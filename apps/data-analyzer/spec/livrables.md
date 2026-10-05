@@ -139,3 +139,15 @@ en 2024, soit 4 % de ceux qui ont un remboursement et 70 % de son volume.
 `mart_article80` porte à la place `nb` et `part_plateforme = source / Σ plateformes`, et sa
 colonne `plateforme` porte une seule plateforme par ligne, puisque c'est son grain. La
 nomenclature véhicule canonique est `vehicule ∈ {Ambulance, Assis, Autre, Total}`.
+
+## Les livrables d'une cible
+
+Un document destiné à un tiers reçoit les mêmes marts, restreints à ses plateformes :
+c'est une **cible**, cf. [Publier pour une cible](../README.md#publier-pour-une-cible).
+Deux différences de lecture avec le périmètre complet :
+
+- les rollups et la synthèse n'y listent que les entités où ces plateformes déclarent des
+  trajets. `nb_entites` n'y est donc plus le nombre d'établissements connus, et un taux de
+  couverture en nombre n'y a pas de sens ;
+- un établissement que la cible partage avec une plateforme hors cible y sort avec les
+  seuls trajets de la cible : son ratio y est plus bas que dans le périmètre complet.

@@ -96,6 +96,7 @@ comporte de manière générique quels que soient les fichiers fournis.
 | `location` | oui | chemin du fichier, absolu ou relatif à la racine de l'app |
 | `label` | oui | identifiant neutre et unique, qui nomme les artefacts de traçabilité |
 | `plateforme` | non | nom affiché dans la colonne `plateforme` des marts. N'a de sens que pour le rôle `plateforme` et **n'existe nulle part dans le code versionné** : c'est ici, dans un fichier non versionné, que le nom d'un fournisseur est autorisé. Absent, la colonne retombe sur le `label` |
+| `cibles` | non | les [cibles](#publier-pour-une-cible) où cette plateforme figure, par exemple `["partenaire-a"]`. N'a de sens que pour le rôle `plateforme`. Absent, la plateforme ne figure que dans le périmètre complet |
 | `options` | non | paramètres propres au format, par exemple les index de colonnes finess pour le TSV. C'est ce qui permet à plusieurs fichiers de partager un adaptateur |
 
 Une entrée invalide, à laquelle il manque le rôle, le format, la location ou le label, ou
@@ -152,6 +153,7 @@ sinon on prend les variables du shell.
 |---|---|
 | `GRIST_DOC_URL` | Base API du doc **dédié dataviz** (≠ doc d'identification), ex. `https://…/api/docs/<docId>` |
 | `GRIST_API_KEY` | Clé API Grist |
+| `GRIST_DOC_URL_<NOM>` | Base API du doc d'une [cible](#publier-pour-une-cible), une variable par cible |
 
 Chaque mart publiable déclare sa table et ses colonnes dans `marts()`
 (`src/05-publish/publish.ts`) : ajouter un mart revient à ajouter une ligne. Le fichier et
@@ -190,6 +192,41 @@ doc Grist cible doit rester privé.
 d'être réinsérée par lots, une coupure en cours de mart laisse la table vide ou partielle,
 et la relance suivante ne le signale pas. Vérifier le compte de lignes après une
 publication interrompue.
+
+### Publier pour une cible
+
+Une **cible** est un document Grist destinataire, restreint à certaines plateformes. Le
+document interne reçoit le périmètre complet et se publie sans option. Une cible reçoit
+les mêmes marts, recalculés sur ses seules plateformes.
+
+Elle se déclare à deux endroits, tous deux non versionnés :
+
+- dans `mapping.json`, chaque plateforme liste dans `cibles` les cibles où elle figure ;
+- dans `.env`, `GRIST_DOC_URL_<NOM>` porte l'adresse du document. Le nom est celui de la
+  cible, en majuscules : `partenaire-a` lit `GRIST_DOC_URL_PARTENAIRE_A`.
+
+```bash
+pnpm publish-grist --cible partenaire-a            # recalcule puis publie tous ses marts
+pnpm publish-grist --cible partenaire-a ght_2024   # un seul
+pnpm marts --cible partenaire-a                    # recalcule sans publier
+```
+
+Ce que la restriction garantit :
+
+| Règle | Effet |
+|---|---|
+| Les trajets des autres plateformes sont retirés avant le calcul | aucun volume ni nom d'une autre plateforme, y compris dans les sommes |
+| Seules les entités où ses plateformes déclarent des trajets sont listées | la cible ne voit pas le remboursement des établissements qu'elle n'équipe pas |
+| Les marts s'écrivent dans `build/cibles/<nom>/marts/` | ceux du périmètre complet ne sont jamais écrasés |
+| La publication recalcule toujours avant d'envoyer | le document ne reçoit ni un mart périmé, ni un mart du périmètre complet |
+
+Une cible que nulle plateforme ne déclare fait échouer la commande : une faute de frappe
+ne publie donc jamais le périmètre complet par erreur. Pour une cible qui doit tout
+recevoir, la déclarer sur toutes les plateformes.
+
+⚠️ Deux chiffres dépassent le périmètre d'une cible et y restent : le remboursement entier
+d'un GHT dont elle n'équipe qu'une partie, dans `mart_ght`, et le total national, dans
+`mart_taux_plateforme`.
 
 ## Référentiels (`ref/`)
 

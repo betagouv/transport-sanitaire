@@ -8,11 +8,16 @@
 //   GRIST_DOC_URL — base API du doc cible, ex. https://…/api/docs/<docId>
 //   GRIST_API_KEY — clé API Grist
 //
+//   GRIST_DOC_URL_<NOM> — le doc d'une cible (cf. cible.ts)
+//
 //   pnpm publish-grist            # tous les marts publiables
 //   pnpm publish-grist ght_2025   # un seul (par son nom court)
+//   pnpm publish-grist --cible partenaire-a   # les marts d'une cible, dans son doc
 
 import { join } from "node:path";
 import { ANNEES_ROLLUP } from "../04-marts/mart-rollup-annuel.ts";
+import { Marts } from "../04-marts/marts.ts";
+import { lienDocument, lireArguments, variableDocUrl } from "../cible.ts";
 import { Csv } from "../csv.ts";
 import { Paths } from "../paths.ts";
 import { type ColumnSpec, coerce, GristDoc } from "./grist.ts";
@@ -45,13 +50,16 @@ if (import.meta.url === `file://${process.argv[1]}`) {
   } catch {
     // Pas de .env : on se rabat sur l'environnement du shell.
   }
-  const docUrl = process.env.GRIST_DOC_URL?.trim();
+  const { cible, reste } = lireArguments(process.argv.slice(2));
+  const docUrl = process.env[variableDocUrl(cible)]?.trim();
   const apiKey = process.env.GRIST_API_KEY?.trim();
   if (!docUrl || !apiKey) {
-    console.error("GRIST_DOC_URL et GRIST_API_KEY sont requis (voir .env).");
+    console.error(
+      `${variableDocUrl(cible)} et GRIST_API_KEY sont requis (voir .env).`,
+    );
     process.exit(1);
   }
-  const filtre = process.argv[2]?.trim();
+  const filtre = reste[0]?.trim();
   const specs = filtre ? marts().filter((m) => m.nom === filtre) : marts();
   if (specs.length === 0) {
     console.error(
@@ -61,8 +69,12 @@ if (import.meta.url === `file://${process.argv[1]}`) {
     );
     process.exit(1);
   }
+  // Une cible se recalcule toujours avant d'être publiée : son document ne peut ainsi
+  // recevoir ni un mart périmé, ni un mart du périmètre complet.
+  if (cible) new Marts(cible).execute();
   const publisher = new PublishMart(new GristDoc(docUrl, apiKey));
   for (const spec of specs) await publisher.execute(spec);
+  console.log(`Document : ${lienDocument(docUrl)}`);
 }
 
 // ---- implémentation ----

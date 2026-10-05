@@ -2,6 +2,9 @@
 // connaît que des rôles ; chaque mart n'est qu'un choix de **grain** sur les trajets
 // réconciliés (build/reconcile/trajets.csv), habillé par une dimension d'identité.
 //
+// `pnpm marts --cible <nom>` recalcule les mêmes livrables pour une cible, restreints à
+// ses plateformes et aux entités qu'elles couvrent, dans `build/cibles/<nom>/marts/`.
+//
 // Dix-sept livrables (cf. spec/points-attention-metier.md pour les spécificités) :
 //   - mart_geographique    — grain finess géographique (le plus fin ; beaucoup de part NULL) ;
 //   - mart_juridique       — grain finess juridique (autorité référentiel) ;
@@ -21,6 +24,7 @@
 
 import { existsSync } from "node:fs";
 import { join } from "node:path";
+import { lireArguments } from "../cible.ts";
 import type {
   EtablissementDimensionRow,
   EtablissementRow,
@@ -28,20 +32,28 @@ import type {
   TrajetReconcilieRow,
 } from "../contrats.ts";
 import { Csv } from "../csv.ts";
+import { Mapping } from "../mapping.ts";
 import { Paths } from "../paths.ts";
 import { MartArticle80 } from "./mart-article80.ts";
 import { MartPlateforme } from "./mart-plateforme.ts";
-import { MartRatio } from "./mart-ratio.ts";
+import { MartRatio, type MartRatioConfig } from "./mart-ratio.ts";
 import { ANNEES_ROLLUP, MartRollupAnnuel } from "./mart-rollup-annuel.ts";
 import { MartSynthese } from "./mart-synthese.ts";
 import { MartTauxPlateforme } from "./mart-taux-plateforme.ts";
+import { restreindre } from "./perimetre.ts";
 
 export class Marts {
+  readonly #cible: string; // "" pour le périmètre complet (cf. cible.ts)
   #juridique = new Map<string, EtablissementDimensionRow>();
   #geo = new Map<string, EtablissementRow>();
   #ght = new Map<string, GhtRattachementRow>();
 
+  constructor(cible = "") {
+    this.#cible = cible;
+  }
+
   execute(): void {
+    Paths.viserCible(this.#cible);
     this.#loadDimensions();
     const trajets = this.#loadTrajets();
     this.#martsRatio().forEach((mart) => {
@@ -96,10 +108,13 @@ export class Marts {
     ];
   }
 
+  // Une cible ne liste que les entités que ses plateformes couvrent : son univers est vide,
+  // et le rollup s'en tient aux clés de son mart de ratio.
   #univers(
     dimension: Map<string, unknown>,
     identite: (cle: string) => Row,
   ): Map<string, Row> {
+    if (this.#cible) return new Map();
     return new Map([...dimension.keys()].map((cle) => [cle, identite(cle)]));
   }
 
@@ -128,33 +143,36 @@ export class Marts {
   }
 
   #martsRatio(): MartRatio[] {
-    return [
-      new MartRatio({
+    const configs: MartRatioConfig[] = [
+      {
         fichier: "mart_geographique.csv",
         log: "geographique",
         grain: (t) =>
           this.#usable(t.finess_geographique) ? t.finess_geographique : "",
         identite: (cle) => this.#identiteGeo(cle),
-      }),
-      new MartRatio({
+      },
+      {
         fichier: "mart_juridique.csv",
         log: "juridique",
         grain: (t) => t.finess_juridique,
         identite: (cle) => this.#identiteJuridique(cle),
-      }),
-      new MartRatio({
+      },
+      {
         fichier: "mart_ght.csv",
         log: "ght",
         grain: (t) => t.ght_code,
         identite: (cle) => this.#identiteGht(cle),
-      }),
-      new MartRatio({
+      },
+      {
         fichier: "mart_hors_ght.csv",
         log: "hors_ght",
         grain: (t) => (t.ght_code ? "" : t.finess_juridique),
         identite: (cle) => this.#identiteJuridique(cle),
-      }),
+      },
     ];
+    return configs.map(
+      (c) => new MartRatio({ ...c, seulementCouvertes: Boolean(this.#cible) }),
+    );
   }
 
   #identiteGeo(cle: string): Row {
@@ -253,6 +271,12 @@ export class Marts {
   }
 
   #loadTrajets(): TrajetReconcilieRow[] {
+    const trajets = this.#readTrajets();
+    if (!this.#cible) return trajets;
+    return restreindre(trajets, Mapping.sourcesDeLaCible(this.#cible));
+  }
+
+  #readTrajets(): TrajetReconcilieRow[] {
     return Csv.read(join(Paths.RECONCILE, "trajets.csv")).map(
       (raw) =>
         ({
@@ -267,7 +291,8 @@ export class Marts {
   }
 }
 
-if (import.meta.url === `file://${process.argv[1]}`) new Marts().execute();
+if (import.meta.url === `file://${process.argv[1]}`)
+  new Marts(lireArguments(process.argv.slice(2)).cible).execute();
 
 // ---- implémentation ----
 

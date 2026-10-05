@@ -19,6 +19,19 @@ export class Mapping {
     return raw.map((item, i) => Mapping.#toEntry(item, i, labels));
   }
 
+  /** Les labels des plateformes qui figurent dans une cible (cf. cible.ts). */
+  static sourcesDeLaCible(cible: string): Set<string> {
+    const sources = Mapping.load()
+      .filter((e) => e.cibles.includes(cible))
+      .map((e) => e.label);
+    if (sources.length === 0)
+      throw new Error(
+        `Aucune plateforme de mapping.json ne déclare la cible « ${cible} ». ` +
+          `Ajoutez-la au champ "cibles" des plateformes qu'elle doit contenir.`,
+      );
+    return new Set(sources);
+  }
+
   static #read(): unknown {
     const path = join(Mapping.#appRoot(), "mapping.json");
     try {
@@ -40,6 +53,7 @@ export class Mapping {
       location: Mapping.#resolve(e.location!),
       label: e.label!,
       plateforme: Mapping.#plateforme(e),
+      cibles: Mapping.#cibles(e, i),
       options: e.options ?? {},
     };
   }
@@ -66,6 +80,18 @@ export class Mapping {
   static #plateforme(e: Partial<MappingEntry>): string {
     if (e.role !== "plateforme") return "";
     return e.plateforme?.trim() || e.label!;
+  }
+
+  // Seule une plateforme figure dans une cible : un référentiel, lui, y est toujours.
+  static #cibles(e: Partial<MappingEntry>, i: number): string[] {
+    const cibles: unknown = e.cibles ?? [];
+    const valides =
+      Array.isArray(cibles) && cibles.every((c) => typeof c === "string" && c);
+    if (!valides || (e.role !== "plateforme" && cibles.length > 0))
+      throw new Error(
+        `mapping.json[${i}].cibles invalide (attendu : une liste de noms, sur une plateforme).`,
+      );
+    return cibles;
   }
 
   static #resolve(location: string): string {
