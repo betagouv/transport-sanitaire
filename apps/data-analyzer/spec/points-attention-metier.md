@@ -144,9 +144,9 @@ de calcul. L'origine de ces révisions est à faire confirmer par l'éditeur de 
 
 ## 9. Un rollup annuel ne répond qu'à la question qui lui est posée
 
-`mart_ght_2024` et `mart_juridique_2024` somment les véhicules d'une seule année. C'est ce
-qui les rend lisibles, et c'est aussi ce qu'ils coûtent. Quatre limites à connaître avant
-de citer un de leurs ratios.
+Les rollups `mart_ght_<année>` et `mart_juridique_<année>` somment les véhicules d'une
+seule année. C'est ce qui les rend lisibles, et c'est aussi ce qu'ils coûtent. Cinq limites
+à connaître avant de citer un de leurs ratios. Les chiffres cités sont ceux de 2024.
 
 - **Le rollup masque une anomalie portée par un seul véhicule.** `GHT Vendée` sort à
   `166 678 / 56 707` sur l'ambulance en 2024, soit `part ≈ 2,9` et une `alerte_qualite`
@@ -166,6 +166,12 @@ de citer un de leurs ratios.
   couverts par une plateforme ». **Les deux chiffres sont justes et ne répondent pas à la
   même question.** L'écart de 225 trajets au numérateur vient des 4 établissements sans
   remboursement 2024, listés avec un ratio vide.
+- **2025 ne se compare pas tel quel à 2024.** Une des quatre plateformes n'a pas livré
+  2025. Elle pesait 625 285 trajets hors article 80 en 2024, plus du tiers du numérateur.
+  Le rollup 2025 sort donc à `1 326 310 / 64 419 410` soit **2,06 %**, contre 2,61 % en
+  2024 : la baisse vient de la source manquante, pas du recours aux plateformes. Une
+  évolution se lit à périmètre de plateformes constant, ou établissement par
+  établissement chez une plateforme présente les deux années.
 - **Le nom affiché est celui du site le plus gros, pas celui de l'entité.** `reconcile` élit
   un libellé représentatif par finess juridique. Sur une entité multi-sites, il désigne un
   site et peut contredire le département de la ligne ; sur un CHU, il désigne parfois le

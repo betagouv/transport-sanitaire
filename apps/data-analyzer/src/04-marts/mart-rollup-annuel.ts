@@ -19,7 +19,12 @@ import { Csv } from "../csv.ts";
 import { Paths } from "../paths.ts";
 import { joindrePlateformes, separerPlateformes } from "./plateformes.ts";
 
-export interface MartRollup2024Config {
+// Les années du référentiel national : hors de cette fenêtre le ratio serait vide partout
+// (cf. spec/points-attention-metier.md, point 4). Un rollup sort par grain et par année.
+export const ANNEES_ROLLUP = ["2024", "2025"];
+
+export interface MartRollupAnnuelConfig {
+  annee: string; // seule année retenue
   source: string; // mart de ratio lu dans build/marts/
   fichier: string; // nom du CSV produit dans build/marts/
   log: string; // libellé affiché
@@ -28,10 +33,10 @@ export interface MartRollup2024Config {
   univers: () => Map<string, Row>; // toutes les entités connues : clé → colonnes d'identité
 }
 
-export class MartRollup2024 {
-  readonly #config: MartRollup2024Config;
+export class MartRollupAnnuel {
+  readonly #config: MartRollupAnnuelConfig;
 
-  constructor(config: MartRollup2024Config) {
+  constructor(config: MartRollupAnnuelConfig) {
     this.#config = config;
   }
 
@@ -58,7 +63,7 @@ export class MartRollup2024 {
     const cle = this.#config.cle(r);
     if (!cle) return;
     const accu = this.#accu(parCle, cle, r);
-    if (r.annee !== ANNEE) return;
+    if (r.annee !== this.#config.annee) return;
     accu.nb_plateforme += Number(r.nb_plateforme) || 0;
     accu.nb_cnam += Number(r.nb_reference) || 0;
     for (const nom of separerPlateformes(r.plateforme ?? ""))
@@ -80,7 +85,7 @@ export class MartRollup2024 {
         : "";
     return {
       ...accu.identite,
-      annee: ANNEE,
+      annee: this.#config.annee,
       plateforme: joindrePlateformes(accu.plateformes),
       nb_plateforme: accu.nb_plateforme,
       nb_cnam: accu.nb_cnam,
@@ -93,7 +98,7 @@ export class MartRollup2024 {
     const anomalies = rows.filter((r) => r.alerte_qualite === "ratio>1").length;
     const couvertes = rows.filter((r) => Number(r.nb_plateforme) > 0).length;
     console.log(
-      `marts ${this.#config.log.padEnd(15)}: ${rows.length} lignes (année ${ANNEE}, tous transports, ${couvertes} avec trajets plateforme, ${anomalies} ratio>1)`,
+      `marts ${this.#config.log.padEnd(15)}: ${rows.length} lignes (année ${this.#config.annee}, tous transports, ${couvertes} avec trajets plateforme, ${anomalies} ratio>1)`,
     );
   }
 }
@@ -104,10 +109,6 @@ type Row = Record<string, string | number>;
 
 /** Ligne d'un mart de ratio relue depuis son CSV : toutes les valeurs y sont des chaînes. */
 type Ligne = Record<string, string>;
-
-// Seule année demandée. Le référentiel national ne couvre que 2024-2025 (cf. README,
-// point 4) : hors de cette fenêtre le ratio serait NULL partout.
-const ANNEE = "2024";
 
 interface Accu {
   identite: Row;

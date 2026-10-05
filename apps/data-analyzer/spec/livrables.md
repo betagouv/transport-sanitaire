@@ -17,6 +17,7 @@ rattachés au GHT. Voir [Pipeline](../README.md#pipeline--artefacts) et le
 | `mart_article80.csv` | juridique **et** GHT | **Volumes + part par plateforme** (pas de ratio national, cf. point 3). Colonne `grain` = `juridique`/`ght`. |
 | `mart_ght_2024.csv` | **GHT**, année 2024, **tous transports** | **Rollup du mart GHT** : une ligne par GHT (136, dont 56 avec des trajets plateforme), somme des véhicules pour 2024. Vue de synthèse « taux réel de recours aux plateformes par GHT ». |
 | `mart_juridique_2024.csv` | **finess juridique**, année 2024, **tous transports** | **Rollup du mart juridique** : une ligne par établissement connu (8 527, dont 446 avec des trajets plateforme). Le même chiffre que ci-dessus, au grain où il s'interprète (cf. [point 9](points-attention-metier.md#9-un-rollup-annuel-ne-répond-quà-la-question-qui-lui-est-posée)). C'est ce mart que consomme la vue Grist « part plateforme par établissement ». |
+| `mart_ght_2025.csv`, `mart_juridique_2025.csv` | les deux mêmes grains, année 2025 | **Les mêmes rollups pour 2025**, aux mêmes colonnes. ⚠️ Une plateforme n'a pas livré 2025 : son numérateur manque, et un ratio 2025 ne se compare pas tel quel à celui de 2024 (cf. [point 9](points-attention-metier.md#9-un-rollup-annuel-ne-répond-quà-la-question-qui-lui-est-posée)). |
 
 Les marts de ratio — `geographique`, `juridique`, `ght` et `hors_ght` — portent les
 colonnes `… annee, vehicule, plateforme, nb_plateforme, nb_reference, part, alerte_qualite`,
@@ -34,9 +35,9 @@ exemple `Plateforme A + Plateforme B` : réduire à une seule mentirait sur l'or
 chiffre. Les noms eux-mêmes viennent de `mapping.json`, cf.
 [Configuration des entrées](../README.md#configuration-des-entrées--mappingjson).
 
-Les deux **rollups annuels**, `ght_2024` et `juridique_2024`, sont le même calcul à deux
-grains : ils somment les véhicules du mart de ratio correspondant pour la seule année 2024
-et portent `… annee, plateforme, nb_plateforme, nb_cnam, ratio, alerte_qualite`, où `nb_cnam` est le
+Les **rollups annuels** sont le même calcul à deux grains, `ght_<année>` et
+`juridique_<année>`, et sortent pour chaque année du référentiel national, 2024 et 2025.
+Ils somment les véhicules du mart de ratio correspondant pour leur seule année et portent `… annee, plateforme, nb_plateforme, nb_cnam, ratio, alerte_qualite`, où `nb_cnam` est le
 référentiel national, `ratio = nb_plateforme / nb_cnam` et
 `alerte_qualite = "ratio>1"` selon la même règle que `part>1`.
 

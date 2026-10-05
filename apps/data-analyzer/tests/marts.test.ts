@@ -1,7 +1,7 @@
 // Tests des marts calculés sur les trajets réconciliés (sans mock, sans I/O) : on appelle
 // `calculer()` sur des trajets synthétiques et on vérifie les règles (part, part>1, NULL,
 // grain, Article 80). Le rollup annuel, qui dérive d'un mart et non des trajets, a son
-// propre fichier : mart-rollup-2024.test.ts.
+// propre fichier : mart-rollup-annuel.test.ts.
 
 import { describe, expect, it } from "vitest";
 import { MartArticle80 } from "../src/04-marts/mart-article80.ts";

@@ -4,9 +4,9 @@
 // établissement.
 
 import { describe, expect, it } from "vitest";
-import { MartRollup2024 } from "../src/04-marts/mart-rollup-2024.ts";
+import { MartRollupAnnuel } from "../src/04-marts/mart-rollup-annuel.ts";
 
-describe("MartRollup2024.calculer", () => {
+describe("MartRollupAnnuel.calculer", () => {
   // Lignes au format d'un mart de ratio relu depuis son CSV : valeurs en chaînes.
   function ghtRow(p: Record<string, string>): Record<string, string> {
     return {
@@ -25,7 +25,8 @@ describe("MartRollup2024.calculer", () => {
   }
 
   // La configuration qui produit mart_ght_2024 : elle sert de témoin de non-régression.
-  const parGht = new MartRollup2024({
+  const parGht = new MartRollupAnnuel({
+    annee: "2024",
     source: "mart_ght.csv",
     fichier: "mart_ght_2024.csv",
     log: "ght_2024",
@@ -190,6 +191,30 @@ describe("MartRollup2024.calculer", () => {
     });
   });
 
+  it("ne retient que l'année de sa configuration", () => {
+    const en2025 = new MartRollupAnnuel({
+      annee: "2025",
+      source: "mart_ght.csv",
+      fichier: "mart_ght_2025.csv",
+      log: "ght_2025",
+      cle: (r) => r.ght_code ?? "",
+      identite: (r) => ({ ght_code: r.ght_code ?? "" }),
+      univers: () => new Map(),
+    });
+    const rows = en2025.calculer([
+      ghtRow({ ght_code: "G1", nb_plateforme: "30", nb_reference: "100" }),
+      ghtRow({
+        ght_code: "G1",
+        annee: "2025",
+        nb_plateforme: "10",
+        nb_reference: "40",
+      }),
+    ]);
+    expect(rows).toMatchObject([
+      { annee: "2025", nb_plateforme: 10, nb_cnam: 40, ratio: 0.25 },
+    ]);
+  });
+
   it("signale ratio > 1 sans jamais le plafonner", () => {
     const rows = parGht.calculer([
       ghtRow({
@@ -203,7 +228,8 @@ describe("MartRollup2024.calculer", () => {
   });
 
   it("habille les lignes avec les colonnes d'identité de la configuration, ici au grain établissement", () => {
-    const parEtablissement = new MartRollup2024({
+    const parEtablissement = new MartRollupAnnuel({
+      annee: "2024",
       source: "mart_juridique.csv",
       fichier: "mart_juridique_2024.csv",
       log: "juridique_2024",

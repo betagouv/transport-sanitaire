@@ -9,9 +9,10 @@
 //   GRIST_API_KEY — clé API Grist
 //
 //   pnpm publish-grist            # tous les marts publiables
-//   pnpm publish-grist ght_2024   # un seul (par son nom court)
+//   pnpm publish-grist ght_2025   # un seul (par son nom court)
 
 import { join } from "node:path";
+import { ANNEES_ROLLUP } from "../04-marts/mart-rollup-annuel.ts";
 import { Csv } from "../csv.ts";
 import { Paths } from "../paths.ts";
 import { type ColumnSpec, coerce, GristDoc } from "./grist.ts";
@@ -94,39 +95,7 @@ function marts(): MartSpec[] {
         { id: "alerte_qualite", type: "Text" },
       ],
     },
-    {
-      nom: "ght_2024",
-      fichier: "mart_ght_2024.csv",
-      table: "Mart_Ght_2024",
-      columns: [
-        { id: "ght_code", type: "Text" },
-        { id: "region", type: "Text" },
-        { id: "ght_libelle", type: "Text" },
-        { id: "annee", type: "Int" },
-        { id: "plateforme", type: "Text" },
-        { id: "nb_plateforme", type: "Int" },
-        { id: "nb_cnam", type: "Int" },
-        { id: "ratio", type: "Numeric" },
-        { id: "alerte_qualite", type: "Text" },
-      ],
-    },
-    {
-      nom: "juridique_2024",
-      fichier: "mart_juridique_2024.csv",
-      table: "Mart_Juridique_2024",
-      columns: [
-        { id: "finess_juridique", type: "Text" },
-        { id: "nom", type: "Text" },
-        { id: "ville", type: "Text" },
-        { id: "departement", type: "Text" },
-        { id: "annee", type: "Int" },
-        { id: "plateforme", type: "Text" },
-        { id: "nb_plateforme", type: "Int" },
-        { id: "nb_cnam", type: "Int" },
-        { id: "ratio", type: "Numeric" },
-        { id: "alerte_qualite", type: "Text" },
-      ],
-    },
+    ...ANNEES_ROLLUP.flatMap(rollups),
     {
       nom: "juridique",
       fichier: "mart_juridique.csv",
@@ -197,5 +166,47 @@ function marts(): MartSpec[] {
         { id: "part_plateforme", type: "Numeric" },
       ],
     },
+  ];
+}
+
+// Les rollups annuels : une table par grain et par année, aux mêmes colonnes d'une année
+// à l'autre.
+function rollups(annee: string): MartSpec[] {
+  return [
+    {
+      nom: `ght_${annee}`,
+      fichier: `mart_ght_${annee}.csv`,
+      table: `Mart_Ght_${annee}`,
+      columns: [
+        { id: "ght_code", type: "Text" },
+        { id: "region", type: "Text" },
+        { id: "ght_libelle", type: "Text" },
+        ...colonnesRollup(),
+      ],
+    },
+    {
+      nom: `juridique_${annee}`,
+      fichier: `mart_juridique_${annee}.csv`,
+      table: `Mart_Juridique_${annee}`,
+      columns: [
+        { id: "finess_juridique", type: "Text" },
+        { id: "nom", type: "Text" },
+        { id: "ville", type: "Text" },
+        { id: "departement", type: "Text" },
+        ...colonnesRollup(),
+      ],
+    },
+  ];
+}
+
+// Hoistée pour la même raison que `marts()`.
+function colonnesRollup(): ColumnSpec[] {
+  return [
+    { id: "annee", type: "Int" },
+    { id: "plateforme", type: "Text" },
+    { id: "nb_plateforme", type: "Int" },
+    { id: "nb_cnam", type: "Int" },
+    { id: "ratio", type: "Numeric" },
+    { id: "alerte_qualite", type: "Text" },
   ];
 }

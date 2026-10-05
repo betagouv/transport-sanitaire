@@ -2,14 +2,15 @@
 // connaît que des rôles ; chaque mart n'est qu'un choix de **grain** sur les trajets
 // réconciliés (build/reconcile/trajets.csv), habillé par une dimension d'identité.
 //
-// Sept livrables (cf. spec/points-attention-metier.md pour les spécificités) :
+// Neuf livrables (cf. spec/points-attention-metier.md pour les spécificités) :
 //   - mart_geographique    — grain finess géographique (le plus fin ; beaucoup de part NULL) ;
 //   - mart_juridique       — grain finess juridique (autorité référentiel) ;
 //   - mart_ght             — grain GHT (le plus propre ; établissements publics only) ;
 //   - mart_hors_ght        — grain finess juridique, restreint aux établissements sans GHT ;
 //   - mart_article80       — volumes + part par plateforme (pas de dénominateur national) ;
-//   - mart_ght_2024        — rollup du mart GHT : ratio annuel plateforme/CNAM par GHT ;
-//   - mart_juridique_2024  — le même rollup par établissement, tous transports confondus.
+//   - mart_ght_<année>        — rollup du mart GHT : ratio annuel plateforme/CNAM par GHT ;
+//   - mart_juridique_<année>  — le même rollup par établissement, tous transports confondus.
+// Les deux rollups sortent pour chaque année de `ANNEES_ROLLUP`.
 
 import { existsSync } from "node:fs";
 import { join } from "node:path";
@@ -23,7 +24,7 @@ import { Csv } from "../csv.ts";
 import { Paths } from "../paths.ts";
 import { MartArticle80 } from "./mart-article80.ts";
 import { MartRatio } from "./mart-ratio.ts";
-import { MartRollup2024 } from "./mart-rollup-2024.ts";
+import { ANNEES_ROLLUP, MartRollupAnnuel } from "./mart-rollup-annuel.ts";
 
 export class Marts {
   #juridique = new Map<string, EtablissementDimensionRow>();
@@ -41,17 +42,18 @@ export class Marts {
       (cle) => this.#ght.get(cle)?.ght_libelle ?? "",
     ).execute(trajets);
     // Rollups dérivés des marts de ratio écrits ci-dessus, donc après eux.
-    this.#rollups2024().forEach((rollup) => {
+    ANNEES_ROLLUP.flatMap((annee) => this.#rollups(annee)).forEach((rollup) => {
       rollup.execute();
     });
   }
 
-  #rollups2024(): MartRollup2024[] {
+  #rollups(annee: string): MartRollupAnnuel[] {
     return [
-      new MartRollup2024({
+      new MartRollupAnnuel({
+        annee,
         source: "mart_ght.csv",
-        fichier: "mart_ght_2024.csv",
-        log: "ght_2024",
+        fichier: `mart_ght_${annee}.csv`,
+        log: `ght_${annee}`,
         cle: (r) => r.ght_code ?? "",
         identite: (r) => ({
           ght_code: r.ght_code ?? "",
@@ -60,10 +62,11 @@ export class Marts {
         }),
         univers: () => this.#univers(this.#ght, (c) => this.#identiteGht(c)),
       }),
-      new MartRollup2024({
+      new MartRollupAnnuel({
+        annee,
         source: "mart_juridique.csv",
-        fichier: "mart_juridique_2024.csv",
-        log: "juridique_2024",
+        fichier: `mart_juridique_${annee}.csv`,
+        log: `juridique_${annee}`,
         cle: (r) => r.finess_juridique ?? "",
         identite: (r) => ({
           finess_juridique: r.finess_juridique ?? "",
