@@ -15,12 +15,12 @@ rattachés au GHT. Voir [Pipeline](../README.md#pipeline--artefacts) et le
 | `mart_ght.csv` | **GHT** | **Le plus fiable** : les désaccords d'attribution intra-GHT se réconcilient (quasi 0 `part>1`). Couvre les établissements **publics en GHT** (cf. point 2) **et** la part d'une source hiérarchique restée au grain GHT (cf. point 6). |
 | `mart_hors_ght.csv` | finess **juridique**, hors GHT | Complément de `mart_ght` : les établissements **sans GHT** (~91 % : cliniques privées, imagerie…). |
 | `mart_article80.csv` | juridique **et** GHT | **Volumes + part par plateforme** (pas de ratio national, cf. point 3). Colonne `grain` = `juridique`/`ght`. |
-| `mart_ght_2024.csv` | **GHT**, année 2024, **tous transports** | **Rollup du mart GHT** : une ligne par GHT (136, dont 56 avec des trajets plateforme), somme des véhicules pour 2024. Vue de synthèse « taux réel de recours aux plateformes par GHT ». |
-| `mart_juridique_2024.csv` | **finess juridique**, année 2024, **tous transports** | **Rollup du mart juridique** : une ligne par établissement connu (8 527, dont 446 avec des trajets plateforme). Le même chiffre que ci-dessus, au grain où il s'interprète (cf. [point 9](points-attention-metier.md#9-un-rollup-annuel-ne-répond-quà-la-question-qui-lui-est-posée)). C'est ce mart que consomme la vue Grist « part plateforme par établissement ». |
+| `mart_ght_2024.csv` | **GHT** × véhicule, année 2024 | **Rollup du mart GHT** : pour chaque GHT (136, dont 56 avec des trajets plateforme), une ligne par véhicule et une ligne « Tous transports ». Vue de synthèse « taux réel de recours aux plateformes par GHT ». |
+| `mart_juridique_2024.csv` | **finess juridique** × véhicule, année 2024 | **Rollup du mart juridique** : les mêmes quatre lignes pour chaque établissement connu (8 527, dont 446 avec des trajets plateforme). Le même chiffre que ci-dessus, au grain où il s'interprète (cf. [point 9](points-attention-metier.md#9-un-rollup-annuel-ne-répond-quà-la-question-qui-lui-est-posée)). C'est ce mart que consomme la vue Grist « part plateforme par établissement ». |
 | `mart_ght_2025.csv`, `mart_juridique_2025.csv` | les deux mêmes grains, année 2025 | **Les mêmes rollups pour 2025**, aux mêmes colonnes. ⚠️ Une plateforme n'a pas livré 2025 : son numérateur manque, et un ratio 2025 ne se compare pas tel quel à celui de 2024 (cf. [point 9](points-attention-metier.md#9-un-rollup-annuel-ne-répond-quà-la-question-qui-lui-est-posée)). |
 | `mart_juridique_plateforme.csv`, `mart_ght_plateforme.csv` | juridique ou GHT, **une ligne par plateforme** | **Le détail par plateforme** de `mart_juridique` et de `mart_ght` : là où ceux-ci écrivent « A + B » et somment, ceux-là rendent à chaque plateforme son volume et sa part. ⚠️ Le dénominateur est répété sur chaque ligne : il ne se somme pas. |
-| `mart_juridique_plateforme_<année>.csv`, `mart_ght_plateforme_<année>.csv` | les mêmes, une année, **tous transports** | **Le détail par plateforme des rollups annuels**, pour 2024 et 2025. |
-| `mart_taux_plateforme.csv` | **plateforme** × année (2024, 2025) | **Le taux de plateformisation de chaque plateforme**, pour les comparer : deux taux et la distribution du ratio chez ses établissements. Hors article 80, au grain établissement. |
+| `mart_juridique_plateforme_<année>.csv`, `mart_ght_plateforme_<année>.csv` | les mêmes × véhicule, une année | **Le détail par plateforme des rollups annuels**, pour 2024 et 2025, avec la même ligne « Tous transports ». |
+| `mart_taux_plateforme.csv` | **plateforme** × année (2024, 2025) × véhicule | **Le taux de plateformisation de chaque plateforme**, pour les comparer : deux taux et la distribution du ratio chez ses établissements. Hors article 80, au grain établissement. |
 
 Les marts de ratio — `geographique`, `juridique`, `ght` et `hors_ght` — portent les
 colonnes `… annee, vehicule, plateforme, nb_plateforme, nb_reference, part, alerte_qualite`,
@@ -40,14 +40,21 @@ chiffre. Les noms eux-mêmes viennent de `mapping.json`, cf.
 
 Les **rollups annuels** sont le même calcul à deux grains, `ght_<année>` et
 `juridique_<année>`, et sortent pour chaque année du référentiel national, 2024 et 2025.
-Ils somment les véhicules du mart de ratio correspondant pour leur seule année et portent `… annee, plateforme, nb_plateforme, nb_cnam, ratio, alerte_qualite`, où `nb_cnam` est le
-référentiel national, `ratio = nb_plateforme / nb_cnam` et
+Ils réduisent le mart de ratio correspondant à leur seule année et portent
+`… annee, vehicule, plateforme, nb_plateforme, nb_cnam, ratio, alerte_qualite`, où
+`nb_cnam` est le référentiel national, `ratio = nb_plateforme / nb_cnam` et
 `alerte_qualite = "ratio>1"` selon la même règle que `part>1`.
+
+**Chaque entité y a quatre lignes**, toujours les mêmes : `Ambulance`, `Assis`, `Autre`,
+et `Tous transports` qui somme les trois. ⚠️ Sommer une colonne sur toute la table compte
+donc chaque trajet deux fois : pour une vue par entité, filtrer sur
+`vehicule = "Tous transports"` ; pour comparer les véhicules, l'exclure. Le mart du taux
+par plateforme et le détail annuel par plateforme suivent la même règle.
 
 **Ils listent toute entité connue**, qu'elle ait ou non des trajets plateforme, qu'elle ait
 ou non des remboursements. Sont connues les entités de la dimension, établissements du
 référentiel ou GHT, et celles que le mart de ratio porte sur une autre année. Quatre cas
-se lisent dans la colonne `ratio` :
+se lisent dans la colonne `ratio`, ici sur la ligne « Tous transports » :
 
 | Cas | `ratio` | En 2024, au grain établissement |
 |---|---|---|
@@ -75,7 +82,9 @@ trajets. Ce qu'il faut savoir pour les lire :
 
 En 2024, 28 établissements et 10 GHT ont des trajets chez plusieurs plateformes.
 
-`mart_taux_plateforme` porte une ligne par plateforme et par année :
+`mart_taux_plateforme` porte, pour chaque plateforme et chaque année, une ligne par
+véhicule où elle déclare des trajets et une ligne « Tous transports ». Sur une ligne
+véhicule, numérateur et dénominateurs sont ceux de ce seul véhicule :
 
 | Colonne | Ce qu'elle dit |
 |---|---|

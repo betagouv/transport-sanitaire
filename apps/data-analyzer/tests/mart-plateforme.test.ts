@@ -4,6 +4,7 @@
 
 import { describe, expect, it } from "vitest";
 import { MartPlateforme } from "../src/04-marts/mart-plateforme.ts";
+import { TOUS_TRANSPORTS } from "../src/04-marts/vehicules.ts";
 import type { TrajetReconcilieRow } from "../src/contrats.ts";
 
 function trajet(p: Partial<TrajetReconcilieRow>): TrajetReconcilieRow {
@@ -96,7 +97,7 @@ describe("MartPlateforme.calculer, forme annuelle", () => {
     identite: (cle) => ({ finess_juridique: cle }),
   });
 
-  it("somme les véhicules de l'année et rapporte chaque plateforme à tout le remboursement de l'entité", () => {
+  it("garde le détail par véhicule de l'année et ajoute leur somme, rapportée à tout le remboursement de l'entité", () => {
     const rows = mart.calculer([
       reference({ vehicule_canonique: "Ambulance", nb_trajets: 100 }),
       reference({ vehicule_canonique: "Assis", nb_trajets: 300 }),
@@ -109,25 +110,28 @@ describe("MartPlateforme.calculer, forme annuelle", () => {
         nb_trajets: 20,
       }),
     ]);
-    expect(rows).toEqual([
-      {
-        finess_juridique: "J1",
-        annee: "2024",
-        plateforme: "Plateforme A",
-        nb_plateforme: 40,
-        nb_cnam: 400,
-        ratio: 0.1,
-        alerte_qualite: "",
-      },
-      {
-        finess_juridique: "J1",
-        annee: "2024",
-        plateforme: "Plateforme B",
-        nb_plateforme: 20,
-        nb_cnam: 400,
-        ratio: 0.05,
-        alerte_qualite: "",
-      },
+    const lecture = rows.map((r) => [
+      r.vehicule,
+      r.plateforme,
+      r.nb_plateforme,
+      r.nb_cnam,
+      r.ratio,
+    ]);
+    expect(lecture).toEqual([
+      ["Ambulance", "Plateforme A", 40, 100, 0.4],
+      ["Assis", "Plateforme B", 20, 300, 0.0667],
+      [TOUS_TRANSPORTS, "Plateforme A", 40, 400, 0.1],
+      [TOUS_TRANSPORTS, "Plateforme B", 20, 400, 0.05],
+    ]);
+    expect(Object.keys(rows[0] ?? {})).toEqual([
+      "finess_juridique",
+      "annee",
+      "vehicule",
+      "plateforme",
+      "nb_plateforme",
+      "nb_cnam",
+      "ratio",
+      "alerte_qualite",
     ]);
   });
 });

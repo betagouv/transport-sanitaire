@@ -146,15 +146,17 @@ de calcul. L'origine de ces révisions est à faire confirmer par l'éditeur de 
 
 ## 9. Un rollup annuel ne répond qu'à la question qui lui est posée
 
-Les rollups `mart_ght_<année>` et `mart_juridique_<année>` somment les véhicules d'une
-seule année. C'est ce qui les rend lisibles, et c'est aussi ce qu'ils coûtent. Cinq limites
-à connaître avant de citer un de leurs ratios. Les chiffres cités sont ceux de 2024.
+Les rollups `mart_ght_<année>` et `mart_juridique_<année>` réduisent un mart de ratio à
+une seule année. C'est ce qui les rend lisibles, et c'est aussi ce qu'ils coûtent. Cinq
+limites à connaître avant de citer un de leurs ratios. Les chiffres cités sont ceux de
+2024, sur la ligne « Tous transports » sauf mention contraire.
 
-- **Le rollup masque une anomalie portée par un seul véhicule.** `GHT Vendée` sort à
-  `166 678 / 56 707` sur l'ambulance en 2024, soit `part ≈ 2,9` et une `alerte_qualite`
-  dans `mart_ght`. Une fois les véhicules sommés, son ratio repasse sous 1 et l'alerte
-  disparaît. **Aucun GHT n'est signalé en 2024**, ce qui ne veut pas dire qu'aucun ne pose
-  question : c'est `mart_ght` qu'il faut ouvrir pour le savoir.
+- **La ligne « Tous transports » masque une anomalie portée par un seul véhicule.**
+  `GHT Vendée` sort à `166 678 / 56 707` sur l'ambulance en 2024, soit un ratio d'environ
+  2,9 et une `alerte_qualite` sur sa ligne `Ambulance`. Une fois les véhicules sommés, son
+  ratio repasse sous 1 et l'alerte disparaît. **Aucun GHT n'est signalé sur sa ligne
+  « Tous transports »**, ce qui ne veut pas dire qu'aucun ne pose question : ce sont les
+  lignes par véhicule qu'il faut lire pour le savoir.
 - **Au grain établissement, le numérateur est incomplet de 10 %.** 183 813 des 1 827 882
   trajets plateforme 2024 hors article 80 n'ont aucun finess juridique, et n'entrent donc
   pas dans `mart_juridique_2024`. C'est le [point 6](#6-plateforme-hiérarchique--une-couverture-au-finess-partielle)

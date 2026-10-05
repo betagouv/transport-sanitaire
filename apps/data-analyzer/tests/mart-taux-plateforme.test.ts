@@ -4,6 +4,7 @@
 
 import { describe, expect, it } from "vitest";
 import { MartTauxPlateforme } from "../src/04-marts/mart-taux-plateforme.ts";
+import { TOUS_TRANSPORTS } from "../src/04-marts/vehicules.ts";
 import type { TrajetReconcilieRow } from "../src/contrats.ts";
 
 function trajet(p: Partial<TrajetReconcilieRow>): TrajetReconcilieRow {
@@ -31,6 +32,12 @@ const reference = (finess_juridique: string, nb_trajets: number) =>
     nb_trajets,
   });
 
+type Row = Record<string, string | number>;
+
+/** Les seules lignes « Tous transports », une par plateforme et par année. */
+const tous = (rows: Row[]) =>
+  rows.filter((r) => r.vehicule === TOUS_TRANSPORTS);
+
 describe("MartTauxPlateforme.calculer", () => {
   const mart = new MartTauxPlateforme(["2024"]);
 
@@ -50,10 +57,11 @@ describe("MartTauxPlateforme.calculer", () => {
       trajet({ annee: "2023", nb_trajets: 999 }), // autre année
       trajet({ enveloppe: "Article 80", nb_trajets: 999 }),
     ]);
-    expect(rows).toEqual([
+    expect(tous(rows)).toEqual([
       {
         plateforme: "Plateforme A",
         annee: "2024",
+        vehicule: TOUS_TRANSPORTS,
         nb_etablissements: 2,
         nb_plateforme: 100,
         nb_plateforme_sans_finess: 5,
@@ -68,6 +76,7 @@ describe("MartTauxPlateforme.calculer", () => {
       {
         plateforme: "Plateforme B",
         annee: "2024",
+        vehicule: TOUS_TRANSPORTS,
         nb_etablissements: 1,
         nb_plateforme: 60,
         nb_plateforme_sans_finess: 0,
@@ -86,7 +95,7 @@ describe("MartTauxPlateforme.calculer", () => {
     const rows = mart.calculer([
       trajet({ finess_juridique: "J1", nb_trajets: 7 }),
     ]);
-    expect(rows).toMatchObject([
+    expect(tous(rows)).toMatchObject([
       {
         nb_etablissements: 1,
         nb_plateforme: 7,
@@ -94,6 +103,32 @@ describe("MartTauxPlateforme.calculer", () => {
         taux_national: "",
         ratio_mediane: "",
       },
+    ]);
+  });
+
+  it("donne les mêmes taux véhicule par véhicule, chacun rapporté au remboursement de ce véhicule", () => {
+    const assis = { vehicule_canonique: "Assis" } as const;
+    const rows = mart.calculer([
+      reference("J1", 100),
+      trajet({
+        role: "referentiel-national",
+        plateforme: "",
+        ...assis,
+        nb_trajets: 400,
+      }),
+      trajet({ finess_juridique: "J1", nb_trajets: 20 }),
+      trajet({ finess_juridique: "J1", ...assis, nb_trajets: 40 }),
+    ]);
+    const lecture = rows.map((r) => [
+      r.vehicule,
+      r.nb_plateforme,
+      r.nb_cnam_national,
+      r.taux_national,
+    ]);
+    expect(lecture).toEqual([
+      ["Ambulance", 20, 100, 0.2],
+      ["Assis", 40, 400, 0.1],
+      [TOUS_TRANSPORTS, 60, 500, 0.12],
     ]);
   });
 });

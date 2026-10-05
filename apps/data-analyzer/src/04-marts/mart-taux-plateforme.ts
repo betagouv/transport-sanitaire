@@ -1,5 +1,6 @@
-// Mart « taux par plateforme » : une ligne par plateforme et par année, pour comparer les
-// plateformes entre elles. Hors Article 80, au grain établissement (finess juridique).
+// Mart « taux par plateforme » : pour chaque plateforme et chaque année, une ligne par
+// véhicule plus une ligne « Tous transports », pour comparer les plateformes entre elles.
+// Hors Article 80, au grain établissement (finess juridique).
 //
 // Deux taux, qui ne répondent pas à la même question :
 //   taux_national       = trajets de la plateforme / tout le remboursement national
@@ -17,6 +18,7 @@ import { join } from "node:path";
 import type { TrajetReconcilieRow } from "../contrats.ts";
 import { Csv } from "../csv.ts";
 import { Paths } from "../paths.ts";
+import { TOUS_TRANSPORTS, VEHICULES } from "./vehicules.ts";
 
 export class MartTauxPlateforme {
   readonly #annees: string[];
@@ -29,28 +31,39 @@ export class MartTauxPlateforme {
     const rows = this.calculer(trajets);
     Csv.write(join(Paths.MARTS, "mart_taux_plateforme.csv"), rows);
     console.log(
-      `marts taux_plateforme : ${rows.length} lignes (une par plateforme et par année)`,
+      `marts taux_plateforme : ${rows.length} lignes (une par plateforme, année et véhicule)`,
     );
   }
 
   /** Le calcul pur (sans écriture), pour le test comme pour `execute`. */
   calculer(trajets: TrajetReconcilieRow[]): Row[] {
-    return this.#annees.flatMap((annee) => {
-      const accu = this.#agreger(trajets, annee);
-      return [...accu.plateformes.entries()]
-        .sort(([a], [b]) => a.localeCompare(b))
-        .map(([nom, p]) => this.#toRow(nom, annee, p, accu));
-    });
+    const coupes = this.#annees.flatMap((annee) =>
+      [...VEHICULES, TOUS_TRANSPORTS].map((vehicule) => ({ annee, vehicule })),
+    );
+    return coupes
+      .flatMap((coupe) => this.#lignes(trajets, coupe))
+      .sort(
+        (a, b) =>
+          a.annee.localeCompare(b.annee) ||
+          a.plateforme.localeCompare(b.plateforme),
+      );
   }
 
-  #agreger(trajets: TrajetReconcilieRow[], annee: string): Accu {
+  #lignes(trajets: TrajetReconcilieRow[], coupe: Coupe): Ligne[] {
+    const accu = this.#agreger(trajets, coupe);
+    return [...accu.plateformes.entries()].map(([nom, p]) =>
+      this.#toRow(nom, coupe, p, accu),
+    );
+  }
+
+  #agreger(trajets: TrajetReconcilieRow[], coupe: Coupe): Accu {
     const accu: Accu = {
       national: 0,
       reference: new Map(),
       plateformes: new Map(),
     };
     for (const t of trajets) {
-      if (t.enveloppe !== "Hors Article 80" || t.annee !== annee) continue;
+      if (!dansLaCoupe(t, coupe)) continue;
       const nb = Number(t.nb_trajets);
       if (t.role === "referentiel-national") {
         accu.national += nb;
@@ -72,7 +85,7 @@ export class MartTauxPlateforme {
     else p.sansFiness += nb;
   }
 
-  #toRow(plateforme: string, annee: string, p: Plateforme, accu: Accu): Row {
+  #toRow(plateforme: string, coupe: Coupe, p: Plateforme, accu: Accu): Ligne {
     const etablissements = [...p.parFiness.entries()].map(([finess, nb]) => ({
       nb,
       reference: accu.reference.get(finess) ?? 0,
@@ -84,7 +97,8 @@ export class MartTauxPlateforme {
       .map((e) => e.nb / e.reference);
     return {
       plateforme,
-      annee,
+      annee: coupe.annee,
+      vehicule: coupe.vehicule,
       nb_etablissements: etablissements.length,
       nb_plateforme: nb,
       nb_plateforme_sans_finess: p.sansFiness,
@@ -102,6 +116,24 @@ export class MartTauxPlateforme {
 // ---- implémentation ----
 
 type Row = Record<string, string | number>;
+
+/** Une ligne du mart : les deux colonnes de tri y sont des chaînes. */
+type Ligne = Row & { plateforme: string; annee: string };
+
+/** Une tranche du mart : une année, et un véhicule ou leur somme. */
+interface Coupe {
+  annee: string;
+  vehicule: string;
+}
+
+function dansLaCoupe(t: TrajetReconcilieRow, coupe: Coupe): boolean {
+  if (t.enveloppe !== "Hors Article 80" || t.annee !== coupe.annee)
+    return false;
+  return (
+    coupe.vehicule === TOUS_TRANSPORTS ||
+    t.vehicule_canonique === coupe.vehicule
+  );
+}
 
 interface Plateforme {
   sansFiness: number; // trajets sans finess juridique, hors du numérateur

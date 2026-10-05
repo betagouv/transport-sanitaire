@@ -12,20 +12,22 @@
 //
 // Deux formes, selon la configuration :
 //   - par véhicule, toutes années (colonnes `nb_reference`, `part`) ;
-//   - annuelle, quand `annee` est fournie : une seule année, tous transports confondus,
-//     aux colonnes des rollups annuels (`nb_cnam`, `ratio`).
+//   - annuelle, quand `annee` est fournie : une seule année, avec en plus une ligne
+//     « Tous transports » qui somme les véhicules, aux colonnes des rollups annuels
+//     (`nb_cnam`, `ratio`).
 
 import { join } from "node:path";
 import type { TrajetReconcilieRow } from "../contrats.ts";
 import { Csv } from "../csv.ts";
 import { Paths } from "../paths.ts";
+import { TOUS_TRANSPORTS } from "./vehicules.ts";
 
 export interface MartPlateformeConfig {
   fichier: string; // nom du CSV produit dans build/marts/
   log: string; // libellé affiché
   grain: (t: TrajetReconcilieRow) => string; // valeur de clé, "" pour ignorer la ligne
   identite: (cle: string) => Row; // colonnes d'identité (clé + libellés), forme fixe
-  annee?: string; // forme annuelle : seule année retenue, véhicules sommés
+  annee?: string; // forme annuelle : seule année retenue, plus la somme des véhicules
 }
 
 export class MartPlateforme {
@@ -56,8 +58,19 @@ export class MartPlateforme {
     if (annee && t.annee !== annee) return;
     const grain = this.#config.grain(t);
     if (!grain) return;
-    const vehicule = annee ? "" : t.vehicule_canonique;
-    const cellule = this.#cellule(cellules, `${grain}|${t.annee}|${vehicule}`);
+    const vehicules = annee
+      ? [t.vehicule_canonique, TOUS_TRANSPORTS]
+      : [t.vehicule_canonique];
+    for (const vehicule of vehicules)
+      this.#ajouter(cellules, `${grain}|${t.annee}|${vehicule}`, t);
+  }
+
+  #ajouter(
+    cellules: Map<string, Cellule>,
+    cle: string,
+    t: TrajetReconcilieRow,
+  ): void {
+    const cellule = this.#cellule(cellules, cle);
     const nb = Number(t.nb_trajets);
     if (t.role === "referentiel-national") cellule.nb_reference += nb;
     else if (t.role === "plateforme") {
@@ -85,7 +98,7 @@ export class MartPlateforme {
       .map(([plateforme, nb]) => ({
         ...this.#config.identite(grain),
         annee,
-        ...(this.#config.annee ? {} : { vehicule }),
+        vehicule,
         plateforme,
         ...this.#mesures(nb, cellule.nb_reference),
       }));

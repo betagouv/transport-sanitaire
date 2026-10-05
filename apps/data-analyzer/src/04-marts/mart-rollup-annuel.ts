@@ -1,5 +1,6 @@
-// Rollup annuel générique : agrège un **mart de ratio** sur l'axe véhicule, pour une seule
-// année, **tous types de transport confondus**. Une ligne par clé du mart source :
+// Rollup annuel générique : réduit un **mart de ratio** à une seule année. Chaque clé du
+// mart source y sort une ligne par véhicule, plus une ligne « Tous transports » qui les
+// somme (cf. `vehicules.ts`) :
 //   nb_plateforme = Σ trajets remontés par les plateformes (numérateur),
 //   nb_cnam       = Σ trajets remboursés par la CNAM / référentiel national (dénominateur),
 //   ratio         = nb_plateforme / nb_cnam, jamais plafonné.
@@ -18,6 +19,7 @@ import { join } from "node:path";
 import { Csv } from "../csv.ts";
 import { Paths } from "../paths.ts";
 import { joindrePlateformes, separerPlateformes } from "./plateformes.ts";
+import { TOUS_TRANSPORTS, VEHICULES } from "./vehicules.ts";
 
 // Les années du référentiel national : hors de cette fenêtre le ratio serait vide partout
 // (cf. spec/points-attention-metier.md, point 4). Un rollup sort par grain et par année.
@@ -56,7 +58,7 @@ export class MartRollupAnnuel {
     for (const r of martRatio) this.#accumuler(parCle, r);
     return [...parCle.entries()]
       .sort(([a], [b]) => a.localeCompare(b))
-      .map(([, accu]) => this.#toRow(accu));
+      .flatMap(([, accu]) => this.#toRows(accu));
   }
 
   #accumuler(parCle: Map<string, Accu>, r: Ligne): void {
@@ -64,10 +66,13 @@ export class MartRollupAnnuel {
     if (!cle) return;
     const accu = this.#accu(parCle, cle, r);
     if (r.annee !== this.#config.annee) return;
-    accu.nb_plateforme += Number(r.nb_plateforme) || 0;
-    accu.nb_cnam += Number(r.nb_reference) || 0;
-    for (const nom of separerPlateformes(r.plateforme ?? ""))
-      accu.plateformes.add(nom);
+    for (const vehicule of [r.vehicule ?? "", TOUS_TRANSPORTS]) {
+      const mesure = this.#mesure(accu, vehicule);
+      mesure.nb_plateforme += Number(r.nb_plateforme) || 0;
+      mesure.nb_cnam += Number(r.nb_reference) || 0;
+      for (const nom of separerPlateformes(r.plateforme ?? ""))
+        mesure.plateformes.add(nom);
+    }
   }
 
   #accu(parCle: Map<string, Accu>, cle: string, r: Ligne): Accu {
@@ -78,27 +83,39 @@ export class MartRollupAnnuel {
     return accu;
   }
 
-  #toRow(accu: Accu): Row {
-    const ratio =
-      accu.nb_cnam > 0
-        ? Number((accu.nb_plateforme / accu.nb_cnam).toFixed(4))
-        : "";
-    return {
-      ...accu.identite,
-      annee: this.#config.annee,
-      plateforme: joindrePlateformes(accu.plateformes),
-      nb_plateforme: accu.nb_plateforme,
-      nb_cnam: accu.nb_cnam,
-      ratio,
-      alerte_qualite: typeof ratio === "number" && ratio > 1 ? "ratio>1" : "",
-    };
+  #mesure(accu: Accu, vehicule: string): Mesure {
+    const connue = accu.parVehicule.get(vehicule);
+    if (connue) return connue;
+    const mesure = mesureVide();
+    accu.parVehicule.set(vehicule, mesure);
+    return mesure;
+  }
+
+  #toRows(accu: Accu): Row[] {
+    return [...accu.parVehicule.entries()].map(([vehicule, mesure]) => {
+      const ratio =
+        mesure.nb_cnam > 0
+          ? Number((mesure.nb_plateforme / mesure.nb_cnam).toFixed(4))
+          : "";
+      return {
+        ...accu.identite,
+        annee: this.#config.annee,
+        vehicule,
+        plateforme: joindrePlateformes(mesure.plateformes),
+        nb_plateforme: mesure.nb_plateforme,
+        nb_cnam: mesure.nb_cnam,
+        ratio,
+        alerte_qualite: typeof ratio === "number" && ratio > 1 ? "ratio>1" : "",
+      };
+    });
   }
 
   #report(rows: Row[]): void {
     const anomalies = rows.filter((r) => r.alerte_qualite === "ratio>1").length;
-    const couvertes = rows.filter((r) => Number(r.nb_plateforme) > 0).length;
+    const entites = rows.filter((r) => r.vehicule === TOUS_TRANSPORTS);
+    const couvertes = entites.filter((r) => Number(r.nb_plateforme) > 0).length;
     console.log(
-      `marts ${this.#config.log.padEnd(15)}: ${rows.length} lignes (année ${this.#config.annee}, tous transports, ${couvertes} avec trajets plateforme, ${anomalies} ratio>1)`,
+      `marts ${this.#config.log.padEnd(15)}: ${rows.length} lignes (année ${this.#config.annee}, ${entites.length} entités dont ${couvertes} avec trajets plateforme, ${anomalies} ratio>1)`,
     );
   }
 }
@@ -112,14 +129,26 @@ type Ligne = Record<string, string>;
 
 interface Accu {
   identite: Row;
+  parVehicule: Map<string, Mesure>; // véhicule, ou « Tous transports » → ses volumes
+}
+
+interface Mesure {
   nb_plateforme: number;
   nb_cnam: number;
   plateformes: Set<string>;
 }
 
-// Le rollup liste toute entité connue, qu'elle ait ou non un volume dans l'année. Sans
-// trajet plateforme son ratio vaut 0, sans remboursement il reste vide : c'est ce qui donne
-// la couverture réelle, pas seulement les entités déjà équipées.
+// Le rollup liste toute entité connue, qu'elle ait ou non un volume dans l'année, et lui
+// donne toujours les mêmes lignes véhicule : un tableau croisé n'a ainsi aucun trou. Sans
+// trajet plateforme le ratio vaut 0, sans remboursement il reste vide.
 function accuVide(identite: Row): Accu {
-  return { identite, nb_plateforme: 0, nb_cnam: 0, plateformes: new Set() };
+  const vehicules = [...VEHICULES, TOUS_TRANSPORTS];
+  return {
+    identite,
+    parVehicule: new Map(vehicules.map((v) => [v, mesureVide()])),
+  };
+}
+
+function mesureVide(): Mesure {
+  return { nb_plateforme: 0, nb_cnam: 0, plateformes: new Set() };
 }

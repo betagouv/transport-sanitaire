@@ -146,11 +146,12 @@ function ratio(): ColumnSpec[] {
   ];
 }
 
-// Les mesures d'un rollup annuel : mêmes colonnes d'une année à l'autre.
+// Les mesures d'un rollup annuel : une ligne par véhicule plus leur somme, et les mêmes
+// colonnes d'une année à l'autre.
 function rollup(): ColumnSpec[] {
   return [
     { id: "annee", type: "Int" },
-    ...texte("plateforme"),
+    ...texte("vehicule", "plateforme"),
     { id: "nb_plateforme", type: "Int" },
     { id: "nb_cnam", type: "Int" },
     { id: "ratio", type: "Numeric" },
@@ -164,6 +165,7 @@ function tauxPlateforme(): ColumnSpec[] {
   const decimal = (id: string): ColumnSpec => ({ id, type: "Numeric" });
   return [
     entier("annee"),
+    ...texte("vehicule"),
     entier("nb_etablissements"),
     entier("nb_plateforme"),
     entier("nb_plateforme_sans_finess"),
