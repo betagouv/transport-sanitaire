@@ -19,19 +19,6 @@ export class Mapping {
     return raw.map((item, i) => Mapping.#toEntry(item, i, labels));
   }
 
-  /** Les labels des plateformes qui figurent dans une cible (cf. cible.ts). */
-  static sourcesDeLaCible(cible: string): Set<string> {
-    const sources = Mapping.load()
-      .filter((e) => e.cibles.includes(cible))
-      .map((e) => e.label);
-    if (sources.length === 0)
-      throw new Error(
-        `Aucune plateforme de mapping.json ne déclare la cible « ${cible} ». ` +
-          `Ajoutez-la au champ "cibles" des plateformes qu'elle doit contenir.`,
-      );
-    return new Set(sources);
-  }
-
   static #read(): unknown {
     const path = join(Mapping.#appRoot(), "mapping.json");
     try {

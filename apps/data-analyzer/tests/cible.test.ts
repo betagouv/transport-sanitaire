@@ -2,9 +2,10 @@
 // variable d'environnement, et restriction des trajets aux plateformes de la cible.
 
 import { describe, expect, it } from "vitest";
-import { restreindre } from "../src/04-marts/perimetre.ts";
+import { restreindre, restriction } from "../src/04-marts/perimetre.ts";
 import { lienDocument, lireArguments, variableDocUrl } from "../src/cible.ts";
 import type { TrajetReconcilieRow } from "../src/contrats.ts";
+import type { MappingEntry } from "../src/types.ts";
 
 describe("lireArguments", () => {
   it("laisse le périmètre complet quand aucune cible n'est nommée", () => {
@@ -52,6 +53,31 @@ describe("lienDocument", () => {
     expect(lienDocument("https://grist.example/ailleurs")).toBe(
       "https://grist.example/ailleurs",
     );
+  });
+});
+
+describe("restriction", () => {
+  const entree = (label: string, cibles: string[], role = "plateforme") =>
+    ({ role, label, cibles }) as MappingEntry;
+  const mapping = [
+    entree("reference-1", [], "referentiel-national"),
+    entree("plateforme-a", ["partenaire-a", "tout"]),
+    entree("plateforme-b", ["tout"]),
+  ];
+
+  it("restreint une cible aux plateformes qui la déclarent", () => {
+    expect(restriction(mapping, "partenaire-a")).toEqual(
+      new Set(["plateforme-a"]),
+    );
+  });
+
+  it("ne restreint ni le périmètre complet, ni une cible qui réunit toutes les plateformes", () => {
+    expect(restriction(mapping, "")).toBeUndefined();
+    expect(restriction(mapping, "tout")).toBeUndefined();
+  });
+
+  it("refuse une cible que nulle plateforme ne déclare", () => {
+    expect(() => restriction(mapping, "inconnue")).toThrow("« inconnue »");
   });
 });
 

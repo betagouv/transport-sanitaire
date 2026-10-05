@@ -221,8 +221,10 @@ Ce que la restriction garantit :
 | La publication recalcule toujours avant d'envoyer | le document ne reçoit ni un mart périmé, ni un mart du périmètre complet |
 
 Une cible que nulle plateforme ne déclare fait échouer la commande : une faute de frappe
-ne publie donc jamais le périmètre complet par erreur. Pour une cible qui doit tout
-recevoir, la déclarer sur toutes les plateformes.
+ne publie donc jamais le périmètre complet par erreur.
+
+Une cible déclarée sur **toutes** les plateformes n'est pas restreinte : elle reçoit le
+périmètre complet, tous les établissements connus compris, dans son propre document.
 
 ⚠️ Deux chiffres dépassent le périmètre d'une cible et y restent : le remboursement entier
 d'un GHT dont elle n'équipe qu'une partie, dans `mart_ght`, et le total national, dans
