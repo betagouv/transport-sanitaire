@@ -2,7 +2,7 @@
 // connaît que des rôles ; chaque mart n'est qu'un choix de **grain** sur les trajets
 // réconciliés (build/reconcile/trajets.csv), habillé par une dimension d'identité.
 //
-// Seize livrables (cf. spec/points-attention-metier.md pour les spécificités) :
+// Dix-sept livrables (cf. spec/points-attention-metier.md pour les spécificités) :
 //   - mart_geographique    — grain finess géographique (le plus fin ; beaucoup de part NULL) ;
 //   - mart_juridique       — grain finess juridique (autorité référentiel) ;
 //   - mart_ght             — grain GHT (le plus propre ; établissements publics only) ;
@@ -15,7 +15,9 @@
 //     marts juridique et GHT, une ligne par plateforme ; suffixés de l'année, le même
 //     détail pour les rollups ;
 //   - mart_taux_plateforme — une ligne par plateforme et par année : ses deux taux et la
-//     distribution du ratio chez ses établissements.
+//     distribution du ratio chez ses établissements ;
+//   - mart_synthese — par année, grain et classe de taille : combien d'entités, combien
+//     de couvertes, et ce qu'elles pèsent.
 
 import { existsSync } from "node:fs";
 import { join } from "node:path";
@@ -31,6 +33,7 @@ import { MartArticle80 } from "./mart-article80.ts";
 import { MartPlateforme } from "./mart-plateforme.ts";
 import { MartRatio } from "./mart-ratio.ts";
 import { ANNEES_ROLLUP, MartRollupAnnuel } from "./mart-rollup-annuel.ts";
+import { MartSynthese } from "./mart-synthese.ts";
 import { MartTauxPlateforme } from "./mart-taux-plateforme.ts";
 
 export class Marts {
@@ -56,6 +59,8 @@ export class Marts {
     ANNEES_ROLLUP.flatMap((annee) => this.#rollups(annee)).forEach((rollup) => {
       rollup.execute();
     });
+    // La synthèse compte les entités des rollups, donc après eux.
+    new MartSynthese(ANNEES_ROLLUP).execute();
   }
 
   #rollups(annee: string): MartRollupAnnuel[] {

@@ -100,6 +100,7 @@ function marts(): MartSpec[] {
     spec("ght_plateforme", ght(), ratio()),
     ...annuels("ght_plateforme", ght(), rollup()),
     spec("taux_plateforme", texte("plateforme"), tauxPlateforme()),
+    spec("synthese", [], synthese()),
   ];
 }
 
@@ -176,6 +177,25 @@ function tauxPlateforme(): ColumnSpec[] {
     decimal("ratio_q1"),
     decimal("ratio_mediane"),
     decimal("ratio_q3"),
+  ];
+}
+
+function synthese(): ColumnSpec[] {
+  const entier = (id: string): ColumnSpec => ({ id, type: "Int" });
+  const decimal = (id: string): ColumnSpec => ({ id, type: "Numeric" });
+  return [
+    entier("annee"),
+    ...texte("grain", "taille"),
+    entier("nb_entites"),
+    entier("nb_avec_remboursement"),
+    entier("nb_avec_plateforme"),
+    decimal("part_entites_couvertes"),
+    entier("nb_cnam"),
+    entier("nb_cnam_couvert"),
+    decimal("part_cnam_couvert"),
+    entier("nb_plateforme"),
+    decimal("ratio"),
+    decimal("ratio_couvert"),
   ];
 }
 

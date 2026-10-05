@@ -21,6 +21,7 @@ rattachés au GHT. Voir [Pipeline](../README.md#pipeline--artefacts) et le
 | `mart_juridique_plateforme.csv`, `mart_ght_plateforme.csv` | juridique ou GHT, **une ligne par plateforme** | **Le détail par plateforme** de `mart_juridique` et de `mart_ght` : là où ceux-ci écrivent « A + B » et somment, ceux-là rendent à chaque plateforme son volume et sa part. ⚠️ Le dénominateur est répété sur chaque ligne : il ne se somme pas. |
 | `mart_juridique_plateforme_<année>.csv`, `mart_ght_plateforme_<année>.csv` | les mêmes × véhicule, une année | **Le détail par plateforme des rollups annuels**, pour 2024 et 2025, avec la même ligne « Tous transports ». |
 | `mart_taux_plateforme.csv` | **plateforme** × année (2024, 2025) × véhicule | **Le taux de plateformisation de chaque plateforme**, pour les comparer : deux taux et la distribution du ratio chez ses établissements. Hors article 80, au grain établissement. |
+| `mart_synthese.csv` | année × grain (établissement, GHT) × **classe de taille** | **La couverture en un coup d'œil** : combien d'entités existent, combien ont des trajets remboursés, combien ont des trajets plateforme, et ce qu'elles pèsent. Dérivé des rollups annuels. |
 
 Les marts de ratio — `geographique`, `juridique`, `ght` et `hors_ght` — portent les
 colonnes `… annee, vehicule, plateforme, nb_plateforme, nb_reference, part, alerte_qualite`,
@@ -107,6 +108,33 @@ Trois précautions avant de comparer deux plateformes :
   donc les `nb_cnam_etablissements` ne se somment pas d'une plateforme à l'autre ;
 - la médiane sous le taux agrégé dit que le taux est porté par quelques gros
   établissements.
+
+`mart_synthese` compte les entités des rollups annuels, sur leur ligne « Tous transports ».
+Chaque année et chaque grain y ont une ligne par classe de taille et une ligne
+« Toutes tailles » :
+
+| Colonne | Ce qu'elle dit |
+|---|---|
+| `nb_entites` | toutes les entités connues |
+| `nb_avec_remboursement` | celles qui ont au moins un trajet remboursé dans l'année |
+| `nb_avec_plateforme` | celles qui ont au moins un trajet plateforme dans l'année |
+| `part_entites_couvertes` | `nb_avec_plateforme / nb_entites` |
+| `nb_cnam`, `nb_cnam_couvert` | le remboursement de la ligne, et celui des seules entités couvertes |
+| `part_cnam_couvert` | leur rapport : la part du remboursement que les entités couvertes représentent |
+| `nb_plateforme` | les trajets plateforme de la ligne |
+| `ratio`, `ratio_couvert` | `nb_plateforme` rapporté à `nb_cnam`, puis à `nb_cnam_couvert` |
+
+Les deux dénominateurs du nombre d'entités sont donnés côte à côte : le taux de couverture
+se calcule sur `nb_entites` ou sur `nb_avec_remboursement` selon la question. Sur la ligne
+« Toutes tailles » du grain établissement, `ratio` et `ratio_couvert` sont les deux
+agrégats du [point 9](points-attention-metier.md#9-un-rollup-annuel-ne-répond-quà-la-question-qui-lui-est-posée),
+2,61 % et 7,99 % en 2024.
+
+La classe de taille d'une entité vient de son nombre de trajets remboursés dans l'année :
+moins de 1 000, 1 000 à 9 999, 10 000 à 49 999, 50 000 et plus. Une entité peut donc
+changer de classe d'une année à l'autre. Celles qui n'ont aucun remboursement dans l'année
+sont à part, dans « Sans remboursement ». La classe la plus haute réunit 312 établissements
+en 2024, soit 4 % de ceux qui ont un remboursement et 70 % de son volume.
 
 `mart_article80` porte à la place `nb` et `part_plateforme = source / Σ plateformes`, et sa
 colonne `plateforme` porte une seule plateforme par ligne, puisque c'est son grain. La
