@@ -99,6 +99,7 @@ function marts(): MartSpec[] {
     ...annuels("juridique_plateforme", juridique(), rollup()),
     spec("ght_plateforme", ght(), ratio()),
     ...annuels("ght_plateforme", ght(), rollup()),
+    spec("taux_plateforme", texte("plateforme"), tauxPlateforme()),
   ];
 }
 
@@ -154,6 +155,25 @@ function rollup(): ColumnSpec[] {
     { id: "nb_cnam", type: "Int" },
     { id: "ratio", type: "Numeric" },
     ...texte("alerte_qualite"),
+  ];
+}
+
+// Dans l'ordre du CSV : les volumes puis leur taux, la distribution à la fin.
+function tauxPlateforme(): ColumnSpec[] {
+  const entier = (id: string): ColumnSpec => ({ id, type: "Int" });
+  const decimal = (id: string): ColumnSpec => ({ id, type: "Numeric" });
+  return [
+    entier("annee"),
+    entier("nb_etablissements"),
+    entier("nb_plateforme"),
+    entier("nb_plateforme_sans_finess"),
+    entier("nb_cnam_etablissements"),
+    decimal("taux_etablissements"),
+    entier("nb_cnam_national"),
+    decimal("taux_national"),
+    decimal("ratio_q1"),
+    decimal("ratio_mediane"),
+    decimal("ratio_q3"),
   ];
 }
 

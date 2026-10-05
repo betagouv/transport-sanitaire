@@ -2,7 +2,7 @@
 // connaît que des rôles ; chaque mart n'est qu'un choix de **grain** sur les trajets
 // réconciliés (build/reconcile/trajets.csv), habillé par une dimension d'identité.
 //
-// Quinze livrables (cf. spec/points-attention-metier.md pour les spécificités) :
+// Seize livrables (cf. spec/points-attention-metier.md pour les spécificités) :
 //   - mart_geographique    — grain finess géographique (le plus fin ; beaucoup de part NULL) ;
 //   - mart_juridique       — grain finess juridique (autorité référentiel) ;
 //   - mart_ght             — grain GHT (le plus propre ; établissements publics only) ;
@@ -13,7 +13,9 @@
 // Les deux rollups sortent pour chaque année de `ANNEES_ROLLUP`.
 //   - mart_juridique_plateforme, mart_ght_plateforme — le détail **par plateforme** des
 //     marts juridique et GHT, une ligne par plateforme ; suffixés de l'année, le même
-//     détail pour les rollups.
+//     détail pour les rollups ;
+//   - mart_taux_plateforme — une ligne par plateforme et par année : ses deux taux et la
+//     distribution du ratio chez ses établissements.
 
 import { existsSync } from "node:fs";
 import { join } from "node:path";
@@ -29,6 +31,7 @@ import { MartArticle80 } from "./mart-article80.ts";
 import { MartPlateforme } from "./mart-plateforme.ts";
 import { MartRatio } from "./mart-ratio.ts";
 import { ANNEES_ROLLUP, MartRollupAnnuel } from "./mart-rollup-annuel.ts";
+import { MartTauxPlateforme } from "./mart-taux-plateforme.ts";
 
 export class Marts {
   #juridique = new Map<string, EtablissementDimensionRow>();
@@ -44,6 +47,7 @@ export class Marts {
     this.#martsPlateforme().forEach((mart) => {
       mart.execute(trajets);
     });
+    new MartTauxPlateforme(ANNEES_ROLLUP).execute(trajets);
     new MartArticle80(
       (cle) => this.#juridique.get(cle)?.nom ?? "",
       (cle) => this.#ght.get(cle)?.ght_libelle ?? "",

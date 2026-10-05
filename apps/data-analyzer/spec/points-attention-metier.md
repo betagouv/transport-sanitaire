@@ -73,10 +73,12 @@ sous certaines d'entre elles le détail de leurs sites, avec finess. Le format
 `plateforme-ght-xlsx` en tire deux grains à la fois. Quatre conséquences à la lecture des
 marts.
 
-- **La couverture au finess est partielle.** Environ 94 % du volume hors article 80 2024 de
-  cette source porte un finess juridique, donc apparaît dans `mart_juridique`. Le reste,
-  une entité réellement multi-sites et sans détail, n'existe qu'au grain GHT. Sommer
-  `mart_juridique` sous-compte donc cette source de quelques pour cent, sans signal.
+- **La couverture au finess est partielle.** 71 % du volume hors article 80 2024 de cette
+  source porte un finess juridique, soit 441 474 trajets sur 625 285, et apparaît dans
+  `mart_juridique`. Le reste, 183 811 trajets, n'existe qu'au grain GHT : deux GHT livrés
+  sans détail par site, dont `GHT Vendée` pour 179 145 trajets. Sommer `mart_juridique`
+  sous-compte donc cette source de 29 %. `mart_taux_plateforme` le montre dans
+  `nb_plateforme_sans_finess`.
 - **L'écart entre une ligne parente et la somme de ses lignes filles est perdu.** Il va
   jusqu'à 13 % sur une entité. Un parent qui a des filles est ignoré, pour ne rien compter
   deux fois. Reprendre cet écart demanderait d'émettre un résidu, ce qui n'est pas fait.

@@ -45,13 +45,13 @@ La **part des trajets réalisés via les plateformes** (numérateur), rapportée
 Trois sources écrites, dans cet ordre d'autorité :
 
 1. [`spec/`](spec/), qui fait autorité sur le métier : `livrables.md` décrit les
-   quinze marts, `points-attention-metier.md` les dix propriétés de la donnée à
+   seize marts, `points-attention-metier.md` les dix propriétés de la donnée à
    connaître avant de citer un chiffre ;
 2. le [README](README.md), qui ne traite que de l'exécution du pipeline ;
 3. [`docs/knowledge/domain/etl-part-plateformes.md`](docs/knowledge/domain/etl-part-plateformes.md),
    qui porte le cadrage d'origine.
 
-**Le cadrage est le moins à jour des trois** : il annonce 5 marts, il y en a 15.
+**Le cadrage est le moins à jour des trois** : il annonce 5 marts, il y en a 16.
 Le métier ne s'écrit plus dans le README : il va dans `spec/`.
 
 ## Le pipeline

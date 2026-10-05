@@ -20,6 +20,7 @@ rattachés au GHT. Voir [Pipeline](../README.md#pipeline--artefacts) et le
 | `mart_ght_2025.csv`, `mart_juridique_2025.csv` | les deux mêmes grains, année 2025 | **Les mêmes rollups pour 2025**, aux mêmes colonnes. ⚠️ Une plateforme n'a pas livré 2025 : son numérateur manque, et un ratio 2025 ne se compare pas tel quel à celui de 2024 (cf. [point 9](points-attention-metier.md#9-un-rollup-annuel-ne-répond-quà-la-question-qui-lui-est-posée)). |
 | `mart_juridique_plateforme.csv`, `mart_ght_plateforme.csv` | juridique ou GHT, **une ligne par plateforme** | **Le détail par plateforme** de `mart_juridique` et de `mart_ght` : là où ceux-ci écrivent « A + B » et somment, ceux-là rendent à chaque plateforme son volume et sa part. ⚠️ Le dénominateur est répété sur chaque ligne : il ne se somme pas. |
 | `mart_juridique_plateforme_<année>.csv`, `mart_ght_plateforme_<année>.csv` | les mêmes, une année, **tous transports** | **Le détail par plateforme des rollups annuels**, pour 2024 et 2025. |
+| `mart_taux_plateforme.csv` | **plateforme** × année (2024, 2025) | **Le taux de plateformisation de chaque plateforme**, pour les comparer : deux taux et la distribution du ratio chez ses établissements. Hors article 80, au grain établissement. |
 
 Les marts de ratio — `geographique`, `juridique`, `ght` et `hors_ght` — portent les
 colonnes `… annee, vehicule, plateforme, nb_plateforme, nb_reference, part, alerte_qualite`,
@@ -73,6 +74,30 @@ trajets. Ce qu'il faut savoir pour les lire :
   dépassement dû au cumul de plusieurs plateformes ne se lit que dans le mart détaillé.
 
 En 2024, 28 établissements et 10 GHT ont des trajets chez plusieurs plateformes.
+
+`mart_taux_plateforme` porte une ligne par plateforme et par année :
+
+| Colonne | Ce qu'elle dit |
+|---|---|
+| `nb_etablissements` | établissements où la plateforme déclare des trajets |
+| `nb_plateforme` | ses trajets rattachés à un établissement |
+| `nb_plateforme_sans_finess` | ses trajets sans finess juridique, **hors du numérateur** |
+| `nb_cnam_etablissements` | remboursement de ces seuls établissements |
+| `taux_etablissements` | `nb_plateforme / nb_cnam_etablissements` : le recours là où elle est présente |
+| `nb_cnam_national` | tout le remboursement de l'année |
+| `taux_national` | `nb_plateforme / nb_cnam_national` : ce que pèse la plateforme |
+| `ratio_q1`, `ratio_mediane`, `ratio_q3` | distribution du ratio établissement par établissement |
+
+Les deux taux sont justes et ne répondent pas à la même question, comme les deux agrégats
+du [point 9](points-attention-metier.md#9-un-rollup-annuel-ne-répond-quà-la-question-qui-lui-est-posée).
+Trois précautions avant de comparer deux plateformes :
+
+- une plateforme dont `nb_plateforme_sans_finess` est élevé est sous-estimée sur ses deux
+  taux, ces trajets n'étant rattachables à aucun établissement ;
+- un établissement partagé entre deux plateformes compte dans le dénominateur de chacune,
+  donc les `nb_cnam_etablissements` ne se somment pas d'une plateforme à l'autre ;
+- la médiane sous le taux agrégé dit que le taux est porté par quelques gros
+  établissements.
 
 `mart_article80` porte à la place `nb` et `part_plateforme = source / Σ plateformes`, et sa
 colonne `plateforme` porte une seule plateforme par ligne, puisque c'est son grain. La
