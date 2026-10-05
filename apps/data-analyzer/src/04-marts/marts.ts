@@ -2,7 +2,7 @@
 // connaît que des rôles ; chaque mart n'est qu'un choix de **grain** sur les trajets
 // réconciliés (build/reconcile/trajets.csv), habillé par une dimension d'identité.
 //
-// Neuf livrables (cf. spec/points-attention-metier.md pour les spécificités) :
+// Quinze livrables (cf. spec/points-attention-metier.md pour les spécificités) :
 //   - mart_geographique    — grain finess géographique (le plus fin ; beaucoup de part NULL) ;
 //   - mart_juridique       — grain finess juridique (autorité référentiel) ;
 //   - mart_ght             — grain GHT (le plus propre ; établissements publics only) ;
@@ -11,6 +11,9 @@
 //   - mart_ght_<année>        — rollup du mart GHT : ratio annuel plateforme/CNAM par GHT ;
 //   - mart_juridique_<année>  — le même rollup par établissement, tous transports confondus.
 // Les deux rollups sortent pour chaque année de `ANNEES_ROLLUP`.
+//   - mart_juridique_plateforme, mart_ght_plateforme — le détail **par plateforme** des
+//     marts juridique et GHT, une ligne par plateforme ; suffixés de l'année, le même
+//     détail pour les rollups.
 
 import { existsSync } from "node:fs";
 import { join } from "node:path";
@@ -23,6 +26,7 @@ import type {
 import { Csv } from "../csv.ts";
 import { Paths } from "../paths.ts";
 import { MartArticle80 } from "./mart-article80.ts";
+import { MartPlateforme } from "./mart-plateforme.ts";
 import { MartRatio } from "./mart-ratio.ts";
 import { ANNEES_ROLLUP, MartRollupAnnuel } from "./mart-rollup-annuel.ts";
 
@@ -35,6 +39,9 @@ export class Marts {
     this.#loadDimensions();
     const trajets = this.#loadTrajets();
     this.#martsRatio().forEach((mart) => {
+      mart.execute(trajets);
+    });
+    this.#martsPlateforme().forEach((mart) => {
       mart.execute(trajets);
     });
     new MartArticle80(
@@ -85,6 +92,30 @@ export class Marts {
     identite: (cle: string) => Row,
   ): Map<string, Row> {
     return new Map([...dimension.keys()].map((cle) => [cle, identite(cle)]));
+  }
+
+  // Le détail par plateforme, aux grains établissement et GHT : par véhicule d'abord, puis
+  // en forme annuelle pour chaque année des rollups.
+  #martsPlateforme(): MartPlateforme[] {
+    return [undefined, ...ANNEES_ROLLUP].flatMap((annee) => {
+      const suffixe = annee ? `_${annee}` : "";
+      return [
+        new MartPlateforme({
+          annee,
+          fichier: `mart_juridique_plateforme${suffixe}.csv`,
+          log: `juridique_plateforme${suffixe}`,
+          grain: (t) => t.finess_juridique,
+          identite: (cle) => this.#identiteJuridique(cle),
+        }),
+        new MartPlateforme({
+          annee,
+          fichier: `mart_ght_plateforme${suffixe}.csv`,
+          log: `ght_plateforme${suffixe}`,
+          grain: (t) => t.ght_code,
+          identite: (cle) => this.#identiteGht(cle),
+        }),
+      ];
+    });
   }
 
   #martsRatio(): MartRatio[] {

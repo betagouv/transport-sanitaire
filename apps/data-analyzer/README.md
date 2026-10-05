@@ -3,7 +3,7 @@
 data-analyzer calcule la part des trajets sanitaires réalisés via les plateformes : au
 numérateur les trajets qu'elles déclarent, au dénominateur le référentiel national de
 remboursement. Le résultat est ventilé par établissement ou GHT, par année, par type de
-transport et par enveloppe, et sort en neuf marts CSV. Un pipeline de cinq étapes les
+transport et par enveloppe, et sort en quinze marts CSV. Un pipeline de cinq étapes les
 produit à partir des fichiers déclarés dans `mapping.json`, la dernière les publiant dans
 Grist pour la dataviz. Tout le métier (description des livrables, limites d'interprétation,
 règles de gestion assumées) vit dans [`spec/`](spec/) ; ce README ne traite que de
@@ -33,7 +33,7 @@ flowchart LR
     G[("Grist<br/>exploration et dataviz")]
 
     SRC --> E
-    M -->|"build/marts/ — les 9 marts"| P --> G
+    M -->|"build/marts/ — les 15 marts"| P --> G
 ```
 
 Les quatre premières étapes sont locales et déterministes ; la cinquième, optionnelle,
@@ -41,7 +41,7 @@ publie les marts dans [Grist](#publication-dataviz).
 
 | Document | Ce qu'il porte |
 |---|---|
-| [`spec/livrables.md`](spec/livrables.md) | Les neuf marts : grain, colonnes, ce que chacun sait et ne sait pas dire. |
+| [`spec/livrables.md`](spec/livrables.md) | Les quinze marts : grain, colonnes, ce que chacun sait et ne sait pas dire. |
 | [`spec/points-attention-metier.md`](spec/points-attention-metier.md) | Les dix propriétés de la donnée et règles de gestion à connaître avant de citer un chiffre. |
 | [`docs/knowledge/domain/etl-part-plateformes.md`](docs/knowledge/domain/etl-part-plateformes.md) | La spec de cadrage d'origine. |
 
@@ -131,7 +131,7 @@ rôles.
 | `build/staging/trajets.csv` | staging | Toutes les sources réunies et agrégées au grain canonique. | idem `trajets/<label>.csv` |
 | `build/reconcile/etablissements.csv` | reconcile | Libellé représentatif de chaque établissement, pour habiller les marts. | `finess_juridique, nom, ville, departement, categorie` |
 | `build/reconcile/trajets.csv` | reconcile | Trajets aux **finess alignés sur le référentiel** et **rattachés au GHT**. Base commune des marts. | idem staging + `ght_code` |
-| `build/marts/mart_*.csv` | marts | Les **9 [livrables](spec/livrables.md)** (dont les rollups annuels 2024 et 2025, dérivés de `mart_ght` et de `mart_juridique`). | selon le mart |
+| `build/marts/mart_*.csv` | marts | Les **15 [livrables](spec/livrables.md)** (dont les rollups annuels 2024 et 2025 et le détail par plateforme, dérivés de `mart_ght` et de `mart_juridique`). | selon le mart |
 
 ## Publication (dataviz)
 
@@ -154,7 +154,8 @@ sinon on prend les variables du shell.
 | `GRIST_API_KEY` | Clé API Grist |
 
 Chaque mart publiable déclare sa table et ses colonnes dans `marts()`
-(`src/05-publish/publish.ts`) : ajouter un mart revient à ajouter une entrée. Pour chacun,
+(`src/05-publish/publish.ts`) : ajouter un mart revient à ajouter une ligne. Le fichier et
+la table se déduisent du nom court. Pour chacun,
 la publication garantit la table, en la créant avec ses colonnes si elle est absente et en
 complétant les colonnes manquantes, puis remplace tout son contenu, en le vidant et en
 réinsérant. La sémantique est celle d'un snapshot : idempotente, sans lignes périmées, et
@@ -175,6 +176,10 @@ fait sentir, se fait à la main dans Grist.
 | `mart_geographique.csv` (`geographique`) | `Mart_Geographique` |
 | `mart_hors_ght.csv` (`hors_ght`) | `Mart_Hors_Ght` |
 | `mart_article80.csv` (`article80`) | `Mart_Article80` |
+| `mart_juridique_plateforme.csv` (`juridique_plateforme`) | `Mart_Juridique_Plateforme` |
+| `mart_juridique_plateforme_<année>.csv` (`juridique_plateforme_<année>`) | `Mart_Juridique_Plateforme_<année>` |
+| `mart_ght_plateforme.csv` (`ght_plateforme`) | `Mart_Ght_Plateforme` |
+| `mart_ght_plateforme_<année>.csv` (`ght_plateforme_<année>`) | `Mart_Ght_Plateforme_<année>` |
 
 ⚠️ Le mart contient de vrais établissements, cf. [Confidentialité](#confidentialité) : le
 doc Grist cible doit rester privé.

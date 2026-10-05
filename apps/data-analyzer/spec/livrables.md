@@ -18,6 +18,8 @@ rattachés au GHT. Voir [Pipeline](../README.md#pipeline--artefacts) et le
 | `mart_ght_2024.csv` | **GHT**, année 2024, **tous transports** | **Rollup du mart GHT** : une ligne par GHT (136, dont 56 avec des trajets plateforme), somme des véhicules pour 2024. Vue de synthèse « taux réel de recours aux plateformes par GHT ». |
 | `mart_juridique_2024.csv` | **finess juridique**, année 2024, **tous transports** | **Rollup du mart juridique** : une ligne par établissement connu (8 527, dont 446 avec des trajets plateforme). Le même chiffre que ci-dessus, au grain où il s'interprète (cf. [point 9](points-attention-metier.md#9-un-rollup-annuel-ne-répond-quà-la-question-qui-lui-est-posée)). C'est ce mart que consomme la vue Grist « part plateforme par établissement ». |
 | `mart_ght_2025.csv`, `mart_juridique_2025.csv` | les deux mêmes grains, année 2025 | **Les mêmes rollups pour 2025**, aux mêmes colonnes. ⚠️ Une plateforme n'a pas livré 2025 : son numérateur manque, et un ratio 2025 ne se compare pas tel quel à celui de 2024 (cf. [point 9](points-attention-metier.md#9-un-rollup-annuel-ne-répond-quà-la-question-qui-lui-est-posée)). |
+| `mart_juridique_plateforme.csv`, `mart_ght_plateforme.csv` | juridique ou GHT, **une ligne par plateforme** | **Le détail par plateforme** de `mart_juridique` et de `mart_ght` : là où ceux-ci écrivent « A + B » et somment, ceux-là rendent à chaque plateforme son volume et sa part. ⚠️ Le dénominateur est répété sur chaque ligne : il ne se somme pas. |
+| `mart_juridique_plateforme_<année>.csv`, `mart_ght_plateforme_<année>.csv` | les mêmes, une année, **tous transports** | **Le détail par plateforme des rollups annuels**, pour 2024 et 2025. |
 
 Les marts de ratio — `geographique`, `juridique`, `ght` et `hors_ght` — portent les
 colonnes `… annee, vehicule, plateforme, nb_plateforme, nb_reference, part, alerte_qualite`,
@@ -56,6 +58,21 @@ se lisent dans la colonne `ratio` :
 Un `0` veut dire « aucun trajet chez les plateformes qui ont livré leurs données », pas
 « aucune plateforme ». Pour retrouver la seule liste des entités couvertes, filtrer sur
 `nb_plateforme > 0`.
+
+Les **marts par plateforme** reprennent les colonnes du mart qu'ils détaillent, à ceci
+près que `plateforme` y porte toujours une seule plateforme et `nb_plateforme` ses seuls
+trajets. Ce qu'il faut savoir pour les lire :
+
+- seules les cellules où une plateforme déclare des trajets y figurent, le fait « aucune
+  plateforme » se lit dans le mart détaillé ;
+- les `nb_plateforme` d'une cellule se somment et redonnent celui du mart détaillé, les
+  parts aussi ;
+- `nb_reference`, ou `nb_cnam` en forme annuelle, est le remboursement de toute la
+  cellule, répété sur chaque ligne plateforme : le sommer le compterait plusieurs fois ;
+- `alerte_qualite` signale une plateforme qui dépasse seule le dénominateur. Un
+  dépassement dû au cumul de plusieurs plateformes ne se lit que dans le mart détaillé.
+
+En 2024, 28 établissements et 10 GHT ont des trajets chez plusieurs plateformes.
 
 `mart_article80` porte à la place `nb` et `part_plateforme = source / Σ plateformes`, et sa
 colonne `plateforme` porte une seule plateforme par ligne, puisque c'est son grain. La

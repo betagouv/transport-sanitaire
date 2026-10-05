@@ -2,7 +2,7 @@
 //
 // Générique : chaque mart déclare son fichier source, sa table Grist et ses colonnes
 // (dans `marts()` ci-dessous) ; le moteur — garantir la table + remplacer son contenu — est
-// mutualisé (voir grist.ts). Ajouter un mart publiable = ajouter une entrée à `marts()`.
+// mutualisé (voir grist.ts). Ajouter un mart publiable = ajouter une ligne à `marts()`.
 //
 // Config (env, .env lu automatiquement s'il existe) :
 //   GRIST_DOC_URL — base API du doc cible, ex. https://…/api/docs/<docId>
@@ -75,138 +75,93 @@ interface MartSpec {
 }
 
 // Hoistée, et non un `const` : le bloc CLI ci-dessus s'exécute au chargement du
-// module, donc une constante déclarée ici serait lue en TDZ.
+// module, donc une constante déclarée ici serait lue en TDZ. Il en va de même des
+// fonctions de colonnes plus bas.
 function marts(): MartSpec[] {
+  const annuels = (
+    nom: string,
+    identite: ColumnSpec[],
+    mesures: ColumnSpec[],
+  ) => ANNEES_ROLLUP.map((annee) => spec(`${nom}_${annee}`, identite, mesures));
   return [
-    {
-      nom: "ght",
-      fichier: "mart_ght.csv",
-      table: "Mart_Ght",
-      columns: [
-        { id: "ght_code", type: "Text" },
-        { id: "region", type: "Text" },
-        { id: "ght_libelle", type: "Text" },
-        { id: "annee", type: "Int" },
-        { id: "vehicule", type: "Text" },
-        { id: "plateforme", type: "Text" },
-        { id: "nb_plateforme", type: "Int" },
-        { id: "nb_reference", type: "Int" },
-        { id: "part", type: "Numeric" },
-        { id: "alerte_qualite", type: "Text" },
-      ],
-    },
-    ...ANNEES_ROLLUP.flatMap(rollups),
-    {
-      nom: "juridique",
-      fichier: "mart_juridique.csv",
-      table: "Mart_Juridique",
-      columns: [
-        { id: "finess_juridique", type: "Text" },
-        { id: "nom", type: "Text" },
-        { id: "ville", type: "Text" },
-        { id: "departement", type: "Text" },
-        { id: "annee", type: "Int" },
-        { id: "vehicule", type: "Text" },
-        { id: "plateforme", type: "Text" },
-        { id: "nb_plateforme", type: "Int" },
-        { id: "nb_reference", type: "Int" },
-        { id: "part", type: "Numeric" },
-        { id: "alerte_qualite", type: "Text" },
-      ],
-    },
-    {
-      nom: "geographique",
-      fichier: "mart_geographique.csv",
-      table: "Mart_Geographique",
-      columns: [
-        { id: "finess_geographique", type: "Text" },
-        { id: "finess_juridique", type: "Text" },
-        { id: "nom", type: "Text" },
-        { id: "ville", type: "Text" },
-        { id: "departement", type: "Text" },
-        { id: "annee", type: "Int" },
-        { id: "vehicule", type: "Text" },
-        { id: "plateforme", type: "Text" },
-        { id: "nb_plateforme", type: "Int" },
-        { id: "nb_reference", type: "Int" },
-        { id: "part", type: "Numeric" },
-        { id: "alerte_qualite", type: "Text" },
-      ],
-    },
-    {
-      nom: "hors_ght",
-      fichier: "mart_hors_ght.csv",
-      table: "Mart_Hors_Ght",
-      columns: [
-        { id: "finess_juridique", type: "Text" },
-        { id: "nom", type: "Text" },
-        { id: "ville", type: "Text" },
-        { id: "departement", type: "Text" },
-        { id: "annee", type: "Int" },
-        { id: "vehicule", type: "Text" },
-        { id: "plateforme", type: "Text" },
-        { id: "nb_plateforme", type: "Int" },
-        { id: "nb_reference", type: "Int" },
-        { id: "part", type: "Numeric" },
-        { id: "alerte_qualite", type: "Text" },
-      ],
-    },
-    {
-      nom: "article80",
-      fichier: "mart_article80.csv",
-      table: "Mart_Article80",
-      columns: [
-        { id: "grain", type: "Text" },
-        { id: "cle", type: "Text" },
-        { id: "libelle", type: "Text" },
-        { id: "annee", type: "Int" },
-        { id: "vehicule", type: "Text" },
-        { id: "plateforme", type: "Text" },
-        { id: "nb", type: "Int" },
-        { id: "part_plateforme", type: "Numeric" },
-      ],
-    },
+    spec("ght", ght(), ratio()),
+    ...annuels("ght", ght(), rollup()),
+    spec("juridique", juridique(), ratio()),
+    ...annuels("juridique", juridique(), rollup()),
+    spec(
+      "geographique",
+      [...texte("finess_geographique"), ...juridique()],
+      ratio(),
+    ),
+    spec("hors_ght", juridique(), ratio()),
+    spec("article80", texte("grain", "cle", "libelle"), article80()),
+    spec("juridique_plateforme", juridique(), ratio()),
+    ...annuels("juridique_plateforme", juridique(), rollup()),
+    spec("ght_plateforme", ght(), ratio()),
+    ...annuels("ght_plateforme", ght(), rollup()),
   ];
 }
 
-// Les rollups annuels : une table par grain et par année, aux mêmes colonnes d'une année
-// à l'autre.
-function rollups(annee: string): MartSpec[] {
-  return [
-    {
-      nom: `ght_${annee}`,
-      fichier: `mart_ght_${annee}.csv`,
-      table: `Mart_Ght_${annee}`,
-      columns: [
-        { id: "ght_code", type: "Text" },
-        { id: "region", type: "Text" },
-        { id: "ght_libelle", type: "Text" },
-        ...colonnesRollup(),
-      ],
-    },
-    {
-      nom: `juridique_${annee}`,
-      fichier: `mart_juridique_${annee}.csv`,
-      table: `Mart_Juridique_${annee}`,
-      columns: [
-        { id: "finess_juridique", type: "Text" },
-        { id: "nom", type: "Text" },
-        { id: "ville", type: "Text" },
-        { id: "departement", type: "Text" },
-        ...colonnesRollup(),
-      ],
-    },
-  ];
+// Le fichier et la table se déduisent du nom court : `hors_ght` lit `mart_hors_ght.csv`
+// et alimente `Mart_Hors_Ght`.
+function spec(
+  nom: string,
+  identite: ColumnSpec[],
+  mesures: ColumnSpec[],
+): MartSpec {
+  const table = nom
+    .split("_")
+    .map((mot) => mot.charAt(0).toUpperCase() + mot.slice(1))
+    .join("_");
+  return {
+    nom,
+    fichier: `mart_${nom}.csv`,
+    table: `Mart_${table}`,
+    columns: [...identite, ...mesures],
+  };
 }
 
-// Hoistée pour la même raison que `marts()`.
-function colonnesRollup(): ColumnSpec[] {
+function texte(...ids: string[]): ColumnSpec[] {
+  return ids.map((id) => ({ id, type: "Text" }));
+}
+
+function ght(): ColumnSpec[] {
+  return texte("ght_code", "region", "ght_libelle");
+}
+
+function juridique(): ColumnSpec[] {
+  return texte("finess_juridique", "nom", "ville", "departement");
+}
+
+// Les mesures d'un mart de ratio, par véhicule.
+function ratio(): ColumnSpec[] {
   return [
     { id: "annee", type: "Int" },
-    { id: "plateforme", type: "Text" },
+    ...texte("vehicule", "plateforme"),
+    { id: "nb_plateforme", type: "Int" },
+    { id: "nb_reference", type: "Int" },
+    { id: "part", type: "Numeric" },
+    ...texte("alerte_qualite"),
+  ];
+}
+
+// Les mesures d'un rollup annuel : mêmes colonnes d'une année à l'autre.
+function rollup(): ColumnSpec[] {
+  return [
+    { id: "annee", type: "Int" },
+    ...texte("plateforme"),
     { id: "nb_plateforme", type: "Int" },
     { id: "nb_cnam", type: "Int" },
     { id: "ratio", type: "Numeric" },
-    { id: "alerte_qualite", type: "Text" },
+    ...texte("alerte_qualite"),
+  ];
+}
+
+function article80(): ColumnSpec[] {
+  return [
+    { id: "annee", type: "Int" },
+    ...texte("vehicule", "plateforme"),
+    { id: "nb", type: "Int" },
+    { id: "part_plateforme", type: "Numeric" },
   ];
 }
