@@ -4,8 +4,9 @@
 //   nb_cnam       = Σ trajets remboursés par la CNAM / référentiel national (dénominateur),
 //   ratio         = nb_plateforme / nb_cnam, jamais plafonné.
 // But : révéler d'un coup d'œil le **taux réel de recours aux plateformes**, par GHT ou par
-// établissement selon la configuration. Seules les entités qui ont les deux membres du
-// ratio y figurent (cf. `lisible`).
+// établissement selon la configuration. Toute entité connue y figure, avec ou sans trajet
+// plateforme, avec ou sans remboursement : celles de l'`univers` fourni par l'appelant, et
+// celles que le mart de ratio porte sur une autre année.
 //
 // Dérivé du mart de ratio écrit juste avant (pas des trajets réconciliés) : c'est une simple
 // agrégation du livrable existant, ce qui garantit que les deux racontent la même chose.
@@ -24,6 +25,7 @@ export interface MartRollup2024Config {
   log: string; // libellé affiché
   cle: (r: Ligne) => string; // valeur de clé, "" pour ignorer la ligne
   identite: (r: Ligne) => Row; // colonnes d'identité, reprises de la 1re ligne rencontrée
+  univers: () => Map<string, Row>; // toutes les entités connues : clé → colonnes d'identité
 }
 
 export class MartRollup2024 {
@@ -36,26 +38,27 @@ export class MartRollup2024 {
   execute(): void {
     const rows = this.calculer(
       Csv.read(join(Paths.MARTS, this.#config.source)),
+      this.#config.univers(),
     );
     Csv.write(join(Paths.MARTS, this.#config.fichier), rows);
     this.#report(rows);
   }
 
   /** Le calcul pur (sans I/O), pour le test comme pour `execute`. */
-  calculer(martRatio: Ligne[]): Row[] {
+  calculer(martRatio: Ligne[], univers = new Map<string, Row>()): Row[] {
     const parCle = new Map<string, Accu>();
+    for (const [cle, identite] of univers) parCle.set(cle, accuVide(identite));
     for (const r of martRatio) this.#accumuler(parCle, r);
     return [...parCle.entries()]
-      .filter(([, accu]) => lisible(accu))
       .sort(([a], [b]) => a.localeCompare(b))
       .map(([, accu]) => this.#toRow(accu));
   }
 
   #accumuler(parCle: Map<string, Accu>, r: Ligne): void {
-    if (r.annee !== ANNEE) return;
     const cle = this.#config.cle(r);
     if (!cle) return;
     const accu = this.#accu(parCle, cle, r);
+    if (r.annee !== ANNEE) return;
     accu.nb_plateforme += Number(r.nb_plateforme) || 0;
     accu.nb_cnam += Number(r.nb_reference) || 0;
     for (const nom of separerPlateformes(r.plateforme ?? ""))
@@ -65,12 +68,7 @@ export class MartRollup2024 {
   #accu(parCle: Map<string, Accu>, cle: string, r: Ligne): Accu {
     const connu = parCle.get(cle);
     if (connu) return connu;
-    const accu: Accu = {
-      identite: this.#config.identite(r),
-      nb_plateforme: 0,
-      nb_cnam: 0,
-      plateformes: new Set(),
-    };
+    const accu = accuVide(this.#config.identite(r));
     parCle.set(cle, accu);
     return accu;
   }
@@ -93,8 +91,9 @@ export class MartRollup2024 {
 
   #report(rows: Row[]): void {
     const anomalies = rows.filter((r) => r.alerte_qualite === "ratio>1").length;
+    const couvertes = rows.filter((r) => Number(r.nb_plateforme) > 0).length;
     console.log(
-      `marts ${this.#config.log.padEnd(15)}: ${rows.length} lignes (année ${ANNEE}, tous transports, plateforme et remboursement non nuls, ${anomalies} ratio>1)`,
+      `marts ${this.#config.log.padEnd(15)}: ${rows.length} lignes (année ${ANNEE}, tous transports, ${couvertes} avec trajets plateforme, ${anomalies} ratio>1)`,
     );
   }
 }
@@ -117,11 +116,9 @@ interface Accu {
   plateformes: Set<string>;
 }
 
-// Un rollup se lit comme un taux de recours. Une entité qui n'a aucun des deux membres du
-// ratio n'y répond pas : sans trajet plateforme le ratio vaut 0, sans remboursement il est
-// NULL. Dans les deux cas la ligne ne dit rien du recours et noie celles qui en disent
-// quelque chose. Le fait « cette entité n'a aucun trajet plateforme » reste lisible dans le
-// mart de ratio dont ce rollup dérive.
-function lisible(accu: Accu): boolean {
-  return accu.nb_plateforme > 0 && accu.nb_cnam > 0;
+// Le rollup liste toute entité connue, qu'elle ait ou non un volume dans l'année. Sans
+// trajet plateforme son ratio vaut 0, sans remboursement il reste vide : c'est ce qui donne
+// la couverture réelle, pas seulement les entités déjà équipées.
+function accuVide(identite: Row): Accu {
+  return { identite, nb_plateforme: 0, nb_cnam: 0, plateformes: new Set() };
 }

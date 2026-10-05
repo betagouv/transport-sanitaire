@@ -15,8 +15,8 @@ rattachés au GHT. Voir [Pipeline](../README.md#pipeline--artefacts) et le
 | `mart_ght.csv` | **GHT** | **Le plus fiable** : les désaccords d'attribution intra-GHT se réconcilient (quasi 0 `part>1`). Couvre les établissements **publics en GHT** (cf. point 2) **et** la part d'une source hiérarchique restée au grain GHT (cf. point 6). |
 | `mart_hors_ght.csv` | finess **juridique**, hors GHT | Complément de `mart_ght` : les établissements **sans GHT** (~91 % : cliniques privées, imagerie…). |
 | `mart_article80.csv` | juridique **et** GHT | **Volumes + part par plateforme** (pas de ratio national, cf. point 3). Colonne `grain` = `juridique`/`ght`. |
-| `mart_ght_2024.csv` | **GHT**, année 2024, **tous transports** | **Rollup du mart GHT** : une ligne par GHT couvert (56 des 136), somme des véhicules pour 2024. Vue de synthèse « taux réel de recours aux plateformes par GHT ». |
-| `mart_juridique_2024.csv` | **finess juridique**, année 2024, **tous transports** | **Rollup du mart juridique** : une ligne par établissement couvert (442). Le même chiffre que ci-dessus, au grain où il s'interprète (cf. [point 9](points-attention-metier.md#9-un-rollup-annuel-ne-répond-quà-la-question-qui-lui-est-posée)). C'est ce mart que consomme la vue Grist « part plateforme par établissement ». |
+| `mart_ght_2024.csv` | **GHT**, année 2024, **tous transports** | **Rollup du mart GHT** : une ligne par GHT (136, dont 56 avec des trajets plateforme), somme des véhicules pour 2024. Vue de synthèse « taux réel de recours aux plateformes par GHT ». |
+| `mart_juridique_2024.csv` | **finess juridique**, année 2024, **tous transports** | **Rollup du mart juridique** : une ligne par établissement connu (8 527, dont 446 avec des trajets plateforme). Le même chiffre que ci-dessus, au grain où il s'interprète (cf. [point 9](points-attention-metier.md#9-un-rollup-annuel-ne-répond-quà-la-question-qui-lui-est-posée)). C'est ce mart que consomme la vue Grist « part plateforme par établissement ». |
 
 Les marts de ratio — `geographique`, `juridique`, `ght` et `hors_ght` — portent les
 colonnes `… annee, vehicule, plateforme, nb_plateforme, nb_reference, part, alerte_qualite`,
@@ -40,12 +40,21 @@ et portent `… annee, plateforme, nb_plateforme, nb_cnam, ratio, alerte_qualite
 référentiel national, `ratio = nb_plateforme / nb_cnam` et
 `alerte_qualite = "ratio>1"` selon la même règle que `part>1`.
 
-**Ils ne retiennent que les entités qui portent les deux membres du ratio**, donc au moins
-un trajet plateforme et au moins un trajet remboursé. Une entité sans trajet plateforme
-sortirait à 0, une entité sans remboursement à NULL : ni l'une ni l'autre ne dit quoi que
-ce soit d'un taux de recours, et à elles deux elles représentaient 94 % des lignes. Le
-fait « cet établissement n'a aucun trajet plateforme » reste lisible dans le mart de ratio
-dont le rollup dérive.
+**Ils listent toute entité connue**, qu'elle ait ou non des trajets plateforme, qu'elle ait
+ou non des remboursements. Sont connues les entités de la dimension, établissements du
+référentiel ou GHT, et celles que le mart de ratio porte sur une autre année. Quatre cas
+se lisent dans la colonne `ratio` :
+
+| Cas | `ratio` | En 2024, au grain établissement |
+|---|---|---|
+| trajets plateforme et trajets remboursés | calculé | 442 |
+| trajets remboursés, aucun trajet plateforme | `0` | 6 632 |
+| trajets plateforme, aucun trajet remboursé | vide | 4 |
+| ni l'un ni l'autre dans l'année | vide | 1 449 |
+
+Un `0` veut dire « aucun trajet chez les plateformes qui ont livré leurs données », pas
+« aucune plateforme ». Pour retrouver la seule liste des entités couvertes, filtrer sur
+`nb_plateforme > 0`.
 
 `mart_article80` porte à la place `nb` et `part_plateforme = source / Σ plateformes`, et sa
 colonne `plateforme` porte une seule plateforme par ligne, puisque c'est son grain. La

@@ -1,6 +1,6 @@
 // Tests du rollup annuel (sans mock, sans I/O) : on appelle `calculer()` sur des lignes de
 // mart de ratio synthétiques et on vérifie les règles (somme des véhicules, année filtrée,
-// ratio, entités écartées, ratio>1) ainsi que les deux configurations livrées, GHT et
+// ratio, entités sans plateforme ou sans remboursement, ratio>1) ainsi que les deux configurations livrées, GHT et
 // établissement.
 
 import { describe, expect, it } from "vitest";
@@ -35,6 +35,7 @@ describe("MartRollup2024.calculer", () => {
       region: r.region ?? "",
       ght_libelle: r.ght_libelle ?? "",
     }),
+    univers: () => new Map(),
   });
 
   it("somme les véhicules par clé pour 2024, ignore les autres années, et calcule ratio = plateforme / cnam", () => {
@@ -81,28 +82,71 @@ describe("MartRollup2024.calculer", () => {
     ]);
   });
 
-  it("écarte les entités sans trajet plateforme et celles sans trajet remboursé", () => {
+  it("liste toute entité : ratio 0 sans trajet plateforme, ratio vide sans remboursement", () => {
     const rows = parGht.calculer([
       ghtRow({
         ght_code: "SANS_PLATEFORME",
-        vehicule: "Ambulance",
+        plateforme: "",
         nb_plateforme: "0",
         nb_reference: "100",
       }),
       ghtRow({
         ght_code: "SANS_REMBOURSEMENT",
-        vehicule: "Ambulance",
         nb_plateforme: "7",
         nb_reference: "0",
       }),
       ghtRow({
-        ght_code: "GARDE",
-        vehicule: "Ambulance",
-        nb_plateforme: "1",
-        nb_reference: "100",
+        ght_code: "ZERO_PARTOUT",
+        plateforme: "",
+        nb_plateforme: "0",
+        nb_reference: "0",
       }),
     ]);
-    expect(rows.map((r) => r.ght_code)).toEqual(["GARDE"]);
+    expect(rows).toMatchObject([
+      { ght_code: "SANS_PLATEFORME", plateforme: "", ratio: 0 },
+      { ght_code: "SANS_REMBOURSEMENT", nb_plateforme: 7, ratio: "" },
+      { ght_code: "ZERO_PARTOUT", nb_plateforme: 0, nb_cnam: 0, ratio: "" },
+    ]);
+  });
+
+  it("liste aussi les entités sans ligne dans l'année : celles d'une autre année et celles de l'univers", () => {
+    const rows = parGht.calculer(
+      [
+        ghtRow({
+          ght_code: "AUTRE_ANNEE",
+          ght_libelle: "GHT Autre",
+          annee: "2023",
+          nb_plateforme: "9",
+        }),
+      ],
+      new Map([
+        ["UNIVERS", { ght_code: "UNIVERS", region: "", ght_libelle: "GHT U" }],
+      ]),
+    );
+    expect(rows).toEqual([
+      {
+        ght_code: "AUTRE_ANNEE",
+        region: "",
+        ght_libelle: "GHT Autre",
+        annee: "2024",
+        plateforme: "",
+        nb_plateforme: 0,
+        nb_cnam: 0,
+        ratio: "",
+        alerte_qualite: "",
+      },
+      {
+        ght_code: "UNIVERS",
+        region: "",
+        ght_libelle: "GHT U",
+        annee: "2024",
+        plateforme: "",
+        nb_plateforme: 0,
+        nb_cnam: 0,
+        ratio: "",
+        alerte_qualite: "",
+      },
+    ]);
   });
 
   it("garde une entité dont un seul véhicule porte les deux membres du ratio", () => {
@@ -170,6 +214,7 @@ describe("MartRollup2024.calculer", () => {
         ville: r.ville ?? "",
         departement: r.departement ?? "",
       }),
+      univers: () => new Map(),
     });
     const juridiqueRow = (p: Record<string, string>) => ({
       finess_juridique: "",

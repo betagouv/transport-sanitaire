@@ -58,6 +58,7 @@ export class Marts {
           region: r.region ?? "",
           ght_libelle: r.ght_libelle ?? "",
         }),
+        univers: () => this.#univers(this.#ght, (c) => this.#identiteGht(c)),
       }),
       new MartRollup2024({
         source: "mart_juridique.csv",
@@ -70,8 +71,17 @@ export class Marts {
           ville: r.ville ?? "",
           departement: r.departement ?? "",
         }),
+        univers: () =>
+          this.#univers(this.#juridique, (c) => this.#identiteJuridique(c)),
       }),
     ];
+  }
+
+  #univers(
+    dimension: Map<string, unknown>,
+    identite: (cle: string) => Row,
+  ): Map<string, Row> {
+    return new Map([...dimension.keys()].map((cle) => [cle, identite(cle)]));
   }
 
   #martsRatio(): MartRatio[] {

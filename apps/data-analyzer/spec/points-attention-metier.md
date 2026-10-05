@@ -157,14 +157,15 @@ de citer un de leurs ratios.
   trajets plateforme 2024 hors article 80 n'ont aucun finess juridique, et n'entrent donc
   pas dans `mart_juridique_2024`. C'est le [point 6](#6-plateforme-hiérarchique--une-couverture-au-finess-partielle)
   vu depuis le livrable.
-- **Le rollup ne porte plus l'agrégat national.** Il ne retient que les 442 établissements
-  qui ont à la fois des trajets plateforme et des trajets remboursés, et son agrégat,
-  `1 643 844 / 20 578 041` soit **7,99 %**, se lit « chez les établissements couverts par
-  une plateforme ». La part du remboursement national réalisée via les plateformes est une
-  autre question, et elle se calcule sur `mart_juridique` filtré sur 2024 :
-  `1 644 069 / 62 930 184` soit **2,61 %**, un plancher pour la raison ci-dessus. **Les
-  deux chiffres sont justes et ne répondent pas à la même question.** Le filtre écarte au
-  passage 225 trajets plateforme, ceux des 4 établissements sans remboursement 2024.
+- **L'agrégat du rollup dépend du filtre posé dessus.** Le rollup liste tous les
+  établissements connus, équipés ou non. Son agrégat complet,
+  `1 644 069 / 62 930 184` soit **2,61 %**, est la part du remboursement national réalisée
+  via les plateformes, un plancher pour la raison ci-dessus. Filtré sur les 442
+  établissements qui ont à la fois des trajets plateforme et des trajets remboursés, il
+  donne `1 643 844 / 20 578 041` soit **7,99 %**, qui se lit « chez les établissements
+  couverts par une plateforme ». **Les deux chiffres sont justes et ne répondent pas à la
+  même question.** L'écart de 225 trajets au numérateur vient des 4 établissements sans
+  remboursement 2024, listés avec un ratio vide.
 - **Le nom affiché est celui du site le plus gros, pas celui de l'entité.** `reconcile` élit
   un libellé représentatif par finess juridique. Sur une entité multi-sites, il désigne un
   site et peut contredire le département de la ligne ; sur un CHU, il désigne parfois le
@@ -189,8 +190,8 @@ lignes sortent toujours avec `nb_reference = 0` et une `part` à `NULL`.
 
 Il en reste **5 clés dans `mart_juridique`, 4 995 trajets, 0,05 % du numérateur
 plateforme**. Elles sont à faire qualifier par les plateformes : soit le code est erroné,
-soit l'établissement est absent du référentiel de remboursement. Aucune n'apparaît dans
-les rollups 2024, qui écartent les entités sans trajet remboursé.
+soit l'établissement est absent du référentiel de remboursement. Celles qui ont des trajets
+en 2024 sortent dans le rollup avec un ratio vide.
 
 Trois codes de test présents dans les extractions sources ont par ailleurs été retirés à la
 main. Le geste ne tient pas : `data/` n'est pas versionné, et une nouvelle livraison les
