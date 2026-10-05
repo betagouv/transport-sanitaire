@@ -5,7 +5,7 @@
 // `pnpm marts --cible <nom>` recalcule les mêmes livrables pour une cible, restreints à
 // ses plateformes et aux entités qu'elles couvrent, dans `build/cibles/<nom>/marts/`.
 //
-// Dix-sept livrables (cf. spec/points-attention-metier.md pour les spécificités) :
+// Dix-huit livrables (cf. spec/points-attention-metier.md pour les spécificités) :
 //   - mart_geographique    — grain finess géographique (le plus fin ; beaucoup de part NULL) ;
 //   - mart_juridique       — grain finess juridique (autorité référentiel) ;
 //   - mart_ght             — grain GHT (le plus propre ; établissements publics only) ;
@@ -20,7 +20,9 @@
 //   - mart_taux_plateforme — une ligne par plateforme et par année : ses deux taux et la
 //     distribution du ratio chez ses établissements ;
 //   - mart_synthese — par année, grain et classe de taille : combien d'entités, combien
-//     de couvertes, et ce qu'elles pèsent.
+//     de couvertes, et ce qu'elles pèsent ;
+//   - mart_repartition — par année et par plateforme : combien d'établissements dans
+//     chaque tranche de ratio.
 
 import { join } from "node:path";
 import { lireArguments } from "../cible.ts";
@@ -32,6 +34,7 @@ import { Dimensions, utilisable } from "./dimensions.ts";
 import { MartArticle80 } from "./mart-article80.ts";
 import { MartPlateforme } from "./mart-plateforme.ts";
 import { MartRatio, type MartRatioConfig } from "./mart-ratio.ts";
+import { MartRepartition } from "./mart-repartition.ts";
 import { ANNEES_ROLLUP, MartRollupAnnuel } from "./mart-rollup-annuel.ts";
 import { MartSynthese } from "./mart-synthese.ts";
 import { MartTauxPlateforme } from "./mart-taux-plateforme.ts";
@@ -67,8 +70,9 @@ export class Marts {
     ANNEES_ROLLUP.flatMap((annee) => this.#rollups(annee)).forEach((rollup) => {
       rollup.execute();
     });
-    // La synthèse compte les entités des rollups, donc après eux.
+    // La synthèse et la répartition lisent les rollups, donc après eux.
     new MartSynthese(ANNEES_ROLLUP).execute();
+    new MartRepartition(ANNEES_ROLLUP).execute();
   }
 
   #rollups(annee: string): MartRollupAnnuel[] {

@@ -22,6 +22,7 @@ rattachés au GHT. Voir [Pipeline](../README.md#pipeline--artefacts) et le
 | `mart_juridique_plateforme_<année>.csv`, `mart_ght_plateforme_<année>.csv` | les mêmes × véhicule, une année | **Le détail par plateforme des rollups annuels**, pour 2024 et 2025, avec la même ligne « Tous transports ». |
 | `mart_taux_plateforme.csv` | **plateforme** × année (2024, 2025) × véhicule | **Le taux de plateformisation de chaque plateforme**, pour les comparer : deux taux et la distribution du ratio chez ses établissements. Hors article 80, au grain établissement. |
 | `mart_synthese.csv` | année × grain (établissement, GHT) × **classe de taille** | **La couverture en un coup d'œil** : combien d'entités existent, combien ont des trajets remboursés, combien ont des trajets plateforme, et ce qu'elles pèsent. Dérivé des rollups annuels. |
+| `mart_repartition.csv` | année × plateforme × **tranche de ratio** | **Le recours est-il répandu ou concentré ?** Le nombre d'établissements dans chaque tranche de ratio, toutes plateformes réunies puis pour chacune. Dérivé des rollups annuels. |
 
 Les marts de ratio — `geographique`, `juridique`, `ght` et `hors_ght` — portent les
 colonnes `… annee, vehicule, plateforme, nb_plateforme, nb_reference, part, alerte_qualite`,
@@ -135,6 +136,20 @@ moins de 1 000, 1 000 à 9 999, 10 000 à 49 999, 50 000 et plus. Une entité pe
 changer de classe d'une année à l'autre. Celles qui n'ont aucun remboursement dans l'année
 sont à part, dans « Sans remboursement ». La classe la plus haute réunit 312 établissements
 en 2024, soit 4 % de ceux qui ont un remboursement et 70 % de son volume.
+
+`mart_repartition` classe les établissements par tranche de ratio, sur la ligne
+« Tous transports » des rollups : moins de 1 %, 1 à 5 %, 5 à 10 %, 10 à 25 %, 25 à 50 %,
+50 à 100 %, plus de 100 %. Chaque tranche inclut sa borne basse. Il porte
+`annee, plateforme, tranche, nb_etablissements, nb_plateforme, nb_cnam`.
+
+- La ligne `Toutes plateformes` classe le ratio de l'établissement, toutes plateformes
+  réunies. Elle seule a une tranche « Aucun trajet plateforme ».
+- Une ligne par plateforme classe le ratio que cette plateforme réalise seule chez ses
+  établissements. Un établissement partagé y compte une fois par plateforme : les lignes
+  plateforme ne se somment pas pour redonner `Toutes plateformes`.
+- Toutes les tranches sortent, même vides, pour qu'un graphique garde le même axe.
+- « Sans remboursement » réunit les établissements qui ont des trajets plateforme et
+  aucun trajet remboursé. Un établissement sans aucun volume dans l'année n'est pas classé.
 
 `mart_article80` porte à la place `nb` et `part_plateforme = source / Σ plateformes`, et sa
 colonne `plateforme` porte une seule plateforme par ligne, puisque c'est son grain. La

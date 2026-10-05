@@ -113,6 +113,7 @@ function marts(): MartSpec[] {
     ...annuels("ght_plateforme", ght(), rollup()),
     spec("taux_plateforme", texte("plateforme"), tauxPlateforme()),
     spec("synthese", [], synthese()),
+    spec("repartition", [], repartition()),
   ];
 }
 
@@ -208,6 +209,16 @@ function synthese(): ColumnSpec[] {
     entier("nb_plateforme"),
     decimal("ratio"),
     decimal("ratio_couvert"),
+  ];
+}
+
+function repartition(): ColumnSpec[] {
+  return [
+    { id: "annee", type: "Int" },
+    ...texte("plateforme", "tranche"),
+    { id: "nb_etablissements", type: "Int" },
+    { id: "nb_plateforme", type: "Int" },
+    { id: "nb_cnam", type: "Int" },
   ];
 }
 
