@@ -102,7 +102,8 @@ type TextInput<Questions extends AnyQuestions, Cibles> = Common<
   Questions,
   Cibles
 > & {
-  readonly kind: "text" | "date" | "datetime";
+  /** `long text` : un texte sur plusieurs lignes, saisi dans une zone de texte. */
+  readonly kind: "text" | "long text" | "date" | "datetime";
 };
 
 // Sans argument, ces types sont ceux du moteur : n'importe quelles questions,

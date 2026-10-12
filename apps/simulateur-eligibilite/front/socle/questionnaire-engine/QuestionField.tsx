@@ -5,6 +5,7 @@ import { DateField } from "../ui/DateField";
 import { NumberField } from "../ui/NumberField";
 import { RadioField } from "../ui/RadioField";
 import { SelectField } from "../ui/SelectField";
+import { TextAreaField } from "../ui/TextAreaField";
 import { TextField } from "../ui/TextField";
 import type {
   Answer,
@@ -111,12 +112,13 @@ function MultipleChoiceField(props: Props & { question: MultipleChoice }) {
 function TextOrDateField({
   kind,
   ...props
-}: Props & { kind: "text" | "date" | "datetime" }) {
+}: Props & { kind: "text" | "long text" | "date" | "datetime" }) {
   const shared = {
     ...common(props),
     value: typeof props.answer === "string" ? props.answer : "",
     onChange: (value: string) => props.onChange(value || undefined),
   };
   if (kind === "text") return <TextField {...shared} />;
+  if (kind === "long text") return <TextAreaField {...shared} />;
   return <DateField {...shared} withTime={kind === "datetime"} />;
 }
