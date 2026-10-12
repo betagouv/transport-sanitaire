@@ -117,6 +117,22 @@ export const COMPLEMENT: QuestionnairePart<Questions, Cibles> = {
       id: "retrait",
       questions: [
         {
+          id: "retrait",
+          kind: "single choice",
+          label: "Comment la récupérer ?",
+          hint: "Démontre : une réponse qui bloque. « En livraison » affiche un message, et la page ne se valide plus.",
+          options: [
+            { value: "sur-place", label: "Sur place" },
+            { value: "a-emporter", label: "À emporter" },
+            {
+              value: "livraison",
+              label: "En livraison",
+              blocks:
+                "La livraison se commande à part. Choisissez une autre réponse pour finir cette commande, puis faites-en une seconde pour la livraison.",
+            },
+          ],
+        },
+        {
           id: "jour",
           kind: "date",
           label: "Pour quel jour ?",
