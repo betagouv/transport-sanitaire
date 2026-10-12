@@ -5,7 +5,7 @@ change, et des tests du modèle qui ne dépendent pas du socle au-delà du contr
 
 **Blocked by:** 02 (les dossiers), 03 (le contrat).
 
-**Status:** fait. À reprendre pour D-82 : le factice en un seul exemplaire.
+**Status:** fait.
 
 ## Décisions prises
 
@@ -17,9 +17,9 @@ change, et des tests du modèle qui ne dépendent pas du socle au-delà du contr
 - **D-81** Le modèle v10.0.0 est retiré de `v10`. Le factice revient dans
   `front/model/`, et les tests du socle gardent leur copie dans
   `tests/socle/fixtures/modele-factice/`. Précise D-52.
-- **D-82** Le factice est le modèle de démonstration de l'app, de façon
-  pérenne. Un seul exemplaire, dans `front/models/fake/` : les tests du socle
-  l'importent de là, et la copie de `tests/socle/fixtures/` disparaît.
+- **D-82** Le factice de l'app devient le modèle de démonstration, pérenne,
+  dans `front/models/fake/`. Il grandit avec le socle. Les tests du socle
+  gardent leur propre factice, petit et figé, dans `tests/socle/fixtures/`.
   Remplace D-52, précise D-81.
 - **D-58** Le test de conformité s'écrit maintenant, sur le factice.
 - **D-59** Un fichier de `front/model/` ne porte pas de version dans son nom.
@@ -46,10 +46,9 @@ change, et des tests du modèle qui ne dépendent pas du socle au-delà du contr
 
 ## Ce qui reste
 
-- D-82 : réunir les deux copies du factice dans `front/models/fake/`. Elles
-  ont divergé (cinq fichiers sur six). `modele-de-test.ts` réexporte ce
-  dossier, et les gardes d'architecture suivent. Le détail est au chantier 09.
-- Faut-il que le test de conformité tourne aussi sur le factice ?
+- ~~Faut-il que le test de conformité tourne aussi sur le factice ?~~ Il
+  passe sur chaque modèle de `front/models/`, le modèle de démonstration
+  compris (D-82).
 - Le test du mapping des cerfa, aux étapes 6 et 7 du chantier 10.
 
 ## Questions ouvertes
