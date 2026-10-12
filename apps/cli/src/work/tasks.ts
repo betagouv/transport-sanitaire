@@ -2,9 +2,9 @@
 
 import fs from "node:fs";
 import path from "node:path";
-import { scopes } from "./apps.ts";
-import { title } from "./markdown.ts";
-import { columns } from "./output.ts";
+import { scopes } from "../apps/apps.ts";
+import { title } from "../core/markdown.ts";
+import { columns } from "../core/output.ts";
 
 export type Tache = { title: string; file: string };
 

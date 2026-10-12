@@ -3,10 +3,10 @@
 
 import fs from "node:fs";
 import path from "node:path";
-import { findApp, type Scope, scopes, unknownApp } from "./apps.ts";
-import type { Invocation } from "./invocation.ts";
-import { title } from "./markdown.ts";
-import { columns, emit, printError, section } from "./output.ts";
+import { findApp, type Scope, scopes, unknownApp } from "../apps/apps.ts";
+import type { Invocation } from "../core/invocation.ts";
+import { title } from "../core/markdown.ts";
+import { columns, emit, printError, section } from "../core/output.ts";
 
 /** `tsp docs [app]` */
 export function docsCommand(invocation: Invocation): number {

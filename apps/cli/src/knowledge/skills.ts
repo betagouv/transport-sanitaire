@@ -2,9 +2,9 @@
 
 import fs from "node:fs";
 import path from "node:path";
-import type { Invocation } from "./invocation.ts";
-import { frontmatter } from "./markdown.ts";
-import { columns, emit, printError } from "./output.ts";
+import type { Invocation } from "../core/invocation.ts";
+import { frontmatter } from "../core/markdown.ts";
+import { columns, emit, printError } from "../core/output.ts";
 
 /** `tsp skills`, `tsp skills <skill>` */
 export function skillsCommand(invocation: Invocation): number {

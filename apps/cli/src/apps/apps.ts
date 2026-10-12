@@ -2,8 +2,8 @@
 
 import fs from "node:fs";
 import path from "node:path";
-import type { Invocation } from "./invocation.ts";
-import { columns, emit } from "./output.ts";
+import type { Invocation } from "../core/invocation.ts";
+import { columns, emit } from "../core/output.ts";
 
 const ACTIONS = [
   "install",

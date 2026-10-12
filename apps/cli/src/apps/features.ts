@@ -3,10 +3,10 @@
 
 import fs from "node:fs";
 import path from "node:path";
+import type { Invocation } from "../core/invocation.ts";
+import { firstTable } from "../core/markdown.ts";
+import { columns, emit, printError, section } from "../core/output.ts";
 import { type App, appsFor, unknownApp } from "./apps.ts";
-import type { Invocation } from "./invocation.ts";
-import { firstTable } from "./markdown.ts";
-import { columns, emit, printError, section } from "./output.ts";
 
 /** `tsp features [app]` */
 export function featuresCommand(invocation: Invocation): number {

@@ -3,10 +3,10 @@
 
 import fs from "node:fs";
 import path from "node:path";
-import { findApp, unknownApp } from "./apps.ts";
-import { git } from "./git.ts";
-import type { Invocation } from "./invocation.ts";
-import { print, printError } from "./output.ts";
+import { findApp, unknownApp } from "../apps/apps.ts";
+import type { Invocation } from "../core/invocation.ts";
+import { print, printError } from "../core/output.ts";
+import { git } from "../git/git.ts";
 import { etatDir, listSpecs, trackerOf } from "./trackers.ts";
 
 /** `tsp spec new <module> <type> <titre> [--app <app>]` */

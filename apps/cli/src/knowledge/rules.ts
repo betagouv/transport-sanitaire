@@ -3,9 +3,9 @@
 
 import fs from "node:fs";
 import path from "node:path";
-import type { Invocation } from "./invocation.ts";
-import { firstTable } from "./markdown.ts";
-import { columns, emit, printError } from "./output.ts";
+import type { Invocation } from "../core/invocation.ts";
+import { firstTable } from "../core/markdown.ts";
+import { columns, emit, printError } from "../core/output.ts";
 
 /** `tsp rules`, `tsp rules <recueil>`, `tsp rules <id>` */
 export function rulesCommand(invocation: Invocation): number {

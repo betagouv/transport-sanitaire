@@ -3,9 +3,10 @@
 
 import fs from "node:fs";
 import path from "node:path";
-import { git } from "./git.ts";
-import type { Invocation } from "./invocation.ts";
-import { section } from "./markdown.ts";
+import type { Invocation } from "../core/invocation.ts";
+import { section } from "../core/markdown.ts";
+import { print, printError } from "../core/output.ts";
+import { git } from "../git/git.ts";
 import {
   advances,
   type Block,
@@ -15,9 +16,8 @@ import {
   readTicket,
   ticketId,
   updateTicket,
-} from "./notion.ts";
-import { print, printError } from "./output.ts";
-import { withField } from "./spec-header.ts";
+} from "../notion/notion.ts";
+import { withField } from "./header.ts";
 import { type Etat, findSpec, listSpecs, type Spec } from "./trackers.ts";
 
 /** `tsp spec sync [id]` */

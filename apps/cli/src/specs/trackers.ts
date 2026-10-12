@@ -3,10 +3,10 @@
 
 import fs from "node:fs";
 import path from "node:path";
-import { scopes } from "./apps.ts";
-import { title } from "./markdown.ts";
-import { columns } from "./output.ts";
-import { blockers, field } from "./spec-header.ts";
+import { scopes } from "../apps/apps.ts";
+import { title } from "../core/markdown.ts";
+import { columns } from "../core/output.ts";
+import { blockers, field } from "./header.ts";
 
 export const ETATS = ["drafts", "backlog", "todo", "doing", "done"] as const;
 

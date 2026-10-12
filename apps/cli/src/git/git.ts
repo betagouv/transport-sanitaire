@@ -1,6 +1,6 @@
 // Les questions que tsp pose à git.
 
-import { captureProgram } from "./run-program.ts";
+import { captureProgram } from "../core/run-program.ts";
 
 /** Ce que git répond. Lève une erreur s'il échoue. */
 export function git(root: string, args: string[]): string {

@@ -2,11 +2,11 @@
 // suivre celle de la branche courante.
 
 import path from "node:path";
+import type { Invocation } from "../core/invocation.ts";
+import { columns, emit, printError, section } from "../core/output.ts";
+import { captureProgram, runProgram } from "../core/run-program.ts";
 import { isConventionalSubject } from "./conventional-commits.ts";
 import { git, stagingRef } from "./git.ts";
-import type { Invocation } from "./invocation.ts";
-import { columns, emit, printError, section } from "./output.ts";
-import { captureProgram, runProgram } from "./run-program.ts";
 
 export type PullRequest = {
   number: number;

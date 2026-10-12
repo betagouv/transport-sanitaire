@@ -29,9 +29,30 @@ qu'il le demande.
 - Une commande se vérifie donc en la lançant. Pour Notion, sans jeton :
   `NOTION_API_URL` redirige la CLI vers un serveur local.
 
+## Les modules
+
+`src/` est rangé par module. `main.ts` et `commands.ts` restent à sa racine : le
+point d'entrée, et la liste des commandes.
+
+| Module | Ce qu'il porte | Dépend de |
+|---|---|---|
+| `core/` | la ligne de commande, les sorties, le lancement d'un programme, la lecture du Markdown et des réglages | rien |
+| `apps/` | les apps, leurs actions, leurs features | `core` |
+| `knowledge/` | les règles, les skills, la documentation de référence | `core`, `apps` |
+| `git/` | les branches, les PR, la forme des commits | `core` |
+| `notion/` | l'API des tickets | `core` |
+| `specs/` | les trackers, l'en-tête d'une spec, `spec new`, `move` et `sync` | `core`, `apps`, `git`, `notion` |
+| `work/` | `wip` et `next`, les tâches, les tickets hors specs | `core`, `apps`, `git`, `notion`, `specs` |
+| `machine/` | `setup`, `doctor`, le lien vers le lanceur, les `.env` | `core`, `apps`, `notion` |
+
+**Les dépendances ne vont que dans ce sens.** `core` n'importe aucun module, et
+aucun module n'importe `work` ni `machine`. Rien ne le garde : c'est à la
+relecture.
+
 ## Ajouter une commande
 
-1. Un fichier par sujet dans `src/`, nommé d'après ce qu'il permet de faire.
+1. Un fichier par sujet, dans le module qu'il concerne, nommé d'après ce qu'il
+   permet de faire.
 2. Une fonction `xxxCommand(invocation)`, qui rend un code de sortie.
 3. Une entrée dans `src/commands.ts` : c'est elle qui l'inscrit dans l'aide.
 4. Une commande de lecture passe par `emit`, pour répondre à `--json`.

@@ -1,5 +1,8 @@
 // Lancer une action sur une app, ou sur toutes celles qui la portent.
 
+import type { Command, Invocation } from "../core/invocation.ts";
+import { print, printError } from "../core/output.ts";
+import { runProgram } from "../core/run-program.ts";
 import {
   type Action,
   type App,
@@ -8,9 +11,6 @@ import {
   listApps,
   unknownApp,
 } from "./apps.ts";
-import type { Command, Invocation } from "./invocation.ts";
-import { print, printError } from "./output.ts";
-import { runProgram } from "./run-program.ts";
 
 /** `tsp <action> [app]` */
 export function actionCommand(action: Action): Command {

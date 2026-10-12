@@ -1,7 +1,7 @@
 // Les tickets de la base Notion : les lire par statut, en créer un, en mettre
 // un à jour.
 
-import { setting } from "./settings.ts";
+import { setting } from "../core/settings.ts";
 
 export type Ticket = { id: string; title: string; statut: string; url: string };
 

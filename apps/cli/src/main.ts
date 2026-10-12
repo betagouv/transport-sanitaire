@@ -2,8 +2,8 @@
 // code de sortie.
 
 import { findCommand, helpText } from "./commands.ts";
-import { readInvocation } from "./invocation.ts";
-import { print, printError } from "./output.ts";
+import { readInvocation } from "./core/invocation.ts";
+import { print, printError } from "./core/output.ts";
 
 process.exitCode = await main(process.argv.slice(2));
 

@@ -1,10 +1,10 @@
 // Tenir les specs : en créer une, la changer d'état, synchroniser son ticket.
 
-import type { Command, Invocation } from "./invocation.ts";
-import { printError } from "./output.ts";
-import { moveCommand } from "./spec-move.ts";
-import { newCommand } from "./spec-new.ts";
-import { syncCommand } from "./spec-sync.ts";
+import type { Command, Invocation } from "../core/invocation.ts";
+import { printError } from "../core/output.ts";
+import { moveCommand } from "./move.ts";
+import { newCommand } from "./new.ts";
+import { syncCommand } from "./sync.ts";
 
 /** `tsp spec new`, `tsp spec move`, `tsp spec sync` */
 export function specCommand(invocation: Invocation): number | Promise<number> {

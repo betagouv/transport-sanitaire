@@ -1,22 +1,22 @@
 // Le travail en cours : PR ouvertes, branches sans PR, tâches, specs en
 // `doing`, tickets Notion en développement ou en revue.
 
-import { unmergedBranches } from "./branches.ts";
-import type { Invocation } from "./invocation.ts";
-import { emit, section } from "./output.ts";
+import type { Invocation } from "../core/invocation.ts";
+import { emit, section } from "../core/output.ts";
+import { unmergedBranches } from "../git/branches.ts";
 import {
   branchesWithPullRequest,
   openPullRequests,
   type PullRequest,
   renderPullRequests,
-} from "./pull-requests.ts";
+} from "../git/pull-requests.ts";
+import { listSpecs, renderSpecs, type Spec } from "../specs/trackers.ts";
 import { listTaches, renderTaches, type Tache } from "./tasks.ts";
 import {
   renderTickets,
   type TicketsView,
   ticketsBeyondSpecs,
 } from "./tickets.ts";
-import { listSpecs, renderSpecs, type Spec } from "./trackers.ts";
 
 export type Wip = TicketsView & {
   /** Absent si `gh` ne répond pas. */

@@ -4,12 +4,12 @@
 
 import fs from "node:fs";
 import path from "node:path";
+import type { Invocation } from "../core/invocation.ts";
+import { print } from "../core/output.ts";
+import { runProgram } from "../core/run-program.ts";
 import { doctorCommand } from "./doctor.ts";
-import type { Invocation } from "./invocation.ts";
+import { missingEnvFiles } from "./env-files.ts";
 import { isOnPath, linkLauncher, linkPath } from "./launcher-link.ts";
-import { print } from "./output.ts";
-import { runProgram } from "./run-program.ts";
-import { missingEnvFiles } from "./settings.ts";
 
 /** `tsp setup`. Rejouable : chaque étape ne fait que ce qui manque. */
 export function setupCommand(invocation: Invocation): number {

@@ -1,11 +1,11 @@
 // Les branches du dépôt : en tirer une de `staging`, lister celles qui
 // attendent encore d'y être fusionnées.
 
+import type { Invocation } from "../core/invocation.ts";
+import { printError } from "../core/output.ts";
+import { runProgram } from "../core/run-program.ts";
 import { COMMIT_TYPES } from "./conventional-commits.ts";
 import { git, stagingRef } from "./git.ts";
-import type { Invocation } from "./invocation.ts";
-import { printError } from "./output.ts";
-import { runProgram } from "./run-program.ts";
 
 /** `tsp branch <type>/<sujet>` */
 export function branchCommand(invocation: Invocation): number {

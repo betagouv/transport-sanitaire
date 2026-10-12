@@ -44,7 +44,7 @@ export function readInvocation(argv: string[]): {
   return {
     name,
     invocation: {
-      root: path.resolve(import.meta.dirname, "../../.."),
+      root: path.resolve(import.meta.dirname, "../../../.."),
       // Le lanceur exécute la CLI depuis la racine : il transmet le dossier
       // d'origine par l'environnement.
       cwd: process.env.TSP_CWD ?? process.cwd(),

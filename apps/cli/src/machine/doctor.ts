@@ -3,12 +3,12 @@
 
 import fs from "node:fs";
 import path from "node:path";
-import type { Invocation } from "./invocation.ts";
+import type { Invocation } from "../core/invocation.ts";
+import { columns, emit } from "../core/output.ts";
+import { captureProgram } from "../core/run-program.ts";
+import { notionAccess } from "../notion/notion.ts";
+import { missingEnvFiles } from "./env-files.ts";
 import { isLinked, isOnPath, linkPath } from "./launcher-link.ts";
-import { notionAccess } from "./notion.ts";
-import { columns, emit } from "./output.ts";
-import { captureProgram } from "./run-program.ts";
-import { missingEnvFiles } from "./settings.ts";
 
 /** `tsp doctor`. Échoue seulement sur un manque qui empêche de travailler. */
 export function doctorCommand(invocation: Invocation): number {

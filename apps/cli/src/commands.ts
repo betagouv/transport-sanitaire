@@ -1,20 +1,20 @@
 // Les commandes de tsp : trouver celle qu'on tape, et l'aide qui les liste.
 
-import { actionCommand } from "./actions.ts";
-import { appsCommand } from "./apps.ts";
-import { branchCommand } from "./branches.ts";
-import { docsCommand } from "./docs.ts";
-import { doctorCommand } from "./doctor.ts";
-import { featuresCommand } from "./features.ts";
-import type { Command } from "./invocation.ts";
-import { nextCommand } from "./next.ts";
-import { columns, section } from "./output.ts";
-import { prCommand } from "./pull-requests.ts";
-import { rulesCommand } from "./rules.ts";
-import { setupCommand } from "./setup.ts";
-import { skillsCommand } from "./skills.ts";
-import { specCommand } from "./spec.ts";
-import { wipCommand } from "./wip.ts";
+import { actionCommand } from "./apps/actions.ts";
+import { appsCommand } from "./apps/apps.ts";
+import { featuresCommand } from "./apps/features.ts";
+import type { Command } from "./core/invocation.ts";
+import { columns, section } from "./core/output.ts";
+import { branchCommand } from "./git/branches.ts";
+import { prCommand } from "./git/pull-requests.ts";
+import { docsCommand } from "./knowledge/docs.ts";
+import { rulesCommand } from "./knowledge/rules.ts";
+import { skillsCommand } from "./knowledge/skills.ts";
+import { doctorCommand } from "./machine/doctor.ts";
+import { setupCommand } from "./machine/setup.ts";
+import { specCommand } from "./specs/spec.ts";
+import { nextCommand } from "./work/next.ts";
+import { wipCommand } from "./work/wip.ts";
 
 export function findCommand(name: string): Command | undefined {
   return [...BY_APP, ...ACROSS].find((entry) => entry.name === name)?.run;

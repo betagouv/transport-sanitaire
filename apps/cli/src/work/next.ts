@@ -2,14 +2,14 @@
 // Notion prêts à développer. Le travail en cours le précède : on ne choisit pas
 // la suite sans voir ce qui est déjà commencé.
 
-import type { Invocation } from "./invocation.ts";
-import { emit, section } from "./output.ts";
+import type { Invocation } from "../core/invocation.ts";
+import { emit, section } from "../core/output.ts";
+import { listSpecs, renderSpecs, type Spec } from "../specs/trackers.ts";
 import {
   renderTickets,
   type TicketsView,
   ticketsBeyondSpecs,
 } from "./tickets.ts";
-import { listSpecs, renderSpecs, type Spec } from "./trackers.ts";
 import { readWip, renderWip, type Wip } from "./wip.ts";
 
 /** `tsp next` */

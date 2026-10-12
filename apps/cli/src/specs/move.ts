@@ -3,13 +3,13 @@
 
 import fs from "node:fs";
 import path from "node:path";
-import { gitSucceeds } from "./git.ts";
-import type { Invocation } from "./invocation.ts";
-import { notionAccess } from "./notion.ts";
-import { print, printError } from "./output.ts";
-import { runProgram } from "./run-program.ts";
-import { withoutBlocker } from "./spec-header.ts";
-import { syncSpec } from "./spec-sync.ts";
+import type { Invocation } from "../core/invocation.ts";
+import { print, printError } from "../core/output.ts";
+import { runProgram } from "../core/run-program.ts";
+import { gitSucceeds } from "../git/git.ts";
+import { notionAccess } from "../notion/notion.ts";
+import { withoutBlocker } from "./header.ts";
+import { syncSpec } from "./sync.ts";
 import {
   ETATS,
   type Etat,
