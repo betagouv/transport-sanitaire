@@ -226,7 +226,7 @@ le moteur de décision et les trois capacités de saisie (D-81).
 - Le factice a migré dans `tests/socle/fixtures/modele-factice/` (D-52).
 - `front/model/rules/` porte le YAML recopié (`regles.publicodes`) et `VERSION`.
 - `publicodes` est figé en 1.10.1. Un plugin de `vite.config.ts` convertit le
-  YAML en objet à la compilation. `Main` charge le modèle à la demande, et
+  YAML en objet à la compilation. `main.tsx` charge le modèle à la demande, et
   `App` l'attend après le rattachement (D-71). `verifier-bundle` le surveille.
 - Les 58 faits et les 44 cibles sont déclarés, et comparés aux règles.
 - L'oracle passe en faits : D01 à D25, et les frontières du test de l'éditeur.

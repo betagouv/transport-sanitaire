@@ -5,7 +5,7 @@ import { App } from "../../../front/socle/app/App";
 import {
   DeveloperTools,
   ToolButton,
-} from "../../../front/socle/developerTools/DeveloperTools";
+} from "../../../front/socle/developer-tools/DeveloperTools";
 import { RattachementForm } from "../../../front/socle/rattachement/RattachementForm";
 import { Simulateur } from "../../../front/socle/simulateur/Simulateur";
 import { snapshotReferentiel } from "../../../shared/referentiel";

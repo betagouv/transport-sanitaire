@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { estServiceProduit } from "../../../front/socle/developerTools/unlock";
+import { estServiceProduit } from "../../../front/socle/developer-tools/unlock";
 
 // La garde d'accès des developer tools. Elle vaut sur tous les environnements :
 // le service du référentiel décide, pas le build.
