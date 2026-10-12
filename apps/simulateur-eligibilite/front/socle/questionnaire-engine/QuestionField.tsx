@@ -61,6 +61,7 @@ function render(props: Props) {
           {...common(props)}
           min={question.min}
           max={question.max}
+          integer={question.integer}
           unit={question.unit}
           value={typeof answer === "number" ? answer : undefined}
           onChange={onChange}
