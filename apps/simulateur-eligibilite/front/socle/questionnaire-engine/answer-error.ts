@@ -19,7 +19,7 @@ export function errorOf(
     return dateErrorOf(question, answer);
   if (question.kind === "multiple choice")
     return Array.isArray(answer) && answer.length > 0
-      ? blockOf(question, answer)
+      ? (incompatibilityOf(question, answer) ?? blockOf(question, answer))
       : "Cochez au moins une réponse.";
   if (typeof answer !== "string" || answer.trim() === "")
     return "Cette réponse est attendue.";
@@ -29,6 +29,17 @@ export function errorOf(
 }
 
 // ---- implémentation ----
+
+// L'écran ne laisse pas cocher deux options incompatibles. Ceci couvre une
+// réponse venue d'ailleurs, comme une seed.
+function incompatibilityOf(
+  question: Extract<Question, { kind: "multiple choice" }>,
+  checked: readonly string[],
+): string | undefined {
+  return question.incompatibleOptions?.find(({ values }) =>
+    values.every((value) => checked.includes(value)),
+  )?.explanation;
+}
 
 // Le message de la première option choisie qui bloque, s'il y en a une.
 function blockOf(
