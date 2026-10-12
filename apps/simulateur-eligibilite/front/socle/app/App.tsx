@@ -12,6 +12,11 @@ import { RattachementScreen } from "../rattachement/RattachementScreen";
 import { SeedsScreen } from "../seeds/SeedsScreen";
 import { SimulateurScreen } from "../simulateur/SimulateurScreen";
 import { Container } from "./Container";
+import {
+  type Demonstration,
+  type DemonstrationSource,
+  useModelChoice,
+} from "./demonstration";
 import { type ModelSource, useModelLoading } from "./model-loading";
 import type { Navigation } from "./navigation";
 import { useNavigation } from "./navigation";
@@ -26,13 +31,24 @@ type Props = Pick<
    * à la demande. `Main` la fournit.
    */
   model: ModelSource;
+  /**
+   * Le modèle de démonstration, s'il y en a un. Les developer tools proposent
+   * alors de le dérouler à la place de `model`.
+   */
+  demonstration?: DemonstrationSource;
 };
 
 // Le rattachement n'attend pas le modèle : il se charge pendant que
 // l'utilisateur se rattache.
-export function App({ model: source, referentiel, declarer }: Props) {
+export function App({
+  model: delivered,
+  demonstration,
+  referentiel,
+  declarer,
+}: Props) {
   const navigation = useNavigation();
-  const { model, failed } = useModelLoading(source);
+  const choice = useModelChoice(delivered, demonstration);
+  const { model, failed } = useModelLoading(choice.source);
 
   if (navigation.screen === "rattachement")
     return (
@@ -43,7 +59,13 @@ export function App({ model: source, referentiel, declarer }: Props) {
       />
     );
   if (!model) return <ModelPending failed={failed} />;
-  return <AfterRattachement model={model} navigation={navigation} />;
+  return (
+    <AfterRattachement
+      model={model}
+      navigation={navigation}
+      demonstration={choice.demonstration}
+    />
+  );
 }
 
 // ---- implémentation ----
@@ -66,9 +88,11 @@ function ModelPending({ failed }: { failed: boolean }) {
 function AfterRattachement({
   model,
   navigation,
+  demonstration,
 }: {
   model: Model;
   navigation: Navigation;
+  demonstration?: Demonstration;
 }) {
   if (navigation.screen === "seeds")
     return (
@@ -84,7 +108,7 @@ function AfterRattachement({
       model={model}
       seedAnswers={navigation.seedAnswers}
       onNewSimulation={navigation.restart}
-      developerToolsPanel={developerToolsPanel(navigation)}
+      developerToolsPanel={developerToolsPanel(navigation, demonstration)}
       DebugTrace={navigation.developerTools ? DebugTrace : undefined}
     />
   );
@@ -92,13 +116,45 @@ function AfterRattachement({
 
 // Le branchement des developer tools sur le simulateur se décide ici. Le
 // simulateur reçoit du contenu déjà composé et n'importe rien de
-// `developerTools/`. Le service n° 4 déverrouille deux choses : le bouton vers
-// l'écran des seeds et la trace de debug.
-function developerToolsPanel(navigation: Navigation) {
+// `developerTools/`. Le service n° 4 déverrouille trois choses : le bouton vers
+// l'écran des seeds, le modèle de démonstration quand l'app en a un, et la
+// trace de debug.
+function developerToolsPanel(
+  navigation: Navigation,
+  demonstration?: Demonstration,
+) {
   if (!navigation.developerTools) return undefined;
   return (
     <DeveloperTools>
       <ToolButton onClick={navigation.openSeeds}>Seeds</ToolButton>
+      {demonstration && (
+        <DemonstrationButton
+          demonstration={demonstration}
+          onChange={navigation.restart}
+        />
+      )}
     </DeveloperTools>
+  );
+}
+
+// Changer de modèle commence une simulation : les réponses de l'un ne valent
+// rien pour l'autre.
+function DemonstrationButton({
+  demonstration,
+  onChange,
+}: {
+  demonstration: Demonstration;
+  onChange: () => void;
+}) {
+  const change = () => {
+    demonstration.toggle();
+    onChange();
+  };
+  return (
+    <ToolButton onClick={change}>
+      {demonstration.active
+        ? "Quitter la démonstration"
+        : "Modèle de démonstration"}
+    </ToolButton>
   );
 }
