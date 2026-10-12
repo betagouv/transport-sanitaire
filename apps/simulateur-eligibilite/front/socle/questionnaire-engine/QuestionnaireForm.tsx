@@ -32,7 +32,7 @@ type Props = Omit<QuestionnaireOptions, "pages"> & {
 /** Ce qu'un écran du simulateur donne à lire à la trace de debug. */
 export type DebugTraceProps = {
   title: string;
-  /** Les pages posées, dans l'ordre. */
+  /** Les pages affichées, dans l'ordre. */
   pages: ReadonlyArray<{ id: string }>;
   /** La page ouverte, s'il y en a une. */
   currentPage?: string;

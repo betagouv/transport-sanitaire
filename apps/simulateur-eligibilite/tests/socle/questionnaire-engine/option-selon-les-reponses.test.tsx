@@ -1,7 +1,7 @@
 import { screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 import type { Page } from "../../../front/socle/questionnaire-engine/question";
-import { poser } from "./poser";
+import { afficher } from "./afficher";
 
 // Le libellé d'une option peut dépendre des réponses. L'option exclusive aussi,
 // et elle peut ne pas se proposer. Les pages sont écrites ici.
@@ -75,7 +75,7 @@ const sansCase = (name: string) =>
 
 describe("libellé d'une option selon les réponses", () => {
   it("garde son libellé quand rien ne le change", async () => {
-    const { user } = poser([HOSPITALISATION, SITUATIONS]);
+    const { user } = afficher([HOSPITALISATION, SITUATIONS]);
 
     await user.click(radio("Non"));
 
@@ -85,7 +85,7 @@ describe("libellé d'une option selon les réponses", () => {
   });
 
   it("change avec les réponses, option exclusive comprise", async () => {
-    const { user } = poser([HOSPITALISATION, SITUATIONS]);
+    const { user } = afficher([HOSPITALISATION, SITUATIONS]);
 
     await user.click(radio("Oui"));
 
@@ -99,7 +99,7 @@ describe("libellé d'une option selon les réponses", () => {
 
 describe("option exclusive conditionnelle", () => {
   it("se propose quand les réponses le permettent", async () => {
-    const { user } = poser([HOSPITALISATION, EXONERATIONS]);
+    const { user } = afficher([HOSPITALISATION, EXONERATIONS]);
 
     await user.click(radio("Non"));
 
@@ -108,7 +108,7 @@ describe("option exclusive conditionnelle", () => {
   });
 
   it("ne se propose pas sinon : il faut cocher autre chose", async () => {
-    const { user, reponses } = poser([HOSPITALISATION, EXONERATIONS]);
+    const { user, reponses } = afficher([HOSPITALISATION, EXONERATIONS]);
 
     await user.click(radio("Oui"));
 
@@ -120,7 +120,7 @@ describe("option exclusive conditionnelle", () => {
   });
 
   it("quitte la réponse quand elle ne se propose plus", async () => {
-    const { user } = poser([HOSPITALISATION, EXONERATIONS]);
+    const { user } = afficher([HOSPITALISATION, EXONERATIONS]);
     await user.click(radio("Non"));
     await screen.findByRole("group", { name: /^quels cas/i });
     await user.click(caseACocher("Aucun"));

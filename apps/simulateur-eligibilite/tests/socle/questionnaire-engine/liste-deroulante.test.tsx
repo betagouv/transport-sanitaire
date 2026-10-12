@@ -1,7 +1,7 @@
 import { screen, within } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 import type { Page } from "../../../front/socle/questionnaire-engine/question";
-import { poser } from "./poser";
+import { afficher } from "./afficher";
 
 // Un choix unique peut se rendre en liste déroulante. Les pages sont écrites
 // ici.
@@ -30,7 +30,7 @@ const valider = () =>
 
 describe("liste déroulante", () => {
   it("propose les options dans une liste, sans bouton radio", () => {
-    poser([LIEU]);
+    afficher([LIEU]);
 
     const options = within(liste()).getAllByRole("option");
     expect(options.map((option) => option.textContent)).toEqual([
@@ -41,7 +41,7 @@ describe("liste déroulante", () => {
   });
 
   it("montre l'indication de la question", () => {
-    poser([LIEU]);
+    afficher([LIEU]);
 
     expect(
       screen.getByText("Le lieu où le patient est pris en charge."),
@@ -49,13 +49,13 @@ describe("liste déroulante", () => {
   });
 
   it("attend un choix pour valider", () => {
-    poser([LIEU]);
+    afficher([LIEU]);
 
     expect(valider()).toBeDisabled();
   });
 
   it("n'avance pas seule : un choix attend le bouton", async () => {
-    const { user, reponses } = poser([LIEU]);
+    const { user, reponses } = afficher([LIEU]);
 
     await user.selectOptions(liste(), "Établissement de soins");
 

@@ -1,7 +1,7 @@
 import { screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 import type { Page } from "../../../front/socle/questionnaire-engine/question";
-import { poser } from "./poser";
+import { afficher } from "./afficher";
 
 // Une question peut rester sans réponse. Les pages sont écrites ici.
 
@@ -37,13 +37,13 @@ const valider = () =>
 
 describe("question facultative", () => {
   it("le dit dans son libellé", () => {
-    poser([ADRESSE]);
+    afficher([ADRESSE]);
 
     expect(complement()).toBeInTheDocument();
   });
 
   it("laisse valider la page sans réponse", async () => {
-    const { user, reponses } = poser([ADRESSE]);
+    const { user, reponses } = afficher([ADRESSE]);
 
     await user.type(voie(), "3 rue des Lilas");
     await user.click(valider());
@@ -52,7 +52,7 @@ describe("question facultative", () => {
   });
 
   it("garde la réponse quand il y en a une", async () => {
-    const { user, reponses } = poser([ADRESSE]);
+    const { user, reponses } = afficher([ADRESSE]);
 
     await user.type(voie(), "3 rue des Lilas");
     await user.type(complement(), "Bâtiment B");
@@ -65,7 +65,7 @@ describe("question facultative", () => {
   });
 
   it("ne dispense pas des autres questions de la page", async () => {
-    const { user } = poser([ADRESSE]);
+    const { user } = afficher([ADRESSE]);
 
     await user.type(complement(), "Bâtiment B");
 
@@ -73,7 +73,7 @@ describe("question facultative", () => {
   });
 
   it("garde son bouton, même en choix unique : la page n'avance pas seule", async () => {
-    const { user, reponses } = poser([AVIS]);
+    const { user, reponses } = afficher([AVIS]);
 
     expect(valider()).toBeEnabled();
     await user.click(valider());
