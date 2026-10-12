@@ -5,7 +5,7 @@ import type {
   Page,
   Question,
 } from "../../../front/socle/questionnaire-engine/question";
-import { poser } from "./poser";
+import { afficher } from "./afficher";
 
 // Deux options d'un choix multiple peuvent s'exclure : cocher l'une décoche
 // l'autre, avec une explication. Les pages sont écrites ici.
@@ -33,7 +33,7 @@ const caseACocher = (name: string) => screen.getByRole("checkbox", { name });
 
 describe("options incompatibles", () => {
   it("décoche l'autre, explique pourquoi, et garde le reste", async () => {
-    const { user } = poser([PAGE]);
+    const { user } = afficher([PAGE]);
     await user.click(caseACocher("Dans son fauteuil"));
     await user.click(caseACocher("Sous oxygène"));
 
@@ -46,7 +46,7 @@ describe("options incompatibles", () => {
   });
 
   it("vaut dans les deux sens", async () => {
-    const { user } = poser([PAGE]);
+    const { user } = afficher([PAGE]);
     await user.click(caseACocher("Sur un brancard"));
 
     await user.click(caseACocher("Dans son fauteuil"));
@@ -56,7 +56,7 @@ describe("options incompatibles", () => {
   });
 
   it("n'explique rien tant que rien n'est décoché", async () => {
-    const { user } = poser([PAGE]);
+    const { user } = afficher([PAGE]);
 
     await user.click(caseACocher("Dans son fauteuil"));
     await user.click(caseACocher("Sous oxygène"));
@@ -65,7 +65,7 @@ describe("options incompatibles", () => {
   });
 
   it("retire l'explication au geste suivant, et valide ce qui reste", async () => {
-    const { user, reponses } = poser([PAGE]);
+    const { user, reponses } = afficher([PAGE]);
     await user.click(caseACocher("Dans son fauteuil"));
     await user.click(caseACocher("Sur un brancard"));
 

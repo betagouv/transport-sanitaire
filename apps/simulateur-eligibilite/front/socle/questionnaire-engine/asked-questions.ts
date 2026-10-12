@@ -1,4 +1,4 @@
-// Ce qui se pose, vu les réponses : les pages, leurs questions, et la forme
+// Ce qui s'affiche, vu les réponses : les pages, leurs questions, et la forme
 // que chaque question prend à ce moment-là.
 //
 // Une question se pose sous son libellé du moment, avec ses bornes du moment,

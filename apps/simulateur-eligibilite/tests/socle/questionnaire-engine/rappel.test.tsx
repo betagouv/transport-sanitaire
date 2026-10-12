@@ -1,7 +1,7 @@
 import { screen, waitFor } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 import type { Page } from "../../../front/socle/questionnaire-engine/question";
-import { poser } from "./poser";
+import { afficher } from "./afficher";
 
 // Un rappel redit un fait déjà connu, en clair, avant la question qu'il aide à
 // comprendre. Ce n'est pas une question. Les pages sont écrites ici.
@@ -64,7 +64,7 @@ const precede = (avant: Element, apres: Element) =>
 
 describe("rappel d'une valeur connue", () => {
   it("s'affiche avant la question qu'il éclaire", async () => {
-    const { user } = poser([SEANCE, CONDITION]);
+    const { user } = afficher([SEANCE, CONDITION]);
 
     await user.click(radio("Une dialyse"));
 
@@ -73,7 +73,7 @@ describe("rappel d'une valeur connue", () => {
   });
 
   it("ne s'affiche pas quand sa question ne se pose pas", async () => {
-    const { user } = poser([SEANCE, CONDITION]);
+    const { user } = afficher([SEANCE, CONDITION]);
 
     await user.click(radio("Aucune"));
 
@@ -82,7 +82,7 @@ describe("rappel d'une valeur connue", () => {
   });
 
   it("n'est pas une question : rien à cocher, rien à saisir, rien à valider", async () => {
-    const { user, reponses } = poser([SEANCE, CONDITION]);
+    const { user, reponses } = afficher([SEANCE, CONDITION]);
     await user.click(radio("Une dialyse"));
     const lieu = await champ("Où a lieu la séance ?");
 
@@ -96,7 +96,7 @@ describe("rappel d'une valeur connue", () => {
   });
 
   it("ne crée pas d'écran à lui seul : une page qui ne demande rien est sautée", async () => {
-    const { user, reponses } = poser([SEANCE, SANS_SUITE]);
+    const { user, reponses } = afficher([SEANCE, SANS_SUITE]);
 
     await user.click(radio("Aucune"));
 

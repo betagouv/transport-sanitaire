@@ -1,7 +1,7 @@
 import { screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 import type { Page } from "../../../front/socle/questionnaire-engine/question";
-import { poser } from "./poser";
+import { afficher } from "./afficher";
 
 // Une date, avec ou sans heure, peut avoir des bornes. Elles sont fixes, ou
 // calculées d'après les réponses. Les pages sont écrites ici.
@@ -38,14 +38,14 @@ const valider = () =>
 
 describe("bornes d'une date", () => {
   it("les donne au champ, pour que le calendrier grise ce qui en sort", () => {
-    poser([ACCIDENT]);
+    afficher([ACCIDENT]);
 
     expect(champ("Date de l'accident")).toHaveAttribute("min", "2026-01-01");
     expect(champ("Date de l'accident")).toHaveAttribute("max", "2026-10-12");
   });
 
   it("refuse une date avant la borne basse, et dit laquelle", async () => {
-    const { user } = poser([ACCIDENT]);
+    const { user } = afficher([ACCIDENT]);
 
     await user.type(champ("Date de l'accident"), "2025-12-31");
 
@@ -56,7 +56,7 @@ describe("bornes d'une date", () => {
   });
 
   it("refuse une date après la borne haute, et dit laquelle", async () => {
-    const { user } = poser([ACCIDENT]);
+    const { user } = afficher([ACCIDENT]);
 
     await user.type(champ("Date de l'accident"), "2026-10-13");
 
@@ -66,7 +66,7 @@ describe("bornes d'une date", () => {
   });
 
   it("accepte une date sur la borne", async () => {
-    const { user, reponses } = poser([ACCIDENT]);
+    const { user, reponses } = afficher([ACCIDENT]);
 
     await user.type(champ("Date de l'accident"), "2026-10-12");
     await user.click(valider());
@@ -75,7 +75,7 @@ describe("bornes d'une date", () => {
   });
 
   it("calcule une borne d'après une réponse de la page", async () => {
-    const { user } = poser([PERMISSION]);
+    const { user } = afficher([PERMISSION]);
 
     await user.type(champ("Début de la permission"), "2026-10-12T08:30");
     await user.type(champ("Fin de la permission"), "2026-10-11T18:00");

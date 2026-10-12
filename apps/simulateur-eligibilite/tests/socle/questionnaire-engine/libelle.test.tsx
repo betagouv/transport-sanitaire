@@ -1,7 +1,7 @@
 import { screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 import type { Page } from "../../../front/socle/questionnaire-engine/question";
-import { poser } from "./poser";
+import { afficher } from "./afficher";
 
 // Le libellé d'une question peut dépendre des réponses. Le questionnaire
 // factice n'en a pas de tel, les pages sont donc écrites ici.
@@ -45,7 +45,7 @@ const radio = (name: string) => screen.getByRole("radio", { name });
 
 describe("libellé qui dépend des réponses", () => {
   it("suit la réponse donnée", async () => {
-    const { user } = poser([COMPAGNIE, HEURE]);
+    const { user } = afficher([COMPAGNIE, HEURE]);
 
     await user.click(radio("Accompagné"));
 
@@ -57,7 +57,7 @@ describe("libellé qui dépend des réponses", () => {
   });
 
   it("change quand la réponse change", async () => {
-    const { user } = poser([COMPAGNIE, HEURE]);
+    const { user } = afficher([COMPAGNIE, HEURE]);
     await user.click(radio("Accompagné"));
     await screen.findByRole("textbox");
     await user.click(screen.getByRole("button", { name: "Précédent" }));
@@ -72,7 +72,7 @@ describe("libellé qui dépend des réponses", () => {
   });
 
   it("reste le libellé déclaré pour une question qui n'en dit rien", async () => {
-    poser([DUREE]);
+    afficher([DUREE]);
 
     expect(
       screen.getByRole("textbox", { name: "Pour combien de temps ?" }),

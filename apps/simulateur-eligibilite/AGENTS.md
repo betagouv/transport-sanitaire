@@ -59,7 +59,7 @@ Cinq fichiers portent la mécanique, dans `front/socle/questionnaire-engine/` :
 | Fichier | Ce qu'il porte |
 |---|---|
 | `question.ts` | ce qu'est une question, une page, une partie, une réponse |
-| `asked-questions.ts` | ce qui se pose, vu les réponses : libellés, bornes et options du moment |
+| `asked-questions.ts` | ce qui s'affiche, vu les réponses : libellés, bornes et options du moment |
 | `answer-error.ts` | ce qui ne va pas dans une saisie, et le message à afficher |
 | `questionnaire.ts` | l'état d'un parcours : page ouverte, brouillon, navigation |
 | `page-commit.ts` | ce que deviennent les réponses quand une page est validée, et ce que ça efface |
@@ -203,7 +203,7 @@ démonstration gagne une page. `tests/model/` vérifie chaque modèle de
 n'importe quel modèle, et rejoue ses seeds.
 
 **Une capacité ajoutée au socle arrive avec trois choses** (D-66) : ses tests,
-sur des pages écrites dans le test (`tests/socle/questionnaire-engine/poser.tsx`),
+sur des pages écrites dans le test (`tests/socle/questionnaire-engine/afficher.tsx`),
 sa page dans le modèle de démonstration, et une seed qui ouvre cette page.
 
 Réutilise les helpers de `tests/socle/` : `modele-de-test.ts` (le modèle que les
