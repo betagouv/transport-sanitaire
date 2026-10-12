@@ -41,18 +41,24 @@ export function RadioField(props: Props) {
           inputGroup: "fr-radio-rich",
           legend: props.lead ? "fr-text--lead" : undefined,
         }}
-        options={props.options.map((option, index) => ({
-          label: option.label,
-          hintText: option.description,
-          nativeInputProps: {
-            value: option.value,
-            checked: props.value === option.value,
-            onChange: () => props.onChange(option.value),
-            autoFocus: props.autoFocus && index === 0,
-          },
-        }))}
+        options={radios(props)}
       />
       <OptionHelp options={props.options} />
     </>
   );
+}
+
+// ---- implémentation ----
+
+function radios(props: Props) {
+  return props.options.map((option, index) => ({
+    label: option.label,
+    hintText: option.description,
+    nativeInputProps: {
+      value: option.value,
+      checked: props.value === option.value,
+      onChange: () => props.onChange(option.value),
+      autoFocus: props.autoFocus && index === 0,
+    },
+  }));
 }

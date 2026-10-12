@@ -37,14 +37,7 @@ export function SelectField(props: Props) {
         // biome-ignore lint/a11y/noAutofocus: le premier champ sans réponse prend le focus à l'ouverture de la page, comme les autres champs du questionnaire
         autoFocus={props.autoFocus}
       >
-        <option value="" disabled hidden>
-          {props.placeholder}
-        </option>
-        {props.options.map((option) => (
-          <option key={option.value} value={option.value}>
-            {option.label}
-          </option>
-        ))}
+        <Options placeholder={props.placeholder} options={props.options} />
       </select>
       {props.error && (
         <p id={messageId} className="fr-error-text">
@@ -52,5 +45,27 @@ export function SelectField(props: Props) {
         </p>
       )}
     </div>
+  );
+}
+
+// ---- implémentation ----
+
+// Les options de la liste. La première tient lieu d'invite : on ne peut pas la
+// choisir, et elle disparaît de la liste ouverte.
+function Options({
+  placeholder,
+  options,
+}: Pick<Props, "placeholder" | "options">) {
+  return (
+    <>
+      <option value="" disabled hidden>
+        {placeholder}
+      </option>
+      {options.map((option) => (
+        <option key={option.value} value={option.value}>
+          {option.label}
+        </option>
+      ))}
+    </>
   );
 }
