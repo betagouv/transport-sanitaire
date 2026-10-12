@@ -54,11 +54,13 @@ un **backend Node/Express** (`server/` : le front et `/api/*`) déployé sur
 
 ## Le questionnaire
 
-Trois fichiers portent la mécanique, dans `front/socle/questionnaire-engine/` :
+Cinq fichiers portent la mécanique, dans `front/socle/questionnaire-engine/` :
 
 | Fichier | Ce qu'il porte |
 |---|---|
 | `question.ts` | ce qu'est une question, une page, une partie, une réponse |
+| `asked-questions.ts` | ce qui se pose, vu les réponses : libellés, bornes et options du moment |
+| `answer-error.ts` | ce qui ne va pas dans une saisie, et le message à afficher |
 | `questionnaire.ts` | l'état d'un parcours : page ouverte, brouillon, navigation |
 | `page-commit.ts` | ce que deviennent les réponses quand une page est validée, et ce que ça efface |
 
