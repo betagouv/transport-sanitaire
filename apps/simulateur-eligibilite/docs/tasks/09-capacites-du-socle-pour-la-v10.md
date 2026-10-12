@@ -6,11 +6,10 @@ au contrat `Model`.
 
 **Blocked by:** 06 (le parcours).
 
-**Status:** trois capacités de saisie codées, celles que P0 et P1 demandent.
-L'inventaire est arrêté le 12 octobre sur les v10.0.0 et v10.0.1 : 21
-capacités restent à écrire. 19 ne dépendent pas de la v10.0.2 et se codent
-d'abord, 2 l'attendent. Le modèle de démonstration (D-82) est en place :
-c'est lui qui permet de les valider à l'écran.
+**Status:** le modèle de démonstration (D-82) est en place, et les neuf
+petites capacités de saisie (1 à 9) sont codées, avec leur page et leur seed.
+Restent 12 capacités sur les 21 de l'inventaire : 10 ne dépendent pas de la
+v10.0.2, 2 l'attendent.
 
 ## Décisions prises
 
@@ -116,7 +115,7 @@ questions, puis confronté au socle.
 |---|---|
 | Un dossier par modèle | Fait : `front/model/` est devenu `front/models/fake/`. `front/models/eligibilite/` arrive avec la v10.0.2. D'ici là, l'app déroule le modèle de démonstration. |
 | Deux factices | Fait. Celui de l'app grandit avec le socle. Celui des tests, dans `tests/socle/fixtures/modele-factice/`, reste petit et figé : les tests de mécanique le déroulent de bout en bout. |
-| Une vitrine | Fait pour les capacités déjà codées : description d'option, option proposée selon les réponses, libellé selon les réponses. Quatre seeds ouvrent ses pages. |
+| Une vitrine | Fait : chaque capacité codée y a sa page, et l'indication sous la question dit ce qu'elle démontre. Huit seeds ouvrent ses pages et ses deux résultats. |
 | Le choix du modèle | Fait dans le socle, sans le mot « démonstration » (D-83) : `App` reçoit `models`, une liste `{ label, load }`, et ouvre le premier. À plusieurs, les developer tools montrent un bouton par modèle, coché pour celui qui est ouvert. Rien n'est rechargé ni stocké. `Main.tsx` n'en liste qu'un tant que `eligibilite/` n'existe pas : d'ici là, il n'y a pas de bouton. |
 | Les gardes | Fait : aucun modèle n'importe l'autre, le test de conformité passe sur chaque dossier de `front/models/`, `verifier-bundle` lit le catalogue de seeds de chacun. |
 
@@ -130,15 +129,15 @@ La colonne « Version » dit quel package le demande.
 
 | N° | Capacité | Demandée par | Version | Écart | Poids |
 |---|---|---|---|---|---|
-| 1 | Liste déroulante | Q3.2, Q3.3 | les deux | `SelectField` existe, aucun `kind` ne le rend. | petit |
-| 2 | Question facultative | complément d'adresse, commentaire de Q3.4, case de Q2.3.2 | les deux | Toute question affichée est obligatoire. | petit |
-| 3 | Entier strict | Q3.1 | les deux | `number` accepte les décimales. | petit |
-| 4 | Bornes de date et d'heure | Q2.8, Q3.6 | les deux | `date` et `datetime` n'ont ni minimum ni maximum. | petit |
-| 5 | Texte long, sur plusieurs lignes | Q3.4, Q3.5, fondement de Q2.1.l | les deux | `text` rend un champ d'une ligne : `ui/` n'a pas de zone de texte. | petit |
-| 6 | Options qui s'excluent deux à deux, avec une explication | Q1.2 (6 et 7, 4 et 11), Q2.2.1.b | 10.0.1 | `exclusiveOption` oppose une option à toutes les autres, pas deux options entre elles. | petit |
-| 7 | Réponse qui bloque | Q3.1, « Aller-retour différent » : un message, et « Suivant » bloqué (D-80) | 10.0.1 | Rien. | petit |
-| 8 | Libellé d'option qui dépend des réponses, option exclusive conditionnelle | Q2.2.1 (« Aucune de ces situations » devient « Aucune autre situation parmi celles proposées »), « Aucun » de Q3.7, indisponible dès qu'une case est acquise | 10.0.1 | `labelFrom` ne porte que sur une question. `exclusiveOption` est fixe. | petit |
-| 9 | Aide dépliable sur une option | Q2.2.1, « Voir les situations concernées » | 10.0.1 | Rien. L'aide se déplie au clavier et ne compte pas comme une réponse. | petit |
+| 1 | ~~Liste déroulante~~ | Q3.2, Q3.3 | les deux | Fait : `dropdown` sur un choix unique. Sa page garde son bouton. | fait |
+| 2 | ~~Question facultative~~ | complément d'adresse, commentaire de Q3.4, case de Q2.3.2 | les deux | Fait : `optional`. Le libellé reçoit « (facultatif) », et la page garde son bouton. | fait |
+| 3 | ~~Entier strict~~ | Q3.1 | les deux | Fait : `integer` sur un nombre. | fait |
+| 4 | ~~Bornes de date et d'heure~~ | Q2.8, Q3.6 | les deux | Fait : `min`, `max`, et `boundsFrom` quand les bornes dépendent des réponses ou du jour. | fait |
+| 5 | ~~Texte long, sur plusieurs lignes~~ | Q3.4, Q3.5, fondement de Q2.1.l | les deux | Fait : le type `long text`, rendu en zone de texte. | fait |
+| 6 | ~~Options qui s'excluent deux à deux, avec une explication~~ | Q1.2 (6 et 7, 4 et 11), Q2.2.1.b | 10.0.1 | Fait : `incompatibleOptions`. Cocher l'une décoche l'autre, l'explication s'affiche. | fait |
+| 7 | ~~Réponse qui bloque~~ | Q3.1, « Aller-retour différent » : un message, et « Suivant » bloqué (D-80) | 10.0.1 | Fait : `blocks` sur une option, le message à afficher. | fait |
+| 8 | ~~Libellé d'option qui dépend des réponses, option exclusive conditionnelle~~ | Q2.2.1 (« Aucune de ces situations » devient « Aucune autre situation parmi celles proposées »), « Aucun » de Q3.7, indisponible dès qu'une case est acquise | 10.0.1 | Fait : `labelFrom` sur une option. L'option exclusive a aussi son `offeredIf`. | fait |
+| 9 | ~~Aide dépliable sur une option~~ | Q2.2.1, « Voir les situations concernées » | 10.0.1 | Fait : `help` et `helpFrom` sur une option, rendus en accordéon sous le champ. | fait |
 | 10 | Rappel d'une valeur connue | les repères « R » de `SPECIFICATION_REAFFICHAGE_FAITS.md` : Q2.1, Q2.1.f, Q2.2.1, Q2.5, Q2.6, Q2.13, Q2.14 | 10.0.1 | Une page ne contient que des questions. Il faut un texte hors des réponses, affiché seulement si la page pose encore une question. | petit |
 | 11 | Donnée fixée près d'un champ | les repères « D » : Q3.2, Q3.3, Q3.4, Q3.7, Q3.8 | 10.0.1 | Rien : le rôle et la nature d'un lieu se lisent à côté des champs d'adresse, sans sélecteur. | petit |
 | 12 | Adresse, type du socle (D-60) : champs séparés, code postal français, mode étranger donné par le modèle | Q3.2, Q3.3, Q3.8 | les deux, pays revu en 10.0.1 | Aucun type. La réponse devient un objet. | moyen |
