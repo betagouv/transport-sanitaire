@@ -83,6 +83,13 @@ export type SingleChoice<
   readonly dropdown?: boolean;
 };
 
+/** Deux options d'un choix multiple qui ne vont pas ensemble, et pourquoi. */
+type IncompatibleOptions = {
+  readonly values: readonly [string, string];
+  /** Affichée quand cocher l'une vient de décocher l'autre. */
+  readonly explanation: string;
+};
+
 export type MultipleChoice<
   Questions extends AnyQuestions = AnyQuestions,
   Cibles = AnyCibles | undefined,
@@ -95,6 +102,11 @@ export type MultipleChoice<
    * changer de libellé avec elles.
    */
   readonly exclusiveOption?: Option<Questions, Cibles>;
+  /**
+   * Les options qui s'excluent deux à deux. Cocher l'une décoche l'autre, sans
+   * toucher au reste, et l'explication s'affiche.
+   */
+  readonly incompatibleOptions?: readonly IncompatibleOptions[];
 };
 
 type NumberInput<Questions extends AnyQuestions, Cibles> = Common<

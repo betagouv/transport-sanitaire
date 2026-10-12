@@ -83,13 +83,21 @@ export const PARTS: readonly QuestionnairePart<Questions, undefined>[] = [
             id: "service",
             kind: "multiple choice",
             label: "Comment la servir ?",
-            hint: "Démontre : une option exclusive conditionnelle. « Rien de particulier » ne se propose pas avec le citron, et change de libellé quand un accompagnement est choisi.",
+            hint: "Démontre : deux options incompatibles (« Très chaude » et « Glacée » : cocher l'une décoche l'autre, avec une explication), et une option exclusive conditionnelle (« Rien de particulier » ne se propose pas avec le citron, et change de libellé quand un accompagnement est choisi).",
             askedIf: (answers) =>
               answers.boisson !== undefined && answers.boisson !== "rien",
             dependsOn: ["boisson", "accompagnements"],
             options: [
               { value: "chaude", label: "Très chaude" },
+              { value: "glacee", label: "Glacée" },
               { value: "grande-tasse", label: "Dans une grande tasse" },
+            ],
+            incompatibleOptions: [
+              {
+                values: ["chaude", "glacee"],
+                explanation:
+                  "Une boisson ne se sert pas à la fois très chaude et glacée : seule la dernière cochée est gardée.",
+              },
             ],
             exclusiveOption: {
               value: "rien",

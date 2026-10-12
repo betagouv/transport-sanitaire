@@ -115,6 +115,7 @@ function MultipleChoiceField(props: Props & { question: MultipleChoice }) {
       {...common(props)}
       options={question.options}
       exclusiveOption={question.exclusiveOption}
+      incompatibleOptions={question.incompatibleOptions}
       values={Array.isArray(answer) ? answer : []}
       onChange={(values) => onChange(values.length > 0 ? values : undefined)}
     />
