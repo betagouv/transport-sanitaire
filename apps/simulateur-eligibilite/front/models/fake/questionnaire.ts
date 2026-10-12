@@ -4,7 +4,7 @@
 // Il garde sous test la mécanique du questionnaire : avancement automatique,
 // retour, brouillon, effacement des réponses dépendantes et verrou.
 
-import type { QuestionnairePart } from "../socle";
+import type { QuestionnairePart } from "../../socle";
 import type { Cibles } from "./declarations/cibles";
 import type { Questions } from "./declarations/questions";
 
