@@ -35,6 +35,9 @@ export function QuestionField(props: Props) {
 
 // ---- implémentation ----
 
+type NumberQuestion = Extract<Question, { kind: "number" }>;
+type DateQuestion = Extract<Question, { kind: "date" | "datetime" }>;
+
 // Ce que tous les champs reçoivent. Le libellé est mis en avant : sur une page
 // du questionnaire, c'est lui qui porte la question.
 function common({ question, error, autoFocus }: Props) {
@@ -49,39 +52,49 @@ function common({ question, error, autoFocus }: Props) {
 }
 
 function render(props: Props) {
-  const { question, answer, onChange } = props;
+  const { question } = props;
   switch (question.kind) {
     case "single choice":
       return <SingleChoiceField {...props} question={question} />;
     case "multiple choice":
       return <MultipleChoiceField {...props} question={question} />;
     case "number":
-      return (
-        <NumberField
-          {...common(props)}
-          min={question.min}
-          max={question.max}
-          integer={question.integer}
-          unit={question.unit}
-          value={typeof answer === "number" ? answer : undefined}
-          onChange={onChange}
-        />
-      );
+      return <NumberQuestionField {...props} question={question} />;
     case "date":
     case "datetime":
-      return (
-        <DateField
-          {...text(props)}
-          withTime={question.kind === "datetime"}
-          min={question.min}
-          max={question.max}
-        />
-      );
+      return <DateQuestionField {...props} question={question} />;
     case "long text":
       return <TextAreaField {...text(props)} />;
     default:
       return <TextField {...text(props)} />;
   }
+}
+
+function NumberQuestionField(props: Props & { question: NumberQuestion }) {
+  const { question, answer, onChange } = props;
+  return (
+    <NumberField
+      {...common(props)}
+      min={question.min}
+      max={question.max}
+      integer={question.integer}
+      unit={question.unit}
+      value={typeof answer === "number" ? answer : undefined}
+      onChange={onChange}
+    />
+  );
+}
+
+function DateQuestionField(props: Props & { question: DateQuestion }) {
+  const { question } = props;
+  return (
+    <DateField
+      {...text(props)}
+      withTime={question.kind === "datetime"}
+      min={question.min}
+      max={question.max}
+    />
+  );
 }
 
 function SingleChoiceField(props: Props & { question: SingleChoice }) {

@@ -41,12 +41,7 @@ export function NumberField(props: Props) {
         id: props.id,
         name: props.id,
         type: "number",
-        min: props.min,
-        max: props.max,
-        // Sans `step`, le navigateur signale lui-même toute décimale, dans ses
-        // mots à lui. Le message vient de la question, pas du navigateur.
-        step: props.integer ? 1 : "any",
-        inputMode: props.integer ? "numeric" : "decimal",
+        ...constraints(props),
         value: props.value ?? "",
         onChange: (e) => props.onChange(typedNumber(e.target.value)),
         autoFocus: props.autoFocus,
@@ -56,6 +51,18 @@ export function NumberField(props: Props) {
 }
 
 // ---- implémentation ----
+
+// Ce que le navigateur sait du nombre attendu. Sans `step`, il signalerait
+// lui-même toute décimale, dans ses mots à lui : le message vient de la
+// question, pas du navigateur.
+function constraints({ min, max, integer }: Props) {
+  return {
+    min,
+    max,
+    step: integer ? 1 : "any",
+    inputMode: integer ? "numeric" : "decimal",
+  } as const;
+}
 
 function typedNumber(input: string): number | undefined {
   return input.trim() === "" ? undefined : Number(input);
