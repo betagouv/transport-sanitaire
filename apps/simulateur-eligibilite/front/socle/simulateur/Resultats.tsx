@@ -4,8 +4,9 @@
 
 import type { ComponentType, ReactNode } from "react";
 import { type Model, preconisationOf } from "../model";
+import { askedPages } from "../questionnaire-engine/asked-questions";
 import type { DebugTraceProps } from "../questionnaire-engine/QuestionnaireForm";
-import { askedPages, pagesOf } from "../questionnaire-engine/question";
+import { pagesOf } from "../questionnaire-engine/question";
 import type { QuestionnaireState } from "../questionnaire-engine/questionnaire";
 import { Stepper } from "../questionnaire-engine/Stepper";
 import type { Locked } from "./start";

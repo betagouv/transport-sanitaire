@@ -2,16 +2,12 @@
 // répondre, et la navigation entre les pages.
 
 import { useState } from "react";
+import { askedPages, askedQuestions } from "./asked-questions";
 import type { AutoAdvance } from "./auto-advance";
 import { useAutoAdvance } from "./auto-advance";
 import { commitPage } from "./page-commit";
 import type { Answer, Answers, AnyCibles, Page, Question } from "./question";
-import {
-  askedPages,
-  askedQuestions,
-  isAnswered,
-  offeredAnswer,
-} from "./question";
+import { isAnswered, offeredAnswer } from "./question";
 import type { QuestionnaireTracking } from "./questionnaire-tracking";
 import { useQuestionnaireTracking } from "./questionnaire-tracking";
 
