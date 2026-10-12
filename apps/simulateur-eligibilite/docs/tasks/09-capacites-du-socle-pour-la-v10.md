@@ -9,7 +9,8 @@ au contrat `Model`.
 **Status:** trois capacités de saisie codées, celles que P0 et P1 demandent.
 L'inventaire est arrêté le 12 octobre sur les v10.0.0 et v10.0.1 : 21
 capacités restent à écrire. 19 ne dépendent pas de la v10.0.2 et se codent
-d'abord, 2 l'attendent.
+d'abord, 2 l'attendent. Le modèle de démonstration (D-82) passe avant elles :
+c'est lui qui permet de les valider à l'écran.
 
 ## Décisions prises
 
@@ -43,6 +44,12 @@ d'abord, 2 l'attendent.
 - **D-68** La taille visée et la taille plancher du texte viennent d'un
   fichier de configuration du socle, qu'une nouvelle version du modèle peut
   modifier. Le contrat `Model` ne change pas.
+
+- **D-82** Le factice est le modèle de démonstration de l'app, de façon
+  pérenne. Il vit dans `front/models/fake/`, le modèle de l'éditeur dans
+  `front/models/eligibilite/`. Il est embarqué partout, chargé à la demande,
+  et choisi par un bouton des developer tools qui recharge l'app. La page de
+  démonstration de D-66 ne disparaît donc plus à l'arrivée du modèle v10.
 
 - **D-77** Un fait inconnu n'est pas transmis au moteur (éditeur).
 - **D-80** Un seul sens par simulation (éditeur). Le socle n'a pas à porter
@@ -97,6 +104,24 @@ questions, puis confronté au socle.
 | Texte sur plusieurs lignes dans un cadre du PDF | `text-fit.ts` mesure un champ multiligne ligne par ligne. `singleLineFields` ramène sur une ligne le texte d'un cadre qui n'en montre qu'une |
 | Modèle chargé à la demande (D-71) | `app/model-loading.ts` |
 | Décision par publicodes (D-76) | `decision-engine/publicodes.ts` |
+
+### Avant les capacités : le modèle de démonstration (D-82)
+
+| Tâche | Détail |
+|---|---|
+| Un dossier par modèle | `front/model/` devient `front/models/fake/`. `front/models/eligibilite/` arrive avec la v10.0.2. D'ici là, l'app charge le factice. |
+| Un seul exemplaire | La copie de `tests/socle/fixtures/modele-factice/` disparaît. Les deux ont divergé (cinq fichiers sur six) : les réunir d'abord. `modele-de-test.ts` réexporte `front/models/fake/`. |
+| Le choix du modèle | `Main.tsx` choisit entre les deux par un `import()`. Aucun n'entre dans le chunk d'entrée : `verifier-bundle` le garde pour les deux. |
+| Le bouton | Dans les developer tools, visibles du seul service n° 4. Il recharge l'app sur l'autre modèle. |
+| Les gardes d'architecture | Seul `Main.tsx` importe `front/models/`. Un modèle n'importe pas l'autre. Les tests du socle ne prennent le factice que par `modele-de-test.ts`. |
+
+À arrêter en l'écrivant :
+
+- **Le choix à travers le rechargement.** Le socle ne garde rien entre deux
+  chargements (D-64), sauf le rattachement, rangé en session. Le choix du
+  modèle peut suivre la même voie.
+- **L'audience.** Une simulation sur le factice ne doit pas compter comme une
+  simulation d'éligibilité dans Matomo : l'exclure, ou la marquer.
 
 ### Ce qui manque, sans dépendre de la v10.0.2
 
@@ -196,11 +221,11 @@ que la v10.0.1 change à l'inventaire ».
 
 ## Proposé, à confirmer
 
-- **L'ordre va du plus petit au plus lourd.** D'abord les petites capacités
-  de saisie (1 à 9), puis le rappel et la donnée fixée (10, 11), puis
-  l'adresse, la validation croisée et la liste filtrable (12 à 14), enfin les
-  résultats et le PDF (15 à 19), une fois la méthode du PDF statique arrêtée
-  avec l'éditeur.
+- **L'ordre va du plus petit au plus lourd.** Après le modèle de
+  démonstration (D-82), les petites capacités de saisie (1 à 9), puis le
+  rappel et la donnée fixée (10, 11), puis l'adresse, la validation croisée et
+  la liste filtrable (12 à 14), enfin les résultats et le PDF (15 à 19), une
+  fois la méthode du PDF statique arrêtée avec l'éditeur.
 - **Une capacité entre dans le socle par un commit**, avec ses tests et sa
   page de démonstration. Son usage par le modèle v10 vient dans un autre.
 - **La lecture seule : tranchée par la v10.0.1.** Une valeur connue est
@@ -267,7 +292,8 @@ Levés par la v10.0.1. Le texte d'origine reste pour mémoire.
 
 Tranchés : le débordement va sous le cadre (D-67), la taille du texte vient
 d'un fichier de configuration du socle (D-68), la liste filtrable s'écrit dans
-le socle, et la page de démonstration disparaît avec le factice.
+le socle, et la page de démonstration reste dans le factice, qui ne disparaît
+plus (D-82).
 
 ### Demandes du livrable qu'un programme ne sait pas tenir
 
