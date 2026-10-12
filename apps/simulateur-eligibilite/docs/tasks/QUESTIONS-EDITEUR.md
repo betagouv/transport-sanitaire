@@ -19,9 +19,11 @@ L'éditeur a répondu le 12 octobre (D-77, D-78) :
   ajoute des tests avec des faits inconnus ;
 - le branchement des décisions est bloqué jusque-là.
 
+La v10.0.2, reçue le 12 octobre, y répond. Le contrôle fait par fait se
+fera à l'intégration du modèle (chantier 10).
+
 ## En cours chez l'éditeur, sans ticket
 
-- **La v10.0.2**, annoncée le 12 octobre.
 - **Le texte de la fiche R2.** Le catalogue de la v10.0.1 le dit toujours « à
   définir ». Il bloque l'étape 4 tant qu'il n'est pas livré.
 
@@ -40,12 +42,35 @@ L'éditeur a répondu le 12 octobre (D-77, D-78) :
 | Recherche d'acte en Q2.1 (D-65) | Confirmée : la sélection, sans code demandé au prescripteur. |
 | Un oracle écrit en réponses | Abandonné : nous écrivons les réponses d'après le contrat (D-79). |
 
+## Levés par la v10.0.2
+
+Lus pour le socle seulement. Le YAML, le contrat réponses/faits et l'oracle
+restent à contrôler avec le modèle.
+
+| Sujet | Ce que l'éditeur a retenu |
+|---|---|
+| PDF des cerfa : dessiner ou remplir | Remplir les champs, puis aplatir les trois sorties (D-84). Le soulignement du type de lieu est abandonné. |
+| Texte trop long | Jamais de blocage ni de reformulation (D-85). |
+| Fait inconnu | Absent de ce que reçoit le moteur, jamais « non » par défaut (D-86). |
+| Les 3 faits de portée juridique | Calculés par le moteur, ainsi que la DAP d'un CAMSP. Il reste 59 faits. |
+| Les faits sans réponse désignée | 21 reçoivent leur réponse positive, négative et absente (`CORRECTIF_FAITS_SANS_REPONSE.md`). |
+| Variables manquantes | Un outil de diagnostic. Elles ne choisissent pas les questions. |
+| Permission d'un adulte liée aux soins (Q2.7, réponse 3) | À la charge de l'établissement. |
+| `fait_intention_entree` | Q0.1 ne donne aucun fait au moteur. |
+
+## À ouvrir, sur le socle
+
+| Sujet | Le problème | Chantier |
+|---|---|---|
+| « Urgence : autres (précisez) » de la PMT | Le gabarit n'a pas de champ, et le livrable ne donne pas la position où écrire. Nous la relevons nous-mêmes. | 09 |
+| Case du centre de référence, sur la DAP (`malrare`) | Le mapping la dit sans état d'export valide. Nous la dessinons, comme les cases groupées. | 09 |
+| Texte sous 8 pt | Aucune taille minimale n'est donnée. La lisibilité se juge à la recette papier. | 09 |
+
 ## À valider, pas encore tranché
 
 | Sujet | Le problème | Chantier |
 |---|---|---|
-| Rejeter un texte libre « contradictoire » | Q3.4 et Q3.5, inchangées dans la v10.0.1. On ne détecte pas une contradiction dans du texte libre. Nous ne l'implémentons pas. | 09 |
-| Texte trop long | Le livrable demande une reformulation à valider avant le PDF. Nous débordons, sans jamais bloquer (D-61, D-63). | 09 |
+| Rejeter un texte libre « contradictoire » | Q3.4 et Q3.5, inchangées dans la v10.0.1 et la v10.0.2. On ne détecte pas une contradiction dans du texte libre. Nous ne l'implémentons pas. | 09 |
 | Libellé de Q1.4 | Le catalogue ne donne pas la phrase. La nôtre attend sa relecture. | 10 |
 
 ## Écartés, sauf avis contraire
