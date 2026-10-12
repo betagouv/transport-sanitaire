@@ -4,8 +4,14 @@ import { CheckboxField } from "../ui/CheckboxField";
 import { DateField } from "../ui/DateField";
 import { NumberField } from "../ui/NumberField";
 import { RadioField } from "../ui/RadioField";
+import { SelectField } from "../ui/SelectField";
 import { TextField } from "../ui/TextField";
-import type { Answer, MultipleChoice, Question } from "./question";
+import type {
+  Answer,
+  MultipleChoice,
+  Question,
+  SingleChoice,
+} from "./question";
 
 type Props = {
   question: Question;
@@ -45,14 +51,7 @@ function render(props: Props) {
   const { question, answer, onChange } = props;
   switch (question.kind) {
     case "single choice":
-      return (
-        <RadioField
-          {...common(props)}
-          options={question.options}
-          value={typeof answer === "string" ? answer : undefined}
-          onChange={onChange}
-        />
-      );
+      return <SingleChoiceField {...props} question={question} />;
     case "multiple choice":
       return <MultipleChoiceField {...props} question={question} />;
     case "number":
@@ -70,6 +69,29 @@ function render(props: Props) {
     default:
       return <TextOrDateField {...props} kind={question.kind} />;
   }
+}
+
+function SingleChoiceField(props: Props & { question: SingleChoice }) {
+  const { question, answer, onChange } = props;
+  const value = typeof answer === "string" ? answer : undefined;
+  if (question.dropdown)
+    return (
+      <SelectField
+        {...common(props)}
+        placeholder="Sélectionnez une option"
+        options={question.options}
+        value={value ?? ""}
+        onChange={onChange}
+      />
+    );
+  return (
+    <RadioField
+      {...common(props)}
+      options={question.options}
+      value={value}
+      onChange={onChange}
+    />
+  );
 }
 
 // Plus rien de coché n'est pas une réponse vide : c'est une absence de réponse.
