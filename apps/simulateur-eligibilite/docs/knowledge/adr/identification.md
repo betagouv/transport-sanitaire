@@ -59,7 +59,7 @@ Contraintes :
   c'est-à-dire pour l'accès Grist (cf. ADR-5).
 
 **Invariant** : le rattachement ne doit jamais entrer dans le moteur `publicodes`
-(`front/model/rules/regles.publicodes`), qui ne contient que la logique métier d'éligibilité. Des
+(`front/models/eligibilite/rules/regles.publicodes`), qui ne contient que la logique métier d'éligibilité. Des
 règles `identification . *` y avaient été mises à tort ; elles ont été retirées.
 
 ## 2. Décisions (ADR)
@@ -179,7 +179,7 @@ modèle et §6 pour l'accès.
 
 ### ADR-6 - Le moteur publicodes reste hors périmètre rattachement
 
-**Décision.** `apps/simulateur-eligibilite/front/model/rules/regles.publicodes` n'est pas modifié.
+**Décision.** `apps/simulateur-eligibilite/front/models/eligibilite/rules/regles.publicodes` n'est pas modifié.
 Le rattachement, comme l'analytics, vit en dehors du moteur.
 
 ## 3. Architecture cible

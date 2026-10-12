@@ -25,12 +25,12 @@ describe("ni la recette ni le modèle ne portent de version", () => {
   });
 
   it("aucun fichier du modèle n'a de version dans son nom", () => {
-    const fautifs = fichiersDe("front/model").filter((fichier) =>
+    const fautifs = fichiersDe("front/models").filter((fichier) =>
       VERSION_DANS_UN_NOM.test(basename(fichier)),
     );
     expect(
       fautifs,
-      "`front/model/` est le modèle en cours : `rules/regles.publicodes`, et " +
+      "`front/models/` porte les modèles en cours : `rules/regles.publicodes`, et " +
         "non `rules/regles-v10.publicodes`. Livrer une version remplace des " +
         "contenus. Renommer les fichiers casserait les imports et " +
         "l'historique pour dire ce que le CHANGELOG dit déjà.",

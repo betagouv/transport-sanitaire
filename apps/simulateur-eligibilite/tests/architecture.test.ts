@@ -33,6 +33,14 @@ const OUVERT_AU_MODELE = [
   "front/socle/decision-engine/publicodes",
 ];
 
+// Un dossier par modèle : celui de l'éditeur, et le modèle de démonstration.
+const MODELES = readdirSync(join(racine, "front/models")).map(
+  (dossier) => `front/models/${dossier}`,
+);
+
+// Le catalogue de seeds d'un modèle : une liste de données.
+const CATALOGUE_DE_SEEDS = /^front\/models\/[^/]+\/seeds-catalogue\.ts$/;
+
 // Le seul fichier par lequel les tests du socle prennent leur modèle, et le
 // dossier où ce modèle est écrit.
 const MODELE_DE_TEST = "tests/socle/modele-de-test.ts";
@@ -72,7 +80,7 @@ describe("frontières de runtime", () => {
 describe("le socle et le modèle", () => {
   it("le socle n'importe rien du modèle", () => {
     expect(
-      franchissements(["front/socle"], commencePar("front/model")),
+      franchissements(["front/socle"], commencePar("front/models")),
       "Le socle ne dépend d'aucune version du modèle : il reçoit le sien en " +
         "prop, depuis `front/Main.tsx`. Un import direct lierait le parcours, " +
         "les seeds ou les developer tools au questionnaire du moment, et " +
@@ -83,7 +91,7 @@ describe("le socle et le modèle", () => {
   it("le modèle n'importe du socle que son point d'entrée", () => {
     expect(
       franchissements(
-        ["front/model"],
+        ["front/models"],
         (cible) =>
           cible.startsWith("front/socle") && !OUVERT_AU_MODELE.includes(cible),
       ),
@@ -95,11 +103,31 @@ describe("le socle et le modèle", () => {
   });
 });
 
+describe("les modèles entre eux", () => {
+  it("un modèle n'importe rien d'un autre", () => {
+    const croisements = MODELES.flatMap((modele) =>
+      franchissements(
+        [modele],
+        (cible) =>
+          cible.startsWith("front/models/") &&
+          cible !== modele &&
+          !cible.startsWith(`${modele}/`),
+      ),
+    );
+    expect(
+      croisements,
+      "Chaque modèle se charge seul, à la demande. Un import de l'un vers " +
+        "l'autre ferait télécharger les deux, et lierait le modèle de " +
+        "l'éditeur au modèle de démonstration.",
+    ).toEqual([]);
+  });
+});
+
 describe("les tests et le modèle", () => {
   it("seuls les tests du modèle importent le modèle livré", () => {
     const autres = franchissements(
       ["tests"],
-      commencePar("front/model"),
+      commencePar("front/models"),
     ).filter((couple) => !couple.startsWith("tests/model/"));
     expect(
       autres,
@@ -130,7 +158,7 @@ describe("invariants métier", () => {
   it("le simulateur ignore qui prescrit", () => {
     expect(
       franchissements(
-        [...PARCOURS, "front/model"],
+        [...PARCOURS, "front/models"],
         commencePar("front/socle/rattachement/"),
       ),
       "Le moteur d'éligibilité raisonne sur une situation médicale, jamais " +
@@ -194,7 +222,7 @@ describe("invariants métier", () => {
     ].filter((terme) => regles.includes(terme));
     expect(
       interdits,
-      "Ni identification, ni analytics dans `front/model/rules/*.publicodes` : le moteur " +
+      "Ni identification, ni analytics dans `front/models/*/rules/*.publicodes` : le moteur " +
         "reste une transcription de la réglementation, rejouable hors de " +
         "l'application.",
     ).toEqual([]);
@@ -223,9 +251,8 @@ describe("taille du code", () => {
   });
 
   it("aucun fichier ne dépasse 300 lignes", () => {
-    const EXEMPTES = ["front/model/seeds-catalogue.ts"];
     const trop = sources("front", "server", "shared", "scripts", "tests")
-      .filter((fichier) => !EXEMPTES.includes(fichier))
+      .filter((fichier) => !CATALOGUE_DE_SEEDS.test(fichier))
       .map((fichier) => ({ fichier, lignes: lignesDe(fichier) }))
       .filter(({ lignes }) => lignes > 300)
       .map(({ fichier, lignes }) => `${fichier} (${lignes} lignes)`);
@@ -258,12 +285,14 @@ describe("chaîne d'outillage", () => {
   });
 });
 
-// Le texte de toutes les règles livrées. Vide quand `front/model/rules/` n'existe pas.
+// Le texte de toutes les règles livrées, tous modèles confondus. Vide quand
+// aucun modèle n'a de dossier `rules/`.
 function reglesPubliees(): string {
-  const dossier = join(racine, "front", "model", "rules");
-  if (!existsSync(dossier)) return "";
-  return readdirSync(dossier)
-    .filter((fichier) => fichier.endsWith(".publicodes"))
-    .map((fichier) => texteDe(`front/model/rules/${fichier}`))
-    .join("\n");
+  return MODELES.flatMap((modele) => {
+    const dossier = `${modele}/rules`;
+    if (!existsSync(join(racine, dossier))) return [];
+    return readdirSync(join(racine, dossier))
+      .filter((fichier) => fichier.endsWith(".publicodes"))
+      .map((fichier) => texteDe(`${dossier}/${fichier}`));
+  }).join("\n");
 }

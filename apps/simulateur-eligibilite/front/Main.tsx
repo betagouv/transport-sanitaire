@@ -18,7 +18,7 @@ startReactDsfr({ defaultColorScheme: "system" });
 // rangé en session au rattachement, puis lu à chaque événement.
 initAnalytics(configDepuisEnv(), { charger: chargerMatomo });
 
-const model = import("./model").then((module) => module.model);
+const model = import("./models/fake").then((module) => module.model);
 
 const racine = document.getElementById("root");
 if (!racine) throw new Error("Élément #root absent de index.html.");

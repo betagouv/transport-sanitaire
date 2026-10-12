@@ -20,7 +20,7 @@ const RACINES = ["front", "server", "shared", "scripts"];
 const MARQUEUR = "// ---- implémentation ----";
 // Une liste de données se lit d'un seul tenant, sans implémentation à cacher.
 // Même exemption que pour la limite de 300 lignes.
-const DONNEES = ["front/model/seeds-catalogue.ts"];
+const DONNEES = /^front\/models\/[^/]+\/seeds-catalogue\.ts$/;
 
 describe("un fichier se lit comme son contrat", () => {
   it("chaque fichier s'ouvre sur un en-tête", () => {
@@ -39,7 +39,7 @@ describe("un fichier se lit comme son contrat", () => {
   it("un fichier qui a du privé le range sous le marqueur d'implémentation", () => {
     const sans = sources(...RACINES).filter(
       (fichier) =>
-        !DONNEES.includes(fichier) &&
+        !DONNEES.test(fichier) &&
         lignesDe(fichier) > 80 &&
         aDesFonctionsPrivees(fichier) &&
         aDuPublic(fichier) &&
