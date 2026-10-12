@@ -19,7 +19,7 @@ export function askedQuestions(
 ): Question[] {
   return page.questions
     .filter((question) => isAsked(question, answers, cibles))
-    .map((question) => asPosed(question, answers, cibles));
+    .map((question) => asAsked(question, answers, cibles));
 }
 
 /** Les pages qui posent au moins une question, dans l'ordre du questionnaire. */
@@ -39,31 +39,35 @@ function isAsked(question: Question, answers: Answers, cibles?: AnyCibles) {
   return question.askedIf?.(answers, cibles) ?? true;
 }
 
-function asPosed(
+function asAsked(
   question: Question,
   answers: Answers,
   cibles?: AnyCibles,
 ): Question {
-  const posed = (options: readonly Option[]) =>
-    posedOptions(options, answers, cibles);
-  const texts = posedTexts(question, answers, cibles);
+  const offered = (options: readonly Option[]) =>
+    offeredOptions(options, answers, cibles);
+  const texts = displayedTexts(question, answers, cibles);
   if (question.kind === "date" || question.kind === "datetime")
     return { ...question, ...texts, ...question.boundsFrom?.(answers, cibles) };
   if (question.kind === "single choice")
-    return { ...question, ...texts, options: posed(question.options) };
+    return { ...question, ...texts, options: offered(question.options) };
   if (question.kind !== "multiple choice") return { ...question, ...texts };
   const { exclusiveOption: exclusive } = question;
-  const [exclusiveOption] = posed(exclusive ? [exclusive] : []);
+  const [exclusiveOption] = offered(exclusive ? [exclusive] : []);
   return {
     ...question,
     ...texts,
-    options: posed(question.options),
+    options: offered(question.options),
     exclusiveOption,
   };
 }
 
 // Ce qui se lit autour du champ, vu les réponses : le libellé, et le rappel.
-function posedTexts(question: Question, answers: Answers, cibles?: AnyCibles) {
+function displayedTexts(
+  question: Question,
+  answers: Answers,
+  cibles?: AnyCibles,
+) {
   const asked = question.labelFrom?.(answers, cibles) ?? question.label;
   return {
     label: question.optional ? `${asked} (facultatif)` : asked,
@@ -72,7 +76,7 @@ function posedTexts(question: Question, answers: Answers, cibles?: AnyCibles) {
 }
 
 // Les options qui se proposent, vu les réponses, sous leur libellé du moment.
-function posedOptions(
+function offeredOptions(
   options: readonly Option[],
   answers: Answers,
   cibles?: AnyCibles,
