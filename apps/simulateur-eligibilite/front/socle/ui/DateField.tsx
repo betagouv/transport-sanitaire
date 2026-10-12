@@ -11,6 +11,9 @@ type Props = {
   withTime?: boolean;
   /** Au format ISO, ou vide. */
   value: string;
+  /** Les bornes, au même format : le calendrier grise ce qui en sort. */
+  min?: string;
+  max?: string;
   onChange: (value: string) => void;
   error?: string;
   autoFocus?: boolean;
@@ -34,6 +37,8 @@ export function DateField(props: Props) {
         // premier, et il donne une heure locale.
         type: props.withTime ? "datetime-local" : "date",
         value: props.value,
+        min: props.min,
+        max: props.max,
         onChange: (e) => props.onChange(e.target.value),
         autoFocus: props.autoFocus,
       }}
