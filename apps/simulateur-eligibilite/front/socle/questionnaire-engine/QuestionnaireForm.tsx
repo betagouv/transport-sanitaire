@@ -2,11 +2,11 @@
 // boutons de navigation. L'état est dans `questionnaire.ts`.
 
 import type { ComponentType } from "react";
+import { errorOf } from "./answer-error";
 import { QuestionField } from "./QuestionField";
 import {
   type Answers,
   type AnyCibles,
-  errorOf,
   pagesOf,
   type QuestionnairePart,
 } from "./question";
