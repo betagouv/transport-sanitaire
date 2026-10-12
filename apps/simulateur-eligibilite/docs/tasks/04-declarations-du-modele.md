@@ -6,7 +6,7 @@ nom mal écrit ne compile pas, et un nom absent des règles fait rougir un test.
 
 **Blocked by:** 01 (les noms), 03 (les génériques).
 
-**Status:** fait pour le factice, en types seuls (`front/model/declarations/`). Les listes `as const` et le test contre `rules/` viennent avec la v10.
+**Status:** les faits et les cibles de la v10 sont déclarés en listes `as const`, et comparés à `rules/` par `tests/model/declarations.test.ts`. Les questions de P0 et P1 sont déclarées (Q0.1 à Q1.4). Restent les questions de P2 et P3, les 6 cibles de la preuve Q2.1 et les cibles documentaires.
 
 ## Décisions prises
 
@@ -14,6 +14,10 @@ nom mal écrit ne compile pas, et un nom absent des règles fait rougir un test.
   la place d'un `Record<string, unknown>`.
 - **D-39** Elles vivent dans `front/model/declarations/` : `questions.ts`,
   `faits.ts`, `cibles.ts`.
+- **D-75** Une option se répond par un slug : son numéro dans le catalogue,
+  puis ce qu'elle veut dire (`"8_BRANCARDAGE"`). `OPTIONS` les déclare une
+  fois avec leurs libellés : le type des réponses et les options du
+  questionnaire en découlent.
 - **D-40** Les questions portent les identifiants de l'éditeur : `Q1.1`,
   `Q2.3.4`.
 - **D-41** Elles sont écrites à la main. Un test compare les faits et les
@@ -47,6 +51,19 @@ nom mal écrit ne compile pas, et un nom absent des règles fait rougir un test.
   réponses de P3, d'un « contexte fiable », ou de la date de complétion.
 - **Questions** : 48, décrites seulement dans le catalogue en Markdown.
 
+## Ce que la v10.0.1 change
+
+- **Faits** : 63. Six sont retirés, onze ajoutés. Plus aucun n'est un nombre.
+  Un fait peut être inconnu, et n'est alors pas transmis (D-77) : le type
+  `Faits` ne peut plus exiger toutes les clés.
+- **Cibles** : 91 dans le dictionnaire, dont 46 calculées par publicodes. Le
+  dictionnaire dit désormais que l'application assemble cinq cibles de
+  provenance, à partir des preuves et des cibles calculées.
+- **Questions** : Q1.3.a, Q2.1.l, Q2.2.1.a, Q2.2.1.b et Q2.2.5 sont nouvelles.
+
+Les déclarations ne sont pas refaites sur la v10.0.1 : la v10.0.2 change
+encore la liste des faits (D-78).
+
 ## Questions ouvertes
 
 Aucune.
@@ -55,4 +72,6 @@ Aucune.
 
 - [ ] `Model<Questions, Faits, Cibles>` est typé par les déclarations.
 - [ ] Un identifiant inconnu ne compile pas.
-- [ ] Le test de correspondance avec `rules/` passe.
+- [x] Le test de correspondance avec `rules/` passe : 58 faits, 44 cibles, et
+      les constantes des six cibles énumérées (issue, mode, support, financeur,
+      statut du soin, code de raison).

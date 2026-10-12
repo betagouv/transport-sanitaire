@@ -16,13 +16,21 @@ ouvertes. On les traite un par un, dans l'ordre du tableau.
 | [01](01-vocabulaire.md) | Vocabulaire | arbitré | reporter dans `CONTEXT.md` |
 | [02](02-structure-des-dossiers.md) | Structure des dossiers | fait | rien |
 | [03](03-contrat-model.md) | Contrat `Model` | écrit | quatre champs pas encore lus par le socle |
-| [04](04-declarations-du-modele.md) | Déclarations du modèle | fait pour le factice | celles de la v10 |
+| [04](04-declarations-du-modele.md) | Déclarations du modèle | faits et cibles de la v10.0.0 déclarés | les refaire sur la v10.0.2 ; les questions, les cibles que l'application assemble, les cibles documentaires |
 | [05](05-questionnaire-en-parties.md) | Questionnaire en parties | fait | rien |
 | [06](06-parcours-et-resultats.md) | Parcours et résultats | fait, hors PDF | impression, production du PDF |
-| [07](07-seeds.md) | Seeds | fait | une seed par cas d'oracle, avec la v10 |
-| [08](08-tests-et-factice.md) | Tests et factice | fait | migrer le factice dans `tests/socle/fixtures/`, avec la v10 |
-| [09](09-capacites-du-socle-pour-la-v10.md) | Capacités du socle pour la v10 | cadré | tout à coder |
-| [10](10-integration-de-la-v10.md) | Intégration de la v10 | cadré, rien de codé | tout ; les étapes 3 et 4 attendent l'éditeur |
+| [07](07-seeds.md) | Seeds | fait | les seeds des cas d'oracle, que nous écrivons d'après le contrat réponses/faits (D-79), après la v10.0.2 |
+| [08](08-tests-et-factice.md) | Tests et factice | fait | rien |
+| [09](09-capacites-du-socle-pour-la-v10.md) | Capacités du socle pour la v10 | trois capacités codées, inventaire revu sur la v10.0.1 | les autres capacités : rien ne les retient (D-78) |
+| [10](10-integration-de-la-v10.md) | Intégration de la v10 | étapes 1 et 2 codées sur la v10.0.0 | le branchement des décisions attend la v10.0.2 (D-78) ; l'interface se poursuit |
+
+## Les livraisons de l'éditeur
+
+| Version | Reçue | État chez nous |
+|---|---|---|
+| v10.0.0 | relivrée le 6 octobre | les étapes 1 et 2 sont codées dessus |
+| v10.0.1 | le 12 octobre | analysée, pas portée : voir le [chantier 10](10-integration-de-la-v10.md) |
+| v10.0.2 | annoncée le 12 octobre | attendue : contrat réponses/faits corrigé, trois décisions déplacées dans le moteur, tests avec des faits inconnus |
 
 ## Commits
 
@@ -86,7 +94,7 @@ reste dans le tableau, barrée, avec celle qui la remplace.
 | D-43 | 2026-10-07 | `QuestionnairePart` s'écrit maintenant dans le code, sur le factice. | 05 |
 | D-44 | 2026-10-07 | En P3, `askedIf` reçoit les cibles figées au verrou : `askedIf(answers, cibles)`. Le modèle ne recalcule rien. | 05, 06 |
 | D-45 | 2026-10-07 | Le stepper s'affiche aussi sur R2 et R3, comme le demande la v10. | 06 |
-| D-46 | 2026-10-07 | Le trajet retour différent (les segments) relève du modèle : une question et des questions conditionnelles. | 06, 10 |
+| D-46 | 2026-10-07 | ~~Le trajet retour différent (les segments) relève du modèle : une question et des questions conditionnelles.~~ Remplacé par D-80. | 06, 10 |
 | D-47 | 2026-10-07 | Première écriture du contrat et de l'injection sur le factice : tout sauf la production du PDF. R3 n'a pas de bouton de téléchargement. | 03, 06, 07, 08 |
 | D-48 | 2026-10-07 | Chaque partie et chaque résultat a un `title`, dont le socle fait le titre de l'écran. (C-1) | 03, 05 |
 | D-49 | 2026-10-07 | Dans le factice, répondre « Rien » ne donne aucun cerfa : le résultat est le dernier écran. (C-2) | 06, 08 |
@@ -115,11 +123,21 @@ reste dans le tableau, barrée, avec celle qui la remplace.
 | D-72 | 2026-10-07 | Pour remplir les cerfa de la v10, le package fait foi : `mapping_documents.json` et `COMPLETION_DOCUMENTS.md`. Le Google Sheet de Notion n'est pas suivi. La question de son maintien est posée à l'éditeur. | 10 |
 | D-73 | 2026-10-07 | Aucun mécanisme dans le code pour désactiver les résultats positifs. La v10 reste sur staging pendant la recette, et passe en production d'un bloc quand tous les profils sont validés. | 10 |
 | D-74 | 2026-10-07 | Le rattachement (établissement et service de l'écran-porte) n'est pas le « contexte fiable » du livrable. Les rubriques d'identité du cerfa restent vides : bénéficiaire, assuré, organisme, prescripteur, structure. | 01, 10 |
+| D-75 | 2026-10-08 | Une option se répond par un slug : son numéro dans le catalogue de l'éditeur, puis ce qu'elle veut dire (`"8_BRANCARDAGE"`). Les slugs et leurs libellés se déclarent une fois, dans `declarations/questions.ts` (`OPTIONS`) : le type des réponses et les options du questionnaire en découlent. L'éditeur numérote ses réponses sans en faire des identifiants : il ne les cite que pour Q2.1. Précise D-40. | 04 |
+| D-76 | 2026-10-08 | publicodes fait partie du socle : c'est l'outil attendu pour décider. Il vit derrière un seul fichier, `front/socle/decision-engine/publicodes.ts`, que le modèle importe directement, hors du point d'entrée du socle, pour que publicodes reste hors du chunk d'entrée (D-71). Le contrat `Model` ne change pas : il demande toujours une fonction `cibles(faits)`, et le reste du socle ignore le moteur. Un test garde que personne d'autre n'importe publicodes. | 03, 10 |
+| D-77 | 2026-10-12 | Décision de l'éditeur. Un fait inconnu n'est pas transmis au moteur, et ne vaut jamais « non » par défaut. Les variables manquantes du moteur ne suffisent pas à dire quelles options de Q2.2.1 afficher : le YAML peut réclamer un fait sans rapport avec le parcours. | 03, 09, 10 |
+| D-78 | 2026-10-12 | Décision de l'éditeur. L'application ne tranche ni les 22 faits sans réponse désignée, ni les 3 faits de portée juridique, même par hypothèse. Le branchement des décisions est bloqué jusqu'à la v10.0.2. L'interface qui n'en dépend pas se poursuit. | 10 |
+| D-79 | 2026-10-12 | Les cas de l'oracle ne sont plus attendus en réponses de l'éditeur. Nous écrivons leurs réponses d'après le contrat réponses/faits. Précise D-57. | 07, 10 |
+| D-80 | 2026-10-12 | Décision de l'éditeur, dans la v10.0.1. Une simulation qualifie un seul sens, ou un aller-retour équivalent. Un retour différent demande une seconde simulation : Q3.1 l'annonce et bloque « Suivant ». Remplace D-46. | 06, 09, 10 |
 
 ## Questions ouvertes, par chantier
 
 | Question | Chantier |
 |---|---|
+| Que coder en attendant la v10.0.2 : les capacités du socle seules, ou aussi les pages de P1, P2 et P3 d'après le catalogue de la v10.0.1, qui peut encore bouger. | 09, 10 |
+| Qui dit qu'une question est « décisive » (Q2.1, Q2.1.l, options de Q2.2.1) : le moteur, ou des conditions écrites dans le questionnaire. Attend la v10.0.2 (D-77). | 05, 10 |
+| Combien de seeds pour les 49 cas de l'oracle. D-57 en prévoyait 25. | 07 |
+| Les gabarits des cerfa : ceux du package, désormais remplissables, ou ceux de Notion (D-62). | 09, 10 |
 
 ## À remonter à l'éditeur
 

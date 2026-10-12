@@ -16,7 +16,8 @@ P3, puis télécharge son cerfa en R3.
   trois actions propres à la version, dont l'impression de la fiche.
 - **D-44** En P3, `askedIf` reçoit les cibles figées au verrou.
 - **D-45** Le stepper s'affiche aussi sur R2 et R3.
-- **D-46** Le trajet retour différent relève du modèle.
+- ~~**D-46** Le trajet retour différent relève du modèle.~~ Remplacé par
+  D-80 : un seul sens par simulation.
 - **D-47** Première écriture sur le factice : tout sauf la production du PDF.
 
 ## Proposé, à confirmer

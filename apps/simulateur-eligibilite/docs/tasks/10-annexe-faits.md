@@ -1,5 +1,26 @@
 # 10, annexe : d'où vient chaque fait
 
+## État après la v10.0.1
+
+Le classement ci-dessous porte sur les 58 faits de la v10.0.0. La v10.0.1 en
+compte 63 et livre `CONTRAT_REPONSES_FAITS.json`, une entrée par fait.
+
+| Classe | Nombre | Ce que ça veut dire |
+|---|---|---|
+| Réponse désignée | 38 | Le contrat dit quelle réponse donne le fait. Les 13 faits de P1 en sont. |
+| Sans réponse désignée | 22 | Le contrat dit ce qui doit être vrai, pas quelle réponse le prouve. |
+| De portée juridique | 3 | Le fait demande à l'application de dire le droit avant le moteur. |
+
+Le détail, fait par fait, est dans le ticket Notion « v10 : le lien entre les
+réponses et les faits n'est pas fourni » : un ✅ par fait levé, un ⬜ par fait
+ouvert. Il n'est pas recopié ici.
+
+L'éditeur nous demande de ne trancher aucun des 25 faits ouverts (D-78). La
+v10.0.2 corrige le contrat et déplace les trois faits de portée juridique dans
+le moteur : cette annexe se réécrit à sa livraison.
+
+## Le classement de la v10.0.0
+
 Les 58 faits du YAML v10.0.0, classés selon ce que le livrable permet d'en
 dire. Le classement est une lecture du catalogue, de
 `PUBLICODE_MODELE_ET_ENTREES.md` et de `CONTRAT_PREUVE_Q21.md`. Il sert à
