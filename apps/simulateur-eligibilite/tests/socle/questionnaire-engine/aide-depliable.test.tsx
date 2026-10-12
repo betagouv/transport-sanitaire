@@ -3,8 +3,8 @@ import { describe, expect, it } from "vitest";
 import type { Page } from "../../../front/socle/questionnaire-engine/question";
 import { poser } from "./poser";
 
-// Une option peut porter une aide, qui se déplie sur une liste. La déplier
-// n'est pas répondre. Les pages sont écrites ici.
+// Une option peut porter une aide : un lien, juste sous elle, qui déplie une
+// liste. La déplier n'est pas répondre. Les pages sont écrites ici.
 
 const AGE: Page = {
   id: "age",
@@ -49,19 +49,40 @@ const SITUATIONS: Page = {
 
 const aide = () =>
   screen.getByRole("button", { name: "Voir les situations concernées" });
+// Ce que l'aide liste, une fois dépliée. Repliée, elle ne liste rien.
 const liste = () =>
   within(
     document.getElementById(aide().getAttribute("aria-controls") ?? "") ??
       document.body,
   )
-    .getAllByRole("listitem")
+    .queryAllByRole("listitem")
     .map((item) => item.textContent);
 
+const caseACocher = (name: RegExp) => screen.getByRole("checkbox", { name });
+const precede = (avant: Element, apres: Element) =>
+  Boolean(
+    avant.compareDocumentPosition(apres) & Node.DOCUMENT_POSITION_FOLLOWING,
+  );
+
 describe("aide dépliable d'une option", () => {
+  it("se place juste sous son option, avant la suivante", () => {
+    poser([SITUATIONS]);
+
+    expect(precede(caseACocher(/^une autre situation/i), aide())).toBe(true);
+    expect(precede(aide(), caseACocher(/^aucune de ces/i))).toBe(true);
+  });
+
+  it("reste hors du libellé de son option", () => {
+    poser([SITUATIONS]);
+
+    expect(aide().closest("label")).toBeNull();
+  });
+
   it("est repliée à l'ouverture de la page", () => {
     poser([SITUATIONS]);
 
     expect(aide()).toHaveAttribute("aria-expanded", "false");
+    expect(liste()).toEqual([]);
   });
 
   it("se déplie sur sa liste, au clavier", async () => {
@@ -91,6 +112,7 @@ describe("aide dépliable d'une option", () => {
     await user.click(screen.getByRole("radio", { name: "Non" }));
 
     await screen.findByRole("group", { name: /^quelles situations/i });
+    await user.click(aide());
     expect(liste()).toEqual([
       "Accident du travail",
       "Suivi en CAMSP ou en CMPP",

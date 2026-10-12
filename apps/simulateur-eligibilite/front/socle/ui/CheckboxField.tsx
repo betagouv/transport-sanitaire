@@ -1,17 +1,10 @@
-// Un choix multiple : le `Checkbox` du DSFR. Une option peut être exclusive, et
+// Un choix multiple, en cases à cocher. Une option peut être exclusive, et
 // deux options peuvent s'exclure l'une l'autre.
 
-import { Checkbox } from "@codegouvfr/react-dsfr/Checkbox";
-import { type ChangeEvent, type ComponentProps, useState } from "react";
-import { type Help, OptionHelp } from "./OptionHelp";
+import { type ChangeEvent, useState } from "react";
+import { type Choice, ChoiceFieldset, type Message } from "./ChoiceFieldset";
 
-type Option = {
-  value: string;
-  label: string;
-  description?: string;
-  /** Une aide dépliable, rendue sous les cases. */
-  help?: Help;
-};
+type Option = Omit<Choice, "input">;
 
 type Props = {
   id: string;
@@ -43,46 +36,39 @@ export function CheckboxField(props: Props) {
     props.onChange(after.values);
   };
   return (
-    <>
-      <Checkbox
-        legend={props.label}
-        hintText={props.hint}
-        {...message(props.error, explanation)}
-        options={checkboxes(props, toggle)}
-        classes={{ legend: props.lead ? "fr-text--lead" : undefined }}
-        style={{ marginBottom: "1.5rem" }}
-      />
-      <OptionHelp options={props.options} />
-    </>
+    <ChoiceFieldset
+      id={props.id}
+      type="checkbox"
+      legend={props.label}
+      hint={props.hint}
+      lead={props.lead}
+      message={message(props.error, explanation)}
+      choices={checkboxes(props, toggle)}
+    />
   );
 }
 
 // ---- implémentation ----
 
-// La forme des cases est empruntée au composant DSFR, pas recopiée.
-type DsfrCheckbox = ComponentProps<typeof Checkbox>["options"][number];
-
 type Toggled = { values: readonly string[]; explanation?: string };
 
 // L'erreur passe devant l'explication : c'est elle qui retient la page.
-function message(error?: string, explanation?: string) {
-  if (error) return { state: "error", stateRelatedMessage: error } as const;
-  if (explanation)
-    return { state: "info", stateRelatedMessage: explanation } as const;
-  return { state: "default" } as const;
+function message(error?: string, explanation?: string): Message | undefined {
+  if (error) return { state: "error", text: error };
+  if (explanation) return { state: "info", text: explanation };
+  return undefined;
 }
 
 function checkboxes(
   props: Props,
   toggle: (value: string, checked: boolean) => void,
-): DsfrCheckbox[] {
+): Choice[] {
   const options = props.exclusiveOption
     ? [...props.options, props.exclusiveOption]
     : props.options;
   return options.map((option) => ({
-    label: option.label,
-    hintText: option.description,
-    nativeInputProps: {
+    ...option,
+    input: {
       name: `${props.id}-${option.value}`,
       checked: props.values.includes(option.value),
       onChange: (e: ChangeEvent<HTMLInputElement>) =>
