@@ -103,8 +103,27 @@ type TextInput<Questions extends AnyQuestions, Cibles> = Common<
   Cibles
 > & {
   /** `long text` : un texte sur plusieurs lignes, saisi dans une zone de texte. */
-  readonly kind: "text" | "long text" | "date" | "datetime";
+  readonly kind: "text" | "long text";
 };
+
+/**
+ * Les bornes d'une date, écrites comme sa réponse : `2026-10-12` pour une
+ * date, `2026-10-12T08:30` pour une date et une heure.
+ */
+type DateBounds = { readonly min?: string; readonly max?: string };
+
+type DateInput<Questions extends AnyQuestions, Cibles> = Common<
+  Questions,
+  Cibles
+> &
+  DateBounds & {
+    readonly kind: "date" | "datetime";
+    /**
+     * Les bornes, quand elles dépendent des réponses ou du jour. Elles passent
+     * devant `min` et `max`.
+     */
+    boundsFrom?(answers: Answers<Questions>, cibles: Cibles): DateBounds;
+  };
 
 // Sans argument, ces types sont ceux du moteur : n'importe quelles questions,
 // des cibles s'il y en a. Le modèle, lui, les écrit avec les siens.
@@ -115,7 +134,8 @@ export type Question<
   | SingleChoice<Questions, Cibles>
   | MultipleChoice<Questions, Cibles>
   | NumberInput<Questions, Cibles>
-  | TextInput<Questions, Cibles>;
+  | TextInput<Questions, Cibles>
+  | DateInput<Questions, Cibles>;
 
 export type Page<
   Questions extends AnyQuestions = AnyQuestions,
@@ -218,6 +238,8 @@ function asPosed(
 ): Question {
   const asked = question.labelFrom?.(answers, cibles) ?? question.label;
   const label = question.optional ? `${asked} (facultatif)` : asked;
+  if (question.kind === "date" || question.kind === "datetime")
+    return { ...question, label, ...question.boundsFrom?.(answers, cibles) };
   if (question.kind !== "single choice" && question.kind !== "multiple choice")
     return { ...question, label };
   const options = question.options.filter(

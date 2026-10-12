@@ -114,6 +114,18 @@ export const COMPLEMENT: QuestionnairePart<Questions, Cibles> = {
       ],
     },
     {
+      id: "retrait",
+      questions: [
+        {
+          id: "jour",
+          kind: "date",
+          label: "Pour quel jour ?",
+          hint: "Démontre : une date bornée, d'aujourd'hui à dans sept jours. Une date hors bornes est refusée.",
+          boundsFrom: () => ({ min: dayFromToday(0), max: dayFromToday(7) }),
+        },
+      ],
+    },
+    {
       id: "remarque",
       questions: [
         {
@@ -127,3 +139,15 @@ export const COMPLEMENT: QuestionnairePart<Questions, Cibles> = {
     },
   ],
 };
+
+// ---- implémentation ----
+
+// Le jour qu'il sera dans `days` jours, à l'heure locale, écrit comme la
+// réponse d'une date : `2026-10-12`.
+function dayFromToday(days: number): string {
+  const day = new Date();
+  day.setDate(day.getDate() + days);
+  const month = String(day.getMonth() + 1).padStart(2, "0");
+  const date = String(day.getDate()).padStart(2, "0");
+  return `${day.getFullYear()}-${month}-${date}`;
+}
