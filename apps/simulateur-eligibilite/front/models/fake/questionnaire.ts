@@ -54,12 +54,17 @@ export const PARTS: readonly QuestionnairePart<Questions, undefined>[] = [
               boisson === "the"
                 ? "Avec quoi, ce thé ?"
                 : "Avec quoi, ce café ?",
-            hint: "Démontre : un libellé qui dépend des réponses, une option proposée selon la boisson (le citron, avec le thé seulement), et une option exclusive.",
+            hint: "Démontre : un libellé de question et un libellé d'option qui dépendent des réponses (le lait devient « un nuage de lait » avec le thé), une option proposée selon la boisson (le citron, avec le thé seulement), et une option exclusive.",
             askedIf: (answers) =>
               answers.boisson !== undefined && answers.boisson !== "rien",
             dependsOn: ["boisson"],
             options: [
-              { value: "lait", label: "Du lait" },
+              {
+                value: "lait",
+                label: "Du lait",
+                labelFrom: ({ boisson }) =>
+                  boisson === "the" ? "Un nuage de lait" : "Du lait",
+              },
               { value: "sucre", label: "Du sucre" },
               {
                 value: "citron",
@@ -68,6 +73,34 @@ export const PARTS: readonly QuestionnairePart<Questions, undefined>[] = [
               },
             ],
             exclusiveOption: { value: "aucun", label: "Rien de plus" },
+          },
+        ],
+      },
+      {
+        id: "service",
+        questions: [
+          {
+            id: "service",
+            kind: "multiple choice",
+            label: "Comment la servir ?",
+            hint: "Démontre : une option exclusive conditionnelle. « Rien de particulier » ne se propose pas avec le citron, et change de libellé quand un accompagnement est choisi.",
+            askedIf: (answers) =>
+              answers.boisson !== undefined && answers.boisson !== "rien",
+            dependsOn: ["boisson", "accompagnements"],
+            options: [
+              { value: "chaude", label: "Très chaude" },
+              { value: "grande-tasse", label: "Dans une grande tasse" },
+            ],
+            exclusiveOption: {
+              value: "rien",
+              label: "Rien de particulier",
+              labelFrom: ({ accompagnements = [] }) =>
+                accompagnements.includes("aucun")
+                  ? "Rien de particulier"
+                  : "Rien d'autre de particulier",
+              offeredIf: ({ accompagnements = [] }) =>
+                !accompagnements.includes("citron"),
+            },
           },
         ],
       },
