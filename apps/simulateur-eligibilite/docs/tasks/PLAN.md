@@ -21,7 +21,7 @@ ouvertes. On les traite un par un, dans l'ordre du tableau.
 | [06](06-parcours-et-resultats.md) | Parcours et résultats | fait, hors PDF | impression, production du PDF |
 | [07](07-seeds.md) | Seeds | fait | les seeds des cas d'oracle, que nous écrivons d'après le contrat réponses/faits (D-79), après la v10.0.2 |
 | [08](08-tests-et-factice.md) | Tests et factice | fait | rien |
-| [09](09-capacites-du-socle-pour-la-v10.md) | Capacités du socle pour la v10 | trois capacités codées, inventaire revu sur la v10.0.1 | les autres capacités : rien ne les retient (D-78) |
+| [09](09-capacites-du-socle-pour-la-v10.md) | Capacités du socle pour la v10 | trois capacités codées, inventaire arrêté sur les v10.0.0 et v10.0.1 | 21 capacités : 19 que rien ne retient (D-78), à coder d'abord ; 2 qui attendent la v10.0.2 |
 | [10](10-integration-de-la-v10.md) | Intégration de la v10 | étapes 1 et 2 codées sur la v10.0.0, gardées sur `v10-modele-10.0.0` (D-81) | le branchement des décisions attend la v10.0.2 (D-78) ; l'interface se poursuit |
 
 ## Les livraisons de l'éditeur
@@ -135,7 +135,7 @@ reste dans le tableau, barrée, avec celle qui la remplace.
 
 | Question | Chantier |
 |---|---|
-| Que coder en attendant la v10.0.2 : les capacités du socle seules, ou aussi les pages de P1, P2 et P3 d'après le catalogue de la v10.0.1, qui peut encore bouger. | 09, 10 |
+| Les capacités du socle se codent d'abord (arbitré le 12 octobre). Reste à dire si les pages de P1, P2 et P3 se codent ensuite d'après le catalogue de la v10.0.1, qui peut encore bouger, ou attendent la v10.0.2. | 09, 10 |
 | Qui dit qu'une question est « décisive » (Q2.1, Q2.1.l, options de Q2.2.1) : le moteur, ou des conditions écrites dans le questionnaire. Attend la v10.0.2 (D-77). | 05, 10 |
 | Combien de seeds pour les 49 cas de l'oracle. D-57 en prévoyait 25. | 07 |
 | Les gabarits des cerfa : ceux du package, désormais remplissables, ou ceux de Notion (D-62). | 09, 10 |
