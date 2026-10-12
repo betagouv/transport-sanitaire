@@ -11,19 +11,26 @@ export type ModelSource = Model | Promise<Model>;
 export type ModelLoading = { model?: Model; failed: boolean };
 
 export function useModelLoading(source: ModelSource): ModelLoading {
-  const [loading, setLoading] = useState<ModelLoading>({ failed: false });
+  const [arrival, setArrival] = useState<Arrival>();
 
   useEffect(() => {
     if (!(source instanceof Promise)) return;
     let current = true;
     source.then(
-      (model) => current && setLoading({ model, failed: false }),
-      () => current && setLoading({ failed: true }),
+      (model) => current && setArrival({ source, model, failed: false }),
+      () => current && setArrival({ source, failed: true }),
     );
     return () => {
       current = false;
     };
   }, [source]);
 
-  return source instanceof Promise ? loading : { model: source, failed: false };
+  if (!(source instanceof Promise)) return { model: source, failed: false };
+  // Une arrivée ne vaut que pour sa source : quand l'app change de modèle, le
+  // précédent ne doit pas rester à l'écran le temps que le suivant arrive.
+  return arrival?.source === source ? arrival : { failed: false };
 }
+
+// ---- implémentation ----
+
+type Arrival = ModelLoading & { source: Promise<Model> };
