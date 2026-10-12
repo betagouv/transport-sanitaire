@@ -3,8 +3,15 @@
 
 import { Checkbox } from "@codegouvfr/react-dsfr/Checkbox";
 import { type ChangeEvent, type ComponentProps, useState } from "react";
+import { type Help, OptionHelp } from "./OptionHelp";
 
-type Option = { value: string; label: string; description?: string };
+type Option = {
+  value: string;
+  label: string;
+  description?: string;
+  /** Une aide dépliable, rendue sous les cases. */
+  help?: Help;
+};
 
 type Props = {
   id: string;
@@ -36,14 +43,17 @@ export function CheckboxField(props: Props) {
     props.onChange(after.values);
   };
   return (
-    <Checkbox
-      legend={props.label}
-      hintText={props.hint}
-      {...message(props.error, explanation)}
-      options={checkboxes(props, toggle)}
-      classes={{ legend: props.lead ? "fr-text--lead" : undefined }}
-      style={{ marginBottom: "1.5rem" }}
-    />
+    <>
+      <Checkbox
+        legend={props.label}
+        hintText={props.hint}
+        {...message(props.error, explanation)}
+        options={checkboxes(props, toggle)}
+        classes={{ legend: props.lead ? "fr-text--lead" : undefined }}
+        style={{ marginBottom: "1.5rem" }}
+      />
+      <OptionHelp options={props.options} />
+    </>
   );
 }
 
