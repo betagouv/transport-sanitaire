@@ -1,15 +1,21 @@
 // Point d'entrée du navigateur : démarre le traceur, puis monte l'app React
-// sur le modèle. C'est le seul fichier qui importe à la fois le socle et le
-// modèle.
+// sur ses modèles. C'est le seul fichier qui importe à la fois le socle et un
+// modèle, et le seul qui les nomme.
 //
-// Le modèle se charge à la demande, pendant l'écran de rattachement : il
-// reste hors du chunk d'entrée.
+// Un modèle se charge à la demande, le premier pendant l'écran de
+// rattachement : il reste hors du chunk d'entrée.
 
 import { startReactDsfr } from "@codegouvfr/react-dsfr/spa";
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import "./socle/app/dsfr-overrides.css";
-import { App, chargerMatomo, configDepuisEnv, initAnalytics } from "./socle";
+import {
+  App,
+  chargerMatomo,
+  configDepuisEnv,
+  initAnalytics,
+  type Models,
+} from "./socle";
 
 startReactDsfr({ defaultColorScheme: "system" });
 
@@ -18,13 +24,20 @@ startReactDsfr({ defaultColorScheme: "system" });
 // rangé en session au rattachement, puis lu à chaque événement.
 initAnalytics(configDepuisEnv(), { charger: chargerMatomo });
 
-const model = import("./models/fake").then((module) => module.model);
+// Le premier s'ouvre au démarrage. À plusieurs, le service n° 4 peut en changer
+// depuis les developer tools.
+const models: Models = [
+  {
+    label: "Modèle de démonstration",
+    load: () => import("./models/fake").then((module) => module.model),
+  },
+];
 
 const racine = document.getElementById("root");
 if (!racine) throw new Error("Élément #root absent de index.html.");
 
 createRoot(racine).render(
   <StrictMode>
-    <App model={model} />
+    <App models={models} />
   </StrictMode>,
 );

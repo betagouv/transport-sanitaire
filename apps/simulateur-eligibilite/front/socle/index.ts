@@ -11,6 +11,7 @@ export {
   initAnalytics,
 } from "./analytics/matomo";
 export { App } from "./app/App";
+export type { Models } from "./app/model-choice";
 export { textFrom } from "./cerfa/field-mapping";
 export { defineModel } from "./model";
 export type {

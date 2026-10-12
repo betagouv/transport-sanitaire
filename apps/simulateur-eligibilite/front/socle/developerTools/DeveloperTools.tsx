@@ -43,21 +43,31 @@ export function DeveloperTools({ children }: { children: ReactNode }) {
   );
 }
 
-/** Bouton d'un developer tool. Même apparence pour tous : aucun n'est « l'action ». */
+/**
+ * Bouton d'un developer tool. Même apparence pour tous : aucun n'est « l'action ».
+ * Avec `pressed`, il porte un état : coché tant qu'il est enfoncé.
+ */
 export function ToolButton({
   onClick,
+  pressed,
   children,
 }: {
   onClick: () => void;
+  pressed?: boolean;
   children: ReactNode;
 }) {
   return (
     <button
       type="button"
-      className="fr-btn fr-btn--tertiary fr-btn--sm"
+      className={`fr-btn fr-btn--tertiary fr-btn--sm${pressed ? PRESSED : ""}`}
+      aria-pressed={pressed}
       onClick={onClick}
     >
       {children}
     </button>
   );
 }
+
+// ---- implémentation ----
+
+const PRESSED = " fr-btn--icon-left fr-icon-check-line";

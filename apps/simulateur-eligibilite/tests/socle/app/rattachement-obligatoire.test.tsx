@@ -11,7 +11,7 @@ import {
   type Referentiel,
   snapshotReferentiel,
 } from "../../../shared/referentiel";
-import { modeleDeTest } from "../modele-de-test";
+import { modeleDeTest, seulModele } from "../modele-de-test";
 
 // L'écran de rattachement : on n'atteint pas le simulateur sans s'être rattaché.
 // Le référentiel est le snapshot. La déclaration capture ce qui partirait au
@@ -21,7 +21,7 @@ function setup(referentiel: Referentiel = snapshotReferentiel) {
   const declarations: RattachementSaisi[] = [];
   render(
     <App
-      model={modeleDeTest}
+      models={seulModele(modeleDeTest)}
       referentiel={referentiel}
       declarer={(saisie) => declarations.push(saisie)}
     />,
