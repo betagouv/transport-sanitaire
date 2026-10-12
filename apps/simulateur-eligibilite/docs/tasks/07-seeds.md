@@ -5,7 +5,7 @@ rejouer, afficher et ouvrir, sans connaître leur contenu.
 
 **Blocked by:** 03 (le contrat), 04 (les déclarations).
 
-**Status:** fait. Reste une seed par cas d'oracle, avec la v10.
+**Status:** fait. Restent les seeds des cas d'oracle, après la v10.0.2.
 
 ## Décisions prises
 
@@ -16,6 +16,8 @@ rejouer, afficher et ouvrir, sans connaître leur contenu.
 - **D-56** Une seed ne déclare pas où elle s'ouvre. Le parcours le déduit de
   ses réponses, verrou compris. Le champ `landing` a disparu.
 - **D-57** À l'intégration de la v10, une seed par cas de l'oracle.
+- **D-79** Nous écrivons les réponses de ces cas d'après le contrat
+  réponses/faits. Elles ne sont plus attendues de l'éditeur.
 
 ## Proposé, à confirmer
 
@@ -44,9 +46,11 @@ rejouer, afficher et ouvrir, sans connaître leur contenu.
 
 ## Questions ouvertes
 
-Aucune. Les seeds par cas d'oracle attendent l'oracle écrit en réponses, que
-l'éditeur prépare : les 25 cas actuels sont en faits, et tous s'appuient sur un
-fait que le livrable ne permet pas de déduire d'une réponse.
+- **Combien de seeds.** La v10.0.1 compte 49 cas, D-57 en prévoyait 25.
+  Certains reposent sur un fait qu'aucune réponse ne donne (D29, D43, D47) :
+  ils ne peuvent pas devenir des seeds.
+- Les seeds attendent la v10.0.2, qui corrige le contrat réponses/faits
+  (D-78).
 
 ## Critères d'acceptation
 

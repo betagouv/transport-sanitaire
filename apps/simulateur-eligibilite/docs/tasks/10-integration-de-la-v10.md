@@ -6,10 +6,17 @@ préconisation et télécharge son cerfa.
 
 **Blocked by:** 02 à 09.
 
-**Status:** cadré, rien de codé. Sept étapes (D-69). Les étapes 3 et 4 attendent l'éditeur.
+**Status:** étapes 1 et 2 codées sur la v10.0.0. La v10.0.1 est analysée, pas portée. Le branchement des décisions attend la v10.0.2 (D-78). L'interface se poursuit.
 
 ## Décisions prises
 
+- **D-77** Un fait inconnu n'est pas transmis au moteur (éditeur). Les
+  variables manquantes ne suffisent pas à filtrer les options de Q2.2.1.
+- **D-78** L'application ne tranche aucun fait non confirmé (éditeur). Le
+  branchement des décisions attend la v10.0.2. L'interface se poursuit.
+- **D-79** Nous écrivons les réponses des cas de l'oracle d'après le contrat
+  réponses/faits.
+- **D-80** Un seul sens par simulation (éditeur). Remplace D-46.
 - **D-04** La v10 est la référence de structure.
 - **D-64** Le simulateur n'existe que dans le navigateur.
 - **D-65** La recherche d'acte de Q2.1 porte sur la sélection de l'éditeur.
@@ -55,6 +62,68 @@ dictionnaire ses 89 cibles, le mapping ses 182 lignes.
   branche oriente vers la caisse. Simon signale la divergence et ne tranche
   pas une question juridique.
 - **Le blocage des segments incompatibles** est désormais testé par le moteur.
+
+## La v10.0.1 du 8 octobre
+
+Reçue le 12 octobre. Un correctif de la v10.0.0, mais large : 18 tickets et 12
+documents nouveaux.
+
+| Pièce | v10.0.0 | v10.0.1 |
+|---|---|---|
+| Faits du YAML | 58 | 63 : 6 retirés, 11 ajoutés |
+| Cibles du YAML | 44 | 46 |
+| Cibles du dictionnaire | 89 | 91, dont 5 que l'application assemble |
+| Issues | 9 | 10 |
+| Cas de l'oracle | 25 | 49, toujours en faits |
+| Gabarits PMT et DAP | spécimens sans champs | remplissables : 53 et 56 champs |
+| Lignes du mapping | 182 | 182, toujours en prose |
+
+Ce qu'elle lève :
+
+- **Le lien entre les réponses et les faits**, en partie.
+  `CONTRAT_REPONSES_FAITS.json` a une entrée par fait. 38 faits sur 63 ont
+  une réponse désignée.
+- **La lecture seule.** `SPECIFICATION_REAFFICHAGE_FAITS.md` tranche 47
+  repères : une valeur connue est invisible par défaut, rappelée en texte si
+  elle éclaire une question, ou fixée près d'un champ de P3. Jamais de case
+  désactivée.
+- **Le retour différent de l'aller** : supprimé de P2 (D-80).
+- **L'équipement bariatrique** : `fait_bariatrique`. L'option n'apparaît
+  qu'avec un critère d'ambulance et ne bloque rien.
+- **Les adresses** : plus de contrôle contre la distance. L'étranger se
+  décide en P2 (Q2.2.5). En P3, le pays est obligatoire et le code postal
+  libre.
+
+Ce qu'elle ajoute :
+
+- **En P1** : les options 4 et 11 de Q1.2 s'excluent, et Q1.3.a précise
+  l'hémodialyse.
+- **Q2.1** n'est posée que si le détail du soin peut changer le transport.
+  Q2.1.l laisse le prescripteur confirmer la prise en charge du soin.
+- **Q2.2.1** tient en quatre réponses, avec ses précisions sur la même page
+  (`CONTRAT_Q221_PROGRESSIF.json`).
+- **Une dixième issue**, la demande d'accord à examiner pour un trajet vers
+  l'étranger. Le SAMSAH et la pension militaire renvoient vers la caisse.
+- **Trois valeurs pour un fait** : oui, non, inconnu.
+
+Ce qu'elle laisse ouvert :
+
+- **22 faits sans réponse désignée**, et **3 faits de portée juridique** que
+  l'application devrait trancher avant le moteur. Le détail est dans
+  [l'annexe](10-annexe-faits.md).
+- **Le texte de la fiche R2**, toujours « à définir ».
+
+## La réponse de l'éditeur du 12 octobre
+
+- Un fait inconnu n'est pas transmis au moteur (D-77).
+- Nous ne tranchons ni les 22 faits ni les 3 faits de portée juridique, même
+  par hypothèse (D-78).
+- La v10.0.2 corrigera le contrat réponses/faits, déplacera les 3 décisions
+  dans le moteur et ajoutera des tests avec des faits inconnus.
+- Le branchement des décisions est bloqué jusque-là. L'interface qui n'en
+  dépend pas se poursuit.
+- Le parcours ALD avec brancardage doit continuer à éviter Q2.1 quand le
+  détail du soin ne change pas le résultat.
 
 ## Ce que le livrable laisse à l'application
 
@@ -130,35 +199,96 @@ Ce que cela implique, après classement des 58 faits
 
 ## Les étapes (D-69)
 
-| Étape | Contenu | Ce qui la retient |
-|---|---|---|
-| 1. Le noyau | Migration du factice (D-52). Le YAML dans `front/model/rules/`. Les déclarations des faits et des cibles, et leur test (D-41). Les 25 cas de l'oracle, en faits, contre le moteur. | rien |
-| 2. P0 et P1 | Q0.1 à Q1.4 : le mode de transport. | le contrôle bariatrique, flou |
-| 3. P2 | Q2.1 à Q2.14 : l'éligibilité, sans page de résultat. | 20 faits à interpréter, le retour différent, la lecture seule |
-| 4. R2 | La page de résultat : mode de transport et éligibilité. Impression. | le texte de la fiche, à définir |
-| 5. P3 | Q3.1 à Q3.8 : les informations qui complètent le cerfa, sans PDF. | la lecture seule |
-| 6. Le premier PDF | Le S3141, ses cibles documentaires, R3. | rien |
-| 7. Les autres PDF | PMT et DAP, leurs volets, le texte médical. | rien |
+| Étape | Contenu | État | Ce qui la retient |
+|---|---|---|---|
+| 1. Le noyau | Migration du factice (D-52). Le YAML dans `front/model/rules/`. Les déclarations des faits et des cibles, et leur test (D-41). Les cas de l'oracle, en faits, contre le moteur. | fait sur la v10.0.0 | à refaire sur la v10.0.2 : le YAML, les faits, les cibles, les 49 cas |
+| 2. P0 et P1 | Q0.1 à Q1.4 : le mode de transport. | fait sur la v10.0.0 | l'interface, rien : Q1.2 (4 et 11 exclusives), Q1.3 (corpulence), Q1.3.a. Les faits : la v10.0.2 |
+| 3. P2 | Q2.1 à Q2.14 : l'éligibilité, sans page de résultat. | pas commencée | les décisions : la v10.0.2. L'interface : rien, mais le catalogue peut encore bouger |
+| 4. R2 | La page de résultat : mode de transport et éligibilité. Impression. | pas commencée | la v10.0.2, et le texte de la fiche |
+| 5. P3 | Q3.1 à Q3.8 : les informations qui complètent le cerfa, sans PDF. | pas commencée | l'interface, rien : la lecture seule est levée |
+| 6. Le premier PDF | Le S3141, ses cibles documentaires, R3. | pas commencée | rien |
+| 7. Les autres PDF | PMT et DAP, leurs volets, le texte médical. | pas commencée | rien |
+
+La v10.0.1 n'est pas portée : son YAML et son contrat changent encore avec la
+v10.0.2. P3 et les PDF lisent des cibles figées. Tant que P2 ne décide rien,
+ils se vérifient par des tests qui posent ces cibles à la main, pas à l'écran.
 
 Les capacités du chantier 09 entrent juste avant l'étape qui les demande.
+
+## Ce que l'étape 1 a livré
+
+- Le factice a migré dans `tests/socle/fixtures/modele-factice/` (D-52).
+- `front/model/rules/` porte le YAML recopié (`regles.publicodes`) et `VERSION`.
+- `publicodes` est figé en 1.10.1. Un plugin de `vite.config.ts` convertit le
+  YAML en objet à la compilation. `Main` charge le modèle à la demande, et
+  `App` l'attend après le rattachement (D-71). `verifier-bundle` le surveille.
+- Les 58 faits et les 44 cibles sont déclarés, et comparés aux règles.
+- L'oracle passe en faits : D01 à D25, et les frontières du test de l'éditeur.
+
+Trois choses à savoir :
+
+- **Q0.1 est déjà posée.** Un questionnaire sans page ne se monte pas : le
+  modèle ouvre donc sur P0, en choix unique simple. L'explication de chaque
+  option attend les cartes radio (chantier 09).
+- **Aucune réponse ne donne de fait.** `preconisation.faits` rend tous les
+  faits à « non ». R2 dit donc toujours que le questionnaire n'est pas complet.
+- **`textFrom` a quitté `front/socle/index.ts`**, faute d'appelant dans le
+  modèle. Il y revient avec le mapping, à l'étape 6.
+
+Non fait à l'étape 1 : le script local qui compare nos déclarations au package
+(D-70). Il prend son sens avec le dictionnaire des cibles et le mapping.
+
+## Ce que l'étape 2 a livré
+
+- P0 et P1 sont posées : Q0.1 en cartes radio, puis Q1.1 à Q1.4, libellés
+  repris du catalogue.
+- Leurs réponses donnent les 11 faits directs du mode de transport
+  (`front/model/mode-de-transport.ts`), et `fait_p1_complete`, que le socle
+  calcule sur les pages de P1 (`areAnswered`).
+- Les règles rendent le mode. `tests/model/mode-de-transport.test.ts` le
+  vérifie des réponses au mode, pour les cinq modes.
+- Trois capacités du chantier 09 sont entrées dans le socle : l'explication
+  d'une option, l'option qui dépend des réponses, le libellé qui dépend des
+  réponses.
+
+Quatre choses à savoir :
+
+- **L'équipement bariatrique ne bloque rien.** La case de Q1.3 est posée et
+  gardée dans les réponses. Elle ne donne aucun fait et ne bloque pas P1 : la
+  règle attend l'éditeur.
+- **Le transport partagé se propose selon le mode que les règles calculent**,
+  TAP ou TPMR, pas selon une condition réécrite dans le questionnaire.
+- **La phrase de Q1.4 est la nôtre.** Le catalogue demande que le libellé
+  précise « en toute autonomie » ou « avec l'aide d'un proche », sans donner
+  la phrase. À faire relire par l'éditeur.
+- **Le résultat ne change pas.** P2 n'est pas posée : `fait_p2_complete` reste
+  à « non », et R2 dit que le questionnaire n'est pas complet. Le mode se lit
+  dans la trace de debug. Le stepper annonce trois parties, jusqu'à P2.
+
+`preconisation.ts` ne porte plus que le passage des réponses aux faits. Le
+moteur publicodes est dans le socle (`decision-engine/publicodes.ts`, D-76).
+`evaluation-des-regles.ts` lui donne les règles et les cibles du modèle, et le
+questionnaire le lit aussi pour connaître le mode.
 
 ## Problèmes restants
 
 ### En attente d'une réponse de l'éditeur
 
-1. **Vingt faits à interpréter** ([annexe](10-annexe-faits.md)). Ticket
-   ouvert.
+1. **Le lien entre les réponses et les faits** ([annexe](10-annexe-faits.md)) :
+   22 faits sans réponse désignée, 3 faits de portée juridique. Bloqué
+   jusqu'à la v10.0.2 (D-78).
 2. **Le texte de la fiche R2**, prévu côté éditeur, sans ticket. Le catalogue écrit : « Le contenu éditorial
    final de la fiche reste à définir. » Le moteur rend neuf issues et
    quatorze codes de raison, sans aucune phrase à afficher.
-3. **Le retour différent de l'aller.** Deux segments à qualifier et à
-   comparer, sans notion de segment dans le YAML ni dans le socle.
-4. **La lecture seule** et **l'équipement bariatrique**, voir le chantier 09.
+3. ~~Le retour différent de l'aller~~ : levé par la v10.0.1 (D-80).
+4. ~~La lecture seule et l'équipement bariatrique~~ : levés par la v10.0.1,
+   voir le chantier 09.
 
 ### Conséquences sur ce qui était décidé
 
-5. **Une seed par cas d'oracle (D-57) attend l'oracle en réponses**, que l'éditeur
-   prépare. Une
+5. **Une seed par cas d'oracle (D-57).** Nous écrivons les réponses nous-mêmes
+   (D-79), après la v10.0.2. La v10.0.1 compte 49 cas : le nombre de seeds
+   reste à arrêter. Le constat d'origine, sur la v10.0.0 : une
    seed est faite de réponses. Les 25 cas de l'oracle s'appuient tous sur au
    moins un fait à interpréter : les quatre drapeaux de preuve pour 23 cas,
    `fait_evenement_sans_soin` et `fait_dap_maternite` pour les deux autres. La
@@ -189,8 +319,9 @@ Les capacités du chantier 09 entrent juste avant l'étape qui les demande.
 
 ## Critères d'acceptation
 
-- [ ] Le factice a migré dans `tests/socle/fixtures/` (D-52), et la garde
+- [x] Le factice a migré dans `tests/socle/fixtures/` (D-52), et la garde
       « seuls les tests du modèle importent le modèle » est écrite.
-- [ ] Les 25 cas de l'oracle passent, et chacun a sa seed (D-57).
+- [ ] Les cas de l'oracle passent (25 en v10.0.0, 49 en v10.0.1), et chacun a sa seed (D-57). Les cas
+      passent en faits ; les seeds attendent l'oracle en réponses.
 - [ ] Aucun fichier de `front/socle/` n'a été modifié pour un besoin propre à
       la v10 hors des capacités du chantier 09.

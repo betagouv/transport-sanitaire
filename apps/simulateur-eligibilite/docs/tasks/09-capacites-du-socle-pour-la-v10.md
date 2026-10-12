@@ -6,7 +6,7 @@ au contrat `Model`.
 
 **Blocked by:** 06 (le parcours).
 
-**Status:** cadré. Rien n'est codé. Restent deux attentes côté éditeur et le détail de l'adresse.
+**Status:** trois capacités de saisie codées, celles que P0 et P1 demandent. L'inventaire est revu sur la v10.0.1. Plus rien n'attend l'éditeur, sauf le fait inconnu, qui attend la v10.0.2.
 
 ## Décisions prises
 
@@ -40,6 +40,23 @@ au contrat `Model`.
 - **D-68** La taille visée et la taille plancher du texte viennent d'un
   fichier de configuration du socle, qu'une nouvelle version du modèle peut
   modifier. Le contrat `Model` ne change pas.
+
+- **D-77** Un fait inconnu n'est pas transmis au moteur (éditeur).
+- **D-80** Un seul sens par simulation (éditeur). Le socle n'a pas à porter
+  de segment.
+
+## Ce que la v10.0.1 change à l'inventaire
+
+| Sujet | Avant | Maintenant |
+|---|---|---|
+| Lecture seule | en attente de l'éditeur | tranchée : jamais de contrôle désactivé. Un rappel en texte, ou une donnée fixée près d'un champ de P3 |
+| Blocage bariatrique | règle non écrite | supprimé : l'option se propose avec un critère d'ambulance, ce que `offeredIf` sait faire |
+| Deux segments | à comparer dans une simulation | supprimés (D-80). Q3.1 bloque « Aller-retour différent » |
+| Pays d'une adresse | case « Adresse hors de France » proposée | le modèle le sait par Q2.2.5 : pays obligatoire, code postal libre |
+| Format postal local | à vérifier, pays par pays | abandonné par l'éditeur |
+| Adresse contre la distance | PDF à bloquer | abandonné par l'éditeur |
+| Q2.2.1 | une liste de douze options | quatre réponses, une aide dépliable, des précisions sur la même page |
+| Fait inconnu | n'existait pas | un fait peut manquer, et une cible rester indéfinie (D-77) |
 
 ## Ce que ces décisions entraînent
 
@@ -75,16 +92,21 @@ questions, puis confronté au socle.
 
 | Capacité | Demandée par | Écart | Poids |
 |---|---|---|---|
-| Cartes radio | Q0.1 | Une option n'a pas d'explication. Ajouter une description et le rendu DSFR. | petit |
+| ~~Cartes radio~~ | Q0.1 | Fait : une option porte une `description`, rendue sous son libellé. | fait |
 | Liste déroulante | Q3.2, Q3.3 | `SelectField` existe, aucun `kind` ne le rend. | petit |
 | Question facultative | complément d'adresse, commentaire de Q3.4, case de Q2.3.2 | Toute question affichée est obligatoire. | petit |
 | Entier strict | Q3.1 | `number` accepte les décimales. | petit |
 | Bornes de date et d'heure | Q2.8, Q3.6 | `date` et `datetime` n'ont ni minimum ni maximum. | petit |
-| Valeur déjà connue, en lecture seule | 17 questions : Q2.1, Q2.1.f, Q2.1.k, Q2.2.1, Q2.2.3, Q2.3.2, Q2.3.4, Q2.5, Q2.6, Q2.11, Q2.13, Q2.14, Q3.2, Q3.3, Q3.4, Q3.7, Q3.8 | Une page ne contient que des questions. Voir « Ce que l'éditeur fixe ». | moyen |
-| Validation croisée | Q3.1 contre Q2.3.3, début avant fin, code postal selon le pays, extrémité contre le segment verrouillé | `errorOf` ne voit qu'une réponse. | moyen |
+| Rappel d'une valeur connue | les repères « R » de `SPECIFICATION_REAFFICHAGE_FAITS.md` : Q2.1, Q2.1.f, Q2.2.1, Q2.5, Q2.6, Q2.13, Q2.14 | Une page ne contient que des questions. Il faut un texte hors des réponses, affiché seulement si la page pose encore une question. | petit |
+| Donnée fixée près d'un champ | les repères « D » : Q3.2, Q3.3, Q3.4, Q3.7, Q3.8 | Rien : le rôle et la nature d'un lieu se lisent à côté des champs d'adresse, sans sélecteur. | petit |
+| Page sans question | toute page dont les valeurs sont déjà connues | À vérifier : une page qui ne pose plus rien doit être sautée, sans écran de rappel. | petit |
+| Validation croisée | début avant fin (Q2.8), code postal selon le pays, extrémité contre le lieu verrouillé, groupe de Q2.2.1 coché sans précision | `errorOf` ne voit qu'une réponse. | moyen |
+| Réponse qui bloque | Q3.1, « Aller-retour différent » : un message, et « Suivant » bloqué (D-80) | Rien. | petit |
 | Adresse, type du socle (D-60) | Q3.2, Q3.3, Q3.8 | Aucun type. La réponse devient un objet. | moyen |
-| Options qui dépendent des réponses | Q1.3 (option 6), Q2.2.1, Q2.6, Q2.13, Q3.2, Q3.3 : « ne proposer que les situations compatibles et encore inconnues » | Les options d'une question sont une liste fixe. | moyen |
-| Libellé qui dépend des réponses | Q1.4 (« en toute autonomie » ou « avec l'aide d'un proche »), Q2.2.1 (libellé de « Aucune ») | Le libellé d'une question et d'une option est un texte fixe. | petit |
+| ~~Options qui dépendent des réponses~~ | Q1.3 (option 6), Q2.2.1, Q2.6, Q2.13, Q3.2, Q3.3 : « ne proposer que les situations compatibles et encore inconnues » | Fait : `offeredIf` sur une option. Une réponse perd l'option qui ne se propose plus. | fait |
+| Libellé qui dépend des réponses | Q1.4 (« en toute autonomie » ou « avec l'aide d'un proche »), Q2.2.1 (« Aucune de ces situations » devient « Aucune autre situation parmi celles proposées ») | Fait pour une question : `labelFrom`. Le libellé d'une option reste un texte fixe : Q2.2.1 le demande. | petit |
+| Aide dépliable sur une option | Q2.2.1, « Voir les situations concernées » | Rien. L'aide se déplie au clavier et ne compte pas comme une réponse. | petit |
+| Fait inconnu (D-77) | tout P2 | Le moteur de décision reçoit des faits tous renseignés. Il doit accepter un fait absent et rendre une cible indéfinie. À préciser avec la v10.0.2. | moyen |
 | Liste filtrable (D-65) | Q2.1.c, Q2.1.d | Rien. Une vingtaine d'options embarquées, filtrées sur le libellé et les synonymes, accessible au clavier, avec « je ne trouve pas ». Aucun chargement à la demande. | moyen |
 
 ### Ce que l'éditeur fixe sur la lecture seule et l'adresse
@@ -99,6 +121,9 @@ questions, puis confronté au socle.
 - **Le pays.** « Pays si hors France. » En France, un code postal de cinq
   chiffres. Hors France, le pays est obligatoire et le code postal suit le
   format local. L'éditeur ne dit pas comment le pays se saisit.
+
+Ces trois points décrivent la v10.0.0. La v10.0.1 les remplace : voir « Ce
+que la v10.0.1 change à l'inventaire ».
 
 ### Résultats
 
@@ -118,6 +143,11 @@ questions, puis confronté au socle.
 - **Les PDF du livrable.** `S3138g.pdf` et `S3139h.pdf` sont les spécimens
   publiés sur ameli.fr : filigrane « SPECIMEN », aucun champ. `S3141.pdf` est
   le même fichier que celui de Notion.
+- **Depuis la v10.0.1**, le livrable porte des gabarits remplissables : PMT
+  (53 champs), DAP (56 champs), moins de 20 ans (46 champs).
+  `PROVENANCE_FORMULAIRES.json` les dit remis le 7 octobre. Le DAP et le
+  moins de 20 ans sont identiques à l'octet aux nôtres. Le PMT reste à
+  comparer à celui de Notion.
 - **Un écart de texte.** Les spécimens datent de février 2026 et ont deux
   corrections que nos gabarits n'ont pas : une référence légale perd la
   mention « annexe VI », et le DAP écrit « prescripteur » là où le nôtre écrit
@@ -156,24 +186,25 @@ questions, puis confronté au socle.
   partie par partie.
 - **Une capacité entre dans le socle par un commit**, avec ses tests et sa
   page de démonstration. Son usage par le modèle v10 vient dans un autre.
-- **La lecture seule : en attente.** Le livrable demande l'affichage à 21
-  endroits et reste ambigu à 24 autres. L'éditeur a dit à l'oral qu'une question
-  déjà répondue ne doit pas être affichée. La contradiction lui est remontée
-  dans Notion (« v10 : préciser quand une valeur "en lecture seule" doit être
-  réaffichée »). D'ici sa réponse, rien n'est réaffiché : la valeur sert
-  seulement à déduire le fait, et la capacité n'est pas construite.
-- **Le pays : en attente de l'éditeur.** Notre préférence est une case « Adresse
-  hors de France », qui fait apparaître le pays en texte libre et lève la
-  règle des cinq chiffres. La question lui est posée avec les deux autres
-  possibilités (liste déroulante, champ toujours visible).
+- **La lecture seule : tranchée par la v10.0.1.** Une valeur connue est
+  invisible par défaut. Elle est rappelée en texte si elle éclaire une
+  question de la page, ou fixée près d'un champ de P3. Deux petites capacités
+  la portent : le rappel et la donnée fixée.
+- **Le pays : tranché par la v10.0.1.** Le prescripteur dit en P2 (Q2.2.5)
+  si le départ ou l'arrivée est à l'étranger. L'adresse de P3 demande alors
+  le pays, en texte libre, et lève la règle des cinq chiffres. Le type
+  d'adresse du socle reçoit ce réglage du modèle, sans case à cocher.
 
 ## Problèmes restants
 
 ### En attente d'une réponse de l'éditeur
 
-1. **La lecture seule.** Réafficher une valeur connue, ou seulement la
-   réutiliser. La capacité n'est pas construite d'ici là.
-2. **Les deux blocages avant un résultat.** Un équipement bariatrique
+Levés par la v10.0.1. Le texte d'origine reste pour mémoire.
+
+1. ~~La lecture seule.~~ Tranchée : voir « Proposé, à confirmer ».
+2. ~~Les deux blocages avant un résultat.~~ L'équipement bariatrique ne
+   bloque plus rien, et les deux segments sont supprimés (D-80). Le constat
+   d'origine : un équipement bariatrique
    incompatible avec le mode (avant la fin de P1), et deux segments
    incompatibles (avant R2). La validation croisée sait bloquer, mais la
    règle n'est pas écrite dans le livrable.
@@ -211,11 +242,12 @@ Non implémentées, et notées dans les points à remonter à l'éditeur.
 
 8. **Rejeter un texte libre contradictoire** (Q3.4, Q3.5) : « toute nouvelle
    indication, nature d'acte, régime ou urgence contradictoire doit être
-   rejetée ».
-9. **Vérifier le format postal local** d'une adresse hors de France.
-10. **Bloquer le PDF pour une adresse « clairement incompatible »** avec le
-    lieu ou la tranche de distance déclarés (Q3.2), sans déduire un seuil
-    routier d'une distance à vol d'oiseau.
+   rejetée ». Inchangé dans la v10.0.1.
+9. ~~Vérifier le format postal local~~ : abandonné par l'éditeur, le code
+   postal étranger est libre.
+10. ~~Bloquer le PDF pour une adresse « clairement incompatible »~~ :
+    abandonné par l'éditeur. Seule une contradiction certaine bloque, comme
+    deux adresses identiques pour un même trajet.
 
 ### Résolu en regardant les gabarits
 
