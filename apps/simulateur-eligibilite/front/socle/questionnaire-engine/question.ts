@@ -63,12 +63,17 @@ type Common<Questions extends AnyQuestions, Cibles> = {
   readonly dependsOn?: readonly (keyof Questions & string)[];
 };
 
-type SingleChoice<Questions extends AnyQuestions, Cibles> = Common<
-  Questions,
-  Cibles
-> & {
+export type SingleChoice<
+  Questions extends AnyQuestions = AnyQuestions,
+  Cibles = AnyCibles | undefined,
+> = Common<Questions, Cibles> & {
   readonly kind: "single choice";
   readonly options: readonly Option<Questions, Cibles>[];
+  /**
+   * Rendue en liste déroulante, et non en boutons radio. Une liste ne valide
+   * rien d'elle-même : sa page garde son bouton.
+   */
+  readonly dropdown?: boolean;
 };
 
 export type MultipleChoice<
