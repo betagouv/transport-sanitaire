@@ -3,8 +3,9 @@ import { describe, expect, it } from "vitest";
 import type { Page } from "../../../front/socle/questionnaire-engine/question";
 import { poser } from "./poser";
 
-// Une donnée fixée montre, près du champ encore demandé, une valeur déjà
-// décidée : on la lit, on ne la modifie pas. Les pages sont écrites ici.
+// Un rappel peut prendre la forme de valeurs avec leur intitulé : ce qui est
+// déjà décidé, montré près du champ encore demandé. On le lit, on ne le
+// modifie pas. Les pages sont écrites ici.
 
 const ARRIVEE: Page = {
   id: "arrivee",
@@ -13,7 +14,7 @@ const ARRIVEE: Page = {
       id: "adresse",
       kind: "text",
       label: "Adresse du lieu d'arrivée",
-      fixedDataFrom: (answers, cibles) => [
+      reminderFrom: (answers, cibles) => [
         { label: "Rôle", value: "arrivée" },
         { label: "Nature", value: String(cibles?.nature ?? answers.nature) },
       ],
@@ -21,7 +22,7 @@ const ARRIVEE: Page = {
   ],
 };
 
-const SANS_DONNEE: Page = {
+const SANS_RAPPEL: Page = {
   id: "nom",
   questions: [{ id: "nom", kind: "text", label: "Nom du lieu" }],
 };
@@ -41,15 +42,15 @@ const precede = (avant: Element, apres: Element) =>
     avant.compareDocumentPosition(apres) & Node.DOCUMENT_POSITION_FOLLOWING,
   );
 
-describe("donnée fixée près d'un champ", () => {
-  it("montre chaque donnée, avec son intitulé", () => {
+describe("rappel en valeurs, près d'un champ", () => {
+  it("montre chaque valeur, avec son intitulé", () => {
     poser([ARRIVEE], VERROU);
 
     expect(termes()).toEqual(["Rôle :", "Nature :"]);
     expect(valeurs()).toEqual(["arrivée", "structure de soins"]);
   });
 
-  it("se place juste avant le champ qu'elle concerne", () => {
+  it("se place juste avant le champ qu'il concerne", () => {
     poser([ARRIVEE], VERROU);
 
     expect(precede(screen.getByText("structure de soins"), adresse())).toBe(
@@ -78,7 +79,7 @@ describe("donnée fixée près d'un champ", () => {
   });
 
   it("ne montre rien pour une question qui n'en a pas", () => {
-    poser([SANS_DONNEE]);
+    poser([SANS_RAPPEL]);
 
     expect(screen.queryByRole("term")).toBeNull();
   });

@@ -2,7 +2,6 @@
 
 import { CheckboxField } from "../ui/CheckboxField";
 import { DateField } from "../ui/DateField";
-import { FixedData } from "../ui/FixedData";
 import { NumberField } from "../ui/NumberField";
 import { RadioField } from "../ui/RadioField";
 import { Reminder } from "../ui/Reminder";
@@ -30,8 +29,7 @@ type Props = {
 export function QuestionField(props: Props) {
   return (
     <div className="fr-form-group" style={{ marginBottom: "1.5rem" }}>
-      {props.question.reminder && <Reminder text={props.question.reminder} />}
-      <FixedData data={props.question.fixedData ?? []} />
+      <Reminder reminder={props.question.reminder} />
       {render(props)}
     </div>
   );

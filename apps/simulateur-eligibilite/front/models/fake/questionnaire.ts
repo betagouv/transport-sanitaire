@@ -86,7 +86,7 @@ export const PARTS: readonly QuestionnairePart<Questions, undefined>[] = [
             label: "Comment la servir ?",
             reminderFrom: (answers) =>
               `Rappel de la commande : ${cibles(faits(answers)).commande}.`,
-            hint: "Démontre : un rappel au-dessus de la question (il redit des réponses déjà données, et ne demande rien), une aide dépliable sous son option (« Voir les préparations possibles », dont la liste dépend de la boisson), deux options incompatibles (« Très chaude » et « Glacée » : cocher l'une décoche l'autre, avec une explication), et une option exclusive conditionnelle (« Rien de particulier » ne se propose pas avec le citron, et change de libellé quand un accompagnement est choisi).",
+            hint: "Démontre : un rappel en une phrase au-dessus de la question (il redit des réponses déjà données, et ne demande rien), une aide dépliable sous son option (« Voir les préparations possibles », dont la liste dépend de la boisson), deux options incompatibles (« Très chaude » et « Glacée » : cocher l'une décoche l'autre, avec une explication), et une option exclusive conditionnelle (« Rien de particulier » ne se propose pas avec le citron, et change de libellé quand un accompagnement est choisi).",
             askedIf: (answers) =>
               answers.boisson !== undefined && answers.boisson !== "rien",
             dependsOn: ["boisson", "accompagnements"],
@@ -143,14 +143,14 @@ export const COMPLEMENT: QuestionnairePart<Questions, Cibles> = {
           id: "quantite",
           kind: "number",
           label: "Combien de tasses ?",
-          fixedDataFrom: ({ service = [] }, { commande }) => [
+          reminderFrom: ({ service = [] }, { commande }) => [
             { label: "Commande", value: commande },
             {
               label: "Service",
               value: service.map((value) => SERVICES[value]).join(", "),
             },
           ],
-          hint: "Démontre : des données fixées au-dessus du champ (la commande, figée au verrou : elle se lit, elle ne se modifie plus), un nombre entier, borné, avec son unité. Une décimale est refusée.",
+          hint: "Démontre : un rappel en valeurs au-dessus du champ (la commande et le service, figés au verrou : ils se lisent, ils ne se modifient plus), un nombre entier, borné, avec son unité. Une décimale est refusée.",
           min: 1,
           integer: true,
           unit: "tasses",

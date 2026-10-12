@@ -60,10 +60,13 @@ export type Option<
 };
 
 /**
- * Une donnée fixée : une valeur déjà décidée, montrée près du champ qu'elle
- * concerne. Elle se lit, elle ne se modifie pas.
+ * Un rappel : ce qui est déjà connu, redit avant la question qu'il éclaire. Il
+ * prend deux formes : une phrase, ou des valeurs avec leur intitulé, comme le
+ * rôle et la nature d'un lieu au-dessus de son adresse.
  */
-type FixedDatum = { readonly label: string; readonly value: string };
+type Reminder =
+  | string
+  | ReadonlyArray<{ readonly label: string; readonly value: string }>;
 
 type Common<Questions extends AnyQuestions, Cibles> = {
   readonly id: keyof Questions & string;
@@ -73,26 +76,19 @@ type Common<Questions extends AnyQuestions, Cibles> = {
   /** Phrase indicative, rendue sous la question. */
   readonly hint?: string;
   /**
-   * Un rappel : un fait déjà connu, redit en clair juste avant la question
-   * qu'il aide à comprendre. Ce n'est pas une question : il n'attend rien, et
-   * ne s'affiche que si sa question se pose.
+   * Le rappel, rendu juste avant la question. Ce n'est pas une question : il
+   * n'attend rien, ne se modifie pas, et ne s'affiche que si sa question se
+   * pose.
    */
-  readonly reminder?: string;
-  /** Le rappel, quand il dépend des réponses. Absente, ou sans texte : `reminder`. */
+  readonly reminder?: Reminder;
+  /**
+   * Le rappel, quand il dépend des réponses ou des cibles. Absente, ou sans
+   * rien à rappeler : `reminder`.
+   */
   reminderFrom?(
     answers: Answers<Questions>,
     cibles: Cibles,
-  ): string | undefined;
-  /**
-   * Les données fixées, montrées avec le champ : le rôle et la nature d'un
-   * lieu à côté de son adresse, par exemple. Ce ne sont pas des réponses.
-   */
-  readonly fixedData?: readonly FixedDatum[];
-  /** Les données fixées, quand elles dépendent des réponses ou des cibles. */
-  fixedDataFrom?(
-    answers: Answers<Questions>,
-    cibles: Cibles,
-  ): readonly FixedDatum[];
+  ): Reminder | undefined;
   /**
    * La question peut rester sans réponse : sa page se valide sans elle. Son
    * libellé le dit, par « (facultatif) ».
