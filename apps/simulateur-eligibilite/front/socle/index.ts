@@ -11,9 +11,9 @@ export {
   initAnalytics,
 } from "./analytics/matomo";
 export { App } from "./app/App";
-export { textFrom } from "./cerfa/field-mapping";
 export { defineModel } from "./model";
 export type {
   Answers,
   QuestionnairePart,
 } from "./questionnaire-engine/question";
+export { areAnswered } from "./questionnaire-engine/question";

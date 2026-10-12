@@ -1,45 +1,18 @@
-// La préconisation factice : la commande, lue dans les réponses. Elle ne décide
-// rien du transport.
+// Des réponses aux faits : ce que les règles de l'éditeur reçoivent.
+//
+// Seule P1 établit des faits aujourd'hui. Q0.1 dit un besoin, pas un fait, et
+// P2 n'est pas encore posée : `fait_p2_complete` reste à « non ».
 
-import type { Answers } from "../socle";
-import type { Cibles } from "./declarations/cibles";
-import type { Faits } from "./declarations/faits";
+import { type Answers, areAnswered } from "../socle";
+import { AUCUN_FAIT, type Faits } from "./declarations/faits";
 import type { Questions } from "./declarations/questions";
+import { faitsDuMode } from "./mode-de-transport";
+import { P1 } from "./questionnaire";
 
-/** Des réponses aux faits : ce qui est commandé, en toutes lettres. */
 export function faits(answers: Answers<Questions>): Faits {
-  const { boisson, accompagnements = [] } = answers;
   return {
-    boisson: boisson === undefined ? null : BOISSONS[boisson],
-    accompagnements: accompagnements.flatMap(
-      (item) => ACCOMPAGNEMENTS[item] ?? [],
-    ),
+    ...AUCUN_FAIT,
+    ...faitsDuMode(answers),
+    fait_p1_complete: areAnswered(P1.pages, answers),
   };
 }
-
-/** Des faits aux cibles : la commande, en une phrase. */
-export function cibles({ boisson, accompagnements }: Faits): Cibles {
-  if (boisson === null) return { commande: SANS_COMMANDE };
-  return {
-    commande:
-      accompagnements.length > 0
-        ? `${boisson}, ${accompagnements.join(" et ")}`
-        : boisson,
-  };
-}
-
-/** La commande d'un questionnaire où rien n'est demandé. */
-export const SANS_COMMANDE = "aucune";
-
-// ---- implémentation ----
-
-const BOISSONS: Record<Questions["boisson"], string | null> = {
-  the: "thé",
-  cafe: "café",
-  rien: null,
-};
-
-const ACCOMPAGNEMENTS: Record<string, string | undefined> = {
-  lait: "lait",
-  sucre: "sucre",
-};

@@ -2,8 +2,8 @@
 // sur le modèle. C'est le seul fichier qui importe à la fois le socle et le
 // modèle.
 //
-// Le modèle se charge à la demande, pendant l'écran de rattachement : il
-// reste hors du chunk d'entrée.
+// Le modèle se charge à la demande, pendant l'écran de rattachement : ses
+// règles et publicodes restent hors du chunk d'entrée.
 
 import { startReactDsfr } from "@codegouvfr/react-dsfr/spa";
 import { StrictMode } from "react";
