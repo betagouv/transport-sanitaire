@@ -14,14 +14,14 @@ ouvertes. On les traite un par un, dans l'ordre du tableau.
 | N° | Chantier | État | Reste |
 |---|---|---|---|
 | [01](01-vocabulaire.md) | Vocabulaire | arbitré | reporter dans `CONTEXT.md` |
-| [02](02-structure-des-dossiers.md) | Structure des dossiers | fait | `front/model/` devient `front/models/fake/` et `front/models/eligibilite/` (D-82) |
+| [02](02-structure-des-dossiers.md) | Structure des dossiers | fait | `front/models/eligibilite/`, avec la v10.0.2 (D-82) |
 | [03](03-contrat-model.md) | Contrat `Model` | écrit | quatre champs pas encore lus par le socle |
 | [04](04-declarations-du-modele.md) | Déclarations du modèle | faits et cibles de la v10.0.0 déclarés | les refaire sur la v10.0.2 ; les questions, les cibles que l'application assemble, les cibles documentaires |
 | [05](05-questionnaire-en-parties.md) | Questionnaire en parties | fait | rien |
 | [06](06-parcours-et-resultats.md) | Parcours et résultats | fait, hors PDF | impression, production du PDF |
 | [07](07-seeds.md) | Seeds | fait | les seeds des cas d'oracle, que nous écrivons d'après le contrat réponses/faits (D-79), après la v10.0.2 |
-| [08](08-tests-et-factice.md) | Tests et factice | fait | le factice en un seul exemplaire, modèle de démonstration de l'app (D-82) |
-| [09](09-capacites-du-socle-pour-la-v10.md) | Capacités du socle pour la v10 | trois capacités codées, inventaire arrêté sur les v10.0.0 et v10.0.1 | le modèle de démonstration d'abord (D-82) ; puis 21 capacités : 19 que rien ne retient (D-78), 2 qui attendent la v10.0.2 |
+| [08](08-tests-et-factice.md) | Tests et factice | fait | rien |
+| [09](09-capacites-du-socle-pour-la-v10.md) | Capacités du socle pour la v10 | modèle de démonstration en place (D-82), trois capacités codées, inventaire arrêté sur les v10.0.0 et v10.0.1 | 21 capacités : 19 que rien ne retient (D-78), 2 qui attendent la v10.0.2 |
 | [10](10-integration-de-la-v10.md) | Intégration de la v10 | étapes 1 et 2 codées sur la v10.0.0, gardées sur `v10-modele-10.0.0` (D-81) | le branchement des décisions attend la v10.0.2 (D-78) ; l'interface se poursuit |
 
 ## Les livraisons de l'éditeur
@@ -130,7 +130,7 @@ reste dans le tableau, barrée, avec celle qui la remplace.
 | D-79 | 2026-10-12 | Les cas de l'oracle ne sont plus attendus en réponses de l'éditeur. Nous écrivons leurs réponses d'après le contrat réponses/faits. Précise D-57. | 07, 10 |
 | D-80 | 2026-10-12 | Décision de l'éditeur, dans la v10.0.1. Une simulation qualifie un seul sens, ou un aller-retour équivalent. Un retour différent demande une seconde simulation : Q3.1 l'annonce et bloque « Suivant ». Remplace D-46. | 06, 09, 10 |
 | D-81 | 2026-10-12 | `v10` ne porte que le socle. Le noyau, P0 et P1 de la v10.0.0 en sont retirés et gardés sur la branche `v10-modele-10.0.0`, d'où l'intégration repart à la livraison de la v10.0.2. Le factice revient dans `front/model/`, et les tests du socle gardent leur copie dans `tests/socle/fixtures/`. Précise D-52. | 08, 10 |
-| D-82 | 2026-10-12 | Le factice devient le modèle de démonstration de l'app, de façon pérenne : chaque capacité du socle s'y valide à l'écran, sans dépendre du modèle de l'éditeur. Il vit en un seul exemplaire dans `front/models/fake/`, et le modèle de l'éditeur dans `front/models/eligibilite/`. Les tests du socle importent le factice de là : la copie de `tests/socle/fixtures/` disparaît. Les deux modèles se chargent à la demande, hors du chunk d'entrée. Le factice est embarqué sur tous les environnements, production comprise, et se choisit par un bouton des developer tools, qui recharge l'app sur l'autre modèle. Le contrat `Model` ne change pas. Remplace D-52, précise D-02, D-66 et D-81. | 02, 08, 09, 10 |
+| D-82 | 2026-10-12 | Le factice de l'app devient le modèle de démonstration, de façon pérenne : chaque capacité du socle y a sa page, pour la valider à l'écran sans dépendre du modèle de l'éditeur. Il vit dans `front/models/fake/`, et le modèle de l'éditeur dans `front/models/eligibilite/`. Il grandit avec le socle : les tests du socle gardent donc leur propre factice, petit et figé, dans `tests/socle/fixtures/`. Les deux modèles se chargent à la demande, hors du chunk d'entrée. Le modèle de démonstration est embarqué sur tous les environnements, production comprise, et s'ouvre par un bouton des developer tools, sans recharger la page : le rattachement n'est gardé qu'en mémoire, et l'app ne stocke rien. Changer de modèle commence une simulation. Le contrat `Model` ne change pas. Remplace D-52, précise D-02, D-66 et D-81. | 02, 08, 09, 10 |
 
 ## Questions ouvertes, par chantier
 

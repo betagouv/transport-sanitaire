@@ -110,11 +110,12 @@ server/                  le backend Node, barrière de sécurité : les secrets 
                          référentiel, qu'elle lit et complète
 front/                   le front, bundlé par Vite
   Main.tsx               le point d'entrée du navigateur : monte l'app, amorce le traceur
-  model/                 ce qui change avec une version du modèle : aujourd'hui le
-                         modèle factice. Ses déclarations (questions, faits, cibles),
-                         son questionnaire, sa préconisation, ses deux résultats et
-                         le catalogue des seeds (vide). Chargé à la demande,
-                         pendant le rattachement
+  models/                un dossier par modèle, chacun chargé à la demande
+    fake/                le modèle de démonstration : une page par capacité du
+                         socle. Ses déclarations (questions, faits, cibles), son
+                         questionnaire, sa préconisation, ses deux résultats et
+                         son catalogue de seeds. `eligibilite/`, le modèle de
+                         l'éditeur, le rejoindra avec la v10.0.2
   socle/                 ce qui ne dépend d'aucune version. `model.ts` est le contrat
                          qu'un modèle remplit, `index.ts` ce qu'il a le droit d'importer
     app/                 le choix de l'écran affiché, la navigation entre les écrans,
@@ -175,11 +176,15 @@ sur la branche `v10-modele-10.0.0`. Ils y attendent la v10.0.2 de l'éditeur, qu
 change les règles et le lien entre les réponses et les faits
 (`docs/tasks/PLAN.md`).
 
-Le questionnaire factice (`front/model/questionnaire.ts`) pose trois questions sans
-rapport avec le transport sanitaire. Les tests du socle tournent sur leur propre
-copie (`tests/socle/fixtures/modele-factice/`) : ils ne changent pas quand
-l'éditeur livre une version. Il sert à tenir en vie, et sous test, ce que le
-parcours réel reprendra :
+Le modèle de démonstration (`front/models/fake/`) pose trois questions sans
+rapport avec le transport sanitaire. Il est pérenne : chaque capacité du socle
+y a sa page, et ses seeds ouvrent les pages à montrer. Quand le modèle de
+l'éditeur sera là, les developer tools proposeront de passer de l'un à l'autre.
+
+Les tests du socle tournent sur leur propre factice
+(`tests/socle/fixtures/modele-factice/`), petit et figé : ils ne changent ni
+quand l'éditeur livre une version, ni quand la démonstration gagne une page. Il
+sert à tenir en vie, et sous test, ce que le parcours réel reprendra :
 
 | Comportement | Ce qu'il fait | Où |
 | --- | --- | --- |
