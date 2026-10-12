@@ -29,7 +29,11 @@ export const SEEDS: readonly Seed<Questions, Cibles>[] = [
     label: "Résultat : un thé, avec lait et citron",
     description:
       "Ouvre le premier résultat d'une commande complète, d'où le complément se lance.",
-    answers: { boisson: "the", accompagnements: ["lait", "citron"] },
+    answers: {
+      boisson: "the",
+      accompagnements: ["lait", "citron"],
+      service: ["grande-tasse"],
+    },
     expected: { commande: "thé, lait et citron" },
   },
   {
