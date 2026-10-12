@@ -1,52 +1,52 @@
-// Le choix du modèle : l'app déroule le sien, et les developer tools proposent
-// d'en dérouler un autre à sa place, parmi ceux que `Main` lui donne.
+// Le choix du modèle : l'app déroule le premier de ses modèles. Quand `Main`
+// lui en donne plusieurs, les developer tools proposent d'en changer.
 //
-// Un autre modèle ne se charge que si on l'ouvre. Le choix ne survit pas au
+// Un modèle ne se charge que quand il s'ouvre. Le choix ne survit pas au
 // rechargement de la page : l'app ne garde rien entre deux chargements.
 
 import { useState } from "react";
 import type { ModelSource } from "./model-loading";
 
-/** Un modèle que l'app peut dérouler à la place du sien. */
-export type OtherModel = {
-  /** Le nom du bouton qui l'ouvre. Il distingue ce modèle des autres. */
+/** Un modèle que l'app peut dérouler. */
+type NamedModel = {
+  /** Le nom sous lequel il se choisit. Il le distingue des autres. */
   label: string;
   /** Ce qui le charge, appelé à son ouverture. */
   load: () => ModelSource;
 };
 
-/** La bascule d'un autre modèle : son nom, s'il est ouvert, et de quoi en changer. */
-export type ModelToggle = {
+/** Les modèles de l'app : au moins un. Le premier s'ouvre au démarrage. */
+export type Models = readonly [NamedModel, ...NamedModel[]];
+
+/** Un modèle à choisir : son nom, s'il est ouvert, et de quoi l'ouvrir. */
+export type ModelChoice = {
   label: string;
   active: boolean;
-  toggle: () => void;
+  choose: () => void;
 };
 
-export type ModelChoice = {
-  /** Le modèle à dérouler : celui de l'app, ou l'autre quand il est ouvert. */
+export type OpenedModel = {
+  /** Le modèle à dérouler. */
   source: ModelSource;
-  /** Une bascule par autre modèle. Aucune quand l'app n'en a pas. */
-  toggles: ModelToggle[];
+  /** Un choix par modèle. Aucun quand l'app n'en a qu'un. */
+  choices: ModelChoice[];
 };
 
-export function useModelChoice(
-  initial: ModelSource,
-  others: OtherModel[] = [],
-): ModelChoice {
-  const [opened, setOpened] = useState<Opened | null>(null);
+export function useModelChoice(models: Models): OpenedModel {
+  const [opened, setOpened] = useState(() => open(models[0]));
+  if (models.length === 1) return { source: opened.source, choices: [] };
   return {
-    source: opened ? opened.source : initial,
-    toggles: others.map(({ label, load }) => {
-      const active = opened?.label === label;
-      return {
-        label,
-        active,
-        toggle: () => setOpened(active ? null : { label, source: load() }),
-      };
-    }),
+    source: opened.source,
+    choices: models.map((model) => ({
+      label: model.label,
+      active: model.label === opened.label,
+      choose: () => setOpened(open(model)),
+    })),
   };
 }
 
 // ---- implémentation ----
 
-type Opened = { label: string; source: ModelSource };
+function open({ label, load }: NamedModel) {
+  return { label, source: load() };
+}

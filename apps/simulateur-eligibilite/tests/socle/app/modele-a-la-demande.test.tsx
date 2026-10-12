@@ -8,7 +8,7 @@ import { App } from "../../../front/socle/app/App";
 import type { Model } from "../../../front/socle/model";
 import { rangerRattachement } from "../../../front/socle/rattachement/session";
 import { snapshotReferentiel } from "../../../shared/referentiel";
-import { modeleDeTest } from "../modele-de-test";
+import { modeleDeTest, seulModele } from "../modele-de-test";
 import { seRattacher } from "../se-rattacher";
 
 const PREMIERE_QUESTION = { name: /^quelle boisson souhaitez-vous/i };
@@ -24,7 +24,7 @@ function chargement() {
   const user = userEvent.setup();
   render(
     <App
-      model={promesse}
+      models={seulModele(promesse)}
       referentiel={snapshotReferentiel}
       declarer={() => {}}
     />,

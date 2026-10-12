@@ -45,7 +45,7 @@ export function DeveloperTools({ children }: { children: ReactNode }) {
 
 /**
  * Bouton d'un developer tool. Même apparence pour tous : aucun n'est « l'action ».
- * Avec `pressed`, c'est une bascule, cochée tant qu'elle est enfoncée.
+ * Avec `pressed`, il porte un état : coché tant qu'il est enfoncé.
  */
 export function ToolButton({
   onClick,

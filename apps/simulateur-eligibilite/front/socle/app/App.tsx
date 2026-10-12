@@ -12,12 +12,8 @@ import { RattachementScreen } from "../rattachement/RattachementScreen";
 import { SeedsScreen } from "../seeds/SeedsScreen";
 import { SimulateurScreen } from "../simulateur/SimulateurScreen";
 import { Container } from "./Container";
-import {
-  type ModelToggle,
-  type OtherModel,
-  useModelChoice,
-} from "./model-choice";
-import { type ModelSource, useModelLoading } from "./model-loading";
+import { type ModelChoice, type Models, useModelChoice } from "./model-choice";
+import { useModelLoading } from "./model-loading";
 import type { Navigation } from "./navigation";
 import { useNavigation } from "./navigation";
 
@@ -27,28 +23,19 @@ type Props = Pick<
   "referentiel" | "declarer"
 > & {
   /**
-   * La version du modèle que l'app déroule, ou sa promesse quand elle se charge
-   * à la demande. `Main` la fournit.
+   * Les modèles que l'app peut dérouler, chacun sous le nom que `Main` lui
+   * donne. Le premier s'ouvre au démarrage. S'il y en a plusieurs, les
+   * developer tools proposent d'en changer.
    */
-  model: ModelSource;
-  /**
-   * Les autres modèles, s'il y en a. Les developer tools proposent de dérouler
-   * chacun à la place de `model`, sous le nom que `Main` lui donne.
-   */
-  otherModels?: OtherModel[];
+  models: Models;
 };
 
 // Le rattachement n'attend pas le modèle : il se charge pendant que
 // l'utilisateur se rattache.
-export function App({
-  model: initial,
-  otherModels,
-  referentiel,
-  declarer,
-}: Props) {
+export function App({ models, referentiel, declarer }: Props) {
   const navigation = useNavigation();
-  const choice = useModelChoice(initial, otherModels);
-  const { model, failed } = useModelLoading(choice.source);
+  const opened = useModelChoice(models);
+  const { model, failed } = useModelLoading(opened.source);
 
   if (navigation.screen === "rattachement")
     return (
@@ -63,7 +50,7 @@ export function App({
     <AfterRattachement
       model={model}
       navigation={navigation}
-      modelToggles={choice.toggles}
+      modelChoices={opened.choices}
     />
   );
 }
@@ -88,11 +75,11 @@ function ModelPending({ failed }: { failed: boolean }) {
 function AfterRattachement({
   model,
   navigation,
-  modelToggles,
+  modelChoices,
 }: {
   model: Model;
   navigation: Navigation;
-  modelToggles: ModelToggle[];
+  modelChoices: ModelChoice[];
 }) {
   if (navigation.screen === "seeds")
     return (
@@ -108,7 +95,7 @@ function AfterRattachement({
       model={model}
       seedAnswers={navigation.seedAnswers}
       onNewSimulation={navigation.restart}
-      developerToolsPanel={developerToolsPanel(navigation, modelToggles)}
+      developerToolsPanel={developerToolsPanel(navigation, modelChoices)}
       DebugTrace={navigation.developerTools ? DebugTrace : undefined}
     />
   );
@@ -117,19 +104,20 @@ function AfterRattachement({
 // Le branchement des developer tools sur le simulateur se décide ici. Le
 // simulateur reçoit du contenu déjà composé et n'importe rien de
 // `developerTools/`. Le service n° 4 déverrouille trois choses : le bouton vers
-// l'écran des seeds, une bascule par autre modèle, et la trace de debug.
+// l'écran des seeds, le choix du modèle quand l'app en a plusieurs, et la trace
+// de debug.
 function developerToolsPanel(
   navigation: Navigation,
-  modelToggles: ModelToggle[],
+  modelChoices: ModelChoice[],
 ) {
   if (!navigation.developerTools) return undefined;
   return (
     <DeveloperTools>
       <ToolButton onClick={navigation.openSeeds}>Seeds</ToolButton>
-      {modelToggles.map((modelToggle) => (
-        <ModelToggleButton
-          key={modelToggle.label}
-          modelToggle={modelToggle}
+      {modelChoices.map((modelChoice) => (
+        <ModelChoiceButton
+          key={modelChoice.label}
+          modelChoice={modelChoice}
           onChange={navigation.restart}
         />
       ))}
@@ -138,21 +126,22 @@ function developerToolsPanel(
 }
 
 // Changer de modèle commence une simulation : les réponses de l'un ne valent
-// rien pour l'autre.
-function ModelToggleButton({
-  modelToggle,
+// rien pour l'autre. Choisir le modèle déjà ouvert ne change rien.
+function ModelChoiceButton({
+  modelChoice,
   onChange,
 }: {
-  modelToggle: ModelToggle;
+  modelChoice: ModelChoice;
   onChange: () => void;
 }) {
   const change = () => {
-    modelToggle.toggle();
+    if (modelChoice.active) return;
+    modelChoice.choose();
     onChange();
   };
   return (
-    <ToolButton onClick={change} pressed={modelToggle.active}>
-      {modelToggle.label}
+    <ToolButton onClick={change} pressed={modelChoice.active}>
+      {modelChoice.label}
     </ToolButton>
   );
 }

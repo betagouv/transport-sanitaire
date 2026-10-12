@@ -6,7 +6,7 @@ import userEvent from "@testing-library/user-event";
 import { App } from "../../../front/socle/app/App";
 import type { Seed } from "../../../front/socle/seeds/seed";
 import { snapshotReferentiel } from "../../../shared/referentiel";
-import { modeleDeTest } from "../modele-de-test";
+import { modeleDeTest, seulModele } from "../modele-de-test";
 import { seRattacher, seRattacherProduit } from "../se-rattacher";
 
 type User = ReturnType<typeof userEvent.setup>;
@@ -18,7 +18,7 @@ export async function ouvrirLeSimulateur(
   const user = userEvent.setup();
   render(
     <App
-      model={modeleAvec(options.seeds)}
+      models={seulModele(modeleAvec(options.seeds))}
       referentiel={snapshotReferentiel}
       declarer={() => {}}
     />,
