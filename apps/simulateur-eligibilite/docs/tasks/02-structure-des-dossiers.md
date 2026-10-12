@@ -12,6 +12,10 @@ dossier.
 
 - **D-02** `front/socle/` pour le socle, `front/model/` pour la version.
 - **D-03** Les règles publicodes vont dans `front/model/rules/`.
+- **D-82** `front/model/` devient `front/models/`, avec un dossier par
+  modèle : `fake/` pour le factice, `eligibilite/` pour celui de l'éditeur.
+  Les règles vont alors dans `front/models/eligibilite/rules/`. Précise D-02
+  et D-03. Pas encore fait : le reste de ce chantier décrit l'état actuel.
 - **D-28** Les tests se rangent en `tests/socle/` et `tests/model/`.
 - **D-29** Le modèle importe le socle par un point d'entrée unique,
   `front/socle/index.ts`.
