@@ -14,6 +14,9 @@ change, et des tests du modèle qui ne dépendent pas du socle au-delà du contr
 - **D-52** Le factice reste dans `front/model/` jusqu'à la v10. À son
   intégration, il migre dans `tests/socle/fixtures/`. D'ici là, les tests du
   socle le prennent par `tests/socle/modele-de-test.ts`.
+- **D-81** Le modèle v10.0.0 est retiré de `v10`. Le factice revient dans
+  `front/model/`, et les tests du socle gardent leur copie dans
+  `tests/socle/fixtures/modele-factice/`. Précise D-52.
 - **D-58** Le test de conformité s'écrit maintenant, sur le factice.
 - **D-59** Un fichier de `front/model/` ne porte pas de version dans son nom.
 

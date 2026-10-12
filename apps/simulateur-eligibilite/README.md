@@ -7,7 +7,8 @@ en conséquence. Le parcours débute par un rattachement obligatoire à un étab
 
 > **L'app est entre deux modèles.** Le modèle d'éligibilité v9 et tout ce qui en
 > dépendait ont été retirés, et la v10 n'est pas encore intégrée. Le simulateur déroule
-> un **questionnaire factice** de trois questions, qui ne décide rien. Voir
+> un **questionnaire factice** de trois questions, qui ne décide rien. Le socle,
+> lui, est prêt à recevoir la v10. Voir
 > [« Entre deux modèles »](#entre-deux-modèles).
 
 ## Fonctionnement
@@ -112,7 +113,8 @@ front/                   le front, bundlé par Vite
   model/                 ce qui change avec une version du modèle : aujourd'hui le
                          modèle factice. Ses déclarations (questions, faits, cibles),
                          son questionnaire, sa préconisation, ses deux résultats et
-                         le catalogue des seeds (vide)
+                         le catalogue des seeds (vide). Chargé à la demande,
+                         pendant le rattachement
   socle/                 ce qui ne dépend d'aucune version. `model.ts` est le contrat
                          qu'un modèle remplit, `index.ts` ce qu'il a le droit d'importer
     app/                 le choix de l'écran affiché, la navigation entre les écrans,
@@ -126,6 +128,9 @@ front/                   le front, bundlé par Vite
                          brouillon, l'invalidation des réponses dépendantes,
                          l'avancement automatique, le champ qui rend une question,
                          ce qui part vers l'analytics
+    decision-engine/     le moteur de décision : des faits aux cibles, par les règles
+                         publicodes qu'un modèle lui donne. Le seul fichier qui
+                         importe publicodes, pris par le modèle hors de `index.ts`
     ui/                  les champs de formulaire, bâtis sur le DSFR et sans rien
                          savoir du questionnaire : TextField, SelectField,
                          RadioField, CheckboxField, NumberField, DateField
@@ -163,8 +168,17 @@ Le questionnaire n'est plus déduit d'un moteur de règles : il est **déclaré 
 le modèle**. Une partie liste ses pages, une page ses questions, une question dit
 quand elle se pose (`askedIf`) et de quelles réponses elle dépend (`dependsOn`).
 
+De la v10, `v10` ne porte que ce qui prépare le socle : le modèle chargé à la
+demande, le moteur de décision publicodes, et les capacités du questionnaire que
+P0 et P1 demandent. Le noyau et les deux premières parties de la v10.0.0 sont
+sur la branche `v10-modele-10.0.0`. Ils y attendent la v10.0.2 de l'éditeur, qui
+change les règles et le lien entre les réponses et les faits
+(`docs/tasks/PLAN.md`).
+
 Le questionnaire factice (`front/model/questionnaire.ts`) pose trois questions sans
-rapport avec le transport sanitaire. Il sert à tenir en vie, et sous test, ce que le
+rapport avec le transport sanitaire. Les tests du socle tournent sur leur propre
+copie (`tests/socle/fixtures/modele-factice/`) : ils ne changent pas quand
+l'éditeur livre une version. Il sert à tenir en vie, et sous test, ce que le
 parcours réel reprendra :
 
 | Comportement | Ce qu'il fait | Où |
