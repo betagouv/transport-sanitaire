@@ -6,4 +6,5 @@ export type Questions = {
   quantite: number;
   lieu: "salle" | "terrasse" | "comptoir";
   nom: string;
+  remarque: string;
 };
