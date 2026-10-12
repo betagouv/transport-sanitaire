@@ -9,7 +9,7 @@ au contrat `Model`.
 **Status:** trois capacités de saisie codées, celles que P0 et P1 demandent.
 L'inventaire est arrêté le 12 octobre sur les v10.0.0 et v10.0.1 : 21
 capacités restent à écrire. 19 ne dépendent pas de la v10.0.2 et se codent
-d'abord, 2 l'attendent. Le modèle de démonstration (D-82) passe avant elles :
+d'abord, 2 l'attendent. Le modèle de démonstration (D-82) est en place :
 c'est lui qui permet de les valider à l'écran.
 
 ## Décisions prises
@@ -45,11 +45,13 @@ c'est lui qui permet de les valider à l'écran.
   fichier de configuration du socle, qu'une nouvelle version du modèle peut
   modifier. Le contrat `Model` ne change pas.
 
-- **D-82** Le factice est le modèle de démonstration de l'app, de façon
+- **D-82** Le factice de l'app est le modèle de démonstration, de façon
   pérenne. Il vit dans `front/models/fake/`, le modèle de l'éditeur dans
   `front/models/eligibilite/`. Il est embarqué partout, chargé à la demande,
-  et choisi par un bouton des developer tools qui recharge l'app. La page de
-  démonstration de D-66 ne disparaît donc plus à l'arrivée du modèle v10.
+  et s'ouvre par un bouton des developer tools, sans recharger la page. La
+  page de démonstration de D-66 ne disparaît donc plus à l'arrivée du modèle
+  v10. Une capacité arrive avec ses tests, sa page de démonstration, et une
+  seed qui ouvre cette page.
 
 - **D-77** Un fait inconnu n'est pas transmis au moteur (éditeur).
 - **D-80** Un seul sens par simulation (éditeur). Le socle n'a pas à porter
@@ -105,23 +107,19 @@ questions, puis confronté au socle.
 | Modèle chargé à la demande (D-71) | `app/model-loading.ts` |
 | Décision par publicodes (D-76) | `decision-engine/publicodes.ts` |
 
-### Avant les capacités : le modèle de démonstration (D-82)
+### Le modèle de démonstration (D-82) : fait
 
-| Tâche | Détail |
+| Tâche | État |
 |---|---|
-| Un dossier par modèle | `front/model/` devient `front/models/fake/`. `front/models/eligibilite/` arrive avec la v10.0.2. D'ici là, l'app charge le factice. |
-| Un seul exemplaire | La copie de `tests/socle/fixtures/modele-factice/` disparaît. Les deux ont divergé (cinq fichiers sur six) : les réunir d'abord. `modele-de-test.ts` réexporte `front/models/fake/`. |
-| Le choix du modèle | `Main.tsx` choisit entre les deux par un `import()`. Aucun n'entre dans le chunk d'entrée : `verifier-bundle` le garde pour les deux. |
-| Le bouton | Dans les developer tools, visibles du seul service n° 4. Il recharge l'app sur l'autre modèle. |
-| Les gardes d'architecture | Seul `Main.tsx` importe `front/models/`. Un modèle n'importe pas l'autre. Les tests du socle ne prennent le factice que par `modele-de-test.ts`. |
+| Un dossier par modèle | Fait : `front/model/` est devenu `front/models/fake/`. `front/models/eligibilite/` arrive avec la v10.0.2. D'ici là, l'app déroule le modèle de démonstration. |
+| Deux factices | Fait. Celui de l'app grandit avec le socle. Celui des tests, dans `tests/socle/fixtures/modele-factice/`, reste petit et figé : les tests de mécanique le déroulent de bout en bout. |
+| Une vitrine | Fait pour les capacités déjà codées : description d'option, option proposée selon les réponses, libellé selon les réponses. Quatre seeds ouvrent ses pages. |
+| Le bouton | Fait dans le socle : `App` reçoit `demonstration`, et les developer tools proposent « Modèle de démonstration », puis « Quitter la démonstration ». Rien n'est rechargé ni stocké. À brancher dans `Main.tsx` quand `eligibilite/` existera : d'ici là, il n'y a qu'un modèle, et pas de bouton. |
+| Les gardes | Fait : aucun modèle n'importe l'autre, le test de conformité passe sur chaque dossier de `front/models/`, `verifier-bundle` lit le catalogue de seeds de chacun. |
 
-À arrêter en l'écrivant :
-
-- **Le choix à travers le rechargement.** Le socle ne garde rien entre deux
-  chargements (D-64), sauf le rattachement, rangé en session. Le choix du
-  modèle peut suivre la même voie.
-- **L'audience.** Une simulation sur le factice ne doit pas compter comme une
-  simulation d'éligibilité dans Matomo : l'exclure, ou la marquer.
+L'audience n'a rien demandé : seul le service n° 4 voit les developer tools,
+et Matomo reçoit le service avec chaque évènement. Une simulation de
+démonstration se range donc déjà à part.
 
 ### Ce qui manque, sans dépendre de la v10.0.2
 
