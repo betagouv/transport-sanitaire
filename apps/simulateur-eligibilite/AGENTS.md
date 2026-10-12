@@ -25,9 +25,12 @@ outils PDF, developer tools. `front/models/` porte un dossier par modèle :
 arrive avec la v10.0.2.
 
 Le modèle de démonstration est pérenne (D-82). **Chaque capacité du socle y a
-sa page**, pour la valider à l'écran sans dépendre du modèle de l'éditeur. Quand
-les deux modèles existent, `Main` passe le second à `App` par `demonstration`,
-et les developer tools proposent de le dérouler (`front/socle/app/demonstration.ts`).
+sa page**, pour la valider à l'écran sans dépendre du modèle de l'éditeur.
+
+**Le socle ne sait pas qu'un modèle est « de démonstration »** (D-83). Il sait
+dérouler un autre modèle à la place du sien (`front/socle/app/model-choice.ts`).
+Quand les deux modèles existent, `Main` passe le second à `App` dans
+`otherModels`, avec son nom, et les developer tools en font une bascule.
 
 Le socle ne connaît le modèle que par un contrat, `Model` (`front/socle/model.ts`) :
 des parties de questionnaire, ce qui calcule la préconisation (des réponses aux

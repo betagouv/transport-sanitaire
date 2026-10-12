@@ -13,10 +13,10 @@ import { SeedsScreen } from "../seeds/SeedsScreen";
 import { SimulateurScreen } from "../simulateur/SimulateurScreen";
 import { Container } from "./Container";
 import {
-  type Demonstration,
-  type DemonstrationSource,
+  type ModelToggle,
+  type OtherModel,
   useModelChoice,
-} from "./demonstration";
+} from "./model-choice";
 import { type ModelSource, useModelLoading } from "./model-loading";
 import type { Navigation } from "./navigation";
 import { useNavigation } from "./navigation";
@@ -32,22 +32,22 @@ type Props = Pick<
    */
   model: ModelSource;
   /**
-   * Le modèle de démonstration, s'il y en a un. Les developer tools proposent
-   * alors de le dérouler à la place de `model`.
+   * Les autres modèles, s'il y en a. Les developer tools proposent de dérouler
+   * chacun à la place de `model`, sous le nom que `Main` lui donne.
    */
-  demonstration?: DemonstrationSource;
+  otherModels?: OtherModel[];
 };
 
 // Le rattachement n'attend pas le modèle : il se charge pendant que
 // l'utilisateur se rattache.
 export function App({
-  model: delivered,
-  demonstration,
+  model: initial,
+  otherModels,
   referentiel,
   declarer,
 }: Props) {
   const navigation = useNavigation();
-  const choice = useModelChoice(delivered, demonstration);
+  const choice = useModelChoice(initial, otherModels);
   const { model, failed } = useModelLoading(choice.source);
 
   if (navigation.screen === "rattachement")
@@ -63,7 +63,7 @@ export function App({
     <AfterRattachement
       model={model}
       navigation={navigation}
-      demonstration={choice.demonstration}
+      modelToggles={choice.toggles}
     />
   );
 }
@@ -88,11 +88,11 @@ function ModelPending({ failed }: { failed: boolean }) {
 function AfterRattachement({
   model,
   navigation,
-  demonstration,
+  modelToggles,
 }: {
   model: Model;
   navigation: Navigation;
-  demonstration?: Demonstration;
+  modelToggles: ModelToggle[];
 }) {
   if (navigation.screen === "seeds")
     return (
@@ -108,7 +108,7 @@ function AfterRattachement({
       model={model}
       seedAnswers={navigation.seedAnswers}
       onNewSimulation={navigation.restart}
-      developerToolsPanel={developerToolsPanel(navigation, demonstration)}
+      developerToolsPanel={developerToolsPanel(navigation, modelToggles)}
       DebugTrace={navigation.developerTools ? DebugTrace : undefined}
     />
   );
@@ -117,44 +117,42 @@ function AfterRattachement({
 // Le branchement des developer tools sur le simulateur se décide ici. Le
 // simulateur reçoit du contenu déjà composé et n'importe rien de
 // `developerTools/`. Le service n° 4 déverrouille trois choses : le bouton vers
-// l'écran des seeds, le modèle de démonstration quand l'app en a un, et la
-// trace de debug.
+// l'écran des seeds, une bascule par autre modèle, et la trace de debug.
 function developerToolsPanel(
   navigation: Navigation,
-  demonstration?: Demonstration,
+  modelToggles: ModelToggle[],
 ) {
   if (!navigation.developerTools) return undefined;
   return (
     <DeveloperTools>
       <ToolButton onClick={navigation.openSeeds}>Seeds</ToolButton>
-      {demonstration && (
-        <DemonstrationButton
-          demonstration={demonstration}
+      {modelToggles.map((modelToggle) => (
+        <ModelToggleButton
+          key={modelToggle.label}
+          modelToggle={modelToggle}
           onChange={navigation.restart}
         />
-      )}
+      ))}
     </DeveloperTools>
   );
 }
 
 // Changer de modèle commence une simulation : les réponses de l'un ne valent
 // rien pour l'autre.
-function DemonstrationButton({
-  demonstration,
+function ModelToggleButton({
+  modelToggle,
   onChange,
 }: {
-  demonstration: Demonstration;
+  modelToggle: ModelToggle;
   onChange: () => void;
 }) {
   const change = () => {
-    demonstration.toggle();
+    modelToggle.toggle();
     onChange();
   };
   return (
-    <ToolButton onClick={change}>
-      {demonstration.active
-        ? "Quitter la démonstration"
-        : "Modèle de démonstration"}
+    <ToolButton onClick={change} pressed={modelToggle.active}>
+      {modelToggle.label}
     </ToolButton>
   );
 }
