@@ -26,6 +26,8 @@ type Option<
 > = {
   readonly value: string;
   readonly label: string;
+  /** Le libellé, quand il dépend des réponses. Absente : `label`. */
+  labelFrom?(answers: Answers<Questions>, cibles: Cibles): string;
   /** Ce que l'option veut dire, rendu sous son libellé. */
   readonly description?: string;
   /**
@@ -87,8 +89,12 @@ export type MultipleChoice<
 > = Common<Questions, Cibles> & {
   readonly kind: "multiple choice";
   readonly options: readonly Option<Questions, Cibles>[];
-  /** L'option exclusive : la cocher décoche les autres, et inversement. */
-  readonly exclusiveOption?: Option;
+  /**
+   * L'option exclusive : la cocher décoche les autres, et inversement. Comme
+   * toute option, elle peut ne se proposer que pour certaines réponses, et
+   * changer de libellé avec elles.
+   */
+  readonly exclusiveOption?: Option<Questions, Cibles>;
 };
 
 type NumberInput<Questions extends AnyQuestions, Cibles> = Common<
@@ -241,16 +247,37 @@ function asPosed(
   answers: Answers,
   cibles?: AnyCibles,
 ): Question {
+  const posed = (options: readonly Option[]) =>
+    posedOptions(options, answers, cibles);
   const asked = question.labelFrom?.(answers, cibles) ?? question.label;
   const label = question.optional ? `${asked} (facultatif)` : asked;
   if (question.kind === "date" || question.kind === "datetime")
     return { ...question, label, ...question.boundsFrom?.(answers, cibles) };
-  if (question.kind !== "single choice" && question.kind !== "multiple choice")
-    return { ...question, label };
-  const options = question.options.filter(
-    (option) => option.offeredIf?.(answers, cibles) ?? true,
-  );
-  return { ...question, label, options };
+  if (question.kind === "single choice")
+    return { ...question, label, options: posed(question.options) };
+  if (question.kind !== "multiple choice") return { ...question, label };
+  const { exclusiveOption: exclusive } = question;
+  const [exclusiveOption] = posed(exclusive ? [exclusive] : []);
+  return {
+    ...question,
+    label,
+    options: posed(question.options),
+    exclusiveOption,
+  };
+}
+
+// Les options qui se proposent, vu les réponses, sous leur libellé du moment.
+function posedOptions(
+  options: readonly Option[],
+  answers: Answers,
+  cibles?: AnyCibles,
+): Option[] {
+  return options
+    .filter((option) => option.offeredIf?.(answers, cibles) ?? true)
+    .map((option) => ({
+      ...option,
+      label: option.labelFrom?.(answers, cibles) ?? option.label,
+    }));
 }
 
 // Les valeurs qu'une réponse peut porter, l'option exclusive comprise.
