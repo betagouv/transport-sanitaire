@@ -7,9 +7,10 @@ au contrat `Model`.
 **Blocked by:** 06 (le parcours).
 
 **Status:** le modèle de démonstration (D-82) est en place, et les neuf
-petites capacités de saisie (1 à 9) sont codées, ainsi que le rappel et la
-donnée fixée (10 et 11), avec leur page et leur seed. Restent 10 capacités sur
-les 21 de l'inventaire : 8 ne dépendent pas de la v10.0.2, 2 l'attendent.
+petites capacités de saisie (1 à 9) sont codées, ainsi que le rappel (10 et
+11, réunies : une phrase, ou des valeurs avec leur intitulé), avec leur page
+et leur seed. Restent 10 capacités sur les 21 de l'inventaire : 8 ne dépendent
+pas de la v10.0.2, 2 l'attendent.
 
 ## Décisions prises
 
@@ -138,8 +139,8 @@ La colonne « Version » dit quel package le demande.
 | 7 | ~~Réponse qui bloque~~ | Q3.1, « Aller-retour différent » : un message, et « Suivant » bloqué (D-80) | 10.0.1 | Fait : `blocks` sur une option, le message à afficher. | fait |
 | 8 | ~~Libellé d'option qui dépend des réponses, option exclusive conditionnelle~~ | Q2.2.1 (« Aucune de ces situations » devient « Aucune autre situation parmi celles proposées »), « Aucun » de Q3.7, indisponible dès qu'une case est acquise | 10.0.1 | Fait : `labelFrom` sur une option. L'option exclusive a aussi son `offeredIf`. | fait |
 | 9 | ~~Aide dépliable sur une option~~ | Q2.2.1, « Voir les situations concernées » | 10.0.1 | Fait : `help` et `helpFrom` sur une option, rendus en lien dépliable juste sous elle. | fait |
-| 10 | ~~Rappel d'une valeur connue~~ | les repères « R » de `SPECIFICATION_REAFFICHAGE_FAITS.md` : Q2.1, Q2.1.f, Q2.2.1, Q2.5, Q2.6, Q2.13, Q2.14 | 10.0.1 | Fait : `reminder` et `reminderFrom` sur une question. Le rappel se rend juste avant elle, et seulement si elle se pose. | fait |
-| 11 | ~~Donnée fixée près d'un champ~~ | les repères « D » : Q3.2, Q3.3, Q3.4, Q3.7, Q3.8 | 10.0.1 | Fait : `fixedData` et `fixedDataFrom` sur une question, rendus en liste de définitions au-dessus du champ. | fait |
+| 10 | ~~Rappel d'une valeur connue~~ | les repères « R » de `SPECIFICATION_REAFFICHAGE_FAITS.md` : Q2.1, Q2.1.f, Q2.2.1, Q2.5, Q2.6, Q2.13, Q2.14 | 10.0.1 | Fait : `reminder` et `reminderFrom` sur une question, en une phrase. Le rappel se rend juste avant elle, et seulement si elle se pose. | fait |
+| 11 | ~~Donnée fixée près d'un champ~~ | les repères « D » : Q3.2, Q3.3, Q3.4, Q3.7, Q3.8 | 10.0.1 | Fait : le même `reminder`, en valeurs avec leur intitulé, rendues en liste de définitions au-dessus du champ. Une seule capacité avec la 10, sous un seul nom. | fait |
 | 12 | Adresse, type du socle (D-60) : champs séparés, code postal français, mode étranger donné par le modèle | Q3.2, Q3.3, Q3.8 | les deux, pays revu en 10.0.1 | Aucun type. La réponse devient un objet. | moyen |
 | 13 | Validation croisée, un message par incohérence | début avant fin (Q2.8), code postal selon le pays, extrémité contre le lieu verrouillé, deux adresses identiques pour un même trajet, groupe de Q2.2.1 coché sans précision | les deux | `errorOf` ne voit qu'une réponse. | moyen |
 | 14 | Liste filtrable (D-65) | Q2.1.c, Q2.1.d | les deux | Rien. Une vingtaine d'options embarquées, filtrées sur le libellé et les synonymes, accessible au clavier, avec « je ne trouve pas ». Aucun chargement à la demande. | moyen |
@@ -231,7 +232,9 @@ que la v10.0.1 change à l'inventaire ».
 - **La lecture seule : tranchée par la v10.0.1.** Une valeur connue est
   invisible par défaut. Elle est rappelée en texte si elle éclaire une
   question de la page, ou fixée près d'un champ de P3. Deux petites capacités
-  la portent : le rappel et la donnée fixée.
+  la portent : le rappel et la donnée fixée. Le socle les réunit sous un
+  seul nom, `reminder`, à deux formes : « donnée fixée » ne disait rien hors
+  de la spec de l'éditeur.
 - **Le pays : tranché par la v10.0.1.** Le prescripteur dit en P2 (Q2.2.5)
   si le départ ou l'arrivée est à l'étranger. L'adresse de P3 demande alors
   le pays, en texte libre, et lève la règle des cinq chiffres. Le type
