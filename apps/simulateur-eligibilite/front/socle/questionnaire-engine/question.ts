@@ -83,6 +83,8 @@ type NumberInput<Questions extends AnyQuestions, Cibles> = Common<
   readonly kind: "number";
   readonly min?: number;
   readonly max?: number;
+  /** N'accepte qu'un nombre entier : une décimale est refusée. */
+  readonly integer?: boolean;
   readonly unit?: string;
 };
 
