@@ -113,5 +113,17 @@ export const COMPLEMENT: QuestionnairePart<Questions, Cibles> = {
         },
       ],
     },
+    {
+      id: "remarque",
+      questions: [
+        {
+          id: "remarque",
+          kind: "long text",
+          label: "Une remarque pour le service ?",
+          hint: "Démontre : un texte sur plusieurs lignes. « Entrée » va à la ligne, sans valider la page.",
+          optional: true,
+        },
+      ],
+    },
   ],
 };
