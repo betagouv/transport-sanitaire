@@ -1,7 +1,7 @@
 // Le modèle que l'app déroule : le questionnaire factice. `Main` le passe au
 // socle.
 
-import { defineModel, textFrom } from "../socle";
+import { defineModel, textFrom } from "../../socle";
 import type { Cibles } from "./declarations/cibles";
 import type { Faits } from "./declarations/faits";
 import type { Questions } from "./declarations/questions";

@@ -1,7 +1,7 @@
 // La préconisation factice : la commande, lue dans les réponses. Elle ne décide
 // rien du transport.
 
-import type { Answers } from "../socle";
+import type { Answers } from "../../socle";
 import type { Cibles } from "./declarations/cibles";
 import type { Faits } from "./declarations/faits";
 import type { Questions } from "./declarations/questions";
