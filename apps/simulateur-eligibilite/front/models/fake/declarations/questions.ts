@@ -3,7 +3,13 @@
 export type Questions = {
   boisson: "the" | "cafe" | "rien";
   accompagnements: readonly ("lait" | "sucre" | "citron" | "aucun")[];
-  service: readonly ("chaude" | "glacee" | "grande-tasse" | "rien")[];
+  service: readonly (
+    | "chaude"
+    | "glacee"
+    | "grande-tasse"
+    | "preparation"
+    | "rien"
+  )[];
   quantite: number;
   lieu: "salle" | "terrasse" | "comptoir";
   nom: string;

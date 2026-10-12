@@ -20,6 +20,15 @@ export type Answers<Questions extends AnyQuestions = AnyQuestions> = Readonly<
 /** Les cibles d'un modèle : ce que sa préconisation rend. */
 export type AnyCibles = Readonly<Record<string, unknown>>;
 
+/**
+ * L'aide d'une option : un intitulé qui se déplie sur une liste. La déplier
+ * n'est pas répondre.
+ */
+type OptionHelp = {
+  readonly label: string;
+  readonly items: readonly string[];
+};
+
 type Option<
   Questions extends AnyQuestions = AnyQuestions,
   Cibles = AnyCibles | undefined,
@@ -40,6 +49,13 @@ type Option<
    * s'affiche, et on n'avance plus tant qu'elle reste choisie.
    */
   readonly blocks?: string;
+  /** L'aide dépliable de l'option. */
+  readonly help?: OptionHelp;
+  /** L'aide, quand elle dépend des réponses. Absente : `help`. */
+  helpFrom?(
+    answers: Answers<Questions>,
+    cibles: Cibles,
+  ): OptionHelp | undefined;
 };
 
 type Common<Questions extends AnyQuestions, Cibles> = {
@@ -289,6 +305,7 @@ function posedOptions(
     .map((option) => ({
       ...option,
       label: option.labelFrom?.(answers, cibles) ?? option.label,
+      help: option.helpFrom?.(answers, cibles) ?? option.help,
     }));
 }
 
