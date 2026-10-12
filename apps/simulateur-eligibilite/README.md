@@ -176,8 +176,8 @@ sur la branche `v10-modele-10.0.0`. Ils y attendent la v10.0.2 de l'éditeur, qu
 change les règles et le lien entre les réponses et les faits
 (`docs/tasks/PLAN.md`).
 
-Le modèle de démonstration (`front/models/fake/`) pose trois questions sans
-rapport avec le transport sanitaire. Il est pérenne : chaque capacité du socle
+Le modèle de démonstration (`front/models/fake/`) déroule une commande de
+boisson, sans rapport avec le transport sanitaire. Il est pérenne : chaque capacité du socle
 y a sa page, et ses seeds ouvrent les pages à montrer. Quand le modèle de
 l'éditeur sera là, les developer tools proposeront de passer de l'un à l'autre.
 
