@@ -33,6 +33,11 @@ type Option<
    * réponse qui la portait la perd quand elle ne se propose plus.
    */
   offeredIf?(answers: Answers<Questions>, cibles: Cibles): boolean;
+  /**
+   * Choisir cette option arrête le questionnaire sur sa page : ce message
+   * s'affiche, et on n'avance plus tant qu'elle reste choisie.
+   */
+  readonly blocks?: string;
 };
 
 type Common<Questions extends AnyQuestions, Cibles> = {
