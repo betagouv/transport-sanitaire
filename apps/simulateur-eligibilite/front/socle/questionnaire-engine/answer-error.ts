@@ -15,6 +15,8 @@ export function errorOf(
 ): string | undefined {
   if (answer === undefined) return undefined;
   if (question.kind === "number") return numberErrorOf(question, answer);
+  if (question.kind === "date" || question.kind === "datetime")
+    return dateErrorOf(question, answer);
   if (question.kind === "multiple choice")
     return Array.isArray(answer) && answer.length > 0
       ? undefined
@@ -25,6 +27,30 @@ export function errorOf(
 }
 
 // ---- implémentation ----
+
+// Les bornes s'écrivent comme la réponse, au format ISO : l'ordre des textes
+// est alors celui des dates.
+function dateErrorOf(
+  question: Extract<Question, { kind: "date" | "datetime" }>,
+  answer: Answer,
+): string | undefined {
+  if (typeof answer !== "string" || answer.trim() === "")
+    return "Cette réponse est attendue.";
+  const { min, max } = question;
+  if (min !== undefined && answer < min)
+    return `Indiquez une date à partir du ${displayedDate(min)}.`;
+  if (max !== undefined && answer > max)
+    return `Indiquez une date au plus tard le ${displayedDate(max)}.`;
+  return undefined;
+}
+
+// « 2026-10-12T08:30 » se lit « 12/10/2026 à 08:30 ».
+function displayedDate(iso: string): string {
+  const [date = "", time] = iso.split("T");
+  const [year, month, day] = date.split("-");
+  const displayed = `${day}/${month}/${year}`;
+  return time ? `${displayed} à ${time.slice(0, 5)}` : displayed;
+}
 
 function numberErrorOf(
   question: Extract<Question, { kind: "number" }>,
