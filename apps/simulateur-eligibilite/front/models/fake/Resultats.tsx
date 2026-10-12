@@ -1,4 +1,4 @@
-// Les deux résultats du modèle factice : la commande, puis la commande
+// Les deux résultats du modèle de démonstration : la commande, puis la commande
 // complétée.
 
 import type { Answers } from "../../socle";
