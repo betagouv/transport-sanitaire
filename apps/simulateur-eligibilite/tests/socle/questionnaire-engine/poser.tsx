@@ -6,11 +6,19 @@ import userEvent from "@testing-library/user-event";
 import { QuestionnaireForm } from "../../../front/socle/questionnaire-engine/QuestionnaireForm";
 import type {
   Answers,
+  AnyCibles,
   Page,
 } from "../../../front/socle/questionnaire-engine/question";
 
-/** Pose ces pages. `reponses` rend ce que le questionnaire a validé, une fois fini. */
-export function poser(pages: readonly Page[]) {
+/**
+ * Pose ces pages. `reponses` rend ce que le questionnaire a validé, une fois
+ * fini. `apresVerrou` les pose comme après le verrou : sur des réponses
+ * acquises et des cibles figées.
+ */
+export function poser(
+  pages: readonly Page[],
+  apresVerrou: { lockedAnswers?: Answers; cibles?: AnyCibles } = {},
+) {
   let validees: Answers | undefined;
   render(
     <QuestionnaireForm
@@ -18,6 +26,7 @@ export function poser(pages: readonly Page[]) {
       partCount={1}
       endLabel="Terminer"
       tracked={false}
+      {...apresVerrou}
       onComplete={(answers) => {
         validees = answers;
       }}
