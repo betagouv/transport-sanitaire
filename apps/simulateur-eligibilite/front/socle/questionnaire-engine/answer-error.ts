@@ -32,6 +32,8 @@ function numberErrorOf(
 ): string | undefined {
   if (typeof answer !== "number" || !Number.isFinite(answer))
     return "Indiquez un nombre.";
+  if (question.integer && !Number.isInteger(answer))
+    return "Indiquez un nombre entier, sans décimale.";
   if (question.min !== undefined && answer < question.min)
     return `Indiquez un nombre d’au moins ${question.min}.`;
   if (question.max !== undefined && answer > question.max)

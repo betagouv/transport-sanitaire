@@ -8,6 +8,8 @@ type Props = {
   hint?: string;
   min?: number;
   max?: number;
+  /** N'attend qu'un entier : le clavier d'un téléphone n'offre que des chiffres. */
+  integer?: boolean;
   unit?: string;
   value: number | undefined;
   /** `undefined` quand le champ est vidé : ce n'est pas zéro, c'est une absence. */
@@ -41,6 +43,10 @@ export function NumberField(props: Props) {
         type: "number",
         min: props.min,
         max: props.max,
+        // Sans `step`, le navigateur signale lui-même toute décimale, dans ses
+        // mots à lui. Le message vient de la question, pas du navigateur.
+        step: props.integer ? 1 : "any",
+        inputMode: props.integer ? "numeric" : "decimal",
         value: props.value ?? "",
         onChange: (e) => props.onChange(typedNumber(e.target.value)),
         autoFocus: props.autoFocus,
