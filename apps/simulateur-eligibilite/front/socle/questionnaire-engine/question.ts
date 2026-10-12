@@ -4,6 +4,8 @@
 // conditions d'affichage et ses dépendances. Le moteur ne connaît aucun
 // identifiant : les génériques ne servent qu'à typer le modèle.
 
+import { errorOf } from "./answer-error";
+
 /** Une réponse : un choix, un nombre, un texte, ou les cases cochées. */
 export type Answer = string | number | readonly string[];
 
@@ -189,25 +191,6 @@ export function areAnswered(
   );
 }
 
-/**
- * Ce qui ne va pas dans une saisie, à afficher sous le champ. `undefined`
- * quand elle convient, ou quand il n'y a encore rien à corriger.
- */
-export function errorOf(
-  question: Question,
-  answer: Answer | undefined,
-): string | undefined {
-  if (answer === undefined) return undefined;
-  if (question.kind === "number") return numberErrorOf(question, answer);
-  if (question.kind === "multiple choice")
-    return Array.isArray(answer) && answer.length > 0
-      ? undefined
-      : "Cochez au moins une réponse.";
-  return typeof answer === "string" && answer.trim() !== ""
-    ? undefined
-    : "Cette réponse est attendue.";
-}
-
 // ---- implémentation ----
 
 function isAsked(question: Question, answers: Answers, cibles?: AnyCibles) {
@@ -237,17 +220,4 @@ function valuesOf(
   return [...question.options, ...(exclusive ? [exclusive] : [])].map(
     (option) => option.value,
   );
-}
-
-function numberErrorOf(
-  question: Extract<Question, { kind: "number" }>,
-  answer: Answer,
-): string | undefined {
-  if (typeof answer !== "number" || !Number.isFinite(answer))
-    return "Indiquez un nombre.";
-  if (question.min !== undefined && answer < question.min)
-    return `Indiquez un nombre d’au moins ${question.min}.`;
-  if (question.max !== undefined && answer > question.max)
-    return `Indiquez un nombre d’au plus ${question.max}.`;
-  return undefined;
 }
