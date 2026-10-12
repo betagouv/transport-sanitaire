@@ -8,6 +8,7 @@
 import type { QuestionnairePart } from "../../socle";
 import type { Cibles } from "./declarations/cibles";
 import type { Questions } from "./declarations/questions";
+import { cibles, faits } from "./preconisation";
 
 /** Modifiables tant que le résultat n'est pas verrouillé. */
 export const PARTS: readonly QuestionnairePart<Questions, undefined>[] = [
@@ -83,7 +84,9 @@ export const PARTS: readonly QuestionnairePart<Questions, undefined>[] = [
             id: "service",
             kind: "multiple choice",
             label: "Comment la servir ?",
-            hint: "Démontre : une aide dépliable sous son option (« Voir les préparations possibles », dont la liste dépend de la boisson), deux options incompatibles (« Très chaude » et « Glacée » : cocher l'une décoche l'autre, avec une explication), et une option exclusive conditionnelle (« Rien de particulier » ne se propose pas avec le citron, et change de libellé quand un accompagnement est choisi).",
+            reminderFrom: (answers) =>
+              `Rappel de la commande : ${cibles(faits(answers)).commande}.`,
+            hint: "Démontre : un rappel au-dessus de la question (il redit des réponses déjà données, et ne demande rien), une aide dépliable sous son option (« Voir les préparations possibles », dont la liste dépend de la boisson), deux options incompatibles (« Très chaude » et « Glacée » : cocher l'une décoche l'autre, avec une explication), et une option exclusive conditionnelle (« Rien de particulier » ne se propose pas avec le citron, et change de libellé quand un accompagnement est choisi).",
             askedIf: (answers) =>
               answers.boisson !== undefined && answers.boisson !== "rien",
             dependsOn: ["boisson", "accompagnements"],

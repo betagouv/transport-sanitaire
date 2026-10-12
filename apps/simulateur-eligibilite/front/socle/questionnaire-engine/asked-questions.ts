@@ -46,20 +46,28 @@ function asPosed(
 ): Question {
   const posed = (options: readonly Option[]) =>
     posedOptions(options, answers, cibles);
-  const asked = question.labelFrom?.(answers, cibles) ?? question.label;
-  const label = question.optional ? `${asked} (facultatif)` : asked;
+  const texts = posedTexts(question, answers, cibles);
   if (question.kind === "date" || question.kind === "datetime")
-    return { ...question, label, ...question.boundsFrom?.(answers, cibles) };
+    return { ...question, ...texts, ...question.boundsFrom?.(answers, cibles) };
   if (question.kind === "single choice")
-    return { ...question, label, options: posed(question.options) };
-  if (question.kind !== "multiple choice") return { ...question, label };
+    return { ...question, ...texts, options: posed(question.options) };
+  if (question.kind !== "multiple choice") return { ...question, ...texts };
   const { exclusiveOption: exclusive } = question;
   const [exclusiveOption] = posed(exclusive ? [exclusive] : []);
   return {
     ...question,
-    label,
+    ...texts,
     options: posed(question.options),
     exclusiveOption,
+  };
+}
+
+// Ce qui se lit autour du champ, vu les réponses : le libellé, et le rappel.
+function posedTexts(question: Question, answers: Answers, cibles?: AnyCibles) {
+  const asked = question.labelFrom?.(answers, cibles) ?? question.label;
+  return {
+    label: question.optional ? `${asked} (facultatif)` : asked,
+    reminder: question.reminderFrom?.(answers, cibles) ?? question.reminder,
   };
 }
 

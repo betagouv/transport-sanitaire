@@ -67,6 +67,17 @@ type Common<Questions extends AnyQuestions, Cibles> = {
   /** Phrase indicative, rendue sous la question. */
   readonly hint?: string;
   /**
+   * Un rappel : un fait déjà connu, redit en clair juste avant la question
+   * qu'il aide à comprendre. Ce n'est pas une question : il n'attend rien, et
+   * ne s'affiche que si sa question se pose.
+   */
+  readonly reminder?: string;
+  /** Le rappel, quand il dépend des réponses. Absente, ou sans texte : `reminder`. */
+  reminderFrom?(
+    answers: Answers<Questions>,
+    cibles: Cibles,
+  ): string | undefined;
+  /**
    * La question peut rester sans réponse : sa page se valide sans elle. Son
    * libellé le dit, par « (facultatif) ».
    */
