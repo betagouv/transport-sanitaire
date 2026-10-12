@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
+import { askedPages } from "../../../front/socle/questionnaire-engine/asked-questions";
 import {
   areAnswered,
-  askedPages,
   type Page,
 } from "../../../front/socle/questionnaire-engine/question";
 
