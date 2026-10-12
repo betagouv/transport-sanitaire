@@ -209,7 +209,7 @@ directement, sans build et sans dépendance d'exécution.
   version qu'on modifie.
 - **Hors de tout clone**, il retombe sur celui d'où il a été installé.
 - **Sans `mise`**, seul `setup` passe : c'est lui qui l'installe, par
-  `bin/amorce.sh`, le seul morceau de `setup` écrit en shell.
+  `bin/setup.sh`, le seul morceau de `setup` écrit en shell.
 
 La CI et le `Procfile` appellent `pnpm` en direct. La production ne dépend pas
 de la CLI.

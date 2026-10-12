@@ -16,7 +16,7 @@ fi
 for argument in "$@"; do
   case "$argument" in
     -*) continue ;;
-    setup) sh "$racine/apps/cli/bin/amorce.sh" "$racine" "$@" ;;
+    setup) sh "$racine/apps/cli/bin/setup.sh" "$racine" "$@" ;;
   esac
   break
 done

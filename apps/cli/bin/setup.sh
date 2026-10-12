@@ -1,9 +1,9 @@
 #!/bin/sh
-# L'amorce de `tsp setup` : ce qu'il faut pour que Node existe. mise d'abord,
+# Le début de `tsp setup` : ce qu'il faut pour que Node existe. mise d'abord,
 # puis le toolchain que mise.toml épingle. La suite de `setup` est en
 # TypeScript, dans src/machine/setup.ts.
 #
-# Usage : amorce.sh <racine du clone> [arguments de tsp]
+# Usage : setup.sh <racine du clone> [arguments de tsp]
 set -eu
 
 racine=$1
