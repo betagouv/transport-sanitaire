@@ -22,13 +22,13 @@ ouvertes. On les traite un par un, dans l'ordre du tableau.
 | [07](07-seeds.md) | Seeds | fait | les seeds des cas d'oracle, que nous écrivons d'après le contrat réponses/faits (D-79), après la v10.0.2 |
 | [08](08-tests-et-factice.md) | Tests et factice | fait | rien |
 | [09](09-capacites-du-socle-pour-la-v10.md) | Capacités du socle pour la v10 | trois capacités codées, inventaire revu sur la v10.0.1 | les autres capacités : rien ne les retient (D-78) |
-| [10](10-integration-de-la-v10.md) | Intégration de la v10 | étapes 1 et 2 codées sur la v10.0.0 | le branchement des décisions attend la v10.0.2 (D-78) ; l'interface se poursuit |
+| [10](10-integration-de-la-v10.md) | Intégration de la v10 | étapes 1 et 2 codées sur la v10.0.0, gardées sur `v10-modele-10.0.0` (D-81) | le branchement des décisions attend la v10.0.2 (D-78) ; l'interface se poursuit |
 
 ## Les livraisons de l'éditeur
 
 | Version | Reçue | État chez nous |
 |---|---|---|
-| v10.0.0 | relivrée le 6 octobre | les étapes 1 et 2 sont codées dessus |
+| v10.0.0 | relivrée le 6 octobre | les étapes 1 et 2 sont codées dessus, sur la branche `v10-modele-10.0.0` (D-81) |
 | v10.0.1 | le 12 octobre | analysée, pas portée : voir le [chantier 10](10-integration-de-la-v10.md) |
 | v10.0.2 | annoncée le 12 octobre | attendue : contrat réponses/faits corrigé, trois décisions déplacées dans le moteur, tests avec des faits inconnus |
 
@@ -129,6 +129,7 @@ reste dans le tableau, barrée, avec celle qui la remplace.
 | D-78 | 2026-10-12 | Décision de l'éditeur. L'application ne tranche ni les 22 faits sans réponse désignée, ni les 3 faits de portée juridique, même par hypothèse. Le branchement des décisions est bloqué jusqu'à la v10.0.2. L'interface qui n'en dépend pas se poursuit. | 10 |
 | D-79 | 2026-10-12 | Les cas de l'oracle ne sont plus attendus en réponses de l'éditeur. Nous écrivons leurs réponses d'après le contrat réponses/faits. Précise D-57. | 07, 10 |
 | D-80 | 2026-10-12 | Décision de l'éditeur, dans la v10.0.1. Une simulation qualifie un seul sens, ou un aller-retour équivalent. Un retour différent demande une seconde simulation : Q3.1 l'annonce et bloque « Suivant ». Remplace D-46. | 06, 09, 10 |
+| D-81 | 2026-10-12 | `v10` ne porte que le socle. Le noyau, P0 et P1 de la v10.0.0 en sont retirés et gardés sur la branche `v10-modele-10.0.0`, d'où l'intégration repart à la livraison de la v10.0.2. Le factice revient dans `front/model/`, et les tests du socle gardent leur copie dans `tests/socle/fixtures/`. Précise D-52. | 08, 10 |
 
 ## Questions ouvertes, par chantier
 

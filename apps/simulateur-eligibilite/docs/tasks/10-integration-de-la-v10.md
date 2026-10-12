@@ -6,10 +6,12 @@ préconisation et télécharge son cerfa.
 
 **Blocked by:** 02 à 09.
 
-**Status:** étapes 1 et 2 codées sur la v10.0.0. La v10.0.1 est analysée, pas portée. Le branchement des décisions attend la v10.0.2 (D-78). L'interface se poursuit.
+**Status:** étapes 1 et 2 codées sur la v10.0.0, retirées de `v10` et gardées sur `v10-modele-10.0.0` (D-81). La v10.0.1 est analysée, pas portée. Le branchement des décisions attend la v10.0.2 (D-78). L'interface se poursuit.
 
 ## Décisions prises
 
+- **D-81** `v10` ne porte que le socle. Le modèle v10.0.0 attend sur
+  `v10-modele-10.0.0`, d'où l'intégration repart avec la v10.0.2.
 - **D-77** Un fait inconnu n'est pas transmis au moteur (éditeur). Les
   variables manquantes ne suffisent pas à filtrer les options de Q2.2.1.
 - **D-78** L'application ne tranche aucun fait non confirmé (éditeur). Le
@@ -201,8 +203,8 @@ Ce que cela implique, après classement des 58 faits
 
 | Étape | Contenu | État | Ce qui la retient |
 |---|---|---|---|
-| 1. Le noyau | Migration du factice (D-52). Le YAML dans `front/model/rules/`. Les déclarations des faits et des cibles, et leur test (D-41). Les cas de l'oracle, en faits, contre le moteur. | fait sur la v10.0.0 | à refaire sur la v10.0.2 : le YAML, les faits, les cibles, les 49 cas |
-| 2. P0 et P1 | Q0.1 à Q1.4 : le mode de transport. | fait sur la v10.0.0 | l'interface, rien : Q1.2 (4 et 11 exclusives), Q1.3 (corpulence), Q1.3.a. Les faits : la v10.0.2 |
+| 1. Le noyau | Migration du factice (D-52). Le YAML dans `front/model/rules/`. Les déclarations des faits et des cibles, et leur test (D-41). Les cas de l'oracle, en faits, contre le moteur. | fait sur la v10.0.0, sur `v10-modele-10.0.0` | à refaire sur la v10.0.2 : le YAML, les faits, les cibles, les 49 cas |
+| 2. P0 et P1 | Q0.1 à Q1.4 : le mode de transport. | fait sur la v10.0.0, sur `v10-modele-10.0.0` | l'interface, rien : Q1.2 (4 et 11 exclusives), Q1.3 (corpulence), Q1.3.a. Les faits : la v10.0.2 |
 | 3. P2 | Q2.1 à Q2.14 : l'éligibilité, sans page de résultat. | pas commencée | les décisions : la v10.0.2. L'interface : rien, mais le catalogue peut encore bouger |
 | 4. R2 | La page de résultat : mode de transport et éligibilité. Impression. | pas commencée | la v10.0.2, et le texte de la fiche |
 | 5. P3 | Q3.1 à Q3.8 : les informations qui complètent le cerfa, sans PDF. | pas commencée | l'interface, rien : la lecture seule est levée |
@@ -216,6 +218,10 @@ ils se vérifient par des tests qui posent ces cibles à la main, pas à l'écra
 Les capacités du chantier 09 entrent juste avant l'étape qui les demande.
 
 ## Ce que l'étape 1 a livré
+
+Ce qui suit décrit la branche `v10-modele-10.0.0`. De ces deux étapes, `v10`
+ne garde que le socle : le modèle chargé à la demande, le factice des tests,
+le moteur de décision et les trois capacités de saisie (D-81).
 
 - Le factice a migré dans `tests/socle/fixtures/modele-factice/` (D-52).
 - `front/model/rules/` porte le YAML recopié (`regles.publicodes`) et `VERSION`.
