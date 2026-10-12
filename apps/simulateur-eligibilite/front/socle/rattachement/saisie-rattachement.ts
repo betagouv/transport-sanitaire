@@ -11,7 +11,7 @@ import type {
   Referentiel,
   Service,
 } from "../../../shared/referentiel";
-import { estServiceProduit } from "../developerTools/unlock";
+import { estServiceProduit } from "../developer-tools/unlock";
 
 type Champs = {
   etabId: string;

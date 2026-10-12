@@ -39,7 +39,7 @@ export function configDepuisEnv(env: Env = import.meta.env): AnalyticsConfig {
 
 export type TrackerOptions = BridgeOptions & {
   /**
-   * Charge le script tiers au premier suivi. Rien par défaut : `Main.tsx` passe
+   * Charge le script tiers au premier suivi. Rien par défaut : `main.tsx` passe
    * `chargerMatomo`, et les tests restent sans réseau.
    */
   charger?: (url: string) => void;

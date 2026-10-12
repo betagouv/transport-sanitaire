@@ -17,6 +17,10 @@ import {
 } from "./inspection-des-sources";
 
 const RACINES = ["front", "server", "shared", "scripts"];
+// Ce dont le nom suit la convention : les sources, et leurs tests.
+const NOMMES = [...RACINES, "tests"];
+const KEBAB = /^[a-z0-9]+(-[a-z0-9]+)*$/;
+const PASCAL = /^[A-Z][A-Za-z0-9]*$/;
 const MARQUEUR = "// ---- implémentation ----";
 // Une liste de données se lit d'un seul tenant, sans implémentation à cacher.
 // Même exemption que pour la limite de 300 lignes.
@@ -84,6 +88,35 @@ describe("un nom dit une intention", () => {
   });
 });
 
+describe("un nom s'écrit d'une seule façon", () => {
+  it("les dossiers sont en kebab-case", () => {
+    const dossiers = new Set(
+      sources(...NOMMES).flatMap((fichier) => fichier.split("/").slice(0, -1)),
+    );
+    expect(
+      [...dossiers].filter((dossier) => !KEBAB.test(dossier)),
+      "Un dossier s'écrit en minuscules, ses mots séparés par des tirets : " +
+        "`developer-tools`, et non `developerTools`. Deux façons d'écrire " +
+        "obligent à vérifier laquelle à chaque import.",
+    ).toEqual([]);
+  });
+
+  it("les fichiers aussi, sauf un composant React", () => {
+    const fautifs = sources(...NOMMES).filter(
+      (fichier) =>
+        !(estUnComposant(fichier) ? PASCAL : KEBAB).test(nomDe(fichier)),
+    );
+    expect(
+      fautifs,
+      "Un fichier s'écrit en kebab-case : `answer-error.ts`, " +
+        "`footer.test.tsx`. Seule exception, le `.tsx` qui exporte un " +
+        "composant React porte le nom de ce qu'il exporte, en PascalCase : " +
+        "`Footer.tsx`. Un fichier de test ou un point d'entrée n'est pas un " +
+        "composant.",
+    ).toEqual([]);
+  });
+});
+
 describe("les extensions d'import suivent le runtime", () => {
   // Node efface les types et exige le vrai nom de fichier. Vite, lui, résout.
   // La frontière est donc ce que Node peut atteindre, pas un dossier. D'où ce
@@ -128,6 +161,19 @@ describe("les extensions d'import suivent le runtime", () => {
 });
 
 // ---- implémentation ----
+
+// Le nom d'un fichier, sans ses extensions : `grist.smoke.test.ts` → `grist`.
+function nomDe(fichier: string): string {
+  return basename(fichier).split(".")[0] ?? "";
+}
+
+// Un `.tsx` hors test qui exporte une fonction au nom capitalisé.
+function estUnComposant(fichier: string): boolean {
+  return (
+    /(?<!\.test)\.tsx$/.test(fichier) &&
+    /^export function [A-Z]/m.test(texteDe(fichier))
+  );
+}
 
 function aDesFonctionsPrivees(fichier: string): boolean {
   return astDe(fichier).statements.some(

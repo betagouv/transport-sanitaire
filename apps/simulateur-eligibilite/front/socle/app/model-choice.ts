@@ -1,4 +1,4 @@
-// Le choix du modèle : l'app déroule le premier de ses modèles. Quand `Main`
+// Le choix du modèle : l'app déroule le premier de ses modèles. Quand `main.tsx`
 // lui en donne plusieurs, les developer tools proposent d'en changer.
 //
 // Un modèle ne se charge que quand il s'ouvre. Le choix ne survit pas au

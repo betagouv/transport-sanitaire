@@ -112,12 +112,12 @@ franciser coûterait plus que ça ne clarifierait.
 
 ## Écrire du code et commiter
 
-23 règles numérotées vivent dans `docs/knowledge/contributing/`. **À lire avant
+24 règles numérotées vivent dans `docs/knowledge/contributing/`. **À lire avant
 d'écrire une ligne ou de commiter.**
 
 | Fichier | Ce qu'il porte |
 |---|---|
-| [`regles-de-code.md`](docs/knowledge/contributing/regles-de-code.md) | les 15 `QUAL-*` : forme d'un fichier, découpage, noms, exports, suppressions de lint |
+| [`regles-de-code.md`](docs/knowledge/contributing/regles-de-code.md) | les 16 `QUAL-*` : forme d'un fichier, découpage, noms, exports, suppressions de lint |
 | [`regles-git.md`](docs/knowledge/contributing/regles-git.md) | les 8 `GIT-*` : branche ou `main`, forme du message, métadonnée d'IA, confidentialité |
 
 Chaque règle porte un identifiant, sa raison, un exemple juste, un exemple faux,

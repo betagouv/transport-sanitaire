@@ -1,10 +1,10 @@
 # Les règles de code
 
-> Les 15 règles `QUAL-*`. Les conventions du dépôt sont dans
+> Les 16 règles `QUAL-*`. Les conventions du dépôt sont dans
 > [`../../AGENTS.md`](../../AGENTS.md), les règles de commit dans
 > [`regles-git.md`](regles-git.md).
 
-**15 règles**. Chacune a son identifiant. Cite-le en revue ou en commit
+**16 règles**. Chacune a son identifiant. Cite-le en revue ou en commit
 (« corrige QUAL-006 ») plutôt que de reformuler la règle.
 
 | Id | Règle | Garde |
@@ -24,6 +24,7 @@
 | QUAL-013 | Ne jamais formater à la main | Biome |
 | QUAL-014 | Pas de suppression pour un linter que le projet ne lance pas | aucune |
 | QUAL-015 | Une suppression nomme sa règle et sa raison | Biome |
+| QUAL-016 | Dossiers et fichiers en kebab-case, sauf un composant React | `lisibilite.test.ts` |
 
 Six règles n'ont aucune garde. Ce sont des règles de jugement : une assertion
 dirait *qu'*on a coupé, jamais *si* on a coupé au bon endroit. Elles restent à la
@@ -472,3 +473,32 @@ key={index}
 
 *Gardé par* Biome, règle `suppressions/unused` : une suppression qui ne supprime
 rien est signalée.
+
+---
+
+### QUAL-016 - Dossiers et fichiers en kebab-case, sauf un composant React
+
+> Raison : deux façons d'écrire un nom obligent à vérifier laquelle à chaque
+> import, et un renommage de casse seule se perd sur un disque qui l'ignore.
+
+Un dossier ou un fichier s'écrit en minuscules, ses mots séparés par des tirets.
+Une seule exception : le `.tsx` qui exporte un composant React porte le nom de
+ce qu'il exporte, en PascalCase. Un fichier de test ou un point d'entrée n'est
+pas un composant.
+
+**Exemples**
+
+```
+✅ OK
+developer-tools/  answer-error.ts  footer.test.tsx  main.tsx
+Footer.tsx        le composant `Footer`
+```
+
+```
+❌ KO
+developerTools/   Footer.test.tsx   Main.tsx   answerError.ts
+footer.tsx        alors qu'il exporte le composant `Footer`
+```
+
+*Gardé par* `tests/lisibilite.test.ts › un nom s'écrit d'une seule façon`, dans
+`apps/simulateur-eligibilite`.

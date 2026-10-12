@@ -1,5 +1,5 @@
 // Le modèle de démonstration : un questionnaire sans rapport avec le transport
-// sanitaire, où chaque capacité du socle se voit à l'écran. `Main` le passe au
+// sanitaire, où chaque capacité du socle se voit à l'écran. `main.tsx` le passe au
 // socle.
 
 import { defineModel, textFrom } from "../../socle";

@@ -5,8 +5,8 @@
 // rattaché. Voir docs/knowledge/adr/identification.md, ADR-1.
 
 import type { ComponentProps } from "react";
-import { DebugTrace } from "../developerTools/DebugTrace";
-import { DeveloperTools, ToolButton } from "../developerTools/DeveloperTools";
+import { DebugTrace } from "../developer-tools/DebugTrace";
+import { DeveloperTools, ToolButton } from "../developer-tools/DeveloperTools";
 import type { Model } from "../model";
 import { RattachementScreen } from "../rattachement/RattachementScreen";
 import { SeedsScreen } from "../seeds/SeedsScreen";
@@ -23,7 +23,7 @@ type Props = Pick<
   "referentiel" | "declarer"
 > & {
   /**
-   * Les modèles que l'app peut dérouler, chacun sous le nom que `Main` lui
+   * Les modèles que l'app peut dérouler, chacun sous le nom que `main.tsx` lui
    * donne. Le premier s'ouvre au démarrage. S'il y en a plusieurs, les
    * developer tools proposent d'en changer.
    */
@@ -103,7 +103,7 @@ function AfterRattachement({
 
 // Le branchement des developer tools sur le simulateur se décide ici. Le
 // simulateur reçoit du contenu déjà composé et n'importe rien de
-// `developerTools/`. Le service n° 4 déverrouille trois choses : le bouton vers
+// `developer-tools/`. Le service n° 4 déverrouille trois choses : le bouton vers
 // l'écran des seeds, le choix du modèle quand l'app en a plusieurs, et la trace
 // de debug.
 function developerToolsPanel(

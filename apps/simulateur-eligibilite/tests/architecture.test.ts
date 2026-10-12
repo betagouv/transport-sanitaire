@@ -82,7 +82,7 @@ describe("le socle et le modèle", () => {
     expect(
       franchissements(["front/socle"], commencePar("front/models")),
       "Le socle ne dépend d'aucune version du modèle : il reçoit le sien en " +
-        "prop, depuis `front/Main.tsx`. Un import direct lierait le parcours, " +
+        "prop, depuis `front/main.tsx`. Un import direct lierait le parcours, " +
         "les seeds ou les developer tools au questionnaire du moment, et " +
         "livrer un nouveau modèle obligerait à toucher au socle.",
     ).toEqual([]);
@@ -173,7 +173,7 @@ describe("invariants métier", () => {
       franchissements(
         PARCOURS,
         (cible) =>
-          cible.startsWith("front/socle/developerTools/") ||
+          cible.startsWith("front/socle/developer-tools/") ||
           cible.startsWith("front/socle/seeds/"),
       ),
       "L'écran des seeds rejoue des seeds dans la décision du simulateur : les " +

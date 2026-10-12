@@ -34,9 +34,9 @@ dossier.
 ## Proposé, à confirmer
 
 ```
-front/Main.tsx       seul fichier à importer le socle et le modèle
+front/main.tsx       seul fichier à importer le socle et le modèle
 front/socle/         app, rattachement, simulateur, questionnaire-engine,
-                     analytics, seeds, cerfa, developerTools, ui
+                     analytics, seeds, cerfa, developer-tools, ui
 front/model/         déclarations, parties, faits, cibles, résultats,
                      mapping cerfa, seeds
 front/model/rules/   les règles publicodes
@@ -47,7 +47,7 @@ tests/model/         les tests de la version
 - `server/` et `shared/` ne bougent pas : ils ne portent que le rattachement,
   donc du socle.
 - Trois gardes dans `tests/architecture.test.ts` :
-  1. seul `front/Main.tsx` importe `front/model/` ;
+  1. seul `front/main.tsx` importe `front/model/` ;
   2. `front/model/` n'importe du socle que `front/socle/index.ts` ;
   3. seuls `tests/model/` et le test de conformité importent `front/model/`.
 - `front/socle/index.ts` ne réexporte ni l'écran des seeds ni son tableau, pour
@@ -67,7 +67,7 @@ tests/model/         les tests de la version
 1. **Le type `Seed`.** `index.ts` l'exporte aujourd'hui pour le catalogue du
    modèle. D-33 exclut les seeds : le catalogue importe-t-il alors `Seed`
    directement depuis `front/socle/seeds/` ?
-2. **`Main.tsx`** importe encore `App` et le traceur par leurs chemins. Il
+2. **`main.tsx`** importe encore `App` et le traceur par leurs chemins. Il
    passera par `index.ts` quand le contrat sera écrit.
 
 ## Fichiers qui citent les anciens chemins
@@ -85,7 +85,7 @@ Quatre skills citent aussi ces chemins, mais décrivent encore la v9 :
 ## Critères d'acceptation
 
 - [x] Tout le code du front est sous `front/socle/` ou `front/model/`, sauf
-      `Main.tsx`.
+      `main.tsx`.
 - [x] Deux gardes sur trois sont des tests, avec leur pourquoi dans le message
       d'échec. La troisième (seuls les tests du modèle importent le modèle)
       attend.

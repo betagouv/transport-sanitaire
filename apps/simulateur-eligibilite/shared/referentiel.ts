@@ -82,7 +82,7 @@ const SERVICES: SnapshotService[] = [
   { id: "s_liberal", etabId: "e_liberal_cnam", libelle: "Libéral" },
   { id: "s_cnam_cpam", etabId: "e_liberal_cnam", libelle: "CNAM / CPAM" },
   // Le service du produit : il déverrouille les developer tools. C'est le
-  // service Grist `Id2 = 4` en production (voir front/socle/developerTools/unlock.ts).
+  // service Grist `Id2 = 4` en production (voir front/socle/developer-tools/unlock.ts).
   {
     id: "s_transport_sanitaire",
     etabId: "e_liberal_cnam",

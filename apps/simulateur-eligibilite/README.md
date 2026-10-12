@@ -109,7 +109,7 @@ server/                  le backend Node, barrière de sécurité : les secrets 
   rattachement/          LA feature backend : les routes `/api` et la source Grist du
                          référentiel, qu'elle lit et complète
 front/                   le front, bundlé par Vite
-  Main.tsx               le point d'entrée du navigateur : monte l'app, amorce le traceur
+  main.tsx               le point d'entrée du navigateur : monte l'app, amorce le traceur
   models/                un dossier par modèle, chacun chargé à la demande
     fake/                le modèle de démonstration : une page par capacité du
                          socle. Ses déclarations (questions, faits, cibles), son
@@ -135,7 +135,7 @@ front/                   le front, bundlé par Vite
     ui/                  les champs de formulaire, bâtis sur le DSFR et sans rien
                          savoir du questionnaire : TextField, SelectField,
                          RadioField, CheckboxField, NumberField, DateField
-    developerTools/      ce qui est réservé au service produit : son encadré, la
+    developer-tools/      ce qui est réservé au service produit : son encadré, la
                          trace de debug du parcours et de ses résultats, et le
                          déverrouillage, garde commune à l'écran des seeds et aux traces
     seeds/               ce qu'est une seed et son écran. Elles se greffent sur le
