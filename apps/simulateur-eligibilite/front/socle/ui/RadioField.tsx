@@ -1,19 +1,13 @@
-// Un choix unique : le `RadioButtons` du DSFR, en variante « riche ».
+// Un choix unique, en boutons radio : la variante « riche » du DSFR, où chaque
+// option est une carte bordée.
 
-import { RadioButtons } from "@codegouvfr/react-dsfr/RadioButtons";
-import { type Help, OptionHelp } from "./OptionHelp";
+import { type Choice, ChoiceFieldset } from "./ChoiceFieldset";
 
 type Props = {
   id: string;
   label: string;
   hint?: string;
-  options: ReadonlyArray<{
-    value: string;
-    label: string;
-    description?: string;
-    /** Une aide dépliable, rendue sous les boutons. */
-    help?: Help;
-  }>;
+  options: ReadonlyArray<Omit<Choice, "input">>;
   value: string | undefined;
   onChange: (value: string) => void;
   error?: string;
@@ -25,36 +19,26 @@ type Props = {
 
 export function RadioField(props: Props) {
   return (
-    <>
-      <RadioButtons
-        id={`fieldset-${props.id}`}
-        name={props.id}
-        legend={props.label}
-        hintText={props.hint}
-        state={props.error ? "error" : "default"}
-        stateRelatedMessage={props.error}
-        // Variante « riche » du DSFR : chaque option est une carte bordée. Le picto
-        // est facultatif, on l'omet. `classes.inputGroup` pose `fr-radio-rich` sur
-        // chaque groupe : le composant ne le fait seul que si une option a une
-        // `illustration`. Incompatible avec `small`.
-        classes={{
-          inputGroup: "fr-radio-rich",
-          legend: props.lead ? "fr-text--lead" : undefined,
-        }}
-        options={radios(props)}
-      />
-      <OptionHelp options={props.options} />
-    </>
+    <ChoiceFieldset
+      id={`fieldset-${props.id}`}
+      type="radio"
+      rich
+      legend={props.label}
+      hint={props.hint}
+      lead={props.lead}
+      message={props.error ? { state: "error", text: props.error } : undefined}
+      choices={radios(props)}
+    />
   );
 }
 
 // ---- implémentation ----
 
-function radios(props: Props) {
+function radios(props: Props): Choice[] {
   return props.options.map((option, index) => ({
-    label: option.label,
-    hintText: option.description,
-    nativeInputProps: {
+    ...option,
+    input: {
+      name: props.id,
       value: option.value,
       checked: props.value === option.value,
       onChange: () => props.onChange(option.value),

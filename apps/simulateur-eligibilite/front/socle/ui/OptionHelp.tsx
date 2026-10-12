@@ -1,31 +1,35 @@
-// L'aide des options d'un choix : pour chaque option qui en a une, un
-// accordéon du DSFR, replié. Il s'ouvre au clavier, et l'ouvrir ne répond à
-// rien.
+// L'aide d'une option : un lien qui déplie une liste, juste sous l'option. Il
+// s'ouvre au clavier, et l'ouvrir ne répond à rien.
 
-import { Accordion } from "@codegouvfr/react-dsfr/Accordion";
+import { useId, useState } from "react";
 
 export type Help = { label: string; items: readonly string[] };
 
 type Props = {
-  options: ReadonlyArray<{ value: string; help?: Help }>;
+  help: Help;
+  /** Aligne l'aide sur le libellé d'une case, décalé par la case elle-même. */
+  indented?: boolean;
 };
 
-export function OptionHelp({ options }: Props) {
-  const helps = options.flatMap(({ value, help }) =>
-    help ? [{ value, help }] : [],
-  );
-  if (helps.length === 0) return null;
+export function OptionHelp({ help, indented }: Props) {
+  const [open, setOpen] = useState(false);
+  const listId = useId();
   return (
-    <div className="fr-accordions-group" style={{ marginBottom: "1.5rem" }}>
-      {helps.map(({ value, help }) => (
-        <Accordion key={value} label={help.label} titleAs="h2">
-          <ul>
-            {help.items.map((item) => (
-              <li key={item}>{item}</li>
-            ))}
-          </ul>
-        </Accordion>
-      ))}
+    <div style={{ margin: indented ? "-0.25rem 0 0.5rem 2rem" : "0 0 1rem" }}>
+      <button
+        type="button"
+        className="fr-link fr-link--sm"
+        aria-expanded={open}
+        aria-controls={listId}
+        onClick={() => setOpen(!open)}
+      >
+        {help.label}
+      </button>
+      <ul id={listId} hidden={!open} className="fr-text--sm fr-mt-1v fr-mb-0">
+        {help.items.map((item) => (
+          <li key={item}>{item}</li>
+        ))}
+      </ul>
     </div>
   );
 }
