@@ -251,12 +251,16 @@ function withRestart(handlers: Actions, autoAdvance: AutoAdvance) {
 // L'avancement automatique vaut pour les pages faites de choix uniques. Avec
 // un seul choix multiple ou champ de saisie, toute la page garde son bouton :
 // on n'avance pas une page à moitié remplie. Une question facultative le garde
-// aussi : sinon la page partirait avant qu'on ait pu y répondre.
+// aussi : sinon la page partirait avant qu'on ait pu y répondre. De même une
+// liste déroulante, qu'on parcourt au clavier en changeant de valeur.
 function isSingleChoicePage(questions: readonly Question[]): boolean {
+  return questions.length > 0 && questions.every(advancesAlone);
+}
+
+function advancesAlone(question: Question): boolean {
   return (
-    questions.length > 0 &&
-    questions.every(
-      (question) => question.kind === "single choice" && !question.optional,
-    )
+    question.kind === "single choice" &&
+    !question.optional &&
+    !question.dropdown
   );
 }

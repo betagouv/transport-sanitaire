@@ -93,6 +93,18 @@ export const COMPLEMENT: QuestionnairePart<Questions, Cibles> = {
           unit: "tasses",
         },
         {
+          id: "lieu",
+          kind: "single choice",
+          dropdown: true,
+          label: "Où la servir ?",
+          hint: "Démontre : un choix unique en liste déroulante. La page garde son bouton.",
+          options: [
+            { value: "salle", label: "En salle" },
+            { value: "terrasse", label: "En terrasse" },
+            { value: "comptoir", label: "Au comptoir" },
+          ],
+        },
+        {
           id: "nom",
           kind: "text",
           label: "À quel nom ?",
