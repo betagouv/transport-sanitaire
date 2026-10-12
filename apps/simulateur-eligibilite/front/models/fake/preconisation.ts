@@ -1,5 +1,5 @@
-// La préconisation factice : la commande, lue dans les réponses. Elle ne décide
-// rien du transport.
+// La préconisation du modèle de démonstration : la commande, lue dans les
+// réponses. Elle ne décide rien du transport.
 
 import type { Answers } from "../../socle";
 import type { Cibles } from "./declarations/cibles";
@@ -42,4 +42,5 @@ const BOISSONS: Record<Questions["boisson"], string | null> = {
 const ACCOMPAGNEMENTS: Record<string, string | undefined> = {
   lait: "lait",
   sucre: "sucre",
+  citron: "citron",
 };

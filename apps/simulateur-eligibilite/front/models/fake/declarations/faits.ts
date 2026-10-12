@@ -1,4 +1,4 @@
-// Les faits du modèle factice : ce que ses règles reçoivent.
+// Les faits du modèle de démonstration : ce que ses règles reçoivent.
 
 export type Faits = {
   /** La boisson commandée, en toutes lettres. `null` : aucune. */
