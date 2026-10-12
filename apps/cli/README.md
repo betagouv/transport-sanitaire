@@ -9,8 +9,11 @@ trackers de specs.
 Sur une machine neuve, depuis la racine du dépôt :
 
 ```bash
-./tsp setup
+apps/cli/bin/tsp setup
 ```
+
+C'est la seule fois où le chemin complet sert : `setup` rend ensuite `tsp`
+appelable de partout.
 
 Seuls un shell et `git` sont requis. `setup` fait le reste, dans l'ordre :
 
@@ -169,7 +172,7 @@ Sans jeton, `wip` et `next` affichent le reste et la ligne
 
 ## Comment c'est fait
 
-`tsp`, à la racine, est un script shell. Il choisit le clone, puis exécute
+Le lanceur, `bin/tsp`, est un script shell. Il choisit le clone, puis exécute
 `src/main.ts` par `mise`, qui fournit Node. La CLI est du TypeScript exécuté
 directement, sans build et sans dépendance d'exécution.
 
@@ -177,7 +180,7 @@ directement, sans build et sans dépendance d'exécution.
   version qu'on modifie.
 - **Hors de tout clone**, il retombe sur celui d'où il a été installé.
 - **Sans `mise`**, seul `setup` passe : c'est lui qui l'installe, par
-  `amorce.sh`, le seul morceau de `setup` écrit en shell.
+  `bin/amorce.sh`, le seul morceau de `setup` écrit en shell.
 
 La CI et le `Procfile` appellent `pnpm` en direct. La production ne dépend pas
 de la CLI.

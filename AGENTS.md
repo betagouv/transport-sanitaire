@@ -68,7 +68,7 @@ aucune app.
 ## `tsp`, le point d'entrée
 
 **Tout geste sur le dépôt passe par `tsp`**, la CLI d'`apps/cli`. Sur une
-machine neuve, `./tsp setup` installe `mise`, le toolchain, les dépendances, les
+machine neuve, `apps/cli/bin/tsp setup` installe `mise`, le toolchain, les dépendances, les
 hooks, et rend `tsp` appelable de partout.
 
 | Besoin | Commande |

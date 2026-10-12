@@ -49,7 +49,7 @@
       "project": ["src/**/*.{ts,tsx}"]
     },
 
-    // Le lanceur shell de la racine exécute `src/main.ts` : aucun script du
+    // Le lanceur shell `bin/tsp` exécute `src/main.ts` : aucun script du
     // package ne le nomme, knip ne peut donc pas le déduire.
     "apps/cli": {
       "entry": ["src/main.ts"],

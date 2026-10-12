@@ -33,6 +33,12 @@ export function linkLauncher(root: string): string | undefined {
   if (existing && isLinked()) return fs.realpathSync(link);
   if (existing) fs.unlinkSync(link);
   fs.mkdirSync(path.dirname(link), { recursive: true });
-  fs.symlinkSync(path.join(root, "tsp"), link);
-  return path.join(root, "tsp");
+  const launcher = path.join(root, LAUNCHER);
+  fs.symlinkSync(launcher, link);
+  return launcher;
 }
+
+// ---- implémentation ----
+
+/** Le lanceur shell, relatif à la racine du clone. */
+const LAUNCHER = "apps/cli/bin/tsp";

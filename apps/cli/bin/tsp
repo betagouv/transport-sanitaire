@@ -7,7 +7,7 @@ set -eu
 # Hors de tout clone, celui d'où le lanceur a été installé.
 racine=$(git rev-parse --show-toplevel 2>/dev/null || true)
 if [ ! -f "$racine/apps/cli/src/main.ts" ]; then
-  racine=$(dirname "$(readlink -f "$0")")
+  racine=$(cd "$(dirname "$(readlink -f "$0")")/../../.." && pwd)
 fi
 
 # Node n'existe pas encore sur une machine neuve : `setup` commence en shell,
@@ -16,14 +16,14 @@ fi
 for argument in "$@"; do
   case "$argument" in
     -*) continue ;;
-    setup) sh "$racine/apps/cli/amorce.sh" "$racine" "$@" ;;
+    setup) sh "$racine/apps/cli/bin/amorce.sh" "$racine" "$@" ;;
   esac
   break
 done
 
 mise=$(command -v mise || echo "$HOME/.local/bin/mise")
 if [ ! -x "$mise" ]; then
-  echo "mise est absent. Lance : ./tsp setup" >&2
+  echo "mise est absent. Lance : apps/cli/bin/tsp setup" >&2
   exit 1
 fi
 

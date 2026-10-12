@@ -1,6 +1,10 @@
 # Architecture : `tsp`, le point d'entrée du dépôt
 
-> Statut : **décidé** · Dernière mise à jour : 2026-10-09
+> Statut : **décidé** · Dernière mise à jour : 2026-10-12
+
+> **Mise à jour 2026-10-12, emplacement du lanceur.** Le lanceur a quitté la
+> racine du dépôt pour le dossier de la CLI. L'ADR-1 tient toujours : seul
+> l'endroit change, et le premier geste s'allonge d'un chemin.
 
 ## 1. Contexte & objectifs
 
@@ -25,7 +29,8 @@ Le vocabulaire (app, action, feature, recueil, spec, tâche, ticket) est dans
 **Contexte.** `tsp` doit être le premier geste sur une machine neuve. Or il est
 écrit pour Node, que `mise` installe : il ne peut pas s'amorcer lui-même.
 
-**Décision.** Un script shell POSIX, versionné à la racine, sert de lanceur. Il
+**Décision.** Un script shell POSIX, versionné dans le dossier de la CLI
+(~~à la racine~~), sert de lanceur. Il
 ne demande qu'un shell et `git`. Il exécute la CLI par `mise`, qui fournit le
 Node épinglé. `setup` commence donc en shell : installer `mise`, puis le
 toolchain. Tout le reste est en TypeScript.
@@ -117,7 +122,7 @@ passe le lint, le typecheck et knip.
 ```mermaid
 flowchart LR
     Dev(["Développeur ou agent"])
-    Lanceur["Lanceur shell<br/>racine du dépôt"]
+    Lanceur["Lanceur shell<br/>dossier de la CLI"]
     Mise["mise<br/>toolchain épinglé"]
     CLI["CLI<br/>TypeScript, Node 24"]
 
@@ -186,7 +191,7 @@ Il se tient à la main et rien ne le garde.
 ## Vérification
 
 ```bash
-./tsp setup          # rejouable : finit par le diagnostic
+apps/cli/bin/tsp setup   # rejouable : finit par le diagnostic
 tsp doctor           # ce qui manque, et la commande qui le répare
 tsp apps             # chaque app et les actions qu'elle porte
 tsp verifier cli     # lint, typecheck, knip

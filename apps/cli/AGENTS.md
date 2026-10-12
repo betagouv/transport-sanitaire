@@ -9,8 +9,9 @@
 
 ## Ce que c'est
 
-- **Un lanceur shell à la racine**, `tsp`. Il choisit le clone, puis exécute la
-  CLI par `mise`. Il ne demande qu'un shell et `git`.
+- **Un lanceur shell**, `bin/tsp`. Il choisit le clone, puis exécute la CLI par
+  `mise`. Il ne demande qu'un shell et `git`. `setup` pose un lien vers lui dans
+  `~/.local/bin` : c'est ce lien qu'on appelle ensuite.
 - **Du TypeScript exécuté directement par Node 24**, sans build, comme
   `data-analyzer`.
 - **Aucune dépendance d'exécution.** Les arguments se lisent avec

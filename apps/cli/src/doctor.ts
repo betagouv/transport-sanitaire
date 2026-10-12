@@ -104,7 +104,7 @@ function launcher(): Check {
     detail: `${linkPath()}${ok ? "" : `, ${gap}`}`,
     fix: isLinked()
       ? `ajoute ${path.dirname(linkPath())} au PATH`
-      : "./tsp setup",
+      : "apps/cli/bin/tsp setup",
   };
 }
 

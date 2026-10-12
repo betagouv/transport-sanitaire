@@ -1,6 +1,6 @@
 // Préparer la machine, une fois Node disponible : dépendances, hooks, `.env`,
 // lien vers le lanceur, puis le diagnostic. `mise` et le toolchain sont posés
-// avant, en shell, par `amorce.sh`.
+// avant, en shell, par `bin/amorce.sh`.
 
 import fs from "node:fs";
 import path from "node:path";
