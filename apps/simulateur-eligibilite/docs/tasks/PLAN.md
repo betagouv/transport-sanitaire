@@ -21,7 +21,7 @@ ouvertes. On les traite un par un, dans l'ordre du tableau.
 | [06](06-parcours-et-resultats.md) | Parcours et résultats | fait, hors PDF | impression, production du PDF |
 | [07](07-seeds.md) | Seeds | fait | les seeds des cas d'oracle, que nous écrivons d'après le contrat réponses/faits (D-79), après la v10.0.2 |
 | [08](08-tests-et-factice.md) | Tests et factice | fait | rien |
-| [09](09-capacites-du-socle-pour-la-v10.md) | Capacités du socle pour la v10 | modèle de démonstration en place (D-82), les neuf petites capacités de saisie codées (1 à 9) | 12 capacités : 10 que rien ne retient (D-78), 2 qui attendent la v10.0.2 |
+| [09](09-capacites-du-socle-pour-la-v10.md) | Capacités du socle pour la v10 | modèle de démonstration en place (D-82), capacités 1 à 11 codées : la saisie, le rappel et la donnée fixée | 10 capacités : 8 que rien ne retient (D-78), 2 qui attendent la v10.0.2 |
 | [10](10-integration-de-la-v10.md) | Intégration de la v10 | étapes 1 et 2 codées sur la v10.0.0, gardées sur `v10-modele-10.0.0` (D-81) | le branchement des décisions attend la v10.0.2 (D-78) ; l'interface se poursuit |
 
 ## Les livraisons de l'éditeur
