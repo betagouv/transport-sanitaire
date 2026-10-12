@@ -52,6 +52,9 @@ c'est lui qui permet de les valider à l'écran.
   page de démonstration de D-66 ne disparaît donc plus à l'arrivée du modèle
   v10. Une capacité arrive avec ses tests, sa page de démonstration, et une
   seed qui ouvre cette page.
+- **D-83** Le socle ne nomme pas le modèle de démonstration. `App` reçoit une
+  seule liste de modèles, chacun sous le nom que `Main` lui donne, et les
+  developer tools proposent d'en changer quand il y en a plusieurs.
 
 - **D-77** Un fait inconnu n'est pas transmis au moteur (éditeur).
 - **D-80** Un seul sens par simulation (éditeur). Le socle n'a pas à porter
@@ -114,7 +117,7 @@ questions, puis confronté au socle.
 | Un dossier par modèle | Fait : `front/model/` est devenu `front/models/fake/`. `front/models/eligibilite/` arrive avec la v10.0.2. D'ici là, l'app déroule le modèle de démonstration. |
 | Deux factices | Fait. Celui de l'app grandit avec le socle. Celui des tests, dans `tests/socle/fixtures/modele-factice/`, reste petit et figé : les tests de mécanique le déroulent de bout en bout. |
 | Une vitrine | Fait pour les capacités déjà codées : description d'option, option proposée selon les réponses, libellé selon les réponses. Quatre seeds ouvrent ses pages. |
-| Le bouton | Fait dans le socle : `App` reçoit `demonstration`, et les developer tools proposent « Modèle de démonstration », puis « Quitter la démonstration ». Rien n'est rechargé ni stocké. À brancher dans `Main.tsx` quand `eligibilite/` existera : d'ici là, il n'y a qu'un modèle, et pas de bouton. |
+| Le choix du modèle | Fait dans le socle, sans le mot « démonstration » (D-83) : `App` reçoit `models`, une liste `{ label, load }`, et ouvre le premier. À plusieurs, les developer tools montrent un bouton par modèle, coché pour celui qui est ouvert. Rien n'est rechargé ni stocké. `Main.tsx` n'en liste qu'un tant que `eligibilite/` n'existe pas : d'ici là, il n'y a pas de bouton. |
 | Les gardes | Fait : aucun modèle n'importe l'autre, le test de conformité passe sur chaque dossier de `front/models/`, `verifier-bundle` lit le catalogue de seeds de chacun. |
 
 L'audience n'a rien demandé : seul le service n° 4 voit les developer tools,

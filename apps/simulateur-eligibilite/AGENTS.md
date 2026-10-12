@@ -25,16 +25,20 @@ outils PDF, developer tools. `front/models/` porte un dossier par modèle :
 arrive avec la v10.0.2.
 
 Le modèle de démonstration est pérenne (D-82). **Chaque capacité du socle y a
-sa page**, pour la valider à l'écran sans dépendre du modèle de l'éditeur. Quand
-les deux modèles existent, `Main` passe le second à `App` par `demonstration`,
-et les developer tools proposent de le dérouler (`front/socle/app/demonstration.ts`).
+sa page**, pour la valider à l'écran sans dépendre du modèle de l'éditeur.
+
+**Le socle ne sait pas qu'un modèle est « de démonstration »** (D-83). `Main`
+passe à `App` une seule liste, `models`, où chaque modèle porte son nom et de
+quoi se charger. Le premier s'ouvre au démarrage. À plusieurs, les developer
+tools proposent d'en changer (`front/socle/app/model-choice.ts`) : le choix est
+donc réservé au service n° 4, comme eux.
 
 Le socle ne connaît le modèle que par un contrat, `Model` (`front/socle/model.ts`) :
 des parties de questionnaire, ce qui calcule la préconisation (des réponses aux
 faits, des faits aux cibles), et deux résultats. `front/Main.tsx` est le seul
-fichier qui importe les deux. Il charge le modèle à la demande, pendant l'écran
-de rattachement, et passe sa promesse à `App` : le modèle reste hors du chunk
-d'entrée. Le socle n'importe rien
+fichier qui importe les deux. Il dit à `App` comment charger chaque modèle, et
+`App` charge le premier pendant l'écran de rattachement : un modèle reste hors
+du chunk d'entrée. Le socle n'importe rien
 de `front/models/`, un modèle n'importe du socle que `front/socle/index.ts`, et
 aucun modèle n'importe l'autre.
 Une exception : le moteur de décision, `front/socle/decision-engine/publicodes.ts`,

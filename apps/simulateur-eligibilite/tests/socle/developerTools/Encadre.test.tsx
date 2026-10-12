@@ -9,7 +9,7 @@ import {
 import { RattachementForm } from "../../../front/socle/rattachement/RattachementForm";
 import { Simulateur } from "../../../front/socle/simulateur/Simulateur";
 import { snapshotReferentiel } from "../../../shared/referentiel";
-import { modeleDeTest } from "../modele-de-test";
+import { modeleDeTest, seulModele } from "../modele-de-test";
 import {
   remplirRattachement,
   remplirRattachementProduit,
@@ -153,7 +153,12 @@ describe("encadré des developer tools, début du parcours", () => {
 describe("App câble les developer tools", () => {
   it("les reproposent au début du parcours après un rattachement service n° 4", async () => {
     const user = userEvent.setup();
-    render(<App model={modeleDeTest} referentiel={snapshotReferentiel} />);
+    render(
+      <App
+        models={seulModele(modeleDeTest)}
+        referentiel={snapshotReferentiel}
+      />,
+    );
 
     await seRattacherProduit(user);
 
@@ -166,7 +171,12 @@ describe("App câble les developer tools", () => {
 
   it("ne les propose pas après un rattachement ordinaire", async () => {
     const user = userEvent.setup();
-    render(<App model={modeleDeTest} referentiel={snapshotReferentiel} />);
+    render(
+      <App
+        models={seulModele(modeleDeTest)}
+        referentiel={snapshotReferentiel}
+      />,
+    );
 
     await remplirRattachement(user);
     expect(screen.queryByRole("region", ENCADRE)).toBeNull();
