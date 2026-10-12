@@ -7,8 +7,8 @@ import type { Invocation } from "../core/invocation.ts";
 import { columns, emit } from "../core/output.ts";
 import { captureProgram } from "../core/run-program.ts";
 import { notionAccess } from "../notion/notion.ts";
-import { missingEnvFiles } from "./env-files.ts";
 import { isLinked, isOnPath, linkPath } from "./launcher-link.ts";
+import { missingLocalFiles } from "./local-files.ts";
 
 /** `tsp doctor`. Échoue seulement sur un manque qui empêche de travailler. */
 export function doctorCommand(invocation: Invocation): number {
@@ -33,7 +33,7 @@ function runChecks(root: string): Check[] {
     ...["node", "pnpm", "gh"].map((tool) => toolVersion(root, tool)),
     dependencies(root),
     hooks(root),
-    envFiles(root),
+    localFiles(root),
     launcher(),
     githubAuth(root),
     notion(root),
@@ -82,10 +82,10 @@ function hooks(root: string): Check {
   };
 }
 
-function envFiles(root: string): Check {
-  const missing = missingEnvFiles(root);
+function localFiles(root: string): Check {
+  const missing = missingLocalFiles(root).map((each) => each.file);
   return {
-    name: ".env",
+    name: "fichiers locaux",
     ok: missing.length === 0,
     required: true,
     detail:

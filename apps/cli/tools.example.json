@@ -1,0 +1,12 @@
+[
+  {
+    "name": "github",
+    "description": "Le dépôt du projet",
+    "url": "https://github.com/betagouv/transports-sanitaires"
+  },
+  {
+    "name": "exemple",
+    "description": "Un outil à remplacer : son nom court, ce que c'est, son adresse",
+    "url": "https://example.org"
+  }
+]

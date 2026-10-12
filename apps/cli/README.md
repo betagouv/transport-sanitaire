@@ -21,7 +21,8 @@ Seuls un shell et `git` sont requis. `setup` fait le reste, dans l'ordre :
 2. installe le toolchain épinglé dans `mise.toml` (Node, pnpm, `gh`) ;
 3. installe les dépendances ;
 4. branche les hooks git ;
-5. crée les `.env` manquants depuis leurs gabarits ;
+5. crée les fichiers locaux manquants depuis leurs gabarits : les `.env` et
+   la liste des outils ;
 6. pose un lien `~/.local/bin/tsp`, pour appeler `tsp` de partout. Un lien qui
    marche déjà est gardé : `setup` lancé depuis un worktree ne le détourne pas ;
 7. finit par `tsp doctor`.
@@ -56,6 +57,8 @@ Transverses :
 | `tsp skills` | liste les skills du dépôt |
 | `tsp skills <skill>` | affiche un skill |
 | `tsp docs [app]` | liste les ADR et les connaissances métier |
+| `tsp open` | liste les outils du projet |
+| `tsp open <outil> […]` | ouvre un ou plusieurs outils dans le navigateur |
 | `tsp wip` | montre le travail en cours |
 | `tsp next` | montre le travail en cours, puis le travail à prendre |
 | `tsp spec new <module> <type> <titre>` | crée une spec avec le prochain id, `--app <app>` pour le tracker d'une app |
@@ -88,6 +91,32 @@ Ce qui suit `--` part tel quel au script :
 ```bash
 tsp test simulateur -- tests/cerfa
 ```
+
+## Les outils du projet
+
+`tsp open` ouvre ce qu'on va chercher dix fois par semaine : le site, la
+préprod, les tableaux de bord de l'hébergeur, le DNS, Notion, GitHub.
+
+```bash
+tsp open                 # la liste : nom, ce que c'est, adresse
+tsp open admin           # ouvre un outil
+tsp open preprod dns     # en ouvre plusieurs
+```
+
+Un outil se nomme en entier ou par un début sans ambiguïté. L'adresse est
+toujours affichée : si rien ne s'ouvre, elle se copie.
+
+**La liste n'est pas versionnée.** Elle vit dans `apps/cli/tools.json`, ignoré
+par git, parce qu'elle nomme l'infrastructure du projet et que le dépôt est
+public. `tsp setup` la crée depuis `tools.example.json`. Chaque entrée porte
+trois champs :
+
+```json
+{ "name": "preprod", "description": "La préprod du simulateur", "url": "https://…" }
+```
+
+Le fichier se transmet entre membres de l'équipe hors du dépôt. Il n'existe que
+dans le clone où il a été posé : un worktree n'en hérite pas.
 
 ## Le travail en cours et à prendre
 

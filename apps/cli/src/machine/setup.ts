@@ -1,5 +1,5 @@
-// Préparer la machine, une fois Node disponible : dépendances, hooks, `.env`,
-// lien vers le lanceur, puis le diagnostic. `mise` et le toolchain sont posés
+// Préparer la machine, une fois Node disponible : dépendances, hooks, fichiers
+// locaux, lien vers le lanceur, puis le diagnostic. `mise` et le toolchain sont posés
 // avant, en shell, par `bin/amorce.sh`.
 
 import fs from "node:fs";
@@ -8,8 +8,8 @@ import type { Invocation } from "../core/invocation.ts";
 import { print } from "../core/output.ts";
 import { runProgram } from "../core/run-program.ts";
 import { doctorCommand } from "./doctor.ts";
-import { missingEnvFiles } from "./env-files.ts";
 import { isOnPath, linkLauncher, linkPath } from "./launcher-link.ts";
+import { missingLocalFiles } from "./local-files.ts";
 
 /** `tsp setup`. Rejouable : chaque étape ne fait que ce qui manque. */
 export function setupCommand(invocation: Invocation): number {
@@ -18,7 +18,7 @@ export function setupCommand(invocation: Invocation): number {
     const code = step(root);
     if (code !== 0) return code;
   }
-  createEnvFiles(root);
+  createLocalFiles(root);
   link(root);
   print("");
   return doctorCommand(invocation);
@@ -37,10 +37,10 @@ function plugHooks(root: string): number {
   return runProgram("git", ["config", "core.hooksPath", ".githooks"], root);
 }
 
-function createEnvFiles(root: string): void {
-  for (const file of missingEnvFiles(root)) {
-    fs.copyFileSync(path.join(root, `${file}.example`), path.join(root, file));
-    print(`.env : ${file} créé depuis son gabarit, à compléter`);
+function createLocalFiles(root: string): void {
+  for (const { file, template } of missingLocalFiles(root)) {
+    fs.copyFileSync(path.join(root, template), path.join(root, file));
+    print(`Fichier local : ${file} créé depuis son gabarit, à compléter`);
   }
 }
 

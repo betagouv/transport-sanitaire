@@ -43,7 +43,7 @@ point d'entrée, et la liste des commandes.
 | `notion/` | l'API des tickets | `core` |
 | `specs/` | les trackers, l'en-tête d'une spec, `spec new`, `move` et `sync` | `core`, `apps`, `git`, `notion` |
 | `work/` | `wip` et `next`, les tâches, les tickets hors specs | `core`, `apps`, `git`, `notion`, `specs` |
-| `machine/` | `setup`, `doctor`, le lien vers le lanceur, les `.env` | `core`, `apps`, `notion` |
+| `machine/` | `setup`, `doctor`, `open`, le lien vers le lanceur, les fichiers locaux | `core`, `apps`, `notion` |
 
 **Les dépendances ne vont que dans ce sens.** `core` n'importe aucun module, et
 aucun module n'importe `work` ni `machine`. Rien ne le garde : c'est à la
@@ -70,6 +70,7 @@ Une **action** n'est pas une commande à écrire : c'est un script du
 | Un statut Notion ne recule jamais | `Reviewing dev` et `Prod / Done` se posent à la main |
 | La cible d'une PR est `staging`, sans option pour en changer | c'est ce qui applique GIT-009 |
 | `setup` se rejoue sans risque | il sert aussi à réparer |
+| La liste des outils de `tsp open` n'entre jamais dans git | elle nomme l'infrastructure, le dépôt est public |
 
 ## Langue
 

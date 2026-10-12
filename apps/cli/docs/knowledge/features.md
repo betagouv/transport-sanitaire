@@ -12,6 +12,7 @@
 | Lecture des règles | `tsp rules` liste les recueils, les règles d'un recueil, ou le texte d'une règle par son identifiant. |
 | Lecture des skills | `tsp skills` liste les modes d'emploi du dépôt, ou en affiche un. |
 | Lecture de la documentation | `tsp docs` liste les ADR et les connaissances métier, à la racine et par app. |
+| Outils du projet | `tsp open` liste les outils les plus utilisés (site, préprod, hébergeur, DNS, Notion, GitHub) et les ouvre dans le navigateur. La liste reste locale. |
 | Travail en cours | `tsp wip` rassemble les PR ouvertes, les branches sans PR, les tâches, les specs en cours et les tickets Notion. |
 | Travail à prendre | `tsp next` rappelle le travail en cours, puis liste les specs en `todo` et en `backlog`, et les tickets Notion prêts à développer. |
 | Tenue des specs | `tsp spec new` crée une spec avec le prochain id. `tsp spec move` la change d'état et tient « bloquée par » à jour. |

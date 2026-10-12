@@ -164,8 +164,13 @@ fichier que le dépôt tient déjà :
 | `skills` | les skills du dépôt |
 | `docs` | les dossiers `adr/` et `domain/` |
 | `wip`, `next` | les trackers, `docs/tasks`, git, GitHub et Notion |
+| `open` | la liste des outils, un fichier local jamais versionné |
 
-Corriger ce que `tsp` affiche, c'est donc corriger le fichier source. Seul
+Corriger ce que `tsp` affiche, c'est donc corriger le fichier source.
+
+`open` est la seule dont la source n'est pas dans le dépôt. Sa liste nomme
+l'infrastructure du projet (hébergement, DNS, administration), et le dépôt est
+public : elle suit le même régime que le `.env`, avec un gabarit neutre. Seul
 `features.md` a été créé pour la CLI : rien ne décrivait les features d'une app.
 Il se tient à la main et rien ne le garde.
 

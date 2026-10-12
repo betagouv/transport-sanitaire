@@ -77,6 +77,7 @@ hooks, et rend `tsp` appelable de partout.
 | Savoir ce qu'une app sait faire | `tsp apps`, `tsp features [app]` |
 | Lire les règles, les skills, la doc | `tsp rules [recueil\|id]`, `tsp skills [skill]`, `tsp docs [app]` |
 | Voir le travail en cours, à prendre | `tsp wip`, `tsp next` |
+| Ouvrir un outil du projet (site, préprod, hébergeur) | `tsp open [outil]` |
 | Tenir une spec | `tsp spec new`, `tsp spec move`, `tsp spec sync` |
 | Brancher, proposer | `tsp branch <type>/<sujet>`, `tsp pr`, `tsp pr status` |
 | Diagnostiquer la machine | `tsp doctor` |

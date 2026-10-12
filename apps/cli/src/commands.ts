@@ -12,6 +12,7 @@ import { rulesCommand } from "./knowledge/rules.ts";
 import { skillsCommand } from "./knowledge/skills.ts";
 import { doctorCommand } from "./machine/doctor.ts";
 import { setupCommand } from "./machine/setup.ts";
+import { openCommand } from "./machine/tools.ts";
 import { specCommand } from "./specs/spec.ts";
 import { nextCommand } from "./work/next.ts";
 import { wipCommand } from "./work/wip.ts";
@@ -118,6 +119,12 @@ const ACROSS: Entry[] = [
     usage: "docs [app]",
     summary: "liste les ADR et les connaissances métier",
     run: docsCommand,
+  },
+  {
+    name: "open",
+    usage: "open [outil …]",
+    summary: "liste les outils du projet, ou en ouvre dans le navigateur",
+    run: openCommand,
   },
   {
     name: "wip",
