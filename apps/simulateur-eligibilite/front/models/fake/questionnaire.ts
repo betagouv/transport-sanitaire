@@ -143,7 +143,14 @@ export const COMPLEMENT: QuestionnairePart<Questions, Cibles> = {
           id: "quantite",
           kind: "number",
           label: "Combien de tasses ?",
-          hint: "Démontre : un nombre entier, borné, avec son unité. Une décimale est refusée.",
+          fixedDataFrom: ({ service = [] }, { commande }) => [
+            { label: "Commande", value: commande },
+            {
+              label: "Service",
+              value: service.map((value) => SERVICES[value]).join(", "),
+            },
+          ],
+          hint: "Démontre : des données fixées au-dessus du champ (la commande, figée au verrou : elle se lit, elle ne se modifie plus), un nombre entier, borné, avec son unité. Une décimale est refusée.",
           min: 1,
           integer: true,
           unit: "tasses",
@@ -213,6 +220,15 @@ export const COMPLEMENT: QuestionnairePart<Questions, Cibles> = {
 };
 
 // ---- implémentation ----
+
+// Les façons de servir, telles qu'on les relit une fois la commande figée.
+const SERVICES: Record<Questions["service"][number], string> = {
+  chaude: "très chaude",
+  glacee: "glacée",
+  "grande-tasse": "dans une grande tasse",
+  preparation: "avec une préparation particulière",
+  rien: "rien de particulier",
+};
 
 // Le jour qu'il sera dans `days` jours, à l'heure locale, écrit comme la
 // réponse d'une date : `2026-10-12`.

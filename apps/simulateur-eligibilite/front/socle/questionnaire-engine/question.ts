@@ -59,6 +59,12 @@ export type Option<
   ): OptionHelp | undefined;
 };
 
+/**
+ * Une donnée fixée : une valeur déjà décidée, montrée près du champ qu'elle
+ * concerne. Elle se lit, elle ne se modifie pas.
+ */
+type FixedDatum = { readonly label: string; readonly value: string };
+
 type Common<Questions extends AnyQuestions, Cibles> = {
   readonly id: keyof Questions & string;
   readonly label: string;
@@ -77,6 +83,16 @@ type Common<Questions extends AnyQuestions, Cibles> = {
     answers: Answers<Questions>,
     cibles: Cibles,
   ): string | undefined;
+  /**
+   * Les données fixées, montrées avec le champ : le rôle et la nature d'un
+   * lieu à côté de son adresse, par exemple. Ce ne sont pas des réponses.
+   */
+  readonly fixedData?: readonly FixedDatum[];
+  /** Les données fixées, quand elles dépendent des réponses ou des cibles. */
+  fixedDataFrom?(
+    answers: Answers<Questions>,
+    cibles: Cibles,
+  ): readonly FixedDatum[];
   /**
    * La question peut rester sans réponse : sa page se valide sans elle. Son
    * libellé le dit, par « (facultatif) ».

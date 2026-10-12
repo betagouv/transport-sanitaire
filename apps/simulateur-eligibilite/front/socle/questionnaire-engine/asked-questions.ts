@@ -62,12 +62,14 @@ function asPosed(
   };
 }
 
-// Ce qui se lit autour du champ, vu les réponses : le libellé, et le rappel.
+// Ce qui se lit autour du champ, vu les réponses : le libellé, le rappel et
+// les données fixées.
 function posedTexts(question: Question, answers: Answers, cibles?: AnyCibles) {
   const asked = question.labelFrom?.(answers, cibles) ?? question.label;
   return {
     label: question.optional ? `${asked} (facultatif)` : asked,
     reminder: question.reminderFrom?.(answers, cibles) ?? question.reminder,
+    fixedData: question.fixedDataFrom?.(answers, cibles) ?? question.fixedData,
   };
 }
 

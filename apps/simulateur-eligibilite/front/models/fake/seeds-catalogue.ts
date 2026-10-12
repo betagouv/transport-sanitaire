@@ -41,9 +41,9 @@ export const SEEDS: readonly Seed<Questions, Cibles>[] = [
   },
   {
     id: "service-sans-accompagnement",
-    label: "Service : options incompatibles, aide dépliable",
+    label: "Service : rappel, options incompatibles, aide dépliable",
     description:
-      "S'arrête sur la façon de servir, après un café sans rien : « Très chaude » et « Glacée » s'excluent, et l'aide liste les préparations du café.",
+      "S'arrête sur la façon de servir, après un café sans rien : un rappel redit la commande, « Très chaude » et « Glacée » s'excluent, et l'aide liste les préparations du café.",
     answers: { boisson: "cafe", accompagnements: ["aucun"] },
     expected: {},
   },
@@ -69,9 +69,10 @@ export const SEEDS: readonly Seed<Questions, Cibles>[] = [
   },
   {
     id: "complement-quantite",
-    label: "Complément : entier, liste déroulante, question facultative",
+    label:
+      "Complément : données fixées, entier, liste déroulante, question facultative",
     description:
-      "Passe le verrou et s'arrête sur la première page du complément : le nombre de tasses, le lieu du service et le nom.",
+      "Passe le verrou et s'arrête sur la première page du complément : la commande et le service, fixés au-dessus du champ, puis le nombre de tasses, le lieu du service et le nom.",
     answers: { ...CAFE_SUCRE, retrait: "sur-place" },
     expected: { commande: "café, sucre" },
   },
