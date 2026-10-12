@@ -27,7 +27,7 @@ arrive avec la v10.0.2.
 Le modèle de démonstration est pérenne (D-82). **Chaque capacité du socle y a
 sa page**, pour la valider à l'écran sans dépendre du modèle de l'éditeur.
 
-**Le socle ne sait pas qu'un modèle est « de démonstration »** (D-83). `Main`
+**Le socle ne sait pas qu'un modèle est « de démonstration »** (D-83). `main.tsx`
 passe à `App` une seule liste, `models`, où chaque modèle porte son nom et de
 quoi se charger. Le premier s'ouvre au démarrage. À plusieurs, les developer
 tools proposent d'en changer (`front/socle/app/model-choice.ts`) : le choix est
@@ -35,7 +35,7 @@ donc réservé au service n° 4, comme eux.
 
 Le socle ne connaît le modèle que par un contrat, `Model` (`front/socle/model.ts`) :
 des parties de questionnaire, ce qui calcule la préconisation (des réponses aux
-faits, des faits aux cibles), et deux résultats. `front/Main.tsx` est le seul
+faits, des faits aux cibles), et deux résultats. `front/main.tsx` est le seul
 fichier qui importe les deux. Il dit à `App` comment charger chaque modèle, et
 `App` charge le premier pendant l'écran de rattachement : un modèle reste hors
 du chunk d'entrée. Le socle n'importe rien
@@ -223,7 +223,7 @@ L'écran des seeds (`front/socle/seeds/`) et les **traces de debug** sont les de
 developer tools. Ils partagent :
 
 - la même garde d'accès **sur tous les environnements** (service n° 4 du
-  référentiel, `front/socle/developerTools/unlock.ts`) ;
+  référentiel, `front/socle/developer-tools/unlock.ts`) ;
 - le même moment : ils sont atteints **après** le rattachement.
 
 Pas de conditionnement sur `import.meta.env.DEV`.
@@ -231,7 +231,7 @@ Pas de conditionnement sur `import.meta.env.DEV`.
 Le simulateur ne connaît pas l'écran des seeds. C'est `App.tsx` qui lui passe du contenu
 déjà composé (`developerToolsPanel`).
 
-La trace de debug vit aussi dans `front/socle/developerTools/` (`DebugTrace.tsx`). Elle
+La trace de debug vit aussi dans `front/socle/developer-tools/` (`DebugTrace.tsx`). Elle
 lit l'état vivant du parcours, qu'`App` n'a pas sous la main : `App` passe donc au
 simulateur le composant lui-même (`DebugTrace`), et chaque écran lui donne son
 état à afficher. Sans composant passé, aucune trace n'est rendue.

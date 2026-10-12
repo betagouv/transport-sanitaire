@@ -1,4 +1,4 @@
-// Ce que le socle expose au reste de l'app : à `Main`, de quoi la monter, et au
+// Ce que le socle expose au reste de l'app : à `main.tsx`, de quoi la monter, et au
 // modèle, de quoi s'écrire. Le modèle n'importe rien d'autre du socle, sauf le
 // type d'une seed, que son catalogue lit à la source.
 //
