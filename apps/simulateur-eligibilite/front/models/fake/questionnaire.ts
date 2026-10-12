@@ -83,7 +83,7 @@ export const PARTS: readonly QuestionnairePart<Questions, undefined>[] = [
             id: "service",
             kind: "multiple choice",
             label: "Comment la servir ?",
-            hint: "Démontre : deux options incompatibles (« Très chaude » et « Glacée » : cocher l'une décoche l'autre, avec une explication), et une option exclusive conditionnelle (« Rien de particulier » ne se propose pas avec le citron, et change de libellé quand un accompagnement est choisi).",
+            hint: "Démontre : une aide dépliable sous les cases (« Voir les préparations possibles », dont la liste dépend de la boisson), deux options incompatibles (« Très chaude » et « Glacée » : cocher l'une décoche l'autre, avec une explication), et une option exclusive conditionnelle (« Rien de particulier » ne se propose pas avec le citron, et change de libellé quand un accompagnement est choisi).",
             askedIf: (answers) =>
               answers.boisson !== undefined && answers.boisson !== "rien",
             dependsOn: ["boisson", "accompagnements"],
@@ -91,6 +91,18 @@ export const PARTS: readonly QuestionnairePart<Questions, undefined>[] = [
               { value: "chaude", label: "Très chaude" },
               { value: "glacee", label: "Glacée" },
               { value: "grande-tasse", label: "Dans une grande tasse" },
+              {
+                value: "preparation",
+                label: "Avec une préparation particulière",
+                description: "À préciser au moment du service.",
+                helpFrom: ({ boisson }) => ({
+                  label: "Voir les préparations possibles",
+                  items:
+                    boisson === "the"
+                      ? ["Infusé cinq minutes", "Avec une théière à part"]
+                      : ["Allongé", "Serré", "Avec un verre d'eau"],
+                }),
+              },
             ],
             incompatibleOptions: [
               {
