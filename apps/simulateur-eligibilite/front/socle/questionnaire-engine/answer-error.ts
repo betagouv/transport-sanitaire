@@ -19,14 +19,26 @@ export function errorOf(
     return dateErrorOf(question, answer);
   if (question.kind === "multiple choice")
     return Array.isArray(answer) && answer.length > 0
-      ? undefined
+      ? blockOf(question, answer)
       : "Cochez au moins une réponse.";
-  return typeof answer === "string" && answer.trim() !== ""
-    ? undefined
-    : "Cette réponse est attendue.";
+  if (typeof answer !== "string" || answer.trim() === "")
+    return "Cette réponse est attendue.";
+  return question.kind === "single choice"
+    ? blockOf(question, [answer])
+    : undefined;
 }
 
 // ---- implémentation ----
+
+// Le message de la première option choisie qui bloque, s'il y en a une.
+function blockOf(
+  question: Extract<Question, { kind: "single choice" | "multiple choice" }>,
+  chosen: readonly string[],
+): string | undefined {
+  return question.options.find(
+    (option) => option.blocks !== undefined && chosen.includes(option.value),
+  )?.blocks;
+}
 
 // Les bornes s'écrivent comme la réponse, au format ISO : l'ordre des textes
 // est alors celui des dates.

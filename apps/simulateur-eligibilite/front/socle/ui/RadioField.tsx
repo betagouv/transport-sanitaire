@@ -13,6 +13,7 @@ type Props = {
   }>;
   value: string | undefined;
   onChange: (value: string) => void;
+  error?: string;
   /** La première option prend le focus à l'affichage. */
   autoFocus?: boolean;
   /** Met le libellé en avant, quand le champ est la question de la page. */
@@ -26,6 +27,8 @@ export function RadioField(props: Props) {
       name={props.id}
       legend={props.label}
       hintText={props.hint}
+      state={props.error ? "error" : "default"}
+      stateRelatedMessage={props.error}
       // Variante « riche » du DSFR : chaque option est une carte bordée. Le picto
       // est facultatif, on l'omet. `classes.inputGroup` pose `fr-radio-rich` sur
       // chaque groupe : le composant ne le fait seul que si une option a une
