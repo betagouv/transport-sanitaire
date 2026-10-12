@@ -6,7 +6,10 @@ au contrat `Model`.
 
 **Blocked by:** 06 (le parcours).
 
-**Status:** trois capacités de saisie codées, celles que P0 et P1 demandent. L'inventaire est revu sur la v10.0.1. Plus rien n'attend l'éditeur, sauf le fait inconnu, qui attend la v10.0.2.
+**Status:** trois capacités de saisie codées, celles que P0 et P1 demandent.
+L'inventaire est arrêté le 12 octobre sur les v10.0.0 et v10.0.1 : 21
+capacités restent à écrire. 19 ne dépendent pas de la v10.0.2 et se codent
+d'abord, 2 l'attendent.
 
 ## Décisions prises
 
@@ -15,8 +18,8 @@ au contrat `Model`.
 - **D-61** Un texte trop long ne bloque jamais le PDF. Le socle applique les
   règles de l'éditeur tant qu'elles suffisent. Si le texte ne tient toujours
   pas, il est écrit en entier et déborde du cadre, comme sur un formulaire
-  papier. C'est un écart au livrable, qui demande de bloquer : à signaler à
-  l'éditeur.
+  papier. L'éditeur l'a accepté à l'oral (rapporté le 12 octobre). Son
+  livrable demande encore de bloquer : la mise à jour lui est demandée.
 - **D-62** Les gabarits sont ceux de Notion, « 05. LIVRABLES » :
   `PMT_cerfa_11574-07`, `DAP_cerfa_11575-08` et celui des moins de 20 ans.
   Les PDF du dossier `formulaires/` du livrable ne servent pas.
@@ -87,27 +90,46 @@ questions, puis confronté au socle.
 | Verrou, pas de retour en P2 depuis P3 | `simulateur/start.ts` |
 | Questions de P3 qui lisent la préconisation figée | `askedIf(answers, cibles)` (D-44) |
 | PDF produit dans le navigateur, sans texte coupé | `fillCerfa`, `TextOverflowError` |
+| Cartes radio (Q0.1) | une option porte une `description`, rendue sous son libellé |
+| Options qui dépendent des réponses (Q1.3, Q2.2.1, Q2.6, Q2.13, Q3.2, Q3.3) | `offeredIf` sur une option. Une réponse perd l'option qui ne se propose plus |
+| Libellé de question qui dépend des réponses (Q1.4) | `labelFrom` |
+| Page qui ne pose plus rien, sautée sans écran de rappel | `askedPages` |
+| Texte sur plusieurs lignes dans un cadre du PDF | `text-fit.ts` mesure un champ multiligne ligne par ligne. `singleLineFields` ramène sur une ligne le texte d'un cadre qui n'en montre qu'une |
+| Modèle chargé à la demande (D-71) | `app/model-loading.ts` |
+| Décision par publicodes (D-76) | `decision-engine/publicodes.ts` |
 
-### Saisie
+### Ce qui manque, sans dépendre de la v10.0.2
 
-| Capacité | Demandée par | Écart | Poids |
-|---|---|---|---|
-| ~~Cartes radio~~ | Q0.1 | Fait : une option porte une `description`, rendue sous son libellé. | fait |
-| Liste déroulante | Q3.2, Q3.3 | `SelectField` existe, aucun `kind` ne le rend. | petit |
-| Question facultative | complément d'adresse, commentaire de Q3.4, case de Q2.3.2 | Toute question affichée est obligatoire. | petit |
-| Entier strict | Q3.1 | `number` accepte les décimales. | petit |
-| Bornes de date et d'heure | Q2.8, Q3.6 | `date` et `datetime` n'ont ni minimum ni maximum. | petit |
-| Rappel d'une valeur connue | les repères « R » de `SPECIFICATION_REAFFICHAGE_FAITS.md` : Q2.1, Q2.1.f, Q2.2.1, Q2.5, Q2.6, Q2.13, Q2.14 | Une page ne contient que des questions. Il faut un texte hors des réponses, affiché seulement si la page pose encore une question. | petit |
-| Donnée fixée près d'un champ | les repères « D » : Q3.2, Q3.3, Q3.4, Q3.7, Q3.8 | Rien : le rôle et la nature d'un lieu se lisent à côté des champs d'adresse, sans sélecteur. | petit |
-| Page sans question | toute page dont les valeurs sont déjà connues | À vérifier : une page qui ne pose plus rien doit être sautée, sans écran de rappel. | petit |
-| Validation croisée | début avant fin (Q2.8), code postal selon le pays, extrémité contre le lieu verrouillé, groupe de Q2.2.1 coché sans précision | `errorOf` ne voit qu'une réponse. | moyen |
-| Réponse qui bloque | Q3.1, « Aller-retour différent » : un message, et « Suivant » bloqué (D-80) | Rien. | petit |
-| Adresse, type du socle (D-60) | Q3.2, Q3.3, Q3.8 | Aucun type. La réponse devient un objet. | moyen |
-| ~~Options qui dépendent des réponses~~ | Q1.3 (option 6), Q2.2.1, Q2.6, Q2.13, Q3.2, Q3.3 : « ne proposer que les situations compatibles et encore inconnues » | Fait : `offeredIf` sur une option. Une réponse perd l'option qui ne se propose plus. | fait |
-| Libellé qui dépend des réponses | Q1.4 (« en toute autonomie » ou « avec l'aide d'un proche »), Q2.2.1 (« Aucune de ces situations » devient « Aucune autre situation parmi celles proposées ») | Fait pour une question : `labelFrom`. Le libellé d'une option reste un texte fixe : Q2.2.1 le demande. | petit |
-| Aide dépliable sur une option | Q2.2.1, « Voir les situations concernées » | Rien. L'aide se déplie au clavier et ne compte pas comme une réponse. | petit |
-| Fait inconnu (D-77) | tout P2 | Le moteur de décision reçoit des faits tous renseignés. Il doit accepter un fait absent et rendre une cible indéfinie. À préciser avec la v10.0.2. | moyen |
-| Liste filtrable (D-65) | Q2.1.c, Q2.1.d | Rien. Une vingtaine d'options embarquées, filtrées sur le libellé et les synonymes, accessible au clavier, avec « je ne trouve pas ». Aucun chargement à la demande. | moyen |
+La colonne « Version » dit quel package le demande.
+
+| N° | Capacité | Demandée par | Version | Écart | Poids |
+|---|---|---|---|---|---|
+| 1 | Liste déroulante | Q3.2, Q3.3 | les deux | `SelectField` existe, aucun `kind` ne le rend. | petit |
+| 2 | Question facultative | complément d'adresse, commentaire de Q3.4, case de Q2.3.2 | les deux | Toute question affichée est obligatoire. | petit |
+| 3 | Entier strict | Q3.1 | les deux | `number` accepte les décimales. | petit |
+| 4 | Bornes de date et d'heure | Q2.8, Q3.6 | les deux | `date` et `datetime` n'ont ni minimum ni maximum. | petit |
+| 5 | Texte long, sur plusieurs lignes | Q3.4, Q3.5, fondement de Q2.1.l | les deux | `text` rend un champ d'une ligne : `ui/` n'a pas de zone de texte. | petit |
+| 6 | Options qui s'excluent deux à deux, avec une explication | Q1.2 (6 et 7, 4 et 11), Q2.2.1.b | 10.0.1 | `exclusiveOption` oppose une option à toutes les autres, pas deux options entre elles. | petit |
+| 7 | Réponse qui bloque | Q3.1, « Aller-retour différent » : un message, et « Suivant » bloqué (D-80) | 10.0.1 | Rien. | petit |
+| 8 | Libellé d'option qui dépend des réponses, option exclusive conditionnelle | Q2.2.1 (« Aucune de ces situations » devient « Aucune autre situation parmi celles proposées »), « Aucun » de Q3.7, indisponible dès qu'une case est acquise | 10.0.1 | `labelFrom` ne porte que sur une question. `exclusiveOption` est fixe. | petit |
+| 9 | Aide dépliable sur une option | Q2.2.1, « Voir les situations concernées » | 10.0.1 | Rien. L'aide se déplie au clavier et ne compte pas comme une réponse. | petit |
+| 10 | Rappel d'une valeur connue | les repères « R » de `SPECIFICATION_REAFFICHAGE_FAITS.md` : Q2.1, Q2.1.f, Q2.2.1, Q2.5, Q2.6, Q2.13, Q2.14 | 10.0.1 | Une page ne contient que des questions. Il faut un texte hors des réponses, affiché seulement si la page pose encore une question. | petit |
+| 11 | Donnée fixée près d'un champ | les repères « D » : Q3.2, Q3.3, Q3.4, Q3.7, Q3.8 | 10.0.1 | Rien : le rôle et la nature d'un lieu se lisent à côté des champs d'adresse, sans sélecteur. | petit |
+| 12 | Adresse, type du socle (D-60) : champs séparés, code postal français, mode étranger donné par le modèle | Q3.2, Q3.3, Q3.8 | les deux, pays revu en 10.0.1 | Aucun type. La réponse devient un objet. | moyen |
+| 13 | Validation croisée, un message par incohérence | début avant fin (Q2.8), code postal selon le pays, extrémité contre le lieu verrouillé, deux adresses identiques pour un même trajet, groupe de Q2.2.1 coché sans précision | les deux | `errorOf` ne voit qu'une réponse. | moyen |
+| 14 | Liste filtrable (D-65) | Q2.1.c, Q2.1.d | les deux | Rien. Une vingtaine d'options embarquées, filtrées sur le libellé et les synonymes, accessible au clavier, avec « je ne trouve pas ». Aucun chargement à la demande. | moyen |
+| 15 | Impression de la fiche | R2 | les deux | `printLabel` n'est pas lu. | petit |
+| 16 | Production, téléchargement et impression du PDF, avec la date de complétion figée | R3 | les deux | `downloadLabel`, `template` et `mapping` ne sont pas lus. C'est le reste du chantier 06. | moyen |
+| 17 | Taille du texte en configuration (D-68) | adresses, texte médical | les deux | Le livrable vise 9 pt, plancher 8 pt. `text-fit.ts` a 10 et 6 en constantes. | petit |
+| 18 | Texte trop long : règles de l'éditeur, puis débordement sous le cadre (D-61, D-63, D-67) | adresses, texte médical | les deux | `fillCerfa` refuse aujourd'hui d'écrire. | moyen |
+| 19 | PDF de sortie statique, sans champ interactif | PMT et DAP | 10.0.1 | Les champs restent dans le PDF produit. `form.flatten()` de `pdf-lib` les retire : essayé sur la PMT (53 champs, puis 0) et la DAP (56, puis 0). La méthode attend l'éditeur : voir « Problèmes restants ». | petit si on aplatit |
+
+### Ce qui attend la v10.0.2
+
+| N° | Capacité | Demandée par | Écart | Pourquoi attendre | Poids |
+|---|---|---|---|---|---|
+| 20 | Fait inconnu (D-77) | tout P2 | Le moteur de décision reçoit des faits tous renseignés. Il doit accepter un fait absent et rendre une cible indéfinie. | L'éditeur ajoute des tests avec des faits inconnus, et déconseille de se fier aux seules variables manquantes. | moyen |
+| 21 | Provenance des faits dans la trace, et son export pour la recette | la recette de l'éditeur | Rien. | Le contrat réponses/faits est corrigé dans la v10.0.2. | petit |
 
 ### Ce que l'éditeur fixe sur la lecture seule et l'adresse
 
@@ -124,14 +146,6 @@ questions, puis confronté au socle.
 
 Ces trois points décrivent la v10.0.0. La v10.0.1 les remplace : voir « Ce
 que la v10.0.1 change à l'inventaire ».
-
-### Résultats
-
-| Capacité | Demandée par | Écart | Poids |
-|---|---|---|---|
-| Impression de la fiche | R2 | `printLabel` n'est pas lu. | petit |
-| Téléchargement du PDF | R3 | `downloadLabel`, `template` et `mapping` ne sont pas lus. C'est le reste du chantier 06. | moyen |
-| Texte trop long : règles de l'éditeur, puis débordement (D-61) | adresses, texte médical | `fillCerfa` refuse aujourd'hui d'écrire. | moyen |
 
 ### PDF
 
@@ -156,8 +170,9 @@ que la v10.0.1 change à l'inventaire ».
   référence S3141, et sa notice le numéro 52996#01. Notion le nomme par la
   notice, le livrable par la référence.
 - **Conséquence.** `fillCerfa` écrit dans des champs sur les trois formulaires.
-  Aucune écriture par coordonnées n'est nécessaire, hors soulignement et
-  débordement.
+  Aucune écriture par coordonnées n'est nécessaire, hors débordement. La
+  v10.0.1 demande l'inverse pour la PMT et la DAP : voir « Problèmes
+  restants ».
 - **Le mapping.** 182 lignes, sans aucune coordonnée : chaque cellule est
   décrite en prose. Écrire sur les PDF sans champs demande de relever chaque
   position, volet par volet.
@@ -181,9 +196,11 @@ que la v10.0.1 change à l'inventaire ».
 
 ## Proposé, à confirmer
 
-- **L'ordre suit le questionnaire.** D'abord ce que P0 à P2 et R2 demandent,
-  puis P3 et R3 sur le S3141, puis PMT et DAP. La v10 peut ainsi s'intégrer
-  partie par partie.
+- **L'ordre va du plus petit au plus lourd.** D'abord les petites capacités
+  de saisie (1 à 9), puis le rappel et la donnée fixée (10, 11), puis
+  l'adresse, la validation croisée et la liste filtrable (12 à 14), enfin les
+  résultats et le PDF (15 à 19), une fois la méthode du PDF statique arrêtée
+  avec l'éditeur.
 - **Une capacité entre dans le socle par un commit**, avec ses tests et sa
   page de démonstration. Son usage par le modèle v10 vient dans un autre.
 - **La lecture seule : tranchée par la v10.0.1.** Une valeur connue est
@@ -223,6 +240,22 @@ Levés par la v10.0.1. Le texte d'origine reste pour mémoire.
    fois et calculer deux préconisations. C'est plus qu'une question du modèle
    (D-46), et cela relève du chantier 10.
 
+11. **Dessiner ou remplir.** Pour la PMT et la DAP, `COMPLETION_DOCUMENTS.md`
+    de la v10.0.1 demande de retirer les champs du PDF de sortie et de
+    dessiner textes, marques et soulignements d'après le mapping. Pour le
+    S3141, il garde les champs, sauf l'adresse d'un « autre lieu » ou d'une
+    « structure de soins », écrite dans une zone commune avec le libellé
+    souligné. Le mapping ne donne aucune coordonnée : dessiner demande de
+    relever 129 positions. Proposé à l'éditeur le 12 octobre : remplir les
+    champs, puis aplatir le PDF (capacité 19), et abandonner le soulignement.
+    Restent à contrôler, s'il accepte : le PDF aplati dans un lecteur courant
+    et à l'impression, et que chaque ligne du mapping a son champ. Ticket
+    Notion : « v10 : les PDF des cerfa du livrable ne sont pas les bons
+    gabarits ».
+12. **Le texte trop long.** L'accord est oral (D-61). Le livrable demande
+    encore de bloquer le PDF, en quatre endroits. Ticket Notion : « v10 : un
+    texte trop long déborde du cadre du cerfa, sans bloquer le PDF ».
+
 ### Conception à arrêter
 
 3. **L'adresse (D-60).** Moins lourd qu'annoncé. Quatre fichiers du socle
@@ -255,7 +288,8 @@ Non implémentées, et notées dans les points à remonter à l'éditeur.
   de texte par type de lieu : « autre lieu » et « structure de soins », au
   départ et à l'arrivée, plus une case « domicile ». L'adresse s'écrit dans le
   champ du type retenu. Les rendus `underline_printed_label_and_shared_address`
-  et `joined_address` du mapping répondaient aux spécimens sans champs.
+  et `joined_address` du mapping répondaient aux spécimens sans champs. La
+  v10.0.1 redemande pourtant le soulignement : voir le point 11.
 
 ## Critères d'acceptation
 
