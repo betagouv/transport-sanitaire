@@ -92,6 +92,13 @@ export const COMPLEMENT: QuestionnairePart<Questions, Cibles> = {
           integer: true,
           unit: "tasses",
         },
+        {
+          id: "nom",
+          kind: "text",
+          label: "À quel nom ?",
+          hint: "Démontre : une question facultative. La page se valide sans elle.",
+          optional: true,
+        },
       ],
     },
   ],

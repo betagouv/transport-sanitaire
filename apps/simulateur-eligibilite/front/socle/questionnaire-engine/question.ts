@@ -43,6 +43,11 @@ type Common<Questions extends AnyQuestions, Cibles> = {
   /** Phrase indicative, rendue sous la question. */
   readonly hint?: string;
   /**
+   * La question peut rester sans réponse : sa page se valide sans elle. Son
+   * libellé le dit, par « (facultatif) ».
+   */
+  readonly optional?: boolean;
+  /**
    * La question se pose-t-elle, vu les réponses ? Absente : toujours. Après le
    * verrou, elle lit aussi les cibles figées : une question peut dépendre de la
    * préconisation.
@@ -177,7 +182,8 @@ export function offeredAnswer(
 /** La réponse suffit-elle à quitter la question ? */
 export function isAnswered(question: Question, answer: Answer | undefined) {
   const offered = offeredAnswer(question, answer);
-  return offered !== undefined && errorOf(question, offered) === undefined;
+  if (offered === undefined) return question.optional === true;
+  return errorOf(question, offered) === undefined;
 }
 
 /** Toutes les questions qui se posent dans ces pages ont-elles leur réponse ? */
@@ -204,7 +210,8 @@ function asPosed(
   answers: Answers,
   cibles?: AnyCibles,
 ): Question {
-  const label = question.labelFrom?.(answers, cibles) ?? question.label;
+  const asked = question.labelFrom?.(answers, cibles) ?? question.label;
+  const label = question.optional ? `${asked} (facultatif)` : asked;
   if (question.kind !== "single choice" && question.kind !== "multiple choice")
     return { ...question, label };
   const options = question.options.filter(

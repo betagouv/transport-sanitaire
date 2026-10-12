@@ -4,4 +4,5 @@ export type Questions = {
   boisson: "the" | "cafe" | "rien";
   accompagnements: readonly ("lait" | "sucre" | "citron" | "aucun")[];
   quantite: number;
+  nom: string;
 };
