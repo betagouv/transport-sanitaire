@@ -18,7 +18,7 @@ export type QuestionnaireState = {
 };
 
 export type QuestionnaireOptions = {
-  // Les pages de ce questionnaire, dans l'ordre. Au moins une doit se poser.
+  // Les pages de ce questionnaire, dans l'ordre. Au moins une doit s'afficher.
   pages: readonly Page[];
   // Les réponses acquises avant ce questionnaire. Ses pages ne les reposent
   // pas : les conditions les lisent, rien ne les change. C'est le verrou.
@@ -36,7 +36,7 @@ export type QuestionnaireOptions = {
 
 type View = {
   page: Page;
-  // Les pages posées, pour la trace de debug.
+  // Les pages affichées, pour la trace de debug.
   pages: readonly Page[];
   questions: readonly Question[];
   // Les réponses de la page telles qu'elles sont à l'écran. Elles ne comptent
@@ -97,7 +97,7 @@ export function stateAfterAnswers(
     ),
   );
   const open = pending ?? asked.at(-1);
-  if (!open) throw new Error("Ce questionnaire ne pose aucune page.");
+  if (!open) throw new Error("Ce questionnaire n'affiche aucune page.");
   return { answers, page: open.id, complete: pending === undefined };
 }
 
@@ -105,7 +105,7 @@ export function stateAfterAnswers(
 
 type State = QuestionnaireState & { readonly draft: Answers };
 
-// Ce qui dit quelles pages se posent : la liste, et les cibles s'il y en a.
+// Ce qui dit quelles pages s'affichent : la liste, et les cibles s'il y en a.
 type Source = Pick<QuestionnaireOptions, "pages" | "cibles">;
 
 type Context = {
@@ -142,7 +142,7 @@ function read(options: Source, state: State): View {
   const { pages: all, cibles } = options;
   const pages = askedPages(all, state.answers, cibles);
   const page = pages.find((p) => p.id === state.page);
-  if (!page) throw new Error(`La page « ${state.page} » ne se pose plus.`);
+  if (!page) throw new Error(`La page « ${state.page} » ne s'affiche plus.`);
   const questions = askedQuestions(page, visibleAnswers(state), cibles);
   const hasPendingQuestions = questions.some(
     (question) => !isAnswered(question, state.draft[question.id]),

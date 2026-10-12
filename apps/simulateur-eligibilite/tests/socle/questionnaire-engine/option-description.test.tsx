@@ -1,7 +1,7 @@
 import { screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 import type { Page } from "../../../front/socle/questionnaire-engine/question";
-import { poser } from "./poser";
+import { afficher } from "./afficher";
 
 // Une option peut porter une explication, rendue sous son libellé : ce sont les
 // cartes radio du DSFR. Le questionnaire factice n'en a pas, la page est donc
@@ -24,7 +24,7 @@ const DUREE: Page = {
 
 describe("explication d'une option", () => {
   it("se lit avec le libellé de l'option qui la porte", () => {
-    poser([DUREE]);
+    afficher([DUREE]);
 
     expect(
       screen.getByRole("radio", { name: "Peu Environ 2 minutes." }),
@@ -32,7 +32,7 @@ describe("explication d'une option", () => {
   });
 
   it("ne change rien à une option qui n'en a pas", () => {
-    poser([DUREE]);
+    afficher([DUREE]);
 
     expect(screen.getByRole("radio", { name: "Beaucoup" })).toBeInTheDocument();
   });

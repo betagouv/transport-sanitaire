@@ -1,7 +1,7 @@
 import { screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 import type { Page } from "../../../front/socle/questionnaire-engine/question";
-import { poser } from "./poser";
+import { afficher } from "./afficher";
 
 // Une option peut arrêter le questionnaire : son message s'affiche, et on
 // n'avance plus. Les pages sont écrites ici.
@@ -60,7 +60,7 @@ const unInstant = () => new Promise((fini) => setTimeout(fini, 300));
 
 describe("réponse qui bloque", () => {
   it("affiche son message et bloque le bouton", async () => {
-    const { user } = poser([TRAJET]);
+    const { user } = afficher([TRAJET]);
     await user.type(screen.getByRole("spinbutton"), "2");
 
     await user.click(radio("Aller-retour différent"));
@@ -70,7 +70,7 @@ describe("réponse qui bloque", () => {
   });
 
   it("libère le bouton dès qu'une autre réponse est choisie", async () => {
-    const { user, reponses } = poser([TRAJET]);
+    const { user, reponses } = afficher([TRAJET]);
     await user.type(screen.getByRole("spinbutton"), "2");
     await user.click(radio("Aller-retour différent"));
 
@@ -82,7 +82,7 @@ describe("réponse qui bloque", () => {
   });
 
   it("retient une page qui avancerait seule", async () => {
-    const { user } = poser([SEULE, SUITE]);
+    const { user } = afficher([SEULE, SUITE]);
 
     await user.click(radio("Aller-retour différent"));
     await unInstant();
@@ -92,7 +92,7 @@ describe("réponse qui bloque", () => {
   });
 
   it("vaut aussi pour une case cochée", async () => {
-    const { user } = poser([EQUIPEMENTS]);
+    const { user } = afficher([EQUIPEMENTS]);
 
     await user.click(screen.getByRole("checkbox", { name: "Un fauteuil" }));
     await user.click(screen.getByRole("checkbox", { name: "Un autre" }));

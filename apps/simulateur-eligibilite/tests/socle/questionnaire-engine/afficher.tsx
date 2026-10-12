@@ -1,4 +1,4 @@
-// Ce que les tests d'une capacité du questionnaire partagent : poser des pages
+// Ce que les tests d'une capacité du questionnaire partagent : afficher des pages
 // écrites dans le test, sans passer par l'application ni par un modèle.
 
 import { render } from "@testing-library/react";
@@ -11,11 +11,11 @@ import type {
 } from "../../../front/socle/questionnaire-engine/question";
 
 /**
- * Pose ces pages. `reponses` rend ce que le questionnaire a validé, une fois
- * fini. `apresVerrou` les pose comme après le verrou : sur des réponses
+ * Affiche ces pages. `reponses` rend ce que le questionnaire a validé, une fois
+ * fini. `apresVerrou` les affiche comme après le verrou : sur des réponses
  * acquises et des cibles figées.
  */
-export function poser(
+export function afficher(
   pages: readonly Page[],
   apresVerrou: { lockedAnswers?: Answers; cibles?: AnyCibles } = {},
 ) {

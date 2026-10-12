@@ -1,7 +1,7 @@
 import { screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 import type { Page } from "../../../front/socle/questionnaire-engine/question";
-import { poser } from "./poser";
+import { afficher } from "./afficher";
 
 // Un nombre peut n'accepter qu'un entier. Les pages sont écrites ici.
 
@@ -31,7 +31,7 @@ const terminer = () =>
 
 describe("nombre entier", () => {
   it("refuse une décimale, et dit pourquoi", async () => {
-    const { user } = poser([TRANSPORTS]);
+    const { user } = afficher([TRANSPORTS]);
 
     await user.type(champ(), "2.5");
 
@@ -42,7 +42,7 @@ describe("nombre entier", () => {
   });
 
   it("accepte un entier", async () => {
-    const { user, reponses } = poser([TRANSPORTS]);
+    const { user, reponses } = afficher([TRANSPORTS]);
 
     await user.type(champ(), "4");
     await user.click(terminer());
@@ -51,7 +51,7 @@ describe("nombre entier", () => {
   });
 
   it("garde ses bornes", async () => {
-    const { user } = poser([TRANSPORTS]);
+    const { user } = afficher([TRANSPORTS]);
 
     await user.type(champ(), "0");
 
@@ -61,7 +61,7 @@ describe("nombre entier", () => {
   });
 
   it("laisse passer une décimale quand rien ne l'interdit", async () => {
-    const { user, reponses } = poser([POIDS]);
+    const { user, reponses } = afficher([POIDS]);
 
     await user.type(champ(), "72.5");
     await user.click(terminer());

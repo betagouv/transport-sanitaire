@@ -26,16 +26,16 @@ const SI_URGENCE: Page = {
   ],
 };
 
-const posees = (cibles: Record<string, unknown>) =>
+const affichees = (cibles: Record<string, unknown>) =>
   askedPages([TOUJOURS, SI_URGENCE], {}, cibles).map((page) => page.id);
 
 describe("condition d'une question sur les cibles", () => {
   it("pose la question quand la cible le demande", () => {
-    expect(posees({ urgence: true })).toEqual(["adresse", "urgence"]);
+    expect(affichees({ urgence: true })).toEqual(["adresse", "urgence"]);
   });
 
   it("ne la pose pas sinon", () => {
-    expect(posees({ urgence: false })).toEqual(["adresse"]);
+    expect(affichees({ urgence: false })).toEqual(["adresse"]);
   });
 });
 

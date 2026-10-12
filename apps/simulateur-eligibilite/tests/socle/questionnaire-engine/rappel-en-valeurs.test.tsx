@@ -1,7 +1,7 @@
 import { screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 import type { Page } from "../../../front/socle/questionnaire-engine/question";
-import { poser } from "./poser";
+import { afficher } from "./afficher";
 
 // Un rappel peut prendre la forme de valeurs avec leur intitulé : ce qui est
 // déjà décidé, montré près du champ encore demandé. On le lit, on ne le
@@ -44,14 +44,14 @@ const precede = (avant: Element, apres: Element) =>
 
 describe("rappel en valeurs, près d'un champ", () => {
   it("montre chaque valeur, avec son intitulé", () => {
-    poser([ARRIVEE], VERROU);
+    afficher([ARRIVEE], VERROU);
 
     expect(termes()).toEqual(["Rôle :", "Nature :"]);
     expect(valeurs()).toEqual(["arrivée", "structure de soins"]);
   });
 
   it("se place juste avant le champ qu'il concerne", () => {
-    poser([ARRIVEE], VERROU);
+    afficher([ARRIVEE], VERROU);
 
     expect(precede(screen.getByText("structure de soins"), adresse())).toBe(
       true,
@@ -59,7 +59,7 @@ describe("rappel en valeurs, près d'un champ", () => {
   });
 
   it("ne se modifie pas : le seul champ de la page est celui de la question", () => {
-    poser([ARRIVEE], VERROU);
+    afficher([ARRIVEE], VERROU);
 
     expect(screen.getAllByRole("textbox")).toEqual([adresse()]);
     expect(screen.queryByRole("combobox")).toBeNull();
@@ -67,7 +67,7 @@ describe("rappel en valeurs, près d'un champ", () => {
   });
 
   it("n'est pas une réponse : seule l'adresse est validée", async () => {
-    const { user, reponses } = poser([ARRIVEE], VERROU);
+    const { user, reponses } = afficher([ARRIVEE], VERROU);
 
     await user.type(adresse(), "3 rue des Lilas");
     await user.click(screen.getByRole("button", { name: "Terminer" }));
@@ -79,7 +79,7 @@ describe("rappel en valeurs, près d'un champ", () => {
   });
 
   it("ne montre rien pour une question qui n'en a pas", () => {
-    poser([SANS_RAPPEL]);
+    afficher([SANS_RAPPEL]);
 
     expect(screen.queryByRole("term")).toBeNull();
   });

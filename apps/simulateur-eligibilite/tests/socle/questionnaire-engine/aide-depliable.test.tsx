@@ -1,7 +1,7 @@
 import { screen, within } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 import type { Page } from "../../../front/socle/questionnaire-engine/question";
-import { poser } from "./poser";
+import { afficher } from "./afficher";
 
 // Une option peut porter une aide : un lien, juste sous elle, qui déplie une
 // liste. La déplier n'est pas répondre. Les pages sont écrites ici.
@@ -66,27 +66,27 @@ const precede = (avant: Element, apres: Element) =>
 
 describe("aide dépliable d'une option", () => {
   it("se place juste sous son option, avant la suivante", () => {
-    poser([SITUATIONS]);
+    afficher([SITUATIONS]);
 
     expect(precede(caseACocher(/^une autre situation/i), aide())).toBe(true);
     expect(precede(aide(), caseACocher(/^aucune de ces/i))).toBe(true);
   });
 
   it("reste hors du libellé de son option", () => {
-    poser([SITUATIONS]);
+    afficher([SITUATIONS]);
 
     expect(aide().closest("label")).toBeNull();
   });
 
   it("est repliée à l'ouverture de la page", () => {
-    poser([SITUATIONS]);
+    afficher([SITUATIONS]);
 
     expect(aide()).toHaveAttribute("aria-expanded", "false");
     expect(liste()).toEqual([]);
   });
 
   it("se déplie sur sa liste, au clavier", async () => {
-    const { user } = poser([SITUATIONS]);
+    const { user } = afficher([SITUATIONS]);
 
     aide().focus();
     await user.keyboard("{Enter}");
@@ -96,7 +96,7 @@ describe("aide dépliable d'une option", () => {
   });
 
   it("n'est pas une réponse : rien n'est coché, la page attend toujours", async () => {
-    const { user } = poser([SITUATIONS]);
+    const { user } = afficher([SITUATIONS]);
 
     await user.click(aide());
 
@@ -107,7 +107,7 @@ describe("aide dépliable d'une option", () => {
   });
 
   it("liste ce que les réponses laissent", async () => {
-    const { user } = poser([AGE, SITUATIONS]);
+    const { user } = afficher([AGE, SITUATIONS]);
 
     await user.click(screen.getByRole("radio", { name: "Non" }));
 
@@ -120,7 +120,7 @@ describe("aide dépliable d'une option", () => {
   });
 
   it("n'ajoute rien à une question sans aide", () => {
-    poser([AGE]);
+    afficher([AGE]);
 
     expect(screen.queryByRole("button", { name: /voir/i })).toBeNull();
   });

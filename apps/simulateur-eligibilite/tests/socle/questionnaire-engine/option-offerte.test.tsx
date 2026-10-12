@@ -1,7 +1,7 @@
 import { screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 import type { Page } from "../../../front/socle/questionnaire-engine/question";
-import { poser } from "./poser";
+import { afficher } from "./afficher";
 
 // Une option peut ne se proposer que pour certaines réponses. Le questionnaire
 // factice n'en a pas, les pages sont donc écrites ici.
@@ -53,7 +53,7 @@ const bouton = (name: string) => screen.getByRole("button", { name });
 
 describe("option qui dépend des réponses", () => {
   it("se propose quand les réponses le permettent", async () => {
-    const { user } = poser([REGIME, PLATS]);
+    const { user } = afficher([REGIME, PLATS]);
 
     await user.click(radio("Je mange de tout"));
 
@@ -62,7 +62,7 @@ describe("option qui dépend des réponses", () => {
   });
 
   it("ne se propose pas sinon", async () => {
-    const { user } = poser([REGIME, PLATS]);
+    const { user } = afficher([REGIME, PLATS]);
 
     await user.click(radio("Végétarien"));
 
@@ -72,7 +72,7 @@ describe("option qui dépend des réponses", () => {
   });
 
   it("quitte la réponse quand elle ne se propose plus", async () => {
-    const { user, reponses } = poser([REGIME, PLATS, DESSERT]);
+    const { user, reponses } = afficher([REGIME, PLATS, DESSERT]);
     await user.click(radio("Je mange de tout"));
     await screen.findByRole("group", PLATS_POSES);
     await user.click(caseACocher("Une salade"));
@@ -95,7 +95,7 @@ describe("option qui dépend des réponses", () => {
   });
 
   it("laisse la question sans réponse quand il n'en reste rien", async () => {
-    const { user } = poser([REGIME, PLATS, DESSERT]);
+    const { user } = afficher([REGIME, PLATS, DESSERT]);
     await user.click(radio("Je mange de tout"));
     await screen.findByRole("group", PLATS_POSES);
     await user.click(caseACocher("Un steak"));
