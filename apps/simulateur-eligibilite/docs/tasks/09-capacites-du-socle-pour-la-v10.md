@@ -6,11 +6,12 @@ au contrat `Model`.
 
 **Blocked by:** 06 (le parcours).
 
-**Status:** le modèle de démonstration (D-82) est en place, et les neuf
-petites capacités de saisie (1 à 9) sont codées, ainsi que le rappel (10 et
-11, réunies : une phrase, ou des valeurs avec leur intitulé), avec leur page
-et leur seed. Restent 10 capacités sur les 21 de l'inventaire : 8 ne dépendent
-pas de la v10.0.2, 2 l'attendent.
+**Status:** le modèle de démonstration (D-82) est en place, et les capacités
+1 à 11 sont codées, avec leur page et leur seed. La v10.0.2, reçue le
+12 octobre, ne retient plus rien : elle libère le fait inconnu, la provenance
+et le PDF aplati, ajoute deux capacités (22 et 23) et rend la liste filtrable
+(14) inutile pour l'instant. Restent 11 capacités à coder sur les 23 de
+l'inventaire.
 
 ## Décisions prises
 
@@ -19,16 +20,15 @@ pas de la v10.0.2, 2 l'attendent.
 - **D-61** Un texte trop long ne bloque jamais le PDF. Le socle applique les
   règles de l'éditeur tant qu'elles suffisent. Si le texte ne tient toujours
   pas, il est écrit en entier et déborde du cadre, comme sur un formulaire
-  papier. L'éditeur l'a accepté à l'oral (rapporté le 12 octobre). Son
-  livrable demande encore de bloquer : la mise à jour lui est demandée.
+  papier. L'éditeur l'a accepté à l'oral (rapporté le 12 octobre), puis
+  écrit dans la v10.0.2 (D-85).
 - **D-62** Les gabarits sont ceux de Notion, « 05. LIVRABLES » :
   `PMT_cerfa_11574-07`, `DAP_cerfa_11575-08` et celui des moins de 20 ans.
   Les PDF du dossier `formulaires/` du livrable ne servent pas.
-- **D-63** Avant de déborder, le socle applique les seules règles
+- ~~**D-63** Avant de déborder, le socle applique les seules règles
   automatiques : réduire le corps jusqu'au plancher (9 pt visés, 8 pt au
   minimum), puis retirer le commentaire facultatif en prévenant le
-  prescripteur. La reformulation à valider n'est pas reprise : depuis D-61,
-  elle ne débloque plus rien.
+  prescripteur.~~ Remplacé par D-85 : 8 pt n'est plus un plancher.
 - **D-64** Le simulateur n'existe que dans le navigateur.
 - **D-65** La recherche d'acte de Q2.1 porte sur la sélection de l'éditeur :
   16 profils, 3 suggestions, leurs synonymes, et « je ne trouve pas ». Pas
@@ -39,8 +39,8 @@ pas de la v10.0.2, 2 l'attendent.
   brut ».
 - **D-66** Chaque capacité a ses tests sur des pages écrites dans le test, et
   une page de démonstration dans le factice.
-- **D-67** Un texte qui déborde continue sous son cadre, quitte à recouvrir
-  ce qui s'y trouve.
+- ~~**D-67** Un texte qui déborde continue sous son cadre, quitte à recouvrir
+  ce qui s'y trouve.~~ Remplacé par D-85 : rien n'est recouvert.
 - **D-68** La taille visée et la taille plancher du texte viennent d'un
   fichier de configuration du socle, qu'une nouvelle version du modèle peut
   modifier. Le contrat `Model` ne change pas.
@@ -60,6 +60,25 @@ pas de la v10.0.2, 2 l'attendent.
 - **D-80** Un seul sens par simulation (éditeur). Le socle n'a pas à porter
   de segment.
 
+Décisions de l'éditeur, dans la v10.0.2 :
+
+- **D-84** Les trois PDF de sortie se remplissent par leurs champs, puis
+  s'aplatissent : il n'y reste aucun champ. Le libellé du type de lieu n'est
+  plus souligné. Ce qu'un champ ne sait pas montrer se dessine sur le PDF
+  aplati, et rien n'est écrit deux fois.
+- **D-85** Un texte trop long ne bloque jamais le PDF, et n'est jamais
+  reformulé. Dans l'ordre : réduire le corps de 9 à 8 pt, retirer le seul
+  commentaire facultatif en prévenant le prescripteur, puis descendre sous
+  8 pt. Le texte reste entier, sur la même page, sans recouvrir une autre
+  cellule. Il peut sortir de son cadre. Confirme D-61, remplace D-63 et D-67.
+- **D-86** Un fait a trois états : « oui », « non » établi, ou absent. Une
+  option non cochée ne vaut « non » que si elle a été proposée et sa page
+  validée. Une option masquée reste absente, sauf incompatibilité prouvée.
+  Une cible peut donc rester indéfinie : ce n'est pas une décision, et elle
+  ne s'affiche pas comme telle. Précise D-77.
+- **D-87** La trace garde la provenance de chaque fait : la réponse qui le
+  donne, la version du référentiel, ou la raison qui le rend sans objet.
+
 ## Ce que la v10.0.1 change à l'inventaire
 
 | Sujet | Avant | Maintenant |
@@ -73,16 +92,52 @@ pas de la v10.0.2, 2 l'attendent.
 | Q2.2.1 | une liste de douze options | quatre réponses, une aide dépliable, des précisions sur la même page |
 | Fait inconnu | n'existait pas | un fait peut manquer, et une cible rester indéfinie (D-77) |
 
+## Ce que la v10.0.2 change à l'inventaire
+
+Tiré du diff des deux packages : `GUIDE_DEVELOPPEUR_DELTA_v10.0.2.md`, les
+six tickets `TS1002`, `COMPLETION_DOCUMENTS.md`, `CONTRAT_SAISIES_ET_PAGES.md`,
+`CORRECTIF_FAITS_SANS_REPONSE.md` et `MAPPING_ACROFORM_GABARITS.json`. Le
+YAML, le contrat réponses/faits et l'oracle relèvent du modèle : voir le
+chantier 10.
+
+| Sujet | Avant | Maintenant |
+|---|---|---|
+| PDF de sortie | dessiner ou remplir : en attente de l'éditeur | remplir, puis aplatir les trois sorties (D-84). La capacité 19 n'attend plus, et couvre aussi le S3141 |
+| Type de lieu | libellé à souligner | le champ « autre lieu » ou « structure de soins » suffit. L'autre reste vide |
+| Cases groupées de la DAP | pas vu | 11 cellules partagent 4 champs. Un champ ne sait cocher qu'une case : chacune se marque à part, sur le PDF aplati. Capacité 22 |
+| Cellule sans champ | pas vu | « Urgence : autres (précisez) » de la PMT n'a aucun champ. Capacité 23 |
+| Texte trop long | accord oral, livrable contraire | écrit dans le livrable (D-85). Plus de taille plancher, plus de recouvrement |
+| Longueur maximale d'un champ | `fillCerfa` refuse d'écrire | elle ne doit ni retirer un mot, ni bloquer |
+| Fait inconnu | attendait la v10.0.2 | spécifié (D-86). La capacité 20 n'attend plus |
+| Provenance | attendait la v10.0.2 | spécifiée (D-87). La capacité 21 n'attend plus |
+| Variables manquantes | à trancher | un outil de diagnostic. Les questions s'affichent par leurs conditions (`askedIf`, `offeredIf`) et par les cibles. Le socle ne les expose pas : rien à faire |
+| Recherche d'acte de Q2.1 | liste filtrable à coder | inactive : le moteur calcule que le code d'un soin ne change aucune décision. Capacité 14 gelée |
+| Q2.10, Q2.7, Q2.8 | une question par page | des précisions sur la même page, selon la réponse : `askedIf` le fait déjà |
+| Contradiction avec une page antérieure | pas vu | le prescripteur corrige la réponse d'origine. S'ajoute à la validation croisée (13) |
+| Gabarits | ceux de Notion (D-62) | ceux du package, contrôlés par leur empreinte. Le mapping des champs y est lié |
+
 ## Ce que ces décisions entraînent
 
 - **D-60.** Une réponse n'est plus seulement une chaîne, un nombre ou une
   liste. La comparaison de deux réponses, l'effacement des dépendances, les
   seeds et la trace doivent accepter un objet. Les règles postales françaises
   entrent dans le socle.
-- **D-61.** `fillCerfa` lève aujourd'hui `TextOverflowError` et ne produit
-  aucun PDF. Cette règle s'inverse. Un champ AcroForm coupe ce qui dépasse de
-  son cadre : pour déborder, le texte se dessine sur la page, hors du champ.
-  L'écran « PDF bloqué » sort de l'inventaire.
+- **D-61, D-85.** `fillCerfa` lève aujourd'hui `TextOverflowError` et ne
+  produit aucun PDF. Cette règle s'inverse : `TextOverflowError` disparaît, et
+  l'écran « PDF bloqué » sort de l'inventaire. `fillCerfa` refuse aussi un
+  texte plus long que la limite du champ : cette limite se lève avant
+  d'écrire, puisque le PDF de sortie n'a plus de champ.
+- **D-84.** L'option `readOnly` de `fillCerfa` n'a plus d'objet. Une case
+  d'un groupe ne se coche plus par son champ quand une autre du même groupe
+  l'est aussi : elle se dessine.
+- **D-86.** `situationOf` envoie aujourd'hui chaque fait au moteur. Un fait
+  absent ne doit pas avoir de clé : publicodes refuse une valeur `undefined`.
+  Les 59 faits de la v10.0.2 sont tous des oui/non.
+- **D-86, D-87.** Le modèle calcule ses faits à partir des seules réponses
+  (`preconisation.faits(answers)`). Les réponses ne disent ni quelles options
+  étaient proposées, ni si une question facultative sans réponse a été
+  validée. C'est le premier point qui peut toucher au contrat `Model` : voir
+  « Conception à arrêter ».
 
 ## Inventaire
 
@@ -94,7 +149,7 @@ questions, puis confronté au socle.
 
 | Besoin de la v10 | Dans le socle |
 |---|---|
-| Sous-questions conditionnelles sur la même page (Q2.1.a à k, Q2.6, Q2.8) | `askedIf` par question, plusieurs questions par page |
+| Sous-questions conditionnelles sur la même page (Q2.1.a à k, Q2.6, Q2.8, et Q2.10.a et b depuis la v10.0.2) | `askedIf` par question, plusieurs questions par page |
 | « Aucune » exclusive (Q1.3, Q2.2.1, Q2.6, Q3.7) | `exclusiveOption` |
 | Avance immédiate, « Suivant » au retour | `auto-advance.ts` |
 | Effacement des seules réponses dépendantes | `dependsOn`, `page-commit.ts` |
@@ -124,7 +179,7 @@ L'audience n'a rien demandé : seul le service n° 4 voit les developer tools,
 et Matomo reçoit le service avec chaque évènement. Une simulation de
 démonstration se range donc déjà à part.
 
-### Ce qui manque, sans dépendre de la v10.0.2
+### Ce qui manque
 
 La colonne « Version » dit quel package le demande.
 
@@ -142,20 +197,25 @@ La colonne « Version » dit quel package le demande.
 | 10 | ~~Rappel d'une valeur connue~~ | les repères « R » de `SPECIFICATION_REAFFICHAGE_FAITS.md` : Q2.1, Q2.1.f, Q2.2.1, Q2.5, Q2.6, Q2.13, Q2.14 | 10.0.1 | Fait : `reminder` et `reminderFrom` sur une question, en une phrase. Le rappel se rend juste avant elle, et seulement si elle se pose. | fait |
 | 11 | ~~Donnée fixée près d'un champ~~ | les repères « D » : Q3.2, Q3.3, Q3.4, Q3.7, Q3.8 | 10.0.1 | Fait : le même `reminder`, en valeurs avec leur intitulé, rendues en liste de définitions au-dessus du champ. Une seule capacité avec la 10, sous un seul nom. | fait |
 | 12 | Adresse, type du socle (D-60) : champs séparés, code postal français, mode étranger donné par le modèle | Q3.2, Q3.3, Q3.8 | les deux, pays revu en 10.0.1 | Aucun type. La réponse devient un objet. | moyen |
-| 13 | Validation croisée, un message par incohérence | début avant fin (Q2.8), code postal selon le pays, extrémité contre le lieu verrouillé, deux adresses identiques pour un même trajet, groupe de Q2.2.1 coché sans précision | les deux | `errorOf` ne voit qu'une réponse. | moyen |
-| 14 | Liste filtrable (D-65) | Q2.1.c, Q2.1.d | les deux | Rien. Une vingtaine d'options embarquées, filtrées sur le libellé et les synonymes, accessible au clavier, avec « je ne trouve pas ». Aucun chargement à la demande. | moyen |
-| 15 | Impression de la fiche | R2 | les deux | `printLabel` n'est pas lu. | petit |
-| 16 | Production, téléchargement et impression du PDF, avec la date de complétion figée | R3 | les deux | `downloadLabel`, `template` et `mapping` ne sont pas lus. C'est le reste du chantier 06. | moyen |
-| 17 | Taille du texte en configuration (D-68) | adresses, texte médical | les deux | Le livrable vise 9 pt, plancher 8 pt. `text-fit.ts` a 10 et 6 en constantes. | petit |
-| 18 | Texte trop long : règles de l'éditeur, puis débordement sous le cadre (D-61, D-63, D-67) | adresses, texte médical | les deux | `fillCerfa` refuse aujourd'hui d'écrire. | moyen |
-| 19 | PDF de sortie statique, sans champ interactif | PMT et DAP | 10.0.1 | Les champs restent dans le PDF produit. `form.flatten()` de `pdf-lib` les retire : essayé sur la PMT (53 champs, puis 0) et la DAP (56, puis 0). La méthode attend l'éditeur : voir « Problèmes restants ». | petit si on aplatit |
+| 13 | Validation croisée, un message par incohérence | début avant fin (Q2.8), code postal selon le pays, extrémité contre le lieu verrouillé, deux adresses identiques pour un même trajet, groupe de Q2.2.1 coché sans précision. Depuis la v10.0.2, une réponse qui contredit une page antérieure : exceptions de Q2.6 contre le séjour, la durée ou la dialyse de Q1.3, « Aucune de ces situations » en Q2.10 après une convocation en Q2.1 | les deux, étendue en 10.0.2 | `errorOf` ne voit qu'une réponse. Il doit voir toutes les réponses, et dire laquelle corriger. | moyen |
+| 14 | Liste filtrable (D-65) : **gelée** | Q2.1.c, Q2.1.d | 10.0.1 | La v10.0.2 n'affiche plus la recherche d'acte. À reprendre si une règle future rend le code d'un soin décisif. | gelée |
+| 15 | Impression de la fiche | R2 | toutes | `printLabel` n'est pas lu. | petit |
+| 16 | Production, téléchargement et impression du PDF, avec la date de complétion figée. Un avertissement quand le commentaire facultatif a été retiré | R3 | toutes, avertissement en 10.0.2 | `downloadLabel`, `template` et `mapping` ne sont pas lus. C'est le reste du chantier 06. | moyen |
+| 17 | Taille du texte en configuration (D-68) : 9 pt visés, 8 pt avant de retirer le commentaire | adresses, texte médical | toutes | `text-fit.ts` a 10 et 6 en constantes. 8 pt n'est plus un plancher (D-85). | petit |
+| 18 | Texte trop long (D-85). Le texte requis et le commentaire facultatif arrivent séparés. Réduire de 9 à 8 pt, retirer le commentaire, puis réduire jusqu'à ce que tout tienne. Dire ce qui a été retiré, et le garder dans la trace | adresses, texte médical | revue en 10.0.2 | `fillCerfa` refuse d'écrire, et s'arrête à une taille plancher. | moyen |
+| 19 | PDF de sortie aplati, sans aucun champ (D-84) | PMT, DAP, S3141 | 10.0.2 | Les champs restent dans le PDF produit. `form.flatten()` de `pdf-lib` les retire : essayé sur la PMT (53 champs, puis 0) et la DAP (56, puis 0). Reste à l'essayer sur le S3141, et à contrôler le rendu dans un lecteur courant. | petit |
+| 20 | Fait à trois états (D-86). Le moteur n'envoie pas un fait absent, et rend une cible indéfinie. Le modèle sait ce qui a été demandé : les questions validées, et les options qui y étaient proposées | tout P2 | 10.0.2 | Le moteur envoie tous les faits. Le modèle ne reçoit que les réponses. | moyen |
+| 21 | Provenance de chaque fait dans la trace, et son export pour la recette (D-87) | recette N3 de l'éditeur | 10.0.2 | `Preconisation` garde les faits sans leur origine. `DebugTrace` les montre, sans export. | petit |
+| 22 | Marque dessinée sur le PDF aplati, à la place de la case, pour chaque motif établi | DAP : groupes `km` (distance, série, CAMSP, maternité), `sit` (quatre situations avion ou bateau), `ald` (ALD, AT/MP), et `malrare` | 10.0.2 | `check` ne coche qu'une case par champ, et refuse une case sans état d'export. La position se lit dans le gabarit : c'est le rectangle de la case. | petit |
+| 23 | Texte écrit hors de tout champ, à une position donnée par le mapping | PMT, « Urgence : autres (précisez) », pages 3 et 4 | 10.0.2 | Une ligne du mapping est un champ, sans exception. Le livrable ne donne pas la position : à relever. | petit |
 
-### Ce qui attend la v10.0.2
+Trois lignes du mapping des champs ne demandent rien au socle :
 
-| N° | Capacité | Demandée par | Écart | Pourquoi attendre | Poids |
-|---|---|---|---|---|---|
-| 20 | Fait inconnu (D-77) | tout P2 | Le moteur de décision reçoit des faits tous renseignés. Il doit accepter un fait absent et rendre une cible indéfinie. | L'éditeur ajoute des tests avec des faits inconnus, et déconseille de se fier aux seules variables manquantes. | moyen |
-| 21 | Provenance des faits dans la trace, et son export pour la recette | la recette de l'éditeur | Rien. | Le contrat réponses/faits est corrigé dans la v10.0.2. | petit |
+- **l'adresse** (16 cellules par formulaire) : ses composants se réunissent
+  dans le seul champ du type de lieu retenu. C'est le mapping du modèle ;
+- **le NIR**, à couper entre le numéro et sa clé : l'identité reste vide
+  (D-74) ;
+- **l'organisme** de la DAP, sans champ : de l'identité aussi.
 
 ### Ce que l'éditeur fixe sur la lecture seule et l'adresse
 
@@ -197,8 +257,13 @@ que la v10.0.1 change à l'inventaire ».
   notice, le livrable par la référence.
 - **Conséquence.** `fillCerfa` écrit dans des champs sur les trois formulaires.
   Aucune écriture par coordonnées n'est nécessaire, hors débordement. La
-  v10.0.1 demande l'inverse pour la PMT et la DAP : voir « Problèmes
-  restants ».
+  v10.0.1 demandait l'inverse pour la PMT et la DAP. La v10.0.2 y renonce
+  (D-84).
+- **Depuis la v10.0.2**, `MAPPING_ACROFORM_GABARITS.json` relie chacune des
+  182 cellules à son champ : 121 par le champ seul, 48 pour les adresses,
+  11 marques à dessiner (capacité 22) et 2 textes sans champ (capacité 23, et
+  l'organisme de la DAP). Il est lié aux gabarits du package par leur
+  empreinte. Les trois empreintes sont les mêmes qu'en v10.0.1.
 - **Le mapping.** 182 lignes, sans aucune coordonnée : chaque cellule est
   décrite en prose. Écrire sur les PDF sans champs demande de relever chaque
   position, volet par volet.
@@ -206,9 +271,9 @@ que la v10.0.1 change à l'inventaire ».
   `date_fr` (12), `underline_printed_label_and_shared_address` (12),
   `checkbox_expression` (6), `integer` (3). Tous sont du calcul, que le mapping
   du modèle fait avec `textFrom` et `formatDateForField`. Le soulignement
-  n'est plus nécessaire : voir « Problèmes restants ».
-- **Le corps du texte.** Le livrable vise 9 pt, plancher 8 pt. Le socle a 10 et
-  6 en constantes.
+  n'est plus demandé (D-84).
+- **Le corps du texte.** Le livrable vise 9 pt, descend à 8 pt, puis plus bas
+  s'il le faut (D-85). Le socle a 10 et 6 en constantes.
 
 ### Hors de ce chantier
 
@@ -222,11 +287,18 @@ que la v10.0.1 change à l'inventaire ».
 
 ## Proposé, à confirmer
 
-- **L'ordre va du plus petit au plus lourd.** Après le modèle de
-  démonstration (D-82), les petites capacités de saisie (1 à 9), puis le
-  rappel et la donnée fixée (10, 11), puis l'adresse, la validation croisée et
-  la liste filtrable (12 à 14), enfin les résultats et le PDF (15 à 19), une
-  fois la méthode du PDF statique arrêtée avec l'éditeur.
+- **L'ordre, revu sur la v10.0.2.** Faits : le modèle de démonstration
+  (D-82), la saisie (1 à 9), le rappel (10, 11). Restent quatre groupes, à
+  valider un par un :
+
+  | Groupe | Capacités | Pourquoi là |
+  |---|---|---|
+  | 1. La décision | 20, 21 | Le modèle écrit tous ses faits dessus. C'est ce qui bloquait le branchement des décisions, et le seul point qui peut toucher au contrat `Model` |
+  | 2. L'adresse | 12 | Change le type d'une réponse |
+  | 3. La validation croisée | 13 | S'appuie sur l'adresse pour deux de ses cas |
+  | 4. Le PDF | 19 et 17, puis 18, puis 22 et 23, puis 16 et 15 | Aplatir d'abord : tout le reste se contrôle sur le PDF aplati |
+
+  La liste filtrable (14) ne se code pas.
 - **Une capacité entre dans le socle par un commit**, avec ses tests et sa
   page de démonstration. Son usage par le modèle v10 vient dans un autre.
 - **La lecture seule : tranchée par la v10.0.1.** Une valeur connue est
@@ -244,7 +316,8 @@ que la v10.0.1 change à l'inventaire ».
 
 ### En attente d'une réponse de l'éditeur
 
-Levés par la v10.0.1. Le texte d'origine reste pour mémoire.
+Levés par la v10.0.1, puis par la v10.0.2 pour les points 11 et 12. Le
+texte d'origine reste pour mémoire.
 
 1. ~~La lecture seule.~~ Tranchée : voir « Proposé, à confirmer ».
 2. ~~Les deux blocages avant un résultat.~~ L'équipement bariatrique ne
@@ -268,21 +341,13 @@ Levés par la v10.0.1. Le texte d'origine reste pour mémoire.
    fois et calculer deux préconisations. C'est plus qu'une question du modèle
    (D-46), et cela relève du chantier 10.
 
-11. **Dessiner ou remplir.** Pour la PMT et la DAP, `COMPLETION_DOCUMENTS.md`
-    de la v10.0.1 demande de retirer les champs du PDF de sortie et de
-    dessiner textes, marques et soulignements d'après le mapping. Pour le
-    S3141, il garde les champs, sauf l'adresse d'un « autre lieu » ou d'une
-    « structure de soins », écrite dans une zone commune avec le libellé
-    souligné. Le mapping ne donne aucune coordonnée : dessiner demande de
-    relever 129 positions. Proposé à l'éditeur le 12 octobre : remplir les
-    champs, puis aplatir le PDF (capacité 19), et abandonner le soulignement.
-    Restent à contrôler, s'il accepte : le PDF aplati dans un lecteur courant
-    et à l'impression, et que chaque ligne du mapping a son champ. Ticket
-    Notion : « v10 : les PDF des cerfa du livrable ne sont pas les bons
-    gabarits ».
-12. **Le texte trop long.** L'accord est oral (D-61). Le livrable demande
-    encore de bloquer le PDF, en quatre endroits. Ticket Notion : « v10 : un
-    texte trop long déborde du cadre du cerfa, sans bloquer le PDF ».
+11. ~~Dessiner ou remplir.~~ Tranché par la v10.0.2 (D-84) : remplir les
+    champs, puis aplatir, comme proposé le 12 octobre. Le soulignement est
+    abandonné. Restent à contrôler chez nous : le PDF aplati dans un lecteur
+    courant et à l'impression, et le S3141, dont un moteur de rendu affiche
+    mal certains libellés d'après l'éditeur.
+12. ~~Le texte trop long.~~ Écrit dans la v10.0.2 (D-85), ticket `TS1002-06`.
+    Les quatre endroits qui demandaient de bloquer sont corrigés.
 
 ### Conception à arrêter
 
@@ -293,10 +358,45 @@ Levés par la v10.0.1. Le texte d'origine reste pour mémoire.
    demande un par champ ; le pays reste proposé (case « Adresse hors de
    France »).
 
-Tranchés : le débordement va sous le cadre (D-67), la taille du texte vient
-d'un fichier de configuration du socle (D-68), la liste filtrable s'écrit dans
-le socle, et la page de démonstration reste dans le factice, qui ne disparaît
-plus (D-82).
+Ouverts par la v10.0.2 :
+
+13. **Ce que le modèle sait de ce qui a été demandé (D-86).** Pour dire
+    « non », le modèle doit savoir qu'une option a été proposée et que sa
+    page est validée. Il ne reçoit que les réponses. Les options proposées
+    s'en déduisent, puisque `offeredIf` ne lit qu'elles. La validation ne
+    s'en déduit pas toujours : une question facultative laissée vide ne
+    laisse aucune réponse, validée ou non. À la fin du parcours, tout ce qui
+    est demandé est validé, et les réponses suffisent. En cours de route, non.
+
+    | Option | Ce qu'elle coûte |
+    |---|---|
+    | A. Le socle donne au modèle, avec les réponses, les questions validées et leurs options proposées | `preconisation.faits` reçoit un second argument : le contrat `Model` change, par ajout |
+    | B. Le socle garde une réponse vide pour une question facultative validée | Rien au contrat. Mais « rien de coché » redevient une réponse, à rebours de ce que le moteur de questionnaire fait aujourd'hui |
+    | C. Le modèle ne calcule ses faits qu'à la fin du parcours | Rien au socle. Mais une question ne peut plus dépendre d'une cible en cours de route, alors que Q2.3.4 dépend de `cible_question_urgence_requise` |
+
+    Proposé : A. C'est la seule qui ne déforme ni les réponses ni le
+    questionnaire.
+14. **Une cible indéfinie à R2 (D-86).** Elle ne doit pas s'afficher comme
+    une décision. Le socle ne sait pas laquelle des cibles est l'issue.
+    Proposé : il transporte la cible indéfinie telle quelle, et c'est le
+    résultat du modèle qui refuse de l'afficher. Un test de conformité vérifie
+    qu'aucune seed du modèle n'arrive à R2 sans issue.
+15. **Sortir du cadre, ou rétrécir dedans (D-85).** L'éditeur permet au texte
+    de sortir de son cadre, sans recouvrir une autre cellule. Il faut alors
+    connaître l'espace libre autour de chaque champ, que le mapping ne donne
+    pas. Proposé : rester dans le cadre et réduire le corps jusqu'à ce que
+    tout tienne. Rien n'est coupé ni recouvert, sans aucune position à
+    relever. La lisibilité des cas extrêmes se juge à la recette papier (N5).
+16. **Les gabarits (D-62).** Le package les porte depuis la v10.0.1, avec
+    leur empreinte, et le mapping des champs y est lié. Proposé : prendre
+    ceux du package, et remplacer D-62.
+17. **La liste filtrable gelée (14).** L'éditeur garde la recherche d'acte
+    dans le catalogue, pour une activation future. Proposé : ne pas la coder
+    tant qu'aucune branche ne l'affiche.
+
+Tranchés : la taille du texte vient d'un fichier de configuration du socle
+(D-68), et la page de démonstration reste dans le factice, qui ne disparaît
+plus (D-82). Le débordement sous le cadre (D-67) est remplacé par D-85.
 
 ### Demandes du livrable qu'un programme ne sait pas tenir
 
@@ -304,7 +404,11 @@ Non implémentées, et notées dans les points à remonter à l'éditeur.
 
 8. **Rejeter un texte libre contradictoire** (Q3.4, Q3.5) : « toute nouvelle
    indication, nature d'acte, régime ou urgence contradictoire doit être
-   rejetée ». Inchangé dans la v10.0.1.
+   rejetée ». Inchangé dans la v10.0.1 et dans la v10.0.2.
+18. **Contrôler à l'œil le PDF produit** : la v10.0.2 demande un contrôle
+    visuel automatisé des limites, des chevauchements et des glyphes, puis
+    une recette humaine (N4). Le socle mesure le texte avant de l'écrire, et
+    ses tests relisent le PDF. Comparer des images de pages n'est pas prévu.
 9. ~~Vérifier le format postal local~~ : abandonné par l'éditeur, le code
    postal étranger est libre.
 10. ~~Bloquer le PDF pour une adresse « clairement incompatible »~~ :
@@ -318,9 +422,10 @@ Non implémentées, et notées dans les points à remonter à l'éditeur.
   départ et à l'arrivée, plus une case « domicile ». L'adresse s'écrit dans le
   champ du type retenu. Les rendus `underline_printed_label_and_shared_address`
   et `joined_address` du mapping répondaient aux spécimens sans champs. La
-  v10.0.1 redemande pourtant le soulignement : voir le point 11.
+  v10.0.2 le confirme (D-84).
 
 ## Critères d'acceptation
 
 - [ ] Chaque capacité a sa tâche, avec un test sur le factice.
-- [ ] Aucune n'a modifié le type `Model`.
+- [ ] Aucune n'a modifié le type `Model`, sauf arbitrage sur le fait à trois
+      états (point 13 de « Conception à arrêter »).

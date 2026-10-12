@@ -21,7 +21,7 @@ ouvertes. On les traite un par un, dans l'ordre du tableau.
 | [06](06-parcours-et-resultats.md) | Parcours et résultats | fait, hors PDF | impression, production du PDF |
 | [07](07-seeds.md) | Seeds | fait | les seeds des cas d'oracle, que nous écrivons d'après le contrat réponses/faits (D-79), après la v10.0.2 |
 | [08](08-tests-et-factice.md) | Tests et factice | fait | rien |
-| [09](09-capacites-du-socle-pour-la-v10.md) | Capacités du socle pour la v10 | modèle de démonstration en place (D-82), capacités 1 à 11 codées : la saisie, et le rappel sous ses deux formes | 10 capacités : 8 que rien ne retient (D-78), 2 qui attendent la v10.0.2 |
+| [09](09-capacites-du-socle-pour-la-v10.md) | Capacités du socle pour la v10 | modèle de démonstration en place (D-82), capacités 1 à 11 codées. Inventaire revu sur la v10.0.2 : 23 capacités | 11 capacités, que plus rien ne retient, en quatre groupes : la décision (20, 21), l'adresse (12), la validation croisée (13), le PDF (15 à 19, 22, 23). La liste filtrable (14) est gelée |
 | [10](10-integration-de-la-v10.md) | Intégration de la v10 | étapes 1 et 2 codées sur la v10.0.0, gardées sur `v10-modele-10.0.0` (D-81) | le branchement des décisions attend la v10.0.2 (D-78) ; l'interface se poursuit |
 
 ## Les livraisons de l'éditeur
@@ -30,7 +30,7 @@ ouvertes. On les traite un par un, dans l'ordre du tableau.
 |---|---|---|
 | v10.0.0 | relivrée le 6 octobre | les étapes 1 et 2 sont codées dessus, sur la branche `v10-modele-10.0.0` (D-81) |
 | v10.0.1 | le 12 octobre | analysée, pas portée : voir le [chantier 10](10-integration-de-la-v10.md) |
-| v10.0.2 | annoncée le 12 octobre | attendue : contrat réponses/faits corrigé, trois décisions déplacées dans le moteur, tests avec des faits inconnus |
+| v10.0.2 | le 12 octobre | analysée pour le socle : voir le [chantier 09](09-capacites-du-socle-pour-la-v10.md). Le modèle suit, après le socle |
 
 ## Commits
 
@@ -111,11 +111,11 @@ reste dans le tableau, barrée, avec celle qui la remplace.
 | D-60 | 2026-10-07 | L'adresse est un type de question du socle. Sa réponse est un objet : le type `Answer` s'élargit. | 09 |
 | D-61 | 2026-10-07 | Un texte trop long ne bloque jamais le PDF. Le socle applique les règles de l'éditeur tant qu'elles suffisent, puis écrit le texte en entier, en débordant du cadre, comme sur un formulaire papier. C'est un écart au livrable, qui demande de bloquer. | 09, 10 |
 | D-62 | 2026-10-07 | Les gabarits des cerfa sont ceux de Notion, « 05. LIVRABLES » : `PMT_cerfa_11574-07`, `DAP_cerfa_11575-08` et celui des moins de 20 ans. Ils sont remplissables. Les PDF du dossier `formulaires/` du livrable sont des spécimens publics, sans champs : ils ne servent pas. | 09, 10 |
-| D-63 | 2026-10-07 | Avant de déborder, le socle applique les seules règles automatiques de l'éditeur : réduire le corps jusqu'au plancher, puis retirer le commentaire facultatif en prévenant le prescripteur. La reformulation à valider n'est pas reprise. | 09, 10 |
+| D-63 | 2026-10-07 | ~~Avant de déborder, le socle applique les seules règles automatiques de l'éditeur : réduire le corps jusqu'au plancher, puis retirer le commentaire facultatif en prévenant le prescripteur. La reformulation à valider n'est pas reprise.~~ Remplacé par D-85. | 09, 10 |
 | D-64 | 2026-10-07 | Le simulateur n'existe que dans le navigateur. L'éditeur a retiré du livrable le verrou, la trace et les marqueurs côté serveur : c'était une erreur. Le verrou est celui du parcours, et le modèle calcule `fait_p1_complete` et `fait_p2_complete`. | 06, 09, 10 |
 | D-65 | 2026-10-07 | En Q2.1, la recherche d'acte porte sur la sélection de l'éditeur (`selection_q21.json` : 16 profils, 3 suggestions, leurs synonymes), pas sur les index CCAM et NABM entiers. Aucun autre acte ne peut qualifier dans cette livraison. | 09, 10 |
 | D-66 | 2026-10-07 | Chaque capacité du socle a ses tests sur des pages écrites dans le test, et une page de démonstration dans le factice pour la voir à l'écran. | 08, 09 |
-| D-67 | 2026-10-07 | Un texte qui déborde continue sous son cadre, quitte à recouvrir ce qui s'y trouve. | 09 |
+| D-67 | 2026-10-07 | ~~Un texte qui déborde continue sous son cadre, quitte à recouvrir ce qui s'y trouve.~~ Remplacé par D-85. | 09 |
 | D-68 | 2026-10-07 | La taille visée et la taille plancher du texte d'un cerfa viennent d'un fichier de configuration du socle. Une nouvelle version du modèle peut modifier ce fichier. Le contrat `Model` ne change pas. | 09, 10 |
 | D-69 | 2026-10-07 | L'intégration de la v10 suit sept étapes, dans l'ordre du questionnaire : 1. le noyau ; 2. P0 et P1, le mode de transport ; 3. P2, l'éligibilité, sans page de résultat ; 4. R2, la page de résultat (mode et éligibilité) ; 5. P3, les informations qui complètent le cerfa, sans PDF ; 6. le premier PDF ; 7. les autres PDF. | 10 |
 | D-70 | 2026-10-07 | Du livrable, le dépôt ne garde que le YAML des règles et un fichier `VERSION`, dans `front/model/rules/`. Le dictionnaire des cibles, le mapping, la sélection Q2.1 et l'oracle sont retranscrits dans `front/model/`, selon les règles de la codebase. Les gabarits remplissables vont dans `front/model/cerfa/`. Un script local compare nos déclarations au package à chaque livraison. D-41 se restreint : le test du dépôt compare au YAML seul. | 04, 10 |
@@ -132,15 +132,22 @@ reste dans le tableau, barrée, avec celle qui la remplace.
 | D-81 | 2026-10-12 | `v10` ne porte que le socle. Le noyau, P0 et P1 de la v10.0.0 en sont retirés et gardés sur la branche `v10-modele-10.0.0`, d'où l'intégration repart à la livraison de la v10.0.2. Le factice revient dans `front/model/`, et les tests du socle gardent leur copie dans `tests/socle/fixtures/`. Précise D-52. | 08, 10 |
 | D-82 | 2026-10-12 | Le factice de l'app devient le modèle de démonstration, de façon pérenne : chaque capacité du socle y a sa page, pour la valider à l'écran sans dépendre du modèle de l'éditeur. Il vit dans `front/models/fake/`, et le modèle de l'éditeur dans `front/models/eligibilite/`. Il grandit avec le socle : les tests du socle gardent donc leur propre factice, petit et figé, dans `tests/socle/fixtures/`. Les deux modèles se chargent à la demande, hors du chunk d'entrée. Le modèle de démonstration est embarqué sur tous les environnements, production comprise, et s'ouvre par un bouton des developer tools, sans recharger la page : le rattachement n'est gardé qu'en mémoire, et l'app ne stocke rien. Changer de modèle commence une simulation. Le contrat `Model` ne change pas. Remplace D-52, précise D-02, D-66 et D-81. | 02, 08, 09, 10 |
 | D-83 | 2026-10-12 | Le socle ne nomme pas le modèle de démonstration : il ne dépend d'aucun modèle, pas même par le vocabulaire. `App` reçoit une seule liste, `models`, où chaque modèle porte son nom et de quoi se charger (`{ label, load }`). Le premier s'ouvre au démarrage. Quand il y en a plusieurs, les developer tools montrent un bouton par modèle, coché pour celui qui est ouvert : changer de modèle reste donc réservé au service n° 4. `main.tsx` compose la liste et nomme l'entrée « Modèle de démonstration », embarquée partout comme le veut D-82. Précise D-82. | 09 |
+| D-84 | 2026-10-12 | Décision de l'éditeur, dans la v10.0.2. Les trois PDF de sortie se remplissent par leurs champs, puis s'aplatissent : il n'y reste aucun champ. Le libellé du type de lieu n'est plus souligné. Ce qu'un champ ne sait pas montrer se dessine sur le PDF aplati : les cases groupées de la DAP, et un texte sans champ de la PMT. `MAPPING_ACROFORM_GABARITS.json` relie les 182 cellules aux champs. | 09, 10 |
+| D-85 | 2026-10-12 | Décision de l'éditeur, dans la v10.0.2. Un texte trop long ne bloque jamais le PDF, et n'est jamais reformulé. Dans l'ordre : réduire le corps de 9 à 8 pt, retirer le seul commentaire facultatif en prévenant le prescripteur, puis descendre sous 8 pt. Le texte reste entier, sur la même page, sans recouvrir une autre cellule. Confirme D-61, remplace D-63 et D-67. | 09, 10 |
+| D-86 | 2026-10-12 | Décision de l'éditeur, dans la v10.0.2. Un fait a trois états : « oui », « non » établi, ou absent. Une option non cochée ne vaut « non » que si elle a été proposée et sa page validée. Une option masquée reste absente, sauf incompatibilité prouvée. Une cible peut rester indéfinie : ce n'est pas une décision. Les variables manquantes servent au diagnostic, pas à choisir les questions. Précise D-77. | 03, 09, 10 |
+| D-87 | 2026-10-12 | Décision de l'éditeur, dans la v10.0.2. La trace garde la provenance de chaque fait : la réponse qui le donne, la version du référentiel, ou la raison qui le rend sans objet. | 09, 10 |
 
 ## Questions ouvertes, par chantier
 
 | Question | Chantier |
 |---|---|
 | Les capacités du socle se codent d'abord (arbitré le 12 octobre). Reste à dire si les pages de P1, P2 et P3 se codent ensuite d'après le catalogue de la v10.0.1, qui peut encore bouger, ou attendent la v10.0.2. | 09, 10 |
-| Qui dit qu'une question est « décisive » (Q2.1, Q2.1.l, options de Q2.2.1) : le moteur, ou des conditions écrites dans le questionnaire. Attend la v10.0.2 (D-77). | 05, 10 |
+| Ce que le modèle sait de ce qui a été demandé, pour distinguer « non » d'absent (D-86) : trois options, dont une ajoute un argument au contrat `Model`. | 03, 09 |
+| Qui refuse d'afficher une cible indéfinie à R2 : le socle, ou le résultat du modèle (D-86). | 09, 10 |
+| Un texte trop long sort de son cadre, ou rétrécit dedans (D-85). | 09 |
+| La liste filtrable (capacité 14) reste gelée tant que la recherche d'acte de Q2.1 est inactive. À confirmer. | 09 |
 | Combien de seeds pour les 49 cas de l'oracle. D-57 en prévoyait 25. | 07 |
-| Les gabarits des cerfa : ceux du package, désormais remplissables, ou ceux de Notion (D-62). | 09, 10 |
+| Les gabarits des cerfa : ceux du package, contrôlés par leur empreinte et liés au mapping des champs. Proposé, à la place de ceux de Notion (D-62). | 09, 10 |
 
 ## À remonter à l'éditeur
 
