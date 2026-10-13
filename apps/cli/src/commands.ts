@@ -141,9 +141,9 @@ const ACROSS: Entry[] = [
   },
   {
     name: "issue",
-    usage: "issue list|show <n>",
+    usage: "issue list|show|new|add|sync …",
     summary:
-      "liste les chantiers ouverts, ou montre l'avancement de l'un d'eux",
+      "liste les chantiers, en montre un, en ouvre un, lui ajoute une tâche, synchronise son ticket Notion",
     run: issueCommand,
   },
   {
@@ -155,7 +155,7 @@ const ACROSS: Entry[] = [
   {
     name: "branch",
     usage: "branch <type>/<sujet>",
-    summary: "tire une branche de staging",
+    summary: "tire une branche de staging, pour une issue avec --issue",
     run: branchCommand,
   },
   {
@@ -169,9 +169,17 @@ const ACROSS: Entry[] = [
 const OPTIONS = [
   ["--json", "sortie JSON, sur les commandes de lecture"],
   ["--yes", "répond oui aux confirmations"],
-  ["--app <app>", "le tracker d'une app, pour spec new"],
+  [
+    "--app <app>",
+    "l'app d'un chantier ou d'une spec, pour issue new et spec new",
+  ],
+  ["--issue <n>", "l'issue que la branche sert, pour branch"],
+  ["--blocked-by <n,…>", "les issues qui bloquent la tâche, pour issue add"],
   ["--title <titre>", "le titre de la PR, pour pr"],
-  ["--body-file <fichier>", "le corps de la PR, pour pr"],
+  [
+    "--body-file <fichier>",
+    "le corps de la PR ou de l'issue, pour pr et issue new|add",
+  ],
   ["-- …", "transmis tel quel au script de l'app"],
 ];
 

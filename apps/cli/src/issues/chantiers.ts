@@ -15,6 +15,8 @@ export type Chantier = {
   title: string;
   url: string;
   etat: Etat;
+  /** Étiquetée `brouillon` : ni à prendre, ni à montrer à l'équipe. */
+  brouillon: boolean;
   /** Les issues encore ouvertes qui la bloquent. */
   bloqueePar: number[];
   /** Où son travail se trouve, tant qu'elle est ouverte. */
@@ -27,6 +29,7 @@ export type Chantier = {
 };
 
 export type Suivi = {
+  issues: Issue[];
   prs: PullRequest[];
   lieux: Lieu[];
   /** Les issues sans parente, ouvertes ou fermées. */
@@ -44,7 +47,7 @@ export function readSuivi(root: string): Suivi | undefined {
     .filter((issue) => issue.parent === undefined)
     .sort((a, b) => a.number - b.number)
     .map((issue) => toChantier(issue, byNumber, lieux));
-  return { prs, lieux, chantiers };
+  return { issues, prs, lieux, chantiers };
 }
 
 /** Le chantier de ce numéro, ou la tâche qui le porte dans un chantier. */
@@ -82,6 +85,8 @@ export function renderChantiers(
 
 // ---- implémentation ----
 
+const BROUILLON = "brouillon";
+
 function toChantier(
   issue: Issue,
   byNumber: Map<number, Issue>,
@@ -100,6 +105,7 @@ function toChantier(
     title: issue.title,
     url: issue.url,
     etat,
+    brouillon: issue.labels.includes(BROUILLON),
     bloqueePar: issue.blockedBy,
     lieu,
     taches,
@@ -155,6 +161,7 @@ function etatLabel(chantier: Chantier): string {
   if (chantier.taches.length > 0) {
     return `${chantier.etat} ${chantier.fait}/${chantier.total}`;
   }
+  if (chantier.brouillon && chantier.etat === "à faire") return BROUILLON;
   if (chantier.etat !== "bloquée") return chantier.etat;
   const blockers = chantier.bloqueePar.map((number) => `#${number}`);
   return `bloquée par ${blockers.join(", ")}`;
