@@ -239,7 +239,7 @@ Il se tient à la main et rien ne le garde.
 - ✅ ~~La tenue des specs et leur ticket Notion~~, retirée (ADR-6)
 - ✅ Les branches et les PR
 - ✅ Le suivi des chantiers par issues, et leur ticket Notion
-- ⬜ La migration de la v10 en issues
+- ✅ La migration de la v10 en issues
 
 ## 6. Risques & validations en attente
 
@@ -250,7 +250,7 @@ Il se tient à la main et rien ne le garde.
 | R-3 | `features.md` se périme sans garde | Assumé |
 | R-4 | Sans tests, une régression ne se voit qu'à l'usage | Assumé (ADR-5) |
 | R-5 | Le lanceur suppose `readlink -f`, absent des macOS antérieurs à 12.3 | Assumé |
-| R-6 | Le workflow de fermeture n'a pas encore fermé une issue en conditions réelles | À valider à la première PR tirée d'une issue |
+| ~~R-6~~ | ~~Le workflow de fermeture n'a pas encore fermé une issue en conditions réelles~~ | Résolu (2026-10-13) : il a fermé les issues 47 et 93 à la fusion de leur PR |
 | R-7 | Une PR venue d'un fork n'a pas le droit de fermer une issue : le workflow échoue | Assumé, le dépôt n'a pas de contributeur externe |
 | R-8 | `tsp issue list` lit au plus 1 000 issues et 1 000 PR | Assumé |
 
