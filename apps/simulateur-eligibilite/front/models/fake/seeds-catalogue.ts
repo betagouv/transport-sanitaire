@@ -58,7 +58,31 @@ export const SEEDS: readonly Seed<Questions, Cibles>[] = [
       accompagnements: ["lait", "citron"],
       service: ["grande-tasse"],
     },
-    expected: { commande: "thé, lait et citron" },
+    expected: { commande: "thé, lait et citron", lait_tourne: true },
+  },
+  {
+    id: "cafe-au-lait",
+    label: "Résultat : un fait absent laisse une cible indéfinie",
+    description:
+      "Ouvre le résultat d'un café au lait. Le citron ne se propose pas avec un café : le fait est absent, pas « non ». La mise en garde n'est donc pas décidée, et le résultat le dit. La trace de debug donne la provenance de chaque fait.",
+    answers: {
+      boisson: "cafe",
+      accompagnements: ["lait"],
+      service: ["rien"],
+    },
+    expected: { commande: "café, lait", lait_tourne: undefined },
+  },
+  {
+    id: "the-au-lait",
+    label: "Résultat : une option proposée et non cochée vaut « non »",
+    description:
+      "Ouvre le résultat d'un thé au lait. Le citron se proposait et n'a pas été coché : le fait vaut « non », et la mise en garde est décidée.",
+    answers: {
+      boisson: "the",
+      accompagnements: ["lait"],
+      service: ["rien"],
+    },
+    expected: { commande: "thé, lait", lait_tourne: false },
   },
   {
     id: "sans-commande",
@@ -75,7 +99,8 @@ export const SEEDS: readonly Seed<Questions, Cibles>[] = [
     description:
       "Passe le verrou et s'arrête sur la première page du complément : la commande et le service, rappelés au-dessus du champ, puis le nombre de tasses, le lieu du service et le nom.",
     answers: { ...CAFE_SUCRE, retrait: "sur-place" },
-    expected: { commande: "café, sucre" },
+    // Sans lait, la mise en garde est décidée, citron connu ou non.
+    expected: { commande: "café, sucre", lait_tourne: false },
   },
   {
     id: "complement-retrait",
