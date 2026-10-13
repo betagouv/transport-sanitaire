@@ -19,7 +19,7 @@
 | QUAL-008 | Répéter un littéral plutôt que fabriquer un fragment sans nom | aucune |
 | QUAL-009 | Une fonction choisit, les autres font | aucune |
 | QUAL-010 | Un fichier se sépare par sujet, pas par débordement | `architecture.test.ts` (détecte seulement) |
-| QUAL-011 | Un fichier porte le nom d'une capacité, pas d'une catégorie | `lisibilite.test.ts` |
+| QUAL-011 | Un fichier porte le nom d'une feature, pas d'une catégorie | `lisibilite.test.ts` |
 | QUAL-012 | N'exporter que ce qu'un autre fichier importe | `pnpm knip` |
 | QUAL-013 | Ne jamais formater à la main | Biome |
 | QUAL-014 | Pas de suppression pour un linter que le projet ne lance pas | aucune |
@@ -325,7 +325,7 @@ export function documentPour(cas: CasFinal): Document {
 **Exemples**
 
 ```
-✅ OK : coupé par sujet, chaque nom dit une capacité
+✅ OK : coupé par sujet, chaque nom dit une feature
 cerfa/field-mapping.ts    ce qu'est un tableau de remplissage
 cerfa/lieux-du-trajet.ts   les adresses, aplaties sur une ligne
 ```
@@ -341,7 +341,7 @@ dépasse 300 lignes`.
 
 ---
 
-### QUAL-011 - Un fichier porte le nom d'une capacité, pas d'une catégorie
+### QUAL-011 - Un fichier porte le nom d'une feature, pas d'une catégorie
 
 > Raison : si le nom a besoin d'`utils`, `helpers`, `commun` ou `acces` pour
 > fonctionner, le fichier n'a pas d'intention. Son contenu appartient à ses
@@ -399,7 +399,7 @@ aujourd'hui appelé `unlock.ts`.
 ### QUAL-013 - Ne jamais formater à la main
 
 > Raison : Biome tient le format, l'ordre des imports et le lint, sur le même
-> socle (`biome.base.jsonc`) pour les trois apps. Une mise en forme manuelle est
+> socle (`biome.base.jsonc`) pour toutes les apps. Une mise en forme manuelle est
 > défaite au passage suivant, et le diff porte alors deux changements.
 
 Un hook `PostToolUse` passe Biome sur chaque `.ts` / `.tsx` écrit, dans n'importe
