@@ -61,6 +61,8 @@ Transverses :
 | `tsp open <outil> […]` | ouvre un ou plusieurs outils dans le navigateur |
 | `tsp wip` | montre le travail en cours |
 | `tsp next` | montre le travail en cours, puis le travail à prendre |
+| `tsp issue list` | liste les chantiers ouverts, avec leur avancement |
+| `tsp issue show <n>` | montre un chantier en arbre : l'état de chaque tâche, sa branche, son worktree, sa PR |
 | `tsp spec new <module> <type> <titre>` | crée une spec avec le prochain id, `--app <app>` pour le tracker d'une app |
 | `tsp spec move <id> <état>` | change une spec d'état |
 | `tsp spec sync [id]` | crée ou met à jour le ticket Notion d'une spec |
@@ -122,9 +124,10 @@ dans le clone où il a été posé : un worktree n'en hérite pas.
 
 | Source | `tsp wip` | `tsp next` |
 |---|---|---|
+| issues GitHub | les chantiers commencés, avec leurs tâches en cours | les tâches que rien ne bloque et que personne n'a commencées |
 | GitHub | les PR ouvertes | |
-| git | les branches locales et distantes non fusionnées dans `staging`, sans PR ouverte ni fusionnée | |
-| `docs/tasks`, racine et apps | toutes les tâches | |
+| git | « Sans issue » : les branches et les worktrees qu'aucune issue ne suit | |
+| `docs/tasks`, racine et apps | tous les fichiers | |
 | specs, racine et apps | `3. doing` | `2. todo`, puis `1. backlog` |
 | Notion | `Doing Dev`, `Reviewing dev` | `Ready To Dev` |
 
@@ -133,6 +136,37 @@ on ne choisit pas la suite sans voir ce qui est déjà commencé. En JSON, le
 travail en cours est sous la clé `wip`.
 
 Une spec liée à un ticket n'apparaît qu'une fois, du côté des specs.
+
+## Les chantiers
+
+Un chantier est une issue GitHub, ses tâches sont ses sous-issues. Une tâche
+tient en une PR. **L'état ne s'écrit nulle part**, il se déduit :
+
+| État | Condition |
+|---|---|
+| à faire | l'issue est ouverte, sans branche ni PR |
+| bloquée | une issue qui la bloque est ouverte |
+| en cours | une branche ou une PR ouverte la sert |
+| fait | l'issue est fermée |
+| abandonnée | l'issue est fermée comme non prévue |
+
+Une branche sert l'issue dont elle porte le numéro, `feat/51-adresse` pour la
+51. À défaut, c'est la PR que GitHub lie à l'issue qui désigne la branche.
+
+```bash
+tsp issue list
+tsp issue show 42
+```
+
+```
+#42 Intégration de la v10  en cours 14/23
+  #51 Adresse              en cours        feat/51-adresse  .claude/worktrees/v10-adresse  PR #60
+  #52 Validation croisée   bloquée par #51
+  #53 Décision             à faire
+```
+
+Le décompte ne porte que sur les tâches, pas sur les issues qui les
+regroupent, et laisse de côté les abandonnées.
 
 ## Les specs
 

@@ -7,6 +7,7 @@ import type { Command } from "./core/invocation.ts";
 import { columns, section } from "./core/output.ts";
 import { branchCommand } from "./git/branches.ts";
 import { prCommand } from "./git/pull-requests.ts";
+import { issueCommand } from "./issues/issue.ts";
 import { docsCommand } from "./knowledge/docs.ts";
 import { rulesCommand } from "./knowledge/rules.ts";
 import { skillsCommand } from "./knowledge/skills.ts";
@@ -137,6 +138,13 @@ const ACROSS: Entry[] = [
     usage: "next",
     summary: "montre le travail en cours, puis le travail à prendre",
     run: nextCommand,
+  },
+  {
+    name: "issue",
+    usage: "issue list|show <n>",
+    summary:
+      "liste les chantiers ouverts, ou montre l'avancement de l'un d'eux",
+    run: issueCommand,
   },
   {
     name: "spec",
