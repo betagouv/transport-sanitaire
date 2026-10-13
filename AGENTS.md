@@ -78,9 +78,10 @@ hooks, et rend `tsp` appelable de partout.
 | Lire les règles, les skills, la doc | `tsp rules [recueil\|id]`, `tsp skills [skill]`, `tsp docs [app]` |
 | Voir le travail en cours, à prendre | `tsp wip`, `tsp next` |
 | Voir où en est un chantier | `tsp issue list`, `tsp issue show <n>` |
+| Tenir un chantier | `tsp issue new`, `tsp issue add`, `tsp issue sync` |
 | Ouvrir un outil du projet (site, préprod, hébergeur) | `tsp open [outil]` |
 | Tenir une spec | `tsp spec new`, `tsp spec move`, `tsp spec sync` |
-| Brancher, proposer | `tsp branch <type>/<sujet>`, `tsp pr`, `tsp pr status` |
+| Brancher, proposer | `tsp branch <type>/<sujet> [--issue <n>]`, `tsp pr`, `tsp pr status` |
 | Diagnostiquer la machine | `tsp doctor` |
 
 `tsp help` les liste toutes. Les commandes de lecture acceptent `--json`.

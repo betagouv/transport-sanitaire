@@ -34,6 +34,19 @@ export function frontmatter(markdown: string): Record<string, string> {
   return pairs;
 }
 
+/** Le document sans son en-tête YAML. */
+export function withoutFrontmatter(markdown: string): string {
+  const lines = markdown.split("\n");
+  if (lines[0]?.trim() !== "---") return markdown;
+  const end = lines.indexOf("---", 1);
+  return end === -1
+    ? markdown
+    : lines
+        .slice(end + 1)
+        .join("\n")
+        .trimStart();
+}
+
 /** Le corps d'une section de niveau 2, jusqu'à la suivante. */
 export function section(markdown: string, heading: string): string {
   const lines = markdown.split("\n");

@@ -1,7 +1,11 @@
 // Où un travail se trouve : sa branche, son worktree, sa PR, et l'issue qu'il
 // sert.
 
-import { isPermanentBranch, unmergedBranches } from "../git/branches.ts";
+import {
+  isPermanentBranch,
+  issueOfBranch,
+  unmergedBranches,
+} from "../git/branches.ts";
 import type { Issue } from "../git/issues.ts";
 import type { PullRequest } from "../git/pull-requests.ts";
 import { listWorktrees, type Worktree } from "../git/worktrees.ts";
@@ -56,9 +60,6 @@ export function renderLieu(lieu: Lieu | undefined): string[] {
 
 // ---- implémentation ----
 
-/** `feat/51-adresse` sert l'issue 51. */
-const ISSUE_IN_BRANCH = /^[a-z]+\/(\d+)-/;
-
 /** Une PR ouverte se passe de précision. */
 const PR_STATES: Record<string, string> = {
   MERGED: " fusionnée",
@@ -72,7 +73,6 @@ function lieuOf(
   issues: Issue[],
 ): Lieu {
   const pr = pullRequestOf(branch, prs);
-  const named = ISSUE_IN_BRANCH.exec(branch)?.[1];
   const linked = issues.find(
     (issue) => pr !== undefined && issue.pullRequests.includes(pr.number),
   );
@@ -80,7 +80,7 @@ function lieuOf(
     branch,
     worktree: worktrees.find((worktree) => worktree.branch === branch)?.dir,
     pr,
-    issue: named === undefined ? linked?.number : Number(named),
+    issue: issueOfBranch(branch) ?? linked?.number,
   };
 }
 

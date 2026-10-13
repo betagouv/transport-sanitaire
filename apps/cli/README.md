@@ -63,10 +63,13 @@ Transverses :
 | `tsp next` | montre le travail en cours, puis le travail à prendre |
 | `tsp issue list` | liste les chantiers ouverts, avec leur avancement |
 | `tsp issue show <n>` | montre un chantier en arbre : l'état de chaque tâche, sa branche, son worktree, sa PR |
+| `tsp issue new <type> <titre>` | ouvre un chantier, `--app <app>` pour l'étiqueter à une app |
+| `tsp issue add <n> <titre>` | ajoute une tâche à un chantier, `--blocked-by <n,…>` pour ce qui la bloque |
+| `tsp issue sync [n]` | crée ou met à jour le ticket Notion d'un chantier |
 | `tsp spec new <module> <type> <titre>` | crée une spec avec le prochain id, `--app <app>` pour le tracker d'une app |
 | `tsp spec move <id> <état>` | change une spec d'état |
 | `tsp spec sync [id]` | crée ou met à jour le ticket Notion d'une spec |
-| `tsp branch <type>/<sujet>` | tire une branche de `staging` |
+| `tsp branch <type>/<sujet>` | tire une branche de `staging`, `--issue <n>` pour celle d'une tâche |
 | `tsp pr` | pousse la branche et ouvre la PR vers `staging` |
 | `tsp pr status` | montre l'état de la PR courante et de sa CI |
 
@@ -168,6 +171,50 @@ tsp issue show 42
 Le décompte ne porte que sur les tâches, pas sur les issues qui les
 regroupent, et laisse de côté les abandonnées.
 
+### Tenir un chantier
+
+```bash
+tsp issue new feat "Intégration de la v10" --app simulateur   # le chantier
+tsp issue add 42 "Adresse"                                    # une tâche
+tsp issue add 42 "Validation croisée" --blocked-by 51         # une tâche bloquée
+tsp branch feat/adresse --issue 51                            # feat/51-adresse
+tsp pr                                                        # « Closes #51 »
+```
+
+- Le corps vient des gabarits de `.github/ISSUE_TEMPLATE/`, ou de
+  `--body-file`. Le cadrage du chantier s'écrit dans son issue.
+- `new` pose le type et l'app en étiquettes, et crée celles qui manquent.
+- Une tâche peut avoir ses propres tâches : `tsp issue add 51 …`.
+- `branch --issue` refuse une issue inconnue ou fermée.
+- **La fusion de la PR ferme l'issue.** GitHub ne le fait que pour une PR vers
+  `main` : le workflow `close-issue.yml` s'en charge, d'après le numéro que
+  porte la branche. Un chantier, lui, se ferme à la main.
+
+### Le ticket Notion
+
+Notion ne porte que le suivi macro : **un ticket par chantier**, aucun pour
+ses tâches. `tsp issue sync` le tient. L'issue fait foi, à sens unique.
+
+| Chantier | `Status P&T` du ticket |
+|---|---|
+| étiqueté `brouillon` | pas de ticket |
+| à faire, bloqué | `Ready To Dev` |
+| en cours | `Doing Dev` |
+| fait | `Staging` |
+| abandonné | inchangé |
+
+- À la création : le titre, le statut, le type `Tech`, l'adresse de l'issue,
+  et dans le corps le « Problème » et la « Solution ». L'adresse du ticket est
+  écrite dans l'issue, ligne `Notion :`.
+- Pour un ticket qui existe déjà, écrire soi-même `Notion : <adresse>` dans
+  l'issue : `sync` le reprend au lieu d'en créer un.
+- Ensuite : le titre, le statut et l'adresse de l'issue. Le corps n'est jamais
+  réécrit.
+- Un statut ne recule jamais. `Reviewing dev` et `Prod / Done` se posent à la
+  main dans Notion.
+- Sans numéro, `sync` passe les chantiers ouverts, et les fermés qui ont un
+  ticket.
+
 ## Les specs
 
 ```bash
@@ -183,7 +230,7 @@ tsp spec move 12 todo
 - `move` refuse `doing` tant qu'un blocage reste.
 - `move` met à jour le ticket Notion si un jeton est présent.
 
-### Le ticket Notion
+### Le ticket Notion d'une spec
 
 `tsp spec sync` tient un ticket par spec dans la base des tickets. La spec fait
 foi, à sens unique.
@@ -208,15 +255,19 @@ foi, à sens unique.
 
 ```bash
 tsp branch fix/libelle-article-80
+tsp branch feat/adresse --issue 51
 tsp pr
 tsp pr status
 ```
 
 - `branch` refuse un type hors Conventional Commits.
+- `--issue <n>` glisse le numéro dans le nom, `feat/51-adresse`. C'est ce
+  numéro qui rattache la branche à sa tâche, et qui ferme l'issue à la fusion.
 - `pr` vise toujours `staging` (GIT-009). Son titre est le sujet du premier
   commit de la branche, ou `--title`. Il doit respecter GIT-003.
 - `--body-file <fichier>` donne le corps de la PR. Un chemin relatif part du
-  dossier courant. Sans lui, le corps est celui des commits.
+  dossier courant. Sans lui, le corps est celui des commits. Sur la branche
+  d'une issue, il se termine par `Closes #<n>`.
 - La fusion reste un geste humain sur GitHub.
 
 ## Configuration
@@ -231,7 +282,7 @@ tsp pr status
 | `NOTION_API_URL` | facultatif. Remplace l'adresse de l'API, pour éprouver la CLI sur un serveur local |
 
 Sans jeton, `wip` et `next` affichent le reste et la ligne
-« Notion : jeton absent ». Seul `spec sync` s'arrête.
+« Notion : jeton absent ». Seuls `issue sync` et `spec sync` s'arrêtent.
 
 ## Comment c'est fait
 

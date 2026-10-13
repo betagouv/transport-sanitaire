@@ -27,6 +27,7 @@ export type Chantier = {
 };
 
 export type Suivi = {
+  issues: Issue[];
   prs: PullRequest[];
   lieux: Lieu[];
   /** Les issues sans parente, ouvertes ou fermées. */
@@ -44,7 +45,7 @@ export function readSuivi(root: string): Suivi | undefined {
     .filter((issue) => issue.parent === undefined)
     .sort((a, b) => a.number - b.number)
     .map((issue) => toChantier(issue, byNumber, lieux));
-  return { prs, lieux, chantiers };
+  return { issues, prs, lieux, chantiers };
 }
 
 /** Le chantier de ce numéro, ou la tâche qui le porte dans un chantier. */
