@@ -25,8 +25,8 @@ export function faits(
     accompagnements: accompagnements.flatMap(
       (item) => ACCOMPAGNEMENTS[item] ?? [],
     ),
-    lait: demande(validated.accompagnements, "lait"),
-    citron: demande(validated.accompagnements, "citron"),
+    lait: demande(answers, validated, "lait"),
+    citron: demande(answers, validated, "citron"),
   };
 }
 
@@ -53,6 +53,7 @@ const ACCOMPAGNEMENTS: Record<string, string | undefined> = {
   lait: "lait",
   sucre: "sucre",
   citron: "citron",
+  "citron-a-voir": "peut-être du citron",
 };
 
 function commandeDe(boisson: string | null, avec: readonly string[]) {
@@ -61,8 +62,8 @@ function commandeDe(boisson: string | null, avec: readonly string[]) {
 }
 
 // Les règles de la mise en garde. Le moteur ne reçoit pas un fait absent : avec
-// du lait et sans rien savoir du citron, la cible reste indéfinie. Sans lait,
-// elle est décidée, citron connu ou non.
+// du lait et un citron à décider au service, la cible reste indéfinie. Sans
+// lait, elle est décidée, citron connu ou non.
 const regles = publicodesEngine<
   Pick<Faits, "lait" | "citron">,
   Pick<Cibles, "lait_tourne">
@@ -76,16 +77,24 @@ const regles = publicodesEngine<
 );
 
 // Ce qu'on sait d'un accompagnement. Coché, il est demandé. Proposé sans être
-// coché, il est refusé. Sinon le fait est absent : une option qui ne s'est pas
-// proposée n'a pas été refusée.
+// coché, il est refusé. Une option qui ne s'est pas proposée n'a pas été
+// refusée : elle ne vaut « non » que si la boisson l'exclut.
 function demande(
-  question: Validated<Questions>["accompagnements"],
+  { boisson }: Answers<Questions>,
+  { accompagnements: question }: Validated<Questions>,
   option: "lait" | "citron",
 ): Fait {
+  if (boisson === "rien")
+    return { value: false, provenance: "Rien n'est commandé." };
   if (!question)
-    return { provenance: "Les accompagnements n'ont pas été demandés." };
+    return { provenance: "Les accompagnements ne sont pas encore validés." };
   if (!question.offered?.includes(option))
-    return { provenance: `L'option « ${option} » ne s'est pas proposée.` };
+    return {
+      value: false,
+      provenance: `« ${option} » ne se sert pas avec cette boisson.`,
+    };
+  if (option === "citron" && question.answer?.includes("citron-a-voir"))
+    return { provenance: "« Peut-être du citron » : à décider au service." };
   return question.answer?.includes(option)
     ? { value: true, provenance: `Accompagnements : « ${option} » coché.` }
     : {

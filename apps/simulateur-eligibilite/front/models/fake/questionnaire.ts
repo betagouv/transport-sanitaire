@@ -55,7 +55,7 @@ export const PARTS: readonly QuestionnairePart<Questions, undefined>[] = [
               boisson === "the"
                 ? "Avec quoi, ce thé ?"
                 : "Avec quoi, ce café ?",
-            hint: "Démontre : un libellé de question et un libellé d'option qui dépendent des réponses (le lait devient « un nuage de lait » avec le thé), une option proposée selon la boisson (le citron, avec le thé seulement), et une option exclusive. Le citron qui ne se propose pas reste un fait absent, pas un « non » : avec un café au lait, le résultat ne décide pas si le lait tourne.",
+            hint: "Démontre : un libellé de question et un libellé d'option qui dépendent des réponses (le lait devient « un nuage de lait » avec le thé), une option proposée selon la boisson (le citron, avec le thé seulement), et une option exclusive. Un fait a trois états. Le citron vaut « oui » s'il est coché, et « non » s'il se proposait sans l'être, ou avec un café, où il ne se sert pas. Avec « Peut-être du citron », on ne sait pas : le fait est absent, et le résultat ne décide pas si le lait tourne.",
             askedIf: (answers) =>
               answers.boisson !== undefined && answers.boisson !== "rien",
             dependsOn: ["boisson"],
@@ -71,6 +71,18 @@ export const PARTS: readonly QuestionnairePart<Questions, undefined>[] = [
                 value: "citron",
                 label: "Une rondelle de citron",
                 offeredIf: ({ boisson }) => boisson === "the",
+              },
+              {
+                value: "citron-a-voir",
+                label: "Peut-être du citron, à décider au service",
+                offeredIf: ({ boisson }) => boisson === "the",
+              },
+            ],
+            incompatibleOptions: [
+              {
+                values: ["citron", "citron-a-voir"],
+                explanation:
+                  "Le citron est demandé, ou reste à décider : seule la dernière case cochée est gardée.",
               },
             ],
             exclusiveOption: { value: "aucun", label: "Rien de plus" },

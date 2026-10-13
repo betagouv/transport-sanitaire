@@ -4,7 +4,6 @@
 import type { Answers } from "../../socle";
 import type { Cibles } from "./declarations/cibles";
 import type { Questions } from "./declarations/questions";
-import { SANS_COMMANDE } from "./preconisation";
 
 type Props = { answers: Answers<Questions>; cibles: Cibles };
 
@@ -12,9 +11,7 @@ export function Commande({ cibles }: Props) {
   return (
     <>
       <p className="fr-text--lead">Commande : {cibles.commande}</p>
-      {cibles.commande !== SANS_COMMANDE && (
-        <MiseEnGarde tourne={cibles.lait_tourne} />
-      )}
+      <MiseEnGarde tourne={cibles.lait_tourne} />
     </>
   );
 }
@@ -37,7 +34,7 @@ function MiseEnGarde({ tourne }: { tourne: Cibles["lait_tourne"] }) {
     <p>
       {tourne
         ? "Attention : le lait tourne au contact du citron."
-        : "Lait et citron : rien n'est décidé. On ne sait pas s'il y a du citron, et ce n'est pas un « non »."}
+        : "Lait et citron : rien n'est décidé. On ne sait pas encore s'il y aura du citron, et ce n'est pas un « non »."}
     </p>
   );
 }

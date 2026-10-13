@@ -326,9 +326,11 @@ que la v10.0.1 change à l'inventaire ».
   provenances : le contrat gagnait un champ, et rien n'empêchait d'en oublier
   une. Codé ainsi, à confirmer.
 - **La démonstration.** Le modèle de démonstration a maintenant trois règles
-  publicodes : le lait tourne au contact du citron. Avec un café, le citron ne
-  se propose pas : le fait est absent, et la mise en garde reste indéfinie.
-  Avec un thé, il se propose : non coché, il vaut « non ».
+  publicodes : le lait tourne au contact du citron. Avec un thé, le citron
+  se propose : coché, il vaut « oui », non coché, « non ». Avec un café, il
+  ne se sert pas : il vaut « non » sans avoir été demandé, par incompatibilité
+  prouvée. Avec « Peut-être du citron, à décider au service », on ne sait
+  pas : le fait est absent, et la mise en garde reste indéfinie.
 - **La lecture seule : tranchée par la v10.0.1.** Une valeur connue est
   invisible par défaut. Elle est rappelée en texte si elle éclaire une
   question de la page, ou fixée près d'un champ de P3. Deux petites capacités
