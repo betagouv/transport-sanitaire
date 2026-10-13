@@ -2,67 +2,100 @@
 // connaît que des rôles ; chaque mart n'est qu'un choix de **grain** sur les trajets
 // réconciliés (build/reconcile/trajets.csv), habillé par une dimension d'identité.
 //
-// Sept livrables (cf. spec/points-attention-metier.md pour les spécificités) :
+// `pnpm marts --cible <nom>` recalcule les mêmes livrables pour une cible, restreints à
+// ses plateformes et aux entités qu'elles couvrent, dans `build/cibles/<nom>/marts/`.
+//
+// Dix-huit livrables (cf. spec/points-attention-metier.md pour les spécificités) :
 //   - mart_geographique    — grain finess géographique (le plus fin ; beaucoup de part NULL) ;
 //   - mart_juridique       — grain finess juridique (autorité référentiel) ;
 //   - mart_ght             — grain GHT (le plus propre ; établissements publics only) ;
 //   - mart_hors_ght        — grain finess juridique, restreint aux établissements sans GHT ;
 //   - mart_article80       — volumes + part par plateforme (pas de dénominateur national) ;
-//   - mart_ght_2024        — rollup du mart GHT : ratio annuel plateforme/CNAM par GHT ;
-//   - mart_juridique_2024  — le même rollup par établissement, tous transports confondus.
+//   - mart_ght_<année>        — rollup du mart GHT : ratio annuel plateforme/CNAM par GHT ;
+//   - mart_juridique_<année>  — le même rollup par établissement, tous transports confondus.
+// Les deux rollups sortent pour chaque année de `ANNEES_ROLLUP`.
+//   - mart_juridique_plateforme, mart_ght_plateforme — le détail **par plateforme** des
+//     marts juridique et GHT, une ligne par plateforme ; suffixés de l'année, le même
+//     détail pour les rollups ;
+//   - mart_taux_plateforme — une ligne par plateforme et par année : ses deux taux et la
+//     distribution du ratio chez ses établissements ;
+//   - mart_synthese — par année, grain et classe de taille : combien d'entités, combien
+//     de couvertes, et ce qu'elles pèsent ;
+//   - mart_repartition — par année et par plateforme : combien d'établissements dans
+//     chaque tranche de ratio.
 
-import { existsSync } from "node:fs";
 import { join } from "node:path";
-import type {
-  EtablissementDimensionRow,
-  EtablissementRow,
-  GhtRattachementRow,
-  TrajetReconcilieRow,
-} from "../contrats.ts";
+import { lireArguments } from "../cible.ts";
+import type { TrajetReconcilieRow } from "../contrats.ts";
 import { Csv } from "../csv.ts";
+import { Mapping } from "../mapping.ts";
 import { Paths } from "../paths.ts";
+import { Dimensions, utilisable } from "./dimensions.ts";
 import { MartArticle80 } from "./mart-article80.ts";
-import { MartRatio } from "./mart-ratio.ts";
-import { MartRollup2024 } from "./mart-rollup-2024.ts";
+import { MartPlateforme } from "./mart-plateforme.ts";
+import { MartRatio, type MartRatioConfig } from "./mart-ratio.ts";
+import { MartRepartition } from "./mart-repartition.ts";
+import { ANNEES_ROLLUP, MartRollupAnnuel } from "./mart-rollup-annuel.ts";
+import { MartSynthese } from "./mart-synthese.ts";
+import { MartTauxPlateforme } from "./mart-taux-plateforme.ts";
+import { restreindre, restriction } from "./perimetre.ts";
 
 export class Marts {
-  #juridique = new Map<string, EtablissementDimensionRow>();
-  #geo = new Map<string, EtablissementRow>();
-  #ght = new Map<string, GhtRattachementRow>();
+  readonly #cible: string; // "" pour le périmètre complet (cf. cible.ts)
+  #dimensions!: Dimensions; // chargées à l'exécution, après `reconcile`
+
+  #restriction: Set<string> | undefined; // les plateformes d'une cible restreinte
+
+  constructor(cible = "") {
+    this.#cible = cible;
+  }
 
   execute(): void {
-    this.#loadDimensions();
+    Paths.viserCible(this.#cible);
+    this.#restriction = restriction(Mapping.load(), this.#cible);
+    this.#dimensions = new Dimensions();
     const trajets = this.#loadTrajets();
     this.#martsRatio().forEach((mart) => {
       mart.execute(trajets);
     });
+    this.#martsPlateforme().forEach((mart) => {
+      mart.execute(trajets);
+    });
+    new MartTauxPlateforme(ANNEES_ROLLUP).execute(trajets);
     new MartArticle80(
-      (cle) => this.#juridique.get(cle)?.nom ?? "",
-      (cle) => this.#ght.get(cle)?.ght_libelle ?? "",
+      (cle) => this.#dimensions.juridique.get(cle)?.nom ?? "",
+      (cle) => this.#dimensions.ght.get(cle)?.ght_libelle ?? "",
     ).execute(trajets);
     // Rollups dérivés des marts de ratio écrits ci-dessus, donc après eux.
-    this.#rollups2024().forEach((rollup) => {
+    ANNEES_ROLLUP.flatMap((annee) => this.#rollups(annee)).forEach((rollup) => {
       rollup.execute();
     });
+    // La synthèse et la répartition lisent les rollups, donc après eux.
+    new MartSynthese(ANNEES_ROLLUP).execute();
+    new MartRepartition(ANNEES_ROLLUP).execute();
   }
 
-  #rollups2024(): MartRollup2024[] {
+  #rollups(annee: string): MartRollupAnnuel[] {
+    const d = this.#dimensions;
     return [
-      new MartRollup2024({
+      new MartRollupAnnuel({
+        annee,
         source: "mart_ght.csv",
-        fichier: "mart_ght_2024.csv",
-        log: "ght_2024",
+        fichier: `mart_ght_${annee}.csv`,
+        log: `ght_${annee}`,
         cle: (r) => r.ght_code ?? "",
         identite: (r) => ({
           ght_code: r.ght_code ?? "",
           region: r.region ?? "",
           ght_libelle: r.ght_libelle ?? "",
         }),
+        univers: () => this.#univers(d.ght, (c) => d.identiteGht(c)),
       }),
-      new MartRollup2024({
+      new MartRollupAnnuel({
+        annee,
         source: "mart_juridique.csv",
-        fichier: "mart_juridique_2024.csv",
-        log: "juridique_2024",
+        fichier: `mart_juridique_${annee}.csv`,
+        log: `juridique_${annee}`,
         cle: (r) => r.finess_juridique ?? "",
         identite: (r) => ({
           finess_juridique: r.finess_juridique ?? "",
@@ -70,136 +103,88 @@ export class Marts {
           ville: r.ville ?? "",
           departement: r.departement ?? "",
         }),
+        univers: () =>
+          this.#univers(d.juridique, (c) => d.identiteJuridique(c)),
       }),
     ];
+  }
+
+  // Une cible restreinte ne liste que les entités que ses plateformes couvrent : son
+  // univers est vide, et le rollup s'en tient aux clés de son mart de ratio.
+  #univers(
+    dimension: Map<string, unknown>,
+    identite: (cle: string) => Row,
+  ): Map<string, Row> {
+    if (this.#restriction) return new Map();
+    return new Map([...dimension.keys()].map((cle) => [cle, identite(cle)]));
+  }
+
+  // Le détail par plateforme, aux grains établissement et GHT : par véhicule d'abord, puis
+  // en forme annuelle pour chaque année des rollups.
+  #martsPlateforme(): MartPlateforme[] {
+    return [undefined, ...ANNEES_ROLLUP].flatMap((annee) => {
+      const suffixe = annee ? `_${annee}` : "";
+      return [
+        new MartPlateforme({
+          annee,
+          fichier: `mart_juridique_plateforme${suffixe}.csv`,
+          log: `juridique_plateforme${suffixe}`,
+          grain: (t) => t.finess_juridique,
+          identite: (cle) => this.#dimensions.identiteJuridique(cle),
+        }),
+        new MartPlateforme({
+          annee,
+          fichier: `mart_ght_plateforme${suffixe}.csv`,
+          log: `ght_plateforme${suffixe}`,
+          grain: (t) => t.ght_code,
+          identite: (cle) => this.#dimensions.identiteGht(cle),
+        }),
+      ];
+    });
   }
 
   #martsRatio(): MartRatio[] {
-    return [
-      new MartRatio({
+    const configs: MartRatioConfig[] = [
+      {
         fichier: "mart_geographique.csv",
         log: "geographique",
         grain: (t) =>
-          this.#usable(t.finess_geographique) ? t.finess_geographique : "",
-        identite: (cle) => this.#identiteGeo(cle),
-      }),
-      new MartRatio({
+          utilisable(t.finess_geographique) ? t.finess_geographique : "",
+        identite: (cle) => this.#dimensions.identiteGeo(cle),
+      },
+      {
         fichier: "mart_juridique.csv",
         log: "juridique",
         grain: (t) => t.finess_juridique,
-        identite: (cle) => this.#identiteJuridique(cle),
-      }),
-      new MartRatio({
+        identite: (cle) => this.#dimensions.identiteJuridique(cle),
+      },
+      {
         fichier: "mart_ght.csv",
         log: "ght",
         grain: (t) => t.ght_code,
-        identite: (cle) => this.#identiteGht(cle),
-      }),
-      new MartRatio({
+        identite: (cle) => this.#dimensions.identiteGht(cle),
+      },
+      {
         fichier: "mart_hors_ght.csv",
         log: "hors_ght",
         grain: (t) => (t.ght_code ? "" : t.finess_juridique),
-        identite: (cle) => this.#identiteJuridique(cle),
-      }),
+        identite: (cle) => this.#dimensions.identiteJuridique(cle),
+      },
     ];
-  }
-
-  #identiteGeo(cle: string): Row {
-    const e = this.#geo.get(cle);
-    return {
-      finess_geographique: cle,
-      finess_juridique: e?.finess_juridique ?? "",
-      nom: e?.nom ?? "",
-      ville: e?.ville ?? "",
-      departement: e?.departement ?? "",
-    };
-  }
-
-  #identiteJuridique(cle: string): Row {
-    const e = this.#juridique.get(cle);
-    return {
-      finess_juridique: cle,
-      nom: e?.nom ?? "",
-      ville: e?.ville ?? "",
-      departement: e?.departement ?? "",
-    };
-  }
-
-  #identiteGht(cle: string): Row {
-    const g = this.#ght.get(cle);
-    return {
-      ght_code: cle,
-      region: g?.region ?? "",
-      ght_libelle: g?.ght_libelle ?? "",
-    };
-  }
-
-  #loadDimensions(): void {
-    this.#juridique = new Map(
-      this.#readDimension().map((r) => [r.finess_juridique, r]),
+    return configs.map(
+      (c) =>
+        new MartRatio({ ...c, seulementCouvertes: Boolean(this.#restriction) }),
     );
-    this.#geo = this.#geoDimension();
-    this.#ght = this.#ghtDimension();
-  }
-
-  #readDimension(): EtablissementDimensionRow[] {
-    return Csv.read(
-      join(Paths.RECONCILE, "etablissements.csv"),
-    ) as unknown as EtablissementDimensionRow[];
-  }
-
-  // Un site (finess géographique) peut apparaître plusieurs fois : on garde le plus gros volume.
-  #geoDimension(): Map<string, EtablissementRow> {
-    const map = new Map<string, EtablissementRow>();
-    for (const raw of Csv.read(join(Paths.EXTRACT, "etablissements.csv"))) {
-      const e = {
-        ...raw,
-        score: Number(raw.score),
-      } as unknown as EtablissementRow;
-      const courant = map.get(e.finess_geographique);
-      if (
-        this.#usable(e.finess_geographique) &&
-        (!courant || e.score > courant.score)
-      )
-        map.set(e.finess_geographique, e);
-    }
-    return map;
-  }
-
-  #ghtDimension(): Map<string, GhtRattachementRow> {
-    const map = new Map<string, GhtRattachementRow>();
-    const path = join(Paths.EXTRACT, "ght.csv");
-    if (existsSync(path))
-      for (const raw of Csv.read(path)) {
-        const g = raw as unknown as GhtRattachementRow;
-        if (!map.has(g.ght_code)) map.set(g.ght_code, g);
-      }
-    this.#completerAvecMappingManuel(map);
-    return map;
-  }
-
-  // Les mappings manuels peuvent introduire des codes hors référentiel (ex. « AP-HP ») : on
-  // les habille avec leur libellé (colonne ght_officiel) pour qu'ils s'affichent proprement.
-  #completerAvecMappingManuel(map: Map<string, GhtRattachementRow>): void {
-    for (const fichier of [
-      "plateforme-ght-mapping.csv",
-      "finess-ght-manuel.csv",
-    ]) {
-      const path = join(Paths.REF, fichier);
-      if (!existsSync(path)) continue;
-      for (const r of Csv.read(path))
-        if (r.ght_code && !map.has(r.ght_code))
-          map.set(r.ght_code, {
-            ght_code: r.ght_code,
-            ght_libelle: r.ght_officiel ?? r.ght_code,
-            region: "",
-            finess_juridique: "",
-            raison_sociale: "",
-          });
-    }
   }
 
   #loadTrajets(): TrajetReconcilieRow[] {
+    const trajets = this.#readTrajets();
+    return this.#restriction
+      ? restreindre(trajets, this.#restriction)
+      : trajets;
+  }
+
+  #readTrajets(): TrajetReconcilieRow[] {
     return Csv.read(join(Paths.RECONCILE, "trajets.csv")).map(
       (raw) =>
         ({
@@ -208,13 +193,10 @@ export class Marts {
         }) as unknown as TrajetReconcilieRow,
     );
   }
-
-  #usable(finess: string): boolean {
-    return Boolean(finess) && finess !== "0";
-  }
 }
 
-if (import.meta.url === `file://${process.argv[1]}`) new Marts().execute();
+if (import.meta.url === `file://${process.argv[1]}`)
+  new Marts(lireArguments(process.argv.slice(2)).cible).execute();
 
 // ---- implémentation ----
 

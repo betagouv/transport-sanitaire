@@ -17,5 +17,17 @@ export class Paths {
   static readonly EXTRACT_TRAJETS = join(Paths.EXTRACT, "trajets"); // 1 CSV normalisé par source
   static readonly STAGING = join(Paths.BUILD, "staging");
   static readonly RECONCILE = join(Paths.BUILD, "reconcile");
-  static readonly MARTS = join(Paths.BUILD, "marts");
+
+  static #cible = "";
+
+  /** Les marts d'une cible s'écrivent à part : ceux du périmètre complet ne sont jamais écrasés. */
+  static viserCible(cible: string): void {
+    Paths.#cible = cible;
+  }
+
+  static get MARTS(): string {
+    return Paths.#cible
+      ? join(Paths.BUILD, "cibles", Paths.#cible, "marts")
+      : join(Paths.BUILD, "marts");
+  }
 }

@@ -73,10 +73,12 @@ sous certaines d'entre elles le détail de leurs sites, avec finess. Le format
 `plateforme-ght-xlsx` en tire deux grains à la fois. Quatre conséquences à la lecture des
 marts.
 
-- **La couverture au finess est partielle.** Environ 94 % du volume hors article 80 2024 de
-  cette source porte un finess juridique, donc apparaît dans `mart_juridique`. Le reste,
-  une entité réellement multi-sites et sans détail, n'existe qu'au grain GHT. Sommer
-  `mart_juridique` sous-compte donc cette source de quelques pour cent, sans signal.
+- **La couverture au finess est partielle.** 71 % du volume hors article 80 2024 de cette
+  source porte un finess juridique, soit 441 474 trajets sur 625 285, et apparaît dans
+  `mart_juridique`. Le reste, 183 811 trajets, n'existe qu'au grain GHT : deux GHT livrés
+  sans détail par site, dont `GHT Vendée` pour 179 145 trajets. Sommer `mart_juridique`
+  sous-compte donc cette source de 29 %. `mart_taux_plateforme` le montre dans
+  `nb_plateforme_sans_finess`.
 - **L'écart entre une ligne parente et la somme de ses lignes filles est perdu.** Il va
   jusqu'à 13 % sur une entité. Un parent qui a des filles est ignoré, pour ne rien compter
   deux fois. Reprendre cet écart demanderait d'émettre un résidu, ce qui n'est pas fait.
@@ -144,27 +146,36 @@ de calcul. L'origine de ces révisions est à faire confirmer par l'éditeur de 
 
 ## 9. Un rollup annuel ne répond qu'à la question qui lui est posée
 
-`mart_ght_2024` et `mart_juridique_2024` somment les véhicules d'une seule année. C'est ce
-qui les rend lisibles, et c'est aussi ce qu'ils coûtent. Quatre limites à connaître avant
-de citer un de leurs ratios.
+Les rollups `mart_ght_<année>` et `mart_juridique_<année>` réduisent un mart de ratio à
+une seule année. C'est ce qui les rend lisibles, et c'est aussi ce qu'ils coûtent. Cinq
+limites à connaître avant de citer un de leurs ratios. Les chiffres cités sont ceux de
+2024, sur la ligne « Tous transports » sauf mention contraire.
 
-- **Le rollup masque une anomalie portée par un seul véhicule.** `GHT Vendée` sort à
-  `166 678 / 56 707` sur l'ambulance en 2024, soit `part ≈ 2,9` et une `alerte_qualite`
-  dans `mart_ght`. Une fois les véhicules sommés, son ratio repasse sous 1 et l'alerte
-  disparaît. **Aucun GHT n'est signalé en 2024**, ce qui ne veut pas dire qu'aucun ne pose
-  question : c'est `mart_ght` qu'il faut ouvrir pour le savoir.
+- **La ligne « Tous transports » masque une anomalie portée par un seul véhicule.**
+  `GHT Vendée` sort à `166 678 / 56 707` sur l'ambulance en 2024, soit un ratio d'environ
+  2,9 et une `alerte_qualite` sur sa ligne `Ambulance`. Une fois les véhicules sommés, son
+  ratio repasse sous 1 et l'alerte disparaît. **Aucun GHT n'est signalé sur sa ligne
+  « Tous transports »**, ce qui ne veut pas dire qu'aucun ne pose question : ce sont les
+  lignes par véhicule qu'il faut lire pour le savoir.
 - **Au grain établissement, le numérateur est incomplet de 10 %.** 183 813 des 1 827 882
   trajets plateforme 2024 hors article 80 n'ont aucun finess juridique, et n'entrent donc
   pas dans `mart_juridique_2024`. C'est le [point 6](#6-plateforme-hiérarchique--une-couverture-au-finess-partielle)
   vu depuis le livrable.
-- **Le rollup ne porte plus l'agrégat national.** Il ne retient que les 442 établissements
-  qui ont à la fois des trajets plateforme et des trajets remboursés, et son agrégat,
-  `1 643 844 / 20 578 041` soit **7,99 %**, se lit « chez les établissements couverts par
-  une plateforme ». La part du remboursement national réalisée via les plateformes est une
-  autre question, et elle se calcule sur `mart_juridique` filtré sur 2024 :
-  `1 644 069 / 62 930 184` soit **2,61 %**, un plancher pour la raison ci-dessus. **Les
-  deux chiffres sont justes et ne répondent pas à la même question.** Le filtre écarte au
-  passage 225 trajets plateforme, ceux des 4 établissements sans remboursement 2024.
+- **L'agrégat du rollup dépend du filtre posé dessus.** Le rollup liste tous les
+  établissements connus, équipés ou non. Son agrégat complet,
+  `1 644 069 / 62 930 184` soit **2,61 %**, est la part du remboursement national réalisée
+  via les plateformes, un plancher pour la raison ci-dessus. Filtré sur les 442
+  établissements qui ont à la fois des trajets plateforme et des trajets remboursés, il
+  donne `1 643 844 / 20 578 041` soit **7,99 %**, qui se lit « chez les établissements
+  couverts par une plateforme ». **Les deux chiffres sont justes et ne répondent pas à la
+  même question.** L'écart de 225 trajets au numérateur vient des 4 établissements sans
+  remboursement 2024, listés avec un ratio vide.
+- **2025 ne se compare pas tel quel à 2024.** Une des quatre plateformes n'a pas livré
+  2025. Elle pesait 625 285 trajets hors article 80 en 2024, plus du tiers du numérateur.
+  Le rollup 2025 sort donc à `1 326 310 / 64 419 410` soit **2,06 %**, contre 2,61 % en
+  2024 : la baisse vient de la source manquante, pas du recours aux plateformes. Une
+  évolution se lit à périmètre de plateformes constant, ou établissement par
+  établissement chez une plateforme présente les deux années.
 - **Le nom affiché est celui du site le plus gros, pas celui de l'entité.** `reconcile` élit
   un libellé représentatif par finess juridique. Sur une entité multi-sites, il désigne un
   site et peut contredire le département de la ligne ; sur un CHU, il désigne parfois le
@@ -189,8 +200,8 @@ lignes sortent toujours avec `nb_reference = 0` et une `part` à `NULL`.
 
 Il en reste **5 clés dans `mart_juridique`, 4 995 trajets, 0,05 % du numérateur
 plateforme**. Elles sont à faire qualifier par les plateformes : soit le code est erroné,
-soit l'établissement est absent du référentiel de remboursement. Aucune n'apparaît dans
-les rollups 2024, qui écartent les entités sans trajet remboursé.
+soit l'établissement est absent du référentiel de remboursement. Celles qui ont des trajets
+en 2024 sortent dans le rollup avec un ratio vide.
 
 Trois codes de test présents dans les extractions sources ont par ailleurs été retirés à la
 main. Le geste ne tient pas : `data/` n'est pas versionné, et une nouvelle livraison les
