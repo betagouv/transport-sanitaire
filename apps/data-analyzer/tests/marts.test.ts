@@ -1,7 +1,7 @@
 // Tests des marts calculés sur les trajets réconciliés (sans mock, sans I/O) : on appelle
 // `calculer()` sur des trajets synthétiques et on vérifie les règles (part, part>1, NULL,
 // grain, Article 80). Le rollup annuel, qui dérive d'un mart et non des trajets, a son
-// propre fichier : mart-rollup-2024.test.ts.
+// propre fichier : mart-rollup-annuel.test.ts.
 
 import { describe, expect, it } from "vitest";
 import { MartArticle80 } from "../src/04-marts/mart-article80.ts";
@@ -120,6 +120,30 @@ describe("MartRatio.calculer", () => {
         part: "",
         alerte_qualite: "",
       },
+    ]);
+  });
+});
+
+describe("MartRatio.calculer, restreint aux entités couvertes", () => {
+  const mart = new MartRatio({
+    fichier: "x.csv",
+    log: "x",
+    grain: (t) => t.finess_juridique,
+    identite: (cle) => ({ finess_juridique: cle }),
+    seulementCouvertes: true,
+  });
+
+  it("écarte une entité sans aucun trajet plateforme, et garde toutes les cellules d'une entité couverte", () => {
+    const reference = { role: "referentiel-national" as Role, nb_trajets: 100 };
+    const rows = mart.calculer([
+      trajet({ ...reference, finess_juridique: "SANS_PLATEFORME" }),
+      trajet({ ...reference, finess_juridique: "COUVERTE" }),
+      trajet({ ...reference, finess_juridique: "COUVERTE", annee: "2025" }),
+      trajet({ finess_juridique: "COUVERTE", nb_trajets: 10 }),
+    ]);
+    expect(rows.map((r) => [r.finess_juridique, r.annee, r.part])).toEqual([
+      ["COUVERTE", "2024", 0.1],
+      ["COUVERTE", "2025", 0],
     ]);
   });
 });

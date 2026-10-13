@@ -14,7 +14,10 @@
     "options": {
       "colFinessJuridique": 1,
       "colFinessGeographique": 0
-    }
+    },
+    "cibles": [
+      "partenaire-a"
+    ]
   },
   {
     "role": "plateforme",
