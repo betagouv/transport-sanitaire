@@ -120,3 +120,29 @@ describe("trace d'une préconisation incomplète", () => {
     });
   });
 });
+
+// Une adresse est un objet. La trace l'écrit en entier : le modèle factice n'en
+// a pas, la trace est donc rendue ici.
+describe("trace d'une adresse", () => {
+  const ADRESSE = {
+    street: "3 rue des Lilas",
+    postalCode: "75012",
+    city: "Paris",
+  };
+  const PARCOURS = {
+    title: "chemin parcouru",
+    pages: [],
+    answers: { depart: ADRESSE },
+    validated: { depart: { answer: ADRESSE } },
+  };
+
+  it("l'écrit champ par champ, à l'écran et dans l'export", () => {
+    render(<DebugTrace {...PARCOURS} />);
+
+    expect(screen.getAllByText(JSON.stringify(ADRESSE))).toHaveLength(2);
+    expect(traceExportee().trace).toMatchObject({
+      answers: { depart: ADRESSE },
+      validated: { depart: { answer: ADRESSE } },
+    });
+  });
+});

@@ -127,7 +127,7 @@ front/                   le front, bundlé par Vite
                          l'API, le rattachement en mémoire de session (ADR-4)
     simulateur/          le parcours : questionnaire, résultat, verrou, complément
     questionnaire-engine/  le moteur de questionnaire : ce qu'est une question, une
-                         page et une partie, l'état d'un questionnaire et son
+                         page, une partie et une adresse, l'état d'un questionnaire et son
                          brouillon, l'invalidation des réponses dépendantes,
                          l'avancement automatique, le champ qui rend une question,
                          ce qui part vers l'analytics
@@ -137,8 +137,9 @@ front/                   le front, bundlé par Vite
                          fichier qui importe publicodes, pris par le modèle hors de
                          `index.ts`
     ui/                  les champs de formulaire, bâtis sur le DSFR et sans rien
-                         savoir du questionnaire : TextField, SelectField,
-                         RadioField, CheckboxField, NumberField, DateField
+                         savoir du questionnaire : TextField, TextAreaField,
+                         SelectField, RadioField, CheckboxField, NumberField,
+                         DateField, AddressField
     developer-tools/      ce qui est réservé au service produit : son encadré, la
                          trace de debug du parcours et de ses résultats, son export, et le
                          déverrouillage, garde commune à l'écran des seeds et aux traces

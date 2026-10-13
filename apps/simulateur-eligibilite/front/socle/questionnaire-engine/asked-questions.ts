@@ -3,8 +3,8 @@
 // questions qui ont leur réponse, avec ce qui s'y proposait.
 //
 // Une question se pose sous son libellé du moment, avec ses bornes du moment,
-// et les seules options qui se proposent. Le reste du moteur ne lit que cette
-// forme.
+// les seules options qui se proposent, et une adresse dans son mode du moment.
+// Le reste du moteur ne lit que cette forme.
 //
 // Les questions se lisent dans l'ordre. Chacune voit celles qui la précèdent
 // et qui sont validées : ses conditions peuvent en dépendre, pas de la suite.
@@ -119,6 +119,8 @@ function asAsked(question: Question, seen: Seen): Question {
   const texts = displayedTexts(question, seen);
   if (question.kind === "date" || question.kind === "datetime")
     return { ...question, ...texts, ...question.boundsFrom?.(...seen) };
+  if (question.kind === "address")
+    return { ...question, ...texts, abroad: abroadOf(question, seen) };
   if (question.kind === "single choice")
     return { ...question, ...texts, options: offered(question.options) };
   if (question.kind !== "multiple choice") return { ...question, ...texts };
@@ -130,6 +132,14 @@ function asAsked(question: Question, seen: Seen): Question {
     options: offered(question.options),
     exclusiveOption,
   };
+}
+
+// Le mode d'une adresse, vu les réponses : à l'étranger, ou en France.
+function abroadOf(
+  question: Extract<Question, { kind: "address" }>,
+  seen: Seen,
+): boolean | undefined {
+  return question.abroadIf?.(...seen) ?? question.abroad;
 }
 
 // Ce qui se lit autour du champ, vu les réponses : le libellé, et le rappel.

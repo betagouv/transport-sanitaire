@@ -49,6 +49,39 @@ describe("validation d'une page", () => {
     );
   });
 
+  it("tient une adresse pour la même, quel que soit l'ordre de ses champs", () => {
+    const saisie = {
+      street: "3 rue des Lilas",
+      postalCode: "75012",
+      city: "Paris",
+    };
+    const reprise = {
+      city: "Paris",
+      postalCode: "75012",
+      street: "3 rue des Lilas",
+    };
+
+    expect(
+      commitPage(PAGES, { ...REPONSES, source: reprise }, SOURCE, {
+        source: saisie,
+      }),
+    ).toEqual({ ...REPONSES, source: saisie });
+  });
+
+  it("efface les réponses dépendantes d'une adresse dont un champ change", () => {
+    const adresse = {
+      street: "3 rue des Lilas",
+      postalCode: "75012",
+      city: "Paris",
+    };
+
+    expect(
+      commitPage(PAGES, { ...REPONSES, source: adresse }, SOURCE, {
+        source: { ...adresse, city: "Lyon" },
+      }),
+    ).toEqual({ source: { ...adresse, city: "Lyon" }, independante: "d" });
+  });
+
   it("retire la réponse d'une question que la page ne pose plus", () => {
     const { source: _retiree, ...sansSource } = REPONSES;
     expect(commitPage(PAGES, REPONSES, SOURCE, {})).toEqual({

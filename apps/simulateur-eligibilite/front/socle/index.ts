@@ -14,6 +14,7 @@ export { App } from "./app/App";
 export type { Models } from "./app/model-choice";
 export { textFrom } from "./cerfa/field-mapping";
 export { defineModel } from "./model";
+export type { Address } from "./questionnaire-engine/address";
 export type {
   Answers,
   QuestionnairePart,
