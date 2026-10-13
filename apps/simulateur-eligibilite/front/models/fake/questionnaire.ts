@@ -189,6 +189,34 @@ export const COMPLEMENT: QuestionnairePart<Questions, Cibles> = {
       ],
     },
     {
+      id: "facturation",
+      questions: [
+        {
+          id: "facturation",
+          kind: "single choice",
+          label: "Où envoyer la facture ?",
+          hint: "Démontre : la réponse qui dit, à la page suivante, si l'adresse est en France ou à l'étranger.",
+          options: [
+            { value: "france", label: "En France" },
+            { value: "etranger", label: "À l'étranger" },
+          ],
+        },
+      ],
+    },
+    {
+      id: "adresse",
+      questions: [
+        {
+          id: "adresse",
+          kind: "address",
+          label: "À quelle adresse ?",
+          hint: "Démontre : une adresse en champs séparés, avec le nom du lieu. En France, le code postal fait cinq chiffres. À l'étranger, d'après la page précédente, le pays est attendu, et le code postal est libre et facultatif. Chaque champ fautif porte son message. Revenir changer la page précédente garde l'adresse : elle se relit dans le nouveau mode.",
+          withPlaceName: true,
+          abroadIf: ({ facturation }) => facturation === "etranger",
+        },
+      ],
+    },
+    {
       id: "retrait",
       questions: [
         {

@@ -1,6 +1,8 @@
 // Ce qu'une réponse vaut pour sa question : réduite aux options qui s'y
-// proposent, et suffisante ou non pour la quitter.
+// proposent, ou aux champs d'adresse qui s'y demandent, et suffisante ou non
+// pour la quitter.
 
+import { askedAddress, isAddress, isCompleteAddress } from "./address";
 import { errorOf } from "./answer-error";
 import type { Answer, Question } from "./question";
 
@@ -17,7 +19,8 @@ export function optionValues(question: Question): string[] | undefined {
 
 /**
  * La réponse, réduite aux options de la question. `undefined` quand il n'en
- * reste rien. Une saisie libre est rendue telle quelle.
+ * reste rien. Une adresse est réduite aux champs qui se demandent, sans espace
+ * autour. Une autre saisie libre est rendue telle quelle.
  */
 export function offeredAnswer(
   question: Question,
@@ -25,6 +28,8 @@ export function offeredAnswer(
 ): Answer | undefined {
   if (question.kind === "single choice")
     return valuesOf(question).includes(answer as string) ? answer : undefined;
+  if (question.kind === "address")
+    return isAddress(answer) ? askedAddress(question, answer) : undefined;
   if (question.kind !== "multiple choice" || !Array.isArray(answer))
     return answer;
   const offered = answer.filter((value) => valuesOf(question).includes(value));
@@ -35,6 +40,8 @@ export function offeredAnswer(
 export function isAnswered(question: Question, answer: Answer | undefined) {
   const offered = offeredAnswer(question, answer);
   if (offered === undefined) return question.optional === true;
+  if (question.kind === "address")
+    return isAddress(offered) && isCompleteAddress(question, offered);
   return errorOf(question, offered) === undefined;
 }
 

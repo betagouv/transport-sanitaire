@@ -1,0 +1,94 @@
+// La saisie d'une adresse : un groupe de champs du DSFR, un `Input` par champ.
+// Chaque champ porte son libellé, et son message quand il est fautif.
+
+import { Input } from "@codegouvfr/react-dsfr/Input";
+
+type Field<Name extends string> = {
+  name: Name;
+  label: string;
+  hint?: string;
+  /** Un champ court, pour une saisie de quelques caractères. */
+  short?: boolean;
+  /** Le champ se range sur la ligne de celui qui le précède. */
+  sameLine?: boolean;
+  value: string;
+  /** Affichée sous ce champ, sans toucher aux autres. */
+  error?: string;
+};
+
+type Props<Name extends string> = {
+  id: string;
+  /** Ce qui coiffe le groupe : la question. */
+  label: string;
+  hint?: string;
+  /** Les champs, dans l'ordre où ils se saisissent. */
+  fields: readonly Field<Name>[];
+  onChange: (name: Name, value: string) => void;
+  /** Le premier champ prend le focus à l'ouverture de la page. */
+  autoFocus?: boolean;
+  /** Met le libellé en avant, quand le groupe est la question de la page. */
+  lead?: boolean;
+};
+
+export function AddressField<Name extends string>(props: Props<Name>) {
+  const { id, fields } = props;
+  // Pas de `fr-fieldset--error` : il rougit tous les champs, et un seul est
+  // fautif.
+  return (
+    <fieldset id={id} className="fr-fieldset" aria-labelledby={`${id}-legend`}>
+      <legend
+        id={`${id}-legend`}
+        className={`fr-fieldset__legend fr-text--regular${props.lead ? " fr-text--lead" : ""}`}
+      >
+        {props.label}
+        {props.hint && <span className="fr-hint-text">{props.hint}</span>}
+      </legend>
+      {fields.map((field, rank) => (
+        <div key={field.name} className={elementClass(field)}>
+          <FieldInput
+            {...props}
+            field={field}
+            autoFocus={props.autoFocus && rank === 0}
+          />
+        </div>
+      ))}
+    </fieldset>
+  );
+}
+
+// ---- implémentation ----
+
+// Les classes du DSFR pour une adresse : le champ court garde sa largeur, et
+// celui qui le suit sur sa ligne prend le reste. Sur un écran étroit, il
+// repasse dessous.
+function elementClass(field: { short?: boolean; sameLine?: boolean }): string {
+  if (field.sameLine)
+    return "fr-fieldset__element fr-fieldset__element--inline@md fr-fieldset__element--inline-grow";
+  if (field.short)
+    return "fr-fieldset__element fr-fieldset__element--inline fr-fieldset__element--postal";
+  return "fr-fieldset__element";
+}
+
+function FieldInput<Name extends string>({
+  id,
+  field,
+  onChange,
+  autoFocus,
+}: Props<Name> & { field: Field<Name> }) {
+  return (
+    <Input
+      label={field.label}
+      hintText={field.hint}
+      state={field.error ? "error" : "default"}
+      stateRelatedMessage={field.error}
+      nativeInputProps={{
+        id: `${id}-${field.name}`,
+        name: `${id}-${field.name}`,
+        type: "text",
+        value: field.value,
+        onChange: (e) => onChange(field.name, e.target.value),
+        autoFocus,
+      }}
+    />
+  );
+}
