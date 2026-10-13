@@ -4,9 +4,6 @@
 // conditions d'affichage et ses dépendances. Le moteur ne connaît aucun
 // identifiant : les génériques ne servent qu'à typer le modèle.
 
-import { errorOf } from "./answer-error";
-import { askedQuestions } from "./asked-questions";
-
 /** Une réponse : un choix, un nombre, un texte, ou les cases cochées. */
 export type Answer = string | number | readonly string[];
 
@@ -20,6 +17,20 @@ export type Answers<Questions extends AnyQuestions = AnyQuestions> = Readonly<
 
 /** Les cibles d'un modèle : ce que sa préconisation rend. */
 export type AnyCibles = Readonly<Record<string, unknown>>;
+
+/**
+ * Les questions validées, par question : ce qui s'y proposait, et ce qui y a
+ * été répondu. Une question absente n'est pas validée : elle ne se posait pas,
+ * ou attend encore sa réponse.
+ */
+export type Validated<Questions extends AnyQuestions = AnyQuestions> = {
+  readonly [Id in keyof Questions]?: {
+    /** Les options qui se proposaient. Absente : une saisie libre. */
+    readonly offered?: readonly string[];
+    /** Absente : la question, facultative, est restée sans réponse. */
+    readonly answer?: Questions[Id];
+  };
+};
 
 /**
  * L'aide d'une option : un intitulé qui se déplie sur une liste. La déplier
@@ -37,14 +48,22 @@ export type Option<
   readonly value: string;
   readonly label: string;
   /** Le libellé, quand il dépend des réponses. Absente : `label`. */
-  labelFrom?(answers: Answers<Questions>, cibles: Cibles): string;
+  labelFrom?(
+    answers: Answers<Questions>,
+    cibles: Cibles,
+    validated: Validated<Questions>,
+  ): string;
   /** Ce que l'option veut dire, rendu sous son libellé. */
   readonly description?: string;
   /**
    * L'option se propose-t-elle, vu les réponses ? Absente : toujours. Une
    * réponse qui la portait la perd quand elle ne se propose plus.
    */
-  offeredIf?(answers: Answers<Questions>, cibles: Cibles): boolean;
+  offeredIf?(
+    answers: Answers<Questions>,
+    cibles: Cibles,
+    validated: Validated<Questions>,
+  ): boolean;
   /**
    * Choisir cette option arrête le questionnaire sur sa page : ce message
    * s'affiche, et on n'avance plus tant qu'elle reste choisie.
@@ -56,6 +75,7 @@ export type Option<
   helpFrom?(
     answers: Answers<Questions>,
     cibles: Cibles,
+    validated: Validated<Questions>,
   ): OptionHelp | undefined;
 };
 
@@ -72,7 +92,11 @@ type Common<Questions extends AnyQuestions, Cibles> = {
   readonly id: keyof Questions & string;
   readonly label: string;
   /** Le libellé, quand il dépend des réponses. Absente : `label`. */
-  labelFrom?(answers: Answers<Questions>, cibles: Cibles): string;
+  labelFrom?(
+    answers: Answers<Questions>,
+    cibles: Cibles,
+    validated: Validated<Questions>,
+  ): string;
   /** Phrase indicative, rendue sous la question. */
   readonly hint?: string;
   /**
@@ -88,6 +112,7 @@ type Common<Questions extends AnyQuestions, Cibles> = {
   reminderFrom?(
     answers: Answers<Questions>,
     cibles: Cibles,
+    validated: Validated<Questions>,
   ): Reminder | undefined;
   /**
    * La question peut rester sans réponse : sa page se valide sans elle. Son
@@ -102,7 +127,11 @@ type Common<Questions extends AnyQuestions, Cibles> = {
    * Écrite en méthode : TypeScript compare alors ses paramètres dans les deux
    * sens, et le moteur peut recevoir les questions typées d'un modèle.
    */
-  askedIf?(answers: Answers<Questions>, cibles: Cibles): boolean;
+  askedIf?(
+    answers: Answers<Questions>,
+    cibles: Cibles,
+    validated: Validated<Questions>,
+  ): boolean;
   /**
    * Les questions dont dépend cette réponse. Quand l'une d'elles change, cette
    * réponse est effacée, et elle seule (`page-commit.ts`).
@@ -185,7 +214,11 @@ type DateInput<Questions extends AnyQuestions, Cibles> = Common<
      * Les bornes, quand elles dépendent des réponses ou du jour. Elles passent
      * devant `min` et `max`.
      */
-    boundsFrom?(answers: Answers<Questions>, cibles: Cibles): DateBounds;
+    boundsFrom?(
+      answers: Answers<Questions>,
+      cibles: Cibles,
+      validated: Validated<Questions>,
+    ): DateBounds;
   };
 
 // Sans argument, ces types sont ceux du moteur : n'importe quelles questions,
@@ -224,53 +257,4 @@ export type QuestionnairePart<
 /** Les pages de ces parties, dans l'ordre du questionnaire. */
 export function pagesOf(parts: readonly QuestionnairePart[]): Page[] {
   return parts.flatMap((part) => part.pages);
-}
-
-/**
- * La réponse, réduite aux options de la question. `undefined` quand il n'en
- * reste rien. Une saisie libre est rendue telle quelle.
- */
-export function offeredAnswer(
-  question: Question,
-  answer: Answer | undefined,
-): Answer | undefined {
-  if (question.kind === "single choice")
-    return valuesOf(question).includes(answer as string) ? answer : undefined;
-  if (question.kind !== "multiple choice" || !Array.isArray(answer))
-    return answer;
-  const offered = answer.filter((value) => valuesOf(question).includes(value));
-  return offered.length > 0 ? offered : undefined;
-}
-
-/** La réponse suffit-elle à quitter la question ? */
-export function isAnswered(question: Question, answer: Answer | undefined) {
-  const offered = offeredAnswer(question, answer);
-  if (offered === undefined) return question.optional === true;
-  return errorOf(question, offered) === undefined;
-}
-
-/** Toutes les questions qui se posent dans ces pages ont-elles leur réponse ? */
-export function areAnswered(
-  pages: readonly Page[],
-  answers: Answers,
-  cibles?: AnyCibles,
-): boolean {
-  return pages.every((page) =>
-    askedQuestions(page, answers, cibles).every((question) =>
-      isAnswered(question, answers[question.id]),
-    ),
-  );
-}
-
-// ---- implémentation ----
-
-// Les valeurs qu'une réponse peut porter, l'option exclusive comprise.
-function valuesOf(
-  question: Extract<Question, { kind: "single choice" | "multiple choice" }>,
-): string[] {
-  const exclusive =
-    question.kind === "multiple choice" ? question.exclusiveOption : undefined;
-  return [...question.options, ...(exclusive ? [exclusive] : [])].map(
-    (option) => option.value,
-  );
 }

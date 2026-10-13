@@ -2,12 +2,23 @@
 // répondre, et la navigation entre les pages.
 
 import { useState } from "react";
-import { askedPages, askedQuestions } from "./asked-questions";
+import {
+  askedPages,
+  askedQuestions,
+  validatedQuestions,
+} from "./asked-questions";
 import type { AutoAdvance } from "./auto-advance";
 import { useAutoAdvance } from "./auto-advance";
+import { isAnswered, offeredAnswer } from "./offered-answer";
 import { commitPage } from "./page-commit";
-import type { Answer, Answers, AnyCibles, Page, Question } from "./question";
-import { isAnswered, offeredAnswer } from "./question";
+import type {
+  Answer,
+  Answers,
+  AnyCibles,
+  Page,
+  Question,
+  Validated,
+} from "./question";
 import type { QuestionnaireTracking } from "./questionnaire-tracking";
 import { useQuestionnaireTracking } from "./questionnaire-tracking";
 
@@ -43,6 +54,8 @@ type View = {
   // qu'une fois la page validée.
   draft: Answers;
   answers: Answers;
+  // Les questions validées, pour la trace de debug.
+  validated: Validated;
   hasPrevious: boolean;
   // Une question affichée attend encore sa réponse : on ne peut pas avancer.
   hasPendingQuestions: boolean;
@@ -92,7 +105,7 @@ export function stateAfterAnswers(
 ): QuestionnaireState & { complete: boolean } {
   const asked = askedPages(pages, answers, cibles);
   const pending = asked.find((page) =>
-    askedQuestions(page, answers, cibles).some(
+    askedQuestions(pages, page, answers, cibles).some(
       (question) => !isAnswered(question, answers[question.id]),
     ),
   );
@@ -143,7 +156,7 @@ function read(options: Source, state: State): View {
   const pages = askedPages(all, state.answers, cibles);
   const page = pages.find((p) => p.id === state.page);
   if (!page) throw new Error(`La page « ${state.page} » ne s'affiche plus.`);
-  const questions = askedQuestions(page, visibleAnswers(state), cibles);
+  const questions = askedQuestions(all, page, visibleAnswers(state), cibles);
   const hasPendingQuestions = questions.some(
     (question) => !isAnswered(question, state.draft[question.id]),
   );
@@ -153,6 +166,7 @@ function read(options: Source, state: State): View {
     questions,
     draft: state.draft,
     answers: state.answers,
+    validated: validatedQuestions(all, state.answers, cibles),
     hasPrevious: pages.indexOf(page) > 0,
     hasPendingQuestions,
     isLast:
@@ -177,12 +191,11 @@ function committedAnswers(
   state: State,
   page: Page,
 ): Answers {
-  const inputs = askedQuestions(page, visibleAnswers(state), cibles).flatMap(
-    (question) => {
-      const answer = offeredAnswer(question, state.draft[question.id]);
-      return answer === undefined ? [] : [[question.id, answer] as const];
-    },
-  );
+  const asked = askedQuestions(pages, page, visibleAnswers(state), cibles);
+  const inputs = asked.flatMap((question) => {
+    const answer = offeredAnswer(question, state.draft[question.id]);
+    return answer === undefined ? [] : [[question.id, answer] as const];
+  });
   return commitPage(pages, state.answers, page, Object.fromEntries(inputs));
 }
 

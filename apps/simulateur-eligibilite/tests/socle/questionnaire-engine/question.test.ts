@@ -1,9 +1,9 @@
 import { describe, expect, it } from "vitest";
-import { askedPages } from "../../../front/socle/questionnaire-engine/asked-questions";
 import {
   areAnswered,
-  type Page,
-} from "../../../front/socle/questionnaire-engine/question";
+  askedPages,
+} from "../../../front/socle/questionnaire-engine/asked-questions";
+import type { Page } from "../../../front/socle/questionnaire-engine/question";
 
 // Après le verrou, une question peut dépendre de la préconisation : sa condition
 // lit les cibles figées, en plus des réponses. Le questionnaire factice n'a pas
