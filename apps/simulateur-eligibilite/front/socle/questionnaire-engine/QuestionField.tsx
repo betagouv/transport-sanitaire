@@ -1,5 +1,6 @@
 // Rend une question avec le champ de `front/socle/ui/` qui lui convient.
 
+import { AddressField } from "../ui/AddressField";
 import { CheckboxField } from "../ui/CheckboxField";
 import { DateField } from "../ui/DateField";
 import { NumberField } from "../ui/NumberField";
@@ -8,6 +9,7 @@ import { Reminder } from "../ui/Reminder";
 import { SelectField } from "../ui/SelectField";
 import { TextAreaField } from "../ui/TextAreaField";
 import { TextField } from "../ui/TextField";
+import { addressErrors, askedFields, isAddress, withField } from "./address";
 import type {
   Answer,
   MultipleChoice,
@@ -20,7 +22,10 @@ type Props = {
   answer: Answer | undefined;
   /** `undefined` retire la réponse : un champ vidé n'est plus répondu. */
   onChange: (answer: Answer | undefined) => void;
-  /** Ce qui ne va pas dans la saisie, affiché sous le champ. */
+  /**
+   * Ce qui ne va pas dans la saisie, affiché sous le champ. Une adresse ne le
+   * lit pas : elle a un message par champ.
+   */
   error?: string;
   /** Le champ prend le focus à l'ouverture de la page. */
   autoFocus?: boolean;
@@ -37,6 +42,7 @@ export function QuestionField(props: Props) {
 
 // ---- implémentation ----
 
+type AddressQuestion = Extract<Question, { kind: "address" }>;
 type NumberQuestion = Extract<Question, { kind: "number" }>;
 type DateQuestion = Extract<Question, { kind: "date" | "datetime" }>;
 
@@ -60,6 +66,8 @@ function render(props: Props) {
       return <SingleChoiceField {...props} question={question} />;
     case "multiple choice":
       return <MultipleChoiceField {...props} question={question} />;
+    case "address":
+      return <AddressQuestionField {...props} question={question} />;
     case "number":
       return <NumberQuestionField {...props} question={question} />;
     case "date":
@@ -70,6 +78,29 @@ function render(props: Props) {
     default:
       return <TextField {...text(props)} />;
   }
+}
+
+// Chaque champ qui se demande reçoit sa valeur et son message. Le brouillon
+// garde la saisie telle quelle : les espaces ne tombent qu'à la validation.
+function AddressQuestionField(props: Props & { question: AddressQuestion }) {
+  const { question, onChange } = props;
+  const address = isAddress(props.answer) ? props.answer : undefined;
+  const errors = address ? addressErrors(question, address) : {};
+  return (
+    <AddressField
+      id={question.id}
+      label={question.label}
+      hint={question.hint}
+      autoFocus={props.autoFocus}
+      lead
+      fields={askedFields(question).map((field) => ({
+        ...field,
+        value: address?.[field.name] ?? "",
+        error: errors[field.name],
+      }))}
+      onChange={(name, text) => onChange(withField(address, name, text))}
+    />
+  );
 }
 
 function NumberQuestionField(props: Props & { question: NumberQuestion }) {

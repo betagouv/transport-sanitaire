@@ -4,8 +4,13 @@
 // conditions d'affichage et ses dépendances. Le moteur ne connaît aucun
 // identifiant : les génériques ne servent qu'à typer le modèle.
 
-/** Une réponse : un choix, un nombre, un texte, ou les cases cochées. */
-export type Answer = string | number | readonly string[];
+import type { Address, AddressSettings } from "./address";
+
+/**
+ * Une réponse : un choix, un nombre, un texte, les cases cochées, ou une
+ * adresse.
+ */
+export type Answer = string | number | readonly string[] | Address;
 
 /** Les questions d'un modèle : pour chacune, le type de sa réponse. */
 export type AnyQuestions = Readonly<Record<string, Answer>>;
@@ -221,6 +226,28 @@ type DateInput<Questions extends AnyQuestions, Cibles> = Common<
     ): DateBounds;
   };
 
+/**
+ * Une adresse, saisie champ par champ (`address.ts`). Son libellé coiffe les
+ * champs.
+ */
+type AddressInput<Questions extends AnyQuestions, Cibles> = Common<
+  Questions,
+  Cibles
+> &
+  AddressSettings & {
+    readonly kind: "address";
+    /**
+     * L'adresse est-elle à l'étranger, vu les réponses ? Passe devant `abroad`.
+     * Sans `dependsOn`, une adresse déjà saisie survit au changement : elle se
+     * relit dans le nouveau mode.
+     */
+    abroadIf?(
+      answers: Answers<Questions>,
+      cibles: Cibles,
+      validated: Validated<Questions>,
+    ): boolean;
+  };
+
 // Sans argument, ces types sont ceux du moteur : n'importe quelles questions,
 // des cibles s'il y en a. Le modèle, lui, les écrit avec les siens.
 export type Question<
@@ -231,7 +258,8 @@ export type Question<
   | MultipleChoice<Questions, Cibles>
   | NumberInput<Questions, Cibles>
   | TextInput<Questions, Cibles>
-  | DateInput<Questions, Cibles>;
+  | DateInput<Questions, Cibles>
+  | AddressInput<Questions, Cibles>;
 
 export type Page<
   Questions extends AnyQuestions = AnyQuestions,

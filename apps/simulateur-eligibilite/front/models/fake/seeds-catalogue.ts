@@ -14,6 +14,9 @@ const CAFE_SUCRE = {
   service: ["rien"],
 } as const;
 
+// La même, la première page du complément remplie.
+const DEUX_TASSES = { ...CAFE_SUCRE, quantite: 2, lieu: "terrasse" } as const;
+
 export const SEEDS: readonly Seed<Questions, Cibles>[] = [
   {
     id: "accompagnements-du-the",
@@ -118,11 +121,36 @@ export const SEEDS: readonly Seed<Questions, Cibles>[] = [
     expected: { commande: "café, sucre", lait_tourne: false },
   },
   {
+    id: "complement-adresse-en-france",
+    label: "Complément : adresse en France",
+    description:
+      "Passe le verrou et s'arrête sur l'adresse, la facture partant en France : des champs séparés, le nom du lieu, un code postal de cinq chiffres, pas de pays.",
+    answers: { ...DEUX_TASSES, facturation: "france" },
+    expected: { commande: "café, sucre" },
+  },
+  {
+    id: "complement-adresse-a-l-etranger",
+    label: "Complément : adresse à l'étranger",
+    description:
+      "S'arrête sur la même page, la facture partant à l'étranger : le pays est attendu, et le code postal est libre et facultatif. « Précédent » permet de changer de mode, adresse saisie.",
+    answers: { ...DEUX_TASSES, facturation: "etranger" },
+    expected: { commande: "café, sucre" },
+  },
+  {
     id: "complement-retrait",
     label: "Complément : réponse qui bloque, date bornée",
     description:
-      "Passe le verrou et s'arrête sur le retrait : « En livraison » bloque, et le jour est borné. La page suivante porte le texte long.",
-    answers: { ...CAFE_SUCRE, quantite: 2, lieu: "terrasse" },
+      "Passe le verrou et s'arrête sur le retrait : « En livraison » bloque, et le jour est borné. La page suivante porte le texte long. L'adresse, déjà donnée, est un objet.",
+    answers: {
+      ...DEUX_TASSES,
+      facturation: "france",
+      adresse: {
+        placeName: "Café de la Gare",
+        street: "3 rue des Lilas",
+        postalCode: "75012",
+        city: "Paris",
+      },
+    },
     expected: { commande: "café, sucre" },
   },
 ];

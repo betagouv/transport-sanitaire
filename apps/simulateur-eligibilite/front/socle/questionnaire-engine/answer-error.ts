@@ -3,6 +3,7 @@
 // Une réponse en erreur ne compte pas : la page ne se valide pas tant qu'il en
 // reste une.
 
+import { addressErrors, isAddress } from "./address";
 import type { Answer, Question } from "./question";
 
 /**
@@ -14,6 +15,7 @@ export function errorOf(
   answer: Answer | undefined,
 ): string | undefined {
   if (answer === undefined) return undefined;
+  if (question.kind === "address") return addressErrorOf(question, answer);
   if (question.kind === "number") return numberErrorOf(question, answer);
   if (question.kind === "date" || question.kind === "datetime")
     return dateErrorOf(question, answer);
@@ -29,6 +31,16 @@ export function errorOf(
 }
 
 // ---- implémentation ----
+
+// Une adresse a un message par champ, rendu sous chacun (`address.ts`). Ici, le
+// premier suffit : il dit qu'il reste quelque chose à corriger.
+function addressErrorOf(
+  question: Extract<Question, { kind: "address" }>,
+  answer: Answer,
+): string | undefined {
+  if (!isAddress(answer)) return "Cette réponse est attendue.";
+  return Object.values(addressErrors(question, answer))[0];
+}
 
 // L'écran ne laisse pas cocher deux options incompatibles. Ceci couvre une
 // réponse venue d'ailleurs, comme une seed.

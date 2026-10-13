@@ -3,6 +3,7 @@
 // Les réponses de la page sont remplacées. Celles qui dépendaient d'une réponse
 // changée sont effacées, et elles seules.
 
+import { isAddress } from "./address";
 import type { Answer, Answers, Page } from "./question";
 
 /**
@@ -51,5 +52,13 @@ function dependentsOf(
 }
 
 function sameAnswer(a: Answer | undefined, b: Answer | undefined): boolean {
-  return JSON.stringify(a) === JSON.stringify(b);
+  return JSON.stringify(comparable(a)) === JSON.stringify(comparable(b));
+}
+
+// Une adresse est la même quel que soit l'ordre où ses champs sont écrits :
+// une seed ne les range pas forcément comme l'écran.
+function comparable(answer: Answer | undefined) {
+  return isAddress(answer)
+    ? Object.entries(answer).sort(([a], [b]) => a.localeCompare(b))
+    : answer;
 }
