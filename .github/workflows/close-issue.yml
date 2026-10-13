@@ -1,0 +1,32 @@
+name: Ferme l'issue d'une PR fusionnée
+
+# GitHub ne ferme une issue par `Closes #n` que si la PR vise la branche par
+# défaut. Ici toute PR vise `staging` (GIT-009) : l'issue se ferme donc d'après
+# le numéro que porte la branche, `feat/51-adresse` pour l'issue 51. C'est le
+# même numéro que lit `issueOfBranch`, dans `apps/cli/src/git/branches.ts`.
+on:
+  pull_request:
+    types: [closed]
+
+permissions:
+  issues: write
+
+jobs:
+  close:
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    steps:
+      # Le nom de la branche vient de l'auteur de la PR : il passe par
+      # l'environnement, jamais par une interpolation dans le script.
+      - env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          BRANCH: ${{ github.head_ref }}
+          PR: ${{ github.event.pull_request.number }}
+        run: |
+          number=$(printf '%s' "$BRANCH" | sed -nE 's|^[a-z]+/([0-9]+)-.*$|\1|p')
+          if [ -z "$number" ]; then
+            echo "La branche $BRANCH ne sert aucune issue."
+            exit 0
+          fi
+          gh issue close "$number" --comment "Fermée par la fusion de #$PR."

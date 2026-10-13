@@ -35,9 +35,7 @@ Le toolchain vient de `mise` :
 
 - Node 24
 - pnpm
-- `gh`, pour publier la release d'une livraison
-
-`pnpm install` à la racine monte les trois apps.
+- `gh`, pour les PR et la release d'une livraison
 
 Les apps restent **indépendantes de code**. Aucune n'importe une autre. Chacune a
 son `package.json`, son job CI et son `pnpm verifier`. Le workspace mutualise
@@ -65,15 +63,42 @@ aucune app.
 | `apps/simulateur-eligibilite` | Le produit. Simulateur d'éligibilité au transport sanitaire : règles publicodes, front React/DSFR, backend Express, rattachement à un établissement et un service, remplissage du CERFA. |
 | `apps/data-analyzer` | L'ETL qui calcule la part des trajets réalisés via les plateformes. Code public, **données et fournisseurs privés**. |
 | `apps/glossaire-notion` | Une extension de navigateur qui affiche le glossaire tenu dans Notion. |
+| `apps/cli` | `tsp`, le point d'entrée du dépôt. Sans dépendance d'exécution, **sans tests**. |
+
+## `tsp`, le point d'entrée
+
+**Tout geste sur le dépôt passe par `tsp`**, la CLI d'`apps/cli`. Sur une
+machine neuve, `apps/cli/bin/tsp setup` installe `mise`, le toolchain, les dépendances, les
+hooks, et rend `tsp` appelable de partout.
+
+| Besoin | Commande |
+|---|---|
+| Lancer une action sur une app | `tsp <install\|build\|start\|test\|dev\|verifier> [app]` |
+| Savoir ce qu'une app sait faire | `tsp apps`, `tsp features [app]` |
+| Lire les règles, les skills, la doc | `tsp rules [recueil\|id]`, `tsp skills [skill]`, `tsp docs [app]` |
+| Voir le travail en cours, à prendre | `tsp wip`, `tsp next` |
+| Voir où en est un chantier | `tsp issue list`, `tsp issue show <n>` |
+| Tenir un chantier | `tsp issue new`, `tsp issue add`, `tsp issue sync` |
+| Ouvrir un outil du projet (site, préprod, hébergeur) | `tsp open [outil]` |
+| Brancher, proposer | `tsp branch <type>/<sujet> [--issue <n>]`, `tsp pr`, `tsp pr status` |
+| Diagnostiquer la machine | `tsp doctor` |
+
+`tsp help` les liste toutes. Les commandes de lecture acceptent `--json`.
+Sans app, une action passe sur toutes les apps qui la portent, une à la fois.
+`dev` et `start` ne rendent pas la main : ils demandent une app dès que
+plusieurs les portent.
 
 ## Vérifier
 
-`pnpm verifier`, dans l'app. **C'est la commande à passer avant de dire que c'est
-fait.** La CI lance exactement la même : un `verifier` vert ici l'est là-bas. Une
-porte à ajouter se met dans ce script, jamais dans le YAML.
+`tsp verifier <app>`. **C'est la commande à passer avant de dire que c'est
+fait.** Elle lance le script `verifier` de l'app, et la CI lance exactement le
+même : un `verifier` vert ici l'est là-bas. Une porte à ajouter se met dans ce
+script, jamais dans le YAML.
 
-À la racine, `pnpm verifier` le passe sur les trois apps, une à la fois.
-`mise run verifier` l'appelle.
+`tsp verifier` sans app le passe sur toutes les apps, une à la fois.
+
+La CI et le `Procfile` appellent `pnpm` en direct, pas `tsp` : la production ne
+dépend pas de la CLI.
 
 `pnpm audit` ne se scope pas à une app : il lit le lock, et le lock est unique
 au dépôt. Il a son job de CI à la racine.
@@ -106,19 +131,22 @@ anglais : `RattachementForm`, `SeedsTable`, `seedAnswers`.
 
 Aucun test ne garde cette règle : elle se tient à la relecture.
 
-**Une dérogation assumée** : `apps/glossaire-notion` est entièrement en anglais.
+**Deux dérogations assumées.** `apps/cli` écrit ses identifiants techniques en
+anglais et garde le français pour le métier (`recueil`, `tache`, `etat`) : voir
+son `AGENTS.md`. Et `apps/glossaire-notion` est entièrement en anglais.
 Elle n'a pas de vocabulaire métier propre. C'est un lecteur de base Notion, et la
 franciser coûterait plus que ça ne clarifierait.
 
 ## Écrire du code et commiter
 
-24 règles numérotées vivent dans `docs/knowledge/contributing/`. **À lire avant
+23 règles numérotées vivent dans `docs/knowledge/contributing/`. **À lire avant
 d'écrire une ligne ou de commiter.**
 
 | Fichier | Ce qu'il porte |
 |---|---|
 | [`regles-de-code.md`](docs/knowledge/contributing/regles-de-code.md) | les 16 `QUAL-*` : forme d'un fichier, découpage, noms, exports, suppressions de lint |
-| [`regles-git.md`](docs/knowledge/contributing/regles-git.md) | les 8 `GIT-*` : branche ou `main`, forme du message, métadonnée d'IA, confidentialité |
+| [`regles-git.md`](docs/knowledge/contributing/regles-git.md) | les 7 `GIT-*` : branche et PR vers `staging`, forme du message, métadonnée d'IA, confidentialité |
+| [`ecrire-une-regle.md`](docs/knowledge/contributing/ecrire-une-regle.md) | le format d'une règle, pour en ajouter, modifier ou retirer une |
 
 Chaque règle porte un identifiant, sa raison, un exemple juste, un exemple faux,
 et la garde qui l'applique. **Ne les recopie pas ici.** Cite l'identifiant en
@@ -129,12 +157,15 @@ revue et en commit : « corrige QUAL-006 ».
 | Ce que tu veux écrire | Où ça va |
 |---|---|
 | Une décision d'architecture | `docs/knowledge/adr/` de l'app concernée, ou celui de la racine si la décision traverse plusieurs apps. Format ADR maison, au niveau composant C4, sans détail de fichier |
-| Le cadrage d'un chantier | `docs/specs/` (tracker `0. drafts` → `4. done`), à la racine ou dans l'app |
+| Le cadrage d'un chantier | le corps de son issue GitHub, que `tsp issue new` ouvre. Jamais un fichier du dépôt |
+| Le découpage d'un chantier | ses sous-issues, une par PR, que `tsp issue add` ouvre |
+| L'état d'un chantier | **nulle part** : il se déduit de l'issue, de sa branche et de sa PR. `tsp issue show <n>` l'affiche |
+| Ce qu'une app sait faire | son `docs/knowledge/features.md`, un tableau « feature, ce qu'elle fait » que lit `tsp features` |
 | Une connaissance métier actée | `docs/knowledge/domain/` de l'app concernée, ou celui de la racine si elle traverse plusieurs apps |
 | Le mode d'emploi d'une app | son `README.md` |
 | Ce qu'une version apporte | le `CHANGELOG.md` de l'app. Un TL;DR, puis une ligne par commit groupée par type |
 | Une règle pour l'IA | `AGENTS.md`, celui de la racine ou celui de l'app |
-| Une règle de code ou de commit | `docs/knowledge/contributing/`, avec un identifiant, une raison et deux exemples |
+| Une règle de code ou de commit | `docs/knowledge/contributing/`, au format de [`ecrire-une-regle.md`](docs/knowledge/contributing/ecrire-une-regle.md) |
 | Une garde | **un test**, pas une phrase |
 
 Ce que `docs/knowledge/` contient aujourd'hui ne se recopie pas ici : liste les
@@ -179,7 +210,7 @@ Une règle de jugement, elle, ne se mécanise pas. Une assertion dirait *qu'*on 
 coupé, jamais *si* on a coupé au bon endroit. Elle écrit alors `*Aucune garde.*`
 en toutes lettres, plutôt que de laisser croire qu'elle en a une.
 
-L'état de chaque règle des 23 de
+L'état de chaque règle des 22 de
 [`docs/knowledge/contributing/`](docs/knowledge/contributing/) se lit dans la
 colonne « Garde » de son tableau, pas ici : recopier cet état dans ce fichier
 créerait deux sources à tenir à jour au lieu d'une.

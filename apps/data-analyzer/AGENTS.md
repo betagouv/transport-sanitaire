@@ -22,14 +22,17 @@ gabarit neutre est `mapping.example.json`.
 | **Jamais versionnés** | `data/` (sources brutes), `build/` (tous les artefacts, dont des marts contenant de vrais établissements), `mapping.json`, `.env` |
 | **Versionnés** | `src/` (code générique), `ref/` (open data figé + mappings manuels), `mapping.example.json` |
 
-Un nom de fournisseur fuite par quatre chemins :
+Un nom de fournisseur fuite par cinq chemins :
 
 - un commentaire,
 - un nom de variable,
 - un fichier de test,
-- **un message de commit**.
+- **un message de commit**,
+- **une issue ou une PR**, par son titre, son corps ou un commentaire. Elles
+  sont publiques, comme le dépôt.
 
-Relis le diff *et* le message avant de commiter. Les libellés de véhicule et les
+Relis le diff *et* le message avant de commiter, et le texte d'une issue avant
+de l'ouvrir. Les libellés de véhicule et les
 noms de colonnes des adaptateurs décrivent des **formats**, jamais des
 fournisseurs. Garde-le ainsi en ajoutant un adaptateur.
 
