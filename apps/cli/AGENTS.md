@@ -42,8 +42,7 @@ point d'entrée, et la liste des commandes.
 | `git/` | les branches, les worktrees, les PR, les issues, la forme des commits | `core` |
 | `notion/` | l'API des tickets | `core` |
 | `issues/` | les chantiers tenus dans les issues GitHub : les lire, en ouvrir, l'état de chaque tâche, l'endroit où son travail se trouve, le ticket Notion | `core`, `apps`, `git`, `notion` |
-| `specs/` | les trackers, l'en-tête d'une spec, `spec new`, `move` et `sync` | `core`, `apps`, `git`, `notion` |
-| `work/` | `wip` et `next`, les tâches, les tickets hors specs | `core`, `apps`, `git`, `issues`, `notion`, `specs` |
+| `work/` | `wip` et `next`, les tickets hors chantiers | `core`, `git`, `issues`, `notion` |
 | `machine/` | `setup`, `doctor`, `open`, le lien vers le lanceur, les fichiers locaux | `core`, `apps`, `notion` |
 
 **Les dépendances ne vont que dans ce sens.** `core` n'importe aucun module, et
@@ -70,7 +69,7 @@ Une **action** n'est pas une commande à écrire : c'est un script du
 | L'état d'une tâche se déduit, il ne s'écrit pas | un état rédigé se périme dès la fusion d'une PR |
 | Le numéro d'issue d'une branche se lit par `issueOfBranch`, et par la même expression dans `close-issue.yml` | deux lectures différentes, et la fusion ferme une autre issue que celle que `tsp` montre |
 | Seul un chantier a un ticket Notion, jamais une tâche | Notion porte le suivi macro, GitHub le détail |
-| `issue sync` et `spec sync` ne réécrivent jamais le corps d'un ticket | l'équipe produit y prend des notes |
+| `issue sync` ne réécrit jamais le corps d'un ticket | l'équipe produit y prend des notes |
 | Un statut Notion ne recule jamais | `Reviewing dev` et `Prod / Done` se posent à la main |
 | La cible d'une PR est `staging`, sans option pour en changer | c'est ce qui applique GIT-009 |
 | `setup` se rejoue sans risque | il sert aussi à réparer |
@@ -80,4 +79,4 @@ Une **action** n'est pas une commande à écrire : c'est un script du
 
 Les noms de commande sont en anglais, comme les scripts `pnpm`. L'aide et les
 sorties sont en français. Dans le code, le technique est en anglais et le
-métier en français : `recueil`, `tracker`, `etat`, `ticket`, `tache`.
+métier en français : `recueil`, `chantier`, `etat`, `ticket`, `tache`, `lieu`.
