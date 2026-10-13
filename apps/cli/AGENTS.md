@@ -39,10 +39,11 @@ point d'entrée, et la liste des commandes.
 | `core/` | la ligne de commande, les sorties, le lancement d'un programme, la lecture du Markdown et des réglages | rien |
 | `apps/` | les apps, leurs actions, leurs features | `core` |
 | `knowledge/` | les règles, les skills, la documentation de référence | `core`, `apps` |
-| `git/` | les branches, les PR, la forme des commits | `core` |
+| `git/` | les branches, les worktrees, les PR, les issues, la forme des commits | `core` |
 | `notion/` | l'API des tickets | `core` |
+| `issues/` | les chantiers lus dans les issues GitHub, l'état de chaque tâche, l'endroit où son travail se trouve | `core`, `git` |
 | `specs/` | les trackers, l'en-tête d'une spec, `spec new`, `move` et `sync` | `core`, `apps`, `git`, `notion` |
-| `work/` | `wip` et `next`, les tâches, les tickets hors specs | `core`, `apps`, `git`, `notion`, `specs` |
+| `work/` | `wip` et `next`, les tâches, les tickets hors specs | `core`, `apps`, `git`, `issues`, `notion`, `specs` |
 | `machine/` | `setup`, `doctor`, `open`, le lien vers le lanceur, les fichiers locaux | `core`, `apps`, `notion` |
 
 **Les dépendances ne vont que dans ce sens.** `core` n'importe aucun module, et
@@ -66,6 +67,7 @@ Une **action** n'est pas une commande à écrire : c'est un script du
 |---|---|
 | Une erreur prévue rend un code non nul et une ligne sur stderr | un agent lit le code de sortie, pas le texte |
 | Sans jeton Notion, `wip` et `next` affichent le reste | personne n'est bloqué par un service absent |
+| L'état d'une tâche se déduit, il ne s'écrit pas | un état rédigé se périme dès la fusion d'une PR |
 | `spec sync` ne réécrit jamais le corps d'un ticket | l'équipe produit y prend des notes |
 | Un statut Notion ne recule jamais | `Reviewing dev` et `Prod / Done` se posent à la main |
 | La cible d'une PR est `staging`, sans option pour en changer | c'est ce qui applique GIT-009 |

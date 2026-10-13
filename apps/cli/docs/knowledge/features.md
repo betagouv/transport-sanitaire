@@ -13,8 +13,9 @@
 | Lecture des skills | `tsp skills` liste les modes d'emploi du dépôt, ou en affiche un. |
 | Lecture de la documentation | `tsp docs` liste les ADR et les connaissances métier, à la racine et par app. |
 | Outils du projet | `tsp open` liste les outils les plus utilisés (site, préprod, hébergeur, DNS, Notion, GitHub) et les ouvre dans le navigateur. La liste reste locale. |
-| Travail en cours | `tsp wip` rassemble les PR ouvertes, les branches sans PR, les tâches, les specs en cours et les tickets Notion. |
-| Travail à prendre | `tsp next` rappelle le travail en cours, puis liste les specs en `todo` et en `backlog`, et les tickets Notion prêts à développer. |
+| Suivi des chantiers | `tsp issue list` liste les chantiers ouverts et leur avancement. `tsp issue show` en montre un en arbre, avec l'état de chaque tâche, sa branche, son worktree et sa PR. L'état se déduit de GitHub et de git. |
+| Travail en cours | `tsp wip` rassemble les chantiers commencés, les PR ouvertes, les branches et worktrees sans issue, les fichiers de `docs/tasks`, les specs en cours et les tickets Notion. |
+| Travail à prendre | `tsp next` rappelle le travail en cours, puis liste les tâches à prendre, les specs en `todo` et en `backlog`, et les tickets Notion prêts à développer. |
 | Tenue des specs | `tsp spec new` crée une spec avec le prochain id. `tsp spec move` la change d'état et tient « bloquée par » à jour. |
 | Ticket Notion d'une spec | `tsp spec sync` crée le ticket d'une spec puis le garde à jour, sans réécrire son corps ni faire reculer son statut. |
 | Branches et PR | `tsp branch` tire une branche de `staging`. `tsp pr` ouvre la PR vers `staging`. `tsp pr status` montre sa CI. |
