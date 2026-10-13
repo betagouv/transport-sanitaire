@@ -6,12 +6,12 @@ au contrat `Model`.
 
 **Blocked by:** 06 (le parcours).
 
-**Status:** le modèle de démonstration (D-82) est en place, et les capacités
-1 à 11 sont codées, avec leur page et leur seed. La v10.0.2, reçue le
-12 octobre, ne retient plus rien : elle libère le fait inconnu, la provenance
-et le PDF aplati, ajoute deux capacités (22 et 23) et rend la liste filtrable
-(14) inutile pour l'instant. Restent 11 capacités à coder sur les 23 de
-l'inventaire.
+**Status:** le modèle de démonstration (D-82) est en place. Les capacités 1 à
+11 sont codées, avec leur page et leur seed, puis le groupe de la décision :
+le fait à trois états (20) et sa provenance (21). La v10.0.2, reçue le
+12 octobre, ne retient plus rien, ajoute deux capacités (22 et 23) et rend la
+liste filtrable (14) inutile pour l'instant. Restent 9 capacités à coder sur
+les 23 de l'inventaire.
 
 ## Décisions prises
 
@@ -79,6 +79,16 @@ Décisions de l'éditeur, dans la v10.0.2 :
 - **D-87** La trace garde la provenance de chaque fait : la réponse qui le
   donne, la version du référentiel, ou la raison qui le rend sans objet.
 
+Décision du 13 octobre :
+
+- **D-88** Le socle relève les questions validées : pour chacune, les options
+  qui se proposaient, et la réponse ou son absence. Le modèle les reçoit pour
+  calculer ses faits (`preconisation.faits(answers, validated)`), et les
+  conditions d'une question les reçoivent en troisième argument. C'est une
+  vue exhaustive : le modèle ne devine pas ce qui a été montré. Le socle ne
+  conclut rien. Dire « non » d'une case proposée et non cochée reste au
+  modèle, fait par fait, d'après le contrat de l'éditeur. Tranche le point 13.
+
 ## Ce que la v10.0.1 change à l'inventaire
 
 | Sujet | Avant | Maintenant |
@@ -130,14 +140,22 @@ chantier 10.
 - **D-84.** L'option `readOnly` de `fillCerfa` n'a plus d'objet. Une case
   d'un groupe ne se coche plus par son champ quand une autre du même groupe
   l'est aussi : elle se dessine.
-- **D-86.** `situationOf` envoie aujourd'hui chaque fait au moteur. Un fait
-  absent ne doit pas avoir de clé : publicodes refuse une valeur `undefined`.
-  Les 59 faits de la v10.0.2 sont tous des oui/non.
-- **D-86, D-87.** Le modèle calcule ses faits à partir des seules réponses
-  (`preconisation.faits(answers)`). Les réponses ne disent ni quelles options
-  étaient proposées, ni si une question facultative sans réponse a été
-  validée. C'est le premier point qui peut toucher au contrat `Model` : voir
-  « Conception à arrêter ».
+- **D-86.** Fait : le moteur n'envoie que les faits établis. Publicodes refuse
+  une valeur `undefined`, et une clé absente laisse indéfinie la cible qui en
+  dépend. Vérifié sur la version 1.10.1 : indéfinie se lit `undefined`, sans
+  objet se lit `null`. Les 59 faits de la v10.0.2 sont tous des oui/non.
+- **D-86, D-87.** Fait : le modèle calculait ses faits à partir des seules
+  réponses, qui ne disent ni quelles options étaient proposées, ni si une
+  question facultative sans réponse a été validée. Il reçoit maintenant les
+  questions validées (D-88). C'est le premier changement du contrat `Model`,
+  par ajout.
+- **D-88.** Les questions se lisent dans l'ordre. Une question est validée
+  quand elle se pose et que sa réponse suffit, et que rien n'attend avant
+  elle. Aucun état ne s'ajoute au questionnaire : la liste se déduit des
+  réponses et de l'ordre des pages, puisqu'on ne passe une page qu'en la
+  validant. Sur la page ouverte, une question voit celles qui la précèdent
+  telles qu'elles sont à l'écran : Q2.3.4 dépend d'une cible que Q2.3.1, sur
+  la même page, fait changer.
 
 ## Inventaire
 
@@ -204,8 +222,8 @@ La colonne « Version » dit quel package le demande.
 | 17 | Taille du texte en configuration (D-68) : 9 pt visés, 8 pt avant de retirer le commentaire | adresses, texte médical | toutes | `text-fit.ts` a 10 et 6 en constantes. 8 pt n'est plus un plancher (D-85). | petit |
 | 18 | Texte trop long (D-85). Le texte requis et le commentaire facultatif arrivent séparés. Réduire de 9 à 8 pt, retirer le commentaire, puis réduire jusqu'à ce que tout tienne. Dire ce qui a été retiré, et le garder dans la trace | adresses, texte médical | revue en 10.0.2 | `fillCerfa` refuse d'écrire, et s'arrête à une taille plancher. | moyen |
 | 19 | PDF de sortie aplati, sans aucun champ (D-84) | PMT, DAP, S3141 | 10.0.2 | Les champs restent dans le PDF produit. `form.flatten()` de `pdf-lib` les retire : essayé sur la PMT (53 champs, puis 0) et la DAP (56, puis 0). Reste à l'essayer sur le S3141, et à contrôler le rendu dans un lecteur courant. | petit |
-| 20 | Fait à trois états (D-86). Le moteur n'envoie pas un fait absent, et rend une cible indéfinie. Le modèle sait ce qui a été demandé : les questions validées, et les options qui y étaient proposées | tout P2 | 10.0.2 | Le moteur envoie tous les faits. Le modèle ne reçoit que les réponses. | moyen |
-| 21 | Provenance de chaque fait dans la trace, et son export pour la recette (D-87) | recette N3 de l'éditeur | 10.0.2 | `Preconisation` garde les faits sans leur origine. `DebugTrace` les montre, sans export. | petit |
+| 20 | ~~Fait à trois états (D-86)~~ | tout P2 | 10.0.2 | Fait : le moteur n'envoie pas un fait absent, et rend une cible indéfinie. Le modèle reçoit les questions validées, avec les options qui s'y proposaient (D-88). | fait |
+| 21 | ~~Provenance de chaque fait dans la trace, et son export pour la recette (D-87)~~ | recette N3 de l'éditeur | 10.0.2 | Fait : un fait porte sa valeur et sa provenance. La trace de debug montre les questions validées, les faits et leur provenance, dit d'une cible qu'elle est indéfinie, et s'exporte en JSON. | fait |
 | 22 | Marque dessinée sur le PDF aplati, à la place de la case, pour chaque motif établi | DAP : groupes `km` (distance, série, CAMSP, maternité), `sit` (quatre situations avion ou bateau), `ald` (ALD, AT/MP), et `malrare` | 10.0.2 | `check` ne coche qu'une case par champ, et refuse une case sans état d'export. La position se lit dans le gabarit : c'est le rectangle de la case. | petit |
 | 23 | Texte écrit hors de tout champ, à une position donnée par le mapping | PMT, « Urgence : autres (précisez) », pages 3 et 4 | 10.0.2 | Une ligne du mapping est un champ, sans exception. Le livrable ne donne pas la position : à relever. | petit |
 
@@ -288,12 +306,12 @@ que la v10.0.1 change à l'inventaire ».
 ## Proposé, à confirmer
 
 - **L'ordre, revu sur la v10.0.2.** Faits : le modèle de démonstration
-  (D-82), la saisie (1 à 9), le rappel (10, 11). Restent quatre groupes, à
-  valider un par un :
+  (D-82), la saisie (1 à 9), le rappel (10, 11), la décision (20, 21).
+  Restent trois groupes, à valider un par un :
 
   | Groupe | Capacités | Pourquoi là |
   |---|---|---|
-  | 1. La décision | 20, 21 | Le modèle écrit tous ses faits dessus. C'est ce qui bloquait le branchement des décisions, et le seul point qui peut toucher au contrat `Model` |
+  | ~~1. La décision~~ | ~~20, 21~~ | Fait. Le modèle écrit tous ses faits dessus |
   | 2. L'adresse | 12 | Change le type d'une réponse |
   | 3. La validation croisée | 13 | S'appuie sur l'adresse pour deux de ses cas |
   | 4. Le PDF | 19 et 17, puis 18, puis 22 et 23, puis 16 et 15 | Aplatir d'abord : tout le reste se contrôle sur le PDF aplati |
@@ -301,6 +319,18 @@ que la v10.0.1 change à l'inventaire ».
   La liste filtrable (14) ne se code pas.
 - **Une capacité entre dans le socle par un commit**, avec ses tests et sa
   page de démonstration. Son usage par le modèle v10 vient dans un autre.
+- **La forme d'un fait.** Un fait du moteur de décision porte sa valeur et sa
+  provenance dans le même objet : `{ value, provenance }`. Sans valeur, il est
+  absent, et la provenance dit pourquoi. C'est la forme que l'éditeur décrit
+  (`faitsTraces`). L'autre voie était une seconde fonction du modèle pour les
+  provenances : le contrat gagnait un champ, et rien n'empêchait d'en oublier
+  une. Codé ainsi, à confirmer.
+- **La démonstration.** Le modèle de démonstration a maintenant trois règles
+  publicodes : le lait tourne au contact du citron. Avec un thé, le citron
+  se propose : coché, il vaut « oui », non coché, « non ». Avec un café, il
+  ne se sert pas : il vaut « non » sans avoir été demandé, par incompatibilité
+  prouvée. Avec « Peut-être du citron, à décider au service », on ne sait
+  pas : le fait est absent, et la mise en garde reste indéfinie.
 - **La lecture seule : tranchée par la v10.0.1.** Une valeur connue est
   invisible par défaut. Elle est rappelée en texte si elle éclaire une
   question de la page, ou fixée près d'un champ de P3. Deux petites capacités
@@ -360,7 +390,10 @@ texte d'origine reste pour mémoire.
 
 Ouverts par la v10.0.2 :
 
-13. **Ce que le modèle sait de ce qui a été demandé (D-86).** Pour dire
+13. ~~Ce que le modèle sait de ce qui a été demandé (D-86).~~ Tranché le
+    13 octobre (D-88) : ni A, ni B, ni C telles quelles. Le socle remonte
+    toutes les questions validées, avec leurs réponses ou leur absence. C'est
+    l'option A en entier, sans état de plus. Le texte d'origine : pour dire
     « non », le modèle doit savoir qu'une option a été proposée et que sa
     page est validée. Il ne reçoit que les réponses. Les options proposées
     s'en déduisent, puisque `offeredIf` ne lit qu'elles. La validation ne
@@ -427,5 +460,5 @@ Non implémentées, et notées dans les points à remonter à l'éditeur.
 ## Critères d'acceptation
 
 - [ ] Chaque capacité a sa tâche, avec un test sur le factice.
-- [ ] Aucune n'a modifié le type `Model`, sauf arbitrage sur le fait à trois
-      états (point 13 de « Conception à arrêter »).
+- [ ] Aucune n'a modifié le type `Model`, sauf le fait à trois états, par
+      ajout (D-88).

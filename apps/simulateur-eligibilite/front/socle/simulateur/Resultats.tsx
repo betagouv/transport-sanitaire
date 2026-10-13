@@ -3,10 +3,18 @@
 // sont ici.
 
 import type { ComponentType, ReactNode } from "react";
-import { type Model, preconisationOf } from "../model";
-import { askedPages } from "../questionnaire-engine/asked-questions";
+import { type Model, type Preconisation, preconisationOf } from "../model";
+import {
+  askedPages,
+  validatedQuestions,
+} from "../questionnaire-engine/asked-questions";
 import type { DebugTraceProps } from "../questionnaire-engine/QuestionnaireForm";
-import { pagesOf } from "../questionnaire-engine/question";
+import {
+  type Answers,
+  type AnyCibles,
+  type Page,
+  pagesOf,
+} from "../questionnaire-engine/question";
 import type { QuestionnaireState } from "../questionnaire-engine/questionnaire";
 import { Stepper } from "../questionnaire-engine/Stepper";
 import type { Locked } from "./start";
@@ -35,13 +43,13 @@ export function FirstResultat({
   const preconisation = preconisationOf(model, answers);
   const { parts, title, Resultat } = model.transportAndEligibility;
   const hasCerfa = model.cerfa.form(preconisation.cibles) !== null;
-  const pages = askedPages(pagesOf(parts), answers);
+  const trace = traceOf("résultat", pagesOf(parts), answers, preconisation);
   return (
     <Frame
       title={title}
       part={parts.length}
       total={parts.length + (hasCerfa ? 1 : 0)}
-      trace={{ title: "résultat", pages, answers, ...preconisation }}
+      trace={trace}
       DebugTrace={DebugTrace}
     >
       <Resultat answers={answers} cibles={preconisation.cibles} />
@@ -77,13 +85,13 @@ export function CerfaResultat({
   const { part, title, Resultat } = model.cerfa;
   const total = model.transportAndEligibility.parts.length + 1;
   const all = [...pagesOf(model.transportAndEligibility.parts), ...part.pages];
-  const pages = askedPages(all, answers, cibles);
+  const trace = traceOf("cerfa", all, answers, locked.preconisation, cibles);
   return (
     <Frame
       title={title}
       part={total}
       total={total}
-      trace={{ title: "cerfa", pages, answers, ...locked.preconisation }}
+      trace={trace}
       DebugTrace={DebugTrace}
     >
       <Resultat answers={answers} cibles={cibles} />
@@ -98,6 +106,25 @@ export function CerfaResultat({
 }
 
 // ---- implémentation ----
+
+// Ce que la trace de debug lit sous un résultat : les pages affichées, les
+// questions validées, et la préconisation. `locked` : les cibles figées, que
+// les questions d'après le verrou lisent.
+function traceOf(
+  title: string,
+  pages: readonly Page[],
+  answers: Answers,
+  preconisation: Preconisation,
+  locked?: AnyCibles,
+): DebugTraceProps {
+  return {
+    title,
+    pages: askedPages(pages, answers, locked),
+    answers,
+    validated: validatedQuestions(pages, answers, locked),
+    ...preconisation,
+  };
+}
 
 function Frame({
   title,

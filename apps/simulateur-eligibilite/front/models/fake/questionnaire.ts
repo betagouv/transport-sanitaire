@@ -55,7 +55,7 @@ export const PARTS: readonly QuestionnairePart<Questions, undefined>[] = [
               boisson === "the"
                 ? "Avec quoi, ce thé ?"
                 : "Avec quoi, ce café ?",
-            hint: "Démontre : un libellé de question et un libellé d'option qui dépendent des réponses (le lait devient « un nuage de lait » avec le thé), une option proposée selon la boisson (le citron, avec le thé seulement), et une option exclusive.",
+            hint: "Démontre : un libellé de question et un libellé d'option qui dépendent des réponses (le lait devient « un nuage de lait » avec le thé), une option proposée selon la boisson (le citron, avec le thé seulement), et une option exclusive. Un fait a trois états. Le citron vaut « oui » s'il est coché, et « non » s'il se proposait sans l'être, ou avec un café, où il ne se sert pas. Avec « Peut-être du citron », on ne sait pas : le fait est absent, et le résultat ne décide pas si le lait tourne.",
             askedIf: (answers) =>
               answers.boisson !== undefined && answers.boisson !== "rien",
             dependsOn: ["boisson"],
@@ -72,6 +72,18 @@ export const PARTS: readonly QuestionnairePart<Questions, undefined>[] = [
                 label: "Une rondelle de citron",
                 offeredIf: ({ boisson }) => boisson === "the",
               },
+              {
+                value: "citron-a-voir",
+                label: "Peut-être du citron, à décider au service",
+                offeredIf: ({ boisson }) => boisson === "the",
+              },
+            ],
+            incompatibleOptions: [
+              {
+                values: ["citron", "citron-a-voir"],
+                explanation:
+                  "Le citron est demandé, ou reste à décider : seule la dernière case cochée est gardée.",
+              },
             ],
             exclusiveOption: { value: "aucun", label: "Rien de plus" },
           },
@@ -84,9 +96,9 @@ export const PARTS: readonly QuestionnairePart<Questions, undefined>[] = [
             id: "service",
             kind: "multiple choice",
             label: "Comment la servir ?",
-            reminderFrom: (answers) =>
-              `Rappel de la commande : ${cibles(faits(answers)).commande}.`,
-            hint: "Démontre : un rappel en une phrase au-dessus de la question (il redit des réponses déjà données, et ne demande rien), une aide dépliable sous son option (« Voir les préparations possibles », dont la liste dépend de la boisson), deux options incompatibles (« Très chaude » et « Glacée » : cocher l'une décoche l'autre, avec une explication), et une option exclusive conditionnelle (« Rien de particulier » ne se propose pas avec le citron, et change de libellé quand un accompagnement est choisi).",
+            reminderFrom: (answers, _, validated) =>
+              `Rappel de la commande : ${cibles(faits(answers, validated)).commande}.`,
+            hint: "Démontre : un rappel en une phrase au-dessus de la question (il redit des réponses déjà données, et ne demande rien : la commande est calculée en route, sur les questions validées), une aide dépliable sous son option (« Voir les préparations possibles », dont la liste dépend de la boisson), deux options incompatibles (« Très chaude » et « Glacée » : cocher l'une décoche l'autre, avec une explication), et une option exclusive conditionnelle (« Rien de particulier » ne se propose pas avec le citron, et change de libellé quand un accompagnement est choisi).",
             askedIf: (answers) =>
               answers.boisson !== undefined && answers.boisson !== "rien",
             dependsOn: ["boisson", "accompagnements"],
