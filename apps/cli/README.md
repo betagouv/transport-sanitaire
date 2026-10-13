@@ -1,8 +1,8 @@
 # tsp
 
 `tsp` (pour « transport sanitaire ») est le point d'entrée du dépôt. Il rassemble
-ce qui demandait de retenir `mise`, `pnpm`, `git`, `gh`, Notion et quatre
-trackers de specs.
+ce qui demandait de retenir `mise`, `pnpm`, `git`, `gh`, les issues GitHub et
+Notion.
 
 ## Installer
 
@@ -66,9 +66,6 @@ Transverses :
 | `tsp issue new <type> <titre>` | ouvre un chantier, `--app <app>` pour l'étiqueter à une app |
 | `tsp issue add <n> <titre>` | ajoute une tâche à un chantier, `--blocked-by <n,…>` pour ce qui la bloque |
 | `tsp issue sync [n]` | crée ou met à jour le ticket Notion d'un chantier |
-| `tsp spec new <module> <type> <titre>` | crée une spec avec le prochain id, `--app <app>` pour le tracker d'une app |
-| `tsp spec move <id> <état>` | change une spec d'état |
-| `tsp spec sync [id]` | crée ou met à jour le ticket Notion d'une spec |
 | `tsp branch <type>/<sujet>` | tire une branche de `staging`, `--issue <n>` pour celle d'une tâche |
 | `tsp pr` | pousse la branche et ouvre la PR vers `staging` |
 | `tsp pr status` | montre l'état de la PR courante et de sa CI |
@@ -130,15 +127,13 @@ dans le clone où il a été posé : un worktree n'en hérite pas.
 | issues GitHub | les chantiers commencés, avec leurs tâches en cours | les tâches que rien ne bloque et que personne n'a commencées |
 | GitHub | les PR ouvertes | |
 | git | « Sans issue » : les branches et les worktrees qu'aucune issue ne suit | |
-| `docs/tasks`, racine et apps | tous les fichiers | |
-| specs, racine et apps | `3. doing` | `2. todo`, puis `1. backlog` |
 | Notion | `Doing Dev`, `Reviewing dev` | `Ready To Dev` |
 
 `tsp next` affiche d'abord tout ce qu'affiche `tsp wip`, puis sa propre colonne :
 on ne choisit pas la suite sans voir ce qui est déjà commencé. En JSON, le
 travail en cours est sous la clé `wip`.
 
-Une spec liée à un ticket n'apparaît qu'une fois, du côté des specs.
+Un ticket lié à un chantier n'apparaît qu'une fois, du côté des chantiers.
 
 ## Les chantiers
 
@@ -219,42 +214,6 @@ ses tâches. `tsp issue sync` le tient. L'issue fait foi, à sens unique.
 - Sans numéro, `sync` passe les chantiers ouverts, et les fermés qui ont un
   ticket.
 
-## Les specs
-
-```bash
-tsp spec new cli feat "Complétion du shell"
-tsp spec new cerfa fix "Date de naissance tronquée" --app simulateur
-tsp spec move 12 todo
-```
-
-- L'id suit le plus grand jamais utilisé dans le dépôt, historique git compris.
-  Un numéro supprimé ne resert pas.
-- L'état se tape par son nom ou son chiffre : `doing`, `3`.
-- Passer une spec en `done` la retire du champ « bloquée par » des autres.
-- `move` refuse `doing` tant qu'un blocage reste.
-- `move` met à jour le ticket Notion si un jeton est présent.
-
-### Le ticket Notion d'une spec
-
-`tsp spec sync` tient un ticket par spec dans la base des tickets. La spec fait
-foi, à sens unique.
-
-| État de la spec | `Status P&T` du ticket |
-|---|---|
-| `0. drafts` | pas de ticket |
-| `1. backlog` | `To Do` |
-| `2. todo` | `Ready To Dev` |
-| `3. doing` | `Doing Dev` |
-| `4. done` | `Staging` |
-
-- À la création : le titre, le statut, le type `Tech`, et dans le corps le
-  « Problem Statement » et la « Solution ». L'adresse du ticket est écrite dans
-  l'en-tête de la spec, ligne `notion` : à commiter.
-- Ensuite : le titre, le statut et l'adresse du fichier sur GitHub. Le corps
-  n'est jamais réécrit.
-- Un statut ne recule jamais. `Reviewing dev` et `Prod / Done` se posent à la
-  main dans Notion.
-
 ## Les branches et les PR
 
 ```bash
@@ -286,7 +245,7 @@ tsp pr status
 | `NOTION_API_URL` | facultatif. Remplace l'adresse de l'API, pour éprouver la CLI sur un serveur local |
 
 Sans jeton, `wip` et `next` affichent le reste et la ligne
-« Notion : jeton absent ». Seuls `issue sync` et `spec sync` s'arrêtent.
+« Notion : jeton absent ». Seul `issue sync` s'arrête.
 
 ## Comment c'est fait
 

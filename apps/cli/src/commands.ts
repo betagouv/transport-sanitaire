@@ -14,7 +14,6 @@ import { skillsCommand } from "./knowledge/skills.ts";
 import { doctorCommand } from "./machine/doctor.ts";
 import { setupCommand } from "./machine/setup.ts";
 import { openCommand } from "./machine/tools.ts";
-import { specCommand } from "./specs/spec.ts";
 import { nextCommand } from "./work/next.ts";
 import { wipCommand } from "./work/wip.ts";
 
@@ -147,12 +146,6 @@ const ACROSS: Entry[] = [
     run: issueCommand,
   },
   {
-    name: "spec",
-    usage: "spec new|move|sync …",
-    summary: "crée une spec, la change d'état, synchronise son ticket Notion",
-    run: specCommand,
-  },
-  {
     name: "branch",
     usage: "branch <type>/<sujet>",
     summary: "tire une branche de staging, pour une issue avec --issue",
@@ -169,10 +162,7 @@ const ACROSS: Entry[] = [
 const OPTIONS = [
   ["--json", "sortie JSON, sur les commandes de lecture"],
   ["--yes", "répond oui aux confirmations"],
-  [
-    "--app <app>",
-    "l'app d'un chantier ou d'une spec, pour issue new et spec new",
-  ],
+  ["--app <app>", "l'app d'un chantier, pour issue new"],
   ["--issue <n>", "l'issue que la branche sert, pour branch"],
   ["--blocked-by <n,…>", "les issues qui bloquent la tâche, pour issue add"],
   ["--title <titre>", "le titre de la PR, pour pr"],

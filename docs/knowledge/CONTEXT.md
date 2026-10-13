@@ -28,20 +28,32 @@ simulateur, où il désigne ce que peut le patient.
 **Recueil**:
 Un fichier de règles numérotées de `docs/knowledge/contributing/`, sous un même
 préfixe. Il y en a deux : `code` (`QUAL-*`) et `git` (`GIT-*`).
-_Avoid_: module, qui est un champ du gabarit de spec.
+_Avoid_: module.
 
 ### Le suivi du travail
 
-**Spec**:
-Le cadrage d'un chantier, un fichier d'un tracker `docs/specs/`. Elle porte un
-id unique dans le dépôt et change d'état en changeant de dossier.
-_Avoid_: ticket, issue.
+**Chantier**:
+Un travail cadré, tenu dans une issue GitHub sans parente. Le corps de l'issue
+porte son cadrage, ses sous-issues portent son découpage.
+_Avoid_: spec, epic. La spec était un fichier de `docs/specs/`, retiré le
+2026-10-13.
 
 **Tâche**:
-Un morceau livrable d'une spec, un fichier de `docs/tasks/`.
+Un morceau livrable d'un chantier, à la taille d'une PR : une sous-issue. Une
+tâche peut avoir ses propres tâches.
 _Avoid_: ticket.
 
+**État**:
+Où en est un chantier ou une tâche : à faire, bloquée, en cours, fait,
+abandonnée. Il ne s'écrit pas, il se déduit de l'issue, de sa branche et de sa
+PR.
+_Avoid_: statut, réservé au ticket Notion.
+
+**Brouillon**:
+Un chantier dont le cadrage n'est pas fini, étiqueté `brouillon`. Il n'est ni à
+prendre, ni montré à l'équipe produit.
+
 **Ticket**:
-Une ligne de la base Notion `[BDD] Tasks`, lue par l'équipe produit. Une spec en
-a au plus un.
+Une ligne de la base Notion `[BDD] Tasks`, lue par l'équipe produit. Un chantier
+en a au plus un, une tâche n'en a jamais.
 _Avoid_: tâche, carte.

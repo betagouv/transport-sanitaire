@@ -1,6 +1,5 @@
 // Le travail en cours : chantiers et tâches commencés, PR ouvertes, branches et
-// worktrees sans issue, fichiers de `docs/tasks`, specs en `doing`, tickets
-// Notion en développement ou en revue.
+// worktrees sans issue, tickets Notion en développement ou en revue.
 
 import type { Invocation } from "../core/invocation.ts";
 import { columns, emit, section } from "../core/output.ts";
@@ -13,12 +12,10 @@ import {
   type Suivi,
 } from "../issues/chantiers.ts";
 import { type Lieu, renderLieu } from "../issues/lieux.ts";
-import { listSpecs, renderSpecs, type Spec } from "../specs/trackers.ts";
-import { listTaches, renderTaches, type Tache } from "./tasks.ts";
 import {
   renderTickets,
   type TicketsView,
-  ticketsBeyondSpecs,
+  ticketsBeyondChantiers,
 } from "./tickets.ts";
 
 export type Wip = TicketsView & {
@@ -31,8 +28,6 @@ export type Wip = TicketsView & {
     /** Les branches et les worktrees qu'aucune issue ne suit. */
     sansIssue: Lieu[];
   };
-  taches: Tache[];
-  specs: Spec[];
 };
 
 /** `tsp wip` */
@@ -45,24 +40,19 @@ export async function readWip(
   root: string,
   suivi: Suivi | undefined = readSuivi(root),
 ): Promise<Wip> {
-  const all = listSpecs(root);
   return {
     github: suivi && {
       chantiers: suivi.chantiers.filter((each) => each.etat === "en cours"),
       prs: suivi.prs.filter((pr) => pr.state === "OPEN"),
       sansIssue: suivi.lieux.filter((lieu) => lieu.issue === undefined),
     },
-    taches: listTaches(root),
-    specs: all.filter((spec) => spec.etat === "doing"),
-    ...(await ticketsBeyondSpecs(root, STATUTS, all)),
+    ...(await ticketsBeyondChantiers(root, STATUTS, suivi?.chantiers ?? [])),
   };
 }
 
 export function renderWip(wip: Wip): string {
   return [
     ...renderGithub(wip.github),
-    section("Fichiers de docs/tasks", renderTaches(wip.taches)),
-    section("Specs en cours", renderSpecs(wip.specs)),
     section("Tickets Notion en cours", renderTickets(wip)),
   ].join("\n\n");
 }
