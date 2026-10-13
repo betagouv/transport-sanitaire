@@ -175,8 +175,9 @@ De la v10, `v10` ne porte que ce qui prépare le socle : le modèle chargé à l
 demande, le moteur de décision publicodes, et les capacités du questionnaire que
 P0 et P1 demandent. Le noyau et les deux premières parties de la v10.0.0 sont
 sur la branche `v10-modele-10.0.0`. Ils y attendent la v10.0.2 de l'éditeur, qui
-change les règles et le lien entre les réponses et les faits
-(`docs/tasks/PLAN.md`).
+change les règles et le lien entre les réponses et les faits. L'avancement
+est dans l'issue 50 du dépôt, les décisions dans
+[`docs/knowledge/adr/journal-des-decisions-v10.md`](docs/knowledge/adr/journal-des-decisions-v10.md).
 
 Le modèle de démonstration (`front/models/fake/`) déroule une commande de
 boisson, sans rapport avec le transport sanitaire. Il est pérenne : chaque capacité du socle
