@@ -9,6 +9,7 @@ import {
   type AnyCibles,
   pagesOf,
   type QuestionnairePart,
+  type Validated,
 } from "./question";
 import type { Questionnaire, QuestionnaireOptions } from "./questionnaire";
 import { useQuestionnaire } from "./questionnaire";
@@ -39,6 +40,8 @@ export type DebugTraceProps = {
   /** Le brouillon de la page ouverte. */
   draft?: Answers;
   answers: Answers;
+  /** Les questions validées, avec ce qui s'y proposait. */
+  validated?: Validated;
   /** Ce que la préconisation a calculé, sur un résultat. */
   faits?: Readonly<Record<string, unknown>>;
   cibles?: AnyCibles;
@@ -75,6 +78,7 @@ export function QuestionnaireForm({
           currentPage={questionnaire.page.id}
           draft={questionnaire.draft}
           answers={questionnaire.answers}
+          validated={questionnaire.validated}
         />
       )}
     </>

@@ -4,6 +4,7 @@
 // sait quel code il avait sous les yeux.
 
 import type { CSSProperties } from "react";
+import { SHA_COMMIT, VERSION_APP } from "./deployed-version";
 
 export function Footer() {
   return (
@@ -27,11 +28,6 @@ export function Footer() {
 }
 
 // ---- implémentation ----
-
-// Vite remplace ces valeurs à la construction. Les replis servent aux outils
-// qui compilent ce fichier sans Vite.
-const VERSION_APP: string = import.meta.env.VITE_VERSION_APP ?? "inconnue";
-const SHA_COMMIT: string = import.meta.env.VITE_SHA_COMMIT ?? "inconnu";
 
 // Le tag d'une version porte le nom de l'app : chaque app du monorepo a son
 // cycle (voir `CHANGELOG.md`). Son `@` est encodé, comme dans l'URL d'une

@@ -116,7 +116,7 @@ function ExpectedCibles({ seed }: { seed: Seed }) {
     <ul className="fr-text--xs" style={{ margin: 0, paddingLeft: "1rem" }}>
       {Object.entries(seed.expected).map(([cible, value]) => (
         <li key={cible}>
-          {cible} : <strong>{String(value)}</strong>
+          {cible} : <strong>{shown(value)}</strong>
         </li>
       ))}
     </ul>
@@ -139,11 +139,16 @@ function Status({ evaluation }: Pick<SeedRow, "evaluation">) {
         >
           {evaluation.mismatches.map((mismatch) => (
             <li key={mismatch.cible}>
-              {mismatch.cible} : {String(mismatch.actual)}
+              {mismatch.cible} : {shown(mismatch.actual)}
             </li>
           ))}
         </ul>
       )}
     </>
   );
+}
+
+// Une cible indéfinie se dit : ce n'est pas une valeur, et pas une décision.
+function shown(cible: unknown): string {
+  return cible === undefined ? "indéfinie" : String(cible);
 }
