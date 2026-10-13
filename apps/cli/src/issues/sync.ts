@@ -22,6 +22,7 @@ import {
   readSuivi,
   type Suivi,
 } from "./chantiers.ts";
+import { withNotionLink } from "./notion-link.ts";
 
 /** `tsp issue sync [n]` */
 export async function syncCommand(invocation: Invocation): Promise<number> {
@@ -62,9 +63,6 @@ const STATUT_BY_ETAT: Record<Etat, string | undefined> = {
 /** Les sections de l'issue recopiées dans le corps du ticket, à sa création. */
 const COPIED_SECTIONS = ["Problème", "Solution"];
 
-/** La ligne du corps de l'issue qui garde l'adresse de son ticket. */
-const NOTION_LINE = /^Notion : .*$/m;
-
 /**
  * Sans numéro : les chantiers ouverts, et les fermés qui ont un ticket à faire
  * avancer. Une tâche ne se synchronise pas : seule une issue sans parente.
@@ -77,7 +75,7 @@ function chantiersToSync(suivi: Suivi, asked?: string): Chantier[] {
   return suivi.chantiers.filter(
     (chantier) =>
       STATUT_BY_ETAT[chantier.etat] !== "Staging" ||
-      notionLink(issueOf(suivi, chantier).body) !== undefined,
+      chantier.notion !== undefined,
   );
 }
 
@@ -110,8 +108,7 @@ async function syncChantier(
 ): Promise<string> {
   if (chantier.brouillon) return "brouillon, pas de ticket";
   const statut = STATUT_BY_ETAT[chantier.etat];
-  const link = notionLink(issue.body);
-  if (link) return refresh(notion, issue, link, statut);
+  if (chantier.notion) return refresh(notion, issue, chantier.notion, statut);
   if (!statut) return `${chantier.etat}, pas de ticket`;
   const ticket = await createTicket(notion, {
     title: issue.title,
@@ -146,18 +143,6 @@ async function refresh(
 
 function issueOf(suivi: Suivi, chantier: Chantier): Issue {
   return suivi.issues.find((issue) => issue.number === chantier.number)!;
-}
-
-function notionLink(body: string): string | undefined {
-  return /^Notion : (https:\/\/\S+)/m.exec(body)?.[1];
-}
-
-/** Remplace la ligne du gabarit, ou l'ajoute en tête d'un corps qui n'en a pas. */
-function withNotionLink(body: string, url: string): string {
-  const line = `Notion : ${url}`;
-  return NOTION_LINE.test(body)
-    ? body.replace(NOTION_LINE, line)
-    : `${line}\n\n${body}`;
 }
 
 function blocks(body: string): Block[] {

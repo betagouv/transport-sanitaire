@@ -5,6 +5,7 @@ import { columns } from "../core/output.ts";
 import { type Issue, readIssues } from "../git/issues.ts";
 import { listPullRequests, type PullRequest } from "../git/pull-requests.ts";
 import { type Lieu, readLieux, renderLieu } from "./lieux.ts";
+import { notionLink } from "./notion-link.ts";
 
 /** Jamais rédigé : déduit de l'issue, de ses blocages, de sa branche et de sa PR. */
 export type Etat = "à faire" | "bloquée" | "en cours" | "fait" | "abandonnée";
@@ -19,6 +20,8 @@ export type Chantier = {
   brouillon: boolean;
   /** Les issues encore ouvertes qui la bloquent. */
   bloqueePar: number[];
+  /** L'adresse de son ticket Notion, si elle en a un. */
+  notion?: string;
   /** Où son travail se trouve, tant qu'elle est ouverte. */
   lieu?: Lieu;
   taches: Chantier[];
@@ -107,6 +110,7 @@ function toChantier(
     etat,
     brouillon: issue.labels.includes(BROUILLON),
     bloqueePar: issue.blockedBy,
+    notion: notionLink(issue.body),
     lieu,
     taches,
     ...progress(etat, taches),

@@ -1,14 +1,14 @@
-// Les tickets Notion d'une liste de statuts, sans ceux qu'une spec porte déjà :
-// un travail suivi par une spec ne s'affiche que du côté des specs.
+// Les tickets Notion d'une liste de statuts, sans ceux qu'un chantier porte
+// déjà : un travail suivi par une issue ne s'affiche que du côté des issues.
 
 import { columns } from "../core/output.ts";
+import type { Chantier } from "../issues/chantiers.ts";
 import {
   notionAccess,
   type Ticket,
   ticketId,
   ticketsByStatus,
 } from "../notion/notion.ts";
-import type { Spec } from "../specs/trackers.ts";
 
 export type TicketsView = {
   tickets: Ticket[];
@@ -17,15 +17,17 @@ export type TicketsView = {
 };
 
 /** Ne lève jamais : sans jeton ou sans réseau, la vue le dit et reste vide. */
-export async function ticketsBeyondSpecs(
+export async function ticketsBeyondChantiers(
   root: string,
   statuts: string[],
-  specs: Spec[],
+  chantiers: Chantier[],
 ): Promise<TicketsView> {
   const notion = notionAccess(root);
   if (typeof notion === "string") return { tickets: [], notion };
   try {
-    const linked = new Set(specs.map((spec) => ticketId(spec.notion ?? "")));
+    const linked = new Set(
+      chantiers.map((chantier) => ticketId(chantier.notion ?? "")),
+    );
     const tickets = await ticketsByStatus(notion, statuts);
     return {
       tickets: tickets.filter((ticket) => !linked.has(ticket.id)),
