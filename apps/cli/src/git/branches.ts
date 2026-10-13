@@ -6,7 +6,7 @@ import { printError } from "../core/output.ts";
 import { runProgram } from "../core/run-program.ts";
 import { COMMIT_TYPES } from "./conventional-commits.ts";
 import { git, stagingRef } from "./git.ts";
-import { issueState } from "./issues.ts";
+import { findIssue } from "./issues.ts";
 
 /** `tsp branch <type>/<sujet> [--issue <n>]` */
 export function branchCommand(invocation: Invocation): number {
@@ -76,9 +76,9 @@ function refuseIssue(root: string, issue?: string): string | undefined {
   if (issue === undefined) return undefined;
   if (!/^\d+$/.test(issue))
     return `--issue attend un numéro. Reçu : « ${issue} ».`;
-  const state = issueState(root, Number(issue));
-  if (state === undefined) return `Aucune issue ne porte le numéro ${issue}.`;
-  return state === "OPEN" ? undefined : `L'issue #${issue} est fermée.`;
+  const found = findIssue(root, Number(issue));
+  if (!found) return `Aucune issue ne porte le numéro ${issue}.`;
+  return found.open ? undefined : `L'issue #${issue} est fermée.`;
 }
 
 /** `feat/adresse` pour l'issue 51 devient `feat/51-adresse`. */

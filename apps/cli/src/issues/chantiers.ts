@@ -6,6 +6,7 @@ import { type Issue, readIssues } from "../git/issues.ts";
 import { listPullRequests, type PullRequest } from "../git/pull-requests.ts";
 import { type Lieu, readLieux, renderLieu } from "./lieux.ts";
 import { notionLink } from "./notion-link.ts";
+import { withoutPath } from "./titles.ts";
 
 /** Jamais rédigé : déduit de l'issue, de ses blocages, de sa branche et de sa PR. */
 export type Etat = "à faire" | "bloquée" | "en cours" | "fait" | "abandonnée";
@@ -83,7 +84,7 @@ export function renderChantiers(
   chantiers: Chantier[],
   keep: (tache: Chantier) => boolean = () => true,
 ): string {
-  return columns(chantiers.flatMap((chantier) => rows(chantier, 0, keep)));
+  return columns(chantiers.flatMap((chantier) => rows(chantier, 0, keep, "")));
 }
 
 // ---- implémentation ----
@@ -148,16 +149,20 @@ function progress(
   };
 }
 
+/** Une tâche se montre sans le chemin de sa parente : l'indentation le dit déjà. */
 function rows(
   chantier: Chantier,
   depth: number,
   keep: (tache: Chantier) => boolean,
+  parentTitle: string,
 ): string[][] {
-  const name = `${"  ".repeat(depth)}#${chantier.number} ${chantier.title}`;
+  const title =
+    depth === 0 ? chantier.title : withoutPath(parentTitle, chantier.title);
+  const name = `${"  ".repeat(depth)}#${chantier.number} ${title}`;
   const row = [name, etatLabel(chantier), ...renderLieu(chantier.lieu)];
   const below = chantier.taches
     .filter(keep)
-    .flatMap((tache) => rows(tache, depth + 1, keep));
+    .flatMap((tache) => rows(tache, depth + 1, keep, chantier.title));
   return [row, ...below];
 }
 
