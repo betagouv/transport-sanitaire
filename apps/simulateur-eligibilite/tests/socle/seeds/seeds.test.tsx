@@ -88,6 +88,17 @@ describe("écran des seeds", () => {
     expect(screen.getAllByText("conforme")).toHaveLength(3);
   });
 
+  it("dit d'une cible attendue indéfinie qu'elle l'est", () => {
+    const sansDecision = {
+      ...THE_AU_LAIT,
+      expected: { supplement: undefined },
+    };
+    render(<Seeds seeds={[sansDecision]} {...SANS_ACTION} />);
+
+    expect(screen.getByText("indéfinie")).toBeInTheDocument();
+    expect(screen.getByText("conforme")).toBeInTheDocument();
+  });
+
   it("annonce un catalogue vide plutôt que des tableaux sans ligne", () => {
     render(<Seeds seeds={[]} {...SANS_ACTION} />);
 

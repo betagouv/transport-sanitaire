@@ -2,7 +2,13 @@
 
 export type Questions = {
   boisson: "the" | "cafe" | "rien";
-  accompagnements: readonly ("lait" | "sucre" | "citron" | "aucun")[];
+  accompagnements: readonly (
+    | "lait"
+    | "sucre"
+    | "citron"
+    | "citron-a-voir"
+    | "aucun"
+  )[];
   service: readonly (
     | "chaude"
     | "glacee"

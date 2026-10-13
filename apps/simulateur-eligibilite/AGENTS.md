@@ -11,9 +11,10 @@ Le simulateur d'éligibilité au transport sanitaire. Sa pile :
 - un questionnaire **déclaré par l'application** (`front/socle/questionnaire-engine/`).
 
 **L'app est entre deux modèles.** Le modèle v9 et ce qui en dépendait sont retirés,
-la v10 n'est pas intégrée (`docs/tasks/PLAN.md`). Il n'y a ni règles publicodes,
-ni page de résultat métier, ni CERFA téléchargeable. Le simulateur déroule le
-**modèle de démonstration** (`front/models/fake/`), qui ne décide rien. Le noyau et les
+la v10 n'est pas intégrée (`docs/tasks/PLAN.md`). Il n'y a ni règles
+d'éligibilité, ni page de résultat métier, ni CERFA téléchargeable. Le simulateur
+déroule le **modèle de démonstration** (`front/models/fake/`), qui ne décide rien
+du transport. Le noyau et les
 deux premières parties de la v10.0.0 attendent sur la branche
 `v10-modele-10.0.0`, le temps que l'éditeur livre la v10.0.2. Le
 [README](README.md) § « Entre deux modèles » dit ce qui est parti et ce qui reste.
@@ -54,19 +55,23 @@ un **backend Node/Express** (`server/` : le front et `/api/*`) déployé sur
 
 ## Le questionnaire
 
-Cinq fichiers portent la mécanique, dans `front/socle/questionnaire-engine/` :
+Six fichiers portent la mécanique, dans `front/socle/questionnaire-engine/` :
 
 | Fichier | Ce qu'il porte |
 |---|---|
 | `question.ts` | ce qu'est une question, une page, une partie, une réponse |
-| `asked-questions.ts` | ce qui s'affiche, vu les réponses : libellés, bornes et options du moment |
+| `asked-questions.ts` | ce qui s'affiche, vu les réponses : libellés, bornes et options du moment. Et les questions validées, avec ce qui s'y proposait |
+| `offered-answer.ts` | ce qu'une réponse vaut pour sa question : réduite aux options qui se proposent, suffisante ou non |
 | `answer-error.ts` | ce qui ne va pas dans une saisie, et le message à afficher |
 | `questionnaire.ts` | l'état d'un parcours : page ouverte, brouillon, navigation |
 | `page-commit.ts` | ce que deviennent les réponses quand une page est validée, et ce que ça efface |
 
-Quatre règles à tenir en ajoutant une question :
+Cinq règles à tenir en ajoutant une question :
 
 - **Une condition d'affichage s'écrit dans `askedIf`.** Jamais dans un composant.
+- **Une condition lit ce qui la précède.** Elle reçoit les réponses, les cibles
+  figées, et les questions validées avant la sienne (`validated`). Sur la page
+  ouverte, celles qui la précèdent comptent telles qu'elles sont à l'écran.
 - **Une dépendance se déclare dans `dependsOn`.** Sans elle, la réponse survit au
   changement de celle dont elle dépend.
 - **Une saisie ne compte qu'une fois la page validée.** Le brouillon vit dans
@@ -76,6 +81,23 @@ Quatre règles à tenir en ajoutant une question :
   (`front/socle/simulateur/Simulateur.tsx`).
 
 *Gardé par* `tests/socle/simulateur/`.
+
+## La décision
+
+Un fait a trois états : vrai, faux, ou absent. Absent, il ne vaut jamais « non ».
+
+| Pièce | Ce qu'elle porte |
+|---|---|
+| `Validated` (`question.ts`) | les questions validées : pour chacune, les options qui se proposaient, et la réponse s'il y en a une. Une question absente n'a pas été demandée |
+| `preconisation.faits(answers, validated)` | le modèle y lit ce qui se proposait. Une case proposée et non cochée peut valoir « non ». Une case jamais montrée laisse le fait absent |
+| `Fait` (`decision-engine/publicodes.ts`) | ce qu'on sait d'un fait : sa valeur si elle est établie, et sa provenance |
+| `publicodesEngine` | n'envoie aux règles que les faits établis. Une cible peut revenir `undefined` : indéfinie, ce qui n'est pas une décision, ni `null` (sans objet) |
+
+Le socle dit ce qui a été montré, validé, coché. Il ne conclut rien : c'est le
+modèle qui applique, fait par fait, le contrat de l'éditeur.
+
+*Gardé par* `tests/socle/decision-engine/`, `tests/socle/preconisation.test.ts` et
+`tests/socle/questionnaire-engine/questions-validees.test.tsx`.
 
 ## Le socle PDF
 
@@ -235,3 +257,7 @@ La trace de debug vit aussi dans `front/socle/developer-tools/` (`DebugTrace.tsx
 lit l'état vivant du parcours, qu'`App` n'a pas sous la main : `App` passe donc au
 simulateur le composant lui-même (`DebugTrace`), et chaque écran lui donne son
 état à afficher. Sans composant passé, aucune trace n'est rendue.
+
+Elle montre les questions validées et ce qui s'y proposait, les faits avec leur
+provenance, et dit d'une cible qu'elle est indéfinie. Son lien « Exporter la
+trace » fabrique un fichier JSON dans le navigateur, pour la recette.

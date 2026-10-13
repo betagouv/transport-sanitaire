@@ -15,13 +15,13 @@ ouvertes. On les traite un par un, dans l'ordre du tableau.
 |---|---|---|---|
 | [01](01-vocabulaire.md) | Vocabulaire | arbitré | reporter dans `CONTEXT.md` |
 | [02](02-structure-des-dossiers.md) | Structure des dossiers | fait | `front/models/eligibilite/`, avec la v10.0.2 (D-82) |
-| [03](03-contrat-model.md) | Contrat `Model` | écrit | quatre champs pas encore lus par le socle |
+| [03](03-contrat-model.md) | Contrat `Model` | écrit, un argument ajouté (D-88) | quatre champs pas encore lus par le socle |
 | [04](04-declarations-du-modele.md) | Déclarations du modèle | faits et cibles de la v10.0.0 déclarés | les refaire sur la v10.0.2 ; les questions, les cibles que l'application assemble, les cibles documentaires |
 | [05](05-questionnaire-en-parties.md) | Questionnaire en parties | fait | rien |
 | [06](06-parcours-et-resultats.md) | Parcours et résultats | fait, hors PDF | impression, production du PDF |
 | [07](07-seeds.md) | Seeds | fait | les seeds des cas d'oracle, que nous écrivons d'après le contrat réponses/faits (D-79), après la v10.0.2 |
 | [08](08-tests-et-factice.md) | Tests et factice | fait | rien |
-| [09](09-capacites-du-socle-pour-la-v10.md) | Capacités du socle pour la v10 | modèle de démonstration en place (D-82), capacités 1 à 11 codées. Inventaire revu sur la v10.0.2 : 23 capacités | 11 capacités, que plus rien ne retient, en quatre groupes : la décision (20, 21), l'adresse (12), la validation croisée (13), le PDF (15 à 19, 22, 23). La liste filtrable (14) est gelée |
+| [09](09-capacites-du-socle-pour-la-v10.md) | Capacités du socle pour la v10 | modèle de démonstration en place (D-82), capacités 1 à 11, 20 et 21 codées. Inventaire revu sur la v10.0.2 : 23 capacités | 9 capacités, en trois groupes : l'adresse (12), la validation croisée (13), le PDF (15 à 19, 22, 23). La liste filtrable (14) est gelée |
 | [10](10-integration-de-la-v10.md) | Intégration de la v10 | étapes 1 et 2 codées sur la v10.0.0, gardées sur `v10-modele-10.0.0` (D-81) | le branchement des décisions attend la v10.0.2 (D-78) ; l'interface se poursuit |
 
 ## Les livraisons de l'éditeur
@@ -136,13 +136,14 @@ reste dans le tableau, barrée, avec celle qui la remplace.
 | D-85 | 2026-10-12 | Décision de l'éditeur, dans la v10.0.2. Un texte trop long ne bloque jamais le PDF, et n'est jamais reformulé. Dans l'ordre : réduire le corps de 9 à 8 pt, retirer le seul commentaire facultatif en prévenant le prescripteur, puis descendre sous 8 pt. Le texte reste entier, sur la même page, sans recouvrir une autre cellule. Confirme D-61, remplace D-63 et D-67. | 09, 10 |
 | D-86 | 2026-10-12 | Décision de l'éditeur, dans la v10.0.2. Un fait a trois états : « oui », « non » établi, ou absent. Une option non cochée ne vaut « non » que si elle a été proposée et sa page validée. Une option masquée reste absente, sauf incompatibilité prouvée. Une cible peut rester indéfinie : ce n'est pas une décision. Les variables manquantes servent au diagnostic, pas à choisir les questions. Précise D-77. | 03, 09, 10 |
 | D-87 | 2026-10-12 | Décision de l'éditeur, dans la v10.0.2. La trace garde la provenance de chaque fait : la réponse qui le donne, la version du référentiel, ou la raison qui le rend sans objet. | 09, 10 |
+| D-88 | 2026-10-13 | Le socle relève les questions validées : pour chacune, les options qui se proposaient, et la réponse ou son absence. Le modèle les reçoit pour calculer ses faits, et les conditions d'une question les reçoivent en troisième argument. La liste se déduit des réponses et de l'ordre des pages : aucun état ne s'ajoute au questionnaire. Le socle ne conclut rien : dire « non » d'une case proposée et non cochée reste au modèle, d'après le contrat de l'éditeur. Premier changement du contrat `Model`, par ajout. Tranche la question ouverte par D-86. | 03, 09, 10 |
 
 ## Questions ouvertes, par chantier
 
 | Question | Chantier |
 |---|---|
 | Les capacités du socle se codent d'abord (arbitré le 12 octobre). Reste à dire si les pages de P1, P2 et P3 se codent ensuite d'après le catalogue de la v10.0.1, qui peut encore bouger, ou attendent la v10.0.2. | 09, 10 |
-| Ce que le modèle sait de ce qui a été demandé, pour distinguer « non » d'absent (D-86) : trois options, dont une ajoute un argument au contrat `Model`. | 03, 09 |
+| La forme d'un fait : sa valeur et sa provenance dans le même objet. Codé ainsi, à confirmer. | 09, 10 |
 | Qui refuse d'afficher une cible indéfinie à R2 : le socle, ou le résultat du modèle (D-86). | 09, 10 |
 | Un texte trop long sort de son cadre, ou rétrécit dedans (D-85). | 09 |
 | La liste filtrable (capacité 14) reste gelée tant que la recherche d'acte de Q2.1 est inactive. À confirmer. | 09 |
