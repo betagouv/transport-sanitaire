@@ -17,4 +17,5 @@ export { defineModel } from "./model";
 export type {
   Answers,
   QuestionnairePart,
+  Validated,
 } from "./questionnaire-engine/question";

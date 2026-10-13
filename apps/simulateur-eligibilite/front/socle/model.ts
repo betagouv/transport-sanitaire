@@ -6,11 +6,14 @@
 
 import type { ComponentType } from "react";
 import type { FieldMapping } from "./cerfa/field-mapping";
-import type {
-  Answers,
-  AnyCibles,
-  AnyQuestions,
-  QuestionnairePart,
+import { validatedQuestions } from "./questionnaire-engine/asked-questions";
+import {
+  type Answers,
+  type AnyCibles,
+  type AnyQuestions,
+  pagesOf,
+  type QuestionnairePart,
+  type Validated,
 } from "./questionnaire-engine/question";
 import type { Seed } from "./seeds/seed";
 
@@ -39,9 +42,16 @@ export type Model<
   Faits extends AnyFaits = AnyFaits,
   Cibles extends AnyCibles = AnyCibles,
 > = {
-  /** Ce qui calcule la préconisation : des réponses aux faits, puis aux cibles. */
+  /**
+   * Ce qui calcule la préconisation : des réponses aux faits, puis aux cibles.
+   * Les faits lisent aussi les questions validées : une option qui ne s'est pas
+   * proposée n'a pas été refusée.
+   */
   preconisation: {
-    faits: (answers: Answers<Questions>) => Faits;
+    faits: (
+      answers: Answers<Questions>,
+      validated: Validated<Questions>,
+    ) => Faits;
     cibles: (faits: Faits) => Cibles;
   };
   /** Le premier résultat, après ses parties : transport et éligibilité. */
@@ -80,8 +90,13 @@ export function defineModel<
   return model as unknown as Model;
 }
 
-/** La préconisation de ces réponses : leurs faits, puis leurs cibles. */
+/**
+ * La préconisation de ces réponses : leurs faits, puis leurs cibles. Seules les
+ * parties d'avant le verrou la font.
+ */
 export function preconisationOf(model: Model, answers: Answers): Preconisation {
-  const faits = model.preconisation.faits(answers);
+  const pages = pagesOf(model.transportAndEligibility.parts);
+  const validated = validatedQuestions(pages, answers);
+  const faits = model.preconisation.faits(answers, validated);
   return { faits, cibles: model.preconisation.cibles(faits) };
 }
