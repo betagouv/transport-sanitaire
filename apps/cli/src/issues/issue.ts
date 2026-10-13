@@ -1,5 +1,6 @@
-// Suivre les chantiers par leurs issues GitHub : lister ceux qui sont ouverts,
-// montrer l'avancement de l'un d'eux.
+// Tenir les chantiers par leurs issues GitHub : lister ceux qui sont ouverts,
+// montrer l'avancement de l'un d'eux, en ouvrir un, lui ajouter une tâche,
+// synchroniser son ticket Notion.
 
 import type { Command, Invocation } from "../core/invocation.ts";
 import { emit, printError } from "../core/output.ts";
@@ -9,8 +10,10 @@ import {
   readSuivi,
   renderChantiers,
 } from "./chantiers.ts";
+import { addCommand, newCommand } from "./new.ts";
+import { syncCommand } from "./sync.ts";
 
-/** `tsp issue list`, `tsp issue show <n>` */
+/** `tsp issue list`, `show`, `new`, `add`, `sync` */
 export function issueCommand(invocation: Invocation): number | Promise<number> {
   const [verb, ...args] = invocation.args;
   const command = verb === undefined ? undefined : VERBS[verb];
@@ -23,7 +26,13 @@ export function issueCommand(invocation: Invocation): number | Promise<number> {
 
 // ---- implémentation ----
 
-const VERBS: Record<string, Command> = { list: listCommand, show: showCommand };
+const VERBS: Record<string, Command> = {
+  list: listCommand,
+  show: showCommand,
+  new: newCommand,
+  add: addCommand,
+  sync: syncCommand,
+};
 
 const GH_SILENT = "GitHub : gh ne répond pas.";
 

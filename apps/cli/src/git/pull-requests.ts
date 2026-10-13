@@ -1,10 +1,12 @@
 // Les PR du dépôt : les lister, en ouvrir une vers `staging`, suivre celle de
 // la branche courante.
 
+import fs from "node:fs";
 import path from "node:path";
 import type { Invocation } from "../core/invocation.ts";
 import { columns, emit, printError, section } from "../core/output.ts";
 import { captureProgram, runProgram } from "../core/run-program.ts";
+import { issueOfBranch } from "./branches.ts";
 import { isConventionalSubject } from "./conventional-commits.ts";
 import { git, stagingRef } from "./git.ts";
 
@@ -93,16 +95,32 @@ function openPullRequest(invocation: Invocation): number {
   const pushed = runProgram("git", ["push", "-u", "origin", branch], root);
   if (pushed !== 0) return pushed;
   const args = ["pr", "create", "--base", BASE, "--head", branch];
-  const body = bodyArgs(invocation);
+  const body = bodyArgs(invocation, branch);
   return runProgram("gh", [...args, "--title", title, ...body], root);
 }
 
-/** Le corps vient du fichier donné, sinon des commits. `gh` tourne à la racine : un chemin relatif se résout d'où `tsp` a été tapé. */
-function bodyArgs(invocation: Invocation): string[] {
-  const { cwd, options } = invocation;
-  return options.bodyFile
-    ? ["--body-file", path.resolve(cwd, options.bodyFile)]
-    : ["--fill"];
+/**
+ * Le corps vient du fichier donné, sinon des commits. `gh` tourne à la racine :
+ * un chemin relatif se résout d'où `tsp` a été tapé. Une branche qui sert une
+ * issue la nomme en dernière ligne.
+ */
+function bodyArgs(invocation: Invocation, branch: string): string[] {
+  const { root, cwd, options } = invocation;
+  const file = options.bodyFile && path.resolve(cwd, options.bodyFile);
+  const issue = issueOfBranch(branch);
+  if (issue === undefined) return file ? ["--body-file", file] : ["--fill"];
+  const text = file ? fs.readFileSync(file, "utf8").trim() : commitsBody(root);
+  return ["--body", [text, `Closes #${issue}`].filter(Boolean).join("\n\n")];
+}
+
+/** Ce que `gh --fill` écrirait : le corps d'un commit seul, sinon la liste des sujets. */
+function commitsBody(root: string): string {
+  const range = `${stagingRef(root)}..HEAD`;
+  const subjects = git(root, ["log", "--reverse", "--format=%s", range]);
+  if (subjects.split("\n").length === 1) {
+    return git(root, ["log", "-1", "--format=%b"]);
+  }
+  return subjects.replace(/^/gm, "- ");
 }
 
 /** Le sujet du premier commit que la branche ajoute à `staging`. */

@@ -12,6 +12,10 @@ type Options = {
   app?: string;
   title?: string;
   bodyFile?: string;
+  /** Le numéro de l'issue qu'une branche sert. */
+  issue?: string;
+  /** Les numéros des issues qui en bloquent une, séparés par des virgules. */
+  blockedBy?: string;
 };
 
 export type Invocation = {
@@ -57,6 +61,8 @@ export function readInvocation(argv: string[]): {
         app: values.app,
         title: values.title,
         bodyFile: values["body-file"],
+        issue: values.issue,
+        blockedBy: values["blocked-by"],
       },
     },
   };
@@ -71,4 +77,6 @@ const FLAGS = {
   app: { type: "string" },
   title: { type: "string" },
   "body-file": { type: "string" },
+  issue: { type: "string" },
+  "blocked-by": { type: "string" },
 } as const;
