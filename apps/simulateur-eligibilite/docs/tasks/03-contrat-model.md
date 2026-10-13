@@ -25,6 +25,10 @@ changer quand l'éditeur livre de nouvelles questions, règles ou formulaires.
 - **D-18** Le second résultat a pour clé `cerfa`, S3141 compris.
 - **D-35** La clé `preconisation` reste. Elle contient ce qui calcule la
   préconisation, pas la préconisation elle-même.
+- **D-88** `preconisation.faits` reçoit aussi les questions validées, avec ce
+  qui s'y proposait. Les conditions d'une question les reçoivent de même, en
+  troisième argument. Premier changement du contrat depuis son écriture, par
+  ajout : un modèle qui n'en a pas besoin ne change pas.
 - **D-36** Le modèle fournit en champs les libellés des trois actions propres
   à la version (`printLabel`, `startLabel`, `downloadLabel`). Le socle rend
   tous les boutons et garde les libellés de navigation.
@@ -42,7 +46,8 @@ changer quand l'éditeur livre de nouvelles questions, règles ou formulaires.
 
 Pendant P0 à P2, une question peut dépendre d'un calcul intermédiaire (Q2.3.4
 n'est posée que si une DAP est requise). Le modèle appelle alors ses règles
-dans le `askedIf` de la question, sans passer par le socle.
+dans le `askedIf` de la question, sans passer par le socle. Le socle lui donne
+les questions validées avant elle, pour qu'il calcule ses faits (D-88).
 
 ## Le contrat arbitré
 
@@ -92,6 +97,8 @@ type CerfaForm<Questions, Cibles> = {
 - **Quatre champs ne sont pas encore lus** par le socle : `printLabel`,
   `downloadLabel`, `template`, `mapping` (D-53).
 - **`AnyFaits`** borne le générique `Faits`, pour que la trace sache l'afficher.
+- **`faits(answers, validated)`** : le second argument s'ajoute (D-88). Le
+  contrat arbitré ci-dessus ne le montre pas.
 
 ## Questions ouvertes
 

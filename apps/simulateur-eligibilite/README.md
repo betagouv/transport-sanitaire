@@ -7,7 +7,7 @@ en conséquence. Le parcours débute par un rattachement obligatoire à un étab
 
 > **L'app est entre deux modèles.** Le modèle d'éligibilité v9 et tout ce qui en
 > dépendait ont été retirés, et la v10 n'est pas encore intégrée. Le simulateur déroule
-> un **questionnaire factice** de trois questions, qui ne décide rien. Le socle,
+> un **questionnaire factice**, qui ne décide rien du transport. Le socle,
 > lui, est prêt à recevoir la v10. Voir
 > [« Entre deux modèles »](#entre-deux-modèles).
 
@@ -130,13 +130,15 @@ front/                   le front, bundlé par Vite
                          l'avancement automatique, le champ qui rend une question,
                          ce qui part vers l'analytics
     decision-engine/     le moteur de décision : des faits aux cibles, par les règles
-                         publicodes qu'un modèle lui donne. Le seul fichier qui
-                         importe publicodes, pris par le modèle hors de `index.ts`
+                         publicodes qu'un modèle lui donne. Un fait absent n'est pas
+                         envoyé, et laisse indéfinie la cible qui en dépend. Le seul
+                         fichier qui importe publicodes, pris par le modèle hors de
+                         `index.ts`
     ui/                  les champs de formulaire, bâtis sur le DSFR et sans rien
                          savoir du questionnaire : TextField, SelectField,
                          RadioField, CheckboxField, NumberField, DateField
     developer-tools/      ce qui est réservé au service produit : son encadré, la
-                         trace de debug du parcours et de ses résultats, et le
+                         trace de debug du parcours et de ses résultats, son export, et le
                          déverrouillage, garde commune à l'écran des seeds et aux traces
     seeds/               ce qu'est une seed et son écran. Elles se greffent sur le
                          simulateur, jamais l'inverse : c'est App.tsx qui compose.
