@@ -31,7 +31,7 @@ export async function nextCommand(invocation: Invocation): Promise<number> {
   const suivi = readSuivi(root);
   const next: Next = {
     wip: await readWip(root, suivi),
-    aPrendre: suivi?.chantiers.filter(isOpen).filter(A_PRENDRE) ?? [],
+    aPrendre: suivi?.chantiers.filter(isReady).filter(A_PRENDRE) ?? [],
     specs,
     ...(await ticketsBeyondSpecs(root, STATUTS, all)),
   };
@@ -47,6 +47,11 @@ type Next = TicketsView & {
   aPrendre: Chantier[];
   specs: Spec[];
 };
+
+/** Un brouillon n'est pas à prendre : son cadrage n'est pas fini. */
+function isReady(chantier: Chantier): boolean {
+  return isOpen(chantier) && !chantier.brouillon;
+}
 
 /** Ni bloquée, ni commencée. */
 const A_PRENDRE = hasTache("à faire");

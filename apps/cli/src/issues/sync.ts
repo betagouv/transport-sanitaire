@@ -59,9 +59,6 @@ const STATUT_BY_ETAT: Record<Etat, string | undefined> = {
   abandonnée: undefined,
 };
 
-/** L'étiquette d'un chantier qui n'est pas encore à montrer à l'équipe. */
-const BROUILLON = "brouillon";
-
 /** Les sections de l'issue recopiées dans le corps du ticket, à sa création. */
 const COPIED_SECTIONS = ["Problème", "Solution"];
 
@@ -111,7 +108,7 @@ async function syncChantier(
   chantier: Chantier,
   issue: Issue,
 ): Promise<string> {
-  if (issue.labels.includes(BROUILLON)) return "brouillon, pas de ticket";
+  if (chantier.brouillon) return "brouillon, pas de ticket";
   const statut = STATUT_BY_ETAT[chantier.etat];
   const link = notionLink(issue.body);
   if (link) return refresh(notion, issue, link, statut);

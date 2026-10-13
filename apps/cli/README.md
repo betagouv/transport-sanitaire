@@ -168,6 +168,10 @@ tsp issue show 42
   #53 Décision             à faire
 ```
 
+Un chantier étiqueté `brouillon` n'est pas fini de cadrer : `tsp next` ne le
+propose pas, et il n'a pas de ticket Notion. L'étiquette se pose et se retire
+sur GitHub.
+
 Le décompte ne porte que sur les tâches, pas sur les issues qui les
 regroupent, et laisse de côté les abandonnées.
 
