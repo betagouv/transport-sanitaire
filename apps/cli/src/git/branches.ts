@@ -32,13 +32,10 @@ export function branchCommand(invocation: Invocation): number {
 
 /**
  * Les branches locales et distantes non fusionnées dans `staging`, une fois
- * chacune, sans celles de `withPullRequest`. Une PR fusionnée par squash laisse
- * sa branche « non fusionnée » aux yeux de git : c'est la PR qui la retire.
+ * chacune. Une PR fusionnée par squash laisse sa branche « non fusionnée » aux
+ * yeux de git : c'est à l'appelant de la retirer, d'après sa PR.
  */
-export function unmergedBranches(
-  root: string,
-  withPullRequest: Set<string>,
-): string[] {
+export function unmergedBranches(root: string): string[] {
   const refs = git(root, [
     "for-each-ref",
     `--no-merged=${stagingRef(root)}`,
@@ -49,14 +46,17 @@ export function unmergedBranches(
   const names = refs
     .split("\n")
     .map((ref) => ref.replace(/^origin\//, ""))
-    .filter((name) => name !== "" && !PERMANENT.includes(name))
-    .filter((name) => !withPullRequest.has(name));
+    .filter((name) => name !== "" && !isPermanentBranch(name));
   return [...new Set(names)].sort();
+}
+
+/** Ce qui n'est pas un travail en cours : les branches pérennes et le pointeur du distant. */
+export function isPermanentBranch(name: string): boolean {
+  return PERMANENT.includes(name);
 }
 
 // ---- implémentation ----
 
 const BRANCH_NAME = /^[a-z]+\/[a-z0-9][a-z0-9.-]*$/;
 
-/** Ce qui n'est pas un travail en cours : les branches pérennes et le pointeur du distant. */
 const PERMANENT = ["main", "staging", "HEAD", "origin"];

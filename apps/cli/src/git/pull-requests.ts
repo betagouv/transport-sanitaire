@@ -1,5 +1,5 @@
-// Les PR du dépôt : celles qui sont ouvertes, en ouvrir une vers `staging`,
-// suivre celle de la branche courante.
+// Les PR du dépôt : les lister, en ouvrir une vers `staging`, suivre celle de
+// la branche courante.
 
 import path from "node:path";
 import type { Invocation } from "../core/invocation.ts";
@@ -14,13 +14,15 @@ export type PullRequest = {
   branch: string;
   base: string;
   url: string;
+  /** `OPEN`, `MERGED`, ou `CLOSED` pour une PR fermée sans fusion. */
+  state: string;
 };
 
-/** Les PR ouvertes, ou rien si `gh` ne répond pas. */
-export function openPullRequests(root: string): PullRequest[] | undefined {
-  const fields = "number,title,headRefName,baseRefName,url";
-  const args = ["pr", "list", "--state", "open", "--json", fields];
-  const result = captureProgram("gh", args, root);
+/** Toutes les PR, quel que soit leur état. Rien si `gh` ne répond pas. */
+export function listPullRequests(root: string): PullRequest[] | undefined {
+  const fields = "number,title,headRefName,baseRefName,url,state";
+  const args = ["pr", "list", "--state", "all", "--limit", "1000"];
+  const result = captureProgram("gh", [...args, "--json", fields], root);
   if (result.code !== 0) return undefined;
   return (JSON.parse(result.stdout) as GhPullRequest[]).map((pr) => ({
     number: pr.number,
@@ -28,26 +30,11 @@ export function openPullRequests(root: string): PullRequest[] | undefined {
     branch: pr.headRefName,
     base: pr.baseRefName,
     url: pr.url,
+    state: pr.state,
   }));
 }
 
-/**
- * Les branches dont la PR est ouverte ou fusionnée. Une PR fermée sans fusion
- * ne compte pas : sa branche reste un travail sans PR. Vide si `gh` ne répond
- * pas.
- */
-export function branchesWithPullRequest(root: string): Set<string> {
-  const args = ["pr", "list", "--state", "all", "--limit", "1000"];
-  const fields = "headRefName,state";
-  const result = captureProgram("gh", [...args, "--json", fields], root);
-  if (result.code !== 0) return new Set();
-  const prs = JSON.parse(result.stdout) as GhBranchState[];
-  const kept = prs.filter((pr) => pr.state !== "CLOSED");
-  return new Set(kept.map((pr) => pr.headRefName));
-}
-
-export function renderPullRequests(prs: PullRequest[] | undefined): string {
-  if (!prs) return "GitHub : gh ne répond pas";
+export function renderPullRequests(prs: PullRequest[]): string {
   return columns(
     prs.map((pr) => [`#${pr.number}`, pr.title, `${pr.branch} → ${pr.base}`]),
   );
@@ -73,9 +60,8 @@ type GhPullRequest = {
   headRefName: string;
   baseRefName: string;
   url: string;
+  state: string;
 };
-
-type GhBranchState = { headRefName: string; state: string };
 
 type Check = {
   name?: string;
@@ -86,7 +72,6 @@ type Check = {
 };
 
 type Status = GhPullRequest & {
-  state: string;
   reviewDecision: string;
   statusCheckRollup: Check[];
 };
