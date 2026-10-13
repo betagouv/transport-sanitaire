@@ -68,6 +68,7 @@ Une **action** n'est pas une commande à écrire : c'est un script du
 | Sans jeton Notion, `wip` et `next` affichent le reste | personne n'est bloqué par un service absent |
 | L'état d'une tâche se déduit, il ne s'écrit pas | un état rédigé se périme dès la fusion d'une PR |
 | Le numéro d'issue d'une branche se lit par `issueOfBranch`, et par la même expression dans `close-issue.yml` | deux lectures différentes, et la fusion ferme une autre issue que celle que `tsp` montre |
+| Le titre d'une tâche porte le nom court de ses parents, posé par `issue add` | une issue se lit seule, dans une notification ou une recherche |
 | Seul un chantier a un ticket Notion, jamais une tâche | Notion porte le suivi macro, GitHub le détail |
 | `issue sync` ne réécrit jamais le corps d'un ticket | l'équipe produit y prend des notes |
 | Un statut Notion ne recule jamais | `Reviewing dev` et `Prod / Done` se posent à la main |

@@ -14,7 +14,7 @@
 | Lecture de la documentation | `tsp docs` liste les ADR et les connaissances métier, à la racine et par app. |
 | Outils du projet | `tsp open` liste les outils les plus utilisés (site, préprod, hébergeur, DNS, Notion, GitHub) et les ouvre dans le navigateur. La liste reste locale. |
 | Suivi des chantiers | `tsp issue list` liste les chantiers ouverts et leur avancement. `tsp issue show` en montre un en arbre, avec l'état de chaque tâche, sa branche, son worktree et sa PR. L'état se déduit de GitHub et de git. |
-| Tenue des chantiers | `tsp issue new` ouvre un chantier depuis son gabarit. `tsp issue add` lui ajoute une tâche, avec ce qui la bloque. `tsp branch --issue` tire la branche d'une tâche, et la fusion de sa PR ferme l'issue. |
+| Tenue des chantiers | `tsp issue new` ouvre un chantier depuis son gabarit. `tsp issue add` lui ajoute une tâche, avec ce qui la bloque, et préfixe son titre du nom court de ses parents. `tsp branch --issue` tire la branche d'une tâche, et la fusion de sa PR ferme l'issue. |
 | Ticket Notion d'un chantier | `tsp issue sync` crée le ticket d'un chantier puis fait avancer son statut, sans réécrire son corps. Les tâches n'ont pas de ticket. |
 | Travail en cours | `tsp wip` rassemble les chantiers commencés, les PR ouvertes, les branches et worktrees sans issue et les tickets Notion en cours. |
 | Travail à prendre | `tsp next` rappelle le travail en cours, puis liste les tâches à prendre et les tickets Notion prêts à développer. |
