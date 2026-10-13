@@ -1,48 +1,40 @@
-# Plan : séparer le socle et le modèle
+# Journal des décisions : séparer le socle et le modèle
+
+> Dernière mise à jour : 2026-10-13
+>
+> Les décisions prises pendant le chantier de la v10, dans l'ordre où elles
+> l'ont été. Ce n'est pas un document d'architecture au format des autres
+> fichiers de ce dossier : c'est le journal dont ils se tireront, sujet par
+> sujet.
 
 Le simulateur a un socle qui ne dépend d'aucune version (rattachement,
 questionnaire, analytics, seeds, outils PDF, developer tools) et un modèle qui
 change à chaque livrable de l'éditeur. Le but est que faire évoluer l'un ne
 touche pas à l'autre.
 
-Ce fichier tient l'ordre des chantiers et le journal des décisions. Chaque
-chantier a son fichier, avec ses décisions, ce qui est proposé et ses questions
-ouvertes. On les traite un par un, dans l'ordre du tableau.
+Le découpage et l'avancement du chantier ne sont pas ici. Ils se lisent dans
+l'issue [#50](https://github.com/betagouv/transports-sanitaires/issues/50) et
+ses sous-issues. Ce journal tenait jusqu'au 2026-10-13 dans
+`docs/tasks/PLAN.md`, retiré depuis.
 
 ## Les chantiers
 
-| N° | Chantier | État | Reste |
-|---|---|---|---|
-| [01](01-vocabulaire.md) | Vocabulaire | arbitré | reporter dans `CONTEXT.md` |
-| [02](02-structure-des-dossiers.md) | Structure des dossiers | fait | `front/models/eligibilite/`, avec la v10.0.2 (D-82) |
-| [03](03-contrat-model.md) | Contrat `Model` | écrit, un argument ajouté (D-88) | quatre champs pas encore lus par le socle |
-| [04](04-declarations-du-modele.md) | Déclarations du modèle | faits et cibles de la v10.0.0 déclarés | les refaire sur la v10.0.2 ; les questions, les cibles que l'application assemble, les cibles documentaires |
-| [05](05-questionnaire-en-parties.md) | Questionnaire en parties | fait | rien |
-| [06](06-parcours-et-resultats.md) | Parcours et résultats | fait, hors PDF | impression, production du PDF |
-| [07](07-seeds.md) | Seeds | fait | les seeds des cas d'oracle, que nous écrivons d'après le contrat réponses/faits (D-79), après la v10.0.2 |
-| [08](08-tests-et-factice.md) | Tests et factice | fait | rien |
-| [09](09-capacites-du-socle-pour-la-v10.md) | Capacités du socle pour la v10 | modèle de démonstration en place (D-82), capacités 1 à 11, 20 et 21 codées. Inventaire revu sur la v10.0.2 : 23 capacités | 9 capacités, en trois groupes : l'adresse (12), la validation croisée (13), le PDF (15 à 19, 22, 23). La liste filtrable (14) est gelée |
-| [10](10-integration-de-la-v10.md) | Intégration de la v10 | étapes 1 et 2 codées sur la v10.0.0, gardées sur `v10-modele-10.0.0` (D-81) | le branchement des décisions attend la v10.0.2 (D-78) ; l'interface se poursuit |
+La colonne « Chantier » du journal renvoie à ces numéros.
 
-## Les livraisons de l'éditeur
-
-| Version | Reçue | État chez nous |
+| N° | Chantier | Issue |
 |---|---|---|
-| v10.0.0 | relivrée le 6 octobre | les étapes 1 et 2 sont codées dessus, sur la branche `v10-modele-10.0.0` (D-81) |
-| v10.0.1 | le 12 octobre | analysée, pas portée : voir le [chantier 10](10-integration-de-la-v10.md) |
-| v10.0.2 | le 12 octobre | analysée pour le socle : voir le [chantier 09](09-capacites-du-socle-pour-la-v10.md). Le modèle suit, après le socle |
+| 01 | Vocabulaire | [#51](https://github.com/betagouv/transports-sanitaires/issues/51) |
+| 02 | Structure des dossiers | [#52](https://github.com/betagouv/transports-sanitaires/issues/52) |
+| 03 | Contrat `Model` | [#53](https://github.com/betagouv/transports-sanitaires/issues/53) |
+| 04 | Déclarations du modèle | [#54](https://github.com/betagouv/transports-sanitaires/issues/54) |
+| 05 | Questionnaire en parties | [#55](https://github.com/betagouv/transports-sanitaires/issues/55) |
+| 06 | Parcours et résultats | [#56](https://github.com/betagouv/transports-sanitaires/issues/56) |
+| 07 | Seeds | [#57](https://github.com/betagouv/transports-sanitaires/issues/57) |
+| 08 | Tests et factice | [#58](https://github.com/betagouv/transports-sanitaires/issues/58) |
+| 09 | Capacités du socle pour la v10 | [#59](https://github.com/betagouv/transports-sanitaires/issues/59) |
+| 10 | Intégration de la v10 | [#60](https://github.com/betagouv/transports-sanitaires/issues/60) |
 
-## Commits
-
-| Commit | Ce qu'il fait |
-|---|---|
-| e9dc636 | sépare le front en socle et modèle (déplacement pur) |
-| c6c12b8 | déclare le questionnaire en parties |
-| 381090c | injecte le modèle dans le socle par le contrat `Model` |
-| a35b0ad | déduit des réponses l'écran où une seed s'ouvre |
-| dfc9ccd | vérifie la conformité du modèle livré, et ajoute deux gardes |
-
-## Journal des décisions
+## Le journal
 
 Les décisions sont de Simon, sauf mention contraire. Une décision renversée
 reste dans le tableau, barrée, avec celle qui la remplace.
@@ -137,20 +129,3 @@ reste dans le tableau, barrée, avec celle qui la remplace.
 | D-86 | 2026-10-12 | Décision de l'éditeur, dans la v10.0.2. Un fait a trois états : « oui », « non » établi, ou absent. Une option non cochée ne vaut « non » que si elle a été proposée et sa page validée. Une option masquée reste absente, sauf incompatibilité prouvée. Une cible peut rester indéfinie : ce n'est pas une décision. Les variables manquantes servent au diagnostic, pas à choisir les questions. Précise D-77. | 03, 09, 10 |
 | D-87 | 2026-10-12 | Décision de l'éditeur, dans la v10.0.2. La trace garde la provenance de chaque fait : la réponse qui le donne, la version du référentiel, ou la raison qui le rend sans objet. | 09, 10 |
 | D-88 | 2026-10-13 | Le socle relève les questions validées : pour chacune, les options qui se proposaient, et la réponse ou son absence. Le modèle les reçoit pour calculer ses faits, et les conditions d'une question les reçoivent en troisième argument. La liste se déduit des réponses et de l'ordre des pages : aucun état ne s'ajoute au questionnaire. Le socle ne conclut rien : dire « non » d'une case proposée et non cochée reste au modèle, d'après le contrat de l'éditeur. Premier changement du contrat `Model`, par ajout. Tranche la question ouverte par D-86. | 03, 09, 10 |
-
-## Questions ouvertes, par chantier
-
-| Question | Chantier |
-|---|---|
-| Les capacités du socle se codent d'abord (arbitré le 12 octobre). Reste à dire si les pages de P1, P2 et P3 se codent ensuite d'après le catalogue de la v10.0.1, qui peut encore bouger, ou attendent la v10.0.2. | 09, 10 |
-| La forme d'un fait : sa valeur et sa provenance dans le même objet. Codé ainsi, à confirmer. | 09, 10 |
-| Qui refuse d'afficher une cible indéfinie à R2 : le socle, ou le résultat du modèle (D-86). | 09, 10 |
-| Un texte trop long sort de son cadre, ou rétrécit dedans (D-85). | 09 |
-| La liste filtrable (capacité 14) reste gelée tant que la recherche d'acte de Q2.1 est inactive. À confirmer. | 09 |
-| Combien de seeds pour les 49 cas de l'oracle. D-57 en prévoyait 25. | 07 |
-| Les gabarits des cerfa : ceux du package, contrôlés par leur empreinte et liés au mapping des champs. Proposé, à la place de ceux de Notion (D-62). | 09, 10 |
-
-## À remonter à l'éditeur
-
-Les tickets ouverts et les questions en attente sont dans
-[QUESTIONS-EDITEUR.md](QUESTIONS-EDITEUR.md).

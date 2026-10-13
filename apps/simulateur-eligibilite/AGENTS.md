@@ -11,7 +11,8 @@ Le simulateur d'éligibilité au transport sanitaire. Sa pile :
 - un questionnaire **déclaré par l'application** (`front/socle/questionnaire-engine/`).
 
 **L'app est entre deux modèles.** Le modèle v9 et ce qui en dépendait sont retirés,
-la v10 n'est pas intégrée (`docs/tasks/PLAN.md`). Il n'y a ni règles
+la v10 n'est pas intégrée : son avancement est dans l'issue 50 du dépôt, ses
+décisions dans `docs/knowledge/adr/journal-des-decisions-v10.md`. Il n'y a ni règles
 d'éligibilité, ni page de résultat métier, ni CERFA téléchargeable. Le simulateur
 déroule le **modèle de démonstration** (`front/models/fake/`), qui ne décide rien
 du transport. Le noyau et les
