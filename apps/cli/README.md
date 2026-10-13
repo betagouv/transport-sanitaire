@@ -157,10 +157,10 @@ tsp issue show 42
 ```
 
 ```
-#42 Intégration de la v10  en cours 14/23
-  #51 Adresse              en cours        feat/51-adresse  .claude/worktrees/v10-adresse  PR #60
-  #52 Validation croisée   bloquée par #51
-  #53 Décision             à faire
+#42 v10 : Intégration de la v10  en cours 14/23
+  #51 Adresse                   en cours        feat/51-adresse  .claude/worktrees/v10-adresse  PR #60
+  #52 Validation croisée        bloquée par #51
+  #53 Décision                  à faire
 ```
 
 Un chantier étiqueté `brouillon` n'est pas fini de cadrer : `tsp next` ne le
@@ -173,8 +173,8 @@ regroupent, et laisse de côté les abandonnées.
 ### Tenir un chantier
 
 ```bash
-tsp issue new feat "Intégration de la v10" --app simulateur   # le chantier
-tsp issue add 42 "Adresse"                                    # une tâche
+tsp issue new feat "v10 : Intégration de la v10" --app simulateur   # le chantier
+tsp issue add 42 "Adresse"                                    # une tâche, « v10 - Adresse »
 tsp issue add 42 "Validation croisée" --blocked-by 51         # une tâche bloquée
 tsp branch feat/adresse --issue 51                            # feat/51-adresse
 tsp pr                                                        # « Closes #51 »
@@ -184,6 +184,12 @@ tsp pr                                                        # « Closes #51 »
   `--body-file`. Le cadrage du chantier s'écrit dans son issue.
 - `new` pose le type et l'app en étiquettes, et crée celles qui manquent.
 - Une tâche peut avoir ses propres tâches : `tsp issue add 51 …`.
+- **Le titre d'une tâche commence par le nom court de ses parents** :
+  `v10 - Chantier 07 - Écrire les seeds des cas d'oracle`. Il se lit ainsi
+  seul, dans une notification ou une recherche. `add` pose ce préfixe, et
+  `show` ne le répète pas dans l'arbre.
+- Le nom court d'une issue est ce qui précède ` : ` dans son titre. Un
+  chantier se nomme donc `v10 : Intégration de la v10`.
 - `branch --issue` refuse une issue inconnue ou fermée.
 - **La fusion de la PR ferme l'issue.** GitHub ne le fait que pour une PR vers
   `main` : le workflow `close-issue.yml` s'en charge, d'après le numéro que

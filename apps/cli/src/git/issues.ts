@@ -38,14 +38,18 @@ export function readIssues(root: string): Issue[] | undefined {
   return (JSON.parse(result.stdout) as GhIssue[]).map(toIssue);
 }
 
-/** `OPEN` ou `CLOSED`. Rien si aucune issue ne porte ce numéro. */
-export function issueState(root: string, number: number): string | undefined {
-  const args = ["issue", "view", String(number), "--json", "state,url"];
+/** Le titre d'une issue et si elle est ouverte. Rien si aucune ne porte ce numéro. */
+export function findIssue(
+  root: string,
+  number: number,
+): { title: string; open: boolean } | undefined {
+  const args = ["issue", "view", String(number), "--json", "title,state,url"];
   const result = captureProgram("gh", args, root);
   if (result.code !== 0) return undefined;
-  const found = JSON.parse(result.stdout) as { state: string; url: string };
+  const found = JSON.parse(result.stdout) as GhFound;
   // `gh issue view` répond aussi pour une PR, qui partage la numérotation.
-  return found.url.includes("/issues/") ? found.state : undefined;
+  if (!found.url.includes("/issues/")) return undefined;
+  return { title: found.title, open: found.state === "OPEN" };
 }
 
 /** Ouvre l'issue et rend son adresse. Crée les étiquettes qui manquent. */
@@ -82,6 +86,8 @@ const FIELDS =
 const ABANDONED = ["NOT_PLANNED", "DUPLICATE"];
 
 type GhRef = { number: number; state?: string };
+
+type GhFound = { title: string; state: string; url: string };
 
 type GhIssue = {
   number: number;
