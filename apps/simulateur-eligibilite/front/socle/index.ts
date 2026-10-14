@@ -12,9 +12,10 @@ export {
 } from "./analytics/matomo";
 export { App } from "./app/App";
 export type { Models } from "./app/model-choice";
-export { textFrom } from "./cerfa/field-mapping";
+export { type Cerfa, drawnBox, text } from "./cerfa/cerfa";
 export { templateAt } from "./cerfa/produce-cerfa";
-export { defineModel } from "./model";
+export { bindCerfa, type CerfaMapping } from "./cerfa-mapping";
+export { type CerfaInput, defineModel } from "./model";
 export type { Address } from "./questionnaire-engine/address";
 export type {
   Answers,

@@ -1,11 +1,5 @@
 import { describe, expect, it } from "vitest";
 import { formatDateForField } from "../../../front/socle/cerfa/dates";
-import {
-  entriesFrom,
-  type FieldMapping,
-  leftTo,
-  textFrom,
-} from "../../../front/socle/cerfa/field-mapping";
 import { fillCerfa } from "../../../front/socle/cerfa/fill-cerfa";
 import { TextOverflowError } from "../../../front/socle/cerfa/text-overflow";
 import { TEXT_SIZES } from "../../../front/socle/cerfa/text-sizes";
@@ -113,29 +107,6 @@ describe("texte mesuré", () => {
       text: LONG,
       message: "Le texte ne tient pas dans le champ « motif ».",
     });
-  });
-});
-
-describe("tableau de remplissage", () => {
-  type Answers = { nom: string; motif: string };
-
-  const MAPPING: FieldMapping<Answers> = {
-    nom: textFrom((answers) => answers.nom),
-    motif: (answers) =>
-      answers.motif ? { measuredText: answers.motif } : undefined,
-    nir: leftTo("le prescripteur", "donnée nominative, hors du simulateur"),
-  };
-
-  it("ne rend que ce qui est déduit des answers", () => {
-    expect(entriesFrom(MAPPING, { nom: "DUPONT", motif: "" })).toEqual([
-      { field: "nom", text: "DUPONT" },
-    ]);
-  });
-
-  it("laisse vierge un texte vide, comme un champ laissé à quelqu'un", () => {
-    expect(entriesFrom(MAPPING, { nom: "", motif: "Dialyse" })).toEqual([
-      { field: "motif", measuredText: "Dialyse" },
-    ]);
   });
 });
 
