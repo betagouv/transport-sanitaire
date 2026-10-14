@@ -65,7 +65,7 @@ Transverses :
 | `tsp issue show <n>` | montre un chantier en arbre : l'état de chaque tâche, sa branche, son worktree, sa PR |
 | `tsp issue new <type> <titre>` | ouvre un chantier, `--app <app>` pour l'étiqueter à une app |
 | `tsp issue add <n> <titre>` | ajoute une tâche à un chantier, `--blocked-by <n,…>` pour ce qui la bloque |
-| `tsp issue sync [n]` | crée ou met à jour le ticket Notion d'un chantier |
+| `tsp issue sync [n]` | projette le tableau des chantiers, puis crée ou met à jour le ticket Notion d'un chantier |
 | `tsp branch <type>/<sujet>` | tire une branche de `staging`, `--issue <n>` pour celle d'une tâche |
 | `tsp pr` | pousse la branche et ouvre la PR vers `staging` |
 | `tsp pr status` | montre l'état de la PR courante et de sa CI |
@@ -195,6 +195,33 @@ tsp pr                                                        # « Closes #51 »
   `main` : le workflow `close-issue.yml` s'en charge, d'après le numéro que
   porte la branche. Un chantier, lui, se ferme à la main.
 
+### Le tableau
+
+Le GitHub Project « Transport Sanitaire » de l'organisation montre les issues en
+kanban. Il est privé. **`tsp` est seul à y écrire une colonne**, d'après l'état
+qu'il déduit : une carte déplacée à la main reprend sa place à la projection
+suivante.
+
+| Issue | Colonne |
+|---|---|
+| à faire, étiquetée `brouillon` | Brouillon |
+| à faire | À faire |
+| bloquée | Bloquée |
+| en cours | En cours |
+| fait | Fait |
+| abandonnée | archivée |
+
+- `issue sync` projette tout le tableau, puis passe à Notion.
+- `issue new`, `issue add`, `branch` et `pr` le projettent après leur geste, et
+  le disent sur la sortie d'erreur en une ligne. Un échec du tableau ne fait
+  pas échouer la commande.
+- Une issue ouverte absente du tableau y est ajoutée. Une fermée hors du
+  tableau n'y revient pas.
+- Le Project ajoute de lui-même les sous-issues d'une carte, passe une issue
+  fermée en `Fait`, et archive une carte faite depuis deux semaines.
+- Le tableau ne bouge qu'avec un geste `tsp` : une issue que la fusion d'une
+  autre débloque attend la projection suivante.
+
 ### Le ticket Notion
 
 Notion ne porte que le suivi macro : **un ticket par chantier**, aucun pour
@@ -251,7 +278,13 @@ tsp pr status
 | `NOTION_API_URL` | facultatif. Remplace l'adresse de l'API, pour éprouver la CLI sur un serveur local |
 
 Sans jeton, `wip` et `next` affichent le reste et la ligne
-« Notion : jeton absent ». Seul `issue sync` s'arrête.
+« Notion : jeton absent ». Seul `issue sync` s'arrête, après le tableau.
+
+Le tableau demande le droit `project` sur le jeton de `gh` :
+
+```bash
+gh auth refresh -s project
+```
 
 ## Comment c'est fait
 

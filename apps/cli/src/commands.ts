@@ -8,6 +8,7 @@ import { columns, section } from "./core/output.ts";
 import { branchCommand } from "./git/branches.ts";
 import { prCommand } from "./git/pull-requests.ts";
 import { issueCommand } from "./issues/issue.ts";
+import { withTableau } from "./issues/tableau.ts";
 import { docsCommand } from "./knowledge/docs.ts";
 import { rulesCommand } from "./knowledge/rules.ts";
 import { skillsCommand } from "./knowledge/skills.ts";
@@ -142,20 +143,21 @@ const ACROSS: Entry[] = [
     name: "issue",
     usage: "issue list|show|new|add|sync …",
     summary:
-      "liste les chantiers, en montre un, en ouvre un, lui ajoute une tâche, synchronise son ticket Notion",
+      "liste les chantiers, en montre un, en ouvre un, lui ajoute une tâche, projette le tableau et les tickets Notion",
     run: issueCommand,
   },
   {
     name: "branch",
     usage: "branch <type>/<sujet>",
     summary: "tire une branche de staging, pour une issue avec --issue",
-    run: branchCommand,
+    run: withTableau(branchCommand),
   },
   {
     name: "pr",
     usage: "pr [status]",
     summary: "ouvre la PR vers staging, ou montre son état et sa CI",
-    run: prCommand,
+    // `pr status` lit : seule l'ouverture d'une PR change un état.
+    run: withTableau(prCommand, (invocation) => invocation.args.length === 0),
   },
 ];
 
