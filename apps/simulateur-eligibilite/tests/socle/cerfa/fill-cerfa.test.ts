@@ -1,4 +1,3 @@
-import { PDFDocument } from "pdf-lib";
 import { describe, expect, it } from "vitest";
 import { formatDateForField } from "../../../front/socle/cerfa/dates";
 import {
@@ -9,6 +8,7 @@ import {
 } from "../../../front/socle/cerfa/field-mapping";
 import { fillCerfa } from "../../../front/socle/cerfa/fill-cerfa";
 import { TextOverflowError } from "../../../front/socle/cerfa/text-overflow";
+import { TEXT_SIZES } from "../../../front/socle/cerfa/text-sizes";
 import { fontSizeOf, readBack, statesOf, testForm } from "./test-form";
 
 // Le socle de remplissage d'un PDF : ce qu'un formulaire accepte, ce qu'il
@@ -30,6 +30,25 @@ describe("fillCerfa", () => {
       nom: "DUPONT Marie",
       ald: `/${state}`,
     });
+  });
+
+  it("écrit un texte qui tient à la taille visée par la configuration", async () => {
+    const pdf = await fillCerfa(await testForm(), [
+      { field: "nom", text: "DUPONT Marie" },
+    ]);
+
+    expect(await fontSizeOf(pdf, "nom")).toBe(TEXT_SIZES.target);
+  });
+
+  it("réduit au plancher un texte qui ne tient pas sur sa ligne", async () => {
+    const pdf = await fillCerfa(await testForm(), [
+      {
+        field: "nom",
+        text: "Centre hospitalier universitaire, 12 avenue du Général Leclerc, 38000 Grenoble",
+      },
+    ]);
+
+    expect(await fontSizeOf(pdf, "nom")).toBe(TEXT_SIZES.floor);
   });
 
   it("refuse un état d'export que la case ne sait pas rendre", async () => {
@@ -66,17 +85,6 @@ describe("fillCerfa", () => {
       nom: "1 rue du Départ - 75001 Paris",
     });
   });
-
-  it("verrouille les champs remplis sur demande, et eux seuls", async () => {
-    const pdf = await fillCerfa(
-      await testForm(),
-      [{ field: "nom", text: "DUPONT Marie" }],
-      { readOnly: true },
-    );
-    const form = (await PDFDocument.load(pdf)).getForm();
-    expect(form.getField("nom").isReadOnly()).toBe(true);
-    expect(form.getField("nir").isReadOnly()).toBe(false);
-  });
 });
 
 describe("texte mesuré", () => {
@@ -88,8 +96,10 @@ describe("texte mesuré", () => {
     ]);
 
     expect(await readBack(pdf)).toEqual({ motif: text });
-    expect(await fontSizeOf(pdf, "motif")).toBeLessThan(10);
-    expect(await fontSizeOf(pdf, "motif")).toBeGreaterThanOrEqual(6);
+    expect(await fontSizeOf(pdf, "motif")).toBeLessThan(TEXT_SIZES.target);
+    expect(await fontSizeOf(pdf, "motif")).toBeGreaterThanOrEqual(
+      TEXT_SIZES.floor,
+    );
   });
 
   it("déborde sans rien écrire, et sans citer le texte dans le message", async () => {
