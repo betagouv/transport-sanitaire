@@ -18,8 +18,14 @@ export type Choice = {
   input: ComponentProps<"input">;
 };
 
-/** Ce qui s'affiche sous le groupe : une erreur, ou une simple explication. */
-export type Message = { state: "error" | "info"; text: string };
+/**
+ * Ce qui s'affiche sous le groupe : des erreurs, ou une simple explication.
+ * Une ligne par texte.
+ */
+export type Message = {
+  state: "error" | "info";
+  texts: readonly string[];
+};
 
 type Props = {
   id: string;
@@ -55,11 +61,11 @@ export function ChoiceFieldset(props: Props) {
         id={`${id}-messages`}
         aria-live={error ? "assertive" : "polite"}
       >
-        {message && (
-          <p className={`fr-message fr-message--${message.state}`}>
-            {message.text}
+        {message?.texts.map((text) => (
+          <p key={text} className={`fr-message fr-message--${message.state}`}>
+            {text}
           </p>
-        )}
+        ))}
       </div>
     </fieldset>
   );

@@ -5,6 +5,7 @@
 // identifiant : les génériques ne servent qu'à typer le modèle.
 
 import type { Address, AddressSettings } from "./address";
+import type { Option } from "./option";
 
 /**
  * Une réponse : un choix, un nombre, un texte, les cases cochées, ou une
@@ -35,53 +36,6 @@ export type Validated<Questions extends AnyQuestions = AnyQuestions> = {
     /** Absente : la question, facultative, est restée sans réponse. */
     readonly answer?: Questions[Id];
   };
-};
-
-/**
- * L'aide d'une option : un intitulé qui se déplie sur une liste. La déplier
- * n'est pas répondre.
- */
-type OptionHelp = {
-  readonly label: string;
-  readonly items: readonly string[];
-};
-
-export type Option<
-  Questions extends AnyQuestions = AnyQuestions,
-  Cibles = AnyCibles | undefined,
-> = {
-  readonly value: string;
-  readonly label: string;
-  /** Le libellé, quand il dépend des réponses. Absente : `label`. */
-  labelFrom?(
-    answers: Answers<Questions>,
-    cibles: Cibles,
-    validated: Validated<Questions>,
-  ): string;
-  /** Ce que l'option veut dire, rendu sous son libellé. */
-  readonly description?: string;
-  /**
-   * L'option se propose-t-elle, vu les réponses ? Absente : toujours. Une
-   * réponse qui la portait la perd quand elle ne se propose plus.
-   */
-  offeredIf?(
-    answers: Answers<Questions>,
-    cibles: Cibles,
-    validated: Validated<Questions>,
-  ): boolean;
-  /**
-   * Choisir cette option arrête le questionnaire sur sa page : ce message
-   * s'affiche, et on n'avance plus tant qu'elle reste choisie.
-   */
-  readonly blocks?: string;
-  /** L'aide dépliable de l'option. */
-  readonly help?: OptionHelp;
-  /** L'aide, quand elle dépend des réponses. Absente : `help`. */
-  helpFrom?(
-    answers: Answers<Questions>,
-    cibles: Cibles,
-    validated: Validated<Questions>,
-  ): OptionHelp | undefined;
 };
 
 /**
@@ -137,6 +91,24 @@ type Common<Questions extends AnyQuestions, Cibles> = {
     cibles: Cibles,
     validated: Validated<Questions>,
   ): boolean;
+  /**
+   * Ce qui, dans la réponse, en contredit une autre : un message par
+   * incohérence, qui dit quoi corriger. Vide : rien ne la contredit. Tant qu'il
+   * en reste, la question n'est pas validée.
+   *
+   * La règle se déclare sur la plus tardive des deux questions : le moteur lui
+   * cache les réponses des pages suivantes. Elle lit celles de sa page, et les
+   * réponses acquises avant le verrou.
+   *
+   * Écrite en méthode, comme `askedIf`.
+   */
+  inconsistenciesFrom?(
+    answers: Answers<Questions>,
+    cibles: Cibles,
+    validated: Validated<Questions>,
+  ): readonly string[];
+  /** Les incohérences du moment, que le moteur résout (`asked-questions.ts`). */
+  readonly inconsistencies?: readonly string[];
   /**
    * Les questions dont dépend cette réponse. Quand l'une d'elles change, cette
    * réponse est effacée, et elle seule (`page-commit.ts`).

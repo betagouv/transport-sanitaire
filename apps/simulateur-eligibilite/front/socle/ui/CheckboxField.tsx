@@ -23,7 +23,8 @@ type Props = {
   }>;
   values: readonly string[];
   onChange: (values: readonly string[]) => void;
-  error?: string;
+  /** Un message par ligne, sous le groupe. */
+  errors?: readonly string[];
   /** Met le libellé en avant, quand le champ est la question de la page. */
   lead?: boolean;
 };
@@ -42,7 +43,7 @@ export function CheckboxField(props: Props) {
       legend={props.label}
       hint={props.hint}
       lead={props.lead}
-      message={message(props.error, explanation)}
+      message={message(props.errors, explanation)}
       choices={checkboxes(props, toggle)}
     />
   );
@@ -52,10 +53,14 @@ export function CheckboxField(props: Props) {
 
 type Toggled = { values: readonly string[]; explanation?: string };
 
-// L'erreur passe devant l'explication : c'est elle qui retient la page.
-function message(error?: string, explanation?: string): Message | undefined {
-  if (error) return { state: "error", text: error };
-  if (explanation) return { state: "info", text: explanation };
+// Les erreurs passent devant l'explication : ce sont elles qui retiennent la
+// page.
+function message(
+  errors: readonly string[] = [],
+  explanation?: string,
+): Message | undefined {
+  if (errors.length > 0) return { state: "error", texts: errors };
+  if (explanation) return { state: "info", texts: [explanation] };
   return undefined;
 }
 

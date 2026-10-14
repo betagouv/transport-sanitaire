@@ -1,20 +1,30 @@
-// Ce qui ne va pas dans une saisie : le message à afficher sous le champ.
+// Ce qui ne va pas dans une saisie : les messages à afficher sous le champ.
 //
 // Une réponse en erreur ne compte pas : la page ne se valide pas tant qu'il en
-// reste une.
+// reste une. Une erreur de format s'affiche seule. Sinon, chaque incohérence
+// avec une autre réponse a son message.
 
 import { addressErrors, isAddress } from "./address";
 import type { Answer, Question } from "./question";
 
 /**
- * Ce qui ne va pas dans une saisie, à afficher sous le champ. `undefined`
- * quand elle convient, ou quand il n'y a encore rien à corriger.
+ * Ce qui ne va pas dans une saisie, à afficher sous le champ. Vide quand elle
+ * convient, ou quand il n'y a encore rien à corriger.
  */
-export function errorOf(
+export function errorsOf(
   question: Question,
   answer: Answer | undefined,
-): string | undefined {
-  if (answer === undefined) return undefined;
+): readonly string[] {
+  if (answer === undefined) return [];
+  const error = formatErrorOf(question, answer);
+  return error === undefined ? (question.inconsistencies ?? []) : [error];
+}
+
+// ---- implémentation ----
+
+// Ce qui ne va pas dans la saisie elle-même : son format, une réponse qui
+// bloque, des options incompatibles.
+function formatErrorOf(question: Question, answer: Answer): string | undefined {
   if (question.kind === "address") return addressErrorOf(question, answer);
   if (question.kind === "number") return numberErrorOf(question, answer);
   if (question.kind === "date" || question.kind === "datetime")
@@ -29,8 +39,6 @@ export function errorOf(
     ? blockOf(question, [answer])
     : undefined;
 }
-
-// ---- implémentation ----
 
 // Une adresse a un message par champ, rendu sous chacun (`address.ts`). Ici, le
 // premier suffit : il dit qu'il reste quelque chose à corriger.

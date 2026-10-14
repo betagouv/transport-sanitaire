@@ -1,5 +1,7 @@
 // Une liste déroulante : le `fr-select` du DSFR.
 
+import { ErrorLines } from "./ErrorLines";
+
 type Props = {
   id: string;
   label: string;
@@ -9,39 +11,35 @@ type Props = {
   options: ReadonlyArray<{ value: string; label: string }>;
   value: string;
   onChange: (value: string) => void;
-  error?: string;
+  /** Un message par ligne, sous la liste. */
+  errors?: readonly string[];
   autoFocus?: boolean;
   /** Met le libellé en avant, quand le champ est la question de la page. */
   lead?: boolean;
 };
 
 export function SelectField(props: Props) {
+  const invalid = props.errors !== undefined && props.errors.length > 0;
   const messageId = `${props.id}-message`;
   return (
     <div
-      className={`fr-select-group${props.error ? " fr-select-group--error" : ""}`}
+      className={`fr-select-group${invalid ? " fr-select-group--error" : ""}`}
     >
-      <label
-        className={`fr-label${props.lead ? " fr-text--lead" : ""}`}
-        htmlFor={props.id}
-      >
-        {props.label}
-        {props.hint && <span className="fr-hint-text">{props.hint}</span>}
-      </label>
+      <Label {...props} />
       <select
-        className={`fr-select${props.error ? " fr-select--error" : ""}`}
+        className={`fr-select${invalid ? " fr-select--error" : ""}`}
         id={props.id}
         value={props.value}
         onChange={(e) => props.onChange(e.target.value)}
-        aria-describedby={props.error ? messageId : undefined}
+        aria-describedby={invalid ? messageId : undefined}
         // biome-ignore lint/a11y/noAutofocus: le premier champ sans réponse prend le focus à l'ouverture de la page, comme les autres champs du questionnaire
         autoFocus={props.autoFocus}
       >
         <Options placeholder={props.placeholder} options={props.options} />
       </select>
-      {props.error && (
+      {props.errors && invalid && (
         <p id={messageId} className="fr-error-text">
-          {props.error}
+          <ErrorLines errors={props.errors} />
         </p>
       )}
     </div>
@@ -49,6 +47,15 @@ export function SelectField(props: Props) {
 }
 
 // ---- implémentation ----
+
+function Label({ id, label, hint, lead }: Props) {
+  return (
+    <label className={`fr-label${lead ? " fr-text--lead" : ""}`} htmlFor={id}>
+      {label}
+      {hint && <span className="fr-hint-text">{hint}</span>}
+    </label>
+  );
+}
 
 // Les options de la liste. La première tient lieu d'invite : on ne peut pas la
 // choisir, et elle disparaît de la liste ouverte.
