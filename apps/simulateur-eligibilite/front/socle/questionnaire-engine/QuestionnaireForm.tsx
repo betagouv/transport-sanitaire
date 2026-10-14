@@ -98,7 +98,9 @@ function QuestionFields({ questionnaire }: { questionnaire: Questionnaire }) {
       key={question.id}
       question={question}
       answer={questionnaire.draft[question.id]}
-      error={errorOf(question, questionnaire.draft[question.id])}
+      errors={[errorOf(question, questionnaire.draft[question.id])].flatMap(
+        (error) => (error ? [error] : []),
+      )}
       autoFocus={question === toFocus}
       onChange={(answer) => questionnaire.answer(question.id, answer)}
     />

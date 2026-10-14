@@ -23,10 +23,10 @@ type Props = {
   /** `undefined` retire la réponse : un champ vidé n'est plus répondu. */
   onChange: (answer: Answer | undefined) => void;
   /**
-   * Ce qui ne va pas dans la saisie, affiché sous le champ. Une adresse ne le
-   * lit pas : elle a un message par champ.
+   * Ce qui ne va pas dans la saisie, un message par ligne sous le champ. Une
+   * adresse ne le lit pas : elle a un message par champ.
    */
-  error?: string;
+  errors?: readonly string[];
   /** Le champ prend le focus à l'ouverture de la page. */
   autoFocus?: boolean;
 };
@@ -48,12 +48,12 @@ type DateQuestion = Extract<Question, { kind: "date" | "datetime" }>;
 
 // Ce que tous les champs reçoivent. Le libellé est mis en avant : sur une page
 // du questionnaire, c'est lui qui porte la question.
-function common({ question, error, autoFocus }: Props) {
+function common({ question, errors, autoFocus }: Props) {
   return {
     id: question.id,
     label: question.label,
     hint: question.hint,
-    error,
+    errors,
     autoFocus,
     lead: true,
   };
