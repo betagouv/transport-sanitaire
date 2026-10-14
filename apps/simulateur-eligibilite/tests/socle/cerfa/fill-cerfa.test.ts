@@ -1,7 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { formatDateForField } from "../../../front/socle/cerfa/dates";
 import { fillCerfa } from "../../../front/socle/cerfa/fill-cerfa";
-import { TextOverflowError } from "../../../front/socle/cerfa/text-overflow";
 import { TEXT_SIZES } from "../../../front/socle/cerfa/text-sizes";
 import { fontSizeOf, readBack, statesOf, testForm } from "./test-form";
 
@@ -10,39 +9,30 @@ import { fontSizeOf, readBack, statesOf, testForm } from "./test-form";
 
 const LONG = "Un motif médical beaucoup trop long pour ce cadre. ".repeat(8);
 
+const remplir = async (...args: Parameters<typeof fillCerfa>) => {
+  const filled = await fillCerfa(...args);
+  return { ...filled, read: await readBack(filled.pdf) };
+};
+
 describe("fillCerfa", () => {
   it("écrit textes et cases, et les valeurs survivent à une relecture", async () => {
     const template = await testForm();
     const [state] = await statesOf(template, "ald");
 
-    const pdf = await fillCerfa(template, [
+    const { read } = await remplir(template, [
       { field: "nom", text: "DUPONT Marie" },
       { field: "ald", checked: state as string },
     ]);
 
-    expect(await readBack(pdf)).toEqual({
-      nom: "DUPONT Marie",
-      ald: `/${state}`,
-    });
+    expect(read).toEqual({ nom: "DUPONT Marie", ald: `/${state}` });
   });
 
   it("écrit un texte qui tient à la taille visée par la configuration", async () => {
-    const pdf = await fillCerfa(await testForm(), [
+    const { pdf } = await fillCerfa(await testForm(), [
       { field: "nom", text: "DUPONT Marie" },
     ]);
 
     expect(await fontSizeOf(pdf, "nom")).toBe(TEXT_SIZES.target);
-  });
-
-  it("réduit au plancher un texte qui ne tient pas sur sa ligne", async () => {
-    const pdf = await fillCerfa(await testForm(), [
-      {
-        field: "nom",
-        text: "Centre hospitalier universitaire, 12 avenue du Général Leclerc, 38000 Grenoble",
-      },
-    ]);
-
-    expect(await fontSizeOf(pdf, "nom")).toBe(TEXT_SIZES.floor);
   });
 
   it("refuse un état d'export que la case ne sait pas rendre", async () => {
@@ -50,13 +40,6 @@ describe("fillCerfa", () => {
     await expect(
       fillCerfa(template, [{ field: "ald", checked: "OUI" }]),
     ).rejects.toThrow("ne connaît pas l'état « /OUI »");
-  });
-
-  it("refuse une valeur plus longue que le champ, plutôt que de la tronquer", async () => {
-    const template = await testForm();
-    await expect(
-      fillCerfa(template, [{ field: "nir", text: "26501751160051" }]),
-    ).rejects.toThrow("« nir » accepte 13 caractères, 14 fournis");
   });
 
   it("refuse d'écrire un texte dans une case, et inversement", async () => {
@@ -70,43 +53,108 @@ describe("fillCerfa", () => {
   });
 
   it("aplatit sur une ligne les champs qui n'en montrent qu'une", async () => {
-    const pdf = await fillCerfa(
+    const { read } = await remplir(
       await testForm(),
       [{ field: "nom", text: "1 rue du Départ\n75001 Paris" }],
       { singleLineFields: ["nom"] },
     );
-    expect(await readBack(pdf)).toEqual({
-      nom: "1 rue du Départ - 75001 Paris",
-    });
+    expect(read).toEqual({ nom: "1 rue du Départ - 75001 Paris" });
   });
 });
 
-describe("texte mesuré", () => {
-  it("s'écrit en entier quand il tient, police réduite s'il le faut", async () => {
-    const text =
-      "Dialyse en centre, trois séances par semaine, patient en fauteuil.";
-    const pdf = await fillCerfa(await testForm(), [
-      { field: "motif", measuredText: text },
+describe("un commentaire facultatif", () => {
+  it("s'écrit à la suite du texte quand tout tient", async () => {
+    const { read, withoutComment } = await remplir(await testForm(), [
+      { field: "motif", text: "Dialyse.", comment: "Fauteuil." },
     ]);
 
-    expect(await readBack(pdf)).toEqual({ motif: text });
-    expect(await fontSizeOf(pdf, "motif")).toBeLessThan(TEXT_SIZES.target);
-    expect(await fontSizeOf(pdf, "motif")).toBeGreaterThanOrEqual(
-      TEXT_SIZES.floor,
-    );
+    expect(read).toEqual({ motif: "Dialyse. ; Fauteuil." });
+    expect(withoutComment).toEqual([]);
   });
 
-  it("déborde sans rien écrire, et sans citer le texte dans le message", async () => {
-    const attempt = fillCerfa(await testForm(), [
-      { field: "motif", measuredText: LONG },
+  it("est retiré quand le texte ne tient pas avec lui, et le dit", async () => {
+    const { read, withoutComment, overflows } = await remplir(
+      await testForm(),
+      [{ field: "motif", text: "Dialyse en centre.", comment: LONG }],
+    );
+
+    expect(read).toEqual({ motif: "Dialyse en centre." });
+    expect(withoutComment).toEqual(["motif"]);
+    expect(overflows).toEqual([]);
+  });
+});
+
+describe("un texte trop long pour son cadre", () => {
+  it("s'écrit à la taille réduite s'il n'y tient qu'à elle", async () => {
+    const { pdf } = await fillCerfa(await testForm(), [
+      {
+        field: "nom",
+        text: "Clinique des Alpes, 12 avenue Victor Hugo, Grenoble",
+      },
     ]);
 
-    await expect(attempt).rejects.toBeInstanceOf(TextOverflowError);
-    await expect(attempt).rejects.toMatchObject({
-      field: "motif",
-      text: LONG,
-      message: "Le texte ne tient pas dans le champ « motif ».",
-    });
+    expect(await fontSizeOf(pdf, "nom")).toBe(TEXT_SIZES.reduced);
+  });
+
+  it("laisse son champ vide, et se dessine sous le haut de son cadre", async () => {
+    const { read, overflows } = await remplir(await testForm(), [
+      { field: "nom", text: LONG },
+    ]);
+
+    expect(read).toEqual({});
+    // Le widget de `nom`, élargi par `pdf-lib` de sa bordure : x = 19,5, de
+    // y = 359,5 à 376,5. Le texte s'écrit à deux points du bord.
+    expect(overflows).toEqual([
+      {
+        text: LONG,
+        size: TEXT_SIZES.reduced,
+        at: { page: 1, x: 21.5, y: expect.any(Number), width: 197 },
+      },
+    ]);
+    expect(overflows[0]?.at.y).toBeLessThan(374.5);
+  });
+
+  it("perd son commentaire avant de déborder", async () => {
+    const { overflows, withoutComment } = await remplir(await testForm(), [
+      { field: "nom", text: LONG, comment: "Sans mousse." },
+    ]);
+
+    expect(overflows.map(({ text }) => text)).toEqual([LONG]);
+    expect(withoutComment).toEqual(["nom"]);
+  });
+
+  it("se dessine sous chacun de ses volets", async () => {
+    const { overflows } = await remplir(await testForm(), [
+      { field: "adresse", text: LONG },
+    ]);
+
+    expect(overflows.map(({ at }) => at.page)).toEqual([1, 2]);
+  });
+
+  it("descend sous la taille réduite plutôt que de sortir de la page", async () => {
+    const { overflows } = await remplir(await testForm(), [
+      { field: "motif", text: LONG.repeat(3) },
+    ]);
+
+    expect(overflows[0]?.size).toBeLessThan(TEXT_SIZES.reduced);
+    expect(overflows[0]?.size).toBeGreaterThan(TEXT_SIZES.floor);
+  });
+
+  it("s'écrit au plancher, même s'il sort de la page", async () => {
+    const { overflows } = await remplir(await testForm(), [
+      { field: "motif", text: LONG.repeat(10) },
+    ]);
+
+    expect(overflows[0]?.size).toBe(TEXT_SIZES.floor);
+  });
+
+  it("se dessine sous son cadre quand il dépasse la limite du champ", async () => {
+    const { read, overflows } = await remplir(await testForm(), [
+      { field: "nir", text: "26501751160051" },
+    ]);
+
+    expect(read).toEqual({});
+    expect(overflows.map(({ text }) => text)).toEqual(["26501751160051"]);
   });
 });
 

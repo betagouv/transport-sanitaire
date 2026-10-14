@@ -2,8 +2,9 @@
 //
 // Chaque champ devient le dessin de sa valeur, sur la page. Ce qu'un champ ne
 // sait pas montrer se dessine ensuite : la marque d'une case qui partage son
-// champ, et un texte là où le gabarit n'a pas de champ. Le PDF s'imprime tel
-// quel, et rien ne s'y corrige plus dans un lecteur.
+// champ, un texte là où le gabarit n'a pas de champ, et un texte trop long
+// pour son cadre. Le PDF s'imprime tel quel, et rien ne s'y corrige plus dans
+// un lecteur.
 
 import {
   drawObject,
@@ -20,13 +21,23 @@ import {
   translate,
 } from "pdf-lib";
 import type { Position } from "./cerfa";
-import { TEXT_SIZES } from "./text-sizes";
+import { pageOf } from "./widget-page";
 
 /** Une case à marquer : son champ, et l'état d'export qui la désigne. */
 export type Mark = { readonly field: string; readonly state: string };
 
-/** Un texte à dessiner hors de tout champ. */
-export type Drawing = { readonly text: string; readonly at: Position };
+/**
+ * Un texte à dessiner hors de tout champ, à sa taille. `at.y` est la ligne de
+ * base de sa première ligne. Il passe à la ligne dans `at.width`.
+ */
+export type Drawing = {
+  readonly text: string;
+  readonly at: Position;
+  readonly size: number;
+};
+
+/** L'interligne d'un texte dessiné, en proportion de sa taille. */
+export const LINE_HEIGHT = 1.2;
 
 /** Ce qui se dessine après l'aplatissement. */
 export type Drawn = {
@@ -74,20 +85,6 @@ function stampsOf(document: PDFDocument, { field, state }: Mark): Stamp[] {
   return stamps;
 }
 
-function pageOf(document: PDFDocument, widget: PDFWidgetAnnotation): PDFPage {
-  const ref = document.context.getObjectRef(widget.dict);
-  const page = document
-    .getPages()
-    .find(
-      (candidate) =>
-        candidate.ref === widget.P() ||
-        (ref !== undefined &&
-          (candidate.node.Annots()?.indexOf(ref) ?? -1) !== -1),
-    );
-  if (!page) throw new Error("Une case n'est sur aucune page.");
-  return page;
-}
-
 // Le même dessin que l'aplatissement de `pdf-lib` pour un widget.
 function drawStamp({ page, widget, appearance }: Stamp): void {
   const name = page.node.newXObject("Mark", appearance);
@@ -100,8 +97,6 @@ function drawStamp({ page, widget, appearance }: Stamp): void {
   );
 }
 
-// Un texte sans champ s'écrit à la taille visée, et passe à la ligne dans sa
-// largeur.
 async function drawTexts(
   document: PDFDocument,
   drawings: readonly Drawing[],
@@ -109,16 +104,16 @@ async function drawTexts(
   if (drawings.length === 0) return;
   const font = await document.embedFont(StandardFonts.Helvetica);
   const pages = document.getPages();
-  for (const { text, at } of drawings) {
+  for (const { text, at, size } of drawings) {
     const page = pages[at.page - 1];
     if (!page) throw new Error(`Le gabarit n'a pas de page ${at.page}.`);
     page.drawText(text, {
       x: at.x,
       y: at.y,
       font,
-      size: TEXT_SIZES.target,
+      size,
       maxWidth: at.width,
-      lineHeight: TEXT_SIZES.target * 1.2,
+      lineHeight: size * LINE_HEIGHT,
     });
   }
 }

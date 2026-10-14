@@ -1,7 +1,7 @@
 // Remplit un formulaire PDF (AcroForm) à partir d'entrées.
 //
-// Ce fichier ne fait que l'écriture. Ce qu'il faut écrire se décide dans un
-// tableau de remplissage (`field-mapping.ts`).
+// Ce fichier ne fait que l'écriture. Ce qu'il faut écrire se décide d'après le
+// DTO du cerfa (`generate-cerfa.ts`).
 //
 // Il n'importe rien de `node:*` : le PDF se génère dans le navigateur, et les
 // données du patient ne quittent pas le poste.
@@ -15,13 +15,15 @@ import {
   PDFTextField,
   StandardFonts,
 } from "pdf-lib";
-import { fitsInField, fittingFontSize } from "./text-fit";
-import { TextOverflowError } from "./text-overflow";
-import { TEXT_SIZES } from "./text-sizes";
+import type { Drawing } from "./flatten-cerfa";
+import { overflowsOf } from "./overflow";
+import { sizeInField } from "./text-fit";
 
 /**
- * Une valeur à écrire : un texte dans un champ nommé, une case à cocher, ou un
- * texte mesuré avant d'être écrit en entier (`writeMeasuredText`).
+ * Une valeur à écrire : un texte dans un champ nommé, ou une case à cocher.
+ *
+ * Un texte peut porter un commentaire facultatif, écrit à sa suite. C'est la
+ * seule chose qui se retire quand le texte ne tient pas dans son cadre (D-85).
  *
  * `checked` porte l'état d'export à écrire, souvent `On` ou `Yes`. Un gabarit
  * peut aussi mettre plusieurs cases sous un même nom : des boutons radio
@@ -30,9 +32,8 @@ import { TEXT_SIZES } from "./text-sizes";
  * gabarit, ils ne se devinent pas.
  */
 export type FieldEntry = { readonly field: string } & (
-  | { readonly text: string }
+  | { readonly text: string; readonly comment?: string }
   | { readonly checked: string }
-  | { readonly measuredText: string }
 );
 
 export type FillOptions = {
@@ -44,82 +45,188 @@ export type FillOptions = {
   readonly singleLineFields?: readonly string[];
 };
 
+/** Le PDF rempli, et ce que les champs n'ont pas pu recevoir. */
+export type Filled = {
+  readonly pdf: Uint8Array;
+  /** Les textes trop longs pour leur cadre, à dessiner après l'aplatissement. */
+  readonly overflows: readonly Drawing[];
+  /** Les champs dont le commentaire a été retiré, faute de place. */
+  readonly withoutComment: readonly string[];
+};
+
 /**
  * Écrit `entries` dans le formulaire `template` et rend le PDF résultant.
  *
  * Un champ qui porte un widget sur plusieurs volets s'écrit une seule fois, et
  * les volets restent cohérents par construction.
  *
- * @throws {TextOverflowError} si un texte mesuré ne tient pas dans son champ :
- * aucun PDF n'est produit, plutôt qu'un texte coupé.
+ * Un texte n'est jamais coupé, et ne bloque jamais le PDF (D-85). Il s'écrit à
+ * la taille visée, puis réduite. S'il ne tient toujours pas, il perd son
+ * commentaire. S'il ne tient toujours pas, son champ reste vide : il se
+ * dessinera sous son cadre (`overflow.ts`).
  */
 export async function fillCerfa(
   template: Uint8Array | ArrayBuffer,
   entries: readonly FieldEntry[],
-  options: FillOptions = {},
-): Promise<Uint8Array> {
+  { singleLineFields = [] }: FillOptions = {},
+): Promise<Filled> {
   const document = await PDFDocument.load(template);
-  const form = document.getForm();
-  // `form.updateFieldAppearances()` (plus bas) redessine tout champ écrit dans
-  // sa police par défaut, pas dans celle du gabarit. Le débordement se mesure
-  // donc avec cette police-là. Voir `sizeToFit`.
-  const font = await document.embedFont(StandardFonts.Helvetica);
-
-  for (const entry of entries) {
-    if ("checked" in entry) check(form, entry.field, entry.checked);
-    else if ("measuredText" in entry)
-      writeMeasuredText(form, font, entry.field, entry.measuredText);
-    else writeText(form, font, entry, options.singleLineFields ?? []);
-  }
-
-  // Sans cet appel, les valeurs sont dans le PDF mais ne s'affichent pas dans les
-  // lecteurs qui ne régénèrent pas les apparences.
-  form.updateFieldAppearances();
-
-  return document.save();
+  checkBoxes(document, entries.filter(isBox));
+  const texts = entries.filter(isText).map(oneLineIn(singleLineFields));
+  const written = await writeTexts(document, texts);
+  showValues(document);
+  return { pdf: await document.save(), ...written };
 }
 
 // ---- implémentation ----
 
 type Form = ReturnType<PDFDocument["getForm"]>;
 
-function writeText(
-  form: Form,
-  font: PDFFont,
-  { field: name, text }: { field: string; text: string },
-  singleLineFields: readonly string[],
-): void {
-  const field = form.getField(name);
-  if (!(field instanceof PDFTextField)) {
-    throw new Error(`Le champ « ${name} » n'est pas un champ texte.`);
-  }
-  const value = singleLineFields.includes(name) ? flatten(text) : text;
+type Box = { readonly field: string; readonly checked: string };
 
-  const maxLength = field.getMaxLength();
-  if (maxLength !== undefined && value.length > maxLength) {
-    // Tronquer sans le dire donnerait une valeur fausse sur un document
-    // opposable. On refuse plutôt.
-    throw new Error(
-      `« ${name} » accepte ${maxLength} caractères, ${value.length} fournis : « ${value} ».`,
-    );
-  }
-  field.setText(value);
-  sizeToFit(field, font, value);
+type Text = {
+  readonly field: string;
+  readonly text: string;
+  readonly comment?: string;
+};
+
+type Written = Omit<Filled, "pdf">;
+
+function isBox(entry: FieldEntry): entry is Box {
+  return "checked" in entry;
+}
+
+function isText(entry: FieldEntry): entry is Text {
+  return "text" in entry;
+}
+
+function checkBoxes(document: PDFDocument, boxes: readonly Box[]): void {
+  const form = document.getForm();
+  for (const { field, checked } of boxes) check(form, field, checked);
+}
+
+// Un texte destiné à un champ de `singleLineFields` s'aplatit sur une ligne,
+// son commentaire aussi.
+function oneLineIn(singleLineFields: readonly string[]) {
+  return (entry: Text): Text =>
+    singleLineFields.includes(entry.field)
+      ? {
+          ...entry,
+          text: flatten(entry.text),
+          ...(entry.comment === undefined
+            ? {}
+            : { comment: flatten(entry.comment) }),
+        }
+      : entry;
 }
 
 /**
- * Un gabarit déclare sa police (`/Cour 10 Tf`, par exemple). Mais `pdf-lib`
- * redessine tout champ écrit dans sa police par défaut, ici Helvetica,
- * embarquée dans `fillCerfa`. Le texte s'écrit donc à la taille visée, mesurée
- * dans cette police-là (`fitsInField`).
- *
- * Une valeur qui n'y tient pas, comme une adresse sur une seule ligne, descend
- * directement au plancher, sans garantir que tout y tienne. Un texte qui doit
- * tenir passe par `measuredText`.
+ * Un gabarit déclare sa police (`/Cour 10 Tf`, par exemple). Mais
+ * `showValues` redessine tout champ écrit dans la police par défaut de
+ * `pdf-lib`, Helvetica. Le texte se mesure donc dans cette police-là.
  */
-function sizeToFit(field: PDFTextField, font: PDFFont, value: string): void {
-  const fits = fitsInField(field, font, TEXT_SIZES.target)(value);
-  field.setFontSize(fits ? TEXT_SIZES.target : TEXT_SIZES.floor);
+async function writeTexts(
+  document: PDFDocument,
+  texts: readonly Text[],
+): Promise<Written> {
+  const font = await document.embedFont(StandardFonts.Helvetica);
+  const written = texts.map((text) => ({
+    field: text.field,
+    ...writeText(document, font, text),
+  }));
+  return {
+    overflows: written.flatMap(({ overflows }) => overflows),
+    withoutComment: written
+      .filter(({ withoutComment }) => withoutComment)
+      .map(({ field }) => field),
+  };
+}
+
+// Sans cet appel, les valeurs sont dans le PDF mais ne s'affichent pas dans les
+// lecteurs qui ne régénèrent pas les apparences.
+function showValues(document: PDFDocument): void {
+  document.getForm().updateFieldAppearances();
+}
+
+type WrittenText = {
+  readonly overflows: readonly Drawing[];
+  readonly withoutComment: boolean;
+};
+
+// Le texte et son commentaire, sinon le texte seul, dans son champ. Sinon,
+// rien dans le champ : le texte se dessinera sous son cadre.
+function writeText(
+  document: PDFDocument,
+  font: PDFFont,
+  entry: Text,
+): WrittenText {
+  const field = textFieldOf(document, entry.field);
+  return (
+    writeWithComment(field, font, entry) ??
+    writeWithoutComment(field, font, entry) ??
+    overflow(document, field, font, entry)
+  );
+}
+
+function textFieldOf(document: PDFDocument, name: string): PDFTextField {
+  const field = document.getForm().getField(name);
+  if (!(field instanceof PDFTextField)) {
+    throw new Error(`Le champ « ${name} » n'est pas un champ texte.`);
+  }
+  return field;
+}
+
+// Le texte suivi de son commentaire, s'il tient dans le cadre.
+function writeWithComment(
+  field: PDFTextField,
+  font: PDFFont,
+  { text, comment = "" }: Text,
+): WrittenText | undefined {
+  const full = [text, comment].filter((part) => part !== "").join(" ; ");
+  return writeIfFits(field, font, full)
+    ? { overflows: [], withoutComment: false }
+    : undefined;
+}
+
+// Le texte seul, son commentaire retiré, s'il tient dans le cadre.
+function writeWithoutComment(
+  field: PDFTextField,
+  font: PDFFont,
+  { text, comment }: Text,
+): WrittenText | undefined {
+  if (!comment) return undefined;
+  return writeIfFits(field, font, text)
+    ? { overflows: [], withoutComment: true }
+    : undefined;
+}
+
+// Rien dans le champ : le texte, sans son commentaire, se dessinera sous
+// chaque widget.
+function overflow(
+  document: PDFDocument,
+  field: PDFTextField,
+  font: PDFFont,
+  { text, comment }: Text,
+): WrittenText {
+  const widgets = field.acroField.getWidgets();
+  return {
+    overflows: overflowsOf(document, widgets, font, text),
+    withoutComment: Boolean(comment),
+  };
+}
+
+// Écrit `text` à la plus grande taille où il tient dans le cadre, s'il y en a
+// une.
+function writeIfFits(
+  field: PDFTextField,
+  font: PDFFont,
+  text: string,
+): boolean {
+  const fontSize = sizeInField(field, font, text);
+  if (fontSize === undefined) return false;
+  field.setText(text);
+  field.setFontSize(fontSize);
+  return true;
 }
 
 /**
@@ -162,28 +269,4 @@ function flatten(text: string): string {
     .replace(/\s*\n+\s*/g, " - ")
     .replace(/\s+/g, " ")
     .trim();
-}
-
-/**
- * Écrit un texte en entier, s'il tient dans son champ.
- *
- * La police descend jusqu'au plancher de lisibilité s'il le faut. Au-delà, rien
- * n'est écrit plus petit ni coupé : le texte déborde, et le prescripteur le
- * révise.
- */
-function writeMeasuredText(
-  form: Form,
-  font: PDFFont,
-  name: string,
-  text: string,
-): void {
-  const field = form.getField(name);
-  if (!(field instanceof PDFTextField)) {
-    throw new Error(`Le champ « ${name} » n'est pas un champ texte.`);
-  }
-  const fontSize =
-    text === "" ? TEXT_SIZES.target : fittingFontSize(field, font, text);
-  if (fontSize === undefined) throw new TextOverflowError(name, text);
-  field.setText(text);
-  field.setFontSize(fontSize);
 }

@@ -11,8 +11,9 @@ import {
 } from "./questionnaire";
 import { ecouterLesTelechargements } from "./telechargements";
 
-// Le cerfa se télécharge sous le second résultat, rempli dans le navigateur.
-// Il porte la date du jour où le complément a été validé.
+// Le cerfa se télécharge sous le second résultat, rempli dans le navigateur dès
+// que le résultat s'affiche. Il porte la date du jour où le complément a été
+// validé.
 
 type User = Awaited<ReturnType<typeof ouvrirLeSimulateur>>;
 
@@ -73,8 +74,6 @@ describe("le cerfa", () => {
     const user = await ouvrirLeSimulateur({ modele: sansGabarit() });
     await allerAuCerfa(user);
 
-    await user.click(bouton(TELECHARGER));
-
     expect(await screen.findByRole("alert")).toHaveTextContent(
       "Le document n'a pas pu être généré.",
     );
@@ -94,7 +93,7 @@ async function allerAuCerfa(user: User) {
 }
 
 async function telecharger(user: User) {
-  await user.click(bouton(TELECHARGER));
+  await user.click(await screen.findByRole("button", { name: TELECHARGER }));
   await waitFor(() => expect(ecoute.telechargements).toHaveLength(1));
   const [pdf] = ecoute.telechargements;
   if (!pdf) throw new Error("Aucun téléchargement.");

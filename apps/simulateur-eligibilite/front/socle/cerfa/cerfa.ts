@@ -26,11 +26,16 @@ export type Position = {
 /** Où va un texte : le nom exact du champ, et comment l'écrire. */
 export type TextBinding = {
   readonly field: string;
-  /** Mesuré avant d'être écrit : le texte doit tenir en entier. */
-  readonly measured?: boolean;
   /** Champ multiligne dont le cadre ne montre qu'une ligne. */
   readonly singleLine?: boolean;
 };
+
+/**
+ * Un commentaire facultatif : il s'écrit à la suite du texte `commentOn`, une
+ * autre entrée du DTO, dans le même champ. C'est la seule chose qui se retire
+ * quand le texte ne tient pas dans son cadre (D-85).
+ */
+export type CommentBinding = { readonly commentOn: string };
 
 /**
  * Où va une case : le nom exact du champ, et l'état d'export qui la coche.
@@ -43,12 +48,14 @@ export type BoxBinding = {
   readonly drawn?: boolean;
 };
 
-type Binding<Value> = [Value] extends [boolean] ? BoxBinding : TextBinding;
+type Binding<Value> = [Value] extends [boolean]
+  ? BoxBinding
+  : TextBinding | CommentBinding;
 
 /** Un cerfa à remplir d'après son DTO. */
 export type Cerfa<Dto extends CerfaDto> = {
   /**
-   * Charge le gabarit vierge, au clic : un asset servi par l'app
+   * Charge le gabarit vierge, quand le bouton s'affiche : un asset servi par l'app
    * (`templateAt`), ou un formulaire fabriqué.
    */
   readonly template: () => Promise<ArrayBuffer | Uint8Array>;
@@ -68,6 +75,11 @@ export function text(
   options: Omit<TextBinding, "field"> = {},
 ): TextBinding {
   return { field, ...options };
+}
+
+/** Le commentaire facultatif du texte `entry`, une entrée du DTO. */
+export function commentOn(entry: string): CommentBinding {
+  return { commentOn: entry };
 }
 
 /** Une case du champ `field`, cochée par son état d'export `state`. */
