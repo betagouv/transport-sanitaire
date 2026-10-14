@@ -183,9 +183,11 @@ Le modèle de l'éditeur s'intègre sur la v10.0.2, dans `front/models/eligibili
 une étape après l'autre. Ses règles sont livrées en YAML : Vite les convertit en
 objet à la compilation (`vite.config.ts`), et aucun analyseur YAML ne part dans
 le navigateur. Le noyau est là : les règles, la déclaration des faits et des
-cibles, et l'oracle de l'éditeur rejoué en faits. Le questionnaire s'arrête à
-P1 : ses réponses donnent les faits du mode de transport, à trois états. P2
-n'est pas posée, et R2 dit encore que le questionnaire n'est pas complet.
+cibles, et l'oracle de l'éditeur rejoué en faits. Le questionnaire pose P1 :
+ses réponses donnent les faits du mode de transport, à trois états. De P2, il
+ne pose que la page du trajet, avec la distance et la série (Q2.3.1, Q2.3.3).
+P2 n'est donc jamais complète, et R2 dit encore que le questionnaire ne l'est
+pas.
 L'avancement
 est dans l'issue 50 du dépôt, les décisions dans
 [`docs/knowledge/adr/journal-des-decisions-v10.md`](docs/knowledge/adr/journal-des-decisions-v10.md).

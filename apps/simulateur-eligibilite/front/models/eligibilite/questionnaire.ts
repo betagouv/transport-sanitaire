@@ -5,6 +5,7 @@ import { optionsFrom, type QuestionnairePart } from "../../socle";
 import type { Cibles } from "./declarations/cibles";
 import { OPTIONS, type Questions } from "./declarations/questions";
 import { modeDe } from "./mode-de-transport";
+import { faitsDuTrajet } from "./trajet";
 
 type Partie<Cibles> = QuestionnairePart<Questions, Cibles>;
 
@@ -135,6 +136,39 @@ export const P1: Partie<undefined> = {
   ],
 };
 
+// Q2.3 : le trajet évalué, sur une seule page. La série se révèle sous la
+// distance quand le trajet dépasse 50 km. La case de l'avion ou du bateau
+// (Q2.3.2) et l'urgence (Q2.3.4) attendent leur décision (issue 63).
+const PAGE_DU_TRAJET: Partie<undefined>["pages"][number] = {
+  id: "P2/trajet",
+  questions: [
+    {
+      id: "Q2.3.1",
+      kind: "single choice",
+      label:
+        "Quelle distance parcourra le patient pour le trajet dans le sens évalué ?",
+      options: optionsFrom(OPTIONS["Q2.3.1"]),
+    },
+    {
+      id: "Q2.3.3",
+      kind: "single choice",
+      label:
+        "Dans les deux mois à compter du premier transport, au moins quatre transports de plus de 50 km chacun sont-ils prescrits au titre du même traitement ?",
+      hint: "Un aller-retour compte pour deux transports.",
+      askedIf: (_answers, _cibles, validated) =>
+        faitsDuTrajet(validated).fait_distance_plus_50.value === true,
+      options: optionsFrom(OPTIONS["Q2.3.3"]),
+    },
+  ],
+};
+
+/** P2 : l'éligibilité. Seule la page du trajet est posée. */
+const P2: Partie<undefined> = {
+  id: "P2",
+  title: "Éligibilité",
+  pages: [PAGE_DU_TRAJET],
+};
+
 /** P0 à P2 : modifiables tant que le résultat n'est pas verrouillé. */
 export const PARTS: readonly Partie<undefined>[] = [
   {
@@ -158,6 +192,7 @@ export const PARTS: readonly Partie<undefined>[] = [
     ],
   },
   P1,
+  P2,
 ];
 
 /** P3, posée après le verrou : elle complète le cerfa, elle ne décide plus. */
