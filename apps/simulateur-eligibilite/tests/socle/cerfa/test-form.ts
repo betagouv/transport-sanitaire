@@ -14,14 +14,15 @@ import {
 } from "pdf-lib";
 
 /**
- * Un formulaire à cinq champs : `nom` sur une ligne, `nir` limité à treize
- * caractères, `motif` multiligne et étroit, la case `ald`, et `acc`, trois
- * cases sous un même nom (`lait`, `sucre`, `citron`), comme les cases groupées
- * de la DAP.
+ * Un formulaire à six champs : `nom` sur une ligne, `nir` limité à treize
+ * caractères, `motif` multiligne et étroit, la case `ald`, `acc`, trois cases
+ * sous un même nom (`lait`, `sucre`, `citron`), comme les cases groupées de la
+ * DAP, et `adresse`, recopiée sur deux volets, comme sur la PMT.
  */
 export async function testForm(): Promise<Uint8Array> {
   const document = await PDFDocument.create();
   const page = document.addPage([400, 400]);
+  const volet = document.addPage([400, 400]);
   const form = document.getForm();
 
   const box = { x: 20, width: 200, height: 16 };
@@ -34,6 +35,9 @@ export async function testForm(): Promise<Uint8Array> {
   motif.addToPage(page, { x: 20, y: 270, width: 120, height: 30 });
   form.createCheckBox("ald").addToPage(page, { x: 20, y: 240 });
   sharedBoxes(form.createCheckBox("acc"), page, ["lait", "sucre", "citron"]);
+  const adresse = form.createTextField("adresse");
+  adresse.addToPage(page, { ...box, y: 180 });
+  adresse.addToPage(volet, { ...box, y: 180 });
 
   return document.save();
 }

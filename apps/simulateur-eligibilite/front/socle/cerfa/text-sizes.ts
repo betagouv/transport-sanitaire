@@ -6,6 +6,15 @@
 export const TEXT_SIZES = {
   /** La taille visée : tout texte s'écrit à cette taille s'il y tient. */
   target: 9,
-  /** Le plancher : en dessous, un texte imprimé se lit mal. */
+  /**
+   * La taille réduite : un texte trop long pour son cadre y descend avant de
+   * perdre son commentaire facultatif, puis déborde sous le cadre à cette
+   * taille (D-85).
+   */
+  reduced: 8,
+  /**
+   * Le plancher : un texte qui sortirait de la page descend jusque-là, pas
+   * plus bas. En dessous, un texte imprimé se lit mal.
+   */
   floor: 6,
 } as const;

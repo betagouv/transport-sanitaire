@@ -8,54 +8,35 @@ import {
   layoutSinglelineText,
   type PDFFont,
   type PDFTextField,
+  type PDFWidgetAnnotation,
   TextAlignment,
 } from "pdf-lib";
 import { TEXT_SIZES } from "./text-sizes";
 
 /**
- * Une mesure liée à `field` : `text` tient-il dans sa zone réelle, à `font` et
- * `fontSize` ? `fontSize` vaut la taille visée par défaut.
+ * La taille à laquelle `text` tient dans la zone de `field` : la taille visée,
+ * sinon la taille réduite. Le nombre maximal de caractères du champ compte
+ * aussi. `undefined` si le texte ne tient pas dans son cadre (D-85).
  */
-export function fitsInField(
-  field: PDFTextField,
-  font: PDFFont,
-  fontSize: number = TEXT_SIZES.target,
-): (text: string) => boolean {
-  const bounds = innerBounds(field);
-  if (!bounds || bounds.width <= 0 || bounds.height <= 0) {
-    return (text) => text === "";
-  }
-  return field.isMultiline()
-    ? (text) => fitsMultiline(text, font, fontSize, bounds)
-    : (text) =>
-        layoutSinglelineText(text, {
-          alignment: TextAlignment.Left,
-          fontSize,
-          font,
-          bounds,
-        }).line.width <= bounds.width;
-}
-
-/**
- * La plus grande taille à laquelle `text` tient dans la zone de `field`, entre
- * la taille visée et le plancher (`TEXT_SIZES`). Le nombre maximal de
- * caractères du champ compte aussi. `undefined` si le texte déborde à toutes
- * les tailles.
- */
-export function fittingFontSize(
+export function sizeInField(
   field: PDFTextField,
   font: PDFFont,
   text: string,
 ): number | undefined {
   const maximum = field.getMaxLength();
   if (maximum !== undefined && text.length > maximum) return undefined;
-  for (
-    let fontSize: number = TEXT_SIZES.target;
-    fontSize >= TEXT_SIZES.floor;
-    fontSize--
-  )
-    if (fitsInField(field, font, fontSize)(text)) return fontSize;
-  return undefined;
+  return [TEXT_SIZES.target, TEXT_SIZES.reduced].find((fontSize) =>
+    fits(field, font, fontSize, text),
+  );
+}
+
+/**
+ * La marge intérieure d'un widget : sa bordure plus un point, jamais 0, sinon
+ * le texte toucherait le cadre. Le même calcul que
+ * `defaultTextFieldAppearanceProvider` de `pdf-lib`.
+ */
+export function paddingOf(widget: PDFWidgetAnnotation): number {
+  return (widget.getBorderStyle()?.getWidth() ?? 0) + 1;
 }
 
 // ---- implémentation ----
@@ -67,15 +48,24 @@ type Bounds = {
   readonly height: number;
 };
 
-// Le même calcul que `defaultTextFieldAppearanceProvider` de `pdf-lib`. La
-// marge est la bordure du widget plus son remplissage, jamais 0 : sinon le
-// texte toucherait le cadre.
+function fits(
+  field: PDFTextField,
+  font: PDFFont,
+  fontSize: number,
+  text: string,
+): boolean {
+  const bounds = innerBounds(field);
+  if (!bounds || bounds.width <= 0 || bounds.height <= 0) return text === "";
+  if (field.isMultiline()) return fitsMultiline(text, font, fontSize, bounds);
+  const options = { alignment: TextAlignment.Left, fontSize, font, bounds };
+  return layoutSinglelineText(text, options).line.width <= bounds.width;
+}
+
 function innerBounds(field: PDFTextField): Bounds | undefined {
-  const rectangle = field.acroField.getWidgets()[0]?.getRectangle();
-  if (!rectangle) return undefined;
-  const border =
-    field.acroField.getWidgets()[0]?.getBorderStyle()?.getWidth() ?? 0;
-  const padding = border + 1;
+  const widget = field.acroField.getWidgets()[0];
+  if (!widget) return undefined;
+  const rectangle = widget.getRectangle();
+  const padding = paddingOf(widget);
   return {
     x: 0,
     y: 0,
@@ -84,12 +74,18 @@ function innerBounds(field: PDFTextField): Bounds | undefined {
   };
 }
 
+// `layoutMultilineText` met des secondes à couper un long texte. Un texte plus
+// large que deux fois toutes les lignes du cadre bout à bout n'y tient pas : on
+// le sait sans le couper.
 function fitsMultiline(
   text: string,
   font: PDFFont,
   fontSize: number,
   bounds: Bounds,
 ): boolean {
+  const lines = Math.ceil(bounds.height / fontSize);
+  if (font.widthOfTextAtSize(text, fontSize) > 2 * lines * bounds.width)
+    return false;
   const layout = layoutMultilineText(text, {
     alignment: TextAlignment.Left,
     fontSize,
