@@ -115,11 +115,25 @@ modèle qui applique, fait par fait, le contrat de l'éditeur.
 ## Le socle PDF
 
 `front/socle/cerfa/` remplit un cerfa et le télécharge. Il ne porte aucun
-formulaire, et **ne sait rien du simulateur** : il reçoit des données, d'où
-qu'elles viennent, et un mapping qui les lit (`CerfaForm<Input>`). Le simulateur
-le branche sous le second résultat, avec les réponses, les cibles et la date de
-complétion. Une autre source pourrait le brancher de même. Il n'importe rien du
-reste du socle.
+formulaire, et **ne sait rien du simulateur** : il reçoit un DTO, d'où qu'il
+vienne. Il n'importe rien du reste du socle.
+
+Chaque cerfa a son DTO, en mots clairs, et une définition qui dit où va chaque
+entrée dans le gabarit (`Cerfa<Dto>`) :
+
+| Le DTO dit | La définition garde | Exemple |
+|---|---|---|
+| un texte | le nom exact du champ, mesuré ou non | `motif: text("elements medicaux", { measured: true })` |
+| une case cochée | le champ et son état d'export | `en_ald: box("ald", "Oui")` |
+| une case qui partage son champ | le champ et son état : la marque est dessinée | `longue_distance: drawnBox("km", "Oui")` |
+
+Un gabarit qui renomme un champ ne change que la définition, jamais le DTO.
+
+Le modèle traduit les données du simulateur en DTO (`CerfaMapping`, dans
+`front/socle/cerfa-mapping.ts`) : une fonction par entrée, qui lit les réponses,
+les faits et les cibles figés au verrou, et la date de complétion. `bindCerfa`
+lie une définition à son mapping et vérifie qu'ils parlent du même DTO. Le
+simulateur calcule le DTO sous le second résultat et le passe au bouton.
 
 | Fichier | Ce qu'il porte |
 |---|---|
@@ -127,10 +141,10 @@ reste du socle.
 | `text-fit.ts` | un texte tient-il dans son champ, et à quelle taille |
 | `text-sizes.ts` | la configuration des tailles (D-68) : la taille visée, 9 pt, et le plancher. Une version du modèle la modifie, pas le code |
 | `text-overflow.ts` | l'erreur levée quand il ne tient pas |
-| `field-mapping.ts` | la forme d'un tableau de remplissage : un champ, une ligne |
+| `cerfa.ts` | ce qu'est un cerfa : son DTO, son gabarit, et où va chaque entrée |
 | `dates.ts` | une date sur un champ peigné |
-| `flatten-cerfa.ts` | l'aplatissement du PDF rempli : plus aucun champ, chaque valeur dessinée sur la page (D-84) |
-| `produce-cerfa.ts` | ce qu'est un cerfa à remplir (`CerfaForm`), sa production au clic (remplir, puis aplatir) avec `pdf-lib` chargé à la demande, le nom daté du fichier, le téléchargement |
+| `flatten-cerfa.ts` | l'aplatissement du PDF rempli : plus aucun champ, chaque valeur dessinée sur la page (D-84). Puis ce qu'un champ ne sait pas montrer : les marques des cases partagées |
+| `produce-cerfa.ts` | la production au clic : le DTO traduit dans les noms du gabarit, remplir, puis aplatir, avec `pdf-lib` chargé à la demande. Le nom daté du fichier, le téléchargement |
 | `CerfaDownload.tsx` | le bouton qui produit et télécharge, et l'alerte si ça échoue |
 
 Un formulaire rempli porte des données de santé nominatives. Il se génère **dans le
