@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
+  at,
   box,
   type Cerfa,
   drawnBox,
@@ -24,6 +25,7 @@ type Fiche = {
     avec_sucre?: boolean;
     avec_citron?: boolean;
   };
+  drawings: { remarque?: string };
 };
 
 const template = testForm();
@@ -41,6 +43,7 @@ async function fiche(): Promise<Cerfa<Fiche>> {
       avec_sucre: drawnBox("acc", "sucre"),
       avec_citron: drawnBox("acc", "citron"),
     },
+    drawings: { remarque: at({ page: 1, x: 20, y: 100, width: 300 }) },
   };
 }
 
@@ -51,6 +54,7 @@ describe("produire un cerfa", () => {
   it("le remplit d'après son DTO, puis l'aplatit", async () => {
     const pdf = await produire({
       fields: { nom: "Dupont", motif: "Dialyse" },
+      drawings: {},
     });
 
     expect(await drawnOn(pdf)).toEqual({
@@ -60,7 +64,10 @@ describe("produire un cerfa", () => {
   });
 
   it("laisse vide une entrée absente, vide ou fausse", async () => {
-    const pdf = await produire({ fields: { nom: "", en_ald: false } });
+    const pdf = await produire({
+      fields: { nom: "", en_ald: false },
+      drawings: { remarque: "" },
+    });
 
     expect((await drawnOn(pdf)).texts).toEqual([]);
     expect(await markedStates(await template, pdf, "acc")).toEqual([]);
@@ -69,6 +76,7 @@ describe("produire un cerfa", () => {
   it("marque ensemble plusieurs cases d'un même champ", async () => {
     const pdf = await produire({
       fields: { avec_lait: true, avec_citron: true },
+      drawings: {},
     });
 
     expect(await markedStates(await template, pdf, "acc")).toEqual([
@@ -78,7 +86,7 @@ describe("produire un cerfa", () => {
   });
 
   it("coche une case seule dans son champ", async () => {
-    const pdf = await produire({ fields: { en_ald: true } });
+    const pdf = await produire({ fields: { en_ald: true }, drawings: {} });
 
     expect(await markedStates(await template, pdf, "ald")).toEqual(
       await statesOf(await template, "ald"),
@@ -93,8 +101,17 @@ describe("produire un cerfa", () => {
     };
 
     await expect(
-      produceCerfa(fautive, { fields: { avec_lait: true } }),
+      produceCerfa(fautive, { fields: { avec_lait: true }, drawings: {} }),
     ).rejects.toThrow("« acc » ne connaît pas l'état « /Lait »");
+  });
+
+  it("dessine un texte là où le gabarit n'a pas de champ", async () => {
+    const pdf = await produire({
+      fields: {},
+      drawings: { remarque: "Sans mousse." },
+    });
+
+    expect((await drawnOn(pdf)).texts).toEqual(["Sans mousse."]);
   });
 
   it("date le nom du fichier au jour de Paris", () => {
