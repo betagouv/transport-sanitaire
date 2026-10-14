@@ -3,7 +3,7 @@
 data-analyzer calcule la part des trajets sanitaires réalisés via les plateformes : au
 numérateur les trajets qu'elles déclarent, au dénominateur le référentiel national de
 remboursement. Le résultat est ventilé par établissement ou GHT, par année, par type de
-transport et par enveloppe, et sort en sept marts CSV. Un pipeline de cinq étapes les
+transport et par enveloppe, et sort en dix-huit marts CSV. Un pipeline de cinq étapes les
 produit à partir des fichiers déclarés dans `mapping.json`, la dernière les publiant dans
 Grist pour la dataviz. Tout le métier (description des livrables, limites d'interprétation,
 règles de gestion assumées) vit dans [`spec/`](spec/) ; ce README ne traite que de
@@ -33,7 +33,7 @@ flowchart LR
     G[("Grist<br/>exploration et dataviz")]
 
     SRC --> E
-    M -->|"build/marts/ — les 7 marts"| P --> G
+    M -->|"build/marts/ — les 18 marts"| P --> G
 ```
 
 Les quatre premières étapes sont locales et déterministes ; la cinquième, optionnelle,
@@ -41,7 +41,7 @@ publie les marts dans [Grist](#publication-dataviz).
 
 | Document | Ce qu'il porte |
 |---|---|
-| [`spec/livrables.md`](spec/livrables.md) | Les sept marts : grain, colonnes, ce que chacun sait et ne sait pas dire. |
+| [`spec/livrables.md`](spec/livrables.md) | Les dix-huit marts : grain, colonnes, ce que chacun sait et ne sait pas dire. |
 | [`spec/points-attention-metier.md`](spec/points-attention-metier.md) | Les dix propriétés de la donnée et règles de gestion à connaître avant de citer un chiffre. |
 | [`docs/knowledge/domain/etl-part-plateformes.md`](docs/knowledge/domain/etl-part-plateformes.md) | La spec de cadrage d'origine. |
 
@@ -96,6 +96,7 @@ comporte de manière générique quels que soient les fichiers fournis.
 | `location` | oui | chemin du fichier, absolu ou relatif à la racine de l'app |
 | `label` | oui | identifiant neutre et unique, qui nomme les artefacts de traçabilité |
 | `plateforme` | non | nom affiché dans la colonne `plateforme` des marts. N'a de sens que pour le rôle `plateforme` et **n'existe nulle part dans le code versionné** : c'est ici, dans un fichier non versionné, que le nom d'un fournisseur est autorisé. Absent, la colonne retombe sur le `label` |
+| `cibles` | non | les [cibles](#publier-pour-une-cible) où cette plateforme figure, par exemple `["partenaire-a"]`. N'a de sens que pour le rôle `plateforme`. Absent, la plateforme ne figure que dans le périmètre complet |
 | `options` | non | paramètres propres au format, par exemple les index de colonnes finess pour le TSV. C'est ce qui permet à plusieurs fichiers de partager un adaptateur |
 
 Une entrée invalide, à laquelle il manque le rôle, le format, la location ou le label, ou
@@ -131,7 +132,7 @@ rôles.
 | `build/staging/trajets.csv` | staging | Toutes les sources réunies et agrégées au grain canonique. | idem `trajets/<label>.csv` |
 | `build/reconcile/etablissements.csv` | reconcile | Libellé représentatif de chaque établissement, pour habiller les marts. | `finess_juridique, nom, ville, departement, categorie` |
 | `build/reconcile/trajets.csv` | reconcile | Trajets aux **finess alignés sur le référentiel** et **rattachés au GHT**. Base commune des marts. | idem staging + `ght_code` |
-| `build/marts/mart_*.csv` | marts | Les **7 [livrables](spec/livrables.md)** (dont les deux rollups annuels, dérivés de `mart_ght` et de `mart_juridique`). | selon le mart |
+| `build/marts/mart_*.csv` | marts | Les **18 [livrables](spec/livrables.md)** (dont les rollups annuels 2024 et 2025 et le détail par plateforme, dérivés de `mart_ght` et de `mart_juridique`). | selon le mart |
 
 ## Publication (dataviz)
 
@@ -142,7 +143,7 @@ chaque table donne à lire, et à quel grain, est décrit dans
 
 ```bash
 pnpm publish-grist            # tous les marts publiables
-pnpm publish-grist ght_2024   # un seul (par son nom court)
+pnpm publish-grist ght_2025   # un seul (par son nom court)
 ```
 
 La configuration passe par l'environnement. Un `.env` est lu automatiquement s'il existe,
@@ -152,9 +153,11 @@ sinon on prend les variables du shell.
 |---|---|
 | `GRIST_DOC_URL` | Base API du doc **dédié dataviz** (≠ doc d'identification), ex. `https://…/api/docs/<docId>` |
 | `GRIST_API_KEY` | Clé API Grist |
+| `GRIST_DOC_URL_<NOM>` | Base API du doc d'une [cible](#publier-pour-une-cible), une variable par cible |
 
 Chaque mart publiable déclare sa table et ses colonnes dans `marts()`
-(`src/05-publish/publish.ts`) : ajouter un mart revient à ajouter une entrée. Pour chacun,
+(`src/05-publish/publish.ts`) : ajouter un mart revient à ajouter une ligne. Le fichier et
+la table se déduisent du nom court. Pour chacun,
 la publication garantit la table, en la créant avec ses colonnes si elle est absente et en
 complétant les colonnes manquantes, puis remplace tout son contenu, en le vidant et en
 réinsérant. La sémantique est celle d'un snapshot : idempotente, sans lignes périmées, et
@@ -169,10 +172,19 @@ fait sentir, se fait à la main dans Grist.
 | `mart_ght.csv` (`ght`) | `Mart_Ght` |
 | `mart_ght_2024.csv` (`ght_2024`) | `Mart_Ght_2024` |
 | `mart_juridique_2024.csv` (`juridique_2024`) | `Mart_Juridique_2024` |
+| `mart_ght_2025.csv` (`ght_2025`) | `Mart_Ght_2025` |
+| `mart_juridique_2025.csv` (`juridique_2025`) | `Mart_Juridique_2025` |
 | `mart_juridique.csv` (`juridique`) | `Mart_Juridique` |
 | `mart_geographique.csv` (`geographique`) | `Mart_Geographique` |
 | `mart_hors_ght.csv` (`hors_ght`) | `Mart_Hors_Ght` |
 | `mart_article80.csv` (`article80`) | `Mart_Article80` |
+| `mart_juridique_plateforme.csv` (`juridique_plateforme`) | `Mart_Juridique_Plateforme` |
+| `mart_juridique_plateforme_<année>.csv` (`juridique_plateforme_<année>`) | `Mart_Juridique_Plateforme_<année>` |
+| `mart_ght_plateforme.csv` (`ght_plateforme`) | `Mart_Ght_Plateforme` |
+| `mart_ght_plateforme_<année>.csv` (`ght_plateforme_<année>`) | `Mart_Ght_Plateforme_<année>` |
+| `mart_taux_plateforme.csv` (`taux_plateforme`) | `Mart_Taux_Plateforme` |
+| `mart_synthese.csv` (`synthese`) | `Mart_Synthese` |
+| `mart_repartition.csv` (`repartition`) | `Mart_Repartition` |
 
 ⚠️ Le mart contient de vrais établissements, cf. [Confidentialité](#confidentialité) : le
 doc Grist cible doit rester privé.
@@ -181,6 +193,43 @@ doc Grist cible doit rester privé.
 d'être réinsérée par lots, une coupure en cours de mart laisse la table vide ou partielle,
 et la relance suivante ne le signale pas. Vérifier le compte de lignes après une
 publication interrompue.
+
+### Publier pour une cible
+
+Une **cible** est un document Grist destinataire, restreint à certaines plateformes. Le
+document interne reçoit le périmètre complet et se publie sans option. Une cible reçoit
+les mêmes marts, recalculés sur ses seules plateformes.
+
+Elle se déclare à deux endroits, tous deux non versionnés :
+
+- dans `mapping.json`, chaque plateforme liste dans `cibles` les cibles où elle figure ;
+- dans `.env`, `GRIST_DOC_URL_<NOM>` porte l'adresse du document. Le nom est celui de la
+  cible, en majuscules : `partenaire-a` lit `GRIST_DOC_URL_PARTENAIRE_A`.
+
+```bash
+pnpm publish-grist --cible partenaire-a            # recalcule puis publie tous ses marts
+pnpm publish-grist --cible partenaire-a ght_2024   # un seul
+pnpm marts --cible partenaire-a                    # recalcule sans publier
+```
+
+Ce que la restriction garantit :
+
+| Règle | Effet |
+|---|---|
+| Les trajets des autres plateformes sont retirés avant le calcul | aucun volume ni nom d'une autre plateforme, y compris dans les sommes |
+| Seules les entités où ses plateformes déclarent des trajets sont listées | la cible ne voit pas le remboursement des établissements qu'elle n'équipe pas |
+| Les marts s'écrivent dans `build/cibles/<nom>/marts/` | ceux du périmètre complet ne sont jamais écrasés |
+| La publication recalcule toujours avant d'envoyer | le document ne reçoit ni un mart périmé, ni un mart du périmètre complet |
+
+Une cible que nulle plateforme ne déclare fait échouer la commande : une faute de frappe
+ne publie donc jamais le périmètre complet par erreur.
+
+Une cible déclarée sur **toutes** les plateformes n'est pas restreinte : elle reçoit le
+périmètre complet, tous les établissements connus compris, dans son propre document.
+
+⚠️ Deux chiffres dépassent le périmètre d'une cible et y restent : le remboursement entier
+d'un GHT dont elle n'équipe qu'une partie, dans `mart_ght`, et le total national, dans
+`mart_taux_plateforme`.
 
 ## Référentiels (`ref/`)
 

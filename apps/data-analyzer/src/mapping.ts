@@ -40,6 +40,7 @@ export class Mapping {
       location: Mapping.#resolve(e.location!),
       label: e.label!,
       plateforme: Mapping.#plateforme(e),
+      cibles: Mapping.#cibles(e, i),
       options: e.options ?? {},
     };
   }
@@ -66,6 +67,18 @@ export class Mapping {
   static #plateforme(e: Partial<MappingEntry>): string {
     if (e.role !== "plateforme") return "";
     return e.plateforme?.trim() || e.label!;
+  }
+
+  // Seule une plateforme figure dans une cible : un référentiel, lui, y est toujours.
+  static #cibles(e: Partial<MappingEntry>, i: number): string[] {
+    const cibles: unknown = e.cibles ?? [];
+    const valides =
+      Array.isArray(cibles) && cibles.every((c) => typeof c === "string" && c);
+    if (!valides || (e.role !== "plateforme" && cibles.length > 0))
+      throw new Error(
+        `mapping.json[${i}].cibles invalide (attendu : une liste de noms, sur une plateforme).`,
+      );
+    return cibles;
   }
 
   static #resolve(location: string): string {

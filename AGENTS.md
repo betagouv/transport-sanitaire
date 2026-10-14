@@ -159,7 +159,7 @@ revue et en commit : « corrige QUAL-006 ».
 | Une décision d'architecture | `docs/knowledge/adr/` de l'app concernée, ou celui de la racine si la décision traverse plusieurs apps. Format ADR maison, au niveau composant C4, sans détail de fichier |
 | Le cadrage d'un chantier | le corps de son issue GitHub, que `tsp issue new` ouvre. Jamais un fichier du dépôt |
 | Le découpage d'un chantier | ses sous-issues, une par PR, que `tsp issue add` ouvre |
-| L'état d'un chantier | **nulle part** : il se déduit de l'issue, de sa branche et de sa PR. `tsp issue show <n>` l'affiche |
+| L'état d'un chantier | **nulle part** : il se déduit de l'issue, de sa branche et de sa PR. `tsp issue show <n>` l'affiche, et `tsp` le projette dans le tableau GitHub Project |
 | Ce qu'une app sait faire | son `docs/knowledge/features.md`, un tableau « feature, ce qu'elle fait » que lit `tsp features` |
 | Une connaissance métier actée | `docs/knowledge/domain/` de l'app concernée, ou celui de la racine si elle traverse plusieurs apps |
 | Le mode d'emploi d'une app | son `README.md` |

@@ -1,6 +1,6 @@
 // Tenir les chantiers par leurs issues GitHub : lister ceux qui sont ouverts,
 // montrer l'avancement de l'un d'eux, en ouvrir un, lui ajouter une tâche,
-// synchroniser son ticket Notion.
+// projeter le tableau et synchroniser les tickets Notion.
 
 import type { Command, Invocation } from "../core/invocation.ts";
 import { emit, printError } from "../core/output.ts";
@@ -12,6 +12,7 @@ import {
 } from "./chantiers.ts";
 import { addCommand, newCommand } from "./new.ts";
 import { syncCommand } from "./sync.ts";
+import { withTableau } from "./tableau.ts";
 
 /** `tsp issue list`, `show`, `new`, `add`, `sync` */
 export function issueCommand(invocation: Invocation): number | Promise<number> {
@@ -29,8 +30,8 @@ export function issueCommand(invocation: Invocation): number | Promise<number> {
 const VERBS: Record<string, Command> = {
   list: listCommand,
   show: showCommand,
-  new: newCommand,
-  add: addCommand,
+  new: withTableau(newCommand),
+  add: withTableau(addCommand),
   sync: syncCommand,
 };
 

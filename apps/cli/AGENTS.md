@@ -39,9 +39,9 @@ point d'entrée, et la liste des commandes.
 | `core/` | la ligne de commande, les sorties, le lancement d'un programme, la lecture du Markdown et des réglages | rien |
 | `apps/` | les apps, leurs actions, leurs features | `core` |
 | `knowledge/` | les règles, les skills, la documentation de référence | `core`, `apps` |
-| `git/` | les branches, les worktrees, les PR, les issues, la forme des commits | `core` |
+| `git/` | les branches, les worktrees, les PR, les issues, le Project, la forme des commits | `core` |
 | `notion/` | l'API des tickets | `core` |
-| `issues/` | les chantiers tenus dans les issues GitHub : les lire, en ouvrir, l'état de chaque tâche, l'endroit où son travail se trouve, le ticket Notion | `core`, `apps`, `git`, `notion` |
+| `issues/` | les chantiers tenus dans les issues GitHub : les lire, en ouvrir, l'état de chaque tâche, l'endroit où son travail se trouve, le tableau, le ticket Notion | `core`, `apps`, `git`, `notion` |
 | `work/` | `wip` et `next`, les tickets hors chantiers | `core`, `git`, `issues`, `notion` |
 | `machine/` | `setup`, `doctor`, `open`, le lien vers le lanceur, les fichiers locaux | `core`, `apps`, `notion` |
 
@@ -67,6 +67,8 @@ Une **action** n'est pas une commande à écrire : c'est un script du
 | Une erreur prévue rend un code non nul et une ligne sur stderr | un agent lit le code de sortie, pas le texte |
 | Sans jeton Notion, `wip` et `next` affichent le reste | personne n'est bloqué par un service absent |
 | L'état d'une tâche se déduit, il ne s'écrit pas | un état rédigé se périme dès la fusion d'une PR |
+| Seul `tsp` écrit une colonne du tableau, et il ne la lit jamais pour déduire un état | le tableau est une projection : s'il faisait foi, l'état redeviendrait rédigé |
+| Le tableau ne fait jamais échouer une commande autre que `issue sync` | personne n'est bloqué par un droit `gh` manquant |
 | Le numéro d'issue d'une branche se lit par `issueOfBranch`, et par la même expression dans `close-issue.yml` | deux lectures différentes, et la fusion ferme une autre issue que celle que `tsp` montre |
 | Le titre d'une tâche porte le nom court de ses parents, posé par `issue add` | une issue se lit seule, dans une notification ou une recherche |
 | Seul un chantier a un ticket Notion, jamais une tâche | Notion porte le suivi macro, GitHub le détail |
