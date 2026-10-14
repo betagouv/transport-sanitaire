@@ -68,54 +68,93 @@ export type Filled = {
 export async function fillCerfa(
   template: Uint8Array | ArrayBuffer,
   entries: readonly FieldEntry[],
-  options: FillOptions = {},
+  { singleLineFields = [] }: FillOptions = {},
 ): Promise<Filled> {
   const document = await PDFDocument.load(template);
-  const form = document.getForm();
-  // `form.updateFieldAppearances()` (plus bas) redessine tout champ écrit dans
-  // sa police par défaut, pas dans celle du gabarit. Le texte se mesure donc
-  // avec cette police-là.
-  const font = await document.embedFont(StandardFonts.Helvetica);
-  const singleLineFields = options.singleLineFields ?? [];
-  const overflows: Drawing[] = [];
-  const withoutComment: string[] = [];
-
-  for (const entry of entries) {
-    if ("checked" in entry) {
-      check(form, entry.field, entry.checked);
-      continue;
-    }
-    const value = singleLineFields.includes(entry.field)
-      ? { ...entry, text: flatten(entry.text), comment: flattenComment(entry) }
-      : entry;
-    const written = writeText(document, font, value);
-    overflows.push(...written.overflows);
-    if (written.withoutComment) withoutComment.push(entry.field);
-  }
-
-  // Sans cet appel, les valeurs sont dans le PDF mais ne s'affichent pas dans les
-  // lecteurs qui ne régénèrent pas les apparences.
-  form.updateFieldAppearances();
-
-  return { pdf: await document.save(), overflows, withoutComment };
+  checkBoxes(document, entries.filter(isBox));
+  const texts = entries.filter(isText).map(oneLineIn(singleLineFields));
+  const written = await writeTexts(document, texts);
+  showValues(document);
+  return { pdf: await document.save(), ...written };
 }
 
 // ---- implémentation ----
 
 type Form = ReturnType<PDFDocument["getForm"]>;
 
-type Text = { field: string; text: string; comment?: string };
+type Box = { readonly field: string; readonly checked: string };
+
+type Text = {
+  readonly field: string;
+  readonly text: string;
+  readonly comment?: string;
+};
+
+type Written = Omit<Filled, "pdf">;
+
+function isBox(entry: FieldEntry): entry is Box {
+  return "checked" in entry;
+}
+
+function isText(entry: FieldEntry): entry is Text {
+  return "text" in entry;
+}
+
+function checkBoxes(document: PDFDocument, boxes: readonly Box[]): void {
+  const form = document.getForm();
+  for (const { field, checked } of boxes) check(form, field, checked);
+}
+
+// Un texte destiné à un champ de `singleLineFields` s'aplatit sur une ligne,
+// son commentaire aussi.
+function oneLineIn(singleLineFields: readonly string[]) {
+  return (entry: Text): Text =>
+    singleLineFields.includes(entry.field)
+      ? {
+          ...entry,
+          text: flatten(entry.text),
+          ...(entry.comment === undefined
+            ? {}
+            : { comment: flatten(entry.comment) }),
+        }
+      : entry;
+}
 
 /**
- * Un gabarit déclare sa police (`/Cour 10 Tf`, par exemple). Mais `pdf-lib`
- * redessine tout champ écrit dans sa police par défaut, ici Helvetica,
- * embarquée dans `fillCerfa`. Le texte se mesure donc dans cette police-là.
+ * Un gabarit déclare sa police (`/Cour 10 Tf`, par exemple). Mais
+ * `showValues` redessine tout champ écrit dans la police par défaut de
+ * `pdf-lib`, Helvetica. Le texte se mesure donc dans cette police-là.
  */
+async function writeTexts(
+  document: PDFDocument,
+  texts: readonly Text[],
+): Promise<Written> {
+  const font = await document.embedFont(StandardFonts.Helvetica);
+  const written = texts.map((text) => ({
+    field: text.field,
+    ...writeText(document, font, text),
+  }));
+  return {
+    overflows: written.flatMap(({ overflows }) => overflows),
+    withoutComment: written
+      .filter(({ withoutComment }) => withoutComment)
+      .map(({ field }) => field),
+  };
+}
+
+// Sans cet appel, les valeurs sont dans le PDF mais ne s'affichent pas dans les
+// lecteurs qui ne régénèrent pas les apparences.
+function showValues(document: PDFDocument): void {
+  document.getForm().updateFieldAppearances();
+}
+
+// Le texte et son commentaire, sinon le texte seul, dans son champ. Sinon,
+// rien dans le champ : le texte se dessinera sous son cadre.
 function writeText(
   document: PDFDocument,
   font: PDFFont,
   { field: name, text, comment = "" }: Text,
-): { overflows: Drawing[]; withoutComment: boolean } {
+): { overflows: readonly Drawing[]; withoutComment: boolean } {
   const field = document.getForm().getField(name);
   if (!(field instanceof PDFTextField)) {
     throw new Error(`Le champ « ${name} » n'est pas un champ texte.`);
@@ -184,8 +223,4 @@ function flatten(text: string): string {
     .replace(/\s*\n+\s*/g, " - ")
     .replace(/\s+/g, " ")
     .trim();
-}
-
-function flattenComment({ comment }: Text): string | undefined {
-  return comment === undefined ? undefined : flatten(comment);
 }
