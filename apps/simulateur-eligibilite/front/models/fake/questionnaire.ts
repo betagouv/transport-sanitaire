@@ -9,6 +9,7 @@ import type { QuestionnairePart } from "../../socle";
 import type { Cibles } from "./declarations/cibles";
 import type { Questions } from "./declarations/questions";
 import { cibles, faits } from "./preconisation";
+import { CRENEAU, EXPEDITION } from "./validation-croisee";
 
 /** Modifiables tant que le résultat n'est pas verrouillé. */
 export const PARTS: readonly QuestionnairePart<Questions, undefined>[] = [
@@ -216,6 +217,8 @@ export const COMPLEMENT: QuestionnairePart<Questions, Cibles> = {
         },
       ],
     },
+    EXPEDITION,
+    CRENEAU,
     {
       id: "retrait",
       questions: [
@@ -223,7 +226,7 @@ export const COMPLEMENT: QuestionnairePart<Questions, Cibles> = {
           id: "retrait",
           kind: "single choice",
           label: "Comment la récupérer ?",
-          hint: "Démontre : une réponse qui bloque. « En livraison » affiche un message, et la page ne se valide plus.",
+          hint: "Démontre : une réponse qui bloque. « En livraison » affiche un message, et la page ne se valide plus. Et une réponse qui contredit une page antérieure : « À emporter » ne va pas avec « En terrasse », choisi au lieu de service. Le message nomme la question à corriger, qu'on retrouve par « Précédent ».",
           options: [
             { value: "sur-place", label: "Sur place" },
             { value: "a-emporter", label: "À emporter" },
@@ -234,6 +237,12 @@ export const COMPLEMENT: QuestionnairePart<Questions, Cibles> = {
                 "La livraison se commande à part. Choisissez une autre réponse pour finir cette commande, puis faites-en une seconde pour la livraison.",
             },
           ],
+          inconsistenciesFrom: ({ lieu, retrait }) =>
+            lieu === "terrasse" && retrait === "a-emporter"
+              ? [
+                  "« À emporter » ne va pas avec « En terrasse », choisi à la question « Où la servir ? ». Revenez par « Précédent » changer le lieu, ou choisissez « Sur place ».",
+                ]
+              : [],
         },
         {
           id: "jour",

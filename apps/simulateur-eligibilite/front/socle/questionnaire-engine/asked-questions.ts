@@ -8,13 +8,14 @@
 //
 // Les questions se lisent dans l'ordre. Chacune voit celles qui la précèdent
 // et qui sont validées : ses conditions peuvent en dépendre, pas de la suite.
+// Ses incohérences ne voient pas non plus les réponses des pages suivantes.
 
 import { isAnswered, offeredAnswer, optionValues } from "./offered-answer";
+import type { Option } from "./option";
 import type {
   Answer,
   Answers,
   AnyCibles,
-  Option,
   Page,
   Question,
   Validated,
@@ -76,31 +77,73 @@ type Seen = readonly [Answers, AnyCibles | undefined, Validated];
 
 type AskedPage = { page: Page; questions: Question[] };
 
+// Où en est la lecture du questionnaire : les questions validées jusqu'ici, et
+// si aucune n'attend encore sa réponse.
+type Progress = { readonly validated: Validated; readonly complete: boolean };
+
+// Ce que les questions d'une page peuvent lire : les réponses, celles qu'en
+// voient leurs incohérences (sans les pages suivantes), et les cibles.
+type Context = {
+  readonly answers: Answers;
+  readonly earlier: Answers;
+  readonly cibles?: AnyCibles;
+};
+
 // Les pages lues dans l'ordre, question par question. Dès qu'une question
 // attend sa réponse, plus rien n'est validé : ce qui la suit se pose encore,
 // mais ne compte pas.
 function inOrder(pages: readonly Page[], answers: Answers, cibles?: AnyCibles) {
-  let validated: Validated = {};
-  let complete = true;
+  let progress: Progress = { validated: {}, complete: true };
   const asked: AskedPage[] = [];
-  for (const page of pages) {
-    const questions: Question[] = [];
-    for (const declared of page.questions) {
-      const seen: Seen = [answers, cibles, validated];
-      if (!(declared.askedIf?.(...seen) ?? true)) continue;
-      const question = asAsked(declared, seen);
-      const answer = answers[question.id];
-      questions.push(question);
-      complete &&= isAnswered(question, answer);
-      if (complete)
-        validated = {
-          ...validated,
-          [question.id]: asValidated(question, answer),
-        };
-    }
-    asked.push({ page, questions });
+  for (const [rank, page] of pages.entries()) {
+    const earlier = answersUpTo(pages, rank, answers);
+    const read = askPage(page, { answers, earlier, cibles }, progress);
+    asked.push({ page, questions: read.questions });
+    progress = read.progress;
   }
-  return { asked, validated, complete };
+  return { asked, ...progress };
+}
+
+// Les questions de la page qui se posent, dans l'ordre. Chacune voit ce que les
+// précédentes ont validé.
+function askPage(page: Page, context: Context, start: Progress) {
+  let progress = start;
+  const questions: Question[] = [];
+  for (const declared of page.questions) {
+    const question = askQuestion(declared, context, progress.validated);
+    if (!question) continue;
+    questions.push(question);
+    progress = validateInTurn(progress, question, context.answers);
+  }
+  return { questions, progress };
+}
+
+// La question telle qu'elle se pose, ou `undefined` quand elle ne se pose pas.
+function askQuestion(
+  declared: Question,
+  { answers, earlier, cibles }: Context,
+  validated: Validated,
+): Question | undefined {
+  const seen: Seen = [answers, cibles, validated];
+  if (!(declared.askedIf?.(...seen) ?? true)) return undefined;
+  return asAsked(declared, seen, [earlier, cibles, validated]);
+}
+
+// Une question qui a sa réponse est validée, si aucune n'attend avant elle. La
+// première qui attend arrête la validation pour toute la suite.
+function validateInTurn(
+  progress: Progress,
+  question: Question,
+  answers: Answers,
+): Progress {
+  const answer = answers[question.id];
+  const complete = progress.complete && isAnswered(question, answer);
+  if (!complete) return { ...progress, complete };
+  const validated = asValidated(question, answer);
+  return {
+    complete,
+    validated: { ...progress.validated, [question.id]: validated },
+  };
 }
 
 // Ce qu'on retient d'une question validée : ses options du moment, et sa
@@ -114,9 +157,9 @@ function asValidated(question: Question, answer: Answer | undefined) {
   };
 }
 
-function asAsked(question: Question, seen: Seen): Question {
+function asAsked(question: Question, seen: Seen, earlier: Seen): Question {
   const offered = (options: readonly Option[]) => offeredOptions(options, seen);
-  const texts = displayedTexts(question, seen);
+  const texts = displayedTexts(question, seen, earlier);
   if (question.kind === "date" || question.kind === "datetime")
     return { ...question, ...texts, ...question.boundsFrom?.(...seen) };
   if (question.kind === "address")
@@ -142,13 +185,30 @@ function abroadOf(
   return question.abroadIf?.(...seen) ?? question.abroad;
 }
 
-// Ce qui se lit autour du champ, vu les réponses : le libellé, et le rappel.
-function displayedTexts(question: Question, seen: Seen) {
+// Ce qui se lit autour du champ, vu les réponses : le libellé, le rappel, et
+// les incohérences. Celles-ci ne lisent pas les pages suivantes (`earlier`).
+function displayedTexts(question: Question, seen: Seen, earlier: Seen) {
   const asked = question.labelFrom?.(...seen) ?? question.label;
   return {
     label: question.optional ? `${asked} (facultatif)` : asked,
     reminder: question.reminderFrom?.(...seen) ?? question.reminder,
+    inconsistencies: question.inconsistenciesFrom?.(...earlier),
   };
+}
+
+// Les réponses, sans celles des questions des pages qui suivent celle-ci. Les
+// réponses acquises avant le verrou n'ont pas de page ici : elles restent.
+function answersUpTo(
+  pages: readonly Page[],
+  rank: number,
+  answers: Answers,
+): Answers {
+  const later = pages
+    .slice(rank + 1)
+    .flatMap((page) => page.questions.map((question) => question.id));
+  return Object.fromEntries(
+    Object.entries(answers).filter(([id]) => !later.includes(id)),
+  );
 }
 
 // Les options qui se proposent, vu les réponses, sous leur libellé du moment.

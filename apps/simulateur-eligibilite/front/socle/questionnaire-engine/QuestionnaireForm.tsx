@@ -2,7 +2,7 @@
 // boutons de navigation. L'état est dans `questionnaire.ts`.
 
 import type { ComponentType } from "react";
-import { errorOf } from "./answer-error";
+import { errorsOf } from "./answer-error";
 import { QuestionField } from "./QuestionField";
 import {
   type Answers,
@@ -98,7 +98,7 @@ function QuestionFields({ questionnaire }: { questionnaire: Questionnaire }) {
       key={question.id}
       question={question}
       answer={questionnaire.draft[question.id]}
-      error={errorOf(question, questionnaire.draft[question.id])}
+      errors={errorsOf(question, questionnaire.draft[question.id])}
       autoFocus={question === toFocus}
       onChange={(answer) => questionnaire.answer(question.id, answer)}
     />

@@ -10,7 +10,8 @@ type Props = {
   options: ReadonlyArray<Omit<Choice, "input">>;
   value: string | undefined;
   onChange: (value: string) => void;
-  error?: string;
+  /** Un message par ligne, sous le groupe. */
+  errors?: readonly string[];
   /** La première option prend le focus à l'affichage. */
   autoFocus?: boolean;
   /** Met le libellé en avant, quand le champ est la question de la page. */
@@ -26,7 +27,11 @@ export function RadioField(props: Props) {
       legend={props.label}
       hint={props.hint}
       lead={props.lead}
-      message={props.error ? { state: "error", text: props.error } : undefined}
+      message={
+        props.errors?.length
+          ? { state: "error", texts: props.errors }
+          : undefined
+      }
       choices={radios(props)}
     />
   );

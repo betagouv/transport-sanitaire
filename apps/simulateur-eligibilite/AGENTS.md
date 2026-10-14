@@ -56,19 +56,20 @@ un **backend Node/Express** (`server/` : le front et `/api/*`) déployé sur
 
 ## Le questionnaire
 
-Sept fichiers portent la mécanique, dans `front/socle/questionnaire-engine/` :
+Huit fichiers portent la mécanique, dans `front/socle/questionnaire-engine/` :
 
 | Fichier | Ce qu'il porte |
 |---|---|
 | `question.ts` | ce qu'est une question, une page, une partie, une réponse |
+| `option.ts` | ce qu'est une option d'un choix : son libellé, ce qui la propose, son aide, ce qu'elle bloque |
 | `address.ts` | ce qu'est une adresse, la seule réponse en objet : ses champs, ceux qui se demandent en France ou à l'étranger, et le message de chaque champ fautif |
-| `asked-questions.ts` | ce qui s'affiche, vu les réponses : libellés, bornes, options et mode d'adresse du moment. Et les questions validées, avec ce qui s'y proposait |
+| `asked-questions.ts` | ce qui s'affiche, vu les réponses : libellés, bornes, options, mode d'adresse et incohérences du moment. Et les questions validées, avec ce qui s'y proposait |
 | `offered-answer.ts` | ce qu'une réponse vaut pour sa question : réduite aux options qui se proposent ou aux champs d'adresse qui se demandent, suffisante ou non |
-| `answer-error.ts` | ce qui ne va pas dans une saisie, et le message à afficher. Une adresse a les siens, un par champ, dans `address.ts` |
+| `answer-error.ts` | ce qui ne va pas dans une saisie, et les messages à afficher : une erreur de format seule, sinon une ligne par incohérence. Une adresse a les siens, un par champ, dans `address.ts` |
 | `questionnaire.ts` | l'état d'un parcours : page ouverte, brouillon, navigation |
 | `page-commit.ts` | ce que deviennent les réponses quand une page est validée, et ce que ça efface |
 
-Cinq règles à tenir en ajoutant une question :
+Six règles à tenir en ajoutant une question :
 
 - **Une condition d'affichage s'écrit dans `askedIf`.** Jamais dans un composant.
 - **Une condition lit ce qui la précède.** Elle reçoit les réponses, les cibles
@@ -78,6 +79,14 @@ Cinq règles à tenir en ajoutant une question :
   changement de celle dont elle dépend. Une adresse dont le mode change
   (`abroadIf`) survit de même : elle se relit dans le nouveau mode, sans son
   pays si elle revient en France.
+- **Une incohérence se déclare dans `inconsistenciesFrom`, sur la plus tardive des
+  deux questions.** Le moteur lui cache les réponses des pages suivantes : une
+  règle écrite sur la première ne se déclenche jamais. Elle lit sa propre page, brouillon
+  compris, et les réponses d'avant le verrou. Elle rend un message par
+  incohérence, qui dit quelle question corriger. Une question incohérente n'est
+  pas validée. On corrige par « Précédent » : aucun bouton, aucun saut. Une
+  erreur de format s'affiche seule, avant les incohérences. Celle d'une adresse
+  s'affiche sous le groupe, et une erreur de champ passe devant.
 - **Une saisie ne compte qu'une fois la page validée.** Le brouillon vit dans
   `questionnaire.ts`, pas dans le champ.
 - **Le verrou est un montage, pas un drapeau.** Ce qui vient après le verrou est un

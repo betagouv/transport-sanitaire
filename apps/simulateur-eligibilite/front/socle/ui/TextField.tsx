@@ -1,6 +1,7 @@
 // La saisie d'un texte libre : l'`Input` du DSFR.
 
 import { Input } from "@codegouvfr/react-dsfr/Input";
+import { ErrorLines } from "./ErrorLines";
 
 type Props = {
   id: string;
@@ -8,7 +9,8 @@ type Props = {
   hint?: string;
   value: string;
   onChange: (value: string) => void;
-  error?: string;
+  /** Un message par ligne, sous le champ. */
+  errors?: readonly string[];
   autoFocus?: boolean;
   /** Met le libellé en avant, quand le champ est la question de la page. */
   lead?: boolean;
@@ -19,8 +21,10 @@ export function TextField(props: Props) {
     <Input
       label={props.label}
       hintText={props.hint}
-      state={props.error ? "error" : "default"}
-      stateRelatedMessage={props.error}
+      state={props.errors?.length ? "error" : "default"}
+      stateRelatedMessage={
+        props.errors?.length ? <ErrorLines errors={props.errors} /> : undefined
+      }
       classes={{ label: props.lead ? "fr-text--lead" : undefined }}
       nativeInputProps={{
         id: props.id,

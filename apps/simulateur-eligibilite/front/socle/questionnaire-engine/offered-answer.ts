@@ -3,7 +3,7 @@
 // pour la quitter.
 
 import { askedAddress, isAddress, isCompleteAddress } from "./address";
-import { errorOf } from "./answer-error";
+import { errorsOf } from "./answer-error";
 import type { Answer, Question } from "./question";
 
 /**
@@ -41,8 +41,12 @@ export function isAnswered(question: Question, answer: Answer | undefined) {
   const offered = offeredAnswer(question, answer);
   if (offered === undefined) return question.optional === true;
   if (question.kind === "address")
-    return isAddress(offered) && isCompleteAddress(question, offered);
-  return errorOf(question, offered) === undefined;
+    return (
+      isAddress(offered) &&
+      isCompleteAddress(question, offered) &&
+      !question.inconsistencies?.length
+    );
+  return errorsOf(question, offered).length === 0;
 }
 
 // ---- implémentation ----

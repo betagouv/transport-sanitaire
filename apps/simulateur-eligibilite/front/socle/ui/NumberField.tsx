@@ -1,6 +1,7 @@
 // La saisie d'un nombre : l'`Input` du DSFR, avec ses bornes et son unité.
 
 import { Input } from "@codegouvfr/react-dsfr/Input";
+import { ErrorLines } from "./ErrorLines";
 
 type Props = {
   id: string;
@@ -15,7 +16,8 @@ type Props = {
   /** `undefined` quand le champ est vidé : ce n'est pas zéro, c'est une absence. */
   onChange: (value: number | undefined) => void;
   /** Affichée sous la saisie, sans y toucher : la valeur reste celle tapée. */
-  error?: string;
+  /** Un message par ligne, sous le champ. */
+  errors?: readonly string[];
   autoFocus?: boolean;
   /** Met le libellé en avant, quand le champ est la question de la page. */
   lead?: boolean;
@@ -25,8 +27,10 @@ export function NumberField(props: Props) {
   return (
     <Input
       label={props.label}
-      state={props.error ? "error" : "default"}
-      stateRelatedMessage={props.error}
+      state={props.errors?.length ? "error" : "default"}
+      stateRelatedMessage={
+        props.errors?.length ? <ErrorLines errors={props.errors} /> : undefined
+      }
       hintText={props.hint}
       classes={{ label: props.lead ? "fr-text--lead" : undefined }}
       style={{ maxWidth: "16rem" }}

@@ -23,10 +23,11 @@ type Props = {
   /** `undefined` retire la réponse : un champ vidé n'est plus répondu. */
   onChange: (answer: Answer | undefined) => void;
   /**
-   * Ce qui ne va pas dans la saisie, affiché sous le champ. Une adresse ne le
-   * lit pas : elle a un message par champ.
+   * Ce qui ne va pas dans la saisie, un message par ligne sous le champ. Une
+   * adresse a un message par champ, et lit celui-ci comme un message de groupe,
+   * tant qu'aucun de ses champs n'est fautif.
    */
-  error?: string;
+  errors?: readonly string[];
   /** Le champ prend le focus à l'ouverture de la page. */
   autoFocus?: boolean;
 };
@@ -48,12 +49,12 @@ type DateQuestion = Extract<Question, { kind: "date" | "datetime" }>;
 
 // Ce que tous les champs reçoivent. Le libellé est mis en avant : sur une page
 // du questionnaire, c'est lui qui porte la question.
-function common({ question, error, autoFocus }: Props) {
+function common({ question, errors, autoFocus }: Props) {
   return {
     id: question.id,
     label: question.label,
     hint: question.hint,
-    error,
+    errors,
     autoFocus,
     lead: true,
   };
@@ -81,14 +82,17 @@ function render(props: Props) {
 }
 
 // Chaque champ qui se demande reçoit sa valeur et son message. Le brouillon
-// garde la saisie telle quelle : les espaces ne tombent qu'à la validation.
+// garde la saisie telle quelle : les espaces ne tombent qu'à la validation. Une
+// erreur de champ passe devant le message de groupe.
 function AddressQuestionField(props: Props & { question: AddressQuestion }) {
   const { question, onChange } = props;
   const address = isAddress(props.answer) ? props.answer : undefined;
   const errors = address ? addressErrors(question, address) : {};
+  const failing = Object.keys(errors).length > 0;
   return (
     <AddressField
       id={question.id}
+      errors={failing ? [] : props.errors}
       label={question.label}
       hint={question.hint}
       autoFocus={props.autoFocus}
