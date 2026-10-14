@@ -1,7 +1,7 @@
 // Le questionnaire du modèle : ses parties, dans l'ordre du catalogue de
 // l'éditeur. Les options et leurs libellés viennent des déclarations.
 
-import type { QuestionnairePart } from "../../socle";
+import { optionsFrom, type QuestionnairePart } from "../../socle";
 import type { Cibles } from "./declarations/cibles";
 import { OPTIONS, type Questions } from "./declarations/questions";
 
@@ -18,7 +18,7 @@ export const PARTS: readonly QuestionnairePart<Questions, undefined>[] = [
             id: "Q0.1",
             kind: "single choice",
             label: "Quel est votre besoin ?",
-            options: optionsOf("Q0.1", {
+            options: optionsFrom(OPTIONS["Q0.1"], {
               "1_VERIFIER": { description: "Environ 2 minutes." },
               "2_VERIFIER_ET_PRESCRIRE": { description: "Environ 4 minutes." },
             }),
@@ -35,22 +35,3 @@ export const COMPLEMENT: QuestionnairePart<Questions, Cibles> = {
   title: "Informations permettant de compléter la prescription",
   pages: [],
 };
-
-// ---- implémentation ----
-
-// Ce qu'une option porte en plus de son libellé.
-type Details = { description?: string };
-
-// Les options d'une question, dans l'ordre de leur déclaration.
-function optionsOf<Id extends keyof typeof OPTIONS>(
-  id: Id,
-  details: Partial<Record<keyof (typeof OPTIONS)[Id], Details>> = {},
-) {
-  const slugs = Object.keys(OPTIONS[id]) as (keyof (typeof OPTIONS)[Id] &
-    string)[];
-  return slugs.map((slug) => ({
-    value: slug,
-    label: OPTIONS[id][slug] as string,
-    ...details[slug],
-  }));
-}

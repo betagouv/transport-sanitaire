@@ -61,7 +61,7 @@ Huit fichiers portent la mécanique, dans `front/socle/questionnaire-engine/` :
 | Fichier | Ce qu'il porte |
 |---|---|
 | `question.ts` | ce qu'est une question, une page, une partie, une réponse |
-| `option.ts` | ce qu'est une option d'un choix : son libellé, ce qui la propose, son aide, ce qu'elle bloque |
+| `option.ts` | ce qu'est une option d'un choix : son libellé, ce qui la propose, son aide, ce qu'elle bloque. `optionsFrom` tire les options d'une table de libellés, dans l'ordre de ses clés |
 | `address.ts` | ce qu'est une adresse, la seule réponse en objet : ses champs, ceux qui se demandent en France ou à l'étranger, et le message de chaque champ fautif |
 | `asked-questions.ts` | ce qui s'affiche, vu les réponses : libellés, bornes, options, mode d'adresse et incohérences du moment. Et les questions validées, avec ce qui s'y proposait |
 | `offered-answer.ts` | ce qu'une réponse vaut pour sa question : réduite aux options qui se proposent ou aux champs d'adresse qui se demandent, suffisante ou non |
