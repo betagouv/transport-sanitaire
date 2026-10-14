@@ -1,7 +1,7 @@
 // Remplit un formulaire PDF (AcroForm) à partir d'entrées.
 //
 // Ce fichier ne fait que l'écriture. Ce qu'il faut écrire se décide d'après le
-// DTO du cerfa (`produce-cerfa.ts`).
+// DTO du cerfa (`generate-cerfa.ts`).
 //
 // Il n'importe rien de `node:*` : le PDF se génère dans le navigateur, et les
 // données du patient ne quittent pas le poste.

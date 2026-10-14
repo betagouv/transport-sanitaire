@@ -1,4 +1,4 @@
-// Produit un cerfa rempli puis aplati, et le propose au téléchargement.
+// Génère un cerfa rempli puis aplati, et le propose au téléchargement.
 //
 // Le cerfa ne sait pas d'où viennent ses données : il reçoit son DTO, que le
 // simulateur calcule, et qu'une autre source pourrait calculer.
@@ -17,18 +17,18 @@ import type { FieldEntry } from "./fill-cerfa";
 import type { Drawing, Mark } from "./flatten-cerfa";
 import { TEXT_SIZES } from "./text-sizes";
 
-/** Le cerfa produit, et les commentaires qu'il n'a pas pu garder. */
-export type Produced = {
+/** Le cerfa généré, et les commentaires qu'il n'a pas pu garder. */
+export type GeneratedCerfa = {
   readonly pdf: Blob;
   /** Les entrées du DTO dont le commentaire a été retiré, faute de place. */
   readonly removedComments: readonly string[];
 };
 
 /** Le cerfa rempli d'après `dto`, aplati, prêt à télécharger. */
-export async function produceCerfa<Dto extends CerfaDto>(
+export async function generateCerfa<Dto extends CerfaDto>(
   cerfa: Cerfa<Dto>,
   dto: Dto,
-): Promise<Produced> {
+): Promise<GeneratedCerfa> {
   const [template, { fillCerfa }, { flattenCerfa }] = await Promise.all([
     cerfa.template(),
     import("./fill-cerfa"),

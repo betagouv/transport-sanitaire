@@ -1,6 +1,6 @@
 // Le bouton qui télécharge un cerfa.
 //
-// Le PDF se produit dès que le bouton s'affiche, dans le navigateur : un
+// Le PDF se génère dès que le bouton s'affiche, dans le navigateur : un
 // commentaire retiré faute de place s'annonce avant tout téléchargement (D-85).
 // Un échec se signale sans masquer ce que la page affiche déjà, et le clic
 // réessaie.
@@ -13,9 +13,9 @@ import type { Cerfa, CerfaDto } from "./cerfa";
 import {
   download,
   fileNameOf,
-  type Produced,
-  produceCerfa,
-} from "./produce-cerfa";
+  type GeneratedCerfa,
+  generateCerfa,
+} from "./generate-cerfa";
 
 type Props<Dto extends CerfaDto> = {
   cerfa: Cerfa<Dto>;
@@ -31,18 +31,10 @@ export function CerfaDownload<Dto extends CerfaDto>({
   date,
   label,
 }: Props<Dto>) {
-  const [downloadablePdf, setDownloadablePdf] = useState(() =>
-    produce(cerfa, dto),
-  );
-  const settled = useSettled(downloadablePdf);
+  const { settled, ready } = useDownloadablePdf(cerfa, dto);
 
   async function onClick() {
-    let result = settled;
-    if (result?.status !== "ready") {
-      const retry = produce(cerfa, dto);
-      setDownloadablePdf(retry);
-      result = await retry;
-    }
+    const result = await ready();
     if (result.status === "ready")
       download(result.pdf, fileNameOf(cerfa.fileName, date));
   }
@@ -67,20 +59,36 @@ export function CerfaDownload<Dto extends CerfaDto>({
 
 // ---- implémentation ----
 
-type Settled = ({ status: "ready" } & Produced) | { status: "failed" };
+type Settled = ({ status: "ready" } & GeneratedCerfa) | { status: "failed" };
 
-// Une production qui ne rejette jamais : son échec est un état de l'écran.
-function produce<Dto extends CerfaDto>(
+// Une génération qui ne rejette jamais : son échec est un état de l'écran.
+function generate<Dto extends CerfaDto>(
   cerfa: Cerfa<Dto>,
   dto: Dto,
 ): Promise<Settled> {
-  return produceCerfa(cerfa, dto).then(
-    (produced) => ({ status: "ready", ...produced }),
+  return generateCerfa(cerfa, dto).then(
+    (generated) => ({ status: "ready", ...generated }),
     (cause) => {
       console.error("[cerfa] Génération impossible.", cause);
       return { status: "failed" };
     },
   );
+}
+
+// Le PDF du cerfa, généré dès le montage. `ready` le rend, et le génère à
+// nouveau si la première tentative a échoué.
+function useDownloadablePdf<Dto extends CerfaDto>(cerfa: Cerfa<Dto>, dto: Dto) {
+  const [downloadablePdf, setDownloadablePdf] = useState(() =>
+    generate(cerfa, dto),
+  );
+  const settled = useSettled(downloadablePdf);
+  async function ready(): Promise<Settled> {
+    if (settled?.status === "ready") return settled;
+    const retry = generate(cerfa, dto);
+    setDownloadablePdf(retry);
+    return retry;
+  }
+  return { settled, ready };
 }
 
 // L'issue de `downloadablePdf`, `undefined` tant qu'elle se fait attendre.

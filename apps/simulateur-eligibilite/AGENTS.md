@@ -154,8 +154,8 @@ simulateur calcule le DTO sous le second résultat et le passe au bouton.
 | `cerfa.ts` | ce qu'est un cerfa : son DTO, son gabarit, et où va chaque entrée |
 | `dates.ts` | une date sur un champ peigné |
 | `flatten-cerfa.ts` | l'aplatissement du PDF rempli : plus aucun champ, chaque valeur dessinée sur la page (D-84). Puis ce qu'un champ ne sait pas montrer : les marques des cases partagées, les textes sans champ, ceux qui débordent |
-| `produce-cerfa.ts` | la production : le DTO traduit dans les noms du gabarit, remplir, puis aplatir, avec `pdf-lib` chargé à la demande. Le nom daté du fichier, le téléchargement |
-| `CerfaDownload.tsx` | le bouton, qui produit le PDF dès qu'il s'affiche et le télécharge au clic. L'avertissement d'un commentaire retiré, l'alerte si ça échoue |
+| `generate-cerfa.ts` | la génération : le DTO traduit dans les noms du gabarit, remplir, puis aplatir, avec `pdf-lib` chargé à la demande. Le nom daté du fichier, le téléchargement |
+| `CerfaDownload.tsx` | le bouton, qui génère le PDF dès qu'il s'affiche et le télécharge au clic. L'avertissement d'un commentaire retiré, l'alerte si ça échoue |
 
 Un formulaire rempli porte des données de santé nominatives. Il se génère **dans le
 navigateur uniquement**, et ce dossier n'adresse jamais `/api`.

@@ -148,7 +148,7 @@ front/                   le front, bundlé par Vite
     cerfa/               le socle de remplissage d'un PDF : un cerfa et son DTO,
                          l'écriture dans un AcroForm, le texte qui déborde,
                          l'aplatissement, les marques et textes dessinés, la
-                         production et le bouton de téléchargement. Aucun gabarit,
+                         génération et le bouton de téléchargement. Aucun gabarit,
                          et rien du simulateur.
     cerfa-mapping.ts     la traduction des données du simulateur en DTO d'un cerfa
     analytics/           le vocabulaire mesuré, seul import du reste, son transport
@@ -203,7 +203,7 @@ sert à tenir en vie, et sous test, ce que le parcours réel reprendra :
 | Verrou | Au résultat, « Précédent » rouvre le questionnaire. L'action principale verrouille : le complément est un second parcours, qui ne repose aucune question d'avant et n'a pas de « Précédent » sur sa première page. | `simulateur/Simulateur.tsx` |
 | Stepper | Il compte des parties, jamais des pages. Les résultats l'affichent aussi. | `questionnaire-engine/Stepper.tsx` |
 | Impression de la fiche | Le premier résultat s'imprime depuis le navigateur, en action principale. Imprimer ne verrouille rien : « Précédent » reste possible, et une fiche changée se réimprime. « Compléter » se tient dans un groupe à part. Seule la fiche s'imprime : boutons, stepper et trace sont masqués (`fr-no-print`). | `simulateur/Resultats.tsx` |
-| Téléchargement du cerfa | Sous le second résultat, l'action principale télécharge le cerfa, produit dans le navigateur dès que le résultat s'affiche. Il porte la date du jour où le complément a été validé, qui ne change pas tant qu'il ne l'est pas à nouveau. Un échec s'affiche sous le résultat. Le PDF est aplati, sans aucun champ : il s'imprime depuis le lecteur, et ne s'y corrige plus. | `cerfa/CerfaDownload.tsx`, branché par `simulateur/Resultats.tsx` |
+| Téléchargement du cerfa | Sous le second résultat, l'action principale télécharge le cerfa, généré dans le navigateur dès que le résultat s'affiche. Il porte la date du jour où le complément a été validé, qui ne change pas tant qu'il ne l'est pas à nouveau. Un échec s'affiche sous le résultat. Le PDF est aplati, sans aucun champ : il s'imprime depuis le lecteur, et ne s'y corrige plus. | `cerfa/CerfaDownload.tsx`, branché par `simulateur/Resultats.tsx` |
 | Texte trop long | Un texte n'est jamais coupé, et ne bloque jamais le cerfa. Trop long pour son cadre, il passe de 9 à 8 pt, puis perd son commentaire facultatif : un avertissement le dit au-dessus du bouton, avant tout téléchargement. S'il ne tient toujours pas, il déborde sous son cadre, par-dessus ce qui s'y trouve, et ne descend sous 8 pt, jusqu'à 6 pt, que pour rester sur la page. | `cerfa/fill-cerfa.ts`, `cerfa/overflow.ts` |
 | Résultat sans suite | Quand la préconisation ne donne aucun cerfa, le premier résultat est le dernier écran : pas de bouton pour verrouiller, et le stepper s'arrête sur lui. | `simulateur/Resultats.tsx` |
 
