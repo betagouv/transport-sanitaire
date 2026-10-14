@@ -10,24 +10,16 @@ import {
   type PDFTextField,
   TextAlignment,
 } from "pdf-lib";
-
-/** La taille de départ d'un texte, en points. */
-export const TEMPLATE_FONT_SIZE = 10;
-
-/**
- * En dessous, un texte imprimé se lit mal. C'est le plancher courant des notes
- * de bas de page et des mentions légales.
- */
-export const MIN_READABLE_FONT_SIZE = 6;
+import { TEXT_SIZES } from "./text-sizes";
 
 /**
  * Une mesure liée à `field` : `text` tient-il dans sa zone réelle, à `font` et
- * `fontSize` ? `fontSize` vaut `TEMPLATE_FONT_SIZE` par défaut.
+ * `fontSize` ? `fontSize` vaut la taille visée par défaut.
  */
 export function fitsInField(
   field: PDFTextField,
   font: PDFFont,
-  fontSize: number = TEMPLATE_FONT_SIZE,
+  fontSize: number = TEXT_SIZES.target,
 ): (text: string) => boolean {
   const bounds = innerBounds(field);
   if (!bounds || bounds.width <= 0 || bounds.height <= 0) {
@@ -46,7 +38,7 @@ export function fitsInField(
 
 /**
  * La plus grande taille à laquelle `text` tient dans la zone de `field`, entre
- * celle du gabarit et le plancher de lisibilité. Le nombre maximal de
+ * la taille visée et le plancher (`TEXT_SIZES`). Le nombre maximal de
  * caractères du champ compte aussi. `undefined` si le texte déborde à toutes
  * les tailles.
  */
@@ -58,8 +50,8 @@ export function fittingFontSize(
   const maximum = field.getMaxLength();
   if (maximum !== undefined && text.length > maximum) return undefined;
   for (
-    let fontSize = TEMPLATE_FONT_SIZE;
-    fontSize >= MIN_READABLE_FONT_SIZE;
+    let fontSize: number = TEXT_SIZES.target;
+    fontSize >= TEXT_SIZES.floor;
     fontSize--
   )
     if (fitsInField(field, font, fontSize)(text)) return fontSize;

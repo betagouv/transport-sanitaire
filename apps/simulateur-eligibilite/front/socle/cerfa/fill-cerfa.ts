@@ -15,13 +15,9 @@ import {
   PDFTextField,
   StandardFonts,
 } from "pdf-lib";
-import {
-  fitsInField,
-  fittingFontSize,
-  MIN_READABLE_FONT_SIZE,
-  TEMPLATE_FONT_SIZE,
-} from "./text-fit";
+import { fitsInField, fittingFontSize } from "./text-fit";
 import { TextOverflowError } from "./text-overflow";
+import { TEXT_SIZES } from "./text-sizes";
 
 /**
  * Une valeur à écrire : un texte dans un champ nommé, une case à cocher, ou un
@@ -40,12 +36,6 @@ export type FieldEntry = { readonly field: string } & (
 );
 
 export type FillOptions = {
-  /**
-   * Passe les champs remplis en lecture seule. Le prescripteur ne peut alors
-   * plus corriger ce que le simulateur a déduit. Par défaut, le formulaire reste
-   * éditable.
-   */
-  readonly readOnly?: boolean;
   /**
    * Champs déclarés multilignes dans le PDF, mais dont le cadre ne montre qu'une
    * ligne. Un `\n` y ferait disparaître la suite à l'impression : leurs valeurs
@@ -72,7 +62,7 @@ export async function fillCerfa(
   const form = document.getForm();
   // `form.updateFieldAppearances()` (plus bas) redessine tout champ écrit dans
   // sa police par défaut, pas dans celle du gabarit. Le débordement se mesure
-  // donc avec cette police-là. Voir `shrinkOnOverflow`.
+  // donc avec cette police-là. Voir `sizeToFit`.
   const font = await document.embedFont(StandardFonts.Helvetica);
 
   for (const entry of entries) {
@@ -85,9 +75,6 @@ export async function fillCerfa(
   // Sans cet appel, les valeurs sont dans le PDF mais ne s'affichent pas dans les
   // lecteurs qui ne régénèrent pas les apparences.
   form.updateFieldAppearances();
-
-  if (options.readOnly)
-    for (const { field } of entries) form.getField(field).enableReadOnly();
 
   return document.save();
 }
@@ -117,25 +104,22 @@ function writeText(
     );
   }
   field.setText(value);
-  shrinkOnOverflow(field, font, value);
+  sizeToFit(field, font, value);
 }
 
 /**
  * Un gabarit déclare sa police (`/Cour 10 Tf`, par exemple). Mais `pdf-lib`
  * redessine tout champ écrit dans sa police par défaut, ici Helvetica,
- * embarquée dans `fillCerfa`. Une valeur composée, comme une adresse sur une
- * seule ligne, peut dépasser le cadre réel à 10 points (`fitsInField`).
+ * embarquée dans `fillCerfa`. Le texte s'écrit donc à la taille visée, mesurée
+ * dans cette police-là (`fitsInField`).
  *
- * On descend alors directement à `MIN_READABLE_FONT_SIZE`, sans garantir que
- * tout y tienne. Un texte qui doit tenir passe par `measuredText`.
+ * Une valeur qui n'y tient pas, comme une adresse sur une seule ligne, descend
+ * directement au plancher, sans garantir que tout y tienne. Un texte qui doit
+ * tenir passe par `measuredText`.
  */
-function shrinkOnOverflow(
-  field: PDFTextField,
-  font: PDFFont,
-  value: string,
-): void {
-  if (fitsInField(field, font, TEMPLATE_FONT_SIZE)(value)) return;
-  field.setFontSize(MIN_READABLE_FONT_SIZE);
+function sizeToFit(field: PDFTextField, font: PDFFont, value: string): void {
+  const fits = fitsInField(field, font, TEXT_SIZES.target)(value);
+  field.setFontSize(fits ? TEXT_SIZES.target : TEXT_SIZES.floor);
 }
 
 /**
@@ -198,7 +182,7 @@ function writeMeasuredText(
     throw new Error(`Le champ « ${name} » n'est pas un champ texte.`);
   }
   const fontSize =
-    text === "" ? TEMPLATE_FONT_SIZE : fittingFontSize(field, font, text);
+    text === "" ? TEXT_SIZES.target : fittingFontSize(field, font, text);
   if (fontSize === undefined) throw new TextOverflowError(name, text);
   field.setText(text);
   field.setFontSize(fontSize);

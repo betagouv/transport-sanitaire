@@ -2,10 +2,12 @@
 // Pas de gabarit réel : on connaît la taille et les états de chaque champ.
 
 import {
+  decodePDFRawStream,
   PDFCheckBox,
   PDFDict,
   PDFDocument,
   PDFName,
+  PDFRawStream,
   PDFTextField,
 } from "pdf-lib";
 
@@ -87,4 +89,33 @@ export async function fontSizeOf(
   const field = (await PDFDocument.load(pdf)).getForm().getTextField(name);
   const fontSize = field.acroField.getDefaultAppearance()?.match(/([\d.]+) Tf/);
   return Number(fontSize?.[1]);
+}
+
+/**
+ * Ce qu'un PDF aplati montre : le nombre de champs qui y restent, et les textes
+ * dessinés, dans l'ordre où le fichier les range.
+ */
+export async function drawnOn(
+  pdf: Uint8Array,
+): Promise<{ fields: number; texts: string[] }> {
+  const document = await PDFDocument.load(pdf);
+  const texts = document.context
+    .enumerateIndirectObjects()
+    .flatMap(([, object]) =>
+      object instanceof PDFRawStream ? textsOf(object) : [],
+    );
+  return { fields: document.getForm().getFields().length, texts };
+}
+
+// Les textes qu'un flux dessine. `pdf-lib` les écrit en hexadécimal, encodés
+// en WinAnsi, qui ne diffère pas de Latin-1 pour les lettres accentuées.
+function textsOf(stream: PDFRawStream): string[] {
+  const content = new TextDecoder("latin1").decode(
+    decodePDFRawStream(stream).decode(),
+  );
+  return [...content.matchAll(/<([0-9A-Fa-f]+)>\s*Tj/g)].map(([, hex = ""]) =>
+    new TextDecoder("latin1").decode(
+      Uint8Array.from(hex.match(/../g) ?? [], (byte) => parseInt(byte, 16)),
+    ),
+  );
 }

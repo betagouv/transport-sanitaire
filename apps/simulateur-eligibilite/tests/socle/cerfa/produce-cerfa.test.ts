@@ -4,7 +4,7 @@ import {
   fileNameOf,
   produceCerfa,
 } from "../../../front/socle/cerfa/produce-cerfa";
-import { readBack, testForm } from "./test-form";
+import { drawnOn, testForm } from "./test-form";
 
 // Le cerfa se remplit d'après ce qu'on lui donne, sans rien savoir du
 // simulateur : ici, une simple fiche.
@@ -21,15 +21,15 @@ const formulaire = {
 };
 
 describe("produire un cerfa", () => {
-  it("le remplit d'après une source quelconque", async () => {
+  it("le remplit d'après une source quelconque, puis l'aplatit", async () => {
     const pdf = await produceCerfa(formulaire, {
       nom: "Dupont",
       motif: "Dialyse",
     });
 
-    expect(await readBack(new Uint8Array(await pdf.arrayBuffer()))).toEqual({
-      nom: "Dupont",
-      motif: "Dialyse",
+    expect(await drawnOn(new Uint8Array(await pdf.arrayBuffer()))).toEqual({
+      fields: 0,
+      texts: expect.arrayContaining(["Dupont", "Dialyse"]),
     });
     expect(pdf.type).toBe("application/pdf");
   });

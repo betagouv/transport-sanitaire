@@ -1,4 +1,4 @@
-// Produit un cerfa rempli et le propose au téléchargement.
+// Produit un cerfa rempli puis aplati, et le propose au téléchargement.
 //
 // Le cerfa ne sait pas d'où viennent ses données : le simulateur lui en donne,
 // une autre source le pourrait. `Input` est ce que lit son mapping.
@@ -25,11 +25,13 @@ export async function produceCerfa<Input>(
   form: CerfaForm<Input>,
   input: Input,
 ): Promise<Blob> {
-  const [template, { fillCerfa }] = await Promise.all([
+  const [template, { fillCerfa }, { flattenCerfa }] = await Promise.all([
     form.template(),
     import("./fill-cerfa"),
+    import("./flatten-cerfa"),
   ]);
-  const pdf = await fillCerfa(template, entriesFrom(form.mapping, input));
+  const filled = await fillCerfa(template, entriesFrom(form.mapping, input));
+  const pdf = await flattenCerfa(filled);
   // `pdf` est une vue typée trop large pour `BlobPart` : on la repasse telle
   // quelle.
   return new Blob([pdf as BlobPart], { type: "application/pdf" });

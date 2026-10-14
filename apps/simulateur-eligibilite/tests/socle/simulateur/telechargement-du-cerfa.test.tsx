@@ -1,7 +1,7 @@
 import { screen, waitFor } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { Model } from "../../../front/socle/model";
-import { readBack } from "../cerfa/test-form";
+import { drawnOn } from "../cerfa/test-form";
 import { modeleDeTest } from "../modele-de-test";
 import {
   allerAuResultat,
@@ -30,7 +30,7 @@ afterEach(() => {
 });
 
 describe("le cerfa", () => {
-  it("se télécharge rempli, sous un nom daté", async () => {
+  it("se télécharge rempli et aplati, sous un nom daté", async () => {
     vi.setSystemTime(new Date("2026-10-14T10:00:00Z"));
     const user = await ouvrirLeSimulateur();
     await allerAuCerfa(user);
@@ -38,10 +38,9 @@ describe("le cerfa", () => {
     const pdf = await telecharger(user);
 
     expect(pdf.nom).toBe("bon-de-commande-2026-10-14.pdf");
-    expect(await readBack(await pdf.contenu())).toEqual({
-      commande: "thé, lait",
-      quantite: "2",
-      date: "2026-10-14",
+    expect(await drawnOn(await pdf.contenu())).toEqual({
+      fields: 0,
+      texts: ["thé, lait", "2", "2026-10-14"],
     });
   });
 
@@ -54,9 +53,7 @@ describe("le cerfa", () => {
     const pdf = await telecharger(user);
 
     expect(pdf.nom).toBe("bon-de-commande-2026-10-14.pdf");
-    expect(await readBack(await pdf.contenu())).toMatchObject({
-      date: "2026-10-14",
-    });
+    expect((await drawnOn(await pdf.contenu())).texts).toContain("2026-10-14");
   });
 
   it("prend la date du jour quand le complément est validé à nouveau", async () => {
@@ -69,9 +66,7 @@ describe("le cerfa", () => {
 
     const pdf = await telecharger(user);
 
-    expect(await readBack(await pdf.contenu())).toMatchObject({
-      date: "2026-10-15",
-    });
+    expect((await drawnOn(await pdf.contenu())).texts).toContain("2026-10-15");
   });
 
   it("qui ne se génère pas le dit, sous le résultat toujours affiché", async () => {

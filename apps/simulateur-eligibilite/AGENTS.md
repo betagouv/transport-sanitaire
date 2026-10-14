@@ -125,10 +125,12 @@ reste du socle.
 |---|---|
 | `fill-cerfa.ts` | l'écriture dans un AcroForm : textes, cases et leurs états d'export, refus de tronquer |
 | `text-fit.ts` | un texte tient-il dans son champ, et à quelle taille |
+| `text-sizes.ts` | la configuration des tailles (D-68) : la taille visée, 9 pt, et le plancher. Une version du modèle la modifie, pas le code |
 | `text-overflow.ts` | l'erreur levée quand il ne tient pas |
 | `field-mapping.ts` | la forme d'un tableau de remplissage : un champ, une ligne |
 | `dates.ts` | une date sur un champ peigné |
-| `produce-cerfa.ts` | ce qu'est un cerfa à remplir (`CerfaForm`), sa production au clic avec `pdf-lib` chargé à la demande, le nom daté du fichier, le téléchargement |
+| `flatten-cerfa.ts` | l'aplatissement du PDF rempli : plus aucun champ, chaque valeur dessinée sur la page (D-84) |
+| `produce-cerfa.ts` | ce qu'est un cerfa à remplir (`CerfaForm`), sa production au clic (remplir, puis aplatir) avec `pdf-lib` chargé à la demande, le nom daté du fichier, le téléchargement |
 | `CerfaDownload.tsx` | le bouton qui produit et télécharge, et l'alerte si ça échoue |
 
 Un formulaire rempli porte des données de santé nominatives. Il se génère **dans le
