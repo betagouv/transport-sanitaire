@@ -26,10 +26,16 @@ export const model = defineModel<Questions, Faits, Cibles>({
       commande === SANS_COMMANDE
         ? null
         : {
-            template: "bon-de-commande.pdf",
+            // Un gabarit fabriqué : le test relit ses champs sans servir d'asset.
+            template: () =>
+              import("../../cerfa/test-form").then((m) => m.bonDeCommande()),
+            fileName: "bon-de-commande",
             mapping: {
               commande: textFrom(({ cibles }) => cibles.commande),
               quantite: textFrom(({ answers }) => String(answers.quantite)),
+              date: textFrom(({ completedAt }) =>
+                completedAt.toISOString().slice(0, 10),
+              ),
             },
           },
     title: "Commande complétée",

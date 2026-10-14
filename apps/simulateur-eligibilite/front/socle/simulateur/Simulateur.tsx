@@ -114,7 +114,12 @@ function SecondQuestionnaire({
       endLabel="Terminer"
       DebugTrace={DebugTrace}
       onComplete={(_, previousState) =>
-        goTo({ name: "cerfa", locked, previousState })
+        goTo({
+          name: "cerfa",
+          locked,
+          previousState,
+          completedAt: new Date(),
+        })
       }
     />
   );
@@ -141,6 +146,7 @@ function CerfaResultatScreen({ screen, goTo, ...props }: ScreenProps<"cerfa">) {
     <CerfaResultat
       state={screen.previousState}
       locked={locked}
+      completedAt={screen.completedAt}
       onReopen={(resume) => goTo({ name: "complement", locked, resume })}
       {...props}
     />

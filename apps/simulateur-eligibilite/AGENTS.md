@@ -114,8 +114,12 @@ modèle qui applique, fait par fait, le contrat de l'éditeur.
 
 ## Le socle PDF
 
-`front/socle/cerfa/` ne porte plus aucun formulaire. Il garde ce qui
-ne dépend d'aucun gabarit :
+`front/socle/cerfa/` remplit un cerfa et le télécharge. Il ne porte aucun
+formulaire, et **ne sait rien du simulateur** : il reçoit des données, d'où
+qu'elles viennent, et un mapping qui les lit (`CerfaForm<Input>`). Le simulateur
+le branche sous le second résultat, avec les réponses, les cibles et la date de
+complétion. Une autre source pourrait le brancher de même. Il n'importe rien du
+reste du socle.
 
 | Fichier | Ce qu'il porte |
 |---|---|
@@ -124,11 +128,17 @@ ne dépend d'aucun gabarit :
 | `text-overflow.ts` | l'erreur levée quand il ne tient pas |
 | `field-mapping.ts` | la forme d'un tableau de remplissage : un champ, une ligne |
 | `dates.ts` | une date sur un champ peigné |
+| `produce-cerfa.ts` | ce qu'est un cerfa à remplir (`CerfaForm`), sa production au clic avec `pdf-lib` chargé à la demande, le nom daté du fichier, le téléchargement |
+| `CerfaDownload.tsx` | le bouton qui produit et télécharge, et l'alerte si ça échoue |
 
 Un formulaire rempli porte des données de santé nominatives. Il se génère **dans le
 navigateur uniquement**, et ce dossier n'adresse jamais `/api`.
 
-*Gardé par* `tests/socle/cerfa/fill-cerfa.test.ts`, sur un formulaire fabriqué, et par
+Qui fournit le cerfa dit d'où vient son gabarit : `template` est un chargeur,
+appelé au clic. `templateAt(url)` charge un asset servi par l'app.
+
+*Gardé par* `tests/socle/cerfa/`, sur des formulaires fabriqués,
+`tests/socle/simulateur/telechargement-du-cerfa.test.tsx`, et
 `tests/architecture.test.ts`.
 
 ## Les trois racines de runtime
@@ -193,13 +203,15 @@ Ils sont **exécutables**, dans
 - les frontières entre `front/`, `server/` et `shared/` ;
 - le simulateur, qui ignore qui prescrit ;
 - les seeds et les developer tools, greffés sur le simulateur et jamais l'inverse ;
-- le socle PDF, qui n'adresse jamais `/api` ;
+- le socle PDF, qui ne dépend que de lui-même et n'adresse jamais `/api` ;
 - les règles publicodes, qui ne portent que de l'éligibilité (sans objet tant que
   aucun modèle n'a de dossier `rules/`) ;
 - publicodes, que seul le moteur de décision du socle importe ;
 - les modèles de `front/models/`, que seul `tests/model/` importe, et qui ne
-  s'importent pas entre eux ;
-- les limites de 30 et 300 lignes.
+  s'importent pas entre eux.
+
+Les limites de 30 et 300 lignes sont à part, dans
+[`tests/taille-du-code.test.ts`](tests/taille-du-code.test.ts).
 
 **Ne les recopie pas ici.** Lis le fichier. Lis surtout le message d'échec avant
 de contourner une règle : il dit ce qu'elle protège.
