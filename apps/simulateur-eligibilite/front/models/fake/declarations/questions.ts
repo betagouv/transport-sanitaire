@@ -23,6 +23,9 @@ export type Questions = {
   nom: string;
   facturation: "france" | "etranger";
   adresse: Address;
+  expedition: Address;
+  debut: string;
+  fin: string;
   retrait: "sur-place" | "a-emporter" | "livraison";
   jour: string;
   remarque: string;

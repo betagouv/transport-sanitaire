@@ -17,6 +17,30 @@ const CAFE_SUCRE = {
 // La même, la première page du complément remplie.
 const DEUX_TASSES = { ...CAFE_SUCRE, quantite: 2, lieu: "terrasse" } as const;
 
+// La facture part en France, à une adresse connue.
+const FACTURE = {
+  ...DEUX_TASSES,
+  facturation: "france",
+  adresse: {
+    placeName: "Café de la Gare",
+    street: "3 rue des Lilas",
+    postalCode: "75012",
+    city: "Paris",
+  },
+} as const;
+
+// Le reçu part ailleurs, puis le créneau est valable : la page du retrait suit.
+const AVANT_LE_RETRAIT = {
+  ...FACTURE,
+  expedition: {
+    street: "8 avenue des Tilleuls",
+    postalCode: "69003",
+    city: "Lyon",
+  },
+  debut: "2026-10-12T08:30",
+  fin: "2026-10-12T10:00",
+} as const;
+
 export const SEEDS: readonly Seed<Questions, Cibles>[] = [
   {
     id: "accompagnements-du-the",
@@ -140,17 +164,37 @@ export const SEEDS: readonly Seed<Questions, Cibles>[] = [
     id: "complement-retrait",
     label: "Complément : réponse qui bloque, date bornée",
     description:
-      "Passe le verrou et s'arrête sur le retrait : « En livraison » bloque, et le jour est borné. La page suivante porte le texte long. L'adresse, déjà donnée, est un objet.",
+      "Passe le verrou et s'arrête sur le retrait : « En livraison » bloque, et le jour est borné. La page suivante porte le texte long. Les adresses, déjà données, sont des objets.",
+    answers: AVANT_LE_RETRAIT,
+    expected: { commande: "café, sucre" },
+  },
+  {
+    id: "complement-creneau",
+    label: "Complément : deux messages sous une même réponse",
+    description:
+      "S'arrête sur le créneau de retrait, dont la fin est un dimanche et précède le début : deux messages s'affichent ensemble sous la fin, et « Suivant » reste grisé. Corrigée, la page se valide.",
     answers: {
-      ...DEUX_TASSES,
-      facturation: "france",
-      adresse: {
-        placeName: "Café de la Gare",
-        street: "3 rue des Lilas",
-        postalCode: "75012",
-        city: "Paris",
-      },
+      ...FACTURE,
+      expedition: AVANT_LE_RETRAIT.expedition,
+      debut: "2026-10-19T10:00",
+      fin: "2026-10-18T09:00",
     },
+    expected: { commande: "café, sucre" },
+  },
+  {
+    id: "complement-retrait-contredit",
+    label: "Complément : une réponse contredit une page antérieure",
+    description:
+      "S'arrête sur le retrait, « À emporter » étant choisi alors que le service est en terrasse, plusieurs pages plus haut : le message nomme la question à corriger. « Précédent » mène au lieu, et revenir sur le retrait permet de repasser.",
+    answers: { ...AVANT_LE_RETRAIT, retrait: "a-emporter" },
+    expected: { commande: "café, sucre" },
+  },
+  {
+    id: "complement-expedition",
+    label: "Complément : une adresse répète la précédente",
+    description:
+      "S'arrête sur l'adresse du reçu, identique à celle de la facture : le message s'affiche sous le groupe, tous les champs en rouge, et « Suivant » reste grisé.",
+    answers: { ...FACTURE, expedition: FACTURE.adresse },
     expected: { commande: "café, sucre" },
   },
 ];
