@@ -202,7 +202,7 @@ export const SEEDS: readonly Seed<Questions, Cibles>[] = [
     id: "commande-complete",
     label: "Résultat : le bon de commande à télécharger",
     description:
-      "Passe tout le complément et s'ouvre sur la commande complétée. Le bouton télécharge le bon de commande aplati : la commande, le nombre de tasses et la date du jour dans leurs champs, et le lait et le sucre marqués ensemble alors qu'ils partagent un même champ.",
+      "Passe tout le complément et s'ouvre sur la commande complétée. Le bouton télécharge le bon de commande aplati : la commande, le nombre de tasses et la date du jour dans leurs champs, le lait et le sucre marqués ensemble alors qu'ils partagent un même champ, et la remarque dessinée là où le gabarit n'a pas de champ.",
     // Le jour retenu reste dans ses bornes : demain, quel que soit le jour où
     // la seed est rejouée.
     answers: {
@@ -210,6 +210,7 @@ export const SEEDS: readonly Seed<Questions, Cibles>[] = [
       accompagnements: ["lait", "sucre"],
       retrait: "sur-place",
       jour: dayFromToday(1),
+      remarque: "Sans mousse, s'il vous plaît.",
     },
     expected: { commande: "café, lait et sucre" },
   },

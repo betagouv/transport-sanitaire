@@ -8,7 +8,7 @@
 
 import type { BoxBinding, Cerfa, CerfaDto, TextBinding } from "./cerfa";
 import type { FieldEntry } from "./fill-cerfa";
-import type { Mark } from "./flatten-cerfa";
+import type { Drawing, Mark } from "./flatten-cerfa";
 
 /** Le cerfa rempli d'après `dto`, aplati, prêt à télécharger. */
 export async function produceCerfa<Dto extends CerfaDto>(
@@ -20,9 +20,12 @@ export async function produceCerfa<Dto extends CerfaDto>(
     import("./fill-cerfa"),
     import("./flatten-cerfa"),
   ]);
-  const { entries, singleLineFields, marks } = instructionsOf(cerfa, dto);
+  const { entries, singleLineFields, marks, drawings } = instructionsOf(
+    cerfa,
+    dto,
+  );
   const filled = await fillCerfa(template, entries, { singleLineFields });
-  const pdf = await flattenCerfa(filled, marks);
+  const pdf = await flattenCerfa(filled, { marks, drawings });
   // `pdf` est une vue typée trop large pour `BlobPart` : on la repasse telle
   // quelle.
   return new Blob([pdf as BlobPart], { type: "application/pdf" });
@@ -47,6 +50,10 @@ function instructionsOf<Dto extends CerfaDto>(cerfa: Cerfa<Dto>, dto: Dto) {
     marks: filled.flatMap(([, binding]): Mark[] =>
       "drawn" in binding && binding.drawn ? [binding] : [],
     ),
+    drawings: Object.entries(cerfa.drawings).flatMap(([key, at]): Drawing[] => {
+      const text = dto.drawings[key];
+      return isGiven(text) ? [{ text, at }] : [];
+    }),
   };
 }
 
