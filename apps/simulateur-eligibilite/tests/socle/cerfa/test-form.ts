@@ -31,6 +31,18 @@ export async function testForm(): Promise<Uint8Array> {
   return document.save();
 }
 
+/** Le bon de commande du modèle factice : trois champs sur une ligne. */
+export async function bonDeCommande(): Promise<Uint8Array> {
+  const document = await PDFDocument.create();
+  const page = document.addPage([400, 200]);
+  const form = document.getForm();
+  for (const [rang, nom] of ["commande", "quantite", "date"].entries())
+    form
+      .createTextField(nom)
+      .addToPage(page, { x: 20, y: 150 - 40 * rang, width: 300, height: 16 });
+  return document.save();
+}
+
 /** Relit un PDF rempli et rend `{ nom du champ → valeur }`, champs vides exclus. */
 export async function readBack(
   pdf: Uint8Array,

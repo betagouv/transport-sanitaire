@@ -17,6 +17,7 @@ import {
 } from "../questionnaire-engine/question";
 import type { QuestionnaireState } from "../questionnaire-engine/questionnaire";
 import { Stepper } from "../questionnaire-engine/Stepper";
+import { CerfaDownload } from "./CerfaDownload";
 import type { Locked } from "./start";
 
 type Props = {
@@ -71,15 +72,17 @@ export function FirstResultat({
 }
 
 // « Précédent » revient au second questionnaire, jamais avant le verrou. La
-// préconisation affichée est celle que le verrou a figée.
+// préconisation affichée est celle que le verrou a figée. Le cerfa se télécharge
+// tel que le résultat l'affiche, daté du jour où le complément a été validé.
 export function CerfaResultat({
   model,
   state,
   locked,
+  completedAt,
   DebugTrace,
   onReopen,
   onRestart,
-}: Props & { locked: Locked }) {
+}: Props & { locked: Locked; completedAt: Date }) {
   const { answers } = state;
   const { cibles } = locked.preconisation;
   const { part, title, Resultat } = model.cerfa;
@@ -95,11 +98,17 @@ export function CerfaResultat({
       DebugTrace={DebugTrace}
     >
       <Resultat answers={answers} cibles={cibles} />
+      <CerfaDownload
+        cerfa={model.cerfa}
+        input={{ answers, cibles, completedAt }}
+      />
       <div className="fr-btns-group fr-btns-group--inline">
         <SecondaryButton onClick={() => onReopen(state)}>
           Précédent
         </SecondaryButton>
-        <PrimaryButton onClick={onRestart}>Nouvelle simulation</PrimaryButton>
+        <SecondaryButton onClick={onRestart}>
+          Nouvelle simulation
+        </SecondaryButton>
       </div>
     </Frame>
   );

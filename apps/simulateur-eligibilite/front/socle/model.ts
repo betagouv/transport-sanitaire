@@ -29,12 +29,25 @@ type ResultatProps<Questions extends AnyQuestions, Cibles> = {
   cibles: Cibles;
 };
 
+/** Ce que le mapping d'un cerfa lit : le résultat, et la date de complétion. */
+export type CerfaInput<
+  Questions extends AnyQuestions = AnyQuestions,
+  Cibles = AnyCibles,
+> = ResultatProps<Questions, Cibles> & { completedAt: Date };
+
 /** Le cerfa d'une préconisation : son gabarit, et ce qu'on y écrit. */
-type CerfaForm<Questions extends AnyQuestions, Cibles> = {
-  template: string;
-  mapping: FieldMapping<
-    ResultatProps<Questions, Cibles> & { completedAt: Date }
-  >;
+export type CerfaForm<
+  Questions extends AnyQuestions = AnyQuestions,
+  Cibles = AnyCibles,
+> = {
+  /**
+   * Charge le gabarit vierge, au clic. Le modèle dit d'où il vient : un asset
+   * servi par l'app, ou un formulaire fabriqué.
+   */
+  template: () => Promise<ArrayBuffer | Uint8Array>;
+  /** Le début du nom du fichier téléchargé. Le socle y ajoute la date. */
+  fileName: string;
+  mapping: FieldMapping<CerfaInput<Questions, Cibles>>;
 };
 
 export type Model<
