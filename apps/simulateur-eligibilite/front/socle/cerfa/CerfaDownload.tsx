@@ -4,27 +4,23 @@
 // masquer ce que la page affiche déjà.
 
 import { useState } from "react";
-import {
-  type CerfaForm,
-  download,
-  fileNameOf,
-  produceCerfa,
-} from "./produce-cerfa";
+import type { Cerfa, CerfaDto } from "./cerfa";
+import { download, fileNameOf, produceCerfa } from "./produce-cerfa";
 
-type Props<Input> = {
-  form: CerfaForm<Input>;
-  input: Input;
+type Props<Dto extends CerfaDto> = {
+  cerfa: Cerfa<Dto>;
+  dto: Dto;
   /** La date du document, qui date aussi le nom du fichier. */
   date: Date;
   label: string;
 };
 
-export function CerfaDownload<Input>({
-  form,
-  input,
+export function CerfaDownload<Dto extends CerfaDto>({
+  cerfa,
+  dto,
   date,
   label,
-}: Props<Input>) {
+}: Props<Dto>) {
   const [pending, setPending] = useState(false);
   const [failed, setFailed] = useState(false);
 
@@ -32,8 +28,8 @@ export function CerfaDownload<Input>({
     setPending(true);
     setFailed(false);
     try {
-      const pdf = await produceCerfa(form, input);
-      download(pdf, fileNameOf(form.fileName, date));
+      const pdf = await produceCerfa(cerfa, dto);
+      download(pdf, fileNameOf(cerfa.fileName, date));
     } catch (cause) {
       console.error("[cerfa] Génération impossible.", cause);
       setFailed(true);

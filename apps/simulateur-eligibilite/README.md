@@ -145,11 +145,11 @@ front/                   le front, bundlé par Vite
                          déverrouillage, garde commune à l'écran des seeds et aux traces
     seeds/               ce qu'est une seed et son écran. Elles se greffent sur le
                          simulateur, jamais l'inverse : c'est App.tsx qui compose.
-    cerfa/               le socle de remplissage d'un PDF : l'écriture dans un
-                         AcroForm et ses pièges, la mesure d'un texte dans son champ,
-                         la forme d'un tableau de remplissage, la production au
-                         clic et le bouton de téléchargement. Aucun gabarit, et
-                         rien du simulateur : il remplit d'après toute source.
+    cerfa/               le socle de remplissage d'un PDF : un cerfa et son DTO,
+                         l'écriture dans un AcroForm, l'aplatissement, les marques
+                         dessinées, la production au clic et le bouton de
+                         téléchargement. Aucun gabarit, et rien du simulateur.
+    cerfa-mapping.ts     la traduction des données du simulateur en DTO d'un cerfa
     analytics/           le vocabulaire mesuré, seul import du reste, son transport
                          vers Matomo, et le choix de l'utilisateur transmis par le CMS
 cms/                     le script à coller dans Sites Conformes : l'opt-out du pied de

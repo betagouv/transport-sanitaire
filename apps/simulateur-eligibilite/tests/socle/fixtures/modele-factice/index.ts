@@ -1,14 +1,44 @@
 // Le modèle factice : un questionnaire sans rapport avec le transport
 // sanitaire, écrit dans le contrat `Model`. Les tests du socle tournent sur lui.
 
-import { defineModel } from "../../../../front/socle";
-import { textFrom } from "../../../../front/socle/cerfa/field-mapping";
+import {
+  bindCerfa,
+  type CerfaInput,
+  defineModel,
+  text,
+} from "../../../../front/socle";
 import type { Cibles } from "./declarations/cibles";
 import type { Faits } from "./declarations/faits";
 import type { Questions } from "./declarations/questions";
 import { cibles, faits, SANS_COMMANDE } from "./preconisation";
 import { COMPLEMENT, PARTS } from "./questionnaire";
 import { Commande, CommandeCompletee } from "./Resultats";
+
+// Un gabarit fabriqué : le test relit ce qu'il dessine sans servir d'asset.
+const BON_DE_COMMANDE = bindCerfa<
+  {
+    fields: { commande: string; quantite: string; date: string };
+  },
+  CerfaInput<Questions, Faits, Cibles>
+>(
+  {
+    template: () =>
+      import("../../cerfa/test-form").then((m) => m.bonDeCommande()),
+    fileName: "bon-de-commande",
+    fields: {
+      commande: text("commande"),
+      quantite: text("quantite"),
+      date: text("date"),
+    },
+  },
+  {
+    fields: {
+      commande: ({ cibles }) => cibles.commande,
+      quantite: ({ answers }) => String(answers.quantite),
+      date: ({ completedAt }) => completedAt.toISOString().slice(0, 10),
+    },
+  },
+);
 
 export const model = defineModel<Questions, Faits, Cibles>({
   preconisation: { faits, cibles },
@@ -23,21 +53,7 @@ export const model = defineModel<Questions, Faits, Cibles>({
     // Sans boisson, il n'y a rien à compléter : le premier résultat est le
     // dernier écran.
     form: ({ commande }) =>
-      commande === SANS_COMMANDE
-        ? null
-        : {
-            // Un gabarit fabriqué : le test relit ses champs sans servir d'asset.
-            template: () =>
-              import("../../cerfa/test-form").then((m) => m.bonDeCommande()),
-            fileName: "bon-de-commande",
-            mapping: {
-              commande: textFrom(({ cibles }) => cibles.commande),
-              quantite: textFrom(({ answers }) => String(answers.quantite)),
-              date: textFrom(({ completedAt }) =>
-                completedAt.toISOString().slice(0, 10),
-              ),
-            },
-          },
+      commande === SANS_COMMANDE ? null : BON_DE_COMMANDE,
     title: "Commande complétée",
     Resultat: CommandeCompletee,
     startLabel: "Compléter la commande",

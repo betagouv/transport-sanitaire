@@ -5,7 +5,7 @@
 // réponses, les faits et les cibles de l'un à l'autre.
 
 import type { ComponentType } from "react";
-import type { CerfaForm } from "./cerfa/produce-cerfa";
+import type { BoundCerfa } from "./cerfa-mapping";
 import { validatedQuestions } from "./questionnaire-engine/asked-questions";
 import {
   type Answers,
@@ -29,11 +29,15 @@ type ResultatProps<Questions extends AnyQuestions, Cibles> = {
   cibles: Cibles;
 };
 
-/** Ce que le mapping du cerfa lit : le résultat, et la date de complétion. */
+/**
+ * Ce que le mapping du cerfa lit : tout ce que le simulateur sait. Les
+ * réponses, les faits et les cibles figés au verrou, et la date de complétion.
+ */
 export type CerfaInput<
   Questions extends AnyQuestions = AnyQuestions,
+  Faits extends AnyFaits = AnyFaits,
   Cibles = AnyCibles,
-> = ResultatProps<Questions, Cibles> & { completedAt: Date };
+> = ResultatProps<Questions, Cibles> & { faits: Faits; completedAt: Date };
 
 export type Model<
   Questions extends AnyQuestions = AnyQuestions,
@@ -63,7 +67,9 @@ export type Model<
   cerfa: {
     part: QuestionnairePart<Questions, Cibles>;
     /** Le cerfa de cette préconisation. `null` : rien ne suit le premier résultat. */
-    form: (cibles: Cibles) => CerfaForm<CerfaInput<Questions, Cibles>> | null;
+    form: (
+      cibles: Cibles,
+    ) => BoundCerfa<CerfaInput<Questions, Faits, Cibles>> | null;
     title: string;
     Resultat: ComponentType<ResultatProps<Questions, Cibles>>;
     /** Le libellé de l'action qui verrouille. */

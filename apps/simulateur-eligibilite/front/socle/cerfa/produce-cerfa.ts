@@ -1,40 +1,53 @@
 // Produit un cerfa rempli puis aplati, et le propose au téléchargement.
 //
-// Le cerfa ne sait pas d'où viennent ses données : le simulateur lui en donne,
-// une autre source le pourrait. `Input` est ce que lit son mapping.
+// Le cerfa ne sait pas d'où viennent ses données : il reçoit son DTO, que le
+// simulateur calcule, et qu'une autre source pourrait calculer.
 //
 // `pdf-lib` et le gabarit ne se chargent qu'ici, au clic : le chunk d'entrée
 // n'en porte rien, et `scripts/verifier-bundle.ts` le vérifie.
 
-import { entriesFrom, type FieldMapping } from "./field-mapping";
+import type { BoxBinding, Cerfa, CerfaDto, TextBinding } from "./cerfa";
+import type { FieldEntry } from "./fill-cerfa";
+import type { Mark } from "./flatten-cerfa";
 
-/** Un cerfa à remplir : son gabarit, son nom de fichier, et ce qu'on y écrit. */
-export type CerfaForm<Input> = {
-  /**
-   * Charge le gabarit vierge, au clic. Qui le fournit dit d'où il vient : un
-   * asset servi par l'app (`templateAt`), ou un formulaire fabriqué.
-   */
-  template: () => Promise<ArrayBuffer | Uint8Array>;
-  /** Le début du nom du fichier téléchargé. `fileNameOf` y ajoute la date. */
-  fileName: string;
-  mapping: FieldMapping<Input>;
-};
-
-/** Le cerfa rempli d'après `input`, prêt à télécharger. */
-export async function produceCerfa<Input>(
-  form: CerfaForm<Input>,
-  input: Input,
+/** Le cerfa rempli d'après `dto`, aplati, prêt à télécharger. */
+export async function produceCerfa<Dto extends CerfaDto>(
+  cerfa: Cerfa<Dto>,
+  dto: Dto,
 ): Promise<Blob> {
   const [template, { fillCerfa }, { flattenCerfa }] = await Promise.all([
-    form.template(),
+    cerfa.template(),
     import("./fill-cerfa"),
     import("./flatten-cerfa"),
   ]);
-  const filled = await fillCerfa(template, entriesFrom(form.mapping, input));
-  const pdf = await flattenCerfa(filled);
+  const { entries, singleLineFields, marks } = instructionsOf(cerfa, dto);
+  const filled = await fillCerfa(template, entries, { singleLineFields });
+  const pdf = await flattenCerfa(filled, marks);
   // `pdf` est une vue typée trop large pour `BlobPart` : on la repasse telle
   // quelle.
   return new Blob([pdf as BlobPart], { type: "application/pdf" });
+}
+
+/**
+ * Ce que le DTO demande au PDF, dans les noms du gabarit. Une entrée absente,
+ * vide ou fausse laisse sa place vide.
+ */
+function instructionsOf<Dto extends CerfaDto>(cerfa: Cerfa<Dto>, dto: Dto) {
+  const bound = Object.entries(
+    cerfa.fields as Readonly<Record<string, TextBinding | BoxBinding>>,
+  );
+  const filled = bound.filter(([key]) => isGiven(dto.fields[key]));
+  return {
+    entries: filled.flatMap(([key, binding]) =>
+      entryOf(binding, dto.fields[key]),
+    ),
+    singleLineFields: bound.flatMap(([, binding]) =>
+      "singleLine" in binding && binding.singleLine ? [binding.field] : [],
+    ),
+    marks: filled.flatMap(([, binding]): Mark[] =>
+      "drawn" in binding && binding.drawn ? [binding] : [],
+    ),
+  };
 }
 
 /**
@@ -69,4 +82,25 @@ export function download(blob: Blob, name: string): void {
   link.click();
   link.remove();
   URL.revokeObjectURL(url);
+}
+
+// ---- implémentation ----
+
+function isGiven<Value>(value: Value | undefined): value is Value {
+  return value !== undefined && value !== "" && value !== false;
+}
+
+// Une case dessinée n'est pas un champ à remplir : elle part dans les marques.
+function entryOf(
+  binding: TextBinding | BoxBinding,
+  value: string | boolean | undefined,
+): FieldEntry[] {
+  if ("state" in binding)
+    return binding.drawn
+      ? []
+      : [{ field: binding.field, checked: binding.state }];
+  const text = String(value);
+  return binding.measured
+    ? [{ field: binding.field, measuredText: text }]
+    : [{ field: binding.field, text }];
 }

@@ -4,6 +4,7 @@
 
 import type { ComponentType, ReactNode } from "react";
 import { CerfaDownload } from "../cerfa/CerfaDownload";
+import { dtoFrom } from "../cerfa-mapping";
 import {
   type CerfaInput,
   type Model,
@@ -89,7 +90,7 @@ export function CerfaResultat({
   onRestart,
 }: Props & { locked: Locked; completedAt: Date }) {
   const { answers } = state;
-  const { cibles } = locked.preconisation;
+  const { faits, cibles } = locked.preconisation;
   const { part, title, Resultat } = model.cerfa;
   const total = model.transportAndEligibility.parts.length + 1;
   const all = [...pagesOf(model.transportAndEligibility.parts), ...part.pages];
@@ -103,7 +104,7 @@ export function CerfaResultat({
       DebugTrace={DebugTrace}
     >
       <Resultat answers={answers} cibles={cibles} />
-      <Cerfa model={model} input={{ answers, cibles, completedAt }} />
+      <Cerfa model={model} input={{ answers, faits, cibles, completedAt }} />
       <div className="fr-btns-group fr-btns-group--inline">
         <SecondaryButton onClick={() => onReopen(state)}>
           Précédent
@@ -121,12 +122,12 @@ export function CerfaResultat({
 // Le cerfa de la préconisation figée, daté du jour où le complément a été
 // validé. Rien quand elle n'en donne pas.
 function Cerfa({ model, input }: { model: Model; input: CerfaInput }) {
-  const form = model.cerfa.form(input.cibles);
+  const bound = model.cerfa.form(input.cibles);
   return (
-    form && (
+    bound && (
       <CerfaDownload
-        form={form}
-        input={input}
+        cerfa={bound.cerfa}
+        dto={dtoFrom(bound.mapping, input)}
         date={input.completedAt}
         label={model.cerfa.downloadLabel}
       />
