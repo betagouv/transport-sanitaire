@@ -10,10 +10,10 @@ describe("flattenCerfa", () => {
   it("ne laisse aucun champ, et garde chaque valeur écrite", async () => {
     const filled = await fillCerfa(await testForm(), [
       { field: "nom", text: "DUPONT Marie" },
-      { field: "motif", measuredText: "Dialyse en centre." },
+      { field: "motif", text: "Dialyse en centre." },
     ]);
 
-    const pdf = await flattenCerfa(filled);
+    const pdf = await flattenCerfa(filled.pdf);
 
     expect(await drawnOn(pdf)).toEqual({
       fields: 0,

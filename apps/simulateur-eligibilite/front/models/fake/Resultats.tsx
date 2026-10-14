@@ -1,7 +1,8 @@
 // Les deux résultats du modèle de démonstration : la commande, puis la commande
 // complétée.
 
-import type { Address, Answers } from "../../socle";
+import type { Answers } from "../../socle";
+import { enUneLigne } from "./adresse";
 import type { Cibles } from "./declarations/cibles";
 import type { Questions } from "./declarations/questions";
 
@@ -34,15 +35,6 @@ export function CommandeCompletee({ answers, cibles }: Props) {
 }
 
 // ---- implémentation ----
-
-// Une adresse est un objet : ses champs se lisent un par un.
-function enUneLigne(adresse: Address): string {
-  const { placeName, street, complement, postalCode, city, country } = adresse;
-  const commune = [postalCode, city].filter(Boolean).join(" ");
-  return [placeName, street, complement, commune, country]
-    .filter(Boolean)
-    .join(", ");
-}
 
 // Une cible indéfinie n'est pas une décision : elle ne s'affiche ni comme un
 // « oui », ni comme un « non ».

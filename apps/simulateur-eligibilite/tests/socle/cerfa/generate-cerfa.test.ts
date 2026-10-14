@@ -3,13 +3,14 @@ import {
   at,
   box,
   type Cerfa,
+  commentOn,
   drawnBox,
   text,
 } from "../../../front/socle/cerfa/cerfa";
 import {
   fileNameOf,
-  produceCerfa,
-} from "../../../front/socle/cerfa/produce-cerfa";
+  generateCerfa,
+} from "../../../front/socle/cerfa/generate-cerfa";
 import { drawnOn, markedStates, statesOf, testForm } from "./test-form";
 
 // Le cerfa se remplit d'après son DTO, sans rien savoir du simulateur : ici,
@@ -20,6 +21,7 @@ type Fiche = {
   fields: {
     nom?: string;
     motif?: string;
+    precisions?: string;
     en_ald?: boolean;
     avec_lait?: boolean;
     avec_sucre?: boolean;
@@ -37,7 +39,8 @@ async function fiche(): Promise<Cerfa<Fiche>> {
     fileName: "fiche",
     fields: {
       nom: text("nom"),
-      motif: text("motif", { measured: true }),
+      motif: text("motif"),
+      precisions: commentOn("motif"),
       en_ald: box("ald", ald ?? ""),
       avec_lait: drawnBox("acc", "lait"),
       avec_sucre: drawnBox("acc", "sucre"),
@@ -47,12 +50,16 @@ async function fiche(): Promise<Cerfa<Fiche>> {
   };
 }
 
-const produire = async (dto: Fiche) =>
-  new Uint8Array(await (await produceCerfa(await fiche(), dto)).arrayBuffer());
+const generer = async (dto: Fiche) =>
+  new Uint8Array(
+    await (await generateCerfa(await fiche(), dto)).pdf.arrayBuffer(),
+  );
 
-describe("produire un cerfa", () => {
+const LONG = "Un motif médical beaucoup trop long pour ce cadre. ".repeat(4);
+
+describe("générer un cerfa", () => {
   it("le remplit d'après son DTO, puis l'aplatit", async () => {
-    const pdf = await produire({
+    const pdf = await generer({
       fields: { nom: "Dupont", motif: "Dialyse" },
       drawings: {},
     });
@@ -64,7 +71,7 @@ describe("produire un cerfa", () => {
   });
 
   it("laisse vide une entrée absente, vide ou fausse", async () => {
-    const pdf = await produire({
+    const pdf = await generer({
       fields: { nom: "", en_ald: false },
       drawings: { remarque: "" },
     });
@@ -74,7 +81,7 @@ describe("produire un cerfa", () => {
   });
 
   it("marque ensemble plusieurs cases d'un même champ", async () => {
-    const pdf = await produire({
+    const pdf = await generer({
       fields: { avec_lait: true, avec_citron: true },
       drawings: {},
     });
@@ -86,7 +93,7 @@ describe("produire un cerfa", () => {
   });
 
   it("coche une case seule dans son champ", async () => {
-    const pdf = await produire({ fields: { en_ald: true }, drawings: {} });
+    const pdf = await generer({ fields: { en_ald: true }, drawings: {} });
 
     expect(await markedStates(await template, pdf, "ald")).toEqual(
       await statesOf(await template, "ald"),
@@ -101,17 +108,57 @@ describe("produire un cerfa", () => {
     };
 
     await expect(
-      produceCerfa(fautive, { fields: { avec_lait: true }, drawings: {} }),
+      generateCerfa(fautive, { fields: { avec_lait: true }, drawings: {} }),
     ).rejects.toThrow("« acc » ne connaît pas l'état « /Lait »");
   });
 
   it("dessine un texte là où le gabarit n'a pas de champ", async () => {
-    const pdf = await produire({
+    const pdf = await generer({
       fields: {},
       drawings: { remarque: "Sans mousse." },
     });
 
     expect((await drawnOn(pdf)).texts).toEqual(["Sans mousse."]);
+  });
+
+  it("écrit le commentaire à la suite du texte qu'il suit", async () => {
+    const pdf = await generer({
+      fields: { motif: "Dialyse.", precisions: "Fauteuil." },
+      drawings: {},
+    });
+
+    expect((await drawnOn(pdf)).texts).toEqual(["Dialyse. ; Fauteuil."]);
+  });
+
+  it("retire le commentaire qui ne tient pas, et dit lequel", async () => {
+    const genere = await generateCerfa(await fiche(), {
+      fields: { motif: "Dialyse.", precisions: LONG },
+      drawings: {},
+    });
+
+    expect(genere.removedComments).toEqual(["precisions"]);
+  });
+
+  it("dessine en entier, sous son cadre, un texte qui n'y tient pas", async () => {
+    const pdf = await generer({ fields: { nom: LONG }, drawings: {} });
+
+    const { fields, texts } = await drawnOn(pdf);
+    expect(fields).toBe(0);
+    expect(texts.map((line) => line.trim()).join(" ")).toBe(LONG.trim());
+  });
+
+  it("refuse un commentaire qui ne suit aucun texte du cerfa", async () => {
+    const cerfa = await fiche();
+    const fautive = {
+      ...cerfa,
+      fields: { ...cerfa.fields, precisions: commentOn("en_ald") },
+    };
+
+    await expect(
+      generateCerfa(fautive, { fields: { precisions: "?" }, drawings: {} }),
+    ).rejects.toThrow(
+      "« precisions » commente « en_ald », qui n'est pas un texte du cerfa.",
+    );
   });
 
   it("date le nom du fichier au jour de Paris", () => {

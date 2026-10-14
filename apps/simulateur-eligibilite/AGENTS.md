@@ -123,12 +123,20 @@ entrée dans le gabarit (`Cerfa<Dto>`) :
 
 | Le DTO dit | La définition garde | Exemple |
 |---|---|---|
-| un texte | le nom exact du champ, mesuré ou non | `motif: text("elements medicaux", { measured: true })` |
+| un texte | le nom exact du champ | `motif: text("elements medicaux")` |
+| un commentaire facultatif | le texte qu'il suit, dans le même champ | `commentaire: commentOn("motif")` |
 | une case cochée | le champ et son état d'export | `en_ald: box("ald", "Oui")` |
 | une case qui partage son champ | le champ et son état : la marque est dessinée | `longue_distance: drawnBox("km", "Oui")` |
 | un texte sans champ | sa position sur la page | `remarque: at({ page: 1, x: 36, y: 104, width: 348 })` |
 
 Un gabarit qui renomme un champ ne change que la définition, jamais le DTO.
+
+Un texte n'est jamais coupé, et ne bloque jamais le PDF (D-85, D-94). Il
+s'écrit dans son champ à 9 pt, puis à 8 pt. S'il n'y tient pas, il perd son
+commentaire facultatif, et le bouton le dit avant tout téléchargement. S'il
+n'y tient toujours pas, son champ reste vide : il se dessine depuis le haut du
+cadre, à 8 pt, et déborde dessous, par-dessus ce qui s'y trouve. Il ne descend
+sous 8 pt que pour rester sur la page, jusqu'à 6 pt.
 
 Le modèle traduit les données du simulateur en DTO (`CerfaMapping`, dans
 `front/socle/cerfa-mapping.ts`) : une fonction par entrée, qui lit les réponses,
@@ -138,21 +146,22 @@ simulateur calcule le DTO sous le second résultat et le passe au bouton.
 
 | Fichier | Ce qu'il porte |
 |---|---|
-| `fill-cerfa.ts` | l'écriture dans un AcroForm : textes, cases et leurs états d'export, refus de tronquer |
+| `fill-cerfa.ts` | l'écriture dans un AcroForm : textes et leur commentaire, cases et leurs états d'export. Ce qui ne tient pas dans son cadre |
 | `text-fit.ts` | un texte tient-il dans son champ, et à quelle taille |
-| `text-sizes.ts` | la configuration des tailles (D-68) : la taille visée, 9 pt, et le plancher. Une version du modèle la modifie, pas le code |
-| `text-overflow.ts` | l'erreur levée quand il ne tient pas |
+| `overflow.ts` | où et à quelle taille se dessine un texte qui déborde de son cadre |
+| `widget-page.ts` | la page qui porte le widget d'un champ |
+| `text-sizes.ts` | la configuration des tailles (D-68) : la taille visée, 9 pt, la taille réduite, 8 pt, et le plancher, 6 pt. Une version du modèle la modifie, pas le code |
 | `cerfa.ts` | ce qu'est un cerfa : son DTO, son gabarit, et où va chaque entrée |
 | `dates.ts` | une date sur un champ peigné |
-| `flatten-cerfa.ts` | l'aplatissement du PDF rempli : plus aucun champ, chaque valeur dessinée sur la page (D-84). Puis ce qu'un champ ne sait pas montrer : les marques des cases partagées, les textes sans champ |
-| `produce-cerfa.ts` | la production au clic : le DTO traduit dans les noms du gabarit, remplir, puis aplatir, avec `pdf-lib` chargé à la demande. Le nom daté du fichier, le téléchargement |
-| `CerfaDownload.tsx` | le bouton qui produit et télécharge, et l'alerte si ça échoue |
+| `flatten-cerfa.ts` | l'aplatissement du PDF rempli : plus aucun champ, chaque valeur dessinée sur la page (D-84). Puis ce qu'un champ ne sait pas montrer : les marques des cases partagées, les textes sans champ, ceux qui débordent |
+| `generate-cerfa.ts` | la génération : le DTO traduit dans les noms du gabarit, remplir, puis aplatir, avec `pdf-lib` chargé à la demande. Le nom daté du fichier, le téléchargement |
+| `CerfaDownload.tsx` | le bouton, qui génère le PDF dès qu'il s'affiche et le télécharge au clic. L'avertissement d'un commentaire retiré, l'alerte si ça échoue |
 
 Un formulaire rempli porte des données de santé nominatives. Il se génère **dans le
 navigateur uniquement**, et ce dossier n'adresse jamais `/api`.
 
 Qui fournit le cerfa dit d'où vient son gabarit : `template` est un chargeur,
-appelé au clic. `templateAt(url)` charge un asset servi par l'app.
+appelé quand le bouton s'affiche. `templateAt(url)` charge un asset servi par l'app.
 
 *Gardé par* `tests/socle/cerfa/`, sur des formulaires fabriqués,
 `tests/socle/simulateur/telechargement-du-cerfa.test.tsx`, et

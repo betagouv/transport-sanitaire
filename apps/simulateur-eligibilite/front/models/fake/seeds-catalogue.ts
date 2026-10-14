@@ -42,6 +42,17 @@ const AVANT_LE_RETRAIT = {
   fin: "2026-10-12T10:00",
 } as const;
 
+// Tout le complément est passé. Le jour reste dans ses bornes : demain, quel
+// que soit le jour où la seed est rejouée.
+const COMPLETE = {
+  ...AVANT_LE_RETRAIT,
+  accompagnements: ["lait", "sucre"],
+  nom: "Mme Martin",
+  retrait: "sur-place",
+  jour: dayFromToday(1),
+  remarque: "Sans mousse, s'il vous plaît.",
+} as const;
+
 export const SEEDS: readonly Seed<Questions, Cibles>[] = [
   {
     id: "accompagnements-du-the",
@@ -202,15 +213,26 @@ export const SEEDS: readonly Seed<Questions, Cibles>[] = [
     id: "commande-complete",
     label: "Résultat : le bon de commande à télécharger",
     description:
-      "Passe tout le complément et s'ouvre sur la commande complétée. Le bouton télécharge le bon de commande aplati : la commande, le nombre de tasses et la date du jour dans leurs champs, le lait et le sucre marqués ensemble alors qu'ils partagent un même champ, et la remarque dessinée là où le gabarit n'a pas de champ.",
-    // Le jour retenu reste dans ses bornes : demain, quel que soit le jour où
-    // la seed est rejouée.
+      "Passe tout le complément et s'ouvre sur la commande complétée. Le bouton télécharge le bon de commande aplati : la commande, le nombre de tasses, la date du jour et l'adresse dans leurs champs, le lait et le sucre marqués ensemble alors qu'ils partagent un même champ, la remarque à la suite des instructions, et le nom dessiné là où le gabarit n'a pas de champ.",
+    answers: COMPLETE,
+    expected: { commande: "café, lait et sucre" },
+  },
+  {
+    id: "commande-trop-longue",
+    label: "Résultat : des textes trop longs pour leur cadre",
+    description:
+      "S'ouvre sur la commande complétée, avec une adresse et une remarque trop longues. Un avertissement dit, avant tout téléchargement, que la remarque ne figure pas sur le bon : elle ne tenait pas avec les instructions. L'adresse, elle, s'écrit en entier : elle déborde sous son cadre, par-dessus ce qui s'y trouve.",
     answers: {
-      ...AVANT_LE_RETRAIT,
-      accompagnements: ["lait", "sucre"],
-      retrait: "sur-place",
-      jour: dayFromToday(1),
-      remarque: "Sans mousse, s'il vous plaît.",
+      ...COMPLETE,
+      adresse: {
+        placeName: "Brasserie du Grand Marché couvert de la place Carnot",
+        street: "143 boulevard du Maréchal de Lattre de Tassigny",
+        complement: "Bâtiment B, escalier 4, troisième étage, porte gauche",
+        postalCode: "69003",
+        city: "Lyon",
+      },
+      remarque:
+        "Sans mousse, s'il vous plaît, et servie dans la tasse bleue à liseré doré du fond de la vitrine, à côté de la théière en fonte, que nous avions déjà demandée la semaine dernière. Le lait à part, tiède et non bouillant, dans le petit pot en grès, avec deux sucres roux posés sur la soucoupe et une cuillère en argent.",
     },
     expected: { commande: "café, lait et sucre" },
   },
