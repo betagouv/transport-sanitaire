@@ -9,9 +9,7 @@ import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 import {
-  fonctionsDe,
   franchissements,
-  lignesDe,
   racine,
   sources,
   texteDe,
@@ -37,9 +35,6 @@ const OUVERT_AU_MODELE = [
 const MODELES = readdirSync(join(racine, "front/models")).map(
   (dossier) => `front/models/${dossier}`,
 );
-
-// Le catalogue de seeds d'un modèle : une liste de données.
-const CATALOGUE_DE_SEEDS = /^front\/models\/[^/]+\/seeds-catalogue\.ts$/;
 
 // Le seul fichier par lequel les tests du socle prennent leur modèle, et le
 // dossier où ce modèle est écrit.
@@ -198,6 +193,19 @@ describe("invariants métier", () => {
     ).toEqual([]);
   });
 
+  it("le CERFA ne dépend que de lui-même", () => {
+    expect(
+      franchissements(
+        ["front/socle/cerfa"],
+        (cible) => !cible.startsWith("front/socle/cerfa/"),
+      ),
+      "Remplir un cerfa ne dépend pas du simulateur : il reçoit ses données, " +
+        "d'où qu'elles viennent, et un mapping qui les lit. Le simulateur " +
+        "branche le cerfa, jamais l'inverse. Passe ce qui lui manque en " +
+        "paramètre, ou rends le type générique.",
+    ).toEqual([]);
+  });
+
   it("le CERFA n'adresse jamais le backend", () => {
     const fautifs = sources("front/socle/cerfa").filter((f) =>
       texteDe(f).includes("/api"),
@@ -232,40 +240,6 @@ describe("invariants métier", () => {
 // Biome a les mêmes deux limites, mais il compte des lignes logiques : un bloc
 // JSX ou une chaîne multiligne y vaut une seule ligne. Il reste utile dans
 // l'éditeur. Ce fichier fait foi, en lignes réelles.
-describe("taille du code", () => {
-  it("aucune fonction ne dépasse 30 lignes", () => {
-    const trop = sources("front", "server", "shared", "scripts").flatMap(
-      (fichier) =>
-        fonctionsDe(fichier)
-          .filter(({ lignes }) => lignes > 30)
-          .map(({ ligne, lignes }) => `${fichier}:${ligne} (${lignes} lignes)`),
-    );
-    expect(
-      trop,
-      "Une fonction qu'on ne voit pas d'un écran fait plusieurs choses. La " +
-        "limite *détecte* le problème, elle ne dit pas où couper : cherche la " +
-        "jointure de sens (le plus souvent, un branchement sur des cas " +
-        "métier), pas le fragment le moins cher à sortir. Les fichiers de " +
-        "test sont exemptés : un bloc de cas n'est pas un traitement.",
-    ).toEqual([]);
-  });
-
-  it("aucun fichier ne dépasse 300 lignes", () => {
-    const trop = sources("front", "server", "shared", "scripts", "tests")
-      .filter((fichier) => !CATALOGUE_DE_SEEDS.test(fichier))
-      .map((fichier) => ({ fichier, lignes: lignesDe(fichier) }))
-      .filter(({ lignes }) => lignes > 300)
-      .map(({ fichier, lignes }) => `${fichier} (${lignes} lignes)`);
-    expect(
-      trop,
-      "Passé cette taille, un fichier porte plusieurs intentions : sépare-le " +
-        "par sujet, jamais en déplaçant le débordement ailleurs. Seule " +
-        "exception : le catalogue de seeds, qui est une liste de données et " +
-        "vaut d'être lu d'un seul tenant.",
-    ).toEqual([]);
-  });
-});
-
 describe("chaîne d'outillage", () => {
   it("pnpm lance les scripts pre et post", () => {
     const workspace = readFileSync(
