@@ -279,9 +279,11 @@ const SERVICES: Record<Questions["service"][number], string> = {
   rien: "rien de particulier",
 };
 
-// Le jour qu'il sera dans `days` jours, à l'heure locale, écrit comme la
-// réponse d'une date : `2026-10-12`.
-function dayFromToday(days: number): string {
+/**
+ * Le jour qu'il sera dans `days` jours, à l'heure locale, écrit comme la
+ * réponse d'une date : `2026-10-12`.
+ */
+export function dayFromToday(days: number): string {
   const day = new Date();
   day.setDate(day.getDate() + days);
   const month = String(day.getMonth() + 1).padStart(2, "0");

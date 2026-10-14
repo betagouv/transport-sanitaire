@@ -17,7 +17,13 @@ export type Screen =
   | { name: "questionnaire"; resume?: QuestionnaireState }
   | { name: "resultat"; previousState: QuestionnaireState }
   | { name: "complement"; locked: Locked; resume?: QuestionnaireState }
-  | { name: "cerfa"; locked: Locked; previousState: QuestionnaireState };
+  | {
+      name: "cerfa";
+      locked: Locked;
+      previousState: QuestionnaireState;
+      /** Le jour où le complément a été validé : figé tant qu'il ne l'est pas à nouveau. */
+      completedAt: Date;
+    };
 
 /**
  * Sans réponse, le premier questionnaire. Sinon, là où ces réponses mènent : la
@@ -56,6 +62,6 @@ function screenAfterLock(model: Model, answers: Answers): Screen | undefined {
   if (form(cibles) === null) return undefined;
   const { complete, ...state } = stateAfterAnswers(part.pages, answers, cibles);
   return complete
-    ? { name: "cerfa", locked, previousState: state }
+    ? { name: "cerfa", locked, previousState: state, completedAt: new Date() }
     : { name: "complement", locked, resume: state };
 }

@@ -25,6 +25,10 @@ export function CommandeCompletee({ answers, cibles }: Props) {
       {answers.adresse && (
         <p>Facture à envoyer : {enUneLigne(answers.adresse)}</p>
       )}
+      <p>
+        Le bon de commande est prêt à être imprimé. Il doit encore être signé
+        avant d'être envoyé.
+      </p>
     </>
   );
 }

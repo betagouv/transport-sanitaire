@@ -4,6 +4,7 @@
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { App } from "../../../front/socle/app/App";
+import type { Model } from "../../../front/socle/model";
 import type { Seed } from "../../../front/socle/seeds/seed";
 import { snapshotReferentiel } from "../../../shared/referentiel";
 import { modeleDeTest, seulModele } from "../modele-de-test";
@@ -13,12 +14,12 @@ type User = ReturnType<typeof userEvent.setup>;
 
 /** Monte l'application et franchit l'écran de rattachement. `produit` : service n° 4. */
 export async function ouvrirLeSimulateur(
-  options: { produit?: boolean; seeds?: readonly Seed[] } = {},
+  options: { produit?: boolean; seeds?: readonly Seed[]; modele?: Model } = {},
 ): Promise<User> {
   const user = userEvent.setup();
   render(
     <App
-      models={seulModele(modeleAvec(options.seeds))}
+      models={seulModele(modeleAvec(options.seeds, options.modele))}
       referentiel={snapshotReferentiel}
       declarer={() => {}}
     />,
@@ -27,9 +28,9 @@ export async function ouvrirLeSimulateur(
   return user;
 }
 
-// Le modèle de test, avec ces seeds à la place de son catalogue.
-function modeleAvec(seeds?: readonly Seed[]) {
-  return seeds ? { ...modeleDeTest, seeds: async () => seeds } : modeleDeTest;
+// Le modèle de test, ou celui donné, avec ces seeds à la place de son catalogue.
+function modeleAvec(seeds?: readonly Seed[], modele: Model = modeleDeTest) {
+  return seeds ? { ...modele, seeds: async () => seeds } : modele;
 }
 
 export const BOISSON = { name: /^quelle boisson souhaitez-vous/i };

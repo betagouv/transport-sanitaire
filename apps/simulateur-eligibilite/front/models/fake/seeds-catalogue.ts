@@ -6,6 +6,7 @@
 import type { Seed } from "../../socle/seeds/seed";
 import type { Cibles } from "./declarations/cibles";
 import type { Questions } from "./declarations/questions";
+import { dayFromToday } from "./questionnaire";
 
 // Une commande qui passe le premier résultat, pour ouvrir le complément.
 const CAFE_SUCRE = {
@@ -195,6 +196,20 @@ export const SEEDS: readonly Seed<Questions, Cibles>[] = [
     description:
       "S'arrête sur l'adresse du reçu, identique à celle de la facture : le message s'affiche sous le groupe, tous les champs en rouge, et « Suivant » reste grisé.",
     answers: { ...FACTURE, expedition: FACTURE.adresse },
+    expected: { commande: "café, sucre" },
+  },
+  {
+    id: "commande-complete",
+    label: "Résultat : le bon de commande à télécharger",
+    description:
+      "Passe tout le complément et s'ouvre sur la commande complétée. Le bouton télécharge le bon de commande rempli : la commande, le nombre de tasses et la date du jour. Il s'imprime depuis le lecteur PDF.",
+    // Le jour retenu reste dans ses bornes : demain, quel que soit le jour où
+    // la seed est rejouée.
+    answers: {
+      ...AVANT_LE_RETRAIT,
+      retrait: "sur-place",
+      jour: dayFromToday(1),
+    },
     expected: { commande: "café, sucre" },
   },
 ];

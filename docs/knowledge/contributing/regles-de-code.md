@@ -13,12 +13,12 @@
 | QUAL-002 | Le privé descend sous le marqueur d'implémentation | `lisibilite.test.ts` |
 | QUAL-003 | Un helper privé est une `function` hoistée | `lisibilite.test.ts` |
 | QUAL-004 | Rien ne s'exécute au chargement du module | aucune |
-| QUAL-005 | Couper aux jointures du sens, pas pour tenir le budget | `architecture.test.ts` (détecte seulement) |
+| QUAL-005 | Couper aux jointures du sens, pas pour tenir le budget | `taille-du-code.test.ts` (détecte seulement) |
 | QUAL-006 | Séparer les branches, pas la répétition | aucune |
 | QUAL-007 | Un nom ajoute ce que le site d'appel ne dit pas | aucune |
 | QUAL-008 | Répéter un littéral plutôt que fabriquer un fragment sans nom | aucune |
 | QUAL-009 | Une fonction choisit, les autres font | aucune |
-| QUAL-010 | Un fichier se sépare par sujet, pas par débordement | `architecture.test.ts` (détecte seulement) |
+| QUAL-010 | Un fichier se sépare par sujet, pas par débordement | `taille-du-code.test.ts` (détecte seulement) |
 | QUAL-011 | Un fichier porte le nom d'une feature, pas d'une catégorie | `lisibilite.test.ts` |
 | QUAL-012 | N'exporter que ce qu'un autre fichier importe | `pnpm knip` |
 | QUAL-013 | Ne jamais formater à la main | Biome |
@@ -191,7 +191,7 @@ function Bloc1Resultat({ cas }: Props) {
 }
 ```
 
-*Gardé par* `tests/architecture.test.ts › taille du code › aucune fonction ne
+*Gardé par* `tests/taille-du-code.test.ts › taille du code › aucune fonction ne
 dépasse 30 lignes`, en lignes réelles. Biome porte la même limite pour le retour
 dans l'éditeur, mais il compte des lignes *logiques* : un bloc de texte JSX y
 pèse une ligne. C'est le test qui fait foi.
@@ -336,7 +336,7 @@ cerfa/field-mapping.ts
 cerfa/field-mapping-suite.ts
 ```
 
-*Gardé par* `tests/architecture.test.ts › taille du code › aucun fichier ne
+*Gardé par* `tests/taille-du-code.test.ts › taille du code › aucun fichier ne
 dépasse 300 lignes`.
 
 ---

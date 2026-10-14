@@ -3,7 +3,13 @@
 // sont ici.
 
 import type { ComponentType, ReactNode } from "react";
-import { type Model, type Preconisation, preconisationOf } from "../model";
+import { CerfaDownload } from "../cerfa/CerfaDownload";
+import {
+  type CerfaInput,
+  type Model,
+  type Preconisation,
+  preconisationOf,
+} from "../model";
 import {
   askedPages,
   validatedQuestions,
@@ -71,15 +77,17 @@ export function FirstResultat({
 }
 
 // « Précédent » revient au second questionnaire, jamais avant le verrou. La
-// préconisation affichée est celle que le verrou a figée.
+// préconisation affichée est celle que le verrou a figée. Le cerfa se télécharge
+// tel que le résultat l'affiche, daté du jour où le complément a été validé.
 export function CerfaResultat({
   model,
   state,
   locked,
+  completedAt,
   DebugTrace,
   onReopen,
   onRestart,
-}: Props & { locked: Locked }) {
+}: Props & { locked: Locked; completedAt: Date }) {
   const { answers } = state;
   const { cibles } = locked.preconisation;
   const { part, title, Resultat } = model.cerfa;
@@ -95,17 +103,36 @@ export function CerfaResultat({
       DebugTrace={DebugTrace}
     >
       <Resultat answers={answers} cibles={cibles} />
+      <Cerfa model={model} input={{ answers, cibles, completedAt }} />
       <div className="fr-btns-group fr-btns-group--inline">
         <SecondaryButton onClick={() => onReopen(state)}>
           Précédent
         </SecondaryButton>
-        <PrimaryButton onClick={onRestart}>Nouvelle simulation</PrimaryButton>
+        <SecondaryButton onClick={onRestart}>
+          Nouvelle simulation
+        </SecondaryButton>
       </div>
     </Frame>
   );
 }
 
 // ---- implémentation ----
+
+// Le cerfa de la préconisation figée, daté du jour où le complément a été
+// validé. Rien quand elle n'en donne pas.
+function Cerfa({ model, input }: { model: Model; input: CerfaInput }) {
+  const form = model.cerfa.form(input.cibles);
+  return (
+    form && (
+      <CerfaDownload
+        form={form}
+        input={input}
+        date={input.completedAt}
+        label={model.cerfa.downloadLabel}
+      />
+    )
+  );
+}
 
 // Ce que la trace de debug lit sous un résultat : les pages affichées, les
 // questions validées, et la préconisation. `locked` : les cibles figées, que
