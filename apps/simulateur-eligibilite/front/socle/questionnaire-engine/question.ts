@@ -8,10 +8,10 @@ import type { Address, AddressSettings } from "./address";
 import type { Option } from "./option";
 
 /**
- * Une réponse : un choix, un nombre, un texte, les cases cochées, ou une
- * adresse.
+ * Une réponse : un choix, un nombre, un texte, les cases cochées, une case
+ * seule, ou une adresse.
  */
-export type Answer = string | number | readonly string[] | Address;
+export type Answer = string | number | boolean | readonly string[] | Address;
 
 /** Les questions d'un modèle : pour chacune, le type de sa réponse. */
 export type AnyQuestions = Readonly<Record<string, Answer>>;
@@ -199,6 +199,20 @@ type DateInput<Questions extends AnyQuestions, Cibles> = Common<
   };
 
 /**
+ * Une case seule. Son libellé coiffe la case, et `box` est le texte de la case.
+ * Sa réponse est `true` ou `false` : décochée sur une page validée, elle vaut
+ * `false`, et n'est donc jamais facultative. Absente, la page n'est pas encore
+ * validée.
+ */
+type CheckboxInput<Questions extends AnyQuestions, Cibles> = Common<
+  Questions,
+  Cibles
+> & {
+  readonly kind: "checkbox";
+  readonly box: string;
+};
+
+/**
  * Une adresse, saisie champ par champ (`address.ts`). Son libellé coiffe les
  * champs.
  */
@@ -231,6 +245,7 @@ export type Question<
   | NumberInput<Questions, Cibles>
   | TextInput<Questions, Cibles>
   | DateInput<Questions, Cibles>
+  | CheckboxInput<Questions, Cibles>
   | AddressInput<Questions, Cibles>;
 
 export type Page<

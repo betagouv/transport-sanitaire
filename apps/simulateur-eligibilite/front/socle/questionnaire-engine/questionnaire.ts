@@ -158,7 +158,7 @@ function read(options: Source, state: State): View {
   if (!page) throw new Error(`La page « ${state.page} » ne s'affiche plus.`);
   const questions = askedQuestions(all, page, visibleAnswers(state), cibles);
   const hasPendingQuestions = questions.some(
-    (question) => !isAnswered(question, state.draft[question.id]),
+    (question) => !isAnswered(question, drafted(question, state.draft)),
   );
   return {
     page,
@@ -193,7 +193,7 @@ function committedAnswers(
 ): Answers {
   const asked = askedQuestions(pages, page, visibleAnswers(state), cibles);
   const inputs = asked.flatMap((question) => {
-    const answer = offeredAnswer(question, state.draft[question.id]);
+    const answer = offeredAnswer(question, drafted(question, state.draft));
     return answer === undefined ? [] : [[question.id, answer] as const];
   });
   return commitPage(pages, state.answers, page, Object.fromEntries(inputs));
@@ -233,6 +233,13 @@ function actions({
       if (previous) setState(onPage(previous, state.answers));
     },
   };
+}
+
+// La réponse du brouillon à cette question. Une case seule qu'on n'a pas
+// touchée est décochée : la page se valide, et la case vaut `false`.
+function drafted(question: Question, draft: Answers): Answer | undefined {
+  const answer = draft[question.id];
+  return question.kind === "checkbox" ? (answer ?? false) : answer;
 }
 
 function withAnswer(

@@ -25,6 +25,7 @@ export function errorsOf(
 // Ce qui ne va pas dans la saisie elle-même : son format, une réponse qui
 // bloque, des options incompatibles.
 function formatErrorOf(question: Question, answer: Answer): string | undefined {
+  if (question.kind === "checkbox") return undefined;
   if (question.kind === "address") return addressErrorOf(question, answer);
   if (question.kind === "number") return numberErrorOf(question, answer);
   if (question.kind === "date" || question.kind === "datetime")

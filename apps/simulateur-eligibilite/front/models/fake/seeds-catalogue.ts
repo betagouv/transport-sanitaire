@@ -16,7 +16,12 @@ const CAFE_SUCRE = {
 } as const;
 
 // La même, la première page du complément remplie.
-const DEUX_TASSES = { ...CAFE_SUCRE, quantite: 2, lieu: "terrasse" } as const;
+const DEUX_TASSES = {
+  ...CAFE_SUCRE,
+  quantite: 2,
+  lieu: "terrasse",
+  ticket: false,
+} as const;
 
 // La facture part en France, à une adresse connue.
 const FACTURE = {
@@ -149,9 +154,9 @@ export const SEEDS: readonly Seed<Questions, Cibles>[] = [
   {
     id: "complement-quantite",
     label:
-      "Complément : rappel en valeurs, entier, liste déroulante, question facultative",
+      "Complément : rappel en valeurs, entier, liste déroulante, question facultative, case seule",
     description:
-      "Passe le verrou et s'arrête sur la première page du complément : la commande et le service, rappelés au-dessus du champ, puis le nombre de tasses, le lieu du service et le nom.",
+      "Passe le verrou et s'arrête sur la première page du complément : la commande et le service, rappelés au-dessus du champ, puis le nombre de tasses, le lieu du service, le nom et le ticket de caisse, une case seule qui répond « non » décochée.",
     answers: { ...CAFE_SUCRE, retrait: "sur-place" },
     // Sans lait, la mise en garde est décidée, citron connu ou non.
     expected: { commande: "café, sucre", lait_tourne: false },

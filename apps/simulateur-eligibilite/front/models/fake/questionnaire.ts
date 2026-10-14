@@ -187,6 +187,13 @@ export const COMPLEMENT: QuestionnairePart<Questions, Cibles> = {
           hint: "Démontre : une question facultative. La page se valide sans elle. Sur le bon de commande, le nom se dessine là où le gabarit n'a pas de champ.",
           optional: true,
         },
+        {
+          id: "ticket",
+          kind: "checkbox",
+          label: "Un ticket de caisse est-il demandé ?",
+          box: "Oui, un ticket de caisse est demandé.",
+          hint: "Démontre : une case seule. Décochée, la page se valide et la case répond « non » : ce n'est ni une question facultative, ni une absence de réponse.",
+        },
       ],
     },
     {
