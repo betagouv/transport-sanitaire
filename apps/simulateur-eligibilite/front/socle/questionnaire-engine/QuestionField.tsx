@@ -46,6 +46,7 @@ export function QuestionField(props: Props) {
 type AddressQuestion = Extract<Question, { kind: "address" }>;
 type NumberQuestion = Extract<Question, { kind: "number" }>;
 type DateQuestion = Extract<Question, { kind: "date" | "datetime" }>;
+type CheckboxQuestion = Extract<Question, { kind: "checkbox" }>;
 
 // Ce que tous les champs reçoivent. Le libellé est mis en avant : sur une page
 // du questionnaire, c'est lui qui porte la question.
@@ -67,6 +68,8 @@ function render(props: Props) {
       return <SingleChoiceField {...props} question={question} />;
     case "multiple choice":
       return <MultipleChoiceField {...props} question={question} />;
+    case "checkbox":
+      return <SingleCheckboxField {...props} question={question} />;
     case "address":
       return <AddressQuestionField {...props} question={question} />;
     case "number":
@@ -171,6 +174,22 @@ function MultipleChoiceField(props: Props & { question: MultipleChoice }) {
     />
   );
 }
+
+// Une case seule : une seule case sous son libellé. Décochée, elle répond
+// `false`, pas une absence de réponse.
+function SingleCheckboxField(props: Props & { question: CheckboxQuestion }) {
+  const { question, answer, onChange } = props;
+  return (
+    <CheckboxField
+      {...common(props)}
+      options={[{ value: CHECKED, label: question.box }]}
+      values={answer === true ? [CHECKED] : []}
+      onChange={(values) => onChange(values.includes(CHECKED))}
+    />
+  );
+}
+
+const CHECKED = "coche";
 
 // Ce qu'une saisie de texte reçoit en plus. Un champ vidé n'est plus répondu.
 function text(props: Props) {

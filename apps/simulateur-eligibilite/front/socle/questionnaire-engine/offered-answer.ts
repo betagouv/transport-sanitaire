@@ -30,6 +30,8 @@ export function offeredAnswer(
     return valuesOf(question).includes(answer as string) ? answer : undefined;
   if (question.kind === "address")
     return isAddress(answer) ? askedAddress(question, answer) : undefined;
+  if (question.kind === "checkbox")
+    return typeof answer === "boolean" ? answer : undefined;
   if (question.kind !== "multiple choice" || !Array.isArray(answer))
     return answer;
   const offered = answer.filter((value) => valuesOf(question).includes(value));
