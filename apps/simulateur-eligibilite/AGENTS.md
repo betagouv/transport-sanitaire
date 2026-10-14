@@ -128,7 +128,8 @@ reste du socle.
 | `text-overflow.ts` | l'erreur levée quand il ne tient pas |
 | `field-mapping.ts` | la forme d'un tableau de remplissage : un champ, une ligne |
 | `dates.ts` | une date sur un champ peigné |
-| `produce-cerfa.ts` | ce qu'est un cerfa à remplir (`CerfaForm`), sa production au clic avec `pdf-lib` chargé à la demande, le nom daté du fichier, le téléchargement |
+| `flatten-cerfa.ts` | l'aplatissement du PDF rempli : plus aucun champ, chaque valeur dessinée sur la page (D-84) |
+| `produce-cerfa.ts` | ce qu'est un cerfa à remplir (`CerfaForm`), sa production au clic (remplir, puis aplatir) avec `pdf-lib` chargé à la demande, le nom daté du fichier, le téléchargement |
 | `CerfaDownload.tsx` | le bouton qui produit et télécharge, et l'alerte si ça échoue |
 
 Un formulaire rempli porte des données de santé nominatives. Il se génère **dans le

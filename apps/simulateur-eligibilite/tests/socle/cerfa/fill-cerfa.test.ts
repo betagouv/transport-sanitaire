@@ -1,4 +1,3 @@
-import { PDFDocument } from "pdf-lib";
 import { describe, expect, it } from "vitest";
 import { formatDateForField } from "../../../front/socle/cerfa/dates";
 import {
@@ -65,17 +64,6 @@ describe("fillCerfa", () => {
     expect(await readBack(pdf)).toEqual({
       nom: "1 rue du Départ - 75001 Paris",
     });
-  });
-
-  it("verrouille les champs remplis sur demande, et eux seuls", async () => {
-    const pdf = await fillCerfa(
-      await testForm(),
-      [{ field: "nom", text: "DUPONT Marie" }],
-      { readOnly: true },
-    );
-    const form = (await PDFDocument.load(pdf)).getForm();
-    expect(form.getField("nom").isReadOnly()).toBe(true);
-    expect(form.getField("nir").isReadOnly()).toBe(false);
   });
 });
 

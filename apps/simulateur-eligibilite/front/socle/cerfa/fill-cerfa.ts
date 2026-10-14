@@ -41,12 +41,6 @@ export type FieldEntry = { readonly field: string } & (
 
 export type FillOptions = {
   /**
-   * Passe les champs remplis en lecture seule. Le prescripteur ne peut alors
-   * plus corriger ce que le simulateur a déduit. Par défaut, le formulaire reste
-   * éditable.
-   */
-  readonly readOnly?: boolean;
-  /**
    * Champs déclarés multilignes dans le PDF, mais dont le cadre ne montre qu'une
    * ligne. Un `\n` y ferait disparaître la suite à l'impression : leurs valeurs
    * sont aplaties sur une ligne.
@@ -85,9 +79,6 @@ export async function fillCerfa(
   // Sans cet appel, les valeurs sont dans le PDF mais ne s'affichent pas dans les
   // lecteurs qui ne régénèrent pas les apparences.
   form.updateFieldAppearances();
-
-  if (options.readOnly)
-    for (const { field } of entries) form.getField(field).enableReadOnly();
 
   return document.save();
 }
