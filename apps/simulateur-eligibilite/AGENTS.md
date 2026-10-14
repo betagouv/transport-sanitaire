@@ -124,11 +124,16 @@ ne dépend d'aucun gabarit :
 | `text-overflow.ts` | l'erreur levée quand il ne tient pas |
 | `field-mapping.ts` | la forme d'un tableau de remplissage : un champ, une ligne |
 | `dates.ts` | une date sur un champ peigné |
+| `produce-cerfa.ts` | la production au clic : le gabarit que charge le modèle, `pdf-lib` chargé à la demande, le nom daté du fichier, le téléchargement |
 
 Un formulaire rempli porte des données de santé nominatives. Il se génère **dans le
 navigateur uniquement**, et ce dossier n'adresse jamais `/api`.
 
-*Gardé par* `tests/socle/cerfa/fill-cerfa.test.ts`, sur un formulaire fabriqué, et par
+Le modèle dit d'où vient son gabarit : `template` est un chargeur, appelé au clic.
+`templateAt(url)` charge un asset servi par l'app.
+
+*Gardé par* `tests/socle/cerfa/fill-cerfa.test.ts`, sur un formulaire fabriqué,
+`tests/socle/simulateur/telechargement-du-cerfa.test.tsx`, et
 `tests/architecture.test.ts`.
 
 ## Les trois racines de runtime
