@@ -1,5 +1,6 @@
 // La saisie d'une adresse : un groupe de champs du DSFR, un `Input` par champ.
-// Chaque champ porte son libellé, et son message quand il est fautif.
+// Chaque champ porte son libellé, et son message quand il est fautif. Le groupe
+// porte les siens, quand l'adresse entière est en cause.
 
 import { Input } from "@codegouvfr/react-dsfr/Input";
 
@@ -21,6 +22,11 @@ type Props<Name extends string> = {
   /** Ce qui coiffe le groupe : la question. */
   label: string;
   hint?: string;
+  /**
+   * Ce qui ne va pas dans l'adresse entière, un message par ligne sous le
+   * groupe, dont tous les champs rougissent.
+   */
+  errors?: readonly string[];
   /** Les champs, dans l'ordre où ils se saisissent. */
   fields: readonly Field<Name>[];
   onChange: (name: Name, value: string) => void;
@@ -32,10 +38,17 @@ type Props<Name extends string> = {
 
 export function AddressField<Name extends string>(props: Props<Name>) {
   const { id, fields } = props;
-  // Pas de `fr-fieldset--error` : il rougit tous les champs, et un seul est
-  // fautif.
+  const failing = props.errors !== undefined && props.errors.length > 0;
+  // `fr-fieldset--error` rougit tous les champs : il ne sert qu'à un message de
+  // groupe. Une erreur de champ n'a que son champ, et passe devant : tant qu'il
+  // y en a, l'appelant ne donne pas de message de groupe.
   return (
-    <fieldset id={id} className="fr-fieldset" aria-labelledby={`${id}-legend`}>
+    <fieldset
+      id={id}
+      className={`fr-fieldset${failing ? " fr-fieldset--error" : ""}`}
+      aria-labelledby={`${id}-legend`}
+      aria-describedby={failing ? `${id}-messages` : undefined}
+    >
       <legend
         id={`${id}-legend`}
         className={`fr-fieldset__legend fr-text--regular${props.lead ? " fr-text--lead" : ""}`}
@@ -52,11 +65,34 @@ export function AddressField<Name extends string>(props: Props<Name>) {
           />
         </div>
       ))}
+      {failing && <GroupMessages id={id} errors={props.errors ?? []} />}
     </fieldset>
   );
 }
 
 // ---- implémentation ----
+
+function GroupMessages({
+  id,
+  errors,
+}: {
+  id: string;
+  errors: readonly string[];
+}) {
+  return (
+    <div
+      className="fr-messages-group fr-fieldset__element"
+      id={`${id}-messages`}
+      aria-live="assertive"
+    >
+      {errors.map((error) => (
+        <p key={error} className="fr-message fr-message--error">
+          {error}
+        </p>
+      ))}
+    </div>
+  );
+}
 
 // Les classes du DSFR pour une adresse : le champ court garde sa largeur, et
 // celui qui le suit sur sa ligne prend le reste. Sur un écran étroit, il

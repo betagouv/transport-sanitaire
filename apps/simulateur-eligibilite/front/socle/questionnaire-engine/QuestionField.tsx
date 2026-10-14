@@ -24,7 +24,8 @@ type Props = {
   onChange: (answer: Answer | undefined) => void;
   /**
    * Ce qui ne va pas dans la saisie, un message par ligne sous le champ. Une
-   * adresse ne le lit pas : elle a un message par champ.
+   * adresse a un message par champ, et lit celui-ci comme un message de groupe,
+   * tant qu'aucun de ses champs n'est fautif.
    */
   errors?: readonly string[];
   /** Le champ prend le focus à l'ouverture de la page. */
@@ -81,14 +82,17 @@ function render(props: Props) {
 }
 
 // Chaque champ qui se demande reçoit sa valeur et son message. Le brouillon
-// garde la saisie telle quelle : les espaces ne tombent qu'à la validation.
+// garde la saisie telle quelle : les espaces ne tombent qu'à la validation. Une
+// erreur de champ passe devant le message de groupe.
 function AddressQuestionField(props: Props & { question: AddressQuestion }) {
   const { question, onChange } = props;
   const address = isAddress(props.answer) ? props.answer : undefined;
   const errors = address ? addressErrors(question, address) : {};
+  const failing = Object.keys(errors).length > 0;
   return (
     <AddressField
       id={question.id}
+      errors={failing ? [] : props.errors}
       label={question.label}
       hint={question.hint}
       autoFocus={props.autoFocus}
