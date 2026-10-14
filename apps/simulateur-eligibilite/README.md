@@ -55,8 +55,8 @@ front et le référentiel de rattachement.
 | `pnpm start` | Le serveur de production (`node server/server.ts`, Node 24) |
 
 Les règles d'écriture et les invariants ne sont pas de la prose, ils sont exécutables.
-On les trouve dans `tests/architecture.test.ts`, pour les frontières et les limites de 30
-et 300 lignes, et dans `tests/lisibilite.test.ts`, pour la forme des fichiers, les noms
+On les trouve dans `tests/architecture.test.ts`, pour les frontières, dans
+`tests/taille-du-code.test.ts`, pour les limites de 30 et 300 lignes, et dans `tests/lisibilite.test.ts`, pour la forme des fichiers, les noms
 et les extensions d'import. Lis leur message d'échec : chacun dit ce que sa règle
 protège. Ce qu'on attend d'un contributeur est écrit dans [AGENTS.md](AGENTS.md).
 
@@ -148,7 +148,8 @@ front/                   le front, bundlé par Vite
     cerfa/               le socle de remplissage d'un PDF : l'écriture dans un
                          AcroForm et ses pièges, la mesure d'un texte dans son champ,
                          la forme d'un tableau de remplissage, la production au
-                         clic et le téléchargement. Aucun gabarit.
+                         clic et le bouton de téléchargement. Aucun gabarit, et
+                         rien du simulateur : il remplit d'après toute source.
     analytics/           le vocabulaire mesuré, seul import du reste, son transport
                          vers Matomo, et le choix de l'utilisateur transmis par le CMS
 cms/                     le script à coller dans Sites Conformes : l'opt-out du pied de
@@ -200,7 +201,7 @@ sert à tenir en vie, et sous test, ce que le parcours réel reprendra :
 | Invalidation | Une réponse changée efface les réponses qui en dépendent, et elles seules. | `questionnaire-engine/page-commit.ts` |
 | Verrou | Au résultat, « Précédent » rouvre le questionnaire. L'action principale verrouille : le complément est un second parcours, qui ne repose aucune question d'avant et n'a pas de « Précédent » sur sa première page. | `simulateur/Simulateur.tsx` |
 | Stepper | Il compte des parties, jamais des pages. Les résultats l'affichent aussi. | `questionnaire-engine/Stepper.tsx` |
-| Téléchargement du cerfa | Sous le second résultat, l'action principale produit le cerfa dans le navigateur, au clic, et le télécharge. Il porte la date du jour où le complément a été validé, qui ne change pas tant qu'il ne l'est pas à nouveau. Un échec s'affiche sous le résultat. Le PDF s'imprime depuis le lecteur. | `simulateur/CerfaDownload.tsx` |
+| Téléchargement du cerfa | Sous le second résultat, l'action principale produit le cerfa dans le navigateur, au clic, et le télécharge. Il porte la date du jour où le complément a été validé, qui ne change pas tant qu'il ne l'est pas à nouveau. Un échec s'affiche sous le résultat. Le PDF s'imprime depuis le lecteur. | `cerfa/CerfaDownload.tsx`, branché par `simulateur/Resultats.tsx` |
 | Résultat sans suite | Quand la préconisation ne donne aucun cerfa, le premier résultat est le dernier écran : pas de bouton pour verrouiller, et le stepper s'arrête sur lui. | `simulateur/Resultats.tsx` |
 
 *Gardé par* `tests/socle/simulateur/`.

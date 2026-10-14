@@ -5,7 +5,7 @@
 // réponses, les faits et les cibles de l'un à l'autre.
 
 import type { ComponentType } from "react";
-import type { FieldMapping } from "./cerfa/field-mapping";
+import type { CerfaForm } from "./cerfa/produce-cerfa";
 import { validatedQuestions } from "./questionnaire-engine/asked-questions";
 import {
   type Answers,
@@ -29,26 +29,11 @@ type ResultatProps<Questions extends AnyQuestions, Cibles> = {
   cibles: Cibles;
 };
 
-/** Ce que le mapping d'un cerfa lit : le résultat, et la date de complétion. */
+/** Ce que le mapping du cerfa lit : le résultat, et la date de complétion. */
 export type CerfaInput<
   Questions extends AnyQuestions = AnyQuestions,
   Cibles = AnyCibles,
 > = ResultatProps<Questions, Cibles> & { completedAt: Date };
-
-/** Le cerfa d'une préconisation : son gabarit, et ce qu'on y écrit. */
-export type CerfaForm<
-  Questions extends AnyQuestions = AnyQuestions,
-  Cibles = AnyCibles,
-> = {
-  /**
-   * Charge le gabarit vierge, au clic. Le modèle dit d'où il vient : un asset
-   * servi par l'app, ou un formulaire fabriqué.
-   */
-  template: () => Promise<ArrayBuffer | Uint8Array>;
-  /** Le début du nom du fichier téléchargé. Le socle y ajoute la date. */
-  fileName: string;
-  mapping: FieldMapping<CerfaInput<Questions, Cibles>>;
-};
 
 export type Model<
   Questions extends AnyQuestions = AnyQuestions,
@@ -78,7 +63,7 @@ export type Model<
   cerfa: {
     part: QuestionnairePart<Questions, Cibles>;
     /** Le cerfa de cette préconisation. `null` : rien ne suit le premier résultat. */
-    form: (cibles: Cibles) => CerfaForm<Questions, Cibles> | null;
+    form: (cibles: Cibles) => CerfaForm<CerfaInput<Questions, Cibles>> | null;
     title: string;
     Resultat: ComponentType<ResultatProps<Questions, Cibles>>;
     /** Le libellé de l'action qui verrouille. */

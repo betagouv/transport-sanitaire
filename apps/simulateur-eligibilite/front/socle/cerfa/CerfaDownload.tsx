@@ -1,31 +1,30 @@
-// Le téléchargement du cerfa, sous le second résultat : l'action principale.
+// Le bouton qui télécharge un cerfa.
 //
 // Le PDF se produit au clic, dans le navigateur. Un échec se signale sans
-// masquer le résultat déjà affiché.
+// masquer ce que la page affiche déjà.
 
 import { useState } from "react";
-import { download, fileNameOf, produceCerfa } from "../cerfa/produce-cerfa";
-import type { CerfaForm, CerfaInput, Model } from "../model";
+import {
+  type CerfaForm,
+  download,
+  fileNameOf,
+  produceCerfa,
+} from "./produce-cerfa";
 
-type Props = { cerfa: Model["cerfa"]; input: CerfaInput };
+type Props<Input> = {
+  form: CerfaForm<Input>;
+  input: Input;
+  /** La date du document, qui date aussi le nom du fichier. */
+  date: Date;
+  label: string;
+};
 
-/** Rien quand la préconisation ne donne aucun cerfa. */
-export function CerfaDownload({ cerfa, input }: Props) {
-  const form = cerfa.form(input.cibles);
-  return (
-    form && (
-      <DownloadButton form={form} input={input} label={cerfa.downloadLabel} />
-    )
-  );
-}
-
-// ---- implémentation ----
-
-function DownloadButton({
+export function CerfaDownload<Input>({
   form,
   input,
+  date,
   label,
-}: Omit<Props, "cerfa"> & { form: CerfaForm; label: string }) {
+}: Props<Input>) {
   const [pending, setPending] = useState(false);
   const [failed, setFailed] = useState(false);
 
@@ -34,7 +33,7 @@ function DownloadButton({
     setFailed(false);
     try {
       const pdf = await produceCerfa(form, input);
-      download(pdf, fileNameOf(form.fileName, input.completedAt));
+      download(pdf, fileNameOf(form.fileName, date));
     } catch (cause) {
       console.error("[cerfa] Génération impossible.", cause);
       setFailed(true);
@@ -56,6 +55,8 @@ function DownloadButton({
     </div>
   );
 }
+
+// ---- implémentation ----
 
 function Failure() {
   return (

@@ -3,7 +3,13 @@
 // sont ici.
 
 import type { ComponentType, ReactNode } from "react";
-import { type Model, type Preconisation, preconisationOf } from "../model";
+import { CerfaDownload } from "../cerfa/CerfaDownload";
+import {
+  type CerfaInput,
+  type Model,
+  type Preconisation,
+  preconisationOf,
+} from "../model";
 import {
   askedPages,
   validatedQuestions,
@@ -17,7 +23,6 @@ import {
 } from "../questionnaire-engine/question";
 import type { QuestionnaireState } from "../questionnaire-engine/questionnaire";
 import { Stepper } from "../questionnaire-engine/Stepper";
-import { CerfaDownload } from "./CerfaDownload";
 import type { Locked } from "./start";
 
 type Props = {
@@ -98,10 +103,7 @@ export function CerfaResultat({
       DebugTrace={DebugTrace}
     >
       <Resultat answers={answers} cibles={cibles} />
-      <CerfaDownload
-        cerfa={model.cerfa}
-        input={{ answers, cibles, completedAt }}
-      />
+      <Cerfa model={model} input={{ answers, cibles, completedAt }} />
       <div className="fr-btns-group fr-btns-group--inline">
         <SecondaryButton onClick={() => onReopen(state)}>
           Précédent
@@ -115,6 +117,22 @@ export function CerfaResultat({
 }
 
 // ---- implémentation ----
+
+// Le cerfa de la préconisation figée, daté du jour où le complément a été
+// validé. Rien quand elle n'en donne pas.
+function Cerfa({ model, input }: { model: Model; input: CerfaInput }) {
+  const form = model.cerfa.form(input.cibles);
+  return (
+    form && (
+      <CerfaDownload
+        form={form}
+        input={input}
+        date={input.completedAt}
+        label={model.cerfa.downloadLabel}
+      />
+    )
+  );
+}
 
 // Ce que la trace de debug lit sous un résultat : les pages affichées, les
 // questions validées, et la préconisation. `locked` : les cibles figées, que
