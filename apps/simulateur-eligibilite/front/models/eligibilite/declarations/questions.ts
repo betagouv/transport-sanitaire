@@ -80,6 +80,11 @@ export const OPTIONS = {
     "1_OUI": "Oui.",
     "2_NON": "Non.",
   },
+  /** Le médecin prescripteur atteste-t-il que ce transport est urgent ? */
+  "Q2.3.4": {
+    "1_OUI": "Oui.",
+    "2_NON": "Non.",
+  },
 } as const;
 
 type Option<Id extends keyof typeof OPTIONS> = keyof (typeof OPTIONS)[Id];
@@ -93,4 +98,5 @@ export type Questions = {
   "Q1.4": Option<"Q1.4">;
   "Q2.3.1": Option<"Q2.3.1">;
   "Q2.3.3": Option<"Q2.3.3">;
+  "Q2.3.4": Option<"Q2.3.4">;
 };

@@ -5,7 +5,7 @@ import { optionsFrom, type QuestionnairePart } from "../../socle";
 import type { Cibles } from "./declarations/cibles";
 import { OPTIONS, type Questions } from "./declarations/questions";
 import { modeDe } from "./mode-de-transport";
-import { faitsDuTrajet } from "./trajet";
+import { dapPossible, faitsDuTrajet } from "./trajet";
 
 type Partie<Cibles> = QuestionnairePart<Questions, Cibles>;
 
@@ -137,8 +137,9 @@ export const P1: Partie<undefined> = {
 };
 
 // Q2.3 : le trajet évalué, sur une seule page. La série se révèle sous la
-// distance quand le trajet dépasse 50 km. La case de l'avion ou du bateau
-// (Q2.3.2) et l'urgence (Q2.3.4) attendent leur décision (issue 63).
+// distance quand le trajet dépasse 50 km, et l'urgence dès qu'une demande
+// d'accord est possible (D-95). La case de l'avion ou du bateau (Q2.3.2)
+// attend sa décision (issue 63).
 const PAGE_DU_TRAJET: Partie<undefined>["pages"][number] = {
   id: "P2/trajet",
   questions: [
@@ -158,6 +159,15 @@ const PAGE_DU_TRAJET: Partie<undefined>["pages"][number] = {
       askedIf: (_answers, _cibles, validated) =>
         faitsDuTrajet(validated).fait_distance_plus_50.value === true,
       options: optionsFrom(OPTIONS["Q2.3.3"]),
+    },
+    {
+      id: "Q2.3.4",
+      kind: "single choice",
+      label:
+        "Le médecin prescripteur atteste-t-il que ce transport est urgent ?",
+      askedIf: (_answers, _cibles, validated) =>
+        dapPossible(validated) === true,
+      options: optionsFrom(OPTIONS["Q2.3.4"]),
     },
   ],
 };

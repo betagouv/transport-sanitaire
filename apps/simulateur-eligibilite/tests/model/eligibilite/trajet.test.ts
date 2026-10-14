@@ -32,10 +32,7 @@ describe("la page du trajet", () => {
   it.each(["2_PLUS_DE_CINQUANTE_KM", "3_PLUS_DE_CENT_CINQUANTE_KM"] as const)(
     "pose la série pour un trajet de %s",
     (distance) => {
-      expect(posees({ ...SEUL, "Q2.3.1": distance })).toEqual([
-        "Q2.3.1",
-        "Q2.3.3",
-      ]);
+      expect(posees({ ...SEUL, "Q2.3.1": distance })).toContain("Q2.3.3");
     },
   );
 
@@ -43,5 +40,27 @@ describe("la page du trajet", () => {
     expect(posees({ ...SEUL, "Q2.3.1": "1_CINQUANTE_KM_OU_MOINS" })).toEqual([
       "Q2.3.1",
     ]);
+  });
+
+  // D-95 : l'urgence se pose dès qu'une demande d'accord est possible, en
+  // attendant l'arbitrage de l'éditeur.
+  it.each([
+    ["au-delà de 150 km", { "Q2.3.1": "3_PLUS_DE_CENT_CINQUANTE_KM" }],
+    [
+      "pour une série",
+      { "Q2.3.1": "2_PLUS_DE_CINQUANTE_KM", "Q2.3.3": "1_OUI" },
+    ],
+  ] as const)("pose l'urgence %s", (_, trajet) => {
+    expect(posees({ ...SEUL, ...trajet })).toContain("Q2.3.4");
+  });
+
+  it.each([
+    ["à 50 km ou moins", { "Q2.3.1": "1_CINQUANTE_KM_OU_MOINS" }],
+    [
+      "sans série, jusqu'à 150 km",
+      { "Q2.3.1": "2_PLUS_DE_CINQUANTE_KM", "Q2.3.3": "2_NON" },
+    ],
+  ] as const)("ne pose pas l'urgence %s", (_, trajet) => {
+    expect(posees({ ...SEUL, ...trajet })).not.toContain("Q2.3.4");
   });
 });

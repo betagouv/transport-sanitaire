@@ -82,10 +82,32 @@ describe("P2", () => {
     ).toBeUndefined();
   });
 
-  it("laisse absents les faits que la page du trajet n'établit pas encore", () => {
-    const reponses = { ...LONG, "Q2.3.3": "1_OUI" } as const;
-    expect(valeur("fait_avion_bateau_ligne", reponses)).toBeUndefined();
-    expect(valeur("fait_urgence_attestee", reponses)).toBeUndefined();
-    expect(valeur("fait_urgence_repondue", reponses)).toBeUndefined();
+  it("laisse absent l'avion ou le bateau, que la page ne pose pas encore", () => {
+    expect(valeur("fait_avion_bateau_ligne", LONG)).toBeUndefined();
+  });
+});
+
+describe("l'urgence (Q2.3.4)", () => {
+  const SERIE = { ...LONG, "Q2.3.3": "1_OUI" } as const;
+
+  it.each([
+    ["« Oui »", { ...SERIE, "Q2.3.4": "1_OUI" }, true, true],
+    ["« Non »", { ...SERIE, "Q2.3.4": "2_NON" }, false, true],
+    ["une réponse qui attend", SERIE, undefined, undefined],
+    [
+      "une réponse restée d'un trajet sans demande d'accord",
+      { ...COURT, "Q2.3.4": "1_OUI" },
+      undefined,
+      undefined,
+    ],
+  ] as const)("%s", (_, reponses, attestee, repondue) => {
+    expect(valeur("fait_urgence_attestee", reponses)).toBe(attestee);
+    expect(valeur("fait_urgence_repondue", reponses)).toBe(repondue);
+  });
+
+  it("donne aux règles l'urgence attestée", () => {
+    expect(
+      cible("cible_urgence_attestee", { ...SERIE, "Q2.3.4": "1_OUI" }),
+    ).toBe(true);
   });
 });

@@ -6,17 +6,39 @@
 
 import type { Validated } from "../../socle";
 import type { Fait } from "../../socle/decision-engine/publicodes";
-import type { Faits } from "./declarations/faits";
+import { AUCUN_FAIT, type Faits } from "./declarations/faits";
 import type { Questions } from "./declarations/questions";
+import { cible } from "./evaluation-des-regles";
+import { faitsDuMode } from "./mode-de-transport";
 
 type Valides = Validated<Questions>;
 
-/** Les faits que Q2.3.1 et Q2.3.3 établissent, ou laissent absents. */
+/** Les faits que Q2.3.1, Q2.3.3 et Q2.3.4 établissent, ou laissent absents. */
 export function faitsDuTrajet(validated: Valides) {
   return {
     ...faitsDeLaDistance(validated),
     fait_serie_qualifiante: serieQualifiante(validated),
+    ...faitsDeLUrgence(validated),
   } satisfies Partial<Faits>;
+}
+
+/**
+ * Une demande d'accord préalable est-elle possible, vu P1 et le trajet ?
+ * `undefined` : on ne le sait pas encore. Q2.3.4 se pose quand elle l'est
+ * (D-95), en attendant l'arbitrage de l'éditeur : la règle qu'il destine à
+ * cette question attend des faits posés après la page du trajet.
+ */
+export function dapPossible(validated: Valides): boolean | undefined {
+  const requise = cible(
+    {
+      ...AUCUN_FAIT,
+      ...faitsDuMode(validated),
+      ...faitsDeLaDistance(validated),
+      fait_serie_qualifiante: serieQualifiante(validated),
+    },
+    "cible_dap_requise",
+  );
+  return requise ?? undefined;
 }
 
 // ---- implémentation ----
@@ -64,4 +86,26 @@ function serieQualifiante(validated: Valides): Fait {
   if (validated["Q2.3.1"]?.answer === CINQUANTE_KM_OU_MOINS)
     return absent("Q2.3.3 ne se pose pas : le trajet ne dépasse pas 50 km.");
   return absent("Q2.3.3 n'est pas encore validée.");
+}
+
+// Q2.3.4 : le médecin atteste-t-il l'urgence ? Sans demande d'accord possible,
+// la question est sans objet : elle vaut « non » répondue, et l'attestation
+// reste absente, faute de réponse.
+function faitsDeLUrgence(validated: Valides) {
+  const reponse = validated["Q2.3.4"]?.answer;
+  if (reponse !== undefined) {
+    const source = `Q2.3.4 : « ${reponse} ».`;
+    return {
+      fait_urgence_attestee: reponse === "1_OUI" ? oui(source) : non(source),
+      fait_urgence_repondue: oui(source),
+    };
+  }
+  const sansObjet = dapPossible(validated) === false;
+  const attente = sansObjet
+    ? "Q2.3.4 ne se pose pas : aucune demande d'accord n'est possible."
+    : "Q2.3.4 n'est pas encore validée.";
+  return {
+    fait_urgence_attestee: absent(attente),
+    fait_urgence_repondue: sansObjet ? non(attente) : absent(attente),
+  };
 }
