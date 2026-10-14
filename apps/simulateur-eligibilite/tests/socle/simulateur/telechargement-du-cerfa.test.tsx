@@ -109,11 +109,14 @@ function sansGabarit(): Model {
     cerfa: {
       ...cerfa,
       form: (cibles) => {
-        const form = cerfa.form(cibles);
+        const bound = cerfa.form(cibles);
         return (
-          form && {
-            ...form,
-            template: () => Promise.reject(new Error("Gabarit introuvable.")),
+          bound && {
+            ...bound,
+            cerfa: {
+              ...bound.cerfa,
+              template: () => Promise.reject(new Error("Gabarit introuvable.")),
+            },
           }
         );
       },
