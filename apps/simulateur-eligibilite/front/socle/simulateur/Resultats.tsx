@@ -60,19 +60,13 @@ export function FirstResultat({
       DebugTrace={DebugTrace}
     >
       <Resultat answers={answers} cibles={preconisation.cibles} />
-      <div className="fr-btns-group fr-btns-group--inline">
-        <SecondaryButton onClick={() => onReopen(state)}>
-          Précédent
-        </SecondaryButton>
-        {hasCerfa && (
-          <PrimaryButton onClick={() => onLock({ answers, preconisation })}>
-            {model.cerfa.startLabel}
-          </PrimaryButton>
-        )}
-        <SecondaryButton onClick={onRestart}>
-          Nouvelle simulation
-        </SecondaryButton>
-      </div>
+      <FirstActions
+        printLabel={model.transportAndEligibility.printLabel}
+        startLabel={hasCerfa ? model.cerfa.startLabel : undefined}
+        onReopen={() => onReopen(state)}
+        onLock={() => onLock({ answers, preconisation })}
+        onRestart={onRestart}
+      />
     </Frame>
   );
 }
@@ -105,7 +99,7 @@ export function CerfaResultat({
     >
       <Resultat answers={answers} cibles={cibles} />
       <Cerfa model={model} input={{ answers, faits, cibles, completedAt }} />
-      <div className="fr-btns-group fr-btns-group--inline">
+      <div className="fr-btns-group fr-btns-group--inline fr-no-print">
         <SecondaryButton onClick={() => onReopen(state)}>
           Précédent
         </SecondaryButton>
@@ -132,6 +126,42 @@ function Cerfa({ model, input }: { model: Model; input: CerfaInput }) {
         label={model.cerfa.downloadLabel}
       />
     )
+  );
+}
+
+// Deux groupes, comme le veut la fiche. L'impression ne verrouille rien : elle
+// reste avec « Précédent ». « Compléter » verrouille, et se tient à part. Rien
+// de ces boutons ne s'imprime.
+function FirstActions({
+  printLabel,
+  startLabel,
+  onReopen,
+  onLock,
+  onRestart,
+}: {
+  printLabel: string;
+  startLabel?: string;
+  onReopen: () => void;
+  onLock: () => void;
+  onRestart: () => void;
+}) {
+  return (
+    <div className="fr-no-print">
+      <div className="fr-btns-group fr-btns-group--inline">
+        <SecondaryButton onClick={onReopen}>Précédent</SecondaryButton>
+        <SecondaryButton onClick={onRestart}>
+          Nouvelle simulation
+        </SecondaryButton>
+        <PrimaryButton onClick={() => window.print()}>
+          {printLabel}
+        </PrimaryButton>
+      </div>
+      {startLabel && (
+        <div className="fr-btns-group fr-btns-group--inline fr-mt-3w">
+          <PrimaryButton onClick={onLock}>{startLabel}</PrimaryButton>
+        </div>
+      )}
+    </div>
   );
 }
 
@@ -172,9 +202,15 @@ function Frame({
   return (
     <>
       <h1 className="fr-h3">{title}</h1>
-      <Stepper part={part} total={total} />
+      <div className="fr-no-print">
+        <Stepper part={part} total={total} />
+      </div>
       {children}
-      {DebugTrace && <DebugTrace {...trace} />}
+      {DebugTrace && (
+        <div className="fr-no-print">
+          <DebugTrace {...trace} />
+        </div>
+      )}
     </>
   );
 }
