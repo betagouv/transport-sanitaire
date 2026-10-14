@@ -49,13 +49,7 @@ export function AddressField<Name extends string>(props: Props<Name>) {
       aria-labelledby={`${id}-legend`}
       aria-describedby={failing ? `${id}-messages` : undefined}
     >
-      <legend
-        id={`${id}-legend`}
-        className={`fr-fieldset__legend fr-text--regular${props.lead ? " fr-text--lead" : ""}`}
-      >
-        {props.label}
-        {props.hint && <span className="fr-hint-text">{props.hint}</span>}
-      </legend>
+      <Legend {...props} />
       {fields.map((field, rank) => (
         <div key={field.name} className={elementClass(field)}>
           <FieldInput
@@ -71,6 +65,23 @@ export function AddressField<Name extends string>(props: Props<Name>) {
 }
 
 // ---- implémentation ----
+
+function Legend({
+  id,
+  label,
+  hint,
+  lead,
+}: Pick<Props<string>, "id" | "label" | "hint" | "lead">) {
+  return (
+    <legend
+      id={`${id}-legend`}
+      className={`fr-fieldset__legend fr-text--regular${lead ? " fr-text--lead" : ""}`}
+    >
+      {label}
+      {hint && <span className="fr-hint-text">{hint}</span>}
+    </legend>
+  );
+}
 
 function GroupMessages({
   id,

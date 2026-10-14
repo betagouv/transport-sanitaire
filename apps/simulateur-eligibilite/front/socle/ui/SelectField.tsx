@@ -25,13 +25,7 @@ export function SelectField(props: Props) {
     <div
       className={`fr-select-group${invalid ? " fr-select-group--error" : ""}`}
     >
-      <label
-        className={`fr-label${props.lead ? " fr-text--lead" : ""}`}
-        htmlFor={props.id}
-      >
-        {props.label}
-        {props.hint && <span className="fr-hint-text">{props.hint}</span>}
-      </label>
+      <Label {...props} />
       <select
         className={`fr-select${invalid ? " fr-select--error" : ""}`}
         id={props.id}
@@ -53,6 +47,15 @@ export function SelectField(props: Props) {
 }
 
 // ---- implémentation ----
+
+function Label({ id, label, hint, lead }: Props) {
+  return (
+    <label className={`fr-label${lead ? " fr-text--lead" : ""}`} htmlFor={id}>
+      {label}
+      {hint && <span className="fr-hint-text">{hint}</span>}
+    </label>
+  );
+}
 
 // Les options de la liste. La première tient lieu d'invite : on ne peut pas la
 // choisir, et elle disparaît de la liste ouverte.
