@@ -31,6 +31,10 @@ const models: Models = [
     label: "Modèle de démonstration",
     load: () => import("./models/fake").then((module) => module.model),
   },
+  {
+    label: "Modèle de l’éditeur",
+    load: () => import("./models/eligibilite").then((module) => module.model),
+  },
 ];
 
 const racine = document.getElementById("root");
