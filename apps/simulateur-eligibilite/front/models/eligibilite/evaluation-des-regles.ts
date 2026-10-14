@@ -6,5 +6,5 @@ import { CIBLES, type Cibles } from "./declarations/cibles";
 import type { Faits } from "./declarations/faits";
 import { rules } from "./rules/regles.publicodes";
 
-/** Toutes les cibles de faits donnés. */
-export const { cibles } = publicodesEngine<Faits, Cibles>(rules, CIBLES);
+/** Toutes les cibles, et une seule cible, de faits donnés. */
+export const { cibles, cible } = publicodesEngine<Faits, Cibles>(rules, CIBLES);

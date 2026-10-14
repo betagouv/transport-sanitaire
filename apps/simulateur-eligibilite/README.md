@@ -184,14 +184,16 @@ une étape après l'autre. Ses règles sont livrées en YAML : Vite les converti
 objet à la compilation (`vite.config.ts`), et aucun analyseur YAML ne part dans
 le navigateur. Le noyau est là : les règles, la déclaration des faits et des
 cibles, et l'oracle de l'éditeur rejoué en faits. Le questionnaire s'arrête à
-P0, et aucun fait n'est encore établi. L'avancement
+P1 : ses réponses donnent les faits du mode de transport, à trois états. P2
+n'est pas posée, et R2 dit encore que le questionnaire n'est pas complet.
+L'avancement
 est dans l'issue 50 du dépôt, les décisions dans
 [`docs/knowledge/adr/journal-des-decisions-v10.md`](docs/knowledge/adr/journal-des-decisions-v10.md).
 
 Le modèle de démonstration (`front/models/fake/`) déroule une commande de
 boisson, sans rapport avec le transport sanitaire. Il est pérenne : chaque capacité du socle
-y a sa page, et ses seeds ouvrent les pages à montrer. Quand le modèle de
-l'éditeur sera là, les developer tools proposeront de passer de l'un à l'autre.
+y a sa page, et ses seeds ouvrent les pages à montrer. Il s'ouvre par défaut ;
+les developer tools permettent de passer au modèle de l'éditeur.
 
 Les tests du socle tournent sur leur propre factice
 (`tests/socle/fixtures/modele-factice/`), petit et figé : ils ne changent ni
