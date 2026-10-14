@@ -57,6 +57,9 @@ description = "Noms de règles publicodes, pris pour des clés par generic-api-k
 targetRules = ["generic-api-key"]
 paths = [
   '''apps/simulateur-eligibilite/front/simulateur/contrat-regles-publicodes\.ts$''',
+  '''apps/simulateur-eligibilite/front/models/eligibilite/rules/regles\.publicodes$''',
+  '''apps/simulateur-eligibilite/front/models/eligibilite/declarations/(faits|cibles)\.ts$''',
+  '''apps/simulateur-eligibilite/tests/model/eligibilite/oracle\.test\.ts$''',
   '''apps/simulateur-eligibilite/front/simulateur/questionnaire/visibilite-des-options\.ts$''',
   '''apps/simulateur-eligibilite/tests/simulateur/livrable\.ts$''',
   '''apps/simulateur-eligibilite/tests/simulateur/livrable-v[0-9]+(-[0-9]+)+\.ts$''',
