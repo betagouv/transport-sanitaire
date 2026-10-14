@@ -8,6 +8,7 @@
 //
 // Les questions se lisent dans l'ordre. Chacune voit celles qui la précèdent
 // et qui sont validées : ses conditions peuvent en dépendre, pas de la suite.
+// Ses incohérences ne voient pas non plus les réponses des pages suivantes.
 
 import { isAnswered, offeredAnswer, optionValues } from "./offered-answer";
 import type { Option } from "./option";
@@ -83,12 +84,13 @@ function inOrder(pages: readonly Page[], answers: Answers, cibles?: AnyCibles) {
   let validated: Validated = {};
   let complete = true;
   const asked: AskedPage[] = [];
-  for (const page of pages) {
+  for (const [rank, page] of pages.entries()) {
+    const earlier = answersUpTo(pages, rank, answers);
     const questions: Question[] = [];
     for (const declared of page.questions) {
       const seen: Seen = [answers, cibles, validated];
       if (!(declared.askedIf?.(...seen) ?? true)) continue;
-      const question = asAsked(declared, seen);
+      const question = asAsked(declared, seen, [earlier, cibles, validated]);
       const answer = answers[question.id];
       questions.push(question);
       complete &&= isAnswered(question, answer);
@@ -114,9 +116,9 @@ function asValidated(question: Question, answer: Answer | undefined) {
   };
 }
 
-function asAsked(question: Question, seen: Seen): Question {
+function asAsked(question: Question, seen: Seen, earlier: Seen): Question {
   const offered = (options: readonly Option[]) => offeredOptions(options, seen);
-  const texts = displayedTexts(question, seen);
+  const texts = displayedTexts(question, seen, earlier);
   if (question.kind === "date" || question.kind === "datetime")
     return { ...question, ...texts, ...question.boundsFrom?.(...seen) };
   if (question.kind === "address")
@@ -142,13 +144,30 @@ function abroadOf(
   return question.abroadIf?.(...seen) ?? question.abroad;
 }
 
-// Ce qui se lit autour du champ, vu les réponses : le libellé, et le rappel.
-function displayedTexts(question: Question, seen: Seen) {
+// Ce qui se lit autour du champ, vu les réponses : le libellé, le rappel, et
+// les incohérences. Celles-ci ne lisent pas les pages suivantes (`earlier`).
+function displayedTexts(question: Question, seen: Seen, earlier: Seen) {
   const asked = question.labelFrom?.(...seen) ?? question.label;
   return {
     label: question.optional ? `${asked} (facultatif)` : asked,
     reminder: question.reminderFrom?.(...seen) ?? question.reminder,
+    inconsistencies: question.inconsistenciesFrom?.(...earlier),
   };
+}
+
+// Les réponses, sans celles des questions des pages qui suivent celle-ci. Les
+// réponses acquises avant le verrou n'ont pas de page ici : elles restent.
+function answersUpTo(
+  pages: readonly Page[],
+  rank: number,
+  answers: Answers,
+): Answers {
+  const later = pages
+    .slice(rank + 1)
+    .flatMap((page) => page.questions.map((question) => question.id));
+  return Object.fromEntries(
+    Object.entries(answers).filter(([id]) => !later.includes(id)),
+  );
 }
 
 // Les options qui se proposent, vu les réponses, sous leur libellé du moment.

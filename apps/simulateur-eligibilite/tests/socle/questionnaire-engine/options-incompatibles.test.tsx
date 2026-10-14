@@ -1,6 +1,6 @@
 import { screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
-import { errorOf } from "../../../front/socle/questionnaire-engine/answer-error";
+import { errorsOf } from "../../../front/socle/questionnaire-engine/answer-error";
 import type {
   Page,
   Question,
@@ -77,7 +77,7 @@ describe("options incompatibles", () => {
   });
 
   it("refuse une réponse venue d'ailleurs qui porterait les deux", () => {
-    expect(errorOf(CRITERES, ["fauteuil", "brancard"])).toBe(EXPLICATION);
-    expect(errorOf(CRITERES, ["fauteuil", "oxygene"])).toBeUndefined();
+    expect(errorsOf(CRITERES, ["fauteuil", "brancard"])).toEqual([EXPLICATION]);
+    expect(errorsOf(CRITERES, ["fauteuil", "oxygene"])).toEqual([]);
   });
 });

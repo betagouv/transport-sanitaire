@@ -92,6 +92,24 @@ type Common<Questions extends AnyQuestions, Cibles> = {
     validated: Validated<Questions>,
   ): boolean;
   /**
+   * Ce qui, dans la réponse, en contredit une autre : un message par
+   * incohérence, qui dit quoi corriger. Vide : rien ne la contredit. Tant qu'il
+   * en reste, la question n'est pas validée.
+   *
+   * La règle se déclare sur la plus tardive des deux questions : le moteur lui
+   * cache les réponses des pages suivantes. Elle lit celles de sa page, et les
+   * réponses acquises avant le verrou.
+   *
+   * Écrite en méthode, comme `askedIf`.
+   */
+  inconsistenciesFrom?(
+    answers: Answers<Questions>,
+    cibles: Cibles,
+    validated: Validated<Questions>,
+  ): readonly string[];
+  /** Les incohérences du moment, que le moteur résout (`asked-questions.ts`). */
+  readonly inconsistencies?: readonly string[];
+  /**
    * Les questions dont dépend cette réponse. Quand l'une d'elles change, cette
    * réponse est effacée, et elle seule (`page-commit.ts`).
    */
