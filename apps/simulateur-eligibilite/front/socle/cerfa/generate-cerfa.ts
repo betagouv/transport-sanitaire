@@ -24,7 +24,7 @@ export type GeneratedCerfa = {
   readonly removedComments: readonly string[];
 };
 
-/** Le cerfa rempli d'après `dto`, aplati, prêt à télécharger. */
+/** Génère le cerfa rempli d'après `dto`, aplati, prêt à télécharger. */
 export async function generateCerfa<Dto extends CerfaDto>(
   cerfa: Cerfa<Dto>,
   dto: Dto,
@@ -50,8 +50,8 @@ export async function generateCerfa<Dto extends CerfaDto>(
 }
 
 /**
- * Le chargeur d'un gabarit servi comme asset de l'app : un modèle l'importe par
- * `import url from "./gabarit.pdf?url"`.
+ * Rend le chargeur d'un gabarit servi comme asset de l'app. Un modèle en
+ * obtient l'URL par `import url from "./gabarit.pdf?url"`.
  */
 export function templateAt(url: string): () => Promise<ArrayBuffer> {
   return async () => {
@@ -62,7 +62,7 @@ export function templateAt(url: string): () => Promise<ArrayBuffer> {
   };
 }
 
-/** Le nom du fichier : sa racine, puis la date du document. */
+/** Nomme le fichier : sa racine, puis la date du document. */
 export function fileNameOf(root: string, date: Date): string {
   // La locale suédoise écrit la date en `AAAA-MM-JJ`, qui se trie.
   const day = date.toLocaleDateString("sv-SE", {
@@ -88,8 +88,8 @@ export function download(blob: Blob, name: string): void {
 type Binding = TextBinding | CommentBinding | BoxBinding;
 
 /**
- * Ce que le DTO demande au PDF, dans les noms du gabarit. Une entrée absente,
- * vide ou fausse laisse sa place vide.
+ * Traduit ce que le DTO demande au PDF dans les noms du gabarit. Une entrée
+ * absente, vide ou fausse laisse sa place vide.
  */
 function instructionsOf<Dto extends CerfaDto>(cerfa: Cerfa<Dto>, dto: Dto) {
   const bound = Object.entries(
@@ -118,7 +118,8 @@ function instructionsOf<Dto extends CerfaDto>(cerfa: Cerfa<Dto>, dto: Dto) {
   };
 }
 
-// Du champ qui a perdu son commentaire à l'entrée du DTO qui le portait.
+// Retrouve, d'un champ qui a perdu son commentaire, l'entrée du DTO qui le
+// portait.
 function commentOf(
   bound: readonly (readonly [string, Binding])[],
   comments: ReadonlyMap<string, string>,
@@ -132,8 +133,8 @@ function commentOf(
     });
 }
 
-// De chaque texte commenté à l'entrée qui porte son commentaire. Un
-// commentaire ne suit qu'un texte du cerfa.
+// Relie chaque texte commenté à l'entrée qui porte son commentaire. Refuse un
+// commentaire qui ne suit aucun texte du cerfa.
 function commentsOf(
   bound: readonly (readonly [string, Binding])[],
 ): Map<string, string> {
@@ -158,8 +159,9 @@ function isGiven<Value>(value: Value | undefined): value is Value {
   return value !== undefined && value !== "" && value !== false;
 }
 
-// Une case dessinée n'est pas un champ à remplir : elle part dans les marques.
-// Un commentaire s'écrit avec le texte qu'il suit.
+// Traduit une entrée du DTO en valeur à écrire dans un champ. Une case
+// dessinée n'en donne aucune : elle part dans les marques. Un commentaire non
+// plus : il s'écrit avec le texte qu'il suit.
 function entryOf(
   binding: Binding,
   value: string | boolean | undefined,
