@@ -21,6 +21,7 @@ export type Questions = {
   quantite: number;
   lieu: "salle" | "terrasse" | "comptoir";
   nom: string;
+  ticket: boolean;
   facturation: "france" | "etranger";
   adresse: Address;
   expedition: Address;
