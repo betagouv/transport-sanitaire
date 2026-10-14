@@ -11,6 +11,11 @@ export type CerfaMapping<Dto extends CerfaDto, Data> = {
   readonly fields: {
     readonly [Key in keyof Dto["fields"]]-?: (data: Data) => Dto["fields"][Key];
   };
+  readonly drawings: {
+    readonly [Key in keyof Dto["drawings"]]-?: (
+      data: Data,
+    ) => Dto["drawings"][Key];
+  };
 };
 
 /** Un cerfa et le mapping qui calcule son DTO, vérifiés ensemble. */
@@ -40,5 +45,8 @@ export function dtoFrom<Data>(
     Object.fromEntries(
       Object.entries(rules).map(([key, rule]) => [key, rule(data)]),
     );
-  return { fields: apply(mapping.fields) as CerfaDto["fields"] };
+  return {
+    fields: apply(mapping.fields) as CerfaDto["fields"],
+    drawings: apply(mapping.drawings) as CerfaDto["drawings"],
+  };
 }

@@ -147,7 +147,7 @@ front/                   le front, bundlé par Vite
                          simulateur, jamais l'inverse : c'est App.tsx qui compose.
     cerfa/               le socle de remplissage d'un PDF : un cerfa et son DTO,
                          l'écriture dans un AcroForm, l'aplatissement, les marques
-                         dessinées, la production au clic et le bouton de
+                         et textes dessinés, la production au clic et le bouton de
                          téléchargement. Aucun gabarit, et rien du simulateur.
     cerfa-mapping.ts     la traduction des données du simulateur en DTO d'un cerfa
     analytics/           le vocabulaire mesuré, seul import du reste, son transport

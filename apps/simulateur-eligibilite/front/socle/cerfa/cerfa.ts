@@ -7,10 +7,20 @@
 
 /**
  * Les données d'un cerfa. `fields` va dans les champs du gabarit : un texte,
- * ou une case cochée (`true`). Une entrée absente laisse sa place vide.
+ * ou une case cochée (`true`). `drawings` se dessine là où le gabarit n'a pas
+ * de champ. Une entrée absente laisse sa place vide.
  */
 export type CerfaDto = {
   readonly fields: Readonly<Record<string, string | boolean | undefined>>;
+  readonly drawings: Readonly<Record<string, string | undefined>>;
+};
+
+/** Un emplacement sur une page du gabarit, comptée depuis 1, en points. */
+export type Position = {
+  readonly page: number;
+  readonly x: number;
+  readonly y: number;
+  readonly width: number;
 };
 
 /** Où va un texte : le nom exact du champ, et comment l'écrire. */
@@ -49,6 +59,7 @@ export type Cerfa<Dto extends CerfaDto> = {
       NonNullable<Dto["fields"][Key]>
     >;
   };
+  readonly drawings: { readonly [Key in keyof Dto["drawings"]]-?: Position };
 };
 
 /** Un texte écrit dans le champ `field`. */
@@ -67,4 +78,9 @@ export function box(field: string, state: string): BoxBinding {
 /** Une case qui partage son champ : sa marque est dessinée sur la page. */
 export function drawnBox(field: string, state: string): BoxBinding {
   return { field, state, drawn: true };
+}
+
+/** Un texte dessiné à `position`, là où le gabarit n'a pas de champ. */
+export function at(position: Position): Position {
+  return position;
 }
