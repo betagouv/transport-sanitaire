@@ -1,10 +1,10 @@
-// Tenir le ticket Notion d'un chantier : le créer, puis faire avancer son
-// statut. L'issue fait foi, à sens unique. Notion ne porte que le suivi macro :
-// les tâches n'y ont pas de ticket.
+// Projeter le tableau, puis tenir le ticket Notion d'un chantier : le créer,
+// puis faire avancer son statut. L'issue fait foi, à sens unique. Notion ne
+// porte que le suivi macro : les tâches n'y ont pas de ticket.
 
 import type { Invocation } from "../core/invocation.ts";
 import { section } from "../core/markdown.ts";
-import { print, printError } from "../core/output.ts";
+import { print, printError, section as titled } from "../core/output.ts";
 import { type Issue, writeIssueBody } from "../git/issues.ts";
 import {
   advances,
@@ -23,10 +23,47 @@ import {
   type Suivi,
 } from "./chantiers.ts";
 import { withNotionLink } from "./notion-link.ts";
+import { projectSuivi } from "./tableau.ts";
 
-/** `tsp issue sync [n]` */
+/**
+ * `tsp issue sync [n]` : le tableau d'abord, toujours en entier, puis le ticket
+ * Notion du chantier `n`, ou de tous.
+ */
 export async function syncCommand(invocation: Invocation): Promise<number> {
   const { root, args } = invocation;
+  const suivi = readSuivi(root);
+  if (!suivi) {
+    printError("GitHub : gh ne répond pas.");
+    return 1;
+  }
+  const projected = syncTableau(root, suivi);
+  const synced = await syncNotion(root, suivi, args[0]);
+  return projected && synced === 0 ? 0 : 1;
+}
+
+// ---- implémentation ----
+
+/** Dit ce qui a bougé sur le tableau. Rend faux s'il ne répond pas. */
+function syncTableau(root: string, suivi: Suivi): boolean {
+  try {
+    const moved = projectSuivi(root, suivi);
+    print(
+      moved.length === 0
+        ? "Tableau : à jour"
+        : titled("Tableau", moved.join("\n")),
+    );
+    return true;
+  } catch (error) {
+    printError(`Tableau : ${(error as Error).message}`);
+    return false;
+  }
+}
+
+async function syncNotion(
+  root: string,
+  suivi: Suivi,
+  asked?: string,
+): Promise<number> {
   const notion = notionAccess(root);
   if (typeof notion === "string") {
     printError(
@@ -34,22 +71,15 @@ export async function syncCommand(invocation: Invocation): Promise<number> {
     );
     return 1;
   }
-  const suivi = readSuivi(root);
-  if (!suivi) {
-    printError("GitHub : gh ne répond pas.");
-    return 1;
-  }
-  const chantiers = chantiersToSync(suivi, args[0]);
+  const chantiers = chantiersToSync(suivi, asked);
   if (chantiers.length === 0) {
     printError(
-      `Aucun chantier à synchroniser${args[0] ? ` : « ${args[0]} »` : ""}.`,
+      `Aucun chantier à synchroniser${asked ? ` : « ${asked} »` : ""}.`,
     );
     return 1;
   }
   return syncAll(root, notion, suivi, chantiers);
 }
-
-// ---- implémentation ----
 
 /** `Reviewing dev` et `Prod / Done` se posent à la main. Un chantier abandonné ne pose rien. */
 const STATUT_BY_ETAT: Record<Etat, string | undefined> = {

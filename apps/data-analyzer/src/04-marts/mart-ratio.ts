@@ -17,6 +17,7 @@ export interface MartRatioConfig {
   log: string; // libellé affiché
   grain: (t: TrajetReconcilieRow) => string; // valeur de clé, "" pour ignorer la ligne
   identite: (cle: string) => Row; // colonnes d'identité (clé + libellés), forme fixe
+  seulementCouvertes?: boolean; // ne garder que les entités qui ont des trajets plateforme
 }
 
 interface Accu {
@@ -78,7 +79,16 @@ export class MartRatio {
   }
 
   #construire(cellules: Map<string, Accu>): Row[] {
+    const couvertes = new Set(
+      [...cellules.entries()]
+        .filter(([, accu]) => accu.nb_plateforme > 0)
+        .map(([cle]) => grainDe(cle)),
+    );
     return [...cellules.entries()]
+      .filter(
+        ([cle]) =>
+          !this.#config.seulementCouvertes || couvertes.has(grainDe(cle)),
+      )
       .sort(([a], [b]) => a.localeCompare(b)) // grain, puis année, puis véhicule
       .map(([cle, accu]) => this.#toRow(cle, accu));
   }
@@ -127,3 +137,8 @@ export class MartRatio {
 // ---- implémentation ----
 
 type Row = Record<string, string | number>;
+
+/** La clé d'une cellule est `grain|année|véhicule`. */
+function grainDe(cle: string): string {
+  return cle.split("|")[0] ?? "";
+}
