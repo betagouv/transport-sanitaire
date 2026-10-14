@@ -25,9 +25,21 @@ const BRANCARD: Reponses = {
   "Q1.2": ["8_BRANCARDAGE"],
   "Q1.3": ["7_AUCUNE"],
 };
-const COURT: Reponses = { ...BRANCARD, "Q2.3.1": "1_CINQUANTE_KM_OU_MOINS" };
-const MOYEN: Reponses = { ...BRANCARD, "Q2.3.1": "2_PLUS_DE_CINQUANTE_KM" };
-const LONG: Reponses = { ...BRANCARD, "Q2.3.1": "3_PLUS_DE_CENT_CINQUANTE_KM" };
+const COURT: Reponses = {
+  ...BRANCARD,
+  "Q2.3.1": "1_CINQUANTE_KM_OU_MOINS",
+  "Q2.3.2": false,
+};
+const MOYEN: Reponses = {
+  ...BRANCARD,
+  "Q2.3.1": "2_PLUS_DE_CINQUANTE_KM",
+  "Q2.3.2": false,
+};
+const LONG: Reponses = {
+  ...BRANCARD,
+  "Q2.3.1": "3_PLUS_DE_CENT_CINQUANTE_KM",
+  "Q2.3.2": false,
+};
 
 describe("la distance (Q2.3.1)", () => {
   it.each([
@@ -81,9 +93,21 @@ describe("P2", () => {
       valeur("fait_p2_complete", { ...LONG, "Q2.3.3": "1_OUI" }),
     ).toBeUndefined();
   });
+});
 
-  it("laisse absent l'avion ou le bateau, que la page ne pose pas encore", () => {
-    expect(valeur("fait_avion_bateau_ligne", LONG)).toBeUndefined();
+describe("l'avion ou le bateau (Q2.3.2)", () => {
+  it.each([
+    ["case cochée", { ...COURT, "Q2.3.2": true }, true],
+    ["case décochée", COURT, false],
+    ["page pas encore validée", BRANCARD, undefined],
+  ] as const)("%s", (_, reponses, attendu) => {
+    expect(valeur("fait_avion_bateau_ligne", reponses)).toBe(attendu);
+  });
+
+  it("donne aux règles le motif de demande d'accord, même sur un trajet court", () => {
+    expect(
+      cible("cible_dap_motif_avion_bateau", { ...COURT, "Q2.3.2": true }),
+    ).toBe(true);
   });
 });
 

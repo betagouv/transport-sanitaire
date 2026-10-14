@@ -136,10 +136,10 @@ export const P1: Partie<undefined> = {
   ],
 };
 
-// Q2.3 : le trajet évalué, sur une seule page. La série se révèle sous la
+// Q2.3 : le trajet évalué, sur une seule page. L'avion ou le bateau est une
+// case seule : décochée, elle répond « non ». La série se révèle sous la
 // distance quand le trajet dépasse 50 km, et l'urgence dès qu'une demande
-// d'accord est possible (D-95). La case de l'avion ou du bateau (Q2.3.2)
-// attend sa décision (issue 63).
+// d'accord est possible (D-95).
 const PAGE_DU_TRAJET: Partie<undefined>["pages"][number] = {
   id: "P2/trajet",
   questions: [
@@ -149,6 +149,13 @@ const PAGE_DU_TRAJET: Partie<undefined>["pages"][number] = {
       label:
         "Quelle distance parcourra le patient pour le trajet dans le sens évalué ?",
       options: optionsFrom(OPTIONS["Q2.3.1"]),
+    },
+    {
+      id: "Q2.3.2",
+      kind: "checkbox",
+      label:
+        "Une partie du trajet se fera en avion ou en bateau de ligne régulière.",
+      box: "Oui, une partie du trajet se fera en avion ou en bateau de ligne régulière.",
     },
     {
       id: "Q2.3.3",

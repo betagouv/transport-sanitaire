@@ -97,6 +97,7 @@ export type Questions = {
   "Q1.3.a": Option<"Q1.3.a">;
   "Q1.4": Option<"Q1.4">;
   "Q2.3.1": Option<"Q2.3.1">;
+  "Q2.3.2": boolean;
   "Q2.3.3": Option<"Q2.3.3">;
   "Q2.3.4": Option<"Q2.3.4">;
 };

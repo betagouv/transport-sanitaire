@@ -13,10 +13,11 @@ import { faitsDuMode } from "./mode-de-transport";
 
 type Valides = Validated<Questions>;
 
-/** Les faits que Q2.3.1, Q2.3.3 et Q2.3.4 établissent, ou laissent absents. */
+/** Les faits que la page du trajet établit, ou laisse absents. */
 export function faitsDuTrajet(validated: Valides) {
   return {
     ...faitsDeLaDistance(validated),
+    fait_avion_bateau_ligne: avionOuBateau(validated),
     fait_serie_qualifiante: serieQualifiante(validated),
     ...faitsDeLUrgence(validated),
   } satisfies Partial<Faits>;
@@ -34,6 +35,7 @@ export function dapPossible(validated: Valides): boolean | undefined {
       ...AUCUN_FAIT,
       ...faitsDuMode(validated),
       ...faitsDeLaDistance(validated),
+      fait_avion_bateau_ligne: avionOuBateau(validated),
       fait_serie_qualifiante: serieQualifiante(validated),
     },
     "cible_dap_requise",
@@ -72,6 +74,13 @@ function faitsDeLaDistance(validated: Valides) {
     fait_distance_plus_150:
       tranche === "3_PLUS_DE_CENT_CINQUANTE_KM" ? oui(source) : non(source),
   };
+}
+
+// Q2.3.2 : une case seule. Décochée sur la page validée, elle vaut « non ».
+function avionOuBateau(validated: Valides): Fait {
+  const cochee = validated["Q2.3.2"]?.answer;
+  if (cochee === undefined) return absent("Q2.3.2 n'est pas encore validée.");
+  return cochee ? oui("Q2.3.2 : case cochée.") : non("Q2.3.2 : case décochée.");
 }
 
 // Q2.3.3 porte sur la conjonction entière : « Non » ne dit pas quelle

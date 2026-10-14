@@ -185,8 +185,8 @@ objet à la compilation (`vite.config.ts`), et aucun analyseur YAML ne part dans
 le navigateur. Le noyau est là : les règles, la déclaration des faits et des
 cibles, et l'oracle de l'éditeur rejoué en faits. Le questionnaire pose P1 :
 ses réponses donnent les faits du mode de transport, à trois états. De P2, il
-ne pose que la page du trajet, avec la distance, la série et l'urgence (Q2.3.1,
-Q2.3.3, Q2.3.4).
+ne pose que la page du trajet : la distance, l'avion ou le bateau, la série et
+l'urgence (Q2.3.1 à Q2.3.4).
 P2 n'est donc jamais complète, et R2 dit encore que le questionnaire ne l'est
 pas.
 L'avancement
