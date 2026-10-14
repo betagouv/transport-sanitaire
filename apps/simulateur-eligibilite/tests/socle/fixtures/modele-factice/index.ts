@@ -18,6 +18,7 @@ import { Commande, CommandeCompletee } from "./Resultats";
 const BON_DE_COMMANDE = bindCerfa<
   {
     fields: { commande: string; quantite: string; date: string };
+    drawings: Record<never, never>;
   },
   CerfaInput<Questions, Faits, Cibles>
 >(
@@ -30,6 +31,7 @@ const BON_DE_COMMANDE = bindCerfa<
       quantite: text("quantite"),
       date: text("date"),
     },
+    drawings: {},
   },
   {
     fields: {
@@ -37,6 +39,7 @@ const BON_DE_COMMANDE = bindCerfa<
       quantite: ({ answers }) => String(answers.quantite),
       date: ({ completedAt }) => completedAt.toISOString().slice(0, 10),
     },
+    drawings: {},
   },
 );
 

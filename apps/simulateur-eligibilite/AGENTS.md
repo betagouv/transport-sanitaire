@@ -126,6 +126,7 @@ entrée dans le gabarit (`Cerfa<Dto>`) :
 | un texte | le nom exact du champ, mesuré ou non | `motif: text("elements medicaux", { measured: true })` |
 | une case cochée | le champ et son état d'export | `en_ald: box("ald", "Oui")` |
 | une case qui partage son champ | le champ et son état : la marque est dessinée | `longue_distance: drawnBox("km", "Oui")` |
+| un texte sans champ | sa position sur la page | `remarque: at({ page: 1, x: 36, y: 104, width: 348 })` |
 
 Un gabarit qui renomme un champ ne change que la définition, jamais le DTO.
 
@@ -143,7 +144,7 @@ simulateur calcule le DTO sous le second résultat et le passe au bouton.
 | `text-overflow.ts` | l'erreur levée quand il ne tient pas |
 | `cerfa.ts` | ce qu'est un cerfa : son DTO, son gabarit, et où va chaque entrée |
 | `dates.ts` | une date sur un champ peigné |
-| `flatten-cerfa.ts` | l'aplatissement du PDF rempli : plus aucun champ, chaque valeur dessinée sur la page (D-84). Puis ce qu'un champ ne sait pas montrer : les marques des cases partagées |
+| `flatten-cerfa.ts` | l'aplatissement du PDF rempli : plus aucun champ, chaque valeur dessinée sur la page (D-84). Puis ce qu'un champ ne sait pas montrer : les marques des cases partagées, les textes sans champ |
 | `produce-cerfa.ts` | la production au clic : le DTO traduit dans les noms du gabarit, remplir, puis aplatir, avec `pdf-lib` chargé à la demande. Le nom daté du fichier, le téléchargement |
 | `CerfaDownload.tsx` | le bouton qui produit et télécharge, et l'alerte si ça échoue |
 

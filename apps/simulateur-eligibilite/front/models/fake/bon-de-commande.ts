@@ -3,9 +3,11 @@
 //
 // Le DTO parle en mots clairs (`avec_lait`). Le gabarit, lui, range les trois
 // accompagnements sous un même nom de champ, `acc` : comme les cases groupées
-// de la DAP, ils se marquent par un dessin.
+// de la DAP, ils se marquent par un dessin. La remarque n'a pas de champ : elle
+// se dessine dans son cadre.
 
 import {
+  at,
   bindCerfa,
   type Cerfa,
   type CerfaInput,
@@ -28,6 +30,7 @@ type BonDeCommande = {
     avec_sucre: boolean;
     avec_citron: boolean;
   };
+  drawings: { remarque?: string };
 };
 
 const BON_DE_COMMANDE: Cerfa<BonDeCommande> = {
@@ -41,6 +44,7 @@ const BON_DE_COMMANDE: Cerfa<BonDeCommande> = {
     avec_sucre: drawnBox("acc", "sucre"),
     avec_citron: drawnBox("acc", "citron"),
   },
+  drawings: { remarque: at({ page: 1, x: 36, y: 104, width: 348 }) },
 };
 
 const VERS_LE_BON_DE_COMMANDE: CerfaMapping<
@@ -56,6 +60,7 @@ const VERS_LE_BON_DE_COMMANDE: CerfaMapping<
       answers.accompagnements?.includes("sucre") === true,
     avec_citron: ({ faits }) => faits.citron.value === true,
   },
+  drawings: { remarque: ({ answers }) => answers.remarque },
 };
 
 /** Le bon de commande, lié à la traduction de la commande. */

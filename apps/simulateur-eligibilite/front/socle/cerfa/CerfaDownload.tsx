@@ -38,7 +38,7 @@ export function CerfaDownload<Dto extends CerfaDto>({
   }
 
   return (
-    <div className="fr-mb-4w">
+    <div className="fr-mb-4w fr-no-print">
       {failed && <Failure />}
       <button
         type="button"

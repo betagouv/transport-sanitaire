@@ -2,8 +2,8 @@
 //
 // Chaque champ devient le dessin de sa valeur, sur la page. Ce qu'un champ ne
 // sait pas montrer se dessine ensuite : la marque d'une case qui partage son
-// champ. Le PDF s'imprime tel quel, et rien ne s'y corrige plus dans un
-// lecteur.
+// champ, et un texte là où le gabarit n'a pas de champ. Le PDF s'imprime tel
+// quel, et rien ne s'y corrige plus dans un lecteur.
 
 import {
   drawObject,
@@ -16,22 +16,35 @@ import {
   type PDFWidgetAnnotation,
   popGraphicsState,
   pushGraphicsState,
+  StandardFonts,
   translate,
 } from "pdf-lib";
+import type { Position } from "./cerfa";
+import { TEXT_SIZES } from "./text-sizes";
 
 /** Une case à marquer : son champ, et l'état d'export qui la désigne. */
 export type Mark = { readonly field: string; readonly state: string };
 
-/** Le PDF rempli `pdf`, sans aucun champ, avec `marks` dessinées par-dessus. */
+/** Un texte à dessiner hors de tout champ. */
+export type Drawing = { readonly text: string; readonly at: Position };
+
+/** Ce qui se dessine après l'aplatissement. */
+export type Drawn = {
+  readonly marks?: readonly Mark[];
+  readonly drawings?: readonly Drawing[];
+};
+
+/** Le PDF rempli `pdf`, sans aucun champ, avec `drawn` dessiné par-dessus. */
 export async function flattenCerfa(
   pdf: Uint8Array,
-  marks: readonly Mark[] = [],
+  { marks = [], drawings = [] }: Drawn = {},
 ): Promise<Uint8Array> {
   const document = await PDFDocument.load(pdf);
   // Les marques se relèvent avant : l'aplatissement retire les cases.
   const stamps = marks.flatMap((mark) => stampsOf(document, mark));
   document.getForm().flatten();
   for (const stamp of stamps) drawStamp(stamp);
+  await drawTexts(document, drawings);
   return document.save();
 }
 
@@ -85,4 +98,27 @@ function drawStamp({ page, widget, appearance }: Stamp): void {
     drawObject(name),
     popGraphicsState(),
   );
+}
+
+// Un texte sans champ s'écrit à la taille visée, et passe à la ligne dans sa
+// largeur.
+async function drawTexts(
+  document: PDFDocument,
+  drawings: readonly Drawing[],
+): Promise<void> {
+  if (drawings.length === 0) return;
+  const font = await document.embedFont(StandardFonts.Helvetica);
+  const pages = document.getPages();
+  for (const { text, at } of drawings) {
+    const page = pages[at.page - 1];
+    if (!page) throw new Error(`Le gabarit n'a pas de page ${at.page}.`);
+    page.drawText(text, {
+      x: at.x,
+      y: at.y,
+      font,
+      size: TEXT_SIZES.target,
+      maxWidth: at.width,
+      lineHeight: TEXT_SIZES.target * 1.2,
+    });
+  }
 }
