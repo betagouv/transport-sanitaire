@@ -36,7 +36,7 @@ export function DeveloperTools({ children }: { children: ReactNode }) {
         <span className="fr-icon-flashlight-line fr-mr-1w" aria-hidden="true" />
         Developer tools — service Transport Sanitaire
       </p>
-      <div className="fr-btns-group fr-btns-group--inline fr-btns-group--sm">
+      <div className="fr-btns-group fr-btns-group--inline fr-btns-group--sm fr-btns-group--icon-left">
         {children}
       </div>
     </section>
@@ -70,4 +70,6 @@ export function ToolButton({
 
 // ---- implémentation ----
 
+// L'icône d'un bouton enfoncé. Son groupe porte `fr-btns-group--icon-left` :
+// sans lui, le DSFR réduirait le bouton à son icône, sans libellé.
 const PRESSED = " fr-btn--icon-left fr-icon-check-line";

@@ -34,8 +34,9 @@ console.log(
  * `pdf-lib` (~400 ko) ne se charge qu'à la demande, par import dynamique. Un
  * `import` statique mal placé le ferait télécharger à chaque prescripteur, sans
  * rien casser. Même chose pour l'écran des seeds, réservé au service produit,
- * et pour le modèle, qui se charge pendant l'écran de rattachement. L'énoncé
- * d'une de ses questions n'existe que dans le modèle.
+ * et pour les modèles, qui se chargent pendant l'écran de rattachement. L'énoncé
+ * d'une question n'existe que dans le modèle de démonstration, et un nom de
+ * fait que dans les règles du modèle de l'éditeur.
  */
 function interdits(): Array<[marqueur: string, quoi: string]> {
   const marqueurs: Array<[string, string]> = [
@@ -44,6 +45,7 @@ function interdits(): Array<[marqueur: string, quoi: string]> {
       "Quelle boisson souhaitez-vous",
       "le modèle de démonstration (son questionnaire)",
     ],
+    ["fait_p1_complete", "le modèle de l'éditeur (ses règles et publicodes)"],
   ];
   for (const seed of premieresSeeds())
     marqueurs.push([seed, "un catalogue de seeds (service produit)"]);

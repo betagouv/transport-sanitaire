@@ -13,10 +13,71 @@ export const OPTIONS = {
     "2_VERIFIER_ET_PRESCRIRE":
       "Vérifier et prescrire si la situation le permet",
   },
+  /** Concernant son déplacement, le patient : */
+  "Q1.1": {
+    "1_SEUL":
+      "Peut se déplacer seul, sans aide technique ou humaine et sans besoin particulier sur l’entièreté du trajet.",
+    "2_AVEC_UN_PROCHE":
+      "Nécessite l’accompagnement d’un proche pour se déplacer ou transmettre les informations nécessaires à l’équipe soignante, sans intervention d’un professionnel pendant le transport.",
+    "3_AVEC_UN_PROFESSIONNEL":
+      "Nécessite l’intervention d’un professionnel ou des conditions particulières pendant le transport ; les besoins précis sont sélectionnés à la question suivante.",
+  },
+  /** Quelles aides ou conditions particulières sont nécessaires pendant le transport ? */
+  "Q1.2": {
+    "1_PAS_AUTONOME":
+      "Ne peut pas se déplacer de manière autonome sur une longue distance, utiliser seul les transports en commun ou conduire un véhicule personnel en raison de sa pathologie, de son traitement ou d’un handicap.",
+    "2_AIDE_TECHNIQUE":
+      "Nécessite une aide technique, telle qu’un fauteuil roulant, un déambulateur ou des béquilles, et une assistance pour monter dans le véhicule ou en descendre.",
+    "3_TRANSMISSION_PAR_UN_PROFESSIONNEL":
+      "Nécessite, en l’absence d’un proche accompagnant, l’aide d’un professionnel pour transmettre les informations nécessaires à l’équipe soignante.",
+    "4_HYGIENE":
+      "Nécessite des précautions d’hygiène ou la désinfection du véhicule pour prévenir un risque infectieux, sans exigence de transport en conditions d’asepsie.",
+    "5_RISQUE_DE_MALAISE":
+      "Présente un risque d’effets secondaires, de malaise ou de complications pendant le transport.",
+    "6_FAUTEUIL_SANS_TRANSFERT":
+      "Le patient doit être transporté dans son fauteuil roulant, sans transfert vers un siège du véhicule.",
+    "7_ALLONGE":
+      "Doit être transporté en position allongée ou semi-assise sur un brancard, car son état ne lui permet pas de rester assis normalement pendant le transport.",
+    "8_BRANCARDAGE":
+      "Nécessite un brancardage ou un portage, c’est-à-dire que le patient doit être soulevé et transporté par des professionnels, y compris sur une courte distance.",
+    "9_SURVEILLANCE":
+      "Nécessite une surveillance constante par une personne qualifiée et la présence de matériel de secours pendant le transport, en raison d’un risque médical identifié de dégradation de son état.",
+    "10_OXYGENE": "Nécessite l’administration d’oxygène pendant le transport.",
+    "11_ASEPSIE":
+      "L’état de santé du patient impose un transport dans des conditions d’asepsie.",
+  },
+  /** Les cas particuliers concernant le patient. */
+  "Q1.3": {
+    "1_FORTE_CORPULENCE": "Présente une forte corpulence (plus de 150 kg).",
+    "2_ALD":
+      "Les soins ou examens à l’origine du déplacement sont en lien avec une ALD (Affection de Longue Durée) reconnue pour ce patient par l’Assurance Maladie.",
+    "3_CHIMIOTHERAPIE": "Ce déplacement concerne une séance de chimiothérapie.",
+    "4_RADIOTHERAPIE": "Ce déplacement concerne une séance de radiothérapie.",
+    "5_DIALYSE": "Ce déplacement concerne une séance de dialyse en centre.",
+    "6_PARTAGE_INCOMPATIBLE":
+      "L’état de santé du patient n’est pas compatible avec un transport partagé.",
+    "7_AUCUNE": "Aucune de ces situations.",
+  },
+  /** La séance prévue est-elle une séance d’hémodialyse ? */
+  "Q1.3.a": {
+    "1_OUI": "Oui",
+    "2_AUTRE_DIALYSE": "Non, il s’agit d’une autre dialyse en centre",
+    "3_NE_SAIT_PAS": "Je ne peux pas le préciser",
+  },
+  /** La préférence du patient en matière de transport. */
+  "Q1.4": {
+    "1_VEHICULE_PERSONNEL": "Véhicule personnel.",
+    "2_TRANSPORTS_EN_COMMUN": "Transports en commun terrestres.",
+  },
 } as const;
 
 type Option<Id extends keyof typeof OPTIONS> = keyof (typeof OPTIONS)[Id];
 
 export type Questions = {
   "Q0.1": Option<"Q0.1">;
+  "Q1.1": Option<"Q1.1">;
+  "Q1.2": readonly Option<"Q1.2">[];
+  "Q1.3": readonly Option<"Q1.3">[];
+  "Q1.3.a": Option<"Q1.3.a">;
+  "Q1.4": Option<"Q1.4">;
 };

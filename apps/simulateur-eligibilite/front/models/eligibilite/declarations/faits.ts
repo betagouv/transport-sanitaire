@@ -74,3 +74,11 @@ export const FAITS = [
  * (D-77) : ce qui en dépend reste indéfini.
  */
 export type Faits = Readonly<Record<(typeof FAITS)[number], Fait>>;
+
+/** Aucun fait n'est établi : chacun est absent, faute d'une question qui le donne. */
+export const AUCUN_FAIT = Object.fromEntries(
+  FAITS.map((fait) => [
+    fait,
+    { provenance: "Aucune question posée ne l'établit encore." },
+  ]),
+) as Faits;
