@@ -1,6 +1,11 @@
 # Architecture : `tsp`, le point d'entrée du dépôt
 
-> Statut : **décidé** · Dernière mise à jour : 2026-10-13
+> Statut : **décidé** · Dernière mise à jour : 2026-10-14
+
+> **Mise à jour 2026-10-14, tableau des chantiers.** Le refus d'un GitHub
+> Project, dans l'ADR-6, est révoqué. Les chantiers ont un kanban, projeté par
+> `tsp` depuis l'état qu'il déduit. L'ADR-7 dit pourquoi l'état ne s'y écrit
+> pas pour autant.
 
 > **Mise à jour 2026-10-13, suivi par issues.** L'ADR-4 est renversé. Les specs
 > et les tâches quittent le dépôt : un chantier est une issue GitHub, ses
@@ -141,7 +146,7 @@ d'architecture, une connaissance métier dans `domain/`.
 |---|---|
 | Garder les fichiers, avec un état structuré | l'état resterait sur une branche, et rédigé à la main |
 | Des sous-tickets Notion | le tableau de l'équipe produit se remplirait d'items techniques |
-| Un GitHub Project | un tableau de plus à administrer, quand l'issue parente montre déjà l'avancement |
+| ~~Un GitHub Project~~ | ~~un tableau de plus à administrer, quand l'issue parente montre déjà l'avancement~~ : révoqué, voir l'ADR-7 |
 
 **Conséquences.**
 
@@ -152,6 +157,48 @@ d'architecture, une connaissance métier dans `domain/`.
   `data-analyzer` vaut pour elle comme pour un commit.
 - Le numéro d'issue se lit à deux endroits, la CLI et le workflow de fermeture.
   Ils doivent le lire de la même façon.
+
+### ADR-7 - Le tableau des chantiers est une projection
+
+**Contexte.** L'état se lisait dans `tsp issue list` et `tsp issue show`, dans
+un terminal, chantier par chantier. Rien ne montrait d'un coup d'œil ce qui
+est en cours et ce qui ne l'est pas, et qui n'avait pas cloné le dépôt ne
+voyait rien.
+
+**Décision.** Un GitHub Project de l'organisation, privé et lié au dépôt, montre
+les issues en kanban. Ses colonnes sont les états de l'ADR-6, plus `Brouillon`.
+
+- **`tsp` est seul à écrire une colonne**, d'après l'état qu'il déduit. Le
+  tableau ne fait jamais foi. Une carte déplacée à la main reprend sa place à
+  la projection suivante.
+- La projection passe sur toutes les issues : une issue ouverte absente est
+  ajoutée, une abandonnée est archivée, une fermée hors du tableau n'y revient
+  pas.
+- `issue sync` la lance, puis tient Notion. `issue new`, `issue add`, `branch`
+  et l'ouverture d'une PR la lancent après leur geste.
+- Deux workflows du Project complètent : une issue fermée passe en `Fait`, une
+  carte faite depuis deux semaines est archivée. Celui qui ajoute les
+  sous-issues d'une carte est gardé. Ceux qui fermeraient une issue depuis le
+  tableau sont coupés.
+
+**Écarté.**
+
+| Option | Pourquoi non |
+|---|---|
+| Un tableau qui fait foi, où l'on déplace les cartes | l'état redeviendrait rédigé, et se périmerait comme avant l'ADR-6 |
+| Une projection par la CI | le jeton d'une GitHub Action ne peut pas écrire dans un Project d'organisation |
+| Une branche qui sert plusieurs issues | une branche sert l'issue de son nom, et une PR sur plusieurs issues est un héritage, pas un cas à outiller |
+
+**Conséquences.**
+
+- Le tableau ne bouge qu'avec un geste `tsp`. Une issue débloquée par la
+  fusion d'une autre attend la projection suivante.
+- La projection part de la machine du développeur : une branche locale, non
+  poussée, compte.
+- Le jeton `gh` doit avoir le droit `project`. Sans lui, `issue sync` le dit et
+  passe à Notion, et les autres commandes réussissent quand même.
+- Une projection coûte deux appels à `gh` par carte qui bouge. La reprise de 26
+  issues a pris une minute et demie.
 
 ### ADR-5 - Pas de tests sur la CLI
 
@@ -183,6 +230,7 @@ flowchart LR
     Git[("git")]
     GitHub[("GitHub<br/>via gh")]
     Notion[("Notion<br/>base des tickets")]
+    Project[("GitHub Project<br/>tableau des chantiers")]
 
     Dev --> Lanceur --> Mise --> CLI
     CLI -->|"pnpm run"| Scripts
@@ -191,6 +239,7 @@ flowchart LR
     CLI -->|"PR, CI, issues"| GitHub
     GitHub -->|"ferme l'issue<br/>à la fusion"| GitHub
     CLI -->|"lit, crée, met à jour"| Notion
+    CLI -->|"projette l'état"| Project
 ```
 
 | Composant | Rôle | Statut |
@@ -202,6 +251,7 @@ flowchart LR
 | ~~Trackers de specs, `docs/tasks`~~ | ~~le cadrage, le découpage et l'état d'un chantier~~ | supprimé (ADR-6) |
 | `gh` | le seul accès à GitHub : PR, état de la CI, issues, sous-issues, blocages | modifié |
 | Workflow de fermeture | ferme l'issue d'une PR fusionnée, d'après le numéro de sa branche | ajouté |
+| GitHub Project | le kanban des issues, projeté par la CLI à sens unique (ADR-7) | ajouté |
 | API Notion | lecture des tickets par statut, création et mise à jour du ticket d'un chantier | modifié |
 
 ## 4. Les commandes de lecture ne possèdent rien
@@ -240,6 +290,7 @@ Il se tient à la main et rien ne le garde.
 - ✅ Les branches et les PR
 - ✅ Le suivi des chantiers par issues, et leur ticket Notion
 - ✅ La migration de la v10 en issues
+- ✅ Le tableau des chantiers, et la reprise des issues ouvertes
 
 ## 6. Risques & validations en attente
 
@@ -253,6 +304,8 @@ Il se tient à la main et rien ne le garde.
 | ~~R-6~~ | ~~Le workflow de fermeture n'a pas encore fermé une issue en conditions réelles~~ | Résolu (2026-10-13) : il a fermé les issues 47 et 93 à la fusion de leur PR |
 | R-7 | Une PR venue d'un fork n'a pas le droit de fermer une issue : le workflow échoue | Assumé, le dépôt n'a pas de contributeur externe |
 | R-8 | `tsp issue list` lit au plus 1 000 issues et 1 000 PR | Assumé |
+| R-9 | Le tableau ne suit que les gestes `tsp`. Une fusion fait passer son issue en `Fait`, mais pas le chantier parent ni les issues qu'elle débloque | Assumé (ADR-7) |
+| R-10 | Le numéro du Project est écrit dans le code. Recréer le tableau demande de le changer | Assumé |
 
 ## Vérification
 
@@ -264,4 +317,5 @@ tsp verifier cli     # lint, typecheck, knip
 tsp wip              # sans jeton : le reste, et « Notion : jeton absent »
 tsp issue list       # les chantiers ouverts et leur avancement
 tsp issue show 43    # un chantier en arbre, avec branche, worktree et PR
+tsp issue sync       # projette le tableau, puis tient les tickets Notion
 ```
