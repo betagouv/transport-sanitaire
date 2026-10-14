@@ -125,6 +125,7 @@ reste du socle.
 |---|---|
 | `fill-cerfa.ts` | l'écriture dans un AcroForm : textes, cases et leurs états d'export, refus de tronquer |
 | `text-fit.ts` | un texte tient-il dans son champ, et à quelle taille |
+| `text-sizes.ts` | la configuration des tailles (D-68) : la taille visée, 9 pt, et le plancher. Une version du modèle la modifie, pas le code |
 | `text-overflow.ts` | l'erreur levée quand il ne tient pas |
 | `field-mapping.ts` | la forme d'un tableau de remplissage : un champ, une ligne |
 | `dates.ts` | une date sur un champ peigné |
