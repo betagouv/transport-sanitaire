@@ -31,14 +31,16 @@ export function CerfaDownload<Dto extends CerfaDto>({
   date,
   label,
 }: Props<Dto>) {
-  const [production, setProduction] = useState(() => produce(cerfa, dto));
-  const settled = useSettled(production);
+  const [downloadablePdf, setDownloadablePdf] = useState(() =>
+    produce(cerfa, dto),
+  );
+  const settled = useSettled(downloadablePdf);
 
   async function onClick() {
     let result = settled;
     if (result?.status !== "ready") {
       const retry = produce(cerfa, dto);
-      setProduction(retry);
+      setDownloadablePdf(retry);
       result = await retry;
     }
     if (result.status === "ready")
@@ -81,19 +83,19 @@ function produce<Dto extends CerfaDto>(
   );
 }
 
-// L'issue de `production`, `undefined` tant qu'elle se fait attendre.
-function useSettled(production: Promise<Settled>): Settled | undefined {
+// L'issue de `downloadablePdf`, `undefined` tant qu'elle se fait attendre.
+function useSettled(downloadablePdf: Promise<Settled>): Settled | undefined {
   const [settled, setSettled] = useState<Settled>();
   useEffect(() => {
     let current = true;
     setSettled(undefined);
-    production.then((result) => {
+    downloadablePdf.then((result) => {
       if (current) setSettled(result);
     });
     return () => {
       current = false;
     };
-  }, [production]);
+  }, [downloadablePdf]);
   return settled;
 }
 
