@@ -15,16 +15,16 @@ la v10 n'est pas intégrée : son avancement est dans l'issue 50 du dépôt, ses
 décisions dans `docs/knowledge/adr/journal-des-decisions-v10.md`. Il n'y a ni règles
 d'éligibilité, ni page de résultat métier, ni CERFA téléchargeable. Le simulateur
 déroule le **modèle de démonstration** (`front/models/fake/`), qui ne décide rien
-du transport. Le noyau et les
-deux premières parties de la v10.0.0 attendent sur la branche
-`v10-modele-10.0.0`, le temps que l'éditeur livre la v10.0.2. Le
+du transport. Le modèle de l'éditeur (`front/models/eligibilite/`) s'intègre
+étape par étape, sur la v10.0.2 : ses règles, ses faits, ses cibles et son
+oracle sont là, son questionnaire s'arrête à P0. Le
 [README](README.md) § « Entre deux modèles » dit ce qui est parti et ce qui reste.
 
 Le front a deux dossiers. `front/socle/` porte ce qui ne dépend d'aucune version
 du modèle : rattachement, parcours, moteur de questionnaire, analytics, seeds,
 outils PDF, developer tools. `front/models/` porte un dossier par modèle :
-`fake/`, le modèle de démonstration, et `eligibilite/`, celui de l'éditeur, qui
-arrive avec la v10.0.2.
+`fake/`, le modèle de démonstration, et `eligibilite/`, celui de l'éditeur, en
+cours d'intégration.
 
 Le modèle de démonstration est pérenne (D-82). **Chaque capacité du socle y a
 sa page**, pour la valider à l'écran sans dépendre du modèle de l'éditeur.
@@ -61,7 +61,7 @@ Huit fichiers portent la mécanique, dans `front/socle/questionnaire-engine/` :
 | Fichier | Ce qu'il porte |
 |---|---|
 | `question.ts` | ce qu'est une question, une page, une partie, une réponse |
-| `option.ts` | ce qu'est une option d'un choix : son libellé, ce qui la propose, son aide, ce qu'elle bloque |
+| `option.ts` | ce qu'est une option d'un choix : son libellé, ce qui la propose, son aide, ce qu'elle bloque. `optionsFrom` tire les options d'une table de libellés, dans l'ordre de ses clés |
 | `address.ts` | ce qu'est une adresse, la seule réponse en objet : ses champs, ceux qui se demandent en France ou à l'étranger, et le message de chaque champ fautif |
 | `asked-questions.ts` | ce qui s'affiche, vu les réponses : libellés, bornes, options, mode d'adresse et incohérences du moment. Et les questions validées, avec ce qui s'y proposait |
 | `offered-answer.ts` | ce qu'une réponse vaut pour sa question : réduite aux options qui se proposent ou aux champs d'adresse qui se demandent, suffisante ou non |
@@ -230,8 +230,7 @@ Ils sont **exécutables**, dans
 - le simulateur, qui ignore qui prescrit ;
 - les seeds et les developer tools, greffés sur le simulateur et jamais l'inverse ;
 - le socle PDF, qui ne dépend que de lui-même et n'adresse jamais `/api` ;
-- les règles publicodes, qui ne portent que de l'éligibilité (sans objet tant que
-  aucun modèle n'a de dossier `rules/`) ;
+- les règles publicodes, qui ne portent que de l'éligibilité ;
 - publicodes, que seul le moteur de décision du socle importe ;
 - les modèles de `front/models/`, que seul `tests/model/` importe, et qui ne
   s'importent pas entre eux.
@@ -274,7 +273,9 @@ lui injecte : le factice, écrit pour eux dans `tests/socle/fixtures/modele-fact
 Il est petit et figé, pour que ces tests ne changent pas quand le modèle de
 démonstration gagne une page. `tests/model/` vérifie chaque modèle de
 `front/models/` : `conformite.test.ts` y contrôle ce que le socle suppose de
-n'importe quel modèle, et rejoue ses seeds.
+n'importe quel modèle, et rejoue ses seeds. `tests/model/eligibilite/` compare
+les déclarations du modèle de l'éditeur à ses règles, et rejoue son oracle, en
+faits, contre le moteur.
 
 **Une capacité ajoutée au socle arrive avec trois choses** (D-66) : ses tests,
 sur des pages écrites dans le test (`tests/socle/questionnaire-engine/afficher.tsx`),

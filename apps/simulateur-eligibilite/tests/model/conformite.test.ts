@@ -8,13 +8,14 @@
 import { readdirSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
+import { model as eligibilite } from "../../front/models/eligibilite";
 import { model as fake } from "../../front/models/fake";
 import { type Model, preconisationOf } from "../../front/socle/model";
 import type { Page } from "../../front/socle/questionnaire-engine/question";
 import { evaluateSeed } from "../../front/socle/seeds/seed";
 import { racine } from "../inspection-des-sources";
 
-const MODELES: Record<string, Model> = { fake };
+const MODELES: Record<string, Model> = { eligibilite, fake };
 
 const doublons = (valeurs: readonly string[]) => [
   ...new Set(valeurs.filter((v, rang) => valeurs.indexOf(v) !== rang)),

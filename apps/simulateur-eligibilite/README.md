@@ -116,8 +116,10 @@ front/                   le front, bundlé par Vite
     fake/                le modèle de démonstration : une page par capacité du
                          socle. Ses déclarations (questions, faits, cibles), son
                          questionnaire, sa préconisation, ses deux résultats et
-                         son catalogue de seeds. `eligibilite/`, le modèle de
-                         l'éditeur, le rejoindra avec la v10.0.2
+                         son catalogue de seeds
+    eligibilite/         le modèle de l'éditeur, en cours d'intégration. Ses règles
+                         (`rules/`, le YAML livré et sa `VERSION`), ses déclarations,
+                         son questionnaire, sa préconisation et ses deux résultats
   socle/                 ce qui ne dépend d'aucune version. `model.ts` est le contrat
                          qu'un modèle remplit, `index.ts` ce qu'il a le droit d'importer
     app/                 le choix de l'écran affiché, la navigation entre les écrans,
@@ -177,11 +179,12 @@ Le questionnaire n'est plus déduit d'un moteur de règles : il est **déclaré 
 le modèle**. Une partie liste ses pages, une page ses questions, une question dit
 quand elle se pose (`askedIf`) et de quelles réponses elle dépend (`dependsOn`).
 
-De la v10, `v10` ne porte que ce qui prépare le socle : le modèle chargé à la
-demande, le moteur de décision publicodes, et les capacités du questionnaire que
-P0 et P1 demandent. Le noyau et les deux premières parties de la v10.0.0 sont
-sur la branche `v10-modele-10.0.0`. Ils y attendent la v10.0.2 de l'éditeur, qui
-change les règles et le lien entre les réponses et les faits. L'avancement
+Le modèle de l'éditeur s'intègre sur la v10.0.2, dans `front/models/eligibilite/`,
+une étape après l'autre. Ses règles sont livrées en YAML : Vite les convertit en
+objet à la compilation (`vite.config.ts`), et aucun analyseur YAML ne part dans
+le navigateur. Le noyau est là : les règles, la déclaration des faits et des
+cibles, et l'oracle de l'éditeur rejoué en faits. Le questionnaire s'arrête à
+P0, et aucun fait n'est encore établi. L'avancement
 est dans l'issue 50 du dépôt, les décisions dans
 [`docs/knowledge/adr/journal-des-decisions-v10.md`](docs/knowledge/adr/journal-des-decisions-v10.md).
 

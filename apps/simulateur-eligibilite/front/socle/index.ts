@@ -17,6 +17,7 @@ export { templateAt } from "./cerfa/generate-cerfa";
 export { bindCerfa, type CerfaMapping } from "./cerfa-mapping";
 export { type CerfaInput, defineModel } from "./model";
 export type { Address } from "./questionnaire-engine/address";
+export { optionsFrom } from "./questionnaire-engine/option";
 export type {
   Answers,
   QuestionnairePart,
