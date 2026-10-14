@@ -211,6 +211,13 @@ suivante.
 | fait | Fait |
 | abandonnée | archivée |
 
+Deux vues, réglées dans l'interface de GitHub, faute d'API :
+
+| Vue | Filtre | Ce qu'elle montre |
+|---|---|---|
+| Chantiers | `has:sub-issues-progress OR no:parent-issue` | les issues qui ont des tâches, et celles qui n'ont ni parente ni tâche |
+| Tâches | `no:sub-issues-progress` | les issues sans tâche, celles qui tiennent en une PR |
+
 - `issue sync` projette tout le tableau, puis passe à Notion.
 - `issue new`, `issue add`, `branch` et `pr` le projettent après leur geste, et
   le disent sur la sortie d'erreur en une ligne. Un échec du tableau ne fait
