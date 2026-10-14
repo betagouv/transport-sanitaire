@@ -10,11 +10,11 @@
 // et qui sont validées : ses conditions peuvent en dépendre, pas de la suite.
 
 import { isAnswered, offeredAnswer, optionValues } from "./offered-answer";
+import type { Option } from "./option";
 import type {
   Answer,
   Answers,
   AnyCibles,
-  Option,
   Page,
   Question,
   Validated,
