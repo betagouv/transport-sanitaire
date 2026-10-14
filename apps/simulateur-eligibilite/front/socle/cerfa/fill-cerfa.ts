@@ -148,39 +148,85 @@ function showValues(document: PDFDocument): void {
   document.getForm().updateFieldAppearances();
 }
 
+type WrittenText = {
+  readonly overflows: readonly Drawing[];
+  readonly withoutComment: boolean;
+};
+
 // Le texte et son commentaire, sinon le texte seul, dans son champ. Sinon,
 // rien dans le champ : le texte se dessinera sous son cadre.
 function writeText(
   document: PDFDocument,
   font: PDFFont,
-  { field: name, text, comment = "" }: Text,
-): { overflows: readonly Drawing[]; withoutComment: boolean } {
+  entry: Text,
+): WrittenText {
+  const field = textFieldOf(document, entry.field);
+  return (
+    writeWithComment(field, font, entry) ??
+    writeWithoutComment(field, font, entry) ??
+    overflow(document, field, font, entry)
+  );
+}
+
+function textFieldOf(document: PDFDocument, name: string): PDFTextField {
   const field = document.getForm().getField(name);
   if (!(field instanceof PDFTextField)) {
     throw new Error(`Le champ « ${name} » n'est pas un champ texte.`);
   }
+  return field;
+}
+
+// Le texte suivi de son commentaire, s'il tient dans le cadre.
+function writeWithComment(
+  field: PDFTextField,
+  font: PDFFont,
+  { text, comment = "" }: Text,
+): WrittenText | undefined {
   const full = [text, comment].filter((part) => part !== "").join(" ; ");
-  const fullSize = sizeInField(field, font, full);
-  if (fullSize !== undefined) {
-    write(field, full, fullSize);
-    return { overflows: [], withoutComment: false };
-  }
-  const withoutComment = comment !== "";
-  const size = withoutComment ? sizeInField(field, font, text) : undefined;
-  if (size !== undefined) {
-    write(field, text, size);
-    return { overflows: [], withoutComment };
-  }
+  return writeIfFits(field, font, full)
+    ? { overflows: [], withoutComment: false }
+    : undefined;
+}
+
+// Le texte seul, son commentaire retiré, s'il tient dans le cadre.
+function writeWithoutComment(
+  field: PDFTextField,
+  font: PDFFont,
+  { text, comment }: Text,
+): WrittenText | undefined {
+  if (!comment) return undefined;
+  return writeIfFits(field, font, text)
+    ? { overflows: [], withoutComment: true }
+    : undefined;
+}
+
+// Rien dans le champ : le texte, sans son commentaire, se dessinera sous
+// chaque widget.
+function overflow(
+  document: PDFDocument,
+  field: PDFTextField,
+  font: PDFFont,
+  { text, comment }: Text,
+): WrittenText {
   const widgets = field.acroField.getWidgets();
   return {
     overflows: overflowsOf(document, widgets, font, text),
-    withoutComment,
+    withoutComment: Boolean(comment),
   };
 }
 
-function write(field: PDFTextField, text: string, fontSize: number): void {
+// Écrit `text` à la plus grande taille où il tient dans le cadre, s'il y en a
+// une.
+function writeIfFits(
+  field: PDFTextField,
+  font: PDFFont,
+  text: string,
+): boolean {
+  const fontSize = sizeInField(field, font, text);
+  if (fontSize === undefined) return false;
   field.setText(text);
   field.setFontSize(fontSize);
+  return true;
 }
 
 /**
