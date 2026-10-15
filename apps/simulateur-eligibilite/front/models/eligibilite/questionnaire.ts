@@ -6,6 +6,7 @@ import type { Cibles } from "./declarations/cibles";
 import { OPTIONS, type Questions } from "./declarations/questions";
 import { modeDe } from "./mode-de-transport";
 import { P2 } from "./partie-2";
+import { sansProfessionnel } from "./reponses";
 
 type Partie<Cibles> = QuestionnairePart<Questions, Cibles>;
 
@@ -125,8 +126,7 @@ export const P1: Partie<undefined> = {
             answers["Q1.1"] === "2_AVEC_UN_PROCHE"
               ? "Le patient pouvant réaliser le trajet avec l’aide d’un proche, sans intervention d’un professionnel, merci de préciser sa préférence en matière de transport."
               : "Le patient pouvant réaliser le trajet en toute autonomie, sans intervention d’un professionnel, merci de préciser sa préférence en matière de transport.",
-          askedIf: (answers) =>
-            answers["Q1.1"] !== undefined && answers["Q1.1"] !== PROFESSIONNEL,
+          askedIf: (answers) => sansProfessionnel(answers["Q1.1"]),
           dependsOn: ["Q1.1"],
           options: optionsFrom(OPTIONS["Q1.4"]),
         },

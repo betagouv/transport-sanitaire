@@ -10,6 +10,7 @@ import type { Fait } from "../../socle/decision-engine/publicodes";
 import type { Faits } from "./declarations/faits";
 import type { Questions } from "./declarations/questions";
 import { faitsDuMode } from "./mode-de-transport";
+import { aSaReponse } from "./reponses";
 
 type Valides = Validated<Questions>;
 type Motif = Questions["Q2.1"];
@@ -91,7 +92,7 @@ function permission(motif: Motif | undefined): Fait {
 // convocation ou la maternité ne le deviennent qu'une fois leur branche
 // qualifiée (Q2.7, Q2.10, Q2.14).
 function evenementSansSoin(motif: Motif | undefined): Fait {
-  if (motif === undefined) return absent("Q2.1 n'est pas validée.");
+  if (!aSaReponse(motif)) return absent("Q2.1 n'est pas validée.");
   if (SOINS.includes(motif)) return non(`Q2.1 : « ${motif} », un soin.`);
   return absent(`Q2.1 : « ${motif} », à qualifier dans sa branche.`);
 }
@@ -101,7 +102,7 @@ function camsp(
   motif: Motif | undefined,
   rattachement: Questions["Q2.1.h"] | undefined,
 ): Fait {
-  if (motif !== "10_CAMSP" || rattachement === undefined)
+  if (motif !== "10_CAMSP" || !aSaReponse(rattachement))
     return absent("Ni Q2.1.h, ni Q2.2.1 n'établissent encore le CAMSP.");
   const source = `Q2.1.h : « ${rattachement} ».`;
   if (rattachement === "1_OUI") return oui(source);
