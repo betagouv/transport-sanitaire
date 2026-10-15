@@ -69,6 +69,49 @@ export const OPTIONS = {
     "1_VEHICULE_PERSONNEL": "Véhicule personnel.",
     "2_TRANSPORTS_EN_COMMUN": "Transports en commun terrestres.",
   },
+  /** Quelle situation médicale ou quel événement motive ce déplacement ? */
+  "Q2.1": {
+    "1_CONSULTATION":
+      "Consultation médicale de diagnostic, de traitement ou de suivi, dont suivi de l’ALD.",
+    "2_DENTISTE_OU_SAGE_FEMME":
+      "Consultation ou soin réalisé par un chirurgien-dentiste ou une sage-femme.",
+    "3_IMAGERIE": "Examen d’imagerie ou autre acte médical technique.",
+    "4_BIOLOGIE": "Analyse ou examen de biologie médicale.",
+    "5_PARAMEDICAL":
+      "Rééducation, orthophonie, soins infirmiers ou autre soin paramédical.",
+    "6_SEANCE": "Chimiothérapie, radiothérapie ou dialyse.",
+    "7_PSYCHOLOGUE": "Séance de psychologue ou dispositif particulier.",
+    "8_HOSPITALISATION":
+      "Entrée ou sortie d’hospitalisation, ou admission en HAD.",
+    "9_TRANSFERT":
+      "Transfert entre établissements, ou déplacement pour soin pendant l’hospitalisation.",
+    "10_CAMSP":
+      "Soin CAMSP/CMPP, y compris séance en ville organisée dans le parcours de l’enfant.",
+    "11_PERMISSION": "Permission temporaire pendant l’hospitalisation.",
+    "12_CONVOCATION":
+      "Convocation, expertise, audience ou déplacement chez un fournisseur d’appareillage.",
+    "13_MATERNITE":
+      "Trajet vers un hébergement près d’une maternité dans l’Engagement maternité.",
+    "14_AUTRE": "Autre soin, examen ou séjour.",
+    "15_AUCUN": "Aucun de ces soins ou événements.",
+  },
+  /** Les séances sélectionnées motivent-elles le même déplacement ? */
+  "Q2.1.f": {
+    "1_OUI": "Oui, il s’agit du même déplacement et du même lieu",
+    "2_NON": "Non, il s’agit de déplacements ou de lieux différents",
+  },
+  /** Entrée, sortie ou admission en HAD ? */
+  "Q2.1.g": {
+    "1_ENTREE": "Une entrée dans un établissement de santé",
+    "2_SORTIE": "Une sortie de cet établissement",
+    "3_ADMISSION_HAD": "Une admission en HAD à domicile",
+  },
+  /** La séance est-elle organisée dans le parcours de l’enfant ? */
+  "Q2.1.h": {
+    "1_OUI": "Oui",
+    "2_NON": "Non",
+    "3_NE_SAIT_PAS": "Je ne peux pas le préciser",
+  },
   /** Quelle distance parcourra le patient pour le trajet dans le sens évalué ? */
   "Q2.3.1": {
     "1_CINQUANTE_KM_OU_MOINS": "50 km ou moins.",
@@ -96,6 +139,10 @@ export type Questions = {
   "Q1.3": readonly Option<"Q1.3">[];
   "Q1.3.a": Option<"Q1.3.a">;
   "Q1.4": Option<"Q1.4">;
+  "Q2.1": Option<"Q2.1">;
+  "Q2.1.f": Option<"Q2.1.f">;
+  "Q2.1.g": Option<"Q2.1.g">;
+  "Q2.1.h": Option<"Q2.1.h">;
   "Q2.3.1": Option<"Q2.3.1">;
   "Q2.3.2": boolean;
   "Q2.3.3": Option<"Q2.3.3">;

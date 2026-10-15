@@ -13,6 +13,12 @@ import type { Option } from "./option";
  */
 export type Answer = string | number | boolean | readonly string[] | Address;
 
+/**
+ * Pas de réponse : la question ne l'a pas encore reçue, ou ne se pose pas. Ce
+ * n'est ni oui, ni non. `answerPresent` et `answerAbsent` le testent.
+ */
+export type Unanswered = undefined;
+
 /** Les questions d'un modèle : pour chacune, le type de sa réponse. */
 export type AnyQuestions = Readonly<Record<string, Answer>>;
 

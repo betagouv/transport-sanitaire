@@ -17,10 +17,15 @@ export { templateAt } from "./cerfa/generate-cerfa";
 export { bindCerfa, type CerfaMapping } from "./cerfa-mapping";
 export { type CerfaInput, defineModel } from "./model";
 export type { Address } from "./questionnaire-engine/address";
+export {
+  answerAbsent,
+  answerPresent,
+} from "./questionnaire-engine/answer-presence";
 export { areAnswered } from "./questionnaire-engine/asked-questions";
 export { optionsFrom } from "./questionnaire-engine/option";
 export type {
   Answers,
   QuestionnairePart,
+  Unanswered,
   Validated,
 } from "./questionnaire-engine/question";
