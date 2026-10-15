@@ -1,7 +1,8 @@
-// La trace de debug du simulateur : les pages parcourues, les questions
-// validées et les réponses. Sous le questionnaire, elle ajoute le brouillon de
-// la page. Sous un résultat, les faits et les cibles de la préconisation. Elle
-// s'exporte en un fichier, pour la recette.
+// La trace de debug du simulateur : la page affichée, les pages parcourues, les
+// questions validées et les réponses. Sous le questionnaire, elle ajoute les
+// questions de la page, répondues ou non, et le brouillon de la page. Sous un
+// résultat, les faits et les cibles de la préconisation. Elle s'exporte en un
+// fichier, pour la recette.
 //
 // C'est un developer tool, réservé au service qui les déverrouille (`unlock.ts`).
 // Le simulateur ne l'importe pas : `App` la lui passe.
@@ -16,6 +17,7 @@ export function DebugTrace(props: DebugTraceProps) {
       <summary style={{ cursor: "pointer" }}>Debug — {props.title}</summary>
       <div style={{ marginTop: "0.75rem" }}>
         <ExportLink trace={props} />
+        <ShownPage {...props} />
         <strong>Pages (◀ = page courante) :</strong>
         <PageList pages={props.pages} currentPage={props.currentPage} />
         {props.draft && (
@@ -65,6 +67,27 @@ function withUndefinedNamed(cibles: Readonly<Record<string, unknown>>) {
       id,
       value === undefined ? UNDEFINED : value,
     ]),
+  );
+}
+
+// La page affichée, toujours nommée : son identifiant sous le questionnaire, le
+// titre de l'écran sous un résultat. Puis chacune de ses questions affichées,
+// avec ce qu'en dit le brouillon, même sans réponse.
+function ShownPage({ title, currentPage, questions, draft }: DebugTraceProps) {
+  return (
+    <>
+      <strong>Page affichée :</strong> <code>{currentPage ?? title}</code>
+      {questions && (
+        <ul style={{ margin: "0.25rem 0 1rem" }}>
+          {questions.map(({ id, label }) => (
+            <li key={id}>
+              <code>{id}</code> {label}{" "}
+              <Value value={draft?.[id]} absent="sans réponse" />
+            </li>
+          ))}
+        </ul>
+      )}
+    </>
   );
 }
 

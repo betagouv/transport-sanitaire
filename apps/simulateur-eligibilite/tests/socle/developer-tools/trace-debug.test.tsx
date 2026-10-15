@@ -49,6 +49,31 @@ describe("traces de debug", () => {
     expect(screen.getByText('"thé"')).toBeInTheDocument();
   });
 
+  it("nomment la page affichée et ses questions, même sans réponse", async () => {
+    await ouvrirLeSimulateur({ produit: true });
+    await question(BOISSON);
+
+    expect(screen.getByText("Page affichée :")).toBeInTheDocument();
+    // Une fois sur la page, une fois dans la trace.
+    expect(screen.getAllByText(/^Quelle boisson souhaitez-vous/)).toHaveLength(
+      2,
+    );
+    expect(screen.getByText("sans réponse")).toBeInTheDocument();
+    expect(traceExportee().trace).toMatchObject({
+      currentPage: "boisson",
+      questions: [{ id: "boisson" }],
+    });
+  });
+
+  it("nomment l'écran affiché sous un résultat", async () => {
+    const user = await ouvrirLeSimulateur({ produit: true });
+    await allerAuResultat(user);
+
+    expect(
+      screen.getByText("Page affichée :").nextElementSibling,
+    ).toHaveTextContent("résultat");
+  });
+
   it("montrent les questions validées, avec ce qui s'y proposait", async () => {
     const user = await ouvrirLeSimulateur({ produit: true });
     await allerAuResultat(user);
