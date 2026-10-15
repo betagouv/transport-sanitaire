@@ -17,7 +17,7 @@ d'éligibilité, ni page de résultat métier, ni CERFA téléchargeable. Le sim
 déroule le **modèle de démonstration** (`front/models/fake/`), qui ne décide rien
 du transport. Le modèle de l'éditeur (`front/models/eligibilite/`) s'intègre
 étape par étape, sur la v10.0.2 : ses règles, ses faits, ses cibles et son
-oracle sont là, son questionnaire s'arrête à P1. Le
+oracle sont là, son questionnaire s'arrête à la page du trajet de P2. Le
 [README](README.md) § « Entre deux modèles » dit ce qui est parti et ce qui reste.
 
 Le front a deux dossiers. `front/socle/` porte ce qui ne dépend d'aucune version

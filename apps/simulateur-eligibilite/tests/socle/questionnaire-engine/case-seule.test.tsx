@@ -86,4 +86,29 @@ describe("case seule", () => {
       avion: { answer: false },
     });
   });
+
+  it("non touchée, laisse se révéler les questions qui la suivent sur sa page", async () => {
+    const { user } = afficher([
+      {
+        id: "trajet",
+        questions: [
+          TRAJET.questions[1] as Page["questions"][number],
+          TRAJET.questions[0] as Page["questions"][number],
+          {
+            id: "escale",
+            kind: "text",
+            label: "Où se fait l'escale ?",
+            askedIf: (_answers, _cibles, validated) =>
+              validated.distance?.answer === "longue",
+          },
+        ],
+      },
+    ]);
+
+    await user.click(screen.getByLabelText("Longue"));
+
+    expect(
+      screen.getByRole("textbox", { name: "Où se fait l'escale ?" }),
+    ).toBeInTheDocument();
+  });
 });

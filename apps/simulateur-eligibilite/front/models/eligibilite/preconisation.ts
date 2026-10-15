@@ -1,7 +1,8 @@
 // Des réponses aux faits : ce que les règles de l'éditeur reçoivent.
 //
-// Q0.1 dit un besoin, pas un fait. Seule P1 établit des faits aujourd'hui : P2
-// n'est pas encore posée, et ses faits restent absents.
+// Q0.1 dit un besoin, pas un fait. P1 établit ses faits, et P2 ceux de la
+// page du trajet. Les autres faits de P2 restent absents, et P2 n'est jamais
+// tenue pour complète tant qu'elle n'est pas posée en entier.
 
 import type { Answers } from "../../socle";
 import { areAnswered, type Validated } from "../../socle";
@@ -9,6 +10,7 @@ import { AUCUN_FAIT, type Faits } from "./declarations/faits";
 import type { Questions } from "./declarations/questions";
 import { faitsDuMode } from "./mode-de-transport";
 import { P1 } from "./questionnaire";
+import { faitsDuTrajet } from "./trajet";
 
 export function faits(
   answers: Answers<Questions>,
@@ -18,6 +20,7 @@ export function faits(
   return {
     ...AUCUN_FAIT,
     ...faitsDuMode(validated),
+    ...faitsDuTrajet(validated),
     fait_p1_complete: complete
       ? {
           value: true,
