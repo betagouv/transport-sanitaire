@@ -9,12 +9,17 @@
 import Engine, { type RawPublicodes } from "publicodes";
 
 /**
+ * Un fait inconnu : ni vrai ni faux. Les règles ne le reçoivent pas, et ce qui
+ * en dépend reste indéfini.
+ */
+type Unknown = undefined;
+
+/**
  * Ce qu'on sait d'un fait : sa valeur, quand elle est établie, et d'où on le
- * tient. Sans valeur, le fait est absent : ni vrai ni faux, et les règles ne le
- * reçoivent pas.
+ * tient. Sans valeur, le fait est inconnu (`Unknown`).
  */
 export type Fait<Value extends boolean | number | string = boolean> = {
-  readonly value?: Value;
+  readonly value?: Value | Unknown;
   /** La réponse qui le donne, son référentiel, ou ce qui le rend sans objet. */
   readonly provenance: string;
 };
