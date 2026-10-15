@@ -69,6 +69,22 @@ export const OPTIONS = {
     "1_VEHICULE_PERSONNEL": "Véhicule personnel.",
     "2_TRANSPORTS_EN_COMMUN": "Transports en commun terrestres.",
   },
+  /** Quelle distance parcourra le patient pour le trajet dans le sens évalué ? */
+  "Q2.3.1": {
+    "1_CINQUANTE_KM_OU_MOINS": "50 km ou moins.",
+    "2_PLUS_DE_CINQUANTE_KM": "Plus de 50 km, jusqu’à 150 km inclus.",
+    "3_PLUS_DE_CENT_CINQUANTE_KM": "Plus de 150 km.",
+  },
+  /** Au moins quatre transports de plus de 50 km, en deux mois, pour le même traitement ? */
+  "Q2.3.3": {
+    "1_OUI": "Oui.",
+    "2_NON": "Non.",
+  },
+  /** Le médecin prescripteur atteste-t-il que ce transport est urgent ? */
+  "Q2.3.4": {
+    "1_OUI": "Oui.",
+    "2_NON": "Non.",
+  },
 } as const;
 
 type Option<Id extends keyof typeof OPTIONS> = keyof (typeof OPTIONS)[Id];
@@ -80,4 +96,8 @@ export type Questions = {
   "Q1.3": readonly Option<"Q1.3">[];
   "Q1.3.a": Option<"Q1.3.a">;
   "Q1.4": Option<"Q1.4">;
+  "Q2.3.1": Option<"Q2.3.1">;
+  "Q2.3.2": boolean;
+  "Q2.3.3": Option<"Q2.3.3">;
+  "Q2.3.4": Option<"Q2.3.4">;
 };

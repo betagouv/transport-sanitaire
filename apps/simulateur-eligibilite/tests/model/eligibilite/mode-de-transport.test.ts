@@ -54,9 +54,15 @@ const avecUnProfessionnel = (
 });
 const BRANCARD = avecUnProfessionnel(["8_BRANCARDAGE"]);
 
-describe("les pages de P0 et P1", () => {
+describe("les pages de P0 et P1, jusqu'au trajet", () => {
   it("un patient autonome saute les critères et dit sa préférence", () => {
-    expect(pagesAffichees(SEUL)).toEqual(["P0/1", "P1/1", "P1/3", "P1/4"]);
+    expect(pagesAffichees(SEUL)).toEqual([
+      "P0/1",
+      "P1/1",
+      "P1/3",
+      "P1/4",
+      "P2/trajet",
+    ]);
   });
 
   it("un patient accompagné d'un proche suit le même chemin", () => {
@@ -65,11 +71,18 @@ describe("les pages de P0 et P1", () => {
       "P1/1",
       "P1/3",
       "P1/4",
+      "P2/trajet",
     ]);
   });
 
   it("l'aide d'un professionnel pose les critères, pas la préférence", () => {
-    expect(pagesAffichees(BRANCARD)).toEqual(["P0/1", "P1/1", "P1/2", "P1/3"]);
+    expect(pagesAffichees(BRANCARD)).toEqual([
+      "P0/1",
+      "P1/1",
+      "P1/2",
+      "P1/3",
+      "P2/trajet",
+    ]);
   });
 });
 

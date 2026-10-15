@@ -141,14 +141,20 @@ function startingState(options: QuestionnaireOptions): State {
 
 // Ouvrir une page copie ses réponses validées dans le brouillon. Elle rouvre
 // ainsi telle qu'on l'a quittée. Un « Précédent » sans validation abandonne
-// ce brouillon.
+// ce brouillon. Une case seule sans réponse y part décochée : sans y toucher,
+// on valide la page, et les questions qui la suivent se révèlent.
 function onPage(page: Page, answers: Answers): State {
   const draft = Object.fromEntries(
-    page.questions
-      .filter((question) => answers[question.id] !== undefined)
-      .map((question) => [question.id, answers[question.id] as Answer]),
+    page.questions.flatMap((question) => {
+      const answer = answers[question.id] ?? unchecked(question);
+      return answer === undefined ? [] : [[question.id, answer]];
+    }),
   );
   return { answers, page: page.id, draft };
+}
+
+function unchecked(question: Question): Answer | undefined {
+  return question.kind === "checkbox" ? false : undefined;
 }
 
 function read(options: Source, state: State): View {
@@ -158,7 +164,7 @@ function read(options: Source, state: State): View {
   if (!page) throw new Error(`La page « ${state.page} » ne s'affiche plus.`);
   const questions = askedQuestions(all, page, visibleAnswers(state), cibles);
   const hasPendingQuestions = questions.some(
-    (question) => !isAnswered(question, drafted(question, state.draft)),
+    (question) => !isAnswered(question, state.draft[question.id]),
   );
   return {
     page,
@@ -193,7 +199,7 @@ function committedAnswers(
 ): Answers {
   const asked = askedQuestions(pages, page, visibleAnswers(state), cibles);
   const inputs = asked.flatMap((question) => {
-    const answer = offeredAnswer(question, drafted(question, state.draft));
+    const answer = offeredAnswer(question, state.draft[question.id]);
     return answer === undefined ? [] : [[question.id, answer] as const];
   });
   return commitPage(pages, state.answers, page, Object.fromEntries(inputs));
@@ -233,13 +239,6 @@ function actions({
       if (previous) setState(onPage(previous, state.answers));
     },
   };
-}
-
-// La réponse du brouillon à cette question. Une case seule qu'on n'a pas
-// touchée est décochée : la page se valide, et la case vaut `false`.
-function drafted(question: Question, draft: Answers): Answer | undefined {
-  const answer = draft[question.id];
-  return question.kind === "checkbox" ? (answer ?? false) : answer;
 }
 
 function withAnswer(
