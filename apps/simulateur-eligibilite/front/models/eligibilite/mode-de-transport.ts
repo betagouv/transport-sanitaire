@@ -6,13 +6,13 @@
 // « oui », ce qui le met à « non », et ce qui le laisse absent. Il ne lit que
 // les questions validées.
 
-import type { Validated } from "../../socle";
+import { answerAbsent, answerPresent, type Validated } from "../../socle";
 import type { Fait } from "../../socle/decision-engine/publicodes";
 import type { Cibles } from "./declarations/cibles";
 import { AUCUN_FAIT, type Faits } from "./declarations/faits";
 import type { Questions } from "./declarations/questions";
 import { cible } from "./evaluation-des-regles";
-import { aSaReponse, sansProfessionnel } from "./reponses";
+import { sansProfessionnel } from "./reponses";
 
 type Valides = Validated<Questions>;
 type Critere = Questions["Q1.2"][number];
@@ -78,7 +78,7 @@ function absent(provenance: string): Fait {
 // Q1.1 dit qui aide le patient : personne, un proche, ou un professionnel.
 function faitsDeQ11(validated: Valides) {
   const reponse = validated["Q1.1"]?.answer;
-  if (!aSaReponse(reponse)) {
+  if (answerAbsent(reponse)) {
     const attente = absent("Q1.1 n'est pas encore validée.");
     return {
       fait_autonomie_professionnel: attente,
@@ -119,7 +119,7 @@ function faitsDesCriteres(validated: Valides) {
 // leur « non » attend Q2.1.g, en P2.
 function faitsDeQ13(validated: Valides) {
   const cas = validated["Q1.3"]?.answer;
-  if (!aSaReponse(cas)) {
+  if (answerAbsent(cas)) {
     const attente = absent("Q1.3 n'est pas encore validée.");
     return {
       fait_partage_incompatible: attente,
@@ -168,7 +168,7 @@ function seanceQualifiante(validated: Valides, cas: Questions["Q1.3"]): Fait {
 // préférence est sans objet : elle vaut « non ».
 function prefereLeTransportCommun(validated: Valides): Fait {
   const preference = validated["Q1.4"]?.answer;
-  if (aSaReponse(preference)) {
+  if (answerPresent(preference)) {
     const source = `Q1.4 : « ${preference} ».`;
     return preference === "2_TRANSPORTS_EN_COMMUN" ? oui(source) : non(source);
   }

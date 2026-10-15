@@ -4,13 +4,12 @@
 // qui le met à « oui », ce qui le met à « non », et ce qui le laisse absent.
 // Il ne lit que les questions validées.
 
-import type { Validated } from "../../socle";
+import { answerAbsent, answerPresent, type Validated } from "../../socle";
 import type { Fait } from "../../socle/decision-engine/publicodes";
 import { AUCUN_FAIT, type Faits } from "./declarations/faits";
 import type { Questions } from "./declarations/questions";
 import { cible } from "./evaluation-des-regles";
 import { faitsDuMode } from "./mode-de-transport";
-import { aSaReponse } from "./reponses";
 
 type Valides = Validated<Questions>;
 
@@ -64,7 +63,7 @@ function absent(provenance: string): Fait {
 // dépassent pas leur seuil.
 function faitsDeLaDistance(validated: Valides) {
   const tranche = validated["Q2.3.1"]?.answer;
-  if (!aSaReponse(tranche)) {
+  if (answerAbsent(tranche)) {
     const attente = absent("Q2.3.1 n'est pas encore validée.");
     return { fait_distance_plus_50: attente, fait_distance_plus_150: attente };
   }
@@ -80,7 +79,7 @@ function faitsDeLaDistance(validated: Valides) {
 // Q2.3.2 : une case seule. Décochée sur la page validée, elle vaut « non ».
 function avionOuBateau(validated: Valides): Fait {
   const cochee = validated["Q2.3.2"]?.answer;
-  if (!aSaReponse(cochee)) return absent("Q2.3.2 n'est pas encore validée.");
+  if (answerAbsent(cochee)) return absent("Q2.3.2 n'est pas encore validée.");
   return cochee ? oui("Q2.3.2 : case cochée.") : non("Q2.3.2 : case décochée.");
 }
 
@@ -89,7 +88,7 @@ function avionOuBateau(validated: Valides): Fait {
 // absente, et les règles l'écartent par la distance.
 function serieQualifiante(validated: Valides): Fait {
   const reponse = validated["Q2.3.3"]?.answer;
-  if (aSaReponse(reponse)) {
+  if (answerPresent(reponse)) {
     const source = `Q2.3.3 : « ${reponse} ».`;
     return reponse === "1_OUI" ? oui(source) : non(source);
   }
@@ -103,7 +102,7 @@ function serieQualifiante(validated: Valides): Fait {
 // reste absente, faute de réponse.
 function faitsDeLUrgence(validated: Valides) {
   const reponse = validated["Q2.3.4"]?.answer;
-  if (aSaReponse(reponse)) {
+  if (answerPresent(reponse)) {
     const source = `Q2.3.4 : « ${reponse} ».`;
     return {
       fait_urgence_attestee: reponse === "1_OUI" ? oui(source) : non(source),
