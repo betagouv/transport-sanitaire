@@ -1,0 +1,109 @@
+// Le modèle de l'éditeur déroulé dans le formulaire du socle, comme à l'écran.
+//
+// Les autres tests du modèle appellent le moteur du questionnaire sans écran,
+// et ceux du socle éprouvent chaque mécanisme sur des pages écrites pour eux.
+// Ceux-ci vérifient l'assemblage : les conditions du modèle, lues par le
+// formulaire, avec son brouillon, son avance automatique et ses blocages. Ils
+// sont peu nombreux à dessein : un parcours par mécanisme de P2.
+
+import { render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
+import { describe, expect, it } from "vitest";
+import { model } from "../../../front/models/eligibilite";
+import { QuestionnaireForm } from "../../../front/socle/questionnaire-engine/QuestionnaireForm";
+
+const Q11 = /^Concernant son déplacement/;
+const Q13 = /^Avant d’établir le mode de transport/;
+const Q21 = /^Quelle situation médicale ou quel événement/;
+const Q21F = /^Les séances sélectionnées motivent-elles/;
+const Q21G = /^S’agit-il d’une entrée dans un établissement/;
+const Q231 = /^Quelle distance parcourra le patient/;
+
+function afficherLeQuestionnaire() {
+  render(
+    <QuestionnaireForm
+      parts={model.transportAndEligibility.parts}
+      partCount={3}
+      endLabel="Voir le résultat"
+      tracked={false}
+      onComplete={() => {}}
+    />,
+  );
+  return userEvent.setup();
+}
+
+const page = (question: RegExp) =>
+  screen.findByRole("group", { name: question });
+const choisir = (user: ReturnType<typeof userEvent.setup>, reponse: RegExp) =>
+  user.click(screen.getByRole("radio", { name: reponse }));
+const cocher = (user: ReturnType<typeof userEvent.setup>, reponse: RegExp) =>
+  user.click(screen.getByRole("checkbox", { name: reponse }));
+const suivant = (user: ReturnType<typeof userEvent.setup>) =>
+  user.click(screen.getByRole("button", { name: "Suivant" }));
+
+// Q0.1, puis Q1.1 avec un professionnel, Q1.2 avec ces critères.
+async function avecUnProfessionnel(
+  user: ReturnType<typeof userEvent.setup>,
+  criteres: readonly RegExp[],
+) {
+  await choisir(user, /^Vérifier une éligibilité/);
+  await page(Q11);
+  await choisir(user, /^Nécessite l’intervention d’un professionnel/);
+  await page(/^Quelles aides ou conditions particulières/);
+  for (const critere of criteres) await cocher(user, critere);
+  await suivant(user);
+  await page(Q13);
+}
+
+describe("le modèle de l'éditeur, déroulé dans le formulaire", () => {
+  it("révèle Q2.1.g sur la page de Q2.1, puis passe au trajet", async () => {
+    const user = afficherLeQuestionnaire();
+    await choisir(user, /^Vérifier une éligibilité/);
+    await page(Q11);
+    await choisir(user, /^Peut se déplacer seul/);
+    await page(Q13);
+    await cocher(user, /^Aucune de ces situations/);
+    await suivant(user);
+    await page(/^Le patient pouvant réaliser le trajet/);
+    await choisir(user, /^Véhicule personnel/);
+    await page(Q21);
+
+    await choisir(user, /^Entrée ou sortie d’hospitalisation/);
+    expect(await page(Q21G)).toBeInTheDocument();
+    expect(screen.getByRole("group", { name: Q21 })).toBeInTheDocument();
+
+    await choisir(user, /^Une entrée dans un établissement de santé/);
+    expect(await page(Q231)).toBeInTheDocument();
+  });
+
+  it("saute Q2.1 quand le brancard prouve le motif", async () => {
+    const user = afficherLeQuestionnaire();
+    await avecUnProfessionnel(user, [/^Nécessite un brancardage/]);
+    await cocher(user, /^Aucune de ces situations/);
+    await suivant(user);
+
+    expect(await page(Q231)).toBeInTheDocument();
+    expect(screen.queryByRole("group", { name: Q21 })).toBeNull();
+  });
+
+  it("bloque sur Q2.1.f quand les séances ne sont pas le même déplacement", async () => {
+    const user = afficherLeQuestionnaire();
+    await avecUnProfessionnel(user, [
+      /^Ne peut pas se déplacer de manière autonome/,
+    ]);
+    await cocher(user, /séance de chimiothérapie/);
+    await cocher(user, /séance de radiothérapie/);
+    await suivant(user);
+    await page(Q21F);
+    expect(screen.queryByRole("group", { name: Q21 })).toBeNull();
+
+    await choisir(user, /^Non, il s’agit de déplacements/);
+    expect(
+      await screen.findByText(/une simulation par déplacement/),
+    ).toBeInTheDocument();
+    expect(screen.queryByRole("group", { name: Q231 })).toBeNull();
+
+    await choisir(user, /^Oui, il s’agit du même déplacement/);
+    expect(await page(Q231)).toBeInTheDocument();
+  });
+});

@@ -99,3 +99,19 @@ describe("les options déclarées", () => {
     },
   );
 });
+
+describe("les libellés des options", () => {
+  it("ne portent aucune consigne destinée aux développeurs", () => {
+    const libelles = Object.values(OPTIONS).flatMap((options) =>
+      Object.values(options),
+    );
+    expect(
+      libelles.filter((libelle) =>
+        /\bQ\d|à préciser|déduit de|\[Seulement/.test(libelle),
+      ),
+      "Le catalogue mêle parfois au libellé une consigne pour nous (« à " +
+        "préciser en Q2.10 », « déduit de Q1.3… »). Le prescripteur ne doit " +
+        "voir que le libellé.",
+    ).toEqual([]);
+  });
+});
