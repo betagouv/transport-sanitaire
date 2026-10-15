@@ -5,7 +5,7 @@
 // avec une autre réponse a son message.
 
 import { addressErrors, isAddress } from "./address";
-import type { Answer, Question } from "./question";
+import type { Answer, Question, Unanswered } from "./question";
 
 /**
  * Ce qui ne va pas dans une saisie, à afficher sous le champ. Vide quand elle
@@ -13,7 +13,7 @@ import type { Answer, Question } from "./question";
  */
 export function errorsOf(
   question: Question,
-  answer: Answer | undefined,
+  answer: Answer | Unanswered,
 ): readonly string[] {
   if (answer === undefined) return [];
   const error = formatErrorOf(question, answer);

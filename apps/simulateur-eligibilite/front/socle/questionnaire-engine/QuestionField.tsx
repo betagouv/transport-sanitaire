@@ -15,13 +15,14 @@ import type {
   MultipleChoice,
   Question,
   SingleChoice,
+  Unanswered,
 } from "./question";
 
 type Props = {
   question: Question;
-  answer: Answer | undefined;
+  answer: Answer | Unanswered;
   /** `undefined` retire la réponse : un champ vidé n'est plus répondu. */
-  onChange: (answer: Answer | undefined) => void;
+  onChange: (answer: Answer | Unanswered) => void;
   /**
    * Ce qui ne va pas dans la saisie, un message par ligne sous le champ. Une
    * adresse a un message par champ, et lit celui-ci comme un message de groupe,

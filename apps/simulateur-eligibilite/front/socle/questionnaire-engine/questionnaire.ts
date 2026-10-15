@@ -17,6 +17,7 @@ import type {
   AnyCibles,
   Page,
   Question,
+  Unanswered,
   Validated,
 } from "./question";
 import type { QuestionnaireTracking } from "./questionnaire-tracking";
@@ -64,7 +65,7 @@ type View = {
 };
 
 type Actions = {
-  answer: (id: string, answer: Answer | undefined) => void;
+  answer: (id: string, answer: Answer | Unanswered) => void;
   next: () => void;
   back: () => void;
 };
@@ -153,7 +154,7 @@ function onPage(page: Page, answers: Answers): State {
   return { answers, page: page.id, draft };
 }
 
-function unchecked(question: Question): Answer | undefined {
+function unchecked(question: Question): Answer | Unanswered {
   return question.kind === "checkbox" ? false : undefined;
 }
 
@@ -244,7 +245,7 @@ function actions({
 function withAnswer(
   draft: Answers,
   id: string,
-  answer: Answer | undefined,
+  answer: Answer | Unanswered,
 ): Answers {
   const { [id]: _removed, ...rest } = draft;
   return answer === undefined ? rest : { ...rest, [id]: answer };
@@ -256,7 +257,7 @@ function withRestart(handlers: Actions, autoAdvance: AutoAdvance) {
   return {
     ...handlers,
     autoAdvances: autoAdvance.autoAdvances,
-    answer: (id: string, answer: Answer | undefined) => {
+    answer: (id: string, answer: Answer | Unanswered) => {
       autoAdvance.onInput();
       handlers.answer(id, answer);
     },

@@ -18,6 +18,7 @@ import type {
   AnyCibles,
   Page,
   Question,
+  Unanswered,
   Validated,
 } from "./question";
 
@@ -148,7 +149,7 @@ function validateInTurn(
 
 // Ce qu'on retient d'une question validée : ses options du moment, et sa
 // réponse s'il y en a une.
-function asValidated(question: Question, answer: Answer | undefined) {
+function asValidated(question: Question, answer: Answer | Unanswered) {
   const offered = optionValues(question);
   const given = offeredAnswer(question, answer);
   return {

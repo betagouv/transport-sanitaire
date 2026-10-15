@@ -37,6 +37,8 @@ export type DebugTraceProps = {
   pages: ReadonlyArray<{ id: string }>;
   /** La page ouverte, s'il y en a une. */
   currentPage?: string;
+  /** Les questions affichées sur la page ouverte, répondues ou non. */
+  questions?: ReadonlyArray<{ id: string; label: string }>;
   /** Le brouillon de la page ouverte. */
   draft?: Answers;
   answers: Answers;
@@ -71,21 +73,26 @@ export function QuestionnaireForm({
         <QuestionFields questionnaire={questionnaire} />
         <NavigationButtons questionnaire={questionnaire} endLabel={endLabel} />
       </form>
-      {DebugTrace && (
-        <DebugTrace
-          title="chemin parcouru"
-          pages={questionnaire.pages}
-          currentPage={questionnaire.page.id}
-          draft={questionnaire.draft}
-          answers={questionnaire.answers}
-          validated={questionnaire.validated}
-        />
-      )}
+      {DebugTrace && <DebugTrace {...traceOf(questionnaire)} />}
     </>
   );
 }
 
 // ---- implémentation ----
+
+// Ce que la trace lit sous le questionnaire : la page affichée et ses questions,
+// répondues ou non, les pages, le brouillon et les réponses validées.
+function traceOf(questionnaire: Questionnaire): DebugTraceProps {
+  return {
+    title: "chemin parcouru",
+    pages: questionnaire.pages,
+    currentPage: questionnaire.page.id,
+    questions: questionnaire.questions.map(({ id, label }) => ({ id, label })),
+    draft: questionnaire.draft,
+    answers: questionnaire.answers,
+    validated: questionnaire.validated,
+  };
+}
 
 // La page affiche son brouillon : une saisie ne compte qu'une fois la page
 // validée. La première question sans réponse prend le focus, pour le clavier.

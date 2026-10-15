@@ -5,7 +5,8 @@ import { optionsFrom, type QuestionnairePart } from "../../socle";
 import type { Cibles } from "./declarations/cibles";
 import { OPTIONS, type Questions } from "./declarations/questions";
 import { modeDe } from "./mode-de-transport";
-import { dapPossible, faitsDuTrajet } from "./trajet";
+import { P2 } from "./partie-2";
+import { sansProfessionnel } from "./reponses";
 
 type Partie<Cibles> = QuestionnairePart<Questions, Cibles>;
 
@@ -32,28 +33,27 @@ const PAGE_DES_CAS_PARTICULIERS: Partie<undefined>["pages"][number] = {
         "Avant d’établir le mode de transport adéquat, sélectionnez tous les éventuels cas particuliers concernant le patient.",
       // Les types se donnent ici : `.filter` prive l'appel du contexte qui
       // les ferait inférer.
-      options: optionsFrom<
-        keyof (typeof OPTIONS)["Q1.3"],
-        Questions,
-        undefined
-      >(OPTIONS["Q1.3"], {
-        // La corpulence ne compte qu'avec un motif d'ambulance. Retiré en
-        // Q1.2, il emporte la réponse.
-        "1_FORTE_CORPULENCE": {
-          offeredIf: (_answers, _cibles, validated) =>
-            CRITERES_D_AMBULANCE.some((critere) =>
-              validated["Q1.2"]?.answer?.includes(critere),
-            ),
-        },
-        // Le partage ne concerne que le transport assis professionnel et le
-        // TPMR. Ce sont les règles qui disent le mode.
-        "6_PARTAGE_INCOMPATIBLE": {
-          offeredIf: (_answers, _cibles, validated) => {
-            const mode = modeDe(validated);
-            return mode === "TAP" || mode === "TPMR";
+      options: optionsFrom<Questions["Q1.3"][number], Questions, undefined>(
+        OPTIONS["Q1.3"],
+        {
+          // La corpulence ne compte qu'avec un motif d'ambulance. Retiré en
+          // Q1.2, il emporte la réponse.
+          "1_FORTE_CORPULENCE": {
+            offeredIf: (_answers, _cibles, validated) =>
+              CRITERES_D_AMBULANCE.some((critere) =>
+                validated["Q1.2"]?.answer?.includes(critere),
+              ),
+          },
+          // Le partage ne concerne que le transport assis professionnel et le
+          // TPMR. Ce sont les règles qui disent le mode.
+          "6_PARTAGE_INCOMPATIBLE": {
+            offeredIf: (_answers, _cibles, validated) => {
+              const mode = modeDe(validated);
+              return mode === "TAP" || mode === "TPMR";
+            },
           },
         },
-      }).filter((option) => option.value !== "7_AUCUNE"),
+      ).filter((option) => option.value !== "7_AUCUNE"),
       exclusiveOption: {
         value: "7_AUCUNE",
         label: OPTIONS["Q1.3"]["7_AUCUNE"],
@@ -126,64 +126,13 @@ export const P1: Partie<undefined> = {
             answers["Q1.1"] === "2_AVEC_UN_PROCHE"
               ? "Le patient pouvant réaliser le trajet avec l’aide d’un proche, sans intervention d’un professionnel, merci de préciser sa préférence en matière de transport."
               : "Le patient pouvant réaliser le trajet en toute autonomie, sans intervention d’un professionnel, merci de préciser sa préférence en matière de transport.",
-          askedIf: (answers) =>
-            answers["Q1.1"] !== undefined && answers["Q1.1"] !== PROFESSIONNEL,
+          askedIf: (answers) => sansProfessionnel(answers["Q1.1"]),
           dependsOn: ["Q1.1"],
           options: optionsFrom(OPTIONS["Q1.4"]),
         },
       ],
     },
   ],
-};
-
-// Q2.3 : le trajet évalué, sur une seule page. L'avion ou le bateau est une
-// case seule : décochée, elle répond « non ». La série se révèle sous la
-// distance quand le trajet dépasse 50 km, et l'urgence dès qu'une demande
-// d'accord est possible (D-95).
-const PAGE_DU_TRAJET: Partie<undefined>["pages"][number] = {
-  id: "P2/trajet",
-  questions: [
-    {
-      id: "Q2.3.1",
-      kind: "single choice",
-      label:
-        "Quelle distance parcourra le patient pour le trajet dans le sens évalué ?",
-      options: optionsFrom(OPTIONS["Q2.3.1"]),
-    },
-    {
-      id: "Q2.3.2",
-      kind: "checkbox",
-      label:
-        "Une partie du trajet se fera en avion ou en bateau de ligne régulière.",
-      box: "Oui, une partie du trajet se fera en avion ou en bateau de ligne régulière.",
-    },
-    {
-      id: "Q2.3.3",
-      kind: "single choice",
-      label:
-        "Dans les deux mois à compter du premier transport, au moins quatre transports de plus de 50 km chacun sont-ils prescrits au titre du même traitement ?",
-      hint: "Un aller-retour compte pour deux transports.",
-      askedIf: (_answers, _cibles, validated) =>
-        faitsDuTrajet(validated).fait_distance_plus_50.value === true,
-      options: optionsFrom(OPTIONS["Q2.3.3"]),
-    },
-    {
-      id: "Q2.3.4",
-      kind: "single choice",
-      label:
-        "Le médecin prescripteur atteste-t-il que ce transport est urgent ?",
-      askedIf: (_answers, _cibles, validated) =>
-        dapPossible(validated) === true,
-      options: optionsFrom(OPTIONS["Q2.3.4"]),
-    },
-  ],
-};
-
-/** P2 : l'éligibilité. Seule la page du trajet est posée. */
-const P2: Partie<undefined> = {
-  id: "P2",
-  title: "Éligibilité",
-  pages: [PAGE_DU_TRAJET],
 };
 
 /** P0 à P2 : modifiables tant que le résultat n'est pas verrouillé. */
