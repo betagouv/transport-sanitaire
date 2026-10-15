@@ -32,28 +32,27 @@ const PAGE_DES_CAS_PARTICULIERS: Partie<undefined>["pages"][number] = {
         "Avant d’établir le mode de transport adéquat, sélectionnez tous les éventuels cas particuliers concernant le patient.",
       // Les types se donnent ici : `.filter` prive l'appel du contexte qui
       // les ferait inférer.
-      options: optionsFrom<
-        keyof (typeof OPTIONS)["Q1.3"],
-        Questions,
-        undefined
-      >(OPTIONS["Q1.3"], {
-        // La corpulence ne compte qu'avec un motif d'ambulance. Retiré en
-        // Q1.2, il emporte la réponse.
-        "1_FORTE_CORPULENCE": {
-          offeredIf: (_answers, _cibles, validated) =>
-            CRITERES_D_AMBULANCE.some((critere) =>
-              validated["Q1.2"]?.answer?.includes(critere),
-            ),
-        },
-        // Le partage ne concerne que le transport assis professionnel et le
-        // TPMR. Ce sont les règles qui disent le mode.
-        "6_PARTAGE_INCOMPATIBLE": {
-          offeredIf: (_answers, _cibles, validated) => {
-            const mode = modeDe(validated);
-            return mode === "TAP" || mode === "TPMR";
+      options: optionsFrom<Questions["Q1.3"][number], Questions, undefined>(
+        OPTIONS["Q1.3"],
+        {
+          // La corpulence ne compte qu'avec un motif d'ambulance. Retiré en
+          // Q1.2, il emporte la réponse.
+          "1_FORTE_CORPULENCE": {
+            offeredIf: (_answers, _cibles, validated) =>
+              CRITERES_D_AMBULANCE.some((critere) =>
+                validated["Q1.2"]?.answer?.includes(critere),
+              ),
+          },
+          // Le partage ne concerne que le transport assis professionnel et le
+          // TPMR. Ce sont les règles qui disent le mode.
+          "6_PARTAGE_INCOMPATIBLE": {
+            offeredIf: (_answers, _cibles, validated) => {
+              const mode = modeDe(validated);
+              return mode === "TAP" || mode === "TPMR";
+            },
           },
         },
-      }).filter((option) => option.value !== "7_AUCUNE"),
+      ).filter((option) => option.value !== "7_AUCUNE"),
       exclusiveOption: {
         value: "7_AUCUNE",
         label: OPTIONS["Q1.3"]["7_AUCUNE"],

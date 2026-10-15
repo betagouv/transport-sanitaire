@@ -21,21 +21,20 @@ const PAGE_DE_LA_PRESTATION: Page = {
       label:
         "Quelle situation médicale ou quel événement motive ce déplacement ?",
       askedIf: (_answers, _cibles, validated) => !motifDeP1(validated),
-      options: optionsFrom<
-        keyof (typeof OPTIONS)["Q2.1"],
-        Questions,
-        undefined
-      >(OPTIONS["Q2.1"], {
-        // Une séance se coche en Q1.3 : elle ne se vote pas deux fois.
-        "6_SEANCE": {
-          offeredIf: (_answers, _cibles, validated) =>
-            !validated["Q1.3"]?.answer?.some((cas) =>
-              ["3_CHIMIOTHERAPIE", "4_RADIOTHERAPIE", "5_DIALYSE"].includes(
-                cas,
+      options: optionsFrom<Questions["Q2.1"], Questions, undefined>(
+        OPTIONS["Q2.1"],
+        {
+          // Une séance se coche en Q1.3 : elle ne se vote pas deux fois.
+          "6_SEANCE": {
+            offeredIf: (_answers, _cibles, validated) =>
+              !validated["Q1.3"]?.answer?.some((cas) =>
+                ["3_CHIMIOTHERAPIE", "4_RADIOTHERAPIE", "5_DIALYSE"].includes(
+                  cas,
+                ),
               ),
-            ),
+          },
         },
-      }),
+      ),
     },
     {
       id: "Q2.1.f",
