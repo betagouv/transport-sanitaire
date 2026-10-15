@@ -26,5 +26,6 @@ export { optionsFrom } from "./questionnaire-engine/option";
 export type {
   Answers,
   QuestionnairePart,
+  Unanswered,
   Validated,
 } from "./questionnaire-engine/question";

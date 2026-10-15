@@ -4,7 +4,7 @@
 // changée sont effacées, et elles seules.
 
 import { isAddress } from "./address";
-import type { Answer, Answers, Page } from "./question";
+import type { Answer, Answers, Page, Unanswered } from "./question";
 
 /**
  * Les réponses du questionnaire, une fois la page validée. `inputs` porte les
@@ -51,13 +51,13 @@ function dependentsOf(
   return stale;
 }
 
-function sameAnswer(a: Answer | undefined, b: Answer | undefined): boolean {
+function sameAnswer(a: Answer | Unanswered, b: Answer | Unanswered): boolean {
   return JSON.stringify(comparable(a)) === JSON.stringify(comparable(b));
 }
 
 // Une adresse est la même quel que soit l'ordre où ses champs sont écrits :
 // une seed ne les range pas forcément comme l'écran.
-function comparable(answer: Answer | undefined) {
+function comparable(answer: Answer | Unanswered) {
   return isAddress(answer)
     ? Object.entries(answer).sort(([a], [b]) => a.localeCompare(b))
     : answer;

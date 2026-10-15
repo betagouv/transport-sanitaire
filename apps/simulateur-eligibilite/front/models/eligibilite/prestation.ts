@@ -5,7 +5,7 @@
 // les questions validées. Les sous-questions a à e et i à l, et le régime, ne
 // changent aucune sortie en v10.0.2 : elles ne sont pas posées (D-97).
 
-import { answerAbsent, type Validated } from "../../socle";
+import { answerAbsent, type Unanswered, type Validated } from "../../socle";
 import type { Fait } from "../../socle/decision-engine/publicodes";
 import type { Faits } from "./declarations/faits";
 import type { Questions } from "./declarations/questions";
@@ -82,7 +82,7 @@ function absent(provenance: string): Fait {
 }
 
 // Q2.1 = 11 prouve la permission. Sans elle, Q2.2.1 peut encore l'établir.
-function permission(motif: Motif | undefined): Fait {
+function permission(motif: Motif | Unanswered): Fait {
   if (motif === "11_PERMISSION") return oui("Q2.1 : « 11_PERMISSION ».");
   return absent("Ni Q2.1, ni Q2.2.1 n'établissent encore de permission.");
 }
@@ -90,7 +90,7 @@ function permission(motif: Motif | undefined): Fait {
 // Un soin ordinaire n'est pas un événement autonome. Une permission, une
 // convocation ou la maternité ne le deviennent qu'une fois leur branche
 // qualifiée (Q2.7, Q2.10, Q2.14).
-function evenementSansSoin(motif: Motif | undefined): Fait {
+function evenementSansSoin(motif: Motif | Unanswered): Fait {
   if (answerAbsent(motif)) return absent("Q2.1 n'est pas validée.");
   if (SOINS.includes(motif)) return non(`Q2.1 : « ${motif} », un soin.`);
   return absent(`Q2.1 : « ${motif} », à qualifier dans sa branche.`);
@@ -98,8 +98,8 @@ function evenementSansSoin(motif: Motif | undefined): Fait {
 
 // Q2.1 = 10, puis Q2.1.h : la séance est-elle dans le parcours de l'enfant ?
 function camsp(
-  motif: Motif | undefined,
-  rattachement: Questions["Q2.1.h"] | undefined,
+  motif: Motif | Unanswered,
+  rattachement: Questions["Q2.1.h"] | Unanswered,
 ): Fait {
   if (motif !== "10_CAMSP" || answerAbsent(rattachement))
     return absent("Ni Q2.1.h, ni Q2.2.1 n'établissent encore le CAMSP.");
@@ -110,7 +110,7 @@ function camsp(
 
 // Une entrée ou une sortie d'établissement prouve l'hospitalisation réelle.
 // L'admission en HAD à domicile ne la prouve pas seule.
-function hospitalisation(sousType: Questions["Q2.1.g"] | undefined) {
+function hospitalisation(sousType: Questions["Q2.1.g"] | Unanswered) {
   if (sousType !== "1_ENTREE" && sousType !== "2_SORTIE") return {};
   const sejour = oui(`Q2.1.g : « ${sousType} ».`);
   return {

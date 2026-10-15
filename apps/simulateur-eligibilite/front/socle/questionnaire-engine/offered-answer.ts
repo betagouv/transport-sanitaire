@@ -4,7 +4,7 @@
 
 import { askedAddress, isAddress, isCompleteAddress } from "./address";
 import { errorsOf } from "./answer-error";
-import type { Answer, Question } from "./question";
+import type { Answer, Question, Unanswered } from "./question";
 
 /**
  * Les valeurs qu'une réponse à cette question peut porter, l'option exclusive
@@ -24,8 +24,8 @@ export function optionValues(question: Question): string[] | undefined {
  */
 export function offeredAnswer(
   question: Question,
-  answer: Answer | undefined,
-): Answer | undefined {
+  answer: Answer | Unanswered,
+): Answer | Unanswered {
   if (question.kind === "single choice")
     return valuesOf(question).includes(answer as string) ? answer : undefined;
   if (question.kind === "address")
@@ -39,7 +39,7 @@ export function offeredAnswer(
 }
 
 /** La réponse suffit-elle à quitter la question ? */
-export function isAnswered(question: Question, answer: Answer | undefined) {
+export function isAnswered(question: Question, answer: Answer | Unanswered) {
   const offered = offeredAnswer(question, answer);
   if (offered === undefined) return question.optional === true;
   if (question.kind === "address")
