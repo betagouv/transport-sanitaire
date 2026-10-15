@@ -22,6 +22,7 @@ const SEUL: Reponses = {
   "Q1.1": "1_SEUL",
   "Q1.3": ["7_AUCUNE"],
   "Q1.4": "1_VEHICULE_PERSONNEL",
+  "Q2.1": "1_CONSULTATION",
 };
 
 describe("la page du trajet", () => {

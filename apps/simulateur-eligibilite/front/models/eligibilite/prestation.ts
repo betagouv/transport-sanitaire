@@ -1,0 +1,120 @@
+// La prestation : ce qui motive le déplacement (Q2.1), et les faits que sa page
+// établit, avec ses sous-questions f, g et h.
+//
+// Chaque fait suit `CONTRAT_REPONSES_FAITS.json` et son correctif. Il ne lit que
+// les questions validées. Les sous-questions a à e et i à l, et le régime, ne
+// changent aucune sortie en v10.0.2 : elles ne sont pas posées (D-97).
+
+import type { Validated } from "../../socle";
+import type { Fait } from "../../socle/decision-engine/publicodes";
+import type { Faits } from "./declarations/faits";
+import type { Questions } from "./declarations/questions";
+import { faitsDuMode } from "./mode-de-transport";
+
+type Valides = Validated<Questions>;
+type Motif = Questions["Q2.1"];
+
+/**
+ * P1 prouve-t-elle déjà un motif de transport ? Un critère d'ambulance, ou une
+ * séance qualifiante. Q2.1 n'est alors pas posée (D-97).
+ */
+export function motifDeP1(validated: Valides): boolean {
+  const mode = faitsDuMode(validated);
+  return [
+    mode.fait_critere_allonge,
+    mode.fait_critere_brancard,
+    mode.fait_critere_surveillance,
+    mode.fait_critere_oxygene,
+    mode.fait_critere_asepsie,
+    mode.fait_situation_soins_qualifiante,
+  ].some((fait) => fait.value === true);
+}
+
+/** Plusieurs séances de familles différentes sont-elles cochées en Q1.3 ? */
+export function plusieursSeances(validated: Valides): boolean {
+  const cas = validated["Q1.3"]?.answer ?? [];
+  return SEANCES.filter((seance) => cas.includes(seance)).length >= 2;
+}
+
+/**
+ * Les faits que la page de Q2.1 établit. L'hospitalisation n'y figure que si
+ * Q2.1.g la prouve : sinon, P1 garde la sienne.
+ */
+export function faitsDeLaPrestation(validated: Valides) {
+  const motif = validated["Q2.1"]?.answer;
+  return {
+    fait_permission: permission(motif),
+    fait_evenement_sans_soin: evenementSansSoin(motif),
+    fait_motif_camsp: camsp(motif, validated["Q2.1.h"]?.answer),
+    ...hospitalisation(validated["Q2.1.g"]?.answer),
+  } satisfies Partial<Faits>;
+}
+
+// ---- implémentation ----
+
+const SEANCES = ["3_CHIMIOTHERAPIE", "4_RADIOTHERAPIE", "5_DIALYSE"] as const;
+
+// Les soins et examens ordinaires : ils ne sont pas un événement autonome.
+const SOINS: readonly Motif[] = [
+  "1_CONSULTATION",
+  "2_DENTISTE_OU_SAGE_FEMME",
+  "3_IMAGERIE",
+  "4_BIOLOGIE",
+  "5_PARAMEDICAL",
+  "6_SEANCE",
+  "7_PSYCHOLOGUE",
+  "8_HOSPITALISATION",
+  "9_TRANSFERT",
+  "10_CAMSP",
+  "14_AUTRE",
+];
+
+function oui(provenance: string): Fait {
+  return { value: true, provenance };
+}
+
+function non(provenance: string): Fait {
+  return { value: false, provenance };
+}
+
+function absent(provenance: string): Fait {
+  return { provenance };
+}
+
+// Q2.1 = 11 prouve la permission. Sans elle, Q2.2.1 peut encore l'établir.
+function permission(motif: Motif | undefined): Fait {
+  if (motif === "11_PERMISSION") return oui("Q2.1 : « 11_PERMISSION ».");
+  return absent("Ni Q2.1, ni Q2.2.1 n'établissent encore de permission.");
+}
+
+// Un soin ordinaire n'est pas un événement autonome. Une permission, une
+// convocation ou la maternité ne le deviennent qu'une fois leur branche
+// qualifiée (Q2.7, Q2.10, Q2.14).
+function evenementSansSoin(motif: Motif | undefined): Fait {
+  if (motif === undefined) return absent("Q2.1 n'est pas validée.");
+  if (SOINS.includes(motif)) return non(`Q2.1 : « ${motif} », un soin.`);
+  return absent(`Q2.1 : « ${motif} », à qualifier dans sa branche.`);
+}
+
+// Q2.1 = 10, puis Q2.1.h : la séance est-elle dans le parcours de l'enfant ?
+function camsp(
+  motif: Motif | undefined,
+  rattachement: Questions["Q2.1.h"] | undefined,
+): Fait {
+  if (motif !== "10_CAMSP" || rattachement === undefined)
+    return absent("Ni Q2.1.h, ni Q2.2.1 n'établissent encore le CAMSP.");
+  const source = `Q2.1.h : « ${rattachement} ».`;
+  if (rattachement === "1_OUI") return oui(source);
+  return rattachement === "2_NON" ? non(source) : absent(source);
+}
+
+// Une entrée ou une sortie d'établissement prouve l'hospitalisation réelle.
+// L'admission en HAD à domicile ne la prouve pas seule.
+function hospitalisation(sousType: Questions["Q2.1.g"] | undefined) {
+  if (sousType !== "1_ENTREE" && sousType !== "2_SORTIE") return {};
+  const sejour = oui(`Q2.1.g : « ${sousType} ».`);
+  return {
+    fait_hospitalisation: sejour,
+    fait_situation_soins_qualifiante: sejour,
+  };
+}
