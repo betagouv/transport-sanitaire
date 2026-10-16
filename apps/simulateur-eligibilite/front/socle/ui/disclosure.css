@@ -1,0 +1,21 @@
+/* Le bloc dépliable (Disclosure.tsx). Le résumé est en bleu, en gras et en
+   petit ; le contenu, en petit. Les couleurs sont des jetons du DSFR, qui
+   suivent le thème. */
+
+.socle-disclosure > summary {
+  color: var(--text-action-high-blue-france);
+  font-size: 0.875rem;
+  font-weight: 700;
+  line-height: 1.5rem;
+  cursor: pointer;
+}
+
+.socle-disclosure__body {
+  margin-top: 0.75rem;
+  font-size: 0.875rem;
+  line-height: 1.5rem;
+}
+
+.socle-disclosure__body > :last-child {
+  margin-bottom: 0;
+}

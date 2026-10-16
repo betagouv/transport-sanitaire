@@ -15,7 +15,7 @@ export type { Models } from "./app/model-choice";
 export { at, type Cerfa, commentOn, drawnBox, text } from "./cerfa/cerfa";
 export { templateAt } from "./cerfa/generate-cerfa";
 export { bindCerfa, type CerfaMapping } from "./cerfa-mapping";
-export { type CerfaInput, defineModel } from "./model";
+export { type CerfaInput, defineModel, type FirstResult } from "./model";
 export type { Address } from "./questionnaire-engine/address";
 export {
   answerAbsent,
@@ -33,3 +33,6 @@ export {
   type Unanswered,
   type Validated,
 } from "./questionnaire-engine/question";
+export { Disclosure } from "./ui/Disclosure";
+export { NumberedCards } from "./ui/NumberedCards";
+export { Panel } from "./ui/Panel";
