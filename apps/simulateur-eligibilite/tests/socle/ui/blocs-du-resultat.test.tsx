@@ -82,10 +82,9 @@ describe("les cartes numérotées", () => {
 });
 
 describe("les cartes illustrées", () => {
-  const CARTES = [
-    { title: "Une", text: "La première", image: "/une.webp" },
-    { title: "Deux", text: "La deuxième", image: "/deux.webp" },
-  ];
+  const UNE = { title: "Une", text: "La première", image: "/une.webp" };
+  const DEUX = { title: "Deux", text: "La deuxième", image: "/deux.webp" };
+  const CARTES = [UNE, DEUX];
 
   it("sont une liste, chaque carte avec son titre au niveau demandé", () => {
     render(<IllustratedCards cards={CARTES} titleLevel={4} />);
@@ -112,15 +111,27 @@ describe("les cartes illustrées", () => {
   });
 
   it("gardent la zone d'un dessin qui ne se charge pas, vide", () => {
-    const { container } = render(
-      <IllustratedCards cards={CARTES.slice(0, 1)} />,
-    );
+    const { container } = render(<IllustratedCards cards={[UNE]} />);
 
     fireEvent.error(screen.getByRole("presentation"));
 
     expect(
       container.querySelector(".socle-illustrated-cards__media"),
     ).toBeEmptyDOMElement();
+  });
+
+  it("marquent la carte retenue de son badge, comme l'élément courant", () => {
+    render(
+      <IllustratedCards
+        cards={[UNE, { ...DEUX, selected: true }]}
+        selectedLabel="Votre choix"
+      />,
+    );
+
+    const retenue = screen.getByRole("listitem", { current: true });
+    expect(within(retenue).getByText("Votre choix")).toBeInTheDocument();
+    expect(within(retenue).getByRole("heading")).toHaveTextContent("Deux");
+    expect(screen.getAllByText("Votre choix")).toHaveLength(1);
   });
 
   it("ne s'affichent pas sans carte", () => {
