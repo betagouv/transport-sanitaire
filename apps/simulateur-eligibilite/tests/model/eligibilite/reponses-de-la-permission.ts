@@ -52,16 +52,13 @@ export const validee = (id: keyof Reponses, reponses: Reponses) =>
   validatedQuestions(pages, reponses)[id] !== undefined;
 
 /**
- * L'issue des règles. P2 n'est complète qu'avec #143 : on force `fait_p2_complete`,
- * et les deux négations que la fin de P2 déduira d'un séjour en cours
- * qualifié, sans transfert ni Centre 15.
+ * L'issue des règles. P2 n'est complète qu'avec #143 : on force
+ * `fait_p2_complete`. Le transfert et le Centre 15 viennent de la permission.
  */
-export function issue(reponses: Reponses) {
-  const sans = { value: false, provenance: "Négation de la fin de P2." };
-  return cibles({
+export const ciblesDe = (reponses: Reponses) =>
+  cibles({
     ...faits(reponses),
-    fait_transfert_article80: sans,
-    fait_centre15_interetablissements: sans,
     fait_p2_complete: { value: true, provenance: "Fin de P2." },
-  }).cible_issue_id;
-}
+  });
+
+export const issue = (reponses: Reponses) => ciblesDe(reponses).cible_issue_id;
