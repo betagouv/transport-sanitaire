@@ -16,11 +16,10 @@ décisions dans `docs/knowledge/adr/journal-des-decisions-v10.md`. Il n'y a enco
 ni page de résultat métier, ni CERFA téléchargeable. Le simulateur
 s'ouvre sur le **modèle de l'éditeur** (`front/models/eligibilite/`, D-119). Il
 s'intègre étape par étape, sur la v10.1.1 : ses règles, ses faits, ses cibles et son
-oracle sont là, son questionnaire va jusqu'à la fin de P2 (la page de branche). R2 est posée pour les cinq issues sans fiche patient
+oracle sont là, son questionnaire va jusqu'à la fin de P2 (la page de branche). R2 est posée pour les dix issues : les cinq issues sans fiche patient
 (caisse, établissement, permission à la charge du patient, convocation, transport
-à l'étranger), pour la fiche négative, et pour les fiches positives de la
-prescription médicale de transport et du S3141 ; les deux issues d'accord
-préalable montrent encore ce que les règles calculent.
+à l'étranger), la fiche négative, et les fiches positives de la prescription
+médicale de transport, du S3141 et des deux demandes d'accord préalable.
 Le [README](README.md) § « Entre deux modèles » dit ce qui est parti et ce qui reste.
 
 Le front a deux dossiers. `front/socle/` porte ce qui ne dépend d'aucune version

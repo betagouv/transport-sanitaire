@@ -1,7 +1,8 @@
-// La fiche patient positive (#135) : la prescription médicale de transport et
-// le formulaire S3141, à remettre au patient. Le titre du prescripteur et sa
-// phrase sont au-dessus, dans la page que le socle compose. Le composant range
-// un `TexteDeLaFichePositive` ; il n'écrit aucun texte de l'éditeur.
+// La fiche patient positive, à remettre au patient : la prescription médicale
+// de transport et le formulaire S3141 (#135), puis les deux demandes d'accord
+// préalable (#136). Le titre du prescripteur et sa phrase sont au-dessus, dans
+// la page que le socle compose. Le composant range un `TexteDeLaFichePositive`
+// ; il n'écrit aucun texte de l'éditeur.
 
 import { IllustratedCards } from "../../socle";
 import type { CarteAffichee } from "./cartes-et-badges";
@@ -20,6 +21,7 @@ export function FichePositive({ texte }: { texte: TexteDeLaFichePositive }) {
       {texte.raison && <p className="fr-text--lead">{texte.raison}</p>}
       <Cartes cartes={texte.cartes} />
       <ConsignesDuPatient consignes={texte.consignes} />
+      {texte.rappel && <Rappel texte={texte.rappel} />}
       <aside aria-labelledby="finance-titre" className="fr-callout">
         <h3 className="fr-callout__title" id="finance-titre">
           {texte.finance.title}
@@ -31,6 +33,15 @@ export function FichePositive({ texte }: { texte: TexteDeLaFichePositive }) {
 }
 
 // ---- implémentation ----
+
+// Le rappel d'attente de l'accord préalable : un encadré sans titre.
+function Rappel({ texte }: { texte: string }) {
+  return (
+    <div className="fr-callout fr-callout--blue-ecume">
+      <p className="fr-callout__text">{texte}</p>
+    </div>
+  );
+}
 
 // Les trois modes de transport, chacun avec son dessin ; celui du patient est
 // marqué « Votre situation ».
@@ -56,6 +67,11 @@ function ConsignesDuPatient({ consignes }: { consignes: Consignes }) {
       <h3 className="fr-h5" id="consignes-titre">
         {consignes.introduction}
       </h3>
+      {consignes.complement.map((paragraphe) => (
+        <p key={paragraphe}>
+          <TexteEnrichi texte={paragraphe} />
+        </p>
+      ))}
       <div>
         {consignes.etapes.map((etape) => (
           <div className="fr-mb-2w" key={etape.numero}>
