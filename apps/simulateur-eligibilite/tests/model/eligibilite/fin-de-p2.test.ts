@@ -74,14 +74,12 @@ describe("de bout en bout, par les réponses", () => {
     expect(ciblesDe(reponses).cible_issue_id).toBe("ISSUE_PMT");
   });
 
-  // Constat, à remonter : D-102 ne pose pas la qualification du soin (Q2.1.a à
-  // e). Une consultation ordinaire n'établit donc pas
-  // `fait_situation_soins_qualifiante`, `cible_motif_transport` reste indéfini
-  // et la décision n'a pas d'issue, alors que P2 est complète (D41 et D42 de
-  // l'oracle supposent ce fait à « non »).
-  it("consultation ordinaire sans autre motif : P2 complète, mais aucune issue", () => {
+  // `negation_precise_v1002` : Q1.3 sans séance et Q2.1 hors hospitalisation
+  // écartent la séance qualifiante ; « déjà hospitalisé » écarté en Q2.2.1
+  // écarte l'hospitalisation (D41 et D42 de l'oracle).
+  it("consultation ordinaire sans autre motif : ISSUE_NON_ELIGIBLE", () => {
     const reponses = { ...PATIENT_SEUL, "Q2.1": "1_CONSULTATION" } as const;
     expect(p2Complete(reponses)).toBe(true);
-    expect(ciblesDe(reponses).cible_issue_id).toBeUndefined();
+    expect(ciblesDe(reponses).cible_issue_id).toBe("ISSUE_NON_ELIGIBLE");
   });
 });
