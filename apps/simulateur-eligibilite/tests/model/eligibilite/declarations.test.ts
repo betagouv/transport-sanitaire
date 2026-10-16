@@ -75,7 +75,12 @@ describe("les cibles déclarées", () => {
 });
 
 describe("les options déclarées", () => {
-  it.each(Object.entries(OPTIONS))(
+  // Q2.2.1.b ne montre que les options 1, 4 à 10 et 13 des treize de Q2.2.1 :
+  // elles gardent leur numéro du catalogue (S1). Q2.6 pose son option 1, le
+  // type du transfert, à part (D-106).
+  const { "Q2.2.1.b": contextes, "Q2.6": exceptions, ...suivies } = OPTIONS;
+
+  it.each(Object.entries(suivies))(
     "%s numérote ses options comme le catalogue, de 1 en 1",
     (_, options) => {
       const slugs = Object.keys(options);
@@ -87,6 +92,18 @@ describe("les options déclarées", () => {
       ).toEqual(slugs.map((_, rang) => String(rang + 1)));
     },
   );
+
+  it("Q2.2.1.b garde les numéros des options de Q2.2.1", () => {
+    expect(
+      Object.keys(contextes).map((slug) => Number(slug.split("_")[0])),
+    ).toEqual([1, 4, 5, 6, 7, 8, 9, 10, 13]);
+  });
+
+  it("Q2.6 numérote ses exceptions à partir de 2, après le type", () => {
+    expect(
+      Object.keys(exceptions).map((slug) => Number(slug.split("_")[0])),
+    ).toEqual([2, 3, 4, 5, 6, 7, 8, 9, 10, 11]);
+  });
 
   it.each(Object.entries(OPTIONS))(
     "%s nomme chaque option après son numéro",
