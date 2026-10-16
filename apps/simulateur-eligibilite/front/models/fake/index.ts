@@ -25,7 +25,8 @@ export const model = defineModel<Questions, Faits, Cibles>({
     form: ({ commande }) => (commande === SANS_COMMANDE ? null : bonDeCommande),
     title: "Commande complétée",
     Resultat: CommandeCompletee,
-    startLabel: "Compléter la commande",
+    startLabel: ({ commande }) =>
+      commande === SANS_COMMANDE ? null : "Compléter la commande",
     downloadLabel: "Télécharger et imprimer le bon de commande",
   },
   seeds: () => import("./seeds-catalogue").then((m) => m.SEEDS),

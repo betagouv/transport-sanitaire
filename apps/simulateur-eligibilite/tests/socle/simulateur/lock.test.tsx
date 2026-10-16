@@ -118,7 +118,7 @@ describe("après le verrou", () => {
     const user = await ouvrirLeSimulateur();
     await allerAuResultat(user);
 
-    await user.click(bouton("Nouvelle simulation"));
+    await user.click(bouton("Faire une nouvelle simulation"));
 
     await question(BOISSON);
     expect(radio("Un thé")).not.toBeChecked();

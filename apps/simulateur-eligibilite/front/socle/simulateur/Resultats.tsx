@@ -63,7 +63,7 @@ export function CerfaResultat({
           Précédent
         </SecondaryButton>
         <SecondaryButton onClick={onRestart}>
-          Nouvelle simulation
+          Faire une nouvelle simulation
         </SecondaryButton>
       </div>
     </Frame>
