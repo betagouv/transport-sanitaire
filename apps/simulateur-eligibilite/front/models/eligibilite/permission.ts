@@ -1,10 +1,11 @@
 // La permission : quand Q2.7 et Q2.8 se posent, et les faits que leurs pages
 // établissent (D-107).
 //
-// Chaque fait suit `CONTRAT_REPONSES_FAITS.json` du paquet de l'éditeur. Sans
-// Q2.7 validée, rien n'est établi : la permission écartée a déjà posé ses
-// deux faits à « non » (contextes). Le cadre de Q2.8.4.a ne change aucun fait.
-// Ces fonctions ne lisent que les questions validées.
+// Chaque fait suit `CONTRAT_REPONSES_FAITS.json` du paquet de l'éditeur. Une
+// permission acquise écarte le transfert et le Centre 15, dès la question qui
+// la pose. Sans Q2.7 validée, rien d'autre n'est établi : la permission écartée
+// a déjà posé ses deux faits à « non » (contextes). Le cadre de Q2.8.4.a ne
+// change aucun fait. Ces fonctions ne lisent que les questions validées.
 
 import type { Validated } from "../../socle";
 import type { Fait } from "../../socle/decision-engine/publicodes";
@@ -42,6 +43,30 @@ export function optionsAdultesAProposer(validated: Valides): boolean {
  * question n'est pas validée reste comme il était.
  */
 export function faitsDeLaPermission(validated: Valides): Partial<Faits> {
+  return { ...faitsDuTransfertEcarte(validated), ...faitsDeQ27(validated) };
+}
+
+// ---- implémentation ----
+
+// Une permission n'est ni un transfert ni un déplacement pour soins : la
+// question qui la pose a écarté l'option 9 de Q2.1 (choix unique), ou l'option 2
+// de Q2.2.1.a. Q2.5 ne se pose pas alors ; si elle est validée, elle décide.
+function faitsDuTransfertEcarte(validated: Valides): Partial<Faits> {
+  if (validated["Q2.5"]) return {};
+  const raison =
+    validated["Q2.1"]?.answer === "11_PERMISSION"
+      ? "Q2.1 : « 11_PERMISSION » ; une permission n'est ni un transfert ni un déplacement pour soins (option 9 écartée)."
+      : validated["Q2.2.1.a"]?.answer === "1_OUI"
+        ? "Q2.2.1.a : « 1_OUI » ; une permission n'est ni un transfert ni un déplacement pour soins (option 2 écartée)."
+        : undefined;
+  if (raison === undefined) return {};
+  return {
+    fait_transfert_article80: non(raison),
+    fait_centre15_interetablissements: non(raison),
+  };
+}
+
+function faitsDeQ27(validated: Valides): Partial<Faits> {
   const tranche = validated["Q2.7"]?.answer;
   if (tranche === undefined) return {};
   const source = `Q2.7 : « ${tranche} ».`;
@@ -65,8 +90,6 @@ export function faitsDeLaPermission(validated: Valides): Partial<Faits> {
     ),
   };
 }
-
-// ---- implémentation ----
 
 function oui(provenance: string): Fait {
   return { value: true, provenance };

@@ -5,6 +5,7 @@
 import { describe, expect, it } from "vitest";
 import type { Faits } from "../../../front/models/eligibilite/declarations/faits";
 import {
+  ciblesDe,
   faits,
   issue,
   MINEUR,
@@ -12,6 +13,7 @@ import {
   posee,
   type Reponses,
 } from "./reponses-de-la-permission";
+import { SEJOUR } from "./reponses-du-transfert";
 
 const DEUX_FAITS = [
   "fait_permission_charge_patient",
@@ -203,6 +205,54 @@ describe("les faits de la permission", () => {
       "Q2.8.4.a": "3_DEMANDE_PERSONNELLE",
     };
     expect(faits(personnelle)).toEqual(faits(MINEUR));
+  });
+});
+
+describe("une permission écarte le transfert et le Centre 15", () => {
+  const DEUX_ECARTES = [
+    "fait_transfert_article80",
+    "fait_centre15_interetablissements",
+  ] as const;
+  const PAR_Q221A: Reponses = { ...SEJOUR, "Q2.2.1.a": "1_OUI" };
+
+  it("par Q2.1 = Permission (l'option 9 n'est pas choisie)", () => {
+    for (const nom of DEUX_ECARTES) {
+      expect(unFait(PATIENT_SEUL, nom)).toEqual({
+        value: false,
+        provenance:
+          "Q2.1 : « 11_PERMISSION » ; une permission n'est ni un transfert ni un déplacement pour soins (option 9 écartée).",
+      });
+    }
+  });
+
+  it("par Q2.2.1.a = Oui (l'option 2 est écartée)", () => {
+    for (const nom of DEUX_ECARTES) {
+      expect(unFait(PAR_Q221A, nom)).toEqual({
+        value: false,
+        provenance:
+          "Q2.2.1.a : « 1_OUI » ; une permission n'est ni un transfert ni un déplacement pour soins (option 2 écartée).",
+      });
+    }
+  });
+});
+
+describe("« je ne peux pas le vérifier » : l'impasse de la caisse", () => {
+  // La règle de l'éditeur attend les deux faits de la permission indéfinis,
+  // alors que le contrat en fixe un à « non » : la caisse n'est jamais atteinte.
+  // Ces tests redeviendront rouges le jour où l'éditeur corrige.
+  it.each([
+    [
+      "un mineur sans autorisation vérifiable",
+      { ...MINEUR, "Q2.8.4": "3_NE_SAIT_PAS" },
+    ],
+    [
+      "un adulte à sa charge sans confirmation vérifiable",
+      { ...ADULTE_A_SA_CHARGE, "Q2.7.a": "3_NE_SAIT_PAS" },
+    ],
+  ] as const)("%s ne donne ni caisse ni issue", (_, reponses) => {
+    const cibles = ciblesDe(reponses);
+    expect(cibles.cible_couverture_inconnue_decisive).not.toBe(true);
+    expect(cibles.cible_issue_id).toBeUndefined();
   });
 });
 
