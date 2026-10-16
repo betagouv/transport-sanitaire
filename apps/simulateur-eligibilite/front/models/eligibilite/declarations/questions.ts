@@ -3,7 +3,11 @@
 //
 // Une option se répond par un slug : son numéro dans le catalogue de l'éditeur,
 // puis ce qu'elle veut dire. Le libellé est celui du catalogue, mot pour mot.
-// Les options se déclarent dans l'ordre du catalogue : c'est l'ordre de l'écran.
+// Les options se déclarent dans l'ordre du catalogue : c'est l'ordre de l'écran,
+// sauf quand le catalogue en donne un autre (Q1.3).
+
+import { OPTIONS_DE_LA_BRANCHE } from "./options-de-la-branche";
+import { OPTIONS_DE_LA_PERMISSION } from "./options-de-la-permission";
 
 /** Les options de chaque question à choix : leur slug, et leur libellé. */
 export const OPTIONS = {
@@ -50,13 +54,15 @@ export const OPTIONS = {
   "Q1.3": {
     "1_FORTE_CORPULENCE": "Présente une forte corpulence (plus de 150 kg).",
     "2_ALD":
-      "Les soins ou examens à l’origine du déplacement sont en lien avec une ALD (Affection de Longue Durée) reconnue pour ce patient par l’Assurance Maladie.",
+      "Les soins ou examens à l’origine du déplacement sont en lien avec une ALD reconnue (prise en charge à 100 % au titre de cette ALD).",
     "3_CHIMIOTHERAPIE": "Ce déplacement concerne une séance de chimiothérapie.",
     "4_RADIOTHERAPIE": "Ce déplacement concerne une séance de radiothérapie.",
     "5_DIALYSE": "Ce déplacement concerne une séance de dialyse en centre.",
     "6_PARTAGE_INCOMPATIBLE":
       "L’état de santé du patient n’est pas compatible avec un transport partagé.",
     "7_AUCUNE": "Aucune de ces situations.",
+    "8_MINEUR_SOINS_CONTINUS":
+      "Le patient a moins de 18 ans et le service médical de l’Assurance Maladie a reconnu qu’il nécessite des soins continus pendant plus de six mois, en lien avec ce déplacement.",
   },
   /** La séance prévue est-elle une séance d’hémodialyse ? */
   "Q1.3.a": {
@@ -112,6 +118,49 @@ export const OPTIONS = {
     "2_NON": "Non",
     "3_NE_SAIT_PAS": "Je ne peux pas le préciser",
   },
+  /** L’une de ces situations correspond-elle aussi au trajet à réaliser ? */
+  "Q2.2.1": {
+    "1_HOSPITALISATION":
+      "Le patient est déjà hospitalisé pendant ce trajet, y compris en hospitalisation à domicile (HAD).",
+    "2_ETRANGER":
+      "Le départ, l’arrivée ou le lieu de soins concerné se trouve à l’étranger.",
+    "3_AUTRE_CADRE": "Une autre situation particulière concerne ce trajet.",
+    "4_AUCUNE": "Aucune de ces situations.",
+  },
+  /** Ce trajet correspond-il à une permission temporaire de sortie de l’hôpital ? */
+  "Q2.2.1.a": {
+    "1_OUI": "Oui, il s'agit d'une permission de sortie.",
+    "2_NON":
+      "Non, ce déplacement a lieu pendant l'hospitalisation sans être une permission.",
+  },
+  /**
+   * Laquelle ou lesquelles de ces situations concernent aussi ce trajet ? Les
+   * options gardent leur numéro parmi les treize du catalogue (S1).
+   */
+  "Q2.2.1.b": {
+    "1_ATMP": "À un accident du travail ou à une maladie professionnelle.",
+    "4_MATERNITE_ELOIGNEE": "À un séjour près d’une maternité éloignée.",
+    "5_HTNM":
+      "À un hébergement temporaire non médicalisé en lien avec les soins.",
+    "6_CAMSP":
+      "À des soins dans le cadre d’un CAMSP ou d’un CMPP, y compris une séance en ville organisée dans le parcours de l’enfant.",
+    "7_SAMSAH": "À des soins dans un SAMSAH.",
+    "8_CENTRE_DE_REFERENCE":
+      "À une consultation ou à des soins dans un centre de référence pour une maladie rare.",
+    "9_PENSION_MILITAIRE":
+      "À des soins en rapport avec une pension militaire d’invalidité.",
+    "10_RETOUR_PENITENTIAIRE":
+      "À un retour vers un établissement pénitentiaire.",
+    "13_CONVOCATION":
+      "À une convocation de contrôle, une expertise ou un rendez-vous chez un fournisseur d’appareillage.",
+  },
+  /** Quel lieu lié à ce transport se trouve à l’étranger ? */
+  "Q2.2.5": {
+    "1_DEPART": "Le départ.",
+    "2_ARRIVEE": "L’arrivée.",
+    "3_LIEU_DES_SOINS":
+      "Le lieu des soins, s’il est distinct du départ et de l’arrivée.",
+  },
   /** Quelle distance parcourra le patient pour le trajet dans le sens évalué ? */
   "Q2.3.1": {
     "1_CINQUANTE_KM_OU_MOINS": "50 km ou moins.",
@@ -128,6 +177,71 @@ export const OPTIONS = {
     "1_OUI": "Oui.",
     "2_NON": "Non.",
   },
+  /** S’agit-il d’un transfert entre établissements ou d’un autre déplacement pendant l’hospitalisation ? */
+  "Q2.5": {
+    "1_TRANSFERT": "Oui, il s’agit d’un transfert entre établissements.",
+    "2_AUTRE_DEPLACEMENT":
+      "Non, il s’agit d’un autre déplacement pendant l’hospitalisation.",
+  },
+  /** Le type du transfert : l'option 1 du catalogue, posée à part (D-106). */
+  "Q2.6.a": {
+    "1_DEFINITIF": "Définitif (au moins 48 heures).",
+    "2_PROVISOIRE":
+      "Provisoire (moins de 48 heures avec retour dans l’établissement d’origine).",
+  },
+  /**
+   * Quelle situation précise et quelles exceptions s’appliquent à ce
+   * déplacement ? Les options gardent leur numéro du catalogue, où le type est
+   * l'option 1. L'option 4 est la nôtre (D-106).
+   */
+  "Q2.6": {
+    "2_ADMISSION_SANS_SEJOUR":
+      "Admission dans le nouvel établissement sans prestation d’hospitalisation dans le premier.",
+    "3_CENTRE_QUINZE":
+      "Transport sanitaire demandé par le Centre 15, hors SMUR, dans le cadre de l’aide médicale urgente.",
+    "4_AIR_MER": "Trajet aérien ou maritime autre qu’en ligne régulière.",
+    "5_HAD": "Transport prescrit par une HAD hors soins liés à la HAD.",
+    "6_USLD": "Transport depuis/vers USLD hors même implantation géographique.",
+    "7_EHPAD":
+      "Transport depuis/vers EHPAD hors même implantation géographique.",
+    "8_RADIOTHERAPIE":
+      "Transfert <48 heures pour radiothérapie en exercice libéral ou centre de santé.",
+    "9_DIALYSE_A_DOMICILE": "Patient pratiquant la dialyse à domicile.",
+    "10_ADMISSION_HAD":
+      "Patient hospitalisé rentrant à domicile pour une admission en HAD.",
+    "11_AUCUNE": "Aucune de ces exceptions.",
+  },
+  ...OPTIONS_DE_LA_PERMISSION,
+  /** Quelle convocation, quel avis d’audience ou quel appareillage motive ce trajet ? */
+  "Q2.10": {
+    "1_CONTROLE_MEDICAL":
+      "Convocation au contrôle médical de l’Assurance Maladie.",
+    "2_EXPERT_JURIDICTION":
+      "Convocation par un médecin-expert ou consultant désigné par une juridiction compétente.",
+    "3_AUDIENCE_CONSULTATION":
+      "Audience de cette juridiction comportant une consultation clinique.",
+    "4_EXPERT_CONTESTATION":
+      "Consultation d’un expert désigné pour une contestation médicale.",
+    "5_COMMISSION_RECOURS":
+      "Convocation d’une commission médicale de recours amiable ou du médecin désigné par elle.",
+    "6_APPAREILLAGE": "Déplacement chez un fournisseur d’appareillage.",
+    "7_AUCUNE": "Aucune de ces situations.",
+  },
+  /** Le fournisseur est-il agréé pour cet appareillage ? (option 6 de Q2.10) */
+  "Q2.10.a": {
+    "1_OUI": "Oui",
+    "2_NON": "Non",
+    "3_NE_PEUX_PAS_VERIFIER": "Je ne peux pas le vérifier",
+  },
+  /** Quel appareillage est concerné ? (option 6 de Q2.10) */
+  "Q2.10.b": {
+    "1_PROTHESE_OCULAIRE_FACIALE": "Prothèse oculaire ou faciale",
+    "2_PODO_ORTHESE": "Podo-orthèse",
+    "3_ORTHOPROTHESE": "Orthoprothèse",
+    "4_AUTRE": "Un autre appareillage",
+    "5_NE_PEUX_PAS_PRECISER": "Je ne peux pas le préciser",
+  },
+  ...OPTIONS_DE_LA_BRANCHE,
 } as const;
 
 type Option<Id extends keyof typeof OPTIONS> = keyof (typeof OPTIONS)[Id];
@@ -143,8 +257,35 @@ export type Questions = {
   "Q2.1.f": Option<"Q2.1.f">;
   "Q2.1.g": Option<"Q2.1.g">;
   "Q2.1.h": Option<"Q2.1.h">;
+  "Q2.2.1": readonly Option<"Q2.2.1">[];
+  "Q2.2.1.a": Option<"Q2.2.1.a">;
+  "Q2.2.1.b": readonly Option<"Q2.2.1.b">[];
+  "Q2.2.5": readonly Option<"Q2.2.5">[];
   "Q2.3.1": Option<"Q2.3.1">;
   "Q2.3.2": boolean;
   "Q2.3.3": Option<"Q2.3.3">;
   "Q2.3.4": Option<"Q2.3.4">;
+  "Q2.5": Option<"Q2.5">;
+  "Q2.6.a": Option<"Q2.6.a">;
+  "Q2.6": readonly Option<"Q2.6">[];
+  "Q2.7": Option<"Q2.7">;
+  "Q2.7.a": Option<"Q2.7.a">;
+  // Les dates s'écrivent `AAAA-MM-JJ`, avec l'heure `AAAA-MM-JJTHH:mm`.
+  "Q2.8.1": string;
+  "Q2.8.2": string;
+  "Q2.8.3": string;
+  "Q2.8.4": Option<"Q2.8.4">;
+  "Q2.8.4.a": Option<"Q2.8.4.a">;
+  "Q2.8.5": Option<"Q2.8.5">;
+  "Q2.8.6": string;
+  /** Une permission aller-retour toutes les N semaines. */
+  "Q2.8.6.a": number;
+  "Q2.8.6.b": Option<"Q2.8.6.b">;
+  "Q2.10": Option<"Q2.10">;
+  "Q2.10.a": Option<"Q2.10.a">;
+  "Q2.10.b": Option<"Q2.10.b">;
+  "Q2.13.depart": Option<"Q2.13.depart">;
+  "Q2.14.1": Option<"Q2.14.1">;
+  "Q2.14.2": Option<"Q2.14.2">;
+  "Q2.12": Option<"Q2.12">;
 };

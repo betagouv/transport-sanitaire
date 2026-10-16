@@ -24,6 +24,7 @@ const BRANCARD: Reponses = {
   "Q1.1": "3_AVEC_UN_PROFESSIONNEL",
   "Q1.2": ["8_BRANCARDAGE"],
   "Q1.3": ["7_AUCUNE"],
+  "Q2.2.1": ["4_AUCUNE"],
 };
 const COURT: Reponses = {
   ...BRANCARD,
@@ -88,7 +89,7 @@ describe("la série (Q2.3.3)", () => {
 });
 
 describe("P2", () => {
-  it("n'est pas tenue pour complète : elle n'est pas posée en entier", () => {
+  it("reste absente tant que ses pages ne sont pas toutes validées (fin-de-p2.test.ts)", () => {
     expect(
       valeur("fait_p2_complete", { ...LONG, "Q2.3.3": "1_OUI" }),
     ).toBeUndefined();
@@ -118,6 +119,7 @@ describe("l'urgence (Q2.3.4)", () => {
     ["« Oui »", { ...SERIE, "Q2.3.4": "1_OUI" }, true, true],
     ["« Non »", { ...SERIE, "Q2.3.4": "2_NON" }, false, true],
     ["une réponse qui attend", SERIE, undefined, undefined],
+    ["un trajet sans demande d'accord", COURT, undefined, undefined],
     [
       "une réponse restée d'un trajet sans demande d'accord",
       { ...COURT, "Q2.3.4": "1_OUI" },
