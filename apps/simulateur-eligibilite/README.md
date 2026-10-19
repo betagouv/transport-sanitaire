@@ -6,9 +6,9 @@ en conséquence. Le parcours débute par un rattachement obligatoire à un étab
 à un service, sans identifier la personne.
 
 > **L'app est entre deux modèles.** Le modèle d'éligibilité v9 et tout ce qui en
-> dépendait ont été retirés, et la v10 n'est pas encore intégrée. Le simulateur déroule
-> un **questionnaire factice**, qui ne décide rien du transport. Le socle,
-> lui, est prêt à recevoir la v10. Voir
+> dépendait ont été retirés, et la v10 s'intègre étape par étape. Le simulateur
+> s'ouvre sur le **modèle de l'éditeur**, encore incomplet. Le modèle de
+> démonstration reste à portée des developer tools. Voir
 > [« Entre deux modèles »](#entre-deux-modèles).
 
 ## Fonctionnement
@@ -195,8 +195,9 @@ est dans l'issue 50 du dépôt, les décisions dans
 
 Le modèle de démonstration (`front/models/fake/`) déroule une commande de
 boisson, sans rapport avec le transport sanitaire. Il est pérenne : chaque capacité du socle
-y a sa page, et ses seeds ouvrent les pages à montrer. Il s'ouvre par défaut ;
-les developer tools permettent de passer au modèle de l'éditeur.
+y a sa page, et ses seeds ouvrent les pages à montrer. Le modèle de l'éditeur
+s'ouvre par défaut (D-119) ; les developer tools permettent de passer à la
+démonstration.
 
 Les tests du socle tournent sur leur propre factice
 (`tests/socle/fixtures/modele-factice/`), petit et figé : ils ne changent ni
