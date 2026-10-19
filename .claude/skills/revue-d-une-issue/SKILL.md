@@ -1,6 +1,6 @@
 ---
 name: revue-d-une-issue
-description: Faire la revue d'une issue et de sa PR, fonctionnelle puis technique. Elle donne le contexte, un tl;dr, les écarts à l'issue, ce que les tests couvrent, un cahier de tests à cocher, un verdict, et lance l'app en local pour tester. À charger dès qu'on demande de revoir, relire ou recetter une issue, une PR ou une branche.
+description: Faire la revue d'une issue et de sa PR, fonctionnelle puis technique. Elle donne le contexte, un tl;dr, les écarts à l'issue et aux maquettes, ce que les tests couvrent, un cahier de tests à cocher, un verdict, et lance l'app en local pour tester. À charger dès qu'on demande de revoir, relire ou recetter une issue, une PR ou une branche.
 ---
 
 # Revue d'une issue
@@ -39,6 +39,10 @@ git diff --stat origin/<base>...origin/<head>
 - **Relire la tête de la PR (`origin/<head>`), jamais la branche locale.** Elle
   peut être en retard ou partie d'une autre base. Ex. pour #132, la branche
   locale portait 14 commits d'une ancienne pile ; la PR, un seul.
+- Repérer la maquette de chaque page que la PR touche : celle que l'issue
+  cite, sinon celle du livrable. Une page a souvent une maquette, même quand
+  l'issue ne parle que des textes. Ex. pour R2 du simulateur, les gabarits et
+  les aperçus de `integration_resultats/`.
 
 ## 2. Lancer l'app
 
@@ -63,11 +67,21 @@ Les apps des worktrees s'arrêtent à l'annonce de la fusion (hook local).
    puces. Ex. « Dix seeds, une par issue de R2, ouvrent le résultat ».
 2. **Écarts à l'issue** : chaque critère d'acceptation, fait, pas fait ou écart
    assumé, avec sa raison. Ajouter ce que la PR dit ne pas faire.
-3. **Couverture** : un tableau de ce que les tests automatiques couvrent déjà
+3. **Maquettes** : ouvrir chaque page de la PR et sa maquette côte à côte,
+   dans le navigateur intégré, sur ordinateur puis sur mobile, et à
+   l'impression s'il y en a une. Comparer les blocs, les cadres, les couleurs,
+   les colonnes, les illustrations, la place des boutons, et les comportements
+   (bloc caché s'il est vide, bloc dépliable, carte retenue). On attend les
+   comportements, pas une copie du HTML ou du CSS : ils vivent dans des
+   composants génériques du socle. Ex. pour #176 : dans l'aperçu, « Pourquoi
+   ce résultat ? » est un panneau gris à filet bleu ; dans la PR, un titre et
+   un paragraphe nus. Un écart que le journal ne décide pas est un bloquant.
+   Sans maquette, le dire.
+4. **Couverture** : un tableau de ce que les tests automatiques couvrent déjà
    (`grep -n "describe(\|it(" <fichiers de test du diff>`). Puis vérifier à
    l'écran ce qui se vérifie vite (ex. les seeds « Conforme », chacune ouvre le
    bon résultat) et le dire. Enfin, dire ce qui n'est pas couvert.
-4. **Cahier de tests** (`feat`) : seulement ce que ni les tests ni l'agent
+5. **Cahier de tests** (`feat`) : seulement ce que ni les tests ni l'agent
    n'ont vu (aspect, textes, enchaînement à l'écran). D'abord le chemin
    nominal, puis les comportements singuliers. Dix minutes au plus.
 
@@ -121,6 +135,11 @@ Issue : <url> · PR : <url> (base `<base>`, empilée sur #<m>, CI verte)
 ### Écarts à l'issue
 
 | Critère | État | Note |
+|---|---|---|
+
+### Maquettes
+
+| Page | Maquette | Écart |
 |---|---|---|
 
 ### Couverture
