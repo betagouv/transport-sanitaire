@@ -76,6 +76,13 @@ export function retourPenitentiaireValide(validated: Valides): boolean {
   return retourCoche(validated);
 }
 
+/** Le retour pénitentiaire est-il coché, dans les réponses acquises au verrou ? */
+export function retourPenitentiaireCoche(
+  answers: GivenAnswers<Questions>,
+): boolean {
+  return retourCoche(answers);
+}
+
 /** Les faits qu'une sortie définitive vers la prison établit. */
 export function faitsDuRetourPenitentiaire(validated: Valides): Partial<Faits> {
   if (!sortieVersLaPrison(validated)) return {};

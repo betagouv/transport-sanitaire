@@ -33,7 +33,6 @@ export function NumberField(props: Props) {
       }
       hintText={props.hint}
       classes={{ label: props.lead ? "fr-text--lead" : undefined }}
-      style={{ maxWidth: "16rem" }}
       addon={
         props.unit ? (
           <span className="fr-label" style={{ whiteSpace: "nowrap" }}>
@@ -49,6 +48,8 @@ export function NumberField(props: Props) {
         value: props.value ?? "",
         onChange: (e) => props.onChange(typedNumber(e.target.value)),
         autoFocus: props.autoFocus,
+        // Seule la saisie se borne : le libellé garde la largeur de la page.
+        style: { maxWidth: "16rem" },
       }}
     />
   );
