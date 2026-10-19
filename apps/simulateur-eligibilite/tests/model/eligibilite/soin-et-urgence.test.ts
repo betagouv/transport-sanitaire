@@ -142,17 +142,21 @@ describe("la page du soin (Q3.4, Q3.4.a)", () => {
       "Q3.3.nom": "Centre de dialyse",
       "Q3.3.adresse": { street: "2 rue B", postalCode: "75002", city: "Paris" },
     };
+    const jusquAuSoin = pages.slice(
+      0,
+      pages.findIndex(({ id }) => id === "P3/soin") + 1,
+    );
     expect(
-      areAnswered(pages, new GivenAnswers(sansCentre), cibles(avant)),
+      areAnswered(jusquAuSoin, new GivenAnswers(sansCentre), cibles(avant)),
     ).toBe(false);
     expect(
       areAnswered(
-        pages,
+        jusquAuSoin,
         new GivenAnswers({ ...sansCentre, "Q3.4.a": "2_NON" }),
         cibles(avant),
       ),
     ).toBe(true);
-    expect(cibles(sansCentre)).toEqual(cibles(avant));
+    expect(cibles({ ...sansCentre, "Q3.4.a": "1_OUI" })).toEqual(cibles(avant));
   });
 });
 
