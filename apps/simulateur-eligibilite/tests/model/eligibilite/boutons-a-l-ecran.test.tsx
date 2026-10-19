@@ -139,6 +139,8 @@ describe("les boutons du modèle de l'éditeur", DELAI_D_UN_TEST, () => {
     await user.click(screen.getByRole("button", { name: "Suivant" }));
     await screen.findByRole("group", { name: /^Adresse du lieu d’arrivée/ });
     await saisirUneAdresse(user, "2 rue B", "75002");
+    await user.click(screen.getByRole("button", { name: "Suivant" }));
+    await user.click(await screen.findByLabelText("Non"));
     await user.click(screen.getByRole("button", { name: "Terminer" }));
 
     expect(

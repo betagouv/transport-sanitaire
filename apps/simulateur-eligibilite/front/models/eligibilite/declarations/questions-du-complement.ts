@@ -25,4 +25,10 @@ export type QuestionsDuComplement = {
   "Q3.3.nom": string;
   "Q3.3.precision": string;
   "Q3.3.adresse": Address;
+  /** Les précisions du soin, et la raison d'un lieu éloigné. */
+  "Q3.4": string;
+  "Q3.4.distance": string;
+  "Q3.4.a": Option<"Q3.4.a">;
+  /** La nature de l'urgence médicale attestée. */
+  "Q3.5": string;
 };

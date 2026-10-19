@@ -9,6 +9,7 @@ import type { Cibles } from "../declarations/cibles";
 import type { Questions } from "../declarations/questions";
 import { questionDuComplement as question } from "../question";
 import { PAGE_DE_L_ARRIVEE, PAGE_DU_DEPART } from "./pages-des-lieux";
+import { PAGE_DE_L_URGENCE, PAGE_DU_SOIN } from "./pages-du-soin";
 import {
   nombreDuSens,
   rappelDesPermissions,
@@ -75,5 +76,11 @@ const PAGE_DU_TRAJET: Page = {
 export const COMPLEMENT: Partie = {
   id: "P3",
   title: "Informations permettant de compléter la prescription",
-  pages: [PAGE_DU_TRAJET, PAGE_DU_DEPART, PAGE_DE_L_ARRIVEE],
+  pages: [
+    PAGE_DU_TRAJET,
+    PAGE_DU_DEPART,
+    PAGE_DE_L_ARRIVEE,
+    PAGE_DU_SOIN,
+    PAGE_DE_L_URGENCE,
+  ],
 };
