@@ -5,7 +5,7 @@ description: Faire la revue d'une issue et de sa PR, fonctionnelle puis techniqu
 
 # Revue d'une issue
 
-La revue aide Simon à décider : fusionner, faire corriger, ou poser une
+La revue aide le relecteur à décider : fusionner, faire corriger, ou poser une
 question. Elle est **fonctionnelle d'abord, technique ensuite**. Elle suit la
 section « Communication » d'[AGENTS.md](../../../AGENTS.md) : mots simples,
 phrases courtes, un exemple pour chaque point délicat.
@@ -17,7 +17,7 @@ phrases courtes, un exemple pour chaque point délicat.
 | La revue complète | `tmp/revue-<n>.md` (non suivi), sur le gabarit plus bas |
 | L'app à la tête de la PR | worktree `.claude/worktrees/revue-<n>`, ouverte dans le navigateur intégré |
 | Un résumé de quelques lignes | dans la conversation, avec le lien vers le fichier |
-| Le verdict en commentaire de PR | seulement si Simon le demande |
+| Le verdict en commentaire de PR | seulement si le relecteur le demande |
 
 Le type de la PR (`feat`, `fix`, `docs`…) vient de son titre. Les points clés
 fonctionnels et le cahier de tests ne se font que pour un `feat`.
@@ -98,7 +98,7 @@ Trois listes, chaque point avec son `fichier:ligne` ou son étape du cahier :
 - **Remarques** : questions, idées, rien d'obligatoire.
 
 Rédigé pour pouvoir être collé en commentaire de PR. Le poster
-(`gh pr comment`) seulement sur demande de Simon.
+(`gh pr comment`) seulement sur demande du relecteur.
 
 ## Gabarit de `tmp/revue-<n>.md`
 
