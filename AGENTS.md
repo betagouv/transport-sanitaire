@@ -186,7 +186,7 @@ t'y fie pas.
 
 ## Marches à suivre
 
-Six gestes récurrents ont leur mode d'emploi dans `.claude/skills/`, chargé à la
+Sept gestes récurrents ont leur mode d'emploi dans `.claude/skills/`, chargé à la
 demande plutôt que recopié ici :
 
 | Skill | Quand |
@@ -197,6 +197,7 @@ demande plutôt que recopié ici :
 | `implement-publicodes-version` | Intégrer une version du modèle livrée par l'éditeur : le diff du paquet, le contrat, les seeds, la recette portée, le retour à l'éditeur |
 | `doc-architecture` | Écrire ou réviser un document de `docs/knowledge/adr/` : format ADR maison, décisions révoquées conservées et barrées |
 | `livrer-une-version` | Livrer une app : numéro, journal des versions, tag `<app>@<version>` et release GitHub, qui vont ensemble |
+| `revue-d-une-issue` | Revoir une issue et sa PR : fonctionnel puis technique, écarts à l'issue, couverture, cahier de tests à cocher, app lancée à la tête de la PR, verdict |
 
 ## Toute règle nomme sa garde
 
