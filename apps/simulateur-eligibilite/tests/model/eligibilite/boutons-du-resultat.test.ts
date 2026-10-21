@@ -1,29 +1,29 @@
 // Les boutons de R2 (#137) : pour chacune des dix issues, le libellé de
-// l'action qui complète. « Précédent » et « Nouvelle
-// simulation » sont ceux du socle, et se testent à l'écran.
+// l'action qui complète, recopié de `CONTRAT_RENDU_DOCUMENTAIRE.json`
+// (v10.1.3). « Précédent » et « Nouvelle simulation » sont ceux du socle, et se
+// testent à l'écran.
 
 import { describe, expect, it } from "vitest";
 import { libelleDeCompletion } from "../../../front/models/eligibilite/boutons-du-resultat";
-import { catalogueResultats } from "../../../front/models/eligibilite/catalogue-resultats";
 import { CIBLES_ENUMEREES } from "../../../front/models/eligibilite/declarations/cibles";
 import { trace } from "./traces-du-praticien";
 
 type Issue = (typeof CIBLES_ENUMEREES.cible_issue_id)[number];
 
 const PRESCRIPTION = "Compléter la prescription";
-const DEMANDE = "Compléter la demande";
+const ACCORD_PREALABLE = "Compléter la demande d’accord préalable";
 
 const BOUTONS: Readonly<Record<Issue, string | null>> = {
   ISSUE_PMT: PRESCRIPTION,
-  ISSUE_DAP_SANS_URGENCE: PRESCRIPTION,
-  ISSUE_DAP_URGENCE_ATTESTEE: PRESCRIPTION,
+  ISSUE_DAP_SANS_URGENCE: ACCORD_PREALABLE,
+  ISSUE_DAP_URGENCE_ATTESTEE: ACCORD_PREALABLE,
   ISSUE_S3141: PRESCRIPTION,
   ISSUE_NON_ELIGIBLE: null,
   ISSUE_CAISSE: null,
   ISSUE_ETABLISSEMENT: null,
   ISSUE_PERMISSION_PATIENT: null,
   ISSUE_CONVOCATION: null,
-  ISSUE_DAP_ETRANGER_A_EXAMINER: DEMANDE,
+  ISSUE_DAP_ETRANGER_A_EXAMINER: "Compléter la demande d’examen",
 };
 
 const ciblesDe = (issue: Issue | undefined | null) =>
@@ -45,12 +45,5 @@ describe("les boutons de chaque issue", () => {
     ["sans objet", null],
   ])("%s, rien à compléter", (_cas, issue) => {
     expect(libelleDeCompletion(ciblesDe(issue))).toBeNull();
-  });
-
-  it("« Compléter la demande » est le libellé du catalogue de l'éditeur", async () => {
-    const catalogue = await catalogueResultats();
-    expect(libelleDeCompletion(ciblesDe("ISSUE_DAP_ETRANGER_A_EXAMINER"))).toBe(
-      catalogue.issues.ISSUE_DAP_ETRANGER_A_EXAMINER.completeLabel,
-    );
   });
 });

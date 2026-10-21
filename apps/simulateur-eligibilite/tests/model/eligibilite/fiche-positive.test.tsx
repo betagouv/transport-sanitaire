@@ -60,7 +60,7 @@ describe("la fiche de la seed issue-pmt (dialyse, TAP non partagé)", () => {
       .getAllByRole("heading", { level: 3 })
       .filter((titre) => titre.closest("[aria-current='true']"));
     expect(retenues.map((titre) => titre.textContent)).toEqual([
-      "VSL (véhicule sanitaire léger) ou taxi conventionné",
+      "VSL (Véhicule Sanitaire Léger) ou taxi conventionné",
     ]);
     expect(fiche().getByText("Votre situation")).toBeInTheDocument();
   });

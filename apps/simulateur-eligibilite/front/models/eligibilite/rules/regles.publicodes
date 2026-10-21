@@ -256,8 +256,16 @@ cible_couverture_inconnue_decisive:
   une de ces conditions:
     - toutes ces conditions:
         - fait_permission
-        - est non défini: fait_permission_mineur_admissible
-        - est non défini: fait_permission_charge_patient
+        - une de ces conditions:
+            - toutes ces conditions:
+                - est non défini: fait_permission_mineur_admissible
+                - fait_permission_charge_patient = non
+            - toutes ces conditions:
+                - fait_permission_mineur_admissible = non
+                - est non défini: fait_permission_charge_patient
+            - toutes ces conditions:
+                - est non défini: fait_permission_mineur_admissible
+                - est non défini: fait_permission_charge_patient
     - toutes ces conditions:
         - fait_hospitalisation
         - est non défini: fait_transfert_article80
@@ -330,9 +338,11 @@ cible_point_cnam:
         - fait_htnm_segment_verifie = non
     - toutes ces conditions:
         - fait_dap_maternite
+        - est défini: fait_urgence_attestee
         - fait_urgence_attestee
     - toutes ces conditions:
         - cible_dap_motif_camsp_cmpp
+        - est défini: fait_urgence_attestee
         - fait_urgence_attestee
 # Garde d’affichage de Q2.3.4 à sa place dans P2. Les faits des branches
 # futures ne deviennent pas Non : seules leurs valeurs déjà définies peuvent
@@ -572,6 +582,7 @@ cible_reason_code:
           toutes ces conditions:
             - cible_issue_id = 'ISSUE_NON_ELIGIBLE'
             - fait_prestation_non_couverte_declaree
+            - cible_qualification_soin_decisive_transport
         alors: "'NON_COUVERTE_DECLAREE'"
       - si:
           toutes ces conditions:
@@ -600,11 +611,13 @@ cible_reason_code:
       - si:
           toutes ces conditions:
             - cible_dap_motif_camsp_cmpp
+            - est défini: fait_urgence_attestee
             - fait_urgence_attestee
         alors: "'DAP_AUTONOME_URGENCE_NON_VERIFIEE'"
       - si:
           toutes ces conditions:
             - fait_dap_maternite
+            - est défini: fait_urgence_attestee
             - fait_urgence_attestee
         alors: "'CNAM_ENGAGEMENT_MATERNITE_URGENCE'"
       - si:

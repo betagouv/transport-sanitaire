@@ -5,9 +5,10 @@
 // L'éditeur ne donne pas de variable de décisivité pour Q2.13 ni pour Q2.14 :
 // la condition est la plus étroite que ses règles permettent. Elle lit les faits
 // des pages précédentes, jamais ceux de la branche. Ces fonctions ne lisent que
-// les questions validées.
+// les questions validées, sauf le motif de Q2.14, qui lit l'éloignement sur la
+// même page.
 
-import type { Validated } from "../../socle";
+import { answerAbsent, type Validated } from "../../socle";
 import type { Fait } from "../../socle/decision-engine/publicodes";
 import { AUCUN_FAIT, type Faits } from "./declarations/faits";
 import type { Questions } from "./declarations/questions";
@@ -32,27 +33,28 @@ export function departAPoser(validated: Valides): boolean {
 }
 
 /**
- * Q2.14.2 (le rattachement d'un HTNM) se pose-t-elle ? Q2.2.1.b déclare un
- * HTNM, dont le rattachement à l'Engagement maternité reste inconnu.
+ * Le groupe de l'éloignement (Q2.14) se pose-t-il ? Q2.1 dit la maternité, ou
+ * Q2.2.1.b la signale.
  */
-export function rattachementAPoser(validated: Valides): boolean {
-  return (
-    (validated["Q2.2.1.b"]?.answer?.includes("5_HTNM") ?? false) &&
-    brancheDecisive(faitsAvantLaBranche(validated))
-  );
+export function eloignementAPoser(validated: Valides): boolean {
+  const signalee =
+    validated["Q2.1"]?.answer === "13_MATERNITE" ||
+    (validated["Q2.2.1.b"]?.answer?.includes("4_MATERNITE_ELOIGNEE") ?? false);
+  return signalee && brancheDecisive(faitsAvantLaBranche(validated));
 }
 
 /**
- * Q2.14.1 (le dispositif établi) se pose-t-elle ? Q2.1 dit la maternité,
- * Q2.2.1.b la signale, ou le HTNM se dit dans l'Engagement maternité.
+ * Le groupe du motif (Q2.14) se pose-t-il ? Comme l'éloignement, sauf quand
+ * celui-ci a déjà écarté le dispositif : le motif ne changerait plus rien.
  */
-export function dispositifAPoser(validated: Valides): boolean {
-  const signalee =
-    validated["Q2.1"]?.answer === "13_MATERNITE" ||
-    (validated["Q2.2.1.b"]?.answer?.includes("4_MATERNITE_ELOIGNEE") ??
-      false) ||
-    validated["Q2.14.2"]?.answer === "1_DANS_L_ENGAGEMENT";
-  return signalee && brancheDecisive(faitsAvantLaBranche(validated));
+export function motifAPoser(
+  eloignement: Questions["Q2.14.eloignement"] | undefined,
+  validated: Valides,
+): boolean {
+  return (
+    !(eloignement?.includes("3_AUCUNE") ?? false) &&
+    eloignementAPoser(validated)
+  );
 }
 
 /**
@@ -78,8 +80,7 @@ export function urgenceDevoilee(validated: Valides): boolean {
 export function faitsDeLaBranche(validated: Valides): Partial<Faits> {
   return {
     ...faitsDuDepart(validated),
-    ...faitsDuRattachement(validated),
-    ...faitsDuDispositif(validated),
+    ...faitsDeLaMaternite(validated),
   };
 }
 
@@ -127,38 +128,17 @@ function faitsDuDepart(validated: Valides): Partial<Faits> {
   };
 }
 
-// Dans l'Engagement maternité, le HTNM n'est pas hors du dispositif. Hors de
-// l'Engagement, il va à la caisse : son segment n'est pas vérifié.
-function faitsDuRattachement(validated: Valides): Partial<Faits> {
-  const rattachement = validated["Q2.14.2"]?.answer;
-  if (rattachement === "1_DANS_L_ENGAGEMENT") {
-    return {
-      fait_htnm_hors_maternite: non(`Q2.14.2 : « ${rattachement} ».`),
-    };
-  }
-  if (rattachement !== "2_HORS_ENGAGEMENT") return {};
-  const source = `Q2.14.2 : « ${rattachement} ».`;
-  return {
-    fait_htnm_hors_maternite: oui(source),
-    fait_htnm_segment_verifie: non(
-      `${source} Le segment du HTNM hors Engagement n'est pas vérifié.`,
-    ),
-  };
-}
-
-// Le dispositif établi confirme l'admission, et le rattachement du séjour à
-// l'Engagement. Refusé, il écarte l'admission.
-function faitsDuDispositif(validated: Valides): Partial<Faits> {
-  const dispositif = validated["Q2.14.1"]?.answer;
-  const source = `Q2.14.1 : « ${dispositif} ».`;
-  if (dispositif === "1_OUI") {
-    return {
-      fait_dap_maternite: oui(source),
-      fait_htnm_hors_maternite: non(
-        `${source} Le rattachement à l'Engagement maternité est établi.`,
-      ),
-    };
-  }
-  if (dispositif !== "2_NON") return {};
-  return { fait_dap_maternite: non(source) };
+// Les deux groupes de Q2.14 (`CONTRAT_Q214_GROUPES.json`) : une condition
+// cochée dans chacun établit le dispositif, « Aucune » dans l'un l'écarte. Un
+// groupe sans réponse le laisse absent, jamais « non ».
+function faitsDeLaMaternite(validated: Valides): Partial<Faits> {
+  const eloignement = validated["Q2.14.eloignement"]?.answer;
+  const motif = validated["Q2.14.motif"]?.answer;
+  if (eloignement?.includes("3_AUCUNE"))
+    return { fait_dap_maternite: non("Q2.14 : aucun éloignement éligible.") };
+  if (motif?.includes("3_AUCUNE"))
+    return { fait_dap_maternite: non("Q2.14 : aucun motif éligible.") };
+  if (answerAbsent(eloignement) || answerAbsent(motif)) return {};
+  const conditions = [...eloignement, ...motif].join(" », « ");
+  return { fait_dap_maternite: oui(`Q2.14 : « ${conditions} ».`) };
 }

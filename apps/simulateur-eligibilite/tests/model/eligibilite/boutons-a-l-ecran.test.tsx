@@ -20,8 +20,10 @@ const PRECEDENT = "Précédent";
 const NOUVELLE = "Faire une nouvelle simulation";
 
 // L'écran des seeds liste une trentaine de situations : sous la charge de la
-// suite entière, il met plus que la seconde par défaut.
+// suite entière, il met plus que la seconde par défaut. Un test attend trois
+// fois : son délai couvre les trois.
 const ATTENTE = { timeout: 4000 };
+const DELAI_D_UN_TEST = { timeout: 3 * ATTENTE.timeout };
 
 beforeEach(() => rangerRattachement(null));
 
@@ -50,10 +52,11 @@ const boutonsDuResultat = () =>
     PRECEDENT,
     NOUVELLE,
     "Compléter la prescription",
-    "Compléter la demande",
+    "Compléter la demande d’accord préalable",
+    "Compléter la demande d’examen",
   ].filter((nom) => screen.queryByRole("button", { name: nom }) !== null);
 
-describe("les boutons du modèle de l'éditeur", () => {
+describe("les boutons du modèle de l'éditeur", DELAI_D_UN_TEST, () => {
   it.each([
     ["issue-caisse", [PRECEDENT, NOUVELLE]],
     ["issue-etablissement", [PRECEDENT, NOUVELLE]],
@@ -69,6 +72,18 @@ describe("les boutons du modèle de l'éditeur", () => {
     await ouvrirLaSeed(id);
 
     expect(boutonsDuResultat()).toEqual(attendus);
+  });
+
+  it("oriente un retour pénitentiaire administratif, sans rien à compléter", async () => {
+    await ouvrirLaSeed("orientation-penitentiaire");
+
+    expect(
+      screen.getByRole("heading", {
+        level: 1,
+        name: "Ce retour relève de l’organisation pénitentiaire",
+      }),
+    ).toBeInTheDocument();
+    expect(boutonsDuResultat()).toEqual([PRECEDENT, NOUVELLE]);
   });
 
   it("garde le stepper sur le résultat : P3 n'a pas encore de page", async () => {

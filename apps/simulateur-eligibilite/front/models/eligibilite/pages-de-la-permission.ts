@@ -127,7 +127,7 @@ export const PAGE_DE_LA_PERMISSION_DU_MINEUR: Page = {
     {
       id: "Q2.8.6",
       kind: "date",
-      label: "Quand se termine la période couverte par la prescription ?",
+      label: "Jusqu’à quelle date ces permissions sont-elles prévues ?",
       askedIf: plusieursPermissions,
       dependsOn: ["Q2.8.5"],
       inconsistenciesFrom: (answers) =>

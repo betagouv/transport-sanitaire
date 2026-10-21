@@ -179,7 +179,7 @@ Le questionnaire n'est plus déduit d'un moteur de règles : il est **déclaré 
 le modèle**. Une partie liste ses pages, une page ses questions, une question dit
 quand elle se pose (`askedIf`) et de quelles réponses elle dépend (`dependsOn`).
 
-Le modèle de l'éditeur s'intègre sur la v10.1.1, dans `front/models/eligibilite/`,
+Le modèle de l'éditeur s'intègre sur la v10.1.3, dans `front/models/eligibilite/`,
 une étape après l'autre. Ses règles sont livrées en YAML : Vite les convertit en
 objet à la compilation (`vite.config.ts`), et aucun analyseur YAML ne part dans
 le navigateur. Le noyau est là : les règles, la déclaration des faits et des
@@ -190,8 +190,9 @@ distance, l'avion ou le bateau, la série et l'urgence (Q2.3.1 à Q2.3.4).
 Le résultat de R2 montre la page du praticien pour cinq issues, la fiche
 patient négative pour `ISSUE_NON_ELIGIBLE` et la fiche patient positive pour
 `ISSUE_PMT`, `ISSUE_S3141` et les deux demandes d'accord préalable : les dix
-issues ont leur texte et leurs boutons : « Compléter la prescription » ou
-« Compléter la demande » s'affichent quand P3 aura ses pages (#65).
+issues ont leur texte et leurs boutons. « Compléter la prescription », « Compléter
+la demande d’accord préalable » ou « Compléter la demande d’examen »
+s'affichent quand P3 aura ses pages (#65).
 L'avancement
 est dans l'issue 50 du dépôt, les décisions dans
 [`docs/knowledge/adr/journal-des-decisions-v10.md`](docs/knowledge/adr/journal-des-decisions-v10.md).

@@ -45,6 +45,7 @@ export function faitsDesContextes(validated: Valides): Partial<Faits> {
     ...faitsDuSejour(validated),
     ...faitsDeLEtranger(validated),
     ...faitsDuCadre(validated),
+    ...faitsDeLaMaternite(validated),
   };
 }
 
@@ -65,14 +66,15 @@ const RETIRES_PAR_Q21: Partial<Record<Motif, readonly Contexte[]>> = {
 // Le fait de chaque situation de l'autre cadre, et si la cocher le met à
 // « oui ». Les autres attendent la page de leur branche (Q2.10, Q2.13, Q2.14) ;
 // le retour pénitentiaire n'a pas de fait : il qualifie son circuit
-// (`retour-penitentiaire.ts`).
+// (`retour-penitentiaire.ts`). Le HTNM se dit hors Engagement maternité dans
+// son libellé même (point 11).
 const FAIT_DU_CONTEXTE: Record<
   Contexte,
   { fait: keyof Faits; positif: boolean } | undefined
 > = {
   "1_ATMP": { fait: "fait_atmp_lie", positif: true },
   "4_MATERNITE_ELOIGNEE": { fait: "fait_dap_maternite", positif: false },
-  "5_HTNM": { fait: "fait_htnm_hors_maternite", positif: false },
+  "5_HTNM": { fait: "fait_htnm_hors_maternite", positif: true },
   "6_CAMSP": { fait: "fait_motif_camsp", positif: true },
   "7_SAMSAH": { fait: "fait_motif_samsah", positif: true },
   "9_PENSION_MILITAIRE": { fait: "fait_motif_pension", positif: true },
@@ -155,6 +157,18 @@ function faitsDeLEtranger(validated: Valides): Partial<Faits> {
   return { fait_trajet_etranger: extremite ? oui(source) : non(source) };
 }
 
+// Q2.1 = 13 décrit un trajet de l'Engagement maternité. Les options 4 et 5
+// s'excluent pour un même trajet (`CONTRAT_CONTEXTES_DECISIFS.md`) : il n'est
+// pas un HTNM hors maternité.
+function faitsDeLaMaternite(validated: Valides): Partial<Faits> {
+  if (validated["Q2.1"]?.answer !== "13_MATERNITE") return {};
+  return {
+    fait_htnm_hors_maternite: non(
+      "Q2.1 : « 13_MATERNITE » ; le même trajet n'est pas un HTNM hors maternité.",
+    ),
+  };
+}
+
 // L'autre cadre : écarté, chaque situation que son aide montrait vaut « non ».
 // Coché, Q2.2.1.b dit lesquelles concernent le trajet, parmi celles proposées.
 function faitsDuCadre(validated: Valides): Partial<Faits> {
@@ -194,5 +208,15 @@ function faitDuContexte(
         ? oui(source)
         : absent(`${source} À qualifier dans sa branche.`),
     ],
+    ...(contexte === "5_HTNM" ? [segmentDuHtnm(source)] : []),
   ];
+}
+
+// Hors Engagement maternité, aucune règle du segment d'un HTNM n'est vérifiée :
+// la caisse tranche (`CONTRAT_REPONSES_FAITS.json`).
+function segmentDuHtnm(source: string) {
+  return [
+    "fait_htnm_segment_verifie",
+    non(`${source} Le segment du HTNM hors Engagement n'est pas vérifié.`),
+  ] as const;
 }

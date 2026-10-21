@@ -4,16 +4,23 @@
 
 import type { ReactNode } from "react";
 import type { FirstResult, Sheet } from "../../socle";
+import type { CatalogueResultats } from "./declarations/catalogue-resultats";
 
-// La phrase d'introduction vient de l'aperçu de l'éditeur : le catalogue ne la
-// porte pas.
-const INTRO =
-  "Vous trouverez ci-dessous une fiche explicative officielle de l’Assurance Maladie à remettre à votre patient.";
+// La phrase d'introduction est `patientSheetIntro` du catalogue (point 28).
+type Catalogue = Pick<CatalogueResultats, "patientSheetIntro">;
 
-export function pageDeLaFiche(titre: string, fiche: ReactNode): FirstResult {
-  return { title: titre, intro: INTRO, body: fiche };
+export function pageDeLaFiche(
+  { patientSheetIntro }: Catalogue,
+  titre: string,
+  fiche: ReactNode,
+): FirstResult {
+  return { title: titre, intro: patientSheetIntro, body: fiche };
 }
 
-export function pageDeLaFeuille(titre: string, feuille: Sheet): FirstResult {
-  return { title: titre, intro: INTRO, sheet: feuille };
+export function pageDeLaFeuille(
+  { patientSheetIntro }: Catalogue,
+  titre: string,
+  feuille: Sheet,
+): FirstResult {
+  return { title: titre, intro: patientSheetIntro, sheet: feuille };
 }

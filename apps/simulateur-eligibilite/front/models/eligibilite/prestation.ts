@@ -27,10 +27,20 @@ export function motifDeP1(validated: Valides): boolean {
   return MOTIFS_DE_P1.some((motif) => cible(mode, motif) === true);
 }
 
-/** Plusieurs séances de familles différentes sont-elles cochées en Q1.3 ? */
+/**
+ * Plusieurs séances de familles différentes comptent-elles en Q1.3 ? Une
+ * dialyse ne compte que si Q1.3.a confirme l'hémodialyse : sinon Q2.1.f ne
+ * change plus rien (COR-17, D-131).
+ */
 export function plusieursSeances(validated: Valides): boolean {
   const cas = validated["Q1.3"]?.answer ?? [];
-  return SEANCES.filter((seance) => cas.includes(seance)).length >= 2;
+  const hemodialyse = validated["Q1.3.a"]?.answer === "1_OUI";
+  return (
+    SEANCES.filter(
+      (seance) =>
+        cas.includes(seance) && (seance !== "5_DIALYSE" || hemodialyse),
+    ).length >= 2
+  );
 }
 
 /**

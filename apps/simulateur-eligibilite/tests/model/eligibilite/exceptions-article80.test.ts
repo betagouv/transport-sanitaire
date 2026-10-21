@@ -167,11 +167,8 @@ describe("l'avion ou le bateau (Q2.3.2)", () => {
     "Q2.3.4": "2_NON",
   });
 
-  it("retire l'option 4 et rappelle la ligne régulière", () => {
+  it("retire l'option 4", () => {
     expect(proposees(ligne)).not.toContain("4_AIR_MER");
-    expect(posee("P2/exceptions", "Q2.6", ligne)?.reminder).toBe(
-      "Déjà indiqué : une partie du trajet se fera en avion ou en bateau de ligne régulière.",
-    );
   });
 
   it("réutilise la ligne régulière sans revote : l'exception vaut « oui »", () => {

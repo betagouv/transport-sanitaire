@@ -1,13 +1,13 @@
 // Le retour vers un établissement pénitentiaire (option 10 de Q2.2.1.b) :
-// TS1012-04 et `CONTRAT_CONTEXTES_V1012.json` du paquet v10.1.2 de l'éditeur.
-// Les réponses qui qualifient le circuit sont notre lecture (D-118).
+// TS1012-04 et `CONTRAT_CONTEXTES_V1012.json` du paquet v10.1.2 de l'éditeur,
+// les points 33 et 34 de la v10.1.3 et `CONTRAT_ORIENTATION_ADMINISTRATIVE.json`.
+// Ce qui établit l'indication médicale est notre lecture (D-130).
 
 import { describe, expect, it } from "vitest";
-import {
-  CIRCUIT_PENITENTIAIRE,
-  TRANSFERT_VERS_LA_PRISON,
-} from "../../../front/models/eligibilite/retour-penitentiaire";
-import { ciblesDe, validee } from "./reponses-de-la-permission";
+import { model } from "../../../front/models/eligibilite";
+import type { Cibles } from "../../../front/models/eligibilite/declarations/cibles";
+import { TRANSFERT_VERS_LA_PRISON } from "../../../front/models/eligibilite/retour-penitentiaire";
+import { ciblesDe } from "./reponses-de-la-permission";
 import {
   faits,
   posee,
@@ -42,37 +42,74 @@ const DE_LA_SORTIE = [
 const incoherences = (page: string, id: keyof Reponses, reponses: Reponses) =>
   posee(page, id, reponses)?.inconsistencies ?? [];
 
-describe("un mouvement administratif vers la prison", () => {
+const SEUL: Reponses = {
+  "Q0.1": "1_VERIFIER",
+  "Q1.1": "1_SEUL",
+  "Q1.3": ["7_AUCUNE"],
+  "Q1.4": "1_VEHICULE_PERSONNEL",
+  "Q2.1": "1_CONSULTATION",
+  ...RETOUR,
+};
+const qualifie = (indication: Reponses["Q2.2.1.indication"]): Reponses => ({
+  ...SEUL,
+  "Q2.2.1.indication": indication,
+  ...TRAJET,
+});
+
+describe("l'indication médicale d'un retour vers la prison (point 33)", () => {
   it.each([
-    [
-      "sans professionnel (Q1.1)",
-      {
-        "Q0.1": "1_VERIFIER",
-        "Q1.1": "1_SEUL",
-        "Q1.3": ["7_AUCUNE"],
-        "Q1.4": "1_VEHICULE_PERSONNEL",
-        "Q2.1": "1_CONSULTATION",
-      },
-    ],
-    ["sans soin (Q2.1)", { ...AVEC_UN_PROFESSIONNEL, "Q2.1": "15_AUCUN" }],
-  ] as const)("%s s'arrête sur le circuit pénitentiaire", (_, avant) => {
-    const reponses: Reponses = { ...avant, ...RETOUR };
-    expect(incoherences("P2/contextes", "Q2.2.1.b", reponses)).toEqual([
-      CIRCUIT_PENITENTIAIRE,
-    ]);
-    expect(validee("Q2.2.1.b", reponses)).toBe(false);
+    ["seul", SEUL],
+    ["sans soin", { ...SEUL, "Q2.1": "15_AUCUN" }],
+  ] as const)("%s, sans critère en P1, se demande", (_, reponses) => {
+    expect(posee("P2/contextes", "Q2.2.1.indication", reponses)).toBeDefined();
   });
 
-  it("avec un soin et un professionnel, la prison n'est que l'adresse", () => {
-    const reponses: Reponses = {
-      ...AVEC_UN_PROFESSIONNEL,
-      "Q2.1": "1_CONSULTATION",
-      ...RETOUR,
-    };
-    expect(incoherences("P2/contextes", "Q2.2.1.b", reponses)).toEqual([]);
-    expect(valeurs(reponses, DE_LA_SORTIE)).toEqual(
-      valeurs({ ...reponses, "Q2.2.1": ["4_AUCUNE"] }, DE_LA_SORTIE),
-    );
+  it.each([
+    ["un critère de Q1.2", { ...AVEC_UN_PROFESSIONNEL, "Q2.1": "15_AUCUN" }],
+    ["une ALD en Q1.3", { ...SEUL, "Q1.3": ["2_ALD"] }],
+  ] as const)("%s l'établit déjà", (_, avant) => {
+    expect(
+      posee("P2/contextes", "Q2.2.1.indication", { ...avant, ...RETOUR }),
+    ).toBeUndefined();
+  });
+
+  it("ne se demande pas sans retour vers la prison", () => {
+    expect(
+      posee("P2/contextes", "Q2.2.1.indication", {
+        ...SEUL,
+        "Q2.2.1": ["4_AUCUNE"],
+      }),
+    ).toBeUndefined();
+  });
+
+  it("« Oui » laisse les règles calculer l'issue", () => {
+    expect(ciblesDe(qualifie("1_OUI")).cible_issue_id).toBeDefined();
+  });
+});
+
+describe("un retour qui relève de l'organisation pénitentiaire (point 34)", () => {
+  const administratif = qualifie("2_NON");
+  const cibles = ciblesDe(administratif) as Cibles;
+
+  it("ne pose plus rien après les contextes", () => {
+    expect(posee("P2/trajet", "Q2.3.1", administratif)).toBeUndefined();
+  });
+
+  it("ne complète pas P2 : les règles ne concluent pas", () => {
+    expect(faits(administratif).fait_p2_complete.value).toBeUndefined();
+    expect(cibles.cible_issue_id).toBeUndefined();
+  });
+
+  it("oriente vers l'administration pénitentiaire, sans rien à compléter", () => {
+    const resultat = model.transportAndEligibility.result({
+      answers: administratif,
+      cibles,
+    });
+    expect(resultat).toMatchObject({
+      title: "Ce retour relève de l’organisation pénitentiaire",
+    });
+    expect(resultat).not.toHaveProperty("sheet");
+    expect(model.cerfa.startLabel(cibles)).toBeNull();
   });
 });
 
