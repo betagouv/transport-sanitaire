@@ -9,13 +9,13 @@
 
 import type { Answers } from "../../socle";
 import { areAnswered, type Validated } from "../../socle";
-import { faitsDeLaBranche } from "./branche";
 import type { Faits } from "./declarations/faits";
 import type { Questions } from "./declarations/questions";
-import { faitsAvantLaBranche } from "./faits-avant-la-branche";
-import { P2 } from "./partie-2";
-import { P1 } from "./questionnaire";
-import { horsCircuit } from "./retour-penitentiaire";
+import { P1 } from "./p1/partie-1";
+import { faitsDeLaBranche } from "./p2/branche";
+import { faitsAvantLaBranche } from "./p2/faits-avant-la-branche";
+import { P2 } from "./p2/partie-2";
+import { horsCircuit } from "./p2/retour-penitentiaire";
 
 export function faits(
   answers: Answers<Questions>,

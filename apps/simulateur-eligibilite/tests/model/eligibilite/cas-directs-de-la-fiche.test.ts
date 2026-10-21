@@ -14,12 +14,12 @@
 // avec le contexte ALD ou mineur propre à cette issue.
 
 import { describe, expect, it } from "vitest";
-import { catalogueResultats } from "../../../front/models/eligibilite/catalogue-resultats";
+import { catalogueResultats } from "../../../front/models/eligibilite/r2/catalogue-resultats";
 import {
   type TexteDeLaFichePositive,
   texteDeLaFichePositive,
-} from "../../../front/models/eligibilite/texte-de-la-fiche-positive";
-import { traceDuResultat } from "../../../front/models/eligibilite/trace-du-resultat";
+} from "../../../front/models/eligibilite/r2/fiche-positive/texte-de-la-fiche-positive";
+import { traceDuResultat } from "../../../front/models/eligibilite/r2/trace-du-resultat";
 import { ciblesDe, type Reponses } from "./reponses-de-la-permission";
 
 const catalogue = await catalogueResultats();

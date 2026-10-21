@@ -10,8 +10,8 @@ import {
   AUCUN_FAIT,
   type Faits,
 } from "../../../front/models/eligibilite/declarations/faits";
-import type { Precisions } from "../../../front/models/eligibilite/precisions-du-resultat";
-import type { Trace } from "../../../front/models/eligibilite/trace-du-resultat";
+import type { Precisions } from "../../../front/models/eligibilite/r2/precisions-du-resultat";
+import type { Trace } from "../../../front/models/eligibilite/r2/trace-du-resultat";
 
 // Une trace dont rien n'est prouvé, avec ce que le test pose.
 const AUCUNE_CIBLE = Object.fromEntries(

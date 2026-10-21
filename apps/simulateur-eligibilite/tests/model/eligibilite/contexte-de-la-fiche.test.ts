@@ -5,14 +5,14 @@
 // du catalogue de l'éditeur.
 
 import { describe, expect, it } from "vitest";
-import { catalogueResultats } from "../../../front/models/eligibilite/catalogue-resultats";
+import type { Cibles } from "../../../front/models/eligibilite/declarations/cibles";
+import { catalogueResultats } from "../../../front/models/eligibilite/r2/catalogue-resultats";
 import {
   codesDeContexte,
   motifAdministratif,
   phraseDuContexte,
-} from "../../../front/models/eligibilite/contexte-du-resultat";
-import type { Cibles } from "../../../front/models/eligibilite/declarations/cibles";
-import type { Precisions } from "../../../front/models/eligibilite/precisions-du-resultat";
+} from "../../../front/models/eligibilite/r2/fiche-positive/contexte-du-resultat";
+import type { Precisions } from "../../../front/models/eligibilite/r2/precisions-du-resultat";
 import { trace } from "./traces-du-praticien";
 
 const { issues } = await catalogueResultats();

@@ -6,7 +6,7 @@
 import { describe, expect, it } from "vitest";
 import { model } from "../../../front/models/eligibilite";
 import type { Cibles } from "../../../front/models/eligibilite/declarations/cibles";
-import { TRANSFERT_VERS_LA_PRISON } from "../../../front/models/eligibilite/retour-penitentiaire";
+import { TRANSFERT_VERS_LA_PRISON } from "../../../front/models/eligibilite/p2/retour-penitentiaire";
 import { ciblesDe } from "./reponses-de-la-permission";
 import {
   faits,

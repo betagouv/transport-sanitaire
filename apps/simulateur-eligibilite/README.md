@@ -117,9 +117,22 @@ front/                   le front, bundlé par Vite
                          socle. Ses déclarations (questions, faits, cibles), son
                          questionnaire, sa préconisation, ses deux résultats et
                          son catalogue de seeds
-    eligibilite/         le modèle de l'éditeur, en cours d'intégration. Ses règles
-                         (`rules/`, le YAML livré et sa `VERSION`), ses déclarations,
-                         son questionnaire, sa préconisation et ses deux résultats
+    eligibilite/         le modèle de l'éditeur, en cours d'intégration. À sa racine,
+                         ce qui assemble : le questionnaire, la préconisation,
+                         l'évaluation des règles et le catalogue de seeds
+      rules/             le livrable de l'éditeur : le YAML, sa `VERSION` et le
+                         catalogue des textes de R2
+      declarations/      les questions, faits et cibles, dans les mots des règles
+      p1/                l'autonomie et l'état de santé : les pages et les faits du
+                         mode de transport
+      p2/                l'éligibilité : une page et ses faits par thème (prestation,
+                         contextes, trajet, transfert, permission, convocation,
+                         retour pénitentiaire, branche)
+      r2/                le résultat : la trace, ses précisions, le catalogue chargé
+                         à la demande, les boutons, et ce que les fiches partagent
+        praticien/       les cinq issues sans fiche patient
+        fiche-negative/  `ISSUE_NON_ELIGIBLE`
+        fiche-positive/  la prescription, le S3141 et les deux accords préalables
   socle/                 ce qui ne dépend d'aucune version. `model.ts` est le contrat
                          qu'un modèle remplit, `index.ts` ce qu'il a le droit d'importer
     app/                 le choix de l'écran affiché, la navigation entre les écrans,
