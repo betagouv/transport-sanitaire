@@ -24,15 +24,14 @@ type Props = {
 };
 
 // Le verrou ne s'annonce pas à l'écran : l'interface nomme l'action, et le
-// « Précédent » de cette page dit ce qui reste ouvert. Sans cerfa, rien ne suit
-// ce résultat : le stepper s'arrête sur lui. Les boutons restent pendant le
-// chargement du résultat.
+// « Précédent » de cette page dit ce qui reste ouvert. Sans action qui
+// verrouille, rien ne suit ce résultat : le stepper s'arrête sur lui. Les
+// boutons restent pendant le chargement du résultat.
 export function FirstResultat({ model, state, DebugTrace, ...on }: Props) {
   const { answers } = state;
   const preconisation = preconisationOf(model, answers);
   const { parts, title } = model.transportAndEligibility;
-  const hasCerfa = model.cerfa.form(preconisation.cibles) !== null;
-  const startLabel = hasCerfa ? model.cerfa.startLabel : undefined;
+  const startLabel = startLabelOf(model, preconisation.cibles);
   const trace = traceOf("résultat", pagesOf(parts), answers, preconisation);
   return (
     <>
@@ -40,7 +39,7 @@ export function FirstResultat({ model, state, DebugTrace, ...on }: Props) {
         <Stepper
           title={title}
           part={parts.length}
-          total={parts.length + (hasCerfa ? 1 : 0)}
+          total={parts.length + (startLabel === null ? 0 : 1)}
           details={<NextStep startLabel={startLabel} />}
         />
       </div>
@@ -61,6 +60,15 @@ export function FirstResultat({ model, state, DebugTrace, ...on }: Props) {
 }
 
 // ---- implémentation ----
+
+// L'action qui verrouille, si elle a de quoi ouvrir la partie suivante : une
+// page à poser, ou un cerfa à remplir. Un modèle peut donner un libellé sans
+// avoir encore de partie à ouvrir ; le verrou ne mène pas à un écran vide.
+function startLabelOf(model: Model, cibles: AnyCibles): string | null {
+  const { part, form, startLabel } = model.cerfa;
+  const opens = part.pages.length > 0 || form(cibles) !== null;
+  return opens ? startLabel(cibles) : null;
+}
 
 type Loading = FirstResult | Promise<FirstResult>;
 
@@ -109,8 +117,8 @@ function useLoaded(result: Loading): FirstResult | null {
   return loaded?.from === result ? loaded.value : null;
 }
 
-function NextStep({ startLabel }: { startLabel?: string }) {
-  if (!startLabel) {
+function NextStep({ startLabel }: { startLabel: string | null }) {
+  if (startLabel === null) {
     return <span className="fr-text--bold">Évaluation terminée.</span>;
   }
   return (
@@ -121,14 +129,15 @@ function NextStep({ startLabel }: { startLabel?: string }) {
 }
 
 // Une seule rangée sous le corps, empilée sur mobile. « Compléter » verrouille,
-// et se tient en dernier. Rien de ces boutons ne s'imprime.
+// et se tient en dernier ; un libellé `null` le retire. Rien de ces boutons ne
+// s'imprime.
 function PageActions({
   startLabel,
   onReopen,
   onLock,
   onRestart,
 }: {
-  startLabel?: string;
+  startLabel: string | null;
   onReopen: () => void;
   onLock: () => void;
   onRestart: () => void;
@@ -138,9 +147,9 @@ function PageActions({
       <div className="fr-btns-group fr-btns-group--inline-md">
         <SecondaryButton onClick={onReopen}>Précédent</SecondaryButton>
         <SecondaryButton onClick={onRestart}>
-          Nouvelle simulation
+          Faire une nouvelle simulation
         </SecondaryButton>
-        {startLabel && (
+        {startLabel !== null && (
           <PrimaryButton onClick={onLock}>{startLabel}</PrimaryButton>
         )}
       </div>

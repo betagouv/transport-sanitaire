@@ -85,8 +85,12 @@ export type Model<
     ) => BoundCerfa<CerfaInput<Questions, Faits, Cibles>> | null;
     title: string;
     Resultat: ComponentType<ResultatProps<Questions, Cibles>>;
-    /** Le libellé de l'action qui verrouille. */
-    startLabel: string;
+    /**
+     * Le libellé de l'action qui verrouille. `null` : cette préconisation ne
+     * complète rien, le bouton n'est pas posé. Il ne l'est pas non plus tant que
+     * la partie n'a ni page ni cerfa : le verrou n'ouvre pas un écran vide.
+     */
+    startLabel: (cibles: Cibles) => string | null;
     downloadLabel: string;
   };
   /** Le catalogue des seeds, chargé à la demande. */
