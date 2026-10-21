@@ -26,12 +26,12 @@ import { SANS_COMMANDE } from "./preconisation";
 
 type Props = { answers: Answers<Questions>; cibles: Cibles };
 
-export function resultatDeLaCommande({ cibles }: Props): FirstResult {
+export function resultatDeLaCommande({ answers, cibles }: Props): FirstResult {
   if (cibles.commande === SANS_COMMANDE) return RIEN_A_SERVIR;
   return {
     title: "La commande est prête à être complétée",
     intro: `Commande : ${cibles.commande}.`,
-    body: <PageDeLaCommande cibles={cibles} />,
+    body: <PageDeLaCommande answers={answers} cibles={cibles} />,
   };
 }
 
@@ -69,7 +69,7 @@ const RIEN_A_SERVIR: FirstResult = {
   ),
 };
 
-function PageDeLaCommande({ cibles }: { cibles: Cibles }) {
+function PageDeLaCommande({ answers, cibles }: Props) {
   return (
     <>
       <Pourquoi cibles={cibles} />
@@ -81,7 +81,10 @@ function PageDeLaCommande({ cibles }: { cibles: Cibles }) {
         </Panel>
       )}
       <h2 className="fr-h5 fr-mt-5w">Les façons de servir</h2>
-      <IllustratedCards cards={FACONS_DE_SERVIR} />
+      <IllustratedCards
+        cards={facons(answers.service ?? [])}
+        selectedLabel="Votre commande"
+      />
       <NumberedCards
         title="Que faire maintenant ?"
         items={[
@@ -113,23 +116,32 @@ function Pourquoi({ cibles }: { cibles: Cibles }) {
   );
 }
 
-const FACONS_DE_SERVIR: readonly IllustratedCard[] = [
-  {
-    title: "En tasse",
-    text: "La boisson chaude, servie à table.",
-    image: tasse,
-  },
-  {
-    title: "En grande tasse",
-    text: "Le double de la tasse, pour les grandes soifs.",
-    image: grandeTasse,
-  },
-  {
-    title: "En verre glacé",
-    text: "Servie froide, avec des glaçons.",
-    image: verreGlace,
-  },
-];
+// La façon de servir de la commande est retenue : la grande tasse ou le verre
+// glacé s'ils sont demandés, la tasse sinon.
+function facons(service: readonly string[]): readonly IllustratedCard[] {
+  const grande = service.includes("grande-tasse");
+  const glacee = !grande && service.includes("glacee");
+  return [
+    {
+      title: "En tasse",
+      text: "La boisson chaude, servie à table.",
+      image: tasse,
+      selected: !grande && !glacee,
+    },
+    {
+      title: "En grande tasse",
+      text: "Le double de la tasse, pour les grandes soifs.",
+      image: grandeTasse,
+      selected: grande,
+    },
+    {
+      title: "En verre glacé",
+      text: "Servie froide, avec des glaçons.",
+      image: verreGlace,
+      selected: glacee,
+    },
+  ];
+}
 
 // Une cible indéfinie n'est pas une décision : elle ne s'affiche ni comme un
 // « oui », ni comme un « non ».

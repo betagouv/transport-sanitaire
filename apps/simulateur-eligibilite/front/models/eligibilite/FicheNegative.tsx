@@ -5,6 +5,7 @@
 
 import { IllustratedCards } from "../../socle";
 import { illustrationDuMode } from "./illustrations-des-modes";
+import { TexteEnrichi } from "./TexteEnrichi";
 import type { TexteDeLaFicheNegative } from "./texte-de-la-fiche-negative";
 
 type Bloc = TexteDeLaFicheNegative["finance"];
@@ -80,9 +81,7 @@ function ConseilAld({ texte }: { texte: string }) {
       className="fr-callout fr-callout--yellow-moutarde"
     >
       <p className="fr-callout__text">
-        {enGras(texte).map(({ debut, gras, texte: morceau }) =>
-          gras ? <strong key={debut}>{morceau}</strong> : morceau,
-        )}
+        <TexteEnrichi texte={texte} />
       </p>
     </aside>
   );
@@ -97,15 +96,4 @@ function Finance({ bloc }: { bloc: Bloc }) {
       <p className="fr-callout__text">{bloc.text}</p>
     </aside>
   );
-}
-
-// Le catalogue met en gras avec `**…**`. Chaque morceau garde sa position
-// dans le texte, qui lui sert de clé.
-function enGras(texte: string) {
-  let debut = 0;
-  return texte.split("**").map((morceau, rang) => {
-    const segment = { debut, gras: rang % 2 === 1, texte: morceau };
-    debut += morceau.length + 2;
-    return segment;
-  });
 }
