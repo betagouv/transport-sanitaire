@@ -1,6 +1,7 @@
-// Le résultat de `ISSUE_PMT` et de `ISSUE_S3141` (#135) : la fiche patient
-// positive. Il charge les textes de l'éditeur à la demande, calcule la trace
-// des réponses, puis donne la page de la fiche.
+// Le résultat des issues positives : `ISSUE_PMT` et `ISSUE_S3141` (#135),
+// `ISSUE_DAP_SANS_URGENCE` et `ISSUE_DAP_URGENCE_ATTESTEE` (#136). Il charge les
+// textes de l'éditeur à la demande, calcule la trace des réponses, puis donne
+// la page de la fiche patient positive.
 
 import type { Answers, FirstResult } from "../../socle";
 import { avecLeCatalogue } from "./avec-le-catalogue";
