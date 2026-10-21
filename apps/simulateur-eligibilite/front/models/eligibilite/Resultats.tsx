@@ -3,9 +3,9 @@
 //
 // Cinq issues n'ont pas de fiche patient : leur texte est celui du praticien
 // (#133). La non-éligibilité a sa fiche patient négative (#134), la
-// prescription médicale de transport et le S3141 leur fiche positive (#135).
-// Les autres montrent, d'ici à leur fiche, ce que les règles ont calculé,
-// sans phrase.
+// prescription médicale de transport et le S3141 leur fiche positive (#135),
+// les deux demandes d'accord préalable la leur (#136). Les dix issues ont donc
+// leur texte.
 
 import type { Answers, FirstResult } from "../../socle";
 import type { Cibles } from "./declarations/cibles";
@@ -25,14 +25,9 @@ export function eligibilite({
   if (!issue) return SANS_ISSUE;
   if (issue === "ISSUE_NON_ELIGIBLE")
     return resultatNegatif({ answers, cibles });
-  if (issue === "ISSUE_PMT" || issue === "ISSUE_S3141")
-    return resultatPositif({ answers, cibles, issue });
   if (estSansFiche(issue))
     return resultatDuPraticien({ answers, cibles, issue });
-  return {
-    title: "Ce que les règles ont calculé",
-    body: <CiblesCalculees cibles={cibles} />,
-  };
+  return resultatPositif({ answers, cibles, issue });
 }
 
 /** Jamais affichée tant qu'aucun cerfa n'est produit. */
@@ -53,18 +48,3 @@ const SANS_ISSUE: FirstResult = {
     </p>
   ),
 };
-
-function CiblesCalculees({ cibles }: { cibles: Cibles }) {
-  return (
-    <dl>
-      <dt>Issue</dt>
-      <dd>{cibles.cible_issue_id}</dd>
-      <dt>Mode de transport</dt>
-      <dd>{cibles.cible_mode_id}</dd>
-      <dt>Financeur</dt>
-      <dd>{cibles.cible_financeur}</dd>
-      <dt>Document</dt>
-      <dd>{cibles.cible_support_id}</dd>
-    </dl>
-  );
-}
