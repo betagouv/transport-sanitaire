@@ -1,8 +1,12 @@
-/* Les boutons sous le premier résultat (FirstResultat.tsx), séparés du corps
-   d'un trait, comme dans les gabarits de l'éditeur. */
+/* Les boutons du premier résultat (FirstResultat.tsx). Sous le corps, un trait
+   les sépare de lui ; au-dessus d'une feuille, ils la précèdent sans trait. */
 
-.socle-page-actions {
+.socle-page-actions--below {
   margin-top: 2.5rem;
   padding-top: 1.5rem;
   border-top: 1px solid var(--border-default-grey);
+}
+
+.socle-page-actions--above {
+  margin-top: 1.5rem;
 }

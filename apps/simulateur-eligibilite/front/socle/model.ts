@@ -31,9 +31,21 @@ type ResultatProps<Questions extends AnyQuestions, Cibles> = {
 
 /**
  * Ce que le premier résultat donne au socle, qui compose la page : le `h1`,
- * une introduction, puis le corps. Les boutons sont au socle, sous le corps.
+ * une introduction, puis le corps, et la feuille à remettre au patient s'il en
+ * a une. Les boutons sont au socle : sous le corps, ou au-dessus de la feuille.
  */
-export type FirstResult = { title: string; intro?: ReactNode; body: ReactNode };
+export type FirstResult = {
+  title: string;
+  intro?: ReactNode;
+  body?: ReactNode;
+  sheet?: Sheet;
+};
+
+/**
+ * La feuille à remettre au patient, que le socle pose sur une A4 sous les
+ * logos : son titre, sa phrase d'introduction, puis son contenu.
+ */
+export type Sheet = { title: string; intro?: ReactNode; body: ReactNode };
 
 /**
  * Ce que le mapping du cerfa lit : tout ce que le simulateur sait. Les

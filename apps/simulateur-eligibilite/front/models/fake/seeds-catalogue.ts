@@ -145,9 +145,9 @@ export const SEEDS: readonly Seed<Questions, Cibles>[] = [
   },
   {
     id: "sans-commande",
-    label: "Résultat : rien à servir, deux étapes sur deux colonnes",
+    label: "Résultat : rien à servir, une feuille à remettre au client",
     description:
-      "Ouvre un premier résultat sans suite : aucun complément n'est proposé, et le stepper dit « Évaluation terminée. ». Sans encadré, ses deux étapes se rangent sur deux colonnes.",
+      "Ouvre un premier résultat sans suite : aucun complément n'est proposé, et le stepper dit « Évaluation terminée. ». Sans encadré, ses deux étapes se rangent sur deux colonnes. Les boutons passent au-dessus de la feuille, une A4 sous les logos, avec ses cartes illustrées et son bloc de suivi ; seule la feuille s'imprime.",
     answers: { boisson: "rien" },
     expected: { commande: "aucune", lait_tourne: false },
   },

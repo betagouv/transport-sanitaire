@@ -1,6 +1,6 @@
 // Les blocs qu'un modèle place dans le corps d'un résultat : l'encadré, nommé
-// par son titre, le bloc dépliable, les cartes numérotées et les cartes
-// illustrées.
+// par son titre ou, sans titre, par son label, le bloc dépliable, les cartes
+// numérotées et les cartes illustrées.
 
 import { fireEvent, render, screen, within } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
@@ -23,6 +23,31 @@ describe("l'encadré", () => {
       name: "Pourquoi ce résultat ?",
     });
     expect(within(encadre).getByText("Un élément")).toBeInTheDocument();
+  });
+
+  it("prend le niveau de titre donné, sous celui de sa section", () => {
+    render(
+      <Panel variant="white" title="À propos des frais" titleLevel={3}>
+        <p>Un texte</p>
+      </Panel>,
+    );
+
+    expect(
+      screen.getByRole("heading", { level: 3, name: "À propos des frais" }),
+    ).toBeInTheDocument();
+  });
+
+  it("sans titre, est un aparté nommé par son label", () => {
+    render(
+      <Panel variant="outlined" label="Information importante">
+        <p>Un conseil</p>
+      </Panel>,
+    );
+
+    const encadre = screen.getByRole("complementary", {
+      name: "Information importante",
+    });
+    expect(within(encadre).getByText("Un conseil")).toBeInTheDocument();
   });
 });
 
