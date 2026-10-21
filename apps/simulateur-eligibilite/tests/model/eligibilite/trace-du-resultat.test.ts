@@ -100,9 +100,11 @@ const CAS: readonly [
 
 describe("la trace des dix seeds", () => {
   it("couvre les dix issues, une seed chacune", () => {
-    expect(SEEDS.map(({ expected }) => expected.cible_issue_id).sort()).toEqual(
-      [...CIBLES_ENUMEREES.cible_issue_id].sort(),
+    // L'orientation pénitentiaire n'a pas d'issue.
+    const issues = SEEDS.flatMap(
+      ({ expected }) => expected.cible_issue_id ?? [],
     );
+    expect(issues.sort()).toEqual([...CIBLES_ENUMEREES.cible_issue_id].sort());
   });
 
   describe.each(CAS)(

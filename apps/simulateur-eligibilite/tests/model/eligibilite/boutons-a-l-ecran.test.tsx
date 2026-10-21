@@ -72,6 +72,18 @@ describe("les boutons du modèle de l'éditeur", () => {
     expect(boutonsDuResultat()).toEqual(attendus);
   });
 
+  it("oriente un retour pénitentiaire administratif, sans rien à compléter", async () => {
+    await ouvrirLaSeed("orientation-penitentiaire");
+
+    expect(
+      screen.getByRole("heading", {
+        level: 1,
+        name: "Ce retour relève de l’organisation pénitentiaire",
+      }),
+    ).toBeInTheDocument();
+    expect(boutonsDuResultat()).toEqual([PRECEDENT, NOUVELLE]);
+  });
+
   it("garde le stepper sur le résultat : P3 n'a pas encore de page", async () => {
     await ouvrirLaSeed("issue-pmt");
 

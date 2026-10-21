@@ -158,6 +158,15 @@ export const OPTIONS = {
     "13_CONVOCATION":
       "À une convocation de contrôle, une expertise ou un rendez-vous chez un fournisseur d’appareillage.",
   },
+  /**
+   * Ce retour nécessite-t-il un transport pour raison médicale ? Le
+   * `Q2.2.1.prison-medical` de l'éditeur (point 33, v10.1.3).
+   */
+  "Q2.2.1.indication": {
+    "1_OUI": "Oui, une indication médicale de transport est présente.",
+    "2_NON":
+      "Non, le déplacement relève uniquement de l’organisation pénitentiaire.",
+  },
   /** Quel lieu lié à ce transport se trouve à l’étranger ? */
   "Q2.2.5": {
     "1_DEPART": "Le départ.",
@@ -266,6 +275,7 @@ export type Questions = {
   "Q2.2.1": readonly Option<"Q2.2.1">[];
   "Q2.2.1.a": Option<"Q2.2.1.a">;
   "Q2.2.1.b": readonly Option<"Q2.2.1.b">[];
+  "Q2.2.1.indication": Option<"Q2.2.1.indication">;
   "Q2.2.5": readonly Option<"Q2.2.5">[];
   "Q2.3.1": Option<"Q2.3.1">;
   "Q2.3.2": boolean;

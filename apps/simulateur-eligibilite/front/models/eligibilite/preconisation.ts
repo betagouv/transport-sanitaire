@@ -4,7 +4,8 @@
 // prestation, des situations particulières, du trajet, du transfert, des
 // exceptions de l'article 80, de la permission, de la convocation et de sa
 // branche. L'exclusion du transport se constate sans question. P1 et P2 sont
-// complètes quand toutes leurs questions posées ont leur réponse (D-110).
+// complètes quand toutes leurs questions posées ont leur réponse (D-110). Un
+// retour pénitentiaire hors du circuit de prescription ne complète pas P2.
 
 import type { Answers } from "../../socle";
 import { areAnswered, type Validated } from "../../socle";
@@ -14,6 +15,7 @@ import type { Questions } from "./declarations/questions";
 import { faitsAvantLaBranche } from "./faits-avant-la-branche";
 import { P2 } from "./partie-2";
 import { P1 } from "./questionnaire";
+import { horsCircuit } from "./retour-penitentiaire";
 
 export function faits(
   answers: Answers<Questions>,
@@ -31,11 +33,13 @@ export function faits(
         }
       : { value: false, provenance: "Une question de P1 attend sa réponse." },
     // Jamais « non » : une P2 incomplète ne dit pas que la décision est fausse.
-    ...(areAnswered([...P1.pages, ...P2.pages], answers) && {
-      fait_p2_complete: {
-        value: true,
-        provenance: "Toutes les questions de P1 et de P2 ont leur réponse.",
-      },
-    }),
+    // Hors du circuit de prescription, les règles ne concluent pas (point 34).
+    ...(!horsCircuit(validated) &&
+      areAnswered([...P1.pages, ...P2.pages], answers) && {
+        fait_p2_complete: {
+          value: true,
+          provenance: "Toutes les questions de P1 et de P2 ont leur réponse.",
+        },
+      }),
   };
 }

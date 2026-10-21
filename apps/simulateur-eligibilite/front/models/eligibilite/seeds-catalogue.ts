@@ -1,7 +1,8 @@
 // Le catalogue des seeds : les situations de référence du simulateur.
 //
 // Les tests le rejouent et l'écran des seeds l'affiche. Dix seeds, une par
-// issue de R2, faites de réponses complètes jusqu'à la fin de P2. Elles suivent
+// issue de R2, faites de réponses complètes jusqu'à la fin de P2, et une pour
+// l'orientation d'un retour pénitentiaire, qui n'a pas d'issue. Elles suivent
 // les dix traces de l'oracle de la v10.1.0 : le patient est accompagné d'un
 // professionnel (Q1.1) et ses critères sont ceux de la trace, 1 et 5 pour les
 // quatre premières et l'étranger, 1 pour les autres. Les cibles attendues sont
@@ -230,5 +231,22 @@ export const SEEDS: readonly Seed<Questions, Cibles>[] = [
       cible_financeur: "NON_CONCLU",
       cible_mode_id: "TAP",
     },
+  },
+  {
+    id: "orientation-penitentiaire",
+    label: "Résultat : retour vers la prison, sans indication médicale",
+    description:
+      "Ouvre le résultat d'un patient qui rentre seul en prison après une consultation, sans indication médicale de transport (Q2.2.1.indication). Le déplacement relève de l'administration pénitentiaire : aucune issue, aucun document.",
+    answers: {
+      "Q0.1": "1_VERIFIER",
+      "Q1.1": "1_SEUL",
+      "Q1.3": ["7_AUCUNE"],
+      "Q1.4": "1_VEHICULE_PERSONNEL",
+      "Q2.1": "1_CONSULTATION",
+      "Q2.2.1": ["3_AUTRE_CADRE"],
+      "Q2.2.1.b": ["10_RETOUR_PENITENTIAIRE"],
+      "Q2.2.1.indication": "2_NON",
+    },
+    expected: { cible_issue_id: undefined },
   },
 ];
