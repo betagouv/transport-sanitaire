@@ -1,9 +1,15 @@
 // Les blocs qu'un modèle place dans le corps d'un résultat : l'encadré, nommé
-// par son titre, le bloc dépliable, et les cartes numérotées.
+// par son titre, le bloc dépliable, les cartes numérotées et les cartes
+// illustrées.
 
 import { fireEvent, render, screen, within } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
-import { Disclosure, NumberedCards, Panel } from "../../../front/socle";
+import {
+  Disclosure,
+  IllustratedCards,
+  NumberedCards,
+  Panel,
+} from "../../../front/socle";
 
 describe("l'encadré", () => {
   it("est une région nommée par son titre", () => {
@@ -72,5 +78,54 @@ describe("les cartes numérotées", () => {
     render(<NumberedCards title="Que faire ?" items={[]} />);
 
     expect(screen.queryByRole("region")).not.toBeInTheDocument();
+  });
+});
+
+describe("les cartes illustrées", () => {
+  const CARTES = [
+    { title: "Une", text: "La première", image: "/une.webp" },
+    { title: "Deux", text: "La deuxième", image: "/deux.webp" },
+  ];
+
+  it("sont une liste, chaque carte avec son titre au niveau demandé", () => {
+    render(<IllustratedCards cards={CARTES} titleLevel={4} />);
+
+    expect(screen.getAllByRole("listitem")).toHaveLength(2);
+    expect(
+      screen.getByRole("heading", { level: 4, name: "Deux" }),
+    ).toBeInTheDocument();
+    expect(screen.getByText("La deuxième")).toBeInTheDocument();
+  });
+
+  it("ont des dessins décoratifs, que le lecteur d'écran ignore", () => {
+    render(<IllustratedCards cards={CARTES} />);
+
+    const dessins = screen.getAllByRole("presentation");
+    expect(dessins.map((dessin) => dessin.getAttribute("src"))).toEqual([
+      "/une.webp",
+      "/deux.webp",
+    ]);
+    expect(dessins.map((dessin) => dessin.getAttribute("alt"))).toEqual([
+      "",
+      "",
+    ]);
+  });
+
+  it("gardent la zone d'un dessin qui ne se charge pas, vide", () => {
+    const { container } = render(
+      <IllustratedCards cards={CARTES.slice(0, 1)} />,
+    );
+
+    fireEvent.error(screen.getByRole("presentation"));
+
+    expect(
+      container.querySelector(".socle-illustrated-cards__media"),
+    ).toBeEmptyDOMElement();
+  });
+
+  it("ne s'affichent pas sans carte", () => {
+    render(<IllustratedCards cards={[]} />);
+
+    expect(screen.queryByRole("list")).not.toBeInTheDocument();
   });
 });
