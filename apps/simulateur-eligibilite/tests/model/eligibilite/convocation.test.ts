@@ -163,18 +163,20 @@ describe("les faits de la convocation", () => {
     },
   );
 
-  it("« aucune » après Q2.1 = convocation laisse le fait absent, jamais « oui »", () => {
-    expect(fait({ ...PAR_Q21, "Q2.10": "7_AUCUNE" })).toEqual({
-      provenance: expect.stringMatching(/alors que Q2\.1 annonçait/),
-    });
-  });
-
-  it("« aucune » après Q2.2.1.b seule vaut « non »", () => {
-    expect(fait({ ...PAR_Q221B, "Q2.10": "7_AUCUNE" })).toEqual({
-      value: false,
-      provenance: expect.stringMatching(/alors que Q2\.2\.1\.b annonçait/),
-    });
-  });
+  // Point 6 de la v10.1.3 : la même réponse, la même qualification.
+  it.each([
+    ["Q2.1", PAR_Q21],
+    ["Q2.2.1.b", PAR_Q221B],
+  ] as const)(
+    "« aucune » vaut « non », la convocation venant de %s",
+    (_, entree) => {
+      expect(fait({ ...entree, "Q2.10": "7_AUCUNE" })).toEqual({
+        value: false,
+        provenance:
+          "Q2.10 : « 7_AUCUNE », ce motif de convocation ne s'applique pas.",
+      });
+    },
+  );
 
   it("n'établit rien quand la page ne se pose pas : le « non » de Q2.2.1 reste", () => {
     for (const reponses of [
@@ -216,9 +218,9 @@ describe("l'issue des règles", () => {
     expect(issue(reponses)).not.toBe("ISSUE_CONVOCATION");
   });
 
-  it("« aucune » après Q2.1 = convocation ne donne pas ISSUE_CONVOCATION", () => {
-    const reponses = { ...PAR_Q21, "Q2.10": "7_AUCUNE" } as const;
-    expect(issue(reponses)).not.toBe("ISSUE_CONVOCATION");
-    expect(issue(reponses)).toBe("ISSUE_CAISSE");
+  it("« aucune » après Q2.1 = convocation, sans autre motif, ne donne aucun droit", () => {
+    expect(issue({ ...PAR_Q21, "Q2.10": "7_AUCUNE" })).toBe(
+      "ISSUE_NON_ELIGIBLE",
+    );
   });
 });

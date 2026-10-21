@@ -113,13 +113,20 @@ describe("l'autre cadre (Q2.2.1.b)", () => {
     ["6_CAMSP", "fait_motif_camsp"],
     ["7_SAMSAH", "fait_motif_samsah"],
     ["9_PENSION_MILITAIRE", "fait_motif_pension"],
+    // Son libellé le dit hors Engagement maternité (point 11, v10.1.3).
+    ["5_HTNM", "fait_htnm_hors_maternite"],
   ] as const)("%s donne %s", (contexte, fait) => {
     expect(faits(cadre([contexte]))[fait].value).toBe(true);
   });
 
+  it("5_HTNM laisse son segment non vérifié : la caisse tranche", () => {
+    expect(faits(cadre(["5_HTNM"])).fait_htnm_segment_verifie.value).toBe(
+      false,
+    );
+  });
+
   it.each([
     ["4_MATERNITE_ELOIGNEE", "fait_dap_maternite"],
-    ["5_HTNM", "fait_htnm_hors_maternite"],
     ["13_CONVOCATION", "fait_convocation"],
   ] as const)("%s laisse %s à qualifier dans sa branche", (contexte, fait) => {
     expect(faits(cadre([contexte]))[fait]).toEqual({
@@ -243,10 +250,12 @@ describe("ce que Q2.1 indique déjà (D-98)", () => {
     expect(faits(camsp).fait_motif_camsp.value).toBe(true);
   });
 
-  it("« Aucune » laisse absente la maternité indiquée en Q2.1", () => {
+  // La maternité attend Q2.14. Le même trajet ne peut pas être un HTNM hors
+  // maternité : les options 4 et 5 s'excluent.
+  it("« Aucune » laisse absente la maternité indiquée en Q2.1, et écarte le HTNM", () => {
     const maternite = avec({ "Q2.1": "13_MATERNITE" });
     expect(
       valeurs(maternite, ["fait_dap_maternite", "fait_htnm_hors_maternite"]),
-    ).toEqual([undefined, undefined]);
+    ).toEqual([undefined, false]);
   });
 });

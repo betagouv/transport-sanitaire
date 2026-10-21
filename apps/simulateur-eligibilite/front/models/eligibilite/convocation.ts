@@ -64,24 +64,12 @@ function faitDeLaCategorie(
     case "6_APPAREILLAGE":
       return faitDeLAppareillage(validated);
     case "7_AUCUNE":
-      return faitSansCategorie(validated);
+      return non(
+        "Q2.10 : « 7_AUCUNE », ce motif de convocation ne s'applique pas.",
+      );
     default:
       return oui(`Q2.10 : « ${categorie} ».`);
   }
-}
-
-// « Aucune de ces situations » ne donne jamais de positif. Après Q2.1 = 12,
-// elle contredit le motif : le fait reste absent, la caisse tranche. Après
-// Q2.2.1.b seule, la convocation signalée ne se confirme pas.
-function faitSansCategorie(validated: Valides): Fait {
-  if (validated["Q2.1"]?.answer === "12_CONVOCATION") {
-    return absent(
-      "Q2.10 : « 7_AUCUNE », alors que Q2.1 annonçait une convocation (« 12_CONVOCATION »).",
-    );
-  }
-  return non(
-    "Q2.10 : « 7_AUCUNE », alors que Q2.2.1.b annonçait une convocation.",
-  );
 }
 
 // Un « oui » exige l'agrément et un appareillage visé. Un « non » à l'agrément

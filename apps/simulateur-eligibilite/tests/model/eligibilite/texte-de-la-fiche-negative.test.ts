@@ -42,7 +42,7 @@ describe("le texte de la seed issue-non-eligible", () => {
     );
     expect(texte.cartes.map(({ title }) => title)).toEqual([
       "Véhicule personnel ou transports en commun",
-      "VSL (véhicule sanitaire léger) ou taxi conventionné",
+      "VSL (Véhicule Sanitaire Léger) ou taxi conventionné",
       "Ambulance",
     ]);
   });

@@ -79,7 +79,7 @@ describe("la justification suit l'ensemble exact des motifs établis", () => {
       )
       .replaceAll(
         "{cadre_camsp_cmpp}",
-        "un centre d’action médico-sociale précoce (CAMSP) ou un centre médico-psycho-pédagogique (CMPP)",
+        "un CAMSP (Centre d’Action Médico-Sociale Précoce) ou un CMPP (Centre Médico-Psycho-Pédagogique)",
       );
 
   it.each(
@@ -147,13 +147,13 @@ describe("le lexique de l'accord préalable", () => {
 
   it("CAMSP ou CMPP : la valeur commune, faute de précision", () => {
     expect(demande(CAMSP)?.raison).toBe(
-      "La prise en charge de votre transport nécessite l’accord préalable de l’Assurance Maladie car le déplacement est lié à des soins ou traitements dans un centre d’action médico-sociale précoce (CAMSP) ou un centre médico-psycho-pédagogique (CMPP).",
+      "La prise en charge de votre transport nécessite l’accord préalable de l’Assurance Maladie car le déplacement est lié à des soins ou traitements dans un CAMSP (Centre d’Action Médico-Sociale Précoce) ou un CMPP (Centre Médico-Psycho-Pédagogique).",
     );
   });
 
   it.each([
-    ["CAMSP", "dans un centre d’action médico-sociale précoce (CAMSP)."],
-    ["CMPP", "dans un centre médico-psycho-pédagogique (CMPP)."],
+    ["CAMSP", "dans un CAMSP (Centre d’Action Médico-Sociale Précoce)."],
+    ["CMPP", "dans un CMPP (Centre Médico-Psycho-Pédagogique)."],
   ] as const)("CAMSP ou CMPP : la précision %s", (camspType, fin) => {
     expect(demande(CAMSP, { precisions: { camspType } })?.raison).toMatch(
       new RegExp(`${fin.replace(/[()]/g, "\\$&")}$`),

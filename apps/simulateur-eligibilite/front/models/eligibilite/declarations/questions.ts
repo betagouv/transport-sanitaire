@@ -7,6 +7,7 @@
 // sauf quand le catalogue en donne un autre (Q1.3).
 
 import { OPTIONS_DE_LA_BRANCHE } from "./options-de-la-branche";
+import { OPTIONS_DE_LA_CONVOCATION } from "./options-de-la-convocation";
 import { OPTIONS_DE_LA_PERMISSION } from "./options-de-la-permission";
 
 /** Les options de chaque question à choix : leur slug, et leur libellé. */
@@ -54,7 +55,7 @@ export const OPTIONS = {
   "Q1.3": {
     "1_FORTE_CORPULENCE": "Présente une forte corpulence (plus de 150 kg).",
     "2_ALD":
-      "Les soins ou examens à l’origine du déplacement sont en lien avec une ALD reconnue (prise en charge à 100 % au titre de cette ALD).",
+      "Les soins ou examens à l’origine du déplacement sont en lien avec une ALD (Affection Longue Durée) reconnue (prise en charge à 100 % au titre de cette ALD (Affection Longue Durée)).",
     "3_CHIMIOTHERAPIE": "Ce déplacement concerne une séance de chimiothérapie.",
     "4_RADIOTHERAPIE": "Ce déplacement concerne une séance de radiothérapie.",
     "5_DIALYSE": "Ce déplacement concerne une séance de dialyse en centre.",
@@ -78,7 +79,7 @@ export const OPTIONS = {
   /** Quelle situation médicale ou quel événement motive ce déplacement ? */
   "Q2.1": {
     "1_CONSULTATION":
-      "Consultation médicale de diagnostic, de traitement ou de suivi, dont suivi de l’ALD.",
+      "Consultation médicale de diagnostic, de traitement ou de suivi, dont suivi de l’ALD (Affection Longue Durée).",
     "2_DENTISTE_OU_SAGE_FEMME":
       "Consultation ou soin réalisé par un chirurgien-dentiste ou une sage-femme.",
     "3_IMAGERIE": "Examen d’imagerie ou autre acte médical technique.",
@@ -88,16 +89,16 @@ export const OPTIONS = {
     "6_SEANCE": "Chimiothérapie, radiothérapie ou dialyse.",
     "7_PSYCHOLOGUE": "Séance de psychologue ou dispositif particulier.",
     "8_HOSPITALISATION":
-      "Entrée ou sortie d’hospitalisation, ou admission en HAD.",
+      "Entrée ou sortie d’hospitalisation, ou admission en HAD (Hospitalisation à Domicile).",
     "9_TRANSFERT":
       "Transfert entre établissements, ou déplacement pour soin pendant l’hospitalisation.",
     "10_CAMSP":
-      "Soin CAMSP/CMPP, y compris séance en ville organisée dans le parcours de l’enfant.",
+      "Soin CAMSP (Centre d’Action Médico-Sociale Précoce)/CMPP (Centre Médico-Psycho-Pédagogique), y compris séance en ville organisée dans le parcours de l’enfant.",
     "11_PERMISSION": "Permission temporaire pendant l’hospitalisation.",
     "12_CONVOCATION":
       "Convocation, expertise, audience ou déplacement chez un fournisseur d’appareillage.",
     "13_MATERNITE":
-      "Trajet vers un hébergement près d’une maternité dans l’Engagement maternité.",
+      "À un examen obligatoire du 8ᵉ ou du 9ᵉ mois de grossesse en maternité, ou à un hébergement temporaire prévu en raison de l’éloignement de la maternité.",
     "14_AUTRE": "Autre soin, examen ou séjour.",
     "15_AUCUN": "Aucun de ces soins ou événements.",
   },
@@ -110,7 +111,8 @@ export const OPTIONS = {
   "Q2.1.g": {
     "1_ENTREE": "Une entrée dans un établissement de santé",
     "2_SORTIE": "Une sortie de cet établissement",
-    "3_ADMISSION_HAD": "Une admission en HAD à domicile",
+    "3_ADMISSION_HAD":
+      "Une admission en HAD (Hospitalisation à Domicile) à domicile",
   },
   /** La séance est-elle organisée dans le parcours de l’enfant ? */
   "Q2.1.h": {
@@ -121,7 +123,7 @@ export const OPTIONS = {
   /** L’une de ces situations correspond-elle aussi au trajet à réaliser ? */
   "Q2.2.1": {
     "1_HOSPITALISATION":
-      "Le patient est déjà hospitalisé pendant ce trajet, y compris en hospitalisation à domicile (HAD).",
+      "Le patient est déjà hospitalisé pendant ce trajet, y compris en HAD (Hospitalisation à Domicile).",
     "2_ETRANGER":
       "Le départ, l’arrivée ou le lieu de soins concerné se trouve à l’étranger.",
     "3_AUTRE_CADRE": "Une autre situation particulière concerne ce trajet.",
@@ -142,18 +144,29 @@ export const OPTIONS = {
    */
   "Q2.2.1.b": {
     "1_ATMP": "À un accident du travail ou à une maladie professionnelle.",
-    "4_MATERNITE_ELOIGNEE": "À un séjour près d’une maternité éloignée.",
+    "4_MATERNITE_ELOIGNEE":
+      "À un examen obligatoire du 8ᵉ ou du 9ᵉ mois de grossesse en maternité, ou à un hébergement temporaire prévu en raison de l’éloignement de la maternité.",
     "5_HTNM":
-      "À un hébergement temporaire non médicalisé en lien avec les soins.",
+      "À un hébergement temporaire non médicalisé en lien avec les soins, pour un autre motif que l’éloignement d’une maternité.",
     "6_CAMSP":
-      "À des soins dans le cadre d’un CAMSP ou d’un CMPP, y compris une séance en ville organisée dans le parcours de l’enfant.",
-    "7_SAMSAH": "À des soins dans un SAMSAH.",
+      "À des soins dans le cadre d’un CAMSP (Centre d’Action Médico-Sociale Précoce) ou d’un CMPP (Centre Médico-Psycho-Pédagogique), y compris une séance en ville organisée dans le parcours de l’enfant.",
+    "7_SAMSAH":
+      "À des soins dans un SAMSAH (Service d’Accompagnement Médico-Social pour Adultes Handicapés).",
     "9_PENSION_MILITAIRE":
       "À des soins en rapport avec une pension militaire d’invalidité.",
     "10_RETOUR_PENITENTIAIRE":
       "À un retour vers un établissement pénitentiaire.",
     "13_CONVOCATION":
       "À une convocation de contrôle, une expertise ou un rendez-vous chez un fournisseur d’appareillage.",
+  },
+  /**
+   * Ce retour nécessite-t-il un transport pour raison médicale ? Le
+   * `Q2.2.1.prison-medical` de l'éditeur (point 33, v10.1.3).
+   */
+  "Q2.2.1.indication": {
+    "1_OUI": "Oui, une indication médicale de transport est présente.",
+    "2_NON":
+      "Non, le déplacement relève uniquement de l’organisation pénitentiaire.",
   },
   /** Quel lieu lié à ce transport se trouve à l’étranger ? */
   "Q2.2.5": {
@@ -199,49 +212,23 @@ export const OPTIONS = {
     "2_ADMISSION_SANS_SEJOUR":
       "Admission dans le nouvel établissement sans prestation d’hospitalisation dans le premier.",
     "3_CENTRE_QUINZE":
-      "Transport sanitaire demandé par le Centre 15, hors SMUR, dans le cadre de l’aide médicale urgente.",
+      "Transport sanitaire demandé par le Centre 15, hors SMUR (Structure Mobile d’Urgence et de Réanimation), dans le cadre de l’aide médicale urgente.",
     "4_AIR_MER": "Trajet aérien ou maritime autre qu’en ligne régulière.",
-    "5_HAD": "Transport prescrit par une HAD hors soins liés à la HAD.",
-    "6_USLD": "Transport depuis/vers USLD hors même implantation géographique.",
+    "5_HAD":
+      "Transport prescrit par une HAD (Hospitalisation à Domicile) hors soins liés à la HAD (Hospitalisation à Domicile).",
+    "6_USLD":
+      "Transport depuis/vers USLD (Unité de Soins de Longue Durée) hors même implantation géographique.",
     "7_EHPAD":
-      "Transport depuis/vers EHPAD hors même implantation géographique.",
+      "Transport depuis/vers EHPAD (Établissement d'Hébergement pour Personnes Âgées Dépendantes) hors même implantation géographique.",
     "8_RADIOTHERAPIE":
       "Transfert <48 heures pour radiothérapie en exercice libéral ou centre de santé.",
     "9_DIALYSE_A_DOMICILE": "Patient pratiquant la dialyse à domicile.",
     "10_ADMISSION_HAD":
-      "Patient hospitalisé rentrant à domicile pour une admission en HAD.",
+      "Patient hospitalisé rentrant à domicile pour une admission en HAD (Hospitalisation à Domicile).",
     "11_AUCUNE": "Aucune de ces exceptions.",
   },
   ...OPTIONS_DE_LA_PERMISSION,
-  /** Quelle convocation, quel avis d’audience ou quel appareillage motive ce trajet ? */
-  "Q2.10": {
-    "1_CONTROLE_MEDICAL":
-      "Convocation au contrôle médical de l’Assurance Maladie.",
-    "2_EXPERT_JURIDICTION":
-      "Convocation par un médecin-expert ou consultant désigné par une juridiction compétente.",
-    "3_AUDIENCE_CONSULTATION":
-      "Audience de cette juridiction comportant une consultation clinique.",
-    "4_EXPERT_CONTESTATION":
-      "Consultation d’un expert désigné pour une contestation médicale.",
-    "5_COMMISSION_RECOURS":
-      "Convocation d’une commission médicale de recours amiable ou du médecin désigné par elle.",
-    "6_APPAREILLAGE": "Déplacement chez un fournisseur d’appareillage.",
-    "7_AUCUNE": "Aucune de ces situations.",
-  },
-  /** Le fournisseur est-il agréé pour cet appareillage ? (option 6 de Q2.10) */
-  "Q2.10.a": {
-    "1_OUI": "Oui",
-    "2_NON": "Non",
-    "3_NE_PEUX_PAS_VERIFIER": "Je ne peux pas le vérifier",
-  },
-  /** Quel appareillage est concerné ? (option 6 de Q2.10) */
-  "Q2.10.b": {
-    "1_PROTHESE_OCULAIRE_FACIALE": "Prothèse oculaire ou faciale",
-    "2_PODO_ORTHESE": "Podo-orthèse",
-    "3_ORTHOPROTHESE": "Orthoprothèse",
-    "4_AUTRE": "Un autre appareillage",
-    "5_NE_PEUX_PAS_PRECISER": "Je ne peux pas le préciser",
-  },
+  ...OPTIONS_DE_LA_CONVOCATION,
   ...OPTIONS_DE_LA_BRANCHE,
 } as const;
 
@@ -261,6 +248,7 @@ export type Questions = {
   "Q2.2.1": readonly Option<"Q2.2.1">[];
   "Q2.2.1.a": Option<"Q2.2.1.a">;
   "Q2.2.1.b": readonly Option<"Q2.2.1.b">[];
+  "Q2.2.1.indication": Option<"Q2.2.1.indication">;
   "Q2.2.5": readonly Option<"Q2.2.5">[];
   "Q2.3.1": Option<"Q2.3.1">;
   "Q2.3.2": boolean;
@@ -286,7 +274,7 @@ export type Questions = {
   "Q2.10.a": Option<"Q2.10.a">;
   "Q2.10.b": Option<"Q2.10.b">;
   "Q2.13.depart": Option<"Q2.13.depart">;
-  "Q2.14.1": Option<"Q2.14.1">;
-  "Q2.14.2": Option<"Q2.14.2">;
+  "Q2.14.eloignement": readonly Option<"Q2.14.eloignement">[];
+  "Q2.14.motif": readonly Option<"Q2.14.motif">[];
   "Q2.12": Option<"Q2.12">;
 };

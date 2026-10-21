@@ -12,7 +12,7 @@ import { describe, expect, it } from "vitest";
 import {
   BRANCARD_20_KM,
   ciblesDe,
-  MATERNITE,
+  MATERNITE_ETABLIE,
   type Reponses,
 } from "./reponses-de-la-branche";
 import { PAR_Q21 } from "./reponses-de-la-convocation";
@@ -45,24 +45,9 @@ const CAS: readonly [ids: string, reponses: Reponses, issue: string][] = [
   ["D13", { ...LONGUE, "Q2.3.4": "1_OUI" }, "ISSUE_DAP_URGENCE_ATTESTEE"],
   ["D14 D45", definitif(["11_AUCUNE"]), "ISSUE_ETABLISSEMENT"],
   ["D15", definitif(["3_CENTRE_QUINZE"]), "ISSUE_CAISSE"],
-  [
-    "D18",
-    {
-      ...autreCadre(BRANCARD_20_KM, "5_HTNM"),
-      "Q2.14.2": "2_HORS_ENGAGEMENT",
-    },
-    "ISSUE_CAISSE",
-  ],
-  [
-    "D19",
-    { ...MATERNITE, "Q2.14.1": "1_OUI", "Q2.12": "2_NON" },
-    "ISSUE_DAP_SANS_URGENCE",
-  ],
-  [
-    "D20",
-    { ...MATERNITE, "Q2.14.1": "1_OUI", "Q2.12": "1_OUI" },
-    "ISSUE_CAISSE",
-  ],
+  ["D18", autreCadre(BRANCARD_20_KM, "5_HTNM"), "ISSUE_CAISSE"],
+  ["D19", { ...MATERNITE_ETABLIE, "Q2.12": "2_NON" }, "ISSUE_DAP_SANS_URGENCE"],
+  ["D20", { ...MATERNITE_ETABLIE, "Q2.12": "1_OUI" }, "ISSUE_CAISSE"],
   ["D30", { ...PAR_Q21, "Q2.10": "1_CONTROLE_MEDICAL" }, "ISSUE_CONVOCATION"],
   [
     "D35",

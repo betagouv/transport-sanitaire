@@ -16,10 +16,7 @@ import {
 } from "./pages-de-la-permission";
 import { PAGE_DES_EXCEPTIONS, PAGE_DU_TRANSFERT } from "./pages-du-transfert";
 import { motifDeP1, plusieursSeances } from "./prestation";
-import {
-  CIRCUIT_PENITENTIAIRE,
-  mouvementAdministratif,
-} from "./retour-penitentiaire";
+import { dansLeCircuit, indicationAPoser } from "./retour-penitentiaire";
 import { faitsDuTrajet, urgenceAAfficher } from "./trajet";
 
 type Page = QuestionnairePart<Questions, undefined>["pages"][number];
@@ -69,7 +66,7 @@ const PAGE_DE_LA_PRESTATION: Page = {
       id: "Q2.1.g",
       kind: "single choice",
       label:
-        "S’agit-il d’une entrée dans un établissement de santé, d’une sortie de cet établissement ou d’une admission en HAD à domicile ?",
+        "S’agit-il d’une entrée dans un établissement de santé, d’une sortie de cet établissement ou d’une admission en HAD (Hospitalisation à Domicile) à domicile ?",
       askedIf: (answers) => answers["Q2.1"] === "8_HOSPITALISATION",
       dependsOn: ["Q2.1"],
       options: optionsFrom(OPTIONS["Q2.1.g"]),
@@ -78,7 +75,7 @@ const PAGE_DE_LA_PRESTATION: Page = {
       id: "Q2.1.h",
       kind: "single choice",
       label:
-        "La séance est-elle organisée par le CAMSP ou le CMPP, dans le parcours de l’enfant ?",
+        "La séance est-elle organisée par le CAMSP (Centre d’Action Médico-Sociale Précoce) ou le CMPP (Centre Médico-Psycho-Pédagogique), dans le parcours de l’enfant ?",
       askedIf: (answers) => answers["Q2.1"] === "10_CAMSP",
       dependsOn: ["Q2.1"],
       options: optionsFrom(OPTIONS["Q2.1.h"]),
@@ -87,9 +84,10 @@ const PAGE_DE_LA_PRESTATION: Page = {
 };
 
 // Q2.2.1 et ses précisions sur une seule page : la permission (a), l'autre
-// cadre (b) et l'étranger (Q2.2.5), chacune sous le groupe qui l'ouvre. Elle se
-// pose sur tous les parcours, même quand Q2.1 est sautée (D-98). Ce que Q2.1
-// indique déjà est retiré, sans rappel (TS1012-01).
+// cadre (b), l'indication médicale d'un retour pénitentiaire et l'étranger
+// (Q2.2.5), chacune sous le groupe qui l'ouvre. Elle se pose sur tous les
+// parcours, même quand Q2.1 est sautée (D-98). Ce que Q2.1 indique déjà est
+// retiré, sans rappel (TS1012-01).
 const PAGE_DES_CONTEXTES: Page = {
   id: "P2/contextes",
   questions: [
@@ -156,14 +154,20 @@ const PAGE_DES_CONTEXTES: Page = {
         {
           values: ["6_CAMSP", "7_SAMSAH"],
           explanation:
-            "Le CAMSP ou le CMPP accueille un enfant, le SAMSAH un adulte : un seul des deux pour un même trajet.",
+            "Le CAMSP (Centre d’Action Médico-Sociale Précoce) ou le CMPP (Centre Médico-Psycho-Pédagogique) accueille un enfant, le SAMSAH (Service d’Accompagnement Médico-Social pour Adultes Handicapés) un adulte : un seul des deux pour un même trajet.",
         },
       ],
-      // Un mouvement administratif vers la prison n'a aucune issue (TS1012-04).
-      inconsistenciesFrom: (answers, _cibles, validated) =>
-        mouvementAdministratif(answers, validated)
-          ? [CIRCUIT_PENITENTIAIRE]
-          : [],
+    },
+    {
+      id: "Q2.2.1.indication",
+      kind: "single choice",
+      label:
+        "Ce retour nécessite-t-il un transport pour raison médicale, indépendamment des contraintes d’escorte pénitentiaire ?",
+      askedIf: (answers, _cibles, validated) =>
+        indicationAPoser(answers, validated),
+      // Une modification clinique invalide la qualification (point 33).
+      dependsOn: ["Q1.1", "Q1.2", "Q1.3"],
+      options: optionsFrom(OPTIONS["Q2.2.1.indication"]),
     },
     {
       id: "Q2.2.5",
@@ -224,12 +228,15 @@ export const P2: QuestionnairePart<Questions, undefined> = {
   pages: [
     PAGE_DE_LA_PRESTATION,
     PAGE_DES_CONTEXTES,
-    PAGE_DU_TRAJET,
-    PAGE_DU_TRANSFERT,
-    PAGE_DES_EXCEPTIONS,
-    PAGE_DE_LA_PERMISSION,
-    PAGE_DE_LA_PERMISSION_DU_MINEUR,
-    PAGE_DE_LA_CONVOCATION,
-    PAGE_DE_LA_BRANCHE,
+    // Un retour pénitentiaire hors du circuit de prescription s'arrête là.
+    ...[
+      PAGE_DU_TRAJET,
+      PAGE_DU_TRANSFERT,
+      PAGE_DES_EXCEPTIONS,
+      PAGE_DE_LA_PERMISSION,
+      PAGE_DE_LA_PERMISSION_DU_MINEUR,
+      PAGE_DE_LA_CONVOCATION,
+      PAGE_DE_LA_BRANCHE,
+    ].map(dansLeCircuit),
   ],
 };

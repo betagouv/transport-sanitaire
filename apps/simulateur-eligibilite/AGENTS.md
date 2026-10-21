@@ -15,7 +15,7 @@ la v10 n'est pas intégrée : son avancement est dans l'issue 50 du dépôt, ses
 décisions dans `docs/knowledge/adr/journal-des-decisions-v10.md`. Il n'y a encore
 ni page de résultat métier, ni CERFA téléchargeable. Le simulateur
 s'ouvre sur le **modèle de l'éditeur** (`front/models/eligibilite/`, D-119). Il
-s'intègre étape par étape, sur la v10.1.1 : ses règles, ses faits, ses cibles et son
+s'intègre étape par étape, sur la v10.1.3 : ses règles, ses faits, ses cibles et son
 oracle sont là, son questionnaire va jusqu'à la fin de P2 (la page de branche). R2 est posée pour les dix issues : les cinq issues sans fiche patient
 (caisse, établissement, permission à la charge du patient, convocation, transport
 à l'étranger), la fiche négative, et les fiches positives de la prescription

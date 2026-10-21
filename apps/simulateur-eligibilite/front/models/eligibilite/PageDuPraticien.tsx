@@ -4,7 +4,7 @@
 // l'introduction que le socle place ; elle n'écrit que ses intertitres, ceux
 // des gabarits de l'éditeur.
 
-import { Disclosure, NumberedCards, Panel } from "../../socle";
+import { NumberedCards, Panel } from "../../socle";
 import type { ElementDuPourquoi, TexteDuPraticien } from "./texte-du-praticien";
 
 export function PageDuPraticien({ texte }: { texte: TexteDuPraticien }) {
@@ -22,22 +22,12 @@ export function PageDuPraticien({ texte }: { texte: TexteDuPraticien }) {
 
 type PourquoiProps = { pourquoi: NonNullable<TexteDuPraticien["pourquoi"]> };
 
-// Les éléments du dossier ferment l'encadré, dépliés ; sans fait, ils manquent.
 function Pourquoi({ pourquoi }: PourquoiProps) {
   return (
     <Panel variant="grey" title={pourquoi.titre} divided>
       {pourquoi.elements.map((element) => (
         <Element key={element.texte} element={element} />
       ))}
-      {pourquoi.dossier.length > 0 && (
-        <Disclosure summary="Éléments du dossier pris en compte pour cette simulation">
-          <ul>
-            {pourquoi.dossier.map((ligne) => (
-              <li key={ligne}>{ligne}</li>
-            ))}
-          </ul>
-        </Disclosure>
-      )}
     </Panel>
   );
 }

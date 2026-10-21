@@ -39,13 +39,12 @@ describe("le texte des seeds", () => {
                 "Le trajet a été qualifié comme un transfert entre établissements pendant une prise en charge hospitalière. Il s’agit d’un déplacement provisoire de moins de 48 heures, avec retour vers l’établissement d’origine lorsque ce retour a été confirmé. Aucune exception applicable n’a été établie pour ce trajet.",
             },
           ],
-          dossier: ["Qualification du transfert hospitalier : établi"],
         },
         questions: [],
         actions: [
           "Contacter le service prescripteur ou la cellule de coordination des transports de l’établissement d’origine.",
           "Faire confirmer l’organisation du transfert, les horaires et, si applicable, le retour par les établissements concernés.",
-          "Ne pas générer de PMT ou de DAP Assurance Maladie à partir de ce résultat.",
+          "Ne pas générer de PMT (Prescription Médicale de Transport) ou de DAP (Demande d’Accord Préalable) Assurance Maladie à partir de ce résultat.",
         ],
       },
     );
@@ -67,13 +66,12 @@ describe("le texte des seeds", () => {
               "La permission concerne un patient âgé d’au moins 20 ans. Une prestation exceptionnelle a été demandée expressément par le patient, sans fondement médical distinct ouvrant droit à une prise en charge du transport ; sa facturation personnelle a été confirmée.",
           },
         ],
-        dossier: ["Facturation personnelle de la permission : établi"],
       },
       questions: [],
       actions: [
         "Confirmer avec le service concerné les modalités de sortie et informer le patient de la prise en charge financière retenue.",
         "Vérifier le tarif et, si nécessaire, faire établir un devis avant de réserver un transport payant.",
-        "Ne pas éditer de prescription PMT/DAP Assurance Maladie pour ce trajet.",
+        "Ne pas éditer de prescription PMT (Prescription Médicale de Transport)/DAP (Demande d’Accord Préalable) Assurance Maladie pour ce trajet.",
       ],
     });
   });
@@ -93,12 +91,11 @@ describe("le texte des seeds", () => {
               "Le trajet est motivé par une convocation du contrôle médical de l’Assurance Maladie. Cette catégorie relève des situations réglementaires de convocation prévues pour le transport. La pièce justificative de référence est la convocation émise par le contrôle médical de l’Assurance Maladie.",
           },
         ],
-        dossier: ["Conditions de convocation ou d’appareillage : établi"],
       },
       questions: [],
       actions: [
         "Vérifier que la convocation ou l’avis mentionne bien la date, le lieu et l’objet du déplacement.",
-        "Indiquer au patient de conserver cette pièce et de se rapprocher de l’organisme émetteur ou de sa caisse pour les modalités pratiques de remboursement. Ne pas générer de PMT ou DAP.",
+        "Indiquer au patient de conserver cette pièce et de se rapprocher de l’organisme émetteur ou de sa caisse pour les modalités pratiques de remboursement. Ne pas générer de PMT (Prescription Médicale de Transport) ou DAP (Demande d’Accord Préalable).",
       ],
     });
   });
@@ -115,16 +112,12 @@ describe("le texte des seeds", () => {
           {
             titre: "L’effet de la demande du Centre 15 doit être clarifié",
             texte:
-              "Un transport entre établissements, hors SMUR, a été demandé dans le cadre de l’aide médicale urgente par le Centre 15. Son articulation avec le financement des transferts hospitaliers n’est pas tranchée par le simulateur.",
+              "Un transport entre établissements, hors SMUR (Structure Mobile d’Urgence et de Réanimation), a été demandé dans le cadre de l’aide médicale urgente par le Centre 15. Son articulation avec le financement des transferts hospitaliers n’est pas tranchée par le simulateur.",
           },
-        ],
-        dossier: [
-          "Centre 15 hors SMUR entre établissements : établi",
-          "Qualification du transfert hospitalier : établi",
         ],
       },
       questions: [
-        "La demande du Centre 15 hors SMUR constitue-t-elle, pour ce transfert, une exception au financement par l’établissement ?",
+        "La demande du Centre 15 hors SMUR (Structure Mobile d’Urgence et de Réanimation) constitue-t-elle, pour ce transfert, une exception au financement par l’établissement ?",
         "Quel financeur et quel document doivent être retenus pour ce cas précis ?",
       ],
       actions: [
@@ -154,11 +147,6 @@ describe("le texte des seeds", () => {
               "Dans cette situation, la caisse doit préciser les conditions applicables au transport. Le document S3139h préparé par le simulateur constitue une demande d’examen, pas un accord de remboursement. La prise en charge des soins à l’étranger relève de ses propres démarches.",
           },
         ],
-        dossier: [
-          "Départ ou arrivée hors de France : établi",
-          "Document à préparer : demande d’examen (formulaire S3139h)",
-          "Prise en charge et financeur : à confirmer auprès de la caisse",
-        ],
       },
       questions: [
         "Ce trajet peut-il être pris en charge et à quelles conditions ?",
@@ -169,7 +157,7 @@ describe("le texte des seeds", () => {
         "Préparer la demande S3139h avec les informations du trajet, en suivant les instructions de la caisse. Le document devra être complété et signé par le médecin ; sa préparation ou son envoi ne vaut pas accord.",
       ],
       avertissement:
-        "Une réponse explicite de la caisse est nécessaire dans cette branche du simulateur. N’appliquez pas la règle d’accord tacite après 15 jours ni la dispense d’attente d’une DAP ordinaire sur la seule base de l’urgence.",
+        "Une réponse explicite de la caisse est nécessaire dans cette branche du simulateur. N’appliquez pas la règle d’accord tacite après 15 jours ni la dispense d’attente d’une DAP (Demande d’Accord Préalable) ordinaire sur la seule base de l’urgence.",
     });
   });
 });
@@ -183,6 +171,10 @@ describe("le texte de repli", () => {
   });
 });
 
+// Plusieurs points ouverts : le titre de la caisse le dit (point 27).
+const PLUSIEURS_POINTS =
+  "Plusieurs points restent à vérifier auprès de l’Assurance Maladie";
+
 describe("le texte de la caisse quand plusieurs points sont ouverts", () => {
   const ald = { cible_preuve_ald_inconnue_decisive: true } as const;
   const htnm = {
@@ -193,6 +185,7 @@ describe("le texte de la caisse quand plusieurs points sont ouverts", () => {
   // L'oracle a un scénario de cumul pour l'ALD et l'hébergement.
   it("prend le scénario de cumul que l'éditeur a écrit pour ces deux points", () => {
     const texte = texteDuPraticien(catalogue, "ISSUE_CAISSE", trace(ald, htnm));
+    expect(texte.titre).toBe(PLUSIEURS_POINTS);
     expect(texte.introduction).toMatch(
       /^Le simulateur a identifié deux points/,
     );
@@ -200,9 +193,10 @@ describe("le texte de la caisse quand plusieurs points sont ouverts", () => {
       titre: "Points à confirmer",
       elements: [
         {
-          titre: "La catégorie de l’ALD n’est pas vérifiée",
+          titre:
+            "La catégorie de l’ALD (Affection Longue Durée) n’est pas vérifiée",
           texte:
-            "Un lien entre les soins et une ALD a été déclaré, mais sa catégorie réglementaire ne peut pas être établie à partir des réponses disponibles. Cette information peut conditionner le droit au transport ou une dispense d’accord préalable.",
+            "Un lien entre les soins et une ALD (Affection Longue Durée) a été déclaré, mais sa catégorie réglementaire ne peut pas être établie à partir des réponses disponibles. Cette information peut conditionner le droit au transport ou une dispense d’accord préalable.",
         },
         {
           titre:
@@ -210,11 +204,6 @@ describe("le texte de la caisse quand plusieurs points sont ouverts", () => {
           texte:
             "Le trajet comporte un segment lié à un hébergement temporaire non médicalisé, hors dispositif Engagement maternité. La règle applicable à ce segment exact n’est pas suffisamment vérifiée pour conclure sur son financement.",
         },
-      ],
-      dossier: [
-        "Soins et déficience en lien avec l’ALD : non vérifiable dans la trace",
-        "Base juridique ALD qualifiante : non vérifiable dans la trace",
-        "Segment d’hébergement temporaire hors maternité : établi",
       ],
     });
     expect(texte.questions).toHaveLength(4);
@@ -225,13 +214,14 @@ describe("le texte de la caisse quand plusieurs points sont ouverts", () => {
   it("donne l'introduction pour plusieurs points, puis chaque scénario", () => {
     const trois = trace(ald, { ...htnm, fait_motif_samsah: vrai });
     const texte = texteDuPraticien(catalogue, "ISSUE_CAISSE", trois);
+    expect(texte.titre).toBe(PLUSIEURS_POINTS);
     expect(texte.introduction).toBe(
       "Plusieurs points restent à confirmer auprès de l’Assurance Maladie avant de déterminer la prise en charge de ce transport. Les éléments établis du dossier restent pris en compte ; aucune conclusion n’est déduite des informations manquantes.",
     );
     expect(texte.pourquoi?.titre).toBe("Points à confirmer");
     expect(texte.pourquoi?.elements.map(({ titre }) => titre)).toEqual([
-      "La catégorie de l’ALD n’est pas vérifiée",
-      "Le circuit documentaire du SAMSAH doit être précisé",
+      "La catégorie de l’ALD (Affection Longue Durée) n’est pas vérifiée",
+      "Le circuit documentaire du SAMSAH (Service d’Accompagnement Médico-Social pour Adultes Handicapés) doit être précisé",
       "Le segment d’hébergement temporaire nécessite une qualification",
     ]);
     expect(texte.questions).toHaveLength(6);

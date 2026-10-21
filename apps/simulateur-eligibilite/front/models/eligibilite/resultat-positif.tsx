@@ -31,6 +31,7 @@ export function resultatPositif({
     const texte = texteDeLaFichePositive(catalogue, trace, issue);
     if (!texte) return SANS_MODE;
     return pageDeLaFiche(
+      catalogue,
       texte.titreDuPrescripteur,
       <FichePositive texte={texte} />,
     );

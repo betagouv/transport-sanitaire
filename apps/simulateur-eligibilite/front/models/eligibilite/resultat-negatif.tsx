@@ -20,7 +20,7 @@ export function resultatNegatif({
   return avecLeCatalogue((catalogue) => {
     const trace = traceDuResultat(answers, cibles);
     const texte = texteDeLaFicheNegative(catalogue, trace);
-    return pageDeLaFeuille(texte.titreDuPrescripteur, {
+    return pageDeLaFeuille(catalogue, texte.titreDuPrescripteur, {
       title: texte.titreDuPatient,
       intro: texte.raison,
       body: <FicheNegative texte={texte} />,
