@@ -1,18 +1,21 @@
 // Les options de P3, le complément du cerfa, dans l'ordre du catalogue.
 
 /**
- * La nature d'un lieu du trajet (Q3.2, Q3.3). Le catalogue les nomme ; leur
- * ordre et leurs slugs sont ceux de Q2.13 : un départ qu'elle a établi est
- * déjà une nature.
+ * La nature d'un lieu du trajet (Q3.2, Q3.3), dans l'ordre de Q2.13. Le
+ * cabinet et l'autre lieu sont deux natures (`CONTRAT_LIEUX_CERFA.json`) : la
+ * huitième ne suit plus Q2.13, qui garde « D’un autre lieu. »
  */
 const NATURES_DU_LIEU = {
   "1_DOMICILE": "Domicile ou autre lieu de vie",
   "2_ETABLISSEMENT_DE_SANTE": "Établissement de santé ou centre de soins",
-  "3_EHPAD": "EHPAD",
-  "4_USLD": "Unité de soins de longue durée (USLD)",
-  "5_HEBERGEMENT_NON_MEDICALISE": "Hébergement temporaire non médicalisé",
+  "3_EHPAD":
+    "EHPAD (Établissement d'Hébergement pour Personnes Âgées Dépendantes)",
+  "4_USLD": "USLD (Unité de Soins de Longue Durée)",
+  "5_HEBERGEMENT_NON_MEDICALISE":
+    "Hébergement, notamment HTNM (Hébergement Temporaire Non Médicalisé)",
   "6_ETABLISSEMENT_PENITENTIAIRE": "Établissement pénitentiaire",
-  "7_AUTRE_LIEU": "Cabinet ou autre lieu",
+  "7_CABINET": "Cabinet d’un professionnel de santé",
+  "8_AUTRE_LIEU": "Autre lieu",
 } as const;
 
 export const OPTIONS_DU_COMPLEMENT = {

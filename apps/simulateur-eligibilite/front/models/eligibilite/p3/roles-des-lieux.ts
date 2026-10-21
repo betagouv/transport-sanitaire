@@ -59,13 +59,10 @@ export function natureAdmise(
 const ETABLISSEMENT = "2_ETABLISSEMENT_DE_SANTE";
 const DOMICILE_HAD: Etablie = {
   nature: "1_DOMICILE",
-  rappel: "Le domicile, pour l’admission en HAD",
+  rappel: "Le domicile, pour l’admission en HAD (Hospitalisation à Domicile)",
 };
 const ETABLISSEMENTS: readonly Nature[] = [ETABLISSEMENT, "3_EHPAD", "4_USLD"];
-const LIEUX_DE_RADIOTHERAPIE: readonly Nature[] = [
-  ETABLISSEMENT,
-  "7_AUTRE_LIEU",
-];
+const LIEUX_DE_RADIOTHERAPIE: readonly Nature[] = [ETABLISSEMENT, "7_CABINET"];
 
 // Dans l'ordre : la première qui établit un lieu le fixe.
 const SITUATIONS: readonly ((reponses: Reponses) => Lieux)[] = [
@@ -166,12 +163,12 @@ function hebergement(reponses: Reponses): Lieux {
   return retour(reponses) ? { depart: htnm } : { arrivee: htnm };
 }
 
-// Q2.13 nomme le départ d'une entrée.
+// Q2.13 nomme le départ d'une entrée. Son autre lieu n'est pas un cabinet.
 function departDeQ213(reponses: Reponses): Lieux {
   const depart = reponses.question("Q2.13.depart").value;
-  return depart === undefined
-    ? {}
-    : { depart: { nature: depart, rappel: OPTIONS["Q3.2.nature"][depart] } };
+  if (depart === undefined) return {};
+  const nature = depart === "7_AUTRE_LIEU" ? "8_AUTRE_LIEU" : depart;
+  return { depart: { nature, rappel: OPTIONS["Q3.2.nature"][nature] } };
 }
 
 // Q1.3 le dit d'un centre : l'aller y arrive, le retour en part.

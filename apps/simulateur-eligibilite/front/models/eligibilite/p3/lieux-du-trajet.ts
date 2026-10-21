@@ -23,8 +23,18 @@ type Reponses = GivenAnswers<Questions>;
 
 /** Les questions de chaque lieu. */
 export const QUESTIONS_DU_LIEU = {
-  depart: { nature: "Q3.2.nature", nom: "Q3.2.nom", adresse: "Q3.2.adresse" },
-  arrivee: { nature: "Q3.3.nature", nom: "Q3.3.nom", adresse: "Q3.3.adresse" },
+  depart: {
+    nature: "Q3.2.nature",
+    nom: "Q3.2.nom",
+    precision: "Q3.2.precision",
+    adresse: "Q3.2.adresse",
+  },
+  arrivee: {
+    nature: "Q3.3.nature",
+    nom: "Q3.3.nom",
+    precision: "Q3.3.precision",
+    adresse: "Q3.3.adresse",
+  },
 } as const;
 
 /** La nature que P2 établit pour ce lieu. Absente : elle se choisit en P3. */
@@ -45,6 +55,24 @@ export function natureDu(
   return natureEtablie(extremite, reponses)?.nature ?? choisie;
 }
 
+/**
+ * La nature s'écrit-elle en toutes lettres sur le cerfa ? Un hébergement ou un
+ * autre lieu y porte sa nature (`CONTRAT_LIEUX_CERFA.json`). Seul l'hébergement
+ * que P2 établit, le HTNM, la donne déjà.
+ */
+export function precisionAPoser(
+  extremite: Extremite,
+  reponses: Reponses,
+  validated: ValidatedAnswers<Questions>,
+): boolean {
+  const nature = natureDu(extremite, reponses, validated);
+  if (nature === "8_AUTRE_LIEU") return true;
+  return (
+    nature === "5_HEBERGEMENT_NON_MEDICALISE" &&
+    natureEtablie(extremite, reponses) === undefined
+  );
+}
+
 /** Q2.2.5 situe-t-elle ce lieu à l'étranger ? Q3.2 et Q3.3 ne le découvrent pas. */
 export function aLEtranger(extremite: Extremite, reponses: Reponses): boolean {
   const lieu = extremite === "depart" ? "1_DEPART" : "2_ARRIVEE";
@@ -52,8 +80,8 @@ export function aLEtranger(extremite: Extremite, reponses: Reponses): boolean {
 }
 
 /**
- * La case du cerfa de cette nature. Choix provisoire : l'éditeur n'a pas livré
- * cette projection (D-121, point 39 du retour à l'éditeur).
+ * La case du cerfa de cette nature, selon la convention validée par l'éditeur
+ * (`CONTRAT_LIEUX_CERFA.json`, point 39).
  */
 export function projectionCerfa(nature: Nature): Projection {
   return PROJECTIONS[nature];
@@ -68,5 +96,6 @@ const PROJECTIONS: Record<Nature, Projection> = {
   "4_USLD": "STRUCTURE_DE_SOINS",
   "5_HEBERGEMENT_NON_MEDICALISE": "AUTRE_LIEU",
   "6_ETABLISSEMENT_PENITENTIAIRE": "AUTRE_LIEU",
-  "7_AUTRE_LIEU": "AUTRE_LIEU",
+  "7_CABINET": "STRUCTURE_DE_SOINS",
+  "8_AUTRE_LIEU": "AUTRE_LIEU",
 };

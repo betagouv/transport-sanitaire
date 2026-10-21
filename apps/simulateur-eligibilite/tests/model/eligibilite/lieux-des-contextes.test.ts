@@ -105,7 +105,7 @@ describe("les lieux que les contextes de P2 fixent (matrice des lieux)", () => {
     const ehpad: Reponses = {
       ...ALLER,
       "Q2.6": ["7_EHPAD"],
-      "Q3.2.nature": "7_AUTRE_LIEU",
+      "Q3.2.nature": "8_AUTRE_LIEU",
       "Q3.2.adresse": ADRESSE,
     };
     expect(naturesDe("P3/arrivee", "Q3.3.nature", ehpad)).toEqual(["3_EHPAD"]);
@@ -125,7 +125,7 @@ describe("les lieux que les contextes de P2 fixent (matrice des lieux)", () => {
     ]);
     expect(naturesDe("P3/arrivee", "Q3.3.nature", radiotherapie)).toEqual([
       "2_ETABLISSEMENT_DE_SANTE",
-      "7_AUTRE_LIEU",
+      "7_CABINET",
     ]);
   });
 
@@ -137,7 +137,7 @@ describe("les lieux que les contextes de P2 fixent (matrice des lieux)", () => {
     };
     expect(naturesDe("P3/arrivee", "Q3.3.nature", depuisLUsld)).toEqual([
       "2_ETABLISSEMENT_DE_SANTE",
-      "7_AUTRE_LIEU",
+      "7_CABINET",
     ]);
   });
 

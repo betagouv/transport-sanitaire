@@ -55,9 +55,11 @@ const natures = (question: Question) =>
 describe("ce que P2 établit d'un lieu (Q2.13, Q3.3)", () => {
   it("sans fait de P2, la nature se choisit d'abord, puis le nom et l'adresse", () => {
     expect(ids("P3/depart", ALLER)).toEqual(["Q3.2.nature", "Q3.2.adresse"]);
-    expect(
-      ids("P3/depart", { ...ALLER, "Q3.2.nature": "7_AUTRE_LIEU" }),
-    ).toEqual(["Q3.2.nature", "Q3.2.nom", "Q3.2.adresse"]);
+    expect(ids("P3/depart", { ...ALLER, "Q3.2.nature": "7_CABINET" })).toEqual([
+      "Q3.2.nature",
+      "Q3.2.nom",
+      "Q3.2.adresse",
+    ]);
   });
 
   it("l'aller d'une dialyse en centre arrive au centre, rappelé sans sélecteur", () => {
@@ -94,7 +96,11 @@ describe("ce que P2 établit d'un lieu (Q2.13, Q3.3)", () => {
     };
     expect(ids("P3/arrivee", entree)).toEqual(["Q3.3.nom", "Q3.3.adresse"]);
     expect(posee("P3/depart", "Q3.2.nom", entree).reminder).toEqual([
-      { label: "Lieu de départ", value: "EHPAD" },
+      {
+        label: "Lieu de départ",
+        value:
+          "EHPAD (Établissement d'Hébergement pour Personnes Âgées Dépendantes)",
+      },
     ]);
   });
 
@@ -109,7 +115,8 @@ describe("ce que P2 établit d'un lieu (Q2.13, Q3.3)", () => {
     expect(posee("P3/arrivee", "Q3.3.adresse", had).reminder).toEqual([
       {
         label: "Lieu d’arrivée",
-        value: "Le domicile, pour l’admission en HAD",
+        value:
+          "Le domicile, pour l’admission en HAD (Hospitalisation à Domicile)",
       },
     ]);
     expect(natures(posee("P3/depart", "Q3.2.nature", had))).not.toContain(
@@ -134,7 +141,7 @@ describe("les contrôles des deux lieux", () => {
   it("un autre lieu sans nom se valide : le nom ne se donne que s'il est utile", () => {
     const sansNom: Reponses = {
       ...ALLER,
-      "Q3.2.nature": "7_AUTRE_LIEU",
+      "Q3.2.nature": "7_CABINET",
       "Q3.2.adresse": ADRESSE,
     };
     const depart = pages.filter(({ id }) => id === "P3/depart");
@@ -144,7 +151,7 @@ describe("les contrôles des deux lieux", () => {
   it("deux adresses identiques bloquent l'arrivée, aux espaces extrêmes et à la casse près", () => {
     const meme: Reponses = {
       ...depuisLeDomicile,
-      "Q3.3.nature": "7_AUTRE_LIEU",
+      "Q3.3.nature": "7_CABINET",
       "Q3.3.adresse": { ...ADRESSE, city: " PARIS " },
     };
     expect(posee("P3/arrivee", "Q3.3.adresse", meme).inconsistencies).toEqual([
@@ -181,7 +188,54 @@ describe("les contrôles des deux lieux", () => {
   });
 });
 
-describe("la case du cerfa de chaque nature, choix provisoire (D-121)", () => {
+describe("la nature en toutes lettres d'un hébergement ou d'un autre lieu (CONTRAT_LIEUX_CERFA)", () => {
+  it("un autre lieu choisi en P3 demande sa nature, après le nom", () => {
+    expect(
+      ids("P3/depart", { ...ALLER, "Q3.2.nature": "8_AUTRE_LIEU" }),
+    ).toEqual(["Q3.2.nature", "Q3.2.nom", "Q3.2.precision", "Q3.2.adresse"]);
+  });
+
+  it("un hébergement choisi en P3 la demande aussi", () => {
+    expect(
+      ids("P3/depart", {
+        ...ALLER,
+        "Q3.2.nature": "5_HEBERGEMENT_NON_MEDICALISE",
+      }),
+    ).toContain("Q3.2.precision");
+  });
+
+  it("l'autre lieu que Q2.13 nomme la demande, car Q2.13 ne la dit pas", () => {
+    const entree: Reponses = {
+      ...ALLER,
+      "Q2.1.g": "1_ENTREE",
+      "Q2.13.depart": "7_AUTRE_LIEU",
+    };
+    expect(ids("P3/depart", entree)).toEqual([
+      "Q3.2.nom",
+      "Q3.2.precision",
+      "Q3.2.adresse",
+    ]);
+  });
+
+  it("le HTNM que P2 établit ne la redemande pas", () => {
+    const htnm: Reponses = { ...ALLER, "Q2.2.1.b": ["5_HTNM"] };
+    expect(ids("P3/arrivee", htnm)).toEqual(["Q3.3.nom", "Q3.3.adresse"]);
+  });
+
+  it("sans elle, un autre lieu ne se valide pas", () => {
+    const sansNature: Reponses = {
+      ...ALLER,
+      "Q3.2.nature": "8_AUTRE_LIEU",
+      "Q3.2.adresse": ADRESSE,
+    };
+    const depart = pages.filter(({ id }) => id === "P3/depart");
+    const avecLaNature = { ...sansNature, "Q3.2.precision": "Foyer" };
+    expect(areAnswered(depart, new GivenAnswers(sansNature), PMT)).toBe(false);
+    expect(areAnswered(depart, new GivenAnswers(avecLaNature), PMT)).toBe(true);
+  });
+});
+
+describe("la case du cerfa de chaque nature (CONTRAT_LIEUX_CERFA)", () => {
   it.each([
     ["1_DOMICILE", "DOMICILE"],
     ["2_ETABLISSEMENT_DE_SANTE", "STRUCTURE_DE_SOINS"],
@@ -189,7 +243,8 @@ describe("la case du cerfa de chaque nature, choix provisoire (D-121)", () => {
     ["4_USLD", "STRUCTURE_DE_SOINS"],
     ["5_HEBERGEMENT_NON_MEDICALISE", "AUTRE_LIEU"],
     ["6_ETABLISSEMENT_PENITENTIAIRE", "AUTRE_LIEU"],
-    ["7_AUTRE_LIEU", "AUTRE_LIEU"],
+    ["7_CABINET", "STRUCTURE_DE_SOINS"],
+    ["8_AUTRE_LIEU", "AUTRE_LIEU"],
   ] as const)("%s se reporte en %s", (nature, projection) => {
     expect(projectionCerfa(nature)).toBe(projection);
   });

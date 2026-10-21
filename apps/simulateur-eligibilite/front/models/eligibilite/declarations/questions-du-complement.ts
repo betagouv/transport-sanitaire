@@ -12,12 +12,17 @@ export type QuestionsDuComplement = {
   "Q3.1.2": Option<"Q3.1.2">;
   /** Les trajets par mois du S3141. */
   "Q3.1.3": number;
-  /** Le départ : sa nature, si P2 ne l'établit pas, son nom, son adresse. */
+  /**
+   * Le départ : sa nature, si P2 ne l'établit pas, son nom, sa nature en
+   * toutes lettres pour un hébergement ou un autre lieu, son adresse.
+   */
   "Q3.2.nature": Option<"Q3.2.nature">;
   "Q3.2.nom": string;
+  "Q3.2.precision": string;
   "Q3.2.adresse": Address;
   /** L'arrivée, de même. */
   "Q3.3.nature": Option<"Q3.3.nature">;
   "Q3.3.nom": string;
+  "Q3.3.precision": string;
   "Q3.3.adresse": Address;
 };

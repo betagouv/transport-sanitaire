@@ -1,6 +1,7 @@
 // Les pages du départ (Q3.2) et de l'arrivée (Q3.3) : la nature du lieu, son
-// nom, son adresse. Une nature que P2 établit se rappelle sans se redemander
-// (`lieux-du-trajet.ts`). Aucune distance ne se compare aux adresses.
+// nom, sa nature en toutes lettres s'il le faut, son adresse. Une nature que
+// P2 établit se rappelle sans se redemander (`lieux-du-trajet.ts`). Aucune
+// distance ne se compare aux adresses.
 
 import type { Address, QuestionnairePart } from "../../../socle";
 import type { Cibles } from "../declarations/cibles";
@@ -15,6 +16,7 @@ import {
   type Nature,
   natureDu,
   natureEtablie,
+  precisionAPoser,
   QUESTIONS_DU_LIEU,
 } from "./lieux-du-trajet";
 import { natureAdmise } from "./roles-des-lieux";
@@ -51,10 +53,7 @@ type Libelles = { nature: string; adresse: string; rappel: string };
 // domicile, qui n'en a pas.
 function questionsDuLieu(extremite: Extremite, libelles: Libelles): Question[] {
   const ids = QUESTIONS_DU_LIEU[extremite];
-  const rappel = ({ answers }: Contexte) => {
-    const etablie = natureEtablie(extremite, answers);
-    return etablie && [{ label: libelles.rappel, value: etablie.rappel }];
-  };
+  const rappel = rappelDe(extremite, libelles.rappel);
   const domicile = ({ answers }: Contexte) =>
     natureEtablie(extremite, answers)?.nature === "1_DOMICILE";
   return [
@@ -67,6 +66,7 @@ function questionsDuLieu(extremite: Extremite, libelles: Libelles): Question[] {
         nomUtile(natureDu(extremite, answers, validated)),
       reminderFrom: rappel,
     }),
+    precisionDuLieu(extremite),
     question.address(ids.adresse, {
       label: libelles.adresse,
       askedIf: ({ cibles }) => avecUnDocument(cibles),
@@ -76,6 +76,25 @@ function questionsDuLieu(extremite: Extremite, libelles: Libelles): Question[] {
       ...(extremite === "arrivee" && { inconsistenciesFrom: adresseDistincte }),
     }),
   ];
+}
+
+// Ce que P2 établit du lieu, rappelé sans se redemander.
+function rappelDe(extremite: Extremite, label: string) {
+  return ({ answers }: Contexte) => {
+    const etablie = natureEtablie(extremite, answers);
+    return etablie && [{ label, value: etablie.rappel }];
+  };
+}
+
+// La nature en toutes lettres, pour un hébergement ou un autre lieu
+// (`precisionAPoser`).
+function precisionDuLieu(extremite: Extremite): Question {
+  return question.text(QUESTIONS_DU_LIEU[extremite].precision, {
+    label: "Nature du lieu",
+    hint: "Elle s’inscrit sur le document. Par exemple : maison d’accueil hospitalière, foyer, lieu de travail.",
+    askedIf: ({ answers, cibles, validated }) =>
+      avecUnDocument(cibles) && precisionAPoser(extremite, answers, validated),
+  });
 }
 
 // La nature ne se choisit que si P2 ne l'établit pas, parmi celles que P2 et
