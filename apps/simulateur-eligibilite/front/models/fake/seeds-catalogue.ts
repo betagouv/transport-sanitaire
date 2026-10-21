@@ -96,7 +96,7 @@ export const SEEDS: readonly Seed<Questions, Cibles>[] = [
     id: "commande-de-the",
     label: "Résultat : un thé, avec lait et citron",
     description:
-      "Ouvre le premier résultat d'une commande complète, d'où le complément se lance. L'encadré gris range deux éléments séparés d'un trait et, déplié, ce que la commande a pris en compte. Trois cartes illustrées montrent les façons de servir, puis trois étapes suivent en cartes numérotées.",
+      "Ouvre le premier résultat d'une commande complète, d'où le complément se lance. L'encadré gris range deux éléments séparés d'un trait et, déplié, ce que la commande a pris en compte. Trois cartes illustrées montrent les façons de servir, celle de la commande bordée de vert, puis trois étapes suivent en cartes numérotées.",
     answers: {
       boisson: "the",
       accompagnements: ["lait", "citron"],
