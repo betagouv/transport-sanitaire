@@ -12,7 +12,8 @@ import {
   QuestionnaireForm,
 } from "../questionnaire-engine/QuestionnaireForm";
 import type { Answers } from "../questionnaire-engine/question";
-import { CerfaResultat, FirstResultat } from "./Resultats";
+import { FirstResultat } from "./FirstResultat";
+import { CerfaResultat } from "./Resultats";
 import { type Screen, startingScreen } from "./start";
 
 type Props = {

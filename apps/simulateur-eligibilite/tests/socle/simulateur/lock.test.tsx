@@ -36,7 +36,7 @@ describe("avant le verrou", () => {
     await allerAuResultat(user);
 
     expect(
-      screen.getByRole("heading", { name: "Étape 1 sur 2" }),
+      screen.getByRole("heading", { name: "Résultat Étape 1 sur 2" }),
     ).toBeInTheDocument();
   });
 
@@ -49,7 +49,7 @@ describe("avant le verrou", () => {
     expect(await screen.findByText("Commande : aucune")).toBeInTheDocument();
     expect(sansBouton("Compléter la commande")).toBe(true);
     expect(
-      screen.getByRole("heading", { name: "Étape 1 sur 1" }),
+      screen.getByRole("heading", { name: "Résultat Étape 1 sur 1" }),
     ).toBeInTheDocument();
   });
 

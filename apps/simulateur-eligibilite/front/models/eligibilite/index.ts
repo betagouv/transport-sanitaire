@@ -7,15 +7,14 @@ import type { Questions } from "./declarations/questions";
 import { cibles } from "./evaluation-des-regles";
 import { faits } from "./preconisation";
 import { COMPLEMENT, PARTS } from "./questionnaire";
-import { Eligibilite, PrescriptionPreremplie } from "./Resultats";
+import { eligibilite, PrescriptionPreremplie } from "./Resultats";
 
 export const model = defineModel<Questions, Faits, Cibles>({
   preconisation: { faits, cibles },
   transportAndEligibility: {
     parts: PARTS,
     title: "Résultat de l’éligibilité",
-    Resultat: Eligibilite,
-    printLabel: "Imprimer la fiche patient",
+    result: eligibilite,
   },
   cerfa: {
     part: COMPLEMENT,

@@ -96,7 +96,7 @@ export const SEEDS: readonly Seed<Questions, Cibles>[] = [
     id: "commande-de-the",
     label: "Résultat : un thé, avec lait et citron",
     description:
-      "Ouvre le premier résultat d'une commande complète, d'où le complément se lance.",
+      "Ouvre le premier résultat d'une commande complète, d'où le complément se lance. L'encadré gris range deux éléments séparés d'un trait et, déplié, ce que la commande a pris en compte, puis trois étapes suivent en cartes numérotées.",
     answers: {
       boisson: "the",
       accompagnements: ["lait", "citron"],
@@ -108,7 +108,7 @@ export const SEEDS: readonly Seed<Questions, Cibles>[] = [
     id: "the-au-lait-citron-a-voir",
     label: "Résultat : un fait absent laisse une cible indéfinie",
     description:
-      "Ouvre le résultat d'un thé au lait, avec « Peut-être du citron ». On ne sait pas s'il y aura du citron : le fait est absent, pas « non ». La mise en garde n'est donc pas décidée, et le résultat le dit. La trace de debug donne la provenance de chaque fait.",
+      "Ouvre le résultat d'un thé au lait, avec « Peut-être du citron ». On ne sait pas s'il y aura du citron : le fait est absent, pas « non ». La mise en garde n'est donc pas décidée, et le résultat le dit : l'encadré bleu pose la question au service. La trace de debug donne la provenance de chaque fait.",
     answers: {
       boisson: "the",
       accompagnements: ["lait", "citron-a-voir"],
@@ -145,9 +145,9 @@ export const SEEDS: readonly Seed<Questions, Cibles>[] = [
   },
   {
     id: "sans-commande",
-    label: "Résultat : rien à servir",
+    label: "Résultat : rien à servir, deux étapes sur deux colonnes",
     description:
-      "Ouvre un premier résultat sans suite : aucun complément n'est proposé.",
+      "Ouvre un premier résultat sans suite : aucun complément n'est proposé, et le stepper dit « Évaluation terminée. ». Sans encadré, ses deux étapes se rangent sur deux colonnes.",
     answers: { boisson: "rien" },
     expected: { commande: "aucune", lait_tourne: false },
   },

@@ -12,3 +12,13 @@
   + label.fr-label {
   min-height: auto;
 }
+
+/* Ligne de détail du stepper à la dernière étape. Le DSFR la masque, faute
+   d'étape suivante à annoncer. Le premier résultat y dit « Évaluation
+   terminée. », comme les gabarits de l'éditeur. `p` rend ce sélecteur plus
+   spécifique que celui du DSFR. */
+.fr-stepper
+  .fr-stepper__steps[data-fr-steps][data-fr-current-step]
+  + p.fr-stepper__details {
+  display: block;
+}

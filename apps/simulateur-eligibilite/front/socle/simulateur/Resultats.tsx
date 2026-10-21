@@ -1,16 +1,11 @@
-// Les deux résultats du parcours : le premier, que le verrou suit, et celui du
-// cerfa. Le modèle fournit leur contenu ; le cadre, le stepper et les boutons
-// sont ici.
+// Le résultat du cerfa, le second du parcours, et ce qu'il partage avec le
+// premier (`FirstResultat.tsx`) : la trace de debug et les boutons. Le modèle
+// fournit son contenu ; le cadre, le stepper et les boutons sont ici.
 
 import type { ComponentType, ReactNode } from "react";
 import { CerfaDownload } from "../cerfa/CerfaDownload";
 import { dtoFrom } from "../cerfa-mapping";
-import {
-  type CerfaInput,
-  type Model,
-  type Preconisation,
-  preconisationOf,
-} from "../model";
+import type { CerfaInput, Model, Preconisation } from "../model";
 import {
   askedPages,
   validatedQuestions,
@@ -34,42 +29,6 @@ type Props = {
   onReopen: (state: QuestionnaireState) => void;
   onRestart: () => void;
 };
-
-// Le verrou ne s'annonce pas à l'écran : l'interface nomme l'action, et le
-// « Précédent » de cette page dit ce qui reste ouvert. Sans cerfa, rien ne suit
-// ce résultat : le stepper s'arrête sur lui.
-export function FirstResultat({
-  model,
-  state,
-  DebugTrace,
-  onReopen,
-  onLock,
-  onRestart,
-}: Props & { onLock: (locked: Locked) => void }) {
-  const { answers } = state;
-  const preconisation = preconisationOf(model, answers);
-  const { parts, title, Resultat } = model.transportAndEligibility;
-  const hasCerfa = model.cerfa.form(preconisation.cibles) !== null;
-  const trace = traceOf("résultat", pagesOf(parts), answers, preconisation);
-  return (
-    <Frame
-      title={title}
-      part={parts.length}
-      total={parts.length + (hasCerfa ? 1 : 0)}
-      trace={trace}
-      DebugTrace={DebugTrace}
-    >
-      <Resultat answers={answers} cibles={preconisation.cibles} />
-      <FirstActions
-        printLabel={model.transportAndEligibility.printLabel}
-        startLabel={hasCerfa ? model.cerfa.startLabel : undefined}
-        onReopen={() => onReopen(state)}
-        onLock={() => onLock({ answers, preconisation })}
-        onRestart={onRestart}
-      />
-    </Frame>
-  );
-}
 
 // « Précédent » revient au second questionnaire, jamais avant le verrou. La
 // préconisation affichée est celle que le verrou a figée. Le cerfa se télécharge
@@ -111,6 +70,47 @@ export function CerfaResultat({
   );
 }
 
+// Ce que la trace de debug lit sous un résultat : les pages affichées, les
+// questions validées, et la préconisation. `locked` : les cibles figées, que
+// les questions d'après le verrou lisent.
+export function traceOf(
+  title: string,
+  pages: readonly Page[],
+  answers: Answers,
+  preconisation: Preconisation,
+  locked?: AnyCibles,
+): DebugTraceProps {
+  return {
+    title,
+    pages: askedPages(pages, answers, locked),
+    answers,
+    validated: validatedQuestions(pages, answers, locked),
+    ...preconisation,
+  };
+}
+
+type ButtonProps = { onClick: () => void; children: ReactNode };
+
+export function PrimaryButton({ onClick, children }: ButtonProps) {
+  return (
+    <button type="button" className="fr-btn" onClick={onClick}>
+      {children}
+    </button>
+  );
+}
+
+export function SecondaryButton({ onClick, children }: ButtonProps) {
+  return (
+    <button
+      type="button"
+      className="fr-btn fr-btn--secondary"
+      onClick={onClick}
+    >
+      {children}
+    </button>
+  );
+}
+
 // ---- implémentation ----
 
 // Le cerfa de la préconisation figée, daté du jour où le complément a été
@@ -127,61 +127,6 @@ function Cerfa({ model, input }: { model: Model; input: CerfaInput }) {
       />
     )
   );
-}
-
-// Deux groupes, comme le veut la fiche. L'impression ne verrouille rien : elle
-// reste avec « Précédent ». « Compléter » verrouille, et se tient à part. Rien
-// de ces boutons ne s'imprime.
-function FirstActions({
-  printLabel,
-  startLabel,
-  onReopen,
-  onLock,
-  onRestart,
-}: {
-  printLabel: string;
-  startLabel?: string;
-  onReopen: () => void;
-  onLock: () => void;
-  onRestart: () => void;
-}) {
-  return (
-    <div className="fr-no-print">
-      <div className="fr-btns-group fr-btns-group--inline">
-        <SecondaryButton onClick={onReopen}>Précédent</SecondaryButton>
-        <SecondaryButton onClick={onRestart}>
-          Nouvelle simulation
-        </SecondaryButton>
-        <PrimaryButton onClick={() => window.print()}>
-          {printLabel}
-        </PrimaryButton>
-      </div>
-      {startLabel && (
-        <div className="fr-btns-group fr-btns-group--inline fr-mt-3w">
-          <PrimaryButton onClick={onLock}>{startLabel}</PrimaryButton>
-        </div>
-      )}
-    </div>
-  );
-}
-
-// Ce que la trace de debug lit sous un résultat : les pages affichées, les
-// questions validées, et la préconisation. `locked` : les cibles figées, que
-// les questions d'après le verrou lisent.
-function traceOf(
-  title: string,
-  pages: readonly Page[],
-  answers: Answers,
-  preconisation: Preconisation,
-  locked?: AnyCibles,
-): DebugTraceProps {
-  return {
-    title,
-    pages: askedPages(pages, answers, locked),
-    answers,
-    validated: validatedQuestions(pages, answers, locked),
-    ...preconisation,
-  };
 }
 
 function Frame({
@@ -212,27 +157,5 @@ function Frame({
         </div>
       )}
     </>
-  );
-}
-
-type ButtonProps = { onClick: () => void; children: ReactNode };
-
-function PrimaryButton({ onClick, children }: ButtonProps) {
-  return (
-    <button type="button" className="fr-btn" onClick={onClick}>
-      {children}
-    </button>
-  );
-}
-
-function SecondaryButton({ onClick, children }: ButtonProps) {
-  return (
-    <button
-      type="button"
-      className="fr-btn fr-btn--secondary"
-      onClick={onClick}
-    >
-      {children}
-    </button>
   );
 }

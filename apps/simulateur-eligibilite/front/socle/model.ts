@@ -4,7 +4,7 @@
 // Le socle déroule le parcours et ne lit aucune clé du modèle. Il transporte les
 // réponses, les faits et les cibles de l'un à l'autre.
 
-import type { ComponentType } from "react";
+import type { ComponentType, ReactNode } from "react";
 import type { BoundCerfa } from "./cerfa-mapping";
 import { validatedQuestions } from "./questionnaire-engine/asked-questions";
 import {
@@ -28,6 +28,12 @@ type ResultatProps<Questions extends AnyQuestions, Cibles> = {
   answers: Answers<Questions>;
   cibles: Cibles;
 };
+
+/**
+ * Ce que le premier résultat donne au socle, qui compose la page : le `h1`,
+ * une introduction, puis le corps. Les boutons sont au socle, sous le corps.
+ */
+export type FirstResult = { title: string; intro?: ReactNode; body: ReactNode };
 
 /**
  * Ce que le mapping du cerfa lit : tout ce que le simulateur sait. Les
@@ -59,9 +65,16 @@ export type Model<
   /** Le premier résultat, après ses parties : transport et éligibilité. */
   transportAndEligibility: {
     parts: readonly QuestionnairePart<Questions, undefined>[];
+    /** Le titre du stepper, au-dessus du `h1` que le résultat donne. */
     title: string;
-    Resultat: ComponentType<ResultatProps<Questions, Cibles>>;
-    printLabel: string;
+    /**
+     * Le résultat de ces réponses. Une promesse quand il charge ses textes :
+     * elle ne rejette pas, un échec de chargement est un résultat comme un
+     * autre.
+     */
+    result: (
+      props: ResultatProps<Questions, Cibles>,
+    ) => FirstResult | Promise<FirstResult>;
   };
   /** Le second résultat, après le verrou : le cerfa. */
   cerfa: {
