@@ -218,7 +218,7 @@ describe("le modèle de l'éditeur, déroulé dans le formulaire", () => {
       await choisir(user, /^Moins de 16 ans/);
       await page(Q284);
       expect(
-        screen.queryByLabelText(/^Quand se termine la période/),
+        screen.queryByLabelText(/^Jusqu’à quelle date ces permissions/),
       ).toBeNull();
 
       await user.type(champ(/^Depuis quelle date/), "2026-10-01");
@@ -231,12 +231,15 @@ describe("le modèle de l'éditeur, déroulé dans le formulaire", () => {
       await choisirDans(user, Q284A, /^Elle est liée aux soins/);
       await choisirDans(user, Q285, /^Oui\./);
 
-      expect(champ(/^Quand se termine la période/)).toBeInTheDocument();
+      expect(champ(/^Jusqu’à quelle date ces permissions/)).toBeInTheDocument();
       expect(champ(/^Une permission aller-retour/)).toBeInTheDocument();
       expect(screen.getByRole("group", { name: Q286B })).toBeInTheDocument();
       expect(screen.getByRole("button", { name: "Suivant" })).toBeDisabled();
 
-      await user.type(champ(/^Quand se termine la période/), "2026-12-01");
+      await user.type(
+        champ(/^Jusqu’à quelle date ces permissions/),
+        "2026-12-01",
+      );
       await user.type(champ(/^Une permission aller-retour/), "2");
       await choisirDans(user, Q286B, /^Non\./);
       expect(

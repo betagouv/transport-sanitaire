@@ -58,10 +58,6 @@ export const PAGE_DES_EXCEPTIONS: Page = {
       askedIf: (answers, _cibles, validated) =>
         champIOuvert(validated) &&
         (!typeAPoser(validated) || answers["Q2.6.a"] !== undefined),
-      reminderFrom: (_answers, _cibles, validated) =>
-        validated["Q2.3.2"]?.answer === true
-          ? "Déjà indiqué : une partie du trajet se fera en avion ou en bateau de ligne régulière."
-          : undefined,
       options: optionsFrom<Questions["Q2.6"][number], Questions, undefined>(
         OPTIONS["Q2.6"],
       )
