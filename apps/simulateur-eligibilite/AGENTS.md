@@ -20,7 +20,7 @@ oracle sont là, son questionnaire va jusqu'à la fin de P2 (la page de branche)
 (caisse, établissement, permission à la charge du patient, convocation, transport
 à l'étranger), la fiche négative, et les fiches positives de la prescription
 médicale de transport, du S3141 et des deux demandes d'accord préalable. Les
-boutons de chaque issue sont posés (`boutons-du-resultat.ts`) ; « Compléter »
+boutons de chaque issue sont posés (`r2/boutons-du-resultat.ts`) ; « Compléter »
 attend P3, qui n'a pas encore de page.
 Le [README](README.md) § « Entre deux modèles » dit ce qui est parti et ce qui reste.
 
@@ -29,6 +29,13 @@ du modèle : rattachement, parcours, moteur de questionnaire, analytics, seeds,
 outils PDF, developer tools. `front/models/` porte un dossier par modèle :
 `fake/`, le modèle de démonstration, et `eligibilite/`, celui de l'éditeur, en
 cours d'intégration.
+
+Le modèle de l'éditeur se range par partie du parcours : `p1/` (le mode),
+`p2/` (l'éligibilité), `r2/` (le résultat, avec un dossier par famille
+d'issues). Sa racine les assemble. Une partie ne lit pas celle qui la suit, et
+les familles de R2 ne s'importent pas entre elles :
+`tests/model/eligibilite/domaines.test.ts` le garde. P3 et R3 auront leur
+dossier.
 
 Le modèle de démonstration est pérenne (D-82). **Chaque capacité du socle y a
 sa page**, pour la valider à l'écran sans dépendre du modèle de l'éditeur.

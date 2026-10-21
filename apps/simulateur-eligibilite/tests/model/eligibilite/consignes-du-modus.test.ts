@@ -3,8 +3,8 @@
 // particularités de ceux de l'éditeur.
 
 import { describe, expect, it } from "vitest";
-import { consignesDuModus } from "../../../front/models/eligibilite/consignes-du-modus";
-import { segmentsDuTexte } from "../../../front/models/eligibilite/segments-du-texte";
+import { consignesDuModus } from "../../../front/models/eligibilite/r2/fiche-positive/consignes-du-modus";
+import { segmentsDuTexte } from "../../../front/models/eligibilite/r2/segments-du-texte";
 
 const MODUS = [
   "Une prescription va vous être remise.",

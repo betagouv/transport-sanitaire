@@ -3,14 +3,14 @@
 // change sans que son oracle change échoue ici.
 
 import { describe, expect, it } from "vitest";
-import { catalogueResultats } from "../../../front/models/eligibilite/catalogue-resultats";
-import { SEEDS } from "../../../front/models/eligibilite/seeds-catalogue";
+import { catalogueResultats } from "../../../front/models/eligibilite/r2/catalogue-resultats";
 import {
   estSansFiche,
   type IssueSansFiche,
   texteDuPraticien,
-} from "../../../front/models/eligibilite/texte-du-praticien";
-import { traceDuResultat } from "../../../front/models/eligibilite/trace-du-resultat";
+} from "../../../front/models/eligibilite/r2/praticien/texte-du-praticien";
+import { traceDuResultat } from "../../../front/models/eligibilite/r2/trace-du-resultat";
+import { SEEDS } from "../../../front/models/eligibilite/seeds-catalogue";
 import { ciblesDe } from "./reponses-de-la-permission";
 import { faux, trace, vrai } from "./traces-du-praticien";
 

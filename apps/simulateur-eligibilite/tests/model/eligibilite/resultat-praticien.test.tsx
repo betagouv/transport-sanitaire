@@ -5,8 +5,8 @@
 
 import { render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
-import { catalogueResultats } from "../../../front/models/eligibilite/catalogue-resultats";
-import { eligibilite } from "../../../front/models/eligibilite/Resultats";
+import { catalogueResultats } from "../../../front/models/eligibilite/r2/catalogue-resultats";
+import { eligibilite } from "../../../front/models/eligibilite/r2/resultat";
 import { SEEDS } from "../../../front/models/eligibilite/seeds-catalogue";
 import { ciblesDe } from "./reponses-de-la-permission";
 

@@ -5,7 +5,7 @@
 
 import { describe, expect, it } from "vitest";
 import type { Cibles } from "../../../front/models/eligibilite/declarations/cibles";
-import { codesDeLAccord } from "../../../front/models/eligibilite/fondement-de-l-accord-prealable";
+import { codesDeLAccord } from "../../../front/models/eligibilite/r2/fiche-positive/fondement-de-l-accord-prealable";
 import {
   DIALYSE,
   demande,

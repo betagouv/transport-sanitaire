@@ -17,7 +17,7 @@ import {
 import {
   faitsDuMode,
   modeDe,
-} from "../../../front/models/eligibilite/mode-de-transport";
+} from "../../../front/models/eligibilite/p1/mode-de-transport";
 import type { Validated } from "../../../front/socle";
 import { preconisationOf } from "../../../front/socle/model";
 import {
