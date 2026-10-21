@@ -1,15 +1,23 @@
 // Le premier résultat, que le verrou suit. Le modèle donne ses morceaux : le
-// titre, l'introduction, le corps. Le socle compose la page autour : le
-// stepper et ce qui suit, puis les boutons sous le corps, séparés d'un trait.
+// titre, l'introduction, le corps, la feuille à remettre au patient. Le socle
+// compose la page autour : le stepper et ce qui suit, puis les boutons. Sans
+// feuille, ils sont sous le corps, séparés d'un trait. Avec une feuille, ils
+// passent au-dessus d'elle, et seule la feuille s'imprime.
 
 import { type ComponentType, useEffect, useState } from "react";
-import { type FirstResult, type Model, preconisationOf } from "../model";
+import {
+  type FirstResult,
+  type Model,
+  type Preconisation,
+  preconisationOf,
+} from "../model";
 import type { DebugTraceProps } from "../questionnaire-engine/QuestionnaireForm";
 import type { Answers, AnyCibles } from "../questionnaire-engine/question";
 import { pagesOf } from "../questionnaire-engine/question";
 import type { QuestionnaireState } from "../questionnaire-engine/questionnaire";
 import { Stepper } from "../questionnaire-engine/Stepper";
 import { PrimaryButton, SecondaryButton, traceOf } from "./Resultats";
+import { SheetViewer } from "./SheetViewer";
 import type { Locked } from "./start";
 import "./first-resultat.css";
 
@@ -33,6 +41,7 @@ export function FirstResultat({ model, state, DebugTrace, ...on }: Props) {
   const { parts, title } = model.transportAndEligibility;
   const startLabel = startLabelOf(model, preconisation.cibles);
   const trace = traceOf("résultat", pagesOf(parts), answers, preconisation);
+  const buttons = { startLabel, ...actionsOf(state, preconisation, on) };
   return (
     <>
       <div className="fr-no-print">
@@ -43,12 +52,9 @@ export function FirstResultat({ model, state, DebugTrace, ...on }: Props) {
           details={<NextStep startLabel={startLabel} />}
         />
       </div>
-      <Content result={resultOf(model, answers, preconisation.cibles)} />
-      <PageActions
-        startLabel={startLabel}
-        onReopen={() => on.onReopen(state)}
-        onLock={() => on.onLock({ answers, preconisation })}
-        onRestart={on.onRestart}
+      <Content
+        result={resultOf(model, answers, preconisation.cibles)}
+        buttons={buttons}
       />
       {DebugTrace && (
         <div className="fr-no-print">
@@ -86,17 +92,68 @@ function resultOf(model: Model, answers: Answers, cibles: AnyCibles): Loading {
   return result;
 }
 
-function Content({ result }: { result: Loading }) {
+/** Les boutons de la page, et ce que chacun fait. */
+type Buttons = {
+  startLabel: string | null;
+  onReopen: () => void;
+  onLock: () => void;
+  onRestart: () => void;
+};
+
+type Placement = "below" | "above";
+
+type On = Pick<Props, "onReopen" | "onLock" | "onRestart">;
+
+// Ce que font les boutons : rouvrir ce questionnaire, verrouiller ses réponses
+// et sa préconisation, ou recommencer.
+function actionsOf(
+  state: QuestionnaireState,
+  preconisation: Preconisation,
+  on: On,
+): Omit<Buttons, "startLabel"> {
+  const { answers } = state;
+  return {
+    onReopen: () => on.onReopen(state),
+    onLock: () => on.onLock({ answers, preconisation }),
+    onRestart: on.onRestart,
+  };
+}
+
+function Content({ result, buttons }: { result: Loading; buttons: Buttons }) {
   const loaded = useLoaded(result);
   if (loaded === null) {
-    return <p aria-live="polite">Chargement du résultat…</p>;
+    return (
+      <>
+        <p aria-live="polite">Chargement du résultat…</p>
+        <PageActions placement="below" {...buttons} />
+      </>
+    );
   }
-  const { title, intro, body } = loaded;
-  return (
+  return <Page result={loaded} buttons={buttons} />;
+}
+
+function Page({ result, buttons }: { result: FirstResult; buttons: Buttons }) {
+  const { title, intro, body, sheet } = result;
+  const page = (
     <>
       <h1 className="fr-h2">{title}</h1>
       {intro && <p className="fr-text--lg">{intro}</p>}
       {body}
+    </>
+  );
+  if (!sheet) {
+    return (
+      <>
+        {page}
+        <PageActions placement="below" {...buttons} />
+      </>
+    );
+  }
+  return (
+    <>
+      <div className="fr-no-print">{page}</div>
+      <PageActions placement="above" {...buttons} />
+      <SheetViewer sheet={sheet} />
     </>
   );
 }
@@ -128,22 +185,17 @@ function NextStep({ startLabel }: { startLabel: string | null }) {
   );
 }
 
-// Une seule rangée sous le corps, empilée sur mobile. « Compléter » verrouille,
-// et se tient en dernier ; un libellé `null` le retire. Rien de ces boutons ne
-// s'imprime.
+// Une seule rangée, empilée sur mobile. « Compléter » verrouille, et se tient
+// en dernier ; un libellé `null` le retire. Rien de ces boutons ne s'imprime.
 function PageActions({
+  placement,
   startLabel,
   onReopen,
   onLock,
   onRestart,
-}: {
-  startLabel: string | null;
-  onReopen: () => void;
-  onLock: () => void;
-  onRestart: () => void;
-}) {
+}: Buttons & { placement: Placement }) {
   return (
-    <div className="socle-page-actions fr-no-print">
+    <div className={`socle-page-actions--${placement} fr-no-print`}>
       <div className="fr-btns-group fr-btns-group--inline-md">
         <SecondaryButton onClick={onReopen}>Précédent</SecondaryButton>
         <SecondaryButton onClick={onRestart}>

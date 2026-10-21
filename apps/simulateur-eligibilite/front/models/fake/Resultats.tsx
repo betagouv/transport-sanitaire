@@ -4,7 +4,9 @@
 // Le premier montre ce que le socle offre à une page de résultat : un encadré
 // gris à éléments séparés, qui finit par un bloc dépliable, un encadré bleu qui
 // ne s'affiche qu'avec une question, des cartes illustrées, et des étapes en
-// cartes numérotées, trois ou deux par rangée.
+// cartes numérotées, trois ou deux par rangée. Le résultat sans commande
+// montre la feuille à remettre : ses cartes illustrées, puis son bloc de suivi,
+// avec un conseil bordé de bleu et un encadré blanc.
 
 import type { ReactNode } from "react";
 import {
@@ -15,6 +17,7 @@ import {
   IllustratedCards,
   NumberedCards,
   Panel,
+  SheetFollowUp,
 } from "../../socle";
 import { enUneLigne } from "./adresse";
 import type { Cibles } from "./declarations/cibles";
@@ -54,7 +57,8 @@ export function CommandeCompletee({ answers, cibles }: Props) {
 
 // ---- implémentation ----
 
-// Deux étapes : les cartes se rangent sur deux colonnes.
+// Deux étapes : les cartes se rangent sur deux colonnes. La feuille suit les
+// boutons.
 const RIEN_A_SERVIR: FirstResult = {
   title: "Rien à servir",
   intro: "Aucune boisson n'est commandée : il n'y a rien à compléter.",
@@ -62,12 +66,42 @@ const RIEN_A_SERVIR: FirstResult = {
     <NumberedCards
       title="Que faire maintenant ?"
       items={[
-        "Proposer la carte au client.",
+        "Remettre la fiche ci-dessous au client.",
         "Faire une nouvelle simulation s'il change d'avis.",
       ]}
     />
   ),
+  sheet: {
+    title: "Votre commande est vide",
+    intro: "Vous n'avez choisi aucune boisson : rien ne vous sera servi.",
+    body: <FicheDuClient />,
+  },
 };
+
+function FicheDuClient() {
+  return (
+    <>
+      <section>
+        <h3>Les façons de servir</h3>
+        <IllustratedCards cards={SANS_FACON_CHOISIE} titleLevel={4} />
+      </section>
+      <SheetFollowUp>
+        <section>
+          <h3>Que pouvez-vous faire maintenant ?</h3>
+          <p>Revenez au comptoir quand vous aurez choisi votre boisson.</p>
+        </section>
+        <Panel variant="outlined" label="Un conseil sur le lait">
+          <p>
+            <strong>Important :</strong> le lait tourne au contact du citron.
+          </p>
+        </Panel>
+        <Panel variant="white" title="À propos des prix" titleLevel={3}>
+          <p>La carte et ses prix sont affichés au comptoir.</p>
+        </Panel>
+      </SheetFollowUp>
+    </>
+  );
+}
 
 function PageDeLaCommande({ answers, cibles }: Props) {
   return (
@@ -118,6 +152,12 @@ function Pourquoi({ cibles }: { cibles: Cibles }) {
 
 // La façon de servir de la commande est retenue : la grande tasse ou le verre
 // glacé s'ils sont demandés, la tasse sinon.
+// Une commande vide n'a pas choisi sa façon de servir.
+const SANS_FACON_CHOISIE = facons([]).map((facon) => ({
+  ...facon,
+  selected: false,
+}));
+
 function facons(service: readonly string[]): readonly IllustratedCard[] {
   const grande = service.includes("grande-tasse");
   const glacee = !grande && service.includes("glacee");

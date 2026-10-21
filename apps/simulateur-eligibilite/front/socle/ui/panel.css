@@ -6,8 +6,18 @@
   padding: 1.5rem;
 }
 
-.socle-panel > h2 {
+/* L'échelle de `fr-h5`, dont le DSFR force la taille : la feuille ne pourrait
+   pas la réduire. */
+.socle-panel__title {
   margin-bottom: 1rem;
+  font-size: 1.25rem;
+  line-height: 1.75rem;
+}
+
+@media print, (min-width: 48em) {
+  .socle-panel__title {
+    font-size: 1.375rem;
+  }
 }
 
 .socle-panel--grey {
@@ -20,6 +30,23 @@
   border-left: 3px solid var(--border-plain-blue-france);
 }
 
+.socle-panel--white {
+  border-radius: 10px;
+  background-color: var(--background-default-grey);
+}
+
+.socle-panel--outlined {
+  border: 1px solid var(--border-plain-info);
+  border-left-width: 4px;
+  border-radius: 8px;
+  background-color: var(--background-default-grey);
+}
+
+.socle-panel--outlined,
+.socle-panel--outlined p {
+  color: var(--text-default-info);
+}
+
 .socle-panel__body > :last-child {
   margin-bottom: 0;
 }
@@ -30,7 +57,7 @@
   border-top: 1px solid var(--border-default-grey);
 }
 
-@media (max-width: 47.99em) {
+@media screen and (max-width: 47.99em) {
   .socle-panel {
     padding: 1.25rem 1rem;
   }

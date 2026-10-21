@@ -1,8 +1,10 @@
 // La page du premier résultat, que le socle compose : le stepper et ce qui
 // suit, le titre, l'introduction et le corps que le modèle donne, puis les
-// boutons sous le corps. Un résultat qui charge ses textes garde tout le reste.
+// boutons sous le corps. Avec une feuille à remettre, les boutons passent
+// au-dessus d'elle, et seule la feuille s'imprime. Un résultat qui charge ses
+// textes garde tout le reste.
 
-import { act, screen } from "@testing-library/react";
+import { act, fireEvent, screen, within } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 import type { FirstResult, Model } from "../../../front/socle/model";
 import { modeleDeTest } from "../modele-de-test";
@@ -98,6 +100,57 @@ describe("un résultat qui charge ses textes", () => {
   });
 });
 
+describe("un résultat avec une feuille", () => {
+  it("la pose dans sa visionneuse, sous les logos, avec son titre et sa raison", async () => {
+    await avecUneFeuille();
+
+    const feuille = within(laFeuille());
+    expect(
+      feuille.getByRole("img", { name: /^Ministère de la Santé/ }),
+    ).toBeInTheDocument();
+    expect(
+      feuille.getByRole("img", { name: "L’Assurance Maladie" }),
+    ).toBeInTheDocument();
+    expect(
+      feuille.getByRole("heading", { level: 2, name: "Votre commande" }),
+    ).toBeInTheDocument();
+    expect(feuille.getByText("Une raison")).toBeInTheDocument();
+    expect(feuille.getByText("Un contenu")).toBeInTheDocument();
+  });
+
+  it("place les boutons entre l'introduction et la visionneuse", async () => {
+    await avecUneFeuille();
+
+    const visionneuse = screen.getByRole("region", {
+      name: "Aperçu de la fiche patient",
+    });
+    for (const libelle of ["Précédent", "Compléter la commande"]) {
+      expect(avant(screen.getByText("Une intro"), bouton(libelle))).toBe(true);
+      expect(avant(bouton(libelle), visionneuse)).toBe(true);
+    }
+  });
+
+  it("n'imprime que la feuille", async () => {
+    await avecUneFeuille();
+
+    expect(pasImprime(screen.getByRole("heading", { level: 1 }))).toBe(true);
+    expect(pasImprime(screen.getByText("Une intro"))).toBe(true);
+    expect(pasImprime(bouton("Précédent"))).toBe(true);
+    expect(pasImprime(bouton("Imprimer"))).toBe(true);
+    expect(pasImprime(laFeuille())).toBe(false);
+  });
+
+  it("laisse son nom à un logo qui ne se charge pas", async () => {
+    await avecUneFeuille();
+
+    fireEvent.error(screen.getByRole("img", { name: "L’Assurance Maladie" }));
+
+    expect(
+      within(laFeuille()).getByText("L’Assurance Maladie"),
+    ).toBeInTheDocument();
+  });
+});
+
 // ---- implémentation ----
 
 type User = Awaited<ReturnType<typeof ouvrirLeSimulateur>>;
@@ -111,6 +164,27 @@ function qui(result: () => Promise<FirstResult>): Model {
       result,
     },
   };
+}
+
+// Le premier résultat, avec une feuille.
+async function avecUneFeuille() {
+  const user = await ouvrirLeSimulateur({
+    modele: qui(async () => ({
+      title: "Le résultat",
+      intro: "Une intro",
+      sheet: {
+        title: "Votre commande",
+        intro: "Une raison",
+        body: "Un contenu",
+      },
+    })),
+  });
+  await repondreJusquAuResultat(user);
+  await screen.findByRole("heading", { level: 1, name: "Le résultat" });
+}
+
+function laFeuille() {
+  return screen.getByRole("article", { name: "Fiche explicative patient" });
 }
 
 // Le chemin d'`allerAuResultat`, sans attendre le titre : il charge.
