@@ -20,8 +20,10 @@ const PRECEDENT = "Précédent";
 const NOUVELLE = "Faire une nouvelle simulation";
 
 // L'écran des seeds liste une trentaine de situations : sous la charge de la
-// suite entière, il met plus que la seconde par défaut.
+// suite entière, il met plus que la seconde par défaut. Un test attend trois
+// fois : son délai couvre les trois.
 const ATTENTE = { timeout: 4000 };
+const DELAI_D_UN_TEST = { timeout: 3 * ATTENTE.timeout };
 
 beforeEach(() => rangerRattachement(null));
 
@@ -54,7 +56,7 @@ const boutonsDuResultat = () =>
     "Compléter la demande d’examen",
   ].filter((nom) => screen.queryByRole("button", { name: nom }) !== null);
 
-describe("les boutons du modèle de l'éditeur", () => {
+describe("les boutons du modèle de l'éditeur", DELAI_D_UN_TEST, () => {
   it.each([
     ["issue-caisse", [PRECEDENT, NOUVELLE]],
     ["issue-etablissement", [PRECEDENT, NOUVELLE]],
