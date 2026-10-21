@@ -1,0 +1,37 @@
+/* L'encadré du résultat (Panel.tsx). Les couleurs sont des jetons du DSFR,
+   qui suivent le thème. */
+
+.socle-panel {
+  margin-top: 2rem;
+  padding: 1.5rem;
+}
+
+.socle-panel > h2 {
+  margin-bottom: 1rem;
+}
+
+.socle-panel--grey {
+  background-color: var(--background-alt-grey);
+  border-left: 4px solid var(--border-plain-blue-france);
+}
+
+.socle-panel--blue {
+  background-color: var(--background-alt-blue-france);
+  border-left: 3px solid var(--border-plain-blue-france);
+}
+
+.socle-panel__body > :last-child {
+  margin-bottom: 0;
+}
+
+.socle-panel--divided .socle-panel__body > * + * {
+  margin-top: 1.25rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--border-default-grey);
+}
+
+@media (max-width: 47.99em) {
+  .socle-panel {
+    padding: 1.25rem 1rem;
+  }
+}

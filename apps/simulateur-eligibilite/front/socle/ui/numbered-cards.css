@@ -1,0 +1,51 @@
+/* Les cartes numérotées (NumberedCards.tsx). Le compteur remplace la puce : le
+   numéro reste lu comme celui d'une liste ordonnée. */
+
+.socle-numbered-cards__section {
+  margin-top: 2.5rem;
+}
+
+.socle-numbered-cards {
+  list-style: none;
+  counter-reset: socle-card;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+  margin: 0;
+  padding: 0;
+}
+
+.socle-numbered-cards--two {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.socle-numbered-cards > li {
+  margin: 0;
+  padding: 1rem 1rem 1.25rem;
+  border: 1px solid var(--border-default-grey);
+  background-color: var(--background-default-grey);
+}
+
+/* Le DSFR numérote une liste ordonnée par son `::marker` : le numéro passe
+   au-dessus de la carte, le marqueur disparaît. */
+.socle-numbered-cards > li::marker {
+  content: none;
+}
+
+.socle-numbered-cards > li::before {
+  counter-increment: socle-card;
+  content: counter(socle-card);
+  display: block;
+  margin-bottom: 0.5rem;
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: var(--text-title-blue-france);
+}
+
+@media (max-width: 47.99em) {
+  .socle-numbered-cards,
+  .socle-numbered-cards--two {
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+  }
+}

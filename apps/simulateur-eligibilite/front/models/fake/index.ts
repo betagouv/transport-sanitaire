@@ -9,15 +9,14 @@ import type { Faits } from "./declarations/faits";
 import type { Questions } from "./declarations/questions";
 import { cibles, faits, SANS_COMMANDE } from "./preconisation";
 import { COMPLEMENT, PARTS } from "./questionnaire";
-import { Commande, CommandeCompletee } from "./Resultats";
+import { CommandeCompletee, resultatDeLaCommande } from "./Resultats";
 
 export const model = defineModel<Questions, Faits, Cibles>({
   preconisation: { faits, cibles },
   transportAndEligibility: {
     parts: PARTS,
     title: "Résultat",
-    Resultat: Commande,
-    printLabel: "Imprimer la commande",
+    result: resultatDeLaCommande,
   },
   cerfa: {
     part: COMPLEMENT,

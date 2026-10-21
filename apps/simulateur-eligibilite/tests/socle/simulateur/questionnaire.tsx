@@ -60,5 +60,5 @@ export async function allerAuResultat(user: User) {
   await question(ACCOMPAGNEMENTS);
   await user.click(caseACocher("Du lait"));
   await user.click(bouton("Voir le résultat"));
-  await screen.findByRole("heading", { name: "Résultat" });
+  await screen.findByRole("heading", { level: 1, name: "Votre commande" });
 }
