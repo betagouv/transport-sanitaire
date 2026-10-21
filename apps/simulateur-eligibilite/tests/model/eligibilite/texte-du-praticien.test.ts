@@ -45,7 +45,7 @@ describe("le texte des seeds", () => {
         actions: [
           "Contacter le service prescripteur ou la cellule de coordination des transports de l’établissement d’origine.",
           "Faire confirmer l’organisation du transfert, les horaires et, si applicable, le retour par les établissements concernés.",
-          "Ne pas générer de PMT ou de DAP Assurance Maladie à partir de ce résultat.",
+          "Ne pas générer de PMT (Prescription Médicale de Transport) ou de DAP (Demande d’Accord Préalable) Assurance Maladie à partir de ce résultat.",
         ],
       },
     );
@@ -73,7 +73,7 @@ describe("le texte des seeds", () => {
       actions: [
         "Confirmer avec le service concerné les modalités de sortie et informer le patient de la prise en charge financière retenue.",
         "Vérifier le tarif et, si nécessaire, faire établir un devis avant de réserver un transport payant.",
-        "Ne pas éditer de prescription PMT/DAP Assurance Maladie pour ce trajet.",
+        "Ne pas éditer de prescription PMT (Prescription Médicale de Transport)/DAP (Demande d’Accord Préalable) Assurance Maladie pour ce trajet.",
       ],
     });
   });
@@ -98,7 +98,7 @@ describe("le texte des seeds", () => {
       questions: [],
       actions: [
         "Vérifier que la convocation ou l’avis mentionne bien la date, le lieu et l’objet du déplacement.",
-        "Indiquer au patient de conserver cette pièce et de se rapprocher de l’organisme émetteur ou de sa caisse pour les modalités pratiques de remboursement. Ne pas générer de PMT ou DAP.",
+        "Indiquer au patient de conserver cette pièce et de se rapprocher de l’organisme émetteur ou de sa caisse pour les modalités pratiques de remboursement. Ne pas générer de PMT (Prescription Médicale de Transport) ou DAP (Demande d’Accord Préalable).",
       ],
     });
   });
@@ -115,7 +115,7 @@ describe("le texte des seeds", () => {
           {
             titre: "L’effet de la demande du Centre 15 doit être clarifié",
             texte:
-              "Un transport entre établissements, hors SMUR, a été demandé dans le cadre de l’aide médicale urgente par le Centre 15. Son articulation avec le financement des transferts hospitaliers n’est pas tranchée par le simulateur.",
+              "Un transport entre établissements, hors SMUR (Structure Mobile d’Urgence et de Réanimation), a été demandé dans le cadre de l’aide médicale urgente par le Centre 15. Son articulation avec le financement des transferts hospitaliers n’est pas tranchée par le simulateur.",
           },
         ],
         dossier: [
@@ -124,7 +124,7 @@ describe("le texte des seeds", () => {
         ],
       },
       questions: [
-        "La demande du Centre 15 hors SMUR constitue-t-elle, pour ce transfert, une exception au financement par l’établissement ?",
+        "La demande du Centre 15 hors SMUR (Structure Mobile d’Urgence et de Réanimation) constitue-t-elle, pour ce transfert, une exception au financement par l’établissement ?",
         "Quel financeur et quel document doivent être retenus pour ce cas précis ?",
       ],
       actions: [
@@ -169,7 +169,7 @@ describe("le texte des seeds", () => {
         "Préparer la demande S3139h avec les informations du trajet, en suivant les instructions de la caisse. Le document devra être complété et signé par le médecin ; sa préparation ou son envoi ne vaut pas accord.",
       ],
       avertissement:
-        "Une réponse explicite de la caisse est nécessaire dans cette branche du simulateur. N’appliquez pas la règle d’accord tacite après 15 jours ni la dispense d’attente d’une DAP ordinaire sur la seule base de l’urgence.",
+        "Une réponse explicite de la caisse est nécessaire dans cette branche du simulateur. N’appliquez pas la règle d’accord tacite après 15 jours ni la dispense d’attente d’une DAP (Demande d’Accord Préalable) ordinaire sur la seule base de l’urgence.",
     });
   });
 });
@@ -200,9 +200,10 @@ describe("le texte de la caisse quand plusieurs points sont ouverts", () => {
       titre: "Points à confirmer",
       elements: [
         {
-          titre: "La catégorie de l’ALD n’est pas vérifiée",
+          titre:
+            "La catégorie de l’ALD (Affection Longue Durée) n’est pas vérifiée",
           texte:
-            "Un lien entre les soins et une ALD a été déclaré, mais sa catégorie réglementaire ne peut pas être établie à partir des réponses disponibles. Cette information peut conditionner le droit au transport ou une dispense d’accord préalable.",
+            "Un lien entre les soins et une ALD (Affection Longue Durée) a été déclaré, mais sa catégorie réglementaire ne peut pas être établie à partir des réponses disponibles. Cette information peut conditionner le droit au transport ou une dispense d’accord préalable.",
         },
         {
           titre:
@@ -230,8 +231,8 @@ describe("le texte de la caisse quand plusieurs points sont ouverts", () => {
     );
     expect(texte.pourquoi?.titre).toBe("Points à confirmer");
     expect(texte.pourquoi?.elements.map(({ titre }) => titre)).toEqual([
-      "La catégorie de l’ALD n’est pas vérifiée",
-      "Le circuit documentaire du SAMSAH doit être précisé",
+      "La catégorie de l’ALD (Affection Longue Durée) n’est pas vérifiée",
+      "Le circuit documentaire du SAMSAH (Service d’Accompagnement Médico-Social pour Adultes Handicapés) doit être précisé",
       "Le segment d’hébergement temporaire nécessite une qualification",
     ]);
     expect(texte.questions).toHaveLength(6);

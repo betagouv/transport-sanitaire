@@ -101,7 +101,7 @@ describe("le conseil sur l'ALD", () => {
     });
     expect(within(conseil).getByText("Important :").tagName).toBe("STRONG");
     expect(conseil).toHaveTextContent(
-      "être en ALD ne vous donne pas automatiquement droit à une prescription médicale de transport",
+      "être en ALD (Affection Longue Durée) ne vous donne pas automatiquement droit à une prescription médicale de transport",
     );
   });
 

@@ -40,10 +40,9 @@ describe("Q2.14.1, le dispositif Engagement maternité", () => {
     expect(posees(permissionAChargeDuPatient)).toEqual([]);
   });
 
-  // Constat, à remonter : la maternité signalée reste « à qualifier », donc
-  // `cible_dap_requise` reste indéfinie et la décision n'est pas calculable,
-  // alors que la permission à charge du patient suffirait à l'issue.
-  it("laisse alors la décision sans issue, faute de fait_dap_maternite", () => {
+  // La maternité signalée reste « à qualifier », mais la permission à la
+  // charge du patient suffit à l'issue (point 2, v10.1.3).
+  it("donne alors la permission à la charge du patient", () => {
     const permissionAChargeDuPatient = {
       ...MATERNITE_PAR_Q221B,
       "Q2.1": "11_PERMISSION",
@@ -51,7 +50,9 @@ describe("Q2.14.1, le dispositif Engagement maternité", () => {
       "Q2.7.a": "1_OUI",
     } as const;
     expect(p2Complete(permissionAChargeDuPatient)).toBe(true);
-    expect(ciblesDe(permissionAChargeDuPatient).cible_issue_id).toBeUndefined();
+    expect(ciblesDe(permissionAChargeDuPatient).cible_issue_id).toBe(
+      "ISSUE_PERMISSION_PATIENT",
+    );
   });
 
   it("attend sa réponse : sans elle, P2 n'est pas complète et aucune issue ne vaut", () => {

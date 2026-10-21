@@ -44,7 +44,7 @@ const CAS: readonly [string, string, string, string][] = [
     "issue-permission-patient",
     "Le transport lié à cette permission est à la charge du patient",
     "Qualification de la permission",
-    "Ne pas éditer de prescription PMT/DAP Assurance Maladie pour ce trajet.",
+    "Ne pas éditer de prescription PMT (Prescription Médicale de Transport)/DAP (Demande d’Accord Préalable) Assurance Maladie pour ce trajet.",
   ],
   [
     "issue-convocation",

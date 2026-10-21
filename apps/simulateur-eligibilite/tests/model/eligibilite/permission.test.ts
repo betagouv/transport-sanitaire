@@ -236,10 +236,9 @@ describe("une permission écarte le transfert et le Centre 15", () => {
   });
 });
 
-describe("« je ne peux pas le vérifier » : l'impasse de la caisse", () => {
-  // La règle de l'éditeur attend les deux faits de la permission indéfinis,
-  // alors que le contrat en fixe un à « non » : la caisse n'est jamais atteinte.
-  // Ces tests redeviendront rouges le jour où l'éditeur corrige.
+describe("« je ne peux pas le vérifier » : la caisse", () => {
+  // Un fait inconnu, l'autre à « non » : la v10.1.3 envoie à la caisse
+  // (point 1). En v10.1.2, la règle attendait les deux faits indéfinis.
   it.each([
     [
       "un mineur sans autorisation vérifiable",
@@ -249,10 +248,10 @@ describe("« je ne peux pas le vérifier » : l'impasse de la caisse", () => {
       "un adulte à sa charge sans confirmation vérifiable",
       { ...ADULTE_A_SA_CHARGE, "Q2.7.a": "3_NE_SAIT_PAS" },
     ],
-  ] as const)("%s ne donne ni caisse ni issue", (_, reponses) => {
+  ] as const)("%s va à la caisse", (_, reponses) => {
     const cibles = ciblesDe(reponses);
-    expect(cibles.cible_couverture_inconnue_decisive).not.toBe(true);
-    expect(cibles.cible_issue_id).toBeUndefined();
+    expect(cibles.cible_couverture_inconnue_decisive).toBe(true);
+    expect(cibles.cible_issue_id).toBe("ISSUE_CAISSE");
   });
 });
 
