@@ -1,9 +1,9 @@
-// La fiche patient négative (#134), à remettre au patient. Le titre du
-// prescripteur et sa phrase sont au-dessus, dans la page que le socle compose.
-// Le composant range un `TexteDeLaFicheNegative` ; il n'écrit aucun texte de
-// l'éditeur.
+// Le contenu de la fiche patient négative (#134), à remettre au patient. Le
+// socle la pose sur sa feuille, sous les logos, son titre et sa raison. Le
+// composant range un `TexteDeLaFicheNegative` dans les blocs du socle ; il
+// n'écrit aucun texte de l'éditeur.
 
-import { IllustratedCards } from "../../socle";
+import { IllustratedCards, Panel, SheetFollowUp } from "../../socle";
 import { illustrationDuMode } from "./illustrations-des-modes";
 import { TexteEnrichi } from "./TexteEnrichi";
 import type { TexteDeLaFicheNegative } from "./texte-de-la-fiche-negative";
@@ -12,17 +12,16 @@ type Bloc = TexteDeLaFicheNegative["finance"];
 
 export function FicheNegative({ texte }: { texte: TexteDeLaFicheNegative }) {
   return (
-    <article
-      aria-label="Fiche explicative patient"
-      className="fr-p-3w fr-mb-4w"
-    >
-      <h2 className="fr-h3">{texte.titreDuPatient}</h2>
-      <p className="fr-text--lead">{texte.raison}</p>
+    <>
       <Cartes intro={texte.introDesCartes} cartes={texte.cartes} />
-      <Consignes consignes={texte.consignes} />
-      {texte.conseilAld && <ConseilAld texte={texte.conseilAld} />}
-      <Finance bloc={texte.finance} />
-    </article>
+      <SheetFollowUp>
+        <Consignes consignes={texte.consignes} />
+        {texte.conseilAld && <ConseilAld texte={texte.conseilAld} />}
+        <Panel variant="white" title={texte.finance.title} titleLevel={3}>
+          <p>{texte.finance.text}</p>
+        </Panel>
+      </SheetFollowUp>
+    </>
   );
 }
 
@@ -33,9 +32,7 @@ type CartesProps = { intro: Bloc; cartes: readonly Bloc[] };
 function Cartes({ intro, cartes }: CartesProps) {
   return (
     <section aria-labelledby="cartes-titre">
-      <h3 className="fr-h5" id="cartes-titre">
-        {intro.title}
-      </h3>
+      <h3 id="cartes-titre">{intro.title}</h3>
       <p>{intro.text}</p>
       <IllustratedCards
         cards={cartes.map((carte, rang) => ({
@@ -56,9 +53,7 @@ function Consignes({
 }) {
   return (
     <section aria-labelledby="consignes-titre">
-      <h3 className="fr-h5" id="consignes-titre">
-        {consignes.titre}
-      </h3>
+      <h3 id="consignes-titre">{consignes.titre}</h3>
       {consignes.sousTitre && (
         <p className="fr-text--bold">{consignes.sousTitre}</p>
       )}
@@ -76,24 +71,13 @@ function Consignes({
 
 function ConseilAld({ texte }: { texte: string }) {
   return (
-    <aside
-      aria-label="Information importante concernant les affections de longue durée"
-      className="fr-callout fr-callout--yellow-moutarde"
+    <Panel
+      variant="outlined"
+      label="Information importante concernant les affections de longue durée"
     >
-      <p className="fr-callout__text">
+      <p>
         <TexteEnrichi texte={texte} />
       </p>
-    </aside>
-  );
-}
-
-function Finance({ bloc }: { bloc: Bloc }) {
-  return (
-    <aside aria-labelledby="finance-titre" className="fr-callout">
-      <h3 className="fr-callout__title" id="finance-titre">
-        {bloc.title}
-      </h3>
-      <p className="fr-callout__text">{bloc.text}</p>
-    </aside>
+    </Panel>
   );
 }

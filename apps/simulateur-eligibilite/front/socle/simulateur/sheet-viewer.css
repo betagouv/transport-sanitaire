@@ -1,0 +1,308 @@
+/* La visionneuse et sa feuille (SheetViewer.tsx). La feuille est du papier :
+   blanche et lisible dans les deux thèmes. Elle fixe donc pour ce qu'elle
+   contient les jetons du DSFR du thème clair, et les blocs du socle qu'on y
+   pose les suivent. Les mesures sont celles des gabarits de l'éditeur. */
+
+.socle-viewer {
+  margin-top: 2rem;
+  padding: 1.75rem 1.75rem 2rem;
+  background-color: #525659;
+}
+
+.socle-viewer__actions {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.socle-viewer__button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.625rem;
+  min-height: 3rem;
+  padding: 0.625rem 1.375rem;
+  border: 1px solid #fff;
+  background-color: #fff;
+  color: #525659;
+  font-weight: 700;
+  font-size: 1rem;
+  line-height: 1.5rem;
+  cursor: pointer;
+}
+
+/* L'inversion du survol est immédiate, sans la teinte du DSFR. Le sélecteur
+   l'emporte sur `button:not(:disabled):hover:not([class^="Mui"])` du DSFR,
+   dont le fond, sinon, reste clair sous le texte blanc. */
+.socle-viewer .socle-viewer__button:not(:disabled):hover,
+.socle-viewer .socle-viewer__button:not(:disabled):active {
+  background-color: #525659;
+  color: #fff;
+}
+
+.socle-viewer__button:focus-visible {
+  outline: 3px solid #fff;
+  outline-offset: 4px;
+}
+
+.socle-viewer__button svg {
+  width: 1.25rem;
+  height: 1.25rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.7;
+}
+
+.socle-sheet {
+  --background-default-grey: #fff;
+  --background-alt-grey: #f6f6f6;
+  --background-alt-blue-france: #f5f5fe;
+  --border-default-grey: #ddd;
+  --border-plain-blue-france: #000091;
+  --border-plain-info: #0066b3;
+  --text-default-grey: #3a3a3a;
+  --text-title-grey: #161616;
+  --text-default-info: #0066b3;
+  --text-spacing: 0 0 2mm;
+  --title-spacing: 0 0 2mm;
+
+  display: flex;
+  flex-direction: column;
+  width: 210mm;
+  min-height: 297mm;
+  margin: 0 auto;
+  padding: 9mm 10mm;
+  box-shadow:
+    0 0 0 1px #161616,
+    0 4px 14px #0005;
+  background-color: #fff;
+  color: #161616;
+  font-size: 10.5pt;
+  line-height: 1.28;
+  color-scheme: light;
+}
+
+.socle-sheet > * {
+  flex-shrink: 0;
+}
+
+.socle-sheet p,
+.socle-sheet li {
+  font-size: 10pt;
+  line-height: 1.38;
+}
+
+.socle-sheet h3 {
+  font-size: 13pt;
+  line-height: 1.3;
+}
+
+.socle-sheet h4 {
+  font-size: 10.5pt;
+  line-height: 1.2;
+}
+
+/* Les logos et leur espace restent fixes, quelle que soit la longueur. */
+.socle-sheet__logos {
+  display: flex;
+  align-items: center;
+  gap: 8mm;
+  height: 18mm;
+  margin-bottom: 8mm;
+}
+
+.socle-sheet__logo {
+  display: flex;
+  align-items: center;
+  height: 18mm;
+}
+
+.socle-sheet__logo--ameli {
+  height: 14mm;
+}
+
+.socle-sheet__logo img {
+  display: block;
+  width: auto;
+  height: 100%;
+}
+
+.socle-sheet__logo-fallback {
+  max-width: 60mm;
+  font-size: 9.5pt;
+  line-height: 1.2;
+}
+
+.socle-sheet .socle-sheet__title {
+  margin: 0 0 3mm;
+  font-size: 18pt;
+  line-height: 1.15;
+}
+
+.socle-sheet .socle-sheet__intro {
+  margin-bottom: 4mm;
+  color: #3a3a3a;
+  font-size: 10.5pt;
+}
+
+/* Les cartes illustrées, à l'échelle de la feuille. */
+.socle-sheet .socle-illustrated-cards {
+  gap: 3mm;
+  margin-bottom: 5mm;
+}
+
+.socle-sheet .socle-illustrated-cards__media {
+  height: 37mm;
+}
+
+.socle-sheet .socle-illustrated-cards__body {
+  padding: 2mm 2.5mm 3mm;
+}
+
+.socle-sheet .socle-illustrated-cards__title {
+  margin-bottom: 1.5mm;
+}
+
+.socle-sheet .socle-illustrated-cards__body p {
+  font-size: 10pt;
+  line-height: 1.25;
+}
+
+/* Les encadrés, à l'échelle de la feuille. */
+.socle-sheet .socle-panel {
+  margin-top: 5mm;
+  padding: 4mm;
+}
+
+.socle-sheet .socle-panel__title {
+  margin-bottom: 2mm;
+  font-size: 11.5pt;
+  line-height: 1.3;
+}
+
+@media screen and (max-width: 47.99em) {
+  .socle-viewer {
+    padding: 1.25rem 0.75rem;
+  }
+
+  .socle-sheet {
+    width: 100%;
+    min-height: 0;
+    padding: 1.5rem 1.125rem;
+    font-size: 1rem;
+    line-height: 1.5;
+  }
+
+  .socle-sheet p,
+  .socle-sheet li {
+    font-size: 1rem;
+    line-height: 1.5;
+  }
+
+  .socle-sheet h3 {
+    font-size: 1.25rem;
+  }
+
+  .socle-sheet h4 {
+    font-size: 1.25rem;
+    line-height: 1.3;
+  }
+
+  .socle-sheet__logos {
+    flex-wrap: wrap;
+    gap: 1rem;
+    height: auto;
+  }
+
+  .socle-sheet .socle-sheet__title {
+    margin-bottom: 1rem;
+    font-size: 1.6875rem;
+    line-height: 1.2;
+  }
+
+  .socle-sheet .socle-sheet__intro {
+    margin-bottom: 1.5rem;
+    font-size: 1rem;
+  }
+
+  .socle-sheet .socle-illustrated-cards {
+    gap: 1rem;
+    margin-bottom: 1.75rem;
+  }
+
+  .socle-sheet .socle-illustrated-cards__media {
+    height: 170px;
+  }
+
+  .socle-sheet .socle-illustrated-cards__body {
+    padding: 1rem 1.125rem 1.25rem;
+  }
+
+  .socle-sheet .socle-illustrated-cards__body p {
+    font-size: 1rem;
+    line-height: 1.5;
+  }
+
+  .socle-sheet .socle-panel {
+    margin-top: 1.125rem;
+    padding: 1rem;
+  }
+
+  .socle-sheet .socle-panel__title {
+    font-size: 1.25rem;
+  }
+}
+
+/* La feuille s'imprime seule, sans la visionneuse ni le reste de la page,
+   avec les marges des gabarits. Tout le document prend la page nommée : posée
+   sur la seule feuille, elle forcerait un saut de page avant elle, et le reste
+   de la page, masqué, laisserait une page blanche. */
+@page socle-sheet {
+  size: A4;
+  margin: 9mm 10mm;
+}
+
+@media print {
+  body:has(.socle-sheet) {
+    page: socle-sheet;
+  }
+
+  .fr-container:has(.socle-sheet) {
+    /* biome-ignore lint/complexity/noImportantStyles: le cadre de l'écran pose ses marges en style en ligne */
+    padding: 0 !important;
+  }
+
+  .socle-viewer {
+    margin: 0;
+    padding: 0;
+    background: none;
+  }
+
+  /* Son `display: flex` l'emporte sur `fr-no-print`. */
+  .socle-viewer__actions {
+    display: none;
+  }
+
+  .socle-sheet {
+    display: block;
+    width: auto;
+    min-height: 0;
+    padding: 0;
+    box-shadow: none;
+    print-color-adjust: exact;
+  }
+
+  .socle-sheet__logos {
+    margin-bottom: 3mm;
+  }
+
+  .socle-sheet .socle-sheet__title {
+    font-size: 17pt;
+  }
+
+  .socle-sheet .socle-panel {
+    margin-top: 4mm;
+    padding: 3mm 3.5mm;
+    break-inside: avoid;
+  }
+}

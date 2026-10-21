@@ -1,28 +1,46 @@
-// Un encadré du résultat : un titre, puis son contenu, sur un fond teinté à
-// filet bleu. Le gris range des éléments séparés d'un trait ; le bleu pâle
-// porte ce que l'utilisateur transmet. Les gabarits de l'éditeur en font foi.
+// Un encadré du résultat : un titre, puis son contenu. Le gris, à filet bleu,
+// range des éléments séparés d'un trait ; le bleu pâle porte ce que
+// l'utilisateur transmet. Sur une feuille à remettre, le blanc range un texte
+// dans le bloc de suivi, et le blanc bordé de bleu, en texte bleu, met un
+// conseil en avant. Sans titre, l'encadré est un aparté que son `label` nomme.
+// Les gabarits de l'éditeur en font foi.
 
 import { type ReactNode, useId } from "react";
 import "./panel.css";
 
 type Props = {
-  variant: "grey" | "blue";
-  title: string;
+  variant: "grey" | "blue" | "white" | "outlined";
   /** Un trait sépare chaque enfant du suivant. */
   divided?: boolean;
   children: ReactNode;
-};
+} & (
+  | {
+      title: string;
+      /** Le niveau du titre, sous celui de la section. */
+      titleLevel?: 2 | 3;
+    }
+  | { label: string }
+);
 
-export function Panel({ variant, title, divided, children }: Props) {
+export function Panel({ variant, divided, children, ...named }: Props) {
   const id = useId();
   const classes = ["socle-panel", `socle-panel--${variant}`];
   if (divided) classes.push("socle-panel--divided");
+  const body = <div className="socle-panel__body">{children}</div>;
+  if ("label" in named) {
+    return (
+      <aside aria-label={named.label} className={classes.join(" ")}>
+        {body}
+      </aside>
+    );
+  }
+  const Title = named.titleLevel === 3 ? "h3" : "h2";
   return (
     <section aria-labelledby={id} className={classes.join(" ")}>
-      <h2 className="fr-h5" id={id}>
-        {title}
-      </h2>
-      <div className="socle-panel__body">{children}</div>
+      <Title className="socle-panel__title" id={id}>
+        {named.title}
+      </Title>
+      {body}
     </section>
   );
 }

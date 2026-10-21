@@ -1,7 +1,8 @@
 // La fiche patient négative, telle qu'elle s'affiche (#134). La seed
 // `issue-non-eligible` donne les textes de l'aperçu de l'éditeur ; le conseil
 // sur l'ALD ne vient qu'avec une ALD établie. `eligibilite` donne le titre du
-// prescripteur et sa phrase ; la fiche est le corps, que le socle place.
+// prescripteur et sa phrase à la page, puis la feuille, que le socle pose sous
+// ses logos avec son titre et sa raison.
 
 import { render, screen, within } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
@@ -16,10 +17,10 @@ const issue = issues.ISSUE_NON_ELIGIBLE;
 const seed = SEEDS.find(({ id }) => id === "issue-non-eligible");
 if (!seed) throw new Error("Seed inconnue : issue-non-eligible");
 
-// Affiche le corps du résultat, et en donne le titre et l'introduction.
+// Affiche le contenu de la feuille, et donne le résultat.
 const afficher = async (answers: Reponses) => {
   const resultat = await eligibilite({ answers, cibles: ciblesDe(answers) });
-  render(resultat.body);
+  render(resultat.sheet?.body);
   return resultat;
 };
 
@@ -31,41 +32,36 @@ const AVEC_ALD = {
   "Q1.3": ["2_ALD"],
 } as Reponses;
 
-const fiche = () =>
-  within(screen.getByRole("article", { name: "Fiche explicative patient" }));
-
 describe("la fiche de la seed issue-non-eligible", () => {
-  it("donne le titre du prescripteur à la page, et celui du patient à la fiche", async () => {
-    const { title, intro } = await afficher(seed.answers);
+  it("donne le titre du prescripteur à la page, et celui du patient à la feuille", async () => {
+    const { title, intro, sheet } = await afficher(seed.answers);
     expect(title).toBe(issue.prescriberTitle);
     expect(intro).toMatch(/^Vous trouverez ci-dessous une fiche explicative/);
-    expect(
-      fiche().getByRole("heading", { level: 2, name: issue.title }),
-    ).toBeInTheDocument();
+    expect(sheet?.title).toBe(issue.title);
   });
 
-  it("donne la raison de la consultation", async () => {
-    await afficher(seed.answers);
-    expect(
-      fiche().getByText(/votre déplacement concerne une consultation médicale/),
-    ).toBeInTheDocument();
+  it("donne à la feuille la raison de la consultation", async () => {
+    const { sheet } = await afficher(seed.answers);
+    expect(sheet?.intro).toMatch(
+      /votre déplacement concerne une consultation médicale/,
+    );
   });
 
   it("donne l'introduction des cartes et les trois cartes fixes", async () => {
     await afficher(seed.answers);
     expect(
-      fiche().getByRole("heading", { name: issue.cardIntro.title }),
+      screen.getByRole("heading", { name: issue.cardIntro.title }),
     ).toBeInTheDocument();
-    expect(fiche().getByText(issue.cardIntro.text)).toBeInTheDocument();
+    expect(screen.getByText(issue.cardIntro.text)).toBeInTheDocument();
     for (const { title, text } of issue.fixedCards) {
-      expect(fiche().getByRole("heading", { name: title })).toBeInTheDocument();
-      expect(fiche().getByText(text)).toBeInTheDocument();
+      expect(screen.getByRole("heading", { name: title })).toBeInTheDocument();
+      expect(screen.getByText(text)).toBeInTheDocument();
     }
   });
 
   it("illustre chaque carte du dessin de son mode", async () => {
     await afficher(seed.answers);
-    const cartes = fiche().getByRole("region", { name: issue.cardIntro.title });
+    const cartes = screen.getByRole("region", { name: issue.cardIntro.title });
     const dessins = within(cartes)
       .getAllByRole("listitem")
       .map((carte) =>
@@ -82,13 +78,13 @@ describe("la fiche de la seed issue-non-eligible", () => {
     await afficher(seed.answers);
     const { intro, body } = issue.instructions;
     expect(
-      fiche().getByRole("heading", { name: intro.title }),
+      screen.getByRole("heading", { name: intro.title }),
     ).toBeInTheDocument();
-    expect(fiche().getByText(body)).toBeInTheDocument();
+    expect(screen.getByText(body)).toBeInTheDocument();
     expect(
-      fiche().getByRole("heading", { name: issue.finance.title }),
+      screen.getByRole("heading", { name: issue.finance.title }),
     ).toBeInTheDocument();
-    expect(fiche().getByText(issue.finance.text)).toBeInTheDocument();
+    expect(screen.getByText(issue.finance.text)).toBeInTheDocument();
   });
 });
 
@@ -100,7 +96,7 @@ describe("le conseil sur l'ALD", () => {
 
   it("figure dans la fiche quand l'ALD est établie, avec son gras", async () => {
     await afficher(AVEC_ALD);
-    const conseil = fiche().getByRole("complementary", {
+    const conseil = screen.getByRole("complementary", {
       name: "Information importante concernant les affections de longue durée",
     });
     expect(within(conseil).getByText("Important :").tagName).toBe("STRONG");
@@ -110,9 +106,7 @@ describe("le conseil sur l'ALD", () => {
   });
 
   it("garde alors la raison propre à l'ALD", async () => {
-    await afficher(AVEC_ALD);
-    expect(
-      fiche().getByText(/les critères de déficience ou d’incapacité/),
-    ).toBeInTheDocument();
+    const { sheet } = await afficher(AVEC_ALD);
+    expect(sheet?.intro).toMatch(/les critères de déficience ou d’incapacité/);
   });
 });
