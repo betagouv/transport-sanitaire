@@ -12,8 +12,16 @@ import {
 
 export { ciblesDe, faits, issue, posee, type Reponses };
 
-// Un patient seul, dont le motif est la maternité éloignée : Q2.14.1 se pose.
+// Un patient seul, dont le motif est la maternité éloignée : les groupes de
+// Q2.14 se posent.
 export const MATERNITE: Reponses = { ...PATIENT_SEUL, "Q2.1": "13_MATERNITE" };
+
+// La maternité, avec une condition cochée dans chaque groupe de Q2.14.
+export const MATERNITE_ETABLIE: Reponses = {
+  ...MATERNITE,
+  "Q2.14.eloignement": ["1_PLUS_DE_QUARANTE_CINQ_MINUTES"],
+  "Q2.14.motif": ["1_EXAMEN_DU_HUITIEME_OU_NEUVIEME_MOIS"],
+};
 
 // Une consultation, avec une maternité éloignée signalée en Q2.2.1.b.
 export const MATERNITE_PAR_Q221B: Reponses = {
@@ -50,13 +58,13 @@ export const BRANCARD_20_KM: Reponses = {
 
 const PAGE = "P2/branche";
 
-type Id = "Q2.12" | "Q2.13.depart" | "Q2.14.1" | "Q2.14.2";
+type Id = "Q2.12" | "Q2.13.depart" | "Q2.14.eloignement" | "Q2.14.motif";
 
 /** Les ids posés sur la page de branche, dans l'ordre de la page. */
 export const posees = (reponses: Reponses) =>
-  (["Q2.13.depart", "Q2.14.2", "Q2.14.1", "Q2.12"] as const).filter(
-    (id: Id) => posee(PAGE, id, reponses) !== undefined,
-  );
+  (
+    ["Q2.13.depart", "Q2.14.eloignement", "Q2.14.motif", "Q2.12"] as const
+  ).filter((id: Id) => posee(PAGE, id, reponses) !== undefined);
 
 export const incoherences = (id: Id, reponses: Reponses) =>
   posee(PAGE, id, reponses)?.inconsistencies ?? [];

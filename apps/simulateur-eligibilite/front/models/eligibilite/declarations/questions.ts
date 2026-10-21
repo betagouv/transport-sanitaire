@@ -291,7 +291,7 @@ export type Questions = {
   "Q2.10.a": Option<"Q2.10.a">;
   "Q2.10.b": Option<"Q2.10.b">;
   "Q2.13.depart": Option<"Q2.13.depart">;
-  "Q2.14.1": Option<"Q2.14.1">;
-  "Q2.14.2": Option<"Q2.14.2">;
+  "Q2.14.eloignement": readonly Option<"Q2.14.eloignement">[];
+  "Q2.14.motif": readonly Option<"Q2.14.motif">[];
   "Q2.12": Option<"Q2.12">;
 };

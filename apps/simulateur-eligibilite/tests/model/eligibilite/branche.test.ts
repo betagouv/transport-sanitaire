@@ -11,83 +11,96 @@ import {
   HTNM,
   incoherences,
   MATERNITE,
+  MATERNITE_ETABLIE,
   MATERNITE_PAR_Q221B,
   p2Complete,
   posees,
 } from "./reponses-de-la-branche";
 import { PATIENT_SEUL } from "./reponses-de-la-permission";
 
-describe("Q2.14.1, le dispositif Engagement maternité", () => {
-  it("se pose quand Q2.1 dit la maternité éloignée", () => {
-    expect(posees(MATERNITE)).toEqual(["Q2.14.1"]);
+const PERMISSION_A_CHARGE_DU_PATIENT = {
+  ...MATERNITE_PAR_Q221B,
+  "Q2.1": "11_PERMISSION",
+  "Q2.7": "4_ADULTE_A_SA_CHARGE",
+  "Q2.7.a": "1_OUI",
+} as const;
+
+const GROUPES = ["Q2.14.eloignement", "Q2.14.motif"];
+
+describe("Q2.14, les deux groupes de l'Engagement maternité", () => {
+  it("se posent quand Q2.1 dit la maternité éloignée", () => {
+    expect(posees(MATERNITE)).toEqual(GROUPES);
   });
 
-  it("se pose quand Q2.2.1.b signale la maternité éloignée", () => {
-    expect(posees(MATERNITE_PAR_Q221B)).toEqual(["Q2.14.1"]);
+  it("se posent quand Q2.2.1.b signale la maternité éloignée", () => {
+    expect(posees(MATERNITE_PAR_Q221B)).toEqual(GROUPES);
   });
 
-  it("ne se pose pas sans maternité", () => {
+  it("ne se posent pas sans maternité", () => {
     expect(posees(PATIENT_SEUL)).toEqual([]);
   });
 
-  it("ne se pose pas quand une orientation prioritaire est établie", () => {
-    const permissionAChargeDuPatient = {
-      ...MATERNITE_PAR_Q221B,
-      "Q2.1": "11_PERMISSION",
-      "Q2.7": "4_ADULTE_A_SA_CHARGE",
-      "Q2.7.a": "1_OUI",
-    } as const;
-    expect(posees(permissionAChargeDuPatient)).toEqual([]);
+  it("ne se posent pas quand une orientation prioritaire est établie", () => {
+    expect(posees(PERMISSION_A_CHARGE_DU_PATIENT)).toEqual([]);
   });
 
   // La maternité signalée reste « à qualifier », mais la permission à la
   // charge du patient suffit à l'issue (point 2, v10.1.3).
   it("donne alors la permission à la charge du patient", () => {
-    const permissionAChargeDuPatient = {
-      ...MATERNITE_PAR_Q221B,
-      "Q2.1": "11_PERMISSION",
-      "Q2.7": "4_ADULTE_A_SA_CHARGE",
-      "Q2.7.a": "1_OUI",
-    } as const;
-    expect(p2Complete(permissionAChargeDuPatient)).toBe(true);
-    expect(ciblesDe(permissionAChargeDuPatient).cible_issue_id).toBe(
+    expect(p2Complete(PERMISSION_A_CHARGE_DU_PATIENT)).toBe(true);
+    expect(ciblesDe(PERMISSION_A_CHARGE_DU_PATIENT).cible_issue_id).toBe(
       "ISSUE_PERMISSION_PATIENT",
     );
   });
 
-  it("attend sa réponse : sans elle, P2 n'est pas complète et aucune issue ne vaut", () => {
+  it("attendent leurs réponses : sans elles, P2 n'est pas complète et aucune issue ne vaut", () => {
     expect(faits(MATERNITE).fait_dap_maternite.value).toBeUndefined();
     expect(p2Complete(MATERNITE)).toBeUndefined();
     expect(ciblesDe(MATERNITE).cible_issue_id).toBeUndefined();
   });
+
+  it("un seul groupe répondu laisse le dispositif inconnu", () => {
+    const reponses = {
+      ...MATERNITE,
+      "Q2.14.eloignement": ["1_PLUS_DE_QUARANTE_CINQ_MINUTES"],
+    } as const;
+    expect(faits(reponses).fait_dap_maternite.value).toBeUndefined();
+  });
 });
 
-describe("Q2.14.1 = Oui, le dispositif est établi", () => {
-  const etabli = { ...MATERNITE, "Q2.14.1": "1_OUI" } as const;
+describe("Q2.14, une condition dans chaque groupe : le dispositif est établi", () => {
+  it("établit la maternité ; Q2.1 = 13 écarte le HTNM hors maternité", () => {
+    expect(faits(MATERNITE_ETABLIE).fait_dap_maternite.value).toBe(true);
+    expect(faits(MATERNITE_ETABLIE).fait_htnm_hors_maternite.value).toBe(false);
+  });
 
-  it("établit la maternité et le rattachement à l'Engagement", () => {
-    expect(faits(etabli).fait_dap_maternite.value).toBe(true);
-    expect(faits(etabli).fait_htnm_hors_maternite.value).toBe(false);
+  it("les autres conditions l'établissent aussi", () => {
+    const reponses = {
+      ...MATERNITE,
+      "Q2.14.eloignement": ["2_COMMUNE_DESIGNEE_PAR_L_ARS"],
+      "Q2.14.motif": ["2_HEBERGEMENT_ENGAGEMENT"],
+    } as const;
+    expect(faits(reponses).fait_dap_maternite.value).toBe(true);
   });
 
   it("dévoile l'urgence (Q2.12), que la page du trajet avait masquée", () => {
     expect(posees(MATERNITE)).not.toContain("Q2.12");
-    expect(posees(etabli)).toEqual(["Q2.14.1", "Q2.12"]);
+    expect(posees(MATERNITE_ETABLIE)).toEqual([...GROUPES, "Q2.12"]);
   });
 
   it("sans l'urgence, la décision n'est pas calculable", () => {
-    expect(p2Complete(etabli)).toBeUndefined();
-    expect(ciblesDe(etabli).cible_issue_id).toBeUndefined();
+    expect(p2Complete(MATERNITE_ETABLIE)).toBeUndefined();
+    expect(ciblesDe(MATERNITE_ETABLIE).cible_issue_id).toBeUndefined();
   });
 
   it("urgence non attestée (Q2.12) : demande d'accord préalable sans urgence", () => {
-    const reponses = { ...etabli, "Q2.12": "2_NON" } as const;
+    const reponses = { ...MATERNITE_ETABLIE, "Q2.12": "2_NON" } as const;
     expect(ciblesDe(reponses).cible_issue_id).toBe("ISSUE_DAP_SANS_URGENCE");
     expect(p2Complete(reponses)).toBe(true);
   });
 
   it("urgence attestée (Q2.12) : point à la caisse, Engagement maternité", () => {
-    const reponses = { ...etabli, "Q2.12": "1_OUI" } as const;
+    const reponses = { ...MATERNITE_ETABLIE, "Q2.12": "1_OUI" } as const;
     const cibles = ciblesDe(reponses);
     expect(cibles.cible_issue_id).toBe("ISSUE_CAISSE");
     expect(cibles.cible_reason_code).toBe("CNAM_ENGAGEMENT_MATERNITE_URGENCE");
@@ -95,80 +108,69 @@ describe("Q2.14.1 = Oui, le dispositif est établi", () => {
 
   it("ne repose pas l'urgence que le trajet a déjà posée", () => {
     const longue = {
-      ...etabli,
+      ...MATERNITE_ETABLIE,
       "Q2.3.1": "3_PLUS_DE_CENT_CINQUANTE_KM",
       "Q2.3.3": "2_NON",
       "Q2.3.4": "2_NON",
     } as const;
-    expect(posees(longue)).toEqual(["Q2.14.1"]);
+    expect(posees(longue)).toEqual(GROUPES);
     expect(ciblesDe(longue).cible_issue_id).toBe("ISSUE_DAP_SANS_URGENCE");
   });
 
-  it("change Q2.14.1 : la réponse de Q2.12 est effacée", () => {
-    const reponses = { ...etabli, "Q2.12": "2_NON" } as const;
-    expect(posees({ ...reponses, "Q2.14.1": "2_NON" })).not.toContain("Q2.12");
+  it("un groupe passé à « Aucune » retire Q2.12", () => {
+    const reponses = { ...MATERNITE_ETABLIE, "Q2.12": "2_NON" } as const;
+    expect(posees({ ...reponses, "Q2.14.motif": ["3_AUCUNE"] })).not.toContain(
+      "Q2.12",
+    );
   });
 });
 
-describe("Q2.14.1 = Non, le dispositif n'est pas établi", () => {
-  it("écarte la maternité signalée en Q2.2.1.b, sans autre motif", () => {
-    const reponses = { ...MATERNITE_PAR_Q221B, "Q2.14.1": "2_NON" } as const;
+describe("Q2.14, « Aucune » dans un groupe : le dispositif est écarté", () => {
+  const sansEloignement = {
+    ...MATERNITE,
+    "Q2.14.eloignement": ["3_AUCUNE"],
+  } as const;
+
+  it("aucun éloignement : le motif ne se pose plus", () => {
+    expect(posees(sansEloignement)).toEqual(["Q2.14.eloignement"]);
+    expect(faits(sansEloignement).fait_dap_maternite.value).toBe(false);
+  });
+
+  it("aucun motif : le dispositif est écarté", () => {
+    const reponses = {
+      ...MATERNITE,
+      "Q2.14.eloignement": ["1_PLUS_DE_QUARANTE_CINQ_MINUTES"],
+      "Q2.14.motif": ["3_AUCUNE"],
+    } as const;
     expect(faits(reponses).fait_dap_maternite.value).toBe(false);
-    expect(posees(reponses)).toEqual(["Q2.14.1"]);
+  });
+
+  // Ce n'est plus une contradiction avec Q2.1 (D-129) : la patiente va à la
+  // maternité, sans en remplir les conditions.
+  it("après Q2.1 = 13, rien ne bloque : P2 est complète", () => {
+    expect(incoherences("Q2.14.eloignement", sansEloignement)).toEqual([]);
+    expect(p2Complete(sansEloignement)).toBe(true);
+    expect(ciblesDe(sansEloignement).cible_issue_id).toBe("ISSUE_NON_ELIGIBLE");
+  });
+
+  it("signalée en Q2.2.1.b, sans autre motif : P2 est complète", () => {
+    const reponses = {
+      ...MATERNITE_PAR_Q221B,
+      "Q2.14.eloignement": ["3_AUCUNE"],
+    } as const;
+    expect(faits(reponses).fait_dap_maternite.value).toBe(false);
     expect(p2Complete(reponses)).toBe(true);
   });
-
-  it("demande de corriger le motif quand Q2.1 dit la maternité", () => {
-    const reponses = { ...MATERNITE, "Q2.14.1": "2_NON" } as const;
-    expect(incoherences("Q2.14.1", reponses)).toEqual([
-      expect.stringContaining("Corrigez le motif en Q2.1"),
-    ]);
-    expect(p2Complete(reponses)).toBeUndefined();
-    expect(ciblesDe(reponses).cible_issue_id).toBeUndefined();
-  });
 });
 
-describe("Q2.14.2, le rattachement d'un HTNM", () => {
-  it("se pose quand Q2.2.1.b déclare un HTNM, jamais avec « Non »", () => {
-    expect(posees(HTNM)).toEqual(["Q2.14.2"]);
-  });
-
-  it("hors de l'Engagement : point à la caisse, sans question de plus", () => {
-    const reponses = { ...HTNM, "Q2.14.2": "2_HORS_ENGAGEMENT" } as const;
-    const cibles = ciblesDe(reponses);
-    expect(faits(reponses).fait_htnm_hors_maternite.value).toBe(true);
-    expect(posees(reponses)).toEqual(["Q2.14.2"]);
+describe("le HTNM hors Engagement maternité (Q2.2.1.b, point 11)", () => {
+  it("point à la caisse, sans question sur la page de branche", () => {
+    const cibles = ciblesDe(HTNM);
+    expect(faits(HTNM).fait_htnm_hors_maternite.value).toBe(true);
+    expect(faits(HTNM).fait_htnm_segment_verifie.value).toBe(false);
+    expect(posees(HTNM)).toEqual([]);
     expect(cibles.cible_issue_id).toBe("ISSUE_CAISSE");
     expect(cibles.cible_reason_code).toBe("CNAM_HTNM_HORS_MATERNITE");
-  });
-
-  it("dans l'Engagement : demande si le dispositif est établi", () => {
-    const reponses = { ...HTNM, "Q2.14.2": "1_DANS_L_ENGAGEMENT" } as const;
-    expect(posees(reponses)).toEqual(["Q2.14.2", "Q2.14.1"]);
-    expect(faits(reponses).fait_htnm_hors_maternite.value).toBe(false);
-  });
-
-  it("dans l'Engagement avec un dispositif établi : maternité et DAP", () => {
-    const reponses = {
-      ...HTNM,
-      "Q2.14.2": "1_DANS_L_ENGAGEMENT",
-      "Q2.14.1": "1_OUI",
-      "Q2.12": "2_NON",
-    } as const;
-    expect(faits(reponses).fait_dap_maternite.value).toBe(true);
-    expect(ciblesDe(reponses).cible_issue_id).toBe("ISSUE_DAP_SANS_URGENCE");
-  });
-
-  it("dans l'Engagement avec un dispositif refusé : incohérent, à corriger", () => {
-    const reponses = {
-      ...HTNM,
-      "Q2.14.2": "1_DANS_L_ENGAGEMENT",
-      "Q2.14.1": "2_NON",
-    } as const;
-    expect(incoherences("Q2.14.1", reponses)).toEqual([
-      expect.stringContaining("suppose que le dispositif soit établi"),
-    ]);
-    expect(p2Complete(reponses)).toBeUndefined();
   });
 });
 
