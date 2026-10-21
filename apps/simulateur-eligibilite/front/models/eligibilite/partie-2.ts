@@ -69,7 +69,7 @@ const PAGE_DE_LA_PRESTATION: Page = {
       id: "Q2.1.g",
       kind: "single choice",
       label:
-        "S’agit-il d’une entrée dans un établissement de santé, d’une sortie de cet établissement ou d’une admission en HAD à domicile ?",
+        "S’agit-il d’une entrée dans un établissement de santé, d’une sortie de cet établissement ou d’une admission en HAD (Hospitalisation à Domicile) à domicile ?",
       askedIf: (answers) => answers["Q2.1"] === "8_HOSPITALISATION",
       dependsOn: ["Q2.1"],
       options: optionsFrom(OPTIONS["Q2.1.g"]),
@@ -78,7 +78,7 @@ const PAGE_DE_LA_PRESTATION: Page = {
       id: "Q2.1.h",
       kind: "single choice",
       label:
-        "La séance est-elle organisée par le CAMSP ou le CMPP, dans le parcours de l’enfant ?",
+        "La séance est-elle organisée par le CAMSP (Centre d’Action Médico-Sociale Précoce) ou le CMPP (Centre Médico-Psycho-Pédagogique), dans le parcours de l’enfant ?",
       askedIf: (answers) => answers["Q2.1"] === "10_CAMSP",
       dependsOn: ["Q2.1"],
       options: optionsFrom(OPTIONS["Q2.1.h"]),
@@ -156,7 +156,7 @@ const PAGE_DES_CONTEXTES: Page = {
         {
           values: ["6_CAMSP", "7_SAMSAH"],
           explanation:
-            "Le CAMSP ou le CMPP accueille un enfant, le SAMSAH un adulte : un seul des deux pour un même trajet.",
+            "Le CAMSP (Centre d’Action Médico-Sociale Précoce) ou le CMPP (Centre Médico-Psycho-Pédagogique) accueille un enfant, le SAMSAH (Service d’Accompagnement Médico-Social pour Adultes Handicapés) un adulte : un seul des deux pour un même trajet.",
         },
       ],
       // Un mouvement administratif vers la prison n'a aucune issue (TS1012-04).

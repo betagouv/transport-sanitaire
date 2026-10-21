@@ -8,8 +8,9 @@ export const OPTIONS_DE_LA_BRANCHE = {
   "Q2.13.depart": {
     "1_DOMICILE": "De son domicile ou d’un autre lieu de vie.",
     "2_ETABLISSEMENT_DE_SANTE": "D’un établissement de santé.",
-    "3_EHPAD": "D’un EHPAD.",
-    "4_USLD": "D’une unité de soins de longue durée (USLD).",
+    "3_EHPAD":
+      "D’un EHPAD (Établissement d'Hébergement pour Personnes Âgées Dépendantes).",
+    "4_USLD": "D’une USLD (Unité de Soins de Longue Durée).",
     "5_HEBERGEMENT_NON_MEDICALISE":
       "D’un hébergement temporaire non médicalisé.",
     "6_ETABLISSEMENT_PENITENTIAIRE": "D’un établissement pénitentiaire.",

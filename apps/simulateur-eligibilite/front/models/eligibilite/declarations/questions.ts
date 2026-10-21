@@ -54,7 +54,7 @@ export const OPTIONS = {
   "Q1.3": {
     "1_FORTE_CORPULENCE": "Présente une forte corpulence (plus de 150 kg).",
     "2_ALD":
-      "Les soins ou examens à l’origine du déplacement sont en lien avec une ALD reconnue (prise en charge à 100 % au titre de cette ALD).",
+      "Les soins ou examens à l’origine du déplacement sont en lien avec une ALD (Affection Longue Durée) reconnue (prise en charge à 100 % au titre de cette ALD (Affection Longue Durée)).",
     "3_CHIMIOTHERAPIE": "Ce déplacement concerne une séance de chimiothérapie.",
     "4_RADIOTHERAPIE": "Ce déplacement concerne une séance de radiothérapie.",
     "5_DIALYSE": "Ce déplacement concerne une séance de dialyse en centre.",
@@ -78,7 +78,7 @@ export const OPTIONS = {
   /** Quelle situation médicale ou quel événement motive ce déplacement ? */
   "Q2.1": {
     "1_CONSULTATION":
-      "Consultation médicale de diagnostic, de traitement ou de suivi, dont suivi de l’ALD.",
+      "Consultation médicale de diagnostic, de traitement ou de suivi, dont suivi de l’ALD (Affection Longue Durée).",
     "2_DENTISTE_OU_SAGE_FEMME":
       "Consultation ou soin réalisé par un chirurgien-dentiste ou une sage-femme.",
     "3_IMAGERIE": "Examen d’imagerie ou autre acte médical technique.",
@@ -88,16 +88,16 @@ export const OPTIONS = {
     "6_SEANCE": "Chimiothérapie, radiothérapie ou dialyse.",
     "7_PSYCHOLOGUE": "Séance de psychologue ou dispositif particulier.",
     "8_HOSPITALISATION":
-      "Entrée ou sortie d’hospitalisation, ou admission en HAD.",
+      "Entrée ou sortie d’hospitalisation, ou admission en HAD (Hospitalisation à Domicile).",
     "9_TRANSFERT":
       "Transfert entre établissements, ou déplacement pour soin pendant l’hospitalisation.",
     "10_CAMSP":
-      "Soin CAMSP/CMPP, y compris séance en ville organisée dans le parcours de l’enfant.",
+      "Soin CAMSP (Centre d’Action Médico-Sociale Précoce)/CMPP (Centre Médico-Psycho-Pédagogique), y compris séance en ville organisée dans le parcours de l’enfant.",
     "11_PERMISSION": "Permission temporaire pendant l’hospitalisation.",
     "12_CONVOCATION":
       "Convocation, expertise, audience ou déplacement chez un fournisseur d’appareillage.",
     "13_MATERNITE":
-      "Trajet vers un hébergement près d’une maternité dans l’Engagement maternité.",
+      "À un examen obligatoire du 8ᵉ ou du 9ᵉ mois de grossesse en maternité, ou à un hébergement temporaire prévu en raison de l’éloignement de la maternité.",
     "14_AUTRE": "Autre soin, examen ou séjour.",
     "15_AUCUN": "Aucun de ces soins ou événements.",
   },
@@ -110,7 +110,8 @@ export const OPTIONS = {
   "Q2.1.g": {
     "1_ENTREE": "Une entrée dans un établissement de santé",
     "2_SORTIE": "Une sortie de cet établissement",
-    "3_ADMISSION_HAD": "Une admission en HAD à domicile",
+    "3_ADMISSION_HAD":
+      "Une admission en HAD (Hospitalisation à Domicile) à domicile",
   },
   /** La séance est-elle organisée dans le parcours de l’enfant ? */
   "Q2.1.h": {
@@ -121,7 +122,7 @@ export const OPTIONS = {
   /** L’une de ces situations correspond-elle aussi au trajet à réaliser ? */
   "Q2.2.1": {
     "1_HOSPITALISATION":
-      "Le patient est déjà hospitalisé pendant ce trajet, y compris en hospitalisation à domicile (HAD).",
+      "Le patient est déjà hospitalisé pendant ce trajet, y compris en HAD (Hospitalisation à Domicile).",
     "2_ETRANGER":
       "Le départ, l’arrivée ou le lieu de soins concerné se trouve à l’étranger.",
     "3_AUTRE_CADRE": "Une autre situation particulière concerne ce trajet.",
@@ -142,12 +143,14 @@ export const OPTIONS = {
    */
   "Q2.2.1.b": {
     "1_ATMP": "À un accident du travail ou à une maladie professionnelle.",
-    "4_MATERNITE_ELOIGNEE": "À un séjour près d’une maternité éloignée.",
+    "4_MATERNITE_ELOIGNEE":
+      "À un examen obligatoire du 8ᵉ ou du 9ᵉ mois de grossesse en maternité, ou à un hébergement temporaire prévu en raison de l’éloignement de la maternité.",
     "5_HTNM":
-      "À un hébergement temporaire non médicalisé en lien avec les soins.",
+      "À un hébergement temporaire non médicalisé en lien avec les soins, pour un autre motif que l’éloignement d’une maternité.",
     "6_CAMSP":
-      "À des soins dans le cadre d’un CAMSP ou d’un CMPP, y compris une séance en ville organisée dans le parcours de l’enfant.",
-    "7_SAMSAH": "À des soins dans un SAMSAH.",
+      "À des soins dans le cadre d’un CAMSP (Centre d’Action Médico-Sociale Précoce) ou d’un CMPP (Centre Médico-Psycho-Pédagogique), y compris une séance en ville organisée dans le parcours de l’enfant.",
+    "7_SAMSAH":
+      "À des soins dans un SAMSAH (Service d’Accompagnement Médico-Social pour Adultes Handicapés).",
     "9_PENSION_MILITAIRE":
       "À des soins en rapport avec une pension militaire d’invalidité.",
     "10_RETOUR_PENITENTIAIRE":
@@ -199,17 +202,19 @@ export const OPTIONS = {
     "2_ADMISSION_SANS_SEJOUR":
       "Admission dans le nouvel établissement sans prestation d’hospitalisation dans le premier.",
     "3_CENTRE_QUINZE":
-      "Transport sanitaire demandé par le Centre 15, hors SMUR, dans le cadre de l’aide médicale urgente.",
+      "Transport sanitaire demandé par le Centre 15, hors SMUR (Structure Mobile d’Urgence et de Réanimation), dans le cadre de l’aide médicale urgente.",
     "4_AIR_MER": "Trajet aérien ou maritime autre qu’en ligne régulière.",
-    "5_HAD": "Transport prescrit par une HAD hors soins liés à la HAD.",
-    "6_USLD": "Transport depuis/vers USLD hors même implantation géographique.",
+    "5_HAD":
+      "Transport prescrit par une HAD (Hospitalisation à Domicile) hors soins liés à la HAD (Hospitalisation à Domicile).",
+    "6_USLD":
+      "Transport depuis/vers USLD (Unité de Soins de Longue Durée) hors même implantation géographique.",
     "7_EHPAD":
-      "Transport depuis/vers EHPAD hors même implantation géographique.",
+      "Transport depuis/vers EHPAD (Établissement d'Hébergement pour Personnes Âgées Dépendantes) hors même implantation géographique.",
     "8_RADIOTHERAPIE":
       "Transfert <48 heures pour radiothérapie en exercice libéral ou centre de santé.",
     "9_DIALYSE_A_DOMICILE": "Patient pratiquant la dialyse à domicile.",
     "10_ADMISSION_HAD":
-      "Patient hospitalisé rentrant à domicile pour une admission en HAD.",
+      "Patient hospitalisé rentrant à domicile pour une admission en HAD (Hospitalisation à Domicile).",
     "11_AUCUNE": "Aucune de ces exceptions.",
   },
   ...OPTIONS_DE_LA_PERMISSION,
