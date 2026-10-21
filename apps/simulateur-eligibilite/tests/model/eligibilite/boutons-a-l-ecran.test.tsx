@@ -50,7 +50,8 @@ const boutonsDuResultat = () =>
     PRECEDENT,
     NOUVELLE,
     "Compléter la prescription",
-    "Compléter la demande",
+    "Compléter la demande d’accord préalable",
+    "Compléter la demande d’examen",
   ].filter((nom) => screen.queryByRole("button", { name: nom }) !== null);
 
 describe("les boutons du modèle de l'éditeur", () => {

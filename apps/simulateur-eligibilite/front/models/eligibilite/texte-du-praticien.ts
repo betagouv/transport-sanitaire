@@ -2,22 +2,19 @@
 // (D-112) : la caisse, l'établissement, la permission à la charge du patient,
 // la convocation, et le transport à l'étranger. Une fonction pure, sans React.
 //
-// Tous les mots viennent du catalogue de l'éditeur, recopiés tels quels, sauf
-// les éléments du dossier (`elements-du-dossier.ts`). Ce fichier choisit le
-// scénario, puis range ses textes dans la page : il n'en écrit aucun.
+// Tous les mots viennent du catalogue de l'éditeur, recopiés tels quels. Ce
+// fichier choisit le scénario, puis range ses textes dans la page : il n'en
+// écrit aucun.
 // `factsReference` n'est pas repris : l'éditeur le dit phrase de démonstrateur,
 // que le praticien ne doit pas lire comme des faits du dossier.
 
 import type {
   CatalogueResultats,
+  IssueDeLaCaisse,
   IssueEtranger,
   IssuePraticien,
   ScenarioPraticien,
 } from "./declarations/catalogue-resultats";
-import {
-  elementsDuDossier,
-  elementsDuDossierDeLEtranger,
-} from "./elements-du-dossier";
 import {
   type IssueDuPraticien,
   scenariosDuPraticien,
@@ -40,8 +37,6 @@ export type TexteDuPraticien = {
   readonly pourquoi?: {
     readonly titre: string;
     readonly elements: readonly ElementDuPourquoi[];
-    /** Chaque fait que le scénario cite, et ce que la trace en dit. */
-    readonly dossier: readonly string[];
   };
   readonly questions: readonly string[];
   readonly actions: readonly string[];
@@ -70,20 +65,16 @@ export function texteDuPraticien(
   trace: Trace,
 ): TexteDuPraticien {
   if (issue === "ISSUE_DAP_ETRANGER_A_EXAMINER") {
-    return texteDeLEtranger(catalogue.issues[issue], trace);
+    return texteDeLEtranger(catalogue.issues[issue]);
   }
   const { issues } = catalogue;
   const scenarios = scenariosDuPraticien(issue, issues[issue], trace);
   if (issue === "ISSUE_CAISSE") {
-    return texteDesPoints(issues[issue], scenarios, trace);
+    return texteDesPoints(issues[issue], scenarios);
   }
   const [scenario] = scenarios;
   return scenario
-    ? texteDUnScenario(
-        issues[issue].title,
-        scenario,
-        dossierDe([scenario], trace),
-      )
+    ? texteDUnScenario(issues[issue].title, scenario)
     : { ...SANS_TEXTE, titre: issues[issue].title };
 }
 
@@ -91,10 +82,7 @@ export function texteDuPraticien(
 
 const SANS_TEXTE = { questions: [], actions: [] } as const;
 
-function texteDeLEtranger(
-  issue: IssueEtranger,
-  trace: Trace,
-): TexteDuPraticien {
+function texteDeLEtranger(issue: IssueEtranger): TexteDuPraticien {
   return {
     titre: issue.title,
     introduction: issue.intro,
@@ -104,7 +92,6 @@ function texteDeLEtranger(
         titre: title,
         texte: body,
       })),
-      dossier: elementsDuDossierDeLEtranger(trace),
     },
     questions: issue.questions,
     actions: issue.actions,
@@ -115,7 +102,6 @@ function texteDeLEtranger(
 function texteDUnScenario(
   titre: string,
   scenario: ScenarioPraticien,
-  dossier: readonly string[],
 ): TexteDuPraticien {
   return {
     titre,
@@ -123,7 +109,6 @@ function texteDUnScenario(
     pourquoi: {
       titre: scenario.whyTitle,
       elements: elementsDuPourquoi(scenario.whyText),
-      dossier,
     },
     questions: scenario.questions,
     actions: scenario.actions,
@@ -132,27 +117,24 @@ function texteDUnScenario(
 
 // Aucun point : le titre seul. Un point : son scénario. Plusieurs : le
 // scénario de cumul que l'éditeur a écrit pour ces points, s'il existe ; sinon
-// son introduction pour « plusieurs points », puis chaque scénario. Les
-// éléments du dossier sont ceux des points, comme dans le programme de
-// l'éditeur.
+// son introduction pour « plusieurs points », puis chaque scénario. Le titre
+// compte les points, une fois chacun (point 27).
 function texteDesPoints(
-  issue: IssuePraticien & { readonly multipleIntro: string },
+  issue: IssueDeLaCaisse,
   points: readonly ScenarioPraticien[],
-  trace: Trace,
 ): TexteDuPraticien {
   const [premier, deuxieme] = points;
   if (!premier) return { ...SANS_TEXTE, titre: issue.title };
-  const dossier = dossierDe(points, trace);
-  if (!deuxieme) return texteDUnScenario(issue.title, premier, dossier);
+  if (!deuxieme) return texteDUnScenario(issue.titles.single, premier);
+  const titre = issue.titles.multiple;
   const cumul = scenarioDeCumul(issue, points);
-  if (cumul) return texteDUnScenario(issue.title, cumul, dossier);
+  if (cumul) return texteDUnScenario(titre, cumul);
   return {
-    titre: issue.title,
+    titre,
     introduction: issue.multipleIntro,
     pourquoi: {
       titre: titreAuPluriel(issue, premier),
       elements: points.flatMap(({ whyText }) => elementsDuPourquoi(whyText)),
-      dossier,
     },
     questions: points.flatMap(({ questions }) => questions),
     actions: sansDoublon(points.flatMap(({ actions }) => actions)),
@@ -181,16 +163,6 @@ function titreAuPluriel(
   return (
     scenarios.find(({ codes, inactive }) => !inactive && codes.length > 1)
       ?.whyTitle ?? premier.whyTitle
-  );
-}
-
-function dossierDe(
-  scenarios: readonly ScenarioPraticien[],
-  trace: Trace,
-): string[] {
-  return elementsDuDossier(
-    scenarios.flatMap(({ sourceKeys }) => sourceKeys),
-    trace,
   );
 }
 

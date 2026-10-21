@@ -3,7 +3,7 @@
 // porte les textes de l'éditeur. Le socle place l'un et l'autre ; ses propres
 // tests le vérifient.
 
-import { render, screen, within } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 import { catalogueResultats } from "../../../front/models/eligibilite/catalogue-resultats";
 import { eligibilite } from "../../../front/models/eligibilite/Resultats";
@@ -70,25 +70,6 @@ describe.each(CAS)("la page de la seed %s", (id, titre, element, action) => {
   it("n'est pas une fiche patient", async () => {
     await afficher(id);
     expect(screen.queryByText(/fiche patient/i)).not.toBeInTheDocument();
-  });
-});
-
-describe("les éléments du dossier", () => {
-  it("ferment l'encadré du pourquoi, dépliés", async () => {
-    await afficher("issue-convocation");
-    const encadre = screen.getByRole("region", {
-      name: "Pourquoi ce résultat ?",
-    });
-    const bloc = within(encadre).getByRole("group");
-    expect(bloc).toHaveAttribute("open");
-    expect(
-      within(bloc).getByText(/^Éléments du dossier pris en compte/),
-    ).toBeInTheDocument();
-    expect(
-      within(bloc)
-        .getAllByRole("listitem")
-        .map((ligne) => ligne.textContent),
-    ).toEqual(["Conditions de convocation ou d’appareillage : établi"]);
   });
 });
 

@@ -14,6 +14,8 @@ export type CatalogueResultats = {
   readonly modelSha256: string;
   readonly sourceDate: string;
   readonly sources: Readonly<Record<string, Source>>;
+  /** La phrase qui annonce la fiche à remettre au patient. */
+  readonly patientSheetIntro: string;
   readonly issues: {
     readonly ISSUE_PMT: IssuePositive;
     readonly ISSUE_DAP_SANS_URGENCE: IssuePositive & { readonly intro: Intro };
@@ -24,7 +26,7 @@ export type CatalogueResultats = {
       readonly permissionPhrases: readonly Texte[];
       readonly permissionAdministrative: readonly Texte[];
     };
-    readonly ISSUE_CAISSE: IssuePraticien & { readonly multipleIntro: string };
+    readonly ISSUE_CAISSE: IssueDeLaCaisse;
     readonly ISSUE_ETABLISSEMENT: IssuePraticien;
     readonly ISSUE_PERMISSION_PATIENT: IssuePraticien;
     readonly ISSUE_CONVOCATION: IssuePraticien;
@@ -111,6 +113,12 @@ export type IssuePraticien = {
   readonly type: string;
   readonly title: string;
   readonly scenarios: readonly ScenarioPraticien[];
+};
+
+/** La caisse : ses titres, pour un point et pour plusieurs, et l'introduction de plusieurs. */
+export type IssueDeLaCaisse = IssuePraticien & {
+  readonly multipleIntro: string;
+  readonly titles: { readonly single: string; readonly multiple: string };
 };
 
 /** Un scénario du résultat praticien, et les paramètres qui le choisissent. */
