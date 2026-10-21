@@ -7,6 +7,7 @@
 // sauf quand le catalogue en donne un autre (Q1.3).
 
 import { OPTIONS_DE_LA_BRANCHE } from "./options-de-la-branche";
+import { OPTIONS_DE_LA_CONVOCATION } from "./options-de-la-convocation";
 import { OPTIONS_DE_LA_PERMISSION } from "./options-de-la-permission";
 
 /** Les options de chaque question à choix : leur slug, et leur libellé. */
@@ -227,35 +228,7 @@ export const OPTIONS = {
     "11_AUCUNE": "Aucune de ces exceptions.",
   },
   ...OPTIONS_DE_LA_PERMISSION,
-  /** Quelle convocation, quel avis d’audience ou quel appareillage motive ce trajet ? */
-  "Q2.10": {
-    "1_CONTROLE_MEDICAL":
-      "Convocation au contrôle médical de l’Assurance Maladie.",
-    "2_EXPERT_JURIDICTION":
-      "Convocation par un médecin-expert ou consultant désigné par une juridiction compétente.",
-    "3_AUDIENCE_CONSULTATION":
-      "Audience de cette juridiction comportant une consultation clinique.",
-    "4_EXPERT_CONTESTATION":
-      "Consultation d’un expert désigné pour une contestation médicale.",
-    "5_COMMISSION_RECOURS":
-      "Convocation d’une commission médicale de recours amiable ou du médecin désigné par elle.",
-    "6_APPAREILLAGE": "Déplacement chez un fournisseur d’appareillage.",
-    "7_AUCUNE": "Aucune de ces situations.",
-  },
-  /** Le fournisseur est-il agréé pour cet appareillage ? (option 6 de Q2.10) */
-  "Q2.10.a": {
-    "1_OUI": "Oui",
-    "2_NON": "Non",
-    "3_NE_PEUX_PAS_VERIFIER": "Je ne peux pas le vérifier",
-  },
-  /** Quel appareillage est concerné ? (option 6 de Q2.10) */
-  "Q2.10.b": {
-    "1_PROTHESE_OCULAIRE_FACIALE": "Prothèse oculaire ou faciale",
-    "2_PODO_ORTHESE": "Podo-orthèse",
-    "3_ORTHOPROTHESE": "Orthoprothèse",
-    "4_AUTRE": "Un autre appareillage",
-    "5_NE_PEUX_PAS_PRECISER": "Je ne peux pas le préciser",
-  },
+  ...OPTIONS_DE_LA_CONVOCATION,
   ...OPTIONS_DE_LA_BRANCHE,
 } as const;
 
