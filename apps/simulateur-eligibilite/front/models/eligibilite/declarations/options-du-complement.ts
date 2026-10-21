@@ -58,7 +58,7 @@ export const OPTIONS_DU_COMPLEMENT = {
     "3_URGENCE_HOSPITALIERE":
       "Un transport d’urgence pour une hospitalisation où est effectué un acte coûteux, ou pour une hospitalisation qui en découle directement.",
     "4_HAD_OU_RADIOTHERAPIE":
-      "Un transport entre l’établissement et le domicile en HAD, prescrit hors protocole HAD, ou pour des séances de radiothérapie en structure libérale ou en centre de santé.",
+      "Un transport entre l’établissement et le domicile en HAD (Hospitalisation à Domicile), prescrit hors protocole HAD, ou pour des séances de radiothérapie en structure libérale ou en centre de santé.",
     "5_NOUVEAU_NE":
       "Un transport lié à l’hospitalisation d’un nouveau-né de moins de trente jours.",
     "6_TRAITEMENT_MIEUX_ADAPTE":
