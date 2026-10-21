@@ -1,15 +1,15 @@
 // Les aides des tests du texte de la fiche patient positive (#135) : des traces
 // écrites à la main, et la lecture de la fiche qu'elles donnent.
 
-import { catalogueResultats } from "../../../front/models/eligibilite/catalogue-resultats";
 import type { Cibles } from "../../../front/models/eligibilite/declarations/cibles";
 import type { Faits } from "../../../front/models/eligibilite/declarations/faits";
+import { catalogueResultats } from "../../../front/models/eligibilite/r2/catalogue-resultats";
 import {
   type IssueAvecFichePositive,
   type TexteDeLaFichePositive,
   texteDeLaFichePositive,
-} from "../../../front/models/eligibilite/texte-de-la-fiche-positive";
-import type { Trace } from "../../../front/models/eligibilite/trace-du-resultat";
+} from "../../../front/models/eligibilite/r2/fiche-positive/texte-de-la-fiche-positive";
+import type { Trace } from "../../../front/models/eligibilite/r2/trace-du-resultat";
 import { trace } from "./traces-du-praticien";
 
 export const catalogue = await catalogueResultats();

@@ -6,7 +6,7 @@
 import { screen } from "@testing-library/react";
 import { beforeEach, describe, expect, it } from "vitest";
 import { model } from "../../../front/models/eligibilite";
-import { catalogueResultats } from "../../../front/models/eligibilite/catalogue-resultats";
+import { catalogueResultats } from "../../../front/models/eligibilite/r2/catalogue-resultats";
 import { SEEDS } from "../../../front/models/eligibilite/seeds-catalogue";
 import { rangerRattachement } from "../../../front/socle/rattachement/session";
 import { ouvrirLeSimulateur } from "../../socle/simulateur/questionnaire";

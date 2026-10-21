@@ -3,8 +3,8 @@
 // éditoriales utiles ».
 
 import { describe, expect, it } from "vitest";
-import type { Precisions } from "../../../front/models/eligibilite/precisions-du-resultat";
-import { traceDuResultat } from "../../../front/models/eligibilite/trace-du-resultat";
+import type { Precisions } from "../../../front/models/eligibilite/r2/precisions-du-resultat";
+import { traceDuResultat } from "../../../front/models/eligibilite/r2/trace-du-resultat";
 import { BRANCARD_20_KM } from "./reponses-de-la-branche";
 import { appareillage, PAR_Q21 } from "./reponses-de-la-convocation";
 import {

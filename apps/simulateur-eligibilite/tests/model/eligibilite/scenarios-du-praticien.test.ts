@@ -3,18 +3,18 @@
 // main, avec les seuls faits et cibles qu'une condition des règles lit.
 
 import { describe, expect, it } from "vitest";
-import { catalogueResultats } from "../../../front/models/eligibilite/catalogue-resultats";
 import type { IssuePraticien } from "../../../front/models/eligibilite/declarations/catalogue-resultats";
-import type { Precisions } from "../../../front/models/eligibilite/precisions-du-resultat";
+import { catalogueResultats } from "../../../front/models/eligibilite/r2/catalogue-resultats";
 import {
   type IssueDuPraticien,
   scenariosDuPraticien,
-} from "../../../front/models/eligibilite/scenarios-du-praticien";
-import { SEEDS } from "../../../front/models/eligibilite/seeds-catalogue";
+} from "../../../front/models/eligibilite/r2/praticien/scenarios-du-praticien";
+import type { Precisions } from "../../../front/models/eligibilite/r2/precisions-du-resultat";
 import {
   type Trace,
   traceDuResultat,
-} from "../../../front/models/eligibilite/trace-du-resultat";
+} from "../../../front/models/eligibilite/r2/trace-du-resultat";
+import { SEEDS } from "../../../front/models/eligibilite/seeds-catalogue";
 import { ciblesDe } from "./reponses-de-la-permission";
 import { faux, trace, vrai } from "./traces-du-praticien";
 

@@ -8,11 +8,11 @@
 
 import { describe, expect, it } from "vitest";
 import { CIBLES_ENUMEREES } from "../../../front/models/eligibilite/declarations/cibles";
-import { SEEDS } from "../../../front/models/eligibilite/seeds-catalogue";
 import {
   type Trace,
   traceDuResultat,
-} from "../../../front/models/eligibilite/trace-du-resultat";
+} from "../../../front/models/eligibilite/r2/trace-du-resultat";
+import { SEEDS } from "../../../front/models/eligibilite/seeds-catalogue";
 import { BRANCARD_20_KM, faits, type Reponses } from "./reponses-de-la-branche";
 import { ciblesDe, PATIENT_SEUL } from "./reponses-de-la-permission";
 

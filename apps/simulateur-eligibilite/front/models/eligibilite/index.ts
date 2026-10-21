@@ -1,14 +1,14 @@
 // Le modèle de l'éditeur, dont `rules/VERSION` porte le numéro.
 
 import { defineModel } from "../../socle";
-import { libelleDeCompletion } from "./boutons-du-resultat";
 import type { Cibles } from "./declarations/cibles";
 import type { Faits } from "./declarations/faits";
 import type { Questions } from "./declarations/questions";
 import { cibles } from "./evaluation-des-regles";
 import { faits } from "./preconisation";
 import { COMPLEMENT, PARTS } from "./questionnaire";
-import { eligibilite, PrescriptionPreremplie } from "./Resultats";
+import { libelleDeCompletion } from "./r2/boutons-du-resultat";
+import { eligibilite } from "./r2/resultat";
 
 export const model = defineModel<Questions, Faits, Cibles>({
   preconisation: { faits, cibles },
@@ -23,7 +23,8 @@ export const model = defineModel<Questions, Faits, Cibles>({
     // écran, quelle que soit l'issue.
     form: () => null,
     title: "Prescription préremplie prête à imprimer",
-    Resultat: PrescriptionPreremplie,
+    // R3 n'a pas encore de page : jamais affichée tant qu'aucun cerfa n'est produit.
+    Resultat: () => null,
     startLabel: libelleDeCompletion,
     downloadLabel: "Télécharger et imprimer la prescription pré-remplie",
   },
