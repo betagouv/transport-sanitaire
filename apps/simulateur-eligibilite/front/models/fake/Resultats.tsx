@@ -3,20 +3,25 @@
 //
 // Le premier montre ce que le socle offre à une page de résultat : un encadré
 // gris à éléments séparés, qui finit par un bloc dépliable, un encadré bleu qui
-// ne s'affiche qu'avec une question, et des étapes en cartes numérotées, trois
-// ou deux par rangée.
+// ne s'affiche qu'avec une question, des cartes illustrées, et des étapes en
+// cartes numérotées, trois ou deux par rangée.
 
 import type { ReactNode } from "react";
 import {
   type Answers,
   Disclosure,
   type FirstResult,
+  type IllustratedCard,
+  IllustratedCards,
   NumberedCards,
   Panel,
 } from "../../socle";
 import { enUneLigne } from "./adresse";
 import type { Cibles } from "./declarations/cibles";
 import type { Questions } from "./declarations/questions";
+import grandeTasse from "./illustrations/grande-tasse.svg";
+import tasse from "./illustrations/tasse.svg";
+import verreGlace from "./illustrations/verre-glace.svg";
 import { SANS_COMMANDE } from "./preconisation";
 
 type Props = { answers: Answers<Questions>; cibles: Cibles };
@@ -75,6 +80,8 @@ function PageDeLaCommande({ cibles }: { cibles: Cibles }) {
           </ul>
         </Panel>
       )}
+      <h2 className="fr-h5 fr-mt-5w">Les façons de servir</h2>
+      <IllustratedCards cards={FACONS_DE_SERVIR} />
       <NumberedCards
         title="Que faire maintenant ?"
         items={[
@@ -105,6 +112,24 @@ function Pourquoi({ cibles }: { cibles: Cibles }) {
     </Panel>
   );
 }
+
+const FACONS_DE_SERVIR: readonly IllustratedCard[] = [
+  {
+    title: "En tasse",
+    text: "La boisson chaude, servie à table.",
+    image: tasse,
+  },
+  {
+    title: "En grande tasse",
+    text: "Le double de la tasse, pour les grandes soifs.",
+    image: grandeTasse,
+  },
+  {
+    title: "En verre glacé",
+    text: "Servie froide, avec des glaçons.",
+    image: verreGlace,
+  },
+];
 
 // Une cible indéfinie n'est pas une décision : elle ne s'affiche ni comme un
 // « oui », ni comme un « non ».

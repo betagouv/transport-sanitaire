@@ -34,5 +34,6 @@ export {
   type Validated,
 } from "./questionnaire-engine/question";
 export { Disclosure } from "./ui/Disclosure";
+export { type IllustratedCard, IllustratedCards } from "./ui/IllustratedCards";
 export { NumberedCards } from "./ui/NumberedCards";
 export { Panel } from "./ui/Panel";
