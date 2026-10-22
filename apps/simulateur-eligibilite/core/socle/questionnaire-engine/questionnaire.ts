@@ -18,6 +18,9 @@ import type {
 import { type AskedPage, readInOrder } from "./reading-in-order.ts";
 import { ValidatedAnswers } from "./validated-answers.ts";
 
+/** Le questionnaire s'achève : aucune page ne suit. */
+type Finished = undefined;
+
 /**
  * Où en est un questionnaire : ses réponses validées, et la page ouverte. Le
  * parcours le garde d'un écran à l'autre, une seed le reconstruit.
@@ -116,7 +119,7 @@ export class Reading<Questions extends AnyQuestions = AnyQuestions> {
   }
 
   /** La page qui suit celle-ci. Aucune : le questionnaire s'achève. */
-  pageAfter(page: Page): Page | undefined {
+  pageAfter(page: Page): Page | Finished {
     const pages = this.askedPages();
     return pages[pages.findIndex(({ id }) => id === page.id) + 1];
   }

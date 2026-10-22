@@ -12,7 +12,7 @@ import {
   isAddress,
   isCompleteAddress,
 } from "./address.ts";
-import { type AnswerProblem, MISSING } from "./answer-problem.ts";
+import { type AnswerProblem, MISSING, type NoError } from "./answer-problem.ts";
 import { AskedCommon, type AskedCommonData } from "./asked-common.ts";
 import type { Answer, Unanswered } from "./question.ts";
 
@@ -65,9 +65,7 @@ export class AskedAddress extends AskedCommon {
 
   // Une adresse a un problème par champ, montré sous chacun. Ici, le premier
   // suffit : il dit qu'il reste quelque chose à corriger.
-  protected override formatProblemOf(
-    answer: Answer,
-  ): AnswerProblem | undefined {
+  protected override formatProblemOf(answer: Answer): AnswerProblem | NoError {
     if (!isAddress(answer)) return MISSING;
     return Object.values(this.fieldProblems(answer))[0];
   }

@@ -7,7 +7,7 @@ import type { GivenAnswers } from "../../../socle/index.ts";
 import { Permission } from "../concepts/permission.ts";
 import type { Questions } from "../declarations/questions.ts";
 import { retourPenitentiaireCoche } from "../p2/retour-penitentiaire.ts";
-import type { ContextDuComplement } from "../question.ts";
+import type { ContextDuComplement, Inconnu } from "../question.ts";
 import { pmtOuDap } from "./supports-du-complement.ts";
 
 type Reponses = GivenAnswers<Questions>;
@@ -34,7 +34,7 @@ export function trajetsMensuelsAPoser({
 }
 
 /** Le sens du document : Q3.1.2, ou l'aller-retour de plusieurs permissions. */
-export function sensDuDocument(reponses: Reponses): Sens | undefined {
+export function sensDuDocument(reponses: Reponses): Sens | Inconnu {
   const sens = reponses.question("Q3.1.2");
   if (sens.hasAnswer()) return sens.value;
   return Permission.of(reponses).estRepetee()
@@ -113,8 +113,10 @@ export function rappelDesPermissions({ answers }: ContextDuComplement): Rappel {
 
 // ---- implémentation ----
 
+/** Aucun sens n'est imposé : tous se proposent. */
+type AucunImpose = undefined;
 // Le seul sens que les rôles de P2 permettent. Absent : tous se proposent.
-function sensImpose(reponses: Reponses): Sens | undefined {
+function sensImpose(reponses: Reponses): Sens | AucunImpose {
   const sousType = reponses.question("Q2.1.g");
   if (sousType.is("1_ENTREE")) return "1_ALLER";
   if (

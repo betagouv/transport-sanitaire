@@ -12,6 +12,9 @@ import { Sejour } from "../../../../core/models/eligibilite/concepts/sejour";
 import type { Questions } from "../../../../core/models/eligibilite/declarations/questions";
 import type { ValidatedAnswers } from "../../../../core/socle";
 
+/** Les réponses ne prouvent pas ce cas : la précision ne s'écrit pas. */
+export type NonProuve = undefined;
+
 type Valides = ValidatedAnswers<Questions>;
 
 /**
@@ -98,7 +101,7 @@ function seancesRetenues(validated: Valides): readonly string[] {
 }
 
 // L'identifiant du lexique : le séjour ou les séances, puis leurs familles.
-function hospitalisation(validated: Valides): string | undefined {
+function hospitalisation(validated: Valides): string | NonProuve {
   const seances = seancesRetenues(validated);
   const sejour = Sejour.of(validated).estReel();
   if (!sejour && seances.length === 0) return undefined;
@@ -107,14 +110,14 @@ function hospitalisation(validated: Valides): string | undefined {
 
 // « Accident du travail ou maladie professionnelle » : Q2.2.1.b ne les
 // sépare pas, seul l'identifiant commun est prouvé.
-function atmp(validated: Valides): "ATMP" | undefined {
+function atmp(validated: Valides): "ATMP" | NonProuve {
   return validated.question("Q2.2.1.b").checked("1_ATMP") ? "ATMP" : undefined;
 }
 
 // Le numéro de l'option de Q2.1, pour les soins qui ont une phrase de famille.
 const FAMILLES_DE_SOIN = [1, 2, 3, 4, 5, 6, 7, 14, 15];
 
-function familleDeSoin(validated: Valides): number | undefined {
+function familleDeSoin(validated: Valides): number | NonProuve {
   const motif = validated.question("Q2.1");
   if (!motif.hasAnswer()) return undefined;
   const numero = numeroDeLOption(motif.value);
@@ -129,7 +132,7 @@ function typeDeDialyse(validated: Valides): Precisions["dialysisType"] {
 }
 
 // Q2.10.b : un appareillage qui n'est pas l'un des trois que vise R.322-10 2°.
-function categorieDAppareil(validated: Valides): "hors-categories" | undefined {
+function categorieDAppareil(validated: Valides): "hors-categories" | NonProuve {
   return validated.question("Q2.10.b").is("4_AUTRE")
     ? "hors-categories"
     : undefined;
@@ -137,7 +140,7 @@ function categorieDAppareil(validated: Valides): "hors-categories" | undefined {
 
 // Q2.3.3 « Oui » prouve des transports répétés. « Non » ne dit pas quelle
 // condition de la série manque : rien n'en est inféré.
-function seriePrevue(validated: Valides): true | undefined {
+function seriePrevue(validated: Valides): true | NonProuve {
   return validated.question("Q2.3.3").is("1_OUI") ? true : undefined;
 }
 
@@ -155,7 +158,7 @@ function aldDeQ13(
 // l'EHPAD n'ont pas de question qui les prouve. Un autre déplacement pendant
 // le séjour est provisoire (D-106). L'admission en HAD à domicile prouve le
 // genre « had » seul.
-function contexteDeLArticle80(validated: Valides): Contexte | undefined {
+function contexteDeLArticle80(validated: Valides): Contexte | NonProuve {
   const deplacement = validated.question("Q2.5");
   if (deplacement.is("2_AUTRE_DEPLACEMENT"))
     return { kind: "inpatient", duration: "temporary" };
@@ -173,7 +176,7 @@ function contexteDeLArticle80(validated: Valides): Contexte | undefined {
 }
 
 // Q2.7 option 4 : un transport exceptionnel demandé par écrit par le patient.
-function contexteDeLaPermission(validated: Valides): Contexte | undefined {
+function contexteDeLaPermission(validated: Valides): Contexte | NonProuve {
   return Permission.of(validated).estAChargeDuPatient()
     ? { kind: "adult-explicit" }
     : undefined;
@@ -195,7 +198,7 @@ const APPAREIL: Partial<Record<string, string>> = {
 };
 
 // Q2.10 dit le genre ; Q2.10.b l'appareil, pour un appareillage seulement.
-function contexteDeLaConvocation(validated: Valides): Contexte | undefined {
+function contexteDeLaConvocation(validated: Valides): Contexte | NonProuve {
   const categorie = validated.question("Q2.10").value;
   const kind = categorie && GENRE_DE_CONVOCATION[categorie];
   if (!kind) return undefined;

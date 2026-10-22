@@ -6,9 +6,12 @@
 //
 // Une option ne change pas : chaque réglage donne une copie.
 
-import type { OfferedOption, OptionHelp } from "./option.ts";
+import type { NotOffered, OfferedOption, OptionHelp } from "./option.ts";
 import type { AnyQuestions } from "./question.ts";
 import type { QuestionContext } from "./question-context.ts";
+
+/** L'option n'a pas d'aide dans ce cas. */
+type NoHelp = undefined;
 
 /** Une option déclarée : son libellé, ce qui la fait se proposer, son aide. */
 export class DeclaredOption<Questions extends AnyQuestions, Cibles, Faits> {
@@ -57,17 +60,15 @@ export class DeclaredOption<Questions extends AnyQuestions, Cibles, Faits> {
 
   /** L'aide dépliable de l'option, qui dépend des réponses. */
   helpFrom(
-    help: (
-      context: Context<Questions, Cibles, Faits>,
-    ) => OptionHelp | undefined,
+    help: (context: Context<Questions, Cibles, Faits>) => OptionHelp | NoHelp,
   ): DeclaredOption<Questions, Cibles, Faits> {
     return this.#with({ helpFrom: help });
   }
 
-  /** L'option telle qu'elle se propose. `undefined` : elle ne se propose pas. */
+  /** L'option telle qu'elle se propose, si elle se propose. */
   offeredIn(
     context: Context<Questions, Cibles, Faits>,
-  ): OfferedOption | undefined {
+  ): OfferedOption | NotOffered {
     const { value, description, blocks, conditions } = this.#settings;
     if (!conditions.every((condition) => condition(context))) return undefined;
     const help = this.#settings.helpFrom?.(context);
@@ -149,7 +150,7 @@ export class DeclaredOptions<Questions extends AnyQuestions, Cibles, Faits> {
   offeredOneIn(
     value: string,
     context: Context<Questions, Cibles, Faits>,
-  ): OfferedOption | undefined {
+  ): OfferedOption | NotOffered {
     const option = this.#options.find((each) => each.value === value);
     return option?.offeredIn(context);
   }
@@ -173,7 +174,7 @@ type OptionSettings<Questions extends AnyQuestions, Cibles, Faits> = {
   readonly description?: string;
   readonly blocks?: string;
   labelFrom?(context: Context<Questions, Cibles, Faits>): string;
-  helpFrom?(context: Context<Questions, Cibles, Faits>): OptionHelp | undefined;
+  helpFrom?(context: Context<Questions, Cibles, Faits>): OptionHelp | NoHelp;
 };
 
 function optionsOf<Questions extends AnyQuestions, Cibles, Faits>(

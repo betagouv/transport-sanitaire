@@ -10,21 +10,24 @@
 /** Ce que vaut une cible établie : « oui ou non », ou l'une de ses constantes. */
 type Value = boolean | string;
 
+/** Les règles ne concluent pas sur cette cible : il manque un fait. */
+type Undetermined = undefined;
+
 /**
  * Une cible des règles. Le compilateur suit sa sorte : `isOui()` et `isNon()`
  * pour une cible « oui ou non », `is(valeur)` pour une cible à constantes.
  */
 export class Cible<Of extends Value = Value> {
-  /** Sa valeur. `null` : sans objet. `undefined` : inconnue, faute d'un fait. */
-  readonly value: Of | null | undefined;
+  /** Sa valeur. `null` : sans objet. `Undetermined` : inconnue. */
+  readonly value: Of | null | Undetermined;
 
-  private constructor(value: Of | null | undefined) {
+  private constructor(value: Of | null | Undetermined) {
     this.value = value;
     Object.freeze(this);
   }
 
   /** La cible de cette valeur, telle que les règles la donnent. */
-  static of<Of extends Value>(value: Of | null | undefined): Cible<Of> {
+  static of<Of extends Value>(value: Of | null | Undetermined): Cible<Of> {
     return new Cible(value);
   }
 
@@ -54,7 +57,7 @@ export class Cible<Of extends Value = Value> {
   }
 
   /** Sa valeur, en JSON. */
-  toJSON(): Of | null | undefined {
+  toJSON(): Of | null | Undetermined {
     return this.value;
   }
 }
@@ -62,7 +65,7 @@ export class Cible<Of extends Value = Value> {
 /** La valeur de chaque cible : ce qu'une situation de référence en attend. */
 export type CibleValues<Cibles> = {
   readonly [Nom in keyof Cibles]: Cibles[Nom] extends Cible<infer Of>
-    ? Of | null | undefined
+    ? Of | null | Undetermined
     : never;
 };
 

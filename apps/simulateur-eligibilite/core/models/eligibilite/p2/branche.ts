@@ -21,6 +21,9 @@ import type { Questions } from "../declarations/questions.ts";
 import { cible } from "../evaluation-des-regles.ts";
 import { situationDuCadre } from "./contextes.ts";
 
+/** Le départ n'est pas celui d'une entrée simple, ou n'est pas encore donné. */
+type PasUneEntreeSimple = undefined;
+
 type Valides = ValidatedAnswers<Questions>;
 
 /** Ce que lit une garde de la branche : les réponses validées, et leurs faits. */
@@ -84,7 +87,7 @@ export function urgenceDevoilee({ validated, faits }: Lecture): boolean {
  */
 export function departDUneEntreeSimple(
   validated: Valides,
-): Questions["Q2.13.depart"] | undefined {
+): Questions["Q2.13.depart"] | PasUneEntreeSimple {
   const depart = validated.question("Q2.13.depart");
   return depart.isOneOf(...DEPARTS_D_UNE_ENTREE_SIMPLE)
     ? depart.value

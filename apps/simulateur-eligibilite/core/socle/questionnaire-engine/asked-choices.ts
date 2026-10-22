@@ -2,7 +2,12 @@
 // qui se proposent, sous leur libellé du moment. Une réponse n'en garde que ces
 // options, et l'une d'elles peut bloquer le questionnaire.
 
-import { type AnswerProblem, MISSING, stated } from "./answer-problem.ts";
+import {
+  type AnswerProblem,
+  MISSING,
+  type NoError,
+  stated,
+} from "./answer-problem.ts";
 import { AskedCommon, type AskedCommonData } from "./asked-common.ts";
 import type { OfferedOption } from "./option.ts";
 import type { Answer, IncompatibleOptions, Unanswered } from "./question.ts";
@@ -85,7 +90,7 @@ export class AskedMultipleChoice extends AskedCommon {
 
   // L'écran ne laisse pas cocher deux options incompatibles. Ceci couvre une
   // réponse venue d'ailleurs, comme une seed.
-  #incompatibilityOf(checked: readonly string[]): AnswerProblem | undefined {
+  #incompatibilityOf(checked: readonly string[]): AnswerProblem | NoError {
     const incompatible = this.incompatibleOptions.find(({ values }) =>
       values.every((value) => checked.includes(value)),
     );
@@ -99,7 +104,7 @@ export class AskedMultipleChoice extends AskedCommon {
 function blockOf(
   options: readonly OfferedOption[],
   chosen: readonly string[],
-): AnswerProblem | undefined {
+): AnswerProblem | NoError {
   const blocking = options.find(
     (option) => option.blocks !== undefined && chosen.includes(option.value),
   );

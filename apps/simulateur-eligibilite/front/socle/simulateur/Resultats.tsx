@@ -14,7 +14,7 @@ import {
   Questionnaire,
   type QuestionnaireState,
 } from "../../../core/socle/questionnaire-engine/questionnaire";
-import { CerfaDownload } from "../cerfa/CerfaDownload";
+import { CerfaActions } from "../cerfa/CerfaActions";
 import { dtoFrom } from "../cerfa-mapping";
 import type { CerfaInput, Model } from "../model";
 import type { DebugTraceProps } from "../questionnaire-engine/QuestionnaireForm";
@@ -52,7 +52,7 @@ export function CerfaResultat({
   const read = readOf(all, answers, cibles);
   return (
     <Frame
-      title={title}
+      title={title(cibles)}
       part={total}
       total={total}
       trace={trace}
@@ -129,11 +129,12 @@ function Cerfa({ model, input }: { model: Model; input: CerfaInput }) {
   const bound = model.cerfa.form(input.cibles);
   return (
     bound && (
-      <CerfaDownload
+      <CerfaActions
         cerfa={bound.cerfa}
         dto={dtoFrom(bound.mapping, input)}
         date={input.completedAt}
-        label={model.cerfa.downloadLabel}
+        printLabel={model.cerfa.printLabel}
+        downloadLabel={model.cerfa.downloadLabel}
       />
     )
   );

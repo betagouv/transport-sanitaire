@@ -13,10 +13,9 @@ Le simulateur d'éligibilité au transport sanitaire. Sa pile :
 
 **L'app est entre deux modèles.** Le modèle v9 et ce qui en dépendait sont retirés,
 la v10 n'est pas intégrée : son avancement est dans l'issue 50 du dépôt, ses
-décisions dans `docs/knowledge/adr/journal-des-decisions-v10.md`. Il n'y a encore
-ni page de résultat métier, ni CERFA téléchargeable. Le simulateur
-s'ouvre sur le **modèle de l'éditeur** (`core/models/eligibilite/` et
-`front/models/eligibilite/`, D-119). Il
+décisions dans `docs/knowledge/adr/journal-des-decisions-v10.md`. Seul le
+S3141 se télécharge rempli. Le simulateur s'ouvre sur le **modèle de
+l'éditeur** (`core/models/eligibilite/` et `front/models/eligibilite/`, D-119). Il
 s'intègre étape par étape, sur la v10.1.3 : ses règles, ses faits, ses cibles et son
 oracle sont là, son questionnaire va jusqu'à P3, le complément du cerfa, qui
 s'ouvre après le verrou (`p3/partie-3.ts`). R2 est posée pour les dix issues : les cinq issues sans fiche patient
@@ -24,8 +23,12 @@ s'ouvre après le verrou (`p3/partie-3.ts`). R2 est posée pour les dix issues :
 à l'étranger), la fiche négative, et les fiches positives de la prescription
 médicale de transport, du S3141 et des deux demandes d'accord préalable. Les
 boutons de chaque issue sont posés (`r2/boutons-du-resultat.ts`) ; « Compléter »
-ouvre P3, dont le résultat (R3) n'a pas encore de PDF (#157) : en attendant, il
-récapitule les réponses de P3 (`r3/recapitulatif-du-complement.ts`).
+ouvre P3, dont le résultat (R3) imprime et télécharge le gabarit du support
+(`r3/documents-du-resultat.ts`, #157). Le S3141 se remplit (`r3/s3141/`,
+#158) : il assemble les rubriques que les cerfa partagent (`r3/rubriques/`,
+D-138), qui ne connaissent aucun cerfa. La PMT et la DAP sortent encore
+vierges : en attendant leur remplissage (#160, #161), R3 récapitule les
+réponses de P3 (`r3/recapitulatif-du-complement.ts`).
 Le [README](README.md) § « Entre deux modèles » dit ce qui est parti et ce qui reste.
 
 Le simulateur a deux racines, et chacune a deux dossiers (ADR
@@ -46,8 +49,9 @@ Le modèle de l'éditeur se range par partie du parcours : `p1/` (le mode),
 résultat, avec un dossier par famille d'issues) et `r3/` (son résultat) dans
 `front/`. `core/models/eligibilite/concepts/` porte ce que plusieurs parties
 lisent d'un même concept : la permission, le séjour, l'aide du patient, le
-numéro d'une option. Les racines des deux dossiers les assemblent. Une partie ne lit pas
-celle qui la suit, et les familles de R2 ne s'importent pas entre elles :
+numéro d'une option. Les racines des deux dossiers les assemblent. Une partie
+ne lit pas celle qui la suit, et les familles de R2 ne s'importent pas entre
+elles, ni les cerfa de R3, et une rubrique de R3 n'importe aucun cerfa :
 `tests/model/eligibilite/domaines.test.ts` le garde.
 
 Le modèle de démonstration est pérenne (D-82). **Chaque capacité du socle y a
@@ -214,6 +218,7 @@ entrée dans le gabarit (`Cerfa<Dto>`) :
 | un commentaire facultatif | le texte qu'il suit, dans le même champ | `commentaire: commentOn("motif")` |
 | une case cochée | le champ et son état d'export | `en_ald: box("ald", "Oui")` |
 | une case qui partage son champ | le champ et son état : la marque est dessinée | `longue_distance: drawnBox("km", "Oui")` |
+| une date | le champ, qui l'écrit selon ses cases | `date_prescription: date("dat pmt")` |
 | un texte sans champ | sa position sur la page | `remarque: at({ page: 1, x: 36, y: 104, width: 348 })` |
 
 Un gabarit qui renomme un champ ne change que la définition, jamais le DTO.
@@ -240,9 +245,11 @@ simulateur calcule le DTO sous le second résultat et le passe au bouton.
 | `text-sizes.ts` | la configuration des tailles (D-68) : la taille visée, 9 pt, la taille réduite, 8 pt, et le plancher, 6 pt. Une version du modèle la modifie, pas le code |
 | `cerfa.ts` | ce qu'est un cerfa : son DTO, son gabarit, et où va chaque entrée |
 | `dates.ts` | une date sur un champ peigné |
+| `box-appearances.ts` | le dessin des cases du gabarit, gardé : un `/Off` vide pour celles qui n'en ont pas, sans quoi `pdf-lib` les redessine (D-140) |
 | `flatten-cerfa.ts` | l'aplatissement du PDF rempli : plus aucun champ, chaque valeur dessinée sur la page (D-84). Puis ce qu'un champ ne sait pas montrer : les marques des cases partagées, les textes sans champ, ceux qui débordent |
 | `generate-cerfa.ts` | la génération : le DTO traduit dans les noms du gabarit, remplir, puis aplatir, avec `pdf-lib` chargé à la demande. Le nom daté du fichier, le téléchargement |
-| `CerfaDownload.tsx` | le bouton, qui génère le PDF dès qu'il s'affiche et le télécharge au clic. L'avertissement d'un commentaire retiré, l'alerte si ça échoue |
+| `print-pdf.ts` | l'impression d'un PDF dans un cadre invisible : le dialogue du navigateur s'ouvre sur le PDF, pas sur la page |
+| `CerfaActions.tsx` | les boutons « Imprimer » et « Télécharger », qui génèrent le PDF dès qu'ils s'affichent et portent le même document. L'avertissement d'un commentaire retiré, l'alerte si ça échoue |
 
 Un formulaire rempli porte des données de santé nominatives. Il se génère **dans le
 navigateur uniquement**, et ce dossier n'adresse jamais `/api`.

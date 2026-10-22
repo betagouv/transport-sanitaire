@@ -10,6 +10,9 @@ export type OptionHelp = {
   readonly items: readonly string[];
 };
 
+/** L'option ne se propose pas. */
+export type NotOffered = undefined;
+
 /**
  * Une option telle qu'elle se propose : sous son libellé et avec son aide du
  * moment. Elle ne porte que des données.

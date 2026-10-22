@@ -56,10 +56,11 @@ export const model = defineModel<Questions, Faits, Cibles>({
     // dernier écran.
     form: ({ commande }) =>
       commande.is(SANS_COMMANDE) ? null : BON_DE_COMMANDE,
-    title: "Commande complétée",
+    title: ({ commande }) => `Commande complétée : ${commande.value}`,
     Resultat: CommandeCompletee,
     startLabel: ({ commande }) =>
       commande.is(SANS_COMMANDE) ? null : "Compléter la commande",
+    printLabel: "Imprimer le bon de commande",
     downloadLabel: "Télécharger le bon de commande",
   },
 });

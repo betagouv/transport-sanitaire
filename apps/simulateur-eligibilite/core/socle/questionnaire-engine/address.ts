@@ -6,7 +6,8 @@
 // À l'étranger, le pays est attendu, et le code postal est libre : il peut
 // même manquer.
 
-import type { AnswerProblem } from "./answer-problem.ts";
+import type { AnswerProblem, NoError } from "./answer-problem.ts";
+import type { Unanswered } from "./question.ts";
 
 /**
  * Une adresse. Un champ qui ne se demande pas est absent, comme un champ
@@ -70,27 +71,27 @@ export function askedFields(settings: AddressSettings): AskedField[] {
 }
 
 /**
- * L'adresse à l'écran, une fois ce champ saisi. `undefined` quand il n'y reste
- * rien : une adresse vidée n'est plus une réponse.
+ * L'adresse à l'écran, une fois ce champ saisi. Une adresse vidée n'est plus
+ * une réponse.
  */
 export function withField(
-  address: Address | undefined,
+  address: Address | Unanswered,
   name: AddressFieldName,
   text: string,
-): Address | undefined {
+): Address | Unanswered {
   const typed = { ...EMPTY, ...address, [name]: text };
   return Object.values(typed).some((value) => value !== "") ? typed : undefined;
 }
 
 /**
  * L'adresse, réduite aux champs qui se demandent, sans espace en début ni en
- * fin. `undefined` quand il n'en reste rien. Le pays d'une adresse repassée en
- * France s'y perd.
+ * fin. Une adresse dont il ne reste rien n'est plus une réponse. Le pays d'une
+ * adresse repassée en France s'y perd.
  */
 export function askedAddress(
   settings: AddressSettings,
   address: Address,
-): Address | undefined {
+): Address | Unanswered {
   const read = askedFields(settings).map((field) => ({
     ...field,
     text: address[field.name]?.trim() ?? "",
@@ -147,7 +148,7 @@ function fieldProblem(
   settings: AddressSettings,
   field: AskedField,
   typed: string,
-): AnswerProblem | undefined {
+): AnswerProblem | NoError {
   if (typed === "") return undefined;
   const text = typed.trim();
   if (text === "") return field.optional ? undefined : { kind: "missing" };

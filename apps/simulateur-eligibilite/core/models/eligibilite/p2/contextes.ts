@@ -11,7 +11,12 @@
 // donne sa règle au fait qui la reprend : le séjour écarté au transfert, au
 // Centre 15 et à la permission, et chaque situation de l'autre cadre.
 
-import { Fait, regles, type ValidatedAnswers } from "../../../socle/index.ts";
+import {
+  Fait,
+  type PassesOn,
+  regles,
+  type ValidatedAnswers,
+} from "../../../socle/index.ts";
 import { Sejour } from "../concepts/sejour.ts";
 import {
   type DeclarationsDeFaits,
@@ -37,7 +42,7 @@ export function contextesAProposer(validated: Valides): readonly Contexte[] {
  * Le séjour en cours, proposé et écarté : il exclut le transfert, le Centre 15
  * et la permission. Coché, seule Q2.2.1.a dit la permission.
  */
-export function sejourEcarte(validated: Valides): Fait | undefined {
+export function sejourEcarte(validated: Valides): Fait | PassesOn {
   if (!Sejour.of(validated).estEcarte()) return undefined;
   return Fait.non("Q2.2.1 : « déjà hospitalisé » proposé, non coché.");
 }
@@ -51,7 +56,7 @@ export function sejourEcarte(validated: Valides): Fait | undefined {
 export function situationDuCadre(
   validated: Valides,
   contexte: Exclude<Contexte, "10_RETOUR_PENITENTIAIRE">,
-): Fait | undefined {
+): Fait | PassesOn {
   const { propose, coche } = groupe(validated, "3_AUTRE_CADRE");
   const precision = validated.question("Q2.2.1.b");
   if (!propose || (coche && !precision.hasAnswer())) return undefined;

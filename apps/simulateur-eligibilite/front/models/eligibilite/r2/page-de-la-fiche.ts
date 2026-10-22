@@ -1,21 +1,12 @@
 // Le résultat d'une issue à fiche patient : le titre du prescripteur, la
-// consigne de lui remettre la fiche, puis la fiche. Elle est le corps de la
-// page que le socle compose, ou la feuille qu'il pose sous ses logos.
+// consigne de lui remettre la fiche, puis la fiche. Toute fiche à remettre au
+// patient est une feuille, que le socle pose dans sa liseuse, sous ses logos.
 
-import type { ReactNode } from "react";
 import type { CatalogueResultats } from "../../../../core/models/eligibilite/declarations/catalogue-resultats";
 import type { FirstResult, Sheet } from "../../../socle";
 
 // La phrase d'introduction est `patientSheetIntro` du catalogue (point 28).
 type Catalogue = Pick<CatalogueResultats, "patientSheetIntro">;
-
-export function pageDeLaFiche(
-  { patientSheetIntro }: Catalogue,
-  titre: string,
-  fiche: ReactNode,
-): FirstResult {
-  return { title: titre, intro: patientSheetIntro, body: fiche };
-}
 
 export function pageDeLaFeuille(
   { patientSheetIntro }: Catalogue,

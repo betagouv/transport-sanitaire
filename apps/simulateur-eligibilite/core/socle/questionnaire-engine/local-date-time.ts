@@ -6,12 +6,15 @@
 // Une date est un objet valeur. Une saisie qui n'a pas ce format est illisible
 // : elle n'est comparée à rien, et toute comparaison avec elle vaut « non ».
 
+/** La saisie manque ou est mal écrite : la date est illisible. */
+type Unreadable = undefined;
+
 /** Une date, avec ou sans heure, sans fuseau. */
 export class LocalDateTime {
-  // L'instant UTC de cette heure locale. Indéfini : la saisie est illisible.
-  private readonly epoch: number | undefined;
+  // L'instant UTC de cette heure locale.
+  private readonly epoch: number | Unreadable;
 
-  private constructor(epoch: number | undefined) {
+  private constructor(epoch: number | Unreadable) {
     this.epoch = epoch;
     Object.freeze(this);
   }
@@ -81,8 +84,8 @@ const MS_PAR_HEURE = 3_600_000;
 const HEURES_PAR_JOUR = 24;
 const FORMAT = /^(\d{4})-(\d{2})-(\d{2})(?:T(\d{2}):(\d{2}))?$/;
 
-// L'instant UTC d'une saisie, avec ou sans heure. Indéfini si elle est mal écrite.
-function epochOf(saisie: string | undefined): number | undefined {
+// L'instant UTC d'une saisie, avec ou sans heure.
+function epochOf(saisie: string | undefined): number | Unreadable {
   const lue = saisie === undefined ? null : FORMAT.exec(saisie);
   if (!lue) return undefined;
   const [annee, mois, jour, heure = 0, minute = 0] = lue

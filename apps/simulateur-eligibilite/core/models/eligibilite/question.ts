@@ -12,6 +12,9 @@ import type { Cibles } from "./declarations/cibles.ts";
 import type { Faits } from "./declarations/faits.ts";
 import { OPTIONS, type Questions } from "./declarations/questions.ts";
 
+/** La réponse qui le dirait n'est pas donnée : on ne le sait pas encore. */
+export type Inconnu = undefined;
+
 /** Ce que lit une condition déclarée hors de son constructeur. */
 export type Context = QuestionContext<Questions, undefined, Faits>;
 

@@ -8,6 +8,7 @@
 import {
   Fait,
   type GivenAnswer,
+  type PassesOn,
   regles,
   type ValidatedAnswers,
 } from "../../../socle/index.ts";
@@ -142,7 +143,7 @@ function sansQuestion(): Fait {
 // le transport. Q2.1 est un choix unique : un autre motif écarte
 // l'hospitalisation, et l'admission en HAD (Q2.1.g) n'est pas un séjour
 // (`negation_precise_v1002` de `fait_situation_soins_qualifiante`).
-function sansSeanceNiSejour(validated: Valides): Fait | undefined {
+function sansSeanceNiSejour(validated: Valides): Fait | PassesOn {
   const motif = validated.question("Q2.1");
   const sousType = validated.question("Q2.1.g");
   if (!motif.hasAnswer() || !q13SansSeance(validated)) return undefined;
@@ -159,7 +160,7 @@ function sansSeanceNiSejour(validated: Valides): Fait | undefined {
 // cours, ne sont pas une hospitalisation (`non_ou_absence` du contrat). Il faut
 // que Q2.2.1 ait proposé « déjà hospitalisé » et qu'il soit écarté. Le
 // transfert et la permission se qualifient dans leur branche.
-function sansSejourEnCours(validated: Valides): Fait | undefined {
+function sansSejourEnCours(validated: Valides): Fait | PassesOn {
   const sansSejour = sansSeanceNiSejour(validated);
   const contextes = validated.question("Q2.2.1");
   if (

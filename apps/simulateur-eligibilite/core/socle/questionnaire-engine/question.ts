@@ -21,6 +21,9 @@ export type Answer = string | number | boolean | readonly string[] | Address;
  */
 export type Unanswered = undefined;
 
+/** La question ne se pose pas. */
+export type NotAsked = undefined;
+
 /** Les questions d'un modèle : pour chacune, le type de sa réponse. */
 export type AnyQuestions = Readonly<Record<string, Answer>>;
 
@@ -84,13 +87,12 @@ export type Question<
    */
   readonly dependencies: readonly string[];
   /**
-   * La question telle qu'elle se pose, vu les réponses. `undefined` : elle ne
-   * s'y pose pas. Ses incohérences lisent `earlier`, sans les pages suivantes.
+   * La question telle qu'elle se pose, vu les réponses, si elle s'y pose. Ses incohérences lisent `earlier`, sans les pages suivantes.
    */
   askedIn(
     seen: SeenAnswers<Questions, Cibles>,
     earlier: SeenAnswers<Questions, Cibles>,
-  ): AskedQuestion | undefined;
+  ): AskedQuestion | NotAsked;
 };
 
 export type Page<

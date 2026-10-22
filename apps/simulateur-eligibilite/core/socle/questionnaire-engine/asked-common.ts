@@ -6,8 +6,11 @@
 // qu'une API la donnera, et `askedQuestion` la relit (`asked-question.ts`).
 // Chaque sorte en dit plus dans sa classe.
 
-import { type AnswerProblem, stated } from "./answer-problem.ts";
+import { type AnswerProblem, type NoError, stated } from "./answer-problem.ts";
 import type { Answer, Reminder, Unanswered } from "./question.ts";
+
+/** Une saisie libre, sans options. */
+type FreeInput = undefined;
 
 /** Ce que toute question posée porte. */
 export type AskedCommonData = {
@@ -55,9 +58,9 @@ export class AskedCommon {
 
   /**
    * Les valeurs qu'une réponse peut porter, l'option exclusive comprise.
-   * `undefined` : une saisie libre.
+   * Sans options : une saisie libre.
    */
-  offeredValues(): readonly string[] | undefined {
+  offeredValues(): readonly string[] | FreeInput {
     return undefined;
   }
 
@@ -81,7 +84,7 @@ export class AskedCommon {
   }
 
   /** Ce qui ne va pas dans la saisie elle-même. Chaque sorte dit le sien. */
-  protected formatProblemOf(_answer: Answer): AnswerProblem | undefined {
+  protected formatProblemOf(_answer: Answer): AnswerProblem | NoError {
     return undefined;
   }
 }

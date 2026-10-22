@@ -164,6 +164,22 @@ describe("date sur un champ peigné", () => {
     expect(formatDateForField("2026-10-06", 10)).toBe("06/10/2026");
   });
 
+  it("s'écrit selon les cases du champ qui la reçoit", async () => {
+    const { read } = await remplir(
+      await testForm(),
+      [
+        { field: "naissance", text: "2026-10-06" },
+        { field: "echeance", text: "2026-10-06" },
+      ],
+      { dateFields: ["naissance", "echeance"] },
+    );
+
+    expect(read).toMatchObject({
+      naissance: "06102026",
+      echeance: "06/10/2026",
+    });
+  });
+
   it("rend telle quelle une valeur qui n'est pas une date ISO", () => {
     expect(formatDateForField("", 8)).toBe("");
   });

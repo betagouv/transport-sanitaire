@@ -12,6 +12,7 @@ import type {
   Answer,
   Answers,
   AnyCibles,
+  NotAsked,
   Page,
   Question,
   Unanswered,
@@ -77,12 +78,12 @@ function askPage(page: Page, context: Context, start: Progress) {
   return { questions, progress };
 }
 
-// La question telle qu'elle se pose, ou `undefined` quand elle ne se pose pas.
+// La question telle qu'elle se pose, ou `NotAsked`.
 function askQuestion(
   declared: Question,
   { answers, earlier, cibles }: Context,
   validated: Validated,
-): AskedQuestion | undefined {
+): AskedQuestion | NotAsked {
   const read = new ValidatedAnswers(validated);
   const seenWith = (given: Answers): SeenAnswers => ({
     answers: new GivenAnswers(given),

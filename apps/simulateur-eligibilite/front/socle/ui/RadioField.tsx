@@ -1,5 +1,4 @@
-// Un choix unique, en boutons radio : la variante « riche » du DSFR, où chaque
-// option est une carte bordée.
+// Un choix unique, en boutons radio : chaque option est une carte bordée.
 
 import { type Choice, ChoiceFieldset } from "./ChoiceFieldset";
 
@@ -23,7 +22,6 @@ export function RadioField(props: Props) {
     <ChoiceFieldset
       id={`fieldset-${props.id}`}
       type="radio"
-      rich
       legend={props.label}
       hint={props.hint}
       lead={props.lead}

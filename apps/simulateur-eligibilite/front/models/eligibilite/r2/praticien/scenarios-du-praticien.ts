@@ -6,9 +6,11 @@
 // ouverts (`scenarios-de-la-caisse.ts`).
 
 import type {
+  AucunScenario,
   IssuePraticien,
   ScenarioPraticien,
 } from "../../../../../core/models/eligibilite/declarations/catalogue-resultats";
+import type { NonProuve } from "../precisions-du-resultat";
 import type { Trace } from "../trace-du-resultat";
 import { scenariosDeLaCaisse } from "./scenarios-de-la-caisse";
 
@@ -42,7 +44,7 @@ type Contexte = Readonly<Record<string, string | undefined>>;
 function contexteDe(
   issue: Exclude<IssueDuPraticien, "ISSUE_CAISSE">,
   { precisions }: Trace,
-): Contexte | undefined {
+): Contexte | NonProuve {
   if (issue === "ISSUE_ETABLISSEMENT") return precisions.article80Context;
   if (issue === "ISSUE_PERMISSION_PATIENT") return precisions.permissionContext;
   return precisions.convocationContext;
@@ -53,7 +55,7 @@ function contexteDe(
 function scenarioDuContexte(
   { scenarios }: IssuePraticien,
   contexte: Contexte | undefined,
-): ScenarioPraticien | undefined {
+): ScenarioPraticien | AucunScenario {
   const actifs = scenarios.filter(({ inactive }) => !inactive);
   const prouves = actifs.filter((scenario) =>
     estProuve(scenario, contexte ?? {}),

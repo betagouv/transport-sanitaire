@@ -20,6 +20,9 @@ export type AnswerProblem =
   /** Une phrase de l'éditeur : un blocage, une incompatibilité, une incohérence. */
   | { readonly kind: "stated"; readonly text: string };
 
+/** Rien à redire : la réponse est bonne. */
+export type NoError = undefined;
+
 /** Une réponse attendue manque. */
 export const MISSING: AnswerProblem = { kind: "missing" };
 

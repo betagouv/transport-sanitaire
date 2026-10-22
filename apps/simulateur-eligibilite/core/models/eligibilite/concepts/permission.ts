@@ -12,6 +12,7 @@ import {
   LocalDateTime,
 } from "../../../socle/index.ts";
 import type { Questions } from "../declarations/questions.ts";
+import type { Inconnu } from "../question.ts";
 
 /** La permission que ces réponses décrivent. */
 export class Permission {
@@ -21,7 +22,7 @@ export class Permission {
   private readonly fin: LocalDateTime;
   private readonly repetition: GivenAnswer<Questions["Q2.8.5"]>;
   private readonly finDeLaPeriode: LocalDateTime;
-  private readonly semaines: Questions["Q2.8.6.a"] | undefined;
+  private readonly semaines: Questions["Q2.8.6.a"] | Inconnu;
 
   private constructor(reponses: AnswersReader<Questions>) {
     this.tranche = reponses.question("Q2.7");
@@ -97,7 +98,7 @@ export class Permission {
   }
 
   /** Une permission revient toutes les tant de semaines (Q2.8.6.a). */
-  semainesEntreDeuxPermissions(): number | undefined {
+  semainesEntreDeuxPermissions(): number | Inconnu {
     return this.semaines;
   }
 
@@ -105,7 +106,7 @@ export class Permission {
    * Le plus de trajets qu'un mois peut compter : deux par permission, une
    * permission toutes les N semaines, sur 31 jours.
    */
-  trajetsMensuelsMaximum(): number | undefined {
+  trajetsMensuelsMaximum(): number | Inconnu {
     if (this.semaines === undefined || this.semaines < 1) return undefined;
     return 2 * Math.ceil(31 / (7 * this.semaines));
   }

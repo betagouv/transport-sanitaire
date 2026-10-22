@@ -138,7 +138,8 @@ core/                    le métier, sans React ni DOM : ce qu'un serveur ou un 
                          contextes, trajet, transfert, permission, convocation,
                          retour pénitentiaire, branche). Chaque fait se déclare
                          dans un seul thème
-      p3/                le complément du cerfa
+      p3/                le complément du cerfa : le trajet, le soin, l'urgence, les
+                         évènements et l'exonération
   socle/                 ce qui ne dépend d'aucune version. `model.ts` est le contrat
                          métier qu'un modèle remplit (`CoreModel`), `index.ts` ce
                          qu'il a le droit d'importer
@@ -165,7 +166,9 @@ front/                   le front, bundlé par Vite
         praticien/       les cinq issues sans fiche patient
         fiche-negative/  `ISSUE_NON_ELIGIBLE`
         fiche-positive/  la prescription, le S3141 et les deux accords préalables
-      r3/                le résultat du complément
+      r3/                le résultat du complément : le document de chaque support
+        rubriques/       ce que les cerfa partagent, sans lien à aucun d'eux (D-138)
+        s3141/           le S3141, assemblé de rubriques
   socle/                 ce qui ne dépend d'aucune version. `model.ts` est le contrat
                          d'écran qu'un modèle remplit (`Model`), qui porte son
                          métier sous `core`, `index.ts` ce qu'il a le droit d'importer
@@ -233,7 +236,9 @@ patient négative pour `ISSUE_NON_ELIGIBLE` et la fiche patient positive pour
 `ISSUE_PMT`, `ISSUE_S3141` et les deux demandes d'accord préalable : les dix
 issues ont leur texte et leurs boutons. « Compléter la prescription »,
 « Compléter la demande d’accord préalable » et « Compléter la demande
-d’examen » ouvrent P3, qui pose le trajet (#144).
+d’examen » ouvrent P3, qui pose le trajet (#144). Son résultat, R3, imprime et
+télécharge le document du support : le S3141 rempli (#158), la PMT et la DAP
+encore vierges.
 L'avancement
 est dans l'issue 50 du dépôt, les décisions dans
 [`docs/knowledge/adr/journal-des-decisions-v10.md`](docs/knowledge/adr/journal-des-decisions-v10.md).
@@ -256,8 +261,8 @@ sert à tenir en vie, et sous test, ce que le parcours réel reprendra :
 | Invalidation | Une réponse changée efface les réponses qui en dépendent, et elles seules. | `core/socle/questionnaire-engine/page-commit.ts` |
 | Verrou | Au résultat, « Précédent » rouvre le questionnaire. L'action principale verrouille : le complément est un second parcours, qui ne repose aucune question d'avant et n'a pas de « Précédent » sur sa première page. | `simulateur/Simulateur.tsx` |
 | Stepper | Il compte des parties, jamais des pages. Les résultats l'affichent aussi. | `questionnaire-engine/Stepper.tsx` |
-| Page du premier résultat | Le socle compose la page : le stepper avec son titre et ce qui suit (« Étape suivante : … » ou « Évaluation terminée. »), puis le `h1`, l'introduction et le corps que le modèle donne (D-124), puis une rangée de boutons sous un trait. « Compléter » verrouille et se tient en dernier ; le modèle le nomme selon la préconisation, ou le retire (libellé `null`), et il n'est posé que si la partie suivante a des pages ou un cerfa. Un résultat qui charge ses textes garde le stepper et les boutons. Rien ne s'imprime encore : la feuille viendra avec la fiche patient. | `simulateur/FirstResultat.tsx` |
-| Téléchargement du cerfa | Sous le second résultat, l'action principale télécharge le cerfa, généré dans le navigateur dès que le résultat s'affiche. Il porte la date du jour où le complément a été validé, qui ne change pas tant qu'il ne l'est pas à nouveau. Un échec s'affiche sous le résultat. Le PDF est aplati, sans aucun champ : il s'imprime depuis le lecteur, et ne s'y corrige plus. | `cerfa/CerfaDownload.tsx`, branché par `simulateur/Resultats.tsx` |
+| Page du premier résultat | Le socle compose la page : le stepper avec son titre et ce qui suit (« Étape suivante : … » ou « Évaluation terminée. »), puis le `h1`, l'introduction et le corps que le modèle donne (D-124), puis une rangée de boutons sous un trait. « Compléter » verrouille et se tient en dernier ; le modèle le nomme selon la préconisation, ou le retire (libellé `null`), et il n'est posé que si la partie suivante a des pages ou un cerfa. Un résultat qui charge ses textes garde le stepper et les boutons. Toute fiche à remettre au patient est une feuille (`sheet`, D-125) : les boutons passent au-dessus d'elle, puis la liseuse la pose sur fond gris, sous une barre « Imprimer », et seule la feuille s'imprime. « Télécharger » viendra avec #129. | `simulateur/FirstResultat.tsx` |
+| Impression et téléchargement du cerfa | Sous le second résultat, « Imprimer » et « Télécharger » portent le même cerfa, généré une fois dans le navigateur dès que le résultat s'affiche (D-135). « Imprimer » ouvre le dialogue d'impression sur le PDF, chargé dans un cadre invisible, et non sur la page. Le cerfa porte la date du jour où le complément a été validé, qui ne change pas tant qu'il ne l'est pas à nouveau. Un échec s'affiche sous le résultat. Le PDF est aplati, sans aucun champ : il ne se corrige plus. Le titre du résultat est celui que le modèle donne à la préconisation. | `cerfa/CerfaActions.tsx`, `cerfa/print-pdf.ts`, branchés par `simulateur/Resultats.tsx` |
 | Texte trop long | Un texte n'est jamais coupé, et ne bloque jamais le cerfa. Trop long pour son cadre, il passe de 9 à 8 pt, puis perd son commentaire facultatif : un avertissement le dit au-dessus du bouton, avant tout téléchargement. S'il ne tient toujours pas, il déborde sous son cadre, par-dessus ce qui s'y trouve, et ne descend sous 8 pt, jusqu'à 6 pt, que pour rester sur la page. | `cerfa/fill-cerfa.ts`, `cerfa/overflow.ts` |
 | Résultat sans suite | Quand la préconisation ne donne pas de libellé pour l'action qui verrouille, ou pas de partie suivante qui ait des pages ou un cerfa, le premier résultat est le dernier écran : pas de bouton pour verrouiller, et le stepper s'arrête sur lui. | `simulateur/FirstResultat.tsx` |
 

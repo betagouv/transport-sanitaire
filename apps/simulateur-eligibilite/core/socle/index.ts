@@ -7,7 +7,11 @@
 
 export { Cible, cibleValues } from "./decision-engine/cible.ts";
 export { Fait } from "./decision-engine/fait.ts";
-export { citant, regles } from "./decision-engine/fait-builder.ts";
+export {
+  citant,
+  type PassesOn,
+  regles,
+} from "./decision-engine/fait-builder.ts";
 export {
   FaitCatalogue,
   type FaitContext,
@@ -26,6 +30,7 @@ export { LocalDateTime } from "./questionnaire-engine/local-date-time.ts";
 export type {
   Answers,
   QuestionnairePart,
+  Unanswered,
 } from "./questionnaire-engine/question.ts";
 export type { QuestionContext } from "./questionnaire-engine/question-context.ts";
 export { questionsOf } from "./questionnaire-engine/question-factory.ts";

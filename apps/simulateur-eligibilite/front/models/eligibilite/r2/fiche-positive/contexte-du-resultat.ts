@@ -7,6 +7,7 @@
 // exactement les codes établis. Les mots viennent du catalogue.
 
 import type {
+  AucunTexte,
   IssuePositive,
   TexteCode,
 } from "../../../../../core/models/eligibilite/declarations/catalogue-resultats";
@@ -25,7 +26,7 @@ export function codesDeContexte(cibles: Cibles): readonly string[] {
 export function phraseDuContexte(
   issue: IssuePositive,
   trace: Trace,
-): string | undefined {
+): string | AucunTexte {
   const texte = texteDesCodes(issue.contexts, trace.cibles);
   return texte && avecLeLexique(issue, trace, texte);
 }
@@ -34,7 +35,7 @@ export function phraseDuContexte(
 export function motifAdministratif(
   issue: IssuePositive,
   trace: Trace,
-): string | undefined {
+): string | AucunTexte {
   const texte = texteDesCodes(issue.administrativeBases, trace.cibles);
   return texte && avecLeLexique(issue, trace, texte);
 }
@@ -70,7 +71,7 @@ export function avecLeLexique(
 export function texteDuCodeExact(
   textes: readonly TexteCode[],
   etablis: readonly string[],
-): string | undefined {
+): string | AucunTexte {
   return textes.find(({ codes }) => memesCodes(codes, etablis))?.text;
 }
 
@@ -91,7 +92,7 @@ const CODES = [
 function texteDesCodes(
   textes: readonly TexteCode[],
   cibles: Cibles,
-): string | undefined {
+): string | AucunTexte {
   const etablis = codesDeContexte(cibles);
   if (etablis.length === 0) return undefined;
   return texteDuCodeExact(textes, etablis);

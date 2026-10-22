@@ -7,7 +7,10 @@
 // Q2.8.5, le catalogue ne dit pas quoi montrer : aucune phrase n'est choisie
 // à sa place.
 
-import type { CatalogueResultats } from "../../../../../core/models/eligibilite/declarations/catalogue-resultats";
+import type {
+  AucunTexte,
+  CatalogueResultats,
+} from "../../../../../core/models/eligibilite/declarations/catalogue-resultats";
 import type { Trace } from "../trace-du-resultat";
 
 type IssueS3141 = CatalogueResultats["issues"]["ISSUE_S3141"];
@@ -16,7 +19,7 @@ type IssueS3141 = CatalogueResultats["issues"]["ISSUE_S3141"];
 export function phraseDeLaPermission(
   issue: IssueS3141,
   trace: Trace,
-): string | undefined {
+): string | AucunTexte {
   if (trace.permissionRepeated === undefined) return undefined;
   const repetee = trace.permissionRepeated ? "R" : "U";
   const ambulance = trace.cibles.cible_mode_ambulance.isOui() ? "-B" : "";
@@ -27,7 +30,7 @@ export function phraseDeLaPermission(
 export function motifDeLaPermission(
   issue: IssueS3141,
   trace: Trace,
-): string | undefined {
+): string | AucunTexte {
   if (trace.permissionRepeated === undefined) return undefined;
   const suffixe = trace.permissionRepeated ? "N" : "1";
   return texte(issue.permissionAdministrative, `MA-S3141-${suffixe}`);
@@ -38,6 +41,6 @@ export function motifDeLaPermission(
 function texte(
   textes: readonly { id: string; text: string }[],
   id: string,
-): string | undefined {
+): string | AucunTexte {
   return textes.find((candidat) => candidat.id === id)?.text;
 }

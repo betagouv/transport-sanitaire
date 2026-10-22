@@ -1,25 +1,28 @@
 // La fiche patient positive, telle qu'elle s'affiche (#135). Les seeds
 // `issue-pmt` et `issue-s3141` donnent les textes des aperçus de l'éditeur
 // (recopiés de leurs PDF). `eligibilite` donne le titre du prescripteur et sa
-// phrase ; la fiche est le corps, que le socle place.
+// phrase ; la fiche est la feuille, posée ici dans la liseuse du socle.
 
 import { render, screen, within } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 import { SEEDS } from "../../../core/models/eligibilite/seeds-catalogue";
 import { catalogueResultats } from "../../../front/models/eligibilite/r2/catalogue-resultats";
 import { eligibilite } from "../../../front/models/eligibilite/r2/resultat";
+import { SheetViewer } from "../../../front/socle/simulateur/SheetViewer";
 import { lectureDe, type Reponses } from "./reponses-de-la-permission";
 
 // Le catalogue est chargé une fois : le premier test n'attend pas 750 ko.
 await catalogueResultats();
 
-// Affiche le corps du résultat de la seed, et en donne le titre.
+// Affiche la feuille du résultat de la seed dans la liseuse, et donne le titre
+// de la page.
 const afficher = async (id: string) => {
   const seed = SEEDS.find((candidate) => candidate.id === id);
   if (!seed) throw new Error(`Seed inconnue : ${id}`);
   const answers = seed.answers as Reponses;
   const resultat = await eligibilite(lectureDe(answers));
-  render(resultat.body);
+  if (!resultat.sheet) throw new Error(`Pas de feuille : ${id}`);
+  render(<SheetViewer sheet={resultat.sheet} />);
   return resultat.title;
 };
 

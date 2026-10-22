@@ -5,17 +5,13 @@ import { useId, useState } from "react";
 
 export type Help = { label: string; items: readonly string[] };
 
-type Props = {
-  help: Help;
-  /** Aligne l'aide sur le libellé d'une case, décalé par la case elle-même. */
-  indented?: boolean;
-};
+type Props = { help: Help };
 
-export function OptionHelp({ help, indented }: Props) {
+export function OptionHelp({ help }: Props) {
   const [open, setOpen] = useState(false);
   const listId = useId();
   return (
-    <div style={{ margin: indented ? "-0.25rem 0 0.5rem 2rem" : "0 0 1rem" }}>
+    <div style={{ margin: "0 0 1rem" }}>
       <button
         type="button"
         className="fr-link fr-link--sm"

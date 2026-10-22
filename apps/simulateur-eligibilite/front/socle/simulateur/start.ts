@@ -67,9 +67,12 @@ export function startingScreen(model: Model, answers: Answers | null): Screen {
 
 // ---- implémentation ----
 
+/** Le verrou n'est pas franchi : on reste sur le premier résultat. */
+type NotPastLock = undefined;
+
 // Répondre à une question d'après le verrou, c'est l'avoir franchi. Sans une
 // telle réponse, ou sans cerfa à compléter, on reste sur le premier résultat.
-function screenAfterLock(model: Model, answers: Answers): Screen | undefined {
+function screenAfterLock(model: Model, answers: Answers): Screen | NotPastLock {
   const part = model.core.complement;
   const { form } = model.cerfa;
   const after = part.pages.flatMap((page) => page.questions.map((q) => q.id));

@@ -1,7 +1,7 @@
 // Les saisies libres telles qu'elles se posent : un nombre, un texte, une
 // date, une case seule. Chacune dit ce qui ne va pas dans sa saisie.
 
-import { type AnswerProblem, MISSING } from "./answer-problem.ts";
+import { type AnswerProblem, MISSING, type NoError } from "./answer-problem.ts";
 import { AskedCommon, type AskedCommonData } from "./asked-common.ts";
 import type { Answer, Unanswered } from "./question.ts";
 
@@ -30,9 +30,7 @@ export class AskedNumber extends AskedCommon {
     this.unit = data.unit;
   }
 
-  protected override formatProblemOf(
-    answer: Answer,
-  ): AnswerProblem | undefined {
+  protected override formatProblemOf(answer: Answer): AnswerProblem | NoError {
     if (typeof answer !== "number" || !Number.isFinite(answer))
       return { kind: "not a number" };
     if (this.integer && !Number.isInteger(answer))
@@ -87,9 +85,7 @@ export class AskedDate extends AskedCommon {
     this.max = data.max;
   }
 
-  protected override formatProblemOf(
-    answer: Answer,
-  ): AnswerProblem | undefined {
+  protected override formatProblemOf(answer: Answer): AnswerProblem | NoError {
     if (typeof answer !== "string" || answer.trim() === "") return MISSING;
     const { min, max } = this;
     if (min !== undefined && answer < min) return { kind: "date before", min };

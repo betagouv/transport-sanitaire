@@ -18,6 +18,9 @@ const R2 = `${ECRAN}/r2`;
 const P3 = `${METIER}/p3`;
 const R3 = `${ECRAN}/r3`;
 const CONCEPTS = `${METIER}/concepts`;
+const RUBRIQUES = `${R3}/rubriques`;
+// Un dossier par cerfa rempli. La PMT et la DAP y viendront (#160, #161).
+const CERFA_DE_R3 = ["s3141"].map((cerfa) => `${R3}/${cerfa}`);
 const FAMILLES_DE_R2 = ["praticien", "fiche-negative", "fiche-positive"].map(
   (famille) => `${R2}/${famille}`,
 );
@@ -74,6 +77,32 @@ describe("les domaines du modèle de l'éditeur", () => {
       "Le praticien, la fiche négative et la fiche positive lisent chacun " +
         "leurs textes dans le catalogue. Ce qu'ils partagent (la trace, la " +
         "page de la fiche, le texte enrichi) vit à la racine de `r2/`.",
+    ).toEqual([]);
+  });
+
+  it("les rubriques des cerfa ne lisent aucun cerfa", () => {
+    expect(
+      franchissements([RUBRIQUES], (cible) =>
+        CERFA_DE_R3.some((cerfa) => dans(cerfa)(cible)),
+      ),
+      "Une rubrique se lit sur les réponses et les cibles, sans savoir quel " +
+        "cerfa la reçoit : chaque cerfa assemble celles qu'il porte. Faire " +
+        "évoluer ou retirer un cerfa ne touche pas les autres (D-138).",
+    ).toEqual([]);
+  });
+
+  it("les cerfa de R3 ne s'importent pas entre eux", () => {
+    const croisements = CERFA_DE_R3.flatMap((cerfa) =>
+      franchissements(
+        [cerfa],
+        (cible) =>
+          CERFA_DE_R3.some((autre) => dans(autre)(cible)) &&
+          !dans(cerfa)(cible),
+      ),
+    );
+    expect(
+      croisements,
+      "Ce que deux cerfa partagent est une rubrique, dans `r3/rubriques/`.",
     ).toEqual([]);
   });
 });

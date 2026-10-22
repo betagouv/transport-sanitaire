@@ -8,7 +8,12 @@
 // permission, ni sa charge par le patient, ni la règle du mineur. Le cadre de
 // Q2.8.4.a ne change aucun fait.
 
-import { Fait, regles, type ValidatedAnswers } from "../../../socle/index.ts";
+import {
+  Fait,
+  type PassesOn,
+  regles,
+  type ValidatedAnswers,
+} from "../../../socle/index.ts";
 import { Permission } from "../concepts/permission.ts";
 import { Sejour } from "../concepts/sejour.ts";
 import {
@@ -37,7 +42,7 @@ export function optionsAdultesAProposer(validated: Valides): boolean {
  * question qui la pose a écarté l'option 9 de Q2.1 (choix unique), ou l'option
  * 2 de Q2.2.1.a. Q2.5 ne se pose pas alors ; si elle est validée, elle décide.
  */
-export function permissionSansTransfert(validated: Valides): Fait | undefined {
+export function permissionSansTransfert(validated: Valides): Fait | PassesOn {
   if (validated.question("Q2.5").isValidated()) return undefined;
   if (validated.question("Q2.1").is("11_PERMISSION"))
     return Fait.non(
@@ -84,7 +89,7 @@ const SANS_PERMISSION = "fait_permission vaut « non » : aucune permission.";
 
 // La charge que Q2.7 établit : celle d'un adulte à sa charge, que Q2.7.a
 // confirme. Q2.7 sans réponse n'établit rien.
-function chargeDeQ27(validated: Valides): Fait | undefined {
+function chargeDeQ27(validated: Valides): Fait | PassesOn {
   const tranche = validated.question("Q2.7");
   if (!tranche.hasAnswer()) return undefined;
   const source = `Q2.7 : « ${tranche.value} ».`;
@@ -100,7 +105,7 @@ function chargeDeQ27(validated: Valides): Fait | undefined {
 
 // L'admissibilité que Q2.7 établit : celle d'un patient de moins de 20 ans,
 // que Q2.8.4 décide. Avant Q2.8.4, rien.
-function admissibiliteDeQ27(validated: Valides): Fait | undefined {
+function admissibiliteDeQ27(validated: Valides): Fait | PassesOn {
   const tranche = validated.question("Q2.7");
   if (!tranche.hasAnswer()) return undefined;
   if (!Permission.of(validated).estDUnMineurDeVingtAns())

@@ -11,8 +11,11 @@ import type { Cibles } from "../../../../../core/models/eligibilite/declarations
 /** Le partage du transport : prouvé, écarté, ou que les réponses ne disent pas. */
 export type Partage = "incompatible" | "possible" | "inconnu";
 
+/** Les règles n'ont pas donné de mode. */
+type SansMode = undefined;
+
 /** Le libellé de mode du catalogue ; absent si les règles n'ont pas de mode. */
-export function libelleDuMode(cibles: Cibles): string | undefined {
+export function libelleDuMode(cibles: Cibles): string | SansMode {
   switch (cibles.cible_mode_id.value) {
     case "VEHICULE_PERSONNEL":
       return avecProche("Véhicule personnel", cibles);

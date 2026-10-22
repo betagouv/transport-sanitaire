@@ -17,13 +17,16 @@
 
 import type { AskedCommonData } from "./asked-common.ts";
 import type { AskedQuestion } from "./asked-question.ts";
-import type { AnyQuestions, Reminder } from "./question.ts";
+import type { AnyQuestions, NotAsked, Reminder } from "./question.ts";
 import {
   contextOf,
   type FaitsOf,
   type QuestionContext,
   type SeenAnswers,
 } from "./question-context.ts";
+
+/** Rien de calculé : le rappel fixe de `reminder` vaut. */
+type NothingComputed = undefined;
 
 /** Une condition sur les réponses. Elle lit le contexte de la question. */
 export type Condition<Questions extends AnyQuestions, Cibles, Faits> = (
@@ -45,7 +48,7 @@ export type CommonSettings<Questions extends AnyQuestions, Cibles, Faits> = {
   labelFrom?(context: QuestionContext<Questions, Cibles, Faits>): string;
   reminderFrom?(
     context: QuestionContext<Questions, Cibles, Faits>,
-  ): Reminder | undefined;
+  ): Reminder | NothingComputed;
 };
 
 /** Une question déclarée, sans ce que sa sorte y ajoute. */
@@ -102,7 +105,7 @@ export abstract class DeclaredQuestion<
   reminderFrom(
     reminder: (
       context: QuestionContext<Questions, Cibles, Faits>,
-    ) => Reminder | undefined,
+    ) => Reminder | NothingComputed,
   ): this {
     return this.withSettings({ reminderFrom: reminder });
   }
@@ -144,14 +147,13 @@ export abstract class DeclaredQuestion<
   }
 
   /**
-   * La question telle qu'elle se pose, vu les réponses. `undefined` : elle ne
-   * s'y pose pas. Ses incohérences lisent `earlier`, qui ne voit pas les
+   * La question telle qu'elle se pose, vu les réponses, si elle s'y pose. Ses incohérences lisent `earlier`, qui ne voit pas les
    * réponses des pages suivantes.
    */
   askedIn(
     seen: SeenAnswers<Questions, Cibles>,
     earlier: SeenAnswers<Questions, Cibles>,
-  ): AskedQuestion | undefined {
+  ): AskedQuestion | NotAsked {
     const { settings } = this;
     const context = contextOf(seen, settings.faits);
     if (!settings.conditions.every((condition) => condition(context)))

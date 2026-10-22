@@ -45,6 +45,12 @@ export function fondementDeLAccord(
   };
 }
 
+/** Le rappel d'attente, et le nom de son encadré, tiré du gabarit. */
+export type RappelDAttente = { readonly nom: string; readonly texte: string };
+
+/** Les règles ne disent pas s'il faut attendre l'accord. */
+type AucunRappel = undefined;
+
 /**
  * Le rappel d'attente : le texte de l'issue sans urgence quand les règles
  * disent d'attendre l'accord, celui de l'urgence attestée quand elles disent
@@ -53,19 +59,26 @@ export function fondementDeLAccord(
 export function rappelDAttente(
   catalogue: CatalogueResultats,
   cibles: Cibles,
-): string | undefined {
-  const { ISSUE_DAP_SANS_URGENCE, ISSUE_DAP_URGENCE_ATTESTEE } =
-    catalogue.issues;
-  if (cibles.cible_attente_accord.isOui()) {
-    return ISSUE_DAP_SANS_URGENCE.blueReminder ?? undefined;
-  }
-  if (cibles.cible_attente_accord.isNon()) {
-    return ISSUE_DAP_URGENCE_ATTESTEE.blueReminder ?? undefined;
-  }
-  return undefined;
+): RappelDAttente | AucunRappel {
+  const attente = cibles.cible_attente_accord;
+  if (!attente.isOui() && !attente.isNon()) return undefined;
+  const { issue, nom } = attente.isOui() ? EN_ATTENTE : SANS_ATTENTE;
+  const texte = catalogue.issues[issue].blueReminder;
+  return texte ? { nom, texte } : undefined;
 }
 
 // ---- implémentation ----
+
+// D'où vient le texte du rappel, et le nom de son encadré, selon qu'il faut
+// attendre l'accord ou non. Les noms sont ceux de `rendu-resultats.mjs`.
+const EN_ATTENTE = {
+  issue: "ISSUE_DAP_SANS_URGENCE",
+  nom: "Délai de l’accord préalable",
+} as const;
+const SANS_ATTENTE = {
+  issue: "ISSUE_DAP_URGENCE_ATTESTEE",
+  nom: "Urgence attestée : dispense d’attente",
+} as const;
 
 // Chaque code de motif, et la cible qui le prouve.
 const MOTIFS = [

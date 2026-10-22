@@ -1,5 +1,6 @@
-// Un choix multiple, en cases à cocher. Une option peut être exclusive, et
-// deux options peuvent s'exclure l'une l'autre.
+// Un choix multiple, en cases à cocher : chaque option est une carte bordée,
+// comme un bouton radio. Une option peut être exclusive, et deux options
+// peuvent s'exclure l'une l'autre.
 
 import { type ChangeEvent, useState } from "react";
 import { type Choice, ChoiceFieldset, type Message } from "./ChoiceFieldset";
@@ -53,12 +54,15 @@ export function CheckboxField(props: Props) {
 
 type Toggled = { values: readonly string[]; explanation?: string };
 
+/** Rien à afficher sous les cases. */
+type NoMessage = undefined;
+
 // Les erreurs passent devant l'explication : ce sont elles qui retiennent la
 // page.
 function message(
   errors: readonly string[] = [],
   explanation?: string,
-): Message | undefined {
+): Message | NoMessage {
   if (errors.length > 0) return { state: "error", texts: errors };
   if (explanation) return { state: "info", texts: [explanation] };
   return undefined;

@@ -2,25 +2,28 @@
 // (#136). Les seeds `issue-dap-sans-urgence` et `issue-dap-urgence-attestee`
 // donnent les textes des aperçus PDF de l'éditeur, recopiés ici. Les aperçus
 // HTML ne servent pas de référence : leur corps est réécrit par un script.
-// `eligibilite` donne le titre du prescripteur et sa phrase ; la fiche est le
-// corps, que le socle place.
+// `eligibilite` donne le titre du prescripteur et sa phrase ; la fiche est la
+// feuille, posée ici dans la liseuse du socle.
 
 import { render, screen, within } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 import { SEEDS } from "../../../core/models/eligibilite/seeds-catalogue";
 import { catalogueResultats } from "../../../front/models/eligibilite/r2/catalogue-resultats";
 import { eligibilite } from "../../../front/models/eligibilite/r2/resultat";
+import { SheetViewer } from "../../../front/socle/simulateur/SheetViewer";
 import { lectureDe, type Reponses } from "./reponses-de-la-permission";
 
 await catalogueResultats();
 
-// Affiche le corps du résultat de la seed, et en donne le titre.
+// Affiche la feuille du résultat de la seed dans la liseuse, et donne le titre
+// de la page.
 const afficher = async (id: string) => {
   const seed = SEEDS.find((candidate) => candidate.id === id);
   if (!seed) throw new Error(`Seed inconnue : ${id}`);
   const answers = seed.answers as Reponses;
   const resultat = await eligibilite(lectureDe(answers));
-  render(resultat.body);
+  if (!resultat.sheet) throw new Error(`Pas de feuille : ${id}`);
+  render(<SheetViewer sheet={resultat.sheet} />);
   return resultat.title;
 };
 
@@ -118,6 +121,11 @@ describe("la fiche de la seed issue-dap-sans-urgence (dialyse à plus de 150 km)
 
   it("donne le rappel d'attente, puis le bloc des frais", async () => {
     await afficher("issue-dap-sans-urgence");
+    expect(
+      fiche().getByRole("complementary", {
+        name: "Délai de l’accord préalable",
+      }),
+    ).toBeInTheDocument();
     const rappel = fiche().getByText(
       "La prise en charge de votre transport nécessite l’accord préalable de l’Assurance Maladie. Sans réponse dans les 15 jours suivant l’envoi de votre demande, l’accord est considéré comme obtenu. Attendez cet accord avant d’effectuer le transport.",
     );
@@ -180,6 +188,11 @@ describe("la fiche de la seed issue-dap-urgence-attestee (urgence attestée en Q
 
   it("donne le rappel de l'urgence, pas celui de l'attente", async () => {
     await afficher("issue-dap-urgence-attestee");
+    expect(
+      fiche().getByRole("complementary", {
+        name: "Urgence attestée : dispense d’attente",
+      }),
+    ).toBeInTheDocument();
     expect(
       fiche().getByText(
         "L’urgence de votre transport est attestée par votre médecin. Vous pouvez effectuer ce transport sans attendre l’accord préalable de l’Assurance Maladie.",

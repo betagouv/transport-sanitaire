@@ -25,6 +25,9 @@ import { Fait } from "./fait.ts";
 /** Ce qu'une réponse dit du fait : l'un de ses trois états. */
 type Etat = "oui" | "non" | "inconnu";
 
+/** La règle n'établit pas le fait : elle laisse la main à la suivante. */
+export type PassesOn = undefined;
+
 /** Les règles d'un fait, à écrire dans l'ordre : `regles().ouiSi(…).sinon(…)`. */
 export function regles(): FaitBuilder {
   return new FaitBuilder([]);
@@ -120,10 +123,10 @@ class FaitBuilder {
 
   /**
    * Ce fait, établi ailleurs, l'emporte s'il est donné, même inconnu.
-   * `undefined` laisse la main. Pour un cas que les autres règles n'écrivent
+   * `PassesOn` laisse la main. Pour un cas que les autres règles n'écrivent
    * pas.
    */
-  retient(fait: Fait | undefined): FaitBuilder {
+  retient(fait: Fait | PassesOn): FaitBuilder {
     return this.#then(() => fait);
   }
 
@@ -134,7 +137,7 @@ class FaitBuilder {
   sinon(fallback: string | Fait): Fait {
     const sinon =
       typeof fallback === "string" ? Fait.inconnu(fallback) : fallback;
-    const found = this.#rules.reduce<Fait | undefined>(
+    const found = this.#rules.reduce<Fait | PassesOn>(
       (fait, rule) => fait ?? rule(sinon),
       undefined,
     );
@@ -150,7 +153,7 @@ class FaitBuilder {
 
 // Une règle établit le fait, ou laisse la main. Elle reçoit le fait de
 // `sinon`, que `seulementSi` reprend.
-type Rule = (sinon: Fait) => Fait | undefined;
+type Rule = (sinon: Fait) => Fait | PassesOn;
 
 function formatted(value: unknown): string {
   return Array.isArray(value) ? value.join(", ") : String(value);

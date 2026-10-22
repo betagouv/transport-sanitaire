@@ -14,6 +14,7 @@
 import {
   Fait,
   type GivenAnswer,
+  type PassesOn,
   regles,
   type ValidatedAnswers,
 } from "../../../socle/index.ts";
@@ -105,7 +106,7 @@ export function exceptionAProposer(
  */
 export function hospitalisationDuTransfert(
   validated: Valides,
-): Fait | undefined {
+): Fait | PassesOn {
   const deplacement = validated.question("Q2.5");
   if (deplacement.is("1_TRANSFERT") && Sejour.of(validated).estCoche())
     return Fait.oui("Q2.2.1 : séjour coché, Q2.5 : « 1_TRANSFERT ».");
@@ -198,7 +199,7 @@ function centre15(validated: Valides): Fait {
 
 // L'option 3 de Q2.6 : le Centre 15 a-t-il demandé le transport ? Non
 // proposée, elle ne dit rien.
-function centre15DeQ26(validated: Valides): Fait | undefined {
+function centre15DeQ26(validated: Valides): Fait | PassesOn {
   const exceptions = validated.question("Q2.6");
   return exceptions.hasAnswer()
     ? exceptions.faitOf("3_CENTRE_QUINZE")

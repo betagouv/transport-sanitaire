@@ -15,6 +15,8 @@ import {
   PDFTextField,
   StandardFonts,
 } from "pdf-lib";
+import { keepBoxAppearances } from "./box-appearances";
+import { formatDateForField } from "./dates";
 import type { Drawing } from "./flatten-cerfa";
 import { overflowsOf } from "./overflow";
 import { sizeInField } from "./text-fit";
@@ -43,6 +45,8 @@ export type FillOptions = {
    * sont aplaties sur une ligne.
    */
   readonly singleLineFields?: readonly string[];
+  /** Champs qui reçoivent une date ISO, à écrire selon leurs cases. */
+  readonly dateFields?: readonly string[];
 };
 
 /** Le PDF rempli, et ce que les champs n'ont pas pu recevoir. */
@@ -68,11 +72,15 @@ export type Filled = {
 export async function fillCerfa(
   template: Uint8Array | ArrayBuffer,
   entries: readonly FieldEntry[],
-  { singleLineFields = [] }: FillOptions = {},
+  { singleLineFields = [], dateFields = [] }: FillOptions = {},
 ): Promise<Filled> {
   const document = await PDFDocument.load(template);
+  keepBoxAppearances(document);
   checkBoxes(document, entries.filter(isBox));
-  const texts = entries.filter(isText).map(oneLineIn(singleLineFields));
+  const texts = entries
+    .filter(isText)
+    .map(oneLineIn(singleLineFields))
+    .map(asDateIn(document, dateFields));
   const written = await writeTexts(document, texts);
   showValues(document);
   return { pdf: await document.save(), ...written };
@@ -118,6 +126,16 @@ function oneLineIn(singleLineFields: readonly string[]) {
             : { comment: flatten(entry.comment) }),
         }
       : entry;
+}
+
+// Une date ISO destinée à un champ de `dateFields` s'écrit selon ses cases : un
+// champ sans limite en a dix.
+function asDateIn(document: PDFDocument, dateFields: readonly string[]) {
+  return (entry: Text): Text => {
+    if (!dateFields.includes(entry.field)) return entry;
+    const boxCount = textFieldOf(document, entry.field).getMaxLength() ?? 10;
+    return { ...entry, text: formatDateForField(entry.text, boxCount) };
+  };
 }
 
 /**
@@ -176,12 +194,15 @@ function textFieldOf(document: PDFDocument, name: string): PDFTextField {
   return field;
 }
 
+/** Rien n'est écrit dans le champ : l'étape suivante essaie autrement. */
+type NotWritten = undefined;
+
 // Le texte suivi de son commentaire, s'il tient dans le cadre.
 function writeWithComment(
   field: PDFTextField,
   font: PDFFont,
   { text, comment = "" }: Text,
-): WrittenText | undefined {
+): WrittenText | NotWritten {
   const full = [text, comment].filter((part) => part !== "").join(" ; ");
   return writeIfFits(field, font, full)
     ? { overflows: [], withoutComment: false }
@@ -193,7 +214,7 @@ function writeWithoutComment(
   field: PDFTextField,
   font: PDFFont,
   { text, comment }: Text,
-): WrittenText | undefined {
+): WrittenText | NotWritten {
   if (!comment) return undefined;
   return writeIfFits(field, font, text)
     ? { overflows: [], withoutComment: true }

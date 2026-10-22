@@ -13,16 +13,19 @@ import {
 } from "pdf-lib";
 import { TEXT_SIZES } from "./text-sizes";
 
+/** Le texte ne tient dans son cadre à aucune taille. */
+type DoesNotFit = undefined;
+
 /**
  * La taille à laquelle `text` tient dans la zone de `field` : la taille visée,
  * sinon la taille réduite. Le nombre maximal de caractères du champ compte
- * aussi. `undefined` si le texte ne tient pas dans son cadre (D-85).
+ * aussi (D-85).
  */
 export function sizeInField(
   field: PDFTextField,
   font: PDFFont,
   text: string,
-): number | undefined {
+): number | DoesNotFit {
   const maximum = field.getMaxLength();
   if (maximum !== undefined && text.length > maximum) return undefined;
   return [TEXT_SIZES.target, TEXT_SIZES.reduced].find((fontSize) =>
@@ -61,7 +64,10 @@ function fits(
   return layoutSinglelineText(text, options).line.width <= bounds.width;
 }
 
-function innerBounds(field: PDFTextField): Bounds | undefined {
+/** Le champ n'a pas de cadre sur la page. */
+type NoWidget = undefined;
+
+function innerBounds(field: PDFTextField): Bounds | NoWidget {
   const widget = field.acroField.getWidgets()[0];
   if (!widget) return undefined;
   const rectangle = widget.getRectangle();
