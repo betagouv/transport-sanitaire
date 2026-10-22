@@ -1,3 +1,4 @@
+import { resolveObjectURL } from "node:buffer";
 import { screen, waitFor } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { Model } from "../../../front/socle/model";
@@ -11,13 +12,14 @@ import {
 } from "./questionnaire";
 import { ecouterLesTelechargements } from "./telechargements";
 
-// Le cerfa se télécharge sous le second résultat, rempli dans le navigateur dès
-// que le résultat s'affiche. Il porte la date du jour où le complément a été
-// validé.
+// Le cerfa s'imprime et se télécharge sous le second résultat, rempli dans le
+// navigateur dès que le résultat s'affiche : les deux actions portent le même
+// PDF. Il porte la date du jour où le complément a été validé.
 
 type User = Awaited<ReturnType<typeof ouvrirLeSimulateur>>;
 
 const TELECHARGER = "Télécharger le bon de commande";
+const IMPRIMER = "Imprimer le bon de commande";
 let ecoute: ReturnType<typeof ecouterLesTelechargements>;
 
 beforeEach(() => {
@@ -28,6 +30,20 @@ beforeEach(() => {
 afterEach(() => {
   ecoute.arreter();
   vi.useRealTimers();
+});
+
+describe("le second résultat", () => {
+  it("porte le titre que le modèle donne à la préconisation", async () => {
+    const user = await ouvrirLeSimulateur();
+    await allerAuCerfa(user);
+
+    expect(
+      screen.getByRole("heading", {
+        level: 1,
+        name: "Commande complétée : thé, lait",
+      }),
+    ).toBeVisible();
+  });
 });
 
 describe("le cerfa", () => {
@@ -43,6 +59,16 @@ describe("le cerfa", () => {
       fields: 0,
       texts: ["thé, lait", "2", "2026-10-14"],
     });
+  });
+
+  it("s'imprime tel qu'il se télécharge", async () => {
+    const user = await ouvrirLeSimulateur();
+    await allerAuCerfa(user);
+
+    const imprime = await imprimer(user);
+    const telecharge = await telecharger(user);
+
+    expect(imprime).toEqual(await telecharge.contenu());
   });
 
   it("garde la date du jour où le complément a été validé", async () => {
@@ -93,11 +119,28 @@ async function allerAuCerfa(user: User) {
 }
 
 async function telecharger(user: User) {
-  await user.click(await screen.findByRole("button", { name: TELECHARGER }));
+  await user.click(await genere(TELECHARGER));
   await waitFor(() => expect(ecoute.telechargements).toHaveLength(1));
   const [pdf] = ecoute.telechargements;
   if (!pdf) throw new Error("Aucun téléchargement.");
   return pdf;
+}
+
+// Le bouton `name`, actif une fois le PDF généré.
+async function genere(name: string) {
+  const action = await screen.findByRole("button", { name });
+  await waitFor(() => expect(action).toBeEnabled());
+  return action;
+}
+
+// Le PDF que le cadre d'impression charge. Le navigateur de test ne l'imprime
+// pas : on relit le blob derrière son URL, par Node, qui l'a créée.
+async function imprimer(user: User) {
+  await user.click(await genere(IMPRIMER));
+  const cadre = document.querySelector("iframe");
+  const blob = cadre && resolveObjectURL(cadre.src);
+  if (!blob) throw new Error("Aucun PDF à imprimer.");
+  return new Uint8Array(await blob.arrayBuffer());
 }
 
 // Le modèle de test, dont le gabarit ne se charge pas.
