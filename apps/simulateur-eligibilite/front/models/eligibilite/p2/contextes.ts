@@ -22,8 +22,8 @@ type Contexte = Questions["Q2.2.1.b"][number];
  */
 export function sejourAProposer(validated: Valides): boolean {
   return (
-    !validated.question("Q2.1").is("11_PERMISSION") &&
-    !validated.question("Q2.1.g").is("1_ENTREE")
+    validated.question("Q2.1").isNot("11_PERMISSION") &&
+    validated.question("Q2.1.g").isNot("1_ENTREE")
   );
 }
 
@@ -116,7 +116,7 @@ function faitsDuSejour(validated: Valides): Partial<Faits> {
 // Une entrée en établissement de santé ne se propose pas en séjour (D-98) :
 // aucun séjour n'est en cours, donc aucune permission.
 function faitsDeLEntree(validated: Valides): Partial<Faits> {
-  if (!validated.question("Q2.1.g").is("1_ENTREE")) return {};
+  if (validated.question("Q2.1.g").isNot("1_ENTREE")) return {};
   return sansPermission(
     Fait.non(
       "Q2.1.g : « 1_ENTREE » ; aucun séjour en cours, donc aucune permission.",
@@ -159,7 +159,7 @@ function faitsDeLEtranger(validated: Valides): Partial<Faits> {
 // s'excluent pour un même trajet (`CONTRAT_CONTEXTES_DECISIFS.md`) : il n'est
 // pas un HTNM hors maternité.
 function faitsDeLaMaternite(validated: Valides): Partial<Faits> {
-  if (!validated.question("Q2.1").is("13_MATERNITE")) return {};
+  if (validated.question("Q2.1").isNot("13_MATERNITE")) return {};
   return {
     fait_htnm_hors_maternite: Fait.non(
       "Q2.1 : « 13_MATERNITE » ; le même trajet n'est pas un HTNM hors maternité.",

@@ -285,7 +285,7 @@ export const COMPLEMENT: QuestionnairePart<Questions, Cibles> = {
 // Une boisson est choisie : la commande se poursuit.
 function commandeEnCours(answers: GivenAnswers<Questions>): boolean {
   const boisson = answers.question("boisson");
-  return boisson.hasAnswer() && !boisson.is("rien");
+  return boisson.hasAnswer() && boisson.isNot("rien");
 }
 
 // Les façons de servir, telles qu'on les relit une fois la commande figée.

@@ -65,7 +65,7 @@ export function exceptionAProposer(
     case "3_CENTRE_QUINZE":
       return transfert;
     case "4_AIR_MER":
-      return !validated.question("Q2.3.2").is(true);
+      return validated.question("Q2.3.2").isNot(true);
     case "8_RADIOTHERAPIE":
       return (
         (transfert && type.is("2_PROVISOIRE")) ||
@@ -125,7 +125,7 @@ function exceptionsValidees(validated: Valides) {
 function faitsDeQ25(validated: Valides): Partial<Faits> {
   const reponse = validated.question("Q2.5");
   if (reponse.is("1_TRANSFERT")) return faitsDuTransfertEntreEtablissements();
-  if (!reponse.is("2_AUTRE_DEPLACEMENT")) return {};
+  if (reponse.isNot("2_AUTRE_DEPLACEMENT")) return {};
   const source = "Q2.5 : « 2_AUTRE_DEPLACEMENT ».";
   return {
     fait_centre15_interetablissements: Fait.non(
