@@ -4,6 +4,7 @@ import {
   areAnswered,
   validatedQuestions,
 } from "../../../front/socle/questionnaire-engine/asked-questions";
+import { GivenAnswers } from "../../../front/socle/questionnaire-engine/given-answers";
 import type {
   Page,
   Question,
@@ -39,8 +40,9 @@ const MODE: Question = {
     { value: "carte", label: "Par carte" },
     { value: "especes", label: "En espèces" },
   ],
-  inconsistenciesFrom: ({ livraison, mode }) =>
-    livraison === "domicile" && mode === "especes"
+  inconsistenciesFrom: (answers) =>
+    answers.question("livraison").is("domicile") &&
+    answers.question("mode").is("especes")
       ? [
           "Les espèces ne se paient pas à la livraison : revenez à la livraison.",
         ]
@@ -109,15 +111,17 @@ describe("réponse qui contredit une page antérieure", () => {
     const reponses = { livraison: "domicile", mode: "especes" };
 
     expect(validatedQuestions(COMMANDE, reponses).mode).toBeUndefined();
-    expect(areAnswered(COMMANDE, reponses)).toBe(false);
+    expect(areAnswered(COMMANDE, new GivenAnswers(reponses))).toBe(false);
   });
 });
 
 describe("règle écrite sur la première des deux questions", () => {
   const PREMIERE: Question = {
     ...LIVRAISON,
-    inconsistenciesFrom: ({ mode }) =>
-      mode === undefined ? [] : ["Reçoit la réponse de la page suivante."],
+    inconsistenciesFrom: (answers) =>
+      answers.question("mode").hasAnswer()
+        ? ["Reçoit la réponse de la page suivante."]
+        : [],
   };
   const PAGES = [
     page(PREMIERE),
@@ -136,8 +140,8 @@ describe("règle écrite sur la première des deux questions", () => {
   it("reçoit pourtant les réponses de sa propre page, brouillon compris", async () => {
     const memePage = page(MODE, {
       ...LIVRAISON,
-      inconsistenciesFrom: ({ mode }) =>
-        mode === "especes" ? ["Vu sur la même page."] : [],
+      inconsistenciesFrom: (answers) =>
+        answers.question("mode").is("especes") ? ["Vu sur la même page."] : [],
     });
     const { user } = afficher([memePage]);
 

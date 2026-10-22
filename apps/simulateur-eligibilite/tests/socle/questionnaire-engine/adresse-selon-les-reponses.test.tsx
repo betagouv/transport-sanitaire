@@ -36,7 +36,7 @@ const ARRIVEE: Question = {
   id: "arrivee",
   kind: "address",
   label: "Adresse d'arrivée",
-  abroadIf: (answers) => answers.destination === "etranger",
+  abroadIf: (answers) => answers.question("destination").is("etranger"),
 };
 
 const REMARQUE: Page = page({

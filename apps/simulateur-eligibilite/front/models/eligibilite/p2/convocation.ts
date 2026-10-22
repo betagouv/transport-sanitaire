@@ -6,12 +6,11 @@
 // fait absent : la règle `cible_convocation_inconnue_decisive` envoie alors à la
 // caisse. Ces fonctions ne lisent que les questions validées.
 
-import type { Validated } from "../../../socle";
-import type { Fait } from "../../../socle/decision-engine/publicodes";
+import { Fait, type ValidatedAnswers } from "../../../socle";
 import type { Faits } from "../declarations/faits";
 import type { Questions } from "../declarations/questions";
 
-type Valides = Validated<Questions>;
+type Valides = ValidatedAnswers<Questions>;
 
 /**
  * Une convocation est-elle annoncée, par Q2.1 ou par Q2.2.1.b ? Q2.10 se pose
@@ -20,8 +19,8 @@ type Valides = Validated<Questions>;
  */
 export function convocationAnnoncee(validated: Valides): boolean {
   return (
-    validated["Q2.1"]?.answer === "12_CONVOCATION" ||
-    (validated["Q2.2.1.b"]?.answer?.includes("13_CONVOCATION") ?? false)
+    validated.question("Q2.1").is("12_CONVOCATION") ||
+    (validated.question("Q2.2.1.b").checked("13_CONVOCATION") ?? false)
   );
 }
 
@@ -30,31 +29,19 @@ export function convocationAnnoncee(validated: Valides): boolean {
  * reste comme il était : le « À qualifier dans sa branche » des contextes.
  */
 export function faitsDeLaConvocation(validated: Valides): Partial<Faits> {
-  const categorie = validated["Q2.10"]?.answer;
-  if (categorie === undefined) return {};
-  return { fait_convocation: faitDeLaCategorie(validated, categorie) };
+  const categorie = validated.question("Q2.10");
+  if (!categorie.hasAnswer()) return {};
+  return { fait_convocation: faitDeLaCategorie(validated, categorie.value) };
 }
 
 // ---- implémentation ----
 
 // Les trois appareillages que vise R.322-10 2°.
-const APPAREILLAGES_VISES: readonly string[] = [
+const APPAREILLAGES_VISES: readonly Questions["Q2.10.b"][] = [
   "1_PROTHESE_OCULAIRE_FACIALE",
   "2_PODO_ORTHESE",
   "3_ORTHOPROTHESE",
 ];
-
-function oui(provenance: string): Fait {
-  return { value: true, provenance };
-}
-
-function non(provenance: string): Fait {
-  return { value: false, provenance };
-}
-
-function absent(provenance: string): Fait {
-  return { provenance };
-}
 
 function faitDeLaCategorie(
   validated: Valides,
@@ -64,11 +51,11 @@ function faitDeLaCategorie(
     case "6_APPAREILLAGE":
       return faitDeLAppareillage(validated);
     case "7_AUCUNE":
-      return non(
+      return Fait.non(
         "Q2.10 : « 7_AUCUNE », ce motif de convocation ne s'applique pas.",
       );
     default:
-      return oui(`Q2.10 : « ${categorie} ».`);
+      return Fait.oui(`Q2.10 : « ${categorie} ».`);
   }
 }
 
@@ -76,26 +63,24 @@ function faitDeLaCategorie(
 // ou un autre appareillage écarte ce seul motif. Sinon, une réponse « je ne
 // peux pas » sans rien de négatif laisse le fait absent.
 function faitDeLAppareillage(validated: Valides): Fait {
-  const agrement = validated["Q2.10.a"]?.answer;
-  const appareillage = validated["Q2.10.b"]?.answer;
-  if (agrement === "2_NON") {
-    return non(
+  const agrement = validated.question("Q2.10.a");
+  const appareillage = validated.question("Q2.10.b");
+  if (agrement.is("2_NON")) {
+    return Fait.non(
       "Q2.10.a : « 2_NON » ; le fournisseur n'est pas agréé, ce motif ne s'applique pas.",
     );
   }
-  if (appareillage === "4_AUTRE") {
-    return non(
+  if (appareillage.is("4_AUTRE")) {
+    return Fait.non(
       "Q2.10.b : « 4_AUTRE » ; hors des trois appareillages visés par R.322-10 2°, ce motif ne s'applique pas.",
     );
   }
-  if (
-    agrement === "1_OUI" &&
-    appareillage !== undefined &&
-    APPAREILLAGES_VISES.includes(appareillage)
-  ) {
-    return oui(`Q2.10.a : « 1_OUI » ; Q2.10.b : « ${appareillage} ».`);
+  if (agrement.is("1_OUI") && appareillage.isOneOf(...APPAREILLAGES_VISES)) {
+    return Fait.oui(
+      `Q2.10.a : « 1_OUI » ; Q2.10.b : « ${appareillage.value} ».`,
+    );
   }
-  return absent(
+  return Fait.inconnu(
     "Q2.10 : « 6_APPAREILLAGE » ; l'agrément ou l'appareillage ne peut pas se vérifier ou se préciser. À vérifier.",
   );
 }

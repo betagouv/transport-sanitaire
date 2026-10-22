@@ -20,7 +20,11 @@ import {
   texteDeLaFichePositive,
 } from "../../../front/models/eligibilite/r2/fiche-positive/texte-de-la-fiche-positive";
 import { traceDuResultat } from "../../../front/models/eligibilite/r2/trace-du-resultat";
-import { ciblesDe, type Reponses } from "./reponses-de-la-permission";
+import {
+  ciblesDe,
+  lectureDe,
+  type Reponses,
+} from "./reponses-de-la-permission";
 
 const catalogue = await catalogueResultats();
 
@@ -47,10 +51,9 @@ const AVEC_UN_PROCHE = (
 });
 
 const fiche = (reponses: Reponses): TexteDeLaFichePositive | undefined => {
-  const cibles = ciblesDe(reponses);
   return texteDeLaFichePositive(
     catalogue,
-    traceDuResultat(reponses, cibles),
+    traceDuResultat(lectureDe(reponses)),
     "ISSUE_PMT",
   );
 };
@@ -196,7 +199,7 @@ const demande = (reponses: Reponses) => {
     issue,
     texte: texteDeLaFichePositive(
       catalogue,
-      traceDuResultat(reponses, cibles),
+      traceDuResultat(lectureDe(reponses)),
       issue,
     ),
   };

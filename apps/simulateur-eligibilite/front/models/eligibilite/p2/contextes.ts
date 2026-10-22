@@ -7,12 +7,11 @@
 // situation qui ne se propose pas laisse son fait absent, et un groupe coché
 // n'établit rien avant sa précision. Ils ne lisent que les questions validées.
 
-import { answerAbsent, type Validated } from "../../../socle";
-import type { Fait } from "../../../socle/decision-engine/publicodes";
+import { Fait, type ValidatedAnswers } from "../../../socle";
 import type { Faits } from "../declarations/faits";
 import { OPTIONS, type Questions } from "../declarations/questions";
 
-type Valides = Validated<Questions>;
+type Valides = ValidatedAnswers<Questions>;
 type Motif = Questions["Q2.1"];
 type Contexte = Questions["Q2.2.1.b"][number];
 
@@ -23,8 +22,8 @@ type Contexte = Questions["Q2.2.1.b"][number];
  */
 export function sejourAProposer(validated: Valides): boolean {
   return (
-    validated["Q2.1"]?.answer !== "11_PERMISSION" &&
-    validated["Q2.1.g"]?.answer !== "1_ENTREE"
+    !validated.question("Q2.1").is("11_PERMISSION") &&
+    !validated.question("Q2.1.g").is("1_ENTREE")
   );
 }
 
@@ -33,14 +32,14 @@ export function sejourAProposer(validated: Valides): boolean {
  * l'aide de Q2.2.1. Une situation déjà indiquée en Q2.1 en est retirée (D-98).
  */
 export function contextesAProposer(validated: Valides): readonly Contexte[] {
-  const motif = validated["Q2.1"]?.answer;
+  const motif = validated.question("Q2.1").value;
   const retires = (motif && RETIRES_PAR_Q21[motif]) || [];
   return CONTEXTES.filter((contexte) => !retires.includes(contexte));
 }
 
 /** Les faits que la page des contextes établit. Absents : rien n'y figure. */
 export function faitsDesContextes(validated: Valides): Partial<Faits> {
-  if (answerAbsent(validated["Q2.2.1"]?.answer)) return {};
+  if (!validated.question("Q2.2.1").hasAnswer()) return {};
   return {
     ...faitsDuSejour(validated),
     ...faitsDeLEtranger(validated),
@@ -82,22 +81,13 @@ const FAIT_DU_CONTEXTE: Record<
   "13_CONVOCATION": { fait: "fait_convocation", positif: false },
 };
 
-function oui(provenance: string): Fait {
-  return { value: true, provenance };
-}
-
-function non(provenance: string): Fait {
-  return { value: false, provenance };
-}
-
-function absent(provenance: string): Fait {
-  return { provenance };
-}
-
 // Le groupe que Q2.2.1 a proposé, et s'il est coché.
 function groupe(validated: Valides, valeur: Questions["Q2.2.1"][number]) {
-  const { offered = [], answer = [] } = validated["Q2.2.1"] ?? {};
-  return { propose: offered.includes(valeur), coche: answer.includes(valeur) };
+  const contextes = validated.question("Q2.2.1");
+  return {
+    propose: contextes.offers(valeur),
+    coche: contextes.checked(valeur),
+  };
 }
 
 // Le séjour en cours, y compris en HAD. Écarté, il exclut le transfert, le
@@ -106,27 +96,29 @@ function faitsDuSejour(validated: Valides): Partial<Faits> {
   const { propose, coche } = groupe(validated, "1_HOSPITALISATION");
   if (!propose) return faitsDeLEntree(validated);
   if (!coche) {
-    const ecarte = non("Q2.2.1 : « déjà hospitalisé » proposé, non coché.");
+    const ecarte = Fait.non(
+      "Q2.2.1 : « déjà hospitalisé » proposé, non coché.",
+    );
     return {
       fait_transfert_article80: ecarte,
       fait_centre15_interetablissements: ecarte,
       ...sansPermission(ecarte),
     };
   }
-  const reponse = validated["Q2.2.1.a"]?.answer;
-  if (answerAbsent(reponse)) return {};
-  const source = `Q2.2.1.a : « ${reponse} ».`;
-  return reponse === "1_OUI"
-    ? { fait_permission: oui(source) }
-    : sansPermission(non(source));
+  const reponse = validated.question("Q2.2.1.a");
+  if (!reponse.hasAnswer()) return {};
+  const source = `Q2.2.1.a : « ${reponse.value} ».`;
+  return reponse.is("1_OUI")
+    ? { fait_permission: Fait.oui(source) }
+    : sansPermission(Fait.non(source));
 }
 
 // Une entrée en établissement de santé ne se propose pas en séjour (D-98) :
 // aucun séjour n'est en cours, donc aucune permission.
 function faitsDeLEntree(validated: Valides): Partial<Faits> {
-  if (validated["Q2.1.g"]?.answer !== "1_ENTREE") return {};
+  if (!validated.question("Q2.1.g").is("1_ENTREE")) return {};
   return sansPermission(
-    non(
+    Fait.non(
       "Q2.1.g : « 1_ENTREE » ; aucun séjour en cours, donc aucune permission.",
     ),
   );
@@ -134,7 +126,7 @@ function faitsDeLEntree(validated: Valides): Partial<Faits> {
 
 // Sans permission, ni sa charge par le patient, ni la règle du mineur.
 function sansPermission(preuve: Fait): Partial<Faits> {
-  const deduit = non("fait_permission vaut « non » : aucune permission.");
+  const deduit = Fait.non("fait_permission vaut « non » : aucune permission.");
   return {
     fait_permission: preuve,
     fait_permission_charge_patient: deduit,
@@ -148,22 +140,28 @@ function faitsDeLEtranger(validated: Valides): Partial<Faits> {
   if (!propose) return {};
   if (!coche)
     return {
-      fait_trajet_etranger: non("Q2.2.1 : « l'étranger » proposé, non coché."),
+      fait_trajet_etranger: Fait.non(
+        "Q2.2.1 : « l'étranger » proposé, non coché.",
+      ),
     };
-  const lieux = validated["Q2.2.5"]?.answer;
-  if (answerAbsent(lieux)) return {};
-  const source = `Q2.2.5 : « ${lieux.join(" », « ")} ».`;
-  const extremite = lieux.some((lieu) => lieu !== "3_LIEU_DES_SOINS");
-  return { fait_trajet_etranger: extremite ? oui(source) : non(source) };
+  const lieux = validated.question("Q2.2.5");
+  if (!lieux.hasAnswer()) return {};
+  const source = `Q2.2.5 : « ${lieux.value.join(" », « ")} ».`;
+  const extremite = lieux
+    .checkedBoxes()
+    .some((lieu) => lieu !== "3_LIEU_DES_SOINS");
+  return {
+    fait_trajet_etranger: extremite ? Fait.oui(source) : Fait.non(source),
+  };
 }
 
 // Q2.1 = 13 décrit un trajet de l'Engagement maternité. Les options 4 et 5
 // s'excluent pour un même trajet (`CONTRAT_CONTEXTES_DECISIFS.md`) : il n'est
 // pas un HTNM hors maternité.
 function faitsDeLaMaternite(validated: Valides): Partial<Faits> {
-  if (validated["Q2.1"]?.answer !== "13_MATERNITE") return {};
+  if (!validated.question("Q2.1").is("13_MATERNITE")) return {};
   return {
-    fait_htnm_hors_maternite: non(
+    fait_htnm_hors_maternite: Fait.non(
       "Q2.1 : « 13_MATERNITE » ; le même trajet n'est pas un HTNM hors maternité.",
     ),
   };
@@ -174,15 +172,15 @@ function faitsDeLaMaternite(validated: Valides): Partial<Faits> {
 function faitsDuCadre(validated: Valides): Partial<Faits> {
   const { propose, coche } = groupe(validated, "3_AUTRE_CADRE");
   if (!propose) return {};
-  const precision = validated["Q2.2.1.b"];
-  if (coche && answerAbsent(precision?.answer)) return {};
+  const precision = validated.question("Q2.2.1.b");
+  if (coche && !precision.hasAnswer()) return {};
   const proposes = coche
-    ? (precision?.offered ?? [])
+    ? precision.offeredOptions()
     : contextesAProposer(validated);
-  const coches: readonly string[] = (coche && precision?.answer) || [];
   return Object.fromEntries(
     CONTEXTES.filter((contexte) => proposes.includes(contexte)).flatMap(
-      (contexte) => faitDuContexte(contexte, coches.includes(contexte), coche),
+      (contexte) =>
+        faitDuContexte(contexte, coche && precision.checked(contexte), coche),
     ),
   );
 }
@@ -198,15 +196,15 @@ function faitDuContexte(
     const ecarte = detaille
       ? `Q2.2.1.b : « ${contexte} » proposée, non cochée.`
       : "Q2.2.1 : « autre situation » proposée, non cochée.";
-    return [[lien.fait, non(ecarte)]];
+    return [[lien.fait, Fait.non(ecarte)]];
   }
   const source = `Q2.2.1.b : « ${contexte} ».`;
   return [
     [
       lien.fait,
       lien.positif
-        ? oui(source)
-        : absent(`${source} À qualifier dans sa branche.`),
+        ? Fait.oui(source)
+        : Fait.inconnu(`${source} À qualifier dans sa branche.`),
     ],
     ...(contexte === "5_HTNM" ? [segmentDuHtnm(source)] : []),
   ];
@@ -217,6 +215,6 @@ function faitDuContexte(
 function segmentDuHtnm(source: string) {
   return [
     "fait_htnm_segment_verifie",
-    non(`${source} Le segment du HTNM hors Engagement n'est pas vérifié.`),
+    Fait.non(`${source} Le segment du HTNM hors Engagement n'est pas vérifié.`),
   ] as const;
 }

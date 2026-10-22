@@ -39,7 +39,8 @@ const REGIME: Page = {
       kind: "text",
       label: "Quelles protéines ?",
       // Sur la même page : la question lit celle qui la précède.
-      askedIf: (_, __, validated) => validated.regime?.answer === "vegetarien",
+      askedIf: (_, __, validated) =>
+        validated.question("regime").is("vegetarien"),
     },
   ],
 };
@@ -56,7 +57,7 @@ const PLATS: Page = {
         {
           value: "steak",
           label: "Un steak",
-          offeredIf: (answers) => answers.regime === "tout",
+          offeredIf: (answers) => answers.question("regime").is("tout"),
         },
       ],
       exclusiveOption: { value: "rien", label: "Rien" },
@@ -71,7 +72,7 @@ const DESSERT: Page = {
       id: "dessert",
       kind: "text",
       label: "Quel dessert ?",
-      askedIf: (_, __, validated) => validated.plats?.answer !== undefined,
+      askedIf: (_, __, validated) => validated.question("plats").hasAnswer(),
     },
   ],
 };

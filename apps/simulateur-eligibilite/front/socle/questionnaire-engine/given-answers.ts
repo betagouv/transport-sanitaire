@@ -1,0 +1,92 @@
+// Lire les réponses données, question par question : ce qu'une question a
+// reçu, sans fouiller la structure qui les garde. Le modèle les reçoit ainsi
+// dans ses conditions, ses faits et ses résultats.
+//
+// Une question sans réponse n'a rien de coché et n'est aucune option : ce
+// n'est pas pour autant un « non ». `hasAnswer` le distingue.
+
+import type { Address } from "./address";
+import type { Answer, Answers, AnyQuestions, Unanswered } from "./question";
+
+/** Ce qu'un choix unique peut valoir : une option, ou la valeur d'une case seule. */
+export type Choice<Given> = Given extends readonly unknown[] | Address
+  ? never
+  : Given;
+
+/** Les cases d'un choix multiple. */
+export type Box<Given> = Given extends readonly (infer Option)[]
+  ? Option
+  : never;
+
+/** La réponse qu'une question a reçue, ou pas encore. */
+export class GivenAnswer<Given extends Answer = Answer> {
+  /** La réponse telle quelle : un nombre, une date, un texte, une adresse. */
+  readonly value: Given | Unanswered;
+
+  constructor(value: Given | Unanswered) {
+    this.value = value;
+  }
+
+  /**
+   * La question a reçu sa réponse. Ce n'est pas `isAnswered`, qui dit si une
+   * réponse suffit à quitter sa page.
+   */
+  hasAnswer(): this is { readonly value: Given } {
+    return this.value !== undefined;
+  }
+
+  /** La réponse est cette option. Sans réponse : non. */
+  is(option: Choice<Given>): boolean {
+    return this.value === option;
+  }
+
+  /** La réponse est l'une de ces options. Sans réponse : non. */
+  isOneOf(...options: readonly Choice<Given>[]): boolean {
+    return options.some((option) => this.is(option));
+  }
+
+  /** Cette case est cochée. Sans réponse : non. */
+  checked(box: Box<Given>): boolean {
+    return this.checkedBoxes().includes(box);
+  }
+
+  /** Au moins une case est cochée. */
+  hasAnyChecked(): boolean {
+    return this.checkedBoxes().length > 0;
+  }
+
+  /** Les cases cochées. Sans réponse : aucune. */
+  checkedBoxes(): readonly Box<Given>[] {
+    return Array.isArray(this.value) ? (this.value as Box<Given>[]) : [];
+  }
+}
+
+/** Les réponses données, à lire question par question. */
+export class GivenAnswers<Questions extends AnyQuestions = AnyQuestions> {
+  constructor(answers: Answers<Questions>) {
+    RAW.set(this, answers);
+  }
+
+  /** La réponse que cette question a reçue, ou pas encore. */
+  question<Id extends keyof Questions & string>(
+    id: Id,
+  ): GivenAnswer<Questions[Id]> {
+    return new GivenAnswer(answersOf(this)[id] as Questions[Id] | Unanswered);
+  }
+}
+
+/**
+ * Les réponses telles que le moteur les garde. Le socle seul les lit : le
+ * point d'entrée ne l'expose pas au modèle.
+ */
+export function answersOf<Questions extends AnyQuestions>(
+  given: GivenAnswers<Questions>,
+): Answers<Questions> {
+  return RAW.get(given) as Answers<Questions>;
+}
+
+// ---- implémentation ----
+
+// Les réponses de chaque lecture. Hors de la classe : un champ, même privé,
+// se lirait encore par `given["answers"]`.
+const RAW = new WeakMap<object, Answers>();

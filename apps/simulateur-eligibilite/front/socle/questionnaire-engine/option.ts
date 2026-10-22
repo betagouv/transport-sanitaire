@@ -1,7 +1,9 @@
 // Ce qu'est une option d'un choix : son libellé, ce qui la fait se proposer,
 // son aide, et ce qu'elle bloque. Les questions à choix en portent la liste.
 
-import type { Answers, AnyCibles, AnyQuestions, Validated } from "./question";
+import type { GivenAnswers } from "./given-answers";
+import type { AnyCibles, AnyQuestions } from "./question";
+import type { ValidatedAnswers } from "./validated-answers";
 
 /**
  * L'aide d'une option : un intitulé qui se déplie sur une liste. La déplier
@@ -20,9 +22,9 @@ export type Option<
   readonly label: string;
   /** Le libellé, quand il dépend des réponses. Absente : `label`. */
   labelFrom?(
-    answers: Answers<Questions>,
+    answers: GivenAnswers<Questions>,
     cibles: Cibles,
-    validated: Validated<Questions>,
+    validated: ValidatedAnswers<Questions>,
   ): string;
   /** Ce que l'option veut dire, rendu sous son libellé. */
   readonly description?: string;
@@ -31,9 +33,9 @@ export type Option<
    * réponse qui la portait la perd quand elle ne se propose plus.
    */
   offeredIf?(
-    answers: Answers<Questions>,
+    answers: GivenAnswers<Questions>,
     cibles: Cibles,
-    validated: Validated<Questions>,
+    validated: ValidatedAnswers<Questions>,
   ): boolean;
   /**
    * Choisir cette option arrête le questionnaire sur sa page : ce message
@@ -44,9 +46,9 @@ export type Option<
   readonly help?: OptionHelp;
   /** L'aide, quand elle dépend des réponses. Absente : `help`. */
   helpFrom?(
-    answers: Answers<Questions>,
+    answers: GivenAnswers<Questions>,
     cibles: Cibles,
-    validated: Validated<Questions>,
+    validated: ValidatedAnswers<Questions>,
   ): OptionHelp | undefined;
 };
 

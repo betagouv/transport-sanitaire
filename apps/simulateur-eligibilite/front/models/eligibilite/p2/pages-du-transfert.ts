@@ -30,7 +30,7 @@ export const PAGE_DU_TRANSFERT: Page = {
       askedIf: (_answers, _cibles, validated) => transfertAPoser(validated),
       options: optionsFrom(OPTIONS["Q2.5"]),
       inconsistenciesFrom: (answers, _cibles, validated) =>
-        answers["Q2.5"] === "1_TRANSFERT" &&
+        answers.question("Q2.5").is("1_TRANSFERT") &&
         retourPenitentiaireValide(validated)
           ? [TRANSFERT_VERS_LA_PRISON]
           : [],
@@ -57,7 +57,7 @@ export const PAGE_DES_EXCEPTIONS: Page = {
         "Quelle situation précise et quelles exceptions s’appliquent à ce déplacement ?",
       askedIf: (answers, _cibles, validated) =>
         champIOuvert(validated) &&
-        (!typeAPoser(validated) || answers["Q2.6.a"] !== undefined),
+        (!typeAPoser(validated) || answers.question("Q2.6.a").hasAnswer()),
       options: optionsFrom<Questions["Q2.6"][number], Questions, undefined>(
         OPTIONS["Q2.6"],
       )
@@ -67,7 +67,7 @@ export const PAGE_DES_EXCEPTIONS: Page = {
           offeredIf: (answers, _cibles, validated) =>
             exceptionAProposer(
               option.value as Questions["Q2.6"][number],
-              answers["Q2.6.a"],
+              answers.question("Q2.6.a"),
               validated,
             ),
         })),

@@ -51,7 +51,7 @@ const PAGE_DES_CAS_PARTICULIERS: Partie<undefined>["pages"][number] = {
           "1_FORTE_CORPULENCE": {
             offeredIf: (_answers, _cibles, validated) =>
               CRITERES_D_AMBULANCE.some((critere) =>
-                validated["Q1.2"]?.answer?.includes(critere),
+                validated.question("Q1.2").checked(critere),
               ),
           },
           // Le partage ne concerne que le transport assis professionnel et le
@@ -78,7 +78,8 @@ const PAGE_DES_CAS_PARTICULIERS: Partie<undefined>["pages"][number] = {
       id: "Q1.3.a",
       kind: "single choice",
       label: "La séance prévue est-elle une séance d’hémodialyse ?",
-      askedIf: (answers) => answers["Q1.3"]?.includes("5_DIALYSE") ?? false,
+      askedIf: (answers) =>
+        answers.question("Q1.3").checked("5_DIALYSE") ?? false,
       options: optionsFrom(OPTIONS["Q1.3.a"]),
     },
   ],
@@ -108,7 +109,7 @@ export const P1: Partie<undefined> = {
           kind: "multiple choice",
           label:
             "Quelles aides ou conditions particulières sont nécessaires pendant le transport ?",
-          askedIf: (answers) => answers["Q1.1"] === PROFESSIONNEL,
+          askedIf: (answers) => answers.question("Q1.1").is(PROFESSIONNEL),
           dependsOn: ["Q1.1"],
           options: optionsFrom(OPTIONS["Q1.2"]),
           incompatibleOptions: [
@@ -138,10 +139,10 @@ export const P1: Partie<undefined> = {
           // Le catalogue demande que le libellé précise « en toute autonomie »
           // ou « avec l’aide d’un proche », sans donner la phrase.
           labelFrom: (answers) =>
-            answers["Q1.1"] === "2_AVEC_UN_PROCHE"
+            answers.question("Q1.1").is("2_AVEC_UN_PROCHE")
               ? "Le patient pouvant réaliser le trajet avec l’aide d’un proche, sans intervention d’un professionnel, merci de préciser sa préférence en matière de transport."
               : "Le patient pouvant réaliser le trajet en toute autonomie, sans intervention d’un professionnel, merci de préciser sa préférence en matière de transport.",
-          askedIf: (answers) => sansProfessionnel(answers["Q1.1"]),
+          askedIf: (answers) => sansProfessionnel(answers.question("Q1.1")),
           dependsOn: ["Q1.1"],
           options: optionsFrom(OPTIONS["Q1.4"]),
         },

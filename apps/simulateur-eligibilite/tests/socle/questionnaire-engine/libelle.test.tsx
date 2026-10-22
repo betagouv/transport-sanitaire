@@ -29,7 +29,7 @@ const HEURE: Page = {
       kind: "text",
       label: "À quelle heure arrivez-vous ?",
       labelFrom: (answers) =>
-        answers.compagnie === "accompagne"
+        answers.question("compagnie").is("accompagne")
           ? "À quelle heure arrivez-vous, vous et votre proche ?"
           : "À quelle heure arrivez-vous, seul ?",
     },

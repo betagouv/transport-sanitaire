@@ -112,16 +112,18 @@ Un fait a trois états : vrai, faux, ou absent. Absent, il ne vaut jamais « non
 
 | Pièce | Ce qu'elle porte |
 |---|---|
-| `Validated` (`question.ts`) | les questions validées : pour chacune, les options qui se proposaient, et la réponse s'il y en a une. Une question absente n'a pas été demandée |
-| `preconisation.faits(answers, validated)` | le modèle y lit ce qui se proposait. Une case proposée et non cochée peut valoir « non ». Une case jamais montrée laisse le fait absent |
-| `Fait` (`decision-engine/publicodes.ts`) | ce qu'on sait d'un fait : sa valeur si elle est établie, et sa provenance |
+| `GivenAnswers` (`given-answers.ts`) | les réponses données, lues question par question : `answers.question("Q1.1").is("1_SEUL")`, `.checked(case)`, `.checkedBoxes()`, `.hasAnswer()`. Une question sans réponse n'est aucune option, sans être un « non » |
+| `ValidatedAnswers` (`validated-answers.ts`) | les questions validées, lues de même, avec ce qui se proposait : `.isValidated()`, `.offers(option)`, `.declined(case)`, et `.faitOf(case)`, qui donne oui (cochée), non (proposée, non cochée) ou rien (jamais montrée) |
+| `preconisation.faits(answers, validated)` | le modèle reçoit ces deux lectures, jamais les réponses brutes. Il applique, fait par fait, le contrat de l'éditeur |
+| `Fait` (`decision-engine/fait.ts`) | ce qu'on sait d'un fait : sa valeur si elle est établie, et sa provenance. `Fait.oui`, `Fait.non` et `Fait.inconnu` le construisent |
 | `publicodesEngine` | n'envoie aux règles que les faits établis. Une cible peut revenir `undefined` : indéfinie, ce qui n'est pas une décision, ni `null` (sans objet) |
 
 Le socle dit ce qui a été montré, validé, coché. Il ne conclut rien : c'est le
 modèle qui applique, fait par fait, le contrat de l'éditeur.
 
 *Gardé par* `tests/socle/decision-engine/`, `tests/socle/preconisation.test.ts` et
-`tests/socle/questionnaire-engine/questions-validees.test.tsx`.
+`tests/socle/questionnaire-engine/questions-validees.test.tsx` et
+`tests/socle/questionnaire-engine/lecture-des-reponses.test.ts`.
 
 ## Le socle PDF
 

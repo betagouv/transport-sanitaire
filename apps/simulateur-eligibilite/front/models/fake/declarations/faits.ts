@@ -1,6 +1,6 @@
 // Les faits du modèle de démonstration : ce que ses règles reçoivent.
 
-import type { Fait } from "../../../socle/decision-engine/publicodes";
+import type { Fait } from "../../../socle";
 
 export type Faits = {
   /** La boisson commandée, en toutes lettres. `null` : aucune. */

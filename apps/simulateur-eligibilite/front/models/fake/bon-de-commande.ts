@@ -16,6 +16,7 @@ import {
   type CerfaMapping,
   commentOn,
   drawnBox,
+  type GivenAnswers,
   templateAt,
   text,
 } from "../../socle";
@@ -63,22 +64,21 @@ const VERS_LE_BON_DE_COMMANDE: CerfaMapping<
 > = {
   fields: {
     commande: ({ cibles }) => cibles.commande,
-    nombre_de_tasses: ({ answers }) => String(answers.quantite),
+    nombre_de_tasses: ({ answers }) =>
+      String(answers.question("quantite").value),
     date: ({ completedAt }) => enFrancais(completedAt),
-    adresse_de_facturation: ({ answers }) =>
-      answers.adresse && enUneLigne(answers.adresse),
+    adresse_de_facturation: ({ answers }) => {
+      const adresse = answers.question("adresse");
+      return adresse.hasAnswer() ? enUneLigne(adresse.value) : undefined;
+    },
     avec_lait: ({ faits }) => faits.lait.value === true,
     avec_sucre: ({ answers }) =>
-      answers.accompagnements?.includes("sucre") === true,
+      answers.question("accompagnements").checked("sucre"),
     avec_citron: ({ faits }) => faits.citron.value === true,
-    instructions: ({ answers: { lieu, retrait, jour } }) =>
-      lieu &&
-      retrait &&
-      jour &&
-      `Servie ${LIEUX[lieu]}, ${RETRAITS[retrait]}, le ${enFrancais(new Date(jour))}`,
-    remarque: ({ answers }) => answers.remarque,
+    instructions: ({ answers }) => instructionsDe(answers),
+    remarque: ({ answers }) => answers.question("remarque").value,
   },
-  drawings: { au_nom_de: ({ answers }) => answers.nom },
+  drawings: { au_nom_de: ({ answers }) => answers.question("nom").value },
 };
 
 /** Le bon de commande, lié à la traduction de la commande. */
@@ -100,6 +100,16 @@ const RETRAITS: Record<Questions["retrait"], string> = {
   "a-emporter": "à emporter",
   livraison: "en livraison",
 };
+
+// Le lieu, le retrait et le jour, une fois tous trois donnés.
+function instructionsDe(answers: GivenAnswers<Questions>): string | undefined {
+  const lieu = answers.question("lieu");
+  const retrait = answers.question("retrait");
+  const jour = answers.question("jour");
+  if (!lieu.hasAnswer() || !retrait.hasAnswer() || !jour.hasAnswer())
+    return undefined;
+  return `Servie ${LIEUX[lieu.value]}, ${RETRAITS[retrait.value]}, le ${enFrancais(new Date(jour.value))}`;
+}
 
 // Le jour, à Paris : « 14/10/2026 ».
 function enFrancais(date: Date): string {

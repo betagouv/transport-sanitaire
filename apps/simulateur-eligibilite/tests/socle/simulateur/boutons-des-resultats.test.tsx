@@ -82,7 +82,9 @@ describe("le complément", () => {
       ...modeleDeTest.preconisation,
       faits: (answers, validated) => ({
         ...modeleDeTest.preconisation.faits(answers, validated),
-        ...(answers.quantite !== undefined && { boisson: "chocolat" }),
+        ...(answers.question("quantite").hasAnswer() && {
+          boisson: "chocolat",
+        }),
       }),
     },
   };
