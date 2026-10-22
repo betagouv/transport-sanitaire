@@ -185,11 +185,84 @@ un test le vérifie sur toutes les questions posées par les seeds.
 
 Les déclarations restent des objets littéraux jusqu'au constructeur de #204 :
 `askedIn(question, contexte)` est donc une fonction du moteur, et non encore
-une méthode de la question déclarée.
+une méthode de la question déclarée. *Levé par l'ADR-9 : `askedIn` est
+désormais une méthode de la question déclarée.*
 
 **Conséquences.** L'écran ne reçoit plus que des questions posées. Le
 récapitulatif de R3 relit P3 par le questionnaire, et le contexte d'une
 question ne sort plus du socle (`contextOf`).
+
+### ADR-9 - Une question se déclare par son constructeur (~~objet littéral~~)
+
+**Contexte.** Une question s'écrivait en objet littéral. Elle redisait sa sorte
+(`kind: "single choice"`), que son id disait déjà par le catalogue. Elle
+recopiait ses options pour en régler une seule. Ses conditions recevaient trois
+arguments positionnels, et le moteur lisait l'objet par des fonctions libres.
+Rien n'empêchait un `min` sur un texte.
+
+**Décision.** Un constructeur par sorte (`question.singleChoice(id, libellé)`,
+`question.number(…)`, `question.address(…)`…), lié au catalogue du modèle par
+`questionsOf`. La sorte vient du constructeur, les options du catalogue,
+d'après l'id. Chaque réglage s'écrit sur sa ligne et donne une copie : une
+déclaration ne change jamais, et deux déclarations tirées d'une même base ne se
+touchent pas. Une sorte n'a que ses réglages : `min` n'existe pas sur un texte,
+au typage comme à l'exécution.
+
+Le moteur ne reçoit plus que des questions qui savent se poser. `Question`
+devient une interface : son id, sa sorte, ses dépendances (`dependencies`), et
+`askedIn(vues, antérieures)`, qui donne la question posée. Les fonctions libres
+qui lisaient l'objet (`askedIn`, `dependenciesOf`, `optionsFrom`)
+disparaissent.
+
+| Option | Pour | Contre |
+|---|---|---|
+| garder l'objet littéral, typé plus strictement | rien à porter | la sorte et les options restent redites |
+| un constructeur qui donne un objet littéral | la sorte et les options viennent du catalogue | le moteur lit toujours un objet par des fonctions libres |
+| un constructeur qui donne une question déclarée, qui sait se poser | la question porte ses règles ; le typage refuse un réglage d'une autre sorte | une classe par sorte à tenir |
+
+La troisième. Une union transitoire a laissé les deux formes coexister le temps
+de porter les modèles, puis la voie littérale a disparu avec le test
+d'architecture qui la refusait : le typage la refuse.
+
+**Conséquences.** Les déclarations s'évaluent au chargement du module. Une
+constante lue par une déclaration doit la précéder dans le fichier : déclarée
+plus bas, elle casse le chargement (R-5). `Page` et `QuestionnairePart` ne
+prennent plus les faits en paramètre de type : ils restent dans la question.
+
+### ADR-10 - Une option se règle dans une lambda, et `order` est une vue
+
+**Contexte.** Une option portait jusqu'à cinq réglages : sa description, ce qui
+la propose, son aide, ce qu'elle bloque, son exclusivité. Écrits en méthodes de
+la question (`offeredIf(valeur, …)`), ils se seraient dispersés sur la chaîne.
+
+**Décision.** `.option(valeur, (option) => option.offeredIf(…).description(…))` :
+tous les réglages d'une option au même endroit. `order(…)` dit quelles options
+s'affichent, dans quel ordre, sans retirer les autres du catalogue : une option
+hors de l'ordre se règle encore, et peut être l'exclusive (« Aucune »).
+`exclusive(valeur)` la met à part. Une règle qui vaut pour toutes les options du
+catalogue (Q2.2.1.b, Q2.6, les natures de P3) s'écrit par un `reduce` sur ses
+clés, sans les recopier.
+
+**Conséquences.** Une option inconnue ne compile pas. Un catalogue qui gagne une
+option l'affiche sans qu'on touche à la déclaration, sauf si elle a un `order`.
+
+### ADR-11 - Une condition de page s'ajoute à ses questions ; un message peut citer les réponses
+
+**Contexte.** Sept pages de P2 ne se posent que dans le circuit de
+prescription. Le modèle recopiait chacune de leurs questions pour y ajouter la
+garde, ce qu'une question déclarée, qui ne s'ouvre pas, ne permet plus. Une incohérence
+s'écrivait en tableau de messages, calculé d'un bloc : Q3.1.3 doit citer la
+fréquence de Q2.8.6.a et son maximum.
+
+**Décision.** `page(id, ...questions).askedIf(condition)` ajoute la condition à
+chacune de ses questions. Une page dont aucune question ne se pose est sautée,
+sans rien de plus à déclarer. Une incohérence se déclare par
+`inconsistentIf(condition, message)`, une par appel. Le message est un texte,
+ou une fonction du contexte quand il cite les réponses.
+
+**Conséquences.** Le moteur n'a pas de notion de page conditionnelle : la page
+reste une liste de questions. Une incohérence se lit sur sa ligne, avec sa
+condition.
 
 ## 3. Architecture cible
 
@@ -216,6 +289,7 @@ flowchart LR
 | Moteur de questionnaire | `core/` | questions posées, validées, problèmes d'une saisie, réponses effacées | déplacé |
 | `Questionnaire` et `Reading` | `core/` | des réponses lues une fois : pages, questions posées, validées, page suivante | nouveau |
 | Question posée (`AskedQuestion`) | `core/` | la question du moment, en données ; ce qu'elle garde d'une réponse et ce qui n'y va pas | nouveau |
+| Question déclarée et ses constructeurs (`questionsOf`) | `core/` | une classe par sorte, réglage par réglage ; elle sait se poser | nouveau |
 | Questionnaire à l'écran | `front/` | page ouverte, brouillon, navigation, phrases, champs | modifié |
 | Moteur de décision | `core/` | des faits aux cibles, seul à importer publicodes | déplacé |
 | Seeds | `core/` | ce qu'est une seed, ce qu'elle confirme ou dément | déplacé |
@@ -246,7 +320,7 @@ a-t-il besoin ?**
 |---|---|---|
 | Sortir le métier du front | 202 | ✅ |
 | Moteur objet | 203 | ✅ |
-| Constructeur de questions | 204 | à venir |
+| Constructeur de questions | 204 | ✅ |
 | Faits : une déclaration par fait | 205 | à venir |
 | Cibles : un objet valeur par cible | 206 | à venir |
 | Concepts du modèle | 207 | à venir |
@@ -259,6 +333,7 @@ a-t-il besoin ?**
 | R-2 | Le JSON des règles oublié après une livraison | un test compare le JSON au YAML ; les skills d'intégration disent la commande |
 | R-3 | Le serveur n'importe pas encore le métier : la frontière n'est éprouvée que par un test | le test sous Node rejoue toutes les seeds à attendus |
 | R-4 | Une question posée gagne une fonction, et ne passe plus en JSON | le test de conformité relit chaque question posée par les seeds |
+| R-5 | Une constante déclarée sous la déclaration qui la lit casse le chargement du module | le test sous Node et chaque test du modèle chargent le module ; l'erreur nomme la constante |
 
 ## Vérification
 
