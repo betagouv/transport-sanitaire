@@ -5,20 +5,22 @@
 // réponses, les faits et les cibles de l'un à l'autre.
 
 import type { ComponentType, ReactNode } from "react";
-import type { AnyFaits, CoreModel, Reading } from "../../core/socle/model";
+import type { AnyFaits, CoreModel } from "../../core/socle/model";
 import type {
   AnyCibles,
   AnyQuestions,
 } from "../../core/socle/questionnaire-engine/question";
+import type { Reading } from "../../core/socle/questionnaire-engine/questionnaire";
 import type { BoundCerfa } from "./cerfa-mapping";
 
-/** Ce qu'un résultat reçoit pour s'afficher. */
-type ResultatProps<
-  Questions extends AnyQuestions,
-  Cibles,
-> = Reading<Questions> & {
-  cibles: Cibles;
-};
+/**
+ * Ce qu'un résultat reçoit pour s'afficher : les réponses, les questions
+ * validées, et les cibles.
+ */
+type ResultatProps<Questions extends AnyQuestions, Cibles> = Pick<
+  Reading<Questions>,
+  "answers" | "validated"
+> & { cibles: Cibles };
 
 /**
  * Ce que le premier résultat donne au socle, qui compose la page : le `h1`,

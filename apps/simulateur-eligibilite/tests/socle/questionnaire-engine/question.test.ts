@@ -1,10 +1,6 @@
 import { describe, expect, it } from "vitest";
-import {
-  areAnswered,
-  askedPages,
-} from "../../../core/socle/questionnaire-engine/asked-questions";
-import { GivenAnswers } from "../../../core/socle/questionnaire-engine/given-answers";
 import type { Page } from "../../../core/socle/questionnaire-engine/question";
+import { Questionnaire } from "../../../core/socle/questionnaire-engine/questionnaire";
 
 // Après le verrou, une question peut dépendre de la préconisation : sa condition
 // lit les cibles figées, en plus des réponses. Le questionnaire factice n'a pas
@@ -28,7 +24,10 @@ const SI_URGENCE: Page = {
 };
 
 const affichees = (cibles: Record<string, unknown>) =>
-  askedPages([TOUJOURS, SI_URGENCE], {}, cibles).map((page) => page.id);
+  new Questionnaire([TOUJOURS, SI_URGENCE])
+    .readWith({}, cibles)
+    .askedPages()
+    .map((page) => page.id);
 
 describe("condition d'une question sur les cibles", () => {
   it("pose la question quand la cible le demande", () => {
@@ -65,7 +64,7 @@ const DOULEUR: Page = {
 };
 
 const repondu = (reponses: Record<string, string>) =>
-  areAnswered([DOULEUR], new GivenAnswers(reponses));
+  new Questionnaire([DOULEUR]).readWith(reponses).isComplete();
 
 describe("pages auxquelles tout est répondu", () => {
   it("le sont quand chaque question posée a sa réponse", () => {

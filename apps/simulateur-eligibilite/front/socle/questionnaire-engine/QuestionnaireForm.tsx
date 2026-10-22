@@ -10,7 +10,10 @@ import {
   type Validated,
 } from "../../../core/socle/questionnaire-engine/question";
 import { QuestionField } from "./QuestionField";
-import type { Questionnaire, QuestionnaireOptions } from "./questionnaire";
+import type {
+  QuestionnaireOptions,
+  QuestionnaireScreen,
+} from "./questionnaire";
 import { useQuestionnaire } from "./questionnaire";
 import { Stepper } from "./Stepper";
 import { errorsOf } from "./screen-texts";
@@ -82,7 +85,7 @@ export function QuestionnaireForm({
 
 // Ce que la trace lit sous le questionnaire : la page affichée et ses questions,
 // répondues ou non, les pages, le brouillon et les réponses validées.
-function traceOf(questionnaire: Questionnaire): DebugTraceProps {
+function traceOf(questionnaire: QuestionnaireScreen): DebugTraceProps {
   return {
     title: "chemin parcouru",
     pages: questionnaire.pages,
@@ -96,7 +99,11 @@ function traceOf(questionnaire: Questionnaire): DebugTraceProps {
 
 // La page affiche son brouillon : une saisie ne compte qu'une fois la page
 // validée. La première question sans réponse prend le focus, pour le clavier.
-function QuestionFields({ questionnaire }: { questionnaire: Questionnaire }) {
+function QuestionFields({
+  questionnaire,
+}: {
+  questionnaire: QuestionnaireScreen;
+}) {
   const toFocus = questionnaire.questions.find(
     (question) => questionnaire.draft[question.id] === undefined,
   );
@@ -116,7 +123,7 @@ function NavigationButtons({
   questionnaire,
   endLabel,
 }: {
-  questionnaire: Questionnaire;
+  questionnaire: QuestionnaireScreen;
   endLabel: string;
 }) {
   return (

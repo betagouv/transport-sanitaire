@@ -4,7 +4,7 @@ import type {
   Page,
   Question,
 } from "../../../core/socle/questionnaire-engine/question";
-import { stateAfterAnswers } from "../../../core/socle/questionnaire-engine/questionnaire-state";
+import { Questionnaire } from "../../../core/socle/questionnaire-engine/questionnaire";
 import { afficher } from "./afficher";
 
 // Une adresse incohérente avec une autre réponse affiche son message sous le
@@ -69,12 +69,11 @@ describe("adresse incohérente", () => {
   it("ne compte pas comme répondue", () => {
     const reponses = { depart: LILAS, arrivee: LILAS };
 
-    expect(
-      stateAfterAnswers([page(DEPART), page(ARRIVEE)], reponses),
-    ).toMatchObject({
-      page: "arrivee",
-      complete: false,
-    });
+    const lecture = new Questionnaire([page(DEPART), page(ARRIVEE)]).readWith(
+      reponses,
+    );
+    expect(lecture.openPage().id).toBe("arrivee");
+    expect(lecture.isComplete()).toBe(false);
   });
 
   it("laisse passer devant l'erreur d'un champ, sans message de groupe", async () => {

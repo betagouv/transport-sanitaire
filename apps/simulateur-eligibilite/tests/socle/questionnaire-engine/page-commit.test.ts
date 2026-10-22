@@ -1,9 +1,9 @@
 import { describe, expect, it } from "vitest";
-import { commitPage } from "../../../core/socle/questionnaire-engine/page-commit";
 import type {
   Page,
   Question,
 } from "../../../core/socle/questionnaire-engine/question";
+import { Questionnaire } from "../../../core/socle/questionnaire-engine/questionnaire";
 
 // Une réponse qui change n'efface que les réponses qui en dépendent. Les pages
 // sont écrites ici : le questionnaire factice n'a qu'une seule dépendance.
@@ -27,6 +27,7 @@ const PAGES = [
   page(texte("dependante-de-dependante", ["dependante"])),
   page(texte("independante")),
 ];
+const QUESTIONNAIRE = new Questionnaire(PAGES);
 
 const REPONSES = {
   source: "a",
@@ -37,16 +38,18 @@ const REPONSES = {
 
 describe("validation d'une page", () => {
   it("efface les réponses dépendantes, de proche en proche", () => {
-    expect(commitPage(PAGES, REPONSES, SOURCE, { source: "z" })).toEqual({
+    expect(
+      QUESTIONNAIRE.readWith(REPONSES).commit(SOURCE, { source: "z" }),
+    ).toEqual({
       source: "z",
       independante: "d",
     });
   });
 
   it("ne touche à rien quand la réponse est la même", () => {
-    expect(commitPage(PAGES, REPONSES, SOURCE, { source: "a" })).toEqual(
-      REPONSES,
-    );
+    expect(
+      QUESTIONNAIRE.readWith(REPONSES).commit(SOURCE, { source: "a" }),
+    ).toEqual(REPONSES);
   });
 
   it("tient une adresse pour la même, quel que soit l'ordre de ses champs", () => {
@@ -62,7 +65,7 @@ describe("validation d'une page", () => {
     };
 
     expect(
-      commitPage(PAGES, { ...REPONSES, source: reprise }, SOURCE, {
+      QUESTIONNAIRE.readWith({ ...REPONSES, source: reprise }).commit(SOURCE, {
         source: saisie,
       }),
     ).toEqual({ ...REPONSES, source: saisie });
@@ -76,7 +79,7 @@ describe("validation d'une page", () => {
     };
 
     expect(
-      commitPage(PAGES, { ...REPONSES, source: adresse }, SOURCE, {
+      QUESTIONNAIRE.readWith({ ...REPONSES, source: adresse }).commit(SOURCE, {
         source: { ...adresse, city: "Lyon" },
       }),
     ).toEqual({ source: { ...adresse, city: "Lyon" }, independante: "d" });
@@ -84,7 +87,7 @@ describe("validation d'une page", () => {
 
   it("retire la réponse d'une question que la page ne pose plus", () => {
     const { source: _retiree, ...sansSource } = REPONSES;
-    expect(commitPage(PAGES, REPONSES, SOURCE, {})).toEqual({
+    expect(QUESTIONNAIRE.readWith(REPONSES).commit(SOURCE, {})).toEqual({
       independante: sansSource.independante,
     });
   });

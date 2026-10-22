@@ -5,16 +5,15 @@
 // Le socle déroule le parcours et ne lit aucune clé du modèle. Il transporte les
 // réponses, les faits et les cibles de l'un à l'autre.
 
-import { validatedAnswers } from "./questionnaire-engine/asked-questions.ts";
-import { GivenAnswers } from "./questionnaire-engine/given-answers.ts";
+import type { GivenAnswers } from "./questionnaire-engine/given-answers.ts";
 import {
   type Answers,
   type AnyCibles,
   type AnyQuestions,
-  type Page,
   pagesOf,
   type QuestionnairePart,
 } from "./questionnaire-engine/question.ts";
+import { Questionnaire } from "./questionnaire-engine/questionnaire.ts";
 import type { ValidatedAnswers } from "./questionnaire-engine/validated-answers.ts";
 import type { Seed } from "./seeds/seed.ts";
 
@@ -25,15 +24,6 @@ export type AnyFaits = Readonly<Record<string, unknown>>;
 export type Preconisation<Faits = AnyFaits, Cibles = AnyCibles> = {
   faits: Faits;
   cibles: Cibles;
-};
-
-/**
- * Ce que le modèle lit des réponses : chacune telle qu'elle est donnée, et les
- * questions validées, avec ce qui s'y proposait.
- */
-export type Reading<Questions extends AnyQuestions = AnyQuestions> = {
-  answers: GivenAnswers<Questions>;
-  validated: ValidatedAnswers<Questions>;
 };
 
 export type CoreModel<
@@ -73,22 +63,10 @@ export function preconisationOf<
   model: CoreModel<Questions, Faits, Cibles>,
   answers: Answers<Questions>,
 ): Preconisation<Faits, Cibles> {
-  const read = readingOf(pagesOf(model.questionnaire), answers);
+  const questionnaire = new Questionnaire<Questions>(
+    pagesOf(model.questionnaire),
+  );
+  const read = questionnaire.readWith(answers);
   const faits = model.preconisation.faits(read.answers, read.validated);
   return { faits, cibles: model.preconisation.cibles(faits) };
-}
-
-/**
- * Ces réponses, telles que le modèle les lit. `pages` : celles dont les
- * questions validées comptent. Après le verrou, les cibles figées.
- */
-export function readingOf<Questions extends AnyQuestions>(
-  pages: readonly Page[],
-  answers: Answers<Questions>,
-  cibles?: AnyCibles,
-): Reading<Questions> {
-  return {
-    answers: new GivenAnswers(answers),
-    validated: validatedAnswers(pages, answers, cibles),
-  };
 }

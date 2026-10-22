@@ -3,18 +3,17 @@
 // fournit son contenu ; le cadre, le stepper et les boutons sont ici.
 
 import type { ComponentType, ReactNode } from "react";
-import { type Preconisation, readingOf } from "../../../core/socle/model";
-import {
-  askedPages,
-  validatedQuestions,
-} from "../../../core/socle/questionnaire-engine/asked-questions";
+import type { Preconisation } from "../../../core/socle/model";
 import {
   type Answers,
   type AnyCibles,
   type Page,
   pagesOf,
 } from "../../../core/socle/questionnaire-engine/question";
-import type { QuestionnaireState } from "../../../core/socle/questionnaire-engine/questionnaire-state";
+import {
+  Questionnaire,
+  type QuestionnaireState,
+} from "../../../core/socle/questionnaire-engine/questionnaire";
 import { CerfaDownload } from "../cerfa/CerfaDownload";
 import { dtoFrom } from "../cerfa-mapping";
 import type { CerfaInput, Model } from "../model";
@@ -50,7 +49,11 @@ export function CerfaResultat({
   const total = model.core.questionnaire.length + 1;
   const all = [...pagesOf(model.core.questionnaire), ...part.pages];
   const trace = traceOf("cerfa", all, answers, locked.preconisation, cibles);
-  const read = readingOf(all, answers, cibles);
+  const { validated, answers: given } = new Questionnaire(all).readWith(
+    answers,
+    cibles,
+  );
+  const read = { answers: given, validated };
   return (
     <Frame
       title={title}
@@ -83,11 +86,12 @@ export function traceOf(
   preconisation: Preconisation,
   locked?: AnyCibles,
 ): DebugTraceProps {
+  const read = new Questionnaire(pages).readWith(answers, locked);
   return {
     title,
-    pages: askedPages(pages, answers, locked),
+    pages: read.askedPages(),
     answers,
-    validated: validatedQuestions(pages, answers, locked),
+    validated: read.validated.toJSON(),
     ...preconisation,
   };
 }

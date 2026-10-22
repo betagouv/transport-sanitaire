@@ -10,14 +10,13 @@
 // et qui sont validées : ses conditions peuvent en dépendre, pas de la suite.
 // Ses incohérences ne voient pas non plus les réponses des pages suivantes.
 
-import { answersOf, GivenAnswers } from "./given-answers.ts";
+import { GivenAnswers } from "./given-answers.ts";
 import { isAnswered, offeredAnswer, optionValues } from "./offered-answer.ts";
 import type { Option } from "./option.ts";
 import type {
   Answer,
   Answers,
   AnyCibles,
-  AnyQuestions,
   Page,
   Question,
   Unanswered,
@@ -26,66 +25,33 @@ import type {
 import { contextOf, type QuestionContext } from "./question-context.ts";
 import { ValidatedAnswers } from "./validated-answers.ts";
 
-/**
- * Les questions de la page qui se posent, vu les réponses et les cibles, telles
- * qu'elles se posent : sous leur libellé du moment, avec les seules options
- * qui se proposent. `pages` : le questionnaire où la page se trouve.
- */
-export function askedQuestions(
-  pages: readonly Page[],
-  page: Page,
-  answers: Answers,
-  cibles?: AnyCibles,
-): readonly Question[] {
-  const { asked } = inOrder(pages, answers, cibles);
-  return asked.find((read) => read.page === page)?.questions ?? [];
-}
+/** Une page lue : ses questions qui se posent, telles qu'elles se posent. */
+export type AskedPage = {
+  readonly page: Page;
+  readonly questions: readonly Question[];
+};
 
-/** Les pages qui posent au moins une question, dans l'ordre du questionnaire. */
-export function askedPages(
+/**
+ * Ces pages lues dans l'ordre, question par question : ce qui s'y pose, ce qui
+ * en est validé, et si toutes les questions posées ont leur réponse. Dès
+ * qu'une question attend sa réponse, plus rien n'est validé : ce qui la suit se
+ * pose encore, mais ne compte pas. `Questionnaire.readWith` la lit
+ * (`questionnaire.ts`).
+ */
+export function readInOrder(
   pages: readonly Page[],
   answers: Answers,
   cibles?: AnyCibles,
-) {
-  return inOrder(pages, answers, cibles)
-    .asked.filter(({ questions }) => questions.length > 0)
-    .map(({ page }) => page);
-}
-
-/**
- * Les questions validées de ces pages : chaque question qui se pose, dans
- * l'ordre, jusqu'à la première qui attend sa réponse. Une question facultative
- * restée sans réponse y figure : elle a été posée.
- */
-export function validatedQuestions(
-  pages: readonly Page[],
-  answers: Answers,
-  cibles?: AnyCibles,
-): Validated {
-  return inOrder(pages, answers, cibles).validated;
-}
-
-/**
- * Les questions validées de ces pages, à lire question par question (voir
- * `validatedQuestions`).
- */
-export function validatedAnswers<Questions extends AnyQuestions>(
-  pages: readonly Page[],
-  answers: Answers<Questions>,
-  cibles?: AnyCibles,
-): ValidatedAnswers<Questions> {
-  return new ValidatedAnswers(
-    validatedQuestions(pages, answers, cibles) as Validated<Questions>,
-  );
-}
-
-/** Toutes les questions qui se posent dans ces pages ont-elles leur réponse ? */
-export function areAnswered(
-  pages: readonly Page[],
-  answers: GivenAnswers,
-  cibles?: AnyCibles,
-): boolean {
-  return inOrder(pages, answersOf(answers), cibles).complete;
+): { readonly asked: readonly AskedPage[] } & Progress {
+  let progress: Progress = { validated: {}, complete: true };
+  const asked: AskedPage[] = [];
+  for (const [rank, page] of pages.entries()) {
+    const earlier = answersUpTo(pages, rank, answers);
+    const read = askPage(page, { answers, earlier, cibles }, progress);
+    asked.push({ page, questions: read.questions });
+    progress = read.progress;
+  }
+  return { asked, ...progress };
 }
 
 // ---- implémentation ----
@@ -93,8 +59,6 @@ export function areAnswered(
 // Ce qu'un rappel lit : les réponses, les cibles figées s'il y en a, les
 // questions validées avant celle qu'il concerne, et leurs faits.
 type Seen = QuestionContext;
-
-type AskedPage = { page: Page; questions: Question[] };
 
 // Où en est la lecture du questionnaire : les questions validées jusqu'ici, et
 // si aucune n'attend encore sa réponse.
@@ -107,21 +71,6 @@ type Context = {
   readonly earlier: Answers;
   readonly cibles?: AnyCibles;
 };
-
-// Les pages lues dans l'ordre, question par question. Dès qu'une question
-// attend sa réponse, plus rien n'est validé : ce qui la suit se pose encore,
-// mais ne compte pas.
-function inOrder(pages: readonly Page[], answers: Answers, cibles?: AnyCibles) {
-  let progress: Progress = { validated: {}, complete: true };
-  const asked: AskedPage[] = [];
-  for (const [rank, page] of pages.entries()) {
-    const earlier = answersUpTo(pages, rank, answers);
-    const read = askPage(page, { answers, earlier, cibles }, progress);
-    asked.push({ page, questions: read.questions });
-    progress = read.progress;
-  }
-  return { asked, ...progress };
-}
 
 // Les questions de la page qui se posent, dans l'ordre. Chacune voit ce que les
 // précédentes ont validé.

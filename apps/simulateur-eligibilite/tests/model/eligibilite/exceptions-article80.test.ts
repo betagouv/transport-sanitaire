@@ -4,7 +4,7 @@
 
 import { describe, expect, it } from "vitest";
 import { cible } from "../../../core/models/eligibilite/evaluation-des-regles";
-import { validatedQuestions } from "../../../core/socle/questionnaire-engine/asked-questions";
+import { Questionnaire } from "../../../core/socle/questionnaire-engine/questionnaire";
 import {
   definitif,
   EXCEPTIONS,
@@ -104,11 +104,12 @@ describe("les options de Q2.6", () => {
 
   it("une réponse que le type retire à l'écran est perdue à la validation", () => {
     const reponses = provisoire(["2_ADMISSION_SANS_SEJOUR"], URGENCES);
-    expect(validatedQuestions(pages, reponses)["Q2.6"]).toBeUndefined();
-    const valide = validatedQuestions(
-      pages,
-      definitif(["2_ADMISSION_SANS_SEJOUR"], URGENCES),
-    );
+    expect(
+      new Questionnaire(pages).readWith(reponses).validated.toJSON()["Q2.6"],
+    ).toBeUndefined();
+    const valide = new Questionnaire(pages)
+      .readWith(definitif(["2_ADMISSION_SANS_SEJOUR"], URGENCES))
+      .validated.toJSON();
     expect(valide["Q2.6"]?.answer).toEqual(["2_ADMISSION_SANS_SEJOUR"]);
   });
 });

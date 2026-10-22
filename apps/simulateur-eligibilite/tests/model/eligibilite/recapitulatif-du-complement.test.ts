@@ -5,8 +5,8 @@ import { describe, expect, it } from "vitest";
 import type { Cibles } from "../../../core/models/eligibilite/declarations/cibles";
 import type { Questions } from "../../../core/models/eligibilite/declarations/questions";
 import { COMPLEMENT } from "../../../core/models/eligibilite/p3/partie-3";
-import { readingOf } from "../../../core/socle/model";
 import type { Answers } from "../../../core/socle/questionnaire-engine/question";
+import { Questionnaire } from "../../../core/socle/questionnaire-engine/questionnaire";
 import { recapitulatifDuComplement as recapitulatif } from "../../../front/models/eligibilite/r3/recapitulatif-du-complement";
 import { PLUSIEURS_PERMISSIONS } from "./reponses-de-la-permission";
 
@@ -18,11 +18,11 @@ const avecLeSupport = (support: Cibles["cible_support_id"]) =>
 const recapitulatifDuComplement = (
   reponses: Answers<Questions>,
   cibles: Cibles,
-) =>
-  recapitulatif({
-    ...readingOf<Questions>(COMPLEMENT.pages, reponses, cibles),
-    cibles,
-  });
+) => {
+  const questionnaire = new Questionnaire<Questions>(COMPLEMENT.pages);
+  const { answers, validated } = questionnaire.readWith(reponses, cibles);
+  return recapitulatif({ answers, validated, cibles });
+};
 
 describe("le récapitulatif de P3", () => {
   it("donne chaque réponse sous sa question : le nombre avec son unité, le sens en toutes lettres", () => {

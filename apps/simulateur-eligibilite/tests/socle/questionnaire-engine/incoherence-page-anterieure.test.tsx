@@ -1,15 +1,10 @@
 import { screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
-import {
-  areAnswered,
-  validatedQuestions,
-} from "../../../core/socle/questionnaire-engine/asked-questions";
-import { GivenAnswers } from "../../../core/socle/questionnaire-engine/given-answers";
 import type {
   Page,
   Question,
 } from "../../../core/socle/questionnaire-engine/question";
-import { stateAfterAnswers } from "../../../core/socle/questionnaire-engine/questionnaire-state";
+import { Questionnaire } from "../../../core/socle/questionnaire-engine/questionnaire";
 import { afficher } from "./afficher";
 
 // Une réponse peut en contredire une page antérieure. Le moteur cache à la
@@ -95,23 +90,25 @@ describe("réponse qui contredit une page antérieure", () => {
   it("rouvre la page sur son message quand la réponse d'origine a changé", () => {
     const reponses = { livraison: "domicile", mode: "especes" };
 
-    expect(stateAfterAnswers(COMMANDE, reponses)).toMatchObject({
-      page: "mode",
-      complete: false,
-    });
+    const lecture = new Questionnaire(COMMANDE).readWith(reponses);
+    expect(lecture.openPage().id).toBe("mode");
+    expect(lecture.isComplete()).toBe(false);
   });
 
   it("n'a pas de message tant que la réponse d'origine ne la contredit pas", () => {
     const reponses = { livraison: "relais", mode: "especes" };
 
-    expect(stateAfterAnswers(COMMANDE, reponses).page).toBe("debut");
+    expect(new Questionnaire(COMMANDE).readWith(reponses).openPage().id).toBe(
+      "debut",
+    );
   });
 
   it("ne compte pas la question incohérente parmi les validées", () => {
     const reponses = { livraison: "domicile", mode: "especes" };
 
-    expect(validatedQuestions(COMMANDE, reponses).mode).toBeUndefined();
-    expect(areAnswered(COMMANDE, new GivenAnswers(reponses))).toBe(false);
+    const lecture = new Questionnaire(COMMANDE).readWith(reponses);
+    expect(lecture.validated.toJSON().mode).toBeUndefined();
+    expect(lecture.isComplete()).toBe(false);
   });
 });
 
@@ -131,10 +128,9 @@ describe("règle écrite sur la première des deux questions", () => {
   it("ne reçoit pas la réponse de la page suivante", () => {
     const reponses = { livraison: "domicile", mode: "carte" };
 
-    expect(stateAfterAnswers(PAGES, reponses)).toMatchObject({
-      page: "mode",
-      complete: true,
-    });
+    const lecture = new Questionnaire(PAGES).readWith(reponses);
+    expect(lecture.openPage().id).toBe("mode");
+    expect(lecture.isComplete()).toBe(true);
   });
 
   it("reçoit pourtant les réponses de sa propre page, brouillon compris", async () => {

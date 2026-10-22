@@ -4,7 +4,7 @@
 
 import { Fait } from "../decision-engine/fait.ts";
 import { type Box, type Choice, GivenAnswer } from "./given-answers.ts";
-import type { AnyQuestions, Validated } from "./question.ts";
+import type { Answers, AnyQuestions, Validated } from "./question.ts";
 
 /**
  * Une question validée, ou pas : sa réponse, et les options qui se
@@ -72,5 +72,22 @@ export class ValidatedAnswers<Questions extends AnyQuestions = AnyQuestions> {
     id: Id,
   ): ValidatedAnswer<Questions[Id]> {
     return new ValidatedAnswer(id, this.#validated[id] as Validated[string]);
+  }
+
+  /**
+   * Les réponses des questions validées. Une question facultative restée sans
+   * réponse n'y figure pas.
+   */
+  answers(): Answers<Questions> {
+    return Object.fromEntries(
+      Object.entries(this.#validated).flatMap(([id, validated]) =>
+        validated?.answer === undefined ? [] : [[id, validated.answer]],
+      ),
+    ) as Answers<Questions>;
+  }
+
+  /** Les questions validées telles que le moteur les garde : la trace les lit. */
+  toJSON(): Validated<Questions> {
+    return this.#validated;
   }
 }

@@ -8,15 +8,11 @@ import type { Cibles } from "../../../core/models/eligibilite/declarations/cible
 import type { Questions } from "../../../core/models/eligibilite/declarations/questions";
 import { SEEDS } from "../../../core/models/eligibilite/seeds-catalogue";
 import { preconisationOf } from "../../../core/socle/model";
-import {
-  areAnswered,
-  askedQuestions,
-} from "../../../core/socle/questionnaire-engine/asked-questions";
-import { GivenAnswers } from "../../../core/socle/questionnaire-engine/given-answers";
 import type {
   Answers,
   AnyCibles,
 } from "../../../core/socle/questionnaire-engine/question";
+import { Questionnaire } from "../../../core/socle/questionnaire-engine/questionnaire";
 import { errorsOf } from "../../../front/socle/questionnaire-engine/screen-texts";
 import { MINEUR, PLUSIEURS_PERMISSIONS } from "./reponses-de-la-permission";
 
@@ -33,7 +29,11 @@ const posees = (
   support: Cibles["cible_support_id"],
   reponses: Reponses = {},
 ) =>
-  PAGE ? askedQuestions(pages, PAGE, reponses, avecLeSupport(support)) : [];
+  PAGE
+    ? new Questionnaire(pages)
+        .readWith(reponses, avecLeSupport(support))
+        .questionsOn(PAGE)
+    : [];
 const question = (
   id: keyof Questions,
   support: Cibles["cible_support_id"],
@@ -84,11 +84,9 @@ describe("les réponses de Q3.1", () => {
       "Ces deux trajets nécessitent deux simulations distinctes. Choisissez ici le sens déjà évalué, puis faites une autre simulation pour l’autre sens.",
     ]);
     expect(
-      areAnswered(
-        DU_TRAJET,
-        new GivenAnswers(reponses),
-        avecLeSupport("S3138g"),
-      ),
+      new Questionnaire(DU_TRAJET)
+        .readWith(reponses, avecLeSupport("S3138g"))
+        .isComplete(),
     ).toBe(false);
   });
 
@@ -99,11 +97,9 @@ describe("les réponses de Q3.1", () => {
     };
 
     expect(
-      areAnswered(
-        DU_TRAJET,
-        new GivenAnswers(reponses),
-        avecLeSupport("S3138g"),
-      ),
+      new Questionnaire(DU_TRAJET)
+        .readWith(reponses, avecLeSupport("S3138g"))
+        .isComplete(),
     ).toBe(true);
   });
 
@@ -117,11 +113,9 @@ describe("les réponses de Q3.1", () => {
       "Un aller-retour compte deux transports. Indiquez-en au moins deux, ou choisissez « Aller simple » ou « Retour simple ».",
     ]);
     expect(
-      areAnswered(
-        DU_TRAJET,
-        new GivenAnswers(reponses),
-        avecLeSupport("S3138g"),
-      ),
+      new Questionnaire(DU_TRAJET)
+        .readWith(reponses, avecLeSupport("S3138g"))
+        .isComplete(),
     ).toBe(false);
   });
 

@@ -8,8 +8,8 @@ import type { Questions } from "../../../core/models/eligibilite/declarations/qu
 import { jourAParis } from "../../../core/models/eligibilite/p3/pages-des-evenements";
 import { SEEDS } from "../../../core/models/eligibilite/seeds-catalogue";
 import { preconisationOf } from "../../../core/socle/model";
-import { askedQuestions } from "../../../core/socle/questionnaire-engine/asked-questions";
 import type { Answers } from "../../../core/socle/questionnaire-engine/question";
+import { Questionnaire } from "../../../core/socle/questionnaire-engine/questionnaire";
 import { BRANCARD_20_KM } from "./reponses-de-la-branche";
 
 type Reponses = Answers<Questions>;
@@ -25,7 +25,7 @@ const posees = (pageId: string, reponses: Reponses) => {
   const page = pages.find(({ id }) => id === pageId);
   if (!page) throw new Error(`${pageId} n'existe pas`);
   const { cibles } = preconisationOf(model, reponses);
-  return askedQuestions(pages, page, reponses, cibles);
+  return new Questionnaire(pages).readWith(reponses, cibles).questionsOn(page);
 };
 const ids = (pageId: string, reponses: Reponses) =>
   posees(pageId, reponses).map(({ id }) => id);

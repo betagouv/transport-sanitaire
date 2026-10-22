@@ -19,15 +19,12 @@ import {
   modeDe,
 } from "../../../core/models/eligibilite/p1/mode-de-transport";
 import { preconisationOf } from "../../../core/socle/model";
-import {
-  askedQuestions,
-  validatedQuestions,
-} from "../../../core/socle/questionnaire-engine/asked-questions";
 import { isAnswered } from "../../../core/socle/questionnaire-engine/offered-answer";
 import {
   type Answers,
   pagesOf,
 } from "../../../core/socle/questionnaire-engine/question";
+import { Questionnaire } from "../../../core/socle/questionnaire-engine/questionnaire";
 import { ValidatedAnswers } from "../../../core/socle/questionnaire-engine/validated-answers";
 
 type Reponses = Answers<Questions>;
@@ -39,7 +36,7 @@ const PRO: Reponses = {
   "Q1.1": "3_AVEC_UN_PROFESSIONNEL",
 };
 const q12 = pages
-  .flatMap((page) => askedQuestions(pages, page, PRO))
+  .flatMap((page) => new Questionnaire(pages).readWith(PRO).questionsOn(page))
   .find(({ id }) => id === "Q1.2");
 const CRITERES = Object.keys(OPTIONS["Q1.2"]) as Critere[];
 
@@ -108,7 +105,9 @@ describe("le retour en P1", () => {
   it("au retrait du brancard, efface la corpulence et garde l'ALD et le mineur", () => {
     const sansBrancard = { ...AMBULANCE, "Q1.2": ["1_PAS_AUTONOME"] };
     expect(
-      validatedQuestions(pages, sansBrancard as Reponses)["Q1.3"]?.answer,
+      new Questionnaire(pages)
+        .readWith(sansBrancard as Reponses)
+        .validated.toJSON()["Q1.3"]?.answer,
     ).toEqual(["2_ALD", "8_MINEUR_SOINS_CONTINUS"]);
     const etabli = faits(sansBrancard as Reponses);
     expect(etabli.fait_bariatrique.value).toBe(false);
@@ -128,10 +127,10 @@ describe("le retour en P1", () => {
   it("passé au patient seul, retire la déficience, pas les réponses", () => {
     const { "Q1.2": _, ...sansCriteres } = AMBULANCE;
     const seul = { ...sansCriteres, "Q1.1": "1_SEUL" } satisfies Reponses;
-    expect(validatedQuestions(pages, seul)["Q1.3"]?.answer).toEqual([
-      "2_ALD",
-      "8_MINEUR_SOINS_CONTINUS",
-    ]);
+    expect(
+      new Questionnaire(pages).readWith(seul).validated.toJSON()["Q1.3"]
+        ?.answer,
+    ).toEqual(["2_ALD", "8_MINEUR_SOINS_CONTINUS"]);
     expect(faits(seul).fait_ald_liee.value).toBe(false);
     expect(faits(seul).fait_mineur_soins_prolonges_reconnus.value).toBe(false);
   });

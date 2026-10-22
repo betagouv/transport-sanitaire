@@ -18,18 +18,20 @@ import { model } from "../../../core/models/eligibilite";
 import type { Faits } from "../../../core/models/eligibilite/declarations/faits";
 import type { Questions } from "../../../core/models/eligibilite/declarations/questions";
 import { preconisationOf } from "../../../core/socle/model";
-import { askedQuestions } from "../../../core/socle/questionnaire-engine/asked-questions";
 import {
   type Answers,
   pagesOf,
 } from "../../../core/socle/questionnaire-engine/question";
+import { Questionnaire } from "../../../core/socle/questionnaire-engine/questionnaire";
 
 type Reponses = Answers<Questions>;
 type Cas = Questions["Q1.3"];
 
 const pages = pagesOf(model.questionnaire);
 const posees = (reponses: Reponses) =>
-  pages.flatMap((page) => askedQuestions(pages, page, reponses));
+  pages.flatMap((page) =>
+    new Questionnaire(pages).readWith(reponses).questionsOn(page),
+  );
 const q13 = (reponses: Reponses) => {
   const question = posees(reponses).find((posee) => posee.id === "Q1.3");
   return question?.kind === "multiple choice" ? question : undefined;

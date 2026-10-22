@@ -10,21 +10,23 @@ import { model } from "../../../core/models/eligibilite";
 import type { Questions } from "../../../core/models/eligibilite/declarations/questions";
 import { preconisationOf } from "../../../core/socle/model";
 import {
-  askedPages,
-  askedQuestions,
-} from "../../../core/socle/questionnaire-engine/asked-questions";
-import {
   type Answers,
   pagesOf,
 } from "../../../core/socle/questionnaire-engine/question";
+import { Questionnaire } from "../../../core/socle/questionnaire-engine/questionnaire";
 
 type Reponses = Answers<Questions>;
 
 const pages = pagesOf(model.questionnaire);
 const pagesAffichees = (reponses: Reponses) =>
-  askedPages(pages, reponses).map((page) => page.id);
+  new Questionnaire(pages)
+    .readWith(reponses)
+    .askedPages()
+    .map((page) => page.id);
 const question = (id: keyof Questions, reponses: Reponses) => {
-  const posees = pages.flatMap((page) => askedQuestions(pages, page, reponses));
+  const posees = pages.flatMap((page) =>
+    new Questionnaire(pages).readWith(reponses).questionsOn(page),
+  );
   return posees.find((posee) => posee.id === id);
 };
 const optionsDe = (id: keyof Questions, reponses: Reponses) => {

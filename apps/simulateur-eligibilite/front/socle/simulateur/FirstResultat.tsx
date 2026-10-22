@@ -5,13 +5,16 @@
 // passent au-dessus d'elle, et seule la feuille s'imprime.
 
 import { type ComponentType, useEffect, useState } from "react";
-import { preconisationOf, readingOf } from "../../../core/socle/model";
+import { preconisationOf } from "../../../core/socle/model";
 import type {
   Answers,
   AnyCibles,
 } from "../../../core/socle/questionnaire-engine/question";
 import { pagesOf } from "../../../core/socle/questionnaire-engine/question";
-import type { QuestionnaireState } from "../../../core/socle/questionnaire-engine/questionnaire-state";
+import {
+  Questionnaire,
+  type QuestionnaireState,
+} from "../../../core/socle/questionnaire-engine/questionnaire";
 import type { FirstResult, Model } from "../model";
 import type { DebugTraceProps } from "../questionnaire-engine/QuestionnaireForm";
 import { Stepper } from "../questionnaire-engine/Stepper";
@@ -85,11 +88,9 @@ const loading = new WeakMap<Model, WeakMap<Answers, Promise<FirstResult>>>();
 function resultOf(model: Model, answers: Answers, cibles: AnyCibles): Loading {
   const known = loading.get(model)?.get(answers);
   if (known) return known;
-  const pages = pagesOf(model.core.questionnaire);
-  const result = model.result.content({
-    ...readingOf(pages, answers),
-    cibles,
-  });
+  const questionnaire = new Questionnaire(pagesOf(model.core.questionnaire));
+  const { validated, answers: given } = questionnaire.readWith(answers);
+  const result = model.result.content({ answers: given, validated, cibles });
   if (!(result instanceof Promise)) return result;
   const byAnswers = loading.get(model) ?? new WeakMap();
   loading.set(model, byAnswers.set(answers, result));

@@ -5,11 +5,11 @@ import { model } from "../../../core/models/eligibilite";
 import type { Faits } from "../../../core/models/eligibilite/declarations/faits";
 import type { Questions } from "../../../core/models/eligibilite/declarations/questions";
 import { preconisationOf } from "../../../core/socle/model";
-import { askedQuestions } from "../../../core/socle/questionnaire-engine/asked-questions";
 import {
   type Answers,
   pagesOf,
 } from "../../../core/socle/questionnaire-engine/question";
+import { Questionnaire } from "../../../core/socle/questionnaire-engine/questionnaire";
 
 export type Reponses = Answers<Questions>;
 
@@ -20,9 +20,9 @@ export const posee = (
   reponses: Reponses,
 ) => {
   const page = pages.find(({ id: candidate }) => candidate === idDePage);
-  return (page ? askedQuestions(pages, page, reponses) : []).find(
-    (candidate) => candidate.id === id,
-  );
+  return (
+    page ? new Questionnaire(pages).readWith(reponses).questionsOn(page) : []
+  ).find((candidate) => candidate.id === id);
 };
 export const proposees = (reponses: Reponses) => {
   const question = posee("P2/exceptions", "Q2.6", reponses);

@@ -8,16 +8,12 @@ import type { Questions } from "../../../core/models/eligibilite/declarations/qu
 import { projectionCerfa } from "../../../core/models/eligibilite/p3/lieux-du-trajet";
 import { SEEDS } from "../../../core/models/eligibilite/seeds-catalogue";
 import { preconisationOf } from "../../../core/socle/model";
-import {
-  areAnswered,
-  askedQuestions,
-} from "../../../core/socle/questionnaire-engine/asked-questions";
-import { GivenAnswers } from "../../../core/socle/questionnaire-engine/given-answers";
 import type {
   Answers,
   AnyCibles,
   Question,
 } from "../../../core/socle/questionnaire-engine/question";
+import { Questionnaire } from "../../../core/socle/questionnaire-engine/questionnaire";
 
 type Reponses = Answers<Questions>;
 
@@ -38,7 +34,7 @@ const posees = (
 ) => {
   const page = pages.find(({ id }) => id === pageId);
   if (!page) throw new Error(`${pageId} n'existe pas`);
-  return askedQuestions(pages, page, reponses, cibles);
+  return new Questionnaire(pages).readWith(reponses, cibles).questionsOn(page);
 };
 const ids = (pageId: string, reponses: Reponses) =>
   posees(pageId, reponses).map(({ id }) => id);
@@ -144,7 +140,9 @@ describe("les contrôles des deux lieux", () => {
       "Q3.2.adresse": ADRESSE,
     };
     const depart = pages.filter(({ id }) => id === "P3/depart");
-    expect(areAnswered(depart, new GivenAnswers(sansNom), PMT)).toBe(true);
+    expect(new Questionnaire(depart).readWith(sansNom, PMT).isComplete()).toBe(
+      true,
+    );
   });
 
   it("deux adresses identiques bloquent l'arrivée, aux espaces extrêmes et à la casse près", () => {
@@ -229,8 +227,12 @@ describe("la nature en toutes lettres d'un hébergement ou d'un autre lieu (CONT
     };
     const depart = pages.filter(({ id }) => id === "P3/depart");
     const avecLaNature = { ...sansNature, "Q3.2.precision": "Foyer" };
-    expect(areAnswered(depart, new GivenAnswers(sansNature), PMT)).toBe(false);
-    expect(areAnswered(depart, new GivenAnswers(avecLaNature), PMT)).toBe(true);
+    expect(
+      new Questionnaire(depart).readWith(sansNature, PMT).isComplete(),
+    ).toBe(false);
+    expect(
+      new Questionnaire(depart).readWith(avecLaNature, PMT).isComplete(),
+    ).toBe(true);
   });
 });
 

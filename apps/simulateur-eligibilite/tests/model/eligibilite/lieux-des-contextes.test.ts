@@ -5,11 +5,11 @@
 import { describe, expect, it } from "vitest";
 import { model } from "../../../core/models/eligibilite";
 import type { Questions } from "../../../core/models/eligibilite/declarations/questions";
-import { askedQuestions } from "../../../core/socle/questionnaire-engine/asked-questions";
 import type {
   Answers,
   AnyCibles,
 } from "../../../core/socle/questionnaire-engine/question";
+import { Questionnaire } from "../../../core/socle/questionnaire-engine/questionnaire";
 
 type Reponses = Answers<Questions>;
 
@@ -26,7 +26,7 @@ const ADRESSE = {
 const posees = (pageId: string, reponses: Reponses, cibles = PMT) => {
   const page = pages.find(({ id }) => id === pageId);
   if (!page) throw new Error(`${pageId} n'existe pas`);
-  return askedQuestions(pages, page, reponses, cibles);
+  return new Questionnaire(pages).readWith(reponses, cibles).questionsOn(page);
 };
 const ids = (pageId: string, reponses: Reponses) =>
   posees(pageId, reponses).map(({ id }) => id);

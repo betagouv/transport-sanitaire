@@ -8,9 +8,9 @@
 // retour pénitentiaire hors du circuit de prescription ne complète pas P2.
 
 import {
-  areAnswered,
   Fait,
   type GivenAnswers,
+  Questionnaire,
   type ValidatedAnswers,
 } from "../../socle/index.ts";
 import { AUCUN_FAIT, type Faits } from "./declarations/faits.ts";
@@ -24,7 +24,7 @@ export function faits(
   answers: GivenAnswers<Questions>,
   validated: ValidatedAnswers<Questions>,
 ): Faits {
-  const complete = areAnswered(P1.pages, answers);
+  const complete = new Questionnaire(P1.pages).readWith(answers).isComplete();
   return {
     ...faitsDesReponses(validated),
     fait_p1_complete: complete
@@ -34,7 +34,9 @@ export function faits(
     // Hors du circuit de prescription, les règles ne concluent pas (point 34).
     fait_p2_complete:
       !horsCircuit(validated) &&
-      areAnswered([...P1.pages, ...P2.pages], answers)
+      new Questionnaire([...P1.pages, ...P2.pages])
+        .readWith(answers)
+        .isComplete()
         ? Fait.oui("Toutes les questions de P1 et de P2 ont leur réponse.")
         : AUCUN_FAIT.fait_p2_complete,
   };

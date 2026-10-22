@@ -1,11 +1,10 @@
 import { screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
-import { validatedQuestions } from "../../../core/socle/questionnaire-engine/asked-questions";
 import type {
   Page,
   Question,
 } from "../../../core/socle/questionnaire-engine/question";
-import { stateAfterAnswers } from "../../../core/socle/questionnaire-engine/questionnaire-state";
+import { Questionnaire } from "../../../core/socle/questionnaire-engine/questionnaire";
 import { afficher } from "./afficher";
 
 // C'est la question qui dit si son adresse est à l'étranger, d'après les
@@ -47,6 +46,7 @@ const REMARQUE: Page = page({
 });
 
 const PAGES = [DESTINATION, page(ARRIVEE), REMARQUE];
+const QUESTIONNAIRE = new Questionnaire(PAGES);
 
 const LONDRES = {
   street: "10 Downing Street",
@@ -170,19 +170,17 @@ describe("adresse déjà répondue", () => {
   it("compte comme une réponse quand elle est complète pour son mode", () => {
     const reponses = { destination: "etranger", arrivee: LONDRES };
 
-    expect(stateAfterAnswers(PAGES, reponses)).toMatchObject({
-      page: "remarque",
-      complete: true,
-    });
+    const lecture = QUESTIONNAIRE.readWith(reponses);
+    expect(lecture.openPage().id).toBe("remarque");
+    expect(lecture.isComplete()).toBe(true);
   });
 
   it("attend encore le pays d'une adresse à l'étranger qui n'en a pas", () => {
     const reponses = { destination: "etranger", arrivee: SANS_PAYS };
 
-    expect(stateAfterAnswers(PAGES, reponses)).toMatchObject({
-      page: "arrivee",
-      complete: false,
-    });
+    const lecture = QUESTIONNAIRE.readWith(reponses);
+    expect(lecture.openPage().id).toBe("arrivee");
+    expect(lecture.isComplete()).toBe(false);
   });
 
   it("figure parmi les questions validées, réduite aux champs de son mode", () => {
@@ -191,8 +189,10 @@ describe("adresse déjà répondue", () => {
       arrivee: { ...LONDRES, postalCode: "62100" },
     };
 
-    expect(validatedQuestions(PAGES, reponses).arrivee).toEqual({
-      answer: { ...SANS_PAYS, postalCode: "62100" },
-    });
+    expect(QUESTIONNAIRE.readWith(reponses).validated.toJSON().arrivee).toEqual(
+      {
+        answer: { ...SANS_PAYS, postalCode: "62100" },
+      },
+    );
   });
 });

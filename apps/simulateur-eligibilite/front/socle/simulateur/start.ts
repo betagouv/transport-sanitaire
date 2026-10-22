@@ -4,13 +4,15 @@
 // l'état qu'un utilisateur aurait laissé, « Précédent » et verrou compris.
 
 import { type Preconisation, preconisationOf } from "../../../core/socle/model";
-import { validatedQuestions } from "../../../core/socle/questionnaire-engine/asked-questions";
 import {
   type Answers,
   pagesOf,
 } from "../../../core/socle/questionnaire-engine/question";
-import type { QuestionnaireState } from "../../../core/socle/questionnaire-engine/questionnaire-state";
-import { stateAfterAnswers } from "../../../core/socle/questionnaire-engine/questionnaire-state";
+import {
+  Questionnaire,
+  type QuestionnaireState,
+  type Reading,
+} from "../../../core/socle/questionnaire-engine/questionnaire";
 import type { Model } from "../model";
 
 /** Ce que le verrou fige : les réponses d'avant, et leur préconisation. */
@@ -22,12 +24,8 @@ export type Locked = { answers: Answers; preconisation: Preconisation };
  * ne passe pas le verrou : rien de ce qui suit ne la lit.
  */
 export function lock(model: Model, answers: Answers): Locked {
-  const pages = pagesOf(model.core.questionnaire);
-  const acquired = Object.fromEntries(
-    Object.entries(validatedQuestions(pages, answers)).flatMap(([id, seen]) =>
-      seen?.answer === undefined ? [] : [[id, seen.answer]],
-    ),
-  );
+  const questionnaire = new Questionnaire(pagesOf(model.core.questionnaire));
+  const acquired = questionnaire.readWith(answers).validated.answers();
   return {
     answers: acquired,
     preconisation: preconisationOf(model.core, acquired),
@@ -55,9 +53,10 @@ export type Screen =
  */
 export function startingScreen(model: Model, answers: Answers | null): Screen {
   if (!answers) return { name: "questionnaire" };
-  const before = pagesOf(model.core.questionnaire);
-  const { complete, ...state } = stateAfterAnswers(before, answers);
-  if (!complete) return { name: "questionnaire", resume: state };
+  const questionnaire = new Questionnaire(pagesOf(model.core.questionnaire));
+  const read = questionnaire.readWith(answers);
+  const state = stateOf(read, answers);
+  if (!read.isComplete()) return { name: "questionnaire", resume: state };
   return (
     screenAfterLock(model, answers) ?? {
       name: "resultat",
@@ -81,8 +80,14 @@ function screenAfterLock(model: Model, answers: Answers): Screen | undefined {
   const locked = lock(model, before);
   const { cibles } = locked.preconisation;
   if (form(cibles) === null) return undefined;
-  const { complete, ...state } = stateAfterAnswers(part.pages, answers, cibles);
-  return complete
+  const read = new Questionnaire(part.pages).readWith(answers, cibles);
+  const state = stateOf(read, answers);
+  return read.isComplete()
     ? { name: "cerfa", locked, previousState: state, completedAt: new Date() }
     : { name: "complement", locked, resume: state };
+}
+
+// L'état qu'aurait laissé un utilisateur ayant donné ces réponses.
+function stateOf(read: Reading, answers: Answers): QuestionnaireState {
+  return { answers, page: read.openPage().id };
 }

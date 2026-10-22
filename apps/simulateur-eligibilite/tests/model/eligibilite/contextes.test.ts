@@ -11,20 +11,20 @@ import { model } from "../../../core/models/eligibilite";
 import type { Faits } from "../../../core/models/eligibilite/declarations/faits";
 import type { Questions } from "../../../core/models/eligibilite/declarations/questions";
 import { preconisationOf } from "../../../core/socle/model";
-import { askedQuestions } from "../../../core/socle/questionnaire-engine/asked-questions";
 import {
   type Answers,
   pagesOf,
 } from "../../../core/socle/questionnaire-engine/question";
+import { Questionnaire } from "../../../core/socle/questionnaire-engine/questionnaire";
 
 type Reponses = Answers<Questions>;
 
 const pages = pagesOf(model.questionnaire);
 const page = pages.find(({ id }) => id === "P2/contextes");
 const posee = (id: keyof Questions, reponses: Reponses) => {
-  const question = (page ? askedQuestions(pages, page, reponses) : []).find(
-    (candidate) => candidate.id === id,
-  );
+  const question = (
+    page ? new Questionnaire(pages).readWith(reponses).questionsOn(page) : []
+  ).find((candidate) => candidate.id === id);
   return question?.kind === "multiple choice" ? question : undefined;
 };
 const proposees = (id: keyof Questions, reponses: Reponses) =>

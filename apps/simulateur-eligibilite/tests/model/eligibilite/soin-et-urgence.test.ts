@@ -7,12 +7,8 @@ import { model } from "../../../core/models/eligibilite";
 import type { Questions } from "../../../core/models/eligibilite/declarations/questions";
 import { SEEDS } from "../../../core/models/eligibilite/seeds-catalogue";
 import { preconisationOf } from "../../../core/socle/model";
-import {
-  areAnswered,
-  askedQuestions,
-} from "../../../core/socle/questionnaire-engine/asked-questions";
-import { GivenAnswers } from "../../../core/socle/questionnaire-engine/given-answers";
 import type { Answers } from "../../../core/socle/questionnaire-engine/question";
+import { Questionnaire } from "../../../core/socle/questionnaire-engine/questionnaire";
 import { MATERNITE_ETABLIE } from "./reponses-de-la-branche";
 
 type Reponses = Answers<Questions>;
@@ -29,7 +25,9 @@ const cibles = (reponses: Reponses) => preconisationOf(model, reponses).cibles;
 const posees = (pageId: string, reponses: Reponses, figees = reponses) => {
   const page = pages.find(({ id }) => id === pageId);
   if (!page) throw new Error(`${pageId} n'existe pas`);
-  return askedQuestions(pages, page, reponses, cibles(figees));
+  return new Questionnaire(pages)
+    .readWith(reponses, cibles(figees))
+    .questionsOn(page);
 };
 const ids = (pageId: string, reponses: Reponses) =>
   posees(pageId, reponses).map(({ id }) => id);
@@ -119,15 +117,13 @@ describe("la page du soin (Q3.4, Q3.4.a)", () => {
     expect(
       posees("P3/soin", dap).find(({ id }) => id === "Q3.4.distance")?.label,
     ).toBe("Justification médicale du lieu de soins éloigné");
-    expect(areAnswered(soin, new GivenAnswers(reponses("")), cibles(dap))).toBe(
-      false,
-    );
     expect(
-      areAnswered(
-        soin,
-        new GivenAnswers(reponses("Centre expert")),
-        cibles(dap),
-      ),
+      new Questionnaire(soin).readWith(reponses(""), cibles(dap)).isComplete(),
+    ).toBe(false);
+    expect(
+      new Questionnaire(soin)
+        .readWith(reponses("Centre expert"), cibles(dap))
+        .isComplete(),
     ).toBe(true);
   });
 
@@ -147,14 +143,14 @@ describe("la page du soin (Q3.4, Q3.4.a)", () => {
       pages.findIndex(({ id }) => id === "P3/soin") + 1,
     );
     expect(
-      areAnswered(jusquAuSoin, new GivenAnswers(sansCentre), cibles(avant)),
+      new Questionnaire(jusquAuSoin)
+        .readWith(sansCentre, cibles(avant))
+        .isComplete(),
     ).toBe(false);
     expect(
-      areAnswered(
-        jusquAuSoin,
-        new GivenAnswers({ ...sansCentre, "Q3.4.a": "2_NON" }),
-        cibles(avant),
-      ),
+      new Questionnaire(jusquAuSoin)
+        .readWith({ ...sansCentre, "Q3.4.a": "2_NON" }, cibles(avant))
+        .isComplete(),
     ).toBe(true);
     expect(cibles({ ...sansCentre, "Q3.4.a": "1_OUI" })).toEqual(cibles(avant));
   });

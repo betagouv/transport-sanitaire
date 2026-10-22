@@ -1,7 +1,7 @@
 import { screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
-import { validatedQuestions } from "../../../core/socle/questionnaire-engine/asked-questions";
 import type { Page } from "../../../core/socle/questionnaire-engine/question";
+import { Questionnaire } from "../../../core/socle/questionnaire-engine/questionnaire";
 import { afficher } from "./afficher";
 
 // Une case seule : décochée sur une page validée, elle répond « non ». Les
@@ -76,11 +76,17 @@ describe("case seule", () => {
   });
 
   it("n'est pas validée tant que sa page ne l'est pas", () => {
-    expect(validatedQuestions([TRAJET], { distance: "longue" })).toEqual({
+    expect(
+      new Questionnaire([TRAJET])
+        .readWith({ distance: "longue" })
+        .validated.toJSON(),
+    ).toEqual({
       distance: { offered: ["courte", "longue"], answer: "longue" },
     });
     expect(
-      validatedQuestions([TRAJET], { distance: "longue", avion: false }),
+      new Questionnaire([TRAJET])
+        .readWith({ distance: "longue", avion: false })
+        .validated.toJSON(),
     ).toEqual({
       distance: { offered: ["courte", "longue"], answer: "longue" },
       avion: { answer: false },

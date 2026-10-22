@@ -4,11 +4,11 @@
 
 import { describe, expect, it } from "vitest";
 import { questionsOf } from "../../../core/socle";
-import { askedQuestions } from "../../../core/socle/questionnaire-engine/asked-questions";
 import type {
   Page,
   Question,
 } from "../../../core/socle/questionnaire-engine/question";
+import { Questionnaire } from "../../../core/socle/questionnaire-engine/questionnaire";
 
 type Questions = {
   boisson: "the" | "cafe" | "eau";
@@ -74,7 +74,7 @@ const PAGES = [BOISSON, ACCOMPAGNEMENTS, QUANTITE];
 const poseesSur = (
   page: Page<Questions, undefined>,
   boisson: Questions["boisson"],
-) => askedQuestions(PAGES, page, { boisson });
+) => new Questionnaire(PAGES).readWith({ boisson }).questionsOn(page);
 
 describe("un constructeur nommé", () => {
   it("donne la sorte et les options du catalogue, dans son ordre", () => {
@@ -133,7 +133,9 @@ describe("une garde qui lit les faits", () => {
 
   it("ne les fait calculer que si elle les lit", () => {
     calculs = 0;
-    askedQuestions([BOISSON], BOISSON, { boisson: "the" });
+    new Questionnaire([BOISSON])
+      .readWith({ boisson: "the" })
+      .questionsOn(BOISSON);
     expect(calculs).toBe(0);
   });
 
@@ -141,7 +143,8 @@ describe("une garde qui lit les faits", () => {
     const boucle = questionsOf<Questions, Faits>({
       options: OPTIONS,
       faits: (): Faits => ({
-        chaude: askedQuestions([page], page, {}).length > 0,
+        chaude:
+          new Questionnaire([page]).readWith({}).questionsOn(page).length > 0,
       }),
     });
     const garde: Question<Questions, undefined> = boucle.number("quantite", {
@@ -149,8 +152,8 @@ describe("une garde qui lit les faits", () => {
       askedIf: ({ faits }) => faits.chaude,
     });
     const page = { id: "quantite", questions: [garde] };
-    expect(() => askedQuestions([page], page, {})).toThrow(
-      "un fait ne lit jamais une garde qui lit les faits",
-    );
+    expect(() =>
+      new Questionnaire([page]).readWith({}).questionsOn(page),
+    ).toThrow("un fait ne lit jamais une garde qui lit les faits");
   });
 });
