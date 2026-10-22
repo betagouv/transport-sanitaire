@@ -7,7 +7,11 @@
 // exception qui ne s'est pas proposée prend un prédicat structurel, tracé dans
 // sa provenance. Ces fonctions ne lisent que les questions validées.
 
-import { Fait, type GivenAnswer, type ValidatedAnswers } from "../../../socle";
+import {
+  Fait,
+  type GivenAnswer,
+  type ValidatedAnswers,
+} from "../../../../core/socle";
 import type { Faits } from "../declarations/faits";
 import type { Questions } from "../declarations/questions";
 import { sortieVersLaPrison } from "./retour-penitentiaire";

@@ -1,6 +1,6 @@
 // Une adresse en une ligne, pour la relire à l'écran et sur le bon de commande.
 
-import type { Address } from "../../socle";
+import type { Address } from "../../../core/socle";
 
 // Une adresse est un objet : ses champs se lisent un par un.
 export function enUneLigne(adresse: Address): string {

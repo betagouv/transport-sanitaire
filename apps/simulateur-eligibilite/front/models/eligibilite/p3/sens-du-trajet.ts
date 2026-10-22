@@ -3,7 +3,7 @@
 // aux lieux. Plusieurs permissions sont chacune un aller-retour : Q2.8 donne
 // alors le sens, qui ne se redemande pas (D-120).
 
-import type { GivenAnswers } from "../../../socle";
+import type { GivenAnswers } from "../../../../core/socle";
 import type { Questions } from "../declarations/questions";
 import { retourPenitentiaireCoche } from "../p2/retour-penitentiaire";
 import type { ContextDuComplement } from "../question";

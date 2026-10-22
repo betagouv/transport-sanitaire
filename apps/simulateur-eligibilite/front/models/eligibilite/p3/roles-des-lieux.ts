@@ -6,7 +6,7 @@
 // sans la fixer, comme les deux bouts d'un transfert, se choisit parmi celles
 // qu'elle permet.
 
-import type { GivenAnswers } from "../../../socle";
+import type { GivenAnswers } from "../../../../core/socle";
 import { OPTIONS, type Questions } from "../declarations/questions";
 import { retourPenitentiaireCoche } from "../p2/retour-penitentiaire";
 import { sensDuDocument } from "./sens-du-trajet";

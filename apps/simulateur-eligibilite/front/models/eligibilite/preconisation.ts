@@ -12,7 +12,7 @@ import {
   Fait,
   type GivenAnswers,
   type ValidatedAnswers,
-} from "../../socle";
+} from "../../../core/socle";
 import { AUCUN_FAIT, type Faits } from "./declarations/faits";
 import type { Questions } from "./declarations/questions";
 import { P1 } from "./p1/partie-1";

@@ -1,7 +1,7 @@
 // Les deux pages du transfert, après le trajet de P2 : Q2.5 seule, puis Q2.6.a
 // et Q2.6 sur la page des exceptions de l'article 80 (D-106).
 
-import type { QuestionnairePart } from "../../../socle";
+import type { QuestionnairePart } from "../../../../core/socle";
 import { OPTIONS, type Questions } from "../declarations/questions";
 import { type Context, question } from "../question";
 import {

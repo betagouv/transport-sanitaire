@@ -4,11 +4,11 @@
 // seeds en deux sections : celles qui ouvrent un résultat, et celles qui
 // s'arrêtent dans le questionnaire.
 
+import { evaluateSeed, type Seed } from "../../../core/socle/seeds/seed";
 import { Container } from "../app/Container";
 import { type Model, preconisationOf } from "../model";
 import { startingScreen } from "../simulateur/start";
 import { type SeedRow, SeedsTable } from "./SeedsTable";
-import { evaluateSeed, type Seed } from "./seed";
 
 type Props = {
   seeds: readonly Seed[];

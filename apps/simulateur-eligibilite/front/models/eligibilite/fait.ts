@@ -2,7 +2,7 @@
 // règles. Le nom est vérifié contre la liste des faits que les règles
 // reçoivent.
 
-import { faitsOf } from "../../socle";
+import { faitsOf } from "../../../core/socle";
 import type { Faits } from "./declarations/faits";
 
 /** Le constructeur d'un fait du modèle, par son nom. */

@@ -7,7 +7,7 @@ import type {
   GivenAnswers,
   QuestionnairePart,
   ValidatedAnswers,
-} from "../../../socle";
+} from "../../../../core/socle";
 import type { Cibles } from "../declarations/cibles";
 import type { Questions } from "../declarations/questions";
 import { COMPLEMENT } from "../p3/partie-3";

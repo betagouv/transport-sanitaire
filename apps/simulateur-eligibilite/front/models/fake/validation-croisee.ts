@@ -4,7 +4,7 @@
 // Une incohérence se déclare sur la plus tardive des deux questions : le moteur
 // lui cache les pages suivantes. Elle dit quoi corriger, en texte.
 
-import type { QuestionnairePart } from "../../socle";
+import type { QuestionnairePart } from "../../../core/socle";
 import type { Cibles } from "./declarations/cibles";
 import type { Questions } from "./declarations/questions";
 import { questionDuComplement as question } from "./question";

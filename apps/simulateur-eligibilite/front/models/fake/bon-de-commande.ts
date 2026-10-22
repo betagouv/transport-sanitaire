@@ -8,6 +8,7 @@
 // si elle n'y tient pas. Le nom du client n'a pas de champ : il se dessine dans
 // son cadre.
 
+import type { GivenAnswers } from "../../../core/socle";
 import {
   at,
   bindCerfa,
@@ -16,7 +17,6 @@ import {
   type CerfaMapping,
   commentOn,
   drawnBox,
-  type GivenAnswers,
   templateAt,
   text,
 } from "../../socle";

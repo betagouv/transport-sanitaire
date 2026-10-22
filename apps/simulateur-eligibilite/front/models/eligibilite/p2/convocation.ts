@@ -6,7 +6,7 @@
 // fait absent : la règle `cible_convocation_inconnue_decisive` envoie alors à la
 // caisse. Ces fonctions ne lisent que les questions validées.
 
-import { Fait, type ValidatedAnswers } from "../../../socle";
+import { Fait, type ValidatedAnswers } from "../../../../core/socle";
 import type { Faits } from "../declarations/faits";
 import type { Questions } from "../declarations/questions";
 

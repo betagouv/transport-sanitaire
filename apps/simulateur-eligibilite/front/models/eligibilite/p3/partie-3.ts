@@ -4,7 +4,7 @@
 // Chaque question ne se pose que si le support de l'issue, figé au verrou, la
 // réclame (`CATALOGUE_COMPLET_QUESTIONS.md`, « Partie 3 »).
 
-import type { QuestionnairePart } from "../../../socle";
+import type { QuestionnairePart } from "../../../../core/socle";
 import type { Cibles } from "../declarations/cibles";
 import type { Questions } from "../declarations/questions";
 import { questionDuComplement as question } from "../question";

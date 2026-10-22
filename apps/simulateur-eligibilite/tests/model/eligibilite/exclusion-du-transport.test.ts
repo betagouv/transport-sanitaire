@@ -8,12 +8,12 @@
 // ils arrivent avec leurs questions.
 
 import { describe, expect, it } from "vitest";
+import type { Fait } from "../../../core/socle";
 import type { Answers } from "../../../core/socle/questionnaire-engine/question";
 import { model } from "../../../front/models/eligibilite";
 import type { Faits } from "../../../front/models/eligibilite/declarations/faits";
 import type { Questions } from "../../../front/models/eligibilite/declarations/questions";
 import { cibles } from "../../../front/models/eligibilite/evaluation-des-regles";
-import type { Fait } from "../../../front/socle";
 import { preconisationOf } from "../../../front/socle/model";
 
 const BRANCARD_20_KM: Answers<Questions> = {

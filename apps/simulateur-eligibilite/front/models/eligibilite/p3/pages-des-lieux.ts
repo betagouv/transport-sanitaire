@@ -3,7 +3,7 @@
 // P2 établit se rappelle sans se redemander (`lieux-du-trajet.ts`). Aucune
 // distance ne se compare aux adresses.
 
-import type { Address, QuestionnairePart } from "../../../socle";
+import type { Address, QuestionnairePart } from "../../../../core/socle";
 import type { Cibles } from "../declarations/cibles";
 import { OPTIONS, type Questions } from "../declarations/questions";
 import {

@@ -16,8 +16,8 @@ import {
   type QuestionnairePart,
 } from "../../core/socle/questionnaire-engine/question";
 import type { ValidatedAnswers } from "../../core/socle/questionnaire-engine/validated-answers";
+import type { Seed } from "../../core/socle/seeds/seed";
 import type { BoundCerfa } from "./cerfa-mapping";
-import type { Seed } from "./seeds/seed";
 
 /** Les faits d'un modèle : ce que ses règles reçoivent. */
 export type AnyFaits = Readonly<Record<string, unknown>>;

@@ -7,7 +7,7 @@
 // l'éligibilité. Une simulation se fait en une fois, sur le modèle chargé à
 // l'ouverture : le constat vaut pour toute la simulation.
 
-import { Fait } from "../../socle";
+import { Fait } from "../../../core/socle";
 
 /** Le constat du logiciel sur les règles chargées. */
 export const EXCLUSION_DU_TRANSPORT = Fait.non(

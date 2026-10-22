@@ -7,7 +7,7 @@
 // situation qui ne se propose pas laisse son fait absent, et un groupe coché
 // n'établit rien avant sa précision. Ils ne lisent que les questions validées.
 
-import { Fait, type ValidatedAnswers } from "../../../socle";
+import { Fait, type ValidatedAnswers } from "../../../../core/socle";
 import type { Faits } from "../declarations/faits";
 import { OPTIONS, type Questions } from "../declarations/questions";
 

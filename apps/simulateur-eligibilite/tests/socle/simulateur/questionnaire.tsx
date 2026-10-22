@@ -3,9 +3,9 @@
 
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import type { Seed } from "../../../core/socle/seeds/seed";
 import { App } from "../../../front/socle/app/App";
 import type { Model } from "../../../front/socle/model";
-import type { Seed } from "../../../front/socle/seeds/seed";
 import { snapshotReferentiel } from "../../../shared/referentiel";
 import { modeleDeTest, seulModele } from "../modele-de-test";
 import { seRattacher, seRattacherProduit } from "../se-rattacher";

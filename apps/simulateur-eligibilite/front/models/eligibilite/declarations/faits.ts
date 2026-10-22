@@ -4,7 +4,7 @@
 // La liste suit l'ordre des règles. `tests/model/eligibilite/declarations.test.ts`
 // la compare à `rules/regles.publicodes`.
 
-import { Fait } from "../../../socle";
+import { Fait } from "../../../../core/socle";
 
 /** Le nom de chaque fait que les règles reçoivent. */
 export const FAITS = [

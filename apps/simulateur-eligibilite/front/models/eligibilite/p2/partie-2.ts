@@ -5,7 +5,7 @@
 // `pages-de-la-convocation.ts`, puis la branche (Q2.12 à Q2.14), dans
 // `pages-de-la-branche.ts`. Q2.4, Q2.9 et Q2.11 n'ont aucun écran.
 
-import type { QuestionnairePart } from "../../../socle";
+import type { QuestionnairePart } from "../../../../core/socle";
 import { OPTIONS, type Questions } from "../declarations/questions";
 import { type Context, question } from "../question";
 import { contextesAProposer, sejourAProposer } from "./contextes";

@@ -7,7 +7,7 @@
 // a déjà posé ses deux faits à « non » (contextes). Le cadre de Q2.8.4.a ne
 // change aucun fait. Ces fonctions ne lisent que les questions validées.
 
-import { Fait, type ValidatedAnswers } from "../../../socle";
+import { Fait, type ValidatedAnswers } from "../../../../core/socle";
 import type { Faits } from "../declarations/faits";
 import type { Questions } from "../declarations/questions";
 

@@ -8,7 +8,11 @@
 // les questions validées, sauf le motif de Q2.14, qui lit l'éloignement sur la
 // même page.
 
-import { Fait, type GivenAnswer, type ValidatedAnswers } from "../../../socle";
+import {
+  Fait,
+  type GivenAnswer,
+  type ValidatedAnswers,
+} from "../../../../core/socle";
 import { AUCUN_FAIT, type Faits } from "../declarations/faits";
 import type { Questions } from "../declarations/questions";
 import { cible } from "../evaluation-des-regles";

@@ -13,7 +13,7 @@
 // pas (`oracle-par-reponses.test.ts`). La seed de la caisse prend un transfert
 // que le Centre 15 a demandé, autre raison d'envoyer le patient à la caisse.
 
-import type { Seed } from "../../socle/seeds/seed";
+import type { Seed } from "../../../core/socle";
 import type { Cibles } from "./declarations/cibles";
 import type { Questions } from "./declarations/questions";
 

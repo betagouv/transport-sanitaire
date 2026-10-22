@@ -2,7 +2,7 @@
 // pour la tranche d'âge et le cadre, puis Q2.8 pour le patient de moins de
 // 20 ans, sur une seule page (D-107).
 
-import type { QuestionnairePart } from "../../../socle";
+import type { QuestionnairePart } from "../../../../core/socle";
 import type { Questions } from "../declarations/questions";
 import { type Context, question } from "../question";
 import {

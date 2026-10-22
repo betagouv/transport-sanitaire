@@ -6,7 +6,7 @@
 // (D-104 : une simulation se fait en une fois, sur le modèle chargé à
 // l'ouverture). Un fait inconnu est une clé absente, jamais un « non ».
 
-import type { GivenAnswers, ValidatedAnswers } from "../../../socle";
+import type { GivenAnswers, ValidatedAnswers } from "../../../../core/socle";
 import type { Cibles } from "../declarations/cibles";
 import type { Faits } from "../declarations/faits";
 import type { Questions } from "../declarations/questions";

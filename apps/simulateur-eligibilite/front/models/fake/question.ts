@@ -4,7 +4,7 @@
 // Avant le verrou, une question ne connaît pas encore les cibles ; après, elle
 // les lit figées. D'où deux jeux de constructeurs.
 
-import { questionsOf } from "../../socle";
+import { questionsOf } from "../../../core/socle";
 import type { Cibles } from "./declarations/cibles";
 import type { Faits } from "./declarations/faits";
 import { OPTIONS, type Questions } from "./declarations/questions";

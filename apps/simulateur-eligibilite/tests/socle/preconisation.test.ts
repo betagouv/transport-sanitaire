@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import type { ValidatedAnswers } from "../../front/socle";
+import type { ValidatedAnswers } from "../../core/socle";
 import { type Model, preconisationOf } from "../../front/socle/model";
 import { modeleDeTest } from "./modele-de-test";
 

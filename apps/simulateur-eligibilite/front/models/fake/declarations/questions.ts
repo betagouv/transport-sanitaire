@@ -1,7 +1,7 @@
 // Les questions du modèle de démonstration, le type de la réponse de chacune,
 // et le libellé de chaque option.
 
-import type { Address } from "../../../socle";
+import type { Address } from "../../../../core/socle";
 
 export type Questions = {
   boisson: "the" | "cafe" | "rien";

@@ -31,13 +31,13 @@ const SOCLE = ["front/socle", "core/socle"];
 const dansLeSocle = (cible: string) =>
   SOCLE.some((dossier) => cible.startsWith(dossier));
 
-// Ce que le modèle a le droit d'importer du socle, en plus de son point
-// d'entrée : le type d'une seed, que le catalogue lit à la source, et le moteur
-// de décision, qui amènerait publicodes dans le chunk d'entrée s'il passait par
-// le point d'entrée.
+// Ce que le modèle a le droit d'importer du socle : ses deux points d'entrée,
+// celui de l'écran et celui du métier, et le moteur de décision, qui amènerait
+// publicodes dans le chunk d'entrée s'il passait par un point d'entrée.
 const OUVERT_AU_MODELE = [
   "front/socle",
-  "front/socle/seeds/seed",
+  "core/socle",
+  "core/socle/index",
   "core/socle/decision-engine/publicodes",
 ];
 
@@ -74,7 +74,8 @@ describe("le socle et le modèle", () => {
           dansLeSocle(cible) &&
           !OUVERT_AU_MODELE.includes(cible.replace(/\.tsx?$/, "")),
       ),
-      "`front/socle/index.ts` dit ce que le socle promet au modèle. Un import " +
+      "`front/socle/index.ts` et `core/socle/index.ts` disent ce que le " +
+        "socle promet au modèle. Un import " +
         "plus profond lie le modèle à un détail du socle, qui ne peut plus " +
         "changer sans le casser. S'il manque quelque chose, ajoute-le au " +
         "point d'entrée.",

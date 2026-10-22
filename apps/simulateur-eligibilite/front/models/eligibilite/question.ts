@@ -9,7 +9,7 @@ import {
   type QuestionContext,
   questionsOf,
   type ValidatedAnswers,
-} from "../../socle";
+} from "../../../core/socle";
 import type { Cibles } from "./declarations/cibles";
 import type { Faits } from "./declarations/faits";
 import { OPTIONS, type Questions } from "./declarations/questions";

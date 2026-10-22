@@ -3,7 +3,7 @@
 // pénitentiaire et la convocation. La page de branche (Q2.12 à Q2.14) les lit pour savoir si l'une
 // de ses questions est utile.
 
-import type { ValidatedAnswers } from "../../../socle";
+import type { ValidatedAnswers } from "../../../../core/socle";
 import { AUCUN_FAIT, type Faits } from "../declarations/faits";
 import type { Questions } from "../declarations/questions";
 import { EXCLUSION_DU_TRANSPORT } from "../exclusion-du-transport";

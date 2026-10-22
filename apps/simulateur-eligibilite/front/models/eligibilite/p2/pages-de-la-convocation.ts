@@ -2,7 +2,7 @@
 // sur la même page, pour l'appareillage, l'agrément du fournisseur (Q2.10.a) et
 // l'appareillage concerné (Q2.10.b) (D-108).
 
-import type { QuestionnairePart } from "../../../socle";
+import type { QuestionnairePart } from "../../../../core/socle";
 import type { Questions } from "../declarations/questions";
 import { question } from "../question";
 import { convocationAnnoncee } from "./convocation";

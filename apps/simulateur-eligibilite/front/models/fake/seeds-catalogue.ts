@@ -3,7 +3,7 @@
 // Chaque seed ouvre le questionnaire sur une page à montrer, ou sur un
 // résultat. L'écran des seeds l'affiche, et le test de conformité la rejoue.
 
-import type { Seed } from "../../socle/seeds/seed";
+import type { Seed } from "../../../core/socle";
 import type { Cibles } from "./declarations/cibles";
 import type { Questions } from "./declarations/questions";
 import { dayFromToday } from "./jour";

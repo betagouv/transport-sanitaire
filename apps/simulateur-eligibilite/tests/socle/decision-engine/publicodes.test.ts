@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
+import type { Fait } from "../../../core/socle";
 import { publicodesEngine } from "../../../core/socle/decision-engine/publicodes";
-import type { Fait } from "../../../front/socle";
 
 // Le moteur de décision, sur des règles écrites ici : il ne connaît celles
 // d'aucun modèle.

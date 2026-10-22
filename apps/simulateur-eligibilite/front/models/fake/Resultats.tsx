@@ -9,10 +9,10 @@
 // avec un conseil bordé de bleu et un encadré blanc.
 
 import type { ReactNode } from "react";
+import type { GivenAnswers } from "../../../core/socle";
 import {
   Disclosure,
   type FirstResult,
-  type GivenAnswers,
   type IllustratedCard,
   IllustratedCards,
   NumberedCards,

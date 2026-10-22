@@ -5,7 +5,7 @@
 // (`roles-des-lieux.ts`). Elle ne se redemande pas : le lieu se rappelle, et
 // seuls son nom et son adresse se saisissent.
 
-import type { GivenAnswers, ValidatedAnswers } from "../../../socle";
+import type { GivenAnswers, ValidatedAnswers } from "../../../../core/socle";
 import type { Questions } from "../declarations/questions";
 import {
   type Etablie,

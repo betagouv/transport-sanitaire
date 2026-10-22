@@ -5,7 +5,11 @@
 // les questions validées. Les sous-questions a à e et i à l, et le régime, ne
 // changent aucune sortie : elles ne sont pas posées (D-102).
 
-import { Fait, type GivenAnswer, type ValidatedAnswers } from "../../../socle";
+import {
+  Fait,
+  type GivenAnswer,
+  type ValidatedAnswers,
+} from "../../../../core/socle";
 import { AUCUN_FAIT, type Faits } from "../declarations/faits";
 import type { Questions } from "../declarations/questions";
 import { cible } from "../evaluation-des-regles";

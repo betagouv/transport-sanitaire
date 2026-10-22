@@ -2,7 +2,7 @@
 // volet médical de la PMT et de la DAP : le S3141 n'en a pas. Rien de ce
 // qu'elles recueillent ne requalifie P2.
 
-import type { GivenAnswers, QuestionnairePart } from "../../../socle";
+import type { GivenAnswers, QuestionnairePart } from "../../../../core/socle";
 import type { Cibles } from "../declarations/cibles";
 import { OPTIONS, type Questions } from "../declarations/questions";
 import { questionDuComplement as question } from "../question";

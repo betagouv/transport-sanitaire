@@ -3,7 +3,7 @@
 // Q2.3.4).
 // Elle ne s'affiche que si l'une de ses questions se pose (D-110).
 
-import type { QuestionnairePart } from "../../../socle";
+import type { QuestionnairePart } from "../../../../core/socle";
 import type { Questions } from "../declarations/questions";
 import { question } from "../question";
 import {

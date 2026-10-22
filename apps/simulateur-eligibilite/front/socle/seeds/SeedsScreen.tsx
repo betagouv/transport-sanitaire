@@ -4,8 +4,8 @@
 // ni le catalogue ni le tableau (`scripts/verifier-bundle.ts` le vérifie).
 
 import { lazy, Suspense, useEffect, useState } from "react";
+import type { Seed } from "../../../core/socle/seeds/seed";
 import type { Model } from "../model";
-import type { Seed } from "./seed";
 
 type Props = {
   /** Le modèle dont on rejoue les seeds. */

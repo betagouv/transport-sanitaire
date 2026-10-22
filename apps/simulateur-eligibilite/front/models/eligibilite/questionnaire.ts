@@ -1,7 +1,7 @@
 // Le questionnaire du modèle : ses parties, dans l'ordre du catalogue de
 // l'éditeur. Les options et leurs libellés viennent des déclarations.
 
-import type { QuestionnairePart } from "../../socle";
+import type { QuestionnairePart } from "../../../core/socle";
 import type { Questions } from "./declarations/questions";
 import { P1 } from "./p1/partie-1";
 import { P2 } from "./p2/partie-2";

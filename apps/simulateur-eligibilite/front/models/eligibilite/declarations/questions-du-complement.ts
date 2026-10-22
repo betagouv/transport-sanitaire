@@ -1,6 +1,6 @@
 // Les questions de P3, le complément du cerfa, et le type de leur réponse.
 
-import type { Address } from "../../../socle";
+import type { Address } from "../../../../core/socle";
 import type { OPTIONS_DU_COMPLEMENT } from "./options-du-complement";
 
 type Option<Id extends keyof typeof OPTIONS_DU_COMPLEMENT> =

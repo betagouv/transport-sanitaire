@@ -5,7 +5,7 @@
 // sous une question dit ce qu'elle démontre. Les tests du socle n'en dépendent
 // pas : ils tournent sur leur propre modèle.
 
-import type { GivenAnswers, QuestionnairePart } from "../../socle";
+import type { GivenAnswers, QuestionnairePart } from "../../../core/socle";
 import type { Cibles } from "./declarations/cibles";
 import type { Questions } from "./declarations/questions";
 import { dayFromToday } from "./jour";

@@ -1,7 +1,7 @@
 // P1 : l'autonomie et l'état de santé du patient, ce qui fait le mode de
 // transport. Les options et leurs libellés viennent des déclarations.
 
-import type { QuestionnairePart } from "../../../socle";
+import type { QuestionnairePart } from "../../../../core/socle";
 import type { Questions } from "../declarations/questions";
 import { question } from "../question";
 import { modeDe } from "./mode-de-transport";

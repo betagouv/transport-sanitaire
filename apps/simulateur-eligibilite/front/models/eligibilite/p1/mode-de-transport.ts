@@ -6,7 +6,11 @@
 // « oui », ce qui le met à « non », et ce qui le laisse absent. Il ne lit que
 // les questions validées.
 
-import { Fait, type GivenAnswer, type ValidatedAnswers } from "../../../socle";
+import {
+  Fait,
+  type GivenAnswer,
+  type ValidatedAnswers,
+} from "../../../../core/socle";
 import type { Cibles } from "../declarations/cibles";
 import { AUCUN_FAIT, type Faits } from "../declarations/faits";
 import type { Questions } from "../declarations/questions";

@@ -1,6 +1,6 @@
 // Ce que le modèle lit de Q1.1 : qui aide le patient pendant le trajet.
 
-import type { GivenAnswer } from "../../../socle";
+import type { GivenAnswer } from "../../../../core/socle";
 import type { Questions } from "../declarations/questions";
 
 /** Q1.1 dit-elle que le patient se passe d'un professionnel, seul ou aidé d'un proche ? */

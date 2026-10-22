@@ -1,7 +1,8 @@
 // Les deux résultats du modèle factice : la commande, puis la commande
 // complétée.
 
-import type { FirstResult, GivenAnswers } from "../../../../front/socle";
+import type { GivenAnswers } from "../../../../core/socle";
+import type { FirstResult } from "../../../../front/socle";
 import type { Cibles } from "./declarations/cibles";
 import type { Questions } from "./declarations/questions";
 

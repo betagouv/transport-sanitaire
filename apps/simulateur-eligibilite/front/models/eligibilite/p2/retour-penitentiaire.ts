@@ -22,7 +22,7 @@ import {
   type GivenAnswers,
   type QuestionnairePart,
   type ValidatedAnswers,
-} from "../../../socle";
+} from "../../../../core/socle";
 import type { Faits } from "../declarations/faits";
 import type { Questions } from "../declarations/questions";
 

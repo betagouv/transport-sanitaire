@@ -3,7 +3,7 @@
 // supports ont ces cases. Elles sont documentaires : ni le motif, ni le
 // document, ni la DAP n'en dépendent.
 
-import type { QuestionnairePart } from "../../../socle";
+import type { QuestionnairePart } from "../../../../core/socle";
 import type { Cibles } from "../declarations/cibles";
 import type { Questions } from "../declarations/questions";
 import {
