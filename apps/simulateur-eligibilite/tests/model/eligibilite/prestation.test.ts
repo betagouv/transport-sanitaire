@@ -2,17 +2,17 @@
 // l'éditeur et D-102. Q2.1 se saute quand P1 prouve déjà un motif de transport.
 
 import { describe, expect, it } from "vitest";
+import { model } from "../../../core/models/eligibilite";
+import type { Questions } from "../../../core/models/eligibilite/declarations/questions";
 import { askedQuestions } from "../../../core/socle/questionnaire-engine/asked-questions";
 import {
   type Answers,
   pagesOf,
 } from "../../../core/socle/questionnaire-engine/question";
-import { model } from "../../../front/models/eligibilite";
-import type { Questions } from "../../../front/models/eligibilite/declarations/questions";
 
 type Reponses = Answers<Questions>;
 
-const pages = pagesOf(model.core.questionnaire);
+const pages = pagesOf(model.questionnaire);
 const page = pages.find(({ id }) => id === "P2/prestation");
 const posees = (reponses: Reponses) =>
   page ? askedQuestions(pages, page, reponses) : [];

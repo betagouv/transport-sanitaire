@@ -6,8 +6,8 @@
 // clé : le texte prend alors son repli générique, et rien n'est jamais
 // deviné. Ces fonctions ne lisent que les questions validées.
 
+import type { Questions } from "../../../../core/models/eligibilite/declarations/questions";
 import type { ValidatedAnswers } from "../../../../core/socle";
-import type { Questions } from "../declarations/questions";
 
 type Valides = ValidatedAnswers<Questions>;
 

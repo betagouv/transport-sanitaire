@@ -7,12 +7,12 @@
 // non des réponses. Nos traces n'ont ces clés que si une réponse les prouve.
 
 import { describe, expect, it } from "vitest";
-import { CIBLES_ENUMEREES } from "../../../front/models/eligibilite/declarations/cibles";
+import { CIBLES_ENUMEREES } from "../../../core/models/eligibilite/declarations/cibles";
+import { SEEDS } from "../../../core/models/eligibilite/seeds-catalogue";
 import {
   type Trace,
   traceDuResultat,
 } from "../../../front/models/eligibilite/r2/trace-du-resultat";
-import { SEEDS } from "../../../front/models/eligibilite/seeds-catalogue";
 import { BRANCARD_20_KM, faits, type Reponses } from "./reponses-de-la-branche";
 import { lectureDe, PATIENT_SEUL } from "./reponses-de-la-permission";
 

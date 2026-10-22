@@ -8,7 +8,7 @@ import {
   depasseQuaranteHuitHeures,
   finNonPosterieure,
   periodeAvantLaFinDeLaPermission,
-} from "../../../front/models/eligibilite/p2/dates-de-la-permission";
+} from "../../../core/models/eligibilite/p2/dates-de-la-permission";
 
 describe("commenceAvantLHospitalisation", () => {
   it.each([

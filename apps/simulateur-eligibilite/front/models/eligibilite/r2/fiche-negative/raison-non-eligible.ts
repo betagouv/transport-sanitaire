@@ -13,7 +13,7 @@
 // table) : leur condition est codée, elle ne devient jamais vraie, et la
 // raison n'est donc jamais choisie.
 
-import type { IssueNegative } from "../../declarations/catalogue-resultats";
+import type { IssueNegative } from "../../../../../core/models/eligibilite/declarations/catalogue-resultats";
 import type { Trace } from "../trace-du-resultat";
 
 /** Une raison du catalogue : son texte, son code, sa priorité. */

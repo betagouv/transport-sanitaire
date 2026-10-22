@@ -9,8 +9,8 @@
 import type {
   IssuePositive,
   TexteCode,
-} from "../../declarations/catalogue-resultats";
-import type { Cibles } from "../../declarations/cibles";
+} from "../../../../../core/models/eligibilite/declarations/catalogue-resultats";
+import type { Cibles } from "../../../../../core/models/eligibilite/declarations/cibles";
 import type { Trace } from "../trace-du-resultat";
 import { avecLesAutresTermes } from "./autres-termes-du-lexique";
 

@@ -27,7 +27,7 @@ for (const yaml of reglesLivrees()) {
 
 /** Les fichiers `.publicodes` de chaque modèle, relatifs à la racine de l'app. */
 function reglesLivrees(): string[] {
-  const modeles = "front/models";
+  const modeles = "core/models";
   return readdirSync(join(racine, modeles)).flatMap((modele) => {
     const dossier = `${modeles}/${modele}/rules`;
     if (!existsSync(join(racine, dossier))) return [];

@@ -23,7 +23,7 @@ describe("les règles de chaque modèle", () => {
 // ---- implémentation ----
 
 function reglesLivrees(): string[] {
-  const modeles = "front/models";
+  const modeles = "core/models";
   return readdirSync(join(racine, modeles)).flatMap((modele) => {
     const dossier = `${modeles}/${modele}/rules`;
     if (!existsSync(join(racine, dossier))) return [];

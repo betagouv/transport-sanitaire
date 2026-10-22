@@ -7,10 +7,10 @@ import { describe, expect, it } from "vitest";
 import {
   CIBLES,
   CIBLES_ENUMEREES,
-} from "../../../front/models/eligibilite/declarations/cibles";
-import { FAITS } from "../../../front/models/eligibilite/declarations/faits";
-import { OPTIONS } from "../../../front/models/eligibilite/declarations/questions";
-import rules from "../../../front/models/eligibilite/rules/regles.json" with {
+} from "../../../core/models/eligibilite/declarations/cibles";
+import { FAITS } from "../../../core/models/eligibilite/declarations/faits";
+import { OPTIONS } from "../../../core/models/eligibilite/declarations/questions";
+import rules from "../../../core/models/eligibilite/rules/regles.json" with {
   type: "json",
 };
 

@@ -8,6 +8,16 @@
 // dates…) arrivent avec leurs questions.
 
 import { describe, expect, it } from "vitest";
+import { model } from "../../../core/models/eligibilite";
+import type { Faits } from "../../../core/models/eligibilite/declarations/faits";
+import {
+  OPTIONS,
+  type Questions,
+} from "../../../core/models/eligibilite/declarations/questions";
+import {
+  faitsDuMode,
+  modeDe,
+} from "../../../core/models/eligibilite/p1/mode-de-transport";
 import { preconisationOf } from "../../../core/socle/model";
 import {
   askedQuestions,
@@ -19,21 +29,11 @@ import {
   pagesOf,
 } from "../../../core/socle/questionnaire-engine/question";
 import { ValidatedAnswers } from "../../../core/socle/questionnaire-engine/validated-answers";
-import { model } from "../../../front/models/eligibilite";
-import type { Faits } from "../../../front/models/eligibilite/declarations/faits";
-import {
-  OPTIONS,
-  type Questions,
-} from "../../../front/models/eligibilite/declarations/questions";
-import {
-  faitsDuMode,
-  modeDe,
-} from "../../../front/models/eligibilite/p1/mode-de-transport";
 
 type Reponses = Answers<Questions>;
 type Critere = Questions["Q1.2"][number];
 
-const pages = pagesOf(model.core.questionnaire);
+const pages = pagesOf(model.questionnaire);
 const PRO: Reponses = {
   "Q0.1": "1_VERIFIER",
   "Q1.1": "3_AVEC_UN_PROFESSIONNEL",
@@ -103,7 +103,7 @@ describe("le retour en P1", () => {
     "Q1.3": ["1_FORTE_CORPULENCE", "2_ALD", "8_MINEUR_SOINS_CONTINUS"],
   };
   const faits = (reponses: Reponses) =>
-    preconisationOf(model.core, reponses).faits as Faits;
+    preconisationOf(model, reponses).faits as Faits;
 
   it("au retrait du brancard, efface la corpulence et garde l'ALD et le mineur", () => {
     const sansBrancard = { ...AMBULANCE, "Q1.2": ["1_PAS_AUTONOME"] };

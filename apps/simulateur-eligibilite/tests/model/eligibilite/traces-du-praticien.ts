@@ -5,11 +5,11 @@
 import {
   CIBLES,
   type Cibles,
-} from "../../../front/models/eligibilite/declarations/cibles";
+} from "../../../core/models/eligibilite/declarations/cibles";
 import {
   AUCUN_FAIT,
   type Faits,
-} from "../../../front/models/eligibilite/declarations/faits";
+} from "../../../core/models/eligibilite/declarations/faits";
 import type { Precisions } from "../../../front/models/eligibilite/r2/precisions-du-resultat";
 import type { Trace } from "../../../front/models/eligibilite/r2/trace-du-resultat";
 

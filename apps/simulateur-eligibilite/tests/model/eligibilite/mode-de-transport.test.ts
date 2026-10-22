@@ -6,6 +6,8 @@
 // `CONTRAT_REPONSES_FAITS.json` avec son correctif pour les faits.
 
 import { describe, expect, it } from "vitest";
+import { model } from "../../../core/models/eligibilite";
+import type { Questions } from "../../../core/models/eligibilite/declarations/questions";
 import { preconisationOf } from "../../../core/socle/model";
 import {
   askedPages,
@@ -15,12 +17,10 @@ import {
   type Answers,
   pagesOf,
 } from "../../../core/socle/questionnaire-engine/question";
-import { model } from "../../../front/models/eligibilite";
-import type { Questions } from "../../../front/models/eligibilite/declarations/questions";
 
 type Reponses = Answers<Questions>;
 
-const pages = pagesOf(model.core.questionnaire);
+const pages = pagesOf(model.questionnaire);
 const pagesAffichees = (reponses: Reponses) =>
   askedPages(pages, reponses).map((page) => page.id);
 const question = (id: keyof Questions, reponses: Reponses) => {
@@ -34,7 +34,7 @@ const optionsDe = (id: keyof Questions, reponses: Reponses) => {
     : [];
 };
 const modeDe = (reponses: Reponses) =>
-  preconisationOf(model.core, reponses).cibles.cible_mode_id;
+  preconisationOf(model, reponses).cibles.cible_mode_id;
 
 const SEUL: Reponses = {
   "Q0.1": "1_VERIFIER",

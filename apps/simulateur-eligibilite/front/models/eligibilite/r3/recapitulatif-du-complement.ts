@@ -2,15 +2,15 @@
 // chaque question validée, sous son libellé du moment, avec sa réponse en
 // toutes lettres. Un échafaudage : il part quand le cerfa se remplit.
 
+import type { Cibles } from "../../../../core/models/eligibilite/declarations/cibles";
+import type { Questions } from "../../../../core/models/eligibilite/declarations/questions";
+import { COMPLEMENT } from "../../../../core/models/eligibilite/p3/partie-3";
 import type {
   Address,
   GivenAnswers,
   QuestionnairePart,
   ValidatedAnswers,
 } from "../../../../core/socle";
-import type { Cibles } from "../declarations/cibles";
-import type { Questions } from "../declarations/questions";
-import { COMPLEMENT } from "../p3/partie-3";
 
 /** Ce que R3 reçoit du socle : les réponses, les questions validées, les cibles. */
 export type LectureDuComplement = {

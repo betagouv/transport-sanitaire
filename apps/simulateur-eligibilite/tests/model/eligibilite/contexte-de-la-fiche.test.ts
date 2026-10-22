@@ -5,7 +5,7 @@
 // du catalogue de l'éditeur.
 
 import { describe, expect, it } from "vitest";
-import type { Cibles } from "../../../front/models/eligibilite/declarations/cibles";
+import type { Cibles } from "../../../core/models/eligibilite/declarations/cibles";
 import { catalogueResultats } from "../../../front/models/eligibilite/r2/catalogue-resultats";
 import {
   codesDeContexte,

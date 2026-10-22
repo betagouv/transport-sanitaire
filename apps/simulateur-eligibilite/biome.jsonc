@@ -21,7 +21,7 @@
       "!**/*.tsbuildinfo",
       // Les fichiers de l'éditeur sont recopiés tels quels, et ses règles
       // écrites en JSON par un script : Biome ne les reformate pas.
-      "!front/models/*/rules/*.json",
+      "!core/models/*/rules/*.json",
       // Les logos du socle sont extraits tels quels des gabarits de l'éditeur.
       "!front/socle/simulateur/logos/*.svg"
     ]

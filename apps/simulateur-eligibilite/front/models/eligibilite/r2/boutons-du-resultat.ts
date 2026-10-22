@@ -16,7 +16,7 @@
 // « Précédent » et « Faire une nouvelle simulation » sont ceux du socle : ils
 // ne dépendent d'aucune issue. Sans issue, les règles n'ont pas conclu : rien à compléter.
 
-import type { Cibles } from "../declarations/cibles";
+import type { Cibles } from "../../../../core/models/eligibilite/declarations/cibles";
 
 /** Le libellé de l'action qui complète, pour cette préconisation. */
 export function libelleDeCompletion(cibles: Cibles): string | null {

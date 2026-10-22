@@ -3,17 +3,17 @@
 // du document (D-121).
 
 import { describe, expect, it } from "vitest";
+import { model } from "../../../core/models/eligibilite";
+import type { Questions } from "../../../core/models/eligibilite/declarations/questions";
 import { askedQuestions } from "../../../core/socle/questionnaire-engine/asked-questions";
 import type {
   Answers,
   AnyCibles,
 } from "../../../core/socle/questionnaire-engine/question";
-import { model } from "../../../front/models/eligibilite";
-import type { Questions } from "../../../front/models/eligibilite/declarations/questions";
 
 type Reponses = Answers<Questions>;
 
-const pages = model.core.complement.pages;
+const pages = model.complement.pages;
 const PMT = { cible_support_id: "S3138g" } as AnyCibles;
 const ALLER: Reponses = { "Q3.1.1": 1, "Q3.1.2": "1_ALLER" };
 const RETOUR: Reponses = { "Q3.1.1": 1, "Q3.1.2": "2_RETOUR" };

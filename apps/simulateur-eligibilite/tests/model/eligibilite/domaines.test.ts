@@ -9,12 +9,14 @@
 import { describe, expect, it } from "vitest";
 import { franchissements } from "../../inspection-des-sources";
 
-const EDITEUR = "front/models/eligibilite";
-const P1 = `${EDITEUR}/p1`;
-const P2 = `${EDITEUR}/p2`;
-const R2 = `${EDITEUR}/r2`;
-const P3 = `${EDITEUR}/p3`;
-const R3 = `${EDITEUR}/r3`;
+// Les parties sont au métier, les résultats à l'écran.
+const METIER = "core/models/eligibilite";
+const ECRAN = "front/models/eligibilite";
+const P1 = `${METIER}/p1`;
+const P2 = `${METIER}/p2`;
+const R2 = `${ECRAN}/r2`;
+const P3 = `${METIER}/p3`;
+const R3 = `${ECRAN}/r3`;
 const FAMILLES_DE_R2 = ["praticien", "fiche-negative", "fiche-positive"].map(
   (famille) => `${R2}/${famille}`,
 );

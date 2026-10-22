@@ -7,8 +7,8 @@
 // leur texte. Un retour pénitentiaire hors du circuit de prescription n'a pas
 // d'issue : R2 oriente vers l'administration pénitentiaire (point 34).
 
+import { horsCircuit } from "../../../../core/models/eligibilite/p2/retour-penitentiaire";
 import type { FirstResult } from "../../../socle";
-import { horsCircuit } from "../p2/retour-penitentiaire";
 import { resultatNegatif } from "./fiche-negative/resultat-negatif";
 import { resultatPositif } from "./fiche-positive/resultat-positif";
 import { resultatDuPraticien } from "./praticien/resultat-du-praticien";

@@ -5,9 +5,9 @@
 
 import { render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
+import { SEEDS } from "../../../core/models/eligibilite/seeds-catalogue";
 import { catalogueResultats } from "../../../front/models/eligibilite/r2/catalogue-resultats";
 import { eligibilite } from "../../../front/models/eligibilite/r2/resultat";
-import { SEEDS } from "../../../front/models/eligibilite/seeds-catalogue";
 import { lectureDe } from "./reponses-de-la-permission";
 
 // Le premier chargement du catalogue (900 ko) est long : il se fait avant les

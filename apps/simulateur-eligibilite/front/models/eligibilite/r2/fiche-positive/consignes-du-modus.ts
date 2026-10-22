@@ -7,7 +7,7 @@
 // n'y met aucun mot. Le gras et les liens du texte courant restent en place
 // (`segments-du-texte.ts`).
 
-import type { IssuePositive } from "../../declarations/catalogue-resultats";
+import type { IssuePositive } from "../../../../../core/models/eligibilite/declarations/catalogue-resultats";
 
 /** Une puce de liste ; avec des badges, c'est la légende qui les introduit. */
 export type Puce = {

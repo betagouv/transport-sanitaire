@@ -6,7 +6,7 @@
 // règles peuvent donner en a un : un test le vérifie pour toutes les valeurs
 // de `cible_mode_id`.
 
-import type { Cibles } from "../../declarations/cibles";
+import type { Cibles } from "../../../../../core/models/eligibilite/declarations/cibles";
 
 /** Le partage du transport : prouvé, écarté, ou que les réponses ne disent pas. */
 export type Partage = "incompatible" | "possible" | "inconnu";

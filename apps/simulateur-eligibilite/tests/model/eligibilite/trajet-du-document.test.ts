@@ -3,6 +3,10 @@
 // TS1001-03 du paquet de l'éditeur.
 
 import { describe, expect, it } from "vitest";
+import { model } from "../../../core/models/eligibilite";
+import type { Cibles } from "../../../core/models/eligibilite/declarations/cibles";
+import type { Questions } from "../../../core/models/eligibilite/declarations/questions";
+import { SEEDS } from "../../../core/models/eligibilite/seeds-catalogue";
 import { preconisationOf } from "../../../core/socle/model";
 import {
   areAnswered,
@@ -13,16 +17,12 @@ import type {
   Answers,
   AnyCibles,
 } from "../../../core/socle/questionnaire-engine/question";
-import { model } from "../../../front/models/eligibilite";
-import type { Cibles } from "../../../front/models/eligibilite/declarations/cibles";
-import type { Questions } from "../../../front/models/eligibilite/declarations/questions";
-import { SEEDS } from "../../../front/models/eligibilite/seeds-catalogue";
 import { errorsOf } from "../../../front/socle/questionnaire-engine/screen-texts";
 import { MINEUR, PLUSIEURS_PERMISSIONS } from "./reponses-de-la-permission";
 
 type Reponses = Answers<Questions>;
 
-const pages = model.core.complement.pages;
+const pages = model.complement.pages;
 const [PAGE] = pages;
 // Les pages des lieux suivent : seule celle du trajet se juge ici.
 const DU_TRAJET = pages.slice(0, 1);
@@ -221,12 +221,12 @@ describe("Q3.1 ne requalifie pas P2", () => {
   } as Reponses;
 
   it("deux documents de deux transports gardent la série qualifiante de P2", () => {
-    const { faits, cibles } = preconisationOf(model.core, {
+    const { faits, cibles } = preconisationOf(model, {
       ...SERIE,
       ...PRESCRIPTION,
     });
 
     expect(faits.fait_serie_qualifiante).toMatchObject({ value: true });
-    expect(cibles).toEqual(preconisationOf(model.core, SERIE).cibles);
+    expect(cibles).toEqual(preconisationOf(model, SERIE).cibles);
   });
 });

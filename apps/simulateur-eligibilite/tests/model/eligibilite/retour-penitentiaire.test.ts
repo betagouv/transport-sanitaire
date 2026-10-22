@@ -4,9 +4,9 @@
 // Ce qui établit l'indication médicale est notre lecture (D-130).
 
 import { describe, expect, it } from "vitest";
+import type { Cibles } from "../../../core/models/eligibilite/declarations/cibles";
+import { TRANSFERT_VERS_LA_PRISON } from "../../../core/models/eligibilite/p2/retour-penitentiaire";
 import { model } from "../../../front/models/eligibilite";
-import type { Cibles } from "../../../front/models/eligibilite/declarations/cibles";
-import { TRANSFERT_VERS_LA_PRISON } from "../../../front/models/eligibilite/p2/retour-penitentiaire";
 import { ciblesDe, lectureDe } from "./reponses-de-la-permission";
 import {
   faits,

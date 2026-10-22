@@ -1,7 +1,7 @@
 // Les aides des tests de l'accord préalable (#136) : une demande écrite à la
 // main, et le motif qu'elle donne dans la réservation.
 
-import type { Cibles } from "../../../front/models/eligibilite/declarations/cibles";
+import type { Cibles } from "../../../core/models/eligibilite/declarations/cibles";
 import { type Ajouts, fiche, NON_PARTAGE, puces, TAP } from "./fiches-du-test";
 
 export const SANS_URGENCE = "ISSUE_DAP_SANS_URGENCE";

@@ -36,7 +36,7 @@ type SeedMismatch = {
 };
 
 export type SeedEvaluation = {
-  /** Ce que la préconisation rend pour cette seed. */
+  /** Les cibles que la préconisation calcule pour cette seed. */
   readonly cibles: AnyCibles;
   /** Attendus démentis. Une liste vide veut dire seed conforme. */
   readonly mismatches: readonly SeedMismatch[];

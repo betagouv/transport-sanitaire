@@ -3,7 +3,8 @@
 // main, avec les seuls faits et cibles qu'une condition des règles lit.
 
 import { describe, expect, it } from "vitest";
-import type { IssuePraticien } from "../../../front/models/eligibilite/declarations/catalogue-resultats";
+import type { IssuePraticien } from "../../../core/models/eligibilite/declarations/catalogue-resultats";
+import { SEEDS } from "../../../core/models/eligibilite/seeds-catalogue";
 import { catalogueResultats } from "../../../front/models/eligibilite/r2/catalogue-resultats";
 import {
   type IssueDuPraticien,
@@ -14,7 +15,6 @@ import {
   type Trace,
   traceDuResultat,
 } from "../../../front/models/eligibilite/r2/trace-du-resultat";
-import { SEEDS } from "../../../front/models/eligibilite/seeds-catalogue";
 import { lectureDe } from "./reponses-de-la-permission";
 import { faux, trace, vrai } from "./traces-du-praticien";
 

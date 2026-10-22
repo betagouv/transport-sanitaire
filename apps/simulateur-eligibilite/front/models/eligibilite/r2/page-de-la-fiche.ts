@@ -3,8 +3,8 @@
 // page que le socle compose, ou la feuille qu'il pose sous ses logos.
 
 import type { ReactNode } from "react";
+import type { CatalogueResultats } from "../../../../core/models/eligibilite/declarations/catalogue-resultats";
 import type { FirstResult, Sheet } from "../../../socle";
-import type { CatalogueResultats } from "../declarations/catalogue-resultats";
 
 // La phrase d'introduction est `patientSheetIntro` du catalogue (point 28).
 type Catalogue = Pick<CatalogueResultats, "patientSheetIntro">;

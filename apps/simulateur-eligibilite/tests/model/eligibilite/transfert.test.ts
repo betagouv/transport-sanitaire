@@ -7,7 +7,7 @@ import { describe, expect, it } from "vitest";
 import {
   cible,
   cibles,
-} from "../../../front/models/eligibilite/evaluation-des-regles";
+} from "../../../core/models/eligibilite/evaluation-des-regles";
 import {
   definitif,
   EXCEPTIONS,

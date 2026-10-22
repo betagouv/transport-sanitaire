@@ -3,7 +3,7 @@
 // et `TSREF-20261015-05` du paquet de l'éditeur (D-107).
 
 import { describe, expect, it } from "vitest";
-import type { Faits } from "../../../front/models/eligibilite/declarations/faits";
+import type { Faits } from "../../../core/models/eligibilite/declarations/faits";
 import {
   ciblesDe,
   faits,

@@ -8,13 +8,13 @@
 // ils arrivent avec leurs questions.
 
 import { describe, expect, it } from "vitest";
+import { model } from "../../../core/models/eligibilite";
+import type { Faits } from "../../../core/models/eligibilite/declarations/faits";
+import type { Questions } from "../../../core/models/eligibilite/declarations/questions";
+import { cibles } from "../../../core/models/eligibilite/evaluation-des-regles";
 import type { Fait } from "../../../core/socle";
 import { preconisationOf } from "../../../core/socle/model";
 import type { Answers } from "../../../core/socle/questionnaire-engine/question";
-import { model } from "../../../front/models/eligibilite";
-import type { Faits } from "../../../front/models/eligibilite/declarations/faits";
-import type { Questions } from "../../../front/models/eligibilite/declarations/questions";
-import { cibles } from "../../../front/models/eligibilite/evaluation-des-regles";
 
 const BRANCARD_20_KM: Answers<Questions> = {
   "Q0.1": "1_VERIFIER",
@@ -25,7 +25,7 @@ const BRANCARD_20_KM: Answers<Questions> = {
   "Q2.3.1": "1_CINQUANTE_KM_OU_MOINS",
   "Q2.3.2": false,
 };
-const nos = preconisationOf(model.core, BRANCARD_20_KM).faits as Faits;
+const nos = preconisationOf(model, BRANCARD_20_KM).faits as Faits;
 
 const issue = (exclusion: Fait) =>
   cibles({

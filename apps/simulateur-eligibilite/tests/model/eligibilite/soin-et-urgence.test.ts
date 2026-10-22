@@ -3,6 +3,9 @@
 // Q3.4.a et Q3.5, `CONTRAT_CONTEXTES_V1012.json` (`centreReference`).
 
 import { describe, expect, it } from "vitest";
+import { model } from "../../../core/models/eligibilite";
+import type { Questions } from "../../../core/models/eligibilite/declarations/questions";
+import { SEEDS } from "../../../core/models/eligibilite/seeds-catalogue";
 import { preconisationOf } from "../../../core/socle/model";
 import {
   areAnswered,
@@ -10,22 +13,18 @@ import {
 } from "../../../core/socle/questionnaire-engine/asked-questions";
 import { GivenAnswers } from "../../../core/socle/questionnaire-engine/given-answers";
 import type { Answers } from "../../../core/socle/questionnaire-engine/question";
-import { model } from "../../../front/models/eligibilite";
-import type { Questions } from "../../../front/models/eligibilite/declarations/questions";
-import { SEEDS } from "../../../front/models/eligibilite/seeds-catalogue";
 import { MATERNITE_ETABLIE } from "./reponses-de-la-branche";
 
 type Reponses = Answers<Questions>;
 
-const pages = model.core.complement.pages;
+const pages = model.complement.pages;
 
 const seed = (id: string) => {
   const trouvee = SEEDS.find((candidate) => candidate.id === id);
   if (!trouvee) throw new Error(`seed ${id} absente`);
   return trouvee.answers as Reponses;
 };
-const cibles = (reponses: Reponses) =>
-  preconisationOf(model.core, reponses).cibles;
+const cibles = (reponses: Reponses) => preconisationOf(model, reponses).cibles;
 // Les cibles sont celles du verrou : `figees` les donne, `reponses` les complète.
 const posees = (pageId: string, reponses: Reponses, figees = reponses) => {
   const page = pages.find(({ id }) => id === pageId);

@@ -231,7 +231,7 @@ describe("invariants métier", () => {
     ].filter((terme) => regles.includes(terme));
     expect(
       interdits,
-      "Ni identification, ni analytics dans `front/models/*/rules/*.publicodes` : le moteur " +
+      "Ni identification, ni analytics dans `core/models/*/rules/*.publicodes` : le moteur " +
         "reste une transcription de la réglementation, rejouable hors de " +
         "l'application.",
     ).toEqual([]);

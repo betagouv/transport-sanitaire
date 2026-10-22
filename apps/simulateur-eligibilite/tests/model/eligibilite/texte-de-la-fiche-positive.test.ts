@@ -8,7 +8,7 @@ import { describe, expect, it } from "vitest";
 import {
   CIBLES_ENUMEREES,
   type Cibles,
-} from "../../../front/models/eligibilite/declarations/cibles";
+} from "../../../core/models/eligibilite/declarations/cibles";
 import {
   AMBULANCE,
   badges,

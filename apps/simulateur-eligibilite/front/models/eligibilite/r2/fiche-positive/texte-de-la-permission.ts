@@ -7,7 +7,7 @@
 // Q2.8.5, le catalogue ne dit pas quoi montrer : aucune phrase n'est choisie
 // à sa place.
 
-import type { CatalogueResultats } from "../../declarations/catalogue-resultats";
+import type { CatalogueResultats } from "../../../../../core/models/eligibilite/declarations/catalogue-resultats";
 import type { Trace } from "../trace-du-resultat";
 
 type IssueS3141 = CatalogueResultats["issues"]["ISSUE_S3141"];

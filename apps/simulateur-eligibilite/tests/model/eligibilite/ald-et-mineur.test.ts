@@ -14,20 +14,20 @@
 // - le `doublon` est impossible : une case se coche une fois.
 
 import { describe, expect, it } from "vitest";
+import { model } from "../../../core/models/eligibilite";
+import type { Faits } from "../../../core/models/eligibilite/declarations/faits";
+import type { Questions } from "../../../core/models/eligibilite/declarations/questions";
 import { preconisationOf } from "../../../core/socle/model";
 import { askedQuestions } from "../../../core/socle/questionnaire-engine/asked-questions";
 import {
   type Answers,
   pagesOf,
 } from "../../../core/socle/questionnaire-engine/question";
-import { model } from "../../../front/models/eligibilite";
-import type { Faits } from "../../../front/models/eligibilite/declarations/faits";
-import type { Questions } from "../../../front/models/eligibilite/declarations/questions";
 
 type Reponses = Answers<Questions>;
 type Cas = Questions["Q1.3"];
 
-const pages = pagesOf(model.core.questionnaire);
+const pages = pagesOf(model.questionnaire);
 const posees = (reponses: Reponses) =>
   pages.flatMap((page) => askedQuestions(pages, page, reponses));
 const q13 = (reponses: Reponses) => {
@@ -35,7 +35,7 @@ const q13 = (reponses: Reponses) => {
   return question?.kind === "multiple choice" ? question : undefined;
 };
 const faits = (reponses: Reponses) =>
-  preconisationOf(model.core, reponses).faits as Faits;
+  preconisationOf(model, reponses).faits as Faits;
 
 const BESOIN: Reponses = { "Q0.1": "1_VERIFIER" };
 const CLINIQUE = (cas: Cas): Reponses => ({

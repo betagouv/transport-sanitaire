@@ -14,7 +14,7 @@ import type {
   IssueEtranger,
   IssuePraticien,
   ScenarioPraticien,
-} from "../../declarations/catalogue-resultats";
+} from "../../../../../core/models/eligibilite/declarations/catalogue-resultats";
 import type { Trace } from "../trace-du-resultat";
 import {
   type IssueDuPraticien,

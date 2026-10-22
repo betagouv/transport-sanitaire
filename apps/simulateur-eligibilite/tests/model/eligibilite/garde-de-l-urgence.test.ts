@@ -6,7 +6,7 @@
 // ne le lit pas comme un « non ». Les identifiants sont ceux de l'éditeur.
 
 import { describe, expect, it } from "vitest";
-import { cibles } from "../../../front/models/eligibilite/evaluation-des-regles";
+import { cibles } from "../../../core/models/eligibilite/evaluation-des-regles";
 import {
   ABSENTS,
   type Changements,

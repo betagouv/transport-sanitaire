@@ -11,7 +11,7 @@
 import type {
   Bloc,
   CatalogueResultats,
-} from "../../declarations/catalogue-resultats";
+} from "../../../../../core/models/eligibilite/declarations/catalogue-resultats";
 import type { Trace } from "../trace-du-resultat";
 import {
   badgesDuResultat,

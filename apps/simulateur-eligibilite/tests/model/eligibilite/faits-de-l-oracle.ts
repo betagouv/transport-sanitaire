@@ -4,12 +4,12 @@
 // quelques-uns. Un fait changé en `undefined` est absent : il n'est pas
 // transmis aux règles.
 
-import type { Cibles } from "../../../front/models/eligibilite/declarations/cibles";
+import type { Cibles } from "../../../core/models/eligibilite/declarations/cibles";
 import {
   FAITS,
   type Faits,
-} from "../../../front/models/eligibilite/declarations/faits";
-import { cibles } from "../../../front/models/eligibilite/evaluation-des-regles";
+} from "../../../core/models/eligibilite/declarations/faits";
+import { cibles } from "../../../core/models/eligibilite/evaluation-des-regles";
 
 export type Changements = Partial<Record<keyof Faits, boolean | undefined>>;
 export type Issue = NonNullable<Cibles["cible_issue_id"]>;

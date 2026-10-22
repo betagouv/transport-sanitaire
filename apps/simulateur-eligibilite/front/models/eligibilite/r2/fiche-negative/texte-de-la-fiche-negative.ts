@@ -9,7 +9,7 @@
 import type {
   CatalogueResultats,
   IssueNegative,
-} from "../../declarations/catalogue-resultats";
+} from "../../../../../core/models/eligibilite/declarations/catalogue-resultats";
 import type { Trace } from "../trace-du-resultat";
 import { raisonNonEligible } from "./raison-non-eligible";
 

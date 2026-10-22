@@ -6,11 +6,11 @@
 // (D-104 : une simulation se fait en une fois, sur le modèle chargé à
 // l'ouverture). Un fait inconnu est une clé absente, jamais un « non ».
 
+import type { Cibles } from "../../../../core/models/eligibilite/declarations/cibles";
+import type { Faits } from "../../../../core/models/eligibilite/declarations/faits";
+import type { Questions } from "../../../../core/models/eligibilite/declarations/questions";
+import { faits } from "../../../../core/models/eligibilite/preconisation";
 import type { GivenAnswers, ValidatedAnswers } from "../../../../core/socle";
-import type { Cibles } from "../declarations/cibles";
-import type { Faits } from "../declarations/faits";
-import type { Questions } from "../declarations/questions";
-import { faits } from "../preconisation";
 import {
   type Precisions,
   precisionsDuResultat,

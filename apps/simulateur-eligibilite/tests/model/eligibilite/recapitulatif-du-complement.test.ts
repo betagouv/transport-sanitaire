@@ -2,11 +2,11 @@
 // chaque question validée, avec sa réponse en toutes lettres.
 
 import { describe, expect, it } from "vitest";
+import type { Cibles } from "../../../core/models/eligibilite/declarations/cibles";
+import type { Questions } from "../../../core/models/eligibilite/declarations/questions";
+import { COMPLEMENT } from "../../../core/models/eligibilite/p3/partie-3";
 import { readingOf } from "../../../core/socle/model";
 import type { Answers } from "../../../core/socle/questionnaire-engine/question";
-import type { Cibles } from "../../../front/models/eligibilite/declarations/cibles";
-import type { Questions } from "../../../front/models/eligibilite/declarations/questions";
-import { COMPLEMENT } from "../../../front/models/eligibilite/p3/partie-3";
 import { recapitulatifDuComplement as recapitulatif } from "../../../front/models/eligibilite/r3/recapitulatif-du-complement";
 import { PLUSIEURS_PERMISSIONS } from "./reponses-de-la-permission";
 

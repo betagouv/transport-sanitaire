@@ -7,7 +7,7 @@
 // chaque nom : Q2.3.2 ne distingue pas l'avion du bateau, et aucune question
 // ne dit CAMSP ou CMPP. Rien n'est jamais deviné.
 
-import type { IssuePositive } from "../../declarations/catalogue-resultats";
+import type { IssuePositive } from "../../../../../core/models/eligibilite/declarations/catalogue-resultats";
 import type { Trace } from "../trace-du-resultat";
 
 /**
