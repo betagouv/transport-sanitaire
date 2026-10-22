@@ -1,0 +1,110 @@
+/* Une case à cocher en carte, comme un bouton radio « riche » du DSFR. Le DSFR
+   n'a pas de case riche : ces règles reprennent les mesures et les couleurs du
+   radio riche. La case garde son dessin DSFR, à la taille du rond (1rem), et
+   le libellé s'aligne sur celui d'un radio.
+   `.fr-checkbox-group.socle-checkbox-card` rend ces sélecteurs plus
+   spécifiques que ceux du DSFR : ils gagnent quel que soit l'ordre de
+   chargement des feuilles de style. */
+
+.fr-fieldset .fr-fieldset__content .fr-checkbox-group.socle-checkbox-card {
+  display: flex;
+  align-items: center;
+  max-width: 100%;
+  margin-top: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.fr-fieldset
+  .fr-fieldset__content
+  .fr-checkbox-group.socle-checkbox-card:first-child {
+  margin-top: 0;
+}
+
+.fr-fieldset
+  .fr-fieldset__content
+  .fr-checkbox-group.socle-checkbox-card:last-child {
+  margin-bottom: 0.75rem;
+}
+
+/* La case, invisible, sous son dessin : centrée verticalement, à gauche. */
+.fr-fieldset
+  .fr-fieldset__content
+  .fr-checkbox-group.socle-checkbox-card
+  input[type="checkbox"] {
+  left: 1rem;
+  top: calc(50% - 0.5rem);
+  width: 1rem;
+  height: 1rem;
+  margin-top: 0;
+}
+
+/* La carte : toute sa surface coche la case. */
+.fr-fieldset
+  .fr-fieldset__content
+  .fr-checkbox-group.socle-checkbox-card
+  input[type="checkbox"]
+  + label {
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: center;
+  align-self: stretch;
+  width: 100%;
+  margin-left: 0;
+  padding: 0.75rem 1rem 0.75rem 2.75rem;
+  border: 1px solid var(--border-default-grey);
+  background-color: var(--background-default-grey);
+}
+
+.fr-fieldset
+  .fr-fieldset__content
+  .fr-checkbox-group.socle-checkbox-card
+  input[type="checkbox"]
+  + label::before {
+  top: calc(50% - 0.5rem);
+  left: 1rem;
+  width: 1rem;
+  height: 1rem;
+  margin: 0;
+}
+
+.fr-fieldset
+  .fr-fieldset__content
+  .fr-checkbox-group.socle-checkbox-card
+  input[type="checkbox"]:checked
+  + label {
+  border-color: var(--border-active-blue-france);
+}
+
+.fr-fieldset
+  .fr-fieldset__content
+  .fr-checkbox-group.socle-checkbox-card
+  input[type="checkbox"]:not(:disabled)
+  + label:hover {
+  background-color: var(--background-default-grey-hover);
+}
+
+.fr-fieldset
+  .fr-fieldset__content
+  .fr-checkbox-group.socle-checkbox-card
+  input[type="checkbox"]:not(:disabled)
+  + label:active {
+  background-color: var(--background-default-grey-active);
+}
+
+/* Le focus entoure la carte, comme celui d'un radio riche, et plus la case. */
+.fr-fieldset
+  .fr-fieldset__content
+  .fr-checkbox-group.socle-checkbox-card
+  input[type="checkbox"]:focus-visible
+  + label {
+  outline: 2px solid #0a76f6;
+  outline-offset: 2px;
+}
+
+.fr-fieldset
+  .fr-fieldset__content
+  .fr-checkbox-group.socle-checkbox-card
+  input[type="checkbox"]:focus
+  + label::before {
+  outline-style: none;
+}
