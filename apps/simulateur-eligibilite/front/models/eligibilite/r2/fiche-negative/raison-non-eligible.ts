@@ -70,8 +70,8 @@ function familleDeSoin(numero: number): Condition {
 }
 
 // Un séjour réel est prouvé : le texte de la dialyse ne dirait plus le vrai.
-function sansSejour({ precisions }: Trace): boolean {
-  return !precisions.hospitalisation?.startsWith("H-SEJOUR");
+function sansSejour({ sejourReel }: Trace): boolean {
+  return sejourReel !== true;
 }
 
 function aldConfirmee({ precisions }: Trace): boolean {

@@ -7,6 +7,7 @@
 // deviné. Ces fonctions ne lisent que les questions validées.
 
 import { Permission } from "../../../../core/models/eligibilite/concepts/permission";
+import { Sejour } from "../../../../core/models/eligibilite/concepts/sejour";
 import type { Questions } from "../../../../core/models/eligibilite/declarations/questions";
 import type { ValidatedAnswers } from "../../../../core/socle";
 
@@ -95,19 +96,10 @@ function seancesRetenues(validated: Valides): readonly string[] {
   return seances.length >= 2 && !memeDeplacement ? [] : seances;
 }
 
-// Un séjour réel : une entrée ou une sortie d'établissement (Q2.1.g), ou
-// « déjà hospitalisé » coché (Q2.2.1). L'admission en HAD à domicile n'en est pas un.
-function sejourReel(validated: Valides): boolean {
-  return (
-    validated.question("Q2.1.g").isOneOf("1_ENTREE", "2_SORTIE") ||
-    validated.question("Q2.2.1").checked("1_HOSPITALISATION")
-  );
-}
-
 // L'identifiant du lexique : le séjour ou les séances, puis leurs familles.
 function hospitalisation(validated: Valides): string | undefined {
   const seances = seancesRetenues(validated);
-  const sejour = sejourReel(validated);
+  const sejour = Sejour.of(validated).estReel();
   if (!sejour && seances.length === 0) return undefined;
   return [sejour ? "H-SEJOUR" : "H-SEANCE", ...seances].join("-");
 }

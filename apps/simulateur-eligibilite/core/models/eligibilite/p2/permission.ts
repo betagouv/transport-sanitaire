@@ -10,6 +10,7 @@
 
 import { Fait, regles, type ValidatedAnswers } from "../../../socle/index.ts";
 import { Permission } from "../concepts/permission.ts";
+import { Sejour } from "../concepts/sejour.ts";
 import {
   type DeclarationsDeFaits,
   PAS_ENCORE_ETABLI,
@@ -57,7 +58,7 @@ export const FAITS_DE_LA_PERMISSION: DeclarationsDeFaits = {
       .nonSi(sortieVersLaPrison(validated), SORTIE_VERS_LA_PRISON)
       .nonSi(
         validated.question("Q2.2.1").hasAnswer() &&
-          validated.question("Q2.1.g").is("1_ENTREE"),
+          Sejour.of(validated).commenceAvecCeTrajet(),
         "Q2.1.g : « 1_ENTREE » ; aucun séjour en cours, donc aucune permission.",
       )
       .retient(sejourEcarte(validated))

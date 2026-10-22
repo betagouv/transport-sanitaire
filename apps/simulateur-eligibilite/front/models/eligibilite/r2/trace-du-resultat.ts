@@ -7,6 +7,7 @@
 // l'ouverture). Un fait inconnu est une clé absente, jamais un « non ».
 
 import { Permission } from "../../../../core/models/eligibilite/concepts/permission";
+import { Sejour } from "../../../../core/models/eligibilite/concepts/sejour";
 import type { Cibles } from "../../../../core/models/eligibilite/declarations/cibles";
 import type { Faits } from "../../../../core/models/eligibilite/declarations/faits";
 import type { Questions } from "../../../../core/models/eligibilite/declarations/questions";
@@ -43,6 +44,11 @@ export type Trace = {
    * La clé reste donc absente.
    */
   readonly partieTerrestre?: true;
+  /**
+   * Un séjour réel est prouvé. Ce n'est pas une clé de l'éditeur : un texte de
+   * R2 le lit ici, plutôt que de redécouper l'identifiant du lexique.
+   */
+  readonly sejourReel?: true;
   readonly precisions: Precisions;
 };
 
@@ -57,6 +63,7 @@ export function traceDuResultat({
     faits: faits(answers, validated),
     criteres: validated.question("Q1.2").checkedBoxes().map(numeroDuCritere),
     ...repetition(Permission.of(validated)),
+    ...(Sejour.of(validated).estReel() && { sejourReel: true }),
     precisions: precisionsDuResultat(validated),
   };
 }

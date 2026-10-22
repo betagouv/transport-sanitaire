@@ -17,6 +17,7 @@ import {
   regles,
   type ValidatedAnswers,
 } from "../../../socle/index.ts";
+import { Sejour } from "../concepts/sejour.ts";
 import {
   type DeclarationsDeFaits,
   PAS_ENCORE_ETABLI,
@@ -61,7 +62,8 @@ export function champIOuvert(validated: Valides): boolean {
   const deplacement = validated.question("Q2.5");
   return (
     deplacement.is("1_TRANSFERT") ||
-    (deplacement.is("2_AUTRE_DEPLACEMENT") && sejourCoche(validated)) ||
+    (deplacement.is("2_AUTRE_DEPLACEMENT") &&
+      Sejour.of(validated).estCoche()) ||
     admissionHad(validated)
   );
 }
@@ -79,7 +81,9 @@ export function exceptionAProposer(
   const transfert = typeAPoser(validated);
   switch (exception) {
     case "2_ADMISSION_SANS_SEJOUR":
-      return transfert && type.is("1_DEFINITIF") && !sejourCoche(validated);
+      return (
+        transfert && type.is("1_DEFINITIF") && !Sejour.of(validated).estCoche()
+      );
     case "3_CENTRE_QUINZE":
       return transfert;
     case "4_AIR_MER":
@@ -103,7 +107,7 @@ export function hospitalisationDuTransfert(
   validated: Valides,
 ): Fait | undefined {
   const deplacement = validated.question("Q2.5");
-  if (deplacement.is("1_TRANSFERT") && sejourCoche(validated))
+  if (deplacement.is("1_TRANSFERT") && Sejour.of(validated).estCoche())
     return Fait.oui("Q2.2.1 : séjour coché, Q2.5 : « 1_TRANSFERT ».");
   if (deplacement.is("2_AUTRE_DEPLACEMENT"))
     return Fait.oui("Q2.5 : « 2_AUTRE_DEPLACEMENT ».");
@@ -135,11 +139,6 @@ export const FAITS_DU_TRANSFERT: DeclarationsDeFaits = {
 };
 
 // ---- implémentation ----
-
-/** Le séjour est-il coché en Q2.2.1 (« déjà hospitalisé ») ? */
-function sejourCoche(validated: Valides): boolean {
-  return validated.question("Q2.2.1").checked("1_HOSPITALISATION");
-}
 
 // Q2.1.g établit une admission en HAD à domicile : Q2.6 s'ouvre sans Q2.5.
 function admissionHad(validated: Valides): boolean {
@@ -237,7 +236,8 @@ function structurel(exception: ExceptionDuFait, validated: Valides): Fait {
 }
 
 function raisonSansAdmission(validated: Valides): string {
-  if (sejourCoche(validated)) return "un séjour initial est coché en Q2.2.1";
+  if (Sejour.of(validated).estCoche())
+    return "un séjour initial est coché en Q2.2.1";
   if (validated.question("Q2.5").is("2_AUTRE_DEPLACEMENT"))
     return "Q2.5 : autre déplacement, pas un transfert";
   if (validated.question("Q2.6.a").is("2_PROVISOIRE"))

@@ -12,6 +12,7 @@
 // Centre 15 et à la permission, et chaque situation de l'autre cadre.
 
 import { Fait, regles, type ValidatedAnswers } from "../../../socle/index.ts";
+import { Sejour } from "../concepts/sejour.ts";
 import {
   type DeclarationsDeFaits,
   PAS_ENCORE_ETABLI,
@@ -21,18 +22,6 @@ import { OPTIONS, type Questions } from "../declarations/questions.ts";
 type Valides = ValidatedAnswers<Questions>;
 type Motif = Questions["Q2.1"];
 type Contexte = Questions["Q2.2.1.b"][number];
-
-/**
- * Le groupe « déjà hospitalisé » se propose-t-il ? Ni une permission déjà
- * indiquée en Q2.1, ni une entrée en hospitalisation ne le laissent (D-98).
- * Coché, il n'établit pas l'hospitalisation : il inclut la HAD (TS1012-02).
- */
-export function sejourAProposer(validated: Valides): boolean {
-  return (
-    validated.question("Q2.1").isNot("11_PERMISSION") &&
-    validated.question("Q2.1.g").isNot("1_ENTREE")
-  );
-}
 
 /**
  * Les situations de l'autre cadre qui se proposent, en Q2.2.1.b comme dans
@@ -49,7 +38,7 @@ export function contextesAProposer(validated: Valides): readonly Contexte[] {
  * et la permission. Coché, seule Q2.2.1.a dit la permission.
  */
 export function sejourEcarte(validated: Valides): Fait | undefined {
-  if (!groupe(validated, "1_HOSPITALISATION").ecarte) return undefined;
+  if (!Sejour.of(validated).estEcarte()) return undefined;
   return Fait.non("Q2.2.1 : « déjà hospitalisé » proposé, non coché.");
 }
 
@@ -127,7 +116,7 @@ const CONTEXTES = Object.keys(OPTIONS["Q2.2.1.b"]) as Contexte[];
 
 // Les situations que Q2.1 indique déjà. Elles sont retirées sans rappel
 // (TS1012-01). Le groupe « déjà hospitalisé », que la permission retire, se lit
-// dans `sejourAProposer`.
+// dans le séjour (`Sejour.estAProposer`).
 const RETIRES_PAR_Q21: Partial<Record<Motif, readonly Contexte[]>> = {
   "10_CAMSP": ["6_CAMSP"],
   "11_PERMISSION": [],

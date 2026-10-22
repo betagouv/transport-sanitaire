@@ -11,6 +11,7 @@ import {
   regles,
   type ValidatedAnswers,
 } from "../../../socle/index.ts";
+import { Sejour } from "../concepts/sejour.ts";
 import type { DeclarationsDeFaits, Faits } from "../declarations/faits.ts";
 import type { Questions } from "../declarations/questions.ts";
 import { cible } from "../evaluation-des-regles.ts";
@@ -165,7 +166,7 @@ function sansSejourEnCours(validated: Valides): Fait | undefined {
     !sansSejour ||
     validated.question("Q2.1").isOneOf("9_TRANSFERT", "11_PERMISSION") ||
     !contextes.hasAnswer() ||
-    !contextes.declined("1_HOSPITALISATION")
+    !Sejour.of(validated).estEcarte()
   )
     return undefined;
   return Fait.non(

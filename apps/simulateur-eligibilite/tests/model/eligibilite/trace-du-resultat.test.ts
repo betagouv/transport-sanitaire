@@ -15,6 +15,7 @@ import {
 } from "../../../front/models/eligibilite/r2/trace-du-resultat";
 import { BRANCARD_20_KM, faits, type Reponses } from "./reponses-de-la-branche";
 import { lectureDe, PATIENT_SEUL } from "./reponses-de-la-permission";
+import { HAD_A_DOMICILE, SEJOUR } from "./reponses-du-transfert";
 
 // La trace de ces réponses, avec les cibles que calculent les règles.
 const traceDe = (reponses: Reponses): Trace =>
@@ -168,5 +169,15 @@ describe("la trace, quand les réponses manquent ou ne comptent plus", () => {
   it("garde une clé absente, et non une valeur vide, pour une précision inconnue", () => {
     const { precisions } = traceDe(seed("issue-pmt"));
     expect(Object.keys(precisions)).toEqual(["hospitalisation"]);
+  });
+});
+
+describe("le séjour réel", () => {
+  it("se dit quand une réponse le prouve, sans redécouper le lexique", () => {
+    expect(traceDe(SEJOUR).sejourReel).toBe(true);
+  });
+
+  it("reste absent pour l'admission en HAD à domicile", () => {
+    expect("sejourReel" in traceDe(HAD_A_DOMICILE)).toBe(false);
   });
 });

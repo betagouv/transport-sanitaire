@@ -163,12 +163,15 @@ describe("un fait absent n'est jamais « non »", () => {
   });
 
   it("un séjour prouvé écarte les raisons de la dialyse", () => {
-    expect(
-      raisonDe({
-        dialysisType: "non-hemodialyse",
-        hospitalisation: "H-SEJOUR",
-      }),
-    ).toBe("AUCUN_GENERIQUE");
+    const precisions: Precisions = {
+      dialysisType: "non-hemodialyse",
+      hospitalisation: "H-SEJOUR",
+    };
+    const avecSejour = {
+      ...trace(AUCUN_MOTIF, {}, precisions),
+      sejourReel: true,
+    } as const;
+    expect(raisonNonEligible(issue, avecSejour).id).toBe("AUCUN_GENERIQUE");
   });
 });
 

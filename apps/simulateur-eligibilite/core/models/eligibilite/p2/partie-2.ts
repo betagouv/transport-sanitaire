@@ -6,9 +6,10 @@
 // `pages-de-la-branche.ts`. Q2.4, Q2.9 et Q2.11 n'ont aucun écran.
 
 import { page, type QuestionnairePart } from "../../../socle/index.ts";
+import { Sejour } from "../concepts/sejour.ts";
 import { OPTIONS, type Questions } from "../declarations/questions.ts";
 import { question } from "../question.ts";
-import { contextesAProposer, sejourAProposer } from "./contextes.ts";
+import { contextesAProposer } from "./contextes.ts";
 import { PAGE_DE_LA_BRANCHE } from "./pages-de-la-branche.ts";
 import { PAGE_DE_LA_CONVOCATION } from "./pages-de-la-convocation.ts";
 import {
@@ -119,7 +120,7 @@ const PAGE_DES_CONTEXTES = page(
     )
     .exclusive("4_AUCUNE")
     .option("1_HOSPITALISATION", (option) =>
-      option.offeredIf(({ validated }) => sejourAProposer(validated)),
+      option.offeredIf(({ validated }) => Sejour.of(validated).estAProposer()),
     )
     .option("3_AUTRE_CADRE", (option) =>
       option
@@ -138,9 +139,7 @@ const PAGE_DES_CONTEXTES = page(
       "Q2.2.1.a",
       "Ce trajet correspond-il à une permission temporaire de sortie de l’hôpital ?",
     )
-    .askedIf(({ answers }) =>
-      answers.question("Q2.2.1").checked("1_HOSPITALISATION"),
-    ),
+    .askedIf(({ answers }) => Sejour.of(answers).estCoche()),
   AUTRES_CADRES,
   question
     .singleChoice(
