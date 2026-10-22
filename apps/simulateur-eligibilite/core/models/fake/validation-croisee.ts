@@ -4,10 +4,10 @@
 // Une incohérence se déclare sur la plus tardive des deux questions : le moteur
 // lui cache les pages suivantes. Elle dit quoi corriger, en texte.
 
-import type { QuestionnairePart } from "../../../core/socle";
-import type { Cibles } from "./declarations/cibles";
-import type { Questions } from "./declarations/questions";
-import { questionDuComplement as question } from "./question";
+import type { QuestionnairePart } from "../../socle/index.ts";
+import type { Cibles } from "./declarations/cibles.ts";
+import type { Questions } from "./declarations/questions.ts";
+import { questionDuComplement as question } from "./question.ts";
 
 type DemoPage = QuestionnairePart<Questions, Cibles>["pages"][number];
 

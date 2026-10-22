@@ -8,6 +8,9 @@
 // si elle n'y tient pas. Le nom du client n'a pas de champ : il se dessine dans
 // son cadre.
 
+import type { Cibles } from "../../../core/models/fake/declarations/cibles";
+import type { Faits } from "../../../core/models/fake/declarations/faits";
+import type { Questions } from "../../../core/models/fake/declarations/questions";
 import type { GivenAnswers } from "../../../core/socle";
 import {
   at,
@@ -22,9 +25,6 @@ import {
 } from "../../socle";
 import { enUneLigne } from "./adresse";
 import gabarit from "./bon-de-commande.pdf?url";
-import type { Cibles } from "./declarations/cibles";
-import type { Faits } from "./declarations/faits";
-import type { Questions } from "./declarations/questions";
 
 type BonDeCommande = {
   fields: {

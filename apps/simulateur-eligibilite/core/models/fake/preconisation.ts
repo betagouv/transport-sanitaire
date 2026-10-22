@@ -2,15 +2,15 @@
 // réponses, et une mise en garde que des règles publicodes décident. Elle ne
 // décide rien du transport.
 
+import { publicodesEngine } from "../../socle/decision-engine/publicodes.ts";
 import {
   Fait,
   type GivenAnswers,
   type ValidatedAnswers,
-} from "../../../core/socle";
-import { publicodesEngine } from "../../../core/socle/decision-engine/publicodes";
-import type { Cibles } from "./declarations/cibles";
-import type { Faits } from "./declarations/faits";
-import type { Questions } from "./declarations/questions";
+} from "../../socle/index.ts";
+import type { Cibles } from "./declarations/cibles.ts";
+import type { Faits } from "./declarations/faits.ts";
+import type { Questions } from "./declarations/questions.ts";
 
 /**
  * Des réponses aux faits : ce qui est commandé, en toutes lettres, et ce qu'on

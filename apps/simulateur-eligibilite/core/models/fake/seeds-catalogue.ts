@@ -3,10 +3,10 @@
 // Chaque seed ouvre le questionnaire sur une page à montrer, ou sur un
 // résultat. L'écran des seeds l'affiche, et le test de conformité la rejoue.
 
-import type { Seed } from "../../../core/socle";
-import type { Cibles } from "./declarations/cibles";
-import type { Questions } from "./declarations/questions";
-import { dayFromToday } from "./jour";
+import type { Seed } from "../../socle/index.ts";
+import type { Cibles } from "./declarations/cibles.ts";
+import type { Questions } from "./declarations/questions.ts";
+import { dayFromToday } from "./jour.ts";
 
 // Une commande qui passe le premier résultat, pour ouvrir le complément.
 const CAFE_SUCRE = {

@@ -7,6 +7,7 @@
 
 export { Fait } from "./decision-engine/fait.ts";
 export { faitsOf } from "./decision-engine/fait-builder.ts";
+export type { CoreModel } from "./model.ts";
 export type { Address } from "./questionnaire-engine/address.ts";
 export { areAnswered } from "./questionnaire-engine/asked-questions.ts";
 export type {

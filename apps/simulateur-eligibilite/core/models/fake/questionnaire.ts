@@ -5,13 +5,13 @@
 // sous une question dit ce qu'elle démontre. Les tests du socle n'en dépendent
 // pas : ils tournent sur leur propre modèle.
 
-import type { GivenAnswers, QuestionnairePart } from "../../../core/socle";
-import type { Cibles } from "./declarations/cibles";
-import type { Questions } from "./declarations/questions";
-import { dayFromToday } from "./jour";
-import { cibles } from "./preconisation";
-import { question, questionDuComplement } from "./question";
-import { CRENEAU, EXPEDITION } from "./validation-croisee";
+import type { GivenAnswers, QuestionnairePart } from "../../socle/index.ts";
+import type { Cibles } from "./declarations/cibles.ts";
+import type { Questions } from "./declarations/questions.ts";
+import { dayFromToday } from "./jour.ts";
+import { cibles } from "./preconisation.ts";
+import { question, questionDuComplement } from "./question.ts";
+import { CRENEAU, EXPEDITION } from "./validation-croisee.ts";
 
 /** Modifiables tant que le résultat n'est pas verrouillé. */
 export const PARTS: readonly QuestionnairePart<Questions, undefined>[] = [

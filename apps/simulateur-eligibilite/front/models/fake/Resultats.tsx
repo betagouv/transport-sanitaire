@@ -9,6 +9,9 @@
 // avec un conseil bordé de bleu et un encadré blanc.
 
 import type { ReactNode } from "react";
+import type { Cibles } from "../../../core/models/fake/declarations/cibles";
+import type { Questions } from "../../../core/models/fake/declarations/questions";
+import { SANS_COMMANDE } from "../../../core/models/fake/preconisation";
 import type { GivenAnswers } from "../../../core/socle";
 import {
   Disclosure,
@@ -20,12 +23,9 @@ import {
   SheetFollowUp,
 } from "../../socle";
 import { enUneLigne } from "./adresse";
-import type { Cibles } from "./declarations/cibles";
-import type { Questions } from "./declarations/questions";
 import grandeTasse from "./illustrations/grande-tasse.svg";
 import tasse from "./illustrations/tasse.svg";
 import verreGlace from "./illustrations/verre-glace.svg";
-import { SANS_COMMANDE } from "./preconisation";
 
 type Props = { answers: GivenAnswers<Questions>; cibles: Cibles };
 

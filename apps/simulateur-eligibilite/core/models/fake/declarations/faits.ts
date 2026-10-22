@@ -1,6 +1,6 @@
 // Les faits du modèle de démonstration : ce que ses règles reçoivent.
 
-import type { Fait } from "../../../../core/socle";
+import type { Fait } from "../../../socle/index.ts";
 
 export type Faits = {
   /** La boisson commandée, en toutes lettres. `null` : aucune. */
