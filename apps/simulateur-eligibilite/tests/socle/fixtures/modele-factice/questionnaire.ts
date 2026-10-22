@@ -36,8 +36,10 @@ export const PARTS: readonly QuestionnairePart<Questions, undefined>[] = [
             id: "accompagnements",
             kind: "multiple choice",
             label: "Avec quoi ?",
-            askedIf: (answers) =>
-              answers.boisson !== undefined && answers.boisson !== "rien",
+            askedIf: (answers) => {
+              const boisson = answers.question("boisson");
+              return boisson.hasAnswer() && !boisson.is("rien");
+            },
             dependsOn: ["boisson"],
             options: [
               { value: "lait", label: "Du lait" },

@@ -4,7 +4,7 @@
 // La liste suit l'ordre des règles. `tests/model/eligibilite/declarations.test.ts`
 // la compare à `rules/regles.publicodes`.
 
-import type { Fait } from "../../../socle/decision-engine/publicodes";
+import { Fait } from "../../../socle";
 
 /** Le nom de chaque fait que les règles reçoivent. */
 export const FAITS = [
@@ -80,6 +80,6 @@ export type Faits = Readonly<Record<(typeof FAITS)[number], Fait>>;
 export const AUCUN_FAIT = Object.fromEntries(
   FAITS.map((fait) => [
     fait,
-    { provenance: "Aucune question posée ne l'établit encore." },
+    Fait.inconnu("Aucune question posée ne l'établit encore."),
   ]),
 ) as Faits;

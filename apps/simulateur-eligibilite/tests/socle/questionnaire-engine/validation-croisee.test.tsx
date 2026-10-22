@@ -29,12 +29,16 @@ const FIN: Question = {
   id: "fin",
   kind: "datetime",
   label: "Fin du créneau",
-  inconsistenciesFrom: ({ debut, fin }) => [
-    ...(debut && fin && fin < debut ? [FIN_AVANT_LE_DEBUT] : []),
-    ...(typeof fin === "string" && fin.startsWith("2026-10-18")
-      ? [FERME_LE_DIMANCHE]
-      : []),
-  ],
+  inconsistenciesFrom: (answers) => {
+    const debut = answers.question("debut").value;
+    const fin = answers.question("fin").value;
+    return [
+      ...(debut && fin && fin < debut ? [FIN_AVANT_LE_DEBUT] : []),
+      ...(typeof fin === "string" && fin.startsWith("2026-10-18")
+        ? [FERME_LE_DIMANCHE]
+        : []),
+    ];
+  },
 };
 
 const CRENEAU = page(DEBUT, FIN);
@@ -118,8 +122,7 @@ describe("précision obligatoire restée vide", () => {
         id: "precision",
         kind: "text",
         label: "Précisez",
-        askedIf: ({ raisons }) =>
-          Array.isArray(raisons) && raisons.includes("autre"),
+        askedIf: (answers) => answers.question("raisons").checked("autre"),
       },
     ],
   };

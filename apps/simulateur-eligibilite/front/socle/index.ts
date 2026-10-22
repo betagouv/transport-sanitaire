@@ -15,6 +15,7 @@ export type { Models } from "./app/model-choice";
 export { at, type Cerfa, commentOn, drawnBox, text } from "./cerfa/cerfa";
 export { templateAt } from "./cerfa/generate-cerfa";
 export { bindCerfa, type CerfaMapping } from "./cerfa-mapping";
+export { Fait } from "./decision-engine/fait";
 export {
   type CerfaInput,
   defineModel,
@@ -22,22 +23,14 @@ export {
   type Sheet,
 } from "./model";
 export type { Address } from "./questionnaire-engine/address";
-export {
-  answerAbsent,
-  answerPresent,
-} from "./questionnaire-engine/answer-presence";
-export {
-  areAnswered,
-  validatedQuestions,
-} from "./questionnaire-engine/asked-questions";
+export { areAnswered } from "./questionnaire-engine/asked-questions";
+export type {
+  GivenAnswer,
+  GivenAnswers,
+} from "./questionnaire-engine/given-answers";
 export { optionsFrom } from "./questionnaire-engine/option";
-export {
-  type Answers,
-  pagesOf,
-  type QuestionnairePart,
-  type Unanswered,
-  type Validated,
-} from "./questionnaire-engine/question";
+export type { QuestionnairePart } from "./questionnaire-engine/question";
+export type { ValidatedAnswers } from "./questionnaire-engine/validated-answers";
 export { Disclosure } from "./ui/Disclosure";
 export { type IllustratedCard, IllustratedCards } from "./ui/IllustratedCards";
 export { NumberedCards } from "./ui/NumberedCards";

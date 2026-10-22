@@ -6,7 +6,7 @@
 import type { Seed } from "../../socle/seeds/seed";
 import type { Cibles } from "./declarations/cibles";
 import type { Questions } from "./declarations/questions";
-import { dayFromToday } from "./questionnaire";
+import { dayFromToday } from "./jour";
 
 // Une commande qui passe le premier résultat, pour ouvrir le complément.
 const CAFE_SUCRE = {

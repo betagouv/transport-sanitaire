@@ -40,11 +40,13 @@ const PAGE_DE_LA_PRESTATION: Page = {
           // Une séance se coche en Q1.3 : elle ne se vote pas deux fois.
           "6_SEANCE": {
             offeredIf: (_answers, _cibles, validated) =>
-              !validated["Q1.3"]?.answer?.some((cas) =>
-                ["3_CHIMIOTHERAPIE", "4_RADIOTHERAPIE", "5_DIALYSE"].includes(
-                  cas,
+              !validated
+                .question("Q1.3")
+                .value?.some((cas) =>
+                  ["3_CHIMIOTHERAPIE", "4_RADIOTHERAPIE", "5_DIALYSE"].includes(
+                    cas,
+                  ),
                 ),
-              ),
           },
         },
       ),
@@ -67,7 +69,7 @@ const PAGE_DE_LA_PRESTATION: Page = {
       kind: "single choice",
       label:
         "S’agit-il d’une entrée dans un établissement de santé, d’une sortie de cet établissement ou d’une admission en HAD (Hospitalisation à Domicile) à domicile ?",
-      askedIf: (answers) => answers["Q2.1"] === "8_HOSPITALISATION",
+      askedIf: (answers) => answers.question("Q2.1").is("8_HOSPITALISATION"),
       dependsOn: ["Q2.1"],
       options: optionsFrom(OPTIONS["Q2.1.g"]),
     },
@@ -76,7 +78,7 @@ const PAGE_DE_LA_PRESTATION: Page = {
       kind: "single choice",
       label:
         "La séance est-elle organisée par le CAMSP (Centre d’Action Médico-Sociale Précoce) ou le CMPP (Centre Médico-Psycho-Pédagogique), dans le parcours de l’enfant ?",
-      askedIf: (answers) => answers["Q2.1"] === "10_CAMSP",
+      askedIf: (answers) => answers.question("Q2.1").is("10_CAMSP"),
       dependsOn: ["Q2.1"],
       options: optionsFrom(OPTIONS["Q2.1.h"]),
     },
@@ -126,7 +128,7 @@ const PAGE_DES_CONTEXTES: Page = {
       label:
         "Ce trajet correspond-il à une permission temporaire de sortie de l’hôpital ?",
       askedIf: (answers) =>
-        answers["Q2.2.1"]?.includes("1_HOSPITALISATION") ?? false,
+        answers.question("Q2.2.1").checked("1_HOSPITALISATION") ?? false,
       options: optionsFrom(OPTIONS["Q2.2.1.a"]),
     },
     {
@@ -135,7 +137,7 @@ const PAGE_DES_CONTEXTES: Page = {
       label:
         "Laquelle ou lesquelles de ces situations concernent aussi ce trajet ?",
       askedIf: (answers) =>
-        answers["Q2.2.1"]?.includes("3_AUTRE_CADRE") ?? false,
+        answers.question("Q2.2.1").checked("3_AUTRE_CADRE") ?? false,
       options: optionsFrom<Questions["Q2.2.1.b"][number], Questions, undefined>(
         OPTIONS["Q2.2.1.b"],
       ).map((option) => ({
@@ -173,7 +175,8 @@ const PAGE_DES_CONTEXTES: Page = {
       id: "Q2.2.5",
       kind: "multiple choice",
       label: "Quel lieu lié à ce transport se trouve à l’étranger ?",
-      askedIf: (answers) => answers["Q2.2.1"]?.includes("2_ETRANGER") ?? false,
+      askedIf: (answers) =>
+        answers.question("Q2.2.1").checked("2_ETRANGER") ?? false,
       options: optionsFrom(OPTIONS["Q2.2.5"]),
     },
   ],

@@ -2,27 +2,20 @@
 // de l'éditeur à la demande, calcule la trace des réponses, puis donne au
 // socle le titre, l'introduction et la page du praticien.
 
-import type { Answers, FirstResult } from "../../../../socle";
-import type { Cibles } from "../../declarations/cibles";
-import type { Questions } from "../../declarations/questions";
+import type { FirstResult } from "../../../../socle";
 import { avecLeCatalogue } from "../avec-le-catalogue";
-import { traceDuResultat } from "../trace-du-resultat";
+import { type ReponsesEtCibles, traceDuResultat } from "../trace-du-resultat";
 import { PageDuPraticien } from "./PageDuPraticien";
 import { type IssueSansFiche, texteDuPraticien } from "./texte-du-praticien";
 
-type Props = {
-  answers: Answers<Questions>;
-  cibles: Cibles;
-  issue: IssueSansFiche;
-};
+type Props = ReponsesEtCibles & { issue: IssueSansFiche };
 
 export function resultatDuPraticien({
-  answers,
-  cibles,
   issue,
+  ...reponses
 }: Props): Promise<FirstResult> {
   return avecLeCatalogue((catalogue) => {
-    const trace = traceDuResultat(answers, cibles);
+    const trace = traceDuResultat(reponses);
     const texte = texteDuPraticien(catalogue, issue, trace);
     return {
       title: texte.titre,

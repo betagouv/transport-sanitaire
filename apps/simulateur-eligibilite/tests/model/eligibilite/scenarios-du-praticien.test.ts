@@ -15,7 +15,7 @@ import {
   traceDuResultat,
 } from "../../../front/models/eligibilite/r2/trace-du-resultat";
 import { SEEDS } from "../../../front/models/eligibilite/seeds-catalogue";
-import { ciblesDe } from "./reponses-de-la-permission";
+import { lectureDe } from "./reponses-de-la-permission";
 import { faux, trace, vrai } from "./traces-du-praticien";
 
 const { issues } = await catalogueResultats();
@@ -23,7 +23,7 @@ const { issues } = await catalogueResultats();
 const traceDeLaSeed = (id: string): Trace => {
   const seed = SEEDS.find((candidate) => candidate.id === id);
   if (!seed) throw new Error(`Seed inconnue : ${id}`);
-  return traceDuResultat(seed.answers, ciblesDe(seed.answers));
+  return traceDuResultat(lectureDe(seed.answers));
 };
 
 const ids = (issue: IssueDuPraticien, depuis: Trace) =>

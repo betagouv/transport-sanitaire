@@ -2,6 +2,8 @@
 // et Q2.8).
 
 import { cibles } from "../../../front/models/eligibilite/evaluation-des-regles";
+import type { ReponsesEtCibles } from "../../../front/models/eligibilite/r2/trace-du-resultat";
+import { readingOf } from "../../../front/socle/model";
 import { validatedQuestions } from "../../../front/socle/questionnaire-engine/asked-questions";
 import { faits, pages, posee, type Reponses } from "./reponses-du-transfert";
 
@@ -53,5 +55,11 @@ export const validee = (id: keyof Reponses, reponses: Reponses) =>
 
 /** Les cibles des règles, sur les faits que les réponses établissent. */
 export const ciblesDe = (reponses: Reponses) => cibles(faits(reponses));
+
+/** Ce que le socle passe à R2 : les réponses lues, et les cibles. */
+export const lectureDe = (reponses: Reponses): ReponsesEtCibles => ({
+  ...readingOf(pages, reponses),
+  cibles: ciblesDe(reponses),
+});
 
 export const issue = (reponses: Reponses) => ciblesDe(reponses).cible_issue_id;

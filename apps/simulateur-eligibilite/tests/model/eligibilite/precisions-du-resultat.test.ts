@@ -8,7 +8,7 @@ import { traceDuResultat } from "../../../front/models/eligibilite/r2/trace-du-r
 import { BRANCARD_20_KM } from "./reponses-de-la-branche";
 import { appareillage, PAR_Q21 } from "./reponses-de-la-convocation";
 import {
-  ciblesDe,
+  lectureDe,
   MINEUR,
   PATIENT_SEUL,
   PLUSIEURS_PERMISSIONS,
@@ -23,8 +23,7 @@ import {
 } from "./reponses-du-transfert";
 
 // La trace de ces réponses, avec les cibles que calculent les règles.
-const traceDe = (reponses: Reponses) =>
-  traceDuResultat(reponses, ciblesDe(reponses));
+const traceDe = (reponses: Reponses) => traceDuResultat(lectureDe(reponses));
 
 const precisionsDe = (reponses: Reponses): Precisions =>
   traceDe(reponses).precisions;

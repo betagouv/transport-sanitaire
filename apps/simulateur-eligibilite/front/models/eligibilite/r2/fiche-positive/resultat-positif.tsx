@@ -3,31 +3,24 @@
 // textes de l'éditeur à la demande, calcule la trace des réponses, puis donne
 // la page de la fiche patient positive.
 
-import type { Answers, FirstResult } from "../../../../socle";
-import type { Cibles } from "../../declarations/cibles";
-import type { Questions } from "../../declarations/questions";
+import type { FirstResult } from "../../../../socle";
 import { avecLeCatalogue } from "../avec-le-catalogue";
 import { pageDeLaFiche } from "../page-de-la-fiche";
-import { traceDuResultat } from "../trace-du-resultat";
+import { type ReponsesEtCibles, traceDuResultat } from "../trace-du-resultat";
 import { FichePositive } from "./FichePositive";
 import {
   type IssueAvecFichePositive,
   texteDeLaFichePositive,
 } from "./texte-de-la-fiche-positive";
 
-type Props = {
-  answers: Answers<Questions>;
-  cibles: Cibles;
-  issue: IssueAvecFichePositive;
-};
+type Props = ReponsesEtCibles & { issue: IssueAvecFichePositive };
 
 export function resultatPositif({
-  answers,
-  cibles,
   issue,
+  ...reponses
 }: Props): Promise<FirstResult> {
   return avecLeCatalogue((catalogue) => {
-    const trace = traceDuResultat(answers, cibles);
+    const trace = traceDuResultat(reponses);
     const texte = texteDeLaFichePositive(catalogue, trace, issue);
     if (!texte) return SANS_MODE;
     return pageDeLaFiche(
