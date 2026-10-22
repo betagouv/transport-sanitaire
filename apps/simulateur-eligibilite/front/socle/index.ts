@@ -30,6 +30,7 @@ export type {
 } from "./questionnaire-engine/given-answers";
 export { optionsFrom } from "./questionnaire-engine/option";
 export type { QuestionnairePart } from "./questionnaire-engine/question";
+export { questionsOf } from "./questionnaire-engine/question-factory";
 export type { ValidatedAnswers } from "./questionnaire-engine/validated-answers";
 export { Disclosure } from "./ui/Disclosure";
 export { type IllustratedCard, IllustratedCards } from "./ui/IllustratedCards";
