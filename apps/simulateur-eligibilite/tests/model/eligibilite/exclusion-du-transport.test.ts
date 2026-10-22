@@ -12,7 +12,7 @@ import { model } from "../../../front/models/eligibilite";
 import type { Faits } from "../../../front/models/eligibilite/declarations/faits";
 import type { Questions } from "../../../front/models/eligibilite/declarations/questions";
 import { cibles } from "../../../front/models/eligibilite/evaluation-des-regles";
-import type { Fait } from "../../../front/socle/decision-engine/publicodes";
+import type { Fait } from "../../../front/socle";
 import { preconisationOf } from "../../../front/socle/model";
 import type { Answers } from "../../../front/socle/questionnaire-engine/question";
 

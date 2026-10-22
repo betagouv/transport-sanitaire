@@ -36,7 +36,7 @@ const BON_DE_COMMANDE = bindCerfa<
   {
     fields: {
       commande: ({ cibles }) => cibles.commande,
-      quantite: ({ answers }) => String(answers.quantite),
+      quantite: ({ answers }) => String(answers.question("quantite").value),
       date: ({ completedAt }) => completedAt.toISOString().slice(0, 10),
     },
     drawings: {},

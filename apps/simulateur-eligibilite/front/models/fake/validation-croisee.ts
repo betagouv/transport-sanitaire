@@ -25,14 +25,18 @@ export const CRENEAU: DemoPage = {
       kind: "datetime",
       label: "Quand finit-il ?",
       hint: "Démontre : deux messages ensemble, sous la même réponse. Une fin avant le début, un jour de fermeture : choisissez un dimanche avant le début pour voir les deux. Corrigée, la page se valide.",
-      inconsistenciesFrom: ({ debut, fin }) => [
-        ...(debut && fin && fin < debut
-          ? ["La fin du retrait précède son début."]
-          : []),
-        ...(fin && isSunday(fin)
-          ? ["Le comptoir est fermé le dimanche : choisissez un autre jour."]
-          : []),
-      ],
+      inconsistenciesFrom: (answers) => {
+        const debut = answers.question("debut").value;
+        const fin = answers.question("fin").value;
+        return [
+          ...(debut && fin && fin < debut
+            ? ["La fin du retrait précède son début."]
+            : []),
+          ...(fin && isSunday(fin)
+            ? ["Le comptoir est fermé le dimanche : choisissez un autre jour."]
+            : []),
+        ];
+      },
     },
   ],
 };
@@ -46,8 +50,11 @@ export const EXPEDITION: DemoPage = {
       kind: "address",
       label: "À quelle adresse envoyer le reçu ?",
       hint: "Démontre : une incohérence de deux adresses. Celle de la facture, donnée plus haut, ne peut pas être répétée. Le message s'affiche sous le groupe, tous les champs en rouge. Une erreur de champ passe devant.",
-      inconsistenciesFrom: ({ adresse, expedition }) =>
-        sameAddress(adresse, expedition)
+      inconsistenciesFrom: (answers) =>
+        sameAddress(
+          answers.question("adresse").value,
+          answers.question("expedition").value,
+        )
           ? ["Le reçu doit partir à une autre adresse que celle de la facture."]
           : [],
     },

@@ -9,7 +9,7 @@ import { raisonNonEligible } from "../../../front/models/eligibilite/r2/fiche-ne
 import type { Precisions } from "../../../front/models/eligibilite/r2/precisions-du-resultat";
 import { traceDuResultat } from "../../../front/models/eligibilite/r2/trace-du-resultat";
 import { SEEDS } from "../../../front/models/eligibilite/seeds-catalogue";
-import { ciblesDe } from "./reponses-de-la-permission";
+import { ciblesDe, lectureDe } from "./reponses-de-la-permission";
 import { faux, trace, vrai } from "./traces-du-praticien";
 
 const { issues } = await catalogueResultats();
@@ -210,7 +210,7 @@ describe("de bout en bout, par les réponses", () => {
     const cibles = ciblesDe(answers);
     return {
       issue: cibles.cible_issue_id,
-      raison: raisonNonEligible(issue, traceDuResultat(answers, cibles)).id,
+      raison: raisonNonEligible(issue, traceDuResultat(lectureDe(answers))).id,
     };
   };
 

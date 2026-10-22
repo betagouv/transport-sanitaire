@@ -1,11 +1,11 @@
 // Les deux résultats du modèle factice : la commande, puis la commande
 // complétée.
 
-import type { Answers, FirstResult } from "../../../../front/socle";
+import type { FirstResult, GivenAnswers } from "../../../../front/socle";
 import type { Cibles } from "./declarations/cibles";
 import type { Questions } from "./declarations/questions";
 
-type Props = { answers: Answers<Questions>; cibles: Cibles };
+type Props = { answers: GivenAnswers<Questions>; cibles: Cibles };
 
 export function resultatDeLaCommande({ cibles }: Props): FirstResult {
   return {
@@ -17,7 +17,8 @@ export function resultatDeLaCommande({ cibles }: Props): FirstResult {
 export function CommandeCompletee({ answers, cibles }: Props) {
   return (
     <p className="fr-text--lead">
-      Commande : {cibles.commande}, {String(answers.quantite)} tasses
+      Commande : {cibles.commande}, {String(answers.question("quantite").value)}{" "}
+      tasses
     </p>
   );
 }

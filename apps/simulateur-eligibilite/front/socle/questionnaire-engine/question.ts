@@ -5,7 +5,9 @@
 // identifiant : les génériques ne servent qu'à typer le modèle.
 
 import type { Address, AddressSettings } from "./address";
+import type { GivenAnswers } from "./given-answers";
 import type { Option } from "./option";
+import type { ValidatedAnswers } from "./validated-answers";
 
 /**
  * Une réponse : un choix, un nombre, un texte, les cases cochées, une case
@@ -15,7 +17,7 @@ export type Answer = string | number | boolean | readonly string[] | Address;
 
 /**
  * Pas de réponse : la question ne l'a pas encore reçue, ou ne se pose pas. Ce
- * n'est ni oui, ni non. `answerPresent` et `answerAbsent` le testent.
+ * n'est ni oui, ni non. `GivenAnswer.hasAnswer` le teste.
  */
 export type Unanswered = undefined;
 
@@ -58,9 +60,9 @@ type Common<Questions extends AnyQuestions, Cibles> = {
   readonly label: string;
   /** Le libellé, quand il dépend des réponses. Absente : `label`. */
   labelFrom?(
-    answers: Answers<Questions>,
+    answers: GivenAnswers<Questions>,
     cibles: Cibles,
-    validated: Validated<Questions>,
+    validated: ValidatedAnswers<Questions>,
   ): string;
   /** Phrase indicative, rendue sous la question. */
   readonly hint?: string;
@@ -75,9 +77,9 @@ type Common<Questions extends AnyQuestions, Cibles> = {
    * rien à rappeler : `reminder`.
    */
   reminderFrom?(
-    answers: Answers<Questions>,
+    answers: GivenAnswers<Questions>,
     cibles: Cibles,
-    validated: Validated<Questions>,
+    validated: ValidatedAnswers<Questions>,
   ): Reminder | undefined;
   /**
    * La question peut rester sans réponse : sa page se valide sans elle. Son
@@ -93,9 +95,9 @@ type Common<Questions extends AnyQuestions, Cibles> = {
    * sens, et le moteur peut recevoir les questions typées d'un modèle.
    */
   askedIf?(
-    answers: Answers<Questions>,
+    answers: GivenAnswers<Questions>,
     cibles: Cibles,
-    validated: Validated<Questions>,
+    validated: ValidatedAnswers<Questions>,
   ): boolean;
   /**
    * Ce qui, dans la réponse, en contredit une autre : un message par
@@ -109,9 +111,9 @@ type Common<Questions extends AnyQuestions, Cibles> = {
    * Écrite en méthode, comme `askedIf`.
    */
   inconsistenciesFrom?(
-    answers: Answers<Questions>,
+    answers: GivenAnswers<Questions>,
     cibles: Cibles,
-    validated: Validated<Questions>,
+    validated: ValidatedAnswers<Questions>,
   ): readonly string[];
   /** Les incohérences du moment, que le moteur résout (`asked-questions.ts`). */
   readonly inconsistencies?: readonly string[];
@@ -198,9 +200,9 @@ type DateInput<Questions extends AnyQuestions, Cibles> = Common<
      * devant `min` et `max`.
      */
     boundsFrom?(
-      answers: Answers<Questions>,
+      answers: GivenAnswers<Questions>,
       cibles: Cibles,
-      validated: Validated<Questions>,
+      validated: ValidatedAnswers<Questions>,
     ): DateBounds;
   };
 
@@ -234,9 +236,9 @@ type AddressInput<Questions extends AnyQuestions, Cibles> = Common<
      * relit dans le nouveau mode.
      */
     abroadIf?(
-      answers: Answers<Questions>,
+      answers: GivenAnswers<Questions>,
       cibles: Cibles,
-      validated: Validated<Questions>,
+      validated: ValidatedAnswers<Questions>,
     ): boolean;
   };
 

@@ -5,7 +5,12 @@
 import type { ComponentType, ReactNode } from "react";
 import { CerfaDownload } from "../cerfa/CerfaDownload";
 import { dtoFrom } from "../cerfa-mapping";
-import type { CerfaInput, Model, Preconisation } from "../model";
+import {
+  type CerfaInput,
+  type Model,
+  type Preconisation,
+  readingOf,
+} from "../model";
 import {
   askedPages,
   validatedQuestions,
@@ -48,6 +53,7 @@ export function CerfaResultat({
   const total = model.transportAndEligibility.parts.length + 1;
   const all = [...pagesOf(model.transportAndEligibility.parts), ...part.pages];
   const trace = traceOf("cerfa", all, answers, locked.preconisation, cibles);
+  const read = readingOf(all, answers, cibles);
   return (
     <Frame
       title={title}
@@ -56,8 +62,8 @@ export function CerfaResultat({
       trace={trace}
       DebugTrace={DebugTrace}
     >
-      <Resultat answers={answers} cibles={cibles} />
-      <Cerfa model={model} input={{ answers, faits, cibles, completedAt }} />
+      <Resultat {...read} cibles={cibles} />
+      <Cerfa model={model} input={{ ...read, faits, cibles, completedAt }} />
       <div className="fr-btns-group fr-btns-group--inline fr-no-print">
         <SecondaryButton onClick={() => onReopen(state)}>
           Précédent

@@ -7,36 +7,23 @@
 // leur texte. Un retour pénitentiaire hors du circuit de prescription n'a pas
 // d'issue : R2 oriente vers l'administration pénitentiaire (point 34).
 
-import {
-  type Answers,
-  type FirstResult,
-  pagesOf,
-  type Validated,
-  validatedQuestions,
-} from "../../../socle";
-import type { Cibles } from "../declarations/cibles";
-import type { Questions } from "../declarations/questions";
+import type { FirstResult } from "../../../socle";
 import { horsCircuit } from "../p2/retour-penitentiaire";
-import { PARTS } from "../questionnaire";
 import { resultatNegatif } from "./fiche-negative/resultat-negatif";
 import { resultatPositif } from "./fiche-positive/resultat-positif";
 import { resultatDuPraticien } from "./praticien/resultat-du-praticien";
 import { estSansFiche } from "./praticien/texte-du-praticien";
+import type { ReponsesEtCibles } from "./trace-du-resultat";
 
-type Props = { answers: Answers<Questions>; cibles: Cibles };
-
-export function eligibilite({
-  answers,
-  cibles,
-}: Props): FirstResult | Promise<FirstResult> {
-  if (horsCircuit(validees(answers))) return ORIENTATION_PENITENTIAIRE;
-  const issue = cibles.cible_issue_id;
+export function eligibilite(
+  reponses: ReponsesEtCibles,
+): FirstResult | Promise<FirstResult> {
+  if (horsCircuit(reponses.validated)) return ORIENTATION_PENITENTIAIRE;
+  const issue = reponses.cibles.cible_issue_id;
   if (!issue) return SANS_ISSUE;
-  if (issue === "ISSUE_NON_ELIGIBLE")
-    return resultatNegatif({ answers, cibles });
-  if (estSansFiche(issue))
-    return resultatDuPraticien({ answers, cibles, issue });
-  return resultatPositif({ answers, cibles, issue });
+  if (issue === "ISSUE_NON_ELIGIBLE") return resultatNegatif(reponses);
+  if (estSansFiche(issue)) return resultatDuPraticien({ ...reponses, issue });
+  return resultatPositif({ ...reponses, issue });
 }
 
 // ---- implémentation ----
@@ -65,7 +52,3 @@ const ORIENTATION_PENITENTIAIRE: FirstResult = {
     </p>
   ),
 };
-
-function validees(answers: Answers<Questions>): Validated<Questions> {
-  return validatedQuestions(pagesOf(PARTS), answers) as Validated<Questions>;
-}

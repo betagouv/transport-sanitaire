@@ -6,15 +6,17 @@
 
 import type { ComponentType, ReactNode } from "react";
 import type { BoundCerfa } from "./cerfa-mapping";
-import { validatedQuestions } from "./questionnaire-engine/asked-questions";
+import { validatedAnswers } from "./questionnaire-engine/asked-questions";
+import { GivenAnswers } from "./questionnaire-engine/given-answers";
 import {
   type Answers,
   type AnyCibles,
   type AnyQuestions,
+  type Page,
   pagesOf,
   type QuestionnairePart,
-  type Validated,
 } from "./questionnaire-engine/question";
+import type { ValidatedAnswers } from "./questionnaire-engine/validated-answers";
 import type { Seed } from "./seeds/seed";
 
 /** Les faits d'un modèle : ce que ses règles reçoivent. */
@@ -23,9 +25,20 @@ export type AnyFaits = Readonly<Record<string, unknown>>;
 /** Ce que la préconisation a calculé pour des réponses. */
 export type Preconisation = { faits: AnyFaits; cibles: AnyCibles };
 
+/**
+ * Ce que le modèle lit des réponses : chacune telle qu'elle est donnée, et les
+ * questions validées, avec ce qui s'y proposait.
+ */
+export type Reading<Questions extends AnyQuestions = AnyQuestions> = {
+  answers: GivenAnswers<Questions>;
+  validated: ValidatedAnswers<Questions>;
+};
+
 /** Ce qu'un résultat reçoit pour s'afficher. */
-type ResultatProps<Questions extends AnyQuestions, Cibles> = {
-  answers: Answers<Questions>;
+type ResultatProps<
+  Questions extends AnyQuestions,
+  Cibles,
+> = Reading<Questions> & {
   cibles: Cibles;
 };
 
@@ -69,8 +82,8 @@ export type Model<
    */
   preconisation: {
     faits: (
-      answers: Answers<Questions>,
-      validated: Validated<Questions>,
+      answers: GivenAnswers<Questions>,
+      validated: ValidatedAnswers<Questions>,
     ) => Faits;
     cibles: (faits: Faits) => Cibles;
   };
@@ -129,7 +142,22 @@ export function defineModel<
  */
 export function preconisationOf(model: Model, answers: Answers): Preconisation {
   const pages = pagesOf(model.transportAndEligibility.parts);
-  const validated = validatedQuestions(pages, answers);
-  const faits = model.preconisation.faits(answers, validated);
+  const read = readingOf(pages, answers);
+  const faits = model.preconisation.faits(read.answers, read.validated);
   return { faits, cibles: model.preconisation.cibles(faits) };
+}
+
+/**
+ * Ces réponses, telles que le modèle les lit. `pages` : celles dont les
+ * questions validées comptent. Après le verrou, les cibles figées.
+ */
+export function readingOf<Questions extends AnyQuestions>(
+  pages: readonly Page[],
+  answers: Answers<Questions>,
+  cibles?: AnyCibles,
+): Reading<Questions> {
+  return {
+    answers: new GivenAnswers(answers),
+    validated: validatedAnswers(pages, answers, cibles),
+  };
 }

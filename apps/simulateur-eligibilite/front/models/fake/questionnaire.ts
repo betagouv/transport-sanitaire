@@ -5,9 +5,10 @@
 // sous une question dit ce qu'elle démontre. Les tests du socle n'en dépendent
 // pas : ils tournent sur leur propre modèle.
 
-import type { QuestionnairePart } from "../../socle";
+import type { GivenAnswers, QuestionnairePart } from "../../socle";
 import type { Cibles } from "./declarations/cibles";
 import type { Questions } from "./declarations/questions";
+import { dayFromToday } from "./jour";
 import { cibles, faits } from "./preconisation";
 import { CRENEAU, EXPEDITION } from "./validation-croisee";
 
@@ -52,31 +53,32 @@ export const PARTS: readonly QuestionnairePart<Questions, undefined>[] = [
             id: "accompagnements",
             kind: "multiple choice",
             label: "Avec quoi ?",
-            labelFrom: ({ boisson }) =>
-              boisson === "the"
+            labelFrom: (answers) =>
+              answers.question("boisson").is("the")
                 ? "Avec quoi, ce thé ?"
                 : "Avec quoi, ce café ?",
             hint: "Démontre : un libellé de question et un libellé d'option qui dépendent des réponses (le lait devient « un nuage de lait » avec le thé), une option proposée selon la boisson (le citron, avec le thé seulement), et une option exclusive. Un fait a trois états. Le citron vaut « oui » s'il est coché, et « non » s'il se proposait sans l'être, ou avec un café, où il ne se sert pas. Avec « Peut-être du citron », on ne sait pas : le fait est absent, et le résultat ne décide pas si le lait tourne.",
-            askedIf: (answers) =>
-              answers.boisson !== undefined && answers.boisson !== "rien",
+            askedIf: (answers) => commandeEnCours(answers),
             dependsOn: ["boisson"],
             options: [
               {
                 value: "lait",
                 label: "Du lait",
-                labelFrom: ({ boisson }) =>
-                  boisson === "the" ? "Un nuage de lait" : "Du lait",
+                labelFrom: (answers) =>
+                  answers.question("boisson").is("the")
+                    ? "Un nuage de lait"
+                    : "Du lait",
               },
               { value: "sucre", label: "Du sucre" },
               {
                 value: "citron",
                 label: "Une rondelle de citron",
-                offeredIf: ({ boisson }) => boisson === "the",
+                offeredIf: (answers) => answers.question("boisson").is("the"),
               },
               {
                 value: "citron-a-voir",
                 label: "Peut-être du citron, à décider au service",
-                offeredIf: ({ boisson }) => boisson === "the",
+                offeredIf: (answers) => answers.question("boisson").is("the"),
               },
             ],
             incompatibleOptions: [
@@ -100,8 +102,7 @@ export const PARTS: readonly QuestionnairePart<Questions, undefined>[] = [
             reminderFrom: (answers, _, validated) =>
               `Rappel de la commande : ${cibles(faits(answers, validated)).commande}.`,
             hint: "Démontre : un rappel en une phrase au-dessus de la question (il redit des réponses déjà données, et ne demande rien : la commande est calculée en route, sur les questions validées), une aide dépliable sous son option (« Voir les préparations possibles », dont la liste dépend de la boisson), deux options incompatibles (« Très chaude » et « Glacée » : cocher l'une décoche l'autre, avec une explication), et une option exclusive conditionnelle (« Rien de particulier » ne se propose pas avec le citron, et change de libellé quand un accompagnement est choisi).",
-            askedIf: (answers) =>
-              answers.boisson !== undefined && answers.boisson !== "rien",
+            askedIf: (answers) => commandeEnCours(answers),
             dependsOn: ["boisson", "accompagnements"],
             options: [
               { value: "chaude", label: "Très chaude" },
@@ -111,12 +112,11 @@ export const PARTS: readonly QuestionnairePart<Questions, undefined>[] = [
                 value: "preparation",
                 label: "Avec une préparation particulière",
                 description: "À préciser au moment du service.",
-                helpFrom: ({ boisson }) => ({
+                helpFrom: (answers) => ({
                   label: "Voir les préparations possibles",
-                  items:
-                    boisson === "the"
-                      ? ["Infusé cinq minutes", "Avec une théière à part"]
-                      : ["Allongé", "Serré", "Avec un verre d'eau"],
+                  items: answers.question("boisson").is("the")
+                    ? ["Infusé cinq minutes", "Avec une théière à part"]
+                    : ["Allongé", "Serré", "Avec un verre d'eau"],
                 }),
               },
             ],
@@ -130,12 +130,12 @@ export const PARTS: readonly QuestionnairePart<Questions, undefined>[] = [
             exclusiveOption: {
               value: "rien",
               label: "Rien de particulier",
-              labelFrom: ({ accompagnements = [] }) =>
-                accompagnements.includes("aucun")
+              labelFrom: (answers) =>
+                answers.question("accompagnements").checked("aucun")
                   ? "Rien de particulier"
                   : "Rien d'autre de particulier",
-              offeredIf: ({ accompagnements = [] }) =>
-                !accompagnements.includes("citron"),
+              offeredIf: (answers) =>
+                !answers.question("accompagnements").checked("citron"),
             },
           },
         ],
@@ -156,11 +156,15 @@ export const COMPLEMENT: QuestionnairePart<Questions, Cibles> = {
           id: "quantite",
           kind: "number",
           label: "Combien de tasses ?",
-          reminderFrom: ({ service = [] }, { commande }) => [
+          reminderFrom: (answers, { commande }) => [
             { label: "Commande", value: commande },
             {
               label: "Service",
-              value: service.map((value) => SERVICES[value]).join(", "),
+              value: answers
+                .question("service")
+                .checkedBoxes()
+                .map((value) => SERVICES[value])
+                .join(", "),
             },
           ],
           hint: "Démontre : un rappel en valeurs au-dessus du champ (la commande et le service, figés au verrou : ils se lisent, ils ne se modifient plus), un nombre entier, borné, avec son unité. Une décimale est refusée.",
@@ -220,7 +224,7 @@ export const COMPLEMENT: QuestionnairePart<Questions, Cibles> = {
           label: "À quelle adresse ?",
           hint: "Démontre : une adresse en champs séparés, avec le nom du lieu. En France, le code postal fait cinq chiffres. À l'étranger, d'après la page précédente, le pays est attendu, et le code postal est libre et facultatif. Chaque champ fautif porte son message. Revenir changer la page précédente garde l'adresse : elle se relit dans le nouveau mode.",
           withPlaceName: true,
-          abroadIf: ({ facturation }) => facturation === "etranger",
+          abroadIf: (answers) => answers.question("facturation").is("etranger"),
         },
       ],
     },
@@ -244,8 +248,9 @@ export const COMPLEMENT: QuestionnairePart<Questions, Cibles> = {
                 "La livraison se commande à part. Choisissez une autre réponse pour finir cette commande, puis faites-en une seconde pour la livraison.",
             },
           ],
-          inconsistenciesFrom: ({ lieu, retrait }) =>
-            lieu === "terrasse" && retrait === "a-emporter"
+          inconsistenciesFrom: (answers) =>
+            answers.question("lieu").is("terrasse") &&
+            answers.question("retrait").is("a-emporter")
               ? [
                   "« À emporter » ne va pas avec « En terrasse », choisi à la question « Où la servir ? ». Revenez par « Précédent » changer le lieu, ou choisissez « Sur place ».",
                 ]
@@ -277,6 +282,12 @@ export const COMPLEMENT: QuestionnairePart<Questions, Cibles> = {
 
 // ---- implémentation ----
 
+// Une boisson est choisie : la commande se poursuit.
+function commandeEnCours(answers: GivenAnswers<Questions>): boolean {
+  const boisson = answers.question("boisson");
+  return boisson.hasAnswer() && !boisson.is("rien");
+}
+
 // Les façons de servir, telles qu'on les relit une fois la commande figée.
 const SERVICES: Record<Questions["service"][number], string> = {
   chaude: "très chaude",
@@ -285,15 +296,3 @@ const SERVICES: Record<Questions["service"][number], string> = {
   preparation: "avec une préparation particulière",
   rien: "rien de particulier",
 };
-
-/**
- * Le jour qu'il sera dans `days` jours, à l'heure locale, écrit comme la
- * réponse d'une date : `2026-10-12`.
- */
-export function dayFromToday(days: number): string {
-  const day = new Date();
-  day.setDate(day.getDate() + days);
-  const month = String(day.getMonth() + 1).padStart(2, "0");
-  const date = String(day.getDate()).padStart(2, "0");
-  return `${day.getFullYear()}-${month}-${date}`;
-}

@@ -36,7 +36,7 @@ export const PAGE_DE_LA_BRANCHE: Page = {
       kind: "multiple choice",
       label: "Quel motif concerne le déplacement évalué ?",
       askedIf: (answers, _cibles, validated) =>
-        motifAPoser(answers["Q2.14.eloignement"], validated),
+        motifAPoser(answers.question("Q2.14.eloignement"), validated),
       ...groupe("Q2.14.motif"),
     },
     {

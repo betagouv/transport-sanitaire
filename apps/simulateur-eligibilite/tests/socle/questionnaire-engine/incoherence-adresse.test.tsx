@@ -31,10 +31,12 @@ describe("adresse incohérente", () => {
     id: "arrivee",
     kind: "address",
     label: "Adresse d'arrivée",
-    inconsistenciesFrom: ({ depart, arrivee }) =>
-      memeVoie(depart) && memeVoie(depart) === memeVoie(arrivee)
+    inconsistenciesFrom: (answers) => {
+      const depart = memeVoie(answers.question("depart").value);
+      return depart && depart === memeVoie(answers.question("arrivee").value)
         ? ["L'arrivée répète le départ."]
-        : [],
+        : [];
+    },
   };
   const LILAS = {
     street: "3 rue des Lilas",

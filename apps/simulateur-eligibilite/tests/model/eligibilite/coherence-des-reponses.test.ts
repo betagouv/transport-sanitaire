@@ -18,7 +18,6 @@ import {
   faitsDuMode,
   modeDe,
 } from "../../../front/models/eligibilite/p1/mode-de-transport";
-import type { Validated } from "../../../front/socle";
 import { preconisationOf } from "../../../front/socle/model";
 import {
   askedQuestions,
@@ -29,6 +28,7 @@ import {
   type Answers,
   pagesOf,
 } from "../../../front/socle/questionnaire-engine/question";
+import { ValidatedAnswers } from "../../../front/socle/questionnaire-engine/validated-answers";
 
 type Reponses = Answers<Questions>;
 type Critere = Questions["Q1.2"][number];
@@ -83,11 +83,11 @@ describe("les 2 048 combinaisons de Q1.2", () => {
     const modes = new Map<string, ReturnType<typeof modeDe>>();
     const ecarts = acceptees.filter((masque) => {
       const criteres = criteresDu(masque);
-      const validated: Validated<Questions> = {
+      const validated = new ValidatedAnswers<Questions>({
         "Q1.1": { answer: "3_AVEC_UN_PROFESSIONNEL" },
         "Q1.2": { answer: criteres },
         "Q1.3": { answer: ["7_AUCUNE"] },
-      };
+      });
       const cle = JSON.stringify(faitsDuMode(validated));
       if (!modes.has(cle)) modes.set(cle, modeDe(validated));
       return modes.get(cle) !== modeAttendu(criteres);

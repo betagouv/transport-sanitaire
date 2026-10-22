@@ -17,12 +17,16 @@
 //   transfert entre établissements ne mène pas à une prison : il se refuse.
 // - Pour tout autre soin, la prison n'est que l'adresse d'arrivée, en P3.
 
-import type { Answers, QuestionnairePart, Validated } from "../../../socle";
-import type { Fait } from "../../../socle/decision-engine/publicodes";
+import {
+  Fait,
+  type GivenAnswers,
+  type QuestionnairePart,
+  type ValidatedAnswers,
+} from "../../../socle";
 import type { Faits } from "../declarations/faits";
 import type { Questions } from "../declarations/questions";
 
-type Valides = Validated<Questions>;
+type Valides = ValidatedAnswers<Questions>;
 type Page = QuestionnairePart<Questions, undefined>["pages"][number];
 
 /** Le message qui refuse un transfert entre établissements vers la prison. */
@@ -34,18 +38,15 @@ export const TRANSFERT_VERS_LA_PRISON =
  * validée avant elle, n'établit aucune indication médicale.
  */
 export function indicationAPoser(
-  answers: Answers<Questions>,
+  answers: GivenAnswers<Questions>,
   validated: Valides,
 ): boolean {
-  return (
-    retourCoche(answers["Q2.2.1"], answers["Q2.2.1.b"]) &&
-    !indicationEtablie(validated)
-  );
+  return retourCoche(answers) && !indicationEtablie(validated);
 }
 
 /** Le retour relève-t-il de la seule organisation pénitentiaire ? */
 export function horsCircuit(validated: Valides): boolean {
-  return validated["Q2.2.1.indication"]?.answer === "2_NON";
+  return validated.question("Q2.2.1.indication").is("2_NON");
 }
 
 /** La page, dont rien ne se pose plus hors du circuit de prescription. */
@@ -64,18 +65,15 @@ export function dansLeCircuit(page: Page): Page {
 /** Le retour pénitentiaire est-il une sortie définitive d'hospitalisation ? */
 export function sortieVersLaPrison(validated: Valides): boolean {
   return (
-    retourCoche(validated["Q2.2.1"]?.answer, validated["Q2.2.1.b"]?.answer) &&
-    validated["Q2.1.g"]?.answer === "2_SORTIE" &&
-    validated["Q2.2.1.a"]?.answer !== "1_OUI"
+    retourCoche(validated) &&
+    validated.question("Q2.1.g").is("2_SORTIE") &&
+    !validated.question("Q2.2.1.a").is("1_OUI")
   );
 }
 
 /** Le retour pénitentiaire est-il coché, une fois sa page validée ? */
 export function retourPenitentiaireValide(validated: Valides): boolean {
-  return retourCoche(
-    validated["Q2.2.1"]?.answer,
-    validated["Q2.2.1.b"]?.answer,
-  );
+  return retourCoche(validated);
 }
 
 /** Les faits qu'une sortie définitive vers la prison établit. */
@@ -83,11 +81,11 @@ export function faitsDuRetourPenitentiaire(validated: Valides): Partial<Faits> {
   if (!sortieVersLaPrison(validated)) return {};
   const source =
     "Q2.1.g : « 2_SORTIE », Q2.2.1.b : « 10_RETOUR_PENITENTIAIRE » ; sortie définitive vers la prison.";
-  const deduit = non("fait_permission vaut « non » : aucune permission.");
+  const deduit = Fait.non("fait_permission vaut « non » : aucune permission.");
   return {
-    fait_transfert_article80: non(source),
-    fait_centre15_interetablissements: non(source),
-    fait_permission: non(source),
+    fait_transfert_article80: Fait.non(source),
+    fait_centre15_interetablissements: Fait.non(source),
+    fait_permission: Fait.non(source),
     fait_permission_charge_patient: deduit,
     fait_permission_mineur_admissible: deduit,
   };
@@ -98,21 +96,18 @@ export function faitsDuRetourPenitentiaire(validated: Valides): Partial<Faits> {
 // Un critère de Q1.2, une ALD, une séance ou un autre cas de Q1.3.
 function indicationEtablie(validated: Valides): boolean {
   return (
-    (validated["Q1.2"]?.answer?.length ?? 0) > 0 ||
-    (validated["Q1.3"]?.answer?.some((cas) => cas !== "7_AUCUNE") ?? false)
+    validated.question("Q1.2").hasAnyChecked() ||
+    validated
+      .question("Q1.3")
+      .checkedBoxes()
+      .some((cas) => cas !== "7_AUCUNE")
   );
 }
 
-function retourCoche(
-  groupes: Questions["Q2.2.1"] | undefined,
-  contextes: Questions["Q2.2.1.b"] | undefined,
-): boolean {
+// Sur la page en cours (les réponses données) comme une fois validée.
+function retourCoche(reponses: GivenAnswers<Questions> | Valides): boolean {
   return (
-    (groupes?.includes("3_AUTRE_CADRE") ?? false) &&
-    (contextes?.includes("10_RETOUR_PENITENTIAIRE") ?? false)
+    reponses.question("Q2.2.1").checked("3_AUTRE_CADRE") &&
+    reponses.question("Q2.2.1.b").checked("10_RETOUR_PENITENTIAIRE")
   );
-}
-
-function non(provenance: string): Fait {
-  return { value: false, provenance };
 }

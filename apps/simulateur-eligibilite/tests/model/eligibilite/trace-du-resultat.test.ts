@@ -14,11 +14,11 @@ import {
 } from "../../../front/models/eligibilite/r2/trace-du-resultat";
 import { SEEDS } from "../../../front/models/eligibilite/seeds-catalogue";
 import { BRANCARD_20_KM, faits, type Reponses } from "./reponses-de-la-branche";
-import { ciblesDe, PATIENT_SEUL } from "./reponses-de-la-permission";
+import { lectureDe, PATIENT_SEUL } from "./reponses-de-la-permission";
 
 // La trace de ces réponses, avec les cibles que calculent les règles.
 const traceDe = (reponses: Reponses): Trace =>
-  traceDuResultat(reponses, ciblesDe(reponses));
+  traceDuResultat(lectureDe(reponses));
 
 const seed = (id: string): Reponses => {
   const trouvee = SEEDS.find((candidate) => candidate.id === id);

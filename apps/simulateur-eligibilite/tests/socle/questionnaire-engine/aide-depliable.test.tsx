@@ -33,12 +33,11 @@ const SITUATIONS: Page = {
         {
           value: "autre",
           label: "Une autre situation particulière",
-          helpFrom: ({ age }) => ({
+          helpFrom: (answers) => ({
             label: "Voir les situations concernées",
-            items:
-              age === "non"
-                ? ["Accident du travail", "Suivi en CAMSP ou en CMPP"]
-                : ["Accident du travail", "Pension militaire"],
+            items: answers.question("age").is("non")
+              ? ["Accident du travail", "Suivi en CAMSP ou en CMPP"]
+              : ["Accident du travail", "Pension militaire"],
           }),
         },
       ],

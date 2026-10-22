@@ -3,7 +3,7 @@
 // pénitentiaire et la convocation. La page de branche (Q2.12 à Q2.14) les lit pour savoir si l'une
 // de ses questions est utile.
 
-import type { Validated } from "../../../socle";
+import type { ValidatedAnswers } from "../../../socle";
 import { AUCUN_FAIT, type Faits } from "../declarations/faits";
 import type { Questions } from "../declarations/questions";
 import { EXCLUSION_DU_TRANSPORT } from "../exclusion-du-transport";
@@ -16,7 +16,9 @@ import { faitsDuRetourPenitentiaire } from "./retour-penitentiaire";
 import { faitsDuTrajet } from "./trajet";
 import { faitsDuTransfert } from "./transfert";
 
-export function faitsAvantLaBranche(validated: Validated<Questions>): Faits {
+export function faitsAvantLaBranche(
+  validated: ValidatedAnswers<Questions>,
+): Faits {
   return {
     ...AUCUN_FAIT,
     ...faitsDuMode(validated),

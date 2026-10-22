@@ -10,6 +10,7 @@ import {
   type Model,
   type Preconisation,
   preconisationOf,
+  readingOf,
 } from "../model";
 import type { DebugTraceProps } from "../questionnaire-engine/QuestionnaireForm";
 import type { Answers, AnyCibles } from "../questionnaire-engine/question";
@@ -85,7 +86,11 @@ const loading = new WeakMap<Model, WeakMap<Answers, Promise<FirstResult>>>();
 function resultOf(model: Model, answers: Answers, cibles: AnyCibles): Loading {
   const known = loading.get(model)?.get(answers);
   if (known) return known;
-  const result = model.transportAndEligibility.result({ answers, cibles });
+  const pages = pagesOf(model.transportAndEligibility.parts);
+  const result = model.transportAndEligibility.result({
+    ...readingOf(pages, answers),
+    cibles,
+  });
   if (!(result instanceof Promise)) return result;
   const byAnswers = loading.get(model) ?? new WeakMap();
   loading.set(model, byAnswers.set(answers, result));

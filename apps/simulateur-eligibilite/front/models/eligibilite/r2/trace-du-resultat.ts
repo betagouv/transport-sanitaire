@@ -6,21 +6,22 @@
 // (D-104 : une simulation se fait en une fois, sur le modèle chargé à
 // l'ouverture). Un fait inconnu est une clé absente, jamais un « non ».
 
-import {
-  type Answers,
-  pagesOf,
-  type Validated,
-  validatedQuestions,
-} from "../../../socle";
+import type { GivenAnswers, ValidatedAnswers } from "../../../socle";
 import type { Cibles } from "../declarations/cibles";
 import type { Faits } from "../declarations/faits";
 import type { Questions } from "../declarations/questions";
 import { faits } from "../preconisation";
-import { PARTS } from "../questionnaire";
 import {
   type Precisions,
   precisionsDuResultat,
 } from "./precisions-du-resultat";
+
+/** Ce que R2 reçoit du socle : les réponses, les questions validées, les cibles. */
+export type ReponsesEtCibles = {
+  answers: GivenAnswers<Questions>;
+  validated: ValidatedAnswers<Questions>;
+  cibles: Cibles;
+};
 
 /** Ce que les textes de R2 lisent, pour des réponses et leurs cibles. */
 export type Trace = {
@@ -44,21 +45,18 @@ export type Trace = {
   readonly precisions: Precisions;
 };
 
-/** La trace de ces réponses : elle relit les questions qui se posent encore. */
-export function traceDuResultat(
-  answers: Answers<Questions>,
-  cibles: Cibles,
-): Trace {
-  const validated = validatedQuestions(
-    pagesOf(PARTS),
-    answers,
-  ) as Validated<Questions>;
-  const repetee = validated["Q2.8.5"]?.answer;
+/** La trace de ces réponses : elle relit les questions validées. */
+export function traceDuResultat({
+  answers,
+  validated,
+  cibles,
+}: ReponsesEtCibles): Trace {
+  const repetee = validated.question("Q2.8.5");
   return {
     cibles,
     faits: faits(answers, validated),
-    criteres: (validated["Q1.2"]?.answer ?? []).map(numeroDuCritere),
-    ...(repetee && { permissionRepeated: repetee === "1_OUI" }),
+    criteres: validated.question("Q1.2").checkedBoxes().map(numeroDuCritere),
+    ...(repetee.hasAnswer() && { permissionRepeated: repetee.is("1_OUI") }),
     precisions: precisionsDuResultat(validated),
   };
 }

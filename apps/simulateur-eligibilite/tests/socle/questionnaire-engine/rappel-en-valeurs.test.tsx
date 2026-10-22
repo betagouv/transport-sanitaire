@@ -16,7 +16,10 @@ const ARRIVEE: Page = {
       label: "Adresse du lieu d'arrivée",
       reminderFrom: (answers, cibles) => [
         { label: "Rôle", value: "arrivée" },
-        { label: "Nature", value: String(cibles?.nature ?? answers.nature) },
+        {
+          label: "Nature",
+          value: String(cibles?.nature ?? answers.question("nature").value),
+        },
       ],
     },
   ],

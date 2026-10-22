@@ -10,17 +10,20 @@
 // et qui sont validées : ses conditions peuvent en dépendre, pas de la suite.
 // Ses incohérences ne voient pas non plus les réponses des pages suivantes.
 
+import { answersOf, GivenAnswers } from "./given-answers";
 import { isAnswered, offeredAnswer, optionValues } from "./offered-answer";
 import type { Option } from "./option";
 import type {
   Answer,
   Answers,
   AnyCibles,
+  AnyQuestions,
   Page,
   Question,
   Unanswered,
   Validated,
 } from "./question";
+import { ValidatedAnswers } from "./validated-answers";
 
 /**
  * Les questions de la page qui se posent, vu les réponses et les cibles, telles
@@ -61,20 +64,34 @@ export function validatedQuestions(
   return inOrder(pages, answers, cibles).validated;
 }
 
+/**
+ * Les questions validées de ces pages, à lire question par question (voir
+ * `validatedQuestions`).
+ */
+export function validatedAnswers<Questions extends AnyQuestions>(
+  pages: readonly Page[],
+  answers: Answers<Questions>,
+  cibles?: AnyCibles,
+): ValidatedAnswers<Questions> {
+  return new ValidatedAnswers(
+    validatedQuestions(pages, answers, cibles) as Validated<Questions>,
+  );
+}
+
 /** Toutes les questions qui se posent dans ces pages ont-elles leur réponse ? */
 export function areAnswered(
   pages: readonly Page[],
-  answers: Answers,
+  answers: GivenAnswers,
   cibles?: AnyCibles,
 ): boolean {
-  return inOrder(pages, answers, cibles).complete;
+  return inOrder(pages, answersOf(answers), cibles).complete;
 }
 
 // ---- implémentation ----
 
 // Ce qu'une condition lit : les réponses, les cibles figées s'il y en a, et
 // les questions validées avant celle qu'elle concerne.
-type Seen = readonly [Answers, AnyCibles | undefined, Validated];
+type Seen = readonly [GivenAnswers, AnyCibles | undefined, ValidatedAnswers];
 
 type AskedPage = { page: Page; questions: Question[] };
 
@@ -125,9 +142,10 @@ function askQuestion(
   { answers, earlier, cibles }: Context,
   validated: Validated,
 ): Question | undefined {
-  const seen: Seen = [answers, cibles, validated];
+  const read = new ValidatedAnswers(validated);
+  const seen: Seen = [new GivenAnswers(answers), cibles, read];
   if (!(declared.askedIf?.(...seen) ?? true)) return undefined;
-  return asAsked(declared, seen, [earlier, cibles, validated]);
+  return asAsked(declared, seen, [new GivenAnswers(earlier), cibles, read]);
 }
 
 // Une question qui a sa réponse est validée, si aucune n'attend avant elle. La

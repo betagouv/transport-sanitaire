@@ -3,10 +3,10 @@
 // 20 ans, sur une seule page (D-107).
 
 import {
-  type Answers,
+  type GivenAnswers,
   optionsFrom,
   type QuestionnairePart,
-  type Validated,
+  type ValidatedAnswers,
 } from "../../../socle";
 import { OPTIONS, type Questions } from "../declarations/questions";
 import {
@@ -50,7 +50,7 @@ export const PAGE_DE_LA_PERMISSION: Page = {
       label:
         "L’établissement confirme-t-il que ce transport correspond à une prestation exceptionnelle facturable au patient ?",
       hint: "La seule préférence personnelle ne suffit pas. Vérifier la demande écrite, l’absence de fondement médical, l’absence de couverture par les tarifs de l’établissement et l’information du patient sur le prix et la facturation.",
-      askedIf: (answers) => answers["Q2.7"] === "4_ADULTE_A_SA_CHARGE",
+      askedIf: (answers) => answers.question("Q2.7").is("4_ADULTE_A_SA_CHARGE"),
       dependsOn: ["Q2.7"],
       options: optionsFrom(OPTIONS["Q2.7.a"]),
     },
@@ -75,12 +75,18 @@ export const PAGE_DE_LA_PERMISSION_DU_MINEUR: Page = {
       label: "Quand commence la première permission ?",
       askedIf: mineurAPoser,
       inconsistenciesFrom: (answers) => [
-        ...(commenceAvantLHospitalisation(answers["Q2.8.1"], answers["Q2.8.2"])
+        ...(commenceAvantLHospitalisation(
+          answers.question("Q2.8.1").value,
+          answers.question("Q2.8.2").value,
+        )
           ? [
               "La permission ne peut pas commencer avant le début de l’hospitalisation.",
             ]
           : []),
-        ...(commenceAvantLeQuatorzieme(answers["Q2.8.1"], answers["Q2.8.2"])
+        ...(commenceAvantLeQuatorzieme(
+          answers.question("Q2.8.1").value,
+          answers.question("Q2.8.2").value,
+        )
           ? [
               "La première permission doit commencer au 14e jour d’hospitalisation ou après.",
             ]
@@ -93,10 +99,16 @@ export const PAGE_DE_LA_PERMISSION_DU_MINEUR: Page = {
       label: "Quand se termine cette première permission ?",
       askedIf: mineurAPoser,
       inconsistenciesFrom: (answers) => [
-        ...(finNonPosterieure(answers["Q2.8.2"], answers["Q2.8.3"])
+        ...(finNonPosterieure(
+          answers.question("Q2.8.2").value,
+          answers.question("Q2.8.3").value,
+        )
           ? ["La fin de la permission doit venir après son début."]
           : []),
-        ...(depasseQuaranteHuitHeures(answers["Q2.8.2"], answers["Q2.8.3"])
+        ...(depasseQuaranteHuitHeures(
+          answers.question("Q2.8.2").value,
+          answers.question("Q2.8.3").value,
+        )
           ? ["Une permission dure au plus 48 heures."]
           : []),
       ],
@@ -131,7 +143,10 @@ export const PAGE_DE_LA_PERMISSION_DU_MINEUR: Page = {
       askedIf: plusieursPermissions,
       dependsOn: ["Q2.8.5"],
       inconsistenciesFrom: (answers) =>
-        periodeAvantLaFinDeLaPermission(answers["Q2.8.6"], answers["Q2.8.3"])
+        periodeAvantLaFinDeLaPermission(
+          answers.question("Q2.8.6").value,
+          answers.question("Q2.8.3").value,
+        )
           ? [
               "La période ne peut pas se terminer avant la fin de la première permission.",
             ]
@@ -168,8 +183,8 @@ export const PAGE_DE_LA_PERMISSION_DU_MINEUR: Page = {
 
 // ---- implémentation ----
 
-type Reponses = Answers<Questions>;
-type Valides = Validated<Questions>;
+type Reponses = GivenAnswers<Questions>;
+type Valides = ValidatedAnswers<Questions>;
 
 function adultesAProposer(
   _answers: Reponses,
@@ -193,6 +208,7 @@ function plusieursPermissions(
   validated: Valides,
 ): boolean {
   return (
-    mineurAPoser(answers, cibles, validated) && answers["Q2.8.5"] === "1_OUI"
+    mineurAPoser(answers, cibles, validated) &&
+    answers.question("Q2.8.5").is("1_OUI")
   );
 }

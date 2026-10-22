@@ -8,7 +8,7 @@ import { describe, expect, it } from "vitest";
 import { catalogueResultats } from "../../../front/models/eligibilite/r2/catalogue-resultats";
 import { eligibilite } from "../../../front/models/eligibilite/r2/resultat";
 import { SEEDS } from "../../../front/models/eligibilite/seeds-catalogue";
-import { ciblesDe, type Reponses } from "./reponses-de-la-permission";
+import { lectureDe, type Reponses } from "./reponses-de-la-permission";
 
 // Le catalogue est chargé une fois : le premier test n'attend pas 750 ko.
 await catalogueResultats();
@@ -18,7 +18,7 @@ const afficher = async (id: string) => {
   const seed = SEEDS.find((candidate) => candidate.id === id);
   if (!seed) throw new Error(`Seed inconnue : ${id}`);
   const answers = seed.answers as Reponses;
-  const resultat = await eligibilite({ answers, cibles: ciblesDe(answers) });
+  const resultat = await eligibilite(lectureDe(answers));
   render(resultat.body);
   return resultat.title;
 };

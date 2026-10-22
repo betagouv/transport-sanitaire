@@ -10,9 +10,9 @@
 
 import type { ReactNode } from "react";
 import {
-  type Answers,
   Disclosure,
   type FirstResult,
+  type GivenAnswers,
   type IllustratedCard,
   IllustratedCards,
   NumberedCards,
@@ -27,7 +27,7 @@ import tasse from "./illustrations/tasse.svg";
 import verreGlace from "./illustrations/verre-glace.svg";
 import { SANS_COMMANDE } from "./preconisation";
 
-type Props = { answers: Answers<Questions>; cibles: Cibles };
+type Props = { answers: GivenAnswers<Questions>; cibles: Cibles };
 
 export function resultatDeLaCommande({ answers, cibles }: Props): FirstResult {
   if (cibles.commande === SANS_COMMANDE) return RIEN_A_SERVIR;
@@ -39,13 +39,15 @@ export function resultatDeLaCommande({ answers, cibles }: Props): FirstResult {
 }
 
 export function CommandeCompletee({ answers, cibles }: Props) {
+  const adresse = answers.question("adresse");
   return (
     <>
       <p className="fr-text--lead">
-        Commande : {cibles.commande}, {String(answers.quantite)} tasses
+        Commande : {cibles.commande},{" "}
+        {String(answers.question("quantite").value)} tasses
       </p>
-      {answers.adresse && (
-        <p>Facture à envoyer : {enUneLigne(answers.adresse)}</p>
+      {adresse.hasAnswer() && (
+        <p>Facture à envoyer : {enUneLigne(adresse.value)}</p>
       )}
       <p>
         Le bon de commande est prêt à être imprimé. Il doit encore être signé
@@ -116,7 +118,7 @@ function PageDeLaCommande({ answers, cibles }: Props) {
       )}
       <h2 className="fr-h5 fr-mt-5w">Les façons de servir</h2>
       <IllustratedCards
-        cards={facons(answers.service ?? [])}
+        cards={facons(answers.question("service").checkedBoxes())}
         selectedLabel="Votre commande"
       />
       <NumberedCards

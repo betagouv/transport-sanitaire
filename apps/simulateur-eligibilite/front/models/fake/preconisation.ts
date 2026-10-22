@@ -2,11 +2,8 @@
 // réponses, et une mise en garde que des règles publicodes décident. Elle ne
 // décide rien du transport.
 
-import type { Answers, Validated } from "../../socle";
-import {
-  type Fait,
-  publicodesEngine,
-} from "../../socle/decision-engine/publicodes";
+import { Fait, type GivenAnswers, type ValidatedAnswers } from "../../socle";
+import { publicodesEngine } from "../../socle/decision-engine/publicodes";
 import type { Cibles } from "./declarations/cibles";
 import type { Faits } from "./declarations/faits";
 import type { Questions } from "./declarations/questions";
@@ -16,15 +13,16 @@ import type { Questions } from "./declarations/questions";
  * sait du lait et du citron.
  */
 export function faits(
-  answers: Answers<Questions>,
-  validated: Validated<Questions>,
+  answers: GivenAnswers<Questions>,
+  validated: ValidatedAnswers<Questions>,
 ): Faits {
-  const { boisson, accompagnements = [] } = answers;
+  const boisson = answers.question("boisson");
   return {
-    boisson: boisson === undefined ? null : BOISSONS[boisson],
-    accompagnements: accompagnements.flatMap(
-      (item) => ACCOMPAGNEMENTS[item] ?? [],
-    ),
+    boisson: boisson.hasAnswer() ? BOISSONS[boisson.value] : null,
+    accompagnements: answers
+      .question("accompagnements")
+      .checkedBoxes()
+      .flatMap((item) => ACCOMPAGNEMENTS[item] ?? []),
     lait: demande(answers, validated, "lait"),
     citron: demande(answers, validated, "citron"),
   };
@@ -80,25 +78,19 @@ const regles = publicodesEngine<
 // coché, il est refusé. Une option qui ne s'est pas proposée n'a pas été
 // refusée : elle ne vaut « non » que si la boisson l'exclut.
 function demande(
-  { boisson }: Answers<Questions>,
-  { accompagnements: question }: Validated<Questions>,
+  answers: GivenAnswers<Questions>,
+  validated: ValidatedAnswers<Questions>,
   option: "lait" | "citron",
 ): Fait {
-  if (boisson === "rien")
-    return { value: false, provenance: "Rien n'est commandé." };
-  if (!question)
-    return { provenance: "Les accompagnements ne sont pas encore validés." };
-  if (!question.offered?.includes(option))
-    return {
-      value: false,
-      provenance: `« ${option} » ne se sert pas avec cette boisson.`,
-    };
-  if (option === "citron" && question.answer?.includes("citron-a-voir"))
-    return { provenance: "« Peut-être du citron » : à décider au service." };
-  return question.answer?.includes(option)
-    ? { value: true, provenance: `Accompagnements : « ${option} » coché.` }
-    : {
-        value: false,
-        provenance: `Accompagnements : « ${option} » proposé, pas coché.`,
-      };
+  if (answers.question("boisson").is("rien"))
+    return Fait.non("Rien n'est commandé.");
+  const question = validated.question("accompagnements");
+  if (!question.isValidated())
+    return Fait.inconnu("Les accompagnements ne sont pas encore validés.");
+  if (option === "citron" && question.checked("citron-a-voir"))
+    return Fait.inconnu("« Peut-être du citron » : à décider au service.");
+  return (
+    question.faitOf(option) ??
+    Fait.non(`« ${option} » ne se sert pas avec cette boisson.`)
+  );
 }

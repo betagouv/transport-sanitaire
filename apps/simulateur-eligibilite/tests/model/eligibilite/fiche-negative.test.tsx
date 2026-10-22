@@ -9,7 +9,7 @@ import { describe, expect, it } from "vitest";
 import { catalogueResultats } from "../../../front/models/eligibilite/r2/catalogue-resultats";
 import { eligibilite } from "../../../front/models/eligibilite/r2/resultat";
 import { SEEDS } from "../../../front/models/eligibilite/seeds-catalogue";
-import { ciblesDe, type Reponses } from "./reponses-de-la-permission";
+import { lectureDe, type Reponses } from "./reponses-de-la-permission";
 
 const { issues } = await catalogueResultats();
 const issue = issues.ISSUE_NON_ELIGIBLE;
@@ -19,7 +19,7 @@ if (!seed) throw new Error("Seed inconnue : issue-non-eligible");
 
 // Affiche le contenu de la feuille, et donne le résultat.
 const afficher = async (answers: Reponses) => {
-  const resultat = await eligibilite({ answers, cibles: ciblesDe(answers) });
+  const resultat = await eligibilite(lectureDe(answers));
   render(resultat.sheet?.body);
   return resultat;
 };

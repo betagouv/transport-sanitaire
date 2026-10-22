@@ -11,7 +11,7 @@ import {
 } from "../../../front/models/eligibilite/r2/praticien/texte-du-praticien";
 import { traceDuResultat } from "../../../front/models/eligibilite/r2/trace-du-resultat";
 import { SEEDS } from "../../../front/models/eligibilite/seeds-catalogue";
-import { ciblesDe } from "./reponses-de-la-permission";
+import { lectureDe } from "./reponses-de-la-permission";
 import { faux, trace, vrai } from "./traces-du-praticien";
 
 const catalogue = await catalogueResultats();
@@ -19,7 +19,7 @@ const catalogue = await catalogueResultats();
 const texteDeLaSeed = (id: string, issue: IssueSansFiche) => {
   const seed = SEEDS.find((candidate) => candidate.id === id);
   if (!seed) throw new Error(`Seed inconnue : ${id}`);
-  const depuis = traceDuResultat(seed.answers, ciblesDe(seed.answers));
+  const depuis = traceDuResultat(lectureDe(seed.answers));
   return texteDuPraticien(catalogue, issue, depuis);
 };
 

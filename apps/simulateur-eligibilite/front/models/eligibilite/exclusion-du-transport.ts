@@ -7,11 +7,9 @@
 // l'éligibilité. Une simulation se fait en une fois, sur le modèle chargé à
 // l'ouverture : le constat vaut pour toute la simulation.
 
-import type { Fait } from "../../socle/decision-engine/publicodes";
+import { Fait } from "../../socle";
 
 /** Le constat du logiciel sur les règles chargées. */
-export const EXCLUSION_DU_TRANSPORT: Fait = {
-  value: false,
-  provenance:
-    "Contrôle du logiciel : les règles chargées ne portent aucune règle d'exclusion du transport.",
-};
+export const EXCLUSION_DU_TRANSPORT = Fait.non(
+  "Contrôle du logiciel : les règles chargées ne portent aucune règle d'exclusion du transport.",
+);

@@ -7,7 +7,7 @@ import { catalogueResultats } from "../../../front/models/eligibilite/r2/catalog
 import { texteDeLaFicheNegative } from "../../../front/models/eligibilite/r2/fiche-negative/texte-de-la-fiche-negative";
 import { traceDuResultat } from "../../../front/models/eligibilite/r2/trace-du-resultat";
 import { SEEDS } from "../../../front/models/eligibilite/seeds-catalogue";
-import { ciblesDe } from "./reponses-de-la-permission";
+import { lectureDe } from "./reponses-de-la-permission";
 import { trace } from "./traces-du-praticien";
 
 const catalogue = await catalogueResultats();
@@ -18,7 +18,7 @@ if (!seed) throw new Error("Seed inconnue : issue-non-eligible");
 describe("le texte de la seed issue-non-eligible", () => {
   const texte = texteDeLaFicheNegative(
     catalogue,
-    traceDuResultat(seed.answers, ciblesDe(seed.answers)),
+    traceDuResultat(lectureDe(seed.answers)),
   );
 
   it("donne les titres de l'aperçu", () => {

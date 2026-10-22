@@ -7,13 +7,12 @@
 // exception qui ne s'est pas proposée prend un prédicat structurel, tracé dans
 // sa provenance. Ces fonctions ne lisent que les questions validées.
 
-import { answerAbsent, type Validated } from "../../../socle";
-import type { Fait } from "../../../socle/decision-engine/publicodes";
+import { Fait, type GivenAnswer, type ValidatedAnswers } from "../../../socle";
 import type { Faits } from "../declarations/faits";
 import type { Questions } from "../declarations/questions";
 import { sortieVersLaPrison } from "./retour-penitentiaire";
 
-type Valides = Validated<Questions>;
+type Valides = ValidatedAnswers<Questions>;
 type Exception = Questions["Q2.6"][number];
 type TypeDuTransfert = Questions["Q2.6.a"];
 
@@ -24,15 +23,15 @@ type TypeDuTransfert = Questions["Q2.6.a"];
  */
 export function transfertAPoser(validated: Valides): boolean {
   return (
-    (validated["Q2.1"]?.answer === "9_TRANSFERT" ||
-      validated["Q2.2.1.a"]?.answer === "2_NON") &&
+    (validated.question("Q2.1").is("9_TRANSFERT") ||
+      validated.question("Q2.2.1.a").is("2_NON")) &&
     !sortieVersLaPrison(validated)
   );
 }
 
 /** Q2.5 dit-elle un transfert entre établissements ? Q2.6.a se pose alors. */
 export function typeAPoser(validated: Valides): boolean {
-  return validated["Q2.5"]?.answer === "1_TRANSFERT";
+  return validated.question("Q2.5").is("1_TRANSFERT");
 }
 
 /**
@@ -41,10 +40,10 @@ export function typeAPoser(validated: Valides): boolean {
  * établit : Q2.6 se pose alors.
  */
 export function champIOuvert(validated: Valides): boolean {
-  const deplacement = validated["Q2.5"]?.answer;
+  const deplacement = validated.question("Q2.5");
   return (
-    deplacement === "1_TRANSFERT" ||
-    (deplacement === "2_AUTRE_DEPLACEMENT" && sejourCoche(validated)) ||
+    deplacement.is("1_TRANSFERT") ||
+    (deplacement.is("2_AUTRE_DEPLACEMENT") && sejourCoche(validated)) ||
     admissionHad(validated)
   );
 }
@@ -56,21 +55,21 @@ export function champIOuvert(validated: Valides): boolean {
  */
 export function exceptionAProposer(
   exception: Exception,
-  type: TypeDuTransfert | undefined,
+  type: GivenAnswer<TypeDuTransfert>,
   validated: Valides,
 ): boolean {
   const transfert = typeAPoser(validated);
   switch (exception) {
     case "2_ADMISSION_SANS_SEJOUR":
-      return transfert && type === "1_DEFINITIF" && !sejourCoche(validated);
+      return transfert && type.is("1_DEFINITIF") && !sejourCoche(validated);
     case "3_CENTRE_QUINZE":
       return transfert;
     case "4_AIR_MER":
-      return validated["Q2.3.2"]?.answer !== true;
+      return !validated.question("Q2.3.2").is(true);
     case "8_RADIOTHERAPIE":
       return (
-        (transfert && type === "2_PROVISOIRE") ||
-        validated["Q2.5"]?.answer === "2_AUTRE_DEPLACEMENT"
+        (transfert && type.is("2_PROVISOIRE")) ||
+        validated.question("Q2.5").is("2_AUTRE_DEPLACEMENT")
       );
     default:
       return true;
@@ -91,7 +90,7 @@ export function faitsDuTransfert(validated: Valides): Partial<Faits> {
 
 /** Le séjour est-il coché en Q2.2.1 (« déjà hospitalisé ») ? */
 function sejourCoche(validated: Valides): boolean {
-  return validated["Q2.2.1"]?.answer?.includes("1_HOSPITALISATION") ?? false;
+  return validated.question("Q2.2.1").checked("1_HOSPITALISATION") ?? false;
 }
 
 // Le fait de chaque exception. L'option 3 n'en a pas : elle établit le
@@ -110,44 +109,31 @@ const FAIT_DE_L_EXCEPTION: Record<
   "10_ADMISSION_HAD": "fait_exception_article80_admission_had",
 };
 
-function oui(provenance: string): Fait {
-  return { value: true, provenance };
-}
-
-function non(provenance: string): Fait {
-  return { value: false, provenance };
-}
-
-function absent(provenance: string): Fait {
-  return { provenance };
-}
-
 // Q2.1.g établit une admission en HAD à domicile : Q2.6 s'ouvre sans Q2.5.
 function admissionHad(validated: Valides): boolean {
-  return validated["Q2.1.g"]?.answer === "3_ADMISSION_HAD";
+  return validated.question("Q2.1.g").is("3_ADMISSION_HAD");
 }
 
-// Q2.6 est-elle validée ? Ses options proposées, et ce qui y est coché.
+// Q2.6, si elle a sa réponse.
 function exceptionsValidees(validated: Valides) {
-  const { offered = [], answer } = validated["Q2.6"] ?? {};
-  if (answerAbsent(answer)) return undefined;
-  return { offered, cochees: answer };
+  const exceptions = validated.question("Q2.6");
+  return exceptions.hasAnswer() ? exceptions : undefined;
 }
 
 // Un transfert depuis les urgences n'établit pas de séjour : seul le séjour
 // coché le fait. Le centre 15 attend Q2.6, et écrase le « non » de Q2.2.1.
 function faitsDeQ25(validated: Valides): Partial<Faits> {
-  const reponse = validated["Q2.5"]?.answer;
-  if (reponse === "1_TRANSFERT") return faitsDuTransfertEntreEtablissements();
-  if (reponse !== "2_AUTRE_DEPLACEMENT") return {};
+  const reponse = validated.question("Q2.5");
+  if (reponse.is("1_TRANSFERT")) return faitsDuTransfertEntreEtablissements();
+  if (!reponse.is("2_AUTRE_DEPLACEMENT")) return {};
   const source = "Q2.5 : « 2_AUTRE_DEPLACEMENT ».";
   return {
-    fait_centre15_interetablissements: non(
+    fait_centre15_interetablissements: Fait.non(
       `${source} Ce n'est pas un transfert entre établissements.`,
     ),
-    fait_hospitalisation: oui(source),
+    fait_hospitalisation: Fait.oui(source),
     ...(exceptionsValidees(validated) && {
-      fait_transfert_article80: oui(
+      fait_transfert_article80: Fait.oui(
         "Q2.5 et Q2.6 : déplacement provisoire pendant le séjour.",
       ),
     }),
@@ -156,8 +142,8 @@ function faitsDeQ25(validated: Valides): Partial<Faits> {
 
 function faitsDuTransfertEntreEtablissements(): Partial<Faits> {
   return {
-    fait_transfert_article80: oui("Q2.5 : « 1_TRANSFERT »."),
-    fait_centre15_interetablissements: absent(
+    fait_transfert_article80: Fait.oui("Q2.5 : « 1_TRANSFERT »."),
+    fait_centre15_interetablissements: Fait.inconnu(
       "Q2.5 : transfert entre établissements ; Q2.6 dira si le Centre 15 l'a demandé.",
     ),
   };
@@ -167,7 +153,9 @@ function faitsDuTransfertEntreEtablissements(): Partial<Faits> {
 function faitsDuSejourDuTransfert(validated: Valides): Partial<Faits> {
   if (!typeAPoser(validated) || !sejourCoche(validated)) return {};
   return {
-    fait_hospitalisation: oui("Q2.2.1 : séjour coché, Q2.5 : « 1_TRANSFERT »."),
+    fait_hospitalisation: Fait.oui(
+      "Q2.2.1 : séjour coché, Q2.5 : « 1_TRANSFERT ».",
+    ),
   };
 }
 
@@ -177,7 +165,7 @@ function faitsDeLAdmissionHad(validated: Valides): Partial<Faits> {
     ...faitsDuSejourDuTransfert(validated),
     ...(admissionHad(validated) &&
       exceptionsValidees(validated) && {
-        fait_transfert_article80: oui(
+        fait_transfert_article80: Fait.oui(
           "Q2.1.g : « 3_ADMISSION_HAD », Q2.6 validée.",
         ),
       }),
@@ -186,8 +174,7 @@ function faitsDeLAdmissionHad(validated: Valides): Partial<Faits> {
 
 // Les huit exceptions, toutes définies une fois Q2.6 validée.
 function faitsDesExceptions(validated: Valides): Partial<Faits> {
-  const reponse = exceptionsValidees(validated);
-  if (!reponse) return {};
+  if (!exceptionsValidees(validated)) return {};
   return Object.fromEntries(
     Object.entries(FAIT_DE_L_EXCEPTION).map(([exception, fait]) => [
       fait,
@@ -203,11 +190,10 @@ function faitDeLException(
   exception: keyof typeof FAIT_DE_L_EXCEPTION,
   validated: Valides,
 ): Fait {
-  const { offered = [], answer = [] } = validated["Q2.6"] ?? {};
-  if (!offered.includes(exception)) return structurel(exception, validated);
-  return answer.includes(exception)
-    ? oui(`Q2.6 : « ${exception} » cochée.`)
-    : non(`Q2.6 : « ${exception} » proposée, non cochée.`);
+  return (
+    validated.question("Q2.6").faitOf(exception) ??
+    structurel(exception, validated)
+  );
 }
 
 // Ce qu'une exception vaut quand Q2.6 ne l'a pas proposée.
@@ -217,31 +203,31 @@ function structurel(
 ): Fait {
   switch (exception) {
     case "2_ADMISSION_SANS_SEJOUR":
-      return non(
+      return Fait.non(
         `Q2.6 : « ${exception} » ne s'est pas proposée : ${raisonSansAdmission(validated)}.`,
       );
     case "4_AIR_MER":
-      return oui("Q2.3.2 : ligne régulière, réutilisée sans revote.");
+      return Fait.oui("Q2.3.2 : ligne régulière, réutilisée sans revote.");
     case "8_RADIOTHERAPIE":
-      return non(
+      return Fait.non(
         `Q2.6 : « ${exception} » ne s'est pas proposée : ${raisonSansRadiotherapie(validated)}.`,
       );
     default:
-      return absent(`Q2.6 : « ${exception} » ne s'est pas proposée.`);
+      return Fait.inconnu(`Q2.6 : « ${exception} » ne s'est pas proposée.`);
   }
 }
 
 function raisonSansAdmission(validated: Valides): string {
   if (sejourCoche(validated)) return "un séjour initial est coché en Q2.2.1";
-  if (validated["Q2.5"]?.answer === "2_AUTRE_DEPLACEMENT")
+  if (validated.question("Q2.5").is("2_AUTRE_DEPLACEMENT"))
     return "Q2.5 : autre déplacement, pas un transfert";
-  if (validated["Q2.6.a"]?.answer === "2_PROVISOIRE")
+  if (validated.question("Q2.6.a").is("2_PROVISOIRE"))
     return "Q2.6.a : transfert provisoire, avec retour à l'établissement d'origine";
   return "une admission en HAD n'est pas un transfert entre établissements";
 }
 
 function raisonSansRadiotherapie(validated: Valides): string {
-  return validated["Q2.6.a"]?.answer === "1_DEFINITIF"
+  return validated.question("Q2.6.a").is("1_DEFINITIF")
     ? "Q2.6.a : transfert définitif"
     : "une admission en HAD n'est pas un transfert provisoire";
 }
@@ -249,11 +235,8 @@ function raisonSansRadiotherapie(validated: Valides): string {
 // L'option 3 : le Centre 15 a-t-il demandé le transport ? Non proposée, les
 // deux faits restent comme ils étaient.
 function faitsDuCentre15(validated: Valides): Partial<Faits> {
-  const reponse = exceptionsValidees(validated);
-  if (!reponse?.offered.includes("3_CENTRE_QUINZE")) return {};
-  const centre15 = reponse.cochees.includes("3_CENTRE_QUINZE")
-    ? oui("Q2.6 : « 3_CENTRE_QUINZE » cochée.")
-    : non("Q2.6 : « 3_CENTRE_QUINZE » proposée, non cochée.");
+  const centre15 = exceptionsValidees(validated)?.faitOf("3_CENTRE_QUINZE");
+  if (!centre15) return {};
   return {
     fait_centre15_interetablissements: centre15,
     fait_appel_centre15: centre15,

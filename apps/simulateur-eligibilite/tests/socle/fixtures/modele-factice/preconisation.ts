@@ -1,19 +1,20 @@
 // La préconisation factice : la commande, lue dans les réponses. Elle ne décide
 // rien du transport.
 
-import type { Answers } from "../../../../front/socle";
+import type { GivenAnswers } from "../../../../front/socle";
 import type { Cibles } from "./declarations/cibles";
 import type { Faits } from "./declarations/faits";
 import type { Questions } from "./declarations/questions";
 
 /** Des réponses aux faits : ce qui est commandé, en toutes lettres. */
-export function faits(answers: Answers<Questions>): Faits {
-  const { boisson, accompagnements = [] } = answers;
+export function faits(answers: GivenAnswers<Questions>): Faits {
+  const boisson = answers.question("boisson");
   return {
-    boisson: boisson === undefined ? null : BOISSONS[boisson],
-    accompagnements: accompagnements.flatMap(
-      (item) => ACCOMPAGNEMENTS[item] ?? [],
-    ),
+    boisson: boisson.hasAnswer() ? BOISSONS[boisson.value] : null,
+    accompagnements: answers
+      .question("accompagnements")
+      .checkedBoxes()
+      .flatMap((item) => ACCOMPAGNEMENTS[item] ?? []),
   };
 }
 

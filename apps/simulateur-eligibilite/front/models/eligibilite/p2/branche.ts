@@ -8,14 +8,13 @@
 // les questions validées, sauf le motif de Q2.14, qui lit l'éloignement sur la
 // même page.
 
-import { answerAbsent, type Validated } from "../../../socle";
-import type { Fait } from "../../../socle/decision-engine/publicodes";
+import { Fait, type GivenAnswer, type ValidatedAnswers } from "../../../socle";
 import { AUCUN_FAIT, type Faits } from "../declarations/faits";
 import type { Questions } from "../declarations/questions";
 import { cible } from "../evaluation-des-regles";
 import { faitsAvantLaBranche } from "./faits-avant-la-branche";
 
-type Valides = Validated<Questions>;
+type Valides = ValidatedAnswers<Questions>;
 
 /**
  * Q2.13 (le départ) se pose-t-elle ? Une entrée en établissement de santé qui
@@ -23,7 +22,7 @@ type Valides = Validated<Questions>;
  * départ dit si l'entrée est simple.
  */
 export function departAPoser(validated: Valides): boolean {
-  if (validated["Q2.1.g"]?.answer !== "1_ENTREE") return false;
+  if (!validated.question("Q2.1.g").is("1_ENTREE")) return false;
   const faits = faitsAvantLaBranche(validated);
   return (
     faits.fait_hospitalisation.value === true &&
@@ -38,8 +37,8 @@ export function departAPoser(validated: Valides): boolean {
  */
 export function eloignementAPoser(validated: Valides): boolean {
   const signalee =
-    validated["Q2.1"]?.answer === "13_MATERNITE" ||
-    (validated["Q2.2.1.b"]?.answer?.includes("4_MATERNITE_ELOIGNEE") ?? false);
+    validated.question("Q2.1").is("13_MATERNITE") ||
+    (validated.question("Q2.2.1.b").checked("4_MATERNITE_ELOIGNEE") ?? false);
   return signalee && brancheDecisive(faitsAvantLaBranche(validated));
 }
 
@@ -48,13 +47,10 @@ export function eloignementAPoser(validated: Valides): boolean {
  * celui-ci a déjà écarté le dispositif : le motif ne changerait plus rien.
  */
 export function motifAPoser(
-  eloignement: Questions["Q2.14.eloignement"] | undefined,
+  eloignement: GivenAnswer<Questions["Q2.14.eloignement"]>,
   validated: Valides,
 ): boolean {
-  return (
-    !(eloignement?.includes("3_AUCUNE") ?? false) &&
-    eloignementAPoser(validated)
-  );
+  return !eloignement.checked("3_AUCUNE") && eloignementAPoser(validated);
 }
 
 /**
@@ -65,7 +61,7 @@ export function motifAPoser(
  * Sans réponse à Q2.3.4 : l'urgence ne se redemande jamais.
  */
 export function urgenceDevoilee(validated: Valides): boolean {
-  if (validated["Q2.3.4"] !== undefined) return false;
+  if (validated.question("Q2.3.4").isValidated()) return false;
   const faits = {
     ...faitsAvantLaBranche(validated),
     ...faitsDeLaBranche(validated),
@@ -89,19 +85,11 @@ export function faitsDeLaBranche(validated: Valides): Partial<Faits> {
 // Les départs d'une entrée simple : hors du champ du I de D.162-17. Les trois
 // autres (établissement, EHPAD, USLD) ouvrent le transfert ; un autre lieu ne
 // se qualifie pas sur une description libre. Le fait reste alors absent.
-const DEPARTS_D_UNE_ENTREE_SIMPLE: readonly string[] = [
+const DEPARTS_D_UNE_ENTREE_SIMPLE: readonly Questions["Q2.13.depart"][] = [
   "1_DOMICILE",
   "5_HEBERGEMENT_NON_MEDICALISE",
   "6_ETABLISSEMENT_PENITENTIAIRE",
 ];
-
-function oui(provenance: string): Fait {
-  return { value: true, provenance };
-}
-
-function non(provenance: string): Fait {
-  return { value: false, provenance };
-}
 
 // Le trajet a-t-il quelque chose à décider, une fois les pages précédentes
 // posées ? Le mode se tient, et aucune orientation prioritaire n'est établie :
@@ -115,15 +103,14 @@ function brancheDecisive(faits: Faits): boolean {
 }
 
 function faitsDuDepart(validated: Valides): Partial<Faits> {
-  const depart = validated["Q2.13.depart"]?.answer;
-  if (depart === undefined || !DEPARTS_D_UNE_ENTREE_SIMPLE.includes(depart))
-    return {};
+  const depart = validated.question("Q2.13.depart");
+  if (!depart.isOneOf(...DEPARTS_D_UNE_ENTREE_SIMPLE)) return {};
   return {
-    fait_transfert_article80: non(
-      `Q2.13 : « ${depart} » ; une entrée simple est hors du champ du I de D.162-17.`,
+    fait_transfert_article80: Fait.non(
+      `Q2.13 : « ${depart.value} » ; une entrée simple est hors du champ du I de D.162-17.`,
     ),
-    fait_centre15_interetablissements: non(
-      `Q2.13 : « ${depart} » ; aucun transfert entre établissements.`,
+    fait_centre15_interetablissements: Fait.non(
+      `Q2.13 : « ${depart.value} » ; aucun transfert entre établissements.`,
     ),
   };
 }
@@ -132,13 +119,18 @@ function faitsDuDepart(validated: Valides): Partial<Faits> {
 // cochée dans chacun établit le dispositif, « Aucune » dans l'un l'écarte. Un
 // groupe sans réponse le laisse absent, jamais « non ».
 function faitsDeLaMaternite(validated: Valides): Partial<Faits> {
-  const eloignement = validated["Q2.14.eloignement"]?.answer;
-  const motif = validated["Q2.14.motif"]?.answer;
-  if (eloignement?.includes("3_AUCUNE"))
-    return { fait_dap_maternite: non("Q2.14 : aucun éloignement éligible.") };
-  if (motif?.includes("3_AUCUNE"))
-    return { fait_dap_maternite: non("Q2.14 : aucun motif éligible.") };
-  if (answerAbsent(eloignement) || answerAbsent(motif)) return {};
-  const conditions = [...eloignement, ...motif].join(" », « ");
-  return { fait_dap_maternite: oui(`Q2.14 : « ${conditions} ».`) };
+  const eloignement = validated.question("Q2.14.eloignement");
+  const motif = validated.question("Q2.14.motif");
+  if (eloignement.checked("3_AUCUNE"))
+    return {
+      fait_dap_maternite: Fait.non("Q2.14 : aucun éloignement éligible."),
+    };
+  if (motif.checked("3_AUCUNE"))
+    return { fait_dap_maternite: Fait.non("Q2.14 : aucun motif éligible.") };
+  if (!eloignement.hasAnswer() || !motif.hasAnswer()) return {};
+  const conditions = [
+    ...eloignement.checkedBoxes(),
+    ...motif.checkedBoxes(),
+  ].join(" », « ");
+  return { fait_dap_maternite: Fait.oui(`Q2.14 : « ${conditions} ».`) };
 }

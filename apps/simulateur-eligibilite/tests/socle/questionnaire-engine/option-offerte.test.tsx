@@ -33,7 +33,7 @@ const PLATS: Page = {
         {
           value: "steak",
           label: "Un steak",
-          offeredIf: (answers) => answers.regime === "tout",
+          offeredIf: (answers) => answers.question("regime").is("tout"),
         },
       ],
       exclusiveOption: { value: "rien", label: "Rien" },

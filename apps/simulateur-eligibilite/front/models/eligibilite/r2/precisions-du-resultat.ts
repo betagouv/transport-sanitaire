@@ -6,10 +6,10 @@
 // clé : le texte prend alors son repli générique, et rien n'est jamais
 // deviné. Ces fonctions ne lisent que les questions validées.
 
-import type { Validated } from "../../../socle";
+import type { ValidatedAnswers } from "../../../socle";
 import type { Questions } from "../declarations/questions";
 
-type Valides = Validated<Questions>;
+type Valides = ValidatedAnswers<Questions>;
 
 /**
  * Un contexte de scénario du catalogue : les seuls paramètres non nuls que
@@ -82,26 +82,24 @@ function cle<K extends keyof Precisions>(
 // hémodialyse demande Q1.3.a. Plusieurs séances demandent que Q2.1.f les dise
 // vers le même lieu de soins.
 function seancesRetenues(validated: Valides): readonly string[] {
-  const cas = validated["Q1.3"]?.answer ?? [];
+  const cas = validated.question("Q1.3");
   const seances = [
-    cas.includes("3_CHIMIOTHERAPIE") && "CH",
-    cas.includes("4_RADIOTHERAPIE") && "RA",
-    cas.includes("5_DIALYSE") &&
-      validated["Q1.3.a"]?.answer === "1_OUI" &&
+    cas.checked("3_CHIMIOTHERAPIE") && "CH",
+    cas.checked("4_RADIOTHERAPIE") && "RA",
+    cas.checked("5_DIALYSE") &&
+      validated.question("Q1.3.a").is("1_OUI") &&
       "HE",
   ].filter((seance) => seance !== false);
-  const memeDeplacement = validated["Q2.1.f"]?.answer === "1_OUI";
+  const memeDeplacement = validated.question("Q2.1.f").is("1_OUI");
   return seances.length >= 2 && !memeDeplacement ? [] : seances;
 }
 
 // Un séjour réel : une entrée ou une sortie d'établissement (Q2.1.g), ou
 // « déjà hospitalisé » coché (Q2.2.1). L'admission en HAD à domicile n'en est pas un.
 function sejourReel(validated: Valides): boolean {
-  const sousType = validated["Q2.1.g"]?.answer;
   return (
-    sousType === "1_ENTREE" ||
-    sousType === "2_SORTIE" ||
-    (validated["Q2.2.1"]?.answer?.includes("1_HOSPITALISATION") ?? false)
+    validated.question("Q2.1.g").isOneOf("1_ENTREE", "2_SORTIE") ||
+    validated.question("Q2.2.1").checked("1_HOSPITALISATION")
   );
 }
 
@@ -116,29 +114,29 @@ function hospitalisation(validated: Valides): string | undefined {
 // « Accident du travail ou maladie professionnelle » : Q2.2.1.b ne les
 // sépare pas, seul l'identifiant commun est prouvé.
 function atmp(validated: Valides): "ATMP" | undefined {
-  return validated["Q2.2.1.b"]?.answer?.includes("1_ATMP") ? "ATMP" : undefined;
+  return validated.question("Q2.2.1.b").checked("1_ATMP") ? "ATMP" : undefined;
 }
 
 // Le numéro de l'option de Q2.1, pour les soins qui ont une phrase de famille.
 const FAMILLES_DE_SOIN = [1, 2, 3, 4, 5, 6, 7, 14, 15];
 
 function familleDeSoin(validated: Valides): number | undefined {
-  const motif = validated["Q2.1"]?.answer;
-  if (motif === undefined) return undefined;
-  const numero = Number.parseInt(motif, 10);
+  const motif = validated.question("Q2.1");
+  if (!motif.hasAnswer()) return undefined;
+  const numero = Number.parseInt(motif.value, 10);
   return FAMILLES_DE_SOIN.includes(numero) ? numero : undefined;
 }
 
 // Q1.3.a dit une dialyse qui n'est pas de l'hémodialyse, ou ne le dit pas.
 function typeDeDialyse(validated: Valides): Precisions["dialysisType"] {
-  const reponse = validated["Q1.3.a"]?.answer;
-  if (reponse === "2_AUTRE_DIALYSE") return "non-hemodialyse";
-  return reponse === "3_NE_SAIT_PAS" ? "inconnu" : undefined;
+  const reponse = validated.question("Q1.3.a");
+  if (reponse.is("2_AUTRE_DIALYSE")) return "non-hemodialyse";
+  return reponse.is("3_NE_SAIT_PAS") ? "inconnu" : undefined;
 }
 
 // Q2.10.b : un appareillage qui n'est pas l'un des trois que vise R.322-10 2°.
 function categorieDAppareil(validated: Valides): "hors-categories" | undefined {
-  return validated["Q2.10.b"]?.answer === "4_AUTRE"
+  return validated.question("Q2.10.b").is("4_AUTRE")
     ? "hors-categories"
     : undefined;
 }
@@ -146,7 +144,7 @@ function categorieDAppareil(validated: Valides): "hors-categories" | undefined {
 // Q2.3.3 « Oui » prouve des transports répétés. « Non » ne dit pas quelle
 // condition de la série manque : rien n'en est inféré.
 function seriePrevue(validated: Valides): true | undefined {
-  return validated["Q2.3.3"]?.answer === "1_OUI" ? true : undefined;
+  return validated.question("Q2.3.3").is("1_OUI") ? true : undefined;
 }
 
 // Q1.3 option 2 dit les deux à la fois : l'ALD est reconnue, et les soins de
@@ -154,7 +152,7 @@ function seriePrevue(validated: Valides): true | undefined {
 function aldDeQ13(
   validated: Valides,
 ): Pick<Precisions, "aldRecognized" | "aldRelated"> {
-  return validated["Q1.3"]?.answer?.includes("2_ALD")
+  return validated.question("Q1.3").checked("2_ALD")
     ? { aldRecognized: true, aldRelated: true }
     : {};
 }
@@ -164,25 +162,25 @@ function aldDeQ13(
 // le séjour est provisoire (D-106). L'admission en HAD à domicile prouve le
 // genre « had » seul.
 function contexteDeLArticle80(validated: Valides): Contexte | undefined {
-  const deplacement = validated["Q2.5"]?.answer;
-  if (deplacement === "2_AUTRE_DEPLACEMENT")
+  const deplacement = validated.question("Q2.5");
+  if (deplacement.is("2_AUTRE_DEPLACEMENT"))
     return { kind: "inpatient", duration: "temporary" };
-  if (deplacement === "1_TRANSFERT") {
-    const type = validated["Q2.6.a"]?.answer;
-    if (type === "1_DEFINITIF")
+  if (deplacement.is("1_TRANSFERT")) {
+    const type = validated.question("Q2.6.a");
+    if (type.is("1_DEFINITIF"))
       return { kind: "transfer", duration: "permanent" };
-    return type === "2_PROVISOIRE"
+    return type.is("2_PROVISOIRE")
       ? { kind: "transfer", duration: "temporary" }
       : { kind: "transfer" };
   }
-  return validated["Q2.1.g"]?.answer === "3_ADMISSION_HAD"
+  return validated.question("Q2.1.g").is("3_ADMISSION_HAD")
     ? { kind: "had" }
     : undefined;
 }
 
 // Q2.7 option 4 : un transport exceptionnel demandé par écrit par le patient.
 function contexteDeLaPermission(validated: Valides): Contexte | undefined {
-  return validated["Q2.7"]?.answer === "4_ADULTE_A_SA_CHARGE"
+  return validated.question("Q2.7").is("4_ADULTE_A_SA_CHARGE")
     ? { kind: "adult-explicit" }
     : undefined;
 }
@@ -204,9 +202,9 @@ const APPAREIL: Partial<Record<string, string>> = {
 
 // Q2.10 dit le genre ; Q2.10.b l'appareil, pour un appareillage seulement.
 function contexteDeLaConvocation(validated: Valides): Contexte | undefined {
-  const categorie = validated["Q2.10"]?.answer;
+  const categorie = validated.question("Q2.10").value;
   const kind = categorie && GENRE_DE_CONVOCATION[categorie];
   if (!kind) return undefined;
-  const device = APPAREIL[validated["Q2.10.b"]?.answer ?? ""];
+  const device = APPAREIL[validated.question("Q2.10.b").value ?? ""];
   return categorie === "6_APPAREILLAGE" && device ? { kind, device } : { kind };
 }

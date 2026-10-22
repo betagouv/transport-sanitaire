@@ -7,7 +7,7 @@ import { describe, expect, it } from "vitest";
 import { model } from "../../../front/models/eligibilite";
 import type { Cibles } from "../../../front/models/eligibilite/declarations/cibles";
 import { TRANSFERT_VERS_LA_PRISON } from "../../../front/models/eligibilite/p2/retour-penitentiaire";
-import { ciblesDe } from "./reponses-de-la-permission";
+import { ciblesDe, lectureDe } from "./reponses-de-la-permission";
 import {
   faits,
   posee,
@@ -101,10 +101,9 @@ describe("un retour qui relève de l'organisation pénitentiaire (point 34)", ()
   });
 
   it("oriente vers l'administration pénitentiaire, sans rien à compléter", () => {
-    const resultat = model.transportAndEligibility.result({
-      answers: administratif,
-      cibles,
-    });
+    const resultat = model.transportAndEligibility.result(
+      lectureDe(administratif),
+    );
     expect(resultat).toMatchObject({
       title: "Ce retour relève de l’organisation pénitentiaire",
     });

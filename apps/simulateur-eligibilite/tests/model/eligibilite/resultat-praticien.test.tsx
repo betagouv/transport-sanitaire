@@ -8,7 +8,7 @@ import { describe, expect, it } from "vitest";
 import { catalogueResultats } from "../../../front/models/eligibilite/r2/catalogue-resultats";
 import { eligibilite } from "../../../front/models/eligibilite/r2/resultat";
 import { SEEDS } from "../../../front/models/eligibilite/seeds-catalogue";
-import { ciblesDe } from "./reponses-de-la-permission";
+import { lectureDe } from "./reponses-de-la-permission";
 
 // Le premier chargement du catalogue (900 ko) est long : il se fait avant les
 // tests, dont le délai ne le mesure pas.
@@ -18,10 +18,7 @@ await catalogueResultats();
 const afficher = async (id: string) => {
   const seed = SEEDS.find((candidate) => candidate.id === id);
   if (!seed) throw new Error(`Seed inconnue : ${id}`);
-  const resultat = await eligibilite({
-    answers: seed.answers,
-    cibles: ciblesDe(seed.answers),
-  });
+  const resultat = await eligibilite(lectureDe(seed.answers));
   render(resultat.body);
   return resultat.title;
 };

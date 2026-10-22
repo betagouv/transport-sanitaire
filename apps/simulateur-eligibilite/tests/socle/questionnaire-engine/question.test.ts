@@ -3,6 +3,7 @@ import {
   areAnswered,
   askedPages,
 } from "../../../front/socle/questionnaire-engine/asked-questions";
+import { GivenAnswers } from "../../../front/socle/questionnaire-engine/given-answers";
 import type { Page } from "../../../front/socle/questionnaire-engine/question";
 
 // Après le verrou, une question peut dépendre de la préconisation : sa condition
@@ -58,27 +59,28 @@ const DOULEUR: Page = {
       id: "endroit",
       kind: "text",
       label: "Où ?",
-      askedIf: (answers) => answers.douleur === "oui",
+      askedIf: (answers) => answers.question("douleur").is("oui"),
     },
   ],
 };
 
+const repondu = (reponses: Record<string, string>) =>
+  areAnswered([DOULEUR], new GivenAnswers(reponses));
+
 describe("pages auxquelles tout est répondu", () => {
   it("le sont quand chaque question posée a sa réponse", () => {
-    expect(areAnswered([DOULEUR], { douleur: "oui", endroit: "Au dos" })).toBe(
-      true,
-    );
+    expect(repondu({ douleur: "oui", endroit: "Au dos" })).toBe(true);
   });
 
   it("le sont sans réponse à une question qui ne se pose pas", () => {
-    expect(areAnswered([DOULEUR], { douleur: "non" })).toBe(true);
+    expect(repondu({ douleur: "non" })).toBe(true);
   });
 
   it("ne le sont pas tant qu'une question posée attend", () => {
-    expect(areAnswered([DOULEUR], { douleur: "oui" })).toBe(false);
+    expect(repondu({ douleur: "oui" })).toBe(false);
   });
 
   it("ne le sont pas pour une réponse hors des options", () => {
-    expect(areAnswered([DOULEUR], { douleur: "peut-être" })).toBe(false);
+    expect(repondu({ douleur: "peut-être" })).toBe(false);
   });
 });
