@@ -112,7 +112,7 @@ Un fait a trois états : vrai, faux, ou absent. Absent, il ne vaut jamais « non
 
 | Pièce | Ce qu'elle porte |
 |---|---|
-| `GivenAnswers` (`given-answers.ts`) | les réponses données, lues question par question : `answers.question("Q1.1").is("1_SEUL")`, `.checked(case)`, `.checkedBoxes()`, `.hasAnswer()`. Une question sans réponse n'est aucune option, sans être un « non » |
+| `GivenAnswers` (`given-answers.ts`) | les réponses données, lues question par question : `answers.question("Q1.1").is("1_SEUL")`, `.isNot(option)`, `.checked(case)`, `.checkedBoxes()`, `.hasAnswer()`. Une question sans réponse n'est aucune option, sans être un « non » |
 | `ValidatedAnswers` (`validated-answers.ts`) | les questions validées, lues de même, avec ce qui se proposait : `.isValidated()`, `.offers(option)`, `.declined(case)`, et `.faitOf(case)`, qui donne oui (cochée), non (proposée, non cochée) ou rien (jamais montrée) |
 | `preconisation.faits(answers, validated)` | le modèle reçoit ces deux lectures, jamais les réponses brutes. Il applique, fait par fait, le contrat de l'éditeur |
 | `Fait` (`decision-engine/fait.ts`) | ce qu'on sait d'un fait : sa valeur si elle est établie, et sa provenance. `Fait.oui`, `Fait.non` et `Fait.inconnu` le construisent |

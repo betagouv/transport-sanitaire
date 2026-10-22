@@ -67,7 +67,7 @@ export function sortieVersLaPrison(validated: Valides): boolean {
   return (
     retourCoche(validated) &&
     validated.question("Q2.1.g").is("2_SORTIE") &&
-    !validated.question("Q2.2.1.a").is("1_OUI")
+    validated.question("Q2.2.1.a").isNot("1_OUI")
   );
 }
 

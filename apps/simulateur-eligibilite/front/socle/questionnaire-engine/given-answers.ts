@@ -40,6 +40,11 @@ export class GivenAnswer<Given extends Answer = Answer> {
     return this.value === option;
   }
 
+  /** La réponse n'est pas cette option. Sans réponse : oui. */
+  isNot(option: Choice<Given>): boolean {
+    return !this.is(option);
+  }
+
   /** La réponse est l'une de ces options. Sans réponse : non. */
   isOneOf(...options: readonly Choice<Given>[]): boolean {
     return options.some((option) => this.is(option));

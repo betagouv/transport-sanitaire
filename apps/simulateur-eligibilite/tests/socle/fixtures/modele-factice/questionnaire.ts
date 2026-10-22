@@ -38,7 +38,7 @@ export const PARTS: readonly QuestionnairePart<Questions, undefined>[] = [
             label: "Avec quoi ?",
             askedIf: (answers) => {
               const boisson = answers.question("boisson");
-              return boisson.hasAnswer() && !boisson.is("rien");
+              return boisson.hasAnswer() && boisson.isNot("rien");
             },
             dependsOn: ["boisson"],
             options: [

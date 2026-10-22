@@ -62,7 +62,7 @@ const EXONERATIONS: Page = {
       exclusiveOption: {
         value: "aucun",
         label: "Aucun",
-        offeredIf: (answers) => !answers.question("hospitalise").is("oui"),
+        offeredIf: (answers) => answers.question("hospitalise").isNot("oui"),
       },
     },
   ],

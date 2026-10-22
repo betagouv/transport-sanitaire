@@ -30,6 +30,8 @@ describe("une réponse donnée", () => {
     expect(boisson.is("the")).toBe(true);
     expect(boisson.is("cafe")).toBe(false);
     expect(boisson.isOneOf("cafe", "the")).toBe(true);
+    expect(boisson.isNot("cafe")).toBe(true);
+    expect(boisson.isNot("the")).toBe(false);
   });
 
   it("dit ses cases cochées", () => {
@@ -44,6 +46,9 @@ describe("une réponse donnée", () => {
     const quantite = donnees.question("quantite");
     expect(quantite.hasAnswer()).toBe(false);
     expect(quantite.value).toBeUndefined();
+    expect(
+      new GivenAnswers<Questions>({}).question("boisson").isNot("the"),
+    ).toBe(true);
     expect(new GivenAnswers<Questions>({}).question("boisson").is("the")).toBe(
       false,
     );
