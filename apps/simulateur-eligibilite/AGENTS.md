@@ -16,12 +16,14 @@ décisions dans `docs/knowledge/adr/journal-des-decisions-v10.md`. Il n'y a enco
 ni page de résultat métier, ni CERFA téléchargeable. Le simulateur
 s'ouvre sur le **modèle de l'éditeur** (`front/models/eligibilite/`, D-119). Il
 s'intègre étape par étape, sur la v10.1.3 : ses règles, ses faits, ses cibles et son
-oracle sont là, son questionnaire va jusqu'à la fin de P2 (la page de branche). R2 est posée pour les dix issues : les cinq issues sans fiche patient
+oracle sont là, son questionnaire va jusqu'à P3, le complément du cerfa, qui
+s'ouvre après le verrou (`p3/partie-3.ts`). R2 est posée pour les dix issues : les cinq issues sans fiche patient
 (caisse, établissement, permission à la charge du patient, convocation, transport
 à l'étranger), la fiche négative, et les fiches positives de la prescription
 médicale de transport, du S3141 et des deux demandes d'accord préalable. Les
 boutons de chaque issue sont posés (`r2/boutons-du-resultat.ts`) ; « Compléter »
-attend P3, qui n'a pas encore de page.
+ouvre P3, dont le résultat (R3) n'a pas encore de PDF (#157) : en attendant, il
+récapitule les réponses de P3 (`r3/recapitulatif-du-complement.ts`).
 Le [README](README.md) § « Entre deux modèles » dit ce qui est parti et ce qui reste.
 
 Le front a deux dossiers. `front/socle/` porte ce qui ne dépend d'aucune version
@@ -32,10 +34,9 @@ cours d'intégration.
 
 Le modèle de l'éditeur se range par partie du parcours : `p1/` (le mode),
 `p2/` (l'éligibilité), `r2/` (le résultat, avec un dossier par famille
-d'issues). Sa racine les assemble. Une partie ne lit pas celle qui la suit, et
+d'issues), `p3/` (le complément du cerfa), `r3/` (son résultat). Sa racine les assemble. Une partie ne lit pas celle qui la suit, et
 les familles de R2 ne s'importent pas entre elles :
-`tests/model/eligibilite/domaines.test.ts` le garde. P3 et R3 auront leur
-dossier.
+`tests/model/eligibilite/domaines.test.ts` le garde.
 
 Le modèle de démonstration est pérenne (D-82). **Chaque capacité du socle y a
 sa page**, pour la valider à l'écran sans dépendre du modèle de l'éditeur.

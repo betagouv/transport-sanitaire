@@ -4,12 +4,28 @@
 // l'état qu'un utilisateur aurait laissé, « Précédent » et verrou compris.
 
 import { type Model, type Preconisation, preconisationOf } from "../model";
+import { validatedQuestions } from "../questionnaire-engine/asked-questions";
 import { type Answers, pagesOf } from "../questionnaire-engine/question";
 import type { QuestionnaireState } from "../questionnaire-engine/questionnaire";
 import { stateAfterAnswers } from "../questionnaire-engine/questionnaire";
 
 /** Ce que le verrou fige : les réponses d'avant, et leur préconisation. */
 export type Locked = { answers: Answers; preconisation: Preconisation };
+
+/**
+ * Verrouille ces réponses : n'en garde que celles des questions validées, et
+ * leur préconisation. Une réponse qu'un retour en arrière a laissée sans objet
+ * ne passe pas le verrou : rien de ce qui suit ne la lit.
+ */
+export function lock(model: Model, answers: Answers): Locked {
+  const pages = pagesOf(model.transportAndEligibility.parts);
+  const acquired = Object.fromEntries(
+    Object.entries(validatedQuestions(pages, answers)).flatMap(([id, seen]) =>
+      seen?.answer === undefined ? [] : [[id, seen.answer]],
+    ),
+  );
+  return { answers: acquired, preconisation: preconisationOf(model, acquired) };
+}
 
 // `previousState` est le questionnaire derrière un résultat : « Précédent » le
 // rouvre. Après le verrou, il n'y a plus rien à rouvrir avant lui.
@@ -54,10 +70,7 @@ function screenAfterLock(model: Model, answers: Answers): Screen | undefined {
   const before = Object.fromEntries(
     Object.entries(answers).filter(([id]) => !after.includes(id)),
   );
-  const locked = {
-    answers: before,
-    preconisation: preconisationOf(model, before),
-  };
+  const locked = lock(model, before);
   const { cibles } = locked.preconisation;
   if (form(cibles) === null) return undefined;
   const { complete, ...state } = stateAfterAnswers(part.pages, answers, cibles);

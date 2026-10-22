@@ -8,7 +8,6 @@ import { type ComponentType, useEffect, useState } from "react";
 import {
   type FirstResult,
   type Model,
-  type Preconisation,
   preconisationOf,
   readingOf,
 } from "../model";
@@ -19,7 +18,7 @@ import type { QuestionnaireState } from "../questionnaire-engine/questionnaire";
 import { Stepper } from "../questionnaire-engine/Stepper";
 import { PrimaryButton, SecondaryButton, traceOf } from "./Resultats";
 import { SheetViewer } from "./SheetViewer";
-import type { Locked } from "./start";
+import { type Locked, lock } from "./start";
 import "./first-resultat.css";
 
 type Props = {
@@ -42,7 +41,7 @@ export function FirstResultat({ model, state, DebugTrace, ...on }: Props) {
   const { parts, title } = model.transportAndEligibility;
   const startLabel = startLabelOf(model, preconisation.cibles);
   const trace = traceOf("résultat", pagesOf(parts), answers, preconisation);
-  const buttons = { startLabel, ...actionsOf(state, preconisation, on) };
+  const buttons = { startLabel, ...actionsOf(model, state, on) };
   return (
     <>
       <div className="fr-no-print">
@@ -110,16 +109,15 @@ type Placement = "below" | "above";
 type On = Pick<Props, "onReopen" | "onLock" | "onRestart">;
 
 // Ce que font les boutons : rouvrir ce questionnaire, verrouiller ses réponses
-// et sa préconisation, ou recommencer.
+// (`lock`), ou recommencer.
 function actionsOf(
+  model: Model,
   state: QuestionnaireState,
-  preconisation: Preconisation,
   on: On,
 ): Omit<Buttons, "startLabel"> {
-  const { answers } = state;
   return {
     onReopen: () => on.onReopen(state),
-    onLock: () => on.onLock({ answers, preconisation }),
+    onLock: () => on.onLock(lock(model, state.answers)),
     onRestart: on.onRestart,
   };
 }

@@ -9,6 +9,7 @@
 import { OPTIONS_DE_LA_BRANCHE } from "./options-de-la-branche";
 import { OPTIONS_DE_LA_CONVOCATION } from "./options-de-la-convocation";
 import { OPTIONS_DE_LA_PERMISSION } from "./options-de-la-permission";
+import { OPTIONS_DU_COMPLEMENT } from "./options-du-complement";
 
 /** Les options de chaque question à choix : leur slug, et leur libellé. */
 export const OPTIONS = {
@@ -230,6 +231,7 @@ export const OPTIONS = {
   ...OPTIONS_DE_LA_PERMISSION,
   ...OPTIONS_DE_LA_CONVOCATION,
   ...OPTIONS_DE_LA_BRANCHE,
+  ...OPTIONS_DU_COMPLEMENT,
 } as const;
 
 type Option<Id extends keyof typeof OPTIONS> = keyof (typeof OPTIONS)[Id];
@@ -277,4 +279,9 @@ export type Questions = {
   "Q2.14.eloignement": readonly Option<"Q2.14.eloignement">[];
   "Q2.14.motif": readonly Option<"Q2.14.motif">[];
   "Q2.12": Option<"Q2.12">;
+  /** Les transports de ce document (PMT, DAP), puis leur sens. */
+  "Q3.1.1": number;
+  "Q3.1.2": Option<"Q3.1.2">;
+  /** Les trajets par mois du S3141. */
+  "Q3.1.3": number;
 };
