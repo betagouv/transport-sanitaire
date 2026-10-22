@@ -1,8 +1,9 @@
 // P1 : l'autonomie et l'état de santé du patient, ce qui fait le mode de
 // transport. Les options et leurs libellés viennent des déclarations.
 
-import { optionsFrom, type QuestionnairePart } from "../../../socle";
-import { OPTIONS, type Questions } from "../declarations/questions";
+import type { QuestionnairePart } from "../../../socle";
+import type { Questions } from "../declarations/questions";
+import { question } from "../question";
 import { modeDe } from "./mode-de-transport";
 import { sansProfessionnel } from "./reponses";
 
@@ -21,7 +22,7 @@ const CRITERES_D_AMBULANCE = [
 
 // L'ordre d'écran de Q1.3, que son contrat fixe : le mineur suit l'ALD. Les
 // slugs gardent le numéro du catalogue, et « Aucune » ferme la liste.
-const ORDRE_DES_CAS: readonly string[] = [
+const ORDRE_DES_CAS = [
   "1_FORTE_CORPULENCE",
   "2_ALD",
   "8_MINEUR_SOINS_CONTINUS",
@@ -36,52 +37,34 @@ const ORDRE_DES_CAS: readonly string[] = [
 const PAGE_DES_CAS_PARTICULIERS: Partie<undefined>["pages"][number] = {
   id: "P1/3",
   questions: [
-    {
-      id: "Q1.3",
-      kind: "multiple choice",
+    question.multipleChoice("Q1.3", {
       label:
         "Avant d’établir le mode de transport adéquat, sélectionnez tous les éventuels cas particuliers concernant le patient.",
-      // Les types se donnent ici : `.filter` prive l'appel du contexte qui
-      // les ferait inférer.
-      options: optionsFrom<Questions["Q1.3"][number], Questions, undefined>(
-        OPTIONS["Q1.3"],
-        {
-          // La corpulence ne compte qu'avec un motif d'ambulance. Retiré en
-          // Q1.2, il emporte la réponse.
-          "1_FORTE_CORPULENCE": {
-            offeredIf: (_answers, _cibles, validated) =>
-              CRITERES_D_AMBULANCE.some((critere) =>
-                validated.question("Q1.2").checked(critere),
-              ),
-          },
-          // Le partage ne concerne que le transport assis professionnel et le
-          // TPMR. Ce sont les règles qui disent le mode.
-          "6_PARTAGE_INCOMPATIBLE": {
-            offeredIf: (_answers, _cibles, validated) => {
-              const mode = modeDe(validated);
-              return mode === "TAP" || mode === "TPMR";
-            },
+      order: ORDRE_DES_CAS,
+      exclusiveOption: "7_AUCUNE",
+      options: {
+        // La corpulence ne compte qu'avec un motif d'ambulance. Retiré en
+        // Q1.2, il emporte la réponse.
+        "1_FORTE_CORPULENCE": {
+          offeredIf: ({ validated }) =>
+            CRITERES_D_AMBULANCE.some((critere) =>
+              validated.question("Q1.2").checked(critere),
+            ),
+        },
+        // Le partage ne concerne que le transport assis professionnel et le
+        // TPMR. Ce sont les règles qui disent le mode.
+        "6_PARTAGE_INCOMPATIBLE": {
+          offeredIf: ({ validated }) => {
+            const mode = modeDe(validated);
+            return mode === "TAP" || mode === "TPMR";
           },
         },
-      )
-        .filter((option) => option.value !== "7_AUCUNE")
-        .sort(
-          (a, b) =>
-            ORDRE_DES_CAS.indexOf(a.value) - ORDRE_DES_CAS.indexOf(b.value),
-        ),
-      exclusiveOption: {
-        value: "7_AUCUNE",
-        label: OPTIONS["Q1.3"]["7_AUCUNE"],
       },
-    },
-    {
-      id: "Q1.3.a",
-      kind: "single choice",
+    }),
+    question.singleChoice("Q1.3.a", {
       label: "La séance prévue est-elle une séance d’hémodialyse ?",
-      askedIf: (answers) =>
-        answers.question("Q1.3").checked("5_DIALYSE") ?? false,
-      options: optionsFrom(OPTIONS["Q1.3.a"]),
-    },
+      askedIf: ({ answers }) => answers.question("Q1.3").checked("5_DIALYSE"),
+    }),
   ],
 };
 
@@ -93,25 +76,19 @@ export const P1: Partie<undefined> = {
     {
       id: "P1/1",
       questions: [
-        {
-          id: "Q1.1",
-          kind: "single choice",
+        question.singleChoice("Q1.1", {
           label: "Concernant son déplacement, le patient :",
-          options: optionsFrom(OPTIONS["Q1.1"]),
-        },
+        }),
       ],
     },
     {
       id: "P1/2",
       questions: [
-        {
-          id: "Q1.2",
-          kind: "multiple choice",
+        question.multipleChoice("Q1.2", {
           label:
             "Quelles aides ou conditions particulières sont nécessaires pendant le transport ?",
-          askedIf: (answers) => answers.question("Q1.1").is(PROFESSIONNEL),
+          askedIf: ({ answers }) => answers.question("Q1.1").is(PROFESSIONNEL),
           dependsOn: ["Q1.1"],
-          options: optionsFrom(OPTIONS["Q1.2"]),
           incompatibleOptions: [
             {
               values: ["6_FAUTEUIL_SANS_TRANSFERT", "7_ALLONGE"],
@@ -124,28 +101,25 @@ export const P1: Partie<undefined> = {
                 "L’asepsie va au-delà des précautions d’hygiène : un seul de ces deux niveaux est retenu pour un même trajet.",
             },
           ],
-        },
+        }),
       ],
     },
     PAGE_DES_CAS_PARTICULIERS,
     {
       id: "P1/4",
       questions: [
-        {
-          id: "Q1.4",
-          kind: "single choice",
+        question.singleChoice("Q1.4", {
           label:
             "Le patient pouvant réaliser le trajet sans intervention d’un professionnel, merci de préciser sa préférence en matière de transport.",
           // Le catalogue demande que le libellé précise « en toute autonomie »
           // ou « avec l’aide d’un proche », sans donner la phrase.
-          labelFrom: (answers) =>
+          labelFrom: ({ answers }) =>
             answers.question("Q1.1").is("2_AVEC_UN_PROCHE")
               ? "Le patient pouvant réaliser le trajet avec l’aide d’un proche, sans intervention d’un professionnel, merci de préciser sa préférence en matière de transport."
               : "Le patient pouvant réaliser le trajet en toute autonomie, sans intervention d’un professionnel, merci de préciser sa préférence en matière de transport.",
-          askedIf: (answers) => sansProfessionnel(answers.question("Q1.1")),
+          askedIf: ({ answers }) => sansProfessionnel(answers.question("Q1.1")),
           dependsOn: ["Q1.1"],
-          options: optionsFrom(OPTIONS["Q1.4"]),
-        },
+        }),
       ],
     },
   ],

@@ -5,8 +5,9 @@
 // `pages-de-la-convocation.ts`, puis la branche (Q2.12 à Q2.14), dans
 // `pages-de-la-branche.ts`. Q2.4, Q2.9 et Q2.11 n'ont aucun écran.
 
-import { optionsFrom, type QuestionnairePart } from "../../../socle";
+import type { QuestionnairePart } from "../../../socle";
 import { OPTIONS, type Questions } from "../declarations/questions";
+import { type Context, question } from "../question";
 import { contextesAProposer, sejourAProposer } from "./contextes";
 import { PAGE_DE_LA_BRANCHE } from "./pages-de-la-branche";
 import { PAGE_DE_LA_CONVOCATION } from "./pages-de-la-convocation";
@@ -17,9 +18,10 @@ import {
 import { PAGE_DES_EXCEPTIONS, PAGE_DU_TRANSFERT } from "./pages-du-transfert";
 import { motifDeP1, plusieursSeances } from "./prestation";
 import { dansLeCircuit, indicationAPoser } from "./retour-penitentiaire";
-import { faitsDuTrajet, urgenceAAfficher } from "./trajet";
+import { urgenceAAfficher } from "./trajet";
 
 type Page = QuestionnairePart<Questions, undefined>["pages"][number];
+type Contexte = Questions["Q2.2.1.b"][number];
 
 // Q2.1 et ses sous-questions f, g et h, sur une seule page. Q2.1 se saute quand
 // P1 prouve déjà un motif de transport ; Q2.1.f se pose quand même, si
@@ -28,60 +30,48 @@ type Page = QuestionnairePart<Questions, undefined>["pages"][number];
 const PAGE_DE_LA_PRESTATION: Page = {
   id: "P2/prestation",
   questions: [
-    {
-      id: "Q2.1",
-      kind: "single choice",
+    question.singleChoice("Q2.1", {
       label:
         "Quelle situation médicale ou quel événement motive ce déplacement ?",
-      askedIf: (_answers, _cibles, validated) => !motifDeP1(validated),
-      options: optionsFrom<Questions["Q2.1"], Questions, undefined>(
-        OPTIONS["Q2.1"],
-        {
-          // Une séance se coche en Q1.3 : elle ne se vote pas deux fois.
-          "6_SEANCE": {
-            offeredIf: (_answers, _cibles, validated) =>
-              !validated
-                .question("Q1.3")
-                .value?.some((cas) =>
-                  ["3_CHIMIOTHERAPIE", "4_RADIOTHERAPIE", "5_DIALYSE"].includes(
-                    cas,
-                  ),
+      askedIf: ({ validated }) => !motifDeP1(validated),
+      options: {
+        // Une séance se coche en Q1.3 : elle ne se vote pas deux fois.
+        "6_SEANCE": {
+          offeredIf: ({ validated }) =>
+            !validated
+              .question("Q1.3")
+              .value?.some((cas) =>
+                ["3_CHIMIOTHERAPIE", "4_RADIOTHERAPIE", "5_DIALYSE"].includes(
+                  cas,
                 ),
-          },
+              ),
         },
-      ),
-    },
-    {
-      id: "Q2.1.f",
-      kind: "single choice",
+      },
+    }),
+    question.singleChoice("Q2.1.f", {
       label:
         "Les séances sélectionnées motivent-elles le même déplacement vers le même lieu de soins ?",
-      askedIf: (_answers, _cibles, validated) => plusieursSeances(validated),
-      options: optionsFrom(OPTIONS["Q2.1.f"], {
+      askedIf: ({ validated }) => plusieursSeances(validated),
+      options: {
         "2_NON": {
           blocks:
             "Une simulation porte sur un seul déplacement. Corrigez les séances en Q1.3, puis faites une simulation par déplacement.",
         },
-      }),
-    },
-    {
-      id: "Q2.1.g",
-      kind: "single choice",
+      },
+    }),
+    question.singleChoice("Q2.1.g", {
       label:
         "S’agit-il d’une entrée dans un établissement de santé, d’une sortie de cet établissement ou d’une admission en HAD (Hospitalisation à Domicile) à domicile ?",
-      askedIf: (answers) => answers.question("Q2.1").is("8_HOSPITALISATION"),
+      askedIf: ({ answers }) =>
+        answers.question("Q2.1").is("8_HOSPITALISATION"),
       dependsOn: ["Q2.1"],
-      options: optionsFrom(OPTIONS["Q2.1.g"]),
-    },
-    {
-      id: "Q2.1.h",
-      kind: "single choice",
+    }),
+    question.singleChoice("Q2.1.h", {
       label:
         "La séance est-elle organisée par le CAMSP (Centre d’Action Médico-Sociale Précoce) ou le CMPP (Centre Médico-Psycho-Pédagogique), dans le parcours de l’enfant ?",
-      askedIf: (answers) => answers.question("Q2.1").is("10_CAMSP"),
+      askedIf: ({ answers }) => answers.question("Q2.1").is("10_CAMSP"),
       dependsOn: ["Q2.1"],
-      options: optionsFrom(OPTIONS["Q2.1.h"]),
-    },
+    }),
   ],
 };
 
@@ -93,60 +83,47 @@ const PAGE_DE_LA_PRESTATION: Page = {
 const PAGE_DES_CONTEXTES: Page = {
   id: "P2/contextes",
   questions: [
-    {
-      id: "Q2.2.1",
-      kind: "multiple choice",
+    question.multipleChoice("Q2.2.1", {
       label:
         "L’une de ces situations correspond-elle aussi au trajet à réaliser ?",
-      options: optionsFrom<Questions["Q2.2.1"][number], Questions, undefined>(
-        OPTIONS["Q2.2.1"],
-        {
-          "1_HOSPITALISATION": {
-            offeredIf: (_answers, _cibles, validated) =>
-              sejourAProposer(validated),
-          },
-          "3_AUTRE_CADRE": {
-            description:
-              "Accident du travail ou maladie professionnelle, convocation ou appareillage, pension militaire, soins ou hébergement dans un dispositif particulier, retour vers un établissement pénitentiaire.",
-            helpFrom: (_answers, _cibles, validated) => ({
-              label: "Voir les situations concernées",
-              items: contextesAProposer(validated).map(
-                (contexte) => OPTIONS["Q2.2.1.b"][contexte],
-              ),
-            }),
-          },
+      exclusiveOption: "4_AUCUNE",
+      options: {
+        "1_HOSPITALISATION": {
+          offeredIf: ({ validated }) => sejourAProposer(validated),
         },
-      ).filter((option) => option.value !== "4_AUCUNE"),
-      exclusiveOption: {
-        value: "4_AUCUNE",
-        label: OPTIONS["Q2.2.1"]["4_AUCUNE"],
+        "3_AUTRE_CADRE": {
+          description:
+            "Accident du travail ou maladie professionnelle, convocation ou appareillage, pension militaire, soins ou hébergement dans un dispositif particulier, retour vers un établissement pénitentiaire.",
+          helpFrom: ({ validated }) => ({
+            label: "Voir les situations concernées",
+            items: contextesAProposer(validated).map(
+              (contexte) => OPTIONS["Q2.2.1.b"][contexte],
+            ),
+          }),
+        },
       },
-    },
-    {
-      id: "Q2.2.1.a",
-      kind: "single choice",
+    }),
+    question.singleChoice("Q2.2.1.a", {
       label:
         "Ce trajet correspond-il à une permission temporaire de sortie de l’hôpital ?",
-      askedIf: (answers) =>
-        answers.question("Q2.2.1").checked("1_HOSPITALISATION") ?? false,
-      options: optionsFrom(OPTIONS["Q2.2.1.a"]),
-    },
-    {
-      id: "Q2.2.1.b",
-      kind: "multiple choice",
+      askedIf: ({ answers }) =>
+        answers.question("Q2.2.1").checked("1_HOSPITALISATION"),
+    }),
+    question.multipleChoice("Q2.2.1.b", {
       label:
         "Laquelle ou lesquelles de ces situations concernent aussi ce trajet ?",
-      askedIf: (answers) =>
-        answers.question("Q2.2.1").checked("3_AUTRE_CADRE") ?? false,
-      options: optionsFrom<Questions["Q2.2.1.b"][number], Questions, undefined>(
-        OPTIONS["Q2.2.1.b"],
-      ).map((option) => ({
-        ...option,
-        offeredIf: (_answers, _cibles, validated) =>
-          contextesAProposer(validated).some(
-            (contexte) => contexte === option.value,
-          ),
-      })),
+      askedIf: ({ answers }) =>
+        answers.question("Q2.2.1").checked("3_AUTRE_CADRE"),
+      // Chaque situation ne se propose que si Q2.1 ne l'indique pas déjà.
+      options: Object.fromEntries(
+        (Object.keys(OPTIONS["Q2.2.1.b"]) as Contexte[]).map((contexte) => [
+          contexte,
+          {
+            offeredIf: ({ validated }: Context) =>
+              contextesAProposer(validated).includes(contexte),
+          },
+        ]),
+      ),
       incompatibleOptions: [
         {
           values: ["4_MATERNITE_ELOIGNEE", "5_HTNM"],
@@ -159,26 +136,19 @@ const PAGE_DES_CONTEXTES: Page = {
             "Le CAMSP (Centre d’Action Médico-Sociale Précoce) ou le CMPP (Centre Médico-Psycho-Pédagogique) accueille un enfant, le SAMSAH (Service d’Accompagnement Médico-Social pour Adultes Handicapés) un adulte : un seul des deux pour un même trajet.",
         },
       ],
-    },
-    {
-      id: "Q2.2.1.indication",
-      kind: "single choice",
+    }),
+    question.singleChoice("Q2.2.1.indication", {
       label:
         "Ce retour nécessite-t-il un transport pour raison médicale, indépendamment des contraintes d’escorte pénitentiaire ?",
-      askedIf: (answers, _cibles, validated) =>
-        indicationAPoser(answers, validated),
+      askedIf: ({ answers, validated }) => indicationAPoser(answers, validated),
       // Une modification clinique invalide la qualification (point 33).
       dependsOn: ["Q1.1", "Q1.2", "Q1.3"],
-      options: optionsFrom(OPTIONS["Q2.2.1.indication"]),
-    },
-    {
-      id: "Q2.2.5",
-      kind: "multiple choice",
+    }),
+    question.multipleChoice("Q2.2.5", {
       label: "Quel lieu lié à ce transport se trouve à l’étranger ?",
-      askedIf: (answers) =>
-        answers.question("Q2.2.1").checked("2_ETRANGER") ?? false,
-      options: optionsFrom(OPTIONS["Q2.2.5"]),
-    },
+      askedIf: ({ answers }) =>
+        answers.question("Q2.2.1").checked("2_ETRANGER"),
+    }),
   ],
 };
 
@@ -189,38 +159,26 @@ const PAGE_DES_CONTEXTES: Page = {
 const PAGE_DU_TRAJET: Page = {
   id: "P2/trajet",
   questions: [
-    {
-      id: "Q2.3.1",
-      kind: "single choice",
+    question.singleChoice("Q2.3.1", {
       label:
         "Quelle distance parcourra le patient pour le trajet dans le sens évalué ?",
-      options: optionsFrom(OPTIONS["Q2.3.1"]),
-    },
-    {
-      id: "Q2.3.2",
-      kind: "checkbox",
+    }),
+    question.checkbox("Q2.3.2", {
       label:
         "Une partie du trajet se fera en avion ou en bateau de ligne régulière.",
       box: "Oui, une partie du trajet se fera en avion ou en bateau de ligne régulière.",
-    },
-    {
-      id: "Q2.3.3",
-      kind: "single choice",
+    }),
+    question.singleChoice("Q2.3.3", {
       label:
         "Dans les deux mois à compter du premier transport, au moins quatre transports de plus de 50 km chacun sont-ils prescrits au titre du même traitement ?",
       hint: "Un aller-retour compte pour deux transports.",
-      askedIf: (_answers, _cibles, validated) =>
-        faitsDuTrajet(validated).fait_distance_plus_50.value === true,
-      options: optionsFrom(OPTIONS["Q2.3.3"]),
-    },
-    {
-      id: "Q2.3.4",
-      kind: "single choice",
+      askedIf: ({ faits }) => faits.fait_distance_plus_50.value === true,
+    }),
+    question.singleChoice("Q2.3.4", {
       label:
         "Le médecin prescripteur atteste-t-il que ce transport est urgent ?",
-      askedIf: (_answers, _cibles, validated) => urgenceAAfficher(validated),
-      options: optionsFrom(OPTIONS["Q2.3.4"]),
-    },
+      askedIf: ({ validated }) => urgenceAAfficher(validated),
+    }),
   ],
 };
 

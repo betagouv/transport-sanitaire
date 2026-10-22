@@ -38,7 +38,7 @@ export function departAPoser(validated: Valides): boolean {
 export function eloignementAPoser(validated: Valides): boolean {
   const signalee =
     validated.question("Q2.1").is("13_MATERNITE") ||
-    (validated.question("Q2.2.1.b").checked("4_MATERNITE_ELOIGNEE") ?? false);
+    validated.question("Q2.2.1.b").checked("4_MATERNITE_ELOIGNEE");
   return signalee && brancheDecisive(faitsAvantLaBranche(validated));
 }
 

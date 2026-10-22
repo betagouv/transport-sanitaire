@@ -1,11 +1,12 @@
 // Le questionnaire du modèle : ses parties, dans l'ordre du catalogue de
 // l'éditeur. Les options et leurs libellés viennent des déclarations.
 
-import { optionsFrom, type QuestionnairePart } from "../../socle";
+import type { QuestionnairePart } from "../../socle";
 import type { Cibles } from "./declarations/cibles";
-import { OPTIONS, type Questions } from "./declarations/questions";
+import type { Questions } from "./declarations/questions";
 import { P1 } from "./p1/partie-1";
 import { P2 } from "./p2/partie-2";
+import { question } from "./question";
 
 type Partie<Cibles> = QuestionnairePart<Questions, Cibles>;
 
@@ -18,15 +19,13 @@ export const PARTS: readonly Partie<undefined>[] = [
       {
         id: "P0/1",
         questions: [
-          {
-            id: "Q0.1",
-            kind: "single choice",
+          question.singleChoice("Q0.1", {
             label: "Quel est votre besoin ?",
-            options: optionsFrom(OPTIONS["Q0.1"], {
+            options: {
               "1_VERIFIER": { description: "Environ 3 minutes." },
               "2_VERIFIER_ET_PRESCRIRE": { description: "Environ 10 minutes." },
-            }),
-          },
+            },
+          }),
         ],
       },
     ],

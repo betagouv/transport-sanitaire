@@ -13,14 +13,6 @@ import type { Questions } from "../declarations/questions";
 
 type Valides = ValidatedAnswers<Questions>;
 
-/** La permission est-elle acquise, par Q2.1 ou par Q2.2.1.a ? */
-export function permissionAcquise(validated: Valides): boolean {
-  return (
-    validated.question("Q2.1").is("11_PERMISSION") ||
-    validated.question("Q2.2.1.a").is("1_OUI")
-  );
-}
-
 /** Q2.7 dit-elle un patient de moins de 20 ans ? Q2.8 se pose alors. */
 export function mineurDeVingtAns(validated: Valides): boolean {
   return validated

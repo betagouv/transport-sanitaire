@@ -28,8 +28,8 @@ export type {
   GivenAnswer,
   GivenAnswers,
 } from "./questionnaire-engine/given-answers";
-export { optionsFrom } from "./questionnaire-engine/option";
 export type { QuestionnairePart } from "./questionnaire-engine/question";
+export type { QuestionContext } from "./questionnaire-engine/question-context";
 export { questionsOf } from "./questionnaire-engine/question-factory";
 export type { ValidatedAnswers } from "./questionnaire-engine/validated-answers";
 export { Disclosure } from "./ui/Disclosure";

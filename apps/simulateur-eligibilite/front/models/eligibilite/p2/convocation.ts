@@ -20,7 +20,7 @@ type Valides = ValidatedAnswers<Questions>;
 export function convocationAnnoncee(validated: Valides): boolean {
   return (
     validated.question("Q2.1").is("12_CONVOCATION") ||
-    (validated.question("Q2.2.1.b").checked("13_CONVOCATION") ?? false)
+    validated.question("Q2.2.1.b").checked("13_CONVOCATION")
   );
 }
 

@@ -90,7 +90,7 @@ export function faitsDuTransfert(validated: Valides): Partial<Faits> {
 
 /** Le séjour est-il coché en Q2.2.1 (« déjà hospitalisé ») ? */
 function sejourCoche(validated: Valides): boolean {
-  return validated.question("Q2.2.1").checked("1_HOSPITALISATION") ?? false;
+  return validated.question("Q2.2.1").checked("1_HOSPITALISATION");
 }
 
 // Le fait de chaque exception. L'option 3 n'en a pas : elle établit le

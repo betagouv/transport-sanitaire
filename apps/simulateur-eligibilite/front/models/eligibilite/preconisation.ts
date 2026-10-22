@@ -13,13 +13,12 @@ import {
   type GivenAnswers,
   type ValidatedAnswers,
 } from "../../socle";
-import type { Faits } from "./declarations/faits";
+import { AUCUN_FAIT, type Faits } from "./declarations/faits";
 import type { Questions } from "./declarations/questions";
 import { P1 } from "./p1/partie-1";
-import { faitsDeLaBranche } from "./p2/branche";
-import { faitsAvantLaBranche } from "./p2/faits-avant-la-branche";
 import { P2 } from "./p2/partie-2";
 import { horsCircuit } from "./p2/retour-penitentiaire";
+import { faitsDesReponses } from "./question";
 
 export function faits(
   answers: GivenAnswers<Questions>,
@@ -27,19 +26,16 @@ export function faits(
 ): Faits {
   const complete = areAnswered(P1.pages, answers);
   return {
-    ...faitsAvantLaBranche(validated),
-    // Après les contextes : la branche l'emporte sur le « À qualifier » de Q2.2.1.b.
-    ...faitsDeLaBranche(validated),
+    ...faitsDesReponses(validated),
     fait_p1_complete: complete
       ? Fait.oui("Toutes les questions de P1 ont leur réponse.")
       : Fait.non("Une question de P1 attend sa réponse."),
     // Jamais « non » : une P2 incomplète ne dit pas que la décision est fausse.
     // Hors du circuit de prescription, les règles ne concluent pas (point 34).
-    ...(!horsCircuit(validated) &&
-      areAnswered([...P1.pages, ...P2.pages], answers) && {
-        fait_p2_complete: Fait.oui(
-          "Toutes les questions de P1 et de P2 ont leur réponse.",
-        ),
-      }),
+    fait_p2_complete:
+      !horsCircuit(validated) &&
+      areAnswered([...P1.pages, ...P2.pages], answers)
+        ? Fait.oui("Toutes les questions de P1 et de P2 ont leur réponse.")
+        : AUCUN_FAIT.fait_p2_complete,
   };
 }
