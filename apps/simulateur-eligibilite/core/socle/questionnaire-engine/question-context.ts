@@ -2,7 +2,8 @@
 // validées, les cibles et les faits. Toutes ses conditions et tous ses libellés
 // du moment le reçoivent, et rien d'autre.
 //
-// Les faits ne se calculent qu'à la lecture, une fois par contexte.
+// Les faits ne se calculent qu'à la lecture, une fois par contexte. Le
+// catalogue des faits arrête un fait qui se relit par une garde.
 
 import type { GivenAnswers } from "./given-answers.ts";
 import type { AnyCibles, AnyQuestions } from "./question.ts";
@@ -20,7 +21,7 @@ export type QuestionContext<
   readonly cibles: Cibles;
   /**
    * Les faits des questions validées jusqu'ici. Une garde les lit quand un
-   * fait dit déjà ce qu'elle teste. Un fait ne lit jamais une garde.
+   * fait dit déjà ce qu'elle teste.
    */
   readonly faits: Faits;
 };
@@ -65,10 +66,6 @@ export function contextOf<Questions extends AnyQuestions, Cibles, Faits>(
 
 // ---- implémentation ----
 
-// Un calcul des faits en cours. Un calcul qui en relance un autre boucle : un
-// fait a lu une garde qui lit les faits. Il s'arrête net.
-let computing = false;
-
 function computed<Questions extends AnyQuestions, Faits>(
   faitsOf: FaitsOf<Questions, Faits> | undefined,
   { answers, validated }: Omit<QuestionContext<Questions>, "faits" | "cibles">,
@@ -77,14 +74,5 @@ function computed<Questions extends AnyQuestions, Faits>(
     throw new Error(
       "Cette question ne connaît pas ses faits : déclare-la par les constructeurs de son modèle.",
     );
-  if (computing)
-    throw new Error(
-      "Les faits se calculent déjà : un fait ne lit jamais une garde qui lit les faits.",
-    );
-  computing = true;
-  try {
-    return faitsOf(answers, validated);
-  } finally {
-    computing = false;
-  }
+  return faitsOf(answers, validated);
 }

@@ -6,7 +6,12 @@
 // L'écran a son propre point d'entrée, `front/socle/index.ts`.
 
 export { Fait } from "./decision-engine/fait.ts";
-export { faitsOf } from "./decision-engine/fait-builder.ts";
+export { citant, regles } from "./decision-engine/fait-builder.ts";
+export {
+  FaitCatalogue,
+  type FaitContext,
+  type FaitDeclarations,
+} from "./decision-engine/fait-catalogue.ts";
 export type { CoreModel } from "./model.ts";
 export type { Address } from "./questionnaire-engine/address.ts";
 export type { AskedQuestion } from "./questionnaire-engine/asked-question.ts";

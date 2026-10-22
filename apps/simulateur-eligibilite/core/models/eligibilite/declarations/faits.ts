@@ -4,7 +4,8 @@
 // La liste suit l'ordre des règles. `tests/model/eligibilite/declarations.test.ts`
 // la compare à `rules/regles.publicodes`.
 
-import { Fait } from "../../../socle/index.ts";
+import type { Fait, FaitDeclarations } from "../../../socle/index.ts";
+import type { Questions } from "./questions.ts";
 
 /** Le nom de chaque fait que les règles reçoivent. */
 export const FAITS = [
@@ -76,10 +77,8 @@ export const FAITS = [
  */
 export type Faits = Readonly<Record<(typeof FAITS)[number], Fait>>;
 
-/** Aucun fait n'est établi : chacun est absent, faute d'une question qui le donne. */
-export const AUCUN_FAIT = Object.fromEntries(
-  FAITS.map((fait) => [
-    fait,
-    Fait.inconnu("Aucune question posée ne l'établit encore."),
-  ]),
-) as Faits;
+/** Des déclarations de faits, par thème : `catalogue-des-faits.ts` les réunit. */
+export type DeclarationsDeFaits = FaitDeclarations<Questions, Faits>;
+
+/** La provenance d'un fait qu'aucune question posée n'établit encore. */
+export const PAS_ENCORE_ETABLI = "Aucune question posée ne l'établit encore.";

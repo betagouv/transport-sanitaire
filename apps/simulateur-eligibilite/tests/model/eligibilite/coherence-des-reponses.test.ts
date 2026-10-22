@@ -9,16 +9,18 @@
 
 import { describe, expect, it } from "vitest";
 import { model } from "../../../core/models/eligibilite";
+import { CATALOGUE_DES_FAITS } from "../../../core/models/eligibilite/catalogue-des-faits";
 import type { Faits } from "../../../core/models/eligibilite/declarations/faits";
 import {
   OPTIONS,
   type Questions,
 } from "../../../core/models/eligibilite/declarations/questions";
 import {
-  faitsDuMode,
+  FAITS_DU_MODE,
   modeDe,
 } from "../../../core/models/eligibilite/p1/mode-de-transport";
 import { preconisationOf } from "../../../core/socle/model";
+import { GivenAnswers } from "../../../core/socle/questionnaire-engine/given-answers";
 import {
   type Answers,
   pagesOf,
@@ -84,8 +86,14 @@ describe("les 2 048 combinaisons de Q1.2", () => {
         "Q1.2": { answer: criteres },
         "Q1.3": { answer: ["7_AUCUNE"] },
       });
-      const cle = JSON.stringify(faitsDuMode(validated));
-      if (!modes.has(cle)) modes.set(cle, modeDe(validated));
+      const faits = CATALOGUE_DES_FAITS.read(
+        new GivenAnswers<Questions>({}),
+        validated,
+      );
+      const cle = JSON.stringify(
+        Object.keys(FAITS_DU_MODE).map((nom) => faits[nom as keyof Faits]),
+      );
+      if (!modes.has(cle)) modes.set(cle, modeDe(faits));
       return modes.get(cle) !== modeAttendu(criteres);
     });
     expect(ecarts).toEqual([]);

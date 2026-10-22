@@ -12,7 +12,7 @@ import { model } from "../../../core/models/eligibilite";
 import type { Faits } from "../../../core/models/eligibilite/declarations/faits";
 import type { Questions } from "../../../core/models/eligibilite/declarations/questions";
 import { cibles } from "../../../core/models/eligibilite/evaluation-des-regles";
-import type { Fait } from "../../../core/socle";
+import { Fait } from "../../../core/socle";
 import { preconisationOf } from "../../../core/socle/model";
 import type { Answers } from "../../../core/socle/questionnaire-engine/question";
 
@@ -59,12 +59,10 @@ describe("l'exclusion du transport", () => {
   });
 
   it("exclusions-indeterminees : sans constat, aucune issue", () => {
-    expect(issue({ provenance: "Aucun constat." })).toBeUndefined();
+    expect(issue(Fait.inconnu("Aucun constat."))).toBeUndefined();
   });
 
   it("exclusion-positive-sourcee : une exclusion prouvée, ISSUE_NON_ELIGIBLE", () => {
-    expect(issue({ value: true, provenance: "Règle d'exclusion." })).toBe(
-      "ISSUE_NON_ELIGIBLE",
-    );
+    expect(issue(Fait.oui("Règle d'exclusion."))).toBe("ISSUE_NON_ELIGIBLE");
   });
 });

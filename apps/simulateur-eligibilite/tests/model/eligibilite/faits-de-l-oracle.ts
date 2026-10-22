@@ -10,6 +10,7 @@ import {
   type Faits,
 } from "../../../core/models/eligibilite/declarations/faits";
 import { cibles } from "../../../core/models/eligibilite/evaluation-des-regles";
+import { Fait } from "../../../core/socle";
 
 export type Changements = Partial<Record<keyof Faits, boolean | undefined>>;
 export type Issue = NonNullable<Cibles["cible_issue_id"]>;
@@ -24,9 +25,15 @@ export const faitsDe = (valeurs: Changements) =>
   Object.fromEntries(
     Object.entries(valeurs).map(([fait, value]) => [
       fait,
-      { value, provenance: "oracle de l'éditeur" },
+      etabliPar(value, "oracle de l'éditeur"),
     ]),
   ) as Faits;
+
+// Un fait de l'oracle : « oui », « non », ou inconnu pour `undefined`.
+function etabliPar(value: boolean | undefined, provenance: string): Fait {
+  if (value === undefined) return Fait.inconnu(provenance);
+  return value ? Fait.oui(provenance) : Fait.non(provenance);
+}
 
 export const preconiser = (changements: Changements) =>
   cibles(

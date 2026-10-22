@@ -128,10 +128,8 @@ function complements(
     fait_permission_mineur_admissible,
   } = trace.faits;
   const qualifies = {
-    K: fait_convocation.value === true,
-    P:
-      fait_permission.value === true &&
-      fait_permission_mineur_admissible.value === true,
+    K: fait_convocation.isOui(),
+    P: fait_permission.isOui() && fait_permission_mineur_admissible.isOui(),
   };
   return extras
     .filter(({ code }) => qualifies[code as keyof typeof qualifies])

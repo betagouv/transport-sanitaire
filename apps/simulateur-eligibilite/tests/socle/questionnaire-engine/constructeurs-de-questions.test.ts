@@ -201,23 +201,4 @@ describe("une garde qui lit les faits", () => {
       .questionsOn(BOISSON);
     expect(calculs).toBe(0);
   });
-
-  it("arrête net un fait qui la lit à son tour", () => {
-    const boucle = questionsOf<Questions, Faits>({
-      options: OPTIONS,
-      faits: (): Faits => ({
-        chaude:
-          new Questionnaire([seule]).readWith({}).questionsOn(seule).length > 0,
-      }),
-    });
-    const seule = page(
-      "quantite",
-      boucle
-        .number("quantite", "Combien ?")
-        .askedIf(({ faits }) => faits.chaude),
-    );
-    expect(() =>
-      new Questionnaire([seule]).readWith({}).questionsOn(seule),
-    ).toThrow("un fait ne lit jamais une garde qui lit les faits");
-  });
 });

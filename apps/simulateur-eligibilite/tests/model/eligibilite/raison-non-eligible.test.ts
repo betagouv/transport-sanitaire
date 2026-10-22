@@ -5,6 +5,7 @@
 import { describe, expect, it } from "vitest";
 import type { Faits } from "../../../core/models/eligibilite/declarations/faits";
 import { SEEDS } from "../../../core/models/eligibilite/seeds-catalogue";
+import { Fait } from "../../../core/socle";
 import { catalogueResultats } from "../../../front/models/eligibilite/r2/catalogue-resultats";
 import { raisonNonEligible } from "../../../front/models/eligibilite/r2/fiche-negative/raison-non-eligible";
 import type { Precisions } from "../../../front/models/eligibilite/r2/precisions-du-resultat";
@@ -145,8 +146,11 @@ describe("un fait absent n'est jamais « non »", () => {
   });
 
   it("un fondement d'ALD inconnu ne dit pas que le cadre n'est pas qualifiant", () => {
-    const inconnu = { fait_ald_liee: vrai, fait_ald_exonerante_3_ou_4: {} };
-    expect(raisonDe(ALD, inconnu as Partial<Faits>)).toBe("AUCUN_GENERIQUE");
+    const inconnu = {
+      fait_ald_liee: vrai,
+      fait_ald_exonerante_3_ou_4: Fait.inconnu("test"),
+    };
+    expect(raisonDe(ALD, inconnu)).toBe("AUCUN_GENERIQUE");
   });
 
   it("« Je ne peux pas préciser » n'est pas « Non »", () => {

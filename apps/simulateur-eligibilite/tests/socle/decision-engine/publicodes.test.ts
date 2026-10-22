@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import type { Fait } from "../../../core/socle";
+import { Fait } from "../../../core/socle";
 import { publicodesEngine } from "../../../core/socle/decision-engine/publicodes";
 
 // Le moteur de décision, sur des règles écrites ici : il ne connaît celles
@@ -41,20 +41,19 @@ const moteur = publicodesEngine<Faits, Cibles>(REGLES, [
   "cible_table",
 ]);
 
-const etabli = <Value extends boolean | number>(value: Value) => ({
-  value,
-  provenance: "dit par l'hôte",
-});
-const ABSENT = { provenance: "personne ne l'a dit" };
+const etabli = (value: boolean) =>
+  value ? Fait.oui("dit par l'hôte") : Fait.non("dit par l'hôte");
+const invites = (nombre: number) => Fait.valant(nombre, "dit par l'hôte");
+const ABSENT = Fait.inconnu("personne ne l'a dit");
 const SOIREE: Faits = {
   fait_pluie: etabli(true),
   fait_vent: etabli(false),
-  fait_invites: etabli(8),
+  fait_invites: invites(8),
   fait_pret: etabli(true),
 };
 
 describe("le moteur de décision publicodes", () => {
-  it("rend chaque cible demandée", () => {
+  it("donne chaque cible demandée", () => {
     expect(moteur.cibles(SOIREE)).toEqual({
       cible_parapluie: true,
       cible_abri: true,
@@ -70,7 +69,7 @@ describe("le moteur de décision publicodes", () => {
 
   it("compare un fait numérique à un seuil", () => {
     expect(
-      moteur.cibles({ ...SOIREE, fait_invites: etabli(2) }).cible_table,
+      moteur.cibles({ ...SOIREE, fait_invites: invites(2) }).cible_table,
     ).toBe("PETITE");
   });
 

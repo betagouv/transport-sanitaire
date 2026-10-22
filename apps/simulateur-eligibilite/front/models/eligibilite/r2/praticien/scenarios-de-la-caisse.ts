@@ -50,12 +50,9 @@ const POINTS: readonly Point[] = [
   ],
   ["permission-inconnue", permissionInconnue],
   ["transfert-inconnu", transfertInconnu],
-  ["samsah", ({ faits }) => faits.fait_motif_samsah.value === true],
-  ["pension", ({ faits }) => faits.fait_motif_pension.value === true],
-  [
-    "centre15",
-    ({ faits }) => faits.fait_centre15_interetablissements.value === true,
-  ],
+  ["samsah", ({ faits }) => faits.fait_motif_samsah.isOui()],
+  ["pension", ({ faits }) => faits.fait_motif_pension.isOui()],
+  ["centre15", ({ faits }) => faits.fait_centre15_interetablissements.isOui()],
   ["htnm", hebergementNonMedicalise],
   ["camsp-urgence", camspEnUrgence],
   ["maternite-urgence", materniteEnUrgence],
@@ -64,38 +61,37 @@ const POINTS: readonly Point[] = [
 function permissionInconnue({ cibles, faits }: Trace): boolean {
   return (
     cibles.cible_couverture_inconnue_decisive === true &&
-    faits.fait_permission.value === true &&
-    faits.fait_permission_mineur_admissible.value === undefined &&
-    faits.fait_permission_charge_patient.value === undefined
+    faits.fait_permission.isOui() &&
+    faits.fait_permission_mineur_admissible.isInconnu() &&
+    faits.fait_permission_charge_patient.isInconnu()
   );
 }
 
 function transfertInconnu({ cibles, faits }: Trace): boolean {
   return (
     cibles.cible_couverture_inconnue_decisive === true &&
-    faits.fait_hospitalisation.value === true &&
-    faits.fait_transfert_article80.value === undefined
+    faits.fait_hospitalisation.isOui() &&
+    faits.fait_transfert_article80.isInconnu()
   );
 }
 
 function hebergementNonMedicalise({ faits }: Trace): boolean {
   return (
-    faits.fait_htnm_hors_maternite.value === true &&
-    faits.fait_htnm_segment_verifie.value === false
+    faits.fait_htnm_hors_maternite.isOui() &&
+    faits.fait_htnm_segment_verifie.isNon()
   );
 }
 
 function camspEnUrgence({ cibles, faits }: Trace): boolean {
   return (
     cibles.cible_dap_motif_camsp_cmpp === true &&
-    faits.fait_urgence_attestee.value === true
+    faits.fait_urgence_attestee.isOui()
   );
 }
 
 function materniteEnUrgence({ faits }: Trace): boolean {
   return (
-    faits.fait_dap_maternite.value === true &&
-    faits.fait_urgence_attestee.value === true
+    faits.fait_dap_maternite.isOui() && faits.fait_urgence_attestee.isOui()
   );
 }
 

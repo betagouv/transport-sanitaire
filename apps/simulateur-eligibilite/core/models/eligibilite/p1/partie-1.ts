@@ -55,8 +55,8 @@ const PAGE_DES_CAS_PARTICULIERS = page(
     // Le partage ne concerne que le transport assis professionnel et le TPMR.
     // Ce sont les règles qui disent le mode.
     .option("6_PARTAGE_INCOMPATIBLE", (option) =>
-      option.offeredIf(({ validated }) => {
-        const mode = modeDe(validated);
+      option.offeredIf(({ faits }) => {
+        const mode = modeDe(faits);
         return mode === "TAP" || mode === "TPMR";
       }),
     ),

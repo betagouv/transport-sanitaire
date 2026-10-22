@@ -17,12 +17,7 @@
 //   transfert entre établissements ne mène pas à une prison : il se refuse.
 // - Pour tout autre soin, la prison n'est que l'adresse d'arrivée, en P3.
 
-import {
-  Fait,
-  type GivenAnswers,
-  type ValidatedAnswers,
-} from "../../../socle/index.ts";
-import type { Faits } from "../declarations/faits.ts";
+import type { GivenAnswers, ValidatedAnswers } from "../../../socle/index.ts";
 import type { Questions } from "../declarations/questions.ts";
 
 type Valides = ValidatedAnswers<Questions>;
@@ -80,20 +75,12 @@ export function retourPenitentiaireCoche(
   return retourCoche(answers);
 }
 
-/** Les faits qu'une sortie définitive vers la prison établit. */
-export function faitsDuRetourPenitentiaire(validated: Valides): Partial<Faits> {
-  if (!sortieVersLaPrison(validated)) return {};
-  const source =
-    "Q2.1.g : « 2_SORTIE », Q2.2.1.b : « 10_RETOUR_PENITENTIAIRE » ; sortie définitive vers la prison.";
-  const deduit = Fait.non("fait_permission vaut « non » : aucune permission.");
-  return {
-    fait_transfert_article80: Fait.non(source),
-    fait_centre15_interetablissements: Fait.non(source),
-    fait_permission: Fait.non(source),
-    fait_permission_charge_patient: deduit,
-    fait_permission_mineur_admissible: deduit,
-  };
-}
+/**
+ * La provenance d'une sortie définitive vers la prison : ni transfert, ni
+ * Centre 15, ni permission.
+ */
+export const SORTIE_VERS_LA_PRISON =
+  "Q2.1.g : « 2_SORTIE », Q2.2.1.b : « 10_RETOUR_PENITENTIAIRE » ; sortie définitive vers la prison.";
 
 // ---- implémentation ----
 

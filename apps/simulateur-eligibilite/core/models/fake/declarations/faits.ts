@@ -1,4 +1,5 @@
-// Les faits du modèle de démonstration : ce que ses règles reçoivent.
+// Les faits du modèle de démonstration : ce que ses règles reçoivent, et
+// l'ordre où ils se lisent.
 
 import type { Fait } from "../../../socle/index.ts";
 
@@ -15,3 +16,11 @@ export type Faits = {
    */
   citron: Fait;
 };
+
+/** Le nom de chaque fait, dans l'ordre où ils se lisent. */
+export const FAITS = [
+  "boisson",
+  "accompagnements",
+  "lait",
+  "citron",
+] as const satisfies readonly (keyof Faits)[];

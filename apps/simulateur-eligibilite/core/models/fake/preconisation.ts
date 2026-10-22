@@ -4,12 +4,15 @@
 
 import { publicodesEngine } from "../../socle/decision-engine/publicodes.ts";
 import {
-  Fait,
+  type Fait,
+  FaitCatalogue,
+  type FaitContext,
   type GivenAnswers,
+  regles,
   type ValidatedAnswers,
 } from "../../socle/index.ts";
 import type { Cibles } from "./declarations/cibles.ts";
-import type { Faits } from "./declarations/faits.ts";
+import { FAITS, type Faits } from "./declarations/faits.ts";
 import type { Questions } from "./declarations/questions.ts";
 
 /**
@@ -20,23 +23,14 @@ export function faits(
   answers: GivenAnswers<Questions>,
   validated: ValidatedAnswers<Questions>,
 ): Faits {
-  const boisson = answers.question("boisson");
-  return {
-    boisson: boisson.hasAnswer() ? BOISSONS[boisson.value] : null,
-    accompagnements: answers
-      .question("accompagnements")
-      .checkedBoxes()
-      .flatMap((item) => ACCOMPAGNEMENTS[item] ?? []),
-    lait: demande(answers, validated, "lait"),
-    citron: demande(answers, validated, "citron"),
-  };
+  return CATALOGUE.read(answers, validated);
 }
 
 /** Des faits aux cibles : la commande, en une phrase, et la mise en garde. */
 export function cibles({ boisson, accompagnements, ...connus }: Faits): Cibles {
   return {
     commande: commandeDe(boisson, accompagnements),
-    ...regles.cibles(connus),
+    ...miseEnGarde.cibles(connus),
   };
 }
 
@@ -66,7 +60,7 @@ function commandeDe(boisson: string | null, avec: readonly string[]) {
 // Les règles de la mise en garde. Le moteur ne reçoit pas un fait absent : avec
 // du lait et un citron à décider au service, la cible reste indéfinie. Sans
 // lait, elle est décidée, citron connu ou non.
-const regles = publicodesEngine<
+const miseEnGarde = publicodesEngine<
   Pick<Faits, "lait" | "citron">,
   Pick<Cibles, "lait_tourne">
 >(
@@ -82,19 +76,36 @@ const regles = publicodesEngine<
 // coché, il est refusé. Une option qui ne s'est pas proposée n'a pas été
 // refusée : elle ne vaut « non » que si la boisson l'exclut.
 function demande(
-  answers: GivenAnswers<Questions>,
-  validated: ValidatedAnswers<Questions>,
+  { answers, validated }: FaitContext<Questions, Faits>,
   option: "lait" | "citron",
 ): Fait {
-  if (answers.question("boisson").is("rien"))
-    return Fait.non("Rien n'est commandé.");
   const question = validated.question("accompagnements");
-  if (!question.isValidated())
-    return Fait.inconnu("Les accompagnements ne sont pas encore validés.");
-  if (option === "citron" && question.checked("citron-a-voir"))
-    return Fait.inconnu("« Peut-être du citron » : à décider au service.");
-  return (
-    question.faitOf(option) ??
-    Fait.non(`« ${option} » ne se sert pas avec cette boisson.`)
-  );
+  return regles()
+    .nonSi(answers.question("boisson").is("rien"), "Rien n'est commandé.")
+    .seulementSi(question.isValidated())
+    .inconnuSi(
+      option === "citron" && question.checked("citron-a-voir"),
+      "« Peut-être du citron » : à décider au service.",
+    )
+    .selonCase(question, option)
+    .nonSi(
+      !question.offers(option),
+      `« ${option} » ne se sert pas avec cette boisson.`,
+    )
+    .sinon("Les accompagnements ne sont pas encore validés.");
 }
+
+// Chaque fait, déclaré une fois.
+const CATALOGUE = new FaitCatalogue<Questions, Faits>(FAITS, {
+  boisson: ({ answers }) => {
+    const boisson = answers.question("boisson");
+    return boisson.hasAnswer() ? BOISSONS[boisson.value] : null;
+  },
+  accompagnements: ({ answers }) =>
+    answers
+      .question("accompagnements")
+      .checkedBoxes()
+      .flatMap((item) => ACCOMPAGNEMENTS[item] ?? []),
+  lait: (contexte) => demande(contexte, "lait"),
+  citron: (contexte) => demande(contexte, "citron"),
+});

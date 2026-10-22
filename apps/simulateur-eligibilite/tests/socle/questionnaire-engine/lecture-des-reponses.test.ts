@@ -103,16 +103,3 @@ describe("le fait d'une case", () => {
     expect(accompagnements.faitOf("citron")).toBeUndefined();
   });
 });
-
-describe("un fait", () => {
-  it("garde sa valeur et sa provenance", () => {
-    expect(Fait.oui("coché")).toEqual({ value: true, provenance: "coché" });
-    expect(Fait.non("écarté")).toEqual({ value: false, provenance: "écarté" });
-  });
-
-  it("inconnu, n'a pas de valeur : ce n'est pas un « non »", () => {
-    expect(Fait.inconnu("pas encore validé")).toEqual({
-      provenance: "pas encore validé",
-    });
-  });
-});

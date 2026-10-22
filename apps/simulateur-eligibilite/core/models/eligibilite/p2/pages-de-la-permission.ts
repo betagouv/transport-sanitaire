@@ -23,7 +23,7 @@ export const PAGE_DE_LA_PERMISSION = page(
       "Q2.7",
       "Dans quelle tranche d’âge se situe le patient pendant la période prescrite et quel est le cadre de la permission ?",
     )
-    .askedIf(({ faits }) => faits.fait_permission.value === true)
+    .askedIf(({ faits }) => faits.fait_permission.isOui())
     .option("3_ADULTE_AUTORISEE", (option) =>
       option.offeredIf(adultesAProposer),
     )

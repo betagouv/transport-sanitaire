@@ -1,15 +1,24 @@
 // La permission : quand Q2.7 et Q2.8 se posent, et les faits que leurs pages
 // établissent (D-107).
 //
-// Chaque fait suit `CONTRAT_REPONSES_FAITS.json` du paquet de l'éditeur. Une
-// permission acquise écarte le transfert et le Centre 15, dès la question qui
-// la pose. Sans Q2.7 validée, rien d'autre n'est établi : la permission écartée
-// a déjà posé ses deux faits à « non » (contextes). Le cadre de Q2.8.4.a ne
-// change aucun fait. Ces fonctions ne lisent que les questions validées.
+// Chaque fait suit `CONTRAT_REPONSES_FAITS.json` du paquet de l'éditeur. Q2.1
+// ou Q2.2.1.a établissent la permission ; le séjour écarté, l'entrée en
+// établissement ou la sortie vers la prison l'excluent. Une permission acquise
+// écarte le transfert et le Centre 15, dès la question qui la pose. Sans
+// permission, ni sa charge par le patient, ni la règle du mineur. Le cadre de
+// Q2.8.4.a ne change aucun fait.
 
-import { Fait, type ValidatedAnswers } from "../../../socle/index.ts";
-import type { Faits } from "../declarations/faits.ts";
+import { Fait, regles, type ValidatedAnswers } from "../../../socle/index.ts";
+import {
+  type DeclarationsDeFaits,
+  PAS_ENCORE_ETABLI,
+} from "../declarations/faits.ts";
 import type { Questions } from "../declarations/questions.ts";
+import { sejourEcarte } from "./contextes.ts";
+import {
+  SORTIE_VERS_LA_PRISON,
+  sortieVersLaPrison,
+} from "./retour-penitentiaire.ts";
 
 type Valides = ValidatedAnswers<Questions>;
 
@@ -29,54 +38,82 @@ export function optionsAdultesAProposer(validated: Valides): boolean {
 }
 
 /**
- * Les faits que les pages de la permission établissent. Un fait dont la
- * question n'est pas validée reste comme il était.
+ * Une permission n'est ni un transfert ni un déplacement pour soins : la
+ * question qui la pose a écarté l'option 9 de Q2.1 (choix unique), ou l'option
+ * 2 de Q2.2.1.a. Q2.5 ne se pose pas alors ; si elle est validée, elle décide.
  */
-export function faitsDeLaPermission(validated: Valides): Partial<Faits> {
-  return { ...faitsDuTransfertEcarte(validated), ...faitsDeQ27(validated) };
+export function permissionSansTransfert(validated: Valides): Fait | undefined {
+  if (validated.question("Q2.5").isValidated()) return undefined;
+  if (validated.question("Q2.1").is("11_PERMISSION"))
+    return Fait.non(
+      "Q2.1 : « 11_PERMISSION » ; une permission n'est ni un transfert ni un déplacement pour soins (option 9 écartée).",
+    );
+  if (validated.question("Q2.2.1.a").is("1_OUI"))
+    return Fait.non(
+      "Q2.2.1.a : « 1_OUI » ; une permission n'est ni un transfert ni un déplacement pour soins (option 2 écartée).",
+    );
+  return undefined;
 }
+
+/** La permission, sa charge par le patient et la règle du mineur. */
+export const FAITS_DE_LA_PERMISSION: DeclarationsDeFaits = {
+  // Le séjour coché, seule Q2.2.1.a dit la permission : elle ne se pose qu'alors.
+  fait_permission: ({ validated }) =>
+    regles()
+      .nonSi(sortieVersLaPrison(validated), SORTIE_VERS_LA_PRISON)
+      .nonSi(
+        validated.question("Q2.2.1").hasAnswer() &&
+          validated.question("Q2.1.g").is("1_ENTREE"),
+        "Q2.1.g : « 1_ENTREE » ; aucun séjour en cours, donc aucune permission.",
+      )
+      .retient(sejourEcarte(validated))
+      .selon(validated.question("Q2.2.1.a"), { "1_OUI": "oui", "2_NON": "non" })
+      .selon(validated.question("Q2.1"), { "11_PERMISSION": "oui" })
+      .sinon("Ni Q2.1, ni Q2.2.1 n'établissent encore de permission."),
+  // Q2.7 ne se pose qu'avec une permission acquise.
+  fait_permission_charge_patient: ({ validated, faits }) =>
+    regles()
+      .nonSi(faits.fait_permission.isNon(), SANS_PERMISSION)
+      .retient(chargeDeQ27(validated))
+      .sinon(PAS_ENCORE_ETABLI),
+  fait_permission_mineur_admissible: ({ validated, faits }) =>
+    regles()
+      .nonSi(faits.fait_permission.isNon(), SANS_PERMISSION)
+      .retient(admissibiliteDeQ27(validated))
+      .sinon(PAS_ENCORE_ETABLI),
+};
 
 // ---- implémentation ----
 
-// Une permission n'est ni un transfert ni un déplacement pour soins : la
-// question qui la pose a écarté l'option 9 de Q2.1 (choix unique), ou l'option 2
-// de Q2.2.1.a. Q2.5 ne se pose pas alors ; si elle est validée, elle décide.
-function faitsDuTransfertEcarte(validated: Valides): Partial<Faits> {
-  if (validated.question("Q2.5").isValidated()) return {};
-  const raison = validated.question("Q2.1").is("11_PERMISSION")
-    ? "Q2.1 : « 11_PERMISSION » ; une permission n'est ni un transfert ni un déplacement pour soins (option 9 écartée)."
-    : validated.question("Q2.2.1.a").is("1_OUI")
-      ? "Q2.2.1.a : « 1_OUI » ; une permission n'est ni un transfert ni un déplacement pour soins (option 2 écartée)."
-      : undefined;
-  if (raison === undefined) return {};
-  return {
-    fait_transfert_article80: Fait.non(raison),
-    fait_centre15_interetablissements: Fait.non(raison),
-  };
+const SANS_PERMISSION = "fait_permission vaut « non » : aucune permission.";
+
+// La charge que Q2.7 établit : celle d'un adulte à sa charge, que Q2.7.a
+// confirme. Q2.7 sans réponse n'établit rien.
+function chargeDeQ27(validated: Valides): Fait | undefined {
+  const tranche = validated.question("Q2.7");
+  if (!tranche.hasAnswer()) return undefined;
+  const source = `Q2.7 : « ${tranche.value} ».`;
+  if (mineurDeVingtAns(validated))
+    return Fait.non(
+      `${source} La charge patient ne vaut que pour 20 ans ou plus.`,
+    );
+  return tranche.is("4_ADULTE_A_SA_CHARGE")
+    ? chargeDuPatient(validated)
+    : Fait.non(source);
 }
 
-function faitsDeQ27(validated: Valides): Partial<Faits> {
+// L'admissibilité que Q2.7 établit : celle d'un patient de moins de 20 ans,
+// que Q2.8.4 décide. Avant Q2.8.4, rien.
+function admissibiliteDeQ27(validated: Valides): Fait | undefined {
   const tranche = validated.question("Q2.7");
-  if (!tranche.hasAnswer()) return {};
-  const source = `Q2.7 : « ${tranche.value} ».`;
-  if (mineurDeVingtAns(validated)) {
-    return {
-      fait_permission_charge_patient: Fait.non(
-        `${source} La charge patient ne vaut que pour 20 ans ou plus.`,
-      ),
-      ...(validated.question("Q2.8.4").isValidated() && {
-        fait_permission_mineur_admissible: admissibilite(validated),
-      }),
-    };
-  }
-  return {
-    fait_permission_charge_patient: tranche.is("4_ADULTE_A_SA_CHARGE")
-      ? chargeDuPatient(validated)
-      : Fait.non(source),
-    fait_permission_mineur_admissible: Fait.non(
-      `${source} L'admissibilité ne vaut que pour moins de 20 ans.`,
-    ),
-  };
+  if (!tranche.hasAnswer()) return undefined;
+  if (!mineurDeVingtAns(validated))
+    return Fait.non(
+      `Q2.7 : « ${tranche.value} ». L'admissibilité ne vaut que pour moins de 20 ans.`,
+    );
+  return validated.question("Q2.8.4").isValidated()
+    ? admissibilite(validated)
+    : undefined;
 }
 
 // Un adulte à sa charge : l'établissement confirme, ou ne peut pas le vérifier.

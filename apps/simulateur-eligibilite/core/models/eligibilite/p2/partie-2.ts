@@ -36,7 +36,7 @@ const PAGE_DE_LA_PRESTATION = page(
       "Q2.1",
       "Quelle situation médicale ou quel événement motive ce déplacement ?",
     )
-    .askedIf(({ validated }) => !motifDeP1(validated))
+    .askedIf(({ faits }) => !motifDeP1(faits))
     // Une séance se coche en Q1.3 : elle ne se vote pas deux fois.
     .option("6_SEANCE", (option) =>
       option.offeredIf(
@@ -179,13 +179,13 @@ const PAGE_DU_TRAJET = page(
       "Dans les deux mois à compter du premier transport, au moins quatre transports de plus de 50 km chacun sont-ils prescrits au titre du même traitement ?",
     )
     .hint("Un aller-retour compte pour deux transports.")
-    .askedIf(({ faits }) => faits.fait_distance_plus_50.value === true),
+    .askedIf(({ faits }) => faits.fait_distance_plus_50.isOui()),
   question
     .singleChoice(
       "Q2.3.4",
       "Le médecin prescripteur atteste-t-il que ce transport est urgent ?",
     )
-    .askedIf(({ validated }) => urgenceAAfficher(validated)),
+    .askedIf(({ faits }) => urgenceAAfficher(faits)),
 );
 
 /** P2 : l'éligibilité. */

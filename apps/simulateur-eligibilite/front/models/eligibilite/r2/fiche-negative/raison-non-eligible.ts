@@ -95,13 +95,13 @@ const CONDITIONS: Readonly<Record<string, Condition>> = {
   // « Lien établi ; Q1.1/Q1.2 prouve l'absence de déficience ». Avec Q1.3
   // option 2, `fait_ald_liee` ne vaut « non » que si Q1.1 dit « seul ».
   AUCUN_ALD_SANS_DEFICIENCE: (trace) =>
-    aldLiee(trace) && trace.faits.fait_ald_liee.value === false,
+    aldLiee(trace) && trace.faits.fait_ald_liee.isNon(),
   // « Réponse prouvée hors fondement 3°/4° ; exception mineur non applicable ».
   // Q1.3 option 2 dit le 100 % : le fondement n'est jamais prouvé « non ».
   AUCUN_ALD_CADRE_NON_QUALIFIANT: (trace) =>
     aldLiee(trace) &&
-    trace.faits.fait_ald_exonerante_3_ou_4.value === false &&
-    trace.faits.fait_mineur_soins_prolonges_reconnus.value === false,
+    trace.faits.fait_ald_exonerante_3_ou_4.isNon() &&
+    trace.faits.fait_mineur_soins_prolonges_reconnus.isNon(),
   AUCUN_DIALYSE_NON_HEMO: (trace) =>
     trace.precisions.dialysisType === "non-hemodialyse" && sansSejour(trace),
   AUCUN_DIALYSE_TYPE_INCONNU: (trace) =>
@@ -113,7 +113,7 @@ const CONDITIONS: Readonly<Record<string, Condition>> = {
   // et il qualifie la série : les deux ne vont jamais ensemble.
   AUCUN_SERIE_NON_QUALIFIANTE: (trace) =>
     trace.precisions.repeatedTripsPlanned === true &&
-    trace.faits.fait_serie_qualifiante.value === false,
+    trace.faits.fait_serie_qualifiante.isNon(),
   AUCUN_CONSULTATION: familleDeSoin(1),
   AUCUN_SOINS_DENTAIRES_SAGE_FEMME: familleDeSoin(2),
   AUCUN_IMAGERIE: familleDeSoin(3),
@@ -129,6 +129,6 @@ const CONDITIONS: Readonly<Record<string, Condition>> = {
   // « fait_exclusion_transport_prouvee = oui + règle officielle datée
   // conservée en preuve ». Notre fait vaut toujours « non » (D-111).
   TRANSPORT_EXCLU: (trace) =>
-    trace.faits.fait_exclusion_transport_prouvee.value === true &&
+    trace.faits.fait_exclusion_transport_prouvee.isOui() &&
     trace.precisions.transportExclusionRule !== undefined,
 };

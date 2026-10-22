@@ -7,9 +7,10 @@ import {
   type Cibles,
 } from "../../../core/models/eligibilite/declarations/cibles";
 import {
-  AUCUN_FAIT,
+  FAITS,
   type Faits,
 } from "../../../core/models/eligibilite/declarations/faits";
+import { Fait } from "../../../core/socle";
 import type { Precisions } from "../../../front/models/eligibilite/r2/precisions-du-resultat";
 import type { Trace } from "../../../front/models/eligibilite/r2/trace-du-resultat";
 
@@ -17,8 +18,11 @@ import type { Trace } from "../../../front/models/eligibilite/r2/trace-du-result
 const AUCUNE_CIBLE = Object.fromEntries(
   CIBLES.map((cible) => [cible, undefined]),
 ) as Cibles;
-export const vrai = { value: true, provenance: "test" };
-export const faux = { value: false, provenance: "test" };
+const AUCUN_FAIT = Object.fromEntries(
+  FAITS.map((fait) => [fait, Fait.inconnu("test")]),
+) as Faits;
+export const vrai = Fait.oui("test");
+export const faux = Fait.non("test");
 
 export const trace = (
   cibles: Partial<Cibles>,

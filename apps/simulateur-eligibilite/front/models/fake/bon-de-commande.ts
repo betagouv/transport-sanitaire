@@ -71,10 +71,10 @@ const VERS_LE_BON_DE_COMMANDE: CerfaMapping<
       const adresse = answers.question("adresse");
       return adresse.hasAnswer() ? enUneLigne(adresse.value) : undefined;
     },
-    avec_lait: ({ faits }) => faits.lait.value === true,
+    avec_lait: ({ faits }) => faits.lait.isOui(),
     avec_sucre: ({ answers }) =>
       answers.question("accompagnements").checked("sucre"),
-    avec_citron: ({ faits }) => faits.citron.value === true,
+    avec_citron: ({ faits }) => faits.citron.isOui(),
     instructions: ({ answers }) => instructionsDe(answers),
     remarque: ({ answers }) => answers.question("remarque").value,
   },

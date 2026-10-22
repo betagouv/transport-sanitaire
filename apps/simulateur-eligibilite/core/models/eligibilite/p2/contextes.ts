@@ -4,11 +4,18 @@
 //
 // Chaque fait suit `CONTRAT_REPONSES_FAITS.json` et `CONTRAT_NEGATIONS_PROUVEES.json`
 // du paquet de l'éditeur. Une situation proposée et écartée vaut « non ». Une
-// situation qui ne se propose pas laisse son fait absent, et un groupe coché
-// n'établit rien avant sa précision. Ils ne lisent que les questions validées.
+// situation qui ne se propose pas n'établit rien, et un groupe coché n'établit
+// rien avant sa précision. Rien ne s'établit avant la réponse à Q2.2.1.
+//
+// La page déclare les faits qui ne viennent que d'elle. Pour les autres, elle
+// donne sa règle au fait qui la reprend : le séjour écarté au transfert, au
+// Centre 15 et à la permission, et chaque situation de l'autre cadre.
 
-import { Fait, type ValidatedAnswers } from "../../../socle/index.ts";
-import type { Faits } from "../declarations/faits.ts";
+import { Fait, regles, type ValidatedAnswers } from "../../../socle/index.ts";
+import {
+  type DeclarationsDeFaits,
+  PAS_ENCORE_ETABLI,
+} from "../declarations/faits.ts";
 import { OPTIONS, type Questions } from "../declarations/questions.ts";
 
 type Valides = ValidatedAnswers<Questions>;
@@ -37,16 +44,82 @@ export function contextesAProposer(validated: Valides): readonly Contexte[] {
   return CONTEXTES.filter((contexte) => !retires.includes(contexte));
 }
 
-/** Les faits que la page des contextes établit. Absents : rien n'y figure. */
-export function faitsDesContextes(validated: Valides): Partial<Faits> {
-  if (!validated.question("Q2.2.1").hasAnswer()) return {};
-  return {
-    ...faitsDuSejour(validated),
-    ...faitsDeLEtranger(validated),
-    ...faitsDuCadre(validated),
-    ...faitsDeLaMaternite(validated),
-  };
+/**
+ * Le séjour en cours, proposé et écarté : il exclut le transfert, le Centre 15
+ * et la permission. Coché, seule Q2.2.1.a dit la permission.
+ */
+export function sejourEcarte(validated: Valides): Fait | undefined {
+  if (!groupe(validated, "1_HOSPITALISATION").ecarte) return undefined;
+  return Fait.non("Q2.2.1 : « déjà hospitalisé » proposé, non coché.");
 }
+
+/**
+ * Ce qu'une situation de l'autre cadre établit. Écartée, elle vaut « non ».
+ * Cochée, elle vaut « oui », ou reste à qualifier dans sa branche (la
+ * maternité, la convocation). Le retour pénitentiaire n'a pas de fait : il
+ * qualifie son circuit (`retour-penitentiaire.ts`).
+ */
+export function situationDuCadre(
+  validated: Valides,
+  contexte: Exclude<Contexte, "10_RETOUR_PENITENTIAIRE">,
+): Fait | undefined {
+  const { propose, coche } = groupe(validated, "3_AUTRE_CADRE");
+  const precision = validated.question("Q2.2.1.b");
+  if (!propose || (coche && !precision.hasAnswer())) return undefined;
+  const proposes = coche
+    ? precision.offeredOptions()
+    : contextesAProposer(validated);
+  if (!proposes.includes(contexte)) return undefined;
+  if (!coche)
+    return Fait.non("Q2.2.1 : « autre situation » proposée, non cochée.");
+  if (!precision.checked(contexte))
+    return Fait.non(`Q2.2.1.b : « ${contexte} » proposée, non cochée.`);
+  const source = `Q2.2.1.b : « ${contexte} ».`;
+  return A_QUALIFIER.includes(contexte)
+    ? Fait.inconnu(`${source} À qualifier dans sa branche.`)
+    : Fait.oui(source);
+}
+
+/** Les faits que seule la page des contextes établit. */
+export const FAITS_DES_CONTEXTES: DeclarationsDeFaits = {
+  fait_trajet_etranger: ({ validated }) => trajetEtranger(validated),
+  fait_atmp_lie: ({ validated }) =>
+    regles()
+      .retient(situationDuCadre(validated, "1_ATMP"))
+      .sinon(PAS_ENCORE_ETABLI),
+  fait_motif_samsah: ({ validated }) =>
+    regles()
+      .retient(situationDuCadre(validated, "7_SAMSAH"))
+      .sinon(PAS_ENCORE_ETABLI),
+  fait_motif_pension: ({ validated }) =>
+    regles()
+      .retient(situationDuCadre(validated, "9_PENSION_MILITAIRE"))
+      .sinon(PAS_ENCORE_ETABLI),
+  // Q2.1 = 13 décrit un trajet de l'Engagement maternité. Les options 4 et 5
+  // s'excluent pour un même trajet (`CONTRAT_CONTEXTES_DECISIFS.md`) : il n'est
+  // pas un HTNM hors maternité. Le HTNM se dit hors Engagement maternité dans
+  // son libellé même (point 11).
+  fait_htnm_hors_maternite: ({ validated }) =>
+    regles()
+      .nonSi(
+        validated.question("Q2.2.1").hasAnswer() &&
+          validated.question("Q2.1").is("13_MATERNITE"),
+        "Q2.1 : « 13_MATERNITE » ; le même trajet n'est pas un HTNM hors maternité.",
+      )
+      .retient(situationDuCadre(validated, "5_HTNM"))
+      .sinon(PAS_ENCORE_ETABLI),
+  // Hors Engagement maternité, aucune règle du segment d'un HTNM n'est
+  // vérifiée : la caisse tranche (`CONTRAT_REPONSES_FAITS.json`).
+  fait_htnm_segment_verifie: ({ validated }) => {
+    const htnm = situationDuCadre(validated, "5_HTNM");
+    return regles()
+      .nonSi(
+        htnm?.isOui() === true,
+        `${htnm?.provenance} Le segment du HTNM hors Engagement n'est pas vérifié.`,
+      )
+      .sinon(PAS_ENCORE_ETABLI);
+  },
+};
 
 // ---- implémentation ----
 
@@ -62,159 +135,34 @@ const RETIRES_PAR_Q21: Partial<Record<Motif, readonly Contexte[]>> = {
   "13_MATERNITE": ["4_MATERNITE_ELOIGNEE", "5_HTNM"],
 };
 
-// Le fait de chaque situation de l'autre cadre, et si la cocher le met à
-// « oui ». Les autres attendent la page de leur branche (Q2.10, Q2.13, Q2.14) ;
-// le retour pénitentiaire n'a pas de fait : il qualifie son circuit
-// (`retour-penitentiaire.ts`). Le HTNM se dit hors Engagement maternité dans
-// son libellé même (point 11).
-const FAIT_DU_CONTEXTE: Record<
-  Contexte,
-  { fait: keyof Faits; positif: boolean } | undefined
-> = {
-  "1_ATMP": { fait: "fait_atmp_lie", positif: true },
-  "4_MATERNITE_ELOIGNEE": { fait: "fait_dap_maternite", positif: false },
-  "5_HTNM": { fait: "fait_htnm_hors_maternite", positif: true },
-  "6_CAMSP": { fait: "fait_motif_camsp", positif: true },
-  "7_SAMSAH": { fait: "fait_motif_samsah", positif: true },
-  "9_PENSION_MILITAIRE": { fait: "fait_motif_pension", positif: true },
-  "10_RETOUR_PENITENTIAIRE": undefined,
-  "13_CONVOCATION": { fait: "fait_convocation", positif: false },
-};
+// Les situations que leur branche qualifie (Q2.10, Q2.14) : cochées, elles
+// restent à qualifier.
+const A_QUALIFIER: readonly Contexte[] = [
+  "4_MATERNITE_ELOIGNEE",
+  "13_CONVOCATION",
+];
 
-// Le groupe que Q2.2.1 a proposé, et s'il est coché.
+// Le groupe que Q2.2.1 a proposé, s'il est coché, et s'il est écarté.
 function groupe(validated: Valides, valeur: Questions["Q2.2.1"][number]) {
   const contextes = validated.question("Q2.2.1");
   return {
     propose: contextes.offers(valeur),
     coche: contextes.checked(valeur),
-  };
-}
-
-// Le séjour en cours, y compris en HAD. Écarté, il exclut le transfert, le
-// centre 15 et la permission. Coché, seule Q2.2.1.a dit la permission.
-function faitsDuSejour(validated: Valides): Partial<Faits> {
-  const { propose, coche } = groupe(validated, "1_HOSPITALISATION");
-  if (!propose) return faitsDeLEntree(validated);
-  if (!coche) {
-    const ecarte = Fait.non(
-      "Q2.2.1 : « déjà hospitalisé » proposé, non coché.",
-    );
-    return {
-      fait_transfert_article80: ecarte,
-      fait_centre15_interetablissements: ecarte,
-      ...sansPermission(ecarte),
-    };
-  }
-  const reponse = validated.question("Q2.2.1.a");
-  if (!reponse.hasAnswer()) return {};
-  const source = `Q2.2.1.a : « ${reponse.value} ».`;
-  return reponse.is("1_OUI")
-    ? { fait_permission: Fait.oui(source) }
-    : sansPermission(Fait.non(source));
-}
-
-// Une entrée en établissement de santé ne se propose pas en séjour (D-98) :
-// aucun séjour n'est en cours, donc aucune permission.
-function faitsDeLEntree(validated: Valides): Partial<Faits> {
-  if (validated.question("Q2.1.g").isNot("1_ENTREE")) return {};
-  return sansPermission(
-    Fait.non(
-      "Q2.1.g : « 1_ENTREE » ; aucun séjour en cours, donc aucune permission.",
-    ),
-  );
-}
-
-// Sans permission, ni sa charge par le patient, ni la règle du mineur.
-function sansPermission(preuve: Fait): Partial<Faits> {
-  const deduit = Fait.non("fait_permission vaut « non » : aucune permission.");
-  return {
-    fait_permission: preuve,
-    fait_permission_charge_patient: deduit,
-    fait_permission_mineur_admissible: deduit,
+    ecarte: contextes.declined(valeur),
   };
 }
 
 // Une extrémité à l'étranger, et non le seul lieu des soins (Q2.2.5).
-function faitsDeLEtranger(validated: Valides): Partial<Faits> {
-  const { propose, coche } = groupe(validated, "2_ETRANGER");
-  if (!propose) return {};
-  if (!coche)
-    return {
-      fait_trajet_etranger: Fait.non(
-        "Q2.2.1 : « l'étranger » proposé, non coché.",
-      ),
-    };
+function trajetEtranger(validated: Valides): Fait {
+  const { ecarte } = groupe(validated, "2_ETRANGER");
   const lieux = validated.question("Q2.2.5");
-  if (!lieux.hasAnswer()) return {};
-  const source = `Q2.2.5 : « ${lieux.value.join(" », « ")} ».`;
   const extremite = lieux
     .checkedBoxes()
     .some((lieu) => lieu !== "3_LIEU_DES_SOINS");
-  return {
-    fait_trajet_etranger: extremite ? Fait.oui(source) : Fait.non(source),
-  };
-}
-
-// Q2.1 = 13 décrit un trajet de l'Engagement maternité. Les options 4 et 5
-// s'excluent pour un même trajet (`CONTRAT_CONTEXTES_DECISIFS.md`) : il n'est
-// pas un HTNM hors maternité.
-function faitsDeLaMaternite(validated: Valides): Partial<Faits> {
-  if (validated.question("Q2.1").isNot("13_MATERNITE")) return {};
-  return {
-    fait_htnm_hors_maternite: Fait.non(
-      "Q2.1 : « 13_MATERNITE » ; le même trajet n'est pas un HTNM hors maternité.",
-    ),
-  };
-}
-
-// L'autre cadre : écarté, chaque situation que son aide montrait vaut « non ».
-// Coché, Q2.2.1.b dit lesquelles concernent le trajet, parmi celles proposées.
-function faitsDuCadre(validated: Valides): Partial<Faits> {
-  const { propose, coche } = groupe(validated, "3_AUTRE_CADRE");
-  if (!propose) return {};
-  const precision = validated.question("Q2.2.1.b");
-  if (coche && !precision.hasAnswer()) return {};
-  const proposes = coche
-    ? precision.offeredOptions()
-    : contextesAProposer(validated);
-  return Object.fromEntries(
-    CONTEXTES.filter((contexte) => proposes.includes(contexte)).flatMap(
-      (contexte) =>
-        faitDuContexte(contexte, coche && precision.checked(contexte), coche),
-    ),
-  );
-}
-
-function faitDuContexte(
-  contexte: Contexte,
-  cochee: boolean,
-  detaille: boolean,
-) {
-  const lien = FAIT_DU_CONTEXTE[contexte];
-  if (!lien) return [];
-  if (!cochee) {
-    const ecarte = detaille
-      ? `Q2.2.1.b : « ${contexte} » proposée, non cochée.`
-      : "Q2.2.1 : « autre situation » proposée, non cochée.";
-    return [[lien.fait, Fait.non(ecarte)]];
-  }
-  const source = `Q2.2.1.b : « ${contexte} ».`;
-  return [
-    [
-      lien.fait,
-      lien.positif
-        ? Fait.oui(source)
-        : Fait.inconnu(`${source} À qualifier dans sa branche.`),
-    ],
-    ...(contexte === "5_HTNM" ? [segmentDuHtnm(source)] : []),
-  ];
-}
-
-// Hors Engagement maternité, aucune règle du segment d'un HTNM n'est vérifiée :
-// la caisse tranche (`CONTRAT_REPONSES_FAITS.json`).
-function segmentDuHtnm(source: string) {
-  return [
-    "fait_htnm_segment_verifie",
-    Fait.non(`${source} Le segment du HTNM hors Engagement n'est pas vérifié.`),
-  ] as const;
+  const source = `Q2.2.5 : « ${lieux.value?.join(" », « ")} ».`;
+  return regles()
+    .nonSi(ecarte, "Q2.2.1 : « l'étranger » proposé, non coché.")
+    .ouiSi(lieux.hasAnswer() && extremite, source)
+    .nonSi(lieux.hasAnswer(), source)
+    .sinon(PAS_ENCORE_ETABLI);
 }

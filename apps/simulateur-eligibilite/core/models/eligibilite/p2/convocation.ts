@@ -4,11 +4,15 @@
 // du paquet de l'éditeur. Une catégorie vérifiée donne « oui ». Une catégorie
 // négative vérifiée donne « non ». Une condition impossible à vérifier laisse le
 // fait absent : la règle `cible_convocation_inconnue_decisive` envoie alors à la
-// caisse. Ces fonctions ne lisent que les questions validées.
+// caisse. Avant Q2.10, la convocation cochée en Q2.2.1.b reste à qualifier.
 
-import { Fait, type ValidatedAnswers } from "../../../socle/index.ts";
-import type { Faits } from "../declarations/faits.ts";
+import { Fait, regles, type ValidatedAnswers } from "../../../socle/index.ts";
+import {
+  type DeclarationsDeFaits,
+  PAS_ENCORE_ETABLI,
+} from "../declarations/faits.ts";
 import type { Questions } from "../declarations/questions.ts";
+import { situationDuCadre } from "./contextes.ts";
 
 type Valides = ValidatedAnswers<Questions>;
 
@@ -24,15 +28,20 @@ export function convocationAnnoncee(validated: Valides): boolean {
   );
 }
 
-/**
- * Le fait que la page de la convocation établit. Sans Q2.10 validée, le fait
- * reste comme il était : le « À qualifier dans sa branche » des contextes.
- */
-export function faitsDeLaConvocation(validated: Valides): Partial<Faits> {
-  const categorie = validated.question("Q2.10");
-  if (!categorie.hasAnswer()) return {};
-  return { fait_convocation: faitDeLaCategorie(validated, categorie.value) };
-}
+/** Le fait que la page de la convocation établit. */
+export const FAITS_DE_LA_CONVOCATION: DeclarationsDeFaits = {
+  fait_convocation: ({ validated }) => {
+    const categorie = validated.question("Q2.10");
+    return regles()
+      .retient(
+        categorie.hasAnswer()
+          ? faitDeLaCategorie(validated, categorie.value)
+          : undefined,
+      )
+      .retient(situationDuCadre(validated, "13_CONVOCATION"))
+      .sinon(PAS_ENCORE_ETABLI);
+  },
+};
 
 // ---- implémentation ----
 

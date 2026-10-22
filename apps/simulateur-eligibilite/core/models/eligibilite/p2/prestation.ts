@@ -8,13 +8,15 @@
 import {
   Fait,
   type GivenAnswer,
+  regles,
   type ValidatedAnswers,
 } from "../../../socle/index.ts";
-import { AUCUN_FAIT, type Faits } from "../declarations/faits.ts";
+import type { DeclarationsDeFaits, Faits } from "../declarations/faits.ts";
 import type { Questions } from "../declarations/questions.ts";
 import { cible } from "../evaluation-des-regles.ts";
-import { fait } from "../fait.ts";
-import { faitsDuMode } from "../p1/mode-de-transport.ts";
+import { seanceDeP1 } from "../p1/mode-de-transport.ts";
+import { situationDuCadre } from "./contextes.ts";
+import { hospitalisationDuTransfert } from "./transfert.ts";
 
 type Valides = ValidatedAnswers<Questions>;
 type Motif = Questions["Q2.1"];
@@ -25,10 +27,9 @@ type Motif = Questions["Q2.1"];
  * continus. Q2.1 n'est alors pas posée (D-102), et son saut ne donne aucun
  * « non ».
  */
-export function motifDeP1(validated: Valides): boolean {
-  const mode = { ...AUCUN_FAIT, ...faitsDuMode(validated) };
-  if (mode.fait_situation_soins_qualifiante.value === true) return true;
-  return MOTIFS_DE_P1.some((motif) => cible(mode, motif) === true);
+export function motifDeP1(faits: Faits): boolean {
+  if (faits.fait_situation_soins_qualifiante.isOui()) return true;
+  return MOTIFS_DE_P1.some((motif) => cible(faits, motif) === true);
 }
 
 /**
@@ -47,31 +48,47 @@ export function plusieursSeances(validated: Valides): boolean {
   );
 }
 
-/**
- * Les faits que la page de Q2.1 établit. L'hospitalisation n'y figure que si
- * Q2.1.g la prouve : sinon, P1 garde la sienne.
- */
-export function faitsDeLaPrestation(validated: Valides) {
-  const motif = validated.question("Q2.1");
-  return {
-    // Q2.1 = 11 prouve la permission. Sans elle, Q2.2.1 peut encore l'établir.
-    ...fait("fait_permission")
-      .selon(motif, { "11_PERMISSION": "oui" })
-      .sinon("Ni Q2.1, ni Q2.2.1 n'établissent encore de permission."),
-    fait_evenement_sans_soin: evenementSansSoin(motif),
-    // Q2.1 = 10, puis Q2.1.h : la séance est-elle dans le parcours de l'enfant ?
-    ...fait("fait_motif_camsp")
-      .seulementSi(motif.is("10_CAMSP"))
+/** Les faits que la page de Q2.1 établit, avec ses sous-questions f, g et h. */
+export const FAITS_DE_LA_PRESTATION: DeclarationsDeFaits = {
+  fait_evenement_sans_soin: ({ validated }) =>
+    evenementSansSoin(validated.question("Q2.1")),
+  // Q2.1 = 10, puis Q2.1.h : la séance est-elle dans le parcours de l'enfant ?
+  // Q2.2.1.b le dit aussi.
+  fait_motif_camsp: ({ validated }) =>
+    regles()
+      .retient(situationDuCadre(validated, "6_CAMSP"))
+      .seulementSi(validated.question("Q2.1").is("10_CAMSP"))
       .selon(validated.question("Q2.1.h"), {
         "1_OUI": "oui",
         "2_NON": "non",
         "3_NE_SAIT_PAS": "inconnu",
       })
       .sinon("Ni Q2.1.h, ni Q2.2.1 n'établissent encore le CAMSP."),
-    ...hospitalisation(validated.question("Q2.1.g")),
-    ...sansSeanceNiSejour(validated),
-  } satisfies Partial<Faits>;
-}
+  // Une entrée ou une sortie d'établissement prouve le séjour qualifiant.
+  // Sinon, P1 garde sa séance.
+  fait_situation_soins_qualifiante: ({ validated }) =>
+    regles()
+      .retient(sansSeanceNiSejour(validated))
+      .selon(validated.question("Q2.1.g"), SEJOUR)
+      .sinon(seanceDeP1(validated)),
+  // Le transfert le prouve, et le séjour écarté l'exclut. Une entrée ou une
+  // sortie d'établissement le prouve aussi. L'admission en HAD à domicile ne
+  // le prouve pas seule.
+  fait_hospitalisation: ({ validated }) =>
+    regles()
+      .retient(hospitalisationDuTransfert(validated))
+      .retient(sansSejourEnCours(validated))
+      .selon(validated.question("Q2.1.g"), SEJOUR)
+      .sinon(seanceDeP1(validated)),
+  fait_source_officielle_active: sansQuestion,
+  fait_correspondance_univoque: sansQuestion,
+  fait_conditions_soin_verifiees: sansQuestion,
+  fait_regime_verifie: sansQuestion,
+  fait_exclusion_soin_prouvee: sansQuestion,
+  fait_preuve_prescripteur_qualifiante: sansQuestion,
+  fait_preuve_prestation_absente: sansQuestion,
+  fait_prestation_non_couverte_declaree: sansQuestion,
+};
 
 // ---- implémentation ----
 
@@ -109,58 +126,55 @@ function evenementSansSoin(motif: GivenAnswer<Motif>): Fait {
   return Fait.inconnu(`${source}, à qualifier dans sa branche.`);
 }
 
-// Une entrée ou une sortie d'établissement prouve l'hospitalisation réelle.
-// L'admission en HAD à domicile ne la prouve pas seule.
-function hospitalisation(sousType: GivenAnswer<Questions["Q2.1.g"]>) {
-  if (!sousType.isOneOf("1_ENTREE", "2_SORTIE")) return {};
-  const sejour = Fait.oui(`Q2.1.g : « ${sousType.value} ».`);
-  return {
-    fait_hospitalisation: sejour,
-    fait_situation_soins_qualifiante: sejour,
-  };
+// Q2.1.g : une entrée ou une sortie d'établissement.
+const SEJOUR = { "1_ENTREE": "oui", "2_SORTIE": "oui" } as const;
+
+// Les sous-questions a à e et i à l de Q2.1, et le régime, ne changent aucune
+// sortie : elles restent masquées, sans fait par défaut (D-102).
+function sansQuestion(): Fait {
+  return Fait.inconnu(
+    "Aucune question ne le pose : les sous-questions a à e et i à l de Q2.1, et le régime, restent masquées (D-102).",
+  );
 }
 
 // Ni séance qualifiante en Q1.3, ni séjour en Q2.1 : le soin ne qualifie pas
 // le transport. Q2.1 est un choix unique : un autre motif écarte
 // l'hospitalisation, et l'admission en HAD (Q2.1.g) n'est pas un séjour
 // (`negation_precise_v1002` de `fait_situation_soins_qualifiante`).
-function sansSeanceNiSejour(validated: Valides): Partial<Faits> {
+function sansSeanceNiSejour(validated: Valides): Fait | undefined {
   const motif = validated.question("Q2.1");
   const sousType = validated.question("Q2.1.g");
-  if (!motif.hasAnswer() || !q13SansSeance(validated)) return {};
+  if (!motif.hasAnswer() || !q13SansSeance(validated)) return undefined;
   const hospitalise = motif.is("8_HOSPITALISATION");
-  if (hospitalise && sousType.isNot("3_ADMISSION_HAD")) return {};
-  const source = hospitalise
-    ? `Q2.1.g : « ${sousType.value} », pas un séjour ; Q1.3 sans séance.`
-    : `Q2.1 : « ${motif.value} », pas une hospitalisation ; Q1.3 sans séance.`;
-  return {
-    fait_situation_soins_qualifiante: Fait.non(source),
-    ...sansSejourEnCours(validated, motif, source),
-  };
+  if (hospitalise && sousType.isNot("3_ADMISSION_HAD")) return undefined;
+  return Fait.non(
+    hospitalise
+      ? `Q2.1.g : « ${sousType.value} », pas un séjour ; Q1.3 sans séance.`
+      : `Q2.1 : « ${motif.value} », pas une hospitalisation ; Q1.3 sans séance.`,
+  );
 }
 
 // Une simple consultation, l'HAD à domicile ou un autre motif, sans séjour en
 // cours, ne sont pas une hospitalisation (`non_ou_absence` du contrat). Il faut
 // que Q2.2.1 ait proposé « déjà hospitalisé » et qu'il soit écarté. Le
 // transfert et la permission se qualifient dans leur branche.
-function sansSejourEnCours(
-  validated: Valides,
-  motif: GivenAnswer<Motif>,
-  source: string,
-): Partial<Faits> {
-  if (motif.isOneOf("9_TRANSFERT", "11_PERMISSION")) return {};
+function sansSejourEnCours(validated: Valides): Fait | undefined {
+  const sansSejour = sansSeanceNiSejour(validated);
   const contextes = validated.question("Q2.2.1");
-  if (!contextes.hasAnswer() || !contextes.declined("1_HOSPITALISATION"))
-    return {};
-  return {
-    fait_hospitalisation: Fait.non(
-      `${source} Q2.2.1 : « déjà hospitalisé » écarté.`,
-    ),
-  };
+  if (
+    !sansSejour ||
+    validated.question("Q2.1").isOneOf("9_TRANSFERT", "11_PERMISSION") ||
+    !contextes.hasAnswer() ||
+    !contextes.declined("1_HOSPITALISATION")
+  )
+    return undefined;
+  return Fait.non(
+    `${sansSejour.provenance} Q2.2.1 : « déjà hospitalisé » écarté.`,
+  );
 }
 
 // Q1.3 validée sans séance qualifiante : ni chimiothérapie, ni radiothérapie,
-// ni hémodialyse (Q1.3.a). Une séance cochée, `faitsDuMode` la prouve déjà.
+// ni hémodialyse (Q1.3.a). Une séance cochée, `seanceDeP1` la prouve déjà.
 function q13SansSeance(validated: Valides): boolean {
   const cas = validated.question("Q1.3");
   if (!cas.hasAnswer()) return false;
