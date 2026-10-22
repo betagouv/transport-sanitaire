@@ -49,11 +49,7 @@ export function CerfaResultat({
   const total = model.core.questionnaire.length + 1;
   const all = [...pagesOf(model.core.questionnaire), ...part.pages];
   const trace = traceOf("cerfa", all, answers, locked.preconisation, cibles);
-  const { validated, answers: given } = new Questionnaire(all).readWith(
-    answers,
-    cibles,
-  );
-  const read = { answers: given, validated };
+  const read = readOf(all, answers, cibles);
   return (
     <Frame
       title={title}
@@ -74,6 +70,13 @@ export function CerfaResultat({
       </div>
     </Frame>
   );
+}
+
+// Ce que lisent le résultat et le cerfa : les réponses données et validées,
+// lues avec les cibles figées au verrou.
+function readOf(pages: readonly Page[], answers: Answers, cibles: AnyCibles) {
+  const read = new Questionnaire(pages).readWith(answers, cibles);
+  return { answers: read.answers, validated: read.validated };
 }
 
 // Ce que la trace de debug lit sous un résultat : les pages affichées, les
