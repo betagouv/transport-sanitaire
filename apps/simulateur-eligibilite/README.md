@@ -143,11 +143,11 @@ core/                    le métier, sans React ni DOM : ce qu'un serveur ou un 
                          page, une partie et une adresse, les questions posées et
                          validées, l'état d'un questionnaire, l'invalidation des
                          réponses dépendantes, ce qui ne va pas dans une saisie
-    decision-engine/     le moteur de décision : le fait en objet valeur, le
-                         catalogue des faits et leurs règles, puis des faits aux
-                         cibles, par les règles publicodes qu'un modèle lui
-                         donne. Un fait absent n'est pas
-                         envoyé, et laisse indéfinie la cible qui en dépend. Le seul
+    decision-engine/     le moteur de décision : le fait et la cible en objets
+                         valeur, le catalogue des faits et leurs règles, puis des
+                         faits aux cibles, par les règles publicodes qu'un modèle
+                         lui donne. Un fait absent n'est pas envoyé, et laisse
+                         inconnue la cible qui en dépend. Le seul
                          fichier qui importe publicodes, pris par le modèle hors de
                          `index.ts`
     seeds/               ce qu'est une seed, et ce qu'elle confirme ou dément

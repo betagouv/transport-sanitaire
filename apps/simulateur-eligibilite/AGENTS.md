@@ -166,6 +166,7 @@ questions déclarées, qui savent se poser.
 ## La décision
 
 Un fait a trois états : vrai, faux, ou absent. Absent, il ne vaut jamais « non ».
+Une cible de même, avec un quatrième : sans objet.
 
 Ses pièces sont dans `core/socle/`.
 
@@ -177,7 +178,8 @@ Ses pièces sont dans `core/socle/`.
 | `Fait` (`decision-engine/fait.ts`) | ce qu'on sait d'un fait, en objet valeur figé : sa valeur si elle est établie, et sa provenance. `Fait.oui`, `Fait.non`, `Fait.inconnu` et `Fait.valant` le construisent ; `isOui()`, `isNon()` et `isInconnu()` le lisent, jamais `.value === true`. `avecProvenance` en donne une copie, `equals` compare valeur et provenance |
 | `FaitCatalogue` (`decision-engine/fait-catalogue.ts`) | les faits d'un modèle, **une déclaration par fait**. Le modèle le construit une fois avec la liste de ses faits et ses déclarations par thème (`catalogue-des-faits.ts`) : un doublon, un oubli ou un nom hors du modèle l'arrêtent au chargement. Une déclaration reçoit `{ answers, validated, faits }` et peut lire d'autres faits. `read(answers, validated, fixed)` calcule chaque fait à sa première lecture, et `fixed` en impose (la complétude). Un fait qui se relit, par d'autres faits ou par une garde, s'arrête sur une erreur qui donne le chemin. Un fait qu'aucune réponse ne pose se déclare aussi, et sa provenance dit pourquoi |
 | `regles()` (`decision-engine/fait-builder.ts`) | la chaîne de règles d'un fait. La première qui conclut l'emporte : `seulementSi(condition)`, `selon(réponse, { "1_OUI": "oui", "2_NON": "non" })`, qui écrit seul la provenance « Q2.1.h : « 1_OUI ». », `selonCase(réponse, case)` et `nonSiEcartee(réponse, case)` pour une case proposée, `ouiSi`, `nonSi` et `inconnuSi(condition, provenance)`, et `retient(fait)`, qui reprend une règle d'un autre thème (`sejourEcarte`, `situationDuCadre`). `sinon(provenance)` clôt la chaîne : le fait reste inconnu, ou vaut le fait qu'on lui donne. `citant(…réponses)` écrit une provenance qui cite les réponses données |
-| `publicodesEngine` | n'envoie aux règles que les faits établis. Une cible peut revenir `undefined` : indéfinie, ce qui n'est pas une décision, ni `null` (sans objet) |
+| `Cible` (`decision-engine/cible.ts`) | ce que les règles donnent pour une cible, en objet valeur figé, que seul `Cible.of` construit. `isOui()` et `isNon()` lisent une cible « oui ou non », `is("TAP")` une cible à constantes, `isInconnue()` et `isSansObjet()` les deux cas qui ne sont pas une décision. Jamais `.value === true` : une cible inconnue n'est pas un « non ». `cibleValues(cibles)` donne leurs valeurs, pour la trace, une seed ou un test |
+| `publicodesEngine` | n'envoie aux règles que les faits établis, et donne chaque cible en `Cible`. Il manque un fait : elle est inconnue, ce qui n'est pas une décision, ni « sans objet » (`null`) |
 
 Le socle dit ce qui a été montré, validé, coché. Il ne conclut rien : c'est le
 modèle qui applique, fait par fait, le contrat de l'éditeur.

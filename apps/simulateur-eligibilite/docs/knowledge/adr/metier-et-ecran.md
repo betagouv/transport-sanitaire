@@ -343,6 +343,59 @@ les faits que la branche pose avant elle (le départ de Q2.13 pour Q2.14), et
 l'exclusion du transport. Le banc d'équivalence ne montre aucune question
 posée de plus ou de moins.
 
+### ADR-15 - La cible est un objet valeur, comme le fait
+
+**Contexte.** Le moteur de décision donnait chaque cible en valeur nue :
+`true`, `false`, une constante, `null` quand elle ne s'applique pas,
+`undefined` quand il manque un fait. Une trentaine d'appelants la comparaient
+par `=== true`, `!== true` ou `=== "TAP"`. Écrire `!cible` ou `=== false`
+prenait une cible inconnue pour un « non », sans que rien ne le signale.
+
+**Décision.** `Cible` est une classe figée du socle, que seul `Cible.of(value)`
+construit. `isOui()` et `isNon()` lisent une cible « oui ou non », `is(valeur)`
+une cible à constantes, `isInconnue()` et `isSansObjet()` les deux cas qui ne
+sont pas une décision. Le compilateur suit la sorte de la cible : `isOui()` sur
+une cible à constantes, ou `is("MOYENNE")` hors de ses constantes, ne compile
+pas. `is` prend une seule constante : deux constantes s'écrivent avec `||`.
+
+La valeur reste lisible par `.value`, et une cible passe en JSON par sa valeur.
+`cibleValues(cibles)` donne la valeur de chacune : la trace de débogage
+l'affiche et l'exporte, une seed l'attend, un test la compare. Il n'y a pas
+d'`equals` : une cible n'a pas de provenance, et deux cibles de même valeur
+sont égales pour `toEqual`.
+
+| Option | Pour | Contre |
+|---|---|---|
+| garder la valeur nue | rien à porter | `!cible` lit une inconnue comme un « non » |
+| des fonctions libres (`estOui(cible)`) | aucun objet à construire | rien n'empêche la comparaison nue à côté |
+| un objet valeur, comme `Fait` | une seule façon de lire, que le compilateur vérifie | chaque test écrit ses cibles par une aide |
+
+La troisième, par symétrie avec le fait (ADR-13). Les tests écrivent les
+valeurs des cibles à la main, et une aide les emballe : un test reste aussi
+court qu'avant.
+
+**Conséquences.** Les règles publicodes ne changent pas. Sur les 4 688 états
+du banc d'équivalence, les questions posées, les faits, les cibles et les
+provenances sont les mêmes. Les précisions de la trace restent des valeurs
+nues, jusqu'aux concepts du modèle (#207).
+
+### ADR-16 - P1 lit la cible qui dit ce qu'elle cherche, plutôt que le mode
+
+**Contexte.** Deux lectures déduisaient une famille de modes de la cible
+`cible_mode_id`. L'option « partage incompatible » de Q1.3 cherchait le TAP ou
+le TPMR, par la fonction `modeDe` qui calculait le mode pendant P1. Le rang du
+titre du prescripteur cherchait le véhicule personnel ou le transport en
+commun. Les règles calculent déjà ces familles : `cible_mode_tap_ou_tpmr`,
+`cible_mode_individual`, `cible_mode_public`.
+
+**Décision.** Ces lectures lisent la cible de la famille. `modeDe` devient
+`cibleEnCoursDeP1(faits, nom)`, qui calcule n'importe quelle cible en tenant P1
+pour complète le temps de la poser.
+
+**Conséquences.** La liste des modes d'une famille ne s'écrit plus que dans les
+règles de l'éditeur. Un test dit le titre du prescripteur pour le véhicule
+personnel et le transport en commun.
+
 ## 3. Architecture cible
 
 ```mermaid
@@ -372,6 +425,7 @@ flowchart LR
 | Questionnaire à l'écran | `front/` | page ouverte, brouillon, navigation, phrases, champs | modifié |
 | Moteur de décision | `core/` | des faits aux cibles, seul à importer publicodes | déplacé |
 | `Fait` | `core/` | ce qu'on sait d'un fait, en objet valeur figé | modifié |
+| `Cible` | `core/` | ce que les règles donnent pour une cible, en objet valeur figé | nouveau |
 | Catalogue des faits (`FaitCatalogue`) | `core/` | une déclaration par fait, calculée à la lecture ; refuse doublon, oubli, cycle | nouveau |
 | Règles d'un fait (`regles()`) | `core/` | la chaîne de règles d'un fait, la première qui conclut l'emporte | modifié |
 | Fusion des faits partiels (`faitsAvantLaBranche`, `FaitsDesReponses`) | `core/` | l'ordre des pages décidait du fait | supprimé |
@@ -405,7 +459,7 @@ a-t-il besoin ?**
 | Moteur objet | 203 | ✅ |
 | Constructeur de questions | 204 | ✅ |
 | Faits : une déclaration par fait | 205 | ✅ |
-| Cibles : un objet valeur par cible | 206 | à venir |
+| Cibles : un objet valeur par cible | 206 | ✅ |
 | Concepts du modèle | 207 | à venir |
 
 ## 6. Risques & validations en attente
