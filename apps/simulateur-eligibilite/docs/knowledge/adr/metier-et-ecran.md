@@ -136,6 +136,61 @@ préconisation dément.
 **Conséquences.** Une régression de chargement tombe dans `pnpm verifier`, pas
 au premier script qui en aurait besoin.
 
+### ADR-7 - Le moteur lit le questionnaire en objets (~~fonctions libres~~)
+
+**Contexte.** Le moteur exposait des fonctions libres sur `(pages, answers,
+cibles)` : les pages posées, les questions d'une page, les validées, la
+complétude, la validation d'une page. Chacune refaisait la lecture complète,
+gardes et faits compris, et l'écran d'une page la faisait cinq fois. Les
+rappels avaient deux formes : le modèle les écrivait sur un objet, le moteur
+les appelait avec trois arguments, et un adaptateur traduisait d'après une
+liste de noms tenue à la main.
+
+**Décision.** Deux objets. `Questionnaire` porte les pages, dans l'ordre.
+`questionnaire.readWith(answers, cibles)` donne une `Reading`, calculée une
+fois à sa construction : pages et questions posées, questions validées,
+complétude, page où l'on rouvre, page suivante. Une lecture ne change pas :
+valider une page (`commit`) donne de nouvelles réponses, qu'on relit. Tous
+les rappels reçoivent le même contexte, `{ answers, validated, cibles,
+faits }`, où les faits ne se calculent qu'à la lecture. L'adaptateur
+disparaît. Le hook de l'écran ne garde que l'état (page ouverte, brouillon) et
+demande le reste à la lecture.
+
+**Conséquences.** Une page fait deux lectures : les réponses validées, qui
+disent les pages, et les mêmes avec le brouillon, qui disent ce que la page
+pose. La trace de debug garde la forme brute des validées
+(`ValidatedAnswers.toJSON`).
+
+### ADR-8 - La question posée ne porte que des données
+
+**Contexte.** La lecture recopiait la question déclarée avec ses valeurs du
+moment, fonctions comprises. Rien ne distinguait une question déclarée d'une
+question posée, et une API n'aurait pas pu sérialiser ce que l'écran reçoit.
+Juger une réponse passait par des fonctions libres réparties dans trois
+fichiers.
+
+**Décision.** Une question posée est un objet par sorte (`AskedSingleChoice`,
+`AskedNumber`, `AskedAddress`…), distingué par `kind`. Ses champs ne sont que
+des données : libellé, rappel, options, bornes, mode d'adresse, incohérences
+du moment. Ses méthodes, sur le prototype, disent ce qu'elle garde d'une
+réponse (`kept`), si la réponse suffit (`isAnsweredBy`) et ce qui n'y va pas
+(`problemsWith`). `askedQuestion` la relit depuis son JSON, à l'identique ;
+un test le vérifie sur toutes les questions posées par les seeds.
+
+| Option | Pour | Contre |
+|---|---|---|
+| des données, et des fonctions libres pour les juger | rien à changer | ce que fait une question se lit dans plusieurs fichiers |
+| un objet qui garde ses fonctions | rien à recopier | ne passe pas en JSON |
+| un objet par sorte, données en champs, règles en méthodes | passe en JSON ; une sorte porte ses règles | une classe par sorte à tenir |
+
+Les déclarations restent des objets littéraux jusqu'au constructeur de #204 :
+`askedIn(question, contexte)` est donc une fonction du moteur, et non encore
+une méthode de la question déclarée.
+
+**Conséquences.** L'écran ne reçoit plus que des questions posées. Le
+récapitulatif de R3 relit P3 par le questionnaire, et le contexte d'une
+question ne sort plus du socle (`contextOf`).
+
 ## 3. Architecture cible
 
 ```mermaid
@@ -159,6 +214,8 @@ flowchart LR
 | Composant | Racine | Rôle | Statut |
 |---|---|---|---|
 | Moteur de questionnaire | `core/` | questions posées, validées, problèmes d'une saisie, réponses effacées | déplacé |
+| `Questionnaire` et `Reading` | `core/` | des réponses lues une fois : pages, questions posées, validées, page suivante | nouveau |
+| Question posée (`AskedQuestion`) | `core/` | la question du moment, en données ; ce qu'elle garde d'une réponse et ce qui n'y va pas | nouveau |
 | Questionnaire à l'écran | `front/` | page ouverte, brouillon, navigation, phrases, champs | modifié |
 | Moteur de décision | `core/` | des faits aux cibles, seul à importer publicodes | déplacé |
 | Seeds | `core/` | ce qu'est une seed, ce qu'elle confirme ou dément | déplacé |
@@ -188,7 +245,7 @@ a-t-il besoin ?**
 | Incrément | Issue | Statut |
 |---|---|---|
 | Sortir le métier du front | 202 | ✅ |
-| Moteur objet | 203 | à venir |
+| Moteur objet | 203 | ✅ |
 | Constructeur de questions | 204 | à venir |
 | Faits : une déclaration par fait | 205 | à venir |
 | Cibles : un objet valeur par cible | 206 | à venir |
@@ -201,6 +258,7 @@ a-t-il besoin ?**
 | R-1 | Les décisions de ce document ont été prises sans Simon | relecture de la PR, issue par issue |
 | R-2 | Le JSON des règles oublié après une livraison | un test compare le JSON au YAML ; les skills d'intégration disent la commande |
 | R-3 | Le serveur n'importe pas encore le métier : la frontière n'est éprouvée que par un test | le test sous Node rejoue toutes les seeds à attendus |
+| R-4 | Une question posée gagne une fonction, et ne passe plus en JSON | le test de conformité relit chaque question posée par les seeds |
 
 ## Vérification
 
@@ -208,4 +266,5 @@ a-t-il besoin ?**
 cd apps/simulateur-eligibilite
 pnpm vitest run tests/frontieres-des-racines.test.ts tests/architecture.test.ts
 pnpm vitest run tests/model/metier-sous-node.test.ts tests/model/regles-a-jour.test.ts
+pnpm vitest run tests/model/conformite.test.ts tests/socle/questionnaire-engine
 ```
