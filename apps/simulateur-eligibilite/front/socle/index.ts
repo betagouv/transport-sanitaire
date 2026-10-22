@@ -16,6 +16,7 @@ export { at, type Cerfa, commentOn, drawnBox, text } from "./cerfa/cerfa";
 export { templateAt } from "./cerfa/generate-cerfa";
 export { bindCerfa, type CerfaMapping } from "./cerfa-mapping";
 export { Fait } from "./decision-engine/fait";
+export { faitsOf } from "./decision-engine/fait-builder";
 export {
   type CerfaInput,
   defineModel,

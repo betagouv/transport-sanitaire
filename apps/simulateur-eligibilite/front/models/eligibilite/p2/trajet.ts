@@ -9,6 +9,7 @@ import { AUCUN_FAIT, type Faits } from "../declarations/faits";
 import type { Questions } from "../declarations/questions";
 import { cible } from "../evaluation-des-regles";
 import { EXCLUSION_DU_TRANSPORT } from "../exclusion-du-transport";
+import { fait } from "../fait";
 import { faitsDuMode } from "../p1/mode-de-transport";
 import { faitsDesContextes } from "./contextes";
 import { faitsDeLaPrestation } from "./prestation";
@@ -19,8 +20,8 @@ type Valides = ValidatedAnswers<Questions>;
 export function faitsDuTrajet(validated: Valides) {
   return {
     ...faitsDeLaDistance(validated),
-    fait_avion_bateau_ligne: avionOuBateau(validated),
-    fait_serie_qualifiante: serieQualifiante(validated),
+    ...avionOuBateau(validated),
+    ...serieQualifiante(validated),
     ...faitsDeLUrgence(validated),
   } satisfies Partial<Faits>;
 }
@@ -42,8 +43,8 @@ export function urgenceAAfficher(validated: Valides): boolean {
         ...faitsDeLaPrestation(validated),
         ...faitsDesContextes(validated),
         ...faitsDeLaDistance(validated),
-        fait_avion_bateau_ligne: avionOuBateau(validated),
-        fait_serie_qualifiante: serieQualifiante(validated),
+        ...avionOuBateau(validated),
+        ...serieQualifiante(validated),
         fait_exclusion_transport_prouvee: EXCLUSION_DU_TRANSPORT,
       },
       "cible_question_urgence_a_afficher",
@@ -59,45 +60,45 @@ const CINQUANTE_KM_OU_MOINS = "1_CINQUANTE_KM_OU_MOINS";
 // dépassent pas leur seuil.
 function faitsDeLaDistance(validated: Valides) {
   const tranche = validated.question("Q2.3.1");
-  if (!tranche.hasAnswer()) {
-    const attente = Fait.inconnu("Q2.3.1 n'est pas encore validée.");
-    return { fait_distance_plus_50: attente, fait_distance_plus_150: attente };
-  }
-  const source = `Q2.3.1 : « ${tranche.value} ».`;
+  const attente = "Q2.3.1 n'est pas encore validée.";
   return {
-    fait_distance_plus_50: tranche.is(CINQUANTE_KM_OU_MOINS)
-      ? Fait.non(source)
-      : Fait.oui(source),
-    fait_distance_plus_150: tranche.is("3_PLUS_DE_CENT_CINQUANTE_KM")
-      ? Fait.oui(source)
-      : Fait.non(source),
+    ...fait("fait_distance_plus_50")
+      .selon(tranche, {
+        [CINQUANTE_KM_OU_MOINS]: "non",
+        "2_PLUS_DE_CINQUANTE_KM": "oui",
+        "3_PLUS_DE_CENT_CINQUANTE_KM": "oui",
+      })
+      .sinon(attente),
+    ...fait("fait_distance_plus_150")
+      .selon(tranche, {
+        [CINQUANTE_KM_OU_MOINS]: "non",
+        "2_PLUS_DE_CINQUANTE_KM": "non",
+        "3_PLUS_DE_CENT_CINQUANTE_KM": "oui",
+      })
+      .sinon(attente),
   };
 }
 
 // Q2.3.2 : une case seule. Décochée sur la page validée, elle vaut « non ».
-function avionOuBateau(validated: Valides): Fait {
+function avionOuBateau(validated: Valides) {
   const caseSeule = validated.question("Q2.3.2");
-  if (!caseSeule.hasAnswer())
-    return Fait.inconnu("Q2.3.2 n'est pas encore validée.");
-  return caseSeule.is(true)
-    ? Fait.oui("Q2.3.2 : case cochée.")
-    : Fait.non("Q2.3.2 : case décochée.");
+  return fait("fait_avion_bateau_ligne")
+    .ouiSi(caseSeule.is(true), "Q2.3.2 : case cochée.")
+    .nonSi(caseSeule.is(false), "Q2.3.2 : case décochée.")
+    .sinon("Q2.3.2 n'est pas encore validée.");
 }
 
 // Q2.3.3 porte sur la conjonction entière : « Non » ne dit pas quelle
 // condition manque. Elle ne se pose pas sous 50 km : la série reste alors
 // absente, et les règles l'écartent par la distance.
-function serieQualifiante(validated: Valides): Fait {
-  const reponse = validated.question("Q2.3.3");
-  if (reponse.hasAnswer()) {
-    const source = `Q2.3.3 : « ${reponse.value} ».`;
-    return reponse.is("1_OUI") ? Fait.oui(source) : Fait.non(source);
-  }
-  if (validated.question("Q2.3.1").is(CINQUANTE_KM_OU_MOINS))
-    return Fait.inconnu(
-      "Q2.3.3 ne se pose pas : le trajet ne dépasse pas 50 km.",
+function serieQualifiante(validated: Valides) {
+  return fait("fait_serie_qualifiante")
+    .selon(validated.question("Q2.3.3"), { "1_OUI": "oui", "2_NON": "non" })
+    .sinon(
+      validated.question("Q2.3.1").is(CINQUANTE_KM_OU_MOINS)
+        ? "Q2.3.3 ne se pose pas : le trajet ne dépasse pas 50 km."
+        : "Q2.3.3 n'est pas encore validée.",
     );
-  return Fait.inconnu("Q2.3.3 n'est pas encore validée.");
 }
 
 // Q2.3.4 : le médecin atteste-t-il l'urgence ? « Oui » comme « Non » disent que

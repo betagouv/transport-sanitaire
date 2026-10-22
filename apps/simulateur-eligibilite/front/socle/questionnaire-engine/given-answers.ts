@@ -20,10 +20,14 @@ export type Box<Given> = Given extends readonly (infer Option)[]
 
 /** La réponse qu'une question a reçue, ou pas encore. */
 export class GivenAnswer<Given extends Answer = Answer> {
+  /** L'id de la question : « Q2.1 ». */
+  readonly id: string;
+
   /** La réponse telle quelle : un nombre, une date, un texte, une adresse. */
   readonly value: Given | Unanswered;
 
-  constructor(value: Given | Unanswered) {
+  constructor(id: string, value: Given | Unanswered) {
+    this.id = id;
     this.value = value;
   }
 
@@ -76,7 +80,10 @@ export class GivenAnswers<Questions extends AnyQuestions = AnyQuestions> {
   question<Id extends keyof Questions & string>(
     id: Id,
   ): GivenAnswer<Questions[Id]> {
-    return new GivenAnswer(answersOf(this)[id] as Questions[Id] | Unanswered);
+    return new GivenAnswer(
+      id,
+      answersOf(this)[id] as Questions[Id] | Unanswered,
+    );
   }
 }
 

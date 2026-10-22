@@ -9,6 +9,7 @@ import { Fait, type GivenAnswer, type ValidatedAnswers } from "../../../socle";
 import { AUCUN_FAIT, type Faits } from "../declarations/faits";
 import type { Questions } from "../declarations/questions";
 import { cible } from "../evaluation-des-regles";
+import { fait } from "../fait";
 import { faitsDuMode } from "../p1/mode-de-transport";
 
 type Valides = ValidatedAnswers<Questions>;
@@ -49,9 +50,20 @@ export function plusieursSeances(validated: Valides): boolean {
 export function faitsDeLaPrestation(validated: Valides) {
   const motif = validated.question("Q2.1");
   return {
-    fait_permission: permission(motif),
+    // Q2.1 = 11 prouve la permission. Sans elle, Q2.2.1 peut encore l'établir.
+    ...fait("fait_permission")
+      .selon(motif, { "11_PERMISSION": "oui" })
+      .sinon("Ni Q2.1, ni Q2.2.1 n'établissent encore de permission."),
     fait_evenement_sans_soin: evenementSansSoin(motif),
-    fait_motif_camsp: camsp(motif, validated.question("Q2.1.h")),
+    // Q2.1 = 10, puis Q2.1.h : la séance est-elle dans le parcours de l'enfant ?
+    ...fait("fait_motif_camsp")
+      .seulementSi(motif.is("10_CAMSP"))
+      .selon(validated.question("Q2.1.h"), {
+        "1_OUI": "oui",
+        "2_NON": "non",
+        "3_NE_SAIT_PAS": "inconnu",
+      })
+      .sinon("Ni Q2.1.h, ni Q2.2.1 n'établissent encore le CAMSP."),
     ...hospitalisation(validated.question("Q2.1.g")),
     ...sansSeanceNiSejour(validated),
   } satisfies Partial<Faits>;
@@ -83,12 +95,6 @@ const SOINS: readonly Motif[] = [
   "14_AUTRE",
 ];
 
-// Q2.1 = 11 prouve la permission. Sans elle, Q2.2.1 peut encore l'établir.
-function permission(motif: GivenAnswer<Motif>): Fait {
-  if (motif.is("11_PERMISSION")) return Fait.oui("Q2.1 : « 11_PERMISSION ».");
-  return Fait.inconnu("Ni Q2.1, ni Q2.2.1 n'établissent encore de permission.");
-}
-
 // Un soin ordinaire n'est pas un événement autonome. Une permission, une
 // convocation ou la maternité ne le deviennent qu'une fois leur branche
 // qualifiée (Q2.7, Q2.10, Q2.14).
@@ -97,18 +103,6 @@ function evenementSansSoin(motif: GivenAnswer<Motif>): Fait {
   const source = `Q2.1 : « ${motif.value} »`;
   if (motif.isOneOf(...SOINS)) return Fait.non(`${source}, un soin.`);
   return Fait.inconnu(`${source}, à qualifier dans sa branche.`);
-}
-
-// Q2.1 = 10, puis Q2.1.h : la séance est-elle dans le parcours de l'enfant ?
-function camsp(
-  motif: GivenAnswer<Motif>,
-  rattachement: GivenAnswer<Questions["Q2.1.h"]>,
-): Fait {
-  if (motif.isNot("10_CAMSP") || !rattachement.hasAnswer())
-    return Fait.inconnu("Ni Q2.1.h, ni Q2.2.1 n'établissent encore le CAMSP.");
-  const source = `Q2.1.h : « ${rattachement.value} ».`;
-  if (rattachement.is("1_OUI")) return Fait.oui(source);
-  return rattachement.is("2_NON") ? Fait.non(source) : Fait.inconnu(source);
 }
 
 // Une entrée ou une sortie d'établissement prouve l'hospitalisation réelle.

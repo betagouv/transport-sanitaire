@@ -13,13 +13,11 @@ import type { AnyQuestions, Validated } from "./question";
 export class ValidatedAnswer<
   Given extends AnyQuestions[string] = AnyQuestions[string],
 > extends GivenAnswer<Given> {
-  readonly #id: string;
   readonly #offered: readonly string[] | undefined;
   readonly #validated: boolean;
 
   constructor(id: string, entry: Validated[string]) {
-    super(entry?.answer as Given | undefined);
-    this.#id = id;
+    super(id, entry?.answer as Given | undefined);
     this.#offered = entry?.offered;
     this.#validated = entry !== undefined;
   }
@@ -54,7 +52,7 @@ export class ValidatedAnswer<
    */
   faitOf(box: Box<Given>): Fait | undefined {
     if (!this.offers(box)) return undefined;
-    const option = `${this.#id} : « ${box} »`;
+    const option = `${this.id} : « ${box} »`;
     return this.checked(box)
       ? Fait.oui(`${option} cochée.`)
       : Fait.non(`${option} proposée, non cochée.`);
