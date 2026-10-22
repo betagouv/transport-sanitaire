@@ -83,7 +83,7 @@ describe("l'indication médicale d'un retour vers la prison (point 33)", () => {
   });
 
   it("« Oui » laisse les règles calculer l'issue", () => {
-    expect(ciblesDe(qualifie("1_OUI")).cible_issue_id).toBeDefined();
+    expect(ciblesDe(qualifie("1_OUI")).cible_issue_id.value).toBeDefined();
   });
 });
 
@@ -97,7 +97,7 @@ describe("un retour qui relève de l'organisation pénitentiaire (point 34)", ()
 
   it("ne complète pas P2 : les règles ne concluent pas", () => {
     expect(faits(administratif).fait_p2_complete.value).toBeUndefined();
-    expect(cibles.cible_issue_id).toBeUndefined();
+    expect(cibles.cible_issue_id.value).toBeUndefined();
   });
 
   it("oriente vers l'administration pénitentiaire, sans rien à compléter", () => {
@@ -141,7 +141,9 @@ describe("une sortie définitive vers la prison", () => {
   });
 
   it("laisse les règles calculer l'issue", () => {
-    expect(ciblesDe({ ...SORTIE, ...TRAJET }).cible_issue_id).toBeDefined();
+    expect(
+      ciblesDe({ ...SORTIE, ...TRAJET }).cible_issue_id.value,
+    ).toBeDefined();
   });
 });
 

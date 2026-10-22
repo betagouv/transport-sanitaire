@@ -18,14 +18,14 @@ type Critere = Questions["Q1.2"][number];
 type Cas = Questions["Q1.3"][number];
 
 /**
- * Le mode que les règles retiennent pour ces faits. Elles ne le donnent
+ * Une cible du mode pour ces faits, pendant P1. Les règles ne donnent le mode
  * qu'une fois P1 complète : elle est tenue pour telle, le temps de la poser.
  */
-export function modeDe(faits: Faits): Cibles["cible_mode_id"] {
-  return cible(
-    { ...faits, fait_p1_complete: Fait.oui("P1 en cours.") },
-    "cible_mode_id",
-  );
+export function cibleEnCoursDeP1<Nom extends keyof Cibles>(
+  faits: Faits,
+  nom: Nom,
+): Cibles[Nom] {
+  return cible({ ...faits, fait_p1_complete: Fait.oui("P1 en cours.") }, nom);
 }
 
 /** Les faits que Q1.1 à Q1.4 établissent, ou laissent absents. */

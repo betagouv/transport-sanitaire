@@ -4,6 +4,7 @@
 // conditions d'affichage et ses dépendances. Le moteur ne connaît aucun
 // identifiant : les génériques ne servent qu'à typer le modèle.
 
+import type { Cible } from "../decision-engine/cible.ts";
 import type { Address } from "./address.ts";
 import type { AskedQuestion } from "./asked-question.ts";
 import type { SeenAnswers } from "./question-context.ts";
@@ -28,8 +29,8 @@ export type Answers<Questions extends AnyQuestions = AnyQuestions> = Readonly<
   Partial<Questions>
 >;
 
-/** Les cibles d'un modèle : ce que sa préconisation rend. */
-export type AnyCibles = Readonly<Record<string, unknown>>;
+/** Les cibles d'un modèle : ce que sa préconisation calcule. */
+export type AnyCibles = Readonly<Record<string, Cible>>;
 
 /**
  * Les questions validées, par question : ce qui s'y proposait, et ce qui y a

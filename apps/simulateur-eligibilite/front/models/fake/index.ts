@@ -17,11 +17,11 @@ export const model = defineModel<Questions, Faits, Cibles>({
   cerfa: {
     // Sans boisson, il n'y a rien à compléter : le premier résultat est le
     // dernier écran.
-    form: ({ commande }) => (commande === SANS_COMMANDE ? null : bonDeCommande),
+    form: ({ commande }) => (commande.is(SANS_COMMANDE) ? null : bonDeCommande),
     title: "Commande complétée",
     Resultat: CommandeCompletee,
     startLabel: ({ commande }) =>
-      commande === SANS_COMMANDE ? null : "Compléter la commande",
+      commande.is(SANS_COMMANDE) ? null : "Compléter la commande",
     downloadLabel: "Télécharger et imprimer le bon de commande",
   },
 });

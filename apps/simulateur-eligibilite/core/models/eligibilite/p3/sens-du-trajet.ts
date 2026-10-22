@@ -17,7 +17,7 @@ type Rappel = { readonly label: string; readonly value: string }[];
 export function sensAPoser({ answers, cibles }: ContextDuComplement): boolean {
   return (
     pmtOuDap(cibles) ||
-    (cibles.cible_support_id === "S3141" && !plusieursPermissions(answers))
+    (cibles.cible_support_id.is("S3141") && !plusieursPermissions(answers))
   );
 }
 
@@ -26,7 +26,7 @@ export function trajetsMensuelsAPoser({
   answers,
   cibles,
 }: ContextDuComplement): boolean {
-  return cibles.cible_support_id === "S3141" && plusieursPermissions(answers);
+  return cibles.cible_support_id.is("S3141") && plusieursPermissions(answers);
 }
 
 /** Le sens du document : Q3.1.2, ou l'aller-retour de plusieurs permissions. */

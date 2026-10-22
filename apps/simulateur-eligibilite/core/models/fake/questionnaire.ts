@@ -127,7 +127,7 @@ export const COMPLEMENT: QuestionnairePart<Questions, Cibles> = {
       questionDuComplement
         .number("quantite", "Combien de tasses ?")
         .reminderFrom(({ answers, cibles: { commande } }) => [
-          { label: "Commande", value: commande },
+          { label: "Commande", value: String(commande.value) },
           {
             label: "Service",
             value: answers

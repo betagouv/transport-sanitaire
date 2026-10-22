@@ -3,6 +3,7 @@
 // La même définition sert aux tests, qui comparent la préconisation aux
 // attendus, et à l'écran des seeds, qui permet de l'ouvrir.
 
+import type { CibleValues } from "../decision-engine/cible.ts";
 import type {
   Answers,
   AnyCibles,
@@ -25,8 +26,11 @@ export type Seed<
    * n'annonce aucun attendu.
    */
   readonly answers: Answers<Questions>;
-  /** Les cibles attendues. Partiel : on n'annonce que ce qui la caractérise. */
-  readonly expected: Partial<Cibles>;
+  /**
+   * La valeur attendue de ses cibles. Partiel : on n'annonce que ce qui la
+   * caractérise.
+   */
+  readonly expected: Partial<CibleValues<Cibles>>;
 };
 
 type SeedMismatch = {
@@ -54,7 +58,11 @@ export function evaluateSeed(
 ): SeedEvaluation {
   const cibles = preconise(seed.answers);
   const mismatches = Object.entries(seed.expected)
-    .filter(([cible, expected]) => cibles[cible] !== expected)
-    .map(([cible, expected]) => ({ cible, expected, actual: cibles[cible] }));
+    .map(([cible, expected]) => ({
+      cible,
+      expected,
+      actual: cibles[cible]?.value,
+    }))
+    .filter(({ expected, actual }) => actual !== expected);
   return { cibles, mismatches };
 }

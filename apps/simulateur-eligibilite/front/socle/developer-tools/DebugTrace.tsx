@@ -7,6 +7,7 @@
 // C'est un developer tool, réservé au service qui les déverrouille (`unlock.ts`).
 // Le simulateur ne l'importe pas : `App` la lui passe.
 
+import { cibleValues } from "../../../core/socle/decision-engine/cible";
 import type { Validated } from "../../../core/socle/questionnaire-engine/question";
 import { SHA_COMMIT, VERSION_APP } from "../app/deployed-version";
 import type { DebugTraceProps } from "../questionnaire-engine/QuestionnaireForm";
@@ -26,7 +27,9 @@ export function DebugTrace(props: DebugTraceProps) {
         <ValueList title="Réponses validées" values={props.answers} />
         {props.validated && <ValidatedList validated={props.validated} />}
         {props.faits && <ValueList title="Faits" values={props.faits} />}
-        {props.cibles && <ValueList title="Cibles" values={props.cibles} />}
+        {props.cibles && (
+          <ValueList title="Cibles" values={cibleValues(props.cibles)} />
+        )}
       </div>
     </details>
   );
@@ -46,7 +49,7 @@ function ExportLink({ trace }: { trace: DebugTraceProps }) {
     app: { version: VERSION_APP, commit: SHA_COMMIT },
     ...rest,
     pages: pages.map((page) => page.id),
-    ...(cibles && { cibles: withUndefinedNamed(cibles) }),
+    ...(cibles && { cibles: withUndefinedNamed(cibleValues(cibles)) }),
   };
   const file = encodeURIComponent(JSON.stringify(content, null, 2));
   return (

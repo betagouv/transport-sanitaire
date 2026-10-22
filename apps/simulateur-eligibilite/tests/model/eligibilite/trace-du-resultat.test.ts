@@ -113,7 +113,7 @@ describe("la trace des dix seeds", () => {
       const trace = traceDe(seed(id));
 
       it("garde les cibles des règles", () => {
-        expect(trace.cibles.cible_issue_id).toBe(
+        expect(trace.cibles.cible_issue_id.value).toBe(
           SEEDS.find((candidate) => candidate.id === id)?.expected
             .cible_issue_id,
         );

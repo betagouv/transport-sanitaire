@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { Fait } from "../../../core/socle";
+import { Cible, Fait } from "../../../core/socle";
 import { publicodesEngine } from "../../../core/socle/decision-engine/publicodes";
 
 // Le moteur de décision, sur des règles écrites ici : il ne connaît celles
@@ -12,9 +12,9 @@ type Faits = {
   fait_pret: Fait;
 };
 type Cibles = {
-  cible_parapluie: boolean | null;
-  cible_abri: boolean | null;
-  cible_table: string | null;
+  cible_parapluie: Cible<boolean>;
+  cible_abri: Cible<boolean>;
+  cible_table: Cible<"GRANDE" | "PETITE">;
 };
 
 const REGLES = {
@@ -55,68 +55,78 @@ const SOIREE: Faits = {
 describe("le moteur de décision publicodes", () => {
   it("donne chaque cible demandée", () => {
     expect(moteur.cibles(SOIREE)).toEqual({
-      cible_parapluie: true,
-      cible_abri: true,
-      cible_table: "GRANDE",
+      cible_parapluie: Cible.of(true),
+      cible_abri: Cible.of(true),
+      cible_table: Cible.of("GRANDE"),
     });
   });
 
   it("lit un fait faux comme un « non »", () => {
     expect(
-      moteur.cibles({ ...SOIREE, fait_pluie: etabli(false) }).cible_parapluie,
-    ).toBe(false);
+      moteur
+        .cibles({ ...SOIREE, fait_pluie: etabli(false) })
+        .cible_parapluie.isNon(),
+    ).toBe(true);
   });
 
   it("compare un fait numérique à un seuil", () => {
     expect(
-      moteur.cibles({ ...SOIREE, fait_invites: invites(2) }).cible_table,
-    ).toBe("PETITE");
+      moteur
+        .cibles({ ...SOIREE, fait_invites: invites(2) })
+        .cible_table.is("PETITE"),
+    ).toBe(true);
   });
 
-  it("rend `null` pour une cible qui ne s'applique pas", () => {
+  it("donne une cible sans objet quand elle ne s'applique pas", () => {
     expect(
-      moteur.cibles({ ...SOIREE, fait_pret: etabli(false) }).cible_table,
-    ).toBeNull();
+      moteur
+        .cibles({ ...SOIREE, fait_pret: etabli(false) })
+        .cible_table.isSansObjet(),
+    ).toBe(true);
   });
 
-  it("rend une seule cible sur demande", () => {
-    expect(moteur.cible(SOIREE, "cible_table")).toBe("GRANDE");
+  it("calcule une seule cible sur demande", () => {
+    expect(moteur.cible(SOIREE, "cible_table")).toEqual(Cible.of("GRANDE"));
   });
 
   it("ne garde rien d'un calcul à l'autre", () => {
     moteur.cibles(SOIREE);
     expect(
-      moteur.cible({ ...SOIREE, fait_pluie: etabli(false) }, "cible_parapluie"),
-    ).toBe(false);
+      moteur
+        .cible({ ...SOIREE, fait_pluie: etabli(false) }, "cible_parapluie")
+        .isNon(),
+    ).toBe(true);
   });
 });
 
 // Un fait a trois états : vrai, faux, ou absent. Absent, il n'est pas envoyé
 // aux règles, et ne vaut jamais « non ».
 describe("un fait absent", () => {
-  it("laisse indéfinie la cible qui en dépend", () => {
+  it("laisse inconnue la cible qui en dépend", () => {
     expect(
-      moteur.cibles({ ...SOIREE, fait_pluie: ABSENT }).cible_parapluie,
-    ).toBeUndefined();
+      moteur
+        .cibles({ ...SOIREE, fait_pluie: ABSENT })
+        .cible_parapluie.isInconnue(),
+    ).toBe(true);
   });
 
   it("ne vaut pas « non » : un « non » décide, lui", () => {
     const sansVent = { ...SOIREE, fait_pluie: etabli(false) };
-    expect(moteur.cible(sansVent, "cible_abri")).toBe(false);
-    expect(
-      moteur.cible({ ...sansVent, fait_vent: ABSENT }, "cible_abri"),
-    ).toBeUndefined();
+    expect(moteur.cible(sansVent, "cible_abri").isNon()).toBe(true);
+    const abri = moteur.cible({ ...sansVent, fait_vent: ABSENT }, "cible_abri");
+    expect(abri.isInconnue()).toBe(true);
+    expect(abri.isNon()).toBe(false);
   });
 
   it("n'empêche pas de décider, quand un autre fait suffit", () => {
-    expect(moteur.cible({ ...SOIREE, fait_vent: ABSENT }, "cible_abri")).toBe(
-      true,
-    );
+    expect(
+      moteur.cible({ ...SOIREE, fait_vent: ABSENT }, "cible_abri").isOui(),
+    ).toBe(true);
   });
 
-  it("ne rend pas une cible sans objet : indéfinie n'est pas `null`", () => {
-    expect(
-      moteur.cibles({ ...SOIREE, fait_pret: ABSENT }).cible_table,
-    ).toBeUndefined();
+  it("ne donne pas une cible sans objet : inconnue n'est pas sans objet", () => {
+    const table = moteur.cibles({ ...SOIREE, fait_pret: ABSENT }).cible_table;
+    expect(table.isInconnue()).toBe(true);
+    expect(table.isSansObjet()).toBe(false);
   });
 });

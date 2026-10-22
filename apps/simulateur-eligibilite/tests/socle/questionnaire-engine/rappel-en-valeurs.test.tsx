@@ -1,6 +1,6 @@
 import { screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
-import { page, questionsOf } from "../../../core/socle";
+import { Cible, page, questionsOf } from "../../../core/socle";
 import { afficher } from "./afficher";
 
 // Un rappel peut prendre la forme de valeurs avec leur intitulé : ce qui est
@@ -14,7 +14,7 @@ type Questions = {
 };
 
 // Les cibles figées au verrou. Avant lui : aucune.
-type Cibles = { readonly nature: string } | undefined;
+type Cibles = { readonly nature: Cible<string> } | undefined;
 
 const question = questionsOf<Questions, undefined, Cibles>({ options: {} });
 
@@ -26,7 +26,7 @@ const ARRIVEE = page(
       { label: "Rôle", value: "arrivée" },
       {
         label: "Nature",
-        value: String(cibles?.nature ?? answers.question("nature").value),
+        value: String(cibles?.nature.value ?? answers.question("nature").value),
       },
     ]),
 );
@@ -35,7 +35,7 @@ const SANS_RAPPEL = page("nom", question.text("nom", "Nom du lieu"));
 
 const VERROU = {
   lockedAnswers: { motif: "consultation" },
-  cibles: { nature: "structure de soins" },
+  cibles: { nature: Cible.of("structure de soins") },
 };
 
 const adresse = () =>

@@ -11,15 +11,15 @@ type Props = { answers: GivenAnswers<Questions>; cibles: Cibles };
 export function resultatDeLaCommande({ cibles }: Props): FirstResult {
   return {
     title: "Votre commande",
-    body: <p className="fr-text--lead">Commande : {cibles.commande}</p>,
+    body: <p className="fr-text--lead">Commande : {cibles.commande.value}</p>,
   };
 }
 
 export function CommandeCompletee({ answers, cibles }: Props) {
   return (
     <p className="fr-text--lead">
-      Commande : {cibles.commande}, {String(answers.question("quantite").value)}{" "}
-      tasses
+      Commande : {cibles.commande.value},{" "}
+      {String(answers.question("quantite").value)} tasses
     </p>
   );
 }

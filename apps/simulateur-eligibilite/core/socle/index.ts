@@ -5,6 +5,7 @@
 //
 // L'écran a son propre point d'entrée, `front/socle/index.ts`.
 
+export { Cible, cibleValues } from "./decision-engine/cible.ts";
 export { Fait } from "./decision-engine/fait.ts";
 export { citant, regles } from "./decision-engine/fait-builder.ts";
 export {

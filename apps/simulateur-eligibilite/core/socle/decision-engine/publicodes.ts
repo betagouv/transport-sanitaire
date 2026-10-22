@@ -7,34 +7,27 @@
 // chunk d'entrée.
 
 import Engine, { type RawPublicodes } from "publicodes";
+import { Cible } from "./cible.ts";
 import type { Fait } from "./fait.ts";
-
-/**
- * Des cibles telles que les règles les rendent. Chacune peut rester
- * indéfinie, faute d'un fait dont elle dépend : ce n'est pas une décision.
- */
-type Evaluated<Cibles> = {
-  readonly [Nom in keyof Cibles]: Cibles[Nom] | undefined;
-};
 
 /** Les règles d'un modèle, par nom : les faits, puis les cibles. */
 export type Rules = RawPublicodes<string>;
 
-/** Ce que des règles calculent pour des faits. */
+/**
+ * Ce que des règles calculent pour des faits. Chaque cible peut rester
+ * inconnue, faute d'un fait dont elle dépend : ce n'est pas une décision.
+ */
 export type DecisionEngine<Faits, Cibles> = {
   /** Toutes les cibles de ces faits : la préconisation. */
-  cibles(faits: Faits): Evaluated<Cibles>;
+  cibles(faits: Faits): Cibles;
   /** Une seule cible de ces faits, quand le questionnaire en a besoin en route. */
-  cible<Nom extends keyof Cibles>(
-    faits: Faits,
-    nom: Nom,
-  ): Cibles[Nom] | undefined;
+  cible<Nom extends keyof Cibles>(faits: Faits, nom: Nom): Cibles[Nom];
 };
 
-/** Le moteur de ces règles, qui rend ces cibles. */
+/** Le moteur de ces règles, qui calcule ces cibles. */
 export function publicodesEngine<
   Faits extends Readonly<Record<string, Fait<boolean | number | string>>>,
-  Cibles extends Readonly<Record<string, unknown>>,
+  Cibles extends Readonly<Record<string, Cible>>,
 >(
   rules: Rules,
   cibles: readonly (keyof Cibles & string)[],
@@ -50,15 +43,23 @@ export function publicodesEngine<
     cibles: (faits) => {
       const evaluated = on(faits);
       return Object.fromEntries(
-        cibles.map((cible) => [cible, evaluated.evaluate(cible).nodeValue]),
-      ) as Evaluated<Cibles>;
+        cibles.map((cible) => [cible, cibleOf(evaluated, cible)]),
+      ) as Cibles;
     },
     cible: (faits, nom) =>
-      on(faits).evaluate(nom as string).nodeValue as Cibles[typeof nom],
+      cibleOf(on(faits), nom as string) as Cibles[typeof nom],
   };
 }
 
 // ---- implémentation ----
+
+// Une règle booléenne vaut `true` ou `false`, une règle à constantes l'une
+// d'elles. `null` : elle ne s'applique pas. `undefined` : il manque un fait.
+function cibleOf(engine: Engine, nom: string): Cible {
+  return Cible.of(
+    engine.evaluate(nom).nodeValue as boolean | string | null | undefined,
+  );
+}
 
 // Seuls les faits établis partent aux règles : publicodes refuse une valeur
 // `undefined`, et une clé absente laisse indéfini ce qui en dépend. Les règles

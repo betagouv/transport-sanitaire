@@ -73,7 +73,7 @@ export function motifAPoser(
  */
 export function urgenceDevoilee({ validated, faits }: Lecture): boolean {
   if (validated.question("Q2.3.4").isValidated()) return false;
-  return cible(faits, "cible_question_urgence_a_afficher") === true;
+  return cible(faits, "cible_question_urgence_a_afficher").isOui();
 }
 
 /**
@@ -132,7 +132,7 @@ const DEPARTS_D_UNE_ENTREE_SIMPLE: readonly Questions["Q2.13.depart"][] = [
 // patient, une pension ou un point à la caisse.
 function brancheDecisive(faits: Faits): boolean {
   return (
-    cible(faits, "cible_mode_coherent") === true &&
-    cible(faits, "cible_orientation_sans_urgence_deja_etablie") !== true
+    cible(faits, "cible_mode_coherent").isOui() &&
+    !cible(faits, "cible_orientation_sans_urgence_deja_etablie").isOui()
   );
 }

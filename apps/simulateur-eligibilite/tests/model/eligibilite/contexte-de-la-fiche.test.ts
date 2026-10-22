@@ -5,7 +5,6 @@
 // du catalogue de l'éditeur.
 
 import { describe, expect, it } from "vitest";
-import type { Cibles } from "../../../core/models/eligibilite/declarations/cibles";
 import { catalogueResultats } from "../../../front/models/eligibilite/r2/catalogue-resultats";
 import {
   codesDeContexte,
@@ -13,22 +12,22 @@ import {
   phraseDuContexte,
 } from "../../../front/models/eligibilite/r2/fiche-positive/contexte-du-resultat";
 import type { Precisions } from "../../../front/models/eligibilite/r2/precisions-du-resultat";
-import { trace } from "./traces-du-praticien";
+import { trace, type ValeursDesCibles } from "./traces-du-praticien";
 
 const { issues } = await catalogueResultats();
 const pmt = issues.ISSUE_PMT;
 
-const H: Partial<Cibles> = {
+const H: ValeursDesCibles = {
   cible_hospitalisation_ou_seances_assimilees: true,
 };
-const T: Partial<Cibles> = { cible_situation_at_mp: true };
-const A: Partial<Cibles> = {
+const T: ValeursDesCibles = { cible_situation_at_mp: true };
+const A: ValeursDesCibles = {
   cible_ald_juridiquement_qualifiante_3_ou_4_degres: true,
 };
-const M: Partial<Cibles> = { cible_mineur_ald_non_exonerante_reconnue: true };
-const B: Partial<Cibles> = { cible_mode_ambulance: true };
+const M: ValeursDesCibles = { cible_mineur_ald_non_exonerante_reconnue: true };
+const B: ValeursDesCibles = { cible_mode_ambulance: true };
 
-const phrase = (cibles: Partial<Cibles>, precisions: Precisions = {}) =>
+const phrase = (cibles: ValeursDesCibles, precisions: Precisions = {}) =>
   phraseDuContexte(pmt, trace(cibles, {}, precisions));
 
 describe("les codes de contexte", () => {

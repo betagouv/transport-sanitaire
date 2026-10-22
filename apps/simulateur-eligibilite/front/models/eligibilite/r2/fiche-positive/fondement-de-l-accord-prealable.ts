@@ -29,7 +29,7 @@ export type FondementDeLAccord = {
 
 /** Les codes des motifs d'accord préalable établis, dans l'ordre L, S, V, C, N. */
 export function codesDeLAccord(cibles: Cibles): readonly string[] {
-  return MOTIFS.filter(([, cible]) => cibles[cible] === true).map(
+  return MOTIFS.filter(([, cible]) => cibles[cible].isOui()).map(
     ([code]) => code,
   );
 }
@@ -56,10 +56,10 @@ export function rappelDAttente(
 ): string | undefined {
   const { ISSUE_DAP_SANS_URGENCE, ISSUE_DAP_URGENCE_ATTESTEE } =
     catalogue.issues;
-  if (cibles.cible_attente_accord === true) {
+  if (cibles.cible_attente_accord.isOui()) {
     return ISSUE_DAP_SANS_URGENCE.blueReminder ?? undefined;
   }
-  if (cibles.cible_attente_accord === false) {
+  if (cibles.cible_attente_accord.isNon()) {
     return ISSUE_DAP_URGENCE_ATTESTEE.blueReminder ?? undefined;
   }
   return undefined;

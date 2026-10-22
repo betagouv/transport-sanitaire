@@ -10,10 +10,10 @@ import {
   type Faits,
 } from "../../../core/models/eligibilite/declarations/faits";
 import { cibles } from "../../../core/models/eligibilite/evaluation-des-regles";
-import { Fait } from "../../../core/socle";
+import { cibleValues, Fait } from "../../../core/socle";
 
 export type Changements = Partial<Record<keyof Faits, boolean | undefined>>;
-export type Issue = NonNullable<Cibles["cible_issue_id"]>;
+export type Issue = NonNullable<Cibles["cible_issue_id"]["value"]>;
 
 export const ABSENTS = Object.fromEntries(
   FAITS.map((fait) => [fait, undefined]),
@@ -35,14 +35,17 @@ function etabliPar(value: boolean | undefined, provenance: string): Fait {
   return value ? Fait.oui(provenance) : Fait.non(provenance);
 }
 
+// La valeur des cibles que les règles calculent pour ces changements.
 export const preconiser = (changements: Changements) =>
-  cibles(
-    faitsDe({
-      ...TOUS_NON,
-      fait_p1_complete: true,
-      fait_p2_complete: true,
-      ...changements,
-    }),
+  cibleValues(
+    cibles(
+      faitsDe({
+        ...TOUS_NON,
+        fait_p1_complete: true,
+        fait_p2_complete: true,
+        ...changements,
+      }),
+    ),
   );
 
 // Aucun profil de code de soin ne prouve à lui seul un motif de transport.

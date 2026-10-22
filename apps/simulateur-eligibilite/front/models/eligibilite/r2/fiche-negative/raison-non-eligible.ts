@@ -6,9 +6,9 @@
 // `priority` gagne ; `AUCUN_GENERIQUE` ne sert que de repli. Une raison
 // inactive n'est jamais prise.
 //
-// Une condition n'est vraie que si la trace la PROUVE. Un fait absent n'est
-// jamais « non » : le test est toujours `=== false`, `=== true` ou une
-// précision présente. « Je ne peux pas préciser » (Q1.3.a) n'est jamais
+// Une condition n'est vraie que si la trace la PROUVE. Un fait ou une cible
+// inconnus ne sont jamais « non » : ils se lisent par `isOui()` et `isNon()`,
+// une précision par `=== true`, `=== false` ou sa présence. « Je ne peux pas préciser » (Q1.3.a) n'est jamais
 // « Non ». Cinq raisons ne se prouvent par aucune de nos réponses (voir la
 // table) : leur condition est codée, elle ne devient jamais vraie, et la
 // raison n'est donc jamais choisie.
@@ -49,10 +49,11 @@ const REPLI = "AUCUN_GENERIQUE";
 // (`cible_motif_transport` à « non », la condition même de la règle) vaut alors
 // `AUCUN_MOTIF_TRANSPORT`, comme dans la trace de l'éditeur.
 function codeDeLaRaison({ cibles }: Trace): string | undefined {
-  if (cibles.cible_reason_code != null) return cibles.cible_reason_code;
+  const code = cibles.cible_reason_code.value;
+  if (code != null) return code;
   const sansMotif =
-    cibles.cible_issue_id === "ISSUE_NON_ELIGIBLE" &&
-    cibles.cible_motif_transport === false;
+    cibles.cible_issue_id.is("ISSUE_NON_ELIGIBLE") &&
+    cibles.cible_motif_transport.isNon();
   return sansMotif ? "AUCUN_MOTIF_TRANSPORT" : undefined;
 }
 

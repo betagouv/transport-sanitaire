@@ -65,4 +65,5 @@ export const lectureDe = (reponses: Reponses): ReponsesEtCibles => {
   return { answers, validated, cibles: ciblesDe(reponses) };
 };
 
-export const issue = (reponses: Reponses) => ciblesDe(reponses).cible_issue_id;
+export const issue = (reponses: Reponses) =>
+  ciblesDe(reponses).cible_issue_id.value;

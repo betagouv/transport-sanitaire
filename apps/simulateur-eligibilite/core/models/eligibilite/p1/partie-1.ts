@@ -4,7 +4,7 @@
 import { page, type QuestionnairePart } from "../../../socle/index.ts";
 import type { Questions } from "../declarations/questions.ts";
 import { question } from "../question.ts";
-import { modeDe } from "./mode-de-transport.ts";
+import { cibleEnCoursDeP1 } from "./mode-de-transport.ts";
 import { sansProfessionnel } from "./reponses.ts";
 
 type Partie<Cibles> = QuestionnairePart<Questions, Cibles>;
@@ -53,12 +53,11 @@ const PAGE_DES_CAS_PARTICULIERS = page(
       ),
     )
     // Le partage ne concerne que le transport assis professionnel et le TPMR.
-    // Ce sont les règles qui disent le mode.
+    // Ce sont les règles qui le disent.
     .option("6_PARTAGE_INCOMPATIBLE", (option) =>
-      option.offeredIf(({ faits }) => {
-        const mode = modeDe(faits);
-        return mode === "TAP" || mode === "TPMR";
-      }),
+      option.offeredIf(({ faits }) =>
+        cibleEnCoursDeP1(faits, "cible_mode_tap_ou_tpmr").isOui(),
+      ),
     ),
   question
     .singleChoice(

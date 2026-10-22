@@ -63,7 +63,7 @@ const VERS_LE_BON_DE_COMMANDE: CerfaMapping<
   CerfaInput<Questions, Faits, Cibles>
 > = {
   fields: {
-    commande: ({ cibles }) => cibles.commande,
+    commande: ({ cibles }) => String(cibles.commande.value),
     nombre_de_tasses: ({ answers }) =>
       String(answers.question("quantite").value),
     date: ({ completedAt }) => enFrancais(completedAt),

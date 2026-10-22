@@ -30,7 +30,7 @@ export const PAGE_DU_SOIN = page(
       "Justification médicale du lieu de soins éloigné",
     )
     .hint("Au-delà de 150 km, la demande d’accord préalable l’exige.")
-    .askedIf(({ cibles }) => cibles.cible_dap_motif_longue_distance === true),
+    .askedIf(({ cibles }) => cibles.cible_dap_motif_longue_distance.isOui()),
   question
     .singleChoice(
       "Q3.4.a",
@@ -102,10 +102,11 @@ function recapitulatifDuSoin(reponses: GivenAnswers<Questions>) {
 // `cible_urgence_autre` manque tant que l'appel au Centre 15 n'est pas un fait :
 // l'urgence attestée suffit alors, puisque l'appel n'est pas établi.
 function autreUrgence(cibles: Cibles): boolean {
-  if (cibles.cible_urgence_autre === true) return true;
+  const autre = cibles.cible_urgence_autre;
+  if (autre.isOui()) return true;
   return (
-    cibles.cible_urgence_autre == null &&
-    cibles.cible_urgence_attestee === true &&
-    cibles.cible_urgence_appel15 !== true
+    (autre.isInconnue() || autre.isSansObjet()) &&
+    cibles.cible_urgence_attestee.isOui() &&
+    !cibles.cible_urgence_appel15.isOui()
   );
 }

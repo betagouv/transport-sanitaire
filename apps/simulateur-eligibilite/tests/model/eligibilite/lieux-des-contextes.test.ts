@@ -5,16 +5,14 @@
 import { describe, expect, it } from "vitest";
 import { model } from "../../../core/models/eligibilite";
 import type { Questions } from "../../../core/models/eligibilite/declarations/questions";
-import type {
-  Answers,
-  AnyCibles,
-} from "../../../core/socle/questionnaire-engine/question";
+import type { Answers } from "../../../core/socle/questionnaire-engine/question";
 import { Questionnaire } from "../../../core/socle/questionnaire-engine/questionnaire";
+import { ciblesValant } from "./traces-du-praticien";
 
 type Reponses = Answers<Questions>;
 
 const pages = model.complement.pages;
-const PMT = { cible_support_id: "S3138g" } as AnyCibles;
+const PMT = ciblesValant({ cible_support_id: "S3138g" });
 const ALLER: Reponses = { "Q3.1.1": 1, "Q3.1.2": "1_ALLER" };
 const RETOUR: Reponses = { "Q3.1.1": 1, "Q3.1.2": "2_RETOUR" };
 const ADRESSE = {
@@ -148,7 +146,7 @@ describe("les lieux que les contextes de P2 fixent (matrice des lieux)", () => {
   });
 
   it("plusieurs permissions du S3141 vont de l'établissement au lieu de séjour, sans Q3.1.2", () => {
-    const S3141 = { cible_support_id: "S3141" } as AnyCibles;
+    const S3141 = ciblesValant({ cible_support_id: "S3141" });
     const permissions: Reponses = {
       "Q2.1": "11_PERMISSION",
       "Q2.8.5": "1_OUI",

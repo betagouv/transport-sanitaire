@@ -20,13 +20,13 @@ import type { Cibles } from "../../../../core/models/eligibilite/declarations/ci
 
 /** Le libellé de l'action qui complète, pour cette préconisation. */
 export function libelleDeCompletion(cibles: Cibles): string | null {
-  const issue = cibles.cible_issue_id;
+  const issue = cibles.cible_issue_id.value;
   return (issue && LIBELLES[issue]) ?? null;
 }
 
 // ---- implémentation ----
 
-type Issue = NonNullable<Cibles["cible_issue_id"]>;
+type Issue = NonNullable<Cibles["cible_issue_id"]["value"]>;
 
 const PRESCRIPTION = "Compléter la prescription";
 const ACCORD_PREALABLE = "Compléter la demande d’accord préalable";

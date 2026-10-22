@@ -19,7 +19,7 @@ export function avecLesAutresTermes(
   trace: Trace,
   texte: string,
 ): string {
-  const avionBateau = trace.cibles.cible_dap_motif_avion_bateau === true;
+  const avionBateau = trace.cibles.cible_dap_motif_avion_bateau.isOui();
   return texte
     .replaceAll(
       "{segment_ligne_reguliere}",

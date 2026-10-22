@@ -8,9 +8,10 @@ import { GivenAnswers } from "../../../core/socle/questionnaire-engine/given-ans
 import type { Answers } from "../../../core/socle/questionnaire-engine/question";
 import { recapitulatifDuComplement as recapitulatif } from "../../../front/models/eligibilite/r3/recapitulatif-du-complement";
 import { PLUSIEURS_PERMISSIONS } from "./reponses-de-la-permission";
+import { ciblesValant } from "./traces-du-praticien";
 
-const avecLeSupport = (support: Cibles["cible_support_id"]) =>
-  ({ cible_support_id: support }) as Cibles;
+const avecLeSupport = (support: Cibles["cible_support_id"]["value"]) =>
+  ciblesValant({ cible_support_id: support });
 
 // Ce que le socle passe à R3 : les réponses, et les cibles figées. Les pages
 // d'avant P3 sont validées par hypothèse.

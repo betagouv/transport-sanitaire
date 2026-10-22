@@ -31,7 +31,7 @@ const issue = (exclusion: Fait) =>
   cibles({
     ...nos,
     fait_exclusion_transport_prouvee: exclusion,
-  }).cible_issue_id;
+  }).cible_issue_id.value;
 
 describe("l'exclusion du transport", () => {
   it("vaut « non », constatée par le logiciel, sans question", () => {

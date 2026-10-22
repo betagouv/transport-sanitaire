@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { page, questionsOf } from "../../../core/socle";
+import { Cible, page, questionsOf } from "../../../core/socle";
 import { Questionnaire } from "../../../core/socle/questionnaire-engine/questionnaire";
 
 // Après le verrou, une question peut dépendre de la préconisation : sa condition
@@ -14,7 +14,7 @@ type Questions = {
 };
 
 // Les cibles figées au verrou. Avant lui : aucune.
-type Cibles = { readonly urgence: boolean } | undefined;
+type Cibles = { readonly urgence: Cible<boolean> } | undefined;
 
 const OPTIONS = { douleur: { oui: "Oui", non: "Non" } } as const;
 
@@ -28,22 +28,22 @@ const SI_URGENCE = page(
   "urgence",
   question
     .text("precision", "Précision sur l'urgence")
-    .askedIf(({ cibles }) => cibles?.urgence === true),
+    .askedIf(({ cibles }) => cibles?.urgence.isOui() ?? false),
 );
 
-const affichees = (cibles: Record<string, unknown>) =>
+const affichees = (urgence: boolean) =>
   new Questionnaire([TOUJOURS, SI_URGENCE])
-    .readWith({}, cibles)
+    .readWith({}, { urgence: Cible.of(urgence) })
     .askedPages()
     .map((page) => page.id);
 
 describe("condition d'une question sur les cibles", () => {
   it("pose la question quand la cible le demande", () => {
-    expect(affichees({ urgence: true })).toEqual(["adresse", "urgence"]);
+    expect(affichees(true)).toEqual(["adresse", "urgence"]);
   });
 
   it("ne la pose pas sinon", () => {
-    expect(affichees({ urgence: false })).toEqual(["adresse"]);
+    expect(affichees(false)).toEqual(["adresse"]);
   });
 });
 

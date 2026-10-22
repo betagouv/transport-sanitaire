@@ -17,7 +17,7 @@ type Reponses = Answers<Questions>;
 const valeur = (fait: keyof Faits, reponses: Reponses) =>
   (preconisationOf(model, reponses).faits as Faits)[fait].value;
 const cible = (nom: keyof Cibles, reponses: Reponses) =>
-  (preconisationOf(model, reponses).cibles as Cibles)[nom];
+  (preconisationOf(model, reponses).cibles as Cibles)[nom].value;
 
 const BRANCARD: Reponses = {
   "Q0.1": "1_VERIFIER",

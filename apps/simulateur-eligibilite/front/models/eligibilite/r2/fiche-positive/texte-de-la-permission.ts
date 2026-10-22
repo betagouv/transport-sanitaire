@@ -19,7 +19,7 @@ export function phraseDeLaPermission(
 ): string | undefined {
   if (trace.permissionRepeated === undefined) return undefined;
   const repetee = trace.permissionRepeated ? "R" : "U";
-  const ambulance = trace.cibles.cible_mode_ambulance === true ? "-B" : "";
+  const ambulance = trace.cibles.cible_mode_ambulance.isOui() ? "-B" : "";
   return texte(issue.permissionPhrases, `E-S3141-${repetee}${ambulance}`);
 }
 

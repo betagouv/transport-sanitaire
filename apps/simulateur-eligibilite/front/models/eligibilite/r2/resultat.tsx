@@ -19,7 +19,7 @@ export function eligibilite(
   reponses: ReponsesEtCibles,
 ): FirstResult | Promise<FirstResult> {
   if (horsCircuit(reponses.validated)) return ORIENTATION_PENITENTIAIRE;
-  const issue = reponses.cibles.cible_issue_id;
+  const issue = reponses.cibles.cible_issue_id.value;
   if (!issue) return SANS_ISSUE;
   if (issue === "ISSUE_NON_ELIGIBLE") return resultatNegatif(reponses);
   if (estSansFiche(issue)) return resultatDuPraticien({ ...reponses, issue });

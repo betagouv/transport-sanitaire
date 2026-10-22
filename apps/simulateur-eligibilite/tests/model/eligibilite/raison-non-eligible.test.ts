@@ -213,7 +213,7 @@ describe("de bout en bout, par les réponses", () => {
     const answers = { ...seed.answers, ...plus } as typeof seed.answers;
     const cibles = ciblesDe(answers);
     return {
-      issue: cibles.cible_issue_id,
+      issue: cibles.cible_issue_id.value,
       raison: raisonNonEligible(issue, traceDuResultat(lectureDe(answers))).id,
     };
   };

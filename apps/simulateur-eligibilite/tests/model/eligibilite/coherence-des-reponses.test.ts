@@ -16,8 +16,8 @@ import {
   type Questions,
 } from "../../../core/models/eligibilite/declarations/questions";
 import {
+  cibleEnCoursDeP1,
   FAITS_DU_MODE,
-  modeDe,
 } from "../../../core/models/eligibilite/p1/mode-de-transport";
 import { preconisationOf } from "../../../core/socle/model";
 import { GivenAnswers } from "../../../core/socle/questionnaire-engine/given-answers";
@@ -78,7 +78,7 @@ describe("les 2 048 combinaisons de Q1.2", () => {
   // Le mode ne lit que les faits des critères : il s'évalue une fois par
   // jeu de faits, comme l'éditeur évalue ses faits fermés.
   it("donnent le mode de l'éditeur à chaque combinaison acceptée", () => {
-    const modes = new Map<string, ReturnType<typeof modeDe>>();
+    const modes = new Map<string, string | null | undefined>();
     const ecarts = acceptees.filter((masque) => {
       const criteres = criteresDu(masque);
       const validated = new ValidatedAnswers<Questions>({
@@ -93,7 +93,8 @@ describe("les 2 048 combinaisons de Q1.2", () => {
       const cle = JSON.stringify(
         Object.keys(FAITS_DU_MODE).map((nom) => faits[nom as keyof Faits]),
       );
-      if (!modes.has(cle)) modes.set(cle, modeDe(faits));
+      if (!modes.has(cle))
+        modes.set(cle, cibleEnCoursDeP1(faits, "cible_mode_id").value);
       return modes.get(cle) !== modeAttendu(criteres);
     });
     expect(ecarts).toEqual([]);

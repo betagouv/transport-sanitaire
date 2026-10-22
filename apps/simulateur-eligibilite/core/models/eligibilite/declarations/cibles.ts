@@ -4,6 +4,8 @@
 // Les listes suivent l'ordre des règles. `tests/model/eligibilite/declarations.test.ts`
 // les compare à `rules/regles.publicodes`.
 
+import type { Cible } from "../../../socle/index.ts";
+
 /** Les cibles qui valent une constante, et les constantes que chacune peut valoir. */
 export const CIBLES_ENUMEREES = {
   cible_mode_id: [
@@ -118,17 +120,14 @@ const CIBLES_BOOLEENNES = [
 type CibleEnumeree = keyof typeof CIBLES_ENUMEREES;
 
 /**
- * Ce que les règles rendent pour des faits. `null` : la cible ne s'applique
- * pas. `undefined` : elle reste indéfinie, faute d'un fait dont elle dépend.
- * Ni l'un ni l'autre n'est une décision.
+ * Ce que les règles donnent pour des faits : chaque cible, « oui ou non » ou à
+ * constantes. Sans objet ou inconnue, elle n'est pas une décision.
  */
 export type Cibles = Readonly<
-  Record<(typeof CIBLES_BOOLEENNES)[number], Rendue<boolean>> & {
-    [Cible in CibleEnumeree]: Rendue<(typeof CIBLES_ENUMEREES)[Cible][number]>;
+  Record<(typeof CIBLES_BOOLEENNES)[number], Cible<boolean>> & {
+    [Nom in CibleEnumeree]: Cible<(typeof CIBLES_ENUMEREES)[Nom][number]>;
   }
 >;
-
-type Rendue<Valeur> = Valeur | null | undefined;
 
 /** Le nom de chaque cible que les règles calculent. */
 export const CIBLES: readonly (keyof Cibles)[] = [

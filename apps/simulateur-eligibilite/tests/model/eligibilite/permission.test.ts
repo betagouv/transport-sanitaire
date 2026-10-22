@@ -250,8 +250,8 @@ describe("« je ne peux pas le vérifier » : la caisse", () => {
     ],
   ] as const)("%s va à la caisse", (_, reponses) => {
     const cibles = ciblesDe(reponses);
-    expect(cibles.cible_couverture_inconnue_decisive).toBe(true);
-    expect(cibles.cible_issue_id).toBe("ISSUE_CAISSE");
+    expect(cibles.cible_couverture_inconnue_decisive.value).toBe(true);
+    expect(cibles.cible_issue_id.value).toBe("ISSUE_CAISSE");
   });
 });
 

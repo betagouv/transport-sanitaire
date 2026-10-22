@@ -16,7 +16,7 @@ import { avecLesAutresTermes } from "./autres-termes-du-lexique";
 
 /** Les codes de contexte que ces cibles établissent, dans l'ordre H, T, A, M, B. */
 export function codesDeContexte(cibles: Cibles): readonly string[] {
-  return CODES.filter(([, cible]) => cibles[cible] === true).map(
+  return CODES.filter(([, cible]) => cibles[cible].isOui()).map(
     ([code]) => code,
   );
 }

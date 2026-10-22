@@ -4,6 +4,7 @@
 
 import { publicodesEngine } from "../../socle/decision-engine/publicodes.ts";
 import {
+  Cible,
   type Fait,
   FaitCatalogue,
   type FaitContext,
@@ -26,10 +27,13 @@ export function faits(
   return CATALOGUE.read(answers, validated);
 }
 
-/** Des faits aux cibles : la commande, en une phrase, et la mise en garde. */
+/**
+ * Des faits aux cibles : la commande, en une phrase, et la mise en garde. La
+ * commande se calcule en code, mais se lit comme toute cible.
+ */
 export function cibles({ boisson, accompagnements, ...connus }: Faits): Cibles {
   return {
-    commande: commandeDe(boisson, accompagnements),
+    commande: Cible.of(commandeDe(boisson, accompagnements)),
     ...miseEnGarde.cibles(connus),
   };
 }

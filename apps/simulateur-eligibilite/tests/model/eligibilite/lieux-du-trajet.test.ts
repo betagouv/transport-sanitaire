@@ -14,11 +14,12 @@ import type {
   AnyCibles,
 } from "../../../core/socle/questionnaire-engine/question";
 import { Questionnaire } from "../../../core/socle/questionnaire-engine/questionnaire";
+import { ciblesValant } from "./traces-du-praticien";
 
 type Reponses = Answers<Questions>;
 
 const pages = model.complement.pages;
-const PMT = { cible_support_id: "S3138g" } as AnyCibles;
+const PMT = ciblesValant({ cible_support_id: "S3138g" });
 const ALLER: Reponses = { "Q3.1.1": 1, "Q3.1.2": "1_ALLER" };
 const DIALYSE: Reponses = { ...ALLER, "Q1.3": ["5_DIALYSE"] };
 const ADRESSE = {

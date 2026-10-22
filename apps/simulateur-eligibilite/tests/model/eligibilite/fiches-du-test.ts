@@ -1,7 +1,6 @@
 // Les aides des tests du texte de la fiche patient positive (#135) : des traces
 // écrites à la main, et la lecture de la fiche qu'elles donnent.
 
-import type { Cibles } from "../../../core/models/eligibilite/declarations/cibles";
 import type { Faits } from "../../../core/models/eligibilite/declarations/faits";
 import { catalogueResultats } from "../../../front/models/eligibilite/r2/catalogue-resultats";
 import {
@@ -10,7 +9,7 @@ import {
   texteDeLaFichePositive,
 } from "../../../front/models/eligibilite/r2/fiche-positive/texte-de-la-fiche-positive";
 import type { Trace } from "../../../front/models/eligibilite/r2/trace-du-resultat";
-import { trace } from "./traces-du-praticien";
+import { trace, type ValeursDesCibles } from "./traces-du-praticien";
 
 export const catalogue = await catalogueResultats();
 export const pmt = catalogue.issues.ISSUE_PMT;
@@ -25,7 +24,7 @@ export type Ajouts = {
   readonly faits?: Partial<Faits>;
 };
 
-const tracer = (cibles: Partial<Cibles>, ajouts: Ajouts = {}): Trace => ({
+const tracer = (cibles: ValeursDesCibles, ajouts: Ajouts = {}): Trace => ({
   ...trace(cibles, ajouts.faits, ajouts.precisions),
   criteres: ajouts.criteres ?? [],
   ...(ajouts.permissionRepeated !== undefined && {
@@ -34,7 +33,7 @@ const tracer = (cibles: Partial<Cibles>, ajouts: Ajouts = {}): Trace => ({
 });
 
 export const fiche = (
-  cibles: Partial<Cibles>,
+  cibles: ValeursDesCibles,
   ajouts: Ajouts = {},
   issue: IssueAvecFichePositive = "ISSUE_PMT",
 ): TexteDeLaFichePositive | undefined =>
@@ -57,6 +56,14 @@ export const carteDuCatalogue = (id: string) => {
   return trouvee.text;
 };
 
+export const VEHICULE_PERSONNEL = {
+  cible_mode_id: "VEHICULE_PERSONNEL",
+  cible_mode_individual: true,
+} as const;
+export const TRANSPORT_COMMUN = {
+  cible_mode_id: "TRANSPORT_COMMUN",
+  cible_mode_public: true,
+} as const;
 export const TAP = { cible_mode_id: "TAP" } as const;
 export const NON_PARTAGE = {
   cible_transport_partage_incompatible: true,

@@ -170,7 +170,7 @@ describe("la page de l'urgence (Q3.5)", () => {
       ...MATERNITE_ETABLIE,
       "Q2.12": "1_OUI",
     };
-    expect(cibles(reponses).cible_support_id).toBe("AUCUN");
+    expect(cibles(reponses).cible_support_id.value).toBe("AUCUN");
     expect(ids("P3/urgence", reponses)).toEqual([]);
   });
 

@@ -29,7 +29,7 @@ type Motif = Questions["Q2.1"];
  */
 export function motifDeP1(faits: Faits): boolean {
   if (faits.fait_situation_soins_qualifiante.isOui()) return true;
-  return MOTIFS_DE_P1.some((motif) => cible(faits, motif) === true);
+  return MOTIFS_DE_P1.some((motif) => cible(faits, motif).isOui());
 }
 
 /**

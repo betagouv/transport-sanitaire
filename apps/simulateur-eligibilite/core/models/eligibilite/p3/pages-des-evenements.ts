@@ -24,7 +24,7 @@ export const PAGE_DES_EVENEMENTS = page(
     )
     .askedIf(
       ({ cibles }) =>
-        avecUnDocument(cibles) && cibles.cible_situation_at_mp === true,
+        avecUnDocument(cibles) && cibles.cible_situation_at_mp.isOui(),
     )
     .reminder(
       "Le transport est lié à un accident du travail ou à une maladie professionnelle : la case est déjà cochée.",
@@ -66,12 +66,12 @@ export const PAGE_DE_L_EXONERATION = page(
     .askedIf(
       ({ cibles }) =>
         avecUnDocument(cibles) &&
-        cibles.cible_hospitalisation_ou_seances_assimilees === true,
+        cibles.cible_hospitalisation_ou_seances_assimilees.isOui(),
     )
     .option("3_URGENCE_HOSPITALIERE", (option) => option.offeredIf(horsDap))
     .option("4_HAD_OU_RADIOTHERAPIE", (option) => option.offeredIf(horsDap))
     .option("6_TRAITEMENT_MIEUX_ADAPTE", (option) =>
-      option.offeredIf(({ cibles }) => cibles.cible_support_id === "S3139h"),
+      option.offeredIf(({ cibles }) => cibles.cible_support_id.is("S3139h")),
     )
     .exclusive("7_AUCUN"),
 );
@@ -87,7 +87,7 @@ export function jourAParis(instant: Date): string {
 // La notice de la DAP n'a ni l'urgence hospitalière, ni la HAD ou la
 // radiothérapie. Elle seule a le traitement mieux adapté.
 function horsDap({ cibles }: Contexte): boolean {
-  return cibles.cible_support_id !== "S3139h";
+  return !cibles.cible_support_id.is("S3139h");
 }
 
 // Une date au format AAAA-MM-JJ se compare comme un texte.

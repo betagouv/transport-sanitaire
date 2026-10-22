@@ -37,16 +37,16 @@ type Point = readonly [scenario: string, estOuvert: (trace: Trace) => boolean];
 const POINTS: readonly Point[] = [
   [
     "ald-base",
-    ({ cibles }) => cibles.cible_preuve_ald_inconnue_decisive === true,
+    ({ cibles }) => cibles.cible_preuve_ald_inconnue_decisive.isOui(),
   ],
   [
     "mineur",
     ({ cibles }) =>
-      cibles.cible_reconnaissance_mineur_inconnue_decisive === true,
+      cibles.cible_reconnaissance_mineur_inconnue_decisive.isOui(),
   ],
   [
     "appareillage",
-    ({ cibles }) => cibles.cible_convocation_inconnue_decisive === true,
+    ({ cibles }) => cibles.cible_convocation_inconnue_decisive.isOui(),
   ],
   ["permission-inconnue", permissionInconnue],
   ["transfert-inconnu", transfertInconnu],
@@ -60,7 +60,7 @@ const POINTS: readonly Point[] = [
 
 function permissionInconnue({ cibles, faits }: Trace): boolean {
   return (
-    cibles.cible_couverture_inconnue_decisive === true &&
+    cibles.cible_couverture_inconnue_decisive.isOui() &&
     faits.fait_permission.isOui() &&
     faits.fait_permission_mineur_admissible.isInconnu() &&
     faits.fait_permission_charge_patient.isInconnu()
@@ -69,7 +69,7 @@ function permissionInconnue({ cibles, faits }: Trace): boolean {
 
 function transfertInconnu({ cibles, faits }: Trace): boolean {
   return (
-    cibles.cible_couverture_inconnue_decisive === true &&
+    cibles.cible_couverture_inconnue_decisive.isOui() &&
     faits.fait_hospitalisation.isOui() &&
     faits.fait_transfert_article80.isInconnu()
   );
@@ -84,7 +84,7 @@ function hebergementNonMedicalise({ faits }: Trace): boolean {
 
 function camspEnUrgence({ cibles, faits }: Trace): boolean {
   return (
-    cibles.cible_dap_motif_camsp_cmpp === true &&
+    cibles.cible_dap_motif_camsp_cmpp.isOui() &&
     faits.fait_urgence_attestee.isOui()
   );
 }
@@ -101,7 +101,7 @@ function parSaRaison(
   actifs: readonly ScenarioPraticien[],
   { cibles }: Trace,
 ): readonly ScenarioPraticien[] {
-  const raison = cibles.cible_reason_code;
+  const raison = cibles.cible_reason_code.value;
   const portent = actifs.filter(
     ({ codes }) => codes.length === 1 && codes[0] === raison,
   );

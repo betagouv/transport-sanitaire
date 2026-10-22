@@ -36,7 +36,7 @@ const optionsDe = (id: keyof Questions, reponses: Reponses) => {
     : [];
 };
 const modeDe = (reponses: Reponses) =>
-  preconisationOf(model, reponses).cibles.cible_mode_id;
+  preconisationOf(model, reponses).cibles.cible_mode_id.value;
 
 const SEUL: Reponses = {
   "Q0.1": "1_VERIFIER",

@@ -8,13 +8,11 @@ import type { Cibles } from "../../../core/models/eligibilite/declarations/cible
 import type { Questions } from "../../../core/models/eligibilite/declarations/questions";
 import { SEEDS } from "../../../core/models/eligibilite/seeds-catalogue";
 import { preconisationOf } from "../../../core/socle/model";
-import type {
-  Answers,
-  AnyCibles,
-} from "../../../core/socle/questionnaire-engine/question";
+import type { Answers } from "../../../core/socle/questionnaire-engine/question";
 import { Questionnaire } from "../../../core/socle/questionnaire-engine/questionnaire";
 import { errorsOf } from "../../../front/socle/questionnaire-engine/screen-texts";
 import { MINEUR, PLUSIEURS_PERMISSIONS } from "./reponses-de-la-permission";
+import { ciblesValant } from "./traces-du-praticien";
 
 type Reponses = Answers<Questions>;
 
@@ -23,10 +21,10 @@ const [PAGE] = pages;
 // Les pages des lieux suivent : seule celle du trajet se juge ici.
 const DU_TRAJET = pages.slice(0, 1);
 
-const avecLeSupport = (support: Cibles["cible_support_id"]) =>
-  ({ cible_support_id: support }) as AnyCibles;
+const avecLeSupport = (support: Cibles["cible_support_id"]["value"]) =>
+  ciblesValant({ cible_support_id: support });
 const posees = (
-  support: Cibles["cible_support_id"],
+  support: Cibles["cible_support_id"]["value"],
   reponses: Reponses = {},
 ) =>
   PAGE
@@ -36,7 +34,7 @@ const posees = (
     : [];
 const question = (
   id: keyof Questions,
-  support: Cibles["cible_support_id"],
+  support: Cibles["cible_support_id"]["value"],
   reponses: Reponses = {},
 ) => {
   const trouvee = posees(support, reponses).find(

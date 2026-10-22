@@ -35,7 +35,7 @@ const BON_DE_COMMANDE = bindCerfa<
   },
   {
     fields: {
-      commande: ({ cibles }) => cibles.commande,
+      commande: ({ cibles }) => String(cibles.commande.value),
       quantite: ({ answers }) => String(answers.question("quantite").value),
       date: ({ completedAt }) => completedAt.toISOString().slice(0, 10),
     },
@@ -55,11 +55,11 @@ export const model = defineModel<Questions, Faits, Cibles>({
     // Sans boisson, il n'y a rien à compléter : le premier résultat est le
     // dernier écran.
     form: ({ commande }) =>
-      commande === SANS_COMMANDE ? null : BON_DE_COMMANDE,
+      commande.is(SANS_COMMANDE) ? null : BON_DE_COMMANDE,
     title: "Commande complétée",
     Resultat: CommandeCompletee,
     startLabel: ({ commande }) =>
-      commande === SANS_COMMANDE ? null : "Compléter la commande",
+      commande.is(SANS_COMMANDE) ? null : "Compléter la commande",
     downloadLabel: "Télécharger le bon de commande",
   },
 });

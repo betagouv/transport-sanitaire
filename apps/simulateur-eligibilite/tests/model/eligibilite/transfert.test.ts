@@ -24,7 +24,9 @@ describe("article80-bilan-complet", () => {
   const bilan = definitif(["11_AUCUNE"]);
 
   it("un transfert définitif sans exception : ISSUE_ETABLISSEMENT", () => {
-    expect(cibles(faits(bilan)).cible_issue_id).toBe("ISSUE_ETABLISSEMENT");
+    expect(cibles(faits(bilan)).cible_issue_id.value).toBe(
+      "ISSUE_ETABLISSEMENT",
+    );
   });
 
   it("établit le transfert, le séjour et le Centre 15 écarté", () => {
@@ -40,7 +42,7 @@ describe("article80-bilan-complet", () => {
 
   it("définit les huit exceptions, toutes à « non »", () => {
     expect(valeurs(bilan, EXCEPTIONS)).toEqual(Array(8).fill(false));
-    expect(cible(faits(bilan), "cible_exception_article80")).toBe(false);
+    expect(cible(faits(bilan), "cible_exception_article80").value).toBe(false);
   });
 });
 

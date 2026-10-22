@@ -68,11 +68,11 @@ export const FAITS_DU_TRAJET: DeclarationsDeFaits = {
  * Q2.3.4 s'affiche-t-elle ? C'est la garde de l'éditeur,
  * `cible_question_urgence_a_afficher`, lue sur les faits des questions posées
  * avant elle. Les faits des pages suivantes restent absents : la garde ne les
- * lit jamais comme un « non ». Elle vaut `true` même si des faits manquent
+ * lit jamais comme un « non ». Elle vaut « oui » même si des faits manquent
  * encore.
  */
 export function urgenceAAfficher(faits: Faits): boolean {
-  return cible(faits, "cible_question_urgence_a_afficher") === true;
+  return cible(faits, "cible_question_urgence_a_afficher").isOui();
 }
 
 // ---- implémentation ----

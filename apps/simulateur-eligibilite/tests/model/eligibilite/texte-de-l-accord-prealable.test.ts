@@ -4,7 +4,6 @@
 // recopiés du catalogue de l'éditeur et de ses aperçus PDF.
 
 import { describe, expect, it } from "vitest";
-import type { Cibles } from "../../../core/models/eligibilite/declarations/cibles";
 import { codesDeLAccord } from "../../../front/models/eligibilite/r2/fiche-positive/fondement-de-l-accord-prealable";
 import {
   DIALYSE,
@@ -15,7 +14,11 @@ import {
   URGENCE,
 } from "./demandes-du-test";
 import { dapSansUrgence, dapUrgence } from "./fiches-du-test";
-import { vrai } from "./traces-du-praticien";
+import {
+  ciblesValant,
+  type ValeursDesCibles,
+  vrai,
+} from "./traces-du-praticien";
 
 const DIALYSE_ET_150_KM =
   "Votre déplacement est lié à une séance de dialyse, prise en compte comme une hospitalisation pour le transport.";
@@ -65,7 +68,7 @@ describe("la justification suit l'ensemble exact des motifs établis", () => {
     C: "cible_dap_motif_camsp_cmpp",
     N: "cible_dap_motif_engagement_maternite",
   } as const;
-  const motifs = (codes: readonly string[]): Partial<Cibles> =>
+  const motifs = (codes: readonly string[]): ValeursDesCibles =>
     Object.fromEntries(
       Object.entries(cible).map(([code, nom]) => [nom, codes.includes(code)]),
     );
@@ -97,9 +100,9 @@ describe("la justification suit l'ensemble exact des motifs établis", () => {
   });
 
   it("lit les codes dans l'ordre L, S, V, C, N", () => {
-    expect(codesDeLAccord(motifs(["N", "C", "V", "S", "L"]) as Cibles)).toEqual(
-      ["L", "S", "V", "C", "N"],
-    );
+    expect(
+      codesDeLAccord(ciblesValant(motifs(["N", "C", "V", "S", "L"]))),
+    ).toEqual(["L", "S", "V", "C", "N"]);
   });
 
   it("sans motif établi, ou sans phrase pour eux, n'écrit aucune justification", () => {

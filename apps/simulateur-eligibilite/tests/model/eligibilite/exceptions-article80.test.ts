@@ -32,7 +32,7 @@ describe("une exception cochée", () => {
       false,
       false,
     ]);
-    expect(cible(faits(had), "cible_exception_article80")).toBe(true);
+    expect(cible(faits(had), "cible_exception_article80").value).toBe(true);
   });
 
   it("garde la trace de la case cochée et de celle écartée", () => {

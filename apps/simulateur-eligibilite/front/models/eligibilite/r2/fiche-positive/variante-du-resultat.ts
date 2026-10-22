@@ -13,7 +13,7 @@ export type Partage = "incompatible" | "possible" | "inconnu";
 
 /** Le libellé de mode du catalogue ; absent si les règles n'ont pas de mode. */
 export function libelleDuMode(cibles: Cibles): string | undefined {
-  switch (cibles.cible_mode_id) {
+  switch (cibles.cible_mode_id.value) {
     case "VEHICULE_PERSONNEL":
       return avecProche("Véhicule personnel", cibles);
     case "TRANSPORT_COMMUN":
@@ -35,8 +35,7 @@ export function libelleDuMode(cibles: Cibles): string | undefined {
  */
 export function rangDuTitreDuPrescripteur(cibles: Cibles): 0 | 1 {
   const propre =
-    cibles.cible_mode_id === "VEHICULE_PERSONNEL" ||
-    cibles.cible_mode_id === "TRANSPORT_COMMUN";
+    cibles.cible_mode_individual.isOui() || cibles.cible_mode_public.isOui();
   return propre ? 0 : 1;
 }
 
@@ -46,8 +45,8 @@ export function rangDuTitreDuPrescripteur(cibles: Cibles): 0 | 1 {
  */
 export function partageDuTransport(cibles: Cibles): Partage {
   const incompatible = cibles.cible_transport_partage_incompatible;
-  if (incompatible === true) return "incompatible";
-  return incompatible === false ? "possible" : "inconnu";
+  if (incompatible.isOui()) return "incompatible";
+  return incompatible.isNon() ? "possible" : "inconnu";
 }
 
 // ---- implémentation ----
@@ -61,7 +60,7 @@ function partage(cibles: Cibles): string {
 }
 
 function avecProche(base: string, cibles: Cibles): string {
-  return cibles.cible_personne_accompagnante === true
+  return cibles.cible_personne_accompagnante.isOui()
     ? `${base} avec proche accompagnant nécessaire`
     : base;
 }
@@ -69,8 +68,8 @@ function avecProche(base: string, cibles: Cibles): string {
 // Le fauteuil et la corpulence ne se prouvent que par les cibles : jamais par
 // défaut.
 function ambulance(cibles: Cibles): string {
-  const fauteuil = cibles.cible_fauteuil_roulant === true;
-  const bariatrique = cibles.cible_ambulance_equipement_bariatrique === true;
+  const fauteuil = cibles.cible_fauteuil_roulant.isOui();
+  const bariatrique = cibles.cible_ambulance_equipement_bariatrique.isOui();
   if (fauteuil && bariatrique) return "Ambulance + TPMR + bariatrique";
   if (fauteuil) return "Ambulance + TPMR";
   return bariatrique ? "Ambulance avec équipement bariatrique" : "Ambulance";
