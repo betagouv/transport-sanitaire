@@ -8,13 +8,15 @@
 Le simulateur d'éligibilité au transport sanitaire. Sa pile :
 
 - React 19 + Vite + DSFR (`@codegouvfr/react-dsfr`) ;
-- un questionnaire **déclaré par l'application** (`front/socle/questionnaire-engine/`).
+- un questionnaire **déclaré par l'application** (`core/socle/questionnaire-engine/`),
+  que `front/socle/questionnaire-engine/` affiche.
 
 **L'app est entre deux modèles.** Le modèle v9 et ce qui en dépendait sont retirés,
 la v10 n'est pas intégrée : son avancement est dans l'issue 50 du dépôt, ses
 décisions dans `docs/knowledge/adr/journal-des-decisions-v10.md`. Il n'y a encore
 ni page de résultat métier, ni CERFA téléchargeable. Le simulateur
-s'ouvre sur le **modèle de l'éditeur** (`front/models/eligibilite/`, D-119). Il
+s'ouvre sur le **modèle de l'éditeur** (`core/models/eligibilite/` et
+`front/models/eligibilite/`, D-119). Il
 s'intègre étape par étape, sur la v10.1.3 : ses règles, ses faits, ses cibles et son
 oracle sont là, son questionnaire va jusqu'à P3, le complément du cerfa, qui
 s'ouvre après le verrou (`p3/partie-3.ts`). R2 est posée pour les dix issues : les cinq issues sans fiche patient
@@ -26,16 +28,24 @@ ouvre P3, dont le résultat (R3) n'a pas encore de PDF (#157) : en attendant, il
 récapitule les réponses de P3 (`r3/recapitulatif-du-complement.ts`).
 Le [README](README.md) § « Entre deux modèles » dit ce qui est parti et ce qui reste.
 
-Le front a deux dossiers. `front/socle/` porte ce qui ne dépend d'aucune version
-du modèle : rattachement, parcours, moteur de questionnaire, analytics, seeds,
-outils PDF, developer tools. `front/models/` porte un dossier par modèle :
-`fake/`, le modèle de démonstration, et `eligibilite/`, celui de l'éditeur, en
-cours d'intégration.
+Le simulateur a deux racines, et chacune a deux dossiers (ADR
+[`metier-et-ecran`](docs/knowledge/adr/metier-et-ecran.md)) :
+
+| | `socle/` : ce qui ne dépend d'aucune version du modèle | `models/` : un dossier par modèle |
+|---|---|---|
+| `core/`, le métier | moteur de questionnaire, moteur de décision, seeds, contrat `CoreModel` | les déclarations, les questions, les faits, les règles et les seeds |
+| `front/`, l'écran | rattachement, parcours, affichage des questions, analytics, outils PDF, developer tools, contrat `Model` | les deux résultats et le cerfa |
+
+Les modèles sont `fake/`, celui de démonstration, et `eligibilite/`, celui de
+l'éditeur, en cours d'intégration. Chacun a un dossier du même nom dans
+`core/models/` et dans `front/models/`. Le métier se charge sous Node, sans
+Vite ni navigateur : `tests/model/metier-sous-node.test.ts` le vérifie.
 
 Le modèle de l'éditeur se range par partie du parcours : `p1/` (le mode),
-`p2/` (l'éligibilité), `r2/` (le résultat, avec un dossier par famille
-d'issues), `p3/` (le complément du cerfa), `r3/` (son résultat). Sa racine les assemble. Une partie ne lit pas celle qui la suit, et
-les familles de R2 ne s'importent pas entre elles :
+`p2/` (l'éligibilité) et `p3/` (le complément du cerfa) dans `core/`, `r2/` (le
+résultat, avec un dossier par famille d'issues) et `r3/` (son résultat) dans
+`front/`. Les racines des deux dossiers les assemblent. Une partie ne lit pas
+celle qui la suit, et les familles de R2 ne s'importent pas entre elles :
 `tests/model/eligibilite/domaines.test.ts` le garde.
 
 Le modèle de démonstration est pérenne (D-82). **Chaque capacité du socle y a
@@ -47,15 +57,18 @@ quoi se charger. Le premier s'ouvre au démarrage. À plusieurs, les developer
 tools proposent d'en changer (`front/socle/app/model-choice.ts`) : le choix est
 donc réservé au service n° 4, comme eux.
 
-Le socle ne connaît le modèle que par un contrat, `Model` (`front/socle/model.ts`) :
-des parties de questionnaire, ce qui calcule la préconisation (des réponses aux
-faits, des faits aux cibles), et deux résultats. `front/main.tsx` est le seul
-fichier qui importe les deux. Il dit à `App` comment charger chaque modèle, et
-`App` charge le premier pendant l'écran de rattachement : un modèle reste hors
-du chunk d'entrée. Le socle n'importe rien
-de `front/models/`, un modèle n'importe du socle que `front/socle/index.ts`, et
-aucun modèle n'importe l'autre.
-Une exception : le moteur de décision, `front/socle/decision-engine/publicodes.ts`,
+Le socle ne connaît le modèle que par deux contrats. `CoreModel`
+(`core/socle/model.ts`) porte le métier : les parties d'avant le verrou
+(`questionnaire`), celle d'après (`complement`), ce qui calcule la préconisation
+(des réponses aux faits, des faits aux cibles) et les seeds. `Model`
+(`front/socle/model.ts`) le porte sous `core`, et y ajoute les deux résultats :
+`result` et `cerfa`. `front/main.tsx` est le seul fichier qui importe le socle
+et les modèles. Il dit à `App` comment charger chaque modèle, et `App` charge le
+premier pendant l'écran de rattachement : un modèle reste hors du chunk
+d'entrée. Le socle n'importe rien des modèles. Un modèle n'importe du socle que
+ses deux points d'entrée, `core/socle/index.ts` pour son métier et
+`front/socle/index.ts` pour son écran. Aucun modèle n'importe l'autre.
+Une exception : le moteur de décision, `core/socle/decision-engine/publicodes.ts`,
 qu'un modèle prend à la source. C'est le seul fichier qui importe publicodes
 (D-76).
 `tests/architecture.test.ts` garde ces règles.
@@ -68,7 +81,8 @@ un **backend Node/Express** (`server/` : le front et `/api/*`) déployé sur
 
 ## Le questionnaire
 
-Dix fichiers portent la mécanique, dans `front/socle/questionnaire-engine/` :
+Le moteur est en deux moitiés. `core/socle/questionnaire-engine/` porte la
+mécanique, sans React ni phrase de l'écran :
 
 | Fichier | Ce qu'il porte |
 |---|---|
@@ -76,12 +90,22 @@ Dix fichiers portent la mécanique, dans `front/socle/questionnaire-engine/` :
 | `question-factory.ts` | les constructeurs nommés des questions (`questionsOf`) : la sorte vient du constructeur, les options du catalogue du modèle, d'après l'id |
 | `question-context.ts` | le seul objet que reçoivent les conditions et les libellés du moment : `{ answers, validated, cibles, faits }`. Les faits n'y sont calculés que si on les lit |
 | `option.ts` | ce qu'est une option d'un choix : son libellé, ce qui la propose, son aide, ce qu'elle bloque. `optionsFrom` tire les options d'une table de libellés, dans l'ordre de ses clés |
-| `address.ts` | ce qu'est une adresse, la seule réponse en objet : ses champs, ceux qui se demandent en France ou à l'étranger, et le message de chaque champ fautif |
+| `address.ts` | ce qu'est une adresse, la seule réponse en objet : ses champs, ceux qui se demandent en France ou à l'étranger, et ce qui ne va pas dans chacun |
 | `asked-questions.ts` | ce qui s'affiche, vu les réponses : libellés, bornes, options, mode d'adresse et incohérences du moment. Et les questions validées, avec ce qui s'y proposait |
+| `given-answers.ts`, `validated-answers.ts` | les deux lectures des réponses, que le modèle reçoit (voir « La décision ») |
 | `offered-answer.ts` | ce qu'une réponse vaut pour sa question : réduite aux options qui se proposent ou aux champs d'adresse qui se demandent, suffisante ou non |
-| `answer-error.ts` | ce qui ne va pas dans une saisie, et les messages à afficher : une erreur de format seule, sinon une ligne par incohérence. Une adresse a les siens, un par champ, dans `address.ts` |
-| `questionnaire.ts` | l'état d'un parcours : page ouverte, brouillon, navigation |
+| `answer-problem.ts` | ce qui ne va pas dans une saisie, dit par sa nature (`{ kind: "required" }`…) : une erreur de format seule, sinon une incohérence par ligne. Les phrases de l'éditeur y restent telles quelles (`{ kind: "stated", message }`) |
+| `questionnaire-state.ts` | où en est un questionnaire : ses réponses validées et la page ouverte |
 | `page-commit.ts` | ce que deviennent les réponses quand une page est validée, et ce que ça efface |
+
+`front/socle/questionnaire-engine/` l'affiche :
+
+| Fichier | Ce qu'il porte |
+|---|---|
+| `questionnaire.ts` | le parcours à l'écran : page ouverte, brouillon, navigation |
+| `screen-texts.ts` | les phrases de l'écran : « (facultatif) », le message de chaque nature de problème, les libellés des champs d'une adresse |
+| `QuestionnaireForm.tsx`, `QuestionField.tsx`, `Stepper.tsx` | le formulaire, le champ DSFR de chaque sorte de question, le stepper |
+| `auto-advance.ts`, `questionnaire-tracking.ts` | l'avancement seul d'une page de choix uniques, et ce que le parcours envoie à l'analytics |
 
 Neuf règles à tenir en ajoutant une question :
 
@@ -115,7 +139,7 @@ Neuf règles à tenir en ajoutant une question :
 - **Une incohérence se déclare dans `inconsistenciesFrom`, sur la plus tardive des
   deux questions.** Le moteur lui cache les réponses des pages suivantes : une
   règle écrite sur la première ne se déclenche jamais. Elle lit sa propre page, brouillon
-  compris, et les réponses d'avant le verrou. Elle rend un message par
+  compris, et les réponses d'avant le verrou. Elle donne un message par
   incohérence, qui dit quelle question corriger. Une question incohérente n'est
   pas validée. On corrige par « Précédent » : aucun bouton, aucun saut. Une
   erreur de format s'affiche seule, avant les incohérences. Celle d'une adresse
@@ -134,13 +158,15 @@ Neuf règles à tenir en ajoutant une question :
 
 Un fait a trois états : vrai, faux, ou absent. Absent, il ne vaut jamais « non ».
 
+Ses pièces sont dans `core/socle/`.
+
 | Pièce | Ce qu'elle porte |
 |---|---|
 | `GivenAnswers` (`given-answers.ts`) | les réponses données, lues question par question : `answers.question("Q1.1").is("1_SEUL")`, `.isNot(option)`, `.checked(case)`, `.checkedBoxes()`, `.hasAnswer()`. Une question sans réponse n'est aucune option, sans être un « non » |
 | `ValidatedAnswers` (`validated-answers.ts`) | les questions validées, lues de même, avec ce qui se proposait : `.isValidated()`, `.offers(option)`, `.declined(case)`, et `.faitOf(case)`, qui donne oui (cochée), non (proposée, non cochée) ou rien (jamais montrée) |
 | `preconisation.faits(answers, validated)` | le modèle reçoit ces deux lectures, jamais les réponses brutes. Il applique, fait par fait, le contrat de l'éditeur |
 | `Fait` (`decision-engine/fait.ts`) | ce qu'on sait d'un fait : sa valeur si elle est établie, et sa provenance. `Fait.oui`, `Fait.non` et `Fait.inconnu` le construisent |
-| `faitsOf` (`decision-engine/fait-builder.ts`) | le constructeur des faits, lié au modèle dans son `fait.ts` : `fait("fait_motif_camsp")`, dont le nom est vérifié. Ses règles s'appliquent dans l'ordre, la première qui établit le fait l'emporte : `seulementSi(condition)`, `selon(réponse, { "1_OUI": "oui", "2_NON": "non" })`, qui écrit seul la provenance « Q2.1.h : « 1_OUI ». », `ouiSi` et `nonSi(condition, provenance)`. `sinon(provenance)` clôt la chaîne : le fait est inconnu si aucune règle ne l'établit, et l'entrée `{ fait_motif_camsp: … }` revient. Un fait qui enchaîne plusieurs cas, ou ajoute un texte à la réponse, reste une fonction qui rend un `Fait` |
+| `faitsOf` (`decision-engine/fait-builder.ts`) | le constructeur des faits, lié au modèle dans son `fait.ts` : `fait("fait_motif_camsp")`, dont le nom est vérifié. Ses règles s'appliquent dans l'ordre, la première qui établit le fait l'emporte : `seulementSi(condition)`, `selon(réponse, { "1_OUI": "oui", "2_NON": "non" })`, qui écrit seul la provenance « Q2.1.h : « 1_OUI ». », `ouiSi` et `nonSi(condition, provenance)`. `sinon(provenance)` clôt la chaîne : le fait est inconnu si aucune règle ne l'établit, et l'entrée `{ fait_motif_camsp: … }` revient. Un fait qui enchaîne plusieurs cas, ou ajoute un texte à la réponse, reste une fonction qui donne un `Fait` |
 | `publicodesEngine` | n'envoie aux règles que les faits établis. Une cible peut revenir `undefined` : indéfinie, ce qui n'est pas une décision, ni `null` (sans objet) |
 
 Le socle dit ce qui a été montré, validé, coché. Il ne conclut rien : c'est le
@@ -205,12 +231,13 @@ appelé quand le bouton s'affiche. `templateAt(url)` charge un asset servi par l
 `tests/socle/simulateur/telechargement-du-cerfa.test.tsx`, et
 `tests/architecture.test.ts`.
 
-## Les trois racines de runtime
+## Les quatre racines de runtime
 
-Découpage **par fonctionnalité**, à l'intérieur de trois racines :
+Découpage **par fonctionnalité**, à l'intérieur de quatre racines :
 
 | Racine | Ce que c'est |
 |---|---|
+| `core/` | le métier : les moteurs et la logique des modèles. Il se charge sous Node comme dans le navigateur, sans React ni DOM |
 | `front/` | le navigateur, bundlé par Vite |
 | `server/` | le backend, qui détient la clé Grist |
 | `shared/` | le contrat front ⇄ back, chargé des deux côtés |
@@ -235,10 +262,11 @@ personne, ses tests le chargent comme texte.
 | `pnpm dev:server` | Backend Express, <http://localhost:3000> |
 | `pnpm start` | Serveur de production (`node server/server.ts`) |
 | `pnpm lint:fix` | Applique tous les correctifs sûrs de Biome |
+| `pnpm regles` | Recalcule le `regles.json` de chaque modèle d'après son `regles.publicodes`. À lancer après toute retouche des règles : un test le compare |
 
 `pnpm build` enchaîne trois étapes :
 
-1. `tsc -b` sur les quatre projets : front, node, serveur, tests ;
+1. `tsc -b` sur les cinq projets : front, métier, node, serveur, tests ;
 2. Vite ;
 3. `verifier-bundle` : `pdf-lib`, le modèle et le catalogue de seeds doivent
    rester hors du chunk d'entrée.
@@ -261,17 +289,20 @@ La marche à suivre est dans le skill `livrer-une-version`.
 
 ## Les invariants
 
-Ils sont **exécutables**, dans
-[`tests/architecture.test.ts`](tests/architecture.test.ts) :
+Ils sont **exécutables**. Les frontières entre `core/`, `front/`, `server/` et
+`shared/` sont dans
+[`tests/frontieres-des-racines.test.ts`](tests/frontieres-des-racines.test.ts).
+Le reste est dans [`tests/architecture.test.ts`](tests/architecture.test.ts) :
 
-- les frontières entre `front/`, `server/` et `shared/` ;
 - le simulateur, qui ignore qui prescrit ;
 - les seeds et les developer tools, greffés sur le simulateur et jamais l'inverse ;
 - le socle PDF, qui ne dépend que de lui-même et n'adresse jamais `/api` ;
 - les règles publicodes, qui ne portent que de l'éligibilité ;
 - publicodes, que seul le moteur de décision du socle importe ;
-- les modèles de `front/models/`, que seul `tests/model/` importe, et qui ne
-  s'importent pas entre eux.
+- les modèles de `core/models/` et de `front/models/`, que seul `tests/model/`
+  importe, et qui ne s'importent pas entre eux.
+- le socle, qui n'importe rien des modèles, et les deux points d'entrée par
+  lesquels un modèle importe le socle.
 
 Les limites de 30 et 300 lignes sont à part, dans
 [`tests/taille-du-code.test.ts`](tests/taille-du-code.test.ts).
@@ -286,7 +317,7 @@ fichier, et nulle part ailleurs dans `front/`.
 
 | Emplacement | Extension |
 |---|---|
-| `server/`, `shared/`, `scripts/` | `.ts` |
+| `core/`, `server/`, `shared/`, `scripts/` | `.ts` |
 | ce qu'un script tire dans `front/` | `.ts` |
 | le reste de `front/` | aucune |
 
@@ -309,9 +340,10 @@ d'une version à l'autre.
 Les tests ont deux dossiers. `tests/socle/` éprouve le socle sur un modèle qu'on
 lui injecte : le factice, écrit pour eux dans `tests/socle/fixtures/modele-factice/`.
 Il est petit et figé, pour que ces tests ne changent pas quand le modèle de
-démonstration gagne une page. `tests/model/` vérifie chaque modèle de
-`front/models/` : `conformite.test.ts` y contrôle ce que le socle suppose de
-n'importe quel modèle, et rejoue ses seeds. `tests/model/eligibilite/` compare
+démonstration gagne une page. `tests/model/` vérifie chaque modèle, dans
+`core/models/` et `front/models/` : `conformite.test.ts` y contrôle ce que le
+socle suppose de n'importe quel modèle, et rejoue ses seeds.
+`metier-sous-node.test.ts` les rejoue sous Node, sur le seul métier. `tests/model/eligibilite/` compare
 les déclarations du modèle de l'éditeur à ses règles, et rejoue son oracle, en
 faits, contre le moteur.
 
@@ -326,7 +358,7 @@ tests injectent), `se-rattacher.ts`, `simulateur/questionnaire.tsx`,
 **Une situation de référence va dans le `seeds-catalogue.ts` de son modèle,
 pas dans un fichier de test.** C'est un catalogue unique de situations nommées,
 *avec leurs cibles attendues*. Celui du modèle de démonstration
-([`front/models/fake/seeds-catalogue.ts`](front/models/fake/seeds-catalogue.ts))
+([`core/models/fake/seeds-catalogue.ts`](core/models/fake/seeds-catalogue.ts))
 ouvre les pages à montrer. Les tests de l'écran des seeds écrivent leurs propres seeds, sur le parcours
 factice.
 
@@ -347,7 +379,7 @@ déjà composé (`developerToolsPanel`).
 La trace de debug vit aussi dans `front/socle/developer-tools/` (`DebugTrace.tsx`). Elle
 lit l'état vivant du parcours, qu'`App` n'a pas sous la main : `App` passe donc au
 simulateur le composant lui-même (`DebugTrace`), et chaque écran lui donne son
-état à afficher. Sans composant passé, aucune trace n'est rendue.
+état à afficher. Sans composant passé, aucune trace ne s'affiche.
 
 Elle montre les questions validées et ce qui s'y proposait, les faits avec leur
 provenance, et dit d'une cible qu'elle est indéfinie. Son lien « Exporter la

@@ -8,7 +8,7 @@ import { describe, expect, it } from "vitest";
 import { fonctionsDe, lignesDe, sources } from "./inspection-des-sources";
 
 // Le catalogue de seeds d'un modèle : une liste de données.
-const CATALOGUE_DE_SEEDS = /^front\/models\/[^/]+\/seeds-catalogue\.ts$/;
+const CATALOGUE_DE_SEEDS = /^core\/models\/[^/]+\/seeds-catalogue\.ts$/;
 
 describe("taille du code", () => {
   it("aucune fonction ne dépasse 30 lignes", () => {

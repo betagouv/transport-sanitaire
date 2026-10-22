@@ -1,4 +1,4 @@
-// Les frontières entre les racines de l'app, rendues exécutables : le métier
+// Les frontières entre les racines de l'app, en règles exécutables : le métier
 // (`core/`), le navigateur (`front/`), le backend (`server/`) et leur contrat
 // (`shared/`).
 //

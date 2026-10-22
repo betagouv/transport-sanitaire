@@ -1,6 +1,6 @@
 # Journal des décisions : séparer le socle et le modèle
 
-> Dernière mise à jour : 2026-10-21
+> Dernière mise à jour : 2026-10-22
 >
 > Les décisions prises pendant le chantier de la v10, dans l'ordre où elles
 > l'ont été. Ce n'est pas un document d'architecture au format des autres
@@ -33,6 +33,7 @@ La colonne « Chantier » du journal renvoie à ces numéros.
 | 08 | Tests et factice | [#58](https://github.com/betagouv/transports-sanitaires/issues/58) |
 | 09 | Capacités du socle pour la v10 | [#59](https://github.com/betagouv/transports-sanitaires/issues/59) |
 | 10 | Intégration de la v10 | [#60](https://github.com/betagouv/transports-sanitaires/issues/60) |
+| 11 | Refonte du métier | [#202](https://github.com/betagouv/transports-sanitaires/issues/202) à [#207](https://github.com/betagouv/transports-sanitaires/issues/207) |
 
 ## Le journal
 
@@ -49,7 +50,7 @@ reste dans le tableau, barrée, avec celle qui la remplace.
 | D-06 | 2026-10-07 | P0 à P3 sont des `QuestionnairePart`, pas des pages. | 05 |
 | D-07 | 2026-10-07 | Un fichier déclare explicitement les questions, les faits, les cibles et tout ce qui entre dans le questionnaire ou sa réponse. Il sert à typer précisément. | 04 |
 | D-08 | 2026-10-07 | ~~`completion`~~ abandonné. Le simulateur a deux résultats : R2 à l'issue de P2, R3 (le cerfa) à l'issue du questionnaire entier. | 03, 06 |
-| D-09 | 2026-10-07 | La clé du premier résultat s'appelle `transportAndEligibility`. | 03 |
+| D-09 | 2026-10-07 | ~~La clé du premier résultat s'appelle `transportAndEligibility`.~~ Remplacé par D-135. | 03 |
 | D-10 | 2026-10-07 | Les génériques de `Model` portent des noms explicites. | 03 |
 | D-11 | 2026-10-07 | Le concept qui aboutit à R2 puis à R3 s'appelle une Préconisation. R2 et R3 s'appellent des Résultats. | 01, 03 |
 | D-12 | 2026-10-07 | On dit Cibles, en français, pour éviter l'ambiguïté de « target ». Même logique pour Faits. | 01 |
@@ -173,3 +174,5 @@ reste dans le tableau, barrée, avec celle qui la remplace.
 | D-131 | 2026-10-21 | Décidé par Simon, sur COR-17 et `CONTRAT_SEANCES_Q21.md` (#193). Une sous-question de Q2.1 ne se pose que si sa réponse peut encore changer le mode, le droit, le financeur ou le document. Les règles publicodes ne concluent pas avant la fin de P2 : la garde s'écrit question par question. Q2.1.g et Q2.1.h ne se posent que lorsque P1 n'établit aucun motif, et leur réponse l'établit : elles restent posées. Q2.1.f ne se pose que si au moins deux séances comptent en Q1.3 : une dialyse ne compte que si Q1.3.a confirme l'hémodialyse, comme dans le document. Une chimiothérapie avec une autre dialyse ne pose plus Q2.1.f, ni son blocage. | 10 |
 | D-132 | 2026-10-21 | Décidé par Simon, sur COR-20 de la v10.1.3 (#144). COR-20 fixe les lieux de chaque segment d'après P2 : une sortie part de l'établissement, une admission en HAD arrive au domicile, un retour pénitentiaire arrive à l'établissement pénitentiaire, un retour de permission va du lieu de vie à l'établissement. Elle ne dit pas quels sens un segment admet. Le filtre de Q3.1.2 (D-120) reste donc notre choix : une entrée ne fait que l'aller ; une sortie, une admission en HAD et un retour pénitentiaire ne font que le retour. La v10.1.3 ne le contredit pas et ne le couvre pas. | 10 |
 | D-133 | 2026-10-21 | P3 suit `CONTRAT_LIEUX_CERFA.json` de la v10.1.3 (#145, point 39). Il remplace la partie natures et projection de D-121. Le cabinet et l'autre lieu sont deux natures : un cabinet se reporte en structure de soins, un autre lieu en autre lieu. Les natures gardent l'ordre de Q2.13, mais la huitième ne la suit plus : son « D’un autre lieu. » donne l'autre lieu, jamais le cabinet. Une radiothérapie en ville propose un centre ou un cabinet face à l'origine. La table de projection n'est plus provisoire. Un hébergement ou un autre lieu porte sa nature en toutes lettres sur le cerfa (« Nature du lieu », obligatoire, après le nom) : le contrat la demande, et seul le HTNM que P2 établit la donne déjà. Son libellé et son aide sont les nôtres. Les libellés de l'EHPAD, de l'USLD, de l'hébergement et le rappel de l'admission en HAD développent leurs sigles (COR-12). | 10 |
+| D-134 | 2026-10-22 | Décidé par l'agent, sur délégation de Simon (#202). Le métier sort du front dans une racine `core/`, qui se charge sous Node : moteurs, seeds et métier de chaque modèle. Les règles se chargent en JSON versionné, que `pnpm regles` calcule du YAML livré ; un test les compare. D-71 tient pour le reste. Voir [`metier-et-ecran.md`](./metier-et-ecran.md), ADR-1 à ADR-3. | 11 |
+| D-135 | 2026-10-22 | Décidé par l'agent, sur délégation de Simon (#202). Le contrat se coupe en deux : `CoreModel` (questionnaire, complément, préconisation, seeds) dans `core/`, et `Model` qui le porte sous `core` et ajoute `result` et `cerfa`. Un modèle a un dossier du même nom dans `core/models/` et `front/models/`. Remplace D-09. Voir [`metier-et-ecran.md`](./metier-et-ecran.md), ADR-4 et ADR-5. | 11 |

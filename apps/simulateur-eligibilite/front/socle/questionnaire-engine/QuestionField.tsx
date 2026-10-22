@@ -1,4 +1,4 @@
-// Rend une question avec le champ de `front/socle/ui/` qui lui convient.
+// Affiche une question avec le champ de `front/socle/ui/` qui lui convient.
 
 import {
   addressProblems,
