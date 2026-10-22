@@ -22,7 +22,7 @@ type Valides = ValidatedAnswers<Questions>;
  * départ dit si l'entrée est simple.
  */
 export function departAPoser(validated: Valides): boolean {
-  if (!validated.question("Q2.1.g").is("1_ENTREE")) return false;
+  if (validated.question("Q2.1.g").isNot("1_ENTREE")) return false;
   const faits = faitsAvantLaBranche(validated);
   return (
     faits.fait_hospitalisation.value === true &&

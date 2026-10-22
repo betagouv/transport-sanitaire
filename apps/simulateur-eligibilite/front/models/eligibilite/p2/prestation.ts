@@ -104,7 +104,7 @@ function camsp(
   motif: GivenAnswer<Motif>,
   rattachement: GivenAnswer<Questions["Q2.1.h"]>,
 ): Fait {
-  if (!motif.is("10_CAMSP") || !rattachement.hasAnswer())
+  if (motif.isNot("10_CAMSP") || !rattachement.hasAnswer())
     return Fait.inconnu("Ni Q2.1.h, ni Q2.2.1 n'établissent encore le CAMSP.");
   const source = `Q2.1.h : « ${rattachement.value} ».`;
   if (rattachement.is("1_OUI")) return Fait.oui(source);
@@ -131,7 +131,7 @@ function sansSeanceNiSejour(validated: Valides): Partial<Faits> {
   const sousType = validated.question("Q2.1.g");
   if (!motif.hasAnswer() || !q13SansSeance(validated)) return {};
   const hospitalise = motif.is("8_HOSPITALISATION");
-  if (hospitalise && !sousType.is("3_ADMISSION_HAD")) return {};
+  if (hospitalise && sousType.isNot("3_ADMISSION_HAD")) return {};
   const source = hospitalise
     ? `Q2.1.g : « ${sousType.value} », pas un séjour ; Q1.3 sans séance.`
     : `Q2.1 : « ${motif.value} », pas une hospitalisation ; Q1.3 sans séance.`;
@@ -169,6 +169,6 @@ function q13SansSeance(validated: Valides): boolean {
   return (
     !cas.checked("3_CHIMIOTHERAPIE") &&
     !cas.checked("4_RADIOTHERAPIE") &&
-    !validated.question("Q1.3.a").is("1_OUI")
+    validated.question("Q1.3.a").isNot("1_OUI")
   );
 }
