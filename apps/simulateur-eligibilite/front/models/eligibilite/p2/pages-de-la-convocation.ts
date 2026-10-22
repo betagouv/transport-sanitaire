@@ -2,8 +2,9 @@
 // sur la même page, pour l'appareillage, l'agrément du fournisseur (Q2.10.a) et
 // l'appareillage concerné (Q2.10.b) (D-108).
 
-import { optionsFrom, type QuestionnairePart } from "../../../socle";
-import { OPTIONS, type Questions } from "../declarations/questions";
+import type { QuestionnairePart } from "../../../socle";
+import type { Questions } from "../declarations/questions";
+import { question } from "../question";
 import { convocationAnnoncee } from "./convocation";
 
 type Page = QuestionnairePart<Questions, undefined>["pages"][number];
@@ -14,29 +15,20 @@ type Page = QuestionnairePart<Questions, undefined>["pages"][number];
 export const PAGE_DE_LA_CONVOCATION: Page = {
   id: "P2/convocation",
   questions: [
-    {
-      id: "Q2.10",
-      kind: "single choice",
+    question.singleChoice("Q2.10", {
       label:
         "Quelle convocation, quel avis d’audience ou quel appareillage motive ce trajet ?",
-      askedIf: (_answers, _cibles, validated) => convocationAnnoncee(validated),
-      options: optionsFrom(OPTIONS["Q2.10"]),
-    },
-    {
-      id: "Q2.10.a",
-      kind: "single choice",
+      askedIf: ({ validated }) => convocationAnnoncee(validated),
+    }),
+    question.singleChoice("Q2.10.a", {
       label: "Le fournisseur est-il agréé pour cet appareillage ?",
-      askedIf: (answers) => answers.question("Q2.10").is("6_APPAREILLAGE"),
+      askedIf: ({ answers }) => answers.question("Q2.10").is("6_APPAREILLAGE"),
       dependsOn: ["Q2.10"],
-      options: optionsFrom(OPTIONS["Q2.10.a"]),
-    },
-    {
-      id: "Q2.10.b",
-      kind: "single choice",
+    }),
+    question.singleChoice("Q2.10.b", {
       label: "Quel appareillage est concerné ?",
-      askedIf: (answers) => answers.question("Q2.10").is("6_APPAREILLAGE"),
+      askedIf: ({ answers }) => answers.question("Q2.10").is("6_APPAREILLAGE"),
       dependsOn: ["Q2.10"],
-      options: optionsFrom(OPTIONS["Q2.10.b"]),
-    },
+    }),
   ],
 };
