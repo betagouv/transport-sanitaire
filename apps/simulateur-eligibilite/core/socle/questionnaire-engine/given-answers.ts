@@ -32,7 +32,7 @@ export class GivenAnswer<Given extends Answer = Answer> {
   }
 
   /**
-   * La question a reçu sa réponse. Ce n'est pas `isAnswered`, qui dit si une
+   * La question a reçu sa réponse. Ce n'est pas `isAnsweredBy`, qui dit si une
    * réponse suffit à quitter sa page.
    */
   hasAnswer(): this is { readonly value: Given } {

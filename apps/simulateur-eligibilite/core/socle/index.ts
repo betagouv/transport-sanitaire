@@ -9,15 +9,16 @@ export { Fait } from "./decision-engine/fait.ts";
 export { faitsOf } from "./decision-engine/fait-builder.ts";
 export type { CoreModel } from "./model.ts";
 export type { Address } from "./questionnaire-engine/address.ts";
+export type { AskedQuestion } from "./questionnaire-engine/asked-question.ts";
 export type {
   GivenAnswer,
   GivenAnswers,
 } from "./questionnaire-engine/given-answers.ts";
-export type { QuestionnairePart } from "./questionnaire-engine/question.ts";
-export {
-  contextOf,
-  type QuestionContext,
-} from "./questionnaire-engine/question-context.ts";
+export type {
+  Answers,
+  QuestionnairePart,
+} from "./questionnaire-engine/question.ts";
+export type { QuestionContext } from "./questionnaire-engine/question-context.ts";
 export { questionsOf } from "./questionnaire-engine/question-factory.ts";
 export { Questionnaire } from "./questionnaire-engine/questionnaire.ts";
 export type { ValidatedAnswers } from "./questionnaire-engine/validated-answers.ts";

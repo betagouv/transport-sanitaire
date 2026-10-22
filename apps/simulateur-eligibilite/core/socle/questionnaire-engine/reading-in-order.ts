@@ -1,18 +1,13 @@
-// Ce qui s'affiche, vu les réponses : les pages, leurs questions, et la forme
-// que chaque question prend à ce moment-là. Et ce qui en est validé : les
-// questions qui ont leur réponse, avec ce qui s'y proposait.
-//
-// Une question se pose sous son libellé du moment, avec ses bornes du moment,
-// les seules options qui se proposent, et une adresse dans son mode du moment.
-// Le reste du moteur ne lit que cette forme.
+// Les réponses lues à travers les pages, dans l'ordre : les questions qui se
+// posent, telles qu'elles se posent (`asked-question.ts`), et ce qui en est
+// validé, avec ce qui s'y proposait.
 //
 // Les questions se lisent dans l'ordre. Chacune voit celles qui la précèdent
 // et qui sont validées : ses conditions peuvent en dépendre, pas de la suite.
 // Ses incohérences ne voient pas non plus les réponses des pages suivantes.
 
+import { type AskedQuestion, askedIn } from "./asked-question.ts";
 import { GivenAnswers } from "./given-answers.ts";
-import { isAnswered, offeredAnswer, optionValues } from "./offered-answer.ts";
-import type { Option } from "./option.ts";
 import type {
   Answer,
   Answers,
@@ -28,7 +23,7 @@ import { ValidatedAnswers } from "./validated-answers.ts";
 /** Une page lue : ses questions qui se posent, telles qu'elles se posent. */
 export type AskedPage = {
   readonly page: Page;
-  readonly questions: readonly Question[];
+  readonly questions: readonly AskedQuestion[];
 };
 
 /**
@@ -76,7 +71,7 @@ type Context = {
 // précédentes ont validé.
 function askPage(page: Page, context: Context, start: Progress) {
   let progress = start;
-  const questions: Question[] = [];
+  const questions: AskedQuestion[] = [];
   for (const declared of page.questions) {
     const question = askQuestion(declared, context, progress.validated);
     if (!question) continue;
@@ -91,27 +86,25 @@ function askQuestion(
   declared: Question,
   { answers, earlier, cibles }: Context,
   validated: Validated,
-): Question | undefined {
+): AskedQuestion | undefined {
   const read = new ValidatedAnswers(validated);
   const seenWith = (given: Answers): Seen =>
     contextOf(
       { answers: new GivenAnswers(given), cibles, validated: read },
       declared.faits,
     );
-  const seen = seenWith(answers);
-  if (!(declared.askedIf?.(seen) ?? true)) return undefined;
-  return asAsked(declared, seen, seenWith(earlier));
+  return askedIn(declared, seenWith(answers), seenWith(earlier));
 }
 
 // Une question qui a sa réponse est validée, si aucune n'attend avant elle. La
 // première qui attend arrête la validation pour toute la suite.
 function validateInTurn(
   progress: Progress,
-  question: Question,
+  question: AskedQuestion,
   answers: Answers,
 ): Progress {
   const answer = answers[question.id];
-  const complete = progress.complete && isAnswered(question, answer);
+  const complete = progress.complete && question.isAnsweredBy(answer);
   if (!complete) return { ...progress, complete };
   const validated = asValidated(question, answer);
   return {
@@ -122,50 +115,12 @@ function validateInTurn(
 
 // Ce qu'on retient d'une question validée : ses options du moment, et sa
 // réponse s'il y en a une.
-function asValidated(question: Question, answer: Answer | Unanswered) {
-  const offered = optionValues(question);
-  const given = offeredAnswer(question, answer);
+function asValidated(question: AskedQuestion, answer: Answer | Unanswered) {
+  const offered = question.offeredValues();
+  const given = question.kept(answer);
   return {
     ...(offered && { offered }),
     ...(given !== undefined && { answer: given }),
-  };
-}
-
-function asAsked(question: Question, seen: Seen, earlier: Seen): Question {
-  const offered = (options: readonly Option[]) => offeredOptions(options, seen);
-  const texts = displayedTexts(question, seen, earlier);
-  if (question.kind === "date" || question.kind === "datetime")
-    return { ...question, ...texts, ...question.boundsFrom?.(seen) };
-  if (question.kind === "address")
-    return { ...question, ...texts, abroad: abroadOf(question, seen) };
-  if (question.kind === "single choice")
-    return { ...question, ...texts, options: offered(question.options) };
-  if (question.kind !== "multiple choice") return { ...question, ...texts };
-  const { exclusiveOption: exclusive } = question;
-  const [exclusiveOption] = offered(exclusive ? [exclusive] : []);
-  return {
-    ...question,
-    ...texts,
-    options: offered(question.options),
-    exclusiveOption,
-  };
-}
-
-// Le mode d'une adresse, vu les réponses : à l'étranger, ou en France.
-function abroadOf(
-  question: Extract<Question, { kind: "address" }>,
-  seen: Seen,
-): boolean | undefined {
-  return question.abroadIf?.(seen) ?? question.abroad;
-}
-
-// Ce qui se lit autour du champ, vu les réponses : le libellé, le rappel, et
-// les incohérences. Celles-ci ne lisent pas les pages suivantes (`earlier`).
-function displayedTexts(question: Question, seen: Seen, earlier: Seen) {
-  return {
-    label: question.labelFrom?.(seen) ?? question.label,
-    reminder: question.reminderFrom?.(seen) ?? question.reminder,
-    inconsistencies: question.inconsistenciesFrom?.(earlier),
   };
 }
 
@@ -182,15 +137,4 @@ function answersUpTo(
   return Object.fromEntries(
     Object.entries(answers).filter(([id]) => !later.includes(id)),
   );
-}
-
-// Les options qui se proposent, vu les réponses, sous leur libellé du moment.
-function offeredOptions(options: readonly Option[], seen: Seen): Option[] {
-  return options
-    .filter((option) => option.offeredIf?.(seen) ?? true)
-    .map((option) => ({
-      ...option,
-      label: option.labelFrom?.(seen) ?? option.label,
-      help: option.helpFrom?.(seen) ?? option.help,
-    }));
 }

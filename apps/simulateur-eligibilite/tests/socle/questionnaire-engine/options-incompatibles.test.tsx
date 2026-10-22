@@ -4,6 +4,7 @@ import type {
   Page,
   Question,
 } from "../../../core/socle/questionnaire-engine/question";
+import { Questionnaire } from "../../../core/socle/questionnaire-engine/questionnaire";
 import { errorsOf } from "../../../front/socle/questionnaire-engine/screen-texts";
 import { afficher } from "./afficher";
 
@@ -77,7 +78,10 @@ describe("options incompatibles", () => {
   });
 
   it("refuse une réponse venue d'ailleurs qui porterait les deux", () => {
-    expect(errorsOf(CRITERES, ["fauteuil", "brancard"])).toEqual([EXPLICATION]);
-    expect(errorsOf(CRITERES, ["fauteuil", "oxygene"])).toEqual([]);
+    const [criteres] = new Questionnaire([PAGE]).readWith({}).questionsOn(PAGE);
+    expect(criteres && errorsOf(criteres, ["fauteuil", "brancard"])).toEqual([
+      EXPLICATION,
+    ]);
+    expect(criteres && errorsOf(criteres, ["fauteuil", "oxygene"])).toEqual([]);
   });
 });

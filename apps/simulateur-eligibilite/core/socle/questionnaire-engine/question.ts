@@ -53,7 +53,7 @@ export type Validated<Questions extends AnyQuestions = AnyQuestions> = {
  * prend deux formes : une phrase, ou des valeurs avec leur intitulé, comme le
  * rôle et la nature d'un lieu au-dessus de son adresse.
  */
-type Reminder =
+export type Reminder =
   | string
   | ReadonlyArray<{ readonly label: string; readonly value: string }>;
 
@@ -105,8 +105,6 @@ type Common<Questions extends AnyQuestions, Cibles, Faits> = {
   inconsistenciesFrom?(
     context: Context<Questions, Cibles, Faits>,
   ): readonly string[];
-  /** Les incohérences du moment, que le moteur résout (`asked-questions.ts`). */
-  readonly inconsistencies?: readonly string[];
   /**
    * Les questions dont dépend cette réponse. Quand l'une d'elles change, cette
    * réponse est effacée, et elle seule (`page-commit.ts`).
@@ -135,7 +133,7 @@ export type SingleChoice<
 };
 
 /** Deux options d'un choix multiple qui ne vont pas ensemble, et pourquoi. */
-type IncompatibleOptions = {
+export type IncompatibleOptions = {
   readonly values: readonly [string, string];
   /** Affichée quand cocher l'une vient de décocher l'autre. */
   readonly explanation: string;

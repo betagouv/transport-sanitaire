@@ -2,7 +2,7 @@
 // à répondre, et la navigation entre les pages.
 
 import { useState } from "react";
-import { isAnswered } from "../../../core/socle/questionnaire-engine/offered-answer";
+import type { AskedQuestion } from "../../../core/socle/questionnaire-engine/asked-question";
 import type {
   Answer,
   Answers,
@@ -42,7 +42,7 @@ type View = {
   page: Page;
   // Les pages affichées, pour la trace de debug.
   pages: readonly Page[];
-  questions: readonly Question[];
+  questions: readonly AskedQuestion[];
   // Les réponses de la page telles qu'elles sont à l'écran. Elles ne comptent
   // qu'une fois la page validée.
   draft: Answers;
@@ -149,7 +149,7 @@ function read(options: Source, state: State): View {
     .readWith(visible, options.cibles)
     .questionsOn(page);
   const hasPendingQuestions = questions.some(
-    (question) => !isAnswered(question, state.draft[question.id]),
+    (question) => !question.isAnsweredBy(state.draft[question.id]),
   );
   return {
     page,
@@ -233,11 +233,11 @@ function withRestart(handlers: Actions, autoAdvance: AutoAdvance) {
 // on n'avance pas une page à moitié remplie. Une question facultative le garde
 // aussi : sinon la page partirait avant qu'on ait pu y répondre. De même une
 // liste déroulante, qu'on parcourt au clavier en changeant de valeur.
-function isSingleChoicePage(questions: readonly Question[]): boolean {
+function isSingleChoicePage(questions: readonly AskedQuestion[]): boolean {
   return questions.length > 0 && questions.every(advancesAlone);
 }
 
-function advancesAlone(question: Question): boolean {
+function advancesAlone(question: AskedQuestion): boolean {
   return (
     question.kind === "single choice" &&
     !question.optional &&

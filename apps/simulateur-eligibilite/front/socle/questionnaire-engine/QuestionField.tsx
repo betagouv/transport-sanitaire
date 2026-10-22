@@ -1,15 +1,12 @@
 // Affiche une question avec le champ de `front/socle/ui/` qui lui convient.
 
 import {
-  addressProblems,
   isAddress,
   withField,
 } from "../../../core/socle/questionnaire-engine/address";
+import type { AskedQuestion } from "../../../core/socle/questionnaire-engine/asked-question";
 import type {
   Answer,
-  MultipleChoice,
-  Question,
-  SingleChoice,
   Unanswered,
 } from "../../../core/socle/questionnaire-engine/question";
 import { AddressField } from "../ui/AddressField";
@@ -24,7 +21,7 @@ import { TextField } from "../ui/TextField";
 import { displayedFields, displayedLabel, messageOf } from "./screen-texts";
 
 type Props = {
-  question: Question;
+  question: AskedQuestion;
   answer: Answer | Unanswered;
   /** `undefined` retire la réponse : un champ vidé n'est plus répondu. */
   onChange: (answer: Answer | Unanswered) => void;
@@ -49,10 +46,16 @@ export function QuestionField(props: Props) {
 
 // ---- implémentation ----
 
-type AddressQuestion = Extract<Question, { kind: "address" }>;
-type NumberQuestion = Extract<Question, { kind: "number" }>;
-type DateQuestion = Extract<Question, { kind: "date" | "datetime" }>;
-type CheckboxQuestion = Extract<Question, { kind: "checkbox" }>;
+type Asked<Kind extends AskedQuestion["kind"]> = Extract<
+  AskedQuestion,
+  { kind: Kind }
+>;
+type AddressQuestion = Asked<"address">;
+type NumberQuestion = Asked<"number">;
+type DateQuestion = Asked<"date" | "datetime">;
+type CheckboxQuestion = Asked<"checkbox">;
+type SingleChoice = Asked<"single choice">;
+type MultipleChoice = Asked<"multiple choice">;
 
 // Ce que tous les champs reçoivent. Le libellé est mis en avant : sur une page
 // du questionnaire, c'est lui qui porte la question.
@@ -96,7 +99,7 @@ function render(props: Props) {
 function AddressQuestionField(props: Props & { question: AddressQuestion }) {
   const { question, onChange } = props;
   const address = isAddress(props.answer) ? props.answer : undefined;
-  const problems = address ? addressProblems(question, address) : {};
+  const problems = address ? question.fieldProblems(address) : {};
   const failing = Object.keys(problems).length > 0;
   return (
     <AddressField

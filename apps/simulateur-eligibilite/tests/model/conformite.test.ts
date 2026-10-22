@@ -9,7 +9,9 @@ import { readdirSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 import { preconisationOf } from "../../core/socle/model";
+import { askedQuestion } from "../../core/socle/questionnaire-engine/asked-question";
 import type { Page } from "../../core/socle/questionnaire-engine/question";
+import { Questionnaire } from "../../core/socle/questionnaire-engine/questionnaire";
 import { evaluateSeed } from "../../core/socle/seeds/seed";
 import { model as eligibilite } from "../../front/models/eligibilite";
 import { model as fake } from "../../front/models/fake";
@@ -30,10 +32,9 @@ it("chaque modèle de `front/models/` est vérifié", () => {
 });
 
 describe.each(Object.entries(MODELES))("le modèle %s", (_nom, model) => {
-  const pages: readonly Page[] = [
-    ...model.core.questionnaire.flatMap((part) => part.pages),
-    ...model.core.complement.pages,
-  ];
+  const questionnaire = model.core.questionnaire.flatMap((part) => part.pages);
+  const complement = model.core.complement.pages;
+  const pages: readonly Page[] = [...questionnaire, ...complement];
   const questions = pages.flatMap((page) => page.questions);
   const identifiants = questions.map((question) => question.id);
 
@@ -110,6 +111,26 @@ describe.each(Object.entries(MODELES))("le modèle %s", (_nom, model) => {
           "écart veut dire que la préconisation a changé, ou que l'attendu " +
           "était faux. Dans les deux cas, il faut trancher, pas ajuster.",
       ).toEqual([]);
+    });
+
+    // Le questionnaire se lit sans cibles, le complément avec celles du verrou.
+    it("posent des questions qui passent en JSON, et s'y relisent à l'identique", () => {
+      const posees = seeds.flatMap((seed) => {
+        const { cibles } = preconisationOf(model.core, seed.answers);
+        return [
+          new Questionnaire(questionnaire).readWith(seed.answers),
+          new Questionnaire(complement).readWith(seed.answers, cibles),
+        ].flatMap((lecture) =>
+          lecture.askedPages().flatMap((page) => lecture.questionsOn(page)),
+        );
+      });
+      expect(posees.length).toBeGreaterThan(0);
+      for (const question of posees)
+        expect(
+          askedQuestion(JSON.parse(JSON.stringify(question))),
+          `${question.id} : une question posée ne porte que des données. Une ` +
+            "API la donnera telle quelle.",
+        ).toStrictEqual(question);
     });
   });
 });

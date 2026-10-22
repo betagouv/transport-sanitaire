@@ -4,25 +4,20 @@
 import { describe, expect, it } from "vitest";
 import type { Cibles } from "../../../core/models/eligibilite/declarations/cibles";
 import type { Questions } from "../../../core/models/eligibilite/declarations/questions";
-import { COMPLEMENT } from "../../../core/models/eligibilite/p3/partie-3";
+import { GivenAnswers } from "../../../core/socle/questionnaire-engine/given-answers";
 import type { Answers } from "../../../core/socle/questionnaire-engine/question";
-import { Questionnaire } from "../../../core/socle/questionnaire-engine/questionnaire";
 import { recapitulatifDuComplement as recapitulatif } from "../../../front/models/eligibilite/r3/recapitulatif-du-complement";
 import { PLUSIEURS_PERMISSIONS } from "./reponses-de-la-permission";
 
 const avecLeSupport = (support: Cibles["cible_support_id"]) =>
   ({ cible_support_id: support }) as Cibles;
 
-// Ce que le socle passe à R3, réduit aux pages de P3 : celles d'avant sont
-// validées par hypothèse.
+// Ce que le socle passe à R3 : les réponses, et les cibles figées. Les pages
+// d'avant P3 sont validées par hypothèse.
 const recapitulatifDuComplement = (
   reponses: Answers<Questions>,
   cibles: Cibles,
-) => {
-  const questionnaire = new Questionnaire<Questions>(COMPLEMENT.pages);
-  const { answers, validated } = questionnaire.readWith(reponses, cibles);
-  return recapitulatif({ answers, validated, cibles });
-};
+) => recapitulatif({ answers: new GivenAnswers(reponses), cibles });
 
 describe("le récapitulatif de P3", () => {
   it("donne chaque réponse sous sa question : le nombre avec son unité, le sens en toutes lettres", () => {

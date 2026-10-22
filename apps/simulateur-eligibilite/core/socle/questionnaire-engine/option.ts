@@ -40,6 +40,18 @@ export type Option<
   helpFrom?(context: Context<Questions, Cibles, Faits>): OptionHelp | undefined;
 };
 
+/**
+ * Une option telle qu'elle se propose : sous son libellé et avec son aide du
+ * moment. Elle ne porte que des données.
+ */
+export type OfferedOption = {
+  readonly value: string;
+  readonly label: string;
+  readonly description?: string;
+  readonly blocks?: string;
+  readonly help?: OptionHelp;
+};
+
 /** Ce qu'une option porte en plus de sa valeur et de son libellé. */
 type OptionDetails<
   Questions extends AnyQuestions = AnyQuestions,

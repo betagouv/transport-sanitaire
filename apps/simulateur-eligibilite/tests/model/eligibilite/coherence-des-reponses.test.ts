@@ -19,7 +19,6 @@ import {
   modeDe,
 } from "../../../core/models/eligibilite/p1/mode-de-transport";
 import { preconisationOf } from "../../../core/socle/model";
-import { isAnswered } from "../../../core/socle/questionnaire-engine/offered-answer";
 import {
   type Answers,
   pagesOf,
@@ -53,8 +52,8 @@ const modeAttendu = (criteres: readonly Critere[]) => {
 
 describe("les 2 048 combinaisons de Q1.2", () => {
   const masques = Array.from({ length: 2048 }, (_, masque) => masque);
-  const acceptees = masques.filter(
-    (masque) => q12 && isAnswered(q12, criteresDu(masque)),
+  const acceptees = masques.filter((masque) =>
+    q12?.isAnsweredBy(criteresDu(masque)),
   );
 
   it("en acceptent 1 151, et en refusent 897", () => {

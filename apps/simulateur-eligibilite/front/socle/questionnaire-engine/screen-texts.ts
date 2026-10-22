@@ -5,15 +5,13 @@
 
 import type {
   AddressFieldName,
-  AddressSettings,
   AskedField,
 } from "../../../core/socle/questionnaire-engine/address";
-import { askedFields } from "../../../core/socle/questionnaire-engine/address";
 import type { AnswerProblem } from "../../../core/socle/questionnaire-engine/answer-problem";
-import { problemsOf } from "../../../core/socle/questionnaire-engine/answer-problem";
+import type { AskedAddress } from "../../../core/socle/questionnaire-engine/asked-address";
+import type { AskedQuestion } from "../../../core/socle/questionnaire-engine/asked-question";
 import type {
   Answer,
-  Question,
   Unanswered,
 } from "../../../core/socle/questionnaire-engine/question";
 
@@ -24,10 +22,10 @@ export function displayedLabel(label: string, optional?: boolean): string {
 
 /** Ce qui ne va pas dans une saisie, un message par ligne sous le champ. */
 export function errorsOf(
-  question: Question,
+  question: AskedQuestion,
   answer: Answer | Unanswered,
 ): readonly string[] {
-  return problemsOf(question, answer).map(messageOf);
+  return question.problemsWith(answer).map(messageOf);
 }
 
 /** Le message d'un problème de saisie. */
@@ -67,8 +65,8 @@ export type DisplayedField = AskedField & {
 };
 
 /** Les champs d'une adresse qui se demandent, dans l'ordre de la saisie. */
-export function displayedFields(settings: AddressSettings): DisplayedField[] {
-  return askedFields(settings).map((field) => ({
+export function displayedFields(question: AskedAddress): DisplayedField[] {
+  return question.fields().map((field) => ({
     ...field,
     ...PRESENTATION[field.name],
     label: displayedLabel(LABELS[field.name], field.optional),

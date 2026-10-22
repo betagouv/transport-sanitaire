@@ -5,18 +5,17 @@
 // Une lecture ne change pas, et se calcule une seule fois : ses accesseurs ne
 // relisent rien. Valider une page donne de nouvelles réponses, qu'on relit.
 
-import { type AskedPage, readInOrder } from "./asked-questions.ts";
+import type { AskedQuestion } from "./asked-question.ts";
 import { answersOf, GivenAnswers } from "./given-answers.ts";
-import { isAnswered, offeredAnswer } from "./offered-answer.ts";
 import { commitPage } from "./page-commit.ts";
 import type {
   Answers,
   AnyCibles,
   AnyQuestions,
   Page,
-  Question,
   Validated,
 } from "./question.ts";
+import { type AskedPage, readInOrder } from "./reading-in-order.ts";
 import { ValidatedAnswers } from "./validated-answers.ts";
 
 /**
@@ -92,7 +91,7 @@ export class Reading<Questions extends AnyQuestions = AnyQuestions> {
    * Les questions de cette page qui se posent, telles qu'elles se posent :
    * sous leur libellé du moment, avec les seules options qui se proposent.
    */
-  questionsOn(page: Page): readonly Question[] {
+  questionsOn(page: Page): readonly AskedQuestion[] {
     return this.#asked.find((read) => read.page === page)?.questions ?? [];
   }
 
@@ -109,7 +108,7 @@ export class Reading<Questions extends AnyQuestions = AnyQuestions> {
   openPage(): Page {
     const given = answersOf(this.answers);
     const pending = this.#asked.find(({ questions }) =>
-      questions.some((question) => !isAnswered(question, given[question.id])),
+      questions.some((question) => !question.isAnsweredBy(given[question.id])),
     );
     const open = pending ?? this.#asked.at(-1);
     if (!open) throw new Error("Ce questionnaire n'affiche aucune page.");
@@ -135,7 +134,7 @@ export class Reading<Questions extends AnyQuestions = AnyQuestions> {
       this.#cibles,
     );
     const inputs = shown.questionsOn(page).flatMap((question) => {
-      const answer = offeredAnswer(question, draft[question.id]);
+      const answer = question.kept(draft[question.id]);
       return answer === undefined ? [] : [[question.id, answer] as const];
     });
     const { pages } = this.#questionnaire;

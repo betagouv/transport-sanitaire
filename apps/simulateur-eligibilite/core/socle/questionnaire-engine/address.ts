@@ -47,7 +47,7 @@ export type AskedField = {
 };
 
 /** Ce qui ne va pas dans une adresse, par champ fautif. */
-type AddressProblems = Readonly<
+export type AddressProblems = Readonly<
   Partial<Record<AddressFieldName, AnswerProblem>>
 >;
 
