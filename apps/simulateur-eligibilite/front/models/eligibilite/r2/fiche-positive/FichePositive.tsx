@@ -1,45 +1,40 @@
 // La fiche patient positive, à remettre au patient : la prescription médicale
 // de transport et le formulaire S3141 (#135), puis les deux demandes d'accord
-// préalable (#136). Le titre du prescripteur et sa phrase sont au-dessus, dans
-// la page que le socle compose. Le composant range un `TexteDeLaFichePositive`
-// ; il n'écrit aucun texte de l'éditeur.
+// préalable (#136). Le socle la pose sur sa feuille, sous les logos, son titre
+// et sa raison. Le composant range un `TexteDeLaFichePositive` dans les blocs
+// du socle ; il n'écrit aucun texte de l'éditeur.
 
-import { IllustratedCards } from "../../../../socle";
+import { IllustratedCards, Panel, SheetFollowUp } from "../../../../socle";
 import { illustrationDuMode } from "../illustrations-des-modes";
 import { TexteEnrichi } from "../TexteEnrichi";
 import type { CarteAffichee } from "./cartes-et-badges";
 import type { BlocDeConsigne, Consignes, Puce } from "./consignes-du-modus";
+import type { RappelDAttente } from "./fondement-de-l-accord-prealable";
 import type { TexteDeLaFichePositive } from "./texte-de-la-fiche-positive";
 
 export function FichePositive({ texte }: { texte: TexteDeLaFichePositive }) {
   return (
-    <article
-      aria-label="Fiche explicative patient"
-      className="fr-p-3w fr-mb-4w"
-    >
-      <h2 className="fr-h3">{texte.titreDuPatient}</h2>
-      {texte.raison && <p className="fr-text--lead">{texte.raison}</p>}
+    <>
       <Cartes cartes={texte.cartes} />
-      <ConsignesDuPatient consignes={texte.consignes} />
-      {texte.rappel && <Rappel texte={texte.rappel} />}
-      <aside aria-labelledby="finance-titre" className="fr-callout">
-        <h3 className="fr-callout__title" id="finance-titre">
-          {texte.finance.title}
-        </h3>
-        <p className="fr-callout__text">{texte.finance.text}</p>
-      </aside>
-    </article>
+      <SheetFollowUp>
+        <ConsignesDuPatient consignes={texte.consignes} />
+        {texte.rappel && <Rappel rappel={texte.rappel} />}
+        <Panel variant="white" title={texte.finance.title} titleLevel={3}>
+          <p>{texte.finance.text}</p>
+        </Panel>
+      </SheetFollowUp>
+    </>
   );
 }
 
 // ---- implémentation ----
 
-// Le rappel d'attente de l'accord préalable : un encadré sans titre.
-function Rappel({ texte }: { texte: string }) {
+// Le rappel d'attente de l'accord préalable : un aparté bordé de bleu.
+function Rappel({ rappel }: { rappel: RappelDAttente }) {
   return (
-    <div className="fr-callout fr-callout--blue-ecume">
-      <p className="fr-callout__text">{texte}</p>
-    </div>
+    <Panel variant="outlined" label={rappel.nom}>
+      <p>{rappel.texte}</p>
+    </Panel>
   );
 }
 
@@ -64,9 +59,7 @@ function Cartes({ cartes }: { cartes: readonly CarteAffichee[] }) {
 function ConsignesDuPatient({ consignes }: { consignes: Consignes }) {
   return (
     <section aria-labelledby="consignes-titre">
-      <h3 className="fr-h5" id="consignes-titre">
-        {consignes.introduction}
-      </h3>
+      <h3 id="consignes-titre">{consignes.introduction}</h3>
       {consignes.complement.map((paragraphe) => (
         <p key={paragraphe}>
           <TexteEnrichi texte={paragraphe} />
@@ -75,7 +68,7 @@ function ConsignesDuPatient({ consignes }: { consignes: Consignes }) {
       <div>
         {consignes.etapes.map((etape) => (
           <div className="fr-mb-2w" key={etape.numero}>
-            <h4 className="fr-h6">
+            <h4>
               {etape.numero}. {etape.titre}
             </h4>
             {etape.blocs.map((bloc, rang) => (

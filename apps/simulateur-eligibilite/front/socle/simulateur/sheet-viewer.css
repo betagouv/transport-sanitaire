@@ -57,12 +57,17 @@
   --background-default-grey: #fff;
   --background-alt-grey: #f6f6f6;
   --background-alt-blue-france: #f5f5fe;
+  --background-contrast-grey: #eee;
+  --background-contrast-success: #b8fec9;
   --border-default-grey: #ddd;
   --border-plain-blue-france: #000091;
   --border-plain-info: #0066b3;
+  --border-plain-success: #18753c;
+  --text-action-high-blue-france: #000091;
   --text-default-grey: #3a3a3a;
   --text-title-grey: #161616;
   --text-default-info: #0066b3;
+  --text-default-success: #18753c;
   --text-spacing: 0 0 2mm;
   --title-spacing: 0 0 2mm;
 
@@ -250,59 +255,5 @@
 
   .socle-sheet .socle-panel__title {
     font-size: 1.25rem;
-  }
-}
-
-/* La feuille s'imprime seule, sans la visionneuse ni le reste de la page,
-   avec les marges des gabarits. Tout le document prend la page nommée : posée
-   sur la seule feuille, elle forcerait un saut de page avant elle, et le reste
-   de la page, masqué, laisserait une page blanche. */
-@page socle-sheet {
-  size: A4;
-  margin: 9mm 10mm;
-}
-
-@media print {
-  body:has(.socle-sheet) {
-    page: socle-sheet;
-  }
-
-  .fr-container:has(.socle-sheet) {
-    /* biome-ignore lint/complexity/noImportantStyles: le cadre de l'écran pose ses marges en style en ligne */
-    padding: 0 !important;
-  }
-
-  .socle-viewer {
-    margin: 0;
-    padding: 0;
-    background: none;
-  }
-
-  /* Son `display: flex` l'emporte sur `fr-no-print`. */
-  .socle-viewer__actions {
-    display: none;
-  }
-
-  .socle-sheet {
-    display: block;
-    width: auto;
-    min-height: 0;
-    padding: 0;
-    box-shadow: none;
-    print-color-adjust: exact;
-  }
-
-  .socle-sheet__logos {
-    margin-bottom: 3mm;
-  }
-
-  .socle-sheet .socle-sheet__title {
-    font-size: 17pt;
-  }
-
-  .socle-sheet .socle-panel {
-    margin-top: 4mm;
-    padding: 3mm 3.5mm;
-    break-inside: avoid;
   }
 }

@@ -159,22 +159,22 @@ describe("le rappel d'attente suit cible_attente_accord", () => {
 
   it("attendre l'accord : le rappel de l'issue sans urgence", () => {
     expect(
-      demande({ cible_attente_accord: true }, {}, SANS_URGENCE)?.rappel,
+      demande({ cible_attente_accord: true }, {}, SANS_URGENCE)?.rappel?.texte,
     ).toBe(ATTENDRE);
   });
 
   it("partir sans attendre : le rappel de l'urgence attestée", () => {
-    expect(demande({ cible_attente_accord: false }, {}, URGENCE)?.rappel).toBe(
-      PARTIR,
-    );
+    expect(
+      demande({ cible_attente_accord: false }, {}, URGENCE)?.rappel?.texte,
+    ).toBe(PARTIR);
   });
 
   it("suit la cible, pas le nom de l'issue", () => {
-    expect(demande({ cible_attente_accord: true }, {}, URGENCE)?.rappel).toBe(
-      ATTENDRE,
-    );
     expect(
-      demande({ cible_attente_accord: false }, {}, SANS_URGENCE)?.rappel,
+      demande({ cible_attente_accord: true }, {}, URGENCE)?.rappel?.texte,
+    ).toBe(ATTENDRE);
+    expect(
+      demande({ cible_attente_accord: false }, {}, SANS_URGENCE)?.rappel?.texte,
     ).toBe(PARTIR);
   });
 

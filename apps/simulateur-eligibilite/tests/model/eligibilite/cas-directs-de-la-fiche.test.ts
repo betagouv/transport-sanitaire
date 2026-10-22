@@ -237,7 +237,9 @@ describe("les mêmes patients à plus de 150 km : l'accord préalable", () => {
         true,
         false,
       ]);
-      expect(texte?.rappel).toMatch(/^La prise en charge de votre transport/);
+      expect(texte?.rappel?.texte).toMatch(
+        /^La prise en charge de votre transport/,
+      );
     },
   );
 
@@ -272,7 +274,7 @@ describe("les mêmes patients à plus de 150 km : l'accord préalable", () => {
       ...URGENCE_ATTESTEE,
     });
     expect(issue).toBe("ISSUE_DAP_URGENCE_ATTESTEE");
-    expect(texte?.rappel).toMatch(/^L’urgence de votre transport/);
+    expect(texte?.rappel?.texte).toMatch(/^L’urgence de votre transport/);
     expect(texte?.consignes.etapes[0]?.titre).toBe("Aussi tôt que possible");
   });
 });
