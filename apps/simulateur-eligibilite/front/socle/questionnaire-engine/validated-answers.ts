@@ -6,6 +6,9 @@ import { Fait } from "../decision-engine/fait";
 import { type Box, type Choice, GivenAnswer } from "./given-answers";
 import type { AnyQuestions, Validated } from "./question";
 
+/** La case ne se proposait pas : elle ne dit rien. */
+type NotOffered = undefined;
+
 /**
  * Une question validée, ou pas : sa réponse, et les options qui se
  * proposaient. Non validée, elle n'a ni réponse ni option.
@@ -48,9 +51,9 @@ export class ValidatedAnswer<
   /**
    * Le fait que dit une case, selon le contrat de l'éditeur : cochée, oui ;
    * proposée sans être cochée, non. Une case qui ne se proposait pas ne dit
-   * rien : `undefined`, et le modèle décide.
+   * rien, et le modèle décide.
    */
-  faitOf(box: Box<Given>): Fait | undefined {
+  faitOf(box: Box<Given>): Fait | NotOffered {
     if (!this.offers(box)) return undefined;
     const option = `${this.id} : « ${box} »`;
     return this.checked(box)

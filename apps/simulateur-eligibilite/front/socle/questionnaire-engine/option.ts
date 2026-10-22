@@ -9,6 +9,9 @@ import type { ValidatedAnswers } from "./validated-answers";
  * L'aide d'une option : un intitulé qui se déplie sur une liste. La déplier
  * n'est pas répondre.
  */
+/** Rien de calculé : la question garde son texte fixe. */
+export type UseStatic = undefined;
+
 type OptionHelp = {
   readonly label: string;
   readonly items: readonly string[];
@@ -49,7 +52,7 @@ export type Option<
     answers: GivenAnswers<Questions>,
     cibles: Cibles,
     validated: ValidatedAnswers<Questions>,
-  ): OptionHelp | undefined;
+  ): OptionHelp | UseStatic;
 };
 
 /** Ce qu'une option porte en plus de sa valeur et de son libellé. */

@@ -194,12 +194,15 @@ function textFieldOf(document: PDFDocument, name: string): PDFTextField {
   return field;
 }
 
+/** Rien n'est écrit dans le champ : l'étape suivante essaie autrement. */
+type NotWritten = undefined;
+
 // Le texte suivi de son commentaire, s'il tient dans le cadre.
 function writeWithComment(
   field: PDFTextField,
   font: PDFFont,
   { text, comment = "" }: Text,
-): WrittenText | undefined {
+): WrittenText | NotWritten {
   const full = [text, comment].filter((part) => part !== "").join(" ; ");
   return writeIfFits(field, font, full)
     ? { overflows: [], withoutComment: false }
@@ -211,7 +214,7 @@ function writeWithoutComment(
   field: PDFTextField,
   font: PDFFont,
   { text, comment }: Text,
-): WrittenText | undefined {
+): WrittenText | NotWritten {
   if (!comment) return undefined;
   return writeIfFits(field, font, text)
     ? { overflows: [], withoutComment: true }

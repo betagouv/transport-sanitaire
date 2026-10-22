@@ -34,9 +34,11 @@ const Seeds = lazy(() =>
   })),
 );
 
-// Le catalogue du modèle, demandé à l'ouverture de l'écran. `undefined` tant
-// qu'il n'est pas arrivé.
-function useCatalogue(model: Model): readonly Seed[] | undefined {
+/** Ce qui est attendu n'est pas encore arrivé. */
+type Pending = undefined;
+
+// Le catalogue du modèle, demandé à l'ouverture de l'écran.
+function useCatalogue(model: Model): readonly Seed[] | Pending {
   const [seeds, setSeeds] = useState<readonly Seed[]>();
   useEffect(() => {
     let active = true;

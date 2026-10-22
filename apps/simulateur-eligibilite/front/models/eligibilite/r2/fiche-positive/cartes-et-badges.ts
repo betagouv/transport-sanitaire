@@ -8,6 +8,7 @@
 // badge. Les mots viennent du catalogue.
 
 import type {
+  AucunTexte,
   CatalogueResultats,
   IssuePositive,
 } from "../../declarations/catalogue-resultats";
@@ -108,7 +109,7 @@ function badgeDuCritere(
   badges: CatalogueResultats["badges"],
   numero: number,
   mode: ModeSanitaire,
-): string | undefined {
+): string | AucunTexte {
   const libelles = badges.criteria[String(numero)];
   return mode === "TPMR" ? (libelles?.[1] ?? libelles?.[0]) : libelles?.[0];
 }

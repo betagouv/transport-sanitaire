@@ -79,6 +79,9 @@ function constraints({ min, max, integer }: Props) {
   } as const;
 }
 
-function typedNumber(input: string): number | undefined {
+/** Le champ est vide. */
+type Empty = undefined;
+
+function typedNumber(input: string): number | Empty {
   return input.trim() === "" ? undefined : Number(input);
 }

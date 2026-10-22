@@ -101,8 +101,11 @@ const RETRAITS: Record<Questions["retrait"], string> = {
   livraison: "en livraison",
 };
 
+/** Les trois réponses ne sont pas toutes données. */
+type Incomplet = undefined;
+
 // Le lieu, le retrait et le jour, une fois tous trois donnés.
-function instructionsDe(answers: GivenAnswers<Questions>): string | undefined {
+function instructionsDe(answers: GivenAnswers<Questions>): string | Incomplet {
   const lieu = answers.question("lieu");
   const retrait = answers.question("retrait");
   const jour = answers.question("jour");

@@ -6,6 +6,12 @@
 // Les noms des champs sont ceux de l'éditeur.
 
 /** Le catalogue : sa version, ses sources, et les textes de chaque issue. */
+/** Le catalogue n'a pas de texte pour ce cas : rien ne s'affiche. */
+export type AucunTexte = undefined;
+
+/** Aucun scénario du catalogue ne correspond à ce cas. */
+export type AucunScenario = undefined;
+
 export type CatalogueResultats = {
   readonly schema: string;
   /** La version du modèle, celle de `rules/VERSION`. */

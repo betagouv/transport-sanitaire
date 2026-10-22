@@ -14,6 +14,7 @@
 // raison n'est donc jamais choisie.
 
 import type { IssueNegative } from "../../declarations/catalogue-resultats";
+import type { Inconnu } from "../../question";
 import type { Trace } from "../trace-du-resultat";
 
 /** Une raison du catalogue : son texte, son code, sa priorité. */
@@ -48,7 +49,7 @@ const REPLI = "AUCUN_GENERIQUE";
 // nous ne les posons pas. Une non-éligibilité sans motif de transport
 // (`cible_motif_transport` à « non », la condition même de la règle) vaut alors
 // `AUCUN_MOTIF_TRANSPORT`, comme dans la trace de l'éditeur.
-function codeDeLaRaison({ cibles }: Trace): string | undefined {
+function codeDeLaRaison({ cibles }: Trace): string | Inconnu {
   if (cibles.cible_reason_code != null) return cibles.cible_reason_code;
   const sansMotif =
     cibles.cible_issue_id === "ISSUE_NON_ELIGIBLE" &&
