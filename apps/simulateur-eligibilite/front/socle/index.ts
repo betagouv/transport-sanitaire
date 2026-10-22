@@ -6,6 +6,17 @@
 // demande, et les réexporter ici les ramènerait dans le chunk d'entrée.
 
 export { Fait } from "../../core/socle/decision-engine/fait";
+export { faitsOf } from "../../core/socle/decision-engine/fait-builder";
+export type { Address } from "../../core/socle/questionnaire-engine/address";
+export { areAnswered } from "../../core/socle/questionnaire-engine/asked-questions";
+export type {
+  GivenAnswer,
+  GivenAnswers,
+} from "../../core/socle/questionnaire-engine/given-answers";
+export type { QuestionnairePart } from "../../core/socle/questionnaire-engine/question";
+export type { QuestionContext } from "../../core/socle/questionnaire-engine/question-context";
+export { questionsOf } from "../../core/socle/questionnaire-engine/question-factory";
+export type { ValidatedAnswers } from "../../core/socle/questionnaire-engine/validated-answers";
 export {
   chargerMatomo,
   configDepuisEnv,
@@ -16,23 +27,12 @@ export type { Models } from "./app/model-choice";
 export { at, type Cerfa, commentOn, drawnBox, text } from "./cerfa/cerfa";
 export { templateAt } from "./cerfa/generate-cerfa";
 export { bindCerfa, type CerfaMapping } from "./cerfa-mapping";
-export { faitsOf } from "./decision-engine/fait-builder";
 export {
   type CerfaInput,
   defineModel,
   type FirstResult,
   type Sheet,
 } from "./model";
-export type { Address } from "./questionnaire-engine/address";
-export { areAnswered } from "./questionnaire-engine/asked-questions";
-export type {
-  GivenAnswer,
-  GivenAnswers,
-} from "./questionnaire-engine/given-answers";
-export type { QuestionnairePart } from "./questionnaire-engine/question";
-export type { QuestionContext } from "./questionnaire-engine/question-context";
-export { questionsOf } from "./questionnaire-engine/question-factory";
-export type { ValidatedAnswers } from "./questionnaire-engine/validated-answers";
 export { Disclosure } from "./ui/Disclosure";
 export { type IllustratedCard, IllustratedCards } from "./ui/IllustratedCards";
 export { NumberedCards } from "./ui/NumberedCards";

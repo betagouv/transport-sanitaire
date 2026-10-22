@@ -3,7 +3,7 @@ import { describe, expect, it } from "vitest";
 import type {
   Page,
   Question,
-} from "../../../front/socle/questionnaire-engine/question";
+} from "../../../core/socle/questionnaire-engine/question";
 import { afficher } from "./afficher";
 
 // Une réponse peut en contredire une autre. La question qui vient en dernier

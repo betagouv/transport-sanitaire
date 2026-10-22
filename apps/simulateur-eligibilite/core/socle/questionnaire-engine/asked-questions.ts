@@ -10,9 +10,9 @@
 // et qui sont validées : ses conditions peuvent en dépendre, pas de la suite.
 // Ses incohérences ne voient pas non plus les réponses des pages suivantes.
 
-import { answersOf, GivenAnswers } from "./given-answers";
-import { isAnswered, offeredAnswer, optionValues } from "./offered-answer";
-import type { Option } from "./option";
+import { answersOf, GivenAnswers } from "./given-answers.ts";
+import { isAnswered, offeredAnswer, optionValues } from "./offered-answer.ts";
+import type { Option } from "./option.ts";
 import type {
   Answer,
   Answers,
@@ -22,8 +22,8 @@ import type {
   Question,
   Unanswered,
   Validated,
-} from "./question";
-import { ValidatedAnswers } from "./validated-answers";
+} from "./question.ts";
+import { ValidatedAnswers } from "./validated-answers.ts";
 
 /**
  * Les questions de la page qui se posent, vu les réponses et les cibles, telles

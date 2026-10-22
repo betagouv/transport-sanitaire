@@ -3,13 +3,13 @@
 // du document (D-121).
 
 import { describe, expect, it } from "vitest";
-import { model } from "../../../front/models/eligibilite";
-import type { Questions } from "../../../front/models/eligibilite/declarations/questions";
-import { askedQuestions } from "../../../front/socle/questionnaire-engine/asked-questions";
+import { askedQuestions } from "../../../core/socle/questionnaire-engine/asked-questions";
 import type {
   Answers,
   AnyCibles,
-} from "../../../front/socle/questionnaire-engine/question";
+} from "../../../core/socle/questionnaire-engine/question";
+import { model } from "../../../front/models/eligibilite";
+import type { Questions } from "../../../front/models/eligibilite/declarations/questions";
 
 type Reponses = Answers<Questions>;
 

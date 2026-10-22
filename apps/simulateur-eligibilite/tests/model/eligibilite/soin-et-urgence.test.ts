@@ -3,16 +3,16 @@
 // Q3.4.a et Q3.5, `CONTRAT_CONTEXTES_V1012.json` (`centreReference`).
 
 import { describe, expect, it } from "vitest";
+import {
+  areAnswered,
+  askedQuestions,
+} from "../../../core/socle/questionnaire-engine/asked-questions";
+import { GivenAnswers } from "../../../core/socle/questionnaire-engine/given-answers";
+import type { Answers } from "../../../core/socle/questionnaire-engine/question";
 import { model } from "../../../front/models/eligibilite";
 import type { Questions } from "../../../front/models/eligibilite/declarations/questions";
 import { SEEDS } from "../../../front/models/eligibilite/seeds-catalogue";
 import { preconisationOf } from "../../../front/socle/model";
-import {
-  areAnswered,
-  askedQuestions,
-} from "../../../front/socle/questionnaire-engine/asked-questions";
-import { GivenAnswers } from "../../../front/socle/questionnaire-engine/given-answers";
-import type { Answers } from "../../../front/socle/questionnaire-engine/question";
 import { MATERNITE_ETABLIE } from "./reponses-de-la-branche";
 
 type Reponses = Answers<Questions>;

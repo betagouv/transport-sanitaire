@@ -3,11 +3,14 @@
 // Une seed n'est qu'un pré-remplissage. À réponses égales, le parcours est dans
 // l'état qu'un utilisateur aurait laissé, « Précédent » et verrou compris.
 
+import { validatedQuestions } from "../../../core/socle/questionnaire-engine/asked-questions";
+import {
+  type Answers,
+  pagesOf,
+} from "../../../core/socle/questionnaire-engine/question";
+import type { QuestionnaireState } from "../../../core/socle/questionnaire-engine/questionnaire-state";
+import { stateAfterAnswers } from "../../../core/socle/questionnaire-engine/questionnaire-state";
 import { type Model, type Preconisation, preconisationOf } from "../model";
-import { validatedQuestions } from "../questionnaire-engine/asked-questions";
-import { type Answers, pagesOf } from "../questionnaire-engine/question";
-import type { QuestionnaireState } from "../questionnaire-engine/questionnaire";
-import { stateAfterAnswers } from "../questionnaire-engine/questionnaire";
 
 /** Ce que le verrou fige : les réponses d'avant, et leur préconisation. */
 export type Locked = { answers: Answers; preconisation: Preconisation };

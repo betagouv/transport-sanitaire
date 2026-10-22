@@ -1,9 +1,9 @@
 // Ce qu'est une option d'un choix : son libellé, ce qui la fait se proposer,
 // son aide, et ce qu'elle bloque. Les questions à choix en portent la liste.
 
-import type { GivenAnswers } from "./given-answers";
-import type { AnyCibles, AnyQuestions } from "./question";
-import type { ValidatedAnswers } from "./validated-answers";
+import type { GivenAnswers } from "./given-answers.ts";
+import type { AnyCibles, AnyQuestions } from "./question.ts";
+import type { ValidatedAnswers } from "./validated-answers.ts";
 
 /**
  * L'aide d'une option : un intitulé qui se déplie sur une liste. La déplier

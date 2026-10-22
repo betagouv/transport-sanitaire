@@ -3,8 +3,8 @@
 // exception qui ne s'est pas proposée prend un prédicat structurel (D-106).
 
 import { describe, expect, it } from "vitest";
+import { validatedQuestions } from "../../../core/socle/questionnaire-engine/asked-questions";
 import { cible } from "../../../front/models/eligibilite/evaluation-des-regles";
-import { validatedQuestions } from "../../../front/socle/questionnaire-engine/asked-questions";
 import {
   definitif,
   EXCEPTIONS,

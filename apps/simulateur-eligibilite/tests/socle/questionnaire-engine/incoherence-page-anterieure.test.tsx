@@ -3,13 +3,13 @@ import { describe, expect, it } from "vitest";
 import {
   areAnswered,
   validatedQuestions,
-} from "../../../front/socle/questionnaire-engine/asked-questions";
-import { GivenAnswers } from "../../../front/socle/questionnaire-engine/given-answers";
+} from "../../../core/socle/questionnaire-engine/asked-questions";
+import { GivenAnswers } from "../../../core/socle/questionnaire-engine/given-answers";
 import type {
   Page,
   Question,
-} from "../../../front/socle/questionnaire-engine/question";
-import { stateAfterAnswers } from "../../../front/socle/questionnaire-engine/questionnaire";
+} from "../../../core/socle/questionnaire-engine/question";
+import { stateAfterAnswers } from "../../../core/socle/questionnaire-engine/questionnaire-state";
 import { afficher } from "./afficher";
 
 // Une réponse peut en contredire une page antérieure. Le moteur cache à la

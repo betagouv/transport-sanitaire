@@ -6,7 +6,7 @@
 // 14 octobre, à minuit.
 
 import { describe, expect, it } from "vitest";
-import { isAnswered } from "../../../front/socle/questionnaire-engine/offered-answer";
+import { isAnswered } from "../../../core/socle/questionnaire-engine/offered-answer";
 import {
   incoherences,
   MINEUR,

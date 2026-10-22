@@ -1,7 +1,7 @@
 // Des faits aux cibles : ce que les règles publicodes de l'éditeur en
 // calculent, par le moteur de décision du socle.
 
-import { publicodesEngine } from "../../socle/decision-engine/publicodes";
+import { publicodesEngine } from "../../../core/socle/decision-engine/publicodes";
 import { CIBLES, type Cibles } from "./declarations/cibles";
 import type { Faits } from "./declarations/faits";
 import { rules } from "./rules/regles.publicodes";

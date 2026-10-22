@@ -3,12 +3,12 @@
 // faits qu'elles y lisent sont ceux des questions validées avant elles.
 
 import { describe, expect, it } from "vitest";
-import { questionsOf } from "../../../front/socle";
-import { askedQuestions } from "../../../front/socle/questionnaire-engine/asked-questions";
+import { askedQuestions } from "../../../core/socle/questionnaire-engine/asked-questions";
 import type {
   Page,
   Question,
-} from "../../../front/socle/questionnaire-engine/question";
+} from "../../../core/socle/questionnaire-engine/question";
+import { questionsOf } from "../../../front/socle";
 
 type Questions = {
   boisson: "the" | "cafe" | "eau";

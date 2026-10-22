@@ -3,13 +3,13 @@
 // Q3.6 et Q3.7, `mapping_documents.json` (cases tiers, AT/MP, exonération).
 
 import { describe, expect, it } from "vitest";
+import { askedQuestions } from "../../../core/socle/questionnaire-engine/asked-questions";
+import type { Answers } from "../../../core/socle/questionnaire-engine/question";
 import { model } from "../../../front/models/eligibilite";
 import type { Questions } from "../../../front/models/eligibilite/declarations/questions";
 import { jourAParis } from "../../../front/models/eligibilite/p3/pages-des-evenements";
 import { SEEDS } from "../../../front/models/eligibilite/seeds-catalogue";
 import { preconisationOf } from "../../../front/socle/model";
-import { askedQuestions } from "../../../front/socle/questionnaire-engine/asked-questions";
-import type { Answers } from "../../../front/socle/questionnaire-engine/question";
 import { BRANCARD_20_KM } from "./reponses-de-la-branche";
 
 type Reponses = Answers<Questions>;

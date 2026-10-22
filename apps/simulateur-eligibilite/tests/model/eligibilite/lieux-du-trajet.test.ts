@@ -3,21 +3,21 @@
 // toucher à R2. `CATALOGUE_COMPLET_QUESTIONS.md` Q2.13, Q3.2 et Q3.3.
 
 import { describe, expect, it } from "vitest";
+import {
+  areAnswered,
+  askedQuestions,
+} from "../../../core/socle/questionnaire-engine/asked-questions";
+import { GivenAnswers } from "../../../core/socle/questionnaire-engine/given-answers";
+import type {
+  Answers,
+  AnyCibles,
+  Question,
+} from "../../../core/socle/questionnaire-engine/question";
 import { model } from "../../../front/models/eligibilite";
 import type { Questions } from "../../../front/models/eligibilite/declarations/questions";
 import { projectionCerfa } from "../../../front/models/eligibilite/p3/lieux-du-trajet";
 import { SEEDS } from "../../../front/models/eligibilite/seeds-catalogue";
 import { preconisationOf } from "../../../front/socle/model";
-import {
-  areAnswered,
-  askedQuestions,
-} from "../../../front/socle/questionnaire-engine/asked-questions";
-import { GivenAnswers } from "../../../front/socle/questionnaire-engine/given-answers";
-import type {
-  Answers,
-  AnyCibles,
-  Question,
-} from "../../../front/socle/questionnaire-engine/question";
 
 type Reponses = Answers<Questions>;
 

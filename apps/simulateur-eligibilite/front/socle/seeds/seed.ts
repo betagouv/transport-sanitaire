@@ -7,7 +7,7 @@ import type {
   Answers,
   AnyCibles,
   AnyQuestions,
-} from "../questionnaire-engine/question";
+} from "../../../core/socle/questionnaire-engine/question";
 
 export type Seed<
   Questions extends AnyQuestions = AnyQuestions,

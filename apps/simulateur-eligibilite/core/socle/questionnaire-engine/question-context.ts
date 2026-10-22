@@ -5,9 +5,9 @@
 //
 // Les faits ne se calculent qu'à la lecture, une fois par appel.
 
-import type { GivenAnswers } from "./given-answers";
-import type { AnyQuestions } from "./question";
-import type { ValidatedAnswers } from "./validated-answers";
+import type { GivenAnswers } from "./given-answers.ts";
+import type { AnyQuestions } from "./question.ts";
+import type { ValidatedAnswers } from "./validated-answers.ts";
 
 /** Ce que lisent les conditions et les libellés du moment d'une question. */
 export type QuestionContext<Questions extends AnyQuestions, Cibles, Faits> = {

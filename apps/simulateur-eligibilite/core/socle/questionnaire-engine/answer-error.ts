@@ -4,8 +4,8 @@
 // reste une. Une erreur de format s'affiche seule. Sinon, chaque incohérence
 // avec une autre réponse a son message.
 
-import { addressErrors, isAddress } from "./address";
-import type { Answer, Question, Unanswered } from "./question";
+import { addressErrors, isAddress } from "./address.ts";
+import type { Answer, Question, Unanswered } from "./question.ts";
 
 /**
  * Ce qui ne va pas dans une saisie, à afficher sous le champ. Vide quand elle

@@ -7,9 +7,9 @@
 // C'est un developer tool, réservé au service qui les déverrouille (`unlock.ts`).
 // Le simulateur ne l'importe pas : `App` la lui passe.
 
+import type { Validated } from "../../../core/socle/questionnaire-engine/question";
 import { SHA_COMMIT, VERSION_APP } from "../app/deployed-version";
 import type { DebugTraceProps } from "../questionnaire-engine/QuestionnaireForm";
-import type { Validated } from "../questionnaire-engine/question";
 
 export function DebugTrace(props: DebugTraceProps) {
   return (

@@ -1,15 +1,15 @@
 // Les réponses et les lectures que partagent les tests du transfert (Q2.5) et
 // des exceptions de l'article 80 (Q2.6.a et Q2.6).
 
+import { askedQuestions } from "../../../core/socle/questionnaire-engine/asked-questions";
+import {
+  type Answers,
+  pagesOf,
+} from "../../../core/socle/questionnaire-engine/question";
 import { model } from "../../../front/models/eligibilite";
 import type { Faits } from "../../../front/models/eligibilite/declarations/faits";
 import type { Questions } from "../../../front/models/eligibilite/declarations/questions";
 import { preconisationOf } from "../../../front/socle/model";
-import { askedQuestions } from "../../../front/socle/questionnaire-engine/asked-questions";
-import {
-  type Answers,
-  pagesOf,
-} from "../../../front/socle/questionnaire-engine/question";
 
 export type Reponses = Answers<Questions>;
 

@@ -4,7 +4,7 @@
 // `rattacher` ne retient que l'accès aux developer tools.
 
 import { useState } from "react";
-import type { Answers } from "../questionnaire-engine/question";
+import type { Answers } from "../../../core/socle/questionnaire-engine/question";
 import type { AccesRattachement } from "../rattachement/RattachementForm";
 import type { Seed } from "../seeds/seed";
 

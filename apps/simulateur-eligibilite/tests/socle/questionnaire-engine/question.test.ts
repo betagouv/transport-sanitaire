@@ -2,9 +2,9 @@ import { describe, expect, it } from "vitest";
 import {
   areAnswered,
   askedPages,
-} from "../../../front/socle/questionnaire-engine/asked-questions";
-import { GivenAnswers } from "../../../front/socle/questionnaire-engine/given-answers";
-import type { Page } from "../../../front/socle/questionnaire-engine/question";
+} from "../../../core/socle/questionnaire-engine/asked-questions";
+import { GivenAnswers } from "../../../core/socle/questionnaire-engine/given-answers";
+import type { Page } from "../../../core/socle/questionnaire-engine/question";
 
 // Après le verrou, une question peut dépendre de la préconisation : sa condition
 // lit les cibles figées, en plus des réponses. Le questionnaire factice n'a pas

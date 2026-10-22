@@ -1,6 +1,6 @@
 import { screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
-import type { Page } from "../../../front/socle/questionnaire-engine/question";
+import type { Page } from "../../../core/socle/questionnaire-engine/question";
 import { afficher } from "./afficher";
 
 // Une date, avec ou sans heure, peut avoir des bornes. Elles sont fixes, ou

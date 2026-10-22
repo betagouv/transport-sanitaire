@@ -2,8 +2,8 @@
 // réponses, et une mise en garde que des règles publicodes décident. Elle ne
 // décide rien du transport.
 
+import { publicodesEngine } from "../../../core/socle/decision-engine/publicodes";
 import { Fait, type GivenAnswers, type ValidatedAnswers } from "../../socle";
-import { publicodesEngine } from "../../socle/decision-engine/publicodes";
 import type { Cibles } from "./declarations/cibles";
 import type { Faits } from "./declarations/faits";
 import type { Questions } from "./declarations/questions";

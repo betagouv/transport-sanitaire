@@ -4,10 +4,10 @@
 // conditions d'affichage et ses dépendances. Le moteur ne connaît aucun
 // identifiant : les génériques ne servent qu'à typer le modèle.
 
-import type { Address, AddressSettings } from "./address";
-import type { GivenAnswers } from "./given-answers";
-import type { Option } from "./option";
-import type { ValidatedAnswers } from "./validated-answers";
+import type { Address, AddressSettings } from "./address.ts";
+import type { GivenAnswers } from "./given-answers.ts";
+import type { Option } from "./option.ts";
+import type { ValidatedAnswers } from "./validated-answers.ts";
 
 /**
  * Une réponse : un choix, un nombre, un texte, les cases cochées, une case

@@ -2,9 +2,9 @@
 // proposent, ou aux champs d'adresse qui s'y demandent, et suffisante ou non
 // pour la quitter.
 
-import { askedAddress, isAddress, isCompleteAddress } from "./address";
-import { errorsOf } from "./answer-error";
-import type { Answer, Question, Unanswered } from "./question";
+import { askedAddress, isAddress, isCompleteAddress } from "./address.ts";
+import { errorsOf } from "./answer-error.ts";
+import type { Answer, Question, Unanswered } from "./question.ts";
 
 /**
  * Les valeurs qu'une réponse à cette question peut porter, l'option exclusive

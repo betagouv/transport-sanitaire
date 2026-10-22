@@ -1,9 +1,9 @@
 import { describe, expect, it } from "vitest";
-import { commitPage } from "../../../front/socle/questionnaire-engine/page-commit";
+import { commitPage } from "../../../core/socle/questionnaire-engine/page-commit";
 import type {
   Page,
   Question,
-} from "../../../front/socle/questionnaire-engine/question";
+} from "../../../core/socle/questionnaire-engine/question";
 
 // Une réponse qui change n'efface que les réponses qui en dépendent. Les pages
 // sont écrites ici : le questionnaire factice n'a qu'une seule dépendance.

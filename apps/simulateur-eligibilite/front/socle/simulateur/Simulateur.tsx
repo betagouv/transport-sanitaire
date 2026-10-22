@@ -6,12 +6,12 @@
 // questionnaire ne repose aucune question d'avant.
 
 import { type ComponentType, type ReactNode, useState } from "react";
+import type { Answers } from "../../../core/socle/questionnaire-engine/question";
 import type { Model } from "../model";
 import {
   type DebugTraceProps,
   QuestionnaireForm,
 } from "../questionnaire-engine/QuestionnaireForm";
-import type { Answers } from "../questionnaire-engine/question";
 import { FirstResultat } from "./FirstResultat";
 import { CerfaResultat } from "./Resultats";
 import { type Screen, startingScreen } from "./start";

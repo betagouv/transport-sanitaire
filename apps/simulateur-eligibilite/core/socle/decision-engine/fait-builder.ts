@@ -13,12 +13,12 @@
 // Un fait qui croise des dates ou enchaîne plusieurs cas reste une fonction :
 // le constructeur sert le cas courant, pas tous.
 
-import { Fait } from "../../../core/socle/decision-engine/fait";
 import type {
   Choice,
   GivenAnswer,
-} from "../questionnaire-engine/given-answers";
-import type { Answer } from "../questionnaire-engine/question";
+} from "../questionnaire-engine/given-answers.ts";
+import type { Answer } from "../questionnaire-engine/question.ts";
+import { Fait } from "./fait.ts";
 
 /** Ce qu'une réponse dit du fait : l'un de ses trois états. */
 export type Etat = "oui" | "non" | "inconnu";

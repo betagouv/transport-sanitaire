@@ -1,5 +1,18 @@
 // Rend une question avec le champ de `front/socle/ui/` qui lui convient.
 
+import {
+  addressErrors,
+  askedFields,
+  isAddress,
+  withField,
+} from "../../../core/socle/questionnaire-engine/address";
+import type {
+  Answer,
+  MultipleChoice,
+  Question,
+  SingleChoice,
+  Unanswered,
+} from "../../../core/socle/questionnaire-engine/question";
 import { AddressField } from "../ui/AddressField";
 import { CheckboxField } from "../ui/CheckboxField";
 import { DateField } from "../ui/DateField";
@@ -9,14 +22,6 @@ import { Reminder } from "../ui/Reminder";
 import { SelectField } from "../ui/SelectField";
 import { TextAreaField } from "../ui/TextAreaField";
 import { TextField } from "../ui/TextField";
-import { addressErrors, askedFields, isAddress, withField } from "./address";
-import type {
-  Answer,
-  MultipleChoice,
-  Question,
-  SingleChoice,
-  Unanswered,
-} from "./question";
 
 type Props = {
   question: Question;

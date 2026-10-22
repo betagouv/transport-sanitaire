@@ -3,8 +3,8 @@ import { describe, expect, it } from "vitest";
 import {
   askedPages,
   validatedQuestions,
-} from "../../../front/socle/questionnaire-engine/asked-questions";
-import type { Page } from "../../../front/socle/questionnaire-engine/question";
+} from "../../../core/socle/questionnaire-engine/asked-questions";
+import type { Page } from "../../../core/socle/questionnaire-engine/question";
 import { afficher } from "./afficher";
 
 // Le questionnaire relève ce qui est validé : chaque question qui a eu sa

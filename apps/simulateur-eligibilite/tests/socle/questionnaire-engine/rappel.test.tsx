@@ -1,6 +1,6 @@
 import { screen, waitFor } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
-import type { Page } from "../../../front/socle/questionnaire-engine/question";
+import type { Page } from "../../../core/socle/questionnaire-engine/question";
 import { afficher } from "./afficher";
 
 // Un rappel redit un fait déjà connu, en clair, avant la question qu'il aide à

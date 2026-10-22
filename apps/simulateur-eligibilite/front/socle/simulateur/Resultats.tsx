@@ -3,6 +3,17 @@
 // fournit son contenu ; le cadre, le stepper et les boutons sont ici.
 
 import type { ComponentType, ReactNode } from "react";
+import {
+  askedPages,
+  validatedQuestions,
+} from "../../../core/socle/questionnaire-engine/asked-questions";
+import {
+  type Answers,
+  type AnyCibles,
+  type Page,
+  pagesOf,
+} from "../../../core/socle/questionnaire-engine/question";
+import type { QuestionnaireState } from "../../../core/socle/questionnaire-engine/questionnaire-state";
 import { CerfaDownload } from "../cerfa/CerfaDownload";
 import { dtoFrom } from "../cerfa-mapping";
 import {
@@ -11,18 +22,7 @@ import {
   type Preconisation,
   readingOf,
 } from "../model";
-import {
-  askedPages,
-  validatedQuestions,
-} from "../questionnaire-engine/asked-questions";
 import type { DebugTraceProps } from "../questionnaire-engine/QuestionnaireForm";
-import {
-  type Answers,
-  type AnyCibles,
-  type Page,
-  pagesOf,
-} from "../questionnaire-engine/question";
-import type { QuestionnaireState } from "../questionnaire-engine/questionnaire";
 import { Stepper } from "../questionnaire-engine/Stepper";
 import type { Locked } from "./start";
 

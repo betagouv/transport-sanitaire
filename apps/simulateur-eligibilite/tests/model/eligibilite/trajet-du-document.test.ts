@@ -3,21 +3,21 @@
 // TS1001-03 du paquet de l'éditeur.
 
 import { describe, expect, it } from "vitest";
+import { errorsOf } from "../../../core/socle/questionnaire-engine/answer-error";
+import {
+  areAnswered,
+  askedQuestions,
+} from "../../../core/socle/questionnaire-engine/asked-questions";
+import { GivenAnswers } from "../../../core/socle/questionnaire-engine/given-answers";
+import type {
+  Answers,
+  AnyCibles,
+} from "../../../core/socle/questionnaire-engine/question";
 import { model } from "../../../front/models/eligibilite";
 import type { Cibles } from "../../../front/models/eligibilite/declarations/cibles";
 import type { Questions } from "../../../front/models/eligibilite/declarations/questions";
 import { SEEDS } from "../../../front/models/eligibilite/seeds-catalogue";
 import { preconisationOf } from "../../../front/socle/model";
-import { errorsOf } from "../../../front/socle/questionnaire-engine/answer-error";
-import {
-  areAnswered,
-  askedQuestions,
-} from "../../../front/socle/questionnaire-engine/asked-questions";
-import { GivenAnswers } from "../../../front/socle/questionnaire-engine/given-answers";
-import type {
-  Answers,
-  AnyCibles,
-} from "../../../front/socle/questionnaire-engine/question";
 import { MINEUR, PLUSIEURS_PERMISSIONS } from "./reponses-de-la-permission";
 
 type Reponses = Answers<Questions>;

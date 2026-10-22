@@ -1,6 +1,6 @@
 import { screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
-import type { Page } from "../../../front/socle/questionnaire-engine/question";
+import type { Page } from "../../../core/socle/questionnaire-engine/question";
 import { afficher } from "./afficher";
 
 // Un nombre peut n'accepter qu'un entier. Les pages sont écrites ici.

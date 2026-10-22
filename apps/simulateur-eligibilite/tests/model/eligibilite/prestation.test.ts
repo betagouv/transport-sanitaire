@@ -2,13 +2,13 @@
 // l'éditeur et D-102. Q2.1 se saute quand P1 prouve déjà un motif de transport.
 
 import { describe, expect, it } from "vitest";
-import { model } from "../../../front/models/eligibilite";
-import type { Questions } from "../../../front/models/eligibilite/declarations/questions";
-import { askedQuestions } from "../../../front/socle/questionnaire-engine/asked-questions";
+import { askedQuestions } from "../../../core/socle/questionnaire-engine/asked-questions";
 import {
   type Answers,
   pagesOf,
-} from "../../../front/socle/questionnaire-engine/question";
+} from "../../../core/socle/questionnaire-engine/question";
+import { model } from "../../../front/models/eligibilite";
+import type { Questions } from "../../../front/models/eligibilite/declarations/questions";
 
 type Reponses = Answers<Questions>;
 

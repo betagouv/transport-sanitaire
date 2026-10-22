@@ -5,6 +5,12 @@
 // passent au-dessus d'elle, et seule la feuille s'imprime.
 
 import { type ComponentType, useEffect, useState } from "react";
+import type {
+  Answers,
+  AnyCibles,
+} from "../../../core/socle/questionnaire-engine/question";
+import { pagesOf } from "../../../core/socle/questionnaire-engine/question";
+import type { QuestionnaireState } from "../../../core/socle/questionnaire-engine/questionnaire-state";
 import {
   type FirstResult,
   type Model,
@@ -12,9 +18,6 @@ import {
   readingOf,
 } from "../model";
 import type { DebugTraceProps } from "../questionnaire-engine/QuestionnaireForm";
-import type { Answers, AnyCibles } from "../questionnaire-engine/question";
-import { pagesOf } from "../questionnaire-engine/question";
-import type { QuestionnaireState } from "../questionnaire-engine/questionnaire";
 import { Stepper } from "../questionnaire-engine/Stepper";
 import { PrimaryButton, SecondaryButton, traceOf } from "./Resultats";
 import { SheetViewer } from "./SheetViewer";

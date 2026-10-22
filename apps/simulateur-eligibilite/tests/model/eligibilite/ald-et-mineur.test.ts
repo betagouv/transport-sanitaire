@@ -14,15 +14,15 @@
 // - le `doublon` est impossible : une case se coche une fois.
 
 import { describe, expect, it } from "vitest";
+import { askedQuestions } from "../../../core/socle/questionnaire-engine/asked-questions";
+import {
+  type Answers,
+  pagesOf,
+} from "../../../core/socle/questionnaire-engine/question";
 import { model } from "../../../front/models/eligibilite";
 import type { Faits } from "../../../front/models/eligibilite/declarations/faits";
 import type { Questions } from "../../../front/models/eligibilite/declarations/questions";
 import { preconisationOf } from "../../../front/socle/model";
-import { askedQuestions } from "../../../front/socle/questionnaire-engine/asked-questions";
-import {
-  type Answers,
-  pagesOf,
-} from "../../../front/socle/questionnaire-engine/question";
 
 type Reponses = Answers<Questions>;
 type Cas = Questions["Q1.3"];

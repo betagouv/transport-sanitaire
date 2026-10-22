@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { optionsFrom } from "../../../front/socle/questionnaire-engine/option";
+import { optionsFrom } from "../../../core/socle/questionnaire-engine/option";
 
 // Un modèle peut déclarer ses libellés à part, en table, et en tirer ses
 // options. Le socle garde l'ordre de la table, et refuse ce qui le changerait.

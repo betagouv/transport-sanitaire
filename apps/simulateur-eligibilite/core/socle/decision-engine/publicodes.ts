@@ -7,7 +7,7 @@
 // chunk d'entrée.
 
 import Engine, { type RawPublicodes } from "publicodes";
-import type { Fait } from "../../../core/socle/decision-engine/fait";
+import type { Fait } from "./fait.ts";
 
 /**
  * Des cibles telles que les règles les rendent. Chacune peut rester

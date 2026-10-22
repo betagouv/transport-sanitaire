@@ -5,9 +5,8 @@
 // réponses, les faits et les cibles de l'un à l'autre.
 
 import type { ComponentType, ReactNode } from "react";
-import type { BoundCerfa } from "./cerfa-mapping";
-import { validatedAnswers } from "./questionnaire-engine/asked-questions";
-import { GivenAnswers } from "./questionnaire-engine/given-answers";
+import { validatedAnswers } from "../../core/socle/questionnaire-engine/asked-questions";
+import { GivenAnswers } from "../../core/socle/questionnaire-engine/given-answers";
 import {
   type Answers,
   type AnyCibles,
@@ -15,8 +14,9 @@ import {
   type Page,
   pagesOf,
   type QuestionnairePart,
-} from "./questionnaire-engine/question";
-import type { ValidatedAnswers } from "./questionnaire-engine/validated-answers";
+} from "../../core/socle/questionnaire-engine/question";
+import type { ValidatedAnswers } from "../../core/socle/questionnaire-engine/validated-answers";
+import type { BoundCerfa } from "./cerfa-mapping";
 import type { Seed } from "./seeds/seed";
 
 /** Les faits d'un modèle : ce que ses règles reçoivent. */

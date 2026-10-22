@@ -1,11 +1,11 @@
 import { screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
-import { validatedQuestions } from "../../../front/socle/questionnaire-engine/asked-questions";
+import { validatedQuestions } from "../../../core/socle/questionnaire-engine/asked-questions";
 import type {
   Page,
   Question,
-} from "../../../front/socle/questionnaire-engine/question";
-import { stateAfterAnswers } from "../../../front/socle/questionnaire-engine/questionnaire";
+} from "../../../core/socle/questionnaire-engine/question";
+import { stateAfterAnswers } from "../../../core/socle/questionnaire-engine/questionnaire-state";
 import { afficher } from "./afficher";
 
 // C'est la question qui dit si son adresse est à l'étranger, d'après les

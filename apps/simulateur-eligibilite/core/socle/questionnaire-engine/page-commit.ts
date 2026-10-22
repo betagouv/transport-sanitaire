@@ -3,8 +3,8 @@
 // Les réponses de la page sont remplacées. Celles qui dépendaient d'une réponse
 // changée sont effacées, et elles seules.
 
-import { isAddress } from "./address";
-import type { Answer, Answers, Page, Unanswered } from "./question";
+import { isAddress } from "./address.ts";
+import type { Answer, Answers, Page, Unanswered } from "./question.ts";
 
 /**
  * Les réponses du questionnaire, une fois la page validée. `inputs` porte les

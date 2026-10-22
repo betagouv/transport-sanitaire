@@ -3,8 +3,8 @@ import { describe, expect, it } from "vitest";
 import type {
   Page,
   Question,
-} from "../../../front/socle/questionnaire-engine/question";
-import { stateAfterAnswers } from "../../../front/socle/questionnaire-engine/questionnaire";
+} from "../../../core/socle/questionnaire-engine/question";
+import { stateAfterAnswers } from "../../../core/socle/questionnaire-engine/questionnaire-state";
 import { afficher } from "./afficher";
 
 // Une adresse incohérente avec une autre réponse affiche son message sous le

@@ -2,13 +2,13 @@
 // l'éditeur. La série se révèle sur la même page, sous la distance.
 
 import { describe, expect, it } from "vitest";
-import { model } from "../../../front/models/eligibilite";
-import type { Questions } from "../../../front/models/eligibilite/declarations/questions";
-import { askedQuestions } from "../../../front/socle/questionnaire-engine/asked-questions";
+import { askedQuestions } from "../../../core/socle/questionnaire-engine/asked-questions";
 import {
   type Answers,
   pagesOf,
-} from "../../../front/socle/questionnaire-engine/question";
+} from "../../../core/socle/questionnaire-engine/question";
+import { model } from "../../../front/models/eligibilite";
+import type { Questions } from "../../../front/models/eligibilite/declarations/questions";
 
 type Reponses = Answers<Questions>;
 

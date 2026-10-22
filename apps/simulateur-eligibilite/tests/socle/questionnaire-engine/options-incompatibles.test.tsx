@@ -1,10 +1,10 @@
 import { screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
-import { errorsOf } from "../../../front/socle/questionnaire-engine/answer-error";
+import { errorsOf } from "../../../core/socle/questionnaire-engine/answer-error";
 import type {
   Page,
   Question,
-} from "../../../front/socle/questionnaire-engine/question";
+} from "../../../core/socle/questionnaire-engine/question";
 import { afficher } from "./afficher";
 
 // Deux options d'un choix multiple peuvent s'exclure : cocher l'une décoche

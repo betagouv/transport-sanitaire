@@ -7,21 +7,21 @@
 // ceux des questions validées jusque-là, calculés seulement si on les lit. Le
 // constructeur traduit ces rappels vers la forme que le moteur appelle.
 
-import type { Address } from "./address";
-import type { GivenAnswers } from "./given-answers";
-import { type Option, optionsFrom } from "./option";
+import type { Address } from "./address.ts";
+import type { GivenAnswers } from "./given-answers.ts";
+import { type Option, optionsFrom } from "./option.ts";
 import type {
   AnyQuestions,
   MultipleChoice,
   Question,
   SingleChoice,
-} from "./question";
+} from "./question.ts";
 import {
   type Adapt,
   adapterOf,
   type QuestionContext,
-} from "./question-context";
-import type { ValidatedAnswers } from "./validated-answers";
+} from "./question-context.ts";
+import type { ValidatedAnswers } from "./validated-answers.ts";
 
 /** Les libellés des options de chaque question à choix, par valeur. */
 export type Catalogue<Questions extends AnyQuestions> = {

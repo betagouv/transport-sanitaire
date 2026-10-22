@@ -2,15 +2,15 @@
 // boutons de navigation. L'état est dans `questionnaire.ts`.
 
 import type { ComponentType } from "react";
-import { errorsOf } from "./answer-error";
-import { QuestionField } from "./QuestionField";
+import { errorsOf } from "../../../core/socle/questionnaire-engine/answer-error";
 import {
   type Answers,
   type AnyCibles,
   pagesOf,
   type QuestionnairePart,
   type Validated,
-} from "./question";
+} from "../../../core/socle/questionnaire-engine/question";
+import { QuestionField } from "./QuestionField";
 import type { Questionnaire, QuestionnaireOptions } from "./questionnaire";
 import { useQuestionnaire } from "./questionnaire";
 import { Stepper } from "./Stepper";

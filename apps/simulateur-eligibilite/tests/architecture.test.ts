@@ -19,7 +19,17 @@ const commencePar = (prefixe: string) => (cible: string) =>
   cible.startsWith(prefixe);
 
 // Ce qui pose les questions : le parcours et le moteur de questionnaire.
-const PARCOURS = ["front/socle/simulateur", "front/socle/questionnaire-engine"];
+const PARCOURS = [
+  "front/socle/simulateur",
+  "front/socle/questionnaire-engine",
+  "core/socle/questionnaire-engine",
+];
+
+// Le socle, à l'écran et dans le métier.
+const SOCLE = ["front/socle", "core/socle"];
+
+const dansLeSocle = (cible: string) =>
+  SOCLE.some((dossier) => cible.startsWith(dossier));
 
 // Ce que le modèle a le droit d'importer du socle, en plus de son point
 // d'entrée : le type d'une seed, que le catalogue lit à la source, et le moteur
@@ -28,7 +38,7 @@ const PARCOURS = ["front/socle/simulateur", "front/socle/questionnaire-engine"];
 const OUVERT_AU_MODELE = [
   "front/socle",
   "front/socle/seeds/seed",
-  "front/socle/decision-engine/publicodes",
+  "core/socle/decision-engine/publicodes",
 ];
 
 // Un dossier par modèle : celui de l'éditeur, et le modèle de démonstration.
@@ -44,7 +54,11 @@ const MODELE_FACTICE = "tests/socle/fixtures/modele-factice";
 describe("le socle et le modèle", () => {
   it("le socle n'importe rien du modèle", () => {
     expect(
-      franchissements(["front/socle"], commencePar("front/models")),
+      franchissements(
+        SOCLE,
+        (cible) =>
+          cible.startsWith("front/models") || cible.startsWith("core/models"),
+      ),
       "Le socle ne dépend d'aucune version du modèle : il reçoit le sien en " +
         "prop, depuis `front/main.tsx`. Un import direct lierait le parcours, " +
         "les seeds ou les developer tools au questionnaire du moment, et " +
@@ -57,7 +71,8 @@ describe("le socle et le modèle", () => {
       franchissements(
         ["front/models"],
         (cible) =>
-          cible.startsWith("front/socle") && !OUVERT_AU_MODELE.includes(cible),
+          dansLeSocle(cible) &&
+          !OUVERT_AU_MODELE.includes(cible.replace(/\.tsx?$/, "")),
       ),
       "`front/socle/index.ts` dit ce que le socle promet au modèle. Un import " +
         "plus profond lie le modèle à un détail du socle, qui ne peut plus " +
@@ -165,15 +180,15 @@ describe("invariants métier", () => {
   });
 
   it("seul le moteur de décision importe publicodes", () => {
-    const fautifs = sources("front").filter(
+    const fautifs = sources("front", "core").filter(
       (f) =>
-        !f.startsWith("front/socle/decision-engine/") &&
+        !f.startsWith("core/socle/decision-engine/") &&
         /^import (?!type ).*from "publicodes";$/m.test(texteDe(f)),
     );
     expect(
       fautifs,
       "publicodes est l'outil du socle pour décider, derrière un seul " +
-        "fichier : `front/socle/decision-engine/publicodes.ts`. Le reste du " +
+        "fichier : `core/socle/decision-engine/publicodes.ts`. Le reste du " +
         "socle et le modèle passent par lui. Un autre import lie du code au " +
         "moteur, et rend son remplacement plus cher.",
     ).toEqual([]);

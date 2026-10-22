@@ -5,8 +5,8 @@
 
 import { describe, expect, it } from "vitest";
 import { Fait } from "../../../core/socle/decision-engine/fait";
-import { GivenAnswers } from "../../../front/socle/questionnaire-engine/given-answers";
-import { ValidatedAnswers } from "../../../front/socle/questionnaire-engine/validated-answers";
+import { GivenAnswers } from "../../../core/socle/questionnaire-engine/given-answers";
+import { ValidatedAnswers } from "../../../core/socle/questionnaire-engine/validated-answers";
 
 type Questions = {
   boisson: "the" | "cafe";

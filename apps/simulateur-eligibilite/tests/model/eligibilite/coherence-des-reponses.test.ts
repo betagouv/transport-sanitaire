@@ -8,6 +8,16 @@
 // dates…) arrivent avec leurs questions.
 
 import { describe, expect, it } from "vitest";
+import {
+  askedQuestions,
+  validatedQuestions,
+} from "../../../core/socle/questionnaire-engine/asked-questions";
+import { isAnswered } from "../../../core/socle/questionnaire-engine/offered-answer";
+import {
+  type Answers,
+  pagesOf,
+} from "../../../core/socle/questionnaire-engine/question";
+import { ValidatedAnswers } from "../../../core/socle/questionnaire-engine/validated-answers";
 import { model } from "../../../front/models/eligibilite";
 import type { Faits } from "../../../front/models/eligibilite/declarations/faits";
 import {
@@ -19,16 +29,6 @@ import {
   modeDe,
 } from "../../../front/models/eligibilite/p1/mode-de-transport";
 import { preconisationOf } from "../../../front/socle/model";
-import {
-  askedQuestions,
-  validatedQuestions,
-} from "../../../front/socle/questionnaire-engine/asked-questions";
-import { isAnswered } from "../../../front/socle/questionnaire-engine/offered-answer";
-import {
-  type Answers,
-  pagesOf,
-} from "../../../front/socle/questionnaire-engine/question";
-import { ValidatedAnswers } from "../../../front/socle/questionnaire-engine/validated-answers";
 
 type Reponses = Answers<Questions>;
 type Critere = Questions["Q1.2"][number];

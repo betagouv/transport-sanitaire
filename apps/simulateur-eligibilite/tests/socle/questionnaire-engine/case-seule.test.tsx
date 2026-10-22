@@ -1,7 +1,7 @@
 import { screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
-import { validatedQuestions } from "../../../front/socle/questionnaire-engine/asked-questions";
-import type { Page } from "../../../front/socle/questionnaire-engine/question";
+import { validatedQuestions } from "../../../core/socle/questionnaire-engine/asked-questions";
+import type { Page } from "../../../core/socle/questionnaire-engine/question";
 import { afficher } from "./afficher";
 
 // Une case seule : décochée sur une page validée, elle répond « non ». Les
