@@ -9,6 +9,7 @@
 // Q2.8.4.a ne change aucun fait.
 
 import { Fait, regles, type ValidatedAnswers } from "../../../socle/index.ts";
+import { Permission } from "../concepts/permission.ts";
 import {
   type DeclarationsDeFaits,
   PAS_ENCORE_ETABLI,
@@ -21,13 +22,6 @@ import {
 } from "./retour-penitentiaire.ts";
 
 type Valides = ValidatedAnswers<Questions>;
-
-/** Q2.7 dit-elle un patient de moins de 20 ans ? Q2.8 se pose alors. */
-export function mineurDeVingtAns(validated: Valides): boolean {
-  return validated
-    .question("Q2.7")
-    .isOneOf("1_MOINS_DE_SEIZE_ANS", "2_SEIZE_A_DIX_NEUF_ANS");
-}
 
 /**
  * Les options adultes de Q2.7 se proposent-elles ? Pas si Q1.3 dit un patient
@@ -93,11 +87,12 @@ function chargeDeQ27(validated: Valides): Fait | undefined {
   const tranche = validated.question("Q2.7");
   if (!tranche.hasAnswer()) return undefined;
   const source = `Q2.7 : « ${tranche.value} ».`;
-  if (mineurDeVingtAns(validated))
+  const permission = Permission.of(validated);
+  if (permission.estDUnMineurDeVingtAns())
     return Fait.non(
       `${source} La charge patient ne vaut que pour 20 ans ou plus.`,
     );
-  return tranche.is("4_ADULTE_A_SA_CHARGE")
+  return permission.estAChargeDuPatient()
     ? chargeDuPatient(validated)
     : Fait.non(source);
 }
@@ -107,7 +102,7 @@ function chargeDeQ27(validated: Valides): Fait | undefined {
 function admissibiliteDeQ27(validated: Valides): Fait | undefined {
   const tranche = validated.question("Q2.7");
   if (!tranche.hasAnswer()) return undefined;
-  if (!mineurDeVingtAns(validated))
+  if (!Permission.of(validated).estDUnMineurDeVingtAns())
     return Fait.non(
       `Q2.7 : « ${tranche.value} ». L'admissibilité ne vaut que pour moins de 20 ans.`,
     );

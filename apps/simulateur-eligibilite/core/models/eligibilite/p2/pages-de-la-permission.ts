@@ -3,15 +3,9 @@
 // 20 ans, sur une seule page (D-107).
 
 import { page } from "../../../socle/index.ts";
+import { Permission } from "../concepts/permission.ts";
 import { type Context, question } from "../question.ts";
-import {
-  commenceAvantLeQuatorzieme,
-  commenceAvantLHospitalisation,
-  depasseQuaranteHuitHeures,
-  finNonPosterieure,
-  periodeAvantLaFinDeLaPermission,
-} from "./dates-de-la-permission.ts";
-import { mineurDeVingtAns, optionsAdultesAProposer } from "./permission.ts";
+import { optionsAdultesAProposer } from "./permission.ts";
 
 // Q2.7 se pose dès que la permission est un fait, par Q2.1 ou par Q2.2.1.a. Un
 // patient de moins de 18 ans en Q1.3 ne se propose pas adulte. Q2.7.a confirme
@@ -38,9 +32,7 @@ export const PAGE_DE_LA_PERMISSION = page(
     .hint(
       "La seule préférence personnelle ne suffit pas. Vérifier la demande écrite, l’absence de fondement médical, l’absence de couverture par les tarifs de l’établissement et l’information du patient sur le prix et la facturation.",
     )
-    .askedIf(({ answers }) =>
-      answers.question("Q2.7").is("4_ADULTE_A_SA_CHARGE"),
-    )
+    .askedIf(({ answers }) => Permission.of(answers).estAChargeDuPatient())
     .dependsOn("Q2.7"),
 );
 
@@ -56,38 +48,22 @@ export const PAGE_DE_LA_PERMISSION_DU_MINEUR = page(
     .datetime("Q2.8.2", "Quand commence la première permission ?")
     .askedIf(mineurAPoser)
     .inconsistentIf(
-      ({ answers }) =>
-        commenceAvantLHospitalisation(
-          answers.question("Q2.8.1").value,
-          answers.question("Q2.8.2").value,
-        ),
+      ({ answers }) => Permission.of(answers).commenceAvantLHospitalisation(),
       "La permission ne peut pas commencer avant le début de l’hospitalisation.",
     )
     .inconsistentIf(
-      ({ answers }) =>
-        commenceAvantLeQuatorzieme(
-          answers.question("Q2.8.1").value,
-          answers.question("Q2.8.2").value,
-        ),
+      ({ answers }) => Permission.of(answers).commenceAvantLeQuatorziemeJour(),
       "La première permission doit commencer au 14e jour d’hospitalisation ou après.",
     ),
   question
     .datetime("Q2.8.3", "Quand se termine cette première permission ?")
     .askedIf(mineurAPoser)
     .inconsistentIf(
-      ({ answers }) =>
-        finNonPosterieure(
-          answers.question("Q2.8.2").value,
-          answers.question("Q2.8.3").value,
-        ),
+      ({ answers }) => Permission.of(answers).neFinitPasApresSonDebut(),
       "La fin de la permission doit venir après son début.",
     )
     .inconsistentIf(
-      ({ answers }) =>
-        depasseQuaranteHuitHeures(
-          answers.question("Q2.8.2").value,
-          answers.question("Q2.8.3").value,
-        ),
+      ({ answers }) => Permission.of(answers).depasseQuaranteHuitHeures(),
       "Une permission dure au plus 48 heures.",
     ),
   question
@@ -113,11 +89,7 @@ export const PAGE_DE_LA_PERMISSION_DU_MINEUR = page(
     .askedIf(plusieursPermissions)
     .dependsOn("Q2.8.5")
     .inconsistentIf(
-      ({ answers }) =>
-        periodeAvantLaFinDeLaPermission(
-          answers.question("Q2.8.6").value,
-          answers.question("Q2.8.3").value,
-        ),
+      ({ answers }) => Permission.of(answers).periodeFinitAvantLaPremiere(),
       "La période ne peut pas se terminer avant la fin de la première permission.",
     ),
   question
@@ -154,11 +126,9 @@ function adultesAProposer({ validated }: Context): boolean {
 }
 
 function mineurAPoser({ validated }: Context): boolean {
-  return mineurDeVingtAns(validated);
+  return Permission.of(validated).estDUnMineurDeVingtAns();
 }
 
 function plusieursPermissions(context: Context): boolean {
-  return (
-    mineurAPoser(context) && context.answers.question("Q2.8.5").is("1_OUI")
-  );
+  return mineurAPoser(context) && Permission.of(context.answers).estRepetee();
 }

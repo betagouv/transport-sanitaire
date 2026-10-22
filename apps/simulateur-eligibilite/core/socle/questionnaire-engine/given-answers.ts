@@ -88,6 +88,17 @@ export class GivenAnswers<Questions extends AnyQuestions = AnyQuestions> {
 }
 
 /**
+ * Des réponses à lire question par question, données ou validées. Un concept
+ * du modèle se construit sur les unes comme sur les autres : la garde d'une
+ * page lit les premières, un fait les secondes.
+ */
+export type AnswersReader<Questions extends AnyQuestions = AnyQuestions> = {
+  question<Id extends keyof Questions & string>(
+    id: Id,
+  ): GivenAnswer<Questions[Id]>;
+};
+
+/**
  * Les réponses telles que le moteur les garde. Le socle seul les lit : le
  * point d'entrée ne l'expose pas au modèle.
  */

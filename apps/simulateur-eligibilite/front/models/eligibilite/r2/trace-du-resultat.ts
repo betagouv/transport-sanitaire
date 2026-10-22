@@ -6,6 +6,7 @@
 // (D-104 : une simulation se fait en une fois, sur le modèle chargé à
 // l'ouverture). Un fait inconnu est une clé absente, jamais un « non ».
 
+import { Permission } from "../../../../core/models/eligibilite/concepts/permission";
 import type { Cibles } from "../../../../core/models/eligibilite/declarations/cibles";
 import type { Faits } from "../../../../core/models/eligibilite/declarations/faits";
 import type { Questions } from "../../../../core/models/eligibilite/declarations/questions";
@@ -51,14 +52,20 @@ export function traceDuResultat({
   validated,
   cibles,
 }: ReponsesEtCibles): Trace {
-  const repetee = validated.question("Q2.8.5");
   return {
     cibles,
     faits: faits(answers, validated),
     criteres: validated.question("Q1.2").checkedBoxes().map(numeroDuCritere),
-    ...(repetee.hasAnswer() && { permissionRepeated: repetee.is("1_OUI") }),
+    ...repetition(Permission.of(validated)),
     precisions: precisionsDuResultat(validated),
   };
+}
+
+// Q2.8.5 dit si la permission se répète. Sans réponse, la clé reste absente.
+function repetition(permission: Permission): { permissionRepeated?: boolean } {
+  if (permission.estRepetee()) return { permissionRepeated: true };
+  if (permission.estUnique()) return { permissionRepeated: false };
+  return {};
 }
 
 // Le numéro de l'option au catalogue, que porte son identifiant (D-75).

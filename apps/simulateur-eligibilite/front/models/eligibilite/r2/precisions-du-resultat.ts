@@ -6,6 +6,7 @@
 // clé : le texte prend alors son repli générique, et rien n'est jamais
 // deviné. Ces fonctions ne lisent que les questions validées.
 
+import { Permission } from "../../../../core/models/eligibilite/concepts/permission";
 import type { Questions } from "../../../../core/models/eligibilite/declarations/questions";
 import type { ValidatedAnswers } from "../../../../core/socle";
 
@@ -180,7 +181,7 @@ function contexteDeLArticle80(validated: Valides): Contexte | undefined {
 
 // Q2.7 option 4 : un transport exceptionnel demandé par écrit par le patient.
 function contexteDeLaPermission(validated: Valides): Contexte | undefined {
-  return validated.question("Q2.7").is("4_ADULTE_A_SA_CHARGE")
+  return Permission.of(validated).estAChargeDuPatient()
     ? { kind: "adult-explicit" }
     : undefined;
 }

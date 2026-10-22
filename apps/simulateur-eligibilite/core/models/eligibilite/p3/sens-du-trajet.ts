@@ -4,6 +4,7 @@
 // alors le sens, qui ne se redemande pas (D-120).
 
 import type { GivenAnswers } from "../../../socle/index.ts";
+import { Permission } from "../concepts/permission.ts";
 import type { Questions } from "../declarations/questions.ts";
 import { retourPenitentiaireCoche } from "../p2/retour-penitentiaire.ts";
 import type { ContextDuComplement } from "../question.ts";
@@ -17,7 +18,8 @@ type Rappel = { readonly label: string; readonly value: string }[];
 export function sensAPoser({ answers, cibles }: ContextDuComplement): boolean {
   return (
     pmtOuDap(cibles) ||
-    (cibles.cible_support_id.is("S3141") && !plusieursPermissions(answers))
+    (cibles.cible_support_id.is("S3141") &&
+      !Permission.of(answers).estRepetee())
   );
 }
 
@@ -26,14 +28,16 @@ export function trajetsMensuelsAPoser({
   answers,
   cibles,
 }: ContextDuComplement): boolean {
-  return cibles.cible_support_id.is("S3141") && plusieursPermissions(answers);
+  return (
+    cibles.cible_support_id.is("S3141") && Permission.of(answers).estRepetee()
+  );
 }
 
 /** Le sens du document : Q3.1.2, ou l'aller-retour de plusieurs permissions. */
 export function sensDuDocument(reponses: Reponses): Sens | undefined {
   const sens = reponses.question("Q3.1.2");
   if (sens.hasAnswer()) return sens.value;
-  return plusieursPermissions(reponses)
+  return Permission.of(reponses).estRepetee()
     ? "3_ALLER_RETOUR_EQUIVALENT"
     : undefined;
 }
@@ -67,14 +71,15 @@ export function allerRetourDUnSeulTransport({
 export function trajetsAuDelaDeLaFrequence({
   answers,
 }: ContextDuComplement): boolean {
-  const maximum = trajetsMensuelsMaximum(answers);
+  const maximum = Permission.of(answers).trajetsMensuelsMaximum();
   const nombre = answers.question("Q3.1.3").value;
   return maximum !== undefined && nombre !== undefined && nombre > maximum;
 }
 
 /** Le message de Q3.1.3 au-delà de la fréquence : il cite le maximum. */
 export function frequenceDepassee({ answers }: ContextDuComplement): string {
-  return `Avec une permission toutes les ${answers.question("Q2.8.6.a").value} semaine(s), un mois compte au plus ${trajetsMensuelsMaximum(answers)} trajets.`;
+  const permission = Permission.of(answers);
+  return `Avec une permission toutes les ${permission.semainesEntreDeuxPermissions()} semaine(s), un mois compte au plus ${permission.trajetsMensuelsMaximum()} trajets.`;
 }
 
 /** Ce que Q2.8 a fixé des permissions, rappelé au-dessus de Q3.1.3. */
@@ -107,19 +112,6 @@ export function rappelDesPermissions({ answers }: ContextDuComplement): Rappel {
 }
 
 // ---- implémentation ----
-
-// Q2.8 couvre-t-elle plusieurs permissions ? Chacune est un aller-retour.
-function plusieursPermissions(reponses: Reponses): boolean {
-  return reponses.question("Q2.8.5").is("1_OUI");
-}
-
-// Le plus de trajets qu'un mois peut compter : deux par permission, une
-// permission toutes les N semaines, sur 31 jours.
-function trajetsMensuelsMaximum(reponses: Reponses): number | undefined {
-  const semaines = reponses.question("Q2.8.6.a").value;
-  if (semaines === undefined || semaines < 1) return undefined;
-  return 2 * Math.ceil(31 / (7 * semaines));
-}
 
 // Le seul sens que les rôles de P2 permettent. Absent : tous se proposent.
 function sensImpose(reponses: Reponses): Sens | undefined {
