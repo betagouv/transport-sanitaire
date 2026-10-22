@@ -6,12 +6,17 @@
 // « oui », ce qui le met à « non », et ce qui le laisse absent. Il ne lit que
 // les questions validées.
 
-import { Fait, regles, type ValidatedAnswers } from "../../../socle/index.ts";
+import {
+  citant,
+  Fait,
+  regles,
+  type ValidatedAnswers,
+} from "../../../socle/index.ts";
+import { AideDuPatient } from "../concepts/aide-du-patient.ts";
 import type { Cibles } from "../declarations/cibles.ts";
 import type { DeclarationsDeFaits, Faits } from "../declarations/faits.ts";
 import type { Questions } from "../declarations/questions.ts";
 import { cible } from "../evaluation-des-regles.ts";
-import { sansProfessionnel } from "./reponses.ts";
 
 type Valides = ValidatedAnswers<Questions>;
 type Critere = Questions["Q1.2"][number];
@@ -30,22 +35,23 @@ export function cibleEnCoursDeP1<Nom extends keyof Cibles>(
 
 /** Les faits que Q1.1 à Q1.4 établissent, ou laissent absents. */
 export const FAITS_DU_MODE: DeclarationsDeFaits = {
-  fait_autonomie_professionnel: ({ validated }) =>
-    regles()
-      .selon(validated.question("Q1.1"), {
-        "1_SEUL": "non",
-        "2_AVEC_UN_PROCHE": "non",
-        [PROFESSIONNEL]: "oui",
-      })
-      .sinon(Q11_EN_ATTENTE),
-  fait_accompagnant: ({ validated }) =>
-    regles()
-      .selon(validated.question("Q1.1"), {
-        "1_SEUL": "non",
-        "2_AVEC_UN_PROCHE": "oui",
-        [PROFESSIONNEL]: "non",
-      })
-      .sinon(Q11_EN_ATTENTE),
+  fait_autonomie_professionnel: ({ validated }) => {
+    const aide = AideDuPatient.of(validated);
+    return regles()
+      .ouiSi(aide.avecUnProfessionnel(), citeQ11(validated))
+      .nonSi(aide.sansProfessionnel(), citeQ11(validated))
+      .sinon(Q11_EN_ATTENTE);
+  },
+  fait_accompagnant: ({ validated }) => {
+    const aide = AideDuPatient.of(validated);
+    return regles()
+      .ouiSi(aide.avecUnProche(), citeQ11(validated))
+      .nonSi(
+        aide.seDeplaceSeul() || aide.avecUnProfessionnel(),
+        citeQ11(validated),
+      )
+      .sinon(Q11_EN_ATTENTE);
+  },
   fait_critere_tap: ({ validated }) =>
     critere(validated, CRITERES.fait_critere_tap),
   fait_critere_fauteuil: ({ validated }) =>
@@ -93,7 +99,7 @@ export const FAITS_DU_MODE: DeclarationsDeFaits = {
         "2_TRANSPORTS_EN_COMMUN": "oui",
       })
       .nonSi(
-        validated.question("Q1.1").is(PROFESSIONNEL),
+        AideDuPatient.of(validated).avecUnProfessionnel(),
         "Q1.4 ne se pose pas : un professionnel intervient.",
       )
       .sinon("Q1.4 n'est pas encore validée."),
@@ -124,9 +130,13 @@ export function seanceDeP1(validated: Valides): Fait {
 
 // ---- implémentation ----
 
-const PROFESSIONNEL = "3_AVEC_UN_PROFESSIONNEL";
 const Q11_EN_ATTENTE = "Q1.1 n'est pas encore validée.";
 const Q13_EN_ATTENTE = "Q1.3 n'est pas encore validée.";
+
+// La provenance d'un fait que Q1.1 décide : sa réponse.
+function citeQ11(validated: Valides): string {
+  return citant(validated.question("Q1.1"));
+}
 
 // Les options de Q1.2 qui donnent chaque critère.
 const CRITERES = {
@@ -157,7 +167,7 @@ function critere(validated: Valides, options: readonly Critere[]): Fait {
       `Q1.2 validée sans « ${options.join(" », « ")} ».`,
     )
     .nonSi(
-      sansProfessionnel(validated.question("Q1.1")),
+      AideDuPatient.of(validated).sansProfessionnel(),
       "Q1.2 ne se pose pas : aucun professionnel n'intervient.",
     )
     .sinon("Q1.2 n'est pas encore validée.");
@@ -188,16 +198,13 @@ function fondement(validated: Valides, option: Cas): Fait {
 // patient qui se déplace seul n'a pas de déficience. Une Q1.2 qui ne se pose
 // pas, après un proche, n'en dit pas l'absence.
 function preuveClinique(validated: Valides): Fait {
-  const qui = validated.question("Q1.1");
+  const aide = AideDuPatient.of(validated);
   const [critere] = validated.question("Q1.2").checkedBoxes();
   return regles()
+    .ouiSi(aide.avecUnProche(), "Q1.1 : l'aide d'un proche est nécessaire.")
+    .nonSi(aide.seDeplaceSeul(), "Q1.1 : le patient se déplace seul.")
     .ouiSi(
-      qui.is("2_AVEC_UN_PROCHE"),
-      "Q1.1 : l'aide d'un proche est nécessaire.",
-    )
-    .nonSi(qui.is("1_SEUL"), "Q1.1 : le patient se déplace seul.")
-    .ouiSi(
-      qui.is(PROFESSIONNEL) && critere !== undefined,
+      aide.avecUnProfessionnel() && critere !== undefined,
       `Q1.2 : « ${critere} » coché.`,
     )
     .sinon("Ni Q1.1 ni Q1.2 n'établissent encore une déficience.");

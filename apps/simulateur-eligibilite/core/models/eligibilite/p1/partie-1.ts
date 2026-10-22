@@ -2,14 +2,12 @@
 // transport. Les options et leurs libellés viennent des déclarations.
 
 import { page, type QuestionnairePart } from "../../../socle/index.ts";
+import { AideDuPatient } from "../concepts/aide-du-patient.ts";
 import type { Questions } from "../declarations/questions.ts";
 import { question } from "../question.ts";
 import { cibleEnCoursDeP1 } from "./mode-de-transport.ts";
-import { sansProfessionnel } from "./reponses.ts";
 
 type Partie<Cibles> = QuestionnairePart<Questions, Cibles>;
-
-const PROFESSIONNEL = "3_AVEC_UN_PROFESSIONNEL";
 
 // Les critères de Q1.2 qui imposent l'ambulance.
 const CRITERES_D_AMBULANCE = [
@@ -83,7 +81,9 @@ export const P1: Partie<undefined> = {
           "Q1.2",
           "Quelles aides ou conditions particulières sont nécessaires pendant le transport ?",
         )
-        .askedIf(({ answers }) => answers.question("Q1.1").is(PROFESSIONNEL))
+        .askedIf(({ answers }) =>
+          AideDuPatient.of(answers).avecUnProfessionnel(),
+        )
         .dependsOn("Q1.1")
         .incompatible(
           "6_FAUTEUIL_SANS_TRANSFERT",
@@ -107,11 +107,11 @@ export const P1: Partie<undefined> = {
         // Le catalogue demande que le libellé précise « en toute autonomie »
         // ou « avec l’aide d’un proche », sans donner la phrase.
         .labelFrom(({ answers }) =>
-          answers.question("Q1.1").is("2_AVEC_UN_PROCHE")
+          AideDuPatient.of(answers).avecUnProche()
             ? "Le patient pouvant réaliser le trajet avec l’aide d’un proche, sans intervention d’un professionnel, merci de préciser sa préférence en matière de transport."
             : "Le patient pouvant réaliser le trajet en toute autonomie, sans intervention d’un professionnel, merci de préciser sa préférence en matière de transport.",
         )
-        .askedIf(({ answers }) => sansProfessionnel(answers.question("Q1.1")))
+        .askedIf(({ answers }) => AideDuPatient.of(answers).sansProfessionnel())
         .dependsOn("Q1.1"),
     ),
   ],
