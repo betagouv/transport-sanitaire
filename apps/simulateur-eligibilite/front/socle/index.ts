@@ -37,7 +37,10 @@ export type {
   GivenAnswer,
   GivenAnswers,
 } from "./questionnaire-engine/given-answers";
-export type { QuestionnairePart } from "./questionnaire-engine/question";
+export type {
+  QuestionnairePart,
+  Unanswered,
+} from "./questionnaire-engine/question";
 export type { QuestionContext } from "./questionnaire-engine/question-context";
 export { questionsOf } from "./questionnaire-engine/question-factory";
 export type { ValidatedAnswers } from "./questionnaire-engine/validated-answers";
