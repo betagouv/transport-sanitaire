@@ -17,6 +17,9 @@ type Evaluated<Cibles> = {
   readonly [Nom in keyof Cibles]: Cibles[Nom] | undefined;
 };
 
+/** Les règles d'un modèle, par nom : les faits, puis les cibles. */
+export type Rules = RawPublicodes<string>;
+
 /** Ce que des règles calculent pour des faits. */
 export type DecisionEngine<Faits, Cibles> = {
   /** Toutes les cibles de ces faits : la préconisation. */
@@ -33,7 +36,7 @@ export function publicodesEngine<
   Faits extends Readonly<Record<string, Fait<boolean | number | string>>>,
   Cibles extends Readonly<Record<string, unknown>>,
 >(
-  rules: RawPublicodes<string>,
+  rules: Rules,
   cibles: readonly (keyof Cibles & string)[],
 ): DecisionEngine<Faits, Cibles> {
   // Compiler les règles coûte : le moteur est créé au premier calcul, puis gardé.

@@ -10,7 +10,9 @@ import {
 } from "../../../front/models/eligibilite/declarations/cibles";
 import { FAITS } from "../../../front/models/eligibilite/declarations/faits";
 import { OPTIONS } from "../../../front/models/eligibilite/declarations/questions";
-import { rules } from "../../../front/models/eligibilite/rules/regles.publicodes";
+import rules from "../../../front/models/eligibilite/rules/regles.json" with {
+  type: "json",
+};
 
 type Regle = {
   type?: string;
