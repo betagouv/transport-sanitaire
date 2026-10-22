@@ -117,4 +117,26 @@ describe("les boutons du modèle de l'éditeur", DELAI_D_UN_TEST, () => {
       await screen.findByLabelText(/^Combien de transports faut-il prescrire/),
     ).toBeInTheDocument();
   });
+
+  it("récapitule sur R3 les réponses de P3, en attendant le PDF", async () => {
+    await ouvrirLaSeed("issue-pmt");
+    const user = userEvent.setup();
+    await user.click(screen.getByRole("button", { name: COMPLETER }));
+
+    await user.type(
+      await screen.findByLabelText(/^Combien de transports faut-il prescrire/),
+      "2",
+    );
+    await user.click(screen.getByLabelText("Aller simple"));
+    await user.click(screen.getByRole("button", { name: "Terminer" }));
+
+    expect(
+      await screen.findByRole("heading", {
+        level: 1,
+        name: /^Informations recueillies/,
+      }),
+    ).toBeInTheDocument();
+    expect(screen.getByText("2 transport(s)")).toBeInTheDocument();
+    expect(screen.getByText("Aller simple")).toBeInTheDocument();
+  });
 });

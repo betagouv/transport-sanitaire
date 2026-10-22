@@ -22,7 +22,8 @@ s'ouvre après le verrou (`p3/partie-3.ts`). R2 est posée pour les dix issues :
 à l'étranger), la fiche négative, et les fiches positives de la prescription
 médicale de transport, du S3141 et des deux demandes d'accord préalable. Les
 boutons de chaque issue sont posés (`r2/boutons-du-resultat.ts`) ; « Compléter »
-ouvre P3, dont le résultat (R3) n'a pas encore de PDF (#157).
+ouvre P3, dont le résultat (R3) n'a pas encore de PDF (#157) : en attendant, il
+récapitule les réponses de P3 (`r3/recapitulatif-du-complement.ts`).
 Le [README](README.md) § « Entre deux modèles » dit ce qui est parti et ce qui reste.
 
 Le front a deux dossiers. `front/socle/` porte ce qui ne dépend d'aucune version
@@ -33,9 +34,9 @@ cours d'intégration.
 
 Le modèle de l'éditeur se range par partie du parcours : `p1/` (le mode),
 `p2/` (l'éligibilité), `r2/` (le résultat, avec un dossier par famille
-d'issues), `p3/` (le complément du cerfa). Sa racine les assemble. Une partie ne lit pas celle qui la suit, et
+d'issues), `p3/` (le complément du cerfa), `r3/` (son résultat). Sa racine les assemble. Une partie ne lit pas celle qui la suit, et
 les familles de R2 ne s'importent pas entre elles :
-`tests/model/eligibilite/domaines.test.ts` le garde. R3 aura son dossier.
+`tests/model/eligibilite/domaines.test.ts` le garde.
 
 Le modèle de démonstration est pérenne (D-82). **Chaque capacité du socle y a
 sa page**, pour la valider à l'écran sans dépendre du modèle de l'éditeur.

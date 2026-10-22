@@ -10,6 +10,7 @@ import { faits } from "./preconisation";
 import { PARTS } from "./questionnaire";
 import { libelleDeCompletion } from "./r2/boutons-du-resultat";
 import { eligibilite } from "./r2/resultat";
+import { PrescriptionPreremplie } from "./r3/PrescriptionPreremplie";
 
 export const model = defineModel<Questions, Faits, Cibles>({
   preconisation: { faits, cibles },
@@ -21,11 +22,11 @@ export const model = defineModel<Questions, Faits, Cibles>({
   cerfa: {
     part: COMPLEMENT,
     // Aucun cerfa n'est encore rempli : après P3, le résultat n'offre pas de
-    // PDF à télécharger (#157).
+    // PDF à télécharger (#157). Il récapitule les réponses, sous un titre
+    // d'attente.
     form: () => null,
-    title: "Prescription préremplie prête à imprimer",
-    // R3 n'a pas encore de page : jamais affichée tant qu'aucun cerfa n'est produit.
-    Resultat: () => null,
+    title: "Informations recueillies",
+    Resultat: PrescriptionPreremplie,
     startLabel: libelleDeCompletion,
     downloadLabel: "Télécharger et imprimer la prescription pré-remplie",
   },
