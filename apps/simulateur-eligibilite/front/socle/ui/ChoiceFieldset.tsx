@@ -1,4 +1,6 @@
-// Un groupe de cases ou de boutons radio, au balisage du DSFR.
+// Un groupe de cases ou de boutons radio, au balisage du DSFR. Chaque option
+// est une carte bordée : la variante « riche » du DSFR pour un bouton radio,
+// la même carte, écrite ici, pour une case à cocher.
 //
 // Il est écrit ici, et non avec le composant du DSFR : celui-ci range tout le
 // contenu d'une option dans son libellé. Or l'aide d'une option se rend juste
@@ -6,6 +8,7 @@
 
 import type { ComponentProps } from "react";
 import { type Help, OptionHelp } from "./OptionHelp";
+import "./checkbox-card.css";
 
 export type Choice = {
   value: string;
@@ -34,8 +37,6 @@ type Props = {
   hint?: string;
   choices: readonly Choice[];
   message?: Message;
-  /** Variante « riche » du DSFR : chaque bouton radio est une carte bordée. */
-  rich?: boolean;
   /** Met la légende en avant, quand le champ est la question de la page. */
   lead?: boolean;
 };
@@ -87,11 +88,11 @@ function Legend({ id, legend, hint, lead }: Props) {
 
 // Une option, puis son aide. L'aide est sœur de l'option, pas son enfant : le
 // DSFR espace les options d'après leur rang dans le groupe.
-function ChoiceInput({ id, type, rich, choice }: Props & { choice: Choice }) {
+function ChoiceInput({ id, type, choice }: Props & { choice: Choice }) {
   const inputId = `${id}-${choice.value}`;
   return (
     <>
-      <div className={`fr-${type}-group${rich ? " fr-radio-rich" : ""}`}>
+      <div className={`fr-${type}-group ${CARD[type]}`}>
         <input type={type} id={inputId} {...choice.input} />
         <label className="fr-label" htmlFor={inputId}>
           {choice.label}
@@ -100,7 +101,9 @@ function ChoiceInput({ id, type, rich, choice }: Props & { choice: Choice }) {
           )}
         </label>
       </div>
-      {choice.help && <OptionHelp help={choice.help} indented={!rich} />}
+      {choice.help && <OptionHelp help={choice.help} />}
     </>
   );
 }
+
+const CARD = { radio: "fr-radio-rich", checkbox: "socle-checkbox-card" };
