@@ -1,5 +1,6 @@
-// Un choix multiple, en cases à cocher. Une option peut être exclusive, et
-// deux options peuvent s'exclure l'une l'autre.
+// Un choix multiple, en cases à cocher : chaque option est une carte bordée,
+// comme un bouton radio. Une option peut être exclusive, et deux options
+// peuvent s'exclure l'une l'autre.
 
 import { type ChangeEvent, useState } from "react";
 import { type Choice, ChoiceFieldset, type Message } from "./ChoiceFieldset";
