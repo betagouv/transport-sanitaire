@@ -24,7 +24,7 @@ type Reponses = Answers<Questions>;
 
 const pages = model.cerfa.part.pages;
 const [PAGE] = pages;
-// Seule la page du trajet se juge ici.
+// Les pages des lieux suivent : seule celle du trajet se juge ici.
 const DU_TRAJET = pages.slice(0, 1);
 
 const avecLeSupport = (support: Cibles["cible_support_id"]) =>
@@ -84,7 +84,11 @@ describe("les réponses de Q3.1", () => {
       "Ces deux trajets nécessitent deux simulations distinctes. Choisissez ici le sens déjà évalué, puis faites une autre simulation pour l’autre sens.",
     ]);
     expect(
-      areAnswered(pages, new GivenAnswers(reponses), avecLeSupport("S3138g")),
+      areAnswered(
+        DU_TRAJET,
+        new GivenAnswers(reponses),
+        avecLeSupport("S3138g"),
+      ),
     ).toBe(false);
   });
 
@@ -95,7 +99,11 @@ describe("les réponses de Q3.1", () => {
     };
 
     expect(
-      areAnswered(pages, new GivenAnswers(reponses), avecLeSupport("S3138g")),
+      areAnswered(
+        DU_TRAJET,
+        new GivenAnswers(reponses),
+        avecLeSupport("S3138g"),
+      ),
     ).toBe(true);
   });
 

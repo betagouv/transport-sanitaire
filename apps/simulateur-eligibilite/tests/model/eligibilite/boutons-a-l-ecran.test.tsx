@@ -128,6 +128,17 @@ describe("les boutons du modèle de l'éditeur", DELAI_D_UN_TEST, () => {
       "2",
     );
     await user.click(screen.getByLabelText("Aller simple"));
+    await user.click(screen.getByRole("button", { name: "Suivant" }));
+    await user.selectOptions(
+      await screen.findByRole("combobox", {
+        name: /^Quel est le lieu de départ/,
+      }),
+      "Domicile ou autre lieu de vie",
+    );
+    await saisirUneAdresse(user, "1 rue A", "75001");
+    await user.click(screen.getByRole("button", { name: "Suivant" }));
+    await screen.findByRole("group", { name: /^Adresse du lieu d’arrivée/ });
+    await saisirUneAdresse(user, "2 rue B", "75002");
     await user.click(screen.getByRole("button", { name: "Terminer" }));
 
     expect(
@@ -140,3 +151,16 @@ describe("les boutons du modèle de l'éditeur", DELAI_D_UN_TEST, () => {
     expect(screen.getByText("Aller simple")).toBeInTheDocument();
   });
 });
+
+// Une adresse à Paris, dans les champs de la page ouverte.
+async function saisirUneAdresse(
+  user: ReturnType<typeof userEvent.setup>,
+  voie: string,
+  codePostal: string,
+) {
+  const champ = (libelle: string) =>
+    screen.getByRole("textbox", { name: (nom) => nom.startsWith(libelle) });
+  await user.type(champ("Numéro et voie"), voie);
+  await user.type(champ("Code postal"), codePostal);
+  await user.type(champ("Commune"), "Paris");
+}

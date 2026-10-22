@@ -29,6 +29,15 @@ export function trajetsMensuelsAPoser({
   return cibles.cible_support_id === "S3141" && plusieursPermissions(answers);
 }
 
+/** Le sens du document : Q3.1.2, ou l'aller-retour de plusieurs permissions. */
+export function sensDuDocument(reponses: Reponses): Sens | undefined {
+  const sens = reponses.question("Q3.1.2");
+  if (sens.hasAnswer()) return sens.value;
+  return plusieursPermissions(reponses)
+    ? "3_ALLER_RETOUR_EQUIVALENT"
+    : undefined;
+}
+
 /**
  * Le sens se propose-t-il, vu les rôles fixés en P2 ? Une entrée va vers
  * l'établissement. Une sortie, une admission en HAD et un retour pénitentiaire
