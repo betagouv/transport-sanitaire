@@ -1,16 +1,19 @@
-// Le contexte des conditions et des libellés du moment d'une question : les
-// réponses, les questions validées, les cibles et les faits. Les constructeurs
-// nommés (`question-factory.ts`) y traduisent les rappels du moteur, qui les
-// appelle avec trois paramètres.
+// Le contexte des rappels d'une question : les réponses, les questions
+// validées, les cibles et les faits. Toutes ses conditions et tous ses libellés
+// du moment le reçoivent, et rien d'autre.
 //
-// Les faits ne se calculent qu'à la lecture, une fois par appel.
+// Les faits ne se calculent qu'à la lecture, une fois par contexte.
 
 import type { GivenAnswers } from "./given-answers.ts";
-import type { AnyQuestions } from "./question.ts";
+import type { AnyCibles, AnyQuestions } from "./question.ts";
 import type { ValidatedAnswers } from "./validated-answers.ts";
 
 /** Ce que lisent les conditions et les libellés du moment d'une question. */
-export type QuestionContext<Questions extends AnyQuestions, Cibles, Faits> = {
+export type QuestionContext<
+  Questions extends AnyQuestions = AnyQuestions,
+  Cibles = AnyCibles | undefined,
+  Faits = unknown,
+> = {
   readonly answers: GivenAnswers<Questions>;
   readonly validated: ValidatedAnswers<Questions>;
   /** Les cibles figées au verrou. Avant lui : `undefined`. */
@@ -22,88 +25,57 @@ export type QuestionContext<Questions extends AnyQuestions, Cibles, Faits> = {
   readonly faits: Faits;
 };
 
-/** Réécrit les rappels d'une déclaration dans la forme du moteur. */
-export type Adapt = (declared: object) => object;
+/** Ce qui calcule les faits que lisent les rappels des questions d'un modèle. */
+export type FaitsOf<
+  Questions extends AnyQuestions = AnyQuestions,
+  Faits = unknown,
+> = (
+  answers: GivenAnswers<Questions>,
+  validated: ValidatedAnswers<Questions>,
+) => Faits;
 
-/** Ce qui réécrit les rappels d'un modèle, d'après le calcul de ses faits. */
-export function adapterOf<Questions extends AnyQuestions, Faits>(
-  faitsOf: (
-    answers: GivenAnswers<Questions>,
-    validated: ValidatedAnswers<Questions>,
-  ) => Faits,
-): Adapt {
-  return adapter(contexts(faitsOf));
+/**
+ * Le contexte d'une question. `faitsOf` : le calcul des faits que sa
+ * déclaration lui donne. Absent, les faits ne se lisent pas.
+ */
+export function contextOf<Questions extends AnyQuestions, Cibles, Faits>(
+  seen: Omit<QuestionContext<Questions, Cibles>, "faits">,
+  faitsOf: FaitsOf<Questions, Faits> | undefined,
+): QuestionContext<Questions, Cibles, Faits> {
+  let read: { readonly faits: Faits } | undefined;
+  return {
+    answers: seen.answers,
+    validated: seen.validated,
+    cibles: seen.cibles,
+    get faits() {
+      read ??= { faits: computed(faitsOf, seen) };
+      return read.faits;
+    },
+  };
 }
 
 // ---- implémentation ----
 
-// Les rappels que le moteur appelle avec les réponses, les cibles et les
-// questions validées.
-const CALLBACKS: ReadonlySet<string> = new Set([
-  "labelFrom",
-  "reminderFrom",
-  "askedIf",
-  "inconsistenciesFrom",
-  "boundsFrom",
-  "abroadIf",
-  "offeredIf",
-  "helpFrom",
-]);
+// Un calcul des faits en cours. Un calcul qui en relance un autre boucle : un
+// fait a lu une garde qui lit les faits. Il s'arrête net.
+let computing = false;
 
-type ContextOf = (
-  answers: unknown,
-  cibles: unknown,
-  validated: unknown,
-) => unknown;
-
-// Réécrit les rappels d'une déclaration dans la forme du moteur.
-function adapter(contextOf: ContextOf): Adapt {
-  return (declared) =>
-    Object.fromEntries(
-      Object.entries(declared).map(([key, value]) => [
-        key,
-        CALLBACKS.has(key) && typeof value === "function"
-          ? (answers: unknown, cibles: unknown, validated: unknown) =>
-              value(contextOf(answers, cibles, validated))
-          : value,
-      ]),
+function computed<Questions extends AnyQuestions, Faits>(
+  faitsOf: FaitsOf<Questions, Faits> | undefined,
+  { answers, validated }: Omit<QuestionContext<Questions>, "faits" | "cibles">,
+): Faits {
+  if (!faitsOf)
+    throw new Error(
+      "Cette question ne connaît pas ses faits : déclare-la par les constructeurs de son modèle.",
     );
-}
-
-// Le contexte de chaque appel. Les faits ne se calculent qu'à la lecture, une
-// fois par appel. Un calcul qui en relance un autre boucle : il s'arrête net.
-function contexts<Questions extends AnyQuestions, Faits>(
-  faitsOf: (
-    answers: GivenAnswers<Questions>,
-    validated: ValidatedAnswers<Questions>,
-  ) => Faits,
-): ContextOf {
-  let computing = false;
-  const compute = (answers: unknown, validated: unknown): Faits => {
-    if (computing)
-      throw new Error(
-        "Les faits se calculent déjà : un fait ne lit jamais une garde qui lit les faits.",
-      );
-    computing = true;
-    try {
-      return faitsOf(
-        answers as GivenAnswers<Questions>,
-        validated as ValidatedAnswers<Questions>,
-      );
-    } finally {
-      computing = false;
-    }
-  };
-  return (answers, cibles, validated) => {
-    let read: { readonly faits: Faits } | undefined;
-    return {
-      answers,
-      cibles,
-      validated,
-      get faits() {
-        read ??= { faits: compute(answers, validated) };
-        return read.faits;
-      },
-    };
-  };
+  if (computing)
+    throw new Error(
+      "Les faits se calculent déjà : un fait ne lit jamais une garde qui lit les faits.",
+    );
+  computing = true;
+  try {
+    return faitsOf(answers, validated);
+  } finally {
+    computing = false;
+  }
 }

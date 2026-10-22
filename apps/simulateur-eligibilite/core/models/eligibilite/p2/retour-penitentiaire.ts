@@ -55,9 +55,9 @@ export function dansLeCircuit(page: Page): Page {
     ...page,
     questions: page.questions.map((question) => ({
       ...question,
-      askedIf: (answers, cibles, validated) =>
-        !horsCircuit(validated) &&
-        (question.askedIf?.(answers, cibles, validated) ?? true),
+      askedIf: (context) =>
+        !horsCircuit(context.validated) &&
+        (question.askedIf?.(context) ?? true),
     })),
   };
 }

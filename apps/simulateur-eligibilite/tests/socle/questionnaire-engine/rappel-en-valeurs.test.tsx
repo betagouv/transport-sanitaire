@@ -14,7 +14,7 @@ const ARRIVEE: Page = {
       id: "adresse",
       kind: "text",
       label: "Adresse du lieu d'arrivée",
-      reminderFrom: (answers, cibles) => [
+      reminderFrom: ({ answers, cibles }) => [
         { label: "Rôle", value: "arrivée" },
         {
           label: "Nature",

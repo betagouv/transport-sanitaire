@@ -30,15 +30,15 @@ const CONDITION: Page = {
       id: "lieu",
       kind: "text",
       label: "Où a lieu la séance ?",
-      askedIf: (answers) => answers.question("seance").is("dialyse"),
-      reminderFrom: (answers) =>
+      askedIf: ({ answers }) => answers.question("seance").is("dialyse"),
+      reminderFrom: ({ answers }) =>
         answers.question("seance").is("dialyse") ? RAPPEL : undefined,
     },
     {
       id: "motif",
       kind: "text",
       label: "Quel est le motif du trajet ?",
-      askedIf: (answers) => answers.question("seance").is("aucune"),
+      askedIf: ({ answers }) => answers.question("seance").is("aucune"),
     },
   ],
 };

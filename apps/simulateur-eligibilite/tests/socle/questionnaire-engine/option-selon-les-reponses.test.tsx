@@ -32,7 +32,7 @@ const SITUATIONS: Page = {
         {
           value: "etranger",
           label: "Un lieu à l'étranger",
-          labelFrom: (answers) =>
+          labelFrom: ({ answers }) =>
             answers.question("hospitalise").is("oui")
               ? "Un établissement à l'étranger"
               : "Un lieu à l'étranger",
@@ -42,7 +42,7 @@ const SITUATIONS: Page = {
       exclusiveOption: {
         value: "aucune",
         label: "Aucune de ces situations",
-        labelFrom: (answers) =>
+        labelFrom: ({ answers }) =>
           answers.question("hospitalise").is("oui")
             ? "Aucune autre situation parmi celles proposées"
             : "Aucune de ces situations",
@@ -62,7 +62,8 @@ const EXONERATIONS: Page = {
       exclusiveOption: {
         value: "aucun",
         label: "Aucun",
-        offeredIf: (answers) => answers.question("hospitalise").isNot("oui"),
+        offeredIf: ({ answers }) =>
+          answers.question("hospitalise").isNot("oui"),
       },
     },
   ],

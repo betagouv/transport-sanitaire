@@ -40,7 +40,7 @@ const MODE: Question = {
     { value: "carte", label: "Par carte" },
     { value: "especes", label: "En espèces" },
   ],
-  inconsistenciesFrom: (answers) =>
+  inconsistenciesFrom: ({ answers }) =>
     answers.question("livraison").is("domicile") &&
     answers.question("mode").is("especes")
       ? [
@@ -118,7 +118,7 @@ describe("réponse qui contredit une page antérieure", () => {
 describe("règle écrite sur la première des deux questions", () => {
   const PREMIERE: Question = {
     ...LIVRAISON,
-    inconsistenciesFrom: (answers) =>
+    inconsistenciesFrom: ({ answers }) =>
       answers.question("mode").hasAnswer()
         ? ["Reçoit la réponse de la page suivante."]
         : [],
@@ -140,7 +140,7 @@ describe("règle écrite sur la première des deux questions", () => {
   it("reçoit pourtant les réponses de sa propre page, brouillon compris", async () => {
     const memePage = page(MODE, {
       ...LIVRAISON,
-      inconsistenciesFrom: (answers) =>
+      inconsistenciesFrom: ({ answers }) =>
         answers.question("mode").is("especes") ? ["Vu sur la même page."] : [],
     });
     const { user } = afficher([memePage]);

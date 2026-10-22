@@ -98,7 +98,7 @@ describe("case seule", () => {
             id: "escale",
             kind: "text",
             label: "Où se fait l'escale ?",
-            askedIf: (_answers, _cibles, validated) =>
+            askedIf: ({ validated }) =>
               validated.question("distance").is("longue"),
           },
         ],

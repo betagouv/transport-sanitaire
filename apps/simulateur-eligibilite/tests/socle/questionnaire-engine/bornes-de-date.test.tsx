@@ -27,7 +27,7 @@ const PERMISSION: Page = {
       id: "fin",
       kind: "datetime",
       label: "Fin de la permission",
-      boundsFrom: (answers) => ({
+      boundsFrom: ({ answers }) => ({
         min: answers.question("debut").value as string | undefined,
       }),
     },

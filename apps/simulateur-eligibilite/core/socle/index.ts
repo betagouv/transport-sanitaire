@@ -15,7 +15,10 @@ export type {
   GivenAnswers,
 } from "./questionnaire-engine/given-answers.ts";
 export type { QuestionnairePart } from "./questionnaire-engine/question.ts";
-export type { QuestionContext } from "./questionnaire-engine/question-context.ts";
+export {
+  contextOf,
+  type QuestionContext,
+} from "./questionnaire-engine/question-context.ts";
 export { questionsOf } from "./questionnaire-engine/question-factory.ts";
 export type { ValidatedAnswers } from "./questionnaire-engine/validated-answers.ts";
 export type { Seed } from "./seeds/seed.ts";

@@ -5,10 +5,9 @@
 // Ses conditions et ses libellés du moment reçoivent un seul objet : les
 // réponses, les questions validées, les cibles et les faits. Les faits sont
 // ceux des questions validées jusque-là, calculés seulement si on les lit. Le
-// constructeur traduit ces rappels vers la forme que le moteur appelle.
+// constructeur donne à chaque question ce qui les calcule.
 
 import type { Address } from "./address.ts";
-import type { GivenAnswers } from "./given-answers.ts";
 import { type Option, optionsFrom } from "./option.ts";
 import type {
   AnyQuestions,
@@ -16,12 +15,7 @@ import type {
   Question,
   SingleChoice,
 } from "./question.ts";
-import {
-  type Adapt,
-  adapterOf,
-  type QuestionContext,
-} from "./question-context.ts";
-import type { ValidatedAnswers } from "./validated-answers.ts";
+import type { FaitsOf } from "./question-context.ts";
 
 /** Les libellés des options de chaque question à choix, par valeur. */
 export type Catalogue<Questions extends AnyQuestions> = {
@@ -42,18 +36,15 @@ export function questionsOf<
   Cibles = undefined,
 >(model: {
   readonly options: Catalogue<Questions>;
-  readonly faits: (
-    answers: GivenAnswers<Questions>,
-    validated: ValidatedAnswers<Questions>,
-  ) => Faits;
+  readonly faits: FaitsOf<Questions, Faits>;
 }) {
-  const adapt = adapterOf(model.faits);
   const labels = model.options as unknown as Readonly<Record<string, Labels>>;
   const labelsOf = (id: string) => labels[id] ?? {};
+  const { faits } = model;
   return {
-    singleChoice: singleChoiceOf<Questions, Cibles, Faits>(labelsOf, adapt),
-    multipleChoice: multipleChoiceOf<Questions, Cibles, Faits>(labelsOf, adapt),
-    ...inputs<Questions, Cibles, Faits>(adapt),
+    singleChoice: singleChoiceOf<Questions, Cibles, Faits>(labelsOf, faits),
+    multipleChoice: multipleChoiceOf<Questions, Cibles, Faits>(labelsOf, faits),
+    ...inputs<Questions, Cibles, Faits>(faits),
   };
 }
 
@@ -113,8 +104,8 @@ type InputId<Questions, Kind> = {
 }[keyof Questions & string];
 
 // La question du moteur de cette sorte.
-type Engine<Questions extends AnyQuestions, Cibles, Kind> =
-  Question<Questions, Cibles> extends infer Each
+type Engine<Questions extends AnyQuestions, Cibles, Faits, Kind> =
+  Question<Questions, Cibles, Faits> extends infer Each
     ? Each extends { readonly kind: infer Own }
       ? Kind extends Own
         ? Each
@@ -122,30 +113,16 @@ type Engine<Questions extends AnyQuestions, Cibles, Kind> =
       : never
     : never;
 
-// Les rappels du moteur, réécrits pour lire un contexte.
-type WithContext<Declaration, Context> = {
-  [Key in keyof Declaration]: Declaration[Key] extends
-    | ((...args: never[]) => infer Result)
-    | undefined
-    ? (context: Context) => Result
-    : Declaration[Key];
-};
-
+// Ce que le modèle déclare d'une question : tout, sauf ce que le constructeur
+// pose lui-même, et ce que le moteur calcule.
 type Declared<Questions extends AnyQuestions, Cibles, Faits, Kind> = Omit<
-  WithContext<
-    Engine<Questions, Cibles, Kind>,
-    QuestionContext<Questions, Cibles, Faits>
-  >,
-  "id" | "kind" | "options" | "exclusiveOption"
+  Engine<Questions, Cibles, Faits, Kind>,
+  "id" | "kind" | "options" | "exclusiveOption" | "faits" | "inconsistencies"
 >;
 
-type OptionDeclaration<
-  Questions extends AnyQuestions,
-  Cibles,
-  Faits,
-> = WithContext<
-  Omit<Option<Questions, Cibles>, "value" | "label">,
-  QuestionContext<Questions, Cibles, Faits>
+type OptionDeclaration<Questions extends AnyQuestions, Cibles, Faits> = Omit<
+  Option<Questions, Cibles, Faits>,
+  "value" | "label"
 >;
 
 // Ce qu'une question à choix déclare de ses options.
@@ -160,27 +137,28 @@ type ChoiceDeclaration<Questions extends AnyQuestions, Cibles, Faits, Value> = {
 
 function singleChoiceOf<Questions extends AnyQuestions, Cibles, Faits>(
   labelsOf: (id: string) => Labels,
-  adapt: Adapt,
+  faits: FaitsOf<Questions, Faits>,
 ) {
   return <Id extends SingleChoiceId<Questions>>(
     id: Id,
     declared: Declared<Questions, Cibles, Faits, "single choice"> &
       ChoiceDeclaration<Questions, Cibles, Faits, OptionOf<Questions[Id]>>,
-  ): SingleChoice<Questions, Cibles> => {
+  ): SingleChoice<Questions, Cibles, Faits> => {
     const { options: _, order: __, ...rest } = declared;
-    const { offered } = optionsOf(labelsOf(id), declared, adapt);
+    const { offered } = optionsOf(labelsOf(id), declared);
     return {
-      ...adapt(rest),
+      ...rest,
       id,
       kind: "single choice",
       options: offered,
-    } as unknown as SingleChoice<Questions, Cibles>;
+      faits,
+    } as SingleChoice<Questions, Cibles, Faits>;
   };
 }
 
 function multipleChoiceOf<Questions extends AnyQuestions, Cibles, Faits>(
   labelsOf: (id: string) => Labels,
-  adapt: Adapt,
+  faits: FaitsOf<Questions, Faits>,
 ) {
   return <Id extends MultipleChoiceId<Questions>>(
     id: Id,
@@ -189,16 +167,17 @@ function multipleChoiceOf<Questions extends AnyQuestions, Cibles, Faits>(
         /** L'option qui décoche les autres : « Aucune », souvent. */
         readonly exclusiveOption?: OptionOf<Questions[Id]>;
       },
-  ): MultipleChoice<Questions, Cibles> => {
+  ): MultipleChoice<Questions, Cibles, Faits> => {
     const { options: _, order: __, exclusiveOption: ___, ...rest } = declared;
-    const { offered, exclusive } = optionsOf(labelsOf(id), declared, adapt);
+    const { offered, exclusive } = optionsOf(labelsOf(id), declared);
     return {
-      ...adapt(rest),
+      ...rest,
       id,
       kind: "multiple choice",
       options: offered,
       ...(exclusive && { exclusiveOption: exclusive }),
-    } as unknown as MultipleChoice<Questions, Cibles>;
+      faits,
+    } as MultipleChoice<Questions, Cibles, Faits>;
   };
 }
 
@@ -211,16 +190,12 @@ function optionsOf(
     readonly order?: readonly string[];
     readonly exclusiveOption?: string;
   },
-  adapt: Adapt,
 ): { offered: Option[]; exclusive?: Option } {
-  const details = Object.fromEntries(
-    Object.entries(declared.options ?? {}).map(([value, option]) => [
-      value,
-      adapt(option ?? {}),
-    ]),
-  );
   const byValue = new Map(
-    optionsFrom(labels, details).map((option) => [option.value, option]),
+    optionsFrom(labels, declared.options ?? {}).map((option) => [
+      option.value,
+      option,
+    ]),
   );
   const order = declared.order ?? [...byValue.keys()];
   const exclusive = declared.exclusiveOption;
@@ -232,16 +207,19 @@ function optionsOf(
   };
 }
 
-function inputs<Questions extends AnyQuestions, Cibles, Faits>(adapt: Adapt) {
+function inputs<Questions extends AnyQuestions, Cibles, Faits>(
+  faits: FaitsOf<Questions, Faits>,
+) {
   const of =
     <Kind extends InputKind>(kind: Kind) =>
     <Id extends InputId<Questions, Kind>>(
       id: Id,
       declared: Declared<Questions, Cibles, Faits, Kind>,
-    ): Engine<Questions, Cibles, Kind> =>
-      ({ ...adapt(declared), id, kind }) as unknown as Engine<
+    ): Engine<Questions, Cibles, Faits, Kind> =>
+      ({ ...declared, id, kind, faits }) as unknown as Engine<
         Questions,
         Cibles,
+        Faits,
         Kind
       >;
   return {

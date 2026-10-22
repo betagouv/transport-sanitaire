@@ -140,8 +140,8 @@ describe("une garde qui lit les faits", () => {
   it("arrête net un fait qui la lit à son tour", () => {
     const boucle = questionsOf<Questions, Faits>({
       options: OPTIONS,
-      faits: (answers, validated): Faits => ({
-        chaude: garde.askedIf?.(answers, undefined, validated) ?? false,
+      faits: (): Faits => ({
+        chaude: askedQuestions([page], page, {}).length > 0,
       }),
     });
     const garde: Question<Questions, undefined> = boucle.number("quantite", {

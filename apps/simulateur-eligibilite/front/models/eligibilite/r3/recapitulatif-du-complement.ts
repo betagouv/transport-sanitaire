@@ -5,11 +5,13 @@
 import type { Cibles } from "../../../../core/models/eligibilite/declarations/cibles";
 import type { Questions } from "../../../../core/models/eligibilite/declarations/questions";
 import { COMPLEMENT } from "../../../../core/models/eligibilite/p3/partie-3";
-import type {
-  Address,
-  GivenAnswers,
-  QuestionnairePart,
-  ValidatedAnswers,
+import {
+  type Address,
+  contextOf,
+  type GivenAnswers,
+  type QuestionContext,
+  type QuestionnairePart,
+  type ValidatedAnswers,
 } from "../../../../core/socle";
 
 /** Ce que R3 reçoit du socle : les réponses, les questions validées, les cibles. */
@@ -25,13 +27,13 @@ export type LigneDuRecapitulatif = { question: string; reponse: string };
 export function recapitulatifDuComplement(
   lecture: LectureDuComplement,
 ): LigneDuRecapitulatif[] {
-  const vu: Vu = [lecture.answers, lecture.cibles, lecture.validated];
   return COMPLEMENT.pages
     .flatMap((page) => page.questions)
     .flatMap((question) => {
       const validee = lecture.validated.question(question.id);
       if (!validee.isValidated() || !validee.hasAnswer()) return [];
-      const libelle = question.labelFrom?.(...vu) ?? question.label;
+      const vu = contextOf(lecture, question.faits);
+      const libelle = question.labelFrom?.(vu) ?? question.label;
       const reponse = enLettres(question, validee.value, vu);
       return [{ question: libelle, reponse }];
     });
@@ -44,7 +46,7 @@ type Question = QuestionnairePart<
   Cibles
 >["pages"][number]["questions"][number];
 type Option = Extract<Question, { options: unknown }>["options"][number];
-type Vu = [GivenAnswers<Questions>, Cibles, ValidatedAnswers<Questions>];
+type Vu = QuestionContext<Questions, Cibles>;
 
 function enLettres(question: Question, reponse: unknown, vu: Vu): string {
   switch (question.kind) {
@@ -78,7 +80,7 @@ function libelleDe(
   vu: Vu,
 ): string {
   const option = options.find((candidate) => candidate?.value === valeur);
-  return option?.labelFrom?.(...vu) ?? option?.label ?? String(valeur);
+  return option?.labelFrom?.(vu) ?? option?.label ?? String(valeur);
 }
 
 // `2026-10-12` devient « 12/10/2026 », `2026-10-12T08:30` « 12/10/2026 à 08:30 ».

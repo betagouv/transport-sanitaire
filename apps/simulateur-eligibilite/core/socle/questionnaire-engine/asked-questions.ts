@@ -23,6 +23,7 @@ import type {
   Unanswered,
   Validated,
 } from "./question.ts";
+import { contextOf, type QuestionContext } from "./question-context.ts";
 import { ValidatedAnswers } from "./validated-answers.ts";
 
 /**
@@ -89,9 +90,9 @@ export function areAnswered(
 
 // ---- implémentation ----
 
-// Ce qu'une condition lit : les réponses, les cibles figées s'il y en a, et
-// les questions validées avant celle qu'elle concerne.
-type Seen = readonly [GivenAnswers, AnyCibles | undefined, ValidatedAnswers];
+// Ce qu'un rappel lit : les réponses, les cibles figées s'il y en a, les
+// questions validées avant celle qu'il concerne, et leurs faits.
+type Seen = QuestionContext;
 
 type AskedPage = { page: Page; questions: Question[] };
 
@@ -143,9 +144,14 @@ function askQuestion(
   validated: Validated,
 ): Question | undefined {
   const read = new ValidatedAnswers(validated);
-  const seen: Seen = [new GivenAnswers(answers), cibles, read];
-  if (!(declared.askedIf?.(...seen) ?? true)) return undefined;
-  return asAsked(declared, seen, [new GivenAnswers(earlier), cibles, read]);
+  const seenWith = (given: Answers): Seen =>
+    contextOf(
+      { answers: new GivenAnswers(given), cibles, validated: read },
+      declared.faits,
+    );
+  const seen = seenWith(answers);
+  if (!(declared.askedIf?.(seen) ?? true)) return undefined;
+  return asAsked(declared, seen, seenWith(earlier));
 }
 
 // Une question qui a sa réponse est validée, si aucune n'attend avant elle. La
@@ -180,7 +186,7 @@ function asAsked(question: Question, seen: Seen, earlier: Seen): Question {
   const offered = (options: readonly Option[]) => offeredOptions(options, seen);
   const texts = displayedTexts(question, seen, earlier);
   if (question.kind === "date" || question.kind === "datetime")
-    return { ...question, ...texts, ...question.boundsFrom?.(...seen) };
+    return { ...question, ...texts, ...question.boundsFrom?.(seen) };
   if (question.kind === "address")
     return { ...question, ...texts, abroad: abroadOf(question, seen) };
   if (question.kind === "single choice")
@@ -201,16 +207,16 @@ function abroadOf(
   question: Extract<Question, { kind: "address" }>,
   seen: Seen,
 ): boolean | undefined {
-  return question.abroadIf?.(...seen) ?? question.abroad;
+  return question.abroadIf?.(seen) ?? question.abroad;
 }
 
 // Ce qui se lit autour du champ, vu les réponses : le libellé, le rappel, et
 // les incohérences. Celles-ci ne lisent pas les pages suivantes (`earlier`).
 function displayedTexts(question: Question, seen: Seen, earlier: Seen) {
   return {
-    label: question.labelFrom?.(...seen) ?? question.label,
-    reminder: question.reminderFrom?.(...seen) ?? question.reminder,
-    inconsistencies: question.inconsistenciesFrom?.(...earlier),
+    label: question.labelFrom?.(seen) ?? question.label,
+    reminder: question.reminderFrom?.(seen) ?? question.reminder,
+    inconsistencies: question.inconsistenciesFrom?.(earlier),
   };
 }
 
@@ -232,10 +238,10 @@ function answersUpTo(
 // Les options qui se proposent, vu les réponses, sous leur libellé du moment.
 function offeredOptions(options: readonly Option[], seen: Seen): Option[] {
   return options
-    .filter((option) => option.offeredIf?.(...seen) ?? true)
+    .filter((option) => option.offeredIf?.(seen) ?? true)
     .map((option) => ({
       ...option,
-      label: option.labelFrom?.(...seen) ?? option.label,
-      help: option.helpFrom?.(...seen) ?? option.help,
+      label: option.labelFrom?.(seen) ?? option.label,
+      help: option.helpFrom?.(seen) ?? option.help,
     }));
 }

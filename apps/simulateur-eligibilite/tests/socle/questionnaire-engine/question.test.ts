@@ -22,7 +22,7 @@ const SI_URGENCE: Page = {
       id: "precision",
       kind: "text",
       label: "Précision sur l'urgence",
-      askedIf: (_, cibles) => cibles?.urgence === true,
+      askedIf: ({ cibles }) => cibles?.urgence === true,
     },
   ],
 };
@@ -59,7 +59,7 @@ const DOULEUR: Page = {
       id: "endroit",
       kind: "text",
       label: "Où ?",
-      askedIf: (answers) => answers.question("douleur").is("oui"),
+      askedIf: ({ answers }) => answers.question("douleur").is("oui"),
     },
   ],
 };

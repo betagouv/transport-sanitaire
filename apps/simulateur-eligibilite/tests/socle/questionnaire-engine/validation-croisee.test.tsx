@@ -29,7 +29,7 @@ const FIN: Question = {
   id: "fin",
   kind: "datetime",
   label: "Fin du créneau",
-  inconsistenciesFrom: (answers) => {
+  inconsistenciesFrom: ({ answers }) => {
     const debut = answers.question("debut").value;
     const fin = answers.question("fin").value;
     return [
@@ -122,7 +122,7 @@ describe("précision obligatoire restée vide", () => {
         id: "precision",
         kind: "text",
         label: "Précisez",
-        askedIf: (answers) => answers.question("raisons").checked("autre"),
+        askedIf: ({ answers }) => answers.question("raisons").checked("autre"),
       },
     ],
   };

@@ -31,7 +31,7 @@ describe("adresse incohérente", () => {
     id: "arrivee",
     kind: "address",
     label: "Adresse d'arrivée",
-    inconsistenciesFrom: (answers) => {
+    inconsistenciesFrom: ({ answers }) => {
       const depart = memeVoie(answers.question("depart").value);
       return depart && depart === memeVoie(answers.question("arrivee").value)
         ? ["L'arrivée répète le départ."]

@@ -5,9 +5,11 @@
 // identifiant : les génériques ne servent qu'à typer le modèle.
 
 import type { Address, AddressSettings } from "./address.ts";
-import type { GivenAnswers } from "./given-answers.ts";
 import type { Option } from "./option.ts";
-import type { ValidatedAnswers } from "./validated-answers.ts";
+import type {
+  QuestionContext as Context,
+  FaitsOf,
+} from "./question-context.ts";
 
 /**
  * Une réponse : un choix, un nombre, un texte, les cases cochées, une case
@@ -55,15 +57,11 @@ type Reminder =
   | string
   | ReadonlyArray<{ readonly label: string; readonly value: string }>;
 
-type Common<Questions extends AnyQuestions, Cibles> = {
+type Common<Questions extends AnyQuestions, Cibles, Faits> = {
   readonly id: keyof Questions & string;
   readonly label: string;
   /** Le libellé, quand il dépend des réponses. Absente : `label`. */
-  labelFrom?(
-    answers: GivenAnswers<Questions>,
-    cibles: Cibles,
-    validated: ValidatedAnswers<Questions>,
-  ): string;
+  labelFrom?(context: Context<Questions, Cibles, Faits>): string;
   /** Phrase indicative, rendue sous la question. */
   readonly hint?: string;
   /**
@@ -77,9 +75,7 @@ type Common<Questions extends AnyQuestions, Cibles> = {
    * rien à rappeler : `reminder`.
    */
   reminderFrom?(
-    answers: GivenAnswers<Questions>,
-    cibles: Cibles,
-    validated: ValidatedAnswers<Questions>,
+    context: Context<Questions, Cibles, Faits>,
   ): Reminder | undefined;
   /**
    * La question peut rester sans réponse : sa page se valide sans elle.
@@ -94,11 +90,7 @@ type Common<Questions extends AnyQuestions, Cibles> = {
    * Écrite en méthode : TypeScript compare alors ses paramètres dans les deux
    * sens, et le moteur peut recevoir les questions typées d'un modèle.
    */
-  askedIf?(
-    answers: GivenAnswers<Questions>,
-    cibles: Cibles,
-    validated: ValidatedAnswers<Questions>,
-  ): boolean;
+  askedIf?(context: Context<Questions, Cibles, Faits>): boolean;
   /**
    * Ce qui, dans la réponse, en contredit une autre : un message par
    * incohérence, qui dit quoi corriger. Vide : rien ne la contredit. Tant qu'il
@@ -111,9 +103,7 @@ type Common<Questions extends AnyQuestions, Cibles> = {
    * Écrite en méthode, comme `askedIf`.
    */
   inconsistenciesFrom?(
-    answers: GivenAnswers<Questions>,
-    cibles: Cibles,
-    validated: ValidatedAnswers<Questions>,
+    context: Context<Questions, Cibles, Faits>,
   ): readonly string[];
   /** Les incohérences du moment, que le moteur résout (`asked-questions.ts`). */
   readonly inconsistencies?: readonly string[];
@@ -122,14 +112,21 @@ type Common<Questions extends AnyQuestions, Cibles> = {
    * réponse est effacée, et elle seule (`page-commit.ts`).
    */
   readonly dependsOn?: readonly (keyof Questions & string)[];
+  /**
+   * Ce qui calcule les faits que ses rappels lisent. Les constructeurs du
+   * modèle le posent (`question-factory.ts`). Écrite en méthode, comme
+   * `askedIf`.
+   */
+  faits?(...seen: Parameters<FaitsOf<Questions, Faits>>): Faits;
 };
 
 export type SingleChoice<
   Questions extends AnyQuestions = AnyQuestions,
   Cibles = AnyCibles | undefined,
-> = Common<Questions, Cibles> & {
+  Faits = unknown,
+> = Common<Questions, Cibles, Faits> & {
   readonly kind: "single choice";
-  readonly options: readonly Option<Questions, Cibles>[];
+  readonly options: readonly Option<Questions, Cibles, Faits>[];
   /**
    * Rendue en liste déroulante, et non en boutons radio. Une liste ne valide
    * rien d'elle-même : sa page garde son bouton.
@@ -147,15 +144,16 @@ type IncompatibleOptions = {
 export type MultipleChoice<
   Questions extends AnyQuestions = AnyQuestions,
   Cibles = AnyCibles | undefined,
-> = Common<Questions, Cibles> & {
+  Faits = unknown,
+> = Common<Questions, Cibles, Faits> & {
   readonly kind: "multiple choice";
-  readonly options: readonly Option<Questions, Cibles>[];
+  readonly options: readonly Option<Questions, Cibles, Faits>[];
   /**
    * L'option exclusive : la cocher décoche les autres, et inversement. Comme
    * toute option, elle peut ne se proposer que pour certaines réponses, et
    * changer de libellé avec elles.
    */
-  readonly exclusiveOption?: Option<Questions, Cibles>;
+  readonly exclusiveOption?: Option<Questions, Cibles, Faits>;
   /**
    * Les options qui s'excluent deux à deux. Cocher l'une décoche l'autre, sans
    * toucher au reste, et l'explication s'affiche.
@@ -163,9 +161,10 @@ export type MultipleChoice<
   readonly incompatibleOptions?: readonly IncompatibleOptions[];
 };
 
-type NumberInput<Questions extends AnyQuestions, Cibles> = Common<
+type NumberInput<Questions extends AnyQuestions, Cibles, Faits> = Common<
   Questions,
-  Cibles
+  Cibles,
+  Faits
 > & {
   readonly kind: "number";
   readonly min?: number;
@@ -175,9 +174,10 @@ type NumberInput<Questions extends AnyQuestions, Cibles> = Common<
   readonly unit?: string;
 };
 
-type TextInput<Questions extends AnyQuestions, Cibles> = Common<
+type TextInput<Questions extends AnyQuestions, Cibles, Faits> = Common<
   Questions,
-  Cibles
+  Cibles,
+  Faits
 > & {
   /** `long text` : un texte sur plusieurs lignes, saisi dans une zone de texte. */
   readonly kind: "text" | "long text";
@@ -189,9 +189,10 @@ type TextInput<Questions extends AnyQuestions, Cibles> = Common<
  */
 type DateBounds = { readonly min?: string; readonly max?: string };
 
-type DateInput<Questions extends AnyQuestions, Cibles> = Common<
+type DateInput<Questions extends AnyQuestions, Cibles, Faits> = Common<
   Questions,
-  Cibles
+  Cibles,
+  Faits
 > &
   DateBounds & {
     readonly kind: "date" | "datetime";
@@ -199,11 +200,7 @@ type DateInput<Questions extends AnyQuestions, Cibles> = Common<
      * Les bornes, quand elles dépendent des réponses ou du jour. Elles passent
      * devant `min` et `max`.
      */
-    boundsFrom?(
-      answers: GivenAnswers<Questions>,
-      cibles: Cibles,
-      validated: ValidatedAnswers<Questions>,
-    ): DateBounds;
+    boundsFrom?(context: Context<Questions, Cibles, Faits>): DateBounds;
   };
 
 /**
@@ -212,9 +209,10 @@ type DateInput<Questions extends AnyQuestions, Cibles> = Common<
  * `false`, et n'est donc jamais facultative. Absente, la page n'est pas encore
  * validée.
  */
-type CheckboxInput<Questions extends AnyQuestions, Cibles> = Common<
+type CheckboxInput<Questions extends AnyQuestions, Cibles, Faits> = Common<
   Questions,
-  Cibles
+  Cibles,
+  Faits
 > & {
   readonly kind: "checkbox";
   readonly box: string;
@@ -224,9 +222,10 @@ type CheckboxInput<Questions extends AnyQuestions, Cibles> = Common<
  * Une adresse, saisie champ par champ (`address.ts`). Son libellé coiffe les
  * champs.
  */
-type AddressInput<Questions extends AnyQuestions, Cibles> = Common<
+type AddressInput<Questions extends AnyQuestions, Cibles, Faits> = Common<
   Questions,
-  Cibles
+  Cibles,
+  Faits
 > &
   AddressSettings & {
     readonly kind: "address";
@@ -235,11 +234,7 @@ type AddressInput<Questions extends AnyQuestions, Cibles> = Common<
      * Sans `dependsOn`, une adresse déjà saisie survit au changement : elle se
      * relit dans le nouveau mode.
      */
-    abroadIf?(
-      answers: GivenAnswers<Questions>,
-      cibles: Cibles,
-      validated: ValidatedAnswers<Questions>,
-    ): boolean;
+    abroadIf?(context: Context<Questions, Cibles, Faits>): boolean;
   };
 
 // Sans argument, ces types sont ceux du moteur : n'importe quelles questions,
@@ -247,21 +242,23 @@ type AddressInput<Questions extends AnyQuestions, Cibles> = Common<
 export type Question<
   Questions extends AnyQuestions = AnyQuestions,
   Cibles = AnyCibles | undefined,
+  Faits = unknown,
 > =
-  | SingleChoice<Questions, Cibles>
-  | MultipleChoice<Questions, Cibles>
-  | NumberInput<Questions, Cibles>
-  | TextInput<Questions, Cibles>
-  | DateInput<Questions, Cibles>
-  | CheckboxInput<Questions, Cibles>
-  | AddressInput<Questions, Cibles>;
+  | SingleChoice<Questions, Cibles, Faits>
+  | MultipleChoice<Questions, Cibles, Faits>
+  | NumberInput<Questions, Cibles, Faits>
+  | TextInput<Questions, Cibles, Faits>
+  | DateInput<Questions, Cibles, Faits>
+  | CheckboxInput<Questions, Cibles, Faits>
+  | AddressInput<Questions, Cibles, Faits>;
 
 export type Page<
   Questions extends AnyQuestions = AnyQuestions,
   Cibles = AnyCibles | undefined,
+  Faits = unknown,
 > = {
   readonly id: string;
-  readonly questions: readonly Question<Questions, Cibles>[];
+  readonly questions: readonly Question<Questions, Cibles, Faits>[];
 };
 
 /**
@@ -271,10 +268,11 @@ export type Page<
 export type QuestionnairePart<
   Questions extends AnyQuestions = AnyQuestions,
   Cibles = AnyCibles | undefined,
+  Faits = unknown,
 > = {
   readonly id: string;
   readonly title: string;
-  readonly pages: readonly Page<Questions, Cibles>[];
+  readonly pages: readonly Page<Questions, Cibles, Faits>[];
 };
 
 /** Les pages de ces parties, dans l'ordre du questionnaire. */
