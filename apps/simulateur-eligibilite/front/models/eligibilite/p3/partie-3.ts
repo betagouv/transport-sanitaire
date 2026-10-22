@@ -8,6 +8,10 @@ import type { QuestionnairePart } from "../../../socle";
 import type { Cibles } from "../declarations/cibles";
 import type { Questions } from "../declarations/questions";
 import { questionDuComplement as question } from "../question";
+import {
+  PAGE_DE_L_EXONERATION,
+  PAGE_DES_EVENEMENTS,
+} from "./pages-des-evenements";
 import { PAGE_DE_L_ARRIVEE, PAGE_DU_DEPART } from "./pages-des-lieux";
 import { PAGE_DE_L_URGENCE, PAGE_DU_SOIN } from "./pages-du-soin";
 import {
@@ -82,5 +86,7 @@ export const COMPLEMENT: Partie = {
     PAGE_DE_L_ARRIVEE,
     PAGE_DU_SOIN,
     PAGE_DE_L_URGENCE,
+    PAGE_DES_EVENEMENTS,
+    PAGE_DE_L_EXONERATION,
   ],
 };

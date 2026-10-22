@@ -31,4 +31,10 @@ export type QuestionsDuComplement = {
   "Q3.4.a": Option<"Q3.4.a">;
   /** La nature de l'urgence médicale attestée. */
   "Q3.5": string;
+  /** La date AT/MP, puis l'accident causé par un tiers et sa date. */
+  "Q3.6.1": string;
+  "Q3.6.2": Option<"Q3.6.2">;
+  "Q3.6.3": string;
+  /** Les cas particuliers d'exonération du ticket modérateur. */
+  "Q3.7": Option<"Q3.7">[];
 };
