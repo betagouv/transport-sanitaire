@@ -67,11 +67,13 @@ un **backend Node/Express** (`server/` : le front et `/api/*`) déployé sur
 
 ## Le questionnaire
 
-Huit fichiers portent la mécanique, dans `front/socle/questionnaire-engine/` :
+Dix fichiers portent la mécanique, dans `front/socle/questionnaire-engine/` :
 
 | Fichier | Ce qu'il porte |
 |---|---|
 | `question.ts` | ce qu'est une question, une page, une partie, une réponse |
+| `question-factory.ts` | les constructeurs nommés des questions (`questionsOf`) : la sorte vient du constructeur, les options du catalogue du modèle, d'après l'id |
+| `question-context.ts` | le seul objet que reçoivent les conditions et les libellés du moment : `{ answers, validated, cibles, faits }`. Les faits n'y sont calculés que si on les lit |
 | `option.ts` | ce qu'est une option d'un choix : son libellé, ce qui la propose, son aide, ce qu'elle bloque. `optionsFrom` tire les options d'une table de libellés, dans l'ordre de ses clés |
 | `address.ts` | ce qu'est une adresse, la seule réponse en objet : ses champs, ceux qui se demandent en France ou à l'étranger, et le message de chaque champ fautif |
 | `asked-questions.ts` | ce qui s'affiche, vu les réponses : libellés, bornes, options, mode d'adresse et incohérences du moment. Et les questions validées, avec ce qui s'y proposait |
@@ -80,12 +82,31 @@ Huit fichiers portent la mécanique, dans `front/socle/questionnaire-engine/` :
 | `questionnaire.ts` | l'état d'un parcours : page ouverte, brouillon, navigation |
 | `page-commit.ts` | ce que deviennent les réponses quand une page est validée, et ce que ça efface |
 
-Six règles à tenir en ajoutant une question :
+Neuf règles à tenir en ajoutant une question :
 
+- **Une question se déclare par son constructeur.**
+  `question.singleChoice("Q1.1", { label })` : la sorte vient du constructeur,
+  les options du catalogue `OPTIONS` du modèle, d'après l'id. La déclaration
+  n'ajoute à une option que ce qu'elle porte de plus (`offeredIf`, `blocks`…), et
+  `order` en garde une partie. Le modèle lie ses constructeurs une fois, dans son
+  `question.ts` : `questionsOf<Questions, Faits>({ options, faits })`. Ce qui se
+  pose après le verrou lit les cibles : un second jeu, typé avec elles
+  (`questionDuComplement` dans le modèle de démonstration).
 - **Une condition d'affichage s'écrit dans `askedIf`.** Jamais dans un composant.
-- **Une condition lit ce qui la précède.** Elle reçoit les réponses, les cibles
-  figées, et les questions validées avant la sienne (`validated`). Sur la page
+- **Une condition lit ce qui la précède.** Elle reçoit un seul objet : les
+  réponses (`answers`), les questions validées avant la sienne (`validated`),
+  les cibles figées et les faits de ces questions validées. Sur la page
   ouverte, celles qui la précèdent comptent telles qu'elles sont à l'écran.
+- **Une garde lit le fait quand il en existe un.**
+  `askedIf: ({ faits }) => faits.fait_permission.value === true`. Elle ne
+  recompose pas, réponse par réponse, ce que le fait établit déjà. Sans fait qui
+  la dise, elle appelle un prédicat nommé, rangé dans le fichier de son concept
+  (`mineurDeVingtAns` dans `p2/permission.ts`).
+- **Un fait ne lit jamais une garde qui lit les faits.** Le calcul tournerait en
+  rond : le socle l'arrête net, sur une erreur qui le dit. Dans le modèle
+  d'éligibilité, les gardes lisent les faits des réponses (`FaitsDesReponses`),
+  sans la complétude de P1 et de P2 : la constater pose les questions, donc lit
+  leurs gardes.
 - **Une dépendance se déclare dans `dependsOn`.** Sans elle, la réponse survit au
   changement de celle dont elle dépend. Une adresse dont le mode change
   (`abroadIf`) survit de même : elle se relit dans le nouveau mode, sans son
@@ -104,7 +125,9 @@ Six règles à tenir en ajoutant une question :
   second `QuestionnaireForm`, qui reçoit `lockedAnswers` et ne repose rien
   (`front/socle/simulateur/Simulateur.tsx`).
 
-*Gardé par* `tests/socle/simulateur/`.
+*Gardé par* `tests/socle/simulateur/`,
+`tests/socle/questionnaire-engine/constructeurs-de-questions.test.ts`, et
+`tests/architecture.test.ts`, qui refuse une question écrite en objet.
 
 ## La décision
 
@@ -116,6 +139,7 @@ Un fait a trois états : vrai, faux, ou absent. Absent, il ne vaut jamais « non
 | `ValidatedAnswers` (`validated-answers.ts`) | les questions validées, lues de même, avec ce qui se proposait : `.isValidated()`, `.offers(option)`, `.declined(case)`, et `.faitOf(case)`, qui donne oui (cochée), non (proposée, non cochée) ou rien (jamais montrée) |
 | `preconisation.faits(answers, validated)` | le modèle reçoit ces deux lectures, jamais les réponses brutes. Il applique, fait par fait, le contrat de l'éditeur |
 | `Fait` (`decision-engine/fait.ts`) | ce qu'on sait d'un fait : sa valeur si elle est établie, et sa provenance. `Fait.oui`, `Fait.non` et `Fait.inconnu` le construisent |
+| `faitsOf` (`decision-engine/fait-builder.ts`) | le constructeur des faits, lié au modèle dans son `fait.ts` : `fait("fait_motif_camsp")`, dont le nom est vérifié. Ses règles s'appliquent dans l'ordre, la première qui établit le fait l'emporte : `seulementSi(condition)`, `selon(réponse, { "1_OUI": "oui", "2_NON": "non" })`, qui écrit seul la provenance « Q2.1.h : « 1_OUI ». », `ouiSi` et `nonSi(condition, provenance)`. `sinon(provenance)` clôt la chaîne : le fait est inconnu si aucune règle ne l'établit, et l'entrée `{ fait_motif_camsp: … }` revient. Un fait qui enchaîne plusieurs cas, ou ajoute un texte à la réponse, reste une fonction qui rend un `Fait` |
 | `publicodesEngine` | n'envoie aux règles que les faits établis. Une cible peut revenir `undefined` : indéfinie, ce qui n'est pas une décision, ni `null` (sans objet) |
 
 Le socle dit ce qui a été montré, validé, coché. Il ne conclut rien : c'est le
