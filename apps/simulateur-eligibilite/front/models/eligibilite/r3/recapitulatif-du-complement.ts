@@ -1,6 +1,7 @@
-// Le récapitulatif de P3, que R3 affiche en attendant le PDF du cerfa (#157) :
-// chaque question validée, sous son libellé du moment, avec sa réponse en
-// toutes lettres. Un échafaudage : il part quand le cerfa se remplit.
+// Le récapitulatif de P3, que R3 affiche tant que les documents se téléchargent
+// vierges : chaque question validée, sous son libellé du moment, avec sa réponse
+// en toutes lettres. Un échafaudage : il part quand les documents se remplissent
+// (#161).
 
 import type {
   Address,

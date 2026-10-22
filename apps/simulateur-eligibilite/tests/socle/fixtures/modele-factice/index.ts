@@ -56,10 +56,11 @@ export const model = defineModel<Questions, Faits, Cibles>({
     // dernier écran.
     form: ({ commande }) =>
       commande === SANS_COMMANDE ? null : BON_DE_COMMANDE,
-    title: "Commande complétée",
+    title: ({ commande }) => `Commande complétée : ${commande}`,
     Resultat: CommandeCompletee,
     startLabel: ({ commande }) =>
       commande === SANS_COMMANDE ? null : "Compléter la commande",
+    printLabel: "Imprimer le bon de commande",
     downloadLabel: "Télécharger le bon de commande",
   },
   seeds: () => import("./seeds-catalogue").then((m) => m.SEEDS),

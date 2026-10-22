@@ -10,7 +10,9 @@ import { faits } from "./preconisation";
 import { PARTS } from "./questionnaire";
 import { libelleDeCompletion } from "./r2/boutons-du-resultat";
 import { eligibilite } from "./r2/resultat";
+import { documentDuComplement } from "./r3/documents-du-resultat";
 import { PrescriptionPreremplie } from "./r3/PrescriptionPreremplie";
+import { titreDuResultat } from "./r3/titre-du-resultat";
 
 export const model = defineModel<Questions, Faits, Cibles>({
   preconisation: { faits, cibles },
@@ -21,14 +23,13 @@ export const model = defineModel<Questions, Faits, Cibles>({
   },
   cerfa: {
     part: COMPLEMENT,
-    // Aucun cerfa n'est encore rempli : après P3, le résultat n'offre pas de
-    // PDF à télécharger (#157). Il récapitule les réponses, sous un titre
-    // d'attente.
-    form: () => null,
-    title: "Informations recueillies",
+    form: documentDuComplement,
+    title: titreDuResultat,
     Resultat: PrescriptionPreremplie,
     startLabel: libelleDeCompletion,
-    downloadLabel: "Télécharger et imprimer la prescription pré-remplie",
+    // `printLabel` et `downloadLabel` de `CONTRAT_RENDU_DOCUMENTAIRE.json`.
+    printLabel: "Imprimer",
+    downloadLabel: "Télécharger",
   },
   seeds: () => import("./seeds-catalogue").then((m) => m.SEEDS),
 });
