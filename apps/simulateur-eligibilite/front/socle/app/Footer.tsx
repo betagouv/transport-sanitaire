@@ -32,7 +32,7 @@ export function Footer() {
 // Le tag d'une version porte le nom de l'app : chaque app du monorepo a son
 // cycle (voir `CHANGELOG.md`). Son `@` est encodé, comme dans l'URL d'une
 // release GitHub.
-const LIEN_DE_LA_VERSION = `https://github.com/betagouv/transports-sanitaires/releases/tag/${encodeURIComponent(
+const LIEN_DE_LA_VERSION = `https://github.com/betagouv/transport-sanitaire/releases/tag/${encodeURIComponent(
   `simulateur-eligibilite@${VERSION_APP}`,
 )}`;
 

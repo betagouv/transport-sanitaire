@@ -54,7 +54,7 @@ trancher seul.
 ## 3. L'entrée du journal
 
 ```markdown
-## [0.2.0](https://github.com/betagouv/transports-sanitaires/releases/tag/simulateur-eligibilite%400.2.0), 12 septembre 2026
+## [0.2.0](https://github.com/betagouv/transport-sanitaire/releases/tag/simulateur-eligibilite%400.2.0), 12 septembre 2026
 
 <Une ou deux phrases : ce que la version rassemble, et depuis quel point.>
 
@@ -64,7 +64,7 @@ trancher seul.
 
 ### ✨ Nouveautés
 
-- [8c1788e](https://github.com/betagouv/transports-sanitaires/commit/8c1788e) : passe le modèle en v9.4.1 et corrige trois anomalies qu'on avait remontées à l'éditeur : …
+- [8c1788e](https://github.com/betagouv/transport-sanitaire/commit/8c1788e) : passe le modèle en v9.4.1 et corrige trois anomalies qu'on avait remontées à l'éditeur : …
 ```
 
 - Le `@` du tag s'encode en `%40` dans le lien du titre. C'est la forme sous

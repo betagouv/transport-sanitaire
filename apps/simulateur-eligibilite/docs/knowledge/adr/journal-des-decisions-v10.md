@@ -13,7 +13,7 @@ change à chaque livrable de l'éditeur. Le but est que faire évoluer l'un ne
 touche pas à l'autre.
 
 Le découpage et l'avancement du chantier ne sont pas ici. Ils se lisent dans
-l'issue [#50](https://github.com/betagouv/transports-sanitaires/issues/50) et
+l'issue [#50](https://github.com/betagouv/transport-sanitaire/issues/50) et
 ses sous-issues. Ce journal tenait jusqu'au 2026-10-13 dans
 `docs/tasks/PLAN.md`, retiré depuis.
 
@@ -23,16 +23,16 @@ La colonne « Chantier » du journal renvoie à ces numéros.
 
 | N° | Chantier | Issue |
 |---|---|---|
-| 01 | Vocabulaire | [#51](https://github.com/betagouv/transports-sanitaires/issues/51) |
-| 02 | Structure des dossiers | [#52](https://github.com/betagouv/transports-sanitaires/issues/52) |
-| 03 | Contrat `Model` | [#53](https://github.com/betagouv/transports-sanitaires/issues/53) |
-| 04 | Déclarations du modèle | [#54](https://github.com/betagouv/transports-sanitaires/issues/54) |
-| 05 | Questionnaire en parties | [#55](https://github.com/betagouv/transports-sanitaires/issues/55) |
-| 06 | Parcours et résultats | [#56](https://github.com/betagouv/transports-sanitaires/issues/56) |
-| 07 | Seeds | [#57](https://github.com/betagouv/transports-sanitaires/issues/57) |
-| 08 | Tests et factice | [#58](https://github.com/betagouv/transports-sanitaires/issues/58) |
-| 09 | Capacités du socle pour la v10 | [#59](https://github.com/betagouv/transports-sanitaires/issues/59) |
-| 10 | Intégration de la v10 | [#60](https://github.com/betagouv/transports-sanitaires/issues/60) |
+| 01 | Vocabulaire | [#51](https://github.com/betagouv/transport-sanitaire/issues/51) |
+| 02 | Structure des dossiers | [#52](https://github.com/betagouv/transport-sanitaire/issues/52) |
+| 03 | Contrat `Model` | [#53](https://github.com/betagouv/transport-sanitaire/issues/53) |
+| 04 | Déclarations du modèle | [#54](https://github.com/betagouv/transport-sanitaire/issues/54) |
+| 05 | Questionnaire en parties | [#55](https://github.com/betagouv/transport-sanitaire/issues/55) |
+| 06 | Parcours et résultats | [#56](https://github.com/betagouv/transport-sanitaire/issues/56) |
+| 07 | Seeds | [#57](https://github.com/betagouv/transport-sanitaire/issues/57) |
+| 08 | Tests et factice | [#58](https://github.com/betagouv/transport-sanitaire/issues/58) |
+| 09 | Capacités du socle pour la v10 | [#59](https://github.com/betagouv/transport-sanitaire/issues/59) |
+| 10 | Intégration de la v10 | [#60](https://github.com/betagouv/transport-sanitaire/issues/60) |
 
 ## Le journal
 
