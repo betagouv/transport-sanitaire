@@ -6,6 +6,7 @@
 // (D-104 : une simulation se fait en une fois, sur le modèle chargé à
 // l'ouverture). Un fait inconnu est une clé absente, jamais un « non ».
 
+import { numeroDeLOption } from "../../../../core/models/eligibilite/concepts/numero-de-l-option";
 import { Permission } from "../../../../core/models/eligibilite/concepts/permission";
 import { Sejour } from "../../../../core/models/eligibilite/concepts/sejour";
 import type { Cibles } from "../../../../core/models/eligibilite/declarations/cibles";
@@ -61,7 +62,7 @@ export function traceDuResultat({
   return {
     cibles,
     faits: faits(answers, validated),
-    criteres: validated.question("Q1.2").checkedBoxes().map(numeroDuCritere),
+    criteres: validated.question("Q1.2").checkedBoxes().map(numeroDeLOption),
     ...repetition(Permission.of(validated)),
     ...(Sejour.of(validated).estReel() && { sejourReel: true }),
     precisions: precisionsDuResultat(validated),
@@ -73,9 +74,4 @@ function repetition(permission: Permission): { permissionRepeated?: boolean } {
   if (permission.estRepetee()) return { permissionRepeated: true };
   if (permission.estUnique()) return { permissionRepeated: false };
   return {};
-}
-
-// Le numéro de l'option au catalogue, que porte son identifiant (D-75).
-function numeroDuCritere(option: string): number {
-  return Number.parseInt(option, 10);
 }

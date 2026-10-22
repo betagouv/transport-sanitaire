@@ -6,6 +6,7 @@
 // clé : le texte prend alors son repli générique, et rien n'est jamais
 // deviné. Ces fonctions ne lisent que les questions validées.
 
+import { numeroDeLOption } from "../../../../core/models/eligibilite/concepts/numero-de-l-option";
 import { Permission } from "../../../../core/models/eligibilite/concepts/permission";
 import { Sejour } from "../../../../core/models/eligibilite/concepts/sejour";
 import type { Questions } from "../../../../core/models/eligibilite/declarations/questions";
@@ -116,7 +117,7 @@ const FAMILLES_DE_SOIN = [1, 2, 3, 4, 5, 6, 7, 14, 15];
 function familleDeSoin(validated: Valides): number | undefined {
   const motif = validated.question("Q2.1");
   if (!motif.hasAnswer()) return undefined;
-  const numero = Number.parseInt(motif.value, 10);
+  const numero = numeroDeLOption(motif.value);
   return FAMILLES_DE_SOIN.includes(numero) ? numero : undefined;
 }
 
