@@ -12,7 +12,15 @@ export {
 } from "./analytics/matomo";
 export { App } from "./app/App";
 export type { Models } from "./app/model-choice";
-export { at, type Cerfa, commentOn, drawnBox, text } from "./cerfa/cerfa";
+export {
+  at,
+  box,
+  type Cerfa,
+  commentOn,
+  date,
+  drawnBox,
+  text,
+} from "./cerfa/cerfa";
 export { templateAt } from "./cerfa/generate-cerfa";
 export { bindCerfa, type CerfaMapping } from "./cerfa-mapping";
 export { Fait } from "./decision-engine/fait";
@@ -29,7 +37,10 @@ export type {
   GivenAnswer,
   GivenAnswers,
 } from "./questionnaire-engine/given-answers";
-export type { QuestionnairePart } from "./questionnaire-engine/question";
+export type {
+  QuestionnairePart,
+  Unanswered,
+} from "./questionnaire-engine/question";
 export type { QuestionContext } from "./questionnaire-engine/question-context";
 export { questionsOf } from "./questionnaire-engine/question-factory";
 export type { ValidatedAnswers } from "./questionnaire-engine/validated-answers";

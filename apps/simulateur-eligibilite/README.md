@@ -133,6 +133,11 @@ front/                   le front, bundlé par Vite
         praticien/       les cinq issues sans fiche patient
         fiche-negative/  `ISSUE_NON_ELIGIBLE`
         fiche-positive/  la prescription, le S3141 et les deux accords préalables
+      p3/                le complément du cerfa : le trajet, le soin, l'urgence, les
+                         évènements et l'exonération
+      r3/                son résultat : le document de chaque support
+        rubriques/       ce que les cerfa partagent, sans lien à aucun d'eux (D-138)
+        s3141/           le S3141, assemblé de rubriques
   socle/                 ce qui ne dépend d'aucune version. `model.ts` est le contrat
                          qu'un modèle remplit, `index.ts` ce qu'il a le droit d'importer
     app/                 le choix de l'écran affiché, la navigation entre les écrans,
@@ -205,7 +210,9 @@ patient négative pour `ISSUE_NON_ELIGIBLE` et la fiche patient positive pour
 `ISSUE_PMT`, `ISSUE_S3141` et les deux demandes d'accord préalable : les dix
 issues ont leur texte et leurs boutons. « Compléter la prescription »,
 « Compléter la demande d’accord préalable » et « Compléter la demande
-d’examen » ouvrent P3, qui pose le trajet (#144).
+d’examen » ouvrent P3, qui pose le trajet (#144). Son résultat, R3, imprime et
+télécharge le document du support : le S3141 rempli (#158), la PMT et la DAP
+encore vierges.
 L'avancement
 est dans l'issue 50 du dépôt, les décisions dans
 [`docs/knowledge/adr/journal-des-decisions-v10.md`](docs/knowledge/adr/journal-des-decisions-v10.md).

@@ -1,16 +1,14 @@
 // Les documents de R3 (#157) : le gabarit de chaque support, son titre et le
-// texte de R3, recopiés de `CONTRAT_RENDU_DOCUMENTAIRE.json` (v10.1.3). Les
-// documents se téléchargent encore vierges : chacun sort aplati, sans champ.
+// texte de R3, recopiés de `CONTRAT_RENDU_DOCUMENTAIRE.json` (v10.1.3). La PMT
+// et la DAP se téléchargent encore vierges, aplaties, sans champ. Le S3141 se
+// remplit : `s3141-rempli.test.ts`.
 
-import { readFile } from "node:fs/promises";
-import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 import type { Cibles } from "../../../front/models/eligibilite/declarations/cibles";
 import { documentDuComplement } from "../../../front/models/eligibilite/r3/documents-du-resultat";
 import { titreDuResultat } from "../../../front/models/eligibilite/r3/titre-du-resultat";
-import { generateCerfa } from "../../../front/socle/cerfa/generate-cerfa";
-import { racine } from "../../inspection-des-sources";
 import { drawnOn } from "../../socle/cerfa/test-form";
+import { genere } from "./reponses-du-cerfa";
 import { trace } from "./traces-du-praticien";
 
 type Support = NonNullable<Cibles["cible_support_id"]>;
@@ -44,10 +42,10 @@ describe("le document de R3", () => {
     ).toBeNull();
   });
 
-  it.each(["S3138g", "S3139h", "S3141"] as const)(
+  it.each(["S3138g", "S3139h"] as const)(
     "%s se génère vierge et aplati",
     async (support) => {
-      const pdf = await genere(support);
+      const pdf = await vierge(support);
 
       expect((await drawnOn(pdf)).fields).toBe(0);
     },
@@ -71,18 +69,11 @@ describe("le titre de R3", () => {
 
 // ---- implémentation ----
 
-// Le document du support, généré depuis son gabarit lu sur le disque : le
-// navigateur de test ne sert pas les assets de l'app.
-async function genere(support: Support): Promise<Uint8Array> {
+// Le document vierge du support.
+async function vierge(support: Support): Promise<Uint8Array> {
   const document = documentDuComplement(
     ciblesDe({ cible_support_id: support }),
   );
   if (!document) throw new Error(`Aucun document pour ${support}.`);
-  const gabarit = join(
-    racine,
-    `front/models/eligibilite/r3/gabarits/${support}.pdf`,
-  );
-  const cerfa = { ...document.cerfa, template: () => readFile(gabarit) };
-  const { pdf } = await generateCerfa(cerfa, { fields: {}, drawings: {} });
-  return new Uint8Array(await pdf.arrayBuffer());
+  return genere(document.cerfa, support, { fields: {}, drawings: {} });
 }

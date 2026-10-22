@@ -28,6 +28,11 @@ export type TextBinding = {
   readonly field: string;
   /** Champ multiligne dont le cadre ne montre qu'une ligne. */
   readonly singleLine?: boolean;
+  /**
+   * La valeur est une date ISO (`AAAA-MM-JJ`) : elle s'écrit selon les cases
+   * du champ, `JJMMAAAA` sur huit, `JJ/MM/AAAA` sinon (`dates.ts`).
+   */
+  readonly date?: boolean;
 };
 
 /**
@@ -75,6 +80,14 @@ export function text(
   options: Omit<TextBinding, "field"> = {},
 ): TextBinding {
   return { field, ...options };
+}
+
+/**
+ * Une date ISO écrite dans le champ `field`, au format de ses cases. Le DTO
+ * ne sait pas combien le gabarit en a.
+ */
+export function date(field: string): TextBinding {
+  return { field, date: true };
 }
 
 /** Le commentaire facultatif du texte `entry`, une entrée du DTO. */
