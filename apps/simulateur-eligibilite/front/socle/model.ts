@@ -108,7 +108,8 @@ export type Model<
     form: (
       cibles: Cibles,
     ) => BoundCerfa<CerfaInput<Questions, Faits, Cibles>> | null;
-    title: string;
+    /** Le `h1` du second résultat, selon le document que la préconisation donne. */
+    title: (cibles: Cibles) => string;
     Resultat: ComponentType<ResultatProps<Questions, Cibles>>;
     /**
      * Le libellé de l'action qui verrouille. `null` : cette préconisation ne
@@ -116,6 +117,8 @@ export type Model<
      * la partie n'a ni page ni cerfa : le verrou n'ouvre pas un écran vide.
      */
     startLabel: (cibles: Cibles) => string | null;
+    /** Les libellés des deux actions sur le cerfa, qui portent le même PDF. */
+    printLabel: string;
     downloadLabel: string;
   };
   /** Le catalogue des seeds, chargé à la demande. */

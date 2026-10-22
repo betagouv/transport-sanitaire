@@ -118,7 +118,7 @@ describe("les boutons du modèle de l'éditeur", DELAI_D_UN_TEST, () => {
     ).toBeInTheDocument();
   });
 
-  it("récapitule sur R3 les réponses de P3, en attendant le PDF", async () => {
+  it("pose R3 : son titre, son texte, ses deux actions et les réponses de P3", async () => {
     await ouvrirLaSeed("issue-pmt");
     const user = userEvent.setup();
     await user.click(screen.getByRole("button", { name: COMPLETER }));
@@ -153,9 +153,14 @@ describe("les boutons du modèle de l'éditeur", DELAI_D_UN_TEST, () => {
     expect(
       await screen.findByRole("heading", {
         level: 1,
-        name: /^Informations recueillies/,
+        name: /^Prescription préremplie prête à imprimer/,
       }),
     ).toBeInTheDocument();
+    expect(
+      screen.getByText(/^Le document est prêt à être imprimé\./),
+    ).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Imprimer" })).toBeVisible();
+    expect(screen.getByRole("button", { name: "Télécharger" })).toBeVisible();
     expect(screen.getByText("2 transport(s)")).toBeInTheDocument();
     expect(screen.getByText("Aller simple")).toBeInTheDocument();
   });

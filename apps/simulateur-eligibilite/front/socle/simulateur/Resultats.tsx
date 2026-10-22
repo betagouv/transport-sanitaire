@@ -3,7 +3,7 @@
 // fournit son contenu ; le cadre, le stepper et les boutons sont ici.
 
 import type { ComponentType, ReactNode } from "react";
-import { CerfaDownload } from "../cerfa/CerfaDownload";
+import { CerfaActions } from "../cerfa/CerfaActions";
 import { dtoFrom } from "../cerfa-mapping";
 import {
   type CerfaInput,
@@ -56,7 +56,7 @@ export function CerfaResultat({
   const read = readingOf(all, answers, cibles);
   return (
     <Frame
-      title={title}
+      title={title(cibles)}
       part={total}
       total={total}
       trace={trace}
@@ -125,11 +125,12 @@ function Cerfa({ model, input }: { model: Model; input: CerfaInput }) {
   const bound = model.cerfa.form(input.cibles);
   return (
     bound && (
-      <CerfaDownload
+      <CerfaActions
         cerfa={bound.cerfa}
         dto={dtoFrom(bound.mapping, input)}
         date={input.completedAt}
-        label={model.cerfa.downloadLabel}
+        printLabel={model.cerfa.printLabel}
+        downloadLabel={model.cerfa.downloadLabel}
       />
     )
   );

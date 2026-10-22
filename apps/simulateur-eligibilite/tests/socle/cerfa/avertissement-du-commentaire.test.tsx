@@ -1,7 +1,7 @@
-import { render, screen } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
-import { CerfaDownload } from "../../../front/socle/cerfa/CerfaDownload";
+import { CerfaActions } from "../../../front/socle/cerfa/CerfaActions";
 import { type Cerfa, commentOn, text } from "../../../front/socle/cerfa/cerfa";
 import { ecouterLesTelechargements } from "../simulateur/telechargements";
 import { drawnOn, testForm } from "./test-form";
@@ -35,7 +35,7 @@ describe("le commentaire facultatif", () => {
   it("retiré faute de place, s'annonce avant le téléchargement", async () => {
     afficher({ motif: "Dialyse.", precisions: LONG });
 
-    await screen.findByRole("button", TELECHARGER);
+    await genere();
 
     expect(screen.getByText(RETIRE)).toBeVisible();
     expect(ecoute.telechargements).toEqual([]);
@@ -45,7 +45,7 @@ describe("le commentaire facultatif", () => {
     const user = userEvent.setup();
     afficher({ motif: "Dialyse.", precisions: LONG });
 
-    await user.click(await screen.findByRole("button", TELECHARGER));
+    await user.click(await genere());
 
     const [pdf] = ecoute.telechargements;
     expect((await drawnOn(await pdfDe(pdf))).texts).toEqual(["Dialyse."]);
@@ -54,7 +54,7 @@ describe("le commentaire facultatif", () => {
   it("qui tient ne s'annonce pas", async () => {
     afficher({ motif: "Dialyse.", precisions: "Fauteuil." });
 
-    await screen.findByRole("button", TELECHARGER);
+    await genere();
 
     expect(screen.queryByText(RETIRE)).toBeNull();
   });
@@ -62,13 +62,21 @@ describe("le commentaire facultatif", () => {
 
 // ---- implémentation ----
 
+// Le bouton « Télécharger », actif une fois le PDF généré.
+async function genere() {
+  const bouton = screen.getByRole("button", TELECHARGER);
+  await waitFor(() => expect(bouton).toBeEnabled());
+  return bouton;
+}
+
 function afficher(fields: Fiche["fields"]) {
   render(
-    <CerfaDownload
+    <CerfaActions
       cerfa={FICHE}
       dto={{ fields, drawings: {} }}
       date={new Date("2026-10-14T10:00:00Z")}
-      label="Télécharger la fiche"
+      printLabel="Imprimer la fiche"
+      downloadLabel="Télécharger la fiche"
     />,
   );
 }
