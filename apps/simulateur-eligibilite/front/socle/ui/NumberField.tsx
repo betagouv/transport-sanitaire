@@ -35,7 +35,14 @@ export function NumberField(props: Props) {
       classes={{ label: props.lead ? "fr-text--lead" : undefined }}
       addon={
         props.unit ? (
-          <span className="fr-label" style={{ whiteSpace: "nowrap" }}>
+          <span
+            className="fr-label"
+            style={{
+              whiteSpace: "nowrap",
+              alignSelf: "center",
+              marginLeft: "0.5rem",
+            }}
+          >
             {props.unit}
           </span>
         ) : undefined
