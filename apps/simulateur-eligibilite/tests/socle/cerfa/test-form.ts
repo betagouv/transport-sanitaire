@@ -14,10 +14,11 @@ import {
 } from "pdf-lib";
 
 /**
- * Un formulaire à six champs : `nom` sur une ligne, `nir` limité à treize
+ * Un formulaire à huit champs : `nom` sur une ligne, `nir` limité à treize
  * caractères, `motif` multiligne et étroit, la case `ald`, `acc`, trois cases
  * sous un même nom (`lait`, `sucre`, `citron`), comme les cases groupées de la
- * DAP, et `adresse`, recopiée sur deux volets, comme sur la PMT.
+ * DAP, `adresse`, recopiée sur deux volets, comme sur la PMT, et deux dates :
+ * `naissance` sur huit cases, `echeance` sans limite.
  */
 export async function testForm(): Promise<Uint8Array> {
   const document = await PDFDocument.create();
@@ -38,8 +39,34 @@ export async function testForm(): Promise<Uint8Array> {
   const adresse = form.createTextField("adresse");
   adresse.addToPage(page, { ...box, y: 180 });
   adresse.addToPage(volet, { ...box, y: 180 });
+  const naissance = form.createTextField("naissance");
+  naissance.setMaxLength(8);
+  naissance.addToPage(page, { ...box, y: 150 });
+  form.createTextField("echeance").addToPage(page, { ...box, y: 125 });
 
   return document.save();
+}
+
+/**
+ * Le formulaire `pdf`, dont les cases `field` n'ont plus d'apparence `/Off`,
+ * comme les cases des gabarits réels : seul l'état coché s'y dessine.
+ */
+export async function withoutOffAppearance(
+  pdf: Uint8Array,
+  field: string,
+): Promise<Uint8Array> {
+  const document = await PDFDocument.load(pdf);
+  for (const widget of document
+    .getForm()
+    .getField(field)
+    .acroField.getWidgets())
+    for (const kind of ["N", "D"])
+      widget.dict
+        .lookup(PDFName.of("AP"), PDFDict)
+        .lookup(PDFName.of(kind), PDFDict)
+        .delete(PDFName.of("Off"));
+  // Sans quoi `pdf-lib` les redessine en enregistrant.
+  return document.save({ updateFieldAppearances: false });
 }
 
 /** Le bon de commande du modèle factice : trois champs sur une ligne. */

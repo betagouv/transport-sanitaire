@@ -1,6 +1,7 @@
 // Le résultat de la prescription préremplie (R3) : le texte du contrat, au-dessus
-// des boutons que le socle pose. Tant que les documents se téléchargent vierges
-// (#158 à #161), il récapitule aussi les réponses de P3, pour la recette.
+// des boutons que le socle pose. Le S3141 se remplit (#158). Tant que la PMT et
+// la DAP se téléchargent vierges (#160, #161), il récapitule aussi les réponses
+// de P3, pour la recette.
 
 import {
   type LectureDuComplement,

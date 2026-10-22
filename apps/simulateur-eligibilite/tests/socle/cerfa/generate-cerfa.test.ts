@@ -4,6 +4,7 @@ import {
   box,
   type Cerfa,
   commentOn,
+  date,
   drawnBox,
   text,
 } from "../../../front/socle/cerfa/cerfa";
@@ -26,6 +27,7 @@ type Fiche = {
     avec_lait?: boolean;
     avec_sucre?: boolean;
     avec_citron?: boolean;
+    echeance?: string;
   };
   drawings: { remarque?: string };
 };
@@ -45,6 +47,7 @@ async function fiche(): Promise<Cerfa<Fiche>> {
       avec_lait: drawnBox("acc", "lait"),
       avec_sucre: drawnBox("acc", "sucre"),
       avec_citron: drawnBox("acc", "citron"),
+      echeance: date("echeance"),
     },
     drawings: { remarque: at({ page: 1, x: 20, y: 100, width: 300 }) },
   };
@@ -110,6 +113,15 @@ describe("générer un cerfa", () => {
     await expect(
       generateCerfa(fautive, { fields: { avec_lait: true }, drawings: {} }),
     ).rejects.toThrow("« acc » ne connaît pas l'état « /Lait »");
+  });
+
+  it("écrit une date au format de son champ", async () => {
+    const pdf = await generer({
+      fields: { echeance: "2026-10-06" },
+      drawings: {},
+    });
+
+    expect((await drawnOn(pdf)).texts).toEqual(["06/10/2026"]);
   });
 
   it("dessine un texte là où le gabarit n'a pas de champ", async () => {
