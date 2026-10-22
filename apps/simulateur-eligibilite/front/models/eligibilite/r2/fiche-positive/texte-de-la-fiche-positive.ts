@@ -26,6 +26,7 @@ import {
 import { motifAdministratif, phraseDuContexte } from "./contexte-du-resultat";
 import {
   fondementDeLAccord,
+  type RappelDAttente,
   rappelDAttente,
 } from "./fondement-de-l-accord-prealable";
 import {
@@ -56,7 +57,7 @@ export type TexteDeLaFichePositive = {
    * Le rappel d'attente d'une demande d'accord préalable ; absent pour les
    * autres issues, et quand les règles ne disent pas s'il faut attendre.
    */
-  readonly rappel?: string;
+  readonly rappel?: RappelDAttente;
   readonly finance: Bloc;
 };
 
