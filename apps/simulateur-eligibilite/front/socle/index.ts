@@ -5,6 +5,7 @@
 // L'écran des seeds et son tableau n'y figurent pas : ils sont chargés à la
 // demande, et les réexporter ici les ramènerait dans le chunk d'entrée.
 
+export { Fait } from "../../core/socle/decision-engine/fait";
 export {
   chargerMatomo,
   configDepuisEnv,
@@ -15,7 +16,6 @@ export type { Models } from "./app/model-choice";
 export { at, type Cerfa, commentOn, drawnBox, text } from "./cerfa/cerfa";
 export { templateAt } from "./cerfa/generate-cerfa";
 export { bindCerfa, type CerfaMapping } from "./cerfa-mapping";
-export { Fait } from "./decision-engine/fait";
 export { faitsOf } from "./decision-engine/fait-builder";
 export {
   type CerfaInput,

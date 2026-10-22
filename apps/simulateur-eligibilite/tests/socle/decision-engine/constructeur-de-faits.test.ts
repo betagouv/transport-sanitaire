@@ -3,7 +3,7 @@
 // qu'aucune n'établit. `selon` cite la question et sa réponse.
 
 import { describe, expect, it } from "vitest";
-import { Fait } from "../../../front/socle/decision-engine/fait";
+import { Fait } from "../../../core/socle/decision-engine/fait";
 import { faitsOf } from "../../../front/socle/decision-engine/fait-builder";
 import { ValidatedAnswers } from "../../../front/socle/questionnaire-engine/validated-answers";
 

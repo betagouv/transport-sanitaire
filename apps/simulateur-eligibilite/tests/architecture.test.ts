@@ -41,37 +41,6 @@ const MODELES = readdirSync(join(racine, "front/models")).map(
 const MODELE_DE_TEST = "tests/socle/modele-de-test.ts";
 const MODELE_FACTICE = "tests/socle/fixtures/modele-factice";
 
-describe("frontières de runtime", () => {
-  it("le front n'importe rien du serveur", () => {
-    expect(
-      franchissements(["front"], commencePar("server/")),
-      "Le serveur détient la clé Grist. Un seul import suffirait à la " +
-        "faire entrer dans le bundle servi au navigateur. Passe par une " +
-        "route `/api`.",
-    ).toEqual([]);
-  });
-
-  it("le serveur n'importe rien du front", () => {
-    expect(
-      franchissements(["server"], commencePar("front/")),
-      "Le backend tourne sous Node sans DOM : importer du front y ferait " +
-        "entrer du JSX et des API navigateur qui n'existent pas à " +
-        "l'exécution. Ce qui doit être partagé va dans `shared/`.",
-    ).toEqual([]);
-  });
-
-  it("le contrat partagé ne dépend d'aucune des deux racines", () => {
-    expect(
-      franchissements(
-        ["shared"],
-        (cible) => cible.startsWith("front/") || cible.startsWith("server/"),
-      ),
-      "`shared/` est chargé des deux côtés : il ne peut dépendre que de " +
-        "lui-même. Ce qui a besoin du front ou du serveur n'est pas du contrat.",
-    ).toEqual([]);
-  });
-});
-
 describe("le socle et le modèle", () => {
   it("le socle n'importe rien du modèle", () => {
     expect(

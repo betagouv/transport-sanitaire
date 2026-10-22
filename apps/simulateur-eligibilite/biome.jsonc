@@ -8,6 +8,7 @@
   "files": {
     "includes": [
       "front/**",
+      "core/**",
       "server/**",
       "shared/**",
       "scripts/**",

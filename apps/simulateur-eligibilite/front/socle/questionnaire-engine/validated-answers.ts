@@ -2,7 +2,7 @@
 // proposait. C'est ce qui sépare un « non » d'un fait inconnu : une case
 // proposée et non cochée a été refusée, une case jamais montrée ne l'a pas été.
 
-import { Fait } from "../decision-engine/fait";
+import { Fait } from "../../../core/socle/decision-engine/fait";
 import { type Box, type Choice, GivenAnswer } from "./given-answers";
 import type { AnyQuestions, Validated } from "./question";
 

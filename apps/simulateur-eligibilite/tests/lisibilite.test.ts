@@ -16,7 +16,7 @@ import {
   texteDe,
 } from "./inspection-des-sources";
 
-const RACINES = ["front", "server", "shared", "scripts"];
+const RACINES = ["front", "core", "server", "shared", "scripts"];
 // Ce dont le nom suit la convention : les sources, et leurs tests.
 const NOMMES = [...RACINES, "tests"];
 const KEBAB = /^[a-z0-9]+(-[a-z0-9]+)*$/;
@@ -131,8 +131,8 @@ describe("les extensions d'import suivent le runtime", () => {
     );
     expect(
       sans,
-      "Ce fichier est atteignable depuis Node (`server/`, `shared/`, " +
-        "`scripts/`, ou ce qu'ils tirent dans " +
+      "Ce fichier est atteignable depuis Node (`core/`, `server/`, " +
+        "`shared/`, `scripts/`, ou ce qu'ils tirent dans " +
         "`front/`). Node ne résout pas les extensions : écris `.ts` / `.tsx`, " +
         "sinon l'import casse à l'exécution — sans que Vite ni `tsc` le voient.",
     ).toEqual([]);
@@ -201,11 +201,12 @@ function fonctionsPriveesEnFleche(fichier: string): string[] {
 }
 
 /**
- * Les fichiers que Node peut atteindre : ses trois racines, plus tout ce
- * qu'elles importent de proche en proche, y compris dans `front/`.
+ * Les fichiers que Node peut atteindre : ses quatre racines, plus tout ce
+ * qu'elles importent de proche en proche, y compris dans `front/`. Le métier
+ * (`core/`) en est une : le serveur doit pouvoir le charger.
  */
 function joignablesDepuisNode(): Set<string> {
-  const atteints = new Set(sources("server", "shared", "scripts"));
+  const atteints = new Set(sources("core", "server", "shared", "scripts"));
   const aVisiter = [...atteints];
   while (aVisiter.length > 0) {
     const fichier = aVisiter.pop() as string;

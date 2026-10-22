@@ -28,6 +28,7 @@
       "entry": ["scripts/*.ts", "tests/**/*.test.{ts,tsx}"],
       "project": [
         "front/**/*.{ts,tsx}",
+        "core/**/*.ts",
         "server/**/*.ts",
         "shared/**/*.ts",
         "scripts/*.ts"
