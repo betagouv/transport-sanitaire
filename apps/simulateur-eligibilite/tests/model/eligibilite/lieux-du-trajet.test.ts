@@ -80,11 +80,10 @@ describe("ce que P2 établit d'un lieu (Q2.13, Q3.3)", () => {
       ...DIALYSE,
       "Q3.1.2": "3_ALLER_RETOUR_EQUIVALENT",
     };
-    expect(pages.map(({ id }) => id)).toEqual([
-      "P3/trajet",
-      "P3/depart",
-      "P3/arrivee",
-    ]);
+    const lieux = pages.filter(({ questions }) =>
+      questions.some(({ id }) => id.endsWith(".adresse")),
+    );
+    expect(lieux.map(({ id }) => id)).toEqual(["P3/depart", "P3/arrivee"]);
     expect(ids("P3/arrivee", equivalent)).toEqual(["Q3.3.nom", "Q3.3.adresse"]);
   });
 

@@ -20,6 +20,7 @@ import {
   QUESTIONS_DU_LIEU,
 } from "./lieux-du-trajet";
 import { natureAdmise } from "./roles-des-lieux";
+import { avecUnDocument } from "./supports-du-complement";
 
 type Page = QuestionnairePart<Questions, Cibles>["pages"][number];
 type Question = Page["questions"][number];
@@ -150,9 +151,4 @@ function memeAdresse(a: Address, b: Address): boolean {
   const lu = (adresse: Address, champ: (typeof champs)[number]) =>
     (adresse[champ] ?? "").trim().toLocaleLowerCase("fr");
   return champs.every((champ) => lu(a, champ) === lu(b, champ));
-}
-
-// Les trois supports de P3 ont un départ et une arrivée.
-function avecUnDocument(cibles: Cibles): boolean {
-  return cibles.cible_support_id !== "AUCUN";
 }

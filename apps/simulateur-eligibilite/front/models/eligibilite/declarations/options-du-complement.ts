@@ -35,4 +35,9 @@ export const OPTIONS_DU_COMPLEMENT = {
   "Q3.2.nature": NATURES_DU_LIEU,
   /** Quel est le lieu d’arrivée ? (Q3.3, premier point du catalogue.) */
   "Q3.3.nature": NATURES_DU_LIEU,
+  /** Un trajet vers un centre de référence pour une maladie rare ? (Q3.4.a.) */
+  "Q3.4.a": {
+    "1_OUI": "Oui",
+    "2_NON": "Non",
+  },
 } as const;
