@@ -9,6 +9,7 @@ import type { Sheet } from "../model";
 import assuranceMaladie from "./logos/assurance-maladie.svg";
 import ministere from "./logos/ministere-de-la-sante.svg";
 import "./sheet-viewer.css";
+import "./sheet-viewer-print.css";
 
 export function SheetViewer({ sheet }: { sheet: Sheet }) {
   return (
