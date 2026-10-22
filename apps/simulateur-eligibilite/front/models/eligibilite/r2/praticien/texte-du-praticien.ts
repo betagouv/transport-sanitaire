@@ -9,6 +9,7 @@
 // que le praticien ne doit pas lire comme des faits du dossier.
 
 import type {
+  AucunScenario,
   CatalogueResultats,
   IssueDeLaCaisse,
   IssueEtranger,
@@ -145,7 +146,7 @@ function texteDesPoints(
 function scenarioDeCumul(
   { scenarios }: IssuePraticien,
   points: readonly ScenarioPraticien[],
-): ScenarioPraticien | undefined {
+): ScenarioPraticien | AucunScenario {
   const codes = points.flatMap((point) => point.codes).sort();
   return scenarios.find(
     (scenario) =>

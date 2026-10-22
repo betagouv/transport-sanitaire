@@ -17,6 +17,9 @@ type Evaluated<Cibles> = {
   readonly [Nom in keyof Cibles]: Cibles[Nom] | undefined;
 };
 
+/** Les règles ne concluent pas sur cette cible. */
+type Undetermined = undefined;
+
 /** Ce que des règles calculent pour des faits. */
 export type DecisionEngine<Faits, Cibles> = {
   /** Toutes les cibles de ces faits : la préconisation. */
@@ -25,7 +28,7 @@ export type DecisionEngine<Faits, Cibles> = {
   cible<Nom extends keyof Cibles>(
     faits: Faits,
     nom: Nom,
-  ): Cibles[Nom] | undefined;
+  ): Cibles[Nom] | Undetermined;
 };
 
 /** Le moteur de ces règles, qui rend ces cibles. */

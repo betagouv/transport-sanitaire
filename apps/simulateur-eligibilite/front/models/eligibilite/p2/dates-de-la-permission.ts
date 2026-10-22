@@ -83,8 +83,11 @@ export function periodeAvantLaFinDeLaPermission(
 
 const FORMAT = /^(\d{4})-(\d{2})-(\d{2})(?:T(\d{2}):(\d{2}))?$/;
 
-/** L'instant d'une date, avec ou sans heure. Indéfini si elle est mal écrite. */
-function instant(saisie: string | undefined): number | undefined {
+/** La date est mal écrite. */
+type MalEcrite = undefined;
+
+/** L'instant d'une date, avec ou sans heure. */
+function instant(saisie: string | undefined): number | MalEcrite {
   const lue = saisie === undefined ? null : FORMAT.exec(saisie);
   if (!lue) return undefined;
   const [annee, mois, jour, heure = 0, minute = 0] = lue

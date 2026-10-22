@@ -88,6 +88,18 @@ describe("un nom dit une intention", () => {
   });
 });
 
+describe("une absence dit ce qu'elle veut dire", () => {
+  it("aucun retour ne finit par un `undefined` sans nom", () => {
+    const anonymes = sources(...RACINES).flatMap(retoursSansNom);
+    expect(
+      anonymes,
+      "Un retour qui peut manquer nomme son absence (QUAL-017) : " +
+        "`number | DoesNotFit`, pas `number | undefined`. Le même sens " +
+        "prend le même nom, et le type dit en une phrase ce qui manque.",
+    ).toEqual([]);
+  });
+});
+
 describe("un nom s'écrit d'une seule façon", () => {
   it("les dossiers sont en kebab-case", () => {
     const dossiers = new Set(
@@ -198,6 +210,29 @@ function fonctionsPriveesEnFleche(fichier: string): string[] {
       const { line } = source.getLineAndCharacterOfPosition(pos);
       return `${fichier}:${line + 1} — ${name.getText(source)}`;
     });
+}
+
+// Les fonctions dont le type de retour écrit `undefined` en toutes lettres
+// dans son union : « fichier:ligne — texte du type ».
+function retoursSansNom(fichier: string): string[] {
+  const source = astDe(fichier);
+  const trouves: string[] = [];
+  const visiter = (noeud: ts.Node): void => {
+    const retour = ts.isFunctionLike(noeud) ? noeud.type : undefined;
+    if (retour && ts.isUnionTypeNode(retour) && avecUndefined(retour)) {
+      const { line } = source.getLineAndCharacterOfPosition(retour.getStart());
+      trouves.push(`${fichier}:${line + 1} — ${retour.getText(source)}`);
+    }
+    ts.forEachChild(noeud, visiter);
+  };
+  visiter(source);
+  return trouves;
+}
+
+function avecUndefined(union: ts.UnionTypeNode): boolean {
+  return union.types.some(
+    (type) => type.kind === ts.SyntaxKind.UndefinedKeyword,
+  );
 }
 
 /**

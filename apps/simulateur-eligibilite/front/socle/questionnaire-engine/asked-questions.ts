@@ -136,12 +136,15 @@ function askPage(page: Page, context: Context, start: Progress) {
   return { questions, progress };
 }
 
-// La question telle qu'elle se pose, ou `undefined` quand elle ne se pose pas.
+/** La question ne se pose pas. */
+type NotAsked = undefined;
+
+// La question telle qu'elle se pose.
 function askQuestion(
   declared: Question,
   { answers, earlier, cibles }: Context,
   validated: Validated,
-): Question | undefined {
+): Question | NotAsked {
   const read = new ValidatedAnswers(validated);
   const seen: Seen = [new GivenAnswers(answers), cibles, read];
   if (!(declared.askedIf?.(...seen) ?? true)) return undefined;
@@ -196,11 +199,14 @@ function asAsked(question: Question, seen: Seen, earlier: Seen): Question {
   };
 }
 
+/** La question ne dit pas si l'adresse est à l'étranger. */
+type Unspecified = undefined;
+
 // Le mode d'une adresse, vu les réponses : à l'étranger, ou en France.
 function abroadOf(
   question: Extract<Question, { kind: "address" }>,
   seen: Seen,
-): boolean | undefined {
+): boolean | Unspecified {
   return question.abroadIf?.(...seen) ?? question.abroad;
 }
 

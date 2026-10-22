@@ -90,9 +90,12 @@ export class FaitBuilder<Name extends string> {
 
 // ---- implémentation ----
 
+/** La règle n'établit pas le fait : elle laisse la main à la suivante. */
+type PassesOn = undefined;
+
 // Une règle établit le fait, ou laisse la main. Elle reçoit la provenance de
 // `sinon`, que `seulementSi` reprend.
-type Rule = (sinon: string) => Fait | undefined;
+type Rule = (sinon: string) => Fait | PassesOn;
 
 // Les noms des faits du modèle qui valent « oui » ou « non ».
 type FaitName<Faits> = {
