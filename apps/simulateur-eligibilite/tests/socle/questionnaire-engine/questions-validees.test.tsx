@@ -1,6 +1,6 @@
 import { screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
-import type { Page } from "../../../core/socle/questionnaire-engine/question";
+import { page, questionsOf } from "../../../core/socle";
 import { Questionnaire } from "../../../core/socle/questionnaire-engine/questionnaire";
 import { afficher } from "./afficher";
 
@@ -9,69 +9,48 @@ import { afficher } from "./afficher";
 // ne se lit pas de la même façon selon qu'elle a été proposée ou non : le
 // modèle en a besoin pour dire « non » plutôt que « on ne sait pas ».
 
-const REGIME: Page = {
-  id: "regime",
-  questions: [
-    {
-      id: "regime",
-      kind: "single choice",
-      label: "Quel est votre régime ?",
-      options: [
-        { value: "tout", label: "Je mange de tout" },
-        { value: "vegetarien", label: "Végétarien" },
-      ],
-    },
-    {
-      id: "allergies",
-      kind: "multiple choice",
-      label: "Des allergies ?",
-      optional: true,
-      options: [
-        { value: "gluten", label: "Au gluten" },
-        { value: "arachide", label: "À l'arachide" },
-      ],
-    },
-    {
-      id: "proteines",
-      kind: "text",
-      label: "Quelles protéines ?",
-      // Sur la même page : la question lit celle qui la précède.
-      askedIf: ({ validated }) => validated.question("regime").is("vegetarien"),
-    },
-  ],
+type Questions = {
+  regime: "tout" | "vegetarien";
+  allergies: readonly ("gluten" | "arachide")[];
+  proteines: string;
+  plats: readonly ("salade" | "steak" | "rien")[];
+  dessert: string;
 };
 
-const PLATS: Page = {
-  id: "plats",
-  questions: [
-    {
-      id: "plats",
-      kind: "multiple choice",
-      label: "Quels plats ?",
-      options: [
-        { value: "salade", label: "Une salade" },
-        {
-          value: "steak",
-          label: "Un steak",
-          offeredIf: ({ answers }) => answers.question("regime").is("tout"),
-        },
-      ],
-      exclusiveOption: { value: "rien", label: "Rien" },
-    },
-  ],
-};
+const OPTIONS = {
+  regime: { tout: "Je mange de tout", vegetarien: "Végétarien" },
+  allergies: { gluten: "Au gluten", arachide: "À l'arachide" },
+  plats: { salade: "Une salade", steak: "Un steak", rien: "Rien" },
+} as const;
 
-const DESSERT: Page = {
-  id: "dessert",
-  questions: [
-    {
-      id: "dessert",
-      kind: "text",
-      label: "Quel dessert ?",
-      askedIf: ({ validated }) => validated.question("plats").hasAnswer(),
-    },
-  ],
-};
+const question = questionsOf<Questions>({ options: OPTIONS });
+
+const REGIME = page(
+  "regime",
+  question.singleChoice("regime", "Quel est votre régime ?"),
+  question.multipleChoice("allergies", "Des allergies ?").optional(),
+  question
+    .text("proteines", "Quelles protéines ?")
+    // Sur la même page : la question lit celle qui la précède.
+    .askedIf(({ validated }) => validated.question("regime").is("vegetarien")),
+);
+
+const PLATS = page(
+  "plats",
+  question
+    .multipleChoice("plats", "Quels plats ?")
+    .option("steak", (option) =>
+      option.offeredIf(({ answers }) => answers.question("regime").is("tout")),
+    )
+    .exclusive("rien"),
+);
+
+const DESSERT = page(
+  "dessert",
+  question
+    .text("dessert", "Quel dessert ?")
+    .askedIf(({ validated }) => validated.question("plats").hasAnswer()),
+);
 
 const PAGES = [REGIME, PLATS, DESSERT];
 const QUESTIONNAIRE = new Questionnaire(PAGES);

@@ -1,20 +1,18 @@
 import { screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
-import type { Page } from "../../../core/socle/questionnaire-engine/question";
+import { page, questionsOf } from "../../../core/socle";
 import { afficher } from "./afficher";
 
 // Un texte peut se saisir sur plusieurs lignes. Les pages sont écrites ici.
 
-const PRECISIONS: Page = {
-  id: "precisions",
-  questions: [
-    {
-      id: "precisions",
-      kind: "long text",
-      label: "Quelles précisions sur le soin ?",
-    },
-  ],
-};
+type Questions = { precisions: string };
+
+const question = questionsOf<Questions>({ options: {} });
+
+const PRECISIONS = page(
+  "precisions",
+  question.longText("precisions", "Quelles précisions sur le soin ?"),
+);
 
 const zone = () =>
   screen.getByRole("textbox", { name: /^quelles précisions sur le soin/i });

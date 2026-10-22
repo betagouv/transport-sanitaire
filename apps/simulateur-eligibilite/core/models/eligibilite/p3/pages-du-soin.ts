@@ -2,59 +2,65 @@
 // volet médical de la PMT et de la DAP : le S3141 n'en a pas. Rien de ce
 // qu'elles recueillent ne requalifie P2.
 
-import type { GivenAnswers, QuestionnairePart } from "../../../socle/index.ts";
+import { type GivenAnswers, page } from "../../../socle/index.ts";
 import type { Cibles } from "../declarations/cibles.ts";
 import { OPTIONS, type Questions } from "../declarations/questions.ts";
 import { questionDuComplement as question } from "../question.ts";
 import { sensDuDocument } from "./sens-du-trajet.ts";
 import { pmtOuDap } from "./supports-du-complement.ts";
 
-type Page = QuestionnairePart<Questions, Cibles>["pages"][number];
-
 // Le soin, tel que P2 l'a validé, se rappelle sans se redemander. Aucun code
 // de nomenclature ne s'affiche.
-export const PAGE_DU_SOIN: Page = {
-  id: "P3/soin",
-  questions: [
-    question.longText("Q3.4", {
-      label:
-        "Quelles précisions sur le soin et le trajet doivent figurer sur la prescription ?",
-      hint: "Seulement ce qui manque encore à la prescription. Une précision qui change le soin ou le motif demande une nouvelle simulation.",
-      optional: true,
-      askedIf: ({ cibles }) => pmtOuDap(cibles),
-      reminderFrom: ({ answers }) => recapitulatifDuSoin(answers),
-    }),
-    question.longText("Q3.4.distance", {
-      label: "Justification médicale du lieu de soins éloigné",
-      hint: "Au-delà de 150 km, la demande d’accord préalable l’exige.",
-      askedIf: ({ cibles }) => cibles.cible_dap_motif_longue_distance === true,
-    }),
-    question.singleChoice("Q3.4.a", {
-      label:
-        "Le transport à prescrire comprend-il un trajet vers un centre de référence pour une maladie rare ?",
-      hint: "Oui pour un aller, ou un aller-retour, vers ce centre. Une maladie rare ne suffit pas.",
-      // Un retour seul ne va pas vers le centre : Non, sans question.
-      askedIf: ({ answers, cibles }) =>
+export const PAGE_DU_SOIN = page(
+  "P3/soin",
+  question
+    .longText(
+      "Q3.4",
+      "Quelles précisions sur le soin et le trajet doivent figurer sur la prescription ?",
+    )
+    .hint(
+      "Seulement ce qui manque encore à la prescription. Une précision qui change le soin ou le motif demande une nouvelle simulation.",
+    )
+    .optional()
+    .askedIf(({ cibles }) => pmtOuDap(cibles))
+    .reminderFrom(({ answers }) => recapitulatifDuSoin(answers)),
+  question
+    .longText(
+      "Q3.4.distance",
+      "Justification médicale du lieu de soins éloigné",
+    )
+    .hint("Au-delà de 150 km, la demande d’accord préalable l’exige.")
+    .askedIf(({ cibles }) => cibles.cible_dap_motif_longue_distance === true),
+  question
+    .singleChoice(
+      "Q3.4.a",
+      "Le transport à prescrire comprend-il un trajet vers un centre de référence pour une maladie rare ?",
+    )
+    .hint(
+      "Oui pour un aller, ou un aller-retour, vers ce centre. Une maladie rare ne suffit pas.",
+    )
+    // Un retour seul ne va pas vers le centre : Non, sans question.
+    .askedIf(
+      ({ answers, cibles }) =>
         pmtOuDap(cibles) && sensDuDocument(answers) !== "2_RETOUR",
-    }),
-  ],
-};
+    ),
+);
 
 // L'urgence se précise seulement si les règles l'ont retenue, hors appel au
 // Centre 15 (`cible_urgence_autre`). Elle ne se repose pas, et sa précision ne
 // change rien à l'issue. La référence du Centre 15 ne se demande pas : un
 // appel au Centre 15 entre établissements va toujours à la caisse, sans
 // document à compléter.
-export const PAGE_DE_L_URGENCE: Page = {
-  id: "P3/urgence",
-  questions: [
-    question.longText("Q3.5", {
-      label: "Quelle précision faut-il apporter sur l’urgence déjà attestée ?",
-      hint: "La nature de l’urgence médicale attestée.",
-      askedIf: ({ cibles }) => pmtOuDap(cibles) && autreUrgence(cibles),
-    }),
-  ],
-};
+export const PAGE_DE_L_URGENCE = page(
+  "P3/urgence",
+  question
+    .longText(
+      "Q3.5",
+      "Quelle précision faut-il apporter sur l’urgence déjà attestée ?",
+    )
+    .hint("La nature de l’urgence médicale attestée.")
+    .askedIf(({ cibles }) => pmtOuDap(cibles) && autreUrgence(cibles)),
+);
 
 // ---- implémentation ----
 

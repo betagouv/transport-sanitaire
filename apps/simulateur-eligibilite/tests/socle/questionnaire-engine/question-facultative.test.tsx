@@ -1,33 +1,30 @@
 import { screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
-import type { Page } from "../../../core/socle/questionnaire-engine/question";
+import { page, questionsOf } from "../../../core/socle";
 import { afficher } from "./afficher";
 
 // Une question peut rester sans réponse. Les pages sont écrites ici.
 
-const ADRESSE: Page = {
-  id: "adresse",
-  questions: [
-    { id: "voie", kind: "text", label: "Numéro et voie" },
-    { id: "complement", kind: "text", label: "Complément", optional: true },
-  ],
+type Questions = {
+  voie: string;
+  complement: string;
+  avis: "bien" | "mal";
 };
 
-const AVIS: Page = {
-  id: "avis",
-  questions: [
-    {
-      id: "avis",
-      kind: "single choice",
-      label: "Un avis ?",
-      optional: true,
-      options: [
-        { value: "bien", label: "Bien" },
-        { value: "mal", label: "Mal" },
-      ],
-    },
-  ],
-};
+const OPTIONS = { avis: { bien: "Bien", mal: "Mal" } } as const;
+
+const question = questionsOf<Questions>({ options: OPTIONS });
+
+const ADRESSE = page(
+  "adresse",
+  question.text("voie", "Numéro et voie"),
+  question.text("complement", "Complément").optional(),
+);
+
+const AVIS = page(
+  "avis",
+  question.singleChoice("avis", "Un avis ?").optional(),
+);
 
 const voie = () => screen.getByRole("textbox", { name: "Numéro et voie" });
 const complement = () =>

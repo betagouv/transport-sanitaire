@@ -1,27 +1,26 @@
 import { screen, within } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
-import type { Page } from "../../../core/socle/questionnaire-engine/question";
+import { page, questionsOf } from "../../../core/socle";
 import { afficher } from "./afficher";
 
-// Un choix unique peut se rendre en liste déroulante. Les pages sont écrites
+// Un choix unique peut s'afficher en liste déroulante. Les pages sont écrites
 // ici.
 
-const LIEU: Page = {
-  id: "lieu",
-  questions: [
-    {
-      id: "lieu",
-      kind: "single choice",
-      dropdown: true,
-      label: "Quel est le lieu de départ ?",
-      hint: "Le lieu où le patient est pris en charge.",
-      options: [
-        { value: "domicile", label: "Domicile" },
-        { value: "etablissement", label: "Établissement de soins" },
-      ],
-    },
-  ],
-};
+type Questions = { lieu: "domicile" | "etablissement" };
+
+const OPTIONS = {
+  lieu: { domicile: "Domicile", etablissement: "Établissement de soins" },
+} as const;
+
+const question = questionsOf<Questions>({ options: OPTIONS });
+
+const LIEU = page(
+  "lieu",
+  question
+    .singleChoice("lieu", "Quel est le lieu de départ ?")
+    .dropdown()
+    .hint("Le lieu où le patient est pris en charge."),
+);
 
 const liste = () =>
   screen.getByRole("combobox", { name: /^quel est le lieu de départ/i });

@@ -1,57 +1,48 @@
 import { screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
-import type { Page } from "../../../core/socle/questionnaire-engine/question";
+import { page, questionsOf } from "../../../core/socle";
 import { afficher } from "./afficher";
 
 // Une option peut arrêter le questionnaire : son message s'affiche, et on
 // n'avance plus. Les pages sont écrites ici.
 
+type Questions = {
+  nombre: number;
+  organisation: "aller" | "different";
+  depart: string;
+  equipements: readonly ("fauteuil" | "autre")[];
+};
+
+const OPTIONS = {
+  organisation: { aller: "Aller simple", different: "Aller-retour différent" },
+  equipements: { fauteuil: "Un fauteuil", autre: "Un autre" },
+} as const;
+
+const question = questionsOf<Questions>({ options: OPTIONS });
+
 const MESSAGE =
   "Un retour différent demande une autre simulation, pour l'autre sens.";
 
-const ORGANISATION = {
-  id: "organisation",
-  kind: "single choice",
-  label: "Comment le trajet est-il organisé ?",
-  options: [
-    { value: "aller", label: "Aller simple" },
-    { value: "different", label: "Aller-retour différent", blocks: MESSAGE },
-  ],
-} as const;
+const ORGANISATION = question
+  .singleChoice("organisation", "Comment le trajet est-il organisé ?")
+  .option("different", (option) => option.blocks(MESSAGE));
 
-const TRAJET: Page = {
-  id: "trajet",
-  questions: [
-    { id: "nombre", kind: "number", label: "Combien de transports ?" },
-    ORGANISATION,
-  ],
-};
+const TRAJET = page(
+  "trajet",
+  question.number("nombre", "Combien de transports ?"),
+  ORGANISATION,
+);
 
-const SEULE: Page = { id: "organisation", questions: [ORGANISATION] };
+const SEULE = page("organisation", ORGANISATION);
 
-const SUITE: Page = {
-  id: "depart",
-  questions: [{ id: "depart", kind: "text", label: "Lieu de départ" }],
-};
+const SUITE = page("depart", question.text("depart", "Lieu de départ"));
 
-const EQUIPEMENTS: Page = {
-  id: "equipements",
-  questions: [
-    {
-      id: "equipements",
-      kind: "multiple choice",
-      label: "Quels équipements ?",
-      options: [
-        { value: "fauteuil", label: "Un fauteuil" },
-        {
-          value: "autre",
-          label: "Un autre",
-          blocks: "Précisez avec la caisse.",
-        },
-      ],
-    },
-  ],
-};
+const EQUIPEMENTS = page(
+  "equipements",
+  question
+    .multipleChoice("equipements", "Quels équipements ?")
+    .option("autre", (option) => option.blocks("Précisez avec la caisse.")),
+);
 
 const radio = (name: string) => screen.getByRole("radio", { name });
 const valider = () =>

@@ -59,7 +59,7 @@ describe.each(Object.entries(MODELES))("le modèle %s", (_nom, model) => {
 
     it("ne fait dépendre une réponse que d'une question qui existe", () => {
       const orphelines = questions.flatMap((question) =>
-        (question.dependsOn ?? [])
+        question.dependencies
           .filter((id) => !identifiants.includes(id))
           .map((id) => `${question.id} → ${id}`),
       );

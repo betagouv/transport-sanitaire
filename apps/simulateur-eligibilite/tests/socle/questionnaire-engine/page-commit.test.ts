@@ -1,31 +1,33 @@
 import { describe, expect, it } from "vitest";
-import type {
-  Page,
-  Question,
-} from "../../../core/socle/questionnaire-engine/question";
+import { page, questionsOf } from "../../../core/socle";
 import { Questionnaire } from "../../../core/socle/questionnaire-engine/questionnaire";
 
 // Une réponse qui change n'efface que les réponses qui en dépendent. Les pages
 // sont écrites ici : le questionnaire factice n'a qu'une seule dépendance.
 
-const texte = (id: string, dependsOn?: string[]): Question => ({
-  id,
-  kind: "text",
-  label: id,
-  dependsOn,
-});
+type Questions = {
+  source: string;
+  dependante: string;
+  "dependante-de-dependante": string;
+  independante: string;
+};
 
-const page = (question: Question): Page => ({
-  id: question.id,
-  questions: [question],
-});
+type Id = keyof Questions;
 
-const SOURCE = page(texte("source"));
+const question = questionsOf<Questions>({ options: {} });
+
+const texte = (id: Id, ...dependsOn: Id[]) =>
+  question.text(id, id).dependsOn(...dependsOn);
+
+const SOURCE = page("source", texte("source"));
 const PAGES = [
   SOURCE,
-  page(texte("dependante", ["source"])),
-  page(texte("dependante-de-dependante", ["dependante"])),
-  page(texte("independante")),
+  page("dependante", texte("dependante", "source")),
+  page(
+    "dependante-de-dependante",
+    texte("dependante-de-dependante", "dependante"),
+  ),
+  page("independante", texte("independante")),
 ];
 const QUESTIONNAIRE = new Questionnaire(PAGES);
 

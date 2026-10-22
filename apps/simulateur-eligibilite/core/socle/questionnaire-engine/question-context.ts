@@ -25,6 +25,15 @@ export type QuestionContext<
   readonly faits: Faits;
 };
 
+/**
+ * Ce qu'une question voit des réponses, sans ses faits : elle les en déduit
+ * par le calcul de son modèle.
+ */
+export type SeenAnswers<
+  Questions extends AnyQuestions = AnyQuestions,
+  Cibles = AnyCibles | undefined,
+> = Omit<QuestionContext<Questions, Cibles>, "faits">;
+
 /** Ce qui calcule les faits que lisent les rappels des questions d'un modèle. */
 export type FaitsOf<
   Questions extends AnyQuestions = AnyQuestions,
@@ -39,7 +48,7 @@ export type FaitsOf<
  * déclaration lui donne. Absent, les faits ne se lisent pas.
  */
 export function contextOf<Questions extends AnyQuestions, Cibles, Faits>(
-  seen: Omit<QuestionContext<Questions, Cibles>, "faits">,
+  seen: SeenAnswers<Questions, Cibles>,
   faitsOf: FaitsOf<Questions, Faits> | undefined,
 ): QuestionContext<Questions, Cibles, Faits> {
   let read: { readonly faits: Faits } | undefined;

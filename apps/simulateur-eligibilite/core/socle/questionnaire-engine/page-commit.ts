@@ -42,7 +42,7 @@ function dependentsOf(
     const next = questions
       .filter((question) => !stale.has(question.id))
       .filter((question) =>
-        question.dependsOn?.some((id) => frontier.includes(id)),
+        question.dependencies.some((id) => frontier.includes(id)),
       )
       .map((question) => question.id);
     for (const id of next) stale.add(id);

@@ -1,60 +1,51 @@
 import { screen, waitFor } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
-import type { Page } from "../../../core/socle/questionnaire-engine/question";
+import { page, questionsOf } from "../../../core/socle";
 import { afficher } from "./afficher";
 
 // Un rappel redit un fait déjà connu, en clair, avant la question qu'il aide à
 // comprendre. Ce n'est pas une question. Les pages sont écrites ici.
 
-const SEANCE: Page = {
-  id: "seance",
-  questions: [
-    {
-      id: "seance",
-      kind: "single choice",
-      label: "Quelle séance motive ce trajet ?",
-      options: [
-        { value: "dialyse", label: "Une dialyse" },
-        { value: "aucune", label: "Aucune" },
-      ],
-    },
-  ],
+type Questions = {
+  seance: "dialyse" | "aucune";
+  lieu: string;
+  motif: string;
+  precision: string;
 };
+
+const OPTIONS = {
+  seance: { dialyse: "Une dialyse", aucune: "Aucune" },
+} as const;
+
+const question = questionsOf<Questions>({ options: OPTIONS });
+
+const SEANCE = page(
+  "seance",
+  question.singleChoice("seance", "Quelle séance motive ce trajet ?"),
+);
 
 const RAPPEL = "Séance indiquée : une dialyse.";
 
-const CONDITION: Page = {
-  id: "condition",
-  questions: [
-    {
-      id: "lieu",
-      kind: "text",
-      label: "Où a lieu la séance ?",
-      askedIf: ({ answers }) => answers.question("seance").is("dialyse"),
-      reminderFrom: ({ answers }) =>
-        answers.question("seance").is("dialyse") ? RAPPEL : undefined,
-    },
-    {
-      id: "motif",
-      kind: "text",
-      label: "Quel est le motif du trajet ?",
-      askedIf: ({ answers }) => answers.question("seance").is("aucune"),
-    },
-  ],
-};
+const CONDITION = page(
+  "condition",
+  question
+    .text("lieu", "Où a lieu la séance ?")
+    .askedIf(({ answers }) => answers.question("seance").is("dialyse"))
+    .reminderFrom(({ answers }) =>
+      answers.question("seance").is("dialyse") ? RAPPEL : undefined,
+    ),
+  question
+    .text("motif", "Quel est le motif du trajet ?")
+    .askedIf(({ answers }) => answers.question("seance").is("aucune")),
+);
 
-const SANS_SUITE: Page = {
-  id: "precision",
-  questions: [
-    {
-      id: "precision",
-      kind: "text",
-      label: "Une précision sur la séance ?",
-      askedIf: () => false,
-      reminder: "Ce rappel ne s'affiche pas seul.",
-    },
-  ],
-};
+const SANS_SUITE = page(
+  "precision",
+  question
+    .text("precision", "Une précision sur la séance ?")
+    .askedIf(() => false)
+    .reminder("Ce rappel ne s'affiche pas seul."),
+);
 
 const radio = (name: string) => screen.getByRole("radio", { name });
 const champ = (name: string) => screen.findByRole("textbox", { name });

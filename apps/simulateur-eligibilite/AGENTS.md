@@ -86,13 +86,15 @@ mécanique, sans React ni phrase de l'écran :
 
 | Fichier | Ce qu'il porte |
 |---|---|
-| `question.ts` | ce qu'est une question, une page, une partie, une réponse |
+| `question.ts` | ce qu'est une question pour le moteur (`Question` : son id, sa sorte, ses dépendances, et `askedIn`, ce qu'elle donne vu le contexte), une page, une partie, une réponse |
 | `question-factory.ts` | les constructeurs nommés des questions (`questionsOf`) : la sorte vient du constructeur, les options du catalogue du modèle, d'après l'id |
+| `declared-question.ts`, `declared-choices.ts`, `declared-inputs.ts` | une classe par sorte de question déclarée. Chaque réglage (`askedIf`, `hint`, `min`…) donne une copie, et `askedIn` tire la question posée de la déclaration |
+| `declared-option.ts`, `declared-page.ts` | les réglages d'une option, par une lambda (`.option(valeur, (option) => …)`), et `page(id, ...questions)`, dont la condition s'ajoute à chacune de ses questions |
 | `question-context.ts` | le seul objet que reçoivent les conditions et les libellés du moment : `{ answers, validated, cibles, faits }`. Les faits n'y sont calculés que si on les lit |
-| `option.ts` | ce qu'est une option d'un choix : son libellé, ce qui la propose, son aide, ce qu'elle bloque. `optionsFrom` tire les options d'une table de libellés, dans l'ordre de ses clés |
+| `option.ts` | ce qu'est une option offerte : sa valeur, son libellé, sa description, son aide, ce qu'elle bloque |
 | `address.ts` | ce qu'est une adresse, la seule réponse en objet : ses champs, ceux qui se demandent en France ou à l'étranger, et ce qui ne va pas dans chacun |
 | `questionnaire.ts` | `Questionnaire`, ses pages dans l'ordre, et `Reading`, des réponses lues à travers lui : `questionnaire.readWith(answers, cibles)`. Une lecture se calcule une fois et ne change pas : pages et questions qui se posent (`askedPages`, `questionsOn`), questions validées (`validated`), complétude (`isComplete`), page où l'on rouvre (`openPage`), page suivante (`pageAfter`), réponses d'une page validée (`commit`). Et `QuestionnaireState`, ce que le parcours garde d'un écran à l'autre |
-| `asked-question.ts` | `AskedQuestion`, la question telle qu'elle se pose, et `askedIn`, qui la tire de sa déclaration vu le contexte : libellé, rappel, bornes, options, mode d'adresse et incohérences du moment. Elle ne porte aucune fonction : elle passe en JSON, et `askedQuestion` la relit |
+| `asked-question.ts` | `AskedQuestion`, la question telle qu'elle se pose : libellé, rappel, bornes, options, mode d'adresse et incohérences du moment. Elle ne porte aucune fonction : elle passe en JSON, et `askedQuestion` la relit |
 | `asked-common.ts`, `asked-choices.ts`, `asked-inputs.ts`, `asked-address.ts` | une classe par sorte de question posée. Chacune dit ce qu'elle garde d'une réponse (`kept`), si la réponse suffit (`isAnsweredBy`) et ce qui n'y va pas (`problemsWith`) |
 | `answer-problem.ts` | ce qui ne va pas dans une saisie, dit par sa nature (`{ kind: "missing" }`…). Les phrases de l'éditeur y restent telles quelles (`{ kind: "stated", text }`) |
 | `reading-in-order.ts` | la lecture dans l'ordre, que `Reading` fait une fois : chaque question posée voit les validées d'avant elle, et les questions validées gardent ce qui s'y proposait |
@@ -110,21 +112,24 @@ mécanique, sans React ni phrase de l'écran :
 
 Neuf règles à tenir en ajoutant une question :
 
-- **Une question se déclare par son constructeur.**
-  `question.singleChoice("Q1.1", { label })` : la sorte vient du constructeur,
-  les options du catalogue `OPTIONS` du modèle, d'après l'id. La déclaration
-  n'ajoute à une option que ce qu'elle porte de plus (`offeredIf`, `blocks`…), et
-  `order` en garde une partie. Le modèle lie ses constructeurs une fois, dans son
+- **Une question se déclare par son constructeur, un réglage par ligne.**
+  `question.singleChoice("Q1.1", "Concernant son déplacement, le patient :")` :
+  la sorte vient du constructeur, les options du catalogue `OPTIONS` du modèle,
+  d'après l'id. Une option ne se règle que pour ce qu'elle porte de plus, dans
+  sa lambda : `.option("6_SEANCE", (option) => option.offeredIf(…))`. `order`
+  en garde une partie, dans cet ordre, et `exclusive` met la sienne à part.
+  Chaque réglage donne une copie : une déclaration ne change jamais. Le modèle lie ses constructeurs une fois, dans son
   `question.ts` : `questionsOf<Questions, Faits>({ options, faits })`. Ce qui se
   pose après le verrou lit les cibles : un second jeu, typé avec elles
   (`questionDuComplement` dans le modèle de démonstration).
 - **Une condition d'affichage s'écrit dans `askedIf`.** Jamais dans un composant.
+  Celle d'une page (`page(…).askedIf(…)`) s'ajoute à chacune de ses questions.
 - **Une condition lit ce qui la précède.** Elle reçoit un seul objet : les
   réponses (`answers`), les questions validées avant la sienne (`validated`),
   les cibles figées et les faits de ces questions validées. Sur la page
   ouverte, celles qui la précèdent comptent telles qu'elles sont à l'écran.
 - **Une garde lit le fait quand il en existe un.**
-  `askedIf: ({ faits }) => faits.fait_permission.value === true`. Elle ne
+  `.askedIf(({ faits }) => faits.fait_permission.value === true)`. Elle ne
   recompose pas, réponse par réponse, ce que le fait établit déjà. Sans fait qui
   la dise, elle appelle un prédicat nommé, rangé dans le fichier de son concept
   (`mineurDeVingtAns` dans `p2/permission.ts`).
@@ -137,11 +142,12 @@ Neuf règles à tenir en ajoutant une question :
   changement de celle dont elle dépend. Une adresse dont le mode change
   (`abroadIf`) survit de même : elle se relit dans le nouveau mode, sans son
   pays si elle revient en France.
-- **Une incohérence se déclare dans `inconsistenciesFrom`, sur la plus tardive des
-  deux questions.** Le moteur lui cache les réponses des pages suivantes : une
+- **Une incohérence se déclare par `inconsistentIf(condition, message)`, sur la
+  plus tardive des deux questions.** Le moteur lui cache les réponses des pages suivantes : une
   règle écrite sur la première ne se déclenche jamais. Elle lit sa propre page, brouillon
-  compris, et les réponses d'avant le verrou. Elle donne un message par
-  incohérence, qui dit quelle question corriger. Une question incohérente n'est
+  compris, et les réponses d'avant le verrou. Son message dit quelle
+  question corriger ; il peut citer les réponses, s'il est une fonction du
+  contexte. Une question incohérente n'est
   pas validée. On corrige par « Précédent » : aucun bouton, aucun saut. Une
   erreur de format s'affiche seule, avant les incohérences. Celle d'une adresse
   s'affiche sous le groupe, et une erreur de champ passe devant.
@@ -151,9 +157,10 @@ Neuf règles à tenir en ajoutant une question :
   second `QuestionnaireForm`, qui reçoit `lockedAnswers` et ne repose rien
   (`front/socle/simulateur/Simulateur.tsx`).
 
-*Gardé par* `tests/socle/simulateur/`,
-`tests/socle/questionnaire-engine/constructeurs-de-questions.test.ts`, et
-`tests/architecture.test.ts`, qui refuse une question écrite en objet.
+*Gardé par* `tests/socle/simulateur/` et
+`tests/socle/questionnaire-engine/constructeurs-de-questions.test.ts`. Le
+typage refuse une question écrite en objet : le moteur ne reçoit que des
+questions déclarées, qui savent se poser.
 
 ## La décision
 

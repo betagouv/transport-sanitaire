@@ -1,73 +1,66 @@
 import { screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
-import type { Page } from "../../../core/socle/questionnaire-engine/question";
+import { page, questionsOf } from "../../../core/socle";
 import { afficher } from "./afficher";
 
 // Le libellé d'une option peut dépendre des réponses. L'option exclusive aussi,
 // et elle peut ne pas se proposer. Les pages sont écrites ici.
 
-const HOSPITALISATION: Page = {
-  id: "hospitalisation",
-  questions: [
-    {
-      id: "hospitalise",
-      kind: "single choice",
-      label: "Le patient est-il hospitalisé ?",
-      options: [
-        { value: "oui", label: "Oui" },
-        { value: "non", label: "Non" },
-      ],
-    },
-  ],
+type Questions = {
+  hospitalise: "oui" | "non";
+  situations: readonly ("etranger" | "autre" | "aucune")[];
+  exonerations: readonly ("ald" | "aucun")[];
 };
 
-const SITUATIONS: Page = {
-  id: "situations",
-  questions: [
-    {
-      id: "situations",
-      kind: "multiple choice",
-      label: "Quelles situations concernent ce trajet ?",
-      options: [
-        {
-          value: "etranger",
-          label: "Un lieu à l'étranger",
-          labelFrom: ({ answers }) =>
-            answers.question("hospitalise").is("oui")
-              ? "Un établissement à l'étranger"
-              : "Un lieu à l'étranger",
-        },
-        { value: "autre", label: "Une autre situation" },
-      ],
-      exclusiveOption: {
-        value: "aucune",
-        label: "Aucune de ces situations",
-        labelFrom: ({ answers }) =>
-          answers.question("hospitalise").is("oui")
-            ? "Aucune autre situation parmi celles proposées"
-            : "Aucune de ces situations",
-      },
-    },
-  ],
-};
+const OPTIONS = {
+  hospitalise: { oui: "Oui", non: "Non" },
+  situations: {
+    etranger: "Un lieu à l'étranger",
+    autre: "Une autre situation",
+    aucune: "Aucune de ces situations",
+  },
+  exonerations: { ald: "Une affection de longue durée", aucun: "Aucun" },
+} as const;
 
-const EXONERATIONS: Page = {
-  id: "exonerations",
-  questions: [
-    {
-      id: "exonerations",
-      kind: "multiple choice",
-      label: "Quels cas d'exonération ?",
-      options: [{ value: "ald", label: "Une affection de longue durée" }],
-      exclusiveOption: {
-        value: "aucun",
-        label: "Aucun",
-        offeredIf: ({ answers }) =>
-          answers.question("hospitalise").isNot("oui"),
-      },
-    },
-  ],
-};
+const question = questionsOf<Questions>({ options: OPTIONS });
+
+const HOSPITALISATION = page(
+  "hospitalisation",
+  question.singleChoice("hospitalise", "Le patient est-il hospitalisé ?"),
+);
+
+const SITUATIONS = page(
+  "situations",
+  question
+    .multipleChoice("situations", "Quelles situations concernent ce trajet ?")
+    .exclusive("aucune")
+    .option("etranger", (option) =>
+      option.labelFrom(({ answers }) =>
+        answers.question("hospitalise").is("oui")
+          ? "Un établissement à l'étranger"
+          : "Un lieu à l'étranger",
+      ),
+    )
+    .option("aucune", (option) =>
+      option.labelFrom(({ answers }) =>
+        answers.question("hospitalise").is("oui")
+          ? "Aucune autre situation parmi celles proposées"
+          : "Aucune de ces situations",
+      ),
+    ),
+);
+
+const EXONERATIONS = page(
+  "exonerations",
+  question
+    .multipleChoice("exonerations", "Quels cas d'exonération ?")
+    .exclusive("aucun")
+    .option("aucun", (option) =>
+      option.offeredIf(({ answers }) =>
+        answers.question("hospitalise").isNot("oui"),
+      ),
+    ),
+);
 
 const radio = (name: string) => screen.getByRole("radio", { name });
 const caseACocher = (name: string) => screen.getByRole("checkbox", { name });

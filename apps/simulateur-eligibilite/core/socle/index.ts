@@ -10,6 +10,7 @@ export { faitsOf } from "./decision-engine/fait-builder.ts";
 export type { CoreModel } from "./model.ts";
 export type { Address } from "./questionnaire-engine/address.ts";
 export type { AskedQuestion } from "./questionnaire-engine/asked-question.ts";
+export { page } from "./questionnaire-engine/declared-page.ts";
 export type {
   GivenAnswer,
   GivenAnswers,

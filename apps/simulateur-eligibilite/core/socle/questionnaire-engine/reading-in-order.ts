@@ -6,7 +6,7 @@
 // et qui sont validées : ses conditions peuvent en dépendre, pas de la suite.
 // Ses incohérences ne voient pas non plus les réponses des pages suivantes.
 
-import { type AskedQuestion, askedIn } from "./asked-question.ts";
+import type { AskedQuestion } from "./asked-question.ts";
 import { GivenAnswers } from "./given-answers.ts";
 import type {
   Answer,
@@ -17,7 +17,7 @@ import type {
   Unanswered,
   Validated,
 } from "./question.ts";
-import { contextOf, type QuestionContext } from "./question-context.ts";
+import type { SeenAnswers } from "./question-context.ts";
 import { ValidatedAnswers } from "./validated-answers.ts";
 
 /** Une page lue : ses questions qui se posent, telles qu'elles se posent. */
@@ -50,10 +50,6 @@ export function readInOrder(
 }
 
 // ---- implémentation ----
-
-// Ce qu'un rappel lit : les réponses, les cibles figées s'il y en a, les
-// questions validées avant celle qu'il concerne, et leurs faits.
-type Seen = QuestionContext;
 
 // Où en est la lecture du questionnaire : les questions validées jusqu'ici, et
 // si aucune n'attend encore sa réponse.
@@ -88,12 +84,12 @@ function askQuestion(
   validated: Validated,
 ): AskedQuestion | undefined {
   const read = new ValidatedAnswers(validated);
-  const seenWith = (given: Answers): Seen =>
-    contextOf(
-      { answers: new GivenAnswers(given), cibles, validated: read },
-      declared.faits,
-    );
-  return askedIn(declared, seenWith(answers), seenWith(earlier));
+  const seenWith = (given: Answers): SeenAnswers => ({
+    answers: new GivenAnswers(given),
+    cibles,
+    validated: read,
+  });
+  return declared.askedIn(seenWith(answers), seenWith(earlier));
 }
 
 // Une question qui a sa réponse est validée, si aucune n'attend avant elle. La

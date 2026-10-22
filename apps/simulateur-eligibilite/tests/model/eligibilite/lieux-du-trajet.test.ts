@@ -8,10 +8,10 @@ import type { Questions } from "../../../core/models/eligibilite/declarations/qu
 import { projectionCerfa } from "../../../core/models/eligibilite/p3/lieux-du-trajet";
 import { SEEDS } from "../../../core/models/eligibilite/seeds-catalogue";
 import { preconisationOf } from "../../../core/socle/model";
+import type { AskedQuestion } from "../../../core/socle/questionnaire-engine/asked-question";
 import type {
   Answers,
   AnyCibles,
-  Question,
 } from "../../../core/socle/questionnaire-engine/question";
 import { Questionnaire } from "../../../core/socle/questionnaire-engine/questionnaire";
 
@@ -43,7 +43,7 @@ const posee = (pageId: string, id: keyof Questions, reponses: Reponses) => {
   if (!trouvee) throw new Error(`${id} ne se pose pas`);
   return trouvee;
 };
-const natures = (question: Question) =>
+const natures = (question: AskedQuestion) =>
   question.kind === "single choice"
     ? question.options.map(({ value }) => value)
     : [];

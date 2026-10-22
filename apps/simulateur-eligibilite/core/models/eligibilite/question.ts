@@ -1,6 +1,7 @@
 // Les constructeurs des questions du modèle : `question.singleChoice("Q1.1",
-// { label })`. Les options viennent du catalogue de l'éditeur, et les gardes
-// lisent les faits des questions validées avant elles.
+// "Concernant son déplacement, le patient :")`, puis un réglage par ligne. Les
+// options viennent du catalogue de l'éditeur, et les gardes lisent les faits
+// des questions validées avant elles.
 //
 // Ces faits sont ceux des réponses, sans la complétude de P1 et de P2 : la
 // constater pose les questions, donc lit leurs gardes.

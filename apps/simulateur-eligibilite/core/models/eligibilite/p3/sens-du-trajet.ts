@@ -49,26 +49,32 @@ export function sensCompatible(sens: Sens, reponses: Reponses): boolean {
 }
 
 /** Un aller-retour compte deux transports : un seul ne le couvre pas. */
-export function nombreDuSens({ answers }: ContextDuComplement): string[] {
-  return answers.question("Q3.1.2").is("3_ALLER_RETOUR_EQUIVALENT") &&
+/** Le message d'un aller-retour qui ne compte qu'un transport. */
+export const ALLER_RETOUR_D_UN_TRANSPORT =
+  "Un aller-retour compte deux transports. Indiquez-en au moins deux, ou choisissez « Aller simple » ou « Retour simple ».";
+
+/** Q3.1.2 dit-elle un aller-retour, quand Q3.1.1 ne compte qu'un transport ? */
+export function allerRetourDUnSeulTransport({
+  answers,
+}: ContextDuComplement): boolean {
+  return (
+    answers.question("Q3.1.2").is("3_ALLER_RETOUR_EQUIVALENT") &&
     answers.question("Q3.1.1").is(1)
-    ? [
-        "Un aller-retour compte deux transports. Indiquez-en au moins deux, ou choisissez « Aller simple » ou « Retour simple ».",
-      ]
-    : [];
+  );
 }
 
 /** Q3.1.3 dépasse-t-elle ce que la fréquence de Q2.8 permet ? */
 export function trajetsAuDelaDeLaFrequence({
   answers,
-}: ContextDuComplement): string[] {
+}: ContextDuComplement): boolean {
   const maximum = trajetsMensuelsMaximum(answers);
   const nombre = answers.question("Q3.1.3").value;
-  return maximum !== undefined && nombre !== undefined && nombre > maximum
-    ? [
-        `Avec une permission toutes les ${answers.question("Q2.8.6.a").value} semaine(s), un mois compte au plus ${maximum} trajets.`,
-      ]
-    : [];
+  return maximum !== undefined && nombre !== undefined && nombre > maximum;
+}
+
+/** Le message de Q3.1.3 au-delà de la fréquence : il cite le maximum. */
+export function frequenceDepassee({ answers }: ContextDuComplement): string {
+  return `Avec une permission toutes les ${answers.question("Q2.8.6.a").value} semaine(s), un mois compte au plus ${trajetsMensuelsMaximum(answers)} trajets.`;
 }
 
 /** Ce que Q2.8 a fixé des permissions, rappelé au-dessus de Q3.1.3. */

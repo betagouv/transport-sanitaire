@@ -5,6 +5,7 @@
 import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it } from "vitest";
+import { page, questionsOf } from "../../../core/socle";
 import { App } from "../../../front/socle/app/App";
 import type { Model } from "../../../front/socle/model";
 import { rangerRattachement } from "../../../front/socle/rattachement/session";
@@ -21,6 +22,16 @@ const FROMAGE = { name: /^quel fromage souhaitez-vous/i };
 const CARTE_DES_BOISSONS = "Carte des boissons";
 const CARTE_DES_DESSERTS = "Carte des desserts";
 const CARTE_DES_FROMAGES = "Carte des fromages";
+
+// Les deux autres modèles ne posent qu'une question, celle de leur mets.
+type Questions = { dessert: "maison"; fromage: "maison" };
+
+const OPTIONS = {
+  dessert: { maison: "Celui de la maison" },
+  fromage: { maison: "Celui de la maison" },
+} as const;
+
+const question = questionsOf<Questions>({ options: OPTIONS });
 
 const desserts = modeleQuiDemande("dessert");
 const fromages = modeleQuiDemande("fromage");
@@ -163,7 +174,7 @@ describe("le choix du modèle", () => {
 // ---- implémentation ----
 
 // Un autre modèle, reconnaissable à sa première question.
-function modeleQuiDemande(mets: string): Model {
+function modeleQuiDemande(mets: keyof Questions): Model {
   return {
     ...modeleDeTest,
     core: {
@@ -173,17 +184,10 @@ function modeleQuiDemande(mets: string): Model {
           id: mets,
           title: mets,
           pages: [
-            {
-              id: mets,
-              questions: [
-                {
-                  id: mets,
-                  kind: "single choice",
-                  label: `Quel ${mets} souhaitez-vous ?`,
-                  options: [{ value: "maison", label: "Celui de la maison" }],
-                },
-              ],
-            },
+            page(
+              mets,
+              question.singleChoice(mets, `Quel ${mets} souhaitez-vous ?`),
+            ),
           ],
         },
       ],

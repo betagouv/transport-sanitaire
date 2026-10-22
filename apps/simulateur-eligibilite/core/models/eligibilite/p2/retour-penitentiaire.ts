@@ -20,14 +20,12 @@
 import {
   Fait,
   type GivenAnswers,
-  type QuestionnairePart,
   type ValidatedAnswers,
 } from "../../../socle/index.ts";
 import type { Faits } from "../declarations/faits.ts";
 import type { Questions } from "../declarations/questions.ts";
 
 type Valides = ValidatedAnswers<Questions>;
-type Page = QuestionnairePart<Questions, undefined>["pages"][number];
 
 /** Le message qui refuse un transfert entre établissements vers la prison. */
 export const TRANSFERT_VERS_LA_PRISON =
@@ -49,17 +47,16 @@ export function horsCircuit(validated: Valides): boolean {
   return validated.question("Q2.2.1.indication").is("2_NON");
 }
 
-/** La page, dont rien ne se pose plus hors du circuit de prescription. */
-export function dansLeCircuit(page: Page): Page {
-  return {
-    ...page,
-    questions: page.questions.map((question) => ({
-      ...question,
-      askedIf: (context) =>
-        !horsCircuit(context.validated) &&
-        (question.askedIf?.(context) ?? true),
-    })),
-  };
+/**
+ * Le trajet reste-t-il dans le circuit de prescription ? Hors du circuit, plus
+ * rien ne se pose : c'est la condition des pages qui suivent les contextes.
+ */
+export function dansLeCircuit({
+  validated,
+}: {
+  readonly validated: Valides;
+}): boolean {
+  return !horsCircuit(validated);
 }
 
 /** Le retour pénitentiaire est-il une sortie définitive d'hospitalisation ? */

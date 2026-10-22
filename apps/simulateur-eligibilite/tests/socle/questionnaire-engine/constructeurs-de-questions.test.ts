@@ -1,19 +1,17 @@
-// Les constructeurs nommés des questions : la sorte et les options viennent du
-// constructeur et du catalogue, et les conditions lisent un seul objet. Les
-// faits qu'elles y lisent sont ceux des questions validées avant elles.
+// Les constructeurs des questions : la sorte et les options viennent du
+// constructeur et du catalogue, puis chaque réglage s'écrit sur sa ligne. Les
+// conditions lisent un seul objet, et les faits qu'elles y lisent sont ceux des
+// questions validées avant elles.
 
 import { describe, expect, it } from "vitest";
-import { questionsOf } from "../../../core/socle";
-import type {
-  Page,
-  Question,
-} from "../../../core/socle/questionnaire-engine/question";
+import { page, questionsOf } from "../../../core/socle";
 import { Questionnaire } from "../../../core/socle/questionnaire-engine/questionnaire";
 
 type Questions = {
   boisson: "the" | "cafe" | "eau";
   accompagnements: readonly ("lait" | "sucre" | "citron" | "rien")[];
   quantite: number;
+  remarque: string;
 };
 
 type Faits = { readonly chaude: boolean };
@@ -38,45 +36,43 @@ const question = questionsOf<Questions, Faits>({
   },
 });
 
-const BOISSON: Page<Questions, undefined> = {
-  id: "boisson",
-  questions: [question.singleChoice("boisson", { label: "Quelle boisson ?" })],
-};
+const BOISSON = page(
+  "boisson",
+  question.singleChoice("boisson", "Quelle boisson ?"),
+);
 
-const ACCOMPAGNEMENTS: Page<Questions, undefined> = {
-  id: "accompagnements",
-  questions: [
-    question.multipleChoice("accompagnements", {
-      label: "Avec quoi ?",
-      labelFrom: ({ answers }) =>
-        answers.question("boisson").is("the")
-          ? "Avec votre thé ?"
-          : "Avec votre café ?",
-      askedIf: ({ faits }) => faits.chaude,
-      order: ["sucre", "lait"],
-      exclusiveOption: "rien",
-      options: {
-        lait: {
-          offeredIf: ({ validated }) => validated.question("boisson").is("the"),
-        },
-      },
-    }),
-  ],
-};
+const ACCOMPAGNEMENTS = page(
+  "accompagnements",
+  question
+    .multipleChoice("accompagnements", "Avec quoi ?")
+    .labelFrom(({ answers }) =>
+      answers.question("boisson").is("the")
+        ? "Avec votre thé ?"
+        : "Avec votre café ?",
+    )
+    .askedIf(({ faits }) => faits.chaude)
+    .order("sucre", "lait")
+    .exclusive("rien")
+    .option("lait", (option) =>
+      option.offeredIf(({ validated }) =>
+        validated.question("boisson").is("the"),
+      ),
+    ),
+);
 
-const QUANTITE: Page<Questions, undefined> = {
-  id: "quantite",
-  questions: [question.number("quantite", { label: "Combien ?", min: 1 })],
-};
+const QUANTITE = page(
+  "quantite",
+  question.number("quantite", "Combien ?").min(1),
+);
 
 const PAGES = [BOISSON, ACCOMPAGNEMENTS, QUANTITE];
 
 const poseesSur = (
-  page: Page<Questions, undefined>,
+  surLaPage: (typeof PAGES)[number],
   boisson: Questions["boisson"],
-) => new Questionnaire(PAGES).readWith({ boisson }).questionsOn(page);
+) => new Questionnaire(PAGES).readWith({ boisson }).questionsOn(surLaPage);
 
-describe("un constructeur nommé", () => {
+describe("un constructeur", () => {
   it("donne la sorte et les options du catalogue, dans son ordre", () => {
     const [boisson] = poseesSur(BOISSON, "the");
     expect(boisson).toMatchObject({ id: "boisson", kind: "single choice" });
@@ -111,17 +107,84 @@ describe("un constructeur nommé", () => {
     ]);
   });
 
-  it("donne aussi la sorte d'une saisie, avec ce qu'elle déclare", () => {
+  it("donne aussi la sorte d'une saisie, avec ses réglages", () => {
     const [quantite] = poseesSur(QUANTITE, "eau");
     expect(quantite).toMatchObject({ id: "quantite", kind: "number", min: 1 });
   });
-  it("refuse, au typage, un id d'une autre sorte ou une option inconnue", () => {
+
+  it("donne une copie à chaque réglage, sans toucher à la question d'avant", () => {
+    const libre = question.number("quantite", "Combien ?");
+    const bornee = libre.min(2);
+    const lire = (declaree: typeof libre) => {
+      const seule = page("quantite", declaree);
+      return new Questionnaire([seule]).readWith({}).questionsOn(seule)[0];
+    };
+    expect(lire(libre)).toMatchObject({ min: undefined });
+    expect(lire(bornee)).toMatchObject({ min: 2 });
+  });
+
+  it("refuse, au typage, un id d'une autre sorte, une option inconnue ou un réglage d'une autre sorte", () => {
     // @ts-expect-error « quantite » n'est pas une question à choix.
-    question.singleChoice("quantite", { label: "Combien ?" });
+    question.singleChoice("quantite", "Combien ?");
     // @ts-expect-error « citron » n'est pas une boisson.
-    question.singleChoice("boisson", { label: "Quoi ?", order: ["citron"] });
+    question.singleChoice("boisson", "Quoi ?").order("citron");
+    // @ts-expect-error « citron » n'est pas une boisson.
+    question.singleChoice("boisson", "Quoi ?").option("citron", (o) => o);
     // @ts-expect-error « boisson » n'est pas un nombre.
-    question.number("boisson", { label: "Combien ?" });
+    question.number("boisson", "Combien ?");
+    expect(() =>
+      // @ts-expect-error un texte n'a pas de borne.
+      question.text("remarque", "Une remarque ?").min(1),
+    ).toThrow(TypeError);
+  });
+});
+
+describe("une condition de page", () => {
+  it("s'ajoute à celles de chacune de ses questions", () => {
+    const sansEau = page(
+      "quantite",
+      question.number("quantite", "Combien ?"),
+      question
+        .text("remarque", "Une remarque ?")
+        .askedIf(({ answers }) => answers.question("boisson").is("the")),
+    ).askedIf(({ answers }) => answers.question("boisson").isNot("eau"));
+    const posees = (boisson: Questions["boisson"]) =>
+      new Questionnaire([BOISSON, sansEau])
+        .readWith({ boisson })
+        .questionsOn(sansEau)
+        .map(({ id }) => id);
+
+    expect(posees("the")).toEqual(["quantite", "remarque"]);
+    expect(posees("cafe")).toEqual(["quantite"]);
+    expect(posees("eau")).toEqual([]);
+  });
+});
+
+describe("une incohérence", () => {
+  it("peut citer les réponses dans son message", () => {
+    const trop = page(
+      "quantite",
+      question.number("quantite", "Combien ?").inconsistentIf(
+        ({ answers }) => (answers.question("quantite").value ?? 0) > 3,
+        ({ answers }) =>
+          `${answers.question("quantite").value} tasses, c'est trop.`,
+      ),
+    );
+    const [quantite] = new Questionnaire([trop])
+      .readWith({ quantite: 5 })
+      .questionsOn(trop);
+    expect(quantite?.inconsistencies).toEqual(["5 tasses, c'est trop."]);
+  });
+});
+
+describe("les options du catalogue", () => {
+  it("refusent une valeur qui a l'air d'un entier : elle passerait avant les autres", () => {
+    const entiers = questionsOf<{ choix: "a" | "1" }>({
+      options: { choix: { a: "A", "1": "Un" } },
+    });
+    expect(() => entiers.singleChoice("choix", "Lequel ?")).toThrow(
+      "« 1 » a l'air d'un entier",
+    );
   });
 });
 
@@ -144,16 +207,17 @@ describe("une garde qui lit les faits", () => {
       options: OPTIONS,
       faits: (): Faits => ({
         chaude:
-          new Questionnaire([page]).readWith({}).questionsOn(page).length > 0,
+          new Questionnaire([seule]).readWith({}).questionsOn(seule).length > 0,
       }),
     });
-    const garde: Question<Questions, undefined> = boucle.number("quantite", {
-      label: "Combien ?",
-      askedIf: ({ faits }) => faits.chaude,
-    });
-    const page = { id: "quantite", questions: [garde] };
+    const seule = page(
+      "quantite",
+      boucle
+        .number("quantite", "Combien ?")
+        .askedIf(({ faits }) => faits.chaude),
+    );
     expect(() =>
-      new Questionnaire([page]).readWith({}).questionsOn(page),
+      new Questionnaire([seule]).readWith({}).questionsOn(seule),
     ).toThrow("un fait ne lit jamais une garde qui lit les faits");
   });
 });
