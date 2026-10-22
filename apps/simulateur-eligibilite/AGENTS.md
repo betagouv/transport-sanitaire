@@ -129,15 +129,16 @@ Neuf règles à tenir en ajoutant une question :
   les cibles figées et les faits de ces questions validées. Sur la page
   ouverte, celles qui la précèdent comptent telles qu'elles sont à l'écran.
 - **Une garde lit le fait quand il en existe un.**
-  `.askedIf(({ faits }) => faits.fait_permission.value === true)`. Elle ne
+  `.askedIf(({ faits }) => faits.fait_permission.isOui())`. Elle ne
   recompose pas, réponse par réponse, ce que le fait établit déjà. Sans fait qui
   la dise, elle appelle un prédicat nommé, rangé dans le fichier de son concept
   (`mineurDeVingtAns` dans `p2/permission.ts`).
 - **Un fait ne lit jamais une garde qui lit les faits.** Le calcul tournerait en
-  rond : le socle l'arrête net, sur une erreur qui le dit. Dans le modèle
-  d'éligibilité, les gardes lisent les faits des réponses (`FaitsDesReponses`),
-  sans la complétude de P1 et de P2 : la constater pose les questions, donc lit
-  leurs gardes.
+  rond : le catalogue l'arrête net, sur une erreur qui le dit. Une garde lit
+  tout le catalogue : la lecture dans l'ordre ne lui montre que les questions
+  validées avant elle. La complétude de P1 et de P2 y reste inconnue : la
+  constater pose les questions, donc lit leurs gardes. Seule la décision
+  l'impose (`preconisation.ts`).
 - **Une dépendance se déclare dans `dependsOn`.** Sans elle, la réponse survit au
   changement de celle dont elle dépend. Une adresse dont le mode change
   (`abroadIf`) survit de même : elle se relit dans le nouveau mode, sans son
@@ -173,8 +174,9 @@ Ses pièces sont dans `core/socle/`.
 | `GivenAnswers` (`given-answers.ts`) | les réponses données, lues question par question : `answers.question("Q1.1").is("1_SEUL")`, `.isNot(option)`, `.checked(case)`, `.checkedBoxes()`, `.hasAnswer()`. Une question sans réponse n'est aucune option, sans être un « non » |
 | `ValidatedAnswers` (`validated-answers.ts`) | les questions validées, lues de même, avec ce qui se proposait : `.isValidated()`, `.offers(option)`, `.declined(case)`, et `.faitOf(case)`, qui donne oui (cochée), non (proposée, non cochée) ou rien (jamais montrée) |
 | `preconisation.faits(answers, validated)` | le modèle reçoit ces deux lectures, jamais les réponses brutes. Il applique, fait par fait, le contrat de l'éditeur |
-| `Fait` (`decision-engine/fait.ts`) | ce qu'on sait d'un fait : sa valeur si elle est établie, et sa provenance. `Fait.oui`, `Fait.non` et `Fait.inconnu` le construisent |
-| `faitsOf` (`decision-engine/fait-builder.ts`) | le constructeur des faits, lié au modèle dans son `fait.ts` : `fait("fait_motif_camsp")`, dont le nom est vérifié. Ses règles s'appliquent dans l'ordre, la première qui établit le fait l'emporte : `seulementSi(condition)`, `selon(réponse, { "1_OUI": "oui", "2_NON": "non" })`, qui écrit seul la provenance « Q2.1.h : « 1_OUI ». », `ouiSi` et `nonSi(condition, provenance)`. `sinon(provenance)` clôt la chaîne : le fait est inconnu si aucune règle ne l'établit, et l'entrée `{ fait_motif_camsp: … }` revient. Un fait qui enchaîne plusieurs cas, ou ajoute un texte à la réponse, reste une fonction qui donne un `Fait` |
+| `Fait` (`decision-engine/fait.ts`) | ce qu'on sait d'un fait, en objet valeur figé : sa valeur si elle est établie, et sa provenance. `Fait.oui`, `Fait.non`, `Fait.inconnu` et `Fait.valant` le construisent ; `isOui()`, `isNon()` et `isInconnu()` le lisent, jamais `.value === true`. `avecProvenance` en donne une copie, `equals` compare valeur et provenance |
+| `FaitCatalogue` (`decision-engine/fait-catalogue.ts`) | les faits d'un modèle, **une déclaration par fait**. Le modèle le construit une fois avec la liste de ses faits et ses déclarations par thème (`catalogue-des-faits.ts`) : un doublon, un oubli ou un nom hors du modèle l'arrêtent au chargement. Une déclaration reçoit `{ answers, validated, faits }` et peut lire d'autres faits. `read(answers, validated, fixed)` calcule chaque fait à sa première lecture, et `fixed` en impose (la complétude). Un fait qui se relit, par d'autres faits ou par une garde, s'arrête sur une erreur qui donne le chemin. Un fait qu'aucune réponse ne pose se déclare aussi, et sa provenance dit pourquoi |
+| `regles()` (`decision-engine/fait-builder.ts`) | la chaîne de règles d'un fait. La première qui conclut l'emporte : `seulementSi(condition)`, `selon(réponse, { "1_OUI": "oui", "2_NON": "non" })`, qui écrit seul la provenance « Q2.1.h : « 1_OUI ». », `selonCase(réponse, case)` et `nonSiEcartee(réponse, case)` pour une case proposée, `ouiSi`, `nonSi` et `inconnuSi(condition, provenance)`, et `retient(fait)`, qui reprend une règle d'un autre thème (`sejourEcarte`, `situationDuCadre`). `sinon(provenance)` clôt la chaîne : le fait reste inconnu, ou vaut le fait qu'on lui donne. `citant(…réponses)` écrit une provenance qui cite les réponses données |
 | `publicodesEngine` | n'envoie aux règles que les faits établis. Une cible peut revenir `undefined` : indéfinie, ce qui n'est pas une décision, ni `null` (sans objet) |
 
 Le socle dit ce qui a été montré, validé, coché. Il ne conclut rien : c'est le

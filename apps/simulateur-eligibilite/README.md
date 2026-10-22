@@ -122,8 +122,9 @@ core/                    le métier, sans React ni DOM : ce qu'un serveur ou un 
                          socle. Ses déclarations (questions, faits, cibles), son
                          questionnaire, sa préconisation et son catalogue de seeds
     eligibilite/         le modèle de l'éditeur, en cours d'intégration. À sa racine,
-                         ce qui assemble : le questionnaire, la préconisation,
-                         l'évaluation des règles et le catalogue de seeds
+                         ce qui assemble : le questionnaire, le catalogue des
+                         faits, la préconisation, l'évaluation des règles et le
+                         catalogue de seeds
       rules/             le livrable de l'éditeur : le YAML, sa `VERSION`, le
                          catalogue des textes de R2, et `regles.json`, que
                          `pnpm regles` calcule du YAML
@@ -132,7 +133,8 @@ core/                    le métier, sans React ni DOM : ce qu'un serveur ou un 
                          mode de transport
       p2/                l'éligibilité : une page et ses faits par thème (prestation,
                          contextes, trajet, transfert, permission, convocation,
-                         retour pénitentiaire, branche)
+                         retour pénitentiaire, branche). Chaque fait se déclare
+                         dans un seul thème
       p3/                le complément du cerfa
   socle/                 ce qui ne dépend d'aucune version. `model.ts` est le contrat
                          métier qu'un modèle remplit (`CoreModel`), `index.ts` ce
@@ -141,8 +143,10 @@ core/                    le métier, sans React ni DOM : ce qu'un serveur ou un 
                          page, une partie et une adresse, les questions posées et
                          validées, l'état d'un questionnaire, l'invalidation des
                          réponses dépendantes, ce qui ne va pas dans une saisie
-    decision-engine/     le moteur de décision : des faits aux cibles, par les règles
-                         publicodes qu'un modèle lui donne. Un fait absent n'est pas
+    decision-engine/     le moteur de décision : le fait en objet valeur, le
+                         catalogue des faits et leurs règles, puis des faits aux
+                         cibles, par les règles publicodes qu'un modèle lui
+                         donne. Un fait absent n'est pas
                          envoyé, et laisse indéfinie la cible qui en dépend. Le seul
                          fichier qui importe publicodes, pris par le modèle hors de
                          `index.ts`

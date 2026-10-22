@@ -14,7 +14,7 @@ et Vite. Rien ne l'interdit, mais rien ne le sépare non plus : un moteur qui
 écrit une phrase d'écran, un modèle qui mêle ses faits et ses fiches, des règles
 que seul Vite sait lire.
 
-Trois besoins le rendent coûteux :
+Trois besoins en font un coût :
 
 - **calculer sans navigateur.** Un serveur ou un script doit pouvoir rejouer une
   préconisation, sur les seules réponses, pour une API ou une recette ;
@@ -264,6 +264,85 @@ ou une fonction du contexte quand il cite les réponses.
 reste une liste de questions. Une incohérence se lit sur sa ligne, avec sa
 condition.
 
+### ADR-12 - Un fait se déclare une fois, dans un catalogue (~~faits partiels fusionnés~~)
+
+**Contexte.** Chaque page de P2 donnait ses faits en objet partiel, et le modèle
+les fusionnait dans un ordre fixe : le dernier écrit l'emportait. Trois
+commentaires gardaient cet ordre (« après les contextes : un positif de Q2.5
+l'emporte… »). La permission avait trois auteurs, le transfert et le Centre 15
+quatre. Lire ce qu'un fait vaut demandait de lire toutes les pages et l'ordre
+de leur fusion. Un fait qu'aucune page ne posait restait absent sans qu'on
+sache si c'était voulu.
+
+**Décision.** Le socle porte un catalogue des faits (`FaitCatalogue`). Le modèle
+le construit une fois, avec la liste des faits de ses règles et une
+déclaration par fait, rangée dans le thème qui le pose. La déclaration est une
+chaîne de règles (`regles()…sinon(…)`) : la première qui conclut l'emporte,
+et la chaîne dit tout ce que le fait vaut. Quand une autre page en décide une
+partie, son thème exporte une petite règle, qui donne un `Fait` ou rien, et la
+chaîne la reprend (`retient(sejourEcarte(validated))`).
+
+Le catalogue refuse au chargement un fait déclaré deux fois, oublié, ou qui
+n'est pas du modèle. Un fait qu'aucune réponse ne pose se déclare aussi, et sa
+provenance dit pourquoi (D-102, D-109, D-117). Une déclaration peut lire
+d'autres faits : chacun se calcule à sa première lecture, une fois par
+lecture. Un fait qui se relit, par d'autres faits ou par une garde, s'arrête
+sur une erreur qui donne le chemin.
+
+| Option | Pour | Contre |
+|---|---|---|
+| garder la fusion, l'ordre documenté | rien à porter | l'ordre reste un savoir caché ; un auteur de plus le casse sans bruit |
+| une déclaration par page, le catalogue vérifie les doublons | peu de code déplacé | un fait à plusieurs auteurs ne s'écrit pas |
+| une déclaration par fait, des règles partagées entre thèmes | tout ce qu'un fait vaut se lit à un endroit | un thème exporte des règles pour un autre |
+
+La troisième. Le thème d'un fait est celui de la question qui le pose le plus
+souvent : la permission vit dans `permission.ts`, même si Q2.1 et Q2.2.1
+l'établissent aussi. L'ordre des chaînes reprend celui de l'ancienne fusion,
+lu à l'envers : la branche, la sortie vers la prison, la convocation, la
+permission, le transfert, les contextes, la prestation.
+
+**Conséquences.** Les règles publicodes ne changent pas. Sur les 4 688 états
+du banc d'équivalence, les questions posées, les faits et les cibles sont les
+mêmes. Seules changent des provenances : celles des faits qu'aucune question
+ne pose, et celle de l'urgence en attente (ADR-14).
+
+### ADR-13 - Le fait est un objet valeur
+
+**Contexte.** Un fait était un objet `{ value, provenance }`. Les appelants
+lisaient `faits.fait_permission.value === true`, et un test pouvait poser `{}`
+à la place d'un fait.
+
+**Décision.** `Fait` est une classe figée. `Fait.oui`, `Fait.non`,
+`Fait.inconnu` et `Fait.valant` la construisent ; `isOui()`, `isNon()` et
+`isInconnu()` la lisent. `avecProvenance` en donne une copie, `equals` compare
+la valeur et la provenance. Le constructeur de règles gagne `inconnuSi`, qui
+s'arrête sur un inconnu, `retient`, qui reprend un fait établi ailleurs, et un
+`sinon` qui reçoit un fait.
+
+**Conséquences.** `.value` reste lisible, pour les règles publicodes et la
+trace. Le front et les tests lisent les méthodes.
+
+### ADR-14 - Une garde lit tout le catalogue ; la décision impose la complétude
+
+**Contexte.** Les gardes lisaient les faits des pages d'avant la branche, puis
+ceux de la branche, par deux fonctions faites pour elles, sans la complétude de
+P1 et de P2. Constater la complétude pose les questions, donc lit leurs
+gardes : une garde qui la lirait bouclerait.
+
+**Décision.** Une garde lit tout le catalogue. La lecture dans l'ordre ne
+valide, pour la garde d'une question, que les questions d'avant elle : un fait
+posé plus loin reste inconnu. Le catalogue déclare la complétude inconnue, et
+la préconisation l'impose (`read(answers, validated, fixed)`). Un fait ne lit
+jamais une cible : `cible()` évalue tous les faits, celui qui la lit compris.
+L'urgence en attente a donc une seule provenance, qui ne dit plus si la garde
+de Q2.3.4 l'a écartée.
+
+**Conséquences.** Les gardes de la branche et de Q2.3.4 lisent les mêmes faits
+que la décision, ceux des questions d'avant elles. Une garde voit maintenant
+les faits que la branche pose avant elle (le départ de Q2.13 pour Q2.14), et
+l'exclusion du transport. Le banc d'équivalence ne montre aucune question
+posée de plus ou de moins.
+
 ## 3. Architecture cible
 
 ```mermaid
@@ -292,6 +371,10 @@ flowchart LR
 | Question déclarée et ses constructeurs (`questionsOf`) | `core/` | une classe par sorte, réglage par réglage ; elle sait se poser | nouveau |
 | Questionnaire à l'écran | `front/` | page ouverte, brouillon, navigation, phrases, champs | modifié |
 | Moteur de décision | `core/` | des faits aux cibles, seul à importer publicodes | déplacé |
+| `Fait` | `core/` | ce qu'on sait d'un fait, en objet valeur figé | modifié |
+| Catalogue des faits (`FaitCatalogue`) | `core/` | une déclaration par fait, calculée à la lecture ; refuse doublon, oubli, cycle | nouveau |
+| Règles d'un fait (`regles()`) | `core/` | la chaîne de règles d'un fait, la première qui conclut l'emporte | modifié |
+| Fusion des faits partiels (`faitsAvantLaBranche`, `FaitsDesReponses`) | `core/` | l'ordre des pages décidait du fait | supprimé |
 | Seeds | `core/` | ce qu'est une seed, ce qu'elle confirme ou dément | déplacé |
 | Écran des seeds | `front/` | la liste, le rejeu à l'écran | inchangé |
 | Contrat du métier (`CoreModel`) | `core/` | questionnaire, complément, préconisation, seeds | nouveau |
@@ -321,7 +404,7 @@ a-t-il besoin ?**
 | Sortir le métier du front | 202 | ✅ |
 | Moteur objet | 203 | ✅ |
 | Constructeur de questions | 204 | ✅ |
-| Faits : une déclaration par fait | 205 | à venir |
+| Faits : une déclaration par fait | 205 | ✅ |
 | Cibles : un objet valeur par cible | 206 | à venir |
 | Concepts du modèle | 207 | à venir |
 
@@ -334,6 +417,8 @@ a-t-il besoin ?**
 | R-3 | Le serveur n'importe pas encore le métier : la frontière n'est éprouvée que par un test | le test sous Node rejoue toutes les seeds à attendus |
 | R-4 | Une question posée gagne une fonction, et ne passe plus en JSON | le test de conformité relit chaque question posée par les seeds |
 | R-5 | Une constante déclarée sous la déclaration qui la lit casse le chargement du module | le test sous Node et chaque test du modèle chargent le module ; l'erreur nomme la constante |
+| R-6 | Une déclaration lit `answers`, les réponses non validées : une garde verrait une page qui ne la précède pas | les faits du modèle ne lisent que `validated` ; le banc d'équivalence compare les questions posées |
+| R-7 | Le banc d'équivalence couvre 4 688 états, pas tous | les seeds et les tests du modèle passent ; la relecture vérifie les chaînes thème par thème |
 
 ## Vérification
 
@@ -342,4 +427,5 @@ cd apps/simulateur-eligibilite
 pnpm vitest run tests/frontieres-des-racines.test.ts tests/architecture.test.ts
 pnpm vitest run tests/model/metier-sous-node.test.ts tests/model/regles-a-jour.test.ts
 pnpm vitest run tests/model/conformite.test.ts tests/socle/questionnaire-engine
+pnpm vitest run tests/socle/decision-engine
 ```
