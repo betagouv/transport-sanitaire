@@ -11,6 +11,7 @@ import type { Cibles } from "../declarations/cibles";
 import { AUCUN_FAIT, type Faits } from "../declarations/faits";
 import type { Questions } from "../declarations/questions";
 import { cible } from "../evaluation-des-regles";
+import { fait } from "../fait";
 import { sansProfessionnel } from "./reponses";
 
 type Valides = ValidatedAnswers<Questions>;
@@ -23,7 +24,7 @@ export function faitsDuMode(validated: Valides) {
     ...faitsDeQ11(validated),
     ...faitsDesCriteres(validated),
     ...faitsDeQ13(validated),
-    fait_prefere_transport_commun: prefereLeTransportCommun(validated),
+    ...prefereLeTransportCommun(validated),
   } satisfies Partial<Faits>;
 }
 
@@ -66,21 +67,22 @@ const CRITERES = {
 // Q1.1 dit qui aide le patient : personne, un proche, ou un professionnel.
 function faitsDeQ11(validated: Valides) {
   const reponse = validated.question("Q1.1");
-  if (!reponse.hasAnswer()) {
-    const attente = Fait.inconnu("Q1.1 n'est pas encore validée.");
-    return {
-      fait_autonomie_professionnel: attente,
-      fait_accompagnant: attente,
-    };
-  }
-  const source = `Q1.1 : « ${reponse.value} ».`;
+  const attente = "Q1.1 n'est pas encore validée.";
   return {
-    fait_autonomie_professionnel: reponse.is(PROFESSIONNEL)
-      ? Fait.oui(source)
-      : Fait.non(source),
-    fait_accompagnant: reponse.is("2_AVEC_UN_PROCHE")
-      ? Fait.oui(source)
-      : Fait.non(source),
+    ...fait("fait_autonomie_professionnel")
+      .selon(reponse, {
+        "1_SEUL": "non",
+        "2_AVEC_UN_PROCHE": "non",
+        [PROFESSIONNEL]: "oui",
+      })
+      .sinon(attente),
+    ...fait("fait_accompagnant")
+      .selon(reponse, {
+        "1_SEUL": "non",
+        "2_AVEC_UN_PROCHE": "oui",
+        [PROFESSIONNEL]: "non",
+      })
+      .sinon(attente),
   };
 }
 
@@ -190,15 +192,15 @@ function seanceQualifiante(validated: Valides, cas: Cas): Fait {
 
 // Q1.4 ne se pose qu'au patient qui se passe d'un professionnel. Sinon, la
 // préférence est sans objet : elle vaut « non ».
-function prefereLeTransportCommun(validated: Valides): Fait {
-  const preference = validated.question("Q1.4");
-  if (preference.hasAnswer()) {
-    const source = `Q1.4 : « ${preference.value} ».`;
-    return preference.is("2_TRANSPORTS_EN_COMMUN")
-      ? Fait.oui(source)
-      : Fait.non(source);
-  }
-  if (validated.question("Q1.1").is(PROFESSIONNEL))
-    return Fait.non("Q1.4 ne se pose pas : un professionnel intervient.");
-  return Fait.inconnu("Q1.4 n'est pas encore validée.");
+function prefereLeTransportCommun(validated: Valides) {
+  return fait("fait_prefere_transport_commun")
+    .selon(validated.question("Q1.4"), {
+      "1_VEHICULE_PERSONNEL": "non",
+      "2_TRANSPORTS_EN_COMMUN": "oui",
+    })
+    .nonSi(
+      validated.question("Q1.1").is(PROFESSIONNEL),
+      "Q1.4 ne se pose pas : un professionnel intervient.",
+    )
+    .sinon("Q1.4 n'est pas encore validée.");
 }
