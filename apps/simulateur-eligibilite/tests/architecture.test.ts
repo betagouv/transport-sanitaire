@@ -98,6 +98,23 @@ describe("le socle et le modèle", () => {
   });
 });
 
+describe("la déclaration des questions", () => {
+  it("un modèle déclare ses questions par ses constructeurs", () => {
+    const litterales = sources(...MODELES, MODELE_FACTICE).filter((f) =>
+      /\bkind: "(single choice|multiple choice|number|text|long text|date|datetime|checkbox|address)"/.test(
+        texteDe(f),
+      ),
+    );
+    expect(
+      litterales,
+      "Une question écrite en objet redit sa sorte et ses options, et ses " +
+        "conditions reçoivent trois arguments positionnels. Son constructeur " +
+        "(`questionsOf`) prend les options dans le catalogue et passe un seul " +
+        "objet, faits compris.",
+    ).toEqual([]);
+  });
+});
+
 describe("les modèles entre eux", () => {
   it("un modèle n'importe rien d'un autre", () => {
     const croisements = MODELES.flatMap((modele) =>

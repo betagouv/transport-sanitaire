@@ -4,9 +4,18 @@
 // Il garde sous test la mécanique du questionnaire : avancement automatique,
 // retour, brouillon, effacement des réponses dépendantes et verrou.
 
-import type { QuestionnairePart } from "../../../../front/socle";
+import { type QuestionnairePart, questionsOf } from "../../../../front/socle";
 import type { Cibles } from "./declarations/cibles";
-import type { Questions } from "./declarations/questions";
+import type { Faits } from "./declarations/faits";
+import { OPTIONS, type Questions } from "./declarations/questions";
+import { faits } from "./preconisation";
+
+const question = questionsOf<Questions, Faits>({ options: OPTIONS, faits });
+
+const questionDuComplement = questionsOf<Questions, Faits, Cibles>({
+  options: OPTIONS,
+  faits,
+});
 
 /** Modifiables tant que le résultat n'est pas verrouillé. */
 export const PARTS: readonly QuestionnairePart<Questions, undefined>[] = [
@@ -17,36 +26,23 @@ export const PARTS: readonly QuestionnairePart<Questions, undefined>[] = [
       {
         id: "boisson",
         questions: [
-          {
-            id: "boisson",
-            kind: "single choice",
+          question.singleChoice("boisson", {
             label: "Quelle boisson souhaitez-vous ?",
-            options: [
-              { value: "the", label: "Un thé" },
-              { value: "cafe", label: "Un café" },
-              { value: "rien", label: "Rien" },
-            ],
-          },
+          }),
         ],
       },
       {
         id: "accompagnements",
         questions: [
-          {
-            id: "accompagnements",
-            kind: "multiple choice",
+          question.multipleChoice("accompagnements", {
             label: "Avec quoi ?",
-            askedIf: (answers) => {
+            askedIf: ({ answers }) => {
               const boisson = answers.question("boisson");
               return boisson.hasAnswer() && boisson.isNot("rien");
             },
             dependsOn: ["boisson"],
-            options: [
-              { value: "lait", label: "Du lait" },
-              { value: "sucre", label: "Du sucre" },
-            ],
-            exclusiveOption: { value: "aucun", label: "Rien de plus" },
-          },
+            exclusiveOption: "aucun",
+          }),
         ],
       },
     ],
@@ -61,13 +57,11 @@ export const COMPLEMENT: QuestionnairePart<Questions, Cibles> = {
     {
       id: "quantite",
       questions: [
-        {
-          id: "quantite",
-          kind: "number",
+        questionDuComplement.number("quantite", {
           label: "Combien de tasses ?",
           min: 1,
           unit: "tasses",
-        },
+        }),
       ],
     },
   ],
