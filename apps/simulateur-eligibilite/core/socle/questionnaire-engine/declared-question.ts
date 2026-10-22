@@ -6,7 +6,10 @@
 //
 //   question.datetime("Q2.8.2", "Quand commence la première permission ?")
 //     .askedIf(mineurAPoser)
-//     .inconsistentIf(commenceAvantLHospitalisation, "La permission …");
+//     .inconsistentIf(
+//       ({ answers }) => Permission.of(answers).commenceAvantLHospitalisation(),
+//       "La permission …",
+//     );
 //
 // Elle ne change pas : chaque réglage donne une copie. Il n'y a pas d'étape
 // finale : la page la prend telle quelle (`declared-page.ts`), et le moteur lui

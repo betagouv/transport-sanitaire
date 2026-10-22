@@ -1,7 +1,7 @@
 // Les domaines du modèle de l'éditeur, dans l'ordre du parcours : P1 dit le
 // mode, P2 l'éligibilité, R2 son résultat, P3 complète le cerfa,
 // R3 le récapitule. La racine du
-// modèle les assemble.
+// modèle les assemble. Les concepts sont lus par toutes les parties.
 //
 // Comme dans `tests/architecture.test.ts`, chaque règle donne son pourquoi
 // dans son message d'échec.
@@ -17,6 +17,7 @@ const P2 = `${METIER}/p2`;
 const R2 = `${ECRAN}/r2`;
 const P3 = `${METIER}/p3`;
 const R3 = `${ECRAN}/r3`;
+const CONCEPTS = `${METIER}/concepts`;
 const FAMILLES_DE_R2 = ["praticien", "fiche-negative", "fiche-positive"].map(
   (famille) => `${R2}/${famille}`,
 );
@@ -43,8 +44,19 @@ describe("les domaines du modèle de l'éditeur", () => {
       "P1 établit le mode avant P2, P2 l'éligibilité avant R2, et R2 l'issue " +
         "que P3 complète avant R3. Une partie " +
         "qui lit la suivante dépend d'une question qu'on ne lui a pas encore " +
-        "posée. Ce qu'elles partagent va à la racine du modèle ou dans " +
-        "`declarations/`.",
+        "posée. Ce qu'elles partagent va à la racine du modèle, dans " +
+        "`declarations/` ou dans `concepts/`.",
+    ).toEqual([]);
+  });
+
+  it("un concept ne lit aucune partie", () => {
+    expect(
+      franchissements([CONCEPTS], (cible) =>
+        [P1, P2, R2, P3, R3].some((partie) => dans(partie)(cible)),
+      ),
+      "Toutes les parties lisent les concepts. Un concept qui lirait une " +
+        "partie la ferait dépendre d'elle-même, ou d'une partie qui la suit. " +
+        "Il ne lit que le socle et les déclarations.",
     ).toEqual([]);
   });
 

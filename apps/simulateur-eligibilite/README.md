@@ -129,6 +129,9 @@ core/                    le métier, sans React ni DOM : ce qu'un serveur ou un 
                          catalogue des textes de R2, et `regles.json`, que
                          `pnpm regles` calcule du YAML
       declarations/      les questions, faits et cibles, dans les mots des règles
+      concepts/          ce que plusieurs parties lisent d'un concept : la
+                         permission, le séjour, l'aide du patient, le numéro d'une
+                         option. Ni page ni fait
       p1/                l'autonomie et l'état de santé : les pages et les faits du
                          mode de transport
       p2/                l'éligibilité : une page et ses faits par thème (prestation,
@@ -142,7 +145,8 @@ core/                    le métier, sans React ni DOM : ce qu'un serveur ou un 
     questionnaire-engine/  le moteur de questionnaire : ce qu'est une question, une
                          page, une partie et une adresse, les questions posées et
                          validées, l'état d'un questionnaire, l'invalidation des
-                         réponses dépendantes, ce qui ne va pas dans une saisie
+                         réponses dépendantes, ce qui ne va pas dans une saisie,
+                         une date répondue
     decision-engine/     le moteur de décision : le fait et la cible en objets
                          valeur, le catalogue des faits et leurs règles, puis des
                          faits aux cibles, par les règles publicodes qu'un modèle

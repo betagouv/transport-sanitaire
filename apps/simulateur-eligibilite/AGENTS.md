@@ -44,7 +44,9 @@ Vite ni navigateur : `tests/model/metier-sous-node.test.ts` le vérifie.
 Le modèle de l'éditeur se range par partie du parcours : `p1/` (le mode),
 `p2/` (l'éligibilité) et `p3/` (le complément du cerfa) dans `core/`, `r2/` (le
 résultat, avec un dossier par famille d'issues) et `r3/` (son résultat) dans
-`front/`. Les racines des deux dossiers les assemblent. Une partie ne lit pas
+`front/`. `core/models/eligibilite/concepts/` porte ce que plusieurs parties
+lisent d'un même concept : la permission, le séjour, l'aide du patient, le
+numéro d'une option. Les racines des deux dossiers les assemblent. Une partie ne lit pas
 celle qui la suit, et les familles de R2 ne s'importent pas entre elles :
 `tests/model/eligibilite/domaines.test.ts` le garde.
 
@@ -131,8 +133,15 @@ Neuf règles à tenir en ajoutant une question :
 - **Une garde lit le fait quand il en existe un.**
   `.askedIf(({ faits }) => faits.fait_permission.isOui())`. Elle ne
   recompose pas, réponse par réponse, ce que le fait établit déjà. Sans fait qui
-  la dise, elle appelle un prédicat nommé, rangé dans le fichier de son concept
-  (`mineurDeVingtAns` dans `p2/permission.ts`).
+  la dise, elle interroge le concept qui porte ce savoir
+  (`Permission.of(answers).estDUnMineurDeVingtAns()`).
+- **Un savoir écrit deux fois vit dans son concept.** Un fichier par concept,
+  sous `concepts/`, nommé en français : `Permission`, `Sejour`,
+  `AideDuPatient`. Il se construit sur des réponses données (une garde, une
+  cohérence) comme sur des réponses validées (un fait, R2), lit ses réponses
+  une fois et ne pose aucun fait. Une lecture qui n'a de sens que validée se
+  déclare avec `this: Sejour<ValidatedAnswers<Questions>>` (`estEcarte`). Une
+  réponse lue à un seul endroit reste lue là : pas d'objet par question.
 - **Un fait ne lit jamais une garde qui lit les faits.** Le calcul tournerait en
   rond : le catalogue l'arrête net, sur une erreur qui le dit. Une garde lit
   tout le catalogue : la lecture dans l'ordre ne lui montre que les questions
@@ -174,6 +183,8 @@ Ses pièces sont dans `core/socle/`.
 |---|---|
 | `GivenAnswers` (`given-answers.ts`) | les réponses données, lues question par question : `answers.question("Q1.1").is("1_SEUL")`, `.isNot(option)`, `.checked(case)`, `.checkedBoxes()`, `.hasAnswer()`. Une question sans réponse n'est aucune option, sans être un « non » |
 | `ValidatedAnswers` (`validated-answers.ts`) | les questions validées, lues de même, avec ce qui se proposait : `.isValidated()`, `.offers(option)`, `.declined(case)`, et `.faitOf(case)`, qui donne oui (cochée), non (proposée, non cochée) ou rien (jamais montrée) |
+| `AnswersReader` (`given-answers.ts`) | ce que les deux lectures ont en commun, `question(id)`. Un concept du modèle le reçoit : il se lit sur l'une comme sur l'autre |
+| `LocalDateTime` (`local-date-time.ts`) | une date répondue, lue une fois, sans fuseau : `LocalDateTime.parse(saisie)`, `isBefore`, `isAfter`, `isAtOrBefore`, `equals`, `plusDays`, `plusHours`, `startOfDay`. Une saisie mal écrite n'est comparée à rien : toute comparaison avec elle vaut « non » |
 | `preconisation.faits(answers, validated)` | le modèle reçoit ces deux lectures, jamais les réponses brutes. Il applique, fait par fait, le contrat de l'éditeur |
 | `Fait` (`decision-engine/fait.ts`) | ce qu'on sait d'un fait, en objet valeur figé : sa valeur si elle est établie, et sa provenance. `Fait.oui`, `Fait.non`, `Fait.inconnu` et `Fait.valant` le construisent ; `isOui()`, `isNon()` et `isInconnu()` le lisent, jamais `.value === true`. `avecProvenance` en donne une copie, `equals` compare valeur et provenance |
 | `FaitCatalogue` (`decision-engine/fait-catalogue.ts`) | les faits d'un modèle, **une déclaration par fait**. Le modèle le construit une fois avec la liste de ses faits et ses déclarations par thème (`catalogue-des-faits.ts`) : un doublon, un oubli ou un nom hors du modèle l'arrêtent au chargement. Une déclaration reçoit `{ answers, validated, faits }` et peut lire d'autres faits. `read(answers, validated, fixed)` calcule chaque fait à sa première lecture, et `fixed` en impose (la complétude). Un fait qui se relit, par d'autres faits ou par une garde, s'arrête sur une erreur qui donne le chemin. Un fait qu'aucune réponse ne pose se déclare aussi, et sa provenance dit pourquoi |
