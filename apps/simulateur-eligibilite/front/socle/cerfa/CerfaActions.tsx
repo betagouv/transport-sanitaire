@@ -97,8 +97,11 @@ function useDownloadablePdf<Dto extends CerfaDto>(cerfa: Cerfa<Dto>, dto: Dto) {
   return { settled, withPdf: settled === undefined ? undefined : withPdf };
 }
 
-// L'issue de `downloadablePdf`, `undefined` tant qu'elle se fait attendre.
-function useSettled(downloadablePdf: Promise<Settled>): Settled | undefined {
+/** Ce qui est attendu n'est pas encore arrivé. */
+type Pending = undefined;
+
+// L'issue de `downloadablePdf`, une fois arrivée.
+function useSettled(downloadablePdf: Promise<Settled>): Settled | Pending {
   const [settled, setSettled] = useState<Settled>();
   useEffect(() => {
     let current = true;
@@ -115,7 +118,7 @@ function useSettled(downloadablePdf: Promise<Settled>): Settled | undefined {
 
 // Ce que la génération annonce, au-dessus des boutons : qu'elle est en cours,
 // qu'elle a échoué, ou qu'elle a retiré un commentaire.
-function Notices({ settled }: { settled: Settled | undefined }) {
+function Notices({ settled }: { settled: Settled | Pending }) {
   return (
     <>
       {settled?.status === "failed" && <Failure />}

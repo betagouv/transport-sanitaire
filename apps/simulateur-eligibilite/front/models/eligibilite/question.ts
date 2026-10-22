@@ -17,6 +17,9 @@ import { faitsDeLaBranche } from "./p2/branche";
 import { faitsAvantLaBranche } from "./p2/faits-avant-la-branche";
 
 /** Les faits que les réponses établissent, hors complétude des parties. */
+/** La réponse qui le dirait n'est pas donnée : on ne le sait pas encore. */
+export type Inconnu = undefined;
+
 export type FaitsDesReponses = Omit<
   Faits,
   "fait_p1_complete" | "fait_p2_complete"

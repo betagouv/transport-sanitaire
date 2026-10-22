@@ -48,6 +48,9 @@ export function fondementDeLAccord(
 /** Le rappel d'attente, et le nom de son encadré, tiré du gabarit. */
 export type RappelDAttente = { readonly nom: string; readonly texte: string };
 
+/** Les règles ne disent pas s'il faut attendre l'accord. */
+type AucunRappel = undefined;
+
 /**
  * Le rappel d'attente : le texte de l'issue sans urgence quand les règles
  * disent d'attendre l'accord, celui de l'urgence attestée quand elles disent
@@ -56,7 +59,7 @@ export type RappelDAttente = { readonly nom: string; readonly texte: string };
 export function rappelDAttente(
   catalogue: CatalogueResultats,
   cibles: Cibles,
-): RappelDAttente | undefined {
+): RappelDAttente | AucunRappel {
   const attente = cibles.cible_attente_accord;
   if (attente !== true && attente !== false) return undefined;
   const { issue, nom } = attente ? EN_ATTENTE : SANS_ATTENTE;

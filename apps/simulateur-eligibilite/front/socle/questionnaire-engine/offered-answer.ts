@@ -6,11 +6,14 @@ import { askedAddress, isAddress, isCompleteAddress } from "./address";
 import { errorsOf } from "./answer-error";
 import type { Answer, Question, Unanswered } from "./question";
 
+/** Une saisie libre, sans options. */
+type FreeInput = undefined;
+
 /**
  * Les valeurs qu'une réponse à cette question peut porter, l'option exclusive
- * comprise. `undefined` : une saisie libre.
+ * comprise.
  */
-export function optionValues(question: Question): string[] | undefined {
+export function optionValues(question: Question): string[] | FreeInput {
   return question.kind === "single choice" ||
     question.kind === "multiple choice"
     ? valuesOf(question)

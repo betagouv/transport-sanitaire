@@ -1,10 +1,10 @@
 # Les règles de code
 
-> Les 16 règles `QUAL-*`. Les conventions du dépôt sont dans
+> Les 17 règles `QUAL-*`. Les conventions du dépôt sont dans
 > [`../../AGENTS.md`](../../AGENTS.md), les règles de commit dans
 > [`regles-git.md`](regles-git.md).
 
-**16 règles**. Chacune a son identifiant. Cite-le en revue ou en commit
+**17 règles**. Chacune a son identifiant. Cite-le en revue ou en commit
 (« corrige QUAL-006 ») plutôt que de reformuler la règle.
 
 | Id | Règle | Garde |
@@ -25,6 +25,7 @@
 | QUAL-014 | Pas de suppression pour un linter que le projet ne lance pas | aucune |
 | QUAL-015 | Une suppression nomme sa règle et sa raison | Biome |
 | QUAL-016 | Dossiers et fichiers en kebab-case, sauf un composant React | `lisibilite.test.ts` |
+| QUAL-017 | Un retour qui peut manquer nomme son absence | `lisibilite.test.ts` |
 
 Six règles n'ont aucune garde. Ce sont des règles de jugement : une assertion
 dirait *qu'*on a coupé, jamais *si* on a coupé au bon endroit. Elles restent à la
@@ -502,3 +503,35 @@ footer.tsx        alors qu'il exporte le composant `Footer`
 
 *Gardé par* `tests/lisibilite.test.ts › un nom s'écrit d'une seule façon`, dans
 `apps/simulateur-eligibilite`.
+
+---
+
+### QUAL-017 - Un retour qui peut manquer nomme son absence
+
+> Raison : `| undefined` ne dit pas pourquoi la valeur manque. Le lecteur doit
+> ouvrir la fonction pour savoir si c'est une réponse absente, un texte qui ne
+> tient pas ou un cas que les règles ne prouvent pas.
+
+Le type de retour nomme l'absence par un alias `= undefined`, avec une phrase qui
+dit ce qui manque. Le même sens prend le même nom, déclaré une fois et importé :
+`Unanswered` pour une réponse pas encore donnée, `NoError` pour une réponse
+juste, `AucunTexte` pour un cas sans texte au catalogue. Un sens propre à un
+fichier y reste, privé.
+
+**Exemples**
+
+```ts
+// ✅ OK
+/** Le texte ne tient dans son cadre à aucune taille. */
+type DoesNotFit = undefined;
+
+function sizeInField(field: PDFTextField, text: string): number | DoesNotFit {
+```
+
+```ts
+// ❌ KO : rien ne dit ce que veut dire l'absence
+function sizeInField(field: PDFTextField, text: string): number | undefined {
+```
+
+*Gardé par* `tests/lisibilite.test.ts › aucun retour ne finit par un \`undefined\`
+sans nom`, dans `apps/simulateur-eligibilite`.

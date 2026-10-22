@@ -7,7 +7,10 @@
 // n'y met aucun mot. Le gras et les liens du texte courant restent en place
 // (`segments-du-texte.ts`).
 
-import type { IssuePositive } from "../../declarations/catalogue-resultats";
+import type {
+  AucunTexte,
+  IssuePositive,
+} from "../../declarations/catalogue-resultats";
 
 /** Une puce de liste ; avec des badges, c'est la légende qui les introduit. */
 export type Puce = {
@@ -43,7 +46,7 @@ export type Consignes = {
 export function modusDuMode(
   issue: IssuePositive,
   libelle: string,
-): string | undefined {
+): string | AucunTexte {
   return issue.modus.find(
     ({ mode, alsoFor }) => mode === libelle || alsoFor.includes(libelle),
   )?.text;

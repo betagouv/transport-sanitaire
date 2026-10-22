@@ -7,6 +7,7 @@
 
 import type { GivenAnswers, ValidatedAnswers } from "../../../socle";
 import type { Questions } from "../declarations/questions";
+import type { Inconnu } from "../question";
 import {
   type Etablie,
   type Extremite,
@@ -37,11 +38,14 @@ export const QUESTIONS_DU_LIEU = {
   },
 } as const;
 
+/** P2 ne fixe pas la nature du lieu : elle se choisit en P3. */
+type NonEtablie = undefined;
+
 /** La nature que P2 établit pour ce lieu. Absente : elle se choisit en P3. */
 export function natureEtablie(
   extremite: Extremite,
   reponses: Reponses,
-): Etablie | undefined {
+): Etablie | NonEtablie {
   return lieuxEtablis(reponses)[extremite];
 }
 
@@ -50,7 +54,7 @@ export function natureDu(
   extremite: Extremite,
   reponses: Reponses,
   validated: ValidatedAnswers<Questions>,
-): Nature | undefined {
+): Nature | Inconnu {
   const choisie = validated.question(QUESTIONS_DU_LIEU[extremite].nature).value;
   return natureEtablie(extremite, reponses)?.nature ?? choisie;
 }

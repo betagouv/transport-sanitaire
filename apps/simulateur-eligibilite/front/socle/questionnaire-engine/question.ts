@@ -6,7 +6,7 @@
 
 import type { Address, AddressSettings } from "./address";
 import type { GivenAnswers } from "./given-answers";
-import type { Option } from "./option";
+import type { Option, UseStatic } from "./option";
 import type { ValidatedAnswers } from "./validated-answers";
 
 /**
@@ -80,7 +80,7 @@ type Common<Questions extends AnyQuestions, Cibles> = {
     answers: GivenAnswers<Questions>,
     cibles: Cibles,
     validated: ValidatedAnswers<Questions>,
-  ): Reminder | undefined;
+  ): Reminder | UseStatic;
   /**
    * La question peut rester sans réponse : sa page se valide sans elle. Son
    * libellé le dit, par « (facultatif) ».

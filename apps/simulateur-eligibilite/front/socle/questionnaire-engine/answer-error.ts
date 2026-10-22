@@ -4,6 +4,7 @@
 // reste une. Une erreur de format s'affiche seule. Sinon, chaque incohérence
 // avec une autre réponse a son message.
 
+import type { NoError } from "./address";
 import { addressErrors, isAddress } from "./address";
 import type { Answer, Question, Unanswered } from "./question";
 
@@ -24,7 +25,7 @@ export function errorsOf(
 
 // Ce qui ne va pas dans la saisie elle-même : son format, une réponse qui
 // bloque, des options incompatibles.
-function formatErrorOf(question: Question, answer: Answer): string | undefined {
+function formatErrorOf(question: Question, answer: Answer): string | NoError {
   if (question.kind === "checkbox") return undefined;
   if (question.kind === "address") return addressErrorOf(question, answer);
   if (question.kind === "number") return numberErrorOf(question, answer);
@@ -46,7 +47,7 @@ function formatErrorOf(question: Question, answer: Answer): string | undefined {
 function addressErrorOf(
   question: Extract<Question, { kind: "address" }>,
   answer: Answer,
-): string | undefined {
+): string | NoError {
   if (!isAddress(answer)) return "Cette réponse est attendue.";
   return Object.values(addressErrors(question, answer))[0];
 }
@@ -56,7 +57,7 @@ function addressErrorOf(
 function incompatibilityOf(
   question: Extract<Question, { kind: "multiple choice" }>,
   checked: readonly string[],
-): string | undefined {
+): string | NoError {
   return question.incompatibleOptions?.find(({ values }) =>
     values.every((value) => checked.includes(value)),
   )?.explanation;
@@ -66,7 +67,7 @@ function incompatibilityOf(
 function blockOf(
   question: Extract<Question, { kind: "single choice" | "multiple choice" }>,
   chosen: readonly string[],
-): string | undefined {
+): string | NoError {
   return question.options.find(
     (option) => option.blocks !== undefined && chosen.includes(option.value),
   )?.blocks;
@@ -77,7 +78,7 @@ function blockOf(
 function dateErrorOf(
   question: Extract<Question, { kind: "date" | "datetime" }>,
   answer: Answer,
-): string | undefined {
+): string | NoError {
   if (typeof answer !== "string" || answer.trim() === "")
     return "Cette réponse est attendue.";
   const { min, max } = question;
@@ -99,7 +100,7 @@ function displayedDate(iso: string): string {
 function numberErrorOf(
   question: Extract<Question, { kind: "number" }>,
   answer: Answer,
-): string | undefined {
+): string | NoError {
   if (typeof answer !== "number" || !Number.isFinite(answer))
     return "Indiquez un nombre.";
   if (question.integer && !Number.isInteger(answer))

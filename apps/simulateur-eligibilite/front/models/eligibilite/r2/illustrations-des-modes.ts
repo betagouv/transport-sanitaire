@@ -9,7 +9,10 @@ import vslOuTaxi from "./illustrations/vsl-ou-taxi.webp";
 
 const DESSINS = [vehiculePersonnel, vslOuTaxi, ambulance];
 
+/** Une carte en trop, qui n'a pas de dessin. */
+type SansDessin = undefined;
+
 /** Le dessin de la carte de ce rang ; une carte en trop n'en a pas. */
-export function illustrationDuMode(rang: number): string | undefined {
+export function illustrationDuMode(rang: number): string | SansDessin {
   return DESSINS[rang];
 }

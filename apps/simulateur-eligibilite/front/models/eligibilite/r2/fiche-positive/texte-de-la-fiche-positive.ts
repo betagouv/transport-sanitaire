@@ -9,6 +9,7 @@
 // raison, et le rappel d'attente.
 
 import type {
+  AucunTexte,
   Bloc,
   CatalogueResultats,
 } from "../../declarations/catalogue-resultats";
@@ -69,7 +70,7 @@ export function texteDeLaFichePositive(
   catalogue: CatalogueResultats,
   trace: Trace,
   issueId: IssueAvecFichePositive,
-): TexteDeLaFichePositive | undefined {
+): TexteDeLaFichePositive | AucunTexte {
   const issue = catalogue.issues[issueId];
   const libelle = libelleDuMode(trace.cibles);
   const titre = libelle && issue.titles[libelle];
