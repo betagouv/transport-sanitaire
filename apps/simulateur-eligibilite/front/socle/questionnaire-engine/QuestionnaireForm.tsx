@@ -2,7 +2,6 @@
 // boutons de navigation. L'état est dans `questionnaire.ts`.
 
 import type { ComponentType } from "react";
-import { errorsOf } from "../../../core/socle/questionnaire-engine/answer-error";
 import {
   type Answers,
   type AnyCibles,
@@ -14,6 +13,7 @@ import { QuestionField } from "./QuestionField";
 import type { Questionnaire, QuestionnaireOptions } from "./questionnaire";
 import { useQuestionnaire } from "./questionnaire";
 import { Stepper } from "./Stepper";
+import { errorsOf } from "./screen-texts";
 
 type Props = Omit<QuestionnaireOptions, "pages"> & {
   // Les parties de ce questionnaire, dans l'ordre.

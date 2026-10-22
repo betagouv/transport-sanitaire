@@ -82,8 +82,8 @@ type Common<Questions extends AnyQuestions, Cibles> = {
     validated: ValidatedAnswers<Questions>,
   ): Reminder | undefined;
   /**
-   * La question peut rester sans réponse : sa page se valide sans elle. Son
-   * libellé le dit, par « (facultatif) ».
+   * La question peut rester sans réponse : sa page se valide sans elle.
+   * L'écran le dit après son libellé.
    */
   readonly optional?: boolean;
   /**

@@ -207,9 +207,8 @@ function abroadOf(
 // Ce qui se lit autour du champ, vu les réponses : le libellé, le rappel, et
 // les incohérences. Celles-ci ne lisent pas les pages suivantes (`earlier`).
 function displayedTexts(question: Question, seen: Seen, earlier: Seen) {
-  const asked = question.labelFrom?.(...seen) ?? question.label;
   return {
-    label: question.optional ? `${asked} (facultatif)` : asked,
+    label: question.labelFrom?.(...seen) ?? question.label,
     reminder: question.reminderFrom?.(...seen) ?? question.reminder,
     inconsistencies: question.inconsistenciesFrom?.(...earlier),
   };

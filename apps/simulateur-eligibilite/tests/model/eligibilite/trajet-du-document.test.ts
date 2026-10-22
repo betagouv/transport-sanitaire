@@ -3,7 +3,6 @@
 // TS1001-03 du paquet de l'éditeur.
 
 import { describe, expect, it } from "vitest";
-import { errorsOf } from "../../../core/socle/questionnaire-engine/answer-error";
 import {
   areAnswered,
   askedQuestions,
@@ -18,6 +17,7 @@ import type { Cibles } from "../../../front/models/eligibilite/declarations/cibl
 import type { Questions } from "../../../front/models/eligibilite/declarations/questions";
 import { SEEDS } from "../../../front/models/eligibilite/seeds-catalogue";
 import { preconisationOf } from "../../../front/socle/model";
+import { errorsOf } from "../../../front/socle/questionnaire-engine/screen-texts";
 import { MINEUR, PLUSIEURS_PERMISSIONS } from "./reponses-de-la-permission";
 
 type Reponses = Answers<Questions>;

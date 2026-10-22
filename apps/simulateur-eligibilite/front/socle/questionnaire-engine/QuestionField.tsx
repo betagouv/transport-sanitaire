@@ -1,8 +1,7 @@
 // Rend une question avec le champ de `front/socle/ui/` qui lui convient.
 
 import {
-  addressErrors,
-  askedFields,
+  addressProblems,
   isAddress,
   withField,
 } from "../../../core/socle/questionnaire-engine/address";
@@ -22,6 +21,7 @@ import { Reminder } from "../ui/Reminder";
 import { SelectField } from "../ui/SelectField";
 import { TextAreaField } from "../ui/TextAreaField";
 import { TextField } from "../ui/TextField";
+import { displayedFields, displayedLabel, messageOf } from "./screen-texts";
 
 type Props = {
   question: Question;
@@ -59,7 +59,7 @@ type CheckboxQuestion = Extract<Question, { kind: "checkbox" }>;
 function common({ question, errors, autoFocus }: Props) {
   return {
     id: question.id,
-    label: question.label,
+    label: displayedLabel(question.label, question.optional),
     hint: question.hint,
     errors,
     autoFocus,
@@ -96,21 +96,24 @@ function render(props: Props) {
 function AddressQuestionField(props: Props & { question: AddressQuestion }) {
   const { question, onChange } = props;
   const address = isAddress(props.answer) ? props.answer : undefined;
-  const errors = address ? addressErrors(question, address) : {};
-  const failing = Object.keys(errors).length > 0;
+  const problems = address ? addressProblems(question, address) : {};
+  const failing = Object.keys(problems).length > 0;
   return (
     <AddressField
       id={question.id}
       errors={failing ? [] : props.errors}
-      label={question.label}
+      label={displayedLabel(question.label, question.optional)}
       hint={question.hint}
       autoFocus={props.autoFocus}
       lead
-      fields={askedFields(question).map((field) => ({
-        ...field,
-        value: address?.[field.name] ?? "",
-        error: errors[field.name],
-      }))}
+      fields={displayedFields(question).map((field) => {
+        const problem = problems[field.name];
+        return {
+          ...field,
+          value: address?.[field.name] ?? "",
+          error: problem && messageOf(problem),
+        };
+      })}
       onChange={(name, text) => onChange(withField(address, name, text))}
     />
   );

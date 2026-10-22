@@ -3,7 +3,7 @@
 // pour la quitter.
 
 import { askedAddress, isAddress, isCompleteAddress } from "./address.ts";
-import { errorsOf } from "./answer-error.ts";
+import { problemsOf } from "./answer-problem.ts";
 import type { Answer, Question, Unanswered } from "./question.ts";
 
 /**
@@ -48,7 +48,7 @@ export function isAnswered(question: Question, answer: Answer | Unanswered) {
       isCompleteAddress(question, offered) &&
       !question.inconsistencies?.length
     );
-  return errorsOf(question, offered).length === 0;
+  return problemsOf(question, offered).length === 0;
 }
 
 // ---- implémentation ----

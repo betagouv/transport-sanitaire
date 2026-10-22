@@ -1,9 +1,12 @@
 // Ce qu'est une adresse, la réponse d'une question « adresse » : ses champs,
-// ceux qui se demandent, et ce qui ne va pas dans chacun.
+// ceux qui se demandent, et ce qui ne va pas dans chacun. Leurs libellés sont
+// écrits par l'écran (`front/socle/questionnaire-engine/screen-texts.ts`).
 //
 // En France, le code postal fait cinq chiffres, et le pays ne se demande pas.
 // À l'étranger, le pays est attendu, et le code postal est libre : il peut
 // même manquer.
+
+import type { AnswerProblem } from "./answer-problem.ts";
 
 /**
  * Une adresse. Un champ qui ne se demande pas est absent, comme un champ
@@ -21,7 +24,8 @@ export type Address = {
   readonly country?: string;
 };
 
-type FieldName = keyof Address;
+/** Le nom d'un champ d'une adresse. */
+export type AddressFieldName = keyof Address;
 
 /** Ce qu'une question règle de son adresse. */
 export type AddressSettings = {
@@ -35,21 +39,17 @@ export type AddressSettings = {
   readonly abroad?: boolean;
 };
 
-/** Un champ qui se demande, tel qu'il se présente. */
-type AskedField = {
-  readonly name: FieldName;
-  readonly label: string;
-  readonly hint?: string;
+/** Un champ qui se demande. */
+export type AskedField = {
+  readonly name: AddressFieldName;
   /** Le champ peut rester vide. */
   readonly optional?: boolean;
-  /** Un champ court, pour une saisie de quelques caractères. */
-  readonly short?: boolean;
-  /** Le champ se range sur la ligne de celui qui le précède. */
-  readonly sameLine?: boolean;
 };
 
-/** Les messages d'une adresse, par champ fautif. */
-type AddressErrors = Readonly<Partial<Record<FieldName, string>>>;
+/** Ce qui ne va pas dans une adresse, par champ fautif. */
+type AddressProblems = Readonly<
+  Partial<Record<AddressFieldName, AnswerProblem>>
+>;
 
 export function isAddress(answer: unknown): answer is Address {
   return (
@@ -75,7 +75,7 @@ export function askedFields(settings: AddressSettings): AskedField[] {
  */
 export function withField(
   address: Address | undefined,
-  name: FieldName,
+  name: AddressFieldName,
   text: string,
 ): Address | undefined {
   const typed = { ...EMPTY, ...address, [name]: text };
@@ -101,18 +101,18 @@ export function askedAddress(
 }
 
 /**
- * Ce qui ne va pas dans l'adresse, champ par champ, à afficher sous chacun. Un
+ * Ce qui ne va pas dans l'adresse, champ par champ, à montrer sous chacun. Un
  * champ encore vide n'a rien à corriger.
  */
-export function addressErrors(
+export function addressProblems(
   settings: AddressSettings,
   address: Address,
-): AddressErrors {
-  const errors = askedFields(settings).flatMap((field) => {
-    const error = fieldError(settings, field, address[field.name] ?? "");
-    return error === undefined ? [] : [[field.name, error] as const];
+): AddressProblems {
+  const problems = askedFields(settings).flatMap((field) => {
+    const problem = fieldProblem(settings, field, address[field.name] ?? "");
+    return problem === undefined ? [] : [[field.name, problem] as const];
   });
-  return Object.fromEntries(errors);
+  return Object.fromEntries(problems);
 }
 
 /** L'adresse a-t-elle tous ses champs attendus, sans rien à corriger ? */
@@ -123,49 +123,35 @@ export function isCompleteAddress(
   const missing = askedFields(settings).some(
     ({ name, optional }) => !optional && !address[name]?.trim(),
   );
-  return !missing && Object.keys(addressErrors(settings, address)).length === 0;
+  return (
+    !missing && Object.keys(addressProblems(settings, address)).length === 0
+  );
 }
 
 // ---- implémentation ----
 
 const EMPTY: Address = { street: "", city: "" };
 
-const PLACE_NAME: AskedField = { name: "placeName", label: "Nom du lieu" };
-const STREET: AskedField = { name: "street", label: "Numéro et voie" };
-const COMPLEMENT: AskedField = {
-  name: "complement",
-  label: "Complément (facultatif)",
-  optional: true,
-};
-const POSTAL_CODE: AskedField = {
-  name: "postalCode",
-  label: "Code postal",
-  hint: "Format attendu : 5 chiffres",
-  short: true,
-};
-const POSTAL_CODE_ABROAD: AskedField = {
-  name: "postalCode",
-  label: "Code postal (facultatif)",
-  optional: true,
-  short: true,
-};
-// La commune suit le code postal, sur sa ligne.
-const CITY: AskedField = { name: "city", label: "Commune", sameLine: true };
-const COUNTRY: AskedField = { name: "country", label: "Pays" };
+const PLACE_NAME: AskedField = { name: "placeName" };
+const STREET: AskedField = { name: "street" };
+const COMPLEMENT: AskedField = { name: "complement", optional: true };
+const POSTAL_CODE: AskedField = { name: "postalCode" };
+const POSTAL_CODE_ABROAD: AskedField = { name: "postalCode", optional: true };
+const CITY: AskedField = { name: "city" };
+const COUNTRY: AskedField = { name: "country" };
 
 // Des espaces seuls ne sont pas une saisie : comme pour un texte, le champ
 // attendu le dit. Le code postal français se juge sans ses espaces extrêmes,
 // puisqu'ils seront retirés.
-function fieldError(
+function fieldProblem(
   settings: AddressSettings,
   field: AskedField,
   typed: string,
-): string | undefined {
+): AnswerProblem | undefined {
   if (typed === "") return undefined;
   const text = typed.trim();
-  if (text === "")
-    return field.optional ? undefined : "Cette réponse est attendue.";
+  if (text === "") return field.optional ? undefined : { kind: "missing" };
   if (field.name === "postalCode" && !settings.abroad && !/^\d{5}$/.test(text))
-    return "Indiquez un code postal de 5 chiffres.";
+    return { kind: "invalid postal code" };
   return undefined;
 }

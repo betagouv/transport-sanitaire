@@ -108,7 +108,7 @@ describe("un nom s'écrit d'une seule façon", () => {
     );
     expect(
       fautifs,
-      "Un fichier s'écrit en kebab-case : `answer-error.ts`, " +
+      "Un fichier s'écrit en kebab-case : `answer-problem.ts`, " +
         "`footer.test.tsx`. Seule exception, le `.tsx` qui exporte un " +
         "composant React porte le nom de ce qu'il exporte, en PascalCase : " +
         "`Footer.tsx`. Un fichier de test ou un point d'entrée n'est pas un " +
