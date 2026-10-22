@@ -4,6 +4,7 @@
 // `boutons-du-resultat.test.ts`.
 
 import { screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it } from "vitest";
 import { model } from "../../../front/models/eligibilite";
 import { catalogueResultats } from "../../../front/models/eligibilite/r2/catalogue-resultats";
@@ -18,6 +19,7 @@ await model.seeds();
 
 const PRECEDENT = "Précédent";
 const NOUVELLE = "Faire une nouvelle simulation";
+const COMPLETER = "Compléter la prescription";
 
 // L'écran des seeds liste une trentaine de situations : sous la charge de la
 // suite entière, il met plus que la seconde par défaut. Un test attend trois
@@ -51,7 +53,7 @@ const boutonsDuResultat = () =>
   [
     PRECEDENT,
     NOUVELLE,
-    "Compléter la prescription",
+    COMPLETER,
     "Compléter la demande d’accord préalable",
     "Compléter la demande d’examen",
   ].filter((nom) => screen.queryByRole("button", { name: nom }) !== null);
@@ -63,11 +65,20 @@ describe("les boutons du modèle de l'éditeur", DELAI_D_UN_TEST, () => {
     ["issue-permission-patient", [PRECEDENT, NOUVELLE]],
     ["issue-convocation", [PRECEDENT, NOUVELLE]],
     ["issue-non-eligible", [PRECEDENT, NOUVELLE]],
-    ["issue-pmt", [PRECEDENT, NOUVELLE]],
-    ["issue-dap-sans-urgence", [PRECEDENT, NOUVELLE]],
-    ["issue-dap-urgence-attestee", [PRECEDENT, NOUVELLE]],
-    ["issue-s3141", [PRECEDENT, NOUVELLE]],
-    ["issue-dap-etranger-a-examiner", [PRECEDENT, NOUVELLE]],
+    ["issue-pmt", [PRECEDENT, NOUVELLE, COMPLETER]],
+    [
+      "issue-dap-sans-urgence",
+      [PRECEDENT, NOUVELLE, "Compléter la demande d’accord préalable"],
+    ],
+    [
+      "issue-dap-urgence-attestee",
+      [PRECEDENT, NOUVELLE, "Compléter la demande d’accord préalable"],
+    ],
+    ["issue-s3141", [PRECEDENT, NOUVELLE, COMPLETER]],
+    [
+      "issue-dap-etranger-a-examiner",
+      [PRECEDENT, NOUVELLE, "Compléter la demande d’examen"],
+    ],
   ])("%s a ses boutons, et seulement eux", async (id, attendus) => {
     await ouvrirLaSeed(id);
 
@@ -86,13 +97,46 @@ describe("les boutons du modèle de l'éditeur", DELAI_D_UN_TEST, () => {
     expect(boutonsDuResultat()).toEqual([PRECEDENT, NOUVELLE]);
   });
 
-  it("garde le stepper sur le résultat : P3 n'a pas encore de page", async () => {
+  it("compte P3 dans le stepper : le résultat en est l'avant-dernière étape", async () => {
     await ouvrirLaSeed("issue-pmt");
 
     expect(
       screen.getByRole("heading", {
-        name: "Résultat de l’éligibilité Étape 3 sur 3",
+        name: "Résultat de l’éligibilité Étape 3 sur 4",
       }),
     ).toBeInTheDocument();
+  });
+
+  it("ouvre P3 par « Compléter la prescription »", async () => {
+    await ouvrirLaSeed("issue-pmt");
+    const user = userEvent.setup();
+
+    await user.click(screen.getByRole("button", { name: COMPLETER }));
+
+    expect(
+      await screen.findByLabelText(/^Combien de transports faut-il prescrire/),
+    ).toBeInTheDocument();
+  });
+
+  it("récapitule sur R3 les réponses de P3, en attendant le PDF", async () => {
+    await ouvrirLaSeed("issue-pmt");
+    const user = userEvent.setup();
+    await user.click(screen.getByRole("button", { name: COMPLETER }));
+
+    await user.type(
+      await screen.findByLabelText(/^Combien de transports faut-il prescrire/),
+      "2",
+    );
+    await user.click(screen.getByLabelText("Aller simple"));
+    await user.click(screen.getByRole("button", { name: "Terminer" }));
+
+    expect(
+      await screen.findByRole("heading", {
+        level: 1,
+        name: /^Informations recueillies/,
+      }),
+    ).toBeInTheDocument();
+    expect(screen.getByText("2 transport(s)")).toBeInTheDocument();
+    expect(screen.getByText("Aller simple")).toBeInTheDocument();
   });
 });

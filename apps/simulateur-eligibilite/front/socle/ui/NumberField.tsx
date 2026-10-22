@@ -33,14 +33,7 @@ export function NumberField(props: Props) {
       }
       hintText={props.hint}
       classes={{ label: props.lead ? "fr-text--lead" : undefined }}
-      style={{ maxWidth: "16rem" }}
-      addon={
-        props.unit ? (
-          <span className="fr-label" style={{ whiteSpace: "nowrap" }}>
-            {props.unit}
-          </span>
-        ) : undefined
-      }
+      addon={props.unit ? <Unit unit={props.unit} /> : undefined}
       nativeInputProps={{
         id: props.id,
         name: props.id,
@@ -49,12 +42,30 @@ export function NumberField(props: Props) {
         value: props.value ?? "",
         onChange: (e) => props.onChange(typedNumber(e.target.value)),
         autoFocus: props.autoFocus,
+        // Seule la saisie se borne : le libellé garde la largeur de la page.
+        style: { maxWidth: "16rem" },
       }}
     />
   );
 }
 
 // ---- implémentation ----
+
+// L'unité, à droite de la saisie : centrée sur sa hauteur, à 8 px d'elle.
+function Unit({ unit }: { unit: string }) {
+  return (
+    <span
+      className="fr-label"
+      style={{
+        whiteSpace: "nowrap",
+        alignSelf: "center",
+        marginLeft: "0.5rem",
+      }}
+    >
+      {unit}
+    </span>
+  );
+}
 
 // Ce que le navigateur sait du nombre attendu. Sans `step`, il signalerait
 // lui-même toute décimale, dans ses mots à lui : le message vient de la

@@ -203,9 +203,9 @@ distance, l'avion ou le bateau, la série et l'urgence (Q2.3.1 à Q2.3.4).
 Le résultat de R2 montre la page du praticien pour cinq issues, la fiche
 patient négative pour `ISSUE_NON_ELIGIBLE` et la fiche patient positive pour
 `ISSUE_PMT`, `ISSUE_S3141` et les deux demandes d'accord préalable : les dix
-issues ont leur texte et leurs boutons. « Compléter la prescription », « Compléter
-la demande d’accord préalable » ou « Compléter la demande d’examen »
-s'affichent quand P3 aura ses pages (#65).
+issues ont leur texte et leurs boutons. « Compléter la prescription »,
+« Compléter la demande d’accord préalable » et « Compléter la demande
+d’examen » ouvrent P3, qui pose le trajet (#144).
 L'avancement
 est dans l'issue 50 du dépôt, les décisions dans
 [`docs/knowledge/adr/journal-des-decisions-v10.md`](docs/knowledge/adr/journal-des-decisions-v10.md).

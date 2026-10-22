@@ -1,5 +1,7 @@
 // Les domaines du modèle de l'éditeur, dans l'ordre du parcours : P1 dit le
-// mode, P2 l'éligibilité, R2 son résultat. La racine du modèle les assemble.
+// mode, P2 l'éligibilité, R2 son résultat, P3 complète le cerfa,
+// R3 le récapitule. La racine du
+// modèle les assemble.
 //
 // Comme dans `tests/architecture.test.ts`, chaque règle donne son pourquoi
 // dans son message d'échec.
@@ -11,6 +13,8 @@ const EDITEUR = "front/models/eligibilite";
 const P1 = `${EDITEUR}/p1`;
 const P2 = `${EDITEUR}/p2`;
 const R2 = `${EDITEUR}/r2`;
+const P3 = `${EDITEUR}/p3`;
+const R3 = `${EDITEUR}/r3`;
 const FAMILLES_DE_R2 = ["praticien", "fiche-negative", "fiche-positive"].map(
   (famille) => `${R2}/${famille}`,
 );
@@ -24,11 +28,18 @@ describe("les domaines du modèle de l'éditeur", () => {
     expect(
       [
         ...franchissements([P1], (cible) =>
-          [P2, R2].some((suite) => dans(suite)(cible)),
+          [P2, R2, P3, R3].some((suite) => dans(suite)(cible)),
         ),
-        ...franchissements([P2], dans(R2)),
+        ...franchissements([P2], (cible) =>
+          [R2, P3, R3].some((suite) => dans(suite)(cible)),
+        ),
+        ...franchissements([R2], (cible) =>
+          [P3, R3].some((suite) => dans(suite)(cible)),
+        ),
+        ...franchissements([P3], dans(R3)),
       ],
-      "P1 établit le mode avant P2, et P2 l'éligibilité avant R2. Une partie " +
+      "P1 établit le mode avant P2, P2 l'éligibilité avant R2, et R2 l'issue " +
+        "que P3 complète avant R3. Une partie " +
         "qui lit la suivante dépend d'une question qu'on ne lui a pas encore " +
         "posée. Ce qu'elles partagent va à la racine du modèle ou dans " +
         "`declarations/`.",

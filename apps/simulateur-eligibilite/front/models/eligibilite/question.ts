@@ -10,6 +10,7 @@ import {
   questionsOf,
   type ValidatedAnswers,
 } from "../../socle";
+import type { Cibles } from "./declarations/cibles";
 import type { Faits } from "./declarations/faits";
 import { OPTIONS, type Questions } from "./declarations/questions";
 import { faitsDeLaBranche } from "./p2/branche";
@@ -24,6 +25,13 @@ export type FaitsDesReponses = Omit<
 /** Ce que lit une condition déclarée hors de son constructeur. */
 export type Context = QuestionContext<Questions, undefined, FaitsDesReponses>;
 
+/** Ce que lit une condition de P3 : les cibles figées au verrou en plus. */
+export type ContextDuComplement = QuestionContext<
+  Questions,
+  Cibles,
+  FaitsDesReponses
+>;
+
 /** Les faits des réponses validées, dans l'ordre où ils s'écrasent. */
 export function faitsDesReponses(
   validated: ValidatedAnswers<Questions>,
@@ -37,6 +45,16 @@ export function faitsDesReponses(
 
 /** Les constructeurs des questions de P0 à P2. */
 export const question = questionsOf<Questions, FaitsDesReponses>({
+  options: OPTIONS,
+  faits: (_answers, validated) => faitsDesReponses(validated),
+});
+
+/** Les constructeurs des questions de P3, posées après le verrou. */
+export const questionDuComplement = questionsOf<
+  Questions,
+  FaitsDesReponses,
+  Cibles
+>({
   options: OPTIONS,
   faits: (_answers, validated) => faitsDesReponses(validated),
 });
