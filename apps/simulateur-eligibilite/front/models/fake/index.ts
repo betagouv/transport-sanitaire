@@ -12,14 +12,14 @@ import { COMPLEMENT, PARTS } from "./questionnaire";
 import { CommandeCompletee, resultatDeLaCommande } from "./Resultats";
 
 export const model = defineModel<Questions, Faits, Cibles>({
-  preconisation: { faits, cibles },
-  transportAndEligibility: {
-    parts: PARTS,
-    title: "Résultat",
-    result: resultatDeLaCommande,
+  core: {
+    preconisation: { faits, cibles },
+    questionnaire: PARTS,
+    complement: COMPLEMENT,
+    seeds: () => import("./seeds-catalogue").then((m) => m.SEEDS),
   },
+  result: { title: "Résultat", content: resultatDeLaCommande },
   cerfa: {
-    part: COMPLEMENT,
     // Sans boisson, il n'y a rien à compléter : le premier résultat est le
     // dernier écran.
     form: ({ commande }) => (commande === SANS_COMMANDE ? null : bonDeCommande),
@@ -29,5 +29,4 @@ export const model = defineModel<Questions, Faits, Cibles>({
       commande === SANS_COMMANDE ? null : "Compléter la commande",
     downloadLabel: "Télécharger et imprimer le bon de commande",
   },
-  seeds: () => import("./seeds-catalogue").then((m) => m.SEEDS),
 });

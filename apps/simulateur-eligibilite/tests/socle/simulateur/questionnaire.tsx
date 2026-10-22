@@ -30,7 +30,9 @@ export async function ouvrirLeSimulateur(
 
 // Le modèle de test, ou celui donné, avec ces seeds à la place de son catalogue.
 function modeleAvec(seeds?: readonly Seed[], modele: Model = modeleDeTest) {
-  return seeds ? { ...modele, seeds: async () => seeds } : modele;
+  return seeds
+    ? { ...modele, core: { ...modele.core, seeds: async () => seeds } }
+    : modele;
 }
 
 export const BOISSON = { name: /^quelle boisson souhaitez-vous/i };

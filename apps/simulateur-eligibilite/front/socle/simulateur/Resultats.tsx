@@ -3,6 +3,7 @@
 // fournit son contenu ; le cadre, le stepper et les boutons sont ici.
 
 import type { ComponentType, ReactNode } from "react";
+import { type Preconisation, readingOf } from "../../../core/socle/model";
 import {
   askedPages,
   validatedQuestions,
@@ -16,12 +17,7 @@ import {
 import type { QuestionnaireState } from "../../../core/socle/questionnaire-engine/questionnaire-state";
 import { CerfaDownload } from "../cerfa/CerfaDownload";
 import { dtoFrom } from "../cerfa-mapping";
-import {
-  type CerfaInput,
-  type Model,
-  type Preconisation,
-  readingOf,
-} from "../model";
+import type { CerfaInput, Model } from "../model";
 import type { DebugTraceProps } from "../questionnaire-engine/QuestionnaireForm";
 import { Stepper } from "../questionnaire-engine/Stepper";
 import type { Locked } from "./start";
@@ -49,9 +45,10 @@ export function CerfaResultat({
 }: Props & { locked: Locked; completedAt: Date }) {
   const { answers } = state;
   const { faits, cibles } = locked.preconisation;
-  const { part, title, Resultat } = model.cerfa;
-  const total = model.transportAndEligibility.parts.length + 1;
-  const all = [...pagesOf(model.transportAndEligibility.parts), ...part.pages];
+  const part = model.core.complement;
+  const { title, Resultat } = model.cerfa;
+  const total = model.core.questionnaire.length + 1;
+  const all = [...pagesOf(model.core.questionnaire), ...part.pages];
   const trace = traceOf("cerfa", all, answers, locked.preconisation, cibles);
   const read = readingOf(all, answers, cibles);
   return (

@@ -36,7 +36,7 @@ const HOSPITALISE = /^Le patient est déjà hospitalisé pendant ce trajet/;
 function afficherLeQuestionnaire(onComplete: () => void = () => {}) {
   render(
     <QuestionnaireForm
-      parts={model.transportAndEligibility.parts}
+      parts={model.core.questionnaire}
       partCount={3}
       endLabel="Voir le résultat"
       tracked={false}

@@ -166,9 +166,9 @@ describe("le choix du modèle", () => {
 function modeleQuiDemande(mets: string): Model {
   return {
     ...modeleDeTest,
-    transportAndEligibility: {
-      ...modeleDeTest.transportAndEligibility,
-      parts: [
+    core: {
+      ...modeleDeTest.core,
+      questionnaire: [
         {
           id: mets,
           title: mets,

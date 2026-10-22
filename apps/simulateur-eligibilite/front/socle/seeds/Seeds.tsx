@@ -4,9 +4,10 @@
 // seeds en deux sections : celles qui ouvrent un résultat, et celles qui
 // s'arrêtent dans le questionnaire.
 
+import { preconisationOf } from "../../../core/socle/model";
 import { evaluateSeed, type Seed } from "../../../core/socle/seeds/seed";
 import { Container } from "../app/Container";
-import { type Model, preconisationOf } from "../model";
+import type { Model } from "../model";
 import { startingScreen } from "../simulateur/start";
 import { type SeedRow, SeedsTable } from "./SeedsTable";
 
@@ -83,7 +84,7 @@ function rowOf(model: Model, seed: Seed): SeedRow {
   return {
     seed,
     evaluation: evaluateSeed(
-      (answers) => preconisationOf(model, answers).cibles,
+      (answers) => preconisationOf(model.core, answers).cibles,
       seed,
     ),
     opensOnResultat: screen === "resultat" || screen === "cerfa",

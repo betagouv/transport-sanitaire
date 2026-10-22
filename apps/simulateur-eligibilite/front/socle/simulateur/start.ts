@@ -3,6 +3,7 @@
 // Une seed n'est qu'un pré-remplissage. À réponses égales, le parcours est dans
 // l'état qu'un utilisateur aurait laissé, « Précédent » et verrou compris.
 
+import { type Preconisation, preconisationOf } from "../../../core/socle/model";
 import { validatedQuestions } from "../../../core/socle/questionnaire-engine/asked-questions";
 import {
   type Answers,
@@ -10,7 +11,7 @@ import {
 } from "../../../core/socle/questionnaire-engine/question";
 import type { QuestionnaireState } from "../../../core/socle/questionnaire-engine/questionnaire-state";
 import { stateAfterAnswers } from "../../../core/socle/questionnaire-engine/questionnaire-state";
-import { type Model, type Preconisation, preconisationOf } from "../model";
+import type { Model } from "../model";
 
 /** Ce que le verrou fige : les réponses d'avant, et leur préconisation. */
 export type Locked = { answers: Answers; preconisation: Preconisation };
@@ -21,13 +22,16 @@ export type Locked = { answers: Answers; preconisation: Preconisation };
  * ne passe pas le verrou : rien de ce qui suit ne la lit.
  */
 export function lock(model: Model, answers: Answers): Locked {
-  const pages = pagesOf(model.transportAndEligibility.parts);
+  const pages = pagesOf(model.core.questionnaire);
   const acquired = Object.fromEntries(
     Object.entries(validatedQuestions(pages, answers)).flatMap(([id, seen]) =>
       seen?.answer === undefined ? [] : [[id, seen.answer]],
     ),
   );
-  return { answers: acquired, preconisation: preconisationOf(model, acquired) };
+  return {
+    answers: acquired,
+    preconisation: preconisationOf(model.core, acquired),
+  };
 }
 
 // `previousState` est le questionnaire derrière un résultat : « Précédent » le
@@ -51,7 +55,7 @@ export type Screen =
  */
 export function startingScreen(model: Model, answers: Answers | null): Screen {
   if (!answers) return { name: "questionnaire" };
-  const before = pagesOf(model.transportAndEligibility.parts);
+  const before = pagesOf(model.core.questionnaire);
   const { complete, ...state } = stateAfterAnswers(before, answers);
   if (!complete) return { name: "questionnaire", resume: state };
   return (
@@ -67,7 +71,8 @@ export function startingScreen(model: Model, answers: Answers | null): Screen {
 // Répondre à une question d'après le verrou, c'est l'avoir franchi. Sans une
 // telle réponse, ou sans cerfa à compléter, on reste sur le premier résultat.
 function screenAfterLock(model: Model, answers: Answers): Screen | undefined {
-  const { part, form } = model.cerfa;
+  const part = model.core.complement;
+  const { form } = model.cerfa;
   const after = part.pages.flatMap((page) => page.questions.map((q) => q.id));
   if (!after.some((id) => answers[id] !== undefined)) return undefined;
   const before = Object.fromEntries(

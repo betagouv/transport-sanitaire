@@ -3,6 +3,7 @@
 // toucher à R2. `CATALOGUE_COMPLET_QUESTIONS.md` Q2.13, Q3.2 et Q3.3.
 
 import { describe, expect, it } from "vitest";
+import { preconisationOf } from "../../../core/socle/model";
 import {
   areAnswered,
   askedQuestions,
@@ -17,11 +18,10 @@ import { model } from "../../../front/models/eligibilite";
 import type { Questions } from "../../../front/models/eligibilite/declarations/questions";
 import { projectionCerfa } from "../../../front/models/eligibilite/p3/lieux-du-trajet";
 import { SEEDS } from "../../../front/models/eligibilite/seeds-catalogue";
-import { preconisationOf } from "../../../front/socle/model";
 
 type Reponses = Answers<Questions>;
 
-const pages = model.cerfa.part.pages;
+const pages = model.core.complement.pages;
 const PMT = { cible_support_id: "S3138g" } as AnyCibles;
 const ALLER: Reponses = { "Q3.1.1": 1, "Q3.1.2": "1_ALLER" };
 const DIALYSE: Reponses = { ...ALLER, "Q1.3": ["5_DIALYSE"] };
@@ -181,8 +181,8 @@ describe("les contrôles des deux lieux", () => {
         country: "Belgique",
       },
     } as Reponses;
-    expect(preconisationOf(model, avecLePays).cibles).toEqual(
-      preconisationOf(model, seed.answers).cibles,
+    expect(preconisationOf(model.core, avecLePays).cibles).toEqual(
+      preconisationOf(model.core, seed.answers).cibles,
     );
   });
 });

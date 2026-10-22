@@ -12,7 +12,7 @@ import type { Questions } from "../../../front/models/eligibilite/declarations/q
 
 type Reponses = Answers<Questions>;
 
-const pages = pagesOf(model.transportAndEligibility.parts);
+const pages = pagesOf(model.core.questionnaire);
 const page = pages.find(({ id }) => id === "P2/trajet");
 const posees = (reponses: Reponses) =>
   page ? askedQuestions(pages, page, reponses).map(({ id }) => id) : [];

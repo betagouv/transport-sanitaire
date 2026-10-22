@@ -8,6 +8,7 @@
 // dates…) arrivent avec leurs questions.
 
 import { describe, expect, it } from "vitest";
+import { preconisationOf } from "../../../core/socle/model";
 import {
   askedQuestions,
   validatedQuestions,
@@ -28,12 +29,11 @@ import {
   faitsDuMode,
   modeDe,
 } from "../../../front/models/eligibilite/p1/mode-de-transport";
-import { preconisationOf } from "../../../front/socle/model";
 
 type Reponses = Answers<Questions>;
 type Critere = Questions["Q1.2"][number];
 
-const pages = pagesOf(model.transportAndEligibility.parts);
+const pages = pagesOf(model.core.questionnaire);
 const PRO: Reponses = {
   "Q0.1": "1_VERIFIER",
   "Q1.1": "3_AVEC_UN_PROFESSIONNEL",
@@ -103,7 +103,7 @@ describe("le retour en P1", () => {
     "Q1.3": ["1_FORTE_CORPULENCE", "2_ALD", "8_MINEUR_SOINS_CONTINUS"],
   };
   const faits = (reponses: Reponses) =>
-    preconisationOf(model, reponses).faits as Faits;
+    preconisationOf(model.core, reponses).faits as Faits;
 
   it("au retrait du brancard, efface la corpulence et garde l'ALD et le mineur", () => {
     const sansBrancard = { ...AMBULANCE, "Q1.2": ["1_PAS_AUTONOME"] };

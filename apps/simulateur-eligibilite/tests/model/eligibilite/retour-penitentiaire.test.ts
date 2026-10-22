@@ -101,9 +101,7 @@ describe("un retour qui relève de l'organisation pénitentiaire (point 34)", ()
   });
 
   it("oriente vers l'administration pénitentiaire, sans rien à compléter", () => {
-    const resultat = model.transportAndEligibility.result(
-      lectureDe(administratif),
-    );
+    const resultat = model.result.content(lectureDe(administratif));
     expect(resultat).toMatchObject({
       title: "Ce retour relève de l’organisation pénitentiaire",
     });

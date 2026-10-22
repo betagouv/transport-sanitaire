@@ -13,14 +13,14 @@ import { eligibilite } from "./r2/resultat";
 import { PrescriptionPreremplie } from "./r3/PrescriptionPreremplie";
 
 export const model = defineModel<Questions, Faits, Cibles>({
-  preconisation: { faits, cibles },
-  transportAndEligibility: {
-    parts: PARTS,
-    title: "Résultat de l’éligibilité",
-    result: eligibilite,
+  core: {
+    preconisation: { faits, cibles },
+    questionnaire: PARTS,
+    complement: COMPLEMENT,
+    seeds: () => import("./seeds-catalogue").then((m) => m.SEEDS),
   },
+  result: { title: "Résultat de l’éligibilité", content: eligibilite },
   cerfa: {
-    part: COMPLEMENT,
     // Aucun cerfa n'est encore rempli : après P3, le résultat n'offre pas de
     // PDF à télécharger (#157). Il récapitule les réponses, sous un titre
     // d'attente.
@@ -30,5 +30,4 @@ export const model = defineModel<Questions, Faits, Cibles>({
     startLabel: libelleDeCompletion,
     downloadLabel: "Télécharger et imprimer la prescription pré-remplie",
   },
-  seeds: () => import("./seeds-catalogue").then((m) => m.SEEDS),
 });

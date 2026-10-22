@@ -6,16 +6,16 @@
 // laisse ses faits absents.
 
 import { describe, expect, it } from "vitest";
+import { preconisationOf } from "../../../core/socle/model";
 import type { Answers } from "../../../core/socle/questionnaire-engine/question";
 import { model } from "../../../front/models/eligibilite";
 import type { Faits } from "../../../front/models/eligibilite/declarations/faits";
 import type { Questions } from "../../../front/models/eligibilite/declarations/questions";
-import { preconisationOf } from "../../../front/socle/model";
 
 type Reponses = Answers<Questions>;
 
 const valeur = (fait: keyof Faits, reponses: Reponses) =>
-  (preconisationOf(model, reponses).faits as Faits)[fait].value;
+  (preconisationOf(model.core, reponses).faits as Faits)[fait].value;
 
 const BESOIN: Reponses = { "Q0.1": "1_VERIFIER" };
 const SEUL: Reponses = { ...BESOIN, "Q1.1": "1_SEUL", "Q1.3": ["7_AUCUNE"] };

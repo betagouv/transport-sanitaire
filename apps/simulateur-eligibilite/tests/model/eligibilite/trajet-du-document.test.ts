@@ -3,6 +3,7 @@
 // TS1001-03 du paquet de l'éditeur.
 
 import { describe, expect, it } from "vitest";
+import { preconisationOf } from "../../../core/socle/model";
 import {
   areAnswered,
   askedQuestions,
@@ -16,13 +17,12 @@ import { model } from "../../../front/models/eligibilite";
 import type { Cibles } from "../../../front/models/eligibilite/declarations/cibles";
 import type { Questions } from "../../../front/models/eligibilite/declarations/questions";
 import { SEEDS } from "../../../front/models/eligibilite/seeds-catalogue";
-import { preconisationOf } from "../../../front/socle/model";
 import { errorsOf } from "../../../front/socle/questionnaire-engine/screen-texts";
 import { MINEUR, PLUSIEURS_PERMISSIONS } from "./reponses-de-la-permission";
 
 type Reponses = Answers<Questions>;
 
-const pages = model.cerfa.part.pages;
+const pages = model.core.complement.pages;
 const [PAGE] = pages;
 // Les pages des lieux suivent : seule celle du trajet se juge ici.
 const DU_TRAJET = pages.slice(0, 1);
@@ -221,12 +221,12 @@ describe("Q3.1 ne requalifie pas P2", () => {
   } as Reponses;
 
   it("deux documents de deux transports gardent la série qualifiante de P2", () => {
-    const { faits, cibles } = preconisationOf(model, {
+    const { faits, cibles } = preconisationOf(model.core, {
       ...SERIE,
       ...PRESCRIPTION,
     });
 
     expect(faits.fait_serie_qualifiante).toMatchObject({ value: true });
-    expect(cibles).toEqual(preconisationOf(model, SERIE).cibles);
+    expect(cibles).toEqual(preconisationOf(model.core, SERIE).cibles);
   });
 });

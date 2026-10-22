@@ -8,11 +8,12 @@
 import { readdirSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
+import { preconisationOf } from "../../core/socle/model";
 import type { Page } from "../../core/socle/questionnaire-engine/question";
 import { evaluateSeed } from "../../core/socle/seeds/seed";
 import { model as eligibilite } from "../../front/models/eligibilite";
 import { model as fake } from "../../front/models/fake";
-import { type Model, preconisationOf } from "../../front/socle/model";
+import type { Model } from "../../front/socle/model";
 import { racine } from "../inspection-des-sources";
 
 const MODELES: Record<string, Model> = { eligibilite, fake };
@@ -30,8 +31,8 @@ it("chaque modèle de `front/models/` est vérifié", () => {
 
 describe.each(Object.entries(MODELES))("le modèle %s", (_nom, model) => {
   const pages: readonly Page[] = [
-    ...model.transportAndEligibility.parts.flatMap((part) => part.pages),
-    ...model.cerfa.part.pages,
+    ...model.core.questionnaire.flatMap((part) => part.pages),
+    ...model.core.complement.pages,
   ];
   const questions = pages.flatMap((page) => page.questions);
   const identifiants = questions.map((question) => question.id);
@@ -71,7 +72,7 @@ describe.each(Object.entries(MODELES))("le modèle %s", (_nom, model) => {
   });
 
   describe("ses seeds", async () => {
-    const seeds = await model.seeds();
+    const seeds = await model.core.seeds();
 
     it("portent chacune un identifiant qui leur est propre", () => {
       expect(
@@ -96,7 +97,7 @@ describe.each(Object.entries(MODELES))("le modèle %s", (_nom, model) => {
     it("sont rejouées sans écart avec leurs attendus", () => {
       const ecarts = seeds.flatMap((seed) =>
         evaluateSeed(
-          (answers) => preconisationOf(model, answers).cibles,
+          (answers) => preconisationOf(model.core, answers).cibles,
           seed,
         ).mismatches.map(
           ({ cible, expected, actual }) =>

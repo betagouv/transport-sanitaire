@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import type { ValidatedAnswers } from "../../core/socle";
-import { type Model, preconisationOf } from "../../front/socle/model";
+import { type CoreModel, preconisationOf } from "../../core/socle/model";
 import { modeleDeTest } from "./modele-de-test";
 
 // La préconisation va des réponses aux faits, puis aux cibles. Pour ses faits,
@@ -16,8 +16,8 @@ const lue = (validated: ValidatedAnswers, id: string) => {
 };
 
 // Un modèle dont les faits sont ce qu'il lit, pour le lire ici.
-const model: Model = {
-  ...modeleDeTest,
+const model: CoreModel = {
+  ...modeleDeTest.core,
   preconisation: {
     faits: (_, validated) => ({
       boisson: lue(validated, "boisson"),

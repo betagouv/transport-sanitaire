@@ -7,6 +7,7 @@
 // sa précision.
 
 import { describe, expect, it } from "vitest";
+import { preconisationOf } from "../../../core/socle/model";
 import { askedQuestions } from "../../../core/socle/questionnaire-engine/asked-questions";
 import {
   type Answers,
@@ -15,11 +16,10 @@ import {
 import { model } from "../../../front/models/eligibilite";
 import type { Faits } from "../../../front/models/eligibilite/declarations/faits";
 import type { Questions } from "../../../front/models/eligibilite/declarations/questions";
-import { preconisationOf } from "../../../front/socle/model";
 
 type Reponses = Answers<Questions>;
 
-const pages = pagesOf(model.transportAndEligibility.parts);
+const pages = pagesOf(model.core.questionnaire);
 const page = pages.find(({ id }) => id === "P2/contextes");
 const posee = (id: keyof Questions, reponses: Reponses) => {
   const question = (page ? askedQuestions(pages, page, reponses) : []).find(
@@ -30,7 +30,7 @@ const posee = (id: keyof Questions, reponses: Reponses) => {
 const proposees = (id: keyof Questions, reponses: Reponses) =>
   posee(id, reponses)?.options.map(({ value }) => value);
 const faits = (reponses: Reponses) =>
-  preconisationOf(model, reponses).faits as Faits;
+  preconisationOf(model.core, reponses).faits as Faits;
 const valeurs = (reponses: Reponses, noms: readonly (keyof Faits)[]) =>
   noms.map((nom) => faits(reponses)[nom].value);
 

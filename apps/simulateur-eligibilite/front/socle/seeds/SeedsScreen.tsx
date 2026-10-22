@@ -40,7 +40,7 @@ function useCatalogue(model: Model): readonly Seed[] | undefined {
   const [seeds, setSeeds] = useState<readonly Seed[]>();
   useEffect(() => {
     let active = true;
-    model.seeds().then((catalogue) => {
+    model.core.seeds().then((catalogue) => {
       // L'écran a pu être quitté entre-temps.
       if (active) setSeeds(catalogue);
     });

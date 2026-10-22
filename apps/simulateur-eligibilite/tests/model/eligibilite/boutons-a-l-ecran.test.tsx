@@ -15,7 +15,7 @@ import { ouvrirLeSimulateur } from "../../socle/simulateur/questionnaire";
 // Le catalogue des textes et celui des seeds sont chargés une fois : la
 // première fiche n'attend pas leurs 900 ko.
 await catalogueResultats();
-await model.seeds();
+await model.core.seeds();
 
 const PRECEDENT = "Précédent";
 const NOUVELLE = "Faire une nouvelle simulation";

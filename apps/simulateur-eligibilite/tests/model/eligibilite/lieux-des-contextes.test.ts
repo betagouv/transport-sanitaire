@@ -13,7 +13,7 @@ import type { Questions } from "../../../front/models/eligibilite/declarations/q
 
 type Reponses = Answers<Questions>;
 
-const pages = model.cerfa.part.pages;
+const pages = model.core.complement.pages;
 const PMT = { cible_support_id: "S3138g" } as AnyCibles;
 const ALLER: Reponses = { "Q3.1.1": 1, "Q3.1.2": "1_ALLER" };
 const RETOUR: Reponses = { "Q3.1.1": 1, "Q3.1.2": "2_RETOUR" };

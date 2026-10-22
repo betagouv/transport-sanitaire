@@ -1,10 +1,10 @@
 // Les réponses et les lectures que partagent les tests de la permission (Q2.7
 // et Q2.8).
 
+import { readingOf } from "../../../core/socle/model";
 import { validatedQuestions } from "../../../core/socle/questionnaire-engine/asked-questions";
 import { cibles } from "../../../front/models/eligibilite/evaluation-des-regles";
 import type { ReponsesEtCibles } from "../../../front/models/eligibilite/r2/trace-du-resultat";
-import { readingOf } from "../../../front/socle/model";
 import { faits, pages, posee, type Reponses } from "./reponses-du-transfert";
 
 export { faits, posee, type Reponses };
