@@ -7,6 +7,7 @@
 import type { QuestionnairePart } from "../../socle";
 import type { Cibles } from "./declarations/cibles";
 import type { Questions } from "./declarations/questions";
+import { questionDuComplement as question } from "./question";
 
 type DemoPage = QuestionnairePart<Questions, Cibles>["pages"][number];
 
@@ -14,18 +15,14 @@ type DemoPage = QuestionnairePart<Questions, Cibles>["pages"][number];
 export const CRENEAU: DemoPage = {
   id: "creneau",
   questions: [
-    {
-      id: "debut",
-      kind: "datetime",
+    question.datetime("debut", {
       label: "Quand commence le retrait ?",
       hint: "Démontre : deux réponses de la même page qui se contredisent. La règle est sur la fin : elle lit le début, saisi juste avant.",
-    },
-    {
-      id: "fin",
-      kind: "datetime",
+    }),
+    question.datetime("fin", {
       label: "Quand finit-il ?",
       hint: "Démontre : deux messages ensemble, sous la même réponse. Une fin avant le début, un jour de fermeture : choisissez un dimanche avant le début pour voir les deux. Corrigée, la page se valide.",
-      inconsistenciesFrom: (answers) => {
+      inconsistenciesFrom: ({ answers }) => {
         const debut = answers.question("debut").value;
         const fin = answers.question("fin").value;
         return [
@@ -37,7 +34,7 @@ export const CRENEAU: DemoPage = {
             : []),
         ];
       },
-    },
+    }),
   ],
 };
 
@@ -45,19 +42,17 @@ export const CRENEAU: DemoPage = {
 export const EXPEDITION: DemoPage = {
   id: "expedition",
   questions: [
-    {
-      id: "expedition",
-      kind: "address",
+    question.address("expedition", {
       label: "À quelle adresse envoyer le reçu ?",
       hint: "Démontre : une incohérence de deux adresses. Celle de la facture, donnée plus haut, ne peut pas être répétée. Le message s'affiche sous le groupe, tous les champs en rouge. Une erreur de champ passe devant.",
-      inconsistenciesFrom: (answers) =>
+      inconsistenciesFrom: ({ answers }) =>
         sameAddress(
           answers.question("adresse").value,
           answers.question("expedition").value,
         )
           ? ["Le reçu doit partir à une autre adresse que celle de la facture."]
           : [],
-    },
+    }),
   ],
 };
 
