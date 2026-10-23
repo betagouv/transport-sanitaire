@@ -1,6 +1,9 @@
 // Le résultat du cerfa, le second du parcours, et ce qu'il partage avec le
 // premier (`FirstResultat.tsx`) : la trace de debug et les boutons. Le modèle
-// fournit son contenu ; le cadre, le stepper et les boutons sont ici.
+// fournit son titre, son texte et son cerfa ; la page les range ici, de haut en
+// bas (C03 du contrat d'intégration) : le stepper, titré du document ; le
+// texte ; « Précédent » et « Faire une nouvelle simulation » ; « Imprimer » et
+// « Télécharger » ; l'aperçu du document.
 
 import type { ComponentType, ReactNode } from "react";
 import type { Preconisation } from "../../../core/socle/model";
@@ -14,7 +17,7 @@ import {
   Questionnaire,
   type QuestionnaireState,
 } from "../../../core/socle/questionnaire-engine/questionnaire";
-import { CerfaActions } from "../cerfa/CerfaActions";
+import { CerfaDocument } from "../cerfa/CerfaDocument";
 import { dtoFrom } from "../cerfa-mapping";
 import type { CerfaInput, Model } from "../model";
 import type { DebugTraceProps } from "../questionnaire-engine/QuestionnaireForm";
@@ -54,13 +57,11 @@ export function CerfaResultat({
     <Frame
       title={title(cibles)}
       part={total}
-      total={total}
       trace={trace}
       DebugTrace={DebugTrace}
     >
       <Resultat {...read} cibles={cibles} />
-      <Cerfa model={model} input={{ ...read, faits, cibles, completedAt }} />
-      <div className="fr-btns-group fr-btns-group--inline fr-no-print">
+      <div className="fr-btns-group fr-btns-group--inline-md fr-no-print">
         <SecondaryButton onClick={() => onReopen(state)}>
           Précédent
         </SecondaryButton>
@@ -68,6 +69,8 @@ export function CerfaResultat({
           Faire une nouvelle simulation
         </SecondaryButton>
       </div>
+      <Cerfa model={model} input={{ ...read, faits, cibles, completedAt }} />
+      {/* L'avis viendra ici, après l'aperçu et hors du document (#195). */}
     </Frame>
   );
 }
@@ -116,42 +119,50 @@ export function SecondaryButton({ onClick, children }: ButtonProps) {
 // ---- implémentation ----
 
 // Le cerfa de la préconisation figée, daté du jour où le complément a été
-// validé. Rien quand elle n'en donne pas.
+// validé. Rien quand elle n'en donne pas. Le modèle peut tenir la place de son
+// aperçu.
 function Cerfa({ model, input }: { model: Model; input: CerfaInput }) {
-  const bound = model.cerfa.form(input.cibles);
+  const { form, standIn, printLabel, downloadLabel } = model.cerfa;
+  const bound = form(input.cibles);
   return (
     bound && (
-      <CerfaActions
+      <CerfaDocument
         cerfa={bound.cerfa}
         dto={dtoFrom(bound.mapping, input)}
         date={input.completedAt}
-        printLabel={model.cerfa.printLabel}
-        downloadLabel={model.cerfa.downloadLabel}
+        printLabel={printLabel}
+        downloadLabel={downloadLabel}
+        standIn={standIn?.(input)}
       />
     )
   );
 }
 
+// Le stepper titre la page du titre du document : c'est son `h1`. Le second
+// résultat est la dernière partie, que rien ne suit.
 function Frame({
   title,
   part,
-  total,
   trace,
   DebugTrace,
   children,
 }: {
   title: string;
   part: number;
-  total: number;
   trace: DebugTraceProps;
   DebugTrace?: ComponentType<DebugTraceProps>;
   children: ReactNode;
 }) {
   return (
     <>
-      <h1 className="fr-h3">{title}</h1>
       <div className="fr-no-print">
-        <Stepper part={part} total={total} />
+        <Stepper
+          title={title}
+          level={1}
+          part={part}
+          total={part}
+          details={<span className="fr-text--bold">Préparation terminée.</span>}
+        />
       </div>
       {children}
       {DebugTrace && (

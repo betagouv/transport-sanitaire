@@ -110,7 +110,7 @@ describe("après le verrou", () => {
       await screen.findByText("Commande : thé, lait, 2 tasses"),
     ).toBeInTheDocument();
     expect(
-      screen.getByRole("heading", { name: "Étape 2 sur 2" }),
+      screen.getByRole("heading", { level: 1, name: /Étape 2 sur 2$/ }),
     ).toBeInTheDocument();
 
     await user.click(bouton("Précédent"));

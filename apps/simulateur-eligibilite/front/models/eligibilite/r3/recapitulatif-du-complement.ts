@@ -1,7 +1,7 @@
-// Le récapitulatif de P3, que R3 affiche tant que les documents se téléchargent
-// vierges : chaque question validée, sous son libellé du moment, avec sa réponse
-// en toutes lettres. Un échafaudage : il part quand les documents se remplissent
-// (#161).
+// Le récapitulatif de P3, que R3 affiche à la place de l'aperçu tant que la
+// PMT et la DAP se téléchargent vierges : chaque question validée, sous son
+// libellé du moment, avec sa réponse en toutes lettres. Un échafaudage : il
+// part quand les documents se remplissent (#160, #161).
 
 import type { Cibles } from "../../../../core/models/eligibilite/declarations/cibles";
 import type { Questions } from "../../../../core/models/eligibilite/declarations/questions";
