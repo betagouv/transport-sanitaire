@@ -71,6 +71,6 @@ const CAS: readonly [ids: string, reponses: Reponses, issue: string][] = [
 
 describe("l'oracle de l'éditeur, par les réponses", () => {
   it.each(CAS)("%s", (_ids, reponses, issue) => {
-    expect(ciblesDe(reponses).cible_issue_id).toBe(issue);
+    expect(ciblesDe(reponses).cible_issue_id.value).toBe(issue);
   });
 });

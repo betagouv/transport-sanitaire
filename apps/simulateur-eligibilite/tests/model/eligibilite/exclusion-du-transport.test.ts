@@ -8,13 +8,13 @@
 // ils arrivent avec leurs questions.
 
 import { describe, expect, it } from "vitest";
-import { model } from "../../../front/models/eligibilite";
-import type { Faits } from "../../../front/models/eligibilite/declarations/faits";
-import type { Questions } from "../../../front/models/eligibilite/declarations/questions";
-import { cibles } from "../../../front/models/eligibilite/evaluation-des-regles";
-import type { Fait } from "../../../front/socle";
-import { preconisationOf } from "../../../front/socle/model";
-import type { Answers } from "../../../front/socle/questionnaire-engine/question";
+import { model } from "../../../core/models/eligibilite";
+import type { Faits } from "../../../core/models/eligibilite/declarations/faits";
+import type { Questions } from "../../../core/models/eligibilite/declarations/questions";
+import { cibles } from "../../../core/models/eligibilite/evaluation-des-regles";
+import { Fait } from "../../../core/socle";
+import { preconisationOf } from "../../../core/socle/model";
+import type { Answers } from "../../../core/socle/questionnaire-engine/question";
 
 const BRANCARD_20_KM: Answers<Questions> = {
   "Q0.1": "1_VERIFIER",
@@ -31,7 +31,7 @@ const issue = (exclusion: Fait) =>
   cibles({
     ...nos,
     fait_exclusion_transport_prouvee: exclusion,
-  }).cible_issue_id;
+  }).cible_issue_id.value;
 
 describe("l'exclusion du transport", () => {
   it("vaut « non », constatée par le logiciel, sans question", () => {
@@ -59,12 +59,10 @@ describe("l'exclusion du transport", () => {
   });
 
   it("exclusions-indeterminees : sans constat, aucune issue", () => {
-    expect(issue({ provenance: "Aucun constat." })).toBeUndefined();
+    expect(issue(Fait.inconnu("Aucun constat."))).toBeUndefined();
   });
 
   it("exclusion-positive-sourcee : une exclusion prouvée, ISSUE_NON_ELIGIBLE", () => {
-    expect(issue({ value: true, provenance: "Règle d'exclusion." })).toBe(
-      "ISSUE_NON_ELIGIBLE",
-    );
+    expect(issue(Fait.oui("Règle d'exclusion."))).toBe("ISSUE_NON_ELIGIBLE");
   });
 });

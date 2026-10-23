@@ -6,16 +6,16 @@
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it } from "vitest";
+import { SEEDS } from "../../../core/models/eligibilite/seeds-catalogue";
 import { model } from "../../../front/models/eligibilite";
 import { catalogueResultats } from "../../../front/models/eligibilite/r2/catalogue-resultats";
-import { SEEDS } from "../../../front/models/eligibilite/seeds-catalogue";
 import { rangerRattachement } from "../../../front/socle/rattachement/session";
 import { ouvrirLeSimulateur } from "../../socle/simulateur/questionnaire";
 
 // Le catalogue des textes et celui des seeds sont chargés une fois : la
 // première fiche n'attend pas leurs 900 ko.
 await catalogueResultats();
-await model.seeds();
+await model.core.seeds();
 
 const PRECEDENT = "Précédent";
 const NOUVELLE = "Faire une nouvelle simulation";

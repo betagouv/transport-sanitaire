@@ -5,27 +5,38 @@
 import {
   CIBLES,
   type Cibles,
-} from "../../../front/models/eligibilite/declarations/cibles";
+} from "../../../core/models/eligibilite/declarations/cibles";
 import {
-  AUCUN_FAIT,
+  FAITS,
   type Faits,
-} from "../../../front/models/eligibilite/declarations/faits";
+} from "../../../core/models/eligibilite/declarations/faits";
+import { Cible, Fait } from "../../../core/socle";
+import type { CibleValues } from "../../../core/socle/decision-engine/cible";
 import type { Precisions } from "../../../front/models/eligibilite/r2/precisions-du-resultat";
 import type { Trace } from "../../../front/models/eligibilite/r2/trace-du-resultat";
 
+/** Des valeurs de cibles écrites à la main, telles que les règles les donnent. */
+export type ValeursDesCibles = Partial<CibleValues<Cibles>>;
+
+/** Les cibles de ces valeurs. Les autres restent inconnues. */
+export const ciblesValant = (valeurs: ValeursDesCibles = {}): Cibles =>
+  Object.fromEntries(
+    CIBLES.map((nom) => [nom, Cible.of(valeurs[nom])]),
+  ) as Cibles;
+
 // Une trace dont rien n'est prouvé, avec ce que le test pose.
-const AUCUNE_CIBLE = Object.fromEntries(
-  CIBLES.map((cible) => [cible, undefined]),
-) as Cibles;
-export const vrai = { value: true, provenance: "test" };
-export const faux = { value: false, provenance: "test" };
+const AUCUN_FAIT = Object.fromEntries(
+  FAITS.map((fait) => [fait, Fait.inconnu("test")]),
+) as Faits;
+export const vrai = Fait.oui("test");
+export const faux = Fait.non("test");
 
 export const trace = (
-  cibles: Partial<Cibles>,
+  cibles: ValeursDesCibles,
   faits: Partial<Faits> = {},
   precisions: Precisions = {},
 ): Trace => ({
-  cibles: { ...AUCUNE_CIBLE, ...cibles },
+  cibles: ciblesValant(cibles),
   faits: { ...AUCUN_FAIT, ...faits },
   criteres: [],
   precisions,

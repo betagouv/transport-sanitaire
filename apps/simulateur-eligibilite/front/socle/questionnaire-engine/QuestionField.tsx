@@ -1,5 +1,14 @@
-// Rend une question avec le champ de `front/socle/ui/` qui lui convient.
+// Affiche une question avec le champ de `front/socle/ui/` qui lui convient.
 
+import {
+  isAddress,
+  withField,
+} from "../../../core/socle/questionnaire-engine/address";
+import type { AskedQuestion } from "../../../core/socle/questionnaire-engine/asked-question";
+import type {
+  Answer,
+  Unanswered,
+} from "../../../core/socle/questionnaire-engine/question";
 import { AddressField } from "../ui/AddressField";
 import { CheckboxField } from "../ui/CheckboxField";
 import { DateField } from "../ui/DateField";
@@ -9,17 +18,10 @@ import { Reminder } from "../ui/Reminder";
 import { SelectField } from "../ui/SelectField";
 import { TextAreaField } from "../ui/TextAreaField";
 import { TextField } from "../ui/TextField";
-import { addressErrors, askedFields, isAddress, withField } from "./address";
-import type {
-  Answer,
-  MultipleChoice,
-  Question,
-  SingleChoice,
-  Unanswered,
-} from "./question";
+import { displayedFields, displayedLabel, messageOf } from "./screen-texts";
 
 type Props = {
-  question: Question;
+  question: AskedQuestion;
   answer: Answer | Unanswered;
   /** `undefined` retire la réponse : un champ vidé n'est plus répondu. */
   onChange: (answer: Answer | Unanswered) => void;
@@ -44,17 +46,23 @@ export function QuestionField(props: Props) {
 
 // ---- implémentation ----
 
-type AddressQuestion = Extract<Question, { kind: "address" }>;
-type NumberQuestion = Extract<Question, { kind: "number" }>;
-type DateQuestion = Extract<Question, { kind: "date" | "datetime" }>;
-type CheckboxQuestion = Extract<Question, { kind: "checkbox" }>;
+type Asked<Kind extends AskedQuestion["kind"]> = Extract<
+  AskedQuestion,
+  { kind: Kind }
+>;
+type AddressQuestion = Asked<"address">;
+type NumberQuestion = Asked<"number">;
+type DateQuestion = Asked<"date" | "datetime">;
+type CheckboxQuestion = Asked<"checkbox">;
+type SingleChoice = Asked<"single choice">;
+type MultipleChoice = Asked<"multiple choice">;
 
 // Ce que tous les champs reçoivent. Le libellé est mis en avant : sur une page
 // du questionnaire, c'est lui qui porte la question.
 function common({ question, errors, autoFocus }: Props) {
   return {
     id: question.id,
-    label: question.label,
+    label: displayedLabel(question.label, question.optional),
     hint: question.hint,
     errors,
     autoFocus,
@@ -91,21 +99,24 @@ function render(props: Props) {
 function AddressQuestionField(props: Props & { question: AddressQuestion }) {
   const { question, onChange } = props;
   const address = isAddress(props.answer) ? props.answer : undefined;
-  const errors = address ? addressErrors(question, address) : {};
-  const failing = Object.keys(errors).length > 0;
+  const problems = address ? question.fieldProblems(address) : {};
+  const failing = Object.keys(problems).length > 0;
   return (
     <AddressField
       id={question.id}
       errors={failing ? [] : props.errors}
-      label={question.label}
+      label={displayedLabel(question.label, question.optional)}
       hint={question.hint}
       autoFocus={props.autoFocus}
       lead
-      fields={askedFields(question).map((field) => ({
-        ...field,
-        value: address?.[field.name] ?? "",
-        error: errors[field.name],
-      }))}
+      fields={displayedFields(question).map((field) => {
+        const problem = problems[field.name];
+        return {
+          ...field,
+          value: address?.[field.name] ?? "",
+          error: problem && messageOf(problem),
+        };
+      })}
       onChange={(name, text) => onChange(withField(address, name, text))}
     />
   );

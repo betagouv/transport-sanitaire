@@ -6,7 +6,8 @@
 // ne le lit pas comme un « non ». Les identifiants sont ceux de l'éditeur.
 
 import { describe, expect, it } from "vitest";
-import { cibles } from "../../../front/models/eligibilite/evaluation-des-regles";
+import { cibles } from "../../../core/models/eligibilite/evaluation-des-regles";
+import { cibleValues } from "../../../core/socle";
 import {
   ABSENTS,
   type Changements,
@@ -116,7 +117,7 @@ const ETATS_PARTIELS: readonly [string, Changements, boolean][] = [
 ];
 
 const partiel = (faits: Changements) =>
-  cibles(faitsDe({ ...ABSENTS, ...faits }));
+  cibleValues(cibles(faitsDe({ ...ABSENTS, ...faits })));
 
 describe("la garde de Q2.3.4, à la page du trajet", () => {
   it.each(ETATS_PARTIELS)("%s", (_id, faits, affichee) => {

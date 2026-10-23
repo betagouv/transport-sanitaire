@@ -1,0 +1,12 @@
+{
+  "extends": "./tsconfig.base.json",
+  "compilerOptions": {
+    // Le métier tourne dans le navigateur comme sous Node : il se résout comme
+    // Node, qui exige l'extension de chaque import. Ni `DOM`, ni JSX, ni les
+    // types de Node : le compilateur refuse `window`, un composant ou `fs`.
+    "module": "NodeNext",
+    "moduleResolution": "nodenext",
+    "types": []
+  },
+  "include": ["../core"]
+}

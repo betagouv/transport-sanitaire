@@ -3,12 +3,12 @@
 
 import { render } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { QuestionnaireForm } from "../../../front/socle/questionnaire-engine/QuestionnaireForm";
 import type {
   Answers,
   AnyCibles,
   Page,
-} from "../../../front/socle/questionnaire-engine/question";
+} from "../../../core/socle/questionnaire-engine/question";
+import { QuestionnaireForm } from "../../../front/socle/questionnaire-engine/QuestionnaireForm";
 
 /**
  * Affiche ces pages. `reponses` rend ce que le questionnaire a validé, une fois

@@ -9,7 +9,7 @@ import type {
   AucunScenario,
   IssuePraticien,
   ScenarioPraticien,
-} from "../../declarations/catalogue-resultats";
+} from "../../../../../core/models/eligibilite/declarations/catalogue-resultats";
 import type { NonProuve } from "../precisions-du-resultat";
 import type { Trace } from "../trace-du-resultat";
 import { scenariosDeLaCaisse } from "./scenarios-de-la-caisse";

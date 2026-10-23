@@ -20,6 +20,7 @@
     "verifier": "pnpm lint && pnpm typecheck && pnpm knip && pnpm test && pnpm build",
     "postbuild": "node scripts/verifier-bundle.ts",
     "verifier-bundle": "node scripts/verifier-bundle.ts",
+    "regles": "node scripts/regles-publicodes.ts",
     "knip": "knip --directory ../.. --workspace apps/simulateur-eligibilite"
   },
   "engines": {

@@ -3,58 +3,59 @@
 // en toutes lettres. Un échafaudage : il part quand les documents se remplissent
 // (#161).
 
-import type {
-  Address,
-  GivenAnswers,
-  QuestionnairePart,
-  ValidatedAnswers,
-} from "../../../socle";
-import type { Cibles } from "../declarations/cibles";
-import type { Questions } from "../declarations/questions";
-import { COMPLEMENT } from "../p3/partie-3";
+import type { Cibles } from "../../../../core/models/eligibilite/declarations/cibles";
+import type { Questions } from "../../../../core/models/eligibilite/declarations/questions";
+import { COMPLEMENT } from "../../../../core/models/eligibilite/p3/partie-3";
+import {
+  type Address,
+  type Answers,
+  type AskedQuestion,
+  type GivenAnswers,
+  Questionnaire,
+} from "../../../../core/socle";
 
-/** Ce que R3 reçoit du socle : les réponses, les questions validées, les cibles. */
+/** Ce que R3 reçoit du socle : les réponses, et les cibles figées au verrou. */
 export type LectureDuComplement = {
   answers: GivenAnswers<Questions>;
-  validated: ValidatedAnswers<Questions>;
   cibles: Cibles;
 };
 
 /** Une ligne du récapitulatif : la question, puis sa réponse. */
 export type LigneDuRecapitulatif = { question: string; reponse: string };
 
-export function recapitulatifDuComplement(
-  lecture: LectureDuComplement,
-): LigneDuRecapitulatif[] {
-  const vu: Vu = [lecture.answers, lecture.cibles, lecture.validated];
-  return COMPLEMENT.pages
-    .flatMap((page) => page.questions)
-    .flatMap((question) => {
-      const validee = lecture.validated.question(question.id);
-      if (!validee.isValidated() || !validee.hasAnswer()) return [];
-      const libelle = question.labelFrom?.(...vu) ?? question.label;
-      const reponse = enLettres(question, validee.value, vu);
-      return [{ question: libelle, reponse }];
-    });
+// P3 se relit comme elle s'est affichée : ses pages, avec les réponses d'avant
+// le verrou et les cibles figées. Chaque question s'y lit sous son libellé du
+// moment, et ses options aussi.
+export function recapitulatifDuComplement({
+  answers,
+  cibles,
+}: LectureDuComplement): LigneDuRecapitulatif[] {
+  const lecture = new Questionnaire<Questions>(COMPLEMENT.pages).readWith(
+    answers,
+    cibles,
+  );
+  const validees: Answers = lecture.validated.answers();
+  return lecture.askedPages().flatMap((page) =>
+    lecture.questionsOn(page).flatMap((question) => {
+      const reponse = validees[question.id];
+      if (reponse === undefined) return [];
+      return [
+        { question: question.label, reponse: enLettres(question, reponse) },
+      ];
+    }),
+  );
 }
 
 // ---- implémentation ----
 
-type Question = QuestionnairePart<
-  Questions,
-  Cibles
->["pages"][number]["questions"][number];
-type Option = Extract<Question, { options: unknown }>["options"][number];
-type Vu = [GivenAnswers<Questions>, Cibles, ValidatedAnswers<Questions>];
-
-function enLettres(question: Question, reponse: unknown, vu: Vu): string {
+function enLettres(question: AskedQuestion, reponse: unknown): string {
   switch (question.kind) {
     case "single choice":
-      return libelleDe([...question.options], reponse, vu);
+      return libelleDe(question.options, reponse);
     case "multiple choice": {
-      const options = [...question.options, question.exclusiveOption];
+      const { options, exclusiveOption } = question;
       return (reponse as string[])
-        .map((valeur) => libelleDe(options, valeur, vu))
+        .map((valeur) => libelleDe([...options, exclusiveOption], valeur))
         .join(", ");
     }
     case "number":
@@ -74,12 +75,11 @@ function enLettres(question: Question, reponse: unknown, vu: Vu): string {
 }
 
 function libelleDe(
-  options: readonly (Option | undefined)[],
+  options: readonly ({ value: string; label: string } | undefined)[],
   valeur: unknown,
-  vu: Vu,
 ): string {
   const option = options.find((candidate) => candidate?.value === valeur);
-  return option?.labelFrom?.(...vu) ?? option?.label ?? String(valeur);
+  return option?.label ?? String(valeur);
 }
 
 // `2026-10-12` devient « 12/10/2026 », `2026-10-12T08:30` « 12/10/2026 à 08:30 ».

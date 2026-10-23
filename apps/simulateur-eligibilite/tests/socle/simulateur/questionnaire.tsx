@@ -3,9 +3,9 @@
 
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import type { Seed } from "../../../core/socle/seeds/seed";
 import { App } from "../../../front/socle/app/App";
 import type { Model } from "../../../front/socle/model";
-import type { Seed } from "../../../front/socle/seeds/seed";
 import { snapshotReferentiel } from "../../../shared/referentiel";
 import { modeleDeTest, seulModele } from "../modele-de-test";
 import { seRattacher, seRattacherProduit } from "../se-rattacher";
@@ -30,7 +30,9 @@ export async function ouvrirLeSimulateur(
 
 // Le modèle de test, ou celui donné, avec ces seeds à la place de son catalogue.
 function modeleAvec(seeds?: readonly Seed[], modele: Model = modeleDeTest) {
-  return seeds ? { ...modele, seeds: async () => seeds } : modele;
+  return seeds
+    ? { ...modele, core: { ...modele.core, seeds: async () => seeds } }
+    : modele;
 }
 
 export const BOISSON = { name: /^quelle boisson souhaitez-vous/i };

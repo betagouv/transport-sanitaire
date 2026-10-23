@@ -1,38 +1,41 @@
 import { screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
-import type { Page } from "../../../front/socle/questionnaire-engine/question";
+import { Cible, page, questionsOf } from "../../../core/socle";
 import { afficher } from "./afficher";
 
 // Un rappel peut prendre la forme de valeurs avec leur intitulé : ce qui est
 // déjà décidé, montré près du champ encore demandé. On le lit, on ne le
 // modifie pas. Les pages sont écrites ici.
 
-const ARRIVEE: Page = {
-  id: "arrivee",
-  questions: [
-    {
-      id: "adresse",
-      kind: "text",
-      label: "Adresse du lieu d'arrivée",
-      reminderFrom: (answers, cibles) => [
-        { label: "Rôle", value: "arrivée" },
-        {
-          label: "Nature",
-          value: String(cibles?.nature ?? answers.question("nature").value),
-        },
-      ],
-    },
-  ],
+type Questions = {
+  adresse: string;
+  nature: string;
+  nom: string;
 };
 
-const SANS_RAPPEL: Page = {
-  id: "nom",
-  questions: [{ id: "nom", kind: "text", label: "Nom du lieu" }],
-};
+// Les cibles figées au verrou. Avant lui : aucune.
+type Cibles = { readonly nature: Cible<string> } | undefined;
+
+const question = questionsOf<Questions, undefined, Cibles>({ options: {} });
+
+const ARRIVEE = page(
+  "arrivee",
+  question
+    .text("adresse", "Adresse du lieu d'arrivée")
+    .reminderFrom(({ answers, cibles }) => [
+      { label: "Rôle", value: "arrivée" },
+      {
+        label: "Nature",
+        value: String(cibles?.nature.value ?? answers.question("nature").value),
+      },
+    ]),
+);
+
+const SANS_RAPPEL = page("nom", question.text("nom", "Nom du lieu"));
 
 const VERROU = {
   lockedAnswers: { motif: "consultation" },
-  cibles: { nature: "structure de soins" },
+  cibles: { nature: Cible.of("structure de soins") },
 };
 
 const adresse = () =>

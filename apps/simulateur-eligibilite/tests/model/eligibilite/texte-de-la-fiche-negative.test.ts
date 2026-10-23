@@ -3,10 +3,10 @@
 // change échoue ici.
 
 import { describe, expect, it } from "vitest";
+import { SEEDS } from "../../../core/models/eligibilite/seeds-catalogue";
 import { catalogueResultats } from "../../../front/models/eligibilite/r2/catalogue-resultats";
 import { texteDeLaFicheNegative } from "../../../front/models/eligibilite/r2/fiche-negative/texte-de-la-fiche-negative";
 import { traceDuResultat } from "../../../front/models/eligibilite/r2/trace-du-resultat";
-import { SEEDS } from "../../../front/models/eligibilite/seeds-catalogue";
 import { lectureDe } from "./reponses-de-la-permission";
 import { trace } from "./traces-du-praticien";
 

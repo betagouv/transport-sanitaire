@@ -1,38 +1,30 @@
 import { screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
-import type { Page } from "../../../front/socle/questionnaire-engine/question";
+import { page, questionsOf } from "../../../core/socle";
 import { afficher } from "./afficher";
 
 // Une date, avec ou sans heure, peut avoir des bornes. Elles sont fixes, ou
 // calculées d'après les réponses. Les pages sont écrites ici.
 
-const ACCIDENT: Page = {
-  id: "accident",
-  questions: [
-    {
-      id: "accident",
-      kind: "date",
-      label: "Date de l'accident",
-      min: "2026-01-01",
-      max: "2026-10-12",
-    },
-  ],
-};
+type Questions = { accident: string; debut: string; fin: string };
 
-const PERMISSION: Page = {
-  id: "permission",
-  questions: [
-    { id: "debut", kind: "datetime", label: "Début de la permission" },
-    {
-      id: "fin",
-      kind: "datetime",
-      label: "Fin de la permission",
-      boundsFrom: (answers) => ({
-        min: answers.question("debut").value as string | undefined,
-      }),
-    },
-  ],
-};
+const question = questionsOf<Questions>({ options: {} });
+
+const ACCIDENT = page(
+  "accident",
+  question
+    .date("accident", "Date de l'accident")
+    .min("2026-01-01")
+    .max("2026-10-12"),
+);
+
+const PERMISSION = page(
+  "permission",
+  question.datetime("debut", "Début de la permission"),
+  question
+    .datetime("fin", "Fin de la permission")
+    .boundsFrom(({ answers }) => ({ min: answers.question("debut").value })),
+);
 
 const champ = (name: string) => screen.getByLabelText(name);
 const valider = () =>

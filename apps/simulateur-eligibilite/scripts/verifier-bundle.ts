@@ -62,7 +62,7 @@ function interdits(): Array<[marqueur: string, quoi: string]> {
  * pointer une seed supprimée.
  */
 function premieresSeeds(): string[] {
-  const modeles = resolve(dist(), "../../front/models");
+  const modeles = resolve(dist(), "../../core/models");
   return readdirSync(modeles).flatMap((modele) => {
     const catalogue = join(modeles, modele, "seeds-catalogue.ts");
     if (!existsSync(catalogue)) return [];

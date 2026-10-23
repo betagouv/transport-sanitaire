@@ -10,11 +10,11 @@
 // La DAP et l'étranger partagent le gabarit S3139h : le titre se lit sur
 // l'issue, pas sur le support.
 
-import type { Cibles } from "../declarations/cibles";
+import type { Cibles } from "../../../../core/models/eligibilite/declarations/cibles";
 
 /** Le titre de R3, selon le document que la préconisation complète. */
 export function titreDuResultat(cibles: Cibles): string {
-  const issue = cibles.cible_issue_id;
+  const issue = cibles.cible_issue_id.value;
   return (issue && TITRES[issue]) ?? PRESCRIPTION;
 }
 
@@ -24,7 +24,7 @@ export const TEXTE_DU_RESULTAT =
 
 // ---- implémentation ----
 
-type Issue = NonNullable<Cibles["cible_issue_id"]>;
+type Issue = NonNullable<Cibles["cible_issue_id"]["value"]>;
 
 const PRESCRIPTION = "Prescription préremplie prête à imprimer";
 const ACCORD_PREALABLE =

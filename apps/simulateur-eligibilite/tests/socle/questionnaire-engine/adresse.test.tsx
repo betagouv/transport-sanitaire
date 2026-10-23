@@ -1,25 +1,17 @@
 import { screen, within } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
-import type {
-  Page,
-  Question,
-} from "../../../front/socle/questionnaire-engine/question";
+import { type Address, page, questionsOf } from "../../../core/socle";
 import { afficher } from "./afficher";
 
 // Une adresse se saisit champ par champ, et sa réponse est un objet. En France,
 // le code postal fait cinq chiffres. À l'étranger, le pays est attendu et le
 // code postal est libre et facultatif. Les pages sont écrites ici.
 
-const DEPART: Question = {
-  id: "depart",
-  kind: "address",
-  label: "Adresse de départ",
-};
+type Questions = { depart: Address };
 
-const page = (question: Question): Page => ({
-  id: question.id,
-  questions: [question],
-});
+const question = questionsOf<Questions>({ options: {} });
+
+const DEPART = question.address("depart", "Adresse de départ");
 
 const LONDRES = {
   street: "10 Downing Street",
@@ -55,7 +47,7 @@ const RUE_DES_LILAS = {
 
 describe("adresse", () => {
   it("se saisit en champs séparés, sous le libellé de la question", async () => {
-    afficher([page(DEPART)]);
+    afficher([page("depart", DEPART)]);
 
     const groupe = within(await adresse("Adresse de départ"));
 
@@ -73,7 +65,7 @@ describe("adresse", () => {
   });
 
   it("rend un objet, une clé par champ saisi", async () => {
-    const { user, reponses } = afficher([page(DEPART)]);
+    const { user, reponses } = afficher([page("depart", DEPART)]);
 
     await saisir(user, RUE_DES_LILAS);
     await user.click(valider());
@@ -84,7 +76,7 @@ describe("adresse", () => {
   });
 
   it("garde le complément quand il est saisi", async () => {
-    const { user, reponses } = afficher([page(DEPART)]);
+    const { user, reponses } = afficher([page("depart", DEPART)]);
 
     await saisir(user, {
       ...RUE_DES_LILAS,
@@ -96,7 +88,7 @@ describe("adresse", () => {
   });
 
   it("retire les espaces de début et de fin, et garde accents et casse", async () => {
-    const { user, reponses } = afficher([page(DEPART)]);
+    const { user, reponses } = afficher([page("depart", DEPART)]);
 
     await saisir(user, {
       "Numéro et voie": "  12 allée de l'Évêché ",
@@ -115,7 +107,7 @@ describe("adresse", () => {
   });
 
   it("ne se valide pas tant qu'un champ attendu manque", async () => {
-    const { user } = afficher([page(DEPART)]);
+    const { user } = afficher([page("depart", DEPART)]);
 
     await saisir(user, { "Numéro et voie": "3 rue des Lilas" });
 
@@ -124,7 +116,7 @@ describe("adresse", () => {
 
   it("demande le nom du lieu quand la question le règle", async () => {
     const { user, reponses } = afficher([
-      page({ ...DEPART, withPlaceName: true }),
+      page("depart", DEPART.withPlaceName()),
     ]);
 
     await saisir(user, RUE_DES_LILAS);
@@ -138,7 +130,7 @@ describe("adresse", () => {
   });
 
   it("laisse valider la page vide quand elle est facultative", async () => {
-    const { user, reponses } = afficher([page({ ...DEPART, optional: true })]);
+    const { user, reponses } = afficher([page("depart", DEPART.optional())]);
 
     await adresse("Adresse de départ (facultatif)");
     await user.click(valider());
@@ -149,7 +141,7 @@ describe("adresse", () => {
 
 describe("adresse en France", () => {
   it("refuse un code postal qui n'a pas cinq chiffres, sous son champ", async () => {
-    const { user } = afficher([page(DEPART)]);
+    const { user } = afficher([page("depart", DEPART)]);
 
     await saisir(user, { ...RUE_DES_LILAS, "Code postal": "7501" });
 
@@ -160,7 +152,7 @@ describe("adresse en France", () => {
   });
 
   it("refuse un code postal qui porte autre chose que des chiffres", async () => {
-    const { user } = afficher([page(DEPART)]);
+    const { user } = afficher([page("depart", DEPART)]);
 
     await saisir(user, { "Code postal": "2A004" });
 
@@ -170,7 +162,7 @@ describe("adresse en France", () => {
   });
 
   it("donne à chaque champ fautif son message, et rien aux autres", async () => {
-    const { user } = afficher([page(DEPART)]);
+    const { user } = afficher([page("depart", DEPART)]);
 
     await saisir(user, {
       "Numéro et voie": "  ",
@@ -188,7 +180,7 @@ describe("adresse en France", () => {
   });
 
   it("ne demande pas le pays", async () => {
-    afficher([page(DEPART)]);
+    afficher([page("depart", DEPART)]);
 
     await adresse("Adresse de départ");
 
@@ -197,7 +189,7 @@ describe("adresse en France", () => {
 });
 
 describe("adresse à l'étranger", () => {
-  const A_L_ETRANGER = page({ ...DEPART, abroad: true });
+  const A_L_ETRANGER = page("depart", DEPART.abroad());
 
   it("attend le pays", async () => {
     const { user, reponses } = afficher([A_L_ETRANGER]);

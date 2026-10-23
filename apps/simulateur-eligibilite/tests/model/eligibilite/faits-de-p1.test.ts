@@ -6,11 +6,11 @@
 // laisse ses faits absents.
 
 import { describe, expect, it } from "vitest";
-import { model } from "../../../front/models/eligibilite";
-import type { Faits } from "../../../front/models/eligibilite/declarations/faits";
-import type { Questions } from "../../../front/models/eligibilite/declarations/questions";
-import { preconisationOf } from "../../../front/socle/model";
-import type { Answers } from "../../../front/socle/questionnaire-engine/question";
+import { model } from "../../../core/models/eligibilite";
+import type { Faits } from "../../../core/models/eligibilite/declarations/faits";
+import type { Questions } from "../../../core/models/eligibilite/declarations/questions";
+import { preconisationOf } from "../../../core/socle/model";
+import type { Answers } from "../../../core/socle/questionnaire-engine/question";
 
 type Reponses = Answers<Questions>;
 

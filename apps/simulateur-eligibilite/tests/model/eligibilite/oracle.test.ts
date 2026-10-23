@@ -7,8 +7,8 @@
 // désaccord remonte sous ce nom.
 
 import { describe, expect, it } from "vitest";
-import type { Cibles } from "../../../front/models/eligibilite/declarations/cibles";
-import { cibles } from "../../../front/models/eligibilite/evaluation-des-regles";
+import type { Cibles } from "../../../core/models/eligibilite/declarations/cibles";
+import { cibles } from "../../../core/models/eligibilite/evaluation-des-regles";
 import {
   ABSENTS,
   ALD,
@@ -136,7 +136,7 @@ const CAS: readonly [id: string, faits: Changements, issue: Issue][] = [
 ];
 
 // Le document de chaque issue. Les autres issues n'en ont pas.
-const SUPPORTS: Partial<Record<Issue, Cibles["cible_support_id"]>> = {
+const SUPPORTS: Partial<Record<Issue, Cibles["cible_support_id"]["value"]>> = {
   ISSUE_PMT: "S3138g",
   ISSUE_DAP_SANS_URGENCE: "S3139h",
   ISSUE_DAP_URGENCE_ATTESTEE: "S3139h",
@@ -229,6 +229,6 @@ describe("les faits inconnus", () => {
         fait_ald_liee: true,
       }),
     );
-    expect(rendu.cible_issue_id).toBeUndefined();
+    expect(rendu.cible_issue_id.isInconnue()).toBe(true);
   });
 });

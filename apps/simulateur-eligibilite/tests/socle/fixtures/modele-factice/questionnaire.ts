@@ -4,7 +4,11 @@
 // Il garde sous test la mécanique du questionnaire : avancement automatique,
 // retour, brouillon, effacement des réponses dépendantes et verrou.
 
-import { type QuestionnairePart, questionsOf } from "../../../../front/socle";
+import {
+  page,
+  type QuestionnairePart,
+  questionsOf,
+} from "../../../../core/socle";
 import type { Cibles } from "./declarations/cibles";
 import type { Faits } from "./declarations/faits";
 import { OPTIONS, type Questions } from "./declarations/questions";
@@ -23,28 +27,21 @@ export const PARTS: readonly QuestionnairePart<Questions, undefined>[] = [
     id: "commande",
     title: "Questionnaire factice",
     pages: [
-      {
-        id: "boisson",
-        questions: [
-          question.singleChoice("boisson", {
-            label: "Quelle boisson souhaitez-vous ?",
-          }),
-        ],
-      },
-      {
-        id: "accompagnements",
-        questions: [
-          question.multipleChoice("accompagnements", {
-            label: "Avec quoi ?",
-            askedIf: ({ answers }) => {
-              const boisson = answers.question("boisson");
-              return boisson.hasAnswer() && boisson.isNot("rien");
-            },
-            dependsOn: ["boisson"],
-            exclusiveOption: "aucun",
-          }),
-        ],
-      },
+      page(
+        "boisson",
+        question.singleChoice("boisson", "Quelle boisson souhaitez-vous ?"),
+      ),
+      page(
+        "accompagnements",
+        question
+          .multipleChoice("accompagnements", "Avec quoi ?")
+          .askedIf(({ answers }) => {
+            const boisson = answers.question("boisson");
+            return boisson.hasAnswer() && boisson.isNot("rien");
+          })
+          .dependsOn("boisson")
+          .exclusive("aucun"),
+      ),
     ],
   },
 ];
@@ -54,15 +51,12 @@ export const COMPLEMENT: QuestionnairePart<Questions, Cibles> = {
   id: "complement",
   title: "Compléter la commande",
   pages: [
-    {
-      id: "quantite",
-      questions: [
-        questionDuComplement.number("quantite", {
-          label: "Combien de tasses ?",
-          min: 1,
-          unit: "tasses",
-        }),
-      ],
-    },
+    page(
+      "quantite",
+      questionDuComplement
+        .number("quantite", "Combien de tasses ?")
+        .min(1)
+        .unit("tasses"),
+    ),
   ],
 };

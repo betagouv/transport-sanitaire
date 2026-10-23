@@ -5,10 +5,7 @@
 // ici.
 
 import { describe, expect, it } from "vitest";
-import {
-  CIBLES_ENUMEREES,
-  type Cibles,
-} from "../../../front/models/eligibilite/declarations/cibles";
+import { CIBLES_ENUMEREES } from "../../../core/models/eligibilite/declarations/cibles";
 import {
   AMBULANCE,
   badges,
@@ -20,14 +17,17 @@ import {
   pmt,
   TAP,
   TPMR,
+  TRANSPORT_COMMUN,
+  VEHICULE_PERSONNEL,
 } from "./fiches-du-test";
+import type { ValeursDesCibles } from "./traces-du-praticien";
 
 describe("un titre et un modus pour chaque mode que les règles donnent", () => {
-  const variantes: Partial<Cibles>[] = [
-    { cible_mode_id: "VEHICULE_PERSONNEL" },
-    { cible_mode_id: "VEHICULE_PERSONNEL", cible_personne_accompagnante: true },
-    { cible_mode_id: "TRANSPORT_COMMUN" },
-    { cible_mode_id: "TRANSPORT_COMMUN", cible_personne_accompagnante: true },
+  const variantes: ValeursDesCibles[] = [
+    VEHICULE_PERSONNEL,
+    { ...VEHICULE_PERSONNEL, cible_personne_accompagnante: true },
+    TRANSPORT_COMMUN,
+    { ...TRANSPORT_COMMUN, cible_personne_accompagnante: true },
     ...[NON_PARTAGE, PARTAGE, {}].flatMap((partage) => [
       { ...TAP, ...partage },
       { ...TPMR, ...partage },
@@ -81,9 +81,17 @@ describe("les titres", () => {
     expect(fiche(TAP)?.titreDuPrescripteur).toBe(
       "Votre patient est éligible à un transport sanitaire",
     );
-    expect(fiche({ cible_mode_id: "VEHICULE_PERSONNEL" })?.titreDuPatient).toBe(
+    expect(fiche(VEHICULE_PERSONNEL)?.titreDuPatient).toBe(
       "Vous êtes éligible à une prise en charge de votre transport",
     );
+  });
+
+  it("PMT : le titre du prescripteur suit le mode, individuel ou en commun", () => {
+    for (const mode of [VEHICULE_PERSONNEL, TRANSPORT_COMMUN]) {
+      expect(fiche(mode)?.titreDuPrescripteur).toBe(
+        "Votre patient est éligible à une prise en charge de son transport",
+      );
+    }
   });
 
   it("S3141 : le titre dit la permission de sortie", () => {
@@ -96,11 +104,8 @@ describe("les titres", () => {
         "Votre patient est éligible à un transport sanitaire pour une permission de sortie",
     });
     expect(
-      fiche(
-        { cible_mode_id: "VEHICULE_PERSONNEL" },
-        { permissionRepeated: false },
-        "ISSUE_S3141",
-      )?.titreDuPatient,
+      fiche(VEHICULE_PERSONNEL, { permissionRepeated: false }, "ISSUE_S3141")
+        ?.titreDuPatient,
     ).toBe(
       "Vous êtes éligible à une prise en charge de votre transport pour une permission de sortie",
     );
@@ -116,11 +121,7 @@ describe("les titres des accords préalables", () => {
         "Le transport sanitaire de votre patient peut être pris en charge sous réserve de l’accord préalable de l’Assurance Maladie",
     });
     expect(
-      fiche(
-        { cible_mode_id: "VEHICULE_PERSONNEL" },
-        {},
-        "ISSUE_DAP_SANS_URGENCE",
-      )?.titreDuPatient,
+      fiche(VEHICULE_PERSONNEL, {}, "ISSUE_DAP_SANS_URGENCE")?.titreDuPatient,
     ).toBe(
       "Votre transport peut être pris en charge sous réserve de l’accord préalable de l’Assurance Maladie",
     );
@@ -201,7 +202,7 @@ describe("la carte de la situation du patient", () => {
 
   it("véhicule personnel ou proche : la carte fixe du premier rang", () => {
     const texte = fiche({
-      cible_mode_id: "VEHICULE_PERSONNEL",
+      ...VEHICULE_PERSONNEL,
       cible_personne_accompagnante: true,
     });
     expect(texte?.cartes.map(({ retenue }) => retenue)).toEqual([
@@ -273,10 +274,7 @@ describe("les badges des besoins à signaler", () => {
   });
 
   it("véhicule personnel : aucun badge, et la puce des besoins disparaît", () => {
-    const texte = fiche(
-      { cible_mode_id: "VEHICULE_PERSONNEL" },
-      { criteres: [1] },
-    );
+    const texte = fiche(VEHICULE_PERSONNEL, { criteres: [1] });
     expect(badges(texte)).toEqual([]);
     expect(JSON.stringify(texte)).not.toContain("besoins particuliers");
   });

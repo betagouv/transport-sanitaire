@@ -1,10 +1,10 @@
 // Les réponses et les lectures que partagent les tests de la permission (Q2.7
 // et Q2.8).
 
-import { cibles } from "../../../front/models/eligibilite/evaluation-des-regles";
+import type { Questions } from "../../../core/models/eligibilite/declarations/questions";
+import { cibles } from "../../../core/models/eligibilite/evaluation-des-regles";
+import { Questionnaire } from "../../../core/socle/questionnaire-engine/questionnaire";
 import type { ReponsesEtCibles } from "../../../front/models/eligibilite/r2/trace-du-resultat";
-import { readingOf } from "../../../front/socle/model";
-import { validatedQuestions } from "../../../front/socle/questionnaire-engine/asked-questions";
 import { faits, pages, posee, type Reponses } from "./reponses-du-transfert";
 
 export { faits, posee, type Reponses };
@@ -51,15 +51,19 @@ export const incoherences = (id: keyof Reponses, reponses: Reponses) =>
 
 /** La question est-elle validée : posée, répondue, sans blocage ? */
 export const validee = (id: keyof Reponses, reponses: Reponses) =>
-  validatedQuestions(pages, reponses)[id] !== undefined;
+  new Questionnaire(pages).readWith(reponses).validated.toJSON()[id] !==
+  undefined;
 
 /** Les cibles des règles, sur les faits que les réponses établissent. */
 export const ciblesDe = (reponses: Reponses) => cibles(faits(reponses));
 
 /** Ce que le socle passe à R2 : les réponses lues, et les cibles. */
-export const lectureDe = (reponses: Reponses): ReponsesEtCibles => ({
-  ...readingOf(pages, reponses),
-  cibles: ciblesDe(reponses),
-});
+export const lectureDe = (reponses: Reponses): ReponsesEtCibles => {
+  const { answers, validated } = new Questionnaire<Questions>(pages).readWith(
+    reponses,
+  );
+  return { answers, validated, cibles: ciblesDe(reponses) };
+};
 
-export const issue = (reponses: Reponses) => ciblesDe(reponses).cible_issue_id;
+export const issue = (reponses: Reponses) =>
+  ciblesDe(reponses).cible_issue_id.value;

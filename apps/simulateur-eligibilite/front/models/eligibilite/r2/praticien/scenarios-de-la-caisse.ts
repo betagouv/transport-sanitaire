@@ -9,7 +9,7 @@
 import type {
   IssuePraticien,
   ScenarioPraticien,
-} from "../../declarations/catalogue-resultats";
+} from "../../../../../core/models/eligibilite/declarations/catalogue-resultats";
 import type { Trace } from "../trace-du-resultat";
 
 /**
@@ -37,25 +37,22 @@ type Point = readonly [scenario: string, estOuvert: (trace: Trace) => boolean];
 const POINTS: readonly Point[] = [
   [
     "ald-base",
-    ({ cibles }) => cibles.cible_preuve_ald_inconnue_decisive === true,
+    ({ cibles }) => cibles.cible_preuve_ald_inconnue_decisive.isOui(),
   ],
   [
     "mineur",
     ({ cibles }) =>
-      cibles.cible_reconnaissance_mineur_inconnue_decisive === true,
+      cibles.cible_reconnaissance_mineur_inconnue_decisive.isOui(),
   ],
   [
     "appareillage",
-    ({ cibles }) => cibles.cible_convocation_inconnue_decisive === true,
+    ({ cibles }) => cibles.cible_convocation_inconnue_decisive.isOui(),
   ],
   ["permission-inconnue", permissionInconnue],
   ["transfert-inconnu", transfertInconnu],
-  ["samsah", ({ faits }) => faits.fait_motif_samsah.value === true],
-  ["pension", ({ faits }) => faits.fait_motif_pension.value === true],
-  [
-    "centre15",
-    ({ faits }) => faits.fait_centre15_interetablissements.value === true,
-  ],
+  ["samsah", ({ faits }) => faits.fait_motif_samsah.isOui()],
+  ["pension", ({ faits }) => faits.fait_motif_pension.isOui()],
+  ["centre15", ({ faits }) => faits.fait_centre15_interetablissements.isOui()],
   ["htnm", hebergementNonMedicalise],
   ["camsp-urgence", camspEnUrgence],
   ["maternite-urgence", materniteEnUrgence],
@@ -63,39 +60,38 @@ const POINTS: readonly Point[] = [
 
 function permissionInconnue({ cibles, faits }: Trace): boolean {
   return (
-    cibles.cible_couverture_inconnue_decisive === true &&
-    faits.fait_permission.value === true &&
-    faits.fait_permission_mineur_admissible.value === undefined &&
-    faits.fait_permission_charge_patient.value === undefined
+    cibles.cible_couverture_inconnue_decisive.isOui() &&
+    faits.fait_permission.isOui() &&
+    faits.fait_permission_mineur_admissible.isInconnu() &&
+    faits.fait_permission_charge_patient.isInconnu()
   );
 }
 
 function transfertInconnu({ cibles, faits }: Trace): boolean {
   return (
-    cibles.cible_couverture_inconnue_decisive === true &&
-    faits.fait_hospitalisation.value === true &&
-    faits.fait_transfert_article80.value === undefined
+    cibles.cible_couverture_inconnue_decisive.isOui() &&
+    faits.fait_hospitalisation.isOui() &&
+    faits.fait_transfert_article80.isInconnu()
   );
 }
 
 function hebergementNonMedicalise({ faits }: Trace): boolean {
   return (
-    faits.fait_htnm_hors_maternite.value === true &&
-    faits.fait_htnm_segment_verifie.value === false
+    faits.fait_htnm_hors_maternite.isOui() &&
+    faits.fait_htnm_segment_verifie.isNon()
   );
 }
 
 function camspEnUrgence({ cibles, faits }: Trace): boolean {
   return (
-    cibles.cible_dap_motif_camsp_cmpp === true &&
-    faits.fait_urgence_attestee.value === true
+    cibles.cible_dap_motif_camsp_cmpp.isOui() &&
+    faits.fait_urgence_attestee.isOui()
   );
 }
 
 function materniteEnUrgence({ faits }: Trace): boolean {
   return (
-    faits.fait_dap_maternite.value === true &&
-    faits.fait_urgence_attestee.value === true
+    faits.fait_dap_maternite.isOui() && faits.fait_urgence_attestee.isOui()
   );
 }
 
@@ -105,7 +101,7 @@ function parSaRaison(
   actifs: readonly ScenarioPraticien[],
   { cibles }: Trace,
 ): readonly ScenarioPraticien[] {
-  const raison = cibles.cible_reason_code;
+  const raison = cibles.cible_reason_code.value;
   const portent = actifs.filter(
     ({ codes }) => codes.length === 1 && codes[0] === raison,
   );

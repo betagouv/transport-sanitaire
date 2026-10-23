@@ -1,8 +1,8 @@
 // Les aides des tests de l'accord préalable (#136) : une demande écrite à la
 // main, et le motif qu'elle donne dans la réservation.
 
-import type { Cibles } from "../../../front/models/eligibilite/declarations/cibles";
 import { type Ajouts, fiche, NON_PARTAGE, puces, TAP } from "./fiches-du-test";
+import type { ValeursDesCibles } from "./traces-du-praticien";
 
 export const SANS_URGENCE = "ISSUE_DAP_SANS_URGENCE";
 export const URGENCE = "ISSUE_DAP_URGENCE_ATTESTEE";
@@ -18,7 +18,7 @@ export const PRECISION_DIALYSE: Ajouts = {
 };
 
 export const demande = (
-  cibles: Partial<Cibles>,
+  cibles: ValeursDesCibles,
   ajouts: Ajouts = {},
   issue: typeof SANS_URGENCE | typeof URGENCE = SANS_URGENCE,
 ) => fiche({ ...TAP, ...NON_PARTAGE, ...cibles }, ajouts, issue);

@@ -98,10 +98,15 @@ variables ont un défaut documenté ci-dessus : elles ne bloquent jamais le dém
 
 ## Structure (feature-first)
 
-Il y a trois racines de *runtime* : `front/`, le front bundlé par Vite, `server/`, le
+Il y a quatre racines de *runtime* : `core/`, le métier, qui se charge sous Node
+comme dans le navigateur, `front/`, le front bundlé par Vite, `server/`, le
 backend Node qui détient la clé Grist, et `shared/`, le contrat commun.
 Chacune est organisée par feature. À côté, `cms/` porte le script que le CMS exécute
 sur ses propres pages : il n'est ni bundlé ni servi par l'app.
+
+`core/` et `front/` ont chacun un `socle/` et un `models/`. Un modèle a son
+dossier des deux côtés, sous le même nom : son métier dans `core/`, son écran
+dans `front/` (ADR [`metier-et-ecran`](docs/knowledge/adr/metier-et-ecran.md)).
 
 ```
 shared/                  le contrat front ⇄ back, source unique des types partagés
@@ -110,53 +115,74 @@ server/                  le backend Node, barrière de sécurité : les secrets 
                          configuration lue une fois et refusée si elle manque en prod.
   rattachement/          LA feature backend : les routes `/api` et la source Grist du
                          référentiel, qu'elle lit et complète
-front/                   le front, bundlé par Vite
-  main.tsx               le point d'entrée du navigateur : monte l'app, amorce le traceur
-  models/                un dossier par modèle, chacun chargé à la demande
+core/                    le métier, sans React ni DOM : ce qu'un serveur ou un script
+                         peut calculer
+  models/                le métier de chaque modèle
     fake/                le modèle de démonstration : une page par capacité du
                          socle. Ses déclarations (questions, faits, cibles), son
-                         questionnaire, sa préconisation, ses deux résultats et
-                         son catalogue de seeds
+                         questionnaire, sa préconisation et son catalogue de seeds
     eligibilite/         le modèle de l'éditeur, en cours d'intégration. À sa racine,
-                         ce qui assemble : le questionnaire, la préconisation,
-                         l'évaluation des règles et le catalogue de seeds
-      rules/             le livrable de l'éditeur : le YAML, sa `VERSION` et le
-                         catalogue des textes de R2
+                         ce qui assemble : le questionnaire, le catalogue des
+                         faits, la préconisation, l'évaluation des règles et le
+                         catalogue de seeds
+      rules/             le livrable de l'éditeur : le YAML, sa `VERSION`, le
+                         catalogue des textes de R2, et `regles.json`, que
+                         `pnpm regles` calcule du YAML
       declarations/      les questions, faits et cibles, dans les mots des règles
+      concepts/          ce que plusieurs parties lisent d'un concept : la
+                         permission, le séjour, l'aide du patient, le numéro d'une
+                         option. Ni page ni fait
       p1/                l'autonomie et l'état de santé : les pages et les faits du
                          mode de transport
       p2/                l'éligibilité : une page et ses faits par thème (prestation,
                          contextes, trajet, transfert, permission, convocation,
-                         retour pénitentiaire, branche)
+                         retour pénitentiaire, branche). Chaque fait se déclare
+                         dans un seul thème
+      p3/                le complément du cerfa : le trajet, le soin, l'urgence, les
+                         évènements et l'exonération
+  socle/                 ce qui ne dépend d'aucune version. `model.ts` est le contrat
+                         métier qu'un modèle remplit (`CoreModel`), `index.ts` ce
+                         qu'il a le droit d'importer
+    questionnaire-engine/  le moteur de questionnaire : ce qu'est une question, une
+                         page, une partie et une adresse, les questions posées et
+                         validées, l'état d'un questionnaire, l'invalidation des
+                         réponses dépendantes, ce qui ne va pas dans une saisie,
+                         une date répondue
+    decision-engine/     le moteur de décision : le fait et la cible en objets
+                         valeur, le catalogue des faits et leurs règles, puis des
+                         faits aux cibles, par les règles publicodes qu'un modèle
+                         lui donne. Un fait absent n'est pas envoyé, et laisse
+                         inconnue la cible qui en dépend. Le seul
+                         fichier qui importe publicodes, pris par le modèle hors de
+                         `index.ts`
+    seeds/               ce qu'est une seed, et ce qu'elle confirme ou dément
+front/                   le front, bundlé par Vite
+  main.tsx               le point d'entrée du navigateur : monte l'app, amorce le traceur
+  models/                l'écran de chaque modèle, chacun chargé à la demande
+    fake/                les deux résultats de la démonstration et son bon de commande
+    eligibilite/         les deux résultats du modèle de l'éditeur
       r2/                le résultat : la trace, ses précisions, le catalogue chargé
                          à la demande, les boutons, et ce que les fiches partagent
         praticien/       les cinq issues sans fiche patient
         fiche-negative/  `ISSUE_NON_ELIGIBLE`
         fiche-positive/  la prescription, le S3141 et les deux accords préalables
-      p3/                le complément du cerfa : le trajet, le soin, l'urgence, les
-                         évènements et l'exonération
-      r3/                son résultat : le document de chaque support
+      r3/                le résultat du complément : le document de chaque support
         rubriques/       ce que les cerfa partagent, sans lien à aucun d'eux (D-138),
                          dont le texte médical de la PMT et de la DAP
         s3141/           le S3141, assemblé de rubriques
   socle/                 ce qui ne dépend d'aucune version. `model.ts` est le contrat
-                         qu'un modèle remplit, `index.ts` ce qu'il a le droit d'importer
+                         d'écran qu'un modèle remplit (`Model`), qui porte son
+                         métier sous `core`, `index.ts` ce qu'il a le droit d'importer
     app/                 le choix de l'écran affiché, la navigation entre les écrans,
                          le conteneur de page, le pied de page
     rattachement/        LA feature de l'écran de rattachement, miroir de server/rattachement/ :
                          le formulaire à révélation progressive, les deux clients de
                          l'API, le rattachement en mémoire de session (ADR-4)
     simulateur/          le parcours : questionnaire, résultat, verrou, complément
-    questionnaire-engine/  le moteur de questionnaire : ce qu'est une question, une
-                         page, une partie et une adresse, l'état d'un questionnaire et son
-                         brouillon, l'invalidation des réponses dépendantes,
-                         l'avancement automatique, le champ qui rend une question,
-                         ce qui part vers l'analytics
-    decision-engine/     le moteur de décision : des faits aux cibles, par les règles
-                         publicodes qu'un modèle lui donne. Un fait absent n'est pas
-                         envoyé, et laisse indéfinie la cible qui en dépend. Le seul
-                         fichier qui importe publicodes, pris par le modèle hors de
-                         `index.ts`
+    questionnaire-engine/  le questionnaire à l'écran : la page ouverte et son
+                         brouillon, les phrases de l'écran, l'avancement
+                         automatique, le champ qui affiche une question, ce qui part
+                         vers l'analytics
     ui/                  les champs de formulaire, bâtis sur le DSFR et sans rien
                          savoir du questionnaire : TextField, TextAreaField,
                          SelectField, RadioField, CheckboxField, NumberField,
@@ -164,7 +190,7 @@ front/                   le front, bundlé par Vite
     developer-tools/      ce qui est réservé au service produit : son encadré, la
                          trace de debug du parcours et de ses résultats, son export, et le
                          déverrouillage, garde commune à l'écran des seeds et aux traces
-    seeds/               ce qu'est une seed et son écran. Elles se greffent sur le
+    seeds/               l'écran des seeds. Elles se greffent sur le
                          simulateur, jamais l'inverse : c'est App.tsx qui compose.
     cerfa/               le socle de remplissage d'un PDF : un cerfa et son DTO,
                          l'écriture dans un AcroForm, le texte qui déborde,
@@ -198,10 +224,10 @@ Le questionnaire n'est plus déduit d'un moteur de règles : il est **déclaré 
 le modèle**. Une partie liste ses pages, une page ses questions, une question dit
 quand elle se pose (`askedIf`) et de quelles réponses elle dépend (`dependsOn`).
 
-Le modèle de l'éditeur s'intègre sur la v10.1.3, dans `front/models/eligibilite/`,
-une étape après l'autre. Ses règles sont livrées en YAML : Vite les convertit en
-objet à la compilation (`vite.config.ts`), et aucun analyseur YAML ne part dans
-le navigateur. Le noyau est là : les règles, la déclaration des faits et des
+Le modèle de l'éditeur s'intègre sur la v10.1.3, dans `core/models/eligibilite/`
+et `front/models/eligibilite/`, une étape après l'autre. Ses règles sont livrées
+en YAML : `pnpm regles` les écrit en JSON à côté, que le navigateur et Node
+importent tels quels. Aucun analyseur YAML ne part dans le navigateur. Le noyau est là : les règles, la déclaration des faits et des
 cibles, et l'oracle de l'éditeur rejoué en faits. Le questionnaire pose P1 :
 ses réponses donnent les faits du mode de transport, à trois états. De P2, il
 pose la prestation (Q2.1, avec ses sous-questions f, g et h) et le trajet : la
@@ -218,7 +244,7 @@ L'avancement
 est dans l'issue 50 du dépôt, les décisions dans
 [`docs/knowledge/adr/journal-des-decisions-v10.md`](docs/knowledge/adr/journal-des-decisions-v10.md).
 
-Le modèle de démonstration (`front/models/fake/`) déroule une commande de
+Le modèle de démonstration (`core/models/fake/` et `front/models/fake/`) déroule une commande de
 boisson, sans rapport avec le transport sanitaire. Il est pérenne : chaque capacité du socle
 y a sa page, et ses seeds ouvrent les pages à montrer. Le modèle de l'éditeur
 s'ouvre par défaut (D-119) ; les developer tools permettent de passer à la
@@ -233,7 +259,7 @@ sert à tenir en vie, et sous test, ce que le parcours réel reprendra :
 | --- | --- | --- |
 | Avancement automatique | Une page faite de choix uniques avance seule 200 ms après la réponse, sans bouton « Suivant ». Au retour, le bouton reprend la main ; changer la réponse avance aussitôt. | `questionnaire-engine/auto-advance.ts` |
 | Brouillon | Une saisie ne compte qu'une fois la page validée. « Précédent » abandonne le brouillon. | `questionnaire-engine/questionnaire.ts` |
-| Invalidation | Une réponse changée efface les réponses qui en dépendent, et elles seules. | `questionnaire-engine/page-commit.ts` |
+| Invalidation | Une réponse changée efface les réponses qui en dépendent, et elles seules. | `core/socle/questionnaire-engine/page-commit.ts` |
 | Verrou | Au résultat, « Précédent » rouvre le questionnaire. L'action principale verrouille : le complément est un second parcours, qui ne repose aucune question d'avant et n'a pas de « Précédent » sur sa première page. | `simulateur/Simulateur.tsx` |
 | Stepper | Il compte des parties, jamais des pages. Les résultats l'affichent aussi. | `questionnaire-engine/Stepper.tsx` |
 | Page du premier résultat | Le socle compose la page : le stepper avec son titre et ce qui suit (« Étape suivante : … » ou « Évaluation terminée. »), puis le `h1`, l'introduction et le corps que le modèle donne (D-124), puis une rangée de boutons sous un trait. « Compléter » verrouille et se tient en dernier ; le modèle le nomme selon la préconisation, ou le retire (libellé `null`), et il n'est posé que si la partie suivante a des pages ou un cerfa. Un résultat qui charge ses textes garde le stepper et les boutons. Toute fiche à remettre au patient est une feuille (`sheet`, D-125) : les boutons passent au-dessus d'elle, puis la liseuse la pose sur fond gris, sous une barre « Imprimer », et seule la feuille s'imprime. « Télécharger » viendra avec #129. | `simulateur/FirstResultat.tsx` |

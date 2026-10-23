@@ -159,10 +159,7 @@ type User = Awaited<ReturnType<typeof ouvrirLeSimulateur>>;
 function qui(result: () => Promise<FirstResult>): Model {
   return {
     ...modeleDeTest,
-    transportAndEligibility: {
-      ...modeleDeTest.transportAndEligibility,
-      result,
-    },
+    result: { ...modeleDeTest.result, content: result },
   };
 }
 

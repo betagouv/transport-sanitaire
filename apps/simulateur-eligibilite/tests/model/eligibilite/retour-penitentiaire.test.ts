@@ -4,9 +4,9 @@
 // Ce qui établit l'indication médicale est notre lecture (D-130).
 
 import { describe, expect, it } from "vitest";
+import type { Cibles } from "../../../core/models/eligibilite/declarations/cibles";
+import { TRANSFERT_VERS_LA_PRISON } from "../../../core/models/eligibilite/p2/retour-penitentiaire";
 import { model } from "../../../front/models/eligibilite";
-import type { Cibles } from "../../../front/models/eligibilite/declarations/cibles";
-import { TRANSFERT_VERS_LA_PRISON } from "../../../front/models/eligibilite/p2/retour-penitentiaire";
 import { ciblesDe, lectureDe } from "./reponses-de-la-permission";
 import {
   faits,
@@ -83,7 +83,7 @@ describe("l'indication médicale d'un retour vers la prison (point 33)", () => {
   });
 
   it("« Oui » laisse les règles calculer l'issue", () => {
-    expect(ciblesDe(qualifie("1_OUI")).cible_issue_id).toBeDefined();
+    expect(ciblesDe(qualifie("1_OUI")).cible_issue_id.value).toBeDefined();
   });
 });
 
@@ -97,13 +97,11 @@ describe("un retour qui relève de l'organisation pénitentiaire (point 34)", ()
 
   it("ne complète pas P2 : les règles ne concluent pas", () => {
     expect(faits(administratif).fait_p2_complete.value).toBeUndefined();
-    expect(cibles.cible_issue_id).toBeUndefined();
+    expect(cibles.cible_issue_id.value).toBeUndefined();
   });
 
   it("oriente vers l'administration pénitentiaire, sans rien à compléter", () => {
-    const resultat = model.transportAndEligibility.result(
-      lectureDe(administratif),
-    );
+    const resultat = model.result.content(lectureDe(administratif));
     expect(resultat).toMatchObject({
       title: "Ce retour relève de l’organisation pénitentiaire",
     });
@@ -143,7 +141,9 @@ describe("une sortie définitive vers la prison", () => {
   });
 
   it("laisse les règles calculer l'issue", () => {
-    expect(ciblesDe({ ...SORTIE, ...TRAJET }).cible_issue_id).toBeDefined();
+    expect(
+      ciblesDe({ ...SORTIE, ...TRAJET }).cible_issue_id.value,
+    ).toBeDefined();
   });
 });
 

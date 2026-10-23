@@ -4,7 +4,6 @@
 // où vont les cellules. `mapping_documents.json` et `CONTRAT_LIEUX_CERFA.json`.
 
 import { describe, expect, it } from "vitest";
-import type { Cibles } from "../../../front/models/eligibilite/declarations/cibles";
 import { ACCIDENT } from "../../../front/models/eligibilite/r3/rubriques/accident";
 import { EXONERATION } from "../../../front/models/eligibilite/r3/rubriques/exoneration";
 import { LIENS } from "../../../front/models/eligibilite/r3/rubriques/liens";
@@ -23,6 +22,7 @@ import {
   PMT,
   type Reponses,
 } from "./reponses-du-cerfa";
+import type { ValeursDesCibles } from "./traces-du-praticien";
 
 describe("l'accident causé par un tiers", () => {
   it("coche Oui et donne sa date", () => {
@@ -222,7 +222,7 @@ describe("le trajet", () => {
 function cellules<Cellules>(
   rubrique: Rubrique<Cellules>,
   reponses: Reponses,
-  cibles: Partial<Cibles> = {},
+  cibles: ValeursDesCibles = {},
   completedAt?: Date,
 ): Cellules {
   const lues = donnees(reponses, cibles, completedAt);

@@ -6,12 +6,12 @@
 // questionnaire ne repose aucune question d'avant.
 
 import { type ComponentType, type ReactNode, useState } from "react";
+import type { Answers } from "../../../core/socle/questionnaire-engine/question";
 import type { Model } from "../model";
 import {
   type DebugTraceProps,
   QuestionnaireForm,
 } from "../questionnaire-engine/QuestionnaireForm";
-import type { Answers } from "../questionnaire-engine/question";
 import { FirstResultat } from "./FirstResultat";
 import { CerfaResultat } from "./Resultats";
 import { type Screen, startingScreen } from "./start";
@@ -78,7 +78,7 @@ function FirstQuestionnaire({
   goTo,
   DebugTrace,
 }: ScreenProps<"questionnaire">) {
-  const { parts } = model.transportAndEligibility;
+  const parts = model.core.questionnaire;
   return (
     <QuestionnaireForm
       parts={parts}
@@ -102,10 +102,10 @@ function SecondQuestionnaire({
   DebugTrace,
 }: ScreenProps<"complement">) {
   const { locked } = screen;
-  const partsBefore = model.transportAndEligibility.parts.length;
+  const partsBefore = model.core.questionnaire.length;
   return (
     <QuestionnaireForm
-      parts={[model.cerfa.part]}
+      parts={[model.core.complement]}
       partsBefore={partsBefore}
       partCount={partsBefore + 1}
       lockedAnswers={locked.answers}

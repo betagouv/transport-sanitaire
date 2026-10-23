@@ -1,7 +1,7 @@
 // Le tableau des seeds : une seed par ligne. Ce qu'elle pose, ce qu'elle attend,
 // ce que la préconisation en dit, et un bouton pour l'ouvrir.
 
-import type { Seed, SeedEvaluation } from "./seed";
+import type { Seed, SeedEvaluation } from "../../../core/socle/seeds/seed";
 
 export type SeedRow = {
   seed: Seed;

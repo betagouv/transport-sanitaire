@@ -3,12 +3,13 @@
 // n'est jamais « non ».
 
 import { describe, expect, it } from "vitest";
-import type { Faits } from "../../../front/models/eligibilite/declarations/faits";
+import type { Faits } from "../../../core/models/eligibilite/declarations/faits";
+import { SEEDS } from "../../../core/models/eligibilite/seeds-catalogue";
+import { Fait } from "../../../core/socle";
 import { catalogueResultats } from "../../../front/models/eligibilite/r2/catalogue-resultats";
 import { raisonNonEligible } from "../../../front/models/eligibilite/r2/fiche-negative/raison-non-eligible";
 import type { Precisions } from "../../../front/models/eligibilite/r2/precisions-du-resultat";
 import { traceDuResultat } from "../../../front/models/eligibilite/r2/trace-du-resultat";
-import { SEEDS } from "../../../front/models/eligibilite/seeds-catalogue";
 import { ciblesDe, lectureDe } from "./reponses-de-la-permission";
 import { faux, trace, vrai } from "./traces-du-praticien";
 
@@ -145,8 +146,11 @@ describe("un fait absent n'est jamais « non »", () => {
   });
 
   it("un fondement d'ALD inconnu ne dit pas que le cadre n'est pas qualifiant", () => {
-    const inconnu = { fait_ald_liee: vrai, fait_ald_exonerante_3_ou_4: {} };
-    expect(raisonDe(ALD, inconnu as Partial<Faits>)).toBe("AUCUN_GENERIQUE");
+    const inconnu = {
+      fait_ald_liee: vrai,
+      fait_ald_exonerante_3_ou_4: Fait.inconnu("test"),
+    };
+    expect(raisonDe(ALD, inconnu)).toBe("AUCUN_GENERIQUE");
   });
 
   it("« Je ne peux pas préciser » n'est pas « Non »", () => {
@@ -159,12 +163,15 @@ describe("un fait absent n'est jamais « non »", () => {
   });
 
   it("un séjour prouvé écarte les raisons de la dialyse", () => {
-    expect(
-      raisonDe({
-        dialysisType: "non-hemodialyse",
-        hospitalisation: "H-SEJOUR",
-      }),
-    ).toBe("AUCUN_GENERIQUE");
+    const precisions: Precisions = {
+      dialysisType: "non-hemodialyse",
+      hospitalisation: "H-SEJOUR",
+    };
+    const avecSejour = {
+      ...trace(AUCUN_MOTIF, {}, precisions),
+      sejourReel: true,
+    } as const;
+    expect(raisonNonEligible(issue, avecSejour).id).toBe("AUCUN_GENERIQUE");
   });
 });
 
@@ -209,7 +216,7 @@ describe("de bout en bout, par les réponses", () => {
     const answers = { ...seed.answers, ...plus } as typeof seed.answers;
     const cibles = ciblesDe(answers);
     return {
-      issue: cibles.cible_issue_id,
+      issue: cibles.cible_issue_id.value,
       raison: raisonNonEligible(issue, traceDuResultat(lectureDe(answers))).id,
     };
   };

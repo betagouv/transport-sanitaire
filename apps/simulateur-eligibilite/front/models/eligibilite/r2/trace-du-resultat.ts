@@ -6,11 +6,14 @@
 // (D-104 : une simulation se fait en une fois, sur le modèle chargé à
 // l'ouverture). Un fait inconnu est une clé absente, jamais un « non ».
 
-import type { GivenAnswers, ValidatedAnswers } from "../../../socle";
-import type { Cibles } from "../declarations/cibles";
-import type { Faits } from "../declarations/faits";
-import type { Questions } from "../declarations/questions";
-import { faits } from "../preconisation";
+import { numeroDeLOption } from "../../../../core/models/eligibilite/concepts/numero-de-l-option";
+import { Permission } from "../../../../core/models/eligibilite/concepts/permission";
+import { Sejour } from "../../../../core/models/eligibilite/concepts/sejour";
+import type { Cibles } from "../../../../core/models/eligibilite/declarations/cibles";
+import type { Faits } from "../../../../core/models/eligibilite/declarations/faits";
+import type { Questions } from "../../../../core/models/eligibilite/declarations/questions";
+import { faits } from "../../../../core/models/eligibilite/preconisation";
+import type { GivenAnswers, ValidatedAnswers } from "../../../../core/socle";
 import {
   type Precisions,
   precisionsDuResultat,
@@ -42,6 +45,11 @@ export type Trace = {
    * La clé reste donc absente.
    */
   readonly partieTerrestre?: true;
+  /**
+   * Un séjour réel est prouvé. Ce n'est pas une clé de l'éditeur : un texte de
+   * R2 le lit ici, plutôt que de redécouper l'identifiant du lexique.
+   */
+  readonly sejourReel?: true;
   readonly precisions: Precisions;
 };
 
@@ -51,17 +59,19 @@ export function traceDuResultat({
   validated,
   cibles,
 }: ReponsesEtCibles): Trace {
-  const repetee = validated.question("Q2.8.5");
   return {
     cibles,
     faits: faits(answers, validated),
-    criteres: validated.question("Q1.2").checkedBoxes().map(numeroDuCritere),
-    ...(repetee.hasAnswer() && { permissionRepeated: repetee.is("1_OUI") }),
+    criteres: validated.question("Q1.2").checkedBoxes().map(numeroDeLOption),
+    ...repetition(Permission.of(validated)),
+    ...(Sejour.of(validated).estReel() && { sejourReel: true }),
     precisions: precisionsDuResultat(validated),
   };
 }
 
-// Le numéro de l'option au catalogue, que porte son identifiant (D-75).
-function numeroDuCritere(option: string): number {
-  return Number.parseInt(option, 10);
+// Q2.8.5 dit si la permission se répète. Sans réponse, la clé reste absente.
+function repetition(permission: Permission): { permissionRepeated?: boolean } {
+  if (permission.estRepetee()) return { permissionRepeated: true };
+  if (permission.estUnique()) return { permissionRepeated: false };
+  return {};
 }

@@ -9,10 +9,13 @@
 // avec un conseil bordé de bleu et un encadré blanc.
 
 import type { ReactNode } from "react";
+import type { Cibles } from "../../../core/models/fake/declarations/cibles";
+import type { Questions } from "../../../core/models/fake/declarations/questions";
+import { SANS_COMMANDE } from "../../../core/models/fake/preconisation";
+import type { GivenAnswers } from "../../../core/socle";
 import {
   Disclosure,
   type FirstResult,
-  type GivenAnswers,
   type IllustratedCard,
   IllustratedCards,
   NumberedCards,
@@ -20,20 +23,17 @@ import {
   SheetFollowUp,
 } from "../../socle";
 import { enUneLigne } from "./adresse";
-import type { Cibles } from "./declarations/cibles";
-import type { Questions } from "./declarations/questions";
 import grandeTasse from "./illustrations/grande-tasse.svg";
 import tasse from "./illustrations/tasse.svg";
 import verreGlace from "./illustrations/verre-glace.svg";
-import { SANS_COMMANDE } from "./preconisation";
 
 type Props = { answers: GivenAnswers<Questions>; cibles: Cibles };
 
 export function resultatDeLaCommande({ answers, cibles }: Props): FirstResult {
-  if (cibles.commande === SANS_COMMANDE) return RIEN_A_SERVIR;
+  if (cibles.commande.is(SANS_COMMANDE)) return RIEN_A_SERVIR;
   return {
     title: "La commande est prête à être complétée",
-    intro: `Commande : ${cibles.commande}.`,
+    intro: `Commande : ${cibles.commande.value}.`,
     body: <PageDeLaCommande answers={answers} cibles={cibles} />,
   };
 }
@@ -43,7 +43,7 @@ export function CommandeCompletee({ answers, cibles }: Props) {
   return (
     <>
       <p className="fr-text--lead">
-        Commande : {cibles.commande},{" "}
+        Commande : {cibles.commande.value},{" "}
         {String(answers.question("quantite").value)} tasses
       </p>
       {adresse.hasAnswer() && (
@@ -109,7 +109,7 @@ function PageDeLaCommande({ answers, cibles }: Props) {
   return (
     <>
       <Pourquoi cibles={cibles} />
-      {cibles.lait_tourne === undefined && (
+      {cibles.lait_tourne.isInconnue() && (
         <Panel variant="blue" title="Questions à poser au service">
           <ul>
             <li>Le thé sera-t-il servi avec du citron ?</li>
@@ -139,12 +139,12 @@ function Pourquoi({ cibles }: { cibles: Cibles }) {
   return (
     <Panel variant="grey" title="Pourquoi ce résultat ?" divided>
       <Element titre="La commande">
-        Les réponses demandent : {cibles.commande}.
+        Les réponses demandent : {cibles.commande.value}.
       </Element>
       <MiseEnGarde tourne={cibles.lait_tourne} />
       <Disclosure summary="Ce que la commande a pris en compte">
         <ul>
-          <li>Boisson : {cibles.commande}</li>
+          <li>Boisson : {cibles.commande.value}</li>
           <li>Lait et citron : {etatDuLait(cibles.lait_tourne)}</li>
         </ul>
       </Disclosure>
@@ -188,10 +188,10 @@ function facons(service: readonly string[]): readonly IllustratedCard[] {
 // Une cible indéfinie n'est pas une décision : elle ne s'affiche ni comme un
 // « oui », ni comme un « non ».
 function MiseEnGarde({ tourne }: { tourne: Cibles["lait_tourne"] }) {
-  if (tourne === false) return null;
+  if (tourne.isNon()) return null;
   return (
     <Element titre="Lait et citron">
-      {tourne
+      {tourne.isOui()
         ? "Attention : le lait tourne au contact du citron."
         : "Lait et citron : rien n'est décidé. On ne sait pas encore s'il y aura du citron, et ce n'est pas un « non »."}
     </Element>
@@ -199,8 +199,8 @@ function MiseEnGarde({ tourne }: { tourne: Cibles["lait_tourne"] }) {
 }
 
 function etatDuLait(tourne: Cibles["lait_tourne"]): string {
-  if (tourne === undefined) return "non décidé";
-  return tourne ? "le lait tourne" : "rien à craindre";
+  if (tourne.isInconnue()) return "non décidé";
+  return tourne.isOui() ? "le lait tourne" : "rien à craindre";
 }
 
 function Element({ titre, children }: { titre: string; children: ReactNode }) {

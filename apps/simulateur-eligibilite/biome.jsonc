@@ -8,6 +8,7 @@
   "files": {
     "includes": [
       "front/**",
+      "core/**",
       "server/**",
       "shared/**",
       "scripts/**",
@@ -18,9 +19,9 @@
       "*.json",
       "*.jsonc",
       "!**/*.tsbuildinfo",
-      // Les fichiers de l'éditeur sont recopiés tels quels : Biome ne les
-      // reformate pas.
-      "!front/models/*/rules/*.json",
+      // Les fichiers de l'éditeur sont recopiés tels quels, et ses règles
+      // écrites en JSON par un script : Biome ne les reformate pas.
+      "!core/models/*/rules/*.json",
       // Les logos du socle sont extraits tels quels des gabarits de l'éditeur.
       "!front/socle/simulateur/logos/*.svg"
     ]
@@ -61,7 +62,10 @@
       // situations de référence. Le scinder pour tenir sous 300 lignes ne
       // produirait qu'un découpage arithmétique, et ferait perdre la propriété
       // qui compte : une seule liste à lire pour connaître tous les cas.
-      "includes": ["front/models/*/seeds-catalogue.ts"],
+      "includes": [
+        "core/models/*/seeds-catalogue.ts",
+        "front/models/*/seeds-catalogue.ts"
+      ],
       "linter": {
         "rules": {
           "style": {

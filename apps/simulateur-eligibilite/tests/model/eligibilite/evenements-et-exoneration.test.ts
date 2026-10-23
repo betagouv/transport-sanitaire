@@ -3,18 +3,18 @@
 // Q3.6 et Q3.7, `mapping_documents.json` (cases tiers, AT/MP, exonération).
 
 import { describe, expect, it } from "vitest";
-import { model } from "../../../front/models/eligibilite";
-import type { Questions } from "../../../front/models/eligibilite/declarations/questions";
-import { jourAParis } from "../../../front/models/eligibilite/p3/pages-des-evenements";
-import { SEEDS } from "../../../front/models/eligibilite/seeds-catalogue";
-import { preconisationOf } from "../../../front/socle/model";
-import { askedQuestions } from "../../../front/socle/questionnaire-engine/asked-questions";
-import type { Answers } from "../../../front/socle/questionnaire-engine/question";
+import { model } from "../../../core/models/eligibilite";
+import type { Questions } from "../../../core/models/eligibilite/declarations/questions";
+import { jourAParis } from "../../../core/models/eligibilite/p3/pages-des-evenements";
+import { SEEDS } from "../../../core/models/eligibilite/seeds-catalogue";
+import { preconisationOf } from "../../../core/socle/model";
+import type { Answers } from "../../../core/socle/questionnaire-engine/question";
+import { Questionnaire } from "../../../core/socle/questionnaire-engine/questionnaire";
 import { BRANCARD_20_KM } from "./reponses-de-la-branche";
 
 type Reponses = Answers<Questions>;
 
-const pages = model.cerfa.part.pages;
+const pages = model.complement.pages;
 
 const seed = (id: string) => {
   const trouvee = SEEDS.find((candidate) => candidate.id === id);
@@ -25,7 +25,7 @@ const posees = (pageId: string, reponses: Reponses) => {
   const page = pages.find(({ id }) => id === pageId);
   if (!page) throw new Error(`${pageId} n'existe pas`);
   const { cibles } = preconisationOf(model, reponses);
-  return askedQuestions(pages, page, reponses, cibles);
+  return new Questionnaire(pages).readWith(reponses, cibles).questionsOn(page);
 };
 const ids = (pageId: string, reponses: Reponses) =>
   posees(pageId, reponses).map(({ id }) => id);

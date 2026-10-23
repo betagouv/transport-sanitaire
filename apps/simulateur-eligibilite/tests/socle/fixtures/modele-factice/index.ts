@@ -35,7 +35,7 @@ const BON_DE_COMMANDE = bindCerfa<
   },
   {
     fields: {
-      commande: ({ cibles }) => cibles.commande,
+      commande: ({ cibles }) => String(cibles.commande.value),
       quantite: ({ answers }) => String(answers.question("quantite").value),
       date: ({ completedAt }) => completedAt.toISOString().slice(0, 10),
     },
@@ -44,24 +44,23 @@ const BON_DE_COMMANDE = bindCerfa<
 );
 
 export const model = defineModel<Questions, Faits, Cibles>({
-  preconisation: { faits, cibles },
-  transportAndEligibility: {
-    parts: PARTS,
-    title: "Résultat",
-    result: resultatDeLaCommande,
+  core: {
+    preconisation: { faits, cibles },
+    questionnaire: PARTS,
+    complement: COMPLEMENT,
+    seeds: () => import("./seeds-catalogue").then((m) => m.SEEDS),
   },
+  result: { title: "Résultat", content: resultatDeLaCommande },
   cerfa: {
-    part: COMPLEMENT,
     // Sans boisson, il n'y a rien à compléter : le premier résultat est le
     // dernier écran.
     form: ({ commande }) =>
-      commande === SANS_COMMANDE ? null : BON_DE_COMMANDE,
-    title: ({ commande }) => `Commande complétée : ${commande}`,
+      commande.is(SANS_COMMANDE) ? null : BON_DE_COMMANDE,
+    title: ({ commande }) => `Commande complétée : ${commande.value}`,
     Resultat: CommandeCompletee,
     startLabel: ({ commande }) =>
-      commande === SANS_COMMANDE ? null : "Compléter la commande",
+      commande.is(SANS_COMMANDE) ? null : "Compléter la commande",
     printLabel: "Imprimer le bon de commande",
     downloadLabel: "Télécharger le bon de commande",
   },
-  seeds: () => import("./seeds-catalogue").then((m) => m.SEEDS),
 });

@@ -4,6 +4,7 @@
 // Les attendus sont recopiés du catalogue de l'éditeur et de ses aperçus PDF.
 
 import { describe, expect, it } from "vitest";
+import { Fait } from "../../../core/socle";
 import {
   DIALYSE,
   demande,
@@ -53,7 +54,7 @@ describe("la convocation et la permission", () => {
     expect(sans?.raison).toBe(L);
     expect(
       demande(LONGUE_DISTANCE, {
-        faits: { fait_convocation: { provenance: "test" } },
+        faits: { fait_convocation: Fait.inconnu("test") },
       })?.raison,
     ).toBe(L);
   });

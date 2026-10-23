@@ -1,32 +1,33 @@
 import { screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
-import { validatedQuestions } from "../../../front/socle/questionnaire-engine/asked-questions";
-import type { Page } from "../../../front/socle/questionnaire-engine/question";
+import { page, questionsOf } from "../../../core/socle";
+import { Questionnaire } from "../../../core/socle/questionnaire-engine/questionnaire";
 import { afficher } from "./afficher";
 
 // Une case seule : décochée sur une page validée, elle répond « non ». Les
 // pages sont écrites ici.
 
-const TRAJET: Page = {
-  id: "trajet",
-  questions: [
-    {
-      id: "distance",
-      kind: "single choice",
-      label: "Quelle distance ?",
-      options: [
-        { value: "courte", label: "Courte" },
-        { value: "longue", label: "Longue" },
-      ],
-    },
-    {
-      id: "avion",
-      kind: "checkbox",
-      label: "Une partie du trajet se fera en avion.",
-      box: "Oui, une partie du trajet se fera en avion.",
-    },
-  ],
+type Questions = {
+  distance: "courte" | "longue";
+  avion: boolean;
+  escale: string;
 };
+
+const OPTIONS = {
+  distance: { courte: "Courte", longue: "Longue" },
+} as const;
+
+const question = questionsOf<Questions>({ options: OPTIONS });
+
+const DISTANCE = question.singleChoice("distance", "Quelle distance ?");
+
+const AVION = question.checkbox(
+  "avion",
+  "Une partie du trajet se fera en avion.",
+  "Oui, une partie du trajet se fera en avion.",
+);
+
+const TRAJET = page("trajet", DISTANCE, AVION);
 
 const caseAvion = () =>
   screen.getByRole("checkbox", {
@@ -76,11 +77,17 @@ describe("case seule", () => {
   });
 
   it("n'est pas validée tant que sa page ne l'est pas", () => {
-    expect(validatedQuestions([TRAJET], { distance: "longue" })).toEqual({
+    expect(
+      new Questionnaire([TRAJET])
+        .readWith({ distance: "longue" })
+        .validated.toJSON(),
+    ).toEqual({
       distance: { offered: ["courte", "longue"], answer: "longue" },
     });
     expect(
-      validatedQuestions([TRAJET], { distance: "longue", avion: false }),
+      new Questionnaire([TRAJET])
+        .readWith({ distance: "longue", avion: false })
+        .validated.toJSON(),
     ).toEqual({
       distance: { offered: ["courte", "longue"], answer: "longue" },
       avion: { answer: false },
@@ -89,20 +96,16 @@ describe("case seule", () => {
 
   it("non touchée, laisse se révéler les questions qui la suivent sur sa page", async () => {
     const { user } = afficher([
-      {
-        id: "trajet",
-        questions: [
-          TRAJET.questions[1] as Page["questions"][number],
-          TRAJET.questions[0] as Page["questions"][number],
-          {
-            id: "escale",
-            kind: "text",
-            label: "Où se fait l'escale ?",
-            askedIf: (_answers, _cibles, validated) =>
-              validated.question("distance").is("longue"),
-          },
-        ],
-      },
+      page(
+        "trajet",
+        AVION,
+        DISTANCE,
+        question
+          .text("escale", "Où se fait l'escale ?")
+          .askedIf(({ validated }) =>
+            validated.question("distance").is("longue"),
+          ),
+      ),
     ]);
 
     await user.click(screen.getByLabelText("Longue"));

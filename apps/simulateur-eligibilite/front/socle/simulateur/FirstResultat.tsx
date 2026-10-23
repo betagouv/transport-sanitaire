@@ -5,16 +5,18 @@
 // passent au-dessus d'elle, et seule la feuille s'imprime.
 
 import { type ComponentType, useEffect, useState } from "react";
+import { preconisationOf } from "../../../core/socle/model";
+import type {
+  Answers,
+  AnyCibles,
+} from "../../../core/socle/questionnaire-engine/question";
+import { pagesOf } from "../../../core/socle/questionnaire-engine/question";
 import {
-  type FirstResult,
-  type Model,
-  preconisationOf,
-  readingOf,
-} from "../model";
+  Questionnaire,
+  type QuestionnaireState,
+} from "../../../core/socle/questionnaire-engine/questionnaire";
+import type { FirstResult, Model } from "../model";
 import type { DebugTraceProps } from "../questionnaire-engine/QuestionnaireForm";
-import type { Answers, AnyCibles } from "../questionnaire-engine/question";
-import { pagesOf } from "../questionnaire-engine/question";
-import type { QuestionnaireState } from "../questionnaire-engine/questionnaire";
 import { Stepper } from "../questionnaire-engine/Stepper";
 import { PrimaryButton, SecondaryButton, traceOf } from "./Resultats";
 import { SheetViewer } from "./SheetViewer";
@@ -37,8 +39,9 @@ type Props = {
 // boutons restent pendant le chargement du résultat.
 export function FirstResultat({ model, state, DebugTrace, ...on }: Props) {
   const { answers } = state;
-  const preconisation = preconisationOf(model, answers);
-  const { parts, title } = model.transportAndEligibility;
+  const preconisation = preconisationOf(model.core, answers);
+  const parts = model.core.questionnaire;
+  const { title } = model.result;
   const startLabel = startLabelOf(model, preconisation.cibles);
   const trace = traceOf("résultat", pagesOf(parts), answers, preconisation);
   const buttons = { startLabel, ...actionsOf(model, state, on) };
@@ -71,8 +74,8 @@ export function FirstResultat({ model, state, DebugTrace, ...on }: Props) {
 // page à poser, ou un cerfa à remplir. Un modèle peut donner un libellé sans
 // avoir encore de partie à ouvrir ; le verrou ne mène pas à un écran vide.
 function startLabelOf(model: Model, cibles: AnyCibles): string | null {
-  const { part, form, startLabel } = model.cerfa;
-  const opens = part.pages.length > 0 || form(cibles) !== null;
+  const { form, startLabel } = model.cerfa;
+  const opens = model.core.complement.pages.length > 0 || form(cibles) !== null;
   return opens ? startLabel(cibles) : null;
 }
 
@@ -85,11 +88,9 @@ const loading = new WeakMap<Model, WeakMap<Answers, Promise<FirstResult>>>();
 function resultOf(model: Model, answers: Answers, cibles: AnyCibles): Loading {
   const known = loading.get(model)?.get(answers);
   if (known) return known;
-  const pages = pagesOf(model.transportAndEligibility.parts);
-  const result = model.transportAndEligibility.result({
-    ...readingOf(pages, answers),
-    cibles,
-  });
+  const questionnaire = new Questionnaire(pagesOf(model.core.questionnaire));
+  const { validated, answers: given } = questionnaire.readWith(answers);
+  const result = model.result.content({ answers: given, validated, cibles });
   if (!(result instanceof Promise)) return result;
   const byAnswers = loading.get(model) ?? new WeakMap();
   loading.set(model, byAnswers.set(answers, result));

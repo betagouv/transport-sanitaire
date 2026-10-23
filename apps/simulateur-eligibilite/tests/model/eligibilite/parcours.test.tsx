@@ -9,7 +9,7 @@
 import { render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
-import { model } from "../../../front/models/eligibilite";
+import { model } from "../../../core/models/eligibilite";
 import { QuestionnaireForm } from "../../../front/socle/questionnaire-engine/QuestionnaireForm";
 
 const Q11 = /^Concernant son déplacement/;
@@ -36,7 +36,7 @@ const HOSPITALISE = /^Le patient est déjà hospitalisé pendant ce trajet/;
 function afficherLeQuestionnaire(onComplete: () => void = () => {}) {
   render(
     <QuestionnaireForm
-      parts={model.transportAndEligibility.parts}
+      parts={model.questionnaire}
       partCount={3}
       endLabel="Voir le résultat"
       tracked={false}

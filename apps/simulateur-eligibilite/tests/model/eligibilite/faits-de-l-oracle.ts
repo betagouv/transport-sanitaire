@@ -4,15 +4,16 @@
 // quelques-uns. Un fait changé en `undefined` est absent : il n'est pas
 // transmis aux règles.
 
-import type { Cibles } from "../../../front/models/eligibilite/declarations/cibles";
+import type { Cibles } from "../../../core/models/eligibilite/declarations/cibles";
 import {
   FAITS,
   type Faits,
-} from "../../../front/models/eligibilite/declarations/faits";
-import { cibles } from "../../../front/models/eligibilite/evaluation-des-regles";
+} from "../../../core/models/eligibilite/declarations/faits";
+import { cibles } from "../../../core/models/eligibilite/evaluation-des-regles";
+import { cibleValues, Fait } from "../../../core/socle";
 
 export type Changements = Partial<Record<keyof Faits, boolean | undefined>>;
-export type Issue = NonNullable<Cibles["cible_issue_id"]>;
+export type Issue = NonNullable<Cibles["cible_issue_id"]["value"]>;
 
 export const ABSENTS = Object.fromEntries(
   FAITS.map((fait) => [fait, undefined]),
@@ -24,18 +25,27 @@ export const faitsDe = (valeurs: Changements) =>
   Object.fromEntries(
     Object.entries(valeurs).map(([fait, value]) => [
       fait,
-      { value, provenance: "oracle de l'éditeur" },
+      etabliPar(value, "oracle de l'éditeur"),
     ]),
   ) as Faits;
 
+// Un fait de l'oracle : « oui », « non », ou inconnu pour `undefined`.
+function etabliPar(value: boolean | undefined, provenance: string): Fait {
+  if (value === undefined) return Fait.inconnu(provenance);
+  return value ? Fait.oui(provenance) : Fait.non(provenance);
+}
+
+// La valeur des cibles que les règles calculent pour ces changements.
 export const preconiser = (changements: Changements) =>
-  cibles(
-    faitsDe({
-      ...TOUS_NON,
-      fait_p1_complete: true,
-      fait_p2_complete: true,
-      ...changements,
-    }),
+  cibleValues(
+    cibles(
+      faitsDe({
+        ...TOUS_NON,
+        fait_p1_complete: true,
+        fait_p2_complete: true,
+        ...changements,
+      }),
+    ),
   );
 
 // Aucun profil de code de soin ne prouve à lui seul un motif de transport.

@@ -2,20 +2,20 @@
 // l'éditeur et D-102. Q2.1 se saute quand P1 prouve déjà un motif de transport.
 
 import { describe, expect, it } from "vitest";
-import { model } from "../../../front/models/eligibilite";
-import type { Questions } from "../../../front/models/eligibilite/declarations/questions";
-import { askedQuestions } from "../../../front/socle/questionnaire-engine/asked-questions";
+import { model } from "../../../core/models/eligibilite";
+import type { Questions } from "../../../core/models/eligibilite/declarations/questions";
 import {
   type Answers,
   pagesOf,
-} from "../../../front/socle/questionnaire-engine/question";
+} from "../../../core/socle/questionnaire-engine/question";
+import { Questionnaire } from "../../../core/socle/questionnaire-engine/questionnaire";
 
 type Reponses = Answers<Questions>;
 
-const pages = pagesOf(model.transportAndEligibility.parts);
+const pages = pagesOf(model.questionnaire);
 const page = pages.find(({ id }) => id === "P2/prestation");
 const posees = (reponses: Reponses) =>
-  page ? askedQuestions(pages, page, reponses) : [];
+  page ? new Questionnaire(pages).readWith(reponses).questionsOn(page) : [];
 const ids = (reponses: Reponses) => posees(reponses).map(({ id }) => id);
 const optionsDeQ21 = (reponses: Reponses) => {
   const q21 = posees(reponses).find(({ id }) => id === "Q2.1");

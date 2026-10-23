@@ -7,7 +7,7 @@
 // chaque nom : Q2.3.2 ne distingue pas l'avion du bateau, et aucune question
 // ne dit CAMSP ou CMPP. Rien n'est jamais deviné.
 
-import type { IssuePositive } from "../../declarations/catalogue-resultats";
+import type { IssuePositive } from "../../../../../core/models/eligibilite/declarations/catalogue-resultats";
 import type { Trace } from "../trace-du-resultat";
 
 /**
@@ -19,7 +19,7 @@ export function avecLesAutresTermes(
   trace: Trace,
   texte: string,
 ): string {
-  const avionBateau = trace.cibles.cible_dap_motif_avion_bateau === true;
+  const avionBateau = trace.cibles.cible_dap_motif_avion_bateau.isOui();
   return texte
     .replaceAll(
       "{segment_ligne_reguliere}",

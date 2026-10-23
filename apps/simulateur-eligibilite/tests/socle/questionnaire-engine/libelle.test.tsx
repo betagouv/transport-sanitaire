@@ -1,45 +1,40 @@
 import { screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
-import type { Page } from "../../../front/socle/questionnaire-engine/question";
+import { page, questionsOf } from "../../../core/socle";
 import { afficher } from "./afficher";
 
 // Le libellé d'une question peut dépendre des réponses. Le questionnaire
 // factice n'en a pas de tel, les pages sont donc écrites ici.
 
-const COMPAGNIE: Page = {
-  id: "compagnie",
-  questions: [
-    {
-      id: "compagnie",
-      kind: "single choice",
-      label: "Venez-vous seul ?",
-      options: [
-        { value: "seul", label: "Seul" },
-        { value: "accompagne", label: "Accompagné" },
-      ],
-    },
-  ],
+type Questions = {
+  compagnie: "seul" | "accompagne";
+  heure: string;
+  duree: string;
 };
 
-const HEURE: Page = {
-  id: "heure",
-  questions: [
-    {
-      id: "heure",
-      kind: "text",
-      label: "À quelle heure arrivez-vous ?",
-      labelFrom: (answers) =>
-        answers.question("compagnie").is("accompagne")
-          ? "À quelle heure arrivez-vous, vous et votre proche ?"
-          : "À quelle heure arrivez-vous, seul ?",
-    },
-  ],
-};
+const OPTIONS = {
+  compagnie: { seul: "Seul", accompagne: "Accompagné" },
+} as const;
 
-const DUREE: Page = {
-  id: "duree",
-  questions: [{ id: "duree", kind: "text", label: "Pour combien de temps ?" }],
-};
+const question = questionsOf<Questions>({ options: OPTIONS });
+
+const COMPAGNIE = page(
+  "compagnie",
+  question.singleChoice("compagnie", "Venez-vous seul ?"),
+);
+
+const HEURE = page(
+  "heure",
+  question
+    .text("heure", "À quelle heure arrivez-vous ?")
+    .labelFrom(({ answers }) =>
+      answers.question("compagnie").is("accompagne")
+        ? "À quelle heure arrivez-vous, vous et votre proche ?"
+        : "À quelle heure arrivez-vous, seul ?",
+    ),
+);
+
+const DUREE = page("duree", question.text("duree", "Pour combien de temps ?"));
 
 const radio = (name: string) => screen.getByRole("radio", { name });
 

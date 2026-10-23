@@ -10,7 +10,7 @@
 import type {
   AucunTexte,
   IssuePositive,
-} from "../../declarations/catalogue-resultats";
+} from "../../../../../core/models/eligibilite/declarations/catalogue-resultats";
 
 /** Une puce de liste ; avec des badges, c'est la légende qui les introduit. */
 export type Puce = {

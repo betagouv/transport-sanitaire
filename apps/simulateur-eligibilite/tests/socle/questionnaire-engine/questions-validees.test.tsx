@@ -1,10 +1,7 @@
 import { screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
-import {
-  askedPages,
-  validatedQuestions,
-} from "../../../front/socle/questionnaire-engine/asked-questions";
-import type { Page } from "../../../front/socle/questionnaire-engine/question";
+import { page, questionsOf } from "../../../core/socle";
+import { Questionnaire } from "../../../core/socle/questionnaire-engine/questionnaire";
 import { afficher } from "./afficher";
 
 // Le questionnaire relève ce qui est validé : chaque question qui a eu sa
@@ -12,85 +9,68 @@ import { afficher } from "./afficher";
 // ne se lit pas de la même façon selon qu'elle a été proposée ou non : le
 // modèle en a besoin pour dire « non » plutôt que « on ne sait pas ».
 
-const REGIME: Page = {
-  id: "regime",
-  questions: [
-    {
-      id: "regime",
-      kind: "single choice",
-      label: "Quel est votre régime ?",
-      options: [
-        { value: "tout", label: "Je mange de tout" },
-        { value: "vegetarien", label: "Végétarien" },
-      ],
-    },
-    {
-      id: "allergies",
-      kind: "multiple choice",
-      label: "Des allergies ?",
-      optional: true,
-      options: [
-        { value: "gluten", label: "Au gluten" },
-        { value: "arachide", label: "À l'arachide" },
-      ],
-    },
-    {
-      id: "proteines",
-      kind: "text",
-      label: "Quelles protéines ?",
-      // Sur la même page : la question lit celle qui la précède.
-      askedIf: (_, __, validated) =>
-        validated.question("regime").is("vegetarien"),
-    },
-  ],
+type Questions = {
+  regime: "tout" | "vegetarien";
+  allergies: readonly ("gluten" | "arachide")[];
+  proteines: string;
+  plats: readonly ("salade" | "steak" | "rien")[];
+  dessert: string;
 };
 
-const PLATS: Page = {
-  id: "plats",
-  questions: [
-    {
-      id: "plats",
-      kind: "multiple choice",
-      label: "Quels plats ?",
-      options: [
-        { value: "salade", label: "Une salade" },
-        {
-          value: "steak",
-          label: "Un steak",
-          offeredIf: (answers) => answers.question("regime").is("tout"),
-        },
-      ],
-      exclusiveOption: { value: "rien", label: "Rien" },
-    },
-  ],
-};
+const OPTIONS = {
+  regime: { tout: "Je mange de tout", vegetarien: "Végétarien" },
+  allergies: { gluten: "Au gluten", arachide: "À l'arachide" },
+  plats: { salade: "Une salade", steak: "Un steak", rien: "Rien" },
+} as const;
 
-const DESSERT: Page = {
-  id: "dessert",
-  questions: [
-    {
-      id: "dessert",
-      kind: "text",
-      label: "Quel dessert ?",
-      askedIf: (_, __, validated) => validated.question("plats").hasAnswer(),
-    },
-  ],
-};
+const question = questionsOf<Questions>({ options: OPTIONS });
+
+const REGIME = page(
+  "regime",
+  question.singleChoice("regime", "Quel est votre régime ?"),
+  question.multipleChoice("allergies", "Des allergies ?").optional(),
+  question
+    .text("proteines", "Quelles protéines ?")
+    // Sur la même page : la question lit celle qui la précède.
+    .askedIf(({ validated }) => validated.question("regime").is("vegetarien")),
+);
+
+const PLATS = page(
+  "plats",
+  question
+    .multipleChoice("plats", "Quels plats ?")
+    .option("steak", (option) =>
+      option.offeredIf(({ answers }) => answers.question("regime").is("tout")),
+    )
+    .exclusive("rien"),
+);
+
+const DESSERT = page(
+  "dessert",
+  question
+    .text("dessert", "Quel dessert ?")
+    .askedIf(({ validated }) => validated.question("plats").hasAnswer()),
+);
 
 const PAGES = [REGIME, PLATS, DESSERT];
+const QUESTIONNAIRE = new Questionnaire(PAGES);
 
 describe("les questions validées", () => {
   it("sont vides tant que rien n'a de réponse", () => {
-    expect(validatedQuestions(PAGES, {})).toEqual({});
+    expect(QUESTIONNAIRE.readWith({}).validated.toJSON()).toEqual({});
   });
 
   it("portent ce qui se proposait et ce qui a été répondu", () => {
-    const { regime } = validatedQuestions(PAGES, { regime: "tout" });
+    const { regime } = QUESTIONNAIRE.readWith({
+      regime: "tout",
+    }).validated.toJSON();
     expect(regime).toEqual({ offered: ["tout", "vegetarien"], answer: "tout" });
   });
 
   it("gardent une question facultative restée sans réponse", () => {
-    const { allergies } = validatedQuestions(PAGES, { regime: "tout" });
+    const { allergies } = QUESTIONNAIRE.readWith({
+      regime: "tout",
+    }).validated.toJSON();
     expect(allergies).toEqual({ offered: ["gluten", "arachide"] });
   });
 
@@ -100,7 +80,7 @@ describe("les questions validées", () => {
       proteines: "Tofu",
       plats: ["rien"],
     };
-    expect(validatedQuestions(PAGES, answers).plats).toEqual({
+    expect(QUESTIONNAIRE.readWith(answers).validated.toJSON().plats).toEqual({
       offered: ["salade", "rien"],
       answer: ["rien"],
     });
@@ -108,26 +88,30 @@ describe("les questions validées", () => {
 
   it("ne donnent pas d'options à une saisie libre", () => {
     const answers = { regime: "tout", plats: ["steak"], dessert: "Une tarte" };
-    expect(validatedQuestions(PAGES, answers).dessert).toEqual({
+    expect(QUESTIONNAIRE.readWith(answers).validated.toJSON().dessert).toEqual({
       answer: "Une tarte",
     });
   });
 
   it("ignorent une question qui ne se pose pas", () => {
-    const validated = validatedQuestions(PAGES, { regime: "tout" });
+    const validated = QUESTIONNAIRE.readWith({
+      regime: "tout",
+    }).validated.toJSON();
     expect(validated).not.toHaveProperty("proteines");
   });
 
   it("s'arrêtent à la première question qui attend sa réponse", () => {
     const sansRegime = { plats: ["salade"], dessert: "Une tarte" };
-    expect(validatedQuestions(PAGES, sansRegime)).toEqual({});
+    expect(QUESTIONNAIRE.readWith(sansRegime).validated.toJSON()).toEqual({});
   });
 });
 
 describe("la condition d'une question sur les questions validées", () => {
   it("lit une page déjà validée", () => {
     const pages = (answers: Record<string, string | string[]>) =>
-      askedPages(PAGES, answers).map((page) => page.id);
+      QUESTIONNAIRE.readWith(answers)
+        .askedPages()
+        .map((page) => page.id);
     expect(pages({ regime: "tout" })).toEqual(["regime", "plats"]);
     expect(pages({ regime: "tout", plats: ["salade"] })).toEqual([
       "regime",
