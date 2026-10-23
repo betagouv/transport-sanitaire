@@ -140,7 +140,7 @@ describe("encadré des developer tools, début du parcours", () => {
     // Le stepper reste hors de l'encadré. La première question est à choix
     // unique : elle avance seule, sans bouton de navigation.
     expect(encadre).not.toContainElement(
-      screen.getByRole("heading", { name: /^étape \d+ sur \d+$/i }),
+      screen.getByRole("heading", { name: /étape \d+ sur \d+$/i }),
     );
   });
 

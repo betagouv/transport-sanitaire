@@ -1,5 +1,8 @@
 // Le formulaire du questionnaire : le stepper, les champs de la page et les
-// boutons de navigation. L'état est dans `questionnaire.ts`.
+// boutons de navigation. L'état est dans `questionnaire.ts`. Le stepper titre
+// l'écran du nom de la partie, et annonce la partie suivante s'il y en a une
+// dans ce questionnaire. La dernière n'annonce rien : ce qui la suit dépend du
+// résultat, encore inconnu.
 
 import type { ComponentType } from "react";
 import {
@@ -15,7 +18,7 @@ import type {
   QuestionnaireScreen,
 } from "./questionnaire";
 import { useQuestionnaire } from "./questionnaire";
-import { Stepper } from "./Stepper";
+import { NextStep, Stepper } from "./Stepper";
 import { errorsOf } from "./screen-texts";
 
 type Props = Omit<QuestionnaireOptions, "pages"> & {
@@ -62,11 +65,11 @@ export function QuestionnaireForm({
 }: Props) {
   const questionnaire = useQuestionnaire({ ...options, pages: pagesOf(parts) });
   const part = parts.findIndex((p) => p.pages.includes(questionnaire.page));
+  const stepper = { parts, part, partsBefore, partCount };
 
   return (
     <>
-      <h1 className="fr-h3">{parts[part]?.title}</h1>
-      <Stepper part={partsBefore + part + 1} total={partCount} />
+      <PartStepper {...stepper} />
       <form
         onSubmit={(e) => {
           e.preventDefault();
@@ -82,6 +85,26 @@ export function QuestionnaireForm({
 }
 
 // ---- implémentation ----
+
+// Le stepper de la partie ouverte, qui titre l'écran. Il annonce la partie
+// suivante de ce questionnaire, s'il y en a une.
+function PartStepper({
+  parts,
+  part,
+  partsBefore,
+  partCount,
+}: Pick<Props, "parts" | "partCount"> & { part: number; partsBefore: number }) {
+  const next = parts[part + 1];
+  return (
+    <Stepper
+      title={parts[part]?.title}
+      level={1}
+      part={partsBefore + part + 1}
+      total={partCount}
+      details={next && <NextStep label={next.title} />}
+    />
+  );
+}
 
 // Ce que la trace lit sous le questionnaire : la page affichée et ses questions,
 // répondues ou non, les pages, le brouillon et les réponses validées.
