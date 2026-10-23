@@ -5,7 +5,9 @@
 // navigateur : les deux actions et l'aperçu portent le même document. Un
 // commentaire retiré faute de place s'annonce avant toute action (D-85). Un
 // échec se signale sans masquer ce que la page affiche déjà, et le clic
-// réessaie. Une action qui attend un PDF ne se fait plus si le document a été
+// réessaie. Pendant la génération, les deux actions attendent, et
+// « Télécharger » dit « Préparation du PDF… », comme le bouton de l'éditeur
+// (D-191). Une action qui attend un PDF ne se fait plus si le document a été
 // quitté entre-temps : un PDF arrivé après coup ne sort jamais (D-190).
 // « Imprimer » vient avant « Télécharger » : côte à côte s'ils tiennent, l'un
 // sous l'autre sinon, le groupe en ligne du DSFR passant à la ligne sans
@@ -62,7 +64,7 @@ export function CerfaDocument<Dto extends CerfaDto>({
           icon="fr-icon-download-line"
           onClick={withPdf && (() => withPdf(save))}
         >
-          {downloadLabel}
+          {settled === undefined ? PREPARING : downloadLabel}
         </ActionButton>
       </ul>
       {standIn ??
@@ -74,6 +76,8 @@ export function CerfaDocument<Dto extends CerfaDto>({
 // ---- implémentation ----
 
 type Settled = ({ status: "ready" } & GeneratedCerfa) | { status: "failed" };
+
+const PREPARING = "Préparation du PDF…";
 
 // Une génération qui ne rejette jamais : son échec est un état de l'écran.
 function generate<Dto extends CerfaDto>(
@@ -143,8 +147,9 @@ function useSettled(downloadablePdf: Promise<Settled>): Settled | Pending {
   return settled;
 }
 
-// Ce que la génération annonce, au-dessus des boutons : qu'elle est en cours,
-// qu'elle a échoué, ou qu'elle a retiré un commentaire.
+// Ce que la génération annonce, au-dessus des boutons : qu'elle a échoué, ou
+// qu'elle a retiré un commentaire. Qu'elle est en cours, seuls les lecteurs
+// d'écran l'entendent ici : le bouton « Télécharger » le montre.
 function Notices({ settled }: { settled: Settled | Pending }) {
   return (
     <>
@@ -152,8 +157,8 @@ function Notices({ settled }: { settled: Settled | Pending }) {
       {settled?.status === "ready" && settled.removedComments.length > 0 && (
         <RemovedComment />
       )}
-      <p className="fr-hint-text" role="status">
-        {settled === undefined ? "Génération du document en cours…" : ""}
+      <p className="fr-sr-only" role="status">
+        {settled === undefined ? PREPARING : ""}
       </p>
     </>
   );
