@@ -49,8 +49,11 @@ Le modèle de l'éditeur se range par partie du parcours : `p1/` (le mode),
 `p2/` (l'éligibilité) et `p3/` (le complément du cerfa) dans `core/`, `r2/` (le
 résultat, avec un dossier par famille d'issues) et `r3/` (son résultat) dans
 `front/`. `core/models/eligibilite/concepts/` porte ce que plusieurs parties
-lisent d'un même concept : la permission, le séjour, l'aide du patient, le
-numéro d'une option. Les racines des deux dossiers les assemblent. Une partie
+ou plusieurs faits lisent d'un même concept : la permission, le séjour, l'aide
+du patient, la distance, l'urgence, le numéro d'une option…
+`core/models/eligibilite/faits/` porte un fichier par fait, au nom du fait sans
+`fait_` : les faits n'appartiennent à aucune partie, et n'en lisent aucune. Les
+racines des deux dossiers les assemblent. Une partie
 ne lit pas celle qui la suit, et les familles de R2 ne s'importent pas entre
 elles, ni les cerfa de R3, et une rubrique de R3 n'importe aucun cerfa :
 `tests/model/eligibilite/domaines.test.ts` le garde.
@@ -144,9 +147,19 @@ Neuf règles à tenir en ajoutant une question :
   sous `concepts/`, nommé en français : `Permission`, `Sejour`,
   `AideDuPatient`. Il se construit sur des réponses données (une garde, une
   cohérence) comme sur des réponses validées (un fait, R2), lit ses réponses
-  une fois et ne pose aucun fait. Une lecture qui n'a de sens que validée se
-  déclare avec `this: Sejour<ValidatedAnswers<Questions>>` (`estEcarte`). Une
-  réponse lue à un seul endroit reste lue là : pas d'objet par question.
+  une fois et ne déclare aucun fait. Il peut répondre par un `Fait` que
+  plusieurs déclarations reprennent (`Sejour.of(validated).nonSiEcarte()`).
+  Une lecture qui n'a de sens que validée se déclare avec
+  `this: Sejour<ValidatedAnswers<Questions>>` (`estEcarte`). Une réponse lue à
+  un seul endroit reste lue là : pas d'objet par question.
+- **Un fait vit dans son fichier.** `fait_distance_plus_50` se déclare dans
+  `faits/distance-plus-50.ts`, et nulle part ailleurs. Le fichier s'ouvre sur
+  le titre que l'éditeur donne au fait, dit ce qui l'établit et le contrat
+  qu'il suit, et n'exporte que sa déclaration (`distancePlus50`). Une page ne
+  garde que ses questions et ses gardes. Une provenance partagée suit la
+  question qu'elle cite, dans son concept ; celles qui n'en citent aucune
+  (`PAS_ENCORE_ETABLI`) restent dans `declarations/faits.ts`.
+  `tests/model/eligibilite/catalogue-des-faits.test.ts` le garde.
 - **Un fait ne lit jamais une garde qui lit les faits.** Le calcul tournerait en
   rond : le catalogue l'arrête net, sur une erreur qui le dit. Une garde lit
   tout le catalogue : la lecture dans l'ordre ne lui montre que les questions
@@ -192,8 +205,8 @@ Ses pièces sont dans `core/socle/`.
 | `LocalDateTime` (`local-date-time.ts`) | une date répondue, lue une fois, sans fuseau : `LocalDateTime.parse(saisie)`, `isBefore`, `isAfter`, `isAtOrBefore`, `equals`, `plusDays`, `plusHours`, `startOfDay`. Une saisie mal écrite n'est comparée à rien : toute comparaison avec elle vaut « non » |
 | `preconisation.faits(answers, validated)` | le modèle reçoit ces deux lectures, jamais les réponses brutes. Il applique, fait par fait, le contrat de l'éditeur |
 | `Fait` (`decision-engine/fait.ts`) | ce qu'on sait d'un fait, en objet valeur figé : sa valeur si elle est établie, et sa provenance. `Fait.oui`, `Fait.non`, `Fait.inconnu` et `Fait.valant` le construisent ; `isOui()`, `isNon()` et `isInconnu()` le lisent, jamais `.value === true`. `avecProvenance` en donne une copie, `equals` compare valeur et provenance |
-| `FaitCatalogue` (`decision-engine/fait-catalogue.ts`) | les faits d'un modèle, **une déclaration par fait**. Le modèle le construit une fois avec la liste de ses faits et ses déclarations par thème (`catalogue-des-faits.ts`) : un doublon, un oubli ou un nom hors du modèle l'arrêtent au chargement. Une déclaration reçoit `{ answers, validated, faits }` et peut lire d'autres faits. `read(answers, validated, fixed)` calcule chaque fait à sa première lecture, et `fixed` en impose (la complétude). Un fait qui se relit, par d'autres faits ou par une garde, s'arrête sur une erreur qui donne le chemin. Un fait qu'aucune réponse ne pose se déclare aussi, et sa provenance dit pourquoi |
-| `regles()` (`decision-engine/fait-builder.ts`) | la chaîne de règles d'un fait. La première qui conclut l'emporte : `seulementSi(condition)`, `selon(réponse, { "1_OUI": "oui", "2_NON": "non" })`, qui écrit seul la provenance « Q2.1.h : « 1_OUI ». », `selonCase(réponse, case)` et `nonSiEcartee(réponse, case)` pour une case proposée, `ouiSi`, `nonSi` et `inconnuSi(condition, provenance)`, et `retient(fait)`, qui reprend une règle d'un autre thème (`sejourEcarte`, `situationDuCadre`). `sinon(provenance)` clôt la chaîne : le fait reste inconnu, ou vaut le fait qu'on lui donne. `citant(…réponses)` écrit une provenance qui cite les réponses données |
+| `FaitCatalogue` (`decision-engine/fait-catalogue.ts`) | les faits d'un modèle, **une déclaration par fait**. Le modèle le construit une fois avec la liste de ses faits et un fichier par fait (`faits/<nom>.ts`, réunis par `faits/index.ts`), qui n'exporte que sa déclaration et s'ouvre sur le titre de l'éditeur : un doublon, un oubli ou un nom hors du modèle l'arrêtent au chargement. Une déclaration reçoit `{ answers, validated, faits }` et peut lire d'autres faits. `read(answers, validated, fixed)` calcule chaque fait à sa première lecture, et `fixed` en impose (la complétude). Un fait qui se relit, par d'autres faits ou par une garde, s'arrête sur une erreur qui donne le chemin. Un fait qu'aucune réponse ne pose se déclare aussi, et sa provenance dit pourquoi |
+| `regles()` (`decision-engine/fait-builder.ts`) | la chaîne de règles d'un fait. La première qui conclut l'emporte : `seulementSi(condition)`, `selon(réponse, { "1_OUI": "oui", "2_NON": "non" })`, qui écrit seul la provenance « Q2.1.h : « 1_OUI ». », `selonCase(réponse, case)` et `nonSiEcartee(réponse, case)` pour une case proposée, `ouiSi`, `nonSi` et `inconnuSi(condition, provenance)`, et `retient(fait)`, qui reprend ce qu'un concept répond, un `Fait` ou rien (`Sejour.of(validated).nonSiEcarte()`). `sinon(provenance)` clôt la chaîne : le fait reste inconnu, ou vaut le fait qu'on lui donne. `citant(…réponses)` écrit une provenance qui cite les réponses données |
 | `Cible` (`decision-engine/cible.ts`) | ce que les règles donnent pour une cible, en objet valeur figé, que seul `Cible.of` construit. `isOui()` et `isNon()` lisent une cible « oui ou non », `is("TAP")` une cible à constantes, `isInconnue()` et `isSansObjet()` les deux cas qui ne sont pas une décision. Jamais `.value === true` : une cible inconnue n'est pas un « non ». `cibleValues(cibles)` donne leurs valeurs, pour la trace, une seed ou un test |
 | `publicodesEngine` | n'envoie aux règles que les faits établis, et donne chaque cible en `Cible`. Il manque un fait : elle est inconnue, ce qui n'est pas une décision, ni « sans objet » (`null`) |
 

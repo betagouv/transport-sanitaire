@@ -1,6 +1,6 @@
 # Architecture : le métier et l'écran
 
-> Statut : **décidé (phase expérimentale)** · Dernière mise à jour : 2026-10-22
+> Statut : **décidé (phase expérimentale)** · Dernière mise à jour : 2026-10-23
 >
 > Où vit le métier du simulateur, et comment l'écran s'y branche. Les décisions
 > ont été prises seul par l'agent qui a mené le chantier, sur délégation de
@@ -11,6 +11,13 @@
 > de R3. Les décisions de ce chantier, D-134 à D-149 dans les messages de
 > commit, sont D-148 à D-163 au journal. La première fusion porte aussi R3 et
 > QUAL-017 sur `core/` : les noms d'absence choisis sont au journal, D-164.
+>
+> **Mise à jour 2026-10-23, un fichier par fait (#218).** L'ADR-12 est révisé :
+> une déclaration ne vit plus dans le thème de la question qui pose son fait,
+> mais dans son propre fichier, sous `faits/`. Une page ne garde que ses
+> questions et ses gardes. L'ADR-18 est précisé : un concept peut répondre par
+> un `Fait`, que la déclaration reprend, sans déclarer de fait du catalogue.
+> Décision de Simon, au journal D-165.
 
 ## 1. Contexte & objectifs
 
@@ -270,7 +277,7 @@ ou une fonction du contexte quand il cite les réponses.
 reste une liste de questions. Une incohérence se lit sur sa ligne, avec sa
 condition.
 
-### ADR-12 - Un fait se déclare une fois, dans un catalogue (~~faits partiels fusionnés~~)
+### ADR-12 - Un fait se déclare une fois, dans son fichier du catalogue (~~dans le thème qui le pose~~, ~~faits partiels fusionnés~~)
 
 **Contexte.** Chaque page de P2 donnait ses faits en objet partiel, et le modèle
 les fusionnait dans un ordre fixe : le dernier écrit l'emportait. Trois
@@ -282,11 +289,14 @@ sache si c'était voulu.
 
 **Décision.** Le socle porte un catalogue des faits (`FaitCatalogue`). Le modèle
 le construit une fois, avec la liste des faits de ses règles et une
-déclaration par fait, rangée dans le thème qui le pose. La déclaration est une
-chaîne de règles (`regles()…sinon(…)`) : la première qui conclut l'emporte,
-et la chaîne dit tout ce que le fait vaut. Quand une autre page en décide une
-partie, son thème exporte une petite règle, qui donne un `Fait` ou rien, et la
-chaîne la reprend (`retient(sejourEcarte(validated))`).
+déclaration par fait, ~~rangée dans le thème qui le pose~~ dans son fichier
+(révision du 2026-10-23, plus bas). La déclaration est une chaîne de règles
+(`regles()…sinon(…)`) : la première qui conclut l'emporte, et la chaîne dit
+tout ce que le fait vaut. ~~Quand une autre page en décide une partie, son
+thème exporte une petite règle, qui donne un `Fait` ou rien, et la chaîne la
+reprend (`retient(sejourEcarte(validated))`).~~ Quand un autre fait lit la même
+chose, un concept la porte et la chaîne reprend sa réponse
+(`retient(Sejour.of(validated).nonSiEcarte())`).
 
 Le catalogue refuse au chargement un fait déclaré deux fois, oublié, ou qui
 n'est pas du modèle. Un fait qu'aucune réponse ne pose se déclare aussi, et sa
@@ -301,9 +311,9 @@ sur une erreur qui donne le chemin.
 | une déclaration par page, le catalogue vérifie les doublons | peu de code déplacé | un fait à plusieurs auteurs ne s'écrit pas |
 | une déclaration par fait, des règles partagées entre thèmes | tout ce qu'un fait vaut se lit à un endroit | un thème exporte des règles pour un autre |
 
-La troisième. Le thème d'un fait est celui de la question qui le pose le plus
+La troisième. ~~Le thème d'un fait est celui de la question qui le pose le plus
 souvent : la permission vit dans `permission.ts`, même si Q2.1 et Q2.2.1
-l'établissent aussi. L'ordre des chaînes reprend celui de l'ancienne fusion,
+l'établissent aussi.~~ L'ordre des chaînes reprend celui de l'ancienne fusion,
 lu à l'envers : la branche, la sortie vers la prison, la convocation, la
 permission, le transfert, les contextes, la prestation.
 
@@ -311,6 +321,43 @@ permission, le transfert, les contextes, la prestation.
 du banc d'équivalence, les questions posées, les faits et les cibles sont les
 mêmes. Seules changent des provenances : celles des faits qu'aucune question
 ne pose, et celle de l'urgence en attente (ADR-14).
+
+**Révision 2026-10-23 : un fichier par fait (#218).** Un fait rangé dans le
+thème de sa question restait dur à trouver. La permission vivait dans la page
+de Q2.7, que Q2.1 et Q2.2.1 établissent aussi. Une page mêlait ses questions,
+ses gardes, ses faits et les petites règles qu'elle prêtait aux autres.
+
+Chaque fait a désormais son fichier, sous `core/models/eligibilite/faits/`, au
+nom du fait sans `fait_`, en kebab-case : `fait_distance_plus_50` vit dans
+`distance-plus-50.ts`. Les faits n'appartiennent à aucune partie, et n'ont pas
+de famille. Le fichier s'ouvre sur le titre que l'éditeur donne au fait, dit
+ce qui l'établit, puis le contrat qu'il suit : `CONTRAT_REPONSES_FAITS.json`,
+ou `CORRECTIF_FAITS_SANS_REPONSE.md` quand ce correctif le reprend. Il
+n'exporte que sa déclaration, au nom du fait en camelCase. Ce qu'il est seul à
+lire reste privé, sous le marqueur d'implémentation.
+
+- Ce que plusieurs faits lisent devient un concept (ADR-18), qui peut répondre
+  par un `Fait` sans déclarer de fait du catalogue.
+- Une provenance partagée suit la question qu'elle cite, dans le concept qui la
+  lit. Celles qui ne citent aucune question restent dans
+  `declarations/faits.ts` : `PAS_ENCORE_ETABLI`, `SANS_PERMISSION`.
+- Une page ne garde que ses questions et ses gardes. Une garde qui lit ce
+  qu'un fait lit passe par le même concept.
+- `faits/index.ts` réunit les fichiers dans le catalogue. `FAITS`, la liste
+  des noms, reste dans les déclarations.
+
+| Option | Pour | Contre |
+|---|---|---|
+| garder le thème de la question | rien à déplacer | un fait se cherche page par page ; une page prête ses règles aux autres |
+| un dossier de faits par partie (`p1/faits/`) | la partie reste le premier rangement | un fait que deux parties établissent n'a pas de partie |
+| un fichier par fait, sous `faits/`, sans famille | un fait se trouve par son nom | 60 fichiers ; ce qu'ils partagent doit devenir un concept |
+
+La troisième, choisie par Simon. Un test d'architecture vérifie qu'à chaque
+nom de `FAITS` répond un fichier, qui n'exporte que sa déclaration et s'ouvre
+sur le titre de l'éditeur. Un autre vérifie qu'un fait ne lit aucune partie :
+les gardes des parties lisent les faits. Sur les 4 688 états du banc
+d'équivalence, les questions posées, les faits, les cibles et les provenances
+sont les mêmes.
 
 ### ADR-13 - Le fait est un objet valeur
 
@@ -438,7 +485,10 @@ de Q1.1 dans une fonction et dans la table de deux faits.
 `core/models/eligibilite/concepts/`, un fichier par concept, nommé en français.
 Il lit ses réponses une fois, à la construction, et répond par des méthodes
 qui disent la règle. Il ne pose aucun fait : la déclaration d'un fait
-l'interroge, et reste unique (ADR-12).
+l'interroge, et reste unique (ADR-12). Précision du 2026-10-23 : un concept
+peut répondre par un `Fait`, ou laisser la main (`PassesOn`), quand plusieurs
+faits reprennent la même règle (`Sejour.nonSiEcarte()`). Il ne déclare pas de
+fait du catalogue pour autant : chaque déclaration choisit ce qu'elle reprend.
 
 Un concept se construit sur `AnswersReader`, ce que les réponses données et
 les questions validées ont en commun. Une garde ou une cohérence lit les
@@ -452,6 +502,10 @@ compiler sur des réponses données échoue.
 | `Permission` | Q2.7 et Q2.8 : le mineur, l'adulte à sa charge, les cinq contrôles de dates et leurs seuils, la répétition, les trajets d'un mois | les pages et les faits de P2, le sens du trajet de P3, la trace et les précisions de R2 |
 | `Sejour` | Q2.2.1, Q2.1 et Q2.1.g : « déjà hospitalisé » à proposer, coché ou écarté, l'entrée qui ouvre le séjour, le séjour réel | les pages, les contextes, le transfert, la permission et la prestation de P2, R2 |
 | `AideDuPatient` | Q1.1 : seul, avec un proche, avec un professionnel, ou sans professionnel | les pages et les faits de P1 |
+| `CriteresDuTransport`, `CasParticuliers`, `Soin` | Q1.2, Q1.3 et le soin de Q2.1 (#218) | les faits de P1 et de la prestation, leurs gardes |
+| `ContextesDuTrajet`, `RetourPenitentiaire`, `DepartDeLEntree` | Q2.2.1.b, l'option 10 et sa sortie vers la prison, le départ de Q2.13 (#218) | les faits des contextes, du transfert, du Centre 15 et de la permission, les pages de P2, P3 |
+| `ExceptionsDeLArticle80` | Q2.6 : les exceptions qui se proposent, et ce que chacune établit (#218) | les huit faits des exceptions, ceux du Centre 15, la page des exceptions |
+| `DistanceDuTrajet`, `Urgence` | Q2.3.1, et Q2.3.4 ou Q2.12 (#218) | les distances et la série, les deux faits et la garde de l'urgence |
 
 | Option | Pour | Contre |
 |---|---|---|
@@ -460,7 +514,9 @@ compiler sur des réponses données échoue.
 | un objet par concept, là où un savoir s'écrit deux fois | une règle, un endroit, un test | une classe par concept |
 
 La troisième. Le critère est le doublon : une réponse lue à un seul endroit
-reste lue là.
+reste lue là. Depuis la révision de l'ADR-12, deux faits sont deux fichiers :
+une lecture qu'ils partagent est un doublon, et devient un concept. Q2.3.2, une
+case seule que lit un seul fait, reste lue dans son fichier.
 
 **Conséquences.**
 
@@ -542,6 +598,8 @@ flowchart LR
 | `Fait` | `core/` | ce qu'on sait d'un fait, en objet valeur figé | modifié |
 | `Cible` | `core/` | ce que les règles donnent pour une cible, en objet valeur figé | nouveau |
 | Catalogue des faits (`FaitCatalogue`) | `core/` | une déclaration par fait, calculée à la lecture ; refuse doublon, oubli, cycle | nouveau |
+| Fichier d'un fait (`faits/<nom>.ts`) | `core/models/` | le titre de l'éditeur, ce qui établit le fait, sa seule déclaration | nouveau |
+| Déclarations par thème (`FAITS_DU_TRAJET`, `DeclarationsDeFaits`…) | `core/models/` | les faits d'une page, dans le fichier de ses questions | supprimé |
 | Règles d'un fait (`regles()`) | `core/` | la chaîne de règles d'un fait, la première qui conclut l'emporte | modifié |
 | Fusion des faits partiels (`faitsAvantLaBranche`, `FaitsDesReponses`) | `core/` | l'ordre des pages décidait du fait | supprimé |
 | Seeds | `core/` | ce qu'est une seed, ce qu'elle confirme ou dément | déplacé |
@@ -552,7 +610,7 @@ flowchart LR
 | Écran d'un modèle | `front/models/` | résultats, fiches, cerfa | modifié |
 | `LocalDateTime` | `core/` | une date répondue, lue une fois, sans fuseau ; illisible, elle n'est comparée à rien | nouveau |
 | `AnswersReader` | `core/` | ce que les réponses données et validées ont en commun : `question(id)` | nouveau |
-| Concepts d'un modèle (`Permission`, `Sejour`, `AideDuPatient`) | `core/models/` | un savoir écrit deux fois, lu sur des réponses données ou validées ; ne pose aucun fait | nouveau |
+| Concepts d'un modèle (`Permission`, `Sejour`, `AideDuPatient`…) | `core/models/` | un savoir écrit deux fois, lu sur des réponses données ou validées ; peut répondre par un `Fait`, sans en déclarer | nouveau |
 | Numéro d'une option (`numeroDeLOption`) | `core/models/` | le numéro au catalogue que porte un slug | nouveau |
 | Calculs de date de la permission | `core/models/` | cinq contrôles sur des chaînes brutes | supprimé |
 | Séjour réel de la trace (`sejourReel`) | `front/models/` | R2 sait s'il y a un séjour sans relire l'identifiant du lexique | nouveau |
@@ -582,6 +640,7 @@ a-t-il besoin ?**
 | Faits : une déclaration par fait | 205 | ✅ |
 | Cibles : un objet valeur par cible | 206 | ✅ |
 | Concepts du modèle | 207 | ✅ |
+| Un fichier par fait | 218 | ✅ |
 
 ## 6. Risques & validations en attente
 
@@ -606,4 +665,5 @@ pnpm vitest run tests/model/metier-sous-node.test.ts tests/model/regles-a-jour.t
 pnpm vitest run tests/model/conformite.test.ts tests/socle/questionnaire-engine
 pnpm vitest run tests/socle/decision-engine
 pnpm vitest run tests/model/eligibilite/concepts tests/model/eligibilite/domaines.test.ts
+pnpm vitest run tests/model/eligibilite/catalogue-des-faits.test.ts
 ```
