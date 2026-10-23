@@ -1,11 +1,17 @@
 // La page du premier résultat, que le socle compose : le stepper et ce qui
 // suit, le titre, l'introduction et le corps que le modèle donne, puis les
 // boutons sous le corps. Avec une feuille à remettre, les boutons passent
-// au-dessus d'elle, et seule la feuille s'imprime. Un résultat qui charge ses
-// textes garde tout le reste.
+// au-dessus d'elle, et seule la feuille s'imprime, passée en papier le temps
+// de l'impression. Un résultat qui charge ses textes garde tout le reste.
 
-import { act, fireEvent, screen, within } from "@testing-library/react";
-import { describe, expect, it } from "vitest";
+import {
+  act,
+  fireEvent,
+  screen,
+  waitFor,
+  within,
+} from "@testing-library/react";
+import { afterEach, describe, expect, it } from "vitest";
 import type { FirstResult, Model } from "../../../front/socle/model";
 import { modeleDeTest } from "../modele-de-test";
 import {
@@ -101,6 +107,10 @@ describe("un résultat qui charge ses textes", () => {
 });
 
 describe("un résultat avec une feuille", () => {
+  afterEach(() => {
+    Reflect.deleteProperty(window, "print");
+  });
+
   it("la pose dans sa visionneuse, sous les logos, avec son titre et sa raison", async () => {
     await avecUneFeuille();
 
@@ -138,6 +148,30 @@ describe("un résultat avec une feuille", () => {
     expect(pasImprime(bouton("Précédent"))).toBe(true);
     expect(pasImprime(bouton("Imprimer"))).toBe(true);
     expect(pasImprime(laFeuille())).toBe(false);
+  });
+
+  it("passe en papier le temps d'une impression lancée par le navigateur", async () => {
+    await avecUneFeuille();
+    expect(laFeuille()).not.toHaveAttribute("data-paper");
+
+    act(() => window.dispatchEvent(new Event("beforeprint")));
+    expect(laFeuille()).toHaveAttribute("data-paper");
+    // Sans moteur de mise en page, la feuille mesure zéro : une page.
+    expect(laFeuille()).toHaveAttribute("data-print-layout", "one-page");
+
+    act(() => window.dispatchEvent(new Event("afterprint")));
+    expect(laFeuille()).not.toHaveAttribute("data-paper");
+    expect(laFeuille()).not.toHaveAttribute("data-print-layout");
+  });
+
+  it("ouvre le dialogue d'impression sur la feuille déjà en papier", async () => {
+    const ouvertures = dialogueDImpression();
+    await avecUneFeuille();
+
+    fireEvent.click(bouton("Imprimer"));
+
+    await waitFor(() => expect(ouvertures).toEqual(["one-page"]));
+    expect(laFeuille()).not.toHaveAttribute("data-paper");
   });
 
   it("laisse son nom à un logo qui ne se charge pas", async () => {
@@ -203,6 +237,19 @@ function avant(premier: HTMLElement, second: HTMLElement) {
       Node.DOCUMENT_POSITION_FOLLOWING) !==
     0
   );
+}
+
+// Le dialogue d'impression, que happy-dom n'a pas, ouvert comme un
+// navigateur l'ouvre : `beforeprint`, puis `afterprint` à sa fermeture. Il
+// note la mise en page que la feuille porte à son ouverture.
+function dialogueDImpression() {
+  const ouvertures: (string | undefined)[] = [];
+  window.print = () => {
+    window.dispatchEvent(new Event("beforeprint"));
+    ouvertures.push(laFeuille().dataset.printLayout);
+    window.dispatchEvent(new Event("afterprint"));
+  };
+  return ouvertures;
 }
 
 function pasImprime(element: HTMLElement) {
