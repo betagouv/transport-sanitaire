@@ -6,7 +6,9 @@
 // fichier choisit le titre, la phrase du contexte, la carte, les badges et le
 // modus, puis les range : il n'en écrit aucun. Les blocs propres à l'accord
 // préalable sont l'introduction (dans les consignes), la justification dans la
-// raison, et le rappel d'attente.
+// raison, et le rappel d'attente. Un trajet en avion ou en bateau de ligne
+// régulière prend ses titres et son modus, ses cartes ont leur préfixe et il
+// n'a pas de badge (#221).
 
 import type {
   AucunTexte,
@@ -35,7 +37,7 @@ import {
   phraseDeLaPermission,
 } from "./texte-de-la-permission";
 import {
-  libelleDuMode,
+  libelleDeLaFiche,
   rangDuTitreDuPrescripteur,
 } from "./variante-du-resultat";
 
@@ -72,11 +74,11 @@ export function texteDeLaFichePositive(
   issueId: IssueAvecFichePositive,
 ): TexteDeLaFichePositive | AucunTexte {
   const issue = catalogue.issues[issueId];
-  const libelle = libelleDuMode(trace.cibles);
+  const libelle = libelleDeLaFiche(trace);
   const titre = libelle && issue.titles[libelle];
   const modus = libelle && modusDuMode(issue, libelle);
   const titreDuPrescripteur =
-    issue.prescriberTitles[rangDuTitreDuPrescripteur(trace.cibles)];
+    issue.prescriberTitles[rangDuTitreDuPrescripteur(trace)];
   if (!titre || !modus || !titreDuPrescripteur) return undefined;
   const fondement = fondementDe(catalogue, trace, issueId);
   const badges = badgesDuResultat(catalogue.badges, trace);
