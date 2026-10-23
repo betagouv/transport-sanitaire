@@ -1,5 +1,6 @@
 import { render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
+import { Cible } from "../../../core/socle";
 import { DebugTrace } from "../../../front/socle/developer-tools/DebugTrace";
 import {
   allerAuResultat,
@@ -108,7 +109,7 @@ describe("traces de debug", () => {
 });
 
 // Un fait a trois états, et une cible peut rester indéfinie. La trace le dit :
-// le modèle factice n'a ni l'un ni l'autre, la trace est donc rendue ici.
+// le modèle factice n'a ni l'un ni l'autre, la trace est donc affichée ici.
 describe("trace d'une préconisation incomplète", () => {
   const PRECONISATION = {
     title: "résultat",
@@ -119,7 +120,10 @@ describe("trace d'une préconisation incomplète", () => {
       fait_gluten: { value: false, provenance: "Proposé, pas coché." },
       fait_arachide: { provenance: "L'option ne s'est pas proposée." },
     },
-    cibles: { cible_menu: undefined, cible_table: "GRANDE" },
+    cibles: {
+      cible_menu: Cible.of(undefined),
+      cible_table: Cible.of("GRANDE"),
+    },
   };
 
   it("dit d'une question validée qu'elle est restée sans réponse", () => {
@@ -147,7 +151,7 @@ describe("trace d'une préconisation incomplète", () => {
 });
 
 // Une adresse est un objet. La trace l'écrit en entier : le modèle factice n'en
-// a pas, la trace est donc rendue ici.
+// a pas, la trace est donc affichée ici.
 describe("trace d'une adresse", () => {
   const ADRESSE = {
     street: "3 rue des Lilas",

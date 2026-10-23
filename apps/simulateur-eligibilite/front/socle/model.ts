@@ -1,46 +1,26 @@
-// Ce que le socle attend d'une version du modèle : ses questions, ce qui
-// calcule la préconisation, et ses deux résultats.
+// Ce que le socle attend d'une version du modèle : son métier
+// (`core/socle/model.ts`), et ce qu'il affiche, ses deux résultats.
 //
 // Le socle déroule le parcours et ne lit aucune clé du modèle. Il transporte les
 // réponses, les faits et les cibles de l'un à l'autre.
 
 import type { ComponentType, ReactNode } from "react";
+import type { AnyFaits, CoreModel } from "../../core/socle/model";
+import type {
+  AnyCibles,
+  AnyQuestions,
+} from "../../core/socle/questionnaire-engine/question";
+import type { Reading } from "../../core/socle/questionnaire-engine/questionnaire";
 import type { BoundCerfa } from "./cerfa-mapping";
-import { validatedAnswers } from "./questionnaire-engine/asked-questions";
-import { GivenAnswers } from "./questionnaire-engine/given-answers";
-import {
-  type Answers,
-  type AnyCibles,
-  type AnyQuestions,
-  type Page,
-  pagesOf,
-  type QuestionnairePart,
-} from "./questionnaire-engine/question";
-import type { ValidatedAnswers } from "./questionnaire-engine/validated-answers";
-import type { Seed } from "./seeds/seed";
-
-/** Les faits d'un modèle : ce que ses règles reçoivent. */
-export type AnyFaits = Readonly<Record<string, unknown>>;
-
-/** Ce que la préconisation a calculé pour des réponses. */
-export type Preconisation = { faits: AnyFaits; cibles: AnyCibles };
 
 /**
- * Ce que le modèle lit des réponses : chacune telle qu'elle est donnée, et les
- * questions validées, avec ce qui s'y proposait.
+ * Ce qu'un résultat reçoit pour s'afficher : les réponses, les questions
+ * validées, et les cibles.
  */
-export type Reading<Questions extends AnyQuestions = AnyQuestions> = {
-  answers: GivenAnswers<Questions>;
-  validated: ValidatedAnswers<Questions>;
-};
-
-/** Ce qu'un résultat reçoit pour s'afficher. */
-type ResultatProps<
-  Questions extends AnyQuestions,
-  Cibles,
-> = Reading<Questions> & {
-  cibles: Cibles;
-};
+type ResultatProps<Questions extends AnyQuestions, Cibles> = Pick<
+  Reading<Questions>,
+  "answers" | "validated"
+> & { cibles: Cibles };
 
 /**
  * Ce que le premier résultat donne au socle, qui compose la page : le `h1`,
@@ -75,21 +55,10 @@ export type Model<
   Faits extends AnyFaits = AnyFaits,
   Cibles extends AnyCibles = AnyCibles,
 > = {
-  /**
-   * Ce qui calcule la préconisation : des réponses aux faits, puis aux cibles.
-   * Les faits lisent aussi les questions validées : une option qui ne s'est pas
-   * proposée n'a pas été refusée.
-   */
-  preconisation: {
-    faits: (
-      answers: GivenAnswers<Questions>,
-      validated: ValidatedAnswers<Questions>,
-    ) => Faits;
-    cibles: (faits: Faits) => Cibles;
-  };
-  /** Le premier résultat, après ses parties : transport et éligibilité. */
-  transportAndEligibility: {
-    parts: readonly QuestionnairePart<Questions, undefined>[];
+  /** Le métier : les questions, la préconisation, les seeds. */
+  core: CoreModel<Questions, Faits, Cibles>;
+  /** Le premier résultat, après les parties du questionnaire. */
+  result: {
     /** Le titre du stepper, au-dessus du `h1` que le résultat donne. */
     title: string;
     /**
@@ -97,13 +66,12 @@ export type Model<
      * elle ne rejette pas, un échec de chargement est un résultat comme un
      * autre.
      */
-    result: (
+    content: (
       props: ResultatProps<Questions, Cibles>,
     ) => FirstResult | Promise<FirstResult>;
   };
-  /** Le second résultat, après le verrou : le cerfa. */
+  /** Le second résultat, après le complément : le cerfa. */
   cerfa: {
-    part: QuestionnairePart<Questions, Cibles>;
     /** Le cerfa de cette préconisation. `null` : rien ne suit le premier résultat. */
     form: (
       cibles: Cibles,
@@ -114,19 +82,17 @@ export type Model<
     /**
      * Le libellé de l'action qui verrouille. `null` : cette préconisation ne
      * complète rien, le bouton n'est pas posé. Il ne l'est pas non plus tant que
-     * la partie n'a ni page ni cerfa : le verrou n'ouvre pas un écran vide.
+     * le complément n'a ni page ni cerfa : le verrou n'ouvre pas un écran vide.
      */
     startLabel: (cibles: Cibles) => string | null;
     /** Les libellés des deux actions sur le cerfa, qui portent le même PDF. */
     printLabel: string;
     downloadLabel: string;
   };
-  /** Le catalogue des seeds, chargé à la demande. */
-  seeds: () => Promise<readonly Seed<Questions, Cibles>[]>;
 };
 
 /**
- * Vérifie un modèle contre ses propres types, puis le rend tel que le socle le
+ * Vérifie un modèle contre ses propres types, puis le donne tel que le socle le
  * voit : sans nom de question, de fait ni de cible.
  */
 export function defineModel<
@@ -134,33 +100,7 @@ export function defineModel<
   Faits extends AnyFaits,
   Cibles extends AnyCibles,
 >(model: Model<Questions, Faits, Cibles>): Model {
-  // Le socle ne lit aucune clé : il rend au modèle ce que le modèle lui a
+  // Le socle ne lit aucune clé : il redonne au modèle ce que le modèle lui a
   // donné. L'effacement des types est donc sans risque, et il n'a lieu qu'ici.
   return model as unknown as Model;
-}
-
-/**
- * La préconisation de ces réponses : leurs faits, puis leurs cibles. Seules les
- * parties d'avant le verrou la font.
- */
-export function preconisationOf(model: Model, answers: Answers): Preconisation {
-  const pages = pagesOf(model.transportAndEligibility.parts);
-  const read = readingOf(pages, answers);
-  const faits = model.preconisation.faits(read.answers, read.validated);
-  return { faits, cibles: model.preconisation.cibles(faits) };
-}
-
-/**
- * Ces réponses, telles que le modèle les lit. `pages` : celles dont les
- * questions validées comptent. Après le verrou, les cibles figées.
- */
-export function readingOf<Questions extends AnyQuestions>(
-  pages: readonly Page[],
-  answers: Answers<Questions>,
-  cibles?: AnyCibles,
-): Reading<Questions> {
-  return {
-    answers: new GivenAnswers(answers),
-    validated: validatedAnswers(pages, answers, cibles),
-  };
 }

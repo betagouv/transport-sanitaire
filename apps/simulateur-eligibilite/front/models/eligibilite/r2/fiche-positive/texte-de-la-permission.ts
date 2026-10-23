@@ -10,7 +10,7 @@
 import type {
   AucunTexte,
   CatalogueResultats,
-} from "../../declarations/catalogue-resultats";
+} from "../../../../../core/models/eligibilite/declarations/catalogue-resultats";
 import type { Trace } from "../trace-du-resultat";
 
 type IssueS3141 = CatalogueResultats["issues"]["ISSUE_S3141"];
@@ -22,7 +22,7 @@ export function phraseDeLaPermission(
 ): string | AucunTexte {
   if (trace.permissionRepeated === undefined) return undefined;
   const repetee = trace.permissionRepeated ? "R" : "U";
-  const ambulance = trace.cibles.cible_mode_ambulance === true ? "-B" : "";
+  const ambulance = trace.cibles.cible_mode_ambulance.isOui() ? "-B" : "";
   return texte(issue.permissionPhrases, `E-S3141-${repetee}${ambulance}`);
 }
 

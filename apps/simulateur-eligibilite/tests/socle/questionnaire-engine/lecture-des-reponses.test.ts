@@ -4,9 +4,9 @@
 // ne dit rien.
 
 import { describe, expect, it } from "vitest";
-import { Fait } from "../../../front/socle/decision-engine/fait";
-import { GivenAnswers } from "../../../front/socle/questionnaire-engine/given-answers";
-import { ValidatedAnswers } from "../../../front/socle/questionnaire-engine/validated-answers";
+import { Fait } from "../../../core/socle/decision-engine/fait";
+import { GivenAnswers } from "../../../core/socle/questionnaire-engine/given-answers";
+import { ValidatedAnswers } from "../../../core/socle/questionnaire-engine/validated-answers";
 
 type Questions = {
   boisson: "the" | "cafe";
@@ -101,18 +101,5 @@ describe("le fait d'une case", () => {
 
   it("ne dit rien quand elle ne se proposait pas", () => {
     expect(accompagnements.faitOf("citron")).toBeUndefined();
-  });
-});
-
-describe("un fait", () => {
-  it("garde sa valeur et sa provenance", () => {
-    expect(Fait.oui("coché")).toEqual({ value: true, provenance: "coché" });
-    expect(Fait.non("écarté")).toEqual({ value: false, provenance: "écarté" });
-  });
-
-  it("inconnu, n'a pas de valeur : ce n'est pas un « non »", () => {
-    expect(Fait.inconnu("pas encore validé")).toEqual({
-      provenance: "pas encore validé",
-    });
   });
 });

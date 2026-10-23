@@ -7,14 +7,15 @@
 // non des réponses. Nos traces n'ont ces clés que si une réponse les prouve.
 
 import { describe, expect, it } from "vitest";
-import { CIBLES_ENUMEREES } from "../../../front/models/eligibilite/declarations/cibles";
+import { CIBLES_ENUMEREES } from "../../../core/models/eligibilite/declarations/cibles";
+import { SEEDS } from "../../../core/models/eligibilite/seeds-catalogue";
 import {
   type Trace,
   traceDuResultat,
 } from "../../../front/models/eligibilite/r2/trace-du-resultat";
-import { SEEDS } from "../../../front/models/eligibilite/seeds-catalogue";
 import { BRANCARD_20_KM, faits, type Reponses } from "./reponses-de-la-branche";
 import { lectureDe, PATIENT_SEUL } from "./reponses-de-la-permission";
+import { HAD_A_DOMICILE, SEJOUR } from "./reponses-du-transfert";
 
 // La trace de ces réponses, avec les cibles que calculent les règles.
 const traceDe = (reponses: Reponses): Trace =>
@@ -113,7 +114,7 @@ describe("la trace des dix seeds", () => {
       const trace = traceDe(seed(id));
 
       it("garde les cibles des règles", () => {
-        expect(trace.cibles.cible_issue_id).toBe(
+        expect(trace.cibles.cible_issue_id.value).toBe(
           SEEDS.find((candidate) => candidate.id === id)?.expected
             .cible_issue_id,
         );
@@ -168,5 +169,15 @@ describe("la trace, quand les réponses manquent ou ne comptent plus", () => {
   it("garde une clé absente, et non une valeur vide, pour une précision inconnue", () => {
     const { precisions } = traceDe(seed("issue-pmt"));
     expect(Object.keys(precisions)).toEqual(["hospitalisation"]);
+  });
+});
+
+describe("le séjour réel", () => {
+  it("se dit quand une réponse le prouve, sans redécouper le lexique", () => {
+    expect(traceDe(SEJOUR).sejourReel).toBe(true);
+  });
+
+  it("reste absent pour l'admission en HAD à domicile", () => {
+    expect("sejourReel" in traceDe(HAD_A_DOMICILE)).toBe(false);
   });
 });

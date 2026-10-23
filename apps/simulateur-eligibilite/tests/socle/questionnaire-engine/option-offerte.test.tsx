@@ -1,50 +1,40 @@
 import { screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
-import type { Page } from "../../../front/socle/questionnaire-engine/question";
+import { page, questionsOf } from "../../../core/socle";
 import { afficher } from "./afficher";
 
 // Une option peut ne se proposer que pour certaines réponses. Le questionnaire
 // factice n'en a pas, les pages sont donc écrites ici.
 
-const REGIME: Page = {
-  id: "regime",
-  questions: [
-    {
-      id: "regime",
-      kind: "single choice",
-      label: "Quel est votre régime ?",
-      options: [
-        { value: "tout", label: "Je mange de tout" },
-        { value: "vegetarien", label: "Végétarien" },
-      ],
-    },
-  ],
+type Questions = {
+  regime: "tout" | "vegetarien";
+  plats: readonly ("salade" | "steak" | "rien")[];
+  dessert: string;
 };
 
-const PLATS: Page = {
-  id: "plats",
-  questions: [
-    {
-      id: "plats",
-      kind: "multiple choice",
-      label: "Quels plats ?",
-      options: [
-        { value: "salade", label: "Une salade" },
-        {
-          value: "steak",
-          label: "Un steak",
-          offeredIf: (answers) => answers.question("regime").is("tout"),
-        },
-      ],
-      exclusiveOption: { value: "rien", label: "Rien" },
-    },
-  ],
-};
+const OPTIONS = {
+  regime: { tout: "Je mange de tout", vegetarien: "Végétarien" },
+  plats: { salade: "Une salade", steak: "Un steak", rien: "Rien" },
+} as const;
 
-const DESSERT: Page = {
-  id: "dessert",
-  questions: [{ id: "dessert", kind: "text", label: "Quel dessert ?" }],
-};
+const question = questionsOf<Questions>({ options: OPTIONS });
+
+const REGIME = page(
+  "regime",
+  question.singleChoice("regime", "Quel est votre régime ?"),
+);
+
+const PLATS = page(
+  "plats",
+  question
+    .multipleChoice("plats", "Quels plats ?")
+    .exclusive("rien")
+    .option("steak", (option) =>
+      option.offeredIf(({ answers }) => answers.question("regime").is("tout")),
+    ),
+);
+
+const DESSERT = page("dessert", question.text("dessert", "Quel dessert ?"));
 
 const PLATS_POSES = { name: /^quels plats/i };
 const radio = (name: string) => screen.getByRole("radio", { name });

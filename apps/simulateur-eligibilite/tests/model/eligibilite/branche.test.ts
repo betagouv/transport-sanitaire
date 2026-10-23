@@ -48,7 +48,7 @@ describe("Q2.14, les deux groupes de l'Engagement maternité", () => {
   // charge du patient suffit à l'issue (point 2, v10.1.3).
   it("donne alors la permission à la charge du patient", () => {
     expect(p2Complete(PERMISSION_A_CHARGE_DU_PATIENT)).toBe(true);
-    expect(ciblesDe(PERMISSION_A_CHARGE_DU_PATIENT).cible_issue_id).toBe(
+    expect(ciblesDe(PERMISSION_A_CHARGE_DU_PATIENT).cible_issue_id.value).toBe(
       "ISSUE_PERMISSION_PATIENT",
     );
   });
@@ -56,7 +56,7 @@ describe("Q2.14, les deux groupes de l'Engagement maternité", () => {
   it("attendent leurs réponses : sans elles, P2 n'est pas complète et aucune issue ne vaut", () => {
     expect(faits(MATERNITE).fait_dap_maternite.value).toBeUndefined();
     expect(p2Complete(MATERNITE)).toBeUndefined();
-    expect(ciblesDe(MATERNITE).cible_issue_id).toBeUndefined();
+    expect(ciblesDe(MATERNITE).cible_issue_id.value).toBeUndefined();
   });
 
   it("un seul groupe répondu laisse le dispositif inconnu", () => {
@@ -90,20 +90,24 @@ describe("Q2.14, une condition dans chaque groupe : le dispositif est établi", 
 
   it("sans l'urgence, la décision n'est pas calculable", () => {
     expect(p2Complete(MATERNITE_ETABLIE)).toBeUndefined();
-    expect(ciblesDe(MATERNITE_ETABLIE).cible_issue_id).toBeUndefined();
+    expect(ciblesDe(MATERNITE_ETABLIE).cible_issue_id.value).toBeUndefined();
   });
 
   it("urgence non attestée (Q2.12) : demande d'accord préalable sans urgence", () => {
     const reponses = { ...MATERNITE_ETABLIE, "Q2.12": "2_NON" } as const;
-    expect(ciblesDe(reponses).cible_issue_id).toBe("ISSUE_DAP_SANS_URGENCE");
+    expect(ciblesDe(reponses).cible_issue_id.value).toBe(
+      "ISSUE_DAP_SANS_URGENCE",
+    );
     expect(p2Complete(reponses)).toBe(true);
   });
 
   it("urgence attestée (Q2.12) : point à la caisse, Engagement maternité", () => {
     const reponses = { ...MATERNITE_ETABLIE, "Q2.12": "1_OUI" } as const;
     const cibles = ciblesDe(reponses);
-    expect(cibles.cible_issue_id).toBe("ISSUE_CAISSE");
-    expect(cibles.cible_reason_code).toBe("CNAM_ENGAGEMENT_MATERNITE_URGENCE");
+    expect(cibles.cible_issue_id.value).toBe("ISSUE_CAISSE");
+    expect(cibles.cible_reason_code.value).toBe(
+      "CNAM_ENGAGEMENT_MATERNITE_URGENCE",
+    );
   });
 
   it("ne repose pas l'urgence que le trajet a déjà posée", () => {
@@ -114,7 +118,9 @@ describe("Q2.14, une condition dans chaque groupe : le dispositif est établi", 
       "Q2.3.4": "2_NON",
     } as const;
     expect(posees(longue)).toEqual(GROUPES);
-    expect(ciblesDe(longue).cible_issue_id).toBe("ISSUE_DAP_SANS_URGENCE");
+    expect(ciblesDe(longue).cible_issue_id.value).toBe(
+      "ISSUE_DAP_SANS_URGENCE",
+    );
   });
 
   it("un groupe passé à « Aucune » retire Q2.12", () => {
@@ -150,7 +156,9 @@ describe("Q2.14, « Aucune » dans un groupe : le dispositif est écarté", () =
   it("après Q2.1 = 13, rien ne bloque : P2 est complète", () => {
     expect(incoherences("Q2.14.eloignement", sansEloignement)).toEqual([]);
     expect(p2Complete(sansEloignement)).toBe(true);
-    expect(ciblesDe(sansEloignement).cible_issue_id).toBe("ISSUE_NON_ELIGIBLE");
+    expect(ciblesDe(sansEloignement).cible_issue_id.value).toBe(
+      "ISSUE_NON_ELIGIBLE",
+    );
   });
 
   it("signalée en Q2.2.1.b, sans autre motif : P2 est complète", () => {
@@ -169,15 +177,15 @@ describe("le HTNM hors Engagement maternité (Q2.2.1.b, point 11)", () => {
     expect(faits(HTNM).fait_htnm_hors_maternite.value).toBe(true);
     expect(faits(HTNM).fait_htnm_segment_verifie.value).toBe(false);
     expect(posees(HTNM)).toEqual([]);
-    expect(cibles.cible_issue_id).toBe("ISSUE_CAISSE");
-    expect(cibles.cible_reason_code).toBe("CNAM_HTNM_HORS_MATERNITE");
+    expect(cibles.cible_issue_id.value).toBe("ISSUE_CAISSE");
+    expect(cibles.cible_reason_code.value).toBe("CNAM_HTNM_HORS_MATERNITE");
   });
 });
 
 describe("Q2.13, le départ d'une entrée en établissement", () => {
   it("se pose pour une entrée dont le transfert reste à qualifier", () => {
     expect(posees(ENTREE)).toEqual(["Q2.13.depart"]);
-    expect(ciblesDe(ENTREE).cible_issue_id).toBeUndefined();
+    expect(ciblesDe(ENTREE).cible_issue_id.value).toBeUndefined();
   });
 
   it("ne se pose pas pour une sortie, déjà qualifiée", () => {
@@ -198,7 +206,7 @@ describe("Q2.13, le départ d'une entrée en établissement", () => {
       expect(faits(reponses).fait_centre15_interetablissements.value).toBe(
         false,
       );
-      expect(ciblesDe(reponses).cible_issue_id).toBe("ISSUE_PMT");
+      expect(ciblesDe(reponses).cible_issue_id.value).toBe("ISSUE_PMT");
     },
   );
 
@@ -213,8 +221,8 @@ describe("Q2.13, le départ d'une entrée en établissement", () => {
       const reponses = { ...ENTREE, "Q2.13.depart": depart };
       const cibles = ciblesDe(reponses);
       expect(faits(reponses).fait_transfert_article80.value).toBeUndefined();
-      expect(cibles.cible_issue_id).toBe("ISSUE_CAISSE");
-      expect(cibles.cible_reason_code).toBe("AUTRE_DROIT_NON_VERIFIABLE");
+      expect(cibles.cible_issue_id.value).toBe("ISSUE_CAISSE");
+      expect(cibles.cible_reason_code.value).toBe("AUTRE_DROIT_NON_VERIFIABLE");
     },
   );
 });

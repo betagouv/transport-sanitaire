@@ -8,38 +8,33 @@
 // dates…) arrivent avec leurs questions.
 
 import { describe, expect, it } from "vitest";
-import { model } from "../../../front/models/eligibilite";
-import type { Faits } from "../../../front/models/eligibilite/declarations/faits";
+import { model } from "../../../core/models/eligibilite";
+import type { Faits } from "../../../core/models/eligibilite/declarations/faits";
 import {
   OPTIONS,
   type Questions,
-} from "../../../front/models/eligibilite/declarations/questions";
-import {
-  faitsDuMode,
-  modeDe,
-} from "../../../front/models/eligibilite/p1/mode-de-transport";
-import { preconisationOf } from "../../../front/socle/model";
-import {
-  askedQuestions,
-  validatedQuestions,
-} from "../../../front/socle/questionnaire-engine/asked-questions";
-import { isAnswered } from "../../../front/socle/questionnaire-engine/offered-answer";
+} from "../../../core/models/eligibilite/declarations/questions";
+import { CATALOGUE_DES_FAITS } from "../../../core/models/eligibilite/faits";
+import { cibleEnCoursDeP1 } from "../../../core/models/eligibilite/p1/partie-1";
+import { preconisationOf } from "../../../core/socle/model";
+import { GivenAnswers } from "../../../core/socle/questionnaire-engine/given-answers";
 import {
   type Answers,
   pagesOf,
-} from "../../../front/socle/questionnaire-engine/question";
-import { ValidatedAnswers } from "../../../front/socle/questionnaire-engine/validated-answers";
+} from "../../../core/socle/questionnaire-engine/question";
+import { Questionnaire } from "../../../core/socle/questionnaire-engine/questionnaire";
+import { ValidatedAnswers } from "../../../core/socle/questionnaire-engine/validated-answers";
 
 type Reponses = Answers<Questions>;
 type Critere = Questions["Q1.2"][number];
 
-const pages = pagesOf(model.transportAndEligibility.parts);
+const pages = pagesOf(model.questionnaire);
 const PRO: Reponses = {
   "Q0.1": "1_VERIFIER",
   "Q1.1": "3_AVEC_UN_PROFESSIONNEL",
 };
 const q12 = pages
-  .flatMap((page) => askedQuestions(pages, page, PRO))
+  .flatMap((page) => new Questionnaire(pages).readWith(PRO).questionsOn(page))
   .find(({ id }) => id === "Q1.2");
 const CRITERES = Object.keys(OPTIONS["Q1.2"]) as Critere[];
 
@@ -54,10 +49,29 @@ const modeAttendu = (criteres: readonly Critere[]) => {
   return ids.includes(6) ? "TPMR" : "TAP";
 };
 
+// Les faits que Q1.1 à Q1.4 établissent.
+const FAITS_DE_P1 = [
+  "fait_autonomie_professionnel",
+  "fait_accompagnant",
+  "fait_critere_tap",
+  "fait_critere_fauteuil",
+  "fait_critere_allonge",
+  "fait_critere_brancard",
+  "fait_critere_surveillance",
+  "fait_critere_oxygene",
+  "fait_critere_asepsie",
+  "fait_partage_incompatible",
+  "fait_bariatrique",
+  "fait_ald_liee",
+  "fait_ald_exonerante_3_ou_4",
+  "fait_mineur_soins_prolonges_reconnus",
+  "fait_prefere_transport_commun",
+] as const satisfies readonly (keyof Faits)[];
+
 describe("les 2 048 combinaisons de Q1.2", () => {
   const masques = Array.from({ length: 2048 }, (_, masque) => masque);
-  const acceptees = masques.filter(
-    (masque) => q12 && isAnswered(q12, criteresDu(masque)),
+  const acceptees = masques.filter((masque) =>
+    q12?.isAnsweredBy(criteresDu(masque)),
   );
 
   it("en acceptent 1 151, et en refusent 897", () => {
@@ -80,7 +94,7 @@ describe("les 2 048 combinaisons de Q1.2", () => {
   // Le mode ne lit que les faits des critères : il s'évalue une fois par
   // jeu de faits, comme l'éditeur évalue ses faits fermés.
   it("donnent le mode de l'éditeur à chaque combinaison acceptée", () => {
-    const modes = new Map<string, ReturnType<typeof modeDe>>();
+    const modes = new Map<string, string | null | undefined>();
     const ecarts = acceptees.filter((masque) => {
       const criteres = criteresDu(masque);
       const validated = new ValidatedAnswers<Questions>({
@@ -88,8 +102,13 @@ describe("les 2 048 combinaisons de Q1.2", () => {
         "Q1.2": { answer: criteres },
         "Q1.3": { answer: ["7_AUCUNE"] },
       });
-      const cle = JSON.stringify(faitsDuMode(validated));
-      if (!modes.has(cle)) modes.set(cle, modeDe(validated));
+      const faits = CATALOGUE_DES_FAITS.read(
+        new GivenAnswers<Questions>({}),
+        validated,
+      );
+      const cle = JSON.stringify(FAITS_DE_P1.map((nom) => faits[nom]));
+      if (!modes.has(cle))
+        modes.set(cle, cibleEnCoursDeP1(faits, "cible_mode_id").value);
       return modes.get(cle) !== modeAttendu(criteres);
     });
     expect(ecarts).toEqual([]);
@@ -108,7 +127,9 @@ describe("le retour en P1", () => {
   it("au retrait du brancard, efface la corpulence et garde l'ALD et le mineur", () => {
     const sansBrancard = { ...AMBULANCE, "Q1.2": ["1_PAS_AUTONOME"] };
     expect(
-      validatedQuestions(pages, sansBrancard as Reponses)["Q1.3"]?.answer,
+      new Questionnaire(pages)
+        .readWith(sansBrancard as Reponses)
+        .validated.toJSON()["Q1.3"]?.answer,
     ).toEqual(["2_ALD", "8_MINEUR_SOINS_CONTINUS"]);
     const etabli = faits(sansBrancard as Reponses);
     expect(etabli.fait_bariatrique.value).toBe(false);
@@ -128,10 +149,10 @@ describe("le retour en P1", () => {
   it("passé au patient seul, retire la déficience, pas les réponses", () => {
     const { "Q1.2": _, ...sansCriteres } = AMBULANCE;
     const seul = { ...sansCriteres, "Q1.1": "1_SEUL" } satisfies Reponses;
-    expect(validatedQuestions(pages, seul)["Q1.3"]?.answer).toEqual([
-      "2_ALD",
-      "8_MINEUR_SOINS_CONTINUS",
-    ]);
+    expect(
+      new Questionnaire(pages).readWith(seul).validated.toJSON()["Q1.3"]
+        ?.answer,
+    ).toEqual(["2_ALD", "8_MINEUR_SOINS_CONTINUS"]);
     expect(faits(seul).fait_ald_liee.value).toBe(false);
     expect(faits(seul).fait_mineur_soins_prolonges_reconnus.value).toBe(false);
   });

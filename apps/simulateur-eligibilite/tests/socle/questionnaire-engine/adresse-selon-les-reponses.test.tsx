@@ -1,52 +1,41 @@
 import { screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
-import { validatedQuestions } from "../../../front/socle/questionnaire-engine/asked-questions";
-import type {
-  Page,
-  Question,
-} from "../../../front/socle/questionnaire-engine/question";
-import { stateAfterAnswers } from "../../../front/socle/questionnaire-engine/questionnaire";
+import { type Address, page, questionsOf } from "../../../core/socle";
+import { Questionnaire } from "../../../core/socle/questionnaire-engine/questionnaire";
 import { afficher } from "./afficher";
 
 // C'est la question qui dit si son adresse est à l'étranger, d'après les
 // réponses : jamais une case de la page. Quand le mode change, l'adresse déjà
 // saisie se relit dans le nouveau. Les pages sont écrites ici.
 
-const page = (question: Question): Page => ({
-  id: question.id,
-  questions: [question],
-});
-
-const DESTINATION: Page = {
-  id: "destination",
-  questions: [
-    {
-      id: "destination",
-      kind: "single choice",
-      label: "Où va le patient ?",
-      options: [
-        { value: "france", label: "En France" },
-        { value: "etranger", label: "À l'étranger" },
-      ],
-    },
-  ],
+type Questions = {
+  destination: "france" | "etranger";
+  arrivee: Address;
+  remarque: string;
 };
 
-const ARRIVEE: Question = {
-  id: "arrivee",
-  kind: "address",
-  label: "Adresse d'arrivée",
-  abroadIf: (answers) => answers.question("destination").is("etranger"),
-};
+const OPTIONS = {
+  destination: { france: "En France", etranger: "À l'étranger" },
+} as const;
 
-const REMARQUE: Page = page({
-  id: "remarque",
-  kind: "text",
-  label: "Une remarque ?",
-  optional: true,
-});
+const question = questionsOf<Questions>({ options: OPTIONS });
 
-const PAGES = [DESTINATION, page(ARRIVEE), REMARQUE];
+const DESTINATION = page(
+  "destination",
+  question.singleChoice("destination", "Où va le patient ?"),
+);
+
+const ARRIVEE = question
+  .address("arrivee", "Adresse d'arrivée")
+  .abroadIf(({ answers }) => answers.question("destination").is("etranger"));
+
+const REMARQUE = page(
+  "remarque",
+  question.text("remarque", "Une remarque ?").optional(),
+);
+
+const PAGES = [DESTINATION, page("arrivee", ARRIVEE), REMARQUE];
+const QUESTIONNAIRE = new Questionnaire(PAGES);
 
 const LONDRES = {
   street: "10 Downing Street",
@@ -134,8 +123,12 @@ describe("mode d'une adresse, donné par une réponse antérieure", () => {
   });
 
   it("l'efface quand la question déclare en dépendre", async () => {
-    const dependante = { ...ARRIVEE, dependsOn: ["destination"] };
-    const { user } = afficher([DESTINATION, page(dependante), REMARQUE]);
+    const dependante = ARRIVEE.dependsOn("destination");
+    const { user } = afficher([
+      DESTINATION,
+      page("arrivee", dependante),
+      REMARQUE,
+    ]);
     await user.click(screen.getByLabelText("En France"));
     await adresse("Adresse d'arrivée");
     await saisir(user, RUE_DES_LILAS);
@@ -156,7 +149,7 @@ describe("adresse déjà répondue", () => {
   const { country: _pays, ...SANS_PAYS } = LONDRES;
 
   it("rouvre sa page dans ses champs", async () => {
-    afficher([page(ARRIVEE)], {
+    afficher([page("arrivee", ARRIVEE)], {
       lockedAnswers: { arrivee: { ...SANS_PAYS, postalCode: "75012" } },
     });
 
@@ -170,19 +163,17 @@ describe("adresse déjà répondue", () => {
   it("compte comme une réponse quand elle est complète pour son mode", () => {
     const reponses = { destination: "etranger", arrivee: LONDRES };
 
-    expect(stateAfterAnswers(PAGES, reponses)).toMatchObject({
-      page: "remarque",
-      complete: true,
-    });
+    const lecture = QUESTIONNAIRE.readWith(reponses);
+    expect(lecture.openPage().id).toBe("remarque");
+    expect(lecture.isComplete()).toBe(true);
   });
 
   it("attend encore le pays d'une adresse à l'étranger qui n'en a pas", () => {
     const reponses = { destination: "etranger", arrivee: SANS_PAYS };
 
-    expect(stateAfterAnswers(PAGES, reponses)).toMatchObject({
-      page: "arrivee",
-      complete: false,
-    });
+    const lecture = QUESTIONNAIRE.readWith(reponses);
+    expect(lecture.openPage().id).toBe("arrivee");
+    expect(lecture.isComplete()).toBe(false);
   });
 
   it("figure parmi les questions validées, réduite aux champs de son mode", () => {
@@ -191,8 +182,10 @@ describe("adresse déjà répondue", () => {
       arrivee: { ...LONDRES, postalCode: "62100" },
     };
 
-    expect(validatedQuestions(PAGES, reponses).arrivee).toEqual({
-      answer: { ...SANS_PAYS, postalCode: "62100" },
-    });
+    expect(QUESTIONNAIRE.readWith(reponses).validated.toJSON().arrivee).toEqual(
+      {
+        answer: { ...SANS_PAYS, postalCode: "62100" },
+      },
+    );
   });
 });

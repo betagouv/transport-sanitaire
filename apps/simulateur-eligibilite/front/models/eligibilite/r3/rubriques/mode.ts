@@ -2,7 +2,8 @@
 // depuis P1. Une cible indéfinie ou sans objet laisse sa case vide : le
 // transport partagé ne se coche que sur une preuve (COR-06).
 
-import type { Cibles } from "../../declarations/cibles";
+import type { Cibles } from "../../../../../core/models/eligibilite/declarations/cibles";
+import type { Cible } from "../../../../../core/socle";
 import type { Rubrique } from "./rubrique";
 
 export type Mode = {
@@ -40,12 +41,10 @@ export const MODE: Rubrique<Mode> = {
 // ---- implémentation ----
 
 type CibleBooleenne = {
-  [Cible in keyof Cibles]: Cibles[Cible] extends boolean | null | undefined
-    ? Cible
-    : never;
+  [Nom in keyof Cibles]: Cibles[Nom] extends Cible<boolean> ? Nom : never;
 }[keyof Cibles];
 
 // La case est cochée si la cible vaut vrai, et seulement alors.
 function coche(cible: CibleBooleenne) {
-  return ({ cibles }: { cibles: Cibles }) => cibles[cible] === true;
+  return ({ cibles }: { cibles: Cibles }) => cibles[cible].isOui();
 }

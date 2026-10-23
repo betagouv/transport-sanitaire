@@ -1,9 +1,10 @@
 {
-  // Fichier de solution : il ne compile rien lui-même, il énumère les quatre
+  // Fichier de solution : il ne compile rien lui-même, il énumère les cinq
   // projets. Leurs réglages vivent dans `config/`.
   "files": [],
   "references": [
     { "path": "./config/tsconfig.app.json" },
+    { "path": "./config/tsconfig.core.json" },
     { "path": "./config/tsconfig.node.json" },
     { "path": "./config/tsconfig.server.json" },
     { "path": "./config/tsconfig.tests.json" }

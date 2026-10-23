@@ -3,21 +3,24 @@
 
 import { readFile } from "node:fs/promises";
 import { join } from "node:path";
-import { model } from "../../../front/models/eligibilite";
-import type { Cibles } from "../../../front/models/eligibilite/declarations/cibles";
-import type { Faits } from "../../../front/models/eligibilite/declarations/faits";
-import type { Questions } from "../../../front/models/eligibilite/declarations/questions";
-import type { Donnees } from "../../../front/models/eligibilite/r3/rubriques/rubrique";
-import { SEEDS } from "../../../front/models/eligibilite/seeds-catalogue";
-import type { Cerfa, CerfaDto } from "../../../front/socle/cerfa/cerfa";
-import { generateCerfa } from "../../../front/socle/cerfa/generate-cerfa";
-import { preconisationOf, readingOf } from "../../../front/socle/model";
+import { model } from "../../../core/models/eligibilite";
+import type { Cibles } from "../../../core/models/eligibilite/declarations/cibles";
+import type { Faits } from "../../../core/models/eligibilite/declarations/faits";
+import type { Questions } from "../../../core/models/eligibilite/declarations/questions";
+import { SEEDS } from "../../../core/models/eligibilite/seeds-catalogue";
+import { cibleValues } from "../../../core/socle/decision-engine/cible";
+import { preconisationOf } from "../../../core/socle/model";
 import {
   type Answers,
   pagesOf,
-} from "../../../front/socle/questionnaire-engine/question";
+} from "../../../core/socle/questionnaire-engine/question";
+import { Questionnaire } from "../../../core/socle/questionnaire-engine/questionnaire";
+import type { Donnees } from "../../../front/models/eligibilite/r3/rubriques/rubrique";
+import type { Cerfa, CerfaDto } from "../../../front/socle/cerfa/cerfa";
+import { generateCerfa } from "../../../front/socle/cerfa/generate-cerfa";
 import { racine } from "../../inspection-des-sources";
 import { PLUSIEURS_PERMISSIONS } from "./reponses-de-la-permission";
+import { ciblesValant, type ValeursDesCibles } from "./traces-du-praticien";
 
 export type Reponses = Answers<Questions>;
 
@@ -68,13 +71,21 @@ export const PERMISSIONS: Reponses = {
  */
 export function donnees(
   reponses: Reponses,
-  choisies: Partial<Cibles> = {},
+  choisies: ValeursDesCibles = {},
   completedAt = new Date("2026-10-22T10:00:00Z"),
 ): Donnees {
   const preconisation = preconisationOf(model, reponses);
-  const cibles = { ...(preconisation.cibles as Cibles), ...choisies };
+  const cibles = ciblesValant({
+    ...cibleValues(preconisation.cibles as Cibles),
+    ...choisies,
+  });
+  const lecture = new Questionnaire<Questions>(PAGES).readWith(
+    reponses,
+    cibles,
+  );
   return {
-    ...readingOf<Questions>(PAGES, reponses, cibles),
+    answers: lecture.answers,
+    validated: lecture.validated,
     cibles,
     faits: preconisation.faits as Faits,
     completedAt,
@@ -102,7 +113,4 @@ export async function genere(
 // ---- implémentation ----
 
 // Toutes les pages du parcours, comme le socle les lit au résultat.
-const PAGES = [
-  ...pagesOf(model.transportAndEligibility.parts),
-  ...model.cerfa.part.pages,
-];
+const PAGES = [...pagesOf(model.questionnaire), ...model.complement.pages];

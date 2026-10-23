@@ -12,8 +12,8 @@
 import type {
   CatalogueResultats,
   IssuePositive,
-} from "../../declarations/catalogue-resultats";
-import type { Cibles } from "../../declarations/cibles";
+} from "../../../../../core/models/eligibilite/declarations/catalogue-resultats";
+import type { Cibles } from "../../../../../core/models/eligibilite/declarations/cibles";
 import type { Trace } from "../trace-du-resultat";
 import {
   avecLeLexique,
@@ -29,7 +29,7 @@ export type FondementDeLAccord = {
 
 /** Les codes des motifs d'accord préalable établis, dans l'ordre L, S, V, C, N. */
 export function codesDeLAccord(cibles: Cibles): readonly string[] {
-  return MOTIFS.filter(([, cible]) => cibles[cible] === true).map(
+  return MOTIFS.filter(([, cible]) => cibles[cible].isOui()).map(
     ([code]) => code,
   );
 }
@@ -61,8 +61,8 @@ export function rappelDAttente(
   cibles: Cibles,
 ): RappelDAttente | AucunRappel {
   const attente = cibles.cible_attente_accord;
-  if (attente !== true && attente !== false) return undefined;
-  const { issue, nom } = attente ? EN_ATTENTE : SANS_ATTENTE;
+  if (!attente.isOui() && !attente.isNon()) return undefined;
+  const { issue, nom } = attente.isOui() ? EN_ATTENTE : SANS_ATTENTE;
   const texte = catalogue.issues[issue].blueReminder;
   return texte ? { nom, texte } : undefined;
 }
@@ -141,10 +141,8 @@ function complements(
     fait_permission_mineur_admissible,
   } = trace.faits;
   const qualifies = {
-    K: fait_convocation.value === true,
-    P:
-      fait_permission.value === true &&
-      fait_permission_mineur_admissible.value === true,
+    K: fait_convocation.isOui(),
+    P: fait_permission.isOui() && fait_permission_mineur_admissible.isOui(),
   };
   return extras
     .filter(({ code }) => qualifies[code as keyof typeof qualifies])

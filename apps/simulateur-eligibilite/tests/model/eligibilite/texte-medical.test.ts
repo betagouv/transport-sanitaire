@@ -3,17 +3,17 @@
 // que les règles calculent. `CONTRAT_ELEMENTS_MEDICAUX.json` en v10.1.3.
 
 import { describe, expect, it } from "vitest";
-import type { Cibles } from "../../../front/models/eligibilite/declarations/cibles";
-import type { Faits } from "../../../front/models/eligibilite/declarations/faits";
+import type { Faits } from "../../../core/models/eligibilite/declarations/faits";
+import { SEEDS } from "../../../core/models/eligibilite/seeds-catalogue";
+import { Fait } from "../../../core/socle";
 import type { Donnees } from "../../../front/models/eligibilite/r3/rubriques/rubrique";
 import {
   TEXTE_MEDICAL,
   type TexteMedical,
 } from "../../../front/models/eligibilite/r3/rubriques/texte-medical";
-import { SEEDS } from "../../../front/models/eligibilite/seeds-catalogue";
-import { Fait } from "../../../front/socle";
 import { ENTREE, MATERNITE_ETABLIE } from "./reponses-de-la-branche";
 import { donnees, PMT, type Reponses } from "./reponses-du-cerfa";
+import type { ValeursDesCibles } from "./traces-du-praticien";
 
 const SEANCE = "Ce déplacement concerne une séance de dialyse en centre";
 const PAS_AUTONOME =
@@ -94,7 +94,7 @@ describe("les besoins", () => {
 
 describe("les compléments", () => {
   it("suivent l'ordre de COMPLETION_DOCUMENTS, la mention du mineur telle quelle", () => {
-    const cibles: Partial<Cibles> = {
+    const cibles: ValeursDesCibles = {
       cible_situation_at_mp: true,
       cible_ambulance_equipement_bariatrique: true,
       cible_dap_motif_camsp_cmpp: true,
@@ -174,7 +174,7 @@ describe("les compléments", () => {
 
 function texte(
   reponses: Reponses,
-  cibles: Partial<Cibles> = {},
+  cibles: ValeursDesCibles = {},
   faits: Partial<Faits> = {},
 ): TexteMedical {
   const calculees = donnees(reponses, cibles);

@@ -3,7 +3,7 @@
 // et `TSREF-20261015-05` du paquet de l'éditeur (D-107).
 
 import { describe, expect, it } from "vitest";
-import type { Faits } from "../../../front/models/eligibilite/declarations/faits";
+import type { Faits } from "../../../core/models/eligibilite/declarations/faits";
 import {
   ciblesDe,
   faits,
@@ -250,8 +250,8 @@ describe("« je ne peux pas le vérifier » : la caisse", () => {
     ],
   ] as const)("%s va à la caisse", (_, reponses) => {
     const cibles = ciblesDe(reponses);
-    expect(cibles.cible_couverture_inconnue_decisive).toBe(true);
-    expect(cibles.cible_issue_id).toBe("ISSUE_CAISSE");
+    expect(cibles.cible_couverture_inconnue_decisive.value).toBe(true);
+    expect(cibles.cible_issue_id.value).toBe("ISSUE_CAISSE");
   });
 });
 

@@ -188,7 +188,7 @@ const URGENCE_ATTESTEE: Reponses = { ...A_150_KM, "Q2.3.4": "1_OUI" };
 
 const demande = (reponses: Reponses) => {
   const cibles = ciblesDe(reponses);
-  const issue = cibles.cible_issue_id;
+  const issue = cibles.cible_issue_id.value;
   if (
     issue !== "ISSUE_DAP_SANS_URGENCE" &&
     issue !== "ISSUE_DAP_URGENCE_ATTESTEE"

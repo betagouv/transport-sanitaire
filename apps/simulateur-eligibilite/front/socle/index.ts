@@ -1,6 +1,7 @@
-// Ce que le socle expose au reste de l'app : à `main.tsx`, de quoi la monter, et au
-// modèle, de quoi s'écrire. Le modèle n'importe rien d'autre du socle, sauf le
-// type d'une seed, que son catalogue lit à la source.
+// Ce que le socle de l'écran expose au reste de l'app : à `main.tsx`, de quoi
+// la monter, et au modèle, de quoi composer ses résultats et son cerfa. Ce qui
+// déclare les questions, les faits et les seeds vient du socle du métier,
+// `core/socle/index.ts`.
 //
 // L'écran des seeds et son tableau n'y figurent pas : ils sont chargés à la
 // demande, et les réexporter ici les ramènerait dans le chunk d'entrée.
@@ -23,27 +24,12 @@ export {
 } from "./cerfa/cerfa";
 export { templateAt } from "./cerfa/generate-cerfa";
 export { bindCerfa, type CerfaMapping } from "./cerfa-mapping";
-export { Fait } from "./decision-engine/fait";
-export { faitsOf } from "./decision-engine/fait-builder";
 export {
   type CerfaInput,
   defineModel,
   type FirstResult,
   type Sheet,
 } from "./model";
-export type { Address } from "./questionnaire-engine/address";
-export { areAnswered } from "./questionnaire-engine/asked-questions";
-export type {
-  GivenAnswer,
-  GivenAnswers,
-} from "./questionnaire-engine/given-answers";
-export type {
-  QuestionnairePart,
-  Unanswered,
-} from "./questionnaire-engine/question";
-export type { QuestionContext } from "./questionnaire-engine/question-context";
-export { questionsOf } from "./questionnaire-engine/question-factory";
-export type { ValidatedAnswers } from "./questionnaire-engine/validated-answers";
 export { Disclosure } from "./ui/Disclosure";
 export { type IllustratedCard, IllustratedCards } from "./ui/IllustratedCards";
 export { NumberedCards } from "./ui/NumberedCards";

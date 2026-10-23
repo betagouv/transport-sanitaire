@@ -8,6 +8,10 @@
 // si elle n'y tient pas. Le nom du client n'a pas de champ : il se dessine dans
 // son cadre.
 
+import type { Cibles } from "../../../core/models/fake/declarations/cibles";
+import type { Faits } from "../../../core/models/fake/declarations/faits";
+import type { Questions } from "../../../core/models/fake/declarations/questions";
+import type { GivenAnswers } from "../../../core/socle";
 import {
   at,
   bindCerfa,
@@ -16,15 +20,11 @@ import {
   type CerfaMapping,
   commentOn,
   drawnBox,
-  type GivenAnswers,
   templateAt,
   text,
 } from "../../socle";
 import { enUneLigne } from "./adresse";
 import gabarit from "./bon-de-commande.pdf?url";
-import type { Cibles } from "./declarations/cibles";
-import type { Faits } from "./declarations/faits";
-import type { Questions } from "./declarations/questions";
 
 type BonDeCommande = {
   fields: {
@@ -63,7 +63,7 @@ const VERS_LE_BON_DE_COMMANDE: CerfaMapping<
   CerfaInput<Questions, Faits, Cibles>
 > = {
   fields: {
-    commande: ({ cibles }) => cibles.commande,
+    commande: ({ cibles }) => String(cibles.commande.value),
     nombre_de_tasses: ({ answers }) =>
       String(answers.question("quantite").value),
     date: ({ completedAt }) => enFrancais(completedAt),
@@ -71,10 +71,10 @@ const VERS_LE_BON_DE_COMMANDE: CerfaMapping<
       const adresse = answers.question("adresse");
       return adresse.hasAnswer() ? enUneLigne(adresse.value) : undefined;
     },
-    avec_lait: ({ faits }) => faits.lait.value === true,
+    avec_lait: ({ faits }) => faits.lait.isOui(),
     avec_sucre: ({ answers }) =>
       answers.question("accompagnements").checked("sucre"),
-    avec_citron: ({ faits }) => faits.citron.value === true,
+    avec_citron: ({ faits }) => faits.citron.isOui(),
     instructions: ({ answers }) => instructionsDe(answers),
     remarque: ({ answers }) => answers.question("remarque").value,
   },

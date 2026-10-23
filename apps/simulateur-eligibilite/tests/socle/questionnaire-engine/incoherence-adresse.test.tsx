@@ -1,43 +1,32 @@
 import { screen, within } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
-import type {
-  Page,
-  Question,
-} from "../../../front/socle/questionnaire-engine/question";
-import { stateAfterAnswers } from "../../../front/socle/questionnaire-engine/questionnaire";
+import { type Address, page, questionsOf } from "../../../core/socle";
+import { Questionnaire } from "../../../core/socle/questionnaire-engine/questionnaire";
 import { afficher } from "./afficher";
 
 // Une adresse incohérente avec une autre réponse affiche son message sous le
 // groupe de champs. Une erreur de champ passe devant. Les pages sont écrites
 // ici.
 
-const page = (...questions: Question[]): Page => ({
-  id: questions[0]?.id ?? "vide",
-  questions,
-});
+type Questions = { depart: Address; arrivee: Address };
+
+const question = questionsOf<Questions>({ options: {} });
 
 const valider = () =>
   screen.getByRole("button", { name: /^(Suivant|Terminer)$/ });
 
 describe("adresse incohérente", () => {
-  const DEPART: Question = {
-    id: "depart",
-    kind: "address",
-    label: "Adresse de départ",
-  };
-  const memeVoie = (adresse: unknown) =>
-    (adresse as { street?: string } | undefined)?.street;
-  const ARRIVEE: Question = {
-    id: "arrivee",
-    kind: "address",
-    label: "Adresse d'arrivée",
-    inconsistenciesFrom: (answers) => {
+  const DEPART = question.address("depart", "Adresse de départ");
+  const memeVoie = (adresse: Address | undefined) => adresse?.street;
+  const ARRIVEE = question
+    .address("arrivee", "Adresse d'arrivée")
+    .inconsistentIf(({ answers }) => {
       const depart = memeVoie(answers.question("depart").value);
-      return depart && depart === memeVoie(answers.question("arrivee").value)
-        ? ["L'arrivée répète le départ."]
-        : [];
-    },
-  };
+      return (
+        Boolean(depart) &&
+        depart === memeVoie(answers.question("arrivee").value)
+      );
+    }, "L'arrivée répète le départ.");
   const LILAS = {
     street: "3 rue des Lilas",
     postalCode: "75012",
@@ -50,7 +39,7 @@ describe("adresse incohérente", () => {
   };
 
   it("affiche son message sous le groupe, et bloque", async () => {
-    const { user } = afficher([page(ARRIVEE)], {
+    const { user } = afficher([page("arrivee", ARRIVEE)], {
       lockedAnswers: { depart: LILAS },
     });
     for (const [nom, texte] of Object.entries(champs))
@@ -69,16 +58,16 @@ describe("adresse incohérente", () => {
   it("ne compte pas comme répondue", () => {
     const reponses = { depart: LILAS, arrivee: LILAS };
 
-    expect(
-      stateAfterAnswers([page(DEPART), page(ARRIVEE)], reponses),
-    ).toMatchObject({
-      page: "arrivee",
-      complete: false,
-    });
+    const lecture = new Questionnaire([
+      page("depart", DEPART),
+      page("arrivee", ARRIVEE),
+    ]).readWith(reponses);
+    expect(lecture.openPage().id).toBe("arrivee");
+    expect(lecture.isComplete()).toBe(false);
   });
 
   it("laisse passer devant l'erreur d'un champ, sans message de groupe", async () => {
-    const { user } = afficher([page(ARRIVEE)], {
+    const { user } = afficher([page("arrivee", ARRIVEE)], {
       lockedAnswers: { depart: { ...LILAS, postalCode: "7501" } },
     });
     for (const [nom, texte] of Object.entries({

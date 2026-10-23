@@ -11,8 +11,8 @@ import type {
   AucunTexte,
   CatalogueResultats,
   IssuePositive,
-} from "../../declarations/catalogue-resultats";
-import type { Cibles } from "../../declarations/cibles";
+} from "../../../../../core/models/eligibilite/declarations/catalogue-resultats";
+import type { Cibles } from "../../../../../core/models/eligibilite/declarations/cibles";
 import type { Trace } from "../trace-du-resultat";
 import { type Partage, partageDuTransport } from "./variante-du-resultat";
 
@@ -51,15 +51,15 @@ export function badgesDuResultat(
   trace: Trace,
 ): readonly string[] {
   const { cibles } = trace;
-  const mode = cibles.cible_mode_id;
+  const mode = cibles.cible_mode_id.value;
   if (!estSanitaire(mode)) return [];
-  const fauteuil = cibles.cible_fauteuil_roulant === true;
+  const fauteuil = cibles.cible_fauteuil_roulant.isOui();
   return [
     ...(mode !== "AMBULANCE" && partageDuTransport(cibles) === "incompatible"
       ? [badges.nonShared]
       : []),
     ...(fauteuil ? [badges.criteria["6"]?.[mode === "TPMR" ? 0 : 1]] : []),
-    ...(cibles.cible_ambulance_equipement_bariatrique === true
+    ...(cibles.cible_ambulance_equipement_bariatrique.isOui()
       ? [badges.bari]
       : []),
     ...criteresDeLaCarte(trace)
@@ -85,22 +85,24 @@ const FAMILLES: Readonly<Record<string, readonly number[]>> = {
  * ajouté s'il est prouvé : c'est le même fait que le critère 6.
  */
 function criteresDeLaCarte(trace: Trace): readonly number[] {
-  const famille = FAMILLES[trace.cibles.cible_mode_id ?? ""];
+  const famille = FAMILLES[trace.cibles.cible_mode_id.value ?? ""];
   if (!famille) return [];
-  const fauteuil = trace.cibles.cible_fauteuil_roulant === true;
+  const fauteuil = trace.cibles.cible_fauteuil_roulant.isOui();
   const criteres = new Set(trace.criteres.filter((n) => famille.includes(n)));
   if (fauteuil && famille.includes(6)) criteres.add(6);
   return [...criteres].sort((a, b) => a - b);
 }
 
-function estSanitaire(mode: Cibles["cible_mode_id"]): mode is ModeSanitaire {
+function estSanitaire(
+  mode: Cibles["cible_mode_id"]["value"],
+): mode is ModeSanitaire {
   return mode === "TAP" || mode === "TPMR" || mode === "AMBULANCE";
 }
 
 // Les cartes fixes vont du déplacement par ses propres moyens à l'ambulance.
 function rangDeLaCarte(cibles: Cibles): number {
-  if (cibles.cible_mode_id === "AMBULANCE") return 2;
-  return estSanitaire(cibles.cible_mode_id) ? 1 : 0;
+  if (cibles.cible_mode_id.is("AMBULANCE")) return 2;
+  return estSanitaire(cibles.cible_mode_id.value) ? 1 : 0;
 }
 
 // Un critère de Q1.2 a un ou deux libellés. Le critère 2 en a deux : en TPMR, le
@@ -119,7 +121,7 @@ function badgeDuCritere(
 // n'a pas de carte : la carte fixe, qui n'en dit rien, reste.
 function carteDetaillee(issue: IssuePositive, trace: Trace) {
   const { cibles } = trace;
-  const mode = cibles.cible_mode_id;
+  const mode = cibles.cible_mode_id.value;
   if (!estSanitaire(mode)) return undefined;
   const partage = partageDuTransport(cibles);
   if (mode !== "AMBULANCE" && partage === "inconnu") return undefined;
@@ -128,7 +130,7 @@ function carteDetaillee(issue: IssuePositive, trace: Trace) {
     (carte) =>
       carte.mode === mode &&
       carte.nonShared === nonPartage(mode, partage) &&
-      carte.bari === (cibles.cible_ambulance_equipement_bariatrique === true) &&
+      carte.bari === cibles.cible_ambulance_equipement_bariatrique.isOui() &&
       memesCriteres(carte.criteria, criteres),
   );
 }

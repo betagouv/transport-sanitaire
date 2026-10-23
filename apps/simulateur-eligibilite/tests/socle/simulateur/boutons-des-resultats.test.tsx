@@ -18,14 +18,11 @@ import {
 const COMPLETER = "Compléter la commande";
 
 const avec = (changement: {
-  premier?: Partial<Model["transportAndEligibility"]>;
+  core?: Partial<Model["core"]>;
   second?: Partial<Model["cerfa"]>;
 }): Model => ({
   ...modeleDeTest,
-  transportAndEligibility: {
-    ...modeleDeTest.transportAndEligibility,
-    ...changement.premier,
-  },
+  core: { ...modeleDeTest.core, ...changement.core },
   cerfa: { ...modeleDeTest.cerfa, ...changement.second },
 });
 
@@ -59,10 +56,8 @@ describe("les boutons du premier résultat", () => {
 
   it("ne verrouillent pas vers une partie sans page ni cerfa", async () => {
     const modele = avec({
-      second: {
-        part: { ...modeleDeTest.cerfa.part, pages: [] },
-        form: () => null,
-      },
+      core: { complement: { ...modeleDeTest.core.complement, pages: [] } },
+      second: { form: () => null },
     });
     const user = await ouvrirLeSimulateur({ modele });
     await allerAuResultat(user);
@@ -76,18 +71,20 @@ describe("les boutons du premier résultat", () => {
 describe("le complément", () => {
   // Ce modèle lit la quantité, réponse d'après le verrou, dans ses faits :
   // s'il recalculait la préconisation, le second résultat changerait de boisson.
-  const requalifiant: Model = {
-    ...modeleDeTest,
-    preconisation: {
-      ...modeleDeTest.preconisation,
-      faits: (answers, validated) => ({
-        ...modeleDeTest.preconisation.faits(answers, validated),
-        ...(answers.question("quantite").hasAnswer() && {
-          boisson: "chocolat",
+  const { preconisation } = modeleDeTest.core;
+  const requalifiant = avec({
+    core: {
+      preconisation: {
+        ...preconisation,
+        faits: (answers, validated) => ({
+          ...preconisation.faits(answers, validated),
+          ...(answers.question("quantite").hasAnswer() && {
+            boisson: "chocolat",
+          }),
         }),
-      }),
+      },
     },
-  };
+  });
 
   it("ne requalifie pas le résultat : le second résultat garde la préconisation du verrou", async () => {
     const user = await ouvrirLeSimulateur({ modele: requalifiant });

@@ -3,8 +3,8 @@
 // exception qui ne s'est pas proposée prend un prédicat structurel (D-106).
 
 import { describe, expect, it } from "vitest";
-import { cible } from "../../../front/models/eligibilite/evaluation-des-regles";
-import { validatedQuestions } from "../../../front/socle/questionnaire-engine/asked-questions";
+import { cible } from "../../../core/models/eligibilite/evaluation-des-regles";
+import { Questionnaire } from "../../../core/socle/questionnaire-engine/questionnaire";
 import {
   definitif,
   EXCEPTIONS,
@@ -32,7 +32,7 @@ describe("une exception cochée", () => {
       false,
       false,
     ]);
-    expect(cible(faits(had), "cible_exception_article80")).toBe(true);
+    expect(cible(faits(had), "cible_exception_article80").value).toBe(true);
   });
 
   it("garde la trace de la case cochée et de celle écartée", () => {
@@ -104,11 +104,12 @@ describe("les options de Q2.6", () => {
 
   it("une réponse que le type retire à l'écran est perdue à la validation", () => {
     const reponses = provisoire(["2_ADMISSION_SANS_SEJOUR"], URGENCES);
-    expect(validatedQuestions(pages, reponses)["Q2.6"]).toBeUndefined();
-    const valide = validatedQuestions(
-      pages,
-      definitif(["2_ADMISSION_SANS_SEJOUR"], URGENCES),
-    );
+    expect(
+      new Questionnaire(pages).readWith(reponses).validated.toJSON()["Q2.6"],
+    ).toBeUndefined();
+    const valide = new Questionnaire(pages)
+      .readWith(definitif(["2_ADMISSION_SANS_SEJOUR"], URGENCES))
+      .validated.toJSON();
     expect(valide["Q2.6"]?.answer).toEqual(["2_ADMISSION_SANS_SEJOUR"]);
   });
 });

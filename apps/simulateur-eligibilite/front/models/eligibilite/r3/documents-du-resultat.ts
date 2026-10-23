@@ -13,13 +13,13 @@
 // DTO de la PMT et de la DAP sont encore vides : elles se téléchargent vierges
 // et aplaties, jusqu'à #160 et #161.
 
+import type { Cibles } from "../../../../core/models/eligibilite/declarations/cibles";
 import {
   bindCerfa,
   type Cerfa,
   type CerfaMapping,
   templateAt,
 } from "../../../socle";
-import type { Cibles } from "../declarations/cibles";
 import s3138g from "./gabarits/S3138g.pdf?url";
 import s3139h from "./gabarits/S3139h.pdf?url";
 import type { Donnees } from "./rubriques/rubrique";
@@ -27,13 +27,16 @@ import { S3141 } from "./s3141/s3141";
 
 /** Le document que cette préconisation complète. `null` : aucun. */
 export function documentDuComplement(cibles: Cibles) {
-  const support = cibles.cible_support_id;
-  return support && support !== "AUCUN" ? DOCUMENTS[support] : null;
+  const support = cibles.cible_support_id.value;
+  return support == null || support === "AUCUN" ? null : DOCUMENTS[support];
 }
 
 // ---- implémentation ----
 
-type Support = Exclude<NonNullable<Cibles["cible_support_id"]>, "AUCUN">;
+type Support = Exclude<
+  NonNullable<Cibles["cible_support_id"]["value"]>,
+  "AUCUN"
+>;
 type SansEntree = {
   fields: Record<never, never>;
   drawings: Record<never, never>;

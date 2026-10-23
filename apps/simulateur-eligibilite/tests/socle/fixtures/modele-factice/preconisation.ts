@@ -1,7 +1,7 @@
 // La préconisation factice : la commande, lue dans les réponses. Elle ne décide
 // rien du transport.
 
-import type { GivenAnswers } from "../../../../front/socle";
+import { Cible, type GivenAnswers } from "../../../../core/socle";
 import type { Cibles } from "./declarations/cibles";
 import type { Faits } from "./declarations/faits";
 import type { Questions } from "./declarations/questions";
@@ -20,12 +20,13 @@ export function faits(answers: GivenAnswers<Questions>): Faits {
 
 /** Des faits aux cibles : la commande, en une phrase. */
 export function cibles({ boisson, accompagnements }: Faits): Cibles {
-  if (boisson === null) return { commande: SANS_COMMANDE };
+  if (boisson === null) return { commande: Cible.of(SANS_COMMANDE) };
   return {
-    commande:
+    commande: Cible.of(
       accompagnements.length > 0
         ? `${boisson}, ${accompagnements.join(" et ")}`
         : boisson,
+    ),
   };
 }
 

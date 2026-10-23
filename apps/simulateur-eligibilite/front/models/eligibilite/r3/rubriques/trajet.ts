@@ -9,15 +9,15 @@
 // L'aller-retour ne se coche que si le retour est le même trajet, adresses
 // inversées. Plusieurs permissions du S3141 en sont chacune un (D-120).
 
-import type { Address, Unanswered } from "../../../../socle";
 import {
   type Extremite,
   type Nature,
   natureDu,
   projectionCerfa,
   QUESTIONS_DU_LIEU,
-} from "../../p3/lieux-du-trajet";
-import { sensDuDocument } from "../../p3/sens-du-trajet";
+} from "../../../../../core/models/eligibilite/p3/lieux-du-trajet";
+import { sensDuDocument } from "../../../../../core/models/eligibilite/p3/sens-du-trajet";
+import type { Address, Unanswered } from "../../../../../core/socle";
 import type { Donnees, Rubrique } from "./rubrique";
 
 export type Trajet = {

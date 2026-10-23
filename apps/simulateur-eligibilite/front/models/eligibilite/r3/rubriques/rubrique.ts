@@ -10,10 +10,10 @@
 // Une rubrique lit les questions validées : une réponse restée d'une question
 // qui ne se pose plus, après un retour en arrière, ne s'écrit pas.
 
+import type { Cibles } from "../../../../../core/models/eligibilite/declarations/cibles";
+import type { Faits } from "../../../../../core/models/eligibilite/declarations/faits";
+import type { Questions } from "../../../../../core/models/eligibilite/declarations/questions";
 import type { CerfaInput } from "../../../../socle";
-import type { Cibles } from "../../declarations/cibles";
-import type { Faits } from "../../declarations/faits";
-import type { Questions } from "../../declarations/questions";
 
 /** Ce que le simulateur sait au moment de remplir le cerfa. */
 export type Donnees = CerfaInput<Questions, Faits, Cibles>;

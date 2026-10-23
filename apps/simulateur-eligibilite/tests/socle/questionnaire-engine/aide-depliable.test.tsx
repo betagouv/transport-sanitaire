@@ -1,50 +1,46 @@
 import { screen, within } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
-import type { Page } from "../../../front/socle/questionnaire-engine/question";
+import { page, questionsOf } from "../../../core/socle";
 import { afficher } from "./afficher";
 
 // Une option peut porter une aide : un lien, juste sous elle, qui déplie une
 // liste. La déplier n'est pas répondre. Les pages sont écrites ici.
 
-const AGE: Page = {
-  id: "age",
-  questions: [
-    {
-      id: "age",
-      kind: "single choice",
-      label: "Le patient est-il majeur ?",
-      options: [
-        { value: "oui", label: "Oui" },
-        { value: "non", label: "Non" },
-      ],
-    },
-  ],
+type Questions = {
+  age: "oui" | "non";
+  situations: readonly ("hospitalise" | "autre" | "aucune")[];
 };
 
-const SITUATIONS: Page = {
-  id: "situations",
-  questions: [
-    {
-      id: "situations",
-      kind: "multiple choice",
-      label: "Quelles situations concernent ce trajet ?",
-      options: [
-        { value: "hospitalise", label: "Le patient est déjà hospitalisé" },
-        {
-          value: "autre",
-          label: "Une autre situation particulière",
-          helpFrom: (answers) => ({
-            label: "Voir les situations concernées",
-            items: answers.question("age").is("non")
-              ? ["Accident du travail", "Suivi en CAMSP ou en CMPP"]
-              : ["Accident du travail", "Pension militaire"],
-          }),
-        },
-      ],
-      exclusiveOption: { value: "aucune", label: "Aucune de ces situations" },
-    },
-  ],
-};
+const OPTIONS = {
+  age: { oui: "Oui", non: "Non" },
+  situations: {
+    hospitalise: "Le patient est déjà hospitalisé",
+    autre: "Une autre situation particulière",
+    aucune: "Aucune de ces situations",
+  },
+} as const;
+
+const question = questionsOf<Questions>({ options: OPTIONS });
+
+const AGE = page(
+  "age",
+  question.singleChoice("age", "Le patient est-il majeur ?"),
+);
+
+const SITUATIONS = page(
+  "situations",
+  question
+    .multipleChoice("situations", "Quelles situations concernent ce trajet ?")
+    .exclusive("aucune")
+    .option("autre", (option) =>
+      option.helpFrom(({ answers }) => ({
+        label: "Voir les situations concernées",
+        items: answers.question("age").is("non")
+          ? ["Accident du travail", "Suivi en CAMSP ou en CMPP"]
+          : ["Accident du travail", "Pension militaire"],
+      })),
+    ),
+);
 
 const aide = () =>
   screen.getByRole("button", { name: "Voir les situations concernées" });

@@ -205,8 +205,8 @@ describe("l'issue des règles", () => {
     const cibles = ciblesDe(
       appareillage("3_NE_PEUX_PAS_VERIFIER", "2_PODO_ORTHESE"),
     );
-    expect(cibles.cible_issue_id).toBe("ISSUE_CAISSE");
-    expect(cibles.cible_reason_code).toBe(
+    expect(cibles.cible_issue_id.value).toBe("ISSUE_CAISSE");
+    expect(cibles.cible_reason_code.value).toBe(
       "CONVOCATION_CONDITION_NON_VERIFIABLE",
     );
   });

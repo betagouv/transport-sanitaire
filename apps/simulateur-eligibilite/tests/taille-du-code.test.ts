@@ -8,15 +8,20 @@ import { describe, expect, it } from "vitest";
 import { fonctionsDe, lignesDe, sources } from "./inspection-des-sources";
 
 // Le catalogue de seeds d'un modèle : une liste de données.
-const CATALOGUE_DE_SEEDS = /^front\/models\/[^/]+\/seeds-catalogue\.ts$/;
+const CATALOGUE_DE_SEEDS = /^core\/models\/[^/]+\/seeds-catalogue\.ts$/;
 
 describe("taille du code", () => {
   it("aucune fonction ne dépasse 30 lignes", () => {
-    const trop = sources("front", "server", "shared", "scripts").flatMap(
-      (fichier) =>
-        fonctionsDe(fichier)
-          .filter(({ lignes }) => lignes > 30)
-          .map(({ ligne, lignes }) => `${fichier}:${ligne} (${lignes} lignes)`),
+    const trop = sources(
+      "front",
+      "core",
+      "server",
+      "shared",
+      "scripts",
+    ).flatMap((fichier) =>
+      fonctionsDe(fichier)
+        .filter(({ lignes }) => lignes > 30)
+        .map(({ ligne, lignes }) => `${fichier}:${ligne} (${lignes} lignes)`),
     );
     expect(
       trop,
@@ -29,7 +34,14 @@ describe("taille du code", () => {
   });
 
   it("aucun fichier ne dépasse 300 lignes", () => {
-    const trop = sources("front", "server", "shared", "scripts", "tests")
+    const trop = sources(
+      "front",
+      "core",
+      "server",
+      "shared",
+      "scripts",
+      "tests",
+    )
       .filter((fichier) => !CATALOGUE_DE_SEEDS.test(fichier))
       .map((fichier) => ({ fichier, lignes: lignesDe(fichier) }))
       .filter(({ lignes }) => lignes > 300)

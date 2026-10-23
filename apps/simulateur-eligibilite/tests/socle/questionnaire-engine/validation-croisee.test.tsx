@@ -1,47 +1,46 @@
 import { screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
-import type {
-  Page,
-  Question,
-} from "../../../front/socle/questionnaire-engine/question";
+import { page, questionsOf } from "../../../core/socle";
 import { afficher } from "./afficher";
 
 // Une réponse peut en contredire une autre. La question qui vient en dernier
 // déclare ses incohérences, un message chacune. Ici, deux réponses de la même
 // page. Les pages sont écrites ici.
 
-const page = (...questions: Question[]): Page => ({
-  id: questions[0]?.id ?? "vide",
-  questions,
-});
+type Questions = {
+  debut: string;
+  fin: string;
+  poids: number;
+  raisons: readonly ("panne" | "autre")[];
+  precision: string;
+};
+
+const OPTIONS = {
+  raisons: { panne: "Une panne", autre: "Autre chose" },
+} as const;
+
+const question = questionsOf<Questions>({ options: OPTIONS });
 
 const FIN_AVANT_LE_DEBUT = "La fin précède le début.";
 const FERME_LE_DIMANCHE = "Le magasin est fermé le dimanche.";
 
-const DEBUT: Question = {
-  id: "debut",
-  kind: "datetime",
-  label: "Début du créneau",
-};
+const DEBUT = question.datetime("debut", "Début du créneau");
 
 // 2026-10-18 tombe un dimanche.
-const FIN: Question = {
-  id: "fin",
-  kind: "datetime",
-  label: "Fin du créneau",
-  inconsistenciesFrom: (answers) => {
+const FIN = question
+  .datetime("fin", "Fin du créneau")
+  .inconsistentIf(({ answers }) => {
     const debut = answers.question("debut").value;
     const fin = answers.question("fin").value;
-    return [
-      ...(debut && fin && fin < debut ? [FIN_AVANT_LE_DEBUT] : []),
-      ...(typeof fin === "string" && fin.startsWith("2026-10-18")
-        ? [FERME_LE_DIMANCHE]
-        : []),
-    ];
-  },
-};
+    return Boolean(debut && fin && fin < debut);
+  }, FIN_AVANT_LE_DEBUT)
+  .inconsistentIf(
+    ({ answers }) =>
+      answers.question("fin").value?.startsWith("2026-10-18") === true,
+    FERME_LE_DIMANCHE,
+  );
 
-const CRENEAU = page(DEBUT, FIN);
+const CRENEAU = page("debut", DEBUT, FIN);
 
 const champ = (name: string) => screen.getByLabelText(name);
 const valider = () =>
@@ -87,14 +86,11 @@ describe("deux réponses de la même page", () => {
   });
 
   it("affiche une erreur de format seule, avant les incohérences", async () => {
-    const decimale: Question = {
-      id: "poids",
-      kind: "number",
-      label: "Poids du colis",
-      integer: true,
-      inconsistenciesFrom: () => ["Le colis est trop lourd pour ce mode."],
-    };
-    const { user } = afficher([page(decimale)]);
+    const decimale = question
+      .number("poids", "Poids du colis")
+      .integer()
+      .inconsistentIf(() => true, "Le colis est trop lourd pour ce mode.");
+    const { user } = afficher([page("poids", decimale)]);
 
     await user.type(screen.getByRole("spinbutton"), "2.5");
 
@@ -106,26 +102,13 @@ describe("deux réponses de la même page", () => {
 });
 
 describe("précision obligatoire restée vide", () => {
-  const RAISONS: Page = {
-    id: "raisons",
-    questions: [
-      {
-        id: "raisons",
-        kind: "multiple choice",
-        label: "Pourquoi ?",
-        options: [
-          { value: "panne", label: "Une panne" },
-          { value: "autre", label: "Autre chose" },
-        ],
-      },
-      {
-        id: "precision",
-        kind: "text",
-        label: "Précisez",
-        askedIf: (answers) => answers.question("raisons").checked("autre"),
-      },
-    ],
-  };
+  const RAISONS = page(
+    "raisons",
+    question.multipleChoice("raisons", "Pourquoi ?"),
+    question
+      .text("precision", "Précisez")
+      .askedIf(({ answers }) => answers.question("raisons").checked("autre")),
+  );
 
   it("grise « Suivant », sans message", async () => {
     const { user } = afficher([RAISONS]);

@@ -2,8 +2,8 @@
 // catalogue se charge à la demande (900 ko, hors du chunk d'entrée). Le
 // chargement en échec donne un titre et une phrase, sans rien inventer.
 
+import type { CatalogueResultats } from "../../../../core/models/eligibilite/declarations/catalogue-resultats";
 import type { FirstResult } from "../../../socle";
-import type { CatalogueResultats } from "../declarations/catalogue-resultats";
 import { catalogueDeLaSession } from "./catalogue-resultats";
 
 export async function avecLeCatalogue(

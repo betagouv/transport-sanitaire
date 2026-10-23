@@ -5,19 +5,19 @@
 // Seule la page du trajet est posée : les autres faits de P2 restent absents.
 
 import { describe, expect, it } from "vitest";
-import { model } from "../../../front/models/eligibilite";
-import type { Cibles } from "../../../front/models/eligibilite/declarations/cibles";
-import type { Faits } from "../../../front/models/eligibilite/declarations/faits";
-import type { Questions } from "../../../front/models/eligibilite/declarations/questions";
-import { preconisationOf } from "../../../front/socle/model";
-import type { Answers } from "../../../front/socle/questionnaire-engine/question";
+import { model } from "../../../core/models/eligibilite";
+import type { Cibles } from "../../../core/models/eligibilite/declarations/cibles";
+import type { Faits } from "../../../core/models/eligibilite/declarations/faits";
+import type { Questions } from "../../../core/models/eligibilite/declarations/questions";
+import { preconisationOf } from "../../../core/socle/model";
+import type { Answers } from "../../../core/socle/questionnaire-engine/question";
 
 type Reponses = Answers<Questions>;
 
 const valeur = (fait: keyof Faits, reponses: Reponses) =>
   (preconisationOf(model, reponses).faits as Faits)[fait].value;
 const cible = (nom: keyof Cibles, reponses: Reponses) =>
-  (preconisationOf(model, reponses).cibles as Cibles)[nom];
+  (preconisationOf(model, reponses).cibles as Cibles)[nom].value;
 
 const BRANCARD: Reponses = {
   "Q0.1": "1_VERIFIER",

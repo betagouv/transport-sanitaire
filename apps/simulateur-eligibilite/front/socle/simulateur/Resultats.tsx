@@ -3,26 +3,21 @@
 // fournit son contenu ; le cadre, le stepper et les boutons sont ici.
 
 import type { ComponentType, ReactNode } from "react";
-import { CerfaActions } from "../cerfa/CerfaActions";
-import { dtoFrom } from "../cerfa-mapping";
-import {
-  type CerfaInput,
-  type Model,
-  type Preconisation,
-  readingOf,
-} from "../model";
-import {
-  askedPages,
-  validatedQuestions,
-} from "../questionnaire-engine/asked-questions";
-import type { DebugTraceProps } from "../questionnaire-engine/QuestionnaireForm";
+import type { Preconisation } from "../../../core/socle/model";
 import {
   type Answers,
   type AnyCibles,
   type Page,
   pagesOf,
-} from "../questionnaire-engine/question";
-import type { QuestionnaireState } from "../questionnaire-engine/questionnaire";
+} from "../../../core/socle/questionnaire-engine/question";
+import {
+  Questionnaire,
+  type QuestionnaireState,
+} from "../../../core/socle/questionnaire-engine/questionnaire";
+import { CerfaActions } from "../cerfa/CerfaActions";
+import { dtoFrom } from "../cerfa-mapping";
+import type { CerfaInput, Model } from "../model";
+import type { DebugTraceProps } from "../questionnaire-engine/QuestionnaireForm";
 import { Stepper } from "../questionnaire-engine/Stepper";
 import type { Locked } from "./start";
 
@@ -49,11 +44,12 @@ export function CerfaResultat({
 }: Props & { locked: Locked; completedAt: Date }) {
   const { answers } = state;
   const { faits, cibles } = locked.preconisation;
-  const { part, title, Resultat } = model.cerfa;
-  const total = model.transportAndEligibility.parts.length + 1;
-  const all = [...pagesOf(model.transportAndEligibility.parts), ...part.pages];
+  const part = model.core.complement;
+  const { title, Resultat } = model.cerfa;
+  const total = model.core.questionnaire.length + 1;
+  const all = [...pagesOf(model.core.questionnaire), ...part.pages];
   const trace = traceOf("cerfa", all, answers, locked.preconisation, cibles);
-  const read = readingOf(all, answers, cibles);
+  const read = readOf(all, answers, cibles);
   return (
     <Frame
       title={title(cibles)}
@@ -76,6 +72,13 @@ export function CerfaResultat({
   );
 }
 
+// Ce que lisent le résultat et le cerfa : les réponses données et validées,
+// lues avec les cibles figées au verrou.
+function readOf(pages: readonly Page[], answers: Answers, cibles: AnyCibles) {
+  const read = new Questionnaire(pages).readWith(answers, cibles);
+  return { answers: read.answers, validated: read.validated };
+}
+
 // Ce que la trace de debug lit sous un résultat : les pages affichées, les
 // questions validées, et la préconisation. `locked` : les cibles figées, que
 // les questions d'après le verrou lisent.
@@ -86,11 +89,12 @@ export function traceOf(
   preconisation: Preconisation,
   locked?: AnyCibles,
 ): DebugTraceProps {
+  const read = new Questionnaire(pages).readWith(answers, locked);
   return {
     title,
-    pages: askedPages(pages, answers, locked),
+    pages: read.askedPages(),
     answers,
-    validated: validatedQuestions(pages, answers, locked),
+    validated: read.validated.toJSON(),
     ...preconisation,
   };
 }

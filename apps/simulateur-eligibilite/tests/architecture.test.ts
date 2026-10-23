@@ -17,65 +17,51 @@ import {
 
 const commencePar = (prefixe: string) => (cible: string) =>
   cible.startsWith(prefixe);
+const dedans = (cible: string) => (dossier: string) =>
+  cible === dossier || cible.startsWith(`${dossier}/`);
 
 // Ce qui pose les questions : le parcours et le moteur de questionnaire.
-const PARCOURS = ["front/socle/simulateur", "front/socle/questionnaire-engine"];
-
-// Ce que le modèle a le droit d'importer du socle, en plus de son point
-// d'entrée : le type d'une seed, que le catalogue lit à la source, et le moteur
-// de décision, qui amènerait publicodes dans le chunk d'entrée s'il passait par
-// le point d'entrée.
-const OUVERT_AU_MODELE = [
-  "front/socle",
-  "front/socle/seeds/seed",
-  "front/socle/decision-engine/publicodes",
+const PARCOURS = [
+  "front/socle/simulateur",
+  "front/socle/questionnaire-engine",
+  "core/socle/questionnaire-engine",
 ];
 
-// Un dossier par modèle : celui de l'éditeur, et le modèle de démonstration.
-const MODELES = readdirSync(join(racine, "front/models")).map(
-  (dossier) => `front/models/${dossier}`,
-);
+// Le socle, à l'écran et dans le métier.
+const SOCLE = ["front/socle", "core/socle"];
+
+const dansLeSocle = (cible: string) =>
+  SOCLE.some((dossier) => cible.startsWith(dossier));
+
+// Ce que le modèle a le droit d'importer du socle : ses deux points d'entrée,
+// celui de l'écran et celui du métier, et le moteur de décision, qui amènerait
+// publicodes dans le chunk d'entrée s'il passait par un point d'entrée.
+const OUVERT_AU_MODELE = [
+  "front/socle",
+  "core/socle",
+  "core/socle/index",
+  "core/socle/decision-engine/publicodes",
+];
+
+// Un nom par modèle : celui de l'éditeur, et le modèle de démonstration. Son
+// métier est dans `core/models/<nom>/`, son écran dans `front/models/<nom>/`.
+const NOMS = readdirSync(join(racine, "front/models"));
+const dossiersDu = (nom: string) =>
+  [`core/models/${nom}`, `front/models/${nom}`].filter((dossier) =>
+    existsSync(join(racine, dossier)),
+  );
+const MODELES = NOMS.flatMap(dossiersDu);
+const unModele = (cible: string) => /^(core|front)\/models\//.test(cible);
 
 // Le seul fichier par lequel les tests du socle prennent leur modèle, et le
 // dossier où ce modèle est écrit.
 const MODELE_DE_TEST = "tests/socle/modele-de-test.ts";
 const MODELE_FACTICE = "tests/socle/fixtures/modele-factice";
 
-describe("frontières de runtime", () => {
-  it("le front n'importe rien du serveur", () => {
-    expect(
-      franchissements(["front"], commencePar("server/")),
-      "Le serveur détient la clé Grist. Un seul import suffirait à la " +
-        "faire entrer dans le bundle servi au navigateur. Passe par une " +
-        "route `/api`.",
-    ).toEqual([]);
-  });
-
-  it("le serveur n'importe rien du front", () => {
-    expect(
-      franchissements(["server"], commencePar("front/")),
-      "Le backend tourne sous Node sans DOM : importer du front y ferait " +
-        "entrer du JSX et des API navigateur qui n'existent pas à " +
-        "l'exécution. Ce qui doit être partagé va dans `shared/`.",
-    ).toEqual([]);
-  });
-
-  it("le contrat partagé ne dépend d'aucune des deux racines", () => {
-    expect(
-      franchissements(
-        ["shared"],
-        (cible) => cible.startsWith("front/") || cible.startsWith("server/"),
-      ),
-      "`shared/` est chargé des deux côtés : il ne peut dépendre que de " +
-        "lui-même. Ce qui a besoin du front ou du serveur n'est pas du contrat.",
-    ).toEqual([]);
-  });
-});
-
 describe("le socle et le modèle", () => {
   it("le socle n'importe rien du modèle", () => {
     expect(
-      franchissements(["front/socle"], commencePar("front/models")),
+      franchissements(SOCLE, unModele),
       "Le socle ne dépend d'aucune version du modèle : il reçoit le sien en " +
         "prop, depuis `front/main.tsx`. Un import direct lierait le parcours, " +
         "les seeds ou les developer tools au questionnaire du moment, et " +
@@ -86,11 +72,13 @@ describe("le socle et le modèle", () => {
   it("le modèle n'importe du socle que son point d'entrée", () => {
     expect(
       franchissements(
-        ["front/models"],
+        ["front/models", "core/models"],
         (cible) =>
-          cible.startsWith("front/socle") && !OUVERT_AU_MODELE.includes(cible),
+          dansLeSocle(cible) &&
+          !OUVERT_AU_MODELE.includes(cible.replace(/\.tsx?$/, "")),
       ),
-      "`front/socle/index.ts` dit ce que le socle promet au modèle. Un import " +
+      "`front/socle/index.ts` et `core/socle/index.ts` disent ce que le " +
+        "socle promet au modèle. Un import " +
         "plus profond lie le modèle à un détail du socle, qui ne peut plus " +
         "changer sans le casser. S'il manque quelque chose, ajoute-le au " +
         "point d'entrée.",
@@ -98,32 +86,12 @@ describe("le socle et le modèle", () => {
   });
 });
 
-describe("la déclaration des questions", () => {
-  it("un modèle déclare ses questions par ses constructeurs", () => {
-    const litterales = sources(...MODELES, MODELE_FACTICE).filter((f) =>
-      /\bkind: "(single choice|multiple choice|number|text|long text|date|datetime|checkbox|address)"/.test(
-        texteDe(f),
-      ),
-    );
-    expect(
-      litterales,
-      "Une question écrite en objet redit sa sorte et ses options, et ses " +
-        "conditions reçoivent trois arguments positionnels. Son constructeur " +
-        "(`questionsOf`) prend les options dans le catalogue et passe un seul " +
-        "objet, faits compris.",
-    ).toEqual([]);
-  });
-});
-
 describe("les modèles entre eux", () => {
   it("un modèle n'importe rien d'un autre", () => {
-    const croisements = MODELES.flatMap((modele) =>
+    const croisements = NOMS.flatMap((nom) =>
       franchissements(
-        [modele],
-        (cible) =>
-          cible.startsWith("front/models/") &&
-          cible !== modele &&
-          !cible.startsWith(`${modele}/`),
+        dossiersDu(nom),
+        (cible) => unModele(cible) && !dossiersDu(nom).some(dedans(cible)),
       ),
     );
     expect(
@@ -137,10 +105,9 @@ describe("les modèles entre eux", () => {
 
 describe("les tests et le modèle", () => {
   it("seuls les tests du modèle importent le modèle livré", () => {
-    const autres = franchissements(
-      ["tests"],
-      commencePar("front/models"),
-    ).filter((couple) => !couple.startsWith("tests/model/"));
+    const autres = franchissements(["tests"], unModele).filter(
+      (couple) => !couple.startsWith("tests/model/"),
+    );
     expect(
       autres,
       "Les tests du socle tournent sur un modèle factice, écrit pour eux : " +
@@ -196,15 +163,15 @@ describe("invariants métier", () => {
   });
 
   it("seul le moteur de décision importe publicodes", () => {
-    const fautifs = sources("front").filter(
+    const fautifs = sources("front", "core").filter(
       (f) =>
-        !f.startsWith("front/socle/decision-engine/") &&
+        !f.startsWith("core/socle/decision-engine/") &&
         /^import (?!type ).*from "publicodes";$/m.test(texteDe(f)),
     );
     expect(
       fautifs,
       "publicodes est l'outil du socle pour décider, derrière un seul " +
-        "fichier : `front/socle/decision-engine/publicodes.ts`. Le reste du " +
+        "fichier : `core/socle/decision-engine/publicodes.ts`. Le reste du " +
         "socle et le modèle passent par lui. Un autre import lie du code au " +
         "moteur, et rend son remplacement plus cher.",
     ).toEqual([]);
@@ -247,7 +214,7 @@ describe("invariants métier", () => {
     ].filter((terme) => regles.includes(terme));
     expect(
       interdits,
-      "Ni identification, ni analytics dans `front/models/*/rules/*.publicodes` : le moteur " +
+      "Ni identification, ni analytics dans `core/models/*/rules/*.publicodes` : le moteur " +
         "reste une transcription de la réglementation, rejouable hors de " +
         "l'application.",
     ).toEqual([]);

@@ -6,8 +6,11 @@
 // clé : le texte prend alors son repli générique, et rien n'est jamais
 // deviné. Ces fonctions ne lisent que les questions validées.
 
-import type { ValidatedAnswers } from "../../../socle";
-import type { Questions } from "../declarations/questions";
+import { numeroDeLOption } from "../../../../core/models/eligibilite/concepts/numero-de-l-option";
+import { Permission } from "../../../../core/models/eligibilite/concepts/permission";
+import { Sejour } from "../../../../core/models/eligibilite/concepts/sejour";
+import type { Questions } from "../../../../core/models/eligibilite/declarations/questions";
+import type { ValidatedAnswers } from "../../../../core/socle";
 
 /** Les réponses ne prouvent pas ce cas : la précision ne s'écrit pas. */
 export type NonProuve = undefined;
@@ -97,19 +100,10 @@ function seancesRetenues(validated: Valides): readonly string[] {
   return seances.length >= 2 && !memeDeplacement ? [] : seances;
 }
 
-// Un séjour réel : une entrée ou une sortie d'établissement (Q2.1.g), ou
-// « déjà hospitalisé » coché (Q2.2.1). L'admission en HAD à domicile n'en est pas un.
-function sejourReel(validated: Valides): boolean {
-  return (
-    validated.question("Q2.1.g").isOneOf("1_ENTREE", "2_SORTIE") ||
-    validated.question("Q2.2.1").checked("1_HOSPITALISATION")
-  );
-}
-
 // L'identifiant du lexique : le séjour ou les séances, puis leurs familles.
 function hospitalisation(validated: Valides): string | NonProuve {
   const seances = seancesRetenues(validated);
-  const sejour = sejourReel(validated);
+  const sejour = Sejour.of(validated).estReel();
   if (!sejour && seances.length === 0) return undefined;
   return [sejour ? "H-SEJOUR" : "H-SEANCE", ...seances].join("-");
 }
@@ -126,7 +120,7 @@ const FAMILLES_DE_SOIN = [1, 2, 3, 4, 5, 6, 7, 14, 15];
 function familleDeSoin(validated: Valides): number | NonProuve {
   const motif = validated.question("Q2.1");
   if (!motif.hasAnswer()) return undefined;
-  const numero = Number.parseInt(motif.value, 10);
+  const numero = numeroDeLOption(motif.value);
   return FAMILLES_DE_SOIN.includes(numero) ? numero : undefined;
 }
 
@@ -183,7 +177,7 @@ function contexteDeLArticle80(validated: Valides): Contexte | NonProuve {
 
 // Q2.7 option 4 : un transport exceptionnel demandé par écrit par le patient.
 function contexteDeLaPermission(validated: Valides): Contexte | NonProuve {
-  return validated.question("Q2.7").is("4_ADULTE_A_SA_CHARGE")
+  return Permission.of(validated).estAChargeDuPatient()
     ? { kind: "adult-explicit" }
     : undefined;
 }

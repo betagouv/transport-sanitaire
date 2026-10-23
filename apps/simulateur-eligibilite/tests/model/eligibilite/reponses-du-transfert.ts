@@ -1,28 +1,28 @@
 // Les réponses et les lectures que partagent les tests du transfert (Q2.5) et
 // des exceptions de l'article 80 (Q2.6.a et Q2.6).
 
-import { model } from "../../../front/models/eligibilite";
-import type { Faits } from "../../../front/models/eligibilite/declarations/faits";
-import type { Questions } from "../../../front/models/eligibilite/declarations/questions";
-import { preconisationOf } from "../../../front/socle/model";
-import { askedQuestions } from "../../../front/socle/questionnaire-engine/asked-questions";
+import { model } from "../../../core/models/eligibilite";
+import type { Faits } from "../../../core/models/eligibilite/declarations/faits";
+import type { Questions } from "../../../core/models/eligibilite/declarations/questions";
+import { preconisationOf } from "../../../core/socle/model";
 import {
   type Answers,
   pagesOf,
-} from "../../../front/socle/questionnaire-engine/question";
+} from "../../../core/socle/questionnaire-engine/question";
+import { Questionnaire } from "../../../core/socle/questionnaire-engine/questionnaire";
 
 export type Reponses = Answers<Questions>;
 
-export const pages = pagesOf(model.transportAndEligibility.parts);
+export const pages = pagesOf(model.questionnaire);
 export const posee = (
   idDePage: string,
   id: keyof Questions,
   reponses: Reponses,
 ) => {
   const page = pages.find(({ id: candidate }) => candidate === idDePage);
-  return (page ? askedQuestions(pages, page, reponses) : []).find(
-    (candidate) => candidate.id === id,
-  );
+  return (
+    page ? new Questionnaire(pages).readWith(reponses).questionsOn(page) : []
+  ).find((candidate) => candidate.id === id);
 };
 export const proposees = (reponses: Reponses) => {
   const question = posee("P2/exceptions", "Q2.6", reponses);

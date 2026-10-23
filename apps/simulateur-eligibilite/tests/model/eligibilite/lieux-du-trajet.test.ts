@@ -3,26 +3,23 @@
 // toucher à R2. `CATALOGUE_COMPLET_QUESTIONS.md` Q2.13, Q3.2 et Q3.3.
 
 import { describe, expect, it } from "vitest";
-import { model } from "../../../front/models/eligibilite";
-import type { Questions } from "../../../front/models/eligibilite/declarations/questions";
-import { projectionCerfa } from "../../../front/models/eligibilite/p3/lieux-du-trajet";
-import { SEEDS } from "../../../front/models/eligibilite/seeds-catalogue";
-import { preconisationOf } from "../../../front/socle/model";
-import {
-  areAnswered,
-  askedQuestions,
-} from "../../../front/socle/questionnaire-engine/asked-questions";
-import { GivenAnswers } from "../../../front/socle/questionnaire-engine/given-answers";
+import { model } from "../../../core/models/eligibilite";
+import type { Questions } from "../../../core/models/eligibilite/declarations/questions";
+import { projectionCerfa } from "../../../core/models/eligibilite/p3/lieux-du-trajet";
+import { SEEDS } from "../../../core/models/eligibilite/seeds-catalogue";
+import { preconisationOf } from "../../../core/socle/model";
+import type { AskedQuestion } from "../../../core/socle/questionnaire-engine/asked-question";
 import type {
   Answers,
   AnyCibles,
-  Question,
-} from "../../../front/socle/questionnaire-engine/question";
+} from "../../../core/socle/questionnaire-engine/question";
+import { Questionnaire } from "../../../core/socle/questionnaire-engine/questionnaire";
+import { ciblesValant } from "./traces-du-praticien";
 
 type Reponses = Answers<Questions>;
 
-const pages = model.cerfa.part.pages;
-const PMT = { cible_support_id: "S3138g" } as AnyCibles;
+const pages = model.complement.pages;
+const PMT = ciblesValant({ cible_support_id: "S3138g" });
 const ALLER: Reponses = { "Q3.1.1": 1, "Q3.1.2": "1_ALLER" };
 const DIALYSE: Reponses = { ...ALLER, "Q1.3": ["5_DIALYSE"] };
 const ADRESSE = {
@@ -38,7 +35,7 @@ const posees = (
 ) => {
   const page = pages.find(({ id }) => id === pageId);
   if (!page) throw new Error(`${pageId} n'existe pas`);
-  return askedQuestions(pages, page, reponses, cibles);
+  return new Questionnaire(pages).readWith(reponses, cibles).questionsOn(page);
 };
 const ids = (pageId: string, reponses: Reponses) =>
   posees(pageId, reponses).map(({ id }) => id);
@@ -47,7 +44,7 @@ const posee = (pageId: string, id: keyof Questions, reponses: Reponses) => {
   if (!trouvee) throw new Error(`${id} ne se pose pas`);
   return trouvee;
 };
-const natures = (question: Question) =>
+const natures = (question: AskedQuestion) =>
   question.kind === "single choice"
     ? question.options.map(({ value }) => value)
     : [];
@@ -144,7 +141,9 @@ describe("les contrôles des deux lieux", () => {
       "Q3.2.adresse": ADRESSE,
     };
     const depart = pages.filter(({ id }) => id === "P3/depart");
-    expect(areAnswered(depart, new GivenAnswers(sansNom), PMT)).toBe(true);
+    expect(new Questionnaire(depart).readWith(sansNom, PMT).isComplete()).toBe(
+      true,
+    );
   });
 
   it("deux adresses identiques bloquent l'arrivée, aux espaces extrêmes et à la casse près", () => {
@@ -229,8 +228,12 @@ describe("la nature en toutes lettres d'un hébergement ou d'un autre lieu (CONT
     };
     const depart = pages.filter(({ id }) => id === "P3/depart");
     const avecLaNature = { ...sansNature, "Q3.2.precision": "Foyer" };
-    expect(areAnswered(depart, new GivenAnswers(sansNature), PMT)).toBe(false);
-    expect(areAnswered(depart, new GivenAnswers(avecLaNature), PMT)).toBe(true);
+    expect(
+      new Questionnaire(depart).readWith(sansNature, PMT).isComplete(),
+    ).toBe(false);
+    expect(
+      new Questionnaire(depart).readWith(avecLaNature, PMT).isComplete(),
+    ).toBe(true);
   });
 });
 

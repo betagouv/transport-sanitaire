@@ -4,16 +4,14 @@
 // remplit : `s3141-rempli.test.ts`.
 
 import { describe, expect, it } from "vitest";
-import type { Cibles } from "../../../front/models/eligibilite/declarations/cibles";
+import type { Cibles } from "../../../core/models/eligibilite/declarations/cibles";
 import { documentDuComplement } from "../../../front/models/eligibilite/r3/documents-du-resultat";
 import { titreDuResultat } from "../../../front/models/eligibilite/r3/titre-du-resultat";
 import { drawnOn } from "../../socle/cerfa/test-form";
 import { genere } from "./reponses-du-cerfa";
-import { trace } from "./traces-du-praticien";
+import { ciblesValant } from "./traces-du-praticien";
 
-type Support = NonNullable<Cibles["cible_support_id"]>;
-
-const ciblesDe = (cibles: Partial<Cibles>) => trace(cibles).cibles;
+type Support = NonNullable<Cibles["cible_support_id"]["value"]>;
 
 const PRESCRIPTION = "Prescription préremplie prête à imprimer";
 const ACCORD_PREALABLE =
@@ -26,7 +24,7 @@ describe("le document de R3", () => {
     ["S3141", "prescription-de-permission-de-sortie"],
   ] as const)("du support %s se nomme %s", (support, nom) => {
     const document = documentDuComplement(
-      ciblesDe({ cible_support_id: support }),
+      ciblesValant({ cible_support_id: support }),
     );
 
     expect(document?.cerfa.fileName).toBe(nom);
@@ -38,7 +36,7 @@ describe("le document de R3", () => {
     ["sans objet", null],
   ] as const)("%s, il n'y en a pas", (_cas, support) => {
     expect(
-      documentDuComplement(ciblesDe({ cible_support_id: support })),
+      documentDuComplement(ciblesValant({ cible_support_id: support })),
     ).toBeNull();
   });
 
@@ -63,7 +61,9 @@ describe("le titre de R3", () => {
       "Demande d’examen préremplie prête à imprimer",
     ],
   ] as const)("de %s est « %s »", (issue, titre) => {
-    expect(titreDuResultat(ciblesDe({ cible_issue_id: issue }))).toBe(titre);
+    expect(titreDuResultat(ciblesValant({ cible_issue_id: issue }))).toBe(
+      titre,
+    );
   });
 });
 
@@ -72,7 +72,7 @@ describe("le titre de R3", () => {
 // Le document vierge du support.
 async function vierge(support: Support): Promise<Uint8Array> {
   const document = documentDuComplement(
-    ciblesDe({ cible_support_id: support }),
+    ciblesValant({ cible_support_id: support }),
   );
   if (!document) throw new Error(`Aucun document pour ${support}.`);
   return genere(document.cerfa, support, { fields: {}, drawings: {} });

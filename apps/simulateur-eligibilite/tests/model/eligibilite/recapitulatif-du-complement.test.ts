@@ -2,27 +2,23 @@
 // chaque question validée, avec sa réponse en toutes lettres.
 
 import { describe, expect, it } from "vitest";
-import type { Cibles } from "../../../front/models/eligibilite/declarations/cibles";
-import type { Questions } from "../../../front/models/eligibilite/declarations/questions";
-import { COMPLEMENT } from "../../../front/models/eligibilite/p3/partie-3";
+import type { Cibles } from "../../../core/models/eligibilite/declarations/cibles";
+import type { Questions } from "../../../core/models/eligibilite/declarations/questions";
+import { GivenAnswers } from "../../../core/socle/questionnaire-engine/given-answers";
+import type { Answers } from "../../../core/socle/questionnaire-engine/question";
 import { recapitulatifDuComplement as recapitulatif } from "../../../front/models/eligibilite/r3/recapitulatif-du-complement";
-import { readingOf } from "../../../front/socle/model";
-import type { Answers } from "../../../front/socle/questionnaire-engine/question";
 import { PLUSIEURS_PERMISSIONS } from "./reponses-de-la-permission";
+import { ciblesValant } from "./traces-du-praticien";
 
-const avecLeSupport = (support: Cibles["cible_support_id"]) =>
-  ({ cible_support_id: support }) as Cibles;
+const avecLeSupport = (support: Cibles["cible_support_id"]["value"]) =>
+  ciblesValant({ cible_support_id: support });
 
-// Ce que le socle passe à R3, réduit aux pages de P3 : celles d'avant sont
-// validées par hypothèse.
+// Ce que le socle passe à R3 : les réponses, et les cibles figées. Les pages
+// d'avant P3 sont validées par hypothèse.
 const recapitulatifDuComplement = (
   reponses: Answers<Questions>,
   cibles: Cibles,
-) =>
-  recapitulatif({
-    ...readingOf<Questions>(COMPLEMENT.pages, reponses, cibles),
-    cibles,
-  });
+) => recapitulatif({ answers: new GivenAnswers(reponses), cibles });
 
 describe("le récapitulatif de P3", () => {
   it("donne chaque réponse sous sa question : le nombre avec son unité, le sens en toutes lettres", () => {

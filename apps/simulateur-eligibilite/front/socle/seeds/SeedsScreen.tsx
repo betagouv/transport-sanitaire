@@ -4,8 +4,8 @@
 // ni le catalogue ni le tableau (`scripts/verifier-bundle.ts` le vérifie).
 
 import { lazy, Suspense, useEffect, useState } from "react";
+import type { Seed } from "../../../core/socle/seeds/seed";
 import type { Model } from "../model";
-import type { Seed } from "./seed";
 
 type Props = {
   /** Le modèle dont on rejoue les seeds. */
@@ -42,7 +42,7 @@ function useCatalogue(model: Model): readonly Seed[] | Pending {
   const [seeds, setSeeds] = useState<readonly Seed[]>();
   useEffect(() => {
     let active = true;
-    model.seeds().then((catalogue) => {
+    model.core.seeds().then((catalogue) => {
       // L'écran a pu être quitté entre-temps.
       if (active) setSeeds(catalogue);
     });

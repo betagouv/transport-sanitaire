@@ -1,27 +1,20 @@
 import { screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
-import type { Page } from "../../../front/socle/questionnaire-engine/question";
+import { page, questionsOf } from "../../../core/socle";
 import { afficher } from "./afficher";
 
 // Un nombre peut n'accepter qu'un entier. Les pages sont écrites ici.
 
-const TRANSPORTS: Page = {
-  id: "transports",
-  questions: [
-    {
-      id: "transports",
-      kind: "number",
-      label: "Combien de transports ?",
-      min: 1,
-      integer: true,
-    },
-  ],
-};
+type Questions = { transports: number; poids: number };
 
-const POIDS: Page = {
-  id: "poids",
-  questions: [{ id: "poids", kind: "number", label: "Quel poids ?" }],
-};
+const question = questionsOf<Questions>({ options: {} });
+
+const TRANSPORTS = page(
+  "transports",
+  question.number("transports", "Combien de transports ?").min(1).integer(),
+);
+
+const POIDS = page("poids", question.number("poids", "Quel poids ?"));
 
 const champ = () => screen.getByRole("spinbutton");
 // Le bouton de la dernière page s'appelle « Suivant » tant qu'elle n'est pas

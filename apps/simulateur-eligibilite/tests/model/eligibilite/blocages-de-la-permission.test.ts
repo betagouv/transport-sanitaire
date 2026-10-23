@@ -6,7 +6,6 @@
 // 14 octobre, à minuit.
 
 import { describe, expect, it } from "vitest";
-import { isAnswered } from "../../../front/socle/questionnaire-engine/offered-answer";
 import {
   incoherences,
   MINEUR,
@@ -134,9 +133,9 @@ describe("la période et sa fréquence (Q2.8.5 = Oui)", () => {
       min: 1,
       unit: "semaine(s)",
     });
-    expect(frequence && isAnswered(frequence, 1)).toBe(true);
-    expect(frequence && isAnswered(frequence, 0)).toBe(false);
-    expect(frequence && isAnswered(frequence, 1.5)).toBe(false);
+    expect(frequence?.isAnsweredBy(1)).toBe(true);
+    expect(frequence?.isAnsweredBy(0)).toBe(false);
+    expect(frequence?.isAnsweredBy(1.5)).toBe(false);
   });
 
   it("Q2.8.6.b « Oui » valide la page", () => {
@@ -156,7 +155,7 @@ describe("la période et sa fréquence (Q2.8.5 = Oui)", () => {
     ).toBe(
       "La période doit se terminer avant le vingtième anniversaire du patient. Raccourcissez-la, puis faites une autre simulation pour la période suivante.",
     );
-    expect(question && isAnswered(question, "2_NON")).toBe(false);
+    expect(question?.isAnsweredBy("2_NON")).toBe(false);
     expect(validee("Q2.8.6.b", reponses)).toBe(false);
   });
 });

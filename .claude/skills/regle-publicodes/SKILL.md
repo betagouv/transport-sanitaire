@@ -1,18 +1,19 @@
 ---
 name: regle-publicodes
-description: Ajouter, modifier ou supprimer une règle du modèle d'éligibilité (apps/simulateur-eligibilite/regles/regles.publicodes). À charger dès qu'il s'agit de toucher au modèle métier, à une question du questionnaire, à une cible, ou d'encoder une question à choix multiple en mosaïque.
+description: Ajouter, modifier ou supprimer une règle du modèle d'éligibilité (apps/simulateur-eligibilite/core/models/eligibilite/rules/regles.publicodes). À charger dès qu'il s'agit de toucher au modèle métier, à une question du questionnaire, à une cible, ou d'encoder une question à choix multiple en mosaïque.
 ---
 
 # Toucher au modèle publicodes
 
 Le modèle vit dans un fichier unique,
-`apps/simulateur-eligibilite/regles/regles.publicodes`, mais il n'est jamais seul.
+`apps/simulateur-eligibilite/core/models/eligibilite/rules/regles.publicodes`,
+mais il n'est jamais seul.
 Une règle nouvelle traverse quatre endroits, et sauter l'un d'eux laisse le produit
 dans un état incohérent que rien ne signale tout de suite.
 
 ## L'ordre
 
-### 1. Le modèle : `regles/regles.publicodes`
+### 1. Le modèle : `rules/regles.publicodes`
 
 - Les clés se séparent par ` . `. Les valeurs d'`une possibilité` s'écrivent entre
   quotes, sous la forme `"'valeur'"`. Les booléens s'écrivent `oui` et `non`.
@@ -20,6 +21,9 @@ dans un état incohérent que rien ne signale tout de suite.
   `tests/architecture.test.ts` échoue sinon, et il a raison : le modèle doit rester
   une transcription de la réglementation, rejouable hors de l'application.
 - Nomme en français, comme le reste du modèle.
+- Relance `pnpm regles` : il recalcule `rules/regles.json`, que l'app importe.
+  `tests/model/regles-a-jour.test.ts` échoue tant que le JSON ne dit pas les
+  mêmes règles que le YAML.
 
 ### 2. Le contrat : `front/simulateur/contrat-regles-publicodes.ts`
 
@@ -51,12 +55,12 @@ Une règle qu'aucune seed ne traverse n'est pas testée. Voir le skill
 
 ```
 cd apps/simulateur-eligibilite
-pnpm valider-regles   # syntaxe YAML, puis compilation publicodes
-pnpm verifier         # tout le reste
+pnpm regles     # le YAML relu, et le JSON recalculé
+pnpm verifier   # tout le reste
 ```
 
-`valider-regles` rapporte la ligne et la colonne d'une erreur YAML, et les
-références manquantes ou cycliques à la compilation.
+`regles` rapporte une erreur YAML. Les tests du modèle compilent les règles, et
+disent les références manquantes ou cycliques.
 
 ## Questions à choix multiple : la mosaïque
 

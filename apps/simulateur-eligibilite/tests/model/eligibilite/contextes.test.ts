@@ -7,24 +7,24 @@
 // sa précision.
 
 import { describe, expect, it } from "vitest";
-import { model } from "../../../front/models/eligibilite";
-import type { Faits } from "../../../front/models/eligibilite/declarations/faits";
-import type { Questions } from "../../../front/models/eligibilite/declarations/questions";
-import { preconisationOf } from "../../../front/socle/model";
-import { askedQuestions } from "../../../front/socle/questionnaire-engine/asked-questions";
+import { model } from "../../../core/models/eligibilite";
+import type { Faits } from "../../../core/models/eligibilite/declarations/faits";
+import type { Questions } from "../../../core/models/eligibilite/declarations/questions";
+import { preconisationOf } from "../../../core/socle/model";
 import {
   type Answers,
   pagesOf,
-} from "../../../front/socle/questionnaire-engine/question";
+} from "../../../core/socle/questionnaire-engine/question";
+import { Questionnaire } from "../../../core/socle/questionnaire-engine/questionnaire";
 
 type Reponses = Answers<Questions>;
 
-const pages = pagesOf(model.transportAndEligibility.parts);
+const pages = pagesOf(model.questionnaire);
 const page = pages.find(({ id }) => id === "P2/contextes");
 const posee = (id: keyof Questions, reponses: Reponses) => {
-  const question = (page ? askedQuestions(pages, page, reponses) : []).find(
-    (candidate) => candidate.id === id,
-  );
+  const question = (
+    page ? new Questionnaire(pages).readWith(reponses).questionsOn(page) : []
+  ).find((candidate) => candidate.id === id);
   return question?.kind === "multiple choice" ? question : undefined;
 };
 const proposees = (id: keyof Questions, reponses: Reponses) =>

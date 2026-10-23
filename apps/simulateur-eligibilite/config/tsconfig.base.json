@@ -1,7 +1,7 @@
 {
-  // Socle commun aux quatre projets (`app`, `node`, `server`, `tests`) : cible,
-  // sémantique de module et niveau de rigueur. Chaque projet n'exprime ensuite
-  // que ce qui le distingue (bibliothèques DOM, JSX, `types`, racines).
+  // Socle commun aux cinq projets (`app`, `core`, `node`, `server`, `tests`) :
+  // cible, sémantique de module et niveau de rigueur. Chaque projet n'exprime
+  // ensuite que ce qui le distingue (bibliothèques DOM, JSX, `types`, racines).
   //
   // `verbatimModuleSyntax` : aucun outil d'ici ne transpile en voyant le
   // programme entier (esbuild pour Vite et Vitest, effacement de types natif
@@ -19,9 +19,8 @@
     "moduleResolution": "bundler",
     "moduleDetection": "force",
     "allowImportingTsExtensions": true,
-    // Les règles d'un modèle s'importent par leur nom, `regles.publicodes`.
-    // Leur type est écrit à côté, dans `regles.d.publicodes.ts`.
-    "allowArbitraryExtensions": true,
+    // Les règles d'un modèle s'importent en JSON (`scripts/regles-publicodes.ts`).
+    "resolveJsonModule": true,
     "isolatedModules": true,
     "noEmit": true,
     "skipLibCheck": true,

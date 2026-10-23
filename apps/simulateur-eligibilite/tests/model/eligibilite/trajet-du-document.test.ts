@@ -3,40 +3,38 @@
 // TS1001-03 du paquet de l'éditeur.
 
 import { describe, expect, it } from "vitest";
-import { model } from "../../../front/models/eligibilite";
-import type { Cibles } from "../../../front/models/eligibilite/declarations/cibles";
-import type { Questions } from "../../../front/models/eligibilite/declarations/questions";
-import { SEEDS } from "../../../front/models/eligibilite/seeds-catalogue";
-import { preconisationOf } from "../../../front/socle/model";
-import { errorsOf } from "../../../front/socle/questionnaire-engine/answer-error";
-import {
-  areAnswered,
-  askedQuestions,
-} from "../../../front/socle/questionnaire-engine/asked-questions";
-import { GivenAnswers } from "../../../front/socle/questionnaire-engine/given-answers";
-import type {
-  Answers,
-  AnyCibles,
-} from "../../../front/socle/questionnaire-engine/question";
+import { model } from "../../../core/models/eligibilite";
+import type { Cibles } from "../../../core/models/eligibilite/declarations/cibles";
+import type { Questions } from "../../../core/models/eligibilite/declarations/questions";
+import { SEEDS } from "../../../core/models/eligibilite/seeds-catalogue";
+import { preconisationOf } from "../../../core/socle/model";
+import type { Answers } from "../../../core/socle/questionnaire-engine/question";
+import { Questionnaire } from "../../../core/socle/questionnaire-engine/questionnaire";
+import { errorsOf } from "../../../front/socle/questionnaire-engine/screen-texts";
 import { MINEUR, PLUSIEURS_PERMISSIONS } from "./reponses-de-la-permission";
+import { ciblesValant } from "./traces-du-praticien";
 
 type Reponses = Answers<Questions>;
 
-const pages = model.cerfa.part.pages;
+const pages = model.complement.pages;
 const [PAGE] = pages;
 // Les pages des lieux suivent : seule celle du trajet se juge ici.
 const DU_TRAJET = pages.slice(0, 1);
 
-const avecLeSupport = (support: Cibles["cible_support_id"]) =>
-  ({ cible_support_id: support }) as AnyCibles;
+const avecLeSupport = (support: Cibles["cible_support_id"]["value"]) =>
+  ciblesValant({ cible_support_id: support });
 const posees = (
-  support: Cibles["cible_support_id"],
+  support: Cibles["cible_support_id"]["value"],
   reponses: Reponses = {},
 ) =>
-  PAGE ? askedQuestions(pages, PAGE, reponses, avecLeSupport(support)) : [];
+  PAGE
+    ? new Questionnaire(pages)
+        .readWith(reponses, avecLeSupport(support))
+        .questionsOn(PAGE)
+    : [];
 const question = (
   id: keyof Questions,
-  support: Cibles["cible_support_id"],
+  support: Cibles["cible_support_id"]["value"],
   reponses: Reponses = {},
 ) => {
   const trouvee = posees(support, reponses).find(
@@ -84,11 +82,9 @@ describe("les réponses de Q3.1", () => {
       "Ces deux trajets nécessitent deux simulations distinctes. Choisissez ici le sens déjà évalué, puis faites une autre simulation pour l’autre sens.",
     ]);
     expect(
-      areAnswered(
-        DU_TRAJET,
-        new GivenAnswers(reponses),
-        avecLeSupport("S3138g"),
-      ),
+      new Questionnaire(DU_TRAJET)
+        .readWith(reponses, avecLeSupport("S3138g"))
+        .isComplete(),
     ).toBe(false);
   });
 
@@ -99,11 +95,9 @@ describe("les réponses de Q3.1", () => {
     };
 
     expect(
-      areAnswered(
-        DU_TRAJET,
-        new GivenAnswers(reponses),
-        avecLeSupport("S3138g"),
-      ),
+      new Questionnaire(DU_TRAJET)
+        .readWith(reponses, avecLeSupport("S3138g"))
+        .isComplete(),
     ).toBe(true);
   });
 
@@ -117,11 +111,9 @@ describe("les réponses de Q3.1", () => {
       "Un aller-retour compte deux transports. Indiquez-en au moins deux, ou choisissez « Aller simple » ou « Retour simple ».",
     ]);
     expect(
-      areAnswered(
-        DU_TRAJET,
-        new GivenAnswers(reponses),
-        avecLeSupport("S3138g"),
-      ),
+      new Questionnaire(DU_TRAJET)
+        .readWith(reponses, avecLeSupport("S3138g"))
+        .isComplete(),
     ).toBe(false);
   });
 

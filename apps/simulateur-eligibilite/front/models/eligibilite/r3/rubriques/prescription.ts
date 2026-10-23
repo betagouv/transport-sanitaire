@@ -2,7 +2,7 @@
 // (`cible_date_completion`). Elle se fige pour les téléchargements de ce
 // résultat, et ne remplace aucune date de soins, d'accident ou de permission.
 
-import { jourAParis } from "../../p3/pages-des-evenements";
+import { jourAParis } from "../../../../../core/models/eligibilite/p3/pages-des-evenements";
 import type { Rubrique } from "./rubrique";
 
 export type Prescription = {

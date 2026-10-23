@@ -8,7 +8,7 @@
 // prescripteur (Q3.4) a sa propre cellule : le cerfa la joint au texte, et la
 // retire faute de place. Le point final va au dernier des deux.
 
-import { OPTIONS } from "../../declarations/questions";
+import { OPTIONS } from "../../../../../core/models/eligibilite/declarations/questions";
 import type { Donnees, Rubrique } from "./rubrique";
 
 /** Rien n'est établi, ou rien n'est saisi : la cellule reste vide. */
@@ -113,15 +113,18 @@ function besoins({ validated }: Donnees): readonly string[] {
 function complements(donnees: Donnees): readonly string[] {
   const { cibles, faits } = donnees;
   const motif = donnees.validated.question("Q2.14.motif");
-  const maternite = cibles.cible_dap_motif_engagement_maternite === true;
+  const maternite = cibles.cible_dap_motif_engagement_maternite.isOui();
   const segments = [
-    [cibles.cible_ambulance_equipement_bariatrique, CONTRAT.bariatrique],
-    [faits.fait_ald_liee.value, CONTRAT.ald],
-    [cibles.cible_situation_at_mp, CONTRAT.atmp],
-    [cibles.cible_dap_motif_camsp_cmpp, CONTRAT.camsp],
-    [cibles.cible_mineur_ald_non_exonerante_reconnue, CONTRAT.mineur],
     [
-      cibles.cible_issue_id === "ISSUE_DAP_ETRANGER_A_EXAMINER",
+      cibles.cible_ambulance_equipement_bariatrique.isOui(),
+      CONTRAT.bariatrique,
+    ],
+    [faits.fait_ald_liee.isOui(), CONTRAT.ald],
+    [cibles.cible_situation_at_mp.isOui(), CONTRAT.atmp],
+    [cibles.cible_dap_motif_camsp_cmpp.isOui(), CONTRAT.camsp],
+    [cibles.cible_mineur_ald_non_exonerante_reconnue.isOui(), CONTRAT.mineur],
+    [
+      cibles.cible_issue_id.is("ISSUE_DAP_ETRANGER_A_EXAMINER"),
       CONTRAT.etranger,
     ],
     [justification(donnees) !== undefined, CONTRAT.distance],
@@ -133,11 +136,9 @@ function complements(donnees: Donnees): readonly string[] {
       maternite && motif.checked("2_HEBERGEMENT_ENGAGEMENT"),
       CONTRAT.hebergement,
     ],
-    [faits.fait_htnm_hors_maternite.value, CONTRAT.htnm],
+    [faits.fait_htnm_hors_maternite.isOui(), CONTRAT.htnm],
   ] as const;
-  return segments
-    .filter(([etabli]) => etabli === true)
-    .map(([, texte]) => texte);
+  return segments.filter(([etabli]) => etabli).map(([, texte]) => texte);
 }
 
 function justification({ validated }: Donnees): string | AucunSegment {

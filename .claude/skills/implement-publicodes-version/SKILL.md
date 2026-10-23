@@ -57,7 +57,7 @@ diff -u $A/transports-sanitaires.ui.*.yaml            $B/transports-sanitaires.u
 diff -u $A/transports-sanitaires.tests.*.yaml         $B/transports-sanitaires.tests.*.yaml
 ```
 
-`regles/regles.publicodes` est la recopie **exacte** du flat de la version en
+`core/models/eligibilite/rules/regles.publicodes` est la recopie **exacte** du flat de la version en
 cours : le diff des deux livrables est donc, au caractère près, le diff qu'on
 subit. C'est le plan de travail, et il vaut d'être montré avant de coder.
 
@@ -114,12 +114,17 @@ chaque commit qui en résulte : un commit, une intention.
 
 ```bash
 cp tmp/<version>/…/transports-sanitaires.publicodes.flat-v<version>.yaml \
-   apps/simulateur-eligibilite/regles/regles.publicodes
-printf 'v<version>\n' > apps/simulateur-eligibilite/regles/VERSION
-cd apps/simulateur-eligibilite && pnpm valider-regles
+   apps/simulateur-eligibilite/core/models/eligibilite/rules/regles.publicodes
+printf 'v<version>\n' > apps/simulateur-eligibilite/core/models/eligibilite/rules/VERSION
+cd apps/simulateur-eligibilite && pnpm regles
 ```
 
-`regles/VERSION` va **avec** la recopie : le pied de page l'affiche, et
+`pnpm regles` recalcule `rules/regles.json`, que le navigateur et Node
+importent : le YAML ne se lit qu'à cette étape. Sans elle,
+`tests/model/regles-a-jour.test.ts` échoue, et l'app tourne sur les règles
+d'avant.
+
+`rules/VERSION` va **avec** la recopie : le pied de page l'affiche, et
 `tests/app/BandeauVersion.test.tsx` compare les deux. Sans elle, l'app annonce
 une version qu'elle n'exécute pas.
 
@@ -129,7 +134,7 @@ côté des règles du modèle (D-103) :
 
 ```bash
 cp tmp/<version>/integration_resultats/catalogue-resultats.json \
-   apps/simulateur-eligibilite/front/models/eligibilite/rules/
+   apps/simulateur-eligibilite/core/models/eligibilite/rules/
 ```
 
 `tests/model/eligibilite/catalogue-resultats.test.ts` échoue si sa version ou
@@ -139,7 +144,7 @@ Le compte de règles et de cibles, que le README annonce :
 
 ```bash
 cd apps/simulateur-eligibilite   # pour que js-yaml se résolve
-node -e "const r=require('js-yaml').load(require('fs').readFileSync('regles/regles.publicodes','utf8'));
+node -e "const r=require('js-yaml').load(require('fs').readFileSync('core/models/eligibilite/rules/regles.publicodes','utf8'));
 console.log(Object.keys(r).length,'règles,',Object.keys(r).filter(n=>n.startsWith('cible_')).length,'cibles')"
 ```
 
@@ -277,7 +282,7 @@ Lire le message avant de toucher au code.
 | `remplissage.test.ts` | un libellé comparé par le CERFA n'est plus une possibilité du modèle |
 | `motifs-de-la-dap.test.tsx` | le modèle porte un motif de DAP que la page n'affiche pas |
 | `bornes-de-saisie.test.tsx` | une borne de saisie du modèle n'atteint pas le champ |
-| `BandeauVersion.test.tsx` | `regles/VERSION` ou `package.json` sont désaccordés |
+| `BandeauVersion.test.tsx` | `rules/VERSION` ou `package.json` sont désaccordés |
 
 Deux limites rencontrées en portant la matrice v9.7.1, à connaître avant d'y
 passer du temps :
