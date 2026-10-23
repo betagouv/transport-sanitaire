@@ -5,8 +5,8 @@
 
 import type { GivenAnswers } from "../../../socle/index.ts";
 import { Permission } from "../concepts/permission.ts";
+import { RetourPenitentiaire } from "../concepts/retour-penitentiaire.ts";
 import type { Questions } from "../declarations/questions.ts";
-import { retourPenitentiaireCoche } from "../p2/retour-penitentiaire.ts";
 import type { ContextDuComplement, Inconnu } from "../question.ts";
 import { pmtOuDap } from "./supports-du-complement.ts";
 
@@ -122,7 +122,7 @@ function sensImpose(reponses: Reponses): Sens | AucunImpose {
   if (
     sousType.isOneOf("2_SORTIE", "3_ADMISSION_HAD") ||
     reponses.question("Q2.6").checked("10_ADMISSION_HAD") ||
-    retourPenitentiaireCoche(reponses)
+    RetourPenitentiaire.of(reponses).estCoche()
   )
     return "2_RETOUR";
   return undefined;

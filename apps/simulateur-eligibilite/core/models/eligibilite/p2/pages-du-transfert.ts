@@ -2,18 +2,12 @@
 // et Q2.6 sur la page des exceptions de l'article 80 (D-106).
 
 import { page } from "../../../socle/index.ts";
+import { ExceptionsDeLArticle80 } from "../concepts/exceptions-de-l-article-80.ts";
+import { RetourPenitentiaire } from "../concepts/retour-penitentiaire.ts";
 import { OPTIONS, type Questions } from "../declarations/questions.ts";
 import { question } from "../question.ts";
-import {
-  retourPenitentiaireValide,
-  TRANSFERT_VERS_LA_PRISON,
-} from "./retour-penitentiaire.ts";
-import {
-  champIOuvert,
-  exceptionAProposer,
-  transfertAPoser,
-  typeAPoser,
-} from "./transfert.ts";
+import { TRANSFERT_VERS_LA_PRISON } from "./retour-penitentiaire.ts";
+import { champIOuvert, transfertAPoser, typeAPoser } from "./transfert.ts";
 
 // Les exceptions de Q2.6, hors « Aucune », qui est exclusive.
 const EXCEPTIONS = (
@@ -34,7 +28,7 @@ export const PAGE_DU_TRANSFERT = page(
     .inconsistentIf(
       ({ answers, validated }) =>
         answers.question("Q2.5").is("1_TRANSFERT") &&
-        retourPenitentiaireValide(validated),
+        RetourPenitentiaire.of(validated).estCoche(),
       TRANSFERT_VERS_LA_PRISON,
     ),
 );
@@ -44,7 +38,10 @@ const EXCEPTIONS_DE_L_ARTICLE_80 = EXCEPTIONS.reduce(
   (declaree, exception) =>
     declaree.option(exception, (option) =>
       option.offeredIf(({ answers, validated }) =>
-        exceptionAProposer(exception, answers.question("Q2.6.a"), validated),
+        ExceptionsDeLArticle80.of(validated).estAProposer(
+          exception,
+          answers.question("Q2.6.a"),
+        ),
       ),
     ),
   question

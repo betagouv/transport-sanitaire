@@ -16,14 +16,15 @@ import { FAITS, type Faits } from "../declarations/faits.ts";
 import type { Questions } from "../declarations/questions.ts";
 import { FAITS_DE_LA_PERMISSION } from "../p2/permission.ts";
 import { FAITS_DU_TRAJET } from "../p2/trajet.ts";
-import { FAITS_DU_TRANSFERT } from "../p2/transfert.ts";
 import { accompagnant } from "./accompagnant.ts";
 import { aldExonerante3Ou4 } from "./ald-exonerante-3-ou-4.ts";
 import { aldLiee } from "./ald-liee.ts";
+import { appelCentre15 } from "./appel-centre15.ts";
 import { atmpLie } from "./atmp-lie.ts";
 import { autonomieProfessionnel } from "./autonomie-professionnel.ts";
 import { bariatrique } from "./bariatrique.ts";
 import { centreReferenceDestination } from "./centre-reference-destination.ts";
+import { centre15Interetablissements } from "./centre15-interetablissements.ts";
 import { conditionsSoinVerifiees } from "./conditions-soin-verifiees.ts";
 import { convocation } from "./convocation.ts";
 import { correspondanceUnivoque } from "./correspondance-univoque.ts";
@@ -36,6 +37,14 @@ import { critereSurveillance } from "./critere-surveillance.ts";
 import { critereTap } from "./critere-tap.ts";
 import { dapMaternite } from "./dap-maternite.ts";
 import { evenementSansSoin } from "./evenement-sans-soin.ts";
+import { exceptionArticle80AdmissionHad } from "./exception-article80-admission-had.ts";
+import { exceptionArticle80AdmissionSansSejour } from "./exception-article80-admission-sans-sejour.ts";
+import { exceptionArticle80AirMer } from "./exception-article80-air-mer.ts";
+import { exceptionArticle80DialyseDomicile } from "./exception-article80-dialyse-domicile.ts";
+import { exceptionArticle80Ehpad } from "./exception-article80-ehpad.ts";
+import { exceptionArticle80HadIntercurrent } from "./exception-article80-had-intercurrent.ts";
+import { exceptionArticle80Radiotherapie } from "./exception-article80-radiotherapie.ts";
+import { exceptionArticle80Usld } from "./exception-article80-usld.ts";
 import { exclusionSoinProuvee } from "./exclusion-soin-prouvee.ts";
 import { exclusionTransportProuvee } from "./exclusion-transport-prouvee.ts";
 import { hospitalisation } from "./hospitalisation.ts";
@@ -57,6 +66,7 @@ import { regimeVerifie } from "./regime-verifie.ts";
 import { situationSoinsQualifiante } from "./situation-soins-qualifiante.ts";
 import { sourceOfficielleActive } from "./source-officielle-active.ts";
 import { trajetEtranger } from "./trajet-etranger.ts";
+import { transfertArticle80 } from "./transfert-article80.ts";
 
 /** Les faits du modèle, chacun déclaré une fois. */
 export const CATALOGUE_DES_FAITS = new FaitCatalogue<Questions, Faits>(
@@ -102,8 +112,21 @@ export const CATALOGUE_DES_FAITS = new FaitCatalogue<Questions, Faits>(
     fait_htnm_segment_verifie: htnmSegmentVerifie,
     fait_dap_maternite: dapMaternite,
     fait_convocation: convocation,
+    fait_transfert_article80: transfertArticle80,
+    fait_centre15_interetablissements: centre15Interetablissements,
+    fait_appel_centre15: appelCentre15,
+    fait_exception_article80_admission_sans_sejour:
+      exceptionArticle80AdmissionSansSejour,
+    fait_exception_article80_air_mer: exceptionArticle80AirMer,
+    fait_exception_article80_had_intercurrent:
+      exceptionArticle80HadIntercurrent,
+    fait_exception_article80_usld: exceptionArticle80Usld,
+    fait_exception_article80_ehpad: exceptionArticle80Ehpad,
+    fait_exception_article80_radiotherapie: exceptionArticle80Radiotherapie,
+    fait_exception_article80_dialyse_domicile:
+      exceptionArticle80DialyseDomicile,
+    fait_exception_article80_admission_had: exceptionArticle80AdmissionHad,
   },
   FAITS_DU_TRAJET,
-  FAITS_DU_TRANSFERT,
   FAITS_DE_LA_PERMISSION,
 );

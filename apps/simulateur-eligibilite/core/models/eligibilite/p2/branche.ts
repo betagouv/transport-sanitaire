@@ -12,9 +12,6 @@ import type { Faits } from "../declarations/faits.ts";
 import type { Questions } from "../declarations/questions.ts";
 import { cible } from "../evaluation-des-regles.ts";
 
-/** Le départ n'est pas celui d'une entrée simple, ou n'est pas encore donné. */
-type PasUneEntreeSimple = undefined;
-
 type Valides = ValidatedAnswers<Questions>;
 
 /** Ce que lit une garde de la branche : les réponses validées, et leurs faits. */
@@ -70,28 +67,7 @@ export function urgenceDevoilee({ validated, faits }: Lecture): boolean {
   return cible(faits, "cible_question_urgence_a_afficher").isOui();
 }
 
-/**
- * Le départ de Q2.13, s'il est celui d'une entrée simple : hors du champ du I
- * de D.162-17, ni transfert ni Centre 15. Les trois autres (établissement,
- * EHPAD, USLD) ouvrent le transfert ; un autre lieu ne se qualifie pas sur une
- * description libre.
- */
-export function departDUneEntreeSimple(
-  validated: Valides,
-): Questions["Q2.13.depart"] | PasUneEntreeSimple {
-  const depart = validated.question("Q2.13.depart");
-  return depart.isOneOf(...DEPARTS_D_UNE_ENTREE_SIMPLE)
-    ? depart.value
-    : undefined;
-}
-
 // ---- implémentation ----
-
-const DEPARTS_D_UNE_ENTREE_SIMPLE: readonly Questions["Q2.13.depart"][] = [
-  "1_DOMICILE",
-  "5_HEBERGEMENT_NON_MEDICALISE",
-  "6_ETABLISSEMENT_PENITENTIAIRE",
-];
 
 // Le trajet a-t-il quelque chose à décider, une fois les questions précédentes
 // posées ? Le mode se tient, et aucune orientation prioritaire n'est établie :

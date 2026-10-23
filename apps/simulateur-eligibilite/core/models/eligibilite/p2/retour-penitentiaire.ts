@@ -1,6 +1,7 @@
 // Le retour vers un établissement pénitentiaire (option 10 de Q2.2.1.b) : ce
 // qui qualifie son circuit avant R2 (points 33 et 34 de la v10.1.3,
 // `CONTRAT_CONTEXTES_V1012.json` et `CONTRAT_ORIENTATION_ADMINISTRATIVE.json`).
+// Le retour lui-même se lit dans `RetourPenitentiaire`.
 //
 // Cocher l'option ne donne aucun fait, ni aucun financeur.
 //
@@ -18,6 +19,7 @@
 // - Pour tout autre soin, la prison n'est que l'adresse d'arrivée, en P3.
 
 import type { GivenAnswers, ValidatedAnswers } from "../../../socle/index.ts";
+import { RetourPenitentiaire } from "../concepts/retour-penitentiaire.ts";
 import type { Questions } from "../declarations/questions.ts";
 
 type Valides = ValidatedAnswers<Questions>;
@@ -34,7 +36,9 @@ export function indicationAPoser(
   answers: GivenAnswers<Questions>,
   validated: Valides,
 ): boolean {
-  return retourCoche(answers) && !indicationEtablie(validated);
+  return (
+    RetourPenitentiaire.of(answers).estCoche() && !indicationEtablie(validated)
+  );
 }
 
 /** Le retour relève-t-il de la seule organisation pénitentiaire ? */
@@ -54,34 +58,6 @@ export function dansLeCircuit({
   return !horsCircuit(validated);
 }
 
-/** Le retour pénitentiaire est-il une sortie définitive d'hospitalisation ? */
-export function sortieVersLaPrison(validated: Valides): boolean {
-  return (
-    retourCoche(validated) &&
-    validated.question("Q2.1.g").is("2_SORTIE") &&
-    validated.question("Q2.2.1.a").isNot("1_OUI")
-  );
-}
-
-/** Le retour pénitentiaire est-il coché, une fois sa page validée ? */
-export function retourPenitentiaireValide(validated: Valides): boolean {
-  return retourCoche(validated);
-}
-
-/** Le retour pénitentiaire est-il coché, dans les réponses acquises au verrou ? */
-export function retourPenitentiaireCoche(
-  answers: GivenAnswers<Questions>,
-): boolean {
-  return retourCoche(answers);
-}
-
-/**
- * La provenance d'une sortie définitive vers la prison : ni transfert, ni
- * Centre 15, ni permission.
- */
-export const SORTIE_VERS_LA_PRISON =
-  "Q2.1.g : « 2_SORTIE », Q2.2.1.b : « 10_RETOUR_PENITENTIAIRE » ; sortie définitive vers la prison.";
-
 // ---- implémentation ----
 
 // Un critère de Q1.2, une ALD, une séance ou un autre cas de Q1.3.
@@ -92,13 +68,5 @@ function indicationEtablie(validated: Valides): boolean {
       .question("Q1.3")
       .checkedBoxes()
       .some((cas) => cas !== "7_AUCUNE")
-  );
-}
-
-// Sur la page en cours (les réponses données) comme une fois validée.
-function retourCoche(reponses: GivenAnswers<Questions> | Valides): boolean {
-  return (
-    reponses.question("Q2.2.1").checked("3_AUTRE_CADRE") &&
-    reponses.question("Q2.2.1.b").checked("10_RETOUR_PENITENTIAIRE")
   );
 }

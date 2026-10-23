@@ -7,8 +7,8 @@
 // qu'elle permet.
 
 import type { GivenAnswers } from "../../../socle/index.ts";
+import { RetourPenitentiaire } from "../concepts/retour-penitentiaire.ts";
 import { OPTIONS, type Questions } from "../declarations/questions.ts";
-import { retourPenitentiaireCoche } from "../p2/retour-penitentiaire.ts";
 import { sensDuDocument } from "./sens-du-trajet.ts";
 
 export type Extremite = "depart" | "arrivee";
@@ -70,7 +70,7 @@ const SITUATIONS: readonly ((reponses: Reponses) => Lieux)[] = [
   (reponses) => (q26(reponses, "10_ADMISSION_HAD") ? admissionEnHad() : {}),
   radiotherapie,
   (reponses) =>
-    retourPenitentiaireCoche(reponses) ? retourPenitentiaire() : {},
+    RetourPenitentiaire.of(reponses).estCoche() ? retourPenitentiaire() : {},
   permission,
   hebergement,
   departDeQ213,

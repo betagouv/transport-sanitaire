@@ -3,10 +3,9 @@
 //
 // Chaque fait suit `CONTRAT_REPONSES_FAITS.json` du paquet de l'éditeur. Q2.1
 // ou Q2.2.1.a établissent la permission ; le séjour écarté, l'entrée en
-// établissement ou la sortie vers la prison l'excluent. Une permission acquise
-// écarte le transfert et le Centre 15, dès la question qui la pose. Sans
-// permission, ni sa charge par le patient, ni la règle du mineur. Le cadre de
-// Q2.8.4.a ne change aucun fait.
+// établissement ou la sortie vers la prison l'excluent. Sans permission, ni sa
+// charge par le patient, ni la règle du mineur. Le cadre de Q2.8.4.a ne change
+// aucun fait.
 
 import {
   Fait,
@@ -15,16 +14,13 @@ import {
   type ValidatedAnswers,
 } from "../../../socle/index.ts";
 import { Permission } from "../concepts/permission.ts";
+import { RetourPenitentiaire } from "../concepts/retour-penitentiaire.ts";
 import { Sejour } from "../concepts/sejour.ts";
 import {
   type DeclarationsDeFaits,
   PAS_ENCORE_ETABLI,
 } from "../declarations/faits.ts";
 import type { Questions } from "../declarations/questions.ts";
-import {
-  SORTIE_VERS_LA_PRISON,
-  sortieVersLaPrison,
-} from "./retour-penitentiaire.ts";
 
 type Valides = ValidatedAnswers<Questions>;
 
@@ -36,30 +32,12 @@ export function optionsAdultesAProposer(validated: Valides): boolean {
   return !validated.question("Q1.3").checked("8_MINEUR_SOINS_CONTINUS");
 }
 
-/**
- * Une permission n'est ni un transfert ni un déplacement pour soins : la
- * question qui la pose a écarté l'option 9 de Q2.1 (choix unique), ou l'option
- * 2 de Q2.2.1.a. Q2.5 ne se pose pas alors ; si elle est validée, elle décide.
- */
-export function permissionSansTransfert(validated: Valides): Fait | PassesOn {
-  if (validated.question("Q2.5").isValidated()) return undefined;
-  if (validated.question("Q2.1").is("11_PERMISSION"))
-    return Fait.non(
-      "Q2.1 : « 11_PERMISSION » ; une permission n'est ni un transfert ni un déplacement pour soins (option 9 écartée).",
-    );
-  if (validated.question("Q2.2.1.a").is("1_OUI"))
-    return Fait.non(
-      "Q2.2.1.a : « 1_OUI » ; une permission n'est ni un transfert ni un déplacement pour soins (option 2 écartée).",
-    );
-  return undefined;
-}
-
 /** La permission, sa charge par le patient et la règle du mineur. */
 export const FAITS_DE_LA_PERMISSION: DeclarationsDeFaits = {
   // Le séjour coché, seule Q2.2.1.a dit la permission : elle ne se pose qu'alors.
   fait_permission: ({ validated }) =>
     regles()
-      .nonSi(sortieVersLaPrison(validated), SORTIE_VERS_LA_PRISON)
+      .retient(RetourPenitentiaire.of(validated).nonSiSortieVersLaPrison())
       .nonSi(
         validated.question("Q2.2.1").hasAnswer() &&
           Sejour.of(validated).commenceAvecCeTrajet(),
