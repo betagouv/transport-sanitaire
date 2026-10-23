@@ -15,10 +15,7 @@ import {
   type Questions,
 } from "../../../core/models/eligibilite/declarations/questions";
 import { CATALOGUE_DES_FAITS } from "../../../core/models/eligibilite/faits";
-import {
-  cibleEnCoursDeP1,
-  FAITS_DU_MODE,
-} from "../../../core/models/eligibilite/p1/mode-de-transport";
+import { cibleEnCoursDeP1 } from "../../../core/models/eligibilite/p1/partie-1";
 import { preconisationOf } from "../../../core/socle/model";
 import { GivenAnswers } from "../../../core/socle/questionnaire-engine/given-answers";
 import {
@@ -51,6 +48,25 @@ const modeAttendu = (criteres: readonly Critere[]) => {
   if (ids.some((id) => id >= 7)) return "AMBULANCE";
   return ids.includes(6) ? "TPMR" : "TAP";
 };
+
+// Les faits que Q1.1 à Q1.4 établissent.
+const FAITS_DE_P1 = [
+  "fait_autonomie_professionnel",
+  "fait_accompagnant",
+  "fait_critere_tap",
+  "fait_critere_fauteuil",
+  "fait_critere_allonge",
+  "fait_critere_brancard",
+  "fait_critere_surveillance",
+  "fait_critere_oxygene",
+  "fait_critere_asepsie",
+  "fait_partage_incompatible",
+  "fait_bariatrique",
+  "fait_ald_liee",
+  "fait_ald_exonerante_3_ou_4",
+  "fait_mineur_soins_prolonges_reconnus",
+  "fait_prefere_transport_commun",
+] as const satisfies readonly (keyof Faits)[];
 
 describe("les 2 048 combinaisons de Q1.2", () => {
   const masques = Array.from({ length: 2048 }, (_, masque) => masque);
@@ -90,9 +106,7 @@ describe("les 2 048 combinaisons de Q1.2", () => {
         new GivenAnswers<Questions>({}),
         validated,
       );
-      const cle = JSON.stringify(
-        Object.keys(FAITS_DU_MODE).map((nom) => faits[nom as keyof Faits]),
-      );
+      const cle = JSON.stringify(FAITS_DE_P1.map((nom) => faits[nom]));
       if (!modes.has(cle))
         modes.set(cle, cibleEnCoursDeP1(faits, "cible_mode_id").value);
       return modes.get(cle) !== modeAttendu(criteres);

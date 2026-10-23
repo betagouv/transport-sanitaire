@@ -12,11 +12,11 @@ import {
   regles,
   type ValidatedAnswers,
 } from "../../../socle/index.ts";
+import { CasParticuliers } from "../concepts/cas-particuliers.ts";
 import { Sejour } from "../concepts/sejour.ts";
 import type { DeclarationsDeFaits, Faits } from "../declarations/faits.ts";
 import type { Questions } from "../declarations/questions.ts";
 import { cible } from "../evaluation-des-regles.ts";
-import { seanceDeP1 } from "../p1/mode-de-transport.ts";
 import { situationDuCadre } from "./contextes.ts";
 import { hospitalisationDuTransfert } from "./transfert.ts";
 
@@ -32,22 +32,6 @@ type Motif = Questions["Q2.1"];
 export function motifDeP1(faits: Faits): boolean {
   if (faits.fait_situation_soins_qualifiante.isOui()) return true;
   return MOTIFS_DE_P1.some((motif) => cible(faits, motif).isOui());
-}
-
-/**
- * Plusieurs séances de familles différentes comptent-elles en Q1.3 ? Une
- * dialyse ne compte que si Q1.3.a confirme l'hémodialyse : sinon Q2.1.f ne
- * change plus rien (COR-17, D-131).
- */
-export function plusieursSeances(validated: Valides): boolean {
-  const cas = validated.question("Q1.3");
-  const hemodialyse = validated.question("Q1.3.a").is("1_OUI");
-  return (
-    SEANCES.filter(
-      (seance) =>
-        cas.checked(seance) && (seance !== "5_DIALYSE" || hemodialyse),
-    ).length >= 2
-  );
 }
 
 /** Les faits que la page de Q2.1 établit, avec ses sous-questions f, g et h. */
@@ -72,7 +56,7 @@ export const FAITS_DE_LA_PRESTATION: DeclarationsDeFaits = {
     regles()
       .retient(sansSeanceNiSejour(validated))
       .selon(validated.question("Q2.1.g"), SEJOUR)
-      .sinon(seanceDeP1(validated)),
+      .sinon(CasParticuliers.of(validated).seance()),
   // Le transfert le prouve, et le séjour écarté l'exclut. Une entrée ou une
   // sortie d'établissement le prouve aussi. L'admission en HAD à domicile ne
   // le prouve pas seule.
@@ -81,7 +65,7 @@ export const FAITS_DE_LA_PRESTATION: DeclarationsDeFaits = {
       .retient(hospitalisationDuTransfert(validated))
       .retient(sansSejourEnCours(validated))
       .selon(validated.question("Q2.1.g"), SEJOUR)
-      .sinon(seanceDeP1(validated)),
+      .sinon(CasParticuliers.of(validated).seance()),
 };
 
 // ---- implémentation ----
@@ -92,8 +76,6 @@ const MOTIFS_DE_P1 = [
   "cible_ald_qualifiante",
   "cible_mineur_soins_prolonges",
 ] as const;
-
-const SEANCES = ["3_CHIMIOTHERAPIE", "4_RADIOTHERAPIE", "5_DIALYSE"] as const;
 
 // Les soins et examens ordinaires : ils ne sont pas un événement autonome.
 const SOINS: readonly Motif[] = [
@@ -130,7 +112,8 @@ const SEJOUR = { "1_ENTREE": "oui", "2_SORTIE": "oui" } as const;
 function sansSeanceNiSejour(validated: Valides): Fait | PassesOn {
   const motif = validated.question("Q2.1");
   const sousType = validated.question("Q2.1.g");
-  if (!motif.hasAnswer() || !q13SansSeance(validated)) return undefined;
+  if (!motif.hasAnswer() || !CasParticuliers.of(validated).sansSeance())
+    return undefined;
   const hospitalise = motif.is("8_HOSPITALISATION");
   if (hospitalise && sousType.isNot("3_ADMISSION_HAD")) return undefined;
   return Fait.non(
@@ -156,17 +139,5 @@ function sansSejourEnCours(validated: Valides): Fait | PassesOn {
     return undefined;
   return Fait.non(
     `${sansSejour.provenance} Q2.2.1 : « déjà hospitalisé » écarté.`,
-  );
-}
-
-// Q1.3 validée sans séance qualifiante : ni chimiothérapie, ni radiothérapie,
-// ni hémodialyse (Q1.3.a). Une séance cochée, `seanceDeP1` la prouve déjà.
-function q13SansSeance(validated: Valides): boolean {
-  const cas = validated.question("Q1.3");
-  if (!cas.hasAnswer()) return false;
-  return (
-    !cas.checked("3_CHIMIOTHERAPIE") &&
-    !cas.checked("4_RADIOTHERAPIE") &&
-    validated.question("Q1.3.a").isNot("1_OUI")
   );
 }

@@ -4,9 +4,14 @@
 // passe.
 //
 // Elle se construit sur des réponses données, pour une garde de page, comme
-// sur des réponses validées, pour un fait. Elle ne pose aucun fait.
+// sur des réponses validées, pour un fait. Elle ne déclare aucun fait du
+// catalogue.
 
-import type { AnswersReader, GivenAnswer } from "../../../socle/index.ts";
+import {
+  type AnswersReader,
+  citant,
+  type GivenAnswer,
+} from "../../../socle/index.ts";
 import type { Questions } from "../declarations/questions.ts";
 
 /** L'aide que ces réponses disent. */
@@ -41,5 +46,12 @@ export class AideDuPatient {
   /** Il se passe d'un professionnel : seul, ou avec un proche. */
   sansProfessionnel(): boolean {
     return this.seDeplaceSeul() || this.avecUnProche();
+  }
+
+  /** La provenance d'un fait que Q1.1 décide : sa réponse, ou son attente. */
+  provenance(): string {
+    return this.qui.hasAnswer()
+      ? citant(this.qui)
+      : "Q1.1 n'est pas encore validée.";
   }
 }

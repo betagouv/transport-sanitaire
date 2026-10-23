@@ -6,6 +6,7 @@
 // `pages-de-la-branche.ts`. Q2.4, Q2.9 et Q2.11 n'ont aucun écran.
 
 import { page, type QuestionnairePart } from "../../../socle/index.ts";
+import { CasParticuliers } from "../concepts/cas-particuliers.ts";
 import { Sejour } from "../concepts/sejour.ts";
 import { OPTIONS, type Questions } from "../declarations/questions.ts";
 import { question } from "../question.ts";
@@ -20,7 +21,7 @@ import {
   PAGE_DES_EXCEPTIONS,
   PAGE_DU_TRANSFERT,
 } from "./pages-du-transfert.ts";
-import { motifDeP1, plusieursSeances } from "./prestation.ts";
+import { motifDeP1 } from "./prestation.ts";
 import { dansLeCircuit, indicationAPoser } from "./retour-penitentiaire.ts";
 import { urgenceAAfficher } from "./trajet.ts";
 
@@ -41,14 +42,7 @@ const PAGE_DE_LA_PRESTATION = page(
     // Une séance se coche en Q1.3 : elle ne se vote pas deux fois.
     .option("6_SEANCE", (option) =>
       option.offeredIf(
-        ({ validated }) =>
-          !validated
-            .question("Q1.3")
-            .value?.some((cas) =>
-              ["3_CHIMIOTHERAPIE", "4_RADIOTHERAPIE", "5_DIALYSE"].includes(
-                cas,
-              ),
-            ),
+        ({ validated }) => !CasParticuliers.of(validated).uneSeance(),
       ),
     ),
   question
@@ -56,7 +50,9 @@ const PAGE_DE_LA_PRESTATION = page(
       "Q2.1.f",
       "Les séances sélectionnées motivent-elles le même déplacement vers le même lieu de soins ?",
     )
-    .askedIf(({ validated }) => plusieursSeances(validated))
+    .askedIf(({ validated }) =>
+      CasParticuliers.of(validated).plusieursSeances(),
+    )
     .option("2_NON", (option) =>
       option.blocks(
         "Une simulation porte sur un seul déplacement. Corrigez les séances en Q1.3, puis faites une simulation par déplacement.",

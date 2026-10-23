@@ -1,22 +1,27 @@
 // P1 : l'autonomie et l'état de santé du patient, ce qui fait le mode de
 // transport. Les options et leurs libellés viennent des déclarations.
 
-import { page, type QuestionnairePart } from "../../../socle/index.ts";
+import { Fait, page, type QuestionnairePart } from "../../../socle/index.ts";
 import { AideDuPatient } from "../concepts/aide-du-patient.ts";
+import { CriteresDuTransport } from "../concepts/criteres-du-transport.ts";
+import type { Cibles } from "../declarations/cibles.ts";
+import type { Faits } from "../declarations/faits.ts";
 import type { Questions } from "../declarations/questions.ts";
+import { cible } from "../evaluation-des-regles.ts";
 import { question } from "../question.ts";
-import { cibleEnCoursDeP1 } from "./mode-de-transport.ts";
 
 type Partie<Cibles> = QuestionnairePart<Questions, Cibles>;
 
-// Les critères de Q1.2 qui imposent l'ambulance.
-const CRITERES_D_AMBULANCE = [
-  "7_ALLONGE",
-  "8_BRANCARDAGE",
-  "9_SURVEILLANCE",
-  "10_OXYGENE",
-  "11_ASEPSIE",
-] as const;
+/**
+ * Une cible du mode pour ces faits, pendant P1. Les règles ne donnent le mode
+ * qu'une fois P1 complète : elle est tenue pour telle, le temps de la poser.
+ */
+export function cibleEnCoursDeP1<Nom extends keyof Cibles>(
+  faits: Faits,
+  nom: Nom,
+): Cibles[Nom] {
+  return cible({ ...faits, fait_p1_complete: Fait.oui("P1 en cours.") }, nom);
+}
 
 // L'ordre d'écran de Q1.3, que son contrat fixe : le mineur suit l'ALD. Les
 // slugs gardent le numéro du catalogue, et « Aucune » ferme la liste.
@@ -45,9 +50,7 @@ const PAGE_DES_CAS_PARTICULIERS = page(
     // emporte la réponse.
     .option("1_FORTE_CORPULENCE", (option) =>
       option.offeredIf(({ validated }) =>
-        CRITERES_D_AMBULANCE.some((critere) =>
-          validated.question("Q1.2").checked(critere),
-        ),
+        CriteresDuTransport.of(validated).imposentLAmbulance(),
       ),
     )
     // Le partage ne concerne que le transport assis professionnel et le TPMR.

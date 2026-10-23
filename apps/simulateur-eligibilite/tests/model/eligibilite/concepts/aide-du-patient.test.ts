@@ -1,5 +1,5 @@
 // L'aide du patient, lue sur Q1.1 : seul, avec un proche ou avec un
-// professionnel. Sans réponse, elle ne dit rien.
+// professionnel. Sans réponse, elle ne dit rien, et sa provenance l'attend.
 
 import { describe, expect, it } from "vitest";
 import { AideDuPatient } from "../../../../core/models/eligibilite/concepts/aide-du-patient";
@@ -29,5 +29,17 @@ describe("l'aide que Q1.1 dit", () => {
 
   it("sans réponse, aucune aide n'est dite", () => {
     expect(lecture(aide({}))).toEqual([false, false, false, false]);
+  });
+});
+
+describe("la provenance d'un fait que Q1.1 décide", () => {
+  it("cite la réponse", () => {
+    expect(aide({ "Q1.1": "2_AVEC_UN_PROCHE" }).provenance()).toBe(
+      "Q1.1 : « 2_AVEC_UN_PROCHE ».",
+    );
+  });
+
+  it("sans réponse, l'attend", () => {
+    expect(aide({}).provenance()).toBe("Q1.1 n'est pas encore validée.");
   });
 });
