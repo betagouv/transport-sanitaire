@@ -100,12 +100,15 @@ const CAS: readonly [
 ];
 
 describe("la trace des dix seeds", () => {
-  it("couvre les dix issues, une seed chacune", () => {
-    // L'orientation pénitentiaire n'a pas d'issue.
-    const issues = SEEDS.flatMap(
-      ({ expected }) => expected.cible_issue_id ?? [],
+  it("couvre les dix issues, au moins une seed chacune", () => {
+    // L'orientation pénitentiaire n'a pas d'issue. Les deux accords préalables
+    // en avion ou en bateau de ligne (#221) en ont une seconde.
+    const issues = new Set(
+      SEEDS.flatMap(({ expected }) => expected.cible_issue_id ?? []),
     );
-    expect(issues.sort()).toEqual([...CIBLES_ENUMEREES.cible_issue_id].sort());
+    expect([...issues].sort()).toEqual(
+      [...CIBLES_ENUMEREES.cible_issue_id].sort(),
+    );
   });
 
   describe.each(CAS)(

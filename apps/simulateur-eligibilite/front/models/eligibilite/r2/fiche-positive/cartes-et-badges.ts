@@ -6,6 +6,12 @@
 // viennent des cibles, qui les prouvent. Sans professionnel (un proche seul, ou
 // le véhicule personnel), Q1.2 ne s'est pas posée : il n'y a ni critère ni
 // badge. Les mots viennent du catalogue.
+//
+// Un trajet en avion ou en bateau de ligne régulière, sans partie terrestre
+// établie, garde la carte de son mode. Le préfixe de sa portée la limite aux
+// éventuelles parties terrestres, sur les trois cartes comme dans la
+// projection de l'éditeur. Il n'a aucun badge : aucun besoin terrestre n'est
+// établi (§7.3 du contrat).
 
 import type {
   AucunTexte,
@@ -14,7 +20,11 @@ import type {
 } from "../../../../../core/models/eligibilite/declarations/catalogue-resultats";
 import type { Cibles } from "../../../../../core/models/eligibilite/declarations/cibles";
 import type { Trace } from "../trace-du-resultat";
-import { type Partage, partageDuTransport } from "./variante-du-resultat";
+import {
+  type Partage,
+  partageDuTransport,
+  porteeDuTrajet,
+} from "./variante-du-resultat";
 
 /** Une carte de la fiche, et si c'est celle de la situation du patient. */
 export type CarteAffichee = {
@@ -26,6 +36,8 @@ export type CarteAffichee = {
 /**
  * Les trois cartes de mode. Celle de la situation du patient est détaillée
  * quand le catalogue a la carte de ses critères, et reste la carte fixe sinon.
+ * Chaque texte commence par le préfixe de la portée du trajet, vide pour un
+ * trajet terrestre.
  */
 export function cartesDeLaFiche(
   issue: IssuePositive,
@@ -33,18 +45,19 @@ export function cartesDeLaFiche(
 ): readonly CarteAffichee[] {
   const rang = rangDeLaCarte(trace.cibles);
   const detail = carteDetaillee(issue, trace);
+  const prefixe = issue.cardPrefixes[porteeDuTrajet(trace)] ?? "";
   return issue.fixedCards.map(({ title, text }, index) => {
     const retenue = index === rang;
     return retenue && detail
-      ? { titre: detail.title, texte: detail.text, retenue }
-      : { titre: title, texte: text, retenue };
+      ? { titre: detail.title, texte: prefixe + detail.text, retenue }
+      : { titre: title, texte: prefixe + text, retenue };
   });
 }
 
 /**
  * Les besoins à signaler au transporteur : le partage et le fauteuil, puis la
  * corpulence, puis les critères de Q1.2 dans l'ordre. Chacun exige le fait qui
- * le justifie.
+ * le justifie. Un trajet en ligne régulière n'en a aucun.
  */
 export function badgesDuResultat(
   badges: CatalogueResultats["badges"],
@@ -52,7 +65,7 @@ export function badgesDuResultat(
 ): readonly string[] {
   const { cibles } = trace;
   const mode = cibles.cible_mode_id.value;
-  if (!estSanitaire(mode)) return [];
+  if (!estSanitaire(mode) || porteeDuTrajet(trace) !== "L") return [];
   const fauteuil = cibles.cible_fauteuil_roulant.isOui();
   return [
     ...(mode !== "AMBULANCE" && partageDuTransport(cibles) === "incompatible"

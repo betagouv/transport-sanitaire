@@ -1,8 +1,9 @@
 // Le catalogue des seeds : les situations de référence du simulateur.
 //
 // Les tests le rejouent et l'écran des seeds l'affiche. Dix seeds, une par
-// issue de R2, faites de réponses complètes jusqu'à la fin de P2, et une pour
-// l'orientation d'un retour pénitentiaire, qui n'a pas d'issue. Elles suivent
+// issue de R2, faites de réponses complètes jusqu'à la fin de P2, deux pour la
+// demande d'accord préalable en avion ou en bateau de ligne régulière, et une
+// pour l'orientation d'un retour pénitentiaire, qui n'a pas d'issue. Elles suivent
 // les dix traces de l'oracle de la v10.1.0 : le patient est accompagné d'un
 // professionnel (Q1.1) et ses critères sont ceux de la trace, 1 et 5 pour les
 // quatre premières et l'étranger, 1 pour les autres. Les cibles attendues sont
@@ -48,6 +49,10 @@ const DIALYSE_LONGUE = {
   "Q2.3.1": "3_PLUS_DE_CENT_CINQUANTE_KM",
   "Q2.3.3": "2_NON",
 } as const;
+
+// La même dialyse, sur un trajet court dont une partie se fait en avion ou en
+// bateau de ligne régulière : l'accord préalable, sans partie terrestre établie.
+const DIALYSE_EN_LIGNE_REGULIERE = { ...DIALYSE, "Q2.3.2": true } as const;
 
 // Un mineur de moins de 16 ans, en permission autorisée, la première.
 const PERMISSION_DU_MINEUR = {
@@ -119,6 +124,31 @@ export const SEEDS: readonly Seed<Questions, Cibles>[] = [
     description:
       "Ouvre le résultat d'une dialyse à plus de 150 km, avec une urgence attestée en Q2.3.4. L'issue est la demande d'accord préalable (Cerfa S3139h), avec son rappel d'urgence.",
     answers: { ...DIALYSE_LONGUE, "Q2.3.4": "1_OUI" },
+    expected: {
+      cible_issue_id: "ISSUE_DAP_URGENCE_ATTESTEE",
+      cible_support_id: "S3139h",
+      ...DOCUMENTS,
+    },
+  },
+  {
+    id: "issue-dap-avion-ou-bateau",
+    label: "Résultat : accord préalable, en avion ou bateau de ligne régulière",
+    description:
+      "Ouvre le résultat d'une dialyse dont une partie du trajet se fait en avion ou en bateau de ligne régulière (Q2.3.2), sans urgence attestée. La fiche prend les titres et le modus de la ligne régulière, ses cartes le préfixe des parties terrestres, sans badge.",
+    answers: { ...DIALYSE_EN_LIGNE_REGULIERE, "Q2.3.4": "2_NON" },
+    expected: {
+      cible_issue_id: "ISSUE_DAP_SANS_URGENCE",
+      cible_support_id: "S3139h",
+      ...DOCUMENTS,
+    },
+  },
+  {
+    id: "issue-dap-avion-ou-bateau-urgence-attestee",
+    label:
+      "Résultat : accord préalable, en avion ou bateau de ligne régulière, urgence attestée",
+    description:
+      "Ouvre le résultat d'une dialyse dont une partie du trajet se fait en avion ou en bateau de ligne régulière (Q2.3.2), avec une urgence attestée en Q2.3.4. La fiche prend les titres et le modus de la ligne régulière dans l'urgence, ses cartes le préfixe des parties terrestres, sans badge.",
+    answers: { ...DIALYSE_EN_LIGNE_REGULIERE, "Q2.3.4": "1_OUI" },
     expected: {
       cible_issue_id: "ISSUE_DAP_URGENCE_ATTESTEE",
       cible_support_id: "S3139h",
