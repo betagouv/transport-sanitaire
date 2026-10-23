@@ -25,7 +25,6 @@ import {
 } from "../declarations/faits.ts";
 import type { Questions } from "../declarations/questions.ts";
 import { departDUneEntreeSimple } from "./branche.ts";
-import { sejourEcarte } from "./contextes.ts";
 import { permissionSansTransfert } from "./permission.ts";
 import {
   SORTIE_VERS_LA_PRISON,
@@ -152,7 +151,7 @@ function transfert(validated: Valides): Fait {
       deplacement.is("2_AUTRE_DEPLACEMENT") && q26,
       "Q2.5 et Q2.6 : déplacement provisoire pendant le séjour.",
     )
-    .retient(sejourEcarte(validated))
+    .retient(Sejour.of(validated).nonSiEcarte())
     .sinon(PAS_ENCORE_ETABLI);
 }
 
@@ -177,7 +176,7 @@ function centre15(validated: Valides): Fait {
       deplacement.is("2_AUTRE_DEPLACEMENT"),
       "Q2.5 : « 2_AUTRE_DEPLACEMENT ». Ce n'est pas un transfert entre établissements.",
     )
-    .retient(sejourEcarte(validated))
+    .retient(Sejour.of(validated).nonSiEcarte())
     .sinon(PAS_ENCORE_ETABLI);
 }
 

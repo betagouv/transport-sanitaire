@@ -14,19 +14,18 @@
 import { FaitCatalogue } from "../../../socle/index.ts";
 import { FAITS, type Faits } from "../declarations/faits.ts";
 import type { Questions } from "../declarations/questions.ts";
-import { FAITS_DE_LA_BRANCHE } from "../p2/branche.ts";
-import { FAITS_DES_CONTEXTES } from "../p2/contextes.ts";
-import { FAITS_DE_LA_CONVOCATION } from "../p2/convocation.ts";
 import { FAITS_DE_LA_PERMISSION } from "../p2/permission.ts";
 import { FAITS_DU_TRAJET } from "../p2/trajet.ts";
 import { FAITS_DU_TRANSFERT } from "../p2/transfert.ts";
 import { accompagnant } from "./accompagnant.ts";
 import { aldExonerante3Ou4 } from "./ald-exonerante-3-ou-4.ts";
 import { aldLiee } from "./ald-liee.ts";
+import { atmpLie } from "./atmp-lie.ts";
 import { autonomieProfessionnel } from "./autonomie-professionnel.ts";
 import { bariatrique } from "./bariatrique.ts";
 import { centreReferenceDestination } from "./centre-reference-destination.ts";
 import { conditionsSoinVerifiees } from "./conditions-soin-verifiees.ts";
+import { convocation } from "./convocation.ts";
 import { correspondanceUnivoque } from "./correspondance-univoque.ts";
 import { critereAllonge } from "./critere-allonge.ts";
 import { critereAsepsie } from "./critere-asepsie.ts";
@@ -35,13 +34,18 @@ import { critereFauteuil } from "./critere-fauteuil.ts";
 import { critereOxygene } from "./critere-oxygene.ts";
 import { critereSurveillance } from "./critere-surveillance.ts";
 import { critereTap } from "./critere-tap.ts";
+import { dapMaternite } from "./dap-maternite.ts";
 import { evenementSansSoin } from "./evenement-sans-soin.ts";
 import { exclusionSoinProuvee } from "./exclusion-soin-prouvee.ts";
 import { exclusionTransportProuvee } from "./exclusion-transport-prouvee.ts";
 import { hospitalisation } from "./hospitalisation.ts";
+import { htnmHorsMaternite } from "./htnm-hors-maternite.ts";
+import { htnmSegmentVerifie } from "./htnm-segment-verifie.ts";
 import { mineurSoinsProlongesAVerifier } from "./mineur-soins-prolonges-a-verifier.ts";
 import { mineurSoinsProlongesReconnus } from "./mineur-soins-prolonges-reconnus.ts";
 import { motifCamsp } from "./motif-camsp.ts";
+import { motifPension } from "./motif-pension.ts";
+import { motifSamsah } from "./motif-samsah.ts";
 import { p1Complete } from "./p1-complete.ts";
 import { p2Complete } from "./p2-complete.ts";
 import { partageIncompatible } from "./partage-incompatible.ts";
@@ -52,6 +56,7 @@ import { preuvePrestationAbsente } from "./preuve-prestation-absente.ts";
 import { regimeVerifie } from "./regime-verifie.ts";
 import { situationSoinsQualifiante } from "./situation-soins-qualifiante.ts";
 import { sourceOfficielleActive } from "./source-officielle-active.ts";
+import { trajetEtranger } from "./trajet-etranger.ts";
 
 /** Les faits du modèle, chacun déclaré une fois. */
 export const CATALOGUE_DES_FAITS = new FaitCatalogue<Questions, Faits>(
@@ -89,11 +94,16 @@ export const CATALOGUE_DES_FAITS = new FaitCatalogue<Questions, Faits>(
     fait_motif_camsp: motifCamsp,
     fait_situation_soins_qualifiante: situationSoinsQualifiante,
     fait_hospitalisation: hospitalisation,
+    fait_trajet_etranger: trajetEtranger,
+    fait_atmp_lie: atmpLie,
+    fait_motif_samsah: motifSamsah,
+    fait_motif_pension: motifPension,
+    fait_htnm_hors_maternite: htnmHorsMaternite,
+    fait_htnm_segment_verifie: htnmSegmentVerifie,
+    fait_dap_maternite: dapMaternite,
+    fait_convocation: convocation,
   },
   FAITS_DU_TRAJET,
-  FAITS_DES_CONTEXTES,
   FAITS_DU_TRANSFERT,
   FAITS_DE_LA_PERMISSION,
-  FAITS_DE_LA_CONVOCATION,
-  FAITS_DE_LA_BRANCHE,
 );

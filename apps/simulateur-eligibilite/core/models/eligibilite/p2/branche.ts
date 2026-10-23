@@ -1,5 +1,5 @@
-// La page de branche, dernière de P2 : quand ses questions se posent, et les
-// faits qu'elle établit (Q2.12, Q2.13, Q2.14).
+// La page de branche, dernière de P2 : quand ses questions se posent (Q2.12,
+// Q2.13, Q2.14). Ses faits vivent sous `faits/`.
 //
 // Une question de branche ne se pose que si sa réponse peut changer l'issue.
 // L'éditeur ne donne pas de variable de décisivité pour Q2.13 ni pour Q2.14 :
@@ -7,19 +7,10 @@
 // des questions posées avant elle. Le motif de Q2.14 lit aussi l'éloignement,
 // sur la même page.
 
-import {
-  type GivenAnswers,
-  regles,
-  type ValidatedAnswers,
-} from "../../../socle/index.ts";
-import {
-  type DeclarationsDeFaits,
-  type Faits,
-  PAS_ENCORE_ETABLI,
-} from "../declarations/faits.ts";
+import type { GivenAnswers, ValidatedAnswers } from "../../../socle/index.ts";
+import type { Faits } from "../declarations/faits.ts";
 import type { Questions } from "../declarations/questions.ts";
 import { cible } from "../evaluation-des-regles.ts";
-import { situationDuCadre } from "./contextes.ts";
 
 /** Le départ n'est pas celui d'une entrée simple, ou n'est pas encore donné. */
 type PasUneEntreeSimple = undefined;
@@ -93,33 +84,6 @@ export function departDUneEntreeSimple(
     ? depart.value
     : undefined;
 }
-
-/** Les faits que la page de branche établit, hors l'urgence de Q2.12. */
-export const FAITS_DE_LA_BRANCHE: DeclarationsDeFaits = {
-  // Les deux groupes de Q2.14 (`CONTRAT_Q214_GROUPES.json`) : une condition
-  // cochée dans chacun établit le dispositif, « Aucune » dans l'un l'écarte. Un
-  // groupe sans réponse le laisse à la maternité signalée en Q2.2.1.b.
-  fait_dap_maternite: ({ validated }) => {
-    const eloignement = validated.question("Q2.14.eloignement");
-    const motif = validated.question("Q2.14.motif");
-    const conditions = [
-      ...eloignement.checkedBoxes(),
-      ...motif.checkedBoxes(),
-    ].join(" », « ");
-    return regles()
-      .nonSi(
-        eloignement.checked("3_AUCUNE"),
-        "Q2.14 : aucun éloignement éligible.",
-      )
-      .nonSi(motif.checked("3_AUCUNE"), "Q2.14 : aucun motif éligible.")
-      .ouiSi(
-        eloignement.hasAnswer() && motif.hasAnswer(),
-        `Q2.14 : « ${conditions} ».`,
-      )
-      .retient(situationDuCadre(validated, "4_MATERNITE_ELOIGNEE"))
-      .sinon(PAS_ENCORE_ETABLI);
-  },
-};
 
 // ---- implémentation ----
 

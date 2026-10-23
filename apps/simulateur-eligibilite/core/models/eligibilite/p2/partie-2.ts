@@ -7,10 +7,10 @@
 
 import { page, type QuestionnairePart } from "../../../socle/index.ts";
 import { CasParticuliers } from "../concepts/cas-particuliers.ts";
+import { ContextesDuTrajet } from "../concepts/contextes-du-trajet.ts";
 import { Sejour } from "../concepts/sejour.ts";
 import { OPTIONS, type Questions } from "../declarations/questions.ts";
 import { question } from "../question.ts";
-import { contextesAProposer } from "./contextes.ts";
 import { PAGE_DE_LA_BRANCHE } from "./pages-de-la-branche.ts";
 import { PAGE_DE_LA_CONVOCATION } from "./pages-de-la-convocation.ts";
 import {
@@ -79,7 +79,7 @@ const AUTRES_CADRES = (Object.keys(OPTIONS["Q2.2.1.b"]) as Contexte[]).reduce(
   (declaree, contexte) =>
     declaree.option(contexte, (option) =>
       option.offeredIf(({ validated }) =>
-        contextesAProposer(validated).includes(contexte),
+        ContextesDuTrajet.of(validated).aProposer().includes(contexte),
       ),
     ),
   question
@@ -125,9 +125,9 @@ const PAGE_DES_CONTEXTES = page(
         )
         .helpFrom(({ validated }) => ({
           label: "Voir les situations concernées",
-          items: contextesAProposer(validated).map(
-            (contexte) => OPTIONS["Q2.2.1.b"][contexte],
-          ),
+          items: ContextesDuTrajet.of(validated)
+            .aProposer()
+            .map((contexte) => OPTIONS["Q2.2.1.b"][contexte]),
         })),
     ),
   question

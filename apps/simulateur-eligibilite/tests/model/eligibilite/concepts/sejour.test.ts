@@ -61,6 +61,13 @@ describe("coché ou écarté", () => {
     expect([lu.estCoche(), lu.estEcarte()]).toEqual([false, true]);
   });
 
+  it("écarté, il donne son « non » ; coché, il laisse la main", () => {
+    expect(valides(["2_ETRANGER"]).nonSiEcarte()?.provenance).toBe(
+      "Q2.2.1 : « déjà hospitalisé » proposé, non coché.",
+    );
+    expect(valides(["1_HOSPITALISATION"]).nonSiEcarte()).toBeUndefined();
+  });
+
   it("jamais proposé : ni coché, ni écarté", () => {
     const lu = valides(["2_ETRANGER"], ["2_ETRANGER"]);
     expect([lu.estCoche(), lu.estEcarte()]).toEqual([false, false]);

@@ -21,7 +21,6 @@ import {
   PAS_ENCORE_ETABLI,
 } from "../declarations/faits.ts";
 import type { Questions } from "../declarations/questions.ts";
-import { sejourEcarte } from "./contextes.ts";
 import {
   SORTIE_VERS_LA_PRISON,
   sortieVersLaPrison,
@@ -66,7 +65,7 @@ export const FAITS_DE_LA_PERMISSION: DeclarationsDeFaits = {
           Sejour.of(validated).commenceAvecCeTrajet(),
         "Q2.1.g : « 1_ENTREE » ; aucun séjour en cours, donc aucune permission.",
       )
-      .retient(sejourEcarte(validated))
+      .retient(Sejour.of(validated).nonSiEcarte())
       .selon(validated.question("Q2.2.1.a"), { "1_OUI": "oui", "2_NON": "non" })
       .selon(validated.question("Q2.1"), { "11_PERMISSION": "oui" })
       .sinon("Ni Q2.1, ni Q2.2.1 n'établissent encore de permission."),
