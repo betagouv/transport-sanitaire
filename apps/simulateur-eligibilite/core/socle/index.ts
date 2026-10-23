@@ -19,7 +19,6 @@ export {
 } from "./decision-engine/fait-catalogue.ts";
 export type { CoreModel } from "./model.ts";
 export type { Address } from "./questionnaire-engine/address.ts";
-export type { AskedQuestion } from "./questionnaire-engine/asked-question.ts";
 export { page } from "./questionnaire-engine/declared-page.ts";
 export type {
   AnswersReader,
@@ -28,7 +27,6 @@ export type {
 } from "./questionnaire-engine/given-answers.ts";
 export { LocalDateTime } from "./questionnaire-engine/local-date-time.ts";
 export type {
-  Answers,
   QuestionnairePart,
   Unanswered,
 } from "./questionnaire-engine/question.ts";
