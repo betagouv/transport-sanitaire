@@ -33,5 +33,6 @@ export {
 export { Disclosure } from "./ui/Disclosure";
 export { type IllustratedCard, IllustratedCards } from "./ui/IllustratedCards";
 export { NumberedCards } from "./ui/NumberedCards";
+export { NumberedSteps } from "./ui/NumberedSteps";
 export { Panel } from "./ui/Panel";
 export { SheetFollowUp } from "./ui/SheetFollowUp";

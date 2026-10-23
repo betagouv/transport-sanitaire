@@ -1,0 +1,17 @@
+/* L'écran du simulateur (SimulateurScreen.tsx). À l'écran, il fait au moins la
+   hauteur de la fenêtre : le pied de page reste en bas, même quand le contenu
+   est court. `100dvh` et non `100vh` : sur mobile, la barre d'adresse change la
+   hauteur utile, et `vh` laisserait le pied de page sous le pli. Pas à
+   l'impression : la hauteur de la fenêtre y ouvrirait une page blanche après la
+   feuille (§9.2). */
+
+.socle-screen {
+  display: flex;
+  flex-direction: column;
+}
+
+@media screen {
+  .socle-screen {
+    min-height: 100dvh;
+  }
+}

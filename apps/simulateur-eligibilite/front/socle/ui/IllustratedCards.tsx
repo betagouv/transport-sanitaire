@@ -1,10 +1,11 @@
 // Des cartes illustrées : un dessin, puis un titre et un texte. Trois par
 // rangée, une seule colonne sur mobile. Une carte peut être retenue : bordée de
 // vert, elle porte un badge et se lit comme l'élément courant de la liste. Le
-// dessin est décoratif. Sa zone garde
-// sa hauteur pendant le chargement comme après un échec : la carte ne bouge
-// pas, et un dessin qui manque laisse une zone vide. Les gabarits de l'éditeur
-// en font foi. Sans carte, rien ne s'affiche.
+// dessin est décoratif. Tant qu'il se charge, il est masqué et sa zone dit
+// « En cours de chargement », en statut que le lecteur d'écran annonce. Un
+// dessin qui ne se charge pas laisse sa zone vide. Dans les trois cas, la zone
+// garde sa hauteur : la carte ne bouge pas. Les gabarits de l'éditeur en font
+// foi. Sans carte, rien ne s'affiche.
 
 import { type ReactNode, useState } from "react";
 import "./illustrated-cards.css";
@@ -73,9 +74,27 @@ function Card({ card, titleLevel, selectedLabel }: CardProps) {
   );
 }
 
-// Un dessin qui ne se charge pas disparaît ; sa zone reste.
+type Status = "loading" | "loaded" | "failed";
+
+// Le dessin et son état. La clé de son `src` le remonte quand il change : un
+// événement tardif de l'ancien dessin ne touche pas le nouveau.
 function Illustration({ src }: { src?: string }) {
-  const [failed, setFailed] = useState(false);
-  if (!src || failed) return null;
-  return <img alt="" src={src} onError={() => setFailed(true)} />;
+  const [status, setStatus] = useState<Status>("loading");
+  if (!src || status === "failed") return null;
+  return (
+    <>
+      <img
+        alt=""
+        hidden={status === "loading"}
+        src={src}
+        onLoad={() => setStatus("loaded")}
+        onError={() => setStatus("failed")}
+      />
+      {status === "loading" && (
+        <p className="socle-illustrated-cards__loading" role="status">
+          En cours de chargement
+        </p>
+      )}
+    </>
+  );
 }

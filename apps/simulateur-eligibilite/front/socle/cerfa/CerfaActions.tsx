@@ -3,7 +3,9 @@
 // Le PDF se génère une fois, dès que les boutons s'affichent, dans le
 // navigateur : les deux actions portent le même document. Un commentaire retiré
 // faute de place s'annonce avant toute action (D-85). Un échec se signale sans
-// masquer ce que la page affiche déjà, et le clic réessaie.
+// masquer ce que la page affiche déjà, et le clic réessaie. « Imprimer » vient
+// avant « Télécharger » : côte à côte s'ils tiennent, l'un sous l'autre sinon,
+// le groupe en ligne du DSFR passant à la ligne sans couper un libellé (D-173).
 //
 // Le DTO se lit une fois : celui d'un résultat ne change pas tant qu'il est
 // affiché.

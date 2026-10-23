@@ -6,7 +6,8 @@
 // ne s'affiche qu'avec une question, des cartes illustrées, et des étapes en
 // cartes numérotées, trois ou deux par rangée. Le résultat sans commande
 // montre la feuille à remettre : ses cartes illustrées, puis son bloc de suivi,
-// avec un conseil bordé de bleu et un encadré blanc.
+// avec deux étapes à pastille, un rappel encadré de bleu, un conseil bordé de
+// bleu et un encadré blanc.
 
 import type { ReactNode } from "react";
 import type { Cibles } from "../../../core/models/fake/declarations/cibles";
@@ -19,6 +20,7 @@ import {
   type IllustratedCard,
   IllustratedCards,
   NumberedCards,
+  NumberedSteps,
   Panel,
   SheetFollowUp,
 } from "../../socle";
@@ -80,6 +82,18 @@ const RIEN_A_SERVIR: FirstResult = {
   },
 };
 
+// Les deux étapes à pastille de la fiche.
+const ETAPES_DU_CLIENT = [
+  {
+    title: "Choisissez votre boisson",
+    content: <p>La carte est affichée au comptoir.</p>,
+  },
+  {
+    title: "Revenez au comptoir",
+    content: <p>Un serveur prendra votre commande.</p>,
+  },
+];
+
 function FicheDuClient() {
   return (
     <>
@@ -90,8 +104,11 @@ function FicheDuClient() {
       <SheetFollowUp>
         <section>
           <h3>Que pouvez-vous faire maintenant ?</h3>
-          <p>Revenez au comptoir quand vous aurez choisi votre boisson.</p>
+          <NumberedSteps steps={ETAPES_DU_CLIENT} titleLevel={4} />
         </section>
+        <Panel variant="framed" label="Un rappel sur l'attente">
+          <p>Le service peut prendre quelques minutes aux heures de pointe.</p>
+        </Panel>
         <Panel variant="outlined" label="Un conseil sur le lait">
           <p>
             <strong>Important :</strong> le lait tourne au contact du citron.

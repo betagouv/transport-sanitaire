@@ -1,15 +1,16 @@
 // Un encadré du résultat : un titre, puis son contenu. Le gris, à filet bleu,
 // range des éléments séparés d'un trait ; le bleu pâle porte ce que
 // l'utilisateur transmet. Sur une feuille à remettre, le blanc range un texte
-// dans le bloc de suivi, et le blanc bordé de bleu, en texte bleu, met un
-// conseil en avant. Sans titre, l'encadré est un aparté que son `label` nomme.
+// dans le bloc de suivi. En texte bleu, le blanc encadré de bleu porte un
+// rappel, et le blanc bordé de bleu, à filet gauche, met un conseil en avant.
+// Sans titre, l'encadré est un aparté que son `label` nomme.
 // Les gabarits de l'éditeur en font foi.
 
 import { type ReactNode, useId } from "react";
 import "./panel.css";
 
 type Props = {
-  variant: "grey" | "blue" | "white" | "outlined";
+  variant: "grey" | "blue" | "white" | "framed" | "outlined";
   /** Un trait sépare chaque enfant du suivant. */
   divided?: boolean;
   children: ReactNode;

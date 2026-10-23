@@ -65,7 +65,9 @@ describe("la fiche de la seed issue-non-eligible", () => {
     const dessins = within(cartes)
       .getAllByRole("listitem")
       .map((carte) =>
-        within(carte).getByRole("presentation").getAttribute("src"),
+        within(carte)
+          .getByRole("presentation", { hidden: true })
+          .getAttribute("src"),
       );
     expect(dessins).toEqual([
       expect.stringMatching(/vehicule-personnel\.webp$/),

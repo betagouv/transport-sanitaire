@@ -27,15 +27,12 @@
   }
 }
 
+/* Il ne se coupe pas, sauf s'il est plus haut qu'une page : la pagination
+   mesurée le dit à la feuille (sheet-viewer-print.css). Ses tailles sur papier
+   sont dans sheet-paper.css. */
 @media print {
   .socle-sheet-follow-up {
-    padding: 4mm;
     break-inside: avoid;
     print-color-adjust: exact;
-  }
-
-  .socle-sheet-follow-up > section > h3 {
-    margin-bottom: 2mm;
-    font-size: 13.5pt;
   }
 }

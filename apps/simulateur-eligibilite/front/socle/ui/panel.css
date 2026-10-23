@@ -35,6 +35,12 @@
   background-color: var(--background-default-grey);
 }
 
+.socle-panel--framed {
+  border: 1px solid var(--border-plain-info);
+  border-radius: 10px;
+  background-color: var(--background-default-grey);
+}
+
 .socle-panel--outlined {
   border: 1px solid var(--border-plain-info);
   border-left-width: 4px;
@@ -42,6 +48,8 @@
   background-color: var(--background-default-grey);
 }
 
+.socle-panel--framed,
+.socle-panel--framed p,
 .socle-panel--outlined,
 .socle-panel--outlined p {
   color: var(--text-default-info);

@@ -1,5 +1,6 @@
-/* L'impression de la feuille (SheetViewer.tsx), à part de son aspect à
-   l'écran (sheet-viewer.css). */
+/* L'impression de la feuille (SheetViewer.tsx) : ce qui ne vaut que sur
+   papier, la page, ce qui ne sort pas, et les sauts. La mise en page de la
+   feuille elle-même est dans sheet-paper.css, que la mesure lit aussi. */
 
 /* La feuille s'imprime seule, sans la visionneuse ni le reste de la page,
    avec les marges des gabarits. Tout le document prend la page nommée : posée
@@ -31,26 +32,25 @@
     display: none;
   }
 
-  .socle-sheet {
-    display: block;
-    width: auto;
-    min-height: 0;
-    padding: 0;
-    box-shadow: none;
-    print-color-adjust: exact;
-  }
-
-  .socle-sheet__logos {
-    margin-bottom: 3mm;
-  }
-
-  .socle-sheet .socle-sheet__title {
-    font-size: 17pt;
-  }
-
   .socle-sheet .socle-panel {
-    margin-top: 4mm;
-    padding: 3mm 3.5mm;
     break-inside: avoid;
+  }
+
+  /* Les sauts que la pagination mesurée a retenus (sheet-pagination.ts). Sur
+     deux pages, la seconde s'ouvre au bloc de suivi, et seulement alors
+     (§9.3). Plus haut qu'une page, il suit les cartes sans saut et se coupe :
+     rendu insécable, il laisserait une page blanche ou une troisième page.
+     Ses étapes et ses encadrés restent entiers, et un titre ne reste pas seul
+     en bas de page. */
+  .socle-sheet[data-print-layout="two-pages"] .socle-sheet-follow-up {
+    break-before: page;
+  }
+
+  .socle-sheet[data-print-layout="flowing"] .socle-sheet-follow-up {
+    break-inside: auto;
+  }
+
+  .socle-sheet[data-print-layout="flowing"] .socle-sheet-follow-up :is(h3, h4) {
+    break-after: avoid;
   }
 }
