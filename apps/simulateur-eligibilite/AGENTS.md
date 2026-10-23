@@ -28,8 +28,11 @@ ouvre P3, dont le résultat (R3) imprime et télécharge le gabarit du support
 #158) : il assemble les rubriques que les cerfa partagent (`r3/rubriques/`,
 D-138), qui ne connaissent aucun cerfa. Le texte médical de la PMT et de la DAP
 est composé (`r3/rubriques/texte-medical.ts`, #159, D-141 à D-147), mais ces deux
-cerfa sortent encore vierges : en attendant leur remplissage (#160, #161), R3 récapitule les
-réponses de P3 (`r3/recapitulatif-du-complement.ts`).
+cerfa sortent encore vierges. R3 suit C03 (#223) : le stepper titré du document,
+le texte, la navigation, « Imprimer » et « Télécharger », puis l'aperçu du PDF.
+Pour la PMT et la DAP, en attendant leur remplissage (#160, #161), les réponses
+de P3 tiennent la place de l'aperçu (`cerfa.standIn`,
+`r3/recapitulatif-du-complement.ts`, D-184).
 Le [README](README.md) § « Entre deux modèles » dit ce qui est parti et ce qui reste.
 
 Le simulateur a deux racines, et chacune a deux dossiers (ADR
@@ -263,7 +266,8 @@ simulateur calcule le DTO sous le second résultat et le passe au bouton.
 | `flatten-cerfa.ts` | l'aplatissement du PDF rempli : plus aucun champ, chaque valeur dessinée sur la page (D-84). Puis ce qu'un champ ne sait pas montrer : les marques des cases partagées, les textes sans champ, ceux qui débordent |
 | `generate-cerfa.ts` | la génération : le DTO traduit dans les noms du gabarit, remplir, puis aplatir, avec `pdf-lib` chargé à la demande. Le nom daté du fichier, le téléchargement |
 | `print-pdf.ts` | l'impression d'un PDF dans un cadre invisible : le dialogue du navigateur s'ouvre sur le PDF, pas sur la page |
-| `CerfaActions.tsx` | les boutons « Imprimer » et « Télécharger », qui génèrent le PDF dès qu'ils s'affichent et portent le même document. L'avertissement d'un commentaire retiré, l'alerte si ça échoue |
+| `CerfaDocument.tsx` | les boutons « Imprimer » et « Télécharger », qui génèrent le PDF dès qu'ils s'affichent et portent le même document, puis son aperçu, ou ce que le modèle met à sa place. L'avertissement d'un commentaire retiré, l'alerte si ça échoue |
+| `CerfaPreview.tsx` | l'aperçu du PDF dans la page, par le lecteur du navigateur ; sans lecteur, une phrase renvoie au téléchargement (D-183) |
 
 Un formulaire rempli porte des données de santé nominatives. Il se génère **dans le
 navigateur uniquement**, et ce dossier n'adresse jamais `/api`.

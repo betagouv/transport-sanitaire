@@ -1,16 +1,20 @@
-// Les deux actions sur un cerfa : l'imprimer, le télécharger.
+// Le document d'un cerfa : ses deux actions, l'imprimer et le télécharger,
+// puis son aperçu.
 //
-// Le PDF se génère une fois, dès que les boutons s'affichent, dans le
-// navigateur : les deux actions portent le même document. Un commentaire retiré
-// faute de place s'annonce avant toute action (D-85). Un échec se signale sans
-// masquer ce que la page affiche déjà, et le clic réessaie. « Imprimer » vient
-// avant « Télécharger » : côte à côte s'ils tiennent, l'un sous l'autre sinon,
-// le groupe en ligne du DSFR passant à la ligne sans couper un libellé (D-173).
+// Le PDF se génère une fois, dès que le document s'affiche, dans le
+// navigateur : les deux actions et l'aperçu portent le même document. Un
+// commentaire retiré faute de place s'annonce avant toute action (D-85). Un
+// échec se signale sans masquer ce que la page affiche déjà, et le clic
+// réessaie. « Imprimer » vient avant « Télécharger » : côte à côte s'ils
+// tiennent, l'un sous l'autre sinon, le groupe en ligne du DSFR passant à la
+// ligne sans couper un libellé (D-173). Qui l'affiche peut donner de quoi
+// tenir la place de l'aperçu.
 //
 // Le DTO se lit une fois : celui d'un résultat ne change pas tant qu'il est
 // affiché.
 
-import { useEffect, useRef, useState } from "react";
+import { type ReactNode, useEffect, useRef, useState } from "react";
+import { CerfaPreview } from "./CerfaPreview";
 import type { Cerfa, CerfaDto } from "./cerfa";
 import {
   download,
@@ -27,14 +31,17 @@ type Props<Dto extends CerfaDto> = {
   date: Date;
   printLabel: string;
   downloadLabel: string;
+  /** Ce qui se montre à la place de l'aperçu. Sans lui, l'aperçu du PDF. */
+  standIn?: ReactNode;
 };
 
-export function CerfaActions<Dto extends CerfaDto>({
+export function CerfaDocument<Dto extends CerfaDto>({
   cerfa,
   dto,
   date,
   printLabel,
   downloadLabel,
+  standIn,
 }: Props<Dto>) {
   const { settled, withPdf } = useDownloadablePdf(cerfa, dto);
   const print = usePrint();
@@ -56,6 +63,8 @@ export function CerfaActions<Dto extends CerfaDto>({
           {downloadLabel}
         </ActionButton>
       </ul>
+      {standIn ??
+        (settled?.status === "ready" && <CerfaPreview pdf={settled.pdf} />)}
     </div>
   );
 }
