@@ -136,7 +136,8 @@ front/                   le front, bundlé par Vite
       p3/                le complément du cerfa : le trajet, le soin, l'urgence, les
                          évènements et l'exonération
       r3/                son résultat : le document de chaque support
-        rubriques/       ce que les cerfa partagent, sans lien à aucun d'eux (D-138)
+        rubriques/       ce que les cerfa partagent, sans lien à aucun d'eux (D-138),
+                         dont le texte médical de la PMT et de la DAP
         s3141/           le S3141, assemblé de rubriques
   socle/                 ce qui ne dépend d'aucune version. `model.ts` est le contrat
                          qu'un modèle remplit, `index.ts` ce qu'il a le droit d'importer
