@@ -128,6 +128,41 @@ export async function fontSizeOf(
 }
 
 /**
+ * Le formulaire `pdf`, dont le dernier widget du champ `field` déclare sa
+ * propre taille de police, comme ceux des volets 3 et 4 de la DAP.
+ */
+export async function withWidgetFontSize(
+  pdf: Uint8Array,
+  field: string,
+  size: number,
+): Promise<Uint8Array> {
+  const document = await PDFDocument.load(pdf);
+  const widget = document
+    .getForm()
+    .getTextField(field)
+    .acroField.getWidgets()
+    .at(-1);
+  widget?.setDefaultAppearance(`/Helv ${size} Tf 0 g`);
+  return document.save({ updateFieldAppearances: false });
+}
+
+/** Les tailles de police que les widgets du champ `name` dessinent, dans l'ordre. */
+export async function drawnSizesOf(
+  pdf: Uint8Array,
+  name: string,
+): Promise<number[]> {
+  const field = (await PDFDocument.load(pdf)).getForm().getTextField(name);
+  return field.acroField.getWidgets().map((widget) => {
+    const stream = widget.getAppearances()?.normal;
+    const content =
+      stream instanceof PDFRawStream
+        ? new TextDecoder("latin1").decode(decodePDFRawStream(stream).decode())
+        : "";
+    return Number(content.match(/([\d.]+) Tf/)?.[1]);
+  });
+}
+
+/**
  * Ce qu'un PDF aplati montre : le nombre de champs qui y restent, et les textes
  * dessinés, dans l'ordre où le fichier les range.
  */
@@ -141,6 +176,26 @@ export async function drawnOn(
       object instanceof PDFRawStream ? textsOf(object) : [],
     );
   return { fields: document.getForm().getFields().length, texts };
+}
+
+/**
+ * Les textes dessinés sur la page `number`, comptée depuis 1 : ceux des champs
+ * aplatis et ceux dessinés hors champ.
+ */
+export async function textsOn(
+  pdf: Uint8Array,
+  number: number,
+): Promise<string[]> {
+  const page = (await PDFDocument.load(pdf)).getPage(number - 1);
+  const objects = page.node
+    .Resources()
+    ?.lookupMaybe(PDFName.of("XObject"), PDFDict);
+  const drawn = (objects?.values() ?? []).map((ref) =>
+    page.doc.context.lookup(ref),
+  );
+  return [...contentsOf(page), ...drawn].flatMap((stream) =>
+    stream instanceof PDFRawStream ? textsOf(stream) : [],
+  );
 }
 
 /**
@@ -212,12 +267,7 @@ function drawnObjects(page: PDFPage): string[] {
   const objects = page.node
     .Resources()
     ?.lookupMaybe(PDFName.of("XObject"), PDFDict);
-  const contents = page.node.Contents();
-  const streams =
-    contents instanceof PDFArray ? contents.asArray() : [contents];
-  return streams.flatMap((ref) => {
-    const stream = ref && page.doc.context.lookup(ref);
-    if (!(stream instanceof PDFRawStream)) return [];
+  return contentsOf(page).flatMap((stream) => {
     const content = new TextDecoder("latin1").decode(
       decodePDFRawStream(stream).decode(),
     );
@@ -227,5 +277,15 @@ function drawnObjects(page: PDFPage): string[] {
       ([, x, y, name = ""]) =>
         `${objects?.get(PDFName.of(name))} à ${Number(x)},${Number(y)}`,
     );
+  });
+}
+
+// Les flux de contenu de la page.
+function contentsOf(page: PDFPage): PDFRawStream[] {
+  const contents = page.node.Contents();
+  const refs = contents instanceof PDFArray ? contents.asArray() : [contents];
+  return refs.flatMap((ref) => {
+    const stream = ref && page.doc.context.lookup(ref);
+    return stream instanceof PDFRawStream ? [stream] : [];
   });
 }
