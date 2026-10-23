@@ -14,7 +14,8 @@ import { ecouterLesTelechargements } from "./telechargements";
 
 // Le cerfa s'imprime et se télécharge sous le second résultat, rempli dans le
 // navigateur dès que le résultat s'affiche : les deux actions portent le même
-// PDF. Il porte la date du jour où le complément a été validé.
+// PDF. Il porte la date du jour où le complément a été validé. Un PDF arrivé
+// après qu'on a quitté le résultat ne sort pas (D-190).
 
 type User = Awaited<ReturnType<typeof ouvrirLeSimulateur>>;
 
@@ -118,6 +119,23 @@ describe("le cerfa", () => {
     expect(screen.getByText("Commande : thé, lait, 2 tasses")).toBeVisible();
     expect(ecoute.telechargements).toEqual([]);
   });
+
+  it("ne sort pas si l'on quitte le résultat pendant une nouvelle tentative", async () => {
+    const gabarit = gabaritRetenu({ echoueDAbord: true });
+    const user = await ouvrirLeSimulateur({
+      modele: auGabarit(gabarit.charge),
+    });
+    await allerAuCerfa(user);
+    await user.click(await genere(TELECHARGER));
+
+    await user.click(bouton("Précédent"));
+    gabarit.lache();
+    await user.click(bouton("Terminer"));
+    await genere(TELECHARGER);
+
+    expect(ecoute.telechargements).toEqual([]);
+    expect(document.querySelector("iframe")).toBeNull();
+  });
 });
 
 // ---- implémentation ----
@@ -157,6 +175,14 @@ async function imprimer(user: User) {
 
 // Le modèle de test, dont le gabarit ne se charge pas.
 function sansGabarit(): Model {
+  return auGabarit(() => Promise.reject(new Error("Gabarit introuvable.")));
+}
+
+type Gabarit = () => Promise<ArrayBuffer | Uint8Array>;
+
+// Le modèle de test, dont le gabarit se charge par `charge`, qui reçoit le
+// chargement réel.
+function auGabarit(charge: (reel: Gabarit) => ReturnType<Gabarit>): Model {
   const { cerfa } = modeleDeTest;
   return {
     ...modeleDeTest,
@@ -169,11 +195,29 @@ function sansGabarit(): Model {
             ...bound,
             cerfa: {
               ...bound.cerfa,
-              template: () => Promise.reject(new Error("Gabarit introuvable.")),
+              template: () => charge(bound.cerfa.template),
             },
           }
         );
       },
     },
   };
+}
+
+// Un gabarit retenu jusqu'à `lache()`, qui peut échouer à son premier
+// chargement. Les chargements d'après `lache()` passent aussitôt.
+function gabaritRetenu({ echoueDAbord = false } = {}) {
+  let lache: () => void = () => {};
+  const retenu = new Promise<void>((resolve) => {
+    lache = resolve;
+  });
+  let chargements = 0;
+  const charge = async (reel: Gabarit) => {
+    chargements += 1;
+    if (echoueDAbord && chargements === 1)
+      throw new Error("Gabarit introuvable.");
+    await retenu;
+    return reel();
+  };
+  return { charge, lache: () => lache() };
 }
