@@ -45,15 +45,21 @@ export class DeclaredSingleChoice<
     return this.withOwn({ dropdown: true });
   }
 
+  /** Les libellés des options en gras ; leur description reste dessous. */
+  boldLabels(): this {
+    return this.withOwn({ boldLabels: true });
+  }
+
   protected override askedWith(
     common: AskedCommonData,
     context: QuestionContext<Questions, Cibles, Faits>,
   ) {
-    const { options, dropdown } = this.own;
+    const { options, dropdown, boldLabels } = this.own;
     return new AskedSingleChoice({
       ...common,
       kind: this.kind,
       dropdown,
+      boldLabels,
       options: options.offeredIn(context),
     });
   }
@@ -138,6 +144,7 @@ export class DeclaredMultipleChoice<
 export type SingleOwn<Questions extends AnyQuestions, Cibles, Faits> = {
   readonly options: DeclaredOptions<Questions, Cibles, Faits>;
   readonly dropdown?: boolean;
+  readonly boldLabels?: boolean;
 };
 
 /** Ce qu'un choix multiple règle de plus qu'une question. */

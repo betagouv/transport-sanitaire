@@ -28,8 +28,9 @@ export const PARTS: readonly QuestionnairePart<Questions, undefined>[] = [
         question
           .singleChoice("boisson", "Quelle boisson souhaitez-vous ?")
           .hint(
-            "Démontre : une description sous chaque option, et l'avance immédiate après un choix unique.",
+            "Démontre : des libellés en gras, une description grise sous chaque option, et l'avance immédiate après un choix unique.",
           )
+          .boldLabels()
           .option("the", (option) =>
             option.description("Servi en théière, à infuser trois minutes."),
           )
