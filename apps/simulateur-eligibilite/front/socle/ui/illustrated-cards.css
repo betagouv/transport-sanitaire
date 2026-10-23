@@ -1,6 +1,6 @@
 /* Les cartes illustrées (IllustratedCards.tsx). La zone du dessin a une hauteur
    fixe et un fond blanc, et le dessin y tient sans être déformé, sur 90 % de sa
-   place. */
+   place. Tant qu'il se charge, le texte de chargement l'y remplace. */
 
 .socle-illustrated-cards {
   list-style: none;
@@ -54,6 +54,20 @@
   width: 90%;
   height: 90%;
   object-fit: contain;
+}
+
+.socle-illustrated-cards__media img[hidden] {
+  display: none;
+}
+
+/* Gris sur la zone blanche, dans les deux thèmes. */
+.socle-illustrated-cards__loading {
+  max-width: 90%;
+  margin: auto;
+  color: #666;
+  font-size: 0.875rem;
+  line-height: 1.2;
+  text-align: center;
 }
 
 .socle-illustrated-cards__body {

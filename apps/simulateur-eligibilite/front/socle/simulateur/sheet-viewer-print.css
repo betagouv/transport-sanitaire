@@ -40,17 +40,34 @@
     print-color-adjust: exact;
   }
 
-  .socle-sheet__logos {
-    margin-bottom: 3mm;
+  /* Les tailles du texte imprimé sont celles du contrat (§ 9.3) : le corps
+     du bloc de suivi à 9 pt, le texte des cartes à 9,5 pt, les besoins à
+     8 pt. Le reste garde sa taille de l'écran, logos, espace sous eux et
+     titre compris. */
+  .socle-sheet .socle-illustrated-cards__body p {
+    font-size: 9.5pt;
+    line-height: 1.24;
   }
 
-  .socle-sheet .socle-sheet__title {
-    font-size: 17pt;
+  .socle-sheet .socle-sheet-follow-up p,
+  .socle-sheet .socle-sheet-follow-up li {
+    font-size: 9pt;
+    line-height: 1.24;
+  }
+
+  .socle-sheet .fr-badges-group .fr-badge {
+    font-size: 8pt;
+    line-height: 1.25;
   }
 
   .socle-sheet .socle-panel {
     margin-top: 4mm;
     padding: 3mm 3.5mm;
     break-inside: avoid;
+  }
+
+  .socle-sheet .socle-panel--framed {
+    margin-top: 3mm;
+    padding: 3.5mm 4mm;
   }
 }
