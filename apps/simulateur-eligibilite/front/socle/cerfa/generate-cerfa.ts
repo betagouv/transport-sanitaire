@@ -116,12 +116,22 @@ function instructionsOf<Dto extends CerfaDto>(cerfa: Cerfa<Dto>, dto: Dto) {
     marks: bound.flatMap(([key, binding]): Mark[] =>
       "drawn" in binding && binding.drawn && givenValue(key) ? [binding] : [],
     ),
-    drawings: Object.entries(cerfa.drawings).flatMap(([key, at]): Drawing[] => {
-      const text = dto.drawings[key];
-      return isGiven(text) ? [{ text, at, size: TEXT_SIZES.target }] : [];
-    }),
+    drawings: drawingsOf(cerfa, dto),
     commentOf: commentOf(bound, comments),
   };
+}
+
+// Les textes à dessiner, un par position : un texte se répète sur chaque volet
+// qui le porte.
+function drawingsOf<Dto extends CerfaDto>(cerfa: Cerfa<Dto>, dto: Dto) {
+  return Object.entries(cerfa.drawings).flatMap(
+    ([key, positions]): Drawing[] => {
+      const text = dto.drawings[key];
+      return isGiven(text)
+        ? positions.map((at) => ({ text, at, size: TEXT_SIZES.target }))
+        : [];
+    },
+  );
 }
 
 // Retrouve, d'un champ qui a perdu son commentaire, l'entrée du DTO qui le

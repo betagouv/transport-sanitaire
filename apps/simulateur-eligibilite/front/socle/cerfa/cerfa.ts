@@ -71,7 +71,9 @@ export type Cerfa<Dto extends CerfaDto> = {
       NonNullable<Dto["fields"][Key]>
     >;
   };
-  readonly drawings: { readonly [Key in keyof Dto["drawings"]]-?: Position };
+  readonly drawings: {
+    readonly [Key in keyof Dto["drawings"]]-?: readonly Position[];
+  };
 };
 
 /** Un texte écrit dans le champ `field`. */
@@ -105,7 +107,11 @@ export function drawnBox(field: string, state: string): BoxBinding {
   return { field, state, drawn: true };
 }
 
-/** Un texte dessiné à `position`, là où le gabarit n'a pas de champ. */
-export function at(position: Position): Position {
-  return position;
+/**
+ * Un texte dessiné à chaque position, là où le gabarit n'a pas de champ : une
+ * par volet qui le porte, comme un champ recopié d'un volet à l'autre. Le DTO
+ * n'en donne qu'une valeur, et ne sait rien des volets.
+ */
+export function at(...positions: readonly Position[]): readonly Position[] {
+  return positions;
 }
