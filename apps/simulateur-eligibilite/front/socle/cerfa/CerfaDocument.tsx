@@ -5,10 +5,14 @@
 // navigateur : les deux actions et l'aperçu portent le même document. Un
 // commentaire retiré faute de place s'annonce avant toute action (D-85). Un
 // échec se signale sans masquer ce que la page affiche déjà, et le clic
-// réessaie. « Imprimer » vient avant « Télécharger » : côte à côte s'ils
-// tiennent, l'un sous l'autre sinon, le groupe en ligne du DSFR passant à la
-// ligne sans couper un libellé (D-173). Qui l'affiche peut donner de quoi
-// tenir la place de l'aperçu.
+// réessaie. Pendant la génération, les deux actions attendent, et
+// « Télécharger » dit « Préparation du PDF… », comme le bouton de l'éditeur
+// (D-191). Une action qui attend un PDF ne se fait plus si le document a été
+// quitté entre-temps : un PDF arrivé après coup ne sort jamais (D-190).
+// « Imprimer » vient avant « Télécharger » : côte à côte s'ils tiennent, l'un
+// sous l'autre sinon, le groupe en ligne du DSFR passant à la ligne sans
+// couper un libellé (D-173). Qui l'affiche peut donner de quoi tenir la place
+// de l'aperçu.
 //
 // Le DTO se lit une fois : celui d'un résultat ne change pas tant qu'il est
 // affiché.
@@ -60,7 +64,7 @@ export function CerfaDocument<Dto extends CerfaDto>({
           icon="fr-icon-download-line"
           onClick={withPdf && (() => withPdf(save))}
         >
-          {downloadLabel}
+          {settled === undefined ? PREPARING : downloadLabel}
         </ActionButton>
       </ul>
       {standIn ??
@@ -72,6 +76,8 @@ export function CerfaDocument<Dto extends CerfaDto>({
 // ---- implémentation ----
 
 type Settled = ({ status: "ready" } & GeneratedCerfa) | { status: "failed" };
+
+const PREPARING = "Préparation du PDF…";
 
 // Une génération qui ne rejette jamais : son échec est un état de l'écran.
 function generate<Dto extends CerfaDto>(
@@ -88,13 +94,15 @@ function generate<Dto extends CerfaDto>(
 }
 
 // Le PDF du cerfa, généré dès le montage. `withPdf` le passe à une action, et
-// le génère à nouveau si la première tentative a échoué. Il manque tant que la
-// génération se fait attendre.
+// le génère à nouveau si la première tentative a échoué : l'action attend alors
+// le PDF, et ne se fait pas si le document n'est plus affiché. `withPdf` manque
+// tant que la génération se fait attendre.
 function useDownloadablePdf<Dto extends CerfaDto>(cerfa: Cerfa<Dto>, dto: Dto) {
   const [downloadablePdf, setDownloadablePdf] = useState(() =>
     generate(cerfa, dto),
   );
   const settled = useSettled(downloadablePdf);
+  const shown = useShown();
   async function ready(): Promise<Settled> {
     if (settled?.status === "ready") return settled;
     const retry = generate(cerfa, dto);
@@ -103,9 +111,21 @@ function useDownloadablePdf<Dto extends CerfaDto>(cerfa: Cerfa<Dto>, dto: Dto) {
   }
   async function withPdf(action: (pdf: Blob) => void) {
     const result = await ready();
-    if (result.status === "ready") action(result.pdf);
+    if (result.status === "ready" && shown.current) action(result.pdf);
   }
   return { settled, withPdf: settled === undefined ? undefined : withPdf };
+}
+
+// Le document est-il encore affiché ?
+function useShown() {
+  const shown = useRef(false);
+  useEffect(() => {
+    shown.current = true;
+    return () => {
+      shown.current = false;
+    };
+  }, []);
+  return shown;
 }
 
 /** Ce qui est attendu n'est pas encore arrivé. */
@@ -127,8 +147,9 @@ function useSettled(downloadablePdf: Promise<Settled>): Settled | Pending {
   return settled;
 }
 
-// Ce que la génération annonce, au-dessus des boutons : qu'elle est en cours,
-// qu'elle a échoué, ou qu'elle a retiré un commentaire.
+// Ce que la génération annonce, au-dessus des boutons : qu'elle a échoué, ou
+// qu'elle a retiré un commentaire. Qu'elle est en cours, seuls les lecteurs
+// d'écran l'entendent ici : le bouton « Télécharger » le montre.
 function Notices({ settled }: { settled: Settled | Pending }) {
   return (
     <>
@@ -136,8 +157,8 @@ function Notices({ settled }: { settled: Settled | Pending }) {
       {settled?.status === "ready" && settled.removedComments.length > 0 && (
         <RemovedComment />
       )}
-      <p className="fr-hint-text" role="status">
-        {settled === undefined ? "Génération du document en cours…" : ""}
+      <p className="fr-sr-only" role="status">
+        {settled === undefined ? PREPARING : ""}
       </p>
     </>
   );
