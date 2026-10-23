@@ -1,24 +1,18 @@
 // L'écran du simulateur : le simulateur, et le pied de page en bas.
 //
-// La page fait au moins la hauteur de la fenêtre. Le pied de page reste donc en
-// bas, même quand le contenu est court.
+// À l'écran, la page fait au moins la hauteur de la fenêtre. Le pied de page
+// reste donc en bas, même quand le contenu est court. À l'impression, non : la
+// feuille ne laisse pas de page blanche derrière elle (simulateur-screen.css).
 
 import type { ComponentProps } from "react";
 import { Container } from "../app/Container";
 import { Footer } from "../app/Footer";
 import { Simulateur } from "./Simulateur";
+import "./simulateur-screen.css";
 
 export function SimulateurScreen(props: ComponentProps<typeof Simulateur>) {
   return (
-    <div
-      style={{
-        display: "flex",
-        flexDirection: "column",
-        // `100dvh` et non `100vh` : sur mobile, la barre d'adresse change la
-        // hauteur utile, et `vh` laisserait le pied de page sous le pli.
-        minHeight: "100dvh",
-      }}
-    >
+    <div className="socle-screen">
       <Container>
         <Simulateur {...props} />
       </Container>

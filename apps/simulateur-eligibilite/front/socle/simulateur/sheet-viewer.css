@@ -1,7 +1,11 @@
 /* La visionneuse et sa feuille (SheetViewer.tsx). La feuille est du papier :
    blanche et lisible dans les deux thèmes. Elle fixe donc pour ce qu'elle
    contient les jetons du DSFR du thème clair, et les blocs du socle qu'on y
-   pose les suivent. Les mesures sont celles des gabarits de l'éditeur. */
+   pose les suivent. Les mesures sont celles des gabarits de l'éditeur.
+
+   Sur un écran étroit, c'est la visionneuse qui adapte la feuille : ses règles
+   ne valent que dans `.socle-viewer`. La copie que la mesure pose hors d'elle
+   garde ainsi l'A4, même mesurée depuis un téléphone (§6.3). */
 
 .socle-viewer {
   margin-top: 2rem;
@@ -157,8 +161,11 @@
   font-size: 10.5pt;
 }
 
-/* Les cartes illustrées, à l'échelle de la feuille. */
+/* Les cartes illustrées, à l'échelle de la feuille. Trois par rangée, aussi
+   sur la copie que la mesure pose hors de la visionneuse (sheet-measure.ts),
+   même sur un écran étroit. */
 .socle-sheet .socle-illustrated-cards {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 3mm;
   margin-bottom: 5mm;
 }
@@ -206,7 +213,7 @@
     font-size: 0.9375rem;
   }
 
-  .socle-sheet {
+  .socle-viewer .socle-sheet {
     width: 100%;
     min-height: 0;
     padding: 1.5rem 1.125rem;
@@ -214,66 +221,67 @@
     line-height: 1.5;
   }
 
-  .socle-sheet p,
-  .socle-sheet li {
+  .socle-viewer .socle-sheet p,
+  .socle-viewer .socle-sheet li {
     font-size: 1rem;
     line-height: 1.5;
   }
 
-  .socle-sheet h3 {
+  .socle-viewer .socle-sheet h3 {
     font-size: 1.25rem;
   }
 
-  .socle-sheet h4 {
+  .socle-viewer .socle-sheet h4 {
     font-size: 1.25rem;
     line-height: 1.3;
   }
 
-  .socle-sheet__logos {
+  .socle-viewer .socle-sheet__logos {
     flex-wrap: wrap;
     gap: 1rem;
     height: auto;
   }
 
-  .socle-sheet .socle-sheet__title {
+  .socle-viewer .socle-sheet .socle-sheet__title {
     margin-bottom: 1rem;
     font-size: 1.6875rem;
     line-height: 1.2;
   }
 
-  .socle-sheet .socle-sheet__intro {
+  .socle-viewer .socle-sheet .socle-sheet__intro {
     margin-bottom: 1.5rem;
     font-size: 1rem;
   }
 
-  .socle-sheet .socle-illustrated-cards {
+  .socle-viewer .socle-sheet .socle-illustrated-cards {
+    grid-template-columns: 1fr;
     gap: 1rem;
     margin-bottom: 1.75rem;
   }
 
-  .socle-sheet .socle-illustrated-cards__media {
+  .socle-viewer .socle-sheet .socle-illustrated-cards__media {
     height: 170px;
   }
 
-  .socle-sheet .socle-illustrated-cards__body {
+  .socle-viewer .socle-sheet .socle-illustrated-cards__body {
     padding: 1rem 1.125rem 1.25rem;
   }
 
-  .socle-sheet .socle-illustrated-cards__body p {
+  .socle-viewer .socle-sheet .socle-illustrated-cards__body p {
     font-size: 1rem;
     line-height: 1.5;
   }
 
-  .socle-sheet .socle-panel {
+  .socle-viewer .socle-sheet .socle-panel {
     margin-top: 1.125rem;
     padding: 1rem;
   }
 
-  .socle-sheet .socle-panel__title {
+  .socle-viewer .socle-sheet .socle-panel__title {
     font-size: 1.25rem;
   }
 
-  .socle-sheet .socle-panel--framed {
+  .socle-viewer .socle-sheet .socle-panel--framed {
     padding: 1.25rem;
   }
 }

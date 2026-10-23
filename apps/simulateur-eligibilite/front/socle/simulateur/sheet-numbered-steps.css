@@ -1,8 +1,11 @@
 /* Les étapes à pastille (NumberedSteps) à l'échelle de la feuille
    (SheetViewer.tsx), à part de sheet-viewer.css. Les mesures sont celles du
-   gabarit `patient-positive.html` de l'éditeur. */
+   gabarit `patient-positive.html` de l'éditeur. Deux colonnes, aussi sur la
+   copie que la mesure pose hors de la visionneuse ; l'écran étroit n'en
+   garde qu'une, dans la visionneuse. */
 
 .socle-sheet .socle-numbered-steps {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 4mm;
 }
 
@@ -20,16 +23,17 @@
 }
 
 @media screen and (max-width: 47.99em) {
-  .socle-sheet .socle-numbered-steps {
+  .socle-viewer .socle-sheet .socle-numbered-steps {
+    grid-template-columns: 1fr;
     gap: 1.5rem;
   }
 
-  .socle-sheet .socle-numbered-steps__title {
+  .socle-viewer .socle-sheet .socle-numbered-steps__title {
     margin-bottom: 0.875rem;
     font-size: 1.1875rem;
   }
 
-  .socle-sheet .socle-numbered-steps__number {
+  .socle-viewer .socle-sheet .socle-numbered-steps__number {
     width: 1.75rem;
     height: 1.75rem;
     margin-right: 0.5rem;
