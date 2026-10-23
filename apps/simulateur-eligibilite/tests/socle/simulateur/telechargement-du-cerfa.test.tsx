@@ -61,6 +61,18 @@ describe("le cerfa", () => {
     });
   });
 
+  it("propose « Imprimer » avant « Télécharger », dans l'ordre où ils s'empilent", async () => {
+    const user = await ouvrirLeSimulateur();
+    await allerAuCerfa(user);
+
+    const imprimer = await genere(IMPRIMER);
+    const telecharger = await genere(TELECHARGER);
+    expect(
+      imprimer.compareDocumentPosition(telecharger) &
+        Node.DOCUMENT_POSITION_FOLLOWING,
+    ).toBeTruthy();
+  });
+
   it("s'imprime tel qu'il se télécharge", async () => {
     const user = await ouvrirLeSimulateur();
     await allerAuCerfa(user);
