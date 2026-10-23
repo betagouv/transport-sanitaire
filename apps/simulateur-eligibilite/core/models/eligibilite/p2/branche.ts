@@ -8,6 +8,7 @@
 // sur la même page.
 
 import type { GivenAnswers, ValidatedAnswers } from "../../../socle/index.ts";
+import { Urgence } from "../concepts/urgence.ts";
 import type { Faits } from "../declarations/faits.ts";
 import type { Questions } from "../declarations/questions.ts";
 import { cible } from "../evaluation-des-regles.ts";
@@ -63,7 +64,7 @@ export function motifAPoser(
  * Sans réponse à Q2.3.4 : l'urgence ne se redemande jamais.
  */
 export function urgenceDevoilee({ validated, faits }: Lecture): boolean {
-  if (validated.question("Q2.3.4").isValidated()) return false;
+  if (Urgence.of(validated).estDemandeeSurLeTrajet()) return false;
   return cible(faits, "cible_question_urgence_a_afficher").isOui();
 }
 

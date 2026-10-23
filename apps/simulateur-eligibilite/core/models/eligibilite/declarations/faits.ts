@@ -4,11 +4,7 @@
 // La liste suit l'ordre des règles. `tests/model/eligibilite/declarations.test.ts`
 // la compare à `rules/regles.publicodes`.
 
-import type {
-  Fait,
-  FaitContext,
-  FaitDeclarations,
-} from "../../../socle/index.ts";
+import type { Fait, FaitContext } from "../../../socle/index.ts";
 import type { Questions } from "./questions.ts";
 
 /** Le nom de chaque fait que les règles reçoivent. */
@@ -81,9 +77,6 @@ export const FAITS = [
  */
 export type Faits = Readonly<Record<(typeof FAITS)[number], Fait>>;
 
-/** Des déclarations de faits, par thème, que `faits/index.ts` réunit. */
-export type DeclarationsDeFaits = FaitDeclarations<Questions, Faits>;
-
 /**
  * La déclaration d'un fait, dans son fichier de `faits/` : ce qu'il vaut, lu
  * sur les réponses et, au besoin, sur d'autres faits.
@@ -94,6 +87,10 @@ export type DeclarationDeFait = (
 
 /** La provenance d'un fait qu'aucune question posée n'établit encore. */
 export const PAS_ENCORE_ETABLI = "Aucune question posée ne l'établit encore.";
+
+/** La provenance d'un fait de la permission quand il n'y a pas de permission. */
+export const SANS_PERMISSION =
+  "fait_permission vaut « non » : aucune permission.";
 
 /** La provenance d'une complétude : la décision l'impose, aucune garde ne la lit. */
 export const IMPOSEE_PAR_LA_DECISION =
