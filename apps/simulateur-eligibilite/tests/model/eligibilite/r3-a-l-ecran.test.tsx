@@ -2,8 +2,8 @@
 // ouvert sur une seed, mené par P3 jusqu'au document. La page suit C03 pour
 // les cinq documents : le stepper, titré du document, à « Étape 4 sur 4 » et
 // « Préparation terminée. » ; le texte ; la navigation ; les deux actions ;
-// puis l'aperçu. Le S3141 se remplit : il se montre. La PMT et la DAP sortent
-// vierges (#160, #161) : les réponses de P3 tiennent la place de leur aperçu.
+// puis l'aperçu. Le S3141 et la PMT se remplissent : ils se montrent. La DAP
+// sort vierge (#161) : les réponses de P3 tiennent la place de son aperçu.
 
 import { screen } from "@testing-library/react";
 import { beforeEach, describe, expect, it } from "vitest";
@@ -61,7 +61,6 @@ describe("R3 du modèle de l'éditeur", DELAI_D_UN_TEST, () => {
   );
 
   it.each([
-    ["issue-pmt", "Compléter la prescription"],
     ["issue-dap-sans-urgence", "Compléter la demande d’accord préalable"],
     ["issue-dap-urgence-attestee", "Compléter la demande d’accord préalable"],
     ["issue-dap-etranger-a-examiner", "Compléter la demande d’examen"],
@@ -77,12 +76,15 @@ describe("R3 du modèle de l'éditeur", DELAI_D_UN_TEST, () => {
 
   // L'aperçu lui-même se vérifie sur le modèle de test du socle : le navigateur
   // de test ne sert pas les gabarits de l'app, le PDF ne s'y génère pas.
-  it("issue-s3141 : suit C03 et laisse sa place à l'aperçu du document", async () => {
-    await allerEnR3("issue-s3141", "Compléter la prescription");
+  it.each(["issue-s3141", "issue-pmt"])(
+    "%s : suit C03 et laisse sa place à l'aperçu du document",
+    async (id) => {
+      await allerEnR3(id, "Compléter la prescription");
 
-    expect(dansLOrdre(hautDeLaPage())).toBe(true);
-    expect(document.querySelector("dl")).toBeNull();
-  });
+      expect(dansLOrdre(hautDeLaPage())).toBe(true);
+      expect(document.querySelector("dl")).toBeNull();
+    },
+  );
 });
 
 // ---- implémentation ----
