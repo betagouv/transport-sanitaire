@@ -4,7 +4,12 @@
 // et sa raison. Le composant range un `TexteDeLaFichePositive` dans les blocs
 // du socle ; il n'écrit aucun texte de l'éditeur.
 
-import { IllustratedCards, Panel, SheetFollowUp } from "../../../../socle";
+import {
+  IllustratedCards,
+  NumberedSteps,
+  Panel,
+  SheetFollowUp,
+} from "../../../../socle";
 import { illustrationDuMode } from "../illustrations-des-modes";
 import { TexteEnrichi } from "../TexteEnrichi";
 import type { CarteAffichee } from "./cartes-et-badges";
@@ -29,10 +34,11 @@ export function FichePositive({ texte }: { texte: TexteDeLaFichePositive }) {
 
 // ---- implémentation ----
 
-// Le rappel d'attente de l'accord préalable : un aparté bordé de bleu.
+// Le rappel de l'accord préalable : un aparté encadré de bleu, sans le filet
+// gauche du conseil sur l'ALD.
 function Rappel({ rappel }: { rappel: RappelDAttente }) {
   return (
-    <Panel variant="outlined" label={rappel.nom}>
+    <Panel variant="framed" label={rappel.nom}>
       <p>{rappel.texte}</p>
     </Panel>
   );
@@ -65,19 +71,16 @@ function ConsignesDuPatient({ consignes }: { consignes: Consignes }) {
           <TexteEnrichi texte={paragraphe} />
         </p>
       ))}
-      <div>
-        {consignes.etapes.map((etape) => (
-          <div className="fr-mb-2w" key={etape.numero}>
-            <h4>
-              {etape.numero}. {etape.titre}
-            </h4>
-            {etape.blocs.map((bloc, rang) => (
-              // Les blocs d'une étape ne changent jamais d'ordre.
-              <Bloc bloc={bloc} key={`${etape.numero}-${rang}`} />
-            ))}
-          </div>
-        ))}
-      </div>
+      <NumberedSteps
+        titleLevel={4}
+        steps={consignes.etapes.map((etape) => ({
+          title: etape.titre,
+          content: etape.blocs.map((bloc, rang) => (
+            // Les blocs d'une étape ne changent jamais d'ordre.
+            <Bloc bloc={bloc} key={`${etape.numero}-${rang}`} />
+          )),
+        }))}
+      />
     </section>
   );
 }
