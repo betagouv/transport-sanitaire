@@ -1,7 +1,7 @@
 // Des réponses aux faits : ce que les règles de l'éditeur reçoivent.
 //
 // Q0.1 dit un besoin, pas un fait. Le catalogue des faits déclare chacun dans
-// son thème (`catalogue-des-faits.ts`). La décision y impose la complétude :
+// son fichier (`faits/`). La décision y impose la complétude :
 // P1 et P2 sont complètes quand toutes leurs questions posées ont leur réponse
 // (D-110). Un retour pénitentiaire hors du circuit de prescription ne complète
 // pas P2.
@@ -12,9 +12,9 @@ import {
   Questionnaire,
   type ValidatedAnswers,
 } from "../../socle/index.ts";
-import { CATALOGUE_DES_FAITS } from "./catalogue-des-faits.ts";
 import { type Faits, PAS_ENCORE_ETABLI } from "./declarations/faits.ts";
 import type { Questions } from "./declarations/questions.ts";
+import { CATALOGUE_DES_FAITS } from "./faits/index.ts";
 import { P1 } from "./p1/partie-1.ts";
 import { P2 } from "./p2/partie-2.ts";
 import { horsCircuit } from "./p2/retour-penitentiaire.ts";

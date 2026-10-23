@@ -9,12 +9,12 @@
 
 import { describe, expect, it } from "vitest";
 import { model } from "../../../core/models/eligibilite";
-import { CATALOGUE_DES_FAITS } from "../../../core/models/eligibilite/catalogue-des-faits";
 import type { Faits } from "../../../core/models/eligibilite/declarations/faits";
 import {
   OPTIONS,
   type Questions,
 } from "../../../core/models/eligibilite/declarations/questions";
+import { CATALOGUE_DES_FAITS } from "../../../core/models/eligibilite/faits";
 import {
   cibleEnCoursDeP1,
   FAITS_DU_MODE,

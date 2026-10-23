@@ -7,10 +7,10 @@
 // questions, donc lit leurs gardes. Le catalogue la laisse inconnue.
 
 import { type QuestionContext, questionsOf } from "../../socle/index.ts";
-import { CATALOGUE_DES_FAITS } from "./catalogue-des-faits.ts";
 import type { Cibles } from "./declarations/cibles.ts";
 import type { Faits } from "./declarations/faits.ts";
 import { OPTIONS, type Questions } from "./declarations/questions.ts";
+import { CATALOGUE_DES_FAITS } from "./faits/index.ts";
 
 /** La réponse qui le dirait n'est pas donnée : on ne le sait pas encore. */
 export type Inconnu = undefined;

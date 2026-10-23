@@ -84,12 +84,6 @@ export const FAITS_DU_MODE: DeclarationsDeFaits = {
       ),
   fait_mineur_soins_prolonges_reconnus: ({ validated }) =>
     fondement(validated, "8_MINEUR_SOINS_CONTINUS"),
-  // Q1.3 n'a pas de réponse « je ne peux pas le vérifier » : Q2.2.2 à Q2.2.4,
-  // les rattrapages, ne se posent pas (D-109).
-  fait_mineur_soins_prolonges_a_verifier: () =>
-    Fait.inconnu(
-      "Aucune question ne le pose : Q1.3 n'a pas de réponse « je ne peux pas le vérifier » (D-109).",
-    ),
   // Q1.4 ne se pose qu'au patient qui se passe d'un professionnel. Sinon, la
   // préférence est sans objet : elle vaut « non ».
   fait_prefere_transport_commun: ({ validated }) =>

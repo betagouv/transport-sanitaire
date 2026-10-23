@@ -82,14 +82,6 @@ export const FAITS_DE_LA_PRESTATION: DeclarationsDeFaits = {
       .retient(sansSejourEnCours(validated))
       .selon(validated.question("Q2.1.g"), SEJOUR)
       .sinon(seanceDeP1(validated)),
-  fait_source_officielle_active: sansQuestion,
-  fait_correspondance_univoque: sansQuestion,
-  fait_conditions_soin_verifiees: sansQuestion,
-  fait_regime_verifie: sansQuestion,
-  fait_exclusion_soin_prouvee: sansQuestion,
-  fait_preuve_prescripteur_qualifiante: sansQuestion,
-  fait_preuve_prestation_absente: sansQuestion,
-  fait_prestation_non_couverte_declaree: sansQuestion,
 };
 
 // ---- implémentation ----
@@ -130,14 +122,6 @@ function evenementSansSoin(motif: GivenAnswer<Motif>): Fait {
 
 // Q2.1.g : une entrée ou une sortie d'établissement.
 const SEJOUR = { "1_ENTREE": "oui", "2_SORTIE": "oui" } as const;
-
-// Les sous-questions a à e et i à l de Q2.1, et le régime, ne changent aucune
-// sortie : elles restent masquées, sans fait par défaut (D-102).
-function sansQuestion(): Fait {
-  return Fait.inconnu(
-    "Aucune question ne le pose : les sous-questions a à e et i à l de Q2.1, et le régime, restent masquées (D-102).",
-  );
-}
 
 // Ni séance qualifiante en Q1.3, ni séjour en Q2.1 : le soin ne qualifie pas
 // le transport. Q2.1 est un choix unique : un autre motif écarte
