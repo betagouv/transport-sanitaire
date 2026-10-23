@@ -18,7 +18,6 @@ import { FAITS_DE_LA_BRANCHE } from "../p2/branche.ts";
 import { FAITS_DES_CONTEXTES } from "../p2/contextes.ts";
 import { FAITS_DE_LA_CONVOCATION } from "../p2/convocation.ts";
 import { FAITS_DE_LA_PERMISSION } from "../p2/permission.ts";
-import { FAITS_DE_LA_PRESTATION } from "../p2/prestation.ts";
 import { FAITS_DU_TRAJET } from "../p2/trajet.ts";
 import { FAITS_DU_TRANSFERT } from "../p2/transfert.ts";
 import { accompagnant } from "./accompagnant.ts";
@@ -36,10 +35,13 @@ import { critereFauteuil } from "./critere-fauteuil.ts";
 import { critereOxygene } from "./critere-oxygene.ts";
 import { critereSurveillance } from "./critere-surveillance.ts";
 import { critereTap } from "./critere-tap.ts";
+import { evenementSansSoin } from "./evenement-sans-soin.ts";
 import { exclusionSoinProuvee } from "./exclusion-soin-prouvee.ts";
 import { exclusionTransportProuvee } from "./exclusion-transport-prouvee.ts";
+import { hospitalisation } from "./hospitalisation.ts";
 import { mineurSoinsProlongesAVerifier } from "./mineur-soins-prolonges-a-verifier.ts";
 import { mineurSoinsProlongesReconnus } from "./mineur-soins-prolonges-reconnus.ts";
+import { motifCamsp } from "./motif-camsp.ts";
 import { p1Complete } from "./p1-complete.ts";
 import { p2Complete } from "./p2-complete.ts";
 import { partageIncompatible } from "./partage-incompatible.ts";
@@ -48,6 +50,7 @@ import { prestationNonCouverteDeclaree } from "./prestation-non-couverte-declare
 import { preuvePrescripteurQualifiante } from "./preuve-prescripteur-qualifiante.ts";
 import { preuvePrestationAbsente } from "./preuve-prestation-absente.ts";
 import { regimeVerifie } from "./regime-verifie.ts";
+import { situationSoinsQualifiante } from "./situation-soins-qualifiante.ts";
 import { sourceOfficielleActive } from "./source-officielle-active.ts";
 
 /** Les faits du modèle, chacun déclaré une fois. */
@@ -82,9 +85,12 @@ export const CATALOGUE_DES_FAITS = new FaitCatalogue<Questions, Faits>(
     fait_ald_liee: aldLiee,
     fait_ald_exonerante_3_ou_4: aldExonerante3Ou4,
     fait_mineur_soins_prolonges_reconnus: mineurSoinsProlongesReconnus,
+    fait_evenement_sans_soin: evenementSansSoin,
+    fait_motif_camsp: motifCamsp,
+    fait_situation_soins_qualifiante: situationSoinsQualifiante,
+    fait_hospitalisation: hospitalisation,
   },
   FAITS_DU_TRAJET,
-  FAITS_DE_LA_PRESTATION,
   FAITS_DES_CONTEXTES,
   FAITS_DU_TRANSFERT,
   FAITS_DE_LA_PERMISSION,

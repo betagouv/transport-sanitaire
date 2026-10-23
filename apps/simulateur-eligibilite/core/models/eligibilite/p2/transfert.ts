@@ -99,22 +99,6 @@ export function exceptionAProposer(
   }
 }
 
-/**
- * L'hospitalisation qu'établit le transfert : un séjour coché avant un
- * transfert entre établissements, ou un autre déplacement pendant le séjour.
- * Un transfert depuis les urgences n'établit pas de séjour.
- */
-export function hospitalisationDuTransfert(
-  validated: Valides,
-): Fait | PassesOn {
-  const deplacement = validated.question("Q2.5");
-  if (deplacement.is("1_TRANSFERT") && Sejour.of(validated).estCoche())
-    return Fait.oui("Q2.2.1 : séjour coché, Q2.5 : « 1_TRANSFERT ».");
-  if (deplacement.is("2_AUTRE_DEPLACEMENT"))
-    return Fait.oui("Q2.5 : « 2_AUTRE_DEPLACEMENT ».");
-  return undefined;
-}
-
 /** Les faits que les pages du transfert et des exceptions établissent. */
 export const FAITS_DU_TRANSFERT: DeclarationsDeFaits = {
   fait_transfert_article80: ({ validated }) => transfert(validated),
