@@ -31,6 +31,15 @@ export function documentDuComplement(cibles: Cibles) {
   return support == null || support === "AUCUN" ? null : DOCUMENTS[support];
 }
 
+/**
+ * Le document sort-il encore vierge ? La PMT et la DAP, jusqu'à #160 et #161 :
+ * R3 n'en montre pas l'aperçu.
+ */
+export function sortVierge(cibles: Cibles): boolean {
+  const support = cibles.cible_support_id.value;
+  return support === "S3138g" || support === "S3139h";
+}
+
 // ---- implémentation ----
 
 type Support = Exclude<

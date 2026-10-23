@@ -1,7 +1,7 @@
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
-import { CerfaActions } from "../../../front/socle/cerfa/CerfaActions";
+import { CerfaDocument } from "../../../front/socle/cerfa/CerfaDocument";
 import { type Cerfa, commentOn, text } from "../../../front/socle/cerfa/cerfa";
 import { ecouterLesTelechargements } from "../simulateur/telechargements";
 import { drawnOn, testForm } from "./test-form";
@@ -71,7 +71,7 @@ async function genere() {
 
 function afficher(fields: Fiche["fields"]) {
   render(
-    <CerfaActions
+    <CerfaDocument
       cerfa={FICHE}
       dto={{ fields, drawings: {} }}
       date={new Date("2026-10-14T10:00:00Z")}

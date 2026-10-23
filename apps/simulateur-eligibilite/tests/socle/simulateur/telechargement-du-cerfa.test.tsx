@@ -40,7 +40,7 @@ describe("le second résultat", () => {
     expect(
       screen.getByRole("heading", {
         level: 1,
-        name: "Commande complétée : thé, lait",
+        name: /^Commande complétée : thé, lait Étape/,
       }),
     ).toBeVisible();
   });

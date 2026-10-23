@@ -81,9 +81,18 @@ export type Model<
     form: (
       cibles: Cibles,
     ) => BoundCerfa<CerfaInput<Questions, Faits, Cibles>> | null;
-    /** Le `h1` du second résultat, selon le document que la préconisation donne. */
+    /**
+     * Le titre du second résultat, selon le document que la préconisation
+     * donne : celui de son stepper, qui est le `h1` de la page.
+     */
     title: (cibles: Cibles) => string;
+    /** Le texte du second résultat, sous le stepper, avant les boutons. */
     Resultat: ComponentType<ResultatProps<Questions, Cibles>>;
+    /**
+     * Ce qui tient la place de l'aperçu du document, pour un cerfa que son PDF
+     * ne remplit pas encore. Sans lui, ou s'il donne `null`, l'aperçu du PDF.
+     */
+    standIn?: (props: ResultatProps<Questions, Cibles>) => ReactNode;
     /**
      * Le libellé de l'action qui verrouille. `null` : cette préconisation ne
      * complète rien, le bouton n'est pas posé. Il ne l'est pas non plus tant que
