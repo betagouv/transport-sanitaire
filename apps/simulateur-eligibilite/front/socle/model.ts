@@ -32,6 +32,11 @@ export type FirstResult = {
   intro?: ReactNode;
   body?: ReactNode;
   sheet?: Sheet;
+  /**
+   * Rien ne suit ce résultat, quoi que donne `cerfa.startLabel` : il n'a pas
+   * pu conclure. Ni étape suivante ni complétion.
+   */
+  terminal?: boolean;
 };
 
 /**

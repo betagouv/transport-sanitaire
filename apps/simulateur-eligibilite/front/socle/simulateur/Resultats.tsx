@@ -101,14 +101,6 @@ export function traceOf(
 
 type ButtonProps = { onClick: () => void; children: ReactNode };
 
-export function PrimaryButton({ onClick, children }: ButtonProps) {
-  return (
-    <button type="button" className="fr-btn" onClick={onClick}>
-      {children}
-    </button>
-  );
-}
-
 export function SecondaryButton({ onClick, children }: ButtonProps) {
   return (
     <button

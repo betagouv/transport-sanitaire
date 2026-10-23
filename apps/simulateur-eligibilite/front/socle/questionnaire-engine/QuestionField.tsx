@@ -165,6 +165,7 @@ function SingleChoiceField(props: Props & { question: SingleChoice }) {
   return (
     <RadioField
       {...common(props)}
+      boldLabels={question.boldLabels}
       options={question.options}
       value={value}
       onChange={onChange}

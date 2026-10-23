@@ -35,9 +35,10 @@ export function resultatPositif({
 // ---- implémentation ----
 
 // Sans mode, les règles n'ont pas pu choisir le transport : un fait dont elles
-// dépendent est absent.
+// dépendent est absent. Rien n'est alors à compléter.
 const SANS_MODE: FirstResult = {
   title: "Le mode de transport n’a pas pu être choisi",
+  terminal: true,
   body: (
     <p>
       Les réponses données ne suffisent pas à choisir le mode de transport : le

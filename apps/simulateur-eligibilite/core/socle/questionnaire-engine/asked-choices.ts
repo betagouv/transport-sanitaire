@@ -16,6 +16,7 @@ export type AskedSingleChoiceData = AskedCommonData & {
   readonly kind: "single choice";
   readonly options: readonly OfferedOption[];
   readonly dropdown?: boolean;
+  readonly boldLabels?: boolean;
 };
 
 /** Un choix unique, tel qu'il se pose. */
@@ -24,11 +25,14 @@ export class AskedSingleChoice extends AskedCommon {
   readonly options: readonly OfferedOption[];
   /** Affiché en liste déroulante, et non en boutons radio. */
   readonly dropdown: boolean;
+  /** Les libellés des options en gras. */
+  readonly boldLabels: boolean;
 
   constructor(data: AskedSingleChoiceData) {
     super(data);
     this.options = data.options;
     this.dropdown = data.dropdown ?? false;
+    this.boldLabels = data.boldLabels ?? false;
   }
 
   override kept(answer: Answer | Unanswered): Answer | Unanswered {
