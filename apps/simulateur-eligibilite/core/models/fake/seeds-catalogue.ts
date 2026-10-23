@@ -60,6 +60,14 @@ const COMPLETE = {
 
 export const SEEDS: readonly Seed<Questions, Cibles>[] = [
   {
+    id: "boisson",
+    label: "Boisson : libellés en gras, description dessous",
+    description:
+      "S'arrête sur la première page : chaque option a son libellé en gras et sa description en gris dessous.",
+    answers: {},
+    expected: {},
+  },
+  {
     id: "accompagnements-du-the",
     label: "Accompagnements : le citron se propose avec le thé",
     description:

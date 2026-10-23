@@ -1,5 +1,5 @@
-/* Les boutons du premier résultat (FirstResultat.tsx). Sous le corps, un trait
-   les sépare de lui ; au-dessus d'une feuille, ils la précèdent sans trait. */
+/* Le premier résultat (FirstResultat.tsx). Sous le corps, un trait sépare les
+   boutons de lui ; au-dessus d'une feuille, ils la précèdent sans trait. */
 
 .socle-page-actions--below {
   margin-top: 2.5rem;
@@ -9,4 +9,19 @@
 
 .socle-page-actions--above {
   margin-top: 1.5rem;
+}
+
+/* Sur une rangée, la complétion se pousse à droite, les secondaires restent à
+   gauche. Sous 48em, le DSFR empile les trois dans l'ordre du document.
+   Ce sélecteur est plus spécifique que celui du DSFR qui fixe ses marges. */
+@media (min-width: 48em) {
+  .socle-page-actions .fr-btns-group .socle-page-actions__completion {
+    margin-left: auto;
+  }
+}
+
+/* Le titre d'un résultat avec feuille et complétion. `h1` rend ce sélecteur
+   plus spécifique que `.fr-h2`, qui fixe la couleur des titres. */
+h1.socle-result-title--success {
+  color: var(--text-default-success);
 }

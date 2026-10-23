@@ -79,7 +79,10 @@ describe("après le verrou", () => {
     expect(saisie()).toBeInTheDocument();
     expect(sansBouton("Précédent")).toBe(true);
     expect(
-      screen.getByRole("heading", { name: "Étape 2 sur 2" }),
+      screen.getByRole("heading", {
+        level: 1,
+        name: "Compléter la commande Étape 2 sur 2",
+      }),
     ).toBeInTheDocument();
   });
 

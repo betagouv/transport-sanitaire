@@ -1,6 +1,7 @@
 // Ce qui entoure tout résultat qui lit les textes de l'éditeur (D-112) : le
 // catalogue se charge à la demande (900 ko, hors du chunk d'entrée). Le
-// chargement en échec donne un titre et une phrase, sans rien inventer.
+// chargement en échec donne un titre et une phrase, sans rien inventer. Rien ne
+// le suit : sans textes, rien n'est à compléter.
 
 import type { CatalogueResultats } from "../../../../core/models/eligibilite/declarations/catalogue-resultats";
 import type { FirstResult } from "../../../socle";
@@ -18,6 +19,7 @@ export async function avecLeCatalogue(
 
 const CHARGEMENT_EN_ECHEC: FirstResult = {
   title: "Le résultat n’a pas pu être affiché",
+  terminal: true,
   body: (
     <p role="alert">
       Les textes du résultat n’ont pas pu être chargés. Rechargez la page.

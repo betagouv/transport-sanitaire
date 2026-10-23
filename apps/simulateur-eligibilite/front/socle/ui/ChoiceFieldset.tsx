@@ -39,6 +39,8 @@ type Props = {
   message?: Message;
   /** Met la légende en avant, quand le champ est la question de la page. */
   lead?: boolean;
+  /** Les libellés des options en gras ; leur description reste grise, dessous. */
+  boldLabels?: boolean;
 };
 
 export function ChoiceFieldset(props: Props) {
@@ -88,14 +90,23 @@ function Legend({ id, legend, hint, lead }: Props) {
 
 // Une option, puis son aide. L'aide est sœur de l'option, pas son enfant : le
 // DSFR espace les options d'après leur rang dans le groupe.
-function ChoiceInput({ id, type, choice }: Props & { choice: Choice }) {
+function ChoiceInput({
+  id,
+  type,
+  choice,
+  boldLabels,
+}: Props & { choice: Choice }) {
   const inputId = `${id}-${choice.value}`;
   return (
     <>
       <div className={`fr-${type}-group ${CARD[type]}`}>
         <input type={type} id={inputId} {...choice.input} />
         <label className="fr-label" htmlFor={inputId}>
-          {choice.label}
+          {boldLabels ? (
+            <span className="fr-text--bold">{choice.label}</span>
+          ) : (
+            choice.label
+          )}
           {choice.description && (
             <span className="fr-hint-text">{choice.description}</span>
           )}

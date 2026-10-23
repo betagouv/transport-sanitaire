@@ -137,7 +137,7 @@ describe("séquence du parcours", () => {
 
   it("le stepper compte des parties, pas des pages", async () => {
     const user = await ouvrirLeSimulateur();
-    const etape = { name: "Étape 1 sur 2" };
+    const etape = { name: "Questionnaire factice Étape 1 sur 2" };
     expect(await screen.findByRole("heading", etape)).toBeInTheDocument();
 
     await user.click(radio("Un thé"));

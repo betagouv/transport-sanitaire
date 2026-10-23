@@ -19,11 +19,12 @@ export const PARTS: readonly Partie<undefined>[] = [
         "P0/1",
         question
           .singleChoice("Q0.1", "Quel est votre besoin ?")
+          .boldLabels()
           .option("1_VERIFIER", (option) =>
-            option.description("Environ 3 minutes."),
+            option.description("Environ 3 minutes"),
           )
           .option("2_VERIFIER_ET_PRESCRIRE", (option) =>
-            option.description("Environ 10 minutes."),
+            option.description("Environ 10 minutes"),
           ),
       ),
     ],

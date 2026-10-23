@@ -15,6 +15,8 @@ type Props = {
   autoFocus?: boolean;
   /** Met le libellé en avant, quand le champ est la question de la page. */
   lead?: boolean;
+  /** Les libellés des options en gras. */
+  boldLabels?: boolean;
 };
 
 export function RadioField(props: Props) {
@@ -25,6 +27,7 @@ export function RadioField(props: Props) {
       legend={props.label}
       hint={props.hint}
       lead={props.lead}
+      boldLabels={props.boldLabels}
       message={
         props.errors?.length
           ? { state: "error", texts: props.errors }

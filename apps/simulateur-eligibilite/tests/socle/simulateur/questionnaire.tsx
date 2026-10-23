@@ -5,7 +5,7 @@ import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import type { Seed } from "../../../core/socle/seeds/seed";
 import { App } from "../../../front/socle/app/App";
-import type { Model } from "../../../front/socle/model";
+import type { FirstResult, Model } from "../../../front/socle/model";
 import { snapshotReferentiel } from "../../../shared/referentiel";
 import { modeleDeTest, seulModele } from "../modele-de-test";
 import { seRattacher, seRattacherProduit } from "../se-rattacher";
@@ -57,10 +57,28 @@ export const sansBouton = (libelle: string) =>
 
 /** Répond « Un thé », puis « Du lait », et s'arrête sur le résultat. */
 export async function allerAuResultat(user: User) {
+  await repondreJusquAuResultat(user);
+  await screen.findByRole("heading", { level: 1, name: "Votre commande" });
+}
+
+/** Le chemin d'`allerAuResultat`, sans attendre le titre : il peut charger. */
+export async function repondreJusquAuResultat(user: User) {
   await question(BOISSON);
   await user.click(radio("Un thé"));
   await question(ACCOMPAGNEMENTS);
   await user.click(caseACocher("Du lait"));
   await user.click(bouton("Voir le résultat"));
-  await screen.findByRole("heading", { level: 1, name: "Votre commande" });
+}
+
+/** Le modèle de test, dont le premier résultat est celui donné. */
+export function qui(result: () => Promise<FirstResult>): Model {
+  return {
+    ...modeleDeTest,
+    result: { ...modeleDeTest.result, content: result },
+  };
+}
+
+/** La ligne sous la barre du stepper, s'il y en a une. */
+export function detailsDuStepper() {
+  return document.querySelector(".fr-stepper__details")?.textContent;
 }

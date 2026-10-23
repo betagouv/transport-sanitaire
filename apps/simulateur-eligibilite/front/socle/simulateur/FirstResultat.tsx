@@ -2,9 +2,11 @@
 // titre, l'introduction, le corps, la feuille à remettre au patient. Le socle
 // compose la page autour : le stepper et ce qui suit, puis les boutons. Sans
 // feuille, ils sont sous le corps, séparés d'un trait. Avec une feuille, ils
-// passent au-dessus d'elle, et seule la feuille s'imprime.
+// passent au-dessus d'elle, et seule la feuille s'imprime. Les boutons
+// secondaires sont à gauche, la complétion à droite. Le titre d'un résultat
+// avec feuille et complétion est vert.
 
-import { type ComponentType, useEffect, useState } from "react";
+import { type ComponentType, type ReactNode, useEffect, useState } from "react";
 import { preconisationOf } from "../../../core/socle/model";
 import type {
   Answers,
@@ -17,8 +19,8 @@ import {
 } from "../../../core/socle/questionnaire-engine/questionnaire";
 import type { FirstResult, Model } from "../model";
 import type { DebugTraceProps } from "../questionnaire-engine/QuestionnaireForm";
-import { Stepper } from "../questionnaire-engine/Stepper";
-import { PrimaryButton, SecondaryButton, traceOf } from "./Resultats";
+import { NextStep, Stepper } from "../questionnaire-engine/Stepper";
+import { SecondaryButton, traceOf } from "./Resultats";
 import { SheetViewer } from "./SheetViewer";
 import { type Locked, lock } from "./start";
 import "./first-resultat.css";
@@ -35,29 +37,20 @@ type Props = {
 
 // Le verrou ne s'annonce pas à l'écran : l'interface nomme l'action, et le
 // « Précédent » de cette page dit ce qui reste ouvert. Sans action qui
-// verrouille, rien ne suit ce résultat : le stepper s'arrête sur lui. Les
-// boutons restent pendant le chargement du résultat.
+// verrouille, rien ne suit ce résultat : le stepper s'arrête sur lui. Le
+// stepper et les boutons restent pendant le chargement du résultat.
 export function FirstResultat({ model, state, DebugTrace, ...on }: Props) {
   const { answers } = state;
   const preconisation = preconisationOf(model.core, answers);
   const parts = model.core.questionnaire;
-  const { title } = model.result;
-  const startLabel = startLabelOf(model, preconisation.cibles);
   const trace = traceOf("résultat", pagesOf(parts), answers, preconisation);
-  const buttons = { startLabel, ...actionsOf(model, state, on) };
   return (
     <>
-      <div className="fr-no-print">
-        <Stepper
-          title={title}
-          part={parts.length}
-          total={parts.length + (startLabel === null ? 0 : 1)}
-          details={<NextStep startLabel={startLabel} />}
-        />
-      </div>
       <Content
         result={resultOf(model, answers, preconisation.cibles)}
-        buttons={buttons}
+        step={{ title: model.result.title, part: parts.length }}
+        startLabel={startLabelOf(model, preconisation.cibles)}
+        actions={actionsOf(model, state, on)}
       />
       {DebugTrace && (
         <div className="fr-no-print">
@@ -97,13 +90,21 @@ function resultOf(model: Model, answers: Answers, cibles: AnyCibles): Loading {
   return result;
 }
 
-/** Les boutons de la page, et ce que chacun fait. */
-type Buttons = {
-  startLabel: string | null;
+/** Ce que font les boutons de la page. */
+type Actions = {
   onReopen: () => void;
   onLock: () => void;
   onRestart: () => void;
 };
+
+// Ce qui suit le résultat : l'action qui verrouille, et son libellé ; rien ;
+// ou on ne le sait pas encore, le temps que le résultat charge.
+type Completion = { label: string } | "none" | "pending";
+
+type Buttons = Actions & { completion: Completion };
+
+// Où le stepper en est : le titre du résultat, et la partie qu'il clôt.
+type Step = { title: string; part: number };
 
 type Placement = "below" | "above";
 
@@ -111,11 +112,7 @@ type On = Pick<Props, "onReopen" | "onLock" | "onRestart">;
 
 // Ce que font les boutons : rouvrir ce questionnaire, verrouiller ses réponses
 // (`lock`), ou recommencer.
-function actionsOf(
-  model: Model,
-  state: QuestionnaireState,
-  on: On,
-): Omit<Buttons, "startLabel"> {
+function actionsOf(model: Model, state: QuestionnaireState, on: On): Actions {
   return {
     onReopen: () => on.onReopen(state),
     onLock: () => on.onLock(lock(model, state.answers)),
@@ -123,24 +120,76 @@ function actionsOf(
   };
 }
 
-function Content({ result, buttons }: { result: Loading; buttons: Buttons }) {
+type ContentProps = {
+  result: Loading;
+  step: Step;
+  startLabel: string | null;
+  actions: Actions;
+};
+
+function Content({ result, step, startLabel, actions }: ContentProps) {
   const loaded = useLoaded(result);
-  if (loaded === null) {
-    return (
-      <>
-        <p aria-live="polite">Chargement du résultat…</p>
-        <PageActions placement="below" {...buttons} />
-      </>
-    );
+  const buttons = { ...actions, completion: completionOf(startLabel, loaded) };
+  return (
+    <>
+      <div className="fr-no-print">
+        <ResultStepper {...step} completion={buttons.completion} />
+      </div>
+      {loaded === null ? (
+        <>
+          <p aria-live="polite">Chargement du résultat…</p>
+          <PageActions placement="below" {...buttons} />
+        </>
+      ) : (
+        <Page result={loaded} buttons={buttons} />
+      )}
+    </>
+  );
+}
+
+// La complétion n'est offerte qu'une fois le résultat chargé : un résultat qui
+// ne peut rien compléter (`terminal`) la retire, quoi que dise le libellé.
+function completionOf(
+  startLabel: string | null,
+  loaded: FirstResult | null,
+): Completion {
+  if (startLabel === null || loaded?.terminal) return "none";
+  if (loaded === null) return "pending";
+  return { label: startLabel };
+}
+
+// Une partie de plus tant que la complétion est possible, ou pas encore connue.
+function ResultStepper({
+  title,
+  part,
+  completion,
+}: Step & { completion: Completion }) {
+  return (
+    <Stepper
+      title={title}
+      part={part}
+      total={completion === "none" ? part : part + 1}
+      details={detailsOf(completion)}
+    />
+  );
+}
+
+function detailsOf(completion: Completion): ReactNode {
+  if (completion === "pending") return null;
+  if (completion === "none") {
+    return <span className="fr-text--bold">Évaluation terminée.</span>;
   }
-  return <Page result={loaded} buttons={buttons} />;
+  return <NextStep label={completion.label} />;
 }
 
 function Page({ result, buttons }: { result: FirstResult; buttons: Buttons }) {
   const { title, intro, body, sheet } = result;
+  const success = sheet !== undefined && typeof buttons.completion === "object";
   const page = (
     <>
-      <h1 className="fr-h2">{title}</h1>
+      <h1 className={success ? "fr-h2 socle-result-title--success" : "fr-h2"}>
+        {title}
+      </h1>
       {intro && <p className="fr-text--lg">{intro}</p>}
       {body}
     </>
@@ -178,35 +227,33 @@ function useLoaded(result: Loading): FirstResult | null {
   return loaded?.from === result ? loaded.value : null;
 }
 
-function NextStep({ startLabel }: { startLabel: string | null }) {
-  if (startLabel === null) {
-    return <span className="fr-text--bold">Évaluation terminée.</span>;
-  }
-  return (
-    <>
-      <span className="fr-text--bold">Étape suivante :</span> {startLabel}
-    </>
-  );
-}
-
-// Une seule rangée, empilée sur mobile. « Compléter » verrouille, et se tient
-// en dernier ; un libellé `null` le retire. Rien de ces boutons ne s'imprime.
+// Une seule rangée, empilée sur mobile : les secondaires à gauche, la
+// complétion poussée à droite. Elle n'est posée qu'offerte. Rien de ces
+// boutons ne s'imprime.
 function PageActions({
   placement,
-  startLabel,
+  completion,
   onReopen,
   onLock,
   onRestart,
 }: Buttons & { placement: Placement }) {
   return (
-    <div className={`socle-page-actions--${placement} fr-no-print`}>
+    <div
+      className={`socle-page-actions socle-page-actions--${placement} fr-no-print`}
+    >
       <div className="fr-btns-group fr-btns-group--inline-md">
         <SecondaryButton onClick={onReopen}>Précédent</SecondaryButton>
         <SecondaryButton onClick={onRestart}>
           Faire une nouvelle simulation
         </SecondaryButton>
-        {startLabel !== null && (
-          <PrimaryButton onClick={onLock}>{startLabel}</PrimaryButton>
+        {typeof completion === "object" && (
+          <button
+            type="button"
+            className="fr-btn socle-page-actions__completion"
+            onClick={onLock}
+          >
+            {completion.label}
+          </button>
         )}
       </div>
     </div>
