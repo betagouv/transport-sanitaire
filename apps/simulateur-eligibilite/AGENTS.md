@@ -26,8 +26,9 @@ boutons de chaque issue sont posés (`r2/boutons-du-resultat.ts`) ; « Compléte
 ouvre P3, dont le résultat (R3) imprime et télécharge le gabarit du support
 (`r3/documents-du-resultat.ts`, #157). Le S3141 se remplit (`r3/s3141/`,
 #158) : il assemble les rubriques que les cerfa partagent (`r3/rubriques/`,
-D-138), qui ne connaissent aucun cerfa. La PMT et la DAP sortent encore
-vierges : en attendant leur remplissage (#160, #161), R3 récapitule les
+D-138), qui ne connaissent aucun cerfa. Le texte médical de la PMT et de la DAP
+est composé (`r3/rubriques/texte-medical.ts`, #159, D-141 à D-147), mais ces deux
+cerfa sortent encore vierges : en attendant leur remplissage (#160, #161), R3 récapitule les
 réponses de P3 (`r3/recapitulatif-du-complement.ts`).
 Le [README](README.md) § « Entre deux modèles » dit ce qui est parti et ce qui reste.
 

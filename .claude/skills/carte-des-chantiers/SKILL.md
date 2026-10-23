@@ -18,7 +18,7 @@ L'état d'une issue se déduit comme le dit
    sous-issues, avec l'état de chacune :
 
    ```bash
-   gh api graphql -f query='{repository(owner:"betagouv",name:"transports-sanitaires"){issue(number:50){subIssues(first:60){nodes{number title state subIssues(first:60){nodes{number title state subIssues(first:30){nodes{number title state}}}}}}}}}'
+   gh api graphql -f query='{repository(owner:"betagouv",name:"transport-sanitaire"){issue(number:50){subIssues(first:60){nodes{number title state subIssues(first:60){nodes{number title state subIssues(first:30){nodes{number title state}}}}}}}}}'
    ```
 
    `tsp issue show 50` donne le même arbre avec les branches et les PR.

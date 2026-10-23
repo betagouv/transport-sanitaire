@@ -6,11 +6,11 @@
 > ont été prises seul par l'agent qui a mené le chantier, sur délégation de
 > Simon, le 2026-10-22 : elles sont à relire (issues 202 à 207 du dépôt).
 >
-> **Mise à jour 2026-10-22, fusion de staging.** Staging avait pris sept
-> numéros du journal entre-temps. Les décisions de ce chantier, D-134 à D-149
-> dans les messages de commit, sont D-141 à D-156 au journal. La fusion porte
-> aussi R3 et QUAL-017 sur `core/` : les noms d'absence choisis sont au
-> journal, D-157.
+> **Mise à jour 2026-10-23, deux fusions de staging.** Staging avait pris
+> sept numéros du journal le 2026-10-22, puis sept autres pour le texte médical
+> de R3. Les décisions de ce chantier, D-134 à D-149 dans les messages de
+> commit, sont D-148 à D-163 au journal. La première fusion porte aussi R3 et
+> QUAL-017 sur `core/` : les noms d'absence choisis sont au journal, D-164.
 
 ## 1. Contexte & objectifs
 
@@ -101,7 +101,7 @@ le verrou (`questionnaire`), celle d'après (`complement`), la préconisation et
 les seeds. `Model`, dans `front/`, le porte sous `core`, et y ajoute les deux
 résultats, `result` et `cerfa`. Le premier résultat ne s'appelle plus
 `transportAndEligibility` : ce nom disait une partie du parcours, pas un
-résultat. **Ceci remplace D-09** (D-142 du
+résultat. **Ceci remplace D-09** (D-149 du
 [journal](./journal-des-decisions-v10.md)). Aucune fonction ne fabrique un `CoreModel` : un
 type annoncé suffit, puisque rien n'est à effacer.
 

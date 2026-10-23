@@ -33,7 +33,7 @@ describe("pied de page", () => {
     const lien = screen.getByRole("link");
     expect(lien).toHaveAttribute(
       "href",
-      "https://github.com/betagouv/transports-sanitaires/releases/tag/" +
+      "https://github.com/betagouv/transport-sanitaire/releases/tag/" +
         `simulateur-eligibilite%40${versionDeLApp}`,
     );
     expect(lien).toHaveAttribute("target", "_blank");

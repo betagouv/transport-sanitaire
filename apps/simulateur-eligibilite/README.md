@@ -167,7 +167,8 @@ front/                   le front, bundlé par Vite
         fiche-negative/  `ISSUE_NON_ELIGIBLE`
         fiche-positive/  la prescription, le S3141 et les deux accords préalables
       r3/                le résultat du complément : le document de chaque support
-        rubriques/       ce que les cerfa partagent, sans lien à aucun d'eux (D-138)
+        rubriques/       ce que les cerfa partagent, sans lien à aucun d'eux (D-138),
+                         dont le texte médical de la PMT et de la DAP
         s3141/           le S3141, assemblé de rubriques
   socle/                 ce qui ne dépend d'aucune version. `model.ts` est le contrat
                          d'écran qu'un modèle remplit (`Model`), qui porte son
