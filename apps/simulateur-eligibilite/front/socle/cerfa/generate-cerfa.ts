@@ -125,11 +125,11 @@ function instructionsOf<Dto extends CerfaDto>(cerfa: Cerfa<Dto>, dto: Dto) {
 // qui le porte.
 function drawingsOf<Dto extends CerfaDto>(cerfa: Cerfa<Dto>, dto: Dto) {
   return Object.entries(cerfa.drawings).flatMap(
-    ([key, positions]): Drawing[] => {
+    ([key, { positions, singleLine }]): Drawing[] => {
       const text = dto.drawings[key];
-      return isGiven(text)
-        ? positions.map((at) => ({ text, at, size: TEXT_SIZES.target }))
-        : [];
+      if (!isGiven(text)) return [];
+      const size = TEXT_SIZES.target;
+      return positions.map((at) => ({ text, at, size, singleLine }));
     },
   );
 }

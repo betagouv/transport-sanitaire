@@ -25,6 +25,7 @@ import {
   type CerfaMapping,
   commentOn,
   date,
+  onOneLine,
   templateAt,
   text,
 } from "../../../../socle";
@@ -137,10 +138,13 @@ const CERFA: Cerfa<DtoS3138g> = {
     date_prescription: date("date"),
   },
   // À la suite de « autres (précisez) : », jusqu'au cadre, sur chaque volet.
+  // Une seconde ligne passerait sur le titre de la rubrique suivante (D-187).
   drawings: {
-    urgence_precision: at(
-      { page: 3, x: 334, y: 322, width: 234 },
-      { page: 4, x: 337, y: 322, width: 231 },
+    urgence_precision: onOneLine(
+      at(
+        { page: 3, x: 334, y: 322, width: 234 },
+        { page: 4, x: 337, y: 322, width: 231 },
+      ),
     ),
   },
 };

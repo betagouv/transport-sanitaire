@@ -181,6 +181,17 @@ describe("l'urgence de la PMT", () => {
     },
   );
 
+  it.each([3, 4])(
+    "garde sur une ligne, page %i, une précision longue de l'urgence",
+    async (page) => {
+      const precision =
+        "Douleur thoracique aiguë avec suspicion de syndrome coronarien";
+      const pdf = await rempli({ ...PMT, "Q3.5": precision }, AUTRE);
+
+      expect(await textsOn(pdf, page)).toContain(precision);
+    },
+  );
+
   it("coche l'appel au Centre 15 établi", async () => {
     const cibles = { cible_urgence_appel15: true, cible_urgence_autre: false };
 

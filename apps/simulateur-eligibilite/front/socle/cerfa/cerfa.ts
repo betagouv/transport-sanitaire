@@ -23,6 +23,16 @@ export type Position = {
   readonly width: number;
 };
 
+/**
+ * Où se dessine un texte : une position par volet qui le porte. `singleLine` :
+ * il reste sur une ligne, quitte à rapetisser jusqu'au plancher, et ne passe à
+ * la ligne qu'au-delà.
+ */
+export type DrawingBinding = {
+  readonly positions: readonly Position[];
+  readonly singleLine?: boolean;
+};
+
 /** Où va un texte : le nom exact du champ, et comment l'écrire. */
 export type TextBinding = {
   readonly field: string;
@@ -72,7 +82,7 @@ export type Cerfa<Dto extends CerfaDto> = {
     >;
   };
   readonly drawings: {
-    readonly [Key in keyof Dto["drawings"]]-?: readonly Position[];
+    readonly [Key in keyof Dto["drawings"]]-?: DrawingBinding;
   };
 };
 
@@ -112,6 +122,15 @@ export function drawnBox(field: string, state: string): BoxBinding {
  * par volet qui le porte, comme un champ recopié d'un volet à l'autre. Le DTO
  * n'en donne qu'une valeur, et ne sait rien des volets.
  */
-export function at(...positions: readonly Position[]): readonly Position[] {
-  return positions;
+export function at(...positions: readonly Position[]): DrawingBinding {
+  return { positions };
+}
+
+/**
+ * Le texte dessiné `drawing`, gardé sur une ligne : il rapetisse jusqu'au
+ * plancher avant de passer à la ligne, là où une seconde ligne passerait sur
+ * le gabarit.
+ */
+export function onOneLine(drawing: DrawingBinding): DrawingBinding {
+  return { ...drawing, singleLine: true };
 }
