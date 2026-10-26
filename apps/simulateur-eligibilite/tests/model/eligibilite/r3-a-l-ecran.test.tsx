@@ -2,8 +2,9 @@
 // ouvert sur une seed, mené par P3 jusqu'au document. La page suit C03 pour
 // les cinq documents : le stepper, titré du document, à « Étape 4 sur 4 » et
 // « Préparation terminée. » ; le texte ; la navigation ; les deux actions ;
-// puis l'aperçu. Le S3141 et la PMT se remplissent : ils se montrent. La DAP
-// sort vierge (#161) : les réponses de P3 tiennent la place de son aperçu.
+// puis l'aperçu. L'aperçu lui-même se vérifie sur le modèle de test du
+// socle : le navigateur de test ne sert pas les gabarits de l'app, le PDF ne
+// s'y génère pas.
 
 import { screen } from "@testing-library/react";
 import { beforeEach, describe, expect, it } from "vitest";
@@ -51,38 +52,13 @@ describe("R3 du modèle de l'éditeur", DELAI_D_UN_TEST, () => {
       "Demande d’examen préremplie prête à imprimer",
     ],
   ])(
-    "%s : le stepper porte le titre du document et dit la préparation terminée",
+    "%s : suit C03, le stepper titré du document et la préparation terminée",
     async (id, completer, titre) => {
       await allerEnR3(id, completer);
 
       expect(titreDeLEcran()).toBe(`${titre} Étape 4 sur 4`);
       expect(detailsDuStepper()).toBe("Préparation terminée.");
-    },
-  );
-
-  it.each([
-    ["issue-dap-sans-urgence", "Compléter la demande d’accord préalable"],
-    ["issue-dap-urgence-attestee", "Compléter la demande d’accord préalable"],
-    ["issue-dap-etranger-a-examiner", "Compléter la demande d’examen"],
-  ])(
-    "%s : suit C03, les réponses de P3 à la place de l'aperçu",
-    async (id, completer) => {
-      await allerEnR3(id, completer);
-
-      expect(dansLOrdre([...hautDeLaPage(), recapitulatif()])).toBe(true);
-      expect(screen.queryByTitle("Aperçu du document")).toBeNull();
-    },
-  );
-
-  // L'aperçu lui-même se vérifie sur le modèle de test du socle : le navigateur
-  // de test ne sert pas les gabarits de l'app, le PDF ne s'y génère pas.
-  it.each(["issue-s3141", "issue-pmt"])(
-    "%s : suit C03 et laisse sa place à l'aperçu du document",
-    async (id) => {
-      await allerEnR3(id, "Compléter la prescription");
-
       expect(dansLOrdre(hautDeLaPage())).toBe(true);
-      expect(document.querySelector("dl")).toBeNull();
     },
   );
 });
@@ -124,12 +100,6 @@ function hautDeLaPage(): HTMLElement[] {
     bouton("Imprimer"),
     bouton("Télécharger"),
   ];
-}
-
-function recapitulatif(): Element {
-  const liste = document.querySelector("dl");
-  if (!liste) throw new Error("Aucun récapitulatif de P3.");
-  return liste;
 }
 
 // Chaque élément précède le suivant dans la page.

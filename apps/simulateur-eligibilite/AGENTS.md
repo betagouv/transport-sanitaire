@@ -26,13 +26,11 @@ boutons de chaque issue sont posés (`r2/boutons-du-resultat.ts`) ; « Compléte
 ouvre P3, dont le résultat (R3) imprime et télécharge le gabarit du support
 (`r3/documents-du-resultat.ts`, #157). Le S3141 se remplit (`r3/s3141/`,
 #158) : il assemble les rubriques que les cerfa partagent (`r3/rubriques/`,
-D-138), qui ne connaissent aucun cerfa. Le texte médical de la PMT et de la DAP
-est composé (`r3/rubriques/texte-medical.ts`, #159, D-141 à D-147), mais ces deux
-cerfa sortent encore vierges. R3 suit C03 (#223) : le stepper titré du document,
-le texte, la navigation, « Imprimer » et « Télécharger », puis l'aperçu du PDF.
-Pour la PMT et la DAP, en attendant leur remplissage (#160, #161), les réponses
-de P3 tiennent la place de l'aperçu (`cerfa.standIn`,
-`r3/recapitulatif-du-complement.ts`, D-184).
+D-138), qui ne connaissent aucun cerfa. La PMT (`r3/s3138g/`, #160) et la DAP
+(`r3/s3139h/`, #161) les reprennent, avec leurs propres rubriques, dont le
+texte médical (`r3/rubriques/texte-medical.ts`, #159, D-141 à D-147). R3 suit
+C03 (#223) : le stepper titré du document, le texte, la navigation,
+« Imprimer » et « Télécharger », puis l'aperçu du PDF.
 Le [README](README.md) § « Entre deux modèles » dit ce qui est parti et ce qui reste.
 
 Le simulateur a deux racines, et chacune a deux dossiers (ADR

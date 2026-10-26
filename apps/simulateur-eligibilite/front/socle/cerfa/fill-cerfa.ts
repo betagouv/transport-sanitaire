@@ -7,15 +7,13 @@
 // données du patient ne quittent pas le poste.
 
 import {
-  PDFCheckBox,
-  PDFDict,
   PDFDocument,
   type PDFFont,
-  PDFName,
   PDFTextField,
   StandardFonts,
 } from "pdf-lib";
 import { keepBoxAppearances } from "./box-appearances";
+import { type Box, checkBoxes } from "./check-box";
 import { formatDateForField } from "./dates";
 import type { Drawing } from "./flatten-cerfa";
 import { overflowsOf } from "./overflow";
@@ -88,10 +86,6 @@ export async function fillCerfa(
 
 // ---- implémentation ----
 
-type Form = ReturnType<PDFDocument["getForm"]>;
-
-type Box = { readonly field: string; readonly checked: string };
-
 type Text = {
   readonly field: string;
   readonly text: string;
@@ -106,11 +100,6 @@ function isBox(entry: FieldEntry): entry is Box {
 
 function isText(entry: FieldEntry): entry is Text {
   return "text" in entry;
-}
-
-function checkBoxes(document: PDFDocument, boxes: readonly Box[]): void {
-  const form = document.getForm();
-  for (const { field, checked } of boxes) check(form, field, checked);
 }
 
 // Un texte destiné à un champ de `singleLineFields` s'aplatit sur une ligne,
@@ -247,41 +236,18 @@ function writeIfFits(
   if (fontSize === undefined) return false;
   field.setText(text);
   field.setFontSize(fontSize);
+  sameSizeOnEveryWidget(field);
   return true;
 }
 
-/**
- * Coche en imposant l'état d'export attendu.
- *
- * `PDFCheckBox.check()` de pdf-lib retient le premier état « on » qu'il trouve.
- * Pour les radios déguisés (voir `FieldEntry`), il coche la mauvaise case une
- * fois sur deux. On écrit donc la valeur du champ, puis pour chaque widget
- * l'état qu'il sait rendre, ou `/Off`.
- */
-function check(form: Form, name: string, checked: string): void {
-  const field = form.getField(name);
-  if (!(field instanceof PDFCheckBox)) {
-    throw new Error(`Le champ « ${name} » n'est pas une case à cocher.`);
-  }
-  const state = PDFName.of(checked);
-  const widgets = field.acroField.getWidgets();
-  const capable = widgets.filter((widget) => {
-    const appearances = widget.getAppearances()?.normal;
-    return appearances instanceof PDFDict && appearances.has(state);
-  });
-  if (capable.length === 0) {
-    // Aucun widget ne sait rendre cet état. La case resterait vide sans rien
-    // signaler, sur un document opposable. `/Oui` et `/OUI` sont deux états.
-    throw new Error(
-      `« ${name} » ne connaît pas l'état « /${checked} » : la case resterait vide.`,
-    );
-  }
-
-  field.acroField.dict.set(PDFName.of("V"), state);
-  for (const widget of widgets) {
-    const rendersIt = capable.includes(widget);
-    widget.dict.set(PDFName.of("AS"), rendersIt ? state : PDFName.of("Off"));
-  }
+// Un widget qui déclare sa propre taille, comme ceux des volets 3 et 4 de la
+// DAP, l'emporte sur celle du champ chez `pdf-lib` : son texte s'y dessinerait
+// à cette taille, coupé par son cadre.
+function sameSizeOnEveryWidget(field: PDFTextField): void {
+  const appearance = field.acroField.getDefaultAppearance();
+  if (appearance === undefined) return;
+  for (const widget of field.acroField.getWidgets())
+    widget.setDefaultAppearance(appearance);
 }
 
 /** Les champs `singleLineFields` n'affichent qu'une ligne, on aplatit. */
