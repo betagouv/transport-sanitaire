@@ -3,9 +3,10 @@
    contient les jetons du DSFR du thème clair, et les blocs du socle qu'on y
    pose les suivent. Les mesures sont celles des gabarits de l'éditeur.
 
-   Sur un écran étroit, c'est la visionneuse qui adapte la feuille : ses règles
-   ne valent que dans `.socle-viewer`. La copie que la mesure pose hors d'elle
-   garde ainsi l'A4, même mesurée depuis un téléphone (§6.3). */
+   Sur un écran étroit, c'est la visionneuse qui adapte la feuille
+   (sheet-viewer-narrow.css) : ses règles ne valent que dans `.socle-viewer`.
+   La copie que la mesure pose hors d'elle garde ainsi l'A4, même mesurée
+   depuis un téléphone (§6.3). */
 
 .socle-viewer {
   margin-top: 2rem;
@@ -222,87 +223,4 @@
 
 .socle-sheet .socle-panel--framed {
   padding: 3.5mm 4mm;
-}
-
-@media screen and (max-width: 47.99em) {
-  .socle-viewer {
-    padding: 1.25rem 0.75rem;
-  }
-
-  .socle-viewer__button {
-    padding: 0.625rem 0.875rem;
-    font-size: 0.9375rem;
-  }
-
-  .socle-viewer .socle-sheet {
-    width: 100%;
-    min-height: 0;
-    padding: 1.5rem 1.125rem;
-    font-size: 1rem;
-    line-height: 1.5;
-  }
-
-  .socle-viewer .socle-sheet p,
-  .socle-viewer .socle-sheet li {
-    font-size: 1rem;
-    line-height: 1.5;
-  }
-
-  .socle-viewer .socle-sheet h3 {
-    font-size: 1.25rem;
-  }
-
-  .socle-viewer .socle-sheet h4 {
-    font-size: 1.25rem;
-    line-height: 1.3;
-  }
-
-  .socle-viewer .socle-sheet__logos {
-    flex-wrap: wrap;
-    gap: 1rem;
-    height: auto;
-  }
-
-  .socle-viewer .socle-sheet .socle-sheet__title {
-    margin-bottom: 1rem;
-    font-size: 1.6875rem;
-    line-height: 1.2;
-  }
-
-  .socle-viewer .socle-sheet .socle-sheet__intro {
-    margin-bottom: 1.5rem;
-    font-size: 1rem;
-  }
-
-  .socle-viewer .socle-sheet .socle-illustrated-cards {
-    grid-template-columns: 1fr;
-    gap: 1rem;
-    margin-bottom: 1.75rem;
-  }
-
-  .socle-viewer .socle-sheet .socle-illustrated-cards__media {
-    height: 170px;
-  }
-
-  .socle-viewer .socle-sheet .socle-illustrated-cards__body {
-    padding: 1rem 1.125rem 1.25rem;
-  }
-
-  .socle-viewer .socle-sheet .socle-illustrated-cards__body p {
-    font-size: 1rem;
-    line-height: 1.5;
-  }
-
-  .socle-viewer .socle-sheet .socle-panel {
-    margin-top: 1.125rem;
-    padding: 1rem;
-  }
-
-  .socle-viewer .socle-sheet .socle-panel__title {
-    font-size: 1.25rem;
-  }
-
-  .socle-viewer .socle-sheet .socle-panel--framed {
-    padding: 1.25rem;
-  }
 }

@@ -14,6 +14,7 @@ import { usePaperPrint } from "./paper-print";
 import { useSheetDownload } from "./sheet-download";
 import { paperAttributes } from "./sheet-pagination";
 import "./sheet-viewer.css";
+import "./sheet-viewer-narrow.css";
 import "./sheet-numbered-steps.css";
 import "./sheet-paper.css";
 import "./sheet-viewer-print.css";
