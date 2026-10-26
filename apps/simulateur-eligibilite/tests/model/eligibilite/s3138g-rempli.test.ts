@@ -2,7 +2,8 @@
 // de rester vide, et un parcours réel s'écrit sur les deux volets du gabarit,
 // pages 3 et 4. Rien de médical ne s'écrit sur la page 4. Ce que vaut chaque
 // cellule se teste avec sa rubrique (`rubriques-du-cerfa.test.ts`,
-// `rubriques-de-la-pmt.test.ts`, `texte-medical.test.ts`).
+// `rubriques-de-la-pmt.test.ts`, `texte-medical.test.ts`), la consigne du
+// mineur avec la DAP (`consigne-du-mineur.test.ts`).
 
 import { describe, expect, it } from "vitest";
 import { S3138G } from "../../../front/models/eligibilite/r3/s3138g/s3138g";
@@ -151,16 +152,6 @@ describe("les cases de la PMT", () => {
     ["oui2", { cible_situation_pension_militaire: undefined }, []],
   ] as const)("« %s » d'après %j : %j", async (champ, cibles, etats) => {
     expect(await marquees(PMT, cibles, champ)).toEqual(etats);
-  });
-
-  it("écrivent la mention du mineur sur la page 3 seulement (#128)", async () => {
-    const cibles = { cible_mineur_ald_non_exonerante_reconnue: true };
-    const pdf = await rempli(PMT, cibles);
-
-    expect((await textsOn(pdf, 3)).join(" ")).toContain(
-      "Mineur nécessitant des soins prolongés",
-    );
-    expect((await textsOn(pdf, 4)).join(" ")).not.toContain("Mineur");
   });
 });
 
