@@ -53,10 +53,17 @@ _Avoid_: référentiel, réservé au rattachement.
 La liste des établissements et des services que propose le rattachement (D-21).
 _Chez l'éditeur_: **faux ami**. Ses « référentiels » sont nos nomenclatures.
 
+**Prescripteur**:
+Le professionnel devant l'écran : il répond aux questions, lit les résultats et
+prescrit le transport (D-199).
+_Chez l'éditeur_: « prescripteur », et encore « praticien » pour celui qui lit
+le premier résultat. Il passe à « prescripteur » partout.
+_Avoid_: praticien, utilisateur.
+
 ### Le rattachement
 
 **Rattachement**:
-L'établissement et le service que déclare un utilisateur avant d'accéder au
+L'établissement et le service que déclare un prescripteur avant d'accéder au
 simulateur, sans aucune information sur qui il est. C'est une affiliation
 organisationnelle déclarative, pas une identité.
 _Chez l'éditeur_: aucun mot. Le rattachement n'est pas son « contexte fiable »
@@ -67,12 +74,12 @@ Les employer pour le rattachement laisserait croire qu'une personne est identifi
 
 **Rattachement dégradé**:
 Le rattachement « Autre / Autre » donné d'office quand le référentiel ne répond pas.
-L'utilisateur entre quand même dans le simulateur, et l'analytics range sa visite
+Le prescripteur entre quand même dans le simulateur, et l'analytics range sa visite
 sous « autre ».
 _Avoid_: rattachement vide, anonyme. Il est bien là, simplement non renseigné.
 
 **Établissement**:
-Celui que l'utilisateur déclare au rattachement (D-24).
+Celui que le prescripteur déclare au rattachement (D-24).
 _Chez l'éditeur_: **faux ami**. Notre établissement y est la « structure »
 (du prescripteur). Son « établissement » est un lieu du trajet.
 
@@ -95,7 +102,7 @@ _Chez l'éditeur_: « parcours », ou « catalogue des pages et des questions »
 Son « questionnaire » est celui de satisfaction.
 
 **Parcours**:
-Le chemin d'un utilisateur dans le questionnaire, page après page, jusqu'aux
+Le chemin d'un prescripteur dans le questionnaire, page après page, jusqu'aux
 résultats (D-19).
 _Chez l'éditeur_: « parcours », qui désigne aussi le questionnaire.
 
