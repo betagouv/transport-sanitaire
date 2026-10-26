@@ -20,6 +20,10 @@ await model.core.seeds();
 const PRECEDENT = "Précédent";
 const NOUVELLE = "Faire une nouvelle simulation";
 const COMPLETER = "Compléter la prescription";
+const ACCORD = "Compléter la demande d’accord préalable";
+// La fiche à remettre au patient, en PDF (#129) : seules les issues à fiche
+// l'ont.
+const TELECHARGER = "Télécharger";
 
 // L'écran des seeds liste une trentaine de situations : sous la charge de la
 // suite entière, il met plus que la seconde par défaut. Un test attend trois
@@ -54,8 +58,9 @@ const boutonsDuResultat = () =>
     PRECEDENT,
     NOUVELLE,
     COMPLETER,
-    "Compléter la demande d’accord préalable",
+    ACCORD,
     "Compléter la demande d’examen",
+    TELECHARGER,
   ].filter((nom) => screen.queryByRole("button", { name: nom }) !== null);
 
 describe("les boutons du modèle de l'éditeur", DELAI_D_UN_TEST, () => {
@@ -64,17 +69,11 @@ describe("les boutons du modèle de l'éditeur", DELAI_D_UN_TEST, () => {
     ["issue-etablissement", [PRECEDENT, NOUVELLE]],
     ["issue-permission-patient", [PRECEDENT, NOUVELLE]],
     ["issue-convocation", [PRECEDENT, NOUVELLE]],
-    ["issue-non-eligible", [PRECEDENT, NOUVELLE]],
-    ["issue-pmt", [PRECEDENT, NOUVELLE, COMPLETER]],
-    [
-      "issue-dap-sans-urgence",
-      [PRECEDENT, NOUVELLE, "Compléter la demande d’accord préalable"],
-    ],
-    [
-      "issue-dap-urgence-attestee",
-      [PRECEDENT, NOUVELLE, "Compléter la demande d’accord préalable"],
-    ],
-    ["issue-s3141", [PRECEDENT, NOUVELLE, COMPLETER]],
+    ["issue-non-eligible", [PRECEDENT, NOUVELLE, TELECHARGER]],
+    ["issue-pmt", [PRECEDENT, NOUVELLE, COMPLETER, TELECHARGER]],
+    ["issue-dap-sans-urgence", [PRECEDENT, NOUVELLE, ACCORD, TELECHARGER]],
+    ["issue-dap-urgence-attestee", [PRECEDENT, NOUVELLE, ACCORD, TELECHARGER]],
+    ["issue-s3141", [PRECEDENT, NOUVELLE, COMPLETER, TELECHARGER]],
     [
       "issue-dap-etranger-a-examiner",
       [PRECEDENT, NOUVELLE, "Compléter la demande d’examen"],
