@@ -12,6 +12,7 @@
 | Passation | La situation saisie par le prescripteur passe au secrétariat, qui ne la ressaisit pas. |
 | Information du patient | Une explication vulgarisée du résultat, à donner au patient. |
 | CERFA pré-remplis | PMT, DAP et permission de sortie des moins de 20 ans, remplis dans le navigateur depuis les réponses. Réservé au service produit. |
+| Avis des prescripteurs | Un bouton orange ouvre le questionnaire de satisfaction de l'équipe dans un nouvel onglet, sous le résultat ou sous le document selon le besoin choisi en début de parcours. |
 | Labo | Le produit teste lui-même un fichier de règles. Réservé au service produit. |
 | Galerie de seeds | Le catalogue des situations de référence, ouvertes depuis une galerie. Réservé au service produit. |
 | Analytics | Les événements du parcours partent vers Matomo, rangés par service. L'utilisateur peut s'y opposer depuis le site. |

@@ -61,6 +61,15 @@ export async function allerAuResultat(user: User) {
   await screen.findByRole("heading", { level: 1, name: "Votre commande" });
 }
 
+/** Va jusqu'au second résultat : une commande de deux tasses de thé au lait. */
+export async function allerAuCerfa(user: User) {
+  await allerAuResultat(user);
+  await user.click(bouton("Compléter la commande"));
+  await user.type(screen.getByRole("spinbutton", QUANTITE), "2");
+  await user.click(bouton("Terminer"));
+  await screen.findByText("Commande : thé, lait, 2 tasses");
+}
+
 /** Le chemin d'`allerAuResultat`, sans attendre le titre : il peut charger. */
 export async function repondreJusquAuResultat(user: User) {
   await question(BOISSON);
