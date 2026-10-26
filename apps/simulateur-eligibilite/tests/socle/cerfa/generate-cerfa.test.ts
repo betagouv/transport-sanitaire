@@ -192,11 +192,12 @@ describe("générer un cerfa", () => {
     expect(genere.removedComments).toEqual(["precisions"]);
   });
 
-  it("dessine en entier, sous son cadre, un texte qui n'y tient pas", async () => {
+  it("écrit en entier, sur plusieurs lignes de son cadre, un texte qui n'y tient pas", async () => {
     const pdf = await generer({ fields: { nom: LONG }, drawings: {} });
 
     const { fields, texts } = await drawnOn(pdf);
     expect(fields).toBe(0);
+    expect(texts.length).toBeGreaterThan(1);
     expect(texts.map((line) => line.trim()).join(" ")).toBe(LONG.trim());
   });
 
