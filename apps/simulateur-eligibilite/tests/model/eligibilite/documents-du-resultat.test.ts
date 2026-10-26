@@ -1,7 +1,7 @@
 // Les documents de R3 (#157) : le gabarit de chaque support, son titre et le
-// texte de R3, recopiés de `CONTRAT_RENDU_DOCUMENTAIRE.json` (v10.1.3). La PMT
-// et la DAP se téléchargent encore vierges, aplaties, sans champ. Le S3141 se
-// remplit : `s3141-rempli.test.ts`.
+// texte de R3, recopiés de `CONTRAT_RENDU_DOCUMENTAIRE.json` (v10.1.3). La DAP
+// se télécharge encore vierge, aplatie, sans champ. Le S3141 et la PMT se
+// remplissent : `s3141-rempli.test.ts`, `s3138g-rempli.test.ts`.
 
 import { describe, expect, it } from "vitest";
 import type { Cibles } from "../../../core/models/eligibilite/declarations/cibles";
@@ -40,14 +40,11 @@ describe("le document de R3", () => {
     ).toBeNull();
   });
 
-  it.each(["S3138g", "S3139h"] as const)(
-    "%s se génère vierge et aplati",
-    async (support) => {
-      const pdf = await vierge(support);
+  it("S3139h se génère vierge et aplati", async () => {
+    const pdf = await vierge("S3139h");
 
-      expect((await drawnOn(pdf)).fields).toBe(0);
-    },
-  );
+    expect((await drawnOn(pdf)).fields).toBe(0);
+  });
 });
 
 describe("le titre de R3", () => {

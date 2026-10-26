@@ -14,7 +14,7 @@ import {
 } from "pdf-lib";
 import { type Drawing, LINE_HEIGHT } from "./flatten-cerfa";
 import { paddingOf } from "./text-fit";
-import { TEXT_SIZES } from "./text-sizes";
+import { SIZE_STEP, TEXT_SIZES } from "./text-sizes";
 import { pageOf } from "./widget-page";
 
 /**
@@ -49,9 +49,6 @@ export function overflowsOf(
 // Le bas de la page qu'une imprimante n'imprime pas : 5 mm.
 const PRINTABLE_MARGIN = 14;
 
-// Le pas de réduction sous la taille réduite, en points.
-const STEP = 0.5;
-
 // Le cadre du champ, sans sa marge intérieure : là où le texte s'écrirait.
 type Frame = { x: number; top: number; width: number };
 
@@ -66,7 +63,11 @@ function frameOf(widget: PDFWidgetAnnotation): Frame {
 }
 
 function sizeOnPage(text: string, frame: Frame, font: PDFFont): number {
-  for (let size = TEXT_SIZES.reduced; size > TEXT_SIZES.floor; size -= STEP)
+  for (
+    let size = TEXT_SIZES.reduced;
+    size > TEXT_SIZES.floor;
+    size -= SIZE_STEP
+  )
     if (bottomOf(text, frame, font, size) >= PRINTABLE_MARGIN) return size;
   return TEXT_SIZES.floor;
 }

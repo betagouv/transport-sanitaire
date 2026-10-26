@@ -11,7 +11,7 @@ import {
   type PDFWidgetAnnotation,
   TextAlignment,
 } from "pdf-lib";
-import { TEXT_SIZES } from "./text-sizes";
+import { SIZE_STEP, TEXT_SIZES } from "./text-sizes";
 
 /** Le texte ne tient dans son cadre à aucune taille. */
 type DoesNotFit = undefined;
@@ -31,6 +31,22 @@ export function sizeInField(
   return [TEXT_SIZES.target, TEXT_SIZES.reduced].find((fontSize) =>
     fits(field, font, fontSize, text),
   );
+}
+
+/**
+ * La plus grande taille, de `wanted` au plancher par pas d'un demi-point, à
+ * laquelle `text` tient sur une ligne de `width`. Au plancher, il passera à la
+ * ligne : il s'écrit quand même.
+ */
+export function sizeOnOneLine(
+  text: string,
+  width: number,
+  font: PDFFont,
+  wanted: number,
+): number {
+  for (let size = wanted; size > TEXT_SIZES.floor; size -= SIZE_STEP)
+    if (font.widthOfTextAtSize(text, size) <= width) return size;
+  return TEXT_SIZES.floor;
 }
 
 /**

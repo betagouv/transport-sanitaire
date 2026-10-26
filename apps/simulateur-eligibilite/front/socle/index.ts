@@ -20,6 +20,7 @@ export {
   commentOn,
   date,
   drawnBox,
+  onOneLine,
   text,
 } from "./cerfa/cerfa";
 export { templateAt } from "./cerfa/generate-cerfa";

@@ -18,3 +18,6 @@ export const TEXT_SIZES = {
    */
   floor: 6,
 } as const;
+
+/** Le pas d'un texte qui rapetisse sous la taille réduite, en points. */
+export const SIZE_STEP = 0.5;

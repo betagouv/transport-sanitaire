@@ -15,7 +15,10 @@ import {
   pagesOf,
 } from "../../../core/socle/questionnaire-engine/question";
 import { Questionnaire } from "../../../core/socle/questionnaire-engine/questionnaire";
-import type { Donnees } from "../../../front/models/eligibilite/r3/rubriques/rubrique";
+import type {
+  Donnees,
+  Rubrique,
+} from "../../../front/models/eligibilite/r3/rubriques/rubrique";
 import type { Cerfa, CerfaDto } from "../../../front/socle/cerfa/cerfa";
 import { generateCerfa } from "../../../front/socle/cerfa/generate-cerfa";
 import { racine } from "../../inspection-des-sources";
@@ -90,6 +93,22 @@ export function donnees(
     faits: preconisation.faits as Faits,
     completedAt,
   };
+}
+
+/** Chaque cellule de la rubrique, calculée sur ces données. */
+export function cellules<Cellules>(
+  rubrique: Rubrique<Cellules>,
+  reponses: Reponses,
+  cibles: ValeursDesCibles = {},
+  completedAt?: Date,
+): Cellules {
+  const lues = donnees(reponses, cibles, completedAt);
+  return Object.fromEntries(
+    Object.entries(rubrique).map(([cellule, calcul]) => [
+      cellule,
+      (calcul as (donnees: Donnees) => unknown)(lues),
+    ]),
+  ) as Cellules;
 }
 
 /** Le gabarit d'un support, lu sur le disque. */
