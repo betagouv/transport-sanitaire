@@ -1,0 +1,105 @@
+/* La visionneuse sur un écran plus étroit que la feuille (SheetViewer.tsx), à
+   part de sheet-viewer.css. Ses règles ne valent que dans `.socle-viewer` : la
+   copie que la mesure pose hors d'elle garde l'A4. */
+
+/* Entre l'écran étroit et 900 px, l'A4 ne tient plus dans le cadre gris : elle
+   garde sa largeur et défile dans le cadre, comme dans les gabarits. Le bas de
+   l'hôte laisse voir l'ombre de la feuille au-dessus de la barre de défilement. */
+@media screen and (max-width: 56.25em) {
+  .socle-viewer {
+    padding: 1.5rem 1rem;
+  }
+
+  .socle-viewer__host {
+    overflow-x: auto;
+    padding: 1px 1px 14px;
+  }
+}
+
+@media screen and (max-width: 47.99em) {
+  .socle-viewer {
+    padding: 1.25rem 0.75rem;
+  }
+
+  .socle-viewer__host {
+    overflow: visible;
+    padding: 1px;
+  }
+
+  .socle-viewer__button {
+    padding: 0.625rem 0.875rem;
+    font-size: 0.9375rem;
+  }
+
+  .socle-viewer .socle-sheet {
+    width: 100%;
+    min-height: 0;
+    padding: 1.5rem 1.125rem;
+    font-size: 1rem;
+    line-height: 1.5;
+  }
+
+  .socle-viewer .socle-sheet p,
+  .socle-viewer .socle-sheet li {
+    font-size: 1rem;
+    line-height: 1.5;
+  }
+
+  .socle-viewer .socle-sheet h3 {
+    font-size: 1.25rem;
+  }
+
+  .socle-viewer .socle-sheet h4 {
+    font-size: 1.25rem;
+    line-height: 1.3;
+  }
+
+  .socle-viewer .socle-sheet__logos {
+    flex-wrap: wrap;
+    gap: 1rem;
+    height: auto;
+  }
+
+  .socle-viewer .socle-sheet .socle-sheet__title {
+    margin-bottom: 1rem;
+    font-size: 1.6875rem;
+    line-height: 1.2;
+  }
+
+  .socle-viewer .socle-sheet .socle-sheet__intro {
+    margin-bottom: 1.5rem;
+    font-size: 1rem;
+  }
+
+  .socle-viewer .socle-sheet .socle-illustrated-cards {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+    margin-bottom: 1.75rem;
+  }
+
+  .socle-viewer .socle-sheet .socle-illustrated-cards__media {
+    height: 170px;
+  }
+
+  .socle-viewer .socle-sheet .socle-illustrated-cards__body {
+    padding: 1rem 1.125rem 1.25rem;
+  }
+
+  .socle-viewer .socle-sheet .socle-illustrated-cards__body p {
+    font-size: 1rem;
+    line-height: 1.5;
+  }
+
+  .socle-viewer .socle-sheet .socle-panel {
+    margin-top: 1.125rem;
+    padding: 1rem;
+  }
+
+  .socle-viewer .socle-sheet .socle-panel__title {
+    font-size: 1.25rem;
+  }
+
+  .socle-viewer .socle-sheet .socle-panel--framed {
+    padding: 1.25rem;
+  }
+}

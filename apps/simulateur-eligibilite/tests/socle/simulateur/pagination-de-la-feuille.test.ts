@@ -7,6 +7,7 @@
 import { describe, expect, it } from "vitest";
 import {
   type MeasuredIllustration,
+  pageSlicesOf,
   paperAttributes,
   printLayoutOf,
 } from "../../../front/socle/simulateur/sheet-pagination";
@@ -107,6 +108,55 @@ describe("ce que la feuille porte pour s'imprimer", () => {
       "data-print-layout": "two-pages",
       style: { "--socle-sheet-illustration-zone": "45mm" },
     });
+  });
+});
+
+describe("les pages du PDF de la feuille", () => {
+  it("une seule, toute la feuille, quand elle tient sur une page", () => {
+    const slices = pageSlicesOf(
+      { kind: "one-page", pages: 1 },
+      { height: 250, followUpTop: 120 },
+    );
+
+    expect(slices).toEqual([{ top: 0, height: 250 }]);
+  });
+
+  it("deux, la seconde ouverte au bloc de suivi", () => {
+    const slices = pageSlicesOf(
+      { kind: "two-pages", pages: 2, illustrationZone: 45 },
+      { height: 330, followUpTop: 170 },
+    );
+
+    expect(slices).toEqual([
+      { top: 0, height: 170 },
+      { top: 170, height: 160 },
+    ]);
+  });
+
+  it("des tranches d'une page utile quand le bloc de suivi se coupe", () => {
+    const slices = pageSlicesOf(
+      { kind: "flowing", pages: 3 },
+      { height: 600, followUpTop: 130 },
+    );
+
+    expect(slices).toEqual([
+      { top: 0, height: 278.5 },
+      { top: 278.5, height: 278.5 },
+      { top: 557, height: 43 },
+    ]);
+  });
+
+  it("coupe encore une seconde page plus haute qu'une page utile", () => {
+    const slices = pageSlicesOf(
+      { kind: "two-pages", pages: 2, illustrationZone: 37 },
+      { height: 480, followUpTop: 200 },
+    );
+
+    expect(slices).toEqual([
+      { top: 0, height: 200 },
+      { top: 200, height: 278.5 },
+      { top: 478.5, height: 1.5 },
+    ]);
   });
 });
 

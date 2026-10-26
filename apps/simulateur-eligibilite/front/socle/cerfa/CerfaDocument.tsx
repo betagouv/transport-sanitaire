@@ -6,9 +6,8 @@
 // commentaire retiré faute de place s'annonce avant toute action (D-85). Un
 // échec se signale sans masquer ce que la page affiche déjà, et le clic
 // réessaie. Pendant la génération, les deux actions attendent, et
-// « Télécharger » dit « Préparation du PDF… », comme le bouton de l'éditeur
-// (D-191). Une action qui attend un PDF ne se fait plus si le document a été
-// quitté entre-temps : un PDF arrivé après coup ne sort jamais (D-190).
+// « Télécharger » dit « Préparation du PDF… ». Une action qui attend un PDF ne
+// se fait plus si le document a été quitté entre-temps (pdf-preparation.ts).
 // « Imprimer » vient avant « Télécharger » : côte à côte s'ils tiennent, l'un
 // sous l'autre sinon, le groupe en ligne du DSFR passant à la ligne sans
 // couper un libellé (D-173). Qui l'affiche peut donner de quoi tenir la place
@@ -26,6 +25,7 @@ import {
   type GeneratedCerfa,
   generateCerfa,
 } from "./generate-cerfa";
+import { PREPARING, useShown } from "./pdf-preparation";
 import { printPdf } from "./print-pdf";
 
 type Props<Dto extends CerfaDto> = {
@@ -77,8 +77,6 @@ export function CerfaDocument<Dto extends CerfaDto>({
 
 type Settled = ({ status: "ready" } & GeneratedCerfa) | { status: "failed" };
 
-const PREPARING = "Préparation du PDF…";
-
 // Une génération qui ne rejette jamais : son échec est un état de l'écran.
 function generate<Dto extends CerfaDto>(
   cerfa: Cerfa<Dto>,
@@ -114,18 +112,6 @@ function useDownloadablePdf<Dto extends CerfaDto>(cerfa: Cerfa<Dto>, dto: Dto) {
     if (result.status === "ready" && shown.current) action(result.pdf);
   }
   return { settled, withPdf: settled === undefined ? undefined : withPdf };
-}
-
-// Le document est-il encore affiché ?
-function useShown() {
-  const shown = useRef(false);
-  useEffect(() => {
-    shown.current = true;
-    return () => {
-      shown.current = false;
-    };
-  }, []);
-  return shown;
 }
 
 /** Ce qui est attendu n'est pas encore arrivé. */

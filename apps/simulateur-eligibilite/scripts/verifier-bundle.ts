@@ -33,7 +33,8 @@ console.log(
  *
  * `pdf-lib` (~400 ko) ne se charge qu'à la demande, par import dynamique. Un
  * `import` statique mal placé le ferait télécharger à chaque prescripteur, sans
- * rien casser. Même chose pour l'écran des seeds, réservé au service produit,
+ * rien casser. Même chose pour modern-screenshot, qui photographie la feuille
+ * à remettre pour son PDF, pour l'écran des seeds, réservé au service produit,
  * et pour les modèles, qui se chargent pendant l'écran de rattachement. L'énoncé
  * d'une question n'existe que dans le modèle de démonstration, un nom de fait
  * que dans les règles du modèle de l'éditeur, et le schéma de ses textes de R2
@@ -42,6 +43,7 @@ console.log(
 function interdits(): Array<[marqueur: string, quoi: string]> {
   const marqueurs: Array<[string, string]> = [
     ["PDFDocument", "pdf-lib (remplissage d'un PDF)"],
+    ["[modern-screenshot]", "modern-screenshot (photo de la feuille)"],
     [
       "Quelle boisson souhaitez-vous",
       "le modèle de démonstration (son questionnaire)",
