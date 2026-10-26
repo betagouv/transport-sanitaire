@@ -25,4 +25,13 @@ export const model = defineModel<Questions, Faits, Cibles>({
     printLabel: "Imprimer le bon de commande",
     downloadLabel: "Télécharger le bon de commande",
   },
+  // L'avis : sous le premier résultat pour un thé, qu'on vient seulement
+  // goûter, et sous le second pour un café, qu'on vient commander. Sans
+  // boisson, rien ne se complète : il suit le premier résultat.
+  feedback: {
+    url: "https://example.com/avis",
+    label: "Donnez votre avis sur cette démonstration",
+    intent: (answers) =>
+      answers.question("boisson").is("cafe") ? "prescribe" : "check",
+  },
 });
