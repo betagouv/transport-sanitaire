@@ -149,7 +149,7 @@ describe("le S3141 de plusieurs permissions", () => {
       },
     };
 
-    expect((await drawnOn(await rempli(reponses))).texts.join("")).toContain(
+    expect((await drawnOn(await rempli(reponses))).texts.join(" ")).toContain(
       "Centre hospitalier universitaire, service de pédiatrie, 3175 chemin " +
         "de la Côte-Sainte-Catherine prolongée, Bâtiment 7, escalier B, " +
         "porte 12, 13009 Marseille",
