@@ -1,5 +1,5 @@
-// Des traces écrites à la main pour les tests du résultat praticien : rien n'y
-// est prouvé, sauf ce que le test pose. Elles donnent aux cibles et aux faits
+// Des traces écrites à la main pour les tests du résultat du prescripteur : rien
+// n'y est prouvé, sauf ce que le test pose. Elles donnent aux cibles et aux faits
 // de la trace les seules valeurs qu'une condition des règles lit.
 
 import {

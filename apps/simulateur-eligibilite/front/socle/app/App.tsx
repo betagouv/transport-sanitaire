@@ -31,7 +31,7 @@ type Props = Pick<
 };
 
 // Le rattachement n'attend pas le modèle : il se charge pendant que
-// l'utilisateur se rattache.
+// le prescripteur se rattache.
 export function App({ models, referentiel, declarer }: Props) {
   const navigation = useNavigation();
   const opened = useModelChoice(models);

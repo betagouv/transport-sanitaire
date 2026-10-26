@@ -1,7 +1,7 @@
 // L'écran sur lequel le parcours s'ouvre, selon les réponses déjà données.
 //
 // Une seed n'est qu'un pré-remplissage. À réponses égales, le parcours est dans
-// l'état qu'un utilisateur aurait laissé, « Précédent » et verrou compris.
+// l'état qu'un prescripteur aurait laissé, « Précédent » et verrou compris.
 
 import { type Preconisation, preconisationOf } from "../../../core/socle/model";
 import {
@@ -90,7 +90,7 @@ function screenAfterLock(model: Model, answers: Answers): Screen | NotPastLock {
     : { name: "complement", locked, resume: state };
 }
 
-// L'état qu'aurait laissé un utilisateur ayant donné ces réponses.
+// L'état qu'aurait laissé un prescripteur ayant donné ces réponses.
 function stateOf(read: Reading, answers: Answers): QuestionnaireState {
   return { answers, page: read.openPage().id };
 }

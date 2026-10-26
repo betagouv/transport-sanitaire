@@ -1,5 +1,5 @@
-// Le scénario du résultat praticien qui convient à une trace, pour les quatre
-// issues qui en ont un (D-112). Une fonction pure, sans React.
+// Le scénario du résultat du prescripteur qui convient à une trace, pour les
+// quatre issues qui en ont un (D-112). Une fonction pure, sans React.
 //
 // L'établissement, la permission et la convocation se choisissent par leur
 // contexte. La caisse se choisit par les points que les règles laissent
@@ -7,15 +7,15 @@
 
 import type {
   AucunScenario,
-  IssuePraticien,
-  ScenarioPraticien,
+  IssuePrescripteur,
+  ScenarioPrescripteur,
 } from "../../../../../core/models/eligibilite/declarations/catalogue-resultats";
 import type { NonProuve } from "../precisions-du-resultat";
 import type { Trace } from "../trace-du-resultat";
 import { scenariosDeLaCaisse } from "./scenarios-de-la-caisse";
 
 /** Les issues dont le texte est un scénario de l'éditeur. */
-export type IssueDuPraticien =
+export type IssueDuPrescripteur =
   | "ISSUE_CAISSE"
   | "ISSUE_ETABLISSEMENT"
   | "ISSUE_PERMISSION_PATIENT"
@@ -27,11 +27,11 @@ export type IssueDuPraticien =
  * quand les règles ne laissent aucun point que le catalogue sait nommer :
  * rien n'est alors deviné.
  */
-export function scenariosDuPraticien(
-  issue: IssueDuPraticien,
-  catalogue: IssuePraticien,
+export function scenariosDuPrescripteur(
+  issue: IssueDuPrescripteur,
+  catalogue: IssuePrescripteur,
   trace: Trace,
-): readonly ScenarioPraticien[] {
+): readonly ScenarioPrescripteur[] {
   if (issue === "ISSUE_CAISSE") return scenariosDeLaCaisse(catalogue, trace);
   const scenario = scenarioDuContexte(catalogue, contexteDe(issue, trace));
   return scenario ? [scenario] : [];
@@ -42,7 +42,7 @@ export function scenariosDuPraticien(
 type Contexte = Readonly<Record<string, string | undefined>>;
 
 function contexteDe(
-  issue: Exclude<IssueDuPraticien, "ISSUE_CAISSE">,
+  issue: Exclude<IssueDuPrescripteur, "ISSUE_CAISSE">,
   { precisions }: Trace,
 ): Contexte | NonProuve {
   if (issue === "ISSUE_ETABLISSEMENT") return precisions.article80Context;
@@ -53,14 +53,14 @@ function contexteDe(
 // Le scénario le plus précis dont tous les paramètres sont prouvés par le
 // contexte ; à défaut, le repli. Un scénario inactif n'est jamais choisi.
 function scenarioDuContexte(
-  { scenarios }: IssuePraticien,
+  { scenarios }: IssuePrescripteur,
   contexte: Contexte | undefined,
-): ScenarioPraticien | AucunScenario {
+): ScenarioPrescripteur | AucunScenario {
   const actifs = scenarios.filter(({ inactive }) => !inactive);
   const prouves = actifs.filter((scenario) =>
     estProuve(scenario, contexte ?? {}),
   );
-  const precis = prouves.reduce<ScenarioPraticien | undefined>(
+  const precis = prouves.reduce<ScenarioPrescripteur | undefined>(
     (meilleur, scenario) =>
       !meilleur || parametres(scenario).length > parametres(meilleur).length
         ? scenario
@@ -71,7 +71,10 @@ function scenarioDuContexte(
 }
 
 // Le repli n'est pas un contexte : il se prend quand aucun autre ne tient.
-function estProuve(scenario: ScenarioPraticien, contexte: Contexte): boolean {
+function estProuve(
+  scenario: ScenarioPrescripteur,
+  contexte: Contexte,
+): boolean {
   if (scenario.params.kind === "fallback") return false;
   return parametres(scenario).every(
     ([nom, valeur]) => contexte[nom] === valeur,
@@ -79,7 +82,7 @@ function estProuve(scenario: ScenarioPraticien, contexte: Contexte): boolean {
 }
 
 // Les paramètres dont le scénario demande la preuve.
-function parametres({ params }: ScenarioPraticien): [string, string][] {
+function parametres({ params }: ScenarioPrescripteur): [string, string][] {
   return Object.entries(params).flatMap(([nom, valeur]) =>
     nom !== "scenario_id" && valeur !== null ? [[nom, valeur]] : [],
   );

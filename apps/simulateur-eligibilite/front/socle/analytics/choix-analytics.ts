@@ -1,4 +1,4 @@
-// Le choix de l'utilisateur sur la mesure d'audience.
+// Le choix du prescripteur sur la mesure d'audience.
 //
 // L'app tourne dans une iframe du CMS. C'est le CMS qui propose l'opt-out et qui
 // nous transmet le choix par `postMessage`. Son script est dans `cms/`.

@@ -11,7 +11,7 @@ import { raisonNonEligible } from "../../../front/models/eligibilite/r2/fiche-ne
 import type { Precisions } from "../../../front/models/eligibilite/r2/precisions-du-resultat";
 import { traceDuResultat } from "../../../front/models/eligibilite/r2/trace-du-resultat";
 import { ciblesDe, lectureDe } from "./reponses-de-la-permission";
-import { faux, trace, vrai } from "./traces-du-praticien";
+import { faux, trace, vrai } from "./traces-du-prescripteur";
 
 const { issues } = await catalogueResultats();
 const issue = issues.ISSUE_NON_ELIGIBLE;

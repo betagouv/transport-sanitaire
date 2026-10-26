@@ -2,7 +2,7 @@
 // main, et le motif qu'elle donne dans la réservation.
 
 import { type Ajouts, fiche, NON_PARTAGE, puces, TAP } from "./fiches-du-test";
-import type { ValeursDesCibles } from "./traces-du-praticien";
+import type { ValeursDesCibles } from "./traces-du-prescripteur";
 
 export const SANS_URGENCE = "ISSUE_DAP_SANS_URGENCE";
 export const URGENCE = "ISSUE_DAP_URGENCE_ATTESTEE";

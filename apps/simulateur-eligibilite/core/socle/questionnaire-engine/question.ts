@@ -1,8 +1,8 @@
 // Ce qu'est une question, une page, une partie, une réponse.
 //
 // Le questionnaire est déclaré par le modèle : ses parties, ses pages, ses
-// conditions d'affichage et ses dépendances. Le moteur ne connaît aucun
-// identifiant : les génériques ne servent qu'à typer le modèle.
+// conditions d'affichage et ses dépendances. Le moteur de questionnaire ne
+// connaît aucun identifiant : les génériques ne servent qu'à typer le modèle.
 
 import type { Cible } from "../decision-engine/cible.ts";
 import type { Address } from "./address.ts";
@@ -66,13 +66,13 @@ export type IncompatibleOptions = {
 };
 
 /**
- * Une question, telle que le moteur la lit : elle sait comment elle se pose, et
- * de quelles réponses elle dépend. Le modèle la déclare par ses constructeurs
- * (`question-factory.ts`, `declared-question.ts`).
+ * Une question, telle que le moteur de questionnaire la lit : elle sait comment
+ * elle se pose, et de quelles réponses elle dépend. Le modèle la déclare par
+ * ses constructeurs (`question-factory.ts`, `declared-question.ts`).
  *
  * `askedIn` est écrite en méthode : TypeScript compare alors ses paramètres
- * dans les deux sens, et le moteur peut recevoir les questions typées d'un
- * modèle. Sans argument, ce sont celles du moteur : n'importe quelles
+ * dans les deux sens, et le moteur de questionnaire peut recevoir les questions
+ * typées d'un modèle. Sans argument, ce sont les siennes : n'importe quelles
  * questions, des cibles s'il y en a.
  */
 export type Question<
