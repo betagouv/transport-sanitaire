@@ -9,20 +9,15 @@ import { EXONERATION } from "../../../front/models/eligibilite/r3/rubriques/exon
 import { LIENS } from "../../../front/models/eligibilite/r3/rubriques/liens";
 import { MODE } from "../../../front/models/eligibilite/r3/rubriques/mode";
 import { PRESCRIPTION } from "../../../front/models/eligibilite/r3/rubriques/prescription";
-import type {
-  Donnees,
-  Rubrique,
-} from "../../../front/models/eligibilite/r3/rubriques/rubrique";
 import { TRAJET } from "../../../front/models/eligibilite/r3/rubriques/trajet";
 import { MINEUR } from "./reponses-de-la-permission";
 import {
-  donnees,
+  cellules,
   EHPAD,
   PERMISSIONS,
   PMT,
   type Reponses,
 } from "./reponses-du-cerfa";
-import type { ValeursDesCibles } from "./traces-du-praticien";
 
 describe("l'accident causé par un tiers", () => {
   it("coche Oui et donne sa date", () => {
@@ -215,21 +210,3 @@ describe("le trajet", () => {
     });
   });
 });
-
-// ---- implémentation ----
-
-// Chaque cellule de la rubrique, calculée sur ces données.
-function cellules<Cellules>(
-  rubrique: Rubrique<Cellules>,
-  reponses: Reponses,
-  cibles: ValeursDesCibles = {},
-  completedAt?: Date,
-): Cellules {
-  const lues = donnees(reponses, cibles, completedAt);
-  return Object.fromEntries(
-    Object.entries(rubrique).map(([cellule, calcul]) => [
-      cellule,
-      (calcul as (donnees: Donnees) => unknown)(lues),
-    ]),
-  ) as Cellules;
-}

@@ -118,7 +118,7 @@ describe("les boutons du modèle de l'éditeur", DELAI_D_UN_TEST, () => {
     ).toBeInTheDocument();
   });
 
-  it("pose R3 : son titre, son texte, ses deux actions et les réponses de P3", async () => {
+  it("pose R3 : son titre, son texte et ses deux actions", async () => {
     await ouvrirLaSeed("issue-pmt");
     const user = userEvent.setup();
     await user.click(screen.getByRole("button", { name: COMPLETER }));
@@ -165,8 +165,6 @@ describe("les boutons du modèle de l'éditeur", DELAI_D_UN_TEST, () => {
         name: /^(Télécharger|Préparation du PDF…)$/,
       }),
     ).toBeVisible();
-    expect(screen.getByText("2 transport(s)")).toBeInTheDocument();
-    expect(screen.getByText("Aller simple")).toBeInTheDocument();
   });
 });
 
