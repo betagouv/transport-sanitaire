@@ -115,7 +115,7 @@ chaque commit qui en résulte : un commit, une intention.
 ```bash
 cp tmp/<version>/…/transports-sanitaires.publicodes.flat-v<version>.yaml \
    apps/simulateur-eligibilite/core/models/eligibilite/rules/regles.publicodes
-printf 'v<version>\n' > apps/simulateur-eligibilite/core/models/eligibilite/rules/VERSION
+printf '<version>\n' > apps/simulateur-eligibilite/core/models/eligibilite/rules/VERSION
 cd apps/simulateur-eligibilite && pnpm regles
 ```
 
@@ -139,6 +139,17 @@ cp tmp/<version>/integration_resultats/catalogue-resultats.json \
 
 `tests/model/eligibilite/catalogue-resultats.test.ts` échoue si sa version ou
 son empreinte du modèle ne sont pas celles des règles recopiées.
+
+La recopie se vérifie ensuite d'une commande, qui n'écrit rien dans
+`tmp/<version>/` :
+
+```bash
+cd apps/simulateur-eligibilite && pnpm livrable ../../tmp/<version>
+```
+
+Elle compare les trois fichiers au manifeste `MANIFEST_LIVRAISON_SHA256.json`,
+et le `modelSha256` du catalogue à l'empreinte du YAML. Elle échoue sur le
+moindre octet de différence.
 
 Le compte de règles et de cibles, que le README annonce :
 
