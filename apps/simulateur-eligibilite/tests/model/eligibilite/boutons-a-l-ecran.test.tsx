@@ -160,7 +160,11 @@ describe("les boutons du modèle de l'éditeur", DELAI_D_UN_TEST, () => {
       screen.getByText(/^Le document est prêt à être imprimé\./),
     ).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Imprimer" })).toBeVisible();
-    expect(screen.getByRole("button", { name: "Télécharger" })).toBeVisible();
+    expect(
+      screen.getByRole("button", {
+        name: /^(Télécharger|Préparation du PDF…)$/,
+      }),
+    ).toBeVisible();
   });
 });
 

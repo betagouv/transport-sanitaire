@@ -90,15 +90,17 @@ function titreDeLEcran() {
 }
 
 // Le stepper, le texte, la navigation et les deux actions, dans l'ordre de C03.
+// « Télécharger » dit « Préparation du PDF… » tant que le PDF se génère (D-191).
 function hautDeLaPage(): HTMLElement[] {
-  const bouton = (name: string) => screen.getByRole("button", { name });
+  const bouton = (name: string | RegExp) =>
+    screen.getByRole("button", { name });
   return [
     screen.getByRole("heading", { level: 1 }),
     screen.getByText(/^Le document est prêt à être imprimé\./),
     bouton("Précédent"),
     bouton("Faire une nouvelle simulation"),
     bouton("Imprimer"),
-    bouton("Télécharger"),
+    bouton(/^(Télécharger|Préparation du PDF…)$/),
   ];
 }
 
