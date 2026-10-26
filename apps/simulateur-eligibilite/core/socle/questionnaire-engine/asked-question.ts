@@ -1,7 +1,7 @@
 // Une question telle qu'elle se pose, vu les réponses : sous son libellé du
 // moment, avec ses bornes du moment, les seules options qui se proposent, et
-// une adresse dans son mode du moment. Le reste du moteur, et l'écran, ne
-// lisent que cette forme.
+// une adresse dans son mode du moment. Le reste du moteur de questionnaire,
+// et l'écran, ne lisent que cette forme.
 //
 // La question déclarée porte des fonctions : ses conditions, ses libellés du
 // moment (`declared-question.ts`). La question posée n'en porte aucune. Elle

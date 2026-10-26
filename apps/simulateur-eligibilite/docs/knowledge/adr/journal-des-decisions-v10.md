@@ -73,7 +73,7 @@ reste dans le tableau, barrée, avec celle qui la remplace.
 | D-29 | 2026-10-07 | Le modèle importe le socle par un point d'entrée unique, `front/socle/index.ts`. | 02 |
 | D-30 | 2026-10-07 | Le déplacement des dossiers se fait maintenant, en un commit sans changement de comportement. Les gardes arrivent avec l'injection du modèle. | 02 |
 | D-31 | 2026-10-07 | Le parcours et le moteur de questionnaire sont deux dossiers frères du socle. | 02 |
-| D-32 | 2026-10-07 | Le moteur de questionnaire vit dans `front/socle/questionnaire-engine/`. « Moteur » seul reste au moteur de décision. | 01, 02 |
+| D-32 | 2026-10-07 | Le moteur de questionnaire vit dans `front/socle/questionnaire-engine/`. « Moteur » seul reste au moteur de décision. Précisé le 2026-10-26 (#91), validé par Simon : le moteur de questionnaire vit dans `core/socle/questionnaire-engine/`, et son écran dans `front/socle/questionnaire-engine/`. Ses commentaires disent « le moteur de questionnaire », jamais « le moteur » seul. | 01, 02 |
 | D-33 | 2026-10-07 | `front/socle/index.ts` expose ce dont le reste de l'app a besoin, seeds exceptées. | 02 |
 | D-34 | 2026-10-07 | Les tests du serveur vont dans `tests/socle/`. | 02 |
 | D-35 | 2026-10-07 | La clé `preconisation` reste dans `Model`. Elle contient ce qui calcule la préconisation. | 03 |
