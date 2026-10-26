@@ -21,6 +21,7 @@
     "postbuild": "node scripts/verifier-bundle.ts",
     "verifier-bundle": "node scripts/verifier-bundle.ts",
     "regles": "node scripts/regles-publicodes.ts",
+    "livrable": "node scripts/comparer-au-livrable.ts",
     "knip": "knip --directory ../.. --workspace apps/simulateur-eligibilite"
   },
   "engines": {

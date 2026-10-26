@@ -311,6 +311,7 @@ personne, ses tests le chargent comme texte.
 | `pnpm start` | Serveur de production (`node server/server.ts`) |
 | `pnpm lint:fix` | Applique tous les correctifs sûrs de Biome |
 | `pnpm regles` | Recalcule le `regles.json` de chaque modèle d'après son `regles.publicodes`. À lancer après toute retouche des règles : un test le compare |
+| `pnpm livrable <dossier>` | Dit si le YAML, `VERSION` et `catalogue-resultats.json` sont identiques au livrable de l'éditeur, à l'octet près. N'écrit rien dans le livrable |
 
 `pnpm build` enchaîne trois étapes :
 
