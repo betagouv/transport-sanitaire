@@ -121,6 +121,13 @@ complément.
 _Chez l'éditeur_: « verrou », « verrou R2→P3 ». Son « jeton de verrou », côté
 serveur, n'a pas d'équivalent chez nous (D-64).
 
+**Rappel**:
+Un fait déjà connu, redit en bref avant la question qu'il éclaire. Il ne se
+modifie pas là : on le corrige en revenant à la page où il a été répondu (D-194).
+_Chez l'éditeur_: « rappel », « rappel contextuel » (le traitement R).
+_Avoid_: réponse déduite. « Déduit » se dit d'une réponse qu'on ne demande plus,
+tirée d'une autre.
+
 **Complément**:
 La partie d'après le verrou, P3, qui recueille ce que le cerfa demande en plus.
 _Chez l'éditeur_: **faux ami**. P3 y est la « complétion » (« compléter la
