@@ -9,10 +9,7 @@ import { defineModel } from "../../socle";
 import { libelleDeCompletion } from "./r2/boutons-du-resultat";
 import { eligibilite } from "./r2/resultat";
 import { documentDuComplement } from "./r3/documents-du-resultat";
-import {
-  aLaPlaceDeLApercu,
-  PrescriptionPreremplie,
-} from "./r3/PrescriptionPreremplie";
+import { PrescriptionPreremplie } from "./r3/PrescriptionPreremplie";
 import { titreDuResultat } from "./r3/titre-du-resultat";
 
 export const model = defineModel<Questions, Faits, Cibles>({
@@ -22,7 +19,6 @@ export const model = defineModel<Questions, Faits, Cibles>({
     form: documentDuComplement,
     title: titreDuResultat,
     Resultat: PrescriptionPreremplie,
-    standIn: aLaPlaceDeLApercu,
     startLabel: libelleDeCompletion,
     // `printLabel` et `downloadLabel` de `CONTRAT_RENDU_DOCUMENTAIRE.json`.
     printLabel: "Imprimer",

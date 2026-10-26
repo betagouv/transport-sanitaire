@@ -2,12 +2,12 @@
 // raison de rester vide, et un parcours réel s'écrit sur le gabarit. Ce que
 // vaut chaque cellule se teste avec sa rubrique (`rubriques-du-cerfa.test.ts`).
 
-import { PDFDict, PDFDocument } from "pdf-lib";
 import { describe, expect, it } from "vitest";
 import { S3141 } from "../../../front/models/eligibilite/r3/s3141/s3141";
 import { dtoFrom } from "../../../front/socle/cerfa-mapping";
 import { drawnOn, markedStates } from "../../socle/cerfa/test-form";
 import {
+  abscisses,
   donnees,
   gabarit,
   genere,
@@ -103,7 +103,7 @@ describe("le S3141 de plusieurs permissions", () => {
     const pdf = await rempli(ACCIDENT);
     const [coche] = await markedStates(await gabarit("S3141"), pdf, "rct");
 
-    expect(await abscisses("rct")).toEqual({ Oui: 288, non: 368 });
+    expect(await abscisses("S3141", "rct")).toEqual({ Oui: 288, non: 368 });
     expect(coche).toBe("non");
   });
 
@@ -163,20 +163,4 @@ describe("le S3141 de plusieurs permissions", () => {
 function rempli(reponses: Reponses): Promise<Uint8Array> {
   const dto = dtoFrom(S3141.mapping, donnees(reponses));
   return genere(S3141.cerfa, "S3141", dto);
-}
-
-// L'abscisse arrondie de chaque case du champ, par état d'export.
-async function abscisses(champ: string): Promise<Record<string, number>> {
-  const document = await PDFDocument.load(await gabarit("S3141"));
-  const widgets = document.getForm().getField(champ).acroField.getWidgets();
-  return Object.fromEntries(
-    widgets.flatMap((widget) => {
-      const normal = widget.getAppearances()?.normal;
-      const etats = normal instanceof PDFDict ? normal.keys() : [];
-      return etats
-        .map((etat) => etat.asString().slice(1))
-        .filter((etat) => etat !== "Off")
-        .map((etat) => [etat, Math.round(widget.getRectangle().x)]);
-    }),
-  );
 }

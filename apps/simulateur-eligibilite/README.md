@@ -238,11 +238,10 @@ patient négative pour `ISSUE_NON_ELIGIBLE` et la fiche patient positive pour
 issues ont leur texte et leurs boutons. « Compléter la prescription »,
 « Compléter la demande d’accord préalable » et « Compléter la demande
 d’examen » ouvrent P3, qui pose le trajet (#144). Son résultat, R3, imprime et
-télécharge le document du support : le S3141 (#158) et la PMT (#160) remplis,
-la DAP encore vierge. R3 suit C03 (#223) : le stepper titré du document, à
+télécharge le document du support, rempli : le S3141 (#158), la PMT (#160) et
+la DAP (#161). R3 suit C03 (#223) : le stepper titré du document, à
 « Étape 4 sur 4 » et « Préparation terminée. », le texte, la navigation, les
-deux actions, puis l'aperçu du S3141 ou de la PMT ; pour la DAP, les réponses
-de P3 à sa place.
+deux actions, puis l'aperçu du document.
 L'avancement
 est dans l'issue 50 du dépôt, les décisions dans
 [`docs/knowledge/adr/journal-des-decisions-v10.md`](docs/knowledge/adr/journal-des-decisions-v10.md).

@@ -1,5 +1,5 @@
 // Les rubriques que la PMT ajoute à celles du S3141 (#160), et que la DAP
-// reprendra : les motifs, le nombre de transports, l'urgence et le centre de
+// reprend : les motifs, le nombre de transports, l'urgence et le centre de
 // référence. Des réponses d'un parcours complet et les cibles figées au verrou,
 // les cellules qu'elles donnent. « Sources et cases » de
 // `COMPLETION_DOCUMENTS.md` et `mapping_documents.json`, en v10.1.3.

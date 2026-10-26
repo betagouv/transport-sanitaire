@@ -2,7 +2,14 @@ import { describe, expect, it } from "vitest";
 import { formatDateForField } from "../../../front/socle/cerfa/dates";
 import { fillCerfa } from "../../../front/socle/cerfa/fill-cerfa";
 import { TEXT_SIZES } from "../../../front/socle/cerfa/text-sizes";
-import { fontSizeOf, readBack, statesOf, testForm } from "./test-form";
+import {
+  drawnSizesOf,
+  fontSizeOf,
+  readBack,
+  statesOf,
+  testForm,
+  withWidgetFontSize,
+} from "./test-form";
 
 // Le socle de remplissage d'un PDF : ce qu'un formulaire accepte, ce qu'il
 // refuse, ce qui survit à une relecture. Aucun gabarit réel n'est en jeu.
@@ -33,6 +40,22 @@ describe("fillCerfa", () => {
     ]);
 
     expect(await fontSizeOf(pdf, "nom")).toBe(TEXT_SIZES.target);
+  });
+
+  it("dessine chaque volet à la taille du champ, même si son widget en déclare une autre", async () => {
+    const template = await withWidgetFontSize(await testForm(), "adresse", 14);
+
+    const { pdf } = await fillCerfa(template, [
+      {
+        field: "adresse",
+        text: "Clinique des Alpes, 12 avenue Victor Hugo, Grenoble",
+      },
+    ]);
+
+    expect(await drawnSizesOf(pdf, "adresse")).toEqual([
+      TEXT_SIZES.reduced,
+      TEXT_SIZES.reduced,
+    ]);
   });
 
   it("refuse un état d'export que la case ne sait pas rendre", async () => {

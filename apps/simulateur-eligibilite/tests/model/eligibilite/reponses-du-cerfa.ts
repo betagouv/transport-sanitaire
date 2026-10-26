@@ -3,6 +3,7 @@
 
 import { readFile } from "node:fs/promises";
 import { join } from "node:path";
+import { PDFDict, PDFDocument } from "pdf-lib";
 import { model } from "../../../core/models/eligibilite";
 import type { Cibles } from "../../../core/models/eligibilite/declarations/cibles";
 import type { Faits } from "../../../core/models/eligibilite/declarations/faits";
@@ -43,9 +44,8 @@ export const EHPAD = {
   city: "Lyon",
 };
 
-// Une PMT pour une dialyse, du domicile au centre, P3 répondue en entier.
-export const PMT: Reponses = {
-  ...(SEEDS.find(({ id }) => id === "issue-pmt")?.answers as Reponses),
+// P3 d'une dialyse, du domicile au centre, répondue en entier.
+const P3_DE_LA_DIALYSE: Reponses = {
   "Q3.1.1": 1,
   "Q3.1.2": "1_ALLER",
   "Q3.2.nature": "1_DOMICILE",
@@ -56,6 +56,25 @@ export const PMT: Reponses = {
   "Q3.4.a": "2_NON",
   "Q3.6.2": "2_NON",
   "Q3.7": ["7_AUCUN"],
+};
+
+// Une PMT pour une dialyse.
+export const PMT: Reponses = {
+  ...reponsesDe("issue-pmt"),
+  ...P3_DE_LA_DIALYSE,
+};
+
+// Une DAP pour une dialyse à plus de 150 km, qui en demande la justification.
+export const DAP: Reponses = {
+  ...reponsesDe("issue-dap-sans-urgence"),
+  ...P3_DE_LA_DIALYSE,
+  "Q3.4.distance": "Seul centre équipé pour cette dialyse",
+};
+
+// Une demande d'examen d'un transport à l'étranger, P3 de la dialyse.
+export const ETRANGER: Reponses = {
+  ...reponsesDe("issue-dap-etranger-a-examiner"),
+  ...P3_DE_LA_DIALYSE,
 };
 
 // Plusieurs permissions : P2 fixe les lieux, de l'établissement au domicile.
@@ -115,6 +134,25 @@ export function cellules<Cellules>(
 export const gabarit = (support: string) =>
   readFile(join(racine, `front/models/eligibilite/r3/gabarits/${support}.pdf`));
 
+/** L'abscisse arrondie de chaque case du champ, par état d'export. */
+export async function abscisses(
+  support: string,
+  champ: string,
+): Promise<Record<string, number>> {
+  const document = await PDFDocument.load(await gabarit(support));
+  const widgets = document.getForm().getField(champ).acroField.getWidgets();
+  return Object.fromEntries(
+    widgets.flatMap((widget) => {
+      const normal = widget.getAppearances()?.normal;
+      const etats = normal instanceof PDFDict ? normal.keys() : [];
+      return etats
+        .map((etat) => etat.asString().slice(1))
+        .filter((etat) => etat !== "Off")
+        .map((etat) => [etat, Math.round(widget.getRectangle().x)]);
+    }),
+  );
+}
+
 /**
  * Le cerfa généré depuis son gabarit lu sur le disque : le navigateur de test
  * ne sert pas les assets de l'app.
@@ -130,6 +168,13 @@ export async function genere(
 }
 
 // ---- implémentation ----
+
+// Les réponses de P0 à P2 de la seed `id`.
+function reponsesDe(id: string): Reponses {
+  const seed = SEEDS.find((candidate) => candidate.id === id);
+  if (!seed) throw new Error(`Seed inconnue : ${id}`);
+  return seed.answers as Reponses;
+}
 
 // Toutes les pages du parcours, comme le socle les lit au résultat.
 const PAGES = [...pagesOf(model.questionnaire), ...model.complement.pages];

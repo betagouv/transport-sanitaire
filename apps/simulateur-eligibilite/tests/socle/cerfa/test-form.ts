@@ -128,6 +128,41 @@ export async function fontSizeOf(
 }
 
 /**
+ * Le formulaire `pdf`, dont le dernier widget du champ `field` déclare sa
+ * propre taille de police, comme ceux des volets 3 et 4 de la DAP.
+ */
+export async function withWidgetFontSize(
+  pdf: Uint8Array,
+  field: string,
+  size: number,
+): Promise<Uint8Array> {
+  const document = await PDFDocument.load(pdf);
+  const widget = document
+    .getForm()
+    .getTextField(field)
+    .acroField.getWidgets()
+    .at(-1);
+  widget?.setDefaultAppearance(`/Helv ${size} Tf 0 g`);
+  return document.save({ updateFieldAppearances: false });
+}
+
+/** Les tailles de police que les widgets du champ `name` dessinent, dans l'ordre. */
+export async function drawnSizesOf(
+  pdf: Uint8Array,
+  name: string,
+): Promise<number[]> {
+  const field = (await PDFDocument.load(pdf)).getForm().getTextField(name);
+  return field.acroField.getWidgets().map((widget) => {
+    const stream = widget.getAppearances()?.normal;
+    const content =
+      stream instanceof PDFRawStream
+        ? new TextDecoder("latin1").decode(decodePDFRawStream(stream).decode())
+        : "";
+    return Number(content.match(/([\d.]+) Tf/)?.[1]);
+  });
+}
+
+/**
  * Ce qu'un PDF aplati montre : le nombre de champs qui y restent, et les textes
  * dessinés, dans l'ordre où le fichier les range.
  */
