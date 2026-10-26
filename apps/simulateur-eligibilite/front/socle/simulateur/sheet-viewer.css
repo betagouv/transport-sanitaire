@@ -50,6 +50,27 @@
   color: #fff;
 }
 
+/* Le PDF qui se prépare : le bouton reste blanc, sous un curseur d'attente. */
+.socle-viewer .socle-viewer__button:disabled {
+  background-color: #fff;
+  color: #525659;
+  border-color: #fff;
+  cursor: wait;
+  opacity: 1;
+}
+
+.socle-viewer__status {
+  max-width: 794px;
+  margin: 0.75rem auto 0;
+  color: #fff;
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
+
+.socle-viewer__status:empty {
+  display: none;
+}
+
 .socle-viewer__button:focus-visible {
   outline: 3px solid #fff;
   outline-offset: 4px;

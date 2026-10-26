@@ -266,6 +266,7 @@ simulateur calcule le DTO sous le second résultat et le passe au bouton.
 | `flatten-cerfa.ts` | l'aplatissement du PDF rempli : plus aucun champ, chaque valeur dessinée sur la page (D-84). Puis ce qu'un champ ne sait pas montrer : les marques des cases partagées, les textes sans champ, ceux qui débordent |
 | `generate-cerfa.ts` | la génération : le DTO traduit dans les noms du gabarit, remplir, puis aplatir, avec `pdf-lib` chargé à la demande. Le nom daté du fichier, le téléchargement |
 | `print-pdf.ts` | l'impression d'un PDF dans un cadre invisible : le dialogue du navigateur s'ouvre sur le PDF, pas sur la page |
+| `pdf-preparation.ts` | ce qu'ont en commun les PDF qu'un bouton attend, cerfa et feuille : « Préparation du PDF… » (D-191), et la garde du document quitté pendant la préparation (D-190) |
 | `CerfaDocument.tsx` | les boutons « Imprimer » et « Télécharger », qui génèrent le PDF dès qu'ils s'affichent et portent le même document, puis son aperçu, ou ce que le modèle met à sa place. L'avertissement d'un commentaire retiré, l'alerte si ça échoue |
 | `CerfaPreview.tsx` | l'aperçu du PDF dans la page, par le lecteur du navigateur ; sans lecteur, une phrase renvoie au téléchargement (D-183) |
 
@@ -278,6 +279,34 @@ appelé quand le bouton s'affiche. `templateAt(url)` charge un asset servi par l
 *Gardé par* `tests/socle/cerfa/`, sur des formulaires fabriqués,
 `tests/socle/simulateur/telechargement-du-cerfa.test.tsx`, et
 `tests/architecture.test.ts`.
+
+### La feuille en PDF
+
+« Télécharger », sous la liseuse de la feuille à remettre au patient, donne
+la feuille en PDF, sans le dialogue d'impression (#129). Le PDF se prépare au
+clic, sur la feuille affichée : il est toujours à jour. Il a les pages de
+l'impression : la feuille se mesure comme pour imprimer, sa copie en papier
+est photographiée par le navigateur, puis coupée là où l'impression coupe.
+Chaque tranche va sur une A4, aux marges des gabarits. Le PDF est une image :
+son texte ne se sélectionne pas.
+
+| Fichier (`front/socle/simulateur/`) | Ce qu'il porte |
+|---|---|
+| `sheet-download.ts` | le téléchargement : l'attente, l'échec, le nom daté du fichier, et rien après qu'on a quitté la feuille |
+| `sheet-pdf.ts` | la mesure, la photo de la copie en papier, ses tranches en JPEG |
+| `sheet-pagination.ts` | où se coupent les pages (`pageSlicesOf`), d'après la mise en page retenue pour l'impression |
+| `sheet-measure.ts` | la copie en papier, posée hors de l'écran le temps de la photo (`onPaperCopy`) |
+| `sheet-photo.ts` | la photo, par `modern-screenshot`, chargé à la demande ; seul fichier qui l'importe |
+| `paper-pdf.ts` | le PDF : une A4 par tranche, par `pdf-lib`, chargé à la demande |
+
+`modern-screenshot` fige la hauteur de chaque élément qu'il copie : une marge
+basse qui traversait son parent y resterait, et la photo ne tomberait plus sur
+les coupes. `sheet-photo.ts` rend leur hauteur libre à ces parents.
+
+*Gardé par* `tests/socle/simulateur/telechargement-de-la-feuille.test.tsx`,
+`pdf-de-la-feuille.test.ts` et `pagination-de-la-feuille.test.ts`. Le
+navigateur de test ne met pas en page : la photo et ses coupes se vérifient
+dans Chrome.
 
 ## Les quatre racines de runtime
 
@@ -316,8 +345,8 @@ personne, ses tests le chargent comme texte.
 
 1. `tsc -b` sur les cinq projets : front, métier, node, serveur, tests ;
 2. Vite ;
-3. `verifier-bundle` : `pdf-lib`, le modèle et le catalogue de seeds doivent
-   rester hors du chunk d'entrée.
+3. `verifier-bundle` : `pdf-lib`, `modern-screenshot`, le modèle et le
+   catalogue de seeds doivent rester hors du chunk d'entrée.
 
 Si tu remplaces un `import()` par un import statique, c'est l'étape 3 qui te le
 dit.
@@ -347,6 +376,7 @@ Le reste est dans [`tests/architecture.test.ts`](tests/architecture.test.ts) :
 - le socle PDF, qui ne dépend que de lui-même et n'adresse jamais `/api` ;
 - les règles publicodes, qui ne portent que de l'éligibilité ;
 - publicodes, que seul le moteur de décision du socle importe ;
+- modern-screenshot, que seule la photo de la feuille importe ;
 - les modèles de `core/models/` et de `front/models/`, que seul `tests/model/`
   importe, et qui ne s'importent pas entre eux.
 - le socle, qui n'importe rien des modèles, et les deux points d'entrée par

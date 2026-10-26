@@ -177,6 +177,20 @@ describe("invariants métier", () => {
     ).toEqual([]);
   });
 
+  it("seule la photo de la feuille importe modern-screenshot", () => {
+    const fautifs = sources("front", "core").filter(
+      (f) =>
+        f !== "front/socle/simulateur/sheet-photo.ts" &&
+        texteDe(f).includes('"modern-screenshot"'),
+    );
+    expect(
+      fautifs,
+      "modern-screenshot photographie la feuille pour son PDF, derrière un " +
+        "seul fichier : `front/socle/simulateur/sheet-photo.ts`, qui le charge " +
+        "à la demande. Passe par lui : l'outil se remplace alors en un endroit.",
+    ).toEqual([]);
+  });
+
   it("le CERFA ne dépend que de lui-même", () => {
     expect(
       franchissements(
