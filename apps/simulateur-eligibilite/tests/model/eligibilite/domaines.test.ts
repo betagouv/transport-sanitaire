@@ -23,7 +23,7 @@ const FAITS = `${METIER}/faits`;
 const RUBRIQUES = `${R3}/rubriques`;
 // Un dossier par cerfa rempli. La PMT et la DAP y viendront (#160, #161).
 const CERFA_DE_R3 = ["s3141"].map((cerfa) => `${R3}/${cerfa}`);
-const FAMILLES_DE_R2 = ["praticien", "fiche-negative", "fiche-positive"].map(
+const FAMILLES_DE_R2 = ["prescripteur", "fiche-negative", "fiche-positive"].map(
   (famille) => `${R2}/${famille}`,
 );
 
@@ -88,7 +88,7 @@ describe("les domaines du modèle de l'éditeur", () => {
     );
     expect(
       croisements,
-      "Le praticien, la fiche négative et la fiche positive lisent chacun " +
+      "Le prescripteur, la fiche négative et la fiche positive lisent chacun " +
         "leurs textes dans le catalogue. Ce qu'ils partagent (la trace, la " +
         "page de la fiche, le texte enrichi) vit à la racine de `r2/`.",
     ).toEqual([]);

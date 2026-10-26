@@ -3,7 +3,7 @@
 > Statut : **décidé (release officielle)** · Dernière mise à jour : 2026-09-30
 >
 > Étape de rattachement **intégrée** au simulateur d'éligibilité, **préalable
-> obligatoire** à toute simulation : l'utilisateur déclare son établissement et son
+> obligatoire** à toute simulation : le prescripteur déclare son établissement et son
 > service. Le suivi analytique du parcours fait l'objet d'un document séparé :
 > [analytics.md](./analytics.md). Le vocabulaire est fixé dans
 > [CONTEXT.md](../CONTEXT.md).
@@ -42,7 +42,7 @@ un **backend Node/Express**, en une seule app sur **Scalingo**. Le rattachement 
 en effet de détenir un secret côté serveur, la clé Grist (~~et le secret de
 pseudonymisation, retiré le 2026-09-29~~). Le simulateur a donc quitté GitHub Pages.
 
-On **rattache l'utilisateur en amont** du parcours, en une étape obligatoire : on ne
+On **rattache le prescripteur en amont** du parcours, en une étape obligatoire : on ne
 peut pas simuler sans avoir déclaré son **établissement** et son **service/unité**.
 ~~Elle se jouait en deux temps : l'établissement et le service, puis le **personnel de
 santé** (prescripteur) qui réalise la simulation.~~ Le second temps est retiré depuis
@@ -50,7 +50,7 @@ le 2026-09-29.
 
 Contraintes :
 
-- L'utilisateur arrive via le CMS « Sites Conformes », un site tiers qu'on maîtrise peu.
+- Le prescripteur arrive via le CMS « Sites Conformes », un site tiers qu'on maîtrise peu.
 - Le référentiel établissement/service est construit et maintenu à la main dans Grist,
   sans intégration aux référentiels du SI Sécurité sociale ou CNAM. Aucun FINESS
   officiel n'est branché à ce stade.
@@ -100,8 +100,8 @@ l'app en top-level, reste possible si l'intégration iframe se révèle bloquée
 
 ### ADR-3 - Rattachement déclaratif, sans identité (~~identification déclarative du prescripteur~~)
 
-**Décision (révisée 2026-09-29).** L'utilisateur déclare son établissement et son
-service, sans preuve et **sans dire qui il est**. ~~L'utilisateur déclare qui il est, en
+**Décision (révisée 2026-09-29).** Le prescripteur déclare son établissement et son
+service, sans preuve et **sans dire qui il est**. ~~Le prescripteur déclare qui il est, en
 sélectionnant son établissement, son service et son nom, sans preuve d'identité.~~
 
 **Pourquoi.** Le produit a besoin de savoir d'où viennent les simulations, pas qui les
@@ -224,7 +224,7 @@ Le workflow est linéaire, dans un formulaire à révélation progressive :
 liste » avec son nom et son prénom.~~ Retiré le 2026-09-29.
 
 Le service « Autre » est une entrée du référentiel, un service par établissement, qu'on
-sélectionne comme n'importe quelle autre. Quand il est sélectionné, l'utilisateur doit
+sélectionne comme n'importe quelle autre. Quand il est sélectionné, le prescripteur doit
 saisir son service ou son unité réels. Ce texte libre est alors écrit dans Grist, ce qui
 crée le vrai service, pour qu'à la connexion suivante il apparaisse dans la liste (voir
 la [spec enrichissement](../domain/enrichissement-referentiel-rattachement.md)). C'est

@@ -20,7 +20,7 @@ import {
   TRANSPORT_COMMUN,
   VEHICULE_PERSONNEL,
 } from "./fiches-du-test";
-import type { ValeursDesCibles } from "./traces-du-praticien";
+import type { ValeursDesCibles } from "./traces-du-prescripteur";
 
 describe("un titre et un modus pour chaque mode que les règles donnent", () => {
   const variantes: ValeursDesCibles[] = [

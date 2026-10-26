@@ -15,7 +15,7 @@ import {
   URGENCE,
 } from "./demandes-du-test";
 import { type Ajouts, fiche, NON_PARTAGE, TAP } from "./fiches-du-test";
-import { vrai } from "./traces-du-praticien";
+import { vrai } from "./traces-du-prescripteur";
 
 const DIALYSE_ET_150_KM =
   "Votre déplacement est lié à une séance de dialyse, prise en compte comme une hospitalisation pour le transport.";

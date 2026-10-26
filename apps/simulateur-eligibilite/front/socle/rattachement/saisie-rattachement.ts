@@ -134,7 +134,7 @@ function triParLibelle<T extends { libelle: string }>(liste: T[]): T[] {
   });
 }
 
-// Le rattachement de repli quand le référentiel ne répond pas. L'utilisateur
+// Le rattachement de repli quand le référentiel ne répond pas. Le prescripteur
 // entre quand même, et l'analytics range sa visite sous « autre ».
 const RATTACHEMENT_DEGRADE: RattachementSaisi = {
   etabId: "autre",

@@ -6,7 +6,7 @@
 import { describe, expect, it } from "vitest";
 import { CIBLES_ENUMEREES } from "../../../core/models/eligibilite/declarations/cibles";
 import { libelleDeCompletion } from "../../../front/models/eligibilite/r2/boutons-du-resultat";
-import { trace } from "./traces-du-praticien";
+import { trace } from "./traces-du-prescripteur";
 
 type Issue = (typeof CIBLES_ENUMEREES.cible_issue_id)[number];
 

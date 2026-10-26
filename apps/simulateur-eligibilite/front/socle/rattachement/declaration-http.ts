@@ -1,8 +1,8 @@
 // Déclare au serveur un service saisi sous « Autre » (`POST /api/rattachement`).
 // Le serveur l'ajoute au référentiel Grist.
 //
-// L'appel part sans attendre la réponse. L'utilisateur entre dans le simulateur
-// même si Grist ne répond pas.
+// L'appel part sans attendre la réponse. Le prescripteur entre dans le
+// simulateur même si Grist ne répond pas.
 
 import type { RattachementSaisi } from "../../../shared/rattachement-saisi";
 

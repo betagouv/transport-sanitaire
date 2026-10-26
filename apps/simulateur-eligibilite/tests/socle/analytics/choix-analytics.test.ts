@@ -1,5 +1,5 @@
-// Le pont avec la page qui embarque l'app. Le simulateur demande le choix de
-// l'utilisateur sur la mesure d'audience, et le CMS répond. La page parente est
+// Le pont avec la page qui embarque l'app. Le simulateur demande le choix du
+// prescripteur sur la mesure d'audience, et le CMS répond. La page parente est
 // une vraie fenêtre d'iframe. Elle répond par de vrais évènements `message`.
 
 import { afterEach, describe, expect, it, vi } from "vitest";
@@ -31,7 +31,7 @@ afterEach(() => {
   document.body.innerHTML = "";
 });
 
-describe("choix de l'utilisateur sur la mesure d'audience", () => {
+describe("choix du prescripteur sur la mesure d'audience", () => {
   it("hors iframe, mesure sans rien demander", () => {
     expect(suivre({ parent: window })).toEqual(["suivi"]);
   });

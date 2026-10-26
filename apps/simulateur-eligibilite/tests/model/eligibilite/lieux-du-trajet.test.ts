@@ -14,7 +14,7 @@ import type {
   AnyCibles,
 } from "../../../core/socle/questionnaire-engine/question";
 import { Questionnaire } from "../../../core/socle/questionnaire-engine/questionnaire";
-import { ciblesValant } from "./traces-du-praticien";
+import { ciblesValant } from "./traces-du-prescripteur";
 
 type Reponses = Answers<Questions>;
 

@@ -33,9 +33,9 @@ export type CatalogueResultats = {
       readonly permissionAdministrative: readonly Texte[];
     };
     readonly ISSUE_CAISSE: IssueDeLaCaisse;
-    readonly ISSUE_ETABLISSEMENT: IssuePraticien;
-    readonly ISSUE_PERMISSION_PATIENT: IssuePraticien;
-    readonly ISSUE_CONVOCATION: IssuePraticien;
+    readonly ISSUE_ETABLISSEMENT: IssuePrescripteur;
+    readonly ISSUE_PERMISSION_PATIENT: IssuePrescripteur;
+    readonly ISSUE_CONVOCATION: IssuePrescripteur;
     readonly ISSUE_NON_ELIGIBLE: IssueNegative;
     readonly ISSUE_DAP_ETRANGER_A_EXAMINER: IssueEtranger;
   };
@@ -114,21 +114,21 @@ export type IssuePositive = {
   readonly blueReminder: string | null;
 };
 
-/** Le résultat praticien : un scénario par situation à confirmer. */
-export type IssuePraticien = {
+/** Le résultat du prescripteur : un scénario par situation à confirmer. */
+export type IssuePrescripteur = {
   readonly type: string;
   readonly title: string;
-  readonly scenarios: readonly ScenarioPraticien[];
+  readonly scenarios: readonly ScenarioPrescripteur[];
 };
 
 /** La caisse : ses titres, pour un point et pour plusieurs, et l'introduction de plusieurs. */
-export type IssueDeLaCaisse = IssuePraticien & {
+export type IssueDeLaCaisse = IssuePrescripteur & {
   readonly multipleIntro: string;
   readonly titles: { readonly single: string; readonly multiple: string };
 };
 
-/** Un scénario du résultat praticien, et les paramètres qui le choisissent. */
-export type ScenarioPraticien = {
+/** Un scénario du résultat du prescripteur, et ce qui le choisit. */
+export type ScenarioPrescripteur = {
   readonly id: string;
   readonly label: string;
   readonly intro: string;

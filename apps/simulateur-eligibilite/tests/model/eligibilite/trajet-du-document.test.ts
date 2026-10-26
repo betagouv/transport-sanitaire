@@ -12,7 +12,7 @@ import type { Answers } from "../../../core/socle/questionnaire-engine/question"
 import { Questionnaire } from "../../../core/socle/questionnaire-engine/questionnaire";
 import { errorsOf } from "../../../front/socle/questionnaire-engine/screen-texts";
 import { MINEUR, PLUSIEURS_PERMISSIONS } from "./reponses-de-la-permission";
-import { ciblesValant } from "./traces-du-praticien";
+import { ciblesValant } from "./traces-du-prescripteur";
 
 type Reponses = Answers<Questions>;
 

@@ -1,6 +1,6 @@
 // Un encadré du résultat : un titre, puis son contenu. Le gris, à filet bleu,
 // range des éléments séparés d'un trait ; le bleu pâle porte ce que
-// l'utilisateur transmet. Sur une feuille à remettre, le blanc range un texte
+// le prescripteur transmet. Sur une feuille à remettre, le blanc range un texte
 // dans le bloc de suivi. En texte bleu, le blanc encadré de bleu porte un
 // rappel, et le blanc bordé de bleu, à filet gauche, met un conseil en avant.
 // Sans titre, l'encadré est un aparté que son `label` nomme.

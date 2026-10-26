@@ -6,7 +6,7 @@
 import { describe, expect, it } from "vitest";
 import { documentDuComplement } from "../../../front/models/eligibilite/r3/documents-du-resultat";
 import { titreDuResultat } from "../../../front/models/eligibilite/r3/titre-du-resultat";
-import { ciblesValant } from "./traces-du-praticien";
+import { ciblesValant } from "./traces-du-prescripteur";
 
 const PRESCRIPTION = "Prescription préremplie prête à imprimer";
 const ACCORD_PREALABLE =

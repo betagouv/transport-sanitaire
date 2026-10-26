@@ -22,11 +22,11 @@
 ## Contexte
 
 L'écran de rattachement capture du texte libre, plutôt qu'une sélection dans une liste du
-référentiel, dans un seul cas : l'utilisateur choisit le service « Autre » d'un
+référentiel, dans un seul cas : le prescripteur choisit le service « Autre » d'un
 établissement et doit alors saisir son service ou son unité réels (`serviceLibre`).
 
 Sans enrichissement, ce texte serait perdu. Le but est qu'il enrichisse le
-référentiel Grist, pour que l'admin et les utilisateurs suivants en bénéficient sans
+référentiel Grist, pour que l'admin et les prescripteurs suivants en bénéficient sans
 avoir à ressaisir.
 
 ## Décisions
@@ -35,7 +35,7 @@ avoir à ressaisir.
   colonne `Origine` valant `formulaire` pour marquer la provenance. L'admin peut ainsi
   filtrer et trier.
 - **Visible immédiatement.** Le service créé reçoit un `Id2` automatique, le
-  `max(Id2)` de la table plus un, pour apparaître dans la liste des utilisateurs
+  `max(Id2)` de la table plus un, pour apparaître dans la liste des prescripteurs
   suivants.
 - **Sans doublon.** La déduplication se fait sur le `Nom` normalisé (casse et espaces)
   sous le même établissement : on réutilise une ligne existante au lieu d'empiler.

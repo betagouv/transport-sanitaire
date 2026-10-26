@@ -12,8 +12,8 @@
 //     );
 //
 // Elle ne change pas : chaque réglage donne une copie. Il n'y a pas d'étape
-// finale : la page la prend telle quelle (`declared-page.ts`), et le moteur lui
-// demande comment elle se pose (`askedIn`).
+// finale : la page la prend telle quelle (`declared-page.ts`), et le moteur de
+// questionnaire lui demande comment elle se pose (`askedIn`).
 
 import type { AskedCommonData } from "./asked-common.ts";
 import type { AskedQuestion } from "./asked-question.ts";

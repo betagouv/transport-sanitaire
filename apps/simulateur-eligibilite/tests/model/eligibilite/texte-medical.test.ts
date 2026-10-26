@@ -13,7 +13,7 @@ import {
 } from "../../../front/models/eligibilite/r3/rubriques/texte-medical";
 import { ENTREE, MATERNITE_ETABLIE } from "./reponses-de-la-branche";
 import { donnees, PMT, type Reponses } from "./reponses-du-cerfa";
-import type { ValeursDesCibles } from "./traces-du-praticien";
+import type { ValeursDesCibles } from "./traces-du-prescripteur";
 
 const SEANCE = "Ce déplacement concerne une séance de dialyse en centre";
 const PAS_AUTONOME =

@@ -1,7 +1,7 @@
 // Les phrases que l'écran écrit autour d'une question : « (facultatif) » après
 // un libellé, les messages d'une saisie fautive, les libellés des champs d'une
-// adresse. Le moteur (`core/`) dit les faits : une question facultative, la
-// nature d'un problème. Les phrases de l'éditeur lui viennent toutes faites.
+// adresse. Le moteur de questionnaire (`core/`) dit ce qu'il constate : une
+// question facultative, la nature d'un problème. Les phrases de l'éditeur lui viennent toutes faites.
 
 import type {
   AddressFieldName,

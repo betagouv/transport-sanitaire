@@ -46,8 +46,8 @@ export type TrackerOptions = BridgeOptions & {
 };
 
 /**
- * Configure le traceur, au démarrage. S'il est activé, il attend le choix de
- * l'utilisateur, que le CMS tient (voir `choix-analytics.ts`). Rien n'est
+ * Configure le traceur, au démarrage. S'il est activé, il attend le choix du
+ * prescripteur, que le CMS tient (voir `choix-analytics.ts`). Rien n'est
  * mesuré ni chargé avant. Au suivi, il amorce `_paq` et charge matomo.js. Au
  * refus, il ne charge rien.
  *
@@ -77,7 +77,7 @@ export function chargerMatomo(url: string): void {
 }
 
 /**
- * Émet un événement si le traceur est activé et si l'utilisateur n'a pas
+ * Émet un événement si le traceur est activé et si le prescripteur n'a pas
  * refusé. L'événement porte le service rattaché, lu en session. Tant que le
  * choix n'est pas connu, il attend.
  */

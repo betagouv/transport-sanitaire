@@ -8,7 +8,7 @@ import { catalogueResultats } from "../../../front/models/eligibilite/r2/catalog
 import { texteDeLaFicheNegative } from "../../../front/models/eligibilite/r2/fiche-negative/texte-de-la-fiche-negative";
 import { traceDuResultat } from "../../../front/models/eligibilite/r2/trace-du-resultat";
 import { lectureDe } from "./reponses-de-la-permission";
-import { trace } from "./traces-du-praticien";
+import { trace } from "./traces-du-prescripteur";
 
 const catalogue = await catalogueResultats();
 

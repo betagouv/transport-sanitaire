@@ -16,7 +16,7 @@ import { generateCerfa } from "../../../front/socle/cerfa/generate-cerfa";
 import { type BoundCerfa, dtoFrom } from "../../../front/socle/cerfa-mapping";
 import { markedStates, textsOn } from "../../socle/cerfa/test-form";
 import { DAP, donnees, gabarit, PMT, type Reponses } from "./reponses-du-cerfa";
-import type { ValeursDesCibles } from "./traces-du-praticien";
+import type { ValeursDesCibles } from "./traces-du-prescripteur";
 
 const MENTION =
   "Mineur nécessitant des soins prolongés en raison d’un handicap, d’une incapacité ou d’un accident";

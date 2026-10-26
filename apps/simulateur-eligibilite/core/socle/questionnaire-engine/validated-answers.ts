@@ -87,7 +87,10 @@ export class ValidatedAnswers<Questions extends AnyQuestions = AnyQuestions> {
     ) as Answers<Questions>;
   }
 
-  /** Les questions validées telles que le moteur les garde : la trace les lit. */
+  /**
+   * Les questions validées telles que le moteur de questionnaire les garde :
+   * la trace les lit.
+   */
   toJSON(): Validated<Questions> {
     return this.#validated;
   }

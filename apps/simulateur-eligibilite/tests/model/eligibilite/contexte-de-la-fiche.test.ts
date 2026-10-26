@@ -12,7 +12,7 @@ import {
   phraseDuContexte,
 } from "../../../front/models/eligibilite/r2/fiche-positive/contexte-du-resultat";
 import type { Precisions } from "../../../front/models/eligibilite/r2/precisions-du-resultat";
-import { trace, type ValeursDesCibles } from "./traces-du-praticien";
+import { trace, type ValeursDesCibles } from "./traces-du-prescripteur";
 
 const { issues } = await catalogueResultats();
 const pmt = issues.ISSUE_PMT;

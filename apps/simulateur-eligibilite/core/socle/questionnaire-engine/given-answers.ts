@@ -99,8 +99,8 @@ export type AnswersReader<Questions extends AnyQuestions = AnyQuestions> = {
 };
 
 /**
- * Les réponses telles que le moteur les garde. Le socle seul les lit : le
- * point d'entrée ne l'expose pas au modèle.
+ * Les réponses telles que le moteur de questionnaire les garde. Le socle seul
+ * les lit : le point d'entrée ne l'expose pas au modèle.
  */
 export function answersOf<Questions extends AnyQuestions>(
   given: GivenAnswers<Questions>,

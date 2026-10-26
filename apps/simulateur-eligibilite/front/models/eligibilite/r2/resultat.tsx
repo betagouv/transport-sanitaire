@@ -1,6 +1,6 @@
 // Le résultat de l'éligibilité (R2).
 //
-// Cinq issues n'ont pas de fiche patient : leur texte est celui du praticien
+// Cinq issues n'ont pas de fiche patient : leur texte est celui du prescripteur
 // (#133). La non-éligibilité a sa fiche patient négative (#134), la
 // prescription médicale de transport et le S3141 leur fiche positive (#135),
 // les deux demandes d'accord préalable la leur (#136). Les dix issues ont donc
@@ -11,8 +11,8 @@ import { horsCircuit } from "../../../../core/models/eligibilite/p2/retour-penit
 import type { FirstResult } from "../../../socle";
 import { resultatNegatif } from "./fiche-negative/resultat-negatif";
 import { resultatPositif } from "./fiche-positive/resultat-positif";
-import { resultatDuPraticien } from "./praticien/resultat-du-praticien";
-import { estSansFiche } from "./praticien/texte-du-praticien";
+import { resultatDuPrescripteur } from "./prescripteur/resultat-du-prescripteur";
+import { estSansFiche } from "./prescripteur/texte-du-prescripteur";
 import type { ReponsesEtCibles } from "./trace-du-resultat";
 
 export function eligibilite(
@@ -22,7 +22,8 @@ export function eligibilite(
   const issue = reponses.cibles.cible_issue_id.value;
   if (!issue) return SANS_ISSUE;
   if (issue === "ISSUE_NON_ELIGIBLE") return resultatNegatif(reponses);
-  if (estSansFiche(issue)) return resultatDuPraticien({ ...reponses, issue });
+  if (estSansFiche(issue))
+    return resultatDuPrescripteur({ ...reponses, issue });
   return resultatPositif({ ...reponses, issue });
 }
 
