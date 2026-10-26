@@ -1,177 +1,115 @@
 ---
 name: livrer-une-version
-description: Livrer une version d'une app : numéro, entrée de CHANGELOG, montée du package.json, tag `<app>@<version>`, release GitHub. À charger dès qu'il s'agit de livrer, publier, étiqueter ou « sortir une version ».
+description: Livrer une version d'une app : numéro, entrée de CHANGELOG, montée du package.json par une PR vers staging, tag `<app>@<version>`, release GitHub, puis fusion de staging dans main. À charger dès qu'il s'agit de livrer, publier, étiqueter ou « sortir une version ».
 ---
 
 # Livrer une version
 
-**Une livraison ne concerne qu'une app.** Le workspace pnpm mutualise
-l'installation des dépendances, pas les versions : il n'y a pas de tag global,
-chaque app porte la sienne dans son `package.json` et suit son propre cycle. Une
-livraison ne touche donc que les fichiers de `apps/<app>/`.
+Ce skill ne porte que la marche à suivre. Les règles sont ailleurs :
 
-Un seul précédent à ce jour, `simulateur-eligibilite@0.1.0`. Les exemples
-ci-dessous en viennent.
-
-## Ce qu'une livraison produit
-
-| Quoi | Où |
+| Ce qu'il faut savoir | Où |
 |---|---|
-| Le numéro | `apps/<app>/package.json` |
-| Ce qu'elle apporte | `apps/<app>/CHANGELOG.md`, la plus récente en haut |
-| Le commit | `chore(<app>): livre la version X.Y.Z` |
-| Le tag | annoté, `<app>@X.Y.Z` |
-| La page publique | une release GitHub sur ce tag |
+| ce qu'une livraison produit, l'ordre de mise en production, le numéro, le format du journal, du tag et de la release | [`docs/knowledge/contributing/livraisons.md`](../../../docs/knowledge/contributing/livraisons.md) |
+| la branche, la PR vers `staging`, le message de commit | [`docs/knowledge/contributing/regles-git.md`](../../../docs/knowledge/contributing/regles-git.md) (GIT-003 à GIT-009) |
+| le déploiement sur Scalingo | `apps/simulateur-eligibilite/README.md` § « Déployer » |
 
-**Les cinq vont ensemble.** Le pied de page du simulateur affiche sa version et
-la lie à la page de sa release (`front/app/BandeauVersion.tsx`) : un tag poussé
-sans release publiée fait un lien mort en production, pour tous les utilisateurs.
+Les exemples livrent `simulateur-eligibilite@0.5.0`, après la `0.4.0`.
 
-## 1. Le périmètre
+## 1. Vérifier le point de départ
 
-```
-git status                       # rien en cours, main à jour
-git log --oneline <app>@<version précédente>..main -- apps/<app>
+```bash
+git fetch origin --tags
+git merge-base --is-ancestor origin/main origin/staging && echo ok
 ```
 
-Ces commits doivent **déjà être sur `origin/main`** : le journal renvoie à chacun
-par son sha sur GitHub. Pousser avant d'écrire le journal, pas après.
+Si la commande n'affiche pas `ok`, `main` porte un commit que `staging` n'a pas,
+souvent la livraison précédente. Rapatrie-le d'abord, par une branche et sa PR :
 
-Première livraison d'une app, donc pas de tag précédent : remonter au point qui
-fait sens et le dire dans l'entrée. La 0.1.0 annonce « les 35 commits mergés
-depuis `staging` et `feat/prefill-cerfa-pmt` ».
-
-## 2. Le numéro
-
-Semver. Un `feat` dans le périmètre appelle une mineure, des `fix` seuls un patch.
-Rester en `0.x` tant que la surface publique n'est pas figée : c'est ce qui a valu
-0.1.0 plutôt que 1.0.0 à un simulateur pourtant en production, le pré-remplissage
-des CERFA restant derrière la garde « outils produit ».
-
-Le numéro est une **décision produit** : le proposer avec sa raison, ne pas le
-trancher seul.
-
-## 3. L'entrée du journal
-
-```markdown
-## [0.2.0](https://github.com/betagouv/transport-sanitaire/releases/tag/simulateur-eligibilite%400.2.0), 12 septembre 2026
-
-<Une ou deux phrases : ce que la version rassemble, et depuis quel point.>
-
-### TL;DR
-
-- <Ce qu'un lecteur pressé doit retenir, une ligne par sujet.>
-
-### ✨ Nouveautés
-
-- [8c1788e](https://github.com/betagouv/transport-sanitaire/commit/8c1788e) : passe le modèle en v9.4.1 et corrige trois anomalies qu'on avait remontées à l'éditeur : …
+```bash
+tsp branch chore/rapatrie-main
+git merge origin/main
+tsp pr
 ```
 
-- Le `@` du tag s'encode en `%40` dans le lien du titre. C'est la forme sous
-  laquelle GitHub sert la page d'une release.
-- **Les sections, dans cet ordre, selon le type du commit.** Chacune porte son
-  emoji, toujours le même, collé au titre. C'est ce qui rend les groupes
-  repérables d'un coup d'œil dans une page de release un peu longue :
+## 2. Lister le périmètre
 
-  | Type de commit | Titre de section |
-  |---|---|
-  | `feat` | `### ✨ Nouveautés` |
-  | `fix` | `### 🐛 Corrections` |
-  | `refactor`, `perf` | `### ♻️ Sous le capot` |
-  | `test` | `### ✅ Tests` |
-  | `docs` | `### 📝 Documentation` |
-
-  Une section vide ne s'écrit pas. Le TL;DR n'a pas d'emoji : il ne groupe pas
-  des commits, il résume la version.
-- **Une ligne par commit**, sha court, puis un verbe conjugué à la 3ᵉ personne de
-  l'indicatif présent : la règle du sujet de commit vaut ici.
-- La ligne **n'est pas le sujet recopié**. Elle est écrite pour qui lit le
-  produit, tirée du corps du commit, et dit ce qui change pour l'utilisateur
-  quitte à être plus longue que le sujet.
-- **Chaque commit du périmètre apparaît une fois et une seule.** Compter :
-  `git log --oneline <tag>..main -- apps/<app> | wc -l` doit égaler le nombre de
-  lignes des sections.
-
-## 4. La montée de version
-
-```
-cd apps/<app>
-pnpm version X.Y.Z --no-git-tag-version   # met à jour le package.json de l'app
-pnpm verifier
+```bash
+git log --oneline simulateur-eligibilite@0.4.0..origin/staging -- apps/simulateur-eligibilite
 ```
 
-`--no-git-tag-version` est indispensable : le commit et le tag s'écrivent à la
-main, avec un message.
+Lis le corps de chaque commit : c'est de lui que vient la ligne du journal.
 
-Le `pnpm-lock.yaml` de la racine n'est **pas** touché : il enregistre les
-dépendances de chaque app, jamais leur numéro de version. Un lock qui bouge à
-cette étape est le signe qu'autre chose a changé. Regarde quoi avant de
-commiter.
+## 3. Proposer le numéro
 
-Pour le simulateur, `tests/app/BandeauVersion.test.tsx` compare ce que le pied de
-page affiche à ce que `package.json` et `regles/VERSION` déclarent. Une montée
-oubliée d'un côté s'y voit. C'est la garde de cette étape.
+Propose-le au relecteur, avec sa raison, et attends sa réponse.
 
-## 5. Le commit et le tag
+## 4. Écrire la livraison
 
-```
-git commit -m "chore(simulateur): livre la version 0.2.0"   # corps argumenté
-git tag -a "simulateur-eligibilite@0.2.0" -m "<message>"
-git push origin main "simulateur-eligibilite@0.2.0"
-```
-
-`chore` parce que le commit ne livre que le numéro et le journal. La 0.1.0 est en
-`feat` parce qu'elle apportait aussi le pied de page. Ce n'est pas le régime
-ordinaire.
-
-Le **message du tag** reprend le titre `<app> <version>`, puis le TL;DR en prose.
-C'est ce que voit `git show <tag>`, sans réseau.
-
-## 6. La release GitHub
-
-`gh` vient du toolchain, comme Node : il est épinglé dans `mise.toml` et
-s'installe par `mise install`. L'authentification, elle, est personnelle et se
-fait une fois : `gh auth login`, portée `repo` suffisante. `gh auth status` dit
-où on en est.
-
-Le corps de la release est **l'entrée du journal**, pas autre chose. Comme elle
-est la première du fichier, elle s'extrait sans la recopier :
-
-```
+```bash
+tsp branch chore/livre-simulateur-0.5.0
 cd apps/simulateur-eligibilite
-awk '/^## \[/{n++} n==1' CHANGELOG.md | tail -n +2 |
-  gh release create "simulateur-eligibilite@0.2.0" \
-    --title "simulateur-eligibilite 0.2.0" \
-    --verify-tag --notes-file -
+pnpm version 0.5.0 --no-git-tag-version
 ```
 
-- `--verify-tag` refuse de créer la release si le tag n'est pas **sur le
-  distant** : c'est la garde contre un `git push` du tag oublié à l'étape 5.
-- `tail -n +2` retire la ligne de titre, que GitHub affiche déjà.
-- **Ne jamais passer `--generate-notes`.** GitHub y liste les sujets de commit :
-  on aurait deux textes concurrents pour la même version, et le moins bon des
-  deux en évidence.
+`--no-git-tag-version` empêche pnpm de commiter et de poser le tag lui-même :
+le tag vient plus tard, sur le commit de `staging`.
 
-Relire ce qui est publié : `gh release view "simulateur-eligibilite@0.2.0" --web`.
+Écris ensuite l'entrée en haut de `CHANGELOG.md`, puis compte. Les deux nombres
+doivent être égaux :
 
-## 7. Après
+```bash
+git log --oneline simulateur-eligibilite@0.4.0..origin/staging -- apps/simulateur-eligibilite | wc -l
+awk '/^## \[/{n++} n==1' CHANGELOG.md | grep -c '^- \[[0-9a-f]\{7\}\]'
+```
 
-Scalingo déploie depuis `main`. Une fois le déploiement passé, lire le pied de
-page en production : il doit annoncer la nouvelle version, le sha du commit livré
-et la version des règles attendue. Le lien de la version doit ouvrir la release,
-pas un 404.
+Le `pnpm-lock.yaml` ne doit pas bouger : il ne porte pas le numéro des apps. S'il
+bouge, regarde pourquoi avant de commiter.
 
-## Ne pas réécrire l'historique d'une version publiée
+```bash
+tsp verifier simulateur
+git commit -am "chore(simulateur): livre la version 0.5.0"   # corps : GIT-005, GIT-006
+tsp pr
+```
 
-Le journal renvoie aux commits par leur sha. Un `rebase`, un `amend` ou un
-`filter-branch` les change tous et transforme chaque ligne du journal en lien
-mort, tag compris. Si l'historique doit vraiment être réécrit, refaire les liens
-du journal et replacer les tags dans le même mouvement, avant de pousser.
+Si `staging` reçoit un commit de l'app pendant que la PR est ouverte, ajoute-le
+au journal et refais le compte.
 
-## Les autres apps
+## 5. Poser le tag et la release
 
-Seul le simulateur a aujourd'hui un journal et un tag. `glossaire-notion` porte
-une version dans son `package.json` sans rien de tout cela, et `data-analyzer`
-est en `0.0.0` : elle n'est pas livrée, elle tourne. La marche à suivre ci-dessus
-vaut dès qu'une app est livrée à quelqu'un : c'est la livraison qui appelle le
-journal, pas la présence d'un `package.json`.
+Une fois la PR fusionnée, le tag se pose sur le commit qu'elle a laissé sur
+`staging` :
+
+```bash
+git fetch origin
+SHA=$(git log origin/staging -1 --format=%H --grep='livre la version 0.5.0')
+git tag -a simulateur-eligibilite@0.5.0 "$SHA" -m "<titre, puis le TL;DR>"
+git push origin simulateur-eligibilite@0.5.0
+```
+
+Le corps de la release est l'entrée du journal, sans son titre :
+
+```bash
+git show "$SHA:apps/simulateur-eligibilite/CHANGELOG.md" |
+  awk '/^## \[/{n++} n==1' | tail -n +2 |
+  gh release create simulateur-eligibilite@0.5.0 \
+    --title "simulateur-eligibilite 0.5.0" --verify-tag --notes-file -
+gh release view simulateur-eligibilite@0.5.0 --web
+```
+
+`--verify-tag` refuse la release si le tag n'est pas sur le distant.
+`gh` est épinglé dans `mise.toml`. `gh auth status` dit si tu es connecté.
+
+## 6. Mettre en production
+
+`staging` rejoint `main` en avance rapide :
+
+```bash
+git push origin origin/staging:refs/heads/main
+```
+
+Git refuse ce push si `main` porte un commit que `staging` n'a pas : retour à
+l'étape 1.
+
+Scalingo déploie ensuite depuis `main`. Une fois le déploiement passé, ouvre le
+simulateur en production : le pied de page annonce `0.5.0` et le sha déployé,
+et le lien de la version ouvre la release.

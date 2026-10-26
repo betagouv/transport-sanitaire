@@ -30,7 +30,7 @@ L'état d'une issue se déduit comme le dit
    surtout « Réponses de l'éditeur » et « À faire chez nous » : elle dit ce
    qui reste sur une issue fermée et ce qui attend une livraison.
 5. Vérifie ce que l'éditeur a livré : `ls tmp/` pour la dernière version, et
-   cherche dans `tmp/<version>/` les fichiers qu'une réponse cite.
+   cherche dans `tmp/<version>/package/` les fichiers qu'une réponse cite.
 6. Regarde ce qui est fusionné : `git fetch origin` puis
    `git log origin/v10 --oneline -10`, et `gh pr list --state all --limit 10`.
 7. Si une carte a déjà été dessinée dans la conversation, ne relis que ce qui
