@@ -196,6 +196,14 @@ _Chez l'éditeur_: « page de résultat » ou « résultat de l'éligibilité »
 R2, « page finale » pour R3.
 _Avoid_: sortie (D-25), page (D-26).
 
+**Trace du résultat**:
+Ce que les textes du premier résultat lisent des réponses et des cibles. Rien
+n'en est conservé (D-111, D-195).
+_Chez l'éditeur_: « trace d'audit », « trace technique », que décrit son
+« contrat de trace ». La sienne porte en plus la version du paquet et la
+révision.
+_Avoid_: trace, seule (D-23) ; trace d'audit, réservé à celle de l'éditeur.
+
 **Fiche patient**:
 Ce que le premier résultat donne à remettre au patient, positive ou négative.
 Cinq issues n'en ont pas.
