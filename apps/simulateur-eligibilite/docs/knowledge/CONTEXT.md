@@ -186,9 +186,10 @@ _Chez l'éditeur_: « cible documentaire », le même mot. Celles qui viennent d
 complément ne sont pas dans ses règles.
 
 **Préconisation**:
-L'ensemble des cibles d'une simulation. Les cibles ne servent pas à la calculer :
-elles la composent (D-11, D-16).
-_Chez l'éditeur_: « décision », « instantané ».
+Les faits d'une simulation et les cibles qu'ils donnent. Le verrou la fige :
+le complément n'y change rien (D-11, D-16, D-200).
+_Chez l'éditeur_: « décision », « instantané » (« un instantané des faits P0–P2
+et des sorties du moteur »).
 _Avoid_: décision, sortie.
 
 **Issue**:
