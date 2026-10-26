@@ -144,6 +144,26 @@ export async function drawnOn(
 }
 
 /**
+ * Les textes dessinés sur la page `number`, comptée depuis 1 : ceux des champs
+ * aplatis et ceux dessinés hors champ.
+ */
+export async function textsOn(
+  pdf: Uint8Array,
+  number: number,
+): Promise<string[]> {
+  const page = (await PDFDocument.load(pdf)).getPage(number - 1);
+  const objects = page.node
+    .Resources()
+    ?.lookupMaybe(PDFName.of("XObject"), PDFDict);
+  const drawn = (objects?.values() ?? []).map((ref) =>
+    page.doc.context.lookup(ref),
+  );
+  return [...contentsOf(page), ...drawn].flatMap((stream) =>
+    stream instanceof PDFRawStream ? textsOf(stream) : [],
+  );
+}
+
+/**
  * Les états de la case `field` dont l'apparence cochée est dessinée à sa place
  * sur le PDF aplati, sans doublon.
  */
@@ -212,12 +232,7 @@ function drawnObjects(page: PDFPage): string[] {
   const objects = page.node
     .Resources()
     ?.lookupMaybe(PDFName.of("XObject"), PDFDict);
-  const contents = page.node.Contents();
-  const streams =
-    contents instanceof PDFArray ? contents.asArray() : [contents];
-  return streams.flatMap((ref) => {
-    const stream = ref && page.doc.context.lookup(ref);
-    if (!(stream instanceof PDFRawStream)) return [];
+  return contentsOf(page).flatMap((stream) => {
     const content = new TextDecoder("latin1").decode(
       decodePDFRawStream(stream).decode(),
     );
@@ -227,5 +242,15 @@ function drawnObjects(page: PDFPage): string[] {
       ([, x, y, name = ""]) =>
         `${objects?.get(PDFName.of(name))} à ${Number(x)},${Number(y)}`,
     );
+  });
+}
+
+// Les flux de contenu de la page.
+function contentsOf(page: PDFPage): PDFRawStream[] {
+  const contents = page.node.Contents();
+  const refs = contents instanceof PDFArray ? contents.asArray() : [contents];
+  return refs.flatMap((ref) => {
+    const stream = ref && page.doc.context.lookup(ref);
+    return stream instanceof PDFRawStream ? [stream] : [];
   });
 }

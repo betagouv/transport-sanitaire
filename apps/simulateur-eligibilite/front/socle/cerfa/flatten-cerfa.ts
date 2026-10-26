@@ -21,6 +21,7 @@ import {
   translate,
 } from "pdf-lib";
 import type { Position } from "./cerfa";
+import { sizeOnOneLine } from "./text-fit";
 import { pageOf } from "./widget-page";
 
 /** Une case à marquer : son champ, et l'état d'export qui la désigne. */
@@ -28,12 +29,14 @@ export type Mark = { readonly field: string; readonly state: string };
 
 /**
  * Un texte à dessiner hors de tout champ, à sa taille. `at.y` est la ligne de
- * base de sa première ligne. Il passe à la ligne dans `at.width`.
+ * base de sa première ligne. Il passe à la ligne dans `at.width`. `singleLine` :
+ * il rapetisse d'abord, depuis sa taille, pour tenir sur une ligne.
  */
 export type Drawing = {
   readonly text: string;
   readonly at: Position;
   readonly size: number;
+  readonly singleLine?: boolean;
 };
 
 /** L'interligne d'un texte dessiné, en proportion de sa taille. */
@@ -104,9 +107,12 @@ async function drawTexts(
   if (drawings.length === 0) return;
   const font = await document.embedFont(StandardFonts.Helvetica);
   const pages = document.getPages();
-  for (const { text, at, size } of drawings) {
+  for (const { text, at, size: wanted, singleLine } of drawings) {
     const page = pages[at.page - 1];
     if (!page) throw new Error(`Le gabarit n'a pas de page ${at.page}.`);
+    const size = singleLine
+      ? sizeOnOneLine(text, at.width, font, wanted)
+      : wanted;
     page.drawText(text, {
       x: at.x,
       y: at.y,

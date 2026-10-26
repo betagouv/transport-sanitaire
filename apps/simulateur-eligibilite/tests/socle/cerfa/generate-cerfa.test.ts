@@ -6,13 +6,20 @@ import {
   commentOn,
   date,
   drawnBox,
+  onOneLine,
   text,
 } from "../../../front/socle/cerfa/cerfa";
 import {
   fileNameOf,
   generateCerfa,
 } from "../../../front/socle/cerfa/generate-cerfa";
-import { drawnOn, markedStates, statesOf, testForm } from "./test-form";
+import {
+  drawnOn,
+  markedStates,
+  statesOf,
+  testForm,
+  textsOn,
+} from "./test-form";
 
 // Le cerfa se remplit d'après son DTO, sans rien savoir du simulateur : ici,
 // une simple fiche. Le DTO parle en mots clairs, la définition du cerfa garde
@@ -29,7 +36,7 @@ type Fiche = {
     avec_citron?: boolean;
     echeance?: string;
   };
-  drawings: { remarque?: string };
+  drawings: { remarque?: string; consigne?: string };
 };
 
 const template = testForm();
@@ -49,7 +56,13 @@ async function fiche(): Promise<Cerfa<Fiche>> {
       avec_citron: drawnBox("acc", "citron"),
       echeance: date("echeance"),
     },
-    drawings: { remarque: at({ page: 1, x: 20, y: 100, width: 300 }) },
+    drawings: {
+      remarque: at(
+        { page: 1, x: 20, y: 100, width: 300 },
+        { page: 2, x: 20, y: 100, width: 300 },
+      ),
+      consigne: onOneLine(at({ page: 1, x: 20, y: 60, width: 170 })),
+    },
   };
 }
 
@@ -130,7 +143,35 @@ describe("générer un cerfa", () => {
       drawings: { remarque: "Sans mousse." },
     });
 
-    expect((await drawnOn(pdf)).texts).toEqual(["Sans mousse."]);
+    expect(await textsOn(pdf, 1)).toEqual(["Sans mousse."]);
+  });
+
+  it("dessine ce texte sur chaque volet qui le porte", async () => {
+    const pdf = await generer({
+      fields: {},
+      drawings: { remarque: "Sans mousse." },
+    });
+
+    expect(await textsOn(pdf, 2)).toEqual(["Sans mousse."]);
+  });
+
+  it("garde sur une ligne, en rapetissant, le texte qui doit y tenir", async () => {
+    const consigne = "Sans mousse, lait à part, sucre en morceaux, citron.";
+
+    const pdf = await generer({ fields: {}, drawings: { consigne } });
+
+    expect(await textsOn(pdf, 1)).toEqual([consigne]);
+  });
+
+  it("passe à la ligne au plancher, plutôt que de rien couper", async () => {
+    const consigne =
+      "Sans mousse, lait à part, sucre en morceaux, citron. ".repeat(2);
+
+    const pdf = await generer({ fields: {}, drawings: { consigne } });
+
+    const lignes = await textsOn(pdf, 1);
+    expect(lignes.length).toBeGreaterThan(1);
+    expect(lignes.map((ligne) => ligne.trim()).join(" ")).toBe(consigne.trim());
   });
 
   it("écrit le commentaire à la suite du texte qu'il suit", async () => {
