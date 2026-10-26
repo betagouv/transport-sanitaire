@@ -122,6 +122,11 @@ Ce qu'on demande au prescripteur, sous l'identifiant que lui donne l'éditeur :
 Q1.1, Q2.3.4 (D-40).
 _Chez l'éditeur_: « question », le même mot.
 
+**Réponse**:
+Ce que le prescripteur donne à une question. Elle ne compte qu'une fois sa page
+validée.
+_Chez l'éditeur_: « réponse », le même mot.
+
 **Brouillon**:
 Ce qui est saisi sur une page avant « Suivant ». Une saisie ne compte qu'une
 fois la page validée.
@@ -196,6 +201,15 @@ Le mode de transport que la préconisation retient : ambulance, TAP, TPMR,
 transport en commun, véhicule personnel.
 _Chez l'éditeur_: « mode », le même mot.
 
+**Support**:
+Le cerfa que la préconisation retient : S3138g, S3139h, S3141, ou aucun.
+_Chez l'éditeur_: « support », le même mot.
+
+**Financeur**:
+Celui qui paie le transport, selon la préconisation : l'Assurance maladie,
+l'établissement, le patient, ou pas encore conclu.
+_Chez l'éditeur_: « financeur », le même mot.
+
 **Moteur de décision**:
 Ce qui calcule les cibles des faits, par les règles publicodes du modèle (D-32).
 _Chez l'éditeur_: aucun mot. Son « noyau de décision » est le fichier des
@@ -243,6 +257,10 @@ _Chez l'éditeur_: « gabarit ».
 Une section imprimée d'un cerfa, qu'un autre cerfa peut reprendre : l'accident,
 le trajet, la prescription (D-138).
 _Chez l'éditeur_: « rubrique », le même mot.
+
+**Cellule**:
+Une zone imprimée d'un cerfa, qu'elle soit un champ du PDF ou non.
+_Chez l'éditeur_: « cellule », le même mot.
 
 **Volet**:
 Une page à renseigner d'un cerfa. Un même champ se recopie sur chaque volet
