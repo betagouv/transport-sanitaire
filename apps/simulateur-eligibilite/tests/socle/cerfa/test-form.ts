@@ -200,12 +200,14 @@ export async function textsOn(
 
 /**
  * Les états de la case `field` dont l'apparence cochée est dessinée à sa place
- * sur le PDF aplati, sans doublon.
+ * sur le PDF aplati, sans doublon. Sur la seule page `page`, comptée depuis 1,
+ * si elle est donnée.
  */
 export async function markedStates(
   template: Uint8Array,
   pdf: Uint8Array,
   field: string,
+  page?: number,
 ): Promise<string[]> {
   const boxes = (await PDFDocument.load(template))
     .getForm()
@@ -223,7 +225,10 @@ export async function markedStates(
           drawn: `${normal.get(state)} à ${x},${y}`,
         }));
     });
-  const drawn = (await PDFDocument.load(pdf)).getPages().flatMap(drawnObjects);
+  const drawn = (await PDFDocument.load(pdf))
+    .getPages()
+    .filter((_, rank) => page === undefined || rank === page - 1)
+    .flatMap(drawnObjects);
   const states = boxes.filter((box) => drawn.includes(box.drawn));
   return [...new Set(states.map(({ state }) => state))];
 }

@@ -3,7 +3,8 @@
 // gabarit, pages 2 à 4. Rien de médical ne s'écrit hors de la page 2. Ce que
 // vaut chaque cellule se teste avec sa rubrique (`rubriques-du-cerfa.test.ts`,
 // `rubriques-de-la-pmt.test.ts`, `rubriques-de-la-dap.test.ts`,
-// `texte-medical.test.ts`).
+// `texte-medical.test.ts`), la consigne du mineur avec la PMT
+// (`consigne-du-mineur.test.ts`).
 
 import { describe, expect, it } from "vitest";
 import { S3139H } from "../../../front/models/eligibilite/r3/s3139h/s3139h";
@@ -180,13 +181,6 @@ describe("le transport par avion ou bateau", () => {
       expect(ecrit.split("12082026")).toHaveLength(3);
     },
   );
-
-  it("coche « ALD non exonérante » pour le mineur reconnu, sans avion ni bateau (#128)", async () => {
-    const cibles = { cible_mineur_ald_non_exonerante_reconnue: true };
-
-    expect(await marquees(DAP, cibles, "sit")).toEqual(["ald"]);
-    expect(await marquees(DAP, cibles, "bat ou av")).toEqual([]);
-  });
 });
 
 describe("les cases inversées du gabarit (D-188)", () => {
