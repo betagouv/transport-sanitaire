@@ -18,7 +18,7 @@ elle en est, de la plus avancée à la moins avancée.
 | Jaune | en cours | une partie est fusionnée, ou une branche ou une PR ouverte la sert |
 | Bleu | plan fait, dév pas commencé | l'issue est découpée en sous-issues, ou son corps a un cadrage avec des critères d'acceptation ; rien n'est codé |
 | Violet | package livré, pas de plan | le livrable de l'éditeur couvre l'étape, mais l'issue tient en quelques lignes, sans découpage |
-| Gris | pas de package | l'étape attend des pièces que l'éditeur n'a pas livrées : citées dans une réponse, absentes de `tmp/<version>/` |
+| Gris | pas de package | l'étape attend des pièces que l'éditeur n'a pas livrées : citées dans une réponse, absentes de `tmp/<version>/package/` |
 
 Une case neutre en pointillés est hors échelle, comme la PR d'ensemble d'un
 chantier vers `staging`.

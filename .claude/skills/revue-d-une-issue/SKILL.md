@@ -14,10 +14,16 @@ phrases courtes, un exemple pour chaque point délicat.
 
 | Quoi | Où |
 |---|---|
-| La revue complète | `tmp/revue-<n>.md` (non suivi), sur le gabarit plus bas |
+| La revue complète | `tmp/<version>/revue-<n>.md` (non suivi), sur le gabarit plus bas |
 | L'app à la tête de la PR | worktree `.claude/worktrees/revue-<n>`, ouverte dans le navigateur intégré |
 | Un résumé de quelques lignes | dans la conversation, avec le lien vers le fichier |
 | Le verdict en commentaire de PR | seulement si le relecteur le demande |
+
+`<version>` est celle du modèle à la tête de la PR :
+`git show <tête>:apps/simulateur-eligibilite/core/models/eligibilite/rules/VERSION`.
+Le rangement de `tmp/` est dans
+[`livrable-de-l-editeur.md`](../../../apps/simulateur-eligibilite/docs/knowledge/domain/livrable-de-l-editeur.md)
+§ « Le dossier d'une version ».
 
 Le type de la PR (`feat`, `fix`, `docs`…) vient de son titre. Les points clés
 fonctionnels et le cahier de tests ne se font que pour un `feat`.
@@ -114,7 +120,7 @@ Trois listes, chaque point avec son `fichier:ligne` ou son étape du cahier :
 Rédigé pour pouvoir être collé en commentaire de PR. Le poster
 (`gh pr comment`) seulement sur demande du relecteur.
 
-## Gabarit de `tmp/revue-<n>.md`
+## Gabarit de `tmp/<version>/revue-<n>.md`
 
 ```markdown
 # Revue de #<n> : <titre court>

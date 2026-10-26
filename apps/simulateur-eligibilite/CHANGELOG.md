@@ -7,7 +7,7 @@ commit lui-même.
 Le simulateur affiche en bas de page la version qu'il exécute, le commit déployé
 et la version du modèle de règles.
 
-## [0.3.0](https://github.com/betagouv/transport-sanitaire/releases/tag/simulateur-eligibilite%400.3.0) — 10 septembre 2026
+## [0.3.0](https://github.com/betagouv/transport-sanitaire/releases/tag/simulateur-eligibilite%400.3.0), 10 septembre 2026
 
 La montée du modèle d'éligibilité de la v9.5.1 à la v9.7.0, et le passage du
 contrat d'interface au rang de source de ce que l'application déduisait
@@ -44,7 +44,7 @@ elle-même. Huit commits depuis la 0.2.0.
 
 - [065f299](https://github.com/betagouv/transport-sanitaire/commit/065f299) : remonte à l'éditeur la fusion des motifs ouvrant droit et des conditions d'accord préalable. Vingt-quatre des 225 cas de la grille rendent remboursable un déplacement qu'aucun motif ne couvre dès qu'il dépasse 150 km, là où la v9.5.1 et la v9.6.0 tenaient les deux jugements séparés ; c'est bien ce que la matrice livrée attend, d'où une question posée plutôt qu'un défaut signalé. Une erreur de notre premier constat est corrigée au passage : un critère d'ambulance ouvrant le droit à lui seul n'est pas nouveau en v9.7, il figurait déjà parmi les motifs en v9.5.1.
 
-## [0.2.0](https://github.com/betagouv/transport-sanitaire/releases/tag/simulateur-eligibilite%400.2.0) — 27 août 2026
+## [0.2.0](https://github.com/betagouv/transport-sanitaire/releases/tag/simulateur-eligibilite%400.2.0), 27 août 2026
 
 Deux montées du modèle d'éligibilité, de la v9.4.1 à la v9.5.1, et le passage du
 dépôt en workspace pnpm. Dix-neuf commits depuis la 0.1.2.
@@ -94,7 +94,7 @@ dépôt en workspace pnpm. Dix-neuf commits depuis la 0.1.2.
 - [06cbaf4](https://github.com/betagouv/transport-sanitaire/commit/06cbaf4) : réécrit les commentaires du contrat partagé et du backend, en disant en toutes lettres les invariants qui comptent : le secret reste au serveur, le nom ne circule jamais en clair, l'annuaire complet ne sort pas de Grist.
 - [be001cf](https://github.com/betagouv/transport-sanitaire/commit/be001cf) : réécrit les deux README dans la langue du dépôt, sans qu'aucun fait change.
 
-## [0.1.2](https://github.com/betagouv/transport-sanitaire/releases/tag/simulateur-eligibilite%400.1.2) — 24 août 2026
+## [0.1.2](https://github.com/betagouv/transport-sanitaire/releases/tag/simulateur-eligibilite%400.1.2), 24 août 2026
 
 Correctif d'outillage. Le simulateur ne change pas : le commit livré ne touche
 pas l'app, mais la configuration de la CI qui la garde.
@@ -109,7 +109,7 @@ pas l'app, mais la configuration de la CI qui la garde.
 
 - [25b2b68](https://github.com/betagouv/transport-sanitaire/commit/25b2b68) : cesse de prendre les noms de règles du contrat publicodes pour des secrets. `p2_exception_radiotherapie_moins_48h` déclenchait la règle générique de gitleaks, qui voyait une clé d'API dans ses trente-six caractères, et la CI restait rouge. L'exception est cantonnée à cette règle et à ce seul fichier : la clé Grist, le secret de pseudonymisation et le jeton Matomo y restent surveillés.
 
-## [0.1.1](https://github.com/betagouv/transport-sanitaire/releases/tag/simulateur-eligibilite%400.1.1) — 24 août 2026
+## [0.1.1](https://github.com/betagouv/transport-sanitaire/releases/tag/simulateur-eligibilite%400.1.1), 24 août 2026
 
 Version de documentation. Le simulateur ne change pas : les deux commits livrés
 ne touchent que l'`AGENTS.md` de l'app, qui n'est embarqué nulle part. Rien dans
@@ -123,10 +123,10 @@ ne touchent que l'`AGENTS.md` de l'app, qui n'est embarqué nulle part. Rien dan
 
 ### 📝 Documentation
 
-- [1c469f3](https://github.com/betagouv/transport-sanitaire/commit/1c469f3) : réécrit l'AGENTS.md de l'app dans la langue du dépôt et lui ajoute la section « Versions » qui manquait — où vit le numéro, comment se nomme le tag, où s'écrit ce journal.
+- [1c469f3](https://github.com/betagouv/transport-sanitaire/commit/1c469f3) : réécrit l'AGENTS.md de l'app dans la langue du dépôt et lui ajoute la section « Versions » qui manquait : où vit le numéro, comment se nomme le tag, où s'écrit ce journal.
 - [9370bdc](https://github.com/betagouv/transport-sanitaire/commit/9370bdc) : renvoie de cette section vers la marche à suivre de livraison, qui décrit les cinq gestes d'une version et pourquoi ils ne se séparent pas.
 
-## [0.1.0](https://github.com/betagouv/transport-sanitaire/releases/tag/simulateur-eligibilite%400.1.0) — 24 août 2026
+## [0.1.0](https://github.com/betagouv/transport-sanitaire/releases/tag/simulateur-eligibilite%400.1.0), 24 août 2026
 
 Première version étiquetée. Elle rassemble les 35 commits mergés depuis
 `staging` et `feat/prefill-cerfa-pmt`, entre l'intégration du modèle de règles

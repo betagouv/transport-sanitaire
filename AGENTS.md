@@ -147,6 +147,8 @@ d'écrire une ligne ou de commiter.**
 | [`regles-de-code.md`](docs/knowledge/contributing/regles-de-code.md) | les 17 `QUAL-*` : forme d'un fichier, découpage, noms, exports, suppressions de lint |
 | [`regles-git.md`](docs/knowledge/contributing/regles-git.md) | les 7 `GIT-*` : branche et PR vers `staging`, forme du message, métadonnée d'IA, confidentialité |
 | [`ecrire-une-regle.md`](docs/knowledge/contributing/ecrire-une-regle.md) | le format d'une règle, pour en ajouter, modifier ou retirer une |
+| [`ecrire-une-decision.md`](docs/knowledge/contributing/ecrire-une-decision.md) | une ligne du journal des décisions ou un ADR : où l'écrire, sa forme, les décisions renversées |
+| [`livraisons.md`](docs/knowledge/contributing/livraisons.md) | ce qu'une livraison produit, son ordre de mise en production, le format du journal, du tag et de la release |
 
 Chaque règle porte un identifiant, sa raison, un exemple juste, un exemple faux,
 et la garde qui l'applique. **Ne les recopie pas ici.** Cite l'identifiant en
@@ -156,14 +158,14 @@ revue et en commit : « corrige QUAL-006 ».
 
 | Ce que tu veux écrire | Où ça va |
 |---|---|
-| Une décision d'architecture | `docs/knowledge/adr/` de l'app concernée, ou celui de la racine si la décision traverse plusieurs apps. Format ADR maison, au niveau composant C4, sans détail de fichier |
+| Une décision d'architecture | `docs/knowledge/adr/` de l'app concernée, ou celui de la racine si la décision traverse plusieurs apps, au format de [`ecrire-une-decision.md`](docs/knowledge/contributing/ecrire-une-decision.md) |
 | Le cadrage d'un chantier | le corps de son issue GitHub, que `tsp issue new` ouvre. Jamais un fichier du dépôt |
 | Le découpage d'un chantier | ses sous-issues, une par PR, que `tsp issue add` ouvre |
 | L'état d'un chantier | **nulle part** : il se déduit de l'issue, de sa branche et de sa PR. `tsp issue show <n>` l'affiche, et `tsp` le projette dans le tableau GitHub Project |
 | Ce qu'une app sait faire | son `docs/knowledge/features.md`, un tableau « feature, ce qu'elle fait » que lit `tsp features` |
 | Une connaissance métier actée | `docs/knowledge/domain/` de l'app concernée, ou celui de la racine si elle traverse plusieurs apps |
 | Le mode d'emploi d'une app | son `README.md` |
-| Ce qu'une version apporte | le `CHANGELOG.md` de l'app. Un TL;DR, puis une ligne par commit groupée par type |
+| Ce qu'une version apporte | le `CHANGELOG.md` de l'app, au format de [`livraisons.md`](docs/knowledge/contributing/livraisons.md) |
 | Une règle pour l'IA | `AGENTS.md`, celui de la racine ou celui de l'app |
 | Une règle de code ou de commit | `docs/knowledge/contributing/`, au format de [`ecrire-une-regle.md`](docs/knowledge/contributing/ecrire-une-regle.md) |
 | Une garde | **un test**, pas une phrase |
@@ -191,12 +193,12 @@ demande plutôt que recopié ici :
 
 | Skill | Quand |
 |---|---|
-| `regle-de-contribution` | Ajouter, modifier ou retirer une règle de `docs/knowledge/contributing/` : identifiant, raison, deux exemples, garde nommée |
-| `regle-publicodes` | Toucher au modèle d'éligibilité : les quatre endroits qu'une règle traverse, et l'encodage des choix multiples en mosaïque |
-| `situation-de-reference` | Couvrir un cas métier : il va dans le catalogue de seeds, pas dans un fichier de test |
-| `implement-publicodes-version` | Intégrer une version du modèle livrée par l'éditeur : le diff du paquet, le contrat, les seeds, la recette portée, le retour à l'éditeur |
-| `doc-architecture` | Écrire ou réviser un document de `docs/knowledge/adr/` : format ADR maison, décisions révoquées conservées et barrées |
-| `livrer-une-version` | Livrer une app : numéro, journal des versions, tag `<app>@<version>` et release GitHub, qui vont ensemble |
+| `ecrire-une-regle` | Ajouter, modifier ou retirer une règle de `docs/knowledge/contributing/` : identifiant, raison, deux exemples, garde nommée |
+| `brancher-le-modele` | Brancher le code sur les règles de l'éditeur : déclarer le fait, la cible ou l'option, écrire le fichier du fait, poser la question, lire la cible |
+| `ajouter-une-seed` | Ajouter une seed à un modèle : ses réponses, ses cibles attendues, et ce qui la rejoue |
+| `implement-publicodes-version` | Intégrer une version du modèle livrée par l'éditeur : le paquet dans `tmp/<version>/package/`, le diff, la recopie, l'oracle, le retour à l'éditeur |
+| `ecrire-une-decision` | Écrire une décision : une ligne du journal d'un chantier, ou un ADR de `docs/knowledge/adr/`, décisions renversées gardées et barrées |
+| `livrer-une-version` | Livrer une app : numéro, journal des versions, PR vers `staging`, tag `<app>@<version>` et release, puis fusion de `staging` dans `main` |
 | `revue-d-une-issue` | Revoir une issue et sa PR : fonctionnel puis technique, écarts à l'issue, couverture, cahier de tests à cocher, app lancée à la tête de la PR, verdict |
 
 ## Toute règle nomme sa garde

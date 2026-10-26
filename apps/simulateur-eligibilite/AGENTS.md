@@ -364,7 +364,9 @@ Le pied de page du simulateur affiche deux valeurs : cette version et le commit
 déployé. Voir le [README](README.md) § « Savoir
 ce qui tourne ».
 
-La marche à suivre est dans le skill `livrer-une-version`.
+Les règles d'une livraison sont dans
+[`docs/knowledge/contributing/livraisons.md`](../../docs/knowledge/contributing/livraisons.md),
+la marche à suivre dans le skill `livrer-une-version`.
 
 ## Les invariants
 
