@@ -183,9 +183,9 @@ function texte(
     faits: { ...calculees.faits, ...faits },
   };
   return {
-    elements_medicaux: TEXTE_MEDICAL.elements_medicaux(lues),
+    elements_medicaux: TEXTE_MEDICAL.cellules.elements_medicaux(lues),
     elements_medicaux_precision:
-      TEXTE_MEDICAL.elements_medicaux_precision(lues),
+      TEXTE_MEDICAL.cellules.elements_medicaux_precision(lues),
   };
 }
 

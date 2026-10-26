@@ -18,7 +18,8 @@ import {
 } from "../../../../../core/models/eligibilite/p3/lieux-du-trajet";
 import { sensDuDocument } from "../../../../../core/models/eligibilite/p3/sens-du-trajet";
 import type { Address, Unanswered } from "../../../../../core/socle";
-import type { Donnees, Rubrique } from "./rubrique";
+import { forConcept } from "../../../../socle";
+import { type Lues, uneRubrique } from "./rubrique";
 
 export type Trajet = {
   readonly depart_domicile: boolean;
@@ -30,16 +31,53 @@ export type Trajet = {
   readonly aller_retour: boolean;
 };
 
-export const TRAJET: Rubrique<Trajet> = {
-  depart_domicile: (donnees) => projection("depart", donnees) === "DOMICILE",
-  depart_structure: zone("depart", "STRUCTURE_DE_SOINS"),
-  depart_autre: zone("depart", "AUTRE_LIEU"),
-  arrivee_domicile: (donnees) => projection("arrivee", donnees) === "DOMICILE",
-  arrivee_structure: zone("arrivee", "STRUCTURE_DE_SOINS"),
-  arrivee_autre: zone("arrivee", "AUTRE_LIEU"),
-  aller_retour: ({ validated }) =>
-    sensDuDocument(validated) === "3_ALLER_RETOUR_EQUIVALENT",
-};
+// Les questions des deux lieux, puis celles que lisent `natureDu` et
+// `sensDuDocument` : les lieux que P2 établit, le retour pénitentiaire et la
+// permission de sortie. Déclarées large : un concept qui lit une question non
+// déclarée lève une erreur.
+const LUS = [
+  "Q3.2.nature",
+  "Q3.2.nom",
+  "Q3.2.precision",
+  "Q3.2.adresse",
+  "Q3.3.nature",
+  "Q3.3.nom",
+  "Q3.3.precision",
+  "Q3.3.adresse",
+  "Q1.3",
+  "Q2.1",
+  "Q2.1.g",
+  "Q2.2.1",
+  "Q2.2.1.a",
+  "Q2.2.1.b",
+  "Q2.5",
+  "Q2.6",
+  "Q2.7",
+  "Q2.8.1",
+  "Q2.8.2",
+  "Q2.8.3",
+  "Q2.8.5",
+  "Q2.8.6",
+  "Q2.8.6.a",
+  "Q2.13.depart",
+  "Q3.1.2",
+] as const;
+
+type LuesParLeTrajet = Lues<(typeof LUS)[number]>;
+
+export const TRAJET = uneRubrique("Trajet")
+  .lit(...LUS)
+  .cellules<Trajet>({
+    depart_domicile: (donnees) => projection("depart", donnees) === "DOMICILE",
+    depart_structure: zone("depart", "STRUCTURE_DE_SOINS"),
+    depart_autre: zone("depart", "AUTRE_LIEU"),
+    arrivee_domicile: (donnees) =>
+      projection("arrivee", donnees) === "DOMICILE",
+    arrivee_structure: zone("arrivee", "STRUCTURE_DE_SOINS"),
+    arrivee_autre: zone("arrivee", "AUTRE_LIEU"),
+    aller_retour: ({ validated }) =>
+      sensDuDocument(forConcept(validated)) === "3_ALLER_RETOUR_EQUIVALENT",
+  });
 
 // ---- implémentation ----
 
@@ -58,7 +96,7 @@ type SansMention = undefined;
 // compris à l'étranger. Les parties vides ne s'écrivent pas.
 function lieuEnUnTexte(
   extremite: Extremite,
-  donnees: Donnees,
+  donnees: LuesParLeTrajet,
 ): string | ZoneVide {
   const questions = QUESTIONS_DU_LIEU[extremite];
   const { validated } = donnees;
@@ -73,15 +111,19 @@ function lieuEnUnTexte(
 // La rubrique du cerfa où se reporte ce lieu. Sans nature, aucune.
 function projection(
   extremite: Extremite,
-  { validated }: Donnees,
+  { validated }: LuesParLeTrajet,
 ): Projection | SansRubrique {
-  const nature = natureDu(extremite, validated, validated);
+  const nature = natureDu(
+    extremite,
+    forConcept(validated),
+    forConcept(validated),
+  );
   return nature && projectionCerfa(nature);
 }
 
 // Le lieu écrit dans la zone `cible`, s'il s'y reporte.
 function zone(extremite: Extremite, cible: Projection) {
-  return (donnees: Donnees): string | ZoneVide =>
+  return (donnees: LuesParLeTrajet): string | ZoneVide =>
     projection(extremite, donnees) === cible
       ? lieuEnUnTexte(extremite, donnees)
       : undefined;
@@ -89,11 +131,18 @@ function zone(extremite: Extremite, cible: Projection) {
 
 // Ce que le lieu dit de sa nature : la précision saisie en P3, sinon la
 // mention que le contrat des lieux demande pour un EHPAD ou un HTNM.
-function mention(extremite: Extremite, donnees: Donnees): string | SansMention {
+function mention(
+  extremite: Extremite,
+  donnees: LuesParLeTrajet,
+): string | SansMention {
   const { validated } = donnees;
   const precision = validated.question(QUESTIONS_DU_LIEU[extremite].precision);
   if (precision.hasAnswer()) return precision.value;
-  const nature = natureDu(extremite, validated, validated);
+  const nature = natureDu(
+    extremite,
+    forConcept(validated),
+    forConcept(validated),
+  );
   return nature && MENTIONS[nature];
 }
 

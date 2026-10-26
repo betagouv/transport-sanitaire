@@ -123,7 +123,7 @@ export function cellules<Cellules>(
 ): Cellules {
   const lues = donnees(reponses, cibles, completedAt);
   return Object.fromEntries(
-    Object.entries(rubrique).map(([cellule, calcul]) => [
+    Object.entries(rubrique.cellules).map(([cellule, calcul]) => [
       cellule,
       (calcul as (donnees: Donnees) => unknown)(lues),
     ]),

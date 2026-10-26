@@ -9,7 +9,7 @@
 // retire faute de place. Le point final va au dernier des deux.
 
 import { OPTIONS } from "../../../../../core/models/eligibilite/declarations/questions";
-import type { Donnees, Rubrique } from "./rubrique";
+import { type Lues, uneRubrique } from "./rubrique";
 
 /** Rien n'est établi, ou rien n'est saisi : la cellule reste vide. */
 type AucunSegment = undefined;
@@ -19,28 +19,50 @@ export type TexteMedical = {
   readonly elements_medicaux_precision: string | AucunSegment;
 };
 
-export const TEXTE_MEDICAL: Rubrique<TexteMedical> = {
-  elements_medicaux: (donnees) => {
-    const segments = [
-      ...soin(donnees),
-      ...besoins(donnees),
-      ...complements(donnees),
-    ]
-      .map(forme)
-      .map((segment) =>
-        segment.replace(VARIABLE, justification(donnees) ?? ""),
-      );
-    if (segments.length === 0) return undefined;
-    const texte = segments
-      .map((segment, rang) => (rang === 0 ? segment : enMinuscule(segment)))
-      .join(" ; ");
-    return precision(donnees) === undefined ? `${texte}.` : texte;
-  },
-  elements_medicaux_precision: (donnees) => {
-    const saisie = precision(donnees);
-    return saisie === undefined ? undefined : `${saisie}.`;
-  },
-};
+const LUS = [
+  "Q1.1",
+  "Q1.2",
+  "Q1.3",
+  "Q2.1",
+  "Q2.14.motif",
+  "Q3.4",
+  "Q3.4.distance",
+  "fait_ald_liee",
+  "fait_htnm_hors_maternite",
+  "cible_ambulance_equipement_bariatrique",
+  "cible_dap_motif_camsp_cmpp",
+  "cible_dap_motif_engagement_maternite",
+  "cible_issue_id",
+  "cible_mineur_ald_non_exonerante_reconnue",
+  "cible_situation_at_mp",
+] as const;
+
+type LuesParLeTexte = Lues<(typeof LUS)[number]>;
+
+export const TEXTE_MEDICAL = uneRubrique("Texte médical")
+  .lit(...LUS)
+  .cellules<TexteMedical>({
+    elements_medicaux: (donnees) => {
+      const segments = [
+        ...soin(donnees),
+        ...besoins(donnees),
+        ...complements(donnees),
+      ]
+        .map(forme)
+        .map((segment) =>
+          segment.replace(VARIABLE, justification(donnees) ?? ""),
+        );
+      if (segments.length === 0) return undefined;
+      const texte = segments
+        .map((segment, rang) => (rang === 0 ? segment : enMinuscule(segment)))
+        .join(" ; ");
+      return precision(donnees) === undefined ? `${texte}.` : texte;
+    },
+    elements_medicaux_precision: (donnees) => {
+      const saisie = precision(donnees);
+      return saisie === undefined ? undefined : `${saisie}.`;
+    },
+  });
 
 // ---- implémentation ----
 
@@ -87,7 +109,7 @@ const SEANCES = ["3_CHIMIOTHERAPIE", "4_RADIOTHERAPIE", "5_DIALYSE"] as const;
 const SANS_SOIN: readonly string[] = ["14_AUTRE", "15_AUCUN"];
 
 // Le soin : Q2.1 si elle est posée, sinon les séances de Q1.3 (D-143).
-function soin({ validated }: Donnees): readonly string[] {
+function soin({ validated }: LuesParLeTexte): readonly string[] {
   const motif = validated.question("Q2.1").value;
   if (motif !== undefined)
     return SANS_SOIN.includes(motif) ? [] : [OPTIONS["Q2.1"][motif]];
@@ -97,7 +119,7 @@ function soin({ validated }: Donnees): readonly string[] {
 }
 
 // Les besoins de Q1.2 dans leur ordre, puis le proche de Q1.1.
-function besoins({ validated }: Donnees): readonly string[] {
+function besoins({ validated }: LuesParLeTexte): readonly string[] {
   const aides = validated.question("Q1.2");
   const cochees = (Object.keys(OPTIONS["Q1.2"]) as Besoin[])
     .filter((besoin) => aides.checked(besoin))
@@ -110,7 +132,7 @@ function besoins({ validated }: Donnees): readonly string[] {
 
 // Les segments du contrat, chacun sur la cible ou le fait qui porte sa
 // condition (D-147).
-function complements(donnees: Donnees): readonly string[] {
+function complements(donnees: LuesParLeTexte): readonly string[] {
   const { cibles, faits } = donnees;
   const motif = donnees.validated.question("Q2.14.motif");
   const maternite = cibles.cible_dap_motif_engagement_maternite.isOui();
@@ -141,11 +163,11 @@ function complements(donnees: Donnees): readonly string[] {
   return segments.filter(([etabli]) => etabli).map(([, texte]) => texte);
 }
 
-function justification({ validated }: Donnees): string | AucunSegment {
+function justification({ validated }: LuesParLeTexte): string | AucunSegment {
   return saisie(validated.question("Q3.4.distance").value);
 }
 
-function precision({ validated }: Donnees): string | AucunSegment {
+function precision({ validated }: LuesParLeTexte): string | AucunSegment {
   return saisie(validated.question("Q3.4").value);
 }
 

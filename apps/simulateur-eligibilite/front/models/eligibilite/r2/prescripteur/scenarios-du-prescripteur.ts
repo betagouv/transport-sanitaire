@@ -2,8 +2,8 @@
 // quatre issues qui en ont un (D-112). Une fonction pure, sans React.
 //
 // L'établissement, la permission et la convocation se choisissent par leur
-// contexte. La caisse se choisit par les points que les règles laissent
-// ouverts (`scenarios-de-la-caisse.ts`).
+// contexte. La caisse se choisit par les raisons que les règles laissent
+// ouvertes (`scenarios-de-la-caisse.ts`).
 
 import type {
   AucunScenario,
@@ -24,7 +24,7 @@ export type IssueDuPrescripteur =
 /**
  * Les scénarios que la trace montre, dans l'ordre. Un seul pour
  * l'établissement, la permission et la convocation. Aucun pour la caisse
- * quand les règles ne laissent aucun point que le catalogue sait nommer :
+ * quand les règles ne laissent aucune raison que le catalogue sait nommer :
  * rien n'est alors deviné.
  */
 export function scenariosDuPrescripteur(

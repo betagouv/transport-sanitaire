@@ -33,7 +33,7 @@ import { EXONERATION, type Exoneration } from "../rubriques/exoneration";
 import { LIENS, type Liens } from "../rubriques/liens";
 import { MODE, type Mode } from "../rubriques/mode";
 import { PRESCRIPTION, type Prescription } from "../rubriques/prescription";
-import type { Donnees, Rubrique } from "../rubriques/rubrique";
+import { type Donnees, uneRubrique } from "../rubriques/rubrique";
 import { TRAJET, type Trajet } from "../rubriques/trajet";
 
 /**
@@ -99,25 +99,28 @@ const CERFA: Cerfa<DtoS3141> = {
   drawings: {},
 };
 
-const PERMISSION: Rubrique<Permission> = {
-  debut_hospitalisation: ({ validated }) => validated.question("Q2.8.1").value,
-  nombre: ({ validated }) => {
-    const nombre = validated.question("Q3.1.3").value;
-    return nombre === undefined ? undefined : String(nombre);
-  },
-  periode_fin: ({ validated }) => validated.question("Q2.8.6").value,
-};
+export const PERMISSION = uneRubrique("Permission")
+  .lit("Q2.8.1", "Q3.1.3", "Q2.8.6")
+  .cellules<Permission>({
+    debut_hospitalisation: ({ validated }) =>
+      validated.question("Q2.8.1").value,
+    nombre: ({ validated }) => {
+      const nombre = validated.question("Q3.1.3").value;
+      return nombre === undefined ? undefined : String(nombre);
+    },
+    periode_fin: ({ validated }) => validated.question("Q2.8.6").value,
+  });
 
 // Le DTO du S3141, rubrique par rubrique.
 const VERS_LE_S3141: CerfaMapping<DtoS3141, Donnees> = {
   fields: {
-    ...ACCIDENT,
-    ...PERMISSION,
-    ...MODE,
-    ...LIENS,
-    ...TRAJET,
-    ...EXONERATION,
-    ...PRESCRIPTION,
+    ...ACCIDENT.cellules,
+    ...PERMISSION.cellules,
+    ...MODE.cellules,
+    ...LIENS.cellules,
+    ...TRAJET.cellules,
+    ...EXONERATION.cellules,
+    ...PRESCRIPTION.cellules,
   },
   drawings: {},
 };

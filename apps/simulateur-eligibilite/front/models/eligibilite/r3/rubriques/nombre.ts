@@ -2,15 +2,17 @@
 // DAP. Il ne compte que ceux de ce document : deux documents de deux
 // transports peuvent former une série de quatre.
 
-import type { Rubrique } from "./rubrique";
+import { uneRubrique } from "./rubrique";
 
 export type Nombre = {
   readonly nombre?: string;
 };
 
-export const NOMBRE: Rubrique<Nombre> = {
-  nombre: ({ validated }) => {
-    const nombre = validated.question("Q3.1.1").value;
-    return nombre === undefined ? undefined : String(nombre);
-  },
-};
+export const NOMBRE = uneRubrique("Nombre")
+  .lit("Q3.1.1")
+  .cellules<Nombre>({
+    nombre: ({ validated }) => {
+      const nombre = validated.question("Q3.1.1").value;
+      return nombre === undefined ? undefined : String(nombre);
+    },
+  });

@@ -40,7 +40,7 @@ import { MODE, type Mode } from "../rubriques/mode";
 import { MOTIFS, type Motifs } from "../rubriques/motifs";
 import { NOMBRE, type Nombre } from "../rubriques/nombre";
 import { PRESCRIPTION, type Prescription } from "../rubriques/prescription";
-import type { Donnees, Rubrique } from "../rubriques/rubrique";
+import { type Donnees, uneRubrique } from "../rubriques/rubrique";
 import { TEXTE_MEDICAL, type TexteMedical } from "../rubriques/texte-medical";
 import { TRAJET, type Trajet } from "../rubriques/trajet";
 import {
@@ -149,29 +149,31 @@ const CERFA: Cerfa<DtoS3138g> = {
   },
 };
 
-const PENSION: Rubrique<Pension> = {
-  pension_militaire_oui: ({ cibles }) =>
-    cibles.cible_situation_pension_militaire.isOui(),
-  pension_militaire_non: ({ cibles }) =>
-    cibles.cible_situation_pension_militaire.isNon(),
-};
+export const PENSION = uneRubrique("Pension")
+  .lit("cible_situation_pension_militaire")
+  .cellules<Pension>({
+    pension_militaire_oui: ({ cibles }) =>
+      cibles.cible_situation_pension_militaire.isOui(),
+    pension_militaire_non: ({ cibles }) =>
+      cibles.cible_situation_pension_militaire.isNon(),
+  });
 
 // Le DTO de la PMT, rubrique par rubrique.
 const VERS_LA_PMT: CerfaMapping<DtoS3138g, Donnees> = {
   fields: {
-    ...ACCIDENT,
-    ...MOTIFS,
-    ...MODE,
-    ...TRAJET,
-    ...NOMBRE,
-    ...URGENCE,
-    ...TEXTE_MEDICAL,
-    ...CENTRE_DE_REFERENCE,
-    ...EXONERATION,
-    ...PENSION,
-    ...PRESCRIPTION,
+    ...ACCIDENT.cellules,
+    ...MOTIFS.cellules,
+    ...MODE.cellules,
+    ...TRAJET.cellules,
+    ...NOMBRE.cellules,
+    ...URGENCE.cellules,
+    ...TEXTE_MEDICAL.cellules,
+    ...CENTRE_DE_REFERENCE.cellules,
+    ...EXONERATION.cellules,
+    ...PENSION.cellules,
+    ...PRESCRIPTION.cellules,
   },
-  drawings: { ...PRECISION_DE_L_URGENCE },
+  drawings: { ...PRECISION_DE_L_URGENCE.cellules },
 };
 
 /** La PMT, liée au calcul de son DTO. */

@@ -8,7 +8,7 @@
 // l'AT/MP sont les liens du transport, sous les noms de la PMT.
 
 import { LIENS } from "./liens";
-import type { Rubrique } from "./rubrique";
+import { uneRubrique } from "./rubrique";
 
 export type Motifs = {
   readonly hospitalisation: boolean;
@@ -19,12 +19,18 @@ export type Motifs = {
   readonly atmp_date?: string;
 };
 
-export const MOTIFS: Rubrique<Motifs> = {
-  hospitalisation: ({ cibles }) =>
-    cibles.cible_hospitalisation_ou_seances_assimilees.isOui(),
-  ald_exo: LIENS.lien_ald,
-  ald_non_exo: ({ cibles }) =>
-    cibles.cible_mineur_ald_non_exonerante_reconnue.isOui(),
-  atmp: LIENS.lien_atmp,
-  atmp_date: LIENS.lien_atmp_date,
-};
+export const MOTIFS = uneRubrique("Motifs")
+  .lit(
+    "cible_hospitalisation_ou_seances_assimilees",
+    "cible_mineur_ald_non_exonerante_reconnue",
+    ...LIENS.lit,
+  )
+  .cellules<Motifs>({
+    hospitalisation: ({ cibles }) =>
+      cibles.cible_hospitalisation_ou_seances_assimilees.isOui(),
+    ald_exo: LIENS.cellules.lien_ald,
+    ald_non_exo: ({ cibles }) =>
+      cibles.cible_mineur_ald_non_exonerante_reconnue.isOui(),
+    atmp: LIENS.cellules.lien_atmp,
+    atmp_date: LIENS.cellules.lien_atmp_date,
+  });

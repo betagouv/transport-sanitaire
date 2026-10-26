@@ -26,6 +26,11 @@ export {
 export { templateAt } from "./cerfa/generate-cerfa";
 export { bindCerfa, type CerfaMapping } from "./cerfa-mapping";
 export {
+  type DeclaredAnswers,
+  DeclaredReads,
+  forConcept,
+} from "./declared-reads";
+export {
   type CerfaInput,
   defineModel,
   type Feedback,

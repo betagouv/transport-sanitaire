@@ -75,7 +75,7 @@ export function texteDuPrescripteur(
   const { issues } = catalogue;
   const scenarios = scenariosDuPrescripteur(issue, issues[issue], trace);
   if (issue === "ISSUE_CAISSE") {
-    return texteDesPoints(issues[issue], scenarios);
+    return texteDesRaisons(issues[issue], scenarios);
   }
   const [scenario] = scenarios;
   return scenario
@@ -120,38 +120,38 @@ function texteDUnScenario(
   };
 }
 
-// Aucun point : le titre seul. Un point : son scénario. Plusieurs : le
-// scénario de cumul que l'éditeur a écrit pour ces points, s'il existe ; sinon
+// Aucune raison : le titre seul. Une raison : son scénario. Plusieurs : le
+// scénario de cumul que l'éditeur a écrit pour ces raisons, s'il existe ; sinon
 // son introduction pour « plusieurs points », puis chaque scénario. Le titre
-// compte les points, une fois chacun (point 27).
-function texteDesPoints(
+// compte les raisons, une fois chacune (point 27).
+function texteDesRaisons(
   issue: IssueDeLaCaisse,
-  points: readonly ScenarioPrescripteur[],
+  raisons: readonly ScenarioPrescripteur[],
 ): TexteDuPrescripteur {
-  const [premier, deuxieme] = points;
+  const [premier, deuxieme] = raisons;
   if (!premier) return { ...SANS_TEXTE, titre: issue.title };
   if (!deuxieme) return texteDUnScenario(issue.titles.single, premier);
   const titre = issue.titles.multiple;
-  const cumul = scenarioDeCumul(issue, points);
+  const cumul = scenarioDeCumul(issue, raisons);
   if (cumul) return texteDUnScenario(titre, cumul);
   return {
     titre,
     introduction: issue.multipleIntro,
     pourquoi: {
       titre: titreAuPluriel(issue, premier),
-      elements: points.flatMap(({ whyText }) => elementsDuPourquoi(whyText)),
+      elements: raisons.flatMap(({ whyText }) => elementsDuPourquoi(whyText)),
     },
-    questions: points.flatMap(({ questions }) => questions),
-    actions: sansDoublon(points.flatMap(({ actions }) => actions)),
+    questions: raisons.flatMap(({ questions }) => questions),
+    actions: sansDoublon(raisons.flatMap(({ actions }) => actions)),
   };
 }
 
-// Le scénario dont les codes sont exactement ceux de ces points.
+// Le scénario dont les codes sont exactement ceux de ces raisons ouvertes.
 function scenarioDeCumul(
   { scenarios }: IssuePrescripteur,
-  points: readonly ScenarioPrescripteur[],
+  raisons: readonly ScenarioPrescripteur[],
 ): ScenarioPrescripteur | AucunScenario {
-  const codes = points.flatMap((point) => point.codes).sort();
+  const codes = raisons.flatMap((raison) => raison.codes).sort();
   return scenarios.find(
     (scenario) =>
       !scenario.inactive &&
@@ -160,7 +160,7 @@ function scenarioDeCumul(
   );
 }
 
-// Le titre de l'éditeur pour plusieurs points ; à défaut, celui du premier.
+// Le titre de l'éditeur pour plusieurs raisons ; à défaut, celui du premier.
 function titreAuPluriel(
   { scenarios }: IssuePrescripteur,
   premier: ScenarioPrescripteur,

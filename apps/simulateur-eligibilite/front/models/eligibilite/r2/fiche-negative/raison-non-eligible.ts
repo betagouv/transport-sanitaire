@@ -12,13 +12,33 @@
 // « Non ». Cinq raisons ne se prouvent par aucune de nos réponses (voir la
 // table) : leur condition est codée, elle ne devient jamais vraie, et la
 // raison n'est donc jamais choisie.
+//
+// Chaque condition déclare ce qu'elle lit de la trace (#196) :
+// `uneRaisonNonEligible("AUCUN_IMAGERIE").lit("careFamily").prouveeSi(…)`.
+// Le code de la raison (`codeDeLaRaison`) se lit hors de la table : il choisit
+// les raisons candidates, il n'en prouve aucune.
 
 import type { IssueNegative } from "../../../../../core/models/eligibilite/declarations/catalogue-resultats";
+import type { Cibles } from "../../../../../core/models/eligibilite/declarations/cibles";
+import type { Faits } from "../../../../../core/models/eligibilite/declarations/faits";
 import type { Inconnu } from "../../../../../core/models/eligibilite/question";
+import { DeclaredReads } from "../../../../socle";
+import type { CiblesLues, FaitsLus } from "../../lectures";
+import { PRECISIONS, type Prouvables } from "../precisions-du-resultat";
 import type { Trace } from "../trace-du-resultat";
 
 /** Une raison du catalogue : son texte, son code, sa priorité. */
 export type RaisonNonEligible = IssueNegative["reasons"][number];
+
+/** Un fait, une cible ou une précision : ce qu'une condition peut lire. */
+type LisibleParUneRaison = keyof Faits | keyof Cibles | keyof Prouvables;
+
+/** La condition d'une raison : ce qu'elle lit, et si la trace la prouve. */
+export type ConditionDUneRaison = {
+  readonly id: string;
+  readonly lit: readonly LisibleParUneRaison[];
+  readonly estProuvee: (trace: Trace) => boolean;
+};
 
 /** La raison de la fiche : la plus prioritaire que la trace prouve, ou le repli. */
 export function raisonNonEligible(
@@ -30,15 +50,105 @@ export function raisonNonEligible(
       ({ id, inactive, reason }) =>
         !inactive &&
         reason === codeDeLaRaison(trace) &&
-        CONDITIONS[id]?.(trace) === true,
+        PAR_IDENTIFIANT.get(id)?.estProuvee(trace) === true,
     )
     .sort((a, b) => b.priority - a.priority)[0];
   return prouvee ?? repli(issue);
 }
 
-// ---- implémentation ----
+// La condition de chaque raison. Une raison qui n'y est pas (les trois
+// inactives) n'est jamais prise.
+//
+// Jamais prouvées par nos réponses (arbitrages [ÉDITEUR], D-113) :
+// AUCUN_ALD_SANS_LIEN, AUCUN_ALD_CADRE_NON_QUALIFIANT, AUCUN_SERIE_NON_QUALIFIANTE,
+// AUCUN_AUTRE_DEPLACEMENT et TRANSPORT_EXCLU.
+export const CONDITIONS: readonly ConditionDUneRaison[] = [
+  // « ALD confirmée ; soin sans lien avec cette ALD prouvé ». Q1.3 option 2
+  // dit le lien avec l'ALD : `aldRelated` n'est jamais « faux ».
+  uneRaisonNonEligible("AUCUN_ALD_SANS_LIEN")
+    .lit("aldRecognized", "aldRelated")
+    .prouveeSi(
+      ({ precisions }) =>
+        aldConfirmee(precisions) && precisions.aldRelated === false,
+    ),
+  // « Lien établi ; Q1.1/Q1.2 prouve l'absence de déficience ». Avec Q1.3
+  // option 2, `fait_ald_liee` ne vaut « non » que si Q1.1 dit « seul ».
+  uneRaisonNonEligible("AUCUN_ALD_SANS_DEFICIENCE")
+    .lit("aldRecognized", "aldRelated", "fait_ald_liee")
+    .prouveeSi(
+      ({ precisions, faits }) =>
+        aldLiee(precisions) && faits.fait_ald_liee.isNon(),
+    ),
+  // « Réponse prouvée hors fondement 3°/4° ; exception mineur non applicable ».
+  // Q1.3 option 2 dit le 100 % : le fondement n'est jamais prouvé « non ».
+  uneRaisonNonEligible("AUCUN_ALD_CADRE_NON_QUALIFIANT")
+    .lit(
+      "aldRecognized",
+      "aldRelated",
+      "fait_ald_exonerante_3_ou_4",
+      "fait_mineur_soins_prolonges_reconnus",
+    )
+    .prouveeSi(
+      ({ precisions, faits }) =>
+        aldLiee(precisions) &&
+        faits.fait_ald_exonerante_3_ou_4.isNon() &&
+        faits.fait_mineur_soins_prolonges_reconnus.isNon(),
+    ),
+  uneRaisonNonEligible("AUCUN_DIALYSE_NON_HEMO")
+    .lit("dialysisType", "sejourReel")
+    .prouveeSi(
+      ({ precisions }) =>
+        precisions.dialysisType === "non-hemodialyse" && sansSejour(precisions),
+    ),
+  uneRaisonNonEligible("AUCUN_DIALYSE_TYPE_INCONNU")
+    .lit("dialysisType", "sejourReel")
+    .prouveeSi(
+      ({ precisions }) =>
+        precisions.dialysisType === "inconnu" && sansSejour(precisions),
+    ),
+  uneRaisonNonEligible("AUCUN_APPAREILLAGE_HORS_CATEGORIES")
+    .lit("deviceCategory")
+    .prouveeSi(
+      ({ precisions }) => precisions.deviceCategory === "hors-categories",
+    ),
+  // « Transports répétés effectivement prévus, mais série Q2.3.3 non
+  // qualifiante prouvée ». Seul Q2.3.3 « Oui » prouve des transports répétés,
+  // et il qualifie la série : les deux ne vont jamais ensemble.
+  uneRaisonNonEligible("AUCUN_SERIE_NON_QUALIFIANTE")
+    .lit("repeatedTripsPlanned", "fait_serie_qualifiante")
+    .prouveeSi(
+      ({ precisions, faits }) =>
+        precisions.repeatedTripsPlanned === true &&
+        faits.fait_serie_qualifiante.isNon(),
+    ),
+  familleDeSoin("AUCUN_CONSULTATION", 1),
+  familleDeSoin("AUCUN_SOINS_DENTAIRES_SAGE_FEMME", 2),
+  familleDeSoin("AUCUN_IMAGERIE", 3),
+  familleDeSoin("AUCUN_BIOLOGIE", 4),
+  familleDeSoin("AUCUN_PARAMEDICAL", 5),
+  familleDeSoin("AUCUN_PSYCHOLOGUE", 7),
+  familleDeSoin("AUCUN_AUTRE_SOIN", 14),
+  // « Q2.1 = 15 prouvé et finalité clarifiée ». Aucune question ne clarifie la
+  // finalité : `eventFinalityClarified` n'est jamais là.
+  uneRaisonNonEligible("AUCUN_AUTRE_DEPLACEMENT")
+    .lit("careFamily", "eventFinalityClarified")
+    .prouveeSi(
+      ({ precisions }) =>
+        precisions.careFamily === 15 &&
+        precisions.eventFinalityClarified === true,
+    ),
+  // « fait_exclusion_transport_prouvee = oui + règle officielle datée
+  // conservée en preuve ». Notre fait vaut toujours « non » (D-111).
+  uneRaisonNonEligible("TRANSPORT_EXCLU")
+    .lit("fait_exclusion_transport_prouvee", "transportExclusionRule")
+    .prouveeSi(
+      ({ precisions, faits }) =>
+        faits.fait_exclusion_transport_prouvee.isOui() &&
+        precisions.transportExclusionRule !== undefined,
+    ),
+];
 
-type Condition = (trace: Trace) => boolean;
+// ---- implémentation ----
 
 const REPLI = "AUCUN_GENERIQUE";
 
@@ -64,73 +174,66 @@ function repli(issue: IssueNegative): RaisonNonEligible {
   return raison;
 }
 
+// Ce que reçoit une condition qui déclare lire `Lus`.
+type Lues<Lus extends LisibleParUneRaison> = {
+  readonly faits: FaitsLus<Lus>;
+  readonly cibles: CiblesLues<Lus>;
+  readonly precisions: Pick<Prouvables, Extract<Lus, keyof Prouvables>>;
+};
+
+// Une condition, nommée par sa raison pour les erreurs de lecture.
+function uneRaisonNonEligible(id: string) {
+  return {
+    lit: <const Lus extends readonly LisibleParUneRaison[]>(...lus: Lus) => ({
+      prouveeSi: (
+        condition: (lues: Lues<Lus[number]>) => boolean,
+      ): ConditionDUneRaison => {
+        const lecteur = new DeclaredReads(`La raison non éligible ${id}`, lus);
+        return {
+          id,
+          lit: lecteur.reads,
+          estProuvee: (trace) => condition(lues(lecteur, trace)),
+        };
+      },
+    }),
+  };
+}
+
+// Les précisions et le séjour réel : tous se gardent, même absents.
+const PROUVABLES = [...Object.keys(PRECISIONS), "sejourReel"];
+
+function lues<Lus extends LisibleParUneRaison>(
+  lecteur: DeclaredReads<Lus>,
+  { faits, cibles, precisions, sejourReel }: Trace,
+): Lues<Lus> {
+  return {
+    faits: lecteur.record(faits),
+    cibles: lecteur.record(cibles),
+    precisions: lecteur.record({ ...precisions, sejourReel }, PROUVABLES),
+  };
+}
+
 // « Aucun autre motif » n'est lu nulle part ici : `cible_reason_code` vaut
 // `AUCUN_MOTIF_TRANSPORT` seulement quand les règles n'ont trouvé aucun motif.
-function familleDeSoin(numero: number): Condition {
-  return ({ precisions }) => precisions.careFamily === numero;
+function familleDeSoin(id: string, numero: number): ConditionDUneRaison {
+  return uneRaisonNonEligible(id)
+    .lit("careFamily")
+    .prouveeSi(({ precisions }) => precisions.careFamily === numero);
 }
 
 // Un séjour réel est prouvé : le texte de la dialyse ne dirait plus le vrai.
-function sansSejour({ sejourReel }: Trace): boolean {
-  return sejourReel !== true;
+function sansSejour(precisions: Pick<Prouvables, "sejourReel">): boolean {
+  return precisions.sejourReel !== true;
 }
 
-function aldConfirmee({ precisions }: Trace): boolean {
+function aldConfirmee(precisions: Pick<Prouvables, "aldRecognized">): boolean {
   return precisions.aldRecognized === true;
 }
 
-function aldLiee(trace: Trace): boolean {
-  return aldConfirmee(trace) && trace.precisions.aldRelated === true;
+function aldLiee(
+  precisions: Pick<Prouvables, "aldRecognized" | "aldRelated">,
+): boolean {
+  return aldConfirmee(precisions) && precisions.aldRelated === true;
 }
 
-// La condition de chaque raison, par son identifiant. Une raison qui n'y est
-// pas (les trois inactives) n'est jamais prise.
-//
-// Jamais prouvées par nos réponses (arbitrages [ÉDITEUR], D-113) :
-// AUCUN_ALD_SANS_LIEN, AUCUN_ALD_CADRE_NON_QUALIFIANT, AUCUN_SERIE_NON_QUALIFIANTE,
-// AUCUN_AUTRE_DEPLACEMENT et TRANSPORT_EXCLU.
-const CONDITIONS: Readonly<Record<string, Condition>> = {
-  // « ALD confirmée ; soin sans lien avec cette ALD prouvé ». Q1.3 option 2
-  // dit le lien avec l'ALD : `aldRelated` n'est jamais « faux ».
-  AUCUN_ALD_SANS_LIEN: (trace) =>
-    aldConfirmee(trace) && trace.precisions.aldRelated === false,
-  // « Lien établi ; Q1.1/Q1.2 prouve l'absence de déficience ». Avec Q1.3
-  // option 2, `fait_ald_liee` ne vaut « non » que si Q1.1 dit « seul ».
-  AUCUN_ALD_SANS_DEFICIENCE: (trace) =>
-    aldLiee(trace) && trace.faits.fait_ald_liee.isNon(),
-  // « Réponse prouvée hors fondement 3°/4° ; exception mineur non applicable ».
-  // Q1.3 option 2 dit le 100 % : le fondement n'est jamais prouvé « non ».
-  AUCUN_ALD_CADRE_NON_QUALIFIANT: (trace) =>
-    aldLiee(trace) &&
-    trace.faits.fait_ald_exonerante_3_ou_4.isNon() &&
-    trace.faits.fait_mineur_soins_prolonges_reconnus.isNon(),
-  AUCUN_DIALYSE_NON_HEMO: (trace) =>
-    trace.precisions.dialysisType === "non-hemodialyse" && sansSejour(trace),
-  AUCUN_DIALYSE_TYPE_INCONNU: (trace) =>
-    trace.precisions.dialysisType === "inconnu" && sansSejour(trace),
-  AUCUN_APPAREILLAGE_HORS_CATEGORIES: ({ precisions }) =>
-    precisions.deviceCategory === "hors-categories",
-  // « Transports répétés effectivement prévus, mais série Q2.3.3 non
-  // qualifiante prouvée ». Seul Q2.3.3 « Oui » prouve des transports répétés,
-  // et il qualifie la série : les deux ne vont jamais ensemble.
-  AUCUN_SERIE_NON_QUALIFIANTE: (trace) =>
-    trace.precisions.repeatedTripsPlanned === true &&
-    trace.faits.fait_serie_qualifiante.isNon(),
-  AUCUN_CONSULTATION: familleDeSoin(1),
-  AUCUN_SOINS_DENTAIRES_SAGE_FEMME: familleDeSoin(2),
-  AUCUN_IMAGERIE: familleDeSoin(3),
-  AUCUN_BIOLOGIE: familleDeSoin(4),
-  AUCUN_PARAMEDICAL: familleDeSoin(5),
-  AUCUN_PSYCHOLOGUE: familleDeSoin(7),
-  AUCUN_AUTRE_SOIN: familleDeSoin(14),
-  // « Q2.1 = 15 prouvé et finalité clarifiée ». Aucune question ne clarifie la
-  // finalité : `eventFinalityClarified` n'est jamais là.
-  AUCUN_AUTRE_DEPLACEMENT: (trace) =>
-    trace.precisions.careFamily === 15 &&
-    trace.precisions.eventFinalityClarified === true,
-  // « fait_exclusion_transport_prouvee = oui + règle officielle datée
-  // conservée en preuve ». Notre fait vaut toujours « non » (D-111).
-  TRANSPORT_EXCLU: (trace) =>
-    trace.faits.fait_exclusion_transport_prouvee.isOui() &&
-    trace.precisions.transportExclusionRule !== undefined,
-};
+const PAR_IDENTIFIANT = new Map(CONDITIONS.map((c) => [c.id, c]));

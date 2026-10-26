@@ -8,7 +8,6 @@
 
 import { numeroDeLOption } from "../../../../core/models/eligibilite/concepts/numero-de-l-option";
 import { Permission } from "../../../../core/models/eligibilite/concepts/permission";
-import { Sejour } from "../../../../core/models/eligibilite/concepts/sejour";
 import type { Cibles } from "../../../../core/models/eligibilite/declarations/cibles";
 import type { Faits } from "../../../../core/models/eligibilite/declarations/faits";
 import type { Questions } from "../../../../core/models/eligibilite/declarations/questions";
@@ -17,6 +16,7 @@ import type { GivenAnswers, ValidatedAnswers } from "../../../../core/socle";
 import {
   type Precisions,
   precisionsDuResultat,
+  SEJOUR_REEL,
 } from "./precisions-du-resultat";
 
 /** Ce que R2 reçoit du socle : les réponses, les questions validées, les cibles. */
@@ -64,7 +64,7 @@ export function traceDuResultat({
     faits: faits(answers, validated),
     criteres: validated.question("Q1.2").checkedBoxes().map(numeroDeLOption),
     ...repetition(Permission.of(validated)),
-    ...(Sejour.of(validated).estReel() && { sejourReel: true }),
+    ...(SEJOUR_REEL.de(validated) && { sejourReel: true }),
     precisions: precisionsDuResultat(validated),
   };
 }

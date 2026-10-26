@@ -5,7 +5,7 @@
 // qui reste vide en pratique (D-129).
 
 import type { Cibles } from "../../../../../core/models/eligibilite/declarations/cibles";
-import type { Rubrique } from "./rubrique";
+import { uneRubrique } from "./rubrique";
 
 export type MotifsDeLaDap = {
   readonly longue_distance: boolean;
@@ -15,17 +15,27 @@ export type MotifsDeLaDap = {
   readonly avion_bateau: boolean;
 };
 
-export const MOTIFS_DE_LA_DAP: Rubrique<MotifsDeLaDap> = {
-  longue_distance: ({ cibles }) =>
-    cibles.cible_dap_motif_longue_distance.isOui(),
-  serie: ({ cibles }) => cibles.cible_dap_motif_serie.isOui(),
-  camsp_cmpp: ({ cibles }) => cibles.cible_dap_motif_camsp_cmpp.isOui(),
-  engagement_maternite: ({ cibles }) =>
-    cibles.cible_dap_motif_engagement_maternite.isOui(),
-  avion_bateau: ({ cibles }) => avionOuBateau(cibles),
-};
+export const MOTIFS_DE_LA_DAP = uneRubrique("Motifs de la DAP")
+  .lit(
+    "cible_dap_motif_longue_distance",
+    "cible_dap_motif_serie",
+    "cible_dap_motif_camsp_cmpp",
+    "cible_dap_motif_engagement_maternite",
+    "cible_dap_motif_avion_bateau",
+  )
+  .cellules<MotifsDeLaDap>({
+    longue_distance: ({ cibles }) =>
+      cibles.cible_dap_motif_longue_distance.isOui(),
+    serie: ({ cibles }) => cibles.cible_dap_motif_serie.isOui(),
+    camsp_cmpp: ({ cibles }) => cibles.cible_dap_motif_camsp_cmpp.isOui(),
+    engagement_maternite: ({ cibles }) =>
+      cibles.cible_dap_motif_engagement_maternite.isOui(),
+    avion_bateau: ({ cibles }) => avionOuBateau(cibles),
+  });
 
 /** Le transport par avion ou bateau de ligne régulière est-il un motif ? */
-export function avionOuBateau(cibles: Cibles): boolean {
+export function avionOuBateau(
+  cibles: Pick<Cibles, "cible_dap_motif_avion_bateau">,
+): boolean {
   return cibles.cible_dap_motif_avion_bateau.isOui();
 }

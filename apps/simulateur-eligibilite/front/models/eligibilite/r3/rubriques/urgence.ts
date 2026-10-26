@@ -4,7 +4,7 @@
 //
 // Le gabarit n'a pas de champ pour la précision : elle se dessine (D-93).
 
-import type { Donnees, Rubrique } from "./rubrique";
+import { type Lues, uneRubrique } from "./rubrique";
 
 /** Rien n'est saisi, ou l'urgence n'est pas « autres » : la place reste vide. */
 type SansPrecision = undefined;
@@ -18,21 +18,25 @@ export type PrecisionDeLUrgence = {
   readonly urgence_precision?: string;
 };
 
-export const URGENCE: Rubrique<Urgence> = {
-  urgence_appel15: ({ cibles }) => cibles.cible_urgence_appel15.isOui(),
-  urgence_autre: (donnees) => autre(donnees),
-};
+export const URGENCE = uneRubrique("Urgence")
+  .lit("cible_urgence_appel15", "cible_urgence_autre")
+  .cellules<Urgence>({
+    urgence_appel15: ({ cibles }) => cibles.cible_urgence_appel15.isOui(),
+    urgence_autre: (donnees) => autre(donnees),
+  });
 
-export const PRECISION_DE_L_URGENCE: Rubrique<PrecisionDeLUrgence> = {
-  urgence_precision: (donnees) => {
-    if (!autre(donnees)) return undefined;
-    return saisie(donnees.validated.question("Q3.5").value);
-  },
-};
+export const PRECISION_DE_L_URGENCE = uneRubrique("Précision de l'urgence")
+  .lit("cible_urgence_autre", "Q3.5")
+  .cellules<PrecisionDeLUrgence>({
+    urgence_precision: (donnees) => {
+      if (!autre(donnees)) return undefined;
+      return saisie(donnees.validated.question("Q3.5").value);
+    },
+  });
 
 // ---- implémentation ----
 
-function autre({ cibles }: Donnees): boolean {
+function autre({ cibles }: Lues<"cible_urgence_autre">): boolean {
   return cibles.cible_urgence_autre.isOui();
 }
 

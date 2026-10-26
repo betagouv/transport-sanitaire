@@ -4,31 +4,27 @@
 // Les clés et les valeurs sont celles de l'éditeur (README, « Précisions
 // éditoriales utiles »). Une précision qu'aucune réponse ne prouve n'a pas de
 // clé : le texte prend alors son repli générique, et rien n'est jamais
-// deviné. Ces fonctions ne lisent que les questions validées.
+// deviné. Ces fonctions ne lisent que les questions validées. Chaque précision
+// déclare les siennes (#196) : `unePrecision("dialysisType").lit("Q1.3.a")`.
 
 import { numeroDeLOption } from "../../../../core/models/eligibilite/concepts/numero-de-l-option";
-import { Permission } from "../../../../core/models/eligibilite/concepts/permission";
 import { Sejour } from "../../../../core/models/eligibilite/concepts/sejour";
 import type { Questions } from "../../../../core/models/eligibilite/declarations/questions";
 import type { ValidatedAnswers } from "../../../../core/socle";
+import { DeclaredReads, forConcept } from "../../../socle";
+import type { QuestionsLues } from "../lectures";
+import {
+  type Contexte,
+  contexteDeLArticle80,
+  contexteDeLaConvocation,
+  contexteDeLaPermission,
+  QUESTIONS_DE_LA_PERMISSION,
+} from "./contextes-de-scenario";
 
 /** Les réponses ne prouvent pas ce cas : la précision ne s'écrit pas. */
 export type NonProuve = undefined;
 
 type Valides = ValidatedAnswers<Questions>;
-
-/**
- * Un contexte de scénario du catalogue : les seuls paramètres non nuls que
- * les réponses prouvent. Le `kind` est toujours prouvé ; les autres, quand
- * une réponse les dit.
- */
-type Contexte = {
-  kind: string;
-  duration?: "temporary" | "permanent";
-  place?: "same-site";
-  extra?: string;
-  device?: string;
-};
 
 /**
  * Les précisions que les réponses prouvent. Sans réponse qui les prouve : la
@@ -58,36 +54,118 @@ export type Precisions = {
   convocationContext?: Contexte;
 };
 
+/** Une précision, ou le séjour réel qu'un texte de R2 lit avec elles. */
+export type Prouvables = Precisions & { sejourReel?: true };
+
+/** Une précision : son nom, les questions qu'elle lit, et sa valeur. */
+export type UnePrecision<Nom extends keyof Prouvables> = {
+  readonly nom: Nom;
+  readonly lit: readonly (keyof Questions)[];
+  readonly de: (validated: Valides) => Prouvables[Nom] | NonProuve;
+};
+
 /** Les précisions que ces questions validées prouvent. */
 export function precisionsDuResultat(validated: Valides): Precisions {
-  return {
-    ...cle("hospitalisation", hospitalisation(validated)),
-    ...cle("atmp", atmp(validated)),
-    ...cle("careFamily", familleDeSoin(validated)),
-    ...cle("dialysisType", typeDeDialyse(validated)),
-    ...cle("deviceCategory", categorieDAppareil(validated)),
-    ...cle("repeatedTripsPlanned", seriePrevue(validated)),
-    ...aldDeQ13(validated),
-    ...cle("article80Context", contexteDeLArticle80(validated)),
-    ...cle("permissionContext", contexteDeLaPermission(validated)),
-    ...cle("convocationContext", contexteDeLaConvocation(validated)),
-  };
+  return Object.fromEntries(
+    Object.values(PRECISIONS)
+      .map(({ nom, de }) => [nom, de(validated)])
+      .filter(([, valeur]) => valeur !== undefined),
+  );
 }
+
+/**
+ * Un séjour réel est prouvé (Q2.1.g ou Q2.2.1). Ce n'est pas une clé de
+ * l'éditeur : la trace le porte à part, et un texte de R2 le lit.
+ */
+export const SEJOUR_REEL = unePrecision("sejourReel")
+  .lit("Q2.1.g", "Q2.2.1")
+  .vaut(({ validated }) =>
+    Sejour.of(forConcept(validated)).estReel() ? true : undefined,
+  );
+
+// Dans l'ordre de la trace. Les quatre dernières n'ont aucune question qui
+// les pose : elles ne lisent rien et restent absentes.
+export const PRECISIONS: {
+  readonly [Nom in keyof Precisions]-?: UnePrecision<Nom>;
+} = {
+  hospitalisation: unePrecision("hospitalisation")
+    .lit("Q1.3", "Q1.3.a", "Q2.1.f", ...SEJOUR_REEL.lit)
+    .vaut(({ validated }) => hospitalisation(validated)),
+  atmp: unePrecision("atmp")
+    .lit("Q2.2.1.b")
+    .vaut(({ validated }) => atmp(validated)),
+  careFamily: unePrecision("careFamily")
+    .lit("Q2.1")
+    .vaut(({ validated }) => familleDeSoin(validated)),
+  dialysisType: unePrecision("dialysisType")
+    .lit("Q1.3.a")
+    .vaut(({ validated }) => typeDeDialyse(validated)),
+  deviceCategory: unePrecision("deviceCategory")
+    .lit("Q2.10.b")
+    .vaut(({ validated }) => categorieDAppareil(validated)),
+  repeatedTripsPlanned: unePrecision("repeatedTripsPlanned")
+    .lit("Q2.3.3")
+    .vaut(({ validated }) => seriePrevue(validated)),
+  aldRecognized: unePrecision("aldRecognized")
+    .lit("Q1.3")
+    .vaut(({ validated }) => aldDeQ13(validated)),
+  aldRelated: unePrecision("aldRelated")
+    .lit("Q1.3")
+    .vaut(({ validated }) => aldDeQ13(validated)),
+  article80Context: unePrecision("article80Context")
+    .lit("Q2.5", "Q2.6.a", "Q2.1.g")
+    .vaut(({ validated }) => contexteDeLArticle80(validated)),
+  permissionContext: unePrecision("permissionContext")
+    .lit(...QUESTIONS_DE_LA_PERMISSION)
+    .vaut(({ validated }) => contexteDeLaPermission(validated)),
+  convocationContext: unePrecision("convocationContext")
+    .lit("Q2.10", "Q2.10.b")
+    .vaut(({ validated }) => contexteDeLaConvocation(validated)),
+  lineType: unePrecision("lineType")
+    .lit()
+    .vaut(() => undefined),
+  camspType: unePrecision("camspType")
+    .lit()
+    .vaut(() => undefined),
+  eventFinalityClarified: unePrecision("eventFinalityClarified")
+    .lit()
+    .vaut(() => undefined),
+  transportExclusionRule: unePrecision("transportExclusionRule")
+    .lit()
+    .vaut(() => undefined),
+};
 
 // ---- implémentation ----
 
-// Une clé n'existe que si sa valeur est prouvée : jamais `undefined`.
-function cle<K extends keyof Precisions>(
-  nom: K,
-  valeur: Precisions[K],
-): Partial<Precisions> {
-  return valeur === undefined ? {} : { [nom]: valeur };
+type Lues<Lus extends keyof Questions> = {
+  readonly validated: QuestionsLues<Lus>;
+};
+
+// Une précision, nommée pour les erreurs de lecture. Elle ne lit que des
+// questions : aucun fait ni aucune cible n'en prouve une.
+function unePrecision<Nom extends keyof Prouvables>(nom: Nom) {
+  return {
+    lit: <const Lus extends readonly (keyof Questions)[]>(...lus: Lus) => ({
+      vaut: (
+        valeur: (lues: Lues<Lus[number]>) => Prouvables[Nom] | NonProuve,
+      ): UnePrecision<Nom> => {
+        const lecteur = new DeclaredReads(`La précision ${nom}`, lus);
+        return {
+          nom,
+          lit: lecteur.reads,
+          de: (validated) => valeur({ validated: lecteur.answers(validated) }),
+        };
+      },
+    }),
+  };
 }
 
 // La famille de séances retenues, dans l'ordre du lexique : CH, RA, HE. Une
 // hémodialyse demande Q1.3.a. Plusieurs séances demandent que Q2.1.f les dise
 // vers le même lieu de soins.
-function seancesRetenues(validated: Valides): readonly string[] {
+function seancesRetenues(
+  validated: QuestionsLues<"Q1.3" | "Q1.3.a" | "Q2.1.f">,
+): readonly string[] {
   const cas = validated.question("Q1.3");
   const seances = [
     cas.checked("3_CHIMIOTHERAPIE") && "CH",
@@ -101,23 +179,25 @@ function seancesRetenues(validated: Valides): readonly string[] {
 }
 
 // L'identifiant du lexique : le séjour ou les séances, puis leurs familles.
-function hospitalisation(validated: Valides): string | NonProuve {
+function hospitalisation(
+  validated: QuestionsLues<"Q1.3" | "Q1.3.a" | "Q2.1.f" | "Q2.1.g" | "Q2.2.1">,
+): string | NonProuve {
   const seances = seancesRetenues(validated);
-  const sejour = Sejour.of(validated).estReel();
+  const sejour = Sejour.of(forConcept(validated)).estReel();
   if (!sejour && seances.length === 0) return undefined;
   return [sejour ? "H-SEJOUR" : "H-SEANCE", ...seances].join("-");
 }
 
 // « Accident du travail ou maladie professionnelle » : Q2.2.1.b ne les
 // sépare pas, seul l'identifiant commun est prouvé.
-function atmp(validated: Valides): "ATMP" | NonProuve {
+function atmp(validated: QuestionsLues<"Q2.2.1.b">): "ATMP" | NonProuve {
   return validated.question("Q2.2.1.b").checked("1_ATMP") ? "ATMP" : undefined;
 }
 
 // Le numéro de l'option de Q2.1, pour les soins qui ont une phrase de famille.
 const FAMILLES_DE_SOIN = [1, 2, 3, 4, 5, 6, 7, 14, 15];
 
-function familleDeSoin(validated: Valides): number | NonProuve {
+function familleDeSoin(validated: QuestionsLues<"Q2.1">): number | NonProuve {
   const motif = validated.question("Q2.1");
   if (!motif.hasAnswer()) return undefined;
   const numero = numeroDeLOption(motif.value);
@@ -125,14 +205,18 @@ function familleDeSoin(validated: Valides): number | NonProuve {
 }
 
 // Q1.3.a dit une dialyse qui n'est pas de l'hémodialyse, ou ne le dit pas.
-function typeDeDialyse(validated: Valides): Precisions["dialysisType"] {
+function typeDeDialyse(
+  validated: QuestionsLues<"Q1.3.a">,
+): Precisions["dialysisType"] {
   const reponse = validated.question("Q1.3.a");
   if (reponse.is("2_AUTRE_DIALYSE")) return "non-hemodialyse";
   return reponse.is("3_NE_SAIT_PAS") ? "inconnu" : undefined;
 }
 
 // Q2.10.b : un appareillage qui n'est pas l'un des trois que vise R.322-10 2°.
-function categorieDAppareil(validated: Valides): "hors-categories" | NonProuve {
+function categorieDAppareil(
+  validated: QuestionsLues<"Q2.10.b">,
+): "hors-categories" | NonProuve {
   return validated.question("Q2.10.b").is("4_AUTRE")
     ? "hors-categories"
     : undefined;
@@ -140,68 +224,13 @@ function categorieDAppareil(validated: Valides): "hors-categories" | NonProuve {
 
 // Q2.3.3 « Oui » prouve des transports répétés. « Non » ne dit pas quelle
 // condition de la série manque : rien n'en est inféré.
-function seriePrevue(validated: Valides): true | NonProuve {
+function seriePrevue(validated: QuestionsLues<"Q2.3.3">): true | NonProuve {
   return validated.question("Q2.3.3").is("1_OUI") ? true : undefined;
 }
 
-// Q1.3 option 2 dit les deux à la fois : l'ALD est reconnue, et les soins de
-// ce déplacement y sont liés. Non cochée, elle ne dit rien de l'ALD.
-function aldDeQ13(
-  validated: Valides,
-): Pick<Precisions, "aldRecognized" | "aldRelated"> {
-  return validated.question("Q1.3").checked("2_ALD")
-    ? { aldRecognized: true, aldRelated: true }
-    : {};
-}
-
-// Q2.5 dit le genre du déplacement, Q2.6.a sa durée. Le même site, l'USLD et
-// l'EHPAD n'ont pas de question qui les prouve. Un autre déplacement pendant
-// le séjour est provisoire (D-106). L'admission en HAD à domicile prouve le
-// genre « had » seul.
-function contexteDeLArticle80(validated: Valides): Contexte | NonProuve {
-  const deplacement = validated.question("Q2.5");
-  if (deplacement.is("2_AUTRE_DEPLACEMENT"))
-    return { kind: "inpatient", duration: "temporary" };
-  if (deplacement.is("1_TRANSFERT")) {
-    const type = validated.question("Q2.6.a");
-    if (type.is("1_DEFINITIF"))
-      return { kind: "transfer", duration: "permanent" };
-    return type.is("2_PROVISOIRE")
-      ? { kind: "transfer", duration: "temporary" }
-      : { kind: "transfer" };
-  }
-  return validated.question("Q2.1.g").is("3_ADMISSION_HAD")
-    ? { kind: "had" }
-    : undefined;
-}
-
-// Q2.7 option 4 : un transport exceptionnel demandé par écrit par le patient.
-function contexteDeLaPermission(validated: Valides): Contexte | NonProuve {
-  return Permission.of(validated).estAChargeDuPatient()
-    ? { kind: "adult-explicit" }
-    : undefined;
-}
-
-const GENRE_DE_CONVOCATION: Partial<Record<Questions["Q2.10"], string>> = {
-  "1_CONTROLE_MEDICAL": "control",
-  "2_EXPERT_JURIDICTION": "expert",
-  "3_AUDIENCE_CONSULTATION": "audience",
-  "4_EXPERT_CONTESTATION": "dispute",
-  "5_COMMISSION_RECOURS": "commission",
-  "6_APPAREILLAGE": "equipment",
-};
-
-const APPAREIL: Partial<Record<string, string>> = {
-  "1_PROTHESE_OCULAIRE_FACIALE": "prothèse oculaire ou faciale",
-  "2_PODO_ORTHESE": "podo-orthèse",
-  "3_ORTHOPROTHESE": "orthoprothèse",
-};
-
-// Q2.10 dit le genre ; Q2.10.b l'appareil, pour un appareillage seulement.
-function contexteDeLaConvocation(validated: Valides): Contexte | NonProuve {
-  const categorie = validated.question("Q2.10").value;
-  const kind = categorie && GENRE_DE_CONVOCATION[categorie];
-  if (!kind) return undefined;
-  const device = APPAREIL[validated.question("Q2.10.b").value ?? ""];
-  return categorie === "6_APPAREILLAGE" && device ? { kind, device } : { kind };
+// Q1.3 option 2 dit `aldRecognized` et `aldRelated` à la fois : l'ALD est
+// reconnue, et les soins de ce déplacement y sont liés. Non cochée, elle ne
+// dit rien de l'ALD.
+function aldDeQ13(validated: QuestionsLues<"Q1.3">): true | NonProuve {
+  return validated.question("Q1.3").checked("2_ALD") ? true : undefined;
 }
