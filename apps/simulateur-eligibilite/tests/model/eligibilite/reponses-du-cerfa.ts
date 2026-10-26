@@ -24,7 +24,7 @@ import type { Cerfa, CerfaDto } from "../../../front/socle/cerfa/cerfa";
 import { generateCerfa } from "../../../front/socle/cerfa/generate-cerfa";
 import { racine } from "../../inspection-des-sources";
 import { PLUSIEURS_PERMISSIONS } from "./reponses-de-la-permission";
-import { ciblesValant, type ValeursDesCibles } from "./traces-du-praticien";
+import { ciblesValant, type ValeursDesCibles } from "./traces-du-prescripteur";
 
 export type Reponses = Answers<Questions>;
 

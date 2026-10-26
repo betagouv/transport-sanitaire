@@ -163,7 +163,7 @@ front/                   le front, bundlé par Vite
     eligibilite/         les deux résultats du modèle de l'éditeur
       r2/                le résultat : la trace, ses précisions, le catalogue chargé
                          à la demande, les boutons, et ce que les fiches partagent
-        praticien/       les cinq issues sans fiche patient
+        prescripteur/    les cinq issues sans fiche patient
         fiche-negative/  `ISSUE_NON_ELIGIBLE`
         fiche-positive/  la prescription, le S3141 et les deux accords préalables
       r3/                le résultat du complément : le document de chaque support
@@ -199,7 +199,7 @@ front/                   le front, bundlé par Vite
                          et rien du simulateur.
     cerfa-mapping.ts     la traduction des données du simulateur en DTO d'un cerfa
     analytics/           le vocabulaire mesuré, seul import du reste, son transport
-                         vers Matomo, et le choix de l'utilisateur transmis par le CMS
+                         vers Matomo, et le choix du prescripteur transmis par le CMS
 cms/                     le script à coller dans Sites Conformes : l'opt-out du pied de
                          page, qui répond au traceur de l'iframe (voir « Intégrer dans
                          Sites Conformes »)
@@ -232,7 +232,7 @@ cibles, et l'oracle de l'éditeur rejoué en faits. Le questionnaire pose P1 :
 ses réponses donnent les faits du mode de transport, à trois états. De P2, il
 pose la prestation (Q2.1, avec ses sous-questions f, g et h) et le trajet : la
 distance, l'avion ou le bateau, la série et l'urgence (Q2.3.1 à Q2.3.4).
-Le résultat de R2 montre la page du praticien pour cinq issues, la fiche
+Le résultat de R2 montre la page du prescripteur pour cinq issues, la fiche
 patient négative pour `ISSUE_NON_ELIGIBLE` et la fiche patient positive pour
 `ISSUE_PMT`, `ISSUE_S3141` et les deux demandes d'accord préalable : les dix
 issues ont leur texte et leurs boutons. « Compléter la prescription »,

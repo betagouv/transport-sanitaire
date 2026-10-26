@@ -104,7 +104,7 @@ export class Reading<Questions extends AnyQuestions = AnyQuestions> {
   }
 
   /**
-   * La page où un utilisateur ayant donné ces réponses se trouverait : la
+   * La page où un prescripteur ayant donné ces réponses se trouverait : la
    * première qui attend une réponse, sinon la dernière. Une seed rouvre ainsi
    * sur sa page, avec un « Précédent ».
    */

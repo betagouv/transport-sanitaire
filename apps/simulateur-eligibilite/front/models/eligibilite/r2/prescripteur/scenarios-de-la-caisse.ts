@@ -7,8 +7,8 @@
 // `cible_point_cnam` regroupe les points propres à la caisse.
 
 import type {
-  IssuePraticien,
-  ScenarioPraticien,
+  IssuePrescripteur,
+  ScenarioPrescripteur,
 } from "../../../../../core/models/eligibilite/declarations/catalogue-resultats";
 import type { Trace } from "../trace-du-resultat";
 
@@ -18,9 +18,9 @@ import type { Trace } from "../trace-du-resultat";
  * et la fiche n'a que son titre.
  */
 export function scenariosDeLaCaisse(
-  { scenarios }: IssuePraticien,
+  { scenarios }: IssuePrescripteur,
   trace: Trace,
-): readonly ScenarioPraticien[] {
+): readonly ScenarioPrescripteur[] {
   const actifs = scenarios.filter(({ inactive }) => !inactive);
   const ouverts = POINTS.filter(([, estOuvert]) => estOuvert(trace)).flatMap(
     ([id]) => actifs.filter((scenario) => scenario.id === id),
@@ -98,9 +98,9 @@ function materniteEnUrgence({ faits }: Trace): boolean {
 // Un point que les conditions n'ont pas relu : le scénario de la raison des
 // règles, s'il est le seul à la porter.
 function parSaRaison(
-  actifs: readonly ScenarioPraticien[],
+  actifs: readonly ScenarioPrescripteur[],
   { cibles }: Trace,
-): readonly ScenarioPraticien[] {
+): readonly ScenarioPrescripteur[] {
   const raison = cibles.cible_reason_code.value;
   const portent = actifs.filter(
     ({ codes }) => codes.length === 1 && codes[0] === raison,

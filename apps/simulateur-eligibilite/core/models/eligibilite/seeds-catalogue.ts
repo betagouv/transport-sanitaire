@@ -184,7 +184,7 @@ export const SEEDS: readonly Seed<Questions, Cibles>[] = [
     id: "issue-caisse",
     label: "Résultat : la caisse tranche, transfert demandé par le Centre 15",
     description:
-      "Ouvre le résultat d'un transfert entre établissements définitif que le Centre 15 a demandé (Q2.6). La caisse tranche : l'issue renvoie le praticien vers elle.",
+      "Ouvre le résultat d'un transfert entre établissements définitif que le Centre 15 a demandé (Q2.6). La caisse tranche : l'issue renvoie le prescripteur vers elle.",
     answers: {
       ...TRANSFERT,
       "Q2.6.a": "1_DEFINITIF",

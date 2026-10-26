@@ -6,7 +6,7 @@ import { defineConfig } from "vitest/config";
 export default defineConfig({
   base: "./",
   plugins: [react()],
-  // Ce que le pied de page affiche pour qu'un utilisateur puisse dire *quelle*
+  // Ce que le pied de page affiche pour qu'un prescripteur puisse dire *quelle*
   // application il regarde : la version livrée et le commit déployé. Figés à
   // la construction : le navigateur n'a aucun moyen de les découvrir.
   define: {

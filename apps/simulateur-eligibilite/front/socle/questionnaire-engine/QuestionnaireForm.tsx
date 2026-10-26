@@ -164,7 +164,7 @@ function NavigationButtons({
         </button>
       )}
       {/* Une page à choix unique avance d'elle-même : lui donner un bouton de
-          validation contredirait le geste qu'on attend de l'utilisateur. */}
+          validation contredirait le geste qu'on attend du prescripteur. */}
       {!questionnaire.autoAdvances && (
         <button
           type="submit"

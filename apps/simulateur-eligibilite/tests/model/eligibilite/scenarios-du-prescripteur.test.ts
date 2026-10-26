@@ -1,22 +1,22 @@
-// Le scénario du résultat praticien que choisit une trace (#133, D-112). Les
-// seeds donnent les traces de l'oracle ; les autres traces sont écrites à la
+// Le scénario du résultat du prescripteur que choisit une trace (#133, D-112).
+// Les seeds donnent les traces de l'oracle ; les autres traces sont écrites à la
 // main, avec les seuls faits et cibles qu'une condition des règles lit.
 
 import { describe, expect, it } from "vitest";
-import type { IssuePraticien } from "../../../core/models/eligibilite/declarations/catalogue-resultats";
+import type { IssuePrescripteur } from "../../../core/models/eligibilite/declarations/catalogue-resultats";
 import { SEEDS } from "../../../core/models/eligibilite/seeds-catalogue";
 import { catalogueResultats } from "../../../front/models/eligibilite/r2/catalogue-resultats";
-import {
-  type IssueDuPraticien,
-  scenariosDuPraticien,
-} from "../../../front/models/eligibilite/r2/praticien/scenarios-du-praticien";
 import type { Precisions } from "../../../front/models/eligibilite/r2/precisions-du-resultat";
+import {
+  type IssueDuPrescripteur,
+  scenariosDuPrescripteur,
+} from "../../../front/models/eligibilite/r2/prescripteur/scenarios-du-prescripteur";
 import {
   type Trace,
   traceDuResultat,
 } from "../../../front/models/eligibilite/r2/trace-du-resultat";
 import { lectureDe } from "./reponses-de-la-permission";
-import { faux, trace, vrai } from "./traces-du-praticien";
+import { faux, trace, vrai } from "./traces-du-prescripteur";
 
 const { issues } = await catalogueResultats();
 
@@ -26,8 +26,8 @@ const traceDeLaSeed = (id: string): Trace => {
   return traceDuResultat(lectureDe(seed.answers));
 };
 
-const ids = (issue: IssueDuPraticien, depuis: Trace) =>
-  scenariosDuPraticien(issue, issues[issue], depuis).map(({ id }) => id);
+const ids = (issue: IssueDuPrescripteur, depuis: Trace) =>
+  scenariosDuPrescripteur(issue, issues[issue], depuis).map(({ id }) => id);
 
 describe("les scénarios des seeds", () => {
   it("prend le scénario de l'oracle pour l'établissement", () => {
@@ -124,8 +124,8 @@ describe("le contexte prouvé choisit le scénario le plus précis", () => {
     const issue = {
       ...issues.ISSUE_CONVOCATION,
       scenarios: [inactif, ...issues.ISSUE_CONVOCATION.scenarios],
-    } as IssuePraticien;
-    const choisis = scenariosDuPraticien(
+    } as IssuePrescripteur;
+    const choisis = scenariosDuPrescripteur(
       "ISSUE_CONVOCATION",
       issue,
       trace({}, {}, { convocationContext: { kind: "control" } }),

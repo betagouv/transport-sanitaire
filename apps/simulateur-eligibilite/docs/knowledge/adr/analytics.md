@@ -14,7 +14,7 @@
 > nouvelles. Les événements de résultat reviendront avec la v10.
 >
 > **Mise à jour 2026-09-30, opt-out dans le pied de page du CMS.** L'exemption CNIL
-> demande d'informer l'utilisateur et de le laisser s'opposer à la mesure. L'opt-out
+> demande d'informer le prescripteur et de le laisser s'opposer à la mesure. L'opt-out
 > vit dans le pied de page de Sites Conformes, hors de notre iframe, et le choix est
 > transmis au simulateur par `postMessage` (ADR-5). Le traceur attend ce choix avant
 > de mesurer, et ne suit plus les liens sortants. Le texte d'information reste à
@@ -170,7 +170,7 @@ parente dans un court délai (app ouverte hors du CMS, script absent), la mesure
 son cours. Le script du CMS est versionné dans ce dépôt et testé comme le reste.
 
 **Pourquoi.** L'opt-out se place dans le pied de page du CMS pour l'UX : c'est là que
-l'utilisateur cherche ce réglage, et le simulateur n'a pas de pied de page propre
+le prescripteur cherche ce réglage, et le simulateur n'a pas de pied de page propre
 dans l'iframe. Or le navigateur isole le stockage de chaque origine, et range à part
 celui d'une iframe tierce : aucun des opt-out natifs de Matomo (cookie posé par la
 page du CMS, cookie tiers sur le domaine de Matomo) n'atteint notre traceur. Seul un
@@ -261,7 +261,7 @@ Retiré le 2026-10-06 avec le téléchargement des trois CERFA.
   réponse détaillée. Elle entre dans l'exemption de consentement CNIL et se passe de
   bandeau (ADR-3), sous deux réserves : l'IP doit être anonymisée par l'instance
   Matomo (R-10), et les très petits services restent un cas limite (R-11).
-- **Depuis le 2026-09-30** : l'utilisateur peut s'opposer à la mesure depuis le pied
+- **Depuis le 2026-09-30** : le prescripteur peut s'opposer à la mesure depuis le pied
   de page du CMS (ADR-5). Reste à l'en informer dans la politique de confidentialité
   (R-12).
 - ~~Le suivi par prescripteur est quasi nominatif, donc hors de l'exemption de
@@ -302,7 +302,7 @@ Prérequis : l'écran de rattachement fournit le service (cf.
 | **R-8** | Instance mutualisée beta.gouv : les custom dimensions sont indisponibles, ce que l'ADR-2 contourne en passant par une propriété d'événement. Restent à confirmer la disponibilité des Funnels et les quotas. | partiellement tranché |
 | **R-10** | **Anonymisation de l'IP** : l'exemption CNIL l'exige, et elle se règle sur l'instance Matomo (Administration → Confidentialité), pas dans le code. À confirmer auprès des admins de stats.beta.gouv.fr pour le site 275. | conformité, **à vérifier avant la release** |
 | **R-11** | **Très petits services** : dans un service d'une ou deux personnes, l'id du service désigne de fait des individus. Réserve mineure, acceptée sans traitement dans le code. | conformité |
-| **R-12** | **Information des utilisateurs** : l'exemption exige de dire ce qui est mesuré et comment s'y opposer. Le texte, dans la politique de confidentialité du CMS, doit décrire la mesure par service et renvoyer à l'opt-out du pied de page. | conformité, **à publier avant la release** |
+| **R-12** | **Information des prescripteurs** : l'exemption exige de dire ce qui est mesuré et comment s'y opposer. Le texte, dans la politique de confidentialité du CMS, doit décrire la mesure par service et renvoyer à l'opt-out du pied de page. | conformité, **à publier avant la release** |
 
 ## 8. Vérification
 

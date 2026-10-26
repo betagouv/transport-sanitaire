@@ -19,7 +19,7 @@ import {
   genere,
   type Reponses,
 } from "./reponses-du-cerfa";
-import type { ValeursDesCibles } from "./traces-du-praticien";
+import type { ValeursDesCibles } from "./traces-du-prescripteur";
 
 // Les cellules de la DAP, recopiées de `mapping_documents.json` (v10.1.3).
 const CELLULES = [

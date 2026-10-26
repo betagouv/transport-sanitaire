@@ -18,7 +18,7 @@ import {
   ciblesValant,
   type ValeursDesCibles,
   vrai,
-} from "./traces-du-praticien";
+} from "./traces-du-prescripteur";
 
 const DIALYSE_ET_150_KM =
   "Votre déplacement est lié à une séance de dialyse, prise en compte comme une hospitalisation pour le transport.";

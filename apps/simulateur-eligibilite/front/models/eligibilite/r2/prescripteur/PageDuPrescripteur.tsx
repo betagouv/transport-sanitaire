@@ -1,13 +1,16 @@
-// La page du praticien : ce que la caisse, l'établissement, la permission, la
-// convocation et le transport à l'étranger montrent à la place d'une fiche
-// patient (D-112). Elle range un `TexteDuPraticien` sous le titre et
+// La page du prescripteur : ce que la caisse, l'établissement, la permission,
+// la convocation et le transport à l'étranger montrent à la place d'une fiche
+// patient (D-112). Elle range un `TexteDuPrescripteur` sous le titre et
 // l'introduction que le socle place ; elle n'écrit que ses intertitres, ceux
 // des gabarits de l'éditeur.
 
 import { NumberedCards, Panel } from "../../../../socle";
-import type { ElementDuPourquoi, TexteDuPraticien } from "./texte-du-praticien";
+import type {
+  ElementDuPourquoi,
+  TexteDuPrescripteur,
+} from "./texte-du-prescripteur";
 
-export function PageDuPraticien({ texte }: { texte: TexteDuPraticien }) {
+export function PageDuPrescripteur({ texte }: { texte: TexteDuPrescripteur }) {
   return (
     <>
       {texte.pourquoi && <Pourquoi pourquoi={texte.pourquoi} />}
@@ -20,7 +23,7 @@ export function PageDuPraticien({ texte }: { texte: TexteDuPraticien }) {
 
 // ---- implémentation ----
 
-type PourquoiProps = { pourquoi: NonNullable<TexteDuPraticien["pourquoi"]> };
+type PourquoiProps = { pourquoi: NonNullable<TexteDuPrescripteur["pourquoi"]> };
 
 function Pourquoi({ pourquoi }: PourquoiProps) {
   return (

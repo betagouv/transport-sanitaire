@@ -8,11 +8,11 @@ import { catalogueResultats } from "../../../front/models/eligibilite/r2/catalog
 import {
   estSansFiche,
   type IssueSansFiche,
-  texteDuPraticien,
-} from "../../../front/models/eligibilite/r2/praticien/texte-du-praticien";
+  texteDuPrescripteur,
+} from "../../../front/models/eligibilite/r2/prescripteur/texte-du-prescripteur";
 import { traceDuResultat } from "../../../front/models/eligibilite/r2/trace-du-resultat";
 import { lectureDe } from "./reponses-de-la-permission";
-import { faux, trace, vrai } from "./traces-du-praticien";
+import { faux, trace, vrai } from "./traces-du-prescripteur";
 
 const catalogue = await catalogueResultats();
 
@@ -20,7 +20,7 @@ const texteDeLaSeed = (id: string, issue: IssueSansFiche) => {
   const seed = SEEDS.find((candidate) => candidate.id === id);
   if (!seed) throw new Error(`Seed inconnue : ${id}`);
   const depuis = traceDuResultat(lectureDe(seed.answers));
-  return texteDuPraticien(catalogue, issue, depuis);
+  return texteDuPrescripteur(catalogue, issue, depuis);
 };
 
 describe("le texte des seeds", () => {
@@ -164,7 +164,11 @@ describe("le texte des seeds", () => {
 
 describe("le texte de repli", () => {
   it("garde le repli de l'établissement quand le contexte manque", () => {
-    const texte = texteDuPraticien(catalogue, "ISSUE_ETABLISSEMENT", trace({}));
+    const texte = texteDuPrescripteur(
+      catalogue,
+      "ISSUE_ETABLISSEMENT",
+      trace({}),
+    );
     expect(texte.introduction).toBe(
       "Le trajet a été qualifié comme un transport hospitalier relevant du financement de l’établissement. Aucune exception applicable n’a été établie : l’établissement est le financeur identifié. Contactez son service de coordination pour organiser le déplacement ; aucun formulaire Assurance Maladie n’est à compléter dans ce simulateur.",
     );
@@ -184,7 +188,11 @@ describe("le texte de la caisse quand plusieurs points sont ouverts", () => {
 
   // L'oracle a un scénario de cumul pour l'ALD et l'hébergement.
   it("prend le scénario de cumul que l'éditeur a écrit pour ces deux points", () => {
-    const texte = texteDuPraticien(catalogue, "ISSUE_CAISSE", trace(ald, htnm));
+    const texte = texteDuPrescripteur(
+      catalogue,
+      "ISSUE_CAISSE",
+      trace(ald, htnm),
+    );
     expect(texte.titre).toBe(PLUSIEURS_POINTS);
     expect(texte.introduction).toMatch(
       /^Le simulateur a identifié deux points/,
@@ -213,7 +221,7 @@ describe("le texte de la caisse quand plusieurs points sont ouverts", () => {
   // Aucun scénario de cumul n'existe pour trois points.
   it("donne l'introduction pour plusieurs points, puis chaque scénario", () => {
     const trois = trace(ald, { ...htnm, fait_motif_samsah: vrai });
-    const texte = texteDuPraticien(catalogue, "ISSUE_CAISSE", trois);
+    const texte = texteDuPrescripteur(catalogue, "ISSUE_CAISSE", trois);
     expect(texte.titre).toBe(PLUSIEURS_POINTS);
     expect(texte.introduction).toBe(
       "Plusieurs points restent à confirmer auprès de l’Assurance Maladie avant de déterminer la prise en charge de ce transport. Les éléments établis du dossier restent pris en compte ; aucune conclusion n’est déduite des informations manquantes.",
@@ -234,7 +242,7 @@ describe("le texte de la caisse quand plusieurs points sont ouverts", () => {
   // Les règles disent la caisse sans qu'un point se relise : le catalogue n'a
   // aucun texte à montrer, et rien n'est inventé. Le titre seul reste.
   it("ne montre que le titre quand aucun point ne se relit", () => {
-    expect(texteDuPraticien(catalogue, "ISSUE_CAISSE", trace({}))).toEqual({
+    expect(texteDuPrescripteur(catalogue, "ISSUE_CAISSE", trace({}))).toEqual({
       titre: "Un point précis reste à vérifier auprès de l’Assurance Maladie",
       questions: [],
       actions: [],

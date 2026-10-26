@@ -6,24 +6,26 @@
 // fichier choisit le scénario, puis range ses textes dans la page : il n'en
 // écrit aucun.
 // `factsReference` n'est pas repris : l'éditeur le dit phrase de démonstrateur,
-// que le praticien ne doit pas lire comme des faits du dossier.
+// que le prescripteur ne doit pas lire comme des faits du dossier.
 
 import type {
   AucunScenario,
   CatalogueResultats,
   IssueDeLaCaisse,
   IssueEtranger,
-  IssuePraticien,
-  ScenarioPraticien,
+  IssuePrescripteur,
+  ScenarioPrescripteur,
 } from "../../../../../core/models/eligibilite/declarations/catalogue-resultats";
 import type { Trace } from "../trace-du-resultat";
 import {
-  type IssueDuPraticien,
-  scenariosDuPraticien,
-} from "./scenarios-du-praticien";
+  type IssueDuPrescripteur,
+  scenariosDuPrescripteur,
+} from "./scenarios-du-prescripteur";
 
-/** Les issues dont la page est celle du praticien, sans fiche patient. */
-export type IssueSansFiche = IssueDuPraticien | "ISSUE_DAP_ETRANGER_A_EXAMINER";
+/** Les issues dont la page est celle du prescripteur, sans fiche patient. */
+export type IssueSansFiche =
+  | IssueDuPrescripteur
+  | "ISSUE_DAP_ETRANGER_A_EXAMINER";
 
 /** Un point de « Pourquoi ce résultat ? » : un titre, s'il en a un, et son texte. */
 export type ElementDuPourquoi = {
@@ -31,8 +33,10 @@ export type ElementDuPourquoi = {
   readonly texte: string;
 };
 
-/** La page du praticien. Une section sans texte manque : rien n'est inventé. */
-export type TexteDuPraticien = {
+/**
+ * La page du prescripteur. Une section sans texte manque : rien n'est inventé.
+ */
+export type TexteDuPrescripteur = {
   readonly titre: string;
   readonly introduction?: string;
   readonly pourquoi?: {
@@ -52,7 +56,7 @@ const ISSUES_SANS_FICHE: readonly string[] = [
   "ISSUE_DAP_ETRANGER_A_EXAMINER",
 ];
 
-/** Cette issue a-t-elle la page du praticien, plutôt qu'une fiche patient ? */
+/** Cette issue a-t-elle la page du prescripteur, et pas de fiche patient ? */
 export function estSansFiche(
   issue: string | null | undefined,
 ): issue is IssueSansFiche {
@@ -60,16 +64,16 @@ export function estSansFiche(
 }
 
 /** Le texte de cette issue, pour cette trace. */
-export function texteDuPraticien(
+export function texteDuPrescripteur(
   catalogue: CatalogueResultats,
   issue: IssueSansFiche,
   trace: Trace,
-): TexteDuPraticien {
+): TexteDuPrescripteur {
   if (issue === "ISSUE_DAP_ETRANGER_A_EXAMINER") {
     return texteDeLEtranger(catalogue.issues[issue]);
   }
   const { issues } = catalogue;
-  const scenarios = scenariosDuPraticien(issue, issues[issue], trace);
+  const scenarios = scenariosDuPrescripteur(issue, issues[issue], trace);
   if (issue === "ISSUE_CAISSE") {
     return texteDesPoints(issues[issue], scenarios);
   }
@@ -83,7 +87,7 @@ export function texteDuPraticien(
 
 const SANS_TEXTE = { questions: [], actions: [] } as const;
 
-function texteDeLEtranger(issue: IssueEtranger): TexteDuPraticien {
+function texteDeLEtranger(issue: IssueEtranger): TexteDuPrescripteur {
   return {
     titre: issue.title,
     introduction: issue.intro,
@@ -102,8 +106,8 @@ function texteDeLEtranger(issue: IssueEtranger): TexteDuPraticien {
 
 function texteDUnScenario(
   titre: string,
-  scenario: ScenarioPraticien,
-): TexteDuPraticien {
+  scenario: ScenarioPrescripteur,
+): TexteDuPrescripteur {
   return {
     titre,
     introduction: scenario.intro,
@@ -122,8 +126,8 @@ function texteDUnScenario(
 // compte les points, une fois chacun (point 27).
 function texteDesPoints(
   issue: IssueDeLaCaisse,
-  points: readonly ScenarioPraticien[],
-): TexteDuPraticien {
+  points: readonly ScenarioPrescripteur[],
+): TexteDuPrescripteur {
   const [premier, deuxieme] = points;
   if (!premier) return { ...SANS_TEXTE, titre: issue.title };
   if (!deuxieme) return texteDUnScenario(issue.titles.single, premier);
@@ -144,9 +148,9 @@ function texteDesPoints(
 
 // Le scénario dont les codes sont exactement ceux de ces points.
 function scenarioDeCumul(
-  { scenarios }: IssuePraticien,
-  points: readonly ScenarioPraticien[],
-): ScenarioPraticien | AucunScenario {
+  { scenarios }: IssuePrescripteur,
+  points: readonly ScenarioPrescripteur[],
+): ScenarioPrescripteur | AucunScenario {
   const codes = points.flatMap((point) => point.codes).sort();
   return scenarios.find(
     (scenario) =>
@@ -158,8 +162,8 @@ function scenarioDeCumul(
 
 // Le titre de l'éditeur pour plusieurs points ; à défaut, celui du premier.
 function titreAuPluriel(
-  { scenarios }: IssuePraticien,
-  premier: ScenarioPraticien,
+  { scenarios }: IssuePrescripteur,
+  premier: ScenarioPrescripteur,
 ): string {
   return (
     scenarios.find(({ codes, inactive }) => !inactive && codes.length > 1)

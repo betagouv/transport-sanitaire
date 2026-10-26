@@ -9,7 +9,7 @@ import {
   texteDeLaFichePositive,
 } from "../../../front/models/eligibilite/r2/fiche-positive/texte-de-la-fiche-positive";
 import type { Trace } from "../../../front/models/eligibilite/r2/trace-du-resultat";
-import { trace, type ValeursDesCibles } from "./traces-du-praticien";
+import { trace, type ValeursDesCibles } from "./traces-du-prescripteur";
 
 export const catalogue = await catalogueResultats();
 export const pmt = catalogue.issues.ISSUE_PMT;
