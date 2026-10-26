@@ -6,6 +6,7 @@
 
 import type { ComponentType, ReactNode } from "react";
 import type { AnyFaits, CoreModel } from "../../core/socle/model";
+import type { GivenAnswers } from "../../core/socle/questionnaire-engine/given-answers";
 import type {
   AnyCibles,
   AnyQuestions,
@@ -55,6 +56,26 @@ export type CerfaInput<
   Cibles = AnyCibles,
 > = ResultatProps<Questions, Cibles> & { faits: Faits; completedAt: Date };
 
+/**
+ * Ce que le prescripteur est venu faire : vérifier une éligibilité
+ * (`check`), ou aller jusqu'au document quand la situation le permet
+ * (`prescribe`).
+ */
+export type Intent = "check" | "prescribe";
+
+/**
+ * L'invitation à donner son avis, après un résultat (#195) : un lien vers
+ * l'adresse exacte, sans paramètre, ouvert dans un nouvel onglet. Le socle la
+ * place selon ce que le prescripteur est venu faire : en R2 s'il vérifie ou si
+ * rien ne se complète, en R3 une fois le document prêt.
+ */
+export type Feedback<Questions extends AnyQuestions = AnyQuestions> = {
+  url: string;
+  label: string;
+  /** `null` : on ne sait pas ce qu'il est venu faire, l'avis n'est pas proposé. */
+  intent: (answers: GivenAnswers<Questions>) => Intent | null;
+};
+
 export type Model<
   Questions extends AnyQuestions = AnyQuestions,
   Faits extends AnyFaits = AnyFaits,
@@ -103,6 +124,8 @@ export type Model<
     printLabel: string;
     downloadLabel: string;
   };
+  /** L'invitation à donner son avis. Sans elle, aucune. */
+  feedback?: Feedback<Questions>;
 };
 
 /**

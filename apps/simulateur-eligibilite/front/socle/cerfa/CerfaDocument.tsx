@@ -11,7 +11,7 @@
 // « Imprimer » vient avant « Télécharger » : côte à côte s'ils tiennent, l'un
 // sous l'autre sinon, le groupe en ligne du DSFR passant à la ligne sans
 // couper un libellé (D-173). Qui l'affiche peut donner de quoi tenir la place
-// de l'aperçu.
+// de l'aperçu, et ce qui le suit une fois le PDF prêt.
 //
 // Le DTO se lit une fois : celui d'un résultat ne change pas tant qu'il est
 // affiché.
@@ -37,6 +37,8 @@ type Props<Dto extends CerfaDto> = {
   downloadLabel: string;
   /** Ce qui se montre à la place de l'aperçu. Sans lui, l'aperçu du PDF. */
   standIn?: ReactNode;
+  /** Ce qui suit l'aperçu, une fois le PDF prêt, sans attendre une action. */
+  onceReady?: ReactNode;
 };
 
 export function CerfaDocument<Dto extends CerfaDto>({
@@ -46,6 +48,7 @@ export function CerfaDocument<Dto extends CerfaDto>({
   printLabel,
   downloadLabel,
   standIn,
+  onceReady,
 }: Props<Dto>) {
   const { settled, withPdf } = useDownloadablePdf(cerfa, dto);
   const print = usePrint();
@@ -69,6 +72,7 @@ export function CerfaDocument<Dto extends CerfaDto>({
       </ul>
       {standIn ??
         (settled?.status === "ready" && <CerfaPreview pdf={settled.pdf} />)}
+      {settled?.status === "ready" && onceReady}
     </div>
   );
 }

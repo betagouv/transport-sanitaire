@@ -3,7 +3,7 @@
 // fournit son titre, son texte et son cerfa ; la page les range ici, de haut en
 // bas (C03 du contrat d'intégration) : le stepper, titré du document ; le
 // texte ; « Précédent » et « Faire une nouvelle simulation » ; « Imprimer » et
-// « Télécharger » ; l'aperçu du document.
+// « Télécharger » ; l'aperçu du document ; l'avis, une fois le document prêt.
 
 import type { ComponentType, ReactNode } from "react";
 import type { Preconisation } from "../../../core/socle/model";
@@ -22,6 +22,7 @@ import { dtoFrom } from "../cerfa-mapping";
 import type { CerfaInput, Model } from "../model";
 import type { DebugTraceProps } from "../questionnaire-engine/QuestionnaireForm";
 import { Stepper } from "../questionnaire-engine/Stepper";
+import { FeedbackLink, type FeedbackOffer, feedbackOf } from "./FeedbackLink";
 import type { Locked } from "./start";
 
 type Props = {
@@ -49,14 +50,13 @@ export function CerfaResultat({
   const { faits, cibles } = locked.preconisation;
   const part = model.core.complement;
   const { title, Resultat } = model.cerfa;
-  const total = model.core.questionnaire.length + 1;
   const all = [...pagesOf(model.core.questionnaire), ...part.pages];
   const trace = traceOf("cerfa", all, answers, locked.preconisation, cibles);
   const read = readOf(all, answers, cibles);
   return (
     <Frame
       title={title(cibles)}
-      part={total}
+      part={model.core.questionnaire.length + 1}
       trace={trace}
       DebugTrace={DebugTrace}
     >
@@ -69,8 +69,11 @@ export function CerfaResultat({
           Faire une nouvelle simulation
         </SecondaryButton>
       </div>
-      <Cerfa model={model} input={{ ...read, faits, cibles, completedAt }} />
-      {/* L'avis viendra ici, après l'aperçu et hors du document (#195). */}
+      <Cerfa
+        model={model}
+        input={{ ...read, faits, cibles, completedAt }}
+        feedback={feedbackOf(model, answers)}
+      />
     </Frame>
   );
 }
@@ -120,8 +123,14 @@ export function SecondaryButton({ onClick, children }: ButtonProps) {
 
 // Le cerfa de la préconisation figée, daté du jour où le complément a été
 // validé. Rien quand elle n'en donne pas. Le modèle peut tenir la place de son
-// aperçu.
-function Cerfa({ model, input }: { model: Model; input: CerfaInput }) {
+// aperçu. L'avis le suit, une fois son PDF prêt.
+type CerfaProps = {
+  model: Model;
+  input: CerfaInput;
+  feedback: FeedbackOffer | null;
+};
+
+function Cerfa({ model, input, feedback }: CerfaProps) {
   const { form, standIn, printLabel, downloadLabel } = model.cerfa;
   const bound = form(input.cibles);
   return (
@@ -133,6 +142,7 @@ function Cerfa({ model, input }: { model: Model; input: CerfaInput }) {
         printLabel={printLabel}
         downloadLabel={downloadLabel}
         standIn={standIn?.(input)}
+        onceReady={feedback && <FeedbackLink offer={feedback} />}
       />
     )
   );

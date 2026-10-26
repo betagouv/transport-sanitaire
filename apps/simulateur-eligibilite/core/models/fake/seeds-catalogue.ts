@@ -104,7 +104,7 @@ export const SEEDS: readonly Seed<Questions, Cibles>[] = [
     id: "commande-de-the",
     label: "Résultat : un thé, avec lait et citron",
     description:
-      "Ouvre le premier résultat d'une commande complète, d'où le complément se lance. L'encadré gris range deux éléments séparés d'un trait et, déplié, ce que la commande a pris en compte. Trois cartes illustrées montrent les façons de servir, celle de la commande bordée de vert, puis trois étapes suivent en cartes numérotées.",
+      "Ouvre le premier résultat d'une commande complète, d'où le complément se lance. L'encadré gris range deux éléments séparés d'un trait et, déplié, ce que la commande a pris en compte. Trois cartes illustrées montrent les façons de servir, celle de la commande bordée de vert, puis trois étapes suivent en cartes numérotées. L'avis, en orange, suit le tout : un thé se goûte, on donne son avis dès ce résultat.",
     answers: {
       boisson: "the",
       accompagnements: ["lait", "citron"],
@@ -131,7 +131,7 @@ export const SEEDS: readonly Seed<Questions, Cibles>[] = [
     id: "cafe-au-lait",
     label: "Résultat : une option impossible vaut « non »",
     description:
-      "Ouvre le résultat d'un café au lait. Le citron ne se propose pas, parce qu'il ne se sert pas avec un café : le fait vaut « non », sans avoir été demandé. La mise en garde est décidée.",
+      "Ouvre le résultat d'un café au lait. Le citron ne se propose pas, parce qu'il ne se sert pas avec un café : le fait vaut « non », sans avoir été demandé. La mise en garde est décidée. Pas d'avis ici : un café se commande, l'avis attend le bon de commande prêt.",
     answers: {
       boisson: "cafe",
       accompagnements: ["lait"],

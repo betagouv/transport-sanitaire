@@ -20,6 +20,12 @@ import {
 import type { FirstResult, Model } from "../model";
 import type { DebugTraceProps } from "../questionnaire-engine/QuestionnaireForm";
 import { NextStep, Stepper } from "../questionnaire-engine/Stepper";
+import {
+  FeedbackLink,
+  type FeedbackOffer,
+  feedbackOf,
+  onFirstResult,
+} from "./FeedbackLink";
 import { SecondaryButton, traceOf } from "./Resultats";
 import { SheetViewer } from "./SheetViewer";
 import { type Locked, lock } from "./start";
@@ -51,6 +57,7 @@ export function FirstResultat({ model, state, DebugTrace, ...on }: Props) {
         step={{ title: model.result.title, part: parts.length }}
         startLabel={startLabelOf(model, preconisation.cibles)}
         actions={actionsOf(model, state, on)}
+        feedback={feedbackOf(model, answers)}
       />
       {DebugTrace && (
         <div className="fr-no-print">
@@ -125,11 +132,21 @@ type ContentProps = {
   step: Step;
   startLabel: string | null;
   actions: Actions;
+  feedback: FeedbackOffer | null;
 };
 
-function Content({ result, step, startLabel, actions }: ContentProps) {
+// L'avis suit tout le reste, une fois le résultat chargé.
+function Content({
+  result,
+  step,
+  startLabel,
+  actions,
+  feedback,
+}: ContentProps) {
   const loaded = useLoaded(result);
   const buttons = { ...actions, completion: completionOf(startLabel, loaded) };
+  const completes = typeof buttons.completion === "object";
+  const offer = loaded && onFirstResult(feedback, completes);
   return (
     <>
       <div className="fr-no-print">
@@ -143,6 +160,7 @@ function Content({ result, step, startLabel, actions }: ContentProps) {
       ) : (
         <Page result={loaded} buttons={buttons} />
       )}
+      {offer && <FeedbackLink offer={offer} />}
     </>
   );
 }

@@ -72,8 +72,10 @@ Le socle ne connaît le modèle que par deux contrats. `CoreModel`
 (`core/socle/model.ts`) porte le métier : les parties d'avant le verrou
 (`questionnaire`), celle d'après (`complement`), ce qui calcule la préconisation
 (des réponses aux faits, des faits aux cibles) et les seeds. `Model`
-(`front/socle/model.ts`) le porte sous `core`, et y ajoute les deux résultats :
-`result` et `cerfa`. `front/main.tsx` est le seul fichier qui importe le socle
+(`front/socle/model.ts`) le porte sous `core`, et y ajoute les deux résultats,
+`result` et `cerfa`, et l'invitation à donner son avis, `feedback`, que le
+socle place après l'un ou l'autre (`front/socle/simulateur/FeedbackLink.tsx`,
+D-196). `front/main.tsx` est le seul fichier qui importe le socle
 et les modèles. Il dit à `App` comment charger chaque modèle, et `App` charge le
 premier pendant l'écran de rattachement : un modèle reste hors du chunk
 d'entrée. Le socle n'importe rien des modèles. Un modèle n'importe du socle que
@@ -267,7 +269,7 @@ simulateur calcule le DTO sous le second résultat et le passe au bouton.
 | `generate-cerfa.ts` | la génération : le DTO traduit dans les noms du gabarit, remplir, puis aplatir, avec `pdf-lib` chargé à la demande. Le nom daté du fichier, le téléchargement |
 | `print-pdf.ts` | l'impression d'un PDF dans un cadre invisible : le dialogue du navigateur s'ouvre sur le PDF, pas sur la page |
 | `pdf-preparation.ts` | ce qu'ont en commun les PDF qu'un bouton attend, cerfa et feuille : « Préparation du PDF… » (D-191), et la garde du document quitté pendant la préparation (D-190) |
-| `CerfaDocument.tsx` | les boutons « Imprimer » et « Télécharger », qui génèrent le PDF dès qu'ils s'affichent et portent le même document, puis son aperçu, ou ce que le modèle met à sa place. L'avertissement d'un commentaire retiré, l'alerte si ça échoue |
+| `CerfaDocument.tsx` | les boutons « Imprimer » et « Télécharger », qui génèrent le PDF dès qu'ils s'affichent et portent le même document, puis son aperçu, ou ce que le modèle met à sa place, et ce qui le suit une fois le PDF prêt. L'avertissement d'un commentaire retiré, l'alerte si ça échoue |
 | `CerfaPreview.tsx` | l'aperçu du PDF dans la page, par le lecteur du navigateur ; sans lecteur, une phrase renvoie au téléchargement (D-183) |
 
 Un formulaire rempli porte des données de santé nominatives. Il se génère **dans le
