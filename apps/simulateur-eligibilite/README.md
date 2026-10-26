@@ -39,6 +39,100 @@ flowchart LR
 Aucune réponse du questionnaire ne quitte le navigateur. Le backend ne sert que le
 front et le référentiel de rattachement.
 
+## Le chemin d'une réponse
+
+Une réponse traverse huit étapes avant de faire apparaître, ou non, la question
+suivante :
+
+réponses → lecture dans l'ordre → validées → concepts → faits → cibles → garde
+→ questions posées
+
+Aucun fichier ne porte cette chaîne en entier : chaque étape ne connaît que sa
+voisine. Cette section la suit d'un bout à l'autre.
+
+### Les étapes
+
+| Étape | Ce qu'elle reçoit | Ce qu'elle donne | Où |
+| --- | --- | --- | --- |
+| Réponses données | ce que le prescripteur saisit | les réponses des pages validées, et le brouillon de la page ouverte | `front/socle/questionnaire-engine/questionnaire.ts` |
+| Lecture dans l'ordre | les pages, dans l'ordre où le modèle les déclare, et les réponses | pour chaque question, un contexte : toutes les réponses, mais seulement les questions validées avant elle | `core/socle/questionnaire-engine/reading-in-order.ts` |
+| Validées | les questions posées qui ont leur réponse | ce qui s'y proposait et ce qui y a été répondu. La première question sans réponse arrête la validation pour toute la suite | `core/socle/questionnaire-engine/validated-answers.ts` |
+| Concepts | des réponses, données ou validées | un savoir lu une fois : une tranche de distance, une permission, un séjour | `core/models/eligibilite/concepts/` |
+| Faits | les réponses et les validées | chaque fait à oui, non ou inconnu, avec sa provenance. Il se calcule à sa première lecture | `core/models/eligibilite/faits/`, un fichier par fait |
+| Cibles | les faits établis, jamais les inconnus | chaque cible à sa valeur, inconnue s'il manque un fait | `evaluation-des-regles.ts` du modèle, `core/socle/decision-engine/publicodes.ts`, `rules/regles.json` |
+| Garde | le contexte : réponses, validées, faits, et cibles figées après le verrou | la question se pose ou non. Une option a la sienne, `offeredIf` | `askedIf` des pages, sous `p1/`, `p2/`, `p3/` |
+| Questions posées | les pages et leurs gardes | les pages qui se posent, les questions de chacune. Une page sans question est sautée | `Reading` dans `core/socle/questionnaire-engine/questionnaire.ts` |
+
+Les faits ne se calculent que si une garde les lit, une fois par contexte de
+question (`question-context.ts`). Avant le verrou, une cible ne se calcule que
+si une garde l'appelle.
+
+### Une page validée
+
+1. **Les réponses de la page remplacent les anciennes.** Une question que la
+   page ne pose plus perd sa réponse, une option qu'elle ne propose plus aussi.
+   Celles qui dépendaient d'une réponse changée sont effacées, de proche en
+   proche, d'après `dependsOn` (`page-commit.ts`).
+2. **Tout se relit depuis la première page.** `pageAfter` donne la page posée
+   qui suit.
+3. **Au bout de P2, « Voir le résultat »** calcule la préconisation : les faits,
+   avec la complétude de P1 et de P2 que la décision impose (`preconisation.ts`),
+   puis les cibles. R2 les lit.
+4. **Le verrou** garde les réponses validées et fige leur préconisation
+   (`front/socle/simulateur/start.ts`). P3 ne repose rien d'avant : ses gardes
+   lisent les cibles figées, par `cibles` du contexte.
+
+Sur la page ouverte, l'écran fait deux lectures. La première, sur les réponses
+validées, dit les pages. La seconde ajoute le brouillon et dit ce que la page
+pose : une question peut en révéler une autre sur la même page.
+
+### Un exemple : Q2.3.4
+
+Sur la page du trajet, le prescripteur répond « plus de 150 km » à Q2.3.1.
+Q2.3.4, l'urgence, apparaît sous la distance.
+
+```mermaid
+sequenceDiagram
+    participant E as Écran
+    participant L as Lecture dans l'ordre
+    participant G as Garde de Q2.3.4
+    participant F as Faits
+    participant D as DistanceDuTrajet
+    participant R as Règles (publicodes)
+
+    E->>E: brouillon : Q2.3.1 = « plus de 150 km »
+    E->>L: readWith(réponses + brouillon).questionsOn(trajet)
+    L->>L: Q2.3.1 et Q2.3.2 ont leur réponse : validées
+    L->>G: askedIn(contexte des questions validées avant elle)
+    G->>F: lit faits
+    F->>D: of(validées).depasseCentCinquanteKm()
+    D-->>F: oui
+    F-->>G: fait_distance_plus_150 = oui, et les autres
+    G->>R: cible(faits, "cible_question_urgence_a_afficher")
+    R-->>G: oui
+    G-->>L: posée
+    L-->>E: Q2.3.1, Q2.3.2, Q2.3.3, Q2.3.4
+```
+
+| Étape | Le code |
+| --- | --- |
+| la garde | `p2/partie-2.ts` : `.askedIf(({ faits }) => urgenceAAfficher(faits))` |
+| la cible qu'elle lit | `p2/trajet.ts` : `cible(faits, "cible_question_urgence_a_afficher").isOui()` |
+| le fait | `faits/distance-plus-150.ts` : `DistanceDuTrajet.of(validated).depasseCentCinquanteKm()` |
+| le concept | `concepts/distance-du-trajet.ts` : la tranche de Q2.3.1, `3_PLUS_DE_CENT_CINQUANTE_KM` vaut oui |
+| la règle | `rules/regles.publicodes` : `cible_question_urgence_a_afficher`, vraie si la DAP est requise, le mode cohérent et l'orientation sans urgence pas encore établie |
+
+### Les écarts du code à ce chemin
+
+Relevés pour l'issue 240, pas encore corrigés.
+
+| Écart | Exemple |
+| --- | --- |
+| Avant le verrou, `cibles` du contexte vaut `undefined`. Une garde qui lit une cible la calcule elle-même depuis les faits : deux chemins mènent à une cible | `cible(faits, …)` dans `p1/partie-1.ts`, `p2/trajet.ts`, `p2/branche.ts`, `p2/prestation.ts` |
+| Une garde peut lire cinq sources : une réponse donnée, une validée, un concept, un fait, une cible. La règle « un fait d'abord » ne tient qu'à la relecture | Q2.10.a lit `answers.question("Q2.10").is("6_APPAREILLAGE")`, Q2.3.3 lit `fait_distance_plus_50` |
+| Les faits se calculent à deux endroits, avec deux résultats possibles. Pour une garde, la complétude de P1 et de P2 reste inconnue. Pour la préconisation, elle est imposée | `cibleEnCoursDeP1` (`p1/partie-1.ts`) force `fait_p1_complete` à oui pour lire une cible |
+| Le moteur ne nomme pas l'étape des faits. Le modèle la branche par ses constructeurs (`questionsOf({ faits })`), et le contexte la cache derrière un accesseur | `core/models/eligibilite/question.ts`, `contextOf` dans `question-context.ts` |
+
 ## Commandes
 
 | Commande | Ce qu'elle fait |
