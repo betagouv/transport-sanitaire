@@ -82,6 +82,11 @@ _Chez l'éditeur_: « lieu du soin », l'un des rôles d'un lieu, et
 « établissement ».
 _Avoid_: établissement, réservé au rattachement.
 
+**Sens**:
+L'aller, le retour, ou l'aller et le retour, que le document prescrit (D-198).
+_Chez l'éditeur_: « sens », le même mot ; « segment » pour une portion de trajet.
+_Avoid_: segment, réservé au texte médical.
+
 ### Le questionnaire
 
 **Questionnaire**:
@@ -236,6 +241,13 @@ _Chez l'éditeur_: « rubrique », le même mot.
 Une page à renseigner d'un cerfa. Un même champ se recopie sur chaque volet
 (D-185).
 _Chez l'éditeur_: « volet », le même mot.
+
+**Segment**:
+Un morceau du texte médical du cerfa : le soin, un besoin, un critère
+d'ambulance. Les segments se joignent par « ; » (D-141, D-198).
+_Chez l'éditeur_: **faux ami**. « Segment » y désigne aussi une portion de
+trajet et une étape du stepper.
+_Avoid_: segment pour un trajet, dire l'aller, le retour ou le sens.
 
 ### Les outils de l'équipe
 
