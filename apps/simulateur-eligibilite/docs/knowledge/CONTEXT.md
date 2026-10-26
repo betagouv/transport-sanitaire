@@ -161,6 +161,13 @@ objet.
 _Chez l'éditeur_: « cible », le même mot.
 _Avoid_: sortie, output, target (D-25).
 
+**Cible documentaire**:
+Une valeur que le cerfa écrit (D-197). Elle a deux origines : une projection des
+faits, qui est une cible comme les autres, ou une réponse du complément, que le
+cerfa met en forme.
+_Chez l'éditeur_: « cible documentaire », le même mot. Celles qui viennent du
+complément ne sont pas dans ses règles.
+
 **Préconisation**:
 L'ensemble des cibles d'une simulation. Les cibles ne servent pas à la calculer :
 elles la composent (D-11, D-16).
