@@ -17,7 +17,7 @@ import { type Box, checkBoxes } from "./check-box";
 import { formatDateForField } from "./dates";
 import type { Drawing } from "./flatten-cerfa";
 import { overflowsOf } from "./overflow";
-import { sizeInField } from "./text-fit";
+import { sizeInField, sizeToFit } from "./text-fit";
 
 /**
  * Une valeur à écrire : un texte dans un champ nommé, ou une case à cocher.
@@ -64,8 +64,10 @@ export type Filled = {
  *
  * Un texte n'est jamais coupé, et ne bloque jamais le PDF (D-85). Il s'écrit à
  * la taille visée, puis réduite. S'il ne tient toujours pas, il perd son
- * commentaire. S'il ne tient toujours pas, son champ reste vide : il se
- * dessinera sous son cadre (`overflow.ts`).
+ * commentaire. S'il ne tient toujours pas, il rapetisse et passe à la ligne
+ * jusqu'à tenir dans son cadre (D-193). Seul un texte plus long que le nombre
+ * de caractères du champ laisse le champ vide : il se dessinera sous son cadre
+ * (`overflow.ts`).
  */
 export async function fillCerfa(
   template: Uint8Array | ArrayBuffer,
@@ -160,8 +162,8 @@ type WrittenText = {
   readonly withoutComment: boolean;
 };
 
-// Le texte et son commentaire, sinon le texte seul, dans son champ. Sinon,
-// rien dans le champ : le texte se dessinera sous son cadre.
+// Le texte et son commentaire, sinon le texte seul, dans son champ, au besoin
+// rapetissé. Sinon, rien dans le champ : le texte se dessinera sous son cadre.
 function writeText(
   document: PDFDocument,
   font: PDFFont,
@@ -171,6 +173,7 @@ function writeText(
   return (
     writeWithComment(field, font, entry) ??
     writeWithoutComment(field, font, entry) ??
+    writeShrunk(field, font, entry) ??
     overflow(document, field, font, entry)
   );
 }
@@ -210,6 +213,20 @@ function writeWithoutComment(
     : undefined;
 }
 
+// Le texte seul, rapetissé jusqu'à tenir dans le cadre, sur autant de lignes
+// qu'il y faut (D-193).
+function writeShrunk(
+  field: PDFTextField,
+  font: PDFFont,
+  { text, comment }: Text,
+): WrittenText | NotWritten {
+  const fontSize = sizeToFit(field, font, text);
+  if (fontSize === undefined) return undefined;
+  field.enableMultiline();
+  write(field, text, fontSize);
+  return { overflows: [], withoutComment: Boolean(comment) };
+}
+
 // Rien dans le champ : le texte, sans son commentaire, se dessinera sous
 // chaque widget.
 function overflow(
@@ -234,10 +251,14 @@ function writeIfFits(
 ): boolean {
   const fontSize = sizeInField(field, font, text);
   if (fontSize === undefined) return false;
+  write(field, text, fontSize);
+  return true;
+}
+
+function write(field: PDFTextField, text: string, fontSize: number): void {
   field.setText(text);
   field.setFontSize(fontSize);
   sameSizeOnEveryWidget(field);
-  return true;
 }
 
 // Un widget qui déclare sa propre taille, comme ceux des volets 3 et 4 de la

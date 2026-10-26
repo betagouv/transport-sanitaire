@@ -1,5 +1,6 @@
 // Où et à quelle taille se dessine un texte trop long pour son cadre (D-85,
-// D-94).
+// D-94). Depuis D-193, seul un texte plus long que le nombre de caractères de
+// son champ en arrive là : tout autre rapetisse jusqu'à tenir dans son cadre.
 //
 // Le champ reste vide. Le texte part du haut du cadre, garde sa largeur, et
 // continue en dessous, quitte à passer sur ce qui s'y trouve. Il s'écrit à la

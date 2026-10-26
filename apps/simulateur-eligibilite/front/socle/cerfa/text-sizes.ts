@@ -8,13 +8,14 @@ export const TEXT_SIZES = {
   target: 9,
   /**
    * La taille réduite : un texte trop long pour son cadre y descend avant de
-   * perdre son commentaire facultatif, puis déborde sous le cadre à cette
-   * taille (D-85).
+   * perdre son commentaire facultatif, puis rapetisse en dessous jusqu'à tenir
+   * (D-85, D-193).
    */
   reduced: 8,
   /**
-   * Le plancher : un texte qui sortirait de la page descend jusque-là, pas
-   * plus bas. En dessous, un texte imprimé se lit mal.
+   * Le plancher d'un texte dessiné hors de son champ : un texte qui sortirait
+   * de la page descend jusque-là, pas plus bas. Un texte écrit dans son champ,
+   * lui, rapetisse sans plancher jusqu'à tenir (D-193).
    */
   floor: 6,
 } as const;

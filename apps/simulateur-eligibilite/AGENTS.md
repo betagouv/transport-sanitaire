@@ -238,12 +238,14 @@ entrée dans le gabarit (`Cerfa<Dto>`) :
 
 Un gabarit qui renomme un champ ne change que la définition, jamais le DTO.
 
-Un texte n'est jamais coupé, et ne bloque jamais le PDF (D-85, D-94). Il
+Un texte n'est jamais coupé, et ne bloque jamais le PDF (D-85, D-193). Il
 s'écrit dans son champ à 9 pt, puis à 8 pt. S'il n'y tient pas, il perd son
 commentaire facultatif, et le bouton le dit avant tout téléchargement. S'il
-n'y tient toujours pas, son champ reste vide : il se dessine depuis le haut du
-cadre, à 8 pt, et déborde dessous, par-dessus ce qui s'y trouve. Il ne descend
-sous 8 pt que pour rester sur la page, jusqu'à 6 pt.
+n'y tient toujours pas, il rapetisse par demi-point, sans plancher, et passe à
+la ligne jusqu'à tenir dans son champ. Seul un texte plus long que le nombre
+de caractères du champ laisse le champ vide : il se dessine depuis le haut du
+cadre, à 8 pt, et déborde dessous, par-dessus ce qui s'y trouve (D-94). Il ne
+descend sous 8 pt que pour rester sur la page, jusqu'à 6 pt.
 
 Le modèle traduit les données du simulateur en DTO (`CerfaMapping`, dans
 `front/socle/cerfa-mapping.ts`) : une fonction par entrée, qui lit les réponses,
@@ -254,10 +256,10 @@ simulateur calcule le DTO sous le second résultat et le passe au bouton.
 | Fichier | Ce qu'il porte |
 |---|---|
 | `fill-cerfa.ts` | l'écriture dans un AcroForm : textes et leur commentaire, cases et leurs états d'export. Ce qui ne tient pas dans son cadre |
-| `text-fit.ts` | un texte tient-il dans son champ, et à quelle taille |
-| `overflow.ts` | où et à quelle taille se dessine un texte qui déborde de son cadre |
+| `text-fit.ts` | un texte tient-il dans son champ, et à quelle taille, au besoin rapetissé et sur plusieurs lignes |
+| `overflow.ts` | où et à quelle taille se dessine un texte plus long que le nombre de caractères de son champ |
 | `widget-page.ts` | la page qui porte le widget d'un champ |
-| `text-sizes.ts` | la configuration des tailles (D-68) : la taille visée, 9 pt, la taille réduite, 8 pt, et le plancher, 6 pt. Une version du modèle la modifie, pas le code |
+| `text-sizes.ts` | la configuration des tailles (D-68) : la taille visée, 9 pt, la taille réduite, 8 pt, et le plancher d'un texte dessiné hors de son champ, 6 pt. Une version du modèle la modifie, pas le code |
 | `cerfa.ts` | ce qu'est un cerfa : son DTO, son gabarit, et où va chaque entrée |
 | `dates.ts` | une date sur un champ peigné |
 | `box-appearances.ts` | le dessin des cases du gabarit, gardé : un `/Off` vide pour celles qui n'en ont pas, sans quoi `pdf-lib` les redessine (D-140) |
