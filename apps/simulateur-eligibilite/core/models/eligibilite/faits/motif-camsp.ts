@@ -5,12 +5,12 @@
 //
 // Il suit `CONTRAT_REPONSES_FAITS.json`.
 
-import { regles } from "../../../socle/index.ts";
+import { unFait } from "../../../socle/index.ts";
 import { ContextesDuTrajet } from "../concepts/contextes-du-trajet.ts";
 import type { DeclarationDeFait } from "../declarations/faits.ts";
 
 export const motifCamsp: DeclarationDeFait = ({ validated }) =>
-  regles()
+  unFait()
     .retient(ContextesDuTrajet.of(validated).situation("6_CAMSP"))
     .seulementSi(validated.question("Q2.1").is("10_CAMSP"))
     .selon(validated.question("Q2.1.h"), {

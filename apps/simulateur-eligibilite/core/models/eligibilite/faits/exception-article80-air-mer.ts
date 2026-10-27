@@ -8,7 +8,7 @@
 //
 // Il suit `CONTRAT_REPONSES_FAITS.json`.
 
-import { regles } from "../../../socle/index.ts";
+import { unFait } from "../../../socle/index.ts";
 import { ExceptionsDeLArticle80 } from "../concepts/exceptions-de-l-article-80.ts";
 import {
   type DeclarationDeFait,
@@ -16,6 +16,6 @@ import {
 } from "../declarations/faits.ts";
 
 export const exceptionArticle80AirMer: DeclarationDeFait = ({ validated }) =>
-  regles()
+  unFait()
     .retient(ExceptionsDeLArticle80.of(validated).fait("4_AIR_MER"))
     .sinon(PAS_ENCORE_ETABLI);

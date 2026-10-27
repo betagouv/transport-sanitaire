@@ -6,12 +6,12 @@
 //
 // Il suit `CONTRAT_REPONSES_FAITS.json`.
 
-import { regles } from "../../../socle/index.ts";
+import { unFait } from "../../../socle/index.ts";
 import { AideDuPatient } from "../concepts/aide-du-patient.ts";
 import type { DeclarationDeFait } from "../declarations/faits.ts";
 
 export const prefereTransportCommun: DeclarationDeFait = ({ validated }) =>
-  regles()
+  unFait()
     .selon(validated.question("Q1.4"), {
       "1_VEHICULE_PERSONNEL": "non",
       "2_TRANSPORTS_EN_COMMUN": "oui",

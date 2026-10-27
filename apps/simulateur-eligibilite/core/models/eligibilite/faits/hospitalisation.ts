@@ -11,7 +11,7 @@
 import {
   Fait,
   type PassesOn,
-  regles,
+  unFait,
   type ValidatedAnswers,
 } from "../../../socle/index.ts";
 import { Sejour } from "../concepts/sejour.ts";
@@ -21,7 +21,7 @@ import type { Questions } from "../declarations/questions.ts";
 
 export const hospitalisation: DeclarationDeFait = ({ validated }) => {
   const soin = Soin.of(validated);
-  return regles()
+  return unFait()
     .retient(parLeDeplacement(validated))
     .retient(sansSejourEnCours(validated, soin))
     .retient(soin.parEntreeOuSortie())

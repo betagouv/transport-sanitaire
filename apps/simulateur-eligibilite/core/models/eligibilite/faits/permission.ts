@@ -6,13 +6,13 @@
 //
 // Il suit `CONTRAT_REPONSES_FAITS.json`.
 
-import { regles } from "../../../socle/index.ts";
+import { unFait } from "../../../socle/index.ts";
 import { RetourPenitentiaire } from "../concepts/retour-penitentiaire.ts";
 import { Sejour } from "../concepts/sejour.ts";
 import type { DeclarationDeFait } from "../declarations/faits.ts";
 
 export const permission: DeclarationDeFait = ({ validated }) =>
-  regles()
+  unFait()
     .retient(RetourPenitentiaire.of(validated).nonSiSortieVersLaPrison())
     .nonSi(
       validated.question("Q2.2.1").hasAnswer() &&

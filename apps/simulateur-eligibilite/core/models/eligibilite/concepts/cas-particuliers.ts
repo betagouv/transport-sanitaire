@@ -11,7 +11,7 @@ import {
   type AnswersReader,
   type Fait,
   type GivenAnswer,
-  regles,
+  unFait,
 } from "../../../socle/index.ts";
 import type { Questions } from "../declarations/questions.ts";
 import { AideDuPatient } from "./aide-du-patient.ts";
@@ -42,7 +42,7 @@ export class CasParticuliers {
 
   /** Le cas est coché, ou Q1.3 est validée sans lui. */
   coche(option: Cas): Fait {
-    return regles()
+    return unFait()
       .ouiSi(this.cas.checked(option), `Q1.3 : « ${option} » coché.`)
       .nonSi(this.cas.hasAnswer(), `Q1.3 validée sans « ${option} ».`)
       .sinon(Q13_EN_ATTENTE);
@@ -71,7 +71,7 @@ export class CasParticuliers {
     const seance = SEANCES_SANS_PRECISION.find((option) =>
       this.cas.checked(option),
     );
-    return regles()
+    return unFait()
       .ouiSi(seance !== undefined, `Q1.3 : « ${seance} » coché.`)
       .ouiSi(this.hemodialyse.is("1_OUI"), "Q1.3.a : une séance d'hémodialyse.")
       .sinon(
@@ -118,7 +118,7 @@ export class CasParticuliers {
   private preuveClinique(): Fait {
     const aide = AideDuPatient.of(this.reponses);
     const critere = CriteresDuTransport.of(this.reponses).premier();
-    return regles()
+    return unFait()
       .ouiSi(aide.avecUnProche(), "Q1.1 : l'aide d'un proche est nécessaire.")
       .nonSi(aide.seDeplaceSeul(), "Q1.1 : le patient se déplace seul.")
       .ouiSi(

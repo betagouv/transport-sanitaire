@@ -7,7 +7,7 @@
 // Il suit `CORRECTIF_FAITS_SANS_REPONSE.md`, qui prime sur
 // `CONTRAT_REPONSES_FAITS.json`.
 
-import { regles } from "../../../socle/index.ts";
+import { unFait } from "../../../socle/index.ts";
 import { ContextesDuTrajet } from "../concepts/contextes-du-trajet.ts";
 import {
   type DeclarationDeFait,
@@ -21,7 +21,7 @@ export const dapMaternite: DeclarationDeFait = ({ validated }) => {
     ...eloignement.checkedBoxes(),
     ...motif.checkedBoxes(),
   ].join(" », « ");
-  return regles()
+  return unFait()
     .nonSi(
       eloignement.checked("3_AUCUNE"),
       "Q2.14 : aucun éloignement éligible.",

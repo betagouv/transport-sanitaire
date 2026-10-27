@@ -12,7 +12,7 @@ import {
   type AnswersReader,
   type Fait,
   type GivenAnswer,
-  regles,
+  unFait,
 } from "../../../socle/index.ts";
 import type { Questions } from "../declarations/questions.ts";
 import { AideDuPatient } from "./aide-du-patient.ts";
@@ -44,7 +44,7 @@ export class CriteresDuTransport {
    */
   fait(...options: readonly Critere[]): Fait {
     const coche = options.find((option) => this.criteres.checked(option));
-    return regles()
+    return unFait()
       .ouiSi(coche !== undefined, `Q1.2 : « ${coche} » coché.`)
       .nonSi(
         this.criteres.hasAnswer(),

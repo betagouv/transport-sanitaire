@@ -9,7 +9,7 @@ import {
   type AnswersReader,
   type Fait,
   type GivenAnswer,
-  regles,
+  unFait,
 } from "../../../socle/index.ts";
 import type { Questions } from "../declarations/questions.ts";
 
@@ -29,7 +29,7 @@ export class DistanceDuTrajet {
 
   /** Le trajet dépasse 50 km : plus de 50, ou plus de 150. */
   depasseCinquanteKm(): Fait {
-    return regles()
+    return unFait()
       .selon(this.tranche, {
         "1_CINQUANTE_KM_OU_MOINS": "non",
         "2_PLUS_DE_CINQUANTE_KM": "oui",
@@ -40,7 +40,7 @@ export class DistanceDuTrajet {
 
   /** Le trajet dépasse 150 km. */
   depasseCentCinquanteKm(): Fait {
-    return regles()
+    return unFait()
       .selon(this.tranche, {
         "1_CINQUANTE_KM_OU_MOINS": "non",
         "2_PLUS_DE_CINQUANTE_KM": "non",

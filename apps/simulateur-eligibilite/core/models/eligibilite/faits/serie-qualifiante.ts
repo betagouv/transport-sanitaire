@@ -7,12 +7,12 @@
 //
 // Il suit `CONTRAT_REPONSES_FAITS.json`.
 
-import { regles } from "../../../socle/index.ts";
+import { unFait } from "../../../socle/index.ts";
 import { DistanceDuTrajet } from "../concepts/distance-du-trajet.ts";
 import type { DeclarationDeFait } from "../declarations/faits.ts";
 
 export const serieQualifiante: DeclarationDeFait = ({ validated }) =>
-  regles()
+  unFait()
     .selon(validated.question("Q2.3.3"), { "1_OUI": "oui", "2_NON": "non" })
     .sinon(
       DistanceDuTrajet.of(validated).estDeCinquanteKmOuMoins()

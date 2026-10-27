@@ -16,7 +16,7 @@ Ce skill ne porte que l'ordre des gestes. Les règles sont ailleurs :
 |---|---|
 | ce qui fait foi chez l'éditeur, ce qu'on ne tranche pas à sa place | [`docs/knowledge/domain/livrable-de-l-editeur.md`](../../../apps/simulateur-eligibilite/docs/knowledge/domain/livrable-de-l-editeur.md) |
 | comment déclarer une question, une garde, une dépendance | `apps/simulateur-eligibilite/AGENTS.md` § « Le questionnaire » |
-| `Fait`, `FaitCatalogue`, `regles()`, `Cible` | `apps/simulateur-eligibilite/AGENTS.md` § « La décision » |
+| `Fait`, `FaitCatalogue`, `unFait()`, `Cible` | `apps/simulateur-eligibilite/AGENTS.md` § « La décision » |
 | où vit chaque partie, ce qu'elle a le droit de lire | `apps/simulateur-eligibilite/AGENTS.md` § « Ce que c'est » |
 
 Les chemins ci-dessous partent de `apps/simulateur-eligibilite/core/models/eligibilite/`.
@@ -45,7 +45,7 @@ Ces listes typent le modèle. Un nom absent n'existe pas pour TypeScript.
 
 Un fait vit dans `faits/<nom sans fait_>.ts`, réuni aux autres par
 `faits/index.ts`. Le fichier s'ouvre sur le titre que l'éditeur donne au fait,
-et n'exporte que sa déclaration, une chaîne `regles()`. Exemple :
+et n'exporte que sa déclaration, une chaîne `unFait()`. Exemple :
 `faits/accompagnant.ts`.
 
 Un savoir que deux faits, ou un fait et une garde, lisent va dans son concept,

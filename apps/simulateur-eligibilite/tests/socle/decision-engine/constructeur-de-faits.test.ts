@@ -4,7 +4,7 @@
 // réponses ; `selonCase` et `nonSiEcartee` lisent une case proposée.
 
 import { describe, expect, it } from "vitest";
-import { citant, Fait, regles } from "../../../core/socle";
+import { citant, Fait, unFait } from "../../../core/socle";
 import { ValidatedAnswers } from "../../../core/socle/questionnaire-engine/validated-answers";
 
 type Questions = {
@@ -27,7 +27,7 @@ const validees = (
   );
 
 const chaude = (reponses: Partial<Questions>) =>
-  regles()
+  unFait()
     .selon(validees(reponses).question("boisson"), {
       the: "oui",
       cafe: "oui",
@@ -56,7 +56,7 @@ describe("un fait selon une réponse", () => {
   it("peut rester inconnu par la réponse elle-même", () => {
     const sucre = validees({ sucre: "ne-sait-pas" }).question("sucre");
     expect(
-      regles()
+      unFait()
         .selon(sucre, { oui: "oui", non: "non", "ne-sait-pas": "inconnu" })
         .sinon("Le sucre n'est pas encore demandé."),
     ).toEqual(Fait.inconnu("sucre : « ne-sait-pas »."));
@@ -65,7 +65,7 @@ describe("un fait selon une réponse", () => {
   it("laisse la main aux règles suivantes pour une valeur hors de la table", () => {
     const boisson = validees({ boisson: "eau" }).question("boisson");
     expect(
-      regles()
+      unFait()
         .selon(boisson, { the: "oui" })
         .nonSi(boisson.is("eau"), "De l'eau, servie fraîche.")
         .sinon("La boisson n'est pas encore choisie."),
@@ -75,7 +75,7 @@ describe("un fait selon une réponse", () => {
 
 describe("un fait selon une case", () => {
   const lait = (cochees: Questions["accompagnements"]) =>
-    regles().selonCase(avec(cochees), "lait").sinon("Pas encore validé.");
+    unFait().selonCase(avec(cochees), "lait").sinon("Pas encore validé.");
 
   it("vaut « oui » cochée, « non » proposée sans être cochée", () => {
     expect(lait(["lait"])).toEqual(
@@ -88,7 +88,7 @@ describe("un fait selon une case", () => {
 
   it("laisse la main quand la case ne se proposait pas", () => {
     expect(
-      regles()
+      unFait()
         .selonCase(validees({}).question("accompagnements"), "lait")
         .sinon("Pas encore validé."),
     ).toEqual(Fait.inconnu("Pas encore validé."));
@@ -96,13 +96,13 @@ describe("un fait selon une case", () => {
 
   it("vaut « non » écartée, et seulement écartée", () => {
     const citron = (cochees: Questions["accompagnements"]) =>
-      regles()
+      unFait()
         .nonSiEcartee(avec(cochees), "citron", "Pas de citron.")
         .sinon("À voir au service.");
     expect(citron(["lait"])).toEqual(Fait.non("Pas de citron."));
     expect(citron(["citron"])).toEqual(Fait.inconnu("À voir au service."));
     expect(
-      regles()
+      unFait()
         .nonSiEcartee(avec(["lait"]), "citron")
         .sinon("À voir."),
     ).toEqual(Fait.non("accompagnements : « citron » proposée, non cochée."));
@@ -112,13 +112,13 @@ describe("un fait selon une case", () => {
 describe("les règles d'un fait", () => {
   it("s'appliquent dans l'ordre : la première qui l'établit l'emporte", () => {
     expect(
-      regles().ouiSi(true, "D'abord.").nonSi(true, "Ensuite.").sinon("Jamais."),
+      unFait().ouiSi(true, "D'abord.").nonSi(true, "Ensuite.").sinon("Jamais."),
     ).toEqual(Fait.oui("D'abord."));
   });
 
   it("laissent le fait inconnu quand aucune ne l'établit", () => {
     expect(
-      regles()
+      unFait()
         .ouiSi(false, "Sucré.")
         .nonSi(false, "Pas sucré.")
         .sinon("Rien ne le dit."),
@@ -128,7 +128,7 @@ describe("les règles d'un fait", () => {
   it("ne s'appliquent pas si la condition de `seulementSi` ne tient pas", () => {
     const sucre = validees({ sucre: "oui" }).question("sucre");
     const sucree = (boisson: Questions["boisson"]) =>
-      regles()
+      unFait()
         .seulementSi(boisson !== "eau")
         .selon(sucre, { oui: "oui", non: "non" })
         .sinon("On ne sucre pas l'eau.");
@@ -138,7 +138,7 @@ describe("les règles d'un fait", () => {
 
   it("s'arrêtent sur un inconnu de `inconnuSi`", () => {
     expect(
-      regles()
+      unFait()
         .inconnuSi(true, "Le service le dira.")
         .ouiSi(true, "Trop tard.")
         .sinon("Jamais."),
@@ -147,10 +147,10 @@ describe("les règles d'un fait", () => {
 
   it("retiennent un fait établi ailleurs, même inconnu", () => {
     expect(
-      regles().retient(undefined).ouiSi(true, "Ensuite.").sinon("Jamais."),
+      unFait().retient(undefined).ouiSi(true, "Ensuite.").sinon("Jamais."),
     ).toEqual(Fait.oui("Ensuite."));
     expect(
-      regles()
+      unFait()
         .retient(Fait.inconnu("Ailleurs."))
         .ouiSi(true, "Ensuite.")
         .sinon("Jamais."),
@@ -159,8 +159,8 @@ describe("les règles d'un fait", () => {
 
   it("valent le fait que `sinon` reçoit, quand aucune ne l'établit", () => {
     const servie = Fait.oui("Servie d'office.");
-    expect(regles().ouiSi(false, "Demandée.").sinon(servie)).toBe(servie);
-    expect(regles().ouiSi(true, "Demandée.").sinon(servie)).toEqual(
+    expect(unFait().ouiSi(false, "Demandée.").sinon(servie)).toBe(servie);
+    expect(unFait().ouiSi(true, "Demandée.").sinon(servie)).toEqual(
       Fait.oui("Demandée."),
     );
   });
@@ -168,9 +168,9 @@ describe("les règles d'un fait", () => {
   it("refusent, au typage, une option inconnue", () => {
     const boisson = validees({}).question("boisson");
     // @ts-expect-error « chocolat » n'est pas une boisson.
-    regles().selon(boisson, { chocolat: "oui" });
+    unFait().selon(boisson, { chocolat: "oui" });
     // @ts-expect-error « sucre » n'est pas un accompagnement.
-    regles().selonCase(avec([]), "sucre");
+    unFait().selonCase(avec([]), "sucre");
   });
 });
 

@@ -7,13 +7,13 @@
 // Il suit `CORRECTIF_FAITS_SANS_REPONSE.md`, qui prime sur
 // `CONTRAT_REPONSES_FAITS.json`.
 
-import { regles } from "../../../socle/index.ts";
+import { unFait } from "../../../socle/index.ts";
 import { Soin } from "../concepts/soin.ts";
 import type { DeclarationDeFait } from "../declarations/faits.ts";
 
 export const situationSoinsQualifiante: DeclarationDeFait = ({ validated }) => {
   const soin = Soin.of(validated);
-  return regles()
+  return unFait()
     .retient(soin.sansSeanceNiSejour())
     .retient(soin.parEntreeOuSortie())
     .sinon(soin.seanceDeP1());

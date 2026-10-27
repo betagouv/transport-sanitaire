@@ -7,7 +7,7 @@
 // Il suit `CORRECTIF_FAITS_SANS_REPONSE.md`, qui prime sur
 // `CONTRAT_REPONSES_FAITS.json`.
 
-import { regles } from "../../../socle/index.ts";
+import { unFait } from "../../../socle/index.ts";
 import { ExceptionsDeLArticle80 } from "../concepts/exceptions-de-l-article-80.ts";
 import {
   type DeclarationDeFait,
@@ -17,6 +17,6 @@ import {
 export const exceptionArticle80AdmissionHad: DeclarationDeFait = ({
   validated,
 }) =>
-  regles()
+  unFait()
     .retient(ExceptionsDeLArticle80.of(validated).fait("10_ADMISSION_HAD"))
     .sinon(PAS_ENCORE_ETABLI);

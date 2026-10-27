@@ -6,7 +6,7 @@
 // Il suit `CORRECTIF_FAITS_SANS_REPONSE.md`, qui prime sur
 // `CONTRAT_REPONSES_FAITS.json`.
 
-import { regles } from "../../../socle/index.ts";
+import { unFait } from "../../../socle/index.ts";
 import { ContextesDuTrajet } from "../concepts/contextes-du-trajet.ts";
 import {
   type DeclarationDeFait,
@@ -14,6 +14,6 @@ import {
 } from "../declarations/faits.ts";
 
 export const motifSamsah: DeclarationDeFait = ({ validated }) =>
-  regles()
+  unFait()
     .retient(ContextesDuTrajet.of(validated).situation("7_SAMSAH"))
     .sinon(PAS_ENCORE_ETABLI);

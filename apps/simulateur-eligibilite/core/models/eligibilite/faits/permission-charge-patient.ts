@@ -9,7 +9,7 @@
 import {
   Fait,
   type PassesOn,
-  regles,
+  unFait,
   type ValidatedAnswers,
 } from "../../../socle/index.ts";
 import { Permission } from "../concepts/permission.ts";
@@ -24,7 +24,7 @@ export const permissionChargePatient: DeclarationDeFait = ({
   validated,
   faits,
 }) =>
-  regles()
+  unFait()
     .nonSi(faits.fait_permission.isNon(), SANS_PERMISSION)
     .retient(chargeDeQ27(validated))
     .sinon(PAS_ENCORE_ETABLI);

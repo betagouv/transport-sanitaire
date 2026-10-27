@@ -5,13 +5,13 @@
 //
 // Il suit `CONTRAT_REPONSES_FAITS.json`.
 
-import { regles } from "../../../socle/index.ts";
+import { unFait } from "../../../socle/index.ts";
 import { AideDuPatient } from "../concepts/aide-du-patient.ts";
 import type { DeclarationDeFait } from "../declarations/faits.ts";
 
 export const accompagnant: DeclarationDeFait = ({ validated }) => {
   const aide = AideDuPatient.of(validated);
-  return regles()
+  return unFait()
     .ouiSi(aide.avecUnProche(), aide.provenance())
     .nonSi(
       aide.seDeplaceSeul() || aide.avecUnProfessionnel(),
