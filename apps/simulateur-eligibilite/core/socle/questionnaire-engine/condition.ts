@@ -127,18 +127,13 @@ export function all<Values extends Readonly<Record<string, Value<unknown>>>>(
   );
 }
 
-/** Ce qu'une valeur vaut, dans la lecture que le socle a choisie. */
-export type Read = <Of>(value: Value<Of>) => Of;
-
-/** La lecture de ces valeurs dans `reading`. */
-export function readIn(reading: Reading): Read {
-  return (value) => value.in(reading);
+/** Une valeur qui ne lit rien, et vaut toujours `of`. */
+export function constant<Of>(of: Of): Value<Of> {
+  return new Value(NOTHING, () => of);
 }
 
-// ---- implémentation ----
-
-// Ce que lisent ces deux valeurs, chaque chose une fois.
-function readsOf(a: Reads, b: Reads): Reads {
+/** Ce que lisent ces deux valeurs, chaque chose une fois. */
+export function readsOf(a: Reads, b: Reads): Reads {
   const union = (x: readonly string[], y: readonly string[]) => [
     ...new Set([...x, ...y]),
   ];
@@ -147,4 +142,12 @@ function readsOf(a: Reads, b: Reads): Reads {
     faits: union(a.faits, b.faits),
     cibles: union(a.cibles, b.cibles),
   };
+}
+
+/** Ce qu'une valeur vaut, dans la lecture que le socle a choisie. */
+export type Read = <Of>(value: Value<Of>) => Of;
+
+/** La lecture de ces valeurs dans `reading`. */
+export function readIn(reading: Reading): Read {
+  return (value) => value.in(reading);
 }

@@ -9,9 +9,11 @@ import {
   Cible,
   type Condition,
   Fait,
+  FaitCatalogue,
   givenOf,
   page,
   questionsOf,
+  unFait,
 } from "../../../core/socle";
 import type {
   Answers,
@@ -35,12 +37,21 @@ const question = questionsOf<Questions, Faits, Cibles>({
     boisson: { the: "Un thé", cafe: "Un café", eau: "De l'eau" },
     taille: { petit: "Petit", grand: "Grand" },
   },
-  faits: (_answers, validated) => ({
-    chaude: validated.question("boisson").isOneOf("the", "cafe")
-      ? Fait.oui("Boisson chaude.")
-      : Fait.non("Boisson froide."),
-    matin: Fait.inconnu("L'heure n'est pas demandée."),
-  }),
+  faits: new FaitCatalogue<Faits>(
+    ["chaude", "matin"],
+    [
+      unFait("chaude").vaut(
+        given
+          .question("boisson")
+          .answer()
+          .isOneOf("the", "cafe")
+          .compute((chaude) =>
+            chaude ? Fait.oui("Boisson chaude.") : Fait.non("Boisson froide."),
+          ),
+      ),
+      unFait("matin").sinon("L'heure n'est pas demandée."),
+    ],
+  ),
   cibles: (faits) => ({
     cible_sucre: Cible.of(
       faits.matin.isInconnu() ? undefined : faits.chaude.isOui(),

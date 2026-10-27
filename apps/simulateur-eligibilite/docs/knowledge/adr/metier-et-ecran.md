@@ -18,6 +18,11 @@
 > questions et ses gardes. L'ADR-18 est précisé : un concept peut répondre par
 > un `Fait`, que la déclaration reprend, sans déclarer de fait du catalogue.
 > Décision de Simon, au journal D-165.
+>
+> **Mise à jour 2026-10-27, les faits en valeurs (#245).** Un fait est une
+> valeur nommée, faite de règles sur des conditions (ADR-22). L'ADR-12 et
+> l'ADR-13 perdent `retient`, l'ADR-18 les concepts que seuls les faits
+> lisaient. Décisions de Simon, au journal D-202 à D-207.
 
 ## 1. Contexte & objectifs
 
@@ -294,9 +299,11 @@ déclaration par fait, ~~rangée dans le thème qui le pose~~ dans son fichier
 (`unFait()…sinon(…)`) : la première qui conclut l'emporte, et la chaîne dit
 tout ce que le fait vaut. ~~Quand une autre page en décide une partie, son
 thème exporte une petite règle, qui donne un `Fait` ou rien, et la chaîne la
-reprend (`retient(sejourEcarte(validated))`).~~ Quand un autre fait lit la même
+reprend (`retient(sejourEcarte(validated))`).~~ ~~Quand un autre fait lit la même
 chose, un concept la porte et la chaîne reprend sa réponse
-(`retient(Sejour.of(validated).nonSiEcarte())`).
+(`retient(Sejour.of(validated).nonSiEcarte())`).~~ Quand plusieurs faits
+reprennent la même règle, elle se nomme dans `faits/communs.ts` et chacun
+l'applique (`applique(UN_SEJOUR_ECARTE)`, ADR-22).
 
 Le catalogue refuse au chargement un fait déclaré deux fois, oublié, ou qui
 n'est pas du modèle. Un fait qu'aucune réponse ne pose se déclare aussi, et sa
@@ -336,15 +343,16 @@ ou `CORRECTIF_FAITS_SANS_REPONSE.md` quand ce correctif le reprend. Il
 n'exporte que sa déclaration, au nom du fait en camelCase. Ce qu'il est seul à
 lire reste privé, sous le marqueur d'implémentation.
 
-- Ce que plusieurs faits lisent devient un concept (ADR-18), qui peut répondre
-  par un `Fait` sans déclarer de fait du catalogue.
-- Une provenance partagée suit la question qu'elle cite, dans le concept qui la
-  lit. Celles qui ne citent aucune question restent dans
+- ~~Ce que plusieurs faits lisent devient un concept (ADR-18), qui peut répondre
+  par un `Fait` sans déclarer de fait du catalogue.~~ Ce que plusieurs faits
+  lisent va dans `faits/communs.ts` (ADR-22).
+- ~~Une provenance partagée suit la question qu'elle cite, dans le concept qui la
+  lit.~~ Une règle cite seule ce qu'elle lit (ADR-22). Celles qui ne citent aucune question restent dans
   `declarations/faits.ts` : `PAS_ENCORE_ETABLI`, `SANS_PERMISSION`.
 - Une page ne garde que ses questions et ses gardes. Une garde qui lit ce
   qu'un fait lit passe par le même concept.
-- `faits/index.ts` réunit les fichiers dans le catalogue. `FAITS`, la liste
-  des noms, reste dans les déclarations.
+- `faits/index.ts` réunit les fichiers dans le catalogue, ~~par nom~~ en liste
+  (ADR-22). `FAITS`, la liste des noms, reste dans les déclarations.
 
 | Option | Pour | Contre |
 |---|---|---|
@@ -369,8 +377,9 @@ lisaient `faits.fait_permission.value === true`, et un test pouvait poser `{}`
 `Fait.inconnu` et `Fait.valant` la construisent ; `isOui()`, `isNon()` et
 `isInconnu()` la lisent. `avecProvenance` en donne une copie, `equals` compare
 la valeur et la provenance. Le constructeur de règles gagne `inconnuSi`, qui
-s'arrête sur un inconnu, `retient`, qui reprend un fait établi ailleurs, et un
-`sinon` qui reçoit un fait.
+s'arrête sur un inconnu, ~~`retient`, qui reprend un fait établi ailleurs,~~
+`applique`, qui place une règle écrite ailleurs (ADR-22), et un `sinon` ~~qui
+reçoit un fait~~ qui reçoit la raison d'un fait resté inconnu.
 
 **Conséquences.** `.value` reste lisible, pour les règles publicodes et la
 trace. Le front et les tests lisent les méthodes.
@@ -385,7 +394,7 @@ gardes : une garde qui la lirait bouclerait.
 **Décision.** Une garde lit tout le catalogue. La lecture dans l'ordre ne
 valide, pour la garde d'une question, que les questions d'avant elle : un fait
 posé plus loin reste inconnu. Le catalogue déclare la complétude inconnue, et
-la préconisation l'impose (`read(answers, validated, fixed)`). Un fait ne lit
+la préconisation l'impose (~~`read(answers, validated, fixed)`~~ `read(validated, fixed)`). Un fait ne lit
 jamais une cible : `cible()` évalue tous les faits, celui qui la lit compris.
 L'urgence en attente a donc une seule provenance, qui ne dit plus si la garde
 de Q2.3.4 l'a écartée.
@@ -486,9 +495,12 @@ de Q1.1 dans une fonction et dans la table de deux faits.
 Il lit ses réponses une fois, à la construction, et répond par des méthodes
 qui disent la règle. Il ne pose aucun fait : la déclaration d'un fait
 l'interroge, et reste unique (ADR-12). Précision du 2026-10-23 : un concept
-peut répondre par un `Fait`, ou laisser la main (`PassesOn`), quand plusieurs
+~~peut répondre par un `Fait`, ou laisser la main (`PassesOn`), quand plusieurs
 faits reprennent la même règle (`Sejour.nonSiEcarte()`). Il ne déclare pas de
-fait du catalogue pour autant : chaque déclaration choisit ce qu'elle reprend.
+fait du catalogue pour autant : chaque déclaration choisit ce qu'elle reprend.~~
+Précision du 2026-10-27 : un concept ne donne plus de `Fait`. Les faits lisent
+leurs réponses par des conditions, et ce qu'ils partagent vit dans
+`faits/communs.ts` (ADR-22). Un concept que seuls les faits lisaient disparaît.
 
 Un concept se construit sur `AnswersReader`, ce que les réponses données et
 les questions validées ont en commun. Une garde ou une cohérence lit les
@@ -500,12 +512,12 @@ compiler sur des réponses données échoue.
 | Concept | Ce qu'il porte | Ce qui le lit |
 |---|---|---|
 | `Permission` | Q2.7 et Q2.8 : le mineur, l'adulte à sa charge, les cinq contrôles de dates et leurs seuils, la répétition, les trajets d'un mois | les pages et les faits de P2, le sens du trajet de P3, la trace et les précisions de R2 |
-| `Sejour` | Q2.2.1, Q2.1 et Q2.1.g : « déjà hospitalisé » à proposer, coché ou écarté, l'entrée qui ouvre le séjour, le séjour réel | les pages, les contextes, le transfert, la permission et la prestation de P2, R2 |
-| `AideDuPatient` | Q1.1 : seul, avec un proche, avec un professionnel, ou sans professionnel | les pages et les faits de P1 |
-| `CriteresDuTransport`, `CasParticuliers`, `Soin` | Q1.2, Q1.3 et le soin de Q2.1 (#218) | les faits de P1 et de la prestation, leurs gardes |
-| `ContextesDuTrajet`, `RetourPenitentiaire`, `DepartDeLEntree` | Q2.2.1.b, l'option 10 et sa sortie vers la prison, le départ de Q2.13 (#218) | les faits des contextes, du transfert, du Centre 15 et de la permission, les pages de P2, P3 |
-| `ExceptionsDeLArticle80` | Q2.6 : les exceptions qui se proposent, et ce que chacune établit (#218) | les huit faits des exceptions, ceux du Centre 15, la page des exceptions |
-| `DistanceDuTrajet`, `Urgence` | Q2.3.1, et Q2.3.4 ou Q2.12 (#218) | les distances et la série, les deux faits et la garde de l'urgence |
+| ~~`Sejour`~~ | ~~Q2.2.1, Q2.1 et Q2.1.g : « déjà hospitalisé » à proposer, coché ou écarté, l'entrée qui ouvre le séjour, le séjour réel~~ | retiré (#245) : les faits le lisent par `UN_SEJOUR_ECARTE` |
+| `AideDuPatient` | Q1.1 : seul, avec un proche, avec un professionnel, ou sans professionnel | les pages de P1 |
+| ~~`CriteresDuTransport`, `CasParticuliers`, `Soin`~~ | ~~Q1.2, Q1.3 et le soin de Q2.1 (#218)~~ | retirés (#245) : seuls les faits les lisaient |
+| `ContextesDuTrajet` | Q2.2.1.b : les situations de l'autre cadre à proposer | la page des contextes ; les faits lisent la même table (`SITUATION_PROPOSEE`) |
+| ~~`RetourPenitentiaire`, `DepartDeLEntree`~~ | ~~l'option 10 et sa sortie vers la prison, le départ de Q2.13 (#218)~~ | retirés (#245) : `UNE_SORTIE_VERS_LA_PRISON`, `UNE_ENTREE_SIMPLE` |
+| ~~`ExceptionsDeLArticle80`, `DistanceDuTrajet`, `Urgence`~~ | ~~Q2.6, Q2.3.1, et Q2.3.4 ou Q2.12 (#218)~~ | retirés (#245) : chaque fait lit sa réponse |
 
 | Option | Pour | Contre |
 |---|---|---|
@@ -521,7 +533,7 @@ case seule que lit un seul fait, reste lue dans son fichier.
 **Conséquences.**
 
 - Les deux faits de Q1.1 passent de la table de `selon` à `ouiSi` et `nonSi`,
-  avec la même provenance (`citant`). Le banc d'équivalence le vérifie.
+  avec la même provenance ~~(`citant`)~~. Le banc d'équivalence le vérifie.
 - Ce qui ne se lit qu'une fois reste à sa place : les options adultes de Q2.7,
   qui lisent Q1.3, et le rappel des permissions de P3, qui affiche les dates
   telles qu'elles sont saisies.
@@ -589,6 +601,47 @@ Le graphe pourra dérouler ce que lit chaque morceau du résultat jusqu'aux
 questions. Les textes de R2 et les cerfa remplis ne changent pas : leurs tests
 sur les seeds passent tels quels.
 
+### ADR-22 - Un fait est une valeur nommée, faite de règles sur des conditions
+
+**Contexte.** Les gardes, R2 et R3 lisaient des valeurs, qui savent ce
+qu'elles lisent (ADR-21). Un fait restait une fonction qui recevait les
+réponses et les faits : `faits/index.ts` les rangeait par nom, chaque fichier
+lisait ce qu'il voulait, et sa provenance s'écrivait à la main
+(`citant(…)`). Une règle reprise par plusieurs faits passait par un concept
+qui donnait un `Fait` (`Sejour.of(validated).nonSiEcarte()`), et `selon`,
+`selonCase` et `seulementSi` cachaient des règles dans une table ou une
+barrière. On ne pouvait pas savoir, sans exécuter, ce qu'un fait lisait.
+
+**Décision.** Un fait est une valeur nommée : `unFait("fait_…")`, ses règles,
+puis `sinon(raison)` (D-202). Une règle est une condition et un état :
+`ouiSi`, `nonSi`, `inconnuSi`, et `nonSiEcartee(réponse, case)`. La première
+qui conclut l'emporte. Elle écrit seule sa provenance : ce que lit sa
+condition, puis sa raison (D-203). `selon`, `selonCase`, `seulementSi`,
+`retient`, `citant` et `faitOf` disparaissent (D-205). Une règle reprise mot
+pour mot est une `RegleDeFait`, `uneRegle().nonSi(…)`, qu'un fait place avec
+`applique` (D-204). Chaque fait écrit ses règles ; seuls les lectures, les
+règles nommées et la table `SITUATION_PROPOSEE` se partagent, dans
+`faits/communs.ts` (D-206). Le catalogue reçoit la liste des faits et les lit
+sur les questions validées ; un fait ne lit ni cible ni jour. Le moteur de
+questionnaire reçoit ce catalogue, et non une fonction :
+`questionsOf({ faits: CATALOGUE_DES_FAITS })` (D-207).
+
+| Option | Pour | Contre |
+|---|---|---|
+| garder les fonctions, citer à la main | rien à réécrire | ce qu'un fait lit ne se connaît qu'à l'exécution ; la provenance peut mentir |
+| des valeurs, et des aides paramétrées partagées (`situation(x)`) | moins de lignes | un fait se lit dans deux fichiers |
+| des valeurs, chaque fait écrit ses règles | un fait se lit d'un trait ; ce qu'il lit se sait sans l'exécuter | des règles semblables s'écrivent plusieurs fois |
+
+La troisième, choisie par Simon.
+
+**Conséquences.** Les 60 faits sont des valeurs, sans fonction ni `switch`.
+Sur 2 782 états (chaque préfixe des seeds des deux modèles, et chaque option
+d'une question posée sans réponse), les questions posées, les faits et les
+cibles sont les mêmes ; 42 faits changent de provenance. Les concepts que
+seuls les faits lisaient disparaissent avec leurs tests ; ceux qui restent
+(`Permission`, `AideDuPatient`, `ContextesDuTrajet`) ne donnent plus de
+`Fait`. Le graphe de #196 pourra lire ce que lit chaque fait.
+
 ## 3. Architecture cible
 
 ```mermaid
@@ -619,10 +672,12 @@ flowchart LR
 | Moteur de décision | `core/` | des faits aux cibles, seul à importer publicodes | déplacé |
 | `Fait` | `core/` | ce qu'on sait d'un fait, en objet valeur figé | modifié |
 | `Cible` | `core/` | ce que les règles donnent pour une cible, en objet valeur figé | nouveau |
-| Catalogue des faits (`FaitCatalogue`) | `core/` | une déclaration par fait, calculée à la lecture ; refuse doublon, oubli, cycle | nouveau |
+| Catalogue des faits (`FaitCatalogue`) | `core/` | la liste des faits, calculés à la lecture sur les questions validées ; refuse doublon, oubli, cycle, une cible lue | nouveau |
 | Fichier d'un fait (`faits/<nom>.ts`) | `core/models/` | le titre de l'éditeur, ce qui établit le fait, sa seule déclaration | nouveau |
 | Déclarations par thème (`FAITS_DU_TRAJET`, `DeclarationsDeFaits`…) | `core/models/` | les faits d'une page, dans le fichier de ses questions | supprimé |
-| Règles d'un fait (`unFait()`) | `core/` | la chaîne de règles d'un fait, la première qui conclut l'emporte | modifié |
+| Fait (`unFait(nom)`) | `core/` | une valeur nommée, faite de règles sur des conditions ; la première qui conclut l'emporte, et cite ce qu'elle lit | modifié |
+| Règle nommée (`uneRegle()`, `RegleDeFait`) | `core/` | une règle que plusieurs faits appliquent | nouveau |
+| Ce que les faits partagent (`faits/communs.ts`) | `core/models/` | les lectures, les règles nommées, la table des situations proposées | nouveau |
 | Fusion des faits partiels (`faitsAvantLaBranche`, `FaitsDesReponses`) | `core/` | l'ordre des pages décidait du fait | supprimé |
 | Seeds | `core/` | ce qu'est une seed, ce qu'elle confirme ou dément | déplacé |
 | Écran des seeds | `front/` | la liste, le rejeu à l'écran | inchangé |
@@ -632,7 +687,7 @@ flowchart LR
 | Écran d'un modèle | `front/models/` | résultats, fiches, cerfa | modifié |
 | `LocalDateTime` | `core/` | une date répondue, lue une fois, sans fuseau ; illisible, elle n'est comparée à rien | nouveau |
 | `AnswersReader` | `core/` | ce que les réponses données et validées ont en commun : `question(id)` | nouveau |
-| Concepts d'un modèle (`Permission`, `Sejour`, `AideDuPatient`…) | `core/models/` | un savoir écrit deux fois, lu sur des réponses données ou validées ; peut répondre par un `Fait`, sans en déclarer | nouveau |
+| Concepts d'un modèle (`Permission`, `AideDuPatient`, `ContextesDuTrajet`) | `core/models/` | un savoir écrit deux fois, lu sur des réponses données ou validées ; ne donne aucun `Fait` | modifié |
 | Numéro d'une option (`numeroDeLOption`) | `core/models/` | le numéro au catalogue que porte un slug | nouveau |
 | Calculs de date de la permission | `core/models/` | cinq contrôles sur des chaînes brutes | supprimé |
 | Séjour réel de la trace (`sejourReel`) | `front/models/` | R2 sait s'il y a un séjour sans relire l'identifiant du lexique | nouveau |
@@ -663,6 +718,7 @@ a-t-il besoin ?**
 | Cibles : un objet valeur par cible | 206 | ✅ |
 | Concepts du modèle | 207 | ✅ |
 | Un fichier par fait | 218 | ✅ |
+| Les faits en valeurs | 245 | ✅ |
 
 ## 6. Risques & validations en attente
 
@@ -673,7 +729,7 @@ a-t-il besoin ?**
 | R-3 | Le serveur n'importe pas encore le métier : la frontière n'est éprouvée que par un test | le test sous Node rejoue toutes les seeds à attendus |
 | R-4 | Une question posée gagne une fonction, et ne passe plus en JSON | le test de conformité relit chaque question posée par les seeds |
 | R-5 | Une constante déclarée sous la déclaration qui la lit casse le chargement du module | le test sous Node et chaque test du modèle chargent le module ; l'erreur nomme la constante |
-| R-6 | Une déclaration lit `answers`, les réponses non validées : une garde verrait une page qui ne la précède pas | les faits du modèle ne lisent que `validated` ; le banc d'équivalence compare les questions posées |
+| ~~R-6~~ | ~~Une déclaration lit `answers`, les réponses non validées : une garde verrait une page qui ne la précède pas~~ | levé (#245) : un fait ne reçoit plus que les questions validées |
 | R-7 | Le banc d'équivalence couvre 4 688 états, pas tous | les seeds et les tests du modèle passent ; la relecture vérifie les chaînes thème par thème |
 | R-8 | Une date s'écrit en lettres à trois endroits : le rappel des permissions de P3, le récapitulatif de R3, les textes de l'écran | hors de #207, qui ne lit que des dates ; à ranger quand un quatrième apparaîtra |
 | R-9 | Le banc d'équivalence ne couvre pas la trace de R2 | les tests de la trace et des précisions passent tels quels ; deux tests disent le séjour réel |

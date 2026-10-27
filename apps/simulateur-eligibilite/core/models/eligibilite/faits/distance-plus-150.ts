@@ -5,8 +5,12 @@
 //
 // Il suit `CONTRAT_REPONSES_FAITS.json`.
 
-import { DistanceDuTrajet } from "../concepts/distance-du-trajet.ts";
-import type { DeclarationDeFait } from "../declarations/faits.ts";
+import { unFait } from "../../../socle/index.ts";
+import { given } from "./communs.ts";
 
-export const distancePlus150: DeclarationDeFait = ({ validated }) =>
-  DistanceDuTrajet.of(validated).depasseCentCinquanteKm();
+const DISTANCE = given.question("Q2.3.1").answer();
+
+export const distancePlus150 = unFait("fait_distance_plus_150")
+  .nonSi(DISTANCE.isOneOf("1_CINQUANTE_KM_OU_MOINS", "2_PLUS_DE_CINQUANTE_KM"))
+  .ouiSi(DISTANCE.is("3_PLUS_DE_CENT_CINQUANTE_KM"))
+  .sinon("Q2.3.1 n'est pas encore validée.");

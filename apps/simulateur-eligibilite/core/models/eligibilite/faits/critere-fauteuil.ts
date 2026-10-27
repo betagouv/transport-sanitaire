@@ -5,8 +5,14 @@
 //
 // Il suit `CONTRAT_REPONSES_FAITS.json`.
 
-import { CriteresDuTransport } from "../concepts/criteres-du-transport.ts";
-import type { DeclarationDeFait } from "../declarations/faits.ts";
+import { unFait } from "../../../socle/index.ts";
+import { AIDE, CRITERES } from "./communs.ts";
 
-export const critereFauteuil: DeclarationDeFait = ({ validated }) =>
-  CriteresDuTransport.of(validated).fait("6_FAUTEUIL_SANS_TRANSFERT");
+export const critereFauteuil = unFait("fait_critere_fauteuil")
+  .ouiSi(CRITERES.checked("6_FAUTEUIL_SANS_TRANSFERT"))
+  .nonSi(CRITERES.isPresent())
+  .nonSi(
+    AIDE.isOneOf("1_SEUL", "2_AVEC_UN_PROCHE"),
+    "Q1.2 ne se pose pas : aucun professionnel n'intervient.",
+  )
+  .sinon("Q1.2 n'est pas encore validée.");

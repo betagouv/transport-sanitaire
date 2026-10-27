@@ -6,11 +6,9 @@
 // Il suit `CORRECTIF_FAITS_SANS_REPONSE.md`, qui prime sur
 // `CONTRAT_REPONSES_FAITS.json`.
 
-import { Fait } from "../../../socle/index.ts";
-import {
-  type DeclarationDeFait,
-  SOUS_QUESTIONS_MASQUEES,
-} from "../declarations/faits.ts";
+import { unFait } from "../../../socle/index.ts";
+import { SOUS_QUESTIONS_MASQUEES } from "../declarations/faits.ts";
 
-export const regimeVerifie: DeclarationDeFait = () =>
-  Fait.inconnu(SOUS_QUESTIONS_MASQUEES);
+export const regimeVerifie = unFait("fait_regime_verifie").sinon(
+  SOUS_QUESTIONS_MASQUEES,
+);

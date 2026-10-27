@@ -4,7 +4,14 @@
 // questions validées avant elles.
 
 import { describe, expect, it } from "vitest";
-import { Fait, givenOf, page, questionsOf } from "../../../core/socle";
+import {
+  Fait,
+  FaitCatalogue,
+  givenOf,
+  page,
+  questionsOf,
+  unFait,
+} from "../../../core/socle";
 import { Questionnaire } from "../../../core/socle/questionnaire-engine/questionnaire";
 
 type Questions = {
@@ -33,14 +40,19 @@ const boisson = given.question("boisson").answer();
 
 const question = questionsOf<Questions, Faits>({
   options: OPTIONS,
-  faits: (_answers, validated) => {
-    calculs += 1;
-    return {
-      chaude: validated.question("boisson").isOneOf("the", "cafe")
-        ? Fait.oui("Boisson chaude.")
-        : Fait.non("Boisson froide."),
-    };
-  },
+  faits: new FaitCatalogue<Faits>(
+    ["chaude"],
+    [
+      unFait("chaude").vaut(
+        boisson.isOneOf("the", "cafe").compute((chaude) => {
+          calculs += 1;
+          return chaude
+            ? Fait.oui("Boisson chaude.")
+            : Fait.non("Boisson froide.");
+        }),
+      ),
+    ],
+  ),
 });
 
 const BOISSON = page(

@@ -7,18 +7,12 @@
 // `CONTRAT_REPONSES_FAITS.json`.
 
 import { unFait } from "../../../socle/index.ts";
-import { ContextesDuTrajet } from "../concepts/contextes-du-trajet.ts";
-import {
-  type DeclarationDeFait,
-  PAS_ENCORE_ETABLI,
-} from "../declarations/faits.ts";
+import { PAS_ENCORE_ETABLI } from "../declarations/faits.ts";
+import { SITUATION_DU_CADRE } from "./communs.ts";
 
-export const htnmSegmentVerifie: DeclarationDeFait = ({ validated }) => {
-  const htnm = ContextesDuTrajet.of(validated).situation("5_HTNM");
-  return unFait()
-    .nonSi(
-      htnm?.isOui() === true,
-      `${htnm?.provenance} Le segment du HTNM hors Engagement n'est pas vérifié.`,
-    )
-    .sinon(PAS_ENCORE_ETABLI);
-};
+export const htnmSegmentVerifie = unFait("fait_htnm_segment_verifie")
+  .nonSi(
+    SITUATION_DU_CADRE.checked("5_HTNM"),
+    "Le segment du HTNM hors Engagement n'est pas vérifié.",
+  )
+  .sinon(PAS_ENCORE_ETABLI);

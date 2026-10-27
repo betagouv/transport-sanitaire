@@ -37,7 +37,7 @@ export type CommonSettings<Questions extends AnyQuestions, Cibles, Faits> = {
   readonly id: keyof Questions & string;
   readonly label: string;
   /** Ce qui calcule les faits et les cibles que lisent ses conditions. */
-  readonly pipeline: Pipeline<Questions, Faits, Cibles>;
+  readonly pipeline: Pipeline<Faits, Cibles>;
   readonly conditions: readonly Condition[];
   readonly inconsistencies: readonly Inconsistency[];
   readonly dependsOn: readonly string[];
@@ -210,7 +210,7 @@ type ReadAt<Questions extends AnyQuestions, Cibles, Faits> = {
 
 function readIn<Questions extends AnyQuestions, Cibles, Faits>(
   seen: SeenAnswers<Questions, Cibles | undefined>,
-  pipeline: Pipeline<Questions, Faits, Cibles>,
+  pipeline: Pipeline<Faits, Cibles>,
 ): ReadAt<Questions, Cibles, Faits> {
   const context = contextOf(seen, pipeline);
   return { context, reading: readingOf(seen.answer, context, pipeline) };

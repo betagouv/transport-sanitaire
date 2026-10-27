@@ -54,6 +54,16 @@ class AnswerValue<Given extends Answer> extends Value<ValidatedAnswer<Given>> {
     return this.compute((answer) => answer.hasAnswer());
   }
 
+  /** La question est validée : elle s'est posée, et sa réponse tient. */
+  isValidated(): Condition {
+    return this.compute((answer) => answer.isValidated());
+  }
+
+  /** Au moins une case est cochée. Sans réponse : non. */
+  anyChecked(): Condition {
+    return this.compute((answer) => answer.hasAnyChecked());
+  }
+
   /** Cette case est cochée. Sans réponse : non. */
   checked(box: Box<Given>): Condition {
     return this.compute((answer) => answer.checked(box));

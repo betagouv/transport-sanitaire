@@ -9,13 +9,16 @@
 // Il suit `CONTRAT_REPONSES_FAITS.json`.
 
 import { unFait } from "../../../socle/index.ts";
-import { ExceptionsDeLArticle80 } from "../concepts/exceptions-de-l-article-80.ts";
-import {
-  type DeclarationDeFait,
-  PAS_ENCORE_ETABLI,
-} from "../declarations/faits.ts";
+import { PAS_ENCORE_ETABLI } from "../declarations/faits.ts";
+import { EXCEPTIONS } from "./communs.ts";
 
-export const exceptionArticle80AirMer: DeclarationDeFait = ({ validated }) =>
-  unFait()
-    .retient(ExceptionsDeLArticle80.of(validated).fait("4_AIR_MER"))
-    .sinon(PAS_ENCORE_ETABLI);
+export const exceptionArticle80AirMer = unFait(
+  "fait_exception_article80_air_mer",
+)
+  .ouiSi(EXCEPTIONS.checked("4_AIR_MER"))
+  .nonSiEcartee(EXCEPTIONS, "4_AIR_MER")
+  .ouiSi(
+    EXCEPTIONS.isPresent(),
+    "La ligne régulière de Q2.3.2 se réutilise sans revote.",
+  )
+  .sinon(PAS_ENCORE_ETABLI);

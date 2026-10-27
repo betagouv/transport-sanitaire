@@ -6,13 +6,18 @@
 // Il suit `CONTRAT_REPONSES_FAITS.json`.
 
 import { unFait } from "../../../socle/index.ts";
-import { ContextesDuTrajet } from "../concepts/contextes-du-trajet.ts";
+import { PAS_ENCORE_ETABLI } from "../declarations/faits.ts";
 import {
-  type DeclarationDeFait,
-  PAS_ENCORE_ETABLI,
-} from "../declarations/faits.ts";
+  AUTRE_CADRE_ECARTE,
+  SITUATION_DU_CADRE,
+  SITUATION_PROPOSEE,
+} from "./communs.ts";
 
-export const atmpLie: DeclarationDeFait = ({ validated }) =>
-  unFait()
-    .retient(ContextesDuTrajet.of(validated).situation("1_ATMP"))
-    .sinon(PAS_ENCORE_ETABLI);
+export const atmpLie = unFait("fait_atmp_lie")
+  .nonSi(
+    AUTRE_CADRE_ECARTE.and(SITUATION_PROPOSEE["1_ATMP"]),
+    "« autre situation » proposée, non cochée.",
+  )
+  .ouiSi(SITUATION_DU_CADRE.checked("1_ATMP"))
+  .nonSiEcartee(SITUATION_DU_CADRE, "1_ATMP")
+  .sinon(PAS_ENCORE_ETABLI);

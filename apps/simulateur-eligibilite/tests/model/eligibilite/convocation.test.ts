@@ -124,7 +124,7 @@ describe("les faits de la convocation", () => {
   ] as const)("l'appareillage agréé (%s) donne « oui »", (appareil) => {
     expect(fait(appareillage("1_OUI", appareil))).toEqual({
       value: true,
-      provenance: `Q2.10.a : « 1_OUI » ; Q2.10.b : « ${appareil} ».`,
+      provenance: `Q2.10 : « 6_APPAREILLAGE », Q2.10.a : « 1_OUI », Q2.10.b : « ${appareil} ».`,
     });
   });
 
@@ -143,10 +143,10 @@ describe("les faits de la convocation", () => {
 
   it("trace la raison du « non » : l'agrément, ou l'autre appareillage", () => {
     expect(fait(appareillage("2_NON", "2_PODO_ORTHESE")).provenance).toMatch(
-      /^Q2\.10\.a : « 2_NON »/,
+      /Q2\.10\.a : « 2_NON »/,
     );
     expect(fait(appareillage("1_OUI", "4_AUTRE")).provenance).toMatch(
-      /^Q2\.10\.b : « 4_AUTRE »/,
+      /Q2\.10\.b : « 4_AUTRE »/,
     );
   });
 
@@ -173,7 +173,7 @@ describe("les faits de la convocation", () => {
       expect(fait({ ...entree, "Q2.10": "7_AUCUNE" })).toEqual({
         value: false,
         provenance:
-          "Q2.10 : « 7_AUCUNE », ce motif de convocation ne s'applique pas.",
+          "Q2.10 : « 7_AUCUNE ». Ce motif de convocation ne s'applique pas.",
       });
     },
   );
@@ -185,7 +185,8 @@ describe("les faits de la convocation", () => {
     ]) {
       expect(fait(reponses)).toEqual({
         value: false,
-        provenance: "Q2.2.1 : « autre situation » proposée, non cochée.",
+        provenance:
+          "Q2.2.1 : « 4_AUCUNE », Q2.1 : « 11_PERMISSION ». « autre situation » proposée, non cochée.",
       });
     }
   });

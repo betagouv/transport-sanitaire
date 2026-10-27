@@ -23,7 +23,7 @@ export function faits(
   answers: GivenAnswers<Questions>,
   validated: ValidatedAnswers<Questions>,
 ): Faits {
-  return CATALOGUE_DES_FAITS.read(answers, validated, {
+  return CATALOGUE_DES_FAITS.read(validated, {
     fait_p1_complete: p1Complete(answers),
     fait_p2_complete: p2Complete(answers, validated),
   });

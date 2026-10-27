@@ -14,14 +14,14 @@ import {
 import type { Cibles } from "./declarations/cibles";
 import type { Faits } from "./declarations/faits";
 import { OPTIONS, type Questions } from "./declarations/questions";
-import { cibles, faits } from "./preconisation";
+import { CATALOGUE_DES_FAITS, cibles } from "./preconisation";
 
 export const given = givenOf<Questions, Faits, Cibles>();
 const boisson = given.question("boisson").answer();
 
 const question = questionsOf<Questions, Faits, Cibles>({
   options: OPTIONS,
-  faits,
+  faits: CATALOGUE_DES_FAITS,
   cibles,
 });
 

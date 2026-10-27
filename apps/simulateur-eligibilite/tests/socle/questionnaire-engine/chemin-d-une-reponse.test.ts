@@ -7,9 +7,11 @@ import { describe, expect, it } from "vitest";
 import {
   afterLock,
   Cible,
+  FaitCatalogue,
   givenOf,
   page,
   questionsOf,
+  unFait,
 } from "../../../core/socle";
 import type { Page } from "../../../core/socle/questionnaire-engine/question";
 import { Questionnaire } from "../../../core/socle/questionnaire-engine/questionnaire";
@@ -24,9 +26,14 @@ const given = givenOf<Questions, Faits, Cibles>();
 
 const question = questionsOf<Questions, Faits, Cibles>({
   options: { boisson: { the: "Un thé", cafe: "Un café", eau: "De l'eau" } },
-  faits: (_answers, validated) => ({
-    chaude: validated.question("boisson").isOneOf("the", "cafe"),
-  }),
+  faits: new FaitCatalogue<Faits>(
+    ["chaude"],
+    [
+      unFait("chaude").vaut(
+        given.question("boisson").answer().isOneOf("the", "cafe"),
+      ),
+    ],
+  ),
   cibles: (faits) => {
     calculs += 1;
     return { cible_sucre_propose: Cible.of(faits.chaude) };

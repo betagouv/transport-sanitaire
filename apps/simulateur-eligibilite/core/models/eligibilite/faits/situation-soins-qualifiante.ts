@@ -8,13 +8,23 @@
 // `CONTRAT_REPONSES_FAITS.json`.
 
 import { unFait } from "../../../socle/index.ts";
-import { Soin } from "../concepts/soin.ts";
-import type { DeclarationDeFait } from "../declarations/faits.ts";
+import { CAS, given, SANS_SEANCE_NI_SEJOUR, SOUS_TYPE } from "./communs.ts";
 
-export const situationSoinsQualifiante: DeclarationDeFait = ({ validated }) => {
-  const soin = Soin.of(validated);
-  return unFait()
-    .retient(soin.sansSeanceNiSejour())
-    .retient(soin.parEntreeOuSortie())
-    .sinon(soin.seanceDeP1());
-};
+export const situationSoinsQualifiante = unFait(
+  "fait_situation_soins_qualifiante",
+)
+  .nonSi(
+    SANS_SEANCE_NI_SEJOUR,
+    "Ni séance qualifiante en Q1.3, ni séjour en Q2.1.",
+  )
+  .ouiSi(SOUS_TYPE.isOneOf("1_ENTREE", "2_SORTIE"))
+  .ouiSi(CAS.checked("3_CHIMIOTHERAPIE").or(CAS.checked("4_RADIOTHERAPIE")))
+  .ouiSi(
+    given.question("Q1.3.a").answer().is("1_OUI"),
+    "Une séance d'hémodialyse.",
+  )
+  .inconnuSi(
+    CAS.isPresent(),
+    "Aucune séance qualifiante en P1 : Q2.1.g décidera.",
+  )
+  .sinon("Q1.3 n'est pas encore validée.");

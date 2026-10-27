@@ -42,20 +42,15 @@ export type Catalogue<Questions extends AnyQuestions> = {
 
 /**
  * Les constructeurs des questions d'un modèle. `options` : son catalogue.
- * `faits` et `cibles` : ce qui calcule ses faits, puis ses cibles, que les
- * conditions lisent (`question-context.ts`).
+ * `faits` : son catalogue des faits. `cibles` : ce qui calcule ses cibles sur
+ * ces faits. Les conditions lisent les uns et les autres
+ * (`question-context.ts`).
  */
 export function questionsOf<
   Questions extends AnyQuestions,
   Faits = undefined,
   Cibles = undefined,
->(
-  model: { readonly options: Catalogue<Questions> } & Pipeline<
-    Questions,
-    Faits,
-    Cibles
-  >,
-) {
+>(model: { readonly options: Catalogue<Questions> } & Pipeline<Faits, Cibles>) {
   const pipeline = { faits: model.faits, cibles: model.cibles };
   const settingsOf = settingsFor<Questions, Cibles, Faits>(pipeline);
   const optionsOf = optionsFor<Questions, Cibles, Faits>(model.options);
@@ -135,7 +130,7 @@ type SettingsOf<Questions extends AnyQuestions, Cibles, Faits> = (
 ) => CommonSettings<Questions, Cibles, Faits>;
 
 function settingsFor<Questions extends AnyQuestions, Cibles, Faits>(
-  pipeline: Pipeline<Questions, Faits, Cibles>,
+  pipeline: Pipeline<Faits, Cibles>,
 ): SettingsOf<Questions, Cibles, Faits> {
   return (id, label) => ({
     id,

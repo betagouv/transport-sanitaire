@@ -238,7 +238,7 @@ function q26(entrees: Entrees, option: Questions["Q2.6"][number]): boolean {
   return entrees.contexte.checked(option);
 }
 
-// L'option 10 de l'autre cadre est cochée (`RetourPenitentiaire`).
+// L'option 10 de l'autre cadre est cochée (`p2/retour-penitentiaire.ts`).
 function retourPenitentiaire({ cadre, autreCadre }: Entrees): boolean {
   return (
     cadre.checked("3_AUTRE_CADRE") &&

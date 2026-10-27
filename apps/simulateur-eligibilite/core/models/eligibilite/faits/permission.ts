@@ -7,19 +7,23 @@
 // Il suit `CONTRAT_REPONSES_FAITS.json`.
 
 import { unFait } from "../../../socle/index.ts";
-import { RetourPenitentiaire } from "../concepts/retour-penitentiaire.ts";
-import { Sejour } from "../concepts/sejour.ts";
-import type { DeclarationDeFait } from "../declarations/faits.ts";
+import {
+  MOTIF,
+  PERMISSION_DU_SEJOUR,
+  SITUATIONS,
+  SOUS_TYPE,
+  UN_SEJOUR_ECARTE,
+  UNE_SORTIE_VERS_LA_PRISON,
+} from "./communs.ts";
 
-export const permission: DeclarationDeFait = ({ validated }) =>
-  unFait()
-    .retient(RetourPenitentiaire.of(validated).nonSiSortieVersLaPrison())
-    .nonSi(
-      validated.question("Q2.2.1").hasAnswer() &&
-        Sejour.of(validated).commenceAvecCeTrajet(),
-      "Q2.1.g : « 1_ENTREE » ; aucun séjour en cours, donc aucune permission.",
-    )
-    .retient(Sejour.of(validated).nonSiEcarte())
-    .selon(validated.question("Q2.2.1.a"), { "1_OUI": "oui", "2_NON": "non" })
-    .selon(validated.question("Q2.1"), { "11_PERMISSION": "oui" })
-    .sinon("Ni Q2.1, ni Q2.2.1 n'établissent encore de permission.");
+export const permission = unFait("fait_permission")
+  .applique(UNE_SORTIE_VERS_LA_PRISON)
+  .nonSi(
+    SITUATIONS.isPresent().and(SOUS_TYPE.is("1_ENTREE")),
+    "Aucun séjour en cours, donc aucune permission.",
+  )
+  .applique(UN_SEJOUR_ECARTE)
+  .ouiSi(PERMISSION_DU_SEJOUR.is("1_OUI"))
+  .nonSi(PERMISSION_DU_SEJOUR.is("2_NON"))
+  .ouiSi(MOTIF.is("11_PERMISSION"))
+  .sinon("Ni Q2.1, ni Q2.2.1 n'établissent encore de permission.");

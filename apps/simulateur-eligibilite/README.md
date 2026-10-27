@@ -129,15 +129,17 @@ core/                    le métier, sans React ni DOM : ce qu'un serveur ou un 
                          catalogue des textes de R2, et `regles.json`, que
                          `pnpm regles` calcule du YAML
       declarations/      les questions, faits et cibles, dans les mots des règles
-      concepts/          ce que plusieurs parties lisent d'un concept : la
-                         permission, le séjour, l'aide du patient, le numéro d'une
-                         option. Ni page ni fait
-      p1/                l'autonomie et l'état de santé : les pages et les faits du
-                         mode de transport
-      p2/                l'éligibilité : une page et ses faits par thème (prestation,
+      concepts/          ce que plusieurs pages lisent d'un concept : la
+                         permission, l'aide du patient, les contextes à proposer,
+                         le numéro d'une option. Ni page ni fait
+      faits/             un fichier par fait, une valeur faite de règles ;
+                         `communs.ts` porte les lectures et les règles que
+                         plusieurs faits partagent
+      p1/                l'autonomie et l'état de santé : les pages du mode de
+                         transport
+      p2/                l'éligibilité : les pages par thème (prestation,
                          contextes, trajet, transfert, permission, convocation,
-                         retour pénitentiaire, branche). Chaque fait se déclare
-                         dans un seul thème
+                         retour pénitentiaire, branche)
       p3/                le complément du cerfa : le trajet, le soin, l'urgence, les
                          évènements et l'exonération
   socle/                 ce qui ne dépend d'aucune version. `model.ts` est le contrat

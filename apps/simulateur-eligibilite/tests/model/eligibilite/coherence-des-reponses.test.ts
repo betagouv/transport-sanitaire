@@ -18,7 +18,6 @@ import { cible } from "../../../core/models/eligibilite/evaluation-des-regles";
 import { CATALOGUE_DES_FAITS } from "../../../core/models/eligibilite/faits";
 import { Fait } from "../../../core/socle";
 import { preconisationOf } from "../../../core/socle/model";
-import { GivenAnswers } from "../../../core/socle/questionnaire-engine/given-answers";
 import {
   type Answers,
   pagesOf,
@@ -104,11 +103,9 @@ describe("les 2 048 combinaisons de Q1.2", () => {
         "Q1.3": { answer: ["7_AUCUNE"] },
       });
       // Les règles ne donnent le mode qu'une fois P1 complète.
-      const faits = CATALOGUE_DES_FAITS.read(
-        new GivenAnswers<Questions>({}),
-        validated,
-        { fait_p1_complete: Fait.oui("P1 complète.") },
-      );
+      const faits = CATALOGUE_DES_FAITS.read(validated, {
+        fait_p1_complete: Fait.oui("P1 complète."),
+      });
       const cle = JSON.stringify(FAITS_DE_P1.map((nom) => faits[nom]));
       if (!modes.has(cle)) modes.set(cle, cible(faits, "cible_mode_id").value);
       return modes.get(cle) !== modeAttendu(criteres);

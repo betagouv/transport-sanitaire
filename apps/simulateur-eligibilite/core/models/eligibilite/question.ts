@@ -33,6 +33,6 @@ export const given = givenOf<Questions, Faits, Cibles>();
 /** Les constructeurs des questions de P0 à P3. */
 export const question = questionsOf<Questions, Faits, Cibles>({
   options: OPTIONS,
-  faits: (answers, validated) => CATALOGUE_DES_FAITS.read(answers, validated),
+  faits: CATALOGUE_DES_FAITS,
   cibles: lazyCibles,
 });

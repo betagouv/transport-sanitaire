@@ -5,10 +5,11 @@
 // Il est le bout du chemin d'une réponse : réponses → validées → faits →
 // cibles. Le moteur fait les deux premières étapes, dans l'ordre des questions
 // (`reading-in-order.ts`). Le modèle fait les deux dernières, par son
-// `Pipeline`. Faits et cibles ne se calculent qu'à la lecture, une fois par
+// `Pipeline` : son catalogue des faits, puis ses règles. Faits et cibles ne se calculent qu'à la lecture, une fois par
 // contexte. Le catalogue des faits arrête un fait qui se relit par une garde.
 
 import { Fait } from "../decision-engine/fait.ts";
+import type { FaitCatalogue } from "../decision-engine/fait-catalogue.ts";
 import type { AnswerReading } from "./answer-readings.ts";
 import type { Reading } from "./condition.ts";
 import type { GivenAnswers } from "./given-answers.ts";
@@ -50,29 +51,23 @@ export type SeenAnswers<
   readonly answer: AnswerReading;
 };
 
-/** Ce qui calcule les faits que lisent les rappels des questions d'un modèle. */
-type FaitsOf<Questions extends AnyQuestions = AnyQuestions, Faits = unknown> = (
-  answers: GivenAnswers<Questions>,
-  validated: ValidatedAnswers<Questions>,
-) => Faits;
-
 /** Ce qui calcule les cibles d'un modèle sur ses faits : ses règles. */
 type CiblesOf<Faits = unknown, Cibles = unknown> = (faits: Faits) => Cibles;
 
 /**
  * Les étapes que le modèle ajoute au chemin d'une réponse : des réponses
- * validées aux faits, puis des faits aux cibles. Ce sont celles de sa
- * préconisation, sans la complétude qu'elle seule impose.
+ * validées aux faits, par son catalogue, puis des faits aux cibles. Ce sont
+ * celles de sa préconisation, sans la complétude qu'elle seule impose.
  */
-export type Pipeline<Questions extends AnyQuestions, Faits, Cibles> = {
-  readonly faits?: FaitsOf<Questions, Faits>;
+export type Pipeline<Faits, Cibles> = {
+  readonly faits?: FaitCatalogue<Faits & object>;
   readonly cibles?: CiblesOf<Faits, Cibles>;
 };
 
 /** Le contexte d'une question : ce qu'elle voit, passé par le `pipeline`. */
 export function contextOf<Questions extends AnyQuestions, Cibles, Faits>(
   seen: SeenAnswers<Questions, Cibles | undefined>,
-  pipeline: Pipeline<Questions, Faits, Cibles>,
+  pipeline: Pipeline<Faits, Cibles>,
 ): QuestionContext<Questions, Cibles, Faits> {
   const faits = once(() => faitsThrough(pipeline, seen));
   const cibles = once(() => ciblesThrough(pipeline, seen, faits));
@@ -95,7 +90,7 @@ export function contextOf<Questions extends AnyQuestions, Cibles, Faits>(
 export function readingOf<Questions extends AnyQuestions, Cibles, Faits>(
   answer: AnswerReading,
   context: QuestionContext<Questions, Cibles, Faits>,
-  pipeline: Pipeline<Questions, Faits, Cibles>,
+  pipeline: Pipeline<Faits, Cibles>,
 ): Reading {
   const named = (values: unknown, nom: string) =>
     (values as Readonly<Record<string, unknown>>)[nom];
@@ -112,7 +107,7 @@ export function readingOf<Questions extends AnyQuestions, Cibles, Faits>(
 
 // Les cibles de ces faits, si ce fait valait « oui ».
 function assuming<Questions extends AnyQuestions, Cibles, Faits>(
-  { cibles }: Pipeline<Questions, Faits, Cibles>,
+  { cibles }: Pipeline<Faits, Cibles>,
   context: QuestionContext<Questions, Cibles, Faits>,
   fait: string,
 ): Cibles {
@@ -122,22 +117,22 @@ function assuming<Questions extends AnyQuestions, Cibles, Faits>(
   return cibles({ ...context.faits, [fait]: supposed });
 }
 
-// Étape 3 : des réponses validées aux faits.
+// Étape 3 : des réponses validées aux faits, par le catalogue.
 function faitsThrough<Questions extends AnyQuestions, Faits>(
-  { faits }: Pipeline<Questions, Faits, unknown>,
-  { answers, validated }: SeenAnswers<Questions, unknown>,
+  { faits }: Pipeline<Faits, unknown>,
+  { validated }: SeenAnswers<Questions, unknown>,
 ): Faits {
   if (!faits)
     throw new Error(
       "Cette question ne connaît pas ses faits : déclare-la par les constructeurs de son modèle.",
     );
-  return faits(answers, validated);
+  return faits.read(validated);
 }
 
 // Étape 4 : des faits aux cibles, sauf si le verrou les a figées. Un modèle
 // sans règles laisse les cibles telles que le verrou les donne.
 function ciblesThrough<Questions extends AnyQuestions, Faits, Cibles>(
-  { cibles }: Pipeline<Questions, Faits, Cibles>,
+  { cibles }: Pipeline<Faits, Cibles>,
   seen: SeenAnswers<Questions, Cibles | undefined>,
   faits: () => Faits,
 ): Cibles {

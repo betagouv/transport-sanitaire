@@ -8,56 +8,39 @@
 //
 // Il suit `CONTRAT_REPONSES_FAITS.json`.
 
+import { unFait } from "../../../socle/index.ts";
 import {
-  Fait,
-  type PassesOn,
-  unFait,
-  type ValidatedAnswers,
-} from "../../../socle/index.ts";
-import { Sejour } from "../concepts/sejour.ts";
-import { Soin } from "../concepts/soin.ts";
-import type { DeclarationDeFait } from "../declarations/faits.ts";
-import type { Questions } from "../declarations/questions.ts";
+  CAS,
+  DEPLACEMENT,
+  given,
+  MOTIF,
+  SANS_SEANCE_NI_SEJOUR,
+  SITUATIONS,
+  SOUS_TYPE,
+} from "./communs.ts";
 
-export const hospitalisation: DeclarationDeFait = ({ validated }) => {
-  const soin = Soin.of(validated);
-  return unFait()
-    .retient(parLeDeplacement(validated))
-    .retient(sansSejourEnCours(validated, soin))
-    .retient(soin.parEntreeOuSortie())
-    .sinon(soin.seanceDeP1());
-};
-
-// ---- implémentation ----
-
-type Valides = ValidatedAnswers<Questions>;
-
-// Un séjour coché avant un transfert entre établissements, ou un autre
-// déplacement pendant le séjour. Un transfert depuis les urgences n'établit pas
-// de séjour.
-function parLeDeplacement(validated: Valides): Fait | PassesOn {
-  const deplacement = validated.question("Q2.5");
-  if (deplacement.is("1_TRANSFERT") && Sejour.of(validated).estCoche())
-    return Fait.oui("Q2.2.1 : séjour coché, Q2.5 : « 1_TRANSFERT ».");
-  if (deplacement.is("2_AUTRE_DEPLACEMENT"))
-    return Fait.oui("Q2.5 : « 2_AUTRE_DEPLACEMENT ».");
-  return undefined;
-}
-
-// Une simple consultation, l'HAD à domicile ou un autre motif, sans séjour en
-// cours, ne sont pas une hospitalisation (`non_ou_absence` du contrat). Il faut
-// que Q2.2.1 ait proposé « déjà hospitalisé » et qu'il soit écarté. Le
-// transfert et la permission se qualifient dans leur branche.
-function sansSejourEnCours(validated: Valides, soin: Soin): Fait | PassesOn {
-  const sansSejour = soin.sansSeanceNiSejour();
-  if (
-    !sansSejour ||
-    validated.question("Q2.1").isOneOf("9_TRANSFERT", "11_PERMISSION") ||
-    !validated.question("Q2.2.1").hasAnswer() ||
-    !Sejour.of(validated).estEcarte()
+export const hospitalisation = unFait("fait_hospitalisation")
+  .ouiSi(
+    DEPLACEMENT.is("1_TRANSFERT").and(SITUATIONS.checked("1_HOSPITALISATION")),
   )
-    return undefined;
-  return Fait.non(
-    `${sansSejour.provenance} Q2.2.1 : « déjà hospitalisé » écarté.`,
-  );
-}
+  .ouiSi(DEPLACEMENT.is("2_AUTRE_DEPLACEMENT"))
+  .nonSi(
+    SANS_SEANCE_NI_SEJOUR.and(
+      MOTIF.isOneOf("9_TRANSFERT", "11_PERMISSION").not(),
+    )
+      .and(SITUATIONS.isPresent())
+      .and(SITUATIONS.offered("1_HOSPITALISATION"))
+      .and(SITUATIONS.checked("1_HOSPITALISATION").not()),
+    "Ni séance qualifiante en Q1.3, ni séjour en Q2.1 ; « déjà hospitalisé » écarté.",
+  )
+  .ouiSi(SOUS_TYPE.isOneOf("1_ENTREE", "2_SORTIE"))
+  .ouiSi(CAS.checked("3_CHIMIOTHERAPIE").or(CAS.checked("4_RADIOTHERAPIE")))
+  .ouiSi(
+    given.question("Q1.3.a").answer().is("1_OUI"),
+    "Une séance d'hémodialyse.",
+  )
+  .inconnuSi(
+    CAS.isPresent(),
+    "Aucune séance qualifiante en P1 : Q2.1.g décidera.",
+  )
+  .sinon("Q1.3 n'est pas encore validée.");

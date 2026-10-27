@@ -5,8 +5,15 @@
 //
 // Il suit `CONTRAT_REPONSES_FAITS.json`.
 
-import { Urgence } from "../concepts/urgence.ts";
-import type { DeclarationDeFait } from "../declarations/faits.ts";
+import { unFait } from "../../../socle/index.ts";
+import { given, URGENCE_EN_ATTENTE } from "./communs.ts";
 
-export const urgenceAttestee: DeclarationDeFait = ({ validated }) =>
-  Urgence.of(validated).attestee();
+const SUR_LE_TRAJET = given.question("Q2.3.4").answer();
+const SUR_LA_BRANCHE = given.question("Q2.12").answer();
+
+export const urgenceAttestee = unFait("fait_urgence_attestee")
+  .ouiSi(SUR_LE_TRAJET.is("1_OUI"))
+  .nonSi(SUR_LE_TRAJET.is("2_NON"))
+  .ouiSi(SUR_LE_TRAJET.isValidated().not().and(SUR_LA_BRANCHE.is("1_OUI")))
+  .nonSi(SUR_LE_TRAJET.isValidated().not().and(SUR_LA_BRANCHE.is("2_NON")))
+  .sinon(URGENCE_EN_ATTENTE);
