@@ -9,7 +9,7 @@
 // Il suit `CORRECTIF_FAITS_SANS_REPONSE.md`, qui prime sur
 // `CONTRAT_REPONSES_FAITS.json`.
 
-import { Fait, regles, type ValidatedAnswers } from "../../../socle/index.ts";
+import { Fait, unFait, type ValidatedAnswers } from "../../../socle/index.ts";
 import { ContextesDuTrajet } from "../concepts/contextes-du-trajet.ts";
 import {
   type DeclarationDeFait,
@@ -19,7 +19,7 @@ import type { Questions } from "../declarations/questions.ts";
 
 export const convocation: DeclarationDeFait = ({ validated }) => {
   const categorie = validated.question("Q2.10");
-  return regles()
+  return unFait()
     .retient(
       categorie.hasAnswer()
         ? faitDeLaCategorie(validated, categorie.value)

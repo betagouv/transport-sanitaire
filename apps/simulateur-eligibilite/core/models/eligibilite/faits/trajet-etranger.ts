@@ -7,7 +7,7 @@
 //
 // Il suit `CONTRAT_REPONSES_FAITS.json`.
 
-import { regles } from "../../../socle/index.ts";
+import { unFait } from "../../../socle/index.ts";
 import {
   type DeclarationDeFait,
   PAS_ENCORE_ETABLI,
@@ -19,7 +19,7 @@ export const trajetEtranger: DeclarationDeFait = ({ validated }) => {
     .checkedBoxes()
     .some((lieu) => lieu !== "3_LIEU_DES_SOINS");
   const source = `Q2.2.5 : « ${lieux.value?.join(" », « ")} ».`;
-  return regles()
+  return unFait()
     .nonSi(
       validated.question("Q2.2.1").declined("2_ETRANGER"),
       "Q2.2.1 : « l'étranger » proposé, non coché.",

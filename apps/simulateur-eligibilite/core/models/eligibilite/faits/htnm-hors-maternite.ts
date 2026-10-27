@@ -7,7 +7,7 @@
 //
 // Il suit `CONTRAT_REPONSES_FAITS.json`.
 
-import { regles } from "../../../socle/index.ts";
+import { unFait } from "../../../socle/index.ts";
 import { ContextesDuTrajet } from "../concepts/contextes-du-trajet.ts";
 import {
   type DeclarationDeFait,
@@ -15,7 +15,7 @@ import {
 } from "../declarations/faits.ts";
 
 export const htnmHorsMaternite: DeclarationDeFait = ({ validated }) =>
-  regles()
+  unFait()
     .nonSi(
       validated.question("Q2.2.1").hasAnswer() &&
         validated.question("Q2.1").is("13_MATERNITE"),

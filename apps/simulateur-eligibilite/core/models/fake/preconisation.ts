@@ -9,7 +9,7 @@ import {
   FaitCatalogue,
   type FaitContext,
   type GivenAnswers,
-  regles,
+  unFait,
   type ValidatedAnswers,
 } from "../../socle/index.ts";
 import type { Cibles } from "./declarations/cibles.ts";
@@ -84,7 +84,7 @@ function demande(
   option: "lait" | "citron",
 ): Fait {
   const question = validated.question("accompagnements");
-  return regles()
+  return unFait()
     .nonSi(answers.question("boisson").is("rien"), "Rien n'est commandé.")
     .seulementSi(question.isValidated())
     .inconnuSi(

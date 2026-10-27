@@ -9,7 +9,7 @@
 
 import {
   type Fait,
-  regles,
+  unFait,
   type ValidatedAnswers,
 } from "../../../socle/index.ts";
 import type { Questions } from "../declarations/questions.ts";
@@ -37,14 +37,14 @@ export class Urgence {
 
   /** Le médecin atteste l'urgence, ou non. */
   attestee(): Fait {
-    return regles()
+    return unFait()
       .selon(this.reponse(), { "1_OUI": "oui", "2_NON": "non" })
       .sinon(URGENCE_EN_ATTENTE);
   }
 
   /** La question de l'urgence a sa réponse : « oui » comme « non » le disent. */
   repondue(): Fait {
-    return regles()
+    return unFait()
       .selon(this.reponse(), { "1_OUI": "oui", "2_NON": "oui" })
       .sinon(URGENCE_EN_ATTENTE);
   }

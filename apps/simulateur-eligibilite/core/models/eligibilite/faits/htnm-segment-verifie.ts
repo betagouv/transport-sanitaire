@@ -6,7 +6,7 @@
 // Il suit `CORRECTIF_FAITS_SANS_REPONSE.md`, qui prime sur
 // `CONTRAT_REPONSES_FAITS.json`.
 
-import { regles } from "../../../socle/index.ts";
+import { unFait } from "../../../socle/index.ts";
 import { ContextesDuTrajet } from "../concepts/contextes-du-trajet.ts";
 import {
   type DeclarationDeFait,
@@ -15,7 +15,7 @@ import {
 
 export const htnmSegmentVerifie: DeclarationDeFait = ({ validated }) => {
   const htnm = ContextesDuTrajet.of(validated).situation("5_HTNM");
-  return regles()
+  return unFait()
     .nonSi(
       htnm?.isOui() === true,
       `${htnm?.provenance} Le segment du HTNM hors Engagement n'est pas vérifié.`,

@@ -9,7 +9,7 @@
 // Il suit `CORRECTIF_FAITS_SANS_REPONSE.md`, qui prime sur
 // `CONTRAT_REPONSES_FAITS.json`.
 
-import { regles } from "../../../socle/index.ts";
+import { unFait } from "../../../socle/index.ts";
 import { DepartDeLEntree } from "../concepts/depart-de-l-entree.ts";
 import { Permission } from "../concepts/permission.ts";
 import { RetourPenitentiaire } from "../concepts/retour-penitentiaire.ts";
@@ -22,7 +22,7 @@ import {
 export const transfertArticle80: DeclarationDeFait = ({ validated }) => {
   const deplacement = validated.question("Q2.5");
   const q26 = validated.question("Q2.6").hasAnswer();
-  return regles()
+  return unFait()
     .retient(
       DepartDeLEntree.of(validated).nonSiEntreeSimple(
         "une entrée simple est hors du champ du I de D.162-17.",
