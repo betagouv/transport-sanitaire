@@ -6,6 +6,7 @@
 // pas : ils tournent sur leur propre modèle.
 
 import {
+  afterLock,
   type GivenAnswers,
   page,
   type QuestionnairePart,
@@ -14,7 +15,7 @@ import type { Cibles } from "./declarations/cibles.ts";
 import type { Questions } from "./declarations/questions.ts";
 import { dayFromToday } from "./jour.ts";
 import { cibles } from "./preconisation.ts";
-import { question, questionDuComplement } from "./question.ts";
+import { question } from "./question.ts";
 import { CRENEAU, EXPEDITION } from "./validation-croisee.ts";
 
 /** Modifiables tant que le résultat n'est pas verrouillé. */
@@ -119,13 +120,13 @@ export const PARTS: readonly QuestionnairePart<Questions, undefined>[] = [
 ];
 
 /** Posée après le verrou : elle complète, elle ne décide plus. */
-export const COMPLEMENT: QuestionnairePart<Questions, Cibles> = {
+export const COMPLEMENT: QuestionnairePart<Questions, Cibles> = afterLock({
   id: "complement",
   title: "Compléter la commande",
   pages: [
     page(
       "quantite",
-      questionDuComplement
+      question
         .number("quantite", "Combien de tasses ?")
         .reminderFrom(({ answers, cibles: { commande } }) => [
           { label: "Commande", value: String(commande.value) },
@@ -144,19 +145,19 @@ export const COMPLEMENT: QuestionnairePart<Questions, Cibles> = {
         .min(1)
         .integer()
         .unit("tasses"),
-      questionDuComplement
+      question
         .singleChoice("lieu", "Où la servir ?")
         .dropdown()
         .hint(
           "Démontre : un choix unique en liste déroulante. La page garde son bouton.",
         ),
-      questionDuComplement
+      question
         .text("nom", "À quel nom ?")
         .hint(
           "Démontre : une question facultative. La page se valide sans elle. Sur le bon de commande, le nom se dessine là où le gabarit n'a pas de champ.",
         )
         .optional(),
-      questionDuComplement
+      question
         .checkbox(
           "ticket",
           "Un ticket de caisse est-il demandé ?",
@@ -168,7 +169,7 @@ export const COMPLEMENT: QuestionnairePart<Questions, Cibles> = {
     ),
     page(
       "facturation",
-      questionDuComplement
+      question
         .singleChoice("facturation", "Où envoyer la facture ?")
         .hint(
           "Démontre : la réponse qui dit, à la page suivante, si l'adresse est en France ou à l'étranger.",
@@ -176,7 +177,7 @@ export const COMPLEMENT: QuestionnairePart<Questions, Cibles> = {
     ),
     page(
       "adresse",
-      questionDuComplement
+      question
         .address("adresse", "À quelle adresse ?")
         .hint(
           "Démontre : une adresse en champs séparés, avec le nom du lieu. En France, le code postal fait cinq chiffres. À l'étranger, d'après la page précédente, le pays est attendu, et le code postal est libre et facultatif. Chaque champ fautif porte son message. Revenir changer la page précédente garde l'adresse : elle se relit dans le nouveau mode.",
@@ -190,7 +191,7 @@ export const COMPLEMENT: QuestionnairePart<Questions, Cibles> = {
     CRENEAU,
     page(
       "retrait",
-      questionDuComplement
+      question
         .singleChoice("retrait", "Comment la récupérer ?")
         .hint(
           "Démontre : une réponse qui bloque. « En livraison » affiche un message, et la page ne se valide plus. Et une réponse qui contredit une page antérieure : « À emporter » ne va pas avec « En terrasse », choisi au lieu de service. Le message nomme la question à corriger, qu'on retrouve par « Précédent ».",
@@ -206,7 +207,7 @@ export const COMPLEMENT: QuestionnairePart<Questions, Cibles> = {
             answers.question("retrait").is("a-emporter"),
           "« À emporter » ne va pas avec « En terrasse », choisi à la question « Où la servir ? ». Revenez par « Précédent » changer le lieu, ou choisissez « Sur place ».",
         ),
-      questionDuComplement
+      question
         .date("jour", "Pour quel jour ?")
         .hint(
           "Démontre : une date bornée, d'aujourd'hui à dans sept jours. Une date hors bornes est refusée.",
@@ -215,7 +216,7 @@ export const COMPLEMENT: QuestionnairePart<Questions, Cibles> = {
     ),
     page(
       "remarque",
-      questionDuComplement
+      question
         .longText("remarque", "Une remarque pour le service ?")
         .hint(
           "Démontre : un texte sur plusieurs lignes. « Entrée » va à la ligne, sans valider la page. Sur le bon de commande, la remarque est le commentaire facultatif des instructions : trop longue, elle en est retirée, et le résultat le dit avant le téléchargement.",
@@ -223,7 +224,7 @@ export const COMPLEMENT: QuestionnairePart<Questions, Cibles> = {
         .optional(),
     ),
   ],
-};
+});
 
 // ---- implémentation ----
 

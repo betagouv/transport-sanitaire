@@ -23,7 +23,6 @@ import {
 } from "./pages-du-transfert.ts";
 import { motifDeP1 } from "./prestation.ts";
 import { dansLeCircuit, indicationAPoser } from "./retour-penitentiaire.ts";
-import { urgenceAAfficher } from "./trajet.ts";
 
 type Contexte = Questions["Q2.2.1.b"][number];
 
@@ -38,7 +37,7 @@ const PAGE_DE_LA_PRESTATION = page(
       "Q2.1",
       "Quelle situation médicale ou quel événement motive ce déplacement ?",
     )
-    .askedIf(({ faits }) => !motifDeP1(faits))
+    .askedIf((lecture) => !motifDeP1(lecture))
     // Une séance se coche en Q1.3 : elle ne se vote pas deux fois.
     .option("6_SEANCE", (option) =>
       option.offeredIf(
@@ -180,7 +179,8 @@ const PAGE_DU_TRAJET = page(
       "Q2.3.4",
       "Le médecin prescripteur atteste-t-il que ce transport est urgent ?",
     )
-    .askedIf(({ faits }) => urgenceAAfficher(faits)),
+    // La garde de l'éditeur, sur les faits des questions posées avant elle.
+    .askedIf(({ cibles }) => cibles.cible_question_urgence_a_afficher.isOui()),
 );
 
 /** P2 : l'éligibilité. */

@@ -9,26 +9,30 @@
 
 import type { GivenAnswers, ValidatedAnswers } from "../../../socle/index.ts";
 import { Urgence } from "../concepts/urgence.ts";
-import type { Faits } from "../declarations/faits.ts";
 import type { Questions } from "../declarations/questions.ts";
-import { cible } from "../evaluation-des-regles.ts";
+import type { Context } from "../question.ts";
 
 type Valides = ValidatedAnswers<Questions>;
 
-/** Ce que lit une garde de la branche : les réponses validées, et leurs faits. */
-type Lecture = { readonly validated: Valides; readonly faits: Faits };
+/**
+ * Ce que lit une garde de la branche : les réponses validées, leurs faits et
+ * les cibles que les règles en tirent.
+ */
+type Lecture = Pick<Context, "faits" | "cibles"> & {
+  readonly validated: Valides;
+};
 
 /**
  * Q2.13 (le départ) se pose-t-elle ? Une entrée en établissement de santé qui
  * laisse `fait_transfert_article80` absent envoie à la caisse : la nature du
  * départ dit si l'entrée est simple.
  */
-export function departAPoser({ validated, faits }: Lecture): boolean {
+export function departAPoser({ validated, faits, cibles }: Lecture): boolean {
   return (
     validated.question("Q2.1.g").is("1_ENTREE") &&
     faits.fait_hospitalisation.isOui() &&
     faits.fait_transfert_article80.isInconnu() &&
-    brancheDecisive(faits)
+    brancheDecisive(cibles)
   );
 }
 
@@ -36,11 +40,11 @@ export function departAPoser({ validated, faits }: Lecture): boolean {
  * Le groupe de l'éloignement (Q2.14) se pose-t-il ? Q2.1 dit la maternité, ou
  * Q2.2.1.b la signale.
  */
-export function eloignementAPoser({ validated, faits }: Lecture): boolean {
+export function eloignementAPoser({ validated, cibles }: Lecture): boolean {
   const signalee =
     validated.question("Q2.1").is("13_MATERNITE") ||
     validated.question("Q2.2.1.b").checked("4_MATERNITE_ELOIGNEE");
-  return signalee && brancheDecisive(faits);
+  return signalee && brancheDecisive(cibles);
 }
 
 /**
@@ -63,9 +67,9 @@ export function motifAPoser(
  * maternité) dévoile alors la question que la page du trajet avait masquée.
  * Sans réponse à Q2.3.4 : l'urgence ne se redemande jamais.
  */
-export function urgenceDevoilee({ validated, faits }: Lecture): boolean {
+export function urgenceDevoilee({ validated, cibles }: Lecture): boolean {
   if (Urgence.of(validated).estDemandeeSurLeTrajet()) return false;
-  return cible(faits, "cible_question_urgence_a_afficher").isOui();
+  return cibles.cible_question_urgence_a_afficher.isOui();
 }
 
 // ---- implémentation ----
@@ -74,9 +78,9 @@ export function urgenceDevoilee({ validated, faits }: Lecture): boolean {
 // posées ? Le mode se tient, et aucune orientation prioritaire n'est établie :
 // ni l'exclusion du transport, ni un transfert, une permission à charge du
 // patient, une pension ou un point à la caisse.
-function brancheDecisive(faits: Faits): boolean {
+function brancheDecisive(cibles: Context["cibles"]): boolean {
   return (
-    cible(faits, "cible_mode_coherent").isOui() &&
-    !cible(faits, "cible_orientation_sans_urgence_deja_etablie").isOui()
+    cibles.cible_mode_coherent.isOui() &&
+    !cibles.cible_orientation_sans_urgence_deja_etablie.isOui()
   );
 }

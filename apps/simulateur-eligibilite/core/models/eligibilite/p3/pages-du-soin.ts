@@ -5,7 +5,7 @@
 import { type GivenAnswers, page } from "../../../socle/index.ts";
 import type { Cibles } from "../declarations/cibles.ts";
 import { OPTIONS, type Questions } from "../declarations/questions.ts";
-import { questionDuComplement as question } from "../question.ts";
+import { question } from "../question.ts";
 import { sensDuDocument } from "./sens-du-trajet.ts";
 import { pmtOuDap } from "./supports-du-complement.ts";
 

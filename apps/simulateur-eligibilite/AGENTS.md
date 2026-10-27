@@ -132,14 +132,16 @@ Neuf règles à tenir en ajoutant une question :
   sa lambda : `.option("6_SEANCE", (option) => option.offeredIf(…))`. `order`
   en garde une partie, dans cet ordre, et `exclusive` met la sienne à part.
   Chaque réglage donne une copie : une déclaration ne change jamais. Le modèle lie ses constructeurs une fois, dans son
-  `question.ts` : `questionsOf<Questions, Faits>({ options, faits })`. Ce qui se
-  pose après le verrou lit les cibles : un second jeu, typé avec elles
-  (`questionDuComplement` dans le modèle de démonstration).
+  `question.ts` : `questionsOf<Questions, Faits, Cibles>({ options, faits,
+  cibles })`. Un seul jeu, avant comme après le verrou. La partie posée après
+  le verrou se déclare par `afterLock({ … })` : ses gardes lisent alors les
+  cibles figées.
 - **Une condition d'affichage s'écrit dans `askedIf`.** Jamais dans un composant.
   Celle d'une page (`page(…).askedIf(…)`) s'ajoute à chacune de ses questions.
 - **Une condition lit ce qui la précède.** Elle reçoit un seul objet : les
   réponses (`answers`), les questions validées avant la sienne (`validated`),
-  les cibles figées et les faits de ces questions validées. Sur la page
+  les faits de ces questions validées et les cibles de ces faits (figées dans
+  la partie `afterLock`). Sur la page
   ouverte, celles qui la précèdent comptent telles qu'elles sont à l'écran.
 - **Une garde lit le fait quand il en existe un.**
   `.askedIf(({ faits }) => faits.fait_permission.isOui())`. Elle ne

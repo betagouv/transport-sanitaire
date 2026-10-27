@@ -7,7 +7,7 @@ import type { GivenAnswers } from "../../../socle/index.ts";
 import { Permission } from "../concepts/permission.ts";
 import { RetourPenitentiaire } from "../concepts/retour-penitentiaire.ts";
 import type { Questions } from "../declarations/questions.ts";
-import type { ContextDuComplement, Inconnu } from "../question.ts";
+import type { Context, Inconnu } from "../question.ts";
 import { pmtOuDap } from "./supports-du-complement.ts";
 
 type Reponses = GivenAnswers<Questions>;
@@ -15,7 +15,7 @@ type Sens = Questions["Q3.1.2"];
 type Rappel = { readonly label: string; readonly value: string }[];
 
 /** Q3.1.2 se pose pour la PMT, la DAP, et le S3141 d'une seule permission. */
-export function sensAPoser({ answers, cibles }: ContextDuComplement): boolean {
+export function sensAPoser({ answers, cibles }: Context): boolean {
   return (
     pmtOuDap(cibles) ||
     (cibles.cible_support_id.is("S3141") &&
@@ -24,10 +24,7 @@ export function sensAPoser({ answers, cibles }: ContextDuComplement): boolean {
 }
 
 /** Q3.1.3 se pose pour le S3141 de plusieurs permissions. */
-export function trajetsMensuelsAPoser({
-  answers,
-  cibles,
-}: ContextDuComplement): boolean {
+export function trajetsMensuelsAPoser({ answers, cibles }: Context): boolean {
   return (
     cibles.cible_support_id.is("S3141") && Permission.of(answers).estRepetee()
   );
@@ -58,9 +55,7 @@ export const ALLER_RETOUR_D_UN_TRANSPORT =
   "Un aller-retour compte deux transports. Indiquez-en au moins deux, ou choisissez « Aller simple » ou « Retour simple ».";
 
 /** Q3.1.2 dit-elle un aller-retour, quand Q3.1.1 ne compte qu'un transport ? */
-export function allerRetourDUnSeulTransport({
-  answers,
-}: ContextDuComplement): boolean {
+export function allerRetourDUnSeulTransport({ answers }: Context): boolean {
   return (
     answers.question("Q3.1.2").is("3_ALLER_RETOUR_EQUIVALENT") &&
     answers.question("Q3.1.1").is(1)
@@ -68,22 +63,20 @@ export function allerRetourDUnSeulTransport({
 }
 
 /** Q3.1.3 dépasse-t-elle ce que la fréquence de Q2.8 permet ? */
-export function trajetsAuDelaDeLaFrequence({
-  answers,
-}: ContextDuComplement): boolean {
+export function trajetsAuDelaDeLaFrequence({ answers }: Context): boolean {
   const maximum = Permission.of(answers).trajetsMensuelsMaximum();
   const nombre = answers.question("Q3.1.3").value;
   return maximum !== undefined && nombre !== undefined && nombre > maximum;
 }
 
 /** Le message de Q3.1.3 au-delà de la fréquence : il cite le maximum. */
-export function frequenceDepassee({ answers }: ContextDuComplement): string {
+export function frequenceDepassee({ answers }: Context): string {
   const permission = Permission.of(answers);
   return `Avec une permission toutes les ${permission.semainesEntreDeuxPermissions()} semaine(s), un mois compte au plus ${permission.trajetsMensuelsMaximum()} trajets.`;
 }
 
 /** Ce que Q2.8 a fixé des permissions, rappelé au-dessus de Q3.1.3. */
-export function rappelDesPermissions({ answers }: ContextDuComplement): Rappel {
+export function rappelDesPermissions({ answers }: Context): Rappel {
   const debut = answers.question("Q2.8.2").value;
   const fin = answers.question("Q2.8.3").value;
   const periode = answers.question("Q2.8.6").value;

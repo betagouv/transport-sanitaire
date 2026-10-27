@@ -1,8 +1,7 @@
 // La prestation : ce qui motive le déplacement (Q2.1), et ce que P1 en prouve
 // déjà. Les faits que sa page établit vivent sous `faits/`.
 
-import type { Faits } from "../declarations/faits.ts";
-import { cible } from "../evaluation-des-regles.ts";
+import type { Context } from "../question.ts";
 
 /**
  * P1 prouve-t-elle déjà un motif de transport ? L'ambulance, une séance
@@ -10,9 +9,12 @@ import { cible } from "../evaluation-des-regles.ts";
  * continus. Q2.1 n'est alors pas posée (D-102), et son saut ne donne aucun
  * « non ».
  */
-export function motifDeP1(faits: Faits): boolean {
+export function motifDeP1({
+  faits,
+  cibles,
+}: Pick<Context, "faits" | "cibles">): boolean {
   if (faits.fait_situation_soins_qualifiante.isOui()) return true;
-  return MOTIFS_DE_P1.some((motif) => cible(faits, motif).isOui());
+  return MOTIFS_DE_P1.some((motif) => cibles[motif].isOui());
 }
 
 // ---- implémentation ----

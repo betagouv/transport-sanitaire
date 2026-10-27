@@ -1,10 +1,11 @@
 import { describe, expect, it } from "vitest";
-import { Cible, page, questionsOf } from "../../../core/socle";
+import { afterLock, Cible, page, questionsOf } from "../../../core/socle";
 import { Questionnaire } from "../../../core/socle/questionnaire-engine/questionnaire";
 
 // Après le verrou, une question peut dépendre de la préconisation : sa condition
-// lit les cibles figées, en plus des réponses. Le questionnaire factice n'a pas
-// de telle question, les pages sont donc écrites ici.
+// lit les cibles figées, en plus des réponses. Ses pages sont marquées
+// `afterLock`. Le questionnaire factice n'a pas de telle question, les pages
+// sont donc écrites ici.
 
 type Questions = {
   adresse: string;
@@ -32,7 +33,10 @@ const SI_URGENCE = page(
 );
 
 const affichees = (urgence: boolean) =>
-  new Questionnaire([TOUJOURS, SI_URGENCE])
+  new Questionnaire(
+    afterLock({ id: "complement", title: "", pages: [TOUJOURS, SI_URGENCE] })
+      .pages,
+  )
     .readWith({}, { urgence: Cible.of(urgence) })
     .askedPages()
     .map((page) => page.id);

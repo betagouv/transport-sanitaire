@@ -11,7 +11,7 @@ import {
 } from "../../socle/index.ts";
 import type { Cibles } from "./declarations/cibles.ts";
 import type { Questions } from "./declarations/questions.ts";
-import { questionDuComplement as question } from "./question.ts";
+import { question } from "./question.ts";
 
 type DemoPage = QuestionnairePart<Questions, Cibles>["pages"][number];
 

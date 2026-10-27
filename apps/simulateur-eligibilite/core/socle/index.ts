@@ -26,9 +26,10 @@ export type {
   GivenAnswers,
 } from "./questionnaire-engine/given-answers.ts";
 export { LocalDateTime } from "./questionnaire-engine/local-date-time.ts";
-export type {
-  QuestionnairePart,
-  Unanswered,
+export {
+  afterLock,
+  type QuestionnairePart,
+  type Unanswered,
 } from "./questionnaire-engine/question.ts";
 export type { QuestionContext } from "./questionnaire-engine/question-context.ts";
 export { questionsOf } from "./questionnaire-engine/question-factory.ts";

@@ -5,6 +5,10 @@
 // Les questions se lisent dans l'ordre. Chacune voit celles qui la précèdent
 // et qui sont validées : ses conditions peuvent en dépendre, pas de la suite.
 // Ses incohérences ne voient pas non plus les réponses des pages suivantes.
+//
+// Seules les pages posées après le verrou reçoivent les cibles figées. Les
+// autres lisent celles que le modèle calcule sur leurs faits
+// (`question-context.ts`), même relues après le verrou.
 
 import type { AskedQuestion } from "./asked-question.ts";
 import { GivenAnswers } from "./given-answers.ts";
@@ -43,7 +47,8 @@ export function readInOrder(
   const asked: AskedPage[] = [];
   for (const [rank, page] of pages.entries()) {
     const earlier = answersUpTo(pages, rank, answers);
-    const read = askPage(page, { answers, earlier, cibles }, progress);
+    const frozen = page.afterLock ? cibles : undefined;
+    const read = askPage(page, { answers, earlier, cibles: frozen }, progress);
     asked.push({ page, questions: read.questions });
     progress = read.progress;
   }

@@ -4,10 +4,7 @@
 // document, ni la DAP n'en dépendent.
 
 import { page } from "../../../socle/index.ts";
-import {
-  type ContextDuComplement as Contexte,
-  questionDuComplement as question,
-} from "../question.ts";
+import { type Context as Contexte, question } from "../question.ts";
 import { avecUnDocument } from "./supports-du-complement.ts";
 
 const DATE_FUTURE =

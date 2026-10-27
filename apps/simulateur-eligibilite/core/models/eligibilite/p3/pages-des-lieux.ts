@@ -5,10 +5,7 @@
 
 import { type Address, page } from "../../../socle/index.ts";
 import { OPTIONS } from "../declarations/questions.ts";
-import {
-  type ContextDuComplement as Contexte,
-  questionDuComplement as question,
-} from "../question.ts";
+import { type Context as Contexte, question } from "../question.ts";
 import {
   aLEtranger,
   type Extremite,

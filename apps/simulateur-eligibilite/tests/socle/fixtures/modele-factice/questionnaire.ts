@@ -5,6 +5,7 @@
 // retour, brouillon, effacement des réponses dépendantes et verrou.
 
 import {
+  afterLock,
   page,
   type QuestionnairePart,
   questionsOf,
@@ -12,13 +13,12 @@ import {
 import type { Cibles } from "./declarations/cibles";
 import type { Faits } from "./declarations/faits";
 import { OPTIONS, type Questions } from "./declarations/questions";
-import { faits } from "./preconisation";
+import { cibles, faits } from "./preconisation";
 
-const question = questionsOf<Questions, Faits>({ options: OPTIONS, faits });
-
-const questionDuComplement = questionsOf<Questions, Faits, Cibles>({
+const question = questionsOf<Questions, Faits, Cibles>({
   options: OPTIONS,
   faits,
+  cibles,
 });
 
 /** Modifiables tant que le résultat n'est pas verrouillé. */
@@ -47,16 +47,13 @@ export const PARTS: readonly QuestionnairePart<Questions, undefined>[] = [
 ];
 
 /** Posée après le verrou : elle complète, elle ne décide plus. */
-export const COMPLEMENT: QuestionnairePart<Questions, Cibles> = {
+export const COMPLEMENT: QuestionnairePart<Questions, Cibles> = afterLock({
   id: "complement",
   title: "Compléter la commande",
   pages: [
     page(
       "quantite",
-      questionDuComplement
-        .number("quantite", "Combien de tasses ?")
-        .min(1)
-        .unit("tasses"),
+      question.number("quantite", "Combien de tasses ?").min(1).unit("tasses"),
     ),
   ],
-};
+});

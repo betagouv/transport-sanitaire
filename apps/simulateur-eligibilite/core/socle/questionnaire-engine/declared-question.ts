@@ -20,7 +20,7 @@ import type { AskedQuestion } from "./asked-question.ts";
 import type { AnyQuestions, NotAsked, Reminder } from "./question.ts";
 import {
   contextOf,
-  type FaitsOf,
+  type Pipeline,
   type QuestionContext,
   type SeenAnswers,
 } from "./question-context.ts";
@@ -37,8 +37,8 @@ export type Condition<Questions extends AnyQuestions, Cibles, Faits> = (
 export type CommonSettings<Questions extends AnyQuestions, Cibles, Faits> = {
   readonly id: keyof Questions & string;
   readonly label: string;
-  /** Ce qui calcule les faits que lisent ses conditions. */
-  readonly faits: FaitsOf<Questions, Faits> | undefined;
+  /** Ce qui calcule les faits et les cibles que lisent ses conditions. */
+  readonly pipeline: Pipeline<Questions, Faits, Cibles>;
   readonly conditions: readonly Condition<Questions, Cibles, Faits>[];
   readonly inconsistencies: readonly Inconsistency<Questions, Cibles, Faits>[];
   readonly dependsOn: readonly string[];
@@ -151,14 +151,14 @@ export abstract class DeclaredQuestion<
    * réponses des pages suivantes.
    */
   askedIn(
-    seen: SeenAnswers<Questions, Cibles>,
-    earlier: SeenAnswers<Questions, Cibles>,
+    seen: SeenAnswers<Questions, Cibles | undefined>,
+    earlier: SeenAnswers<Questions, Cibles | undefined>,
   ): AskedQuestion | NotAsked {
     const { settings } = this;
-    const context = contextOf(seen, settings.faits);
+    const context = contextOf(seen, settings.pipeline);
     if (!settings.conditions.every((condition) => condition(context)))
       return undefined;
-    const before = contextOf(earlier, settings.faits);
+    const before = contextOf(earlier, settings.pipeline);
     return this.askedWith(commonIn(settings, context, before), context);
   }
 

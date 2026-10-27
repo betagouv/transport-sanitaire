@@ -4,10 +4,14 @@
 // Chaque question ne se pose que si le support de l'issue, figé au verrou, la
 // réclame (`CATALOGUE_COMPLET_QUESTIONS.md`, « Partie 3 »).
 
-import { page, type QuestionnairePart } from "../../../socle/index.ts";
+import {
+  afterLock,
+  page,
+  type QuestionnairePart,
+} from "../../../socle/index.ts";
 import type { Cibles } from "../declarations/cibles.ts";
 import type { Questions } from "../declarations/questions.ts";
-import { questionDuComplement as question } from "../question.ts";
+import { question } from "../question.ts";
 import {
   PAGE_DE_L_EXONERATION,
   PAGE_DES_EVENEMENTS,
@@ -75,7 +79,7 @@ const PAGE_DU_TRAJET = page(
 );
 
 /** P3, posée après le verrou : elle complète le cerfa, elle ne décide plus. */
-export const COMPLEMENT: Partie = {
+export const COMPLEMENT: Partie = afterLock({
   id: "P3",
   title: "Informations permettant de compléter la prescription",
   pages: [
@@ -87,4 +91,4 @@ export const COMPLEMENT: Partie = {
     PAGE_DES_EVENEMENTS,
     PAGE_DE_L_EXONERATION,
   ],
-};
+});
