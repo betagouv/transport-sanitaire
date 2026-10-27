@@ -5,8 +5,10 @@
 //
 // Il suit `CONTRAT_REPONSES_FAITS.json`.
 
-import { CasParticuliers } from "../concepts/cas-particuliers.ts";
-import type { DeclarationDeFait } from "../declarations/faits.ts";
+import { unFait } from "../../../socle/index.ts";
+import { CAS } from "./communs.ts";
 
-export const partageIncompatible: DeclarationDeFait = ({ validated }) =>
-  CasParticuliers.of(validated).coche("6_PARTAGE_INCOMPATIBLE");
+export const partageIncompatible = unFait("fait_partage_incompatible")
+  .ouiSi(CAS.checked("6_PARTAGE_INCOMPATIBLE"))
+  .nonSi(CAS.isPresent())
+  .sinon("Q1.3 n'est pas encore validée.");

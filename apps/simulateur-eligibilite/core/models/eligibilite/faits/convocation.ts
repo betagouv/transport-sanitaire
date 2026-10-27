@@ -9,75 +9,51 @@
 // Il suit `CORRECTIF_FAITS_SANS_REPONSE.md`, qui prime sur
 // `CONTRAT_REPONSES_FAITS.json`.
 
-import { Fait, unFait, type ValidatedAnswers } from "../../../socle/index.ts";
-import { ContextesDuTrajet } from "../concepts/contextes-du-trajet.ts";
+import { unFait } from "../../../socle/index.ts";
+import { PAS_ENCORE_ETABLI } from "../declarations/faits.ts";
 import {
-  type DeclarationDeFait,
-  PAS_ENCORE_ETABLI,
-} from "../declarations/faits.ts";
-import type { Questions } from "../declarations/questions.ts";
+  AUTRE_CADRE_ECARTE,
+  given,
+  SITUATION_DU_CADRE,
+  SITUATION_PROPOSEE,
+} from "./communs.ts";
 
-export const convocation: DeclarationDeFait = ({ validated }) => {
-  const categorie = validated.question("Q2.10");
-  return unFait()
-    .retient(
-      categorie.hasAnswer()
-        ? faitDeLaCategorie(validated, categorie.value)
-        : undefined,
-    )
-    .retient(ContextesDuTrajet.of(validated).situation("13_CONVOCATION"))
-    .sinon(PAS_ENCORE_ETABLI);
-};
+const CATEGORIE = given.question("Q2.10").answer();
+const AGREMENT = given.question("Q2.10.a").answer();
+const APPAREILLAGE = given.question("Q2.10.b").answer();
+const UN_APPAREILLAGE = CATEGORIE.is("6_APPAREILLAGE");
 
-// ---- implémentation ----
-
-type Valides = ValidatedAnswers<Questions>;
-
-// Les trois appareillages que vise R.322-10 2°.
-const APPAREILLAGES_VISES: readonly Questions["Q2.10.b"][] = [
-  "1_PROTHESE_OCULAIRE_FACIALE",
-  "2_PODO_ORTHESE",
-  "3_ORTHOPROTHESE",
-];
-
-function faitDeLaCategorie(
-  validated: Valides,
-  categorie: Questions["Q2.10"],
-): Fait {
-  switch (categorie) {
-    case "6_APPAREILLAGE":
-      return faitDeLAppareillage(validated);
-    case "7_AUCUNE":
-      return Fait.non(
-        "Q2.10 : « 7_AUCUNE », ce motif de convocation ne s'applique pas.",
-      );
-    default:
-      return Fait.oui(`Q2.10 : « ${categorie} ».`);
-  }
-}
-
-// Un « oui » exige l'agrément et un appareillage visé. Un « non » à l'agrément
-// ou un autre appareillage écarte ce seul motif. Sinon, une réponse « je ne
-// peux pas » sans rien de négatif laisse le fait absent.
-function faitDeLAppareillage(validated: Valides): Fait {
-  const agrement = validated.question("Q2.10.a");
-  const appareillage = validated.question("Q2.10.b");
-  if (agrement.is("2_NON")) {
-    return Fait.non(
-      "Q2.10.a : « 2_NON » ; le fournisseur n'est pas agréé, ce motif ne s'applique pas.",
-    );
-  }
-  if (appareillage.is("4_AUTRE")) {
-    return Fait.non(
-      "Q2.10.b : « 4_AUTRE » ; hors des trois appareillages visés par R.322-10 2°, ce motif ne s'applique pas.",
-    );
-  }
-  if (agrement.is("1_OUI") && appareillage.isOneOf(...APPAREILLAGES_VISES)) {
-    return Fait.oui(
-      `Q2.10.a : « 1_OUI » ; Q2.10.b : « ${appareillage.value} ».`,
-    );
-  }
-  return Fait.inconnu(
-    "Q2.10 : « 6_APPAREILLAGE » ; l'agrément ou l'appareillage ne peut pas se vérifier ou se préciser. À vérifier.",
-  );
-}
+export const convocation = unFait("fait_convocation")
+  .nonSi(CATEGORIE.is("7_AUCUNE"), "Ce motif de convocation ne s'applique pas.")
+  .nonSi(
+    UN_APPAREILLAGE.and(AGREMENT.is("2_NON")),
+    "Le fournisseur n'est pas agréé, ce motif ne s'applique pas.",
+  )
+  .nonSi(
+    UN_APPAREILLAGE.and(APPAREILLAGE.is("4_AUTRE")),
+    "Hors des trois appareillages visés par R.322-10 2°, ce motif ne s'applique pas.",
+  )
+  .ouiSi(
+    UN_APPAREILLAGE.and(AGREMENT.is("1_OUI")).and(
+      APPAREILLAGE.isOneOf(
+        "1_PROTHESE_OCULAIRE_FACIALE",
+        "2_PODO_ORTHESE",
+        "3_ORTHOPROTHESE",
+      ),
+    ),
+  )
+  .inconnuSi(
+    UN_APPAREILLAGE,
+    "L'agrément ou l'appareillage ne peut pas se vérifier ou se préciser. À vérifier.",
+  )
+  .ouiSi(CATEGORIE.isPresent())
+  .nonSi(
+    AUTRE_CADRE_ECARTE.and(SITUATION_PROPOSEE["13_CONVOCATION"]),
+    "« autre situation » proposée, non cochée.",
+  )
+  .inconnuSi(
+    SITUATION_DU_CADRE.checked("13_CONVOCATION"),
+    "À qualifier dans sa branche.",
+  )
+  .nonSiEcartee(SITUATION_DU_CADRE, "13_CONVOCATION")
+  .sinon(PAS_ENCORE_ETABLI);

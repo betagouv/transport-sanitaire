@@ -2,6 +2,7 @@
 // DAP. Il ne compte que ceux de ce document : deux documents de deux
 // transports peuvent former une série de quatre.
 
+import { given } from "../../../../../core/models/eligibilite/question";
 import type { Rubrique } from "./rubrique";
 
 export type Nombre = {
@@ -9,8 +10,8 @@ export type Nombre = {
 };
 
 export const NOMBRE: Rubrique<Nombre> = {
-  nombre: ({ validated }) => {
-    const nombre = validated.question("Q3.1.1").value;
-    return nombre === undefined ? undefined : String(nombre);
-  },
+  nombre: given
+    .question("Q3.1.1")
+    .answer()
+    .compute(({ value }) => (value === undefined ? undefined : String(value))),
 };

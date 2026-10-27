@@ -6,16 +6,9 @@
 // Il suit `CONTRAT_REPONSES_FAITS.json`.
 
 import { unFait } from "../../../socle/index.ts";
-import { AideDuPatient } from "../concepts/aide-du-patient.ts";
-import type { DeclarationDeFait } from "../declarations/faits.ts";
+import { AIDE } from "./communs.ts";
 
-export const accompagnant: DeclarationDeFait = ({ validated }) => {
-  const aide = AideDuPatient.of(validated);
-  return unFait()
-    .ouiSi(aide.avecUnProche(), aide.provenance())
-    .nonSi(
-      aide.seDeplaceSeul() || aide.avecUnProfessionnel(),
-      aide.provenance(),
-    )
-    .sinon(aide.provenance());
-};
+export const accompagnant = unFait("fait_accompagnant")
+  .ouiSi(AIDE.is("2_AVEC_UN_PROCHE"))
+  .nonSi(AIDE.isOneOf("1_SEUL", "3_AVEC_UN_PROFESSIONNEL"))
+  .sinon("Q1.1 n'est pas encore validée.");

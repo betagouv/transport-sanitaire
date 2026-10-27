@@ -12,14 +12,16 @@ import { SEEDS } from "../../../core/models/eligibilite/seeds-catalogue";
 import { cibleValues } from "../../../core/socle/decision-engine/cible";
 import { preconisationOf } from "../../../core/socle/model";
 import {
+  type Read,
+  readIn,
+} from "../../../core/socle/questionnaire-engine/condition";
+import {
   type Answers,
   pagesOf,
 } from "../../../core/socle/questionnaire-engine/question";
 import { Questionnaire } from "../../../core/socle/questionnaire-engine/questionnaire";
-import type {
-  Donnees,
-  Rubrique,
-} from "../../../front/models/eligibilite/r3/rubriques/rubrique";
+import { resultReading } from "../../../core/socle/questionnaire-engine/result-reading";
+import type { Rubrique } from "../../../front/models/eligibilite/r3/rubriques/rubrique";
 import type { Cerfa, CerfaDto } from "../../../front/socle/cerfa/cerfa";
 import { generateCerfa } from "../../../front/socle/cerfa/generate-cerfa";
 import { racine } from "../../inspection-des-sources";
@@ -88,14 +90,15 @@ export const PERMISSIONS: Reponses = {
 };
 
 /**
- * Ce que le socle passe au cerfa : les cibles que les règles calculent, sauf
- * celles que le test choisit.
+ * Ce que le socle passe au cerfa : la lecture des questions validées, avec les
+ * cibles et les faits que les règles calculent, sauf ceux que le test choisit.
  */
 export function donnees(
   reponses: Reponses,
   choisies: ValeursDesCibles = {},
   completedAt = new Date("2026-10-22T10:00:00Z"),
-): Donnees {
+  faits: Partial<Faits> = {},
+): Read {
   const preconisation = preconisationOf(model, reponses);
   const cibles = ciblesValant({
     ...cibleValues(preconisation.cibles as Cibles),
@@ -105,13 +108,14 @@ export function donnees(
     reponses,
     cibles,
   );
-  return {
-    answers: lecture.answers,
-    validated: lecture.validated,
-    cibles,
-    faits: preconisation.faits as Faits,
-    completedAt,
-  };
+  return readIn(
+    resultReading({
+      validated: lecture.validated,
+      faits: { ...(preconisation.faits as Faits), ...faits },
+      cibles,
+      on: completedAt,
+    }),
+  );
 }
 
 /** Chaque cellule de la rubrique, calculée sur ces données. */
@@ -121,12 +125,11 @@ export function cellules<Cellules>(
   cibles: ValeursDesCibles = {},
   completedAt?: Date,
 ): Cellules {
-  const lues = donnees(reponses, cibles, completedAt);
+  const read = donnees(reponses, cibles, completedAt);
   return Object.fromEntries(
-    Object.entries(rubrique).map(([cellule, calcul]) => [
-      cellule,
-      (calcul as (donnees: Donnees) => unknown)(lues),
-    ]),
+    Object.entries<Rubrique<Cellules>[keyof Cellules]>(rubrique).map(
+      ([cellule, valeur]) => [cellule, read(valeur)],
+    ),
   ) as Cellules;
 }
 

@@ -8,18 +8,24 @@
 // Il suit `CONTRAT_REPONSES_FAITS.json`.
 
 import { unFait } from "../../../socle/index.ts";
-import { ContextesDuTrajet } from "../concepts/contextes-du-trajet.ts";
+import { PAS_ENCORE_ETABLI } from "../declarations/faits.ts";
 import {
-  type DeclarationDeFait,
-  PAS_ENCORE_ETABLI,
-} from "../declarations/faits.ts";
+  AUTRE_CADRE_ECARTE,
+  MOTIF,
+  SITUATION_DU_CADRE,
+  SITUATION_PROPOSEE,
+  SITUATIONS,
+} from "./communs.ts";
 
-export const htnmHorsMaternite: DeclarationDeFait = ({ validated }) =>
-  unFait()
-    .nonSi(
-      validated.question("Q2.2.1").hasAnswer() &&
-        validated.question("Q2.1").is("13_MATERNITE"),
-      "Q2.1 : « 13_MATERNITE » ; le même trajet n'est pas un HTNM hors maternité.",
-    )
-    .retient(ContextesDuTrajet.of(validated).situation("5_HTNM"))
-    .sinon(PAS_ENCORE_ETABLI);
+export const htnmHorsMaternite = unFait("fait_htnm_hors_maternite")
+  .nonSi(
+    SITUATIONS.isPresent().and(MOTIF.is("13_MATERNITE")),
+    "Le même trajet n'est pas un HTNM hors maternité.",
+  )
+  .nonSi(
+    AUTRE_CADRE_ECARTE.and(SITUATION_PROPOSEE["5_HTNM"]),
+    "« autre situation » proposée, non cochée.",
+  )
+  .ouiSi(SITUATION_DU_CADRE.checked("5_HTNM"))
+  .nonSiEcartee(SITUATION_DU_CADRE, "5_HTNM")
+  .sinon(PAS_ENCORE_ETABLI);

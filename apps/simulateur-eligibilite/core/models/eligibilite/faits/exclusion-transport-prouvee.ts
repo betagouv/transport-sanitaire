@@ -11,14 +11,14 @@
 // Il suit `CORRECTIF_FAITS_SANS_REPONSE.md`, qui prime sur
 // `CONTRAT_REPONSES_FAITS.json`.
 
-import { Fait } from "../../../socle/index.ts";
-import type { DeclarationDeFait } from "../declarations/faits.ts";
+import { constant, Fait, unFait } from "../../../socle/index.ts";
 
-export const exclusionTransportProuvee: DeclarationDeFait = () =>
-  EXCLUSION_DU_TRANSPORT;
-
-// ---- implémentation ----
-
-const EXCLUSION_DU_TRANSPORT = Fait.non(
-  "Contrôle du logiciel : les règles chargées ne portent aucune règle d'exclusion du transport.",
+export const exclusionTransportProuvee = unFait(
+  "fait_exclusion_transport_prouvee",
+).vaut(
+  constant(
+    Fait.non(
+      "Contrôle du logiciel : les règles chargées ne portent aucune règle d'exclusion du transport.",
+    ),
+  ),
 );

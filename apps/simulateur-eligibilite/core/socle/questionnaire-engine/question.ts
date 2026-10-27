@@ -101,6 +101,11 @@ export type Page<
 > = {
   readonly id: string;
   readonly questions: readonly Question<Questions, Cibles>[];
+  /**
+   * Posée après le verrou : ses questions lisent les cibles figées. Sinon,
+   * celles que le modèle calcule sur les faits d'avant elles (`afterLock`).
+   */
+  readonly afterLock?: true;
 };
 
 /**
@@ -115,6 +120,21 @@ export type QuestionnairePart<
   readonly title: string;
   readonly pages: readonly Page<Questions, Cibles>[];
 };
+
+/**
+ * Cette partie, posée après le verrou : ses pages lisent les cibles figées, et
+ * plus celles des faits d'avant elles. Elle complète, elle ne décide plus.
+ */
+export function afterLock<Questions extends AnyQuestions, Cibles>(
+  part: QuestionnairePart<Questions, Cibles>,
+): QuestionnairePart<Questions, Cibles> {
+  const pages = part.pages.map(({ id, questions }) => ({
+    id,
+    questions,
+    afterLock: true as const,
+  }));
+  return { ...part, pages };
+}
 
 /** Les pages de ces parties, dans l'ordre du questionnaire. */
 export function pagesOf(parts: readonly QuestionnairePart[]): Page[] {

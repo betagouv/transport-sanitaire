@@ -1,5 +1,5 @@
 // La trace du résultat : ce que les textes de R2 lisent (D-111). Une fonction
-// pure des réponses et des cibles, sans React.
+// pure des faits, des cibles et des réponses validées, sans React.
 //
 // Elle suit le « Contrat de trace » du README de l'éditeur, moins ce que nous
 // ne portons pas : la version du paquet, l'empreinte du modèle et la révision
@@ -7,24 +7,18 @@
 // l'ouverture). Un fait inconnu est une clé absente, jamais un « non ».
 
 import { numeroDeLOption } from "../../../../core/models/eligibilite/concepts/numero-de-l-option";
-import { Permission } from "../../../../core/models/eligibilite/concepts/permission";
-import { Sejour } from "../../../../core/models/eligibilite/concepts/sejour";
 import type { Cibles } from "../../../../core/models/eligibilite/declarations/cibles";
 import type { Faits } from "../../../../core/models/eligibilite/declarations/faits";
-import type { Questions } from "../../../../core/models/eligibilite/declarations/questions";
-import { faits } from "../../../../core/models/eligibilite/preconisation";
-import type { GivenAnswers, ValidatedAnswers } from "../../../../core/socle";
+import { given } from "../../../../core/models/eligibilite/question";
+import type { ResultatProps } from "../../../socle";
 import {
+  PRECISIONS,
   type Precisions,
-  precisionsDuResultat,
+  UN_SEJOUR_REEL,
 } from "./precisions-du-resultat";
 
-/** Ce que R2 reçoit du socle : les réponses, les questions validées, les cibles. */
-export type ReponsesEtCibles = {
-  answers: GivenAnswers<Questions>;
-  validated: ValidatedAnswers<Questions>;
-  cibles: Cibles;
-};
+/** Ce que R2 reçoit du socle : les faits, les cibles, et de quoi lire. */
+export type Lecture = ResultatProps<Faits, Cibles>;
 
 /** Ce que les textes de R2 lisent, pour des réponses et leurs cibles. */
 export type Trace = {
@@ -54,24 +48,36 @@ export type Trace = {
 };
 
 /** La trace de ces réponses : elle relit les questions validées. */
-export function traceDuResultat({
-  answers,
-  validated,
-  cibles,
-}: ReponsesEtCibles): Trace {
-  return {
-    cibles,
-    faits: faits(answers, validated),
-    criteres: validated.question("Q1.2").checkedBoxes().map(numeroDeLOption),
-    ...repetition(Permission.of(validated)),
-    ...(Sejour.of(validated).estReel() && { sejourReel: true }),
-    precisions: precisionsDuResultat(validated),
-  };
+export function traceDuResultat({ read, faits, cibles }: Lecture): Trace {
+  return { cibles, faits, ...read(LU_DES_REPONSES) };
 }
 
+// ---- implémentation ----
+
 // Q2.8.5 dit si la permission se répète. Sans réponse, la clé reste absente.
-function repetition(permission: Permission): { permissionRepeated?: boolean } {
-  if (permission.estRepetee()) return { permissionRepeated: true };
-  if (permission.estUnique()) return { permissionRepeated: false };
-  return {};
-}
+const REPETITION = given
+  .question("Q2.8.5")
+  .answer()
+  .compute((repetition): { permissionRepeated?: boolean } => {
+    if (repetition.is("1_OUI")) return { permissionRepeated: true };
+    if (repetition.is("2_NON")) return { permissionRepeated: false };
+    return {};
+  });
+
+// Ce que la trace lit des réponses, en plus des faits et des cibles.
+const LU_DES_REPONSES = given
+  .all({
+    criteres: given
+      .question("Q1.2")
+      .answer()
+      .compute((aides) => aides.checkedBoxes().map(numeroDeLOption)),
+    repetition: REPETITION,
+    sejourReel: UN_SEJOUR_REEL,
+    precisions: PRECISIONS,
+  })
+  .compute(({ criteres, repetition, sejourReel, precisions }) => ({
+    criteres,
+    ...repetition,
+    ...(sejourReel && { sejourReel: true as const }),
+    precisions,
+  }));

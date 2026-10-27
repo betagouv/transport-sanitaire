@@ -1,49 +1,48 @@
 // Le passage des données du simulateur au DTO d'un cerfa.
 //
 // Le module cerfa ne connaît que son DTO. Le modèle dit comment le calculer :
-// une fonction par entrée, qui lit tout ce que le simulateur sait (réponses,
-// faits, cibles, date de complétion).
+// une valeur par entrée, lue sur les questions validées, les faits et les
+// cibles figés au verrou, au jour de la complétion (`given.today()`).
 
+import type {
+  Read,
+  Value,
+} from "../../core/socle/questionnaire-engine/condition";
 import type { Cerfa, CerfaDto } from "./cerfa/cerfa";
 
-/** Une fonction par entrée du DTO, des données `Data` à sa valeur. */
-export type CerfaMapping<Dto extends CerfaDto, Data> = {
+/** Une valeur par entrée du DTO. */
+export type CerfaMapping<Dto extends CerfaDto> = {
   readonly fields: {
-    readonly [Key in keyof Dto["fields"]]-?: (data: Data) => Dto["fields"][Key];
+    readonly [Key in keyof Dto["fields"]]-?: Value<Dto["fields"][Key]>;
   };
   readonly drawings: {
-    readonly [Key in keyof Dto["drawings"]]-?: (
-      data: Data,
-    ) => Dto["drawings"][Key];
+    readonly [Key in keyof Dto["drawings"]]-?: Value<Dto["drawings"][Key]>;
   };
 };
 
 /** Un cerfa et le mapping qui calcule son DTO, vérifiés ensemble. */
-export type BoundCerfa<Data> = {
+export type BoundCerfa = {
   readonly cerfa: Cerfa<CerfaDto>;
-  readonly mapping: CerfaMapping<CerfaDto, Data>;
+  readonly mapping: CerfaMapping<CerfaDto>;
 };
 
 /**
  * Lie un cerfa au mapping de son DTO. Le compilateur vérifie qu'ils parlent du
  * même DTO : une entrée oubliée ou en trop ne compile pas.
  */
-export function bindCerfa<Dto extends CerfaDto, Data>(
+export function bindCerfa<Dto extends CerfaDto>(
   cerfa: Cerfa<Dto>,
-  mapping: CerfaMapping<Dto, Data>,
-): BoundCerfa<Data> {
+  mapping: CerfaMapping<Dto>,
+): BoundCerfa {
   // Le socle ne lit aucune entrée : il rend le DTO au cerfa qui l'a déclaré.
-  return { cerfa, mapping } as unknown as BoundCerfa<Data>;
+  return { cerfa, mapping } as unknown as BoundCerfa;
 }
 
-/** Le DTO que `mapping` calcule de `data`. */
-export function dtoFrom<Data>(
-  mapping: CerfaMapping<CerfaDto, Data>,
-  data: Data,
-): CerfaDto {
-  const apply = (rules: Readonly<Record<string, (data: Data) => unknown>>) =>
+/** Le DTO que `mapping` donne, chaque valeur lue par `read`. */
+export function dtoFrom(mapping: CerfaMapping<CerfaDto>, read: Read): CerfaDto {
+  const apply = (values: Readonly<Record<string, Value<unknown>>>) =>
     Object.fromEntries(
-      Object.entries(rules).map(([key, rule]) => [key, rule(data)]),
+      Object.entries(values).map(([key, value]) => [key, read(value)]),
     );
   return {
     fields: apply(mapping.fields) as CerfaDto["fields"],

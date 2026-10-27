@@ -1,6 +1,6 @@
 import { screen, within } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
-import { type Address, page, questionsOf } from "../../../core/socle";
+import { type Address, givenOf, page, questionsOf } from "../../../core/socle";
 import { Questionnaire } from "../../../core/socle/questionnaire-engine/questionnaire";
 import { afficher } from "./afficher";
 
@@ -11,6 +11,7 @@ import { afficher } from "./afficher";
 type Questions = { depart: Address; arrivee: Address };
 
 const question = questionsOf<Questions>({ options: {} });
+const given = givenOf<Questions>();
 
 const valider = () =>
   screen.getByRole("button", { name: /^(Suivant|Terminer)$/ });
@@ -20,13 +21,16 @@ describe("adresse incohérente", () => {
   const memeVoie = (adresse: Address | undefined) => adresse?.street;
   const ARRIVEE = question
     .address("arrivee", "Adresse d'arrivée")
-    .inconsistentIf(({ answers }) => {
-      const depart = memeVoie(answers.question("depart").value);
-      return (
-        Boolean(depart) &&
-        depart === memeVoie(answers.question("arrivee").value)
-      );
-    }, "L'arrivée répète le départ.");
+    .inconsistentWhen(
+      given
+        .question("depart")
+        .answer()
+        .computeWith(given.question("arrivee").answer(), (depart, arrivee) => {
+          const voie = memeVoie(depart.value);
+          return Boolean(voie) && voie === memeVoie(arrivee.value);
+        }),
+      "L'arrivée répète le départ.",
+    );
   const LILAS = {
     street: "3 rue des Lilas",
     postalCode: "75012",

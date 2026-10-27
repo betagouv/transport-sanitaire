@@ -24,6 +24,16 @@ export class LocalDateTime {
     return new LocalDateTime(epochOf(saisie));
   }
 
+  /**
+   * Le jour de cet instant à Paris, à minuit : celui du prescripteur. La
+   * locale suédoise écrit la date en `AAAA-MM-JJ`.
+   */
+  static dayInParis(instant: Date): LocalDateTime {
+    return LocalDateTime.parse(
+      instant.toLocaleDateString("sv-SE", { timeZone: "Europe/Paris" }),
+    );
+  }
+
   /** Elle vient avant cette autre date. */
   isBefore(autre: LocalDateTime): boolean {
     return this.compare(autre, (ecart) => ecart < 0);
@@ -58,6 +68,13 @@ export class LocalDateTime {
         ? undefined
         : this.epoch - (this.epoch % (HEURES_PAR_JOUR * MS_PAR_HEURE)),
     );
+  }
+
+  /** Son jour, `AAAA-MM-JJ`. Une date illisible n'en a pas. */
+  day(): string | Unreadable {
+    return this.epoch === undefined
+      ? undefined
+      : new Date(this.epoch).toISOString().slice(0, 10);
   }
 
   /** Elle tombe au même instant. Une date illisible n'égale rien. */

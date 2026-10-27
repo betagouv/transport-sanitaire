@@ -6,10 +6,10 @@
 //
 // Il suit `CONTRAT_REPONSES_FAITS.json`.
 
-import { Fait } from "../../../socle/index.ts";
-import type { DeclarationDeFait } from "../declarations/faits.ts";
+import { unFait } from "../../../socle/index.ts";
 
-export const centreReferenceDestination: DeclarationDeFait = () =>
-  Fait.inconnu(
-    "Aucune question avant le verrou ne le pose : Q3.4.a, en P3, précise le document sans requalifier P2 (D-117).",
-  );
+export const centreReferenceDestination = unFait(
+  "fait_centre_reference_destination",
+).sinon(
+  "Aucune question avant le verrou ne le pose : Q3.4.a, en P3, précise le document sans requalifier P2 (D-117).",
+);

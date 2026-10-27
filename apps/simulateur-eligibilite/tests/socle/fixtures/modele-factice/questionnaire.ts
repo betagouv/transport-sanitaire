@@ -5,6 +5,8 @@
 // retour, brouillon, effacement des réponses dépendantes et verrou.
 
 import {
+  afterLock,
+  givenOf,
   page,
   type QuestionnairePart,
   questionsOf,
@@ -12,13 +14,15 @@ import {
 import type { Cibles } from "./declarations/cibles";
 import type { Faits } from "./declarations/faits";
 import { OPTIONS, type Questions } from "./declarations/questions";
-import { faits } from "./preconisation";
+import { CATALOGUE_DES_FAITS, cibles } from "./preconisation";
 
-const question = questionsOf<Questions, Faits>({ options: OPTIONS, faits });
+export const given = givenOf<Questions, Faits, Cibles>();
+const boisson = given.question("boisson").answer();
 
-const questionDuComplement = questionsOf<Questions, Faits, Cibles>({
+const question = questionsOf<Questions, Faits, Cibles>({
   options: OPTIONS,
-  faits,
+  faits: CATALOGUE_DES_FAITS,
+  cibles,
 });
 
 /** Modifiables tant que le résultat n'est pas verrouillé. */
@@ -35,10 +39,7 @@ export const PARTS: readonly QuestionnairePart<Questions, undefined>[] = [
         "accompagnements",
         question
           .multipleChoice("accompagnements", "Avec quoi ?")
-          .askedIf(({ answers }) => {
-            const boisson = answers.question("boisson");
-            return boisson.hasAnswer() && boisson.isNot("rien");
-          })
+          .appliesWhen(boisson.isPresent().and(boisson.is("rien").not()))
           .dependsOn("boisson")
           .exclusive("aucun"),
       ),
@@ -47,16 +48,13 @@ export const PARTS: readonly QuestionnairePart<Questions, undefined>[] = [
 ];
 
 /** Posée après le verrou : elle complète, elle ne décide plus. */
-export const COMPLEMENT: QuestionnairePart<Questions, Cibles> = {
+export const COMPLEMENT: QuestionnairePart<Questions, Cibles> = afterLock({
   id: "complement",
   title: "Compléter la commande",
   pages: [
     page(
       "quantite",
-      questionDuComplement
-        .number("quantite", "Combien de tasses ?")
-        .min(1)
-        .unit("tasses"),
+      question.number("quantite", "Combien de tasses ?").min(1).unit("tasses"),
     ),
   ],
-};
+});

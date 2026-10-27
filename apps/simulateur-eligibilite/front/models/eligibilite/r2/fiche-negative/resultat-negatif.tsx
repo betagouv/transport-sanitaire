@@ -5,15 +5,13 @@
 import type { FirstResult } from "../../../../socle";
 import { avecLeCatalogue } from "../avec-le-catalogue";
 import { pageDeLaFeuille } from "../page-de-la-fiche";
-import { type ReponsesEtCibles, traceDuResultat } from "../trace-du-resultat";
+import { type Lecture, traceDuResultat } from "../trace-du-resultat";
 import { FicheNegative } from "./FicheNegative";
 import { texteDeLaFicheNegative } from "./texte-de-la-fiche-negative";
 
-export function resultatNegatif(
-  reponses: ReponsesEtCibles,
-): Promise<FirstResult> {
+export function resultatNegatif(lecture: Lecture): Promise<FirstResult> {
   return avecLeCatalogue((catalogue) => {
-    const trace = traceDuResultat(reponses);
+    const trace = traceDuResultat(lecture);
     const texte = texteDeLaFicheNegative(catalogue, trace);
     return pageDeLaFeuille(catalogue, texte.titreDuPrescripteur, {
       title: texte.titreDuPatient,

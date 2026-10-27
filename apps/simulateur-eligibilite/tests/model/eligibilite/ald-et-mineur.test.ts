@@ -109,8 +109,8 @@ describe("les cas Q1.3 de l'éditeur", () => {
   });
 
   it("proche-ald-confirmee : le lien de l'ALD cite sa preuve, Q1.1", () => {
-    expect(faits(PROCHE(["2_ALD"])).fait_ald_liee.provenance).toMatch(
-      /Q1\.1 : l'aide d'un proche est nécessaire/,
+    expect(faits(PROCHE(["2_ALD"])).fait_ald_liee.provenance).toBe(
+      "Q1.3 : « 2_ALD », Q1.1 : « 2_AVEC_UN_PROCHE ». L'aide d'un proche est nécessaire.",
     );
   });
 

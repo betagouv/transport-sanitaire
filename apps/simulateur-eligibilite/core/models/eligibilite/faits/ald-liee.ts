@@ -6,8 +6,27 @@
 // Il suit `CORRECTIF_FAITS_SANS_REPONSE.md`, qui prime sur
 // `CONTRAT_REPONSES_FAITS.json`.
 
-import { CasParticuliers } from "../concepts/cas-particuliers.ts";
-import type { DeclarationDeFait } from "../declarations/faits.ts";
+import { unFait } from "../../../socle/index.ts";
+import { AIDE, CAS, CRITERES } from "./communs.ts";
 
-export const aldLiee: DeclarationDeFait = ({ validated }) =>
-  CasParticuliers.of(validated).fondement("2_ALD");
+export const aldLiee = unFait("fait_ald_liee")
+  .nonSi(CAS.isPresent().and(CAS.checked("2_ALD").not()))
+  .ouiSi(
+    CAS.checked("2_ALD").and(AIDE.is("2_AVEC_UN_PROCHE")),
+    "L'aide d'un proche est nécessaire.",
+  )
+  .nonSi(
+    CAS.checked("2_ALD").and(AIDE.is("1_SEUL")),
+    "Le patient se déplace seul.",
+  )
+  .ouiSi(
+    CAS.checked("2_ALD")
+      .and(AIDE.is("3_AVEC_UN_PROFESSIONNEL"))
+      .and(CRITERES.anyChecked()),
+    "Un critère de Q1.2 prouve une déficience.",
+  )
+  .inconnuSi(
+    CAS.checked("2_ALD"),
+    "Ni Q1.1 ni Q1.2 n'établissent encore une déficience.",
+  )
+  .sinon("Q1.3 n'est pas encore validée.");

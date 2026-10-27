@@ -7,13 +7,18 @@
 // `CONTRAT_REPONSES_FAITS.json`.
 
 import { unFait } from "../../../socle/index.ts";
-import { ContextesDuTrajet } from "../concepts/contextes-du-trajet.ts";
+import { PAS_ENCORE_ETABLI } from "../declarations/faits.ts";
 import {
-  type DeclarationDeFait,
-  PAS_ENCORE_ETABLI,
-} from "../declarations/faits.ts";
+  AUTRE_CADRE_ECARTE,
+  SITUATION_DU_CADRE,
+  SITUATION_PROPOSEE,
+} from "./communs.ts";
 
-export const motifSamsah: DeclarationDeFait = ({ validated }) =>
-  unFait()
-    .retient(ContextesDuTrajet.of(validated).situation("7_SAMSAH"))
-    .sinon(PAS_ENCORE_ETABLI);
+export const motifSamsah = unFait("fait_motif_samsah")
+  .nonSi(
+    AUTRE_CADRE_ECARTE.and(SITUATION_PROPOSEE["7_SAMSAH"]),
+    "« autre situation » proposée, non cochée.",
+  )
+  .ouiSi(SITUATION_DU_CADRE.checked("7_SAMSAH"))
+  .nonSiEcartee(SITUATION_DU_CADRE, "7_SAMSAH")
+  .sinon(PAS_ENCORE_ETABLI);

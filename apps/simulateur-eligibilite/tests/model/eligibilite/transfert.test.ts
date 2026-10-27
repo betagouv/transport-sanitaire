@@ -90,7 +90,8 @@ describe("Q2.5 « Non » seule", () => {
     const validee = { ...autre, "Q2.6": ["11_AUCUNE"] } as const;
     expect(faits(validee).fait_transfert_article80).toEqual({
       value: true,
-      provenance: "Q2.5 et Q2.6 : déplacement provisoire pendant le séjour.",
+      provenance:
+        "Q2.5 : « 2_AUTRE_DEPLACEMENT », Q2.6 : « 11_AUCUNE ». Un déplacement provisoire pendant le séjour.",
     });
   });
 });

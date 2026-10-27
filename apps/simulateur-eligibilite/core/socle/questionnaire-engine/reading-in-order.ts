@@ -5,7 +5,12 @@
 // Les questions se lisent dans l'ordre. Chacune voit celles qui la précèdent
 // et qui sont validées : ses conditions peuvent en dépendre, pas de la suite.
 // Ses incohérences ne voient pas non plus les réponses des pages suivantes.
+//
+// Seules les pages posées après le verrou reçoivent les cibles figées. Les
+// autres lisent celles que le modèle calcule sur leurs faits
+// (`question-context.ts`), même relues après le verrou.
 
+import { type GuardPlace, guardReading, Positions } from "./answer-readings.ts";
 import type { AskedQuestion } from "./asked-question.ts";
 import { GivenAnswers } from "./given-answers.ts";
 import type {
@@ -41,9 +46,12 @@ export function readInOrder(
 ): { readonly asked: readonly AskedPage[] } & Progress {
   let progress: Progress = { validated: {}, complete: true };
   const asked: AskedPage[] = [];
+  const positions = new Positions(pages);
   for (const [rank, page] of pages.entries()) {
     const earlier = answersUpTo(pages, rank, answers);
-    const read = askPage(page, { answers, earlier, cibles }, progress);
+    const frozen = page.afterLock ? cibles : undefined;
+    const context = { answers, earlier, cibles: frozen, positions, rank };
+    const read = askPage(page, context, progress);
     asked.push({ page, questions: read.questions });
     progress = read.progress;
   }
@@ -58,19 +66,30 @@ type Progress = { readonly validated: Validated; readonly complete: boolean };
 
 // Ce que les questions d'une page peuvent lire : les réponses, celles qu'en
 // voient leurs incohérences (sans les pages suivantes), et les cibles.
+// `positions` et `rank` : où se trouvent les questions, et la page lue.
 type Context = {
   readonly answers: Answers;
   readonly earlier: Answers;
   readonly cibles?: AnyCibles;
+  readonly positions: Positions;
+  readonly rank: number;
 };
 
 // Les questions de la page qui se posent, dans l'ordre. Chacune voit ce que les
-// précédentes ont validé.
+// précédentes ont validé, et celles de la page posées avant elle.
 function askPage(page: Page, context: Context, start: Progress) {
   let progress = start;
   const questions: AskedQuestion[] = [];
-  for (const declared of page.questions) {
-    const question = askQuestion(declared, context, progress.validated);
+  for (const [index, declared] of page.questions.entries()) {
+    const place: GuardPlace = {
+      id: declared.id,
+      at: { page: context.rank, index },
+      positions: context.positions,
+      onPage: new Map(questions.map((asked) => [asked.id, asked])),
+      validated: progress.validated,
+      answers: context.answers,
+    };
+    const question = askQuestion(declared, context, place);
     if (!question) continue;
     questions.push(question);
     progress = validateInTurn(progress, question, context.answers);
@@ -78,19 +97,21 @@ function askPage(page: Page, context: Context, start: Progress) {
   return { questions, progress };
 }
 
-// La question telle qu'elle se pose, ou `NotAsked`.
+// La question telle qu'elle se pose, ou `NotAsked`. Ses conditions lisent les
+// réponses à sa place ; ses incohérences lisent aussi la sienne.
 function askQuestion(
   declared: Question,
   { answers, earlier, cibles }: Context,
-  validated: Validated,
+  place: GuardPlace,
 ): AskedQuestion | NotAsked {
-  const read = new ValidatedAnswers(validated);
-  const seenWith = (given: Answers): SeenAnswers => ({
+  const read = new ValidatedAnswers(place.validated);
+  const seenWith = (given: Answers, own: boolean): SeenAnswers => ({
     answers: new GivenAnswers(given),
     cibles,
     validated: read,
+    answer: guardReading(place, { own }),
   });
-  return declared.askedIn(seenWith(answers), seenWith(earlier));
+  return declared.askedIn(seenWith(answers, false), seenWith(earlier, true));
 }
 
 // Une question qui a sa réponse est validée, si aucune n'attend avant elle. La

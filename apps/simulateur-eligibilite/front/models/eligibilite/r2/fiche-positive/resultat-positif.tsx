@@ -7,21 +7,21 @@
 import type { FirstResult } from "../../../../socle";
 import { avecLeCatalogue } from "../avec-le-catalogue";
 import { pageDeLaFeuille } from "../page-de-la-fiche";
-import { type ReponsesEtCibles, traceDuResultat } from "../trace-du-resultat";
+import { type Lecture, traceDuResultat } from "../trace-du-resultat";
 import { FichePositive } from "./FichePositive";
 import {
   type IssueAvecFichePositive,
   texteDeLaFichePositive,
 } from "./texte-de-la-fiche-positive";
 
-type Props = ReponsesEtCibles & { issue: IssueAvecFichePositive };
+type Props = Lecture & { issue: IssueAvecFichePositive };
 
 export function resultatPositif({
   issue,
-  ...reponses
+  ...lecture
 }: Props): Promise<FirstResult> {
   return avecLeCatalogue((catalogue) => {
-    const trace = traceDuResultat(reponses);
+    const trace = traceDuResultat(lecture);
     const texte = texteDeLaFichePositive(catalogue, trace, issue);
     if (!texte) return SANS_MODE;
     return pageDeLaFeuille(catalogue, texte.titreDuPrescripteur, {

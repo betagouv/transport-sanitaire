@@ -1,5 +1,6 @@
 // Le catalogue des faits : un fichier par fait sous `faits/`, qui porte son
 // nom sans `fait_`. On y lit tout ce que vaut un fait, sans chercher ailleurs.
+// Seul `communs.ts` n'en déclare pas : ce que plusieurs faits lisent.
 
 import { basename } from "node:path";
 import ts from "typescript";
@@ -9,6 +10,7 @@ import { astDe, sources, texteDe } from "../../inspection-des-sources";
 
 const DOSSIER = "core/models/eligibilite/faits";
 const INDEX = `${DOSSIER}/index.ts`;
+const COMMUNS = `${DOSSIER}/communs.ts`;
 
 const sansPrefixe = (fait: string) => fait.replace(/^fait_/, "");
 const fichierDe = (fait: string) =>
@@ -22,11 +24,11 @@ describe("le catalogue des faits", () => {
   it("à chaque fait répond un fichier, et à chaque fichier un fait", () => {
     expect(
       sources(DOSSIER)
-        .filter((fichier) => fichier !== INDEX)
+        .filter((fichier) => fichier !== INDEX && fichier !== COMMUNS)
         .sort(),
       "Un fait se trouve par son nom : `fait_distance_plus_50` vit dans " +
         "`faits/distance-plus-50.ts`. Un fichier sans fait n'a pas sa place " +
-        "ici : ce que plusieurs faits lisent est un concept, sous `concepts/`.",
+        "ici : ce que plusieurs faits lisent va dans `faits/communs.ts`.",
     ).toEqual(FAITS.map(fichierDe).sort());
   });
 
@@ -35,7 +37,7 @@ describe("le catalogue des faits", () => {
       exportsDe(fichierDe(fait)),
       "Le fichier d'un fait n'exporte que sa déclaration, au nom du fait en " +
         "camelCase. Ce qu'il est seul à lire reste privé, sous le marqueur " +
-        "d'implémentation. Ce que d'autres lisent devient un concept.",
+        "d'implémentation. Ce que d'autres lisent va dans `communs.ts`.",
     ).toEqual([declarationDe(fait)]);
   });
 

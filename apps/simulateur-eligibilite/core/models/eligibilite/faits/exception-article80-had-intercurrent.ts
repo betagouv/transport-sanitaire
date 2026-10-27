@@ -8,15 +8,13 @@
 // `CONTRAT_REPONSES_FAITS.json`.
 
 import { unFait } from "../../../socle/index.ts";
-import { ExceptionsDeLArticle80 } from "../concepts/exceptions-de-l-article-80.ts";
-import {
-  type DeclarationDeFait,
-  PAS_ENCORE_ETABLI,
-} from "../declarations/faits.ts";
+import { PAS_ENCORE_ETABLI } from "../declarations/faits.ts";
+import { EXCEPTIONS } from "./communs.ts";
 
-export const exceptionArticle80HadIntercurrent: DeclarationDeFait = ({
-  validated,
-}) =>
-  unFait()
-    .retient(ExceptionsDeLArticle80.of(validated).fait("5_HAD"))
-    .sinon(PAS_ENCORE_ETABLI);
+export const exceptionArticle80HadIntercurrent = unFait(
+  "fait_exception_article80_had_intercurrent",
+)
+  .ouiSi(EXCEPTIONS.checked("5_HAD"))
+  .nonSiEcartee(EXCEPTIONS, "5_HAD")
+  .inconnuSi(EXCEPTIONS.isPresent(), "« 5_HAD » ne s'est pas proposée.")
+  .sinon(PAS_ENCORE_ETABLI);

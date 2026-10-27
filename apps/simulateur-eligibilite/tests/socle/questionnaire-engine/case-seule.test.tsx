@@ -1,6 +1,6 @@
 import { screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
-import { page, questionsOf } from "../../../core/socle";
+import { givenOf, page, questionsOf } from "../../../core/socle";
 import { Questionnaire } from "../../../core/socle/questionnaire-engine/questionnaire";
 import { afficher } from "./afficher";
 
@@ -18,6 +18,7 @@ const OPTIONS = {
 } as const;
 
 const question = questionsOf<Questions>({ options: OPTIONS });
+const given = givenOf<Questions>();
 
 const DISTANCE = question.singleChoice("distance", "Quelle distance ?");
 
@@ -102,9 +103,7 @@ describe("case seule", () => {
         DISTANCE,
         question
           .text("escale", "Où se fait l'escale ?")
-          .askedIf(({ validated }) =>
-            validated.question("distance").is("longue"),
-          ),
+          .appliesWhen(given.question("distance").answer().is("longue")),
       ),
     ]);
 

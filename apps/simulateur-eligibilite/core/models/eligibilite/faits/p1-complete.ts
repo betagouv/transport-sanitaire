@@ -5,11 +5,9 @@
 //
 // Il suit `CONTRAT_REPONSES_FAITS.json`.
 
-import { Fait } from "../../../socle/index.ts";
-import {
-  type DeclarationDeFait,
-  IMPOSEE_PAR_LA_DECISION,
-} from "../declarations/faits.ts";
+import { unFait } from "../../../socle/index.ts";
+import { IMPOSEE_PAR_LA_DECISION } from "../declarations/faits.ts";
 
-export const p1Complete: DeclarationDeFait = () =>
-  Fait.inconnu(IMPOSEE_PAR_LA_DECISION);
+export const p1Complete = unFait("fait_p1_complete").sinon(
+  IMPOSEE_PAR_LA_DECISION,
+);

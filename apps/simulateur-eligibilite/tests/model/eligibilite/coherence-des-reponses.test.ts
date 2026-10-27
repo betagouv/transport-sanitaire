@@ -3,7 +3,7 @@
 //
 // L'éditeur refuse une réponse incohérente sur sa page, avant « Suivant ». Le
 // socle le fait déjà : une incompatibilité (`incompatibleOptions`), un blocage
-// (`blocks`), ou une question qui ne se pose pas (`askedIf`, `offeredIf`). Les
+// (`blocks`), ou une question qui ne se pose pas (`appliesWhen`, `offeredWhen`). Les
 // contradictions des pages encore à poser (permission, implantation, pays,
 // dates…) arrivent avec leurs questions.
 
@@ -14,10 +14,10 @@ import {
   OPTIONS,
   type Questions,
 } from "../../../core/models/eligibilite/declarations/questions";
+import { cible } from "../../../core/models/eligibilite/evaluation-des-regles";
 import { CATALOGUE_DES_FAITS } from "../../../core/models/eligibilite/faits";
-import { cibleEnCoursDeP1 } from "../../../core/models/eligibilite/p1/partie-1";
+import { Fait } from "../../../core/socle";
 import { preconisationOf } from "../../../core/socle/model";
-import { GivenAnswers } from "../../../core/socle/questionnaire-engine/given-answers";
 import {
   type Answers,
   pagesOf,
@@ -102,13 +102,12 @@ describe("les 2 048 combinaisons de Q1.2", () => {
         "Q1.2": { answer: criteres },
         "Q1.3": { answer: ["7_AUCUNE"] },
       });
-      const faits = CATALOGUE_DES_FAITS.read(
-        new GivenAnswers<Questions>({}),
-        validated,
-      );
+      // Les règles ne donnent le mode qu'une fois P1 complète.
+      const faits = CATALOGUE_DES_FAITS.read(validated, {
+        fait_p1_complete: Fait.oui("P1 complète."),
+      });
       const cle = JSON.stringify(FAITS_DE_P1.map((nom) => faits[nom]));
-      if (!modes.has(cle))
-        modes.set(cle, cibleEnCoursDeP1(faits, "cible_mode_id").value);
+      if (!modes.has(cle)) modes.set(cle, cible(faits, "cible_mode_id").value);
       return modes.get(cle) !== modeAttendu(criteres);
     });
     expect(ecarts).toEqual([]);

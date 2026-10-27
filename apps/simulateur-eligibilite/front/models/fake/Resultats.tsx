@@ -11,9 +11,9 @@
 
 import type { ReactNode } from "react";
 import type { Cibles } from "../../../core/models/fake/declarations/cibles";
-import type { Questions } from "../../../core/models/fake/declarations/questions";
+import type { Faits } from "../../../core/models/fake/declarations/faits";
 import { SANS_COMMANDE } from "../../../core/models/fake/preconisation";
-import type { GivenAnswers } from "../../../core/socle";
+import { given } from "../../../core/models/fake/question";
 import {
   Disclosure,
   type FirstResult,
@@ -22,6 +22,7 @@ import {
   NumberedCards,
   NumberedSteps,
   Panel,
+  type ResultatProps,
   SheetFollowUp,
 } from "../../socle";
 import { enUneLigne } from "./adresse";
@@ -29,24 +30,24 @@ import grandeTasse from "./illustrations/grande-tasse.svg";
 import tasse from "./illustrations/tasse.svg";
 import verreGlace from "./illustrations/verre-glace.svg";
 
-type Props = { answers: GivenAnswers<Questions>; cibles: Cibles };
+type Props = ResultatProps<Faits, Cibles>;
 
-export function resultatDeLaCommande({ answers, cibles }: Props): FirstResult {
+export function resultatDeLaCommande({ read, cibles }: Props): FirstResult {
   if (cibles.commande.is(SANS_COMMANDE)) return RIEN_A_SERVIR;
   return {
     title: "La commande est prête à être complétée",
     intro: `Commande : ${cibles.commande.value}.`,
-    body: <PageDeLaCommande answers={answers} cibles={cibles} />,
+    body: <PageDeLaCommande read={read} cibles={cibles} />,
   };
 }
 
-export function CommandeCompletee({ answers, cibles }: Props) {
-  const adresse = answers.question("adresse");
+export function CommandeCompletee({ read, cibles }: Props) {
+  const adresse = read(given.question("adresse").answer());
   return (
     <>
       <p className="fr-text--lead">
         Commande : {cibles.commande.value},{" "}
-        {String(answers.question("quantite").value)} tasses
+        {String(read(given.question("quantite").answer()).value)} tasses
       </p>
       {adresse.hasAnswer() && (
         <p>Facture à envoyer : {enUneLigne(adresse.value)}</p>
@@ -122,7 +123,7 @@ function FicheDuClient() {
   );
 }
 
-function PageDeLaCommande({ answers, cibles }: Props) {
+function PageDeLaCommande({ read, cibles }: Pick<Props, "read" | "cibles">) {
   return (
     <>
       <Pourquoi cibles={cibles} />
@@ -135,7 +136,7 @@ function PageDeLaCommande({ answers, cibles }: Props) {
       )}
       <h2 className="fr-h5 fr-mt-5w">Les façons de servir</h2>
       <IllustratedCards
-        cards={facons(answers.question("service").checkedBoxes())}
+        cards={facons(read(given.question("service").answer()).checkedBoxes())}
         selectedLabel="Votre commande"
       />
       <NumberedCards

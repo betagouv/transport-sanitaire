@@ -2,9 +2,7 @@
 // proposait. C'est ce qui sépare un « non » d'un fait inconnu : une case
 // proposée et non cochée a été refusée, une case jamais montrée ne l'a pas été.
 
-import { Fait } from "../decision-engine/fait.ts";
 import { type Box, type Choice, GivenAnswer } from "./given-answers.ts";
-import type { NotOffered } from "./option.ts";
 import type { Answers, AnyQuestions, Validated } from "./question.ts";
 
 /**
@@ -44,19 +42,6 @@ export class ValidatedAnswer<
   /** Cette case se proposait, et n'a pas été cochée. */
   declined(box: Box<Given>): boolean {
     return this.offers(box) && !this.checked(box);
-  }
-
-  /**
-   * Le fait que dit une case, selon le contrat de l'éditeur : cochée, oui ;
-   * proposée sans être cochée, non. Une case qui ne se proposait pas ne dit
-   * rien, et le modèle décide.
-   */
-  faitOf(box: Box<Given>): Fait | NotOffered {
-    if (!this.offers(box)) return undefined;
-    const option = `${this.id} : « ${box} »`;
-    return this.checked(box)
-      ? Fait.oui(`${option} cochée.`)
-      : Fait.non(`${option} proposée, non cochée.`);
   }
 }
 

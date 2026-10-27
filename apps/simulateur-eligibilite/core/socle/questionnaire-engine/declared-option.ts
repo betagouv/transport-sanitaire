@@ -2,10 +2,11 @@
 // l'éditeur, d'où viennent leurs valeurs et leurs libellés. Le modèle en règle
 // chacune par une lambda, tous ses réglages au même endroit :
 //
-//   .option("6_SEANCE", (option) => option.description("…").offeredIf(…))
+//   .option("6_SEANCE", (option) => option.description("…").offeredWhen(…))
 //
 // Une option ne change pas : chaque réglage donne une copie.
 
+import type { Condition, Reading } from "./condition.ts";
 import type { NotOffered, OfferedOption, OptionHelp } from "./option.ts";
 import type { AnyQuestions } from "./question.ts";
 import type { QuestionContext } from "./question-context.ts";
@@ -31,13 +32,10 @@ export class DeclaredOption<Questions extends AnyQuestions, Cibles, Faits> {
   }
 
   /**
-   * L'option se propose-t-elle, vu les réponses ? Chaque appel ajoute une
-   * condition. Une réponse qui la portait la perd quand elle ne se propose
-   * plus.
+   * L'option se propose quand cette condition tient. Chaque appel en ajoute
+   * une. Une réponse qui la portait la perd quand elle ne se propose plus.
    */
-  offeredIf(
-    condition: (context: Context<Questions, Cibles, Faits>) => boolean,
-  ): DeclaredOption<Questions, Cibles, Faits> {
+  offeredWhen(condition: Condition): DeclaredOption<Questions, Cibles, Faits> {
     return this.#with({
       conditions: [...this.#settings.conditions, condition],
     });
@@ -68,9 +66,11 @@ export class DeclaredOption<Questions extends AnyQuestions, Cibles, Faits> {
   /** L'option telle qu'elle se propose, si elle se propose. */
   offeredIn(
     context: Context<Questions, Cibles, Faits>,
+    reading: Reading,
   ): OfferedOption | NotOffered {
     const { value, description, blocks, conditions } = this.#settings;
-    if (!conditions.every((condition) => condition(context))) return undefined;
+    if (!conditions.every((condition) => condition.in(reading)))
+      return undefined;
     const help = this.#settings.helpFrom?.(context);
     return {
       value,
@@ -138,21 +138,23 @@ export class DeclaredOptions<Questions extends AnyQuestions, Cibles, Faits> {
   /** Les options qui se proposent, hors `except`, sous leur libellé du moment. */
   offeredIn(
     context: Context<Questions, Cibles, Faits>,
+    reading: Reading,
     except?: string,
   ): OfferedOption[] {
     const values = this.#order ?? this.#options.map(({ value }) => value);
     return values
       .filter((value) => value !== except)
-      .flatMap((value) => this.offeredOneIn(value, context) ?? []);
+      .flatMap((value) => this.offeredOneIn(value, context, reading) ?? []);
   }
 
   /** L'option `value`, si elle se propose. */
   offeredOneIn(
     value: string,
     context: Context<Questions, Cibles, Faits>,
+    reading: Reading,
   ): OfferedOption | NotOffered {
     const option = this.#options.find((each) => each.value === value);
-    return option?.offeredIn(context);
+    return option?.offeredIn(context, reading);
   }
 }
 
@@ -168,9 +170,7 @@ type Context<Questions extends AnyQuestions, Cibles, Faits> = QuestionContext<
 type OptionSettings<Questions extends AnyQuestions, Cibles, Faits> = {
   readonly value: string;
   readonly label: string;
-  readonly conditions: readonly ((
-    context: Context<Questions, Cibles, Faits>,
-  ) => boolean)[];
+  readonly conditions: readonly Condition[];
   readonly description?: string;
   readonly blocks?: string;
   labelFrom?(context: Context<Questions, Cibles, Faits>): string;

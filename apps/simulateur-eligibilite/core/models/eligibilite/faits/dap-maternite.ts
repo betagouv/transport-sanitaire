@@ -8,29 +8,28 @@
 // `CONTRAT_REPONSES_FAITS.json`.
 
 import { unFait } from "../../../socle/index.ts";
-import { ContextesDuTrajet } from "../concepts/contextes-du-trajet.ts";
+import { PAS_ENCORE_ETABLI } from "../declarations/faits.ts";
 import {
-  type DeclarationDeFait,
-  PAS_ENCORE_ETABLI,
-} from "../declarations/faits.ts";
+  AUTRE_CADRE_ECARTE,
+  given,
+  SITUATION_DU_CADRE,
+  SITUATION_PROPOSEE,
+} from "./communs.ts";
 
-export const dapMaternite: DeclarationDeFait = ({ validated }) => {
-  const eloignement = validated.question("Q2.14.eloignement");
-  const motif = validated.question("Q2.14.motif");
-  const conditions = [
-    ...eloignement.checkedBoxes(),
-    ...motif.checkedBoxes(),
-  ].join(" », « ");
-  return unFait()
-    .nonSi(
-      eloignement.checked("3_AUCUNE"),
-      "Q2.14 : aucun éloignement éligible.",
-    )
-    .nonSi(motif.checked("3_AUCUNE"), "Q2.14 : aucun motif éligible.")
-    .ouiSi(
-      eloignement.hasAnswer() && motif.hasAnswer(),
-      `Q2.14 : « ${conditions} ».`,
-    )
-    .retient(ContextesDuTrajet.of(validated).situation("4_MATERNITE_ELOIGNEE"))
-    .sinon(PAS_ENCORE_ETABLI);
-};
+const ELOIGNEMENT = given.question("Q2.14.eloignement").answer();
+const MOTIF_DE_LA_DAP = given.question("Q2.14.motif").answer();
+
+export const dapMaternite = unFait("fait_dap_maternite")
+  .nonSi(ELOIGNEMENT.checked("3_AUCUNE"), "Aucun éloignement éligible.")
+  .nonSi(MOTIF_DE_LA_DAP.checked("3_AUCUNE"), "Aucun motif éligible.")
+  .ouiSi(ELOIGNEMENT.isPresent().and(MOTIF_DE_LA_DAP.isPresent()))
+  .nonSi(
+    AUTRE_CADRE_ECARTE.and(SITUATION_PROPOSEE["4_MATERNITE_ELOIGNEE"]),
+    "« autre situation » proposée, non cochée.",
+  )
+  .inconnuSi(
+    SITUATION_DU_CADRE.checked("4_MATERNITE_ELOIGNEE"),
+    "À qualifier dans sa branche.",
+  )
+  .nonSiEcartee(SITUATION_DU_CADRE, "4_MATERNITE_ELOIGNEE")
+  .sinon(PAS_ENCORE_ETABLI);

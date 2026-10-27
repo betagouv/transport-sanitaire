@@ -1,27 +1,19 @@
 // Le modèle factice : un questionnaire sans rapport avec le transport
 // sanitaire, écrit dans le contrat `Model`. Les tests du socle tournent sur lui.
 
-import {
-  bindCerfa,
-  type CerfaInput,
-  defineModel,
-  text,
-} from "../../../../front/socle";
+import { bindCerfa, defineModel, text } from "../../../../front/socle";
 import type { Cibles } from "./declarations/cibles";
 import type { Faits } from "./declarations/faits";
 import type { Questions } from "./declarations/questions";
 import { cibles, faits, SANS_COMMANDE } from "./preconisation";
-import { COMPLEMENT, PARTS } from "./questionnaire";
+import { COMPLEMENT, given, PARTS } from "./questionnaire";
 import { CommandeCompletee, resultatDeLaCommande } from "./Resultats";
 
 // Un gabarit fabriqué : le test relit ce qu'il dessine sans servir d'asset.
-const BON_DE_COMMANDE = bindCerfa<
-  {
-    fields: { commande: string; quantite: string; date: string };
-    drawings: Record<never, never>;
-  },
-  CerfaInput<Questions, Faits, Cibles>
->(
+const BON_DE_COMMANDE = bindCerfa<{
+  fields: { commande: string; quantite: string; date: string };
+  drawings: Record<never, never>;
+}>(
   {
     template: () =>
       import("../../cerfa/test-form").then((m) => m.bonDeCommande()),
@@ -35,9 +27,12 @@ const BON_DE_COMMANDE = bindCerfa<
   },
   {
     fields: {
-      commande: ({ cibles }) => String(cibles.commande.value),
-      quantite: ({ answers }) => String(answers.question("quantite").value),
-      date: ({ completedAt }) => completedAt.toISOString().slice(0, 10),
+      commande: given.cible("commande").compute(({ value }) => String(value)),
+      quantite: given
+        .question("quantite")
+        .answer()
+        .compute(({ value }) => String(value)),
+      date: given.today().compute((jour) => jour.day() ?? ""),
     },
     drawings: {},
   },

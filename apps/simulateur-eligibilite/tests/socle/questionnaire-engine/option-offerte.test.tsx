@@ -1,6 +1,6 @@
 import { screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
-import { page, questionsOf } from "../../../core/socle";
+import { givenOf, page, questionsOf } from "../../../core/socle";
 import { afficher } from "./afficher";
 
 // Une option peut ne se proposer que pour certaines réponses. Le questionnaire
@@ -18,6 +18,7 @@ const OPTIONS = {
 } as const;
 
 const question = questionsOf<Questions>({ options: OPTIONS });
+const given = givenOf<Questions>();
 
 const REGIME = page(
   "regime",
@@ -30,7 +31,7 @@ const PLATS = page(
     .multipleChoice("plats", "Quels plats ?")
     .exclusive("rien")
     .option("steak", (option) =>
-      option.offeredIf(({ answers }) => answers.question("regime").is("tout")),
+      option.offeredWhen(given.question("regime").answer().is("tout")),
     ),
 );
 

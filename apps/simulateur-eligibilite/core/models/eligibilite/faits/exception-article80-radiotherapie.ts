@@ -10,15 +10,22 @@
 // `CONTRAT_REPONSES_FAITS.json`.
 
 import { unFait } from "../../../socle/index.ts";
-import { ExceptionsDeLArticle80 } from "../concepts/exceptions-de-l-article-80.ts";
-import {
-  type DeclarationDeFait,
-  PAS_ENCORE_ETABLI,
-} from "../declarations/faits.ts";
+import { PAS_ENCORE_ETABLI } from "../declarations/faits.ts";
+import { EXCEPTIONS, given } from "./communs.ts";
 
-export const exceptionArticle80Radiotherapie: DeclarationDeFait = ({
-  validated,
-}) =>
-  unFait()
-    .retient(ExceptionsDeLArticle80.of(validated).fait("8_RADIOTHERAPIE"))
-    .sinon(PAS_ENCORE_ETABLI);
+export const exceptionArticle80Radiotherapie = unFait(
+  "fait_exception_article80_radiotherapie",
+)
+  .ouiSi(EXCEPTIONS.checked("8_RADIOTHERAPIE"))
+  .nonSiEcartee(EXCEPTIONS, "8_RADIOTHERAPIE")
+  .nonSi(
+    EXCEPTIONS.isPresent().and(
+      given.question("Q2.6.a").answer().is("1_DEFINITIF"),
+    ),
+    "Elle ne s'est pas proposée : transfert définitif.",
+  )
+  .nonSi(
+    EXCEPTIONS.isPresent(),
+    "Elle ne s'est pas proposée : une admission en HAD n'est pas un transfert provisoire.",
+  )
+  .sinon(PAS_ENCORE_ETABLI);

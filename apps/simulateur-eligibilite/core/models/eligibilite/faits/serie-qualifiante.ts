@@ -8,14 +8,15 @@
 // Il suit `CONTRAT_REPONSES_FAITS.json`.
 
 import { unFait } from "../../../socle/index.ts";
-import { DistanceDuTrajet } from "../concepts/distance-du-trajet.ts";
-import type { DeclarationDeFait } from "../declarations/faits.ts";
+import { given } from "./communs.ts";
 
-export const serieQualifiante: DeclarationDeFait = ({ validated }) =>
-  unFait()
-    .selon(validated.question("Q2.3.3"), { "1_OUI": "oui", "2_NON": "non" })
-    .sinon(
-      DistanceDuTrajet.of(validated).estDeCinquanteKmOuMoins()
-        ? "Q2.3.3 ne se pose pas : le trajet ne dépasse pas 50 km."
-        : "Q2.3.3 n'est pas encore validée.",
-    );
+const SERIE = given.question("Q2.3.3").answer();
+
+export const serieQualifiante = unFait("fait_serie_qualifiante")
+  .ouiSi(SERIE.is("1_OUI"))
+  .nonSi(SERIE.is("2_NON"))
+  .inconnuSi(
+    given.question("Q2.3.1").answer().is("1_CINQUANTE_KM_OU_MOINS"),
+    "Q2.3.3 ne se pose pas : le trajet ne dépasse pas 50 km.",
+  )
+  .sinon("Q2.3.3 n'est pas encore validée.");

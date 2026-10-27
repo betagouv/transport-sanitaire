@@ -4,7 +4,7 @@
 // s'écrit dans le texte médical (#159). L'Engagement maternité suit sa cible,
 // qui reste vide en pratique (D-129).
 
-import type { Cibles } from "../../../../../core/models/eligibilite/declarations/cibles";
+import { given } from "../../../../../core/models/eligibilite/question";
 import type { Rubrique } from "./rubrique";
 
 export type MotifsDeLaDap = {
@@ -16,16 +16,11 @@ export type MotifsDeLaDap = {
 };
 
 export const MOTIFS_DE_LA_DAP: Rubrique<MotifsDeLaDap> = {
-  longue_distance: ({ cibles }) =>
-    cibles.cible_dap_motif_longue_distance.isOui(),
-  serie: ({ cibles }) => cibles.cible_dap_motif_serie.isOui(),
-  camsp_cmpp: ({ cibles }) => cibles.cible_dap_motif_camsp_cmpp.isOui(),
-  engagement_maternite: ({ cibles }) =>
-    cibles.cible_dap_motif_engagement_maternite.isOui(),
-  avion_bateau: ({ cibles }) => avionOuBateau(cibles),
+  longue_distance: given.cible("cible_dap_motif_longue_distance").isOui(),
+  serie: given.cible("cible_dap_motif_serie").isOui(),
+  camsp_cmpp: given.cible("cible_dap_motif_camsp_cmpp").isOui(),
+  engagement_maternite: given
+    .cible("cible_dap_motif_engagement_maternite")
+    .isOui(),
+  avion_bateau: given.cible("cible_dap_motif_avion_bateau").isOui(),
 };
-
-/** Le transport par avion ou bateau de ligne régulière est-il un motif ? */
-export function avionOuBateau(cibles: Cibles): boolean {
-  return cibles.cible_dap_motif_avion_bateau.isOui();
-}

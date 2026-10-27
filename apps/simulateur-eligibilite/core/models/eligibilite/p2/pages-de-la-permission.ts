@@ -3,9 +3,18 @@
 // 20 ans, sur une seule page (D-107).
 
 import { page } from "../../../socle/index.ts";
-import { Permission } from "../concepts/permission.ts";
-import { type Context, question } from "../question.ts";
-import { optionsAdultesAProposer } from "./permission.ts";
+import { given, question } from "../question.ts";
+import {
+  aLaChargeDuPatient,
+  commenceAvantLeQuatorziemeJour,
+  commenceAvantLHospitalisation,
+  depasseQuaranteHuitHeures,
+  desAdultesAProposer,
+  neFinitPasApresSonDebut,
+  periodeFinitAvantLaPremiere,
+  plusieursPermissions,
+  unMineurDeVingtAns,
+} from "./permission.ts";
 
 // Q2.7 se pose dès que la permission est un fait, par Q2.1 ou par Q2.2.1.a. Un
 // patient de moins de 18 ans en Q1.3 ne se propose pas adulte. Q2.7.a confirme
@@ -17,12 +26,12 @@ export const PAGE_DE_LA_PERMISSION = page(
       "Q2.7",
       "Dans quelle tranche d’âge se situe le patient pendant la période prescrite et quel est le cadre de la permission ?",
     )
-    .askedIf(({ faits }) => faits.fait_permission.isOui())
+    .mattersWhile(given.fait("fait_permission").isOui())
     .option("3_ADULTE_AUTORISEE", (option) =>
-      option.offeredIf(adultesAProposer),
+      option.offeredWhen(desAdultesAProposer),
     )
     .option("4_ADULTE_A_SA_CHARGE", (option) =>
-      option.offeredIf(adultesAProposer),
+      option.offeredWhen(desAdultesAProposer),
     ),
   question
     .singleChoice(
@@ -32,7 +41,7 @@ export const PAGE_DE_LA_PERMISSION = page(
     .hint(
       "La seule préférence personnelle ne suffit pas. Vérifier la demande écrite, l’absence de fondement médical, l’absence de couverture par les tarifs de l’établissement et l’information du patient sur le prix et la facturation.",
     )
-    .askedIf(({ answers }) => Permission.of(answers).estAChargeDuPatient())
+    .appliesWhen(aLaChargeDuPatient)
     .dependsOn("Q2.7"),
 );
 
@@ -43,27 +52,27 @@ export const PAGE_DE_LA_PERMISSION_DU_MINEUR = page(
   "P2/permission-mineur",
   question
     .date("Q2.8.1", "Depuis quelle date le patient est-il hospitalisé ?")
-    .askedIf(mineurAPoser),
+    .appliesWhen(unMineurDeVingtAns),
   question
     .datetime("Q2.8.2", "Quand commence la première permission ?")
-    .askedIf(mineurAPoser)
-    .inconsistentIf(
-      ({ answers }) => Permission.of(answers).commenceAvantLHospitalisation(),
+    .appliesWhen(unMineurDeVingtAns)
+    .inconsistentWhen(
+      commenceAvantLHospitalisation,
       "La permission ne peut pas commencer avant le début de l’hospitalisation.",
     )
-    .inconsistentIf(
-      ({ answers }) => Permission.of(answers).commenceAvantLeQuatorziemeJour(),
+    .inconsistentWhen(
+      commenceAvantLeQuatorziemeJour,
       "La première permission doit commencer au 14e jour d’hospitalisation ou après.",
     ),
   question
     .datetime("Q2.8.3", "Quand se termine cette première permission ?")
-    .askedIf(mineurAPoser)
-    .inconsistentIf(
-      ({ answers }) => Permission.of(answers).neFinitPasApresSonDebut(),
+    .appliesWhen(unMineurDeVingtAns)
+    .inconsistentWhen(
+      neFinitPasApresSonDebut,
       "La fin de la permission doit venir après son début.",
     )
-    .inconsistentIf(
-      ({ answers }) => Permission.of(answers).depasseQuaranteHuitHeures(),
+    .inconsistentWhen(
+      depasseQuaranteHuitHeures,
       "Une permission dure au plus 48 heures.",
     ),
   question
@@ -71,25 +80,25 @@ export const PAGE_DE_LA_PERMISSION_DU_MINEUR = page(
       "Q2.8.4",
       "Cette permission a-t-elle été autorisée par l’établissement après avis favorable du médecin chef de service ?",
     )
-    .askedIf(mineurAPoser),
+    .appliesWhen(unMineurDeVingtAns),
   question
     .singleChoice("Q2.8.4.a", "Quel est le cadre de cette permission ?")
     .hint(
       "Chez un patient de moins de 20 ans, une demande personnelle n’établit pas à elle seule une charge patient ; appliquer les conditions S3141.",
     )
-    .askedIf(mineurAPoser),
+    .appliesWhen(unMineurDeVingtAns),
   question
     .singleChoice(
       "Q2.8.5",
       "La prescription couvre-t-elle plusieurs permissions ?",
     )
-    .askedIf(mineurAPoser),
+    .appliesWhen(unMineurDeVingtAns),
   question
     .date("Q2.8.6", "Jusqu’à quelle date ces permissions sont-elles prévues ?")
-    .askedIf(plusieursPermissions)
+    .appliesWhen(plusieursPermissions)
     .dependsOn("Q2.8.5")
-    .inconsistentIf(
-      ({ answers }) => Permission.of(answers).periodeFinitAvantLaPremiere(),
+    .inconsistentWhen(
+      periodeFinitAvantLaPremiere,
       "La période ne peut pas se terminer avant la fin de la première permission.",
     ),
   question
@@ -103,14 +112,14 @@ export const PAGE_DE_LA_PERMISSION_DU_MINEUR = page(
     .integer()
     .min(1)
     .unit("semaine(s)")
-    .askedIf(plusieursPermissions)
+    .appliesWhen(plusieursPermissions)
     .dependsOn("Q2.8.5"),
   question
     .singleChoice(
       "Q2.8.6.b",
       "Le patient restera-t-il âgé de moins de 20 ans durant toute la période ?",
     )
-    .askedIf(plusieursPermissions)
+    .appliesWhen(plusieursPermissions)
     .dependsOn("Q2.8.5")
     .option("2_NON", (option) =>
       option.blocks(
@@ -118,17 +127,3 @@ export const PAGE_DE_LA_PERMISSION_DU_MINEUR = page(
       ),
     ),
 );
-
-// ---- implémentation ----
-
-function adultesAProposer({ validated }: Context): boolean {
-  return optionsAdultesAProposer(validated);
-}
-
-function mineurAPoser({ validated }: Context): boolean {
-  return Permission.of(validated).estDUnMineurDeVingtAns();
-}
-
-function plusieursPermissions(context: Context): boolean {
-  return mineurAPoser(context) && Permission.of(context.answers).estRepetee();
-}

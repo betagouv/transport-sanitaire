@@ -5,17 +5,21 @@
 // sous une question dit ce qu'elle démontre. Les tests du socle n'en dépendent
 // pas : ils tournent sur leur propre modèle.
 
-import {
-  type GivenAnswers,
-  page,
-  type QuestionnairePart,
-} from "../../socle/index.ts";
+import { afterLock, page, type QuestionnairePart } from "../../socle/index.ts";
 import type { Cibles } from "./declarations/cibles.ts";
 import type { Questions } from "./declarations/questions.ts";
 import { dayFromToday } from "./jour.ts";
 import { cibles } from "./preconisation.ts";
-import { question, questionDuComplement } from "./question.ts";
+import { given, question } from "./question.ts";
 import { CRENEAU, EXPEDITION } from "./validation-croisee.ts";
+
+const boisson = given.question("boisson").answer();
+
+// Une boisson est choisie : la commande se poursuit.
+const commandeEnCours = boisson.isPresent().and(boisson.is("rien").not());
+
+// Le citron ne se sert qu'avec le thé.
+const avecDuThe = boisson.is("the");
 
 /** Modifiables tant que le résultat n'est pas verrouillé. */
 export const PARTS: readonly QuestionnairePart<Questions, undefined>[] = [
@@ -55,7 +59,7 @@ export const PARTS: readonly QuestionnairePart<Questions, undefined>[] = [
           .hint(
             "Démontre : un libellé de question et un libellé d'option qui dépendent des réponses (le lait devient « un nuage de lait » avec le thé), une option proposée selon la boisson (le citron, avec le thé seulement), et une option exclusive. Un fait a trois états. Le citron vaut « oui » s'il est coché, et « non » s'il se proposait sans l'être, ou avec un café, où il ne se sert pas. Avec « Peut-être du citron », on ne sait pas : le fait est absent, et le résultat ne décide pas si le lait tourne.",
           )
-          .askedIf(({ answers }) => commandeEnCours(answers))
+          .appliesWhen(commandeEnCours)
           .dependsOn("boisson")
           .option("lait", (option) =>
             option.labelFrom(({ answers }) =>
@@ -64,8 +68,8 @@ export const PARTS: readonly QuestionnairePart<Questions, undefined>[] = [
                 : "Du lait",
             ),
           )
-          .option("citron", (option) => option.offeredIf(avecDuThe))
-          .option("citron-a-voir", (option) => option.offeredIf(avecDuThe))
+          .option("citron", (option) => option.offeredWhen(avecDuThe))
+          .option("citron-a-voir", (option) => option.offeredWhen(avecDuThe))
           .incompatible(
             "citron",
             "citron-a-voir",
@@ -83,7 +87,7 @@ export const PARTS: readonly QuestionnairePart<Questions, undefined>[] = [
           .hint(
             "Démontre : un rappel en une phrase au-dessus de la question (il redit des réponses déjà données, et ne demande rien : la commande est calculée en route, sur les questions validées), une aide dépliable sous son option (« Voir les préparations possibles », dont la liste dépend de la boisson), deux options incompatibles (« Très chaude » et « Glacée » : cocher l'une décoche l'autre, avec une explication), et une option exclusive conditionnelle (« Rien de particulier » ne se propose pas avec le citron, et change de libellé quand un accompagnement est choisi).",
           )
-          .askedIf(({ answers }) => commandeEnCours(answers))
+          .appliesWhen(commandeEnCours)
           .dependsOn("boisson", "accompagnements")
           .option("preparation", (option) =>
             option
@@ -102,9 +106,12 @@ export const PARTS: readonly QuestionnairePart<Questions, undefined>[] = [
                   ? "Rien de particulier"
                   : "Rien d'autre de particulier",
               )
-              .offeredIf(
-                ({ answers }) =>
-                  !answers.question("accompagnements").checked("citron"),
+              .offeredWhen(
+                given
+                  .question("accompagnements")
+                  .answer()
+                  .checked("citron")
+                  .not(),
               ),
           )
           .incompatible(
@@ -119,13 +126,13 @@ export const PARTS: readonly QuestionnairePart<Questions, undefined>[] = [
 ];
 
 /** Posée après le verrou : elle complète, elle ne décide plus. */
-export const COMPLEMENT: QuestionnairePart<Questions, Cibles> = {
+export const COMPLEMENT: QuestionnairePart<Questions, Cibles> = afterLock({
   id: "complement",
   title: "Compléter la commande",
   pages: [
     page(
       "quantite",
-      questionDuComplement
+      question
         .number("quantite", "Combien de tasses ?")
         .reminderFrom(({ answers, cibles: { commande } }) => [
           { label: "Commande", value: String(commande.value) },
@@ -144,19 +151,19 @@ export const COMPLEMENT: QuestionnairePart<Questions, Cibles> = {
         .min(1)
         .integer()
         .unit("tasses"),
-      questionDuComplement
+      question
         .singleChoice("lieu", "Où la servir ?")
         .dropdown()
         .hint(
           "Démontre : un choix unique en liste déroulante. La page garde son bouton.",
         ),
-      questionDuComplement
+      question
         .text("nom", "À quel nom ?")
         .hint(
           "Démontre : une question facultative. La page se valide sans elle. Sur le bon de commande, le nom se dessine là où le gabarit n'a pas de champ.",
         )
         .optional(),
-      questionDuComplement
+      question
         .checkbox(
           "ticket",
           "Un ticket de caisse est-il demandé ?",
@@ -168,7 +175,7 @@ export const COMPLEMENT: QuestionnairePart<Questions, Cibles> = {
     ),
     page(
       "facturation",
-      questionDuComplement
+      question
         .singleChoice("facturation", "Où envoyer la facture ?")
         .hint(
           "Démontre : la réponse qui dit, à la page suivante, si l'adresse est en France ou à l'étranger.",
@@ -176,7 +183,7 @@ export const COMPLEMENT: QuestionnairePart<Questions, Cibles> = {
     ),
     page(
       "adresse",
-      questionDuComplement
+      question
         .address("adresse", "À quelle adresse ?")
         .hint(
           "Démontre : une adresse en champs séparés, avec le nom du lieu. En France, le code postal fait cinq chiffres. À l'étranger, d'après la page précédente, le pays est attendu, et le code postal est libre et facultatif. Chaque champ fautif porte son message. Revenir changer la page précédente garde l'adresse : elle se relit dans le nouveau mode.",
@@ -190,7 +197,7 @@ export const COMPLEMENT: QuestionnairePart<Questions, Cibles> = {
     CRENEAU,
     page(
       "retrait",
-      questionDuComplement
+      question
         .singleChoice("retrait", "Comment la récupérer ?")
         .hint(
           "Démontre : une réponse qui bloque. « En livraison » affiche un message, et la page ne se valide plus. Et une réponse qui contredit une page antérieure : « À emporter » ne va pas avec « En terrasse », choisi au lieu de service. Le message nomme la question à corriger, qu'on retrouve par « Précédent ».",
@@ -200,13 +207,15 @@ export const COMPLEMENT: QuestionnairePart<Questions, Cibles> = {
             "La livraison se commande à part. Choisissez une autre réponse pour finir cette commande, puis faites-en une seconde pour la livraison.",
           ),
         )
-        .inconsistentIf(
-          ({ answers }) =>
-            answers.question("lieu").is("terrasse") &&
-            answers.question("retrait").is("a-emporter"),
+        .inconsistentWhen(
+          given
+            .question("lieu")
+            .answer()
+            .is("terrasse")
+            .and(given.question("retrait").answer().is("a-emporter")),
           "« À emporter » ne va pas avec « En terrasse », choisi à la question « Où la servir ? ». Revenez par « Précédent » changer le lieu, ou choisissez « Sur place ».",
         ),
-      questionDuComplement
+      question
         .date("jour", "Pour quel jour ?")
         .hint(
           "Démontre : une date bornée, d'aujourd'hui à dans sept jours. Une date hors bornes est refusée.",
@@ -215,7 +224,7 @@ export const COMPLEMENT: QuestionnairePart<Questions, Cibles> = {
     ),
     page(
       "remarque",
-      questionDuComplement
+      question
         .longText("remarque", "Une remarque pour le service ?")
         .hint(
           "Démontre : un texte sur plusieurs lignes. « Entrée » va à la ligne, sans valider la page. Sur le bon de commande, la remarque est le commentaire facultatif des instructions : trop longue, elle en est retirée, et le résultat le dit avant le téléchargement.",
@@ -223,20 +232,9 @@ export const COMPLEMENT: QuestionnairePart<Questions, Cibles> = {
         .optional(),
     ),
   ],
-};
+});
 
 // ---- implémentation ----
-
-// Une boisson est choisie : la commande se poursuit.
-function commandeEnCours(answers: GivenAnswers<Questions>): boolean {
-  const boisson = answers.question("boisson");
-  return boisson.hasAnswer() && boisson.isNot("rien");
-}
-
-// Le citron ne se sert qu'avec le thé.
-function avecDuThe({ answers }: { answers: GivenAnswers<Questions> }): boolean {
-  return answers.question("boisson").is("the");
-}
 
 // Les façons de servir, telles qu'on les relit une fois la commande figée.
 const SERVICES: Record<Questions["service"][number], string> = {

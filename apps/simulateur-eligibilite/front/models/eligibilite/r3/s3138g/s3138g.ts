@@ -17,6 +17,7 @@
 // | `raison sociale VSL`, `adresse VSL`, `fait à`, `date1`, `n° ident` | au transporteur, page 4 |
 // | Engagement maternité | « hors remplissage » pour l'éditeur |
 
+import { given } from "../../../../../core/models/eligibilite/question";
 import {
   at,
   bindCerfa,
@@ -40,7 +41,7 @@ import { MODE, type Mode } from "../rubriques/mode";
 import { MOTIFS, type Motifs } from "../rubriques/motifs";
 import { NOMBRE, type Nombre } from "../rubriques/nombre";
 import { PRESCRIPTION, type Prescription } from "../rubriques/prescription";
-import type { Donnees, Rubrique } from "../rubriques/rubrique";
+import type { Rubrique } from "../rubriques/rubrique";
 import { TEXTE_MEDICAL, type TexteMedical } from "../rubriques/texte-medical";
 import { TRAJET, type Trajet } from "../rubriques/trajet";
 import {
@@ -149,15 +150,15 @@ const CERFA: Cerfa<DtoS3138g> = {
   },
 };
 
+const pension = given.cible("cible_situation_pension_militaire");
+
 const PENSION: Rubrique<Pension> = {
-  pension_militaire_oui: ({ cibles }) =>
-    cibles.cible_situation_pension_militaire.isOui(),
-  pension_militaire_non: ({ cibles }) =>
-    cibles.cible_situation_pension_militaire.isNon(),
+  pension_militaire_oui: pension.isOui(),
+  pension_militaire_non: pension.isNon(),
 };
 
 // Le DTO de la PMT, rubrique par rubrique.
-const VERS_LA_PMT: CerfaMapping<DtoS3138g, Donnees> = {
+const VERS_LA_PMT: CerfaMapping<DtoS3138g> = {
   fields: {
     ...ACCIDENT,
     ...MOTIFS,

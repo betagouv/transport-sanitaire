@@ -3,8 +3,10 @@
 
 import type { Questions } from "../../../core/models/eligibilite/declarations/questions";
 import { cibles } from "../../../core/models/eligibilite/evaluation-des-regles";
+import { readIn } from "../../../core/socle/questionnaire-engine/condition";
 import { Questionnaire } from "../../../core/socle/questionnaire-engine/questionnaire";
-import type { ReponsesEtCibles } from "../../../front/models/eligibilite/r2/trace-du-resultat";
+import { resultReading } from "../../../core/socle/questionnaire-engine/result-reading";
+import type { Lecture } from "../../../front/models/eligibilite/r2/trace-du-resultat";
 import { faits, pages, posee, type Reponses } from "./reponses-du-transfert";
 
 export { faits, posee, type Reponses };
@@ -57,12 +59,12 @@ export const validee = (id: keyof Reponses, reponses: Reponses) =>
 /** Les cibles des règles, sur les faits que les réponses établissent. */
 export const ciblesDe = (reponses: Reponses) => cibles(faits(reponses));
 
-/** Ce que le socle passe à R2 : les réponses lues, et les cibles. */
-export const lectureDe = (reponses: Reponses): ReponsesEtCibles => {
-  const { answers, validated } = new Questionnaire<Questions>(pages).readWith(
-    reponses,
-  );
-  return { answers, validated, cibles: ciblesDe(reponses) };
+/** Ce que le socle passe à R2 : les faits, les cibles, et de quoi lire. */
+export const lectureDe = (reponses: Reponses): Lecture => {
+  const { validated } = new Questionnaire<Questions>(pages).readWith(reponses);
+  const lus = { faits: faits(reponses), cibles: ciblesDe(reponses) };
+  const reading = resultReading({ validated, ...lus, on: new Date() });
+  return { ...lus, read: readIn(reading) };
 };
 
 export const issue = (reponses: Reponses) =>

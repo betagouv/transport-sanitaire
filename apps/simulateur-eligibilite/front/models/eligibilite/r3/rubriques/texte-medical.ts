@@ -9,7 +9,9 @@
 // retire faute de place. Le point final va au dernier des deux.
 
 import { OPTIONS } from "../../../../../core/models/eligibilite/declarations/questions";
-import type { Donnees, Rubrique } from "./rubrique";
+import { given } from "../../../../../core/models/eligibilite/question";
+import type { Value } from "../../../../../core/socle";
+import type { Rubrique } from "./rubrique";
 
 /** Rien n'est établi, ou rien n'est saisi : la cellule reste vide. */
 type AucunSegment = undefined;
@@ -19,30 +21,57 @@ export type TexteMedical = {
   readonly elements_medicaux_precision: string | AucunSegment;
 };
 
+// La précision du prescripteur (Q3.4), saisie telle quelle.
+const PRECISION = given.question("Q3.4").answer().compute(lueTelleQuelle);
+
+// Ce que lit le texte : les réponses du soin et des besoins, et les cibles et
+// les faits qui portent la condition des segments du contrat.
+const ENTREES = given.all({
+  motif: given.question("Q2.1").answer(),
+  seances: given.question("Q1.3").answer(),
+  aides: given.question("Q1.2").answer(),
+  accompagnement: given.question("Q1.1").answer(),
+  motifMaternite: given.question("Q2.14.motif").answer(),
+  justification: given
+    .question("Q3.4.distance")
+    .answer()
+    .compute(lueTelleQuelle),
+  precision: PRECISION,
+  bariatrique: given.cible("cible_ambulance_equipement_bariatrique").isOui(),
+  aldLiee: given.fait("fait_ald_liee").isOui(),
+  atmp: given.cible("cible_situation_at_mp").isOui(),
+  camsp: given.cible("cible_dap_motif_camsp_cmpp").isOui(),
+  mineur: given.cible("cible_mineur_ald_non_exonerante_reconnue").isOui(),
+  etranger: given.cible("cible_issue_id").is("ISSUE_DAP_ETRANGER_A_EXAMINER"),
+  maternite: given.cible("cible_dap_motif_engagement_maternite").isOui(),
+  htnm: given.fait("fait_htnm_hors_maternite").isOui(),
+});
+
 export const TEXTE_MEDICAL: Rubrique<TexteMedical> = {
-  elements_medicaux: (donnees) => {
-    const segments = [
-      ...soin(donnees),
-      ...besoins(donnees),
-      ...complements(donnees),
-    ]
-      .map(forme)
-      .map((segment) =>
-        segment.replace(VARIABLE, justification(donnees) ?? ""),
-      );
-    if (segments.length === 0) return undefined;
-    const texte = segments
-      .map((segment, rang) => (rang === 0 ? segment : enMinuscule(segment)))
-      .join(" ; ");
-    return precision(donnees) === undefined ? `${texte}.` : texte;
-  },
-  elements_medicaux_precision: (donnees) => {
-    const saisie = precision(donnees);
-    return saisie === undefined ? undefined : `${saisie}.`;
-  },
+  elements_medicaux: ENTREES.compute(texteMedical),
+  elements_medicaux_precision: PRECISION.compute((saisie) =>
+    saisie === undefined ? undefined : `${saisie}.`,
+  ),
 };
 
 // ---- implémentation ----
+
+type Entrees = typeof ENTREES extends Value<infer Lues> ? Lues : never;
+
+function texteMedical(entrees: Entrees): string | AucunSegment {
+  const segments = [
+    ...soin(entrees),
+    ...besoins(entrees),
+    ...complements(entrees),
+  ]
+    .map(forme)
+    .map((segment) => segment.replace(VARIABLE, entrees.justification ?? ""));
+  if (segments.length === 0) return undefined;
+  const texte = segments
+    .map((segment, rang) => (rang === 0 ? segment : enMinuscule(segment)))
+    .join(" ; ");
+  return entrees.precision === undefined ? `${texte}.` : texte;
+}
 
 // Les textes du contrat, tels qu'il les donne.
 const CONTRAT = {
@@ -87,22 +116,21 @@ const SEANCES = ["3_CHIMIOTHERAPIE", "4_RADIOTHERAPIE", "5_DIALYSE"] as const;
 const SANS_SOIN: readonly string[] = ["14_AUTRE", "15_AUCUN"];
 
 // Le soin : Q2.1 si elle est posée, sinon les séances de Q1.3 (D-143).
-function soin({ validated }: Donnees): readonly string[] {
-  const motif = validated.question("Q2.1").value;
-  if (motif !== undefined)
-    return SANS_SOIN.includes(motif) ? [] : [OPTIONS["Q2.1"][motif]];
-  return SEANCES.filter((seance) =>
-    validated.question("Q1.3").checked(seance),
-  ).map((seance) => OPTIONS["Q1.3"][seance]);
+function soin({ motif, seances }: Entrees): readonly string[] {
+  const lu = motif.value;
+  if (lu !== undefined)
+    return SANS_SOIN.includes(lu) ? [] : [OPTIONS["Q2.1"][lu]];
+  return SEANCES.filter((seance) => seances.checked(seance)).map(
+    (seance) => OPTIONS["Q1.3"][seance],
+  );
 }
 
 // Les besoins de Q1.2 dans leur ordre, puis le proche de Q1.1.
-function besoins({ validated }: Donnees): readonly string[] {
-  const aides = validated.question("Q1.2");
+function besoins({ aides, accompagnement }: Entrees): readonly string[] {
   const cochees = (Object.keys(OPTIONS["Q1.2"]) as Besoin[])
     .filter((besoin) => aides.checked(besoin))
     .map((besoin) => CRITERES_D_AMBULANCE[besoin] ?? OPTIONS["Q1.2"][besoin]);
-  const proche = validated.question("Q1.1").is("2_AVEC_UN_PROCHE")
+  const proche = accompagnement.is("2_AVEC_UN_PROCHE")
     ? [OPTIONS["Q1.1"]["2_AVEC_UN_PROCHE"]]
     : [];
   return [...cochees, ...proche];
@@ -110,47 +138,37 @@ function besoins({ validated }: Donnees): readonly string[] {
 
 // Les segments du contrat, chacun sur la cible ou le fait qui porte sa
 // condition (D-147).
-function complements(donnees: Donnees): readonly string[] {
-  const { cibles, faits } = donnees;
-  const motif = donnees.validated.question("Q2.14.motif");
-  const maternite = cibles.cible_dap_motif_engagement_maternite.isOui();
+function complements(entrees: Entrees): readonly string[] {
+  const { maternite, motifMaternite } = entrees;
   const segments = [
+    [entrees.bariatrique, CONTRAT.bariatrique],
+    [entrees.aldLiee, CONTRAT.ald],
+    [entrees.atmp, CONTRAT.atmp],
+    [entrees.camsp, CONTRAT.camsp],
+    [entrees.mineur, CONTRAT.mineur],
+    [entrees.etranger, CONTRAT.etranger],
+    [entrees.justification !== undefined, CONTRAT.distance],
     [
-      cibles.cible_ambulance_equipement_bariatrique.isOui(),
-      CONTRAT.bariatrique,
-    ],
-    [faits.fait_ald_liee.isOui(), CONTRAT.ald],
-    [cibles.cible_situation_at_mp.isOui(), CONTRAT.atmp],
-    [cibles.cible_dap_motif_camsp_cmpp.isOui(), CONTRAT.camsp],
-    [cibles.cible_mineur_ald_non_exonerante_reconnue.isOui(), CONTRAT.mineur],
-    [
-      cibles.cible_issue_id.is("ISSUE_DAP_ETRANGER_A_EXAMINER"),
-      CONTRAT.etranger,
-    ],
-    [justification(donnees) !== undefined, CONTRAT.distance],
-    [
-      maternite && motif.checked("1_EXAMEN_DU_HUITIEME_OU_NEUVIEME_MOIS"),
+      maternite &&
+        motifMaternite.checked("1_EXAMEN_DU_HUITIEME_OU_NEUVIEME_MOIS"),
       CONTRAT.examen,
     ],
     [
-      maternite && motif.checked("2_HEBERGEMENT_ENGAGEMENT"),
+      maternite && motifMaternite.checked("2_HEBERGEMENT_ENGAGEMENT"),
       CONTRAT.hebergement,
     ],
-    [faits.fait_htnm_hors_maternite.isOui(), CONTRAT.htnm],
+    [entrees.htnm, CONTRAT.htnm],
   ] as const;
   return segments.filter(([etabli]) => etabli).map(([, texte]) => texte);
 }
 
-function justification({ validated }: Donnees): string | AucunSegment {
-  return saisie(validated.question("Q3.4.distance").value);
-}
-
-function precision({ validated }: Donnees): string | AucunSegment {
-  return saisie(validated.question("Q3.4").value);
-}
-
 // Une saisie telle quelle, ses espaces normalisés et son point final retiré.
-function saisie(texte: string | undefined): string | AucunSegment {
+function lueTelleQuelle({
+  value,
+}: {
+  readonly value: string | undefined;
+}): string | AucunSegment {
+  const texte = value;
   const normale = texte?.replace(/\s+/g, " ").trim().replace(/\.$/, "");
   return normale ? normale : undefined;
 }

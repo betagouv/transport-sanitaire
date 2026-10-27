@@ -6,13 +6,11 @@
 // Il suit `CONTRAT_REPONSES_FAITS.json`.
 
 import { unFait } from "../../../socle/index.ts";
-import { ExceptionsDeLArticle80 } from "../concepts/exceptions-de-l-article-80.ts";
-import {
-  type DeclarationDeFait,
-  PAS_ENCORE_ETABLI,
-} from "../declarations/faits.ts";
+import { PAS_ENCORE_ETABLI } from "../declarations/faits.ts";
+import { EXCEPTIONS } from "./communs.ts";
 
-export const exceptionArticle80Usld: DeclarationDeFait = ({ validated }) =>
-  unFait()
-    .retient(ExceptionsDeLArticle80.of(validated).fait("6_USLD"))
-    .sinon(PAS_ENCORE_ETABLI);
+export const exceptionArticle80Usld = unFait("fait_exception_article80_usld")
+  .ouiSi(EXCEPTIONS.checked("6_USLD"))
+  .nonSiEcartee(EXCEPTIONS, "6_USLD")
+  .inconnuSi(EXCEPTIONS.isPresent(), "« 6_USLD » ne s'est pas proposée.")
+  .sinon(PAS_ENCORE_ETABLI);

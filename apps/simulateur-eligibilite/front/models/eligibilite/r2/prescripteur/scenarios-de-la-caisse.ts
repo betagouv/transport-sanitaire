@@ -22,7 +22,7 @@ export function scenariosDeLaCaisse(
   trace: Trace,
 ): readonly ScenarioPrescripteur[] {
   const actifs = scenarios.filter(({ inactive }) => !inactive);
-  const ouverts = POINTS.filter(([, estOuvert]) => estOuvert(trace)).flatMap(
+  const ouverts = RAISONS.filter(([, estOuverte]) => estOuverte(trace)).flatMap(
     ([id]) => actifs.filter((scenario) => scenario.id === id),
   );
   return ouverts.length > 0 ? ouverts : parSaRaison(actifs, trace);
@@ -30,11 +30,14 @@ export function scenariosDeLaCaisse(
 
 // ---- implémentation ----
 
-type Point = readonly [scenario: string, estOuvert: (trace: Trace) => boolean];
+type RaisonIssueCaisse = readonly [
+  scenario: string,
+  estOuverte: (trace: Trace) => boolean,
+];
 
 // Dans l'ordre de `cible_reason_code`. Les deux scénarios de
 // AUTRE_DROIT_NON_VERIFIABLE se séparent comme `cible_couverture_inconnue_decisive`.
-const POINTS: readonly Point[] = [
+const RAISONS: readonly RaisonIssueCaisse[] = [
   [
     "ald-base",
     ({ cibles }) => cibles.cible_preuve_ald_inconnue_decisive.isOui(),

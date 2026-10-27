@@ -4,7 +4,14 @@
 // questions validées avant elles.
 
 import { describe, expect, it } from "vitest";
-import { page, questionsOf } from "../../../core/socle";
+import {
+  Fait,
+  FaitCatalogue,
+  givenOf,
+  page,
+  questionsOf,
+  unFait,
+} from "../../../core/socle";
 import { Questionnaire } from "../../../core/socle/questionnaire-engine/questionnaire";
 
 type Questions = {
@@ -14,7 +21,7 @@ type Questions = {
   remarque: string;
 };
 
-type Faits = { readonly chaude: boolean };
+type Faits = { readonly chaude: Fait };
 
 const OPTIONS = {
   boisson: { the: "Un thé", cafe: "Un café", eau: "De l'eau" },
@@ -28,12 +35,24 @@ const OPTIONS = {
 
 let calculs = 0;
 
+const given = givenOf<Questions, Faits, undefined>();
+const boisson = given.question("boisson").answer();
+
 const question = questionsOf<Questions, Faits>({
   options: OPTIONS,
-  faits: (_answers, validated) => {
-    calculs += 1;
-    return { chaude: validated.question("boisson").isOneOf("the", "cafe") };
-  },
+  faits: new FaitCatalogue<Faits>(
+    ["chaude"],
+    [
+      unFait("chaude").vaut(
+        boisson.isOneOf("the", "cafe").compute((chaude) => {
+          calculs += 1;
+          return chaude
+            ? Fait.oui("Boisson chaude.")
+            : Fait.non("Boisson froide.");
+        }),
+      ),
+    ],
+  ),
 });
 
 const BOISSON = page(
@@ -50,14 +69,10 @@ const ACCOMPAGNEMENTS = page(
         ? "Avec votre thé ?"
         : "Avec votre café ?",
     )
-    .askedIf(({ faits }) => faits.chaude)
+    .mattersWhile(given.fait("chaude").isOui())
     .order("sucre", "lait")
     .exclusive("rien")
-    .option("lait", (option) =>
-      option.offeredIf(({ validated }) =>
-        validated.question("boisson").is("the"),
-      ),
-    ),
+    .option("lait", (option) => option.offeredWhen(boisson.is("the"))),
 );
 
 const QUANTITE = page(
@@ -146,8 +161,8 @@ describe("une condition de page", () => {
       question.number("quantite", "Combien ?"),
       question
         .text("remarque", "Une remarque ?")
-        .askedIf(({ answers }) => answers.question("boisson").is("the")),
-    ).askedIf(({ answers }) => answers.question("boisson").isNot("eau"));
+        .appliesWhen(boisson.is("the")),
+    ).appliesWhen(boisson.is("eau").not());
     const posees = (boisson: Questions["boisson"]) =>
       new Questionnaire([BOISSON, sansEau])
         .readWith({ boisson })
@@ -161,13 +176,14 @@ describe("une condition de page", () => {
 });
 
 describe("une incohérence", () => {
+  const combien = given.question("quantite").answer();
+
   it("peut citer les réponses dans son message", () => {
     const trop = page(
       "quantite",
-      question.number("quantite", "Combien ?").inconsistentIf(
-        ({ answers }) => (answers.question("quantite").value ?? 0) > 3,
-        ({ answers }) =>
-          `${answers.question("quantite").value} tasses, c'est trop.`,
+      question.number("quantite", "Combien ?").inconsistentWhen(
+        combien.compute(({ value }) => (value ?? 0) > 3),
+        combien.compute(({ value }) => `${value} tasses, c'est trop.`),
       ),
     );
     const [quantite] = new Questionnaire([trop])

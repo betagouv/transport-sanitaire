@@ -1,27 +1,41 @@
 // P1 : l'autonomie et l'état de santé du patient, ce qui fait le mode de
 // transport. Les options et leurs libellés viennent des déclarations.
 
-import { Fait, page, type QuestionnairePart } from "../../../socle/index.ts";
+import { page, type QuestionnairePart } from "../../../socle/index.ts";
 import { AideDuPatient } from "../concepts/aide-du-patient.ts";
-import { CriteresDuTransport } from "../concepts/criteres-du-transport.ts";
-import type { Cibles } from "../declarations/cibles.ts";
-import type { Faits } from "../declarations/faits.ts";
 import type { Questions } from "../declarations/questions.ts";
-import { cible } from "../evaluation-des-regles.ts";
-import { question } from "../question.ts";
+import { given, question } from "../question.ts";
 
 type Partie<Cibles> = QuestionnairePart<Questions, Cibles>;
 
-/**
- * Une cible du mode pour ces faits, pendant P1. Les règles ne donnent le mode
- * qu'une fois P1 complète : elle est tenue pour telle, le temps de la poser.
- */
-export function cibleEnCoursDeP1<Nom extends keyof Cibles>(
-  faits: Faits,
-  nom: Nom,
-): Cibles[Nom] {
-  return cible({ ...faits, fait_p1_complete: Fait.oui("P1 en cours.") }, nom);
-}
+// Q1.1 : un professionnel intervient pendant le transport, ou non.
+const aide = given.question("Q1.1").answer();
+const avecUnProfessionnel = aide.is("3_AVEC_UN_PROFESSIONNEL");
+const sansProfessionnel = aide.isOneOf("1_SEUL", "2_AVEC_UN_PROCHE");
+
+// Les critères de Q1.2 qui imposent l'ambulance.
+const CRITERES_D_AMBULANCE = [
+  "7_ALLONGE",
+  "8_BRANCARDAGE",
+  "9_SURVEILLANCE",
+  "10_OXYGENE",
+  "11_ASEPSIE",
+] as const satisfies readonly Questions["Q1.2"][number][];
+
+const unCritereDAmbulance = given
+  .question("Q1.2")
+  .answer()
+  .compute((criteres) =>
+    CRITERES_D_AMBULANCE.some((critere) => criteres.checked(critere)),
+  );
+
+// Le partage ne concerne que le transport assis professionnel et le TPMR. Les
+// règles ne donnent le mode qu'une fois P1 complète : Q1.3 est la dernière
+// question qui le fait, on la tient donc pour complète le temps de la poser.
+const unModePartageable = given
+  .cible("cible_mode_tap_ou_tpmr")
+  .assuming("fait_p1_complete")
+  .isOui();
 
 // L'ordre d'écran de Q1.3, que son contrat fixe : le mineur suit l'ALD. Les
 // slugs gardent le numéro du catalogue, et « Aucune » ferme la liste.
@@ -49,23 +63,17 @@ const PAGE_DES_CAS_PARTICULIERS = page(
     // La corpulence ne compte qu'avec un motif d'ambulance. Retiré en Q1.2, il
     // emporte la réponse.
     .option("1_FORTE_CORPULENCE", (option) =>
-      option.offeredIf(({ validated }) =>
-        CriteresDuTransport.of(validated).imposentLAmbulance(),
-      ),
+      option.offeredWhen(unCritereDAmbulance),
     )
-    // Le partage ne concerne que le transport assis professionnel et le TPMR.
-    // Ce sont les règles qui le disent.
     .option("6_PARTAGE_INCOMPATIBLE", (option) =>
-      option.offeredIf(({ faits }) =>
-        cibleEnCoursDeP1(faits, "cible_mode_tap_ou_tpmr").isOui(),
-      ),
+      option.offeredWhen(unModePartageable),
     ),
   question
     .singleChoice(
       "Q1.3.a",
       "La séance prévue est-elle une séance d’hémodialyse ?",
     )
-    .askedIf(({ answers }) => answers.question("Q1.3").checked("5_DIALYSE")),
+    .appliesWhen(given.question("Q1.3").answer().checked("5_DIALYSE")),
 );
 
 /** P1 : ce qui fait le mode de transport. Aucun résultat ne la suit seule. */
@@ -84,9 +92,7 @@ export const P1: Partie<undefined> = {
           "Q1.2",
           "Quelles aides ou conditions particulières sont nécessaires pendant le transport ?",
         )
-        .askedIf(({ answers }) =>
-          AideDuPatient.of(answers).avecUnProfessionnel(),
-        )
+        .appliesWhen(avecUnProfessionnel)
         .dependsOn("Q1.1")
         .incompatible(
           "6_FAUTEUIL_SANS_TRANSFERT",
@@ -114,7 +120,7 @@ export const P1: Partie<undefined> = {
             ? "Le patient pouvant réaliser le trajet avec l’aide d’un proche, sans intervention d’un professionnel, merci de préciser sa préférence en matière de transport."
             : "Le patient pouvant réaliser le trajet en toute autonomie, sans intervention d’un professionnel, merci de préciser sa préférence en matière de transport.",
         )
-        .askedIf(({ answers }) => AideDuPatient.of(answers).sansProfessionnel())
+        .appliesWhen(sansProfessionnel)
         .dependsOn("Q1.1"),
     ),
   ],

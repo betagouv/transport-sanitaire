@@ -6,7 +6,6 @@ import { describe, expect, it } from "vitest";
 import type { Faits } from "../../../core/models/eligibilite/declarations/faits";
 import { SEEDS } from "../../../core/models/eligibilite/seeds-catalogue";
 import { Fait } from "../../../core/socle";
-import type { Donnees } from "../../../front/models/eligibilite/r3/rubriques/rubrique";
 import {
   TEXTE_MEDICAL,
   type TexteMedical,
@@ -177,15 +176,12 @@ function texte(
   cibles: ValeursDesCibles = {},
   faits: Partial<Faits> = {},
 ): TexteMedical {
-  const calculees = donnees(reponses, cibles);
-  const lues: Donnees = {
-    ...calculees,
-    faits: { ...calculees.faits, ...faits },
-  };
+  const read = donnees(reponses, cibles, undefined, faits);
   return {
-    elements_medicaux: TEXTE_MEDICAL.elements_medicaux(lues),
-    elements_medicaux_precision:
-      TEXTE_MEDICAL.elements_medicaux_precision(lues),
+    elements_medicaux: read(TEXTE_MEDICAL.elements_medicaux),
+    elements_medicaux_precision: read(
+      TEXTE_MEDICAL.elements_medicaux_precision,
+    ),
   };
 }
 

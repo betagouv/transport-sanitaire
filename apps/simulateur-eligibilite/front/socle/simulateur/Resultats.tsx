@@ -8,6 +8,10 @@
 import type { ComponentType, ReactNode } from "react";
 import type { Preconisation } from "../../../core/socle/model";
 import {
+  type Read,
+  readIn,
+} from "../../../core/socle/questionnaire-engine/condition";
+import {
   type Answers,
   type AnyCibles,
   type Page,
@@ -17,6 +21,7 @@ import {
   Questionnaire,
   type QuestionnaireState,
 } from "../../../core/socle/questionnaire-engine/questionnaire";
+import { resultReading } from "../../../core/socle/questionnaire-engine/result-reading";
 import { CerfaDocument } from "../cerfa/CerfaDocument";
 import { dtoFrom } from "../cerfa-mapping";
 import type { CerfaInput, Model } from "../model";
@@ -52,7 +57,7 @@ export function CerfaResultat({
   const { title, Resultat } = model.cerfa;
   const all = [...pagesOf(model.core.questionnaire), ...part.pages];
   const trace = traceOf("cerfa", all, answers, locked.preconisation, cibles);
-  const read = readOf(all, answers, cibles);
+  const read = readOf(all, answers, locked.preconisation, completedAt);
   return (
     <Frame
       title={title(cibles)}
@@ -60,7 +65,7 @@ export function CerfaResultat({
       trace={trace}
       DebugTrace={DebugTrace}
     >
-      <Resultat {...read} cibles={cibles} />
+      <Resultat read={read} faits={faits} cibles={cibles} />
       <div className="fr-btns-group fr-btns-group--inline-md fr-no-print">
         <SecondaryButton onClick={() => onReopen(state)}>
           Précédent
@@ -71,18 +76,25 @@ export function CerfaResultat({
       </div>
       <Cerfa
         model={model}
-        input={{ ...read, faits, cibles, completedAt }}
+        input={{ read, faits, cibles, completedAt }}
         feedback={feedbackOf(model, answers)}
       />
     </Frame>
   );
 }
 
-// Ce que lisent le résultat et le cerfa : les réponses données et validées,
-// lues avec les cibles figées au verrou.
-function readOf(pages: readonly Page[], answers: Answers, cibles: AnyCibles) {
-  const read = new Questionnaire(pages).readWith(answers, cibles);
-  return { answers: read.answers, validated: read.validated };
+/**
+ * Ce que lit un résultat : les questions validées de ces pages, avec ces faits
+ * et ces cibles, au jour `on`.
+ */
+export function readOf(
+  pages: readonly Page[],
+  answers: Answers,
+  { faits, cibles }: Preconisation,
+  on: Date,
+): Read {
+  const { validated } = new Questionnaire(pages).readWith(answers, cibles);
+  return readIn(resultReading({ validated, faits, cibles, on }));
 }
 
 // Ce que la trace de debug lit sous un résultat : les pages affichées, les
@@ -137,7 +149,7 @@ function Cerfa({ model, input, feedback }: CerfaProps) {
     bound && (
       <CerfaDocument
         cerfa={bound.cerfa}
-        dto={dtoFrom(bound.mapping, input)}
+        dto={dtoFrom(bound.mapping, input.read)}
         date={input.completedAt}
         printLabel={printLabel}
         downloadLabel={downloadLabel}

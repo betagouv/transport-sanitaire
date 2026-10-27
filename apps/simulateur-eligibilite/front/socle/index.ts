@@ -26,10 +26,10 @@ export {
 export { templateAt } from "./cerfa/generate-cerfa";
 export { bindCerfa, type CerfaMapping } from "./cerfa-mapping";
 export {
-  type CerfaInput,
   defineModel,
   type Feedback,
   type FirstResult,
+  type ResultatProps,
   type Sheet,
 } from "./model";
 export { Disclosure } from "./ui/Disclosure";

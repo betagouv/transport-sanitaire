@@ -16,9 +16,10 @@ import {
   projectionCerfa,
   QUESTIONS_DU_LIEU,
 } from "../../../../../core/models/eligibilite/p3/lieux-du-trajet";
-import { sensDuDocument } from "../../../../../core/models/eligibilite/p3/sens-du-trajet";
-import type { Address, Unanswered } from "../../../../../core/socle";
-import type { Donnees, Rubrique } from "./rubrique";
+import { SENS_DU_DOCUMENT } from "../../../../../core/models/eligibilite/p3/sens-du-trajet";
+import { given } from "../../../../../core/models/eligibilite/question";
+import type { Address, Unanswered, Value } from "../../../../../core/socle";
+import type { Rubrique } from "./rubrique";
 
 export type Trajet = {
   readonly depart_domicile: boolean;
@@ -31,14 +32,15 @@ export type Trajet = {
 };
 
 export const TRAJET: Rubrique<Trajet> = {
-  depart_domicile: (donnees) => projection("depart", donnees) === "DOMICILE",
+  depart_domicile: auDomicile("depart"),
   depart_structure: zone("depart", "STRUCTURE_DE_SOINS"),
   depart_autre: zone("depart", "AUTRE_LIEU"),
-  arrivee_domicile: (donnees) => projection("arrivee", donnees) === "DOMICILE",
+  arrivee_domicile: auDomicile("arrivee"),
   arrivee_structure: zone("arrivee", "STRUCTURE_DE_SOINS"),
   arrivee_autre: zone("arrivee", "AUTRE_LIEU"),
-  aller_retour: ({ validated }) =>
-    sensDuDocument(validated) === "3_ALLER_RETOUR_EQUIVALENT",
+  aller_retour: SENS_DU_DOCUMENT.compute(
+    (sens) => sens === "3_ALLER_RETOUR_EQUIVALENT",
+  ),
 };
 
 // ---- implémentation ----
@@ -48,52 +50,53 @@ type Projection = ReturnType<typeof projectionCerfa>;
 /** La zone reste vide : le lieu ne s'y reporte pas, ou on n'en sait rien. */
 type ZoneVide = undefined;
 
-/** Le lieu ne se reporte dans aucune rubrique : sa nature n'est pas connue. */
-type SansRubrique = undefined;
-
 /** Le lieu ne dit rien de sa nature. */
 type SansMention = undefined;
 
-// Le lieu en un seul texte : sa mention, son nom, puis son adresse, pays
-// compris à l'étranger. Les parties vides ne s'écrivent pas.
-function lieuEnUnTexte(
-  extremite: Extremite,
-  donnees: Donnees,
-): string | ZoneVide {
+/** Ce que P3 sait d'un lieu : sa nature, son nom, sa précision, son adresse. */
+type Lieu = ReturnType<typeof lieu> extends Value<infer Lu> ? Lu : never;
+
+function lieu(extremite: Extremite) {
   const questions = QUESTIONS_DU_LIEU[extremite];
-  const { validated } = donnees;
-  const parties = [
-    mention(extremite, donnees),
-    validated.question(questions.nom).value,
-    ...adresseEnParties(validated.question(questions.adresse).value),
-  ].filter((partie): partie is string => Boolean(partie?.trim()));
-  return parties.length > 0 ? parties.join(", ") : undefined;
+  return given.all({
+    nature: natureDu(extremite),
+    nom: given.question(questions.nom).answer(),
+    precision: given.question(questions.precision).answer(),
+    adresse: given.question(questions.adresse).answer(),
+  });
 }
 
-// La rubrique du cerfa où se reporte ce lieu. Sans nature, aucune.
-function projection(
-  extremite: Extremite,
-  { validated }: Donnees,
-): Projection | SansRubrique {
-  const nature = natureDu(extremite, validated, validated);
-  return nature && projectionCerfa(nature);
+// La case du domicile. Sans nature, aucune rubrique ne reçoit le lieu.
+function auDomicile(extremite: Extremite) {
+  return natureDu(extremite).compute(
+    (nature) => nature !== undefined && projectionCerfa(nature) === "DOMICILE",
+  );
 }
 
 // Le lieu écrit dans la zone `cible`, s'il s'y reporte.
 function zone(extremite: Extremite, cible: Projection) {
-  return (donnees: Donnees): string | ZoneVide =>
-    projection(extremite, donnees) === cible
-      ? lieuEnUnTexte(extremite, donnees)
-      : undefined;
+  return lieu(extremite).compute((lu): string | ZoneVide =>
+    lu.nature !== undefined && projectionCerfa(lu.nature) === cible
+      ? lieuEnUnTexte(lu)
+      : undefined,
+  );
+}
+
+// Le lieu en un seul texte : sa mention, son nom, puis son adresse, pays
+// compris à l'étranger. Les parties vides ne s'écrivent pas.
+function lieuEnUnTexte(lu: Lieu): string | ZoneVide {
+  const parties = [
+    mention(lu),
+    lu.nom.value,
+    ...adresseEnParties(lu.adresse.value),
+  ].filter((partie): partie is string => Boolean(partie?.trim()));
+  return parties.length > 0 ? parties.join(", ") : undefined;
 }
 
 // Ce que le lieu dit de sa nature : la précision saisie en P3, sinon la
 // mention que le contrat des lieux demande pour un EHPAD ou un HTNM.
-function mention(extremite: Extremite, donnees: Donnees): string | SansMention {
-  const { validated } = donnees;
-  const precision = validated.question(QUESTIONS_DU_LIEU[extremite].precision);
+function mention({ nature, precision }: Lieu): string | SansMention {
   if (precision.hasAnswer()) return precision.value;
-  const nature = natureDu(extremite, validated, validated);
   return nature && MENTIONS[nature];
 }
 

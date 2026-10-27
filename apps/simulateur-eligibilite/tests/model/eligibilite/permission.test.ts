@@ -153,7 +153,8 @@ describe("les faits de la permission", () => {
       "Q2.7.a": "3_NE_SAIT_PAS",
     };
     expect(unFait(reponses, "fait_permission_charge_patient")).toEqual({
-      provenance: "Q2.7.a : « 3_NE_SAIT_PAS ». À vérifier.",
+      provenance:
+        "Q2.7 : « 4_ADULTE_A_SA_CHARGE », Q2.7.a : « 3_NE_SAIT_PAS ». À vérifier.",
     });
   });
 
@@ -220,7 +221,7 @@ describe("une permission écarte le transfert et le Centre 15", () => {
       expect(unFait(PATIENT_SEUL, nom)).toEqual({
         value: false,
         provenance:
-          "Q2.1 : « 11_PERMISSION » ; une permission n'est ni un transfert ni un déplacement pour soins (option 9 écartée).",
+          "Q2.5 : sans réponse, Q2.1 : « 11_PERMISSION », Q2.2.1.a : sans réponse. Une permission n'est ni un transfert ni un déplacement pour soins.",
       });
     }
   });
@@ -230,7 +231,7 @@ describe("une permission écarte le transfert et le Centre 15", () => {
       expect(unFait(PAR_Q221A, nom)).toEqual({
         value: false,
         provenance:
-          "Q2.2.1.a : « 1_OUI » ; une permission n'est ni un transfert ni un déplacement pour soins (option 2 écartée).",
+          "Q2.5 : sans réponse, Q2.1 : sans réponse, Q2.2.1.a : « 1_OUI ». Une permission n'est ni un transfert ni un déplacement pour soins.",
       });
     }
   });

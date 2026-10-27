@@ -4,7 +4,8 @@
 //
 // Le gabarit n'a pas de champ pour la précision : elle se dessine (D-93).
 
-import type { Donnees, Rubrique } from "./rubrique";
+import { given } from "../../../../../core/models/eligibilite/question";
+import type { Rubrique } from "./rubrique";
 
 /** Rien n'est saisi, ou l'urgence n'est pas « autres » : la place reste vide. */
 type SansPrecision = undefined;
@@ -18,23 +19,21 @@ export type PrecisionDeLUrgence = {
   readonly urgence_precision?: string;
 };
 
+const autre = given.cible("cible_urgence_autre").isOui();
+
 export const URGENCE: Rubrique<Urgence> = {
-  urgence_appel15: ({ cibles }) => cibles.cible_urgence_appel15.isOui(),
-  urgence_autre: (donnees) => autre(donnees),
+  urgence_appel15: given.cible("cible_urgence_appel15").isOui(),
+  urgence_autre: autre,
 };
 
 export const PRECISION_DE_L_URGENCE: Rubrique<PrecisionDeLUrgence> = {
-  urgence_precision: (donnees) => {
-    if (!autre(donnees)) return undefined;
-    return saisie(donnees.validated.question("Q3.5").value);
-  },
+  urgence_precision: autre.computeWith(
+    given.question("Q3.5").answer(),
+    (attestee, { value }) => (attestee ? saisie(value) : undefined),
+  ),
 };
 
 // ---- implémentation ----
-
-function autre({ cibles }: Donnees): boolean {
-  return cibles.cible_urgence_autre.isOui();
-}
 
 // La saisie telle quelle, ses espaces normalisés.
 function saisie(texte: string | undefined): string | SansPrecision {

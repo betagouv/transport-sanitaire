@@ -5,26 +5,23 @@
 import { publicodesEngine } from "../../socle/decision-engine/publicodes.ts";
 import {
   Cible,
-  type Fait,
-  FaitCatalogue,
-  type FaitContext,
   type GivenAnswers,
-  unFait,
   type ValidatedAnswers,
 } from "../../socle/index.ts";
 import type { Cibles } from "./declarations/cibles.ts";
-import { FAITS, type Faits } from "./declarations/faits.ts";
+import type { Faits } from "./declarations/faits.ts";
 import type { Questions } from "./declarations/questions.ts";
+import { CATALOGUE_DES_FAITS } from "./faits.ts";
 
 /**
  * Des réponses aux faits : ce qui est commandé, en toutes lettres, et ce qu'on
- * sait du lait et du citron.
+ * sait du lait et du citron (`faits.ts`).
  */
 export function faits(
-  answers: GivenAnswers<Questions>,
+  _answers: GivenAnswers<Questions>,
   validated: ValidatedAnswers<Questions>,
 ): Faits {
-  return CATALOGUE.read(answers, validated);
+  return CATALOGUE_DES_FAITS.read(validated);
 }
 
 /**
@@ -42,19 +39,6 @@ export function cibles({ boisson, accompagnements, ...connus }: Faits): Cibles {
 export const SANS_COMMANDE = "aucune";
 
 // ---- implémentation ----
-
-const BOISSONS: Record<Questions["boisson"], string | null> = {
-  the: "thé",
-  cafe: "café",
-  rien: null,
-};
-
-const ACCOMPAGNEMENTS: Record<string, string | undefined> = {
-  lait: "lait",
-  sucre: "sucre",
-  citron: "citron",
-  "citron-a-voir": "peut-être du citron",
-};
 
 function commandeDe(boisson: string | null, avec: readonly string[]) {
   if (boisson === null) return SANS_COMMANDE;
@@ -75,41 +59,3 @@ const miseEnGarde = publicodesEngine<
   },
   ["lait_tourne"],
 );
-
-// Ce qu'on sait d'un accompagnement. Coché, il est demandé. Proposé sans être
-// coché, il est refusé. Une option qui ne s'est pas proposée n'a pas été
-// refusée : elle ne vaut « non » que si la boisson l'exclut.
-function demande(
-  { answers, validated }: FaitContext<Questions, Faits>,
-  option: "lait" | "citron",
-): Fait {
-  const question = validated.question("accompagnements");
-  return unFait()
-    .nonSi(answers.question("boisson").is("rien"), "Rien n'est commandé.")
-    .seulementSi(question.isValidated())
-    .inconnuSi(
-      option === "citron" && question.checked("citron-a-voir"),
-      "« Peut-être du citron » : à décider au service.",
-    )
-    .selonCase(question, option)
-    .nonSi(
-      !question.offers(option),
-      `« ${option} » ne se sert pas avec cette boisson.`,
-    )
-    .sinon("Les accompagnements ne sont pas encore validés.");
-}
-
-// Chaque fait, déclaré une fois.
-const CATALOGUE = new FaitCatalogue<Questions, Faits>(FAITS, {
-  boisson: ({ answers }) => {
-    const boisson = answers.question("boisson");
-    return boisson.hasAnswer() ? BOISSONS[boisson.value] : null;
-  },
-  accompagnements: ({ answers }) =>
-    answers
-      .question("accompagnements")
-      .checkedBoxes()
-      .flatMap((item) => ACCOMPAGNEMENTS[item] ?? []),
-  lait: (contexte) => demande(contexte, "lait"),
-  citron: (contexte) => demande(contexte, "citron"),
-});

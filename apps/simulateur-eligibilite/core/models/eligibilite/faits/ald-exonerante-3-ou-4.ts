@@ -7,16 +7,9 @@
 // Il suit `CONTRAT_REPONSES_FAITS.json`.
 
 import { unFait } from "../../../socle/index.ts";
-import { CasParticuliers } from "../concepts/cas-particuliers.ts";
-import type { DeclarationDeFait } from "../declarations/faits.ts";
+import { CAS } from "./communs.ts";
 
-export const aldExonerante3Ou4: DeclarationDeFait = ({ validated }) => {
-  const ald = CasParticuliers.of(validated).coche("2_ALD");
-  return unFait()
-    .ouiSi(ald.isOui(), "Q1.3 : « 2_ALD » coché, pris en charge à 100 %.")
-    .inconnuSi(
-      ald.isNon(),
-      "Q1.3 validée sans « 2_ALD » : le statut de l'ALD reste inconnu.",
-    )
-    .sinon(ald);
-};
+export const aldExonerante3Ou4 = unFait("fait_ald_exonerante_3_ou_4")
+  .ouiSi(CAS.checked("2_ALD"), "Pris en charge à 100 %.")
+  .inconnuSi(CAS.isPresent(), "Sans ALD cochée, son statut reste inconnu.")
+  .sinon("Q1.3 n'est pas encore validée.");

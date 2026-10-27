@@ -3,6 +3,7 @@
 // transport partagé ne se coche que sur une preuve (COR-06).
 
 import type { Cibles } from "../../../../../core/models/eligibilite/declarations/cibles";
+import { given } from "../../../../../core/models/eligibilite/question";
 import type { Cible } from "../../../../../core/socle";
 import type { Rubrique } from "./rubrique";
 
@@ -46,5 +47,5 @@ type CibleBooleenne = {
 
 // La case est cochée si la cible vaut vrai, et seulement alors.
 function coche(cible: CibleBooleenne) {
-  return ({ cibles }: { cibles: Cibles }) => cibles[cible].isOui();
+  return given.cible(cible).isOui();
 }

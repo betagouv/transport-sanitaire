@@ -55,7 +55,6 @@ import {
 } from "../rubriques/motifs-de-la-dap";
 import { NOMBRE, type Nombre } from "../rubriques/nombre";
 import { PRESCRIPTION, type Prescription } from "../rubriques/prescription";
-import type { Donnees } from "../rubriques/rubrique";
 import { TEXTE_MEDICAL, type TexteMedical } from "../rubriques/texte-medical";
 import { TRAJET, type Trajet } from "../rubriques/trajet";
 import {
@@ -137,7 +136,7 @@ const CERFA: Cerfa<DtoS3139h> = {
 };
 
 // Le DTO de la DAP, rubrique par rubrique.
-const VERS_LA_DAP: CerfaMapping<DtoS3139h, Donnees> = {
+const VERS_LA_DAP: CerfaMapping<DtoS3139h> = {
   fields: {
     ...ACCIDENT,
     ...MOTIFS_DE_LA_DAP,
