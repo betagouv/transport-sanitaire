@@ -2,12 +2,13 @@
 // l'éditeur, et le modèle n'en règle que ce qui change :
 //
 //   question.singleChoice("Q2.7", "Dans quelle tranche d'âge …")
-//     .option("3_ADULTE_AUTORISEE", (option) => option.offeredIf(adultes))
+//     .option("3_ADULTE_AUTORISEE", (option) => option.offeredWhen(desAdultesAProposer))
 //
 // `Value` : les valeurs du catalogue. Une autre ne compile pas.
 
 import { AskedMultipleChoice, AskedSingleChoice } from "./asked-choices.ts";
 import type { AskedCommonData } from "./asked-common.ts";
+import type { Reading } from "./condition.ts";
 import type { DeclaredOption, DeclaredOptions } from "./declared-option.ts";
 import { type CommonSettings, DeclaredQuestion } from "./declared-question.ts";
 import type { AnyQuestions, IncompatibleOptions } from "./question.ts";
@@ -53,6 +54,7 @@ export class DeclaredSingleChoice<
   protected override askedWith(
     common: AskedCommonData,
     context: QuestionContext<Questions, Cibles, Faits>,
+    reading: Reading,
   ) {
     const { options, dropdown, boldLabels } = this.own;
     return new AskedSingleChoice({
@@ -60,7 +62,7 @@ export class DeclaredSingleChoice<
       kind: this.kind,
       dropdown,
       boldLabels,
-      options: options.offeredIn(context),
+      options: options.offeredIn(context, reading),
     });
   }
 
@@ -118,16 +120,17 @@ export class DeclaredMultipleChoice<
   protected override askedWith(
     common: AskedCommonData,
     context: QuestionContext<Questions, Cibles, Faits>,
+    reading: Reading,
   ) {
     const { options, exclusive, incompatible } = this.own;
     return new AskedMultipleChoice({
       ...common,
       kind: this.kind,
-      options: options.offeredIn(context, exclusive),
+      options: options.offeredIn(context, reading, exclusive),
       exclusiveOption:
         exclusive === undefined
           ? undefined
-          : options.offeredOneIn(exclusive, context),
+          : options.offeredOneIn(exclusive, context, reading),
       incompatibleOptions: incompatible,
     });
   }

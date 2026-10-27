@@ -6,13 +6,11 @@
 // Il suit `CONTRAT_REPONSES_FAITS.json`.
 
 import { unFait } from "../../../socle/index.ts";
-import { ExceptionsDeLArticle80 } from "../concepts/exceptions-de-l-article-80.ts";
-import {
-  type DeclarationDeFait,
-  PAS_ENCORE_ETABLI,
-} from "../declarations/faits.ts";
+import { PAS_ENCORE_ETABLI } from "../declarations/faits.ts";
+import { EXCEPTIONS } from "./communs.ts";
 
-export const exceptionArticle80Ehpad: DeclarationDeFait = ({ validated }) =>
-  unFait()
-    .retient(ExceptionsDeLArticle80.of(validated).fait("7_EHPAD"))
-    .sinon(PAS_ENCORE_ETABLI);
+export const exceptionArticle80Ehpad = unFait("fait_exception_article80_ehpad")
+  .ouiSi(EXCEPTIONS.checked("7_EHPAD"))
+  .nonSiEcartee(EXCEPTIONS, "7_EHPAD")
+  .inconnuSi(EXCEPTIONS.isPresent(), "« 7_EHPAD » ne s'est pas proposée.")
+  .sinon(PAS_ENCORE_ETABLI);

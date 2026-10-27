@@ -3,15 +3,16 @@
 //
 //   question.singleChoice("Q1.1", "Le patient a-t-il besoin d'aide ?")
 //     .option("3_AIDE_ET_SURVEILLANCE", (option) => option.description("…"))
-//     .askedIf(conditionDuPatient)
+//     .mattersWhile(given.fait("fait_situation_soins_qualifiante").isNon())
 //
 // L'id dit la sorte : une question à choix n'accepte que les ids du catalogue,
 // un nombre que ceux dont la réponse est un nombre. Les options viennent du
 // catalogue d'après l'id, et le modèle ne redit que ce qui change.
 //
-// Les conditions reçoivent un seul objet : les réponses, les questions
-// validées, les cibles et les faits. Les faits sont ceux des questions validées
-// jusque-là, calculés seulement si on les lit.
+// Les gardes et les incohérences sont des conditions (`given.ts`). Les libellés,
+// rappels, aides et bornes calculés reçoivent un seul objet : les réponses, les
+// questions validées, les cibles et les faits. Les faits sont ceux des
+// questions validées jusque-là, calculés seulement si on les lit.
 
 import type { Address } from "./address.ts";
 import {
@@ -28,7 +29,7 @@ import {
 import { DeclaredOptions } from "./declared-option.ts";
 import type { CommonSettings } from "./declared-question.ts";
 import type { AnyQuestions } from "./question.ts";
-import type { FaitsOf } from "./question-context.ts";
+import type { Pipeline } from "./question-context.ts";
 
 /** Les libellés des options de chaque question à choix, par valeur. */
 export type Catalogue<Questions extends AnyQuestions> = {
@@ -41,17 +42,17 @@ export type Catalogue<Questions extends AnyQuestions> = {
 
 /**
  * Les constructeurs des questions d'un modèle. `options` : son catalogue.
- * `faits` : ce qui calcule ses faits, que les conditions lisent.
+ * `faits` : son catalogue des faits. `cibles` : ce qui calcule ses cibles sur
+ * ces faits. Les conditions lisent les uns et les autres
+ * (`question-context.ts`).
  */
 export function questionsOf<
   Questions extends AnyQuestions,
   Faits = undefined,
   Cibles = undefined,
->(model: {
-  readonly options: Catalogue<Questions>;
-  readonly faits?: FaitsOf<Questions, Faits>;
-}) {
-  const settingsOf = settingsFor<Questions, Cibles, Faits>(model.faits);
+>(model: { readonly options: Catalogue<Questions> } & Pipeline<Faits, Cibles>) {
+  const pipeline = { faits: model.faits, cibles: model.cibles };
+  const settingsOf = settingsFor<Questions, Cibles, Faits>(pipeline);
   const optionsOf = optionsFor<Questions, Cibles, Faits>(model.options);
   return {
     singleChoice: <Id extends SingleChoiceId<Questions>>(
@@ -129,12 +130,12 @@ type SettingsOf<Questions extends AnyQuestions, Cibles, Faits> = (
 ) => CommonSettings<Questions, Cibles, Faits>;
 
 function settingsFor<Questions extends AnyQuestions, Cibles, Faits>(
-  faits: FaitsOf<Questions, Faits> | undefined,
+  pipeline: Pipeline<Faits, Cibles>,
 ): SettingsOf<Questions, Cibles, Faits> {
   return (id, label) => ({
     id,
     label,
-    faits,
+    pipeline,
     conditions: [],
     inconsistencies: [],
     dependsOn: [],

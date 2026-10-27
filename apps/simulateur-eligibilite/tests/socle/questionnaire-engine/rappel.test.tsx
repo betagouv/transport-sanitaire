@@ -1,6 +1,6 @@
 import { screen, waitFor } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
-import { page, questionsOf } from "../../../core/socle";
+import { givenOf, page, questionsOf } from "../../../core/socle";
 import { afficher } from "./afficher";
 
 // Un rappel redit un fait déjà connu, en clair, avant la question qu'il aide à
@@ -18,6 +18,8 @@ const OPTIONS = {
 } as const;
 
 const question = questionsOf<Questions>({ options: OPTIONS });
+const given = givenOf<Questions>();
+const seance = given.question("seance").answer();
 
 const SEANCE = page(
   "seance",
@@ -30,20 +32,20 @@ const CONDITION = page(
   "condition",
   question
     .text("lieu", "Où a lieu la séance ?")
-    .askedIf(({ answers }) => answers.question("seance").is("dialyse"))
+    .appliesWhen(seance.is("dialyse"))
     .reminderFrom(({ answers }) =>
       answers.question("seance").is("dialyse") ? RAPPEL : undefined,
     ),
   question
     .text("motif", "Quel est le motif du trajet ?")
-    .askedIf(({ answers }) => answers.question("seance").is("aucune")),
+    .appliesWhen(seance.is("aucune")),
 );
 
 const SANS_SUITE = page(
   "precision",
   question
     .text("precision", "Une précision sur la séance ?")
-    .askedIf(() => false)
+    .appliesWhen(seance.is("dialyse"))
     .reminder("Ce rappel ne s'affiche pas seul."),
 );
 

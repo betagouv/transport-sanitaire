@@ -7,9 +7,11 @@
 // autant (#128). La personne accompagnante est celle de P1 sur ce trajet : les
 // règles n'ont pas de cible propre au trajet aérien.
 
+import { given } from "../../../../../core/models/eligibilite/question";
+import type { Condition } from "../../../../../core/socle";
 import { MOTIFS } from "./motifs";
-import { avionOuBateau } from "./motifs-de-la-dap";
-import type { Donnees, Rubrique } from "./rubrique";
+import { MOTIFS_DE_LA_DAP } from "./motifs-de-la-dap";
+import type { Rubrique } from "./rubrique";
 
 export type AvionOuBateau = {
   readonly air_accompagnant: boolean;
@@ -21,26 +23,24 @@ export type AvionOuBateau = {
   readonly air_atmp_date?: string;
 };
 
+const avionOuBateau = MOTIFS_DE_LA_DAP.avion_bateau;
+
 export const AVION_OU_BATEAU: Rubrique<AvionOuBateau> = {
-  air_accompagnant: (donnees) =>
-    siAvionOuBateau(donnees, ({ cibles }) =>
-      cibles.cible_personne_accompagnante.isOui(),
-    ),
-  air_hospitalisation: (donnees) =>
-    siAvionOuBateau(donnees, MOTIFS.hospitalisation),
-  air_ald_exo: (donnees) => siAvionOuBateau(donnees, MOTIFS.ald_exo),
+  air_accompagnant: siAvionOuBateau(
+    given.cible("cible_personne_accompagnante").isOui(),
+  ),
+  air_hospitalisation: siAvionOuBateau(MOTIFS.hospitalisation),
+  air_ald_exo: siAvionOuBateau(MOTIFS.ald_exo),
   air_ald_non_exo: MOTIFS.ald_non_exo,
-  air_atmp: (donnees) => siAvionOuBateau(donnees, MOTIFS.atmp),
-  air_atmp_date: (donnees) =>
-    avionOuBateau(donnees.cibles) ? MOTIFS.atmp_date(donnees) : undefined,
+  air_atmp: siAvionOuBateau(MOTIFS.atmp),
+  air_atmp_date: avionOuBateau.computeWith(MOTIFS.atmp_date, (motif, date) =>
+    motif ? date : undefined,
+  ),
 };
 
 // ---- implémentation ----
 
 // La case, si l'avion ou le bateau est un motif ; vide sinon.
-function siAvionOuBateau(
-  donnees: Donnees,
-  coche: (donnees: Donnees) => boolean,
-): boolean {
-  return avionOuBateau(donnees.cibles) && coche(donnees);
+function siAvionOuBateau(coche: Condition): Condition {
+  return avionOuBateau.and(coche);
 }

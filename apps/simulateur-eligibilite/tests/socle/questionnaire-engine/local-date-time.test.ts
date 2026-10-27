@@ -66,3 +66,12 @@ describe("une saisie mal écrite", () => {
     ]).toEqual([false, false, false, false, false, false]);
   });
 });
+
+describe("le jour de Paris", () => {
+  it("est celui de Paris, et non celui du fuseau du poste", () => {
+    const jour = (instant: string) =>
+      LocalDateTime.dayInParis(new Date(instant)).day();
+    expect(jour("2026-10-18T22:30:00Z")).toBe("2026-10-19");
+    expect(jour("2026-12-31T22:59:00Z")).toBe("2026-12-31");
+  });
+});

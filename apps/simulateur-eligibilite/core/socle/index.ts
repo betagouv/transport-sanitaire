@@ -7,28 +7,27 @@
 
 export { Cible, cibleValues } from "./decision-engine/cible.ts";
 export { Fait } from "./decision-engine/fait.ts";
-export {
-  citant,
-  type PassesOn,
-  unFait,
-} from "./decision-engine/fait-builder.ts";
-export {
-  FaitCatalogue,
-  type FaitContext,
-  type FaitDeclarations,
-} from "./decision-engine/fait-catalogue.ts";
+export { type FaitDeclare, unFait } from "./decision-engine/fait-builder.ts";
+export { FaitCatalogue } from "./decision-engine/fait-catalogue.ts";
+export { uneRegle } from "./decision-engine/regle-de-fait.ts";
 export type { CoreModel } from "./model.ts";
 export type { Address } from "./questionnaire-engine/address.ts";
+export {
+  type Condition,
+  constant,
+  type Value,
+} from "./questionnaire-engine/condition.ts";
 export { page } from "./questionnaire-engine/declared-page.ts";
+export { givenOf } from "./questionnaire-engine/given.ts";
 export type {
   AnswersReader,
   GivenAnswer,
   GivenAnswers,
 } from "./questionnaire-engine/given-answers.ts";
-export { LocalDateTime } from "./questionnaire-engine/local-date-time.ts";
-export type {
-  QuestionnairePart,
-  Unanswered,
+export {
+  afterLock,
+  type QuestionnairePart,
+  type Unanswered,
 } from "./questionnaire-engine/question.ts";
 export type { QuestionContext } from "./questionnaire-engine/question-context.ts";
 export { questionsOf } from "./questionnaire-engine/question-factory.ts";

@@ -7,76 +7,60 @@
 // des questions posées avant elle. Le motif de Q2.14 lit aussi l'éloignement,
 // sur la même page.
 
-import type { GivenAnswers, ValidatedAnswers } from "../../../socle/index.ts";
-import { Urgence } from "../concepts/urgence.ts";
-import type { Faits } from "../declarations/faits.ts";
-import type { Questions } from "../declarations/questions.ts";
-import { cible } from "../evaluation-des-regles.ts";
+import { given } from "../question.ts";
 
-type Valides = ValidatedAnswers<Questions>;
-
-/** Ce que lit une garde de la branche : les réponses validées, et leurs faits. */
-type Lecture = { readonly validated: Valides; readonly faits: Faits };
-
-/**
- * Q2.13 (le départ) se pose-t-elle ? Une entrée en établissement de santé qui
- * laisse `fait_transfert_article80` absent envoie à la caisse : la nature du
- * départ dit si l'entrée est simple.
- */
-export function departAPoser({ validated, faits }: Lecture): boolean {
-  return (
-    validated.question("Q2.1.g").is("1_ENTREE") &&
-    faits.fait_hospitalisation.isOui() &&
-    faits.fait_transfert_article80.isInconnu() &&
-    brancheDecisive(faits)
+// Le trajet a quelque chose à décider, une fois les questions précédentes
+// posées : le mode se tient, et aucune orientation prioritaire n'est établie,
+// ni l'exclusion du transport, ni un transfert, une permission à charge du
+// patient, une pension ou un point à la caisse.
+const brancheDecisive = given
+  .cible("cible_mode_coherent")
+  .isOui()
+  .and(
+    given.cible("cible_orientation_sans_urgence_deja_etablie").isOui().not(),
   );
-}
 
 /**
- * Le groupe de l'éloignement (Q2.14) se pose-t-il ? Q2.1 dit la maternité, ou
+ * Q2.13 (le départ) se pose : une entrée en établissement de santé qui laisse
+ * `fait_transfert_article80` absent envoie à la caisse. La nature du départ dit
+ * si l'entrée est simple.
+ */
+export const unDepartAPoser = given
+  .question("Q2.1.g")
+  .answer()
+  .is("1_ENTREE")
+  .and(given.fait("fait_hospitalisation").isOui())
+  .and(given.fait("fait_transfert_article80").isInconnu())
+  .and(brancheDecisive);
+
+/**
+ * Le groupe de l'éloignement (Q2.14) se pose : Q2.1 dit la maternité, ou
  * Q2.2.1.b la signale.
  */
-export function eloignementAPoser({ validated, faits }: Lecture): boolean {
-  const signalee =
-    validated.question("Q2.1").is("13_MATERNITE") ||
-    validated.question("Q2.2.1.b").checked("4_MATERNITE_ELOIGNEE");
-  return signalee && brancheDecisive(faits);
-}
+export const unEloignementAPoser = given
+  .question("Q2.1")
+  .answer()
+  .is("13_MATERNITE")
+  .or(given.question("Q2.2.1.b").answer().checked("4_MATERNITE_ELOIGNEE"))
+  .and(brancheDecisive);
 
 /**
- * Le groupe du motif (Q2.14) se pose-t-il ? Comme l'éloignement, sauf quand
- * celui-ci a déjà écarté le dispositif : le motif ne changerait plus rien.
+ * Le groupe du motif (Q2.14) se pose comme l'éloignement, sauf quand celui-ci
+ * a déjà écarté le dispositif : le motif ne changerait plus rien.
  */
-export function motifAPoser(
-  lecture: Lecture & { readonly answers: GivenAnswers<Questions> },
-): boolean {
-  return (
-    !lecture.answers.question("Q2.14.eloignement").checked("3_AUCUNE") &&
-    eloignementAPoser(lecture)
-  );
-}
+export const unMotifAPoser = unEloignementAPoser.and(
+  given.question("Q2.14.eloignement").answer().checked("3_AUCUNE").not(),
+);
 
 /**
- * Q2.12 se pose-t-elle ? C'est la garde de l'éditeur pour l'urgence,
+ * Q2.12 se pose : c'est la garde de l'éditeur pour l'urgence,
  * `cible_question_urgence_a_afficher`, lue sur tous les faits de P2, ceux de la
  * branche compris. Une condition que la branche vient d'établir (le dispositif
  * maternité) dévoile alors la question que la page du trajet avait masquée.
- * Sans réponse à Q2.3.4 : l'urgence ne se redemande jamais.
+ * Q2.3.4 validée, l'urgence ne se redemande jamais.
  */
-export function urgenceDevoilee({ validated, faits }: Lecture): boolean {
-  if (Urgence.of(validated).estDemandeeSurLeTrajet()) return false;
-  return cible(faits, "cible_question_urgence_a_afficher").isOui();
-}
-
-// ---- implémentation ----
-
-// Le trajet a-t-il quelque chose à décider, une fois les questions précédentes
-// posées ? Le mode se tient, et aucune orientation prioritaire n'est établie :
-// ni l'exclusion du transport, ni un transfert, une permission à charge du
-// patient, une pension ou un point à la caisse.
-function brancheDecisive(faits: Faits): boolean {
-  return (
-    cible(faits, "cible_mode_coherent").isOui() &&
-    !cible(faits, "cible_orientation_sans_urgence_deja_etablie").isOui()
-  );
-}
+export const uneUrgenceDevoilee = given
+  .question("Q2.3.4")
+  .answer()
+  .compute((urgence) => !urgence.isValidated())
+  .and(given.cible("cible_question_urgence_a_afficher").isOui());

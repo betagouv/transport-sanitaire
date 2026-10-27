@@ -1,6 +1,6 @@
 import { screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
-import { page, questionsOf } from "../../../core/socle";
+import { givenOf, page, questionsOf } from "../../../core/socle";
 import { Questionnaire } from "../../../core/socle/questionnaire-engine/questionnaire";
 import { afficher } from "./afficher";
 
@@ -24,6 +24,8 @@ const OPTIONS = {
 } as const;
 
 const question = questionsOf<Questions>({ options: OPTIONS });
+const given = givenOf<Questions>();
+const regime = given.question("regime").answer();
 
 const REGIME = page(
   "regime",
@@ -32,16 +34,14 @@ const REGIME = page(
   question
     .text("proteines", "Quelles protéines ?")
     // Sur la même page : la question lit celle qui la précède.
-    .askedIf(({ validated }) => validated.question("regime").is("vegetarien")),
+    .appliesWhen(regime.is("vegetarien")),
 );
 
 const PLATS = page(
   "plats",
   question
     .multipleChoice("plats", "Quels plats ?")
-    .option("steak", (option) =>
-      option.offeredIf(({ answers }) => answers.question("regime").is("tout")),
-    )
+    .option("steak", (option) => option.offeredWhen(regime.is("tout")))
     .exclusive("rien"),
 );
 
@@ -49,7 +49,7 @@ const DESSERT = page(
   "dessert",
   question
     .text("dessert", "Quel dessert ?")
-    .askedIf(({ validated }) => validated.question("plats").hasAnswer()),
+    .appliesWhen(given.question("plats").answer().isPresent()),
 );
 
 const PAGES = [REGIME, PLATS, DESSERT];

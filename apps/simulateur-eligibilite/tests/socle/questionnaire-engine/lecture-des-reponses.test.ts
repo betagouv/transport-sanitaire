@@ -4,7 +4,6 @@
 // ne dit rien.
 
 import { describe, expect, it } from "vitest";
-import { Fait } from "../../../core/socle/decision-engine/fait";
 import { GivenAnswers } from "../../../core/socle/questionnaire-engine/given-answers";
 import { ValidatedAnswers } from "../../../core/socle/questionnaire-engine/validated-answers";
 
@@ -81,25 +80,5 @@ describe("une question validée", () => {
     expect(quantite.isValidated()).toBe(false);
     expect(quantite.hasAnswer()).toBe(false);
     expect(quantite.offeredOptions()).toEqual([]);
-  });
-});
-
-describe("le fait d'une case", () => {
-  const accompagnements = validees.question("accompagnements");
-
-  it("vaut « oui » quand elle est cochée", () => {
-    expect(accompagnements.faitOf("lait")).toEqual(
-      Fait.oui("accompagnements : « lait » cochée."),
-    );
-  });
-
-  it("vaut « non » quand elle se proposait sans être cochée", () => {
-    expect(accompagnements.faitOf("sucre")).toEqual(
-      Fait.non("accompagnements : « sucre » proposée, non cochée."),
-    );
-  });
-
-  it("ne dit rien quand elle ne se proposait pas", () => {
-    expect(accompagnements.faitOf("citron")).toBeUndefined();
   });
 });

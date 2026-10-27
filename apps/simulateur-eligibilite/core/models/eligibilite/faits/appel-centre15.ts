@@ -6,13 +6,10 @@
 // Il suit `CONTRAT_REPONSES_FAITS.json`.
 
 import { unFait } from "../../../socle/index.ts";
-import { ExceptionsDeLArticle80 } from "../concepts/exceptions-de-l-article-80.ts";
-import {
-  type DeclarationDeFait,
-  PAS_ENCORE_ETABLI,
-} from "../declarations/faits.ts";
+import { PAS_ENCORE_ETABLI } from "../declarations/faits.ts";
+import { EXCEPTIONS } from "./communs.ts";
 
-export const appelCentre15: DeclarationDeFait = ({ validated }) =>
-  unFait()
-    .retient(ExceptionsDeLArticle80.of(validated).centre15())
-    .sinon(PAS_ENCORE_ETABLI);
+export const appelCentre15 = unFait("fait_appel_centre15")
+  .ouiSi(EXCEPTIONS.checked("3_CENTRE_QUINZE"))
+  .nonSiEcartee(EXCEPTIONS, "3_CENTRE_QUINZE")
+  .sinon(PAS_ENCORE_ETABLI);

@@ -7,17 +7,15 @@
 // Il suit `CONTRAT_REPONSES_FAITS.json`.
 
 import { unFait } from "../../../socle/index.ts";
-import { AideDuPatient } from "../concepts/aide-du-patient.ts";
-import type { DeclarationDeFait } from "../declarations/faits.ts";
+import { AIDE, given } from "./communs.ts";
 
-export const prefereTransportCommun: DeclarationDeFait = ({ validated }) =>
-  unFait()
-    .selon(validated.question("Q1.4"), {
-      "1_VEHICULE_PERSONNEL": "non",
-      "2_TRANSPORTS_EN_COMMUN": "oui",
-    })
-    .nonSi(
-      AideDuPatient.of(validated).avecUnProfessionnel(),
-      "Q1.4 ne se pose pas : un professionnel intervient.",
-    )
-    .sinon("Q1.4 n'est pas encore validée.");
+const MODE = given.question("Q1.4").answer();
+
+export const prefereTransportCommun = unFait("fait_prefere_transport_commun")
+  .nonSi(MODE.is("1_VEHICULE_PERSONNEL"))
+  .ouiSi(MODE.is("2_TRANSPORTS_EN_COMMUN"))
+  .nonSi(
+    AIDE.is("3_AVEC_UN_PROFESSIONNEL"),
+    "Q1.4 ne se pose pas : un professionnel intervient.",
+  )
+  .sinon("Q1.4 n'est pas encore validée.");

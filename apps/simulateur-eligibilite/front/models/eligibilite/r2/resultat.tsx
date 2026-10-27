@@ -7,24 +7,23 @@
 // leur texte. Un retour pénitentiaire hors du circuit de prescription n'a pas
 // d'issue : R2 oriente vers l'administration pénitentiaire (point 34).
 
-import { horsCircuit } from "../../../../core/models/eligibilite/p2/retour-penitentiaire";
+import { dansLeCircuit } from "../../../../core/models/eligibilite/p2/retour-penitentiaire";
 import type { FirstResult } from "../../../socle";
 import { resultatNegatif } from "./fiche-negative/resultat-negatif";
 import { resultatPositif } from "./fiche-positive/resultat-positif";
 import { resultatDuPrescripteur } from "./prescripteur/resultat-du-prescripteur";
 import { estSansFiche } from "./prescripteur/texte-du-prescripteur";
-import type { ReponsesEtCibles } from "./trace-du-resultat";
+import type { Lecture } from "./trace-du-resultat";
 
 export function eligibilite(
-  reponses: ReponsesEtCibles,
+  lecture: Lecture,
 ): FirstResult | Promise<FirstResult> {
-  if (horsCircuit(reponses.validated)) return ORIENTATION_PENITENTIAIRE;
-  const issue = reponses.cibles.cible_issue_id.value;
+  if (!lecture.read(dansLeCircuit)) return ORIENTATION_PENITENTIAIRE;
+  const issue = lecture.cibles.cible_issue_id.value;
   if (!issue) return SANS_ISSUE;
-  if (issue === "ISSUE_NON_ELIGIBLE") return resultatNegatif(reponses);
-  if (estSansFiche(issue))
-    return resultatDuPrescripteur({ ...reponses, issue });
-  return resultatPositif({ ...reponses, issue });
+  if (issue === "ISSUE_NON_ELIGIBLE") return resultatNegatif(lecture);
+  if (estSansFiche(issue)) return resultatDuPrescripteur({ ...lecture, issue });
+  return resultatPositif({ ...lecture, issue });
 }
 
 // ---- implémentation ----

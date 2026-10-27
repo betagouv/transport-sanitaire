@@ -7,16 +7,13 @@
 // avec feuille et complétion est vert.
 
 import { type ComponentType, type ReactNode, useEffect, useState } from "react";
-import { preconisationOf } from "../../../core/socle/model";
+import { type Preconisation, preconisationOf } from "../../../core/socle/model";
 import type {
   Answers,
   AnyCibles,
 } from "../../../core/socle/questionnaire-engine/question";
 import { pagesOf } from "../../../core/socle/questionnaire-engine/question";
-import {
-  Questionnaire,
-  type QuestionnaireState,
-} from "../../../core/socle/questionnaire-engine/questionnaire";
+import type { QuestionnaireState } from "../../../core/socle/questionnaire-engine/questionnaire";
 import type { FirstResult, Model } from "../model";
 import type { DebugTraceProps } from "../questionnaire-engine/QuestionnaireForm";
 import { NextStep, Stepper } from "../questionnaire-engine/Stepper";
@@ -26,7 +23,7 @@ import {
   feedbackOf,
   onFirstResult,
 } from "./FeedbackLink";
-import { SecondaryButton, traceOf } from "./Resultats";
+import { readOf, SecondaryButton, traceOf } from "./Resultats";
 import { SheetViewer } from "./SheetViewer";
 import { type Locked, lock } from "./start";
 import "./first-resultat.css";
@@ -53,7 +50,7 @@ export function FirstResultat({ model, state, DebugTrace, ...on }: Props) {
   return (
     <>
       <Content
-        result={resultOf(model, answers, preconisation.cibles)}
+        result={resultOf(model, answers, preconisation)}
         step={{ title: model.result.title, part: parts.length }}
         startLabel={startLabelOf(model, preconisation.cibles)}
         actions={actionsOf(model, state, on)}
@@ -85,12 +82,16 @@ type Loading = FirstResult | Promise<FirstResult>;
 // hors de React : chaque rendu de la page relancerait le chargement.
 const loading = new WeakMap<Model, WeakMap<Answers, Promise<FirstResult>>>();
 
-function resultOf(model: Model, answers: Answers, cibles: AnyCibles): Loading {
+function resultOf(
+  model: Model,
+  answers: Answers,
+  preconisation: Preconisation,
+): Loading {
   const known = loading.get(model)?.get(answers);
   if (known) return known;
-  const questionnaire = new Questionnaire(pagesOf(model.core.questionnaire));
-  const { validated, answers: given } = questionnaire.readWith(answers);
-  const result = model.result.content({ answers: given, validated, cibles });
+  const pages = pagesOf(model.core.questionnaire);
+  const read = readOf(pages, answers, preconisation, new Date());
+  const result = model.result.content({ ...preconisation, read });
   if (!(result instanceof Promise)) return result;
   const byAnswers = loading.get(model) ?? new WeakMap();
   loading.set(model, byAnswers.set(answers, result));

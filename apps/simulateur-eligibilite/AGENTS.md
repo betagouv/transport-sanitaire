@@ -50,10 +50,11 @@ Le modèle de l'éditeur se range par partie du parcours : `p1/` (le mode),
 `p2/` (l'éligibilité) et `p3/` (le complément du cerfa) dans `core/`, `r2/` (le
 résultat, avec un dossier par famille d'issues) et `r3/` (son résultat) dans
 `front/`. `core/models/eligibilite/concepts/` porte ce que plusieurs parties
-ou plusieurs faits lisent d'un même concept : la permission, le séjour, l'aide
-du patient, la distance, l'urgence, le numéro d'une option…
+lisent d'un même concept : la permission, l'aide du patient, les contextes du
+trajet, le numéro d'une option.
 `core/models/eligibilite/faits/` porte un fichier par fait, au nom du fait sans
-`fait_` : les faits n'appartiennent à aucune partie, et n'en lisent aucune. Les
+`fait_`, et `communs.ts`, ce que plusieurs faits lisent : les faits
+n'appartiennent à aucune partie, et n'en lisent aucune. Les
 racines des deux dossiers les assemblent. Une partie
 ne lit pas celle qui la suit, et les familles de R2 ne s'importent pas entre
 elles, ni les cerfa de R3, et une rubrique de R3 n'importe aucun cerfa :
@@ -101,9 +102,11 @@ mécanique, sans React ni phrase de l'écran :
 |---|---|
 | `question.ts` | ce qu'est une question pour le moteur (`Question` : son id, sa sorte, ses dépendances, et `askedIn`, ce qu'elle donne vu le contexte), une page, une partie, une réponse |
 | `question-factory.ts` | les constructeurs nommés des questions (`questionsOf`) : la sorte vient du constructeur, les options du catalogue du modèle, d'après l'id |
-| `declared-question.ts`, `declared-choices.ts`, `declared-inputs.ts` | une classe par sorte de question déclarée. Chaque réglage (`askedIf`, `hint`, `min`…) donne une copie, et `askedIn` tire la question posée de la déclaration |
+| `declared-question.ts`, `declared-choices.ts`, `declared-inputs.ts` | une classe par sorte de question déclarée. Chaque réglage (`appliesWhen`, `hint`, `min`…) donne une copie, et `askedIn` tire la question posée de la déclaration |
 | `declared-option.ts`, `declared-page.ts` | les réglages d'une option, par une lambda (`.option(valeur, (option) => …)`), et `page(id, ...questions)`, dont la condition s'ajoute à chacune de ses questions |
-| `question-context.ts` | le seul objet que reçoivent les conditions et les libellés du moment : `{ answers, validated, cibles, faits }`. Les faits n'y sont calculés que si on les lit |
+| `condition.ts`, `given.ts` | les conditions : une valeur qui dit ce qu'elle lit (`Value`, `Condition`), se compose par `and`, `or`, `not`, `compute` et `computeWith`, et ses entrées (`given.question(id).answer()`, `given.fait`, `given.cible`, `given.today`) |
+| `answer-readings.ts` | ce que lit `answer()` selon l'endroit : dans une garde, les questions posées avant elle ; dans un fait, les questions validées |
+| `question-context.ts` | le seul objet que reçoivent les libellés, rappels, aides et bornes du moment : `{ answers, validated, cibles, faits }`. Les faits n'y sont calculés que si on les lit |
 | `option.ts` | ce qu'est une option offerte : sa valeur, son libellé, sa description, son aide, ce qu'elle bloque |
 | `address.ts` | ce qu'est une adresse, la seule réponse en objet : ses champs, ceux qui se demandent en France ou à l'étranger, et ce qui ne va pas dans chacun |
 | `questionnaire.ts` | `Questionnaire`, ses pages dans l'ordre, et `Reading`, des réponses lues à travers lui : `questionnaire.readWith(answers, cibles)`. Une lecture se calcule une fois et ne change pas : pages et questions qui se posent (`askedPages`, `questionsOn`), questions validées (`validated`), complétude (`isComplete`), page où l'on rouvre (`openPage`), page suivante (`pageAfter`), réponses d'une page validée (`commit`). Et `QuestionnaireState`, ce que le parcours garde d'un écran à l'autre |
@@ -129,42 +132,55 @@ Neuf règles à tenir en ajoutant une question :
   `question.singleChoice("Q1.1", "Concernant son déplacement, le patient :")` :
   la sorte vient du constructeur, les options du catalogue `OPTIONS` du modèle,
   d'après l'id. Une option ne se règle que pour ce qu'elle porte de plus, dans
-  sa lambda : `.option("6_SEANCE", (option) => option.offeredIf(…))`. `order`
+  sa lambda : `.option("6_SEANCE", (option) => option.offeredWhen(…))`. `order`
   en garde une partie, dans cet ordre, et `exclusive` met la sienne à part.
   Chaque réglage donne une copie : une déclaration ne change jamais. Le modèle lie ses constructeurs une fois, dans son
-  `question.ts` : `questionsOf<Questions, Faits>({ options, faits })`. Ce qui se
-  pose après le verrou lit les cibles : un second jeu, typé avec elles
-  (`questionDuComplement` dans le modèle de démonstration).
-- **Une condition d'affichage s'écrit dans `askedIf`.** Jamais dans un composant.
-  Celle d'une page (`page(…).askedIf(…)`) s'ajoute à chacune de ses questions.
-- **Une condition lit ce qui la précède.** Elle reçoit un seul objet : les
-  réponses (`answers`), les questions validées avant la sienne (`validated`),
-  les cibles figées et les faits de ces questions validées. Sur la page
-  ouverte, celles qui la précèdent comptent telles qu'elles sont à l'écran.
+  `question.ts` : `questionsOf<Questions, Faits, Cibles>({ options, faits,
+  cibles })`. Un seul jeu, avant comme après le verrou. La partie posée après
+  le verrou se déclare par `afterLock({ … })` : ses gardes lisent alors les
+  cibles figées.
+- **Une garde est une condition.** `appliesWhen` dit quand la question a un
+  sens, d'après les réponses ; `mattersWhile` quand elle est encore utile,
+  d'après un fait ou une cible. Une option se propose par `offeredWhen`.
+  Jamais dans un composant. Celle d'une page (`page(…).appliesWhen(…)`)
+  s'ajoute à chacune de ses questions.
+- **Une condition lit ce qui la précède.** `given.question(id).answer()` voit
+  les pages d'avant validées, et sa page telle qu'elle est à l'écran, pour les
+  questions posées avant la sienne. Une réponse d'avant le verrou se lit telle
+  quelle. Une garde qui lit sa question ou une question d'après s'arrête net.
+  Un fait et une cible se lisent sur les questions validées avant elle (figées
+  dans la partie `afterLock`).
 - **Une garde lit le fait quand il en existe un.**
-  `.askedIf(({ faits }) => faits.fait_permission.isOui())`. Elle ne
-  recompose pas, réponse par réponse, ce que le fait établit déjà. Sans fait qui
-  la dise, elle interroge le concept qui porte ce savoir
-  (`Permission.of(answers).estDUnMineurDeVingtAns()`).
+  `.mattersWhile(given.fait("fait_permission").isOui())`. Elle ne recompose
+  pas, réponse par réponse, ce que le fait établit déjà. Sans fait qui la
+  dise, elle se compose de réponses, nommée près de la question qui la lit
+  (`unMineurDeVingtAns`, dans `p2/permission.ts`). Un calcul sur plusieurs
+  valeurs les nomme : `given.all({ sens, repetition }).compute(sensDe)`
+  (`p3/sens-du-trajet.ts`). Chacune garde ce qu'elle lit.
+- **R2 et R3 lisent des valeurs.** Le socle leur passe `{ read, faits,
+  cibles }`. Une rubrique, un champ de cerfa, la trace sont des valeurs, que
+  `read` lit sur les questions validées : `read(PRECISIONS)`. Aucune fonction
+  n'y reçoit les réponses (ADR-21).
 - **Un savoir écrit deux fois vit dans son concept.** Un fichier par concept,
-  sous `concepts/`, nommé en français : `Permission`, `Sejour`,
-  `AideDuPatient`. Il se construit sur des réponses données (une garde, une
-  cohérence) comme sur des réponses validées (un fait, R2), lit ses réponses
-  une fois et ne déclare aucun fait. Il peut répondre par un `Fait` que
-  plusieurs déclarations reprennent (`Sejour.of(validated).nonSiEcarte()`).
-  Une lecture qui n'a de sens que validée se déclare avec
-  `this: Sejour<ValidatedAnswers<Questions>>` (`estEcarte`). Une réponse lue à
-  un seul endroit reste lue là : pas d'objet par question.
-- **Un fait vit dans son fichier.** `fait_distance_plus_50` se déclare dans
-  `faits/distance-plus-50.ts`, et nulle part ailleurs. Le fichier s'ouvre sur
-  le titre que l'éditeur donne au fait, dit ce qui l'établit et le contrat
-  qu'il suit, et n'exporte que sa déclaration (`distancePlus50`). Une page ne
-  garde que ses questions et ses gardes. Une provenance partagée suit la
-  question qu'elle cite, dans son concept ; celles qui n'en citent aucune
-  (`PAS_ENCORE_ETABLI`) restent dans `declarations/faits.ts`.
+  sous `concepts/`, nommé en français : `Permission`, `AideDuPatient`. Il se
+  construit sur des réponses données (un rappel, une cohérence) comme sur des
+  réponses validées, lit ses réponses une fois et ne donne aucun fait. Une
+  réponse lue à un seul endroit reste lue là : pas d'objet par question.
+- **Un fait est une valeur, dans son fichier.** `fait_distance_plus_50` se
+  déclare dans `faits/distance-plus-50.ts`, et nulle part ailleurs :
+  `unFait("fait_distance_plus_50").ouiSi(…).nonSi(…).sinon(…)`, sans fonction
+  ni `switch`. Le fichier s'ouvre sur le titre que l'éditeur donne au fait, dit
+  ce qui l'établit et le contrat qu'il suit, et n'exporte que sa déclaration
+  (`distancePlus50`). Chaque fait écrit ses règles ; seuls les lectures
+  (`MOTIF`, `SITUATIONS`), les règles reprises mot pour mot
+  (`uneRegle().nonSi(…)`, placées par `applique`) et la table
+  `SITUATION_PROPOSEE` se partagent, dans `faits/communs.ts` (ADR-22). Les
+  provenances qui ne citent rien (`PAS_ENCORE_ETABLI`) restent dans
+  `declarations/faits.ts`. Une page ne garde que ses questions et ses gardes.
   `tests/model/eligibilite/catalogue-des-faits.test.ts` le garde.
-- **Un fait ne lit jamais une garde qui lit les faits.** Le calcul tournerait en
-  rond : le catalogue l'arrête net, sur une erreur qui le dit. Une garde lit
+- **Un fait ne lit ni garde, ni cible, ni jour.** Il lit les questions validées
+  et d'autres faits ; le catalogue arrête net un fait qui lit une cible, et un
+  fait qui se relit, sur une erreur qui le dit. Une garde lit
   tout le catalogue : la lecture dans l'ordre ne lui montre que les questions
   validées avant elle. La complétude de P1 et de P2 y reste inconnue : la
   constater pose les questions, donc lit leurs gardes. Seule la décision
@@ -173,12 +189,12 @@ Neuf règles à tenir en ajoutant une question :
   changement de celle dont elle dépend. Une adresse dont le mode change
   (`abroadIf`) survit de même : elle se relit dans le nouveau mode, sans son
   pays si elle revient en France.
-- **Une incohérence se déclare par `inconsistentIf(condition, message)`, sur la
-  plus tardive des deux questions.** Le moteur lui cache les réponses des pages suivantes : une
-  règle écrite sur la première ne se déclenche jamais. Elle lit sa propre page, brouillon
-  compris, et les réponses d'avant le verrou. Son message dit quelle
-  question corriger ; il peut citer les réponses, s'il est une fonction du
-  contexte. Une question incohérente n'est
+- **Une incohérence se déclare par `inconsistentWhen(condition, message)`, sur
+  la plus tardive des questions qu'elle lit.** Le socle refuse qu'elle en lise
+  une d'après. Elle lit sa propre question et sa page, brouillon compris, et
+  les réponses d'avant le verrou. Son message dit quelle question corriger ; il
+  peut citer les réponses, s'il est une valeur (`answer().compute(…)`). Une
+  question incohérente n'est
   pas validée. On corrige par « Précédent » : aucun bouton, aucun saut. Une
   erreur de format s'affiche seule, avant les incohérences. Celle d'une adresse
   s'affiche sous le groupe, et une erreur de champ passe devant.
@@ -203,13 +219,13 @@ Ses pièces sont dans `core/socle/`.
 | Pièce | Ce qu'elle porte |
 |---|---|
 | `GivenAnswers` (`given-answers.ts`) | les réponses données, lues question par question : `answers.question("Q1.1").is("1_SEUL")`, `.isNot(option)`, `.checked(case)`, `.checkedBoxes()`, `.hasAnswer()`. Une question sans réponse n'est aucune option, sans être un « non » |
-| `ValidatedAnswers` (`validated-answers.ts`) | les questions validées, lues de même, avec ce qui se proposait : `.isValidated()`, `.offers(option)`, `.declined(case)`, et `.faitOf(case)`, qui donne oui (cochée), non (proposée, non cochée) ou rien (jamais montrée) |
+| `ValidatedAnswers` (`validated-answers.ts`) | les questions validées, lues de même, avec ce qui se proposait : `.isValidated()`, `.offers(option)`, `.declined(case)` |
 | `AnswersReader` (`given-answers.ts`) | ce que les deux lectures ont en commun, `question(id)`. Un concept du modèle le reçoit : il se lit sur l'une comme sur l'autre |
 | `LocalDateTime` (`local-date-time.ts`) | une date répondue, lue une fois, sans fuseau : `LocalDateTime.parse(saisie)`, `isBefore`, `isAfter`, `isAtOrBefore`, `equals`, `plusDays`, `plusHours`, `startOfDay`. Une saisie mal écrite n'est comparée à rien : toute comparaison avec elle vaut « non » |
 | `preconisation.faits(answers, validated)` | le modèle reçoit ces deux lectures, jamais les réponses brutes. Il applique, fait par fait, le contrat de l'éditeur |
 | `Fait` (`decision-engine/fait.ts`) | ce qu'on sait d'un fait, en objet valeur figé : sa valeur si elle est établie, et sa provenance. `Fait.oui`, `Fait.non`, `Fait.inconnu` et `Fait.valant` le construisent ; `isOui()`, `isNon()` et `isInconnu()` le lisent, jamais `.value === true`. `avecProvenance` en donne une copie, `equals` compare valeur et provenance |
-| `FaitCatalogue` (`decision-engine/fait-catalogue.ts`) | les faits d'un modèle, **une déclaration par fait**. Le modèle le construit une fois avec la liste de ses faits et un fichier par fait (`faits/<nom>.ts`, réunis par `faits/index.ts`), qui n'exporte que sa déclaration et s'ouvre sur le titre de l'éditeur : un doublon, un oubli ou un nom hors du modèle l'arrêtent au chargement. Une déclaration reçoit `{ answers, validated, faits }` et peut lire d'autres faits. `read(answers, validated, fixed)` calcule chaque fait à sa première lecture, et `fixed` en impose (la complétude). Un fait qui se relit, par d'autres faits ou par une garde, s'arrête sur une erreur qui donne le chemin. Un fait qu'aucune réponse ne pose se déclare aussi, et sa provenance dit pourquoi |
-| `unFait()` (`decision-engine/fait-builder.ts`) | la chaîne de règles d'un fait. La première qui conclut l'emporte : `seulementSi(condition)`, `selon(réponse, { "1_OUI": "oui", "2_NON": "non" })`, qui écrit seul la provenance « Q2.1.h : « 1_OUI ». », `selonCase(réponse, case)` et `nonSiEcartee(réponse, case)` pour une case proposée, `ouiSi`, `nonSi` et `inconnuSi(condition, provenance)`, et `retient(fait)`, qui reprend ce qu'un concept répond, un `Fait` ou rien (`Sejour.of(validated).nonSiEcarte()`). `sinon(provenance)` clôt la chaîne : le fait reste inconnu, ou vaut le fait qu'on lui donne. `citant(…réponses)` écrit une provenance qui cite les réponses données |
+| `FaitCatalogue` (`decision-engine/fait-catalogue.ts`) | les faits d'un modèle, **une déclaration par fait**. Le modèle le construit une fois avec le nom de ses faits et leur liste (`faits/index.ts`, un fichier par fait), qui n'exporte que sa déclaration et s'ouvre sur le titre de l'éditeur : un doublon, un oubli ou un nom hors du modèle l'arrêtent au chargement. `read(validated, fixed)` calcule chaque fait à sa première lecture, et `fixed` en impose (la complétude). Le moteur de questionnaire reçoit le catalogue lui-même (`questionsOf({ faits: CATALOGUE_DES_FAITS })`, D-207) ; la préconisation le lit avec la complétude. Un fait lit les questions validées et d'autres faits, jamais une cible ni le jour. Un fait qui se relit s'arrête sur une erreur qui donne le chemin. Un fait qu'aucune réponse ne pose se déclare aussi, et sa provenance dit pourquoi |
+| `unFait(nom)` (`decision-engine/fait-builder.ts`) | un fait, valeur nommée faite de règles sur des conditions. La première qui conclut l'emporte : `ouiSi`, `nonSi` et `inconnuSi(condition, raison)`, `nonSiEcartee(réponse, case)` pour une case proposée et non cochée, et `applique(regle)`, qui place une règle écrite ailleurs (`uneRegle().nonSi(condition, raison)`, une seule règle par `RegleDeFait`). `sinon(raison)` clôt le fait : il reste inconnu, pour cette raison. `vaut(valeur)` déclare un fait qui n'a pas d'état (la boisson, en toutes lettres). Une règle écrit sa provenance : ce que lit sa condition, puis sa raison, « Q2.10.b : « 2_PODO_ORTHESE ». », « Q2.6 : sans réponse. », « fait_permission : « non ». » (ADR-22) |
 | `Cible` (`decision-engine/cible.ts`) | ce que les règles donnent pour une cible, en objet valeur figé, que seul `Cible.of` construit. `isOui()` et `isNon()` lisent une cible « oui ou non », `is("TAP")` une cible à constantes, `isInconnue()` et `isSansObjet()` les deux cas qui ne sont pas une décision. Jamais `.value === true` : une cible inconnue n'est pas un « non ». `cibleValues(cibles)` donne leurs valeurs, pour la trace, une seed ou un test |
 | `publicodesEngine` | n'envoie aux règles que les faits établis, et donne chaque cible en `Cible`. Il manque un fait : elle est inconnue, ce qui n'est pas une décision, ni « sans objet » (`null`) |
 
@@ -250,8 +266,9 @@ cadre, à 8 pt, et déborde dessous, par-dessus ce qui s'y trouve (D-94). Il ne
 descend sous 8 pt que pour rester sur la page, jusqu'à 6 pt.
 
 Le modèle traduit les données du simulateur en DTO (`CerfaMapping`, dans
-`front/socle/cerfa-mapping.ts`) : une fonction par entrée, qui lit les réponses,
-les faits et les cibles figés au verrou, et la date de complétion. `bindCerfa`
+`front/socle/cerfa-mapping.ts`) : une valeur par entrée (`given…`), que le
+socle lit sur les questions validées, les faits et les cibles figés au verrou,
+et le jour de complétion (`given.today()`, ADR-21). `bindCerfa`
 lie une définition à son mapping et vérifie qu'ils parlent du même DTO. Le
 simulateur calcule le DTO sous le second résultat et le passe au bouton.
 

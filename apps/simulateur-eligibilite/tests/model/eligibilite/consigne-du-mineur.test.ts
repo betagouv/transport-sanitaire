@@ -9,7 +9,6 @@
 // rubrique (`texte-medical.test.ts`).
 
 import { describe, expect, it } from "vitest";
-import type { Donnees } from "../../../front/models/eligibilite/r3/rubriques/rubrique";
 import { S3138G } from "../../../front/models/eligibilite/r3/s3138g/s3138g";
 import { S3139H } from "../../../front/models/eligibilite/r3/s3139h/s3139h";
 import { generateCerfa } from "../../../front/socle/cerfa/generate-cerfa";
@@ -37,7 +36,7 @@ const SERIE = {
 // coche, ses volets et son volet médical.
 type Support = {
   readonly nom: string;
-  readonly cerfa: BoundCerfa<Donnees>;
+  readonly cerfa: BoundCerfa;
   readonly reponses: Reponses;
   readonly cibles: ValeursDesCibles;
   readonly case: string;

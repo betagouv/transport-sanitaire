@@ -6,11 +6,9 @@
 //
 // Il suit `CONTRAT_REPONSES_FAITS.json`.
 
-import { Fait } from "../../../socle/index.ts";
-import {
-  type DeclarationDeFait,
-  SOUS_QUESTIONS_MASQUEES,
-} from "../declarations/faits.ts";
+import { unFait } from "../../../socle/index.ts";
+import { SOUS_QUESTIONS_MASQUEES } from "../declarations/faits.ts";
 
-export const preuvePrescripteurQualifiante: DeclarationDeFait = () =>
-  Fait.inconnu(SOUS_QUESTIONS_MASQUEES);
+export const preuvePrescripteurQualifiante = unFait(
+  "fait_preuve_prescripteur_qualifiante",
+).sinon(SOUS_QUESTIONS_MASQUEES);

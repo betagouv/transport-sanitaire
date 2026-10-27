@@ -6,8 +6,10 @@
 //
 // Il suit `CONTRAT_REPONSES_FAITS.json`.
 
-import { CasParticuliers } from "../concepts/cas-particuliers.ts";
-import type { DeclarationDeFait } from "../declarations/faits.ts";
+import { unFait } from "../../../socle/index.ts";
+import { CAS } from "./communs.ts";
 
-export const bariatrique: DeclarationDeFait = ({ validated }) =>
-  CasParticuliers.of(validated).coche("1_FORTE_CORPULENCE");
+export const bariatrique = unFait("fait_bariatrique")
+  .ouiSi(CAS.checked("1_FORTE_CORPULENCE"))
+  .nonSi(CAS.isPresent())
+  .sinon("Q1.3 n'est pas encore validée.");

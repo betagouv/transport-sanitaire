@@ -8,15 +8,13 @@
 // si elle n'y tient pas. Le nom du client n'a pas de champ : il se dessine dans
 // son cadre.
 
-import type { Cibles } from "../../../core/models/fake/declarations/cibles";
-import type { Faits } from "../../../core/models/fake/declarations/faits";
 import type { Questions } from "../../../core/models/fake/declarations/questions";
-import type { GivenAnswers } from "../../../core/socle";
+import { given } from "../../../core/models/fake/question";
+import type { GivenAnswer } from "../../../core/socle";
 import {
   at,
   bindCerfa,
   type Cerfa,
-  type CerfaInput,
   type CerfaMapping,
   commentOn,
   drawnBox,
@@ -58,27 +56,27 @@ const BON_DE_COMMANDE: Cerfa<BonDeCommande> = {
   drawings: { au_nom_de: at({ page: 1, x: 36, y: 174, width: 348 }) },
 };
 
-const VERS_LE_BON_DE_COMMANDE: CerfaMapping<
-  BonDeCommande,
-  CerfaInput<Questions, Faits, Cibles>
-> = {
+const VERS_LE_BON_DE_COMMANDE: CerfaMapping<BonDeCommande> = {
   fields: {
-    commande: ({ cibles }) => String(cibles.commande.value),
-    nombre_de_tasses: ({ answers }) =>
-      String(answers.question("quantite").value),
-    date: ({ completedAt }) => enFrancais(completedAt),
-    adresse_de_facturation: ({ answers }) => {
-      const adresse = answers.question("adresse");
-      return adresse.hasAnswer() ? enUneLigne(adresse.value) : undefined;
-    },
-    avec_lait: ({ faits }) => faits.lait.isOui(),
-    avec_sucre: ({ answers }) =>
-      answers.question("accompagnements").checked("sucre"),
-    avec_citron: ({ faits }) => faits.citron.isOui(),
-    instructions: ({ answers }) => instructionsDe(answers),
-    remarque: ({ answers }) => answers.question("remarque").value,
+    commande: given.cible("commande").compute(({ value }) => String(value)),
+    nombre_de_tasses: reponse("quantite").compute(({ value }) => String(value)),
+    date: given.today().compute((jour) => enFrancais(jour.day() ?? "")),
+    adresse_de_facturation: reponse("adresse").compute((adresse) =>
+      adresse.hasAnswer() ? enUneLigne(adresse.value) : undefined,
+    ),
+    avec_lait: given.fait("lait").isOui(),
+    avec_sucre: reponse("accompagnements").checked("sucre"),
+    avec_citron: given.fait("citron").isOui(),
+    instructions: given
+      .all({
+        lieu: reponse("lieu"),
+        retrait: reponse("retrait"),
+        jour: reponse("jour"),
+      })
+      .compute(instructionsDe),
+    remarque: reponse("remarque").compute(({ value }) => value),
   },
-  drawings: { au_nom_de: ({ answers }) => answers.question("nom").value },
+  drawings: { au_nom_de: reponse("nom").compute(({ value }) => value) },
 };
 
 /** Le bon de commande, lié à la traduction de la commande. */
@@ -104,17 +102,23 @@ const RETRAITS: Record<Questions["retrait"], string> = {
 /** Les trois réponses ne sont pas toutes données. */
 type Incomplet = undefined;
 
-// Le lieu, le retrait et le jour, une fois tous trois donnés.
-function instructionsDe(answers: GivenAnswers<Questions>): string | Incomplet {
-  const lieu = answers.question("lieu");
-  const retrait = answers.question("retrait");
-  const jour = answers.question("jour");
-  if (!lieu.hasAnswer() || !retrait.hasAnswer() || !jour.hasAnswer())
-    return undefined;
-  return `Servie ${LIEUX[lieu.value]}, ${RETRAITS[retrait.value]}, le ${enFrancais(new Date(jour.value))}`;
+function reponse<Id extends keyof Questions & string>(id: Id) {
+  return given.question(id).answer();
 }
 
-// Le jour, à Paris : « 14/10/2026 ».
-function enFrancais(date: Date): string {
-  return date.toLocaleDateString("fr-FR", { timeZone: "Europe/Paris" });
+type Service = {
+  readonly [Id in "lieu" | "retrait" | "jour"]: GivenAnswer<Questions[Id]>;
+};
+
+// Le lieu, le retrait et le jour, une fois tous trois donnés.
+function instructionsDe({ lieu, retrait, jour }: Service): string | Incomplet {
+  if (!lieu.hasAnswer() || !retrait.hasAnswer() || !jour.hasAnswer())
+    return undefined;
+  return `Servie ${LIEUX[lieu.value]}, ${RETRAITS[retrait.value]}, le ${enFrancais(jour.value)}`;
+}
+
+// Un jour `AAAA-MM-JJ`, écrit à la française : « 14/10/2026 ».
+function enFrancais(jour: string): string {
+  const [annee, mois, date] = jour.split("-");
+  return `${date}/${mois}/${annee}`;
 }

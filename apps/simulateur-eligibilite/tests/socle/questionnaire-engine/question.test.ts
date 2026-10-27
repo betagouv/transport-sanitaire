@@ -1,10 +1,17 @@
 import { describe, expect, it } from "vitest";
-import { Cible, page, questionsOf } from "../../../core/socle";
+import {
+  afterLock,
+  Cible,
+  givenOf,
+  page,
+  questionsOf,
+} from "../../../core/socle";
 import { Questionnaire } from "../../../core/socle/questionnaire-engine/questionnaire";
 
 // Après le verrou, une question peut dépendre de la préconisation : sa condition
-// lit les cibles figées, en plus des réponses. Le questionnaire factice n'a pas
-// de telle question, les pages sont donc écrites ici.
+// lit les cibles figées, en plus des réponses. Ses pages sont marquées
+// `afterLock`. Le questionnaire factice n'a pas de telle question, les pages
+// sont donc écrites ici.
 
 type Questions = {
   adresse: string;
@@ -14,9 +21,12 @@ type Questions = {
 };
 
 // Les cibles figées au verrou. Avant lui : aucune.
-type Cibles = { readonly urgence: Cible<boolean> } | undefined;
+type Figees = { readonly urgence: Cible<boolean> };
+type Cibles = Figees | undefined;
 
 const OPTIONS = { douleur: { oui: "Oui", non: "Non" } } as const;
+
+const given = givenOf<Questions, undefined, Figees>();
 
 const question = questionsOf<Questions, undefined, Cibles>({
   options: OPTIONS,
@@ -28,11 +38,14 @@ const SI_URGENCE = page(
   "urgence",
   question
     .text("precision", "Précision sur l'urgence")
-    .askedIf(({ cibles }) => cibles?.urgence.isOui() ?? false),
+    .mattersWhile(given.cible("urgence").isOui()),
 );
 
 const affichees = (urgence: boolean) =>
-  new Questionnaire([TOUJOURS, SI_URGENCE])
+  new Questionnaire(
+    afterLock({ id: "complement", title: "", pages: [TOUJOURS, SI_URGENCE] })
+      .pages,
+  )
     .readWith({}, { urgence: Cible.of(urgence) })
     .askedPages()
     .map((page) => page.id);
@@ -55,7 +68,7 @@ const DOULEUR = page(
   question.singleChoice("douleur", "Avez-vous mal ?"),
   question
     .text("endroit", "Où ?")
-    .askedIf(({ answers }) => answers.question("douleur").is("oui")),
+    .appliesWhen(given.question("douleur").answer().is("oui")),
 );
 
 const repondu = (reponses: Record<string, string>) =>

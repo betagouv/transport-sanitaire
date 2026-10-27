@@ -18,6 +18,7 @@
 // la case de gauche et `non` celle de droite. Suivre les états cocherait
 // « non » pour un accident causé par un tiers (D-139).
 
+import { given } from "../../../../../core/models/eligibilite/question";
 import {
   bindCerfa,
   box,
@@ -33,7 +34,7 @@ import { EXONERATION, type Exoneration } from "../rubriques/exoneration";
 import { LIENS, type Liens } from "../rubriques/liens";
 import { MODE, type Mode } from "../rubriques/mode";
 import { PRESCRIPTION, type Prescription } from "../rubriques/prescription";
-import type { Donnees, Rubrique } from "../rubriques/rubrique";
+import type { Rubrique } from "../rubriques/rubrique";
 import { TRAJET, type Trajet } from "../rubriques/trajet";
 
 /**
@@ -100,16 +101,22 @@ const CERFA: Cerfa<DtoS3141> = {
 };
 
 const PERMISSION: Rubrique<Permission> = {
-  debut_hospitalisation: ({ validated }) => validated.question("Q2.8.1").value,
-  nombre: ({ validated }) => {
-    const nombre = validated.question("Q3.1.3").value;
-    return nombre === undefined ? undefined : String(nombre);
-  },
-  periode_fin: ({ validated }) => validated.question("Q2.8.6").value,
+  debut_hospitalisation: given
+    .question("Q2.8.1")
+    .answer()
+    .compute(({ value }) => value),
+  nombre: given
+    .question("Q3.1.3")
+    .answer()
+    .compute(({ value }) => (value === undefined ? undefined : String(value))),
+  periode_fin: given
+    .question("Q2.8.6")
+    .answer()
+    .compute(({ value }) => value),
 };
 
 // Le DTO du S3141, rubrique par rubrique.
-const VERS_LE_S3141: CerfaMapping<DtoS3141, Donnees> = {
+const VERS_LE_S3141: CerfaMapping<DtoS3141> = {
   fields: {
     ...ACCIDENT,
     ...PERMISSION,

@@ -4,7 +4,7 @@
 
 import { page } from "../../../socle/index.ts";
 import { question } from "../question.ts";
-import { convocationAnnoncee } from "./convocation.ts";
+import { unAppareillage, uneConvocationAnnoncee } from "./convocation.ts";
 
 // Q2.10 se pose quand Q2.1 dit une convocation, ou que Q2.2.1.b en signale une
 // (option 13). Elle n'est jamais reproposée si Q2.1 l'a déjà dite : Q2.2.1.b la
@@ -16,16 +16,16 @@ export const PAGE_DE_LA_CONVOCATION = page(
       "Q2.10",
       "Quelle convocation, quel avis d’audience ou quel appareillage motive ce trajet ?",
     )
-    .askedIf(({ validated }) => convocationAnnoncee(validated)),
+    .appliesWhen(uneConvocationAnnoncee),
   question
     .singleChoice(
       "Q2.10.a",
       "Le fournisseur est-il agréé pour cet appareillage ?",
     )
-    .askedIf(({ answers }) => answers.question("Q2.10").is("6_APPAREILLAGE"))
+    .appliesWhen(unAppareillage)
     .dependsOn("Q2.10"),
   question
     .singleChoice("Q2.10.b", "Quel appareillage est concerné ?")
-    .askedIf(({ answers }) => answers.question("Q2.10").is("6_APPAREILLAGE"))
+    .appliesWhen(unAppareillage)
     .dependsOn("Q2.10"),
 );

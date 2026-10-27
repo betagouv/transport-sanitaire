@@ -38,9 +38,9 @@ describe("une exception cochée", () => {
   it("garde la trace de la case cochée et de celle écartée", () => {
     expect(
       faits(had).fait_exception_article80_had_intercurrent.provenance,
-    ).toBe("Q2.6 : « 5_HAD » cochée.");
+    ).toBe("Q2.6 : « 5_HAD ».");
     expect(faits(had).fait_exception_article80_usld.provenance).toBe(
-      "Q2.6 : « 6_USLD » proposée, non cochée.",
+      "Q2.6 : « 5_HAD ». « 6_USLD » proposée, non cochée.",
     );
   });
 
@@ -175,7 +175,8 @@ describe("l'avion ou le bateau (Q2.3.2)", () => {
   it("réutilise la ligne régulière sans revote : l'exception vaut « oui »", () => {
     expect(faits(ligne).fait_exception_article80_air_mer).toEqual({
       value: true,
-      provenance: "Q2.3.2 : ligne régulière, réutilisée sans revote.",
+      provenance:
+        "Q2.6 : « 11_AUCUNE ». La ligne régulière de Q2.3.2 se réutilise sans revote.",
     });
   });
 });

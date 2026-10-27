@@ -6,36 +6,36 @@
 import { page } from "../../../socle/index.ts";
 import { question } from "../question.ts";
 import {
-  departAPoser,
-  eloignementAPoser,
-  motifAPoser,
-  urgenceDevoilee,
+  unDepartAPoser,
+  unEloignementAPoser,
+  uneUrgenceDevoilee,
+  unMotifAPoser,
 } from "./branche.ts";
 
 export const PAGE_DE_LA_BRANCHE = page(
   "P2/branche",
   question
     .singleChoice("Q2.13.depart", "D’où part le patient pour ce trajet ?")
-    .askedIf(departAPoser),
+    .mattersWhile(unDepartAPoser),
   question
     .multipleChoice(
       "Q2.14.eloignement",
       "Quelle situation d’éloignement concerne la patiente ?",
     )
-    .askedIf(eloignementAPoser)
+    .mattersWhile(unEloignementAPoser)
     .exclusive("3_AUCUNE"),
   question
     .multipleChoice(
       "Q2.14.motif",
       "Quel motif concerne le déplacement évalué ?",
     )
-    .askedIf(motifAPoser)
+    .mattersWhile(unMotifAPoser)
     .exclusive("3_AUCUNE"),
   question
     .singleChoice(
       "Q2.12",
       "Le médecin prescripteur atteste-t-il que ce transport est urgent ?",
     )
-    .askedIf(urgenceDevoilee)
+    .mattersWhile(uneUrgenceDevoilee)
     .dependsOn("Q2.14.eloignement", "Q2.14.motif"),
 );

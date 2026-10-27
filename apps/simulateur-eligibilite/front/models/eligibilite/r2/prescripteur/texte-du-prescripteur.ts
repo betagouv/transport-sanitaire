@@ -75,7 +75,7 @@ export function texteDuPrescripteur(
   const { issues } = catalogue;
   const scenarios = scenariosDuPrescripteur(issue, issues[issue], trace);
   if (issue === "ISSUE_CAISSE") {
-    return texteDesPoints(issues[issue], scenarios);
+    return texteDesRaisons(issues[issue], scenarios);
   }
   const [scenario] = scenarios;
   return scenario
@@ -124,7 +124,7 @@ function texteDUnScenario(
 // scénario de cumul que l'éditeur a écrit pour ces points, s'il existe ; sinon
 // son introduction pour « plusieurs points », puis chaque scénario. Le titre
 // compte les points, une fois chacun (point 27).
-function texteDesPoints(
+function texteDesRaisons(
   issue: IssueDeLaCaisse,
   points: readonly ScenarioPrescripteur[],
 ): TexteDuPrescripteur {

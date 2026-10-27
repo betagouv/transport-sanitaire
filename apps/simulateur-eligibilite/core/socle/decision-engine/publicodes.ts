@@ -22,6 +22,11 @@ export type DecisionEngine<Faits, Cibles> = {
   cibles(faits: Faits): Cibles;
   /** Une seule cible de ces faits, quand le questionnaire en a besoin en route. */
   cible<Nom extends keyof Cibles>(faits: Faits, nom: Nom): Cibles[Nom];
+  /**
+   * Les cibles de ces faits, chacune calculée à sa première lecture : celles
+   * qu'une garde lit en route, sans payer les autres.
+   */
+  lazyCibles(faits: Faits): Cibles;
 };
 
 /** Le moteur de ces règles, qui calcule ces cibles. */
@@ -48,10 +53,30 @@ export function publicodesEngine<
     },
     cible: (faits, nom) =>
       cibleOf(on(faits), nom as string) as Cibles[typeof nom],
+    lazyCibles: (faits) => lazily(cibles, (nom) => cibleOf(on(faits), nom)),
   };
 }
 
 // ---- implémentation ----
+
+// Un objet dont chaque clé se calcule à sa première lecture, une seule fois.
+function lazily<Values>(
+  keys: readonly string[],
+  compute: (key: string) => unknown,
+): Values {
+  const values = new Map<string, unknown>();
+  const lazy = {};
+  for (const key of keys) {
+    Object.defineProperty(lazy, key, {
+      enumerable: true,
+      get: () => {
+        if (!values.has(key)) values.set(key, compute(key));
+        return values.get(key);
+      },
+    });
+  }
+  return lazy as Values;
+}
 
 // Une règle booléenne vaut `true` ou `false`, une règle à constantes l'une
 // d'elles. `null` : elle ne s'applique pas. `undefined` : il manque un fait.

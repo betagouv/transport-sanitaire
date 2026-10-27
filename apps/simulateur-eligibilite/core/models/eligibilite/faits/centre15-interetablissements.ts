@@ -9,37 +9,31 @@
 // Il suit `CONTRAT_REPONSES_FAITS.json`.
 
 import { unFait } from "../../../socle/index.ts";
-import { DepartDeLEntree } from "../concepts/depart-de-l-entree.ts";
-import { ExceptionsDeLArticle80 } from "../concepts/exceptions-de-l-article-80.ts";
-import { Permission } from "../concepts/permission.ts";
-import { RetourPenitentiaire } from "../concepts/retour-penitentiaire.ts";
-import { Sejour } from "../concepts/sejour.ts";
+import { PAS_ENCORE_ETABLI } from "../declarations/faits.ts";
 import {
-  type DeclarationDeFait,
-  PAS_ENCORE_ETABLI,
-} from "../declarations/faits.ts";
+  DEPLACEMENT,
+  EXCEPTIONS,
+  UN_SEJOUR_ECARTE,
+  UNE_ENTREE_SIMPLE,
+  UNE_PERMISSION_ECARTE_LE_TRANSFERT,
+  UNE_SORTIE_VERS_LA_PRISON,
+} from "./communs.ts";
 
-export const centre15Interetablissements: DeclarationDeFait = ({
-  validated,
-}) => {
-  const deplacement = validated.question("Q2.5");
-  return unFait()
-    .retient(
-      DepartDeLEntree.of(validated).nonSiEntreeSimple(
-        "aucun transfert entre établissements.",
-      ),
-    )
-    .retient(RetourPenitentiaire.of(validated).nonSiSortieVersLaPrison())
-    .retient(Permission.of(validated).ecarteLeTransfert())
-    .retient(ExceptionsDeLArticle80.of(validated).centre15())
-    .inconnuSi(
-      deplacement.is("1_TRANSFERT"),
-      "Q2.5 : transfert entre établissements ; Q2.6 dira si le Centre 15 l'a demandé.",
-    )
-    .nonSi(
-      deplacement.is("2_AUTRE_DEPLACEMENT"),
-      "Q2.5 : « 2_AUTRE_DEPLACEMENT ». Ce n'est pas un transfert entre établissements.",
-    )
-    .retient(Sejour.of(validated).nonSiEcarte())
-    .sinon(PAS_ENCORE_ETABLI);
-};
+export const centre15Interetablissements = unFait(
+  "fait_centre15_interetablissements",
+)
+  .nonSi(UNE_ENTREE_SIMPLE, "Aucun transfert entre établissements.")
+  .applique(UNE_SORTIE_VERS_LA_PRISON)
+  .applique(UNE_PERMISSION_ECARTE_LE_TRANSFERT)
+  .ouiSi(EXCEPTIONS.checked("3_CENTRE_QUINZE"))
+  .nonSiEcartee(EXCEPTIONS, "3_CENTRE_QUINZE")
+  .inconnuSi(
+    DEPLACEMENT.is("1_TRANSFERT"),
+    "Q2.6 dira si le Centre 15 l'a demandé.",
+  )
+  .nonSi(
+    DEPLACEMENT.is("2_AUTRE_DEPLACEMENT"),
+    "Ce n'est pas un transfert entre établissements.",
+  )
+  .applique(UN_SEJOUR_ECARTE)
+  .sinon(PAS_ENCORE_ETABLI);

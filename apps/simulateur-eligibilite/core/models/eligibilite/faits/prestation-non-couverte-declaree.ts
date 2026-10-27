@@ -6,11 +6,9 @@
 //
 // Il suit `CONTRAT_REPONSES_FAITS.json`.
 
-import { Fait } from "../../../socle/index.ts";
-import {
-  type DeclarationDeFait,
-  SOUS_QUESTIONS_MASQUEES,
-} from "../declarations/faits.ts";
+import { unFait } from "../../../socle/index.ts";
+import { SOUS_QUESTIONS_MASQUEES } from "../declarations/faits.ts";
 
-export const prestationNonCouverteDeclaree: DeclarationDeFait = () =>
-  Fait.inconnu(SOUS_QUESTIONS_MASQUEES);
+export const prestationNonCouverteDeclaree = unFait(
+  "fait_prestation_non_couverte_declaree",
+).sinon(SOUS_QUESTIONS_MASQUEES);

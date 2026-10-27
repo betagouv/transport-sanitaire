@@ -9,8 +9,11 @@ import { CIBLES, type Cibles } from "./declarations/cibles.ts";
 import type { Faits } from "./declarations/faits.ts";
 import rules from "./rules/regles.json" with { type: "json" };
 
-/** Toutes les cibles, et une seule cible, de faits donnés. */
-export const { cibles, cible } = publicodesEngine<Faits, Cibles>(
+/**
+ * Toutes les cibles, une seule cible, et les cibles lues à la demande, de
+ * faits donnés.
+ */
+export const { cibles, cible, lazyCibles } = publicodesEngine<Faits, Cibles>(
   rules as Rules,
   CIBLES,
 );

@@ -6,10 +6,10 @@
 //
 // Il suit `CONTRAT_REPONSES_FAITS.json`.
 
-import { Fait } from "../../../socle/index.ts";
-import type { DeclarationDeFait } from "../declarations/faits.ts";
+import { unFait } from "../../../socle/index.ts";
 
-export const mineurSoinsProlongesAVerifier: DeclarationDeFait = () =>
-  Fait.inconnu(
-    "Aucune question ne le pose : Q1.3 n'a pas de réponse « je ne peux pas le vérifier » (D-109).",
-  );
+export const mineurSoinsProlongesAVerifier = unFait(
+  "fait_mineur_soins_prolonges_a_verifier",
+).sinon(
+  "Aucune question ne le pose : Q1.3 n'a pas de réponse « je ne peux pas le vérifier » (D-109).",
+);
