@@ -18,9 +18,9 @@
 //   transfert entre établissements ne mène pas à une prison : il se refuse.
 // - Pour tout autre soin, la prison n'est que l'adresse d'arrivée, en P3.
 
-import type { GivenAnswers, ValidatedAnswers } from "../../../socle/index.ts";
-import { RetourPenitentiaire } from "../concepts/retour-penitentiaire.ts";
+import type { ValidatedAnswers } from "../../../socle/index.ts";
 import type { Questions } from "../declarations/questions.ts";
+import { given } from "../question.ts";
 
 type Valides = ValidatedAnswers<Questions>;
 
@@ -28,18 +28,33 @@ type Valides = ValidatedAnswers<Questions>;
 export const TRANSFERT_VERS_LA_PRISON =
   "Un transfert entre établissements de santé ne mène pas à un établissement pénitentiaire. Corrigez cette réponse, ou retirez le retour pénitentiaire des situations particulières.";
 
-/**
- * Q2.2.1.indication se pose-t-elle ? Le retour est coché sur sa page, et P1,
- * validée avant elle, n'établit aucune indication médicale.
- */
-export function indicationAPoser(
-  answers: GivenAnswers<Questions>,
-  validated: Valides,
-): boolean {
-  return (
-    RetourPenitentiaire.of(answers).estCoche() && !indicationEtablie(validated)
+/** Le retour pénitentiaire est coché dans l'autre cadre. */
+export const unRetourPenitentiaire = given
+  .question("Q2.2.1")
+  .answer()
+  .checked("3_AUTRE_CADRE")
+  .and(given.question("Q2.2.1.b").answer().checked("10_RETOUR_PENITENTIAIRE"));
+
+// Un critère de Q1.2, une ALD, une séance ou un autre cas de Q1.3 établit
+// l'indication médicale.
+const uneIndicationEtablie = given
+  .question("Q1.2")
+  .answer()
+  .compute((criteres) => criteres.hasAnyChecked())
+  .or(
+    given
+      .question("Q1.3")
+      .answer()
+      .compute((cas) => cas.checkedBoxes().some((un) => un !== "7_AUCUNE")),
   );
-}
+
+/**
+ * Q2.2.1.indication se pose : le retour est coché, et P1 n'établit aucune
+ * indication médicale.
+ */
+export const uneIndicationAPoser = unRetourPenitentiaire.and(
+  uneIndicationEtablie.not(),
+);
 
 /** Le retour relève-t-il de la seule organisation pénitentiaire ? */
 export function horsCircuit(validated: Valides): boolean {
@@ -47,26 +62,11 @@ export function horsCircuit(validated: Valides): boolean {
 }
 
 /**
- * Le trajet reste-t-il dans le circuit de prescription ? Hors du circuit, plus
- * rien ne se pose : c'est la condition des pages qui suivent les contextes.
+ * Le trajet reste dans le circuit de prescription. Hors du circuit, plus rien
+ * ne se pose : c'est la condition des pages qui suivent les contextes.
  */
-export function dansLeCircuit({
-  validated,
-}: {
-  readonly validated: Valides;
-}): boolean {
-  return !horsCircuit(validated);
-}
-
-// ---- implémentation ----
-
-// Un critère de Q1.2, une ALD, une séance ou un autre cas de Q1.3.
-function indicationEtablie(validated: Valides): boolean {
-  return (
-    validated.question("Q1.2").hasAnyChecked() ||
-    validated
-      .question("Q1.3")
-      .checkedBoxes()
-      .some((cas) => cas !== "7_AUCUNE")
-  );
-}
+export const dansLeCircuit = given
+  .question("Q2.2.1.indication")
+  .answer()
+  .is("2_NON")
+  .not();

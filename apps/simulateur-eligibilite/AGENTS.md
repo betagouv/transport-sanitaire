@@ -101,9 +101,11 @@ mécanique, sans React ni phrase de l'écran :
 |---|---|
 | `question.ts` | ce qu'est une question pour le moteur (`Question` : son id, sa sorte, ses dépendances, et `askedIn`, ce qu'elle donne vu le contexte), une page, une partie, une réponse |
 | `question-factory.ts` | les constructeurs nommés des questions (`questionsOf`) : la sorte vient du constructeur, les options du catalogue du modèle, d'après l'id |
-| `declared-question.ts`, `declared-choices.ts`, `declared-inputs.ts` | une classe par sorte de question déclarée. Chaque réglage (`askedIf`, `hint`, `min`…) donne une copie, et `askedIn` tire la question posée de la déclaration |
+| `declared-question.ts`, `declared-choices.ts`, `declared-inputs.ts` | une classe par sorte de question déclarée. Chaque réglage (`appliesWhen`, `hint`, `min`…) donne une copie, et `askedIn` tire la question posée de la déclaration |
 | `declared-option.ts`, `declared-page.ts` | les réglages d'une option, par une lambda (`.option(valeur, (option) => …)`), et `page(id, ...questions)`, dont la condition s'ajoute à chacune de ses questions |
-| `question-context.ts` | le seul objet que reçoivent les conditions et les libellés du moment : `{ answers, validated, cibles, faits }`. Les faits n'y sont calculés que si on les lit |
+| `condition.ts`, `given.ts` | les conditions : une valeur qui dit ce qu'elle lit (`Value`, `Condition`), se compose par `and`, `or`, `not`, `compute` et `computeWith`, et ses entrées (`given.question(id).answer()`, `given.fait`, `given.cible`, `given.today`) |
+| `answer-readings.ts` | ce que lit `answer()` selon l'endroit : dans une garde, les questions posées avant elle ; dans un fait, les questions validées |
+| `question-context.ts` | le seul objet que reçoivent les libellés, rappels, aides et bornes du moment : `{ answers, validated, cibles, faits }`. Les faits n'y sont calculés que si on les lit |
 | `option.ts` | ce qu'est une option offerte : sa valeur, son libellé, sa description, son aide, ce qu'elle bloque |
 | `address.ts` | ce qu'est une adresse, la seule réponse en objet : ses champs, ceux qui se demandent en France ou à l'étranger, et ce qui ne va pas dans chacun |
 | `questionnaire.ts` | `Questionnaire`, ses pages dans l'ordre, et `Reading`, des réponses lues à travers lui : `questionnaire.readWith(answers, cibles)`. Une lecture se calcule une fois et ne change pas : pages et questions qui se posent (`askedPages`, `questionsOn`), questions validées (`validated`), complétude (`isComplete`), page où l'on rouvre (`openPage`), page suivante (`pageAfter`), réponses d'une page validée (`commit`). Et `QuestionnaireState`, ce que le parcours garde d'un écran à l'autre |
@@ -129,28 +131,34 @@ Neuf règles à tenir en ajoutant une question :
   `question.singleChoice("Q1.1", "Concernant son déplacement, le patient :")` :
   la sorte vient du constructeur, les options du catalogue `OPTIONS` du modèle,
   d'après l'id. Une option ne se règle que pour ce qu'elle porte de plus, dans
-  sa lambda : `.option("6_SEANCE", (option) => option.offeredIf(…))`. `order`
+  sa lambda : `.option("6_SEANCE", (option) => option.offeredWhen(…))`. `order`
   en garde une partie, dans cet ordre, et `exclusive` met la sienne à part.
   Chaque réglage donne une copie : une déclaration ne change jamais. Le modèle lie ses constructeurs une fois, dans son
   `question.ts` : `questionsOf<Questions, Faits, Cibles>({ options, faits,
   cibles })`. Un seul jeu, avant comme après le verrou. La partie posée après
   le verrou se déclare par `afterLock({ … })` : ses gardes lisent alors les
   cibles figées.
-- **Une condition d'affichage s'écrit dans `askedIf`.** Jamais dans un composant.
-  Celle d'une page (`page(…).askedIf(…)`) s'ajoute à chacune de ses questions.
-- **Une condition lit ce qui la précède.** Elle reçoit un seul objet : les
-  réponses (`answers`), les questions validées avant la sienne (`validated`),
-  les faits de ces questions validées et les cibles de ces faits (figées dans
-  la partie `afterLock`). Sur la page
-  ouverte, celles qui la précèdent comptent telles qu'elles sont à l'écran.
+- **Une garde est une condition.** `appliesWhen` dit quand la question a un
+  sens, d'après les réponses ; `mattersWhile` quand elle est encore utile,
+  d'après un fait ou une cible. Une option se propose par `offeredWhen`.
+  Jamais dans un composant. Celle d'une page (`page(…).appliesWhen(…)`)
+  s'ajoute à chacune de ses questions.
+- **Une condition lit ce qui la précède.** `given.question(id).answer()` voit
+  les pages d'avant validées, et sa page telle qu'elle est à l'écran, pour les
+  questions posées avant la sienne. Une réponse d'avant le verrou se lit telle
+  quelle. Une garde qui lit sa question ou une question d'après s'arrête net.
+  Un fait et une cible se lisent sur les questions validées avant elle (figées
+  dans la partie `afterLock`).
 - **Une garde lit le fait quand il en existe un.**
-  `.askedIf(({ faits }) => faits.fait_permission.isOui())`. Elle ne
-  recompose pas, réponse par réponse, ce que le fait établit déjà. Sans fait qui
-  la dise, elle interroge le concept qui porte ce savoir
-  (`Permission.of(answers).estDUnMineurDeVingtAns()`).
+  `.mattersWhile(given.fait("fait_permission").isOui())`. Elle ne recompose
+  pas, réponse par réponse, ce que le fait établit déjà. Sans fait qui la
+  dise, elle se compose de réponses, nommée près de la question qui la lit
+  (`unMineurDeVingtAns`, dans `p2/permission.ts`). Un calcul qui lit des
+  réponses entières passe par `given.answers(…ids)`, qui refuse une question
+  non déclarée : un pont, le temps que R3 lise des conditions (#246).
 - **Un savoir écrit deux fois vit dans son concept.** Un fichier par concept,
   sous `concepts/`, nommé en français : `Permission`, `Sejour`,
-  `AideDuPatient`. Il se construit sur des réponses données (une garde, une
+  `AideDuPatient`. Il se construit sur des réponses données (un rappel, une
   cohérence) comme sur des réponses validées (un fait, R2), lit ses réponses
   une fois et ne déclare aucun fait. Il peut répondre par un `Fait` que
   plusieurs déclarations reprennent (`Sejour.of(validated).nonSiEcarte()`).
@@ -175,12 +183,12 @@ Neuf règles à tenir en ajoutant une question :
   changement de celle dont elle dépend. Une adresse dont le mode change
   (`abroadIf`) survit de même : elle se relit dans le nouveau mode, sans son
   pays si elle revient en France.
-- **Une incohérence se déclare par `inconsistentIf(condition, message)`, sur la
-  plus tardive des deux questions.** Le moteur lui cache les réponses des pages suivantes : une
-  règle écrite sur la première ne se déclenche jamais. Elle lit sa propre page, brouillon
-  compris, et les réponses d'avant le verrou. Son message dit quelle
-  question corriger ; il peut citer les réponses, s'il est une fonction du
-  contexte. Une question incohérente n'est
+- **Une incohérence se déclare par `inconsistentWhen(condition, message)`, sur
+  la plus tardive des questions qu'elle lit.** Le socle refuse qu'elle en lise
+  une d'après. Elle lit sa propre question et sa page, brouillon compris, et
+  les réponses d'avant le verrou. Son message dit quelle question corriger ; il
+  peut citer les réponses, s'il est une valeur (`answer().compute(…)`). Une
+  question incohérente n'est
   pas validée. On corrige par « Précédent » : aucun bouton, aucun saut. Une
   erreur de format s'affiche seule, avant les incohérences. Celle d'une adresse
   s'affiche sous le groupe, et une erreur de champ passe devant.

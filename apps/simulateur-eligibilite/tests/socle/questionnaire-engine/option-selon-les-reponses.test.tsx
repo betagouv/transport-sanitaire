@@ -1,6 +1,6 @@
 import { screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
-import { page, questionsOf } from "../../../core/socle";
+import { givenOf, page, questionsOf } from "../../../core/socle";
 import { afficher } from "./afficher";
 
 // Le libellé d'une option peut dépendre des réponses. L'option exclusive aussi,
@@ -23,6 +23,7 @@ const OPTIONS = {
 } as const;
 
 const question = questionsOf<Questions>({ options: OPTIONS });
+const given = givenOf<Questions>();
 
 const HOSPITALISATION = page(
   "hospitalisation",
@@ -56,8 +57,8 @@ const EXONERATIONS = page(
     .multipleChoice("exonerations", "Quels cas d'exonération ?")
     .exclusive("aucun")
     .option("aucun", (option) =>
-      option.offeredIf(({ answers }) =>
-        answers.question("hospitalise").isNot("oui"),
+      option.offeredWhen(
+        given.question("hospitalise").answer().is("oui").not(),
       ),
     ),
 );

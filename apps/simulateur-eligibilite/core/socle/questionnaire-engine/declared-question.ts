@@ -5,11 +5,8 @@
 // Une question se déclare réglage par réglage, chacun sur sa ligne :
 //
 //   question.datetime("Q2.8.2", "Quand commence la première permission ?")
-//     .askedIf(mineurAPoser)
-//     .inconsistentIf(
-//       ({ answers }) => Permission.of(answers).commenceAvantLHospitalisation(),
-//       "La permission …",
-//     );
+//     .appliesWhen(unMineurDeVingtAns)
+//     .inconsistentWhen(commenceAvantLHospitalisation, "La permission …");
 //
 // Elle ne change pas : chaque réglage donne une copie. Il n'y a pas d'étape
 // finale : la page la prend telle quelle (`declared-page.ts`), et le moteur de
@@ -17,21 +14,23 @@
 
 import type { AskedCommonData } from "./asked-common.ts";
 import type { AskedQuestion } from "./asked-question.ts";
+import {
+  type Condition,
+  type Reading,
+  type Text,
+  textIn,
+} from "./condition.ts";
 import type { AnyQuestions, NotAsked, Reminder } from "./question.ts";
 import {
   contextOf,
   type Pipeline,
   type QuestionContext,
+  readingOf,
   type SeenAnswers,
 } from "./question-context.ts";
 
 /** Rien de calculé : le rappel fixe de `reminder` vaut. */
 type NothingComputed = undefined;
-
-/** Une condition sur les réponses. Elle lit le contexte de la question. */
-export type Condition<Questions extends AnyQuestions, Cibles, Faits> = (
-  context: QuestionContext<Questions, Cibles, Faits>,
-) => boolean;
 
 /** Ce que toute question déclarée règle, quelle que soit sa sorte. */
 export type CommonSettings<Questions extends AnyQuestions, Cibles, Faits> = {
@@ -39,8 +38,8 @@ export type CommonSettings<Questions extends AnyQuestions, Cibles, Faits> = {
   readonly label: string;
   /** Ce qui calcule les faits et les cibles que lisent ses conditions. */
   readonly pipeline: Pipeline<Questions, Faits, Cibles>;
-  readonly conditions: readonly Condition<Questions, Cibles, Faits>[];
-  readonly inconsistencies: readonly Inconsistency<Questions, Cibles, Faits>[];
+  readonly conditions: readonly Condition[];
+  readonly inconsistencies: readonly Inconsistency[];
   readonly dependsOn: readonly string[];
   readonly hint?: string;
   readonly reminder?: Reminder;
@@ -72,13 +71,24 @@ export abstract class DeclaredQuestion<
   }
 
   /**
-   * La question se pose-t-elle, vu les réponses ? Chaque appel ajoute une
-   * condition : elle se pose quand toutes tiennent. Après le verrou, une
-   * condition lit aussi les cibles figées.
+   * La question a un sens quand cette condition tient : elle porte sur ce que
+   * les réponses disent du patient. Elle se pose quand toutes ses conditions
+   * tiennent, `appliesWhen` comme `mattersWhile`.
    */
-  askedIf(condition: Condition<Questions, Cibles, Faits>): this {
-    const conditions = [...this.settings.conditions, condition];
-    return this.withSettings({ conditions });
+  appliesWhen(condition: Condition): this {
+    return this.withSettings({
+      conditions: [...this.settings.conditions, condition],
+    });
+  }
+
+  /**
+   * La question est utile tant que cette condition tient : sa réponse peut
+   * encore changer l'issue. Elle lit d'ordinaire un fait ou une cible.
+   */
+  mattersWhile(condition: Condition): this {
+    return this.withSettings({
+      conditions: [...this.settings.conditions, condition],
+    });
   }
 
   /** Le libellé, quand il dépend des réponses. */
@@ -118,13 +128,10 @@ export abstract class DeclaredQuestion<
   /**
    * La réponse en contredit une autre quand `condition` tient : `message` dit
    * quoi corriger. Il peut citer les réponses : il les lit alors comme la
-   * condition. La règle se déclare sur la plus tardive des deux questions :
-   * elle ne voit pas les réponses des pages suivantes.
+   * condition. La règle se déclare sur la plus tardive des questions qu'elle
+   * lit : le socle refuse qu'elle en lise une d'après.
    */
-  inconsistentIf(
-    condition: Condition<Questions, Cibles, Faits>,
-    message: Message<Questions, Cibles, Faits>,
-  ): this {
+  inconsistentWhen(condition: Condition, message: Text): this {
     const inconsistency = { condition, message };
     return this.withSettings({
       inconsistencies: [...this.settings.inconsistencies, inconsistency],
@@ -147,25 +154,28 @@ export abstract class DeclaredQuestion<
   }
 
   /**
-   * La question telle qu'elle se pose, vu les réponses, si elle s'y pose. Ses incohérences lisent `earlier`, qui ne voit pas les
-   * réponses des pages suivantes.
+   * La question telle qu'elle se pose, vu les réponses, si elle s'y pose. Ses
+   * incohérences lisent `earlier`, qui voit aussi sa propre réponse.
    */
   askedIn(
     seen: SeenAnswers<Questions, Cibles | undefined>,
     earlier: SeenAnswers<Questions, Cibles | undefined>,
   ): AskedQuestion | NotAsked {
     const { settings } = this;
-    const context = contextOf(seen, settings.pipeline);
-    if (!settings.conditions.every((condition) => condition(context)))
+    checkReads(settings, seen, earlier);
+    const now = readIn(seen, settings.pipeline);
+    if (!settings.conditions.every((guard) => guard.in(now.reading)))
       return undefined;
-    const before = contextOf(earlier, settings.pipeline);
-    return this.askedWith(commonIn(settings, context, before), context);
+    const before = readIn(earlier, settings.pipeline);
+    const common = commonIn(settings, now.context, before.reading);
+    return this.askedWith(common, now.context, now.reading);
   }
 
   /** La question posée, avec ce que sa sorte y ajoute. */
   protected abstract askedWith(
     common: AskedCommonData,
     context: QuestionContext<Questions, Cibles, Faits>,
+    reading: Reading,
   ): AskedQuestion;
 
   /** La même question, réglée autrement. Chaque sorte la refait. */
@@ -188,23 +198,45 @@ export abstract class DeclaredQuestion<
 
 // ---- implémentation ----
 
-// Le message d'une incohérence : un texte, ou un texte qui cite les réponses.
-type Message<Questions extends AnyQuestions, Cibles, Faits> =
-  | string
-  | ((context: QuestionContext<Questions, Cibles, Faits>) => string);
-
 // Une incohérence : sa condition, et le message qui dit quoi corriger.
-type Inconsistency<Questions extends AnyQuestions, Cibles, Faits> = {
-  readonly condition: Condition<Questions, Cibles, Faits>;
-  readonly message: Message<Questions, Cibles, Faits>;
+type Inconsistency = { readonly condition: Condition; readonly message: Text };
+
+// Ce que la question lit à une place : son contexte, et la lecture de ses
+// conditions.
+type ReadAt<Questions extends AnyQuestions, Cibles, Faits> = {
+  readonly context: QuestionContext<Questions, Cibles, Faits>;
+  readonly reading: Reading;
 };
+
+function readIn<Questions extends AnyQuestions, Cibles, Faits>(
+  seen: SeenAnswers<Questions, Cibles | undefined>,
+  pipeline: Pipeline<Questions, Faits, Cibles>,
+): ReadAt<Questions, Cibles, Faits> {
+  const context = contextOf(seen, pipeline);
+  return { context, reading: readingOf(seen.answer, context, pipeline) };
+}
+
+// Chaque question que lisent ses conditions et ses incohérences se lit à sa
+// place, qu'elles tiennent ou non : une garde qui lit plus loin s'arrête net
+// (`answer-readings.ts`).
+function checkReads<Questions extends AnyQuestions, Cibles, Faits>(
+  settings: CommonSettings<Questions, Cibles, Faits>,
+  seen: SeenAnswers<Questions, Cibles | undefined>,
+  earlier: SeenAnswers<Questions, Cibles | undefined>,
+) {
+  const readIds = (guards: readonly Condition[]) =>
+    guards.flatMap((guard) => guard.reads.questions);
+  for (const id of readIds(settings.conditions)) seen.answer(id);
+  const inconsistencies = settings.inconsistencies.map((i) => i.condition);
+  for (const id of readIds(inconsistencies)) earlier.answer(id);
+}
 
 // Ce qui se lit autour du champ, vu les réponses : le libellé, le rappel, et
 // les incohérences.
 function commonIn<Questions extends AnyQuestions, Cibles, Faits>(
   settings: CommonSettings<Questions, Cibles, Faits>,
   context: QuestionContext<Questions, Cibles, Faits>,
-  earlier: QuestionContext<Questions, Cibles, Faits>,
+  earlier: Reading,
 ): AskedCommonData {
   return {
     id: settings.id,
@@ -213,9 +245,7 @@ function commonIn<Questions extends AnyQuestions, Cibles, Faits>(
     reminder: settings.reminderFrom?.(context) ?? settings.reminder,
     optional: settings.optional,
     inconsistencies: settings.inconsistencies
-      .filter(({ condition }) => condition(earlier))
-      .map(({ message }) =>
-        typeof message === "string" ? message : message(earlier),
-      ),
+      .filter(({ condition }) => condition.in(earlier))
+      .map(({ message }) => textIn(message, earlier)),
   };
 }

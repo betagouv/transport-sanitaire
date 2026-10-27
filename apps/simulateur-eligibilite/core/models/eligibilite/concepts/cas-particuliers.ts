@@ -1,8 +1,6 @@
 // Les cas particuliers du patient (Q1.3), et l'hémodialyse que Q1.3.a précise.
 // Les faits de la corpulence, du partage, de l'ALD et du mineur les lisent,
-// comme la prestation, qui reprend la séance qualifiante de P1, et sa page :
-// une séance cochée ne se revote pas en Q2.1, et Q2.1.f se demande quand
-// plusieurs séances comptent.
+// comme la prestation, qui reprend la séance qualifiante de P1.
 //
 // Ils se construisent sur des réponses données comme sur des réponses
 // validées. Ils donnent le fait d'un cas, sans déclarer de fait du catalogue.
@@ -93,25 +91,6 @@ export class CasParticuliers {
     );
   }
 
-  /** Une séance est cochée, qualifiante ou non. */
-  uneSeance(): boolean {
-    return SEANCES.some((seance) => this.cas.checked(seance));
-  }
-
-  /**
-   * Plusieurs séances de familles différentes comptent-elles ? Une dialyse ne
-   * compte que si Q1.3.a confirme l'hémodialyse (COR-17, D-131).
-   */
-  plusieursSeances(): boolean {
-    const hemodialyse = this.hemodialyse.is("1_OUI");
-    return (
-      SEANCES.filter(
-        (seance) =>
-          this.cas.checked(seance) && (seance !== "5_DIALYSE" || hemodialyse),
-      ).length >= 2
-    );
-  }
-
   // L'aide nécessaire d'un proche (Q1.1 réponse 2), ou un critère de Q1.2. Le
   // patient qui se déplace seul n'a pas de déficience. Une Q1.2 qui ne se pose
   // pas, après un proche, n'en dit pas l'absence.
@@ -133,6 +112,5 @@ export class CasParticuliers {
 
 const Q13_EN_ATTENTE = "Q1.3 n'est pas encore validée.";
 
-// Les séances de Q1.3, et celles qui qualifient sans précision de Q1.3.a.
-const SEANCES = ["3_CHIMIOTHERAPIE", "4_RADIOTHERAPIE", "5_DIALYSE"] as const;
+// Les séances qui qualifient sans précision de Q1.3.a.
 const SEANCES_SANS_PRECISION = ["3_CHIMIOTHERAPIE", "4_RADIOTHERAPIE"] as const;

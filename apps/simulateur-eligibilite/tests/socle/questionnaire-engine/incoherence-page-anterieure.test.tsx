@@ -1,13 +1,13 @@
 import { screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
-import { page, questionsOf } from "../../../core/socle";
+import { givenOf, page, questionsOf } from "../../../core/socle";
 import { Questionnaire } from "../../../core/socle/questionnaire-engine/questionnaire";
 import { afficher } from "./afficher";
 
-// Une réponse peut en contredire une page antérieure. Le moteur cache à la
-// règle les réponses des pages suivantes : elle se déclare sur la plus tardive
-// des deux questions. Après le verrou, elle lit les réponses verrouillées. Les
-// pages sont écrites ici.
+// Une réponse peut en contredire une page antérieure. La règle se déclare sur
+// la plus tardive des deux questions : celle qui lirait une page suivante
+// s'arrête net (`conditions-dans-une-garde.test.ts`). Après le verrou, elle lit
+// les réponses verrouillées. Les pages sont écrites ici.
 
 type Questions = {
   livraison: "domicile" | "relais";
@@ -21,16 +21,19 @@ const OPTIONS = {
 } as const;
 
 const question = questionsOf<Questions>({ options: OPTIONS });
+const given = givenOf<Questions>();
 
 const LIVRAISON = question.singleChoice("livraison", "Comment livrer ?");
 
 // Le mode de paiement, sans règle.
 const PAIEMENT = question.singleChoice("mode", "Comment payer ?");
 
-const MODE = PAIEMENT.inconsistentIf(
-  ({ answers }) =>
-    answers.question("livraison").is("domicile") &&
-    answers.question("mode").is("especes"),
+const MODE = PAIEMENT.inconsistentWhen(
+  given
+    .question("livraison")
+    .answer()
+    .is("domicile")
+    .and(given.question("mode").answer().is("especes")),
   "Les espèces ne se paient pas à la livraison : revenez à la livraison.",
 );
 
@@ -102,27 +105,13 @@ describe("réponse qui contredit une page antérieure", () => {
   });
 });
 
-describe("règle écrite sur la première des deux questions", () => {
-  const PREMIERE = LIVRAISON.inconsistentIf(
-    ({ answers }) => answers.question("mode").hasAnswer(),
-    "Reçoit la réponse de la page suivante.",
-  );
-  const PAGES = [page("livraison", PREMIERE), page("mode", PAIEMENT)];
-
-  it("ne reçoit pas la réponse de la page suivante", () => {
-    const reponses = { livraison: "domicile", mode: "carte" };
-
-    const lecture = new Questionnaire(PAGES).readWith(reponses);
-    expect(lecture.openPage().id).toBe("mode");
-    expect(lecture.isComplete()).toBe(true);
-  });
-
-  it("reçoit pourtant les réponses de sa propre page, brouillon compris", async () => {
+describe("règle sur la même page", () => {
+  it("reçoit les réponses saisies avant elle, brouillon compris", async () => {
     const memePage = page(
       "mode",
-      MODE,
-      LIVRAISON.inconsistentIf(
-        ({ answers }) => answers.question("mode").is("especes"),
+      PAIEMENT,
+      LIVRAISON.inconsistentWhen(
+        given.question("mode").answer().is("especes"),
         "Vu sur la même page.",
       ),
     );

@@ -5,18 +5,21 @@
 // sous une question dit ce qu'elle démontre. Les tests du socle n'en dépendent
 // pas : ils tournent sur leur propre modèle.
 
-import {
-  afterLock,
-  type GivenAnswers,
-  page,
-  type QuestionnairePart,
-} from "../../socle/index.ts";
+import { afterLock, page, type QuestionnairePart } from "../../socle/index.ts";
 import type { Cibles } from "./declarations/cibles.ts";
 import type { Questions } from "./declarations/questions.ts";
 import { dayFromToday } from "./jour.ts";
 import { cibles } from "./preconisation.ts";
-import { question } from "./question.ts";
+import { given, question } from "./question.ts";
 import { CRENEAU, EXPEDITION } from "./validation-croisee.ts";
+
+const boisson = given.question("boisson").answer();
+
+// Une boisson est choisie : la commande se poursuit.
+const commandeEnCours = boisson.isPresent().and(boisson.is("rien").not());
+
+// Le citron ne se sert qu'avec le thé.
+const avecDuThe = boisson.is("the");
 
 /** Modifiables tant que le résultat n'est pas verrouillé. */
 export const PARTS: readonly QuestionnairePart<Questions, undefined>[] = [
@@ -56,7 +59,7 @@ export const PARTS: readonly QuestionnairePart<Questions, undefined>[] = [
           .hint(
             "Démontre : un libellé de question et un libellé d'option qui dépendent des réponses (le lait devient « un nuage de lait » avec le thé), une option proposée selon la boisson (le citron, avec le thé seulement), et une option exclusive. Un fait a trois états. Le citron vaut « oui » s'il est coché, et « non » s'il se proposait sans l'être, ou avec un café, où il ne se sert pas. Avec « Peut-être du citron », on ne sait pas : le fait est absent, et le résultat ne décide pas si le lait tourne.",
           )
-          .askedIf(({ answers }) => commandeEnCours(answers))
+          .appliesWhen(commandeEnCours)
           .dependsOn("boisson")
           .option("lait", (option) =>
             option.labelFrom(({ answers }) =>
@@ -65,8 +68,8 @@ export const PARTS: readonly QuestionnairePart<Questions, undefined>[] = [
                 : "Du lait",
             ),
           )
-          .option("citron", (option) => option.offeredIf(avecDuThe))
-          .option("citron-a-voir", (option) => option.offeredIf(avecDuThe))
+          .option("citron", (option) => option.offeredWhen(avecDuThe))
+          .option("citron-a-voir", (option) => option.offeredWhen(avecDuThe))
           .incompatible(
             "citron",
             "citron-a-voir",
@@ -84,7 +87,7 @@ export const PARTS: readonly QuestionnairePart<Questions, undefined>[] = [
           .hint(
             "Démontre : un rappel en une phrase au-dessus de la question (il redit des réponses déjà données, et ne demande rien : la commande est calculée en route, sur les questions validées), une aide dépliable sous son option (« Voir les préparations possibles », dont la liste dépend de la boisson), deux options incompatibles (« Très chaude » et « Glacée » : cocher l'une décoche l'autre, avec une explication), et une option exclusive conditionnelle (« Rien de particulier » ne se propose pas avec le citron, et change de libellé quand un accompagnement est choisi).",
           )
-          .askedIf(({ answers }) => commandeEnCours(answers))
+          .appliesWhen(commandeEnCours)
           .dependsOn("boisson", "accompagnements")
           .option("preparation", (option) =>
             option
@@ -103,9 +106,12 @@ export const PARTS: readonly QuestionnairePart<Questions, undefined>[] = [
                   ? "Rien de particulier"
                   : "Rien d'autre de particulier",
               )
-              .offeredIf(
-                ({ answers }) =>
-                  !answers.question("accompagnements").checked("citron"),
+              .offeredWhen(
+                given
+                  .question("accompagnements")
+                  .answer()
+                  .checked("citron")
+                  .not(),
               ),
           )
           .incompatible(
@@ -201,10 +207,12 @@ export const COMPLEMENT: QuestionnairePart<Questions, Cibles> = afterLock({
             "La livraison se commande à part. Choisissez une autre réponse pour finir cette commande, puis faites-en une seconde pour la livraison.",
           ),
         )
-        .inconsistentIf(
-          ({ answers }) =>
-            answers.question("lieu").is("terrasse") &&
-            answers.question("retrait").is("a-emporter"),
+        .inconsistentWhen(
+          given
+            .question("lieu")
+            .answer()
+            .is("terrasse")
+            .and(given.question("retrait").answer().is("a-emporter")),
           "« À emporter » ne va pas avec « En terrasse », choisi à la question « Où la servir ? ». Revenez par « Précédent » changer le lieu, ou choisissez « Sur place ».",
         ),
       question
@@ -227,17 +235,6 @@ export const COMPLEMENT: QuestionnairePart<Questions, Cibles> = afterLock({
 });
 
 // ---- implémentation ----
-
-// Une boisson est choisie : la commande se poursuit.
-function commandeEnCours(answers: GivenAnswers<Questions>): boolean {
-  const boisson = answers.question("boisson");
-  return boisson.hasAnswer() && boisson.isNot("rien");
-}
-
-// Le citron ne se sert qu'avec le thé.
-function avecDuThe({ answers }: { answers: GivenAnswers<Questions> }): boolean {
-  return answers.question("boisson").is("the");
-}
 
 // Les façons de servir, telles qu'on les relit une fois la commande figée.
 const SERVICES: Record<Questions["service"][number], string> = {

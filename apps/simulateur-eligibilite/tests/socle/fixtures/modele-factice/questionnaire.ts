@@ -6,6 +6,7 @@
 
 import {
   afterLock,
+  givenOf,
   page,
   type QuestionnairePart,
   questionsOf,
@@ -14,6 +15,9 @@ import type { Cibles } from "./declarations/cibles";
 import type { Faits } from "./declarations/faits";
 import { OPTIONS, type Questions } from "./declarations/questions";
 import { cibles, faits } from "./preconisation";
+
+const given = givenOf<Questions, Faits, Cibles>();
+const boisson = given.question("boisson").answer();
 
 const question = questionsOf<Questions, Faits, Cibles>({
   options: OPTIONS,
@@ -35,10 +39,7 @@ export const PARTS: readonly QuestionnairePart<Questions, undefined>[] = [
         "accompagnements",
         question
           .multipleChoice("accompagnements", "Avec quoi ?")
-          .askedIf(({ answers }) => {
-            const boisson = answers.question("boisson");
-            return boisson.hasAnswer() && boisson.isNot("rien");
-          })
+          .appliesWhen(boisson.isPresent().and(boisson.is("rien").not()))
           .dependsOn("boisson")
           .exclusive("aucun"),
       ),

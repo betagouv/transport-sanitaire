@@ -3,15 +3,16 @@
 //
 //   question.singleChoice("Q1.1", "Le patient a-t-il besoin d'aide ?")
 //     .option("3_AIDE_ET_SURVEILLANCE", (option) => option.description("…"))
-//     .askedIf(conditionDuPatient)
+//     .mattersWhile(given.fait("fait_situation_soins_qualifiante").isNon())
 //
 // L'id dit la sorte : une question à choix n'accepte que les ids du catalogue,
 // un nombre que ceux dont la réponse est un nombre. Les options viennent du
 // catalogue d'après l'id, et le modèle ne redit que ce qui change.
 //
-// Les conditions reçoivent un seul objet : les réponses, les questions
-// validées, les cibles et les faits. Les faits sont ceux des questions validées
-// jusque-là, calculés seulement si on les lit.
+// Les gardes et les incohérences sont des conditions (`given.ts`). Les libellés,
+// rappels, aides et bornes calculés reçoivent un seul objet : les réponses, les
+// questions validées, les cibles et les faits. Les faits sont ceux des
+// questions validées jusque-là, calculés seulement si on les lit.
 
 import type { Address } from "./address.ts";
 import {

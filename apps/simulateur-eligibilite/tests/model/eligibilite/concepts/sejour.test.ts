@@ -1,6 +1,5 @@
 // Le séjour hospitalier, lu sur des réponses données ou validées : quand
-// « déjà hospitalisé » se propose (D-98), quand il est coché ou écarté, et ce
-// qui fait un séjour réel.
+// « déjà hospitalisé » est coché ou écarté, et ce qui fait un séjour réel.
 
 import { describe, expect, it } from "vitest";
 import { Sejour } from "../../../../core/models/eligibilite/concepts/sejour";
@@ -11,18 +10,6 @@ import { ValidatedAnswers } from "../../../../core/socle/questionnaire-engine/va
 
 const sejour = (reponses: Answers<Questions>) =>
   Sejour.of(new GivenAnswers<Questions>(reponses));
-
-describe("« déjà hospitalisé » se propose", () => {
-  it.each([
-    [{}, true],
-    [{ "Q2.1": "8_HOSPITALISATION" }, true],
-    [{ "Q2.1.g": "2_SORTIE" }, true],
-    [{ "Q2.1": "11_PERMISSION" }, false],
-    [{ "Q2.1.g": "1_ENTREE" }, false],
-  ] as const)("%j : %s", (reponses, attendu) => {
-    expect(sejour(reponses).estAProposer()).toBe(attendu);
-  });
-});
 
 describe("un séjour réel", () => {
   it.each([

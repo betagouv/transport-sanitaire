@@ -1,6 +1,5 @@
 // Les critères du transport, lus sur Q1.2 : le fait d'un critère, coché ou
-// non, et « non » quand Q1.2 ne se pose pas ; le critère d'ambulance, et le
-// premier critère coché.
+// non, et « non » quand Q1.2 ne se pose pas ; et le premier critère coché.
 
 import { describe, expect, it } from "vitest";
 import { CriteresDuTransport } from "../../../../core/models/eligibilite/concepts/criteres-du-transport";
@@ -33,18 +32,6 @@ describe("le fait d'un critère", () => {
     expect(
       lu(criteres(reponses).fait("1_PAS_AUTONOME", "2_AIDE_TECHNIQUE")),
     ).toEqual(attendu);
-  });
-});
-
-describe("un critère d'ambulance", () => {
-  it.each([
-    [["8_BRANCARDAGE"], true],
-    [["1_PAS_AUTONOME", "11_ASEPSIE"], true],
-    [["6_FAUTEUIL_SANS_TRANSFERT"], false],
-  ] as const)("%j : %s", (coches, attendu) => {
-    expect(criteres({ ...PRO, "Q1.2": [...coches] }).imposentLAmbulance()).toBe(
-      attendu,
-    );
   });
 });
 

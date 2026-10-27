@@ -1,8 +1,6 @@
-// Les exceptions de l'article 80 (Q2.6) : celles qui se proposent, selon le
-// déplacement (Q2.5), le type du transfert (Q2.6.a), le séjour et la ligne
-// régulière (Q2.3.2), et ce que chacune établit (D-106). Les huit faits des
-// exceptions et les deux du Centre 15 les lisent, comme la page des exceptions,
-// qui propose leurs options.
+// Les exceptions de l'article 80 (Q2.6) : ce que chacune établit (D-106). Les
+// huit faits des exceptions et les deux du Centre 15 les lisent. Celles qui se
+// proposent se lisent sur la page des exceptions (`p2/transfert.ts`).
 //
 // Elles se lisent sur des réponses validées. Sans Q2.6 validée, elles
 // n'établissent rien. Une exception proposée vaut « oui » cochée, « non »
@@ -12,7 +10,6 @@
 
 import {
   Fait,
-  type GivenAnswer,
   type PassesOn,
   type ValidatedAnswers,
 } from "../../../socle/index.ts";
@@ -40,38 +37,6 @@ export class ExceptionsDeLArticle80 {
   /** Les exceptions de ces réponses validées. */
   static of(validated: Valides): ExceptionsDeLArticle80 {
     return new ExceptionsDeLArticle80(validated);
-  }
-
-  /**
-   * Une exception se propose-t-elle ? `type` est la réponse en cours de Q2.6.a,
-   * sur la page. Q2.6 s'ouvre directement, sans Q2.5, pour une admission en
-   * HAD : les options 2, 3 et 8 ne s'y proposent pas.
-   */
-  estAProposer(
-    exception: Exception,
-    type: GivenAnswer<Questions["Q2.6.a"]>,
-  ): boolean {
-    const deplacement = this.validated.question("Q2.5");
-    const transfert = deplacement.is("1_TRANSFERT");
-    switch (exception) {
-      case "2_ADMISSION_SANS_SEJOUR":
-        return (
-          transfert &&
-          type.is("1_DEFINITIF") &&
-          !Sejour.of(this.validated).estCoche()
-        );
-      case "3_CENTRE_QUINZE":
-        return transfert;
-      case "4_AIR_MER":
-        return this.validated.question("Q2.3.2").isNot(true);
-      case "8_RADIOTHERAPIE":
-        return (
-          (transfert && type.is("2_PROVISOIRE")) ||
-          deplacement.is("2_AUTRE_DEPLACEMENT")
-        );
-      default:
-        return true;
-    }
   }
 
   /**

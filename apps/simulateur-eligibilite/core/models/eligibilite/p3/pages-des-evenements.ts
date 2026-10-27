@@ -4,8 +4,8 @@
 // document, ni la DAP n'en dépendent.
 
 import { page } from "../../../socle/index.ts";
-import { type Context as Contexte, question } from "../question.ts";
-import { avecUnDocument } from "./supports-du-complement.ts";
+import { given, question } from "../question.ts";
+import { avecUnDocument, uneDap } from "./supports-du-complement.ts";
 
 const DATE_FUTURE =
   "Cette date est dans le futur : un accident ne peut pas encore avoir eu lieu.";
@@ -19,31 +19,24 @@ export const PAGE_DES_EVENEMENTS = page(
       "Q3.6.1",
       "Quelle est la date de l’accident du travail, ou de la première constatation de la maladie professionnelle ?",
     )
-    .askedIf(
-      ({ cibles }) =>
-        avecUnDocument(cibles) && cibles.cible_situation_at_mp.isOui(),
+    .mattersWhile(
+      avecUnDocument.and(given.cible("cible_situation_at_mp").isOui()),
     )
     .reminder(
       "Le transport est lié à un accident du travail ou à une maladie professionnelle : la case est déjà cochée.",
     )
-    .inconsistentIf(
-      ({ answers }) => apresAujourdHui(answers.question("Q3.6.1").value),
-      DATE_FUTURE,
-    ),
+    .inconsistentWhen(dansLeFutur("Q3.6.1"), DATE_FUTURE),
   question
     .singleChoice(
       "Q3.6.2",
       "Ce transport est-il en rapport avec un accident causé par un tiers ?",
     )
-    .askedIf(({ cibles }) => avecUnDocument(cibles)),
+    .mattersWhile(avecUnDocument),
   question
     .date("Q3.6.3", "Quelle est la date de l’accident causé par un tiers ?")
-    .askedIf(({ answers }) => answers.question("Q3.6.2").is("1_OUI"))
+    .appliesWhen(given.question("Q3.6.2").answer().is("1_OUI"))
     .dependsOn("Q3.6.2")
-    .inconsistentIf(
-      ({ answers }) => apresAujourdHui(answers.question("Q3.6.3").value),
-      DATE_FUTURE,
-    ),
+    .inconsistentWhen(dansLeFutur("Q3.6.3"), DATE_FUTURE),
 );
 
 // Q3.7 : le cerfa n'a qu'une case Oui / Non. Les cas aident à la cocher. Ils
@@ -60,16 +53,20 @@ export const PAGE_DE_L_EXONERATION = page(
     .hint(
       "Cochez un cas seulement si sa condition propre est vérifiée : un motif d’hospitalisation ne suffit pas.",
     )
-    .askedIf(
-      ({ cibles }) =>
-        avecUnDocument(cibles) &&
-        cibles.cible_hospitalisation_ou_seances_assimilees.isOui(),
+    .mattersWhile(
+      avecUnDocument.and(
+        given.cible("cible_hospitalisation_ou_seances_assimilees").isOui(),
+      ),
     )
-    .option("3_URGENCE_HOSPITALIERE", (option) => option.offeredIf(horsDap))
-    .option("4_HAD_OU_RADIOTHERAPIE", (option) => option.offeredIf(horsDap))
-    .option("6_TRAITEMENT_MIEUX_ADAPTE", (option) =>
-      option.offeredIf(({ cibles }) => cibles.cible_support_id.is("S3139h")),
+    // La notice de la DAP n'a ni l'urgence hospitalière, ni la HAD ou la
+    // radiothérapie. Elle seule a le traitement mieux adapté.
+    .option("3_URGENCE_HOSPITALIERE", (option) =>
+      option.offeredWhen(uneDap.not()),
     )
+    .option("4_HAD_OU_RADIOTHERAPIE", (option) =>
+      option.offeredWhen(uneDap.not()),
+    )
+    .option("6_TRAITEMENT_MIEUX_ADAPTE", (option) => option.offeredWhen(uneDap))
     .exclusive("7_AUCUN"),
 );
 
@@ -81,17 +78,7 @@ export function jourAParis(instant: Date): string {
 
 // ---- implémentation ----
 
-// La notice de la DAP n'a ni l'urgence hospitalière, ni la HAD ou la
-// radiothérapie. Elle seule a le traitement mieux adapté.
-function horsDap({ cibles }: Contexte): boolean {
-  return !cibles.cible_support_id.is("S3139h");
-}
-
-// Une date au format AAAA-MM-JJ se compare comme un texte.
-function apresAujourdHui(date: string | undefined): boolean {
-  return date !== undefined && date > aujourdHui();
-}
-
-function aujourdHui(): string {
-  return jourAParis(new Date());
+// La date répondue est après aujourd'hui, à Paris.
+function dansLeFutur(id: "Q3.6.1" | "Q3.6.3") {
+  return given.question(id).answer().toDate().isAfter(given.today());
 }

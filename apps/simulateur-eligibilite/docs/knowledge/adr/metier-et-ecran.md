@@ -246,9 +246,9 @@ prennent plus les faits en paramètre de type : ils restent dans la question.
 
 **Contexte.** Une option portait jusqu'à cinq réglages : sa description, ce qui
 la propose, son aide, ce qu'elle bloque, son exclusivité. Écrits en méthodes de
-la question (`offeredIf(valeur, …)`), ils se seraient dispersés sur la chaîne.
+la question (`offeredWhen(valeur, …)`), ils se seraient dispersés sur la chaîne.
 
-**Décision.** `.option(valeur, (option) => option.offeredIf(…).description(…))` :
+**Décision.** `.option(valeur, (option) => option.offeredWhen(…).description(…))` :
 tous les réglages d'une option au même endroit. `order(…)` dit quelles options
 s'affichent, dans quel ordre, sans retirer les autres du catalogue : une option
 hors de l'ordre se règle encore, et peut être l'exclusive (« Aucune »).
@@ -267,11 +267,11 @@ garde, ce qu'une question déclarée, qui ne s'ouvre pas, ne permet plus. Une in
 s'écrivait en tableau de messages, calculé d'un bloc : Q3.1.3 doit citer la
 fréquence de Q2.8.6.a et son maximum.
 
-**Décision.** `page(id, ...questions).askedIf(condition)` ajoute la condition à
+**Décision.** `page(id, ...questions).appliesWhen(condition)` ajoute la condition à
 chacune de ses questions. Une page dont aucune question ne se pose est sautée,
 sans rien de plus à déclarer. Une incohérence se déclare par
-`inconsistentIf(condition, message)`, une par appel. Le message est un texte,
-ou une fonction du contexte quand il cite les réponses.
+`inconsistentWhen(condition, message)`, une par appel. Le message est un texte,
+ou une valeur calculée sur les réponses quand il les cite (`condition.ts`).
 
 **Conséquences.** Le moteur n'a pas de notion de page conditionnelle : la page
 reste une liste de questions. Une incohérence se lit sur sa ligne, avec sa

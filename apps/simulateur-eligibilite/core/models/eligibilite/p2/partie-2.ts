@@ -6,11 +6,12 @@
 // `pages-de-la-branche.ts`. Q2.4, Q2.9 et Q2.11 n'ont aucun écran.
 
 import { page, type QuestionnairePart } from "../../../socle/index.ts";
-import { CasParticuliers } from "../concepts/cas-particuliers.ts";
-import { ContextesDuTrajet } from "../concepts/contextes-du-trajet.ts";
-import { Sejour } from "../concepts/sejour.ts";
+import {
+  ContextesDuTrajet,
+  proposesApres,
+} from "../concepts/contextes-du-trajet.ts";
 import { OPTIONS, type Questions } from "../declarations/questions.ts";
-import { question } from "../question.ts";
+import { given, question } from "../question.ts";
 import { PAGE_DE_LA_BRANCHE } from "./pages-de-la-branche.ts";
 import { PAGE_DE_LA_CONVOCATION } from "./pages-de-la-convocation.ts";
 import {
@@ -21,10 +22,33 @@ import {
   PAGE_DES_EXCEPTIONS,
   PAGE_DU_TRANSFERT,
 } from "./pages-du-transfert.ts";
-import { motifDeP1 } from "./prestation.ts";
-import { dansLeCircuit, indicationAPoser } from "./retour-penitentiaire.ts";
+import { unMotifDeP1 } from "./prestation.ts";
+import { dansLeCircuit, uneIndicationAPoser } from "./retour-penitentiaire.ts";
 
 type Contexte = Questions["Q2.2.1.b"][number];
+
+// Les séances de Q1.3. Une dialyse ne compte parmi plusieurs que si Q1.3.a
+// confirme l'hémodialyse (COR-17, D-131).
+const cas = given.question("Q1.3").answer();
+const chimiotherapie = cas.checked("3_CHIMIOTHERAPIE");
+const radiotherapie = cas.checked("4_RADIOTHERAPIE");
+const uneSeance = chimiotherapie.or(radiotherapie).or(cas.checked("5_DIALYSE"));
+const hemodialyse = cas
+  .checked("5_DIALYSE")
+  .and(given.question("Q1.3.a").answer().is("1_OUI"));
+const plusieursSeances = chimiotherapie
+  .and(radiotherapie.or(hemodialyse))
+  .or(radiotherapie.and(hemodialyse));
+
+const motif = given.question("Q2.1").answer();
+const groupe = given.question("Q2.2.1").answer();
+
+// « Déjà hospitalisé » ne se propose ni après une permission indiquée en Q2.1,
+// ni pour le trajet qui ouvre le séjour (D-98).
+const unSejourAProposer = motif
+  .is("11_PERMISSION")
+  .not()
+  .and(given.question("Q2.1.g").answer().is("1_ENTREE").not());
 
 // Q2.1 et ses sous-questions f, g et h, sur une seule page. Q2.1 se saute quand
 // P1 prouve déjà un motif de transport ; Q2.1.f se pose quand même, si
@@ -37,21 +61,15 @@ const PAGE_DE_LA_PRESTATION = page(
       "Q2.1",
       "Quelle situation médicale ou quel événement motive ce déplacement ?",
     )
-    .askedIf((lecture) => !motifDeP1(lecture))
+    .mattersWhile(unMotifDeP1.not())
     // Une séance se coche en Q1.3 : elle ne se vote pas deux fois.
-    .option("6_SEANCE", (option) =>
-      option.offeredIf(
-        ({ validated }) => !CasParticuliers.of(validated).uneSeance(),
-      ),
-    ),
+    .option("6_SEANCE", (option) => option.offeredWhen(uneSeance.not())),
   question
     .singleChoice(
       "Q2.1.f",
       "Les séances sélectionnées motivent-elles le même déplacement vers le même lieu de soins ?",
     )
-    .askedIf(({ validated }) =>
-      CasParticuliers.of(validated).plusieursSeances(),
-    )
+    .appliesWhen(plusieursSeances)
     .option("2_NON", (option) =>
       option.blocks(
         "Une simulation porte sur un seul déplacement. Corrigez les séances en Q1.3, puis faites une simulation par déplacement.",
@@ -62,14 +80,14 @@ const PAGE_DE_LA_PRESTATION = page(
       "Q2.1.g",
       "S’agit-il d’une entrée dans un établissement de santé, d’une sortie de cet établissement ou d’une admission en HAD (Hospitalisation à Domicile) à domicile ?",
     )
-    .askedIf(({ answers }) => answers.question("Q2.1").is("8_HOSPITALISATION"))
+    .appliesWhen(motif.is("8_HOSPITALISATION"))
     .dependsOn("Q2.1"),
   question
     .singleChoice(
       "Q2.1.h",
       "La séance est-elle organisée par le CAMSP (Centre d’Action Médico-Sociale Précoce) ou le CMPP (Centre Médico-Psycho-Pédagogique), dans le parcours de l’enfant ?",
     )
-    .askedIf(({ answers }) => answers.question("Q2.1").is("10_CAMSP"))
+    .appliesWhen(motif.is("10_CAMSP"))
     .dependsOn("Q2.1"),
 );
 
@@ -77,8 +95,8 @@ const PAGE_DE_LA_PRESTATION = page(
 const AUTRES_CADRES = (Object.keys(OPTIONS["Q2.2.1.b"]) as Contexte[]).reduce(
   (declaree, contexte) =>
     declaree.option(contexte, (option) =>
-      option.offeredIf(({ validated }) =>
-        ContextesDuTrajet.of(validated).aProposer().includes(contexte),
+      option.offeredWhen(
+        motif.compute(({ value }) => proposesApres(value).includes(contexte)),
       ),
     ),
   question
@@ -86,9 +104,7 @@ const AUTRES_CADRES = (Object.keys(OPTIONS["Q2.2.1.b"]) as Contexte[]).reduce(
       "Q2.2.1.b",
       "Laquelle ou lesquelles de ces situations concernent aussi ce trajet ?",
     )
-    .askedIf(({ answers }) =>
-      answers.question("Q2.2.1").checked("3_AUTRE_CADRE"),
-    )
+    .appliesWhen(groupe.checked("3_AUTRE_CADRE"))
     .incompatible(
       "4_MATERNITE_ELOIGNEE",
       "5_HTNM",
@@ -115,7 +131,7 @@ const PAGE_DES_CONTEXTES = page(
     )
     .exclusive("4_AUCUNE")
     .option("1_HOSPITALISATION", (option) =>
-      option.offeredIf(({ validated }) => Sejour.of(validated).estAProposer()),
+      option.offeredWhen(unSejourAProposer),
     )
     .option("3_AUTRE_CADRE", (option) =>
       option
@@ -134,14 +150,14 @@ const PAGE_DES_CONTEXTES = page(
       "Q2.2.1.a",
       "Ce trajet correspond-il à une permission temporaire de sortie de l’hôpital ?",
     )
-    .askedIf(({ answers }) => Sejour.of(answers).estCoche()),
+    .appliesWhen(groupe.checked("1_HOSPITALISATION")),
   AUTRES_CADRES,
   question
     .singleChoice(
       "Q2.2.1.indication",
       "Ce retour nécessite-t-il un transport pour raison médicale, indépendamment des contraintes d’escorte pénitentiaire ?",
     )
-    .askedIf(({ answers, validated }) => indicationAPoser(answers, validated))
+    .appliesWhen(uneIndicationAPoser)
     // Une modification clinique invalide la qualification (point 33).
     .dependsOn("Q1.1", "Q1.2", "Q1.3"),
   question
@@ -149,7 +165,7 @@ const PAGE_DES_CONTEXTES = page(
       "Q2.2.5",
       "Quel lieu lié à ce transport se trouve à l’étranger ?",
     )
-    .askedIf(({ answers }) => answers.question("Q2.2.1").checked("2_ETRANGER")),
+    .appliesWhen(groupe.checked("2_ETRANGER")),
 );
 
 // Q2.3 : le trajet évalué, sur une seule page. L'avion ou le bateau est une
@@ -173,14 +189,14 @@ const PAGE_DU_TRAJET = page(
       "Dans les deux mois à compter du premier transport, au moins quatre transports de plus de 50 km chacun sont-ils prescrits au titre du même traitement ?",
     )
     .hint("Un aller-retour compte pour deux transports.")
-    .askedIf(({ faits }) => faits.fait_distance_plus_50.isOui()),
+    .mattersWhile(given.fait("fait_distance_plus_50").isOui()),
   question
     .singleChoice(
       "Q2.3.4",
       "Le médecin prescripteur atteste-t-il que ce transport est urgent ?",
     )
     // La garde de l'éditeur, sur les faits des questions posées avant elle.
-    .askedIf(({ cibles }) => cibles.cible_question_urgence_a_afficher.isOui()),
+    .mattersWhile(given.cible("cible_question_urgence_a_afficher").isOui()),
 );
 
 /** P2 : l'éligibilité. */
@@ -199,6 +215,6 @@ export const P2: QuestionnairePart<Questions, undefined> = {
       PAGE_DE_LA_PERMISSION_DU_MINEUR,
       PAGE_DE_LA_CONVOCATION,
       PAGE_DE_LA_BRANCHE,
-    ].map((suivante) => suivante.askedIf(dansLeCircuit)),
+    ].map((suivante) => suivante.appliesWhen(dansLeCircuit)),
   ],
 };

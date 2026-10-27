@@ -5,10 +5,14 @@
 // Une condition de page s'ajoute à chacune de ses questions : une page dont
 // aucune question ne se pose est sautée, sans rien de plus à déclarer.
 
-import type { Condition, DeclaredQuestion } from "./declared-question.ts";
+import type { Condition } from "./condition.ts";
+import type { DeclaredQuestion } from "./declared-question.ts";
 import type { AnyQuestions } from "./question.ts";
 
-/** Une page déclarée. Elle ne change pas : `askedIf` donne une copie. */
+/**
+ * Une page déclarée. Elle ne change pas : `appliesWhen` et `mattersWhile`
+ * donnent une copie.
+ */
 export class DeclaredPage<Questions extends AnyQuestions, Cibles, Faits> {
   readonly id: string;
   readonly questions: readonly AnyDeclared<Questions, Cibles, Faits>[];
@@ -21,12 +25,18 @@ export class DeclaredPage<Questions extends AnyQuestions, Cibles, Faits> {
     this.questions = questions;
   }
 
-  /** La page ne se pose que si `condition` tient : chaque question la reçoit. */
-  askedIf(
-    condition: Condition<Questions, Cibles, Faits>,
-  ): DeclaredPage<Questions, Cibles, Faits> {
+  /** La page a un sens quand `condition` tient : chaque question la reçoit. */
+  appliesWhen(condition: Condition): DeclaredPage<Questions, Cibles, Faits> {
     const questions = this.questions.map((question) =>
-      question.askedIf(condition),
+      question.appliesWhen(condition),
+    );
+    return new DeclaredPage(this.id, questions);
+  }
+
+  /** La page est utile tant que `condition` tient : chaque question la reçoit. */
+  mattersWhile(condition: Condition): DeclaredPage<Questions, Cibles, Faits> {
+    const questions = this.questions.map((question) =>
+      question.mattersWhile(condition),
     );
     return new DeclaredPage(this.id, questions);
   }

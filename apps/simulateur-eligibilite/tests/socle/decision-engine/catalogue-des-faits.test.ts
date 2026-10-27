@@ -7,6 +7,7 @@ import {
   Fait,
   FaitCatalogue,
   type FaitDeclarations,
+  givenOf,
   page,
   Questionnaire,
   questionsOf,
@@ -129,7 +130,9 @@ describe("un fait qui se lit lui-même", () => {
       "quantite",
       question
         .number("quantite", "Combien ?")
-        .askedIf(({ faits }) => faits.chaude.isOui()),
+        .mattersWhile(
+          givenOf<Questions, Faits, undefined>().fait("chaude").isOui(),
+        ),
     );
     const boucle: FaitCatalogue<Questions, Faits> = new FaitCatalogue(
       NOMS,

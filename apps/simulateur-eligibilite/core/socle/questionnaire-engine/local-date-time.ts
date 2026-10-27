@@ -24,6 +24,16 @@ export class LocalDateTime {
     return new LocalDateTime(epochOf(saisie));
   }
 
+  /**
+   * Le jour de cet instant à Paris, à minuit : celui du prescripteur. La
+   * locale suédoise écrit la date en `AAAA-MM-JJ`.
+   */
+  static dayInParis(instant: Date): LocalDateTime {
+    return LocalDateTime.parse(
+      instant.toLocaleDateString("sv-SE", { timeZone: "Europe/Paris" }),
+    );
+  }
+
   /** Elle vient avant cette autre date. */
   isBefore(autre: LocalDateTime): boolean {
     return this.compare(autre, (ecart) => ecart < 0);

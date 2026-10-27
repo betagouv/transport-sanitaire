@@ -1,8 +1,7 @@
 // Les critères du transport (Q1.2) : les aides ou conditions particulières
 // nécessaires pendant le trajet. Q1.2 ne se pose qu'avec un professionnel
 // (Q1.1). Les faits des critères les lisent, comme l'ALD et le mineur, qui y
-// cherchent une déficience, et la page des cas particuliers, qui ne propose
-// la forte corpulence qu'avec un critère d'ambulance.
+// cherchent une déficience.
 //
 // Ils se construisent sur des réponses données comme sur des réponses
 // validées. Ils donnent le fait d'un critère, sans déclarer de fait du
@@ -57,27 +56,9 @@ export class CriteresDuTransport {
       .sinon("Q1.2 n'est pas encore validée.");
   }
 
-  /** Un critère coché impose-t-il l'ambulance ? */
-  imposentLAmbulance(): boolean {
-    return CRITERES_D_AMBULANCE.some((critere) =>
-      this.criteres.checked(critere),
-    );
-  }
-
   /** Le premier critère coché, qui prouve une déficience. */
   premier(): Critere | AucunCritere {
     const [critere] = this.criteres.checkedBoxes();
     return critere;
   }
 }
-
-// ---- implémentation ----
-
-// Les critères de Q1.2 qui imposent l'ambulance.
-const CRITERES_D_AMBULANCE = [
-  "7_ALLONGE",
-  "8_BRANCARDAGE",
-  "9_SURVEILLANCE",
-  "10_OXYGENE",
-  "11_ASEPSIE",
-] as const satisfies readonly Critere[];

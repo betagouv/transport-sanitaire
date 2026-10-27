@@ -1,12 +1,11 @@
 // Les exceptions de l'article 80, lues sur Q2.5, Q2.6.a, Q2.6, Q2.2.1 et
-// Q2.3.2 : celles qui se proposent (D-106), le Centre 15 de l'option 3, et ce
-// que chaque exception établit, proposée ou non.
+// Q2.3.2 : le Centre 15 de l'option 3, et ce que chaque exception établit,
+// proposée ou non (D-106).
 
 import { describe, expect, it } from "vitest";
 import { ExceptionsDeLArticle80 } from "../../../../core/models/eligibilite/concepts/exceptions-de-l-article-80";
 import type { Questions } from "../../../../core/models/eligibilite/declarations/questions";
 import type { Fait } from "../../../../core/socle";
-import { GivenAnswers } from "../../../../core/socle/questionnaire-engine/given-answers";
 import type { Validated } from "../../../../core/socle/questionnaire-engine/question";
 import { ValidatedAnswers } from "../../../../core/socle/questionnaire-engine/validated-answers";
 
@@ -14,70 +13,9 @@ const exceptions = (entrees: Validated<Questions>) =>
   ExceptionsDeLArticle80.of(new ValidatedAnswers<Questions>(entrees));
 const lu = (fait: Fait | undefined) => fait && [fait.value, fait.provenance];
 
-const TRANSFERT = { "Q2.5": { answer: "1_TRANSFERT" } } as const;
-const AUTRE_DEPLACEMENT = {
-  "Q2.5": { answer: "2_AUTRE_DEPLACEMENT" },
-} as const;
 const SEJOUR_COCHE = {
   "Q2.2.1": { offered: ["1_HOSPITALISATION"], answer: ["1_HOSPITALISATION"] },
 } as const;
-
-describe("les exceptions qui se proposent", () => {
-  const aProposer = (
-    exception: Questions["Q2.6"][number],
-    entrees: Validated<Questions>,
-    type?: Questions["Q2.6.a"],
-  ) =>
-    exceptions(entrees).estAProposer(
-      exception,
-      new GivenAnswers<Questions>({ "Q2.6.a": type }).question("Q2.6.a"),
-    );
-
-  it.each([
-    ["un transfert définitif sans séjour", TRANSFERT, "1_DEFINITIF", true],
-    ["un transfert provisoire", TRANSFERT, "2_PROVISOIRE", false],
-    [
-      "un transfert définitif après un séjour",
-      { ...TRANSFERT, ...SEJOUR_COCHE },
-      "1_DEFINITIF",
-      false,
-    ],
-  ] as const)(
-    "l'admission sans séjour, pour %s : %s",
-    (_, entrees, type, attendu) => {
-      expect(
-        aProposer(
-          "2_ADMISSION_SANS_SEJOUR",
-          entrees as Validated<Questions>,
-          type,
-        ),
-      ).toBe(attendu);
-    },
-  );
-
-  it("le Centre 15, pour un transfert seulement", () => {
-    expect(aProposer("3_CENTRE_QUINZE", TRANSFERT)).toBe(true);
-    expect(aProposer("3_CENTRE_QUINZE", AUTRE_DEPLACEMENT)).toBe(false);
-  });
-
-  it("l'aérien ou le maritime, sans ligne régulière en Q2.3.2", () => {
-    expect(aProposer("4_AIR_MER", {})).toBe(true);
-    expect(aProposer("4_AIR_MER", { "Q2.3.2": { answer: true } })).toBe(false);
-  });
-
-  it.each([
-    ["un transfert provisoire", TRANSFERT, "2_PROVISOIRE", true],
-    ["un transfert définitif", TRANSFERT, "1_DEFINITIF", false],
-    ["un autre déplacement", AUTRE_DEPLACEMENT, undefined, true],
-    ["une admission en HAD, sans Q2.5", {}, undefined, false],
-  ] as const)("la radiothérapie, pour %s : %s", (_, entrees, type, attendu) => {
-    expect(aProposer("8_RADIOTHERAPIE", entrees, type)).toBe(attendu);
-  });
-
-  it("les autres, toujours", () => {
-    expect(aProposer("5_HAD", {})).toBe(true);
-  });
-});
 
 describe("le Centre 15 de l'option 3", () => {
   it.each([

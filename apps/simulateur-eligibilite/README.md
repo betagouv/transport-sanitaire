@@ -222,7 +222,8 @@ a donc été vidée de ce qui dépendait de la v9, sur la branche `v10`.
 
 Le questionnaire n'est plus déduit d'un moteur de règles : il est **déclaré par
 le modèle**. Une partie liste ses pages, une page ses questions, une question dit
-quand elle se pose (`askedIf`) et de quelles réponses elle dépend (`dependsOn`).
+quand elle se pose (`appliesWhen`, `mattersWhile`) et de quelles réponses elle
+dépend (`dependsOn`).
 
 Le modèle de l'éditeur s'intègre sur la v10.1.3, dans `core/models/eligibilite/`
 et `front/models/eligibilite/`, une étape après l'autre. Ses règles sont livrées

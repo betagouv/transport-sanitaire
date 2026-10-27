@@ -19,13 +19,14 @@ export {
 } from "./decision-engine/fait-catalogue.ts";
 export type { CoreModel } from "./model.ts";
 export type { Address } from "./questionnaire-engine/address.ts";
+export type { Condition } from "./questionnaire-engine/condition.ts";
 export { page } from "./questionnaire-engine/declared-page.ts";
+export { givenOf } from "./questionnaire-engine/given.ts";
 export type {
   AnswersReader,
   GivenAnswer,
   GivenAnswers,
 } from "./questionnaire-engine/given-answers.ts";
-export { LocalDateTime } from "./questionnaire-engine/local-date-time.ts";
 export {
   afterLock,
   type QuestionnairePart,

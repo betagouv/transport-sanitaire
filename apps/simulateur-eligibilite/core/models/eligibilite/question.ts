@@ -7,7 +7,11 @@
 // Une garde ne lit jamais la complétude de P1 ni de P2 : la constater pose les
 // questions, donc lit leurs gardes. Le catalogue la laisse inconnue.
 
-import { type QuestionContext, questionsOf } from "../../socle/index.ts";
+import {
+  givenOf,
+  type QuestionContext,
+  questionsOf,
+} from "../../socle/index.ts";
 import type { Cibles } from "./declarations/cibles.ts";
 import type { Faits } from "./declarations/faits.ts";
 import { OPTIONS, type Questions } from "./declarations/questions.ts";
@@ -19,6 +23,12 @@ export type Inconnu = undefined;
 
 /** Ce que lit une condition déclarée hors de son constructeur. */
 export type Context = QuestionContext<Questions, Cibles, Faits>;
+
+/**
+ * Les entrées des conditions : `given.question("Q1.1").answer()`,
+ * `given.fait(nom)`, `given.cible(nom)`, `given.today()`.
+ */
+export const given = givenOf<Questions, Faits, Cibles>();
 
 /** Les constructeurs des questions de P0 à P3. */
 export const question = questionsOf<Questions, Faits, Cibles>({

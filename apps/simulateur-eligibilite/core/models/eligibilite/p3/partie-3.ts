@@ -20,13 +20,13 @@ import { PAGE_DE_L_ARRIVEE, PAGE_DU_DEPART } from "./pages-des-lieux.ts";
 import { PAGE_DE_L_URGENCE, PAGE_DU_SOIN } from "./pages-du-soin.ts";
 import {
   ALLER_RETOUR_D_UN_TRANSPORT,
-  allerRetourDUnSeulTransport,
-  frequenceDepassee,
+  desTrajetsAuDelaDeLaFrequence,
+  desTrajetsMensuelsAPoser,
+  FREQUENCE_DEPASSEE,
   rappelDesPermissions,
-  sensAPoser,
-  sensCompatible,
-  trajetsAuDelaDeLaFrequence,
-  trajetsMensuelsAPoser,
+  SENS_COMPATIBLES,
+  unAllerRetourDUnSeulTransport,
+  unSensAPoser,
 } from "./sens-du-trajet.ts";
 import { pmtOuDap } from "./supports-du-complement.ts";
 
@@ -46,21 +46,22 @@ const PAGE_DU_TRAJET = page(
     .integer()
     .min(1)
     .unit("transport(s)")
-    .askedIf(({ cibles }) => pmtOuDap(cibles)),
+    .mattersWhile(pmtOuDap),
   question
     .singleChoice("Q3.1.2", "Comment ces transports sont-ils organisés ?")
-    .askedIf(sensAPoser)
-    .inconsistentIf(allerRetourDUnSeulTransport, ALLER_RETOUR_D_UN_TRANSPORT)
+    .mattersWhile(unSensAPoser)
+    .inconsistentWhen(
+      unAllerRetourDUnSeulTransport,
+      ALLER_RETOUR_D_UN_TRANSPORT,
+    )
     .option("1_ALLER", (option) =>
-      option.offeredIf(({ answers }) => sensCompatible("1_ALLER", answers)),
+      option.offeredWhen(SENS_COMPATIBLES["1_ALLER"]),
     )
     .option("2_RETOUR", (option) =>
-      option.offeredIf(({ answers }) => sensCompatible("2_RETOUR", answers)),
+      option.offeredWhen(SENS_COMPATIBLES["2_RETOUR"]),
     )
     .option("3_ALLER_RETOUR_EQUIVALENT", (option) =>
-      option.offeredIf(({ answers }) =>
-        sensCompatible("3_ALLER_RETOUR_EQUIVALENT", answers),
-      ),
+      option.offeredWhen(SENS_COMPATIBLES["3_ALLER_RETOUR_EQUIVALENT"]),
     )
     .option("4_ALLER_RETOUR_DIFFERENT", (option) =>
       option.blocks(
@@ -73,9 +74,9 @@ const PAGE_DU_TRAJET = page(
     .integer()
     .min(1)
     .unit("trajet(s) par mois")
-    .askedIf(trajetsMensuelsAPoser)
+    .mattersWhile(desTrajetsMensuelsAPoser)
     .reminderFrom(rappelDesPermissions)
-    .inconsistentIf(trajetsAuDelaDeLaFrequence, frequenceDepassee),
+    .inconsistentWhen(desTrajetsAuDelaDeLaFrequence, FREQUENCE_DEPASSEE),
 );
 
 /** P3, posée après le verrou : elle complète le cerfa, elle ne décide plus. */

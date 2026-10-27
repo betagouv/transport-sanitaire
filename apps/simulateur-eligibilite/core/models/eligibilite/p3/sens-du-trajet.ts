@@ -3,32 +3,28 @@
 // aux lieux. Plusieurs permissions sont chacune un aller-retour : Q2.8 donne
 // alors le sens, qui ne se redemande pas (D-120).
 
-import type { GivenAnswers } from "../../../socle/index.ts";
-import { Permission } from "../concepts/permission.ts";
-import { RetourPenitentiaire } from "../concepts/retour-penitentiaire.ts";
+import type { Condition, GivenAnswers } from "../../../socle/index.ts";
+import { Permission, trajetsMensuelsAuPlus } from "../concepts/permission.ts";
 import type { Questions } from "../declarations/questions.ts";
-import type { Context, Inconnu } from "../question.ts";
-import { pmtOuDap } from "./supports-du-complement.ts";
+import { unRetourPenitentiaire } from "../p2/retour-penitentiaire.ts";
+import { type Context, given, type Inconnu } from "../question.ts";
+import { pmtOuDap, unS3141 } from "./supports-du-complement.ts";
 
 type Reponses = GivenAnswers<Questions>;
 type Sens = Questions["Q3.1.2"];
 type Rappel = { readonly label: string; readonly value: string }[];
 
+const unePermissionRepetee = given.question("Q2.8.5").answer().is("1_OUI");
+const semaines = given.question("Q2.8.6.a").answer();
+const sousType = given.question("Q2.1.g").answer();
+
 /** Q3.1.2 se pose pour la PMT, la DAP, et le S3141 d'une seule permission. */
-export function sensAPoser({ answers, cibles }: Context): boolean {
-  return (
-    pmtOuDap(cibles) ||
-    (cibles.cible_support_id.is("S3141") &&
-      !Permission.of(answers).estRepetee())
-  );
-}
+export const unSensAPoser = pmtOuDap.or(
+  unS3141.and(unePermissionRepetee.not()),
+);
 
 /** Q3.1.3 se pose pour le S3141 de plusieurs permissions. */
-export function trajetsMensuelsAPoser({ answers, cibles }: Context): boolean {
-  return (
-    cibles.cible_support_id.is("S3141") && Permission.of(answers).estRepetee()
-  );
-}
+export const desTrajetsMensuelsAPoser = unS3141.and(unePermissionRepetee);
 
 /** Le sens du document : Q3.1.2, ou l'aller-retour de plusieurs permissions. */
 export function sensDuDocument(reponses: Reponses): Sens | Inconnu {
@@ -39,41 +35,60 @@ export function sensDuDocument(reponses: Reponses): Sens | Inconnu {
     : undefined;
 }
 
-/**
- * Le sens se propose-t-il, vu les rôles fixés en P2 ? Une entrée va vers
- * l'établissement. Une sortie, une admission en HAD et un retour pénitentiaire
- * en reviennent. Leur aller-retour change de motif : il ne se propose pas.
- */
-export function sensCompatible(sens: Sens, reponses: Reponses): boolean {
-  const impose = sensImpose(reponses);
-  return impose === undefined || sens === impose;
-}
+// Les rôles que P2 a fixés aux lieux. Une entrée va vers l'établissement. Une
+// sortie, une admission en HAD et un retour pénitentiaire en reviennent.
+const versLEtablissement = sousType.is("1_ENTREE");
+const depuisLEtablissement = versLEtablissement
+  .not()
+  .and(
+    sousType
+      .isOneOf("2_SORTIE", "3_ADMISSION_HAD")
+      .or(given.question("Q2.6").answer().checked("10_ADMISSION_HAD"))
+      .or(unRetourPenitentiaire),
+  );
 
-/** Un aller-retour compte deux transports : un seul ne le couvre pas. */
+/**
+ * Quand un sens se propose, vu les rôles fixés en P2. Sans rôle fixé, tous se
+ * proposent. Un aller-retour change de motif : il ne se propose pas quand un
+ * rôle est fixé.
+ */
+export const SENS_COMPATIBLES = {
+  "1_ALLER": depuisLEtablissement.not(),
+  "2_RETOUR": versLEtablissement.not(),
+  "3_ALLER_RETOUR_EQUIVALENT": versLEtablissement
+    .or(depuisLEtablissement)
+    .not(),
+} as const satisfies Partial<Record<Sens, Condition>>;
+
 /** Le message d'un aller-retour qui ne compte qu'un transport. */
 export const ALLER_RETOUR_D_UN_TRANSPORT =
   "Un aller-retour compte deux transports. Indiquez-en au moins deux, ou choisissez « Aller simple » ou « Retour simple ».";
 
-/** Q3.1.2 dit-elle un aller-retour, quand Q3.1.1 ne compte qu'un transport ? */
-export function allerRetourDUnSeulTransport({ answers }: Context): boolean {
-  return (
-    answers.question("Q3.1.2").is("3_ALLER_RETOUR_EQUIVALENT") &&
-    answers.question("Q3.1.1").is(1)
-  );
-}
+/** Q3.1.2 dit un aller-retour, quand Q3.1.1 ne compte qu'un transport. */
+export const unAllerRetourDUnSeulTransport = given
+  .question("Q3.1.2")
+  .answer()
+  .is("3_ALLER_RETOUR_EQUIVALENT")
+  .and(given.question("Q3.1.1").answer().is(1));
 
-/** Q3.1.3 dépasse-t-elle ce que la fréquence de Q2.8 permet ? */
-export function trajetsAuDelaDeLaFrequence({ answers }: Context): boolean {
-  const maximum = Permission.of(answers).trajetsMensuelsMaximum();
-  const nombre = answers.question("Q3.1.3").value;
-  return maximum !== undefined && nombre !== undefined && nombre > maximum;
-}
+/** Q3.1.3 dépasse ce que la fréquence de Q2.8 permet. */
+export const desTrajetsAuDelaDeLaFrequence = given
+  .question("Q3.1.3")
+  .answer()
+  .computeWith(semaines, (nombre, frequence) => {
+    const maximum = trajetsMensuelsAuPlus(frequence.value);
+    return (
+      maximum !== undefined &&
+      nombre.value !== undefined &&
+      nombre.value > maximum
+    );
+  });
 
 /** Le message de Q3.1.3 au-delà de la fréquence : il cite le maximum. */
-export function frequenceDepassee({ answers }: Context): string {
-  const permission = Permission.of(answers);
-  return `Avec une permission toutes les ${permission.semainesEntreDeuxPermissions()} semaine(s), un mois compte au plus ${permission.trajetsMensuelsMaximum()} trajets.`;
-}
+export const FREQUENCE_DEPASSEE = semaines.compute(
+  ({ value }) =>
+    `Avec une permission toutes les ${value} semaine(s), un mois compte au plus ${trajetsMensuelsAuPlus(value)} trajets.`,
+);
 
 /** Ce que Q2.8 a fixé des permissions, rappelé au-dessus de Q3.1.3. */
 export function rappelDesPermissions({ answers }: Context): Rappel {
@@ -105,21 +120,6 @@ export function rappelDesPermissions({ answers }: Context): Rappel {
 }
 
 // ---- implémentation ----
-
-/** Aucun sens n'est imposé : tous se proposent. */
-type AucunImpose = undefined;
-// Le seul sens que les rôles de P2 permettent. Absent : tous se proposent.
-function sensImpose(reponses: Reponses): Sens | AucunImpose {
-  const sousType = reponses.question("Q2.1.g");
-  if (sousType.is("1_ENTREE")) return "1_ALLER";
-  if (
-    sousType.isOneOf("2_SORTIE", "3_ADMISSION_HAD") ||
-    reponses.question("Q2.6").checked("10_ADMISSION_HAD") ||
-    RetourPenitentiaire.of(reponses).estCoche()
-  )
-    return "2_RETOUR";
-  return undefined;
-}
 
 // `AAAA-MM-JJ` donne `JJ/MM/AAAA`, et `AAAA-MM-JJTHH:mm` y ajoute l'heure.
 function lisible(date: string): string {

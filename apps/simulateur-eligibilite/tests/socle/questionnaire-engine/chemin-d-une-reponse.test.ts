@@ -4,7 +4,13 @@
 // lisent les cibles figées.
 
 import { describe, expect, it } from "vitest";
-import { afterLock, Cible, page, questionsOf } from "../../../core/socle";
+import {
+  afterLock,
+  Cible,
+  givenOf,
+  page,
+  questionsOf,
+} from "../../../core/socle";
 import type { Page } from "../../../core/socle/questionnaire-engine/question";
 import { Questionnaire } from "../../../core/socle/questionnaire-engine/questionnaire";
 
@@ -13,6 +19,8 @@ type Faits = { readonly chaude: boolean };
 type Cibles = { readonly cible_sucre_propose: Cible<boolean> };
 
 let calculs = 0;
+
+const given = givenOf<Questions, Faits, Cibles>();
 
 const question = questionsOf<Questions, Faits, Cibles>({
   options: { boisson: { the: "Un thé", cafe: "Un café", eau: "De l'eau" } },
@@ -34,7 +42,7 @@ const SUCRE = page(
   "sucre",
   question
     .checkbox("sucre", "Du sucre ?", "Oui")
-    .askedIf(({ cibles }) => cibles.cible_sucre_propose.isOui()),
+    .mattersWhile(given.cible("cible_sucre_propose").isOui()),
 );
 
 const [SUCRE_DU_COMPLEMENT] = afterLock({

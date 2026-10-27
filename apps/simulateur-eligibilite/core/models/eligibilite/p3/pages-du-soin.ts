@@ -3,11 +3,25 @@
 // qu'elles recueillent ne requalifie P2.
 
 import { type GivenAnswers, page } from "../../../socle/index.ts";
-import type { Cibles } from "../declarations/cibles.ts";
 import { OPTIONS, type Questions } from "../declarations/questions.ts";
-import { question } from "../question.ts";
-import { sensDuDocument } from "./sens-du-trajet.ts";
+import { given, question } from "../question.ts";
 import { pmtOuDap } from "./supports-du-complement.ts";
+
+// Un retour seul ne va pas vers le centre de référence.
+const unRetourSeul = given.question("Q3.1.2").answer().is("2_RETOUR");
+
+// `cible_urgence_autre` manque tant que l'appel au Centre 15 n'est pas un fait :
+// l'urgence attestée suffit alors, puisque l'appel n'est pas établi.
+const autre = given.cible("cible_urgence_autre");
+const uneAutreUrgence = autre
+  .isOui()
+  .or(
+    autre
+      .isInconnue()
+      .or(autre.isSansObjet())
+      .and(given.cible("cible_urgence_attestee").isOui())
+      .and(given.cible("cible_urgence_appel15").isOui().not()),
+  );
 
 // Le soin, tel que P2 l'a validé, se rappelle sans se redemander. Aucun code
 // de nomenclature ne s'affiche.
@@ -22,7 +36,7 @@ export const PAGE_DU_SOIN = page(
       "Seulement ce qui manque encore à la prescription. Une précision qui change le soin ou le motif demande une nouvelle simulation.",
     )
     .optional()
-    .askedIf(({ cibles }) => pmtOuDap(cibles))
+    .mattersWhile(pmtOuDap)
     .reminderFrom(({ answers }) => recapitulatifDuSoin(answers)),
   question
     .longText(
@@ -30,7 +44,7 @@ export const PAGE_DU_SOIN = page(
       "Justification médicale du lieu de soins éloigné",
     )
     .hint("Au-delà de 150 km, la demande d’accord préalable l’exige.")
-    .askedIf(({ cibles }) => cibles.cible_dap_motif_longue_distance.isOui()),
+    .mattersWhile(given.cible("cible_dap_motif_longue_distance").isOui()),
   question
     .singleChoice(
       "Q3.4.a",
@@ -40,10 +54,7 @@ export const PAGE_DU_SOIN = page(
       "Oui pour un aller, ou un aller-retour, vers ce centre. Une maladie rare ne suffit pas.",
     )
     // Un retour seul ne va pas vers le centre : Non, sans question.
-    .askedIf(
-      ({ answers, cibles }) =>
-        pmtOuDap(cibles) && sensDuDocument(answers) !== "2_RETOUR",
-    ),
+    .mattersWhile(pmtOuDap.and(unRetourSeul.not())),
 );
 
 // L'urgence se précise seulement si les règles l'ont retenue, hors appel au
@@ -59,7 +70,7 @@ export const PAGE_DE_L_URGENCE = page(
       "Quelle précision faut-il apporter sur l’urgence déjà attestée ?",
     )
     .hint("La nature de l’urgence médicale attestée.")
-    .askedIf(({ cibles }) => pmtOuDap(cibles) && autreUrgence(cibles)),
+    .mattersWhile(pmtOuDap.and(uneAutreUrgence)),
 );
 
 // ---- implémentation ----
@@ -97,16 +108,4 @@ function recapitulatifDuSoin(reponses: GivenAnswers<Questions>) {
     ...lu("Q2.1.f"),
   ];
   return lignes.length > 0 ? lignes : undefined;
-}
-
-// `cible_urgence_autre` manque tant que l'appel au Centre 15 n'est pas un fait :
-// l'urgence attestée suffit alors, puisque l'appel n'est pas établi.
-function autreUrgence(cibles: Cibles): boolean {
-  const autre = cibles.cible_urgence_autre;
-  if (autre.isOui()) return true;
-  return (
-    (autre.isInconnue() || autre.isSansObjet()) &&
-    cibles.cible_urgence_attestee.isOui() &&
-    !cibles.cible_urgence_appel15.isOui()
-  );
 }

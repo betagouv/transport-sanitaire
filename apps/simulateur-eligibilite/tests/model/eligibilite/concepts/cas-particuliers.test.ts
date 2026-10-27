@@ -83,28 +83,15 @@ describe("la séance qualifiante de P1", () => {
   });
 });
 
-describe("les séances de Q1.3", () => {
-  // Une séance cochée, Q1.3 sans séance qualifiante, plusieurs séances.
-  const lecture = (reponses: Answers<Questions>) => {
-    const lus = cas(reponses);
-    return [lus.uneSeance(), lus.sansSeance(), lus.plusieursSeances()];
-  };
-
+describe("Q1.3 sans séance qualifiante", () => {
   it.each([
-    [{ "Q1.3": ["7_AUCUNE"] }, [false, true, false]],
-    [{ "Q1.3": ["3_CHIMIOTHERAPIE"] }, [true, false, false]],
-    [
-      { "Q1.3": ["5_DIALYSE"], "Q1.3.a": "2_AUTRE_DIALYSE" },
-      [true, true, false],
-    ],
-    [{ "Q1.3": ["3_CHIMIOTHERAPIE", "5_DIALYSE"] }, [true, false, false]],
-    [
-      { "Q1.3": ["3_CHIMIOTHERAPIE", "5_DIALYSE"], "Q1.3.a": "1_OUI" },
-      [true, false, true],
-    ],
-    [{ "Q1.3": ["3_CHIMIOTHERAPIE", "4_RADIOTHERAPIE"] }, [true, false, true]],
-    [{}, [false, false, false]],
-  ] as const)("%j : %j", (reponses, attendu) => {
-    expect(lecture(reponses)).toEqual(attendu);
+    [{ "Q1.3": ["7_AUCUNE"] }, true],
+    [{ "Q1.3": ["3_CHIMIOTHERAPIE"] }, false],
+    [{ "Q1.3": ["5_DIALYSE"], "Q1.3.a": "2_AUTRE_DIALYSE" }, true],
+    [{ "Q1.3": ["3_CHIMIOTHERAPIE", "5_DIALYSE"] }, false],
+    [{ "Q1.3": ["5_DIALYSE"], "Q1.3.a": "1_OUI" }, false],
+    [{}, false],
+  ] as const)("%j : %s", (reponses, attendu) => {
+    expect(cas(reponses).sansSeance()).toBe(attendu);
   });
 });

@@ -1,6 +1,6 @@
 import { screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
-import { page, questionsOf } from "../../../core/socle";
+import { givenOf, page, questionsOf } from "../../../core/socle";
 import { afficher } from "./afficher";
 
 // Une réponse peut en contredire une autre. La question qui vient en dernier
@@ -20,6 +20,7 @@ const OPTIONS = {
 } as const;
 
 const question = questionsOf<Questions>({ options: OPTIONS });
+const given = givenOf<Questions>();
 
 const FIN_AVANT_LE_DEBUT = "La fin précède le début.";
 const FERME_LE_DIMANCHE = "Le magasin est fermé le dimanche.";
@@ -29,14 +30,19 @@ const DEBUT = question.datetime("debut", "Début du créneau");
 // 2026-10-18 tombe un dimanche.
 const FIN = question
   .datetime("fin", "Fin du créneau")
-  .inconsistentIf(({ answers }) => {
-    const debut = answers.question("debut").value;
-    const fin = answers.question("fin").value;
-    return Boolean(debut && fin && fin < debut);
-  }, FIN_AVANT_LE_DEBUT)
-  .inconsistentIf(
-    ({ answers }) =>
-      answers.question("fin").value?.startsWith("2026-10-18") === true,
+  .inconsistentWhen(
+    given
+      .question("fin")
+      .answer()
+      .toDate()
+      .isBefore(given.question("debut").answer().toDate()),
+    FIN_AVANT_LE_DEBUT,
+  )
+  .inconsistentWhen(
+    given
+      .question("fin")
+      .answer()
+      .compute(({ value }) => value?.startsWith("2026-10-18") === true),
     FERME_LE_DIMANCHE,
   );
 
@@ -89,7 +95,10 @@ describe("deux réponses de la même page", () => {
     const decimale = question
       .number("poids", "Poids du colis")
       .integer()
-      .inconsistentIf(() => true, "Le colis est trop lourd pour ce mode.");
+      .inconsistentWhen(
+        given.question("poids").answer().isPresent(),
+        "Le colis est trop lourd pour ce mode.",
+      );
     const { user } = afficher([page("poids", decimale)]);
 
     await user.type(screen.getByRole("spinbutton"), "2.5");
@@ -107,7 +116,7 @@ describe("précision obligatoire restée vide", () => {
     question.multipleChoice("raisons", "Pourquoi ?"),
     question
       .text("precision", "Précisez")
-      .askedIf(({ answers }) => answers.question("raisons").checked("autre")),
+      .appliesWhen(given.question("raisons").answer().checked("autre")),
   );
 
   it("grise « Suivant », sans message", async () => {

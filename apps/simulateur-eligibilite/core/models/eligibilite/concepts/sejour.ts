@@ -1,6 +1,6 @@
 // Le séjour hospitalier : le groupe « déjà hospitalisé » de Q2.2.1, et ce que
-// Q2.1 et Q2.1.g en disent. Les pages de P2, les faits de l'hospitalisation, du
-// transfert, du Centre 15 et de la permission, et la trace de R2 le lisent.
+// Q2.1 et Q2.1.g en disent. Les faits de l'hospitalisation, du transfert, du
+// Centre 15 et de la permission, et la trace de R2 le lisent.
 //
 // Il se construit sur des réponses données comme sur des réponses validées.
 // Seules ces dernières savent qu'il a été proposé puis écarté. Il donne le fait
@@ -30,17 +30,6 @@ export class Sejour<
     reponses: Reponses,
   ): Sejour<Reponses> {
     return new Sejour(reponses);
-  }
-
-  /**
-   * « Déjà hospitalisé » se propose en Q2.2.1. Ni une permission déjà indiquée
-   * en Q2.1, ni un trajet qui ouvre le séjour ne le laissent (D-98).
-   */
-  estAProposer(): boolean {
-    return (
-      this.reponses.question("Q2.1").isNot("11_PERMISSION") &&
-      !this.commenceAvecCeTrajet()
-    );
   }
 
   /**

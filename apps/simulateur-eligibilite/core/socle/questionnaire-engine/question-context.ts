@@ -8,7 +8,11 @@
 // `Pipeline`. Faits et cibles ne se calculent qu'à la lecture, une fois par
 // contexte. Le catalogue des faits arrête un fait qui se relit par une garde.
 
+import { Fait } from "../decision-engine/fait.ts";
+import type { AnswerReading } from "./answer-readings.ts";
+import type { Reading } from "./condition.ts";
 import type { GivenAnswers } from "./given-answers.ts";
+import { LocalDateTime } from "./local-date-time.ts";
 import type { AnyCibles, AnyQuestions } from "./question.ts";
 import type { ValidatedAnswers } from "./validated-answers.ts";
 
@@ -36,12 +40,15 @@ export type QuestionContext<
 /**
  * Ce qu'une question voit des réponses, avant les étapes du modèle. `cibles` :
  * celles figées au verrou, sur une page posée après lui. Ailleurs :
- * `undefined`.
+ * `undefined`. `answer` : la réponse d'une question telle que ses conditions
+ * la lisent, à sa place (`answer-readings.ts`).
  */
 export type SeenAnswers<
   Questions extends AnyQuestions = AnyQuestions,
   Cibles = AnyCibles | undefined,
-> = Omit<QuestionContext<Questions, Cibles>, "faits">;
+> = Omit<QuestionContext<Questions, Cibles>, "faits"> & {
+  readonly answer: AnswerReading;
+};
 
 /** Ce qui calcule les faits que lisent les rappels des questions d'un modèle. */
 type FaitsOf<Questions extends AnyQuestions = AnyQuestions, Faits = unknown> = (
@@ -81,7 +88,39 @@ export function contextOf<Questions extends AnyQuestions, Cibles, Faits>(
   };
 }
 
+/**
+ * Ce que lisent les conditions d'une question : ses réponses à sa place, les
+ * faits et les cibles de son contexte, et le jour.
+ */
+export function readingOf<Questions extends AnyQuestions, Cibles, Faits>(
+  answer: AnswerReading,
+  context: QuestionContext<Questions, Cibles, Faits>,
+  pipeline: Pipeline<Questions, Faits, Cibles>,
+): Reading {
+  const named = (values: unknown, nom: string) =>
+    (values as Readonly<Record<string, unknown>>)[nom];
+  return {
+    answer,
+    fait: (nom) => named(context.faits, nom),
+    cible: (nom) => named(context.cibles, nom),
+    cibleAssuming: (nom, fait) => named(assuming(pipeline, context, fait), nom),
+    today: () => LocalDateTime.dayInParis(new Date()),
+  };
+}
+
 // ---- implémentation ----
+
+// Les cibles de ces faits, si ce fait valait « oui ».
+function assuming<Questions extends AnyQuestions, Cibles, Faits>(
+  { cibles }: Pipeline<Questions, Faits, Cibles>,
+  context: QuestionContext<Questions, Cibles, Faits>,
+  fait: string,
+): Cibles {
+  if (!cibles)
+    throw new Error("Ce modèle n'a pas de règles : il n'a pas de cibles.");
+  const supposed = Fait.oui(`Supposé pour la garde : ${fait}.`);
+  return cibles({ ...context.faits, [fait]: supposed });
+}
 
 // Étape 3 : des réponses validées aux faits.
 function faitsThrough<Questions extends AnyQuestions, Faits>(
