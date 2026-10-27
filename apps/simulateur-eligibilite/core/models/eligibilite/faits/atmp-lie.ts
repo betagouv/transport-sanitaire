@@ -5,7 +5,7 @@
 //
 // Il suit `CONTRAT_REPONSES_FAITS.json`.
 
-import { regles } from "../../../socle/index.ts";
+import { unFait } from "../../../socle/index.ts";
 import { ContextesDuTrajet } from "../concepts/contextes-du-trajet.ts";
 import {
   type DeclarationDeFait,
@@ -13,6 +13,6 @@ import {
 } from "../declarations/faits.ts";
 
 export const atmpLie: DeclarationDeFait = ({ validated }) =>
-  regles()
+  unFait()
     .retient(ContextesDuTrajet.of(validated).situation("1_ATMP"))
     .sinon(PAS_ENCORE_ETABLI);

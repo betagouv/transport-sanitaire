@@ -10,7 +10,7 @@ export { Fait } from "./decision-engine/fait.ts";
 export {
   citant,
   type PassesOn,
-  regles,
+  unFait,
 } from "./decision-engine/fait-builder.ts";
 export {
   FaitCatalogue,

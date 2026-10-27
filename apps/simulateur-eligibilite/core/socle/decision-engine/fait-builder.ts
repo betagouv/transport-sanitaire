@@ -2,7 +2,7 @@
 // qui le met à « oui », ce qui le met à « non », ce qui le laisse inconnu.
 //
 //   fait_motif_camsp: ({ validated }) =>
-//     regles()
+//     unFait()
 //       .selonCase(validated.question("Q2.2.1.b"), "6_CAMSP")
 //       .seulementSi(validated.question("Q2.1").is("10_CAMSP"))
 //       .selon(validated.question("Q2.1.h"), { "1_OUI": "oui", "2_NON": "non" })
@@ -28,8 +28,8 @@ type Etat = "oui" | "non" | "inconnu";
 /** La règle n'établit pas le fait : elle laisse la main à la suivante. */
 export type PassesOn = undefined;
 
-/** Les règles d'un fait, à écrire dans l'ordre : `regles().ouiSi(…).sinon(…)`. */
-export function regles(): FaitBuilder {
+/** Un fait, ses règles écrites dans l'ordre : `unFait().ouiSi(…).sinon(…)`. */
+export function unFait(): FaitBuilder {
   return new FaitBuilder([]);
 }
 

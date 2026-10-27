@@ -6,13 +6,13 @@
 //
 // Il suit `CONTRAT_REPONSES_FAITS.json`.
 
-import { regles } from "../../../socle/index.ts";
+import { unFait } from "../../../socle/index.ts";
 import { CasParticuliers } from "../concepts/cas-particuliers.ts";
 import type { DeclarationDeFait } from "../declarations/faits.ts";
 
 export const aldExonerante3Ou4: DeclarationDeFait = ({ validated }) => {
   const ald = CasParticuliers.of(validated).coche("2_ALD");
-  return regles()
+  return unFait()
     .ouiSi(ald.isOui(), "Q1.3 : « 2_ALD » coché, pris en charge à 100 %.")
     .inconnuSi(
       ald.isNon(),

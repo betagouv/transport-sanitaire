@@ -10,7 +10,7 @@ import {
   page,
   Questionnaire,
   questionsOf,
-  regles,
+  unFait,
 } from "../../../core/socle";
 import { GivenAnswers } from "../../../core/socle/questionnaire-engine/given-answers";
 import { ValidatedAnswers } from "../../../core/socle/questionnaire-engine/validated-answers";
@@ -26,7 +26,7 @@ let calculs: string[] = [];
 const CHAUDE: Declarations = {
   chaude: ({ validated }) => {
     calculs.push("chaude");
-    return regles()
+    return unFait()
       .selon(validated.question("boisson"), {
         the: "oui",
         cafe: "oui",
@@ -38,7 +38,7 @@ const CHAUDE: Declarations = {
 const SERVIE: Declarations = {
   servie: ({ faits }) => {
     calculs.push("servie");
-    return regles()
+    return unFait()
       .ouiSi(faits.chaude.isOui(), "Une boisson chaude se sert.")
       .sinon("Rien à servir.");
   },
@@ -111,9 +111,9 @@ describe("un fait qui se lit lui-même", () => {
   it("s'arrête net, par d'autres faits", () => {
     const boucle = new FaitCatalogue<Questions, Faits>(NOMS, {
       chaude: ({ faits }) =>
-        regles().ouiSi(faits.servie.isOui(), "…").sinon("…"),
+        unFait().ouiSi(faits.servie.isOui(), "…").sinon("…"),
       servie: ({ faits }) =>
-        regles().ouiSi(faits.chaude.isOui(), "…").sinon("…"),
+        unFait().ouiSi(faits.chaude.isOui(), "…").sinon("…"),
     });
     expect(() => lus(boucle).chaude).toThrow(
       "« chaude » se lit lui-même : chaude → servie → chaude.",
@@ -136,7 +136,7 @@ describe("un fait qui se lit lui-même", () => {
       SERVIE,
       {
         chaude: ({ answers }) =>
-          regles()
+          unFait()
             .ouiSi(
               new Questionnaire([quantite]).readWith(answers).isComplete(),
               "…",

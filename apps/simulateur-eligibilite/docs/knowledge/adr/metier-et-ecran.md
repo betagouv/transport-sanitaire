@@ -291,7 +291,7 @@ sache si c'était voulu.
 le construit une fois, avec la liste des faits de ses règles et une
 déclaration par fait, ~~rangée dans le thème qui le pose~~ dans son fichier
 (révision du 2026-10-23, plus bas). La déclaration est une chaîne de règles
-(`regles()…sinon(…)`) : la première qui conclut l'emporte, et la chaîne dit
+(`unFait()…sinon(…)`) : la première qui conclut l'emporte, et la chaîne dit
 tout ce que le fait vaut. ~~Quand une autre page en décide une partie, son
 thème exporte une petite règle, qui donne un `Fait` ou rien, et la chaîne la
 reprend (`retient(sejourEcarte(validated))`).~~ Quand un autre fait lit la même
@@ -600,7 +600,7 @@ flowchart LR
 | Catalogue des faits (`FaitCatalogue`) | `core/` | une déclaration par fait, calculée à la lecture ; refuse doublon, oubli, cycle | nouveau |
 | Fichier d'un fait (`faits/<nom>.ts`) | `core/models/` | le titre de l'éditeur, ce qui établit le fait, sa seule déclaration | nouveau |
 | Déclarations par thème (`FAITS_DU_TRAJET`, `DeclarationsDeFaits`…) | `core/models/` | les faits d'une page, dans le fichier de ses questions | supprimé |
-| Règles d'un fait (`regles()`) | `core/` | la chaîne de règles d'un fait, la première qui conclut l'emporte | modifié |
+| Règles d'un fait (`unFait()`) | `core/` | la chaîne de règles d'un fait, la première qui conclut l'emporte | modifié |
 | Fusion des faits partiels (`faitsAvantLaBranche`, `FaitsDesReponses`) | `core/` | l'ordre des pages décidait du fait | supprimé |
 | Seeds | `core/` | ce qu'est une seed, ce qu'elle confirme ou dément | déplacé |
 | Écran des seeds | `front/` | la liste, le rejeu à l'écran | inchangé |

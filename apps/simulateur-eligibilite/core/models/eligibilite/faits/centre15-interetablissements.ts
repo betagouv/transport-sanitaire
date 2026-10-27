@@ -8,7 +8,7 @@
 //
 // Il suit `CONTRAT_REPONSES_FAITS.json`.
 
-import { regles } from "../../../socle/index.ts";
+import { unFait } from "../../../socle/index.ts";
 import { DepartDeLEntree } from "../concepts/depart-de-l-entree.ts";
 import { ExceptionsDeLArticle80 } from "../concepts/exceptions-de-l-article-80.ts";
 import { Permission } from "../concepts/permission.ts";
@@ -23,7 +23,7 @@ export const centre15Interetablissements: DeclarationDeFait = ({
   validated,
 }) => {
   const deplacement = validated.question("Q2.5");
-  return regles()
+  return unFait()
     .retient(
       DepartDeLEntree.of(validated).nonSiEntreeSimple(
         "aucun transfert entre établissements.",
