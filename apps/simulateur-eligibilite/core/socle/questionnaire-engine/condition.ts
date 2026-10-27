@@ -100,6 +100,41 @@ export function textIn(text: Text, reading: Reading): string {
 /** Rien de lu. */
 export const NOTHING: Reads = { questions: [], faits: [], cibles: [] };
 
+/** Ce que vaut chacune de ces valeurs, sous son nom. */
+export type ValuesOf<Values> = {
+  readonly [Name in keyof Values]: Values[Name] extends Value<infer Of>
+    ? Of
+    : never;
+};
+
+/**
+ * Des valeurs nommées, lues ensemble : un calcul qui lit plusieurs réponses,
+ * ou une valeur bâtie sur d'autres. Elle lit ce que lisent ses parties.
+ *
+ *   all({ motif: given.question("Q2.1").answer(), sens: SENS_DU_DOCUMENT })
+ *     .compute(({ motif, sens }) => …)
+ */
+export function all<Values extends Readonly<Record<string, Value<unknown>>>>(
+  values: Values,
+): Value<ValuesOf<Values>> {
+  const entries = Object.entries(values);
+  return new Value(
+    entries.map(([, value]) => value.reads).reduce(readsOf, NOTHING),
+    (reading) =>
+      Object.fromEntries(
+        entries.map(([name, value]) => [name, value.in(reading)]),
+      ) as ValuesOf<Values>,
+  );
+}
+
+/** Ce qu'une valeur vaut, dans la lecture que le socle a choisie. */
+export type Read = <Of>(value: Value<Of>) => Of;
+
+/** La lecture de ces valeurs dans `reading`. */
+export function readIn(reading: Reading): Read {
+  return (value) => value.in(reading);
+}
+
 // ---- implémentation ----
 
 // Ce que lisent ces deux valeurs, chaque chose une fois.

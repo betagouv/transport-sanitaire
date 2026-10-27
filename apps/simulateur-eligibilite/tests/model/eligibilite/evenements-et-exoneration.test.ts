@@ -5,7 +5,6 @@
 import { describe, expect, it } from "vitest";
 import { model } from "../../../core/models/eligibilite";
 import type { Questions } from "../../../core/models/eligibilite/declarations/questions";
-import { jourAParis } from "../../../core/models/eligibilite/p3/pages-des-evenements";
 import { SEEDS } from "../../../core/models/eligibilite/seeds-catalogue";
 import { preconisationOf } from "../../../core/socle/model";
 import type { Answers } from "../../../core/socle/questionnaire-engine/question";
@@ -92,13 +91,6 @@ describe("la page des évènements (Q3.6)", () => {
       expect(avec("2020-01-01")).toEqual([]);
     },
   );
-});
-
-describe("le jour qui borne les dates (Q3.6)", () => {
-  it("est celui de Paris, et non celui du fuseau du poste", () => {
-    expect(jourAParis(new Date("2026-10-18T22:30:00Z"))).toBe("2026-10-19");
-    expect(jourAParis(new Date("2026-12-31T22:59:00Z"))).toBe("2026-12-31");
-  });
 });
 
 describe("la page de l'exonération (Q3.7)", () => {

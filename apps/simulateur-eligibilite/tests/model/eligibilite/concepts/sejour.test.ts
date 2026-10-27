@@ -1,5 +1,5 @@
 // Le séjour hospitalier, lu sur des réponses données ou validées : quand
-// « déjà hospitalisé » est coché ou écarté, et ce qui fait un séjour réel.
+// « déjà hospitalisé » est coché ou écarté, et l'entrée qui l'ouvre.
 
 import { describe, expect, it } from "vitest";
 import { Sejour } from "../../../../core/models/eligibilite/concepts/sejour";
@@ -11,18 +11,7 @@ import { ValidatedAnswers } from "../../../../core/socle/questionnaire-engine/va
 const sejour = (reponses: Answers<Questions>) =>
   Sejour.of(new GivenAnswers<Questions>(reponses));
 
-describe("un séjour réel", () => {
-  it.each([
-    [{ "Q2.1.g": "1_ENTREE" }, true],
-    [{ "Q2.1.g": "2_SORTIE" }, true],
-    [{ "Q2.2.1": ["1_HOSPITALISATION"] }, true],
-    [{ "Q2.1.g": "3_ADMISSION_HAD" }, false],
-    [{ "Q2.2.1": ["2_ETRANGER"] }, false],
-    [{}, false],
-  ] as const)("%j : %s", (reponses, attendu) => {
-    expect(sejour(reponses).estReel()).toBe(attendu);
-  });
-
+describe("le séjour", () => {
   it("une entrée ouvre le séjour avec ce trajet", () => {
     expect(sejour({ "Q2.1.g": "1_ENTREE" }).commenceAvecCeTrajet()).toBe(true);
     expect(sejour({ "Q2.1.g": "2_SORTIE" }).commenceAvecCeTrajet()).toBe(false);

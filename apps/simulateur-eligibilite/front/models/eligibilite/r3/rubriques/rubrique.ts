@@ -7,20 +7,13 @@
 // Une case vaut `true` cochée. Une valeur inconnue vaut `undefined` et laisse
 // sa cellule vide : elle ne coche jamais « Non ».
 //
-// Une rubrique lit les questions validées : une réponse restée d'une question
-// qui ne se pose plus, après un retour en arrière, ne s'écrit pas.
+// Une cellule est une valeur du modèle (`given`), lue sur les questions
+// validées : une réponse restée d'une question qui ne se pose plus, après un
+// retour en arrière, ne s'écrit pas. Son jour est celui de la complétion.
 
-import type { Cibles } from "../../../../../core/models/eligibilite/declarations/cibles";
-import type { Faits } from "../../../../../core/models/eligibilite/declarations/faits";
-import type { Questions } from "../../../../../core/models/eligibilite/declarations/questions";
-import type { CerfaInput } from "../../../../socle";
+import type { Value } from "../../../../../core/socle";
 
-/** Ce que le simulateur sait au moment de remplir le cerfa. */
-export type Donnees = CerfaInput<Questions, Faits, Cibles>;
-
-/** Le calcul de chaque cellule d'une rubrique. */
+/** La valeur de chaque cellule d'une rubrique. */
 export type Rubrique<Cellules> = {
-  readonly [Cellule in keyof Cellules]-?: (
-    donnees: Donnees,
-  ) => Cellules[Cellule];
+  readonly [Cellule in keyof Cellules]-?: Value<Cellules[Cellule]>;
 };

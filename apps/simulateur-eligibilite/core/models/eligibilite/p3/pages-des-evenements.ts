@@ -70,12 +70,6 @@ export const PAGE_DE_L_EXONERATION = page(
     .exclusive("7_AUCUN"),
 );
 
-/** Le jour de cet instant à Paris, au format `AAAA-MM-JJ`. */
-export function jourAParis(instant: Date): string {
-  // La locale suédoise écrit la date en `AAAA-MM-JJ`.
-  return instant.toLocaleDateString("sv-SE", { timeZone: "Europe/Paris" });
-}
-
 // ---- implémentation ----
 
 // La date répondue est après aujourd'hui, à Paris.

@@ -4,21 +4,21 @@
 
 import type { FirstResult } from "../../../../socle";
 import { avecLeCatalogue } from "../avec-le-catalogue";
-import { type ReponsesEtCibles, traceDuResultat } from "../trace-du-resultat";
+import { type Lecture, traceDuResultat } from "../trace-du-resultat";
 import { PageDuPrescripteur } from "./PageDuPrescripteur";
 import {
   type IssueSansFiche,
   texteDuPrescripteur,
 } from "./texte-du-prescripteur";
 
-type Props = ReponsesEtCibles & { issue: IssueSansFiche };
+type Props = Lecture & { issue: IssueSansFiche };
 
 export function resultatDuPrescripteur({
   issue,
-  ...reponses
+  ...lecture
 }: Props): Promise<FirstResult> {
   return avecLeCatalogue((catalogue) => {
-    const trace = traceDuResultat(reponses);
+    const trace = traceDuResultat(lecture);
     const texte = texteDuPrescripteur(catalogue, issue, trace);
     return {
       title: texte.titre,

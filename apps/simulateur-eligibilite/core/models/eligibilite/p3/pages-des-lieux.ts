@@ -12,41 +12,22 @@ import {
   type Nature,
   natureDu,
   natureEtablie,
+  natureEtablieDu,
   precisionAPoser,
   QUESTIONS_DU_LIEU,
 } from "./lieux-du-trajet.ts";
-import { natureAdmise } from "./roles-des-lieux.ts";
+import {
+  ENTREES_DES_LIEUX,
+  entreesDe,
+  natureAdmise,
+} from "./roles-des-lieux.ts";
 import { avecUnDocument } from "./supports-du-complement.ts";
-
-// Ce que lit la nature que P2 établit (`roles-des-lieux.ts`), en attendant que
-// ces règles s'écrivent en conditions (#246).
-const CE_QUE_P2_ETABLIT = [
-  "Q1.3",
-  "Q2.1",
-  "Q2.1.g",
-  "Q2.2.1",
-  "Q2.2.1.a",
-  "Q2.2.1.b",
-  "Q2.5",
-  "Q2.6",
-  "Q2.7",
-  "Q2.8.5",
-  "Q2.8.6.a",
-  "Q2.13.depart",
-  "Q3.1.2",
-] as const;
-
-const REPONSES_DE_P2 = given.answers(...CE_QUE_P2_ETABLIT);
 
 // La nature de l'autre lieu, vue de celui-ci. Le départ ne voit de l'arrivée
 // que ce que P2 en établit : elle se choisit après lui.
 const AUTRE_LIEU = {
-  depart: REPONSES_DE_P2.compute(
-    (reponses) => natureEtablie("arrivee", reponses)?.nature,
-  ),
-  arrivee: reponsesDu("depart").compute((reponses) =>
-    natureDu("depart", reponses, reponses),
-  ),
+  depart: natureEtablieDu("arrivee").compute((etablie) => etablie?.nature),
+  arrivee: natureDu("depart"),
 };
 
 const ADRESSE_REPETEE = given
@@ -72,14 +53,6 @@ export const PAGE_DE_L_ARRIVEE = pageDuLieu("P3/arrivee", "arrivee", {
 
 // ---- implémentation ----
 
-// Les réponses dont P2 tire les lieux, et la nature choisie de ce lieu.
-function reponsesDu(extremite: Extremite) {
-  return given.answers(
-    ...CE_QUE_P2_ETABLIT,
-    QUESTIONS_DU_LIEU[extremite].nature,
-  );
-}
-
 type Libelles = { nature: string; adresse: string; rappel: string };
 
 // Le rappel coiffe la première question posée : le nom, ou l'adresse d'un
@@ -87,9 +60,7 @@ type Libelles = { nature: string; adresse: string; rappel: string };
 function pageDuLieu(id: string, extremite: Extremite, libelles: Libelles) {
   const ids = QUESTIONS_DU_LIEU[extremite];
   const rappel = rappelDe(extremite, libelles.rappel);
-  const nomUtile = reponsesDu(extremite).compute((reponses) =>
-    unNomAReporter(natureDu(extremite, reponses, reponses)),
-  );
+  const nomUtile = natureDu(extremite).compute(unNomAReporter);
   return page(
     id,
     natureAChoisir(extremite, libelles.nature),
@@ -115,7 +86,8 @@ function adresseDuLieu(
     .mattersWhile(avecUnDocument)
     .abroadIf(({ answers }) => aLEtranger(extremite, answers))
     .reminderFrom((contexte) =>
-      natureEtablie(extremite, contexte.answers)?.nature === "1_DOMICILE"
+      natureEtablie(extremite, entreesDe(contexte.answers))?.nature ===
+      "1_DOMICILE"
         ? rappel(contexte)
         : undefined,
     );
@@ -130,7 +102,7 @@ function adresseDuLieu(
 // Ce que P2 établit du lieu, rappelé sans se redemander.
 function rappelDe(extremite: Extremite, label: string) {
   return ({ answers }: Contexte) => {
-    const etablie = natureEtablie(extremite, answers);
+    const etablie = natureEtablie(extremite, entreesDe(answers));
     return etablie && [{ label, value: etablie.rappel }];
   };
 }
@@ -138,15 +110,12 @@ function rappelDe(extremite: Extremite, label: string) {
 // La nature en toutes lettres, pour un hébergement ou un autre lieu
 // (`precisionAPoser`).
 function precisionDuLieu(extremite: Extremite) {
-  const aPoser = reponsesDu(extremite).compute((reponses) =>
-    precisionAPoser(extremite, reponses, reponses),
-  );
   return question
     .text(QUESTIONS_DU_LIEU[extremite].precision, "Nature du lieu")
     .hint(
       "Elle s’inscrit sur le document. Par exemple : maison d’accueil hospitalière, foyer, lieu de travail.",
     )
-    .mattersWhile(avecUnDocument.and(aPoser));
+    .mattersWhile(avecUnDocument.and(precisionAPoser(extremite)));
 }
 
 // La nature ne se choisit que si P2 ne l'établit pas, parmi celles que P2 et
@@ -154,11 +123,11 @@ function precisionDuLieu(extremite: Extremite) {
 function natureAChoisir(extremite: Extremite, label: string) {
   const id = QUESTIONS_DU_LIEU[extremite].nature;
   const admise = (nature: Nature) =>
-    REPONSES_DE_P2.computeWith(AUTRE_LIEU[extremite], (reponses, autre) =>
-      natureAdmise(nature, extremite, reponses, autre),
+    ENTREES_DES_LIEUX.computeWith(AUTRE_LIEU[extremite], (entrees, autre) =>
+      natureAdmise(nature, extremite, entrees, autre),
     );
-  const aChoisir = REPONSES_DE_P2.compute(
-    (reponses) => natureEtablie(extremite, reponses) === undefined,
+  const aChoisir = natureEtablieDu(extremite).compute(
+    (etablie) => etablie === undefined,
   );
   return (Object.keys(OPTIONS[id]) as Nature[]).reduce(
     (declaree, nature) =>

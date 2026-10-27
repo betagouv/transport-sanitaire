@@ -1,6 +1,6 @@
 # Architecture : le métier et l'écran
 
-> Statut : **décidé (phase expérimentale)** · Dernière mise à jour : 2026-10-23
+> Statut : **décidé (phase expérimentale)** · Dernière mise à jour : 2026-10-27
 >
 > Où vit le métier du simulateur, et comment l'écran s'y branche. Les décisions
 > ont été prises seul par l'agent qui a mené le chantier, sur délégation de
@@ -540,8 +540,8 @@ case seule que lit un seul fait, reste lue dans son fichier.
 par `startsWith("H-SEJOUR")` pour savoir s'il y avait un séjour. L'ADR-15
 annonçait que les précisions resteraient des valeurs nues jusqu'aux concepts.
 
-**Décision.** La trace porte `sejourReel: true` quand `Sejour.estReel()` le
-dit, et rien sinon. La clé n'est pas dans les précisions : leurs clés et leurs
+**Décision.** La trace porte `sejourReel: true` quand `UN_SEJOUR_REEL`
+(~~`Sejour.estReel()`~~, ADR-21) le dit, et rien sinon. La clé n'est pas dans les précisions : leurs clés et leurs
 valeurs sont celles de l'éditeur, et `sejourReel` n'en est pas une.
 L'identifiant du lexique reste calculé dans les précisions : il mêle le séjour
 et les séances, et sa forme est une clé de l'éditeur.
@@ -566,6 +566,28 @@ qu'on lit d'un slug, et un objet n'aurait pas d'autre règle à porter.
 
 **Conséquences.** `declarations/questions.ts` garde les seules déclarations.
 Un test lit le numéro de slugs à un et deux chiffres.
+
+### ADR-21 - R2 et R3 lisent des valeurs, comme les gardes
+
+**Contexte.** Les gardes lisaient des conditions, qui savent ce qu'elles lisent
+(#243). R2 et R3 recevaient encore les réponses et les questions validées, et
+chaque fonction y lisait ce qu'elle voulait. Les pages des lieux lisaient leurs
+réponses par un pont, `given.answers(…ids)`, en attendant.
+
+**Décision.** Le socle passe à R2 et à R3 `{ read, faits, cibles }` (D-201).
+`read` lit une valeur sur les questions validées, les faits et les cibles figés
+au verrou, et le jour de complétion. Une rubrique de R3, un champ de cerfa, la
+trace de R2 et ses précisions sont des valeurs (`given…`). Un calcul sur
+plusieurs valeurs les nomme, `given.all({ sens, repetition }).compute(sensDe)`,
+et chacune garde ce qu'elle lit. Le pont disparaît. Un savoir que R2 seule
+lisait vit près d'elle : le séjour réel est `UN_SEJOUR_REEL`, dans les
+précisions, et `Sejour.estReel()` disparaît. Les libellés, rappels, aides et
+bornes restent des fonctions du contexte.
+
+**Conséquences.** Aucune fonction de `r2/` ni de `r3/` ne reçoit les réponses.
+Le graphe pourra dérouler ce que lit chaque morceau du résultat jusqu'aux
+questions. Les textes de R2 et les cerfa remplis ne changent pas : leurs tests
+sur les seeds passent tels quels.
 
 ## 3. Architecture cible
 

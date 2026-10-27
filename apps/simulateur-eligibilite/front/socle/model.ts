@@ -6,22 +6,23 @@
 
 import type { ComponentType, ReactNode } from "react";
 import type { AnyFaits, CoreModel } from "../../core/socle/model";
+import type { Read } from "../../core/socle/questionnaire-engine/condition";
 import type { GivenAnswers } from "../../core/socle/questionnaire-engine/given-answers";
 import type {
   AnyCibles,
   AnyQuestions,
 } from "../../core/socle/questionnaire-engine/question";
-import type { Reading } from "../../core/socle/questionnaire-engine/questionnaire";
 import type { BoundCerfa } from "./cerfa-mapping";
 
 /**
- * Ce qu'un résultat reçoit pour s'afficher : les réponses, les questions
- * validées, et les cibles.
+ * Ce qu'un résultat reçoit pour s'afficher : les cibles, les faits, et de quoi
+ * lire une valeur du modèle sur les questions validées (`read(SENS_DU_DOCUMENT)`).
  */
-type ResultatProps<Questions extends AnyQuestions, Cibles> = Pick<
-  Reading<Questions>,
-  "answers" | "validated"
-> & { cibles: Cibles };
+export type ResultatProps<Faits = AnyFaits, Cibles = AnyCibles> = {
+  readonly cibles: Cibles;
+  readonly faits: Faits;
+  readonly read: Read;
+};
 
 /**
  * Ce que le premier résultat donne au socle, qui compose la page : le `h1`,
@@ -47,14 +48,14 @@ export type FirstResult = {
 export type Sheet = { title: string; intro?: ReactNode; body: ReactNode };
 
 /**
- * Ce que le mapping du cerfa lit : tout ce que le simulateur sait. Les
- * réponses, les faits et les cibles figés au verrou, et la date de complétion.
+ * Ce que le second résultat reçoit : ce que lit le premier, sur les faits et
+ * les cibles figés au verrou, et la date de complétion. Ce jour est celui que
+ * `given.today()` lit dans le mapping du cerfa.
  */
 export type CerfaInput<
-  Questions extends AnyQuestions = AnyQuestions,
   Faits extends AnyFaits = AnyFaits,
   Cibles = AnyCibles,
-> = ResultatProps<Questions, Cibles> & { faits: Faits; completedAt: Date };
+> = ResultatProps<Faits, Cibles> & { readonly completedAt: Date };
 
 /**
  * Ce que le prescripteur est venu faire : vérifier une éligibilité
@@ -93,27 +94,25 @@ export type Model<
      * autre.
      */
     content: (
-      props: ResultatProps<Questions, Cibles>,
+      props: ResultatProps<Faits, Cibles>,
     ) => FirstResult | Promise<FirstResult>;
   };
   /** Le second résultat, après le complément : le cerfa. */
   cerfa: {
     /** Le cerfa de cette préconisation. `null` : rien ne suit le premier résultat. */
-    form: (
-      cibles: Cibles,
-    ) => BoundCerfa<CerfaInput<Questions, Faits, Cibles>> | null;
+    form: (cibles: Cibles) => BoundCerfa | null;
     /**
      * Le titre du second résultat, selon le document que la préconisation
      * donne : celui de son stepper, qui est le `h1` de la page.
      */
     title: (cibles: Cibles) => string;
     /** Le texte du second résultat, sous le stepper, avant les boutons. */
-    Resultat: ComponentType<ResultatProps<Questions, Cibles>>;
+    Resultat: ComponentType<ResultatProps<Faits, Cibles>>;
     /**
      * Ce qui tient la place de l'aperçu du document, pour un cerfa que son PDF
      * ne remplit pas encore. Sans lui, ou s'il donne `null`, l'aperçu du PDF.
      */
-    standIn?: (props: ResultatProps<Questions, Cibles>) => ReactNode;
+    standIn?: (props: CerfaInput<Faits, Cibles>) => ReactNode;
     /**
      * Le libellé de l'action qui verrouille. `null` : cette préconisation ne
      * complète rien, le bouton n'est pas posé. Il ne l'est pas non plus tant que

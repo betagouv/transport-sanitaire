@@ -4,6 +4,7 @@
 //   given.question("Q2.10").answer().is("6_APPAREILLAGE")
 //   given.fait("fait_permission").isNon()
 //   given.cible("cible_mode_tap_ou_tpmr").assuming("fait_p1_complete").isOui()
+//   given.all({ motif: given.question("Q2.1").answer(), sens: SENS_DU_DOCUMENT })
 //
 // `answer()` est la seule lecture d'une réponse. Le socle la choisit selon
 // l'endroit : dans une garde, les questions posées avant elle ; dans un fait,
@@ -11,11 +12,17 @@
 
 import type { Cible } from "../decision-engine/cible.ts";
 import type { Fait } from "../decision-engine/fait.ts";
-import { type Condition, NOTHING, type Reading, Value } from "./condition.ts";
+import {
+  all,
+  type Condition,
+  NOTHING,
+  type Reading,
+  Value,
+} from "./condition.ts";
 import type { Box, Choice } from "./given-answers.ts";
 import { LocalDateTime } from "./local-date-time.ts";
-import type { AnyQuestions, Validated } from "./question.ts";
-import { type ValidatedAnswer, ValidatedAnswers } from "./validated-answers.ts";
+import type { AnyQuestions } from "./question.ts";
+import type { ValidatedAnswer } from "./validated-answers.ts";
 
 /** La réponse d'une question, telle que l'endroit la voit. */
 class AnswerValue<Given extends Answer> extends Value<ValidatedAnswer<Given>> {
@@ -99,25 +106,6 @@ class DateValue extends Value<LocalDateTime> {
 
   private shifted(shift: (date: LocalDateTime) => LocalDateTime): DateValue {
     return new DateValue(this.reads, (reading) => shift(this.in(reading)));
-  }
-}
-
-/**
- * Les réponses de ces questions, ensemble, pour un calcul qui lit des
- * réponses entières. Il ne lit que celles-là : une autre l'arrête net.
- *
- * C'est un pont, le temps que R3 lise des conditions (#246).
- */
-class AnswersValue<Questions extends AnyQuestions> extends Value<
-  ValidatedAnswers<Questions>
-> {
-  static of<Questions extends AnyQuestions>(
-    ids: readonly string[],
-  ): AnswersValue<Questions> {
-    return new AnswersValue(
-      { ...NOTHING, questions: [...ids] },
-      (reading) => new DeclaredAnswers<Questions>(ids, entriesOf(ids, reading)),
-    );
   }
 }
 
@@ -220,8 +208,7 @@ export function givenOf<
       FaitValue.of<ValueOf<Faits[Nom]>>(nom),
     cible: <Nom extends keyof Cibles & string>(nom: Nom) =>
       CibleValue.of<CibleOf<Cibles[Nom]>, FaitNom>(nom),
-    answers: (...ids: readonly (keyof Questions & string)[]) =>
-      AnswersValue.of<Questions>(ids),
+    all,
     today: () => DateValue.today(),
   };
 }
@@ -231,44 +218,3 @@ export function givenOf<
 type ValueOf<Read> = Read extends Fait<infer Of> ? Of : never;
 type CibleOf<Read> = Read extends Cible<infer Of> ? Of : never;
 type Answer = AnyQuestions[string];
-
-// Des réponses qui refusent une question qu'elles n'ont pas déclarée.
-class DeclaredAnswers<
-  Questions extends AnyQuestions,
-> extends ValidatedAnswers<Questions> {
-  readonly #ids: readonly string[];
-
-  constructor(ids: readonly string[], validated: Validated<Questions>) {
-    super(validated);
-    this.#ids = ids;
-  }
-
-  override question<Id extends keyof Questions & string>(
-    id: Id,
-  ): ValidatedAnswer<Questions[Id]> {
-    if (!this.#ids.includes(id))
-      throw new Error(`Ces réponses lisent ${id} sans la déclarer.`);
-    return super.question(id);
-  }
-}
-
-// Ces questions telles que l'endroit les voit.
-function entriesOf<Questions extends AnyQuestions>(
-  ids: readonly string[],
-  reading: Reading,
-): Validated<Questions> {
-  return Object.fromEntries(
-    ids.map((id) => {
-      const answer = reading.answer(id);
-      if (!answer.isValidated()) return [id, undefined];
-      const offered = answer.offeredOptions() as readonly string[];
-      return [
-        id,
-        {
-          ...(offered.length > 0 && { offered }),
-          ...(answer.value !== undefined && { answer: answer.value }),
-        },
-      ];
-    }),
-  ) as Validated<Questions>;
-}

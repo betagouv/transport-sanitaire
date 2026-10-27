@@ -5,11 +5,14 @@
 // Une nature établie se rappelle sans se redemander. Une nature que P2 borne
 // sans la fixer, comme les deux bouts d'un transfert, se choisit parmi celles
 // qu'elle permet.
+//
+// Les règles lisent les réponses de P2 sous leur nom (`Entrees`). Une garde
+// les reçoit de `ENTREES_DES_LIEUX`, un rappel de `entreesDe`.
 
-import type { GivenAnswers } from "../../../socle/index.ts";
-import { RetourPenitentiaire } from "../concepts/retour-penitentiaire.ts";
+import type { GivenAnswer, GivenAnswers, Value } from "../../../socle/index.ts";
 import { OPTIONS, type Questions } from "../declarations/questions.ts";
-import { sensDuDocument } from "./sens-du-trajet.ts";
+import { given } from "../question.ts";
+import { sensDe } from "./sens-du-trajet.ts";
 
 export type Extremite = "depart" | "arrivee";
 
@@ -22,14 +25,47 @@ export type Etablie = { readonly nature: Nature; readonly rappel: string };
 /** Les natures que P2 établit, lieu par lieu. */
 type Lieux = { readonly depart?: Etablie; readonly arrivee?: Etablie };
 
-type Reponses = GivenAnswers<Questions>;
+/** Les réponses de P2 dont les lieux se tirent, chacune sous son nom. */
+const IDS = {
+  soins: "Q1.3",
+  motif: "Q2.1",
+  sousType: "Q2.1.g",
+  cadre: "Q2.2.1",
+  enPermission: "Q2.2.1.a",
+  autreCadre: "Q2.2.1.b",
+  transfert: "Q2.5",
+  contexte: "Q2.6",
+  repetition: "Q2.8.5",
+  departDeLEntree: "Q2.13.depart",
+  sens: "Q3.1.2",
+} as const;
+
+/** Ces réponses, lues sous leur nom. */
+export type Entrees = {
+  readonly [Nom in keyof typeof IDS]: GivenAnswer<Questions[(typeof IDS)[Nom]]>;
+};
+
+/** Les entrées des lieux, telles qu'une garde les lit à sa place. */
+export const ENTREES_DES_LIEUX = given.all(
+  Object.fromEntries(
+    Object.entries(IDS).map(([nom, id]) => [nom, given.question(id).answer()]),
+  ),
+  // `Object.fromEntries` perd les noms : chacun garde la réponse de son id.
+) as unknown as Value<Entrees>;
+
+/** Les entrées des lieux, lues sur les réponses d'un rappel. */
+export function entreesDe(answers: GivenAnswers<Questions>): Entrees {
+  return Object.fromEntries(
+    Object.entries(IDS).map(([nom, id]) => [nom, answers.question(id)]),
+  ) as unknown as Entrees;
+}
 
 /**
  * Les lieux que P2 établit. Chaque situation donne ses lieux ; la première qui
  * établit un lieu le fixe.
  */
-export function lieuxEtablis(reponses: Reponses): Lieux {
-  const lieux = SITUATIONS.map((situation) => situation(reponses));
+export function lieuxEtablis(entrees: Entrees): Lieux {
+  const lieux = SITUATIONS.map((situation) => situation(entrees));
   return {
     depart: lieux.find(({ depart }) => depart)?.depart,
     arrivee: lieux.find(({ arrivee }) => arrivee)?.arrivee,
@@ -44,13 +80,13 @@ export function lieuxEtablis(reponses: Reponses): Lieux {
 export function natureAdmise(
   nature: Nature,
   extremite: Extremite,
-  reponses: Reponses,
+  entrees: Entrees,
   autre: Nature | undefined,
 ): boolean {
   if (nature === "1_DOMICILE" && autre === "1_DOMICILE") return false;
-  if (!dansLeTransfert(nature, reponses)) return false;
+  if (!dansLeTransfert(nature, entrees)) return false;
   if (extremite === "depart" && autre === undefined) return true;
-  const manquantes = naturesRequises(reponses).filter((n) => n !== autre);
+  const manquantes = naturesRequises(entrees).filter((n) => n !== autre);
   return manquantes.length === 0 || manquantes.includes(nature);
 }
 
@@ -65,12 +101,11 @@ const ETABLISSEMENTS: readonly Nature[] = [ETABLISSEMENT, "3_EHPAD", "4_USLD"];
 const LIEUX_DE_RADIOTHERAPIE: readonly Nature[] = [ETABLISSEMENT, "7_CABINET"];
 
 // Dans l'ordre : la première qui établit un lieu le fixe.
-const SITUATIONS: readonly ((reponses: Reponses) => Lieux)[] = [
+const SITUATIONS: readonly ((entrees: Entrees) => Lieux)[] = [
   hospitalisation,
-  (reponses) => (q26(reponses, "10_ADMISSION_HAD") ? admissionEnHad() : {}),
+  (entrees) => (q26(entrees, "10_ADMISSION_HAD") ? admissionEnHad() : {}),
   radiotherapie,
-  (reponses) =>
-    RetourPenitentiaire.of(reponses).estCoche() ? retourPenitentiaire() : {},
+  (entrees) => (retourPenitentiaire(entrees) ? versLaPrison() : {}),
   permission,
   hebergement,
   departDeQ213,
@@ -79,8 +114,8 @@ const SITUATIONS: readonly ((reponses: Reponses) => Lieux)[] = [
 
 // Q2.1.g : une entrée arrive à l'établissement, une sortie en part, une
 // admission en HAD arrive au domicile.
-function hospitalisation(reponses: Reponses): Lieux {
-  const sousType = reponses.question("Q2.1.g");
+function hospitalisation(entrees: Entrees): Lieux {
+  const sousType = entrees.sousType;
   if (sousType.is("1_ENTREE"))
     return {
       arrivee: {
@@ -112,17 +147,17 @@ function admissionEnHad(): Lieux {
 
 // Q2.6 option 8 : un transfert provisoire, qui part de l'établissement
 // d'origine et y revient.
-function radiotherapie(reponses: Reponses): Lieux {
-  if (!q26(reponses, "8_RADIOTHERAPIE")) return {};
+function radiotherapie(entrees: Entrees): Lieux {
+  if (!q26(entrees, "8_RADIOTHERAPIE")) return {};
   const origine: Etablie = {
     nature: ETABLISSEMENT,
     rappel: "L’établissement d’origine du transfert",
   };
-  return retour(reponses) ? { arrivee: origine } : { depart: origine };
+  return retour(entrees) ? { arrivee: origine } : { depart: origine };
 }
 
 // L'option 10 de Q2.2.1.b fixe l'arrivée pénitentiaire.
-function retourPenitentiaire(): Lieux {
+function versLaPrison(): Lieux {
   return {
     arrivee: {
       nature: "6_ETABLISSEMENT_PENITENTIAIRE",
@@ -132,11 +167,10 @@ function retourPenitentiaire(): Lieux {
 }
 
 // L'établissement et le lieu de séjour, orientés par le sens du document.
-function permission(reponses: Reponses): Lieux {
+function permission(entrees: Entrees): Lieux {
   const acquise =
-    reponses.question("Q2.1").is("11_PERMISSION") ||
-    reponses.question("Q2.2.1.a").is("1_OUI");
-  if (!acquise || sensDuDocument(reponses) === undefined) return {};
+    entrees.motif.is("11_PERMISSION") || entrees.enPermission.is("1_OUI");
+  if (!acquise || sensDe(entrees) === undefined) return {};
   const etablissement: Etablie = {
     nature: ETABLISSEMENT,
     rappel: "L’établissement de santé où le patient séjourne",
@@ -145,67 +179,74 @@ function permission(reponses: Reponses): Lieux {
     nature: "1_DOMICILE",
     rappel: "Le lieu de séjour de la permission",
   };
-  return retour(reponses)
+  return retour(entrees)
     ? { depart: sejour, arrivee: etablissement }
     : { depart: etablissement, arrivee: sejour };
 }
 
 // L'hébergement est l'arrivée de l'aller, le départ du retour.
-function hebergement(reponses: Reponses): Lieux {
+function hebergement(entrees: Entrees): Lieux {
   const acquis =
-    reponses.question("Q2.1").is("13_MATERNITE") ||
-    reponses.question("Q2.2.1.b").checked("5_HTNM");
-  if (!acquis || sensDuDocument(reponses) === undefined) return {};
+    entrees.motif.is("13_MATERNITE") || entrees.autreCadre.checked("5_HTNM");
+  if (!acquis || sensDe(entrees) === undefined) return {};
   const htnm: Etablie = {
     nature: "5_HEBERGEMENT_NON_MEDICALISE",
     rappel: "L’hébergement temporaire non médicalisé",
   };
-  return retour(reponses) ? { depart: htnm } : { arrivee: htnm };
+  return retour(entrees) ? { depart: htnm } : { arrivee: htnm };
 }
 
 // Q2.13 nomme le départ d'une entrée. Son autre lieu n'est pas un cabinet.
-function departDeQ213(reponses: Reponses): Lieux {
-  const depart = reponses.question("Q2.13.depart").value;
+function departDeQ213(entrees: Entrees): Lieux {
+  const depart = entrees.departDeLEntree.value;
   if (depart === undefined) return {};
   const nature = depart === "7_AUTRE_LIEU" ? "8_AUTRE_LIEU" : depart;
   return { depart: { nature, rappel: OPTIONS["Q3.2.nature"][nature] } };
 }
 
 // Q1.3 le dit d'un centre : l'aller y arrive, le retour en part.
-function dialyse(reponses: Reponses): Lieux {
-  if (!reponses.question("Q1.3").checked("5_DIALYSE")) return {};
+function dialyse(entrees: Entrees): Lieux {
+  if (!entrees.soins.checked("5_DIALYSE")) return {};
   const centre: Etablie = {
     nature: ETABLISSEMENT,
     rappel: "Le centre de dialyse",
   };
-  return retour(reponses) ? { depart: centre } : { arrivee: centre };
+  return retour(entrees) ? { depart: centre } : { arrivee: centre };
 }
 
 // Un transfert entre établissements n'a que des établissements pour lieux, une
 // radiothérapie en ville un centre ou un cabinet face à l'origine.
-function dansLeTransfert(nature: Nature, reponses: Reponses): boolean {
-  if (q26(reponses, "8_RADIOTHERAPIE"))
+function dansLeTransfert(nature: Nature, entrees: Entrees): boolean {
+  if (q26(entrees, "8_RADIOTHERAPIE"))
     return LIEUX_DE_RADIOTHERAPIE.includes(nature);
-  if (reponses.question("Q2.5").is("1_TRANSFERT"))
+  if (entrees.transfert.is("1_TRANSFERT"))
     return ETABLISSEMENTS.includes(nature);
   return true;
 }
 
 // L'USLD et l'EHPAD que Q2.6 cite : l'un des deux lieux en est un. Avec une
 // radiothérapie en ville, c'est l'établissement d'origine, que P2 fixe.
-function naturesRequises(reponses: Reponses): Nature[] {
-  if (q26(reponses, "8_RADIOTHERAPIE")) return [];
+function naturesRequises(entrees: Entrees): Nature[] {
+  if (q26(entrees, "8_RADIOTHERAPIE")) return [];
   return [
-    ...(q26(reponses, "6_USLD") ? (["4_USLD"] as const) : []),
-    ...(q26(reponses, "7_EHPAD") ? (["3_EHPAD"] as const) : []),
+    ...(q26(entrees, "6_USLD") ? (["4_USLD"] as const) : []),
+    ...(q26(entrees, "7_EHPAD") ? (["3_EHPAD"] as const) : []),
   ];
 }
 
-function q26(reponses: Reponses, option: Questions["Q2.6"][number]): boolean {
-  return reponses.question("Q2.6").checked(option);
+function q26(entrees: Entrees, option: Questions["Q2.6"][number]): boolean {
+  return entrees.contexte.checked(option);
+}
+
+// L'option 10 de l'autre cadre est cochée (`RetourPenitentiaire`).
+function retourPenitentiaire({ cadre, autreCadre }: Entrees): boolean {
+  return (
+    cadre.checked("3_AUTRE_CADRE") &&
+    autreCadre.checked("10_RETOUR_PENITENTIAIRE")
+  );
 }
 
 // Un aller-retour équivalent se décrit dans le sens de l'aller.
-function retour(reponses: Reponses): boolean {
-  return sensDuDocument(reponses) === "2_RETOUR";
+function retour(entrees: Entrees): boolean {
+  return sensDe(entrees) === "2_RETOUR";
 }

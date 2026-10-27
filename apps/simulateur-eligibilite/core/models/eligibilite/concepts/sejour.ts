@@ -1,6 +1,6 @@
 // Le séjour hospitalier : le groupe « déjà hospitalisé » de Q2.2.1, et ce que
 // Q2.1 et Q2.1.g en disent. Les faits de l'hospitalisation, du transfert, du
-// Centre 15 et de la permission, et la trace de R2 le lisent.
+// Centre 15 et de la permission le lisent.
 //
 // Il se construit sur des réponses données comme sur des réponses validées.
 // Seules ces dernières savent qu'il a été proposé puis écarté. Il donne le fait
@@ -57,16 +57,5 @@ export class Sejour<
   /** Le trajet est l'entrée en établissement (Q2.1.g) : aucun séjour en cours. */
   commenceAvecCeTrajet(): boolean {
     return this.reponses.question("Q2.1.g").is("1_ENTREE");
-  }
-
-  /**
-   * Un séjour réel : une entrée ou une sortie d'établissement (Q2.1.g), ou
-   * « déjà hospitalisé » coché. L'admission en HAD à domicile n'en est pas un.
-   */
-  estReel(): boolean {
-    return (
-      this.reponses.question("Q2.1.g").isOneOf("1_ENTREE", "2_SORTIE") ||
-      this.estCoche()
-    );
   }
 }

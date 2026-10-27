@@ -3,14 +3,13 @@
 // aux lieux. Plusieurs permissions sont chacune un aller-retour : Q2.8 donne
 // alors le sens, qui ne se redemande pas (D-120).
 
-import type { Condition, GivenAnswers } from "../../../socle/index.ts";
-import { Permission, trajetsMensuelsAuPlus } from "../concepts/permission.ts";
+import type { Condition, GivenAnswer } from "../../../socle/index.ts";
+import { trajetsMensuelsAuPlus } from "../concepts/permission.ts";
 import type { Questions } from "../declarations/questions.ts";
 import { unRetourPenitentiaire } from "../p2/retour-penitentiaire.ts";
 import { type Context, given, type Inconnu } from "../question.ts";
 import { pmtOuDap, unS3141 } from "./supports-du-complement.ts";
 
-type Reponses = GivenAnswers<Questions>;
 type Sens = Questions["Q3.1.2"];
 type Rappel = { readonly label: string; readonly value: string }[];
 
@@ -26,14 +25,25 @@ export const unSensAPoser = pmtOuDap.or(
 /** Q3.1.3 se pose pour le S3141 de plusieurs permissions. */
 export const desTrajetsMensuelsAPoser = unS3141.and(unePermissionRepetee);
 
+/** Ce dont le sens du document se tire : Q3.1.2 et la répétition de Q2.8. */
+type Origines = {
+  readonly sens: GivenAnswer<Sens>;
+  readonly repetition: GivenAnswer<Questions["Q2.8.5"]>;
+};
+
 /** Le sens du document : Q3.1.2, ou l'aller-retour de plusieurs permissions. */
-export function sensDuDocument(reponses: Reponses): Sens | Inconnu {
-  const sens = reponses.question("Q3.1.2");
+export function sensDe({ sens, repetition }: Origines): Sens | Inconnu {
   if (sens.hasAnswer()) return sens.value;
-  return Permission.of(reponses).estRepetee()
-    ? "3_ALLER_RETOUR_EQUIVALENT"
-    : undefined;
+  return repetition.is("1_OUI") ? "3_ALLER_RETOUR_EQUIVALENT" : undefined;
 }
+
+/** Le sens du document, tel que l'endroit le lit (`sensDe`). */
+export const SENS_DU_DOCUMENT = given
+  .all({
+    sens: given.question("Q3.1.2").answer(),
+    repetition: given.question("Q2.8.5").answer(),
+  })
+  .compute(sensDe);
 
 // Les rôles que P2 a fixés aux lieux. Une entrée va vers l'établissement. Une
 // sortie, une admission en HAD et un retour pénitentiaire en reviennent.

@@ -89,6 +89,15 @@ describe("ce que lit une condition", () => {
       );
     expect(meme.reads.questions).toEqual(["boisson", "taille"]);
   });
+
+  it("des valeurs nommées lisent ce que lisent leurs parties", () => {
+    const commande = given.all({ chaude, sucre: given.cible("cible_sucre") });
+    expect(commande.reads).toEqual({
+      questions: ["boisson"],
+      faits: [],
+      cibles: ["cible_sucre"],
+    });
+  });
 });
 
 describe("answer() dans un fait", () => {
@@ -109,6 +118,14 @@ describe("answer() dans un fait", () => {
 
   it("ne lit pas une réponse après une question qui attend la sienne", () => {
     expect(chaude.in(lecture(COMMANDE, { boisson: "the" }))).toBe(false);
+  });
+
+  it("donne chaque valeur nommée sous son nom", () => {
+    const validees = lecture(COMMANDE, { taille: "grand", boisson: "eau" });
+    const commande = given
+      .all({ chaude, grand })
+      .compute(({ chaude, grand }) => ({ chaude, grand }));
+    expect(commande.in(validees)).toEqual({ chaude: false, grand: true });
   });
 });
 

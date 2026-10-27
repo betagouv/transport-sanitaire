@@ -24,13 +24,11 @@ export class Permission<
 > {
   private readonly reponses: Reponses;
   private readonly tranche: GivenAnswer<Questions["Q2.7"]>;
-  private readonly repetition: GivenAnswer<Questions["Q2.8.5"]>;
   private readonly semaines: Questions["Q2.8.6.a"] | Inconnu;
 
   private constructor(reponses: Reponses) {
     this.reponses = reponses;
     this.tranche = reponses.question("Q2.7");
-    this.repetition = reponses.question("Q2.8.5");
     this.semaines = reponses.question("Q2.8.6.a").value;
     Object.freeze(this);
   }
@@ -74,16 +72,6 @@ export class Permission<
   /** Q2.7 dit un adulte qui demande par écrit un transport exceptionnel. */
   estAChargeDuPatient(): boolean {
     return this.tranche.is("4_ADULTE_A_SA_CHARGE");
-  }
-
-  /** Q2.8.5 dit plusieurs permissions. Chacune est un aller-retour. */
-  estRepetee(): boolean {
-    return this.repetition.is("1_OUI");
-  }
-
-  /** Q2.8.5 dit une permission unique. */
-  estUnique(): boolean {
-    return this.repetition.is("2_NON");
   }
 
   /** Une permission revient toutes les tant de semaines (Q2.8.6.a). */

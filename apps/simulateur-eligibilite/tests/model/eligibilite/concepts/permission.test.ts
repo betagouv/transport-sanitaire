@@ -29,17 +29,7 @@ describe("la tranche d'âge de Q2.7", () => {
   });
 });
 
-describe("la répétition de Q2.8.5", () => {
-  it("se répète, une seule fois, ou n'est pas encore dite", () => {
-    expect(permission({ "Q2.8.5": "1_OUI" }).estRepetee()).toBe(true);
-    expect(permission({ "Q2.8.5": "2_NON" }).estUnique()).toBe(true);
-    const sansReponse = permission({});
-    expect([sansReponse.estRepetee(), sansReponse.estUnique()]).toEqual([
-      false,
-      false,
-    ]);
-  });
-
+describe("les permissions répétées (Q2.8.6.a)", () => {
   it.each([
     [1, 10],
     [2, 6],

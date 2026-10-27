@@ -7,6 +7,7 @@
 // règles ne donnent jamais les deux cases ensemble (#128). L'ALD exonérante et
 // l'AT/MP sont les liens du transport, sous les noms de la PMT.
 
+import { given } from "../../../../../core/models/eligibilite/question";
 import { LIENS } from "./liens";
 import type { Rubrique } from "./rubrique";
 
@@ -20,11 +21,11 @@ export type Motifs = {
 };
 
 export const MOTIFS: Rubrique<Motifs> = {
-  hospitalisation: ({ cibles }) =>
-    cibles.cible_hospitalisation_ou_seances_assimilees.isOui(),
+  hospitalisation: given
+    .cible("cible_hospitalisation_ou_seances_assimilees")
+    .isOui(),
   ald_exo: LIENS.lien_ald,
-  ald_non_exo: ({ cibles }) =>
-    cibles.cible_mineur_ald_non_exonerante_reconnue.isOui(),
+  ald_non_exo: given.cible("cible_mineur_ald_non_exonerante_reconnue").isOui(),
   atmp: LIENS.lien_atmp,
   atmp_date: LIENS.lien_atmp_date,
 };

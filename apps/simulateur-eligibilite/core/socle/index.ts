@@ -19,7 +19,7 @@ export {
 } from "./decision-engine/fait-catalogue.ts";
 export type { CoreModel } from "./model.ts";
 export type { Address } from "./questionnaire-engine/address.ts";
-export type { Condition } from "./questionnaire-engine/condition.ts";
+export type { Condition, Value } from "./questionnaire-engine/condition.ts";
 export { page } from "./questionnaire-engine/declared-page.ts";
 export { givenOf } from "./questionnaire-engine/given.ts";
 export type {

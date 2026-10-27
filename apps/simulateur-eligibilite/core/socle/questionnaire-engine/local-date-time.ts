@@ -70,6 +70,13 @@ export class LocalDateTime {
     );
   }
 
+  /** Son jour, `AAAA-MM-JJ`. Une date illisible n'en a pas. */
+  day(): string | Unreadable {
+    return this.epoch === undefined
+      ? undefined
+      : new Date(this.epoch).toISOString().slice(0, 10);
+  }
+
   /** Elle tombe au même instant. Une date illisible n'égale rien. */
   equals(autre: LocalDateTime): boolean {
     return this.compare(autre, (ecart) => ecart === 0);

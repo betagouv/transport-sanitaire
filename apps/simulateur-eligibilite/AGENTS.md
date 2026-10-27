@@ -153,13 +153,17 @@ Neuf règles à tenir en ajoutant une question :
   `.mattersWhile(given.fait("fait_permission").isOui())`. Elle ne recompose
   pas, réponse par réponse, ce que le fait établit déjà. Sans fait qui la
   dise, elle se compose de réponses, nommée près de la question qui la lit
-  (`unMineurDeVingtAns`, dans `p2/permission.ts`). Un calcul qui lit des
-  réponses entières passe par `given.answers(…ids)`, qui refuse une question
-  non déclarée : un pont, le temps que R3 lise des conditions (#246).
+  (`unMineurDeVingtAns`, dans `p2/permission.ts`). Un calcul sur plusieurs
+  valeurs les nomme : `given.all({ sens, repetition }).compute(sensDe)`
+  (`p3/sens-du-trajet.ts`). Chacune garde ce qu'elle lit.
+- **R2 et R3 lisent des valeurs.** Le socle leur passe `{ read, faits,
+  cibles }`. Une rubrique, un champ de cerfa, la trace sont des valeurs, que
+  `read` lit sur les questions validées : `read(PRECISIONS)`. Aucune fonction
+  n'y reçoit les réponses (ADR-21).
 - **Un savoir écrit deux fois vit dans son concept.** Un fichier par concept,
   sous `concepts/`, nommé en français : `Permission`, `Sejour`,
   `AideDuPatient`. Il se construit sur des réponses données (un rappel, une
-  cohérence) comme sur des réponses validées (un fait, R2), lit ses réponses
+  cohérence) comme sur des réponses validées (un fait), lit ses réponses
   une fois et ne déclare aucun fait. Il peut répondre par un `Fait` que
   plusieurs déclarations reprennent (`Sejour.of(validated).nonSiEcarte()`).
   Une lecture qui n'a de sens que validée se déclare avec
@@ -260,8 +264,9 @@ cadre, à 8 pt, et déborde dessous, par-dessus ce qui s'y trouve (D-94). Il ne
 descend sous 8 pt que pour rester sur la page, jusqu'à 6 pt.
 
 Le modèle traduit les données du simulateur en DTO (`CerfaMapping`, dans
-`front/socle/cerfa-mapping.ts`) : une fonction par entrée, qui lit les réponses,
-les faits et les cibles figés au verrou, et la date de complétion. `bindCerfa`
+`front/socle/cerfa-mapping.ts`) : une valeur par entrée (`given…`), que le
+socle lit sur les questions validées, les faits et les cibles figés au verrou,
+et le jour de complétion (`given.today()`, ADR-21). `bindCerfa`
 lie une définition à son mapping et vérifie qu'ils parlent du même DTO. Le
 simulateur calcule le DTO sous le second résultat et le passe au bouton.
 

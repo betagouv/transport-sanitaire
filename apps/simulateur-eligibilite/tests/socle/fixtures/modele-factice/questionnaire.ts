@@ -16,7 +16,7 @@ import type { Faits } from "./declarations/faits";
 import { OPTIONS, type Questions } from "./declarations/questions";
 import { cibles, faits } from "./preconisation";
 
-const given = givenOf<Questions, Faits, Cibles>();
+export const given = givenOf<Questions, Faits, Cibles>();
 const boisson = given.question("boisson").answer();
 
 const question = questionsOf<Questions, Faits, Cibles>({
