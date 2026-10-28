@@ -6,7 +6,6 @@
 // clé : le texte prend alors son repli générique, et rien n'est jamais
 // deviné. Elles se lisent sur les questions validées.
 
-import { numeroDeLOption } from "../../../../core/models/eligibilite/concepts/numero-de-l-option";
 import type { Questions } from "../../../../core/models/eligibilite/declarations/questions";
 import { given } from "../../../../core/models/eligibilite/question";
 import type { Condition, Value } from "../../../../core/socle";
@@ -142,7 +141,8 @@ const FAMILLES_DE_SOIN = [1, 2, 3, 4, 5, 6, 7, 14, 15];
 
 function familleDeSoin({ motif }: Entrees): number | NonProuve {
   if (!motif.hasAnswer()) return undefined;
-  const numero = numeroDeLOption(motif.value);
+  // Le slug porte en tête le numéro de l'option au catalogue (D-75).
+  const numero = Number.parseInt(motif.value, 10);
   return FAMILLES_DE_SOIN.includes(numero) ? numero : undefined;
 }
 

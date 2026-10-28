@@ -1,6 +1,6 @@
 # Architecture : le métier et l'écran
 
-> Statut : **décidé (phase expérimentale)** · Dernière mise à jour : 2026-10-27
+> Statut : **décidé (phase expérimentale)** · Dernière mise à jour : 2026-10-28
 >
 > Où vit le métier du simulateur, et comment l'écran s'y branche. Les décisions
 > ont été prises seul par l'agent qui a mené le chantier, sur délégation de
@@ -23,6 +23,13 @@
 > valeur nommée, faite de règles sur des conditions (ADR-22). L'ADR-12 et
 > l'ADR-13 perdent `retient`, l'ADR-18 les concepts que seuls les faits
 > lisaient. Décisions de Simon, au journal D-202 à D-207.
+>
+> **Mise à jour 2026-10-28, la fin des concepts (#247).** L'ADR-18 et l'ADR-20
+> sont renversés : `concepts/` disparaît, avec `AnswersReader` et
+> `numeroDeLOption`. Une lecture de réponse s'écrit là où elle sert, même deux
+> fois. Une donnée de l'éditeur se partage en donnée, dans `declarations/`
+> (`RETIREE_SI_Q21`). Aucun fichier n'est commun aux pages et aux faits.
+> Décisions de Simon, au journal D-208 à D-210.
 
 ## 1. Contexte & objectifs
 
@@ -482,7 +489,14 @@ le découpage des dix premiers caractères : une date et heure mal écrite, dont
 le jour est lisible, n'est plus lue comme ce jour. Le champ de l'écran n'en
 produit pas, et le banc d'équivalence ne montre aucun écart.
 
-### ADR-18 - Un objet par concept du modèle, là où un savoir s'écrit deux fois
+### ~~ADR-18 - Un objet par concept du modèle, là où un savoir s'écrit deux fois~~
+
+> Renversé le 2026-10-28 (#247, D-208 à D-210) : une lecture de réponse
+> s'écrit là où elle sert. La table de D-98 se partage en donnée,
+> `RETIREE_SI_Q21` dans `declarations/questions.ts` ; la page des contextes et
+> les faits écrivent chacun leur condition. `trajetsMensuelsAuPlus` vit dans
+> `p3/sens-du-trajet.ts`, le seul fichier qui le lit. Le texte ci-dessous
+> garde la décision d'alors.
 
 **Contexte.** Une partie du savoir du modèle vivait dans des fonctions libres.
 Quand un savoir servait à plusieurs endroits, chacun le réécrivait : le mineur
@@ -511,11 +525,11 @@ compiler sur des réponses données échoue.
 
 | Concept | Ce qu'il porte | Ce qui le lit |
 |---|---|---|
-| `Permission` | Q2.7 et Q2.8 : le mineur, l'adulte à sa charge, les cinq contrôles de dates et leurs seuils, la répétition, les trajets d'un mois | les pages et les faits de P2, le sens du trajet de P3, la trace et les précisions de R2 |
+| ~~`Permission`~~ | ~~Q2.7 et Q2.8 : le mineur, l'adulte à sa charge, les cinq contrôles de dates et leurs seuils, la répétition, les trajets d'un mois~~ | retiré (#247) : les trajets d'un mois restent dans `p3/sens-du-trajet.ts` |
 | ~~`Sejour`~~ | ~~Q2.2.1, Q2.1 et Q2.1.g : « déjà hospitalisé » à proposer, coché ou écarté, l'entrée qui ouvre le séjour, le séjour réel~~ | retiré (#245) : les faits le lisent par `UN_SEJOUR_ECARTE` |
-| `AideDuPatient` | Q1.1 : seul, avec un proche, avec un professionnel, ou sans professionnel | les pages de P1 |
+| ~~`AideDuPatient`~~ | ~~Q1.1 : seul, avec un proche, avec un professionnel, ou sans professionnel~~ | retiré (#247) : P1 lit Q1.1 sur place |
 | ~~`CriteresDuTransport`, `CasParticuliers`, `Soin`~~ | ~~Q1.2, Q1.3 et le soin de Q2.1 (#218)~~ | retirés (#245) : seuls les faits les lisaient |
-| `ContextesDuTrajet` | Q2.2.1.b : les situations de l'autre cadre à proposer | la page des contextes ; les faits lisent la même table (`SITUATION_PROPOSEE`) |
+| ~~`ContextesDuTrajet`~~ | ~~Q2.2.1.b : les situations de l'autre cadre à proposer~~ | retiré (#247) : la page et les faits lisent `RETIREE_SI_Q21` |
 | ~~`RetourPenitentiaire`, `DepartDeLEntree`~~ | ~~l'option 10 et sa sortie vers la prison, le départ de Q2.13 (#218)~~ | retirés (#245) : `UNE_SORTIE_VERS_LA_PRISON`, `UNE_ENTREE_SIMPLE` |
 | ~~`ExceptionsDeLArticle80`, `DistanceDuTrajet`, `Urgence`~~ | ~~Q2.6, Q2.3.1, et Q2.3.4 ou Q2.12 (#218)~~ | retirés (#245) : chaque fait lit sa réponse |
 
@@ -565,7 +579,11 @@ l'éditeur, que rien ne lit en dehors des textes de R2.
 ce qu'une réponse a dit. Un test de la trace dit le séjour réel et son absence
 en HAD à domicile.
 
-### ADR-20 - Le numéro d'une option est une fonction, pas un objet
+### ~~ADR-20 - Le numéro d'une option est une fonction, pas un objet~~
+
+> Renversé le 2026-10-28 (#247, D-209) : la trace et les précisions de R2
+> lisent le numéro par `Number.parseInt`, chacune avec un commentaire qui cite
+> D-75. Une fonction partagée pour une ligne ne valait pas un dossier.
 
 **Contexte.** Le slug d'une option porte son numéro au catalogue (D-75). La
 trace de R2 et la famille de soin de ses précisions le lisaient chacune par
@@ -678,6 +696,7 @@ flowchart LR
 | Fait (`unFait(nom)`) | `core/` | une valeur nommée, faite de règles sur des conditions ; la première qui conclut l'emporte, et cite ce qu'elle lit | modifié |
 | Règle nommée (`uneRegle()`, `RegleDeFait`) | `core/` | une règle que plusieurs faits appliquent | nouveau |
 | Ce que les faits partagent (`faits/communs.ts`) | `core/models/` | les lectures, les règles nommées, la table des situations proposées | nouveau |
+| Situations retirées par Q2.1 (`RETIREE_SI_Q21`) | `core/models/` | la table de D-98, en donnée, que la page des contextes et les faits lisent chacun | nouveau |
 | Fusion des faits partiels (`faitsAvantLaBranche`, `FaitsDesReponses`) | `core/` | l'ordre des pages décidait du fait | supprimé |
 | Seeds | `core/` | ce qu'est une seed, ce qu'elle confirme ou dément | déplacé |
 | Écran des seeds | `front/` | la liste, le rejeu à l'écran | inchangé |
@@ -686,9 +705,9 @@ flowchart LR
 | Métier d'un modèle | `core/models/` | déclarations, parties, faits, règles, seeds | déplacé |
 | Écran d'un modèle | `front/models/` | résultats, fiches, cerfa | modifié |
 | `LocalDateTime` | `core/` | une date répondue, lue une fois, sans fuseau ; illisible, elle n'est comparée à rien | nouveau |
-| `AnswersReader` | `core/` | ce que les réponses données et validées ont en commun : `question(id)` | nouveau |
-| Concepts d'un modèle (`Permission`, `AideDuPatient`, `ContextesDuTrajet`) | `core/models/` | un savoir écrit deux fois, lu sur des réponses données ou validées ; ne donne aucun `Fait` | modifié |
-| Numéro d'une option (`numeroDeLOption`) | `core/models/` | le numéro au catalogue que porte un slug | nouveau |
+| ~~`AnswersReader`~~ | `core/` | ~~ce que les réponses données et validées ont en commun : `question(id)`~~ | supprimé (#247) |
+| ~~Concepts d'un modèle~~ | `core/models/` | ~~un savoir écrit deux fois, lu sur des réponses données ou validées~~ | supprimé (#247) |
+| ~~Numéro d'une option (`numeroDeLOption`)~~ | `core/models/` | ~~le numéro au catalogue que porte un slug~~ | supprimé (#247) |
 | Calculs de date de la permission | `core/models/` | cinq contrôles sur des chaînes brutes | supprimé |
 | Séjour réel de la trace (`sejourReel`) | `front/models/` | R2 sait s'il y a un séjour sans relire l'identifiant du lexique | nouveau |
 
@@ -719,6 +738,7 @@ a-t-il besoin ?**
 | Concepts du modèle | 207 | ✅ |
 | Un fichier par fait | 218 | ✅ |
 | Les faits en valeurs | 245 | ✅ |
+| La fin des concepts | 247 | ✅ |
 
 ## 6. Risques & validations en attente
 
@@ -742,6 +762,6 @@ pnpm vitest run tests/frontieres-des-racines.test.ts tests/architecture.test.ts
 pnpm vitest run tests/model/metier-sous-node.test.ts tests/model/regles-a-jour.test.ts
 pnpm vitest run tests/model/conformite.test.ts tests/socle/questionnaire-engine
 pnpm vitest run tests/socle/decision-engine
-pnpm vitest run tests/model/eligibilite/concepts tests/model/eligibilite/domaines.test.ts
+pnpm vitest run tests/model/eligibilite/domaines.test.ts
 pnpm vitest run tests/model/eligibilite/catalogue-des-faits.test.ts
 ```

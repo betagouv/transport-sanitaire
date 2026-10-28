@@ -7,12 +7,12 @@
 // ni jour : `given` ne les offre pas au typage, et le catalogue s'y arrête net.
 
 import { type Condition, givenOf, uneRegle } from "../../../socle/index.ts";
-import {
-  RETIRES_PAR_Q21,
-  type SituationDuCadre,
-} from "../concepts/contextes-du-trajet.ts";
 import type { Faits } from "../declarations/faits.ts";
-import { OPTIONS, type Questions } from "../declarations/questions.ts";
+import {
+  OPTIONS,
+  type Questions,
+  RETIREE_SI_Q21,
+} from "../declarations/questions.ts";
 
 /** Les entrées d'un fait : `given.question("Q2.5").answer()`, `given.fait(nom)`. */
 export const given = givenOf<Questions, Faits>();
@@ -54,20 +54,19 @@ export const AUTRE_CADRE_ECARTE = SITUATIONS.offered("3_AUTRE_CADRE").and(
 
 /**
  * Chaque situation de l'autre cadre se propose, sauf celles que Q2.1 indique
- * déjà (D-98). La page des contextes lit la même table (`RETIRES_PAR_Q21`).
+ * déjà (D-98). La page des contextes écrit sa condition sur la même table
+ * (`RETIREE_SI_Q21`, D-208).
  */
-export const SITUATION_PROPOSEE: Readonly<Record<SituationDuCadre, Condition>> =
-  Object.fromEntries(
-    (Object.keys(OPTIONS["Q2.2.1.b"]) as Questions["Q2.2.1.b"][number][])
-      .filter(
-        (situation): situation is SituationDuCadre =>
-          situation !== "10_RETOUR_PENITENTIAIRE",
-      )
-      .map((situation) => [
-        situation,
-        MOTIF.isOneOf(...motifsQuiRetirent(situation)).not(),
-      ]),
-  ) as Record<SituationDuCadre, Condition>;
+export const SITUATION_PROPOSEE: Readonly<
+  Record<Questions["Q2.2.1.b"][number], Condition>
+> = Object.fromEntries(
+  (Object.keys(OPTIONS["Q2.2.1.b"]) as Questions["Q2.2.1.b"][number][]).map(
+    (situation) => [
+      situation,
+      MOTIF.isOneOf(...(RETIREE_SI_Q21[situation] ?? [])).not(),
+    ],
+  ),
+) as Record<Questions["Q2.2.1.b"][number], Condition>;
 
 /**
  * Le départ d'une entrée en établissement (Q2.13) : le domicile, un
@@ -139,13 +138,3 @@ export const UN_SEJOUR_ECARTE = uneRegle().nonSiEcartee(
 /** Ni Q2.3.4 ni Q2.12 n'ont de réponse. */
 export const URGENCE_EN_ATTENTE =
   "Ni Q2.3.4 ni Q2.12 n'ont de réponse : elles attendent, ou leur garde les écarte.";
-
-// ---- implémentation ----
-
-function motifsQuiRetirent(situation: SituationDuCadre) {
-  return (
-    Object.entries(RETIRES_PAR_Q21) as [Questions["Q2.1"], readonly string[]][]
-  )
-    .filter(([, retires]) => retires.includes(situation))
-    .map(([motif]) => motif);
-}

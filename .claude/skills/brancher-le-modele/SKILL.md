@@ -48,8 +48,8 @@ Un fait vit dans `faits/<nom sans fait_>.ts`, réuni aux autres par
 et n'exporte que sa déclaration, une chaîne `unFait()`. Exemple :
 `faits/accompagnant.ts`.
 
-Un savoir que deux faits, ou un fait et une garde, lisent va dans son concept,
-sous `concepts/`.
+Un fait et une garde qui lisent la même réponse l'écrivent chacun : voir
+« Un savoir lu à deux endroits » dans `apps/simulateur-eligibilite/AGENTS.md`.
 
 ## 4. Poser la question
 
@@ -87,5 +87,5 @@ tsp verifier simulateur
 | « … se déclare deux fois », « Ces faits ne sont pas déclarés » au chargement | `faits/index.ts` ne réunit pas chaque fait une fois |
 | « … se lit lui-même : a → b → a » | un fait se relit, par d'autres faits ou par une garde qui lit les faits |
 | une cible reste inconnue | un fait dont elle dépend n'est pas établi : le moteur n'envoie aux règles que les faits établis |
-| `domaines.test.ts` échoue | une partie lit celle qui la suit, ou un fait ou un concept lit une partie |
+| `domaines.test.ts` échoue | une partie lit celle qui la suit, ou un fait lit une partie |
 | `tests/architecture.test.ts` échoue sur publicodes | le modèle importe publicodes : seul le moteur de décision du socle le fait (D-76) |

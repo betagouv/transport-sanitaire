@@ -129,9 +129,6 @@ core/                    le métier, sans React ni DOM : ce qu'un serveur ou un 
                          catalogue des textes de R2, et `regles.json`, que
                          `pnpm regles` calcule du YAML
       declarations/      les questions, faits et cibles, dans les mots des règles
-      concepts/          ce que plusieurs pages lisent d'un concept : la
-                         permission, l'aide du patient, les contextes à proposer,
-                         le numéro d'une option. Ni page ni fait
       faits/             un fichier par fait, une valeur faite de règles ;
                          `communs.ts` porte les lectures et les règles que
                          plusieurs faits partagent

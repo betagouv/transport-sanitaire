@@ -281,3 +281,18 @@ export type Questions = QuestionsDuComplement & {
   "Q2.14.motif": readonly Option<"Q2.14.motif">[];
   "Q2.12": Option<"Q2.12">;
 };
+
+/**
+ * Les motifs de Q2.1 qui retirent une situation de Q2.2.1.b : Q2.1 l'indique
+ * déjà (D-98, TS1012-01). Les autres situations se proposent toujours. La page
+ * des contextes et les faits de l'autre cadre écrivent chacun leur condition
+ * sur cette table (D-208).
+ */
+export const RETIREE_SI_Q21: Partial<
+  Record<Questions["Q2.2.1.b"][number], readonly Questions["Q2.1"][]>
+> = {
+  "4_MATERNITE_ELOIGNEE": ["13_MATERNITE"],
+  "5_HTNM": ["13_MATERNITE"],
+  "6_CAMSP": ["10_CAMSP"],
+  "13_CONVOCATION": ["12_CONVOCATION"],
+};

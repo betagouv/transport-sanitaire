@@ -7,10 +7,10 @@
 
 import { page, type QuestionnairePart } from "../../../socle/index.ts";
 import {
-  ContextesDuTrajet,
-  proposesApres,
-} from "../concepts/contextes-du-trajet.ts";
-import { OPTIONS, type Questions } from "../declarations/questions.ts";
+  OPTIONS,
+  type Questions,
+  RETIREE_SI_Q21,
+} from "../declarations/questions.ts";
 import { given, question } from "../question.ts";
 import { PAGE_DE_LA_BRANCHE } from "./pages-de-la-branche.ts";
 import { PAGE_DE_LA_CONVOCATION } from "./pages-de-la-convocation.ts";
@@ -91,12 +91,14 @@ const PAGE_DE_LA_PRESTATION = page(
     .dependsOn("Q2.1"),
 );
 
-// Q2.2.1.b : chaque situation ne se propose que si Q2.1 ne l'indique pas déjà.
-const AUTRES_CADRES = (Object.keys(OPTIONS["Q2.2.1.b"]) as Contexte[]).reduce(
+// Q2.2.1.b : chaque situation ne se propose que si Q2.1 ne l'indique pas déjà
+// (D-98).
+const CONTEXTES = Object.keys(OPTIONS["Q2.2.1.b"]) as Contexte[];
+const AUTRES_CADRES = CONTEXTES.reduce(
   (declaree, contexte) =>
     declaree.option(contexte, (option) =>
       option.offeredWhen(
-        motif.compute(({ value }) => proposesApres(value).includes(contexte)),
+        motif.isOneOf(...(RETIREE_SI_Q21[contexte] ?? [])).not(),
       ),
     ),
   question
@@ -140,9 +142,12 @@ const PAGE_DES_CONTEXTES = page(
         )
         .helpFrom(({ validated }) => ({
           label: "Voir les situations concernées",
-          items: ContextesDuTrajet.of(validated)
-            .aProposer()
-            .map((contexte) => OPTIONS["Q2.2.1.b"][contexte]),
+          items: CONTEXTES.filter(
+            (contexte) =>
+              !RETIREE_SI_Q21[contexte]?.some(
+                (retire) => validated.question("Q2.1").value === retire,
+              ),
+          ).map((contexte) => OPTIONS["Q2.2.1.b"][contexte]),
         })),
     ),
   question

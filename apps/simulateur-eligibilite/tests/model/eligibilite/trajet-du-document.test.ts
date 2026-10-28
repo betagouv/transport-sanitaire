@@ -202,6 +202,24 @@ describe("le nombre mensuel du S3141 (Q3.1.3)", () => {
       "Avec une permission toutes les 2 semaine(s), un mois compte au plus 6 trajets.",
     ]);
   });
+
+  it.each([
+    [1, 10],
+    [4, 4],
+    [5, 2],
+  ])(
+    "toutes les %i semaine(s), un mois compte au plus %i trajets",
+    (semaines, maximum) => {
+      const reponses = (nombre: number) =>
+        question("Q3.1.3", "S3141", {
+          ...PLUSIEURS_PERMISSIONS,
+          "Q2.8.6.a": semaines,
+          "Q3.1.3": nombre,
+        }).inconsistencies;
+      expect(reponses(maximum)).toEqual([]);
+      expect(reponses(maximum + 1)).toHaveLength(1);
+    },
+  );
 });
 
 describe("Q3.1 ne requalifie pas P2", () => {

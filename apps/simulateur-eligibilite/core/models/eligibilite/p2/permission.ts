@@ -1,6 +1,5 @@
 // La permission : quand Q2.7, Q2.7.a et Q2.8 se posent, et les contrôles de
-// dates de Q2.8 (D-107). Ses faits vivent sous `faits/`, et ce qu'en lisent
-// plusieurs dans `Permission`.
+// dates de Q2.8 (D-107). Ses faits vivent sous `faits/`.
 
 import { given } from "../question.ts";
 

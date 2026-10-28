@@ -49,9 +49,7 @@ Vite ni navigateur : `tests/model/metier-sous-node.test.ts` le vérifie.
 Le modèle de l'éditeur se range par partie du parcours : `p1/` (le mode),
 `p2/` (l'éligibilité) et `p3/` (le complément du cerfa) dans `core/`, `r2/` (le
 résultat, avec un dossier par famille d'issues) et `r3/` (son résultat) dans
-`front/`. `core/models/eligibilite/concepts/` porte ce que plusieurs parties
-lisent d'un même concept : la permission, l'aide du patient, les contextes du
-trajet, le numéro d'une option.
+`front/`.
 `core/models/eligibilite/faits/` porte un fichier par fait, au nom du fait sans
 `fait_`, et `communs.ts`, ce que plusieurs faits lisent : les faits
 n'appartiennent à aucune partie, et n'en lisent aucune. Les
@@ -161,11 +159,15 @@ Neuf règles à tenir en ajoutant une question :
   cibles }`. Une rubrique, un champ de cerfa, la trace sont des valeurs, que
   `read` lit sur les questions validées : `read(PRECISIONS)`. Aucune fonction
   n'y reçoit les réponses (ADR-21).
-- **Un savoir écrit deux fois vit dans son concept.** Un fichier par concept,
-  sous `concepts/`, nommé en français : `Permission`, `AideDuPatient`. Il se
-  construit sur des réponses données (un rappel, une cohérence) comme sur des
-  réponses validées, lit ses réponses une fois et ne donne aucun fait. Une
-  réponse lue à un seul endroit reste lue là : pas d'objet par question.
+- **Un savoir lu à deux endroits.** Une lecture de réponse s'écrit là où elle
+  sert, même si une autre partie l'écrit aussi : le libellé de Q1.4 lit
+  `answers.question("Q1.1").is("2_AVEC_UN_PROCHE")` sur place. Une donnée de
+  l'éditeur se partage en donnée, dans `declarations/` (`OPTIONS`,
+  `RETIREE_SI_Q21`). Une règle que plusieurs faits reprennent mot pour mot se
+  nomme dans `faits/communs.ts`. Ce qui ne sert qu'à un endroit y reste
+  (`trajetsMensuelsAuPlus`, dans `p3/sens-du-trajet.ts`). Aucun fichier n'est
+  commun aux pages et aux faits : mieux vaut une condition écrite deux fois sur
+  la même donnée qu'une abstraction entre les deux (D-208, D-210).
 - **Un fait est une valeur, dans son fichier.** `fait_distance_plus_50` se
   déclare dans `faits/distance-plus-50.ts`, et nulle part ailleurs :
   `unFait("fait_distance_plus_50").ouiSi(…).nonSi(…).sinon(…)`, sans fonction
@@ -220,7 +222,6 @@ Ses pièces sont dans `core/socle/`.
 |---|---|
 | `GivenAnswers` (`given-answers.ts`) | les réponses données, lues question par question : `answers.question("Q1.1").is("1_SEUL")`, `.isNot(option)`, `.checked(case)`, `.checkedBoxes()`, `.hasAnswer()`. Une question sans réponse n'est aucune option, sans être un « non » |
 | `ValidatedAnswers` (`validated-answers.ts`) | les questions validées, lues de même, avec ce qui se proposait : `.isValidated()`, `.offers(option)`, `.declined(case)` |
-| `AnswersReader` (`given-answers.ts`) | ce que les deux lectures ont en commun, `question(id)`. Un concept du modèle le reçoit : il se lit sur l'une comme sur l'autre |
 | `LocalDateTime` (`local-date-time.ts`) | une date répondue, lue une fois, sans fuseau : `LocalDateTime.parse(saisie)`, `isBefore`, `isAfter`, `isAtOrBefore`, `equals`, `plusDays`, `plusHours`, `startOfDay`. Une saisie mal écrite n'est comparée à rien : toute comparaison avec elle vaut « non » |
 | `preconisation.faits(answers, validated)` | le modèle reçoit ces deux lectures, jamais les réponses brutes. Il applique, fait par fait, le contrat de l'éditeur |
 | `Fait` (`decision-engine/fait.ts`) | ce qu'on sait d'un fait, en objet valeur figé : sa valeur si elle est établie, et sa provenance. `Fait.oui`, `Fait.non`, `Fait.inconnu` et `Fait.valant` le construisent ; `isOui()`, `isNon()` et `isInconnu()` le lisent, jamais `.value === true`. `avecProvenance` en donne une copie, `equals` compare valeur et provenance |
