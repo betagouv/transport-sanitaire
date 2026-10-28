@@ -37,6 +37,13 @@
 > `mattersWhile` l'utilité, et la complétude n'a qu'une exception,
 > `assuming`. L'ADR-16 est précisé. Décisions de Simon, au journal D-211 à
 > D-215.
+>
+> **Mise à jour 2026-10-28, le filtrage par le graphe (#255).** L'ADR-24 écrit
+> la phase 2 de #196 : le graphe des règles compilé au build, ce que lit
+> chaque morceau du résultat, et le socle qui saute une question dont la
+> réponse ne change rien de ce que montre le résultat. L'ADR-19 est précisé :
+> chaque précision de R2 se lit sous les issues de son texte. Décisions de
+> Simon, au journal D-216 à D-226.
 
 ## 1. Contexte & objectifs
 
@@ -728,6 +735,55 @@ Q3.3 se choisit après. R2, R3 (ADR-21) et les faits (ADR-22) suivent la même
 forme. Le graphe de #196 pourra lire ce que lit chaque garde ; là où il dira
 qu'une réponse ne change plus le résultat, il remplacera `mattersWhile`.
 
+### ADR-24 - Le socle saute une question que le graphe dit sans effet
+
+**Contexte.** Une question se posait dès que ses gardes tenaient. Une garde
+`mattersWhile` disait à la main qu'une réponse comptait encore, et en oubliait
+souvent : un patient seul en SAMSAH répondait à Q2.3.1, Q2.3.2 et Q2.3.3, alors
+que la caisse est son issue quelle que soit la distance. Les gardes, les faits,
+R2 et R3 savaient ce qu'ils lisent (ADR-21 à ADR-23) : on pouvait dire, sans
+exécuter, ce qu'une réponse change.
+
+**Décision.** Le graphe des règles se compile au build, en un diagramme de
+décision versionné (`regles.graphe.json`, D-216). Ce que change une question
+se lit, de proche en proche, dans ce que lisent les faits et les gardes
+(D-217, D-218). R2 et R3 déclarent ce qu'ils lisent, par branche (D-219,
+D-224). Le socle ne pose alors une question que si elle compte (`Relevance`) :
+
+| Elle compte si | Décision | Exemple |
+|---|---|---|
+| ce que montre le résultat dépend d'elle, dans une branche encore possible | D-220 | Q2.3.2 pour une PMT : l'avion change le document |
+| elle change la garde d'une question qui reste, peut encore se poser et compte | D-221, D-223 | Q2.1.g, que lit la garde de Q2.5 |
+| elle porte une incohérence, ou se déclare toujours posée | D-222, D-226 | Q3.1.3, Q2.8.4.a |
+
+Les faits des questions validées sont figés, ceux des questions qui restent et
+ceux qu'impose la décision sont libres : le graphe restreint aux faits figés ne
+teste plus que ce qui peut encore changer. Une question qui ne peut plus se
+poser ne compte pas, mais le socle ne le dit que quand sa garde est jouée
+d'avance (`askability.ts`). Après le verrou, les cibles sont figées : seul
+compte ce qui lit la question telle quelle. Une question sautée garde sa
+réponse absente, jamais « non » (COR-02). La complétude de P1 et de P2 suit le
+même filtrage : une question sautée n'attend pas sa réponse.
+
+| Option | Pour | Contre |
+|---|---|---|
+| des `mattersWhile` écrits à la main | rien à calculer | ils s'oublient, et se périment à chaque livraison |
+| exécuter les règles sur chaque réponse possible | exact | une combinaison par question qui reste |
+| le graphe restreint, et les gardes lues à côté | aucune liste écrite ; les branches s'ouvrent seules | le graphe ne voit pas les gardes : leur cascade se calcule à part |
+| le questionnaire entier dans le graphe | une seule lecture | des gardes opaques à traduire en nœuds |
+
+La troisième, choisie par Simon. La quatrième reste une piste : elle
+remplacerait le calcul à part de ce qui peut encore se poser (D-223).
+
+**Conséquences.** Le SAMSAH, la pension militaire et l'HTNM ne posent plus la
+distance ; les seeds gardent leurs cibles et leurs questions, que
+`questions-posees-par-seed.test.ts` liste. Une question que rien ne lit n'est
+plus posée : elle sort, ou se déclare `alwaysAsked` en attendant l'éditeur.
+Une lecture du résultat qui ne se déclare pas dans sa branche fait poser des
+questions pour rien. Une lecture coûte environ 60 ms à froid par seed, 4 ms
+ensuite (R-10). Les `mattersWhile` restent, et s'ajoutent au graphe ; #256
+dira lesquels il remplace.
+
 ## 3. Architecture cible
 
 ```mermaid
@@ -781,6 +837,11 @@ flowchart LR
 | ~~Numéro d'une option (`numeroDeLOption`)~~ | `core/models/` | ~~le numéro au catalogue que porte un slug~~ | supprimé (#247) |
 | Calculs de date de la permission | `core/models/` | cinq contrôles sur des chaînes brutes | supprimé |
 | Séjour réel de la trace (`sejourReel`) | `front/models/` | R2 sait s'il y a un séjour sans relire l'identifiant du lexique | nouveau |
+| Graphe de décision (`regles.graphe.json`) | `core/` | les règles en diagramme de décision, compilé au build | nouveau |
+| Ce que change une question (`faitsChangedBy`) | `core/` | les faits qui la lisent, et ceux des gardes qui la lisent, de proche en proche | nouveau |
+| Pertinence (`Relevance`, `RelevanceGraph`) | `core/` | une question compte-t-elle, vu les faits figés et les branches encore possibles | nouveau |
+| Ce qui peut encore se poser (`Askability`) | `core/` | les questions qui restent et dont la garde n'est pas jouée d'avance | nouveau |
+| Précisions de R2 par texte | `front/models/` | trois valeurs, chacune sous les issues de son texte | modifié |
 
 ## 4. Ce qui va où
 
@@ -813,6 +874,11 @@ a-t-il besoin ?**
 | R2 et R3 en valeurs | 246 | ✅ |
 | La fin des concepts | 247 | ✅ |
 | Les gardes, écrites | 248 | ✅ |
+| Le graphe compilé au build | 253 | ✅ |
+| Ce que change une question | 254 | ✅ |
+| Ce que lit la complétude | 259 | ✅ |
+| Ce que lisent R2 et R3 | 260 | ✅ |
+| Le filtrage par le graphe | 255 | ✅ |
 
 ## 6. Risques & validations en attente
 
@@ -827,6 +893,8 @@ a-t-il besoin ?**
 | R-7 | Le banc d'équivalence couvre 4 688 états, pas tous | les seeds et les tests du modèle passent ; la relecture vérifie les chaînes thème par thème |
 | R-8 | Une date s'écrit en lettres à trois endroits : le rappel des permissions de P3, le récapitulatif de R3, les textes de l'écran | hors de #207, qui ne lit que des dates ; à ranger quand un quatrième apparaîtra |
 | R-9 | Le banc d'équivalence ne couvre pas la trace de R2 | les tests de la trace et des précisions passent tels quels ; deux tests disent le séjour réel |
+| R-10 | Le filtrage coûte environ 60 ms à froid par lecture, dix fois une lecture sans lui | des caches par place ; à mesurer à l'écran sur un poste lent |
+| R-11 | Une lecture du résultat déclarée hors de sa branche fait poser des questions pour rien | `questions-posees-par-seed.test.ts` liste les questions de chaque seed |
 
 ## Vérification
 
@@ -838,4 +906,6 @@ pnpm vitest run tests/model/conformite.test.ts tests/socle/questionnaire-engine
 pnpm vitest run tests/socle/decision-engine
 pnpm vitest run tests/model/eligibilite/domaines.test.ts
 pnpm vitest run tests/model/eligibilite/catalogue-des-faits.test.ts
+pnpm vitest run tests/model/eligibilite/filtrage-par-le-graphe.test.ts
+pnpm vitest run tests/model/eligibilite/questions-posees-par-seed.test.ts
 ```

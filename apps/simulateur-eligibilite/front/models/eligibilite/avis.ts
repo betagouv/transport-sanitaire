@@ -4,16 +4,17 @@
 // vérifier une éligibilité, ou aller jusqu'à la prescription. Q0.1 n'a pas
 // d'effet sur l'éligibilité, et sans réponse, l'avis n'est pas proposé.
 
-import type { Questions } from "../../../core/models/eligibilite/declarations/questions";
-import type { Feedback } from "../../socle";
+import { given } from "../../../core/models/eligibilite/question";
+import type { Feedback, Intent } from "../../socle";
 
-export const AVIS: Feedback<Questions> = {
+const BESOIN = given.question("Q0.1").answer();
+
+export const AVIS: Feedback = {
   url: "https://grist.numerique.gouv.fr/o/transports-sanitaires/forms/5Pftvy64N7M7i1ZeP9zs3f/6",
   label: "Aidez notre équipe en donnant votre avis",
-  intent: (answers) => {
-    const besoin = answers.question("Q0.1");
+  intent: BESOIN.compute((besoin): Intent | null => {
     if (besoin.is("1_VERIFIER")) return "check";
     if (besoin.is("2_VERIFIER_ET_PRESCRIRE")) return "prescribe";
     return null;
-  },
+  }),
 };

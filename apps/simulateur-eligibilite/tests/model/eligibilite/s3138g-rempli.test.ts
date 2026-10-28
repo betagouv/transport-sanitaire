@@ -142,16 +142,16 @@ describe("les cases de la PMT", () => {
       { cible_situation_at_mp: true },
       ["On"],
     ],
-    [
-      "transp autre cent",
-      { cible_centre_reference_destination_reelle: true },
-      ["On"],
-    ],
     ["oui2", { cible_situation_pension_militaire: true }, ["OUI"]],
     ["oui2", { cible_situation_pension_militaire: false }, ["NON"]],
     ["oui2", { cible_situation_pension_militaire: undefined }, []],
   ] as const)("« %s » d'après %j : %j", async (champ, cibles, etats) => {
     expect(await marquees(PMT, cibles, champ)).toEqual(etats);
+  });
+
+  it("coche « transp autre cent » sur Oui à Q3.4.a", async () => {
+    const reponses: Reponses = { ...PMT, "Q3.4.a": "1_OUI" };
+    expect(await marquees(reponses, {}, "transp autre cent")).toEqual(["On"]);
   });
 });
 

@@ -82,6 +82,7 @@ function FirstQuestionnaire({
   return (
     <QuestionnaireForm
       parts={parts}
+      relevance={model.core.relevance}
       partCount={parts.length + 1}
       initialState={screen.resume}
       tracked
@@ -106,6 +107,7 @@ function SecondQuestionnaire({
   return (
     <QuestionnaireForm
       parts={[model.core.complement]}
+      relevance={model.core.relevance}
       partsBefore={partsBefore}
       partCount={partsBefore + 1}
       lockedAnswers={locked.answers}

@@ -8,6 +8,7 @@
 // publicodes, dans les tests de chaque modèle.
 
 import type { ASTNode, ParsedRules } from "publicodes";
+import { DecisionDiagram } from "./decision-diagram.ts";
 import {
   type DecisionGraphData,
   type GraphNode,
@@ -80,7 +81,7 @@ function isUndefined(value: RuleValue): RuleValue {
 // Chaque règle se compile une fois. Une référence à `$SITUATION`, la valeur
 // qu'on donnerait à une règle, ne vaut rien : seuls les faits en reçoivent.
 class RulesCompiler {
-  readonly graph = new GraphBuilder();
+  readonly graph = new DecisionDiagram();
   private readonly compiled = new Map<string, number>();
   private readonly rules: ParsedRules<string>;
   private readonly faits: readonly string[];
@@ -157,95 +158,6 @@ function unsupported(mechanism: string, rule: string): Error {
       "Ajoute-le au compilateur, avec son cas dans l'oracle.",
   );
 }
-
-// Les nœuds, partagés : deux nœuds identiques n'en font qu'un, et un fait dont
-// les trois réponses mènent au même nœud ne se teste pas.
-class GraphBuilder {
-  readonly nodes: GraphNode[] = [];
-  private readonly unique = new Map<string, number>();
-  private readonly memo = new Map<string, number>();
-
-  leaf(value: RuleValue): number {
-    const key = value === undefined ? "=" : `=${JSON.stringify(value)}`;
-    return this.intern(key, () => (value === undefined ? {} : { value }));
-  }
-
-  fait(fait: number): number {
-    const kids = [this.leaf(true), this.leaf(false), this.leaf(undefined)];
-    return this.test(fait, kids);
-  }
-
-  // Combine ces graphes feuille à feuille, en testant leurs faits dans
-  // l'ordre : le premier fait testé se teste d'abord, et chaque réponse
-  // combine ce qui suit.
-  apply(
-    operation: string,
-    combine: (...values: RuleValue[]) => RuleValue,
-    ids: readonly number[],
-  ): number {
-    const key = `${operation}|${ids.join(",")}`;
-    const known = this.memo.get(key);
-    if (known !== undefined) return known;
-    const nodes = ids.map((id) => this.at(id));
-    const tested = nodes.flatMap((node) => (isTest(node) ? [node[0]] : []));
-    const result =
-      tested.length === 0
-        ? this.leaf(combine(...nodes.map((node) => (node as Leaf).value)))
-        : this.branch(operation, combine, ids, Math.min(...tested));
-    this.memo.set(key, result);
-    return result;
-  }
-
-  private branch(
-    operation: string,
-    combine: (...values: RuleValue[]) => RuleValue,
-    ids: readonly number[],
-    fait: number,
-  ): number {
-    const kids = [1, 2, 3].map((answer) =>
-      this.apply(
-        operation,
-        combine,
-        ids.map((id) => {
-          const node = this.at(id);
-          return isTest(node) && node[0] === fait
-            ? (node[answer] as number)
-            : id;
-        }),
-      ),
-    );
-    return this.test(fait, kids);
-  }
-
-  private test(fait: number, [oui, non, rien]: readonly number[]): number {
-    if (oui === undefined || non === undefined || rien === undefined) {
-      throw new Error("Un fait testé mène à trois nœuds.");
-    }
-    if (oui === non && non === rien) return oui;
-    return this.intern(`?${fait}:${oui},${non},${rien}`, () => [
-      fait,
-      oui,
-      non,
-      rien,
-    ]);
-  }
-
-  private at(id: number): GraphNode {
-    const node = this.nodes[id];
-    if (node === undefined) throw new Error(`Pas de nœud ${id}.`);
-    return node;
-  }
-
-  private intern(key: string, make: () => GraphNode): number {
-    const known = this.unique.get(key);
-    if (known !== undefined) return known;
-    this.nodes.push(make());
-    this.unique.set(key, this.nodes.length - 1);
-    return this.nodes.length - 1;
-  }
-}
-
-type Leaf = { readonly value?: RuleValue };
 
 // Les combinaisons laissent des nœuds qu'aucune règle n'atteint : le graphe
 // écrit ne garde que les autres, renumérotés dans le même ordre.

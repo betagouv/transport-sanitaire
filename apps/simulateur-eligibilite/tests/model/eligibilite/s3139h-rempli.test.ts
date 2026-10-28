@@ -232,10 +232,16 @@ describe("les autres cases de la DAP", () => {
       },
       ["Oui", "non"],
     ],
-    ["malrare", { cible_centre_reference_destination_reelle: true }, ["Oui"]],
-    ["malrare", {}, []],
   ] as const)("« %s » d'après %j : %j", async (champ, cibles, etats) => {
     expect(await marquees(DAP, cibles, champ)).toEqual(etats);
+  });
+
+  it.each([
+    ["1_OUI", ["Oui"]],
+    ["2_NON", []],
+  ] as const)("« malrare » d'après Q3.4.a %s : %j", async (centre, etats) => {
+    const reponses: Reponses = { ...DAP, "Q3.4.a": centre };
+    expect(await marquees(reponses, {}, "malrare")).toEqual(etats);
   });
 });
 

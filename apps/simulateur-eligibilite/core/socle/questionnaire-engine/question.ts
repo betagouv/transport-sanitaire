@@ -93,6 +93,18 @@ export type Question<
    */
   readonly guardReads: Reads;
   /**
+   * Ce que lisent ses conditions, sans ses options : ce qui décide seul si
+   * elle se pose (`askability.ts`).
+   */
+  readonly conditionReads: Reads;
+  /**
+   * Ce que lisent ses incohérences, qui bloquent la suite du parcours. `null` :
+   * elle n'en a pas.
+   */
+  readonly inconsistencyReads: Reads | null;
+  /** Elle se pose même si sa réponse ne change rien de ce qui compte. */
+  readonly isAlwaysAsked: boolean;
+  /**
    * La question telle qu'elle se pose, vu les réponses, si elle s'y pose. Ses incohérences lisent `earlier`, sans les pages suivantes.
    */
   askedIn(

@@ -47,6 +47,7 @@ export type CommonSettings<Questions extends AnyQuestions, Cibles, Faits> = {
   readonly hint?: string;
   readonly reminder?: Reminder;
   readonly optional?: boolean;
+  readonly alwaysAsked?: boolean;
   labelFrom?(context: QuestionContext<Questions, Cibles, Faits>): string;
   reminderFrom?(
     context: QuestionContext<Questions, Cibles, Faits>,
@@ -129,6 +130,20 @@ export abstract class DeclaredQuestion<
   }
 
   /**
+   * La question se pose même si sa réponse ne change rien de ce qui compte
+   * (#255) : le filtrage par le graphe ne la saute pas. Une question que rien
+   * ne lit attend ainsi la décision de l'éditeur.
+   */
+  alwaysAsked(): this {
+    return this.withSettings({ alwaysAsked: true });
+  }
+
+  /** Le filtrage par le graphe ne la saute pas (`alwaysAsked`). */
+  get isAlwaysAsked(): boolean {
+    return this.settings.alwaysAsked === true;
+  }
+
+  /**
    * La réponse en contredit une autre quand `condition` tient : `message` dit
    * quoi corriger. Il peut citer les réponses : il les lit alors comme la
    * condition. La règle se déclare sur la plus tardive des questions qu'elle
@@ -158,9 +173,23 @@ export abstract class DeclaredQuestion<
 
   /** Ce que lisent ses gardes, celles de ses options comprises. */
   get guardReads(): Reads {
+    return readsOf(this.conditionReads, this.ownGuardReads());
+  }
+
+  /** Ce que lisent ses conditions, sans ses options. */
+  get conditionReads(): Reads {
     return this.settings.conditions
       .map((guard) => guard.reads)
-      .reduce(readsOf, this.ownGuardReads());
+      .reduce(readsOf, NOTHING);
+  }
+
+  /** Ce que lisent ses incohérences. `null` : elle n'en a pas. */
+  get inconsistencyReads(): Reads | null {
+    const { inconsistencies } = this.settings;
+    if (inconsistencies.length === 0) return null;
+    return inconsistencies
+      .map(({ condition }) => condition.reads)
+      .reduce(readsOf, NOTHING);
   }
 
   /** Ce que lisent les gardes de ce que sa sorte ajoute : ses options. */

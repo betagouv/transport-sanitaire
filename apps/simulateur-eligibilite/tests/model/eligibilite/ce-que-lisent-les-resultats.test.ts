@@ -7,21 +7,17 @@
 
 import { describe, expect, it } from "vitest";
 import {
-  NOTHING,
+  flattened,
   type Reads,
   readsOf,
 } from "../../../core/socle/questionnaire-engine/condition";
 import { model } from "../../../front/models/eligibilite";
-import { S3138G } from "../../../front/models/eligibilite/r3/s3138g/s3138g";
-import { S3139H } from "../../../front/models/eligibilite/r3/s3139h/s3139h";
-import { S3141 } from "../../../front/models/eligibilite/r3/s3141/s3141";
-import type { BoundCerfa } from "../../../front/socle/cerfa-mapping";
 
 describe("les questions que les résultats lisent telles quelles", () => {
   // Le circuit (Q2.2.1.indication), les critères de Q1.2, la répétition de
   // Q2.8.5, et ce dont la trace tire ses précisions.
   it("R2 lit le circuit, les critères, la répétition et les précisions", () => {
-    expect(trie(model.result.reading.reads)).toEqual([
+    expect(trie(flattened(model.result.reading.reads))).toEqual([
       "Q1.2",
       "Q1.3",
       "Q1.3.a",
@@ -70,6 +66,7 @@ describe("les questions que les résultats lisent telles quelles", () => {
       "Q3.3.nom",
       "Q3.3.precision",
       "Q3.4",
+      "Q3.4.a",
       "Q3.4.distance",
       "Q3.5",
       "Q3.6.1",
@@ -84,7 +81,7 @@ describe("les cibles et les faits que les résultats lisent", () => {
   // Le circuit et l'issue, puis ce que lisent les deux fiches et le
   // prescripteur.
   it("R2 lit ce que ses textes déclarent", () => {
-    const { cibles, faits } = model.result.reading.reads;
+    const { cibles, faits } = flattened(model.result.reading.reads);
     expect([...cibles].sort()).toEqual([
       "cible_ald_juridiquement_qualifiante_3_ou_4_degres",
       "cible_ambulance_equipement_bariatrique",
@@ -147,7 +144,6 @@ describe("les cibles et les faits que les résultats lisent", () => {
       "cible_ambulance_oxygene",
       "cible_ambulance_position_allongee_demi_assise",
       "cible_ambulance_surveillance_constante",
-      "cible_centre_reference_destination_reelle",
       "cible_dap_motif_avion_bateau",
       "cible_dap_motif_camsp_cmpp",
       "cible_dap_motif_engagement_maternite",
@@ -177,18 +173,13 @@ describe("les cibles et les faits que les résultats lisent", () => {
 
 // ---- implémentation ----
 
+// Toutes les branches réunies : ce que lit chaque cerfa, quel que soit le
+// support.
 function luParR3(): Reads {
   const { reading, form, title, startLabel } = model.cerfa;
-  return [S3138G, S3139H, S3141]
-    .map(entrees)
-    .concat([form, title, startLabel].map((value) => value.reads))
+  return [form, title, startLabel]
+    .map((value) => flattened(value.reads))
     .reduce(readsOf, reading.reads);
-}
-
-function entrees({ mapping }: BoundCerfa): Reads {
-  return [...Object.values(mapping.fields), ...Object.values(mapping.drawings)]
-    .map((value) => value.reads)
-    .reduce(readsOf, NOTHING);
 }
 
 function trie(lu: Reads): string[] {

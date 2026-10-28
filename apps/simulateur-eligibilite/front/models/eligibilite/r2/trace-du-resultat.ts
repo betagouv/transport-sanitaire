@@ -8,7 +8,8 @@
 //
 // R2 ne lit que `LU_PAR_R2` : le socle le calcule et le lui passe. Ce que R2
 // lit des réponses se sait donc sans le dérouler (#254), et ce qu'il lit des
-// cibles et des faits est l'union de ce que ses textes déclarent (#260).
+// cibles et des faits est ce que ses textes déclarent (#260). Ce que lit un
+// texte ne compte que pour les issues qui le montrent (#255).
 
 import type { Cibles } from "../../../../core/models/eligibilite/declarations/cibles";
 import type { Faits } from "../../../../core/models/eligibilite/declarations/faits";
@@ -20,11 +21,14 @@ import { type Lu, luPar, type TraceDe } from "./ce-que-lit-un-texte";
 import { LU_PAR_LA_FICHE_NEGATIVE } from "./fiche-negative/texte-de-la-fiche-negative";
 import { LU_PAR_LA_FICHE_POSITIVE } from "./fiche-positive/texte-de-la-fiche-positive";
 import {
-  PRECISIONS,
+  PRECISIONS_DE_LA_FICHE_NEGATIVE,
+  PRECISIONS_DE_LA_FICHE_POSITIVE,
+  PRECISIONS_DU_PRESCRIPTEUR,
   type Precisions,
   UN_SEJOUR_REEL,
 } from "./precisions-du-resultat";
 import { LU_PAR_LE_PRESCRIPTEUR } from "./prescripteur/texte-du-prescripteur";
+import { issuesDuTexte } from "./texte-de-l-issue";
 
 /** Ce que R2 reçoit du socle : `LU_PAR_R2`. */
 export type Lecture = ResultatProps<LuParR2>;
@@ -80,6 +84,32 @@ const REPETITION = given
     return {};
   });
 
+const ISSUE = given.cible("cible_issue_id");
+
+// Les précisions de chaque texte, sous les issues qui le montrent (D-224).
+const PRECISIONS = given
+  .all({
+    positive: ISSUE.branch(
+      issuesDuTexte("fiche positive"),
+      PRECISIONS_DE_LA_FICHE_POSITIVE,
+    ),
+    negative: ISSUE.branch(
+      issuesDuTexte("fiche négative"),
+      PRECISIONS_DE_LA_FICHE_NEGATIVE,
+    ),
+    prescripteur: ISSUE.branch(
+      issuesDuTexte("prescripteur"),
+      PRECISIONS_DU_PRESCRIPTEUR,
+    ),
+  })
+  .compute(
+    ({ positive, negative, prescripteur }): Precisions => ({
+      ...positive,
+      ...negative,
+      ...prescripteur,
+    }),
+  );
+
 // Ce que la trace lit des réponses, en plus des faits et des cibles.
 const LU_DES_REPONSES = given
   .all({
@@ -104,9 +134,9 @@ const LU_DES_REPONSES = given
 // Ce que lisent les textes de R2 : les deux fiches et le prescripteur.
 const LU_PAR_LES_TEXTES = luPar(
   {},
-  LU_PAR_LA_FICHE_POSITIVE,
-  LU_PAR_LA_FICHE_NEGATIVE,
-  LU_PAR_LE_PRESCRIPTEUR,
+  ISSUE.branch(issuesDuTexte("fiche positive"), LU_PAR_LA_FICHE_POSITIVE),
+  ISSUE.branch(issuesDuTexte("fiche négative"), LU_PAR_LA_FICHE_NEGATIVE),
+  ISSUE.branch(issuesDuTexte("prescripteur"), LU_PAR_LE_PRESCRIPTEUR),
 );
 
 /**
@@ -115,7 +145,7 @@ const LU_PAR_LES_TEXTES = luPar(
  */
 export const LU_PAR_R2 = given.all({
   dansLeCircuit,
-  issue: given.cible("cible_issue_id"),
+  issue: ISSUE,
   textes: LU_PAR_LES_TEXTES,
   reponses: LU_DES_REPONSES,
 });

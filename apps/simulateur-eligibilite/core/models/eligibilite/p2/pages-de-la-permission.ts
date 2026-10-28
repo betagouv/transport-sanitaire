@@ -86,7 +86,10 @@ export const PAGE_DE_LA_PERMISSION_DU_MINEUR = page(
     .hint(
       "Chez un patient de moins de 20 ans, une demande personnelle n’établit pas à elle seule une charge patient ; appliquer les conditions S3141.",
     )
-    .appliesWhen(unMineurDeVingtAns),
+    .appliesWhen(unMineurDeVingtAns)
+    // Aucun fait ne la lit : le filtrage la sauterait. Elle se pose en
+    // attendant que l'éditeur dise si un fait la lit ou si elle sort (#255).
+    .alwaysAsked(),
   question
     .singleChoice(
       "Q2.8.5",

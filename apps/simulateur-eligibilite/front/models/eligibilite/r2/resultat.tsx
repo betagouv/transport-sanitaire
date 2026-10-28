@@ -11,7 +11,7 @@ import type { FirstResult } from "../../../socle";
 import { resultatNegatif } from "./fiche-negative/resultat-negatif";
 import { resultatPositif } from "./fiche-positive/resultat-positif";
 import { resultatDuPrescripteur } from "./prescripteur/resultat-du-prescripteur";
-import { estSansFiche } from "./prescripteur/texte-du-prescripteur";
+import { aLeTexte } from "./texte-de-l-issue";
 import type { Lecture } from "./trace-du-resultat";
 
 export function eligibilite(
@@ -20,8 +20,10 @@ export function eligibilite(
   if (!lecture.reading.dansLeCircuit) return ORIENTATION_PENITENTIAIRE;
   const issue = lecture.reading.issue.value;
   if (!issue) return SANS_ISSUE;
-  if (issue === "ISSUE_NON_ELIGIBLE") return resultatNegatif(lecture);
-  if (estSansFiche(issue)) return resultatDuPrescripteur({ ...lecture, issue });
+  if (aLeTexte(issue, "fiche négative")) return resultatNegatif(lecture);
+  if (aLeTexte(issue, "prescripteur")) {
+    return resultatDuPrescripteur({ ...lecture, issue });
+  }
   return resultatPositif({ ...lecture, issue });
 }
 

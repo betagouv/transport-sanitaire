@@ -16,6 +16,7 @@ import {
   all,
   type Condition,
   NOTHING,
+  onBranch,
   type Reading,
   Value,
 } from "./condition.ts";
@@ -187,6 +188,17 @@ class CibleValue<
   /** La cible vaut cette constante. */
   is(value: Of): Condition {
     return this.compute((cible) => cible.value === value);
+  }
+
+  /**
+   * `value`, qui ne compte que quand cette cible vaut l'une de `values` : la
+   * branche que choisit celui qui l'affiche (`onBranch`).
+   */
+  branch<Branched>(
+    values: readonly Of[],
+    value: Value<Branched>,
+  ): Value<Branched> {
+    return onBranch(this.#nom, values, value);
   }
 
   /** Il manque un fait pour la calculer. */
