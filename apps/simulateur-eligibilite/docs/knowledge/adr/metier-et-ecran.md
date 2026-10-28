@@ -30,6 +30,13 @@
 > fois. Une donnée de l'éditeur se partage en donnée, dans `declarations/`
 > (`RETIREE_SI_Q21`). Aucun fichier n'est commun aux pages et aux faits.
 > Décisions de Simon, au journal D-208 à D-210.
+>
+> **Mise à jour 2026-10-28, les gardes écrites (#248).** L'ADR-23 écrit les
+> décisions de #243 et #244, prises le 2026-10-27 : une garde est une
+> condition, `answer()` se lit selon l'endroit, `appliesWhen` dit le sens et
+> `mattersWhile` l'utilité, et la complétude n'a qu'une exception,
+> `assuming`. L'ADR-16 est précisé. Décisions de Simon, au journal D-211 à
+> D-215.
 
 ## 1. Contexte & objectifs
 
@@ -458,8 +465,10 @@ commun. Les règles calculent déjà ces familles : `cible_mode_tap_ou_tpmr`,
 `cible_mode_individual`, `cible_mode_public`.
 
 **Décision.** Ces lectures lisent la cible de la famille. `modeDe` devient
-`cibleEnCoursDeP1(faits, nom)`, qui calcule n'importe quelle cible en tenant P1
-pour complète le temps de la poser.
+~~`cibleEnCoursDeP1(faits, nom)`, qui calcule n'importe quelle cible en tenant P1
+pour complète le temps de la poser~~. Précision du 2026-10-28 : c'est
+`given.cible("cible_mode_tap_ou_tpmr").assuming("fait_p1_complete")`, la seule
+garde qui suppose une partie finie (ADR-23).
 
 **Conséquences.** La liste des modes d'une famille ne s'écrit plus que dans les
 règles de l'éditeur. Un test dit le titre du prescripteur pour le véhicule
@@ -660,6 +669,65 @@ seuls les faits lisaient disparaissent avec leurs tests ; ceux qui restent
 (`Permission`, `AideDuPatient`, `ContextesDuTrajet`) ne donnent plus de
 `Fait`. Le graphe de #196 pourra lire ce que lit chaque fait.
 
+### ADR-23 - Une garde est une condition, lue selon l'endroit
+
+**Contexte.** Une garde était une fonction du contexte (`askedIf`,
+`offeredIf`, `inconsistentIf`) : elle lisait ce qu'elle voulait, et rien ne
+disait quoi. Deux lectures d'une réponse se côtoyaient, la validée et la
+saisie, et chaque garde choisissait la sienne. Une garde de P2 calculait ses
+cibles elle-même, et P1 en calculait une en tenant ses faits pour finis
+(`cibleEnCoursDeP1`). Le graphe de #196 doit savoir, sans exécuter, ce que
+lit chaque garde.
+
+**Décision.** Une garde est une condition : une valeur qui sait ce qu'elle
+lit (`condition.ts`), composée par `and`, `or` et `not`, calculée par
+`compute` et `computeWith` (D-212). Ses entrées viennent de `given` : la
+réponse d'une question, un fait, une cible, le jour. Il n'y a qu'une lecture
+d'une réponse, `given.question(id).answer()`, et le socle la choisit selon
+l'endroit (D-213, `answer-readings.ts`) :
+
+| Endroit | Ce que `answer()` lit |
+|---|---|
+| une garde | les questions posées avant elle : validées sur les pages d'avant, telles que saisies sur la sienne |
+| une incohérence | de même, sa propre question comprise ; elle se déclare sur la dernière qu'elle lit |
+| un fait, R2, R3 | les questions validées |
+
+Une garde qui lit sa question, ou une question d'après, s'arrête net. Elle lit
+une cible par le même chemin que la décision, réponses, validées, faits,
+cibles ; seule une partie déclarée `afterLock` lit les cibles figées au verrou
+(D-211).
+
+Une garde dit pourquoi elle tient (D-214) :
+
+| Verbe | Ce qu'il dit | Exemple |
+|---|---|---|
+| `appliesWhen` | la question a un sens, d'après les réponses | `page(…).appliesWhen(…)`, ajoutée à chacune de ses questions (ADR-11) |
+| `mattersWhile` | sa réponse peut encore changer le résultat, d'après un fait, une cible ou un support | `.mattersWhile(given.fait("fait_permission").isOui())` |
+| `offeredWhen` | une option se propose | `option.offeredWhen(unModePartageable)` |
+| `inconsistentWhen` | une réponse contredit une autre | Q3.1.3 au-delà de la fréquence de Q2.8.6.a |
+
+La complétude de P1 et de P2 reste inconnue pour une garde (ADR-14). Une seule
+garde suppose une partie finie, isolée et nommée : l'option 6 de Q1.3 lit
+`given.cible("cible_mode_tap_ou_tpmr").assuming("fait_p1_complete")`, parce
+que les règles ne donnent le mode qu'une fois P1 complète (D-215). Elle
+remplace `cibleEnCoursDeP1`.
+
+| Option | Pour | Contre |
+|---|---|---|
+| garder les fonctions du contexte | rien à réécrire | ce qu'une garde lit ne se connaît qu'à l'exécution |
+| des conditions, deux lectures nommées (`wasAnsweredWith`, `isBeingAnsweredWith`) | la lecture se voit à l'appel | chaque garde choisit, et peut choisir mal |
+| des conditions, une lecture que le socle choisit selon l'endroit | une seule façon d'écrire ; l'endroit décide | il faut savoir où l'on est pour savoir ce qu'on lit |
+
+La troisième, choisie par Simon. Pour la complétude, Simon refuse de
+généraliser l'exception : on l'isole et on la nomme.
+
+**Conséquences.** Les gardes des deux modèles sont des conditions ; les
+libellés, rappels, aides et bornes restent des fonctions du contexte. Les
+natures de Q3.2 ne voient plus de l'arrivée que ce que P2 en établit, puisque
+Q3.3 se choisit après. R2, R3 (ADR-21) et les faits (ADR-22) suivent la même
+forme. Le graphe de #196 pourra lire ce que lit chaque garde ; là où il dira
+qu'une réponse ne change plus le résultat, il remplacera `mattersWhile`.
+
 ## 3. Architecture cible
 
 ```mermaid
@@ -693,6 +761,9 @@ flowchart LR
 | Catalogue des faits (`FaitCatalogue`) | `core/` | la liste des faits, calculés à la lecture sur les questions validées ; refuse doublon, oubli, cycle, une cible lue | nouveau |
 | Fichier d'un fait (`faits/<nom>.ts`) | `core/models/` | le titre de l'éditeur, ce qui établit le fait, sa seule déclaration | nouveau |
 | Déclarations par thème (`FAITS_DU_TRAJET`, `DeclarationsDeFaits`…) | `core/models/` | les faits d'une page, dans le fichier de ses questions | supprimé |
+| Condition (`Value`, `Condition`, `given`) | `core/` | une valeur qui sait ce qu'elle lit, composée par `and`, `or`, `not`, `compute` ; ses entrées : une réponse, un fait, une cible, le jour | nouveau |
+| Lecture selon l'endroit (`answer-readings.ts`) | `core/` | ce que lit `answer()` : dans une garde, les questions posées avant elle ; dans un fait, R2 et R3, les validées | nouveau |
+| Partie après le verrou (`afterLock`) | `core/` | la seule dont les gardes lisent les cibles figées | nouveau |
 | Fait (`unFait(nom)`) | `core/` | une valeur nommée, faite de règles sur des conditions ; la première qui conclut l'emporte, et cite ce qu'elle lit | modifié |
 | Règle nommée (`uneRegle()`, `RegleDeFait`) | `core/` | une règle que plusieurs faits appliquent | nouveau |
 | Ce que les faits partagent (`faits/communs.ts`) | `core/models/` | les lectures, les règles nommées, la table des situations proposées | nouveau |
@@ -737,8 +808,11 @@ a-t-il besoin ?**
 | Cibles : un objet valeur par cible | 206 | ✅ |
 | Concepts du modèle | 207 | ✅ |
 | Un fichier par fait | 218 | ✅ |
+| Les gardes en conditions | 243, 244 | ✅ |
 | Les faits en valeurs | 245 | ✅ |
+| R2 et R3 en valeurs | 246 | ✅ |
 | La fin des concepts | 247 | ✅ |
+| Les gardes, écrites | 248 | ✅ |
 
 ## 6. Risques & validations en attente
 
