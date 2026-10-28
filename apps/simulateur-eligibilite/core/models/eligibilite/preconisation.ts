@@ -19,6 +19,20 @@ import { P1 } from "./p1/partie-1.ts";
 import { P2 } from "./p2/partie-2.ts";
 import { horsCircuit } from "./p2/retour-penitentiaire.ts";
 
+// Les parties dont la décision impose la complétude.
+const P1_SEULE = new Questionnaire<Questions>(P1.pages);
+const P1_ET_P2 = new Questionnaire<Questions>([...P1.pages, ...P2.pages]);
+
+/**
+ * Ce que lit chaque fait. La complétude lit ses parties : leurs questions, et
+ * ce que lisent leurs gardes. Hors du circuit, P2 lit Q2.2.1.indication, une
+ * de ses questions.
+ */
+export const LECTURES_DES_FAITS = CATALOGUE_DES_FAITS.readsWith({
+  fait_p1_complete: P1_SEULE.reads,
+  fait_p2_complete: P1_ET_P2.reads,
+});
+
 export function faits(
   answers: GivenAnswers<Questions>,
   validated: ValidatedAnswers<Questions>,
@@ -32,7 +46,7 @@ export function faits(
 // ---- implémentation ----
 
 function p1Complete(answers: GivenAnswers<Questions>): Fait {
-  return new Questionnaire(P1.pages).readWith(answers).isComplete()
+  return P1_SEULE.readWith(answers).isComplete()
     ? Fait.oui("Toutes les questions de P1 ont leur réponse.")
     : Fait.non("Une question de P1 attend sa réponse.");
 }
@@ -43,9 +57,7 @@ function p2Complete(
   answers: GivenAnswers<Questions>,
   validated: ValidatedAnswers<Questions>,
 ): Fait {
-  const complete = new Questionnaire([...P1.pages, ...P2.pages])
-    .readWith(answers)
-    .isComplete();
+  const complete = P1_ET_P2.readWith(answers).isComplete();
   return !horsCircuit(validated) && complete
     ? Fait.oui("Toutes les questions de P1 et de P2 ont leur réponse.")
     : Fait.inconnu(PAS_ENCORE_ETABLI);

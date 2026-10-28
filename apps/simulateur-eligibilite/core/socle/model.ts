@@ -5,6 +5,7 @@
 // Le socle déroule le parcours et ne lit aucune clé du modèle. Il transporte les
 // réponses, les faits et les cibles de l'un à l'autre.
 
+import type { Reads } from "./questionnaire-engine/condition.ts";
 import type { GivenAnswers } from "./questionnaire-engine/given-answers.ts";
 import {
   type Answers,
@@ -42,6 +43,11 @@ export type CoreModel<
       validated: ValidatedAnswers<Questions>,
     ) => Faits;
     cibles: (faits: Faits) => Cibles;
+    /**
+     * Ce que lit chaque fait, ceux qu'impose la décision compris
+     * (`FaitCatalogue.readsWith`) : ce qu'une question change s'y lit.
+     */
+    reads: ReadonlyMap<string, Reads>;
   };
   /** Les parties d'avant le verrou, qui mènent au premier résultat. */
   questionnaire: readonly QuestionnairePart<Questions, undefined>[];

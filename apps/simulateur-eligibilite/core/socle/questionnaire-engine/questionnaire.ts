@@ -6,6 +6,7 @@
 // relisent rien. Valider une page donne de nouvelles réponses, qu'on relit.
 
 import type { AskedQuestion } from "./asked-question.ts";
+import { NOTHING, type Reads, readsOf } from "./condition.ts";
 import { answersOf, GivenAnswers } from "./given-answers.ts";
 import { commitPage } from "./page-commit.ts";
 import type {
@@ -39,6 +40,19 @@ export class Questionnaire<Questions extends AnyQuestions = AnyQuestions> {
 
   constructor(pages: readonly Page[]) {
     this.pages = pages;
+  }
+
+  /**
+   * Ce que lit sa complétude : ses questions, et ce que lisent leurs gardes,
+   * qui décident si chacune se pose.
+   */
+  get reads(): Reads {
+    return this.pages
+      .flatMap((page) => page.questions)
+      .map(({ id, guardReads }) =>
+        readsOf({ ...NOTHING, questions: [id] }, guardReads),
+      )
+      .reduce(readsOf, NOTHING);
   }
 
   /**
