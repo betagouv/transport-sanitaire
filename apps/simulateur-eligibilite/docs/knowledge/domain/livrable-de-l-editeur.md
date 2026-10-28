@@ -42,7 +42,9 @@ Le dépôt ne garde que quatre pièces du paquet, **recopiées telles quelles**
 | `formulaires/*.pdf`, les gabarits des cerfa | `front/models/eligibilite/r3/gabarits/` |
 
 `pnpm regles` recalcule `rules/regles.json` d'après le YAML : c'est lui que le
-code importe.
+code importe. Il écrit aussi `rules/regles.graphe.json`, le graphe de décision
+des règles (D-216). Il s'arrête si une livraison emploie un mécanisme que le
+graphe ne traduit pas encore.
 
 Le reste du paquet est **retranscrit** dans le code, selon les règles du dépôt :
 
