@@ -9,16 +9,34 @@ import type { Questions } from "../../../core/models/fake/declarations/questions
 import { SANS_COMMANDE } from "../../../core/models/fake/preconisation";
 import { defineModel } from "../../socle";
 import { bonDeCommande } from "./bon-de-commande";
-import { CommandeCompletee, resultatDeLaCommande } from "./Resultats";
+import {
+  CommandeCompletee,
+  LU_PAR_LA_COMMANDE_COMPLETEE,
+  LU_PAR_LE_RESULTAT,
+  type LuParLaCommandeCompletee,
+  type LuParLeResultat,
+  resultatDeLaCommande,
+} from "./Resultats";
 
-export const model = defineModel<Questions, Faits, Cibles>({
+export const model = defineModel<
+  Questions,
+  Faits,
+  Cibles,
+  LuParLeResultat,
+  LuParLaCommandeCompletee
+>({
   core,
-  result: { title: "Résultat", content: resultatDeLaCommande },
+  result: {
+    title: "Résultat",
+    reading: LU_PAR_LE_RESULTAT,
+    content: resultatDeLaCommande,
+  },
   cerfa: {
     // Sans boisson, il n'y a rien à compléter : le premier résultat est le
     // dernier écran.
     form: ({ commande }) => (commande.is(SANS_COMMANDE) ? null : bonDeCommande),
     title: ({ commande }) => `Commande complétée : ${commande.value}`,
+    reading: LU_PAR_LA_COMMANDE_COMPLETEE,
     Resultat: CommandeCompletee,
     startLabel: ({ commande }) =>
       commande.is(SANS_COMMANDE) ? null : "Compléter la commande",

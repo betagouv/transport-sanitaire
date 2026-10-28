@@ -8,7 +8,11 @@
 // ou par une garde, s'arrête net.
 
 import { validatedReading } from "../questionnaire-engine/answer-readings.ts";
-import type { Reading } from "../questionnaire-engine/condition.ts";
+import {
+  NOTHING,
+  type Reading,
+  type Reads,
+} from "../questionnaire-engine/condition.ts";
 import type { ValidatedAnswers } from "../questionnaire-engine/validated-answers.ts";
 import type { FaitDeclare } from "./fait-builder.ts";
 
@@ -32,6 +36,16 @@ export class FaitCatalogue<Faits extends object> {
   ) {
     this.#names = names;
     this.#declares = indexed(names, declares);
+  }
+
+  /** Ce que lit chaque fait : des questions et d'autres faits, dans l'ordre du modèle. */
+  get reads(): ReadonlyMap<keyof Faits & string, Reads> {
+    return new Map(
+      this.#names.map((name) => [
+        name,
+        this.#declares.get(name)?.reads ?? NOTHING,
+      ]),
+    );
   }
 
   /**

@@ -6,6 +6,8 @@ import type { Models } from "../../front/socle/app/model-choice";
 import type { ModelSource } from "../../front/socle/app/model-loading";
 
 export { model as modeleDeTest } from "./fixtures/modele-factice";
+/** Le catalogue de ses faits, que le modèle ne montre pas au socle. */
+export { CATALOGUE_DES_FAITS as faitsDeTest } from "./fixtures/modele-factice/preconisation";
 
 /** Ce que `App` attend quand elle n'a qu'un modèle à dérouler. */
 export function seulModele(source: ModelSource): Models {

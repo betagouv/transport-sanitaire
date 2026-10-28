@@ -78,8 +78,16 @@ describe("le graphe de décision", () => {
   });
 
   it("ne teste que les faits dont la règle dépend", () => {
-    expect(faitsTestes("cible_parapluie")).toEqual(["fait_pluie"]);
-    expect(faitsTestes("cible_abri")).toEqual(["fait_pluie", "fait_vent"]);
+    expect(graphe.faitsTestedBy("cible_parapluie")).toEqual(["fait_pluie"]);
+    expect(graphe.faitsTestedBy("cible_abri")).toEqual([
+      "fait_pluie",
+      "fait_vent",
+    ]);
+    expect(graphe.faitsTestedBy("cible_sortie")).toEqual([
+      "fait_pluie",
+      "fait_vent",
+      "fait_froid",
+    ]);
   });
 
   it("deux règles qui disent la même chose partagent leurs nœuds", () => {
@@ -105,19 +113,3 @@ describe("le graphe de décision", () => {
     ).toThrow(/« fait_invites » est de type « nombre »/);
   });
 });
-
-// ---- implémentation ----
-
-function faitsTestes(rule: string): string[] {
-  const { faits, rules, nodes } = decisionGraphOf(REGLES);
-  const testes = new Set<string>();
-  const visit = (id: number) => {
-    const node = nodes[id];
-    if (!Array.isArray(node)) return;
-    const [fait, ...suivants] = node as readonly number[];
-    testes.add(faits[fait ?? -1] ?? "");
-    suivants.forEach(visit);
-  };
-  visit(rules[rule] ?? -1);
-  return [...testes].sort();
-}

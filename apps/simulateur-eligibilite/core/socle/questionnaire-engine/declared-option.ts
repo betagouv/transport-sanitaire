@@ -6,7 +6,13 @@
 //
 // Une option ne change pas : chaque réglage donne une copie.
 
-import type { Condition, Reading } from "./condition.ts";
+import {
+  type Condition,
+  NOTHING,
+  type Reading,
+  type Reads,
+  readsOf,
+} from "./condition.ts";
 import type { NotOffered, OfferedOption, OptionHelp } from "./option.ts";
 import type { AnyQuestions } from "./question.ts";
 import type { QuestionContext } from "./question-context.ts";
@@ -24,6 +30,13 @@ export class DeclaredOption<Questions extends AnyQuestions, Cibles, Faits> {
 
   get value(): string {
     return this.#settings.value;
+  }
+
+  /** Ce que lisent ses gardes (`offeredWhen`). */
+  get guardReads(): Reads {
+    return this.#settings.conditions
+      .map((guard) => guard.reads)
+      .reduce(readsOf, NOTHING);
   }
 
   /** Ce que l'option veut dire, affiché sous son libellé. */
@@ -113,6 +126,13 @@ export class DeclaredOptions<Questions extends AnyQuestions, Cibles, Faits> {
   ) {
     this.#options = options;
     this.#order = order;
+  }
+
+  /** Ce que lisent les gardes de toutes ses options. */
+  get guardReads(): Reads {
+    return this.#options
+      .map((option) => option.guardReads)
+      .reduce(readsOf, NOTHING);
   }
 
   /** Les mêmes, l'option `value` réglée par `settle`. */
