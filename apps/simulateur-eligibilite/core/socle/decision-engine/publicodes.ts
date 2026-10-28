@@ -8,6 +8,8 @@
 
 import Engine, { type RawPublicodes } from "publicodes";
 import { Cible } from "./cible.ts";
+import type { DecisionGraphData } from "./decision-graph.ts";
+import { compileDecisionGraph } from "./decision-graph-compiler.ts";
 import type { Fait } from "./fait.ts";
 
 /** Les règles d'un modèle, par nom : les faits, puis les cibles. */
@@ -55,6 +57,14 @@ export function publicodesEngine<
       cibleOf(on(faits), nom as string) as Cibles[typeof nom],
     lazyCibles: (faits) => lazily(cibles, (nom) => cibleOf(on(faits), nom)),
   };
+}
+
+/**
+ * Le graphe de décision de ces règles (#196). `pnpm regles` l'écrit à côté
+ * d'elles : il se lit ensuite sans publicodes.
+ */
+export function decisionGraphOf(rules: Rules): DecisionGraphData {
+  return compileDecisionGraph(new Engine(rules).getParsedRules());
 }
 
 // ---- implémentation ----
