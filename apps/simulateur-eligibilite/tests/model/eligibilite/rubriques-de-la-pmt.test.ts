@@ -114,10 +114,10 @@ describe("l'urgence", () => {
 });
 
 describe("le centre de référence des maladies rares", () => {
-  it("se coche pour la destination réelle", () => {
-    const cibles = { cible_centre_reference_destination_reelle: true };
+  it("se coche sur Oui (Q3.4.a)", () => {
+    const reponses = { ...PMT, "Q3.4.a": "1_OUI" } as const;
 
-    expect(cellules(CENTRE_DE_REFERENCE, PMT, cibles)).toEqual({
+    expect(cellules(CENTRE_DE_REFERENCE, reponses)).toEqual({
       centre_rare: true,
     });
   });

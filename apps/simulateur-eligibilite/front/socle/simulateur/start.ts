@@ -4,16 +4,13 @@
 // l'état qu'un prescripteur aurait laissé, « Précédent » et verrou compris.
 
 import { type Preconisation, preconisationOf } from "../../../core/socle/model";
-import {
-  type Answers,
-  pagesOf,
-} from "../../../core/socle/questionnaire-engine/question";
-import {
-  Questionnaire,
-  type QuestionnaireState,
-  type Reading,
+import type { Answers } from "../../../core/socle/questionnaire-engine/question";
+import type {
+  QuestionnaireState,
+  Reading,
 } from "../../../core/socle/questionnaire-engine/questionnaire";
 import type { Model } from "../model";
+import { questionnaireOf } from "./questionnaire-of";
 import { readOf } from "./Resultats";
 
 /** Ce que le verrou fige : les réponses d'avant, et leur préconisation. */
@@ -25,8 +22,7 @@ export type Locked = { answers: Answers; preconisation: Preconisation };
  * ne passe pas le verrou : rien de ce qui suit ne la lit.
  */
 export function lock(model: Model, answers: Answers): Locked {
-  const questionnaire = new Questionnaire(pagesOf(model.core.questionnaire));
-  const acquired = questionnaire.readWith(answers).validated.answers();
+  const acquired = questionnaireOf(model).readWith(answers).validated.answers();
   return {
     answers: acquired,
     preconisation: preconisationOf(model.core, acquired),
@@ -54,8 +50,7 @@ export type Screen =
  */
 export function startingScreen(model: Model, answers: Answers | null): Screen {
   if (!answers) return { name: "questionnaire" };
-  const questionnaire = new Questionnaire(pagesOf(model.core.questionnaire));
-  const read = questionnaire.readWith(answers);
+  const read = questionnaireOf(model).readWith(answers);
   const state = stateOf(read, answers);
   if (!read.isComplete()) return { name: "questionnaire", resume: state };
   return (
@@ -83,11 +78,11 @@ function screenAfterLock(model: Model, answers: Answers): Screen | NotPastLock {
   );
   const locked = lock(model, before);
   const { cibles } = locked.preconisation;
-  const pages = pagesOf(model.core.questionnaire);
-  if (readOf(pages, before, locked.preconisation, new Date())(form) === null) {
+  const first = questionnaireOf(model);
+  if (readOf(first, before, locked.preconisation, new Date())(form) === null) {
     return undefined;
   }
-  const read = new Questionnaire(part.pages).readWith(answers, cibles);
+  const read = questionnaireOf(model, part.pages).readWith(answers, cibles);
   const state = stateOf(read, answers);
   return read.isComplete()
     ? { name: "cerfa", locked, previousState: state, completedAt: new Date() }

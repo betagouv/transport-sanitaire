@@ -14,12 +14,11 @@ import {
 import {
   type Answers,
   type AnyCibles,
-  type Page,
   pagesOf,
 } from "../../../core/socle/questionnaire-engine/question";
-import {
+import type {
   Questionnaire,
-  type QuestionnaireState,
+  QuestionnaireState,
 } from "../../../core/socle/questionnaire-engine/questionnaire";
 import { resultReading } from "../../../core/socle/questionnaire-engine/result-reading";
 import { CerfaDocument } from "../cerfa/CerfaDocument";
@@ -28,6 +27,7 @@ import type { CerfaInput, Model } from "../model";
 import type { DebugTraceProps } from "../questionnaire-engine/QuestionnaireForm";
 import { Stepper } from "../questionnaire-engine/Stepper";
 import { FeedbackLink, type FeedbackOffer, feedbackOf } from "./FeedbackLink";
+import { questionnaireOf } from "./questionnaire-of";
 import type { Locked } from "./start";
 
 type Props = {
@@ -54,7 +54,10 @@ export function CerfaResultat({
   const { answers } = state;
   const part = model.core.complement;
   const { title, Resultat, reading: lecture } = model.cerfa;
-  const all = [...pagesOf(model.core.questionnaire), ...part.pages];
+  const all = questionnaireOf(model, [
+    ...pagesOf(model.core.questionnaire),
+    ...part.pages,
+  ]);
   const { cibles } = locked.preconisation;
   const trace = traceOf("cerfa", all, answers, locked.preconisation, cibles);
   const read = readOf(all, answers, locked.preconisation, completedAt);
@@ -72,7 +75,7 @@ export function CerfaResultat({
         model={model}
         read={read}
         input={{ reading, completedAt }}
-        feedback={feedbackOf(model, answers)}
+        feedback={feedbackOf(model, read)}
       />
     </Frame>
   );
@@ -97,16 +100,16 @@ function CerfaActions({
 }
 
 /**
- * Ce que lit un résultat : les questions validées de ces pages, avec ces faits
- * et ces cibles, au jour `on`.
+ * Ce que lit un résultat : les questions validées de ce questionnaire, avec ces
+ * faits et ces cibles, au jour `on`.
  */
 export function readOf(
-  pages: readonly Page[],
+  questionnaire: Questionnaire,
   answers: Answers,
   { faits, cibles }: Preconisation,
   on: Date,
 ): Read {
-  const { validated } = new Questionnaire(pages).readWith(answers, cibles);
+  const { validated } = questionnaire.readWith(answers, cibles);
   return readIn(resultReading({ validated, faits, cibles, on }));
 }
 
@@ -115,12 +118,12 @@ export function readOf(
 // les questions d'après le verrou lisent.
 export function traceOf(
   title: string,
-  pages: readonly Page[],
+  questionnaire: Questionnaire,
   answers: Answers,
   preconisation: Preconisation,
   locked?: AnyCibles,
 ): DebugTraceProps {
-  const read = new Questionnaire(pages).readWith(answers, locked);
+  const read = questionnaire.readWith(answers, locked);
   return {
     title,
     pages: read.askedPages(),

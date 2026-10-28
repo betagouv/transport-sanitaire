@@ -10,7 +10,6 @@ import { type ComponentType, type ReactNode, useEffect, useState } from "react";
 import { type Preconisation, preconisationOf } from "../../../core/socle/model";
 import type { Read } from "../../../core/socle/questionnaire-engine/condition";
 import type { Answers } from "../../../core/socle/questionnaire-engine/question";
-import { pagesOf } from "../../../core/socle/questionnaire-engine/question";
 import type { QuestionnaireState } from "../../../core/socle/questionnaire-engine/questionnaire";
 import type { FirstResult, Model } from "../model";
 import type { DebugTraceProps } from "../questionnaire-engine/QuestionnaireForm";
@@ -21,6 +20,7 @@ import {
   feedbackOf,
   onFirstResult,
 } from "./FeedbackLink";
+import { questionnaireOf } from "./questionnaire-of";
 import { readOf, SecondaryButton, traceOf } from "./Resultats";
 import { SheetViewer } from "./SheetViewer";
 import { type Locked, lock } from "./start";
@@ -44,8 +44,9 @@ export function FirstResultat({ model, state, DebugTrace, ...on }: Props) {
   const { answers } = state;
   const preconisation = preconisationOf(model.core, answers);
   const parts = model.core.questionnaire;
-  const trace = traceOf("résultat", pagesOf(parts), answers, preconisation);
-  const read = readOf(pagesOf(parts), answers, preconisation, new Date());
+  const questionnaire = questionnaireOf(model);
+  const trace = traceOf("résultat", questionnaire, answers, preconisation);
+  const read = readOf(questionnaire, answers, preconisation, new Date());
   return (
     <>
       <Content
@@ -53,7 +54,7 @@ export function FirstResultat({ model, state, DebugTrace, ...on }: Props) {
         step={{ title: model.result.title, part: parts.length }}
         startLabel={startLabelOf(model, read)}
         actions={actionsOf(model, state, on)}
-        feedback={feedbackOf(model, answers)}
+        feedback={feedbackOf(model, read)}
       />
       {DebugTrace && (
         <div className="fr-no-print">
@@ -88,8 +89,12 @@ function resultOf(
 ): Loading {
   const known = loading.get(model)?.get(answers);
   if (known) return known;
-  const pages = pagesOf(model.core.questionnaire);
-  const read = readOf(pages, answers, preconisation, new Date());
+  const read = readOf(
+    questionnaireOf(model),
+    answers,
+    preconisation,
+    new Date(),
+  );
   const reading = read(model.result.reading);
   const result = model.result.content({ reading });
   if (!(result instanceof Promise)) return result;

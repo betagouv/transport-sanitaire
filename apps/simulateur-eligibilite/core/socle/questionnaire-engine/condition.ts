@@ -14,6 +14,18 @@ export type Reads = {
   readonly questions: readonly string[];
   readonly faits: readonly string[];
   readonly cibles: readonly string[];
+  /** Ce qu'elle ne lit que dans une branche (`onBranch`). */
+  readonly branches?: readonly Branch[];
+};
+
+/**
+ * Ce qui ne compte que quand une cible vaut l'une de ces valeurs (#255). Ex. :
+ * ce que lit la fiche positive ne compte que pour une issue positive.
+ */
+type Branch = {
+  readonly cible: string;
+  readonly values: readonly unknown[];
+  readonly reads: Reads;
 };
 
 /**
@@ -140,11 +152,36 @@ export function readsOf(a: Reads, b: Reads): Reads {
   const union = (x: readonly string[], y: readonly string[]) => [
     ...new Set([...x, ...y]),
   ];
+  const branches = [...(a.branches ?? []), ...(b.branches ?? [])];
   return {
     questions: union(a.questions, b.questions),
     faits: union(a.faits, b.faits),
     cibles: union(a.cibles, b.cibles),
+    ...(branches.length > 0 && { branches }),
   };
+}
+
+/**
+ * `value`, qui ne compte que quand la cible `cible` vaut l'une de `values`.
+ * Elle se calcule toujours : c'est celui qui l'affiche qui choisit la branche
+ * sur cette cible. La cible, elle, compte toujours.
+ */
+export function onBranch<Of>(
+  cible: string,
+  values: readonly unknown[],
+  value: Value<Of>,
+): Value<Of> {
+  const branch = { cible, values, reads: value.reads };
+  return new Value({ ...NOTHING, cibles: [cible], branches: [branch] }, (r) =>
+    value.in(r),
+  );
+}
+
+/** Tout ce que lit une valeur, branches comprises, chaque chose une fois. */
+export function flattened({ branches = [], ...reads }: Reads): Reads {
+  return branches
+    .map((branch) => flattened(branch.reads))
+    .reduce(readsOf, reads);
 }
 
 /** Ce qu'une valeur vaut, dans la lecture que le socle a choisie. */
