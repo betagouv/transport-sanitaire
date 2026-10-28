@@ -14,6 +14,7 @@ import type { Cibles } from "../../../core/models/fake/declarations/cibles";
 import type { Faits } from "../../../core/models/fake/declarations/faits";
 import { SANS_COMMANDE } from "../../../core/models/fake/preconisation";
 import { given } from "../../../core/models/fake/question";
+import type { Value } from "../../../core/socle";
 import {
   Disclosure,
   type FirstResult,
@@ -32,26 +33,58 @@ import verreGlace from "./illustrations/verre-glace.svg";
 
 type Props = ResultatProps<Faits, Cibles>;
 
-export function resultatDeLaCommande({ read, cibles }: Props): FirstResult {
+/** Ce que le premier résultat lit des réponses : les façons de servir. */
+export type LuParLeResultat = { readonly service: readonly string[] };
+
+export const LU_PAR_LE_RESULTAT: Value<LuParLeResultat> = given.all({
+  service: given
+    .question("service")
+    .answer()
+    .compute((service) => service.checkedBoxes()),
+});
+
+export function resultatDeLaCommande({
+  reading,
+  cibles,
+}: ResultatProps<Faits, Cibles, LuParLeResultat>): FirstResult {
   if (cibles.commande.is(SANS_COMMANDE)) return RIEN_A_SERVIR;
   return {
     title: "La commande est prête à être complétée",
     intro: `Commande : ${cibles.commande.value}.`,
-    body: <PageDeLaCommande read={read} cibles={cibles} />,
+    body: <PageDeLaCommande service={reading.service} cibles={cibles} />,
   };
 }
 
-export function CommandeCompletee({ read, cibles }: Props) {
-  const adresse = read(given.question("adresse").answer());
+/** Ce que le second résultat lit des réponses : la quantité, l'adresse. */
+export type LuParLaCommandeCompletee = {
+  readonly quantite: string;
+  readonly adresse: string | null;
+};
+
+export const LU_PAR_LA_COMMANDE_COMPLETEE: Value<LuParLaCommandeCompletee> =
+  given.all({
+    quantite: given
+      .question("quantite")
+      .answer()
+      .compute(({ value }) => String(value)),
+    adresse: given
+      .question("adresse")
+      .answer()
+      .compute((adresse) =>
+        adresse.hasAnswer() ? enUneLigne(adresse.value) : null,
+      ),
+  });
+
+export function CommandeCompletee({
+  reading,
+  cibles,
+}: ResultatProps<Faits, Cibles, LuParLaCommandeCompletee>) {
   return (
     <>
       <p className="fr-text--lead">
-        Commande : {cibles.commande.value},{" "}
-        {String(read(given.question("quantite").answer()).value)} tasses
+        Commande : {cibles.commande.value}, {reading.quantite} tasses
       </p>
-      {adresse.hasAnswer() && (
-        <p>Facture à envoyer : {enUneLigne(adresse.value)}</p>
-      )}
+      {reading.adresse && <p>Facture à envoyer : {reading.adresse}</p>}
       <p>
         Le bon de commande est prêt à être imprimé. Il doit encore être signé
         avant d'être envoyé.
@@ -123,7 +156,10 @@ function FicheDuClient() {
   );
 }
 
-function PageDeLaCommande({ read, cibles }: Pick<Props, "read" | "cibles">) {
+function PageDeLaCommande({
+  service,
+  cibles,
+}: LuParLeResultat & Pick<Props, "cibles">) {
   return (
     <>
       <Pourquoi cibles={cibles} />
@@ -136,7 +172,7 @@ function PageDeLaCommande({ read, cibles }: Pick<Props, "read" | "cibles">) {
       )}
       <h2 className="fr-h5 fr-mt-5w">Les façons de servir</h2>
       <IllustratedCards
-        cards={facons(read(given.question("service").answer()).checkedBoxes())}
+        cards={facons(service)}
         selectedLabel="Votre commande"
       />
       <NumberedCards

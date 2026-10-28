@@ -7,7 +7,12 @@ import type { Faits } from "./declarations/faits";
 import type { Questions } from "./declarations/questions";
 import { cibles, faits, SANS_COMMANDE } from "./preconisation";
 import { COMPLEMENT, given, PARTS } from "./questionnaire";
-import { CommandeCompletee, resultatDeLaCommande } from "./Resultats";
+import {
+  CommandeCompletee,
+  LA_QUANTITE,
+  RIEN_DES_REPONSES,
+  resultatDeLaCommande,
+} from "./Resultats";
 
 // Un gabarit fabriqué : le test relit ce qu'il dessine sans servir d'asset.
 const BON_DE_COMMANDE = bindCerfa<{
@@ -38,20 +43,31 @@ const BON_DE_COMMANDE = bindCerfa<{
   },
 );
 
-export const model = defineModel<Questions, Faits, Cibles>({
+export const model = defineModel<
+  Questions,
+  Faits,
+  Cibles,
+  object,
+  { readonly quantite: string }
+>({
   core: {
     preconisation: { faits, cibles },
     questionnaire: PARTS,
     complement: COMPLEMENT,
     seeds: () => import("./seeds-catalogue").then((m) => m.SEEDS),
   },
-  result: { title: "Résultat", content: resultatDeLaCommande },
+  result: {
+    title: "Résultat",
+    reading: RIEN_DES_REPONSES,
+    content: resultatDeLaCommande,
+  },
   cerfa: {
     // Sans boisson, il n'y a rien à compléter : le premier résultat est le
     // dernier écran.
     form: ({ commande }) =>
       commande.is(SANS_COMMANDE) ? null : BON_DE_COMMANDE,
     title: ({ commande }) => `Commande complétée : ${commande.value}`,
+    reading: LA_QUANTITE,
     Resultat: CommandeCompletee,
     startLabel: ({ commande }) =>
       commande.is(SANS_COMMANDE) ? null : "Compléter la commande",

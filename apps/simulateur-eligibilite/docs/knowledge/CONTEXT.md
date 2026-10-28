@@ -156,6 +156,18 @@ l'ouverture. Elle ne se partage pas et ne se reprend pas (D-104).
 _Chez l'éditeur_: « simulation ». Sa « révision » n'a pas d'équivalent chez nous
 (D-192).
 
+**Condition**:
+Une question oui/non sur les réponses, les faits ou les cibles :
+`given.question("Q2.1").answer().is("8_HOSPITALISATION")`. Elle se compose par
+`and`, `or` et `not`, et dit ce qu'elle lit (`reads`) sans se calculer (ADR-23).
+_Chez l'éditeur_: « condition », le même mot.
+
+**Garde**:
+La condition qui dit si une question se pose (`appliesWhen`, `mattersWhile`) ou
+si une option se propose (`offeredWhen`). Elle ne lit que les questions posées
+avant elle (D-213, D-214).
+_Chez l'éditeur_: « condition d'affichage ».
+
 ### La décision
 
 La chaîne : Questions → Faits → Cibles → Résultats.
@@ -215,6 +227,12 @@ _Chez l'éditeur_: « financeur », le même mot.
 Ce qui calcule les cibles des faits, par les règles publicodes du modèle (D-32).
 _Chez l'éditeur_: « moteur », seul. Son « noyau de décision » est le fichier
 des règles.
+
+**Graphe de décision**:
+Ce que vaut chaque règle pour chaque façon dont ses faits valent oui, non ou
+rien. `pnpm regles` le compile des règles (D-216). Il dit quelles questions ne
+changent plus rien (#196).
+_Chez l'éditeur_: aucun mot.
 
 **Moteur de questionnaire**:
 Ce qui dit, des réponses, quelles pages et quelles questions se posent (D-32).

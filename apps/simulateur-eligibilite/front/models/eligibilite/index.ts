@@ -9,15 +9,24 @@ import { defineModel } from "../../socle";
 import { AVIS } from "./avis";
 import { libelleDeCompletion } from "./r2/boutons-du-resultat";
 import { eligibilite } from "./r2/resultat";
+import { LU_PAR_R2, type LuParR2 } from "./r2/trace-du-resultat";
 import { documentDuComplement } from "./r3/documents-du-resultat";
-import { PrescriptionPreremplie } from "./r3/PrescriptionPreremplie";
+import {
+  PrescriptionPreremplie,
+  RIEN_DES_REPONSES,
+} from "./r3/PrescriptionPreremplie";
 import { titreDuResultat } from "./r3/titre-du-resultat";
 
-export const model = defineModel<Questions, Faits, Cibles>({
+export const model = defineModel<Questions, Faits, Cibles, LuParR2, object>({
   core,
-  result: { title: "Résultat de l’éligibilité", content: eligibilite },
+  result: {
+    title: "Résultat de l’éligibilité",
+    reading: LU_PAR_R2,
+    content: eligibilite,
+  },
   cerfa: {
     form: documentDuComplement,
+    reading: RIEN_DES_REPONSES,
     title: titreDuResultat,
     Resultat: PrescriptionPreremplie,
     startLabel: libelleDeCompletion,

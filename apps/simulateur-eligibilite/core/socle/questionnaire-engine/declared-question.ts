@@ -16,7 +16,10 @@ import type { AskedCommonData } from "./asked-common.ts";
 import type { AskedQuestion } from "./asked-question.ts";
 import {
   type Condition,
+  NOTHING,
   type Reading,
+  type Reads,
+  readsOf,
   type Text,
   textIn,
 } from "./condition.ts";
@@ -151,6 +154,18 @@ export abstract class DeclaredQuestion<
   /** Les questions dont dépend cette réponse : `dependsOn` les déclare. */
   get dependencies(): readonly string[] {
     return this.settings.dependsOn;
+  }
+
+  /** Ce que lisent ses gardes, celles de ses options comprises. */
+  get guardReads(): Reads {
+    return this.settings.conditions
+      .map((guard) => guard.reads)
+      .reduce(readsOf, this.ownGuardReads());
+  }
+
+  /** Ce que lisent les gardes de ce que sa sorte ajoute : ses options. */
+  protected ownGuardReads(): Reads {
+    return NOTHING;
   }
 
   /**

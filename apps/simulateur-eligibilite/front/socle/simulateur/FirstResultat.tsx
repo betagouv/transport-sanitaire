@@ -91,7 +91,8 @@ function resultOf(
   if (known) return known;
   const pages = pagesOf(model.core.questionnaire);
   const read = readOf(pages, answers, preconisation, new Date());
-  const result = model.result.content({ ...preconisation, read });
+  const reading = read(model.result.reading);
+  const result = model.result.content({ ...preconisation, reading });
   if (!(result instanceof Promise)) return result;
   const byAnswers = loading.get(model) ?? new WeakMap();
   loading.set(model, byAnswers.set(answers, result));

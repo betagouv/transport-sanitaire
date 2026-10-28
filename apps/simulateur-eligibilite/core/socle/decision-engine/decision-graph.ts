@@ -45,17 +45,36 @@ export class DecisionGraph {
 
   /** Ce que vaut cette règle pour ces faits. Un fait absent ne vaut rien. */
   valueOf(rule: string, faits: Readonly<Record<string, FaitValue>>): RuleValue {
-    const start = this.data.rules[rule];
-    if (start === undefined) {
-      throw new Error(`Le graphe ne calcule pas la règle « ${rule} ».`);
-    }
-    let node = this.node(start);
+    let node = this.node(this.start(rule));
     while (isTest(node)) {
       const [fait, oui, non, rien] = node;
       const value = faits[this.data.faits[fait] ?? ""];
       node = this.node(value === true ? oui : value === false ? non : rien);
     }
     return node.value;
+  }
+
+  /** Les faits dont cette règle dépend, dans l'ordre où le graphe les teste. */
+  faitsTestedBy(rule: string): readonly string[] {
+    const tested = new Set<number>();
+    const seen = new Set<number>();
+    const pending = [this.start(rule)];
+    for (let id = pending.pop(); id !== undefined; id = pending.pop()) {
+      const node = this.node(id);
+      if (seen.has(id) || !isTest(node)) continue;
+      seen.add(id);
+      tested.add(node[0]);
+      pending.push(node[1], node[2], node[3]);
+    }
+    return this.data.faits.filter((_, fait) => tested.has(fait));
+  }
+
+  private start(rule: string): number {
+    const start = this.data.rules[rule];
+    if (start === undefined) {
+      throw new Error(`Le graphe ne calcule pas la règle « ${rule} ».`);
+    }
+    return start;
   }
 
   private node(id: number): GraphNode {

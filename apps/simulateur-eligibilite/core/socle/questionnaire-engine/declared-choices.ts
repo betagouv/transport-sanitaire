@@ -8,7 +8,7 @@
 
 import { AskedMultipleChoice, AskedSingleChoice } from "./asked-choices.ts";
 import type { AskedCommonData } from "./asked-common.ts";
-import type { Reading } from "./condition.ts";
+import type { Reading, Reads } from "./condition.ts";
 import type { DeclaredOption, DeclaredOptions } from "./declared-option.ts";
 import { type CommonSettings, DeclaredQuestion } from "./declared-question.ts";
 import type { AnyQuestions, IncompatibleOptions } from "./question.ts";
@@ -64,6 +64,10 @@ export class DeclaredSingleChoice<
       boldLabels,
       options: options.offeredIn(context, reading),
     });
+  }
+
+  protected override ownGuardReads(): Reads {
+    return this.own.options.guardReads;
   }
 
   protected override rebuilt(
@@ -133,6 +137,10 @@ export class DeclaredMultipleChoice<
           : options.offeredOneIn(exclusive, context, reading),
       incompatibleOptions: incompatible,
     });
+  }
+
+  protected override ownGuardReads(): Reads {
+    return this.own.options.guardReads;
   }
 
   protected override rebuilt(
