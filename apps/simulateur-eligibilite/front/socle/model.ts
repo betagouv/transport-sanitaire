@@ -2,7 +2,8 @@
 // (`core/socle/model.ts`), et ce qu'il affiche, ses deux résultats.
 //
 // Le socle déroule le parcours et ne lit aucune clé du modèle. Il transporte les
-// réponses, les faits et les cibles de l'un à l'autre.
+// réponses, les faits et les cibles de l'un à l'autre, et donne à chaque
+// résultat ce qu'il déclare lire.
 
 import type { ComponentType, ReactNode } from "react";
 import type { AnyFaits, CoreModel } from "../../core/socle/model";
@@ -15,17 +16,11 @@ import type {
 import type { BoundCerfa } from "./cerfa-mapping";
 
 /**
- * Ce qu'un résultat reçoit pour s'afficher : les cibles, les faits, et ce qu'il
- * lit des questions validées (son `reading`), que le socle a calculé. Il ne lit
- * rien d'autre : ce qu'il lit se sait sans le dérouler (#254).
+ * Ce qu'un résultat reçoit pour s'afficher : ce qu'il lit des questions
+ * validées, des faits et des cibles (son `reading`), que le socle a calculé. Il
+ * ne lit rien d'autre : ce qu'il lit se sait sans le dérouler (#254, #260).
  */
-export type ResultatProps<
-  Faits = AnyFaits,
-  Cibles = AnyCibles,
-  Reading = unknown,
-> = {
-  readonly cibles: Cibles;
-  readonly faits: Faits;
+export type ResultatProps<Reading = unknown> = {
   readonly reading: Reading;
 };
 
@@ -57,11 +52,9 @@ export type Sheet = { title: string; intro?: ReactNode; body: ReactNode };
  * second résultat, sur les faits et les cibles figés au verrou, et la date de
  * complétion. Ce jour est celui que `given.today()` lit.
  */
-export type CerfaInput<
-  Faits extends AnyFaits = AnyFaits,
-  Cibles = AnyCibles,
-  Reading = unknown,
-> = ResultatProps<Faits, Cibles, Reading> & { readonly completedAt: Date };
+export type CerfaInput<Reading = unknown> = ResultatProps<Reading> & {
+  readonly completedAt: Date;
+};
 
 /**
  * Ce que le prescripteur est venu faire : vérifier une éligibilité
@@ -104,36 +97,39 @@ export type Model<
      * autre.
      */
     content: (
-      props: ResultatProps<Faits, Cibles, FirstReading>,
+      props: ResultatProps<FirstReading>,
     ) => FirstResult | Promise<FirstResult>;
   };
   /** Le second résultat, après le complément : le cerfa. */
   cerfa: {
-    /** Le cerfa de cette préconisation. `null` : rien ne suit le premier résultat. */
-    form: (cibles: Cibles) => BoundCerfa | null;
+    /**
+     * Le cerfa de cette préconisation. `null` : rien ne suit le premier
+     * résultat. Le choix lit ce qu'il déclare, comme chaque entrée du cerfa.
+     */
+    form: Value<BoundCerfa | null>;
     /**
      * Le titre du second résultat, selon le document que la préconisation
      * donne : celui de son stepper, qui est le `h1` de la page.
      */
-    title: (cibles: Cibles) => string;
+    title: Value<string>;
     /**
      * Ce que le texte du second résultat et ce qui tient la place de l'aperçu
-     * lisent des questions validées, en une valeur.
+     * lisent des questions validées, des faits et des cibles, en une valeur.
      */
     reading: Value<CerfaReading>;
     /** Le texte du second résultat, sous le stepper, avant les boutons. */
-    Resultat: ComponentType<ResultatProps<Faits, Cibles, CerfaReading>>;
+    Resultat: ComponentType<ResultatProps<CerfaReading>>;
     /**
      * Ce qui tient la place de l'aperçu du document, pour un cerfa que son PDF
      * ne remplit pas encore. Sans lui, ou s'il donne `null`, l'aperçu du PDF.
      */
-    standIn?: (props: CerfaInput<Faits, Cibles, CerfaReading>) => ReactNode;
+    standIn?: (props: CerfaInput<CerfaReading>) => ReactNode;
     /**
      * Le libellé de l'action qui verrouille. `null` : cette préconisation ne
      * complète rien, le bouton n'est pas posé. Il ne l'est pas non plus tant que
      * le complément n'a ni page ni cerfa : le verrou n'ouvre pas un écran vide.
      */
-    startLabel: (cibles: Cibles) => string | null;
+    startLabel: Value<string | null>;
     /** Les libellés des deux actions sur le cerfa, qui portent le même PDF. */
     printLabel: string;
     downloadLabel: string;

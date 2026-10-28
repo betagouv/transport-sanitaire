@@ -100,6 +100,9 @@ export function textIn(text: Text, reading: Reading): string {
 /** Rien de lu. */
 export const NOTHING: Reads = { questions: [], faits: [], cibles: [] };
 
+/** Ce que vaut cette valeur. */
+export type ValueOf<Read> = Read extends Value<infer Of> ? Of : never;
+
 /** Ce que vaut chacune de ces valeurs, sous son nom. */
 export type ValuesOf<Values> = {
   readonly [Name in keyof Values]: Values[Name] extends Value<infer Of>

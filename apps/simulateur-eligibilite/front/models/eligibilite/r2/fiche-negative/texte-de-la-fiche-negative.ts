@@ -4,14 +4,18 @@
 // Tous les mots viennent du catalogue de l'éditeur, recopiés tels quels. Ce
 // fichier choisit la raison, puis range les textes de la fiche : il n'en écrit
 // aucun. Le conseil sur l'ALD ne vient que si l'ALD est établie (#134) : le
-// catalogue ne dit pas quand l'afficher.
+// catalogue ne dit pas quand l'afficher. Elle lit ce que lit la raison
+// (`ce-que-lit-un-texte.ts`).
 
 import type {
   CatalogueResultats,
   IssueNegative,
 } from "../../../../../core/models/eligibilite/declarations/catalogue-resultats";
-import type { Trace } from "../trace-du-resultat";
-import { raisonNonEligible } from "./raison-non-eligible";
+import type { TraceDe } from "../ce-que-lit-un-texte";
+import { LU_PAR_LA_RAISON, raisonNonEligible } from "./raison-non-eligible";
+
+/** Ce que lit la fiche négative : ce que lit sa raison. */
+export const LU_PAR_LA_FICHE_NEGATIVE = LU_PAR_LA_RAISON;
 
 type Bloc = IssueNegative["finance"];
 
@@ -37,7 +41,7 @@ export type TexteDeLaFicheNegative = {
 /** Le texte de la fiche négative pour cette trace. */
 export function texteDeLaFicheNegative(
   catalogue: CatalogueResultats,
-  trace: Trace,
+  trace: TraceDe<typeof LU_PAR_LA_FICHE_NEGATIVE>,
 ): TexteDeLaFicheNegative {
   const issue = catalogue.issues.ISSUE_NON_ELIGIBLE;
   const { intro, body, steps } = issue.instructions;

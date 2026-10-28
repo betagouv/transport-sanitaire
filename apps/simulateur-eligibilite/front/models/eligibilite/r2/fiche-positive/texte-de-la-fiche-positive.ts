@@ -8,35 +8,46 @@
 // préalable sont l'introduction (dans les consignes), la justification dans la
 // raison, et le rappel d'attente. Un trajet en avion ou en bateau de ligne
 // régulière prend ses titres et son modus, ses cartes ont leur préfixe et il
-// n'a pas de badge (#221).
+// n'a pas de badge (#221). Elle lit ce que lisent ces textes
+// (`ce-que-lit-un-texte.ts`).
 
 import type {
   AucunTexte,
   Bloc,
   CatalogueResultats,
 } from "../../../../../core/models/eligibilite/declarations/catalogue-resultats";
-import type { Trace } from "../trace-du-resultat";
+import { luPar, type TraceDe } from "../ce-que-lit-un-texte";
 import {
   badgesDuResultat,
   type CarteAffichee,
   cartesDeLaFiche,
+  LU_PAR_LES_CARTES,
 } from "./cartes-et-badges";
 import {
   type Consignes,
   consignesDuModus,
   modusDuMode,
 } from "./consignes-du-modus";
-import { motifAdministratif, phraseDuContexte } from "./contexte-du-resultat";
+import {
+  LU_PAR_LE_CONTEXTE,
+  motifAdministratif,
+  phraseDuContexte,
+} from "./contexte-du-resultat";
 import {
   fondementDeLAccord,
+  LU_PAR_LE_FONDEMENT_DE_L_ACCORD,
+  LU_PAR_LE_RAPPEL,
   type RappelDAttente,
   rappelDAttente,
 } from "./fondement-de-l-accord-prealable";
 import {
+  LU_PAR_LA_PERMISSION,
   motifDeLaPermission,
   phraseDeLaPermission,
 } from "./texte-de-la-permission";
 import {
+  LU_PAR_LE_LIBELLE,
+  LU_PAR_LE_RANG_DU_TITRE,
   libelleDeLaFiche,
   rangDuTitreDuPrescripteur,
 } from "./variante-du-resultat";
@@ -64,13 +75,25 @@ export type TexteDeLaFichePositive = {
   readonly finance: Bloc;
 };
 
+/** Ce que lit la fiche positive : ce que lisent ses textes. */
+export const LU_PAR_LA_FICHE_POSITIVE = luPar(
+  {},
+  LU_PAR_LE_LIBELLE,
+  LU_PAR_LE_RANG_DU_TITRE,
+  LU_PAR_LE_CONTEXTE,
+  LU_PAR_LA_PERMISSION,
+  LU_PAR_LE_FONDEMENT_DE_L_ACCORD,
+  LU_PAR_LES_CARTES,
+  LU_PAR_LE_RAPPEL,
+);
+
 /**
  * Le texte de la fiche de cette issue pour cette trace ; absent si les règles
  * n'ont pas donné de mode, ou si le catalogue n'a rien pour lui.
  */
 export function texteDeLaFichePositive(
   catalogue: CatalogueResultats,
-  trace: Trace,
+  trace: LuParLaFiche,
   issueId: IssueAvecFichePositive,
 ): TexteDeLaFichePositive | AucunTexte {
   const issue = catalogue.issues[issueId];
@@ -101,6 +124,8 @@ export function texteDeLaFichePositive(
 
 // ---- implémentation ----
 
+type LuParLaFiche = TraceDe<typeof LU_PAR_LA_FICHE_POSITIVE>;
+
 type Fondement = {
   readonly raison: string | undefined;
   readonly motif: string | undefined;
@@ -111,7 +136,7 @@ type Fondement = {
 // et la justification de l'accord pour une demande d'accord préalable.
 function fondementDe(
   catalogue: CatalogueResultats,
-  trace: Trace,
+  trace: LuParLaFiche,
   issueId: IssueAvecFichePositive,
 ): Fondement {
   if (issueId === "ISSUE_S3141") {

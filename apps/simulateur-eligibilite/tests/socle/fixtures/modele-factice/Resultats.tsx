@@ -1,16 +1,16 @@
 // Les deux résultats du modèle factice : la commande, puis la commande
 // complétée.
 
+import type { ValueOf } from "../../../../core/socle";
 import type { FirstResult, ResultatProps } from "../../../../front/socle";
-import type { Cibles } from "./declarations/cibles";
-import type { Faits } from "./declarations/faits";
 import { given } from "./questionnaire";
 
-/** Le premier résultat ne lit rien des réponses : la commande suffit. */
-export const RIEN_DES_REPONSES = given.all({});
+/** Le premier résultat ne lit que la commande. */
+export const LA_COMMANDE = given.all({ commande: given.cible("commande") });
 
-/** Le second lit la quantité. */
+/** Le second lit la commande et la quantité. */
 export const LA_QUANTITE = given.all({
+  commande: given.cible("commande"),
   quantite: given
     .question("quantite")
     .answer()
@@ -18,21 +18,20 @@ export const LA_QUANTITE = given.all({
 });
 
 export function resultatDeLaCommande({
-  cibles,
-}: ResultatProps<Faits, Cibles, object>): FirstResult {
+  reading,
+}: ResultatProps<ValueOf<typeof LA_COMMANDE>>): FirstResult {
   return {
     title: "Votre commande",
-    body: <p className="fr-text--lead">Commande : {cibles.commande.value}</p>,
+    body: <p className="fr-text--lead">Commande : {reading.commande.value}</p>,
   };
 }
 
 export function CommandeCompletee({
   reading,
-  cibles,
-}: ResultatProps<Faits, Cibles, { readonly quantite: string }>) {
+}: ResultatProps<ValueOf<typeof LA_QUANTITE>>) {
   return (
     <p className="fr-text--lead">
-      Commande : {cibles.commande.value}, {reading.quantite} tasses
+      Commande : {reading.commande.value}, {reading.quantite} tasses
     </p>
   );
 }

@@ -7,6 +7,7 @@ import type { Cibles } from "../../../core/models/fake/declarations/cibles";
 import type { Faits } from "../../../core/models/fake/declarations/faits";
 import type { Questions } from "../../../core/models/fake/declarations/questions";
 import { SANS_COMMANDE } from "../../../core/models/fake/preconisation";
+import { given } from "../../../core/models/fake/question";
 import { defineModel } from "../../socle";
 import { bonDeCommande } from "./bon-de-commande";
 import {
@@ -17,6 +18,9 @@ import {
   type LuParLeResultat,
   resultatDeLaCommande,
 } from "./Resultats";
+
+// La boisson commandée, que lisent le choix du bon, son titre et le bouton.
+const COMMANDE = given.cible("commande");
 
 export const model = defineModel<
   Questions,
@@ -34,12 +38,15 @@ export const model = defineModel<
   cerfa: {
     // Sans boisson, il n'y a rien à compléter : le premier résultat est le
     // dernier écran.
-    form: ({ commande }) => (commande.is(SANS_COMMANDE) ? null : bonDeCommande),
-    title: ({ commande }) => `Commande complétée : ${commande.value}`,
+    form: COMMANDE.compute((commande) =>
+      commande.is(SANS_COMMANDE) ? null : bonDeCommande,
+    ),
+    title: COMMANDE.compute(({ value }) => `Commande complétée : ${value}`),
     reading: LU_PAR_LA_COMMANDE_COMPLETEE,
     Resultat: CommandeCompletee,
-    startLabel: ({ commande }) =>
+    startLabel: COMMANDE.compute((commande) =>
       commande.is(SANS_COMMANDE) ? null : "Compléter la commande",
+    ),
     printLabel: "Imprimer le bon de commande",
     downloadLabel: "Télécharger le bon de commande",
   },

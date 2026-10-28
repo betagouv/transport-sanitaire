@@ -4,7 +4,8 @@
 //
 // Un code de contexte n'est posé que si la cible qui le justifie est prouvée,
 // jamais par défaut. Le contexte retenu est celui dont les `codes` sont
-// exactement les codes établis. Les mots viennent du catalogue.
+// exactement les codes établis. Les mots viennent du catalogue. Chaque texte
+// déclare ce qu'il lit des cibles (`ce-que-lit-un-texte.ts`).
 
 import type {
   AucunTexte,
@@ -12,11 +13,42 @@ import type {
   TexteCode,
 } from "../../../../../core/models/eligibilite/declarations/catalogue-resultats";
 import type { Cibles } from "../../../../../core/models/eligibilite/declarations/cibles";
-import type { Trace } from "../trace-du-resultat";
-import { avecLesAutresTermes } from "./autres-termes-du-lexique";
+import { given } from "../../../../../core/models/eligibilite/question";
+import { luPar, type TraceDe } from "../ce-que-lit-un-texte";
+import {
+  avecLesAutresTermes,
+  LU_PAR_LES_AUTRES_TERMES,
+} from "./autres-termes-du-lexique";
+
+// Chaque code, et la cible qui le prouve. Le M ne se pose que pour un mineur
+// reconnu dont l'ALD n'est pas à 100 % : la cible l'établit déjà.
+const CODES = [
+  ["H", "cible_hospitalisation_ou_seances_assimilees"],
+  ["T", "cible_situation_at_mp"],
+  ["A", "cible_ald_juridiquement_qualifiante_3_ou_4_degres"],
+  ["M", "cible_mineur_ald_non_exonerante_reconnue"],
+  ["B", "cible_mode_ambulance"],
+] as const satisfies readonly (readonly [string, keyof Cibles])[];
+
+/** Ce que lisent les codes de contexte : la cible de chaque code. */
+export const LU_PAR_LES_CODES_DE_CONTEXTE = luPar({
+  cibles: given.cibles(...CODES.map(([, cible]) => cible)),
+});
+
+/** Ce que lit le lexique d'un texte. */
+export const LU_PAR_LE_LEXIQUE = luPar({}, LU_PAR_LES_AUTRES_TERMES);
+
+/** Ce que lisent la phrase du contexte et le motif administratif. */
+export const LU_PAR_LE_CONTEXTE = luPar(
+  {},
+  LU_PAR_LES_CODES_DE_CONTEXTE,
+  LU_PAR_LE_LEXIQUE,
+);
 
 /** Les codes de contexte que ces cibles établissent, dans l'ordre H, T, A, M, B. */
-export function codesDeContexte(cibles: Cibles): readonly string[] {
+export function codesDeContexte(
+  cibles: TraceDe<typeof LU_PAR_LES_CODES_DE_CONTEXTE>["cibles"],
+): readonly string[] {
   return CODES.filter(([, cible]) => cibles[cible].isOui()).map(
     ([code]) => code,
   );
@@ -25,7 +57,7 @@ export function codesDeContexte(cibles: Cibles): readonly string[] {
 /** La phrase du contexte, lexique rempli ; absente si aucun contexte ne convient. */
 export function phraseDuContexte(
   issue: IssuePositive,
-  trace: Trace,
+  trace: TraceDe<typeof LU_PAR_LE_CONTEXTE>,
 ): string | AucunTexte {
   const texte = texteDesCodes(issue.contexts, trace.cibles);
   return texte && avecLeLexique(issue, trace, texte);
@@ -34,7 +66,7 @@ export function phraseDuContexte(
 /** Le motif administratif du modus, lexique rempli ; absent si aucun ne convient. */
 export function motifAdministratif(
   issue: IssuePositive,
-  trace: Trace,
+  trace: TraceDe<typeof LU_PAR_LE_CONTEXTE>,
 ): string | AucunTexte {
   const texte = texteDesCodes(issue.administrativeBases, trace.cibles);
   return texte && avecLeLexique(issue, trace, texte);
@@ -48,7 +80,7 @@ export function motifAdministratif(
  */
 export function avecLeLexique(
   issue: IssuePositive,
-  trace: Trace,
+  trace: TraceDe<typeof LU_PAR_LE_LEXIQUE>,
   texte: string,
 ): string {
   const { hospitalisation, atmp } = issue.lexicon;
@@ -77,21 +109,11 @@ export function texteDuCodeExact(
 
 // ---- implémentation ----
 
-// Chaque code, et la cible qui le prouve. Le M ne se pose que pour un mineur
-// reconnu dont l'ALD n'est pas à 100 % : la cible l'établit déjà.
-const CODES = [
-  ["H", "cible_hospitalisation_ou_seances_assimilees"],
-  ["T", "cible_situation_at_mp"],
-  ["A", "cible_ald_juridiquement_qualifiante_3_ou_4_degres"],
-  ["M", "cible_mineur_ald_non_exonerante_reconnue"],
-  ["B", "cible_mode_ambulance"],
-] as const satisfies readonly (readonly [string, keyof Cibles])[];
-
 // Le texte dont les codes sont exactement ceux de la trace. Sans aucun code
 // établi, aucune phrase ne s'applique.
 function texteDesCodes(
   textes: readonly TexteCode[],
-  cibles: Cibles,
+  cibles: TraceDe<typeof LU_PAR_LES_CODES_DE_CONTEXTE>["cibles"],
 ): string | AucunTexte {
   const etablis = codesDeContexte(cibles);
   if (etablis.length === 0) return undefined;

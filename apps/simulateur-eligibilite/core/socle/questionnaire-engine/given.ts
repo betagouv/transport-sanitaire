@@ -215,9 +215,19 @@ export function givenOf<
       answer: () => AnswerValue.of<Questions[Id]>(id),
     }),
     fait: <Nom extends FaitNom>(nom: Nom) =>
-      FaitValue.of<ValueOf<Faits[Nom]>>(nom),
+      FaitValue.of<FaitValueOf<Faits[Nom]>>(nom),
     cible: <Nom extends keyof Cibles & string>(nom: Nom) =>
       CibleValue.of<CibleOf<Cibles[Nom]>, FaitNom>(nom),
+    /** Ces faits, sous leur nom : ce qu'un texte en lit, et rien d'autre. */
+    faits: <Nom extends FaitNom>(...noms: Nom[]) =>
+      named<Pick<Faits, Nom>>(noms, "faits", (reading, nom) =>
+        reading.fait(nom),
+      ),
+    /** Ces cibles, sous leur nom : ce qu'un texte en lit, et rien d'autre. */
+    cibles: <Nom extends keyof Cibles & string>(...noms: Nom[]) =>
+      named<Pick<Cibles, Nom>>(noms, "cibles", (reading, nom) =>
+        reading.cible(nom),
+      ),
     all,
     today: () => DateValue.today(),
   };
@@ -225,6 +235,19 @@ export function givenOf<
 
 // ---- implémentation ----
 
-type ValueOf<Read> = Read extends Fait<infer Of> ? Of : never;
+// Des faits ou des cibles, chacun sous son nom.
+function named<Of>(
+  noms: readonly string[],
+  kind: "faits" | "cibles",
+  read: (reading: Reading, nom: string) => unknown,
+): Value<Of> {
+  return new Value(
+    { ...NOTHING, [kind]: noms },
+    (reading) =>
+      Object.fromEntries(noms.map((nom) => [nom, read(reading, nom)])) as Of,
+  );
+}
+
+type FaitValueOf<Read> = Read extends Fait<infer Of> ? Of : never;
 type CibleOf<Read> = Read extends Cible<infer Of> ? Of : never;
 type Answer = AnyQuestions[string];
