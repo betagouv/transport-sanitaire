@@ -20,7 +20,6 @@ export {
 export { page } from "./questionnaire-engine/declared-page.ts";
 export { givenOf } from "./questionnaire-engine/given.ts";
 export type {
-  AnswersReader,
   GivenAnswer,
   GivenAnswers,
 } from "./questionnaire-engine/given-answers.ts";

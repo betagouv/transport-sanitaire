@@ -4,7 +4,6 @@
 // alors le sens, qui ne se redemande pas (D-120).
 
 import type { Condition, GivenAnswer } from "../../../socle/index.ts";
-import { trajetsMensuelsAuPlus } from "../concepts/permission.ts";
 import type { Questions } from "../declarations/questions.ts";
 import { unRetourPenitentiaire } from "../p2/retour-penitentiaire.ts";
 import { type Context, given, type Inconnu } from "../question.ts";
@@ -137,4 +136,11 @@ function lisible(date: string): string {
   const [annee, mois, quantieme] = (jour ?? "").split("-");
   const lu = `${quantieme}/${mois}/${annee}`;
   return heure ? `${lu} à ${heure}` : lu;
+}
+
+// Le plus de trajets qu'un mois compte : une permission aller-retour toutes
+// les `semaines` semaines, deux trajets par permission, sur 31 jours.
+function trajetsMensuelsAuPlus(semaines: number | Inconnu): number | Inconnu {
+  if (semaines === undefined || semaines < 1) return undefined;
+  return 2 * Math.ceil(31 / (7 * semaines));
 }
