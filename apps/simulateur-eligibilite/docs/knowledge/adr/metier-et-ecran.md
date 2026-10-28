@@ -44,6 +44,10 @@
 > réponse ne change rien de ce que montre le résultat. L'ADR-19 est précisé :
 > chaque précision de R2 se lit sous les issues de son texte. Décisions de
 > Simon, au journal D-216 à D-226.
+>
+> **Mise à jour 2026-10-28, le tri des gardes d'utilité (#256).** Le graphe ne
+> remplace aucun `mattersWhile` : ils restent tous (ADR-24, conséquences). La
+> dernière phrase de l'ADR-23 ne vaut plus. Décision de Simon, au journal D-227.
 
 ## 1. Contexte & objectifs
 
@@ -732,8 +736,9 @@ généraliser l'exception : on l'isole et on la nomme.
 libellés, rappels, aides et bornes restent des fonctions du contexte. Les
 natures de Q3.2 ne voient plus de l'arrivée que ce que P2 en établit, puisque
 Q3.3 se choisit après. R2, R3 (ADR-21) et les faits (ADR-22) suivent la même
-forme. Le graphe de #196 pourra lire ce que lit chaque garde ; là où il dira
-qu'une réponse ne change plus le résultat, il remplacera `mattersWhile`.
+forme. Le graphe de #196 pourra lire ce que lit chaque garde ; ~~là où il dira
+qu'une réponse ne change plus le résultat, il remplacera `mattersWhile`~~. Il
+n'en remplace aucun (D-227).
 
 ### ADR-24 - Le socle saute une question que le graphe dit sans effet
 
@@ -781,8 +786,15 @@ distance ; les seeds gardent leurs cibles et leurs questions, que
 plus posée : elle sort, ou se déclare `alwaysAsked` en attendant l'éditeur.
 Une lecture du résultat qui ne se déclare pas dans sa branche fait poser des
 questions pour rien. Une lecture coûte environ 60 ms à froid par seed, 4 ms
-ensuite (R-10). Les `mattersWhile` restent, et s'ajoutent au graphe ; #256
-dira lesquels il remplace.
+ensuite (R-10).
+
+Les `mattersWhile` restent tous, et s'ajoutent au graphe (D-227). Les règles
+lisent les réponses sans regarder les gardes : seule une garde sait qu'une
+question ne se pose pas. Coupée seule, chacune laisse le graphe poser sa
+question dans au moins un des 53 parcours mesurés. Pour `issue-pmt`, la garde
+cache Q2.13.depart, que lisent les cases « départ » du cerfa. Q2.1, Q2.7 et
+Q2.13.depart cachent une réponse qui changerait l'issue ou le cerfa : elles
+remontent à l'éditeur.
 
 ## 3. Architecture cible
 
@@ -879,6 +891,7 @@ a-t-il besoin ?**
 | Ce que lit la complétude | 259 | ✅ |
 | Ce que lisent R2 et R3 | 260 | ✅ |
 | Le filtrage par le graphe | 255 | ✅ |
+| Le tri des gardes d'utilité | 256 | ✅ |
 
 ## 6. Risques & validations en attente
 
