@@ -6,7 +6,7 @@
 
 import type { ComponentType, ReactNode } from "react";
 import type { AnyFaits, CoreModel } from "../../core/socle/model";
-import type { Read } from "../../core/socle/questionnaire-engine/condition";
+import type { Value } from "../../core/socle/questionnaire-engine/condition";
 import type { GivenAnswers } from "../../core/socle/questionnaire-engine/given-answers";
 import type {
   AnyCibles,
@@ -15,13 +15,18 @@ import type {
 import type { BoundCerfa } from "./cerfa-mapping";
 
 /**
- * Ce qu'un résultat reçoit pour s'afficher : les cibles, les faits, et de quoi
- * lire une valeur du modèle sur les questions validées (`read(SENS_DU_DOCUMENT)`).
+ * Ce qu'un résultat reçoit pour s'afficher : les cibles, les faits, et ce qu'il
+ * lit des questions validées (son `reading`), que le socle a calculé. Il ne lit
+ * rien d'autre : ce qu'il lit se sait sans le dérouler (#254).
  */
-export type ResultatProps<Faits = AnyFaits, Cibles = AnyCibles> = {
+export type ResultatProps<
+  Faits = AnyFaits,
+  Cibles = AnyCibles,
+  Reading = unknown,
+> = {
   readonly cibles: Cibles;
   readonly faits: Faits;
-  readonly read: Read;
+  readonly reading: Reading;
 };
 
 /**
@@ -48,14 +53,15 @@ export type FirstResult = {
 export type Sheet = { title: string; intro?: ReactNode; body: ReactNode };
 
 /**
- * Ce que le second résultat reçoit : ce que lit le premier, sur les faits et
- * les cibles figés au verrou, et la date de complétion. Ce jour est celui que
- * `given.today()` lit dans le mapping du cerfa.
+ * Ce que reçoit ce qui tient la place de l'aperçu du cerfa : ce que reçoit le
+ * second résultat, sur les faits et les cibles figés au verrou, et la date de
+ * complétion. Ce jour est celui que `given.today()` lit.
  */
 export type CerfaInput<
   Faits extends AnyFaits = AnyFaits,
   Cibles = AnyCibles,
-> = ResultatProps<Faits, Cibles> & { readonly completedAt: Date };
+  Reading = unknown,
+> = ResultatProps<Faits, Cibles, Reading> & { readonly completedAt: Date };
 
 /**
  * Ce que le prescripteur est venu faire : vérifier une éligibilité
@@ -81,6 +87,8 @@ export type Model<
   Questions extends AnyQuestions = AnyQuestions,
   Faits extends AnyFaits = AnyFaits,
   Cibles extends AnyCibles = AnyCibles,
+  FirstReading = unknown,
+  CerfaReading = unknown,
 > = {
   /** Le métier : les questions, la préconisation, les seeds. */
   core: CoreModel<Questions, Faits, Cibles>;
@@ -88,13 +96,15 @@ export type Model<
   result: {
     /** Le titre du stepper, au-dessus du `h1` que le résultat donne. */
     title: string;
+    /** Ce que le résultat lit des questions validées, en une valeur. */
+    reading: Value<FirstReading>;
     /**
      * Le résultat de ces réponses. Une promesse quand il charge ses textes :
      * elle ne rejette pas, un échec de chargement est un résultat comme un
      * autre.
      */
     content: (
-      props: ResultatProps<Faits, Cibles>,
+      props: ResultatProps<Faits, Cibles, FirstReading>,
     ) => FirstResult | Promise<FirstResult>;
   };
   /** Le second résultat, après le complément : le cerfa. */
@@ -106,13 +116,18 @@ export type Model<
      * donne : celui de son stepper, qui est le `h1` de la page.
      */
     title: (cibles: Cibles) => string;
+    /**
+     * Ce que le texte du second résultat et ce qui tient la place de l'aperçu
+     * lisent des questions validées, en une valeur.
+     */
+    reading: Value<CerfaReading>;
     /** Le texte du second résultat, sous le stepper, avant les boutons. */
-    Resultat: ComponentType<ResultatProps<Faits, Cibles>>;
+    Resultat: ComponentType<ResultatProps<Faits, Cibles, CerfaReading>>;
     /**
      * Ce qui tient la place de l'aperçu du document, pour un cerfa que son PDF
      * ne remplit pas encore. Sans lui, ou s'il donne `null`, l'aperçu du PDF.
      */
-    standIn?: (props: CerfaInput<Faits, Cibles>) => ReactNode;
+    standIn?: (props: CerfaInput<Faits, Cibles, CerfaReading>) => ReactNode;
     /**
      * Le libellé de l'action qui verrouille. `null` : cette préconisation ne
      * complète rien, le bouton n'est pas posé. Il ne l'est pas non plus tant que
@@ -135,7 +150,9 @@ export function defineModel<
   Questions extends AnyQuestions,
   Faits extends AnyFaits,
   Cibles extends AnyCibles,
->(model: Model<Questions, Faits, Cibles>): Model {
+  FirstReading,
+  CerfaReading,
+>(model: Model<Questions, Faits, Cibles, FirstReading, CerfaReading>): Model {
   // Le socle ne lit aucune clé : il redonne au modèle ce que le modèle lui a
   // donné. L'effacement des types est donc sans risque, et il n'a lieu qu'ici.
   return model as unknown as Model;

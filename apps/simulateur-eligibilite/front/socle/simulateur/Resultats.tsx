@@ -54,10 +54,11 @@ export function CerfaResultat({
   const { answers } = state;
   const { faits, cibles } = locked.preconisation;
   const part = model.core.complement;
-  const { title, Resultat } = model.cerfa;
+  const { title, Resultat, reading: lecture } = model.cerfa;
   const all = [...pagesOf(model.core.questionnaire), ...part.pages];
   const trace = traceOf("cerfa", all, answers, locked.preconisation, cibles);
   const read = readOf(all, answers, locked.preconisation, completedAt);
+  const reading = read(lecture);
   return (
     <Frame
       title={title(cibles)}
@@ -65,21 +66,33 @@ export function CerfaResultat({
       trace={trace}
       DebugTrace={DebugTrace}
     >
-      <Resultat read={read} faits={faits} cibles={cibles} />
-      <div className="fr-btns-group fr-btns-group--inline-md fr-no-print">
-        <SecondaryButton onClick={() => onReopen(state)}>
-          Précédent
-        </SecondaryButton>
-        <SecondaryButton onClick={onRestart}>
-          Faire une nouvelle simulation
-        </SecondaryButton>
-      </div>
+      <Resultat reading={reading} faits={faits} cibles={cibles} />
+      <CerfaActions onReopen={() => onReopen(state)} onRestart={onRestart} />
       <Cerfa
         model={model}
-        input={{ read, faits, cibles, completedAt }}
+        read={read}
+        input={{ reading, faits, cibles, completedAt }}
         feedback={feedbackOf(model, answers)}
       />
     </Frame>
+  );
+}
+
+// Sous le texte : revenir au questionnaire, ou recommencer. Rien ne s'imprime.
+function CerfaActions({
+  onReopen,
+  onRestart,
+}: {
+  readonly onReopen: () => void;
+  readonly onRestart: () => void;
+}) {
+  return (
+    <div className="fr-btns-group fr-btns-group--inline-md fr-no-print">
+      <SecondaryButton onClick={onReopen}>Précédent</SecondaryButton>
+      <SecondaryButton onClick={onRestart}>
+        Faire une nouvelle simulation
+      </SecondaryButton>
+    </div>
   );
 }
 
@@ -138,18 +151,20 @@ export function SecondaryButton({ onClick, children }: ButtonProps) {
 // aperçu. L'avis le suit, une fois son PDF prêt.
 type CerfaProps = {
   model: Model;
+  /** Ce que lisent les entrées du cerfa. */
+  read: Read;
   input: CerfaInput;
   feedback: FeedbackOffer | null;
 };
 
-function Cerfa({ model, input, feedback }: CerfaProps) {
+function Cerfa({ model, read, input, feedback }: CerfaProps) {
   const { form, standIn, printLabel, downloadLabel } = model.cerfa;
   const bound = form(input.cibles);
   return (
     bound && (
       <CerfaDocument
         cerfa={bound.cerfa}
-        dto={dtoFrom(bound.mapping, input.read)}
+        dto={dtoFrom(bound.mapping, read)}
         date={input.completedAt}
         printLabel={printLabel}
         downloadLabel={downloadLabel}

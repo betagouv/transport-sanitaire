@@ -7,6 +7,7 @@
 import type { Cible } from "../decision-engine/cible.ts";
 import type { Address } from "./address.ts";
 import type { AskedQuestion } from "./asked-question.ts";
+import type { Reads } from "./condition.ts";
 import type { SeenAnswers } from "./question-context.ts";
 
 /**
@@ -86,6 +87,11 @@ export type Question<
    * réponse est effacée (`page-commit.ts`).
    */
   readonly dependencies: readonly string[];
+  /**
+   * Ce que lisent ses gardes, celles de ses options comprises : les réponses,
+   * les faits et les cibles qui décident si elle se pose, et ce qu'elle propose.
+   */
+  readonly guardReads: Reads;
   /**
    * La question telle qu'elle se pose, vu les réponses, si elle s'y pose. Ses incohérences lisent `earlier`, sans les pages suivantes.
    */
