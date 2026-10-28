@@ -7,7 +7,7 @@ import { describe, expect, it } from "vitest";
 import type { Cibles } from "../../../core/models/eligibilite/declarations/cibles";
 import { TRANSFERT_VERS_LA_PRISON } from "../../../core/models/eligibilite/p2/retour-penitentiaire";
 import { model } from "../../../front/models/eligibilite";
-import { ciblesDe, lectureDe } from "./reponses-de-la-permission";
+import { ciblesDe, lectureDe, luDe } from "./reponses-de-la-permission";
 import {
   faits,
   posee,
@@ -106,7 +106,7 @@ describe("un retour qui relève de l'organisation pénitentiaire (point 34)", ()
       title: "Ce retour relève de l’organisation pénitentiaire",
     });
     expect(resultat).not.toHaveProperty("sheet");
-    expect(model.cerfa.startLabel(cibles)).toBeNull();
+    expect(luDe(model.cerfa.startLabel, administratif)).toBeNull();
   });
 });
 

@@ -9,17 +9,13 @@
 import { describe, expect, it } from "vitest";
 import { CIBLES_ENUMEREES } from "../../../core/models/eligibilite/declarations/cibles";
 import { SEEDS } from "../../../core/models/eligibilite/seeds-catalogue";
-import {
-  type Trace,
-  traceDuResultat,
-} from "../../../front/models/eligibilite/r2/trace-du-resultat";
+import { traceDuResultat } from "../../../front/models/eligibilite/r2/trace-du-resultat";
 import { BRANCARD_20_KM, faits, type Reponses } from "./reponses-de-la-branche";
 import { lectureDe, PATIENT_SEUL } from "./reponses-de-la-permission";
 import { HAD_A_DOMICILE, SEJOUR } from "./reponses-du-transfert";
 
 // La trace de ces réponses, avec les cibles que calculent les règles.
-const traceDe = (reponses: Reponses): Trace =>
-  traceDuResultat(lectureDe(reponses));
+const traceDe = (reponses: Reponses) => traceDuResultat(lectureDe(reponses));
 
 const seed = (id: string): Reponses => {
   const trouvee = SEEDS.find((candidate) => candidate.id === id);
@@ -144,9 +140,14 @@ describe("la trace des dix seeds", () => {
 });
 
 describe("la trace, quand les réponses manquent ou ne comptent plus", () => {
-  it("donne les faits tels que la préconisation les établit", () => {
+  it("donne les faits qu'elle lit tels que la préconisation les établit", () => {
     const trace = traceDe(BRANCARD_20_KM);
-    expect(trace.faits).toEqual(faits(BRANCARD_20_KM));
+    const etablis: Readonly<Record<string, unknown>> = faits(BRANCARD_20_KM);
+    expect(trace.faits).toEqual(
+      Object.fromEntries(
+        Object.keys(trace.faits).map((nom) => [nom, etablis[nom]]),
+      ),
+    );
   });
 
   it("donne des critères vides quand Q1.2 ne se pose pas", () => {

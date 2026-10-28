@@ -16,6 +16,7 @@ export {
   type Condition,
   constant,
   type Value,
+  type ValueOf,
 } from "./questionnaire-engine/condition.ts";
 export { page } from "./questionnaire-engine/declared-page.ts";
 export { givenOf } from "./questionnaire-engine/given.ts";

@@ -16,18 +16,16 @@ export function auGabarit(
     ...modeleDeTest,
     cerfa: {
       ...cerfa,
-      form: (cibles) => {
-        const bound = cerfa.form(cibles);
-        return (
+      form: cerfa.form.compute(
+        (bound) =>
           bound && {
             ...bound,
             cerfa: {
               ...bound.cerfa,
               template: () => charge(bound.cerfa.template),
             },
-          }
-        );
-      },
+          },
+      ),
     },
   };
 }

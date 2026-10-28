@@ -11,19 +11,39 @@
 // une précision par `=== true`, `=== false` ou sa présence. « Je ne peux pas préciser » (Q1.3.a) n'est jamais
 // « Non ». Cinq raisons ne se prouvent par aucune de nos réponses (voir la
 // table) : leur condition est codée, elle ne devient jamais vraie, et la
-// raison n'est donc jamais choisie.
+// raison n'est donc jamais choisie. Elle déclare ce qu'elle lit des cibles et
+// des faits (`ce-que-lit-un-texte.ts`).
 
 import type { IssueNegative } from "../../../../../core/models/eligibilite/declarations/catalogue-resultats";
-import type { Inconnu } from "../../../../../core/models/eligibilite/question";
-import type { Trace } from "../trace-du-resultat";
+import {
+  given,
+  type Inconnu,
+} from "../../../../../core/models/eligibilite/question";
+import { luPar, type TraceDe } from "../ce-que-lit-un-texte";
 
 /** Une raison du catalogue : son texte, son code, sa priorité. */
 export type RaisonNonEligible = IssueNegative["reasons"][number];
 
+/** Ce que lisent le code de la raison et les conditions des raisons. */
+export const LU_PAR_LA_RAISON = luPar({
+  cibles: given.cibles(
+    "cible_reason_code",
+    "cible_issue_id",
+    "cible_motif_transport",
+  ),
+  faits: given.faits(
+    "fait_ald_liee",
+    "fait_ald_exonerante_3_ou_4",
+    "fait_mineur_soins_prolonges_reconnus",
+    "fait_serie_qualifiante",
+    "fait_exclusion_transport_prouvee",
+  ),
+});
+
 /** La raison de la fiche : la plus prioritaire que la trace prouve, ou le repli. */
 export function raisonNonEligible(
   issue: IssueNegative,
-  trace: Trace,
+  trace: LuParLaRaison,
 ): RaisonNonEligible {
   const prouvee = issue.reasons
     .filter(
@@ -38,7 +58,9 @@ export function raisonNonEligible(
 
 // ---- implémentation ----
 
-type Condition = (trace: Trace) => boolean;
+type LuParLaRaison = TraceDe<typeof LU_PAR_LA_RAISON>;
+
+type Condition = (trace: LuParLaRaison) => boolean;
 
 const REPLI = "AUCUN_GENERIQUE";
 
@@ -49,7 +71,7 @@ const REPLI = "AUCUN_GENERIQUE";
 // nous ne les posons pas. Une non-éligibilité sans motif de transport
 // (`cible_motif_transport` à « non », la condition même de la règle) vaut alors
 // `AUCUN_MOTIF_TRANSPORT`, comme dans la trace de l'éditeur.
-function codeDeLaRaison({ cibles }: Trace): string | Inconnu {
+function codeDeLaRaison({ cibles }: LuParLaRaison): string | Inconnu {
   const code = cibles.cible_reason_code.value;
   if (code != null) return code;
   const sansMotif =
@@ -71,15 +93,15 @@ function familleDeSoin(numero: number): Condition {
 }
 
 // Un séjour réel est prouvé : le texte de la dialyse ne dirait plus le vrai.
-function sansSejour({ sejourReel }: Trace): boolean {
+function sansSejour({ sejourReel }: LuParLaRaison): boolean {
   return sejourReel !== true;
 }
 
-function aldConfirmee({ precisions }: Trace): boolean {
+function aldConfirmee({ precisions }: LuParLaRaison): boolean {
   return precisions.aldRecognized === true;
 }
 
-function aldLiee(trace: Trace): boolean {
+function aldLiee(trace: LuParLaRaison): boolean {
   return aldConfirmee(trace) && trace.precisions.aldRelated === true;
 }
 

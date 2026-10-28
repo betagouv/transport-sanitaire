@@ -6,29 +6,38 @@
 // (D-104 : une simulation se fait en une fois, sur le modèle chargé à
 // l'ouverture). Un fait inconnu est une clé absente, jamais un « non ».
 //
-// R2 ne lit des réponses que `LU_PAR_R2` : le socle le calcule et le lui passe.
-// Ce que R2 lit se sait donc sans le dérouler (#254).
+// R2 ne lit que `LU_PAR_R2` : le socle le calcule et le lui passe. Ce que R2
+// lit des réponses se sait donc sans le dérouler (#254), et ce qu'il lit des
+// cibles et des faits est l'union de ce que ses textes déclarent (#260).
 
 import type { Cibles } from "../../../../core/models/eligibilite/declarations/cibles";
 import type { Faits } from "../../../../core/models/eligibilite/declarations/faits";
 import { dansLeCircuit } from "../../../../core/models/eligibilite/p2/retour-penitentiaire";
 import { given } from "../../../../core/models/eligibilite/question";
-import type { Value } from "../../../../core/socle";
+import type { ValueOf } from "../../../../core/socle";
 import type { ResultatProps } from "../../../socle";
+import { type Lu, luPar, type TraceDe } from "./ce-que-lit-un-texte";
+import { LU_PAR_LA_FICHE_NEGATIVE } from "./fiche-negative/texte-de-la-fiche-negative";
+import { LU_PAR_LA_FICHE_POSITIVE } from "./fiche-positive/texte-de-la-fiche-positive";
 import {
   PRECISIONS,
   type Precisions,
   UN_SEJOUR_REEL,
 } from "./precisions-du-resultat";
+import { LU_PAR_LE_PRESCRIPTEUR } from "./prescripteur/texte-du-prescripteur";
 
-/** Ce que R2 reçoit du socle : les faits, les cibles, et `LU_PAR_R2`. */
-export type Lecture = ResultatProps<Faits, Cibles, LuParR2>;
+/** Ce que R2 reçoit du socle : `LU_PAR_R2`. */
+export type Lecture = ResultatProps<LuParR2>;
 
-/** Ce que les textes de R2 lisent, pour des réponses et leurs cibles. */
-export type Trace = {
-  readonly cibles: Cibles;
-  /** Les faits tels que les réponses les établissent. */
-  readonly faits: Faits;
+/**
+ * Tout ce que les textes de R2 peuvent lire, pour des réponses et leurs
+ * cibles. Un texte n'en reçoit que ce qu'il déclare (`TraceDe`).
+ */
+export type Trace = Lu<keyof Cibles & string, keyof Faits & string> &
+  ReponsesLues;
+
+/** Ce que les textes de R2 lisent des réponses, hors des faits et des cibles. */
+export type ReponsesLues = {
   /**
    * Les numéros de Q1.2 réellement choisis, tels que les réponses les disent.
    * Vide si Q1.2 ne s'est pas posée (Q1.1 prouve alors qu'elle ne s'applique
@@ -51,16 +60,14 @@ export type Trace = {
   readonly precisions: Precisions;
 };
 
-/** Ce que R2 lit des réponses validées, hors des faits et des cibles. */
-export type LuParR2 = {
-  /** Le trajet reste dans le circuit de prescription. */
-  readonly dansLeCircuit: boolean;
-  readonly trace: Omit<Trace, "cibles" | "faits">;
-};
+/** Ce que R2 lit. */
+export type LuParR2 = ValueOf<typeof LU_PAR_R2>;
 
-/** La trace de ces réponses, sur les questions validées. */
-export function traceDuResultat({ reading, faits, cibles }: Lecture): Trace {
-  return { cibles, faits, ...reading.trace };
+/** La trace de ces réponses : ce que lisent les textes de R2. */
+export function traceDuResultat({
+  reading,
+}: Lecture): TraceDe<typeof LU_PAR_LES_TEXTES> {
+  return { ...reading.textes, ...reading.reponses };
 }
 
 // Q2.8.5 dit si la permission se répète. Sans réponse, la clé reste absente.
@@ -94,8 +101,21 @@ const LU_DES_REPONSES = given
     precisions,
   }));
 
-/** Tout ce que R2 lit des réponses validées. */
-export const LU_PAR_R2: Value<LuParR2> = given.all({
+// Ce que lisent les textes de R2 : les deux fiches et le prescripteur.
+const LU_PAR_LES_TEXTES = luPar(
+  {},
+  LU_PAR_LA_FICHE_POSITIVE,
+  LU_PAR_LA_FICHE_NEGATIVE,
+  LU_PAR_LE_PRESCRIPTEUR,
+);
+
+/**
+ * Tout ce que R2 lit : le circuit, l'issue qui choisit le texte, ce que lisent
+ * les textes, et ce qu'ils tirent des réponses validées.
+ */
+export const LU_PAR_R2 = given.all({
   dansLeCircuit,
-  trace: LU_DES_REPONSES,
+  issue: given.cible("cible_issue_id"),
+  textes: LU_PAR_LES_TEXTES,
+  reponses: LU_DES_REPONSES,
 });

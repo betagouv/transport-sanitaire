@@ -12,6 +12,8 @@
 // éventuelles parties terrestres, sur les trois cartes comme dans la
 // projection de l'éditeur. Il n'a aucun badge : aucun besoin terrestre n'est
 // établi (§7.3 du contrat).
+//
+// Les deux déclarent ce qu'elles lisent des cibles (`ce-que-lit-un-texte.ts`).
 
 import type {
   AucunTexte,
@@ -19,8 +21,11 @@ import type {
   IssuePositive,
 } from "../../../../../core/models/eligibilite/declarations/catalogue-resultats";
 import type { Cibles } from "../../../../../core/models/eligibilite/declarations/cibles";
-import type { Trace } from "../trace-du-resultat";
+import { given } from "../../../../../core/models/eligibilite/question";
+import { luPar, type TraceDe } from "../ce-que-lit-un-texte";
 import {
+  LU_PAR_LA_PORTEE,
+  LU_PAR_LE_PARTAGE,
   type Partage,
   partageDuTransport,
   porteeDuTrajet,
@@ -33,6 +38,19 @@ export type CarteAffichee = {
   readonly retenue: boolean;
 };
 
+/** Ce que lisent les cartes et les badges : le mode et ses besoins. */
+export const LU_PAR_LES_CARTES = luPar(
+  {
+    cibles: given.cibles(
+      "cible_mode_id",
+      "cible_fauteuil_roulant",
+      "cible_ambulance_equipement_bariatrique",
+    ),
+  },
+  LU_PAR_LA_PORTEE,
+  LU_PAR_LE_PARTAGE,
+);
+
 /**
  * Les trois cartes de mode. Celle de la situation du patient est détaillée
  * quand le catalogue a la carte de ses critères, et reste la carte fixe sinon.
@@ -41,7 +59,7 @@ export type CarteAffichee = {
  */
 export function cartesDeLaFiche(
   issue: IssuePositive,
-  trace: Trace,
+  trace: LuParLesCartes,
 ): readonly CarteAffichee[] {
   const rang = rangDeLaCarte(trace.cibles);
   const detail = carteDetaillee(issue, trace);
@@ -61,7 +79,7 @@ export function cartesDeLaFiche(
  */
 export function badgesDuResultat(
   badges: CatalogueResultats["badges"],
-  trace: Trace,
+  trace: LuParLesCartes,
 ): readonly string[] {
   const { cibles } = trace;
   const mode = cibles.cible_mode_id.value;
@@ -83,6 +101,8 @@ export function badgesDuResultat(
 
 // ---- implémentation ----
 
+type LuParLesCartes = TraceDe<typeof LU_PAR_LES_CARTES>;
+
 type ModeSanitaire = "TAP" | "TPMR" | "AMBULANCE";
 
 // Les critères que porte la carte de chaque mode : 1 à 5 pour un VSL ou un
@@ -97,7 +117,7 @@ const FAMILLES: Readonly<Record<string, readonly number[]>> = {
  * Les critères de Q1.2 que la carte du mode peut porter. Le fauteuil est
  * ajouté s'il est prouvé : c'est le même fait que le critère 6.
  */
-function criteresDeLaCarte(trace: Trace): readonly number[] {
+function criteresDeLaCarte(trace: LuParLesCartes): readonly number[] {
   const famille = FAMILLES[trace.cibles.cible_mode_id.value ?? ""];
   if (!famille) return [];
   const fauteuil = trace.cibles.cible_fauteuil_roulant.isOui();
@@ -113,7 +133,7 @@ function estSanitaire(
 }
 
 // Les cartes fixes vont du déplacement par ses propres moyens à l'ambulance.
-function rangDeLaCarte(cibles: Cibles): number {
+function rangDeLaCarte(cibles: LuParLesCartes["cibles"]): number {
   if (cibles.cible_mode_id.is("AMBULANCE")) return 2;
   return estSanitaire(cibles.cible_mode_id.value) ? 1 : 0;
 }
@@ -132,7 +152,7 @@ function badgeDuCritere(
 // La carte détaillée dont le mode, le partage, la corpulence et les critères
 // sont exactement ceux de la trace. Un partage que les réponses ne disent pas
 // n'a pas de carte : la carte fixe, qui n'en dit rien, reste.
-function carteDetaillee(issue: IssuePositive, trace: Trace) {
+function carteDetaillee(issue: IssuePositive, trace: LuParLesCartes) {
   const { cibles } = trace;
   const mode = cibles.cible_mode_id.value;
   if (!estSanitaire(mode)) return undefined;

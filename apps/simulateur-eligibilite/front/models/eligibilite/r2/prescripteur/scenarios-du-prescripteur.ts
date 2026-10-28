@@ -3,16 +3,24 @@
 //
 // L'établissement, la permission et la convocation se choisissent par leur
 // contexte. La caisse se choisit par les points que les règles laissent
-// ouverts (`scenarios-de-la-caisse.ts`).
+// ouverts (`scenarios-de-la-caisse.ts`) : il lit ce qu'elle lit
+// (`ce-que-lit-un-texte.ts`).
 
 import type {
   AucunScenario,
   IssuePrescripteur,
   ScenarioPrescripteur,
 } from "../../../../../core/models/eligibilite/declarations/catalogue-resultats";
+import type { TraceDe } from "../ce-que-lit-un-texte";
 import type { NonProuve } from "../precisions-du-resultat";
-import type { Trace } from "../trace-du-resultat";
-import { scenariosDeLaCaisse } from "./scenarios-de-la-caisse";
+import type { ReponsesLues } from "../trace-du-resultat";
+import {
+  LU_PAR_LA_CAISSE,
+  scenariosDeLaCaisse,
+} from "./scenarios-de-la-caisse";
+
+/** Ce que lisent les scénarios du prescripteur : ce que lit la caisse. */
+export const LU_PAR_LES_SCENARIOS = LU_PAR_LA_CAISSE;
 
 /** Les issues dont le texte est un scénario de l'éditeur. */
 export type IssueDuPrescripteur =
@@ -30,7 +38,7 @@ export type IssueDuPrescripteur =
 export function scenariosDuPrescripteur(
   issue: IssueDuPrescripteur,
   catalogue: IssuePrescripteur,
-  trace: Trace,
+  trace: TraceDe<typeof LU_PAR_LES_SCENARIOS>,
 ): readonly ScenarioPrescripteur[] {
   if (issue === "ISSUE_CAISSE") return scenariosDeLaCaisse(catalogue, trace);
   const scenario = scenarioDuContexte(catalogue, contexteDe(issue, trace));
@@ -43,7 +51,7 @@ type Contexte = Readonly<Record<string, string | undefined>>;
 
 function contexteDe(
   issue: Exclude<IssueDuPrescripteur, "ISSUE_CAISSE">,
-  { precisions }: Trace,
+  { precisions }: ReponsesLues,
 ): Contexte | NonProuve {
   if (issue === "ISSUE_ETABLISSEMENT") return precisions.article80Context;
   if (issue === "ISSUE_PERMISSION_PATIENT") return precisions.permissionContext;

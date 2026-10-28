@@ -13,25 +13,26 @@
 // (`s3141/`, #158), la PMT (`s3138g/`, #160) et la DAP (`s3139h/`, #161).
 
 import type { Cibles } from "../../../../core/models/eligibilite/declarations/cibles";
+import { given } from "../../../../core/models/eligibilite/question";
 import { S3138G } from "./s3138g/s3138g";
 import { S3139H } from "./s3139h/s3139h";
 import { S3141 } from "./s3141/s3141";
-
-/** Le document que cette préconisation complète. `null` : aucun. */
-export function documentDuComplement(cibles: Cibles) {
-  const support = cibles.cible_support_id.value;
-  return support == null || support === "AUCUN" ? null : DOCUMENTS[support];
-}
-
-// ---- implémentation ----
 
 type Support = Exclude<
   NonNullable<Cibles["cible_support_id"]["value"]>,
   "AUCUN"
 >;
 
-const DOCUMENTS: Record<Support, typeof S3141> = {
+// Les documents du modèle, par support.
+const DOCUMENTS: Readonly<Record<Support, typeof S3141>> = {
   S3138g: S3138G,
   S3139h: S3139H,
   S3141,
 };
+
+/** Le document que cette préconisation complète. `null` : aucun. */
+export const DOCUMENT_DU_COMPLEMENT = given
+  .cible("cible_support_id")
+  .compute(({ value: support }) =>
+    support == null || support === "AUCUN" ? null : DOCUMENTS[support],
+  );

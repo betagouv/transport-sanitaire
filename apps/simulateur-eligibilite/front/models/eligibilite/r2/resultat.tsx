@@ -18,7 +18,7 @@ export function eligibilite(
   lecture: Lecture,
 ): FirstResult | Promise<FirstResult> {
   if (!lecture.reading.dansLeCircuit) return ORIENTATION_PENITENTIAIRE;
-  const issue = lecture.cibles.cible_issue_id.value;
+  const issue = lecture.reading.issue.value;
   if (!issue) return SANS_ISSUE;
   if (issue === "ISSUE_NON_ELIGIBLE") return resultatNegatif(lecture);
   if (estSansFiche(issue)) return resultatDuPrescripteur({ ...lecture, issue });

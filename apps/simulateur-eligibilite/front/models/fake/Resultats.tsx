@@ -11,10 +11,9 @@
 
 import type { ReactNode } from "react";
 import type { Cibles } from "../../../core/models/fake/declarations/cibles";
-import type { Faits } from "../../../core/models/fake/declarations/faits";
 import { SANS_COMMANDE } from "../../../core/models/fake/preconisation";
 import { given } from "../../../core/models/fake/question";
-import type { Value } from "../../../core/socle";
+import type { ValueOf } from "../../../core/socle";
 import {
   Disclosure,
   type FirstResult,
@@ -31,58 +30,59 @@ import grandeTasse from "./illustrations/grande-tasse.svg";
 import tasse from "./illustrations/tasse.svg";
 import verreGlace from "./illustrations/verre-glace.svg";
 
-type Props = ResultatProps<Faits, Cibles>;
+// La boisson commandée, et si son lait tourne.
+const COMMANDE = given.cible("commande");
+const LAIT_TOURNE = given.cible("lait_tourne");
 
-/** Ce que le premier résultat lit des réponses : les façons de servir. */
-export type LuParLeResultat = { readonly service: readonly string[] };
-
-export const LU_PAR_LE_RESULTAT: Value<LuParLeResultat> = given.all({
+/** Ce que lit le premier résultat : la commande, son lait, les façons de servir. */
+export const LU_PAR_LE_RESULTAT = given.all({
+  commande: COMMANDE,
+  tourne: LAIT_TOURNE,
   service: given
     .question("service")
     .answer()
     .compute((service) => service.checkedBoxes()),
 });
 
+export type LuParLeResultat = ValueOf<typeof LU_PAR_LE_RESULTAT>;
+
 export function resultatDeLaCommande({
   reading,
-  cibles,
-}: ResultatProps<Faits, Cibles, LuParLeResultat>): FirstResult {
-  if (cibles.commande.is(SANS_COMMANDE)) return RIEN_A_SERVIR;
+}: ResultatProps<LuParLeResultat>): FirstResult {
+  if (reading.commande.is(SANS_COMMANDE)) return RIEN_A_SERVIR;
   return {
     title: "La commande est prête à être complétée",
-    intro: `Commande : ${cibles.commande.value}.`,
-    body: <PageDeLaCommande service={reading.service} cibles={cibles} />,
+    intro: `Commande : ${reading.commande.value}.`,
+    body: <PageDeLaCommande {...reading} />,
   };
 }
 
-/** Ce que le second résultat lit des réponses : la quantité, l'adresse. */
-export type LuParLaCommandeCompletee = {
-  readonly quantite: string;
-  readonly adresse: string | null;
-};
+/** Ce que lit le second résultat : la commande, la quantité, l'adresse. */
+export const LU_PAR_LA_COMMANDE_COMPLETEE = given.all({
+  commande: COMMANDE,
+  quantite: given
+    .question("quantite")
+    .answer()
+    .compute(({ value }) => String(value)),
+  adresse: given
+    .question("adresse")
+    .answer()
+    .compute((adresse) =>
+      adresse.hasAnswer() ? enUneLigne(adresse.value) : null,
+    ),
+});
 
-export const LU_PAR_LA_COMMANDE_COMPLETEE: Value<LuParLaCommandeCompletee> =
-  given.all({
-    quantite: given
-      .question("quantite")
-      .answer()
-      .compute(({ value }) => String(value)),
-    adresse: given
-      .question("adresse")
-      .answer()
-      .compute((adresse) =>
-        adresse.hasAnswer() ? enUneLigne(adresse.value) : null,
-      ),
-  });
+export type LuParLaCommandeCompletee = ValueOf<
+  typeof LU_PAR_LA_COMMANDE_COMPLETEE
+>;
 
 export function CommandeCompletee({
   reading,
-  cibles,
-}: ResultatProps<Faits, Cibles, LuParLaCommandeCompletee>) {
+}: ResultatProps<LuParLaCommandeCompletee>) {
   return (
     <>
       <p className="fr-text--lead">
-        Commande : {cibles.commande.value}, {reading.quantite} tasses
+        Commande : {reading.commande.value}, {reading.quantite} tasses
       </p>
       {reading.adresse && <p>Facture à envoyer : {reading.adresse}</p>}
       <p>
@@ -156,14 +156,11 @@ function FicheDuClient() {
   );
 }
 
-function PageDeLaCommande({
-  service,
-  cibles,
-}: LuParLeResultat & Pick<Props, "cibles">) {
+function PageDeLaCommande({ commande, tourne, service }: LuParLeResultat) {
   return (
     <>
-      <Pourquoi cibles={cibles} />
-      {cibles.lait_tourne.isInconnue() && (
+      <Pourquoi commande={commande} tourne={tourne} />
+      {tourne.isInconnue() && (
         <Panel variant="blue" title="Questions à poser au service">
           <ul>
             <li>Le thé sera-t-il servi avec du citron ?</li>
@@ -189,17 +186,20 @@ function PageDeLaCommande({
 
 // L'encadré gris : la commande, la mise en garde, puis ce que la commande a
 // pris en compte, déplié.
-function Pourquoi({ cibles }: { cibles: Cibles }) {
+function Pourquoi({
+  commande,
+  tourne,
+}: Pick<LuParLeResultat, "commande" | "tourne">) {
   return (
     <Panel variant="grey" title="Pourquoi ce résultat ?" divided>
       <Element titre="La commande">
-        Les réponses demandent : {cibles.commande.value}.
+        Les réponses demandent : {commande.value}.
       </Element>
-      <MiseEnGarde tourne={cibles.lait_tourne} />
+      <MiseEnGarde tourne={tourne} />
       <Disclosure summary="Ce que la commande a pris en compte">
         <ul>
-          <li>Boisson : {cibles.commande.value}</li>
-          <li>Lait et citron : {etatDuLait(cibles.lait_tourne)}</li>
+          <li>Boisson : {commande.value}</li>
+          <li>Lait et citron : {etatDuLait(tourne)}</li>
         </ul>
       </Disclosure>
     </Panel>

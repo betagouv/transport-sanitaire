@@ -11,12 +11,12 @@
 // l'issue, pas sur le support.
 
 import type { Cibles } from "../../../../core/models/eligibilite/declarations/cibles";
+import { given } from "../../../../core/models/eligibilite/question";
 
 /** Le titre de R3, selon le document que la préconisation complète. */
-export function titreDuResultat(cibles: Cibles): string {
-  const issue = cibles.cible_issue_id.value;
-  return (issue && TITRES[issue]) ?? PRESCRIPTION;
-}
+export const TITRE_DU_RESULTAT = given
+  .cible("cible_issue_id")
+  .compute(({ value: issue }) => (issue && TITRES[issue]) ?? PRESCRIPTION);
 
 /** Le texte de R3, le même pour chaque document (`r3Text`). */
 export const TEXTE_DU_RESULTAT =

@@ -5,20 +5,28 @@
 // Les quatre phrases ne reprennent pas les motifs administratifs de la
 // prescription médicale de transport (README de l'éditeur). Sans réponse à
 // Q2.8.5, le catalogue ne dit pas quoi montrer : aucune phrase n'est choisie
-// à sa place.
+// à sa place. La phrase déclare ce qu'elle lit des cibles
+// (`ce-que-lit-un-texte.ts`) ; le motif n'en lit rien.
 
 import type {
   AucunTexte,
   CatalogueResultats,
 } from "../../../../../core/models/eligibilite/declarations/catalogue-resultats";
-import type { Trace } from "../trace-du-resultat";
+import { given } from "../../../../../core/models/eligibilite/question";
+import { luPar, type TraceDe } from "../ce-que-lit-un-texte";
+import type { ReponsesLues } from "../trace-du-resultat";
 
 type IssueS3141 = CatalogueResultats["issues"]["ISSUE_S3141"];
+
+/** Ce que lit la phrase de la permission : l'ambulance. */
+export const LU_PAR_LA_PERMISSION = luPar({
+  cibles: given.cibles("cible_mode_ambulance"),
+});
 
 /** La phrase qui dit pourquoi la permission ouvre le transport. */
 export function phraseDeLaPermission(
   issue: IssueS3141,
-  trace: Trace,
+  trace: TraceDe<typeof LU_PAR_LA_PERMISSION>,
 ): string | AucunTexte {
   if (trace.permissionRepeated === undefined) return undefined;
   const repetee = trace.permissionRepeated ? "R" : "U";
@@ -29,7 +37,7 @@ export function phraseDeLaPermission(
 /** Le motif administratif du modus : une permission, ou plusieurs. */
 export function motifDeLaPermission(
   issue: IssueS3141,
-  trace: Trace,
+  trace: ReponsesLues,
 ): string | AucunTexte {
   if (trace.permissionRepeated === undefined) return undefined;
   const suffixe = trace.permissionRepeated ? "N" : "1";

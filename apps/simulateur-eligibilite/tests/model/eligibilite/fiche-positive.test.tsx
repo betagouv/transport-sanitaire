@@ -172,13 +172,11 @@ describe("la fiche de la seed issue-s3141 (permission d'un mineur)", () => {
 describe("une issue positive sans mode de transport", () => {
   it("donne un résultat terminal, sans fiche : rien n'est à compléter", async () => {
     const seed = SEEDS.find((candidate) => candidate.id === "issue-pmt");
-    const lecture = lectureDe(seed?.answers as Reponses);
-    const cibles = {
-      ...lecture.cibles,
+    const lecture = lectureDe(seed?.answers as Reponses, {
       cible_mode_id: Cible.of<"TAP">(undefined),
-    };
+    });
 
-    const resultat = await eligibilite({ ...lecture, cibles });
+    const resultat = await eligibilite(lecture);
 
     expect(resultat.title).toBe("Le mode de transport n’a pas pu être choisi");
     expect(resultat.terminal).toBe(true);

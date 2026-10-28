@@ -5,10 +5,18 @@
 // Le catalogue range ces termes dans `lexicon.other`, par nom. Une précision
 // que les réponses ne prouvent pas prend la valeur commune, la dernière de
 // chaque nom : Q2.3.2 ne distingue pas l'avion du bateau, et aucune question
-// ne dit CAMSP ou CMPP. Rien n'est jamais deviné.
+// ne dit CAMSP ou CMPP. Rien n'est jamais deviné. Elle déclare ce qu'elle lit
+// des cibles (`ce-que-lit-un-texte.ts`).
 
 import type { IssuePositive } from "../../../../../core/models/eligibilite/declarations/catalogue-resultats";
-import type { Trace } from "../trace-du-resultat";
+import { given } from "../../../../../core/models/eligibilite/question";
+import { luPar, type TraceDe } from "../ce-que-lit-un-texte";
+import type { ReponsesLues } from "../trace-du-resultat";
+
+/** Ce que lisent les autres termes : l'avion ou le bateau de l'accord. */
+export const LU_PAR_LES_AUTRES_TERMES = luPar({
+  cibles: given.cibles("cible_dap_motif_avion_bateau"),
+});
 
 /**
  * Remplace `{segment_ligne_reguliere}`, `{cadre_camsp_cmpp}`,
@@ -16,7 +24,7 @@ import type { Trace } from "../trace-du-resultat";
  */
 export function avecLesAutresTermes(
   issue: IssuePositive,
-  trace: Trace,
+  trace: TraceDe<typeof LU_PAR_LES_AUTRES_TERMES>,
   texte: string,
 ): string {
   const avionBateau = trace.cibles.cible_dap_motif_avion_bateau.isOui();
@@ -53,7 +61,7 @@ function terme(issue: IssuePositive, nom: string, rang: number | null): string {
 }
 
 // L'avion, le bateau, ou les deux : seulement si une précision le prouve.
-function rangDuSegment(trace: Trace): number | null {
+function rangDuSegment(trace: ReponsesLues): number | null {
   switch (trace.precisions.lineType) {
     case "avion":
       return 0;
@@ -66,7 +74,7 @@ function rangDuSegment(trace: Trace): number | null {
   }
 }
 
-function rangDuCadre(trace: Trace): number | null {
+function rangDuCadre(trace: ReponsesLues): number | null {
   switch (trace.precisions.camspType) {
     case "CAMSP":
       return 0;

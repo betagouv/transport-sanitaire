@@ -6,7 +6,8 @@
 // fichier choisit le scénario, puis range ses textes dans la page : il n'en
 // écrit aucun.
 // `factsReference` n'est pas repris : l'éditeur le dit phrase de démonstrateur,
-// que le prescripteur ne doit pas lire comme des faits du dossier.
+// que le prescripteur ne doit pas lire comme des faits du dossier. Il lit ce
+// que lisent les scénarios (`ce-que-lit-un-texte.ts`).
 
 import type {
   AucunScenario,
@@ -16,11 +17,15 @@ import type {
   IssuePrescripteur,
   ScenarioPrescripteur,
 } from "../../../../../core/models/eligibilite/declarations/catalogue-resultats";
-import type { Trace } from "../trace-du-resultat";
+import type { TraceDe } from "../ce-que-lit-un-texte";
 import {
   type IssueDuPrescripteur,
+  LU_PAR_LES_SCENARIOS,
   scenariosDuPrescripteur,
 } from "./scenarios-du-prescripteur";
+
+/** Ce que lit le texte du prescripteur : ce que lisent ses scénarios. */
+export const LU_PAR_LE_PRESCRIPTEUR = LU_PAR_LES_SCENARIOS;
 
 /** Les issues dont la page est celle du prescripteur, sans fiche patient. */
 export type IssueSansFiche =
@@ -67,7 +72,7 @@ export function estSansFiche(
 export function texteDuPrescripteur(
   catalogue: CatalogueResultats,
   issue: IssueSansFiche,
-  trace: Trace,
+  trace: TraceDe<typeof LU_PAR_LE_PRESCRIPTEUR>,
 ): TexteDuPrescripteur {
   if (issue === "ISSUE_DAP_ETRANGER_A_EXAMINER") {
     return texteDeLEtranger(catalogue.issues[issue]);

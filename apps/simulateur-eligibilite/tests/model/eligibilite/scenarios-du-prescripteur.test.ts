@@ -15,18 +15,21 @@ import {
   type Trace,
   traceDuResultat,
 } from "../../../front/models/eligibilite/r2/trace-du-resultat";
+
+type LuParLesScenarios = Parameters<typeof scenariosDuPrescripteur>[2];
+
 import { lectureDe } from "./reponses-de-la-permission";
 import { faux, trace, vrai } from "./traces-du-prescripteur";
 
 const { issues } = await catalogueResultats();
 
-const traceDeLaSeed = (id: string): Trace => {
+const traceDeLaSeed = (id: string): LuParLesScenarios => {
   const seed = SEEDS.find((candidate) => candidate.id === id);
   if (!seed) throw new Error(`Seed inconnue : ${id}`);
   return traceDuResultat(lectureDe(seed.answers));
 };
 
-const ids = (issue: IssueDuPrescripteur, depuis: Trace) =>
+const ids = (issue: IssueDuPrescripteur, depuis: LuParLesScenarios) =>
   scenariosDuPrescripteur(issue, issues[issue], depuis).map(({ id }) => id);
 
 describe("les scénarios des seeds", () => {
