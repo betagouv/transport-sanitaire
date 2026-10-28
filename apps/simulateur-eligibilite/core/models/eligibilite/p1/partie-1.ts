@@ -2,7 +2,6 @@
 // transport. Les options et leurs libellés viennent des déclarations.
 
 import { page, type QuestionnairePart } from "../../../socle/index.ts";
-import { AideDuPatient } from "../concepts/aide-du-patient.ts";
 import type { Questions } from "../declarations/questions.ts";
 import { given, question } from "../question.ts";
 
@@ -116,7 +115,7 @@ export const P1: Partie<undefined> = {
         // Le catalogue demande que le libellé précise « en toute autonomie »
         // ou « avec l’aide d’un proche », sans donner la phrase.
         .labelFrom(({ answers }) =>
-          AideDuPatient.of(answers).avecUnProche()
+          answers.question("Q1.1").is("2_AVEC_UN_PROCHE")
             ? "Le patient pouvant réaliser le trajet avec l’aide d’un proche, sans intervention d’un professionnel, merci de préciser sa préférence en matière de transport."
             : "Le patient pouvant réaliser le trajet en toute autonomie, sans intervention d’un professionnel, merci de préciser sa préférence en matière de transport.",
         )

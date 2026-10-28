@@ -6,7 +6,6 @@
 // (D-104 : une simulation se fait en une fois, sur le modèle chargé à
 // l'ouverture). Un fait inconnu est une clé absente, jamais un « non ».
 
-import { numeroDeLOption } from "../../../../core/models/eligibilite/concepts/numero-de-l-option";
 import type { Cibles } from "../../../../core/models/eligibilite/declarations/cibles";
 import type { Faits } from "../../../../core/models/eligibilite/declarations/faits";
 import { given } from "../../../../core/models/eligibilite/question";
@@ -70,7 +69,10 @@ const LU_DES_REPONSES = given
     criteres: given
       .question("Q1.2")
       .answer()
-      .compute((aides) => aides.checkedBoxes().map(numeroDeLOption)),
+      // Le slug porte en tête le numéro de l'option au catalogue (D-75).
+      .compute((aides) =>
+        aides.checkedBoxes().map((option) => Number.parseInt(option, 10)),
+      ),
     repetition: REPETITION,
     sejourReel: UN_SEJOUR_REEL,
     precisions: PRECISIONS,
