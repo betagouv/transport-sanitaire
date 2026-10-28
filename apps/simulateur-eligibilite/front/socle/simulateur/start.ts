@@ -14,6 +14,7 @@ import {
   type Reading,
 } from "../../../core/socle/questionnaire-engine/questionnaire";
 import type { Model } from "../model";
+import { readOf } from "./Resultats";
 
 /** Ce que le verrou fige : les réponses d'avant, et leur préconisation. */
 export type Locked = { answers: Answers; preconisation: Preconisation };
@@ -82,7 +83,10 @@ function screenAfterLock(model: Model, answers: Answers): Screen | NotPastLock {
   );
   const locked = lock(model, before);
   const { cibles } = locked.preconisation;
-  if (form(cibles) === null) return undefined;
+  const pages = pagesOf(model.core.questionnaire);
+  if (readOf(pages, before, locked.preconisation, new Date())(form) === null) {
+    return undefined;
+  }
   const read = new Questionnaire(part.pages).readWith(answers, cibles);
   const state = stateOf(read, answers);
   return read.isComplete()

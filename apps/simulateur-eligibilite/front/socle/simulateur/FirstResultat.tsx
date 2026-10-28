@@ -8,10 +8,8 @@
 
 import { type ComponentType, type ReactNode, useEffect, useState } from "react";
 import { type Preconisation, preconisationOf } from "../../../core/socle/model";
-import type {
-  Answers,
-  AnyCibles,
-} from "../../../core/socle/questionnaire-engine/question";
+import type { Read } from "../../../core/socle/questionnaire-engine/condition";
+import type { Answers } from "../../../core/socle/questionnaire-engine/question";
 import { pagesOf } from "../../../core/socle/questionnaire-engine/question";
 import type { QuestionnaireState } from "../../../core/socle/questionnaire-engine/questionnaire";
 import type { FirstResult, Model } from "../model";
@@ -47,12 +45,13 @@ export function FirstResultat({ model, state, DebugTrace, ...on }: Props) {
   const preconisation = preconisationOf(model.core, answers);
   const parts = model.core.questionnaire;
   const trace = traceOf("résultat", pagesOf(parts), answers, preconisation);
+  const read = readOf(pagesOf(parts), answers, preconisation, new Date());
   return (
     <>
       <Content
         result={resultOf(model, answers, preconisation)}
         step={{ title: model.result.title, part: parts.length }}
-        startLabel={startLabelOf(model, preconisation.cibles)}
+        startLabel={startLabelOf(model, read)}
         actions={actionsOf(model, state, on)}
         feedback={feedbackOf(model, answers)}
       />
@@ -70,10 +69,10 @@ export function FirstResultat({ model, state, DebugTrace, ...on }: Props) {
 // L'action qui verrouille, si elle a de quoi ouvrir la partie suivante : une
 // page à poser, ou un cerfa à remplir. Un modèle peut donner un libellé sans
 // avoir encore de partie à ouvrir ; le verrou ne mène pas à un écran vide.
-function startLabelOf(model: Model, cibles: AnyCibles): string | null {
+function startLabelOf(model: Model, read: Read): string | null {
   const { form, startLabel } = model.cerfa;
-  const opens = model.core.complement.pages.length > 0 || form(cibles) !== null;
-  return opens ? startLabel(cibles) : null;
+  const opens = model.core.complement.pages.length > 0 || read(form) !== null;
+  return opens ? read(startLabel) : null;
 }
 
 type Loading = FirstResult | Promise<FirstResult>;
@@ -92,7 +91,7 @@ function resultOf(
   const pages = pagesOf(model.core.questionnaire);
   const read = readOf(pages, answers, preconisation, new Date());
   const reading = read(model.result.reading);
-  const result = model.result.content({ ...preconisation, reading });
+  const result = model.result.content({ reading });
   if (!(result instanceof Promise)) return result;
   const byAnswers = loading.get(model) ?? new WeakMap();
   loading.set(model, byAnswers.set(answers, result));

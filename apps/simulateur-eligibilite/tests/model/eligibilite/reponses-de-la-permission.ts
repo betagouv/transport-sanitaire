@@ -1,9 +1,13 @@
 // Les réponses et les lectures que partagent les tests de la permission (Q2.7
 // et Q2.8).
 
+import type { Cibles } from "../../../core/models/eligibilite/declarations/cibles";
 import type { Questions } from "../../../core/models/eligibilite/declarations/questions";
 import { cibles } from "../../../core/models/eligibilite/evaluation-des-regles";
-import { readIn } from "../../../core/socle/questionnaire-engine/condition";
+import {
+  readIn,
+  type Value,
+} from "../../../core/socle/questionnaire-engine/condition";
 import { Questionnaire } from "../../../core/socle/questionnaire-engine/questionnaire";
 import { resultReading } from "../../../core/socle/questionnaire-engine/result-reading";
 import {
@@ -62,13 +66,28 @@ export const validee = (id: keyof Reponses, reponses: Reponses) =>
 /** Les cibles des règles, sur les faits que les réponses établissent. */
 export const ciblesDe = (reponses: Reponses) => cibles(faits(reponses));
 
-/** Ce que le socle passe à R2 : les faits, les cibles, et ce qu'il lit. */
-export const lectureDe = (reponses: Reponses): Lecture => {
+/**
+ * Ce que vaut cette valeur d'un résultat, sur ces réponses. `forcees` remplace
+ * des cibles des règles.
+ */
+export const luDe = <Of>(
+  value: Value<Of>,
+  reponses: Reponses,
+  forcees: Partial<Cibles> = {},
+): Of => {
   const { validated } = new Questionnaire<Questions>(pages).readWith(reponses);
-  const lus = { faits: faits(reponses), cibles: ciblesDe(reponses) };
-  const reading = resultReading({ validated, ...lus, on: new Date() });
-  return { ...lus, reading: readIn(reading)(LU_PAR_R2) };
+  const lus = {
+    faits: faits(reponses),
+    cibles: { ...ciblesDe(reponses), ...forcees },
+  };
+  return readIn(resultReading({ validated, ...lus, on: new Date() }))(value);
 };
+
+/** Ce que le socle passe à R2 : ce qu'il lit. */
+export const lectureDe = (
+  reponses: Reponses,
+  forcees: Partial<Cibles> = {},
+): Lecture => ({ reading: luDe(LU_PAR_R2, reponses, forcees) });
 
 export const issue = (reponses: Reponses) =>
   ciblesDe(reponses).cible_issue_id.value;

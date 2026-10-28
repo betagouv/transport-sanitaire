@@ -52,26 +52,26 @@ export function CerfaResultat({
   onRestart,
 }: Props & { locked: Locked; completedAt: Date }) {
   const { answers } = state;
-  const { faits, cibles } = locked.preconisation;
   const part = model.core.complement;
   const { title, Resultat, reading: lecture } = model.cerfa;
   const all = [...pagesOf(model.core.questionnaire), ...part.pages];
+  const { cibles } = locked.preconisation;
   const trace = traceOf("cerfa", all, answers, locked.preconisation, cibles);
   const read = readOf(all, answers, locked.preconisation, completedAt);
   const reading = read(lecture);
   return (
     <Frame
-      title={title(cibles)}
+      title={read(title)}
       part={model.core.questionnaire.length + 1}
       trace={trace}
       DebugTrace={DebugTrace}
     >
-      <Resultat reading={reading} faits={faits} cibles={cibles} />
+      <Resultat reading={reading} />
       <CerfaActions onReopen={() => onReopen(state)} onRestart={onRestart} />
       <Cerfa
         model={model}
         read={read}
-        input={{ reading, faits, cibles, completedAt }}
+        input={{ reading, completedAt }}
         feedback={feedbackOf(model, answers)}
       />
     </Frame>
@@ -159,7 +159,7 @@ type CerfaProps = {
 
 function Cerfa({ model, read, input, feedback }: CerfaProps) {
   const { form, standIn, printLabel, downloadLabel } = model.cerfa;
-  const bound = form(input.cibles);
+  const bound = read(form);
   return (
     bound && (
       <CerfaDocument

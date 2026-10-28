@@ -1,5 +1,5 @@
 // Les boutons de R2 (#137) : pour chaque issue, le libellé de l'action qui
-// complète. Un libellé `null` retire le bouton. Une fonction pure, sans React.
+// complète. Un libellé `null` retire le bouton. Il ne lit que l'issue.
 //
 // | Issues | Compléter |
 // |---|---|
@@ -17,12 +17,12 @@
 // ne dépendent d'aucune issue. Sans issue, les règles n'ont pas conclu : rien à compléter.
 
 import type { Cibles } from "../../../../core/models/eligibilite/declarations/cibles";
+import { given } from "../../../../core/models/eligibilite/question";
 
 /** Le libellé de l'action qui complète, pour cette préconisation. */
-export function libelleDeCompletion(cibles: Cibles): string | null {
-  const issue = cibles.cible_issue_id.value;
-  return (issue && LIBELLES[issue]) ?? null;
-}
+export const LIBELLE_DE_COMPLETION = given
+  .cible("cible_issue_id")
+  .compute(({ value: issue }) => (issue && LIBELLES[issue]) ?? null);
 
 // ---- implémentation ----
 
