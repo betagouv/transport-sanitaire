@@ -25,6 +25,7 @@ const model: CoreModel = {
       quantite: lue(validated, "quantite"),
     }),
     cibles: () => ({}),
+    reads: modeleDeTest.core.preconisation.reads,
   },
 };
 

@@ -5,7 +5,12 @@ import { bindCerfa, defineModel, text } from "../../../../front/socle";
 import type { Cibles } from "./declarations/cibles";
 import type { Faits } from "./declarations/faits";
 import type { Questions } from "./declarations/questions";
-import { cibles, faits, SANS_COMMANDE } from "./preconisation";
+import {
+  CATALOGUE_DES_FAITS,
+  cibles,
+  faits,
+  SANS_COMMANDE,
+} from "./preconisation";
 import { COMPLEMENT, given, PARTS } from "./questionnaire";
 import {
   CommandeCompletee,
@@ -51,7 +56,7 @@ export const model = defineModel<
   { readonly quantite: string }
 >({
   core: {
-    preconisation: { faits, cibles },
+    preconisation: { faits, cibles, reads: CATALOGUE_DES_FAITS.reads },
     questionnaire: PARTS,
     complement: COMPLEMENT,
     seeds: () => import("./seeds-catalogue").then((m) => m.SEEDS),
