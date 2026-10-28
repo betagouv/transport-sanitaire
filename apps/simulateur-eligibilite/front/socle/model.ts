@@ -7,12 +7,17 @@
 
 import type { ComponentType, ReactNode } from "react";
 import type { AnyFaits, CoreModel } from "../../core/socle/model";
-import type { Value } from "../../core/socle/questionnaire-engine/condition";
-import type { GivenAnswers } from "../../core/socle/questionnaire-engine/given-answers";
-import type {
-  AnyCibles,
-  AnyQuestions,
+import {
+  NOTHING,
+  readsOf,
+  type Value,
+} from "../../core/socle/questionnaire-engine/condition";
+import {
+  type AnyCibles,
+  type AnyQuestions,
+  pagesOf,
 } from "../../core/socle/questionnaire-engine/question";
+import { Relevance } from "../../core/socle/questionnaire-engine/relevance";
 import type { BoundCerfa } from "./cerfa-mapping";
 
 /**
@@ -69,11 +74,14 @@ export type Intent = "check" | "prescribe";
  * place selon ce que le prescripteur est venu faire : en R2 s'il vérifie ou si
  * rien ne se complète, en R3 une fois le document prêt.
  */
-export type Feedback<Questions extends AnyQuestions = AnyQuestions> = {
+export type Feedback = {
   url: string;
   label: string;
-  /** `null` : on ne sait pas ce qu'il est venu faire, l'avis n'est pas proposé. */
-  intent: (answers: GivenAnswers<Questions>) => Intent | null;
+  /**
+   * Ce qu'il est venu faire, d'après les questions validées. `null` : on ne le
+   * sait pas, l'avis n'est pas proposé. Ce qu'il lit compte (#255).
+   */
+  intent: Value<Intent | null>;
 };
 
 export type Model<
@@ -135,12 +143,13 @@ export type Model<
     downloadLabel: string;
   };
   /** L'invitation à donner son avis. Sans elle, aucune. */
-  feedback?: Feedback<Questions>;
+  feedback?: Feedback;
 };
 
 /**
  * Vérifie un modèle contre ses propres types, puis le donne tel que le socle le
- * voit : sans nom de question, de fait ni de cible.
+ * voit : sans nom de question, de fait ni de cible. Avec un graphe de décision,
+ * il y ajoute ce qu'une question change de ce que lisent ses résultats (#255).
  */
 export function defineModel<
   Questions extends AnyQuestions,
@@ -151,5 +160,27 @@ export function defineModel<
 >(model: Model<Questions, Faits, Cibles, FirstReading, CerfaReading>): Model {
   // Le socle ne lit aucune clé : il redonne au modèle ce que le modèle lui a
   // donné. L'effacement des types est donc sans risque, et il n'a lieu qu'ici.
-  return model as unknown as Model;
+  return withRelevance(model as unknown as Model);
+}
+
+// ---- implémentation ----
+
+function withRelevance(model: Model): Model {
+  const { core, result, cerfa } = model;
+  if (!core.decision) return model;
+  const shown = [result.reading, cerfa.form, cerfa.title, cerfa.reading]
+    .concat(cerfa.startLabel, model.feedback?.intent ?? [])
+    .map((value) => value.reads)
+    .reduce(readsOf, NOTHING);
+  const relevance = new Relevance({
+    graph: core.decision.graph,
+    pages: [...pagesOf(core.questionnaire), ...core.complement.pages],
+    faits: {
+      reads: core.preconisation.reads,
+      imposed: core.decision.imposed,
+      of: core.decision.faits,
+    },
+    shown,
+  });
+  return { ...model, core: { ...core, relevance } };
 }

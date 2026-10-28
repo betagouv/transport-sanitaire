@@ -56,7 +56,10 @@ export const model = defineModel<
   feedback: {
     url: "https://example.com/avis",
     label: "Donnez votre avis sur cette démonstration",
-    intent: (answers) =>
-      answers.question("boisson").is("cafe") ? "prescribe" : "check",
+    intent: given
+      .question("boisson")
+      .answer()
+      .is("cafe")
+      .compute((cafe) => (cafe ? "prescribe" : "check")),
   },
 });

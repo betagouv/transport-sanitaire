@@ -5,6 +5,10 @@
 // éditoriales utiles »). Une précision qu'aucune réponse ne prouve n'a pas de
 // clé : le texte prend alors son repli générique, et rien n'est jamais
 // deviné. Elles se lisent sur les questions validées.
+//
+// Chaque texte a ses précisions, et chacune ne se lit que sous les issues du
+// texte qui la montre (D-224). Ex. : Q2.3.3 ne dit la série qu'à la fiche
+// négative ; pour une issue positive, elle ne compte pas.
 
 import type { Questions } from "../../../../core/models/eligibilite/declarations/questions";
 import { given } from "../../../../core/models/eligibilite/question";
@@ -65,7 +69,7 @@ export const UN_SEJOUR_REEL: Condition = given
   .or(given.question("Q2.2.1").answer().checked("1_HOSPITALISATION"));
 
 // Les réponses que lisent les précisions.
-const ENTREES = given.all({
+const LUES = {
   soins: given.question("Q1.3").answer(),
   dialyse: given.question("Q1.3.a").answer(),
   memeDeplacement: given.question("Q2.1.f").answer(),
@@ -79,17 +83,44 @@ const ENTREES = given.all({
   convocation: given.question("Q2.10").answer(),
   appareil: given.question("Q2.10.b").answer(),
   sejourReel: UN_SEJOUR_REEL,
-});
+};
 
-/** Les précisions que les questions validées prouvent. */
-export const PRECISIONS: Value<Precisions> = ENTREES.compute((entrees) => ({
+/** Les précisions de la fiche positive : le séjour ou les séances, l'AT-MP. */
+export const PRECISIONS_DE_LA_FICHE_POSITIVE: Value<Precisions> = lues(
+  "soins",
+  "dialyse",
+  "memeDeplacement",
+  "sejourReel",
+  "autreCadre",
+).compute((entrees) => ({
   ...cle("hospitalisation", hospitalisation(entrees)),
   ...cle("atmp", atmp(entrees)),
+}));
+
+/** Les précisions de la fiche négative : ce qui dit pourquoi. */
+export const PRECISIONS_DE_LA_FICHE_NEGATIVE: Value<Precisions> = lues(
+  "motif",
+  "dialyse",
+  "appareil",
+  "serie",
+  "soins",
+).compute((entrees) => ({
   ...cle("careFamily", familleDeSoin(entrees)),
   ...cle("dialysisType", typeDeDialyse(entrees)),
   ...cle("deviceCategory", categorieDAppareil(entrees)),
   ...cle("repeatedTripsPlanned", seriePrevue(entrees)),
   ...aldDeQ13(entrees),
+}));
+
+/** Les précisions du prescripteur : le contexte de chaque scénario. */
+export const PRECISIONS_DU_PRESCRIPTEUR: Value<Precisions> = lues(
+  "deplacement",
+  "transfert",
+  "sousType",
+  "tranche",
+  "convocation",
+  "appareil",
+).compute((entrees) => ({
   ...cle("article80Context", contexteDeLArticle80(entrees)),
   ...cle("permissionContext", contexteDeLaPermission(entrees)),
   ...cle("convocationContext", contexteDeLaConvocation(entrees)),
@@ -97,7 +128,16 @@ export const PRECISIONS: Value<Precisions> = ENTREES.compute((entrees) => ({
 
 // ---- implémentation ----
 
-type Entrees = typeof ENTREES extends Value<infer Lues> ? Lues : never;
+type Lues = typeof LUES;
+type Entrees = {
+  [K in keyof Lues]: Lues[K] extends Value<infer V> ? V : never;
+};
+
+// Les seules entrées que lit une précision.
+function lues<K extends keyof Lues>(...noms: K[]): Value<Pick<Entrees, K>> {
+  const choisies = Object.fromEntries(noms.map((nom) => [nom, LUES[nom]]));
+  return given.all(choisies as Pick<Lues, K>) as Value<Pick<Entrees, K>>;
+}
 
 // Une clé n'existe que si sa valeur est prouvée : jamais `undefined`.
 function cle<K extends keyof Precisions>(
@@ -114,7 +154,7 @@ function seancesRetenues({
   soins,
   dialyse,
   memeDeplacement,
-}: Entrees): readonly string[] {
+}: Pick<Entrees, "soins" | "dialyse" | "memeDeplacement">): readonly string[] {
   const seances = [
     soins.checked("3_CHIMIOTHERAPIE") && "CH",
     soins.checked("4_RADIOTHERAPIE") && "RA",
@@ -124,7 +164,12 @@ function seancesRetenues({
 }
 
 // L'identifiant du lexique : le séjour ou les séances, puis leurs familles.
-function hospitalisation(entrees: Entrees): string | NonProuve {
+function hospitalisation(
+  entrees: Pick<
+    Entrees,
+    "soins" | "dialyse" | "memeDeplacement" | "sejourReel"
+  >,
+): string | NonProuve {
   const seances = seancesRetenues(entrees);
   if (!entrees.sejourReel && seances.length === 0) return undefined;
   return [entrees.sejourReel ? "H-SEJOUR" : "H-SEANCE", ...seances].join("-");
@@ -132,14 +177,14 @@ function hospitalisation(entrees: Entrees): string | NonProuve {
 
 // « Accident du travail ou maladie professionnelle » : Q2.2.1.b ne les
 // sépare pas, seul l'identifiant commun est prouvé.
-function atmp({ autreCadre }: Entrees): "ATMP" | NonProuve {
+function atmp({ autreCadre }: Pick<Entrees, "autreCadre">): "ATMP" | NonProuve {
   return autreCadre.checked("1_ATMP") ? "ATMP" : undefined;
 }
 
 // Le numéro de l'option de Q2.1, pour les soins qui ont une phrase de famille.
 const FAMILLES_DE_SOIN = [1, 2, 3, 4, 5, 6, 7, 14, 15];
 
-function familleDeSoin({ motif }: Entrees): number | NonProuve {
+function familleDeSoin({ motif }: Pick<Entrees, "motif">): number | NonProuve {
   if (!motif.hasAnswer()) return undefined;
   // Le slug porte en tête le numéro de l'option au catalogue (D-75).
   const numero = Number.parseInt(motif.value, 10);
@@ -147,7 +192,9 @@ function familleDeSoin({ motif }: Entrees): number | NonProuve {
 }
 
 // Q1.3.a dit une dialyse qui n'est pas de l'hémodialyse, ou ne le dit pas.
-function typeDeDialyse({ dialyse }: Entrees): Precisions["dialysisType"] {
+function typeDeDialyse({
+  dialyse,
+}: Pick<Entrees, "dialyse">): Precisions["dialysisType"] {
   if (dialyse.is("2_AUTRE_DIALYSE")) return "non-hemodialyse";
   return dialyse.is("3_NE_SAIT_PAS") ? "inconnu" : undefined;
 }
@@ -155,13 +202,13 @@ function typeDeDialyse({ dialyse }: Entrees): Precisions["dialysisType"] {
 // Q2.10.b : un appareillage qui n'est pas l'un des trois que vise R.322-10 2°.
 function categorieDAppareil({
   appareil,
-}: Entrees): "hors-categories" | NonProuve {
+}: Pick<Entrees, "appareil">): "hors-categories" | NonProuve {
   return appareil.is("4_AUTRE") ? "hors-categories" : undefined;
 }
 
 // Q2.3.3 « Oui » prouve des transports répétés. « Non » ne dit pas quelle
 // condition de la série manque : rien n'en est inféré.
-function seriePrevue({ serie }: Entrees): true | NonProuve {
+function seriePrevue({ serie }: Pick<Entrees, "serie">): true | NonProuve {
   return serie.is("1_OUI") ? true : undefined;
 }
 
@@ -169,7 +216,7 @@ function seriePrevue({ serie }: Entrees): true | NonProuve {
 // ce déplacement y sont liés. Non cochée, elle ne dit rien de l'ALD.
 function aldDeQ13({
   soins,
-}: Entrees): Pick<Precisions, "aldRecognized" | "aldRelated"> {
+}: Pick<Entrees, "soins">): Pick<Precisions, "aldRecognized" | "aldRelated"> {
   return soins.checked("2_ALD")
     ? { aldRecognized: true, aldRelated: true }
     : {};
@@ -183,7 +230,9 @@ function contexteDeLArticle80({
   deplacement,
   transfert,
   sousType,
-}: Entrees): Contexte | NonProuve {
+}: Pick<Entrees, "deplacement" | "transfert" | "sousType">):
+  | Contexte
+  | NonProuve {
   if (deplacement.is("2_AUTRE_DEPLACEMENT"))
     return { kind: "inpatient", duration: "temporary" };
   if (deplacement.is("1_TRANSFERT")) {
@@ -197,7 +246,9 @@ function contexteDeLArticle80({
 }
 
 // Q2.7 option 4 : un transport exceptionnel demandé par écrit par le patient.
-function contexteDeLaPermission({ tranche }: Entrees): Contexte | NonProuve {
+function contexteDeLaPermission({
+  tranche,
+}: Pick<Entrees, "tranche">): Contexte | NonProuve {
   return tranche.is("4_ADULTE_A_SA_CHARGE")
     ? { kind: "adult-explicit" }
     : undefined;
@@ -222,7 +273,7 @@ const APPAREIL: Partial<Record<string, string>> = {
 function contexteDeLaConvocation({
   convocation,
   appareil,
-}: Entrees): Contexte | NonProuve {
+}: Pick<Entrees, "convocation" | "appareil">): Contexte | NonProuve {
   const categorie = convocation.value;
   const kind = categorie && GENRE_DE_CONVOCATION[categorie];
   if (!kind) return undefined;

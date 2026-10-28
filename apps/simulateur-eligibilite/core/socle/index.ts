@@ -6,6 +6,7 @@
 // L'écran a son propre point d'entrée, `front/socle/index.ts`.
 
 export { Cible, cibleValues } from "./decision-engine/cible.ts";
+export type { DecisionGraphData } from "./decision-engine/decision-graph.ts";
 export { Fait } from "./decision-engine/fait.ts";
 export { type FaitDeclare, unFait } from "./decision-engine/fait-builder.ts";
 export { FaitCatalogue } from "./decision-engine/fait-catalogue.ts";
@@ -32,5 +33,6 @@ export {
 export type { QuestionContext } from "./questionnaire-engine/question-context.ts";
 export { questionsOf } from "./questionnaire-engine/question-factory.ts";
 export { Questionnaire } from "./questionnaire-engine/questionnaire.ts";
+export { Relevance } from "./questionnaire-engine/relevance.ts";
 export type { ValidatedAnswers } from "./questionnaire-engine/validated-answers.ts";
 export type { Seed } from "./seeds/seed.ts";

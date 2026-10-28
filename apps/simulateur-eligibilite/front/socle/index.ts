@@ -24,11 +24,12 @@ export {
   text,
 } from "./cerfa/cerfa";
 export { templateAt } from "./cerfa/generate-cerfa";
-export { bindCerfa, type CerfaMapping } from "./cerfa-mapping";
+export { bindCerfa, type CerfaMapping, cerfaValue } from "./cerfa-mapping";
 export {
   defineModel,
   type Feedback,
   type FirstResult,
+  type Intent,
   type ResultatProps,
   type Sheet,
 } from "./model";

@@ -4,8 +4,10 @@
 // une valeur par entrée, lue sur les questions validées, les faits et les
 // cibles figés au verrou, au jour de la complétion (`given.today()`).
 
-import type {
-  Read,
+import {
+  NOTHING,
+  type Read,
+  readsOf,
   Value,
 } from "../../core/socle/questionnaire-engine/condition";
 import type { Cerfa, CerfaDto } from "./cerfa/cerfa";
@@ -36,6 +38,18 @@ export function bindCerfa<Dto extends CerfaDto>(
 ): BoundCerfa {
   // Le socle ne lit aucune entrée : il rend le DTO au cerfa qui l'a déclaré.
   return { cerfa, mapping } as unknown as BoundCerfa;
+}
+
+/**
+ * Ce cerfa, en valeur qui lit ce que lisent ses entrées. Le choix du document
+ * la donne : ce que lit un cerfa compte quand la préconisation le choisit.
+ */
+export function cerfaValue(bound: BoundCerfa): Value<BoundCerfa> {
+  const { fields, drawings } = bound.mapping;
+  const reads = [...Object.values(fields), ...Object.values(drawings)]
+    .map((value) => value.reads)
+    .reduce(readsOf, NOTHING);
+  return new Value(reads, () => bound);
 }
 
 /** Le DTO que `mapping` donne, chaque valeur lue par `read`. */

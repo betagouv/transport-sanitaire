@@ -18,6 +18,7 @@ import type {
   ScenarioPrescripteur,
 } from "../../../../../core/models/eligibilite/declarations/catalogue-resultats";
 import type { TraceDe } from "../ce-que-lit-un-texte";
+import { issuesDuTexte } from "../texte-de-l-issue";
 import {
   type IssueDuPrescripteur,
   LU_PAR_LES_SCENARIOS,
@@ -53,19 +54,13 @@ export type TexteDuPrescripteur = {
   readonly avertissement?: string;
 };
 
-const ISSUES_SANS_FICHE: readonly string[] = [
-  "ISSUE_CAISSE",
-  "ISSUE_ETABLISSEMENT",
-  "ISSUE_PERMISSION_PATIENT",
-  "ISSUE_CONVOCATION",
-  "ISSUE_DAP_ETRANGER_A_EXAMINER",
-];
-
 /** Cette issue a-t-elle la page du prescripteur, et pas de fiche patient ? */
 export function estSansFiche(
   issue: string | null | undefined,
 ): issue is IssueSansFiche {
-  return issue != null && ISSUES_SANS_FICHE.includes(issue);
+  const issues: readonly (string | null | undefined)[] =
+    issuesDuTexte("prescripteur");
+  return issues.includes(issue);
 }
 
 /** Le texte de cette issue, pour cette trace. */

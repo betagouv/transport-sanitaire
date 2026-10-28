@@ -16,6 +16,7 @@ import {
   Questionnaire,
   type QuestionnaireState,
 } from "../../../core/socle/questionnaire-engine/questionnaire";
+import type { Relevance } from "../../../core/socle/questionnaire-engine/relevance";
 import type { AutoAdvance } from "./auto-advance";
 import { useAutoAdvance } from "./auto-advance";
 import type { QuestionnaireTracking } from "./questionnaire-tracking";
@@ -30,6 +31,9 @@ export type QuestionnaireOptions = {
   // Les cibles figées au verrou. Les conditions des pages les lisent : une
   // question peut dépendre de la préconisation.
   cibles?: AnyCibles;
+  // Ce qu'une question change de ce qui compte : une question qui ne change
+  // rien ne se pose pas (#255). Sans elle, tout compte.
+  relevance?: Relevance;
   // La reprise d'un questionnaire déjà mené, au retour d'une page de résultat.
   // Il rouvre sur sa page, réponses intactes, sans réémettre son début.
   initialState?: QuestionnaireState;
@@ -93,7 +97,7 @@ export function useQuestionnaire(
 type State = QuestionnaireState & { readonly draft: Answers };
 
 // Ce qui dit quelles pages s'affichent : la liste, et les cibles s'il y en a.
-type Source = Pick<QuestionnaireOptions, "pages" | "cibles">;
+type Source = Pick<QuestionnaireOptions, "pages" | "cibles" | "relevance">;
 
 type Context = {
   state: State;
@@ -106,10 +110,11 @@ type Context = {
 // Sans reprise, le questionnaire s'ouvre là où ses réponses le laissent : sur
 // la première page qui attend une réponse.
 function startingState(options: QuestionnaireOptions): State {
-  const { pages, cibles, initialState: resume } = options;
+  const { pages, cibles, relevance, initialState: resume } = options;
   if (!resume) {
     const answers = options.lockedAnswers ?? {};
-    const reading = new Questionnaire(pages).readWith(answers, cibles);
+    const questionnaire = new Questionnaire(pages, relevance);
+    const reading = questionnaire.readWith(answers, cibles);
     return onPage(reading.openPage(), answers);
   }
   const page = pages.find((p) => p.id === resume.page);
@@ -139,7 +144,7 @@ function unchecked(question: Question): Answer | Unanswered {
 // dit les pages, et celle où le brouillon passe par-dessus, qui dit ce que la
 // page pose. Une question peut ainsi en révéler une autre sur la même page.
 function read(options: Source, state: State): View {
-  const questionnaire = new Questionnaire(options.pages);
+  const questionnaire = new Questionnaire(options.pages, options.relevance);
   const reading = questionnaire.readWith(state.answers, options.cibles);
   const pages = reading.askedPages();
   const page = pages.find((p) => p.id === state.page);
@@ -167,8 +172,12 @@ function read(options: Source, state: State): View {
 }
 
 // La page validée : les réponses qu'elle laisse, et la page qui la suit.
-function advance({ pages, cibles }: Source, state: State, page: Page) {
-  const questionnaire = new Questionnaire(pages);
+function advance(
+  { pages, cibles, relevance }: Source,
+  state: State,
+  page: Page,
+) {
+  const questionnaire = new Questionnaire(pages, relevance);
   const answers = questionnaire
     .readWith(state.answers, cibles)
     .commit(page, state.draft);

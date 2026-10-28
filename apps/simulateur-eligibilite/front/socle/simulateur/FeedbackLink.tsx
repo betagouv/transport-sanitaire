@@ -12,22 +12,17 @@
 //
 // Sans intention connue, aucun lien : on ne la suppose pas.
 
-import type { Answers } from "../../../core/socle/questionnaire-engine/question";
-import { pagesOf } from "../../../core/socle/questionnaire-engine/question";
-import { Questionnaire } from "../../../core/socle/questionnaire-engine/questionnaire";
+import type { Read } from "../../../core/socle/questionnaire-engine/condition";
 import type { Intent, Model } from "../model";
 import "./feedback-link.css";
 
 /** L'avis que le modèle propose pour ces réponses. `null` : aucun. */
 export type FeedbackOffer = { url: string; label: string; intent: Intent };
 
-export function feedbackOf(model: Model, answers: Answers) {
+export function feedbackOf(model: Model, read: Read) {
   const { feedback } = model;
   if (!feedback) return null;
-  const pages = pagesOf(model.core.questionnaire);
-  const intent = feedback.intent(
-    new Questionnaire(pages).readWith(answers).answers,
-  );
+  const intent = read(feedback.intent);
   return intent && { url: feedback.url, label: feedback.label, intent };
 }
 

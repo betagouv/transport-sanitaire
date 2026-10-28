@@ -9,6 +9,9 @@
 // Seules les pages posées après le verrou reçoivent les cibles figées. Les
 // autres lisent celles que le modèle calcule sur leurs faits
 // (`question-context.ts`), même relues après le verrou.
+//
+// Avec une pertinence, une question dont la réponse ne change rien de ce qui
+// compte ne se pose pas (`relevance.ts`, #255) : elle n'est jamais validée.
 
 import { type GuardPlace, guardReading, Positions } from "./answer-readings.ts";
 import type { AskedQuestion } from "./asked-question.ts";
@@ -24,6 +27,7 @@ import type {
   Validated,
 } from "./question.ts";
 import type { SeenAnswers } from "./question-context.ts";
+import type { Relevance } from "./relevance.ts";
 import { ValidatedAnswers } from "./validated-answers.ts";
 
 /** Une page lue : ses questions qui se posent, telles qu'elles se posent. */
@@ -42,15 +46,18 @@ export type AskedPage = {
 export function readInOrder(
   pages: readonly Page[],
   answers: Answers,
-  cibles?: AnyCibles,
+  { cibles, relevance }: { cibles?: AnyCibles; relevance?: Relevance } = {},
 ): { readonly asked: readonly AskedPage[] } & Progress {
-  let progress: Progress = { validated: {}, complete: true };
+  let progress: Progress = { validated: {}, complete: true, pending: [] };
   const asked: AskedPage[] = [];
   const positions = new Positions(pages);
   for (const [rank, page] of pages.entries()) {
     const earlier = answersUpTo(pages, rank, answers);
     const frozen = page.afterLock ? cibles : undefined;
-    const context = { answers, earlier, cibles: frozen, positions, rank };
+    const context = {
+      ...{ answers, earlier, cibles: frozen, positions, rank },
+      relevance,
+    };
     const read = askPage(page, context, progress);
     asked.push({ page, questions: read.questions });
     progress = read.progress;
@@ -60,9 +67,13 @@ export function readInOrder(
 
 // ---- implémentation ----
 
-// Où en est la lecture du questionnaire : les questions validées jusqu'ici, et
-// si aucune n'attend encore sa réponse.
-type Progress = { readonly validated: Validated; readonly complete: boolean };
+// Où en est la lecture du questionnaire : les questions validées jusqu'ici, si
+// aucune n'attend encore sa réponse, et celles qui se posent sans être validées.
+type Progress = {
+  readonly validated: Validated;
+  readonly complete: boolean;
+  readonly pending: readonly string[];
+};
 
 // Ce que les questions d'une page peuvent lire : les réponses, celles qu'en
 // voient leurs incohérences (sans les pages suivantes), et les cibles.
@@ -73,6 +84,7 @@ type Context = {
   readonly cibles?: AnyCibles;
   readonly positions: Positions;
   readonly rank: number;
+  readonly relevance?: Relevance;
 };
 
 // Les questions de la page qui se posent, dans l'ordre. Chacune voit ce que les
@@ -90,7 +102,7 @@ function askPage(page: Page, context: Context, start: Progress) {
       answers: context.answers,
     };
     const question = askQuestion(declared, context, place);
-    if (!question) continue;
+    if (!question || !matters(question.id, context, progress)) continue;
     questions.push(question);
     progress = validateInTurn(progress, question, context.answers);
   }
@@ -114,6 +126,13 @@ function askQuestion(
   return declared.askedIn(seenWith(answers, false), seenWith(earlier, true));
 }
 
+// Sans pertinence, toute question qui se pose compte.
+function matters(id: string, context: Context, progress: Progress): boolean {
+  const { relevance, cibles } = context;
+  const { validated, pending } = progress;
+  return relevance?.matters(id, { validated, pending, cibles }) ?? true;
+}
+
 // Une question qui a sa réponse est validée, si aucune n'attend avant elle. La
 // première qui attend arrête la validation pour toute la suite.
 function validateInTurn(
@@ -123,10 +142,16 @@ function validateInTurn(
 ): Progress {
   const answer = answers[question.id];
   const complete = progress.complete && question.isAnsweredBy(answer);
-  if (!complete) return { ...progress, complete };
+  if (!complete) {
+    return {
+      ...progress,
+      complete,
+      pending: [...progress.pending, question.id],
+    };
+  }
   const validated = asValidated(question, answer);
   return {
-    complete,
+    ...progress,
     validated: { ...progress.validated, [question.id]: validated },
   };
 }

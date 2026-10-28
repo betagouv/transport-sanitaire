@@ -17,6 +17,7 @@ import type {
   Validated,
 } from "./question.ts";
 import { type AskedPage, readInOrder } from "./reading-in-order.ts";
+import type { Relevance } from "./relevance.ts";
 import { ValidatedAnswers } from "./validated-answers.ts";
 
 /** Le questionnaire s'achève : aucune page ne suit. */
@@ -37,9 +38,12 @@ export type QuestionnaireState = {
  */
 export class Questionnaire<Questions extends AnyQuestions = AnyQuestions> {
   readonly pages: readonly Page[];
+  /** Ce qu'une question change de ce qui compte. Sans elle, tout compte. */
+  readonly relevance?: Relevance;
 
-  constructor(pages: readonly Page[]) {
+  constructor(pages: readonly Page[], relevance?: Relevance) {
     this.pages = pages;
+    if (relevance) this.relevance = relevance;
   }
 
   /**
@@ -88,7 +92,8 @@ export class Reading<Questions extends AnyQuestions = AnyQuestions> {
     answers: Answers<Questions>,
     cibles: AnyCibles | undefined,
   ) {
-    const read = readInOrder(questionnaire.pages, answers, cibles);
+    const { pages, relevance } = questionnaire;
+    const read = readInOrder(pages, answers, { cibles, relevance });
     this.answers = new GivenAnswers(answers);
     this.validated = new ValidatedAnswers(
       read.validated as Validated<Questions>,
