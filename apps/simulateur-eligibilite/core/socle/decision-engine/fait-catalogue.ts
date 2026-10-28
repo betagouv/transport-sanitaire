@@ -12,6 +12,7 @@ import {
   NOTHING,
   type Reading,
   type Reads,
+  readsOf,
 } from "../questionnaire-engine/condition.ts";
 import type { ValidatedAnswers } from "../questionnaire-engine/validated-answers.ts";
 import type { FaitDeclare } from "./fait-builder.ts";
@@ -40,10 +41,24 @@ export class FaitCatalogue<Faits extends object> {
 
   /** Ce que lit chaque fait : des questions et d'autres faits, dans l'ordre du modèle. */
   get reads(): ReadonlyMap<keyof Faits & string, Reads> {
+    return this.readsWith({});
+  }
+
+  /**
+   * Ce que lit chaque fait, avec ce que lisent ceux qu'impose la décision
+   * (`imposed`) : le catalogue ne les calcule pas, mais ils lisent des
+   * questions.
+   */
+  readsWith(
+    imposed: Partial<Record<keyof Faits & string, Reads>>,
+  ): ReadonlyMap<keyof Faits & string, Reads> {
     return new Map(
       this.#names.map((name) => [
         name,
-        this.#declares.get(name)?.reads ?? NOTHING,
+        readsOf(
+          this.#declares.get(name)?.reads ?? NOTHING,
+          imposed[name] ?? NOTHING,
+        ),
       ]),
     );
   }

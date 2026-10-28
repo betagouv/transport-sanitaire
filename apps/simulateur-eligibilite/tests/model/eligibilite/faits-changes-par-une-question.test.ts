@@ -5,7 +5,8 @@
 
 import { describe, expect, it } from "vitest";
 import { model } from "../../../core/models/eligibilite";
-import { CATALOGUE_DES_FAITS } from "../../../core/models/eligibilite/faits";
+import { P1 } from "../../../core/models/eligibilite/p1/partie-1";
+import { P2 } from "../../../core/models/eligibilite/p2/partie-2";
 import GRAPHE from "../../../core/models/eligibilite/rules/regles.graphe.json";
 import type { DecisionGraphData } from "../../../core/socle/decision-engine/decision-graph";
 import { DecisionGraph } from "../../../core/socle/decision-engine/decision-graph";
@@ -19,15 +20,39 @@ const questions = [
 
 const changes = faitsChangedBy(
   questions,
-  CATALOGUE_DES_FAITS,
+  model.preconisation,
   new DecisionGraph(GRAPHE as DecisionGraphData),
 );
 
 describe("ce que change une question du modèle", () => {
+  // La décision impose la complétude, qui lit ses parties (#259).
+  it("chaque question de P1 change la complétude de P1 et de P2", () => {
+    const p1 = P1.pages.flatMap((each) => each.questions);
+
+    expect(
+      p1.filter(({ id }) => !changes.get(id)?.includes("fait_p1_complete")),
+    ).toEqual([]);
+    expect(
+      p1.filter(({ id }) => !changes.get(id)?.includes("fait_p2_complete")),
+    ).toEqual([]);
+  });
+
+  it("chaque question de P2 change la complétude de P2, pas celle de P1", () => {
+    const p2 = P2.pages.flatMap((each) => each.questions);
+
+    expect(
+      p2.filter(({ id }) => !changes.get(id)?.includes("fait_p2_complete")),
+    ).toEqual([]);
+    expect(
+      p2.filter(({ id }) => changes.get(id)?.includes("fait_p1_complete")),
+    ).toEqual([]);
+  });
+
   // La distance décide aussi si l'urgence se demande (Q2.3.4, Q2.12) : leur
   // garde lit `cible_question_urgence_a_afficher`, qui dépend des seuils.
   it("Q2.3.1, la distance, change les seuils, la série et l'urgence", () => {
     expect(changes.get("Q2.3.1")).toEqual([
+      "fait_p2_complete",
       "fait_distance_plus_50",
       "fait_distance_plus_150",
       "fait_serie_qualifiante",
@@ -43,6 +68,7 @@ describe("ce que change une question du modèle", () => {
   // choix de l'exception, et ce qui le lit, en dépendent.
   it("Q2.3.2, l'avion ou le bateau, change aussi le transfert", () => {
     expect(changes.get("Q2.3.2")).toEqual([
+      "fait_p2_complete",
       "fait_avion_bateau_ligne",
       "fait_appel_centre15",
       "fait_dap_maternite",
@@ -63,6 +89,7 @@ describe("ce que change une question du modèle", () => {
 
   it("Q2.3.3, la série de transports, change la série et l'urgence", () => {
     expect(changes.get("Q2.3.3")).toEqual([
+      "fait_p2_complete",
       "fait_serie_qualifiante",
       "fait_dap_maternite",
       "fait_urgence_attestee",

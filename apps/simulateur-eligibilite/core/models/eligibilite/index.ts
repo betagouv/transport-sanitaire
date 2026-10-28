@@ -8,11 +8,11 @@ import type { Faits } from "./declarations/faits.ts";
 import type { Questions } from "./declarations/questions.ts";
 import { cibles } from "./evaluation-des-regles.ts";
 import { COMPLEMENT } from "./p3/partie-3.ts";
-import { faits } from "./preconisation.ts";
+import { faits, LECTURES_DES_FAITS } from "./preconisation.ts";
 import { PARTS } from "./questionnaire.ts";
 
 export const model: CoreModel<Questions, Faits, Cibles> = {
-  preconisation: { faits, cibles },
+  preconisation: { faits, cibles, reads: LECTURES_DES_FAITS },
   questionnaire: PARTS,
   complement: COMPLEMENT,
   seeds: () => import("./seeds-catalogue.ts").then((m) => m.SEEDS),

@@ -1,7 +1,8 @@
 // Ce que change une question : les faits qui la lisent, et ceux des questions
 // dont une garde la lit, de proche en proche (#254). Le modèle factice montre
 // le lien par une garde de question. Les pages et les règles écrites ici
-// montrent celui par une garde d'option, par une cible, et la constante.
+// montrent celui par une garde d'option, par une cible, par un fait
+// qu'impose la décision, et la constante.
 
 import { describe, expect, it } from "vitest";
 import {
@@ -9,6 +10,8 @@ import {
   Fait,
   FaitCatalogue,
   givenOf,
+  page,
+  Questionnaire,
   questionsOf,
   unFait,
 } from "../../../core/socle";
@@ -16,18 +19,18 @@ import { DecisionGraph } from "../../../core/socle/decision-engine/decision-grap
 import { decisionGraphOf } from "../../../core/socle/decision-engine/publicodes";
 import { faitsChangedBy } from "../../../core/socle/questionnaire-engine/faits-changed-by";
 import { pagesOf } from "../../../core/socle/questionnaire-engine/question";
-import { faitsDeTest, modeleDeTest } from "../modele-de-test";
+import { modeleDeTest } from "../modele-de-test";
 
 describe("ce que change une question", () => {
   it("passe par la garde d'une autre question", () => {
-    const { questionnaire, complement } = modeleDeTest.core;
+    const { questionnaire, complement, preconisation } = modeleDeTest.core;
     const questions = [...pagesOf(questionnaire), ...complement.pages].flatMap(
       (each) => each.questions,
     );
     // Le modèle factice n'a pas de règles : ses gardes ne lisent pas de cible.
     const sansRegles = new DecisionGraph(decisionGraphOf({}));
 
-    const changes = faitsChangedBy(questions, faitsDeTest, sansRegles);
+    const changes = faitsChangedBy(questions, preconisation, sansRegles);
 
     // `accompagnements` ne se pose que pour une boisson : sa garde lit
     // `boisson`, qui change donc le fait qui lit `accompagnements`.
@@ -57,6 +60,19 @@ describe("ce que change une question", () => {
     expect(changes.get("boisson")).toEqual(["chaude", "sucre"]);
     expect(changes.get("taille")).toEqual([]);
   });
+
+  // La décision impose la complétude : le catalogue ne la calcule pas, mais
+  // elle lit sa partie, et ce que lisent ses gardes (#259).
+  it("passe par un fait qu'impose la décision, jusqu'aux gardes de sa partie", () => {
+    const partie = new Questionnaire([page("commande", TAILLE, SUCRE)]);
+    const faits = { reads: FAITS.readsWith({ complete: partie.reads }) };
+
+    const changes = faitsChangedBy([TAILLE, BOISSON, SUCRE], faits, GRAPHE);
+
+    // `boisson` n'est pas de la partie, mais la garde de `sucre` la lit.
+    expect(changes.get("taille")).toEqual(["complete"]);
+    expect(changes.get("boisson")).toEqual(["chaude", "sucre", "complete"]);
+  });
 });
 
 // ---- implémentation ----
@@ -70,14 +86,16 @@ type Faits = {
   readonly chaude: Fait;
   readonly sucre: Fait;
   readonly matin: Fait;
+  readonly complete: Fait;
 };
 type Cibles = { readonly cible_sucre_propose: Cible<boolean> };
 
 const given = givenOf<Questions, Faits, Cibles>();
 
-// `matin` ne lit rien : aucune question ne le change.
+// `matin` ne lit rien : aucune question ne le change. La décision impose
+// `complete`.
 const FAITS = new FaitCatalogue<Faits>(
-  ["chaude", "sucre", "matin"],
+  ["chaude", "sucre", "matin", "complete"],
   [
     unFait("chaude").vaut(
       given
@@ -94,6 +112,7 @@ const FAITS = new FaitCatalogue<Faits>(
         .compute((avec) => (avec ? Fait.oui("Sucré.") : Fait.non("Nature."))),
     ),
     unFait("matin").sinon("L'heure n'est pas demandée."),
+    unFait("complete").sinon("La décision l'impose."),
   ],
 );
 
@@ -103,6 +122,7 @@ const GRAPHE = new DecisionGraph(
     chaude: { titre: "Boisson chaude" },
     sucre: { titre: "Sucré" },
     matin: { titre: "Le matin" },
+    complete: { titre: "Commande complète" },
     cible_sucre_propose: { valeur: "chaude" },
   }),
 );
