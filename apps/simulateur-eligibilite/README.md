@@ -126,8 +126,8 @@ core/                    le métier, sans React ni DOM : ce qu'un serveur ou un 
                          faits, la préconisation, l'évaluation des règles et le
                          catalogue de seeds
       rules/             le livrable de l'éditeur : le YAML, sa `VERSION`, le
-                         catalogue des textes de R2, et `regles.json`, que
-                         `pnpm regles` calcule du YAML
+                         catalogue des textes de R2, et `regles.json` et
+                         `regles.graphe.json`, que `pnpm regles` calcule du YAML
       declarations/      les questions, faits et cibles, dans les mots des règles
       faits/             un fichier par fait, une valeur faite de règles ;
                          `communs.ts` porte les lectures et les règles que

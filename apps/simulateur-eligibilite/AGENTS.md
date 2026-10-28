@@ -229,6 +229,7 @@ Ses pièces sont dans `core/socle/`.
 | `unFait(nom)` (`decision-engine/fait-builder.ts`) | un fait, valeur nommée faite de règles sur des conditions. La première qui conclut l'emporte : `ouiSi`, `nonSi` et `inconnuSi(condition, raison)`, `nonSiEcartee(réponse, case)` pour une case proposée et non cochée, et `applique(regle)`, qui place une règle écrite ailleurs (`uneRegle().nonSi(condition, raison)`, une seule règle par `RegleDeFait`). `sinon(raison)` clôt le fait : il reste inconnu, pour cette raison. `vaut(valeur)` déclare un fait qui n'a pas d'état (la boisson, en toutes lettres). Une règle écrit sa provenance : ce que lit sa condition, puis sa raison, « Q2.10.b : « 2_PODO_ORTHESE ». », « Q2.6 : sans réponse. », « fait_permission : « non ». » (ADR-22) |
 | `Cible` (`decision-engine/cible.ts`) | ce que les règles donnent pour une cible, en objet valeur figé, que seul `Cible.of` construit. `isOui()` et `isNon()` lisent une cible « oui ou non », `is("TAP")` une cible à constantes, `isInconnue()` et `isSansObjet()` les deux cas qui ne sont pas une décision. Jamais `.value === true` : une cible inconnue n'est pas un « non ». `cibleValues(cibles)` donne leurs valeurs, pour la trace, une seed ou un test |
 | `publicodesEngine` | n'envoie aux règles que les faits établis, et donne chaque cible en `Cible`. Il manque un fait : elle est inconnue, ce qui n'est pas une décision, ni « sans objet » (`null`) |
+| `DecisionGraph` (`decision-engine/decision-graph.ts`) | le graphe de décision d'un modèle (#196, D-216) : ce que vaut chaque règle pour chaque façon dont ses faits valent oui, non ou rien. `valueOf(règle, faits)` le lit, sans publicodes. `decisionGraphOf(règles)` le compile (`decision-graph-compiler.ts`), et `pnpm regles` l'écrit dans `rules/regles.graphe.json`. Le compilateur s'arrête sur un mécanisme qu'il ne traduit pas |
 
 Le socle dit ce qui a été montré, validé, coché. Il ne conclut rien : c'est le
 modèle qui applique, fait par fait, le contrat de l'éditeur.
@@ -359,7 +360,7 @@ personne, ses tests le chargent comme texte.
 | `pnpm dev:server` | Backend Express, <http://localhost:3000> |
 | `pnpm start` | Serveur de production (`node server/server.ts`) |
 | `pnpm lint:fix` | Applique tous les correctifs sûrs de Biome |
-| `pnpm regles` | Recalcule le `regles.json` de chaque modèle d'après son `regles.publicodes`. À lancer après toute retouche des règles : un test le compare |
+| `pnpm regles` | Recalcule le `regles.json` et le `regles.graphe.json` de chaque modèle d'après son `regles.publicodes`. À lancer après toute retouche des règles : un test les compare |
 
 `pnpm build` enchaîne trois étapes :
 
