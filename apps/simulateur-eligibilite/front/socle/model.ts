@@ -40,6 +40,11 @@ export type FirstResult = {
   body?: ReactNode;
   sheet?: Sheet;
   /**
+   * Le titre dit un refus : il se lit en rouge foncé, et non en vert ou en
+   * noir.
+   */
+  tone?: "refusal";
+  /**
    * Rien ne suit ce résultat, quoi que donne `cerfa.startLabel` : il n'a pas
    * pu conclure. Ni étape suivante ni complétion.
    */

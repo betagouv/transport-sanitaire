@@ -1,8 +1,8 @@
 // La fiche patient négative, telle qu'elle s'affiche (#134). La seed
-// `issue-non-eligible` donne les textes de l'aperçu de l'éditeur ; le
-// catalogue n'a plus de conseil sur l'ALD (TS1014-J05). `eligibilite` donne le titre du
-// prescripteur et sa phrase à la page, puis la feuille, que le socle pose sous
-// ses logos avec son titre et sa raison.
+// `issue-non-eligible` donne les textes de l'aperçu de l'éditeur (TS1014-J05).
+// `eligibilite` donne le titre du prescripteur, rouge foncé, et sa phrase à la
+// page, puis la feuille, que le socle pose sous ses logos avec son titre et sa
+// raison.
 
 import { render, screen, within } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
@@ -48,33 +48,20 @@ describe("la fiche de la seed issue-non-eligible", () => {
     );
   });
 
-  it("donne l'introduction des cartes et les trois cartes fixes", async () => {
+  it("met en avant ce que l'Assurance Maladie ne rembourse pas", async () => {
     await afficher(seed.answers);
+    const { title, items } = issue.institutionalInformation;
+    const bloc = screen.getByRole("complementary", { name: title });
     expect(
-      screen.getByRole("heading", { name: issue.cardIntro.title }),
-    ).toBeInTheDocument();
-    expect(screen.getByText(issue.cardIntro.text)).toBeInTheDocument();
-    for (const { title, text } of issue.fixedCards) {
-      expect(screen.getByRole("heading", { name: title })).toBeInTheDocument();
-      expect(screen.getByText(text)).toBeInTheDocument();
-    }
+      within(bloc)
+        .getAllByRole("listitem")
+        .map((item) => item.textContent),
+    ).toEqual(items);
   });
 
-  it("illustre chaque carte du dessin de son mode", async () => {
-    await afficher(seed.answers);
-    const cartes = screen.getByRole("region", { name: issue.cardIntro.title });
-    const dessins = within(cartes)
-      .getAllByRole("listitem")
-      .map((carte) =>
-        within(carte)
-          .getByRole("presentation", { hidden: true })
-          .getAttribute("src"),
-      );
-    expect(dessins).toEqual([
-      expect.stringMatching(/vehicule-personnel\.webp$/),
-      expect.stringMatching(/vsl-ou-taxi\.webp$/),
-      expect.stringMatching(/ambulance\.webp$/),
-    ]);
+  it("titre le prescripteur d'un refus", async () => {
+    const { tone } = await afficher(seed.answers);
+    expect(tone).toBe("refusal");
   });
 
   it("donne les consignes et le bloc des frais", async () => {
@@ -86,6 +73,8 @@ describe("la fiche de la seed issue-non-eligible", () => {
     expect(
       screen.getByText(/^La prescription de transport est un acte médical/),
     ).toBeInTheDocument();
+    const regles = screen.getByRole("region", { name: intro.title });
+    expect(within(regles).getAllByRole("listitem")).toHaveLength(4);
     expect(
       screen.getByRole("heading", { name: issue.finance.title }),
     ).toBeInTheDocument();

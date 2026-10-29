@@ -11,17 +11,7 @@ import type {
   AucunTexte,
   IssuePositive,
 } from "../../../../../core/models/eligibilite/declarations/catalogue-resultats";
-
-/** Une puce de liste ; avec des badges, c'est la légende qui les introduit. */
-export type Puce = {
-  readonly texte: string;
-  readonly badges?: readonly string[];
-};
-
-/** Un bloc d'une étape : un paragraphe, ou une liste à puces. */
-export type BlocDeConsigne =
-  | { readonly type: "paragraphe"; readonly texte: string }
-  | { readonly type: "liste"; readonly puces: readonly Puce[] };
+import { type BlocDeConsigne, blocsDesLignes } from "../blocs-de-consigne";
 
 type Etape = {
   readonly numero: number;
@@ -90,7 +80,6 @@ type EtapeEnCours = Omit<Etape, "blocs"> & { lignes: string[] };
 
 const INTRO = "[INTRO]";
 const MOTIF = "[motif_Administratif]";
-const BADGES = "[badges]";
 const CLAUSE_DU_MOTIF = ` au titre de ${MOTIF}`;
 
 function avecLeMotif(modus: string, motif: string | undefined): string {
@@ -139,36 +128,4 @@ function titreDEtape(ligne: string): Pick<Etape, "numero" | "titre"> | null {
   const trouve = /^\*\*(\d+)\.\s*(.+)\*\*$/.exec(ligne.trim());
   if (!trouve) return null;
   return { numero: Number(trouve[1]), titre: trouve[2] ?? "" };
-}
-
-const PUCE = /^\s*•\s*/;
-
-// Les lignes qui se suivent avec une puce font une liste ; les autres, chacune
-// un paragraphe.
-function blocsDesLignes(
-  lignes: readonly string[],
-  badges: readonly string[],
-): BlocDeConsigne[] {
-  const blocs: BlocDeConsigne[] = [];
-  for (const ligne of lignes) {
-    const dernier = blocs.at(-1);
-    if (!PUCE.test(ligne)) {
-      blocs.push({ type: "paragraphe", texte: ligne.trim() });
-      continue;
-    }
-    const puce = puceDe(ligne.replace(PUCE, "").trim(), badges);
-    if (!puce) continue;
-    if (dernier?.type === "liste") {
-      blocs[blocs.length - 1] = { ...dernier, puces: [...dernier.puces, puce] };
-    } else blocs.push({ type: "liste", puces: [puce] });
-  }
-  return blocs;
-}
-
-// « et les besoins particuliers suivants : [badges]. » devient sa légende et
-// ses badges. Sans badge, la puce disparaît.
-function puceDe(texte: string, badges: readonly string[]): Puce | null {
-  if (!texte.includes(BADGES)) return { texte };
-  if (badges.length === 0) return null;
-  return { texte: texte.split(BADGES)[0]?.trim() ?? "", badges };
 }

@@ -162,15 +162,17 @@ export type IssueNegative = {
     readonly reason: string;
     readonly inactive: boolean;
   }[];
-  readonly fixedCards: readonly Bloc[];
-  readonly cardIntro: Bloc;
+  /** Ce que l'Assurance Maladie ne rembourse pas : un titre, puis ses puces. */
+  readonly institutionalInformation: {
+    readonly title: string;
+    readonly items: readonly string[];
+  };
   readonly instructions: {
     readonly intro: Intro;
+    /** À sauts (`<br>`) et à puces (« • »). */
     readonly body: string;
     readonly steps: readonly string[];
   };
-  /** `null` : le catalogue ne donne aucun conseil. */
-  readonly aldAdvice: string | null;
   readonly finance: Bloc;
 };
 
