@@ -1,17 +1,11 @@
-// La recette N2 de l'éditeur (#149), réécrite en tests à nous (D-232) : ses
-// parcours de `Recette_parcours_N2.json` (v10.1.3), sous leur identifiant chez
-// lui. Ne sont repris ici que les cas qu'aucun autre test ne couvre déjà :
-// - les quatre profils ALD et mineur, de la réponse au premier résultat, pour
-//   les deux besoins de Q0.1 ;
-// - les deux paires d'options de Q1.2 qui s'excluent, sur le modèle réel.
+// Les parcours ALD et mineur, de la réponse au premier résultat : les questions
+// posées, l'issue, le mode, le support, le financeur, l'accompagnant et les
+// badges de la fiche, pour les deux besoins de Q0.1.
 //
-// Les autres parcours sont couverts ailleurs : le retour à P0, qui garde le
-// besoin (`questionnaire-navigation.test.tsx`), et le verrou documentaire,
-// sans retour en deçà de P3 (`lock.test.tsx`). Le mécanisme des options qui
-// s'excluent est testé sur le modèle factice (`options-incompatibles.test.tsx`).
-//
-// L'éditeur numérote les options ; nos identifiants gardent son numéro :
-// l'option 8 de Q1.2 est `8_BRANCARDAGE`.
+// Ce sont les profils de la recette N2 de l'éditeur (#149, D-232), sous leur
+// identifiant chez lui (`Recette_parcours_N2.json`, v10.1.3). Ses numéros
+// d'option sont ceux de nos identifiants : l'option 8 de Q1.2 est
+// `8_BRANCARDAGE`.
 
 import { describe, expect, it } from "vitest";
 import type { Questions } from "../../../core/models/eligibilite/declarations/questions";
@@ -99,7 +93,7 @@ const resultat = (reponses: Reponses) => {
   };
 };
 
-describe("les profils ALD et mineur de la recette N2", () => {
+describe("les parcours ALD et mineur", () => {
   describe.each(BESOINS)("Q0.1 « %s »", (besoin) => {
     it.each(PROFILS)("%s", (_id, profil, attendu) => {
       const reponses: Reponses = { "Q0.1": besoin, ...profil };
@@ -114,23 +108,5 @@ describe("les profils ALD et mineur de la recette N2", () => {
         badges: attendu.badges,
       });
     });
-  });
-});
-
-describe("les options de Q1.2 qui s'excluent", () => {
-  it("exclusivite-6-7 et exclusivite-4-11 : fauteuil et allongé, hygiène et asepsie", () => {
-    const read = lire({ "Q0.1": "1_VERIFIER", ...brancard(["2_ALD"]) });
-    const q12 = read
-      .askedPages()
-      .flatMap((page) => read.questionsOn(page))
-      .find(({ id }) => id === "Q1.2");
-
-    expect(
-      q12?.kind === "multiple choice" &&
-        q12.incompatibleOptions?.map(({ values }) => values),
-    ).toEqual([
-      ["6_FAUTEUIL_SANS_TRANSFERT", "7_ALLONGE"],
-      ["4_HYGIENE", "11_ASEPSIE"],
-    ]);
   });
 });

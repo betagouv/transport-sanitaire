@@ -108,6 +108,22 @@ describe("le mode de transport", () => {
   });
 });
 
+describe("les options de Q1.2", () => {
+  // Les cas `exclusivite-6-7` et `exclusivite-4-11` de la recette N2 de
+  // l'éditeur (D-232) : cocher l'une décoche l'autre.
+  it("s'excluent deux à deux : fauteuil et allongé, hygiène et asepsie", () => {
+    const q12 = question("Q1.2", BRANCARD);
+
+    expect(
+      q12?.kind === "multiple choice" &&
+        q12.incompatibleOptions?.map(({ values }) => values),
+    ).toEqual([
+      ["6_FAUTEUIL_SANS_TRANSFERT", "7_ALLONGE"],
+      ["4_HYGIENE", "11_ASEPSIE"],
+    ]);
+  });
+});
+
 describe("les options de Q1.3", () => {
   it.each([
     [
