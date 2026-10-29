@@ -12,12 +12,13 @@
 // comme le nôtre : les consignes en lignes, sans `<br>` ni puce, et sans la
 // marque ` [badges]`.
 //
-// Cinq des 133 scénarios sont écartés :
+// Cinq des 133 scénarios sont écartés. Notre app ne peut pas y arriver :
 // - les quatre trajets mixtes (avion ou bateau, puis une partie terrestre).
 //   L'éditeur y donne les consignes du mode terrestre. Aucune question ne pose
-//   cette partie : notre app ne peut pas y arriver ;
-// - `ISSUE_NON_ELIGIBLE--AUCUN_ALD_CADRE_NON_QUALIFIANT`. L'éditeur y lit l'ALD
-//   dans un fait ; nous la lisons dans une précision. L'écart reste à trier.
+//   cette partie ;
+// - `ISSUE_NON_ELIGIBLE--AUCUN_ALD_CADRE_NON_QUALIFIANT`. Le scénario pose une
+//   ALD liée, mais hors du 3° et du 4°. Chez nous, seule l'option 2 de Q1.3 dit
+//   l'ALD liée, et elle dit aussi le 100 % : le 3° ou le 4° vaut alors « oui ».
 //
 // Ne sont pas comparés :
 // - les faits que la page du prescripteur liste chez l'éditeur. Il les dit
