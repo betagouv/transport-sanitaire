@@ -1,5 +1,6 @@
 // Le modèle de l'éditeur : son métier (`core/models/eligibilite/`), puis ses
-// deux résultats, R2 et R3, et l'invitation à donner son avis.
+// deux résultats, R2 et R3, l'invitation à donner son avis et l'indicateur de
+// parcours ALD.
 
 import { model as core } from "../../../core/models/eligibilite";
 import type { Cibles } from "../../../core/models/eligibilite/declarations/cibles";
@@ -7,6 +8,7 @@ import type { Faits } from "../../../core/models/eligibilite/declarations/faits"
 import type { Questions } from "../../../core/models/eligibilite/declarations/questions";
 import { defineModel } from "../../socle";
 import { AVIS } from "./avis";
+import { INDICATEUR_ALD } from "./indicateur-ald";
 import { LIBELLE_DE_COMPLETION } from "./r2/boutons-du-resultat";
 import { eligibilite } from "./r2/resultat";
 import { LU_PAR_R2, type LuParR2 } from "./r2/trace-du-resultat";
@@ -35,4 +37,5 @@ export const model = defineModel<Questions, Faits, Cibles, LuParR2, object>({
     downloadLabel: "Télécharger",
   },
   feedback: AVIS,
+  aldIndicator: INDICATEUR_ALD,
 });

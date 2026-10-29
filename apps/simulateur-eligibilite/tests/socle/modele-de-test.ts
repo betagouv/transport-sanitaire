@@ -6,6 +6,7 @@ import type { Models } from "../../front/socle/app/model-choice";
 import type { ModelSource } from "../../front/socle/app/model-loading";
 
 export { model as modeleDeTest } from "./fixtures/modele-factice";
+export { given } from "./fixtures/modele-factice/questionnaire";
 
 /** Ce que `App` attend quand elle n'a qu'un modèle à dérouler. */
 export function seulModele(source: ModelSource): Models {
