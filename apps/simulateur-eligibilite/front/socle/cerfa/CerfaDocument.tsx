@@ -6,7 +6,7 @@
 // commentaire retiré faute de place s'annonce avant toute action (D-85). Un
 // échec se signale sans masquer ce que la page affiche déjà, et le clic
 // réessaie. Pendant la génération, les deux actions attendent, et
-// « Télécharger » dit « Préparation du PDF… ». Une action qui attend un PDF ne
+// « Télécharger » dit « Préparation du PDF ». Une action qui attend un PDF ne
 // se fait plus si le document a été quitté entre-temps (pdf-preparation.ts).
 // « Imprimer » vient avant « Télécharger » : côte à côte s'ils tiennent, l'un
 // sous l'autre sinon, le groupe en ligne du DSFR passant à la ligne sans

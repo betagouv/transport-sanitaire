@@ -119,7 +119,7 @@ describe("l'avis sous le second résultat", () => {
         modele: venuPour(intent, auGabarit(gabarit.charge)),
       });
       await allerAuCerfa(user);
-      expect(bouton("Préparation du PDF…")).toBeDisabled();
+      expect(bouton("Préparation du PDF")).toBeDisabled();
       expect(avis()).toEqual([]);
 
       gabarit.lache();
