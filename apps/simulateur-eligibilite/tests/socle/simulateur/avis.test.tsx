@@ -1,5 +1,6 @@
 // L'invitation à donner son avis (#195, COR-13 de la v10.1.3) : un lien que
-// le modèle nomme et adresse, posé après les actions d'un résultat. Il vient en
+// le modèle nomme et adresse, posé dans la barre d'actions d'un résultat, à
+// droite, juste avant la complétion (V02 de la v10.1.4). Il vient en
 // R2 ou en R3 selon ce que le prescripteur est venu faire et selon que le
 // résultat se complète. Les modèles ci-dessous sont écrits pour ces tests, sur
 // le modèle factice.
@@ -33,11 +34,27 @@ const venuPour = (intent: Intent | null, modele = modeleDeTest): Model => ({
 const avis = () =>
   screen.queryAllByRole("link", { name: `${LIBELLE} (nouvel onglet)` });
 
+// Les actions de la barre qui porte l'avis, dans l'ordre de la page.
+function barreDeLAvis(): string[] {
+  const [lien] = avis();
+  const barre = lien?.closest(".fr-btns-group");
+  if (!barre) throw new Error("Aucun avis dans une barre d'actions.");
+  return [...barre.querySelectorAll("a, button")].map(
+    (action) => action.textContent ?? "",
+  );
+}
+
 describe("l'avis sous le premier résultat", () => {
-  it("vient après les actions quand le prescripteur est venu vérifier, même si le résultat se complète", async () => {
+  it("vient juste avant la complétion quand le prescripteur est venu vérifier, même si le résultat se complète", async () => {
     const user = await ouvrirLeSimulateur({ modele: venuPour("check") });
     await allerAuResultat(user);
 
+    expect(barreDeLAvis()).toEqual([
+      "Précédent",
+      "Faire une nouvelle simulation",
+      `${LIBELLE} (nouvel onglet)`,
+      "Compléter la commande",
+    ]);
     const [lien] = avis();
     expect(lien).toHaveAttribute("href", ADRESSE);
     expect(lien).toHaveAttribute("target", "_blank");
@@ -60,7 +77,11 @@ describe("l'avis sous le premier résultat", () => {
       await user.click(radio("Rien"));
 
       expect(await screen.findByText("Commande : aucune")).toBeInTheDocument();
-      expect(avis()).toHaveLength(1);
+      expect(barreDeLAvis()).toEqual([
+        "Précédent",
+        "Faire une nouvelle simulation",
+        `${LIBELLE} (nouvel onglet)`,
+      ]);
     },
   );
 
@@ -86,7 +107,7 @@ describe("l'avis sous le premier résultat", () => {
     expect(avis()).toEqual([]);
   });
 
-  it("suit la feuille du patient, hors d'elle, et ne s'imprime pas", async () => {
+  it("précède la feuille du patient, hors d'elle, et ne s'imprime pas", async () => {
     const avecFeuille = qui(async () => ({
       title: "Le résultat",
       sheet: { title: "Votre commande", body: "Un contenu" },
@@ -104,7 +125,7 @@ describe("l'avis sous le premier résultat", () => {
     expect(visionneuse.contains(lien)).toBe(false);
     expect(
       visionneuse.compareDocumentPosition(lien) &
-        Node.DOCUMENT_POSITION_FOLLOWING,
+        Node.DOCUMENT_POSITION_PRECEDING,
     ).toBeTruthy();
     expect(lien.closest(".fr-no-print")).not.toBeNull();
   });
@@ -127,7 +148,11 @@ describe("l'avis sous le second résultat", () => {
       expect(
         await screen.findByRole("link", { name: /^Donnez votre avis/ }),
       ).toHaveAttribute("href", ADRESSE);
-      expect(avis()).toHaveLength(1);
+      expect(barreDeLAvis()).toEqual([
+        "Précédent",
+        "Faire une nouvelle simulation",
+        `${LIBELLE} (nouvel onglet)`,
+      ]);
     },
   );
 

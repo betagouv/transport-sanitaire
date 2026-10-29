@@ -11,7 +11,7 @@
 // « Imprimer » vient avant « Télécharger » : côte à côte s'ils tiennent, l'un
 // sous l'autre sinon, le groupe en ligne du DSFR passant à la ligne sans
 // couper un libellé (D-173). Qui l'affiche peut donner de quoi tenir la place
-// de l'aperçu, et ce qui le suit une fois le PDF prêt.
+// de l'aperçu, et ce qui précède le tout, selon que le PDF est prêt ou non.
 //
 // Le DTO se lit une fois : celui d'un résultat ne change pas tant qu'il est
 // affiché.
@@ -37,8 +37,8 @@ type Props<Dto extends CerfaDto> = {
   downloadLabel: string;
   /** Ce qui se montre à la place de l'aperçu. Sans lui, l'aperçu du PDF. */
   standIn?: ReactNode;
-  /** Ce qui suit l'aperçu, une fois le PDF prêt, sans attendre une action. */
-  onceReady?: ReactNode;
+  /** Ce qui précède le document, selon que son PDF est prêt ou non. */
+  above?: (ready: boolean) => ReactNode;
 };
 
 export function CerfaDocument<Dto extends CerfaDto>({
@@ -48,13 +48,15 @@ export function CerfaDocument<Dto extends CerfaDto>({
   printLabel,
   downloadLabel,
   standIn,
-  onceReady,
+  above,
 }: Props<Dto>) {
   const { settled, withPdf } = useDownloadablePdf(cerfa, dto);
   const print = usePrint();
   const save = (pdf: Blob) => download(pdf, fileNameOf(cerfa.fileName, date));
+  const ready = settled?.status === "ready";
   return (
     <div className="fr-mb-4w fr-no-print">
+      {above?.(ready)}
       <Notices settled={settled} />
       <ul className="fr-btns-group fr-btns-group--inline fr-btns-group--icon-left">
         <ActionButton
@@ -72,7 +74,6 @@ export function CerfaDocument<Dto extends CerfaDto>({
       </ul>
       {standIn ??
         (settled?.status === "ready" && <CerfaPreview pdf={settled.pdf} />)}
-      {settled?.status === "ready" && onceReady}
     </div>
   );
 }

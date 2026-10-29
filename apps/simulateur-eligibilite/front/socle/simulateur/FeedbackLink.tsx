@@ -1,7 +1,8 @@
 // L'invitation à donner son avis (#195, COR-13 de la v10.1.3) : un lien que le
 // modèle nomme et adresse. Il ouvre l'adresse exacte, sans rien y ajouter,
 // dans un nouvel onglet que les lecteurs d'écran entendent annoncer. Rien ne
-// l'ouvre seul. Il ne s'imprime pas.
+// l'ouvre seul. Il ne s'imprime pas. C'est un bouton de la barre d'actions
+// (V02) : à droite, juste avant la complétion quand elle est offerte.
 //
 // | Ce que le prescripteur est venu faire | Le résultat se complète | R2 | R3 |
 // |---|---|---|---|
@@ -36,17 +37,15 @@ export function onFirstResult(
 
 export function FeedbackLink({ offer }: { offer: FeedbackOffer }) {
   return (
-    <div className="socle-feedback fr-no-print">
-      <a
-        className="socle-feedback__link"
-        href={offer.url}
-        target="_blank"
-        rel="noopener noreferrer"
-        referrerPolicy="no-referrer"
-      >
-        {offer.label}
-        <span className="fr-sr-only"> (nouvel onglet)</span>
-      </a>
-    </div>
+    <a
+      className="fr-btn socle-feedback__link fr-no-print"
+      href={offer.url}
+      target="_blank"
+      rel="noopener noreferrer"
+      referrerPolicy="no-referrer"
+    >
+      {offer.label}
+      <span className="fr-sr-only"> (nouvel onglet)</span>
+    </a>
   );
 }
