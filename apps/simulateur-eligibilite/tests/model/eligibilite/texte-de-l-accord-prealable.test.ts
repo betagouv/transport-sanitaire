@@ -163,15 +163,13 @@ describe("le lexique de l'accord préalable", () => {
     );
   });
 
-  // Le terme du catalogue est vide : son espace reste, comme dans les scénarios
-  // de démonstration de l'éditeur.
   it("ambulance sans avion ni bateau : le contexte n'en dit rien", () => {
     const texte = demande({
       cible_mode_ambulance: true,
       ...LONGUE_DISTANCE,
     });
     expect(texte?.raison).toBe(
-      " La prise en charge de votre transport nécessite l’accord préalable de l’Assurance Maladie car le trajet dépasse 150 km.",
+      "La prise en charge de votre transport nécessite l’accord préalable de l’Assurance Maladie car le trajet dépasse 150 km.",
     );
   });
 

@@ -10,7 +10,8 @@
 //
 // La fixture range le texte de l'éditeur sous ses noms à lui. Elle le découpe
 // comme le nôtre : les consignes en lignes, sans `<br>` ni puce, et sans la
-// marque ` [badges]`. Un titre vide d'un « Pourquoi » y vaut `null`.
+// marque ` [badges]`. Un titre vide d'un « Pourquoi » y vaut `null`. Ses blancs
+// en trop sont réduits avant la comparaison, comme dans nos textes.
 //
 // Quatre des 128 scénarios sont écartés : les trajets mixtes (avion ou bateau,
 // puis une partie terrestre). L'éditeur y donne les consignes du mode
@@ -39,6 +40,7 @@ import {
   type IssueSansFiche,
   texteDuPrescripteur,
 } from "../../../front/models/eligibilite/r2/prescripteur/texte-du-prescripteur";
+import { sansBlancsDeTrop } from "../../../front/models/eligibilite/r2/sans-blancs-de-trop";
 import type { Trace } from "../../../front/models/eligibilite/r2/trace-du-resultat";
 import { type Changements, faitsDuCas } from "./faits-de-l-oracle";
 import { catalogue } from "./fiches-du-test";
@@ -138,11 +140,11 @@ describe("les textes des scénarios de démonstration de l'éditeur", () => {
   });
 
   it.each(comparables)("%s", (_id, scenario) => {
-    expect(texteDe(scenario)).toEqual(scenario.textes);
+    expect(texteDe(scenario)).toEqual(attenduDe(scenario));
   });
 
   it.fails.each(enAttente)("%s, en attente de %s", (_id, _issue, scenario) => {
-    expect(texteDe(scenario)).toEqual(scenario.textes);
+    expect(texteDe(scenario)).toEqual(attenduDe(scenario));
   });
 
   it("n'attend que des scénarios de la fixture", () => {
@@ -155,6 +157,20 @@ describe("les textes des scénarios de démonstration de l'éditeur", () => {
 
 function pour(issue: string, ids: readonly string[]) {
   return Object.fromEntries(ids.map((id) => [id, issue]));
+}
+
+// Le texte de l'éditeur, sans ses blancs en trop.
+function attenduDe(scenario: Scenario): unknown {
+  return sansBlancs(scenario.textes);
+}
+
+function sansBlancs(valeur: unknown): unknown {
+  if (typeof valeur === "string") return sansBlancsDeTrop(valeur);
+  if (Array.isArray(valeur)) return valeur.map(sansBlancs);
+  if (valeur === null || typeof valeur !== "object") return valeur;
+  return Object.fromEntries(
+    Object.entries(valeur).map(([cle, champ]) => [cle, sansBlancs(champ)]),
+  );
 }
 
 // Notre texte du scénario, sous les noms de l'éditeur.

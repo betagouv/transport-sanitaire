@@ -35,7 +35,7 @@ describe("le texte des seeds", () => {
           elements: [
             {
               texte:
-                "Le trajet a été qualifié comme un transfert entre établissements pendant une prise en charge hospitalière. Il s’agit d’un déplacement provisoire de moins de 48 heures, avec retour vers l’établissement d’origine lorsque ce retour a été confirmé.\n\n\n\nAucun formulaire Assurance Maladie n’est à compléter",
+                "Le trajet a été qualifié comme un transfert entre établissements pendant une prise en charge hospitalière. Il s’agit d’un déplacement provisoire de moins de 48 heures, avec retour vers l’établissement d’origine lorsque ce retour a été confirmé. Aucun formulaire Assurance Maladie n’est à compléter",
             },
           ],
         },
@@ -61,7 +61,7 @@ describe("le texte des seeds", () => {
         elements: [
           {
             texte:
-              "La permission concerne un patient âgé d’au moins 20 ans. Une prestation exceptionnelle a été demandée expressément par le patient, sans fondement médical distinct ouvrant droit à une prise en charge du transport ; sa facturation personnelle a été confirmée.\n\n\n\nAucun formulaire Assurance Maladie n’est à compléter",
+              "La permission concerne un patient âgé d’au moins 20 ans. Une prestation exceptionnelle a été demandée expressément par le patient, sans fondement médical distinct ouvrant droit à une prise en charge du transport ; sa facturation personnelle a été confirmée. Aucun formulaire Assurance Maladie n’est à compléter",
           },
         ],
       },
@@ -85,7 +85,7 @@ describe("le texte des seeds", () => {
         elements: [
           {
             texte:
-              "Ce déplacement relève du cadre réglementaire des convocations ou de l’appareillage.\n\n\n\nIndiquer au patient de conserver cette pièce et de se rapprocher de l’organisme émetteur ou de sa caisse pour les modalités pratiques de remboursement.",
+              "Ce déplacement relève du cadre réglementaire des convocations ou de l’appareillage. Indiquer au patient de conserver cette pièce et de se rapprocher de l’organisme émetteur ou de sa caisse pour les modalités pratiques de remboursement.",
           },
         ],
       },
