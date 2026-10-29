@@ -23,6 +23,7 @@ import {
   pagesOf,
 } from "../../../core/socle/questionnaire-engine/question";
 import { Questionnaire } from "../../../core/socle/questionnaire-engine/questionnaire";
+import { lienAld } from "./lien-ald";
 
 type Reponses = Answers<Questions>;
 type Cas = Questions["Q1.3"];
@@ -45,16 +46,19 @@ const CLINIQUE = (cas: Cas): Reponses => ({
   "Q1.1": "3_AVEC_UN_PROFESSIONNEL",
   "Q1.2": ["1_PAS_AUTONOME"],
   "Q1.3": cas,
+  ...lienAld(cas),
 });
 const PROCHE = (cas: Cas): Reponses => ({
   ...BESOIN,
   "Q1.1": "2_AVEC_UN_PROCHE",
   "Q1.3": cas,
+  ...lienAld(cas),
 });
 const SEUL = (cas: Cas): Reponses => ({
   ...BESOIN,
   "Q1.1": "1_SEUL",
   "Q1.3": cas,
+  ...lienAld(cas),
 });
 
 describe("les cas Q1.3 de l'éditeur", () => {
@@ -110,7 +114,7 @@ describe("les cas Q1.3 de l'éditeur", () => {
 
   it("proche-ald-confirmee : le lien de l'ALD cite sa preuve, Q1.1", () => {
     expect(faits(PROCHE(["2_ALD"])).fait_ald_liee.provenance).toBe(
-      "Q1.3 : « 2_ALD », Q1.1 : « 2_AVEC_UN_PROCHE ». L'aide d'un proche est nécessaire.",
+      "Q1.3 : « 2_ALD », Q1.3.b : « 1_LIEN_DIRECT », Q1.1 : « 2_AVEC_UN_PROCHE ». L'aide d'un proche est nécessaire.",
     );
   });
 
@@ -148,12 +152,29 @@ describe("Q1.3 à l'écran", () => {
     ]);
   });
 
-  it("ne pose rien de plus pour une ALD en ambulance", () => {
+  it("ne pose que le lien Q1.3.b de plus pour une ALD en ambulance", () => {
     const ambulance = (cas: Cas): Reponses => ({
       ...CLINIQUE(cas),
       "Q1.2": ["8_BRANCARDAGE"],
     });
     const ids = (reponses: Reponses) => posees(reponses).map((q) => q.id);
-    expect(ids(ambulance(["2_ALD"]))).toEqual(ids(ambulance(["7_AUCUNE"])));
+    const sansAld = ids(ambulance(["7_AUCUNE"]));
+    expect(ids(ambulance(["2_ALD"]))).toEqual([
+      ...sansAld.slice(0, sansAld.indexOf("Q1.3") + 1),
+      "Q1.3.b",
+      ...sansAld.slice(sansAld.indexOf("Q1.3") + 1),
+    ]);
+  });
+
+  it("garde P1 incomplète tant que le lien Q1.3.b manque", () => {
+    const { "Q1.3.b": _, ...sansLien } = CLINIQUE(["2_ALD"]);
+    expect(faits(sansLien).fait_p1_complete.value).toBe(false);
+  });
+
+  it("sans lien direct : ni ALD liée, mais le statut exonérant reste", () => {
+    const sansLien = { ...CLINIQUE(["2_ALD"]), "Q1.3.b": "2_SANS_LIEN_DIRECT" };
+    const etabli = faits(sansLien as Reponses);
+    expect(etabli.fait_ald_liee.value).toBe(false);
+    expect(etabli.fait_ald_exonerante_3_ou_4.value).toBe(true);
   });
 });

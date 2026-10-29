@@ -3,7 +3,7 @@
 //
 // Une entrée simple (Q2.13), la sortie vers la prison ou la permission
 // l'écartent. Sinon, l'option 3 de Q2.6 le dit. Un transfert entre
-// établissements (Q2.5) attend Q2.6 ; un autre déplacement n'en est pas un. Le
+// établissements (Q2.5) attend Q2.6 ; un autre déplacement ni une HAD n'en sont un. Le
 // séjour proposé et écarté le met à « non ».
 //
 // Il suit `CONTRAT_REPONSES_FAITS.json`.
@@ -14,6 +14,7 @@ import {
   DEPLACEMENT,
   EXCEPTIONS,
   UN_SEJOUR_ECARTE,
+  UN_SEJOUR_EN_HAD,
   UNE_ENTREE_SIMPLE,
   UNE_PERMISSION_ECARTE_LE_TRANSFERT,
   UNE_SORTIE_VERS_LA_PRISON,
@@ -27,6 +28,12 @@ export const centre15Interetablissements = unFait(
   .applique(UNE_PERMISSION_ECARTE_LE_TRANSFERT)
   .ouiSi(EXCEPTIONS.checked("3_CENTRE_QUINZE"))
   .nonSiEcartee(EXCEPTIONS, "3_CENTRE_QUINZE")
+  .nonSi(
+    UN_SEJOUR_EN_HAD.and(EXCEPTIONS.isPresent()).and(
+      DEPLACEMENT.is("1_TRANSFERT").not(),
+    ),
+    "Une Hospitalisation à Domicile n'est pas un transfert entre établissements.",
+  )
   .inconnuSi(
     DEPLACEMENT.is("1_TRANSFERT"),
     "Q2.6 dira si le Centre 15 l'a demandé.",

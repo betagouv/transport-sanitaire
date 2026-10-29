@@ -3,7 +3,8 @@
 // Ministère et de l'Assurance Maladie sont en tête : ils ne changent pas avec
 // le modèle. À l'impression, la feuille passe en papier et sort seule, sur une
 // ou deux A4 selon sa mesure (paper-print.ts). Le PDF a les mêmes pages
-// (sheet-download.ts). Les gabarits de l'éditeur en font foi.
+// (sheet-download.ts). Le pied de la feuille la clôt. Les gabarits de
+// l'éditeur en font foi.
 
 import { useRef, useState } from "react";
 import { PREPARING } from "../cerfa/pdf-preparation";
@@ -33,14 +34,13 @@ export function SheetViewer({ sheet }: { sheet: Sheet }) {
           ref={article}
           {...paperAttributes(layout)}
         >
-          <header className="socle-sheet__logos">
-            {LOGOS.map((logo) => (
-              <Logo key={logo.name} {...logo} />
-            ))}
-          </header>
+          <Logos />
           <h2 className="socle-sheet__title">{sheet.title}</h2>
           {sheet.intro && <p className="socle-sheet__intro">{sheet.intro}</p>}
           {sheet.body}
+          {sheet.footer && (
+            <footer className="socle-sheet__footer">{sheet.footer}</footer>
+          )}
         </article>
       </div>
       <p className="socle-viewer__status fr-no-print" role="status">
@@ -99,6 +99,17 @@ const LOGOS: readonly LogoProps[] = [
     className: "socle-sheet__logo socle-sheet__logo--ameli",
   },
 ];
+
+// Les logos en tête de la feuille.
+function Logos() {
+  return (
+    <header className="socle-sheet__logos">
+      {LOGOS.map((logo) => (
+        <Logo key={logo.name} {...logo} />
+      ))}
+    </header>
+  );
+}
 
 // Un logo qui ne se charge pas laisse son nom à sa place.
 function Logo({ name, src, className }: LogoProps) {

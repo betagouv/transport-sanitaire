@@ -12,6 +12,12 @@ import type { Answer, Reminder, Unanswered } from "./question.ts";
 /** Une saisie libre, sans options. */
 type FreeInput = undefined;
 
+/** L'option d'une liste de cases sous laquelle la question s'affiche. */
+export type ShownUnder = { readonly question: string; readonly option: string };
+
+/** La question s'affiche à son rang dans la page. */
+export type InPlace = undefined;
+
 /** Ce que toute question posée porte. */
 export type AskedCommonData = {
   readonly id: string;
@@ -19,6 +25,7 @@ export type AskedCommonData = {
   readonly hint?: string;
   readonly reminder?: Reminder;
   readonly optional?: boolean;
+  readonly under?: ShownUnder;
   readonly inconsistencies?: readonly string[];
 };
 
@@ -33,6 +40,8 @@ export class AskedCommon {
   readonly reminder: Reminder | undefined;
   /** La question peut rester sans réponse : sa page se valide sans elle. */
   readonly optional: boolean;
+  /** L'option sous laquelle elle s'affiche, sur la même page. */
+  readonly under: ShownUnder | InPlace;
   /**
    * Ce qui, dans la réponse, en contredit une autre : un message par
    * incohérence. Tant qu'il en reste, la question n'est pas validée.
@@ -45,6 +54,7 @@ export class AskedCommon {
     this.hint = data.hint;
     this.reminder = data.reminder;
     this.optional = data.optional ?? false;
+    this.under = data.under;
     this.inconsistencies = data.inconsistencies ?? [];
   }
 

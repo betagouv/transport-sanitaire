@@ -25,6 +25,11 @@
   border-left: 4px solid var(--border-plain-blue-france);
 }
 
+.socle-panel--green {
+  background-color: var(--background-alt-grey);
+  border-left: 4px solid var(--border-plain-success);
+}
+
 .socle-panel--blue {
   background-color: var(--background-alt-blue-france);
   border-left: 3px solid var(--border-plain-blue-france);

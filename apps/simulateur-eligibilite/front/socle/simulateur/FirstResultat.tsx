@@ -209,14 +209,19 @@ function detailsOf(completion: Completion): ReactNode {
   return <NextStep label={completion.label} />;
 }
 
+// Le titre d'un refus est rouge foncé ; celui d'un résultat avec feuille et
+// complétion, vert ; les autres restent noirs.
+function titleClass({ tone, sheet }: FirstResult, buttons: Buttons): string {
+  if (tone === "refusal") return "fr-h2 socle-result-title--refusal";
+  const success = sheet !== undefined && typeof buttons.completion === "object";
+  return success ? "fr-h2 socle-result-title--success" : "fr-h2";
+}
+
 function Page({ result, buttons }: { result: FirstResult; buttons: Buttons }) {
   const { title, intro, body, sheet } = result;
-  const success = sheet !== undefined && typeof buttons.completion === "object";
   const page = (
     <>
-      <h1 className={success ? "fr-h2 socle-result-title--success" : "fr-h2"}>
-        {title}
-      </h1>
+      <h1 className={titleClass(result, buttons)}>{title}</h1>
       {intro && <p className="fr-text--lg">{intro}</p>}
       {body}
     </>

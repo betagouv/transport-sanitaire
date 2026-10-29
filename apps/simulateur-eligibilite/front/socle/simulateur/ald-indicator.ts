@@ -6,7 +6,7 @@
 import { preconisationOf } from "../../../core/socle/model";
 import type { Answers } from "../../../core/socle/questionnaire-engine/question";
 import { NomEvenement, trackEvenement } from "../analytics/evenements";
-import type { Model } from "../model";
+import type { AldIndicator, Model } from "../model";
 import { questionnaireOf } from "./questionnaire-of";
 import { readOf } from "./Resultats";
 
@@ -31,7 +31,7 @@ export function aldPathwayOf(
   const preconisation = preconisationOf(model.core, answers);
   const read = readOf(questionnaire, answers, preconisation, new Date());
   if (!read(indicator.counted)) return null;
-  const { pages, questions } = countOf(model, indicator.parts, answers);
+  const { pages, questions } = countOf(model, indicator, answers);
   const caisse = read(indicator.caisse);
   return {
     verdict: NomEvenement[verdictOf(caisse, pages, questions, indicator.limit)],
@@ -54,8 +54,12 @@ type AldVerdict =
   | "aldTooManyQuestions"
   | "aldCaisse";
 
-// Les pages posées dans ces parties, et leurs questions.
-function countOf(model: Model, parts: readonly string[], answers: Answers) {
+// Les pages posées dans ces parties, et leurs questions hors sous-champs.
+function countOf(
+  model: Model,
+  { parts, subFields = [] }: AldIndicator,
+  answers: Answers,
+) {
   const counted = new Set(
     model.core.questionnaire
       .filter((part) => parts.includes(part.id))
@@ -63,9 +67,10 @@ function countOf(model: Model, parts: readonly string[], answers: Answers) {
   );
   const reading = questionnaireOf(model).readWith(answers);
   const pages = reading.askedPages().filter((page) => counted.has(page.id));
+  const notCounted = new Set(subFields);
   const questions = pages
-    .map((page) => reading.questionsOn(page).length)
-    .reduce((sum, count) => sum + count, 0);
+    .flatMap((page) => reading.questionsOn(page))
+    .filter((question) => !notCounted.has(question.id)).length;
   return { pages: pages.length, questions };
 }
 

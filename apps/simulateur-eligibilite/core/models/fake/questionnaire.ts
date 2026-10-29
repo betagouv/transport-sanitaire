@@ -120,6 +120,15 @@ export const PARTS: readonly QuestionnairePart<Questions, undefined>[] = [
             "Une boisson ne se sert pas à la fois très chaude et glacée : seule la dernière cochée est gardée.",
           )
           .exclusive("rien"),
+        question
+          .singleChoice("quelle-preparation", "Où la préparer ?")
+          .hint(
+            "Démontre : une question qui s'affiche juste sous l'option qui la fait apparaître, après son aide, et non sous la liste. Elle garde sa propre légende.",
+          )
+          .appliesWhen(
+            given.question("service").answer().checked("preparation"),
+          )
+          .shownUnder("service", "preparation"),
       ),
     ],
   },
@@ -171,6 +180,11 @@ export const COMPLEMENT: QuestionnairePart<Questions, Cibles> = afterLock({
         )
         .hint(
           "Démontre : une case seule. Décochée, la page se valide et la case répond « non » : ce n'est ni une question facultative, ni une absence de réponse.",
+        ),
+      question
+        .checkbox("couvercle", "Les tasses partent avec un couvercle.")
+        .hint(
+          "Démontre : une case seule sans titre. Son libellé est celui de la case, et elle répond « non » décochée, comme la précédente.",
         ),
     ),
     page(

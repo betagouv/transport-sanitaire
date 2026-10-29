@@ -64,13 +64,22 @@ export function phraseDuContexte(
   return texte && avecLeLexique(issue, trace, texte);
 }
 
-/** Le motif administratif du modus, lexique rempli ; absent si aucun ne convient. */
+/**
+ * Le motif administratif du modus, lexique rempli ; absent si aucun ne
+ * convient. Ses définitions sont celles de `administrativeLexicon` quand
+ * l'issue en porte : le modus ne répète pas « pour le transport » (TS1014-J02).
+ */
 export function motifAdministratif(
   issue: IssuePositive,
   trace: TraceDe<typeof LU_PAR_LE_CONTEXTE>,
 ): string | AucunTexte {
   const texte = texteDesCodes(issue.administrativeBases, trace.cibles);
-  return texte && avecLeLexique(issue, trace, texte);
+  const { administrativeLexicon } = issue;
+  const lexique = administrativeLexicon && {
+    ...issue,
+    lexicon: { ...issue.lexicon, ...administrativeLexicon },
+  };
+  return texte && avecLeLexique(lexique ?? issue, trace, texte);
 }
 
 /**

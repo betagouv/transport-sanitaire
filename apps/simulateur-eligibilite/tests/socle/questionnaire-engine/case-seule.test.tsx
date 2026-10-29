@@ -10,6 +10,7 @@ import { afficher } from "./afficher";
 type Questions = {
   distance: "courte" | "longue";
   avion: boolean;
+  bateau: boolean;
   escale: string;
 };
 
@@ -112,5 +113,45 @@ describe("case seule", () => {
     expect(
       screen.getByRole("textbox", { name: "Où se fait l'escale ?" }),
     ).toBeInTheDocument();
+  });
+});
+
+describe("case seule sans titre", () => {
+  const BATEAU = question.checkbox(
+    "bateau",
+    "Une partie du trajet se fera en bateau.",
+  );
+  const caseBateau = () =>
+    screen.getByRole("checkbox", {
+      name: "Une partie du trajet se fera en bateau.",
+    });
+
+  it("porte son libellé, sans titre ni groupe au-dessus", () => {
+    afficher([page("trajet", DISTANCE, BATEAU)]);
+
+    expect(caseBateau()).not.toBeChecked();
+    expect(screen.getAllByRole("group")).toHaveLength(1);
+    expect(
+      screen.getAllByText("Une partie du trajet se fera en bateau."),
+    ).toHaveLength(1);
+  });
+
+  it("décochée, répond « non »", async () => {
+    const { user, reponses } = afficher([page("trajet", DISTANCE, BATEAU)]);
+
+    await user.click(screen.getByLabelText("Longue"));
+    await user.click(valider());
+
+    expect(reponses()).toEqual({ distance: "longue", bateau: false });
+  });
+
+  it("cochée, répond « oui »", async () => {
+    const { user, reponses } = afficher([page("trajet", DISTANCE, BATEAU)]);
+
+    await user.click(screen.getByLabelText("Longue"));
+    await user.click(caseBateau());
+    await user.click(valider());
+
+    expect(reponses()).toEqual({ distance: "longue", bateau: true });
   });
 });

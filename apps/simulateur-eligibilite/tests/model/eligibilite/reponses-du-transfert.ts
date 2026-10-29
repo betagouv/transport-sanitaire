@@ -47,6 +47,7 @@ export const SEJOUR: Reponses = {
   "Q1.2": ["8_BRANCARDAGE"],
   "Q1.3": ["7_AUCUNE"],
   "Q2.2.1": ["1_HOSPITALISATION"],
+  "Q2.2.1.cadre": "1_ETABLISSEMENT",
   "Q2.2.1.a": "2_NON",
   ...TRAJET,
 };

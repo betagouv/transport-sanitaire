@@ -9,6 +9,7 @@ import {
   pagesOf,
 } from "../../../core/socle/questionnaire-engine/question";
 import { Questionnaire } from "../../../core/socle/questionnaire-engine/questionnaire";
+import { lienAld } from "./lien-ald";
 
 type Reponses = Answers<Questions>;
 
@@ -33,6 +34,7 @@ const assis = (cas: Questions["Q1.3"], autres: Reponses = {}): Reponses => ({
   "Q1.1": "3_AVEC_UN_PROFESSIONNEL",
   "Q1.2": ["1_PAS_AUTONOME"],
   "Q1.3": cas,
+  ...lienAld(cas),
   ...autres,
 });
 
@@ -46,7 +48,11 @@ describe("Q2.1, le motif du déplacement", () => {
     ],
     [
       "une ALD sans déficience, chez un patient seul",
-      { ...SEUL, "Q1.3": ["2_ALD", "8_MINEUR_SOINS_CONTINUS"] },
+      {
+        ...SEUL,
+        "Q1.3": ["2_ALD", "8_MINEUR_SOINS_CONTINUS"],
+        "Q1.3.b": "1_LIEN_DIRECT",
+      },
     ],
   ] as const)("se pose pour %s", (_, reponses) => {
     expect(ids(reponses)).toContain("Q2.1");
@@ -65,7 +71,12 @@ describe("Q2.1, le motif du déplacement", () => {
     ["une ALD à 100 %", assis(["2_ALD"])],
     [
       "une ALD à 100 %, avec un proche",
-      { ...SEUL, "Q1.1": "2_AVEC_UN_PROCHE", "Q1.3": ["2_ALD"] },
+      {
+        ...SEUL,
+        "Q1.1": "2_AVEC_UN_PROCHE",
+        "Q1.3": ["2_ALD"],
+        "Q1.3.b": "1_LIEN_DIRECT",
+      },
     ],
     ["un mineur en soins continus", assis(["8_MINEUR_SOINS_CONTINUS"])],
   ] as const)("ne se pose pas quand P1 prouve un motif : %s", (_, reponses) => {

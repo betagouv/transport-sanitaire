@@ -3,14 +3,15 @@
 //
 // Tous les mots viennent du catalogue de l'éditeur, recopiés tels quels. Ce
 // fichier choisit la raison, puis range les textes de la fiche : il n'en écrit
-// aucun. Le conseil sur l'ALD ne vient que si l'ALD est établie (#134) : le
-// catalogue ne dit pas quand l'afficher. Elle lit ce que lit la raison
-// (`ce-que-lit-un-texte.ts`).
+// aucun. Elle lit ce que lit la raison (`ce-que-lit-un-texte.ts`). Depuis la
+// v10.1.4 (TS1014-J05), ni cartes ni conseil sur l'ALD : le bloc de ce que
+// l'Assurance Maladie ne rembourse pas les remplace.
 
 import type {
   CatalogueResultats,
   IssueNegative,
 } from "../../../../../core/models/eligibilite/declarations/catalogue-resultats";
+import { type BlocDeConsigne, blocsDuTexte } from "../blocs-de-consigne";
 import type { TraceDe } from "../ce-que-lit-un-texte";
 import { LU_PAR_LA_RAISON, raisonNonEligible } from "./raison-non-eligible";
 
@@ -24,17 +25,13 @@ export type TexteDeLaFicheNegative = {
   readonly titreDuPrescripteur: string;
   readonly titreDuPatient: string;
   readonly raison: string;
-  readonly introDesCartes: Bloc;
-  readonly cartes: readonly Bloc[];
+  readonly informationInstitutionnelle: IssueNegative["institutionalInformation"];
   readonly consignes: {
     readonly titre: string;
     /** Absent quand le catalogue le laisse vide. */
     readonly sousTitre?: string;
-    readonly texte: string;
-    readonly etapes: readonly string[];
+    readonly blocs: readonly BlocDeConsigne[];
   };
-  /** Absent tant que la trace n'établit pas l'ALD, ou sans conseil au catalogue. */
-  readonly conseilAld?: string;
   readonly finance: Bloc;
 };
 
@@ -44,21 +41,17 @@ export function texteDeLaFicheNegative(
   trace: TraceDe<typeof LU_PAR_LA_FICHE_NEGATIVE>,
 ): TexteDeLaFicheNegative {
   const issue = catalogue.issues.ISSUE_NON_ELIGIBLE;
-  const { intro, body, steps } = issue.instructions;
+  const { intro, body } = issue.instructions;
   return {
     titreDuPrescripteur: issue.prescriberTitle,
     titreDuPatient: issue.title,
     raison: raisonNonEligible(issue, trace).text,
-    introDesCartes: issue.cardIntro,
-    cartes: issue.fixedCards,
+    informationInstitutionnelle: issue.institutionalInformation,
     consignes: {
       titre: intro.title,
       ...(intro.subtitle !== "" && { sousTitre: intro.subtitle }),
-      texte: body,
-      etapes: steps,
+      blocs: blocsDuTexte(body),
     },
-    ...(trace.precisions.aldRecognized === true &&
-      issue.aldAdvice !== null && { conseilAld: issue.aldAdvice }),
     finance: issue.finance,
   };
 }

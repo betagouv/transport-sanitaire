@@ -20,6 +20,7 @@ import {
   texteDeLaFichePositive,
 } from "../../../front/models/eligibilite/r2/fiche-positive/texte-de-la-fiche-positive";
 import { traceDuResultat } from "../../../front/models/eligibilite/r2/trace-du-resultat";
+import { lienAld } from "./lien-ald";
 import {
   ciblesDe,
   lectureDe,
@@ -39,6 +40,7 @@ const AVEC_UN_PROFESSIONNEL = (cas: Reponses["Q1.3"]): Reponses => ({
   "Q1.1": "3_AVEC_UN_PROFESSIONNEL",
   "Q1.2": ["1_PAS_AUTONOME"],
   "Q1.3": cas,
+  ...lienAld(cas),
 });
 const AVEC_UN_PROCHE = (
   cas: Reponses["Q1.3"],
@@ -47,6 +49,7 @@ const AVEC_UN_PROCHE = (
   ...BESOIN,
   "Q1.1": "2_AVEC_UN_PROCHE",
   "Q1.3": cas,
+  ...lienAld(cas),
   "Q1.4": trajet,
 });
 

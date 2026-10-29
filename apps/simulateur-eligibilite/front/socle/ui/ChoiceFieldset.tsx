@@ -6,7 +6,7 @@
 // contenu d'une option dans son libellé. Or l'aide d'une option se rend juste
 // sous elle, et un bouton n'a pas sa place dans un libellé.
 
-import type { ComponentProps } from "react";
+import type { ComponentProps, ReactNode } from "react";
 import { type Help, OptionHelp } from "./OptionHelp";
 import "./checkbox-card.css";
 
@@ -17,6 +17,11 @@ export type Choice = {
   description?: string;
   /** Une aide dépliable, rendue sous l'option. */
   help?: Help;
+  /**
+   * Ce qui s'affiche juste sous l'option, après son aide : une question qu'elle
+   * fait apparaître. Hors du libellé, elle garde son propre groupe.
+   */
+  below?: ReactNode;
   /** Ce que la case ou le bouton reçoit : son état, et ce qu'un clic fait. */
   input: ComponentProps<"input">;
 };
@@ -88,7 +93,7 @@ function Legend({ id, legend, hint, lead }: Props) {
   );
 }
 
-// Une option, puis son aide. L'aide est sœur de l'option, pas son enfant : le
+// Une option, son aide, puis ce qui s'affiche dessous. L'aide est sœur de l'option, pas son enfant : le
 // DSFR espace les options d'après leur rang dans le groupe.
 function ChoiceInput({
   id,
@@ -113,6 +118,7 @@ function ChoiceInput({
         </label>
       </div>
       {choice.help && <OptionHelp help={choice.help} />}
+      {choice.below}
     </>
   );
 }

@@ -11,6 +11,7 @@ import type { Faits } from "../../../core/models/eligibilite/declarations/faits"
 import type { Questions } from "../../../core/models/eligibilite/declarations/questions";
 import { preconisationOf } from "../../../core/socle/model";
 import type { Answers } from "../../../core/socle/questionnaire-engine/question";
+import { lienAld } from "./lien-ald";
 
 type Reponses = Answers<Questions>;
 
@@ -24,7 +25,13 @@ const avec = (
   criteres: Questions["Q1.2"],
   cas: Questions["Q1.3"] = ["7_AUCUNE"],
   autres: Reponses = {},
-): Reponses => ({ ...PRO, "Q1.2": criteres, "Q1.3": cas, ...autres });
+): Reponses => ({
+  ...PRO,
+  "Q1.2": criteres,
+  "Q1.3": cas,
+  ...lienAld(cas),
+  ...autres,
+});
 
 describe("qui aide le patient (Q1.1)", () => {
   it.each([
@@ -76,8 +83,22 @@ describe("les cas particuliers (Q1.3)", () => {
     ["fait_bariatrique", avec(BRANCARD, ["1_FORTE_CORPULENCE"]), true],
     ["fait_bariatrique", avec(BRANCARD), false],
     ["fait_ald_liee", avec(BRANCARD, ["2_ALD"]), true],
-    ["fait_ald_liee", { ...SEUL, "Q1.3": ["2_ALD"] }, false],
+    [
+      "fait_ald_liee",
+      { ...SEUL, "Q1.3": ["2_ALD"], "Q1.3.b": "1_LIEN_DIRECT" },
+      false,
+    ],
     ["fait_ald_liee", avec(BRANCARD), false],
+    [
+      "fait_ald_liee",
+      avec(BRANCARD, ["2_ALD"], { "Q1.3.b": "2_SANS_LIEN_DIRECT" }),
+      false,
+    ],
+    [
+      "fait_ald_liee",
+      avec(BRANCARD, ["2_ALD"], { "Q1.3.b": undefined }),
+      undefined,
+    ],
     ["fait_partage_incompatible", PRO, undefined],
     ["fait_ald_liee", { ...PRO, "Q1.2": BRANCARD }, undefined],
   ] as const)("%s, %#", (fait, reponses, attendu) => {

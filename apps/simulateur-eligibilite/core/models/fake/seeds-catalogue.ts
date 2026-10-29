@@ -21,6 +21,7 @@ const DEUX_TASSES = {
   quantite: 2,
   lieu: "terrasse",
   ticket: false,
+  couvercle: false,
 } as const;
 
 // La facture part en France, à une adresse connue.
@@ -101,6 +102,18 @@ export const SEEDS: readonly Seed<Questions, Cibles>[] = [
     expected: {},
   },
   {
+    id: "service-avec-preparation",
+    label: "Service : une question sous l'option qui la fait apparaître",
+    description:
+      "S'arrête sur la façon de servir, une préparation particulière cochée : « Où la préparer ? » s'affiche juste sous elle, après son aide.",
+    answers: {
+      boisson: "cafe",
+      accompagnements: ["aucun"],
+      service: ["preparation"],
+    },
+    expected: {},
+  },
+  {
     id: "commande-de-the",
     label: "Résultat : un thé, avec lait et citron",
     description:
@@ -162,9 +175,9 @@ export const SEEDS: readonly Seed<Questions, Cibles>[] = [
   {
     id: "complement-quantite",
     label:
-      "Complément : rappel en valeurs, entier, liste déroulante, question facultative, case seule",
+      "Complément : rappel en valeurs, entier, liste déroulante, question facultative, case seule, case sans titre",
     description:
-      "Passe le verrou et s'arrête sur la première page du complément : la commande et le service, rappelés au-dessus du champ, puis le nombre de tasses, le lieu du service, le nom et le ticket de caisse, une case seule qui répond « non » décochée.",
+      "Passe le verrou et s'arrête sur la première page du complément : la commande et le service, rappelés au-dessus du champ, puis le nombre de tasses, le lieu du service, le nom et le ticket de caisse, une case seule qui répond « non » décochée, puis le couvercle, une case seule sans titre.",
     answers: { ...CAFE_SUCRE, retrait: "sur-place" },
     // Sans lait, la mise en garde est décidée, citron connu ou non.
     expected: { commande: "café, sucre", lait_tourne: false },

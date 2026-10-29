@@ -1,6 +1,7 @@
 // fait_permission : permission temporaire.
 //
-// Le séjour coché, seule Q2.2.1.a la dit : elle ne se pose qu'alors. Sinon,
+// Le séjour coché en établissement, seule Q2.2.1.a la dit : elle ne se pose
+// qu'alors. Une HAD n'ouvre aucune permission (TS1014-B01). Sinon,
 // Q2.1 la dit. Le séjour écarté, l'entrée en établissement (Q2.1.g) ou la
 // sortie vers la prison l'excluent.
 //
@@ -13,6 +14,7 @@ import {
   SITUATIONS,
   SOUS_TYPE,
   UN_SEJOUR_ECARTE,
+  UN_SEJOUR_EN_HAD,
   UNE_SORTIE_VERS_LA_PRISON,
 } from "./communs.ts";
 
@@ -23,6 +25,10 @@ export const permission = unFait("fait_permission")
     "Aucun séjour en cours, donc aucune permission.",
   )
   .applique(UN_SEJOUR_ECARTE)
+  .nonSi(
+    UN_SEJOUR_EN_HAD,
+    "Une Hospitalisation à Domicile n'ouvre aucune permission.",
+  )
   .ouiSi(PERMISSION_DU_SEJOUR.is("1_OUI"))
   .nonSi(PERMISSION_DU_SEJOUR.is("2_NON"))
   .ouiSi(MOTIF.is("11_PERMISSION"))

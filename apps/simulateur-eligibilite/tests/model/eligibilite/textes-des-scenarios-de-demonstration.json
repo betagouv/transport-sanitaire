@@ -4837,18 +4837,27 @@
         "title": "Votre transport ne peut pas être pris en charge par l’Assurance Maladie",
         "prescriberTitle": "Le transport de votre patient ne peut pas être pris en charge par l’Assurance Maladie",
         "eligibility": "Vous bénéficiez d’une reconnaissance en Affection Longue Durée (ALD), mais le soin motivant ce déplacement n’est pas lié à cette Affection Longue Durée (ALD). Ce seul statut ne permet donc pas la prise en charge du transport.",
-        "cardIntro": {
-          "title": "Si la situation médicale le justifie",
-          "text": "L'Assurance Maladie prend en charge les frais de transports sur prescription médicale et dans certaines conditions précises uniquement."
+        "institutionalInformation": {
+          "title": "L’Assurance Maladie ne rembourse pas systématiquement les transports :",
+          "items": [
+            "Même si vous êtes en Affection Longue Durée (ALD)",
+            "Même si vous êtes en invalidité",
+            "Même si vous sortez des urgences",
+            "Même si vous allez en consultation ou en soins"
+          ]
         },
-        "cards": [],
         "instructions": {
           "title": "Les règles de la prescription médicale de transport",
           "subtitle": null,
-          "body": "La prescription de transport est un acte médical réglementé par plusieurs textes de loi (notamment articles L322-5, R322-10 et R322-11 du Code de la sécurité sociale et arrêté du 23 décembre 2006 définissant le référentiel de prescription).<br><br>La réglementation précise que :<br>  • La prise en charge d’un transport dépend de votre état de santé et des conditions prévues par la réglementation.<br>  • Une Affection Longue Durée (ALD) ne donne pas automatiquement droit au remboursement d’un transport. Pour une prise en charge au titre de cette Affection Longue Durée (ALD), le déplacement doit être lié à celle-ci et votre état de santé doit répondre aux critères du référentiel de prescription.<br>  • Le mode de transport prescrit doit être le moins coûteux parmi ceux adaptés à votre état de santé.<br>  • En l’absence de contre-indication médicale, un transport partagé en Véhicule Sanitaire Léger (VSL) ou en taxi conventionné vous est proposé par principe. Dans les situations prévues par la réglementation, refuser ce transport partagé peut vous obliger à avancer les frais de la course.",
-          "steps": []
+          "lines": [
+            "La prescription de transport est un acte médical réglementé par plusieurs textes de loi (notamment articles L322-5, R322-10 et R322-11 du Code de la sécurité sociale et arrêté du 23 décembre 2006 définissant le référentiel de prescription).",
+            "La réglementation précise que :",
+            "La prise en charge d’un transport dépend de votre état de santé et des conditions prévues par la réglementation.",
+            "Une Affection Longue Durée (ALD) ne donne pas automatiquement droit au remboursement d’un transport. Pour une prise en charge au titre de cette Affection Longue Durée (ALD), le déplacement doit être lié à celle-ci et votre état de santé doit répondre aux critères du référentiel de prescription.",
+            "Le mode de transport prescrit doit être le moins coûteux parmi ceux adaptés à votre état de santé.",
+            "En l’absence de contre-indication médicale, un transport partagé en Véhicule Sanitaire Léger (VSL) ou en taxi conventionné vous est proposé par principe. Dans les situations prévues par la réglementation, refuser ce transport partagé peut vous obliger à avancer les frais de la course."
+          ]
         },
-        "aldAdvice": null,
         "finance": {
           "title": "Le saviez-vous ?",
           "text": "Les transports représentent un coût de 6,4 milliards d’euros par an pour l’Assurance Maladie. En respectant les conditions de prescription de transport, nous préservons notre système de santé."
@@ -4869,18 +4878,27 @@
         "title": "Votre transport ne peut pas être pris en charge par l’Assurance Maladie",
         "prescriberTitle": "Le transport de votre patient ne peut pas être pris en charge par l’Assurance Maladie",
         "eligibility": "Le déplacement est lié à votre Affection Longue Durée (ALD), mais les critères de déficience ou d’incapacité nécessaires à la prise en charge du transport ne sont pas remplis dans votre situation.",
-        "cardIntro": {
-          "title": "Si la situation médicale le justifie",
-          "text": "L'Assurance Maladie prend en charge les frais de transports sur prescription médicale et dans certaines conditions précises uniquement."
+        "institutionalInformation": {
+          "title": "L’Assurance Maladie ne rembourse pas systématiquement les transports :",
+          "items": [
+            "Même si vous êtes en Affection Longue Durée (ALD)",
+            "Même si vous êtes en invalidité",
+            "Même si vous sortez des urgences",
+            "Même si vous allez en consultation ou en soins"
+          ]
         },
-        "cards": [],
         "instructions": {
           "title": "Les règles de la prescription médicale de transport",
           "subtitle": null,
-          "body": "La prescription de transport est un acte médical réglementé par plusieurs textes de loi (notamment articles L322-5, R322-10 et R322-11 du Code de la sécurité sociale et arrêté du 23 décembre 2006 définissant le référentiel de prescription).<br><br>La réglementation précise que :<br>  • La prise en charge d’un transport dépend de votre état de santé et des conditions prévues par la réglementation.<br>  • Une Affection Longue Durée (ALD) ne donne pas automatiquement droit au remboursement d’un transport. Pour une prise en charge au titre de cette Affection Longue Durée (ALD), le déplacement doit être lié à celle-ci et votre état de santé doit répondre aux critères du référentiel de prescription.<br>  • Le mode de transport prescrit doit être le moins coûteux parmi ceux adaptés à votre état de santé.<br>  • En l’absence de contre-indication médicale, un transport partagé en Véhicule Sanitaire Léger (VSL) ou en taxi conventionné vous est proposé par principe. Dans les situations prévues par la réglementation, refuser ce transport partagé peut vous obliger à avancer les frais de la course.",
-          "steps": []
+          "lines": [
+            "La prescription de transport est un acte médical réglementé par plusieurs textes de loi (notamment articles L322-5, R322-10 et R322-11 du Code de la sécurité sociale et arrêté du 23 décembre 2006 définissant le référentiel de prescription).",
+            "La réglementation précise que :",
+            "La prise en charge d’un transport dépend de votre état de santé et des conditions prévues par la réglementation.",
+            "Une Affection Longue Durée (ALD) ne donne pas automatiquement droit au remboursement d’un transport. Pour une prise en charge au titre de cette Affection Longue Durée (ALD), le déplacement doit être lié à celle-ci et votre état de santé doit répondre aux critères du référentiel de prescription.",
+            "Le mode de transport prescrit doit être le moins coûteux parmi ceux adaptés à votre état de santé.",
+            "En l’absence de contre-indication médicale, un transport partagé en Véhicule Sanitaire Léger (VSL) ou en taxi conventionné vous est proposé par principe. Dans les situations prévues par la réglementation, refuser ce transport partagé peut vous obliger à avancer les frais de la course."
+          ]
         },
-        "aldAdvice": null,
         "finance": {
           "title": "Le saviez-vous ?",
           "text": "Les transports représentent un coût de 6,4 milliards d’euros par an pour l’Assurance Maladie. En respectant les conditions de prescription de transport, nous préservons notre système de santé."
@@ -4900,18 +4918,27 @@
         "title": "Votre transport ne peut pas être pris en charge par l’Assurance Maladie",
         "prescriberTitle": "Le transport de votre patient ne peut pas être pris en charge par l’Assurance Maladie",
         "eligibility": "Les séances d’hémodialyse sont assimilées à une hospitalisation pour la prise en charge du transport. La séance déclarée est une autre forme de dialyse et aucun autre motif de remboursement n’a été établi pour ce déplacement.",
-        "cardIntro": {
-          "title": "Si la situation médicale le justifie",
-          "text": "L'Assurance Maladie prend en charge les frais de transports sur prescription médicale et dans certaines conditions précises uniquement."
+        "institutionalInformation": {
+          "title": "L’Assurance Maladie ne rembourse pas systématiquement les transports :",
+          "items": [
+            "Même si vous êtes en Affection Longue Durée (ALD)",
+            "Même si vous êtes en invalidité",
+            "Même si vous sortez des urgences",
+            "Même si vous allez en consultation ou en soins"
+          ]
         },
-        "cards": [],
         "instructions": {
           "title": "Les règles de la prescription médicale de transport",
           "subtitle": null,
-          "body": "La prescription de transport est un acte médical réglementé par plusieurs textes de loi (notamment articles L322-5, R322-10 et R322-11 du Code de la sécurité sociale et arrêté du 23 décembre 2006 définissant le référentiel de prescription).<br><br>La réglementation précise que :<br>  • La prise en charge d’un transport dépend de votre état de santé et des conditions prévues par la réglementation.<br>  • Une Affection Longue Durée (ALD) ne donne pas automatiquement droit au remboursement d’un transport. Pour une prise en charge au titre de cette Affection Longue Durée (ALD), le déplacement doit être lié à celle-ci et votre état de santé doit répondre aux critères du référentiel de prescription.<br>  • Le mode de transport prescrit doit être le moins coûteux parmi ceux adaptés à votre état de santé.<br>  • En l’absence de contre-indication médicale, un transport partagé en Véhicule Sanitaire Léger (VSL) ou en taxi conventionné vous est proposé par principe. Dans les situations prévues par la réglementation, refuser ce transport partagé peut vous obliger à avancer les frais de la course.",
-          "steps": []
+          "lines": [
+            "La prescription de transport est un acte médical réglementé par plusieurs textes de loi (notamment articles L322-5, R322-10 et R322-11 du Code de la sécurité sociale et arrêté du 23 décembre 2006 définissant le référentiel de prescription).",
+            "La réglementation précise que :",
+            "La prise en charge d’un transport dépend de votre état de santé et des conditions prévues par la réglementation.",
+            "Une Affection Longue Durée (ALD) ne donne pas automatiquement droit au remboursement d’un transport. Pour une prise en charge au titre de cette Affection Longue Durée (ALD), le déplacement doit être lié à celle-ci et votre état de santé doit répondre aux critères du référentiel de prescription.",
+            "Le mode de transport prescrit doit être le moins coûteux parmi ceux adaptés à votre état de santé.",
+            "En l’absence de contre-indication médicale, un transport partagé en Véhicule Sanitaire Léger (VSL) ou en taxi conventionné vous est proposé par principe. Dans les situations prévues par la réglementation, refuser ce transport partagé peut vous obliger à avancer les frais de la course."
+          ]
         },
-        "aldAdvice": null,
         "finance": {
           "title": "Le saviez-vous ?",
           "text": "Les transports représentent un coût de 6,4 milliards d’euros par an pour l’Assurance Maladie. En respectant les conditions de prescription de transport, nous préservons notre système de santé."
@@ -4931,18 +4958,27 @@
         "title": "Votre transport ne peut pas être pris en charge par l’Assurance Maladie",
         "prescriberTitle": "Le transport de votre patient ne peut pas être pris en charge par l’Assurance Maladie",
         "eligibility": "Votre déplacement concerne un appareillage qui ne fait pas partie des catégories prévues pour cette prise en charge : prothèses oculaires ou faciales, podo-orthèses et orthoprothèses.",
-        "cardIntro": {
-          "title": "Si la situation médicale le justifie",
-          "text": "L'Assurance Maladie prend en charge les frais de transports sur prescription médicale et dans certaines conditions précises uniquement."
+        "institutionalInformation": {
+          "title": "L’Assurance Maladie ne rembourse pas systématiquement les transports :",
+          "items": [
+            "Même si vous êtes en Affection Longue Durée (ALD)",
+            "Même si vous êtes en invalidité",
+            "Même si vous sortez des urgences",
+            "Même si vous allez en consultation ou en soins"
+          ]
         },
-        "cards": [],
         "instructions": {
           "title": "Les règles de la prescription médicale de transport",
           "subtitle": null,
-          "body": "La prescription de transport est un acte médical réglementé par plusieurs textes de loi (notamment articles L322-5, R322-10 et R322-11 du Code de la sécurité sociale et arrêté du 23 décembre 2006 définissant le référentiel de prescription).<br><br>La réglementation précise que :<br>  • La prise en charge d’un transport dépend de votre état de santé et des conditions prévues par la réglementation.<br>  • Une Affection Longue Durée (ALD) ne donne pas automatiquement droit au remboursement d’un transport. Pour une prise en charge au titre de cette Affection Longue Durée (ALD), le déplacement doit être lié à celle-ci et votre état de santé doit répondre aux critères du référentiel de prescription.<br>  • Le mode de transport prescrit doit être le moins coûteux parmi ceux adaptés à votre état de santé.<br>  • En l’absence de contre-indication médicale, un transport partagé en Véhicule Sanitaire Léger (VSL) ou en taxi conventionné vous est proposé par principe. Dans les situations prévues par la réglementation, refuser ce transport partagé peut vous obliger à avancer les frais de la course.",
-          "steps": []
+          "lines": [
+            "La prescription de transport est un acte médical réglementé par plusieurs textes de loi (notamment articles L322-5, R322-10 et R322-11 du Code de la sécurité sociale et arrêté du 23 décembre 2006 définissant le référentiel de prescription).",
+            "La réglementation précise que :",
+            "La prise en charge d’un transport dépend de votre état de santé et des conditions prévues par la réglementation.",
+            "Une Affection Longue Durée (ALD) ne donne pas automatiquement droit au remboursement d’un transport. Pour une prise en charge au titre de cette Affection Longue Durée (ALD), le déplacement doit être lié à celle-ci et votre état de santé doit répondre aux critères du référentiel de prescription.",
+            "Le mode de transport prescrit doit être le moins coûteux parmi ceux adaptés à votre état de santé.",
+            "En l’absence de contre-indication médicale, un transport partagé en Véhicule Sanitaire Léger (VSL) ou en taxi conventionné vous est proposé par principe. Dans les situations prévues par la réglementation, refuser ce transport partagé peut vous obliger à avancer les frais de la course."
+          ]
         },
-        "aldAdvice": null,
         "finance": {
           "title": "Le saviez-vous ?",
           "text": "Les transports représentent un coût de 6,4 milliards d’euros par an pour l’Assurance Maladie. En respectant les conditions de prescription de transport, nous préservons notre système de santé."
@@ -4962,18 +4998,27 @@
         "title": "Votre transport ne peut pas être pris en charge par l’Assurance Maladie",
         "prescriberTitle": "Le transport de votre patient ne peut pas être pris en charge par l’Assurance Maladie",
         "eligibility": "Le trajet évalué ne dépasse pas 50 km. Pour une prise en charge au titre d’une série, chacun des transports doit dépasser 50 km.",
-        "cardIntro": {
-          "title": "Si la situation médicale le justifie",
-          "text": "L'Assurance Maladie prend en charge les frais de transports sur prescription médicale et dans certaines conditions précises uniquement."
+        "institutionalInformation": {
+          "title": "L’Assurance Maladie ne rembourse pas systématiquement les transports :",
+          "items": [
+            "Même si vous êtes en Affection Longue Durée (ALD)",
+            "Même si vous êtes en invalidité",
+            "Même si vous sortez des urgences",
+            "Même si vous allez en consultation ou en soins"
+          ]
         },
-        "cards": [],
         "instructions": {
           "title": "Les règles de la prescription médicale de transport",
           "subtitle": null,
-          "body": "La prescription de transport est un acte médical réglementé par plusieurs textes de loi (notamment articles L322-5, R322-10 et R322-11 du Code de la sécurité sociale et arrêté du 23 décembre 2006 définissant le référentiel de prescription).<br><br>La réglementation précise que :<br>  • La prise en charge d’un transport dépend de votre état de santé et des conditions prévues par la réglementation.<br>  • Une Affection Longue Durée (ALD) ne donne pas automatiquement droit au remboursement d’un transport. Pour une prise en charge au titre de cette Affection Longue Durée (ALD), le déplacement doit être lié à celle-ci et votre état de santé doit répondre aux critères du référentiel de prescription.<br>  • Le mode de transport prescrit doit être le moins coûteux parmi ceux adaptés à votre état de santé.<br>  • En l’absence de contre-indication médicale, un transport partagé en Véhicule Sanitaire Léger (VSL) ou en taxi conventionné vous est proposé par principe. Dans les situations prévues par la réglementation, refuser ce transport partagé peut vous obliger à avancer les frais de la course.",
-          "steps": []
+          "lines": [
+            "La prescription de transport est un acte médical réglementé par plusieurs textes de loi (notamment articles L322-5, R322-10 et R322-11 du Code de la sécurité sociale et arrêté du 23 décembre 2006 définissant le référentiel de prescription).",
+            "La réglementation précise que :",
+            "La prise en charge d’un transport dépend de votre état de santé et des conditions prévues par la réglementation.",
+            "Une Affection Longue Durée (ALD) ne donne pas automatiquement droit au remboursement d’un transport. Pour une prise en charge au titre de cette Affection Longue Durée (ALD), le déplacement doit être lié à celle-ci et votre état de santé doit répondre aux critères du référentiel de prescription.",
+            "Le mode de transport prescrit doit être le moins coûteux parmi ceux adaptés à votre état de santé.",
+            "En l’absence de contre-indication médicale, un transport partagé en Véhicule Sanitaire Léger (VSL) ou en taxi conventionné vous est proposé par principe. Dans les situations prévues par la réglementation, refuser ce transport partagé peut vous obliger à avancer les frais de la course."
+          ]
         },
-        "aldAdvice": null,
         "finance": {
           "title": "Le saviez-vous ?",
           "text": "Les transports représentent un coût de 6,4 milliards d’euros par an pour l’Assurance Maladie. En respectant les conditions de prescription de transport, nous préservons notre système de santé."
@@ -4994,18 +5039,27 @@
         "title": "Votre transport ne peut pas être pris en charge par l’Assurance Maladie",
         "prescriberTitle": "Le transport de votre patient ne peut pas être pris en charge par l’Assurance Maladie",
         "eligibility": "Votre déplacement concerne une consultation médicale. Cette consultation, à elle seule, ne suffit pas à ouvrir droit au remboursement de votre transport par l’Assurance Maladie.",
-        "cardIntro": {
-          "title": "Si la situation médicale le justifie",
-          "text": "L'Assurance Maladie prend en charge les frais de transports sur prescription médicale et dans certaines conditions précises uniquement."
+        "institutionalInformation": {
+          "title": "L’Assurance Maladie ne rembourse pas systématiquement les transports :",
+          "items": [
+            "Même si vous êtes en Affection Longue Durée (ALD)",
+            "Même si vous êtes en invalidité",
+            "Même si vous sortez des urgences",
+            "Même si vous allez en consultation ou en soins"
+          ]
         },
-        "cards": [],
         "instructions": {
           "title": "Les règles de la prescription médicale de transport",
           "subtitle": null,
-          "body": "La prescription de transport est un acte médical réglementé par plusieurs textes de loi (notamment articles L322-5, R322-10 et R322-11 du Code de la sécurité sociale et arrêté du 23 décembre 2006 définissant le référentiel de prescription).<br><br>La réglementation précise que :<br>  • La prise en charge d’un transport dépend de votre état de santé et des conditions prévues par la réglementation.<br>  • Une Affection Longue Durée (ALD) ne donne pas automatiquement droit au remboursement d’un transport. Pour une prise en charge au titre de cette Affection Longue Durée (ALD), le déplacement doit être lié à celle-ci et votre état de santé doit répondre aux critères du référentiel de prescription.<br>  • Le mode de transport prescrit doit être le moins coûteux parmi ceux adaptés à votre état de santé.<br>  • En l’absence de contre-indication médicale, un transport partagé en Véhicule Sanitaire Léger (VSL) ou en taxi conventionné vous est proposé par principe. Dans les situations prévues par la réglementation, refuser ce transport partagé peut vous obliger à avancer les frais de la course.",
-          "steps": []
+          "lines": [
+            "La prescription de transport est un acte médical réglementé par plusieurs textes de loi (notamment articles L322-5, R322-10 et R322-11 du Code de la sécurité sociale et arrêté du 23 décembre 2006 définissant le référentiel de prescription).",
+            "La réglementation précise que :",
+            "La prise en charge d’un transport dépend de votre état de santé et des conditions prévues par la réglementation.",
+            "Une Affection Longue Durée (ALD) ne donne pas automatiquement droit au remboursement d’un transport. Pour une prise en charge au titre de cette Affection Longue Durée (ALD), le déplacement doit être lié à celle-ci et votre état de santé doit répondre aux critères du référentiel de prescription.",
+            "Le mode de transport prescrit doit être le moins coûteux parmi ceux adaptés à votre état de santé.",
+            "En l’absence de contre-indication médicale, un transport partagé en Véhicule Sanitaire Léger (VSL) ou en taxi conventionné vous est proposé par principe. Dans les situations prévues par la réglementation, refuser ce transport partagé peut vous obliger à avancer les frais de la course."
+          ]
         },
-        "aldAdvice": null,
         "finance": {
           "title": "Le saviez-vous ?",
           "text": "Les transports représentent un coût de 6,4 milliards d’euros par an pour l’Assurance Maladie. En respectant les conditions de prescription de transport, nous préservons notre système de santé."
@@ -5026,18 +5080,27 @@
         "title": "Votre transport ne peut pas être pris en charge par l’Assurance Maladie",
         "prescriberTitle": "Le transport de votre patient ne peut pas être pris en charge par l’Assurance Maladie",
         "eligibility": "Votre déplacement concerne une consultation ou un soin réalisé par un chirurgien-dentiste ou une sage-femme. Ce seul motif ne suffit pas à ouvrir droit au remboursement du transport par l’Assurance Maladie.",
-        "cardIntro": {
-          "title": "Si la situation médicale le justifie",
-          "text": "L'Assurance Maladie prend en charge les frais de transports sur prescription médicale et dans certaines conditions précises uniquement."
+        "institutionalInformation": {
+          "title": "L’Assurance Maladie ne rembourse pas systématiquement les transports :",
+          "items": [
+            "Même si vous êtes en Affection Longue Durée (ALD)",
+            "Même si vous êtes en invalidité",
+            "Même si vous sortez des urgences",
+            "Même si vous allez en consultation ou en soins"
+          ]
         },
-        "cards": [],
         "instructions": {
           "title": "Les règles de la prescription médicale de transport",
           "subtitle": null,
-          "body": "La prescription de transport est un acte médical réglementé par plusieurs textes de loi (notamment articles L322-5, R322-10 et R322-11 du Code de la sécurité sociale et arrêté du 23 décembre 2006 définissant le référentiel de prescription).<br><br>La réglementation précise que :<br>  • La prise en charge d’un transport dépend de votre état de santé et des conditions prévues par la réglementation.<br>  • Une Affection Longue Durée (ALD) ne donne pas automatiquement droit au remboursement d’un transport. Pour une prise en charge au titre de cette Affection Longue Durée (ALD), le déplacement doit être lié à celle-ci et votre état de santé doit répondre aux critères du référentiel de prescription.<br>  • Le mode de transport prescrit doit être le moins coûteux parmi ceux adaptés à votre état de santé.<br>  • En l’absence de contre-indication médicale, un transport partagé en Véhicule Sanitaire Léger (VSL) ou en taxi conventionné vous est proposé par principe. Dans les situations prévues par la réglementation, refuser ce transport partagé peut vous obliger à avancer les frais de la course.",
-          "steps": []
+          "lines": [
+            "La prescription de transport est un acte médical réglementé par plusieurs textes de loi (notamment articles L322-5, R322-10 et R322-11 du Code de la sécurité sociale et arrêté du 23 décembre 2006 définissant le référentiel de prescription).",
+            "La réglementation précise que :",
+            "La prise en charge d’un transport dépend de votre état de santé et des conditions prévues par la réglementation.",
+            "Une Affection Longue Durée (ALD) ne donne pas automatiquement droit au remboursement d’un transport. Pour une prise en charge au titre de cette Affection Longue Durée (ALD), le déplacement doit être lié à celle-ci et votre état de santé doit répondre aux critères du référentiel de prescription.",
+            "Le mode de transport prescrit doit être le moins coûteux parmi ceux adaptés à votre état de santé.",
+            "En l’absence de contre-indication médicale, un transport partagé en Véhicule Sanitaire Léger (VSL) ou en taxi conventionné vous est proposé par principe. Dans les situations prévues par la réglementation, refuser ce transport partagé peut vous obliger à avancer les frais de la course."
+          ]
         },
-        "aldAdvice": null,
         "finance": {
           "title": "Le saviez-vous ?",
           "text": "Les transports représentent un coût de 6,4 milliards d’euros par an pour l’Assurance Maladie. En respectant les conditions de prescription de transport, nous préservons notre système de santé."
@@ -5058,18 +5121,27 @@
         "title": "Votre transport ne peut pas être pris en charge par l’Assurance Maladie",
         "prescriberTitle": "Le transport de votre patient ne peut pas être pris en charge par l’Assurance Maladie",
         "eligibility": "Votre déplacement concerne un examen d’imagerie ou un autre acte médical technique. Cet acte, à lui seul, ne suffit pas à ouvrir droit au remboursement du transport par l’Assurance Maladie.",
-        "cardIntro": {
-          "title": "Si la situation médicale le justifie",
-          "text": "L'Assurance Maladie prend en charge les frais de transports sur prescription médicale et dans certaines conditions précises uniquement."
+        "institutionalInformation": {
+          "title": "L’Assurance Maladie ne rembourse pas systématiquement les transports :",
+          "items": [
+            "Même si vous êtes en Affection Longue Durée (ALD)",
+            "Même si vous êtes en invalidité",
+            "Même si vous sortez des urgences",
+            "Même si vous allez en consultation ou en soins"
+          ]
         },
-        "cards": [],
         "instructions": {
           "title": "Les règles de la prescription médicale de transport",
           "subtitle": null,
-          "body": "La prescription de transport est un acte médical réglementé par plusieurs textes de loi (notamment articles L322-5, R322-10 et R322-11 du Code de la sécurité sociale et arrêté du 23 décembre 2006 définissant le référentiel de prescription).<br><br>La réglementation précise que :<br>  • La prise en charge d’un transport dépend de votre état de santé et des conditions prévues par la réglementation.<br>  • Une Affection Longue Durée (ALD) ne donne pas automatiquement droit au remboursement d’un transport. Pour une prise en charge au titre de cette Affection Longue Durée (ALD), le déplacement doit être lié à celle-ci et votre état de santé doit répondre aux critères du référentiel de prescription.<br>  • Le mode de transport prescrit doit être le moins coûteux parmi ceux adaptés à votre état de santé.<br>  • En l’absence de contre-indication médicale, un transport partagé en Véhicule Sanitaire Léger (VSL) ou en taxi conventionné vous est proposé par principe. Dans les situations prévues par la réglementation, refuser ce transport partagé peut vous obliger à avancer les frais de la course.",
-          "steps": []
+          "lines": [
+            "La prescription de transport est un acte médical réglementé par plusieurs textes de loi (notamment articles L322-5, R322-10 et R322-11 du Code de la sécurité sociale et arrêté du 23 décembre 2006 définissant le référentiel de prescription).",
+            "La réglementation précise que :",
+            "La prise en charge d’un transport dépend de votre état de santé et des conditions prévues par la réglementation.",
+            "Une Affection Longue Durée (ALD) ne donne pas automatiquement droit au remboursement d’un transport. Pour une prise en charge au titre de cette Affection Longue Durée (ALD), le déplacement doit être lié à celle-ci et votre état de santé doit répondre aux critères du référentiel de prescription.",
+            "Le mode de transport prescrit doit être le moins coûteux parmi ceux adaptés à votre état de santé.",
+            "En l’absence de contre-indication médicale, un transport partagé en Véhicule Sanitaire Léger (VSL) ou en taxi conventionné vous est proposé par principe. Dans les situations prévues par la réglementation, refuser ce transport partagé peut vous obliger à avancer les frais de la course."
+          ]
         },
-        "aldAdvice": null,
         "finance": {
           "title": "Le saviez-vous ?",
           "text": "Les transports représentent un coût de 6,4 milliards d’euros par an pour l’Assurance Maladie. En respectant les conditions de prescription de transport, nous préservons notre système de santé."
@@ -5090,18 +5162,27 @@
         "title": "Votre transport ne peut pas être pris en charge par l’Assurance Maladie",
         "prescriberTitle": "Le transport de votre patient ne peut pas être pris en charge par l’Assurance Maladie",
         "eligibility": "Votre déplacement concerne une analyse ou un examen de biologie médicale. Cet examen, à lui seul, ne suffit pas à ouvrir droit au remboursement du transport par l’Assurance Maladie.",
-        "cardIntro": {
-          "title": "Si la situation médicale le justifie",
-          "text": "L'Assurance Maladie prend en charge les frais de transports sur prescription médicale et dans certaines conditions précises uniquement."
+        "institutionalInformation": {
+          "title": "L’Assurance Maladie ne rembourse pas systématiquement les transports :",
+          "items": [
+            "Même si vous êtes en Affection Longue Durée (ALD)",
+            "Même si vous êtes en invalidité",
+            "Même si vous sortez des urgences",
+            "Même si vous allez en consultation ou en soins"
+          ]
         },
-        "cards": [],
         "instructions": {
           "title": "Les règles de la prescription médicale de transport",
           "subtitle": null,
-          "body": "La prescription de transport est un acte médical réglementé par plusieurs textes de loi (notamment articles L322-5, R322-10 et R322-11 du Code de la sécurité sociale et arrêté du 23 décembre 2006 définissant le référentiel de prescription).<br><br>La réglementation précise que :<br>  • La prise en charge d’un transport dépend de votre état de santé et des conditions prévues par la réglementation.<br>  • Une Affection Longue Durée (ALD) ne donne pas automatiquement droit au remboursement d’un transport. Pour une prise en charge au titre de cette Affection Longue Durée (ALD), le déplacement doit être lié à celle-ci et votre état de santé doit répondre aux critères du référentiel de prescription.<br>  • Le mode de transport prescrit doit être le moins coûteux parmi ceux adaptés à votre état de santé.<br>  • En l’absence de contre-indication médicale, un transport partagé en Véhicule Sanitaire Léger (VSL) ou en taxi conventionné vous est proposé par principe. Dans les situations prévues par la réglementation, refuser ce transport partagé peut vous obliger à avancer les frais de la course.",
-          "steps": []
+          "lines": [
+            "La prescription de transport est un acte médical réglementé par plusieurs textes de loi (notamment articles L322-5, R322-10 et R322-11 du Code de la sécurité sociale et arrêté du 23 décembre 2006 définissant le référentiel de prescription).",
+            "La réglementation précise que :",
+            "La prise en charge d’un transport dépend de votre état de santé et des conditions prévues par la réglementation.",
+            "Une Affection Longue Durée (ALD) ne donne pas automatiquement droit au remboursement d’un transport. Pour une prise en charge au titre de cette Affection Longue Durée (ALD), le déplacement doit être lié à celle-ci et votre état de santé doit répondre aux critères du référentiel de prescription.",
+            "Le mode de transport prescrit doit être le moins coûteux parmi ceux adaptés à votre état de santé.",
+            "En l’absence de contre-indication médicale, un transport partagé en Véhicule Sanitaire Léger (VSL) ou en taxi conventionné vous est proposé par principe. Dans les situations prévues par la réglementation, refuser ce transport partagé peut vous obliger à avancer les frais de la course."
+          ]
         },
-        "aldAdvice": null,
         "finance": {
           "title": "Le saviez-vous ?",
           "text": "Les transports représentent un coût de 6,4 milliards d’euros par an pour l’Assurance Maladie. En respectant les conditions de prescription de transport, nous préservons notre système de santé."
@@ -5122,18 +5203,27 @@
         "title": "Votre transport ne peut pas être pris en charge par l’Assurance Maladie",
         "prescriberTitle": "Le transport de votre patient ne peut pas être pris en charge par l’Assurance Maladie",
         "eligibility": "Votre déplacement concerne des soins paramédicaux. Ces soins, à eux seuls, ne suffisent pas à ouvrir droit au remboursement du transport par l’Assurance Maladie.",
-        "cardIntro": {
-          "title": "Si la situation médicale le justifie",
-          "text": "L'Assurance Maladie prend en charge les frais de transports sur prescription médicale et dans certaines conditions précises uniquement."
+        "institutionalInformation": {
+          "title": "L’Assurance Maladie ne rembourse pas systématiquement les transports :",
+          "items": [
+            "Même si vous êtes en Affection Longue Durée (ALD)",
+            "Même si vous êtes en invalidité",
+            "Même si vous sortez des urgences",
+            "Même si vous allez en consultation ou en soins"
+          ]
         },
-        "cards": [],
         "instructions": {
           "title": "Les règles de la prescription médicale de transport",
           "subtitle": null,
-          "body": "La prescription de transport est un acte médical réglementé par plusieurs textes de loi (notamment articles L322-5, R322-10 et R322-11 du Code de la sécurité sociale et arrêté du 23 décembre 2006 définissant le référentiel de prescription).<br><br>La réglementation précise que :<br>  • La prise en charge d’un transport dépend de votre état de santé et des conditions prévues par la réglementation.<br>  • Une Affection Longue Durée (ALD) ne donne pas automatiquement droit au remboursement d’un transport. Pour une prise en charge au titre de cette Affection Longue Durée (ALD), le déplacement doit être lié à celle-ci et votre état de santé doit répondre aux critères du référentiel de prescription.<br>  • Le mode de transport prescrit doit être le moins coûteux parmi ceux adaptés à votre état de santé.<br>  • En l’absence de contre-indication médicale, un transport partagé en Véhicule Sanitaire Léger (VSL) ou en taxi conventionné vous est proposé par principe. Dans les situations prévues par la réglementation, refuser ce transport partagé peut vous obliger à avancer les frais de la course.",
-          "steps": []
+          "lines": [
+            "La prescription de transport est un acte médical réglementé par plusieurs textes de loi (notamment articles L322-5, R322-10 et R322-11 du Code de la sécurité sociale et arrêté du 23 décembre 2006 définissant le référentiel de prescription).",
+            "La réglementation précise que :",
+            "La prise en charge d’un transport dépend de votre état de santé et des conditions prévues par la réglementation.",
+            "Une Affection Longue Durée (ALD) ne donne pas automatiquement droit au remboursement d’un transport. Pour une prise en charge au titre de cette Affection Longue Durée (ALD), le déplacement doit être lié à celle-ci et votre état de santé doit répondre aux critères du référentiel de prescription.",
+            "Le mode de transport prescrit doit être le moins coûteux parmi ceux adaptés à votre état de santé.",
+            "En l’absence de contre-indication médicale, un transport partagé en Véhicule Sanitaire Léger (VSL) ou en taxi conventionné vous est proposé par principe. Dans les situations prévues par la réglementation, refuser ce transport partagé peut vous obliger à avancer les frais de la course."
+          ]
         },
-        "aldAdvice": null,
         "finance": {
           "title": "Le saviez-vous ?",
           "text": "Les transports représentent un coût de 6,4 milliards d’euros par an pour l’Assurance Maladie. En respectant les conditions de prescription de transport, nous préservons notre système de santé."
@@ -5154,18 +5244,27 @@
         "title": "Votre transport ne peut pas être pris en charge par l’Assurance Maladie",
         "prescriberTitle": "Le transport de votre patient ne peut pas être pris en charge par l’Assurance Maladie",
         "eligibility": "Votre déplacement concerne une séance de psychologue ou un dispositif de soins particulier. Cette seule situation ne suffit pas à ouvrir droit au remboursement du transport par l’Assurance Maladie.",
-        "cardIntro": {
-          "title": "Si la situation médicale le justifie",
-          "text": "L'Assurance Maladie prend en charge les frais de transports sur prescription médicale et dans certaines conditions précises uniquement."
+        "institutionalInformation": {
+          "title": "L’Assurance Maladie ne rembourse pas systématiquement les transports :",
+          "items": [
+            "Même si vous êtes en Affection Longue Durée (ALD)",
+            "Même si vous êtes en invalidité",
+            "Même si vous sortez des urgences",
+            "Même si vous allez en consultation ou en soins"
+          ]
         },
-        "cards": [],
         "instructions": {
           "title": "Les règles de la prescription médicale de transport",
           "subtitle": null,
-          "body": "La prescription de transport est un acte médical réglementé par plusieurs textes de loi (notamment articles L322-5, R322-10 et R322-11 du Code de la sécurité sociale et arrêté du 23 décembre 2006 définissant le référentiel de prescription).<br><br>La réglementation précise que :<br>  • La prise en charge d’un transport dépend de votre état de santé et des conditions prévues par la réglementation.<br>  • Une Affection Longue Durée (ALD) ne donne pas automatiquement droit au remboursement d’un transport. Pour une prise en charge au titre de cette Affection Longue Durée (ALD), le déplacement doit être lié à celle-ci et votre état de santé doit répondre aux critères du référentiel de prescription.<br>  • Le mode de transport prescrit doit être le moins coûteux parmi ceux adaptés à votre état de santé.<br>  • En l’absence de contre-indication médicale, un transport partagé en Véhicule Sanitaire Léger (VSL) ou en taxi conventionné vous est proposé par principe. Dans les situations prévues par la réglementation, refuser ce transport partagé peut vous obliger à avancer les frais de la course.",
-          "steps": []
+          "lines": [
+            "La prescription de transport est un acte médical réglementé par plusieurs textes de loi (notamment articles L322-5, R322-10 et R322-11 du Code de la sécurité sociale et arrêté du 23 décembre 2006 définissant le référentiel de prescription).",
+            "La réglementation précise que :",
+            "La prise en charge d’un transport dépend de votre état de santé et des conditions prévues par la réglementation.",
+            "Une Affection Longue Durée (ALD) ne donne pas automatiquement droit au remboursement d’un transport. Pour une prise en charge au titre de cette Affection Longue Durée (ALD), le déplacement doit être lié à celle-ci et votre état de santé doit répondre aux critères du référentiel de prescription.",
+            "Le mode de transport prescrit doit être le moins coûteux parmi ceux adaptés à votre état de santé.",
+            "En l’absence de contre-indication médicale, un transport partagé en Véhicule Sanitaire Léger (VSL) ou en taxi conventionné vous est proposé par principe. Dans les situations prévues par la réglementation, refuser ce transport partagé peut vous obliger à avancer les frais de la course."
+          ]
         },
-        "aldAdvice": null,
         "finance": {
           "title": "Le saviez-vous ?",
           "text": "Les transports représentent un coût de 6,4 milliards d’euros par an pour l’Assurance Maladie. En respectant les conditions de prescription de transport, nous préservons notre système de santé."
@@ -5186,18 +5285,27 @@
         "title": "Votre transport ne peut pas être pris en charge par l’Assurance Maladie",
         "prescriberTitle": "Le transport de votre patient ne peut pas être pris en charge par l’Assurance Maladie",
         "eligibility": "Votre déplacement concerne un soin ou un examen qui, à lui seul, ne justifie pas la prise en charge des frais de transport par l’Assurance Maladie.",
-        "cardIntro": {
-          "title": "Si la situation médicale le justifie",
-          "text": "L'Assurance Maladie prend en charge les frais de transports sur prescription médicale et dans certaines conditions précises uniquement."
+        "institutionalInformation": {
+          "title": "L’Assurance Maladie ne rembourse pas systématiquement les transports :",
+          "items": [
+            "Même si vous êtes en Affection Longue Durée (ALD)",
+            "Même si vous êtes en invalidité",
+            "Même si vous sortez des urgences",
+            "Même si vous allez en consultation ou en soins"
+          ]
         },
-        "cards": [],
         "instructions": {
           "title": "Les règles de la prescription médicale de transport",
           "subtitle": null,
-          "body": "La prescription de transport est un acte médical réglementé par plusieurs textes de loi (notamment articles L322-5, R322-10 et R322-11 du Code de la sécurité sociale et arrêté du 23 décembre 2006 définissant le référentiel de prescription).<br><br>La réglementation précise que :<br>  • La prise en charge d’un transport dépend de votre état de santé et des conditions prévues par la réglementation.<br>  • Une Affection Longue Durée (ALD) ne donne pas automatiquement droit au remboursement d’un transport. Pour une prise en charge au titre de cette Affection Longue Durée (ALD), le déplacement doit être lié à celle-ci et votre état de santé doit répondre aux critères du référentiel de prescription.<br>  • Le mode de transport prescrit doit être le moins coûteux parmi ceux adaptés à votre état de santé.<br>  • En l’absence de contre-indication médicale, un transport partagé en Véhicule Sanitaire Léger (VSL) ou en taxi conventionné vous est proposé par principe. Dans les situations prévues par la réglementation, refuser ce transport partagé peut vous obliger à avancer les frais de la course.",
-          "steps": []
+          "lines": [
+            "La prescription de transport est un acte médical réglementé par plusieurs textes de loi (notamment articles L322-5, R322-10 et R322-11 du Code de la sécurité sociale et arrêté du 23 décembre 2006 définissant le référentiel de prescription).",
+            "La réglementation précise que :",
+            "La prise en charge d’un transport dépend de votre état de santé et des conditions prévues par la réglementation.",
+            "Une Affection Longue Durée (ALD) ne donne pas automatiquement droit au remboursement d’un transport. Pour une prise en charge au titre de cette Affection Longue Durée (ALD), le déplacement doit être lié à celle-ci et votre état de santé doit répondre aux critères du référentiel de prescription.",
+            "Le mode de transport prescrit doit être le moins coûteux parmi ceux adaptés à votre état de santé.",
+            "En l’absence de contre-indication médicale, un transport partagé en Véhicule Sanitaire Léger (VSL) ou en taxi conventionné vous est proposé par principe. Dans les situations prévues par la réglementation, refuser ce transport partagé peut vous obliger à avancer les frais de la course."
+          ]
         },
-        "aldAdvice": null,
         "finance": {
           "title": "Le saviez-vous ?",
           "text": "Les transports représentent un coût de 6,4 milliards d’euros par an pour l’Assurance Maladie. En respectant les conditions de prescription de transport, nous préservons notre système de santé."
@@ -5218,18 +5326,27 @@
         "title": "Votre transport ne peut pas être pris en charge par l’Assurance Maladie",
         "prescriberTitle": "Le transport de votre patient ne peut pas être pris en charge par l’Assurance Maladie",
         "eligibility": "Ce déplacement ne correspond pas à une situation ouvrant droit au remboursement du transport par l’Assurance Maladie.",
-        "cardIntro": {
-          "title": "Si la situation médicale le justifie",
-          "text": "L'Assurance Maladie prend en charge les frais de transports sur prescription médicale et dans certaines conditions précises uniquement."
+        "institutionalInformation": {
+          "title": "L’Assurance Maladie ne rembourse pas systématiquement les transports :",
+          "items": [
+            "Même si vous êtes en Affection Longue Durée (ALD)",
+            "Même si vous êtes en invalidité",
+            "Même si vous sortez des urgences",
+            "Même si vous allez en consultation ou en soins"
+          ]
         },
-        "cards": [],
         "instructions": {
           "title": "Les règles de la prescription médicale de transport",
           "subtitle": null,
-          "body": "La prescription de transport est un acte médical réglementé par plusieurs textes de loi (notamment articles L322-5, R322-10 et R322-11 du Code de la sécurité sociale et arrêté du 23 décembre 2006 définissant le référentiel de prescription).<br><br>La réglementation précise que :<br>  • La prise en charge d’un transport dépend de votre état de santé et des conditions prévues par la réglementation.<br>  • Une Affection Longue Durée (ALD) ne donne pas automatiquement droit au remboursement d’un transport. Pour une prise en charge au titre de cette Affection Longue Durée (ALD), le déplacement doit être lié à celle-ci et votre état de santé doit répondre aux critères du référentiel de prescription.<br>  • Le mode de transport prescrit doit être le moins coûteux parmi ceux adaptés à votre état de santé.<br>  • En l’absence de contre-indication médicale, un transport partagé en Véhicule Sanitaire Léger (VSL) ou en taxi conventionné vous est proposé par principe. Dans les situations prévues par la réglementation, refuser ce transport partagé peut vous obliger à avancer les frais de la course.",
-          "steps": []
+          "lines": [
+            "La prescription de transport est un acte médical réglementé par plusieurs textes de loi (notamment articles L322-5, R322-10 et R322-11 du Code de la sécurité sociale et arrêté du 23 décembre 2006 définissant le référentiel de prescription).",
+            "La réglementation précise que :",
+            "La prise en charge d’un transport dépend de votre état de santé et des conditions prévues par la réglementation.",
+            "Une Affection Longue Durée (ALD) ne donne pas automatiquement droit au remboursement d’un transport. Pour une prise en charge au titre de cette Affection Longue Durée (ALD), le déplacement doit être lié à celle-ci et votre état de santé doit répondre aux critères du référentiel de prescription.",
+            "Le mode de transport prescrit doit être le moins coûteux parmi ceux adaptés à votre état de santé.",
+            "En l’absence de contre-indication médicale, un transport partagé en Véhicule Sanitaire Léger (VSL) ou en taxi conventionné vous est proposé par principe. Dans les situations prévues par la réglementation, refuser ce transport partagé peut vous obliger à avancer les frais de la course."
+          ]
         },
-        "aldAdvice": null,
         "finance": {
           "title": "Le saviez-vous ?",
           "text": "Les transports représentent un coût de 6,4 milliards d’euros par an pour l’Assurance Maladie. En respectant les conditions de prescription de transport, nous préservons notre système de santé."
@@ -5247,18 +5364,27 @@
         "title": "Votre transport ne peut pas être pris en charge par l’Assurance Maladie",
         "prescriberTitle": "Le transport de votre patient ne peut pas être pris en charge par l’Assurance Maladie",
         "eligibility": "Ce déplacement ne correspond pas à une situation ouvrant droit au remboursement du transport par l’Assurance Maladie.",
-        "cardIntro": {
-          "title": "Si la situation médicale le justifie",
-          "text": "L'Assurance Maladie prend en charge les frais de transports sur prescription médicale et dans certaines conditions précises uniquement."
+        "institutionalInformation": {
+          "title": "L’Assurance Maladie ne rembourse pas systématiquement les transports :",
+          "items": [
+            "Même si vous êtes en Affection Longue Durée (ALD)",
+            "Même si vous êtes en invalidité",
+            "Même si vous sortez des urgences",
+            "Même si vous allez en consultation ou en soins"
+          ]
         },
-        "cards": [],
         "instructions": {
           "title": "Les règles de la prescription médicale de transport",
           "subtitle": null,
-          "body": "La prescription de transport est un acte médical réglementé par plusieurs textes de loi (notamment articles L322-5, R322-10 et R322-11 du Code de la sécurité sociale et arrêté du 23 décembre 2006 définissant le référentiel de prescription).<br><br>La réglementation précise que :<br>  • La prise en charge d’un transport dépend de votre état de santé et des conditions prévues par la réglementation.<br>  • Une Affection Longue Durée (ALD) ne donne pas automatiquement droit au remboursement d’un transport. Pour une prise en charge au titre de cette Affection Longue Durée (ALD), le déplacement doit être lié à celle-ci et votre état de santé doit répondre aux critères du référentiel de prescription.<br>  • Le mode de transport prescrit doit être le moins coûteux parmi ceux adaptés à votre état de santé.<br>  • En l’absence de contre-indication médicale, un transport partagé en Véhicule Sanitaire Léger (VSL) ou en taxi conventionné vous est proposé par principe. Dans les situations prévues par la réglementation, refuser ce transport partagé peut vous obliger à avancer les frais de la course.",
-          "steps": []
+          "lines": [
+            "La prescription de transport est un acte médical réglementé par plusieurs textes de loi (notamment articles L322-5, R322-10 et R322-11 du Code de la sécurité sociale et arrêté du 23 décembre 2006 définissant le référentiel de prescription).",
+            "La réglementation précise que :",
+            "La prise en charge d’un transport dépend de votre état de santé et des conditions prévues par la réglementation.",
+            "Une Affection Longue Durée (ALD) ne donne pas automatiquement droit au remboursement d’un transport. Pour une prise en charge au titre de cette Affection Longue Durée (ALD), le déplacement doit être lié à celle-ci et votre état de santé doit répondre aux critères du référentiel de prescription.",
+            "Le mode de transport prescrit doit être le moins coûteux parmi ceux adaptés à votre état de santé.",
+            "En l’absence de contre-indication médicale, un transport partagé en Véhicule Sanitaire Léger (VSL) ou en taxi conventionné vous est proposé par principe. Dans les situations prévues par la réglementation, refuser ce transport partagé peut vous obliger à avancer les frais de la course."
+          ]
         },
-        "aldAdvice": null,
         "finance": {
           "title": "Le saviez-vous ?",
           "text": "Les transports représentent un coût de 6,4 milliards d’euros par an pour l’Assurance Maladie. En respectant les conditions de prescription de transport, nous préservons notre système de santé."
@@ -5282,18 +5408,27 @@
         "title": "Votre transport ne peut pas être pris en charge par l’Assurance Maladie",
         "prescriberTitle": "Le transport de votre patient ne peut pas être pris en charge par l’Assurance Maladie",
         "eligibility": "Une règle applicable à ce déplacement exclut expressément la prise en charge de ses frais de transport par l’Assurance Maladie.",
-        "cardIntro": {
-          "title": "Si la situation médicale le justifie",
-          "text": "L'Assurance Maladie prend en charge les frais de transports sur prescription médicale et dans certaines conditions précises uniquement."
+        "institutionalInformation": {
+          "title": "L’Assurance Maladie ne rembourse pas systématiquement les transports :",
+          "items": [
+            "Même si vous êtes en Affection Longue Durée (ALD)",
+            "Même si vous êtes en invalidité",
+            "Même si vous sortez des urgences",
+            "Même si vous allez en consultation ou en soins"
+          ]
         },
-        "cards": [],
         "instructions": {
           "title": "Les règles de la prescription médicale de transport",
           "subtitle": null,
-          "body": "La prescription de transport est un acte médical réglementé par plusieurs textes de loi (notamment articles L322-5, R322-10 et R322-11 du Code de la sécurité sociale et arrêté du 23 décembre 2006 définissant le référentiel de prescription).<br><br>La réglementation précise que :<br>  • La prise en charge d’un transport dépend de votre état de santé et des conditions prévues par la réglementation.<br>  • Une Affection Longue Durée (ALD) ne donne pas automatiquement droit au remboursement d’un transport. Pour une prise en charge au titre de cette Affection Longue Durée (ALD), le déplacement doit être lié à celle-ci et votre état de santé doit répondre aux critères du référentiel de prescription.<br>  • Le mode de transport prescrit doit être le moins coûteux parmi ceux adaptés à votre état de santé.<br>  • En l’absence de contre-indication médicale, un transport partagé en Véhicule Sanitaire Léger (VSL) ou en taxi conventionné vous est proposé par principe. Dans les situations prévues par la réglementation, refuser ce transport partagé peut vous obliger à avancer les frais de la course.",
-          "steps": []
+          "lines": [
+            "La prescription de transport est un acte médical réglementé par plusieurs textes de loi (notamment articles L322-5, R322-10 et R322-11 du Code de la sécurité sociale et arrêté du 23 décembre 2006 définissant le référentiel de prescription).",
+            "La réglementation précise que :",
+            "La prise en charge d’un transport dépend de votre état de santé et des conditions prévues par la réglementation.",
+            "Une Affection Longue Durée (ALD) ne donne pas automatiquement droit au remboursement d’un transport. Pour une prise en charge au titre de cette Affection Longue Durée (ALD), le déplacement doit être lié à celle-ci et votre état de santé doit répondre aux critères du référentiel de prescription.",
+            "Le mode de transport prescrit doit être le moins coûteux parmi ceux adaptés à votre état de santé.",
+            "En l’absence de contre-indication médicale, un transport partagé en Véhicule Sanitaire Léger (VSL) ou en taxi conventionné vous est proposé par principe. Dans les situations prévues par la réglementation, refuser ce transport partagé peut vous obliger à avancer les frais de la course."
+          ]
         },
-        "aldAdvice": null,
         "finance": {
           "title": "Le saviez-vous ?",
           "text": "Les transports représentent un coût de 6,4 milliards d’euros par an pour l’Assurance Maladie. En respectant les conditions de prescription de transport, nous préservons notre système de santé."
@@ -5317,18 +5452,27 @@
         "title": "Votre transport ne peut pas être pris en charge par l’Assurance Maladie",
         "prescriberTitle": "Le transport de votre patient ne peut pas être pris en charge par l’Assurance Maladie",
         "eligibility": "Une règle applicable à ce déplacement exclut expressément la prise en charge de ses frais de transport par l’Assurance Maladie.",
-        "cardIntro": {
-          "title": "Si la situation médicale le justifie",
-          "text": "L'Assurance Maladie prend en charge les frais de transports sur prescription médicale et dans certaines conditions précises uniquement."
+        "institutionalInformation": {
+          "title": "L’Assurance Maladie ne rembourse pas systématiquement les transports :",
+          "items": [
+            "Même si vous êtes en Affection Longue Durée (ALD)",
+            "Même si vous êtes en invalidité",
+            "Même si vous sortez des urgences",
+            "Même si vous allez en consultation ou en soins"
+          ]
         },
-        "cards": [],
         "instructions": {
           "title": "Les règles de la prescription médicale de transport",
           "subtitle": null,
-          "body": "La prescription de transport est un acte médical réglementé par plusieurs textes de loi (notamment articles L322-5, R322-10 et R322-11 du Code de la sécurité sociale et arrêté du 23 décembre 2006 définissant le référentiel de prescription).<br><br>La réglementation précise que :<br>  • La prise en charge d’un transport dépend de votre état de santé et des conditions prévues par la réglementation.<br>  • Une Affection Longue Durée (ALD) ne donne pas automatiquement droit au remboursement d’un transport. Pour une prise en charge au titre de cette Affection Longue Durée (ALD), le déplacement doit être lié à celle-ci et votre état de santé doit répondre aux critères du référentiel de prescription.<br>  • Le mode de transport prescrit doit être le moins coûteux parmi ceux adaptés à votre état de santé.<br>  • En l’absence de contre-indication médicale, un transport partagé en Véhicule Sanitaire Léger (VSL) ou en taxi conventionné vous est proposé par principe. Dans les situations prévues par la réglementation, refuser ce transport partagé peut vous obliger à avancer les frais de la course.",
-          "steps": []
+          "lines": [
+            "La prescription de transport est un acte médical réglementé par plusieurs textes de loi (notamment articles L322-5, R322-10 et R322-11 du Code de la sécurité sociale et arrêté du 23 décembre 2006 définissant le référentiel de prescription).",
+            "La réglementation précise que :",
+            "La prise en charge d’un transport dépend de votre état de santé et des conditions prévues par la réglementation.",
+            "Une Affection Longue Durée (ALD) ne donne pas automatiquement droit au remboursement d’un transport. Pour une prise en charge au titre de cette Affection Longue Durée (ALD), le déplacement doit être lié à celle-ci et votre état de santé doit répondre aux critères du référentiel de prescription.",
+            "Le mode de transport prescrit doit être le moins coûteux parmi ceux adaptés à votre état de santé.",
+            "En l’absence de contre-indication médicale, un transport partagé en Véhicule Sanitaire Léger (VSL) ou en taxi conventionné vous est proposé par principe. Dans les situations prévues par la réglementation, refuser ce transport partagé peut vous obliger à avancer les frais de la course."
+          ]
         },
-        "aldAdvice": null,
         "finance": {
           "title": "Le saviez-vous ?",
           "text": "Les transports représentent un coût de 6,4 milliards d’euros par an pour l’Assurance Maladie. En respectant les conditions de prescription de transport, nous préservons notre système de santé."
@@ -5352,18 +5496,27 @@
         "title": "Votre transport ne peut pas être pris en charge par l’Assurance Maladie",
         "prescriberTitle": "Le transport de votre patient ne peut pas être pris en charge par l’Assurance Maladie",
         "eligibility": "Une règle applicable à ce déplacement exclut expressément la prise en charge de ses frais de transport par l’Assurance Maladie.",
-        "cardIntro": {
-          "title": "Si la situation médicale le justifie",
-          "text": "L'Assurance Maladie prend en charge les frais de transports sur prescription médicale et dans certaines conditions précises uniquement."
+        "institutionalInformation": {
+          "title": "L’Assurance Maladie ne rembourse pas systématiquement les transports :",
+          "items": [
+            "Même si vous êtes en Affection Longue Durée (ALD)",
+            "Même si vous êtes en invalidité",
+            "Même si vous sortez des urgences",
+            "Même si vous allez en consultation ou en soins"
+          ]
         },
-        "cards": [],
         "instructions": {
           "title": "Les règles de la prescription médicale de transport",
           "subtitle": null,
-          "body": "La prescription de transport est un acte médical réglementé par plusieurs textes de loi (notamment articles L322-5, R322-10 et R322-11 du Code de la sécurité sociale et arrêté du 23 décembre 2006 définissant le référentiel de prescription).<br><br>La réglementation précise que :<br>  • La prise en charge d’un transport dépend de votre état de santé et des conditions prévues par la réglementation.<br>  • Une Affection Longue Durée (ALD) ne donne pas automatiquement droit au remboursement d’un transport. Pour une prise en charge au titre de cette Affection Longue Durée (ALD), le déplacement doit être lié à celle-ci et votre état de santé doit répondre aux critères du référentiel de prescription.<br>  • Le mode de transport prescrit doit être le moins coûteux parmi ceux adaptés à votre état de santé.<br>  • En l’absence de contre-indication médicale, un transport partagé en Véhicule Sanitaire Léger (VSL) ou en taxi conventionné vous est proposé par principe. Dans les situations prévues par la réglementation, refuser ce transport partagé peut vous obliger à avancer les frais de la course.",
-          "steps": []
+          "lines": [
+            "La prescription de transport est un acte médical réglementé par plusieurs textes de loi (notamment articles L322-5, R322-10 et R322-11 du Code de la sécurité sociale et arrêté du 23 décembre 2006 définissant le référentiel de prescription).",
+            "La réglementation précise que :",
+            "La prise en charge d’un transport dépend de votre état de santé et des conditions prévues par la réglementation.",
+            "Une Affection Longue Durée (ALD) ne donne pas automatiquement droit au remboursement d’un transport. Pour une prise en charge au titre de cette Affection Longue Durée (ALD), le déplacement doit être lié à celle-ci et votre état de santé doit répondre aux critères du référentiel de prescription.",
+            "Le mode de transport prescrit doit être le moins coûteux parmi ceux adaptés à votre état de santé.",
+            "En l’absence de contre-indication médicale, un transport partagé en Véhicule Sanitaire Léger (VSL) ou en taxi conventionné vous est proposé par principe. Dans les situations prévues par la réglementation, refuser ce transport partagé peut vous obliger à avancer les frais de la course."
+          ]
         },
-        "aldAdvice": null,
         "finance": {
           "title": "Le saviez-vous ?",
           "text": "Les transports représentent un coût de 6,4 milliards d’euros par an pour l’Assurance Maladie. En respectant les conditions de prescription de transport, nous préservons notre système de santé."
@@ -5387,18 +5540,27 @@
         "title": "Votre transport ne peut pas être pris en charge par l’Assurance Maladie",
         "prescriberTitle": "Le transport de votre patient ne peut pas être pris en charge par l’Assurance Maladie",
         "eligibility": "Une règle applicable à ce déplacement exclut expressément la prise en charge de ses frais de transport par l’Assurance Maladie.",
-        "cardIntro": {
-          "title": "Si la situation médicale le justifie",
-          "text": "L'Assurance Maladie prend en charge les frais de transports sur prescription médicale et dans certaines conditions précises uniquement."
+        "institutionalInformation": {
+          "title": "L’Assurance Maladie ne rembourse pas systématiquement les transports :",
+          "items": [
+            "Même si vous êtes en Affection Longue Durée (ALD)",
+            "Même si vous êtes en invalidité",
+            "Même si vous sortez des urgences",
+            "Même si vous allez en consultation ou en soins"
+          ]
         },
-        "cards": [],
         "instructions": {
           "title": "Les règles de la prescription médicale de transport",
           "subtitle": null,
-          "body": "La prescription de transport est un acte médical réglementé par plusieurs textes de loi (notamment articles L322-5, R322-10 et R322-11 du Code de la sécurité sociale et arrêté du 23 décembre 2006 définissant le référentiel de prescription).<br><br>La réglementation précise que :<br>  • La prise en charge d’un transport dépend de votre état de santé et des conditions prévues par la réglementation.<br>  • Une Affection Longue Durée (ALD) ne donne pas automatiquement droit au remboursement d’un transport. Pour une prise en charge au titre de cette Affection Longue Durée (ALD), le déplacement doit être lié à celle-ci et votre état de santé doit répondre aux critères du référentiel de prescription.<br>  • Le mode de transport prescrit doit être le moins coûteux parmi ceux adaptés à votre état de santé.<br>  • En l’absence de contre-indication médicale, un transport partagé en Véhicule Sanitaire Léger (VSL) ou en taxi conventionné vous est proposé par principe. Dans les situations prévues par la réglementation, refuser ce transport partagé peut vous obliger à avancer les frais de la course.",
-          "steps": []
+          "lines": [
+            "La prescription de transport est un acte médical réglementé par plusieurs textes de loi (notamment articles L322-5, R322-10 et R322-11 du Code de la sécurité sociale et arrêté du 23 décembre 2006 définissant le référentiel de prescription).",
+            "La réglementation précise que :",
+            "La prise en charge d’un transport dépend de votre état de santé et des conditions prévues par la réglementation.",
+            "Une Affection Longue Durée (ALD) ne donne pas automatiquement droit au remboursement d’un transport. Pour une prise en charge au titre de cette Affection Longue Durée (ALD), le déplacement doit être lié à celle-ci et votre état de santé doit répondre aux critères du référentiel de prescription.",
+            "Le mode de transport prescrit doit être le moins coûteux parmi ceux adaptés à votre état de santé.",
+            "En l’absence de contre-indication médicale, un transport partagé en Véhicule Sanitaire Léger (VSL) ou en taxi conventionné vous est proposé par principe. Dans les situations prévues par la réglementation, refuser ce transport partagé peut vous obliger à avancer les frais de la course."
+          ]
         },
-        "aldAdvice": null,
         "finance": {
           "title": "Le saviez-vous ?",
           "text": "Les transports représentent un coût de 6,4 milliards d’euros par an pour l’Assurance Maladie. En respectant les conditions de prescription de transport, nous préservons notre système de santé."
@@ -5422,18 +5584,27 @@
         "title": "Votre transport ne peut pas être pris en charge par l’Assurance Maladie",
         "prescriberTitle": "Le transport de votre patient ne peut pas être pris en charge par l’Assurance Maladie",
         "eligibility": "Une règle applicable à ce déplacement exclut expressément la prise en charge de ses frais de transport par l’Assurance Maladie.",
-        "cardIntro": {
-          "title": "Si la situation médicale le justifie",
-          "text": "L'Assurance Maladie prend en charge les frais de transports sur prescription médicale et dans certaines conditions précises uniquement."
+        "institutionalInformation": {
+          "title": "L’Assurance Maladie ne rembourse pas systématiquement les transports :",
+          "items": [
+            "Même si vous êtes en Affection Longue Durée (ALD)",
+            "Même si vous êtes en invalidité",
+            "Même si vous sortez des urgences",
+            "Même si vous allez en consultation ou en soins"
+          ]
         },
-        "cards": [],
         "instructions": {
           "title": "Les règles de la prescription médicale de transport",
           "subtitle": null,
-          "body": "La prescription de transport est un acte médical réglementé par plusieurs textes de loi (notamment articles L322-5, R322-10 et R322-11 du Code de la sécurité sociale et arrêté du 23 décembre 2006 définissant le référentiel de prescription).<br><br>La réglementation précise que :<br>  • La prise en charge d’un transport dépend de votre état de santé et des conditions prévues par la réglementation.<br>  • Une Affection Longue Durée (ALD) ne donne pas automatiquement droit au remboursement d’un transport. Pour une prise en charge au titre de cette Affection Longue Durée (ALD), le déplacement doit être lié à celle-ci et votre état de santé doit répondre aux critères du référentiel de prescription.<br>  • Le mode de transport prescrit doit être le moins coûteux parmi ceux adaptés à votre état de santé.<br>  • En l’absence de contre-indication médicale, un transport partagé en Véhicule Sanitaire Léger (VSL) ou en taxi conventionné vous est proposé par principe. Dans les situations prévues par la réglementation, refuser ce transport partagé peut vous obliger à avancer les frais de la course.",
-          "steps": []
+          "lines": [
+            "La prescription de transport est un acte médical réglementé par plusieurs textes de loi (notamment articles L322-5, R322-10 et R322-11 du Code de la sécurité sociale et arrêté du 23 décembre 2006 définissant le référentiel de prescription).",
+            "La réglementation précise que :",
+            "La prise en charge d’un transport dépend de votre état de santé et des conditions prévues par la réglementation.",
+            "Une Affection Longue Durée (ALD) ne donne pas automatiquement droit au remboursement d’un transport. Pour une prise en charge au titre de cette Affection Longue Durée (ALD), le déplacement doit être lié à celle-ci et votre état de santé doit répondre aux critères du référentiel de prescription.",
+            "Le mode de transport prescrit doit être le moins coûteux parmi ceux adaptés à votre état de santé.",
+            "En l’absence de contre-indication médicale, un transport partagé en Véhicule Sanitaire Léger (VSL) ou en taxi conventionné vous est proposé par principe. Dans les situations prévues par la réglementation, refuser ce transport partagé peut vous obliger à avancer les frais de la course."
+          ]
         },
-        "aldAdvice": null,
         "finance": {
           "title": "Le saviez-vous ?",
           "text": "Les transports représentent un coût de 6,4 milliards d’euros par an pour l’Assurance Maladie. En respectant les conditions de prescription de transport, nous préservons notre système de santé."
@@ -5457,18 +5628,27 @@
         "title": "Votre transport ne peut pas être pris en charge par l’Assurance Maladie",
         "prescriberTitle": "Le transport de votre patient ne peut pas être pris en charge par l’Assurance Maladie",
         "eligibility": "Une règle applicable à ce déplacement exclut expressément la prise en charge de ses frais de transport par l’Assurance Maladie.",
-        "cardIntro": {
-          "title": "Si la situation médicale le justifie",
-          "text": "L'Assurance Maladie prend en charge les frais de transports sur prescription médicale et dans certaines conditions précises uniquement."
+        "institutionalInformation": {
+          "title": "L’Assurance Maladie ne rembourse pas systématiquement les transports :",
+          "items": [
+            "Même si vous êtes en Affection Longue Durée (ALD)",
+            "Même si vous êtes en invalidité",
+            "Même si vous sortez des urgences",
+            "Même si vous allez en consultation ou en soins"
+          ]
         },
-        "cards": [],
         "instructions": {
           "title": "Les règles de la prescription médicale de transport",
           "subtitle": null,
-          "body": "La prescription de transport est un acte médical réglementé par plusieurs textes de loi (notamment articles L322-5, R322-10 et R322-11 du Code de la sécurité sociale et arrêté du 23 décembre 2006 définissant le référentiel de prescription).<br><br>La réglementation précise que :<br>  • La prise en charge d’un transport dépend de votre état de santé et des conditions prévues par la réglementation.<br>  • Une Affection Longue Durée (ALD) ne donne pas automatiquement droit au remboursement d’un transport. Pour une prise en charge au titre de cette Affection Longue Durée (ALD), le déplacement doit être lié à celle-ci et votre état de santé doit répondre aux critères du référentiel de prescription.<br>  • Le mode de transport prescrit doit être le moins coûteux parmi ceux adaptés à votre état de santé.<br>  • En l’absence de contre-indication médicale, un transport partagé en Véhicule Sanitaire Léger (VSL) ou en taxi conventionné vous est proposé par principe. Dans les situations prévues par la réglementation, refuser ce transport partagé peut vous obliger à avancer les frais de la course.",
-          "steps": []
+          "lines": [
+            "La prescription de transport est un acte médical réglementé par plusieurs textes de loi (notamment articles L322-5, R322-10 et R322-11 du Code de la sécurité sociale et arrêté du 23 décembre 2006 définissant le référentiel de prescription).",
+            "La réglementation précise que :",
+            "La prise en charge d’un transport dépend de votre état de santé et des conditions prévues par la réglementation.",
+            "Une Affection Longue Durée (ALD) ne donne pas automatiquement droit au remboursement d’un transport. Pour une prise en charge au titre de cette Affection Longue Durée (ALD), le déplacement doit être lié à celle-ci et votre état de santé doit répondre aux critères du référentiel de prescription.",
+            "Le mode de transport prescrit doit être le moins coûteux parmi ceux adaptés à votre état de santé.",
+            "En l’absence de contre-indication médicale, un transport partagé en Véhicule Sanitaire Léger (VSL) ou en taxi conventionné vous est proposé par principe. Dans les situations prévues par la réglementation, refuser ce transport partagé peut vous obliger à avancer les frais de la course."
+          ]
         },
-        "aldAdvice": null,
         "finance": {
           "title": "Le saviez-vous ?",
           "text": "Les transports représentent un coût de 6,4 milliards d’euros par an pour l’Assurance Maladie. En respectant les conditions de prescription de transport, nous préservons notre système de santé."
@@ -5492,18 +5672,27 @@
         "title": "Votre transport ne peut pas être pris en charge par l’Assurance Maladie",
         "prescriberTitle": "Le transport de votre patient ne peut pas être pris en charge par l’Assurance Maladie",
         "eligibility": "Une règle applicable à ce déplacement exclut expressément la prise en charge de ses frais de transport par l’Assurance Maladie.",
-        "cardIntro": {
-          "title": "Si la situation médicale le justifie",
-          "text": "L'Assurance Maladie prend en charge les frais de transports sur prescription médicale et dans certaines conditions précises uniquement."
+        "institutionalInformation": {
+          "title": "L’Assurance Maladie ne rembourse pas systématiquement les transports :",
+          "items": [
+            "Même si vous êtes en Affection Longue Durée (ALD)",
+            "Même si vous êtes en invalidité",
+            "Même si vous sortez des urgences",
+            "Même si vous allez en consultation ou en soins"
+          ]
         },
-        "cards": [],
         "instructions": {
           "title": "Les règles de la prescription médicale de transport",
           "subtitle": null,
-          "body": "La prescription de transport est un acte médical réglementé par plusieurs textes de loi (notamment articles L322-5, R322-10 et R322-11 du Code de la sécurité sociale et arrêté du 23 décembre 2006 définissant le référentiel de prescription).<br><br>La réglementation précise que :<br>  • La prise en charge d’un transport dépend de votre état de santé et des conditions prévues par la réglementation.<br>  • Une Affection Longue Durée (ALD) ne donne pas automatiquement droit au remboursement d’un transport. Pour une prise en charge au titre de cette Affection Longue Durée (ALD), le déplacement doit être lié à celle-ci et votre état de santé doit répondre aux critères du référentiel de prescription.<br>  • Le mode de transport prescrit doit être le moins coûteux parmi ceux adaptés à votre état de santé.<br>  • En l’absence de contre-indication médicale, un transport partagé en Véhicule Sanitaire Léger (VSL) ou en taxi conventionné vous est proposé par principe. Dans les situations prévues par la réglementation, refuser ce transport partagé peut vous obliger à avancer les frais de la course.",
-          "steps": []
+          "lines": [
+            "La prescription de transport est un acte médical réglementé par plusieurs textes de loi (notamment articles L322-5, R322-10 et R322-11 du Code de la sécurité sociale et arrêté du 23 décembre 2006 définissant le référentiel de prescription).",
+            "La réglementation précise que :",
+            "La prise en charge d’un transport dépend de votre état de santé et des conditions prévues par la réglementation.",
+            "Une Affection Longue Durée (ALD) ne donne pas automatiquement droit au remboursement d’un transport. Pour une prise en charge au titre de cette Affection Longue Durée (ALD), le déplacement doit être lié à celle-ci et votre état de santé doit répondre aux critères du référentiel de prescription.",
+            "Le mode de transport prescrit doit être le moins coûteux parmi ceux adaptés à votre état de santé.",
+            "En l’absence de contre-indication médicale, un transport partagé en Véhicule Sanitaire Léger (VSL) ou en taxi conventionné vous est proposé par principe. Dans les situations prévues par la réglementation, refuser ce transport partagé peut vous obliger à avancer les frais de la course."
+          ]
         },
-        "aldAdvice": null,
         "finance": {
           "title": "Le saviez-vous ?",
           "text": "Les transports représentent un coût de 6,4 milliards d’euros par an pour l’Assurance Maladie. En respectant les conditions de prescription de transport, nous préservons notre système de santé."
@@ -5527,18 +5716,27 @@
         "title": "Votre transport ne peut pas être pris en charge par l’Assurance Maladie",
         "prescriberTitle": "Le transport de votre patient ne peut pas être pris en charge par l’Assurance Maladie",
         "eligibility": "Une règle applicable à ce déplacement exclut expressément la prise en charge de ses frais de transport par l’Assurance Maladie.",
-        "cardIntro": {
-          "title": "Si la situation médicale le justifie",
-          "text": "L'Assurance Maladie prend en charge les frais de transports sur prescription médicale et dans certaines conditions précises uniquement."
+        "institutionalInformation": {
+          "title": "L’Assurance Maladie ne rembourse pas systématiquement les transports :",
+          "items": [
+            "Même si vous êtes en Affection Longue Durée (ALD)",
+            "Même si vous êtes en invalidité",
+            "Même si vous sortez des urgences",
+            "Même si vous allez en consultation ou en soins"
+          ]
         },
-        "cards": [],
         "instructions": {
           "title": "Les règles de la prescription médicale de transport",
           "subtitle": null,
-          "body": "La prescription de transport est un acte médical réglementé par plusieurs textes de loi (notamment articles L322-5, R322-10 et R322-11 du Code de la sécurité sociale et arrêté du 23 décembre 2006 définissant le référentiel de prescription).<br><br>La réglementation précise que :<br>  • La prise en charge d’un transport dépend de votre état de santé et des conditions prévues par la réglementation.<br>  • Une Affection Longue Durée (ALD) ne donne pas automatiquement droit au remboursement d’un transport. Pour une prise en charge au titre de cette Affection Longue Durée (ALD), le déplacement doit être lié à celle-ci et votre état de santé doit répondre aux critères du référentiel de prescription.<br>  • Le mode de transport prescrit doit être le moins coûteux parmi ceux adaptés à votre état de santé.<br>  • En l’absence de contre-indication médicale, un transport partagé en Véhicule Sanitaire Léger (VSL) ou en taxi conventionné vous est proposé par principe. Dans les situations prévues par la réglementation, refuser ce transport partagé peut vous obliger à avancer les frais de la course.",
-          "steps": []
+          "lines": [
+            "La prescription de transport est un acte médical réglementé par plusieurs textes de loi (notamment articles L322-5, R322-10 et R322-11 du Code de la sécurité sociale et arrêté du 23 décembre 2006 définissant le référentiel de prescription).",
+            "La réglementation précise que :",
+            "La prise en charge d’un transport dépend de votre état de santé et des conditions prévues par la réglementation.",
+            "Une Affection Longue Durée (ALD) ne donne pas automatiquement droit au remboursement d’un transport. Pour une prise en charge au titre de cette Affection Longue Durée (ALD), le déplacement doit être lié à celle-ci et votre état de santé doit répondre aux critères du référentiel de prescription.",
+            "Le mode de transport prescrit doit être le moins coûteux parmi ceux adaptés à votre état de santé.",
+            "En l’absence de contre-indication médicale, un transport partagé en Véhicule Sanitaire Léger (VSL) ou en taxi conventionné vous est proposé par principe. Dans les situations prévues par la réglementation, refuser ce transport partagé peut vous obliger à avancer les frais de la course."
+          ]
         },
-        "aldAdvice": null,
         "finance": {
           "title": "Le saviez-vous ?",
           "text": "Les transports représentent un coût de 6,4 milliards d’euros par an pour l’Assurance Maladie. En respectant les conditions de prescription de transport, nous préservons notre système de santé."
@@ -5562,18 +5760,27 @@
         "title": "Votre transport ne peut pas être pris en charge par l’Assurance Maladie",
         "prescriberTitle": "Le transport de votre patient ne peut pas être pris en charge par l’Assurance Maladie",
         "eligibility": "Une règle applicable à ce déplacement exclut expressément la prise en charge de ses frais de transport par l’Assurance Maladie.",
-        "cardIntro": {
-          "title": "Si la situation médicale le justifie",
-          "text": "L'Assurance Maladie prend en charge les frais de transports sur prescription médicale et dans certaines conditions précises uniquement."
+        "institutionalInformation": {
+          "title": "L’Assurance Maladie ne rembourse pas systématiquement les transports :",
+          "items": [
+            "Même si vous êtes en Affection Longue Durée (ALD)",
+            "Même si vous êtes en invalidité",
+            "Même si vous sortez des urgences",
+            "Même si vous allez en consultation ou en soins"
+          ]
         },
-        "cards": [],
         "instructions": {
           "title": "Les règles de la prescription médicale de transport",
           "subtitle": null,
-          "body": "La prescription de transport est un acte médical réglementé par plusieurs textes de loi (notamment articles L322-5, R322-10 et R322-11 du Code de la sécurité sociale et arrêté du 23 décembre 2006 définissant le référentiel de prescription).<br><br>La réglementation précise que :<br>  • La prise en charge d’un transport dépend de votre état de santé et des conditions prévues par la réglementation.<br>  • Une Affection Longue Durée (ALD) ne donne pas automatiquement droit au remboursement d’un transport. Pour une prise en charge au titre de cette Affection Longue Durée (ALD), le déplacement doit être lié à celle-ci et votre état de santé doit répondre aux critères du référentiel de prescription.<br>  • Le mode de transport prescrit doit être le moins coûteux parmi ceux adaptés à votre état de santé.<br>  • En l’absence de contre-indication médicale, un transport partagé en Véhicule Sanitaire Léger (VSL) ou en taxi conventionné vous est proposé par principe. Dans les situations prévues par la réglementation, refuser ce transport partagé peut vous obliger à avancer les frais de la course.",
-          "steps": []
+          "lines": [
+            "La prescription de transport est un acte médical réglementé par plusieurs textes de loi (notamment articles L322-5, R322-10 et R322-11 du Code de la sécurité sociale et arrêté du 23 décembre 2006 définissant le référentiel de prescription).",
+            "La réglementation précise que :",
+            "La prise en charge d’un transport dépend de votre état de santé et des conditions prévues par la réglementation.",
+            "Une Affection Longue Durée (ALD) ne donne pas automatiquement droit au remboursement d’un transport. Pour une prise en charge au titre de cette Affection Longue Durée (ALD), le déplacement doit être lié à celle-ci et votre état de santé doit répondre aux critères du référentiel de prescription.",
+            "Le mode de transport prescrit doit être le moins coûteux parmi ceux adaptés à votre état de santé.",
+            "En l’absence de contre-indication médicale, un transport partagé en Véhicule Sanitaire Léger (VSL) ou en taxi conventionné vous est proposé par principe. Dans les situations prévues par la réglementation, refuser ce transport partagé peut vous obliger à avancer les frais de la course."
+          ]
         },
-        "aldAdvice": null,
         "finance": {
           "title": "Le saviez-vous ?",
           "text": "Les transports représentent un coût de 6,4 milliards d’euros par an pour l’Assurance Maladie. En respectant les conditions de prescription de transport, nous préservons notre système de santé."
@@ -5597,18 +5804,27 @@
         "title": "Votre transport ne peut pas être pris en charge par l’Assurance Maladie",
         "prescriberTitle": "Le transport de votre patient ne peut pas être pris en charge par l’Assurance Maladie",
         "eligibility": "Une règle applicable à ce déplacement exclut expressément la prise en charge de ses frais de transport par l’Assurance Maladie.",
-        "cardIntro": {
-          "title": "Si la situation médicale le justifie",
-          "text": "L'Assurance Maladie prend en charge les frais de transports sur prescription médicale et dans certaines conditions précises uniquement."
+        "institutionalInformation": {
+          "title": "L’Assurance Maladie ne rembourse pas systématiquement les transports :",
+          "items": [
+            "Même si vous êtes en Affection Longue Durée (ALD)",
+            "Même si vous êtes en invalidité",
+            "Même si vous sortez des urgences",
+            "Même si vous allez en consultation ou en soins"
+          ]
         },
-        "cards": [],
         "instructions": {
           "title": "Les règles de la prescription médicale de transport",
           "subtitle": null,
-          "body": "La prescription de transport est un acte médical réglementé par plusieurs textes de loi (notamment articles L322-5, R322-10 et R322-11 du Code de la sécurité sociale et arrêté du 23 décembre 2006 définissant le référentiel de prescription).<br><br>La réglementation précise que :<br>  • La prise en charge d’un transport dépend de votre état de santé et des conditions prévues par la réglementation.<br>  • Une Affection Longue Durée (ALD) ne donne pas automatiquement droit au remboursement d’un transport. Pour une prise en charge au titre de cette Affection Longue Durée (ALD), le déplacement doit être lié à celle-ci et votre état de santé doit répondre aux critères du référentiel de prescription.<br>  • Le mode de transport prescrit doit être le moins coûteux parmi ceux adaptés à votre état de santé.<br>  • En l’absence de contre-indication médicale, un transport partagé en Véhicule Sanitaire Léger (VSL) ou en taxi conventionné vous est proposé par principe. Dans les situations prévues par la réglementation, refuser ce transport partagé peut vous obliger à avancer les frais de la course.",
-          "steps": []
+          "lines": [
+            "La prescription de transport est un acte médical réglementé par plusieurs textes de loi (notamment articles L322-5, R322-10 et R322-11 du Code de la sécurité sociale et arrêté du 23 décembre 2006 définissant le référentiel de prescription).",
+            "La réglementation précise que :",
+            "La prise en charge d’un transport dépend de votre état de santé et des conditions prévues par la réglementation.",
+            "Une Affection Longue Durée (ALD) ne donne pas automatiquement droit au remboursement d’un transport. Pour une prise en charge au titre de cette Affection Longue Durée (ALD), le déplacement doit être lié à celle-ci et votre état de santé doit répondre aux critères du référentiel de prescription.",
+            "Le mode de transport prescrit doit être le moins coûteux parmi ceux adaptés à votre état de santé.",
+            "En l’absence de contre-indication médicale, un transport partagé en Véhicule Sanitaire Léger (VSL) ou en taxi conventionné vous est proposé par principe. Dans les situations prévues par la réglementation, refuser ce transport partagé peut vous obliger à avancer les frais de la course."
+          ]
         },
-        "aldAdvice": null,
         "finance": {
           "title": "Le saviez-vous ?",
           "text": "Les transports représentent un coût de 6,4 milliards d’euros par an pour l’Assurance Maladie. En respectant les conditions de prescription de transport, nous préservons notre système de santé."
@@ -5632,18 +5848,27 @@
         "title": "Votre transport ne peut pas être pris en charge par l’Assurance Maladie",
         "prescriberTitle": "Le transport de votre patient ne peut pas être pris en charge par l’Assurance Maladie",
         "eligibility": "Une règle applicable à ce déplacement exclut expressément la prise en charge de ses frais de transport par l’Assurance Maladie.",
-        "cardIntro": {
-          "title": "Si la situation médicale le justifie",
-          "text": "L'Assurance Maladie prend en charge les frais de transports sur prescription médicale et dans certaines conditions précises uniquement."
+        "institutionalInformation": {
+          "title": "L’Assurance Maladie ne rembourse pas systématiquement les transports :",
+          "items": [
+            "Même si vous êtes en Affection Longue Durée (ALD)",
+            "Même si vous êtes en invalidité",
+            "Même si vous sortez des urgences",
+            "Même si vous allez en consultation ou en soins"
+          ]
         },
-        "cards": [],
         "instructions": {
           "title": "Les règles de la prescription médicale de transport",
           "subtitle": null,
-          "body": "La prescription de transport est un acte médical réglementé par plusieurs textes de loi (notamment articles L322-5, R322-10 et R322-11 du Code de la sécurité sociale et arrêté du 23 décembre 2006 définissant le référentiel de prescription).<br><br>La réglementation précise que :<br>  • La prise en charge d’un transport dépend de votre état de santé et des conditions prévues par la réglementation.<br>  • Une Affection Longue Durée (ALD) ne donne pas automatiquement droit au remboursement d’un transport. Pour une prise en charge au titre de cette Affection Longue Durée (ALD), le déplacement doit être lié à celle-ci et votre état de santé doit répondre aux critères du référentiel de prescription.<br>  • Le mode de transport prescrit doit être le moins coûteux parmi ceux adaptés à votre état de santé.<br>  • En l’absence de contre-indication médicale, un transport partagé en Véhicule Sanitaire Léger (VSL) ou en taxi conventionné vous est proposé par principe. Dans les situations prévues par la réglementation, refuser ce transport partagé peut vous obliger à avancer les frais de la course.",
-          "steps": []
+          "lines": [
+            "La prescription de transport est un acte médical réglementé par plusieurs textes de loi (notamment articles L322-5, R322-10 et R322-11 du Code de la sécurité sociale et arrêté du 23 décembre 2006 définissant le référentiel de prescription).",
+            "La réglementation précise que :",
+            "La prise en charge d’un transport dépend de votre état de santé et des conditions prévues par la réglementation.",
+            "Une Affection Longue Durée (ALD) ne donne pas automatiquement droit au remboursement d’un transport. Pour une prise en charge au titre de cette Affection Longue Durée (ALD), le déplacement doit être lié à celle-ci et votre état de santé doit répondre aux critères du référentiel de prescription.",
+            "Le mode de transport prescrit doit être le moins coûteux parmi ceux adaptés à votre état de santé.",
+            "En l’absence de contre-indication médicale, un transport partagé en Véhicule Sanitaire Léger (VSL) ou en taxi conventionné vous est proposé par principe. Dans les situations prévues par la réglementation, refuser ce transport partagé peut vous obliger à avancer les frais de la course."
+          ]
         },
-        "aldAdvice": null,
         "finance": {
           "title": "Le saviez-vous ?",
           "text": "Les transports représentent un coût de 6,4 milliards d’euros par an pour l’Assurance Maladie. En respectant les conditions de prescription de transport, nous préservons notre système de santé."
@@ -5667,18 +5892,27 @@
         "title": "Votre transport ne peut pas être pris en charge par l’Assurance Maladie",
         "prescriberTitle": "Le transport de votre patient ne peut pas être pris en charge par l’Assurance Maladie",
         "eligibility": "Une règle applicable à ce déplacement exclut expressément la prise en charge de ses frais de transport par l’Assurance Maladie.",
-        "cardIntro": {
-          "title": "Si la situation médicale le justifie",
-          "text": "L'Assurance Maladie prend en charge les frais de transports sur prescription médicale et dans certaines conditions précises uniquement."
+        "institutionalInformation": {
+          "title": "L’Assurance Maladie ne rembourse pas systématiquement les transports :",
+          "items": [
+            "Même si vous êtes en Affection Longue Durée (ALD)",
+            "Même si vous êtes en invalidité",
+            "Même si vous sortez des urgences",
+            "Même si vous allez en consultation ou en soins"
+          ]
         },
-        "cards": [],
         "instructions": {
           "title": "Les règles de la prescription médicale de transport",
           "subtitle": null,
-          "body": "La prescription de transport est un acte médical réglementé par plusieurs textes de loi (notamment articles L322-5, R322-10 et R322-11 du Code de la sécurité sociale et arrêté du 23 décembre 2006 définissant le référentiel de prescription).<br><br>La réglementation précise que :<br>  • La prise en charge d’un transport dépend de votre état de santé et des conditions prévues par la réglementation.<br>  • Une Affection Longue Durée (ALD) ne donne pas automatiquement droit au remboursement d’un transport. Pour une prise en charge au titre de cette Affection Longue Durée (ALD), le déplacement doit être lié à celle-ci et votre état de santé doit répondre aux critères du référentiel de prescription.<br>  • Le mode de transport prescrit doit être le moins coûteux parmi ceux adaptés à votre état de santé.<br>  • En l’absence de contre-indication médicale, un transport partagé en Véhicule Sanitaire Léger (VSL) ou en taxi conventionné vous est proposé par principe. Dans les situations prévues par la réglementation, refuser ce transport partagé peut vous obliger à avancer les frais de la course.",
-          "steps": []
+          "lines": [
+            "La prescription de transport est un acte médical réglementé par plusieurs textes de loi (notamment articles L322-5, R322-10 et R322-11 du Code de la sécurité sociale et arrêté du 23 décembre 2006 définissant le référentiel de prescription).",
+            "La réglementation précise que :",
+            "La prise en charge d’un transport dépend de votre état de santé et des conditions prévues par la réglementation.",
+            "Une Affection Longue Durée (ALD) ne donne pas automatiquement droit au remboursement d’un transport. Pour une prise en charge au titre de cette Affection Longue Durée (ALD), le déplacement doit être lié à celle-ci et votre état de santé doit répondre aux critères du référentiel de prescription.",
+            "Le mode de transport prescrit doit être le moins coûteux parmi ceux adaptés à votre état de santé.",
+            "En l’absence de contre-indication médicale, un transport partagé en Véhicule Sanitaire Léger (VSL) ou en taxi conventionné vous est proposé par principe. Dans les situations prévues par la réglementation, refuser ce transport partagé peut vous obliger à avancer les frais de la course."
+          ]
         },
-        "aldAdvice": null,
         "finance": {
           "title": "Le saviez-vous ?",
           "text": "Les transports représentent un coût de 6,4 milliards d’euros par an pour l’Assurance Maladie. En respectant les conditions de prescription de transport, nous préservons notre système de santé."
@@ -5702,18 +5936,27 @@
         "title": "Votre transport ne peut pas être pris en charge par l’Assurance Maladie",
         "prescriberTitle": "Le transport de votre patient ne peut pas être pris en charge par l’Assurance Maladie",
         "eligibility": "Une règle applicable à ce déplacement exclut expressément la prise en charge de ses frais de transport par l’Assurance Maladie.",
-        "cardIntro": {
-          "title": "Si la situation médicale le justifie",
-          "text": "L'Assurance Maladie prend en charge les frais de transports sur prescription médicale et dans certaines conditions précises uniquement."
+        "institutionalInformation": {
+          "title": "L’Assurance Maladie ne rembourse pas systématiquement les transports :",
+          "items": [
+            "Même si vous êtes en Affection Longue Durée (ALD)",
+            "Même si vous êtes en invalidité",
+            "Même si vous sortez des urgences",
+            "Même si vous allez en consultation ou en soins"
+          ]
         },
-        "cards": [],
         "instructions": {
           "title": "Les règles de la prescription médicale de transport",
           "subtitle": null,
-          "body": "La prescription de transport est un acte médical réglementé par plusieurs textes de loi (notamment articles L322-5, R322-10 et R322-11 du Code de la sécurité sociale et arrêté du 23 décembre 2006 définissant le référentiel de prescription).<br><br>La réglementation précise que :<br>  • La prise en charge d’un transport dépend de votre état de santé et des conditions prévues par la réglementation.<br>  • Une Affection Longue Durée (ALD) ne donne pas automatiquement droit au remboursement d’un transport. Pour une prise en charge au titre de cette Affection Longue Durée (ALD), le déplacement doit être lié à celle-ci et votre état de santé doit répondre aux critères du référentiel de prescription.<br>  • Le mode de transport prescrit doit être le moins coûteux parmi ceux adaptés à votre état de santé.<br>  • En l’absence de contre-indication médicale, un transport partagé en Véhicule Sanitaire Léger (VSL) ou en taxi conventionné vous est proposé par principe. Dans les situations prévues par la réglementation, refuser ce transport partagé peut vous obliger à avancer les frais de la course.",
-          "steps": []
+          "lines": [
+            "La prescription de transport est un acte médical réglementé par plusieurs textes de loi (notamment articles L322-5, R322-10 et R322-11 du Code de la sécurité sociale et arrêté du 23 décembre 2006 définissant le référentiel de prescription).",
+            "La réglementation précise que :",
+            "La prise en charge d’un transport dépend de votre état de santé et des conditions prévues par la réglementation.",
+            "Une Affection Longue Durée (ALD) ne donne pas automatiquement droit au remboursement d’un transport. Pour une prise en charge au titre de cette Affection Longue Durée (ALD), le déplacement doit être lié à celle-ci et votre état de santé doit répondre aux critères du référentiel de prescription.",
+            "Le mode de transport prescrit doit être le moins coûteux parmi ceux adaptés à votre état de santé.",
+            "En l’absence de contre-indication médicale, un transport partagé en Véhicule Sanitaire Léger (VSL) ou en taxi conventionné vous est proposé par principe. Dans les situations prévues par la réglementation, refuser ce transport partagé peut vous obliger à avancer les frais de la course."
+          ]
         },
-        "aldAdvice": null,
         "finance": {
           "title": "Le saviez-vous ?",
           "text": "Les transports représentent un coût de 6,4 milliards d’euros par an pour l’Assurance Maladie. En respectant les conditions de prescription de transport, nous préservons notre système de santé."

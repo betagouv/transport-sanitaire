@@ -36,6 +36,17 @@ describe("la page du trajet", () => {
     expect(posees(SEUL)).toEqual(["Q2.3.1", "Q2.3.2"]);
   });
 
+  // Un seul bloc : la case porte son libellé, sans titre au-dessus (#281).
+  it("pose l'avion ou le bateau en case sans titre", () => {
+    const avion = page
+      ? new Questionnaire(pages)
+          .readWith(SEUL)
+          .questionsOn(page)
+          .find(({ id }) => id === "Q2.3.2")
+      : undefined;
+    expect(avion).toMatchObject({ kind: "checkbox", box: undefined });
+  });
+
   it.each(["2_PLUS_DE_CINQUANTE_KM", "3_PLUS_DE_CENT_CINQUANTE_KM"] as const)(
     "pose la série pour un trajet de %s",
     (distance) => {

@@ -60,17 +60,25 @@ export type Precisions = {
 
 /**
  * Un séjour réel : une entrée ou une sortie d'établissement (Q2.1.g), ou
- * « déjà hospitalisé » coché. L'admission en HAD à domicile n'en est pas un.
+ * « déjà hospitalisé » coché hors HAD. Ni l'admission en HAD à domicile ni un
+ * séjour en HAD n'en sont un (TS1014-B01).
  */
 export const UN_SEJOUR_REEL: Condition = given
   .question("Q2.1.g")
   .answer()
   .isOneOf("1_ENTREE", "2_SORTIE")
-  .or(given.question("Q2.2.1").answer().checked("1_HOSPITALISATION"));
+  .or(
+    given
+      .question("Q2.2.1")
+      .answer()
+      .checked("1_HOSPITALISATION")
+      .and(given.question("Q2.2.1.cadre").answer().is("2_HAD").not()),
+  );
 
 // Les réponses que lisent les précisions.
 const LUES = {
   soins: given.question("Q1.3").answer(),
+  lienAld: given.question("Q1.3.b").answer(),
   dialyse: given.question("Q1.3.a").answer(),
   memeDeplacement: given.question("Q2.1.f").answer(),
   motif: given.question("Q2.1").answer(),
@@ -104,6 +112,7 @@ export const PRECISIONS_DE_LA_FICHE_NEGATIVE: Value<Precisions> = lues(
   "appareil",
   "serie",
   "soins",
+  "lienAld",
 ).compute((entrees) => ({
   ...cle("careFamily", familleDeSoin(entrees)),
   ...cle("dialysisType", typeDeDialyse(entrees)),
@@ -211,14 +220,22 @@ function seriePrevue({ serie }: Pick<Entrees, "serie">): true | NonProuve {
   return serie.is("1_OUI") ? true : undefined;
 }
 
-// Q1.3 option 2 dit les deux à la fois : l'ALD est reconnue, et les soins de
-// ce déplacement y sont liés. Non cochée, elle ne dit rien de l'ALD.
+// Q1.3 option 2 dit que l'ALD est reconnue, Q1.3.b si le soin y est lié
+// (MET-ALD-LIEN-001). Non cochée, elle ne dit rien de l'ALD. Le lien ne se
+// déduit jamais de `fait_ald_liee`, qui y mêle la déficience.
 function aldDeQ13({
   soins,
-}: Pick<Entrees, "soins">): Pick<Precisions, "aldRecognized" | "aldRelated"> {
-  return soins.checked("2_ALD")
-    ? { aldRecognized: true, aldRelated: true }
-    : {};
+  lienAld,
+}: Pick<Entrees, "soins" | "lienAld">): Pick<
+  Precisions,
+  "aldRecognized" | "aldRelated"
+> {
+  if (!soins.checked("2_ALD")) return {};
+  if (lienAld.is("1_LIEN_DIRECT"))
+    return { aldRecognized: true, aldRelated: true };
+  if (lienAld.is("2_SANS_LIEN_DIRECT"))
+    return { aldRecognized: true, aldRelated: false };
+  return { aldRecognized: true };
 }
 
 // Q2.5 dit le genre du déplacement, Q2.6.a sa durée. Le même site, l'USLD et

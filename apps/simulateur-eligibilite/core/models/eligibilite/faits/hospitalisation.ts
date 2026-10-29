@@ -1,8 +1,9 @@
 // fait_hospitalisation : hospitalisation ou séance assimilée établie.
 //
-// Un transfert depuis un séjour coché, ou un autre déplacement pendant le
-// séjour (Q2.5), l'établit. Sans séance ni séjour, et « déjà hospitalisé »
-// écarté en Q2.2.1, il vaut « non ». Une entrée ou une sortie d'établissement
+// Un séjour en établissement l'établit, et un autre déplacement pendant le
+// séjour (Q2.5) hors HAD. Une HAD ne l'établit pas : la séance de P1 en
+// décide, comme sans séjour (TS1014-B01). Sans séance ni séjour, et « déjà
+// hospitalisé » écarté en Q2.2.1, il vaut « non ». Une entrée ou une sortie d'établissement
 // (Q2.1.g) l'établit aussi. Sinon, la séance de P1 décide : l'admission en HAD
 // à domicile ne l'établit pas seule.
 //
@@ -17,18 +18,19 @@ import {
   SANS_SEANCE_NI_SEJOUR,
   SITUATIONS,
   SOUS_TYPE,
+  UN_SEJOUR_EN_ETABLISSEMENT,
+  UN_SEJOUR_EN_HAD,
 } from "./communs.ts";
 
+const SANS_SEANCE_NI_SEJOUR_HORS_Q21 = SANS_SEANCE_NI_SEJOUR.and(
+  MOTIF.isOneOf("9_TRANSFERT", "11_PERMISSION").not(),
+);
+
 export const hospitalisation = unFait("fait_hospitalisation")
-  .ouiSi(
-    DEPLACEMENT.is("1_TRANSFERT").and(SITUATIONS.checked("1_HOSPITALISATION")),
-  )
-  .ouiSi(DEPLACEMENT.is("2_AUTRE_DEPLACEMENT"))
+  .ouiSi(UN_SEJOUR_EN_ETABLISSEMENT, "Un séjour effectif en établissement.")
+  .ouiSi(DEPLACEMENT.is("2_AUTRE_DEPLACEMENT").and(UN_SEJOUR_EN_HAD.not()))
   .nonSi(
-    SANS_SEANCE_NI_SEJOUR.and(
-      MOTIF.isOneOf("9_TRANSFERT", "11_PERMISSION").not(),
-    )
-      .and(SITUATIONS.isPresent())
+    SANS_SEANCE_NI_SEJOUR_HORS_Q21.and(SITUATIONS.isPresent())
       .and(SITUATIONS.offered("1_HOSPITALISATION"))
       .and(SITUATIONS.checked("1_HOSPITALISATION").not()),
     "Ni séance qualifiante en Q1.3, ni séjour en Q2.1 ; « déjà hospitalisé » écarté.",

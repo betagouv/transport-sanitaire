@@ -66,7 +66,10 @@ describe("l'indication médicale d'un retour vers la prison (point 33)", () => {
 
   it.each([
     ["un critère de Q1.2", { ...AVEC_UN_PROFESSIONNEL, "Q2.1": "15_AUCUN" }],
-    ["une ALD en Q1.3", { ...SEUL, "Q1.3": ["2_ALD"] }],
+    [
+      "une ALD en Q1.3",
+      { ...SEUL, "Q1.3": ["2_ALD"], "Q1.3.b": "1_LIEN_DIRECT" },
+    ],
   ] as const)("%s l'établit déjà", (_, avant) => {
     expect(
       posee("P2/contextes", "Q2.2.1.indication", { ...avant, ...RETOUR }),

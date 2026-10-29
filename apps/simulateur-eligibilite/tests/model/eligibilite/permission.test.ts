@@ -40,6 +40,7 @@ describe("quand Q2.7 se pose", () => {
       ...PATIENT_SEUL,
       "Q2.1": "1_CONSULTATION",
       "Q2.2.1": ["1_HOSPITALISATION"],
+      "Q2.2.1.cadre": "1_ETABLISSEMENT",
       "Q2.2.1.a": "1_OUI",
     };
     expect(posee("P2/permission", "Q2.7", reponses)).toBeDefined();
@@ -53,6 +54,7 @@ describe("quand Q2.7 se pose", () => {
         ...PATIENT_SEUL,
         "Q2.1": "1_CONSULTATION",
         "Q2.2.1": ["1_HOSPITALISATION"],
+        "Q2.2.1.cadre": "1_ETABLISSEMENT",
         "Q2.2.1.a": "2_NON",
       },
     ],

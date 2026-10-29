@@ -8,7 +8,7 @@
 // préalable sont l'introduction (dans les consignes) et la justification dans
 // la raison. Un trajet en avion ou en bateau de ligne
 // régulière prend ses titres et son modus, ses cartes ont leur préfixe et il
-// n'a pas de badge (#221). Elle lit ce que lisent ces textes
+// n'a pas de badge (#221) ; en accord préalable, ni cartes ni étapes. Elle lit ce que lisent ces textes
 // (`ce-que-lit-un-texte.ts`).
 
 import type {
@@ -46,6 +46,7 @@ import {
   LU_PAR_LE_LIBELLE,
   LU_PAR_LE_RANG_DU_TITRE,
   libelleDeLaFiche,
+  porteeDuTrajet,
   rangDuTitreDuPrescripteur,
 } from "./variante-du-resultat";
 
@@ -96,17 +97,19 @@ export function texteDeLaFichePositive(
   if (!titre || !modus || !titreDuPrescripteur) return undefined;
   const fondement = fondementDe(catalogue, trace, issueId);
   const badges = badgesDuResultat(catalogue.badges, trace);
+  const consignes = consignesDuModus(
+    modus,
+    fondement.motif,
+    badges,
+    "intro" in issue ? issue.intro : undefined,
+  );
+  const sansDetail = sansCartesNiEtapes(issue, trace);
   return {
     titreDuPrescripteur,
     titreDuPatient: titre,
     ...(fondement.raison !== undefined && { raison: fondement.raison }),
-    cartes: cartesDeLaFiche(issue, trace),
-    consignes: consignesDuModus(
-      modus,
-      fondement.motif,
-      badges,
-      "intro" in issue ? issue.intro : undefined,
-    ),
+    cartes: sansDetail ? [] : cartesDeLaFiche(issue, trace),
+    consignes: sansDetail ? { ...consignes, etapes: [] } : consignes,
     finance: issue.finance,
   };
 }
@@ -114,6 +117,19 @@ export function texteDeLaFichePositive(
 // ---- implémentation ----
 
 type LuParLaFiche = TraceDe<typeof LU_PAR_LA_FICHE_POSITIVE>;
+
+// Une demande d'accord préalable en ligne régulière ne garde que son
+// introduction : ni cartes ni étapes (TS1014-J04).
+function sansCartesNiEtapes(
+  issue: CatalogueResultats["issues"][IssueAvecFichePositive],
+  trace: LuParLaFiche,
+): boolean {
+  return (
+    "suppressCardsAndStepsForLine" in issue &&
+    issue.suppressCardsAndStepsForLine &&
+    porteeDuTrajet(trace) !== "L"
+  );
+}
 
 type Fondement = {
   readonly raison: string | undefined;

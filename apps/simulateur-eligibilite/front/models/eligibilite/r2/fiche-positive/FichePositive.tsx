@@ -10,10 +10,11 @@ import {
   Panel,
   SheetFollowUp,
 } from "../../../../socle";
+import { BlocDeConsigne } from "../BlocDeConsigne";
 import { illustrationDuMode } from "../illustrations-des-modes";
 import { TexteEnrichi } from "../TexteEnrichi";
 import type { CarteAffichee } from "./cartes-et-badges";
-import type { BlocDeConsigne, Consignes, Puce } from "./consignes-du-modus";
+import type { Consignes } from "./consignes-du-modus";
 import type { TexteDeLaFichePositive } from "./texte-de-la-fiche-positive";
 
 export function FichePositive({ texte }: { texte: TexteDeLaFichePositive }) {
@@ -65,49 +66,10 @@ function ConsignesDuPatient({ consignes }: { consignes: Consignes }) {
           title: etape.titre,
           content: etape.blocs.map((bloc, rang) => (
             // Les blocs d'une étape ne changent jamais d'ordre.
-            <Bloc bloc={bloc} key={`${etape.numero}-${rang}`} />
+            <BlocDeConsigne bloc={bloc} key={`${etape.numero}-${rang}`} />
           )),
         }))}
       />
     </section>
-  );
-}
-
-function Bloc({ bloc }: { bloc: BlocDeConsigne }) {
-  if (bloc.type === "paragraphe") {
-    return (
-      <p>
-        <TexteEnrichi texte={bloc.texte} />
-      </p>
-    );
-  }
-  return (
-    <ul>
-      {bloc.puces.map((puce) => (
-        <li key={puce.texte}>
-          <PuceDeConsigne puce={puce} />
-        </li>
-      ))}
-    </ul>
-  );
-}
-
-// Une puce qui introduit des badges : sa légende, puis les besoins à signaler.
-function PuceDeConsigne({ puce }: { puce: Puce }) {
-  if (!puce.badges) return <TexteEnrichi texte={puce.texte} />;
-  return (
-    <>
-      <TexteEnrichi texte={puce.texte} />
-      <ul
-        aria-label="Besoins particuliers à signaler lors de la réservation"
-        className="fr-badges-group"
-      >
-        {puce.badges.map((badge) => (
-          <li key={badge}>
-            <p className="fr-badge">{badge}</p>
-          </li>
-        ))}
-      </ul>
-    </>
   );
 }

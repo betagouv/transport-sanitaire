@@ -35,6 +35,22 @@ export const SOUS_TYPE = given.question("Q2.1.g").answer();
 /** Q2.2.1 : les situations particulières du trajet. */
 export const SITUATIONS = given.question("Q2.2.1").answer();
 
+/** Q2.2.1.cadre : le séjour coché, en établissement ou en HAD. */
+const CADRE_DU_SEJOUR = given.question("Q2.2.1.cadre").answer();
+
+/**
+ * Un séjour en établissement de santé : « déjà hospitalisé » coché, et le
+ * cadre le dit, ou une sortie d'établissement (Q2.1.g) le donne (TS1014-B01).
+ */
+export const UN_SEJOUR_EN_ETABLISSEMENT = SITUATIONS.checked(
+  "1_HOSPITALISATION",
+).and(CADRE_DU_SEJOUR.is("1_ETABLISSEMENT").or(SOUS_TYPE.is("2_SORTIE")));
+
+/** « Déjà hospitalisé » coché, en Hospitalisation à Domicile (TS1014-B01). */
+export const UN_SEJOUR_EN_HAD = SITUATIONS.checked("1_HOSPITALISATION").and(
+  CADRE_DU_SEJOUR.is("2_HAD"),
+);
+
 /** Q2.2.1.a : le séjour coché, le trajet est-il une permission ? */
 export const PERMISSION_DU_SEJOUR = given.question("Q2.2.1.a").answer();
 

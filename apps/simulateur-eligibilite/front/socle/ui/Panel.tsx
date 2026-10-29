@@ -3,6 +3,7 @@
 // le prescripteur transmet. Sur une feuille à remettre, le blanc range un texte
 // dans le bloc de suivi. En texte bleu, le blanc encadré de bleu porte un
 // rappel, et le blanc bordé de bleu, à filet gauche, met un conseil en avant.
+// Le gris à filet vert porte une information générale, sans titre.
 // Sans titre, l'encadré est un aparté que son `label` nomme.
 // Les gabarits de l'éditeur en font foi.
 
@@ -10,7 +11,7 @@ import { type ReactNode, useId } from "react";
 import "./panel.css";
 
 type Props = {
-  variant: "grey" | "blue" | "white" | "framed" | "outlined";
+  variant: "grey" | "green" | "blue" | "white" | "framed" | "outlined";
   /** Un trait sépare chaque enfant du suivant. */
   divided?: boolean;
   children: ReactNode;

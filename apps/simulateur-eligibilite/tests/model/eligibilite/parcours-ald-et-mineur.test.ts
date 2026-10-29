@@ -15,6 +15,7 @@ import { texteDeLaFichePositive } from "../../../front/models/eligibilite/r2/fic
 import { traceDuResultat } from "../../../front/models/eligibilite/r2/trace-du-resultat";
 import { questionnaireOf } from "../../../front/socle/simulateur/questionnaire-of";
 import { badges, catalogue } from "./fiches-du-test";
+import { lienAld } from "./lien-ald";
 import {
   ciblesDe,
   lectureDe,
@@ -34,12 +35,14 @@ const brancard = (cas: Questions["Q1.3"]): Reponses => ({
   "Q1.1": "3_AVEC_UN_PROFESSIONNEL",
   "Q1.2": ["8_BRANCARDAGE"],
   "Q1.3": cas,
+  ...lienAld(cas),
   ...FIN_DE_P2,
 });
 
 const PROCHE: Reponses = {
   "Q1.1": "2_AVEC_UN_PROCHE",
   "Q1.3": ["2_ALD"],
+  "Q1.3.b": "1_LIEN_DIRECT",
   "Q1.4": "1_VEHICULE_PERSONNEL",
   ...FIN_DE_P2,
 };
@@ -51,21 +54,46 @@ const AMBULANCE = {
   accompagnant: false,
 };
 
+// Q1.3.b, le lien du soin avec l'ALD, se pose sur la page de Q1.3 : elle
+// n'ajoute aucune page.
+const AMBULANCE_ALD = {
+  ...AMBULANCE,
+  posees: [
+    "Q0.1",
+    "Q1.1",
+    "Q1.2",
+    "Q1.3",
+    "Q1.3.b",
+    "Q2.2.1",
+    "Q2.3.1",
+    "Q2.3.2",
+  ],
+};
+
 const VEHICULE_PERSONNEL = {
-  posees: ["Q0.1", "Q1.1", "Q1.3", "Q1.4", "Q2.2.1", "Q2.3.1", "Q2.3.2"],
+  posees: [
+    "Q0.1",
+    "Q1.1",
+    "Q1.3",
+    "Q1.3.b",
+    "Q1.4",
+    "Q2.2.1",
+    "Q2.3.1",
+    "Q2.3.2",
+  ],
   mode: "VEHICULE_PERSONNEL",
   badges: [],
   accompagnant: true,
 };
 
 const PROFILS = [
-  ["ald-brancard", brancard(["2_ALD"]), AMBULANCE],
+  ["ald-brancard", brancard(["2_ALD"]), AMBULANCE_ALD],
   ["ald-proche", PROCHE, VEHICULE_PERSONNEL],
   ["mineur-brancard", brancard(["8_MINEUR_SOINS_CONTINUS"]), AMBULANCE],
   [
     "ald-mineur-brancard",
     brancard(["2_ALD", "8_MINEUR_SOINS_CONTINUS"]),
-    AMBULANCE,
+    AMBULANCE_ALD,
   ],
 ] as const;
 
