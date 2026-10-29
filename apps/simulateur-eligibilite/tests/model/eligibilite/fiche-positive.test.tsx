@@ -118,6 +118,22 @@ describe("la fiche de la seed issue-pmt (dialyse, TAP non partagé)", () => {
       fiche().getByRole("heading", { name: "Le saviez-vous ?" }),
     ).toBeInTheDocument();
   });
+
+  it("finit par l'invitation à donner son avis, après les frais (TS1014-J01)", async () => {
+    await afficher("issue-pmt");
+    const courriel = fiche().getByRole("link", {
+      name: "contact@transportsanitaire.beta.gouv.fr",
+    });
+    expect(courriel).toHaveAttribute(
+      "href",
+      "mailto:contact@transportsanitaire.beta.gouv.fr",
+    );
+    const frais = fiche().getByRole("heading", { name: "Le saviez-vous ?" });
+    expect(
+      frais.compareDocumentPosition(courriel) &
+        Node.DOCUMENT_POSITION_FOLLOWING,
+    ).not.toBe(0);
+  });
 });
 
 describe("la fiche de la seed issue-s3141 (permission d'un mineur)", () => {

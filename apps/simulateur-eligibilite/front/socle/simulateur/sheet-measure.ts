@@ -78,8 +78,9 @@ function millimetres(pixels: number): number {
 }
 
 // La copie, à la mise en page `layout` et non à celle d'une impression en
-// cours, dans un hôte hors de l'écran, à 190 mm de large, hors de la
-// visionneuse : ce que l'écran étroit change à la feuille ne s'y applique pas.
+// cours : sur une page, son pied passe au bas de l'A4. La mesure passe `null`
+// et lit la feuille sans rien forcer. La copie est dans un hôte hors de
+// l'écran, à 190 mm de large, hors de la visionneuse : ce que l'écran étroit change à la feuille ne s'y applique pas.
 // L'hôte reste visible, pour que la photo du PDF voie la copie : il est hors
 // de l'écran, caché aux lecteurs d'écran et inerte.
 function paperHost(
@@ -91,6 +92,7 @@ function paperHost(
   copy.removeAttribute("data-print-layout");
   copy.removeAttribute("data-print-pages");
   copy.setAttribute("data-paper", "");
+  if (layout) copy.setAttribute("data-print-layout", layout.kind);
   if (layout?.kind === "two-pages") {
     copy.style.setProperty(
       "--socle-sheet-illustration-zone",

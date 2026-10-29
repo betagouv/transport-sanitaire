@@ -53,9 +53,16 @@ export type FirstResult = {
 
 /**
  * La feuille à remettre au patient, que le socle pose sur une A4 sous les
- * logos : son titre, sa phrase d'introduction, puis son contenu.
+ * logos : son titre, sa phrase d'introduction, puis son contenu. Son pied,
+ * centré et en petit, la clôt : au bas de la page quand elle en tient une,
+ * sous le dernier bloc sur deux.
  */
-export type Sheet = { title: string; intro?: ReactNode; body: ReactNode };
+export type Sheet = {
+  title: string;
+  intro?: ReactNode;
+  body: ReactNode;
+  footer?: ReactNode;
+};
 
 /**
  * Ce que reçoit ce qui tient la place de l'aperçu du cerfa : ce que reçoit le

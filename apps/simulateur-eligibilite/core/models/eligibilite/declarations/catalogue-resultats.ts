@@ -22,6 +22,8 @@ export type CatalogueResultats = {
   readonly sources: Readonly<Record<string, Source>>;
   /** La phrase qui annonce la fiche à remettre au patient. */
   readonly patientSheetIntro: string;
+  /** L'invitation au patient à donner son avis, au pied de sa fiche. */
+  readonly patientFeedback: { readonly text: string; readonly email: string };
   readonly issues: {
     readonly ISSUE_PMT: IssuePositive;
     readonly ISSUE_DAP_SANS_URGENCE: IssueDAccordPrealable;

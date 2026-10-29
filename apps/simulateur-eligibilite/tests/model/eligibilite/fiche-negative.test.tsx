@@ -82,6 +82,21 @@ describe("la fiche de la seed issue-non-eligible", () => {
   });
 });
 
+describe("le pied de la fiche", () => {
+  it("invite le patient à écrire à l'équipe (TS1014-J01)", async () => {
+    const { sheet } = await afficher(seed.answers);
+    render(sheet?.footer);
+    expect(
+      screen.getByText(/^Cette fiche explicative est toute neuve/),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("link", {
+        name: "contact@transportsanitaire.beta.gouv.fr",
+      }),
+    ).toHaveAttribute("href", "mailto:contact@transportsanitaire.beta.gouv.fr");
+  });
+});
+
 describe("une ALD établie", () => {
   it("garde la raison propre à l'ALD", async () => {
     const { sheet } = await afficher(AVEC_ALD);

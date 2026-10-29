@@ -2,7 +2,7 @@
 // suit, le titre, l'introduction et le corps que le modèle donne, puis les
 // boutons sous le corps. Avec une feuille à remettre, les boutons passent
 // au-dessus d'elle, et seule la feuille s'imprime, passée en papier le temps
-// de l'impression. Un résultat qui charge ses textes garde le stepper et les
+// de l'impression. Son pied la clôt. Un résultat qui charge ses textes garde le stepper et les
 // boutons secondaires : la complétion attend qu'il soit chargé.
 
 import {
@@ -217,6 +217,13 @@ describe("un résultat avec une feuille", () => {
     expect(laFeuille()).not.toHaveAttribute("data-paper");
   });
 
+  it("la clôt par son pied, après son contenu", async () => {
+    await avecUneFeuille();
+
+    const pied = within(laFeuille()).getByText("Un pied");
+    expect(avant(within(laFeuille()).getByText("Un contenu"), pied)).toBe(true);
+  });
+
   it("laisse son nom à un logo qui ne se charge pas", async () => {
     await avecUneFeuille();
 
@@ -240,6 +247,7 @@ async function avecUneFeuille() {
         title: "Votre commande",
         intro: "Une raison",
         body: "Un contenu",
+        footer: "Un pied",
       },
     })),
   });
