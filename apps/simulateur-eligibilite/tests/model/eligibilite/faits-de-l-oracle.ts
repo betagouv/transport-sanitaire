@@ -35,18 +35,18 @@ function etabliPar(value: boolean | undefined, provenance: string): Fait {
   return value ? Fait.oui(provenance) : Fait.non(provenance);
 }
 
+// Les faits d'un cas : la base de l'oracle, puis ces changements.
+export const faitsDuCas = (changements: Changements) =>
+  faitsDe({
+    ...TOUS_NON,
+    fait_p1_complete: true,
+    fait_p2_complete: true,
+    ...changements,
+  });
+
 // La valeur des cibles que les règles calculent pour ces changements.
 export const preconiser = (changements: Changements) =>
-  cibleValues(
-    cibles(
-      faitsDe({
-        ...TOUS_NON,
-        fait_p1_complete: true,
-        fait_p2_complete: true,
-        ...changements,
-      }),
-    ),
-  );
+  cibleValues(cibles(faitsDuCas(changements)));
 
 // Aucun profil de code de soin ne prouve à lui seul un motif de transport.
 const SITUATION: Changements = {
