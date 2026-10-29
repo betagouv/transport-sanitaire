@@ -2,8 +2,8 @@
 // potentiellement de l'article 80.
 //
 // Une entrée simple (Q2.13), la sortie vers la prison ou la permission
-// l'écartent. Sinon, Q2.5 l'établit, comme une admission en HAD (Q2.1.g) ou un
-// autre déplacement une fois Q2.6 validée. Le séjour proposé et écarté le met à
+// l'écartent. Sinon, Q2.5 l'établit, comme une admission (Q2.1.g) ou un séjour en
+// HAD (TS1014-B01), ou un autre déplacement une fois Q2.6 validée. Le séjour proposé et écarté le met à
 // « non ».
 //
 // Il suit `CORRECTIF_FAITS_SANS_REPONSE.md`, qui prime sur
@@ -16,6 +16,7 @@ import {
   EXCEPTIONS,
   SOUS_TYPE,
   UN_SEJOUR_ECARTE,
+  UN_SEJOUR_EN_HAD,
   UNE_ENTREE_SIMPLE,
   UNE_PERMISSION_ECARTE_LE_TRANSFERT,
   UNE_SORTIE_VERS_LA_PRISON,
@@ -28,7 +29,11 @@ export const transfertArticle80 = unFait("fait_transfert_article80")
   )
   .applique(UNE_SORTIE_VERS_LA_PRISON)
   .applique(UNE_PERMISSION_ECARTE_LE_TRANSFERT)
-  .ouiSi(SOUS_TYPE.is("3_ADMISSION_HAD").and(EXCEPTIONS.isPresent()))
+  .ouiSi(
+    SOUS_TYPE.is("3_ADMISSION_HAD")
+      .or(UN_SEJOUR_EN_HAD)
+      .and(EXCEPTIONS.isPresent()),
+  )
   .ouiSi(DEPLACEMENT.is("1_TRANSFERT"))
   .ouiSi(
     DEPLACEMENT.is("2_AUTRE_DEPLACEMENT").and(EXCEPTIONS.isPresent()),

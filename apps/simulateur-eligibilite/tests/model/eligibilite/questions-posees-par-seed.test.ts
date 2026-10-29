@@ -104,6 +104,31 @@ const ATTENDU: Record<string, readonly [string[], string[]]> = {
     ]),
     ["Q3.2.adresse", "Q3.3.adresse", "Q3.6.2"],
   ],
+  // Le séjour en établissement ouvre la permission (TS1014-B01).
+  "sejour-en-etablissement": [
+    ["Q0.1", "Q1.1", "Q1.2", "Q1.3", "Q2.2.1", "Q2.2.1.cadre"].concat([
+      "Q2.2.1.a",
+      "Q2.3.1",
+      "Q2.3.2",
+      "Q2.7",
+    ]),
+    ["Q3.1.1", "Q3.1.2", "Q3.2.nature", "Q3.2.adresse", "Q3.3.nature"].concat([
+      "Q3.3.adresse",
+      "Q3.4",
+      "Q3.4.a",
+      "Q3.6.2",
+      "Q3.7",
+    ]),
+  ],
+  // La HAD ne l'ouvre pas : Q2.6 qualifie l'article 80 (TS1014-B01).
+  "sejour-en-had": [
+    ["Q0.1", "Q1.1", "Q1.2", "Q1.3", "Q2.2.1", "Q2.2.1.cadre"].concat([
+      "Q2.3.1",
+      "Q2.3.2",
+      "Q2.6",
+    ]),
+    [],
+  ],
 };
 
 describe("les questions que pose chaque seed", async () => {

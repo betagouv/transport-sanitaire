@@ -60,13 +60,20 @@ export type Precisions = {
 
 /**
  * Un séjour réel : une entrée ou une sortie d'établissement (Q2.1.g), ou
- * « déjà hospitalisé » coché. L'admission en HAD à domicile n'en est pas un.
+ * « déjà hospitalisé » coché hors HAD. Ni l'admission en HAD à domicile ni un
+ * séjour en HAD n'en sont un (TS1014-B01).
  */
 export const UN_SEJOUR_REEL: Condition = given
   .question("Q2.1.g")
   .answer()
   .isOneOf("1_ENTREE", "2_SORTIE")
-  .or(given.question("Q2.2.1").answer().checked("1_HOSPITALISATION"));
+  .or(
+    given
+      .question("Q2.2.1")
+      .answer()
+      .checked("1_HOSPITALISATION")
+      .and(given.question("Q2.2.1.cadre").answer().is("2_HAD").not()),
+  );
 
 // Les réponses que lisent les précisions.
 const LUES = {

@@ -58,6 +58,7 @@ describe("l'indicateur de parcours ALD", () => {
       verdictDe({
         ...ALD,
         "Q2.2.1": ["1_HOSPITALISATION"],
+        "Q2.2.1.cadre": "1_ETABLISSEMENT",
         "Q2.2.1.a": "2_NON",
         "Q2.3.1": "2_PLUS_DE_CINQUANTE_KM",
         "Q2.3.2": false,
@@ -67,7 +68,7 @@ describe("l'indicateur de parcours ALD", () => {
     ).toEqual({
       verdict: "parcours_ald_trop_de_pages",
       pages: 7,
-      questions: 9,
+      questions: 10,
     });
   });
 

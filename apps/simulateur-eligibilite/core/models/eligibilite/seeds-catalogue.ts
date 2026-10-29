@@ -3,7 +3,8 @@
 // Les tests le rejouent et l'écran des seeds l'affiche. Dix seeds, une par
 // issue de R2, faites de réponses complètes jusqu'à la fin de P2, deux pour la
 // demande d'accord préalable en avion ou en bateau de ligne régulière, et une
-// pour l'orientation d'un retour pénitentiaire, qui n'a pas d'issue. Elles suivent
+// pour l'orientation d'un retour pénitentiaire, qui n'a pas d'issue, et une
+// par cadre du séjour en cours, établissement ou HAD (TS1014-B01). Elles suivent
 // les dix traces de l'oracle de la v10.1.0 : le patient est accompagné d'un
 // professionnel (Q1.1) et ses critères sont ceux de la trace, 1 et 5 pour les
 // quatre premières et l'étranger, 1 pour les autres. Les cibles attendues sont
@@ -278,5 +279,51 @@ export const SEEDS: readonly Seed<Questions, Cibles>[] = [
       "Q2.2.1.indication": "2_NON",
     },
     expected: { cible_issue_id: undefined },
+  },
+  {
+    id: "sejour-en-etablissement",
+    label: "Résultat : permission de sortie d'un patient hospitalisé",
+    description:
+      "Ouvre le résultat d'un patient en séjour dans un établissement de santé (Q2.2.1.cadre), dont le trajet est une permission de sortie autorisée. Le séjour en établissement établit l'hospitalisation, et la permission se pose.",
+    answers: {
+      "Q0.1": "1_VERIFIER",
+      "Q1.1": "3_AVEC_UN_PROFESSIONNEL",
+      "Q1.2": ["8_BRANCARDAGE"],
+      "Q1.3": ["7_AUCUNE"],
+      "Q2.2.1": ["1_HOSPITALISATION"],
+      "Q2.2.1.cadre": "1_ETABLISSEMENT",
+      "Q2.2.1.a": "1_OUI",
+      ...TRAJET_COURT,
+      "Q2.7": "3_ADULTE_AUTORISEE",
+    },
+    expected: {
+      cible_issue_id: "ISSUE_PMT",
+      cible_support_id: "S3138g",
+      cible_financeur: "ASSURANCE_MALADIE",
+      cible_mode_id: "AMBULANCE",
+    },
+  },
+  {
+    id: "sejour-en-had",
+    label:
+      "Résultat : transport d'un patient en HAD, à la charge de l'établissement",
+    description:
+      "Ouvre le résultat d'un patient en Hospitalisation à Domicile (Q2.2.1.cadre). La HAD n'ouvre aucune permission : ni Q2.2.1.a, ni Q2.7, ni Q2.8 ne se posent. Q2.6 qualifie l'article 80, sans exception ici.",
+    answers: {
+      "Q0.1": "1_VERIFIER",
+      "Q1.1": "3_AVEC_UN_PROFESSIONNEL",
+      "Q1.2": ["8_BRANCARDAGE"],
+      "Q1.3": ["7_AUCUNE"],
+      "Q2.2.1": ["1_HOSPITALISATION"],
+      "Q2.2.1.cadre": "2_HAD",
+      ...TRAJET_COURT,
+      "Q2.6": ["11_AUCUNE"],
+    },
+    expected: {
+      cible_issue_id: "ISSUE_ETABLISSEMENT",
+      cible_support_id: "AUCUN",
+      cible_financeur: "ETABLISSEMENT",
+      cible_mode_id: "AMBULANCE",
+    },
   },
 ];

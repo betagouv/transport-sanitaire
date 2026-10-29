@@ -76,6 +76,14 @@ export const OPTIONS = {
     // non celui du catalogue quand aucun contexte n'est acquis.
     "4_AUCUNE": "Aucune autre situation parmi celles proposées.",
   },
+  /**
+   * Dans quel cadre le patient est-il actuellement hospitalisé ? Le
+   * `hospitalStayQuestion` de l'éditeur (TS1014-B01).
+   */
+  "Q2.2.1.cadre": {
+    "1_ETABLISSEMENT": "En séjour dans un établissement de santé.",
+    "2_HAD": "En Hospitalisation à Domicile (HAD).",
+  },
   /** Ce trajet correspond-il à une permission temporaire de sortie de l’hôpital ? */
   "Q2.2.1.a": {
     "1_OUI": "Oui.",
@@ -190,6 +198,7 @@ export type Questions = QuestionsDuComplement & {
   "Q2.1.g": Option<"Q2.1.g">;
   "Q2.1.h": Option<"Q2.1.h">;
   "Q2.2.1": readonly Option<"Q2.2.1">[];
+  "Q2.2.1.cadre": Option<"Q2.2.1.cadre">;
   "Q2.2.1.a": Option<"Q2.2.1.a">;
   "Q2.2.1.b": readonly Option<"Q2.2.1.b">[];
   "Q2.2.1.indication": Option<"Q2.2.1.indication">;

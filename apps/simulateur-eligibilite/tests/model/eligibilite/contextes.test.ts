@@ -158,6 +158,7 @@ describe("le séjour en cours (Q2.2.1.a)", () => {
   const sejour = (permission: Questions["Q2.2.1.a"]): Reponses => ({
     ...BRANCARD,
     "Q2.2.1": ["1_HOSPITALISATION"],
+    "Q2.2.1.cadre": "1_ETABLISSEMENT",
     "Q2.2.1.a": permission,
   });
 
