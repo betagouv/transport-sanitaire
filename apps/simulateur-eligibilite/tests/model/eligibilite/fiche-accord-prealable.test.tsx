@@ -45,7 +45,7 @@ const BADGES = [
 describe("la fiche de la seed issue-dap-sans-urgence (dialyse à plus de 150 km)", () => {
   it("donne le titre du prescripteur à la page, et celui du patient à la fiche", async () => {
     expect(await afficher("issue-dap-sans-urgence")).toBe(
-      "Le transport sanitaire de votre patient peut être pris en charge sous réserve de l’accord préalable de l’Assurance Maladie",
+      "Le transport de votre patient peut être pris en charge sous réserve de l’accord préalable de l’Assurance Maladie",
     );
     expect(
       fiche().getByRole("heading", {
@@ -76,9 +76,7 @@ describe("la fiche de la seed issue-dap-sans-urgence (dialyse à plus de 150 km)
       ),
     ).toBeInTheDocument();
     expect(
-      fiche().getByText(
-        "Attendez l’accord avant d’effectuer votre transport. Un accord reçu avant la fin des 15 jours permet de réaliser le transport plus tôt.",
-      ),
+      fiche().getByText("Attendez l’accord avant d’effectuer votre transport."),
     ).toBeInTheDocument();
   });
 
@@ -118,22 +116,6 @@ describe("la fiche de la seed issue-dap-sans-urgence (dialyse à plus de 150 km)
         .map((badge) => badge.textContent),
     ).toEqual(BADGES);
   });
-
-  it("donne le rappel d'attente, puis le bloc des frais", async () => {
-    await afficher("issue-dap-sans-urgence");
-    expect(
-      fiche().getByRole("complementary", {
-        name: "Délai de l’accord préalable",
-      }),
-    ).toBeInTheDocument();
-    const rappel = fiche().getByText(
-      "La prise en charge de votre transport nécessite l’accord préalable de l’Assurance Maladie. Sans réponse dans les 15 jours suivant l’envoi de votre demande, l’accord est considéré comme obtenu. Attendez cet accord avant d’effectuer le transport.",
-    );
-    const frais = fiche().getByRole("heading", { name: "Le saviez-vous ?" });
-    expect(
-      rappel.compareDocumentPosition(frais) & Node.DOCUMENT_POSITION_FOLLOWING,
-    ).toBeTruthy();
-  });
 });
 
 describe("la fiche de la seed issue-dap-urgence-attestee (urgence attestée en Q2.3.4)", () => {
@@ -149,11 +131,11 @@ describe("la fiche de la seed issue-dap-urgence-attestee (urgence attestée en Q
     ).toBeInTheDocument();
   });
 
-  it("dit la distance, puis la dispense d'attendre", async () => {
+  it("dit la dialyse, puis l'envoi de documents complémentaires", async () => {
     await afficher("issue-dap-urgence-attestee");
     expect(
       fiche().getByText(
-        `${DIALYSE} Votre trajet dépasse 150 km. L’urgence étant attestée par votre médecin, vous pouvez effectuer ce transport sans attendre l’accord préalable de l’Assurance Maladie.`,
+        `${DIALYSE} La prise en charge de votre transport nécessite l’envoi de documents complémentaires à l’Assurance Maladie car le trajet dépasse 150 km.`,
       ),
     ).toBeInTheDocument();
   });
@@ -162,10 +144,10 @@ describe("la fiche de la seed issue-dap-urgence-attestee (urgence attestée en Q
     await afficher("issue-dap-urgence-attestee");
     expect(fiche().getByRole("heading", { name: TITRE })).toBeInTheDocument();
     expect(
-      fiche().getByText(
-        "Votre médecin atteste l’urgence de votre transport. Vous pouvez effectuer ce transport sans attendre l’accord préalable de l’Assurance Maladie.",
-      ),
-    ).toBeInTheDocument();
+      fiche().getByText(/^L’urgence de votre transport étant attestée/),
+    ).toHaveTextContent(
+      "L’urgence de votre transport étant attestée, vous pouvez effectuer ce transport sans attendre l’accord de l’Assurance Maladie.",
+    );
     expect(fiche().queryByText(/15 jours/)).toBeNull();
   });
 
@@ -184,20 +166,5 @@ describe("la fiche de la seed issue-dap-urgence-attestee (urgence attestée en Q
         "que votre transport pourra être pris en charge par l’Assurance Maladie, au titre d’un transport lié à une séance de dialyse, prise en compte comme une hospitalisation pour le transport, sur un trajet de plus de 150 km ;",
       ),
     ).toBeInTheDocument();
-  });
-
-  it("donne le rappel de l'urgence, pas celui de l'attente", async () => {
-    await afficher("issue-dap-urgence-attestee");
-    expect(
-      fiche().getByRole("complementary", {
-        name: "Urgence attestée : dispense d’attente",
-      }),
-    ).toBeInTheDocument();
-    expect(
-      fiche().getByText(
-        "L’urgence de votre transport est attestée par votre médecin. Vous pouvez effectuer ce transport sans attendre l’accord préalable de l’Assurance Maladie.",
-      ),
-    ).toBeInTheDocument();
-    expect(fiche().queryByText(/Attendez cet accord/)).toBeNull();
   });
 });

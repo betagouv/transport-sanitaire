@@ -82,9 +82,9 @@ describe("la phrase du contexte", () => {
     );
   });
 
-  it("dit l'ALD à 100 %, avec l'ambulance qui s'y ajoute", () => {
+  it("dit l'ALD à 100 %, sans phrase de plus pour l'ambulance", () => {
     expect(phrase({ ...A, ...B })).toBe(
-      "Les soins à l’origine de ce déplacement sont liés à votre maladie de longue durée reconnue par l’Assurance Maladie. Ce cadre de soins et vos difficultés de déplacement permettent la prise en charge de votre transport par l’Assurance Maladie. L’ambulance médicalement nécessaire constitue aussi un motif de prise en charge.",
+      "Les soins à l’origine de ce déplacement sont liés à votre maladie de longue durée reconnue par l’Assurance Maladie. Ce cadre de soins et vos difficultés de déplacement permettent la prise en charge de votre transport par l’Assurance Maladie.",
     );
   });
 
@@ -104,7 +104,7 @@ describe("la phrase du contexte", () => {
     expect(
       phrase({ ...H, ...T, ...A, ...B }, { hospitalisation: "H-SEJOUR" }),
     ).toBe(
-      "Votre déplacement est lié à une hospitalisation. Les soins à l’origine de ce déplacement sont en lien avec un accident du travail ou une maladie professionnelle et liés à votre maladie de longue durée reconnue par l’Assurance Maladie. Ce cadre de soins et vos difficultés de déplacement permettent la prise en charge de votre transport par l’Assurance Maladie. L’ambulance médicalement nécessaire constitue aussi un motif de prise en charge.",
+      "Votre déplacement est lié à une hospitalisation. Les soins à l’origine de ce déplacement sont en lien avec un accident du travail ou une maladie professionnelle et liés à votre maladie de longue durée reconnue par l’Assurance Maladie. Ce cadre de soins et vos difficultés de déplacement permettent la prise en charge de votre transport par l’Assurance Maladie.",
     );
   });
 

@@ -1,6 +1,6 @@
 // La fiche patient négative, telle qu'elle s'affiche (#134). La seed
-// `issue-non-eligible` donne les textes de l'aperçu de l'éditeur ; le conseil
-// sur l'ALD ne vient qu'avec une ALD établie. `eligibilite` donne le titre du
+// `issue-non-eligible` donne les textes de l'aperçu de l'éditeur ; le
+// catalogue n'a plus de conseil sur l'ALD (TS1014-J05). `eligibilite` donne le titre du
 // prescripteur et sa phrase à la page, puis la feuille, que le socle pose sous
 // ses logos avec son titre et sa raison.
 
@@ -43,7 +43,7 @@ describe("la fiche de la seed issue-non-eligible", () => {
   it("donne à la feuille la raison de la consultation", async () => {
     const { sheet } = await afficher(seed.answers);
     expect(sheet?.intro).toMatch(
-      /votre déplacement concerne une consultation médicale/,
+      /^Votre déplacement concerne une consultation médicale/,
     );
   });
 
@@ -78,11 +78,13 @@ describe("la fiche de la seed issue-non-eligible", () => {
 
   it("donne les consignes et le bloc des frais", async () => {
     await afficher(seed.answers);
-    const { intro, body } = issue.instructions;
+    const { intro } = issue.instructions;
     expect(
       screen.getByRole("heading", { name: intro.title }),
     ).toBeInTheDocument();
-    expect(screen.getByText(body)).toBeInTheDocument();
+    expect(
+      screen.getByText(/^La prescription de transport est un acte médical/),
+    ).toBeInTheDocument();
     expect(
       screen.getByRole("heading", { name: issue.finance.title }),
     ).toBeInTheDocument();
@@ -90,24 +92,8 @@ describe("la fiche de la seed issue-non-eligible", () => {
   });
 });
 
-describe("le conseil sur l'ALD", () => {
-  it("manque de la fiche quand l'ALD n'est pas établie", async () => {
-    await afficher(seed.answers);
-    expect(screen.queryByText(/être en ALD ne vous donne pas/)).toBeNull();
-  });
-
-  it("figure dans la fiche quand l'ALD est établie, avec son gras", async () => {
-    await afficher(AVEC_ALD);
-    const conseil = screen.getByRole("complementary", {
-      name: "Information importante concernant les affections de longue durée",
-    });
-    expect(within(conseil).getByText("Important :").tagName).toBe("STRONG");
-    expect(conseil).toHaveTextContent(
-      "être en ALD (Affection Longue Durée) ne vous donne pas automatiquement droit à une prescription médicale de transport",
-    );
-  });
-
-  it("garde alors la raison propre à l'ALD", async () => {
+describe("une ALD établie", () => {
+  it("garde la raison propre à l'ALD", async () => {
     const { sheet } = await afficher(AVEC_ALD);
     expect(sheet?.intro).toMatch(/les critères de déficience ou d’incapacité/);
   });

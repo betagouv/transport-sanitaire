@@ -44,7 +44,6 @@ const PREUVES: readonly [string, Precisions, Partial<Faits>][] = [
     },
   ],
   ["AUCUN_DIALYSE_NON_HEMO", { dialysisType: "non-hemodialyse" }, {}],
-  ["AUCUN_DIALYSE_TYPE_INCONNU", { dialysisType: "inconnu" }, {}],
   [
     "AUCUN_APPAREILLAGE_HORS_CATEGORIES",
     { deviceCategory: "hors-categories" },
@@ -153,15 +152,6 @@ describe("un fait absent n'est jamais « non »", () => {
     expect(raisonDe(ALD, inconnu)).toBe("AUCUN_GENERIQUE");
   });
 
-  it("« Je ne peux pas préciser » n'est pas « Non »", () => {
-    expect(raisonDe({ dialysisType: "inconnu" })).toBe(
-      "AUCUN_DIALYSE_TYPE_INCONNU",
-    );
-    expect(raisonDe({ dialysisType: "non-hemodialyse" })).toBe(
-      "AUCUN_DIALYSE_NON_HEMO",
-    );
-  });
-
   it("un séjour prouvé écarte les raisons de la dialyse", () => {
     const precisions: Precisions = {
       dialysisType: "non-hemodialyse",
@@ -252,11 +242,6 @@ describe("de bout en bout, par les réponses", () => {
       "une autre dialyse que l'hémodialyse (Q1.3.a Non)",
       { "Q1.3": ["5_DIALYSE"], "Q1.3.a": "2_AUTRE_DIALYSE" },
       "AUCUN_DIALYSE_NON_HEMO",
-    ],
-    [
-      "une dialyse dont le type n'est pas précisé (Q1.3.a)",
-      { "Q1.3": ["5_DIALYSE"], "Q1.3.a": "3_NE_SAIT_PAS" },
-      "AUCUN_DIALYSE_TYPE_INCONNU",
     ],
     [
       "une ALD, le patient se déplaçant seul (Q1.1)",

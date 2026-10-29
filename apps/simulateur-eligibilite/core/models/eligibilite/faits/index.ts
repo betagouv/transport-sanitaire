@@ -72,6 +72,7 @@ import { situationSoinsQualifiante } from "./situation-soins-qualifiante.ts";
 import { sourceOfficielleActive } from "./source-officielle-active.ts";
 import { trajetEtranger } from "./trajet-etranger.ts";
 import { transfertArticle80 } from "./transfert-article80.ts";
+import { typeDialyseNonVerifiable } from "./type-dialyse-non-verifiable.ts";
 import { urgenceAttestee } from "./urgence-attestee.ts";
 import { urgenceRepondue } from "./urgence-repondue.ts";
 
@@ -137,4 +138,5 @@ export const CATALOGUE_DES_FAITS = new FaitCatalogue<Faits>(FAITS, [
   permission,
   permissionChargePatient,
   permissionMineurAdmissible,
+  typeDialyseNonVerifiable,
 ]);

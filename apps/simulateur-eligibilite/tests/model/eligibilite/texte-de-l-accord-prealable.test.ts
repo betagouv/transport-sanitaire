@@ -48,14 +48,14 @@ describe("la raison d'une demande sans urgence", () => {
 });
 
 describe("la raison d'une demande avec urgence attestée", () => {
-  it("dit la dialyse, la distance, puis la dispense d'attendre", () => {
+  it("dit la dialyse, puis l'envoi de documents complémentaires", () => {
     const texte = demande(
       { ...DIALYSE, ...LONGUE_DISTANCE },
       PRECISION_DIALYSE,
       URGENCE,
     );
     expect(texte?.raison).toBe(
-      `${DIALYSE_ET_150_KM} Votre trajet dépasse 150 km. L’urgence étant attestée par votre médecin, vous pouvez effectuer ce transport sans attendre l’accord préalable de l’Assurance Maladie.`,
+      `${DIALYSE_ET_150_KM} La prise en charge de votre transport nécessite l’envoi de documents complémentaires à l’Assurance Maladie car le trajet dépasse 150 km.`,
     );
   });
 });
@@ -82,7 +82,7 @@ describe("la justification suit l'ensemble exact des motifs établis", () => {
       )
       .replaceAll(
         "{cadre_camsp_cmpp}",
-        "un CAMSP (Centre d’Action Médico-Sociale Précoce) ou un CMPP (Centre Médico-Psycho-Pédagogique)",
+        "un Centre d’Action Médico-Sociale Précoce (CAMSP) ou un Centre Médico-Psycho-Pédagogique (CMPP)",
       );
 
   it.each(
@@ -150,26 +150,28 @@ describe("le lexique de l'accord préalable", () => {
 
   it("CAMSP ou CMPP : la valeur commune, faute de précision", () => {
     expect(demande(CAMSP)?.raison).toBe(
-      "La prise en charge de votre transport nécessite l’accord préalable de l’Assurance Maladie car le déplacement est lié à des soins ou traitements dans un CAMSP (Centre d’Action Médico-Sociale Précoce) ou un CMPP (Centre Médico-Psycho-Pédagogique).",
+      "La prise en charge de votre transport nécessite l’accord préalable de l’Assurance Maladie car le déplacement est lié à des soins ou traitements dans un Centre d’Action Médico-Sociale Précoce (CAMSP) ou un Centre Médico-Psycho-Pédagogique (CMPP).",
     );
   });
 
   it.each([
-    ["CAMSP", "dans un CAMSP (Centre d’Action Médico-Sociale Précoce)."],
-    ["CMPP", "dans un CMPP (Centre Médico-Psycho-Pédagogique)."],
+    ["CAMSP", "dans un Centre d’Action Médico-Sociale Précoce (CAMSP)."],
+    ["CMPP", "dans un Centre Médico-Psycho-Pédagogique (CMPP)."],
   ] as const)("CAMSP ou CMPP : la précision %s", (camspType, fin) => {
     expect(demande(CAMSP, { precisions: { camspType } })?.raison).toMatch(
       new RegExp(`${fin.replace(/[()]/g, "\\$&")}$`),
     );
   });
 
-  it("ambulance sans avion ni bateau : pour recevoir les soins", () => {
+  // Le terme du catalogue est vide : son espace reste, comme dans les scénarios
+  // de démonstration de l'éditeur.
+  it("ambulance sans avion ni bateau : le contexte n'en dit rien", () => {
     const texte = demande({
       cible_mode_ambulance: true,
       ...LONGUE_DISTANCE,
     });
     expect(texte?.raison).toBe(
-      "Un transport en ambulance est médicalement nécessaire pour recevoir vos soins. La prise en charge de votre transport nécessite l’accord préalable de l’Assurance Maladie car le trajet dépasse 150 km.",
+      " La prise en charge de votre transport nécessite l’accord préalable de l’Assurance Maladie car le trajet dépasse 150 km.",
     );
   });
 

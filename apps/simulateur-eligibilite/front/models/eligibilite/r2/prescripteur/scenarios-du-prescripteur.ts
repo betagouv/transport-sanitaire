@@ -92,6 +92,6 @@ function estProuve(
 // Les paramètres dont le scénario demande la preuve.
 function parametres({ params }: ScenarioPrescripteur): [string, string][] {
   return Object.entries(params).flatMap(([nom, valeur]) =>
-    nom !== "scenario_id" && valeur !== null ? [[nom, valeur]] : [],
+    nom !== "scenario_id" && valeur != null ? [[nom, valeur]] : [],
   );
 }
