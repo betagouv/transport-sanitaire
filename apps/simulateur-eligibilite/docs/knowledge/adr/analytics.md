@@ -1,10 +1,15 @@
 # Architecture : Analytics de parcours
 
-> Statut : **décidé (release officielle)** · Dernière mise à jour : 2026-10-06
+> Statut : **décidé (release officielle)** · Dernière mise à jour : 2026-10-29
 >
 > Suivi analytique du parcours dans le simulateur d'éligibilité.
 > Repose sur le rattachement établissement/service fourni par l'écran de rattachement :
 > voir [identification.md](./identification.md).
+>
+> **Mise à jour 2026-10-29, indicateur de parcours ALD.** À chaque arrivée sur le
+> premier résultat, un parcours ALD envoie son verdict, avec le nombre de questions
+> posées de P1 à P2 (§4). Le modèle déclare ce qui compte, le socle compte et envoie
+> (D-228 à D-231 du journal de la v10).
 >
 > **Mise à jour 2026-10-06, vidage avant la v10.** Les événements de résultat et de
 > téléchargement de CERFA sont retirés avec le modèle v9 qui les définissait, et les
@@ -36,7 +41,9 @@ On veut suivre le parcours de simulation :
 - qui démarre le formulaire ;
 - qui l'achève ;
 - qui l'abandonne, et à quelle étape ;
-- le nombre de résultats éligibles et non éligibles par service.
+- le nombre de résultats éligibles et non éligibles par service ;
+- la part des parcours ALD qui arrivent au résultat en six pages et six questions
+  au plus (#148).
   ~~par prescripteur~~ (jusqu'au 2026-09-29).
 
 Le découpage par service s'appuie sur l'id du service dans le référentiel Grist,
@@ -239,6 +246,22 @@ jeu depuis le 2026-10-06) :
 | `simulation_abandon` | `lastStep` | départ (onglet quitté) sans avoir atteint le résultat |
 
 Le complément posé après le verrou du résultat n'émet rien.
+
+**Parcours ALD** (#148, D-228 à D-231 du journal de la v10). Un seul de ces
+événements part à chaque arrivée sur le premier résultat, juste après
+`simulation_complete`, si le parcours est un parcours ALD. Sa valeur est le nombre
+de questions posées de P1 à P2 ; un groupe de cases compte une question.
+
+| Action | Valeur | Verdict |
+|---|---|---|
+| `parcours_ald_dans_la_cible` | questions | au plus six pages et six questions |
+| `parcours_ald_trop_de_pages` | questions | plus de six pages |
+| `parcours_ald_trop_de_questions` | questions | six pages au plus, plus de six questions |
+| `parcours_ald_caisse` | questions | issue caisse, sans conclusion sur le droit |
+
+Le verdict part à chaque passage par le résultat : le taux compte des passages, pas
+des simulations (D-230). Le modèle déclare le parcours compté, l'issue caisse, les
+parties et la limite (`aldIndicator`) ; le socle compte et envoie.
 
 ~~**Résultat** (`secretariat:resultat:<slug>`), un slug par valeur de
 `cible_cas_final`.~~ Retiré le 2026-10-06 avec le modèle v9.

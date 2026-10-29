@@ -144,6 +144,25 @@ export type Model<
   };
   /** L'invitation à donner son avis. Sans elle, aucune. */
   feedback?: Feedback;
+  /** L'indicateur de parcours ALD. Sans lui, aucun verdict ne part. */
+  aldIndicator?: AldIndicator;
+};
+
+/**
+ * L'indicateur de parcours ALD (#148) : à chaque arrivée sur le premier
+ * résultat, le socle compte les pages et les questions posées dans ces parties,
+ * et envoie un verdict à Matomo. Ce qu'il lit ne fait poser aucune question :
+ * la mesure suit le parcours, elle ne le change pas.
+ */
+export type AldIndicator = {
+  /** Les parties comptées, par leur `id`. */
+  parts: readonly string[];
+  /** Au plus autant de pages, et autant de questions. */
+  limit: number;
+  /** Le parcours est-il un parcours ALD ? Sinon, aucun verdict. */
+  counted: Value<boolean>;
+  /** Finit-il à la caisse, sans conclusion sur le droit ? */
+  caisse: Value<boolean>;
 };
 
 /**

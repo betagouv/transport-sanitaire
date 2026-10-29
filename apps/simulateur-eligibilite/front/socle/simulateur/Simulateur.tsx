@@ -12,6 +12,7 @@ import {
   type DebugTraceProps,
   QuestionnaireForm,
 } from "../questionnaire-engine/QuestionnaireForm";
+import { trackAldPathway } from "./ald-indicator";
 import { FirstResultat } from "./FirstResultat";
 import { CerfaResultat } from "./Resultats";
 import { type Screen, startingScreen } from "./start";
@@ -88,9 +89,10 @@ function FirstQuestionnaire({
       tracked
       endLabel="Voir le résultat"
       DebugTrace={DebugTrace}
-      onComplete={(_, previousState) =>
-        goTo({ name: "resultat", previousState })
-      }
+      onComplete={(answers, previousState) => {
+        trackAldPathway(model, answers);
+        goTo({ name: "resultat", previousState });
+      }}
     />
   );
 }
