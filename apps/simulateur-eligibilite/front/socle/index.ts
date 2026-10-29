@@ -26,6 +26,7 @@ export {
 export { templateAt } from "./cerfa/generate-cerfa";
 export { bindCerfa, type CerfaMapping, cerfaValue } from "./cerfa-mapping";
 export {
+  type AldIndicator,
   defineModel,
   type Feedback,
   type FirstResult,

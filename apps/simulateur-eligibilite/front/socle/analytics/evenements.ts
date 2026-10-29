@@ -8,8 +8,9 @@ import { emettre } from "./matomo";
  * La liste des évènements Matomo. Chaque nom est fixe. `trackEvenement` refuse à
  * la compilation tout nom qui n'est pas dans la liste.
  *
- * Elle ne couvre que le questionnaire : son début, ses étapes, sa fin, son
- * abandon.
+ * Elle couvre le questionnaire : son début, ses étapes, sa fin, son abandon.
+ * Puis le verdict d'un parcours ALD à son arrivée sur le premier résultat
+ * (#148).
  *
  * Un objet `as const`, pas un `enum` : `erasableSyntaxOnly` (tsconfig) interdit
  * l'`enum`.
@@ -19,6 +20,10 @@ export const NomEvenement = {
   simulationStep: "simulation_step",
   simulationComplete: "simulation_complete",
   simulationAbandon: "simulation_abandon",
+  aldWithinTarget: "parcours_ald_dans_la_cible",
+  aldTooManyPages: "parcours_ald_trop_de_pages",
+  aldTooManyQuestions: "parcours_ald_trop_de_questions",
+  aldCaisse: "parcours_ald_caisse",
 } as const;
 
 /**
