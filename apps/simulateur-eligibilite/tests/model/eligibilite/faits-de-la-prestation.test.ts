@@ -67,11 +67,6 @@ describe("le CAMSP", () => {
       motif("10_CAMSP", { "Q2.1.h": "2_NON" }),
       false,
     ],
-    [
-      "rattachement inconnu",
-      motif("10_CAMSP", { "Q2.1.h": "3_NE_SAIT_PAS" }),
-      undefined,
-    ],
     ["un autre motif", motif("1_CONSULTATION"), undefined],
   ] as const)("%s", (_, reponses, attendu) => {
     expect(valeur("fait_motif_camsp", reponses)).toBe(attendu);

@@ -1,5 +1,5 @@
 // Le titre de R3 (#157) : un par document. Recopiés de `r3Titles` dans
-// `CONTRAT_RENDU_DOCUMENTAIRE.json` de la v10.1.3, comme le texte de R3.
+// `CONTRAT_RENDU_DOCUMENTAIRE.json` de la v10.1.4, comme le texte de R3.
 //
 // | Issues | Titre |
 // |---|---|
@@ -20,7 +20,7 @@ export const TITRE_DU_RESULTAT = given
 
 /** Le texte de R3, le même pour chaque document (`r3Text`). */
 export const TEXTE_DU_RESULTAT =
-  "Le document est prêt à être imprimé. Il doit encore être complété et signé selon le circuit applicable avant utilisation.";
+  "Le document est prêt à être imprimé. Complétez les données manquantes, faites-le signer puis remettez-le au patient.";
 
 // ---- implémentation ----
 

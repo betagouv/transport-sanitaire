@@ -6,7 +6,7 @@
 import { useEffect, useRef } from "react";
 
 /** Ce que dit « Télécharger » tant que le PDF se prépare. */
-export const PREPARING = "Préparation du PDF…";
+export const PREPARING = "Préparation du PDF";
 
 /** Le document est-il encore affiché ? */
 export function useShown() {

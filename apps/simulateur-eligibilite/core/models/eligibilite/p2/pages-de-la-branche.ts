@@ -15,7 +15,10 @@ import {
 export const PAGE_DE_LA_BRANCHE = page(
   "P2/branche",
   question
-    .singleChoice("Q2.13.depart", "D’où part le patient pour ce trajet ?")
+    .singleChoice(
+      "Q2.13.depart",
+      "Le patient devra effectuer son départ depuis…",
+    )
     .mattersWhile(unDepartAPoser),
   question
     .multipleChoice(
@@ -32,10 +35,7 @@ export const PAGE_DE_LA_BRANCHE = page(
     .mattersWhile(unMotifAPoser)
     .exclusive("3_AUCUNE"),
   question
-    .singleChoice(
-      "Q2.12",
-      "Le médecin prescripteur atteste-t-il que ce transport est urgent ?",
-    )
+    .singleChoice("Q2.12", "Attestez-vous que ce transport est urgent ?")
     .mattersWhile(uneUrgenceDevoilee)
     .dependsOn("Q2.14.eloignement", "Q2.14.motif"),
 );

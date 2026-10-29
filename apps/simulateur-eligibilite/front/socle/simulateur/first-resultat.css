@@ -11,12 +11,22 @@
   margin-top: 1.5rem;
 }
 
-/* Sur une rangée, la complétion se pousse à droite, les secondaires restent à
-   gauche. Sous 48em, le DSFR empile les trois dans l'ordre du document.
-   Ce sélecteur est plus spécifique que celui du DSFR qui fixe ses marges. */
+/* Sur une rangée, l'avis et la complétion se poussent à droite, les
+   secondaires restent à gauche : le premier des deux porte la marge, l'avis
+   s'il est là ; la complétion garde alors l'écart du DSFR. Sous 48em, le DSFR empile tout dans l'ordre du document.
+   Ces sélecteurs sont plus spécifiques que celui du DSFR qui fixe ses marges.
+   La barre de R3 (`Resultats.tsx`) suit la même règle. */
 @media (min-width: 48em) {
+  .socle-page-actions .fr-btns-group .socle-feedback__link,
   .socle-page-actions .fr-btns-group .socle-page-actions__completion {
     margin-left: auto;
+  }
+
+  .socle-page-actions
+    .fr-btns-group
+    .socle-feedback__link
+    + .socle-page-actions__completion {
+    margin-left: 0.5rem;
   }
 }
 

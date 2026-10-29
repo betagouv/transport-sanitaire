@@ -72,7 +72,7 @@ describe("la page du soin (Q3.4, Q3.4.a)", () => {
       {
         label: "Motif",
         value:
-          "Entrée ou sortie d’hospitalisation, ou admission en HAD (Hospitalisation à Domicile).",
+          "Entrée ou sortie d’hospitalisation, ou admission en Hospitalisation à Domicile (HAD).",
       },
       {
         label: "Précision",
@@ -88,7 +88,7 @@ describe("la page du soin (Q3.4, Q3.4.a)", () => {
     const precise: Reponses = { ...pmt, "Q2.1.h": "1_OUI", "Q2.1.f": "1_OUI" };
     const [precision] = posees("P3/soin", precise, pmt);
     expect(precision?.reminder).toEqual([
-      { label: "Séance dans le parcours de l’enfant", value: "Oui" },
+      { label: "Séance dans le parcours de l’enfant", value: "Oui." },
       SEANCE,
       HEMODIALYSE,
       {

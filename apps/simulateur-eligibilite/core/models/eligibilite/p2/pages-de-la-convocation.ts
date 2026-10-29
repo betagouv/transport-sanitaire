@@ -25,7 +25,7 @@ export const PAGE_DE_LA_CONVOCATION = page(
     .appliesWhen(unAppareillage)
     .dependsOn("Q2.10"),
   question
-    .singleChoice("Q2.10.b", "Quel appareillage est concerné ?")
+    .singleChoice("Q2.10.b", "Sélectionnez l’appareillage concerné")
     .appliesWhen(unAppareillage)
     .dependsOn("Q2.10"),
 );
