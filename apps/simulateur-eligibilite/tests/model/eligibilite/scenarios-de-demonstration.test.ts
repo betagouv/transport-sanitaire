@@ -1,15 +1,18 @@
-// Les scénarios de démonstration de l'éditeur, rejoués contre les règles : les
-// 133 actifs de `integration_resultats/scenarios-demonstration.json` du paquet
-// v10.1.3, sous ses identifiants.
+// Les 133 scénarios de test tirés des démonstrations de l'éditeur, rejoués
+// contre nos règles. Ils viennent de son paquet v10.1.3
+// (`integration_resultats/scenarios-demonstration.json`). Il y en a un par issue
+// et par mode de transport, ou par variante d'une issue.
 //
-// Ses scénarios partent des faits, comme l'oracle : tous à « non », P1 et P2
-// complètes. La fixture n'en garde que ce qui change, avec `null` pour un fait
-// que le scénario omet, donc inconnu. Elle garde ses 55 cibles, `null` pour une
-// cible qu'il ne sait pas calculer : son banc ne distingue pas l'inconnu du sans
-// objet, on fait de même.
+// Un scénario part de la base de l'oracle : tous les faits à « non », P1 et P2
+// complètes. La fixture ne garde que les faits qu'il change. `null` y marque un
+// fait que l'éditeur omet : il est inconnu.
 //
-// Seules ses cibles sont rejouées. Le reste de sa trace (réponses, précisions,
-// partie terrestre) est une donnée d'entrée de ses textes, que nos règles ne
+// L'assertion porte sur les 55 cibles. Comme l'éditeur, on lit chaque cible
+// avec `?? null`. Une cible inconnue et une cible sans objet valent donc toutes
+// deux `null`.
+//
+// Le reste de la trace de l'éditeur n'est pas testé : les réponses, les
+// précisions, la partie terrestre. Il les fixe au départ, nos règles ne les
 // calculent pas.
 
 import { describe, expect, it } from "vitest";
@@ -45,7 +48,7 @@ describe("les scénarios de démonstration de l'éditeur", () => {
 
 // ---- implémentation ----
 
-// Les faits de la fixture, un `null` devenant un fait absent.
+// Les faits de la fixture. Un `null` devient un fait absent.
 function changementsDe(faits: Scenario["faits"]): Changements {
   return Object.fromEntries(
     Object.entries(faits).map(([fait, value]) => [fait, value ?? undefined]),
