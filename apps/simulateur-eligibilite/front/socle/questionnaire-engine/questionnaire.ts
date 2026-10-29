@@ -85,7 +85,7 @@ export function useQuestionnaire(
   const handlers = actions({ state, setState, view, options, tracking });
   const autoAdvance = useAutoAdvance(
     state.page,
-    isSingleChoicePage(view.questions),
+    isStandalonePage(view.questions),
     view.hasPendingQuestions,
     handlers.next,
   );
@@ -237,13 +237,15 @@ function withRestart(handlers: Actions, autoAdvance: AutoAdvance) {
   };
 }
 
-// L'avancement automatique vaut pour les pages faites de choix uniques. Avec
-// un seul choix multiple ou champ de saisie, toute la page garde son bouton :
-// on n'avance pas une page à moitié remplie. Une question facultative le garde
+// L'avancement automatique ne vaut que pour une page autonome : un seul choix
+// unique, affiché seul. Une page composée garde son bouton, même complète :
+// plusieurs blocs, une case, une saisie, ou un sous-champ révélé par la
+// réponse (REFERENTIEL/03 § 11.3.1, D-240). Une question facultative le garde
 // aussi : sinon la page partirait avant qu'on ait pu y répondre. De même une
 // liste déroulante, qu'on parcourt au clavier en changeant de valeur.
-function isSingleChoicePage(questions: readonly AskedQuestion[]): boolean {
-  return questions.length > 0 && questions.every(advancesAlone);
+function isStandalonePage(questions: readonly AskedQuestion[]): boolean {
+  const [only, ...others] = questions;
+  return only !== undefined && others.length === 0 && advancesAlone(only);
 }
 
 function advancesAlone(question: AskedQuestion): boolean {
