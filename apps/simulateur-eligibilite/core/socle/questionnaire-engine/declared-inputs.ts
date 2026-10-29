@@ -125,7 +125,7 @@ export class DeclaredDate<
 
 /**
  * Une case seule déclarée. Son libellé coiffe la case, et `box` est le texte
- * de la case. Sa réponse est `true` ou `false` : décochée sur une page
+ * de la case. Sans `box`, le libellé est celui de la case, sans titre au-dessus. Sa réponse est `true` ou `false` : décochée sur une page
  * validée, elle vaut `false`.
  */
 export class DeclaredCheckbox<
@@ -223,8 +223,11 @@ export type DateOwn<
   boundsFrom?(context: QuestionContext<Questions, Cibles, Faits>): DateBounds;
 };
 
-/** Ce qu'une case seule règle de plus qu'une question : le texte de la case. */
-export type CheckboxOwn = { readonly box: string };
+/**
+ * Ce qu'une case seule règle de plus qu'une question : le texte de la case,
+ * quand un titre la coiffe.
+ */
+export type CheckboxOwn = { readonly box?: string };
 
 /** Ce qu'une adresse règle de plus qu'une question. */
 export type AddressOwn<Questions extends AnyQuestions, Cibles, Faits> = {

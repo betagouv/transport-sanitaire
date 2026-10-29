@@ -182,7 +182,8 @@ const PAGE_DES_CONTEXTES = page(
 );
 
 // Q2.3 : le trajet évalué, sur une seule page. L'avion ou le bateau est une
-// case seule : décochée, elle répond « non ». La série se révèle sous la
+// case seule sans titre, dans le bloc de la distance : décochée, elle répond
+// « non » (D-239). La série se révèle sous la
 // distance quand le trajet dépasse 50 km, et l'urgence quand la garde de
 // l'éditeur le dit (`cible_question_urgence_a_afficher`).
 const PAGE_DU_TRAJET = page(
@@ -194,7 +195,6 @@ const PAGE_DU_TRAJET = page(
   question.checkbox(
     "Q2.3.2",
     "Une partie du trajet se fera en avion ou en bateau de ligne régulière.",
-    "Oui, une partie du trajet se fera en avion ou en bateau de ligne régulière.",
   ),
   question
     .singleChoice(

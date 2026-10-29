@@ -12,6 +12,7 @@ import type {
 import { AddressField } from "../ui/AddressField";
 import { CheckboxField } from "../ui/CheckboxField";
 import { DateField } from "../ui/DateField";
+import { LoneCheckbox } from "../ui/LoneCheckbox";
 import { NumberField } from "../ui/NumberField";
 import { RadioField } from "../ui/RadioField";
 import { Reminder } from "../ui/Reminder";
@@ -188,10 +189,19 @@ function MultipleChoiceField(props: Props & { question: MultipleChoice }) {
   );
 }
 
-// Une case seule : une seule case sous son libellé. Décochée, elle répond
-// `false`, pas une absence de réponse.
+// Une case seule : une seule case sous son libellé, ou portant son libellé
+// quand elle n'a pas de texte à elle. Décochée, elle répond `false`, pas une
+// absence de réponse.
 function SingleCheckboxField(props: Props & { question: CheckboxQuestion }) {
   const { question, answer, onChange } = props;
+  if (question.box === undefined)
+    return (
+      <LoneCheckbox
+        {...common(props)}
+        checked={answer === true}
+        onChange={onChange}
+      />
+    );
   return (
     <CheckboxField
       {...common(props)}

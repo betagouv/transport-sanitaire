@@ -23,6 +23,7 @@ export type Questions = {
   lieu: "salle" | "terrasse" | "comptoir";
   nom: string;
   ticket: boolean;
+  couvercle: boolean;
   facturation: "france" | "etranger";
   adresse: Address;
   expedition: Address;

@@ -176,7 +176,7 @@ function inputs<Questions extends AnyQuestions, Cibles, Faits>(
       new DeclaredDate<Questions, Cibles, Faits>(settingsOf(id, label), {
         kind: "datetime",
       }),
-    checkbox: (id: Id<"checkbox">, label: string, box: string) =>
+    checkbox: (id: Id<"checkbox">, label: string, box?: string) =>
       new DeclaredCheckbox<Questions, Cibles, Faits>(settingsOf(id, label), {
         box,
       }),

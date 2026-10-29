@@ -172,6 +172,11 @@ export const COMPLEMENT: QuestionnairePart<Questions, Cibles> = afterLock({
         .hint(
           "Démontre : une case seule. Décochée, la page se valide et la case répond « non » : ce n'est ni une question facultative, ni une absence de réponse.",
         ),
+      question
+        .checkbox("couvercle", "Les tasses partent avec un couvercle.")
+        .hint(
+          "Démontre : une case seule sans titre. Son libellé est celui de la case, et elle répond « non » décochée, comme la précédente.",
+        ),
     ),
     page(
       "facturation",
