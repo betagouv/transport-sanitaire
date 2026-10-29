@@ -224,7 +224,7 @@ le modèle**. Une partie liste ses pages, une page ses questions, une question d
 quand elle se pose (`appliesWhen`, `mattersWhile`) et de quelles réponses elle
 dépend (`dependsOn`).
 
-Le modèle de l'éditeur s'intègre sur la v10.1.3, dans `core/models/eligibilite/`
+Le modèle de l'éditeur s'intègre sur la v10.1.4, dans `core/models/eligibilite/`
 et `front/models/eligibilite/`, une étape après l'autre. Ses règles sont livrées
 en YAML : `pnpm regles` les écrit en JSON à côté, que le navigateur et Node
 importent tels quels. Aucun analyseur YAML ne part dans le navigateur. Le noyau est là : les règles, la déclaration des faits et des

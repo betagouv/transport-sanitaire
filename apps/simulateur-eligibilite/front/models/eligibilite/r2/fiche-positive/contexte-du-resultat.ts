@@ -15,6 +15,7 @@ import type {
 import type { Cibles } from "../../../../../core/models/eligibilite/declarations/cibles";
 import { given } from "../../../../../core/models/eligibilite/question";
 import { luPar, type TraceDe } from "../ce-que-lit-un-texte";
+import { sansBlancsDeTrop } from "../sans-blancs-de-trop";
 import {
   avecLesAutresTermes,
   LU_PAR_LES_AUTRES_TERMES,
@@ -90,12 +91,14 @@ export function avecLeLexique(
     "H-GENERIQUE",
   );
   const lien = definition(atmp, trace.precisions.atmp, "ATMP");
-  return avecLesAutresTermes(
-    issue,
-    trace,
-    texte
-      .replaceAll("{cadre_hospitalisation}", cadre)
-      .replaceAll("{lien_atmp}", lien),
+  return sansBlancsDeTrop(
+    avecLesAutresTermes(
+      issue,
+      trace,
+      texte
+        .replaceAll("{cadre_hospitalisation}", cadre)
+        .replaceAll("{lien_atmp}", lien),
+    ),
   );
 }
 

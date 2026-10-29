@@ -1,6 +1,6 @@
-// Le motif, l'introduction et le rappel d'attente des deux demandes d'accord
-// préalable (#136), et la convocation et la permission qui s'y ajoutent. Des
-// traces écrites à la main : rien n'y est prouvé, sauf ce que le test pose.
+// Le motif et l'introduction des deux demandes d'accord préalable (#136), et
+// la convocation et la permission qui s'y ajoutent. Des traces écrites à la
+// main : rien n'y est prouvé, sauf ce que le test pose.
 // Les attendus sont recopiés du catalogue de l'éditeur et de ses aperçus PDF.
 
 import { describe, expect, it } from "vitest";
@@ -11,7 +11,6 @@ import {
   LONGUE_DISTANCE,
   motif,
   PRECISION_DIALYSE,
-  SANS_URGENCE,
   URGENCE,
 } from "./demandes-du-test";
 import { type Ajouts, fiche, NON_PARTAGE, TAP } from "./fiches-du-test";
@@ -125,14 +124,14 @@ describe("l'introduction", () => {
       "Si le professionnel qui vous a remis la demande d’accord préalable ne l’a pas déjà envoyée, adressez dès que possible les volets 1 et 2 du document sous enveloppe au service médical de votre caisse d’assurance maladie, à l’attention du médecin-conseil. Vous trouverez l’adresse sur [ameli.fr](https://www.ameli.fr/).",
       "Conservez une preuve d’envoi et le volet 3, qui vaut prescription médicale de transport.",
       "L’absence de réponse dans les 15 jours à compter de l’envoi de la demande vaut accord. En cas de refus, vous recevez un courrier de l’Assurance Maladie.",
-      "Attendez l’accord avant d’effectuer votre transport. Un accord reçu avant la fin des 15 jours permet de réaliser le transport plus tôt.",
+      "Attendez l’accord avant d’effectuer votre transport.",
     ]);
   });
 
   it("avec urgence : le sous-titre dit qu'on n'attend pas", () => {
     const { consignes } = demande(LONGUE_DISTANCE, {}, URGENCE) ?? {};
-    expect(consignes?.complement.at(1)).toBe(
-      "Votre médecin atteste l’urgence de votre transport. Vous pouvez effectuer ce transport sans attendre l’accord préalable de l’Assurance Maladie.",
+    expect(consignes?.complement.at(-1)).toBe(
+      "L’urgence de votre transport étant attestée, **vous pouvez effectuer ce transport sans attendre l’accord de l’Assurance Maladie**.",
     );
     expect(consignes?.complement).toHaveLength(3);
   });
@@ -149,46 +148,5 @@ describe("l'introduction", () => {
   it("la prescription médicale de transport n'a pas de sous-titre", () => {
     const texte = fiche({ ...TAP, ...NON_PARTAGE });
     expect(texte?.consignes.complement).toEqual([]);
-  });
-});
-
-describe("le rappel d'attente suit cible_attente_accord", () => {
-  const ATTENDRE =
-    "La prise en charge de votre transport nécessite l’accord préalable de l’Assurance Maladie. Sans réponse dans les 15 jours suivant l’envoi de votre demande, l’accord est considéré comme obtenu. Attendez cet accord avant d’effectuer le transport.";
-  const PARTIR =
-    "L’urgence de votre transport est attestée par votre médecin. Vous pouvez effectuer ce transport sans attendre l’accord préalable de l’Assurance Maladie.";
-
-  it("attendre l'accord : le rappel de l'issue sans urgence", () => {
-    expect(
-      demande({ cible_attente_accord: true }, {}, SANS_URGENCE)?.rappel?.texte,
-    ).toBe(ATTENDRE);
-  });
-
-  it("partir sans attendre : le rappel de l'urgence attestée", () => {
-    expect(
-      demande({ cible_attente_accord: false }, {}, URGENCE)?.rappel?.texte,
-    ).toBe(PARTIR);
-  });
-
-  it("suit la cible, pas le nom de l'issue", () => {
-    expect(
-      demande({ cible_attente_accord: true }, {}, URGENCE)?.rappel?.texte,
-    ).toBe(ATTENDRE);
-    expect(
-      demande({ cible_attente_accord: false }, {}, SANS_URGENCE)?.rappel?.texte,
-    ).toBe(PARTIR);
-  });
-
-  it("sans réponse des règles, aucun rappel", () => {
-    expect(demande({}, {}, SANS_URGENCE)?.rappel).toBeUndefined();
-    expect(
-      demande({ cible_attente_accord: undefined }, {}, URGENCE)?.rappel,
-    ).toBeUndefined();
-  });
-
-  it("la prescription médicale de transport n'a pas de rappel", () => {
-    expect(
-      fiche({ ...TAP, cible_attente_accord: true })?.rappel,
-    ).toBeUndefined();
   });
 });

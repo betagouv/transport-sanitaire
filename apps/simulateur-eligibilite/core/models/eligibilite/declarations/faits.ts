@@ -68,6 +68,7 @@ export const FAITS = [
   "fait_permission_charge_patient",
   "fait_convocation",
   "fait_trajet_etranger",
+  "fait_type_dialyse_non_verifiable",
 ] as const;
 
 /**

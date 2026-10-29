@@ -111,7 +111,8 @@ export type IssuePositive = {
     }[];
   };
   readonly finance: Bloc;
-  readonly blueReminder: string | null;
+  /** Le bloc bleu du délai est retiré (TS1014-J04). */
+  readonly blueReminder: null;
 };
 
 /** Le résultat du prescripteur : un scénario par situation à confirmer. */
@@ -134,12 +135,14 @@ export type ScenarioPrescripteur = {
   readonly intro: string;
   readonly whyTitle: string;
   readonly whyText: string;
-  readonly factsReference: string;
   readonly sourceKeys: readonly string[];
   readonly reason: string;
   readonly actions: readonly string[];
-  /** Les paramètres du scénario ; `null` : il n'en demande pas la preuve. */
-  readonly params: Readonly<Record<string, string | null>>;
+  /**
+   * Les paramètres du scénario ; `null` : il n'en demande pas la preuve.
+   * Absents d'un scénario gardé pour la compatibilité, comme celui de la dialyse.
+   */
+  readonly params: Readonly<Partial<Record<string, string | null>>>;
   /** Un scénario inactif n'est jamais montré. */
   readonly inactive: boolean;
   readonly codes: readonly string[];
@@ -166,7 +169,8 @@ export type IssueNegative = {
     readonly body: string;
     readonly steps: readonly string[];
   };
-  readonly aldAdvice: string;
+  /** `null` : le catalogue ne donne aucun conseil. */
+  readonly aldAdvice: string | null;
   readonly finance: Bloc;
 };
 

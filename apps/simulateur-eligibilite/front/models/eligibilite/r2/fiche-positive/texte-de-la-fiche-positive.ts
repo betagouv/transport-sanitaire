@@ -5,8 +5,8 @@
 // Tous les mots viennent du catalogue de l'éditeur, recopiés tels quels. Ce
 // fichier choisit le titre, la phrase du contexte, la carte, les badges et le
 // modus, puis les range : il n'en écrit aucun. Les blocs propres à l'accord
-// préalable sont l'introduction (dans les consignes), la justification dans la
-// raison, et le rappel d'attente. Un trajet en avion ou en bateau de ligne
+// préalable sont l'introduction (dans les consignes) et la justification dans
+// la raison. Un trajet en avion ou en bateau de ligne
 // régulière prend ses titres et son modus, ses cartes ont leur préfixe et il
 // n'a pas de badge (#221). Elle lit ce que lisent ces textes
 // (`ce-que-lit-un-texte.ts`).
@@ -36,9 +36,6 @@ import {
 import {
   fondementDeLAccord,
   LU_PAR_LE_FONDEMENT_DE_L_ACCORD,
-  LU_PAR_LE_RAPPEL,
-  type RappelDAttente,
-  rappelDAttente,
 } from "./fondement-de-l-accord-prealable";
 import {
   LU_PAR_LA_PERMISSION,
@@ -67,11 +64,6 @@ export type TexteDeLaFichePositive = {
   readonly raison?: string;
   readonly cartes: readonly CarteAffichee[];
   readonly consignes: Consignes;
-  /**
-   * Le rappel d'attente d'une demande d'accord préalable ; absent pour les
-   * autres issues, et quand les règles ne disent pas s'il faut attendre.
-   */
-  readonly rappel?: RappelDAttente;
   readonly finance: Bloc;
 };
 
@@ -84,7 +76,6 @@ export const LU_PAR_LA_FICHE_POSITIVE = luPar(
   LU_PAR_LA_PERMISSION,
   LU_PAR_LE_FONDEMENT_DE_L_ACCORD,
   LU_PAR_LES_CARTES,
-  LU_PAR_LE_RAPPEL,
 );
 
 /**
@@ -105,7 +96,6 @@ export function texteDeLaFichePositive(
   if (!titre || !modus || !titreDuPrescripteur) return undefined;
   const fondement = fondementDe(catalogue, trace, issueId);
   const badges = badgesDuResultat(catalogue.badges, trace);
-  const rappel = "intro" in issue && rappelDAttente(catalogue, trace.cibles);
   return {
     titreDuPrescripteur,
     titreDuPatient: titre,
@@ -117,7 +107,6 @@ export function texteDeLaFichePositive(
       badges,
       "intro" in issue ? issue.intro : undefined,
     ),
-    ...(rappel && { rappel }),
     finance: issue.finance,
   };
 }

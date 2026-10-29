@@ -69,9 +69,8 @@ export const OPTIONS = {
   },
   /** La séance prévue est-elle une séance d’hémodialyse ? */
   "Q1.3.a": {
-    "1_OUI": "Oui",
-    "2_AUTRE_DIALYSE": "Non, il s’agit d’une autre dialyse en centre",
-    "3_NE_SAIT_PAS": "Je ne peux pas le préciser",
+    "1_OUI": "Oui.",
+    "2_AUTRE_DIALYSE": "Non, il s’agit d’une autre dialyse en centre.",
   },
   /** La préférence du patient en matière de transport. */
   "Q1.4": {

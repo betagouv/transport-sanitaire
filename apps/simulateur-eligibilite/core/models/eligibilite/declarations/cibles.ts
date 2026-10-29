@@ -41,6 +41,7 @@ export const CIBLES_ENUMEREES = {
     "ASSURANCE_MALADIE",
   ],
   cible_reason_code: [
+    "DIALYSE_TYPE_NON_VERIFIABLE",
     "TRANSPORT_EXCLU_PROUVE",
     "SOIN_NON_COUVERT_PROUVE",
     "NON_COUVERTE_DECLAREE",
@@ -115,6 +116,8 @@ const CIBLES_BOOLEENNES = [
   "cible_centre_reference_destination_reelle",
   "cible_urgence_appel15",
   "cible_urgence_autre",
+  "cible_autre_fondement_dialyse_etabli",
+  "cible_incertitude_dialyse_decisive",
 ] as const;
 
 type CibleEnumeree = keyof typeof CIBLES_ENUMEREES;

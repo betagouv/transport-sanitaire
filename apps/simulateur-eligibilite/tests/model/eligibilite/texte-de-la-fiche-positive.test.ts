@@ -118,7 +118,7 @@ describe("les titres des accords préalables", () => {
       titreDuPatient:
         "Votre transport sanitaire peut être pris en charge sous réserve de l’accord préalable de l’Assurance Maladie",
       titreDuPrescripteur:
-        "Le transport sanitaire de votre patient peut être pris en charge sous réserve de l’accord préalable de l’Assurance Maladie",
+        "Le transport de votre patient peut être pris en charge sous réserve de l’accord préalable de l’Assurance Maladie",
     });
     expect(
       fiche(VEHICULE_PERSONNEL, {}, "ISSUE_DAP_SANS_URGENCE")?.titreDuPatient,

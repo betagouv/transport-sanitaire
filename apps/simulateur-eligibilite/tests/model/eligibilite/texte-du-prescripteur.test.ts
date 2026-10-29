@@ -31,12 +31,11 @@ describe("le texte des seeds", () => {
         introduction:
           "Le trajet a été qualifié comme un transfert entre établissements de moins de 48 heures. Aucune exception applicable n’a été établie : l’établissement est le financeur identifié. Contactez son service de coordination pour organiser le déplacement ; aucun formulaire Assurance Maladie n’est à compléter dans ce simulateur.",
         pourquoi: {
-          titre: "Pourquoi cette orientation ?",
+          titre: "Pourquoi ce résultat ?",
           elements: [
             {
-              titre: "Situation retenue",
               texte:
-                "Le trajet a été qualifié comme un transfert entre établissements pendant une prise en charge hospitalière. Il s’agit d’un déplacement provisoire de moins de 48 heures, avec retour vers l’établissement d’origine lorsque ce retour a été confirmé. Aucune exception applicable n’a été établie pour ce trajet.",
+                "Le trajet a été qualifié comme un transfert entre établissements pendant une prise en charge hospitalière. Il s’agit d’un déplacement provisoire de moins de 48 heures, avec retour vers l’établissement d’origine lorsque ce retour a été confirmé. Aucun formulaire Assurance Maladie n’est à compléter",
             },
           ],
         },
@@ -44,7 +43,7 @@ describe("le texte des seeds", () => {
         actions: [
           "Contacter le service prescripteur ou la cellule de coordination des transports de l’établissement d’origine.",
           "Faire confirmer l’organisation du transfert, les horaires et, si applicable, le retour par les établissements concernés.",
-          "Ne pas générer de PMT (Prescription Médicale de Transport) ou de DAP (Demande d’Accord Préalable) Assurance Maladie à partir de ce résultat.",
+          "Ne pas générer de Prescription Médicale de Transport (PMT) ou de Demande d’Accord Préalable (DAP) Assurance Maladie à partir de ce résultat.",
         ],
       },
     );
@@ -61,9 +60,8 @@ describe("le texte des seeds", () => {
         titre: "Pourquoi les frais relèvent-ils du patient ?",
         elements: [
           {
-            titre: "Qualification de la permission",
             texte:
-              "La permission concerne un patient âgé d’au moins 20 ans. Une prestation exceptionnelle a été demandée expressément par le patient, sans fondement médical distinct ouvrant droit à une prise en charge du transport ; sa facturation personnelle a été confirmée.",
+              "La permission concerne un patient âgé d’au moins 20 ans. Une prestation exceptionnelle a été demandée expressément par le patient, sans fondement médical distinct ouvrant droit à une prise en charge du transport ; sa facturation personnelle a été confirmée. Aucun formulaire Assurance Maladie n’est à compléter",
           },
         ],
       },
@@ -71,7 +69,7 @@ describe("le texte des seeds", () => {
       actions: [
         "Confirmer avec le service concerné les modalités de sortie et informer le patient de la prise en charge financière retenue.",
         "Vérifier le tarif et, si nécessaire, faire établir un devis avant de réserver un transport payant.",
-        "Ne pas éditer de prescription PMT (Prescription Médicale de Transport)/DAP (Demande d’Accord Préalable) Assurance Maladie pour ce trajet.",
+        "Ne pas éditer de prescription Prescription Médicale de Transport (PMT)/Demande d’Accord Préalable (DAP) Assurance Maladie pour ce trajet.",
       ],
     });
   });
@@ -86,16 +84,15 @@ describe("le texte des seeds", () => {
         titre: "Pourquoi ce résultat ?",
         elements: [
           {
-            titre: "Situation reconnue",
             texte:
-              "Le trajet est motivé par une convocation du contrôle médical de l’Assurance Maladie. Cette catégorie relève des situations réglementaires de convocation prévues pour le transport. La pièce justificative de référence est la convocation émise par le contrôle médical de l’Assurance Maladie.",
+              "Ce déplacement relève du cadre réglementaire des convocations ou de l’appareillage. Indiquer au patient de conserver cette pièce et de se rapprocher de l’organisme émetteur ou de sa caisse pour les modalités pratiques de remboursement.",
           },
         ],
       },
       questions: [],
       actions: [
         "Vérifier que la convocation ou l’avis mentionne bien la date, le lieu et l’objet du déplacement.",
-        "Indiquer au patient de conserver cette pièce et de se rapprocher de l’organisme émetteur ou de sa caisse pour les modalités pratiques de remboursement. Ne pas générer de PMT (Prescription Médicale de Transport) ou DAP (Demande d’Accord Préalable).",
+        "Indiquer au patient de conserver cette pièce et de se rapprocher de l’organisme émetteur ou de sa caisse pour les modalités pratiques de remboursement. Ne pas générer de Prescription Médicale de Transport (PMT) ou Demande d’Accord Préalable (DAP).",
       ],
     });
   });
@@ -112,12 +109,12 @@ describe("le texte des seeds", () => {
           {
             titre: "L’effet de la demande du Centre 15 doit être clarifié",
             texte:
-              "Un transport entre établissements, hors SMUR (Structure Mobile d’Urgence et de Réanimation), a été demandé dans le cadre de l’aide médicale urgente par le Centre 15. Son articulation avec le financement des transferts hospitaliers n’est pas tranchée par le simulateur.",
+              "Un transport entre établissements, hors Structure Mobile d’Urgence et de Réanimation (SMUR), a été demandé dans le cadre de l’aide médicale urgente par le Centre 15. Son articulation avec le financement des transferts hospitaliers n’est pas tranchée par le simulateur.",
           },
         ],
       },
       questions: [
-        "La demande du Centre 15 hors SMUR (Structure Mobile d’Urgence et de Réanimation) constitue-t-elle, pour ce transfert, une exception au financement par l’établissement ?",
+        "La demande du Centre 15 hors Structure Mobile d’Urgence et de Réanimation (SMUR) constitue-t-elle, pour ce transfert, une exception au financement par l’établissement ?",
         "Quel financeur et quel document doivent être retenus pour ce cas précis ?",
       ],
       actions: [
@@ -134,10 +131,9 @@ describe("le texte des seeds", () => {
         "ISSUE_DAP_ETRANGER_A_EXAMINER",
       ),
     ).toEqual({
-      titre:
-        "La prise en charge de ce transport à l’étranger doit être examinée par l’Assurance Maladie",
+      titre: "Prise en charge spécifique d’un transport à l’étranger",
       introduction:
-        "Le départ ou l’arrivée du trajet se situe hors de France. Le simulateur ne peut pas confirmer la prise en charge de ce transport. Adressez une demande d’examen à l’Assurance Maladie pour connaître les conditions, le circuit et les justificatifs applicables.",
+        "Le départ ou l’arrivée du trajet se situe hors de France. Le simulateur ne peut pas confirmer la prise en charge de ce transport.",
       pourquoi: {
         titre: "Pourquoi ce résultat ?",
         elements: [
@@ -157,7 +153,7 @@ describe("le texte des seeds", () => {
         "Préparer la demande S3139h avec les informations du trajet, en suivant les instructions de la caisse. Le document devra être complété et signé par le médecin ; sa préparation ou son envoi ne vaut pas accord.",
       ],
       avertissement:
-        "Une réponse explicite de la caisse est nécessaire dans cette branche du simulateur. N’appliquez pas la règle d’accord tacite après 15 jours ni la dispense d’attente d’une DAP (Demande d’Accord Préalable) ordinaire sur la seule base de l’urgence.",
+        "Une réponse explicite de la caisse est nécessaire dans cette branche du simulateur. N’appliquez pas la règle d’accord tacite après 15 jours ni la dispense d’attente d’une Demande d’Accord Préalable (DAP) ordinaire sur la seule base de l’urgence.",
     });
   });
 });
@@ -202,9 +198,9 @@ describe("le texte de la caisse quand plusieurs points sont ouverts", () => {
       elements: [
         {
           titre:
-            "La catégorie de l’ALD (Affection Longue Durée) n’est pas vérifiée",
+            "La catégorie de l’Affection Longue Durée (ALD) n’est pas vérifiée",
           texte:
-            "Un lien entre les soins et une ALD (Affection Longue Durée) a été déclaré, mais sa catégorie réglementaire ne peut pas être établie à partir des réponses disponibles. Cette information peut conditionner le droit au transport ou une dispense d’accord préalable.",
+            "Un lien entre les soins et une Affection Longue Durée (ALD) a été déclaré, mais sa catégorie réglementaire ne peut pas être établie à partir des réponses disponibles. Cette information peut conditionner le droit au transport ou une dispense d’accord préalable.",
         },
         {
           titre:
@@ -228,8 +224,8 @@ describe("le texte de la caisse quand plusieurs points sont ouverts", () => {
     );
     expect(texte.pourquoi?.titre).toBe("Points à confirmer");
     expect(texte.pourquoi?.elements.map(({ titre }) => titre)).toEqual([
-      "La catégorie de l’ALD (Affection Longue Durée) n’est pas vérifiée",
-      "Le circuit documentaire du SAMSAH (Service d’Accompagnement Médico-Social pour Adultes Handicapés) doit être précisé",
+      "La catégorie de l’Affection Longue Durée (ALD) n’est pas vérifiée",
+      "Le circuit documentaire du Service d’Accompagnement Médico-Social pour Adultes Handicapés (SAMSAH) doit être précisé",
       "Le segment d’hébergement temporaire nécessite une qualification",
     ]);
     expect(texte.questions).toHaveLength(6);

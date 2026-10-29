@@ -18,6 +18,7 @@ import type {
   ScenarioPrescripteur,
 } from "../../../../../core/models/eligibilite/declarations/catalogue-resultats";
 import type { TraceDe } from "../ce-que-lit-un-texte";
+import { sansBlancsDeTrop } from "../sans-blancs-de-trop";
 import { issuesDuTexte } from "../texte-de-l-issue";
 import {
   type IssueDuPrescripteur,
@@ -178,9 +179,10 @@ function sansDoublon(textes: readonly string[]): string[] {
 // « Titre : texte », ou plusieurs, numérotés « 1. … 2. … » sans espace entre
 // eux : les seules marques que le catalogue met dans `whyText`.
 function elementsDuPourquoi(whyText: string): ElementDuPourquoi[] {
-  const parties = whyText.startsWith("1. ")
-    ? whyText.slice(3).split(/(?<=[.!?])\s*\d+\.\s+/)
-    : [whyText];
+  const texte = sansBlancsDeTrop(whyText);
+  const parties = texte.startsWith("1. ")
+    ? texte.slice(3).split(/(?<=[.!?])\s*\d+\.\s+/)
+    : [texte];
   return parties.map(titreEtTexte);
 }
 

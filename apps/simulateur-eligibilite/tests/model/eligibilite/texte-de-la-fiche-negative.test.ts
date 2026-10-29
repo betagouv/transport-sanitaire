@@ -32,7 +32,7 @@ describe("le texte de la seed issue-non-eligible", () => {
 
   it("donne la raison de la consultation", () => {
     expect(texte.raison).toBe(
-      "Selon les informations recueillies, votre déplacement concerne une consultation médicale. Cette consultation, à elle seule, ne suffit pas à ouvrir droit au remboursement de votre transport par l’Assurance Maladie.",
+      "Votre déplacement concerne une consultation médicale. Cette consultation, à elle seule, ne suffit pas à ouvrir droit au remboursement de votre transport par l’Assurance Maladie.",
     );
   });
 
@@ -42,22 +42,24 @@ describe("le texte de la seed issue-non-eligible", () => {
     );
     expect(texte.cartes.map(({ title }) => title)).toEqual([
       "Véhicule personnel ou transports en commun",
-      "VSL (Véhicule Sanitaire Léger) ou taxi conventionné",
+      "Véhicule Sanitaire Léger (VSL) ou taxi conventionné",
       "Ambulance",
     ]);
   });
 
   it("donne les consignes, sans sous-titre ni étape quand le catalogue n'en a pas", () => {
     expect(texte.consignes).toEqual({
-      titre: "Que pouvez-vous faire maintenant ?",
-      texte:
-        "Cette conclusion ne remet pas en cause la nécessité de vos soins. Vous pouvez organiser votre déplacement par vos propres moyens ou demander le tarif d’un transporteur avant toute réservation.",
+      titre: "Les règles de la prescription médicale de transport",
+      // Le texte porte des sauts et des puces, que #284 lira comme le modus.
+      texte: expect.stringMatching(
+        /^La prescription de transport est un acte médical réglementé/,
+      ),
       etapes: [],
     });
   });
 
   it("donne le bloc des frais de transport", () => {
-    expect(texte.finance.title).toBe("À propos des frais de transport");
+    expect(texte.finance.title).toBe("Le saviez-vous ?");
   });
 });
 
@@ -67,7 +69,9 @@ describe("le conseil sur l'ALD", () => {
     texteDeLaFicheNegative(catalogue, trace({}, {}, precisions)).conseilAld;
 
   it("vient du catalogue quand l'ALD est établie", () => {
-    expect(conseil({ aldRecognized: true, aldRelated: true })).toBe(aldAdvice);
+    expect(conseil({ aldRecognized: true, aldRelated: true })).toBe(
+      aldAdvice ?? undefined,
+    );
   });
 
   it("manque quand la trace ne dit rien de l'ALD", () => {

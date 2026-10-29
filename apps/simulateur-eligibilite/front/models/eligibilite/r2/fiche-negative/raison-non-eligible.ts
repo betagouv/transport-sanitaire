@@ -8,10 +8,9 @@
 //
 // Une condition n'est vraie que si la trace la PROUVE. Un fait ou une cible
 // inconnus ne sont jamais « non » : ils se lisent par `isOui()` et `isNon()`,
-// une précision par `=== true`, `=== false` ou sa présence. « Je ne peux pas préciser » (Q1.3.a) n'est jamais
-// « Non ». Cinq raisons ne se prouvent par aucune de nos réponses (voir la
-// table) : leur condition est codée, elle ne devient jamais vraie, et la
-// raison n'est donc jamais choisie. Elle déclare ce qu'elle lit des cibles et
+// une précision par `=== true`, `=== false` ou sa présence. Cinq raisons ne se
+// prouvent par aucune de nos réponses (voir la table) : leur condition est
+// codée, elle ne devient jamais vraie, et la raison n'est donc jamais choisie. Elle déclare ce qu'elle lit des cibles et
 // des faits (`ce-que-lit-un-texte.ts`).
 
 import type { IssueNegative } from "../../../../../core/models/eligibilite/declarations/catalogue-resultats";
@@ -106,7 +105,7 @@ function aldLiee(trace: LuParLaRaison): boolean {
 }
 
 // La condition de chaque raison, par son identifiant. Une raison qui n'y est
-// pas (les trois inactives) n'est jamais prise.
+// pas (les quatre inactives) n'est jamais prise.
 //
 // Jamais prouvées par nos réponses (arbitrages [ÉDITEUR], D-113) :
 // AUCUN_ALD_SANS_LIEN, AUCUN_ALD_CADRE_NON_QUALIFIANT, AUCUN_SERIE_NON_QUALIFIANTE,
@@ -128,8 +127,6 @@ const CONDITIONS: Readonly<Record<string, Condition>> = {
     trace.faits.fait_mineur_soins_prolonges_reconnus.isNon(),
   AUCUN_DIALYSE_NON_HEMO: (trace) =>
     trace.precisions.dialysisType === "non-hemodialyse" && sansSejour(trace),
-  AUCUN_DIALYSE_TYPE_INCONNU: (trace) =>
-    trace.precisions.dialysisType === "inconnu" && sansSejour(trace),
   AUCUN_APPAREILLAGE_HORS_CATEGORIES: ({ precisions }) =>
     precisions.deviceCategory === "hors-categories",
   // « Transports répétés effectivement prévus, mais série Q2.3.3 non

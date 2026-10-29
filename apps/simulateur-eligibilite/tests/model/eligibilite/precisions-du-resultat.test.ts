@@ -75,7 +75,6 @@ describe("hospitalisation", () => {
   it.each([
     ["aucun soin ni séjour", CONSULTATION],
     ["une dialyse qui n'est pas de l'hémodialyse", dialyse("2_AUTRE_DIALYSE")],
-    ["une dialyse dont la nature est inconnue", dialyse("3_NE_SAIT_PAS")],
     ["l'admission en HAD à domicile", HAD_A_DOMICILE],
     [
       "deux séances sans Q2.1.f",
@@ -131,11 +130,10 @@ describe("aldRecognized et aldRelated", () => {
 });
 
 describe("dialysisType", () => {
-  it.each([
-    ["2_AUTRE_DIALYSE", "non-hemodialyse"],
-    ["3_NE_SAIT_PAS", "inconnu"],
-  ] as const)("Q1.3.a %s donne %s", (reponse, attendu) => {
-    expect(precisionsDe(dialyse(reponse)).dialysisType).toBe(attendu);
+  it("Q1.3.a 2_AUTRE_DIALYSE donne non-hemodialyse", () => {
+    expect(precisionsDe(dialyse("2_AUTRE_DIALYSE")).dialysisType).toBe(
+      "non-hemodialyse",
+    );
   });
 
   it("manque pour une hémodialyse : le type est alors connu, pas à préciser", () => {
