@@ -115,14 +115,14 @@ describe("le cerfa", () => {
     expect(ecoute.telechargements).toEqual([]);
   });
 
-  it("dit « Préparation du PDF… » sur « Télécharger » tant qu'il se génère", async () => {
+  it("dit « Préparation du PDF » sur « Télécharger » tant qu'il se génère", async () => {
     const gabarit = gabaritRetenu();
     const user = await ouvrirLeSimulateur({
       modele: auGabarit(gabarit.charge),
     });
     await allerAuCerfa(user);
 
-    expect(bouton("Préparation du PDF…")).toBeDisabled();
+    expect(bouton("Préparation du PDF")).toBeDisabled();
     expect(bouton(IMPRIMER)).toBeDisabled();
     gabarit.lache();
     expect(await genere(TELECHARGER)).toBeEnabled();

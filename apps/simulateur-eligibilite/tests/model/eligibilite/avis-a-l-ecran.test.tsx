@@ -19,8 +19,8 @@ await catalogueResultats();
 const ATTENTE = { timeout: 4000 };
 const DELAI_D_UN_TEST = { timeout: 3 * ATTENTE.timeout };
 
-// `CONTRAT_SATISFACTION.json` de la v10.1.3 : `label` et `url`.
-const LIBELLE = "Aidez notre équipe en donnant votre avis";
+// Le § 2.3 de `REFERENTIEL/03` de la v10.1.4 : le libellé et l'adresse.
+const LIBELLE = "Donner mon avis";
 const ADRESSE =
   "https://grist.numerique.gouv.fr/o/transports-sanitaires/forms/5Pftvy64N7M7i1ZeP9zs3f/6";
 

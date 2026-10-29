@@ -63,7 +63,7 @@ describe("le commentaire facultatif", () => {
 // ---- implémentation ----
 
 // Le bouton « Télécharger », actif une fois le PDF généré : il dit
-// « Préparation du PDF… » d'ici là.
+// « Préparation du PDF » d'ici là.
 async function genere() {
   const bouton = await screen.findByRole("button", TELECHARGER);
   await waitFor(() => expect(bouton).toBeEnabled());

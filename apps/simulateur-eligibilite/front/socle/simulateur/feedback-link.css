@@ -1,43 +1,27 @@
-/* L'invitation à donner son avis (FeedbackLink.tsx). Son aspect est le sien,
-   d'après la présentation de CONTRAT_SATISFACTION.json : fond orange, texte
-   sombre, contour de focus sombre. Le libellé passe à la ligne plutôt que
-   d'être coupé, dans la largeur du conteneur. Les autres boutons ne changent
-   pas. */
-
-.socle-feedback {
-  margin-top: 1.5rem;
-}
+/* L'invitation à donner son avis (FeedbackLink.tsx), d'après V01 et le § 5.1
+   de `REFERENTIEL/03` : CTA violet, texte blanc, angles droits, 48 px de haut,
+   libellé sur une ligne. Le survol et l'activation n'ont pas le contraste AA
+   avec le texte blanc ; l'éditeur le sait et garde ces couleurs. */
 
 /* `a.` passe devant le soulignement et le fond que le DSFR donne aux liens. */
 a.socle-feedback__link {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  box-sizing: border-box;
   min-height: 3rem;
-  max-width: 100%;
-  padding: 0.875rem 1.25rem;
-  border-radius: 0.25rem;
-  font-weight: 700;
-  line-height: 1.4;
-  text-align: center;
-  text-decoration: none;
-  white-space: normal;
-  overflow-wrap: anywhere;
-  color: #1e1e1e;
-  background-color: #ff9b30;
+  border-radius: 0;
+  white-space: nowrap;
+  color: #ffffff;
+  background-color: #a558a0;
   background-image: none;
 }
 
 a.socle-feedback__link:hover {
-  background-color: #ffb56b;
+  background-color: #d282cd;
 }
 
 a.socle-feedback__link:active {
-  background-color: #f08416;
+  background-color: #db9cd6;
 }
 
-a.socle-feedback__link:focus-visible {
-  outline: 3px solid #1e1e1e;
-  outline-offset: 3px;
+/* Le DSFR ajoute l'icône des liens externes : le libellé suffit. */
+a.socle-feedback__link::after {
+  display: none;
 }

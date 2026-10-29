@@ -95,7 +95,7 @@ describe("ce que P2 établit d'un lieu (Q2.13, Q3.3)", () => {
       {
         label: "Lieu de départ",
         value:
-          "EHPAD (Établissement d'Hébergement pour Personnes Âgées Dépendantes)",
+          "Établissement d'Hébergement pour Personnes Âgées Dépendantes (EHPAD)",
       },
     ]);
   });
@@ -112,7 +112,7 @@ describe("ce que P2 établit d'un lieu (Q2.13, Q3.3)", () => {
       {
         label: "Lieu d’arrivée",
         value:
-          "Le domicile, pour l’admission en HAD (Hospitalisation à Domicile)",
+          "Le domicile, pour l’admission en Hospitalisation à Domicile (HAD)",
       },
     ]);
     expect(natures(posee("P3/depart", "Q3.2.nature", had))).not.toContain(

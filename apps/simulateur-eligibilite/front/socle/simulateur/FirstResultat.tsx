@@ -3,7 +3,7 @@
 // compose la page autour : le stepper et ce qui suit, puis les boutons. Sans
 // feuille, ils sont sous le corps, séparés d'un trait. Avec une feuille, ils
 // passent au-dessus d'elle, et seule la feuille s'imprime. Les boutons
-// secondaires sont à gauche, la complétion à droite. Le titre d'un résultat
+// secondaires sont à gauche, l'avis et la complétion à droite (V02). Le titre d'un résultat
 // avec feuille et complétion est vert.
 
 import { type ComponentType, type ReactNode, useEffect, useState } from "react";
@@ -114,7 +114,10 @@ type Actions = {
 // ou on ne le sait pas encore, le temps que le résultat charge.
 type Completion = { label: string } | "none" | "pending";
 
-type Buttons = Actions & { completion: Completion };
+type Buttons = Actions & {
+  completion: Completion;
+  feedback: FeedbackOffer | null;
+};
 
 // Où le stepper en est : le titre du résultat, et la partie qu'il clôt.
 type Step = { title: string; part: number };
@@ -141,7 +144,7 @@ type ContentProps = {
   feedback: FeedbackOffer | null;
 };
 
-// L'avis suit tout le reste, une fois le résultat chargé.
+// L'avis entre dans la barre d'actions, une fois le résultat chargé.
 function Content({
   result,
   step,
@@ -150,9 +153,10 @@ function Content({
   feedback,
 }: ContentProps) {
   const loaded = useLoaded(result);
-  const buttons = { ...actions, completion: completionOf(startLabel, loaded) };
-  const completes = typeof buttons.completion === "object";
+  const completion = completionOf(startLabel, loaded);
+  const completes = typeof completion === "object";
   const offer = loaded && onFirstResult(feedback, completes);
+  const buttons = { ...actions, completion, feedback: offer || null };
   return (
     <>
       <div className="fr-no-print">
@@ -166,7 +170,6 @@ function Content({
       ) : (
         <Page result={loaded} buttons={buttons} />
       )}
-      {offer && <FeedbackLink offer={offer} />}
     </>
   );
 }
@@ -251,8 +254,8 @@ function useLoaded(result: Loading): FirstResult | null {
   return loaded?.from === result ? loaded.value : null;
 }
 
-// Une seule rangée, empilée sur mobile : les secondaires à gauche, la
-// complétion poussée à droite. Elle n'est posée qu'offerte. Rien de ces
+// Une seule rangée, empilée sur mobile : les secondaires à gauche, l'avis et la
+// complétion poussés à droite. Elle n'est posée qu'offerte. Rien de ces
 // boutons ne s'imprime.
 function PageActions({
   placement,
@@ -260,6 +263,7 @@ function PageActions({
   onReopen,
   onLock,
   onRestart,
+  feedback,
 }: Buttons & { placement: Placement }) {
   return (
     <div
@@ -270,6 +274,7 @@ function PageActions({
         <SecondaryButton onClick={onRestart}>
           Faire une nouvelle simulation
         </SecondaryButton>
+        {feedback && <FeedbackLink offer={feedback} />}
         {typeof completion === "object" && (
           <button
             type="button"

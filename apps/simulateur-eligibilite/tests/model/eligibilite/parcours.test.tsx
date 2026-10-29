@@ -19,18 +19,18 @@ const Q21F = /^Les séances sélectionnées motivent-elles/;
 const Q21G = /^S’agit-il d’une entrée dans un établissement/;
 const Q221 = /^L’une de ces situations correspond-elle aussi/;
 const Q221B = /^Laquelle ou lesquelles de ces situations/;
-const Q231 = /^Quelle distance parcourra le patient/;
-const Q25 = /^S’agit-il d’un transfert entre établissements/;
+const Q231 = /^Quelle distance sépare les lieux de départ/;
+const Q25 = /^Quel type de déplacement le patient doit-il effectuer/;
 const Q26A = /^Le transfert est-il définitif ou provisoire/;
 const Q26 = /^Quelle situation précise et quelles exceptions/;
-const Q27 = /^Dans quelle tranche d’âge se situe le patient/;
+const Q27 = /^Âge du patient pendant la période prescrite/;
 const Q284 = /^Cette permission a-t-elle été autorisée/;
 const Q284A = /^Quel est le cadre de cette permission/;
 const Q285 = /^La prescription couvre-t-elle plusieurs permissions/;
 const Q286B = /^Le patient restera-t-il âgé de moins de 20 ans/;
 const Q210 = /^Quelle convocation, quel avis d’audience/;
 const Q210A = /^Le fournisseur est-il agréé/;
-const Q210B = /^Quel appareillage est concerné/;
+const Q210B = /^Sélectionnez l’appareillage concerné/;
 const HOSPITALISE = /^Le patient est déjà hospitalisé pendant ce trajet/;
 
 function afficherLeQuestionnaire(onComplete: () => void = () => {}) {
@@ -73,7 +73,7 @@ async function avecUnProfessionnel(
 ) {
   await choisir(user, /^Vérifier une éligibilité/);
   await page(Q11);
-  await choisir(user, /^Nécessite l’intervention d’un professionnel/);
+  await choisir(user, /^Nécessite une prise en charge spécifique/);
   await page(/^Quelles aides ou conditions particulières/);
   for (const critere of criteres) await cocher(user, critere);
   await suivant(user);
@@ -174,7 +174,7 @@ describe("le modèle de l'éditeur, déroulé dans le formulaire", () => {
     await suivant(user);
 
     await page(Q25);
-    await choisir(user, /^Oui, il s’agit d’un transfert/);
+    await choisir(user, /^Un transfert entre établissements/);
     expect(await page(Q26A)).toBeInTheDocument();
     expect(screen.queryByRole("group", { name: Q26 })).toBeNull();
 
@@ -182,7 +182,7 @@ describe("le modèle de l'éditeur, déroulé dans le formulaire", () => {
     expect(await page(Q26)).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Suivant" })).toBeDisabled();
     expect(
-      screen.getByRole("checkbox", { name: /^Admission dans le nouvel/ }),
+      screen.getByRole("checkbox", { name: /^Admission dans un nouvel/ }),
     ).toBeInTheDocument();
     expect(
       screen.queryByRole("checkbox", { name: /^Transfert <48/ }),

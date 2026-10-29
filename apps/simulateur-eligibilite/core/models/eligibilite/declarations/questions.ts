@@ -27,7 +27,7 @@ export const OPTIONS = {
     "2_AVEC_UN_PROCHE":
       "Nécessite l’accompagnement d’un proche pour se déplacer ou transmettre les informations nécessaires à l’équipe soignante, sans intervention d’un professionnel pendant le transport.",
     "3_AVEC_UN_PROFESSIONNEL":
-      "Nécessite l’intervention d’un professionnel ou des conditions particulières pendant le transport ; les besoins précis sont sélectionnés à la question suivante.",
+      "Nécessite une prise en charge spécifique pendant le trajet, une aide d’un professionnel pour se déplacer ou, en l’absence d’un proche accompagnant, pour transmettre les informations nécessaires à l’équipe soignante.",
   },
   /** Quelles aides ou conditions particulières sont nécessaires pendant le transport ? */
   "Q1.2": {
@@ -57,7 +57,7 @@ export const OPTIONS = {
   "Q1.3": {
     "1_FORTE_CORPULENCE": "Présente une forte corpulence (plus de 150 kg).",
     "2_ALD":
-      "Les soins ou examens à l’origine du déplacement sont en lien avec une ALD (Affection Longue Durée) reconnue (prise en charge à 100 % au titre de cette ALD (Affection Longue Durée)).",
+      "Les soins ou examens à l’origine du déplacement sont en lien avec une Affection Longue Durée (ALD) reconnue (prise en charge à 100 % au titre de cette Affection Longue Durée (ALD)).",
     "3_CHIMIOTHERAPIE": "Ce déplacement concerne une séance de chimiothérapie.",
     "4_RADIOTHERAPIE": "Ce déplacement concerne une séance de radiothérapie.",
     "5_DIALYSE": "Ce déplacement concerne une séance de dialyse en centre.",
@@ -80,7 +80,7 @@ export const OPTIONS = {
   /** Quelle situation médicale ou quel événement motive ce déplacement ? */
   "Q2.1": {
     "1_CONSULTATION":
-      "Consultation médicale de diagnostic, de traitement ou de suivi, dont suivi de l’ALD (Affection Longue Durée).",
+      "Consultation médicale de diagnostic, de traitement ou de suivi, dont suivi de l’Affection Longue Durée (ALD).",
     "2_DENTISTE_OU_SAGE_FEMME":
       "Consultation ou soin réalisé par un chirurgien-dentiste ou une sage-femme.",
     "3_IMAGERIE": "Examen d’imagerie ou autre acte médical technique.",
@@ -90,11 +90,11 @@ export const OPTIONS = {
     "6_SEANCE": "Chimiothérapie, radiothérapie ou dialyse.",
     "7_PSYCHOLOGUE": "Séance de psychologue ou dispositif particulier.",
     "8_HOSPITALISATION":
-      "Entrée ou sortie d’hospitalisation, ou admission en HAD (Hospitalisation à Domicile).",
+      "Entrée ou sortie d’hospitalisation, ou admission en Hospitalisation à Domicile (HAD).",
     "9_TRANSFERT":
       "Transfert entre établissements, ou déplacement pour soin pendant l’hospitalisation.",
     "10_CAMSP":
-      "Soin CAMSP (Centre d’Action Médico-Sociale Précoce)/CMPP (Centre Médico-Psycho-Pédagogique), y compris séance en ville organisée dans le parcours de l’enfant.",
+      "Soin Centre d’Action Médico-Sociale Précoce (CAMSP)/Centre Médico-Psycho-Pédagogique (CMPP), y compris séance en ville organisée dans le parcours de l’enfant.",
     "11_PERMISSION": "Permission temporaire pendant l’hospitalisation.",
     "12_CONVOCATION":
       "Convocation, expertise, audience ou déplacement chez un fournisseur d’appareillage.",
@@ -113,18 +113,17 @@ export const OPTIONS = {
     "1_ENTREE": "Une entrée dans un établissement de santé",
     "2_SORTIE": "Une sortie de cet établissement",
     "3_ADMISSION_HAD":
-      "Une admission en HAD (Hospitalisation à Domicile) à domicile",
+      "Une admission en Hospitalisation à Domicile (HAD) à domicile",
   },
-  /** La séance est-elle organisée dans le parcours de l’enfant ? */
+  /** Cette séance en ville est-elle organisée dans le cadre du parcours de soins de l’enfant ? */
   "Q2.1.h": {
-    "1_OUI": "Oui",
-    "2_NON": "Non",
-    "3_NE_SAIT_PAS": "Je ne peux pas le préciser",
+    "1_OUI": "Oui.",
+    "2_NON": "Non.",
   },
   /** L’une de ces situations correspond-elle aussi au trajet à réaliser ? */
   "Q2.2.1": {
     "1_HOSPITALISATION":
-      "Le patient est déjà hospitalisé pendant ce trajet, y compris en HAD (Hospitalisation à Domicile).",
+      "Le patient est déjà hospitalisé pendant ce trajet, y compris en Hospitalisation à Domicile (HAD).",
     "2_ETRANGER":
       "Le départ, l’arrivée ou le lieu de soins concerné se trouve à l’étranger.",
     "3_AUTRE_CADRE": "Une autre situation particulière concerne ce trajet.",
@@ -134,9 +133,8 @@ export const OPTIONS = {
   },
   /** Ce trajet correspond-il à une permission temporaire de sortie de l’hôpital ? */
   "Q2.2.1.a": {
-    "1_OUI": "Oui, il s'agit d'une permission de sortie.",
-    "2_NON":
-      "Non, ce déplacement a lieu pendant l'hospitalisation sans être une permission.",
+    "1_OUI": "Oui.",
+    "2_NON": "Non.",
   },
   /**
    * Laquelle ou lesquelles de ces situations concernent aussi ce trajet ? Les
@@ -150,9 +148,9 @@ export const OPTIONS = {
     "5_HTNM":
       "À un hébergement temporaire non médicalisé en lien avec les soins, pour un autre motif que l’éloignement d’une maternité.",
     "6_CAMSP":
-      "À des soins dans le cadre d’un CAMSP (Centre d’Action Médico-Sociale Précoce) ou d’un CMPP (Centre Médico-Psycho-Pédagogique), y compris une séance en ville organisée dans le parcours de l’enfant.",
+      "À des soins dans le cadre d’un Centre d’Action Médico-Sociale Précoce (CAMSP) ou d’un Centre Médico-Psycho-Pédagogique (CMPP), y compris une séance en ville organisée dans le parcours de l’enfant.",
     "7_SAMSAH":
-      "À des soins dans un SAMSAH (Service d’Accompagnement Médico-Social pour Adultes Handicapés).",
+      "À des soins dans un Service d’Accompagnement Médico-Social pour Adultes Handicapés (SAMSAH).",
     "9_PENSION_MILITAIRE":
       "À des soins en rapport avec une pension militaire d’invalidité.",
     "10_RETOUR_PENITENTIAIRE":
@@ -165,38 +163,36 @@ export const OPTIONS = {
    * `Q2.2.1.prison-medical` de l'éditeur (point 33, v10.1.3).
    */
   "Q2.2.1.indication": {
-    "1_OUI": "Oui, une indication médicale de transport est présente.",
-    "2_NON":
-      "Non, le déplacement relève uniquement de l’organisation pénitentiaire.",
+    "1_OUI": "Oui.",
+    "2_NON": "Non.",
   },
-  /** Quel lieu lié à ce transport se trouve à l’étranger ? */
+  /** Sélectionnez la ou les adresses situées à l’étranger */
   "Q2.2.5": {
-    "1_DEPART": "Le départ.",
-    "2_ARRIVEE": "L’arrivée.",
+    "1_DEPART": "Adresse de départ située à l’étranger.",
+    "2_ARRIVEE": "Adresse d’arrivée située à l’étranger.",
     "3_LIEU_DES_SOINS":
-      "Le lieu des soins, s’il est distinct du départ et de l’arrivée.",
+      "Adresse du lieu de soins située à l’étranger (à ne sélectionner que si elle est différente des adresses de départ et d’arrivée).",
   },
-  /** Quelle distance parcourra le patient pour le trajet dans le sens évalué ? */
+  /** Quelle distance sépare les lieux de départ et d’arrivée ? */
   "Q2.3.1": {
     "1_CINQUANTE_KM_OU_MOINS": "50 km ou moins.",
     "2_PLUS_DE_CINQUANTE_KM": "Plus de 50 km, jusqu’à 150 km inclus.",
     "3_PLUS_DE_CENT_CINQUANTE_KM": "Plus de 150 km.",
   },
-  /** Au moins quatre transports de plus de 50 km, en deux mois, pour le même traitement ? */
+  /** Au moins 4 transports de plus de 50 km, sur 2 mois, pour le même traitement ? */
   "Q2.3.3": {
     "1_OUI": "Oui.",
     "2_NON": "Non.",
   },
-  /** Le médecin prescripteur atteste-t-il que ce transport est urgent ? */
+  /** Attestez-vous que ce transport est urgent ? */
   "Q2.3.4": {
     "1_OUI": "Oui.",
     "2_NON": "Non.",
   },
-  /** S’agit-il d’un transfert entre établissements ou d’un autre déplacement pendant l’hospitalisation ? */
+  /** Quel type de déplacement le patient doit-il effectuer ? */
   "Q2.5": {
-    "1_TRANSFERT": "Oui, il s’agit d’un transfert entre établissements.",
-    "2_AUTRE_DEPLACEMENT":
-      "Non, il s’agit d’un autre déplacement pendant l’hospitalisation.",
+    "1_TRANSFERT": "Un transfert entre établissements.",
+    "2_AUTRE_DEPLACEMENT": "Autre déplacement",
   },
   /** Le type du transfert : l'option 1 du catalogue, posée à part (D-106). */
   "Q2.6.a": {
@@ -211,21 +207,21 @@ export const OPTIONS = {
    */
   "Q2.6": {
     "2_ADMISSION_SANS_SEJOUR":
-      "Admission dans le nouvel établissement sans prestation d’hospitalisation dans le premier.",
+      "Admission dans un nouvel établissement, sans hospitalisation dans l’établissement de départ.",
     "3_CENTRE_QUINZE":
-      "Transport sanitaire demandé par le Centre 15, hors SMUR (Structure Mobile d’Urgence et de Réanimation), dans le cadre de l’aide médicale urgente.",
+      "Transport sanitaire demandé par le Centre 15, hors Structure Mobile d’Urgence et de Réanimation (SMUR), dans le cadre de l’aide médicale urgente.",
     "4_AIR_MER": "Trajet aérien ou maritime autre qu’en ligne régulière.",
     "5_HAD":
-      "Transport prescrit par une HAD (Hospitalisation à Domicile) hors soins liés à la HAD (Hospitalisation à Domicile).",
+      "Transport prescrit par une Hospitalisation à Domicile (HAD) hors soins liés à la Hospitalisation à Domicile (HAD).",
     "6_USLD":
-      "Transport depuis/vers USLD (Unité de Soins de Longue Durée) hors même implantation géographique.",
+      "Transport depuis/vers Unité de Soins de Longue Durée (USLD) hors même implantation géographique.",
     "7_EHPAD":
-      "Transport depuis/vers EHPAD (Établissement d'Hébergement pour Personnes Âgées Dépendantes) hors même implantation géographique.",
+      "Transport depuis/vers Établissement d'Hébergement pour Personnes Âgées Dépendantes (EHPAD) hors même implantation géographique.",
     "8_RADIOTHERAPIE":
       "Transfert <48 heures pour radiothérapie en exercice libéral ou centre de santé.",
     "9_DIALYSE_A_DOMICILE": "Patient pratiquant la dialyse à domicile.",
     "10_ADMISSION_HAD":
-      "Patient hospitalisé rentrant à domicile pour une admission en HAD (Hospitalisation à Domicile).",
+      "Patient hospitalisé rentrant à domicile pour une admission en Hospitalisation à Domicile (HAD).",
     "11_AUCUNE": "Aucune de ces exceptions.",
   },
   ...OPTIONS_DE_LA_PERMISSION,

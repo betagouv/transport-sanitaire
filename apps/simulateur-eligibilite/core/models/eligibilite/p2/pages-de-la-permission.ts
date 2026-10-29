@@ -22,10 +22,7 @@ import {
 export const PAGE_DE_LA_PERMISSION = page(
   "P2/permission",
   question
-    .singleChoice(
-      "Q2.7",
-      "Dans quelle tranche d’âge se situe le patient pendant la période prescrite et quel est le cadre de la permission ?",
-    )
+    .singleChoice("Q2.7", "Âge du patient pendant la période prescrite")
     .mattersWhile(given.fait("fait_permission").isOui())
     .option("3_ADULTE_AUTORISEE", (option) =>
       option.offeredWhen(desAdultesAProposer),
@@ -37,9 +34,6 @@ export const PAGE_DE_LA_PERMISSION = page(
     .singleChoice(
       "Q2.7.a",
       "L’établissement confirme-t-il que ce transport correspond à une prestation exceptionnelle facturable au patient ?",
-    )
-    .hint(
-      "La seule préférence personnelle ne suffit pas. Vérifier la demande écrite, l’absence de fondement médical, l’absence de couverture par les tarifs de l’établissement et l’information du patient sur le prix et la facturation.",
     )
     .appliesWhen(aLaChargeDuPatient)
     .dependsOn("Q2.7"),
@@ -109,9 +103,7 @@ export const PAGE_DE_LA_PERMISSION_DU_MINEUR = page(
       "Q2.8.6.a",
       "Une permission aller-retour est prévue toutes les combien de semaines ?",
     )
-    .hint(
-      "1 = chaque semaine ; 2 = toutes les deux semaines. Pour des permissions irrégulières, qualifier séparément les périodes concernées.",
-    )
+    .hint("1 = chaque semaine ; 2 = toutes les deux semaines.")
     .integer()
     .min(1)
     .unit("semaine(s)")

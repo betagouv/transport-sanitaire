@@ -1,6 +1,6 @@
 // La feuille à remettre se télécharge en PDF, sans la boîte d'impression du
 // navigateur. Le PDF se prépare au clic, sur la feuille affichée : pendant ce
-// temps, « Télécharger » attend et dit « Préparation du PDF… ». Un échec se
+// temps, « Télécharger » attend et dit « Préparation du PDF ». Un échec se
 // signale sans retirer la feuille. Le navigateur de test ne met pas en page :
 // la feuille y mesure zéro, et son PDF y échoue toujours.
 
@@ -22,12 +22,12 @@ describe("le téléchargement de la feuille", () => {
     expect(telecharger.closest(".fr-no-print")).not.toBeNull();
   });
 
-  it("attend et dit « Préparation du PDF… » pendant que le PDF se prépare", async () => {
+  it("attend et dit « Préparation du PDF » pendant que le PDF se prépare", async () => {
     await avecUneFeuille();
 
     fireEvent.click(bouton("Télécharger"));
 
-    expect(bouton("Préparation du PDF…")).toBeDisabled();
+    expect(bouton("Préparation du PDF")).toBeDisabled();
   });
 
   it("qui échoue le dit, garde la feuille affichée et permet de réessayer", async () => {

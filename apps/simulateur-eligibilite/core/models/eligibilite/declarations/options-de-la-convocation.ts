@@ -23,12 +23,12 @@ export const OPTIONS_DE_LA_CONVOCATION = {
     "2_NON": "Non",
     "3_NE_PEUX_PAS_VERIFIER": "Je ne peux pas le vérifier",
   },
-  /** Quel appareillage est concerné ? (option 6 de Q2.10) */
+  /** Sélectionnez l’appareillage concerné (option 6 de Q2.10) */
   "Q2.10.b": {
     "1_PROTHESE_OCULAIRE_FACIALE": "Prothèse oculaire ou faciale",
     "2_PODO_ORTHESE": "Podo-orthèse",
     "3_ORTHOPROTHESE": "Orthoprothèse",
     "4_AUTRE": "Un autre appareillage",
-    "5_NE_PEUX_PAS_PRECISER": "Je ne peux pas le préciser",
+    "5_NE_PEUX_PAS_PRECISER": "Je ne peux pas le vérifier",
   },
 } as const;

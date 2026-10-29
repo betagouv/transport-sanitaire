@@ -2,19 +2,18 @@
 
 export const OPTIONS_DE_LA_BRANCHE = {
   /**
-   * D’où part le patient pour ce trajet ? Les libellés viennent de
-   * `QUESTIONS_P2_LIBELLES_2026-10-15.json`, clé `Q2.13.depart`.
+   * Le patient devra effectuer son départ depuis… Les libellés sont ceux de
+   * WORDING-07 et WORDING-P2-04 (v10.1.4), sigles après leur libellé.
    */
   "Q2.13.depart": {
-    "1_DOMICILE": "De son domicile ou d’un autre lieu de vie.",
-    "2_ETABLISSEMENT_DE_SANTE": "D’un établissement de santé.",
+    "1_DOMICILE": "Son domicile ou un autre lieu de vie",
+    "2_ETABLISSEMENT_DE_SANTE": "Un établissement de santé.",
     "3_EHPAD":
-      "D’un EHPAD (Établissement d'Hébergement pour Personnes Âgées Dépendantes).",
-    "4_USLD": "D’une USLD (Unité de Soins de Longue Durée).",
-    "5_HEBERGEMENT_NON_MEDICALISE":
-      "D’un hébergement temporaire non médicalisé.",
-    "6_ETABLISSEMENT_PENITENTIAIRE": "D’un établissement pénitentiaire.",
-    "7_AUTRE_LIEU": "D’un autre lieu.",
+      "Un Établissement d'Hébergement pour Personnes Âgées Dépendantes (EHPAD).",
+    "4_USLD": "Une Unité de Soins de Longue Durée (USLD).",
+    "5_HEBERGEMENT_NON_MEDICALISE": "Un hébergement temporaire non médicalisé.",
+    "6_ETABLISSEMENT_PENITENTIAIRE": "Un établissement pénitentiaire.",
+    "7_AUTRE_LIEU": "Un autre lieu.",
   },
   /**
    * Quelle situation d’éloignement concerne la patiente ? Premier groupe de
@@ -24,7 +23,7 @@ export const OPTIONS_DE_LA_BRANCHE = {
     "1_PLUS_DE_QUARANTE_CINQ_MINUTES":
       "Sa résidence se situe à plus de 45 minutes de trajet motorisé, dans les conditions habituelles, de la maternité la plus proche adaptée à son état de santé.",
     "2_COMMUNE_DESIGNEE_PAR_L_ARS":
-      "Sa commune bénéficie d’une éligibilité définie par l’ARS (Agence Régionale de Santé) en raison de circonstances pouvant entraîner un éloignement supérieur à 45 minutes à la date prévue d’accouchement, notamment les conditions climatiques ou de circulation.",
+      "Sa commune bénéficie d’une éligibilité définie par l’Agence Régionale de Santé (ARS) en raison de circonstances pouvant entraîner un éloignement supérieur à 45 minutes à la date prévue d’accouchement, notamment les conditions climatiques ou de circulation.",
     "3_AUCUNE": "Aucune de ces conditions.",
   },
   /**
@@ -39,7 +38,7 @@ export const OPTIONS_DE_LA_BRANCHE = {
     "3_AUCUNE": "Aucune de ces conditions.",
   },
   /**
-   * Le médecin prescripteur atteste-t-il que ce transport est urgent ? Même
+   * Attestez-vous que ce transport est urgent ? Même
    * question que Q2.3.4, réutilisée sur la page de branche (Q2.12).
    */
   "Q2.12": {

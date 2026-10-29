@@ -1,8 +1,8 @@
-// L'aspect de l'avis (#195), lu dans sa feuille de style : les couleurs de la
-// présentation de `CONTRAT_SATISFACTION.json`, et un texte qui reste lisible
-// au repos, au survol et à l'activation (contraste WCAG supérieur à 4,5:1).
-// Le libellé qui passe à la ligne sur mobile se vérifie à l'écran : le
-// navigateur de test ne calcule pas la mise en page.
+// L'aspect de l'avis (D-234), lu dans sa feuille de style : les couleurs de V01
+// et du § 5.1 de `REFERENTIEL/03` (v10.1.4), et un texte lisible au repos
+// (contraste WCAG supérieur à 4,5:1). Le survol et l'activation ne l'ont pas ;
+// l'éditeur le sait et garde ces couleurs. La place dans la barre se vérifie à
+// l'écran : le navigateur de test ne calcule pas la mise en page.
 
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
@@ -17,30 +17,23 @@ const CSS = readFileSync(
 const LIEN = "a.socle-feedback__link";
 
 describe("l'aspect de l'avis", () => {
-  it("prend les couleurs du contrat", () => {
-    expect(declaration(LIEN, "color")).toBe("#1e1e1e");
-    expect(declaration(LIEN, "background-color")).toBe("#ff9b30");
-    expect(declaration(`${LIEN}:hover`, "background-color")).toBe("#ffb56b");
-    expect(declaration(`${LIEN}:active`, "background-color")).toBe("#f08416");
-    expect(declaration(`${LIEN}:focus-visible`, "outline")).toBe(
-      "3px solid #1e1e1e",
-    );
-    expect(declaration(`${LIEN}:focus-visible`, "outline-offset")).toBe("3px");
+  it("prend les couleurs de V01", () => {
+    expect(declaration(LIEN, "color")).toBe("#ffffff");
+    expect(declaration(LIEN, "background-color")).toBe("#a558a0");
+    expect(declaration(`${LIEN}:hover`, "background-color")).toBe("#d282cd");
+    expect(declaration(`${LIEN}:active`, "background-color")).toBe("#db9cd6");
   });
 
-  it.each([LIEN, `${LIEN}:hover`, `${LIEN}:active`])(
-    "garde un texte lisible : %s",
-    (etat) => {
-      const texte = declaration(LIEN, "color");
-      const fond = declaration(etat, "background-color");
+  it("garde un texte lisible au repos", () => {
+    const texte = declaration(LIEN, "color");
+    const fond = declaration(LIEN, "background-color");
 
-      expect(contraste(texte, fond)).toBeGreaterThan(4.5);
-    },
-  );
+    expect(contraste(texte, fond)).toBeGreaterThan(4.5);
+  });
 
-  it("passe à la ligne plutôt que de couper son libellé", () => {
-    expect(declaration(LIEN, "white-space")).toBe("normal");
-    expect(declaration(LIEN, "max-width")).toBe("100%");
+  it("tient son libellé sur une ligne, à la hauteur d'un bouton", () => {
+    expect(declaration(LIEN, "white-space")).toBe("nowrap");
+    expect(declaration(LIEN, "min-height")).toBe("3rem");
   });
 });
 

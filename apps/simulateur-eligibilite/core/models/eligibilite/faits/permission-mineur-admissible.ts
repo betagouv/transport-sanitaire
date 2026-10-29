@@ -34,10 +34,6 @@ export const permissionMineurAdmissible = unFait(
     "Permission non autorisée selon R.1112-56.",
   )
   .inconnuSi(
-    MOINS_DE_VINGT_ANS.and(AUTORISATION.is("3_NE_SAIT_PAS")),
-    "À vérifier.",
-  )
-  .inconnuSi(
     MOINS_DE_VINGT_ANS.and(AUTORISATION.isValidated()),
     "Q2.8.4 attend sa réponse.",
   )

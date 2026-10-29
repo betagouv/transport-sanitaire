@@ -2,8 +2,9 @@
 // premier (`FirstResultat.tsx`) : la trace de debug et les boutons. Le modèle
 // fournit son titre, son texte et son cerfa ; la page les range ici, de haut en
 // bas (C03 du contrat d'intégration) : le stepper, titré du document ; le
-// texte ; « Précédent » et « Faire une nouvelle simulation » ; « Imprimer » et
-// « Télécharger » ; l'aperçu du document ; l'avis, une fois le document prêt.
+// texte ; « Précédent », « Faire une nouvelle simulation » et, à droite, l'avis
+// une fois le document prêt (V02) ; « Imprimer » et « Télécharger » ; l'aperçu
+// du document.
 
 import type { ComponentType, ReactNode } from "react";
 import type { Preconisation } from "../../../core/socle/model";
@@ -28,6 +29,7 @@ import type { DebugTraceProps } from "../questionnaire-engine/QuestionnaireForm"
 import { Stepper } from "../questionnaire-engine/Stepper";
 import { FeedbackLink, type FeedbackOffer, feedbackOf } from "./FeedbackLink";
 import { questionnaireOf } from "./questionnaire-of";
+import "./first-resultat.css";
 import type { Locked } from "./start";
 
 type Props = {
@@ -70,31 +72,39 @@ export function CerfaResultat({
       DebugTrace={DebugTrace}
     >
       <Resultat reading={reading} />
-      <CerfaActions onReopen={() => onReopen(state)} onRestart={onRestart} />
       <Cerfa
         model={model}
         read={read}
         input={{ reading, completedAt }}
+        actions={{ onReopen: () => onReopen(state), onRestart }}
         feedback={feedbackOf(model, read)}
       />
     </Frame>
   );
 }
 
-// Sous le texte : revenir au questionnaire, ou recommencer. Rien ne s'imprime.
+type CerfaActionsProps = {
+  readonly onReopen: () => void;
+  readonly onRestart: () => void;
+};
+
+// Sous le texte : revenir au questionnaire, ou recommencer, et l'avis à droite.
+// La barre suit celle du premier résultat (`first-resultat.css`). Rien ne
+// s'imprime.
 function CerfaActions({
   onReopen,
   onRestart,
-}: {
-  readonly onReopen: () => void;
-  readonly onRestart: () => void;
-}) {
+  feedback,
+}: CerfaActionsProps & { feedback: FeedbackOffer | null }) {
   return (
-    <div className="fr-btns-group fr-btns-group--inline-md fr-no-print">
-      <SecondaryButton onClick={onReopen}>Précédent</SecondaryButton>
-      <SecondaryButton onClick={onRestart}>
-        Faire une nouvelle simulation
-      </SecondaryButton>
+    <div className="socle-page-actions fr-no-print">
+      <div className="fr-btns-group fr-btns-group--inline-md">
+        <SecondaryButton onClick={onReopen}>Précédent</SecondaryButton>
+        <SecondaryButton onClick={onRestart}>
+          Faire une nouvelle simulation
+        </SecondaryButton>
+        {feedback && <FeedbackLink offer={feedback} />}
+      </div>
     </div>
   );
 }
@@ -150,31 +160,34 @@ export function SecondaryButton({ onClick, children }: ButtonProps) {
 // ---- implémentation ----
 
 // Le cerfa de la préconisation figée, daté du jour où le complément a été
-// validé. Rien quand elle n'en donne pas. Le modèle peut tenir la place de son
-// aperçu. L'avis le suit, une fois son PDF prêt.
+// validé, rien quand elle n'en donne pas. Le modèle peut tenir la place de son
+// aperçu. Les boutons le précèdent, et l'avis s'y ajoute une fois son PDF
+// prêt. Sans cerfa, les boutons restent, sans avis.
 type CerfaProps = {
   model: Model;
   /** Ce que lisent les entrées du cerfa. */
   read: Read;
   input: CerfaInput;
+  actions: CerfaActionsProps;
   feedback: FeedbackOffer | null;
 };
 
-function Cerfa({ model, read, input, feedback }: CerfaProps) {
+function Cerfa({ model, read, input, actions, feedback }: CerfaProps) {
   const { form, standIn, printLabel, downloadLabel } = model.cerfa;
   const bound = read(form);
+  if (!bound) return <CerfaActions {...actions} feedback={null} />;
   return (
-    bound && (
-      <CerfaDocument
-        cerfa={bound.cerfa}
-        dto={dtoFrom(bound.mapping, read)}
-        date={input.completedAt}
-        printLabel={printLabel}
-        downloadLabel={downloadLabel}
-        standIn={standIn?.(input)}
-        onceReady={feedback && <FeedbackLink offer={feedback} />}
-      />
-    )
+    <CerfaDocument
+      cerfa={bound.cerfa}
+      dto={dtoFrom(bound.mapping, read)}
+      date={input.completedAt}
+      printLabel={printLabel}
+      downloadLabel={downloadLabel}
+      standIn={standIn?.(input)}
+      above={(ready) => (
+        <CerfaActions {...actions} feedback={ready ? feedback : null} />
+      )}
+    />
   );
 }
 

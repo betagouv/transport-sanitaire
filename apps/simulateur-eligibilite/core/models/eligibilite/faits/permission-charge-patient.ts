@@ -22,7 +22,6 @@ export const permissionChargePatient = unFait("fait_permission_charge_patient")
   )
   .ouiSi(A_SA_CHARGE.and(CONFIRMATION.is("1_OUI")))
   .nonSi(A_SA_CHARGE.and(CONFIRMATION.is("2_NON")))
-  .inconnuSi(A_SA_CHARGE.and(CONFIRMATION.is("3_NE_SAIT_PAS")), "À vérifier.")
   .inconnuSi(A_SA_CHARGE, "Q2.7.a attend sa réponse.")
   .nonSi(TRANCHE.isPresent())
   .sinon(PAS_ENCORE_ETABLI);

@@ -3,8 +3,7 @@
 
 export const OPTIONS_DE_LA_PERMISSION = {
   /**
-   * Dans quelle tranche d’âge se situe le patient pendant la période prescrite
-   * et quel est le cadre de la permission ?
+   * Âge du patient pendant la période prescrite
    */
   "Q2.7": {
     "1_MOINS_DE_SEIZE_ANS": "Moins de 16 ans.",
@@ -18,13 +17,11 @@ export const OPTIONS_DE_LA_PERMISSION = {
   "Q2.7.a": {
     "1_OUI": "Oui, les conditions de facturation ont été vérifiées.",
     "2_NON": "Non.",
-    "3_NE_SAIT_PAS": "Je ne peux pas le vérifier.",
   },
   /** L'autorisation de la permission, sous-question de Q2.8 (D-107). */
   "Q2.8.4": {
     "1_OUI": "Oui.",
     "2_NON": "Non.",
-    "3_NE_SAIT_PAS": "Je ne peux pas le vérifier.",
   },
   /** Quel est le cadre de cette permission ? */
   "Q2.8.4.a": {

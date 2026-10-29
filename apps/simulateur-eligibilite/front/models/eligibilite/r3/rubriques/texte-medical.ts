@@ -173,9 +173,19 @@ function lueTelleQuelle({
   return normale ? normale : undefined;
 }
 
-// Le sigle sans sa définition, et sans point final (D-141).
+// Le sigle sans sa définition, et sans point final (D-141). Le contrat met le
+// sigle d'abord, « ALD (Affection Longue Durée) » ; les libellés le mettent
+// après, « Affection Longue Durée (ALD) » (D-235). Une définition est une suite
+// de mots à majuscule, que peuvent lier « à », « de », « d’ »…
+const SIGLE_PUIS_DEFINITION = /(\p{Lu}{2,}) \([^()]*\)/gu;
+const DEFINITION_PUIS_SIGLE =
+  /\p{Lu}[\p{L}-]*(?: (?:(?:à|de|des|du|la|le|et) )?(?:d’)?\p{Lu}[\p{L}-]*)* \((\p{Lu}{2,})\)/gu;
+
 function forme(texte: string): string {
-  return texte.replace(/(\p{Lu}{2,}) \([^()]*\)/gu, "$1").replace(/\.$/, "");
+  return texte
+    .replace(SIGLE_PUIS_DEFINITION, "$1")
+    .replace(DEFINITION_PUIS_SIGLE, "$1")
+    .replace(/\.$/, "");
 }
 
 // Sauf un sigle, et la mention du mineur, que le contrat veut littérale.

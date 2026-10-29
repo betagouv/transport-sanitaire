@@ -26,7 +26,7 @@ export const PAGE_DU_TRANSFERT = page(
   question
     .singleChoice(
       "Q2.5",
-      "S’agit-il d’un transfert entre établissements ou d’un autre déplacement pendant l’hospitalisation ?",
+      "Quel type de déplacement le patient doit-il effectuer ?",
     )
     .appliesWhen(unTransfertAPoser)
     .inconsistentWhen(unTransfertVersLaPrison, TRANSFERT_VERS_LA_PRISON),
