@@ -1,6 +1,6 @@
 # Architecture : le métier et l'écran
 
-> Statut : **décidé (phase expérimentale)** · Dernière mise à jour : 2026-10-28
+> Statut : **décidé (phase expérimentale)** · Dernière mise à jour : 2026-10-29
 >
 > Où vit le métier du simulateur, et comment l'écran s'y branche. Les décisions
 > ont été prises seul par l'agent qui a mené le chantier, sur délégation de
@@ -792,7 +792,7 @@ Les `mattersWhile` restent tous, et s'ajoutent au graphe (D-227). Les règles
 lisent les réponses sans regarder les gardes : seule une garde sait qu'une
 question ne se pose pas. Coupée seule, chacune laisse le graphe poser sa
 question dans au moins un des 53 parcours mesurés. Pour `issue-pmt`, la garde
-cache Q2.13.depart, que lisent les cases « départ » du cerfa. Q2.1, Q2.7 et
+cache Q2.13.depart, que lisent les cases « départ » du cerfa. Q2.1 et
 Q2.13.depart cachent une réponse qui changerait l'issue ou le cerfa : elles
 remontent à l'éditeur.
 
