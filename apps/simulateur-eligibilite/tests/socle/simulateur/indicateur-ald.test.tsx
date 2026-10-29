@@ -72,6 +72,15 @@ describe("l'indicateur de parcours ALD", () => {
     expect(verdicts()).toEqual(["parcours_ald_trop_de_pages"]);
   });
 
+  it("ne compte pas un sous-champ comme une question", async () => {
+    const modele = avec({ subFields: ["accompagnements"] });
+    const user = await ouvrirLeSimulateur({ modele });
+
+    await allerAuResultat(user);
+
+    expect(trackEvents().at(-1)?.[4]).toBe(1);
+  });
+
   it("met à part un parcours qui finit à la caisse", async () => {
     const modele = avec({ caisse: constant(true) });
     const user = await ouvrirLeSimulateur({ modele });

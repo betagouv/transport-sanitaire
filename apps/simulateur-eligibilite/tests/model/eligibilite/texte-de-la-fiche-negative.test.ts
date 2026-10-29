@@ -36,26 +36,27 @@ describe("le texte de la seed issue-non-eligible", () => {
     );
   });
 
-  it("donne les trois cartes fixes et leur introduction", () => {
-    expect(texte.introDesCartes.title).toBe(
-      "Si la situation médicale le justifie",
+  it("donne ce que l'Assurance Maladie ne rembourse pas", () => {
+    expect(texte.informationInstitutionnelle.title).toBe(
+      "L’Assurance Maladie ne rembourse pas systématiquement les transports :",
     );
-    expect(texte.cartes.map(({ title }) => title)).toEqual([
-      "Véhicule personnel ou transports en commun",
-      "Véhicule Sanitaire Léger (VSL) ou taxi conventionné",
-      "Ambulance",
-    ]);
+    expect(texte.informationInstitutionnelle.items).toHaveLength(4);
   });
 
-  it("donne les consignes, sans sous-titre ni étape quand le catalogue n'en a pas", () => {
-    expect(texte.consignes).toEqual({
-      titre: "Les règles de la prescription médicale de transport",
-      // Le texte porte des sauts et des puces, que #284 lira comme le modus.
-      texte: expect.stringMatching(
-        /^La prescription de transport est un acte médical réglementé/,
-      ),
-      etapes: [],
-    });
+  it("lit les consignes en paragraphes, puis en liste", () => {
+    const { titre, blocs } = texte.consignes;
+    expect(titre).toBe("Les règles de la prescription médicale de transport");
+    expect(blocs).toEqual([
+      {
+        type: "paragraphe",
+        texte: expect.stringMatching(
+          /^La prescription de transport est un acte médical réglementé/,
+        ),
+      },
+      { type: "paragraphe", texte: "La réglementation précise que :" },
+      { type: "liste", puces: expect.any(Array) },
+    ]);
+    expect(blocs[2]).toMatchObject({ puces: { length: 4 } });
   });
 
   it("donne le bloc des frais de transport", () => {
@@ -63,28 +64,8 @@ describe("le texte de la seed issue-non-eligible", () => {
   });
 });
 
-describe("le conseil sur l'ALD", () => {
-  const { aldAdvice } = catalogue.issues.ISSUE_NON_ELIGIBLE;
-  const conseil = (precisions: Parameters<typeof trace>[2]) =>
-    texteDeLaFicheNegative(catalogue, trace({}, {}, precisions)).conseilAld;
-
-  it("vient du catalogue quand l'ALD est établie", () => {
-    expect(conseil({ aldRecognized: true, aldRelated: true })).toBe(
-      aldAdvice ?? undefined,
-    );
-  });
-
-  it("manque quand la trace ne dit rien de l'ALD", () => {
-    expect(conseil({})).toBeUndefined();
-  });
-
-  it("manque quand la trace ne la prouve pas", () => {
-    expect(conseil({ aldRecognized: false })).toBeUndefined();
-  });
-});
-
 describe("les parties facultatives du catalogue", () => {
-  it("montre le sous-titre et les étapes quand le catalogue en porte", () => {
+  it("montre le sous-titre quand le catalogue en porte", () => {
     const negative = catalogue.issues.ISSUE_NON_ELIGIBLE;
     const avec = {
       ...catalogue,
@@ -98,13 +79,11 @@ describe("les parties facultatives du catalogue", () => {
               ...negative.instructions.intro,
               subtitle: "Un sous-titre",
             },
-            steps: ["Une étape"],
           },
         },
       },
     };
     const { consignes } = texteDeLaFicheNegative(avec, trace({}));
     expect(consignes.sousTitre).toBe("Un sous-titre");
-    expect(consignes.etapes).toEqual(["Une étape"]);
   });
 });

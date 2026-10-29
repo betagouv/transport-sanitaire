@@ -96,7 +96,7 @@ export class AskedDate extends AskedCommon {
 
 export type AskedCheckboxData = AskedCommonData & {
   readonly kind: "checkbox";
-  readonly box: string;
+  readonly box?: string;
 };
 
 /**
@@ -105,8 +105,8 @@ export type AskedCheckboxData = AskedCommonData & {
  */
 export class AskedCheckbox extends AskedCommon {
   readonly kind = "checkbox";
-  /** Le texte de la case. */
-  readonly box: string;
+  /** Le texte de la case. Absent, le libellé est celui de la case. */
+  readonly box?: string;
 
   constructor(data: AskedCheckboxData) {
     super(data);

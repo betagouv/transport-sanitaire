@@ -108,15 +108,15 @@ function aldLiee(trace: LuParLaRaison): boolean {
 // pas (les quatre inactives) n'est jamais prise.
 //
 // Jamais prouvées par nos réponses (arbitrages [ÉDITEUR], D-113) :
-// AUCUN_ALD_SANS_LIEN, AUCUN_ALD_CADRE_NON_QUALIFIANT, AUCUN_SERIE_NON_QUALIFIANTE,
+// AUCUN_ALD_CADRE_NON_QUALIFIANT, AUCUN_SERIE_NON_QUALIFIANTE,
 // AUCUN_AUTRE_DEPLACEMENT et TRANSPORT_EXCLU.
 const CONDITIONS: Readonly<Record<string, Condition>> = {
-  // « ALD confirmée ; soin sans lien avec cette ALD prouvé ». Q1.3 option 2
-  // dit le lien avec l'ALD : `aldRelated` n'est jamais « faux ».
+  // « ALD confirmée ; soin sans lien avec cette ALD prouvé ». Q1.3.b le
+  // prouve quand elle dit « sans lien direct ».
   AUCUN_ALD_SANS_LIEN: (trace) =>
     aldConfirmee(trace) && trace.precisions.aldRelated === false,
-  // « Lien établi ; Q1.1/Q1.2 prouve l'absence de déficience ». Avec Q1.3
-  // option 2, `fait_ald_liee` ne vaut « non » que si Q1.1 dit « seul ».
+  // « Lien établi ; Q1.1/Q1.2 prouve l'absence de déficience ». Avec un lien
+  // direct en Q1.3.b, `fait_ald_liee` ne vaut « non » que si Q1.1 dit « seul ».
   AUCUN_ALD_SANS_DEFICIENCE: (trace) =>
     aldLiee(trace) && trace.faits.fait_ald_liee.isNon(),
   // « Réponse prouvée hors fondement 3°/4° ; exception mineur non applicable ».

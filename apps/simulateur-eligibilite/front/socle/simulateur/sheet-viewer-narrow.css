@@ -102,4 +102,12 @@
   .socle-viewer .socle-sheet .socle-panel--framed {
     padding: 1.25rem;
   }
+
+  .socle-viewer .socle-sheet .socle-sheet__footer {
+    margin-top: 1.25rem;
+  }
+
+  .socle-viewer .socle-sheet .socle-sheet__footer p {
+    font-size: 0.75rem;
+  }
 }

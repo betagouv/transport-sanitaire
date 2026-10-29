@@ -1,5 +1,6 @@
 // Affiche une question avec le champ de `front/socle/ui/` qui lui convient.
 
+import type { ReactNode } from "react";
 import {
   isAddress,
   withField,
@@ -12,6 +13,7 @@ import type {
 import { AddressField } from "../ui/AddressField";
 import { CheckboxField } from "../ui/CheckboxField";
 import { DateField } from "../ui/DateField";
+import { LoneCheckbox } from "../ui/LoneCheckbox";
 import { NumberField } from "../ui/NumberField";
 import { RadioField } from "../ui/RadioField";
 import { Reminder } from "../ui/Reminder";
@@ -33,6 +35,8 @@ type Props = {
   errors?: readonly string[];
   /** Le champ prend le focus à l'ouverture de la page. */
   autoFocus?: boolean;
+  /** Ce qui s'affiche sous une option d'une liste de cases : ses questions. */
+  below?: (option: string) => ReactNode;
 };
 
 export function QuestionField(props: Props) {
@@ -179,7 +183,10 @@ function MultipleChoiceField(props: Props & { question: MultipleChoice }) {
   return (
     <CheckboxField
       {...common(props)}
-      options={question.options}
+      options={question.options.map((option) => ({
+        ...option,
+        below: props.below?.(option.value),
+      }))}
       exclusiveOption={question.exclusiveOption}
       incompatibleOptions={question.incompatibleOptions}
       values={Array.isArray(answer) ? answer : []}
@@ -188,10 +195,19 @@ function MultipleChoiceField(props: Props & { question: MultipleChoice }) {
   );
 }
 
-// Une case seule : une seule case sous son libellé. Décochée, elle répond
-// `false`, pas une absence de réponse.
+// Une case seule : une seule case sous son libellé, ou portant son libellé
+// quand elle n'a pas de texte à elle. Décochée, elle répond `false`, pas une
+// absence de réponse.
 function SingleCheckboxField(props: Props & { question: CheckboxQuestion }) {
   const { question, answer, onChange } = props;
+  if (question.box === undefined)
+    return (
+      <LoneCheckbox
+        {...common(props)}
+        checked={answer === true}
+        onChange={onChange}
+      />
+    );
   return (
     <CheckboxField
       {...common(props)}

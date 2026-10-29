@@ -115,10 +115,26 @@ describe("careFamily", () => {
 
 describe("aldRecognized et aldRelated", () => {
   it("valent « oui » ensemble quand Q1.3 coche l'ALD", () => {
-    const reponses = { ...BRANCARD_20_KM, "Q1.3": ["2_ALD"] } as Reponses;
+    const reponses = {
+      ...BRANCARD_20_KM,
+      "Q1.3": ["2_ALD"],
+      "Q1.3.b": "1_LIEN_DIRECT",
+    } as Reponses;
     expect(precisionsDe(reponses)).toMatchObject({
       aldRecognized: true,
       aldRelated: true,
+    });
+  });
+
+  it("aldRelated vaut « non » quand Q1.3.b dit le soin sans lien direct", () => {
+    const reponses = {
+      ...BRANCARD_20_KM,
+      "Q1.3": ["2_ALD"],
+      "Q1.3.b": "2_SANS_LIEN_DIRECT",
+    } as Reponses;
+    expect(precisionsDe(reponses)).toMatchObject({
+      aldRecognized: true,
+      aldRelated: false,
     });
   });
 

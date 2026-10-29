@@ -224,3 +224,25 @@
 .socle-sheet .socle-panel--framed {
   padding: 3.5mm 4mm;
 }
+
+/* Le pied de la feuille, après le dernier bloc : centré, petit et gris, son
+   lien de la couleur du texte (TS1014-J01). Sur une page, l'impression le
+   pose au bas de l'A4 (sheet-paper.css). */
+.socle-sheet .socle-sheet__footer {
+  margin-top: 4mm;
+  text-align: center;
+  color: #666;
+}
+
+.socle-sheet .socle-sheet__footer p {
+  margin: 0;
+  font-size: 7.5pt;
+  line-height: 1.35;
+}
+
+.socle-sheet .socle-sheet__footer a {
+  color: inherit;
+  font-size: inherit;
+  background: none;
+  text-decoration: underline;
+}

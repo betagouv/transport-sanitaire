@@ -85,7 +85,7 @@ async function avecUnProfessionnel(
 const PARCOURS_LONG = 15_000;
 
 describe("le modèle de l'éditeur, déroulé dans le formulaire", () => {
-  it("révèle Q2.1.g sur la page de Q2.1, puis passe aux situations particulières", async () => {
+  it("révèle Q2.1.g sur la page de Q2.1, puis attend « Suivant »", async () => {
     const user = afficherLeQuestionnaire();
     await choisir(user, /^Vérifier une éligibilité/);
     await page(Q11);
@@ -102,6 +102,8 @@ describe("le modèle de l'éditeur, déroulé dans le formulaire", () => {
     expect(screen.getByRole("group", { name: Q21 })).toBeInTheDocument();
 
     await choisir(user, /^Une entrée dans un établissement de santé/);
+    // Q2.1.g révélée, la page attend « Suivant » (D-240).
+    await suivant(user);
     expect(await page(Q221)).toBeInTheDocument();
     expect(screen.queryByRole("checkbox", { name: HOSPITALISE })).toBeNull();
   });
@@ -282,13 +284,12 @@ describe("le modèle de l'éditeur, déroulé dans le formulaire", () => {
     await choisir(user, /^Déplacement chez un fournisseur d’appareillage/);
     expect(await page(Q210A)).toBeInTheDocument();
     expect(screen.getByRole("group", { name: Q210B })).toBeInTheDocument();
-    expect(
-      screen.queryByRole("button", { name: "Voir le résultat" }),
-    ).toBeNull();
 
     await choisirDans(user, Q210A, /^Oui$/);
     await choisirDans(user, Q210B, /^Podo-orthèse$/);
-    // Une page de choix uniques avance d'elle-même : c'est la dernière.
+    // Ses sous-champs révélés font de la page une page composée (D-240).
+    expect(terminer).not.toHaveBeenCalled();
+    await user.click(screen.getByRole("button", { name: "Voir le résultat" }));
     await waitFor(() => expect(terminer).toHaveBeenCalledOnce());
   });
 });

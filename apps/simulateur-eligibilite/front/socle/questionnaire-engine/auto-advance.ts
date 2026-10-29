@@ -1,7 +1,7 @@
 // L'avancement automatique du questionnaire.
 //
-// Une page faite de choix uniques avance seule, 200 ms après la réponse. Le
-// bouton « Suivant » n'est alors pas affiché.
+// Une page autonome, un seul choix unique affiché seul, avance d'elle-même
+// 200 ms après la réponse. Le bouton « Suivant » n'est alors pas affiché.
 //
 // Au retour sur une page déjà répondue, le bouton revient. Sinon « Précédent »
 // renverrait aussitôt d'où l'on vient. Changer la réponse relance l'avancement.

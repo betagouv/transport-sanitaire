@@ -42,11 +42,22 @@ export class DeclaredPage<Questions extends AnyQuestions, Cibles, Faits> {
   }
 }
 
-/** La page `id`, avec ces questions dans cet ordre. */
+/**
+ * La page `id`, avec ces questions dans cet ordre. Une question qui s'affiche
+ * sous une option (`shownUnder`) suit la liste de cette option, sur la page.
+ */
 export function page<Questions extends AnyQuestions, Cibles, Faits>(
   id: string,
   ...questions: AnyDeclared<Questions, Cibles, Faits>[]
 ): DeclaredPage<Questions, Cibles, Faits> {
+  questions.forEach((question, rang) => {
+    const parent = question.shownUnderQuestion;
+    if (parent === undefined) return;
+    if (!questions.slice(0, rang).some(({ id }) => id === parent))
+      throw new Error(
+        `${question.id} s'affiche sous ${parent}, qui ne la précède pas sur la page ${id}.`,
+      );
+  });
   return new DeclaredPage(id, questions);
 }
 

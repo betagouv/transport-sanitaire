@@ -24,6 +24,7 @@ import {
 } from "./pages-du-transfert.ts";
 import { unMotifDeP1 } from "./prestation.ts";
 import { dansLeCircuit, uneIndicationAPoser } from "./retour-penitentiaire.ts";
+import { unCadreAPoser, unSejourEnEtablissement } from "./sejour.ts";
 
 type Contexte = Questions["Q2.2.1.b"][number];
 
@@ -119,7 +120,8 @@ const AUTRES_CADRES = CONTEXTES.reduce(
     ),
 );
 
-// Q2.2.1 et ses précisions sur une seule page : la permission (a), l'autre
+// Q2.2.1 et ses précisions sur une seule page : le cadre du séjour, la
+// permission (a), qu'une HAD n'ouvre pas, l'autre
 // cadre (b), l'indication médicale d'un retour pénitentiaire et l'étranger
 // (Q2.2.5), chacune sous le groupe qui l'ouvre. Elle se pose sur tous les
 // parcours, même quand Q2.1 est sautée (D-98). Ce que Q2.1 indique déjà est
@@ -152,10 +154,16 @@ const PAGE_DES_CONTEXTES = page(
     ),
   question
     .singleChoice(
+      "Q2.2.1.cadre",
+      "Dans quel cadre le patient est-il actuellement hospitalisé ?",
+    )
+    .appliesWhen(unCadreAPoser),
+  question
+    .singleChoice(
       "Q2.2.1.a",
       "Ce trajet correspond-il à une permission temporaire de sortie de l’hôpital ?",
     )
-    .appliesWhen(groupe.checked("1_HOSPITALISATION")),
+    .appliesWhen(unSejourEnEtablissement),
   AUTRES_CADRES,
   question
     .singleChoice(
@@ -174,7 +182,8 @@ const PAGE_DES_CONTEXTES = page(
 );
 
 // Q2.3 : le trajet évalué, sur une seule page. L'avion ou le bateau est une
-// case seule : décochée, elle répond « non ». La série se révèle sous la
+// case seule sans titre, dans le bloc de la distance : décochée, elle répond
+// « non » (D-239). La série se révèle sous la
 // distance quand le trajet dépasse 50 km, et l'urgence quand la garde de
 // l'éditeur le dit (`cible_question_urgence_a_afficher`).
 const PAGE_DU_TRAJET = page(
@@ -186,7 +195,6 @@ const PAGE_DU_TRAJET = page(
   question.checkbox(
     "Q2.3.2",
     "Une partie du trajet se fera en avion ou en bateau de ligne régulière.",
-    "Oui, une partie du trajet se fera en avion ou en bateau de ligne régulière.",
   ),
   question
     .singleChoice(

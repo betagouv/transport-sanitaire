@@ -13,10 +13,12 @@ export function resultatNegatif(lecture: Lecture): Promise<FirstResult> {
   return avecLeCatalogue((catalogue) => {
     const trace = traceDuResultat(lecture);
     const texte = texteDeLaFicheNegative(catalogue, trace);
-    return pageDeLaFeuille(catalogue, texte.titreDuPrescripteur, {
+    const page = pageDeLaFeuille(catalogue, texte.titreDuPrescripteur, {
       title: texte.titreDuPatient,
       intro: texte.raison,
       body: <FicheNegative texte={texte} />,
     });
+    // Le titre du prescripteur dit le refus, en rouge foncé (TS1014-J05).
+    return { ...page, tone: "refusal" };
   });
 }

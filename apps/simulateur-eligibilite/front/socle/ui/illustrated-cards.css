@@ -1,6 +1,8 @@
 /* Les cartes illustrées (IllustratedCards.tsx). La zone du dessin a une hauteur
    fixe et un fond blanc, et le dessin y tient sans être déformé, sur 90 % de sa
-   place. Tant qu'il se charge, le texte de chargement l'y remplace. */
+   place. Tant qu'il se charge, le texte de chargement l'y remplace. Le badge
+   de la carte retenue a sa bande, au-dessus du dessin : il ne le chevauche
+   jamais (TS1014-J02). */
 
 .socle-illustrated-cards {
   list-style: none;
@@ -35,24 +37,24 @@
 .socle-illustrated-cards__media {
   flex: none;
   display: flex;
+  flex-direction: column;
   align-items: center;
-  justify-content: center;
-  position: relative;
   height: 140px;
   /* Blanc dans les deux thèmes : un dessin peut avoir un fond blanc opaque. */
   background-color: #fff;
 }
 
 .socle-illustrated-cards__media .fr-badge {
-  position: absolute;
-  top: 0.5rem;
-  left: 0.5rem;
-  z-index: 1;
+  flex: none;
+  align-self: flex-start;
+  margin: 0.5rem 0.5rem 0;
 }
 
 .socle-illustrated-cards__media img {
+  flex: 1;
+  min-height: 0;
   width: 90%;
-  height: 90%;
+  margin: 5% 0;
   object-fit: contain;
 }
 

@@ -35,3 +35,13 @@
 h1.socle-result-title--success {
   color: var(--text-default-success);
 }
+
+/* Le titre d'un refus : rouge foncé, plus sombre que le rouge d'erreur du
+   DSFR, que le thème sombre reprend pour rester lisible. */
+h1.socle-result-title--refusal {
+  color: #a20b1b;
+}
+
+:root[data-fr-theme="dark"] h1.socle-result-title--refusal {
+  color: var(--text-default-error);
+}

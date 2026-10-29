@@ -11,7 +11,12 @@
 
 import { unFait } from "../../../socle/index.ts";
 import { PAS_ENCORE_ETABLI } from "../declarations/faits.ts";
-import { DEPLACEMENT, EXCEPTIONS, given, SITUATIONS } from "./communs.ts";
+import {
+  DEPLACEMENT,
+  EXCEPTIONS,
+  given,
+  UN_SEJOUR_EN_ETABLISSEMENT,
+} from "./communs.ts";
 
 export const exceptionArticle80AdmissionSansSejour = unFait(
   "fait_exception_article80_admission_sans_sejour",
@@ -19,8 +24,8 @@ export const exceptionArticle80AdmissionSansSejour = unFait(
   .ouiSi(EXCEPTIONS.checked("2_ADMISSION_SANS_SEJOUR"))
   .nonSiEcartee(EXCEPTIONS, "2_ADMISSION_SANS_SEJOUR")
   .nonSi(
-    EXCEPTIONS.isPresent().and(SITUATIONS.checked("1_HOSPITALISATION")),
-    "Elle ne s'est pas proposée : un séjour initial est coché en Q2.2.1.",
+    EXCEPTIONS.isPresent().and(UN_SEJOUR_EN_ETABLISSEMENT),
+    "Elle ne s'est pas proposée : un séjour initial en établissement est coché en Q2.2.1.",
   )
   .nonSi(
     EXCEPTIONS.isPresent().and(DEPLACEMENT.is("2_AUTRE_DEPLACEMENT")),
@@ -34,6 +39,6 @@ export const exceptionArticle80AdmissionSansSejour = unFait(
   )
   .nonSi(
     EXCEPTIONS.isPresent(),
-    "Elle ne s'est pas proposée : une admission en HAD n'est pas un transfert entre établissements.",
+    "Elle ne s'est pas proposée : une admission ou un séjour en HAD n'est pas un transfert entre établissements.",
   )
   .sinon(PAS_ENCORE_ETABLI);

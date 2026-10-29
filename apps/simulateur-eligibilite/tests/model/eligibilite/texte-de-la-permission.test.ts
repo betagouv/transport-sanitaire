@@ -17,7 +17,7 @@ describe("le motif du modus", () => {
       { criteres: [1], precisions: { hospitalisation: "H-SEANCE-HE" } },
     );
     expect(puces(texte).map(({ texte: ligne }) => ligne)).toContain(
-      "que votre transport sera pris en charge par l’Assurance Maladie au titre d’un transport lié à une séance de dialyse, prise en compte comme une hospitalisation pour le transport ;",
+      "que votre transport sera pris en charge par l’Assurance Maladie au titre d’un transport lié à une séance de dialyse, prise en compte comme une hospitalisation ;",
     );
   });
 

@@ -22,12 +22,12 @@ export type CatalogueResultats = {
   readonly sources: Readonly<Record<string, Source>>;
   /** La phrase qui annonce la fiche à remettre au patient. */
   readonly patientSheetIntro: string;
+  /** L'invitation au patient à donner son avis, au pied de sa fiche. */
+  readonly patientFeedback: { readonly text: string; readonly email: string };
   readonly issues: {
     readonly ISSUE_PMT: IssuePositive;
-    readonly ISSUE_DAP_SANS_URGENCE: IssuePositive & { readonly intro: Intro };
-    readonly ISSUE_DAP_URGENCE_ATTESTEE: IssuePositive & {
-      readonly intro: Intro;
-    };
+    readonly ISSUE_DAP_SANS_URGENCE: IssueDAccordPrealable;
+    readonly ISSUE_DAP_URGENCE_ATTESTEE: IssueDAccordPrealable;
     readonly ISSUE_S3141: IssuePositive & {
       readonly permissionPhrases: readonly Texte[];
       readonly permissionAdministrative: readonly Texte[];
@@ -110,9 +110,24 @@ export type IssuePositive = {
       readonly text: string;
     }[];
   };
+  /**
+   * Les définitions du motif administratif, quand elles diffèrent de celles
+   * du contexte (TS1014-J02). Seule la PMT en porte.
+   */
+  readonly administrativeLexicon?: Pick<
+    IssuePositive["lexicon"],
+    "hospitalisation" | "atmp"
+  >;
   readonly finance: Bloc;
   /** Le bloc bleu du délai est retiré (TS1014-J04). */
   readonly blueReminder: null;
+};
+
+/** Une demande d'accord préalable : son introduction, avant les étapes. */
+type IssueDAccordPrealable = IssuePositive & {
+  readonly intro: Intro;
+  /** Une ligne régulière n'a ni cartes ni étapes (TS1014-J04). */
+  readonly suppressCardsAndStepsForLine: boolean;
 };
 
 /** Le résultat du prescripteur : un scénario par situation à confirmer. */
@@ -162,15 +177,17 @@ export type IssueNegative = {
     readonly reason: string;
     readonly inactive: boolean;
   }[];
-  readonly fixedCards: readonly Bloc[];
-  readonly cardIntro: Bloc;
+  /** Ce que l'Assurance Maladie ne rembourse pas : un titre, puis ses puces. */
+  readonly institutionalInformation: {
+    readonly title: string;
+    readonly items: readonly string[];
+  };
   readonly instructions: {
     readonly intro: Intro;
+    /** À sauts (`<br>`) et à puces (« • »). */
     readonly body: string;
     readonly steps: readonly string[];
   };
-  /** `null` : le catalogue ne donne aucun conseil. */
-  readonly aldAdvice: string | null;
   readonly finance: Bloc;
 };
 

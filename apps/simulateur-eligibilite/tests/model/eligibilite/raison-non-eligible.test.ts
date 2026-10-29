@@ -249,8 +249,19 @@ describe("de bout en bout, par les réponses", () => {
         "Q1.1": "1_SEUL",
         "Q1.4": "1_VEHICULE_PERSONNEL",
         "Q1.3": ["2_ALD"],
+        "Q1.3.b": "1_LIEN_DIRECT",
       },
       "AUCUN_ALD_SANS_DEFICIENCE",
+    ],
+    [
+      "une ALD sans lien direct avec le soin (Q1.3.b)",
+      {
+        "Q1.1": "1_SEUL",
+        "Q1.4": "1_VEHICULE_PERSONNEL",
+        "Q1.3": ["2_ALD"],
+        "Q1.3.b": "2_SANS_LIEN_DIRECT",
+      },
+      "AUCUN_ALD_SANS_LIEN",
     ],
   ])("%s", (_nom, plus, raison) => {
     expect(raisonDesReponses(plus)).toEqual({

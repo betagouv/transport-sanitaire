@@ -70,61 +70,10 @@ const FAITS = new Map<
 
 // Le changement de la v10.1.4 que chaque scénario attend, et sa sous-issue.
 const EN_ATTENTE: Readonly<Record<string, string>> = {
-  ...pour("#284", [
-    // La fiche non éligible n'a plus de cartes (TS1014-J05).
-    ...[
-      "AUCUN_ALD_SANS_DEFICIENCE",
-      "AUCUN_ALD_SANS_LIEN",
-      "AUCUN_APPAREILLAGE_HORS_CATEGORIES",
-      "AUCUN_AUTRE_DEPLACEMENT",
-      "AUCUN_AUTRE_SOIN",
-      "AUCUN_BIOLOGIE",
-      "AUCUN_CONSULTATION",
-      "AUCUN_DIALYSE_NON_HEMO",
-      "AUCUN_GENERIQUE",
-      "AUCUN_IMAGERIE",
-      "AUCUN_PARAMEDICAL",
-      "AUCUN_PSYCHOLOGUE",
-      // Et la raison d'une série dit le trajet de 50 km ou moins.
-      "AUCUN_SERIE_NON_QUALIFIANTE",
-      "AUCUN_SOINS_DENTAIRES_SAGE_FEMME",
-      "TRANSPORT_EXCLU",
-      ...[
-        "ambulance",
-        "ambulance-bari",
-        "ambulance-tpmr",
-        "ambulance-tpmr-bari",
-        "tap-partage",
-        "tap-seul",
-        "tc",
-        "tc-proche",
-        "tpmr-partage",
-        "tpmr-seul",
-        "vp",
-        "vp-proche",
-      ].map((mode) => `exclusion-${mode}`),
-    ].map((variante) => `ISSUE_NON_ELIGIBLE--${variante}`),
-  ]),
-  ...pour("#285", [
-    // Le motif administratif se lit dans `administrativeLexicon` (TS1014-J02).
-    ...[
-      "ambulance",
-      "ambulance-bari",
-      "ambulance-tpmr",
-      "ambulance-tpmr-bari",
-      "tap-partage",
-      "tap-seul",
-      "tpmr-partage",
-      "tpmr-seul",
-    ].map((mode) => `ISSUE_PMT--${mode}`),
-    // Une DAP en ligne régulière n'a ni cartes ni étapes (TS1014-J04).
-    ...["ISSUE_DAP_SANS_URGENCE", "ISSUE_DAP_URGENCE_ATTESTEE"].flatMap(
-      (issue) =>
-        ["avion", "bateau", "ligne-non-precisee"].map(
-          (ligne) => `${issue}--${ligne}`,
-        ),
-    ),
-  ]),
+  // La raison d'une série dit le trajet de 50 km ou moins
+  // (`relecture_wording/JULIEN_32_SERIE.md`). Son texte manque au catalogue :
+  // à remonter à l'éditeur.
+  ...pour("#271", ["ISSUE_NON_ELIGIBLE--AUCUN_SERIE_NON_QUALIFIANTE"]),
 };
 
 const comparables = SCENARIOS.filter(({ id }) => !(id in EN_ATTENTE)).map(
@@ -260,15 +209,12 @@ function ficheNegative(texte: ReturnType<typeof texteDeLaFicheNegative>) {
     title: texte.titreDuPatient,
     prescriberTitle: texte.titreDuPrescripteur,
     eligibility: texte.raison,
-    cardIntro: texte.introDesCartes,
-    cards: texte.cartes,
+    institutionalInformation: texte.informationInstitutionnelle,
     instructions: {
       title: consignes.titre,
       subtitle: consignes.sousTitre ?? null,
-      body: consignes.texte,
-      steps: consignes.etapes,
+      lines: lignesDe(consignes.blocs),
     },
-    aldAdvice: texte.conseilAld ?? null,
     finance: texte.finance,
   };
 }
