@@ -1,10 +1,14 @@
-// Les frontières entre issues de l'éditeur, rejouées contre les règles : les
-// vecteurs B01 à B21 de sa recette (`tests/release_test_vectors.json` du paquet
-// v10.1.3, groupe « cross-issue boundary »).
+// Les scénarios de test B01 à B21 de l'éditeur, rejoués contre nos règles. Ils
+// viennent de sa recette v10.1.3 (`tests/release_test_vectors.json`). Chacun
+// teste la frontière entre deux issues.
 //
-// Même base que l'oracle : faits tous à « non », P1 et P2 complètes. Un fait
-// omis par l'éditeur est ici `undefined`. Son banc lit chaque cible avec
-// `?? null`, sans distinguer l'inconnu du sans objet : on fait de même.
+// Un scénario part de la base de l'oracle : tous les faits à « non », P1 et P2
+// complètes. Il change quelques faits. Un fait que l'éditeur omet vaut ici
+// `undefined` : il est inconnu.
+//
+// L'assertion porte sur trois cibles : l'issue, le support et le financeur.
+// Comme l'éditeur, on lit chaque cible avec `?? null`. Une cible inconnue et
+// une cible sans objet valent donc toutes deux `null`.
 
 import { describe, expect, it } from "vitest";
 import type { Cibles } from "../../../core/models/eligibilite/declarations/cibles";
@@ -41,7 +45,7 @@ const PERMISSION_PATIENT: Attendu = [
   "PATIENT",
 ];
 
-const VECTEURS: readonly [id: string, faits: Changements, attendu: Attendu][] =
+const SCENARIOS: readonly [id: string, faits: Changements, attendu: Attendu][] =
   [
     ["B01", BRANCARD, PMT],
     ["B02", LONGUE_DISTANCE, DAP],
@@ -103,7 +107,7 @@ const VECTEURS: readonly [id: string, faits: Changements, attendu: Attendu][] =
   ];
 
 describe("les frontières entre issues de l'éditeur", () => {
-  it.each(VECTEURS)("%s", (_id, faits, [issue, support, financeur]) => {
+  it.each(SCENARIOS)("%s", (_id, faits, [issue, support, financeur]) => {
     const valeurs = preconiser(faits);
     expect([
       valeurs.cible_issue_id ?? null,
