@@ -306,7 +306,7 @@ _Chez l'éditeur_: **faux ami**. Son « catalogue » est celui des questions.
 
 **Oracle**:
 Les cas de l'éditeur (D01, D02…), écrits en faits, dont l'attendu est une issue.
-Chaque cas a sa seed (D-57, D-79).
+Il passe en faits, et se rejoue depuis les réponses quand nos questions le posent (D-236).
 _Chez l'éditeur_: « oracle », le même mot.
 
 **Trace de debug**:
