@@ -30,6 +30,7 @@ const AVEC_ALD = {
   "Q1.1": "1_SEUL",
   "Q1.4": "1_VEHICULE_PERSONNEL",
   "Q1.3": ["2_ALD"],
+  "Q1.3.b": "1_LIEN_DIRECT",
 } as Reponses;
 
 describe("la fiche de la seed issue-non-eligible", () => {

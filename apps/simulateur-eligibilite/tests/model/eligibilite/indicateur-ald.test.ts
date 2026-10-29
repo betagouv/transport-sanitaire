@@ -16,6 +16,7 @@ const ALD = {
   "Q1.1": "3_AVEC_UN_PROFESSIONNEL",
   "Q1.2": ["7_ALLONGE"],
   "Q1.3": ["2_ALD"],
+  "Q1.3.b": "1_LIEN_DIRECT",
 };
 
 const verdictDe = (answers: Answers) => aldPathwayOf(model, answers);

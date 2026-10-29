@@ -119,6 +119,7 @@ describe("le retour en P1", () => {
     ...PRO,
     "Q1.2": ["8_BRANCARDAGE"],
     "Q1.3": ["1_FORTE_CORPULENCE", "2_ALD", "8_MINEUR_SOINS_CONTINUS"],
+    "Q1.3.b": "1_LIEN_DIRECT",
   };
   const faits = (reponses: Reponses) =>
     preconisationOf(model, reponses).faits as Faits;

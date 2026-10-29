@@ -159,6 +159,11 @@ export type AldIndicator = {
   parts: readonly string[];
   /** Au plus autant de pages, et autant de questions. */
   limit: number;
+  /**
+   * Les sous-champs, par leur `id` : posés sur la page de leur question, ils
+   * n'en sont pas une de plus.
+   */
+  subFields?: readonly string[];
   /** Le parcours est-il un parcours ALD ? Sinon, aucun verdict. */
   counted: Value<boolean>;
   /** Finit-il à la caisse, sans conclusion sur le droit ? */

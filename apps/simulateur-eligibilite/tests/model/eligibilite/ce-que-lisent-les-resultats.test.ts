@@ -21,6 +21,7 @@ describe("les questions que les résultats lisent telles quelles", () => {
       "Q1.2",
       "Q1.3",
       "Q1.3.a",
+      "Q1.3.b",
       "Q2.1",
       "Q2.1.f",
       "Q2.1.g",
