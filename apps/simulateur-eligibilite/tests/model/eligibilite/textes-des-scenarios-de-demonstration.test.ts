@@ -74,26 +74,6 @@ const EN_ATTENTE: Readonly<Record<string, string>> = {
   // (`relecture_wording/JULIEN_32_SERIE.md`). Son texte manque au catalogue :
   // à remonter à l'éditeur.
   ...pour("#271", ["ISSUE_NON_ELIGIBLE--AUCUN_SERIE_NON_QUALIFIANTE"]),
-  ...pour("#285", [
-    // Le motif administratif se lit dans `administrativeLexicon` (TS1014-J02).
-    ...[
-      "ambulance",
-      "ambulance-bari",
-      "ambulance-tpmr",
-      "ambulance-tpmr-bari",
-      "tap-partage",
-      "tap-seul",
-      "tpmr-partage",
-      "tpmr-seul",
-    ].map((mode) => `ISSUE_PMT--${mode}`),
-    // Une DAP en ligne régulière n'a ni cartes ni étapes (TS1014-J04).
-    ...["ISSUE_DAP_SANS_URGENCE", "ISSUE_DAP_URGENCE_ATTESTEE"].flatMap(
-      (issue) =>
-        ["avion", "bateau", "ligne-non-precisee"].map(
-          (ligne) => `${issue}--${ligne}`,
-        ),
-    ),
-  ]),
 };
 
 const comparables = SCENARIOS.filter(({ id }) => !(id in EN_ATTENTE)).map(

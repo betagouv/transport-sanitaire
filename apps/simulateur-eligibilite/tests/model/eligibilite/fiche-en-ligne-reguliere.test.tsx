@@ -2,8 +2,8 @@
 // se fait en avion ou en bateau de ligne régulière (#221). Les seeds
 // `issue-dap-avion-ou-bateau` et `issue-dap-avion-ou-bateau-urgence-attestee`
 // suivent la projection de l'éditeur (`projection-positive.mjs`) : titres et
-// modus de la ligne régulière, cartes préfixées, aucun badge terrestre. Les
-// textes sont ceux du catalogue, recopiés ici.
+// modus de la ligne régulière, ni cartes ni étapes (TS1014-J04), aucun badge
+// terrestre. Les textes sont ceux du catalogue, recopiés ici.
 
 import { render, screen, within } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
@@ -32,29 +32,17 @@ const fiche = () =>
 const SANS_URGENCE = "issue-dap-avion-ou-bateau";
 const URGENCE = "issue-dap-avion-ou-bateau-urgence-attestee";
 
-const PREFIXE = "Pour les éventuelles parties terrestres du trajet :";
 const CARTES = [
   "Véhicule personnel ou transports en commun",
   "Véhicule Sanitaire Léger (VSL) ou taxi conventionné",
   "Ambulance",
 ];
 
-// Le texte de chaque carte, titre compris, dans l'ordre du catalogue.
+// Les titres des cartes de mode que montre la fiche.
 const cartes = () =>
   fiche()
-    .getAllByRole("heading", { level: 3 })
-    .filter((titre) => CARTES.includes(titre.textContent ?? ""))
-    .map((titre) => titre.closest("li")?.textContent ?? "");
-
-// Chaque carte ouvre son texte sur le préfixe, juste après son titre.
-const attendrePrefixe = () => {
-  const textes = cartes();
-  expect(textes).toHaveLength(CARTES.length);
-  CARTES.forEach((titre, rang) => {
-    expect(textes[rang]).toContain(`${titre}${PREFIXE}`);
-  });
-  return textes;
-};
+    .queryAllByRole("heading", { level: 3 })
+    .filter((titre) => CARTES.includes(titre.textContent ?? ""));
 
 describe("la fiche de la seed issue-dap-avion-ou-bateau (sans urgence attestée)", () => {
   it("donne au prescripteur le titre du transport, pas celui du transport sanitaire", async () => {
@@ -73,13 +61,9 @@ describe("la fiche de la seed issue-dap-avion-ou-bateau (sans urgence attestée)
     ).toBeInTheDocument();
   });
 
-  it("préfixe les trois cartes, et garde celle du mode comme situation", async () => {
+  it("n'a pas de cartes de mode", async () => {
     await afficher(SANS_URGENCE);
-    const textes = attendrePrefixe();
-    expect(textes[1]).toContain("Votre situation");
-    expect(textes[1]).toContain(
-      "Votre état de santé ne permet pas de partager ce transport.",
-    );
+    expect(cartes()).toEqual([]);
   });
 
   // Le modus de la ligne régulière n'est plus que l'introduction (v10.1.4).
@@ -131,9 +115,9 @@ describe("la fiche de la seed issue-dap-avion-ou-bateau-urgence-attestee", () =>
     expect(fiche().queryByRole("heading", { name: /^\d\. / })).toBeNull();
   });
 
-  it("préfixe les cartes, sans badge terrestre", async () => {
+  it("n'a ni cartes de mode, ni badge terrestre", async () => {
     await afficher(URGENCE);
-    attendrePrefixe();
+    expect(cartes()).toEqual([]);
     expect(
       fiche().queryByRole("list", {
         name: "Besoins particuliers à signaler lors de la réservation",
@@ -144,9 +128,10 @@ describe("la fiche de la seed issue-dap-avion-ou-bateau-urgence-attestee", () =>
 
 describe("une demande d'accord préalable sur un trajet terrestre", () => {
   it.each(["issue-dap-sans-urgence", "issue-dap-urgence-attestee"])(
-    "%s : aucune carte préfixée",
+    "%s : garde ses trois cartes, sans préfixe",
     async (id) => {
       await afficher(id);
+      expect(cartes()).toHaveLength(3);
       expect(fiche().queryByText(/éventuelles parties terrestres/)).toBeNull();
     },
   );

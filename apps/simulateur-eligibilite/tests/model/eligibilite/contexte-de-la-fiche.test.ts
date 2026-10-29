@@ -127,11 +127,13 @@ describe("le motif administratif", () => {
     );
   });
 
-  it("remplit le lexique de la dialyse", () => {
+  // Le motif lit `administrativeLexicon`, qui ne répète pas « pour le
+  // transport » (TS1014-J02).
+  it("remplit le lexique administratif de la dialyse", () => {
     expect(
       motifAdministratif(pmt, trace(H, {}, { hospitalisation: "H-SEANCE-HE" })),
     ).toBe(
-      "un transport lié à une séance de dialyse, prise en compte comme une hospitalisation pour le transport",
+      "un transport lié à une séance de dialyse, prise en compte comme une hospitalisation",
     );
   });
 
