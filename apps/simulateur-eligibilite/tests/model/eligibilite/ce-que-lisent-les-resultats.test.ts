@@ -85,7 +85,6 @@ describe("les cibles et les faits que les résultats lisent", () => {
     expect([...cibles].sort()).toEqual([
       "cible_ald_juridiquement_qualifiante_3_ou_4_degres",
       "cible_ambulance_equipement_bariatrique",
-      "cible_attente_accord",
       "cible_convocation_inconnue_decisive",
       "cible_couverture_inconnue_decisive",
       "cible_dap_motif_avion_bateau",

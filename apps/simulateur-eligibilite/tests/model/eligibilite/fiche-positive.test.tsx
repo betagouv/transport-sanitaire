@@ -64,24 +64,25 @@ describe("la fiche de la seed issue-pmt (dialyse, TAP non partagé)", () => {
       .getAllByRole("heading", { level: 3 })
       .filter((titre) => titre.closest("[aria-current='true']"));
     expect(retenues.map((titre) => titre.textContent)).toEqual([
-      "VSL (Véhicule Sanitaire Léger) ou taxi conventionné",
+      "Véhicule Sanitaire Léger (VSL) ou taxi conventionné",
     ]);
     expect(fiche().getByText("Votre situation")).toBeInTheDocument();
   });
 
-  it("donne l'introduction, les deux étapes et les badges", async () => {
+  it("donne l'introduction, les trois étapes et les badges", async () => {
     await afficher("issue-pmt");
     expect(
       fiche().getByRole("heading", {
         name: "Une prescription médicale de transport va vous être remise.",
       }),
     ).toBeInTheDocument();
-    expect(
-      fiche().getByRole("heading", { name: "1. Dès votre rendez-vous fixé" }),
-    ).toBeInTheDocument();
-    expect(
-      fiche().getByRole("heading", { name: "2. Le jour du transport" }),
-    ).toBeInTheDocument();
+    for (const etape of [
+      "1. Trouver votre transport",
+      "2. Réserver votre transport",
+      "3. Le jour du transport",
+    ]) {
+      expect(fiche().getByRole("heading", { name: etape })).toBeInTheDocument();
+    }
     const liste = fiche().getByRole("list", {
       name: "Besoins particuliers à signaler lors de la réservation",
     });
@@ -146,7 +147,7 @@ describe("la fiche de la seed issue-s3141 (permission d'un mineur)", () => {
     await afficher("issue-s3141");
     expect(
       fiche().getByRole("heading", {
-        name: "Une prescription médicale de transport pour permission de sortie (formulaire S3141) va vous être remise.",
+        name: "Une prescription médicale de transport pour permission de sortie va vous être remise.",
       }),
     ).toBeInTheDocument();
     const liste = fiche().getByRole("list", {

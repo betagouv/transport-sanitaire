@@ -117,15 +117,12 @@ describe("les sous-questions de Q2.1", () => {
 
   // Une autre dialyse ne compte pas : il ne reste qu'une séance, et f ne
   // change plus rien (COR-17, D-131).
-  it.each(["2_AUTRE_DIALYSE", "3_NE_SAIT_PAS"] as const)(
-    "ne pose pas f quand Q1.3.a vaut %s",
-    (dialyse) => {
-      const autre = assis(["3_CHIMIOTHERAPIE", "5_DIALYSE"], {
-        "Q1.3.a": dialyse,
-      });
-      expect(ids(autre)).not.toContain("Q2.1.f");
-    },
-  );
+  it("ne pose pas f quand Q1.3.a dit une autre dialyse", () => {
+    const autre = assis(["3_CHIMIOTHERAPIE", "5_DIALYSE"], {
+      "Q1.3.a": "2_AUTRE_DIALYSE",
+    });
+    expect(ids(autre)).not.toContain("Q2.1.f");
+  });
 
   it("bloque f quand les séances ne sont pas le même déplacement", () => {
     const f = posees(assis(["3_CHIMIOTHERAPIE", "4_RADIOTHERAPIE"])).find(

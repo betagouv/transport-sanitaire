@@ -8,10 +8,7 @@
 // | DAP_ETRANGER_A_EXAMINER | « Compléter la demande d’examen » |
 // | NON_ELIGIBLE, CAISSE, ETABLISSEMENT, PERMISSION_PATIENT, CONVOCATION | non |
 //
-// Les libellés sont recopiés de `CONTRAT_RENDU_DOCUMENTAIRE.json` de la
-// v10.1.3 (point 32). Le `completeLabel` de l'étranger dit encore « Compléter la
-// demande » dans le catalogue : le contrat, plus précis, l'emporte, et l'écart
-// est signalé à l'éditeur.
+// Les libellés sont recopiés de `CONTRAT_RENDU_DOCUMENTAIRE.json` (point 32).
 //
 // « Précédent » et « Faire une nouvelle simulation » sont ceux du socle : ils
 // ne dépendent d'aucune issue. Sans issue, les règles n'ont pas conclu : rien à compléter.

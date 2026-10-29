@@ -14,7 +14,6 @@ import { illustrationDuMode } from "../illustrations-des-modes";
 import { TexteEnrichi } from "../TexteEnrichi";
 import type { CarteAffichee } from "./cartes-et-badges";
 import type { BlocDeConsigne, Consignes, Puce } from "./consignes-du-modus";
-import type { RappelDAttente } from "./fondement-de-l-accord-prealable";
 import type { TexteDeLaFichePositive } from "./texte-de-la-fiche-positive";
 
 export function FichePositive({ texte }: { texte: TexteDeLaFichePositive }) {
@@ -23,7 +22,6 @@ export function FichePositive({ texte }: { texte: TexteDeLaFichePositive }) {
       <Cartes cartes={texte.cartes} />
       <SheetFollowUp>
         <ConsignesDuPatient consignes={texte.consignes} />
-        {texte.rappel && <Rappel rappel={texte.rappel} />}
         <Panel variant="white" title={texte.finance.title} titleLevel={3}>
           <p>{texte.finance.text}</p>
         </Panel>
@@ -33,16 +31,6 @@ export function FichePositive({ texte }: { texte: TexteDeLaFichePositive }) {
 }
 
 // ---- implémentation ----
-
-// Le rappel de l'accord préalable : un aparté encadré de bleu, sans le filet
-// gauche du conseil sur l'ALD.
-function Rappel({ rappel }: { rappel: RappelDAttente }) {
-  return (
-    <Panel variant="framed" label={rappel.nom}>
-      <p>{rappel.texte}</p>
-    </Panel>
-  );
-}
 
 // Les trois modes de transport, chacun avec son dessin ; celui du patient est
 // marqué « Votre situation ».

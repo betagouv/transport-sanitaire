@@ -33,7 +33,7 @@ export type TexteDeLaFicheNegative = {
     readonly texte: string;
     readonly etapes: readonly string[];
   };
-  /** Absent tant que la trace n'établit pas l'ALD. */
+  /** Absent tant que la trace n'établit pas l'ALD, ou sans conseil au catalogue. */
   readonly conseilAld?: string;
   readonly finance: Bloc;
 };
@@ -57,9 +57,8 @@ export function texteDeLaFicheNegative(
       texte: body,
       etapes: steps,
     },
-    ...(trace.precisions.aldRecognized === true && {
-      conseilAld: issue.aldAdvice,
-    }),
+    ...(trace.precisions.aldRecognized === true &&
+      issue.aldAdvice !== null && { conseilAld: issue.aldAdvice }),
     finance: issue.finance,
   };
 }

@@ -32,10 +32,10 @@ const fiche = () =>
 const SANS_URGENCE = "issue-dap-avion-ou-bateau";
 const URGENCE = "issue-dap-avion-ou-bateau-urgence-attestee";
 
-const PREFIXE = "Pour les éventuelles parties terrestres du trajet : ";
+const PREFIXE = "Pour les éventuelles parties terrestres du trajet :";
 const CARTES = [
   "Véhicule personnel ou transports en commun",
-  "VSL (Véhicule Sanitaire Léger) ou taxi conventionné",
+  "Véhicule Sanitaire Léger (VSL) ou taxi conventionné",
   "Ambulance",
 ];
 
@@ -82,20 +82,13 @@ describe("la fiche de la seed issue-dap-avion-ou-bateau (sans urgence attestée)
     );
   });
 
-  it("donne le modus de la ligne régulière, avec son motif", async () => {
+  // Le modus de la ligne régulière n'est plus que l'introduction (v10.1.4).
+  it("donne le modus de la ligne régulière : l'introduction, sans étape", async () => {
     await afficher(SANS_URGENCE);
     expect(
-      fiche().getByRole("heading", {
-        name: "1. Dès que votre rendez-vous est fixé",
-      }),
+      fiche().getByText("Attendez l’accord avant d’effectuer votre transport."),
     ).toBeInTheDocument();
-    expect(
-      fiche().getByRole("heading", { name: "2. Le jour du transport" }),
-    ).toBeInTheDocument();
-    expect(fiche().getByText(/réservez votre billet/)).toBeInTheDocument();
-    expect(
-      fiche().getByText(/au titre d’un transport lié à une séance de dialyse/),
-    ).toBeInTheDocument();
+    expect(fiche().queryByRole("heading", { name: /^\d\. / })).toBeNull();
   });
 
   it("n'a aucun badge terrestre, ni la puce des besoins", async () => {
@@ -107,15 +100,6 @@ describe("la fiche de la seed issue-dap-avion-ou-bateau (sans urgence attestée)
     ).toBeNull();
     expect(fiche().queryByText(/besoins particuliers/)).toBeNull();
     expect(fiche().queryByText("Transport non partagé")).toBeNull();
-  });
-
-  it("garde le rappel d'attente de l'accord", async () => {
-    await afficher(SANS_URGENCE);
-    expect(
-      fiche().getByRole("complementary", {
-        name: "Délai de l’accord préalable",
-      }),
-    ).toBeInTheDocument();
   });
 });
 
@@ -135,24 +119,16 @@ describe("la fiche de la seed issue-dap-avion-ou-bateau-urgence-attestee", () =>
   it("donne l'introduction de l'urgence, sans délai d'attente", async () => {
     await afficher(URGENCE);
     expect(
-      fiche().getByText(
-        "Votre médecin atteste l’urgence de votre transport. Vous pouvez effectuer ce transport sans attendre l’accord préalable de l’Assurance Maladie.",
-      ),
-    ).toBeInTheDocument();
+      fiche().getByText(/^L’urgence de votre transport étant attestée/),
+    ).toHaveTextContent(
+      "L’urgence de votre transport étant attestée, vous pouvez effectuer ce transport sans attendre l’accord de l’Assurance Maladie.",
+    );
     expect(fiche().queryByText(/15 jours/)).toBeNull();
   });
 
-  it("donne le modus de la ligne régulière dans l'urgence", async () => {
+  it("donne le modus de la ligne régulière dans l'urgence, sans étape", async () => {
     await afficher(URGENCE);
-    expect(
-      fiche().getByRole("heading", {
-        name: "1. Dès que votre rendez-vous est fixé",
-      }),
-    ).toBeInTheDocument();
-    expect(
-      fiche().getByText(/^C’est à vous \(ou à votre entourage\)/),
-    ).toBeInTheDocument();
-    expect(fiche().queryByText(/réservez votre billet/)).toBeNull();
+    expect(fiche().queryByRole("heading", { name: /^\d\. / })).toBeNull();
   });
 
   it("préfixe les cartes, sans badge terrestre", async () => {
@@ -163,15 +139,6 @@ describe("la fiche de la seed issue-dap-avion-ou-bateau-urgence-attestee", () =>
         name: "Besoins particuliers à signaler lors de la réservation",
       }),
     ).toBeNull();
-  });
-
-  it("donne le rappel de l'urgence", async () => {
-    await afficher(URGENCE);
-    expect(
-      fiche().getByRole("complementary", {
-        name: "Urgence attestée : dispense d’attente",
-      }),
-    ).toBeInTheDocument();
   });
 });
 

@@ -471,6 +471,7 @@ cible_issue_id:
       - si:
           une de ces conditions:
             - cible_point_cnam
+            - cible_incertitude_dialyse_decisive
             - cible_preuve_ald_inconnue_decisive
             - cible_reconnaissance_mineur_inconnue_decisive
             - cible_convocation_inconnue_decisive
@@ -570,6 +571,11 @@ cible_attente_accord:
 cible_reason_code:
   valeur:
     variations:
+      - si:
+          toutes ces conditions:
+            - cible_issue_id = 'ISSUE_CAISSE'
+            - cible_incertitude_dialyse_decisive
+        alors: "'DIALYSE_TYPE_NON_VERIFIABLE'"
       - si: fait_exclusion_transport_prouvee
         alors: "'TRANSPORT_EXCLU_PROUVE'"
       - si:
@@ -688,3 +694,54 @@ cible_urgence_autre:
   toutes ces conditions:
     - fait_urgence_attestee
     - fait_appel_centre15 = non
+
+# Correctif dialyse validé par Loïc, préparation non livrée v10.1.4.
+fait_type_dialyse_non_verifiable:
+  question: Le type de dialyse reste-t-il non vérifiable après la réponse existante ?
+  description: Fait dérivé de Q1.3.a ; aucune question supplémentaire à afficher.
+cible_autre_fondement_dialyse_etabli:
+  une de ces conditions:
+    - toutes ces conditions:
+        - est défini: cible_mode_ambulance
+        - cible_mode_ambulance
+    - toutes ces conditions:
+        - est défini: fait_hospitalisation
+        - fait_hospitalisation
+    - toutes ces conditions:
+        - est défini: fait_atmp_lie
+        - fait_atmp_lie
+    - toutes ces conditions:
+        - est défini: cible_ald_qualifiante
+        - cible_ald_qualifiante
+    - toutes ces conditions:
+        - est défini: cible_mineur_soins_prolonges
+        - cible_mineur_soins_prolonges
+    - toutes ces conditions:
+        - est défini: cible_serie
+        - cible_serie
+    - toutes ces conditions:
+        - est défini: fait_distance_plus_150
+        - fait_distance_plus_150
+    - toutes ces conditions:
+        - est défini: fait_motif_camsp
+        - fait_motif_camsp
+    - toutes ces conditions:
+        - est défini: fait_motif_samsah
+        - fait_motif_samsah
+    - toutes ces conditions:
+        - est défini: fait_motif_pension
+        - fait_motif_pension
+    - toutes ces conditions:
+        - est défini: fait_dap_maternite
+        - fait_dap_maternite
+    - toutes ces conditions:
+        - est défini: fait_convocation
+        - fait_convocation
+    - toutes ces conditions:
+        - est défini: fait_permission_mineur_admissible
+        - fait_permission_mineur_admissible
+cible_incertitude_dialyse_decisive:
+  toutes ces conditions:
+    - est défini: fait_type_dialyse_non_verifiable
+    - fait_type_dialyse_non_verifiable
+    - cible_autre_fondement_dialyse_etabli = non

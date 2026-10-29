@@ -1,5 +1,5 @@
 // Ce que dit la fiche d'une demande d'accord préalable (#136) : la raison que
-// lit le patient, le motif que reprend le modus, et le rappel d'attente. Des
+// lit le patient, et le motif que reprend le modus. Des
 // fonctions pures de la trace, sans React.
 //
 // Les mots viennent du catalogue de l'éditeur. La raison suit la page
@@ -10,10 +10,7 @@
 // établis, la phrase manque : rien n'est inventé à la place. Chaque texte
 // déclare ce qu'il lit des cibles et des faits (`ce-que-lit-un-texte.ts`).
 
-import type {
-  CatalogueResultats,
-  IssuePositive,
-} from "../../../../../core/models/eligibilite/declarations/catalogue-resultats";
+import type { IssuePositive } from "../../../../../core/models/eligibilite/declarations/catalogue-resultats";
 import type { Cibles } from "../../../../../core/models/eligibilite/declarations/cibles";
 import { given } from "../../../../../core/models/eligibilite/question";
 import { luPar, type TraceDe } from "../ce-que-lit-un-texte";
@@ -59,11 +56,6 @@ export const LU_PAR_LE_FONDEMENT_DE_L_ACCORD = luPar(
   LU_PAR_LE_LEXIQUE,
 );
 
-/** Ce que lit le rappel d'attente : l'attente de l'accord. */
-export const LU_PAR_LE_RAPPEL = luPar({
-  cibles: given.cibles("cible_attente_accord"),
-});
-
 /** Les codes des motifs d'accord préalable établis, dans l'ordre L, S, V, C, N. */
 export function codesDeLAccord(
   cibles: TraceDe<typeof LU_PAR_LES_MOTIFS_DE_L_ACCORD>["cibles"],
@@ -84,42 +76,9 @@ export function fondementDeLAccord(
   };
 }
 
-/** Le rappel d'attente, et le nom de son encadré, tiré du gabarit. */
-export type RappelDAttente = { readonly nom: string; readonly texte: string };
-
-/** Les règles ne disent pas s'il faut attendre l'accord. */
-type AucunRappel = undefined;
-
-/**
- * Le rappel d'attente : le texte de l'issue sans urgence quand les règles
- * disent d'attendre l'accord, celui de l'urgence attestée quand elles disent
- * de ne pas attendre. Sans réponse des règles, aucun rappel.
- */
-export function rappelDAttente(
-  catalogue: CatalogueResultats,
-  cibles: TraceDe<typeof LU_PAR_LE_RAPPEL>["cibles"],
-): RappelDAttente | AucunRappel {
-  const attente = cibles.cible_attente_accord;
-  if (!attente.isOui() && !attente.isNon()) return undefined;
-  const { issue, nom } = attente.isOui() ? EN_ATTENTE : SANS_ATTENTE;
-  const texte = catalogue.issues[issue].blueReminder;
-  return texte ? { nom, texte } : undefined;
-}
-
 // ---- implémentation ----
 
 type LuParLeFondement = TraceDe<typeof LU_PAR_LE_FONDEMENT_DE_L_ACCORD>;
-
-// D'où vient le texte du rappel, et le nom de son encadré, selon qu'il faut
-// attendre l'accord ou non. Les noms sont ceux de `rendu-resultats.mjs`.
-const EN_ATTENTE = {
-  issue: "ISSUE_DAP_SANS_URGENCE",
-  nom: "Délai de l’accord préalable",
-} as const;
-const SANS_ATTENTE = {
-  issue: "ISSUE_DAP_URGENCE_ATTESTEE",
-  nom: "Urgence attestée : dispense d’attente",
-} as const;
 
 const SANS_COMPLEMENT = "un transport";
 

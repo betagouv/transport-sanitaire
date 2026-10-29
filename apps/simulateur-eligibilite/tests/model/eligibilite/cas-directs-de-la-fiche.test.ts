@@ -63,7 +63,7 @@ const ALD =
 const MINEUR =
   "Les soins à l’origine de ce déplacement sont liés à votre maladie de longue durée reconnue par l’Assurance Maladie. Votre besoin de soins continus pendant plus de six mois est reconnu par l’Assurance Maladie. Avec vos difficultés de déplacement, il permet la prise en charge de votre transport.";
 const CARTE_TAP =
-  "Vous pouvez voyager assis, mais votre état de santé nécessite une aide professionnelle pour vous déplacer ou des précautions particulières pendant le trajet. Cette aide permet de réaliser un trajet que vous ne pouvez pas effectuer de façon autonome. Votre trajet peut être organisé avec d’autres patients.";
+  "Vous pouvez voyager assis, mais votre état de santé nécessite une aide professionnelle pour vous déplacer ou des précautions particulières pendant le trajet. Votre trajet peut être partagé avec d’autres patients, pour préserver notre système de santé et la planète.";
 const CARTE_PROPRE =
   "Vous pouvez vous déplacer seul ou avec l’aide d’un proche, sans avoir besoin d’une assistance professionnelle particulière.";
 
@@ -96,14 +96,15 @@ describe("avec un professionnel : un TAP, une carte et un badge", () => {
     ]);
     expect(texte?.cartes[1]?.texte).toBe(CARTE_TAP);
     expect(texte?.consignes.etapes.map(({ titre }) => titre)).toEqual([
-      "Dès votre rendez-vous fixé",
+      "Trouver votre transport",
+      "Réserver votre transport",
       "Le jour du transport",
     ]);
   });
 
   it("ald-confirmee : le seul badge est le critère 1 de Q1.2", () => {
     const badges = fiche(AVEC_UN_PROFESSIONNEL(["2_ALD"]))
-      ?.consignes.etapes[0]?.blocs.flatMap((bloc) =>
+      ?.consignes.etapes[1]?.blocs.flatMap((bloc) =>
         bloc.type === "liste" ? bloc.puces : [],
       )
       .flatMap((puce) => puce.badges ?? []);
@@ -112,7 +113,7 @@ describe("avec un professionnel : un TAP, une carte et un badge", () => {
 
   it("mineur-sans-ald : le motif du modus est celui du mineur", () => {
     const etape = fiche(AVEC_UN_PROFESSIONNEL(["8_MINEUR_SOINS_CONTINUS"]))
-      ?.consignes.etapes[0];
+      ?.consignes.etapes[1];
     const puces = etape?.blocs.flatMap((bloc) =>
       bloc.type === "liste" ? bloc.puces.map(({ texte }) => texte) : [],
     );
@@ -237,9 +238,6 @@ describe("les mêmes patients à plus de 150 km : l'accord préalable", () => {
         true,
         false,
       ]);
-      expect(texte?.rappel?.texte).toMatch(
-        /^La prise en charge de votre transport/,
-      );
     },
   );
 
@@ -274,7 +272,6 @@ describe("les mêmes patients à plus de 150 km : l'accord préalable", () => {
       ...URGENCE_ATTESTEE,
     });
     expect(issue).toBe("ISSUE_DAP_URGENCE_ATTESTEE");
-    expect(texte?.rappel?.texte).toMatch(/^L’urgence de votre transport/);
     expect(texte?.consignes.etapes[0]?.titre).toBe("Aussi tôt que possible");
   });
 });

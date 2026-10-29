@@ -36,7 +36,7 @@ const SEANCE = {
   label: "Séance",
   value: "Ce déplacement concerne une séance de dialyse en centre.",
 };
-const HEMODIALYSE = { label: "Séance d’hémodialyse", value: "Oui" };
+const HEMODIALYSE = { label: "Séance d’hémodialyse", value: "Oui." };
 
 describe("la page du soin (Q3.4, Q3.4.a)", () => {
   it("pour la PMT, la précision et le centre de référence", () => {

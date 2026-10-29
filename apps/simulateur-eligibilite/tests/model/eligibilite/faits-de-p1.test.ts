@@ -100,7 +100,6 @@ describe("les séances (Q1.3, Q1.3.a)", () => {
     ["une radiothérapie", avec(BRANCARD, ["4_RADIOTHERAPIE"]), true],
     ["une hémodialyse", dialyse("1_OUI"), true],
     ["une autre dialyse", dialyse("2_AUTRE_DIALYSE"), undefined],
-    ["une dialyse non précisée", dialyse("3_NE_SAIT_PAS"), undefined],
     ["aucune séance", avec(BRANCARD), undefined],
   ] as const)("%s", (_, reponses, attendu) => {
     expect(valeur("fait_situation_soins_qualifiante", reponses)).toBe(attendu);

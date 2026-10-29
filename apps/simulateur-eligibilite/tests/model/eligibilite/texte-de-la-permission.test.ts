@@ -57,7 +57,7 @@ describe("la permission de sortie (S3141, Q2.8.5)", () => {
         ({ texte }) => texte,
       );
     expect(motif(false)).toContain(
-      "que le transport pourra être pris en charge par l’Assurance Maladie au titre d’un transport lié à une permission de sortie autorisée pendant votre hospitalisation ;",
+      "que votre transport sera pris en charge par l’Assurance Maladie au titre d’un transport lié à une permission de sortie autorisée pendant votre hospitalisation ;",
     );
     expect(motif(true).join(" ")).toContain(
       "au titre d’un transport lié à des permissions de sortie autorisées pendant votre hospitalisation",

@@ -23,8 +23,9 @@ const afficher = async (id: string) => {
   return resultat.title;
 };
 
-// La seed, le titre de l'issue, un texte du scénario, une action.
-const CAS: readonly [string, string, string, string][] = [
+// La seed, le titre de l'issue, un texte du scénario (le début du « Pourquoi »
+// quand il n'a pas de titre), une action.
+const CAS: readonly [string, string, string | RegExp, string][] = [
   [
     "issue-caisse",
     "Un point précis reste à vérifier auprès de l’Assurance Maladie",
@@ -34,24 +35,24 @@ const CAS: readonly [string, string, string, string][] = [
   [
     "issue-etablissement",
     "Ce transport relève de la prise en charge de l’établissement",
-    "Situation retenue",
+    /^Le trajet a été qualifié comme un transfert entre établissements/,
     "Contacter le service prescripteur ou la cellule de coordination des transports de l’établissement d’origine.",
   ],
   [
     "issue-permission-patient",
     "Le transport lié à cette permission est à la charge du patient",
-    "Qualification de la permission",
-    "Ne pas éditer de prescription PMT (Prescription Médicale de Transport)/DAP (Demande d’Accord Préalable) Assurance Maladie pour ce trajet.",
+    /^La permission concerne un patient âgé d’au moins 20 ans/,
+    "Ne pas éditer de prescription Prescription Médicale de Transport (PMT)/Demande d’Accord Préalable (DAP) Assurance Maladie pour ce trajet.",
   ],
   [
     "issue-convocation",
     "Ce déplacement relève d’une convocation ou d’un appareillage réglementaire",
-    "Situation reconnue",
+    /^Ce déplacement relève du cadre réglementaire des convocations/,
     "Vérifier que la convocation ou l’avis mentionne bien la date, le lieu et l’objet du déplacement.",
   ],
   [
     "issue-dap-etranger-a-examiner",
-    "La prise en charge de ce transport à l’étranger doit être examinée par l’Assurance Maladie",
+    "Prise en charge spécifique d’un transport à l’étranger",
     "Une demande d’examen du transport",
     "Contacter la caisse du patient avant l’organisation du transport pour faire préciser les conditions de prise en charge et les justificatifs attendus.",
   ],

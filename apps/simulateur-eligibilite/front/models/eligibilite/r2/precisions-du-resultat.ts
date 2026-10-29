@@ -44,7 +44,7 @@ export type Precisions = {
   careFamily?: number;
   aldRecognized?: boolean;
   aldRelated?: boolean;
-  dialysisType?: "non-hemodialyse" | "inconnu";
+  dialysisType?: "non-hemodialyse";
   deviceCategory?: "hors-categories";
   repeatedTripsPlanned?: boolean;
   eventFinalityClarified?: boolean;
@@ -191,12 +191,11 @@ function familleDeSoin({ motif }: Pick<Entrees, "motif">): number | NonProuve {
   return FAMILLES_DE_SOIN.includes(numero) ? numero : undefined;
 }
 
-// Q1.3.a dit une dialyse qui n'est pas de l'hémodialyse, ou ne le dit pas.
+// Q1.3.a dit une dialyse qui n'est pas de l'hémodialyse.
 function typeDeDialyse({
   dialyse,
 }: Pick<Entrees, "dialyse">): Precisions["dialysisType"] {
-  if (dialyse.is("2_AUTRE_DIALYSE")) return "non-hemodialyse";
-  return dialyse.is("3_NE_SAIT_PAS") ? "inconnu" : undefined;
+  return dialyse.is("2_AUTRE_DIALYSE") ? "non-hemodialyse" : undefined;
 }
 
 // Q2.10.b : un appareillage qui n'est pas l'un des trois que vise R.322-10 2°.

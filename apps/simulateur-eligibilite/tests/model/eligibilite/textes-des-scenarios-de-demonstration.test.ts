@@ -1,5 +1,5 @@
 // Les textes des scénarios de démonstration de l'éditeur, comparés aux nôtres.
-// Ils viennent de son paquet v10.1.3
+// Ils viennent de son paquet v10.1.4
 // (`integration_resultats/scenarios-demonstration.json`) : pour chaque scénario,
 // le texte que lit le patient ou le prescripteur.
 //
@@ -10,15 +10,16 @@
 //
 // La fixture range le texte de l'éditeur sous ses noms à lui. Elle le découpe
 // comme le nôtre : les consignes en lignes, sans `<br>` ni puce, et sans la
-// marque ` [badges]`.
+// marque ` [badges]`. Un titre vide d'un « Pourquoi » y vaut `null`. Ses blancs
+// en trop sont réduits avant la comparaison, comme dans nos textes.
 //
-// Cinq des 133 scénarios sont écartés. Notre app ne peut pas y arriver :
-// - les quatre trajets mixtes (avion ou bateau, puis une partie terrestre).
-//   L'éditeur y donne les consignes du mode terrestre. Aucune question ne pose
-//   cette partie ;
-// - `ISSUE_NON_ELIGIBLE--AUCUN_ALD_CADRE_NON_QUALIFIANT`. Le scénario pose une
-//   ALD liée, mais hors du 3° et du 4°. Chez nous, seule l'option 2 de Q1.3 dit
-//   l'ALD liée, et elle dit aussi le 100 % : le 3° ou le 4° vaut alors « oui ».
+// Quatre des 128 scénarios sont écartés : les trajets mixtes (avion ou bateau,
+// puis une partie terrestre). L'éditeur y donne les consignes du mode
+// terrestre. Aucune question ne pose cette partie.
+//
+// Les scénarios de `EN_ATTENTE` attendent la sous-issue qui porte leur
+// changement de la v10.1.4. Ils échouent tant qu'elle n'est pas faite : le
+// jour où l'un passe, il sort de la liste.
 //
 // Ne sont pas comparés :
 // - les faits que la page du prescripteur liste chez l'éditeur. Il les dit
@@ -39,6 +40,7 @@ import {
   type IssueSansFiche,
   texteDuPrescripteur,
 } from "../../../front/models/eligibilite/r2/prescripteur/texte-du-prescripteur";
+import { sansBlancsDeTrop } from "../../../front/models/eligibilite/r2/sans-blancs-de-trop";
 import type { Trace } from "../../../front/models/eligibilite/r2/trace-du-resultat";
 import { type Changements, faitsDuCas } from "./faits-de-l-oracle";
 import { catalogue } from "./fiches-du-test";
@@ -66,20 +68,110 @@ const FAITS = new Map<
   Readonly<Record<string, boolean | null | undefined>>
 >(DEMONSTRATION.scenarios.map(({ id, faits }) => [id, faits]));
 
+// Le changement de la v10.1.4 que chaque scénario attend, et sa sous-issue.
+const EN_ATTENTE: Readonly<Record<string, string>> = {
+  ...pour("#284", [
+    // La fiche non éligible n'a plus de cartes (TS1014-J05).
+    ...[
+      "AUCUN_ALD_SANS_DEFICIENCE",
+      "AUCUN_ALD_SANS_LIEN",
+      "AUCUN_APPAREILLAGE_HORS_CATEGORIES",
+      "AUCUN_AUTRE_DEPLACEMENT",
+      "AUCUN_AUTRE_SOIN",
+      "AUCUN_BIOLOGIE",
+      "AUCUN_CONSULTATION",
+      "AUCUN_DIALYSE_NON_HEMO",
+      "AUCUN_GENERIQUE",
+      "AUCUN_IMAGERIE",
+      "AUCUN_PARAMEDICAL",
+      "AUCUN_PSYCHOLOGUE",
+      // Et la raison d'une série dit le trajet de 50 km ou moins.
+      "AUCUN_SERIE_NON_QUALIFIANTE",
+      "AUCUN_SOINS_DENTAIRES_SAGE_FEMME",
+      "TRANSPORT_EXCLU",
+      ...[
+        "ambulance",
+        "ambulance-bari",
+        "ambulance-tpmr",
+        "ambulance-tpmr-bari",
+        "tap-partage",
+        "tap-seul",
+        "tc",
+        "tc-proche",
+        "tpmr-partage",
+        "tpmr-seul",
+        "vp",
+        "vp-proche",
+      ].map((mode) => `exclusion-${mode}`),
+    ].map((variante) => `ISSUE_NON_ELIGIBLE--${variante}`),
+  ]),
+  ...pour("#285", [
+    // Le motif administratif se lit dans `administrativeLexicon` (TS1014-J02).
+    ...[
+      "ambulance",
+      "ambulance-bari",
+      "ambulance-tpmr",
+      "ambulance-tpmr-bari",
+      "tap-partage",
+      "tap-seul",
+      "tpmr-partage",
+      "tpmr-seul",
+    ].map((mode) => `ISSUE_PMT--${mode}`),
+    // Une DAP en ligne régulière n'a ni cartes ni étapes (TS1014-J04).
+    ...["ISSUE_DAP_SANS_URGENCE", "ISSUE_DAP_URGENCE_ATTESTEE"].flatMap(
+      (issue) =>
+        ["avion", "bateau", "ligne-non-precisee"].map(
+          (ligne) => `${issue}--${ligne}`,
+        ),
+    ),
+  ]),
+};
+
+const comparables = SCENARIOS.filter(({ id }) => !(id in EN_ATTENTE)).map(
+  (scenario) => [scenario.id, scenario] as const,
+);
+const enAttente = SCENARIOS.filter(({ id }) => id in EN_ATTENTE).map(
+  (scenario) => [scenario.id, EN_ATTENTE[scenario.id], scenario] as const,
+);
+
 describe("les textes des scénarios de démonstration de l'éditeur", () => {
-  it("sont 128 : les 133 actifs, moins les 5 écartés", () => {
-    expect(SCENARIOS).toHaveLength(128);
+  it("sont 124 : les 128 actifs, moins les 4 écartés", () => {
+    expect(SCENARIOS).toHaveLength(124);
   });
 
-  it.each(SCENARIOS.map((scenario) => [scenario.id, scenario] as const))(
-    "%s",
-    (_id, scenario) => {
-      expect(texteDe(scenario)).toEqual(scenario.textes);
-    },
-  );
+  it.each(comparables)("%s", (_id, scenario) => {
+    expect(texteDe(scenario)).toEqual(attenduDe(scenario));
+  });
+
+  it.fails.each(enAttente)("%s, en attente de %s", (_id, _issue, scenario) => {
+    expect(texteDe(scenario)).toEqual(attenduDe(scenario));
+  });
+
+  it("n'attend que des scénarios de la fixture", () => {
+    const ids = SCENARIOS.map(({ id }) => id);
+    expect(ids).toEqual(expect.arrayContaining(Object.keys(EN_ATTENTE)));
+  });
 });
 
 // ---- implémentation ----
+
+function pour(issue: string, ids: readonly string[]) {
+  return Object.fromEntries(ids.map((id) => [id, issue]));
+}
+
+// Le texte de l'éditeur, sans ses blancs en trop.
+function attenduDe(scenario: Scenario): unknown {
+  return sansBlancs(scenario.textes);
+}
+
+function sansBlancs(valeur: unknown): unknown {
+  if (typeof valeur === "string") return sansBlancsDeTrop(valeur);
+  if (Array.isArray(valeur)) return valeur.map(sansBlancs);
+  if (valeur === null || typeof valeur !== "object") return valeur;
+  return Object.fromEntries(
+    Object.entries(valeur).map(([cle, champ]) => [cle, sansBlancs(champ)]),
+  );
+}
 
 // Notre texte du scénario, sous les noms de l'éditeur.
 function texteDe(scenario: Scenario): unknown {
@@ -138,7 +230,7 @@ function fichePositive(texte: FichePositive | undefined) {
         lines: lignesDe(blocs),
       })),
     },
-    blueReminder: texte.rappel?.texte ?? null,
+    blueReminder: null,
     finance: texte.finance,
   };
 }
