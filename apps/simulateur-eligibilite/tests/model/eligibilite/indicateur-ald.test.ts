@@ -1,10 +1,10 @@
 // L'indicateur de parcours ALD (#148) sur le modèle réel : le verdict d'un
 // parcours, les pages et les questions posées de P1 à R2.
 //
-// Le parcours de référence de la spécification va jusqu'à R2 en quatre pages et
-// cinq questions, quand le patient n'est pas nouveau. Chez nous, Q2.2.1 est
-// toujours posée à un nouveau patient : le même parcours compte cinq pages et
-// six questions.
+// Le parcours de référence est celui de `SPECIFICATION_ALD_6_QUESTIONS.md` pour
+// un nouveau patient : Q2.2.1, répondue « Aucune », ajoute une page et une
+// question au témoin fermé, qui en compte quatre et cinq. La spécification
+// attend donc cinq pages et six questions de P1 à P2.
 
 import { describe, expect, it } from "vitest";
 import type { Answers } from "../../../core/socle/questionnaire-engine/question";
