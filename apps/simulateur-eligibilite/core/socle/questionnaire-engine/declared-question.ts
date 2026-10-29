@@ -12,7 +12,7 @@
 // finale : la page la prend telle quelle (`declared-page.ts`), et le moteur de
 // questionnaire lui demande comment elle se pose (`askedIn`).
 
-import type { AskedCommonData } from "./asked-common.ts";
+import type { AskedCommonData, InPlace, ShownUnder } from "./asked-common.ts";
 import type { AskedQuestion } from "./asked-question.ts";
 import {
   type Condition,
@@ -24,13 +24,12 @@ import {
   textIn,
 } from "./condition.ts";
 import type { AnyQuestions, NotAsked, Reminder } from "./question.ts";
-import {
-  contextOf,
-  type Pipeline,
-  type QuestionContext,
-  readingOf,
-  type SeenAnswers,
+import type {
+  Pipeline,
+  QuestionContext,
+  SeenAnswers,
 } from "./question-context.ts";
+import { checkReads, readIn } from "./reads-in-place.ts";
 
 /** Rien de calculé : le rappel fixe de `reminder` vaut. */
 type NothingComputed = undefined;
@@ -48,6 +47,7 @@ export type CommonSettings<Questions extends AnyQuestions, Cibles, Faits> = {
   readonly reminder?: Reminder;
   readonly optional?: boolean;
   readonly alwaysAsked?: boolean;
+  readonly under?: ShownUnder;
   labelFrom?(context: QuestionContext<Questions, Cibles, Faits>): string;
   reminderFrom?(
     context: QuestionContext<Questions, Cibles, Faits>,
@@ -127,6 +127,23 @@ export abstract class DeclaredQuestion<
   /** La question peut rester sans réponse : sa page se valide sans elle. */
   optional(): this {
     return this.withSettings({ optional: true });
+  }
+
+  /**
+   * La question s'affiche juste sous cette option d'une liste de cases de la
+   * même page, et non à son rang. Elle reste une question à part, avec sa
+   * légende : sa garde se déclare toujours par `appliesWhen`.
+   */
+  shownUnder<Id extends keyof Questions & string>(
+    question: Id,
+    option: Questions[Id] extends readonly (infer O)[] ? O & string : never,
+  ): this {
+    return this.withSettings({ under: { question, option } });
+  }
+
+  /** La question qui l'affiche sous l'une de ses options (`shownUnder`). */
+  get shownUnderQuestion(): string | InPlace {
+    return this.settings.under?.question;
   }
 
   /**
@@ -245,36 +262,6 @@ export abstract class DeclaredQuestion<
 // Une incohérence : sa condition, et le message qui dit quoi corriger.
 type Inconsistency = { readonly condition: Condition; readonly message: Text };
 
-// Ce que la question lit à une place : son contexte, et la lecture de ses
-// conditions.
-type ReadAt<Questions extends AnyQuestions, Cibles, Faits> = {
-  readonly context: QuestionContext<Questions, Cibles, Faits>;
-  readonly reading: Reading;
-};
-
-function readIn<Questions extends AnyQuestions, Cibles, Faits>(
-  seen: SeenAnswers<Questions, Cibles | undefined>,
-  pipeline: Pipeline<Faits, Cibles>,
-): ReadAt<Questions, Cibles, Faits> {
-  const context = contextOf(seen, pipeline);
-  return { context, reading: readingOf(seen.answer, context, pipeline) };
-}
-
-// Chaque question que lisent ses conditions et ses incohérences se lit à sa
-// place, qu'elles tiennent ou non : une garde qui lit plus loin s'arrête net
-// (`answer-readings.ts`).
-function checkReads<Questions extends AnyQuestions, Cibles, Faits>(
-  settings: CommonSettings<Questions, Cibles, Faits>,
-  seen: SeenAnswers<Questions, Cibles | undefined>,
-  earlier: SeenAnswers<Questions, Cibles | undefined>,
-) {
-  const readIds = (guards: readonly Condition[]) =>
-    guards.flatMap((guard) => guard.reads.questions);
-  for (const id of readIds(settings.conditions)) seen.answer(id);
-  const inconsistencies = settings.inconsistencies.map((i) => i.condition);
-  for (const id of readIds(inconsistencies)) earlier.answer(id);
-}
-
 // Ce qui se lit autour du champ, vu les réponses : le libellé, le rappel, et
 // les incohérences.
 function commonIn<Questions extends AnyQuestions, Cibles, Faits>(
@@ -288,6 +275,7 @@ function commonIn<Questions extends AnyQuestions, Cibles, Faits>(
     hint: settings.hint,
     reminder: settings.reminderFrom?.(context) ?? settings.reminder,
     optional: settings.optional,
+    under: settings.under,
     inconsistencies: settings.inconsistencies
       .filter(({ condition }) => condition.in(earlier))
       .map(({ message }) => textIn(message, earlier)),

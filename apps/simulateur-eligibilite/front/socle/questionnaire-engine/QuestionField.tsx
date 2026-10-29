@@ -1,5 +1,6 @@
 // Affiche une question avec le champ de `front/socle/ui/` qui lui convient.
 
+import type { ReactNode } from "react";
 import {
   isAddress,
   withField,
@@ -34,6 +35,8 @@ type Props = {
   errors?: readonly string[];
   /** Le champ prend le focus à l'ouverture de la page. */
   autoFocus?: boolean;
+  /** Ce qui s'affiche sous une option d'une liste de cases : ses questions. */
+  below?: (option: string) => ReactNode;
 };
 
 export function QuestionField(props: Props) {
@@ -180,7 +183,10 @@ function MultipleChoiceField(props: Props & { question: MultipleChoice }) {
   return (
     <CheckboxField
       {...common(props)}
-      options={question.options}
+      options={question.options.map((option) => ({
+        ...option,
+        below: props.below?.(option.value),
+      }))}
       exclusiveOption={question.exclusiveOption}
       incompatibleOptions={question.incompatibleOptions}
       values={Array.isArray(answer) ? answer : []}

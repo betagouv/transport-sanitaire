@@ -120,6 +120,15 @@ export const PARTS: readonly QuestionnairePart<Questions, undefined>[] = [
             "Une boisson ne se sert pas à la fois très chaude et glacée : seule la dernière cochée est gardée.",
           )
           .exclusive("rien"),
+        question
+          .singleChoice("quelle-preparation", "Où la préparer ?")
+          .hint(
+            "Démontre : une question qui s'affiche juste sous l'option qui la fait apparaître, après son aide, et non sous la liste. Elle garde sa propre légende.",
+          )
+          .appliesWhen(
+            given.question("service").answer().checked("preparation"),
+          )
+          .shownUnder("service", "preparation"),
       ),
     ],
   },

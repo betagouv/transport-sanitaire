@@ -48,8 +48,9 @@ const ORDRE_DES_CAS = [
   "6_PARTAGE_INCOMPATIBLE",
 ] satisfies readonly Questions["Q1.3"][number][];
 
-// Q1.3, puis sur la même page Q1.3.b quand l'ALD est cochée, et Q1.3.a quand
-// une dialyse l'est (QST-ALD-LIEN-001). Décocher la case retire sa question,
+// Q1.3, puis sur la même page Q1.3.b quand l'ALD est cochée, juste sous sa
+// case (QST-ALD-LIEN-001), et Q1.3.a sous la liste quand une dialyse l'est.
+// Décocher la case retire sa question,
 // et sa réponse avec elle. La case ALD ne dit que le statut : le lien du soin
 // avec l'ALD se demande à part.
 const PAGE_DES_CAS_PARTICULIERS = page(
@@ -74,7 +75,8 @@ const PAGE_DES_CAS_PARTICULIERS = page(
       "Q1.3.b",
       "Précisez le lien entre le transport et l'Affection Longue Durée (ALD) de votre patient",
     )
-    .appliesWhen(given.question("Q1.3").answer().checked("2_ALD")),
+    .appliesWhen(given.question("Q1.3").answer().checked("2_ALD"))
+    .shownUnder("Q1.3", "2_ALD"),
   question
     .singleChoice(
       "Q1.3.a",

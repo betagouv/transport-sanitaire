@@ -19,6 +19,7 @@ export type Questions = {
     | "preparation"
     | "rien"
   )[];
+  "quelle-preparation": "comptoir" | "table";
   quantite: number;
   lieu: "salle" | "terrasse" | "comptoir";
   nom: string;
@@ -50,6 +51,10 @@ export const OPTIONS = {
     "grande-tasse": "Dans une grande tasse",
     preparation: "Avec une préparation particulière",
     rien: "Rien de particulier",
+  },
+  "quelle-preparation": {
+    comptoir: "Préparée au comptoir",
+    table: "Préparée à table, devant vous",
   },
   lieu: { salle: "En salle", terrasse: "En terrasse", comptoir: "Au comptoir" },
   facturation: { france: "En France", etranger: "À l'étranger" },

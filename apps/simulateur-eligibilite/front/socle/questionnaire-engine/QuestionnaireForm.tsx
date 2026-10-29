@@ -4,7 +4,8 @@
 // dans ce questionnaire. La dernière n'annonce rien : ce qui la suit dépend du
 // résultat, encore inconnu.
 
-import type { ComponentType } from "react";
+import type { ComponentType, ReactNode } from "react";
+import type { AskedQuestion } from "../../../core/socle/questionnaire-engine/asked-question";
 import {
   type Answers,
   type AnyCibles,
@@ -122,24 +123,33 @@ function traceOf(questionnaire: QuestionnaireScreen): DebugTraceProps {
 
 // La page affiche son brouillon : une saisie ne compte qu'une fois la page
 // validée. La première question sans réponse prend le focus, pour le clavier.
+// Une question qui s'affiche sous une option (`shownUnder`) se pose dans la
+// liste de cette option, si celle-ci est sur la page ; sinon, à son rang.
 function QuestionFields({
   questionnaire,
 }: {
   questionnaire: QuestionnaireScreen;
 }) {
-  const toFocus = questionnaire.questions.find(
-    (question) => questionnaire.draft[question.id] === undefined,
-  );
-  return questionnaire.questions.map((question) => (
+  const { questions, draft } = questionnaire;
+  const toFocus = questions.find(({ id }) => draft[id] === undefined);
+  const parentOf = (question: AskedQuestion) =>
+    questions.find(({ id }) => id === question.under?.question);
+  const field = (question: AskedQuestion): ReactNode => (
     <QuestionField
       key={question.id}
       question={question}
-      answer={questionnaire.draft[question.id]}
-      errors={errorsOf(question, questionnaire.draft[question.id])}
+      answer={draft[question.id]}
+      errors={errorsOf(question, draft[question.id])}
       autoFocus={question === toFocus}
       onChange={(answer) => questionnaire.answer(question.id, answer)}
+      below={(option) =>
+        questions
+          .filter((q) => parentOf(q) === question && q.under?.option === option)
+          .map(field)
+      }
     />
-  ));
+  );
+  return questions.filter((question) => !parentOf(question)).map(field);
 }
 
 function NavigationButtons({

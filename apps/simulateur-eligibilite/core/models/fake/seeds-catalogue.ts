@@ -102,6 +102,18 @@ export const SEEDS: readonly Seed<Questions, Cibles>[] = [
     expected: {},
   },
   {
+    id: "service-avec-preparation",
+    label: "Service : une question sous l'option qui la fait apparaître",
+    description:
+      "S'arrête sur la façon de servir, une préparation particulière cochée : « Où la préparer ? » s'affiche juste sous elle, après son aide.",
+    answers: {
+      boisson: "cafe",
+      accompagnements: ["aucun"],
+      service: ["preparation"],
+    },
+    expected: {},
+  },
+  {
     id: "commande-de-the",
     label: "Résultat : un thé, avec lait et citron",
     description:
