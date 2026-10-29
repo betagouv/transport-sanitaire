@@ -95,7 +95,7 @@ export function natureAdmise(
 const ETABLISSEMENT = "2_ETABLISSEMENT_DE_SANTE";
 const DOMICILE_HAD: Etablie = {
   nature: "1_DOMICILE",
-  rappel: "Le domicile, pour l’admission en HAD (Hospitalisation à Domicile)",
+  rappel: "Le domicile, pour l’admission en Hospitalisation à Domicile (HAD)",
 };
 const ETABLISSEMENTS: readonly Nature[] = [ETABLISSEMENT, "3_EHPAD", "4_USLD"];
 const LIEUX_DE_RADIOTHERAPIE: readonly Nature[] = [ETABLISSEMENT, "7_CABINET"];

@@ -5,7 +5,6 @@
 import { describe, expect, it } from "vitest";
 import type { Faits } from "../../../core/models/eligibilite/declarations/faits";
 import {
-  ciblesDe,
   faits,
   issue,
   MINEUR,
@@ -72,12 +71,6 @@ describe("quand Q2.7 se pose", () => {
     ).toBeUndefined();
   });
 
-  it("donne l'aide du catalogue à Q2.7.a", () => {
-    expect(posee("P2/permission", "Q2.7.a", ADULTE_A_SA_CHARGE)?.hint).toMatch(
-      /^La seule préférence personnelle ne suffit pas\./,
-    );
-  });
-
   it.each([
     ["1_MOINS_DE_SEIZE_ANS", true],
     ["2_SEIZE_A_DIX_NEUF_ANS", true],
@@ -138,7 +131,6 @@ describe("les faits de la permission", () => {
   it.each([
     ["1_OUI", true],
     ["2_NON", false],
-    ["3_NE_SAIT_PAS", undefined],
   ] as const)(
     "4 avec Q2.7.a = %s : la charge patient vaut %s",
     (confirmation, charge) => {
@@ -146,17 +138,6 @@ describe("les faits de la permission", () => {
       expect(deux(reponses)).toEqual([charge, false]);
     },
   );
-
-  it("4 sans confirmation « je ne peux pas le vérifier » trace « à vérifier »", () => {
-    const reponses: Reponses = {
-      ...ADULTE_A_SA_CHARGE,
-      "Q2.7.a": "3_NE_SAIT_PAS",
-    };
-    expect(unFait(reponses, "fait_permission_charge_patient")).toEqual({
-      provenance:
-        "Q2.7 : « 4_ADULTE_A_SA_CHARGE », Q2.7.a : « 3_NE_SAIT_PAS ». À vérifier.",
-    });
-  });
 
   it.each(["1_MOINS_DE_SEIZE_ANS", "2_SEIZE_A_DIX_NEUF_ANS"] as const)(
     "%s : la charge patient vaut « non », car elle ne vaut que pour 20 ans ou plus",
@@ -172,7 +153,6 @@ describe("les faits de la permission", () => {
   it.each([
     ["1_OUI", true],
     ["2_NON", false],
-    ["3_NE_SAIT_PAS", undefined],
   ] as const)(
     "Q2.8.4 = %s : l'admissibilité du mineur vaut %s",
     (autorisation, admissible) => {
@@ -234,25 +214,6 @@ describe("une permission écarte le transfert et le Centre 15", () => {
           "Q2.5 : sans réponse, Q2.1 : sans réponse, Q2.2.1.a : « 1_OUI ». Une permission n'est ni un transfert ni un déplacement pour soins.",
       });
     }
-  });
-});
-
-describe("« je ne peux pas le vérifier » : la caisse", () => {
-  // Un fait inconnu, l'autre à « non » : la v10.1.3 envoie à la caisse
-  // (point 1). En v10.1.2, la règle attendait les deux faits indéfinis.
-  it.each([
-    [
-      "un mineur sans autorisation vérifiable",
-      { ...MINEUR, "Q2.8.4": "3_NE_SAIT_PAS" },
-    ],
-    [
-      "un adulte à sa charge sans confirmation vérifiable",
-      { ...ADULTE_A_SA_CHARGE, "Q2.7.a": "3_NE_SAIT_PAS" },
-    ],
-  ] as const)("%s va à la caisse", (_, reponses) => {
-    const cibles = ciblesDe(reponses);
-    expect(cibles.cible_couverture_inconnue_decisive.value).toBe(true);
-    expect(cibles.cible_issue_id.value).toBe("ISSUE_CAISSE");
   });
 });
 

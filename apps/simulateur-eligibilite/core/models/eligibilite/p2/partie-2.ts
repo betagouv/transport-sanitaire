@@ -78,14 +78,14 @@ const PAGE_DE_LA_PRESTATION = page(
   question
     .singleChoice(
       "Q2.1.g",
-      "S’agit-il d’une entrée dans un établissement de santé, d’une sortie de cet établissement ou d’une admission en HAD (Hospitalisation à Domicile) à domicile ?",
+      "S’agit-il d’une entrée dans un établissement de santé, d’une sortie de cet établissement ou d’une admission en Hospitalisation à Domicile (HAD) à domicile ?",
     )
     .appliesWhen(motif.is("8_HOSPITALISATION"))
     .dependsOn("Q2.1"),
   question
     .singleChoice(
       "Q2.1.h",
-      "La séance est-elle organisée par le CAMSP (Centre d’Action Médico-Sociale Précoce) ou le CMPP (Centre Médico-Psycho-Pédagogique), dans le parcours de l’enfant ?",
+      "Cette séance en ville est-elle organisée dans le cadre du parcours de soins de l’enfant ?",
     )
     .appliesWhen(motif.is("10_CAMSP"))
     .dependsOn("Q2.1"),
@@ -115,7 +115,7 @@ const AUTRES_CADRES = CONTEXTES.reduce(
     .incompatible(
       "6_CAMSP",
       "7_SAMSAH",
-      "Le CAMSP (Centre d’Action Médico-Sociale Précoce) ou le CMPP (Centre Médico-Psycho-Pédagogique) accueille un enfant, le SAMSAH (Service d’Accompagnement Médico-Social pour Adultes Handicapés) un adulte : un seul des deux pour un même trajet.",
+      "Le Centre d’Action Médico-Sociale Précoce (CAMSP) ou le Centre Médico-Psycho-Pédagogique (CMPP) accueille un enfant, le Service d’Accompagnement Médico-Social pour Adultes Handicapés (SAMSAH) un adulte : un seul des deux pour un même trajet.",
     ),
 );
 
@@ -168,7 +168,7 @@ const PAGE_DES_CONTEXTES = page(
   question
     .multipleChoice(
       "Q2.2.5",
-      "Quel lieu lié à ce transport se trouve à l’étranger ?",
+      "Sélectionnez la ou les adresses situées à l’étranger",
     )
     .appliesWhen(groupe.checked("2_ETRANGER")),
 );
@@ -181,7 +181,7 @@ const PAGE_DU_TRAJET = page(
   "P2/trajet",
   question.singleChoice(
     "Q2.3.1",
-    "Quelle distance parcourra le patient pour le trajet dans le sens évalué ?",
+    "Quelle distance sépare les lieux de départ et d’arrivée ?",
   ),
   question.checkbox(
     "Q2.3.2",
@@ -191,15 +191,12 @@ const PAGE_DU_TRAJET = page(
   question
     .singleChoice(
       "Q2.3.3",
-      "Dans les deux mois à compter du premier transport, au moins quatre transports de plus de 50 km chacun sont-ils prescrits au titre du même traitement ?",
+      "Pour le même traitement, prévoyez-vous de prescrire au moins 4 transports de plus de 50 km chacun sur une période de 2 mois ?",
     )
     .hint("Un aller-retour compte pour deux transports.")
     .mattersWhile(given.fait("fait_distance_plus_50").isOui()),
   question
-    .singleChoice(
-      "Q2.3.4",
-      "Le médecin prescripteur atteste-t-il que ce transport est urgent ?",
-    )
+    .singleChoice("Q2.3.4", "Attestez-vous que ce transport est urgent ?")
     // La garde de l'éditeur, sur les faits des questions posées avant elle.
     .mattersWhile(given.cible("cible_question_urgence_a_afficher").isOui()),
 );

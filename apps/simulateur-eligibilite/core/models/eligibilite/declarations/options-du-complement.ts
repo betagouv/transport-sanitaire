@@ -9,10 +9,10 @@ const NATURES_DU_LIEU = {
   "1_DOMICILE": "Domicile ou autre lieu de vie",
   "2_ETABLISSEMENT_DE_SANTE": "Établissement de santé ou centre de soins",
   "3_EHPAD":
-    "EHPAD (Établissement d'Hébergement pour Personnes Âgées Dépendantes)",
-  "4_USLD": "USLD (Unité de Soins de Longue Durée)",
+    "Établissement d'Hébergement pour Personnes Âgées Dépendantes (EHPAD)",
+  "4_USLD": "Unité de Soins de Longue Durée (USLD)",
   "5_HEBERGEMENT_NON_MEDICALISE":
-    "Hébergement, notamment HTNM (Hébergement Temporaire Non Médicalisé)",
+    "Hébergement, notamment Hébergement Temporaire Non Médicalisé (HTNM)",
   "6_ETABLISSEMENT_PENITENTIAIRE": "Établissement pénitentiaire",
   "7_CABINET": "Cabinet d’un professionnel de santé",
   "8_AUTRE_LIEU": "Autre lieu",
@@ -58,7 +58,7 @@ export const OPTIONS_DU_COMPLEMENT = {
     "3_URGENCE_HOSPITALIERE":
       "Un transport d’urgence pour une hospitalisation où est effectué un acte coûteux, ou pour une hospitalisation qui en découle directement.",
     "4_HAD_OU_RADIOTHERAPIE":
-      "Un transport entre l’établissement et le domicile en HAD (Hospitalisation à Domicile), prescrit hors protocole HAD, ou pour des séances de radiothérapie en structure libérale ou en centre de santé.",
+      "Un transport entre l’établissement et le domicile en Hospitalisation à Domicile (HAD), prescrit hors protocole HAD, ou pour des séances de radiothérapie en structure libérale ou en centre de santé.",
     "5_NOUVEAU_NE":
       "Un transport lié à l’hospitalisation d’un nouveau-né de moins de trente jours.",
     "6_TRAITEMENT_MIEUX_ADAPTE":

@@ -25,5 +25,4 @@ export const motifCamsp = unFait("fait_motif_camsp")
   .nonSiEcartee(SITUATION_DU_CADRE, "6_CAMSP")
   .ouiSi(MOTIF.is("10_CAMSP").and(SUIVI.is("1_OUI")))
   .nonSi(MOTIF.is("10_CAMSP").and(SUIVI.is("2_NON")))
-  .inconnuSi(MOTIF.is("10_CAMSP").and(SUIVI.is("3_NE_SAIT_PAS")))
   .sinon("Ni Q2.1.h, ni Q2.2.1 n'établissent encore le CAMSP.");
