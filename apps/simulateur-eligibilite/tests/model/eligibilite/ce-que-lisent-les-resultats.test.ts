@@ -118,6 +118,7 @@ describe("les cibles et les faits que les résultats lisent", () => {
       "fait_centre15_interetablissements",
       "fait_convocation",
       "fait_dap_maternite",
+      "fait_distance_plus_50",
       "fait_exclusion_transport_prouvee",
       "fait_hospitalisation",
       "fait_htnm_hors_maternite",

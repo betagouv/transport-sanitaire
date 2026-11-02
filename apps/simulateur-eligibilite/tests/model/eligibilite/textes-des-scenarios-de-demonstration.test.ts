@@ -17,10 +17,6 @@
 // puis une partie terrestre). L'éditeur y donne les consignes du mode
 // terrestre. Aucune question ne pose cette partie.
 //
-// Les scénarios de `EN_ATTENTE` attendent la sous-issue qui porte leur
-// changement de la v10.1.4. Ils échouent tant qu'elle n'est pas faite : le
-// jour où l'un passe, il sort de la liste.
-//
 // Ne sont pas comparés :
 // - les faits que la page du prescripteur liste chez l'éditeur. Il les dit
 //   phrases de démonstrateur : nous ne les montrons pas ;
@@ -68,19 +64,8 @@ const FAITS = new Map<
   Readonly<Record<string, boolean | null | undefined>>
 >(DEMONSTRATION.scenarios.map(({ id, faits }) => [id, faits]));
 
-// Le changement de la v10.1.4 que chaque scénario attend, et sa sous-issue.
-const EN_ATTENTE: Readonly<Record<string, string>> = {
-  // La raison d'une série dit le trajet de 50 km ou moins
-  // (`relecture_wording/JULIEN_32_SERIE.md`). Son texte manque au catalogue :
-  // à remonter à l'éditeur.
-  ...pour("#271", ["ISSUE_NON_ELIGIBLE--AUCUN_SERIE_NON_QUALIFIANTE"]),
-};
-
-const comparables = SCENARIOS.filter(({ id }) => !(id in EN_ATTENTE)).map(
+const comparables = SCENARIOS.map(
   (scenario) => [scenario.id, scenario] as const,
-);
-const enAttente = SCENARIOS.filter(({ id }) => id in EN_ATTENTE).map(
-  (scenario) => [scenario.id, EN_ATTENTE[scenario.id], scenario] as const,
 );
 
 describe("les textes des scénarios de démonstration de l'éditeur", () => {
@@ -91,22 +76,9 @@ describe("les textes des scénarios de démonstration de l'éditeur", () => {
   it.each(comparables)("%s", (_id, scenario) => {
     expect(texteDe(scenario)).toEqual(attenduDe(scenario));
   });
-
-  it.fails.each(enAttente)("%s, en attente de %s", (_id, _issue, scenario) => {
-    expect(texteDe(scenario)).toEqual(attenduDe(scenario));
-  });
-
-  it("n'attend que des scénarios de la fixture", () => {
-    const ids = SCENARIOS.map(({ id }) => id);
-    expect(ids).toEqual(expect.arrayContaining(Object.keys(EN_ATTENTE)));
-  });
 });
 
 // ---- implémentation ----
-
-function pour(issue: string, ids: readonly string[]) {
-  return Object.fromEntries(ids.map((id) => [id, issue]));
-}
 
 // Le texte de l'éditeur, sans ses blancs en trop.
 function attenduDe(scenario: Scenario): unknown {
