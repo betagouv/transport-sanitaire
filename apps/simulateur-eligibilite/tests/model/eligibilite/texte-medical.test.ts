@@ -11,7 +11,14 @@ import {
   type TexteMedical,
 } from "../../../front/models/eligibilite/r3/rubriques/texte-medical";
 import { ENTREE, MATERNITE_ETABLIE } from "./reponses-de-la-branche";
-import { donnees, PMT, type Reponses } from "./reponses-du-cerfa";
+import {
+  donnees,
+  EXAMEN_DE_MATERNITE,
+  HEBERGEMENT_DE_MATERNITE,
+  PMT,
+  Q38,
+  type Reponses,
+} from "./reponses-du-cerfa";
 import type { ValeursDesCibles } from "./traces-du-prescripteur";
 
 const SEANCE = "Ce déplacement concerne une séance de dialyse en centre";
@@ -157,6 +164,35 @@ describe("les compléments", () => {
 
     expect(texte(reponses).elements_medicaux).toMatch(
       / ; engagement maternité : trajet lié à l’hébergement temporaire non médicalisé\.$/,
+    );
+  });
+
+  it("reportent la maternité et son niveau après le motif (Q3.8)", () => {
+    expect(texte({ ...EXAMEN_DE_MATERNITE, ...Q38 }).elements_medicaux).toMatch(
+      / ; engagement maternité : examen obligatoire du 8ᵉ ou du 9ᵉ mois de grossesse ; maternité : Maternité du Parc — 12 avenue Berthelot, 69007 Lyon ; niveau de maternité requis : type IIA\.$/,
+    );
+  });
+
+  it("reportent l'hébergement du dispositif qui n'est pas un lieu du trajet", () => {
+    const reponses: Reponses = {
+      ...HEBERGEMENT_DE_MATERNITE,
+      ...Q38,
+      "Q3.8.hebergement.nom": "Maison des familles",
+      "Q3.8.hebergement.adresse": {
+        street: "1 place Bellecour",
+        postalCode: "69002",
+        city: "Lyon",
+      },
+    };
+
+    expect(texte(reponses).elements_medicaux).toMatch(
+      / ; niveau de maternité requis : type IIA ; hébergement temporaire non médicalisé : Maison des familles — 1 place Bellecour, 69002 Lyon\.$/,
+    );
+  });
+
+  it("taisent la maternité hors Engagement maternité, même avec une réponse restée", () => {
+    expect(texte({ ...PMT, ...Q38 }).elements_medicaux).not.toMatch(
+      /maternité/,
     );
   });
 

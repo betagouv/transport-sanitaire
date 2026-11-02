@@ -12,6 +12,7 @@ import {
 import type { Cibles } from "../declarations/cibles.ts";
 import type { Questions } from "../declarations/questions.ts";
 import { question } from "../question.ts";
+import { PAGE_DE_LA_MATERNITE } from "./page-de-la-maternite.ts";
 import {
   PAGE_DE_L_EXONERATION,
   PAGE_DES_EVENEMENTS,
@@ -99,5 +100,6 @@ export const COMPLEMENT: Partie = afterLock({
     PAGE_DE_L_URGENCE,
     PAGE_DES_EVENEMENTS,
     PAGE_DE_L_EXONERATION,
+    PAGE_DE_LA_MATERNITE,
   ],
 });

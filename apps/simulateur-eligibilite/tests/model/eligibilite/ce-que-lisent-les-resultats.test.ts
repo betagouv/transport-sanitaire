@@ -76,6 +76,11 @@ describe("les questions que les résultats lisent telles quelles", () => {
       "Q3.6.2",
       "Q3.6.3",
       "Q3.7",
+      "Q3.8.hebergement.adresse",
+      "Q3.8.hebergement.nom",
+      "Q3.8.maternite.adresse",
+      "Q3.8.maternite.nom",
+      "Q3.8.niveau",
     ]);
   });
 });

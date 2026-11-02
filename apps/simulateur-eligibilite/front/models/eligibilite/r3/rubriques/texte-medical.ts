@@ -10,8 +10,9 @@
 
 import { OPTIONS } from "../../../../../core/models/eligibilite/declarations/questions";
 import { given } from "../../../../../core/models/eligibilite/question";
-import type { Value } from "../../../../../core/socle";
+import type { Address, Unanswered, Value } from "../../../../../core/socle";
 import type { Rubrique } from "./rubrique";
+import { adresseEnParties } from "./trajet";
 
 /** Rien n'est établi, ou rien n'est saisi : la cellule reste vide. */
 type AucunSegment = undefined;
@@ -23,6 +24,22 @@ export type TexteMedical = {
 
 // La précision du prescripteur (Q3.4), saisie telle quelle.
 const PRECISION = given.question("Q3.4").answer().compute(lueTelleQuelle);
+
+// La maternité de l'Engagement maternité, son niveau, et l'hébergement du
+// dispositif s'il n'est pas un lieu du trajet (Q3.8, D-251). Le lieu du trajet
+// s'écrit déjà dans sa rubrique.
+const MATERNITE = given
+  .all({
+    nom: given.question("Q3.8.maternite.nom").answer().compute(lueTelleQuelle),
+    adresse: given.question("Q3.8.maternite.adresse").answer(),
+    niveau: given.question("Q3.8.niveau").answer(),
+    nomHebergement: given
+      .question("Q3.8.hebergement.nom")
+      .answer()
+      .compute(lueTelleQuelle),
+    adresseHebergement: given.question("Q3.8.hebergement.adresse").answer(),
+  })
+  .compute(coordonneesDeLaMaternite);
 
 // Ce que lit le texte : les réponses du soin et des besoins, et les cibles et
 // les faits qui portent la condition des segments du contrat.
@@ -45,6 +62,7 @@ const ENTREES = given.all({
   etranger: given.cible("cible_issue_id").is("ISSUE_DAP_ETRANGER_A_EXAMINER"),
   maternite: given.cible("cible_dap_motif_engagement_maternite").isOui(),
   htnm: given.fait("fait_htnm_hors_maternite").isOui(),
+  coordonnees: MATERNITE,
 });
 
 export const TEXTE_MEDICAL: Rubrique<TexteMedical> = {
@@ -90,6 +108,9 @@ const CONTRAT = {
     "Engagement maternité : examen obligatoire du 8ᵉ ou du 9ᵉ mois de grossesse",
   hebergement:
     "Engagement maternité : trajet lié à l’hébergement temporaire non médicalisé",
+  maternite: "Maternité : ",
+  niveau: "Niveau de maternité requis : type ",
+  lieuHebergement: "Hébergement temporaire non médicalisé : ",
   htnm: "Trajet lié à un hébergement temporaire non médicalisé, hors dispositif Engagement maternité",
   distance:
     "Justification médicale du lieu de soins éloigné : [précision du prescripteur]",
@@ -137,29 +158,83 @@ function besoins({ aides, accompagnement }: Entrees): readonly string[] {
 }
 
 // Les segments du contrat, chacun sur la cible ou le fait qui porte sa
-// condition (D-147).
+// condition (D-147). Ce que Q3.8 recueille suit le motif de l'Engagement
+// maternité, avant l'HTNM.
 function complements(entrees: Entrees): readonly string[] {
+  return [
+    ...etablis([
+      [entrees.bariatrique, CONTRAT.bariatrique],
+      [entrees.aldLiee, CONTRAT.ald],
+      [entrees.atmp, CONTRAT.atmp],
+      [entrees.camsp, CONTRAT.camsp],
+      [entrees.mineur, CONTRAT.mineur],
+      [entrees.etranger, CONTRAT.etranger],
+      [entrees.justification !== undefined, CONTRAT.distance],
+    ]),
+    ...engagementMaternite(entrees),
+    ...etablis([[entrees.htnm, CONTRAT.htnm]]),
+  ];
+}
+
+function engagementMaternite(entrees: Entrees): readonly string[] {
   const { maternite, motifMaternite } = entrees;
-  const segments = [
-    [entrees.bariatrique, CONTRAT.bariatrique],
-    [entrees.aldLiee, CONTRAT.ald],
-    [entrees.atmp, CONTRAT.atmp],
-    [entrees.camsp, CONTRAT.camsp],
-    [entrees.mineur, CONTRAT.mineur],
-    [entrees.etranger, CONTRAT.etranger],
-    [entrees.justification !== undefined, CONTRAT.distance],
-    [
-      maternite &&
+  if (!maternite) return [];
+  return [
+    ...etablis([
+      [
         motifMaternite.checked("1_EXAMEN_DU_HUITIEME_OU_NEUVIEME_MOIS"),
-      CONTRAT.examen,
-    ],
-    [
-      maternite && motifMaternite.checked("2_HEBERGEMENT_ENGAGEMENT"),
-      CONTRAT.hebergement,
-    ],
-    [entrees.htnm, CONTRAT.htnm],
-  ] as const;
+        CONTRAT.examen,
+      ],
+      [motifMaternite.checked("2_HEBERGEMENT_ENGAGEMENT"), CONTRAT.hebergement],
+    ]),
+    ...entrees.coordonnees,
+  ];
+}
+
+function etablis(
+  segments: readonly (readonly [boolean, string])[],
+): readonly string[] {
   return segments.filter(([etabli]) => etabli).map(([, texte]) => texte);
+}
+
+type Coordonnees = {
+  readonly nom: string | undefined;
+  readonly adresse: { readonly value: Address | Unanswered };
+  readonly niveau: { readonly value: keyof typeof TYPES | Unanswered };
+  readonly nomHebergement: string | undefined;
+  readonly adresseHebergement: { readonly value: Address | Unanswered };
+};
+
+// Le niveau tel que le contrat l'écrit, après « type ».
+const TYPES = {
+  "1_TYPE_I": "I",
+  "2_TYPE_IIA": "IIA",
+  "3_TYPE_IIB": "IIB",
+  "4_TYPE_III": "III",
+} as const;
+
+function coordonneesDeLaMaternite(lues: Coordonnees): readonly string[] {
+  const niveau = lues.niveau.value;
+  return [
+    lieu(CONTRAT.maternite, lues.nom, lues.adresse.value),
+    niveau && `${CONTRAT.niveau}${TYPES[niveau]}`,
+    lieu(
+      CONTRAT.lieuHebergement,
+      lues.nomHebergement,
+      lues.adresseHebergement.value,
+    ),
+  ].filter((segment): segment is string => Boolean(segment));
+}
+
+// Un lieu à reporter : son nom, puis son adresse sur une ligne.
+function lieu(
+  intitule: string,
+  nom: string | undefined,
+  adresse: Address | Unanswered,
+): string | AucunSegment {
+  const parties = adresseEnParties(adresse);
+  if (nom === undefined || parties.length === 0) return undefined;
+  return `${intitule}${nom} — ${parties.join(", ")}`;
 }
 
 // Une saisie telle quelle, ses espaces normalisés et son point final retiré.

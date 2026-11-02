@@ -96,6 +96,28 @@ const ATTENDU: Record<string, readonly [string[], string[]]> = {
     [...P1, "Q1.3.a", "Q2.2.1", "Q2.2.5", ...DISTANCE],
     complement("Q3.4.a"),
   ],
+  // L'Engagement maternité finit P3 par Q3.8 (D-251). Sans sens, l'hébergement
+  // n'est pas encore l'arrivée.
+  "dap-engagement-maternite": [
+    ["Q0.1", "Q1.1", "Q1.3", "Q1.4", "Q2.1", "Q2.2.1", ...DISTANCE].concat([
+      "Q2.14.eloignement",
+      "Q2.14.motif",
+      "Q2.12",
+    ]),
+    [
+      "Q3.1.2",
+      "Q3.2.nature",
+      "Q3.2.adresse",
+      "Q3.3.nature",
+      "Q3.3.adresse",
+      "Q3.4",
+      "Q3.4.a",
+      "Q3.6.2",
+      "Q3.8.maternite.nom",
+      "Q3.8.maternite.adresse",
+      "Q3.8.niveau",
+    ],
+  ],
   // Sans issue ni document, la distance ne se pose pas.
   "orientation-penitentiaire": [
     ["Q0.1", "Q1.1", "Q1.3", "Q1.4", "Q2.1", "Q2.2.1", "Q2.2.1.b"].concat([
