@@ -135,6 +135,25 @@ describe("les lieux d'un séjour, d'une HAD et d'une permission (QST-LIEUX-001)"
     ]);
   });
 
+  it("une admission en HAD déclarée comme autre déplacement part de l'établissement vers le domicile (#311)", () => {
+    const sortie: Reponses = {
+      ...RETOUR,
+      "Q2.2.1": ["1_HOSPITALISATION"],
+      "Q2.2.1.cadre": "1_ETABLISSEMENT",
+      "Q2.2.1.a": "2_NON",
+      "Q2.5": "2_AUTRE_DEPLACEMENT",
+      "Q2.6": ["10_ADMISSION_HAD"],
+    };
+    expect(rappel("P3/depart", "Q3.2.nom", sortie)).toEqual([
+      { label: "Lieu de départ", value: "L’établissement de santé quitté" },
+    ]);
+    expect(
+      posee("P3/depart", "Q3.2.adresse", { ...sortie, "Q3.2.adresse": ADRESSE })
+        .inconsistencies,
+    ).toEqual([]);
+    expect(ids("P3/arrivee", sortie)).toEqual(["Q3.3.adresse"]);
+  });
+
   it("des soins pendant une HAD partent du domicile, sans établissement inventé", () => {
     const had: Reponses = {
       ...ALLER,
