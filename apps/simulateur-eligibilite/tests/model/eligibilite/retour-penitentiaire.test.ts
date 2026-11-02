@@ -75,13 +75,18 @@ describe("l'indication médicale d'un retour vers la prison (point 33)", () => {
         "Q1.3.b": "1_LIEN_DIRECT",
       },
     ],
+    // Une séance du déplacement (TS1015-08, D-245).
+    ["une chimiothérapie", { ...SEUL, "Q1.3": ["3_CHIMIOTHERAPIE"] }],
+    ["une radiothérapie", { ...SEUL, "Q1.3": ["4_RADIOTHERAPIE"] }],
+    ["une hémodialyse", { ...SEUL, "Q1.3": ["5_DIALYSE"], "Q1.3.a": "1_OUI" }],
   ] as const)("%s l'établit déjà", (_, avant) => {
     expect(
       posee("P2/contextes", "Q2.2.1.indication", { ...avant, ...RETOUR }),
     ).toBeUndefined();
   });
 
-  // Un cas de Q1.3 n'est pas une preuve qualifiée (TS1014-L01, D-245).
+  // Ni une ALD sans lien, ni une dialyse qui n'est pas une hémodialyse
+  // (TS1015-08, D-245).
   it.each([
     [
       "une ALD sans lien direct",
@@ -91,7 +96,10 @@ describe("l'indication médicale d'un retour vers la prison (point 33)", () => {
       "une ALD liée, patient seul",
       { "Q1.3": ["2_ALD"], "Q1.3.b": "1_LIEN_DIRECT" },
     ],
-    ["une chimiothérapie", { "Q1.3": ["3_CHIMIOTHERAPIE"] }],
+    [
+      "une dialyse qui n'est pas une hémodialyse",
+      { "Q1.3": ["5_DIALYSE"], "Q1.3.a": "2_AUTRE_DIALYSE" },
+    ],
   ] as const)("%s ne l'établit pas", (_, cas) => {
     expect(
       posee("P2/contextes", "Q2.2.1.indication", { ...SEUL, ...cas }),

@@ -6,9 +6,10 @@
 //
 // Cocher l'option ne donne aucun fait, ni aucun financeur.
 //
-// - Une preuve qualifiée de P1 établit déjà l'indication médicale du
-//   transport. Sinon, Q2.2.1.indication la demande : voyager seul ou avec un
-//   proche ne dit ni qu'elle existe, ni qu'elle manque (D-130, D-245).
+// - Une preuve qualifiée de P1, ou une séance médicale du déplacement,
+//   établit déjà l'indication médicale du transport. Sinon,
+//   Q2.2.1.indication la demande : voyager seul ou avec un proche ne dit ni
+//   qu'elle existe, ni qu'elle manque (D-130, D-245).
 // - « Non » sort le trajet du circuit de prescription : plus rien ne se pose,
 //   les règles ne concluent pas, et R2 oriente vers l'administration
 //   pénitentiaire, sans issue ni document.
@@ -36,9 +37,11 @@ export const unRetourPenitentiaire = given
   .checked("3_AUTRE_CADRE")
   .and(given.question("Q2.2.1.b").answer().checked("10_RETOUR_PENITENTIAIRE"));
 
-// Seule une preuve médicale qualifiée établit l'indication : un critère de
-// Q1.2, une ALD liée au soin, ou les soins prolongés reconnus d'un mineur.
-// Un cas de Q1.3 coché ne suffit pas (TS1014-L01, D-245).
+// Une preuve médicale qualifiée établit l'indication : un critère de Q1.2,
+// une ALD liée au soin, les soins prolongés reconnus d'un mineur, ou une
+// séance du déplacement (chimiothérapie, radiothérapie, hémodialyse). Ni une
+// ALD sans lien, ni une dialyse qui n'est pas une hémodialyse ne suffisent
+// (`REFERENTIEL/02` QST-RACCORDEMENTS-001, TS1015-08, D-245).
 const PREUVES_QUALIFIEES = [
   "fait_critere_allonge",
   "fait_critere_brancard",
@@ -50,9 +53,14 @@ const PREUVES_QUALIFIEES = [
   "fait_ald_liee",
   "fait_mineur_soins_prolonges_reconnus",
 ] as const;
+const cas = given.question("Q1.3").answer();
+const uneSeanceDuDeplacement = cas
+  .checked("3_CHIMIOTHERAPIE")
+  .or(cas.checked("4_RADIOTHERAPIE"))
+  .or(given.question("Q1.3.a").answer().is("1_OUI"));
 const uneIndicationEtablie = PREUVES_QUALIFIEES.map((fait) =>
   given.fait(fait).isOui(),
-).reduce((une, autre) => une.or(autre));
+).reduce((une, autre) => une.or(autre), uneSeanceDuDeplacement);
 
 /**
  * Q2.2.1.indication se pose : le retour est coché, et P1 n'établit aucune
