@@ -183,7 +183,8 @@ export abstract class DeclaredQuestion<
 
   /**
    * Les questions dont dépend cette réponse. Quand l'une d'elles change, cette
-   * réponse est effacée, et elle seule (`page-commit.ts`).
+   * réponse est effacée, et elle seule (`page-commit.ts`). Sur la même page,
+   * elle l'est dès la saisie : son champ se vide à l'écran.
    */
   dependsOn(...ids: (keyof Questions & string)[]): this {
     return this.withSettings({

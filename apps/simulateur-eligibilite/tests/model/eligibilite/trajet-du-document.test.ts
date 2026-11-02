@@ -8,6 +8,7 @@ import type { Cibles } from "../../../core/models/eligibilite/declarations/cible
 import type { Questions } from "../../../core/models/eligibilite/declarations/questions";
 import { SEEDS } from "../../../core/models/eligibilite/seeds-catalogue";
 import { preconisationOf } from "../../../core/socle/model";
+import { answerOnPage } from "../../../core/socle/questionnaire-engine/page-commit";
 import type { Answers } from "../../../core/socle/questionnaire-engine/question";
 import { Questionnaire } from "../../../core/socle/questionnaire-engine/questionnaire";
 import { errorsOf } from "../../../front/socle/questionnaire-engine/screen-texts";
@@ -138,6 +139,18 @@ describe("les réponses de Q3.1", () => {
     expect(question("Q3.1.1", "S3138g", { "Q3.1.2": sens })).toMatchObject({
       label,
       hint,
+    });
+  });
+
+  it("un autre sens vide le nombre : 3 allers-retours ne deviennent pas 3 allers", () => {
+    if (!PAGE) throw new Error("La page du trajet manque");
+    const allersRetours: Reponses = {
+      "Q3.1.2": "3_ALLER_RETOUR_EQUIVALENT",
+      "Q3.1.1": 3,
+    };
+
+    expect(answerOnPage(PAGE, allersRetours, "Q3.1.2", "1_ALLER")).toEqual({
+      "Q3.1.2": "1_ALLER",
     });
   });
 
