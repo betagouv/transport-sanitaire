@@ -8,7 +8,12 @@
 import { describe, expect, it } from "vitest";
 import { S3138G } from "../../../front/models/eligibilite/r3/s3138g/s3138g";
 import { dtoFrom } from "../../../front/socle/cerfa-mapping";
-import { drawnOn, markedStates, textsOn } from "../../socle/cerfa/test-form";
+import {
+  drawnOn,
+  markedStates,
+  textsIn,
+  textsOn,
+} from "../../socle/cerfa/pdf-aplati";
 import {
   donnees,
   gabarit,
@@ -121,6 +126,28 @@ describe("la PMT d'une dialyse", () => {
     ["transp autre cent", []],
   ])("marque la case « %s » : %j", async (champ, etats) => {
     expect(await marquees(PMT, {}, champ)).toEqual(etats);
+  });
+});
+
+describe("la PMT de 4 allers-retours", () => {
+  // Quatre allers-retours valent 4, et non 8 trajets simples (D-246).
+  const QUATRE: Reponses = {
+    ...PMT,
+    "Q3.1.2": "3_ALLER_RETOUR_EQUIVALENT",
+    "Q3.1.1": 4,
+  };
+
+  it("coche la case aller-retour", async () => {
+    expect(await marquees(QUATRE, {}, "transp aller-retour")).toEqual(["On"]);
+  });
+
+  it("écrit 4 dans « nbr transp », sur les deux volets", async () => {
+    const pdf = await rempli(QUATRE);
+
+    expect(await textsIn(await gabarit("S3138g"), pdf, "nbr transp")).toEqual([
+      "4",
+      "4",
+    ]);
   });
 });
 

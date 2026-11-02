@@ -102,6 +102,20 @@ describe("les faits de la convocation", () => {
     expect(fait(sansAgrement).value).toBeUndefined();
   });
 
+  // Sans Q2.10.b, ni « oui » ni « non » : seul « Non » à l'agrément suffit à
+  // écarter le motif (cas « Conditions obligatoires » des compléments de
+  // recette, #149).
+  it.each(["1_OUI", "3_NE_PEUX_PAS_VERIFIER"] as const)(
+    "laisse le fait absent avec Q2.10.a = %s et Q2.10.b sans réponse",
+    (agrement) => {
+      const { "Q2.10.b": _, ...sansAppareil } = appareillage(
+        agrement,
+        "2_PODO_ORTHESE",
+      );
+      expect(fait(sansAppareil).value).toBeUndefined();
+    },
+  );
+
   it.each([
     "1_CONTROLE_MEDICAL",
     "2_EXPERT_JURIDICTION",

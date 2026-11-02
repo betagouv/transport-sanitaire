@@ -59,7 +59,8 @@ describe("ce que P2 établit d'un lieu (Q2.13, Q3.3)", () => {
     ]);
   });
 
-  it("l'aller d'une dialyse en centre arrive au centre, rappelé sans sélecteur", () => {
+  it("l'aller d'une dialyse en centre part d'un lieu à choisir, et arrive au centre, rappelé sans sélecteur", () => {
+    expect(ids("P3/depart", DIALYSE)).toEqual(["Q3.2.nature", "Q3.2.adresse"]);
     expect(ids("P3/arrivee", DIALYSE)).toEqual(["Q3.3.nom", "Q3.3.adresse"]);
     expect(posee("P3/arrivee", "Q3.3.nom", DIALYSE).reminder).toEqual([
       { label: "Lieu d’arrivée", value: "Le centre de dialyse" },

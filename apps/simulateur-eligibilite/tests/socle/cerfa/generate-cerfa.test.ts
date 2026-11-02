@@ -13,13 +13,8 @@ import {
   fileNameOf,
   generateCerfa,
 } from "../../../front/socle/cerfa/generate-cerfa";
-import {
-  drawnOn,
-  markedStates,
-  statesOf,
-  testForm,
-  textsOn,
-} from "./test-form";
+import { drawnOn, markedStates, textsOn } from "./pdf-aplati";
+import { statesOf, testForm } from "./test-form";
 
 // Le cerfa se remplit d'après son DTO, sans rien savoir du simulateur : ici,
 // une simple fiche. Le DTO parle en mots clairs, la définition du cerfa garde

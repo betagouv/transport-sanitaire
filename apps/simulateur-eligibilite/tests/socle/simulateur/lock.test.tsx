@@ -1,5 +1,5 @@
-import { screen } from "@testing-library/react";
-import { describe, expect, it } from "vitest";
+import { screen, waitFor } from "@testing-library/react";
+import { afterEach, describe, expect, it } from "vitest";
 import { lock } from "../../../front/socle/simulateur/start";
 import { modeleDeTest } from "../modele-de-test";
 import {
@@ -11,13 +11,16 @@ import {
   ouvrirLeSimulateur,
   QUANTITE,
   question,
+  qui,
   radio,
+  repondreJusquAuResultat,
   sansBouton,
 } from "./questionnaire";
 
 // Le résultat reste ouvert tant que son action principale n'est pas choisie.
 // Cette action verrouille : le complément ne repose aucune question déjà posée,
-// et on ne peut plus revenir en arrière.
+// et on ne peut plus revenir en arrière. Imprimer ou télécharger la feuille
+// du premier résultat ne la choisit pas.
 
 const saisie = () => screen.getByRole("spinbutton", QUANTITE);
 
@@ -66,6 +69,35 @@ describe("avant le verrou", () => {
     expect(
       await screen.findByText("Commande : thé, lait et sucre"),
     ).toBeInTheDocument();
+  });
+});
+
+describe("une feuille imprimée ou téléchargée", () => {
+  afterEach(() => {
+    Reflect.deleteProperty(window, "print");
+  });
+
+  it("laisse « Précédent » rouvrir le questionnaire sur sa dernière page", async () => {
+    // Le dialogue d'impression, que happy-dom n'a pas, ouvert puis fermé.
+    let impressions = 0;
+    window.print = () => {
+      impressions++;
+      window.dispatchEvent(new Event("beforeprint"));
+      window.dispatchEvent(new Event("afterprint"));
+    };
+    const user = await avecUneFeuille();
+
+    await user.click(bouton("Imprimer"));
+    await waitFor(() => expect(impressions).toBe(1));
+    // Le navigateur de test ne met pas en page : le PDF de la feuille y échoue.
+    await user.click(bouton("Télécharger"));
+    await screen.findByText(
+      "Le téléchargement a échoué. Réessayez ou utilisez « Imprimer ».",
+    );
+    await user.click(bouton("Précédent"));
+
+    await question(ACCOMPAGNEMENTS);
+    expect(caseACocher("Du lait")).toBeChecked();
   });
 });
 
@@ -140,3 +172,18 @@ describe("ce que le verrou fige", () => {
     expect(locked.answers).toEqual({ boisson: "rien" });
   });
 });
+
+// ---- implémentation ----
+
+// Le premier résultat, avec une feuille à remettre.
+async function avecUneFeuille() {
+  const user = await ouvrirLeSimulateur({
+    modele: qui(async () => ({
+      title: "Le résultat",
+      sheet: { title: "Votre commande", body: "Un contenu" },
+    })),
+  });
+  await repondreJusquAuResultat(user);
+  await screen.findByRole("heading", { level: 1, name: "Le résultat" });
+  return user;
+}

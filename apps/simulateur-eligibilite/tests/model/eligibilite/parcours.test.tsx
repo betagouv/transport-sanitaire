@@ -6,14 +6,20 @@
 // formulaire, avec son brouillon, son avance automatique et ses blocages. Ils
 // sont peu nombreux à dessein : un parcours par mécanisme de P2.
 
-import { render, screen, waitFor, within } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
+import { screen, waitFor, within } from "@testing-library/react";
+import type userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
-import { model } from "../../../core/models/eligibilite";
-import { QuestionnaireForm } from "../../../front/socle/questionnaire-engine/QuestionnaireForm";
+import {
+  afficherLeQuestionnaire,
+  avecUnProfessionnel,
+  choisir,
+  cocher,
+  page,
+  Q11,
+  Q13,
+  suivant,
+} from "./formulaire-du-modele";
 
-const Q11 = /^Concernant son déplacement/;
-const Q13 = /^Avant d’établir le mode de transport/;
 const Q21 = /^Quelle situation médicale ou quel événement/;
 const Q21F = /^Les séances sélectionnées motivent-elles/;
 const Q21G = /^S’agit-il d’une entrée dans un établissement/;
@@ -32,25 +38,6 @@ const Q210A = /^Le fournisseur est-il agréé/;
 const Q210B = /^Sélectionnez l’appareillage concerné/;
 const HOSPITALISE = /^Hospitalisation en cours/;
 
-function afficherLeQuestionnaire(onComplete: () => void = () => {}) {
-  render(
-    <QuestionnaireForm
-      parts={model.questionnaire}
-      partCount={3}
-      endLabel="Voir le résultat"
-      tracked={false}
-      onComplete={onComplete}
-    />,
-  );
-  return userEvent.setup();
-}
-
-const page = (question: RegExp) =>
-  screen.findByRole("group", { name: question });
-const choisir = (user: ReturnType<typeof userEvent.setup>, reponse: RegExp) =>
-  user.click(screen.getByRole("radio", { name: reponse }));
-const cocher = (user: ReturnType<typeof userEvent.setup>, reponse: RegExp) =>
-  user.click(screen.getByRole("checkbox", { name: reponse }));
 const champ = (libelle: RegExp) => screen.getByLabelText(libelle);
 const choisirDans = (
   user: ReturnType<typeof userEvent.setup>,
@@ -62,22 +49,6 @@ const choisirDans = (
       name: reponse,
     }),
   );
-const suivant = (user: ReturnType<typeof userEvent.setup>) =>
-  user.click(screen.getByRole("button", { name: "Suivant" }));
-
-// Q0.1, puis Q1.1 avec un professionnel, Q1.2 avec ces critères.
-async function avecUnProfessionnel(
-  user: ReturnType<typeof userEvent.setup>,
-  criteres: readonly RegExp[],
-) {
-  await choisir(user, /^Vérifier une éligibilité/);
-  await page(Q11);
-  await choisir(user, /^Nécessite une prise en charge spécifique/);
-  await page(/^Quelles aides ou conditions particulières/);
-  for (const critere of criteres) await cocher(user, critere);
-  await suivant(user);
-  await page(Q13);
-}
 
 // Le parcours du mineur remplit une vingtaine de champs : sous la charge de la
 // suite entière, il dépasse les 5 s par défaut.
