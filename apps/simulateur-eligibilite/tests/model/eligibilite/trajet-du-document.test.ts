@@ -48,9 +48,13 @@ const PRESCRIPTION: Reponses = { "Q3.1.1": 2, "Q3.1.2": "1_ALLER" };
 
 describe("ce que la page du trajet pose (Q3.1)", () => {
   it.each(["S3138g", "S3139h"] as const)(
-    "pour %s, le nombre de transports et leur sens",
+    "pour %s, le sens d'abord, puis le nombre une fois le sens choisi",
     (support) => {
-      expect(posees(support).map(({ id }) => id)).toEqual(["Q3.1.1", "Q3.1.2"]);
+      expect(posees(support).map(({ id }) => id)).toEqual(["Q3.1.2"]);
+      expect(posees(support, PRESCRIPTION).map(({ id }) => id)).toEqual([
+        "Q3.1.2",
+        "Q3.1.1",
+      ]);
     },
   );
 
@@ -101,24 +105,46 @@ describe("les réponses de Q3.1", () => {
     ).toBe(true);
   });
 
-  it("un aller-retour d'un seul transport bloque", () => {
+  it("un aller-retour se compte en allers-retours : un seul se valide", () => {
     const reponses: Reponses = {
       "Q3.1.1": 1,
       "Q3.1.2": "3_ALLER_RETOUR_EQUIVALENT",
     };
 
-    expect(question("Q3.1.2", "S3138g", reponses).inconsistencies).toEqual([
-      "Un aller-retour compte deux transports. Indiquez-en au moins deux, ou choisissez « Aller simple » ou « Retour simple ».",
-    ]);
     expect(
       new Questionnaire(DU_TRAJET)
         .readWith(reponses, avecLeSupport("S3138g"))
         .isComplete(),
-    ).toBe(false);
+    ).toBe(true);
+  });
+
+  it.each([
+    [
+      "1_ALLER",
+      "Combien d’allers simples cette prescription doit-elle couvrir ?",
+      "Un aller simple correspond à un seul trajet vers le lieu de soins.",
+    ],
+    [
+      "2_RETOUR",
+      "Combien de retours simples cette prescription doit-elle couvrir ?",
+      "Un retour simple correspond à un seul trajet depuis le lieu de soins.",
+    ],
+    [
+      "3_ALLER_RETOUR_EQUIVALENT",
+      "Combien d’allers-retours cette prescription doit-elle couvrir ?",
+      "Un aller-retour comprend deux trajets : un aller et un retour. Exemple : 3 allers-retours = 3 allers et 3 retours.",
+    ],
+  ] as const)("le nombre suit le sens %s", (sens, label, hint) => {
+    expect(question("Q3.1.1", "S3138g", { "Q3.1.2": sens })).toMatchObject({
+      label,
+      hint,
+    });
   });
 
   it.each([0, 1.5])("refuse %s transport", (nombre) => {
-    expect(errorsOf(question("Q3.1.1", "S3138g"), nombre)).not.toEqual([]);
+    expect(
+      errorsOf(question("Q3.1.1", "S3138g", PRESCRIPTION), nombre),
+    ).not.toEqual([]);
   });
 });
 
@@ -168,56 +194,48 @@ describe("les sens que les rôles de P2 permettent (Q3.1.2)", () => {
 
 describe("le nombre mensuel du S3141 (Q3.1.3)", () => {
   // Une permission toutes les deux semaines : trois au plus dans un mois.
-  const mensuel = (nombre?: number) =>
-    question("Q3.1.3", "S3141", {
-      ...PLUSIEURS_PERMISSIONS,
-      ...(nombre !== undefined && { "Q3.1.3": nombre }),
-    });
+  const mensuel = (reponses: Reponses = {}) =>
+    question("Q3.1.3", "S3141", { ...PLUSIEURS_PERMISSIONS, ...reponses });
 
-  it("compte des trajets par mois, un aller-retour pour deux", () => {
+  it("compte des allers-retours par mois", () => {
     expect(mensuel()).toMatchObject({
-      label: "Combien de trajets faut-il prescrire par mois ?",
-      hint: "Chaque permission est un aller-retour : elle compte deux trajets.",
-      unit: "trajet(s) par mois",
+      label:
+        "Combien d’allers-retours faut-il prescrire par mois pour ces permissions de sortie ?",
+      hint: "Exemple : 2 allers-retours par mois = 2 allers et 2 retours par mois.",
+      unit: "aller(s)-retour(s) par mois",
     });
   });
 
-  it("rappelle les dates et la fréquence de Q2.8", () => {
-    expect(mensuel().reminder).toEqual([
-      {
-        label: "Première permission",
-        value: "du 14/10/2026 à 09:00 au 15/10/2026 à 09:00",
-      },
-      { label: "Fin de la période", value: "01/12/2026" },
-      {
-        label: "Fréquence",
-        value: "une permission aller-retour toutes les 2 semaine(s)",
-      },
-    ]);
-  });
+  it.each([
+    [1, "Une permission aller-retour par semaine"],
+    [2, "Une permission aller-retour toutes les 2 semaines"],
+  ])(
+    "toutes les %i semaine(s), ne rappelle que la fréquence",
+    (semaines, frequence) => {
+      expect(mensuel({ "Q2.8.6.a": semaines }).reminder).toEqual([
+        { label: "Fréquence", value: frequence },
+      ]);
+    },
+  );
 
-  it("refuse plus de trajets que la fréquence n'en permet", () => {
-    expect(mensuel(6).inconsistencies).toEqual([]);
-    expect(mensuel(7).inconsistencies).toEqual([
-      "Avec une permission toutes les 2 semaine(s), un mois compte au plus 6 trajets.",
+  it("refuse plus d'allers-retours que la fréquence n'en permet", () => {
+    expect(mensuel({ "Q3.1.3": 3 }).inconsistencies).toEqual([]);
+    expect(mensuel({ "Q3.1.3": 4 }).inconsistencies).toEqual([
+      "Avec une permission toutes les 2 semaine(s), un mois compte au plus 3 allers-retours.",
     ]);
   });
 
   it.each([
-    [1, 10],
-    [4, 4],
-    [5, 2],
+    [1, 5],
+    [4, 2],
+    [5, 1],
   ])(
-    "toutes les %i semaine(s), un mois compte au plus %i trajets",
+    "toutes les %i semaine(s), un mois compte au plus %i allers-retours",
     (semaines, maximum) => {
-      const reponses = (nombre: number) =>
-        question("Q3.1.3", "S3141", {
-          ...PLUSIEURS_PERMISSIONS,
-          "Q2.8.6.a": semaines,
-          "Q3.1.3": nombre,
-        }).inconsistencies;
-      expect(reponses(maximum)).toEqual([]);
-      expect(reponses(maximum + 1)).toHaveLength(1);
+      const incoherences = (nombre: number) =>
+        mensuel({ "Q2.8.6.a": semaines, "Q3.1.3": nombre }).inconsistencies;
+      expect(incoherences(maximum)).toEqual([]);
+      expect(incoherences(maximum + 1)).toHaveLength(1);
     },
   );
 });

@@ -113,7 +113,9 @@ describe("les boutons du modèle de l'éditeur", DELAI_D_UN_TEST, () => {
     await user.click(screen.getByRole("button", { name: COMPLETER }));
 
     expect(
-      await screen.findByLabelText(/^Combien de transports faut-il prescrire/),
+      await screen.findByRole("group", {
+        name: /^Quel trajet cette prescription doit-elle couvrir/,
+      }),
     ).toBeInTheDocument();
   });
 
@@ -122,11 +124,11 @@ describe("les boutons du modèle de l'éditeur", DELAI_D_UN_TEST, () => {
     const user = userEvent.setup();
     await user.click(screen.getByRole("button", { name: COMPLETER }));
 
+    await user.click(await screen.findByLabelText("Aller simple"));
     await user.type(
-      await screen.findByLabelText(/^Combien de transports faut-il prescrire/),
+      await screen.findByLabelText(/^Combien d’allers simples/),
       "2",
     );
-    await user.click(screen.getByLabelText("Aller simple"));
     await user.click(screen.getByRole("button", { name: "Suivant" }));
     await user.selectOptions(
       await screen.findByRole("combobox", {

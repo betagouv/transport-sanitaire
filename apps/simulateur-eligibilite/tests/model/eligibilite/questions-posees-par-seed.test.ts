@@ -30,9 +30,9 @@ const P1 = ["Q0.1", "Q1.1", "Q1.2", "Q1.3"];
 const LIEUX = ["Q3.2.nature", "Q3.2.adresse", "Q3.3.nom", "Q3.3.adresse"];
 
 // Le complément d'une DAP ou d'une PMT : le patient, les lieux, le centre de
-// référence, puis la distance et l'urgence quand elles comptent.
+// référence, puis la distance et l'urgence quand elles comptent. Le nombre de
+// trajets attend le sens, qu'aucune seed ne donne (D-246).
 const complement = (...entre: string[]) => [
-  "Q3.1.1",
   "Q3.1.2",
   ...LIEUX,
   "Q3.4",
@@ -112,7 +112,7 @@ const ATTENDU: Record<string, readonly [string[], string[]]> = {
       "Q2.3.2",
       "Q2.7",
     ]),
-    ["Q3.1.1", "Q3.1.2", "Q3.2.nature", "Q3.2.adresse", "Q3.3.nature"].concat([
+    ["Q3.1.2", "Q3.2.nature", "Q3.2.adresse", "Q3.3.nature"].concat([
       "Q3.3.adresse",
       "Q3.4",
       "Q3.4.a",

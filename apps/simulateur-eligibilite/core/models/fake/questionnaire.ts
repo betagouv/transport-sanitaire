@@ -56,8 +56,13 @@ export const PARTS: readonly QuestionnairePart<Questions, undefined>[] = [
               ? "Avec quoi, ce thé ?"
               : "Avec quoi, ce café ?",
           )
-          .hint(
-            "Démontre : un libellé de question et un libellé d'option qui dépendent des réponses (le lait devient « un nuage de lait » avec le thé), une option proposée selon la boisson (le citron, avec le thé seulement), et une option exclusive. Un fait a trois états. Le citron vaut « oui » s'il est coché, et « non » s'il se proposait sans l'être, ou avec un café, où il ne se sert pas. Avec « Peut-être du citron », on ne sait pas : le fait est absent, et le résultat ne décide pas si le lait tourne.",
+          .hintFrom(({ answers }) =>
+            [
+              "Démontre : un libellé, une aide et un libellé d'option qui dépendent des réponses (le lait devient « un nuage de lait » avec le thé), une option proposée selon la boisson (le citron, avec le thé seulement), et une option exclusive. Un fait a trois états. Le citron vaut « oui » s'il est coché, et « non » s'il se proposait sans l'être, ou avec un café, où il ne se sert pas. Avec « Peut-être du citron », on ne sait pas : le fait est absent, et le résultat ne décide pas si le lait tourne.",
+              answers.question("boisson").is("the")
+                ? "Cette aide le dit : c'est un thé."
+                : "Cette aide le dit : c'est un café.",
+            ].join(" "),
           )
           .appliesWhen(commandeEnCours)
           .dependsOn("boisson")
