@@ -136,10 +136,12 @@ function permission(entrees: Entrees): Lieux {
 }
 
 // Q2.5 = 2 pendant un séjour en établissement : l'aller en part, le retour y
-// revient.
+// revient. Une admission en HAD de Q2.6 n'y revient pas : elle quitte
+// l'établissement pour le domicile (D-256).
 function deplacementPendantLeSejour(entrees: Entrees): Lieux {
   const autre = entrees.transfert.is("2_AUTRE_DEPLACEMENT");
   if (!autre || !sejourEnEtablissement(entrees)) return {};
+  if (q26(entrees, "10_ADMISSION_HAD")) return {};
   if (sensDe(entrees) === undefined) return {};
   const sejour = hopital(
     entrees,
