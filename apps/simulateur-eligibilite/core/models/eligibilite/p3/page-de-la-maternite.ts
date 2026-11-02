@@ -12,7 +12,7 @@ import { natureDu } from "./lieux-du-trajet.ts";
 import { uneDap } from "./supports-du-complement.ts";
 
 /** La DAP coche le motif Engagement maternité. */
-export const unEngagementMaternite = uneDap.and(
+const unEngagementMaternite = uneDap.and(
   given.cible("cible_dap_motif_engagement_maternite").isOui(),
 );
 
