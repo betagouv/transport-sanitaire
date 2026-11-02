@@ -759,7 +759,7 @@ D-224). Le socle ne pose alors une question que si elle compte (`Relevance`) :
 |---|---|---|
 | ce que montre le résultat dépend d'elle, dans une branche encore possible | D-220 | Q2.3.2 pour une PMT : l'avion change le document |
 | elle change la garde d'une question qui reste, peut encore se poser et compte | D-221, D-223 | Q2.1.g, que lit la garde de Q2.5 |
-| elle porte une incohérence, ou se déclare toujours posée | D-222, D-226 | Q3.1.3, Q2.8.4.a |
+| elle porte une incohérence, ou se déclare toujours posée | D-222 | Q3.1.3 |
 
 Les faits des questions validées sont figés, ceux des questions qui restent et
 ceux qu'impose la décision sont libres : le graphe restreint aux faits figés ne

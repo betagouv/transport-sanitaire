@@ -23,13 +23,6 @@ export const OPTIONS_DE_LA_PERMISSION = {
     "1_OUI": "Oui.",
     "2_NON": "Non.",
   },
-  /** Quel est le cadre de cette permission ? */
-  "Q2.8.4.a": {
-    "1_SOINS": "Elle est liée aux soins du patient.",
-    "2_ORGANISATION": "Elle est liée à l’organisation de l’établissement.",
-    "3_DEMANDE_PERSONNELLE":
-      "Elle répond à une demande personnelle du patient.",
-  },
   /** La prescription couvre-t-elle plusieurs permissions ? */
   "Q2.8.5": {
     "1_OUI": "Oui.",

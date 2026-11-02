@@ -173,21 +173,8 @@ describe("les faits de la permission", () => {
   });
 
   it("laisse l'admissibilité absente tant que Q2.8 n'est pas validée", () => {
-    const {
-      "Q2.8.4": _,
-      "Q2.8.4.a": __,
-      "Q2.8.5": ___,
-      ...sansAutorisation
-    } = MINEUR;
+    const { "Q2.8.4": _, "Q2.8.5": __, ...sansAutorisation } = MINEUR;
     expect(deux(sansAutorisation)).toEqual([false, undefined]);
-  });
-
-  it("le cadre de Q2.8.4.a ne change aucun fait", () => {
-    const personnelle: Reponses = {
-      ...MINEUR,
-      "Q2.8.4.a": "3_DEMANDE_PERSONNELLE",
-    };
-    expect(faits(personnelle)).toEqual(faits(MINEUR));
   });
 });
 

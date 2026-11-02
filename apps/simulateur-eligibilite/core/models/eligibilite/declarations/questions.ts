@@ -217,7 +217,6 @@ export type Questions = QuestionsDuComplement & {
   "Q2.8.2": string;
   "Q2.8.3": string;
   "Q2.8.4": Option<"Q2.8.4">;
-  "Q2.8.4.a": Option<"Q2.8.4.a">;
   "Q2.8.5": Option<"Q2.8.5">;
   "Q2.8.6": string;
   /** Une permission aller-retour toutes les N semaines. */
