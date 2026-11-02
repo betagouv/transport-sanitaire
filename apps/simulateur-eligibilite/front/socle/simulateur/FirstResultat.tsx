@@ -144,7 +144,8 @@ type ContentProps = {
   feedback: FeedbackOffer | null;
 };
 
-// L'avis entre dans la barre d'actions, une fois le résultat chargé.
+// L'avis entre dans la barre d'actions, une fois le résultat chargé. La page
+// prend le nom que le résultat lui donne, une fois chargé.
 function Content({
   result,
   step,
@@ -158,7 +159,7 @@ function Content({
   const offer = loaded && onFirstResult(feedback, completes);
   const buttons = { ...actions, completion, feedback: offer || null };
   return (
-    <>
+    <section aria-label={loaded?.label}>
       <div className="fr-no-print">
         <ResultStepper {...step} completion={buttons.completion} />
       </div>
@@ -170,7 +171,7 @@ function Content({
       ) : (
         <Page result={loaded} buttons={buttons} />
       )}
-    </>
+    </section>
   );
 }
 
