@@ -1,6 +1,6 @@
 # Le livrable de l'éditeur
 
-> Dernière mise à jour : 2026-10-26
+> Dernière mise à jour : 2026-11-02
 
 Le modèle d'éligibilité est **écrit par l'éditeur**, pas par nous. Il arrive en
 paquet, version après version. Ce document dit ce qu'on en garde, ce qui fait
@@ -97,18 +97,18 @@ quel. Le destinataire ne connaît ni notre code ni nos tests.
 ```markdown
 <Une phrase d'ouverture : la version lue, ce qu'on en a fait.>
 
-**Levés**
+**Bloquants**
 1. <Intitulé court> : <une ou deux phrases>. <lien du ticket>
 
-**Bloquants**
+**Sans urgence**
 2. …
 
-**Sans urgence**
-3. …
-
 **À valider**
-4. <Notre lecture, en une phrase.> Tu confirmes ?
+3. <Notre lecture, en une phrase.> Tu confirmes ?
 ```
+
+- Ce que la version a réglé ne s'écrit pas : le message ne porte que ce qui
+  attend l'éditeur.
 
 - Un point dit ce qu'on a constaté, puis ce qu'on propose. Le fait et
   l'hypothèse ne s'écrivent pas sur le même ton.
