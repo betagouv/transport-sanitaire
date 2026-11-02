@@ -59,7 +59,7 @@ const BRANCARD = avecUnProfessionnel(["8_BRANCARDAGE"]);
 describe("les pages de P0 et P1, jusqu'au trajet", () => {
   // Le brancard prouve déjà un motif de transport : la prestation (Q2.1) ne
   // se pose pas (D-102). Les situations particulières se posent toujours
-  // (D-98).
+  // (D-98), en deux pages tant que les soins peuvent changer l'issue (D-252).
   it("un patient autonome saute les critères et dit sa préférence", () => {
     expect(pagesAffichees(SEUL)).toEqual([
       "P0/1",
@@ -68,6 +68,7 @@ describe("les pages de P0 et P1, jusqu'au trajet", () => {
       "P1/4",
       "P2/prestation",
       "P2/contextes",
+      "P2/soins",
       "P2/trajet",
     ]);
   });
@@ -80,6 +81,7 @@ describe("les pages de P0 et P1, jusqu'au trajet", () => {
       "P1/4",
       "P2/prestation",
       "P2/contextes",
+      "P2/soins",
       "P2/trajet",
     ]);
   });
@@ -91,6 +93,7 @@ describe("les pages de P0 et P1, jusqu'au trajet", () => {
       "P1/2",
       "P1/3",
       "P2/contextes",
+      "P2/soins",
       "P2/trajet",
     ]);
   });

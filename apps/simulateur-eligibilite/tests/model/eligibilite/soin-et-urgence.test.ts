@@ -83,12 +83,11 @@ describe("la page du soin (Q3.4, Q3.4.a)", () => {
     ]);
   });
 
-  it("rappelle aussi le parcours de l'enfant et le déplacement des séances de Q2.1", () => {
+  it("rappelle aussi le déplacement des séances de Q2.1", () => {
     const pmt = seed("issue-pmt");
-    const precise: Reponses = { ...pmt, "Q2.1.h": "1_OUI", "Q2.1.f": "1_OUI" };
+    const precise: Reponses = { ...pmt, "Q2.1.f": "1_OUI" };
     const [precision] = posees("P3/soin", precise, pmt);
     expect(precision?.reminder).toEqual([
-      { label: "Séance dans le parcours de l’enfant", value: "Oui." },
       SEANCE,
       HEMODIALYSE,
       {

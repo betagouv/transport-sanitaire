@@ -81,7 +81,6 @@ const SEANCES = ["3_CHIMIOTHERAPIE", "4_RADIOTHERAPIE", "5_DIALYSE"] as const;
 const PRECISIONS = {
   "Q2.1": "Motif",
   "Q2.1.g": "Précision",
-  "Q2.1.h": "Séance dans le parcours de l’enfant",
   "Q1.3.a": "Séance d’hémodialyse",
   "Q2.1.f": "Séances et déplacement",
 } as const;
@@ -102,7 +101,6 @@ function recapitulatifDuSoin(reponses: GivenAnswers<Questions>) {
   const lignes = [
     ...lu("Q2.1"),
     ...lu("Q2.1.g"),
-    ...lu("Q2.1.h"),
     ...seances,
     ...lu("Q1.3.a"),
     ...lu("Q2.1.f"),

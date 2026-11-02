@@ -48,7 +48,10 @@ describe("article80-bilan-complet", () => {
 
 describe("Q2.6 non posée", () => {
   it.each([
-    ["Q2.2.1 « Aucune »", { ...SEJOUR, "Q2.2.1": ["4_AUCUNE"] }],
+    [
+      "Q2.2.1 « Aucune »",
+      { ...SEJOUR, "Q2.2.1": ["0_AUCUNE"], "Q2.2.1.b": ["0_AUCUN"] },
+    ],
     ["Q2.5 sans réponse", { ...URGENCES }],
   ] as const)("%s : les huit exceptions restent absentes", (_, reponses) => {
     expect(posee("P2/exceptions", "Q2.6", reponses)).toBeUndefined();
@@ -56,7 +59,11 @@ describe("Q2.6 non posée", () => {
   });
 
   it("Q2.5 ne se pose pas sans transfert ni déplacement hospitalier", () => {
-    const sansSejour = { ...SEJOUR, "Q2.2.1": ["4_AUCUNE"] } as const;
+    const sansSejour = {
+      ...SEJOUR,
+      "Q2.2.1": ["0_AUCUNE"],
+      "Q2.2.1.b": ["0_AUCUN"],
+    } as const;
     expect(posee("P2/transfert", "Q2.5", sansSejour)).toBeUndefined();
     expect(posee("P2/transfert", "Q2.5", SEJOUR)).toBeDefined();
     expect(posee("P2/transfert", "Q2.5", URGENCES)).toBeDefined();

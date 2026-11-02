@@ -3,8 +3,7 @@
 //
 // Sans permission, il vaut « non ». Q2.7 dit un patient de moins de 20 ans,
 // et l'autorisation de Q2.8.4 décide. Les dates, la durée, la fréquence et
-// l'âge sont garantis par les blocages de la page. Le cadre de Q2.8.4.a ne
-// change aucun fait.
+// l'âge sont garantis par les blocages de la page.
 //
 // Il suit `CORRECTIF_FAITS_SANS_REPONSE.md`, qui prime sur
 // `CONTRAT_REPONSES_FAITS.json`.

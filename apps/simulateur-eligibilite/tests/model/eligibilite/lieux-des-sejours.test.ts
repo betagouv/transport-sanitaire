@@ -102,8 +102,8 @@ describe("les lieux d'un séjour, d'une HAD et d'une permission (QST-LIEUX-001)"
     const prison: Reponses = {
       ...RETOUR,
       "Q2.2.1.a": "1_OUI",
-      "Q2.2.1": ["1_HOSPITALISATION", "3_AUTRE_CADRE"],
-      "Q2.2.1.b": ["10_RETOUR_PENITENTIAIRE"],
+      "Q2.2.1": ["1_HOSPITALISATION", "10_RETOUR_PENITENTIAIRE"],
+      "Q2.2.1.b": ["0_AUCUN"],
     };
     expect(rappel("P3/depart", "Q3.2.nom", prison)).toEqual([
       {
@@ -198,8 +198,8 @@ describe("les lieux d'un séjour, d'une HAD et d'une permission (QST-LIEUX-001)"
 
   it("le HTNM est l'arrivée de l'aller et le départ du retour", () => {
     const htnm: Reponses = {
-      "Q2.2.1": ["3_AUTRE_CADRE"],
-      "Q2.2.1.b": ["5_HTNM"],
+      "Q2.2.1": ["5_HTNM"],
+      "Q2.2.1.b": ["0_AUCUN"],
     };
     const lieu = [
       {

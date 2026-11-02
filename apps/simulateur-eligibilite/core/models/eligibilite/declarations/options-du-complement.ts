@@ -65,4 +65,15 @@ export const OPTIONS_DU_COMPLEMENT = {
       "Un transfert vers un autre établissement d’hospitalisation, pour un traitement mieux adapté à l’état de santé, sauf vers un établissement de soins de suite et de réadaptation.",
     "7_AUCUN": "Aucun autre cas parmi ceux proposés.",
   },
+  /**
+   * Quel niveau de maternité est requis pour cette patiente ? (Q3.8,
+   * `CONTRAT_Q38_MATERNITE_DOCUMENT.json`.)
+   */
+  "Q3.8.niveau": {
+    "1_TYPE_I":
+      "Type I — soins obstétricaux et accueil du nouveau-né sans unité de néonatologie.",
+    "2_TYPE_IIA": "Type IIA — unité de néonatologie.",
+    "3_TYPE_IIB": "Type IIB — néonatologie avec soins intensifs.",
+    "4_TYPE_III": "Type III — réanimation néonatale.",
+  },
 } as const;

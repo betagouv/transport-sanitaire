@@ -37,4 +37,14 @@ export type QuestionsDuComplement = {
   "Q3.6.3": string;
   /** Les cas particuliers d'exonération du ticket modérateur. */
   "Q3.7": Option<"Q3.7">[];
+  /**
+   * La maternité de l'Engagement maternité, que le trajet ne dit pas, et le
+   * niveau requis. L'hébergement du dispositif, s'il n'est ni le départ ni
+   * l'arrivée.
+   */
+  "Q3.8.maternite.nom": string;
+  "Q3.8.maternite.adresse": Address;
+  "Q3.8.niveau": Option<"Q3.8.niveau">;
+  "Q3.8.hebergement.nom": string;
+  "Q3.8.hebergement.adresse": Address;
 };

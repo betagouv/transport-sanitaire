@@ -89,7 +89,7 @@ describe("atmp", () => {
   it("vaut l'identifiant commun quand Q2.2.1.b signale un AT/MP", () => {
     const reponses = {
       ...BRANCARD_20_KM,
-      "Q2.2.1": ["3_AUTRE_CADRE"],
+      "Q2.2.1": ["0_AUCUNE"],
       "Q2.2.1.b": ["1_ATMP"],
     } as Reponses;
     expect(precisionsDe(reponses).atmp).toBe("ATMP");

@@ -190,6 +190,8 @@ export type IssueNegative = {
     readonly text: string;
     readonly reason: string;
     readonly inactive: boolean;
+    /** Les textes d'une situation plus précise, par leur nom au catalogue. */
+    readonly variants?: Readonly<Partial<Record<string, string>>>;
   }[];
   /** Ce que l'Assurance Maladie ne rembourse pas : un titre, puis ses puces. */
   readonly institutionalInformation: {

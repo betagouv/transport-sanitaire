@@ -104,15 +104,33 @@ describe("le cerfa", () => {
     expect((await drawnOn(await pdf.contenu())).texts).toContain("2026-10-15");
   });
 
-  it("qui ne se génère pas le dit, sous le résultat toujours affiché", async () => {
+  it("qui ne se génère pas le dit, à la place du texte du résultat", async () => {
     const user = await ouvrirLeSimulateur({ modele: sansGabarit() });
     await allerAuCerfa(user);
 
     expect(await screen.findByRole("alert")).toHaveTextContent(
-      "Le document n'a pas pu être généré.",
+      "La génération du document a échoué. Réessayez.",
     );
-    expect(screen.getByText("Commande : thé, lait, 2 tasses")).toBeVisible();
+    expect(screen.queryByText("Commande : thé, lait, 2 tasses")).toBeNull();
     expect(ecoute.telechargements).toEqual([]);
+  });
+
+  it("dit qu'il se génère, et ne montre le texte du résultat qu'une fois prêt", async () => {
+    const gabarit = gabaritRetenu();
+    const user = await ouvrirLeSimulateur({
+      modele: auGabarit(gabarit.charge),
+    });
+    await allerAuCerfa(user);
+
+    expect(screen.getByRole("status")).toHaveTextContent(
+      "Génération du document en cours…",
+    );
+    expect(screen.queryByText("Commande : thé, lait, 2 tasses")).toBeNull();
+    gabarit.lache();
+    expect(
+      await screen.findByText("Commande : thé, lait, 2 tasses"),
+    ).toBeVisible();
+    expect(screen.getByRole("status")).toHaveTextContent("");
   });
 
   it("dit « Préparation du PDF » sur « Télécharger » tant qu'il se génère", async () => {

@@ -103,7 +103,7 @@ function radiotherapie(entrees: Entrees): Lieux {
   return retour(entrees) ? { arrivee: origine } : { depart: origine };
 }
 
-// L'option 10 de Q2.2.1.b fixe l'arrivée pénitentiaire.
+// L'option 10 de Q2.2.1 fixe l'arrivée pénitentiaire.
 function versLaPrison(): Lieux {
   return {
     arrivee: {
@@ -152,7 +152,8 @@ function deplacementPendantLeSejour(entrees: Entrees): Lieux {
 // établissement ne s'en déduit.
 function soinsPendantLaHad(entrees: Entrees): Lieux {
   const enHad =
-    entrees.cadre.checked("1_HOSPITALISATION") && entrees.sejour.is("2_HAD");
+    entrees.situations.checked("1_HOSPITALISATION") &&
+    entrees.sejour.is("2_HAD");
   if (!enHad || sensDe(entrees) === undefined) return {};
   const domicile: Etablie = {
     nature: "1_DOMICILE",
@@ -164,7 +165,7 @@ function soinsPendantLaHad(entrees: Entrees): Lieux {
 // L'hébergement est l'arrivée de l'aller, le départ du retour.
 function hebergement(entrees: Entrees): Lieux {
   const acquis =
-    entrees.motif.is("13_MATERNITE") || entrees.autreCadre.checked("5_HTNM");
+    entrees.motif.is("13_MATERNITE") || entrees.situations.checked("5_HTNM");
   if (!acquis || sensDe(entrees) === undefined) return {};
   const htnm: Etablie = {
     nature: "5_HEBERGEMENT_NON_MEDICALISE",
@@ -203,17 +204,14 @@ function hopital(entrees: Entrees, rappel: string): Role {
 // (`p2/sejour.ts`).
 function sejourEnEtablissement(entrees: Entrees): boolean {
   return (
-    entrees.cadre.checked("1_HOSPITALISATION") &&
+    entrees.situations.checked("1_HOSPITALISATION") &&
     (entrees.sejour.is("1_ETABLISSEMENT") || entrees.sousType.is("2_SORTIE"))
   );
 }
 
-// L'option 10 de l'autre cadre est cochée (`p2/retour-penitentiaire.ts`).
-function retourPenitentiaire({ cadre, autreCadre }: Entrees): boolean {
-  return (
-    cadre.checked("3_AUTRE_CADRE") &&
-    autreCadre.checked("10_RETOUR_PENITENTIAIRE")
-  );
+// L'option 10 de Q2.2.1 est cochée (`p2/retour-penitentiaire.ts`).
+function retourPenitentiaire({ situations }: Entrees): boolean {
+  return situations.checked("10_RETOUR_PENITENTIAIRE");
 }
 
 // Un aller-retour équivalent se décrit dans le sens de l'aller.

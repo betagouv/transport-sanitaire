@@ -105,9 +105,11 @@ const MENTIONS: Partial<Record<Nature, string>> = {
   "5_HEBERGEMENT_NON_MEDICALISE": "Hébergement temporaire non médicalisé",
 };
 
-// Les parties saisies de l'adresse. Le code postal et la commune vont
-// ensemble, comme sur une enveloppe.
-function adresseEnParties(adresse: Address | Unanswered): string[] {
+/**
+ * Les parties saisies de l'adresse. Le code postal et la commune vont
+ * ensemble, comme sur une enveloppe.
+ */
+export function adresseEnParties(adresse: Address | Unanswered): string[] {
   if (adresse === undefined) return [];
   const ville = [adresse.postalCode, adresse.city].filter(Boolean).join(" ");
   return [

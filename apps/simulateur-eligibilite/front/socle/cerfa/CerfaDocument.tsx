@@ -1,13 +1,15 @@
-// Le document d'un cerfa : ses deux actions, l'imprimer et le télécharger,
-// puis son aperçu.
+// Le document d'un cerfa : l'état de sa génération, ses deux actions,
+// l'imprimer et le télécharger, puis son aperçu.
 //
 // Le PDF se génère une fois, dès que le document s'affiche, dans le
-// navigateur : les deux actions et l'aperçu portent le même document. Un
-// commentaire retiré faute de place s'annonce avant toute action (D-85). Un
-// échec se signale sans masquer ce que la page affiche déjà, et le clic
-// réessaie. Pendant la génération, les deux actions attendent, et
-// « Télécharger » dit « Préparation du PDF ». Une action qui attend un PDF ne
-// se fait plus si le document a été quitté entre-temps (pdf-preparation.ts).
+// navigateur : les deux actions et l'aperçu portent le même document. Le texte
+// du résultat ne vient qu'avec un PDF prêt, non vide. Avant, « Génération du
+// document en cours… » tient sa place ; après un échec, l'alerte, et le clic
+// réessaie sans reprendre l'ancien PDF (NAV-ETATS-R3-001, D-250). Un
+// commentaire retiré faute de place s'annonce avant toute action (D-85).
+// Pendant la génération, les deux actions attendent, et « Télécharger » dit
+// « Préparation du PDF ». Une action qui attend un PDF ne se fait plus si le
+// document a été quitté entre-temps (pdf-preparation.ts).
 // « Imprimer » vient avant « Télécharger » : côte à côte s'ils tiennent, l'un
 // sous l'autre sinon, le groupe en ligne du DSFR passant à la ligne sans
 // couper un libellé (D-173). Qui l'affiche peut donner de quoi tenir la place
@@ -35,6 +37,8 @@ type Props<Dto extends CerfaDto> = {
   date: Date;
   printLabel: string;
   downloadLabel: string;
+  /** Le texte du résultat, qui ne vient qu'une fois le PDF prêt. */
+  text?: ReactNode;
   /** Ce qui se montre à la place de l'aperçu. Sans lui, l'aperçu du PDF. */
   standIn?: ReactNode;
   /** Ce qui précède le document, selon que son PDF est prêt ou non. */
@@ -47,6 +51,7 @@ export function CerfaDocument<Dto extends CerfaDto>({
   date,
   printLabel,
   downloadLabel,
+  text,
   standIn,
   above,
 }: Props<Dto>) {
@@ -56,8 +61,9 @@ export function CerfaDocument<Dto extends CerfaDto>({
   const ready = settled?.status === "ready";
   return (
     <div className="fr-mb-4w fr-no-print">
+      <Generation settled={settled} text={text} />
       {above?.(ready)}
-      <Notices settled={settled} />
+      {ready && settled.removedComments.length > 0 && <RemovedComment />}
       <ul className="fr-btns-group fr-btns-group--inline fr-btns-group--icon-left">
         <ActionButton
           icon="fr-icon-printer-line"
@@ -82,14 +88,19 @@ export function CerfaDocument<Dto extends CerfaDto>({
 
 type Settled = ({ status: "ready" } & GeneratedCerfa) | { status: "failed" };
 
-// Une génération qui ne rejette jamais : son échec est un état de l'écran.
+// Une génération qui ne rejette jamais : son échec est un état de l'écran. Un
+// PDF vide n'est pas prêt.
 function generate<Dto extends CerfaDto>(
   cerfa: Cerfa<Dto>,
   dto: Dto,
 ): Promise<Settled> {
   return generateCerfa(cerfa, dto).then(
-    (generated) => ({ status: "ready", ...generated }),
-    (cause) => {
+    (generated): Settled => {
+      if (generated.pdf.size > 0) return { status: "ready", ...generated };
+      console.error("[cerfa] Le PDF généré est vide.");
+      return { status: "failed" };
+    },
+    (cause): Settled => {
       console.error("[cerfa] Génération impossible.", cause);
       return { status: "failed" };
     },
@@ -138,19 +149,26 @@ function useSettled(downloadablePdf: Promise<Settled>): Settled | Pending {
   return settled;
 }
 
-// Ce que la génération annonce, au-dessus des boutons : qu'elle a échoué, ou
-// qu'elle a retiré un commentaire. Qu'elle est en cours, seuls les lecteurs
-// d'écran l'entendent ici : le bouton « Télécharger » le montre.
-function Notices({ settled }: { settled: Settled | Pending }) {
+const GENERATING = "Génération du document en cours…";
+
+// L'état de la génération, à la place du texte du résultat : en cours, échouée,
+// ou prête, et le texte vient. La région d'état reste posée, vide hors de
+// l'attente, pour que les lecteurs d'écran entendent chaque nouvelle attente.
+function Generation({
+  settled,
+  text,
+}: {
+  settled: Settled | Pending;
+  text: ReactNode;
+}) {
+  const pending = settled === undefined;
   return (
     <>
-      {settled?.status === "failed" && <Failure />}
-      {settled?.status === "ready" && settled.removedComments.length > 0 && (
-        <RemovedComment />
-      )}
-      <p className="fr-sr-only" role="status">
-        {settled === undefined ? PREPARING : ""}
+      <p className={pending ? undefined : "fr-sr-only"} role="status">
+        {pending ? GENERATING : ""}
       </p>
+      {settled?.status === "failed" && <Failure />}
+      {settled?.status === "ready" && text}
     </>
   );
 }
@@ -194,10 +212,7 @@ function Failure() {
       className="fr-alert fr-alert--error fr-alert--sm fr-mb-2w"
       role="alert"
     >
-      <p>
-        Le document n'a pas pu être généré. Réessayez, ou remplissez le
-        formulaire à la main.
-      </p>
+      <p>La génération du document a échoué. Réessayez.</p>
     </div>
   );
 }

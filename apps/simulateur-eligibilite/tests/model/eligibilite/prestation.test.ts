@@ -105,8 +105,10 @@ describe("les sous-questions de Q2.1", () => {
     ]);
   });
 
-  it("pose h pour un soin CAMSP ou CMPP", () => {
-    expect(ids({ ...SEUL, "Q2.1": "10_CAMSP" })).toEqual(["Q2.1", "Q2.1.h"]);
+  // Son libellé dit déjà la séance organisée dans le parcours de l'enfant
+  // (QST-RACCORDEMENTS-001).
+  it("ne précise pas un soin CAMSP ou CMPP", () => {
+    expect(ids({ ...SEUL, "Q2.1": "10_CAMSP" })).toEqual(["Q2.1"]);
   });
 
   it("pose f pour plusieurs séances, même quand Q2.1 se saute", () => {

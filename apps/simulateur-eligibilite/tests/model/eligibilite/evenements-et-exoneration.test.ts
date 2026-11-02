@@ -46,7 +46,7 @@ const cases = (reponses: Reponses) => {
 // Une DAP au-delà de 150 km, pour des soins liés à un accident du travail.
 const ATMP = {
   ...BRANCARD_20_KM,
-  "Q2.2.1": ["3_AUTRE_CADRE"],
+  "Q2.2.1": ["0_AUCUNE"],
   "Q2.2.1.b": ["1_ATMP"],
   "Q2.3.1": "3_PLUS_DE_CENT_CINQUANTE_KM",
   "Q2.3.3": "2_NON",

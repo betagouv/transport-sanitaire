@@ -1,6 +1,6 @@
 {
   "schema": "resultats-html-patient/2",
-  "packageVersion": "10.1.4",
+  "packageVersion": "10.1.5",
   "modelSha256": "a7c4d4a93f0a1c57062cc0c36057b3dc35e1f962c74f66ad584d72c73c02225b",
   "sourceDate": "2026-10-20",
   "sources": {
@@ -15859,7 +15859,10 @@
           "priority": 80,
           "text": "La prise en charge au titre d’une série nécessite au moins 4 transports de plus de 50 km chacun, sur une période de 2 mois, pour le même traitement. Les déplacements prévus ne remplissent pas ces conditions.",
           "reason": "AUCUN_MOTIF_TRANSPORT",
-          "inactive": false
+          "inactive": false,
+          "variants": {
+            "distance_50_ou_moins": "Le trajet évalué ne dépasse pas 50 km. Pour une prise en charge au titre d’une série, chacun des transports doit dépasser 50 km."
+          }
         },
         {
           "id": "AUCUN_CONSULTATION",

@@ -6,7 +6,7 @@
 //     .ouiSi(situation.checked("6_CAMSP"))
 //     .nonSiEcartee(situation, "6_CAMSP")
 //     .applique(UNE_SORTIE_VERS_LA_PRISON)
-//     .sinon("Ni Q2.1.h, ni Q2.2.1 n'établissent encore le CAMSP.");
+//     .sinon("Ni Q2.1, ni Q2.2.1 n'établissent encore le CAMSP.");
 //
 // Les règles s'appliquent dans l'ordre : la première qui établit le fait
 // l'emporte. `sinon` clôt le fait : si aucune règle ne l'établit, il reste

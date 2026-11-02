@@ -30,13 +30,6 @@ const SERIE = {
   "Q2.3.3": "1_OUI",
 } as const;
 
-const autreCadre = (base: Reponses, ...situations: string[]): Reponses =>
-  ({
-    ...base,
-    "Q2.2.1": ["3_AUTRE_CADRE"],
-    "Q2.2.1.b": situations,
-  }) as Reponses;
-
 const CAS: readonly [ids: string, reponses: Reponses, issue: string][] = [
   ["D01 D31", BRANCARD_20_KM, "ISSUE_PMT"],
   ["D08", { ...SERIE, "Q2.3.4": "2_NON" }, "ISSUE_DAP_SANS_URGENCE"],
@@ -45,14 +38,15 @@ const CAS: readonly [ids: string, reponses: Reponses, issue: string][] = [
   ["D13", { ...LONGUE, "Q2.3.4": "1_OUI" }, "ISSUE_DAP_URGENCE_ATTESTEE"],
   ["D14 D45", definitif(["11_AUCUNE"]), "ISSUE_ETABLISSEMENT"],
   ["D15", definitif(["3_CENTRE_QUINZE"]), "ISSUE_CAISSE"],
-  ["D18", autreCadre(BRANCARD_20_KM, "5_HTNM"), "ISSUE_CAISSE"],
+  ["D18", { ...BRANCARD_20_KM, "Q2.2.1": ["5_HTNM"] }, "ISSUE_CAISSE"],
   ["D19", { ...MATERNITE_ETABLIE, "Q2.12": "2_NON" }, "ISSUE_DAP_SANS_URGENCE"],
   ["D20", { ...MATERNITE_ETABLIE, "Q2.12": "1_OUI" }, "ISSUE_CAISSE"],
   ["D30", { ...PAR_Q21, "Q2.10": "1_CONTROLE_MEDICAL" }, "ISSUE_CONVOCATION"],
   [
     "D35",
     {
-      ...autreCadre(LONGUE, "1_ATMP"),
+      ...LONGUE,
+      "Q2.2.1.b": ["1_ATMP"],
       "Q2.3.4": "2_NON",
     },
     "ISSUE_DAP_SANS_URGENCE",
@@ -60,13 +54,18 @@ const CAS: readonly [ids: string, reponses: Reponses, issue: string][] = [
   [
     "D37",
     {
-      ...autreCadre(LONGUE, "1_ATMP"),
+      ...LONGUE,
+      "Q2.2.1.b": ["1_ATMP"],
       "Q2.3.4": "1_OUI",
     },
     "ISSUE_DAP_URGENCE_ATTESTEE",
   ],
-  ["D48", autreCadre(BRANCARD_20_KM, "7_SAMSAH"), "ISSUE_CAISSE"],
-  ["D49", autreCadre(BRANCARD_20_KM, "9_PENSION_MILITAIRE"), "ISSUE_CAISSE"],
+  ["D48", { ...BRANCARD_20_KM, "Q2.2.1.b": ["7_SAMSAH"] }, "ISSUE_CAISSE"],
+  [
+    "D49",
+    { ...BRANCARD_20_KM, "Q2.2.1.b": ["9_PENSION_MILITAIRE"] },
+    "ISSUE_CAISSE",
+  ],
 ];
 
 describe("l'oracle de l'éditeur, par les réponses", () => {

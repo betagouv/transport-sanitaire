@@ -31,11 +31,11 @@ describe("quand la page de la convocation se pose", () => {
   it.each([
     ["un motif sans convocation", { ...PATIENT_SEUL }],
     [
-      "un autre cadre sans la convocation",
+      "d'autres soins sans la convocation",
       {
         ...PATIENT_SEUL,
         "Q2.1": "1_CONSULTATION",
-        "Q2.2.1": ["3_AUTRE_CADRE"],
+        "Q2.2.1": ["0_AUCUNE"],
         "Q2.2.1.b": ["1_ATMP"],
       },
     ],
@@ -48,8 +48,8 @@ describe("quand la page de la convocation se pose", () => {
   });
 
   it("ne repropose pas la convocation que Q2.1 a déjà dite", () => {
-    const reponses: Reponses = { ...PAR_Q21, "Q2.2.1": ["3_AUTRE_CADRE"] };
-    const question = posee("P2/contextes", "Q2.2.1.b", reponses);
+    const reponses: Reponses = { ...PAR_Q21, "Q2.2.1": ["0_AUCUNE"] };
+    const question = posee("P2/soins", "Q2.2.1.b", reponses);
     const valeurs =
       question?.kind === "multiple choice"
         ? question.options.map(({ value }) => value)
@@ -178,7 +178,7 @@ describe("les faits de la convocation", () => {
     },
   );
 
-  it("n'établit rien quand la page ne se pose pas : le « non » de Q2.2.1 reste", () => {
+  it("n'établit rien quand la page ne se pose pas : le « non » de Q2.2.1.b reste", () => {
     for (const reponses of [
       PATIENT_SEUL,
       { ...PATIENT_SEUL, "Q2.10": "1_CONTROLE_MEDICAL" } as const,
@@ -186,7 +186,7 @@ describe("les faits de la convocation", () => {
       expect(fait(reponses)).toEqual({
         value: false,
         provenance:
-          "Q2.2.1 : « 4_AUCUNE », Q2.1 : « 11_PERMISSION ». « autre situation » proposée, non cochée.",
+          "Q2.2.1.b : « 0_AUCUN ». « 13_CONVOCATION » proposée, non cochée.",
       });
     }
   });

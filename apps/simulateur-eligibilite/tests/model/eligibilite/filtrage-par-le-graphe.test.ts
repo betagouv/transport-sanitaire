@@ -25,15 +25,21 @@ const preconisation = (reponses: Reponses) =>
 
 const DISTANCE = ["Q2.3.1", "Q2.3.2", "Q2.3.3"];
 
-// Un patient seul, pour une consultation, dans un cadre que Q2.2.1.b précise.
-const autreCadre = (cadre: Questions["Q2.2.1.b"][number]): Reponses => ({
+// Un patient seul, pour une consultation, sans situation particulière.
+const SEUL: Reponses = {
   "Q0.1": "1_VERIFIER",
   "Q1.1": "1_SEUL",
   "Q1.3": ["7_AUCUNE"],
   "Q1.4": "1_VEHICULE_PERSONNEL",
   "Q2.1": "1_CONSULTATION",
-  "Q2.2.1": ["3_AUTRE_CADRE"],
-  "Q2.2.1.b": [cadre],
+  "Q2.2.1": ["0_AUCUNE"],
+  "Q2.2.1.b": ["0_AUCUN"],
+};
+
+// Le même, avec des soins que Q2.2.1.b dit.
+const avecDesSoins = (soin: Questions["Q2.2.1.b"][number]): Reponses => ({
+  ...SEUL,
+  "Q2.2.1.b": [soin],
 });
 
 // Un patient qu'un professionnel aide, pour une consultation.
@@ -43,29 +49,31 @@ const CONSULTATION: Reponses = {
   "Q1.2": ["1_PAS_AUTONOME"],
   "Q1.3": ["7_AUCUNE"],
   "Q2.1": "1_CONSULTATION",
-  "Q2.2.1": ["4_AUCUNE"],
+  "Q2.2.1": ["0_AUCUNE"],
+  "Q2.2.1.b": ["0_AUCUN"],
 };
 
 describe("les cadres qui décident sans la distance", () => {
-  it.each(["7_SAMSAH", "9_PENSION_MILITAIRE", "5_HTNM"] as const)(
-    "%s ne pose ni Q2.3.1, ni Q2.3.2, ni Q2.3.3",
-    (cadre) => {
-      const questions = posees(autreCadre(cadre));
+  it.each([
+    ["7_SAMSAH", avecDesSoins("7_SAMSAH")],
+    ["9_PENSION_MILITAIRE", avecDesSoins("9_PENSION_MILITAIRE")],
+    ["5_HTNM", { ...SEUL, "Q2.2.1": ["5_HTNM"] }],
+  ] as const)("%s ne pose ni Q2.3.1, ni Q2.3.2, ni Q2.3.3", (_, reponses) => {
+    const questions = posees(reponses);
 
-      expect(questions).toContain("Q2.2.1.b");
-      expect(questions.filter((id) => DISTANCE.includes(id))).toEqual([]);
-    },
-  );
+    expect(questions).toContain("Q2.2.1");
+    expect(questions.filter((id) => DISTANCE.includes(id))).toEqual([]);
+  });
 
   it("une question sautée ne donne pas « non » : son fait reste absent", () => {
-    const { faits } = preconisation(autreCadre("7_SAMSAH"));
+    const { faits } = preconisation(avecDesSoins("7_SAMSAH"));
 
     expect(faits.fait_avion_bateau_ligne.value).toBeUndefined();
   });
 });
 
 describe("le CAMSP", () => {
-  const CAMSP = autreCadre("6_CAMSP");
+  const CAMSP = avecDesSoins("6_CAMSP");
 
   it("pose Q2.3.1 et Q2.3.2, sans Q2.3.3 à 50 km ou moins", () => {
     const reponses: Reponses = {
