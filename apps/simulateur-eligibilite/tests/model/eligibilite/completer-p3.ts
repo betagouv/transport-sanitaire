@@ -23,6 +23,10 @@ export async function completerP3(user: User) {
 
 const TEXTE_DE_R3 = /^Le document est prêt à être imprimé\./;
 
+// Le texte de R3 attend son PDF. Sous la suite complète, il dépasse la seconde
+// que `waitFor` accorde par défaut.
+const ATTENTE_DU_DOCUMENT = { timeout: 4000 };
+
 type Geste = (user: User) => Promise<void>;
 
 /** Tous les champs obligatoires de la page ont leur réponse. */
@@ -96,7 +100,7 @@ function casesVides(): Geste | PageRemplie {
 // Une page à une seule question à choix avance seule : on attend la suivante.
 async function valider(user: User) {
   const suite = boutonDeSuite();
-  if (!suite) return await waitFor(pageSuivante);
+  if (!suite) return await waitFor(pageSuivante, ATTENTE_DU_DOCUMENT);
   if (suite.disabled) {
     throw new Error(`La page de P3 ne se valide pas. ${texteDeLaPage()}`);
   }
