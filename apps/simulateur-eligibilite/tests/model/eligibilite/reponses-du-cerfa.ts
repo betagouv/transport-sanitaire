@@ -85,6 +85,7 @@ export const PERMISSIONS: Reponses = {
   "Q3.1.3": 4,
   "Q3.2.nom": "Hôpital Necker",
   "Q3.2.adresse": HOPITAL,
+  "Q3.3.nature": "1_DOMICILE",
   "Q3.3.adresse": DOMICILE,
   "Q3.6.2": "2_NON",
 };

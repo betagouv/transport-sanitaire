@@ -17,6 +17,7 @@ import {
   QUESTIONS_DU_LIEU,
 } from "./lieux-du-trajet.ts";
 import {
+  desRolesContradictoires,
   ENTREES_DES_LIEUX,
   entreesDe,
   natureAdmise,
@@ -38,6 +39,11 @@ const ADRESSE_REPETEE = given
       depart.value && arrivee.value && memeAdresse(depart.value, arrivee.value),
     ),
   );
+
+// Deux situations de P2 se contredisent sur un lieu (TS1014-AUDIT-02).
+const ROLES_CONTRADICTOIRES = ENTREES_DES_LIEUX.compute(
+  desRolesContradictoires,
+);
 
 export const PAGE_DU_DEPART = pageDuLieu("P3/depart", "depart", {
   nature: "Quel est le lieu de départ ?",
@@ -96,7 +102,10 @@ function adresseDuLieu(
         ADRESSE_REPETEE,
         "Le départ et l’arrivée ont la même adresse : ce trajet n’existe pas. Corrigez l’une des deux.",
       )
-    : adresse;
+    : adresse.inconsistentWhen(
+        ROLES_CONTRADICTOIRES,
+        "Les réponses de la partie 2 donnent au départ ou à l’arrivée deux lieux différents. Revenez-y pour les corriger.",
+      );
 }
 
 // Ce que P2 établit du lieu, rappelé sans se redemander.
