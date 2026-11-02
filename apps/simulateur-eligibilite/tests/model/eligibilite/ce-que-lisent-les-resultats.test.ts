@@ -50,7 +50,6 @@ describe("les questions que les résultats lisent telles quelles", () => {
       "Q2.14.motif",
       "Q2.2.1",
       "Q2.2.1.a",
-      "Q2.2.1.b",
       "Q2.2.1.cadre",
       "Q2.5",
       "Q2.6",
@@ -76,6 +75,11 @@ describe("les questions que les résultats lisent telles quelles", () => {
       "Q3.6.2",
       "Q3.6.3",
       "Q3.7",
+      "Q3.8.hebergement.adresse",
+      "Q3.8.hebergement.nom",
+      "Q3.8.maternite.adresse",
+      "Q3.8.maternite.nom",
+      "Q3.8.niveau",
     ]);
   });
 });
@@ -118,6 +122,7 @@ describe("les cibles et les faits que les résultats lisent", () => {
       "fait_centre15_interetablissements",
       "fait_convocation",
       "fait_dap_maternite",
+      "fait_distance_plus_50",
       "fait_exclusion_transport_prouvee",
       "fait_hospitalisation",
       "fait_htnm_hors_maternite",

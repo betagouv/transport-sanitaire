@@ -77,10 +77,16 @@ describe("les cibles déclarées", () => {
 });
 
 describe("les options déclarées", () => {
-  // Q2.2.1.b ne montre que les options 1, 4 à 10 et 13 des treize de Q2.2.1 :
-  // elles gardent leur numéro du catalogue (S1). Q2.6 pose son option 1, le
-  // type du transfert, à part (D-106).
-  const { "Q2.2.1.b": contextes, "Q2.6": exceptions, ...suivies } = OPTIONS;
+  // Q2.2.1 et Q2.2.1.b se partagent les treize situations du catalogue, sans
+  // le 8 : chacune garde son numéro, et la réponse négative de chaque bloc
+  // est la 0 (`CONTRAT_Q221_PROGRESSIF.json`, D-252). Q2.6 pose son option 1,
+  // le type du transfert, à part (D-106).
+  const {
+    "Q2.2.1": situations,
+    "Q2.2.1.b": soins,
+    "Q2.6": exceptions,
+    ...suivies
+  } = OPTIONS;
 
   it.each(Object.entries(suivies))(
     "%s numérote ses options comme le catalogue, de 1 en 1",
@@ -95,11 +101,17 @@ describe("les options déclarées", () => {
     },
   );
 
-  it("Q2.2.1.b garde les numéros des options de Q2.2.1, sans le 8 (TS1012-03)", () => {
-    expect(
-      Object.keys(contextes).map((slug) => Number(slug.split("_")[0])),
-    ).toEqual([1, 4, 5, 6, 7, 9, 10, 13]);
-  });
+  it.each([
+    ["Q2.2.1", situations, [1, 2, 4, 5, 10, 0]],
+    ["Q2.2.1.b", soins, [1, 6, 7, 9, 13, 0]],
+  ] as const)(
+    "%s garde les numéros du catalogue (TS1012-03)",
+    (_, options, numeros) => {
+      expect(
+        Object.keys(options).map((slug) => Number(slug.split("_")[0])),
+      ).toEqual(numeros);
+    },
+  );
 
   it("Q2.6 numérote ses exceptions à partir de 2, après le type", () => {
     expect(

@@ -26,7 +26,8 @@ export const PATIENT_SEUL: Reponses = {
   "Q1.3": ["7_AUCUNE"],
   "Q1.4": "1_VEHICULE_PERSONNEL",
   "Q2.1": "11_PERMISSION",
-  "Q2.2.1": ["4_AUCUNE"],
+  "Q2.2.1": ["0_AUCUNE"],
+  "Q2.2.1.b": ["0_AUCUN"],
   "Q2.3.1": "1_CINQUANTE_KM_OU_MOINS",
   "Q2.3.2": false,
 };
@@ -40,7 +41,6 @@ export const MINEUR: Reponses = {
   "Q2.8.2": "2026-10-14T09:00",
   "Q2.8.3": "2026-10-15T09:00",
   "Q2.8.4": "1_OUI",
-  "Q2.8.4.a": "1_SOINS",
   "Q2.8.5": "2_NON",
 };
 

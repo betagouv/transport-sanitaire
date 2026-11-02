@@ -35,6 +35,7 @@ export const LU_PAR_LA_RAISON = luPar({
     "fait_ald_exonerante_3_ou_4",
     "fait_mineur_soins_prolonges_reconnus",
     "fait_serie_qualifiante",
+    "fait_distance_plus_50",
     "fait_exclusion_transport_prouvee",
   ),
 });
@@ -53,6 +54,18 @@ export function raisonNonEligible(
     )
     .sort((a, b) => b.priority - a.priority)[0];
   return prouvee ?? repli(issue);
+}
+
+/**
+ * Le texte de la raison : sa variante quand la trace prouve la situation
+ * qu'elle dit, son texte sinon.
+ */
+export function texteDeLaRaison(
+  raison: RaisonNonEligible,
+  trace: LuParLaRaison,
+): string {
+  const variante = VARIANTES[raison.id]?.(trace);
+  return (variante && raison.variants?.[variante]) ?? raison.text;
 }
 
 // ---- implémentation ----
@@ -152,4 +165,18 @@ const CONDITIONS: Readonly<Record<string, Condition>> = {
   TRANSPORT_EXCLU: (trace) =>
     trace.faits.fait_exclusion_transport_prouvee.isOui() &&
     trace.precisions.transportExclusionRule !== undefined,
+};
+
+// La trace ne prouve la situation d'aucune variante : le texte générique reste.
+type SansVariante = undefined;
+
+// La variante de chaque raison, par son identifiant : le nom de son texte au
+// catalogue, quand la trace prouve sa situation.
+const VARIANTES: Readonly<
+  Record<string, (trace: LuParLaRaison) => string | SansVariante>
+> = {
+  // « Le trajet évalué ne dépasse pas 50 km » (TXT-SERIE-COURTE-001) : une
+  // distance inconnue garde le texte générique, qui ne dit aucun seuil.
+  AUCUN_SERIE_NON_QUALIFIANTE: ({ faits }) =>
+    faits.fait_distance_plus_50.isNon() ? "distance_50_ou_moins" : undefined,
 };

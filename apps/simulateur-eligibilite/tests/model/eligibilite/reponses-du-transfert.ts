@@ -49,6 +49,7 @@ export const SEJOUR: Reponses = {
   "Q2.2.1": ["1_HOSPITALISATION"],
   "Q2.2.1.cadre": "1_ETABLISSEMENT",
   "Q2.2.1.a": "2_NON",
+  "Q2.2.1.b": ["0_AUCUN"],
   ...TRAJET,
 };
 // Le patient seul d'un transfert depuis les urgences : le séjour est écarté.
@@ -58,7 +59,8 @@ export const URGENCES: Reponses = {
   "Q1.3": ["7_AUCUNE"],
   "Q1.4": "1_VEHICULE_PERSONNEL",
   "Q2.1": "9_TRANSFERT",
-  "Q2.2.1": ["4_AUCUNE"],
+  "Q2.2.1": ["0_AUCUNE"],
+  "Q2.2.1.b": ["0_AUCUN"],
   ...TRAJET,
 };
 export const HAD_A_DOMICILE: Reponses = {

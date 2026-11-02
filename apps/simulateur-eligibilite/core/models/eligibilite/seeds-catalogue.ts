@@ -2,12 +2,13 @@
 //
 // Les tests le rejouent et l'écran des seeds l'affiche. Dix seeds, une par
 // issue de R2, faites de réponses complètes jusqu'à la fin de P2, deux pour la
-// demande d'accord préalable en avion ou en bateau de ligne régulière, et une
-// pour l'orientation d'un retour pénitentiaire, qui n'a pas d'issue, et une
-// par cadre du séjour en cours, établissement ou HAD (TS1014-B01). Elles suivent
-// les dix traces de l'oracle de la v10.1.0 : le patient est accompagné d'un
-// professionnel (Q1.1) et ses critères sont ceux de la trace, 1 et 5 pour les
-// quatre premières et l'étranger, 1 pour les autres. Les cibles attendues sont
+// demande d'accord préalable en avion ou en bateau de ligne régulière, une pour
+// l'Engagement maternité, qui mène à Q3.8, une pour l'orientation d'un retour
+// pénitentiaire, qui n'a pas d'issue, et une par cadre du séjour en cours,
+// établissement ou HAD (TS1014-B01). Elles suivent les dix traces de l'oracle
+// de la v10.1.0 : le patient est accompagné d'un professionnel (Q1.1) et ses
+// critères sont ceux de la trace, 1 et 5 pour les quatre premières et
+// l'étranger, 1 pour les autres. Les cibles attendues sont
 // celles des règles.
 //
 // Une seule trace ne se rejoue pas telle quelle : l'oracle donne à la caisse
@@ -40,7 +41,8 @@ const DIALYSE = {
   ...TAP_1_5,
   "Q1.3": ["5_DIALYSE", "6_PARTAGE_INCOMPATIBLE"],
   "Q1.3.a": "1_OUI",
-  "Q2.2.1": ["4_AUCUNE"],
+  "Q2.2.1": ["0_AUCUNE"],
+  "Q2.2.1.b": ["0_AUCUN"],
   ...TRAJET_COURT,
 } as const;
 
@@ -60,14 +62,14 @@ const PERMISSION_DU_MINEUR = {
   ...TAP_1_5,
   "Q1.3": ["7_AUCUNE"],
   "Q2.1": "11_PERMISSION",
-  "Q2.2.1": ["4_AUCUNE"],
+  "Q2.2.1": ["0_AUCUNE"],
+  "Q2.2.1.b": ["0_AUCUN"],
   ...TRAJET_COURT,
   "Q2.7": "1_MOINS_DE_SEIZE_ANS",
   "Q2.8.1": "2026-10-01",
   "Q2.8.2": "2026-10-14T09:00",
   "Q2.8.3": "2026-10-15T09:00",
   "Q2.8.4": "1_OUI",
-  "Q2.8.4.a": "1_SOINS",
   "Q2.8.5": "2_NON",
 } as const;
 
@@ -76,7 +78,8 @@ const TRANSFERT = {
   ...TAP_1,
   "Q1.3": ["7_AUCUNE"],
   "Q2.1": "9_TRANSFERT",
-  "Q2.2.1": ["4_AUCUNE"],
+  "Q2.2.1": ["0_AUCUNE"],
+  "Q2.2.1.b": ["0_AUCUN"],
   ...TRAJET_COURT,
   "Q2.5": "1_TRANSFERT",
 } as const;
@@ -85,7 +88,8 @@ const TRANSFERT = {
 const SANS_SOIN = {
   ...TAP_1,
   "Q1.3": ["7_AUCUNE"],
-  "Q2.2.1": ["4_AUCUNE"],
+  "Q2.2.1": ["0_AUCUNE"],
+  "Q2.2.1.b": ["0_AUCUN"],
   ...TRAJET_COURT,
 } as const;
 
@@ -254,6 +258,7 @@ export const SEEDS: readonly Seed<Questions, Cibles>[] = [
     answers: {
       ...DIALYSE,
       "Q2.2.1": ["2_ETRANGER"],
+      "Q2.2.1.b": ["0_AUCUN"],
       "Q2.2.5": ["1_DEPART"],
     },
     expected: {
@@ -261,6 +266,30 @@ export const SEEDS: readonly Seed<Questions, Cibles>[] = [
       cible_support_id: "S3139h",
       cible_financeur: "NON_CONCLU",
       cible_mode_id: "TAP",
+    },
+  },
+  {
+    id: "dap-engagement-maternite",
+    label: "Résultat : accord préalable, Engagement maternité",
+    description:
+      "Ouvre le résultat d'une patiente qui se rend seule à l'examen obligatoire du 8ᵉ mois, à plus de 45 minutes de la maternité (Q2.1, Q2.14). L'issue est la demande d'accord préalable (Cerfa S3139h), motif Engagement maternité ; P3 finit par Q3.8 (D-251).",
+    answers: {
+      "Q0.1": "1_VERIFIER",
+      "Q1.1": "1_SEUL",
+      "Q1.3": ["7_AUCUNE"],
+      "Q1.4": "1_VEHICULE_PERSONNEL",
+      "Q2.1": "13_MATERNITE",
+      "Q2.2.1": ["0_AUCUNE"],
+      "Q2.2.1.b": ["0_AUCUN"],
+      ...TRAJET_COURT,
+      "Q2.14.eloignement": ["1_PLUS_DE_QUARANTE_CINQ_MINUTES"],
+      "Q2.14.motif": ["1_EXAMEN_DU_HUITIEME_OU_NEUVIEME_MOIS"],
+      "Q2.12": "2_NON",
+    },
+    expected: {
+      cible_issue_id: "ISSUE_DAP_SANS_URGENCE",
+      cible_support_id: "S3139h",
+      cible_dap_motif_engagement_maternite: true,
     },
   },
   {
@@ -274,8 +303,7 @@ export const SEEDS: readonly Seed<Questions, Cibles>[] = [
       "Q1.3": ["7_AUCUNE"],
       "Q1.4": "1_VEHICULE_PERSONNEL",
       "Q2.1": "1_CONSULTATION",
-      "Q2.2.1": ["3_AUTRE_CADRE"],
-      "Q2.2.1.b": ["10_RETOUR_PENITENTIAIRE"],
+      "Q2.2.1": ["10_RETOUR_PENITENTIAIRE"],
       "Q2.2.1.indication": "2_NON",
     },
     expected: { cible_issue_id: undefined },
@@ -291,6 +319,7 @@ export const SEEDS: readonly Seed<Questions, Cibles>[] = [
       "Q1.2": ["8_BRANCARDAGE"],
       "Q1.3": ["7_AUCUNE"],
       "Q2.2.1": ["1_HOSPITALISATION"],
+      "Q2.2.1.b": ["0_AUCUN"],
       "Q2.2.1.cadre": "1_ETABLISSEMENT",
       "Q2.2.1.a": "1_OUI",
       ...TRAJET_COURT,
@@ -315,6 +344,7 @@ export const SEEDS: readonly Seed<Questions, Cibles>[] = [
       "Q1.2": ["8_BRANCARDAGE"],
       "Q1.3": ["7_AUCUNE"],
       "Q2.2.1": ["1_HOSPITALISATION"],
+      "Q2.2.1.b": ["0_AUCUN"],
       "Q2.2.1.cadre": "2_HAD",
       ...TRAJET_COURT,
       "Q2.6": ["11_AUCUNE"],

@@ -1,4 +1,4 @@
-// Le retour vers un établissement pénitentiaire (option 10 de Q2.2.1.b) :
+// Le retour vers un établissement pénitentiaire (option 10 de Q2.2.1) :
 // TS1012-04 et `CONTRAT_CONTEXTES_V1012.json` du paquet v10.1.2 de l'éditeur,
 // les points 33 et 34 de la v10.1.3 et `CONTRAT_ORIENTATION_ADMINISTRATIVE.json`.
 // Ce qui établit l'indication médicale est notre lecture (D-130).
@@ -23,8 +23,8 @@ const AVEC_UN_PROFESSIONNEL: Reponses = {
   "Q1.3": ["7_AUCUNE"],
 };
 const RETOUR: Reponses = {
-  "Q2.2.1": ["3_AUTRE_CADRE"],
-  "Q2.2.1.b": ["10_RETOUR_PENITENTIAIRE"],
+  "Q2.2.1": ["10_RETOUR_PENITENTIAIRE"],
+  "Q2.2.1.b": ["0_AUCUN"],
 };
 const SORTIE: Reponses = {
   ...AVEC_UN_PROFESSIONNEL,
@@ -110,7 +110,8 @@ describe("l'indication médicale d'un retour vers la prison (point 33)", () => {
     expect(
       posee("P2/contextes", "Q2.2.1.indication", {
         ...SEUL,
-        "Q2.2.1": ["4_AUCUNE"],
+        "Q2.2.1": ["0_AUCUNE"],
+        "Q2.2.1.b": ["0_AUCUN"],
       }),
     ).toBeUndefined();
   });
@@ -151,7 +152,7 @@ describe("une sortie définitive vers la prison", () => {
   it("ne pose pas Q2.5, même séjour coché et permission écartée", () => {
     const sejour: Reponses = {
       ...SORTIE,
-      "Q2.2.1": ["1_HOSPITALISATION", "3_AUTRE_CADRE"],
+      "Q2.2.1": ["1_HOSPITALISATION", "10_RETOUR_PENITENTIAIRE"],
       "Q2.2.1.a": "2_NON",
     };
     expect(posee("P2/transfert", "Q2.5", sejour)).toBeUndefined();
@@ -167,7 +168,7 @@ describe("une sortie définitive vers la prison", () => {
   it("laisse une permission à sa branche", () => {
     const permission: Reponses = {
       ...SORTIE,
-      "Q2.2.1": ["1_HOSPITALISATION", "3_AUTRE_CADRE"],
+      "Q2.2.1": ["1_HOSPITALISATION", "10_RETOUR_PENITENTIAIRE"],
       "Q2.2.1.a": "1_OUI",
     };
     expect(faits(permission).fait_permission.value).toBe(true);

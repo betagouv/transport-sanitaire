@@ -25,6 +25,10 @@ import type { Rubrique } from "../../../front/models/eligibilite/r3/rubriques/ru
 import type { Cerfa, CerfaDto } from "../../../front/socle/cerfa/cerfa";
 import { generateCerfa } from "../../../front/socle/cerfa/generate-cerfa";
 import { racine } from "../../inspection-des-sources";
+import {
+  MATERNITE_ETABLIE,
+  MATERNITE_PAR_Q221,
+} from "./reponses-de-la-branche";
 import { PLUSIEURS_PERMISSIONS } from "./reponses-de-la-permission";
 import { ciblesValant, type ValeursDesCibles } from "./traces-du-prescripteur";
 
@@ -87,6 +91,45 @@ export const PERMISSIONS: Reponses = {
   "Q3.2.adresse": HOPITAL,
   "Q3.3.nature": "1_DOMICILE",
   "Q3.3.adresse": DOMICILE,
+  "Q3.6.2": "2_NON",
+};
+
+// Ce que Q3.8 recueille de la maternité.
+export const Q38: Reponses = {
+  "Q3.8.maternite.nom": "Maternité du Parc",
+  "Q3.8.maternite.adresse": EHPAD,
+  "Q3.8.niveau": "2_TYPE_IIA",
+};
+
+// Un examen de l'Engagement maternité, du domicile à l'hébergement que P2
+// établit, sans Q3.8.
+export const EXAMEN_DE_MATERNITE: Reponses = {
+  ...MATERNITE_ETABLIE,
+  "Q2.12": "2_NON",
+  "Q3.1.1": 1,
+  "Q3.1.2": "1_ALLER",
+  "Q3.2.nature": "1_DOMICILE",
+  "Q3.2.adresse": DOMICILE,
+  "Q3.3.adresse": HOPITAL,
+  "Q3.4.a": "2_NON",
+  "Q3.6.2": "2_NON",
+};
+
+// Une consultation signalant la maternité éloignée, pour l'hébergement du
+// dispositif : il n'est ni le départ ni l'arrivée. Sans Q3.8.
+export const HEBERGEMENT_DE_MATERNITE: Reponses = {
+  ...MATERNITE_PAR_Q221,
+  "Q2.14.eloignement": ["1_PLUS_DE_QUARANTE_CINQ_MINUTES"],
+  "Q2.14.motif": ["2_HEBERGEMENT_ENGAGEMENT"],
+  "Q2.12": "2_NON",
+  "Q3.1.1": 1,
+  "Q3.1.2": "1_ALLER",
+  "Q3.2.nature": "1_DOMICILE",
+  "Q3.2.adresse": DOMICILE,
+  "Q3.3.nature": "7_CABINET",
+  "Q3.3.nom": "Cabinet du docteur Martin",
+  "Q3.3.adresse": HOPITAL,
+  "Q3.4.a": "2_NON",
   "Q3.6.2": "2_NON",
 };
 

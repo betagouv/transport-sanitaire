@@ -2,9 +2,8 @@
 // ouvert sur une seed, mené par P3 jusqu'au document. La page suit C03 pour
 // les cinq documents : le stepper, titré du document, à « Étape 4 sur 4 » et
 // « Préparation terminée. » ; le texte ; la navigation ; les deux actions ;
-// puis l'aperçu. L'aperçu lui-même se vérifie sur le modèle de test du
-// socle : le navigateur de test ne sert pas les gabarits de l'app, le PDF ne
-// s'y génère pas.
+// puis l'aperçu. Les gabarits se lisent sur le disque : le PDF se génère, et
+// le texte, qui l'attend, s'affiche.
 
 import { screen } from "@testing-library/react";
 import { beforeEach, describe, expect, it } from "vitest";
@@ -17,6 +16,7 @@ import {
   ouvrirLeSimulateur,
 } from "../../socle/simulateur/questionnaire";
 import { completerP3 } from "./completer-p3";
+import { MODELE_AUX_GABARITS_DU_DISQUE } from "./modele-aux-gabarits-du-disque";
 
 // Le catalogue des textes et celui des seeds sont chargés une fois : la
 // première fiche n'attend pas leurs 900 ko.
@@ -68,7 +68,10 @@ describe("R3 du modèle de l'éditeur", DELAI_D_UN_TEST, () => {
 async function allerEnR3(id: string, completer: string) {
   const seed = SEEDS.find((candidate) => candidate.id === id);
   if (!seed) throw new Error(`Seed inconnue : ${id}`);
-  const user = await ouvrirLeSimulateur({ produit: true, modele: model });
+  const user = await ouvrirLeSimulateur({
+    produit: true,
+    modele: MODELE_AUX_GABARITS_DU_DISQUE,
+  });
   await user.click(
     await screen.findByRole("button", { name: "Seeds" }, ATTENTE),
   );
@@ -83,6 +86,11 @@ async function allerEnR3(id: string, completer: string) {
     await screen.findByRole("button", { name: completer }, ATTENTE),
   );
   await completerP3(user);
+  await screen.findByText(
+    /^Le document est prêt à être imprimé\./,
+    {},
+    ATTENTE,
+  );
 }
 
 function titreDeLEcran() {

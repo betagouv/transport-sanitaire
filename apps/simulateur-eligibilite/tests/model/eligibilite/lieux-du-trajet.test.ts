@@ -77,8 +77,11 @@ describe("ce que P2 établit d'un lieu (Q2.13, Q3.3)", () => {
       ...DIALYSE,
       "Q3.1.2": "3_ALLER_RETOUR_EQUIVALENT",
     };
+    // La maternité de Q3.8 a une adresse, mais n'est pas un lieu du trajet.
     const lieux = pages.filter(({ questions }) =>
-      questions.some(({ id }) => id.endsWith(".adresse")),
+      questions.some(
+        ({ id }) => id.endsWith(".adresse") && !id.startsWith("Q3.8."),
+      ),
     );
     expect(lieux.map(({ id }) => id)).toEqual(["P3/depart", "P3/arrivee"]);
     expect(ids("P3/arrivee", equivalent)).toEqual(["Q3.3.nom", "Q3.3.adresse"]);
@@ -216,7 +219,7 @@ describe("la nature en toutes lettres d'un hébergement ou d'un autre lieu (CONT
   });
 
   it("le HTNM que P2 établit ne la redemande pas", () => {
-    const htnm: Reponses = { ...ALLER, "Q2.2.1.b": ["5_HTNM"] };
+    const htnm: Reponses = { ...ALLER, "Q2.2.1": ["5_HTNM"] };
     expect(ids("P3/arrivee", htnm)).toEqual(["Q3.3.nom", "Q3.3.adresse"]);
   });
 

@@ -137,7 +137,10 @@ export type Model<
      * lisent des questions validées, des faits et des cibles, en une valeur.
      */
     reading: Value<CerfaReading>;
-    /** Le texte du second résultat, sous le stepper, avant les boutons. */
+    /**
+     * Le texte du second résultat, sous le stepper, avant les boutons. Avec un
+     * cerfa, il attend que son PDF soit prêt (D-250).
+     */
     Resultat: ComponentType<ResultatProps<CerfaReading>>;
     /**
      * Ce qui tient la place de l'aperçu du document, pour un cerfa que son PDF

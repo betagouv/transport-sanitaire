@@ -1,6 +1,6 @@
 # Architecture : Analytics de parcours
 
-> Statut : **décidé (release officielle)** · Dernière mise à jour : 2026-10-29
+> Statut : **décidé (release officielle)** · Dernière mise à jour : 2026-11-02
 >
 > Suivi analytique du parcours dans le simulateur d'éligibilité.
 > Repose sur le rattachement établissement/service fourni par l'écran de rattachement :
@@ -262,6 +262,10 @@ de questions posées de P1 à P2 ; un groupe de cases compte une question.
 Le verdict part à chaque passage par le résultat : le taux compte des passages, pas
 des simulations (D-230). Le modèle déclare le parcours compté, l'issue caisse, les
 parties et la limite (`aldIndicator`) ; le socle compte et envoie.
+
+Rien d'autre ne part (D-255) : la raison d'un dépassement est le nom du verdict,
+la durée se lit entre `simulation_start` et `simulation_complete`, et les types
+de soins, qui sont des réponses, ne partent pas.
 
 ~~**Résultat** (`secretariat:resultat:<slug>`), un slug par valeur de
 `cible_cas_final`.~~ Retiré le 2026-10-06 avec le modèle v9.

@@ -61,12 +61,7 @@ describe("l'événement sans soin", () => {
 
 describe("le CAMSP", () => {
   it.each([
-    ["séance dans le parcours", motif("10_CAMSP", { "Q2.1.h": "1_OUI" }), true],
-    [
-      "séance hors du parcours",
-      motif("10_CAMSP", { "Q2.1.h": "2_NON" }),
-      false,
-    ],
+    ["un soin CAMSP ou CMPP en Q2.1", motif("10_CAMSP"), true],
     ["un autre motif", motif("1_CONSULTATION"), undefined],
   ] as const)("%s", (_, reponses, attendu) => {
     expect(valeur("fait_motif_camsp", reponses)).toBe(attendu);
@@ -85,7 +80,10 @@ describe("l'hospitalisation", () => {
   });
 
   it("une consultation, « déjà hospitalisé » écarté : ni séjour, ni soin qualifiant", () => {
-    const reponses = motif("1_CONSULTATION", { "Q2.2.1": ["4_AUCUNE"] });
+    const reponses = motif("1_CONSULTATION", {
+      "Q2.2.1": ["0_AUCUNE"],
+      "Q2.2.1.b": ["0_AUCUN"],
+    });
     expect(valeur("fait_hospitalisation", reponses)).toBe(false);
     expect(valeur("fait_situation_soins_qualifiante", reponses)).toBe(false);
   });

@@ -18,6 +18,7 @@ import { formatDateForField } from "./dates";
 import type { Drawing } from "./flatten-cerfa";
 import { overflowsOf } from "./overflow";
 import { sizeInField, sizeToFit } from "./text-fit";
+import { writableIn } from "./writable-text";
 
 /**
  * Une valeur à écrire : un texte dans un champ nommé, ou une case à cocher.
@@ -139,7 +140,7 @@ async function writeTexts(
   texts: readonly Text[],
 ): Promise<Written> {
   const font = await document.embedFont(StandardFonts.Helvetica);
-  const written = texts.map((text) => ({
+  const written = texts.map(writableWith(font)).map((text) => ({
     field: text.field,
     ...writeText(document, font, text),
   }));
@@ -149,6 +150,15 @@ async function writeTexts(
       .filter(({ withoutComment }) => withoutComment)
       .map(({ field }) => field),
   };
+}
+
+// Un texte et son commentaire, réduits à ce que `font` sait écrire.
+function writableWith(font: PDFFont) {
+  return ({ comment, ...entry }: Text): Text => ({
+    ...entry,
+    text: writableIn(font, entry.text),
+    ...(comment === undefined ? {} : { comment: writableIn(font, comment) }),
+  });
 }
 
 // Sans cet appel, les valeurs sont dans le PDF mais ne s'affichent pas dans les

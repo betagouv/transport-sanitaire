@@ -759,7 +759,7 @@ D-224). Le socle ne pose alors une question que si elle compte (`Relevance`) :
 |---|---|---|
 | ce que montre le résultat dépend d'elle, dans une branche encore possible | D-220 | Q2.3.2 pour une PMT : l'avion change le document |
 | elle change la garde d'une question qui reste, peut encore se poser et compte | D-221, D-223 | Q2.1.g, que lit la garde de Q2.5 |
-| elle porte une incohérence, ou se déclare toujours posée | D-222, D-226 | Q3.1.3, Q2.8.4.a |
+| elle porte une incohérence, ou se déclare toujours posée | D-222 | Q3.1.3 |
 
 Les faits des questions validées sont figés, ceux des questions qui restent et
 ceux qu'impose la décision sont libres : le graphe restreint aux faits figés ne
@@ -834,8 +834,8 @@ flowchart LR
 | Partie après le verrou (`afterLock`) | `core/` | la seule dont les gardes lisent les cibles figées | nouveau |
 | Fait (`unFait(nom)`) | `core/` | une valeur nommée, faite de règles sur des conditions ; la première qui conclut l'emporte, et cite ce qu'elle lit | modifié |
 | Règle nommée (`uneRegle()`, `RegleDeFait`) | `core/` | une règle que plusieurs faits appliquent | nouveau |
-| Ce que les faits partagent (`faits/communs.ts`) | `core/models/` | les lectures, les règles nommées, la table des situations proposées | nouveau |
-| Situations retirées par Q2.1 (`RETIREE_SI_Q21`) | `core/models/` | la table de D-98, en donnée, que la page des contextes et les faits lisent chacun | nouveau |
+| Ce que les faits partagent (`faits/communs.ts`) | `core/models/` | les lectures et les règles nommées | nouveau |
+| ~~Situations retirées par Q2.1 (`RETIREE_SI_Q21`)~~ | ~~`core/models/`~~ | retiré (#280, D-252) : chaque bloc retire ses options par `offeredWhen`, et un fait lit l'option proposée et non cochée (`nonSiEcartee`) |
 | Fusion des faits partiels (`faitsAvantLaBranche`, `FaitsDesReponses`) | `core/` | l'ordre des pages décidait du fait | supprimé |
 | Seeds | `core/` | ce qu'est une seed, ce qu'elle confirme ou dément | déplacé |
 | Écran des seeds | `front/` | la liste, le rejeu à l'écran | inchangé |

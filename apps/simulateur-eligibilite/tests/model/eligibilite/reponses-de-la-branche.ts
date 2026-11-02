@@ -23,18 +23,18 @@ export const MATERNITE_ETABLIE: Reponses = {
   "Q2.14.motif": ["1_EXAMEN_DU_HUITIEME_OU_NEUVIEME_MOIS"],
 };
 
-// Une consultation, avec une maternité éloignée signalée en Q2.2.1.b.
-export const MATERNITE_PAR_Q221B: Reponses = {
+// Une consultation, avec une maternité éloignée signalée en Q2.2.1.
+export const MATERNITE_PAR_Q221: Reponses = {
   ...PATIENT_SEUL,
   "Q2.1": "1_CONSULTATION",
-  "Q2.2.1": ["3_AUTRE_CADRE"],
-  "Q2.2.1.b": ["4_MATERNITE_ELOIGNEE"],
+  "Q2.2.1": ["4_MATERNITE_ELOIGNEE"],
+  "Q2.2.1.b": ["0_AUCUN"],
 };
 
-// Une consultation, avec un hébergement temporaire non médicalisé en Q2.2.1.b.
+// Une consultation, avec un hébergement temporaire non médicalisé en Q2.2.1.
 export const HTNM: Reponses = {
-  ...MATERNITE_PAR_Q221B,
-  "Q2.2.1.b": ["5_HTNM"],
+  ...MATERNITE_PAR_Q221,
+  "Q2.2.1": ["5_HTNM"],
 };
 
 // Une entrée en établissement de santé : le transfert reste à qualifier.
@@ -51,7 +51,8 @@ export const BRANCARD_20_KM: Reponses = {
   "Q1.1": "3_AVEC_UN_PROFESSIONNEL",
   "Q1.2": ["8_BRANCARDAGE"],
   "Q1.3": ["7_AUCUNE"],
-  "Q2.2.1": ["4_AUCUNE"],
+  "Q2.2.1": ["0_AUCUNE"],
+  "Q2.2.1.b": ["0_AUCUN"],
   "Q2.3.1": "1_CINQUANTE_KM_OU_MOINS",
   "Q2.3.2": false,
 };

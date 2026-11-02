@@ -13,7 +13,11 @@ import type {
 } from "../../../../../core/models/eligibilite/declarations/catalogue-resultats";
 import { type BlocDeConsigne, blocsDuTexte } from "../blocs-de-consigne";
 import type { TraceDe } from "../ce-que-lit-un-texte";
-import { LU_PAR_LA_RAISON, raisonNonEligible } from "./raison-non-eligible";
+import {
+  LU_PAR_LA_RAISON,
+  raisonNonEligible,
+  texteDeLaRaison,
+} from "./raison-non-eligible";
 
 /** Ce que lit la fiche négative : ce que lit sa raison. */
 export const LU_PAR_LA_FICHE_NEGATIVE = LU_PAR_LA_RAISON;
@@ -45,7 +49,7 @@ export function texteDeLaFicheNegative(
   return {
     titreDuPrescripteur: issue.prescriberTitle,
     titreDuPatient: issue.title,
-    raison: raisonNonEligible(issue, trace).text,
+    raison: texteDeLaRaison(raisonNonEligible(issue, trace), trace),
     informationInstitutionnelle: issue.institutionalInformation,
     consignes: {
       titre: intro.title,

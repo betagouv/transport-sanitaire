@@ -21,7 +21,8 @@ const BRANCARD_20_KM: Answers<Questions> = {
   "Q1.1": "3_AVEC_UN_PROFESSIONNEL",
   "Q1.2": ["8_BRANCARDAGE"],
   "Q1.3": ["7_AUCUNE"],
-  "Q2.2.1": ["4_AUCUNE"],
+  "Q2.2.1": ["0_AUCUNE"],
+  "Q2.2.1.b": ["0_AUCUN"],
   "Q2.3.1": "1_CINQUANTE_KM_OU_MOINS",
   "Q2.3.2": false,
 };

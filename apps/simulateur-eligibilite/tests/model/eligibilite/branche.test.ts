@@ -12,14 +12,14 @@ import {
   incoherences,
   MATERNITE,
   MATERNITE_ETABLIE,
-  MATERNITE_PAR_Q221B,
+  MATERNITE_PAR_Q221,
   p2Complete,
   posees,
 } from "./reponses-de-la-branche";
 import { PATIENT_SEUL } from "./reponses-de-la-permission";
 
 const PERMISSION_A_CHARGE_DU_PATIENT = {
-  ...MATERNITE_PAR_Q221B,
+  ...MATERNITE_PAR_Q221,
   "Q2.1": "11_PERMISSION",
   "Q2.7": "4_ADULTE_A_SA_CHARGE",
   "Q2.7.a": "1_OUI",
@@ -32,8 +32,8 @@ describe("Q2.14, les deux groupes de l'Engagement maternité", () => {
     expect(posees(MATERNITE)).toEqual(GROUPES);
   });
 
-  it("se posent quand Q2.2.1.b signale la maternité éloignée", () => {
-    expect(posees(MATERNITE_PAR_Q221B)).toEqual(GROUPES);
+  it("se posent quand Q2.2.1 signale la maternité éloignée", () => {
+    expect(posees(MATERNITE_PAR_Q221)).toEqual(GROUPES);
   });
 
   it("ne se posent pas sans maternité", () => {
@@ -161,9 +161,9 @@ describe("Q2.14, « Aucune » dans un groupe : le dispositif est écarté", () =
     );
   });
 
-  it("signalée en Q2.2.1.b, sans autre motif : P2 est complète", () => {
+  it("signalée en Q2.2.1, sans autre motif : P2 est complète", () => {
     const reponses = {
-      ...MATERNITE_PAR_Q221B,
+      ...MATERNITE_PAR_Q221,
       "Q2.14.eloignement": ["3_AUCUNE"],
     } as const;
     expect(faits(reponses).fait_dap_maternite.value).toBe(false);
@@ -171,7 +171,7 @@ describe("Q2.14, « Aucune » dans un groupe : le dispositif est écarté", () =
   });
 });
 
-describe("le HTNM hors Engagement maternité (Q2.2.1.b, point 11)", () => {
+describe("le HTNM hors Engagement maternité (Q2.2.1, point 11)", () => {
   it("point à la caisse, sans question sur la page de branche", () => {
     const cibles = ciblesDe(HTNM);
     expect(faits(HTNM).fait_htnm_hors_maternite.value).toBe(true);

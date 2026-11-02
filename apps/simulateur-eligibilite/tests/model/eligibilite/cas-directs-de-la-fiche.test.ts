@@ -31,7 +31,8 @@ const catalogue = await catalogueResultats();
 
 const BESOIN: Reponses = {
   "Q0.1": "1_VERIFIER",
-  "Q2.2.1": ["4_AUCUNE"],
+  "Q2.2.1": ["0_AUCUNE"],
+  "Q2.2.1.b": ["0_AUCUN"],
   "Q2.3.1": "1_CINQUANTE_KM_OU_MOINS",
   "Q2.3.2": false,
 };
