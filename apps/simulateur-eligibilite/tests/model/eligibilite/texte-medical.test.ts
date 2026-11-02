@@ -205,6 +205,25 @@ describe("les compléments", () => {
   });
 });
 
+// N4-05 de la recette de l'éditeur : chaque seed qui ouvre la PMT ou la DAP,
+// P3 répondue comme la PMT, donne un texte sans crochet ni nom de règle.
+describe("le texte médical de chaque seed qui ouvre la PMT ou la DAP", () => {
+  const seeds = SEEDS.filter(({ expected }) =>
+    ["S3138g", "S3139h"].includes(String(expected.cible_support_id)),
+  ).map(({ id }) => id);
+
+  it.each(seeds)("%s : ni crochet, ni accolade, ni nom de règle", (id) => {
+    const { elements_medicaux, elements_medicaux_precision } = texte(
+      avecLaP3DeLaPmt(id),
+    );
+
+    expect(elements_medicaux).toBeDefined();
+    expect(`${elements_medicaux} ${elements_medicaux_precision}`).not.toMatch(
+      /[[\]{}]|cible_|fait_|ISSUE_|null|NaN/,
+    );
+  });
+});
+
 // ---- implémentation ----
 
 function texte(
@@ -224,8 +243,15 @@ function texte(
 // Une DAP pour une dialyse à plus de 150 km, P3 répondue comme la PMT :
 // Q3.4.distance se pose.
 function dap(): Reponses {
-  const seed = SEEDS.find(({ id }) => id === "issue-dap-sans-urgence");
-  const complement = Object.entries(PMT).filter(([id]) => id.startsWith("Q3."));
+  return avecLaP3DeLaPmt("issue-dap-sans-urgence");
+}
+
+// Les réponses de la seed `id`, P3 répondue comme la PMT.
+function avecLaP3DeLaPmt(id: string): Reponses {
+  const seed = SEEDS.find((candidate) => candidate.id === id);
+  const complement = Object.entries(PMT).filter(([question]) =>
+    question.startsWith("Q3."),
+  );
   return {
     ...(seed?.answers as Reponses),
     ...Object.fromEntries(complement),

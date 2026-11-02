@@ -3,7 +3,8 @@
 // Les tests le rejouent et l'écran des seeds l'affiche. Dix seeds, une par
 // issue de R2, faites de réponses complètes jusqu'à la fin de P2, deux pour la
 // demande d'accord préalable en avion ou en bateau de ligne régulière, une pour
-// l'Engagement maternité, qui mène à Q3.8, une pour l'orientation d'un retour
+// l'Engagement maternité, qui mène à Q3.8, une pour le mineur en soins
+// prolongés, qui coche l'ALD non exonérante, une pour l'orientation d'un retour
 // pénitentiaire, qui n'a pas d'issue, et une par cadre du séjour en cours,
 // établissement ou HAD (TS1014-B01). Elles suivent les dix traces de l'oracle
 // de la v10.1.0 : le patient est accompagné d'un professionnel (Q1.1) et ses
@@ -290,6 +291,25 @@ export const SEEDS: readonly Seed<Questions, Cibles>[] = [
       cible_issue_id: "ISSUE_DAP_SANS_URGENCE",
       cible_support_id: "S3139h",
       cible_dap_motif_engagement_maternite: true,
+    },
+  },
+  {
+    id: "pmt-mineur-soins-continus",
+    label: "Résultat : prescription médicale de transport, pour un mineur",
+    description:
+      "Ouvre le résultat d'un mineur en soins prolongés, sans ALD à 100 %, qui se rend à une séance d'hémodialyse (cas 8 de Q1.3). L'issue est la PMT (Cerfa S3138g) ; P3 faite, elle coche « ALD non exonérante » et porte la mention du mineur sur le volet médical (#128).",
+    answers: {
+      ...DIALYSE,
+      "Q1.3": [
+        "5_DIALYSE",
+        "6_PARTAGE_INCOMPATIBLE",
+        "8_MINEUR_SOINS_CONTINUS",
+      ],
+    },
+    expected: {
+      cible_issue_id: "ISSUE_PMT",
+      cible_support_id: "S3138g",
+      cible_mineur_ald_non_exonerante_reconnue: true,
     },
   },
   {

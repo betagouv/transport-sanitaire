@@ -138,6 +138,12 @@ describe("un retour qui relève de l'organisation pénitentiaire (point 34)", ()
     const resultat = model.result.content(lectureDe(administratif));
     expect(resultat).toMatchObject({
       title: "Ce retour relève de l’organisation pénitentiaire",
+      body: {
+        props: {
+          children:
+            "Ce déplacement a été identifié comme exclusivement administratif, sans indication médicale de transport. Rapprochez-vous de l’administration pénitentiaire pour organiser le déplacement.",
+        },
+      },
     });
     expect(resultat).not.toHaveProperty("sheet");
     expect(luDe(model.cerfa.startLabel, administratif)).toBeNull();

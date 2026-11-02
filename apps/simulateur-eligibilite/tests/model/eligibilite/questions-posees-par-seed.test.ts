@@ -49,6 +49,10 @@ const ATTENDU: Record<string, readonly [string[], string[]]> = {
     [...P1, "Q1.3.a", "Q2.2.1", "Q2.2.1.b", ...DISTANCE],
     complement("Q3.4.a"),
   ],
+  "pmt-mineur-soins-continus": [
+    [...P1, "Q1.3.a", "Q2.2.1", "Q2.2.1.b", ...DISTANCE],
+    complement("Q3.4.a"),
+  ],
   "issue-dap-sans-urgence": [
     [...P1, "Q1.3.a", "Q2.2.1", "Q2.2.1.b", ...DISTANCE, "Q2.3.3", "Q2.3.4"],
     complement("Q3.4.distance", "Q3.4.a"),
