@@ -68,13 +68,6 @@ const PAGE_DE_LA_PRESTATION = page(
     )
     .appliesWhen(motif.is("8_HOSPITALISATION"))
     .dependsOn("Q2.1"),
-  question
-    .singleChoice(
-      "Q2.1.h",
-      "Cette séance en ville est-elle organisée dans le cadre du parcours de soins de l’enfant ?",
-    )
-    .appliesWhen(motif.is("10_CAMSP"))
-    .dependsOn("Q2.1"),
 );
 
 // Q2.3 : le trajet évalué, sur une seule page. L'avion ou le bateau est une

@@ -60,11 +60,6 @@ export const OPTIONS = {
     "3_ADMISSION_HAD":
       "Une admission en Hospitalisation à Domicile (HAD) à domicile",
   },
-  /** Cette séance en ville est-elle organisée dans le cadre du parcours de soins de l’enfant ? */
-  "Q2.1.h": {
-    "1_OUI": "Oui.",
-    "2_NON": "Non.",
-  },
   /**
    * L’une de ces situations concerne-t-elle le transport du patient ? Le
    * premier bloc de `CONTRAT_Q221_PROGRESSIF.json` (v10.1.5). Les situations
@@ -200,7 +195,6 @@ export type Questions = QuestionsDuComplement & {
   "Q2.1": Option<"Q2.1">;
   "Q2.1.f": Option<"Q2.1.f">;
   "Q2.1.g": Option<"Q2.1.g">;
-  "Q2.1.h": Option<"Q2.1.h">;
   "Q2.2.1": readonly Option<"Q2.2.1">[];
   "Q2.2.1.cadre": Option<"Q2.2.1.cadre">;
   "Q2.2.1.a": Option<"Q2.2.1.a">;

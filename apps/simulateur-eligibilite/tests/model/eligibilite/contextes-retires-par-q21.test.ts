@@ -51,13 +51,13 @@ describe("ce que Q2.1 indique déjà (D-98)", () => {
     ["12_CONVOCATION", "Q2.2.1.b", ["13_CONVOCATION"]],
     ["13_MATERNITE", "Q2.2.1", ["4_MATERNITE_ELOIGNEE", "5_HTNM"]],
   ] as const)("%s retire de %s %j", (motif, id, retires) => {
-    const offertes = proposees(id, avec({ "Q2.1": motif, "Q2.1.h": "1_OUI" }));
+    const offertes = proposees(id, avec({ "Q2.1": motif }));
     expect(offertes).toHaveLength(5 - retires.length);
     for (const retire of retires) expect(offertes).not.toContain(retire);
   });
 
-  it("« Aucune » ne touche pas au CAMSP prouvé en Q2.1.h", () => {
-    const camsp = avec({ "Q2.1": "10_CAMSP", "Q2.1.h": "1_OUI" });
+  it("« Aucune » ne touche pas au CAMSP que Q2.1 prouve", () => {
+    const camsp = avec({ "Q2.1": "10_CAMSP" });
     expect(faits(camsp).fait_motif_camsp.value).toBe(true);
   });
 

@@ -110,7 +110,6 @@ describe("la page du trajet", () => {
       posees({
         ...SEUL,
         "Q2.1": "10_CAMSP",
-        "Q2.1.h": "1_OUI",
         "Q2.3.1": "1_CINQUANTE_KM_OU_MOINS",
         "Q2.3.2": false,
       }),
