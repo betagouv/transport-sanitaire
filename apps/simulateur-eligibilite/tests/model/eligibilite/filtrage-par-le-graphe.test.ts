@@ -1,7 +1,8 @@
 // Le filtrage par le graphe (#255) : une question dont la réponse ne change
 // rien de ce que montre le résultat ne se pose pas. Ces cas sont les critères
-// d'acceptation de l'issue ; `questions-posees-par-seed.test.ts` liste les
-// questions posées parcours par parcours.
+// d'acceptation de l'issue, et le second bloc des situations (D-252) ;
+// `questions-posees-par-seed.test.ts` liste les questions posées parcours par
+// parcours.
 
 import { describe, expect, it } from "vitest";
 import { model as metier } from "../../../core/models/eligibilite";
@@ -129,5 +130,31 @@ describe("la distance d'une consultation", () => {
     expect(enAvion.cible_support_id.value).not.toBe(
       parLaRoute.cible_support_id.value,
     );
+  });
+});
+
+// Le second bloc des situations (P2/soins, D-252) : le graphe le saute quand
+// plus rien de ce qu'il établit ne compte. Ses soins changent presque toujours
+// l'issue ou sa raison, et la convocation qu'il signale ouvre Q2.10 : il se
+// pose donc. Les cas « Deux groupes » et « Contextes » des compléments de
+// recette (#149).
+describe("le second bloc des situations", () => {
+  const { "Q2.2.1.b": _, ...SANS_SECOND_BLOC } = SEUL;
+
+  it("se pose après « Non, aucune » au premier bloc", () => {
+    expect(posees(SANS_SECOND_BLOC)).toContain("Q2.2.1.b");
+  });
+
+  // L'HTNM renvoie à la caisse sans la distance ; le SAMSAH change la raison
+  // qu'en donne le résultat.
+  it("se pose encore quand le premier bloc décide sans la distance", () => {
+    const htnm: Reponses = { ...SANS_SECOND_BLOC, "Q2.2.1": ["5_HTNM"] };
+    const raison = (soin: Questions["Q2.2.1.b"][number]) =>
+      preconisation({ ...htnm, "Q2.2.1.b": [soin] }).cibles.cible_reason_code
+        .value;
+
+    expect(posees(htnm)).toContain("Q2.2.1.b");
+    expect(raison("0_AUCUN")).toBe("CNAM_HTNM_HORS_MATERNITE");
+    expect(raison("7_SAMSAH")).toBe("SAMSAH_DAP_SUPPORT_A_QUALIFIER");
   });
 });

@@ -13,7 +13,7 @@ import { S3138G } from "../../../front/models/eligibilite/r3/s3138g/s3138g";
 import { S3139H } from "../../../front/models/eligibilite/r3/s3139h/s3139h";
 import { generateCerfa } from "../../../front/socle/cerfa/generate-cerfa";
 import { type BoundCerfa, dtoFrom } from "../../../front/socle/cerfa-mapping";
-import { markedStates, textsOn } from "../../socle/cerfa/test-form";
+import { markedStates, textsOn } from "../../socle/cerfa/pdf-aplati";
 import { DAP, donnees, gabarit, PMT, type Reponses } from "./reponses-du-cerfa";
 import type { ValeursDesCibles } from "./traces-du-prescripteur";
 

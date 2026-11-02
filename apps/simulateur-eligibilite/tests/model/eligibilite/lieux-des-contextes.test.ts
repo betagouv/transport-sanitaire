@@ -91,6 +91,28 @@ describe("les lieux que les contextes de P2 fixent (matrice des lieux)", () => {
     ]);
   });
 
+  it("une sortie vers une USLD : quitter l'établissement de santé impose l'USLD à l'arrivée", () => {
+    const sortie = (nature: Questions["Q3.2.nature"]): Reponses => ({
+      ...RETOUR,
+      "Q2.2.1": ["1_HOSPITALISATION"],
+      "Q2.1.g": "2_SORTIE",
+      "Q2.6": ["6_USLD"],
+      "Q3.2.nature": nature,
+      "Q3.2.adresse": ADRESSE,
+    });
+    const versLUsld = sortie("2_ETABLISSEMENT_DE_SANTE");
+    expect(ids("P3/arrivee", versLUsld)).toEqual([
+      "Q3.3.nature",
+      "Q3.3.adresse",
+    ]);
+    expect(naturesDe("P3/arrivee", "Q3.3.nature", versLUsld)).toEqual([
+      "4_USLD",
+    ]);
+    expect(naturesDe("P3/arrivee", "Q3.3.nature", sortie("4_USLD"))).toContain(
+      "1_DOMICILE",
+    );
+  });
+
   it("l'EHPAD de Q2.6 aussi", () => {
     const ehpad: Reponses = {
       ...ALLER,
@@ -131,9 +153,19 @@ describe("les lieux que les contextes de P2 fixent (matrice des lieux)", () => {
     ]);
   });
 
-  it("une admission en HAD de Q2.6 part de l'établissement vers le domicile", () => {
+  it("une admission en HAD de Q2.6 part de l'établissement quitté vers le domicile, rappelés", () => {
     const had: Reponses = { ...RETOUR, "Q2.6": ["10_ADMISSION_HAD"] };
     expect(ids("P3/depart", had)).toEqual(["Q3.2.nom", "Q3.2.adresse"]);
     expect(ids("P3/arrivee", had)).toEqual(["Q3.3.adresse"]);
+    expect(rappel("P3/depart", "Q3.2.nom", had)).toEqual([
+      { label: "Lieu de départ", value: "L’établissement de santé quitté" },
+    ]);
+    expect(rappel("P3/arrivee", "Q3.3.adresse", had)).toEqual([
+      {
+        label: "Lieu d’arrivée",
+        value:
+          "Le domicile, pour l’admission en Hospitalisation à Domicile (HAD)",
+      },
+    ]);
   });
 });

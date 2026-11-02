@@ -1,5 +1,6 @@
 // Le transfert (Q2.5) : quand la page se pose, ce qu'elle établit, et
-// l'ouverture directe de Q2.6 par une admission en HAD. `CONTRAT_REPONSES_FAITS.json`,
+// l'ouverture directe de Q2.6 par une admission en HAD, qui n'est pas une
+// permission. `CONTRAT_REPONSES_FAITS.json`,
 // `CONTRAT_NEGATIONS_PROUVEES.json` et le scénario `article80-bilan-complet`
 // de `tests/test_cinq_retours_a.mjs` du paquet de l'éditeur (D-106).
 
@@ -133,6 +134,15 @@ describe("l'ouverture directe par une admission en HAD (Q2.1.g)", () => {
     expect(posee("P2/transfert", "Q2.5", HAD_A_DOMICILE)).toBeUndefined();
     expect(posee("P2/exceptions", "Q2.6.a", HAD_A_DOMICILE)).toBeUndefined();
     expect(posee("P2/exceptions", "Q2.6", HAD_A_DOMICILE)).toBeDefined();
+  });
+
+  it("ne propose aucune permission, et ne conclut rien avant Q2.6", () => {
+    expect(posee("P2/contextes", "Q2.2.1.a", HAD_A_DOMICILE)).toBeUndefined();
+    expect(posee("P2/permission", "Q2.7", HAD_A_DOMICILE)).toBeUndefined();
+    expect(faits(HAD_A_DOMICILE).fait_permission.value).toBe(false);
+    const avant = cibles(faits(HAD_A_DOMICILE));
+    expect(avant.cible_issue_id.value).toBeUndefined();
+    expect(avant.cible_financeur.value).toBeUndefined();
   });
 
   it("ne propose ni l'option 2, ni la 3, ni la 8", () => {

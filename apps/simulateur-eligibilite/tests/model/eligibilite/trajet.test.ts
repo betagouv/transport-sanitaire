@@ -1,5 +1,6 @@
 // La page du trajet de P2 : ce qui s'y pose, d'après le catalogue de
-// l'éditeur. La série se révèle sur la même page, sous la distance.
+// l'éditeur. La série se révèle sur la même page, sous la distance, avec ou
+// sans la ligne régulière.
 
 import { describe, expect, it } from "vitest";
 import { model } from "../../../core/models/eligibilite";
@@ -54,6 +55,20 @@ describe("la page du trajet", () => {
       expect(
         posees({ ...SEUL, "Q2.3.1": distance, "Q2.3.2": false }),
       ).toContain("Q2.3.3");
+    },
+  );
+
+  // La ligne régulière se cumule avec la distance, sans la remplacer (cas
+  // « Distance/ligne » des compléments de recette, #149).
+  it.each(["2_PLUS_DE_CINQUANTE_KM", "3_PLUS_DE_CENT_CINQUANTE_KM"] as const)(
+    "pose la série et l'urgence pour un trajet de %s avec la ligne cochée",
+    (distance) => {
+      expect(posees({ ...SEUL, "Q2.3.1": distance, "Q2.3.2": true })).toEqual([
+        "Q2.3.1",
+        "Q2.3.2",
+        "Q2.3.3",
+        "Q2.3.4",
+      ]);
     },
   );
 

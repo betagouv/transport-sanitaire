@@ -32,13 +32,20 @@ const FIN_DE_P2: Reponses = {
   "Q2.3.2": false,
 };
 
-const brancard = (cas: Questions["Q1.3"]): Reponses => ({
+const brancard = (
+  cas: Questions["Q1.3"],
+  lien?: Questions["Q1.3.b"],
+): Reponses => ({
   "Q1.1": "3_AVEC_UN_PROFESSIONNEL",
   "Q1.2": ["8_BRANCARDAGE"],
   "Q1.3": cas,
-  ...lienAld(cas),
+  ...lienAld(cas, lien),
   ...FIN_DE_P2,
 });
+
+// Un soin sans lien direct avec l'ALD : l'ALD ne fonde rien, le brancard
+// suffit à l'ambulance.
+const ALD_SANS_LIEN = brancard(["2_ALD"], "2_SANS_LIEN_DIRECT");
 
 const PROCHE: Reponses = {
   "Q1.1": "2_AVEC_UN_PROCHE",
@@ -100,6 +107,8 @@ const VEHICULE_PERSONNEL = {
 
 const PROFILS = [
   ["ald-brancard", brancard(["2_ALD"]), AMBULANCE_ALD],
+  // Le cas « ALD sans lien » des compléments de recette (v10.1.4).
+  ["ald-sans-lien-brancard", ALD_SANS_LIEN, AMBULANCE_ALD],
   ["ald-proche", PROCHE, VEHICULE_PERSONNEL],
   ["mineur-brancard", brancard(["8_MINEUR_SOINS_CONTINUS"]), AMBULANCE],
   [
@@ -148,5 +157,11 @@ describe("les parcours ALD et mineur", () => {
         badges: attendu.badges,
       });
     });
+  });
+
+  it("ald-sans-lien-brancard : l'ALD ne qualifie pas, l'ambulance tient au brancard", () => {
+    const cibles = ciblesDe({ "Q0.1": "1_VERIFIER", ...ALD_SANS_LIEN });
+    expect(cibles.cible_ald_qualifiante.isNon()).toBe(true);
+    expect(cibles.cible_mode_ambulance.isOui()).toBe(true);
   });
 });

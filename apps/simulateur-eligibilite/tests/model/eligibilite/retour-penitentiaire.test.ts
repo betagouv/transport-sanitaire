@@ -116,6 +116,22 @@ describe("l'indication médicale d'un retour vers la prison (point 33)", () => {
     ).toBeUndefined();
   });
 
+  // Un « Non » resté de Q2.2.1.indication contredit la séance de P1 : la
+  // question ne se pose plus, sa réponse ne compte pas, et le trajet reste
+  // dans le circuit de prescription (D-104).
+  it("une indication établie en P1 écarte un « Non » contradictoire", () => {
+    const contradiction: Reponses = {
+      ...qualifie("2_NON"),
+      "Q1.3": ["3_CHIMIOTHERAPIE"],
+    };
+    expect(
+      posee("P2/contextes", "Q2.2.1.indication", contradiction),
+    ).toBeUndefined();
+    expect(posee("P2/trajet", "Q2.3.1", contradiction)).toBeDefined();
+    expect(faits(contradiction).fait_p2_complete.value).toBe(true);
+    expect(ciblesDe(contradiction).cible_issue_id.value).toBe("ISSUE_PMT");
+  });
+
   it("« Oui » laisse les règles calculer l'issue", () => {
     expect(ciblesDe(qualifie("1_OUI")).cible_issue_id.value).toBeDefined();
   });

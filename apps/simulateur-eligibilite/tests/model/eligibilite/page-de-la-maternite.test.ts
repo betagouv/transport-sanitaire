@@ -8,7 +8,7 @@ import { S3139H } from "../../../front/models/eligibilite/r3/s3139h/s3139h";
 import { dtoFrom } from "../../../front/socle/cerfa-mapping";
 import { questionnaireOf } from "../../../front/socle/simulateur/questionnaire-of";
 import { lock } from "../../../front/socle/simulateur/start";
-import { textsOn } from "../../socle/cerfa/test-form";
+import { textsOn } from "../../socle/cerfa/pdf-aplati";
 import {
   donnees,
   EXAMEN_DE_MATERNITE,

@@ -1,5 +1,5 @@
-// La permission (Q2.7) : quand les pages se posent, ce qu'elles établissent, et
-// l'issue qu'elles donnent. `CONTRAT_REPONSES_FAITS.json`, `CONTRAT_SAISIES_ET_PAGES.md`
+// La permission (Q2.7) : quand les pages se posent, ce qu'elles proposent, ce
+// qu'elles établissent, et l'issue qu'elles donnent. `CONTRAT_REPONSES_FAITS.json`, `CONTRAT_SAISIES_ET_PAGES.md`
 // et `TSREF-20261015-05` du paquet de l'éditeur (D-107).
 
 import { describe, expect, it } from "vitest";
@@ -89,6 +89,27 @@ describe("quand Q2.7 se pose", () => {
   );
 });
 
+// Les deux confirmations n'ont plus « Je ne peux pas le vérifier » (D-235).
+describe("Q2.7.a et Q2.8.4", () => {
+  const valeurs = (idDePage: string, id: "Q2.7.a" | "Q2.8.4", r: Reponses) => {
+    const question = posee(idDePage, id, r);
+    return question?.kind === "single choice"
+      ? question.options.map(({ value }) => value)
+      : [];
+  };
+
+  it("ne proposent que « Oui » et « Non »", () => {
+    expect(valeurs("P2/permission", "Q2.7.a", ADULTE_A_SA_CHARGE)).toEqual([
+      "1_OUI",
+      "2_NON",
+    ]);
+    expect(valeurs("P2/permission-mineur", "Q2.8.4", MINEUR)).toEqual([
+      "1_OUI",
+      "2_NON",
+    ]);
+  });
+});
+
 describe("un mineur de Q1.3 face à une permission adulte (TSREF-20261015-05)", () => {
   const proposees = (reponses: Reponses) => {
     const question = posee("P2/permission", "Q2.7", reponses);
@@ -140,6 +161,11 @@ describe("les faits de la permission", () => {
       expect(deux(reponses)).toEqual([charge, false]);
     },
   );
+
+  it("4 sans réponse à Q2.7.a : la charge patient reste absente, jamais « non »", () => {
+    const { "Q2.7.a": _, ...sansConfirmation } = ADULTE_A_SA_CHARGE;
+    expect(deux(sansConfirmation)).toEqual([undefined, false]);
+  });
 
   it.each(["1_MOINS_DE_SEIZE_ANS", "2_SEIZE_A_DIX_NEUF_ANS"] as const)(
     "%s : la charge patient vaut « non », car elle ne vaut que pour 20 ans ou plus",

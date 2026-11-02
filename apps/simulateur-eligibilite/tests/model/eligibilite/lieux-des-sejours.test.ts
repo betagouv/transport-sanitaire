@@ -1,6 +1,7 @@
-// Les lieux d'un séjour en cours, d'une admission en HAD et d'une permission
-// en P3 (Q3.2, Q3.3) : les rôles de QST-LIEUX-001 (`REFERENTIEL/02`). Le lieu de
-// vie d'une permission n'est pas présumé domicile, et deux rôles qui se
+// Les lieux d'un séjour en cours, d'une admission en HAD, d'une permission et
+// d'une séance sans séjour en P3 (Q3.2, Q3.3) : les rôles de QST-LIEUX-001
+// (`REFERENTIEL/02`). Le lieu de vie d'une permission n'est pas présumé
+// domicile, une séance ne présume pas l'hôpital, et deux rôles qui se
 // contredisent se refusent (#277).
 
 import { describe, expect, it } from "vitest";
@@ -119,13 +120,15 @@ describe("les lieux d'un séjour, d'une HAD et d'une permission (QST-LIEUX-001)"
     ]);
   });
 
+  const AUTRE_DEPLACEMENT: Reponses = {
+    "Q2.2.1": ["1_HOSPITALISATION"],
+    "Q2.2.1.cadre": "1_ETABLISSEMENT",
+    "Q2.2.1.a": "2_NON",
+    "Q2.5": "2_AUTRE_DEPLACEMENT",
+  };
+
   it("un autre déplacement pendant un séjour en établissement en part, et y revient", () => {
-    const sejour: Reponses = {
-      "Q2.2.1": ["1_HOSPITALISATION"],
-      "Q2.2.1.cadre": "1_ETABLISSEMENT",
-      "Q2.2.1.a": "2_NON",
-      "Q2.5": "2_AUTRE_DEPLACEMENT",
-    };
+    const sejour = AUTRE_DEPLACEMENT;
     const etablissement = "L’établissement de santé où le patient séjourne";
     expect(rappel("P3/depart", "Q3.2.nom", { ...ALLER, ...sejour })).toEqual([
       { label: "Lieu de départ", value: etablissement },
@@ -138,10 +141,7 @@ describe("les lieux d'un séjour, d'une HAD et d'une permission (QST-LIEUX-001)"
   it("une admission en HAD déclarée comme autre déplacement part de l'établissement vers le domicile (#311)", () => {
     const sortie: Reponses = {
       ...RETOUR,
-      "Q2.2.1": ["1_HOSPITALISATION"],
-      "Q2.2.1.cadre": "1_ETABLISSEMENT",
-      "Q2.2.1.a": "2_NON",
-      "Q2.5": "2_AUTRE_DEPLACEMENT",
+      ...AUTRE_DEPLACEMENT,
       "Q2.6": ["10_ADMISSION_HAD"],
     };
     expect(rappel("P3/depart", "Q3.2.nom", sortie)).toEqual([
@@ -152,6 +152,54 @@ describe("les lieux d'un séjour, d'une HAD et d'une permission (QST-LIEUX-001)"
         .inconsistencies,
     ).toEqual([]);
     expect(ids("P3/arrivee", sortie)).toEqual(["Q3.3.adresse"]);
+  });
+
+  it("l'établissement du séjour ne se redemande pas : seul l'autre lieu se choisit", () => {
+    const aller = { ...ALLER, ...AUTRE_DEPLACEMENT };
+    const retour = { ...RETOUR, ...AUTRE_DEPLACEMENT };
+    expect(ids("P3/depart", aller)).toEqual(["Q3.2.nom", "Q3.2.adresse"]);
+    expect(ids("P3/arrivee", aller)).toEqual(["Q3.3.nature", "Q3.3.adresse"]);
+    expect(ids("P3/depart", retour)).toEqual(["Q3.2.nature", "Q3.2.adresse"]);
+    expect(ids("P3/arrivee", retour)).toEqual(["Q3.3.nom", "Q3.3.adresse"]);
+  });
+
+  // L'USLD de Q2.6 peut être l'établissement du séjour : sa nature se choisit
+  // entre les deux, et celle choisie reste proposée (D-244).
+  it("avec l'USLD de Q2.6, l'établissement du séjour se choisit, et l'USLD choisie libère l'autre lieu", () => {
+    const usld: Reponses = { ...AUTRE_DEPLACEMENT, "Q2.6": ["6_USLD"] };
+    const depuisLUsld: Reponses = {
+      "Q3.2.nature": "4_USLD",
+      "Q3.2.adresse": ADRESSE,
+    };
+    const aller = { ...ALLER, ...usld, ...depuisLUsld };
+    expect(naturesDe("P3/depart", "Q3.2.nature", aller)).toEqual([
+      "2_ETABLISSEMENT_DE_SANTE",
+      "4_USLD",
+    ]);
+    expect(naturesDe("P3/arrivee", "Q3.3.nature", aller)).toContain(
+      "1_DOMICILE",
+    );
+    const retour = { ...RETOUR, ...usld, ...depuisLUsld };
+    expect(naturesDe("P3/arrivee", "Q3.3.nature", retour)).toEqual([
+      "2_ETABLISSEMENT_DE_SANTE",
+      "4_USLD",
+    ]);
+  });
+
+  // Une séance n'est pas un séjour : sans hospitalisation en cours, le départ
+  // de l'aller et l'arrivée du retour se choisissent, domicile compris.
+  it.each<[string, Reponses]>([
+    ["une chimiothérapie", { "Q1.3": ["3_CHIMIOTHERAPIE"] }],
+    ["une hémodialyse", { "Q1.3": ["5_DIALYSE"], "Q1.3.a": "1_OUI" }],
+  ])("%s sans séjour en cours ne part pas de l'hôpital", (_cas, seance) => {
+    const aller = { ...ALLER, ...seance };
+    expect(ids("P3/depart", aller)).toEqual(["Q3.2.nature", "Q3.2.adresse"]);
+    expect(naturesDe("P3/depart", "Q3.2.nature", aller)).toContain(
+      "1_DOMICILE",
+    );
+    expect(
+      naturesDe("P3/arrivee", "Q3.3.nature", { ...RETOUR, ...seance }),
+    ).toContain("1_DOMICILE");
   });
 
   it("des soins pendant une HAD partent du domicile, sans établissement inventé", () => {

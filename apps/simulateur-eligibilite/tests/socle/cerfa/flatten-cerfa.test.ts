@@ -1,12 +1,8 @@
 import { describe, expect, it } from "vitest";
 import { fillCerfa } from "../../../front/socle/cerfa/fill-cerfa";
 import { flattenCerfa } from "../../../front/socle/cerfa/flatten-cerfa";
-import {
-  drawnOn,
-  markedStates,
-  testForm,
-  withoutOffAppearance,
-} from "./test-form";
+import { drawnOn, markedStates } from "./pdf-aplati";
+import { testForm, withoutOffAppearance } from "./test-form";
 
 // Le cerfa de sortie est aplati (D-84) : ses valeurs sont dessinées sur la
 // page, et il n'y reste aucun champ à corriger dans un lecteur.

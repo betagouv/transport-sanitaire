@@ -5,7 +5,7 @@
 import { describe, expect, it } from "vitest";
 import { S3141 } from "../../../front/models/eligibilite/r3/s3141/s3141";
 import { dtoFrom } from "../../../front/socle/cerfa-mapping";
-import { drawnOn, markedStates } from "../../socle/cerfa/test-form";
+import { drawnOn, markedStates, textsIn } from "../../socle/cerfa/pdf-aplati";
 import {
   abscisses,
   donnees,
@@ -85,18 +85,40 @@ describe("le S3141 de plusieurs permissions", () => {
     expect((await drawnOn(await rempli(ACCIDENT))).fields).toBe(0);
   });
 
+  // Le nombre se lit dans son champ : un chiffre seul se trouve aussi dans les
+  // dates, écrites case par case, et dans l'adresse.
   it("écrit les dates en chiffres sur leurs cases, le nombre et le départ", async () => {
-    const ecrit = (await drawnOn(await rempli(ACCIDENT))).texts.join("");
+    const pdf = await rempli(ACCIDENT);
+    const ecrit = (await drawnOn(pdf)).texts.join("");
 
     for (const texte of [
       "30092026", // l'accident
       "01102026", // le début de l'hospitalisation
       "01122026", // la fin de la période
       "22102026", // la prescription
-      "4",
       "Hôpital Necker, 149 rue de Sèvres, 75015 Paris",
     ])
       expect(ecrit).toContain(texte);
+    expect(await textsIn(await gabarit("S3141"), pdf, "tr mois")).toEqual([
+      "2",
+    ]);
+  });
+
+  // Une permission par semaine en permet 5 par mois (D-246).
+  it("écrit 4 allers-retours par mois dans « tr mois », la case aller-retour cochée", async () => {
+    const reponses: Reponses = {
+      ...PERMISSIONS,
+      "Q2.8.6.a": 1,
+      "Q3.1.3": 4,
+    };
+    const pdf = await rempli(reponses);
+
+    expect(await textsIn(await gabarit("S3141"), pdf, "tr mois")).toEqual([
+      "4",
+    ]);
+    expect(await markedStates(await gabarit("S3141"), pdf, "a/r")).toEqual([
+      "Oui",
+    ]);
   });
 
   it("coche l'accident causé par un tiers à côté du « oui » imprimé, à droite du « non » (D-139)", async () => {
