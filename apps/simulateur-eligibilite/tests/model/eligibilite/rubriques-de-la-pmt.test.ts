@@ -70,6 +70,16 @@ describe("le nombre de transports", () => {
     });
   });
 
+  // Le nombre compte les trajets du sens choisi (CONTRAT_Q31_QUANTITES.json).
+  it("trois allers-retours valent 3, pas 6", () => {
+    const allersRetours: Reponses = {
+      ...PMT,
+      "Q3.1.2": "3_ALLER_RETOUR_EQUIVALENT",
+      "Q3.1.1": 3,
+    };
+    expect(cellules(NOMBRE, allersRetours)).toEqual({ nombre: "3" });
+  });
+
   it("sans P3 répondue, reste vide", () => {
     expect(cellules(NOMBRE, MINEUR)).toEqual({ nombre: undefined });
   });

@@ -1,6 +1,7 @@
-// Le nombre de transports que ce document prescrit (Q3.1.1), sur la PMT et la
-// DAP. Il ne compte que ceux de ce document : deux documents de deux
-// transports peuvent former une série de quatre.
+// Le nombre que ce document prescrit (Q3.1.1), sur la PMT et la DAP : celui
+// des trajets du sens choisi. Trois allers-retours valent 3, la case
+// aller-retour cochée, et non 6 (`CONTRAT_Q31_QUANTITES.json`, D-246). Il ne
+// compte que ceux de ce document : deux documents peuvent former une série.
 
 import { given } from "../../../../../core/models/eligibilite/question";
 import type { Rubrique } from "./rubrique";

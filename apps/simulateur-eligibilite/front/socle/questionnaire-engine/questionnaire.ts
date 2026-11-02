@@ -3,6 +3,7 @@
 
 import { useState } from "react";
 import type { AskedQuestion } from "../../../core/socle/questionnaire-engine/asked-question";
+import { answerOnPage } from "../../../core/socle/questionnaire-engine/page-commit";
 import type {
   Answer,
   Answers,
@@ -193,8 +194,12 @@ function actions({
   tracking,
 }: Context): Actions {
   return {
+    // Une saisie vide les questions de la page qui en dépendent (`dependsOn`).
     answer: (id, answer) =>
-      setState({ ...state, draft: withAnswer(state.draft, id, answer) }),
+      setState({
+        ...state,
+        draft: answerOnPage(view.page, state.draft, id, answer),
+      }),
     next: () => {
       // Le bouton est déjà désactivé, ceci couvre une soumission au clavier.
       if (view.hasPendingQuestions) return;
@@ -213,15 +218,6 @@ function actions({
       if (previous) setState(onPage(previous, state.answers));
     },
   };
-}
-
-function withAnswer(
-  draft: Answers,
-  id: string,
-  answer: Answer | Unanswered,
-): Answers {
-  const { [id]: _removed, ...rest } = draft;
-  return answer === undefined ? rest : { ...rest, [id]: answer };
 }
 
 // Toute saisie relance l'avancement automatique, même au retour sur une page

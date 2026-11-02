@@ -10,6 +10,7 @@
 // que lisent les scénarios (`ce-que-lit-un-texte.ts`).
 
 import type {
+  AffichageDuPrescripteur,
   AucunScenario,
   CatalogueResultats,
   IssueDeLaCaisse,
@@ -34,10 +35,13 @@ export type IssueSansFiche =
   | IssueDuPrescripteur
   | "ISSUE_DAP_ETRANGER_A_EXAMINER";
 
-/** Un point de « Pourquoi ce résultat ? » : un titre, s'il en a un, et son texte. */
+/**
+ * Un point de « Pourquoi ce résultat ? » : un titre, s'il en a un, et ses
+ * paragraphes.
+ */
 export type ElementDuPourquoi = {
   readonly titre?: string;
-  readonly texte: string;
+  readonly paragraphes: readonly string[];
 };
 
 /**
@@ -84,6 +88,29 @@ export function texteDuPrescripteur(
     : { ...SANS_TEXTE, titre: issues[issue].title };
 }
 
+/**
+ * Le texte réduit aux sections que le catalogue montre (`REFERENTIEL/03`
+ * §4.2, D08). Sans les raisons, il ne reste que le titre et l'introduction.
+ */
+export function selonLAffichage(
+  texte: TexteDuPrescripteur,
+  affichage: AffichageDuPrescripteur,
+): TexteDuPrescripteur {
+  const raisons = affichage.renderReasonPanels !== false;
+  const actions = raisons && affichage.renderNextSteps !== false;
+  return {
+    titre: texte.titre,
+    introduction:
+      affichage.renderPractitionerIntro === false
+        ? undefined
+        : texte.introduction,
+    pourquoi: raisons ? texte.pourquoi : undefined,
+    questions: raisons ? texte.questions : [],
+    actions: actions ? texte.actions : [],
+    avertissement: raisons ? texte.avertissement : undefined,
+  };
+}
+
 // ---- implémentation ----
 
 const SANS_TEXTE = { questions: [], actions: [] } as const;
@@ -96,7 +123,7 @@ function texteDeLEtranger(issue: IssueEtranger): TexteDuPrescripteur {
       titre: issue.whyTitle,
       elements: issue.whyItems.map(({ title, body }) => ({
         titre: title,
-        texte: body,
+        paragraphes: paragraphesDe(body),
       })),
     },
     questions: issue.questions,
@@ -177,20 +204,28 @@ function sansDoublon(textes: readonly string[]): string[] {
 }
 
 // « Titre : texte », ou plusieurs, numérotés « 1. … 2. … » sans espace entre
-// eux : les seules marques que le catalogue met dans `whyText`.
+// eux : les seules marques que le catalogue met dans `whyText`. Une ligne vide
+// y sépare deux paragraphes.
 function elementsDuPourquoi(whyText: string): ElementDuPourquoi[] {
-  const texte = sansBlancsDeTrop(whyText);
+  const texte = whyText.trim();
   const parties = texte.startsWith("1. ")
     ? texte.slice(3).split(/(?<=[.!?])\s*\d+\.\s+/)
     : [texte];
-  return parties.map(titreEtTexte);
+  return parties.map(titreEtParagraphes);
 }
 
-function titreEtTexte(partie: string): ElementDuPourquoi {
+function titreEtParagraphes(partie: string): ElementDuPourquoi {
   const separation = partie.indexOf(" : ");
-  if (separation < 0) return { texte: partie };
+  if (separation < 0) return { paragraphes: paragraphesDe(partie) };
   return {
-    titre: partie.slice(0, separation),
-    texte: partie.slice(separation + 3),
+    titre: sansBlancsDeTrop(partie.slice(0, separation)),
+    paragraphes: paragraphesDe(partie.slice(separation + 3)),
   };
+}
+
+function paragraphesDe(texte: string): string[] {
+  return texte
+    .split(/\n\s*\n/)
+    .map(sansBlancsDeTrop)
+    .filter((paragraphe) => paragraphe !== "");
 }

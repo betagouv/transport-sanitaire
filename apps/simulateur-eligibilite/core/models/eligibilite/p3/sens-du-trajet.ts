@@ -1,7 +1,9 @@
-// Le sens des transports du document (Q3.1.2) et le nombre mensuel du S3141
-// (Q3.1.3). Le sens ne se propose que s'il s'accorde aux rôles que P2 a fixés
-// aux lieux. Plusieurs permissions sont chacune un aller-retour : Q2.8 donne
-// alors le sens, qui ne se redemande pas (D-120).
+// Le sens des transports du document (Q3.1.2), le nombre qui le suit (Q3.1.1)
+// et le nombre mensuel du S3141 (Q3.1.3). Le sens ne se propose que s'il
+// s'accorde aux rôles que P2 a fixés aux lieux. Plusieurs permissions sont
+// chacune un aller-retour : Q2.8 donne alors le sens, qui ne se redemande pas
+// (D-120). Le nombre compte des trajets du sens choisi : trois allers-retours
+// valent 3 (`CONTRAT_Q31_QUANTITES.json`, D-246).
 
 import type { Condition, GivenAnswer } from "../../../socle/index.ts";
 import type { Questions } from "../declarations/questions.ts";
@@ -69,23 +71,30 @@ export const SENS_COMPATIBLES = {
     .not(),
 } as const satisfies Partial<Record<Sens, Condition>>;
 
-/** Le message d'un aller-retour qui ne compte qu'un transport. */
-export const ALLER_RETOUR_D_UN_TRANSPORT =
-  "Un aller-retour compte deux transports. Indiquez-en au moins deux, ou choisissez « Aller simple » ou « Retour simple ».";
+/** Q3.1.1 se pose pour la PMT et la DAP, une fois le sens choisi. */
+export const uneQuantiteAPoser = pmtOuDap.and(
+  given
+    .question("Q3.1.2")
+    .answer()
+    .isOneOf("1_ALLER", "2_RETOUR", "3_ALLER_RETOUR_EQUIVALENT"),
+);
 
-/** Q3.1.2 dit un aller-retour, quand Q3.1.1 ne compte qu'un transport. */
-export const unAllerRetourDUnSeulTransport = given
-  .question("Q3.1.2")
-  .answer()
-  .is("3_ALLER_RETOUR_EQUIVALENT")
-  .and(given.question("Q3.1.1").answer().is(1));
+/** Le libellé de Q3.1.1 : il dit l'unité du sens choisi. */
+export function quantiteDuSens({ answers }: Context): string {
+  return QUANTITES[sensDeQ312(answers)].question;
+}
+
+/** L'aide de Q3.1.1 : ce que vaut une unité du sens choisi. */
+export function aideDuSens({ answers }: Context): string {
+  return QUANTITES[sensDeQ312(answers)].aide;
+}
 
 /** Q3.1.3 dépasse ce que la fréquence de Q2.8 permet. */
 export const desTrajetsAuDelaDeLaFrequence = given
   .question("Q3.1.3")
   .answer()
   .computeWith(semaines, (nombre, frequence) => {
-    const maximum = trajetsMensuelsAuPlus(frequence.value);
+    const maximum = allersRetoursMensuelsAuPlus(frequence.value);
     return (
       maximum !== undefined &&
       nombre.value !== undefined &&
@@ -96,51 +105,56 @@ export const desTrajetsAuDelaDeLaFrequence = given
 /** Le message de Q3.1.3 au-delà de la fréquence : il cite le maximum. */
 export const FREQUENCE_DEPASSEE = semaines.compute(
   ({ value }) =>
-    `Avec une permission toutes les ${value} semaine(s), un mois compte au plus ${trajetsMensuelsAuPlus(value)} trajets.`,
+    `Avec une permission toutes les ${value} semaine(s), un mois compte au plus ${allersRetoursMensuelsAuPlus(value)} allers-retours.`,
 );
 
-/** Ce que Q2.8 a fixé des permissions, rappelé au-dessus de Q3.1.3. */
+/**
+ * La fréquence des permissions de Q2.8, rappelée au-dessus de Q3.1.3. Elle ne
+ * se convertit pas en nombre par mois (TS1014-E04).
+ */
 export function rappelDesPermissions({ answers }: Context): Rappel {
-  const debut = answers.question("Q2.8.2").value;
-  const fin = answers.question("Q2.8.3").value;
-  const periode = answers.question("Q2.8.6").value;
   const semaines = answers.question("Q2.8.6.a").value;
-  return [
-    ...(debut && fin
-      ? [
-          {
-            label: "Première permission",
-            value: `du ${lisible(debut)} au ${lisible(fin)}`,
-          },
-        ]
-      : []),
-    ...(periode
-      ? [{ label: "Fin de la période", value: lisible(periode) }]
-      : []),
-    ...(semaines !== undefined
-      ? [
-          {
-            label: "Fréquence",
-            value: `une permission aller-retour toutes les ${semaines} semaine(s)`,
-          },
-        ]
-      : []),
-  ];
+  if (semaines === undefined || semaines < 1) return [];
+  const frequence =
+    semaines === 1
+      ? "Une permission aller-retour par semaine"
+      : `Une permission aller-retour toutes les ${semaines} semaines`;
+  return [{ label: "Fréquence", value: frequence }];
 }
 
 // ---- implémentation ----
 
-// `AAAA-MM-JJ` donne `JJ/MM/AAAA`, et `AAAA-MM-JJTHH:mm` y ajoute l'heure.
-function lisible(date: string): string {
-  const [jour, heure] = date.split("T");
-  const [annee, mois, quantieme] = (jour ?? "").split("-");
-  const lu = `${quantieme}/${mois}/${annee}`;
-  return heure ? `${lu} à ${heure}` : lu;
+// Les libellés de Q3.1.1, sens par sens (`CONTRAT_Q31_QUANTITES.json`).
+const QUANTITES = {
+  "1_ALLER": {
+    question: "Combien d’allers simples cette prescription doit-elle couvrir ?",
+    aide: "Un aller simple correspond à un seul trajet vers le lieu de soins.",
+  },
+  "2_RETOUR": {
+    question:
+      "Combien de retours simples cette prescription doit-elle couvrir ?",
+    aide: "Un retour simple correspond à un seul trajet depuis le lieu de soins.",
+  },
+  "3_ALLER_RETOUR_EQUIVALENT": {
+    question: "Combien d’allers-retours cette prescription doit-elle couvrir ?",
+    aide: "Un aller-retour comprend deux trajets : un aller et un retour. Exemple : 3 allers-retours = 3 allers et 3 retours.",
+  },
+} as const;
+
+// Le sens de Q3.1.2 qui a une unité. Q3.1.1 ne se pose qu'avec l'un d'eux
+// (`uneQuantiteAPoser`) : l'aller tient lieu de défaut.
+function sensDeQ312(answers: Context["answers"]): keyof typeof QUANTITES {
+  const sens = answers.question("Q3.1.2").value;
+  return sens !== undefined && sens in QUANTITES
+    ? (sens as keyof typeof QUANTITES)
+    : "1_ALLER";
 }
 
-// Le plus de trajets qu'un mois compte : une permission aller-retour toutes
-// les `semaines` semaines, deux trajets par permission, sur 31 jours.
-function trajetsMensuelsAuPlus(semaines: number | Inconnu): number | Inconnu {
+// Le plus d'allers-retours qu'un mois compte : une permission toutes les
+// `semaines` semaines, sur 31 jours.
+function allersRetoursMensuelsAuPlus(
+  semaines: number | Inconnu,
+): number | Inconnu {
   if (semaines === undefined || semaines < 1) return undefined;
-  return 2 * Math.ceil(31 / (7 * semaines));
+  return Math.ceil(31 / (7 * semaines));
 }

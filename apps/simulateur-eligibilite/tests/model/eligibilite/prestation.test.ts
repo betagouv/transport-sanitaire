@@ -119,21 +119,16 @@ describe("les sous-questions de Q2.1", () => {
     expect(ids(assis(["3_CHIMIOTHERAPIE"]))).toEqual([]);
   });
 
-  it("pose f avec une hémodialyse confirmée", () => {
-    const hemodialyse = assis(["3_CHIMIOTHERAPIE", "5_DIALYSE"], {
-      "Q1.3.a": "1_OUI",
-    });
-    expect(ids(hemodialyse)).toEqual(["Q2.1.f"]);
-  });
-
-  // Une autre dialyse ne compte pas : il ne reste qu'une séance, et f ne
-  // change plus rien (COR-17, D-131).
-  it("ne pose pas f quand Q1.3.a dit une autre dialyse", () => {
-    const autre = assis(["3_CHIMIOTHERAPIE", "5_DIALYSE"], {
-      "Q1.3.a": "2_AUTRE_DIALYSE",
-    });
-    expect(ids(autre)).not.toContain("Q2.1.f");
-  });
+  // Toute dialyse déclarée compte, sans attendre Q1.3.a (TS1014-L04, D-245).
+  it.each([["1_OUI"], ["2_AUTRE_DIALYSE"]] as const)(
+    "pose f avec une dialyse, Q1.3.a valant %s",
+    (dialyse) => {
+      const seances = assis(["3_CHIMIOTHERAPIE", "5_DIALYSE"], {
+        "Q1.3.a": dialyse,
+      });
+      expect(ids(seances)).toEqual(["Q2.1.f"]);
+    },
+  );
 
   it("bloque f quand les séances ne sont pas le même déplacement", () => {
     const f = posees(assis(["3_CHIMIOTHERAPIE", "4_RADIOTHERAPIE"])).find(

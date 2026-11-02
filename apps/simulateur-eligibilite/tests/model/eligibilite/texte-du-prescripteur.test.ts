@@ -34,8 +34,10 @@ describe("le texte des seeds", () => {
           titre: "Pourquoi ce résultat ?",
           elements: [
             {
-              texte:
-                "Le trajet a été qualifié comme un transfert entre établissements pendant une prise en charge hospitalière. Il s’agit d’un déplacement provisoire de moins de 48 heures, avec retour vers l’établissement d’origine lorsque ce retour a été confirmé. Aucun formulaire Assurance Maladie n’est à compléter",
+              paragraphes: [
+                "Le trajet a été qualifié comme un transfert entre établissements pendant une prise en charge hospitalière. Il s’agit d’un déplacement provisoire de moins de 48 heures, avec retour vers l’établissement d’origine lorsque ce retour a été confirmé.",
+                "Aucun formulaire Assurance Maladie n’est à compléter",
+              ],
             },
           ],
         },
@@ -60,8 +62,10 @@ describe("le texte des seeds", () => {
         titre: "Pourquoi les frais relèvent-ils du patient ?",
         elements: [
           {
-            texte:
-              "La permission concerne un patient âgé d’au moins 20 ans. Une prestation exceptionnelle a été demandée expressément par le patient, sans fondement médical distinct ouvrant droit à une prise en charge du transport ; sa facturation personnelle a été confirmée. Aucun formulaire Assurance Maladie n’est à compléter",
+            paragraphes: [
+              "La permission concerne un patient âgé d’au moins 20 ans. Une prestation exceptionnelle a été demandée expressément par le patient, sans fondement médical distinct ouvrant droit à une prise en charge du transport ; sa facturation personnelle a été confirmée.",
+              "Aucun formulaire Assurance Maladie n’est à compléter",
+            ],
           },
         ],
       },
@@ -84,8 +88,10 @@ describe("le texte des seeds", () => {
         titre: "Pourquoi ce résultat ?",
         elements: [
           {
-            texte:
-              "Ce déplacement relève du cadre réglementaire des convocations ou de l’appareillage. Indiquer au patient de conserver cette pièce et de se rapprocher de l’organisme émetteur ou de sa caisse pour les modalités pratiques de remboursement.",
+            paragraphes: [
+              "Ce déplacement relève du cadre réglementaire des convocations ou de l’appareillage.",
+              "Indiquer au patient de conserver cette pièce et de se rapprocher de l’organisme émetteur ou de sa caisse pour les modalités pratiques de remboursement.",
+            ],
           },
         ],
       },
@@ -108,8 +114,9 @@ describe("le texte des seeds", () => {
         elements: [
           {
             titre: "L’effet de la demande du Centre 15 doit être clarifié",
-            texte:
+            paragraphes: [
               "Un transport entre établissements, hors Structure Mobile d’Urgence et de Réanimation (SMUR), a été demandé dans le cadre de l’aide médicale urgente par le Centre 15. Son articulation avec le financement des transferts hospitaliers n’est pas tranchée par le simulateur.",
+            ],
           },
         ],
       },
@@ -139,8 +146,9 @@ describe("le texte des seeds", () => {
         elements: [
           {
             titre: "Une demande d’examen du transport",
-            texte:
+            paragraphes: [
               "Dans cette situation, la caisse doit préciser les conditions applicables au transport. Le document S3139h préparé par le simulateur constitue une demande d’examen, pas un accord de remboursement. La prise en charge des soins à l’étranger relève de ses propres démarches.",
+            ],
           },
         ],
       },
@@ -199,14 +207,16 @@ describe("le texte de la caisse quand plusieurs points sont ouverts", () => {
         {
           titre:
             "La catégorie de l’Affection Longue Durée (ALD) n’est pas vérifiée",
-          texte:
+          paragraphes: [
             "Un lien entre les soins et une Affection Longue Durée (ALD) a été déclaré, mais sa catégorie réglementaire ne peut pas être établie à partir des réponses disponibles. Cette information peut conditionner le droit au transport ou une dispense d’accord préalable.",
+          ],
         },
         {
           titre:
             "Le segment d’hébergement temporaire nécessite une qualification",
-          texte:
+          paragraphes: [
             "Le trajet comporte un segment lié à un hébergement temporaire non médicalisé, hors dispositif Engagement maternité. La règle applicable à ce segment exact n’est pas suffisamment vérifiée pour conclure sur son financement.",
+          ],
         },
       ],
     });

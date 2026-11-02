@@ -3,7 +3,7 @@ import { describe, expect, it } from "vitest";
 import { page, questionsOf } from "../../../core/socle";
 import { afficher } from "./afficher";
 
-// Le libellé d'une question peut dépendre des réponses. Le questionnaire
+// Le libellé et l'aide d'une question peuvent dépendre des réponses. Le questionnaire
 // factice n'en a pas de tel, les pages sont donc écrites ici.
 
 type Questions = {
@@ -31,6 +31,17 @@ const HEURE = page(
       answers.question("compagnie").is("accompagne")
         ? "À quelle heure arrivez-vous, vous et votre proche ?"
         : "À quelle heure arrivez-vous, seul ?",
+    ),
+);
+
+const ARRIVEE = page(
+  "arrivee",
+  question
+    .text("duree", "Pour combien de temps ?")
+    .hintFrom(({ answers }) =>
+      answers.question("compagnie").is("accompagne")
+        ? "Le temps que vous restez tous les deux."
+        : "Le temps que vous restez.",
     ),
 );
 
@@ -63,6 +74,16 @@ describe("libellé qui dépend des réponses", () => {
       await screen.findByRole("textbox", {
         name: "À quelle heure arrivez-vous, seul ?",
       }),
+    ).toBeInTheDocument();
+  });
+
+  it("donne aussi l'aide selon la réponse", async () => {
+    const { user } = afficher([COMPAGNIE, ARRIVEE]);
+
+    await user.click(radio("Accompagné"));
+
+    expect(
+      await screen.findByText("Le temps que vous restez tous les deux."),
     ).toBeInTheDocument();
   });
 

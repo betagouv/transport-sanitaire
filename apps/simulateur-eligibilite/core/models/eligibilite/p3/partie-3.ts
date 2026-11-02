@@ -19,41 +19,32 @@ import {
 import { PAGE_DE_L_ARRIVEE, PAGE_DU_DEPART } from "./pages-des-lieux.ts";
 import { PAGE_DE_L_URGENCE, PAGE_DU_SOIN } from "./pages-du-soin.ts";
 import {
-  ALLER_RETOUR_D_UN_TRANSPORT,
+  aideDuSens,
   desTrajetsAuDelaDeLaFrequence,
   desTrajetsMensuelsAPoser,
   FREQUENCE_DEPASSEE,
+  quantiteDuSens,
   rappelDesPermissions,
   SENS_COMPATIBLES,
-  unAllerRetourDUnSeulTransport,
+  uneQuantiteAPoser,
   unSensAPoser,
 } from "./sens-du-trajet.ts";
-import { pmtOuDap } from "./supports-du-complement.ts";
 
 type Partie = QuestionnairePart<Questions, Cibles>;
 
-// Q3.1 : les transports de ce document. La PMT et la DAP demandent leur nombre
-// et leur sens. Le S3141 reprend dates et fréquence de Q2.8. Plusieurs
-// permissions ne demandent que le nombre mensuel de trajets, une seule son
-// sens (D-120). Ce nombre ne recalcule pas la série de P2.
+// Q3.1 : les trajets de ce document. Le sens vient d'abord, puis le nombre,
+// que le sens dit en allers simples, retours simples ou allers-retours. Le
+// S3141 reprend la fréquence de Q2.8. Plusieurs permissions ne demandent que
+// le nombre mensuel d'allers-retours, une seule son sens (D-120, D-246). Ce
+// nombre ne recalcule pas la série de P2.
 const PAGE_DU_TRAJET = page(
   "P3/trajet",
   question
-    .number("Q3.1.1", "Combien de transports faut-il prescrire ?")
-    .hint(
-      "Ceux de ce document seulement : deux documents de deux transports peuvent former une série de quatre.",
+    .singleChoice(
+      "Q3.1.2",
+      "Quel trajet cette prescription doit-elle couvrir ?",
     )
-    .integer()
-    .min(1)
-    .unit("transport(s)")
-    .mattersWhile(pmtOuDap),
-  question
-    .singleChoice("Q3.1.2", "Comment ces transports sont-ils organisés ?")
     .mattersWhile(unSensAPoser)
-    .inconsistentWhen(
-      unAllerRetourDUnSeulTransport,
-      ALLER_RETOUR_D_UN_TRANSPORT,
-    )
     .option("1_ALLER", (option) =>
       option.offeredWhen(SENS_COMPATIBLES["1_ALLER"]),
     )
@@ -69,11 +60,28 @@ const PAGE_DU_TRAJET = page(
       ),
     ),
   question
-    .number("Q3.1.3", "Combien de trajets faut-il prescrire par mois ?")
-    .hint("Chaque permission est un aller-retour : elle compte deux trajets.")
+    .number(
+      "Q3.1.1",
+      "Combien de trajets cette prescription doit-elle couvrir ?",
+    )
+    .labelFrom(quantiteDuSens)
+    .hintFrom(aideDuSens)
     .integer()
     .min(1)
-    .unit("trajet(s) par mois")
+    .mattersWhile(uneQuantiteAPoser)
+    // Un autre sens change l'unité : le nombre se ressaisit.
+    .dependsOn("Q3.1.2"),
+  question
+    .number(
+      "Q3.1.3",
+      "Combien d’allers-retours faut-il prescrire par mois pour ces permissions de sortie ?",
+    )
+    .hint(
+      "Exemple : 2 allers-retours par mois = 2 allers et 2 retours par mois.",
+    )
+    .integer()
+    .min(1)
+    .unit("aller(s)-retour(s) par mois")
     .mattersWhile(desTrajetsMensuelsAPoser)
     .reminderFrom(rappelDesPermissions)
     .inconsistentWhen(desTrajetsAuDelaDeLaFrequence, FREQUENCE_DEPASSEE),

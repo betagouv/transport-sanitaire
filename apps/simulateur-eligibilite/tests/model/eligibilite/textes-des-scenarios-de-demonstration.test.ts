@@ -224,10 +224,12 @@ function prescripteur(texte: ReturnType<typeof texteDuPrescripteur>) {
     prescriberTitle: texte.titre,
     practitionerIntro: texte.introduction ?? null,
     whyTitle: texte.pourquoi?.titre ?? null,
-    whyItems: (texte.pourquoi?.elements ?? []).map(({ titre, texte }) => ({
-      title: titre ?? null,
-      body: texte,
-    })),
+    whyItems: (texte.pourquoi?.elements ?? []).map(
+      ({ titre, paragraphes }) => ({
+        title: titre ?? null,
+        body: paragraphes.join(" "),
+      }),
+    ),
     questions: texte.questions,
     actions: texte.actions,
     notice: texte.avertissement ?? null,

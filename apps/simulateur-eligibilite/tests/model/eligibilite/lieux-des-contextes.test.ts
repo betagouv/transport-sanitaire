@@ -3,44 +3,16 @@
 // du document (D-121).
 
 import { describe, expect, it } from "vitest";
-import { model } from "../../../core/models/eligibilite";
 import type { Questions } from "../../../core/models/eligibilite/declarations/questions";
-import type { Answers } from "../../../core/socle/questionnaire-engine/question";
-import { Questionnaire } from "../../../core/socle/questionnaire-engine/questionnaire";
-import { ciblesValant } from "./traces-du-prescripteur";
-
-type Reponses = Answers<Questions>;
-
-const pages = model.complement.pages;
-const PMT = ciblesValant({ cible_support_id: "S3138g" });
-const ALLER: Reponses = { "Q3.1.1": 1, "Q3.1.2": "1_ALLER" };
-const RETOUR: Reponses = { "Q3.1.1": 1, "Q3.1.2": "2_RETOUR" };
-const ADRESSE = {
-  street: "1 rue de la Paix",
-  postalCode: "75002",
-  city: "Paris",
-};
-
-const posees = (pageId: string, reponses: Reponses, cibles = PMT) => {
-  const page = pages.find(({ id }) => id === pageId);
-  if (!page) throw new Error(`${pageId} n'existe pas`);
-  return new Questionnaire(pages).readWith(reponses, cibles).questionsOn(page);
-};
-const ids = (pageId: string, reponses: Reponses) =>
-  posees(pageId, reponses).map(({ id }) => id);
-const posee = (pageId: string, id: keyof Questions, reponses: Reponses) => {
-  const trouvee = posees(pageId, reponses).find((q) => q.id === id);
-  if (!trouvee) throw new Error(`${id} ne se pose pas`);
-  return trouvee;
-};
-const rappel = (pageId: string, id: keyof Questions, reponses: Reponses) =>
-  posee(pageId, id, reponses).reminder;
-const naturesDe = (pageId: string, id: keyof Questions, reponses: Reponses) => {
-  const question = posee(pageId, id, reponses);
-  return question.kind === "single choice"
-    ? question.options.map(({ value }) => value)
-    : [];
-};
+import {
+  ADRESSE,
+  ALLER,
+  ids,
+  naturesDe,
+  RETOUR,
+  type Reponses,
+  rappel,
+} from "./questions-des-lieux";
 
 describe("les lieux que les contextes de P2 fixent (matrice des lieux)", () => {
   it("un retour pénitentiaire arrive à l'établissement pénitentiaire", () => {
@@ -90,13 +62,33 @@ describe("les lieux que les contextes de P2 fixent (matrice des lieux)", () => {
     ]);
   });
 
-  it("l'USLD de Q2.6 s'impose au départ quand P2 fixe l'arrivée", () => {
+  it("une entrée garde l'USLD de Q2.6 : l'arrivée se choisit entre l'établissement et l'USLD", () => {
     const entree: Reponses = {
       ...ALLER,
       "Q2.1.g": "1_ENTREE",
       "Q2.6": ["6_USLD"],
     };
-    expect(naturesDe("P3/depart", "Q3.2.nature", entree)).toEqual(["4_USLD"]);
+    const depuis = (nature: Questions["Q3.2.nature"]) =>
+      naturesDe("P3/arrivee", "Q3.3.nature", {
+        ...entree,
+        "Q3.2.nature": nature,
+        "Q3.2.adresse": ADRESSE,
+      });
+    expect(depuis("4_USLD")).toEqual(["2_ETABLISSEMENT_DE_SANTE", "4_USLD"]);
+    expect(depuis("1_DOMICILE")).toEqual(["4_USLD"]);
+  });
+
+  it("une sortie aussi : le départ se choisit entre l'établissement et l'USLD", () => {
+    const sortie: Reponses = {
+      ...RETOUR,
+      "Q2.2.1": ["1_HOSPITALISATION"],
+      "Q2.1.g": "2_SORTIE",
+      "Q2.6": ["6_USLD"],
+    };
+    expect(naturesDe("P3/depart", "Q3.2.nature", sortie)).toEqual([
+      "2_ETABLISSEMENT_DE_SANTE",
+      "4_USLD",
+    ]);
   });
 
   it("l'EHPAD de Q2.6 aussi", () => {
@@ -143,56 +135,5 @@ describe("les lieux que les contextes de P2 fixent (matrice des lieux)", () => {
     const had: Reponses = { ...RETOUR, "Q2.6": ["10_ADMISSION_HAD"] };
     expect(ids("P3/depart", had)).toEqual(["Q3.2.nom", "Q3.2.adresse"]);
     expect(ids("P3/arrivee", had)).toEqual(["Q3.3.adresse"]);
-  });
-
-  it("plusieurs permissions du S3141 vont de l'établissement au lieu de séjour, sans Q3.1.2", () => {
-    const S3141 = ciblesValant({ cible_support_id: "S3141" });
-    const permissions: Reponses = {
-      "Q2.1": "11_PERMISSION",
-      "Q2.8.5": "1_OUI",
-    };
-    expect(
-      posees("P3/depart", permissions, S3141).find(
-        ({ id }) => id === "Q3.2.nom",
-      )?.reminder,
-    ).toEqual([
-      {
-        label: "Lieu de départ",
-        value: "L’établissement de santé où le patient séjourne",
-      },
-    ]);
-    expect(
-      posees("P3/arrivee", permissions, S3141).map(({ id }) => id),
-    ).toEqual(["Q3.3.adresse"]);
-  });
-
-  it("le retour d'une permission part du lieu de séjour", () => {
-    const retour: Reponses = { ...RETOUR, "Q2.2.1.a": "1_OUI" };
-    expect(ids("P3/depart", retour)).toEqual(["Q3.2.adresse"]);
-    expect(rappel("P3/arrivee", "Q3.3.nom", retour)).toEqual([
-      {
-        label: "Lieu d’arrivée",
-        value: "L’établissement de santé où le patient séjourne",
-      },
-    ]);
-  });
-
-  it("le HTNM est l'arrivée de l'aller et le départ du retour", () => {
-    const htnm: Reponses = {
-      "Q2.2.1": ["3_AUTRE_CADRE"],
-      "Q2.2.1.b": ["5_HTNM"],
-    };
-    const lieu = [
-      {
-        label: "Lieu d’arrivée",
-        value: "L’hébergement temporaire non médicalisé",
-      },
-    ];
-    expect(rappel("P3/arrivee", "Q3.3.nom", { ...ALLER, ...htnm })).toEqual(
-      lieu,
-    );
-    expect(rappel("P3/depart", "Q3.2.nom", { ...RETOUR, ...htnm })).toEqual([
-      { ...lieu[0], label: "Lieu de départ" },
-    ]);
   });
 });

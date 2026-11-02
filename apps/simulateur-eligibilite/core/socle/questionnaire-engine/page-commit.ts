@@ -1,7 +1,8 @@
 // Enregistre les réponses d'une page validée.
 //
 // Les réponses de la page sont remplacées. Celles qui dépendaient d'une réponse
-// changée sont effacées, et elles seules.
+// changée sont effacées, et elles seules. Sur la page même, la saisie les
+// efface déjà : leur champ se vide à l'écran.
 
 import { isAddress } from "./address.ts";
 import type { Answer, Answers, Page, Unanswered } from "./question.ts";
@@ -26,6 +27,29 @@ export function commitPage(
     ([id]) => !onThePage.has(id) && !stale.has(id),
   );
   return { ...Object.fromEntries(kept), ...inputs };
+}
+
+/**
+ * Le brouillon de la page après une saisie. Les questions de la page qui
+ * dépendent de la réponse changée perdent la leur, de proche en proche. Une
+ * case seule repart décochée.
+ */
+export function answerOnPage(
+  page: Page,
+  draft: Answers,
+  id: string,
+  answer: Answer | Unanswered,
+): Answers {
+  const { [id]: _replaced, ...others } = draft;
+  const answered = answer === undefined ? others : { ...others, [id]: answer };
+  if (sameAnswer(draft[id], answer)) return answered;
+  const stale = dependentsOf([page], [id]);
+  const unchecked = page.questions
+    .filter((question) => stale.has(question.id))
+    .filter((question) => question.kind === "checkbox")
+    .map((question) => [question.id, false]);
+  const kept = Object.entries(answered).filter(([other]) => !stale.has(other));
+  return Object.fromEntries([...kept, ...unchecked]);
 }
 
 // ---- implémentation ----

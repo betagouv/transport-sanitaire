@@ -131,10 +131,24 @@ type IssueDAccordPrealable = IssuePositive & {
 };
 
 /** Le résultat du prescripteur : un scénario par situation à confirmer. */
-export type IssuePrescripteur = {
+export type IssuePrescripteur = AffichageDuPrescripteur & {
   readonly type: string;
   readonly title: string;
   readonly scenarios: readonly ScenarioPrescripteur[];
+};
+
+/**
+ * Ce que la page du prescripteur montre (`REFERENTIEL/03` §4.2). `false` : la
+ * section manque ; absent, elle s'affiche.
+ */
+export type AffichageDuPrescripteur = {
+  /** L'introduction sous le titre. */
+  readonly renderPractitionerIntro?: boolean;
+  /** « Que faire maintenant ? ». */
+  readonly renderNextSteps?: boolean;
+  readonly renderFacts?: boolean;
+  /** Le pourquoi, les questions, les actions et l'avertissement. */
+  readonly renderReasonPanels?: boolean;
 };
 
 /** La caisse : ses titres, pour un point et pour plusieurs, et l'introduction de plusieurs. */
@@ -192,7 +206,7 @@ export type IssueNegative = {
 };
 
 /** Le transport à l'étranger, que la caisse examine. */
-export type IssueEtranger = {
+export type IssueEtranger = AffichageDuPrescripteur & {
   readonly type: string;
   readonly title: string;
   readonly intro: string;

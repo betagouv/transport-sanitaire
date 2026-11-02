@@ -82,9 +82,10 @@ export const ETRANGER: Reponses = {
 // Plusieurs permissions : P2 fixe les lieux, de l'établissement au domicile.
 export const PERMISSIONS: Reponses = {
   ...PLUSIEURS_PERMISSIONS,
-  "Q3.1.3": 4,
+  "Q3.1.3": 2,
   "Q3.2.nom": "Hôpital Necker",
   "Q3.2.adresse": HOPITAL,
+  "Q3.3.nature": "1_DOMICILE",
   "Q3.3.adresse": DOMICILE,
   "Q3.6.2": "2_NON",
 };
