@@ -167,10 +167,13 @@ const CONDITIONS: Readonly<Record<string, Condition>> = {
     trace.precisions.transportExclusionRule !== undefined,
 };
 
+// La trace ne prouve la situation d'aucune variante : le texte générique reste.
+type SansVariante = undefined;
+
 // La variante de chaque raison, par son identifiant : le nom de son texte au
 // catalogue, quand la trace prouve sa situation.
 const VARIANTES: Readonly<
-  Record<string, (trace: LuParLaRaison) => string | undefined>
+  Record<string, (trace: LuParLaRaison) => string | SansVariante>
 > = {
   // « Le trajet évalué ne dépasse pas 50 km » (TXT-SERIE-COURTE-001) : une
   // distance inconnue garde le texte générique, qui ne dit aucun seuil.
