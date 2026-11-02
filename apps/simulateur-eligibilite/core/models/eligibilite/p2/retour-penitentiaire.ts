@@ -6,9 +6,9 @@
 //
 // Cocher l'option ne donne aucun fait, ni aucun financeur.
 //
-// - Un critère de Q1.2 ou un cas de Q1.3 établit déjà l'indication médicale du
+// - Une preuve qualifiée de P1 établit déjà l'indication médicale du
 //   transport. Sinon, Q2.2.1.indication la demande : voyager seul ou avec un
-//   proche ne dit ni qu'elle existe, ni qu'elle manque (D-130).
+//   proche ne dit ni qu'elle existe, ni qu'elle manque (D-130, D-245).
 // - « Non » sort le trajet du circuit de prescription : plus rien ne se pose,
 //   les règles ne concluent pas, et R2 oriente vers l'administration
 //   pénitentiaire, sans issue ni document.
@@ -36,18 +36,23 @@ export const unRetourPenitentiaire = given
   .checked("3_AUTRE_CADRE")
   .and(given.question("Q2.2.1.b").answer().checked("10_RETOUR_PENITENTIAIRE"));
 
-// Un critère de Q1.2, une ALD, une séance ou un autre cas de Q1.3 établit
-// l'indication médicale.
-const uneIndicationEtablie = given
-  .question("Q1.2")
-  .answer()
-  .compute((criteres) => criteres.hasAnyChecked())
-  .or(
-    given
-      .question("Q1.3")
-      .answer()
-      .compute((cas) => cas.checkedBoxes().some((un) => un !== "7_AUCUNE")),
-  );
+// Seule une preuve médicale qualifiée établit l'indication : un critère de
+// Q1.2, une ALD liée au soin, ou les soins prolongés reconnus d'un mineur.
+// Un cas de Q1.3 coché ne suffit pas (TS1014-L01, D-245).
+const PREUVES_QUALIFIEES = [
+  "fait_critere_allonge",
+  "fait_critere_brancard",
+  "fait_critere_surveillance",
+  "fait_critere_oxygene",
+  "fait_critere_asepsie",
+  "fait_critere_tap",
+  "fait_critere_fauteuil",
+  "fait_ald_liee",
+  "fait_mineur_soins_prolonges_reconnus",
+] as const;
+const uneIndicationEtablie = PREUVES_QUALIFIEES.map((fait) =>
+  given.fait(fait).isOui(),
+).reduce((une, autre) => une.or(autre));
 
 /**
  * Q2.2.1.indication se pose : le retour est coché, et P1 n'établit aucune

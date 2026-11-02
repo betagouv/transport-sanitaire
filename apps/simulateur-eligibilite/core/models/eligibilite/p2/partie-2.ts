@@ -28,18 +28,16 @@ import { unCadreAPoser, unSejourEnEtablissement } from "./sejour.ts";
 
 type Contexte = Questions["Q2.2.1.b"][number];
 
-// Les séances de Q1.3. Une dialyse ne compte parmi plusieurs que si Q1.3.a
-// confirme l'hémodialyse (COR-17, D-131).
+// Les séances déclarées en Q1.3. Q2.1.f se pose dès que deux sont cochées,
+// dialyse comprise, sans attendre l'hémodialyse confirmée (TS1014-L04, D-245).
 const cas = given.question("Q1.3").answer();
-const chimiotherapie = cas.checked("3_CHIMIOTHERAPIE");
-const radiotherapie = cas.checked("4_RADIOTHERAPIE");
-const uneSeance = chimiotherapie.or(radiotherapie).or(cas.checked("5_DIALYSE"));
-const hemodialyse = cas
-  .checked("5_DIALYSE")
-  .and(given.question("Q1.3.a").answer().is("1_OUI"));
-const plusieursSeances = chimiotherapie
-  .and(radiotherapie.or(hemodialyse))
-  .or(radiotherapie.and(hemodialyse));
+const SEANCES = ["3_CHIMIOTHERAPIE", "4_RADIOTHERAPIE", "5_DIALYSE"] as const;
+const uneSeance = SEANCES.map((seance) => cas.checked(seance)).reduce(
+  (une, autre) => une.or(autre),
+);
+const plusieursSeances = cas.compute(
+  (cochees) => SEANCES.filter((seance) => cochees.checked(seance)).length >= 2,
+);
 
 const motif = given.question("Q2.1").answer();
 const groupe = given.question("Q2.2.1").answer();

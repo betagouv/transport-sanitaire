@@ -67,13 +67,35 @@ describe("l'indication médicale d'un retour vers la prison (point 33)", () => {
   it.each([
     ["un critère de Q1.2", { ...AVEC_UN_PROFESSIONNEL, "Q2.1": "15_AUCUN" }],
     [
-      "une ALD en Q1.3",
-      { ...SEUL, "Q1.3": ["2_ALD"], "Q1.3.b": "1_LIEN_DIRECT" },
+      "une ALD liée, avec un proche",
+      {
+        ...SEUL,
+        "Q1.1": "2_AVEC_UN_PROCHE",
+        "Q1.3": ["2_ALD"],
+        "Q1.3.b": "1_LIEN_DIRECT",
+      },
     ],
   ] as const)("%s l'établit déjà", (_, avant) => {
     expect(
       posee("P2/contextes", "Q2.2.1.indication", { ...avant, ...RETOUR }),
     ).toBeUndefined();
+  });
+
+  // Un cas de Q1.3 n'est pas une preuve qualifiée (TS1014-L01, D-245).
+  it.each([
+    [
+      "une ALD sans lien direct",
+      { "Q1.3": ["2_ALD"], "Q1.3.b": "2_SANS_LIEN_DIRECT" },
+    ],
+    [
+      "une ALD liée, patient seul",
+      { "Q1.3": ["2_ALD"], "Q1.3.b": "1_LIEN_DIRECT" },
+    ],
+    ["une chimiothérapie", { "Q1.3": ["3_CHIMIOTHERAPIE"] }],
+  ] as const)("%s ne l'établit pas", (_, cas) => {
+    expect(
+      posee("P2/contextes", "Q2.2.1.indication", { ...SEUL, ...cas }),
+    ).toBeDefined();
   });
 
   it("ne se demande pas sans retour vers la prison", () => {
