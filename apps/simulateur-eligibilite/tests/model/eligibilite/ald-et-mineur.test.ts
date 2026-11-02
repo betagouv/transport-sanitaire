@@ -177,4 +177,18 @@ describe("Q1.3 à l'écran", () => {
     expect(etabli.fait_ald_liee.value).toBe(false);
     expect(etabli.fait_ald_exonerante_3_ou_4.value).toBe(true);
   });
+
+  it("ALD et dialyse : P1 attend ses deux sous-champs, Q1.3.a et Q1.3.b", () => {
+    const lesDeux: Reponses = {
+      ...CLINIQUE(["2_ALD", "5_DIALYSE"]),
+      "Q1.3.a": "1_OUI",
+    };
+    const { "Q1.3.a": _, ...sansQ13a } = lesDeux;
+    const { "Q1.3.b": __, ...sansQ13b } = lesDeux;
+    const complete = (reponses: Reponses) =>
+      faits(reponses).fait_p1_complete.value;
+    expect(complete(sansQ13a)).toBe(false);
+    expect(complete(sansQ13b)).toBe(false);
+    expect(complete(lesDeux)).toBe(true);
+  });
 });

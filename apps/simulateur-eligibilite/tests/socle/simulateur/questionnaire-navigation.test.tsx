@@ -15,6 +15,12 @@ import {
 // La navigation du questionnaire, testée sur le questionnaire factice, par la
 // vraie application.
 
+// La page de la boisson est toujours là, ce délai passé : elle n'a pas avancé.
+const resteSurLaBoisson = async (delai: number) => {
+  await new Promise((resolve) => setTimeout(resolve, delai));
+  expect(screen.getByRole("group", BOISSON)).toBeInTheDocument();
+};
+
 describe("avancement automatique", () => {
   it("un choix unique avance seul, sans bouton « Suivant »", async () => {
     const user = await ouvrirLeSimulateur();
@@ -23,6 +29,16 @@ describe("avancement automatique", () => {
 
     await user.click(radio("Un thé"));
 
+    expect(await question(ACCOMPAGNEMENTS)).toBeInTheDocument();
+  });
+
+  it("le choix unique n'avance pas aussitôt : il attend un instant (200 ms)", async () => {
+    const user = await ouvrirLeSimulateur();
+    await question(BOISSON);
+
+    await user.click(radio("Un thé"));
+
+    await resteSurLaBoisson(100);
     expect(await question(ACCOMPAGNEMENTS)).toBeInTheDocument();
   });
 
@@ -50,6 +66,21 @@ describe("retour sur une question", () => {
     expect(radio("Un thé")).toBeChecked();
     await user.click(bouton("Suivant"));
     expect(await question(ACCOMPAGNEMENTS)).toBeInTheDocument();
+  });
+
+  it("n'avance ni au retour, ni en recliquant la même réponse", async () => {
+    const user = await ouvrirLeSimulateur();
+    await user.click(radio("Un thé"));
+    await question(ACCOMPAGNEMENTS);
+
+    await user.click(bouton("Précédent"));
+    await question(BOISSON);
+    expect(bouton("Suivant")).toBeEnabled();
+    await resteSurLaBoisson(300);
+
+    await user.click(radio("Un thé"));
+    await resteSurLaBoisson(300);
+    expect(radio("Un thé")).toBeChecked();
   });
 
   it("avance aussitôt quand la réponse change", async () => {
