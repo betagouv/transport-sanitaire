@@ -3,7 +3,7 @@
 // porte les textes de l'éditeur. Le socle place l'un et l'autre ; ses propres
 // tests le vérifient.
 
-import { render, screen } from "@testing-library/react";
+import { render, screen, within } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 import { SEEDS } from "../../../core/models/eligibilite/seeds-catalogue";
 import { catalogueResultats } from "../../../front/models/eligibilite/r2/catalogue-resultats";
@@ -14,60 +14,73 @@ import { lectureDe } from "./reponses-de-la-permission";
 // tests, dont le délai ne le mesure pas.
 await catalogueResultats();
 
-// Affiche le corps du résultat de la seed, et en donne le titre.
+// Affiche le corps du résultat de la seed, et en donne le titre et
+// l'introduction.
 const afficher = async (id: string) => {
   const seed = SEEDS.find((candidate) => candidate.id === id);
   if (!seed) throw new Error(`Seed inconnue : ${id}`);
   const resultat = await eligibilite(lectureDe(seed.answers));
   render(resultat.body);
-  return resultat.title;
+  return resultat;
 };
 
-// La seed, le titre de l'issue, un texte du scénario (le début du « Pourquoi »
-// quand il n'a pas de titre), une action.
-const CAS: readonly [string, string, string | RegExp, string][] = [
+const ZONE = { name: "Résultat pour le prescripteur" } as const;
+
+// La seed, le titre de l'issue, et un texte du « Pourquoi » (son début quand
+// il n'a pas de titre).
+const ORDINAIRES: readonly [string, string, string | RegExp][] = [
   [
     "issue-caisse",
     "Un point précis reste à vérifier auprès de l’Assurance Maladie",
     "L’effet de la demande du Centre 15 doit être clarifié",
-    "Contacter l’Assurance Maladie et faire préciser le financeur, l’éventuel accord et la pièce à utiliser.",
   ],
   [
     "issue-etablissement",
     "Ce transport relève de la prise en charge de l’établissement",
     /^Le trajet a été qualifié comme un transfert entre établissements/,
-    "Contacter le service prescripteur ou la cellule de coordination des transports de l’établissement d’origine.",
   ],
   [
     "issue-permission-patient",
     "Le transport lié à cette permission est à la charge du patient",
     /^La permission concerne un patient âgé d’au moins 20 ans/,
-    "Ne pas éditer de prescription Prescription Médicale de Transport (PMT)/Demande d’Accord Préalable (DAP) Assurance Maladie pour ce trajet.",
   ],
   [
     "issue-convocation",
     "Ce déplacement relève d’une convocation ou d’un appareillage réglementaire",
     /^Ce déplacement relève du cadre réglementaire des convocations/,
-    "Vérifier que la convocation ou l’avis mentionne bien la date, le lieu et l’objet du déplacement.",
-  ],
-  [
-    "issue-dap-etranger-a-examiner",
-    "Prise en charge spécifique d’un transport à l’étranger",
-    "Une demande d’examen du transport",
-    "Contacter la caisse du patient avant l’organisation du transport pour faire préciser les conditions de prise en charge et les justificatifs attendus.",
   ],
 ];
 
-describe.each(CAS)("la page de la seed %s", (id, titre, element, action) => {
-  it("donne le titre de l'issue, puis le texte de l'éditeur", async () => {
-    expect(await afficher(id)).toBe(titre);
-    expect(screen.getByText(element)).toBeInTheDocument();
-    expect(screen.getByText(action)).toBeInTheDocument();
+// Le catalogue cache leur introduction et « Que faire maintenant ? »
+// (`renderPractitionerIntro`, `renderNextSteps`).
+describe.each(ORDINAIRES)("la page de la seed %s", (id, titre, pourquoi) => {
+  it("donne le titre de l'issue et le pourquoi, sans introduction", async () => {
+    const { title, intro } = await afficher(id);
+    expect(title).toBe(titre);
+    expect(intro).toBeUndefined();
+    const zone = screen.getByRole("region", ZONE);
+    expect(within(zone).getByText(pourquoi)).toBeInTheDocument();
+  });
+
+  it("ne dit pas que faire maintenant", async () => {
+    await afficher(id);
+    expect(
+      screen.queryByRole("heading", { name: "Que faire maintenant ?" }),
+    ).not.toBeInTheDocument();
   });
 
   it("n'est pas une fiche patient", async () => {
     await afficher(id);
     expect(screen.queryByText(/fiche patient/i)).not.toBeInTheDocument();
+  });
+});
+
+describe("la page de l'établissement", () => {
+  it("met chaque bloc du pourquoi dans son paragraphe", async () => {
+    await afficher("issue-etablissement");
+    expect(
+      screen.getByText("Aucun formulaire Assurance Maladie n’est à compléter"),
+    ).toBeInTheDocument();
   });
 });
 
@@ -87,12 +100,15 @@ describe("la page de la caisse", () => {
   });
 });
 
+// Le catalogue cache ses raisons (`renderReasonPanels`) : le titre et
+// l'introduction restent seuls.
 describe("la page du transport à l'étranger", () => {
-  it("garde la mise en garde de l'éditeur, sans note de publication", async () => {
-    await afficher("issue-dap-etranger-a-examiner");
-    expect(
-      screen.getByText(/N’appliquez pas la règle d’accord tacite/),
-    ).toBeInTheDocument();
-    expect(screen.queryByText(/avant publication/)).not.toBeInTheDocument();
+  it("ne garde que le titre et l'introduction", async () => {
+    const { title, intro } = await afficher("issue-dap-etranger-a-examiner");
+    expect(title).toBe(
+      "Prise en charge spécifique d’un transport à l’étranger",
+    );
+    expect(intro).toMatch(/^Le départ ou l’arrivée du trajet se situe hors/);
+    expect(screen.getByRole("region", ZONE)).toBeEmptyDOMElement();
   });
 });
