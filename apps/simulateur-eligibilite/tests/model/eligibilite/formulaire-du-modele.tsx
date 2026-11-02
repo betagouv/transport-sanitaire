@@ -1,9 +1,11 @@
 // Ce que partagent les tests qui déroulent le modèle de l'éditeur dans le
-// formulaire du socle : l'afficher, puis répondre comme un prescripteur.
+// formulaire du socle : l'afficher, au début ou sur une page, puis répondre
+// comme un prescripteur.
 
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { model } from "../../../core/models/eligibilite";
+import type { Answers } from "../../../core/socle/questionnaire-engine/question";
 import { QuestionnaireForm } from "../../../front/socle/questionnaire-engine/QuestionnaireForm";
 
 type User = ReturnType<typeof userEvent.setup>;
@@ -19,6 +21,22 @@ export function afficherLeQuestionnaire(onComplete: () => void = () => {}) {
       endLabel="Voir le résultat"
       tracked={false}
       onComplete={onComplete}
+    />,
+  );
+  return userEvent.setup();
+}
+
+// Le questionnaire rouvert sur cette page, avec ces réponses : un retour
+// depuis le résultat, sans dérouler les pages d'avant.
+export function afficherLaPage(id: string, answers: Answers) {
+  render(
+    <QuestionnaireForm
+      parts={model.questionnaire}
+      partCount={3}
+      endLabel="Voir le résultat"
+      tracked={false}
+      initialState={{ answers, page: id }}
+      onComplete={() => {}}
     />,
   );
   return userEvent.setup();
