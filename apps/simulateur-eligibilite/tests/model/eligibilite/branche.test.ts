@@ -161,7 +161,7 @@ describe("Q2.14, « Aucune » dans un groupe : le dispositif est écarté", () =
     );
   });
 
-  it("signalée en Q2.2.1.b, sans autre motif : P2 est complète", () => {
+  it("signalée en Q2.2.1, sans autre motif : P2 est complète", () => {
     const reponses = {
       ...MATERNITE_PAR_Q221,
       "Q2.14.eloignement": ["3_AUCUNE"],
