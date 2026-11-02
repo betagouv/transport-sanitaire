@@ -40,6 +40,11 @@ export type FirstResult = {
   body?: ReactNode;
   sheet?: Sheet;
   /**
+   * Le nom de la page, du stepper aux boutons : le lecteur d'écran l'annonce
+   * comme une zone.
+   */
+  label?: string;
+  /**
    * Le titre dit un refus : il se lit en rouge foncé, et non en vert ou en
    * noir.
    */

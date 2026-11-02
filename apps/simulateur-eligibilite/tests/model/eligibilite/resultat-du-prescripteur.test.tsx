@@ -1,9 +1,10 @@
 // Le résultat des cinq issues sans fiche patient, tel qu'il s'affiche (#133).
-// Pour chaque seed, `eligibilite` donne le titre de l'issue, et un corps qui
-// porte les textes de l'éditeur. Le socle place l'un et l'autre ; ses propres
+// Pour chaque seed, `eligibilite` donne le titre de l'issue, un corps qui
+// porte les textes de l'éditeur, et le nom de la page, celui du gabarit (#287).
+// Le socle place l'un et l'autre, et range la page sous ce nom ; ses propres
 // tests le vérifient.
 
-import { render, screen, within } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 import { SEEDS } from "../../../core/models/eligibilite/seeds-catalogue";
 import { catalogueResultats } from "../../../front/models/eligibilite/r2/catalogue-resultats";
@@ -23,8 +24,6 @@ const afficher = async (id: string) => {
   render(resultat.body);
   return resultat;
 };
-
-const ZONE = { name: "Résultat pour le prescripteur" } as const;
 
 // La seed, le titre de l'issue, et un texte du « Pourquoi » (son début quand
 // il n'a pas de titre).
@@ -55,11 +54,11 @@ const ORDINAIRES: readonly [string, string, string | RegExp][] = [
 // (`renderPractitionerIntro`, `renderNextSteps`).
 describe.each(ORDINAIRES)("la page de la seed %s", (id, titre, pourquoi) => {
   it("donne le titre de l'issue et le pourquoi, sans introduction", async () => {
-    const { title, intro } = await afficher(id);
+    const { title, intro, label } = await afficher(id);
     expect(title).toBe(titre);
     expect(intro).toBeUndefined();
-    const zone = screen.getByRole("region", ZONE);
-    expect(within(zone).getByText(pourquoi)).toBeInTheDocument();
+    expect(label).toBe("Résultat pour le prescripteur");
+    expect(screen.getByText(pourquoi)).toBeInTheDocument();
   });
 
   it("ne dit pas que faire maintenant", async () => {
@@ -101,14 +100,17 @@ describe("la page de la caisse", () => {
 });
 
 // Le catalogue cache ses raisons (`renderReasonPanels`) : le titre et
-// l'introduction restent seuls, sans zone vide.
+// l'introduction restent seuls, sous le nom de la page.
 describe("la page du transport à l'étranger", () => {
   it("ne garde que le titre et l'introduction", async () => {
-    const { title, intro } = await afficher("issue-dap-etranger-a-examiner");
+    const { title, intro, label } = await afficher(
+      "issue-dap-etranger-a-examiner",
+    );
     expect(title).toBe(
       "Prise en charge spécifique d’un transport à l’étranger",
     );
     expect(intro).toMatch(/^Le départ ou l’arrivée du trajet se situe hors/);
-    expect(screen.queryByRole("region", ZONE)).not.toBeInTheDocument();
+    expect(label).toBe("Résultat pour le prescripteur");
+    expect(screen.queryByRole("heading")).not.toBeInTheDocument();
   });
 });
