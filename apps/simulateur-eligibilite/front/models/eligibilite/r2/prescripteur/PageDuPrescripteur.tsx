@@ -11,6 +11,9 @@ import type {
 } from "./texte-du-prescripteur";
 
 export function PageDuPrescripteur({ texte }: { texte: TexteDuPrescripteur }) {
+  // Le transport à l'étranger ne garde que son titre et son introduction : une
+  // zone vide s'annoncerait quand même au lecteur d'écran.
+  if (!aDuContenu(texte)) return null;
   return (
     <section aria-label="Résultat pour le prescripteur">
       {texte.pourquoi && <Pourquoi pourquoi={texte.pourquoi} />}
@@ -22,6 +25,15 @@ export function PageDuPrescripteur({ texte }: { texte: TexteDuPrescripteur }) {
 }
 
 // ---- implémentation ----
+
+function aDuContenu(texte: TexteDuPrescripteur): boolean {
+  return Boolean(
+    texte.pourquoi ||
+      texte.questions.length > 0 ||
+      texte.actions.length > 0 ||
+      texte.avertissement,
+  );
+}
 
 type PourquoiProps = { pourquoi: NonNullable<TexteDuPrescripteur["pourquoi"]> };
 

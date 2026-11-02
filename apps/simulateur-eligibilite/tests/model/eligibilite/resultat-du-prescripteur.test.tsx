@@ -101,7 +101,7 @@ describe("la page de la caisse", () => {
 });
 
 // Le catalogue cache ses raisons (`renderReasonPanels`) : le titre et
-// l'introduction restent seuls.
+// l'introduction restent seuls, sans zone vide.
 describe("la page du transport à l'étranger", () => {
   it("ne garde que le titre et l'introduction", async () => {
     const { title, intro } = await afficher("issue-dap-etranger-a-examiner");
@@ -109,6 +109,6 @@ describe("la page du transport à l'étranger", () => {
       "Prise en charge spécifique d’un transport à l’étranger",
     );
     expect(intro).toMatch(/^Le départ ou l’arrivée du trajet se situe hors/);
-    expect(screen.getByRole("region", ZONE)).toBeEmptyDOMElement();
+    expect(screen.queryByRole("region", ZONE)).not.toBeInTheDocument();
   });
 });
