@@ -147,18 +147,53 @@ describe("les lieux d'un séjour, d'une HAD et d'une permission (QST-LIEUX-001)"
     );
   });
 
+  const CONTRADICTION = [
+    "Les réponses précédentes donnent au départ ou à l’arrivée deux lieux différents. Revenez par « Précédent » pour les corriger.",
+  ];
+  const incoherencesDuDepart = (reponses: Reponses) =>
+    posee("P3/depart", "Q3.2.adresse", { ...reponses, "Q3.2.adresse": ADRESSE })
+      .inconsistencies;
+  const PERMISSION: Reponses = {
+    "Q2.2.1": ["1_HOSPITALISATION"],
+    "Q2.2.1.cadre": "1_ETABLISSEMENT",
+    "Q2.2.1.a": "1_OUI",
+  };
+
   it("deux rôles contradictoires se refusent : une permission ne part pas du domicile d'une HAD", () => {
-    const contradiction: Reponses = {
-      ...ALLER,
-      "Q2.2.1": ["1_HOSPITALISATION"],
-      "Q2.2.1.cadre": "2_HAD",
-      "Q2.2.1.a": "1_OUI",
-      "Q3.2.adresse": ADRESSE,
-    };
-    const adresse = posee("P3/depart", "Q3.2.adresse", contradiction);
-    expect(adresse.inconsistencies).toEqual([
-      "Les réponses de la partie 2 donnent au départ ou à l’arrivée deux lieux différents. Revenez-y pour les corriger.",
-    ]);
+    expect(
+      incoherencesDuDepart({
+        ...ALLER,
+        ...PERMISSION,
+        "Q2.2.1.cadre": "2_HAD",
+      }),
+    ).toEqual(CONTRADICTION);
+  });
+
+  // Une dialyse cochée en partie 1 fixe le centre de dialyse comme lieu de
+  // soins : il contredit le lieu de vie de la permission, au départ de l'aller
+  // comme à l'arrivée du retour, et l'hôpital d'une admission en HAD.
+  it.each<[string, Reponses]>([
+    ["une permission, à l'aller", { ...ALLER, ...PERMISSION }],
+    ["une permission, au retour", { ...RETOUR, ...PERMISSION }],
+    [
+      "une admission en HAD, à l'aller",
+      { ...ALLER, "Q2.1.g": "3_ADMISSION_HAD" },
+    ],
+  ])("une dialyse de la partie 1 contredit %s", (_cas, reponses) => {
+    expect(
+      incoherencesDuDepart({ ...reponses, "Q1.3": ["5_DIALYSE"] }),
+    ).toEqual(CONTRADICTION);
+  });
+
+  it("une dialyse pendant un séjour en HAD ne contredit rien", () => {
+    expect(
+      incoherencesDuDepart({
+        ...ALLER,
+        "Q1.3": ["5_DIALYSE"],
+        "Q2.2.1": ["1_HOSPITALISATION"],
+        "Q2.2.1.cadre": "2_HAD",
+      }),
+    ).toEqual([]);
   });
 
   it("le HTNM est l'arrivée de l'aller et le départ du retour", () => {

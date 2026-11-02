@@ -104,7 +104,7 @@ function adresseDuLieu(
       )
     : adresse.inconsistentWhen(
         ROLES_CONTRADICTOIRES,
-        "Les réponses de la partie 2 donnent au départ ou à l’arrivée deux lieux différents. Revenez-y pour les corriger.",
+        "Les réponses précédentes donnent au départ ou à l’arrivée deux lieux différents. Revenez par « Précédent » pour les corriger.",
       );
 }
 
