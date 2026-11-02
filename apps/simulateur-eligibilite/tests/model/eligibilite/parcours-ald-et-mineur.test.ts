@@ -26,7 +26,8 @@ const BESOINS = ["1_VERIFIER", "2_VERIFIER_ET_PRESCRIRE"] as const;
 
 // Un nouveau patient, à 50 km au plus, sans avion ni bateau.
 const FIN_DE_P2: Reponses = {
-  "Q2.2.1": ["4_AUCUNE"],
+  "Q2.2.1": ["0_AUCUNE"],
+  "Q2.2.1.b": ["0_AUCUN"],
   "Q2.3.1": "1_CINQUANTE_KM_OU_MOINS",
   "Q2.3.2": false,
 };
@@ -48,7 +49,16 @@ const PROCHE: Reponses = {
 };
 
 const AMBULANCE = {
-  posees: ["Q0.1", "Q1.1", "Q1.2", "Q1.3", "Q2.2.1", "Q2.3.1", "Q2.3.2"],
+  posees: [
+    "Q0.1",
+    "Q1.1",
+    "Q1.2",
+    "Q1.3",
+    "Q2.2.1",
+    "Q2.2.1.b",
+    "Q2.3.1",
+    "Q2.3.2",
+  ],
   mode: "AMBULANCE",
   badges: ["Brancardage ou portage nécessaire"],
   accompagnant: false,
@@ -65,6 +75,7 @@ const AMBULANCE_ALD = {
     "Q1.3",
     "Q1.3.b",
     "Q2.2.1",
+    "Q2.2.1.b",
     "Q2.3.1",
     "Q2.3.2",
   ],
@@ -78,6 +89,7 @@ const VEHICULE_PERSONNEL = {
     "Q1.3.b",
     "Q1.4",
     "Q2.2.1",
+    "Q2.2.1.b",
     "Q2.3.1",
     "Q2.3.2",
   ],

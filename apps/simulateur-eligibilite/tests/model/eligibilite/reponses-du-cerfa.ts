@@ -27,7 +27,7 @@ import { generateCerfa } from "../../../front/socle/cerfa/generate-cerfa";
 import { racine } from "../../inspection-des-sources";
 import {
   MATERNITE_ETABLIE,
-  MATERNITE_PAR_Q221B,
+  MATERNITE_PAR_Q221,
 } from "./reponses-de-la-branche";
 import { PLUSIEURS_PERMISSIONS } from "./reponses-de-la-permission";
 import { ciblesValant, type ValeursDesCibles } from "./traces-du-prescripteur";
@@ -118,7 +118,7 @@ export const EXAMEN_DE_MATERNITE: Reponses = {
 // Une consultation signalant la maternité éloignée, pour l'hébergement du
 // dispositif : il n'est ni le départ ni l'arrivée. Sans Q3.8.
 export const HEBERGEMENT_DE_MATERNITE: Reponses = {
-  ...MATERNITE_PAR_Q221B,
+  ...MATERNITE_PAR_Q221,
   "Q2.14.eloignement": ["1_PLUS_DE_QUARANTE_CINQ_MINUTES"],
   "Q2.14.motif": ["2_HEBERGEMENT_ENGAGEMENT"],
   "Q2.12": "2_NON",

@@ -219,7 +219,7 @@ describe("la nature en toutes lettres d'un hébergement ou d'un autre lieu (CONT
   });
 
   it("le HTNM que P2 établit ne la redemande pas", () => {
-    const htnm: Reponses = { ...ALLER, "Q2.2.1.b": ["5_HTNM"] };
+    const htnm: Reponses = { ...ALLER, "Q2.2.1": ["5_HTNM"] };
     expect(ids("P3/arrivee", htnm)).toEqual(["Q3.3.nom", "Q3.3.adresse"]);
   });
 

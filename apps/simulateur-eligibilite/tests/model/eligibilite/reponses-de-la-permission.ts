@@ -26,7 +26,8 @@ export const PATIENT_SEUL: Reponses = {
   "Q1.3": ["7_AUCUNE"],
   "Q1.4": "1_VEHICULE_PERSONNEL",
   "Q2.1": "11_PERMISSION",
-  "Q2.2.1": ["4_AUCUNE"],
+  "Q2.2.1": ["0_AUCUNE"],
+  "Q2.2.1.b": ["0_AUCUN"],
   "Q2.3.1": "1_CINQUANTE_KM_OU_MOINS",
   "Q2.3.2": false,
 };

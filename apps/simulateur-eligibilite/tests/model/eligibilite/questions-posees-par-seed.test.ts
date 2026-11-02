@@ -45,25 +45,28 @@ const DISTANCE = ["Q2.3.1", "Q2.3.2"];
 
 // Ce que pose chaque seed : avant le verrou, puis après.
 const ATTENDU: Record<string, readonly [string[], string[]]> = {
-  "issue-pmt": [[...P1, "Q1.3.a", "Q2.2.1", ...DISTANCE], complement("Q3.4.a")],
+  "issue-pmt": [
+    [...P1, "Q1.3.a", "Q2.2.1", "Q2.2.1.b", ...DISTANCE],
+    complement("Q3.4.a"),
+  ],
   "issue-dap-sans-urgence": [
-    [...P1, "Q1.3.a", "Q2.2.1", ...DISTANCE, "Q2.3.3", "Q2.3.4"],
+    [...P1, "Q1.3.a", "Q2.2.1", "Q2.2.1.b", ...DISTANCE, "Q2.3.3", "Q2.3.4"],
     complement("Q3.4.distance", "Q3.4.a"),
   ],
   "issue-dap-urgence-attestee": [
-    [...P1, "Q1.3.a", "Q2.2.1", ...DISTANCE, "Q2.3.3", "Q2.3.4"],
+    [...P1, "Q1.3.a", "Q2.2.1", "Q2.2.1.b", ...DISTANCE, "Q2.3.3", "Q2.3.4"],
     complement("Q3.4.distance", "Q3.4.a", "Q3.5"),
   ],
   "issue-dap-avion-ou-bateau": [
-    [...P1, "Q1.3.a", "Q2.2.1", ...DISTANCE, "Q2.3.4"],
+    [...P1, "Q1.3.a", "Q2.2.1", "Q2.2.1.b", ...DISTANCE, "Q2.3.4"],
     complement("Q3.4.a"),
   ],
   "issue-dap-avion-ou-bateau-urgence-attestee": [
-    [...P1, "Q1.3.a", "Q2.2.1", ...DISTANCE, "Q2.3.4"],
+    [...P1, "Q1.3.a", "Q2.2.1", "Q2.2.1.b", ...DISTANCE, "Q2.3.4"],
     complement("Q3.4.a", "Q3.5"),
   ],
   "issue-s3141": [
-    [...P1, "Q2.1", "Q2.2.1", ...DISTANCE, "Q2.7"].concat([
+    [...P1, "Q2.1", "Q2.2.1", "Q2.2.1.b", ...DISTANCE, "Q2.7"].concat([
       "Q2.8.1",
       "Q2.8.2",
       "Q2.8.3",
@@ -78,32 +81,61 @@ const ATTENDU: Record<string, readonly [string[], string[]]> = {
       "Q3.3.adresse",
     ].concat(["Q3.6.2"]),
   ],
-  "issue-non-eligible": [[...P1, "Q2.1", "Q2.2.1", ...DISTANCE], []],
+  "issue-non-eligible": [
+    [...P1, "Q2.1", "Q2.2.1", "Q2.2.1.b", ...DISTANCE],
+    [],
+  ],
   "issue-caisse": [
-    [...P1, "Q2.1", "Q2.2.1", ...DISTANCE, "Q2.5", "Q2.6.a", "Q2.6"],
+    [
+      ...P1,
+      "Q2.1",
+      "Q2.2.1",
+      "Q2.2.1.b",
+      ...DISTANCE,
+      "Q2.5",
+      "Q2.6.a",
+      "Q2.6",
+    ],
     [],
   ],
   "issue-etablissement": [
-    [...P1, "Q2.1", "Q2.2.1", ...DISTANCE, "Q2.5", "Q2.6.a", "Q2.6"],
+    [
+      ...P1,
+      "Q2.1",
+      "Q2.2.1",
+      "Q2.2.1.b",
+      ...DISTANCE,
+      "Q2.5",
+      "Q2.6.a",
+      "Q2.6",
+    ],
     [],
   ],
   "issue-permission-patient": [
-    [...P1, "Q2.1", "Q2.2.1", ...DISTANCE, "Q2.7", "Q2.7.a"],
+    [...P1, "Q2.1", "Q2.2.1", "Q2.2.1.b", ...DISTANCE, "Q2.7", "Q2.7.a"],
     [],
   ],
-  "issue-convocation": [[...P1, "Q2.1", "Q2.2.1", ...DISTANCE, "Q2.10"], []],
+  "issue-convocation": [
+    [...P1, "Q2.1", "Q2.2.1", "Q2.2.1.b", ...DISTANCE, "Q2.10"],
+    [],
+  ],
   "issue-dap-etranger-a-examiner": [
-    [...P1, "Q1.3.a", "Q2.2.1", "Q2.2.5", ...DISTANCE],
+    [...P1, "Q1.3.a", "Q2.2.1", "Q2.2.5", "Q2.2.1.b", ...DISTANCE],
     complement("Q3.4.a"),
   ],
   // L'Engagement maternité finit P3 par Q3.8 (D-251). Sans sens, l'hébergement
   // n'est pas encore l'arrivée.
   "dap-engagement-maternite": [
-    ["Q0.1", "Q1.1", "Q1.3", "Q1.4", "Q2.1", "Q2.2.1", ...DISTANCE].concat([
-      "Q2.14.eloignement",
-      "Q2.14.motif",
-      "Q2.12",
-    ]),
+    [
+      "Q0.1",
+      "Q1.1",
+      "Q1.3",
+      "Q1.4",
+      "Q2.1",
+      "Q2.2.1",
+      "Q2.2.1.b",
+      ...DISTANCE,
+    ].concat(["Q2.14.eloignement", "Q2.14.motif", "Q2.12"]),
     [
       "Q3.1.2",
       "Q3.2.nature",
@@ -120,15 +152,14 @@ const ATTENDU: Record<string, readonly [string[], string[]]> = {
   ],
   // Sans issue ni document, la distance ne se pose pas.
   "orientation-penitentiaire": [
-    ["Q0.1", "Q1.1", "Q1.3", "Q1.4", "Q2.1", "Q2.2.1", "Q2.2.1.b"].concat([
-      "Q2.2.1.indication",
-    ]),
+    ["Q0.1", "Q1.1", "Q1.3", "Q1.4", "Q2.1", "Q2.2.1", "Q2.2.1.indication"],
     ["Q3.2.adresse", "Q3.3.adresse", "Q3.6.2"],
   ],
   // Le séjour en établissement ouvre la permission (TS1014-B01).
   "sejour-en-etablissement": [
     ["Q0.1", "Q1.1", "Q1.2", "Q1.3", "Q2.2.1", "Q2.2.1.cadre"].concat([
       "Q2.2.1.a",
+      "Q2.2.1.b",
       "Q2.3.1",
       "Q2.3.2",
       "Q2.7",
@@ -144,6 +175,7 @@ const ATTENDU: Record<string, readonly [string[], string[]]> = {
   // La HAD ne l'ouvre pas : Q2.6 qualifie l'article 80 (TS1014-B01).
   "sejour-en-had": [
     ["Q0.1", "Q1.1", "Q1.2", "Q1.3", "Q2.2.1", "Q2.2.1.cadre"].concat([
+      "Q2.2.1.b",
       "Q2.3.1",
       "Q2.3.2",
       "Q2.6",

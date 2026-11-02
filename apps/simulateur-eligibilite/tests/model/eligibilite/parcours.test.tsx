@@ -17,8 +17,8 @@ const Q13 = /^Avant d’établir le mode de transport/;
 const Q21 = /^Quelle situation médicale ou quel événement/;
 const Q21F = /^Les séances sélectionnées motivent-elles/;
 const Q21G = /^S’agit-il d’une entrée dans un établissement/;
-const Q221 = /^L’une de ces situations correspond-elle aussi/;
-const Q221B = /^Laquelle ou lesquelles de ces situations/;
+const Q221 = /^L’une de ces situations concerne-t-elle le transport/;
+const Q221B = /^L’un de ces soins ou rendez-vous/;
 const Q231 = /^Quelle distance sépare les lieux de départ/;
 const Q25 = /^Quel type de déplacement le patient doit-il effectuer/;
 const Q26A = /^Le transfert est-il définitif ou provisoire/;
@@ -30,7 +30,7 @@ const Q286B = /^Le patient restera-t-il âgé de moins de 20 ans/;
 const Q210 = /^Quelle convocation, quel avis d’audience/;
 const Q210A = /^Le fournisseur est-il agréé/;
 const Q210B = /^Sélectionnez l’appareillage concerné/;
-const HOSPITALISE = /^Le patient est déjà hospitalisé pendant ce trajet/;
+const HOSPITALISE = /^Hospitalisation en cours/;
 
 function afficherLeQuestionnaire(onComplete: () => void = () => {}) {
   render(
@@ -83,6 +83,15 @@ async function avecUnProfessionnel(
 // suite entière, il dépasse les 5 s par défaut.
 const PARCOURS_LONG = 15_000;
 
+// « Non » aux deux blocs des situations particulières, une page chacun.
+async function sansSituation(user: ReturnType<typeof userEvent.setup>) {
+  await cocher(user, /^Non, aucune de ces situations/);
+  await suivant(user);
+  await page(Q221B);
+  await cocher(user, /^Non, aucun\./);
+  await suivant(user);
+}
+
 describe("le modèle de l'éditeur, déroulé dans le formulaire", () => {
   it("révèle Q2.1.g sur la page de Q2.1, puis attend « Suivant »", async () => {
     const user = afficherLeQuestionnaire();
@@ -117,19 +126,19 @@ describe("le modèle de l'éditeur, déroulé dans le formulaire", () => {
     expect(screen.queryByRole("group", { name: Q21 })).toBeNull();
   });
 
-  it("précise l'autre situation sur la page de Q2.2.1, avant le trajet", async () => {
+  it("pose les soins sur une seconde page, même après « Non » au premier bloc", async () => {
     const user = afficherLeQuestionnaire();
     await avecUnProfessionnel(user, [/^Nécessite un brancardage/]);
     await cocher(user, /^Aucune de ces situations/);
     await suivant(user);
     await page(Q221);
 
-    await cocher(user, /^Une autre situation particulière/);
-    expect(await page(Q221B)).toBeInTheDocument();
+    await cocher(user, /^Non, aucune de ces situations/);
     await suivant(user);
+    expect(await page(Q221B)).toBeInTheDocument();
     expect(screen.queryByRole("group", { name: Q231 })).toBeNull();
 
-    await cocher(user, /^À un accident du travail/);
+    await cocher(user, /^Accident du travail/);
     await suivant(user);
     expect(await page(Q231)).toBeInTheDocument();
   });
@@ -168,8 +177,7 @@ describe("le modèle de l'éditeur, déroulé dans le formulaire", () => {
     await page(Q21);
     await choisir(user, /^Transfert entre établissements/);
     await page(Q221);
-    await cocher(user, /^Aucune autre situation/);
-    await suivant(user);
+    await sansSituation(user);
     await page(Q231);
     await choisir(user, /^50 km ou moins/);
     await suivant(user);
@@ -209,8 +217,7 @@ describe("le modèle de l'éditeur, déroulé dans le formulaire", () => {
       await page(Q21);
       await choisir(user, /^Permission temporaire pendant l’hospitalisation/);
       await page(Q221);
-      await cocher(user, /^Aucune autre situation/);
-      await suivant(user);
+      await sansSituation(user);
       await page(Q231);
       await choisir(user, /^50 km ou moins/);
       await suivant(user);
@@ -271,8 +278,7 @@ describe("le modèle de l'éditeur, déroulé dans le formulaire", () => {
     await page(Q21);
     await choisir(user, /^Convocation, expertise, audience/);
     await page(Q221);
-    await cocher(user, /^Aucune autre situation/);
-    await suivant(user);
+    await sansSituation(user);
     await page(Q231);
     await choisir(user, /^50 km ou moins/);
     await suivant(user);

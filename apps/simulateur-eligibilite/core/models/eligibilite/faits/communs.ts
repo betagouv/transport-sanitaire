@@ -1,18 +1,13 @@
 // Ce que plusieurs faits lisent : les réponses qui reviennent d'un fait à
-// l'autre, les règles qu'ils partagent mot pour mot, et la table des
-// situations de l'autre cadre qui se proposent. Chaque fait écrit ses règles
+// l'autre, et les règles qu'ils partagent mot pour mot. Chaque fait écrit ses règles
 // dans son fichier : seul ce qui s'y lirait à l'identique se nomme ici.
 //
 // Un fait lit les questions validées et les autres faits. Il ne lit ni cible
 // ni jour : `given` ne les offre pas au typage, et le catalogue s'y arrête net.
 
-import { type Condition, givenOf, uneRegle } from "../../../socle/index.ts";
+import { givenOf, uneRegle } from "../../../socle/index.ts";
 import type { Faits } from "../declarations/faits.ts";
-import {
-  OPTIONS,
-  type Questions,
-  RETIREE_SI_Q21,
-} from "../declarations/questions.ts";
+import type { Questions } from "../declarations/questions.ts";
 
 /** Les entrées d'un fait : `given.question("Q2.5").answer()`, `given.fait(nom)`. */
 export const given = givenOf<Questions, Faits>();
@@ -32,7 +27,7 @@ export const MOTIF = given.question("Q2.1").answer();
 /** Q2.1.g : l'entrée, la sortie ou l'admission en HAD. */
 export const SOUS_TYPE = given.question("Q2.1.g").answer();
 
-/** Q2.2.1 : les situations particulières du trajet. */
+/** Q2.2.1 : les situations particulières du trajet, premier bloc. */
 export const SITUATIONS = given.question("Q2.2.1").answer();
 
 /** Q2.2.1.cadre : le séjour coché, en établissement ou en HAD. */
@@ -54,35 +49,14 @@ export const UN_SEJOUR_EN_HAD = SITUATIONS.checked("1_HOSPITALISATION").and(
 /** Q2.2.1.a : le séjour coché, le trajet est-il une permission ? */
 export const PERMISSION_DU_SEJOUR = given.question("Q2.2.1.a").answer();
 
-/** Q2.2.1.b : l'autre cadre, précisé. */
-export const SITUATION_DU_CADRE = given.question("Q2.2.1.b").answer();
+/** Q2.2.1.b : les soins et rendez-vous, second bloc. */
+export const SOINS = given.question("Q2.2.1.b").answer();
 
 /** Q2.5 : un transfert entre établissements, ou un autre déplacement. */
 export const DEPLACEMENT = given.question("Q2.5").answer();
 
 /** Q2.6 : les exceptions de l'article 80. */
 export const EXCEPTIONS = given.question("Q2.6").answer();
-
-/** « Autre situation » s'est proposée en Q2.2.1, et n'est pas cochée. */
-export const AUTRE_CADRE_ECARTE = SITUATIONS.offered("3_AUTRE_CADRE").and(
-  SITUATIONS.checked("3_AUTRE_CADRE").not(),
-);
-
-/**
- * Chaque situation de l'autre cadre se propose, sauf celles que Q2.1 indique
- * déjà (D-98). La page des contextes écrit sa condition sur la même table
- * (`RETIREE_SI_Q21`, D-208).
- */
-export const SITUATION_PROPOSEE: Readonly<
-  Record<Questions["Q2.2.1.b"][number], Condition>
-> = Object.fromEntries(
-  (Object.keys(OPTIONS["Q2.2.1.b"]) as Questions["Q2.2.1.b"][number][]).map(
-    (situation) => [
-      situation,
-      MOTIF.isOneOf(...(RETIREE_SI_Q21[situation] ?? [])).not(),
-    ],
-  ),
-) as Record<Questions["Q2.2.1.b"][number], Condition>;
 
 /**
  * Le départ d'une entrée en établissement (Q2.13) : le domicile, un
@@ -122,8 +96,7 @@ export const SANS_SEANCE_NI_SEJOUR = MOTIF.isPresent()
  * la permission.
  */
 export const UNE_SORTIE_VERS_LA_PRISON = uneRegle().nonSi(
-  SITUATIONS.checked("3_AUTRE_CADRE")
-    .and(SITUATION_DU_CADRE.checked("10_RETOUR_PENITENTIAIRE"))
+  SITUATIONS.checked("10_RETOUR_PENITENTIAIRE")
     .and(SOUS_TYPE.is("2_SORTIE"))
     .and(PERMISSION_DU_SEJOUR.is("1_OUI").not()),
   "Sortie définitive vers la prison.",

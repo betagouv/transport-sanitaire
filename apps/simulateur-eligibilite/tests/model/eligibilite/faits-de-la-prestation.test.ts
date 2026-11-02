@@ -85,7 +85,10 @@ describe("l'hospitalisation", () => {
   });
 
   it("une consultation, « déjà hospitalisé » écarté : ni séjour, ni soin qualifiant", () => {
-    const reponses = motif("1_CONSULTATION", { "Q2.2.1": ["4_AUCUNE"] });
+    const reponses = motif("1_CONSULTATION", {
+      "Q2.2.1": ["0_AUCUNE"],
+      "Q2.2.1.b": ["0_AUCUN"],
+    });
     expect(valeur("fait_hospitalisation", reponses)).toBe(false);
     expect(valeur("fait_situation_soins_qualifiante", reponses)).toBe(false);
   });

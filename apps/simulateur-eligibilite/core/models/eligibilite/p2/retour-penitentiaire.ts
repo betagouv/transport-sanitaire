@@ -1,4 +1,4 @@
-// Le retour vers un établissement pénitentiaire (option 10 de Q2.2.1.b) : ce
+// Le retour vers un établissement pénitentiaire (option 10 de Q2.2.1) : ce
 // qui qualifie son circuit avant R2 (points 33 et 34 de la v10.1.3,
 // `CONTRAT_CONTEXTES_V1012.json` et `CONTRAT_ORIENTATION_ADMINISTRATIVE.json`).
 // La sortie définitive vers la prison est une règle des faits
@@ -30,12 +30,11 @@ type Valides = ValidatedAnswers<Questions>;
 export const TRANSFERT_VERS_LA_PRISON =
   "Un transfert entre établissements de santé ne mène pas à un établissement pénitentiaire. Corrigez cette réponse, ou retirez le retour pénitentiaire des situations particulières.";
 
-/** Le retour pénitentiaire est coché dans l'autre cadre. */
+/** Le retour pénitentiaire est coché en Q2.2.1. */
 export const unRetourPenitentiaire = given
   .question("Q2.2.1")
   .answer()
-  .checked("3_AUTRE_CADRE")
-  .and(given.question("Q2.2.1.b").answer().checked("10_RETOUR_PENITENTIAIRE"));
+  .checked("10_RETOUR_PENITENTIAIRE");
 
 // Une preuve médicale qualifiée établit l'indication : un critère de Q1.2,
 // une ALD liée au soin, les soins prolongés reconnus d'un mineur, ou une

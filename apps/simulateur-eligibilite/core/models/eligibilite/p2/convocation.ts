@@ -5,7 +5,7 @@ import { given } from "../question.ts";
 /**
  * Une convocation est annoncée, par Q2.1 ou par Q2.2.1.b : Q2.10 se pose
  * alors. Sans l'une ni l'autre, elle ne se pose pas : la convocation proposée
- * et écartée en Q2.2.1 vaut déjà « non » (contextes).
+ * et écartée en Q2.2.1.b vaut déjà « non » (contextes).
  */
 export const uneConvocationAnnoncee = given
   .question("Q2.1")

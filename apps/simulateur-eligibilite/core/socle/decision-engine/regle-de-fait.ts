@@ -7,7 +7,7 @@
 //   );
 //
 // Sa provenance cite ce que lit la condition, puis la raison : « Q2.1.g :
-// « 2_SORTIE », Q2.2.1.b : « 10_RETOUR_PENITENTIAIRE ». Sortie définitive vers
+// « 2_SORTIE », Q2.2.1 : « 10_RETOUR_PENITENTIAIRE ». Sortie définitive vers
 // la prison. ». Une réponse absente se cite « sans réponse ». Un fait place la
 // règle avec `applique` (`fait-builder.ts`).
 

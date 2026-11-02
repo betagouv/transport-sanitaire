@@ -18,8 +18,8 @@ describe("les lieux que les contextes de P2 fixent (matrice des lieux)", () => {
   it("un retour pénitentiaire arrive à l'établissement pénitentiaire", () => {
     const penitentiaire: Reponses = {
       ...RETOUR,
-      "Q2.2.1": ["3_AUTRE_CADRE"],
-      "Q2.2.1.b": ["10_RETOUR_PENITENTIAIRE"],
+      "Q2.2.1": ["10_RETOUR_PENITENTIAIRE"],
+      "Q2.2.1.b": ["0_AUCUN"],
     };
     expect(ids("P3/arrivee", penitentiaire)).toEqual([
       "Q3.3.nom",

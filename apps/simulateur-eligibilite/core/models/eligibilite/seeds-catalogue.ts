@@ -41,7 +41,8 @@ const DIALYSE = {
   ...TAP_1_5,
   "Q1.3": ["5_DIALYSE", "6_PARTAGE_INCOMPATIBLE"],
   "Q1.3.a": "1_OUI",
-  "Q2.2.1": ["4_AUCUNE"],
+  "Q2.2.1": ["0_AUCUNE"],
+  "Q2.2.1.b": ["0_AUCUN"],
   ...TRAJET_COURT,
 } as const;
 
@@ -61,7 +62,8 @@ const PERMISSION_DU_MINEUR = {
   ...TAP_1_5,
   "Q1.3": ["7_AUCUNE"],
   "Q2.1": "11_PERMISSION",
-  "Q2.2.1": ["4_AUCUNE"],
+  "Q2.2.1": ["0_AUCUNE"],
+  "Q2.2.1.b": ["0_AUCUN"],
   ...TRAJET_COURT,
   "Q2.7": "1_MOINS_DE_SEIZE_ANS",
   "Q2.8.1": "2026-10-01",
@@ -76,7 +78,8 @@ const TRANSFERT = {
   ...TAP_1,
   "Q1.3": ["7_AUCUNE"],
   "Q2.1": "9_TRANSFERT",
-  "Q2.2.1": ["4_AUCUNE"],
+  "Q2.2.1": ["0_AUCUNE"],
+  "Q2.2.1.b": ["0_AUCUN"],
   ...TRAJET_COURT,
   "Q2.5": "1_TRANSFERT",
 } as const;
@@ -85,7 +88,8 @@ const TRANSFERT = {
 const SANS_SOIN = {
   ...TAP_1,
   "Q1.3": ["7_AUCUNE"],
-  "Q2.2.1": ["4_AUCUNE"],
+  "Q2.2.1": ["0_AUCUNE"],
+  "Q2.2.1.b": ["0_AUCUN"],
   ...TRAJET_COURT,
 } as const;
 
@@ -254,6 +258,7 @@ export const SEEDS: readonly Seed<Questions, Cibles>[] = [
     answers: {
       ...DIALYSE,
       "Q2.2.1": ["2_ETRANGER"],
+      "Q2.2.1.b": ["0_AUCUN"],
       "Q2.2.5": ["1_DEPART"],
     },
     expected: {
@@ -274,7 +279,8 @@ export const SEEDS: readonly Seed<Questions, Cibles>[] = [
       "Q1.3": ["7_AUCUNE"],
       "Q1.4": "1_VEHICULE_PERSONNEL",
       "Q2.1": "13_MATERNITE",
-      "Q2.2.1": ["4_AUCUNE"],
+      "Q2.2.1": ["0_AUCUNE"],
+      "Q2.2.1.b": ["0_AUCUN"],
       ...TRAJET_COURT,
       "Q2.14.eloignement": ["1_PLUS_DE_QUARANTE_CINQ_MINUTES"],
       "Q2.14.motif": ["1_EXAMEN_DU_HUITIEME_OU_NEUVIEME_MOIS"],
@@ -297,8 +303,7 @@ export const SEEDS: readonly Seed<Questions, Cibles>[] = [
       "Q1.3": ["7_AUCUNE"],
       "Q1.4": "1_VEHICULE_PERSONNEL",
       "Q2.1": "1_CONSULTATION",
-      "Q2.2.1": ["3_AUTRE_CADRE"],
-      "Q2.2.1.b": ["10_RETOUR_PENITENTIAIRE"],
+      "Q2.2.1": ["10_RETOUR_PENITENTIAIRE"],
       "Q2.2.1.indication": "2_NON",
     },
     expected: { cible_issue_id: undefined },
@@ -314,6 +319,7 @@ export const SEEDS: readonly Seed<Questions, Cibles>[] = [
       "Q1.2": ["8_BRANCARDAGE"],
       "Q1.3": ["7_AUCUNE"],
       "Q2.2.1": ["1_HOSPITALISATION"],
+      "Q2.2.1.b": ["0_AUCUN"],
       "Q2.2.1.cadre": "1_ETABLISSEMENT",
       "Q2.2.1.a": "1_OUI",
       ...TRAJET_COURT,
@@ -338,6 +344,7 @@ export const SEEDS: readonly Seed<Questions, Cibles>[] = [
       "Q1.2": ["8_BRANCARDAGE"],
       "Q1.3": ["7_AUCUNE"],
       "Q2.2.1": ["1_HOSPITALISATION"],
+      "Q2.2.1.b": ["0_AUCUN"],
       "Q2.2.1.cadre": "2_HAD",
       ...TRAJET_COURT,
       "Q2.6": ["11_AUCUNE"],

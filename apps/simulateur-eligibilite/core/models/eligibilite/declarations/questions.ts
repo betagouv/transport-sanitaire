@@ -65,16 +65,24 @@ export const OPTIONS = {
     "1_OUI": "Oui.",
     "2_NON": "Non.",
   },
-  /** L’une de ces situations correspond-elle aussi au trajet à réaliser ? */
+  /**
+   * L’une de ces situations concerne-t-elle le transport du patient ? Le
+   * premier bloc de `CONTRAT_Q221_PROGRESSIF.json` (v10.1.5). Les situations
+   * venues de l'ancien Q2.2.1.b gardent leur numéro parmi les treize du
+   * catalogue ; le séjour et l'étranger, leur identifiant d'avant. La réponse
+   * négative, sans numéro au catalogue, porte 0.
+   */
   "Q2.2.1": {
     "1_HOSPITALISATION":
-      "Le patient est déjà hospitalisé pendant ce trajet, y compris en Hospitalisation à Domicile (HAD).",
+      "Hospitalisation en cours, y compris en Hospitalisation à Domicile (HAD).",
     "2_ETRANGER":
-      "Le départ, l’arrivée ou le lieu de soins concerné se trouve à l’étranger.",
-    "3_AUTRE_CADRE": "Une autre situation particulière concerne ce trajet.",
-    // Le libellé de `CONTRAT_Q221_PROGRESSIF.json` en v10.1.2, toujours, et
-    // non celui du catalogue quand aucun contexte n'est acquis.
-    "4_AUCUNE": "Aucune autre situation parmi celles proposées.",
+      "Au moins un lieu à l’étranger : départ, arrivée ou lieu de soins.",
+    "4_MATERNITE_ELOIGNEE":
+      "Examen obligatoire du 8ᵉ ou 9ᵉ mois de grossesse en maternité, ou hébergement temporaire lié à l’éloignement de la maternité.",
+    "5_HTNM":
+      "Hébergement temporaire non médicalisé lié aux soins, hors éloignement d’une maternité.",
+    "10_RETOUR_PENITENTIAIRE": "Retour vers un établissement pénitentiaire.",
+    "0_AUCUNE": "Non, aucune de ces situations",
   },
   /**
    * Dans quel cadre le patient est-il actuellement hospitalisé ? Le
@@ -90,26 +98,22 @@ export const OPTIONS = {
     "2_NON": "Non.",
   },
   /**
-   * Laquelle ou lesquelles de ces situations concernent aussi ce trajet ? Les
-   * options gardent leur numéro parmi les treize du catalogue (S1). Le centre
-   * de référence (8) n'en est plus depuis la v10.1.2 : il se recueille en P3.
+   * L’un de ces soins ou rendez-vous est-il concerné ? Le second bloc de
+   * `CONTRAT_Q221_PROGRESSIF.json` (v10.1.5). Les options gardent leur numéro
+   * parmi les treize du catalogue (S1) ; la réponse négative, sans numéro,
+   * porte 0. Le centre de référence (8) n'en est plus depuis la v10.1.2 : il
+   * se recueille en P3.
    */
   "Q2.2.1.b": {
-    "1_ATMP": "À un accident du travail ou à une maladie professionnelle.",
-    "4_MATERNITE_ELOIGNEE":
-      "À un examen obligatoire du 8ᵉ ou du 9ᵉ mois de grossesse en maternité, ou à un hébergement temporaire prévu en raison de l’éloignement de la maternité.",
-    "5_HTNM":
-      "À un hébergement temporaire non médicalisé en lien avec les soins, pour un autre motif que l’éloignement d’une maternité.",
+    "1_ATMP": "Accident du travail ou maladie professionnelle.",
     "6_CAMSP":
-      "À des soins dans le cadre d’un Centre d’Action Médico-Sociale Précoce (CAMSP) ou d’un Centre Médico-Psycho-Pédagogique (CMPP), y compris une séance en ville organisée dans le parcours de l’enfant.",
+      "Soins Centre d’Action Médico-Sociale Précoce (CAMSP) ou Centre Médico-Psycho-Pédagogique (CMPP), y compris les séances en ville organisées dans le parcours de l’enfant.",
     "7_SAMSAH":
-      "À des soins dans un Service d’Accompagnement Médico-Social pour Adultes Handicapés (SAMSAH).",
-    "9_PENSION_MILITAIRE":
-      "À des soins en rapport avec une pension militaire d’invalidité.",
-    "10_RETOUR_PENITENTIAIRE":
-      "À un retour vers un établissement pénitentiaire.",
+      "Soins en Service d’Accompagnement Médico-Social pour Adultes Handicapés (SAMSAH).",
+    "9_PENSION_MILITAIRE": "Soins liés à une pension militaire d’invalidité.",
     "13_CONVOCATION":
-      "À une convocation de contrôle, une expertise ou un rendez-vous chez un fournisseur d’appareillage.",
+      "Convocation de contrôle, expertise ou rendez-vous chez un fournisseur d’appareillage.",
+    "0_AUCUN": "Non, aucun.",
   },
   /**
    * Ce retour nécessite-t-il un transport pour raison médicale ? Le
@@ -229,19 +233,4 @@ export type Questions = QuestionsDuComplement & {
   "Q2.14.eloignement": readonly Option<"Q2.14.eloignement">[];
   "Q2.14.motif": readonly Option<"Q2.14.motif">[];
   "Q2.12": Option<"Q2.12">;
-};
-
-/**
- * Les motifs de Q2.1 qui retirent une situation de Q2.2.1.b : Q2.1 l'indique
- * déjà (D-98, TS1012-01). Les autres situations se proposent toujours. La page
- * des contextes et les faits de l'autre cadre écrivent chacun leur condition
- * sur cette table (D-208).
- */
-export const RETIREE_SI_Q21: Partial<
-  Record<Questions["Q2.2.1.b"][number], readonly Questions["Q2.1"][]>
-> = {
-  "4_MATERNITE_ELOIGNEE": ["13_MATERNITE"],
-  "5_HTNM": ["13_MATERNITE"],
-  "6_CAMSP": ["10_CAMSP"],
-  "13_CONVOCATION": ["12_CONVOCATION"],
 };

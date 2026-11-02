@@ -35,13 +35,13 @@ export const unDepartAPoser = given
 
 /**
  * Le groupe de l'éloignement (Q2.14) se pose : Q2.1 dit la maternité, ou
- * Q2.2.1.b la signale.
+ * Q2.2.1 la signale.
  */
 export const unEloignementAPoser = given
   .question("Q2.1")
   .answer()
   .is("13_MATERNITE")
-  .or(given.question("Q2.2.1.b").answer().checked("4_MATERNITE_ELOIGNEE"))
+  .or(given.question("Q2.2.1").answer().checked("4_MATERNITE_ELOIGNEE"))
   .and(brancheDecisive);
 
 /**

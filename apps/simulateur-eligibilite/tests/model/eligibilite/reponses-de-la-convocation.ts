@@ -20,7 +20,7 @@ export const PAR_Q21: Reponses = { ...PATIENT_SEUL, "Q2.1": "12_CONVOCATION" };
 export const PAR_Q221B: Reponses = {
   ...PATIENT_SEUL,
   "Q2.1": "1_CONSULTATION",
-  "Q2.2.1": ["3_AUTRE_CADRE"],
+  "Q2.2.1": ["0_AUCUNE"],
   "Q2.2.1.b": ["13_CONVOCATION"],
 };
 

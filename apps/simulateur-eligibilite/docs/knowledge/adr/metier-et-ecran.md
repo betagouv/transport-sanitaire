@@ -834,8 +834,8 @@ flowchart LR
 | Partie après le verrou (`afterLock`) | `core/` | la seule dont les gardes lisent les cibles figées | nouveau |
 | Fait (`unFait(nom)`) | `core/` | une valeur nommée, faite de règles sur des conditions ; la première qui conclut l'emporte, et cite ce qu'elle lit | modifié |
 | Règle nommée (`uneRegle()`, `RegleDeFait`) | `core/` | une règle que plusieurs faits appliquent | nouveau |
-| Ce que les faits partagent (`faits/communs.ts`) | `core/models/` | les lectures, les règles nommées, la table des situations proposées | nouveau |
-| Situations retirées par Q2.1 (`RETIREE_SI_Q21`) | `core/models/` | la table de D-98, en donnée, que la page des contextes et les faits lisent chacun | nouveau |
+| Ce que les faits partagent (`faits/communs.ts`) | `core/models/` | les lectures et les règles nommées | nouveau |
+| ~~Situations retirées par Q2.1 (`RETIREE_SI_Q21`)~~ | ~~`core/models/`~~ | retiré (#280, D-252) : chaque bloc retire ses options par `offeredWhen`, et un fait lit l'option proposée et non cochée (`nonSiEcartee`) |
 | Fusion des faits partiels (`faitsAvantLaBranche`, `FaitsDesReponses`) | `core/` | l'ordre des pages décidait du fait | supprimé |
 | Seeds | `core/` | ce qu'est une seed, ce qu'elle confirme ou dément | déplacé |
 | Écran des seeds | `front/` | la liste, le rejeu à l'écran | inchangé |

@@ -169,8 +169,8 @@ describe("les sens que les rôles de P2 permettent (Q3.1.2)", () => {
       : [];
   };
   const PENITENTIAIRE: Reponses = {
-    "Q2.2.1": ["3_AUTRE_CADRE"],
-    "Q2.2.1.b": ["10_RETOUR_PENITENTIAIRE"],
+    "Q2.2.1": ["10_RETOUR_PENITENTIAIRE"],
+    "Q2.2.1.b": ["0_AUCUN"],
   };
 
   it("sans rôle fixé, les quatre", () => {
