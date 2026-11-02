@@ -67,7 +67,8 @@ export async function allerAuCerfa(user: User) {
   await user.click(bouton("Compléter la commande"));
   await user.type(screen.getByRole("spinbutton", QUANTITE), "2");
   await user.click(bouton("Terminer"));
-  await screen.findByText("Commande : thé, lait, 2 tasses");
+  // Le texte du résultat attend le PDF : l'arrivée se lit à son bouton.
+  await screen.findByRole("button", { name: "Imprimer le bon de commande" });
 }
 
 /** Le chemin d'`allerAuResultat`, sans attendre le titre : il peut charger. */

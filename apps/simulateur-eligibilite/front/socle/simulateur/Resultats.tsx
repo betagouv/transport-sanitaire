@@ -2,7 +2,8 @@
 // premier (`FirstResultat.tsx`) : la trace de debug et les boutons. Le modèle
 // fournit son titre, son texte et son cerfa ; la page les range ici, de haut en
 // bas (C03 du contrat d'intégration) : le stepper, titré du document ; le
-// texte ; « Précédent », « Faire une nouvelle simulation » et, à droite, l'avis
+// texte, une fois le document prêt, l'état de sa génération d'ici là ;
+// « Précédent », « Faire une nouvelle simulation » et, à droite, l'avis
 // une fois le document prêt (V02) ; « Imprimer » et « Télécharger » ; l'aperçu
 // du document.
 
@@ -71,10 +72,10 @@ export function CerfaResultat({
       trace={trace}
       DebugTrace={DebugTrace}
     >
-      <Resultat reading={reading} />
       <Cerfa
         model={model}
         read={read}
+        text={<Resultat reading={reading} />}
         input={{ reading, completedAt }}
         actions={{ onReopen: () => onReopen(state), onRestart }}
         feedback={feedbackOf(model, read)}
@@ -161,21 +162,29 @@ export function SecondaryButton({ onClick, children }: ButtonProps) {
 
 // Le cerfa de la préconisation figée, daté du jour où le complément a été
 // validé, rien quand elle n'en donne pas. Le modèle peut tenir la place de son
-// aperçu. Les boutons le précèdent, et l'avis s'y ajoute une fois son PDF
-// prêt. Sans cerfa, les boutons restent, sans avis.
+// aperçu. Le texte et l'avis attendent que son PDF soit prêt ; les boutons le
+// précèdent. Sans cerfa, le texte et les boutons restent, sans avis.
 type CerfaProps = {
   model: Model;
   /** Ce que lisent les entrées du cerfa. */
   read: Read;
+  /** Le texte du résultat. */
+  text: ReactNode;
   input: CerfaInput;
   actions: CerfaActionsProps;
   feedback: FeedbackOffer | null;
 };
 
-function Cerfa({ model, read, input, actions, feedback }: CerfaProps) {
+function Cerfa({ model, read, text, input, actions, feedback }: CerfaProps) {
   const { form, standIn, printLabel, downloadLabel } = model.cerfa;
   const bound = read(form);
-  if (!bound) return <CerfaActions {...actions} feedback={null} />;
+  if (!bound)
+    return (
+      <>
+        {text}
+        <CerfaActions {...actions} feedback={null} />
+      </>
+    );
   return (
     <CerfaDocument
       cerfa={bound.cerfa}
@@ -183,6 +192,7 @@ function Cerfa({ model, read, input, actions, feedback }: CerfaProps) {
       date={input.completedAt}
       printLabel={printLabel}
       downloadLabel={downloadLabel}
+      text={text}
       standIn={standIn?.(input)}
       above={(ready) => (
         <CerfaActions {...actions} feedback={ready ? feedback : null} />

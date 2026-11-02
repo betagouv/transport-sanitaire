@@ -11,6 +11,7 @@ import { model } from "../../../front/models/eligibilite";
 import { catalogueResultats } from "../../../front/models/eligibilite/r2/catalogue-resultats";
 import { rangerRattachement } from "../../../front/socle/rattachement/session";
 import { ouvrirLeSimulateur } from "../../socle/simulateur/questionnaire";
+import { MODELE_AUX_GABARITS_DU_DISQUE } from "./modele-aux-gabarits-du-disque";
 
 // Le catalogue des textes et celui des seeds sont chargés une fois : la
 // première fiche n'attend pas leurs 900 ko.
@@ -36,7 +37,10 @@ beforeEach(() => rangerRattachement(null));
 async function ouvrirLaSeed(id: string) {
   const seed = SEEDS.find((candidate) => candidate.id === id);
   if (!seed) throw new Error(`Seed inconnue : ${id}`);
-  const user = await ouvrirLeSimulateur({ produit: true, modele: model });
+  const user = await ouvrirLeSimulateur({
+    produit: true,
+    modele: MODELE_AUX_GABARITS_DU_DISQUE,
+  });
   await user.click(
     await screen.findByRole("button", { name: "Seeds" }, ATTENTE),
   );
@@ -157,8 +161,13 @@ describe("les boutons du modèle de l'éditeur", DELAI_D_UN_TEST, () => {
         name: /^Prescription préremplie prête à imprimer/,
       }),
     ).toBeInTheDocument();
+    // Le texte attend le PDF (D-250).
     expect(
-      screen.getByText(/^Le document est prêt à être imprimé\./),
+      await screen.findByText(
+        /^Le document est prêt à être imprimé\./,
+        {},
+        ATTENTE,
+      ),
     ).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Imprimer" })).toBeVisible();
     expect(
