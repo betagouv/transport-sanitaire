@@ -49,6 +49,7 @@ export type CommonSettings<Questions extends AnyQuestions, Cibles, Faits> = {
   readonly alwaysAsked?: boolean;
   readonly under?: ShownUnder;
   labelFrom?(context: QuestionContext<Questions, Cibles, Faits>): string;
+  hintFrom?(context: QuestionContext<Questions, Cibles, Faits>): string;
   reminderFrom?(
     context: QuestionContext<Questions, Cibles, Faits>,
   ): Reminder | NothingComputed;
@@ -105,6 +106,13 @@ export abstract class DeclaredQuestion<
   /** Phrase indicative, affichée sous la question. */
   hint(hint: string): this {
     return this.withSettings({ hint });
+  }
+
+  /** La phrase indicative, quand elle dépend des réponses. */
+  hintFrom(
+    hint: (context: QuestionContext<Questions, Cibles, Faits>) => string,
+  ): this {
+    return this.withSettings({ hintFrom: hint });
   }
 
   /**
@@ -175,7 +183,8 @@ export abstract class DeclaredQuestion<
 
   /**
    * Les questions dont dépend cette réponse. Quand l'une d'elles change, cette
-   * réponse est effacée, et elle seule (`page-commit.ts`).
+   * réponse est effacée, et elle seule (`page-commit.ts`). Sur la même page,
+   * elle l'est dès la saisie : son champ se vide à l'écran.
    */
   dependsOn(...ids: (keyof Questions & string)[]): this {
     return this.withSettings({
@@ -272,7 +281,7 @@ function commonIn<Questions extends AnyQuestions, Cibles, Faits>(
   return {
     id: settings.id,
     label: settings.labelFrom?.(context) ?? settings.label,
-    hint: settings.hint,
+    hint: settings.hintFrom?.(context) ?? settings.hint,
     reminder: settings.reminderFrom?.(context) ?? settings.reminder,
     optional: settings.optional,
     under: settings.under,

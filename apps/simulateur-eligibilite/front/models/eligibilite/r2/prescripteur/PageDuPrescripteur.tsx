@@ -2,7 +2,7 @@
 // la convocation et le transport à l'étranger montrent à la place d'une fiche
 // patient (D-112). Elle range un `TexteDuPrescripteur` sous le titre et
 // l'introduction que le socle place ; elle n'écrit que ses intertitres, ceux
-// des gabarits de l'éditeur.
+// des gabarits de l'éditeur, et le nom de sa zone (TS1014-TERMINOLOGIE-PRESCRIPTEUR).
 
 import { NumberedCards, Panel } from "../../../../socle";
 import type {
@@ -11,17 +11,29 @@ import type {
 } from "./texte-du-prescripteur";
 
 export function PageDuPrescripteur({ texte }: { texte: TexteDuPrescripteur }) {
+  // Le transport à l'étranger ne garde que son titre et son introduction : une
+  // zone vide s'annoncerait quand même au lecteur d'écran.
+  if (!aDuContenu(texte)) return null;
   return (
-    <>
+    <section aria-label="Résultat pour le prescripteur">
       {texte.pourquoi && <Pourquoi pourquoi={texte.pourquoi} />}
       <Questions questions={texte.questions} />
       <NumberedCards title="Que faire maintenant ?" items={texte.actions} />
       {texte.avertissement && <p className="fr-mt-4w">{texte.avertissement}</p>}
-    </>
+    </section>
   );
 }
 
 // ---- implémentation ----
+
+function aDuContenu(texte: TexteDuPrescripteur): boolean {
+  return Boolean(
+    texte.pourquoi ||
+      texte.questions.length > 0 ||
+      texte.actions.length > 0 ||
+      texte.avertissement,
+  );
+}
 
 type PourquoiProps = { pourquoi: NonNullable<TexteDuPrescripteur["pourquoi"]> };
 
@@ -29,7 +41,7 @@ function Pourquoi({ pourquoi }: PourquoiProps) {
   return (
     <Panel variant="grey" title={pourquoi.titre} divided>
       {pourquoi.elements.map((element) => (
-        <Element key={element.texte} element={element} />
+        <Element key={element.paragraphes.join()} element={element} />
       ))}
     </Panel>
   );
@@ -41,7 +53,16 @@ function Element({ element }: { element: ElementDuPourquoi }) {
       {element.titre && (
         <h3 className="fr-text--md fr-text--bold fr-mb-1v">{element.titre}</h3>
       )}
-      <p className="fr-mb-0">{element.texte}</p>
+      {element.paragraphes.map((paragraphe, rang) => (
+        <p
+          key={paragraphe}
+          className={
+            rang === element.paragraphes.length - 1 ? "fr-mb-0" : undefined
+          }
+        >
+          {paragraphe}
+        </p>
+      ))}
     </div>
   );
 }
