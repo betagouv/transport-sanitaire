@@ -25,7 +25,6 @@ const Q26A = /^Le transfert est-il définitif ou provisoire/;
 const Q26 = /^Quelle situation précise et quelles exceptions/;
 const Q27 = /^Âge du patient pendant la période prescrite/;
 const Q284 = /^Cette permission a-t-elle été autorisée/;
-const Q284A = /^Quel est le cadre de cette permission/;
 const Q285 = /^La prescription couvre-t-elle plusieurs permissions/;
 const Q286B = /^Le patient restera-t-il âgé de moins de 20 ans/;
 const Q210 = /^Quelle convocation, quel avis d’audience/;
@@ -230,7 +229,6 @@ describe("le modèle de l'éditeur, déroulé dans le formulaire", () => {
         "2026-10-15T09:00",
       );
       await choisirDans(user, Q284, /^Oui\./);
-      await choisirDans(user, Q284A, /^Elle est liée aux soins/);
       await choisirDans(user, Q285, /^Oui\./);
 
       expect(champ(/^Jusqu’à quelle date ces permissions/)).toBeInTheDocument();
