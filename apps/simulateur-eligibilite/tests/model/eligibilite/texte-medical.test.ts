@@ -13,6 +13,7 @@ import {
 import { ENTREE, MATERNITE_ETABLIE } from "./reponses-de-la-branche";
 import {
   donnees,
+  EHPAD,
   EXAMEN_DE_MATERNITE,
   HEBERGEMENT_DE_MATERNITE,
   PMT,
@@ -28,6 +29,18 @@ const MALAISE =
   "présente un risque d’effets secondaires, de malaise ou de complications pendant le transport";
 const MINEUR =
   "Mineur nécessitant des soins prolongés en raison d’un handicap, d’une incapacité ou d’un accident";
+
+// L'hébergement du dispositif, ni départ ni arrivée, que Q3.8 recueille.
+const HEBERGEMENT_DISTINCT: Reponses = {
+  ...HEBERGEMENT_DE_MATERNITE,
+  ...Q38,
+  "Q3.8.hebergement.nom": "Maison des familles",
+  "Q3.8.hebergement.adresse": {
+    street: "1 place Bellecour",
+    postalCode: "69002",
+    city: "Lyon",
+  },
+};
 
 describe("le texte médical", () => {
   it("joint le soin et les besoins par « ; », sans majuscule après", () => {
@@ -174,20 +187,31 @@ describe("les compléments", () => {
   });
 
   it("reportent l'hébergement du dispositif qui n'est pas un lieu du trajet", () => {
+    expect(texte(HEBERGEMENT_DISTINCT).elements_medicaux).toMatch(
+      / ; niveau de maternité requis : type IIA ; hébergement temporaire non médicalisé : Maison des familles — 1 place Bellecour, 69002 Lyon\.$/,
+    );
+  });
+
+  // L'hébergement de Q3.8 ne dépend que de la nature des lieux du trajet.
+  it("gardent l'hébergement de Q3.8 quand l'adresse de l'arrivée change", () => {
     const reponses: Reponses = {
-      ...HEBERGEMENT_DE_MATERNITE,
-      ...Q38,
-      "Q3.8.hebergement.nom": "Maison des familles",
-      "Q3.8.hebergement.adresse": {
-        street: "1 place Bellecour",
-        postalCode: "69002",
-        city: "Lyon",
-      },
+      ...HEBERGEMENT_DISTINCT,
+      "Q3.3.adresse": EHPAD,
     };
 
     expect(texte(reponses).elements_medicaux).toMatch(
-      / ; niveau de maternité requis : type IIA ; hébergement temporaire non médicalisé : Maison des familles — 1 place Bellecour, 69002 Lyon\.$/,
+      /hébergement temporaire non médicalisé : Maison des familles — 1 place Bellecour, 69002 Lyon\.$/,
     );
+  });
+
+  it("taisent l'hébergement de Q3.8 quand l'arrivée devient un hébergement non médicalisé", () => {
+    const reponses: Reponses = {
+      ...HEBERGEMENT_DISTINCT,
+      "Q3.3.nature": "5_HEBERGEMENT_NON_MEDICALISE",
+      "Q3.3.precision": "Maison des familles",
+    };
+
+    expect(texte(reponses).elements_medicaux).not.toMatch(/Bellecour/);
   });
 
   it("taisent la maternité hors Engagement maternité, même avec une réponse restée", () => {

@@ -3,10 +3,11 @@
 // les cinq documents : le stepper, titré du document, à « Étape 4 sur 4 » et
 // « Préparation terminée. » ; le texte ; la navigation ; les deux actions ;
 // puis l'aperçu. Les gabarits se lisent sur le disque : le PDF se génère, et
-// le texte, qui l'attend, s'affiche.
+// le texte, qui l'attend, s'affiche. Une nouvelle simulation ne garde rien du
+// document précédent.
 
-import { screen } from "@testing-library/react";
-import { beforeEach, describe, expect, it } from "vitest";
+import { screen, waitFor } from "@testing-library/react";
+import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { SEEDS } from "../../../core/models/eligibilite/seeds-catalogue";
 import { model } from "../../../front/models/eligibilite";
 import { catalogueResultats } from "../../../front/models/eligibilite/r2/catalogue-resultats";
@@ -15,6 +16,7 @@ import {
   detailsDuStepper,
   ouvrirLeSimulateur,
 } from "../../socle/simulateur/questionnaire";
+import { ecouterLesTelechargements } from "../../socle/simulateur/telechargements";
 import { completerP3 } from "./completer-p3";
 import { MODELE_AUX_GABARITS_DU_DISQUE } from "./modele-aux-gabarits-du-disque";
 
@@ -30,7 +32,16 @@ const PRESCRIPTION = "Prescription préremplie prête à imprimer";
 const ACCORD_PREALABLE =
   "Demande d’accord préalable préremplie prête à imprimer";
 
-beforeEach(() => rangerRattachement(null));
+type User = Awaited<ReturnType<typeof ouvrirLeSimulateur>>;
+
+let ecoute: ReturnType<typeof ecouterLesTelechargements>;
+
+beforeEach(() => {
+  rangerRattachement(null);
+  ecoute = ecouterLesTelechargements();
+});
+
+afterEach(() => ecoute.arreter());
 
 describe("R3 du modèle de l'éditeur", DELAI_D_UN_TEST, () => {
   it.each([
@@ -63,15 +74,46 @@ describe("R3 du modèle de l'éditeur", DELAI_D_UN_TEST, () => {
   );
 });
 
+describe("une nouvelle simulation depuis R3", DELAI_D_UN_TEST, () => {
+  it("ne montre que le document de la nouvelle seed", async () => {
+    const user = await allerEnR3("issue-pmt", "Compléter la prescription");
+    await user.click(
+      screen.getByRole("button", { name: "Faire une nouvelle simulation" }),
+    );
+
+    await ouvrirEnR3(
+      user,
+      "issue-dap-sans-urgence",
+      "Compléter la demande d’accord préalable",
+    );
+
+    expect(titreDeLEcran()).toBe(`${ACCORD_PREALABLE} Étape 4 sur 4`);
+    expect(screen.getAllByText(/^Le document est prêt/)).toHaveLength(1);
+    await user.click(
+      await screen.findByRole("button", { name: "Télécharger" }, ATTENTE),
+    );
+    await waitFor(() => expect(ecoute.telechargements).toHaveLength(1));
+    expect(ecoute.telechargements[0]?.nom).toMatch(
+      /^demande-d-accord-prealable/,
+    );
+  });
+});
+
 // ---- implémentation ----
 
 async function allerEnR3(id: string, completer: string) {
-  const seed = SEEDS.find((candidate) => candidate.id === id);
-  if (!seed) throw new Error(`Seed inconnue : ${id}`);
   const user = await ouvrirLeSimulateur({
     produit: true,
     modele: MODELE_AUX_GABARITS_DU_DISQUE,
   });
+  await ouvrirEnR3(user, id, completer);
+  return user;
+}
+
+// La seed `id`, ouverte par l'écran des seeds et menée jusqu'au document.
+async function ouvrirEnR3(user: User, id: string, completer: string) {
+  const seed = SEEDS.find((candidate) => candidate.id === id);
+  if (!seed) throw new Error(`Seed inconnue : ${id}`);
   await user.click(
     await screen.findByRole("button", { name: "Seeds" }, ATTENTE),
   );

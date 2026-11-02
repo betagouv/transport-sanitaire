@@ -4,17 +4,22 @@
 // vaut chaque cellule se teste avec sa rubrique (`rubriques-du-cerfa.test.ts`,
 // `rubriques-de-la-pmt.test.ts`, `rubriques-de-la-dap.test.ts`,
 // `texte-medical.test.ts`), la consigne du mineur avec la PMT
-// (`consigne-du-mineur.test.ts`).
+// (`consigne-du-mineur.test.ts`), les motifs cochés à part
+// (`motifs-de-la-dap-remplie.test.ts`).
 
 import { describe, expect, it } from "vitest";
 import { S3139H } from "../../../front/models/eligibilite/r3/s3139h/s3139h";
 import { dtoFrom } from "../../../front/socle/cerfa-mapping";
-import { drawnOn, markedStates, textsOn } from "../../socle/cerfa/test-form";
+import {
+  drawnOn,
+  markedStates,
+  textsIn,
+  textsOn,
+} from "../../socle/cerfa/pdf-aplati";
 import {
   abscisses,
   DAP,
   donnees,
-  ETRANGER,
   gabarit,
   genere,
   type Reponses,
@@ -128,59 +133,27 @@ describe("la DAP d'une dialyse à plus de 150 km", () => {
   });
 });
 
-describe("les motifs de la DAP", () => {
-  it("cochent ensemble les fondements établis", async () => {
-    const cibles = {
-      cible_dap_motif_longue_distance: true,
-      cible_dap_motif_serie: true,
-      cible_dap_motif_camsp_cmpp: true,
-    };
-
-    expect(await marquees(DAP, cibles, "km")).toEqual(["Oui", "non", "camsp"]);
-  });
-
-  it("ne cochent rien pour le transport à l'étranger à examiner", async () => {
-    expect(await marquees(ETRANGER, {}, "km")).toEqual([]);
-    expect(await marquees(ETRANGER, {}, "bat ou av")).toEqual([]);
-  });
-
-  it("laissent la demande d'examen à l'étranger au seul volet médical", async () => {
-    const pdf = await rempli(ETRANGER);
-    const examen = "demande d’examen de la prise en charge du transport";
-
-    expect((await textsOn(pdf, 2)).join(" ")).toContain(examen);
-    expect((await textsOn(pdf, 3)).join(" ")).not.toContain("examen");
-  });
-});
-
-describe("le transport par avion ou bateau", () => {
-  const AVION = {
-    cible_dap_motif_avion_bateau: true,
-    cible_personne_accompagnante: true,
-    cible_hospitalisation_ou_seances_assimilees: true,
-    cible_ald_juridiquement_qualifiante_3_ou_4_degres: true,
-    cible_situation_at_mp: true,
+describe("la DAP de 4 allers-retours", () => {
+  // Quatre allers-retours valent 4, et non 8 trajets simples (D-246).
+  const QUATRE: Reponses = {
+    ...DAP,
+    "Q3.1.2": "3_ALLER_RETOUR_EQUIVALENT",
+    "Q3.1.1": 4,
   };
-  const DATE_AT_MP: Reponses = { ...DAP, "Q3.6.1": "2026-08-12" };
 
-  it.each([
-    ["bat ou av", ["Oui"]],
-    ["pers acc", ["Oui"]],
-    ["sit", ["Oui", "non", "atmp"]],
-  ])("coche « %s » : %j", async (champ, etats) => {
-    expect(await marquees(DATE_AT_MP, AVION, champ)).toEqual(etats);
+  it("coche la case aller-retour", async () => {
+    expect(await marquees(QUATRE, {}, "alret")).toEqual(["Oui"]);
   });
 
-  // Une fois sous l'avion ou le bateau, une fois sous le mode de transport.
-  it.each(VOLETS)(
-    "écrit deux fois la date de l'AT/MP sur la page %i",
-    async (page) => {
-      const pdf = await rempli(DATE_AT_MP, AVION);
-      const ecrit = (await textsOn(pdf, page)).join("");
+  it("écrit 4 dans « nom tra », sur les trois volets", async () => {
+    const pdf = await rempli(QUATRE);
 
-      expect(ecrit.split("12082026")).toHaveLength(3);
-    },
-  );
+    expect(await textsIn(await gabarit("S3139h"), pdf, "nom tra")).toEqual([
+      "4",
+      "4",
+      "4",
+    ]);
+  });
 });
 
 describe("les cases inversées du gabarit (D-188)", () => {

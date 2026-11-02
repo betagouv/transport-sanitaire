@@ -2,7 +2,7 @@ import { resolveObjectURL } from "node:buffer";
 import { screen, waitFor } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { Model } from "../../../front/socle/model";
-import { drawnOn } from "../cerfa/test-form";
+import { drawnOn } from "../cerfa/pdf-aplati";
 import { auGabarit, gabaritRetenu } from "./gabarit-retenu";
 import { allerAuCerfa, bouton, ouvrirLeSimulateur } from "./questionnaire";
 import { ecouterLesTelechargements } from "./telechargements";
@@ -144,6 +144,27 @@ describe("le cerfa", () => {
     expect(bouton(IMPRIMER)).toBeDisabled();
     gabarit.lache();
     expect(await genere(TELECHARGER)).toBeEnabled();
+  });
+
+  it("qui a échoué se génère à la nouvelle tentative, puis montre le texte du résultat", async () => {
+    const gabarit = gabaritRetenu({ echoueDAbord: true });
+    const user = await ouvrirLeSimulateur({
+      modele: auGabarit(gabarit.charge),
+    });
+    await allerAuCerfa(user);
+    await screen.findByRole("alert");
+
+    await user.click(await genere(TELECHARGER));
+    expect(screen.getByRole("status")).toHaveTextContent(
+      "Génération du document en cours…",
+    );
+    gabarit.lache();
+
+    await waitFor(() => expect(ecoute.telechargements).toHaveLength(1));
+    expect(
+      await screen.findByText("Commande : thé, lait, 2 tasses"),
+    ).toBeVisible();
+    expect(screen.queryByRole("alert")).toBeNull();
   });
 
   it("ne sort pas si l'on quitte le résultat pendant une nouvelle tentative", async () => {

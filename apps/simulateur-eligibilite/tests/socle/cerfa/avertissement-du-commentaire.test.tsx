@@ -4,7 +4,8 @@ import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { CerfaDocument } from "../../../front/socle/cerfa/CerfaDocument";
 import { type Cerfa, commentOn, text } from "../../../front/socle/cerfa/cerfa";
 import { ecouterLesTelechargements } from "../simulateur/telechargements";
-import { drawnOn, testForm } from "./test-form";
+import { drawnOn } from "./pdf-aplati";
+import { testForm } from "./test-form";
 
 // Un commentaire facultatif qui ne tient pas sur le cerfa en est retiré. Le
 // bouton le dit dès qu'il s'affiche, avant tout téléchargement (D-85).
