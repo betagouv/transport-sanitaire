@@ -3,7 +3,7 @@
 
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import type { Seed } from "../../../core/socle/seeds/seed";
+import type { Seed } from "../../../core/socle/simulation/seed";
 import { App } from "../../../front/socle/app/App";
 import type { FirstResult, Model } from "../../../front/socle/model";
 import { snapshotReferentiel } from "../../../shared/referentiel";

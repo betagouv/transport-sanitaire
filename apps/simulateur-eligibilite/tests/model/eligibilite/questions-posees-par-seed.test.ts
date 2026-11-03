@@ -5,10 +5,9 @@
 import { describe, expect, it } from "vitest";
 import type { Questions } from "../../../core/models/eligibilite/declarations/questions";
 import type { Answers } from "../../../core/socle/questionnaire-engine/question/question";
-import type { Questionnaire } from "../../../core/socle/questionnaire-engine/questionnaire";
+import { Questionnaire } from "../../../core/socle/questionnaire-engine/questionnaire";
+import { Simulation } from "../../../core/socle/simulation/simulation";
 import { model } from "../../../front/models/eligibilite";
-import { questionnaireOf } from "../../../front/socle/simulateur/questionnaire-of";
-import { lock } from "../../../front/socle/simulateur/start";
 
 type Reponses = Answers<Questions>;
 
@@ -18,11 +17,14 @@ const posees = (read: ReturnType<Questionnaire["readWith"]>) =>
     .flatMap((page) => read.questionsOn(page).map(({ id }) => id));
 
 const avantLeVerrou = (reponses: Reponses) =>
-  posees(questionnaireOf(model).readWith(reponses));
+  posees(Simulation.of(model.core, reponses).reading);
 
 const apresLeVerrou = (reponses: Reponses) => {
-  const { cibles } = lock(model, reponses).preconisation;
-  const complement = questionnaireOf(model, model.core.complement.pages);
+  const { cibles } = Simulation.of(model.core, reponses).lock().preconisation;
+  const complement = new Questionnaire(
+    model.core.complement.pages,
+    model.core.relevance,
+  );
   return posees(complement.readWith(reponses, cibles));
 };
 

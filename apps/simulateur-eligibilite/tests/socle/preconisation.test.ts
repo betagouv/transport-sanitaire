@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import type { ValidatedAnswers } from "../../core/socle";
-import { type CoreModel, preconisationOf } from "../../core/socle/model";
+import type { CoreModel } from "../../core/socle/model";
+import { preconisationOf } from "../../core/socle/simulation/simulation";
 import { modeleDeTest } from "./modele-de-test";
 
 // La préconisation va des réponses aux faits, puis aux cibles. Pour ses faits,

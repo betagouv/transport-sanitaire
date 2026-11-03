@@ -3,11 +3,11 @@
 // `CONTRAT_Q38_MATERNITE_DOCUMENT.json`, D-251.
 
 import { describe, expect, it } from "vitest";
+import { Questionnaire } from "../../../core/socle/questionnaire-engine/questionnaire";
+import { Simulation } from "../../../core/socle/simulation/simulation";
 import { model } from "../../../front/models/eligibilite";
 import { S3139H } from "../../../front/models/eligibilite/r3/s3139h/s3139h";
 import { dtoFrom } from "../../../front/socle/cerfa-mapping";
-import { questionnaireOf } from "../../../front/socle/simulateur/questionnaire-of";
-import { lock } from "../../../front/socle/simulateur/start";
 import { textsOn } from "../../socle/cerfa/pdf-aplati";
 import {
   donnees,
@@ -69,8 +69,11 @@ describe("la page de la maternité (Q3.8)", () => {
 
 // La dernière page de P3, et ce qu'elle pose.
 function apresLeVerrou(reponses: Reponses) {
-  const { cibles } = lock(model, reponses).preconisation;
-  const complement = questionnaireOf(model, model.core.complement.pages);
+  const { cibles } = Simulation.of(model.core, reponses).lock().preconisation;
+  const complement = new Questionnaire(
+    model.core.complement.pages,
+    model.core.relevance,
+  );
   const read = complement.readWith(reponses, cibles);
   const derniere = read.askedPages().at(-1);
   return {

@@ -8,11 +8,11 @@
 import { readdirSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
-import { preconisationOf } from "../../core/socle/model";
 import { askedQuestion } from "../../core/socle/questionnaire-engine/question/asked/question";
 import type { Page } from "../../core/socle/questionnaire-engine/question/question";
 import { Questionnaire } from "../../core/socle/questionnaire-engine/questionnaire";
-import { evaluateSeed } from "../../core/socle/seeds/seed";
+import { evaluateSeed } from "../../core/socle/simulation/seed";
+import { preconisationOf } from "../../core/socle/simulation/simulation";
 import { model as eligibilite } from "../../front/models/eligibilite";
 import { model as fake } from "../../front/models/fake";
 import type { Model } from "../../front/socle/model";

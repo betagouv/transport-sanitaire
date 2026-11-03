@@ -9,8 +9,8 @@ import { model } from "../../../core/models/eligibilite";
 import type { Cibles } from "../../../core/models/eligibilite/declarations/cibles";
 import type { Faits } from "../../../core/models/eligibilite/declarations/faits";
 import type { Questions } from "../../../core/models/eligibilite/declarations/questions";
-import { preconisationOf } from "../../../core/socle/model";
 import type { Answers } from "../../../core/socle/questionnaire-engine/question/question";
+import { preconisationOf } from "../../../core/socle/simulation/simulation";
 
 type Reponses = Answers<Questions>;
 

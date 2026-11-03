@@ -7,15 +7,17 @@
 import { describe, expect, it } from "vitest";
 import { model as metier } from "../../../core/models/eligibilite";
 import type { Questions } from "../../../core/models/eligibilite/declarations/questions";
-import { preconisationOf } from "../../../core/socle/model";
 import type { Answers } from "../../../core/socle/questionnaire-engine/question/question";
+import {
+  preconisationOf,
+  Simulation,
+} from "../../../core/socle/simulation/simulation";
 import { model } from "../../../front/models/eligibilite";
-import { questionnaireOf } from "../../../front/socle/simulateur/questionnaire-of";
 
 type Reponses = Answers<Questions>;
 
 const posees = (reponses: Reponses) => {
-  const read = questionnaireOf(model).readWith(reponses);
+  const read = Simulation.of(model.core, reponses).reading;
   return read
     .askedPages()
     .flatMap((page) => read.questionsOn(page).map(({ id }) => id));

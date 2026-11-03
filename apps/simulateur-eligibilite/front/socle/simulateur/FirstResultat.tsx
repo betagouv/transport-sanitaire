@@ -7,10 +7,13 @@
 // avec feuille et complétion est vert.
 
 import { type ComponentType, type ReactNode, useEffect, useState } from "react";
-import { type Preconisation, preconisationOf } from "../../../core/socle/model";
 import type { Read } from "../../../core/socle/questionnaire-engine/conditions/condition";
 import type { Answers } from "../../../core/socle/questionnaire-engine/question/question";
 import type { QuestionnaireState } from "../../../core/socle/questionnaire-engine/questionnaire";
+import {
+  type Locked,
+  Simulation,
+} from "../../../core/socle/simulation/simulation";
 import type { FirstResult, Model } from "../model";
 import type { DebugTraceProps } from "../questionnaire-engine/QuestionnaireForm";
 import { NextStep, Stepper } from "../questionnaire-engine/Stepper";
@@ -20,10 +23,8 @@ import {
   feedbackOf,
   onFirstResult,
 } from "./FeedbackLink";
-import { questionnaireOf } from "./questionnaire-of";
-import { readOf, SecondaryButton, traceOf } from "./Resultats";
+import { SecondaryButton } from "./Resultats";
 import { SheetViewer } from "./SheetViewer";
-import { type Locked, lock } from "./start";
 import "./first-resultat.css";
 
 type Props = {
@@ -41,19 +42,17 @@ type Props = {
 // verrouille, rien ne suit ce résultat : le stepper s'arrête sur lui. Le
 // stepper et les boutons restent pendant le chargement du résultat.
 export function FirstResultat({ model, state, DebugTrace, ...on }: Props) {
-  const { answers } = state;
-  const preconisation = preconisationOf(model.core, answers);
+  const simulation = Simulation.of(model.core, state.answers);
   const parts = model.core.questionnaire;
-  const questionnaire = questionnaireOf(model);
-  const trace = traceOf("résultat", questionnaire, answers, preconisation);
-  const read = readOf(questionnaire, answers, preconisation, new Date());
+  const trace = { title: "résultat", ...simulation.trace() };
+  const read = simulation.read(new Date());
   return (
     <>
       <Content
-        result={resultOf(model, answers, preconisation)}
+        result={resultOf(model, simulation)}
         step={{ title: model.result.title, part: parts.length }}
         startLabel={startLabelOf(model, read)}
-        actions={actionsOf(model, state, on)}
+        actions={actionsOf(simulation, state, on)}
         feedback={feedbackOf(model, read)}
       />
       {DebugTrace && (
@@ -82,20 +81,11 @@ type Loading = FirstResult | Promise<FirstResult>;
 // hors de React : chaque rendu de la page relancerait le chargement.
 const loading = new WeakMap<Model, WeakMap<Answers, Promise<FirstResult>>>();
 
-function resultOf(
-  model: Model,
-  answers: Answers,
-  preconisation: Preconisation,
-): Loading {
+function resultOf(model: Model, simulation: Simulation): Loading {
+  const { answers } = simulation;
   const known = loading.get(model)?.get(answers);
   if (known) return known;
-  const read = readOf(
-    questionnaireOf(model),
-    answers,
-    preconisation,
-    new Date(),
-  );
-  const reading = read(model.result.reading);
+  const reading = simulation.read(new Date())(model.result.reading);
   const result = model.result.content({ reading });
   if (!(result instanceof Promise)) return result;
   const byAnswers = loading.get(model) ?? new WeakMap();
@@ -126,12 +116,16 @@ type Placement = "below" | "above";
 
 type On = Pick<Props, "onReopen" | "onLock" | "onRestart">;
 
-// Ce que font les boutons : rouvrir ce questionnaire, verrouiller ses réponses
-// (`lock`), ou recommencer.
-function actionsOf(model: Model, state: QuestionnaireState, on: On): Actions {
+// Ce que font les boutons : rouvrir ce questionnaire, verrouiller ses réponses,
+// ou recommencer.
+function actionsOf(
+  simulation: Simulation,
+  state: QuestionnaireState,
+  on: On,
+): Actions {
   return {
     onReopen: () => on.onReopen(state),
-    onLock: () => on.onLock(lock(model, state.answers)),
+    onLock: () => on.onLock(simulation.lock()),
     onRestart: on.onRestart,
   };
 }

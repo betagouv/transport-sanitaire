@@ -7,7 +7,7 @@ import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it } from "vitest";
 import { SEEDS } from "../../../core/models/eligibilite/seeds-catalogue";
-import type { Seed } from "../../../core/socle/seeds/seed";
+import type { Seed } from "../../../core/socle/simulation/seed";
 import { model } from "../../../front/models/eligibilite";
 import { catalogueResultats } from "../../../front/models/eligibilite/r2/catalogue-resultats";
 import { rangerRattachement } from "../../../front/socle/rattachement/session";

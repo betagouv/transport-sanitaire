@@ -10,10 +10,10 @@
 import { describe, expect, it } from "vitest";
 import type { Questions } from "../../../core/models/eligibilite/declarations/questions";
 import type { Questionnaire } from "../../../core/socle/questionnaire-engine/questionnaire";
+import { Simulation } from "../../../core/socle/simulation/simulation";
 import { model } from "../../../front/models/eligibilite";
 import { texteDeLaFichePositive } from "../../../front/models/eligibilite/r2/fiche-positive/texte-de-la-fiche-positive";
 import { traceDuResultat } from "../../../front/models/eligibilite/r2/trace-du-resultat";
-import { questionnaireOf } from "../../../front/socle/simulateur/questionnaire-of";
 import { badges, catalogue } from "./fiches-du-test";
 import { lienAld } from "./lien-ald";
 import {
@@ -118,7 +118,8 @@ const PROFILS = [
   ],
 ] as const;
 
-const lire = (reponses: Reponses) => questionnaireOf(model).readWith(reponses);
+const lire = (reponses: Reponses) =>
+  Simulation.of(model.core, reponses).reading;
 
 const posees = (read: ReturnType<Questionnaire["readWith"]>) =>
   read

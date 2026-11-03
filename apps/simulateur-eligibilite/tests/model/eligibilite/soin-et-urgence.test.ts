@@ -6,9 +6,9 @@ import { describe, expect, it } from "vitest";
 import { model } from "../../../core/models/eligibilite";
 import type { Questions } from "../../../core/models/eligibilite/declarations/questions";
 import { SEEDS } from "../../../core/models/eligibilite/seeds-catalogue";
-import { preconisationOf } from "../../../core/socle/model";
 import type { Answers } from "../../../core/socle/questionnaire-engine/question/question";
 import { Questionnaire } from "../../../core/socle/questionnaire-engine/questionnaire";
+import { preconisationOf } from "../../../core/socle/simulation/simulation";
 import { MATERNITE_ETABLIE } from "./reponses-de-la-branche";
 
 type Reponses = Answers<Questions>;

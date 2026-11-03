@@ -2,10 +2,10 @@
 // cibles de la préconisation, et le jour du résultat. Une condition s'y lit
 // comme dans un fait (`given.ts`).
 
-import type { ValidatedAnswers } from "./answers/validated-answers.ts";
-import type { Reading } from "./conditions/condition.ts";
-import { LocalDateTime } from "./conditions/local-date-time.ts";
-import { validatedReading } from "./conditions/what-a-condition-sees.ts";
+import type { ValidatedAnswers } from "../questionnaire-engine/answers/validated-answers.ts";
+import type { Reading } from "../questionnaire-engine/conditions/condition.ts";
+import { LocalDateTime } from "../questionnaire-engine/conditions/local-date-time.ts";
+import { validatedReading } from "../questionnaire-engine/conditions/what-a-condition-sees.ts";
 
 /** Ce qu'un résultat sait : ses réponses, sa préconisation, son jour. */
 export type ResultSources = {

@@ -9,7 +9,7 @@ import {
   type Value,
 } from "../../../core/socle/questionnaire-engine/conditions/condition";
 import { Questionnaire } from "../../../core/socle/questionnaire-engine/questionnaire";
-import { resultReading } from "../../../core/socle/questionnaire-engine/result-reading";
+import { resultReading } from "../../../core/socle/simulation/result-reading";
 import {
   type Lecture,
   LU_PAR_R2,

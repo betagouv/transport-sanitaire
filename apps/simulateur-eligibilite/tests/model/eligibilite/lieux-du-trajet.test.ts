@@ -7,13 +7,13 @@ import { model } from "../../../core/models/eligibilite";
 import type { Questions } from "../../../core/models/eligibilite/declarations/questions";
 import { projectionCerfa } from "../../../core/models/eligibilite/p3/lieux-du-trajet";
 import { SEEDS } from "../../../core/models/eligibilite/seeds-catalogue";
-import { preconisationOf } from "../../../core/socle/model";
 import type { AskedQuestion } from "../../../core/socle/questionnaire-engine/question/asked/question";
 import type {
   Answers,
   AnyCibles,
 } from "../../../core/socle/questionnaire-engine/question/question";
 import { Questionnaire } from "../../../core/socle/questionnaire-engine/questionnaire";
+import { preconisationOf } from "../../../core/socle/simulation/simulation";
 import { ciblesValant } from "./traces-du-prescripteur";
 
 type Reponses = Answers<Questions>;

@@ -17,13 +17,13 @@ import {
 import { cible } from "../../../core/models/eligibilite/evaluation-des-regles";
 import { CATALOGUE_DES_FAITS } from "../../../core/models/eligibilite/faits";
 import { Fait } from "../../../core/socle";
-import { preconisationOf } from "../../../core/socle/model";
 import { ValidatedAnswers } from "../../../core/socle/questionnaire-engine/answers/validated-answers";
 import {
   type Answers,
   pagesOf,
 } from "../../../core/socle/questionnaire-engine/question/question";
 import { Questionnaire } from "../../../core/socle/questionnaire-engine/questionnaire";
+import { preconisationOf } from "../../../core/socle/simulation/simulation";
 
 type Reponses = Answers<Questions>;
 type Critere = Questions["Q1.2"][number];

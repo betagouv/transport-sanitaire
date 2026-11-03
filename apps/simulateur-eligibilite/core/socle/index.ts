@@ -35,4 +35,4 @@ export {
   type Unanswered,
 } from "./questionnaire-engine/question/question.ts";
 export { Questionnaire } from "./questionnaire-engine/questionnaire.ts";
-export type { Seed } from "./seeds/seed.ts";
+export type { Seed } from "./simulation/seed.ts";

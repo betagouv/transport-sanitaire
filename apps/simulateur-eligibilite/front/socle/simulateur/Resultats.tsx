@@ -8,30 +8,19 @@
 // du document.
 
 import type { ComponentType, ReactNode } from "react";
-import type { Preconisation } from "../../../core/socle/model";
+import type { Read } from "../../../core/socle/questionnaire-engine/conditions/condition";
+import type { QuestionnaireState } from "../../../core/socle/questionnaire-engine/questionnaire";
 import {
-  type Read,
-  readIn,
-} from "../../../core/socle/questionnaire-engine/conditions/condition";
-import {
-  type Answers,
-  type AnyCibles,
-  pagesOf,
-} from "../../../core/socle/questionnaire-engine/question/question";
-import type {
-  Questionnaire,
-  QuestionnaireState,
-} from "../../../core/socle/questionnaire-engine/questionnaire";
-import { resultReading } from "../../../core/socle/questionnaire-engine/result-reading";
+  type Locked,
+  Simulation,
+} from "../../../core/socle/simulation/simulation";
 import { CerfaDocument } from "../cerfa/CerfaDocument";
 import { dtoFrom } from "../cerfa-mapping";
 import type { CerfaInput, Model } from "../model";
 import type { DebugTraceProps } from "../questionnaire-engine/QuestionnaireForm";
 import { Stepper } from "../questionnaire-engine/Stepper";
 import { FeedbackLink, type FeedbackOffer, feedbackOf } from "./FeedbackLink";
-import { questionnaireOf } from "./questionnaire-of";
 import "./first-resultat.css";
-import type { Locked } from "./start";
 
 type Props = {
   model: Model;
@@ -54,16 +43,10 @@ export function CerfaResultat({
   onReopen,
   onRestart,
 }: Props & { locked: Locked; completedAt: Date }) {
-  const { answers } = state;
-  const part = model.core.complement;
   const { title, Resultat, reading: lecture } = model.cerfa;
-  const all = questionnaireOf(model, [
-    ...pagesOf(model.core.questionnaire),
-    ...part.pages,
-  ]);
-  const { cibles } = locked.preconisation;
-  const trace = traceOf("cerfa", all, answers, locked.preconisation, cibles);
-  const read = readOf(all, answers, locked.preconisation, completedAt);
+  const simulation = Simulation.afterLock(model.core, locked, state.answers);
+  const trace = { title: "cerfa", ...simulation.trace() };
+  const read = simulation.read(completedAt);
   const reading = read(lecture);
   return (
     <Frame
@@ -108,40 +91,6 @@ function CerfaActions({
       </div>
     </div>
   );
-}
-
-/**
- * Ce que lit un résultat : les questions validées de ce questionnaire, avec ces
- * faits et ces cibles, au jour `on`.
- */
-export function readOf(
-  questionnaire: Questionnaire,
-  answers: Answers,
-  { faits, cibles }: Preconisation,
-  on: Date,
-): Read {
-  const { validated } = questionnaire.readWith(answers, cibles);
-  return readIn(resultReading({ validated, faits, cibles, on }));
-}
-
-// Ce que la trace de debug lit sous un résultat : les pages affichées, les
-// questions validées, et la préconisation. `locked` : les cibles figées, que
-// les questions d'après le verrou lisent.
-export function traceOf(
-  title: string,
-  questionnaire: Questionnaire,
-  answers: Answers,
-  preconisation: Preconisation,
-  locked?: AnyCibles,
-): DebugTraceProps {
-  const read = questionnaire.readWith(answers, locked);
-  return {
-    title,
-    pages: read.askedPages(),
-    answers,
-    validated: read.validated.toJSON(),
-    ...preconisation,
-  };
 }
 
 type ButtonProps = { onClick: () => void; children: ReactNode };

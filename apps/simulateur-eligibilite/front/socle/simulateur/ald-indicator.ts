@@ -3,12 +3,11 @@
 // Le modèle dit quel parcours compte et lequel finit à la caisse ; le socle
 // compte les pages et les questions.
 
-import { preconisationOf } from "../../../core/socle/model";
 import type { Answers } from "../../../core/socle/questionnaire-engine/question/question";
+import type { Reading } from "../../../core/socle/questionnaire-engine/questionnaire";
+import { Simulation } from "../../../core/socle/simulation/simulation";
 import { NomEvenement, trackEvenement } from "../analytics/evenements";
 import type { AldIndicator, Model } from "../model";
-import { questionnaireOf } from "./questionnaire-of";
-import { readOf } from "./Resultats";
 
 /**
  * Le verdict d'un parcours ALD, et ce qu'il a posé de pages et de questions
@@ -27,11 +26,10 @@ export function aldPathwayOf(
 ): AldPathway | null {
   const indicator = model.aldIndicator;
   if (!indicator) return null;
-  const questionnaire = questionnaireOf(model);
-  const preconisation = preconisationOf(model.core, answers);
-  const read = readOf(questionnaire, answers, preconisation, new Date());
+  const simulation = Simulation.of(model.core, answers);
+  const read = simulation.read(new Date());
   if (!read(indicator.counted)) return null;
-  const { pages, questions } = countOf(model, indicator, answers);
+  const { pages, questions } = countOf(model, indicator, simulation.reading);
   const caisse = read(indicator.caisse);
   return {
     verdict: NomEvenement[verdictOf(caisse, pages, questions, indicator.limit)],
@@ -58,14 +56,13 @@ type AldVerdict =
 function countOf(
   model: Model,
   { parts, subFields = [] }: AldIndicator,
-  answers: Answers,
+  reading: Reading,
 ) {
   const counted = new Set(
     model.core.questionnaire
       .filter((part) => parts.includes(part.id))
       .flatMap((part) => part.pages.map((page) => page.id)),
   );
-  const reading = questionnaireOf(model).readWith(answers);
   const pages = reading.askedPages().filter((page) => counted.has(page.id));
   const notCounted = new Set(subFields);
   const questions = pages

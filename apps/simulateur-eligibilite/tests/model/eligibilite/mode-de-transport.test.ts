@@ -8,12 +8,12 @@
 import { describe, expect, it } from "vitest";
 import { model } from "../../../core/models/eligibilite";
 import type { Questions } from "../../../core/models/eligibilite/declarations/questions";
-import { preconisationOf } from "../../../core/socle/model";
 import {
   type Answers,
   pagesOf,
 } from "../../../core/socle/questionnaire-engine/question/question";
 import { Questionnaire } from "../../../core/socle/questionnaire-engine/questionnaire";
+import { preconisationOf } from "../../../core/socle/simulation/simulation";
 
 type Reponses = Answers<Questions>;
 

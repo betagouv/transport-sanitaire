@@ -10,7 +10,6 @@ import type { Faits } from "../../../core/models/eligibilite/declarations/faits"
 import type { Questions } from "../../../core/models/eligibilite/declarations/questions";
 import { SEEDS } from "../../../core/models/eligibilite/seeds-catalogue";
 import { cibleValues } from "../../../core/socle/decision-engine/cible";
-import { preconisationOf } from "../../../core/socle/model";
 import {
   type Read,
   readIn,
@@ -20,7 +19,8 @@ import {
   pagesOf,
 } from "../../../core/socle/questionnaire-engine/question/question";
 import { Questionnaire } from "../../../core/socle/questionnaire-engine/questionnaire";
-import { resultReading } from "../../../core/socle/questionnaire-engine/result-reading";
+import { resultReading } from "../../../core/socle/simulation/result-reading";
+import { preconisationOf } from "../../../core/socle/simulation/simulation";
 import type { Rubrique } from "../../../front/models/eligibilite/r3/rubriques/rubrique";
 import type { Cerfa, CerfaDto } from "../../../front/socle/cerfa/cerfa";
 import { generateCerfa } from "../../../front/socle/cerfa/generate-cerfa";

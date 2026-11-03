@@ -12,7 +12,7 @@ import {
 } from "../../../core/models/eligibilite/declarations/faits";
 import { Cible, Fait, Questionnaire, type Value } from "../../../core/socle";
 import type { CibleValues } from "../../../core/socle/decision-engine/cible";
-import { resultReading } from "../../../core/socle/questionnaire-engine/result-reading";
+import { resultReading } from "../../../core/socle/simulation/result-reading";
 import type { Precisions } from "../../../front/models/eligibilite/r2/precisions-du-resultat";
 import type { Trace } from "../../../front/models/eligibilite/r2/trace-du-resultat";
 
