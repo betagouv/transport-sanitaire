@@ -9,17 +9,17 @@
 // Sa provenance cite ce que lit la condition, puis la raison : « Q2.1.g :
 // « 2_SORTIE », Q2.2.1 : « 10_RETOUR_PENITENTIAIRE ». Sortie définitive vers
 // la prison. ». Une réponse absente se cite « sans réponse ». Un fait place la
-// règle avec `applique` (`fait-builder.ts`).
+// règle avec `applique` (`fait/declared.ts`).
 
 import {
   type Condition,
   type Reading,
   type Reads,
   Value,
-} from "../questionnaire-engine/condition.ts";
-import type { Box, Choice } from "../questionnaire-engine/given-answers.ts";
-import type { Answer } from "../questionnaire-engine/question.ts";
-import type { ValidatedAnswer } from "../questionnaire-engine/validated-answers.ts";
+} from "../../questionnaire-engine/condition.ts";
+import type { Box, Choice } from "../../questionnaire-engine/given-answers.ts";
+import type { Answer } from "../../questionnaire-engine/question.ts";
+import type { ValidatedAnswer } from "../../questionnaire-engine/validated-answers.ts";
 import { Fait } from "./fait.ts";
 
 /** La règle n'établit pas le fait : elle laisse la main à la suivante. */

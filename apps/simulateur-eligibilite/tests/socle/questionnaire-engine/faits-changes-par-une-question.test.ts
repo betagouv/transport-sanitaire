@@ -15,8 +15,8 @@ import {
   questionsOf,
   unFait,
 } from "../../../core/socle";
-import { DecisionGraph } from "../../../core/socle/decision-engine/decision-graph";
-import { decisionGraphOf } from "../../../core/socle/decision-engine/publicodes";
+import { decisionGraphOf } from "../../../core/socle/decision-engine/compute-the-cibles";
+import { DecisionGraph } from "../../../core/socle/decision-engine/decision-graph/graph";
 import { faitsChangedBy } from "../../../core/socle/questionnaire-engine/faits-changed-by";
 import { pagesOf } from "../../../core/socle/questionnaire-engine/question";
 import { modeleDeTest } from "../modele-de-test";

@@ -1,14 +1,14 @@
 import { describe, expect, it } from "vitest";
 import { type Cible, Fait } from "../../../core/socle";
 import {
-  DecisionGraph,
-  type FaitValue,
-} from "../../../core/socle/decision-engine/decision-graph";
-import {
   decisionGraphOf,
   publicodesEngine,
   type Rules,
-} from "../../../core/socle/decision-engine/publicodes";
+} from "../../../core/socle/decision-engine/compute-the-cibles";
+import {
+  DecisionGraph,
+  type FaitValue,
+} from "../../../core/socle/decision-engine/decision-graph/graph";
 
 // Le graphe de décision, sur des règles écrites ici : chaque mécanisme que le
 // compilateur traduit vaut ce que publicodes calcule, pour chaque façon dont

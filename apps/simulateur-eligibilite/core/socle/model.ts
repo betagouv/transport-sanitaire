@@ -5,7 +5,7 @@
 // Le socle déroule le parcours et ne lit aucune clé du modèle. Il transporte les
 // réponses, les faits et les cibles de l'un à l'autre.
 
-import type { DecisionGraphData } from "./decision-engine/decision-graph.ts";
+import type { DecisionGraphData } from "./decision-engine/decision-graph/graph.ts";
 import type { Reads } from "./questionnaire-engine/condition.ts";
 import type { GivenAnswers } from "./questionnaire-engine/given-answers.ts";
 import {

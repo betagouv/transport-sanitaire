@@ -28,7 +28,7 @@
 import type {
   DecisionGraphData,
   FaitValue,
-} from "../decision-engine/decision-graph.ts";
+} from "../decision-engine/decision-graph/graph.ts";
 import { Askability } from "./askability.ts";
 import { flattened, NOTHING, type Reads, readsOf } from "./condition.ts";
 import type { AnyCibles, Page, Validated } from "./question.ts";

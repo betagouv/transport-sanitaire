@@ -11,23 +11,23 @@
 // Les règles s'appliquent dans l'ordre : la première qui établit le fait
 // l'emporte. `sinon` clôt le fait : si aucune règle ne l'établit, il reste
 // inconnu avec cette provenance. Le fait lit ce que lisent ses règles, et le
-// catalogue le calcule (`fait-catalogue.ts`).
+// catalogue le calcule (`establish-the-faits.ts`).
 
 import {
   type Condition,
   NOTHING,
   readsOf,
   Value,
-} from "../questionnaire-engine/condition.ts";
-import type { Box } from "../questionnaire-engine/given-answers.ts";
-import type { Answer } from "../questionnaire-engine/question.ts";
+} from "../../questionnaire-engine/condition.ts";
+import type { Box } from "../../questionnaire-engine/given-answers.ts";
+import type { Answer } from "../../questionnaire-engine/question.ts";
 import { Fait } from "./fait.ts";
 import {
   type AnswerOf,
   type PassesOn,
   type RegleDeFait,
   regles,
-} from "./regle-de-fait.ts";
+} from "./regle.ts";
 
 /** Un fait du catalogue : son nom, et la valeur qui le calcule. */
 export class FaitDeclare<Nom extends string, Of> extends Value<Of> {

@@ -8,9 +8,9 @@
 
 import Engine, { type RawPublicodes } from "publicodes";
 import { Cible } from "./cible.ts";
-import type { DecisionGraphData } from "./decision-graph.ts";
-import { compileDecisionGraph } from "./decision-graph-compiler.ts";
-import type { Fait } from "./fait.ts";
+import { compileDecisionGraph } from "./compile-the-decision-graph.ts";
+import type { DecisionGraphData } from "./decision-graph/graph.ts";
+import type { Fait } from "./fait/fait.ts";
 
 /** Les règles d'un modèle, par nom : les faits, puis les cibles. */
 export type Rules = RawPublicodes<string>;

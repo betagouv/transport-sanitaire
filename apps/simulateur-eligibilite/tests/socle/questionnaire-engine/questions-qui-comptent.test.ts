@@ -18,7 +18,7 @@ import {
   Relevance,
   unFait,
 } from "../../../core/socle";
-import { decisionGraphOf } from "../../../core/socle/decision-engine/publicodes";
+import { decisionGraphOf } from "../../../core/socle/decision-engine/compute-the-cibles";
 
 describe("les questions qui comptent", () => {
   it("pose la distance quand la taille peut encore se poser", () => {

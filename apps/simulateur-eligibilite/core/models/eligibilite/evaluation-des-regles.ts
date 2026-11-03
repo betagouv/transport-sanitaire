@@ -4,7 +4,7 @@
 import {
   publicodesEngine,
   type Rules,
-} from "../../socle/decision-engine/publicodes.ts";
+} from "../../socle/decision-engine/compute-the-cibles.ts";
 import { CIBLES, type Cibles } from "./declarations/cibles.ts";
 import type { Faits } from "./declarations/faits.ts";
 import rules from "./rules/regles.json" with { type: "json" };

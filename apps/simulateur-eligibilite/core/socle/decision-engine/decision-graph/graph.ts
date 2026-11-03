@@ -1,6 +1,6 @@
 // Le graphe de décision : ce que vaut chaque règle d'un modèle, pour chaque
 // façon dont ses faits peuvent valoir oui, non ou rien (#196). Il se compile
-// une fois depuis les règles (`decision-graph-compiler.ts`), s'écrit en JSON à
+// une fois depuis les règles (`compile-the-decision-graph.ts`), s'écrit en JSON à
 // côté d'elles, et se lit sans publicodes.
 //
 // Un nœud teste un fait, et mène à trois nœuds : le fait vaut oui, non, ou

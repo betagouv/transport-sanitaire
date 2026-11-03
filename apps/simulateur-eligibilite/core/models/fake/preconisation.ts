@@ -2,7 +2,7 @@
 // réponses, et une mise en garde que des règles publicodes décident. Elle ne
 // décide rien du transport.
 
-import { publicodesEngine } from "../../socle/decision-engine/publicodes.ts";
+import { publicodesEngine } from "../../socle/decision-engine/compute-the-cibles.ts";
 import {
   Cible,
   type GivenAnswers,

@@ -6,11 +6,11 @@
 // L'écran a son propre point d'entrée, `front/socle/index.ts`.
 
 export { Cible, cibleValues } from "./decision-engine/cible.ts";
-export type { DecisionGraphData } from "./decision-engine/decision-graph.ts";
-export { Fait } from "./decision-engine/fait.ts";
-export { type FaitDeclare, unFait } from "./decision-engine/fait-builder.ts";
-export { FaitCatalogue } from "./decision-engine/fait-catalogue.ts";
-export { uneRegle } from "./decision-engine/regle-de-fait.ts";
+export type { DecisionGraphData } from "./decision-engine/decision-graph/graph.ts";
+export { FaitCatalogue } from "./decision-engine/establish-the-faits.ts";
+export { type FaitDeclare, unFait } from "./decision-engine/fait/declared.ts";
+export { Fait } from "./decision-engine/fait/fait.ts";
+export { uneRegle } from "./decision-engine/fait/regle.ts";
 export type { CoreModel } from "./model.ts";
 export type { Address } from "./questionnaire-engine/address.ts";
 export {

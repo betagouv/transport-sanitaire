@@ -8,13 +8,13 @@
 // publicodes, dans les tests de chaque modèle.
 
 import type { ASTNode, ParsedRules } from "publicodes";
-import { DecisionDiagram } from "./decision-diagram.ts";
+import { DecisionDiagram } from "./decision-graph/diagram.ts";
 import {
   type DecisionGraphData,
   type GraphNode,
   isTest,
   type RuleValue,
-} from "./decision-graph.ts";
+} from "./decision-graph/graph.ts";
 
 /** Le graphe de ces règles, déjà lues par publicodes. */
 export function compileDecisionGraph(

@@ -1,5 +1,5 @@
 // Le catalogue des faits d'un modèle : la liste de ses faits, chacun déclaré
-// une fois (`fait-builder.ts`). Chaque fait lit les questions validées et, au
+// une fois (`fait/declared.ts`). Chaque fait lit les questions validées et, au
 // besoin, d'autres faits.
 //
 // Le catalogue refuse un fait déclaré deux fois, oublié, ou qui n'est pas du
@@ -15,7 +15,7 @@ import {
   readsOf,
 } from "../questionnaire-engine/condition.ts";
 import type { ValidatedAnswers } from "../questionnaire-engine/validated-answers.ts";
-import type { FaitDeclare } from "./fait-builder.ts";
+import type { FaitDeclare } from "./fait/declared.ts";
 
 /** Les faits d'un modèle, chacun sous son nom et avec sa valeur. */
 export type FaitsDeclares<Faits> = readonly {

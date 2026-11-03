@@ -1,5 +1,5 @@
 // Les nœuds du graphe de décision, et ce qu'on en construit (#196). Le
-// compilateur y combine les règles (`decision-graph-compiler.ts`). Le filtrage
+// compilateur y combine les règles (`compile-the-decision-graph.ts`). Le filtrage
 // (#255) y restreint une règle aux faits qu'on sait déjà, puis regarde quels
 // faits elle teste encore.
 //
@@ -13,7 +13,7 @@ import {
   type GraphNode,
   isTest,
   type RuleValue,
-} from "./decision-graph.ts";
+} from "./graph.ts";
 
 /** Les faits fixés, par leur rang dans le graphe, et ce qu'ils valent. */
 export type FixedFaits = ReadonlyMap<number, FaitValue>;

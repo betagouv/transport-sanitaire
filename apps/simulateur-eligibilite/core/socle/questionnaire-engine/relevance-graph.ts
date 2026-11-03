@@ -1,12 +1,12 @@
 // Le graphe de décision tel que la pertinence le lit (#255) : ses règles
 // restreintes aux faits figés, chacune fermée hors des branches qui la lisent.
 
-import { DecisionDiagram } from "../decision-engine/decision-diagram.ts";
+import { DecisionDiagram } from "../decision-engine/decision-graph/diagram.ts";
 import type {
   DecisionGraphData,
   FaitValue,
   RuleValue,
-} from "../decision-engine/decision-graph.ts";
+} from "../decision-engine/decision-graph/graph.ts";
 import type { Reads } from "./condition.ts";
 
 /** Les faits figés, par leur rang dans le graphe. */

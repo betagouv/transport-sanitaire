@@ -40,7 +40,7 @@ const OUVERT_AU_MODELE = [
   "front/socle",
   "core/socle",
   "core/socle/index",
-  "core/socle/decision-engine/publicodes",
+  "core/socle/decision-engine/compute-the-cibles",
 ];
 
 // Un nom par modèle : celui de l'éditeur, et le modèle de démonstration. Son
@@ -171,7 +171,7 @@ describe("invariants métier", () => {
     expect(
       fautifs,
       "publicodes est l'outil du socle pour décider, derrière un seul " +
-        "fichier : `core/socle/decision-engine/publicodes.ts`. Le reste du " +
+        "fichier : `core/socle/decision-engine/compute-the-cibles.ts`. Le reste du " +
         "socle et le modèle passent par lui. Un autre import lie du code au " +
         "moteur, et rend son remplacement plus cher.",
     ).toEqual([]);

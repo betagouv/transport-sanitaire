@@ -11,7 +11,7 @@
 // les questions validées (`answer-readings.ts`).
 
 import type { Cible } from "../decision-engine/cible.ts";
-import type { Fait } from "../decision-engine/fait.ts";
+import type { Fait } from "../decision-engine/fait/fait.ts";
 import {
   all,
   type Condition,

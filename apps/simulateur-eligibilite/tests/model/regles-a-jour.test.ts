@@ -13,13 +13,13 @@ import { describe, expect, it } from "vitest";
 import { parse } from "yaml";
 import { Fait } from "../../core/socle";
 import {
-  DecisionGraph,
-  type FaitValue,
-} from "../../core/socle/decision-engine/decision-graph";
-import {
   decisionGraphOf,
   publicodesEngine,
-} from "../../core/socle/decision-engine/publicodes";
+} from "../../core/socle/decision-engine/compute-the-cibles";
+import {
+  DecisionGraph,
+  type FaitValue,
+} from "../../core/socle/decision-engine/decision-graph/graph";
 import { racine, texteDe } from "../inspection-des-sources";
 
 describe("les règles de chaque modèle", () => {
