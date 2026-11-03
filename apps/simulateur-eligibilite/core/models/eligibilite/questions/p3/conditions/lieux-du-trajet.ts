@@ -6,11 +6,13 @@
 // seuls son nom et son adresse se saisissent.
 
 import type {
+  Answered,
   Condition,
   GivenAnswers,
+  ReadByObject,
   Value,
 } from "../../../../../socle/index.ts";
-import type { Questions } from "../../catalogue/catalogue.ts";
+import { Q2_2_5 } from "../../p2/questions/q2-2-5.ts";
 import { given, type Inconnu } from "../../question.ts";
 import {
   ENTREES_DES_LIEUX,
@@ -26,21 +28,8 @@ export type { Entrees, Extremite, Nature };
 /** La case du cerfa où se reporte un lieu : le gabarit n'en a que trois. */
 export type Projection = "DOMICILE" | "STRUCTURE_DE_SOINS" | "AUTRE_LIEU";
 
-/** Les questions de chaque lieu. */
-export const QUESTIONS_DU_LIEU = {
-  depart: {
-    nature: "Q3.2.nature",
-    nom: "Q3.2.nom",
-    precision: "Q3.2.precision",
-    adresse: "Q3.2.adresse",
-  },
-  arrivee: {
-    nature: "Q3.3.nature",
-    nom: "Q3.3.nom",
-    precision: "Q3.3.precision",
-    adresse: "Q3.3.adresse",
-  },
-} as const;
+/** La question de la nature d'un lieu, qui la choisit en P3. */
+export type QuestionDeNature = Answered<Nature>;
 
 /** P2 ne fixe pas la nature du lieu : elle se choisit en P3. */
 type NonEtablie = undefined;
@@ -63,8 +52,11 @@ export function natureEtablieDu(
 }
 
 /** La nature du lieu : établie en P2, ou choisie plus tôt en P3. */
-export function natureDu(extremite: Extremite): Value<Nature | Inconnu> {
-  return natureEtChoix(extremite).compute(
+export function natureDu(
+  extremite: Extremite,
+  choisie: QuestionDeNature,
+): Value<Nature | Inconnu> {
+  return natureEtChoix(extremite, choisie).compute(
     ({ etablie, choisie }) => etablie?.nature ?? choisie.value,
   );
 }
@@ -74,8 +66,11 @@ export function natureDu(extremite: Extremite): Value<Nature | Inconnu> {
  * autre lieu y porte sa nature (`CONTRAT_LIEUX_CERFA.json`). Seul l'hébergement
  * que P2 établit, le HTNM, la donne déjà.
  */
-export function precisionAPoser(extremite: Extremite): Condition {
-  return natureEtChoix(extremite).compute(({ etablie, choisie }) => {
+export function precisionAPoser(
+  extremite: Extremite,
+  choisie: QuestionDeNature,
+): Condition {
+  return natureEtChoix(extremite, choisie).compute(({ etablie, choisie }) => {
     const nature = etablie?.nature ?? choisie.value;
     if (nature === "8_AUTRE_LIEU") return true;
     return nature === "5_HEBERGEMENT_NON_MEDICALISE" && etablie === undefined;
@@ -85,10 +80,10 @@ export function precisionAPoser(extremite: Extremite): Condition {
 /** Q2.2.5 situe-t-elle ce lieu à l'étranger ? Q3.2 et Q3.3 ne le découvrent pas. */
 export function aLEtranger(
   extremite: Extremite,
-  reponses: GivenAnswers<Questions>,
+  reponses: GivenAnswers<ReadByObject>,
 ): boolean {
   const lieu = extremite === "depart" ? "1_DEPART" : "2_ARRIVEE";
-  return reponses.question("Q2.2.5").checked(lieu);
+  return reponses.question(Q2_2_5).checked(lieu);
 }
 
 /**
@@ -102,10 +97,10 @@ export function projectionCerfa(nature: Nature): Projection {
 // ---- implémentation ----
 
 // La nature que P2 établit, et celle choisie à Q3.x.nature.
-function natureEtChoix(extremite: Extremite) {
+function natureEtChoix(extremite: Extremite, choisie: QuestionDeNature) {
   return given.all({
     etablie: natureEtablieDu(extremite),
-    choisie: given.question(QUESTIONS_DU_LIEU[extremite].nature).answer(),
+    choisie: given.question(choisie).answer(),
   });
 }
 

@@ -7,14 +7,21 @@
 // Q2.3.4 validée, l'urgence ne se redemande jamais.
 
 import { given, question } from "../../question.ts";
+import { Q2_3_4 } from "./q2-3-4.ts";
+import { Q2_14_ELOIGNEMENT, Q2_14_MOTIF } from "./q2-14.ts";
 
 const uneUrgenceDevoilee = given
-  .question("Q2.3.4")
+  .question(Q2_3_4)
   .answer()
   .compute((urgence) => !urgence.isValidated())
   .and(given.cible("cible_question_urgence_a_afficher").isOui());
 
 export const Q2_12 = question
   .singleChoice("Q2.12", "Attestez-vous que ce transport est urgent ?")
+  // La même question que Q2.3.4, reprise sur la page de branche.
+  .options({
+    "1_OUI": "Oui.",
+    "2_NON": "Non.",
+  })
   .mattersWhile(uneUrgenceDevoilee)
-  .dependsOn("Q2.14.eloignement", "Q2.14.motif");
+  .dependsOn(Q2_14_ELOIGNEMENT, Q2_14_MOTIF);

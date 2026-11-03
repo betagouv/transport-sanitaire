@@ -28,10 +28,16 @@ export { Relevance } from "./questionnaire-engine/does-a-question-still-matter/m
 export type { Address } from "./questionnaire-engine/question/address.ts";
 export type { QuestionContext } from "./questionnaire-engine/question/asked/context.ts";
 export { questionsOf } from "./questionnaire-engine/question/declared/factory.ts";
-export { page } from "./questionnaire-engine/question/declared/page.ts";
 export {
+  type DeclaredPage,
+  page,
+} from "./questionnaire-engine/question/declared/page.ts";
+export {
+  type Answered,
+  type AnswerOf,
+  type AnswersOf,
   afterLock,
-  type QuestionnairePart,
+  type ReadByObject,
   type Unanswered,
 } from "./questionnaire-engine/question/question.ts";
 export { Questionnaire } from "./questionnaire-engine/questionnaire.ts";

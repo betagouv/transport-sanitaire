@@ -11,15 +11,20 @@ import { detailsDuStepper } from "../simulateur/questionnaire";
 
 type Questions = { boisson: "the" | "cafe"; quantite: number };
 
-const OPTIONS = { boisson: { the: "Un thé", cafe: "Un café" } } as const;
-
-const question = questionsOf<Questions>({ options: OPTIONS });
+const question = questionsOf<Questions>();
 
 const PARTS = [
   {
     id: "boisson",
     title: "La boisson",
-    pages: [page("boisson", question.singleChoice("boisson", "Laquelle ?"))],
+    pages: [
+      page(
+        "boisson",
+        question
+          .singleChoice("boisson", "Laquelle ?")
+          .options({ the: "Un thé", cafe: "Un café" }),
+      ),
+    ],
   },
   {
     id: "quantite",

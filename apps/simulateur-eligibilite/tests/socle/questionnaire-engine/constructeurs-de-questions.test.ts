@@ -23,23 +23,12 @@ type Questions = {
 
 type Faits = { readonly chaude: Fait };
 
-const OPTIONS = {
-  boisson: { the: "Un thé", cafe: "Un café", eau: "De l'eau" },
-  accompagnements: {
-    lait: "Du lait",
-    sucre: "Du sucre",
-    citron: "Du citron",
-    rien: "Rien",
-  },
-} as const;
-
 let calculs = 0;
 
 const given = givenOf<Questions, Faits, undefined>();
 const boisson = given.question("boisson").answer();
 
 const question = questionsOf<Questions, Faits>({
-  options: OPTIONS,
   faits: new FaitCatalogue<Faits>(
     ["chaude"],
     [
@@ -57,13 +46,21 @@ const question = questionsOf<Questions, Faits>({
 
 const BOISSON = page(
   "boisson",
-  question.singleChoice("boisson", "Quelle boisson ?"),
+  question
+    .singleChoice("boisson", "Quelle boisson ?")
+    .options({ the: "Un thé", cafe: "Un café", eau: "De l'eau" }),
 );
 
 const ACCOMPAGNEMENTS = page(
   "accompagnements",
   question
     .multipleChoice("accompagnements", "Avec quoi ?")
+    .options({
+      lait: "Du lait",
+      sucre: "Du sucre",
+      citron: "Du citron",
+      rien: "Rien",
+    })
     .labelFrom(({ answers }) =>
       answers.question("boisson").is("the")
         ? "Avec votre thé ?"
@@ -138,15 +135,14 @@ describe("un constructeur", () => {
     expect(lire(bornee)).toMatchObject({ min: 2 });
   });
 
-  it("refuse, au typage, un id d'une autre sorte, une option inconnue ou un réglage d'une autre sorte", () => {
-    // @ts-expect-error « quantite » n'est pas une question à choix.
-    question.singleChoice("quantite", "Combien ?");
+  it("refuse, au typage, une option inconnue ou un réglage d'une autre sorte", () => {
+    const boisson = question
+      .singleChoice("boisson", "Quoi ?")
+      .options({ the: "Un thé", cafe: "Un café" });
     // @ts-expect-error « citron » n'est pas une boisson.
-    question.singleChoice("boisson", "Quoi ?").order("citron");
+    boisson.order("citron");
     // @ts-expect-error « citron » n'est pas une boisson.
-    question.singleChoice("boisson", "Quoi ?").option("citron", (o) => o);
-    // @ts-expect-error « boisson » n'est pas un nombre.
-    question.number("boisson", "Combien ?");
+    boisson.option("citron", (o) => o);
     expect(() =>
       // @ts-expect-error un texte n'a pas de borne.
       question.text("remarque", "Une remarque ?").min(1),
@@ -195,12 +191,10 @@ describe("une incohérence", () => {
 
 describe("les options du catalogue", () => {
   it("refusent une valeur qui a l'air d'un entier : elle passerait avant les autres", () => {
-    const entiers = questionsOf<{ choix: "a" | "1" }>({
-      options: { choix: { a: "A", "1": "Un" } },
-    });
-    expect(() => entiers.singleChoice("choix", "Lequel ?")).toThrow(
-      "« 1 » a l'air d'un entier",
-    );
+    const entiers = questionsOf<{ choix: "a" | "1" }>();
+    expect(() =>
+      entiers.singleChoice("choix", "Lequel ?").options({ a: "A", "1": "Un" }),
+    ).toThrow("« 1 » a l'air d'un entier");
   });
 });
 

@@ -6,4 +6,8 @@ import { given, question } from "../../question.ts";
 
 export const Q2_3_4 = question
   .singleChoice("Q2.3.4", "Attestez-vous que ce transport est urgent ?")
+  .options({
+    "1_OUI": "Oui.",
+    "2_NON": "Non.",
+  })
   .mattersWhile(given.cible("cible_question_urgence_a_afficher").isOui());

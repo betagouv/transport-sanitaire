@@ -6,7 +6,8 @@ import { given, question } from "../../question.ts";
 import { DATE_FUTURE, dansLeFutur } from "../conditions/evenements.ts";
 import { avecUnDocument } from "../conditions/supports-du-complement.ts";
 
-export const Q3_6_1 = question
+// La question, avant la règle qui lit sa réponse.
+const declaree = question
   .date(
     "Q3.6.1",
     "Quelle est la date de l’accident du travail, ou de la première constatation de la maladie professionnelle ?",
@@ -16,5 +17,9 @@ export const Q3_6_1 = question
   )
   .reminder(
     "Le transport est lié à un accident du travail ou à une maladie professionnelle : la case est déjà cochée.",
-  )
-  .inconsistentWhen(dansLeFutur("Q3.6.1"), DATE_FUTURE);
+  );
+
+export const Q3_6_1 = declaree.inconsistentWhen(
+  dansLeFutur(declaree),
+  DATE_FUTURE,
+);

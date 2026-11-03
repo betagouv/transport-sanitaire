@@ -13,13 +13,13 @@ type Questions = {
   note: string;
 };
 
-const OPTIONS = { sens: { aller: "Aller", retour: "Retour" } } as const;
-
-const question = questionsOf<Questions>({ options: OPTIONS });
+const question = questionsOf<Questions>();
 
 const TRAJET = page(
   "trajet",
-  question.singleChoice("sens", "Quel sens ?"),
+  question
+    .singleChoice("sens", "Quel sens ?")
+    .options({ aller: "Aller", retour: "Retour" }),
   question.number("nombre", "Combien ?").dependsOn("sens"),
   question
     .checkbox("accompagne", "Accompagné.", "Oui, accompagné.")

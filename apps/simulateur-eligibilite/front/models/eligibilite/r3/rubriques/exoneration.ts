@@ -2,7 +2,7 @@
 // (Q3.7). Un cas coché donne Oui, « Aucun autre cas » donne Non. Sans Q3.7,
 // posée seulement pour une hospitalisation, les deux restent vides (D-136).
 
-import { given } from "../../../../../core/models/eligibilite/questions/question";
+import { given } from "../../../../../core/models/eligibilite/questions/reponses";
 import type { Rubrique } from "./rubrique";
 
 export type Exoneration = {

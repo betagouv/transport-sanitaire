@@ -7,7 +7,7 @@ import { PDFDict, PDFDocument } from "pdf-lib";
 import { model } from "../../../../core/models/eligibilite";
 import type { Cibles } from "../../../../core/models/eligibilite/cibles/noms";
 import type { Faits } from "../../../../core/models/eligibilite/faits/noms";
-import type { Questions } from "../../../../core/models/eligibilite/questions/catalogue/catalogue";
+import type { Questions } from "../../../../core/models/eligibilite/questions/reponses";
 import { SEEDS } from "../../../../core/models/eligibilite/seeds-catalogue";
 import { cibleValues } from "../../../../core/socle/decision-engine/cible";
 import {

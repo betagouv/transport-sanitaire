@@ -11,7 +11,7 @@
 // cas qui la montre (D-224). Ex. : Q2.3.3 ne dit la série qu'à la fiche
 // négative ; pour une issue acceptée, elle ne compte pas.
 
-import { given } from "../../../../../core/models/eligibilite/questions/question";
+import { given } from "../../../../../core/models/eligibilite/questions/reponses";
 import type { Condition, Value } from "../../../../../core/socle";
 
 /** Les réponses ne prouvent pas ce cas : la précision ne s'écrit pas. */

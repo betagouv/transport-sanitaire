@@ -5,7 +5,7 @@
 // `questions/question.ts` : un fait ne lit pas de cible.
 
 import { givenOf } from "../../../socle/index.ts";
-import type { Questions } from "../questions/catalogue.ts";
+import type { Questions } from "../questions/reponses.ts";
 import type { Faits } from "./noms.ts";
 
 const given = givenOf<Questions, Faits>();

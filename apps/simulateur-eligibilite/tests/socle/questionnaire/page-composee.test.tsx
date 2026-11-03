@@ -14,18 +14,21 @@ type Questions = {
   suite: "oui" | "non";
 };
 
-const OPTIONS = {
-  boisson: { cafe: "Café", the: "Thé" },
-  taille: { petite: "Petite", grande: "Grande" },
-  suite: { oui: "Oui", non: "Non" },
-} as const;
-
-const question = questionsOf<Questions>({ options: OPTIONS });
+const question = questionsOf<Questions>();
 const given = givenOf<Questions>();
 
-const BOISSON = question.singleChoice("boisson", "Quelle boisson ?");
-const TAILLE = question.singleChoice("taille", "Quelle taille ?");
-const SUITE = page("suite", question.singleChoice("suite", "Une suite ?"));
+const BOISSON = question
+  .singleChoice("boisson", "Quelle boisson ?")
+  .options({ cafe: "Café", the: "Thé" });
+const TAILLE = question
+  .singleChoice("taille", "Quelle taille ?")
+  .options({ petite: "Petite", grande: "Grande" });
+const SUITE = page(
+  "suite",
+  question
+    .singleChoice("suite", "Une suite ?")
+    .options({ oui: "Oui", non: "Non" }),
+);
 
 const suivant = () => screen.getByRole("button", { name: "Suivant" });
 const laSuite = () => screen.findByRole("group", { name: "Une suite ?" });

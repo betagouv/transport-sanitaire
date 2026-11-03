@@ -11,12 +11,25 @@
 // les reçoit de `ENTREES_DES_LIEUX`, un rappel de `entreesDe`.
 
 import type {
+  Answered,
+  AnswerOf,
   GivenAnswer,
   GivenAnswers,
+  ReadByObject,
   Value,
 } from "../../../../../socle/index.ts";
-import type { OPTIONS, Questions } from "../../catalogue/catalogue.ts";
+import { Q1_3 } from "../../p1/questions/q1-3.ts";
+import { Q2_1, Q2_1_G } from "../../p2/questions/q2-1.ts";
+import { Q2_2_1 } from "../../p2/questions/q2-2-1.ts";
+import { Q2_2_1_A } from "../../p2/questions/q2-2-1-a.ts";
+import { Q2_2_1_CADRE } from "../../p2/questions/q2-2-1-cadre.ts";
+import { Q2_5 } from "../../p2/questions/q2-5.ts";
+import { Q2_6 } from "../../p2/questions/q2-6.ts";
+import { Q2_8_5 } from "../../p2/questions/q2-8-5.ts";
+import { Q2_13_DEPART } from "../../p2/questions/q2-13.ts";
 import { given } from "../../question.ts";
+import { Q3_1_2 } from "../questions/q3-1-2.ts";
+import type { Nature } from "./natures-du-lieu.ts";
 import {
   type Etablie,
   type Lieux,
@@ -27,46 +40,51 @@ import {
 
 export type Extremite = "depart" | "arrivee";
 
-/** La nature d'un lieu, du domicile à l'autre lieu. */
-export type Nature = keyof (typeof OPTIONS)["Q3.2.nature"];
-
-export type { Etablie };
+export type { Etablie, Nature };
 
 /** Les natures que P2 établit, lieu par lieu. */
 type Etablies = { readonly depart?: Etablie; readonly arrivee?: Etablie };
 
 /** Les réponses de P2 dont les lieux se tirent, chacune sous son nom. */
-const IDS = {
-  soins: "Q1.3",
-  motif: "Q2.1",
-  sousType: "Q2.1.g",
-  situations: "Q2.2.1",
-  sejour: "Q2.2.1.cadre",
-  enPermission: "Q2.2.1.a",
-  transfert: "Q2.5",
-  contexte: "Q2.6",
-  repetition: "Q2.8.5",
-  departDeLEntree: "Q2.13.depart",
-  sens: "Q3.1.2",
+const LUES = {
+  soins: Q1_3,
+  motif: Q2_1,
+  sousType: Q2_1_G,
+  situations: Q2_2_1,
+  sejour: Q2_2_1_CADRE,
+  enPermission: Q2_2_1_A,
+  transfert: Q2_5,
+  contexte: Q2_6,
+  repetition: Q2_8_5,
+  departDeLEntree: Q2_13_DEPART,
+  sens: Q3_1_2,
 } as const;
 
 /** Ces réponses, lues sous leur nom. */
 export type Entrees = {
-  readonly [Nom in keyof typeof IDS]: GivenAnswer<Questions[(typeof IDS)[Nom]]>;
+  readonly [Nom in keyof typeof LUES]: GivenAnswer<
+    AnswerOf<(typeof LUES)[Nom]>
+  >;
 };
 
 /** Les entrées des lieux, telles qu'une garde les lit à sa place. */
 export const ENTREES_DES_LIEUX = given.all(
   Object.fromEntries(
-    Object.entries(IDS).map(([nom, id]) => [nom, given.question(id).answer()]),
+    Object.entries(LUES).map(([nom, lue]) => [
+      nom,
+      given.question(lue).answer(),
+    ]),
   ),
-  // `Object.fromEntries` perd les noms : chacun garde la réponse de son id.
+  // `Object.fromEntries` perd les noms : chacun garde la réponse de sa question.
 ) as unknown as Value<Entrees>;
 
 /** Les entrées des lieux, lues sur les réponses d'un rappel. */
-export function entreesDe(answers: GivenAnswers<Questions>): Entrees {
+export function entreesDe(answers: GivenAnswers<ReadByObject>): Entrees {
   return Object.fromEntries(
-    Object.entries(IDS).map(([nom, id]) => [nom, answers.question(id)]),
+    (Object.entries(LUES) as [string, Answered][]).map(([nom, lue]) => [
+      nom,
+      answers.question(lue),
+    ]),
   ) as unknown as Entrees;
 }
 

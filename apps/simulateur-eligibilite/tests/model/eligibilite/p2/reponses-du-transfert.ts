@@ -3,7 +3,7 @@
 
 import { model } from "../../../../core/models/eligibilite";
 import type { Faits } from "../../../../core/models/eligibilite/faits/noms";
-import type { Questions } from "../../../../core/models/eligibilite/questions/catalogue/catalogue";
+import type { Questions } from "../../../../core/models/eligibilite/questions/reponses";
 import {
   type Answers,
   pagesOf,

@@ -8,15 +8,12 @@ import { afficher } from "./afficher";
 
 type Questions = { besoin: "verifier" | "prescrire" };
 
-const OPTIONS = {
-  besoin: { verifier: "Vérifier", prescrire: "Prescrire" },
-} as const;
-
-const question = questionsOf<Questions>({ options: OPTIONS });
+const question = questionsOf<Questions>();
 
 const besoin = () =>
   question
     .singleChoice("besoin", "Quel est votre besoin ?")
+    .options({ verifier: "Vérifier", prescrire: "Prescrire" })
     .option("verifier", (option) => option.description("Environ 3 minutes"));
 
 describe("libellés d'options en gras", () => {

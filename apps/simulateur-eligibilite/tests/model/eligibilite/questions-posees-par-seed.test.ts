@@ -3,7 +3,7 @@
 // le parcours : elle se justifie par ce que montre le résultat (D-220 à D-224).
 
 import { describe, expect, it } from "vitest";
-import type { Questions } from "../../../core/models/eligibilite/questions/catalogue/catalogue";
+import type { Questions } from "../../../core/models/eligibilite/questions/reponses";
 import type { Answers } from "../../../core/socle/questionnaire-engine/question/question";
 import { Questionnaire } from "../../../core/socle/questionnaire-engine/questionnaire";
 import { Simulation } from "../../../core/socle/simulation/simulation";

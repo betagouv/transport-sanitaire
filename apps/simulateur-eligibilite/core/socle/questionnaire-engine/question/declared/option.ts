@@ -1,6 +1,6 @@
-// Les options d'une question à choix déclarée. Elles viennent du catalogue de
-// l'éditeur, d'où viennent leurs valeurs et leurs libellés. Le modèle en règle
-// chacune par une lambda, tous ses réglages au même endroit :
+// Les options d'une question à choix déclarée : leurs valeurs et leurs
+// libellés, que la question déclare (`.options`). Le modèle en règle chacune
+// par une lambda, tous ses réglages au même endroit :
 //
 //   .option("6_SEANCE", (option) => option.description("…").offeredWhen(…))
 //
@@ -30,6 +30,11 @@ export class DeclaredOption<Questions extends AnyQuestions, Cibles, Faits> {
 
   get value(): string {
     return this.#settings.value;
+  }
+
+  /** Son libellé déclaré, avant celui du moment (`labelFrom`). */
+  get label(): string {
+    return this.#settings.label;
   }
 
   /** Ce que lisent ses gardes (`offeredWhen`). */
@@ -100,7 +105,7 @@ export class DeclaredOption<Questions extends AnyQuestions, Cibles, Faits> {
 }
 
 /**
- * Les options d'une question, dans l'ordre du catalogue, ou dans celui que le
+ * Les options d'une question, dans l'ordre déclaré, ou dans celui que le
  * modèle choisit. L'ordre ne retire rien : une option hors de l'ordre se règle
  * encore, et peut servir d'option exclusive.
  */
@@ -126,6 +131,13 @@ export class DeclaredOptions<Questions extends AnyQuestions, Cibles, Faits> {
   ) {
     this.#options = options;
     this.#order = order;
+  }
+
+  /** Le libellé déclaré de chaque option, par valeur. */
+  get labels(): Readonly<Record<string, string>> {
+    return Object.fromEntries(
+      this.#options.map(({ value, label }) => [value, label]),
+    );
   }
 
   /** Ce que lisent les gardes de toutes ses options. */

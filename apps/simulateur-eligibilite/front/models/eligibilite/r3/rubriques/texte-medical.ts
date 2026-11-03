@@ -8,9 +8,17 @@
 // prescripteur (Q3.4) a sa propre cellule : le cerfa la joint au texte, et la
 // retire faute de place. Le point final va au dernier des deux.
 
-import { OPTIONS } from "../../../../../core/models/eligibilite/questions/catalogue/catalogue";
-import { given } from "../../../../../core/models/eligibilite/questions/question";
-import type { Address, Unanswered, Value } from "../../../../../core/socle";
+import { Q1_1 } from "../../../../../core/models/eligibilite/questions/p1/questions/q1-1";
+import { Q1_2 } from "../../../../../core/models/eligibilite/questions/p1/questions/q1-2";
+import { Q1_3 } from "../../../../../core/models/eligibilite/questions/p1/questions/q1-3";
+import { Q2_1 } from "../../../../../core/models/eligibilite/questions/p2/questions/q2-1";
+import { given } from "../../../../../core/models/eligibilite/questions/reponses";
+import type {
+  Address,
+  AnswerOf,
+  Unanswered,
+  Value,
+} from "../../../../../core/socle";
 import type { Rubrique } from "./rubrique";
 import { adresseEnParties } from "./trajet";
 
@@ -122,7 +130,7 @@ const CONTRAT = {
 // La saisie du prescripteur la remplace, sans prendre la forme des segments.
 const VARIABLE = "[précision du prescripteur]";
 
-type Besoin = keyof (typeof OPTIONS)["Q1.2"];
+type Besoin = AnswerOf<typeof Q1_2>[number];
 
 // Les critères d'ambulance prennent le texte court du contrat (D-142).
 const CRITERES_D_AMBULANCE: Partial<Record<Besoin, string>> = {
@@ -139,20 +147,19 @@ const SANS_SOIN: readonly string[] = ["14_AUTRE", "15_AUCUN"];
 // Le soin : Q2.1 si elle est posée, sinon les séances de Q1.3 (D-143).
 function soin({ motif, seances }: Entrees): readonly string[] {
   const lu = motif.value;
-  if (lu !== undefined)
-    return SANS_SOIN.includes(lu) ? [] : [OPTIONS["Q2.1"][lu]];
+  if (lu !== undefined) return SANS_SOIN.includes(lu) ? [] : [Q2_1.labels[lu]];
   return SEANCES.filter((seance) => seances.checked(seance)).map(
-    (seance) => OPTIONS["Q1.3"][seance],
+    (seance) => Q1_3.labels[seance],
   );
 }
 
 // Les besoins de Q1.2 dans leur ordre, puis le proche de Q1.1.
 function besoins({ aides, accompagnement }: Entrees): readonly string[] {
-  const cochees = (Object.keys(OPTIONS["Q1.2"]) as Besoin[])
+  const cochees = (Object.keys(Q1_2.labels) as Besoin[])
     .filter((besoin) => aides.checked(besoin))
-    .map((besoin) => CRITERES_D_AMBULANCE[besoin] ?? OPTIONS["Q1.2"][besoin]);
+    .map((besoin) => CRITERES_D_AMBULANCE[besoin] ?? Q1_2.labels[besoin]);
   const proche = accompagnement.is("2_AVEC_UN_PROCHE")
-    ? [OPTIONS["Q1.1"]["2_AVEC_UN_PROCHE"]]
+    ? [Q1_1.labels["2_AVEC_UN_PROCHE"]]
     : [];
   return [...cochees, ...proche];
 }

@@ -1,6 +1,7 @@
-// Ce que toute question déclarée règle, quelle que soit sa sorte, et ce qu'elle
-// en fait quand elle se pose. Chaque sorte en dit plus dans sa classe
-// (`question/declared/choices.ts`, `question/declared/inputs.ts`).
+// La question déclarée : ses réglages, quelle que soit sa sorte
+// (`question/declared/settings.ts`), et ce qu'elle en fait quand elle se pose.
+// Chaque sorte en dit plus dans sa classe (`question/declared/choices.ts`,
+// `question/declared/inputs.ts`).
 //
 // Une question se déclare réglage par réglage, chacun sur sa ligne :
 //
@@ -19,50 +20,43 @@ import {
   type Reads,
   readsOf,
   type Text,
-  textIn,
 } from "../../conditions/condition.ts";
 import { checkReads, readIn } from "../../conditions/reads-in-place.ts";
-import type { AskedCommonData, InPlace, ShownUnder } from "../asked/common.ts";
-import type {
-  Pipeline,
-  QuestionContext,
-  SeenAnswers,
-} from "../asked/context.ts";
+import type { AskedCommonData, InPlace } from "../asked/common.ts";
+import type { QuestionContext, SeenAnswers } from "../asked/context.ts";
 import type { AskedQuestion } from "../asked/question.ts";
-import type { AnyQuestions, NotAsked, Reminder } from "../question.ts";
+import {
+  type Answer,
+  type AnswerOfRef,
+  type AnyQuestions,
+  idOf,
+  type NotAsked,
+  type QuestionRef,
+  type Reminder,
+} from "../question.ts";
+import {
+  type CommonSettings,
+  commonIn,
+  type NothingComputed,
+} from "./settings.ts";
 
-/** Rien de calculé : le rappel fixe de `reminder` vaut. */
-type NothingComputed = undefined;
-
-/** Ce que toute question déclarée règle, quelle que soit sa sorte. */
-export type CommonSettings<Questions extends AnyQuestions, Cibles, Faits> = {
-  readonly id: keyof Questions & string;
-  readonly label: string;
-  /** Ce qui calcule les faits et les cibles que lisent ses conditions. */
-  readonly pipeline: Pipeline<Faits, Cibles>;
-  readonly conditions: readonly Condition[];
-  readonly inconsistencies: readonly Inconsistency[];
-  readonly dependsOn: readonly string[];
-  readonly hint?: string;
-  readonly reminder?: Reminder;
-  readonly optional?: boolean;
-  readonly alwaysAsked?: boolean;
-  readonly under?: ShownUnder;
-  labelFrom?(context: QuestionContext<Questions, Cibles, Faits>): string;
-  hintFrom?(context: QuestionContext<Questions, Cibles, Faits>): string;
-  reminderFrom?(
-    context: QuestionContext<Questions, Cibles, Faits>,
-  ): Reminder | NothingComputed;
-};
-
-/** Une question déclarée, sans ce que sa sorte y ajoute. */
+/**
+ * Une question déclarée, sans ce que sa sorte y ajoute. `Id` : son id.
+ * `Given` : le type de sa réponse, que sa sorte et ses options disent.
+ * `Questions` : ce que ses rappels et ses libellés lisent par id, rien pour un
+ * modèle dont les questions se lisent par leur objet (`ReadByObject`).
+ */
 export abstract class DeclaredQuestion<
   Questions extends AnyQuestions,
   Cibles,
   Faits,
   Own extends object,
+  Id extends string = string,
+  Given extends Answer = Answer,
 > {
   abstract readonly kind: AskedQuestion["kind"];
+  /** Le type de sa réponse, au typage seulement (`Answered`). */
+  declare readonly "~answer": Given;
   protected readonly settings: CommonSettings<Questions, Cibles, Faits>;
   protected readonly own: Own;
 
@@ -71,8 +65,8 @@ export abstract class DeclaredQuestion<
     this.own = own;
   }
 
-  get id(): keyof Questions & string {
-    return this.settings.id;
+  get id(): Id {
+    return this.settings.id as Id;
   }
 
   /**
@@ -142,11 +136,13 @@ export abstract class DeclaredQuestion<
    * même page, et non à son rang. Elle reste une question à part, avec sa
    * légende : sa garde se déclare toujours par `appliesWhen`.
    */
-  shownUnder<Id extends keyof Questions & string>(
-    question: Id,
-    option: Questions[Id] extends readonly (infer O)[] ? O & string : never,
+  shownUnder<Ref extends QuestionRef<Questions>>(
+    question: Ref,
+    option: AnswerOfRef<Questions, Ref> extends readonly (infer O)[]
+      ? O & string
+      : never,
   ): this {
-    return this.withSettings({ under: { question, option } });
+    return this.withSettings({ under: { question: idOf(question), option } });
   }
 
   /** La question qui l'affiche sous l'une de ses options (`shownUnder`). */
@@ -186,9 +182,9 @@ export abstract class DeclaredQuestion<
    * réponse est effacée, et elle seule (`validate-a-page.ts`). Sur la même page,
    * elle l'est dès la saisie : son champ se vide à l'écran.
    */
-  dependsOn(...ids: (keyof Questions & string)[]): this {
+  dependsOn(...questions: QuestionRef<Questions>[]): this {
     return this.withSettings({
-      dependsOn: [...this.settings.dependsOn, ...ids],
+      dependsOn: [...this.settings.dependsOn, ...questions.map(idOf)],
     });
   }
 
@@ -264,29 +260,4 @@ export abstract class DeclaredQuestion<
   ) {
     return this.rebuilt({ ...this.settings, ...changes }, this.own);
   }
-}
-
-// ---- implémentation ----
-
-// Une incohérence : sa condition, et le message qui dit quoi corriger.
-type Inconsistency = { readonly condition: Condition; readonly message: Text };
-
-// Ce qui se lit autour du champ, vu les réponses : le libellé, le rappel, et
-// les incohérences.
-function commonIn<Questions extends AnyQuestions, Cibles, Faits>(
-  settings: CommonSettings<Questions, Cibles, Faits>,
-  context: QuestionContext<Questions, Cibles, Faits>,
-  earlier: Reading,
-): AskedCommonData {
-  return {
-    id: settings.id,
-    label: settings.labelFrom?.(context) ?? settings.label,
-    hint: settings.hintFrom?.(context) ?? settings.hint,
-    reminder: settings.reminderFrom?.(context) ?? settings.reminder,
-    optional: settings.optional,
-    under: settings.under,
-    inconsistencies: settings.inconsistencies
-      .filter(({ condition }) => condition.in(earlier))
-      .map(({ message }) => textIn(message, earlier)),
-  };
 }

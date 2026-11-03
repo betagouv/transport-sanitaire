@@ -1,13 +1,7 @@
 // Le complément de la commande, après le verrou : il complète, il ne décide
 // plus. Ses pages, dans l'ordre, faites de ses questions (`questions/`).
 
-import {
-  afterLock,
-  page,
-  type QuestionnairePart,
-} from "../../../../socle/index.ts";
-import type { Cibles } from "../../cibles/noms.ts";
-import type { Questions } from "../catalogue.ts";
+import { afterLock, page } from "../../../../socle/index.ts";
 import { ADRESSE } from "./questions/adresse.ts";
 import { COUVERCLE } from "./questions/couvercle.ts";
 import { DEBUT } from "./questions/debut.ts";
@@ -23,7 +17,7 @@ import { RETRAIT } from "./questions/retrait.ts";
 import { TICKET } from "./questions/ticket.ts";
 
 /** Posée après le verrou : elle complète, elle ne décide plus. */
-export const COMPLEMENT: QuestionnairePart<Questions, Cibles> = afterLock({
+export const COMPLEMENT = afterLock({
   id: "complement",
   title: "Compléter la commande",
   pages: [

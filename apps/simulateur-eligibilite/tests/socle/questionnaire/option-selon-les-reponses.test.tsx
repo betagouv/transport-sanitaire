@@ -12,28 +12,25 @@ type Questions = {
   exonerations: readonly ("ald" | "aucun")[];
 };
 
-const OPTIONS = {
-  hospitalise: { oui: "Oui", non: "Non" },
-  situations: {
-    etranger: "Un lieu à l'étranger",
-    autre: "Une autre situation",
-    aucune: "Aucune de ces situations",
-  },
-  exonerations: { ald: "Une affection de longue durée", aucun: "Aucun" },
-} as const;
-
-const question = questionsOf<Questions>({ options: OPTIONS });
+const question = questionsOf<Questions>();
 const given = givenOf<Questions>();
 
 const HOSPITALISATION = page(
   "hospitalisation",
-  question.singleChoice("hospitalise", "Le patient est-il hospitalisé ?"),
+  question
+    .singleChoice("hospitalise", "Le patient est-il hospitalisé ?")
+    .options({ oui: "Oui", non: "Non" }),
 );
 
 const SITUATIONS = page(
   "situations",
   question
     .multipleChoice("situations", "Quelles situations concernent ce trajet ?")
+    .options({
+      etranger: "Un lieu à l'étranger",
+      autre: "Une autre situation",
+      aucune: "Aucune de ces situations",
+    })
     .exclusive("aucune")
     .option("etranger", (option) =>
       option.labelFrom(({ answers }) =>
@@ -55,6 +52,7 @@ const EXONERATIONS = page(
   "exonerations",
   question
     .multipleChoice("exonerations", "Quels cas d'exonération ?")
+    .options({ ald: "Une affection de longue durée", aucun: "Aucun" })
     .exclusive("aucun")
     .option("aucun", (option) =>
       option.offeredWhen(

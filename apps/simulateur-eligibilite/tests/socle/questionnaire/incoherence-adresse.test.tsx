@@ -10,7 +10,7 @@ import { afficher } from "./afficher";
 
 type Questions = { depart: Address; arrivee: Address };
 
-const question = questionsOf<Questions>({ options: {} });
+const question = questionsOf<Questions>();
 const given = givenOf<Questions>();
 
 const valider = () =>

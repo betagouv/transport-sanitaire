@@ -1,7 +1,7 @@
 // Les précisions du prescripteur (D-111) : le contexte de chaque scénario.
 // Elles ne se lisent que sous les issues orientées (D-224).
 
-import type { Questions } from "../../../../../../core/models/eligibilite/questions/catalogue/catalogue";
+import type { Questions } from "../../../../../../core/models/eligibilite/questions/reponses";
 import type { Value } from "../../../../../../core/socle";
 import {
   type Contexte,

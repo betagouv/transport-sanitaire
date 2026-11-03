@@ -25,12 +25,7 @@ type Cibles = { readonly cible_sucre: Cible<boolean> };
 
 const given = givenOf<Questions, Faits, Cibles>();
 
-const question = questionsOf<Questions>({
-  options: {
-    boisson: { the: "Un thé", cafe: "Un café", eau: "De l'eau" },
-    taille: { petit: "Petit", grand: "Grand" },
-  },
-});
+const question = questionsOf<Questions>();
 
 const chaude = given.question("boisson").answer().isOneOf("the", "cafe");
 const grand = given.question("taille").answer().is("grand");
@@ -104,8 +99,12 @@ describe("answer() dans un fait", () => {
   const COMMANDE = [
     page(
       "commande",
-      question.singleChoice("taille", "Quelle taille ?"),
-      question.singleChoice("boisson", "Quelle boisson ?"),
+      question
+        .singleChoice("taille", "Quelle taille ?")
+        .options({ petit: "Petit", grand: "Grand" }),
+      question
+        .singleChoice("boisson", "Quelle boisson ?")
+        .options({ the: "Un thé", cafe: "Un café", eau: "De l'eau" }),
     ),
   ] as Page[];
 

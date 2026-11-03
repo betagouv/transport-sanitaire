@@ -13,17 +13,15 @@ type Questions = {
   precision: string;
 };
 
-const OPTIONS = {
-  seance: { dialyse: "Une dialyse", aucune: "Aucune" },
-} as const;
-
-const question = questionsOf<Questions>({ options: OPTIONS });
+const question = questionsOf<Questions>();
 const given = givenOf<Questions>();
 const seance = given.question("seance").answer();
 
 const SEANCE = page(
   "seance",
-  question.singleChoice("seance", "Quelle séance motive ce trajet ?"),
+  question
+    .singleChoice("seance", "Quelle séance motive ce trajet ?")
+    .options({ dialyse: "Une dialyse", aucune: "Aucune" }),
 );
 
 const RAPPEL = "Séance indiquée : une dialyse.";

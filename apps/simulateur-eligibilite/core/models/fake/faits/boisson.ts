@@ -1,7 +1,7 @@
 // boisson : la boisson commandée, en toutes lettres. `null` : aucune.
 
 import { unFait } from "../../../socle/index.ts";
-import type { Questions } from "../questions/catalogue.ts";
+import type { Questions } from "../questions/reponses.ts";
 import { BOISSON } from "./communs.ts";
 
 const BOISSONS: Record<Questions["boisson"], string | null> = {

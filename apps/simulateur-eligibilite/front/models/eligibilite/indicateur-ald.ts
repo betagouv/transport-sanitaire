@@ -4,7 +4,7 @@
 // verdict est à part. Q1.3.b, le lien du soin avec l'ALD, est un sous-champ de
 // Q1.3 : il n'ajoute aucune question au compte (REFERENTIEL/03, QST-ALD-LIEN-001).
 
-import { given } from "../../../core/models/eligibilite/questions/question";
+import { given } from "../../../core/models/eligibilite/questions/reponses";
 import type { AldIndicator } from "../../socle";
 
 export const INDICATEUR_ALD: AldIndicator = {

@@ -12,23 +12,20 @@ type Questions = {
   lien: "direct" | "indirect";
 };
 
-const OPTIONS = {
-  situations: {
-    ald: "Une affection de longue durée",
-    autre: "Une autre situation",
-    aucune: "Aucune de ces situations",
-  },
-  lien: { direct: "Un lien direct", indirect: "Un lien indirect" },
-} as const;
-
-const question = questionsOf<Questions>({ options: OPTIONS });
+const question = questionsOf<Questions>();
 const given = givenOf<Questions>();
 
 const SITUATIONS = question
   .multipleChoice("situations", "Quelles situations concernent ce trajet ?")
+  .options({
+    ald: "Une affection de longue durée",
+    autre: "Une autre situation",
+    aucune: "Aucune de ces situations",
+  })
   .exclusive("aucune");
 const LIEN = question
   .singleChoice("lien", "Quel lien avec l'affection ?")
+  .options({ direct: "Un lien direct", indirect: "Un lien indirect" })
   .appliesWhen(given.question("situations").answer().checked("ald"));
 
 const SOUS_L_OPTION = page(

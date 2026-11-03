@@ -28,6 +28,65 @@ export type NotAsked = undefined;
 /** Les questions d'un modèle : pour chacune, le type de sa réponse. */
 export type AnyQuestions = Readonly<Record<string, Answer>>;
 
+/**
+ * Une question vue de ce qui lit sa réponse : son id, et le type de sa
+ * réponse. Une question déclarée en est une (`question/declared/question.ts`).
+ * `~answer` n'existe qu'au typage.
+ */
+export type Answered<Given extends Answer = Answer> = {
+  readonly id: string;
+  readonly "~answer": Given;
+};
+
+/** La réponse d'une question déclarée : `AnswerOf<typeof Q1_2>`. */
+export type AnswerOf<Declared extends Answered> = Declared["~answer"];
+
+/**
+ * Une question désignée par son objet, ou par son id quand `Questions` type les
+ * ids. Une question déclarée lit celles d'avant elle par leur objet : son
+ * modèle ne connaît pas encore le type de ses réponses (`ReadByObject`).
+ */
+export type QuestionRef<Questions extends AnyQuestions> =
+  | (keyof Questions & string)
+  | Answered;
+
+/** La réponse de la question que désigne `Ref`. */
+export type AnswerOfRef<Questions extends AnyQuestions, Ref> =
+  Ref extends Answered<infer Given>
+    ? Given
+    : Ref extends keyof Questions
+      ? Questions[Ref]
+      : never;
+
+/** L'id de la question que désigne `question`. */
+export function idOf(question: string | Answered): string {
+  return typeof question === "string" ? question : question.id;
+}
+
+/**
+ * Aucun id typé : les questions se lisent par leur objet. Ce sont les
+ * déclarations d'un modèle qui ne voient que celles-là. Son type `Questions`
+ * se tire de ses parties (`AnswersOf`), donc de ces déclarations : elles ne
+ * peuvent pas le lire.
+ */
+export type ReadByObject = Readonly<Record<never, Answer>>;
+
+/**
+ * Les réponses des questions de ces parties, par id : le type `Questions`
+ * d'un modèle, tiré de ses déclarations.
+ *
+ *   export type Questions = AnswersOf<typeof P1 | typeof P2>;
+ */
+export type AnswersOf<
+  Part extends {
+    readonly pages: readonly { readonly questions: readonly unknown[] }[];
+  },
+> = {
+  readonly [Declared in Part["pages"][number]["questions"][number] as Declared extends Answered
+    ? Declared["id"]
+    : never]: Declared extends Answered<infer Given> ? Given : never;
+};
+
 /** Les réponses données à un instant, par question. Il peut en manquer. */
 export type Answers<Questions extends AnyQuestions = AnyQuestions> = Readonly<
   Partial<Questions>
@@ -143,15 +202,20 @@ export type QuestionnairePart<
  * Cette partie, posée après le verrou : ses pages lisent les cibles figées, et
  * plus celles des faits d'avant elles. Elle complète, elle ne décide plus.
  */
-export function afterLock<Questions extends AnyQuestions, Cibles>(
-  part: QuestionnairePart<Questions, Cibles>,
-): QuestionnairePart<Questions, Cibles> {
+export function afterLock<
+  Part extends {
+    readonly pages: readonly {
+      readonly id: string;
+      readonly questions: unknown;
+    }[];
+  },
+>(part: Part): Part {
   const pages = part.pages.map(({ id, questions }) => ({
     id,
     questions,
     afterLock: true as const,
   }));
-  return { ...part, pages };
+  return { ...part, pages } as Part;
 }
 
 /** Les pages de ces parties, dans l'ordre du questionnaire. */

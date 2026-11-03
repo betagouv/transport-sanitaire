@@ -8,7 +8,7 @@
 // de `cible_mode_id`. Un trajet en avion ou en bateau de ligne régulière prend
 // le libellé de la ligne régulière, pas celui du mode (#221).
 
-import { given } from "../../../../../core/models/eligibilite/questions/question";
+import { given } from "../../../../../core/models/eligibilite/questions/reponses";
 import { luPar, type TraceDe } from "./ce-que-lit-un-bloc";
 
 /** Le partage du transport : prouvé, écarté, ou que les réponses ne disent pas. */

@@ -15,11 +15,7 @@ type Questions = {
   precision: string;
 };
 
-const OPTIONS = {
-  raisons: { panne: "Une panne", autre: "Autre chose" },
-} as const;
-
-const question = questionsOf<Questions>({ options: OPTIONS });
+const question = questionsOf<Questions>();
 const given = givenOf<Questions>();
 
 const FIN_AVANT_LE_DEBUT = "La fin précède le début.";
@@ -113,7 +109,9 @@ describe("deux réponses de la même page", () => {
 describe("précision obligatoire restée vide", () => {
   const RAISONS = page(
     "raisons",
-    question.multipleChoice("raisons", "Pourquoi ?"),
+    question
+      .multipleChoice("raisons", "Pourquoi ?")
+      .options({ panne: "Une panne", autre: "Autre chose" }),
     question
       .text("precision", "Précisez")
       .appliesWhen(given.question("raisons").answer().checked("autre")),

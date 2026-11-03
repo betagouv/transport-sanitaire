@@ -2,7 +2,7 @@
 // Q1.3 est cochée (QST-ALD-LIEN-001). Les cas d'avant la v10.1.4 parlaient
 // d'un soin lié à l'ALD : ils gardent ce sens par un lien direct.
 
-import type { Questions } from "../../../../core/models/eligibilite/questions/catalogue/catalogue";
+import type { Questions } from "../../../../core/models/eligibilite/questions/reponses";
 
 export const lienAld = (
   cas: Questions["Q1.3"] | undefined,

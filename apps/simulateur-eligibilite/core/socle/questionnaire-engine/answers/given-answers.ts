@@ -6,11 +6,13 @@
 // n'est pas pour autant un « non ». `hasAnswer` le distingue.
 
 import type { Address } from "../question/address.ts";
-import type {
-  Answer,
-  Answers,
-  AnyQuestions,
-  Unanswered,
+import {
+  type Answer,
+  type Answered,
+  type Answers,
+  type AnyQuestions,
+  idOf,
+  type Unanswered,
 } from "../question/question.ts";
 
 /** Ce qu'un choix unique peut valoir : une option, ou la valeur d'une case seule. */
@@ -82,13 +84,14 @@ export class GivenAnswers<Questions extends AnyQuestions = AnyQuestions> {
   }
 
   /** La réponse que cette question a reçue, ou pas encore. */
+  question<Given extends Answer>(question: Answered<Given>): GivenAnswer<Given>;
   question<Id extends keyof Questions & string>(
     id: Id,
-  ): GivenAnswer<Questions[Id]> {
-    return new GivenAnswer(
-      id,
-      answersOf(this)[id] as Questions[Id] | Unanswered,
-    );
+  ): GivenAnswer<Questions[Id]>;
+  question(question: string | Answered): GivenAnswer {
+    const id = idOf(question);
+    const answers: Answers = answersOf(this);
+    return new GivenAnswer(id, answers[id]);
   }
 }
 

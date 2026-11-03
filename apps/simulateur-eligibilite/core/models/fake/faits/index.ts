@@ -10,9 +10,9 @@ import { lait } from "./lait.ts";
 import { FAITS, type Faits } from "./noms.ts";
 
 /** Les faits du modèle de démonstration, chacun déclaré une fois. */
-export const CATALOGUE_DES_FAITS = new FaitCatalogue<Faits>(FAITS, [
-  boisson,
-  accompagnements,
-  lait,
-  citron,
-]);
+// Annoté : les questions lisent ce catalogue, et ses faits lisent leurs
+// réponses. Inféré, son type tournerait en rond.
+export const CATALOGUE_DES_FAITS: FaitCatalogue<Faits> = new FaitCatalogue(
+  FAITS,
+  [boisson, accompagnements, lait, citron],
+);

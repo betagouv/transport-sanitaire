@@ -8,7 +8,7 @@
 // déclare ce qu'il lit des cibles (`ce-que-lit-un-texte.ts`).
 
 import type { Cibles } from "../../../../../core/models/eligibilite/cibles/noms";
-import { given } from "../../../../../core/models/eligibilite/questions/question";
+import { given } from "../../../../../core/models/eligibilite/questions/reponses";
 import {
   avecLesAutresTermes,
   LU_PAR_LES_AUTRES_TERMES,

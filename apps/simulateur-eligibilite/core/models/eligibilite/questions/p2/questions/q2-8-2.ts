@@ -3,12 +3,19 @@
 
 import { given, question } from "../../question.ts";
 import { unMineurDeVingtAns } from "../conditions/permission.ts";
+import { Q2_8_1 } from "./q2-8-1.ts";
+
+// La question, avant les règles qui lisent sa réponse.
+const declaree = question.datetime(
+  "Q2.8.2",
+  "Quand commence la première permission ?",
+);
 
 /** La première permission commence au 14e jour d'hospitalisation, ou après. */
 const PREMIER_JOUR_AUTORISE = 14;
 
-const hospitalisation = given.question("Q2.8.1").answer().toDate();
-const debut = given.question("Q2.8.2").answer().toDate();
+const hospitalisation = given.question(Q2_8_1).answer().toDate();
+const debut = given.question(declaree).answer().toDate();
 
 // La première permission commence avant le jour de l'hospitalisation.
 const commenceAvantLHospitalisation = debut.isBefore(hospitalisation);
@@ -19,8 +26,7 @@ const commenceAvantLeQuatorziemeJour = debut.isBefore(
   hospitalisation.plusDays(PREMIER_JOUR_AUTORISE - 1),
 );
 
-export const Q2_8_2 = question
-  .datetime("Q2.8.2", "Quand commence la première permission ?")
+export const Q2_8_2 = declaree
   .appliesWhen(unMineurDeVingtAns)
   .inconsistentWhen(
     commenceAvantLHospitalisation,

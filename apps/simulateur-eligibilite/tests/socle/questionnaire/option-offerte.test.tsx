@@ -12,23 +12,21 @@ type Questions = {
   dessert: string;
 };
 
-const OPTIONS = {
-  regime: { tout: "Je mange de tout", vegetarien: "Végétarien" },
-  plats: { salade: "Une salade", steak: "Un steak", rien: "Rien" },
-} as const;
-
-const question = questionsOf<Questions>({ options: OPTIONS });
+const question = questionsOf<Questions>();
 const given = givenOf<Questions>();
 
 const REGIME = page(
   "regime",
-  question.singleChoice("regime", "Quel est votre régime ?"),
+  question
+    .singleChoice("regime", "Quel est votre régime ?")
+    .options({ tout: "Je mange de tout", vegetarien: "Végétarien" }),
 );
 
 const PLATS = page(
   "plats",
   question
     .multipleChoice("plats", "Quels plats ?")
+    .options({ salade: "Une salade", steak: "Un steak", rien: "Rien" })
     .exclusive("rien")
     .option("steak", (option) =>
       option.offeredWhen(given.question("regime").answer().is("tout")),

@@ -1,10 +1,15 @@
 // Les entrées des conditions d'un modèle : une réponse, un fait, une cible, le
 // jour. Chacune donne une valeur qui sait ce qu'elle lit (`condition.ts`).
 //
+//   given.question(Q2_10).answer().is("6_APPAREILLAGE")
 //   given.question("Q2.10").answer().is("6_APPAREILLAGE")
 //   given.fait("fait_permission").isNon()
 //   given.cible("cible_mode_tap_ou_tpmr").assuming("fait_p1_complete").isOui()
 //   given.all({ motif: given.question("Q2.1").answer(), sens: SENS_DU_DOCUMENT })
+//
+// Une question se lit par son objet, ou par son id quand le modèle type ses
+// ids : une déclaration lit les questions d'avant elle par leur objet
+// (`ReadByObject`), un fait ou un test par leur id.
 //
 // `answer()` est la seule lecture d'une réponse. Le socle la choisit selon
 // l'endroit : dans une garde, les questions posées avant elle ; dans un fait,
@@ -14,7 +19,12 @@ import type { Cible } from "../../decision-engine/cible.ts";
 import type { Fait } from "../../decision-engine/fait/fait.ts";
 import type { Box, Choice } from "../answers/given-answers.ts";
 import type { ValidatedAnswer } from "../answers/validated-answers.ts";
-import type { AnyQuestions } from "../question/question.ts";
+import {
+  type AnswerOfRef,
+  type AnyQuestions,
+  idOf,
+  type QuestionRef,
+} from "../question/question.ts";
 import {
   all,
   type Condition,
@@ -215,6 +225,7 @@ class CibleValue<
 /**
  * Les entrées des conditions d'un modèle, typées par ses questions, ses faits
  * et ses cibles : `export const given = givenOf<Questions, Faits, Cibles>()`.
+ * Avec `ReadByObject`, une question ne se lit que par son objet.
  */
 export function givenOf<
   Questions extends AnyQuestions,
@@ -223,8 +234,8 @@ export function givenOf<
 >() {
   type FaitNom = keyof Faits & string;
   return {
-    question: <Id extends keyof Questions & string>(id: Id) => ({
-      answer: () => AnswerValue.of<Questions[Id]>(id),
+    question: <Ref extends QuestionRef<Questions>>(question: Ref) => ({
+      answer: () => AnswerValue.of<AnswerOfRef<Questions, Ref>>(idOf(question)),
     }),
     fait: <Nom extends FaitNom>(nom: Nom) =>
       FaitValue.of<FaitValueOf<Faits[Nom]>>(nom),

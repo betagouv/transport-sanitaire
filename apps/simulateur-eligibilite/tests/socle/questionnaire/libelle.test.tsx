@@ -12,15 +12,13 @@ type Questions = {
   duree: string;
 };
 
-const OPTIONS = {
-  compagnie: { seul: "Seul", accompagne: "Accompagné" },
-} as const;
-
-const question = questionsOf<Questions>({ options: OPTIONS });
+const question = questionsOf<Questions>();
 
 const COMPAGNIE = page(
   "compagnie",
-  question.singleChoice("compagnie", "Venez-vous seul ?"),
+  question
+    .singleChoice("compagnie", "Venez-vous seul ?")
+    .options({ seul: "Seul", accompagne: "Accompagné" }),
 );
 
 const HEURE = page(

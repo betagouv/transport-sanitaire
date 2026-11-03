@@ -4,19 +4,22 @@
 // (`conditions/lieux-du-trajet.ts`). Aucune distance ne se compare aux
 // adresses.
 
-import type { Address } from "../../../../../socle/index.ts";
-import { OPTIONS } from "../../catalogue/catalogue.ts";
+import type {
+  Address,
+  Answered,
+  Condition,
+} from "../../../../../socle/index.ts";
 import { type Context as Contexte, given, question } from "../../question.ts";
 import {
   aLEtranger,
   type Extremite,
-  type Nature,
   natureDu,
   natureEtablie,
   natureEtablieDu,
   precisionAPoser,
-  QUESTIONS_DU_LIEU,
+  type QuestionDeNature,
 } from "../conditions/lieux-du-trajet.ts";
+import { NATURES_DU_LIEU, type Nature } from "../conditions/natures-du-lieu.ts";
 import {
   desRolesContradictoires,
   ENTREES_DES_LIEUX,
@@ -28,21 +31,27 @@ import { avecUnDocument } from "../conditions/supports-du-complement.ts";
 /** Les libellés propres à un lieu. */
 export type Libelles = { nature: string; adresse: string; rappel: string };
 
-// La nature de l'autre lieu, vue de celui-ci. Le départ ne voit de l'arrivée
-// que ce que P2 en établit : elle se choisit après lui.
-const AUTRE_LIEU = {
-  depart: natureEtablieDu("arrivee").compute((etablie) => etablie?.nature),
-  arrivee: natureDu("depart"),
-};
+// Les identifiants des questions de chaque lieu.
+const QUESTIONS_DU_LIEU = {
+  depart: {
+    nature: "Q3.2.nature",
+    nom: "Q3.2.nom",
+    precision: "Q3.2.precision",
+    adresse: "Q3.2.adresse",
+  },
+  arrivee: {
+    nature: "Q3.3.nature",
+    nom: "Q3.3.nom",
+    precision: "Q3.3.precision",
+    adresse: "Q3.3.adresse",
+  },
+} as const;
 
-const ADRESSE_REPETEE = given
-  .question("Q3.2.adresse")
-  .answer()
-  .computeWith(given.question("Q3.3.adresse").answer(), (depart, arrivee) =>
-    Boolean(
-      depart.value && arrivee.value && memeAdresse(depart.value, arrivee.value),
-    ),
-  );
+/** Ce que l'arrivée lit du départ : sa nature et son adresse. */
+type Depart = {
+  readonly nature: QuestionDeNature;
+  readonly adresse: Answered<Address>;
+};
 
 // Deux situations de P2 se contredisent sur un lieu (TS1014-AUDIT-02).
 const ROLES_CONTRADICTOIRES = ENTREES_DES_LIEUX.compute(
@@ -50,33 +59,39 @@ const ROLES_CONTRADICTOIRES = ENTREES_DES_LIEUX.compute(
 );
 
 /**
- * Les quatre questions du lieu, dans l'ordre de sa page. Le rappel coiffe la
- * première question posée : le nom, ou l'adresse d'un domicile, qui n'en a pas.
+ * Les quatre questions du lieu. L'arrivée reçoit le départ, qu'elle lit. Le
+ * rappel coiffe la première question posée : le nom, ou l'adresse d'un
+ * domicile, qui n'en a pas.
  */
-export function questionsDuLieu(extremite: Extremite, libelles: Libelles) {
-  const ids = QUESTIONS_DU_LIEU[extremite];
+export function questionsDuLieu<E extends Extremite>(
+  extremite: E,
+  libelles: Libelles,
+  depart?: Depart,
+) {
   const rappel = rappelDe(extremite, libelles.rappel);
-  const nomUtile = natureDu(extremite).compute(unNomAReporter);
-  return [
-    natureAChoisir(extremite, libelles.nature),
-    question
-      .text(ids.nom, "Nom du lieu ou de la structure")
+  const nature = natureAChoisir(extremite, libelles.nature, depart);
+  const nomUtile = natureDu(extremite, nature).compute(unNomAReporter);
+  return {
+    nature,
+    nom: question
+      .text(QUESTIONS_DU_LIEU[extremite].nom, "Nom du lieu ou de la structure")
       .optional()
       .mattersWhile(avecUnDocument.and(nomUtile))
       .reminderFrom(rappel),
-    precisionDuLieu(extremite),
-    adresseDuLieu(extremite, libelles.adresse, rappel),
-  ] as const;
+    precision: precisionDuLieu(extremite, nature),
+    adresse: adresseDuLieu(extremite, libelles.adresse, rappel, depart),
+  };
 }
 
 // ---- implémentation ----
 
 // L'adresse d'un domicile porte le rappel, faute de nom. Celle de l'arrivée
 // ne répète pas celle du départ.
-function adresseDuLieu(
-  extremite: Extremite,
+function adresseDuLieu<E extends Extremite>(
+  extremite: E,
   label: string,
   rappel: ReturnType<typeof rappelDe>,
+  depart: Depart | undefined,
 ) {
   const adresse = question
     .address(QUESTIONS_DU_LIEU[extremite].adresse, label)
@@ -88,9 +103,9 @@ function adresseDuLieu(
         ? rappel(contexte)
         : undefined,
     );
-  return extremite === "arrivee"
+  return depart
     ? adresse.inconsistentWhen(
-        ADRESSE_REPETEE,
+        memeAdresseQue(depart.adresse, adresse),
         "Le départ et l’arrivée ont la même adresse : ce trajet n’existe pas. Corrigez l’une des deux.",
       )
     : adresse.inconsistentWhen(
@@ -109,34 +124,63 @@ function rappelDe(extremite: Extremite, label: string) {
 
 // La nature en toutes lettres, pour un hébergement ou un autre lieu
 // (`precisionAPoser`).
-function precisionDuLieu(extremite: Extremite) {
+function precisionDuLieu<E extends Extremite>(
+  extremite: E,
+  nature: QuestionDeNature,
+) {
   return question
     .text(QUESTIONS_DU_LIEU[extremite].precision, "Nature du lieu")
     .hint(
       "Elle s’inscrit sur le document. Par exemple : maison d’accueil hospitalière, foyer, lieu de travail.",
     )
-    .mattersWhile(avecUnDocument.and(precisionAPoser(extremite)));
+    .mattersWhile(avecUnDocument.and(precisionAPoser(extremite, nature)));
 }
 
 // La nature ne se choisit que si P2 ne l'établit pas, parmi celles que P2 et
 // l'autre lieu admettent (`natureAdmise`).
-function natureAChoisir(extremite: Extremite, label: string) {
-  const id = QUESTIONS_DU_LIEU[extremite].nature;
+function natureAChoisir<E extends Extremite>(
+  extremite: E,
+  label: string,
+  depart: Depart | undefined,
+) {
+  const autre = autreLieu(depart);
   const admise = (nature: Nature) =>
-    ENTREES_DES_LIEUX.computeWith(AUTRE_LIEU[extremite], (entrees, autre) =>
+    ENTREES_DES_LIEUX.computeWith(autre, (entrees, autre) =>
       natureAdmise(nature, extremite, entrees, autre),
     );
   const aChoisir = natureEtablieDu(extremite).compute(
     (etablie) => etablie === undefined,
   );
-  return (Object.keys(OPTIONS[id]) as Nature[]).reduce(
+  return (Object.keys(NATURES_DU_LIEU) as Nature[]).reduce(
     (declaree, nature) =>
       declaree.option(nature, (option) => option.offeredWhen(admise(nature))),
     question
-      .singleChoice(id, label)
+      .singleChoice(QUESTIONS_DU_LIEU[extremite].nature, label)
+      .options(NATURES_DU_LIEU)
       .dropdown()
       .mattersWhile(avecUnDocument.and(aChoisir)),
   );
+}
+
+// La nature de l'autre lieu, vue de celui-ci. Le départ ne voit de l'arrivée
+// que ce que P2 en établit : elle se choisit après lui.
+function autreLieu(depart: Depart | undefined) {
+  return depart
+    ? natureDu("depart", depart.nature)
+    : natureEtablieDu("arrivee").compute((etablie) => etablie?.nature);
+}
+
+// Le départ et l'arrivée ont la même adresse.
+function memeAdresseQue(
+  depart: Answered<Address>,
+  arrivee: Answered<Address>,
+): Condition {
+  return given
+    .question(depart)
+    .answer()
+    .computeWith(given.question(arrivee).answer(), (a, b) =>
+      Boolean(a.value && b.value && memeAdresse(a.value, b.value)),
+    );
 }
 
 // Un domicile n'a pas de nom à reporter. Tant que la nature manque, le nom

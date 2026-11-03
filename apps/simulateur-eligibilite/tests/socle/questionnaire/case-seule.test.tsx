@@ -14,14 +14,12 @@ type Questions = {
   escale: string;
 };
 
-const OPTIONS = {
-  distance: { courte: "Courte", longue: "Longue" },
-} as const;
-
-const question = questionsOf<Questions>({ options: OPTIONS });
+const question = questionsOf<Questions>();
 const given = givenOf<Questions>();
 
-const DISTANCE = question.singleChoice("distance", "Quelle distance ?");
+const DISTANCE = question
+  .singleChoice("distance", "Quelle distance ?")
+  .options({ courte: "Courte", longue: "Longue" });
 
 const AVION = question.checkbox(
   "avion",

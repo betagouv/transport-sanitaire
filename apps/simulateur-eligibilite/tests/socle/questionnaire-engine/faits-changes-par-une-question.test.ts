@@ -128,17 +128,17 @@ const GRAPHE = new DecisionGraph(
 );
 
 const question = questionsOf<Questions, Faits, Cibles>({
-  options: {
-    boisson: { the: "Un thé", eau: "De l'eau" },
-    taille: { petit: "Petit", grand: "Grand" },
-  },
   faits: FAITS,
   cibles: (faits) => ({ cible_sucre_propose: Cible.of(faits.chaude.isOui()) }),
 });
 
 const grand = given.question("taille").answer().is("grand");
-const TAILLE = question.singleChoice("taille", "Quelle taille ?");
-const BOISSON = question.singleChoice("boisson", "Quelle boisson ?");
+const TAILLE = question
+  .singleChoice("taille", "Quelle taille ?")
+  .options({ petit: "Petit", grand: "Grand" });
+const BOISSON = question
+  .singleChoice("boisson", "Quelle boisson ?")
+  .options({ the: "Un thé", eau: "De l'eau" });
 const SUCRE = question
   .checkbox("sucre", "Du sucre ?", "Oui")
   .appliesWhen(given.cible("cible_sucre_propose").isOui());

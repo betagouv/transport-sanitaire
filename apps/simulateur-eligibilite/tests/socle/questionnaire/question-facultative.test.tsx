@@ -11,9 +11,7 @@ type Questions = {
   avis: "bien" | "mal";
 };
 
-const OPTIONS = { avis: { bien: "Bien", mal: "Mal" } } as const;
-
-const question = questionsOf<Questions>({ options: OPTIONS });
+const question = questionsOf<Questions>();
 
 const ADRESSE = page(
   "adresse",
@@ -23,7 +21,10 @@ const ADRESSE = page(
 
 const AVIS = page(
   "avis",
-  question.singleChoice("avis", "Un avis ?").optional(),
+  question
+    .singleChoice("avis", "Un avis ?")
+    .options({ bien: "Bien", mal: "Mal" })
+    .optional(),
 );
 
 const voie = () => screen.getByRole("textbox", { name: "Numéro et voie" });

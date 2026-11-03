@@ -13,18 +13,14 @@ type Questions = {
   equipements: readonly ("fauteuil" | "autre")[];
 };
 
-const OPTIONS = {
-  organisation: { aller: "Aller simple", different: "Aller-retour différent" },
-  equipements: { fauteuil: "Un fauteuil", autre: "Un autre" },
-} as const;
-
-const question = questionsOf<Questions>({ options: OPTIONS });
+const question = questionsOf<Questions>();
 
 const MESSAGE =
   "Un retour différent demande une autre simulation, pour l'autre sens.";
 
 const ORGANISATION = question
   .singleChoice("organisation", "Comment le trajet est-il organisé ?")
+  .options({ aller: "Aller simple", different: "Aller-retour différent" })
   .option("different", (option) => option.blocks(MESSAGE));
 
 const TRAJET = page(
@@ -41,6 +37,7 @@ const EQUIPEMENTS = page(
   "equipements",
   question
     .multipleChoice("equipements", "Quels équipements ?")
+    .options({ fauteuil: "Un fauteuil", autre: "Un autre" })
     .option("autre", (option) => option.blocks("Précisez avec la caisse.")),
 );
 

@@ -12,9 +12,9 @@ import {
   faitsSansLaDecision,
   LECTURES_DES_FAITS,
 } from "./faits/preconisation.ts";
-import type { Questions } from "./questions/catalogue/catalogue.ts";
 import { COMPLEMENT } from "./questions/p3/partie-3.ts";
 import { PARTS } from "./questions/questionnaire.ts";
+import type { Questions } from "./questions/reponses.ts";
 import graphe from "./rules/regles.graphe.json" with { type: "json" };
 
 const GRAPHE = graphe as DecisionGraphData;

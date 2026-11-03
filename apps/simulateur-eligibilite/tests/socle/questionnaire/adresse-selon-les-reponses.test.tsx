@@ -14,15 +14,13 @@ type Questions = {
   remarque: string;
 };
 
-const OPTIONS = {
-  destination: { france: "En France", etranger: "À l'étranger" },
-} as const;
-
-const question = questionsOf<Questions>({ options: OPTIONS });
+const question = questionsOf<Questions>();
 
 const DESTINATION = page(
   "destination",
-  question.singleChoice("destination", "Où va le patient ?"),
+  question
+    .singleChoice("destination", "Où va le patient ?")
+    .options({ france: "En France", etranger: "À l'étranger" }),
 );
 
 const ARRIVEE = question

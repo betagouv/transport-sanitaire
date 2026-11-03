@@ -33,10 +33,6 @@ const given = givenOf<Questions, Faits, Cibles>();
 
 // Le sucre se propose pour une boisson chaude, une fois qu'on sait l'heure.
 const question = questionsOf<Questions, Faits, Cibles>({
-  options: {
-    boisson: { the: "Un thé", cafe: "Un café", eau: "De l'eau" },
-    taille: { petit: "Petit", grand: "Grand" },
-  },
   faits: new FaitCatalogue<Faits>(
     ["chaude", "matin"],
     [
@@ -62,8 +58,12 @@ const question = questionsOf<Questions, Faits, Cibles>({
 const chaude = given.question("boisson").answer().isOneOf("the", "cafe");
 const grand = given.question("taille").answer().is("grand");
 
-const TAILLE = question.singleChoice("taille", "Quelle taille ?");
-const BOISSON = question.singleChoice("boisson", "Quelle boisson ?");
+const TAILLE = question
+  .singleChoice("taille", "Quelle taille ?")
+  .options({ petit: "Petit", grand: "Grand" });
+const BOISSON = question
+  .singleChoice("boisson", "Quelle boisson ?")
+  .options({ the: "Un thé", cafe: "Un café", eau: "De l'eau" });
 const sucreSi = (condition: Condition) =>
   question.checkbox("sucre", "Du sucre ?", "Oui").appliesWhen(condition);
 

@@ -1,19 +1,17 @@
 // P2 : l'éligibilité. Ses pages, dans l'ordre, faites de ses questions
 // (`questions/`). Q2.4, Q2.9 et Q2.11 n'ont aucun écran. Un retour
 // pénitentiaire hors du circuit de prescription s'arrête aux contextes
-// (`conditions/retour-penitentiaire.ts`).
+// (`questions/q2-2-1-indication.ts`).
 
-import { page, type QuestionnairePart } from "../../../../socle/index.ts";
-import type { Questions } from "../catalogue/catalogue.ts";
-import { dansLeCircuit } from "./conditions/retour-penitentiaire.ts";
+import { page } from "../../../../socle/index.ts";
 import { Q2_1, Q2_1_F, Q2_1_G } from "./questions/q2-1.ts";
+import { Q2_2_1, Q2_2_1_B } from "./questions/q2-2-1.ts";
+import { Q2_2_1_A } from "./questions/q2-2-1-a.ts";
+import { Q2_2_1_CADRE } from "./questions/q2-2-1-cadre.ts";
 import {
-  Q2_2_1,
-  Q2_2_1_A,
-  Q2_2_1_B,
-  Q2_2_1_CADRE,
+  dansLeCircuit,
   Q2_2_1_INDICATION,
-} from "./questions/q2-2-1.ts";
+} from "./questions/q2-2-1-indication.ts";
 import { Q2_2_5 } from "./questions/q2-2-5.ts";
 import { Q2_3_1 } from "./questions/q2-3-1.ts";
 import { Q2_3_2 } from "./questions/q2-3-2.ts";
@@ -34,7 +32,7 @@ import { Q2_13_DEPART } from "./questions/q2-13.ts";
 import { Q2_14_ELOIGNEMENT, Q2_14_MOTIF } from "./questions/q2-14.ts";
 
 /** P2 : l'éligibilité. */
-export const P2: QuestionnairePart<Questions, undefined> = {
+export const P2 = {
   id: "P2",
   title: "Éligibilité",
   pages: [

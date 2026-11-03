@@ -1,18 +1,21 @@
-// Les questions à choix déclarées. Leurs options viennent du catalogue de
-// l'éditeur, et le modèle n'en règle que ce qui change :
+// Les questions à choix déclarées. Elles portent leurs options, valeur et
+// libellé, dans l'ordre du catalogue de l'éditeur, puis règlent celles qui en
+// disent plus :
 //
 //   question.singleChoice("Q2.7", "Dans quelle tranche d'âge …")
+//     .options({ "1_MINEUR": "…", "3_ADULTE_AUTORISEE": "…" })
 //     .option("3_ADULTE_AUTORISEE", (option) => option.offeredWhen(desAdultesAProposer))
 //
-// `Value` : les valeurs du catalogue. Une autre ne compile pas.
+// `Value` : les valeurs de ses options. Une autre ne compile pas.
 
 import type { Reading, Reads } from "../../conditions/condition.ts";
 import { AskedMultipleChoice, AskedSingleChoice } from "../asked/choices.ts";
 import type { AskedCommonData } from "../asked/common.ts";
 import type { QuestionContext } from "../asked/context.ts";
 import type { AnyQuestions, IncompatibleOptions } from "../question.ts";
-import type { DeclaredOption, DeclaredOptions } from "./option.ts";
-import { type CommonSettings, DeclaredQuestion } from "./question.ts";
+import { type DeclaredOption, DeclaredOptions } from "./option.ts";
+import { DeclaredQuestion } from "./question.ts";
+import type { CommonSettings } from "./settings.ts";
 
 /** Un choix unique déclaré. */
 export class DeclaredSingleChoice<
@@ -20,20 +23,39 @@ export class DeclaredSingleChoice<
   Cibles,
   Faits,
   Value extends string,
+  Id extends string = string,
 > extends DeclaredQuestion<
   Questions,
   Cibles,
   Faits,
-  SingleOwn<Questions, Cibles, Faits>
+  SingleOwn<Questions, Cibles, Faits>,
+  Id,
+  Value
 > {
   readonly kind = "single choice";
+
+  /**
+   * Ses options : chaque clé est une valeur, chaque valeur son libellé, dans
+   * l'ordre du catalogue. Une clé qui a l'air d'un entier est refusée.
+   */
+  options<const Labels extends Readonly<Record<string, string>>>(
+    labels: Labels,
+  ): DeclaredSingleChoice<Questions, Cibles, Faits, keyof Labels & string, Id> {
+    const options = DeclaredOptions.of<Questions, Cibles, Faits>(labels);
+    return new DeclaredSingleChoice(this.settings, { ...this.own, options });
+  }
+
+  /** Le libellé de chacune de ses options, par valeur. */
+  get labels(): Readonly<Record<Value, string>> {
+    return this.own.options.labels;
+  }
 
   /** Règle l'option `value` : sa description, sa condition, son blocage. */
   option(value: Value, settle: Settle<Questions, Cibles, Faits>): this {
     return this.withOwn({ options: this.own.options.settled(value, settle) });
   }
 
-  /** Les seules options proposées, dans cet ordre. Sans : tout le catalogue. */
+  /** Les seules options proposées, dans cet ordre. Sans : toutes. */
   order(...values: Value[]): this {
     return this.withOwn({ options: this.own.options.ordered(values) });
   }
@@ -84,20 +106,45 @@ export class DeclaredMultipleChoice<
   Cibles,
   Faits,
   Value extends string,
+  Id extends string = string,
 > extends DeclaredQuestion<
   Questions,
   Cibles,
   Faits,
-  MultipleOwn<Questions, Cibles, Faits>
+  MultipleOwn<Questions, Cibles, Faits>,
+  Id,
+  readonly Value[]
 > {
   readonly kind = "multiple choice";
+
+  /**
+   * Ses options : chaque clé est une valeur, chaque valeur son libellé, dans
+   * l'ordre du catalogue. Une clé qui a l'air d'un entier est refusée.
+   */
+  options<const Labels extends Readonly<Record<string, string>>>(
+    labels: Labels,
+  ): DeclaredMultipleChoice<
+    Questions,
+    Cibles,
+    Faits,
+    keyof Labels & string,
+    Id
+  > {
+    const options = DeclaredOptions.of<Questions, Cibles, Faits>(labels);
+    return new DeclaredMultipleChoice(this.settings, { ...this.own, options });
+  }
+
+  /** Le libellé de chacune de ses options, par valeur. */
+  get labels(): Readonly<Record<Value, string>> {
+    return this.own.options.labels;
+  }
 
   /** Règle l'option `value` : sa description, sa condition, son blocage. */
   option(value: Value, settle: Settle<Questions, Cibles, Faits>): this {
     return this.withOwn({ options: this.own.options.settled(value, settle) });
   }
 
-  /** Les seules options proposées, dans cet ordre. Sans : tout le catalogue. */
+  /** Les seules options proposées, dans cet ordre. Sans : toutes. */
   order(...values: Value[]): this {
     return this.withOwn({ options: this.own.options.ordered(values) });
   }

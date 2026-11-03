@@ -6,37 +6,48 @@
 // aucune question ne se pose est sautée, sans rien de plus à déclarer.
 
 import type { Condition } from "../../conditions/condition.ts";
-import type { AnyQuestions } from "../question.ts";
+import type { Answer, AnyQuestions } from "../question.ts";
 import type { DeclaredQuestion } from "./question.ts";
 
 /**
  * Une page déclarée. Elle ne change pas : `appliesWhen` et `mattersWhile`
  * donnent une copie.
  */
-export class DeclaredPage<Questions extends AnyQuestions, Cibles, Faits> {
+export class DeclaredPage<
+  Questions extends AnyQuestions,
+  Cibles,
+  Faits,
+  Declared extends AnyDeclared<Questions, Cibles, Faits> = AnyDeclared<
+    Questions,
+    Cibles,
+    Faits
+  >,
+> {
   readonly id: string;
-  readonly questions: readonly AnyDeclared<Questions, Cibles, Faits>[];
+  /** Ses questions, dans l'ordre : le type `Questions` du modèle s'en tire. */
+  readonly questions: readonly Declared[];
 
-  constructor(
-    id: string,
-    questions: readonly AnyDeclared<Questions, Cibles, Faits>[],
-  ) {
+  constructor(id: string, questions: readonly Declared[]) {
     this.id = id;
     this.questions = questions;
   }
 
   /** La page a un sens quand `condition` tient : chaque question la reçoit. */
-  appliesWhen(condition: Condition): DeclaredPage<Questions, Cibles, Faits> {
-    const questions = this.questions.map((question) =>
-      question.appliesWhen(condition),
+  appliesWhen(
+    condition: Condition,
+  ): DeclaredPage<Questions, Cibles, Faits, Declared> {
+    const questions = this.questions.map(
+      (question) => question.appliesWhen(condition) as Declared,
     );
     return new DeclaredPage(this.id, questions);
   }
 
   /** La page est utile tant que `condition` tient : chaque question la reçoit. */
-  mattersWhile(condition: Condition): DeclaredPage<Questions, Cibles, Faits> {
-    const questions = this.questions.map((question) =>
-      question.mattersWhile(condition),
+  mattersWhile(
+    condition: Condition,
+  ): DeclaredPage<Questions, Cibles, Faits, Declared> {
+    const questions = this.questions.map(
+      (question) => question.mattersWhile(condition) as Declared,
     );
     return new DeclaredPage(this.id, questions);
   }
@@ -46,10 +57,15 @@ export class DeclaredPage<Questions extends AnyQuestions, Cibles, Faits> {
  * La page `id`, avec ces questions dans cet ordre. Une question qui s'affiche
  * sous une option (`shownUnder`) suit la liste de cette option, sur la page.
  */
-export function page<Questions extends AnyQuestions, Cibles, Faits>(
+export function page<
+  Questions extends AnyQuestions,
+  Cibles,
+  Faits,
+  Declared extends readonly AnyDeclared<Questions, Cibles, Faits>[],
+>(
   id: string,
-  ...questions: AnyDeclared<Questions, Cibles, Faits>[]
-): DeclaredPage<Questions, Cibles, Faits> {
+  ...questions: Declared & readonly AnyDeclared<Questions, Cibles, Faits>[]
+): DeclaredPage<Questions, Cibles, Faits, Declared[number]> {
   questions.forEach((question, rang) => {
     const parent = question.shownUnderQuestion;
     if (parent === undefined) return;
@@ -68,4 +84,4 @@ type AnyDeclared<
   Questions extends AnyQuestions,
   Cibles,
   Faits,
-> = DeclaredQuestion<Questions, Cibles, Faits, object>;
+> = DeclaredQuestion<Questions, Cibles, Faits, object, string, Answer>;

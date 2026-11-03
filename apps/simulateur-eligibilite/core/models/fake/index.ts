@@ -7,9 +7,9 @@ import type { Cibles } from "./cibles/noms.ts";
 import { CATALOGUE_DES_FAITS } from "./faits/index.ts";
 import type { Faits } from "./faits/noms.ts";
 import { faits } from "./faits/preconisation.ts";
-import type { Questions } from "./questions/catalogue.ts";
 import { COMMANDE } from "./questions/p1/partie-1.ts";
 import { COMPLEMENT } from "./questions/p2/partie-2.ts";
+import type { Questions } from "./questions/reponses.ts";
 
 export const model: CoreModel<Questions, Faits, Cibles> = {
   preconisation: { faits, cibles, reads: CATALOGUE_DES_FAITS.reads },

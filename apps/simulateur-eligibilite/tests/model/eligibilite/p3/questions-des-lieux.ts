@@ -2,7 +2,7 @@
 // P2 fixe ou borne (Q3.2, Q3.3).
 
 import { model } from "../../../../core/models/eligibilite";
-import type { Questions } from "../../../../core/models/eligibilite/questions/catalogue/catalogue";
+import type { Questions } from "../../../../core/models/eligibilite/questions/reponses";
 import type { Answers } from "../../../../core/socle/questionnaire-engine/question/question";
 import { Questionnaire } from "../../../../core/socle/questionnaire-engine/questionnaire";
 import { ciblesValant } from "../r2/traces-du-prescripteur";

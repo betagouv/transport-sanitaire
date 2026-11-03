@@ -13,10 +13,10 @@ import {
   type Relevance,
   type ValidatedAnswers,
 } from "../../../socle/index.ts";
-import type { Questions } from "../questions/catalogue/catalogue.ts";
 import { P1 } from "../questions/p1/partie-1.ts";
-import { horsCircuit } from "../questions/p2/conditions/retour-penitentiaire.ts";
 import { P2 } from "../questions/p2/partie-2.ts";
+import { horsCircuit } from "../questions/p2/questions/q2-2-1-indication.ts";
+import type { Questions } from "../questions/reponses.ts";
 import { CATALOGUE_DES_FAITS } from "./index.ts";
 import { type Faits, PAS_ENCORE_ETABLI } from "./noms.ts";
 

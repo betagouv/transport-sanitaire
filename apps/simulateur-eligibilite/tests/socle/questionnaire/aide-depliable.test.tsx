@@ -11,26 +11,24 @@ type Questions = {
   situations: readonly ("hospitalise" | "autre" | "aucune")[];
 };
 
-const OPTIONS = {
-  age: { oui: "Oui", non: "Non" },
-  situations: {
-    hospitalise: "Le patient est déjà hospitalisé",
-    autre: "Une autre situation particulière",
-    aucune: "Aucune de ces situations",
-  },
-} as const;
-
-const question = questionsOf<Questions>({ options: OPTIONS });
+const question = questionsOf<Questions>();
 
 const AGE = page(
   "age",
-  question.singleChoice("age", "Le patient est-il majeur ?"),
+  question
+    .singleChoice("age", "Le patient est-il majeur ?")
+    .options({ oui: "Oui", non: "Non" }),
 );
 
 const SITUATIONS = page(
   "situations",
   question
     .multipleChoice("situations", "Quelles situations concernent ce trajet ?")
+    .options({
+      hospitalise: "Le patient est déjà hospitalisé",
+      autre: "Une autre situation particulière",
+      aucune: "Aucune de ces situations",
+    })
     .exclusive("aucune")
     .option("autre", (option) =>
       option.helpFrom(({ answers }) => ({

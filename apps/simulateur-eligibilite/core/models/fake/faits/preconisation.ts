@@ -2,7 +2,7 @@
 // sait du lait et du citron (`index.ts`).
 
 import type { GivenAnswers, ValidatedAnswers } from "../../../socle/index.ts";
-import type { Questions } from "../questions/catalogue.ts";
+import type { Questions } from "../questions/reponses.ts";
 import { CATALOGUE_DES_FAITS } from "./index.ts";
 import type { Faits } from "./noms.ts";
 

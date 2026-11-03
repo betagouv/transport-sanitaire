@@ -6,17 +6,20 @@
 // nom et son adresse se demandent toujours. Un hébergement du dispositif qui
 // est déjà l'un des deux lieux garde ceux de Q3.2 ou Q3.3.
 
+import { Q2_14_MOTIF } from "../../p2/questions/q2-14.ts";
 import { given, question } from "../../question.ts";
 import { natureDu } from "../conditions/lieux-du-trajet.ts";
 import { uneDap } from "../conditions/supports-du-complement.ts";
+import { Q3_2 } from "./q3-2.ts";
+import { Q3_3 } from "./q3-3.ts";
 
 // La DAP coche le motif Engagement maternité.
 const unEngagementMaternite = uneDap.and(
   given.cible("cible_dap_motif_engagement_maternite").isOui(),
 );
 
-const unLieuHeberge = natureDu("depart").computeWith(
-  natureDu("arrivee"),
+const unLieuHeberge = natureDu("depart", Q3_2.nature).computeWith(
+  natureDu("arrivee", Q3_3.nature),
   (depart, arrivee) =>
     [depart, arrivee].includes("5_HEBERGEMENT_NON_MEDICALISE"),
 );
@@ -24,9 +27,7 @@ const unLieuHeberge = natureDu("depart").computeWith(
 // Q2.14 dit le déplacement lié à l'hébergement du dispositif, que ni le
 // départ ni l'arrivée ne sont.
 const unHebergementDistinct = unEngagementMaternite
-  .and(
-    given.question("Q2.14.motif").answer().checked("2_HEBERGEMENT_ENGAGEMENT"),
-  )
+  .and(given.question(Q2_14_MOTIF).answer().checked("2_HEBERGEMENT_ENGAGEMENT"))
   .and(unLieuHeberge.not());
 
 export const Q3_8_MATERNITE_NOM = question
@@ -42,6 +43,14 @@ export const Q3_8_NIVEAU = question
     "Q3.8.niveau",
     "Quel niveau de maternité est requis pour cette patiente ?",
   )
+  // Le niveau de `CONTRAT_Q38_MATERNITE_DOCUMENT.json`.
+  .options({
+    "1_TYPE_I":
+      "Type I — soins obstétricaux et accueil du nouveau-né sans unité de néonatologie.",
+    "2_TYPE_IIA": "Type IIA — unité de néonatologie.",
+    "3_TYPE_IIB": "Type IIB — néonatologie avec soins intensifs.",
+    "4_TYPE_III": "Type III — réanimation néonatale.",
+  })
   .mattersWhile(unEngagementMaternite);
 
 export const Q3_8_HEBERGEMENT_NOM = question

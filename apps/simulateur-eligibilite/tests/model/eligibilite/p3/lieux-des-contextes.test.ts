@@ -3,7 +3,7 @@
 // du document (D-121).
 
 import { describe, expect, it } from "vitest";
-import type { Questions } from "../../../../core/models/eligibilite/questions/catalogue/catalogue";
+import type { Questions } from "../../../../core/models/eligibilite/questions/reponses";
 import {
   ADRESSE,
   ALLER,

@@ -2,16 +2,17 @@
 // permissions, chacune un aller-retour, le donnent sans le redemander (D-120).
 // Les rôles des lieux (`situations-des-lieux.ts`) et le cerfa le lisent.
 
-import type { GivenAnswer } from "../../../../../socle/index.ts";
-import type { Questions } from "../../catalogue/catalogue.ts";
+import type { AnswerOf, GivenAnswer } from "../../../../../socle/index.ts";
+import { Q2_8_5 } from "../../p2/questions/q2-8-5.ts";
 import { given, type Inconnu } from "../../question.ts";
+import { Q3_1_2 } from "../questions/q3-1-2.ts";
 
-type Sens = Questions["Q3.1.2"];
+type Sens = AnswerOf<typeof Q3_1_2>;
 
 /** Ce dont le sens du document se tire : Q3.1.2 et la répétition de Q2.8. */
 type Origines = {
   readonly sens: GivenAnswer<Sens>;
-  readonly repetition: GivenAnswer<Questions["Q2.8.5"]>;
+  readonly repetition: GivenAnswer<AnswerOf<typeof Q2_8_5>>;
 };
 
 /** Le sens du document : Q3.1.2, ou l'aller-retour de plusieurs permissions. */
@@ -23,7 +24,7 @@ export function sensDe({ sens, repetition }: Origines): Sens | Inconnu {
 /** Le sens du document, tel que l'endroit le lit (`sensDe`). */
 export const SENS_DU_DOCUMENT = given
   .all({
-    sens: given.question("Q3.1.2").answer(),
-    repetition: given.question("Q2.8.5").answer(),
+    sens: given.question(Q3_1_2).answer(),
+    repetition: given.question(Q2_8_5).answer(),
   })
   .compute(sensDe);

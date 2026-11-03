@@ -9,4 +9,8 @@ export const Q2_8_5 = question
     "Q2.8.5",
     "La prescription couvre-t-elle plusieurs permissions ?",
   )
+  .options({
+    "1_OUI": "Oui.",
+    "2_NON": "Non.",
+  })
   .appliesWhen(unMineurDeVingtAns);

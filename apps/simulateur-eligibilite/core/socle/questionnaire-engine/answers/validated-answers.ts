@@ -2,7 +2,14 @@
 // proposait. C'est ce qui sépare un « non » d'un fait inconnu : une case
 // proposée et non cochée a été refusée, une case jamais montrée ne l'a pas été.
 
-import type { Answers, AnyQuestions, Validated } from "../question/question.ts";
+import {
+  type Answer,
+  type Answered,
+  type Answers,
+  type AnyQuestions,
+  idOf,
+  type Validated,
+} from "../question/question.ts";
 import { type Box, type Choice, GivenAnswer } from "./given-answers.ts";
 
 /**
@@ -54,10 +61,16 @@ export class ValidatedAnswers<Questions extends AnyQuestions = AnyQuestions> {
   }
 
   /** Cette question, validée ou pas. */
+  question<Given extends Answer>(
+    question: Answered<Given>,
+  ): ValidatedAnswer<Given>;
   question<Id extends keyof Questions & string>(
     id: Id,
-  ): ValidatedAnswer<Questions[Id]> {
-    return new ValidatedAnswer(id, this.#validated[id] as Validated[string]);
+  ): ValidatedAnswer<Questions[Id]>;
+  question(question: string | Answered): ValidatedAnswer {
+    const id = idOf(question);
+    const validated: Validated = this.#validated;
+    return new ValidatedAnswer(id, validated[id]);
   }
 
   /**

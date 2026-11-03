@@ -7,7 +7,7 @@
 // autant (#128). La personne accompagnante est celle de P1 sur ce trajet : les
 // règles n'ont pas de cible propre au trajet aérien.
 
-import { given } from "../../../../../core/models/eligibilite/questions/question";
+import { given } from "../../../../../core/models/eligibilite/questions/reponses";
 import type { Condition } from "../../../../../core/socle";
 import { MOTIFS } from "./motifs";
 import { MOTIFS_DE_LA_DAP } from "./motifs-de-la-dap";

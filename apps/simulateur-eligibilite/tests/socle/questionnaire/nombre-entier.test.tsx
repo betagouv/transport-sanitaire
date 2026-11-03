@@ -7,7 +7,7 @@ import { afficher } from "./afficher";
 
 type Questions = { transports: number; poids: number };
 
-const question = questionsOf<Questions>({ options: {} });
+const question = questionsOf<Questions>();
 
 const TRANSPORTS = page(
   "transports",

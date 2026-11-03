@@ -8,16 +8,13 @@ import { afficher } from "./afficher";
 
 type Questions = { lieu: "domicile" | "etablissement" };
 
-const OPTIONS = {
-  lieu: { domicile: "Domicile", etablissement: "Établissement de soins" },
-} as const;
-
-const question = questionsOf<Questions>({ options: OPTIONS });
+const question = questionsOf<Questions>();
 
 const LIEU = page(
   "lieu",
   question
     .singleChoice("lieu", "Quel est le lieu de départ ?")
+    .options({ domicile: "Domicile", etablissement: "Établissement de soins" })
     .dropdown()
     .hint("Le lieu où le patient est pris en charge."),
 );

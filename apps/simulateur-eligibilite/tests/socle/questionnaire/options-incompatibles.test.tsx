@@ -12,21 +12,18 @@ type Questions = {
   criteres: readonly ("fauteuil" | "brancard" | "oxygene")[];
 };
 
-const OPTIONS = {
-  criteres: {
-    fauteuil: "Dans son fauteuil",
-    brancard: "Sur un brancard",
-    oxygene: "Sous oxygène",
-  },
-} as const;
-
-const question = questionsOf<Questions>({ options: OPTIONS });
+const question = questionsOf<Questions>();
 
 const EXPLICATION =
   "Le patient voyage dans son fauteuil ou sur un brancard, pas les deux.";
 
 const CRITERES = question
   .multipleChoice("criteres", "Quels critères ?")
+  .options({
+    fauteuil: "Dans son fauteuil",
+    brancard: "Sur un brancard",
+    oxygene: "Sous oxygène",
+  })
   .incompatible("fauteuil", "brancard", EXPLICATION);
 
 const PAGE = page("criteres", CRITERES);

@@ -25,7 +25,6 @@ let calculs = 0;
 const given = givenOf<Questions, Faits, Cibles>();
 
 const question = questionsOf<Questions, Faits, Cibles>({
-  options: { boisson: { the: "Un thé", cafe: "Un café", eau: "De l'eau" } },
   faits: new FaitCatalogue<Faits>(
     ["chaude"],
     [
@@ -42,7 +41,9 @@ const question = questionsOf<Questions, Faits, Cibles>({
 
 const BOISSON = page(
   "boisson",
-  question.singleChoice("boisson", "Quelle boisson ?"),
+  question
+    .singleChoice("boisson", "Quelle boisson ?")
+    .options({ the: "Un thé", cafe: "Un café", eau: "De l'eau" }),
 );
 
 const SUCRE = page(

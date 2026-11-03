@@ -22,8 +22,8 @@ import type {
   Issue,
 } from "../../../../core/models/eligibilite/cibles/noms";
 import type { Faits } from "../../../../core/models/eligibilite/faits/noms";
-import { dansLeCircuit } from "../../../../core/models/eligibilite/questions/p2/conditions/retour-penitentiaire";
-import { given } from "../../../../core/models/eligibilite/questions/question";
+import { dansLeCircuit } from "../../../../core/models/eligibilite/questions/p2/questions/q2-2-1-indication";
+import { given } from "../../../../core/models/eligibilite/questions/reponses";
 import type { ValueOf } from "../../../../core/socle";
 import type { FirstResult, ResultatProps } from "../../../socle";
 import {

@@ -9,7 +9,7 @@ import { afficher } from "./afficher";
 
 type Questions = { depart: Address };
 
-const question = questionsOf<Questions>({ options: {} });
+const question = questionsOf<Questions>();
 
 const DEPART = question.address("depart", "Adresse de départ");
 

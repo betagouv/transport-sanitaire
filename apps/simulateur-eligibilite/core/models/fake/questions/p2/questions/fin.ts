@@ -3,17 +3,20 @@
 // des deux questions : le moteur lui cache les pages suivantes.
 
 import { given, question } from "../../question.ts";
+import { DEBUT } from "./debut.ts";
 
-const fin = given.question("fin").answer();
-const finAvantDebut = fin
+// La question, avant les règles qui lisent sa réponse.
+const fin = question.datetime("fin", "Quand finit-il ?");
+
+const reponse = given.question(fin).answer();
+const finAvantDebut = reponse
   .toDate()
-  .isBefore(given.question("debut").answer().toDate());
-const finUnDimanche = fin.compute(({ value }) =>
+  .isBefore(given.question(DEBUT).answer().toDate());
+const finUnDimanche = reponse.compute(({ value }) =>
   value ? isSunday(value) : false,
 );
 
-export const FIN = question
-  .datetime("fin", "Quand finit-il ?")
+export const FIN = fin
   .hint(
     "Démontre : deux messages ensemble, sous la même réponse. Une fin avant le début, un jour de fermeture : choisissez un dimanche avant le début pour voir les deux. Corrigée, la page se valide.",
   )

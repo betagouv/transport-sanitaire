@@ -1,34 +1,35 @@
 // Le questionnaire du modèle : ses parties, dans l'ordre du catalogue de
-// l'éditeur. Les options et leurs libellés viennent des déclarations.
+// l'éditeur.
 
-import { page, type QuestionnairePart } from "../../../socle/index.ts";
-import type { Questions } from "./catalogue/catalogue.ts";
+import { page } from "../../../socle/index.ts";
 import { P1 } from "./p1/partie-1.ts";
 import { P2 } from "./p2/partie-2.ts";
 import { question } from "./question.ts";
 
-type Partie<Cibles> = QuestionnairePart<Questions, Cibles>;
+/** P0 : le besoin du prescripteur. */
+const P0 = {
+  id: "P0",
+  title: "Mon besoin",
+  pages: [
+    page(
+      "P0/1",
+      question
+        .singleChoice("Q0.1", "Quel est votre besoin ?")
+        .options({
+          "1_VERIFIER": "Vérifier une éligibilité",
+          "2_VERIFIER_ET_PRESCRIRE":
+            "Vérifier et prescrire si la situation le permet",
+        })
+        .boldLabels()
+        .option("1_VERIFIER", (option) =>
+          option.description("Environ 3 minutes"),
+        )
+        .option("2_VERIFIER_ET_PRESCRIRE", (option) =>
+          option.description("Environ 10 minutes"),
+        ),
+    ),
+  ],
+};
 
 /** P0 à P2 : modifiables tant que le résultat n'est pas verrouillé. */
-export const PARTS: readonly Partie<undefined>[] = [
-  {
-    id: "P0",
-    title: "Mon besoin",
-    pages: [
-      page(
-        "P0/1",
-        question
-          .singleChoice("Q0.1", "Quel est votre besoin ?")
-          .boldLabels()
-          .option("1_VERIFIER", (option) =>
-            option.description("Environ 3 minutes"),
-          )
-          .option("2_VERIFIER_ET_PRESCRIRE", (option) =>
-            option.description("Environ 10 minutes"),
-          ),
-      ),
-    ],
-  },
-  P1,
-  P2,
-];
+export const PARTS = [P0, P1, P2];

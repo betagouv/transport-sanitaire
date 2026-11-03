@@ -17,20 +17,19 @@ type Questions = {
   dessert: string;
 };
 
-const OPTIONS = {
-  regime: { tout: "Je mange de tout", vegetarien: "Végétarien" },
-  allergies: { gluten: "Au gluten", arachide: "À l'arachide" },
-  plats: { salade: "Une salade", steak: "Un steak", rien: "Rien" },
-} as const;
-
-const question = questionsOf<Questions>({ options: OPTIONS });
+const question = questionsOf<Questions>();
 const given = givenOf<Questions>();
 const regime = given.question("regime").answer();
 
 const REGIME = page(
   "regime",
-  question.singleChoice("regime", "Quel est votre régime ?"),
-  question.multipleChoice("allergies", "Des allergies ?").optional(),
+  question
+    .singleChoice("regime", "Quel est votre régime ?")
+    .options({ tout: "Je mange de tout", vegetarien: "Végétarien" }),
+  question
+    .multipleChoice("allergies", "Des allergies ?")
+    .options({ gluten: "Au gluten", arachide: "À l'arachide" })
+    .optional(),
   question
     .text("proteines", "Quelles protéines ?")
     // Sur la même page : la question lit celle qui la précède.
@@ -41,6 +40,7 @@ const PLATS = page(
   "plats",
   question
     .multipleChoice("plats", "Quels plats ?")
+    .options({ salade: "Une salade", steak: "Un steak", rien: "Rien" })
     .option("steak", (option) => option.offeredWhen(regime.is("tout")))
     .exclusive("rien"),
 );

@@ -3,7 +3,7 @@
 // transport partagé ne se coche que sur une preuve (COR-06).
 
 import type { Cibles } from "../../../../../core/models/eligibilite/cibles/noms";
-import { given } from "../../../../../core/models/eligibilite/questions/question";
+import { given } from "../../../../../core/models/eligibilite/questions/reponses";
 import type { Cible } from "../../../../../core/socle";
 import type { Rubrique } from "./rubrique";
 

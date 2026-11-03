@@ -15,18 +15,17 @@ type Questions = {
   debut: string;
 };
 
-const OPTIONS = {
-  livraison: { domicile: "À domicile", relais: "En point relais" },
-  mode: { carte: "Par carte", especes: "En espèces" },
-} as const;
-
-const question = questionsOf<Questions>({ options: OPTIONS });
+const question = questionsOf<Questions>();
 const given = givenOf<Questions>();
 
-const LIVRAISON = question.singleChoice("livraison", "Comment livrer ?");
+const LIVRAISON = question
+  .singleChoice("livraison", "Comment livrer ?")
+  .options({ domicile: "À domicile", relais: "En point relais" });
 
 // Le mode de paiement, sans règle.
-const PAIEMENT = question.singleChoice("mode", "Comment payer ?");
+const PAIEMENT = question
+  .singleChoice("mode", "Comment payer ?")
+  .options({ carte: "Par carte", especes: "En espèces" });
 
 const MODE = PAIEMENT.inconsistentWhen(
   given

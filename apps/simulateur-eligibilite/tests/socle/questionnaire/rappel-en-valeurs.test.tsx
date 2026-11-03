@@ -16,7 +16,7 @@ type Questions = {
 // Les cibles figées au verrou. Avant lui : aucune.
 type Cibles = { readonly nature: Cible<string> } | undefined;
 
-const question = questionsOf<Questions, undefined, Cibles>({ options: {} });
+const question = questionsOf<Questions, undefined, Cibles>();
 
 // La page du lieu d'arrivée, posée après le verrou : elle lit les cibles figées.
 const ARRIVEE = afterLock({

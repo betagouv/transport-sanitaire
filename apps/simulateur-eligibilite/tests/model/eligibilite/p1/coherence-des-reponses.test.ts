@@ -12,10 +12,8 @@ import { model } from "../../../../core/models/eligibilite";
 import { cible } from "../../../../core/models/eligibilite/cibles/evaluation";
 import { CATALOGUE_DES_FAITS } from "../../../../core/models/eligibilite/faits";
 import type { Faits } from "../../../../core/models/eligibilite/faits/noms";
-import {
-  OPTIONS,
-  type Questions,
-} from "../../../../core/models/eligibilite/questions/catalogue/catalogue";
+import { Q1_2 } from "../../../../core/models/eligibilite/questions/p1/questions/q1-2";
+import type { Questions } from "../../../../core/models/eligibilite/questions/reponses";
 import { Fait } from "../../../../core/socle";
 import { ValidatedAnswers } from "../../../../core/socle/questionnaire-engine/answers/validated-answers";
 import {
@@ -36,7 +34,7 @@ const PRO: Reponses = {
 const q12 = pages
   .flatMap((page) => new Questionnaire(pages).readWith(PRO).questionsOn(page))
   .find(({ id }) => id === "Q1.2");
-const CRITERES = Object.keys(OPTIONS["Q1.2"]) as Critere[];
+const CRITERES = Object.keys(Q1_2.labels) as Critere[];
 
 // Le masque de l'éditeur : le bit n donne le critère n + 1 du catalogue.
 const criteresDu = (masque: number) =>

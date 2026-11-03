@@ -5,11 +5,12 @@
 
 import { type Context, given, question } from "../../question.ts";
 import { pmtOuDap } from "../conditions/supports-du-complement.ts";
+import { Q3_1_2 } from "./q3-1-2.ts";
 
 // Q3.1.1 se pose pour la PMT et la DAP, une fois le sens choisi.
 const uneQuantiteAPoser = pmtOuDap.and(
   given
-    .question("Q3.1.2")
+    .question(Q3_1_2)
     .answer()
     .isOneOf("1_ALLER", "2_RETOUR", "3_ALLER_RETOUR_EQUIVALENT"),
 );
@@ -34,7 +35,7 @@ const QUANTITES = {
 // Le sens de Q3.1.2 qui a une unité. Q3.1.1 ne se pose qu'avec l'un d'eux
 // (`uneQuantiteAPoser`) : l'aller tient lieu de défaut.
 function sensDeQ312(answers: Context["answers"]): keyof typeof QUANTITES {
-  const sens = answers.question("Q3.1.2").value;
+  const sens = answers.question(Q3_1_2).value;
   return sens !== undefined && sens in QUANTITES
     ? (sens as keyof typeof QUANTITES)
     : "1_ALLER";
@@ -58,4 +59,4 @@ export const Q3_1_1 = question
   .min(1)
   .mattersWhile(uneQuantiteAPoser)
   // Un autre sens change l'unité : le nombre se ressaisit.
-  .dependsOn("Q3.1.2");
+  .dependsOn(Q3_1_2);

@@ -4,7 +4,7 @@
 // vérifier une éligibilité, ou aller jusqu'à la prescription. Q0.1 n'a pas
 // d'effet sur l'éligibilité, et sans réponse, l'avis n'est pas proposé.
 
-import { given } from "../../../core/models/eligibilite/questions/question";
+import { given } from "../../../core/models/eligibilite/questions/reponses";
 import type { Feedback, Intent } from "../../socle";
 
 const BESOIN = given.question("Q0.1").answer();

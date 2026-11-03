@@ -11,7 +11,7 @@
 // déclare ce qu'il lit des cibles et des faits (`ce-que-lit-un-texte.ts`).
 
 import type { Cibles } from "../../../../../core/models/eligibilite/cibles/noms";
-import { given } from "../../../../../core/models/eligibilite/questions/question";
+import { given } from "../../../../../core/models/eligibilite/questions/reponses";
 import { luPar, type TraceDe } from "./ce-que-lit-un-bloc";
 import {
   avecLeLexique,

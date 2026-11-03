@@ -13,10 +13,8 @@
 // codée, elle ne devient jamais vraie, et la raison n'est donc jamais choisie. Elle déclare ce qu'elle lit des cibles et
 // des faits (`ce-que-lit-un-texte.ts`).
 
-import {
-  given,
-  type Inconnu,
-} from "../../../../../core/models/eligibilite/questions/question";
+import type { Inconnu } from "../../../../../core/models/eligibilite/questions/question";
+import { given } from "../../../../../core/models/eligibilite/questions/reponses";
 import { luPar, type TraceDe } from "./ce-que-lit-un-bloc";
 import type { IssueNegative } from "./forme-du-catalogue";
 

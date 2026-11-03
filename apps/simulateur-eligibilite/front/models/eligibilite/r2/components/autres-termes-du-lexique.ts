@@ -8,7 +8,7 @@
 // ne dit CAMSP ou CMPP. Rien n'est jamais deviné. Elle déclare ce qu'elle lit
 // des cibles (`ce-que-lit-un-texte.ts`).
 
-import { given } from "../../../../../core/models/eligibilite/questions/question";
+import { given } from "../../../../../core/models/eligibilite/questions/reponses";
 import type { ReponsesLues } from "./ce-que-lit-un-bloc";
 import { luPar, type TraceDe } from "./ce-que-lit-un-bloc";
 import type { IssuePositive } from "./forme-du-catalogue";

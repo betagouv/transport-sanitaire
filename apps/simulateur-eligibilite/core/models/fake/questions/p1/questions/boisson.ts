@@ -4,6 +4,7 @@ import { question } from "../../question.ts";
 
 export const BOISSON = question
   .singleChoice("boisson", "Quelle boisson souhaitez-vous ?")
+  .options({ the: "Un thé", cafe: "Un café", rien: "Rien" })
   .hint(
     "Démontre : des libellés en gras, une description grise sous chaque option, et l'avance immédiate après un choix unique.",
   )

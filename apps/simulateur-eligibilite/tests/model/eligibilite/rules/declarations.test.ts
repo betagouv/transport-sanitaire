@@ -4,15 +4,16 @@
 // d'autre ne garantit qu'ils nomment ce que les règles nomment.
 
 import { describe, expect, it } from "vitest";
+import { model } from "../../../../core/models/eligibilite";
 import {
   CIBLES,
   CIBLES_ENUMEREES,
 } from "../../../../core/models/eligibilite/cibles/noms";
 import { FAITS } from "../../../../core/models/eligibilite/faits/noms";
-import { OPTIONS } from "../../../../core/models/eligibilite/questions/catalogue/catalogue";
 import rules from "../../../../core/models/eligibilite/rules/regles.json" with {
   type: "json",
 };
+import { pagesOf } from "../../../../core/socle/questionnaire-engine/question/question";
 
 type Regle = {
   type?: string;
@@ -20,6 +21,18 @@ type Regle = {
 };
 
 const regles = rules as Record<string, Regle>;
+
+// Les options de chaque question à choix du modèle : leur slug, et leur libellé.
+const OPTIONS: Readonly<Record<string, Readonly<Record<string, string>>>> =
+  Object.fromEntries(
+    [...pagesOf(model.questionnaire), ...model.complement.pages]
+      .flatMap((page): readonly object[] => page.questions)
+      .flatMap((question) =>
+        "labels" in question && "id" in question
+          ? [[question.id, question.labels]]
+          : [],
+      ),
+  );
 const nomsCommencantPar = (prefixe: string) =>
   Object.keys(regles).filter((nom) => nom.startsWith(prefixe));
 const tries = (noms: readonly string[]) => [...noms].sort();
@@ -81,14 +94,14 @@ describe("les options déclarées", () => {
   // le 8 : chacune garde son numéro, et la réponse négative de chaque bloc
   // est la 0 (`CONTRAT_Q221_PROGRESSIF.json`, D-252). Q2.6 pose son option 1,
   // le type du transfert, à part (D-106).
-  const {
-    "Q2.2.1": situations,
-    "Q2.2.1.b": soins,
-    "Q2.6": exceptions,
-    ...suivies
-  } = OPTIONS;
+  const A_PART = ["Q2.2.1", "Q2.2.1.b", "Q2.6"];
+  const suivies = Object.entries(OPTIONS).filter(
+    ([id]) => !A_PART.includes(id),
+  );
+  const numerosDe = (id: string) =>
+    Object.keys(OPTIONS[id] ?? {}).map((slug) => Number(slug.split("_")[0]));
 
-  it.each(Object.entries(suivies))(
+  it.each(suivies)(
     "%s numérote ses options comme le catalogue, de 1 en 1",
     (_, options) => {
       const slugs = Object.keys(options);
@@ -102,21 +115,17 @@ describe("les options déclarées", () => {
   );
 
   it.each([
-    ["Q2.2.1", situations, [1, 2, 4, 5, 10, 0]],
-    ["Q2.2.1.b", soins, [1, 6, 7, 9, 13, 0]],
+    ["Q2.2.1", [1, 2, 4, 5, 10, 0]],
+    ["Q2.2.1.b", [1, 6, 7, 9, 13, 0]],
   ] as const)(
     "%s garde les numéros du catalogue (TS1012-03)",
-    (_, options, numeros) => {
-      expect(
-        Object.keys(options).map((slug) => Number(slug.split("_")[0])),
-      ).toEqual(numeros);
+    (id, numeros) => {
+      expect(numerosDe(id)).toEqual(numeros);
     },
   );
 
   it("Q2.6 numérote ses exceptions à partir de 2, après le type", () => {
-    expect(
-      Object.keys(exceptions).map((slug) => Number(slug.split("_")[0])),
-    ).toEqual([2, 3, 4, 5, 6, 7, 8, 9, 10, 11]);
+    expect(numerosDe("Q2.6")).toEqual([2, 3, 4, 5, 6, 7, 8, 9, 10, 11]);
   });
 
   it.each(Object.entries(OPTIONS))(

@@ -1,16 +1,24 @@
 // Q3.1.3 : le nombre mensuel d'allers-retours du S3141 de plusieurs
 // permissions. Il reprend la fréquence de Q2.8, sans la dépasser.
 
+import { Q2_8_5 } from "../../p2/questions/q2-8-5.ts";
+import { Q2_8_6_A } from "../../p2/questions/q2-8-6.ts";
 import { type Context, given, type Inconnu, question } from "../../question.ts";
 import { unS3141 } from "../conditions/supports-du-complement.ts";
 
+// La question, avant les règles qui lisent sa réponse.
+const declaree = question.number(
+  "Q3.1.3",
+  "Combien d’allers-retours faut-il prescrire par mois pour ces permissions de sortie ?",
+);
+
 type Rappel = { readonly label: string; readonly value: string }[];
 
-const semaines = given.question("Q2.8.6.a").answer();
+const semaines = given.question(Q2_8_6_A).answer();
 
 // Q3.1.3 se pose pour le S3141 de plusieurs permissions.
 const desTrajetsMensuelsAPoser = unS3141.and(
-  given.question("Q2.8.5").answer().is("1_OUI"),
+  given.question(Q2_8_5).answer().is("1_OUI"),
 );
 
 // Le plus d'allers-retours qu'un mois compte : une permission toutes les
@@ -24,7 +32,7 @@ function allersRetoursMensuelsAuPlus(
 
 // Q3.1.3 dépasse ce que la fréquence de Q2.8 permet.
 const desTrajetsAuDelaDeLaFrequence = given
-  .question("Q3.1.3")
+  .question(declaree)
   .answer()
   .computeWith(semaines, (nombre, frequence) => {
     const maximum = allersRetoursMensuelsAuPlus(frequence.value);
@@ -44,7 +52,7 @@ const FREQUENCE_DEPASSEE = semaines.compute(
 // La fréquence des permissions de Q2.8, rappelée au-dessus de Q3.1.3. Elle ne
 // se convertit pas en nombre par mois (TS1014-E04).
 function rappelDesPermissions({ answers }: Context): Rappel {
-  const semaines = answers.question("Q2.8.6.a").value;
+  const semaines = answers.question(Q2_8_6_A).value;
   if (semaines === undefined || semaines < 1) return [];
   const frequence =
     semaines === 1
@@ -53,11 +61,7 @@ function rappelDesPermissions({ answers }: Context): Rappel {
   return [{ label: "Fréquence", value: frequence }];
 }
 
-export const Q3_1_3 = question
-  .number(
-    "Q3.1.3",
-    "Combien d’allers-retours faut-il prescrire par mois pour ces permissions de sortie ?",
-  )
+export const Q3_1_3 = declaree
   .hint("Exemple : 2 allers-retours par mois = 2 allers et 2 retours par mois.")
   .integer()
   .min(1)

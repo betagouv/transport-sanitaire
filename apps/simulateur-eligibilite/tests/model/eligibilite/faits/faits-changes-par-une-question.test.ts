@@ -27,7 +27,9 @@ const changes = faitsChangedBy(
 describe("ce que change une question du modèle", () => {
   // La décision impose la complétude, qui lit ses parties (#259).
   it("chaque question de P1 change la complétude de P1 et de P2", () => {
-    const p1 = P1.pages.flatMap((each) => each.questions);
+    const p1 = P1.pages.flatMap(
+      (each): readonly { readonly id: string }[] => each.questions,
+    );
 
     expect(
       p1.filter(({ id }) => !changes.get(id)?.includes("fait_p1_complete")),
@@ -38,7 +40,9 @@ describe("ce que change une question du modèle", () => {
   });
 
   it("chaque question de P2 change la complétude de P2, pas celle de P1", () => {
-    const p2 = P2.pages.flatMap((each) => each.questions);
+    const p2 = P2.pages.flatMap(
+      (each): readonly { readonly id: string }[] => each.questions,
+    );
 
     expect(
       p2.filter(({ id }) => !changes.get(id)?.includes("fait_p2_complete")),

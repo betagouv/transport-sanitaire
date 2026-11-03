@@ -8,7 +8,7 @@
 // `8_BRANCARDAGE`.
 
 import { describe, expect, it } from "vitest";
-import type { Questions } from "../../../../core/models/eligibilite/questions/catalogue/catalogue";
+import type { Questions } from "../../../../core/models/eligibilite/questions/reponses";
 import type { Questionnaire } from "../../../../core/socle/questionnaire-engine/questionnaire";
 import { Simulation } from "../../../../core/socle/simulation/simulation";
 import { model } from "../../../../front/models/eligibilite";

@@ -5,8 +5,10 @@
 // en établissement fixe l'établissement ; une USLD que Q2.6 cite peut l'être.
 // Le lieu de vie d'une permission n'est pas présumé domicile : il se choisit.
 
-import { OPTIONS, type Questions } from "../../catalogue/catalogue.ts";
-import type { Entrees, Nature } from "./roles-des-lieux.ts";
+import type { AnswerOf } from "../../../../../socle/index.ts";
+import type { Q2_6 } from "../../p2/questions/q2-6.ts";
+import { NATURES_DU_LIEU, type Nature } from "./natures-du-lieu.ts";
+import type { Entrees } from "./roles-des-lieux.ts";
 import { sensDe } from "./sens-du-trajet.ts";
 
 /** Une nature établie en P2, et ce que le rappel en dit. */
@@ -29,7 +31,7 @@ export function rolesDesSituations(entrees: Entrees): Lieux[] {
 /** Q2.6 cite cette exception de l'article 80. */
 export function q26(
   entrees: Entrees,
-  option: Questions["Q2.6"][number],
+  option: AnswerOf<typeof Q2_6>[number],
 ): boolean {
   return entrees.contexte.checked(option);
 }
@@ -181,7 +183,7 @@ function departDeQ213(entrees: Entrees): Lieux {
   const depart = entrees.departDeLEntree.value;
   if (depart === undefined) return {};
   const nature = depart === "7_AUTRE_LIEU" ? "8_AUTRE_LIEU" : depart;
-  return { depart: { nature, rappel: OPTIONS["Q3.2.nature"][nature] } };
+  return { depart: { nature, rappel: NATURES_DU_LIEU[nature] } };
 }
 
 // Q1.3 le dit d'un centre : l'aller y arrive, le retour en part.

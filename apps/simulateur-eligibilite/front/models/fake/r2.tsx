@@ -10,7 +10,7 @@
 import type { ReactNode } from "react";
 import { SANS_COMMANDE } from "../../../core/models/fake/cibles/evaluation";
 import type { Cibles } from "../../../core/models/fake/cibles/noms";
-import { given } from "../../../core/models/fake/questions/question";
+import { given } from "../../../core/models/fake/questions/reponses";
 import type { ValueOf } from "../../../core/socle";
 import {
   Disclosure,

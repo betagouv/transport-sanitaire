@@ -18,7 +18,7 @@
 // la case de gauche et `non` celle de droite. Suivre les états cocherait
 // « non » pour un accident causé par un tiers (D-139).
 
-import { given } from "../../../../../core/models/eligibilite/questions/question";
+import { given } from "../../../../../core/models/eligibilite/questions/reponses";
 import {
   bindCerfa,
   box,

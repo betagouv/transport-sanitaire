@@ -34,7 +34,7 @@ import type {
   Cibles,
   Issue,
 } from "../../../../core/models/eligibilite/cibles/noms";
-import { given } from "../../../../core/models/eligibilite/questions/question";
+import { given } from "../../../../core/models/eligibilite/questions/reponses";
 import { cerfaValue } from "../../../socle";
 import { S3138G } from "./s3138g/s3138g";
 import { S3139H } from "./s3139h/s3139h";

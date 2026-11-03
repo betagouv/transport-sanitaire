@@ -6,7 +6,7 @@
 // ni jour : `given` ne les offre pas au typage, et le catalogue s'y arrête net.
 
 import { givenOf, uneRegle } from "../../../socle/index.ts";
-import type { Questions } from "../questions/catalogue/catalogue.ts";
+import type { Questions } from "../questions/reponses.ts";
 import type { Faits } from "./noms.ts";
 
 /** Les entrées d'un fait : `given.question("Q2.5").answer()`, `given.fait(nom)`. */

@@ -3,46 +3,19 @@
 // précisent le volet médical de la PMT et de la DAP : le S3141 n'en a pas.
 // Rien de ce qu'elles recueillent ne requalifie P2.
 
-import type { GivenAnswers } from "../../../../../socle/index.ts";
-import { OPTIONS, type Questions } from "../../catalogue/catalogue.ts";
+import type {
+  Answered,
+  GivenAnswers,
+  ReadByObject,
+} from "../../../../../socle/index.ts";
+import { Q1_3, Q1_3_A } from "../../p1/questions/q1-3.ts";
+import { Q2_1, Q2_1_F, Q2_1_G } from "../../p2/questions/q2-1.ts";
 import { given, question } from "../../question.ts";
 import { pmtOuDap } from "../conditions/supports-du-complement.ts";
+import { Q3_1_2 } from "./q3-1-2.ts";
 
 // Un retour seul ne va pas vers le centre de référence.
-const unRetourSeul = given.question("Q3.1.2").answer().is("2_RETOUR");
-
-const SEANCES = ["3_CHIMIOTHERAPIE", "4_RADIOTHERAPIE", "5_DIALYSE"] as const;
-
-// L'intitulé de chaque fait rappelé, le nôtre (D-122).
-const PRECISIONS = {
-  "Q2.1": "Motif",
-  "Q2.1.g": "Précision",
-  "Q1.3.a": "Séance d’hémodialyse",
-  "Q2.1.f": "Séances et déplacement",
-} as const;
-
-// Le motif de Q2.1, les faits qui le précisent, et les séances que P1 a
-// prouvées. Q2.1.l n'est pas codée : il n'y a pas d'intitulé à rappeler.
-function recapitulatifDuSoin(reponses: GivenAnswers<Questions>) {
-  const lu = (id: keyof typeof PRECISIONS) => {
-    const reponse = reponses.question(id).value;
-    const libelles: Readonly<Record<string, string>> = OPTIONS[id];
-    return reponse
-      ? [{ label: PRECISIONS[id], value: libelles[reponse] ?? reponse }]
-      : [];
-  };
-  const seances = SEANCES.filter((seance) =>
-    reponses.question("Q1.3").checked(seance),
-  ).map((seance) => ({ label: "Séance", value: OPTIONS["Q1.3"][seance] }));
-  const lignes = [
-    ...lu("Q2.1"),
-    ...lu("Q2.1.g"),
-    ...seances,
-    ...lu("Q1.3.a"),
-    ...lu("Q2.1.f"),
-  ];
-  return lignes.length > 0 ? lignes : undefined;
-}
+const unRetourSeul = given.question(Q3_1_2).answer().is("2_RETOUR");
 
 // Le soin, tel que P2 l'a validé, se rappelle sans se redemander. Aucun code
 // de nomenclature ne s'affiche.
@@ -68,8 +41,44 @@ export const Q3_4_A = question
     "Q3.4.a",
     "Le transport à prescrire comprend-il un trajet vers un centre de référence pour une maladie rare ?",
   )
+  .options({
+    "1_OUI": "Oui",
+    "2_NON": "Non",
+  })
   .hint(
     "Oui pour un aller, ou un aller-retour, vers ce centre. Une maladie rare ne suffit pas.",
   )
   // Un retour seul ne va pas vers le centre : Non, sans question.
   .mattersWhile(pmtOuDap.and(unRetourSeul.not()));
+
+// ---- implémentation ----
+
+const SEANCES = ["3_CHIMIOTHERAPIE", "4_RADIOTHERAPIE", "5_DIALYSE"] as const;
+
+/** Une question à choix rappelée : sa réponse se rappelle sous son libellé. */
+type AChoix = Answered<string> & {
+  readonly labels: Readonly<Record<string, string>>;
+};
+
+// Le motif de Q2.1, les faits qui le précisent, et les séances que P1 a
+// prouvées. Q2.1.l n'est pas codée : il n'y a pas d'intitulé à rappeler.
+// L'intitulé de chaque fait rappelé est le nôtre (D-122).
+function recapitulatifDuSoin(reponses: GivenAnswers<ReadByObject>) {
+  const lu = (rappelee: AChoix, intitule: string) => {
+    const reponse = reponses.question(rappelee).value;
+    return reponse
+      ? [{ label: intitule, value: rappelee.labels[reponse] ?? reponse }]
+      : [];
+  };
+  const seances = SEANCES.filter((seance) =>
+    reponses.question(Q1_3).checked(seance),
+  ).map((seance) => ({ label: "Séance", value: Q1_3.labels[seance] }));
+  const lignes = [
+    ...lu(Q2_1, "Motif"),
+    ...lu(Q2_1_G, "Précision"),
+    ...seances,
+    ...lu(Q1_3_A, "Séance d’hémodialyse"),
+    ...lu(Q2_1_F, "Séances et déplacement"),
+  ];
+  return lignes.length > 0 ? lignes : undefined;
+}

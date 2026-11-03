@@ -8,7 +8,7 @@ import { afficher } from "./afficher";
 
 type Questions = { accident: string; debut: string; fin: string };
 
-const question = questionsOf<Questions>({ options: {} });
+const question = questionsOf<Questions>();
 
 const ACCIDENT = page(
   "accident",

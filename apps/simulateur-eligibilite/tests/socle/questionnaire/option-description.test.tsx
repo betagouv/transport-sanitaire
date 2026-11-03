@@ -9,14 +9,13 @@ import { afficher } from "./afficher";
 
 type Questions = { duree: "peu" | "beaucoup" };
 
-const OPTIONS = { duree: { peu: "Peu", beaucoup: "Beaucoup" } } as const;
-
-const question = questionsOf<Questions>({ options: OPTIONS });
+const question = questionsOf<Questions>();
 
 const DUREE = page(
   "duree",
   question
     .singleChoice("duree", "Combien de temps avez-vous ?")
+    .options({ peu: "Peu", beaucoup: "Beaucoup" })
     .option("peu", (option) => option.description("Environ 2 minutes.")),
 );
 

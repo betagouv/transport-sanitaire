@@ -3,7 +3,7 @@
 
 import { cibles } from "../../../../core/models/eligibilite/cibles/evaluation";
 import type { Cibles } from "../../../../core/models/eligibilite/cibles/noms";
-import type { Questions } from "../../../../core/models/eligibilite/questions/catalogue/catalogue";
+import type { Questions } from "../../../../core/models/eligibilite/questions/reponses";
 import {
   readIn,
   type Value,

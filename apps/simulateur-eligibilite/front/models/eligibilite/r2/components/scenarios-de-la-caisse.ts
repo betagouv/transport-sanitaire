@@ -7,7 +7,7 @@
 // `cible_point_cnam` regroupe les points propres à la caisse. Ces conditions
 // déclarent ce qu'elles lisent (`ce-que-lit-un-texte.ts`).
 
-import { given } from "../../../../../core/models/eligibilite/questions/question";
+import { given } from "../../../../../core/models/eligibilite/questions/reponses";
 import { luPar, type TraceDe } from "./ce-que-lit-un-bloc";
 import type {
   IssuePrescripteur,

@@ -1,6 +1,7 @@
 // Les saisies libres déclarées : un nombre, un texte, une date, une case seule,
 // une adresse. Chacune n'a que ses réglages : `min` n'existe pas sur un texte.
 
+import type { Address } from "../address.ts";
 import { AskedAddress } from "../asked/address.ts";
 import type { AskedCommonData } from "../asked/common.ts";
 import type { QuestionContext } from "../asked/context.ts";
@@ -11,14 +12,16 @@ import {
   AskedText,
 } from "../asked/inputs.ts";
 import type { AnyQuestions } from "../question.ts";
-import { type CommonSettings, DeclaredQuestion } from "./question.ts";
+import { DeclaredQuestion } from "./question.ts";
+import type { CommonSettings } from "./settings.ts";
 
 /** Un nombre déclaré. */
 export class DeclaredNumber<
   Questions extends AnyQuestions,
   Cibles,
   Faits,
-> extends DeclaredQuestion<Questions, Cibles, Faits, NumberOwn> {
+  Id extends string = string,
+> extends DeclaredQuestion<Questions, Cibles, Faits, NumberOwn, Id, number> {
   readonly kind = "number";
 
   /** N'accepte qu'un nombre entier : une décimale est refusée. */
@@ -56,7 +59,8 @@ export class DeclaredText<
   Questions extends AnyQuestions,
   Cibles,
   Faits,
-> extends DeclaredQuestion<Questions, Cibles, Faits, TextOwn> {
+  Id extends string = string,
+> extends DeclaredQuestion<Questions, Cibles, Faits, TextOwn, Id, string> {
   get kind(): TextOwn["kind"] {
     return this.own.kind;
   }
@@ -81,11 +85,14 @@ export class DeclaredDate<
   Questions extends AnyQuestions,
   Cibles,
   Faits,
+  Id extends string = string,
 > extends DeclaredQuestion<
   Questions,
   Cibles,
   Faits,
-  DateOwn<Questions, Cibles, Faits>
+  DateOwn<Questions, Cibles, Faits>,
+  Id,
+  string
 > {
   get kind(): DateOwn<Questions, Cibles, Faits>["kind"] {
     return this.own.kind;
@@ -132,7 +139,8 @@ export class DeclaredCheckbox<
   Questions extends AnyQuestions,
   Cibles,
   Faits,
-> extends DeclaredQuestion<Questions, Cibles, Faits, CheckboxOwn> {
+  Id extends string = string,
+> extends DeclaredQuestion<Questions, Cibles, Faits, CheckboxOwn, Id, boolean> {
   readonly kind = "checkbox";
 
   protected override askedWith(common: AskedCommonData) {
@@ -152,11 +160,14 @@ export class DeclaredAddress<
   Questions extends AnyQuestions,
   Cibles,
   Faits,
+  Id extends string = string,
 > extends DeclaredQuestion<
   Questions,
   Cibles,
   Faits,
-  AddressOwn<Questions, Cibles, Faits>
+  AddressOwn<Questions, Cibles, Faits>,
+  Id,
+  Address
 > {
   readonly kind = "address";
 

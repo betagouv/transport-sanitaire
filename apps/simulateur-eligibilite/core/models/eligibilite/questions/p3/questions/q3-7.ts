@@ -15,6 +15,23 @@ export const Q3_7 = question
     "Q3.7",
     "Un cas particulier d’exonération du ticket modérateur doit-il être reporté ?",
   )
+  // Les cas reprennent les notices des cerfa, seuils compris (D-123). Les cas
+  // 3 et 4 sont ceux de la PMT et du S3141, le cas 6 celui de la DAP.
+  .options({
+    "1_ACTE_LOURD":
+      "Un acte réalisé lors de l’hospitalisation a un coefficient égal ou supérieur à K60, ou un tarif égal ou supérieur à 120 euros.",
+    "2_TRANSFERT_CONSECUTIF":
+      "Un transfert en lien direct et consécutif avec une première hospitalisation exonérée en raison d’un K60 ou d’un tarif de 120 euros.",
+    "3_URGENCE_HOSPITALIERE":
+      "Un transport d’urgence pour une hospitalisation où est effectué un acte coûteux, ou pour une hospitalisation qui en découle directement.",
+    "4_HAD_OU_RADIOTHERAPIE":
+      "Un transport entre l’établissement et le domicile en Hospitalisation à Domicile (HAD), prescrit hors protocole HAD, ou pour des séances de radiothérapie en structure libérale ou en centre de santé.",
+    "5_NOUVEAU_NE":
+      "Un transport lié à l’hospitalisation d’un nouveau-né de moins de trente jours.",
+    "6_TRAITEMENT_MIEUX_ADAPTE":
+      "Un transfert vers un autre établissement d’hospitalisation, pour un traitement mieux adapté à l’état de santé, sauf vers un établissement de soins de suite et de réadaptation.",
+    "7_AUCUN": "Aucun autre cas parmi ceux proposés.",
+  })
   .hint(
     "Cochez un cas seulement si sa condition propre est vérifiée : un motif d’hospitalisation ne suffit pas.",
   )

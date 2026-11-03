@@ -14,7 +14,7 @@
 
 import type { Cibles } from "../../../../../core/models/eligibilite/cibles/noms";
 import type { Faits } from "../../../../../core/models/eligibilite/faits/noms";
-import { given } from "../../../../../core/models/eligibilite/questions/question";
+import { given } from "../../../../../core/models/eligibilite/questions/reponses";
 import { constant, type Value, type ValueOf } from "../../../../../core/socle";
 import type { Precisions } from "./precisions";
 

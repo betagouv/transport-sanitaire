@@ -17,7 +17,7 @@
 // | `raison sociale VSL`, `adresse VSL`, `fait à`, `date1`, `n° ident` | au transporteur, page 4 |
 // | Engagement maternité | « hors remplissage » pour l'éditeur |
 
-import { given } from "../../../../../core/models/eligibilite/questions/question";
+import { given } from "../../../../../core/models/eligibilite/questions/reponses";
 import {
   at,
   bindCerfa,

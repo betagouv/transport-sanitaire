@@ -6,13 +6,7 @@
 // réclame (`CATALOGUE_COMPLET_QUESTIONS.md`, « Partie 3 »,
 // `conditions/supports-du-complement.ts`).
 
-import {
-  afterLock,
-  page,
-  type QuestionnairePart,
-} from "../../../../socle/index.ts";
-import type { Cibles } from "../../cibles/noms.ts";
-import type { Questions } from "../catalogue/catalogue.ts";
+import { afterLock, page } from "../../../../socle/index.ts";
 import { Q3_1_1 } from "./questions/q3-1-1.ts";
 import { Q3_1_2 } from "./questions/q3-1-2.ts";
 import { Q3_1_3 } from "./questions/q3-1-3.ts";
@@ -32,17 +26,15 @@ import {
   Q3_8_NIVEAU,
 } from "./questions/q3-8.ts";
 
-type Partie = QuestionnairePart<Questions, Cibles>;
-
 /** P3, posée après le verrou : elle complète le cerfa, elle ne décide plus. */
-export const COMPLEMENT: Partie = afterLock({
+export const COMPLEMENT = afterLock({
   id: "P3",
   title: "Informations permettant de compléter la prescription",
   pages: [
     // Le sens vient d'abord, puis le nombre, que le sens dit.
     page("P3/trajet", Q3_1_2, Q3_1_1, Q3_1_3),
-    page("P3/depart", ...Q3_2),
-    page("P3/arrivee", ...Q3_3),
+    page("P3/depart", Q3_2.nature, Q3_2.nom, Q3_2.precision, Q3_2.adresse),
+    page("P3/arrivee", Q3_3.nature, Q3_3.nom, Q3_3.precision, Q3_3.adresse),
     page("P3/soin", Q3_4, Q3_4_DISTANCE, Q3_4_A),
     page("P3/urgence", Q3_5),
     page("P3/evenements", Q3_6_1, Q3_6_2, Q3_6_3),

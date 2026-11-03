@@ -1,10 +1,11 @@
 // La quantité : un rappel en valeurs, un nombre entier borné avec son unité.
 
-import type { Questions } from "../../catalogue.ts";
+import type { AnswerOf } from "../../../../../socle/index.ts";
+import { SERVICE } from "../../p1/questions/service.ts";
 import { question } from "../../question.ts";
 
 // Les façons de servir, telles qu'on les relit une fois la commande figée.
-const SERVICES: Record<Questions["service"][number], string> = {
+const SERVICES: Record<AnswerOf<typeof SERVICE>[number], string> = {
   chaude: "très chaude",
   glacee: "glacée",
   "grande-tasse": "dans une grande tasse",
@@ -19,7 +20,7 @@ export const QUANTITE = question
     {
       label: "Service",
       value: answers
-        .question("service")
+        .question(SERVICE)
         .checkedBoxes()
         .map((value) => SERVICES[value])
         .join(", "),

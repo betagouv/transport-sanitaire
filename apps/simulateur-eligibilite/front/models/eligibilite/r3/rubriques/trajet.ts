@@ -14,10 +14,11 @@ import {
   type Nature,
   natureDu,
   projectionCerfa,
-  QUESTIONS_DU_LIEU,
 } from "../../../../../core/models/eligibilite/questions/p3/conditions/lieux-du-trajet";
 import { SENS_DU_DOCUMENT } from "../../../../../core/models/eligibilite/questions/p3/conditions/sens-du-trajet";
-import { given } from "../../../../../core/models/eligibilite/questions/question";
+import { Q3_2 } from "../../../../../core/models/eligibilite/questions/p3/questions/q3-2";
+import { Q3_3 } from "../../../../../core/models/eligibilite/questions/p3/questions/q3-3";
+import { given } from "../../../../../core/models/eligibilite/questions/reponses";
 import type { Address, Unanswered, Value } from "../../../../../core/socle";
 import type { Rubrique } from "./rubrique";
 
@@ -30,6 +31,9 @@ export type Trajet = {
   readonly arrivee_autre?: string;
   readonly aller_retour: boolean;
 };
+
+// Les questions de chaque lieu.
+const LIEUX = { depart: Q3_2, arrivee: Q3_3 } as const;
 
 export const TRAJET: Rubrique<Trajet> = {
   depart_domicile: auDomicile("depart"),
@@ -57,9 +61,9 @@ type SansMention = undefined;
 type Lieu = ReturnType<typeof lieu> extends Value<infer Lu> ? Lu : never;
 
 function lieu(extremite: Extremite) {
-  const questions = QUESTIONS_DU_LIEU[extremite];
+  const questions = LIEUX[extremite];
   return given.all({
-    nature: natureDu(extremite),
+    nature: natureDu(extremite, questions.nature),
     nom: given.question(questions.nom).answer(),
     precision: given.question(questions.precision).answer(),
     adresse: given.question(questions.adresse).answer(),
@@ -68,7 +72,7 @@ function lieu(extremite: Extremite) {
 
 // La case du domicile. Sans nature, aucune rubrique ne reçoit le lieu.
 function auDomicile(extremite: Extremite) {
-  return natureDu(extremite).compute(
+  return natureDu(extremite, LIEUX[extremite].nature).compute(
     (nature) => nature !== undefined && projectionCerfa(nature) === "DOMICILE",
   );
 }

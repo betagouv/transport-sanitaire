@@ -4,23 +4,17 @@
 // Il garde sous test la mécanique du questionnaire : avancement automatique,
 // retour, brouillon, effacement des réponses dépendantes et verrou.
 
-import {
-  afterLock,
-  givenOf,
-  page,
-  type QuestionnairePart,
-  questionsOf,
-} from "../../../../core/socle";
+import { afterLock, givenOf, page, questionsOf } from "../../../../core/socle";
+import type { QuestionnairePart } from "../../../../core/socle/questionnaire-engine/question/question";
 import type { Cibles } from "./declarations/cibles";
 import type { Faits } from "./declarations/faits";
-import { OPTIONS, type Questions } from "./declarations/questions";
+import type { Questions } from "./declarations/questions";
 import { CATALOGUE_DES_FAITS, cibles } from "./preconisation";
 
 export const given = givenOf<Questions, Faits, Cibles>();
 const boisson = given.question("boisson").answer();
 
 const question = questionsOf<Questions, Faits, Cibles>({
-  options: OPTIONS,
   faits: CATALOGUE_DES_FAITS,
   cibles,
 });
@@ -33,12 +27,19 @@ export const PARTS: readonly QuestionnairePart<Questions, undefined>[] = [
     pages: [
       page(
         "boisson",
-        question.singleChoice("boisson", "Quelle boisson souhaitez-vous ?"),
+        question
+          .singleChoice("boisson", "Quelle boisson souhaitez-vous ?")
+          .options({ the: "Un thé", cafe: "Un café", rien: "Rien" }),
       ),
       page(
         "accompagnements",
         question
           .multipleChoice("accompagnements", "Avec quoi ?")
+          .options({
+            lait: "Du lait",
+            sucre: "Du sucre",
+            aucun: "Rien de plus",
+          })
           .appliesWhen(boisson.isPresent().and(boisson.is("rien").not()))
           .dependsOn("boisson")
           .exclusive("aucun"),

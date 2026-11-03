@@ -4,8 +4,9 @@
 // réponse avec elle. La case ALD ne dit que le statut : le lien du soin avec
 // l'ALD se demande à part.
 
-import type { Questions } from "../../catalogue/catalogue.ts";
+import type { AnswerOf } from "../../../../../socle/index.ts";
 import { given, question } from "../../question.ts";
+import { Q1_2 } from "./q1-2.ts";
 
 // Les critères de Q1.2 qui imposent l'ambulance.
 const CRITERES_D_AMBULANCE = [
@@ -14,10 +15,10 @@ const CRITERES_D_AMBULANCE = [
   "9_SURVEILLANCE",
   "10_OXYGENE",
   "11_ASEPSIE",
-] as const satisfies readonly Questions["Q1.2"][number][];
+] as const satisfies readonly AnswerOf<typeof Q1_2>[number][];
 
 const unCritereDAmbulance = given
-  .question("Q1.2")
+  .question(Q1_2)
   .answer()
   .compute((criteres) =>
     CRITERES_D_AMBULANCE.some((critere) => criteres.checked(critere)),
@@ -41,13 +42,27 @@ const ORDRE_DES_CAS = [
   "4_RADIOTHERAPIE",
   "5_DIALYSE",
   "6_PARTAGE_INCOMPATIBLE",
-] satisfies readonly Questions["Q1.3"][number][];
+] as const;
 
 export const Q1_3 = question
   .multipleChoice(
     "Q1.3",
     "Avant d’établir le mode de transport adéquat, sélectionnez tous les éventuels cas particuliers concernant le patient.",
   )
+  // Dans l'ordre que le catalogue lui donne, et non celui des numéros.
+  .options({
+    "1_FORTE_CORPULENCE": "Présente une forte corpulence (plus de 150 kg).",
+    "2_ALD":
+      "Le patient est en Affection Longue Durée (ALD) exonérante reconnue.",
+    "3_CHIMIOTHERAPIE": "Ce déplacement concerne une séance de chimiothérapie.",
+    "4_RADIOTHERAPIE": "Ce déplacement concerne une séance de radiothérapie.",
+    "5_DIALYSE": "Ce déplacement concerne une séance de dialyse en centre.",
+    "6_PARTAGE_INCOMPATIBLE":
+      "L’état de santé du patient n’est pas compatible avec un transport partagé.",
+    "7_AUCUNE": "Aucune de ces situations.",
+    "8_MINEUR_SOINS_CONTINUS":
+      "Le patient a moins de 18 ans et le service médical de l’Assurance Maladie a reconnu qu’il nécessite des soins continus pendant plus de six mois, en lien avec ce déplacement.",
+  })
   .order(...ORDRE_DES_CAS)
   .exclusive("7_AUCUNE")
   // La corpulence ne compte qu'avec un motif d'ambulance. Retiré en Q1.2, il
@@ -64,12 +79,22 @@ export const Q1_3_B = question
     "Q1.3.b",
     "Précisez le lien entre le transport et l'Affection Longue Durée (ALD) de votre patient",
   )
-  .appliesWhen(given.question("Q1.3").answer().checked("2_ALD"))
-  .shownUnder("Q1.3", "2_ALD");
+  .options({
+    "1_LIEN_DIRECT":
+      "Soin ou examen directement lié au traitement de cette Affection Longue Durée (ALD) (soin ou examen inscrit au protocole de soins de cette Affection Longue Durée (ALD))",
+    "2_SANS_LIEN_DIRECT":
+      "Soin ou examen sans lien direct avec cette Affection Longue Durée (ALD) (traumatisme distinct, intercurrence, autre affection)",
+  })
+  .appliesWhen(given.question(Q1_3).answer().checked("2_ALD"))
+  .shownUnder(Q1_3, "2_ALD");
 
 export const Q1_3_A = question
   .singleChoice(
     "Q1.3.a",
     "La séance prévue est-elle une séance d’hémodialyse ?",
   )
-  .appliesWhen(given.question("Q1.3").answer().checked("5_DIALYSE"));
+  .options({
+    "1_OUI": "Oui.",
+    "2_AUTRE_DIALYSE": "Non, il s’agit d’une autre dialyse en centre.",
+  })
+  .appliesWhen(given.question(Q1_3).answer().checked("5_DIALYSE"));

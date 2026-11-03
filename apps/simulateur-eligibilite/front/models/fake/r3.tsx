@@ -2,7 +2,7 @@
 // Sans boisson, il n'y a rien à compléter : R2 est le dernier écran.
 
 import { SANS_COMMANDE } from "../../../core/models/fake/cibles/evaluation";
-import { given } from "../../../core/models/fake/questions/question";
+import { given } from "../../../core/models/fake/questions/reponses";
 import type { ValueOf } from "../../../core/socle";
 import type { ResultatProps } from "../../socle";
 import { enUneLigne } from "./adresse";

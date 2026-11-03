@@ -7,7 +7,7 @@ import { afficher } from "./afficher";
 
 type Questions = { precisions: string };
 
-const question = questionsOf<Questions>({ options: {} });
+const question = questionsOf<Questions>();
 
 const PRECISIONS = page(
   "precisions",
