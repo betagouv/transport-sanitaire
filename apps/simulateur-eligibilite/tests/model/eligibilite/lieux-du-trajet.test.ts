@@ -5,7 +5,7 @@
 import { describe, expect, it } from "vitest";
 import { model } from "../../../core/models/eligibilite";
 import type { Questions } from "../../../core/models/eligibilite/questions/catalogue/catalogue";
-import { projectionCerfa } from "../../../core/models/eligibilite/questions/p3/lieux-du-trajet";
+import { projectionCerfa } from "../../../core/models/eligibilite/questions/p3/conditions/lieux-du-trajet";
 import { SEEDS } from "../../../core/models/eligibilite/seeds-catalogue";
 import type { AskedQuestion } from "../../../core/socle/questionnaire-engine/question/asked/question";
 import type {

@@ -49,7 +49,10 @@ Vite ni navigateur : `tests/model/metier-sous-node.test.ts` le vérifie.
 Le modèle de l'éditeur se range par partie du parcours : `questions/p1/` (le mode),
 `questions/p2/` (l'éligibilité) et `questions/p3/` (le complément du cerfa) dans `core/`, `r2/` (le
 résultat, avec un dossier par famille d'issues) et `r3/` (son résultat) dans
-`front/`.
+`front/`. Chaque partie a la même forme : `partie-N.ts`, sa table des matières,
+les pages dans l'ordre faites de ses questions ; `questions/`, un fichier par
+question, nommé de son numéro (`q2-8-6.ts`), qui porte ses sous-questions
+lettrées et ses gardes ; `conditions/`, ce que plusieurs questions lisent.
 `core/models/eligibilite/faits/` porte un fichier par fait, au nom du fait sans
 `fait_`, et `communs.ts`, ce que plusieurs faits lisent : les faits
 n'appartiennent à aucune partie, et n'en lisent aucune. Les
@@ -152,9 +155,9 @@ Neuf règles à tenir en ajoutant une question :
   `.mattersWhile(given.fait("fait_permission").isOui())`. Elle ne recompose
   pas, réponse par réponse, ce que le fait établit déjà. Sans fait qui la
   dise, elle se compose de réponses, nommée près de la question qui la lit
-  (`unMineurDeVingtAns`, dans `questions/p2/permission.ts`). Un calcul sur plusieurs
+  (`unMineurDeVingtAns`, dans `questions/p2/conditions/permission.ts`). Un calcul sur plusieurs
   valeurs les nomme : `given.all({ sens, repetition }).compute(sensDe)`
-  (`questions/p3/sens-du-trajet.ts`). Chacune garde ce qu'elle lit.
+  (`questions/p3/conditions/sens-du-trajet.ts`). Chacune garde ce qu'elle lit.
 - **R2 et R3 lisent des valeurs.** Le socle leur passe `{ read, faits,
   cibles }`. Une rubrique, un champ de cerfa, la trace sont des valeurs, que
   `read` lit sur les questions validées : `read(PRECISIONS)`. Aucune fonction
@@ -165,7 +168,7 @@ Neuf règles à tenir en ajoutant une question :
   l'éditeur se partage en donnée, dans le catalogue de son étape (`questions/catalogue/`, `OPTIONS`,
   `RETIREE_SI_Q21`). Une règle que plusieurs faits reprennent mot pour mot se
   nomme dans `faits/communs.ts`. Ce qui ne sert qu'à un endroit y reste
-  (`trajetsMensuelsAuPlus`, dans `questions/p3/sens-du-trajet.ts`). Aucun fichier n'est
+  (`allersRetoursMensuelsAuPlus`, dans `questions/p3/questions/q3-1-3.ts`). Aucun fichier n'est
   commun aux pages et aux faits : mieux vaut une condition écrite deux fois sur
   la même donnée qu'une abstraction entre les deux (D-208, D-210).
 - **Un fait est une valeur, dans son fichier.** `fait_distance_plus_50` se

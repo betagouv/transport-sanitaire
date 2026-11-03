@@ -127,14 +127,16 @@ core/                    le métier, sans React ni DOM : ce qu'un serveur ou un 
       questions/         `catalogue/` (les questions, leurs options et libellés,
                          dans les mots des règles), `question.ts` (les
                          constructeurs), `questionnaire.ts` (les parties), puis
-                         les questions déclarées par partie
-        p1/              l'autonomie et l'état de santé : les pages du mode de
-                         transport
-        p2/              l'éligibilité : les pages par thème (prestation,
-                         contextes, trajet, transfert, permission, convocation,
-                         retour pénitentiaire, branche)
-        p3/              le complément du cerfa : le trajet, le soin, l'urgence, les
-                         évènements et l'exonération
+                         une partie par dossier, de la même forme
+        p1/              l'autonomie et l'état de santé : le mode de transport
+        p2/              l'éligibilité
+        p3/              le complément du cerfa, après le verrou
+          partie-N.ts    la table des matières : les pages, dans l'ordre, faites
+                         des questions
+          questions/     un fichier par question, avec ses sous-questions
+                         lettrées (`q2-8-6.ts` : Q2.8.6, .a, .b) et ses gardes
+          conditions/    ce que plusieurs questions lisent (`sejour.ts`,
+                         `supports-du-complement.ts`), hors des questions
       faits/             `noms.ts` (les faits, dans les mots des règles), un
                          fichier par fait, une valeur faite de règles ;
                          `communs.ts` porte les lectures et les règles que

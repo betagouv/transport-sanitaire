@@ -13,7 +13,7 @@
 
 import type { Cibles } from "../../../../core/models/eligibilite/cibles/noms";
 import type { Faits } from "../../../../core/models/eligibilite/faits/noms";
-import { dansLeCircuit } from "../../../../core/models/eligibilite/questions/p2/retour-penitentiaire";
+import { dansLeCircuit } from "../../../../core/models/eligibilite/questions/p2/conditions/retour-penitentiaire";
 import { given } from "../../../../core/models/eligibilite/questions/question";
 import type { ValueOf } from "../../../../core/socle";
 import type { ResultatProps } from "../../../socle";

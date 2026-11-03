@@ -54,10 +54,10 @@ Pose au diff ces questions, et montre les réponses avant de coder :
 
 | Question | Ce qu'elle touche |
 |---|---|
-| Quels faits entrent ou sortent ? | `declarations/faits.ts`, un fichier par fait sous `faits/` |
-| Quelles cibles, ou quelles valeurs de cible, changent ? | `declarations/cibles.ts`, les fiches de R2 qui lisent `cible_issue_id` |
+| Quels faits entrent ou sortent ? | `faits/noms.ts`, un fichier par fait sous `faits/` |
+| Quelles cibles, ou quelles valeurs de cible, changent ? | `cibles/noms.ts`, les fiches de R2 qui lisent `cible_issue_id` |
 | Quel contrat réponses/faits change ? | le fichier du fait concerné, sous `faits/` |
-| Quelles questions, options ou libellés changent ? | `declarations/questions.ts`, les pages de `p1/`, `p2/`, `p3/` |
+| Quelles questions, options ou libellés changent ? | `questions/catalogue/`, `questions/p1/`, `p2/`, `p3/` (`questions/qN-N.ts`, un fichier par question) |
 | Quels textes de R2 changent ? | les attendus des tests `texte-*` de R2 |
 | Quel gabarit ou quel mapping de cerfa change ? | `front/models/eligibilite/r3/` |
 

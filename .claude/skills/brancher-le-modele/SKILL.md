@@ -35,9 +35,9 @@ Un contrat ambigu ne se tranche pas dans le code : il se remonte à l'éditeur.
 
 | Ce qui change | Où | Ce qui le garde |
 |---|---|---|
-| un fait | `FAITS`, dans `declarations/faits.ts`, à son rang dans les règles | `tests/model/eligibilite/declarations.test.ts` |
-| une cible | `CIBLES` ou `CIBLES_ENUMEREES`, dans `declarations/cibles.ts` | le même |
-| une option | `OPTIONS`, dans `declarations/questions.ts` : son numéro au catalogue, puis ce qu'elle veut dire (`"2_AVEC_UN_PROCHE"`) | le même |
+| un fait | `FAITS`, dans `faits/noms.ts`, à son rang dans les règles | `tests/model/eligibilite/declarations.test.ts` |
+| une cible | `CIBLES` ou `CIBLES_ENUMEREES`, dans `cibles/noms.ts` | le même |
+| une option | `OPTIONS`, dans `questions/catalogue/catalogue.ts` : son numéro au catalogue, puis ce qu'elle veut dire (`"2_AVEC_UN_PROCHE"`) | le même |
 
 Ces listes typent le modèle. Un nom absent n'existe pas pour TypeScript.
 
@@ -53,9 +53,10 @@ Un fait et une garde qui lisent la même réponse l'écrivent chacun : voir
 
 ## 4. Poser la question
 
-La question se déclare dans la page de sa partie : `p1/partie-1.ts`, les
-`p2/pages-*.ts`, les `p3/pages-*.ts`. Sa garde lit le fait quand il en existe
-un.
+La question se déclare dans son fichier, sous `questions/pN/questions/`,
+nommé de son numéro (`q2-8-6.ts` porte Q2.8.6 et ses sous-questions lettrées),
+puis se place dans une page de `pN/partie-N.ts`. Sa garde lit le fait quand il
+en existe un.
 
 ## 5. Lire une cible
 

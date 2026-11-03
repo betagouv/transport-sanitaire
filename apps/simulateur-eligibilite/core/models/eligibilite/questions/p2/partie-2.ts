@@ -1,120 +1,74 @@
-// P2 : l'éligibilité. La prestation (Q2.1), les situations particulières
-// (Q2.2.1 et Q2.2.1.b), dans `pages-des-contextes.ts`, le trajet (Q2.3), puis
-// le transfert (Q2.5) et les exceptions de l'article 80 (Q2.6), dans
-// `pages-du-transfert.ts`, la permission (Q2.7 et Q2.8), dans
-// `pages-de-la-permission.ts`, et la convocation (Q2.10), dans
-// `pages-de-la-convocation.ts`, puis la branche (Q2.12 à Q2.14), dans
-// `pages-de-la-branche.ts`. Q2.4, Q2.9 et Q2.11 n'ont aucun écran.
+// P2 : l'éligibilité. Ses pages, dans l'ordre, faites de ses questions
+// (`questions/`). Q2.4, Q2.9 et Q2.11 n'ont aucun écran. Un retour
+// pénitentiaire hors du circuit de prescription s'arrête aux contextes
+// (`conditions/retour-penitentiaire.ts`).
 
 import { page, type QuestionnairePart } from "../../../../socle/index.ts";
 import type { Questions } from "../catalogue/catalogue.ts";
-import { given, question } from "../question.ts";
-import { PAGE_DE_LA_BRANCHE } from "./pages-de-la-branche.ts";
-import { PAGE_DE_LA_CONVOCATION } from "./pages-de-la-convocation.ts";
+import { dansLeCircuit } from "./conditions/retour-penitentiaire.ts";
+import { Q2_1, Q2_1_F, Q2_1_G } from "./questions/q2-1.ts";
 import {
-  PAGE_DE_LA_PERMISSION,
-  PAGE_DE_LA_PERMISSION_DU_MINEUR,
-} from "./pages-de-la-permission.ts";
-import { PAGE_DES_CONTEXTES, PAGE_DES_SOINS } from "./pages-des-contextes.ts";
-import {
-  PAGE_DES_EXCEPTIONS,
-  PAGE_DU_TRANSFERT,
-} from "./pages-du-transfert.ts";
-import { unMotifDeP1 } from "./prestation.ts";
-import { dansLeCircuit } from "./retour-penitentiaire.ts";
-
-// Les séances déclarées en Q1.3. Q2.1.f se pose dès que deux sont cochées,
-// dialyse comprise, sans attendre l'hémodialyse confirmée (TS1014-L04, D-245).
-const cas = given.question("Q1.3").answer();
-const SEANCES = ["3_CHIMIOTHERAPIE", "4_RADIOTHERAPIE", "5_DIALYSE"] as const;
-const uneSeance = SEANCES.map((seance) => cas.checked(seance)).reduce(
-  (une, autre) => une.or(autre),
-);
-const plusieursSeances = cas.compute(
-  (cochees) => SEANCES.filter((seance) => cochees.checked(seance)).length >= 2,
-);
-
-const motif = given.question("Q2.1").answer();
-
-// Q2.1 et ses sous-questions f, g et h, sur une seule page. Q2.1 se saute quand
-// P1 prouve déjà un motif de transport ; Q2.1.f se pose quand même, si
-// plusieurs séances sont cochées. La page s'affiche dès que l'une se pose
-// (D-102).
-const PAGE_DE_LA_PRESTATION = page(
-  "P2/prestation",
-  question
-    .singleChoice(
-      "Q2.1",
-      "Quelle situation médicale ou quel événement motive ce déplacement ?",
-    )
-    .mattersWhile(unMotifDeP1.not())
-    // Une séance se coche en Q1.3 : elle ne se vote pas deux fois.
-    .option("6_SEANCE", (option) => option.offeredWhen(uneSeance.not())),
-  question
-    .singleChoice(
-      "Q2.1.f",
-      "Les séances sélectionnées motivent-elles le même déplacement vers le même lieu de soins ?",
-    )
-    .appliesWhen(plusieursSeances)
-    .option("2_NON", (option) =>
-      option.blocks(
-        "Une simulation porte sur un seul déplacement. Corrigez les séances en Q1.3, puis faites une simulation par déplacement.",
-      ),
-    ),
-  question
-    .singleChoice(
-      "Q2.1.g",
-      "S’agit-il d’une entrée dans un établissement de santé, d’une sortie de cet établissement ou d’une admission en Hospitalisation à Domicile (HAD) à domicile ?",
-    )
-    .appliesWhen(motif.is("8_HOSPITALISATION"))
-    .dependsOn("Q2.1"),
-);
-
-// Q2.3 : le trajet évalué, sur une seule page. L'avion ou le bateau est une
-// case seule sans titre, dans le bloc de la distance : décochée, elle répond
-// « non » (D-239). La série se révèle sous la
-// distance quand le trajet dépasse 50 km, et l'urgence quand la garde de
-// l'éditeur le dit (`cible_question_urgence_a_afficher`).
-const PAGE_DU_TRAJET = page(
-  "P2/trajet",
-  question.singleChoice(
-    "Q2.3.1",
-    "Quelle distance sépare les lieux de départ et d’arrivée ?",
-  ),
-  question.checkbox(
-    "Q2.3.2",
-    "Une partie du trajet se fera en avion ou en bateau de ligne régulière.",
-  ),
-  question
-    .singleChoice(
-      "Q2.3.3",
-      "Pour le même traitement, prévoyez-vous de prescrire au moins 4 transports de plus de 50 km chacun sur une période de 2 mois ?",
-    )
-    .hint("Un aller-retour compte pour deux transports.")
-    .mattersWhile(given.fait("fait_distance_plus_50").isOui()),
-  question
-    .singleChoice("Q2.3.4", "Attestez-vous que ce transport est urgent ?")
-    // La garde de l'éditeur, sur les faits des questions posées avant elle.
-    .mattersWhile(given.cible("cible_question_urgence_a_afficher").isOui()),
-);
+  Q2_2_1,
+  Q2_2_1_A,
+  Q2_2_1_B,
+  Q2_2_1_CADRE,
+  Q2_2_1_INDICATION,
+} from "./questions/q2-2-1.ts";
+import { Q2_2_5 } from "./questions/q2-2-5.ts";
+import { Q2_3_1 } from "./questions/q2-3-1.ts";
+import { Q2_3_2 } from "./questions/q2-3-2.ts";
+import { Q2_3_3 } from "./questions/q2-3-3.ts";
+import { Q2_3_4 } from "./questions/q2-3-4.ts";
+import { Q2_5 } from "./questions/q2-5.ts";
+import { Q2_6, Q2_6_A } from "./questions/q2-6.ts";
+import { Q2_7, Q2_7_A } from "./questions/q2-7.ts";
+import { Q2_8_1 } from "./questions/q2-8-1.ts";
+import { Q2_8_2 } from "./questions/q2-8-2.ts";
+import { Q2_8_3 } from "./questions/q2-8-3.ts";
+import { Q2_8_4 } from "./questions/q2-8-4.ts";
+import { Q2_8_5 } from "./questions/q2-8-5.ts";
+import { Q2_8_6, Q2_8_6_A, Q2_8_6_B } from "./questions/q2-8-6.ts";
+import { Q2_10, Q2_10_A, Q2_10_B } from "./questions/q2-10.ts";
+import { Q2_12 } from "./questions/q2-12.ts";
+import { Q2_13_DEPART } from "./questions/q2-13.ts";
+import { Q2_14_ELOIGNEMENT, Q2_14_MOTIF } from "./questions/q2-14.ts";
 
 /** P2 : l'éligibilité. */
 export const P2: QuestionnairePart<Questions, undefined> = {
   id: "P2",
   title: "Éligibilité",
   pages: [
-    PAGE_DE_LA_PRESTATION,
-    PAGE_DES_CONTEXTES,
-    // Un retour pénitentiaire hors du circuit de prescription s'arrête là.
+    page("P2/prestation", Q2_1, Q2_1_F, Q2_1_G),
+    page(
+      "P2/contextes",
+      Q2_2_1,
+      Q2_2_1_CADRE,
+      Q2_2_1_A,
+      Q2_2_1_INDICATION,
+      Q2_2_5,
+    ),
+    // Hors du circuit de prescription, plus rien ne se pose.
     ...[
-      PAGE_DES_SOINS,
-      PAGE_DU_TRAJET,
-      PAGE_DU_TRANSFERT,
-      PAGE_DES_EXCEPTIONS,
-      PAGE_DE_LA_PERMISSION,
-      PAGE_DE_LA_PERMISSION_DU_MINEUR,
-      PAGE_DE_LA_CONVOCATION,
-      PAGE_DE_LA_BRANCHE,
+      page("P2/soins", Q2_2_1_B),
+      page("P2/trajet", Q2_3_1, Q2_3_2, Q2_3_3, Q2_3_4),
+      page("P2/transfert", Q2_5),
+      page("P2/exceptions", Q2_6_A, Q2_6),
+      page("P2/permission", Q2_7, Q2_7_A),
+      page(
+        "P2/permission-mineur",
+        Q2_8_1,
+        Q2_8_2,
+        Q2_8_3,
+        Q2_8_4,
+        Q2_8_5,
+        Q2_8_6,
+        Q2_8_6_A,
+        Q2_8_6_B,
+      ),
+      page("P2/convocation", Q2_10, Q2_10_A, Q2_10_B),
+      // La page de branche ne s'affiche que si l'une de ses questions se pose
+      // (D-110).
+      page("P2/branche", Q2_13_DEPART, Q2_14_ELOIGNEMENT, Q2_14_MOTIF, Q2_12),
     ].map((suivante) => suivante.appliesWhen(dansLeCircuit)),
   ],
 };

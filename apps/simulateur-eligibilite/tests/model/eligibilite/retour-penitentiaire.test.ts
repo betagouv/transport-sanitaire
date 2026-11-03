@@ -5,7 +5,7 @@
 
 import { describe, expect, it } from "vitest";
 import type { Cibles } from "../../../core/models/eligibilite/cibles/noms";
-import { TRANSFERT_VERS_LA_PRISON } from "../../../core/models/eligibilite/questions/p2/retour-penitentiaire";
+import { TRANSFERT_VERS_LA_PRISON } from "../../../core/models/eligibilite/questions/p2/conditions/retour-penitentiaire";
 import { model } from "../../../front/models/eligibilite";
 import { ciblesDe, lectureDe, luDe } from "./reponses-de-la-permission";
 import {
