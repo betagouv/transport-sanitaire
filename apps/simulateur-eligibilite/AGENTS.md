@@ -340,9 +340,11 @@ Découpage **par fonctionnalité**, à l'intérieur de quatre racines :
 | `server/` | le backend, qui détient la clé Grist |
 | `shared/` | le contrat front ⇄ back, chargé des deux côtés |
 
-Hors de ces racines, `cms/` porte le script collé dans Sites Conformes. Il s'exécute
-sur les pages du CMS, pas dans l'app : il n'importe rien et n'est importé par
-personne, ses tests le chargent comme texte.
+Hors de ces racines, `tooling/` porte la configuration TypeScript et les outils de
+développement (le script des règles, la vérification du bundle). Le script collé
+dans Sites Conformes, `front/socle/analytics/consent-cms.js`, s'exécute sur les
+pages du CMS, pas dans l'app : il n'importe rien et n'est importé par personne,
+ses tests le chargent comme texte.
 
 À lire à côté :
 
@@ -418,7 +420,7 @@ fichier, et nulle part ailleurs dans `front/`.
 
 | Emplacement | Extension |
 |---|---|
-| `core/`, `server/`, `shared/`, `scripts/` | `.ts` |
+| `core/`, `server/`, `shared/`, `tooling/` | `.ts` |
 | ce qu'un script tire dans `front/` | `.ts` |
 | le reste de `front/` | aucune |
 

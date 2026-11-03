@@ -1,9 +1,0 @@
-{
-  "extends": "./tsconfig.base.json",
-  "compilerOptions": {
-    "types": ["node"]
-  },
-  // `scripts/` : outils de développement exécutés par Node (`node --experimental-
-  // strip-types`), hors du bundle front.
-  "include": ["../vite.config.ts", "../scripts"]
-}

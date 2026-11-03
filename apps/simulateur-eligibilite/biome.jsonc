@@ -11,9 +11,7 @@
       "core/**",
       "server/**",
       "shared/**",
-      "scripts/**",
-      "cms/**",
-      "config/**",
+      "tooling/**",
       "tests/**",
       "*.ts",
       "*.json",
@@ -45,7 +43,7 @@
       }
     },
     {
-      "includes": ["vite.config.ts", "scripts/**", "server/**"],
+      "includes": ["vite.config.ts", "tooling/**", "server/**"],
       "linter": {
         "rules": {
           "style": {

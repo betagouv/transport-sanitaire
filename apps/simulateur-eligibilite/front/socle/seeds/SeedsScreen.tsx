@@ -1,7 +1,7 @@
 // L'écran des seeds, chargé à la demande.
 //
 // Ce fichier est le seul du module dans le bundle initial. Il ne doit importer
-// ni le catalogue ni le tableau (`scripts/verifier-bundle.ts` le vérifie).
+// ni le catalogue ni le tableau (`tooling/verifier-bundle.ts` le vérifie).
 
 import { lazy, Suspense, useEffect, useState } from "react";
 import type { Seed } from "../../../core/socle/seeds/seed";

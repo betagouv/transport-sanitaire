@@ -250,7 +250,7 @@ describe("chaîne d'outillage", () => {
         "fait que si `enablePrePostScripts` est vrai dans le " +
         "`pnpm-workspace.yaml` de la racine. Sans lui, `prebuild` " +
         "(régénération des icônes DSFR) et `postbuild` " +
-        "(`scripts/verifier-bundle.ts`) disparaissent **sans rien dire** : le " +
+        "(`tooling/verifier-bundle.ts`) disparaissent **sans rien dire** : le " +
         "`verifier` reste vert en ayant sauté une porte, et le bundle part en " +
         "production sans avoir été vérifié.",
     ).toBe(true);

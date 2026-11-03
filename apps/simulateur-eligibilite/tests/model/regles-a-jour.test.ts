@@ -1,6 +1,6 @@
 // Les règles qu'importe le code (`rules/regles.json`) sont celles que l'éditeur
 // a livrées (`rules/regles.publicodes`). Le JSON est écrit par
-// `scripts/regles-publicodes.ts` : un YAML recopié sans relancer le script
+// `tooling/regles-publicodes.ts` : un YAML recopié sans relancer le script
 // laisserait le simulateur décider avec l'ancienne version.
 //
 // Le script écrit aussi leur graphe (`rules/regles.graphe.json`, #196). Il

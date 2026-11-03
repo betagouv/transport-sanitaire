@@ -19,7 +19,7 @@
     "moduleResolution": "bundler",
     "moduleDetection": "force",
     "allowImportingTsExtensions": true,
-    // Les règles d'un modèle s'importent en JSON (`scripts/regles-publicodes.ts`).
+    // Les règles d'un modèle s'importent en JSON (`tooling/regles-publicodes.ts`).
     "resolveJsonModule": true,
     "isolatedModules": true,
     "noEmit": true,

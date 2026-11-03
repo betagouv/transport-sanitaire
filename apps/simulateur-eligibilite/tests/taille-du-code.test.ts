@@ -17,7 +17,7 @@ describe("taille du code", () => {
       "core",
       "server",
       "shared",
-      "scripts",
+      "tooling",
     ).flatMap((fichier) =>
       fonctionsDe(fichier)
         .filter(({ lignes }) => lignes > 30)
@@ -39,7 +39,7 @@ describe("taille du code", () => {
       "core",
       "server",
       "shared",
-      "scripts",
+      "tooling",
       "tests",
     )
       .filter((fichier) => !CATALOGUE_DE_SEEDS.test(fichier))

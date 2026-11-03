@@ -4,7 +4,7 @@
 // simulateur calcule, et qu'une autre source pourrait calculer.
 //
 // `pdf-lib` et le gabarit ne se chargent qu'ici, quand le bouton s'affiche : le
-// chunk d'entrée n'en porte rien, et `scripts/verifier-bundle.ts` le vérifie.
+// chunk d'entrée n'en porte rien, et `tooling/verifier-bundle.ts` le vérifie.
 
 import type {
   BoxBinding,

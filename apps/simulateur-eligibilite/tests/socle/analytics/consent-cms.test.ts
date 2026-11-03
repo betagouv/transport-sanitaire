@@ -10,7 +10,7 @@ import { describe, expect, it } from "vitest";
 import { racine } from "../../inspection-des-sources";
 
 const SOURCE = readFileSync(
-  join(racine, "cms", "statistiques-simulateur.js"),
+  join(racine, "front", "socle", "analytics", "consent-cms.js"),
   "utf-8",
 );
 const ORIGINE_SIMULATEUR = /ORIGINE_SIMULATEUR = "([^"]+)"/.exec(SOURCE)?.[1];

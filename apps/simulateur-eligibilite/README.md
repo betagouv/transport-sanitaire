@@ -101,8 +101,8 @@ variables ont un défaut documenté ci-dessus : elles ne bloquent jamais le dém
 Il y a quatre racines de *runtime* : `core/`, le métier, qui se charge sous Node
 comme dans le navigateur, `front/`, le front bundlé par Vite, `server/`, le
 backend Node qui détient la clé Grist, et `shared/`, le contrat commun.
-Chacune est organisée par feature. À côté, `cms/` porte le script que le CMS exécute
-sur ses propres pages : il n'est ni bundlé ni servi par l'app.
+Chacune est organisée par feature. À côté, `tooling/` porte la configuration
+TypeScript et les outils de développement.
 
 `core/` et `front/` ont chacun un `socle/` et un `models/`. Un modèle a son
 dossier des deux côtés, sous le même nom : son métier dans `core/`, son écran
@@ -198,10 +198,11 @@ front/                   le front, bundlé par Vite
                          et rien du simulateur.
     cerfa-mapping.ts     la traduction des données du simulateur en DTO d'un cerfa
     analytics/           le vocabulaire mesuré, seul import du reste, son transport
-                         vers Matomo, et le choix du prescripteur transmis par le CMS
-cms/                     le script à coller dans Sites Conformes : l'opt-out du pied de
-                         page, qui répond au traceur de l'iframe (voir « Intégrer dans
-                         Sites Conformes »)
+                         vers Matomo, le choix du prescripteur transmis par le CMS, et
+                         consent-cms.js, le script à coller dans Sites Conformes :
+                         l'opt-out du pied de page, qui répond au traceur de l'iframe
+                         (voir « Intégrer dans Sites Conformes »)
+tooling/                 la configuration TypeScript et les outils de développement
 ```
 
 ## Entre deux modèles
@@ -311,7 +312,7 @@ l'administration du CMS :
    casserait l'opt-out et l'API.
 2. **Installer l'opt-out.** Dans Paramètres → Scripts personnalisés → « Scripts dans
    la section `<body>` », coller le contenu de
-   [`cms/statistiques-simulateur.js`](cms/statistiques-simulateur.js) entre
+   [`front/socle/analytics/consent-cms.js`](front/socle/analytics/consent-cms.js) entre
    `<script type="module">` et `</script>`, après avoir remplacé
    `ORIGINE_SIMULATEUR` par l'origine réelle du simulateur (`https://domaine`, sans
    chemin ni barre finale).
