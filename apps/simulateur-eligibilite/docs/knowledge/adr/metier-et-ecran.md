@@ -1,6 +1,6 @@
 # Architecture : le métier et l'écran
 
-> Statut : **décidé (phase expérimentale)** · Dernière mise à jour : 2026-10-29
+> Statut : **décidé (phase expérimentale)** · Dernière mise à jour : 2026-11-03
 >
 > Où vit le métier du simulateur, et comment l'écran s'y branche. Les décisions
 > ont été prises seul par l'agent qui a mené le chantier, sur délégation de
@@ -796,6 +796,43 @@ cache Q2.13.depart, que lisent les cases « départ » du cerfa. Q2.1 et
 Q2.13.depart cachent une réponse qui changerait l'issue ou le cerfa : elles
 remontent à l'éditeur.
 
+### ADR-25 - L'arbre des fichiers dit le chemin
+
+**Contexte.** Les frontières tenaient (ADR-1 à ADR-24), mais l'arbre ne les
+montrait pas : `declarations/` mêlait les trois étapes du modèle, une partie
+tenait dans un fichier de 300 lignes, `reading-in-order.ts` ou `relevance.ts`
+ne disaient pas ce qu'ils font, le parcours n'avait pas d'entité et R2 était
+sept fichiers plats. Les tests, à plat, ne disaient pas ce qu'ils éprouvent
+(#124, #240, #292).
+
+**Décision.** Un dossier est un module, une entité ou une capacité ; un fichier
+porte une responsabilité et se nomme de ce qu'il exporte (D-257). Le modèle se
+lit dans l'ordre du chemin, `questions/`, `faits/`, `cibles/`, `rules/`, et
+chaque partie a la même forme : sa table des matières, un fichier par
+question, ses conditions partagées (D-258). Le socle a ses entités,
+`Simulation` pour le parcours ; l'écran du modèle a les siennes, `R2` et `R3`,
+écrites dans l'ordre du calcul, R2 avec un dossier par cas (D-259). Les tests
+se rangent comme les sources (D-260).
+
+| Option | Pour | Contre |
+|---|---|---|
+| garder l'arbre, documenter le chemin | rien à déplacer | la doc vieillit ; le code ne montre pas le chemin |
+| ranger par sorte de fichier (`types/`, `utils/`, `components/`) | familier | une capacité s'éparpille sur trois dossiers |
+| module, puis entité ou capacité, puis un fichier par responsabilité | le nom du dossier dit ce qu'il fait ; un fichier se trouve sans chercher | des chemins d'import plus longs |
+
+La troisième, choisie par Simon ; elle s'énonce dans `AGENTS.md`, et trois
+tests la gardent : les frontières (`architecture.test.ts`), les domaines du
+modèle (`domaines.test.ts`) et le miroir des tests
+(`miroir-des-sources.test.ts`).
+
+**Conséquences.** Aucun comportement ne change : une PR de neuf commits, un par
+sujet, déplace et renomme. Les entités remplacent des fonctions libres :
+`Simulation.of(core, réponses)` remplace `readOf`, `traceOf` et `lock` ;
+`R2.of(lecture).page()` remplace quatre fonctions. `r2.ts` est `r2.tsx`, parce
+qu'il porte des constantes JSX. Les chemins d'import s'allongent d'un ou deux
+niveaux. Un nouveau dossier de tests sans dossier de sources du même nom fait
+rougir le miroir.
+
 ## 3. Architecture cible
 
 ```mermaid
@@ -854,6 +891,8 @@ flowchart LR
 | Pertinence (`Relevance`, `RelevanceGraph`) | `core/` | une question compte-t-elle, vu les faits figés et les branches encore possibles | nouveau |
 | Ce qui peut encore se poser (`Askability`) | `core/` | les questions qui restent et dont la garde n'est pas jouée d'avance | nouveau |
 | Précisions de R2 par texte | `front/models/` | trois valeurs, chacune sous les issues de son texte | modifié |
+| `Simulation` | `core/` | le parcours : des réponses lues dans le questionnaire d'un modèle, leur préconisation, la lecture d'un résultat, le verrou, la trace | nouveau |
+| `R2` et `R3` | `front/models/` | les résultats en entités : ce qu'ils lisent, puis ce qu'ils donnent ; R2 a un dossier par cas | nouveau |
 
 ## 4. Ce qui va où
 
@@ -892,6 +931,7 @@ a-t-il besoin ?**
 | Ce que lisent R2 et R3 | 260 | ✅ |
 | Le filtrage par le graphe | 255 | ✅ |
 | Le tri des gardes d'utilité | 256 | ✅ |
+| L'arbre des fichiers dit le chemin | 336 | ✅ |
 
 ## 6. Risques & validations en attente
 
@@ -913,7 +953,7 @@ a-t-il besoin ?**
 
 ```bash
 cd apps/simulateur-eligibilite
-pnpm vitest run tests/frontieres-des-racines.test.ts tests/architecture.test.ts
+pnpm vitest run tests/frontieres-des-racines.test.ts tests/architecture.test.ts tests/miroir-des-sources.test.ts
 pnpm vitest run tests/model/metier-sous-node.test.ts tests/model/regles-a-jour.test.ts
 pnpm vitest run tests/model/conformite.test.ts tests/socle/questionnaire-engine
 pnpm vitest run tests/socle/decision-engine

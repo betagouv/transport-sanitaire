@@ -81,7 +81,7 @@ Le socle ne connaît le modèle que par deux contrats. `CoreModel`
 (des réponses aux faits, des faits aux cibles) et les seeds. `Model`
 (`front/socle/model.ts`) le porte sous `core`, et y ajoute les deux résultats,
 `result` et `cerfa`, et l'invitation à donner son avis, `feedback`, que le
-socle place après l'un ou l'autre (`front/socle/simulateur/FeedbackLink.tsx`,
+socle place après l'un ou l'autre (`front/socle/simulateur/screens/FeedbackLink.tsx`,
 D-196). `front/main.tsx` est le seul fichier qui importe le socle
 et les modèles. Il dit à `App` comment charger chaque modèle, et `App` charge le
 premier pendant l'écran de rattachement : un modèle reste hors du chunk
@@ -355,6 +355,15 @@ Découpage **par fonctionnalité**, à l'intérieur de quatre racines :
 | `front/` | le navigateur, bundlé par Vite |
 | `server/` | le backend, qui détient la clé Grist |
 | `shared/` | le contrat front ⇄ back, chargé des deux côtés |
+
+**L'arbre dit le chemin** (ADR-25). Sous une racine, un dossier est un module
+(`socle/`, `models/<nom>/`), une entité, nommée d'un nom (`question/`, `fait/`,
+`simulation/`, `r2/`), ou une capacité, nommée d'un verbe
+(`validate-a-page.ts`, `does-a-question-still-matter/`, `draft-an-answer.ts`).
+Un fichier porte une responsabilité et se nomme de ce qu'il exporte. Le
+technique se nomme en anglais, le métier en français. Un dossier qu'on ne sait
+pas nommer d'un nom ou d'un verbe range mal : `utils/`, `types/`, `helpers/`
+n'existent pas ici.
 
 Hors de ces racines, `tooling/` porte la configuration TypeScript et les outils de
 développement (le script des règles, la vérification du bundle). Le script collé

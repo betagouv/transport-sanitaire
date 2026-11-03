@@ -50,8 +50,8 @@ Le reste du paquet est **retranscrit** dans le code, selon les règles du dépô
 
 | Pièce du paquet | Ce qu'elle devient |
 |---|---|
-| le dictionnaire des cibles, les faits que les règles reçoivent | `core/models/eligibilite/declarations/` (`cibles.ts`, `faits.ts`) |
-| le catalogue des questions et leurs libellés | `declarations/questions.ts` et les pages de `p1/`, `p2/`, `p3/` |
+| le dictionnaire des cibles, les faits que les règles reçoivent | `core/models/eligibilite/cibles/noms.ts` et `faits/noms.ts` |
+| le catalogue des questions et leurs libellés | `questions/catalogue/catalogue.ts` et les pages de `questions/p1/`, `p2/`, `p3/` |
 | le contrat réponses/faits (`CONTRAT_REPONSES_FAITS.json` et les contrats qui le précisent) | un fichier par fait, sous `faits/` |
 | l'oracle, dans le dossier `tests/` du paquet | `tests/model/eligibilite/`, en faits et en réponses (D-79) |
 | le mapping des gabarits | les cerfa de `front/models/eligibilite/r3/` |

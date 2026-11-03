@@ -74,7 +74,7 @@ jamais exposées au front.
 | Variable | Portée | Requis | Défaut / si absente | Usage |
 | --- | --- | --- | --- | --- |
 | `GRIST_API_KEY` | serveur | **prod** | référentiel **snapshot factice** (dev/CI) | Clé API Grist source du référentiel (établissements/services). Jamais exposée au front. |
-| `GRIST_DOC_URL` | serveur | non | doc Grist du projet | Base API du doc Grist (`server/referentiel.ts`). |
+| `GRIST_DOC_URL` | serveur | non | doc Grist du projet | Base API du doc Grist (`server/configuration.ts`). |
 | `VITE_MATOMO_ENABLED` | front | non | `false` (traceur no-op) | Active le tracking Matomo. Actif d'office en build de prod ; à mettre à `true` pour tester en local. |
 | `VITE_MATOMO_URL` | front | non | instance mutualisée beta.gouv | URL de l'instance Matomo. |
 | `VITE_MATOMO_SITE_ID` | front | non | `275` | Identifiant du site Matomo. |
@@ -102,8 +102,10 @@ variables ont un défaut documenté ci-dessus : elles ne bloquent jamais le dém
 Il y a quatre racines de *runtime* : `core/`, le métier, qui se charge sous Node
 comme dans le navigateur, `front/`, le front bundlé par Vite, `server/`, le
 backend Node qui détient la clé Grist, et `shared/`, le contrat commun.
-Chacune est organisée par feature. À côté, `tooling/` porte la configuration
-TypeScript et les outils de développement.
+Chacune est organisée par feature : un dossier est un module, une entité (un
+nom) ou une capacité (un verbe), et un fichier porte une responsabilité, nommé
+de ce qu'il exporte. À côté, `tooling/` porte la configuration TypeScript et
+les outils de développement.
 
 `core/` et `front/` ont chacun un `socle/` et un `models/`. Un modèle a son
 dossier des deux côtés, sous le même nom : son métier dans `core/`, son écran
@@ -286,7 +288,7 @@ sert à tenir en vie, et sous test, ce que le parcours réel reprendra :
 | --- | --- | --- |
 | Avancement automatique | Une page faite de choix uniques avance seule 200 ms après la réponse, sans bouton « Suivant ». Au retour, le bouton reprend la main ; changer la réponse avance aussitôt. | `questionnaire/advance-alone.ts` |
 | Brouillon | Une saisie ne compte qu'une fois la page validée. « Précédent » abandonne le brouillon. | `questionnaire/draft-an-answer.ts` |
-| Invalidation | Une réponse changée efface les réponses qui en dépendent, et elles seules. | `core/socle/questionnaire-engine/page-commit.ts` |
+| Invalidation | Une réponse changée efface les réponses qui en dépendent, et elles seules. | `core/socle/questionnaire-engine/validate-a-page.ts` |
 | Verrou | Au résultat, « Précédent » rouvre le questionnaire. L'action principale verrouille : le complément est un second parcours, qui ne repose aucune question d'avant et n'a pas de « Précédent » sur sa première page. | `simulateur/Simulateur.tsx` |
 | Stepper | Il compte des parties, jamais des pages. Sur une page de questions, le titre de la partie est le sien, en `h1`, et il annonce la partie suivante du même questionnaire ; la dernière n'annonce rien (D-166). Les résultats l'affichent aussi. | `questionnaire/Stepper.tsx`, `questionnaire/QuestionnaireForm.tsx` |
 | Page du premier résultat | Le socle compose la page : le stepper avec son titre et ce qui suit (« Étape suivante : … » ou « Évaluation terminée. »), puis le `h1`, l'introduction et le corps que le modèle donne (D-124), puis une rangée de boutons sous un trait : « Précédent » et « Faire une nouvelle simulation » à gauche, « Compléter » poussé à droite, les trois empilés sous 768 px (D-168). « Compléter » verrouille ; le modèle le nomme selon la préconisation, ou le retire (libellé `null`), et il n'est posé que si la partie suivante a des pages ou un cerfa, et que le résultat chargé n'est pas `terminal`. Un résultat qui charge ses textes garde le stepper, compté avec l'étape prévisionnelle, sans ligne, et les deux boutons de gauche. Le titre d'un résultat avec feuille et complétion est vert (D-169). Toute fiche à remettre au patient est une feuille (`sheet`, D-125) : les boutons passent au-dessus d'elle, puis la liseuse la pose sur fond gris, sous une barre « Imprimer », et seule la feuille s'imprime : sur une A4 si elle y tient, sinon sur deux, la seconde ouverte au bloc de suivi, d'après une mesure de sa mise en page d'impression (D-178, D-179). « Télécharger », à côté, donne la feuille en PDF sans le dialogue d'impression, avec les pages de l'impression (#129). Le PDF se prépare au clic, sur la feuille affichée : pendant ce temps, le bouton dit « Préparation du PDF… » et attend. Un PDF prêt après qu'on a quitté la feuille ne sort pas. Un échec se dit sous la feuille, qui reste affichée. Le PDF est une image de la feuille : son texte ne se sélectionne pas. | `simulateur/screens/ResultatScreen.tsx`, `simulateur/sheet/slice-into-pages.ts`, `simulateur/sheet-download.ts` |
