@@ -21,7 +21,7 @@
       // écrites en JSON par un script : Biome ne les reformate pas.
       "!core/models/*/rules/*.json",
       // Les logos du socle sont extraits tels quels des gabarits de l'éditeur.
-      "!front/socle/simulateur/logos/*.svg"
+      "!front/socle/simulateur/sheet/logos/*.svg"
     ]
   },
   "overrides": [

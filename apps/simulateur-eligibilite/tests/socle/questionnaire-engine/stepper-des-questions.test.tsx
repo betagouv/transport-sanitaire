@@ -2,7 +2,7 @@ import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it } from "vitest";
 import { page, questionsOf } from "../../../core/socle";
-import { QuestionnaireForm } from "../../../front/socle/questionnaire-engine/QuestionnaireForm";
+import { QuestionnaireForm } from "../../../front/socle/questionnaire/QuestionnaireForm";
 import { detailsDuStepper } from "../simulateur/questionnaire";
 
 // Le stepper d'une page de questions : le titre de la partie en est le titre,

@@ -8,7 +8,10 @@
 import { describe, expect, it } from "vitest";
 import { S3138G } from "../../../front/models/eligibilite/r3/s3138g/s3138g";
 import { S3139H } from "../../../front/models/eligibilite/r3/s3139h/s3139h";
-import { type BoundCerfa, dtoFrom } from "../../../front/socle/cerfa-mapping";
+import {
+  type BoundCerfa,
+  dtoFrom,
+} from "../../../front/socle/cerfa/generate-the-cerfa/compute-the-dto";
 import { markedStates, textsOn } from "../../socle/cerfa/pdf-aplati";
 import {
   DAP,

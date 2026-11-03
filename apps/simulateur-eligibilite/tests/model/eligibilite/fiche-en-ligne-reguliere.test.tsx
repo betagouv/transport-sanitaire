@@ -10,7 +10,7 @@ import { describe, expect, it } from "vitest";
 import { SEEDS } from "../../../core/models/eligibilite/seeds-catalogue";
 import { catalogueResultats } from "../../../front/models/eligibilite/r2/catalogue-resultats";
 import { eligibilite } from "../../../front/models/eligibilite/r2/resultat";
-import { SheetViewer } from "../../../front/socle/simulateur/SheetViewer";
+import { SheetViewer } from "../../../front/socle/simulateur/sheet/SheetViewer";
 import { lectureDe, type Reponses } from "./reponses-de-la-permission";
 
 await catalogueResultats();

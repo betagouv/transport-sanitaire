@@ -18,7 +18,7 @@ import {
   type AnyQuestions,
   pagesOf,
 } from "../../core/socle/questionnaire-engine/question/question";
-import type { BoundCerfa } from "./cerfa-mapping";
+import type { BoundCerfa } from "./cerfa/generate-the-cerfa/compute-the-dto";
 
 /**
  * Ce qu'un résultat reçoit pour s'afficher : ce qu'il lit des questions

@@ -7,7 +7,7 @@
 
 import { describe, expect, it } from "vitest";
 import { S3138G } from "../../../front/models/eligibilite/r3/s3138g/s3138g";
-import { dtoFrom } from "../../../front/socle/cerfa-mapping";
+import { dtoFrom } from "../../../front/socle/cerfa/generate-the-cerfa/compute-the-dto";
 import {
   drawnOn,
   markedStates,

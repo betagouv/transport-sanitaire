@@ -11,9 +11,9 @@ import { createRoot } from "react-dom/client";
 import "./socle/app/dsfr-overrides.css";
 import {
   App,
-  chargerMatomo,
-  configDepuisEnv,
+  configFromEnv,
   initAnalytics,
+  loadMatomo,
   type Models,
 } from "./socle";
 
@@ -22,7 +22,7 @@ startReactDsfr({ defaultColorScheme: "system" });
 // Prépare le traceur au démarrage, sans cookie. Il demande au CMS le choix du
 // prescripteur et ne charge Matomo que si le suivi est accepté. Le service est
 // rangé en session au rattachement, puis lu à chaque événement.
-initAnalytics(configDepuisEnv(), { charger: chargerMatomo });
+initAnalytics(configFromEnv(), { load: loadMatomo });
 
 // Le premier s'ouvre au démarrage. À plusieurs, le service n° 4 peut en changer
 // depuis les developer tools.

@@ -5,7 +5,7 @@ import { App } from "../../../front/socle/app/App";
 import {
   rangerRattachement,
   rattachementEnSession,
-} from "../../../front/socle/rattachement/session";
+} from "../../../front/socle/rattachement/rattachement-en-session";
 import type { RattachementSaisi } from "../../../shared/rattachement-saisi";
 import {
   type Referentiel,

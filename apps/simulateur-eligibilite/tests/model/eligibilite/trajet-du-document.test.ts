@@ -11,7 +11,7 @@ import type { Answers } from "../../../core/socle/questionnaire-engine/question/
 import { Questionnaire } from "../../../core/socle/questionnaire-engine/questionnaire";
 import { answerOnPage } from "../../../core/socle/questionnaire-engine/validate-a-page";
 import { preconisationOf } from "../../../core/socle/simulation/simulation";
-import { errorsOf } from "../../../front/socle/questionnaire-engine/screen-texts";
+import { errorsOf } from "../../../front/socle/questionnaire/word-a-problem";
 import { MINEUR, PLUSIEURS_PERMISSIONS } from "./reponses-de-la-permission";
 import { ciblesValant } from "./traces-du-prescripteur";
 

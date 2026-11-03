@@ -23,9 +23,12 @@ const dedans = (cible: string) => (dossier: string) =>
 // Ce qui pose les questions : le parcours et le moteur de questionnaire.
 const PARCOURS = [
   "front/socle/simulateur",
-  "front/socle/questionnaire-engine",
+  "front/socle/questionnaire",
   "core/socle/questionnaire-engine",
 ];
+
+// La valeur que lit le mapping d'un cerfa : ce que le cerfa connaît du socle.
+const VALEUR_LUE = "core/socle/questionnaire-engine/conditions/condition";
 
 // Le socle, à l'écran et dans le métier.
 const SOCLE = ["front/socle", "core/socle"];
@@ -180,13 +183,13 @@ describe("invariants métier", () => {
   it("seule la photo de la feuille importe modern-screenshot", () => {
     const fautifs = sources("front", "core").filter(
       (f) =>
-        f !== "front/socle/simulateur/sheet-photo.ts" &&
+        f !== "front/socle/simulateur/sheet/photograph-a-page.ts" &&
         texteDe(f).includes('"modern-screenshot"'),
     );
     expect(
       fautifs,
       "modern-screenshot photographie la feuille pour son PDF, derrière un " +
-        "seul fichier : `front/socle/simulateur/sheet-photo.ts`, qui le charge " +
+        "seul fichier : `front/socle/simulateur/sheet/photograph-a-page.ts`, qui le charge " +
         "à la demande. Passe par lui : l'outil se remplace alors en un endroit.",
     ).toEqual([]);
   });
@@ -195,12 +198,14 @@ describe("invariants métier", () => {
     expect(
       franchissements(
         ["front/socle/cerfa"],
-        (cible) => !cible.startsWith("front/socle/cerfa/"),
+        (cible) =>
+          !cible.startsWith("front/socle/cerfa/") && cible !== VALEUR_LUE,
       ),
       "Remplir un cerfa ne dépend pas du simulateur : il reçoit ses données, " +
-        "d'où qu'elles viennent, et un mapping qui les lit. Le simulateur " +
-        "branche le cerfa, jamais l'inverse. Passe ce qui lui manque en " +
-        "paramètre, ou rends le type générique.",
+        "d'où qu'elles viennent, et un mapping qui les lit, en valeurs du " +
+        `socle (\`${VALEUR_LUE}\`). Le simulateur branche le cerfa, jamais ` +
+        "l'inverse. Passe ce qui lui manque en paramètre, ou rends le type " +
+        "générique.",
     ).toEqual([]);
   });
 

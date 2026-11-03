@@ -2,7 +2,7 @@ import { screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 import { page, questionsOf } from "../../../core/socle";
 import { Questionnaire } from "../../../core/socle/questionnaire-engine/questionnaire";
-import { errorsOf } from "../../../front/socle/questionnaire-engine/screen-texts";
+import { errorsOf } from "../../../front/socle/questionnaire/word-a-problem";
 import { afficher } from "./afficher";
 
 // Deux options d'un choix multiple peuvent s'exclure : cocher l'une décoche

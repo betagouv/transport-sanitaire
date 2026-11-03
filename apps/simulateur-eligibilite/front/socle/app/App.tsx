@@ -10,12 +10,12 @@ import { DeveloperTools, ToolButton } from "../developer-tools/DeveloperTools";
 import type { Model } from "../model";
 import { RattachementScreen } from "../rattachement/RattachementScreen";
 import { SeedsScreen } from "../seeds/SeedsScreen";
-import { SimulateurScreen } from "../simulateur/SimulateurScreen";
 import { Container } from "./Container";
 import { type ModelChoice, type Models, useModelChoice } from "./model-choice";
 import { useModelLoading } from "./model-loading";
 import type { Navigation } from "./navigation";
 import { useNavigation } from "./navigation";
+import { SimulateurScreen } from "./SimulateurScreen";
 
 // `referentiel` et `declarer` sont injectables pour les tests.
 type Props = Pick<

@@ -7,9 +7,9 @@
 // demande, et les réexporter ici les ramènerait dans le chunk d'entrée.
 
 export {
-  chargerMatomo,
-  configDepuisEnv,
+  configFromEnv,
   initAnalytics,
+  loadMatomo,
 } from "./analytics/matomo";
 export { App } from "./app/App";
 export type { Models } from "./app/model-choice";
@@ -21,10 +21,14 @@ export {
   date,
   drawnBox,
   onOneLine,
+  templateAt,
   text,
 } from "./cerfa/cerfa";
-export { templateAt } from "./cerfa/generate-cerfa";
-export { bindCerfa, type CerfaMapping, cerfaValue } from "./cerfa-mapping";
+export {
+  bindCerfa,
+  type CerfaMapping,
+  cerfaValue,
+} from "./cerfa/generate-the-cerfa/compute-the-dto";
 export {
   type AldIndicator,
   defineModel,

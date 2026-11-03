@@ -1,11 +1,11 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import {
-  configDepuisEnv,
-  construireEvenement,
-  emettre,
+  buildEvent,
+  configFromEnv,
+  emit,
   initAnalytics,
 } from "../../../front/socle/analytics/matomo";
-import { rangerRattachement } from "../../../front/socle/rattachement/session";
+import { rangerRattachement } from "../../../front/socle/rattachement/rattachement-en-session";
 import type { RattachementSaisi } from "../../../shared/rattachement-saisi";
 
 const rattachement: RattachementSaisi = { etabId: "7", serviceId: "42" };
@@ -17,9 +17,9 @@ beforeEach(() => {
   rangerRattachement(null);
 });
 
-describe("construireEvenement", () => {
+describe("buildEvent", () => {
   it("porte l'id du service en Nom d'événement", () => {
-    expect(construireEvenement(rattachement, "simulation_start")).toEqual([
+    expect(buildEvent(rattachement, "simulation_start")).toEqual([
       "trackEvent",
       "simulateur",
       "simulation_start",
@@ -28,7 +28,7 @@ describe("construireEvenement", () => {
   });
 
   it("place la valeur après le Nom", () => {
-    expect(construireEvenement(rattachement, "simulation_step", 2)).toEqual([
+    expect(buildEvent(rattachement, "simulation_step", 2)).toEqual([
       "trackEvent",
       "simulateur",
       "simulation_step",
@@ -45,7 +45,7 @@ describe("construireEvenement", () => {
       serviceEstAutre: true,
       serviceLibre: "Néphrologie",
     };
-    expect(construireEvenement(autre, "simulation_start")).toEqual([
+    expect(buildEvent(autre, "simulation_start")).toEqual([
       "trackEvent",
       "simulateur",
       "simulation_start",
@@ -54,12 +54,12 @@ describe("construireEvenement", () => {
   });
 
   it("sans rattachement : pas de Nom, valeur précédée d'un Nom vide", () => {
-    expect(construireEvenement(null, "simulation_start")).toEqual([
+    expect(buildEvent(null, "simulation_start")).toEqual([
       "trackEvent",
       "simulateur",
       "simulation_start",
     ]);
-    expect(construireEvenement(null, "simulation_abandon", 3)).toEqual([
+    expect(buildEvent(null, "simulation_abandon", 3)).toEqual([
       "trackEvent",
       "simulateur",
       "simulation_abandon",
@@ -69,28 +69,28 @@ describe("construireEvenement", () => {
   });
 });
 
-describe("configDepuisEnv", () => {
+describe("configFromEnv", () => {
   it("désactivé hors prod et sans flag", () => {
-    expect(configDepuisEnv({ PROD: false }).enabled).toBe(false);
+    expect(configFromEnv({ PROD: false }).enabled).toBe(false);
   });
 
   it("activé en build de prod", () => {
-    expect(configDepuisEnv({ PROD: true }).enabled).toBe(true);
+    expect(configFromEnv({ PROD: true }).enabled).toBe(true);
   });
 
   it("activable en local via VITE_MATOMO_ENABLED", () => {
     expect(
-      configDepuisEnv({ PROD: false, VITE_MATOMO_ENABLED: "true" }).enabled,
+      configFromEnv({ PROD: false, VITE_MATOMO_ENABLED: "true" }).enabled,
     ).toBe(true);
   });
 
   it("défauts beta.gouv, surchargeables", () => {
-    expect(configDepuisEnv({ PROD: true })).toMatchObject({
+    expect(configFromEnv({ PROD: true })).toMatchObject({
       url: "https://stats.beta.gouv.fr/",
       siteId: "275",
     });
     expect(
-      configDepuisEnv({
+      configFromEnv({
         PROD: true,
         VITE_MATOMO_URL: "https://x/",
         VITE_MATOMO_SITE_ID: "9",
@@ -115,7 +115,7 @@ describe("initAnalytics", () => {
     initAnalytics(config);
     rangerRattachement(rattachement); // connu après le rattachement, avant les événements
     window._paq = []; // isole les événements des commandes d'amorçage
-    emettre("simulation_start");
+    emit("simulation_start");
     expect(window._paq).toEqual([
       ["trackEvent", "simulateur", "simulation_start", "42"],
     ]);
@@ -123,7 +123,7 @@ describe("initAnalytics", () => {
 
   it("est un no-op quand désactivé", () => {
     initAnalytics({ ...config, enabled: false });
-    emettre("simulation_start");
+    emit("simulation_start");
     expect(window._paq).toEqual([]);
   });
 });
@@ -154,7 +154,7 @@ describe("mesure selon le choix transmis par le CMS", () => {
     initAnalytics(config, {
       parent: page.parent,
       delaiMs: 60_000,
-      charger: (url) => chargements.push(url),
+      load: (url) => chargements.push(url),
     });
     return page;
   };
@@ -165,14 +165,14 @@ describe("mesure selon le choix transmis par le CMS", () => {
 
   it("attend le choix avant la moindre mesure", () => {
     demarrerDansLIframe();
-    emettre("simulation_start");
+    emit("simulation_start");
     expect(window._paq).toEqual([]);
     expect(chargements).toEqual([]);
   });
 
   it("une fois le suivi accepté, amorce le traceur puis rejoue ce qui attendait", () => {
     const { choisir } = demarrerDansLIframe();
-    emettre("simulation_start");
+    emit("simulation_start");
     choisir(true);
 
     expect(window._paq?.at(0)).toEqual(["disableCookies"]);
@@ -187,9 +187,9 @@ describe("mesure selon le choix transmis par le CMS", () => {
 
   it("sur refus, ne charge pas Matomo et n'envoie rien", () => {
     const { choisir } = demarrerDansLIframe();
-    emettre("simulation_start");
+    emit("simulation_start");
     choisir(false);
-    emettre("simulation_step", 1);
+    emit("simulation_step", 1);
 
     expect(window._paq).toEqual([]);
     expect(chargements).toEqual([]);
@@ -200,7 +200,7 @@ describe("mesure selon le choix transmis par le CMS", () => {
     choisir(true);
     window._paq = [];
     choisir(false);
-    emettre("simulation_step", 1);
+    emit("simulation_step", 1);
 
     expect(window._paq).toEqual([]);
   });
@@ -211,7 +211,7 @@ describe("mesure selon le choix transmis par le CMS", () => {
     choisir(false);
     window._paq = [];
     choisir(true);
-    emettre("simulation_step", 1);
+    emit("simulation_step", 1);
 
     expect(window._paq).toEqual([
       ["trackEvent", "simulateur", "simulation_step", "", 1],

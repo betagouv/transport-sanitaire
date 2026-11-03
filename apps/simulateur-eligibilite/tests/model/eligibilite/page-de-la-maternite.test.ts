@@ -7,7 +7,7 @@ import { Questionnaire } from "../../../core/socle/questionnaire-engine/question
 import { Simulation } from "../../../core/socle/simulation/simulation";
 import { model } from "../../../front/models/eligibilite";
 import { S3139H } from "../../../front/models/eligibilite/r3/s3139h/s3139h";
-import { dtoFrom } from "../../../front/socle/cerfa-mapping";
+import { dtoFrom } from "../../../front/socle/cerfa/generate-the-cerfa/compute-the-dto";
 import { textsOn } from "../../socle/cerfa/pdf-aplati";
 import {
   donnees,

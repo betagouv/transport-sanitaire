@@ -11,11 +11,11 @@ import type { Model } from "../model";
 import {
   type DebugTraceProps,
   QuestionnaireForm,
-} from "../questionnaire-engine/QuestionnaireForm";
-import { trackAldPathway } from "./ald-indicator";
-import { FirstResultat } from "./FirstResultat";
-import { CerfaResultat } from "./Resultats";
-import { type Screen, startingScreen } from "./start";
+} from "../questionnaire/QuestionnaireForm";
+import { type Screen, startingScreen } from "./screen";
+import { CerfaScreen } from "./screens/CerfaScreen";
+import { ResultatScreen } from "./screens/ResultatScreen";
+import { trackAldPathway } from "./track-the-ald-pathway";
 
 type Props = {
   /** La version du modèle que le parcours déroule. */
@@ -53,11 +53,11 @@ export function Simulateur({
         </>
       );
     case "resultat":
-      return <FirstResultatScreen screen={screen} {...common} />;
+      return <OnResultat screen={screen} {...common} />;
     case "complement":
       return <SecondQuestionnaire screen={screen} {...common} />;
     default:
-      return <CerfaResultatScreen screen={screen} {...common} />;
+      return <OnCerfa screen={screen} {...common} />;
   }
 }
 
@@ -130,13 +130,9 @@ function SecondQuestionnaire({
   );
 }
 
-function FirstResultatScreen({
-  screen,
-  goTo,
-  ...props
-}: ScreenProps<"resultat">) {
+function OnResultat({ screen, goTo, ...props }: ScreenProps<"resultat">) {
   return (
-    <FirstResultat
+    <ResultatScreen
       state={screen.previousState}
       onReopen={(resume) => goTo({ name: "questionnaire", resume })}
       onLock={(locked) => goTo({ name: "complement", locked })}
@@ -145,10 +141,10 @@ function FirstResultatScreen({
   );
 }
 
-function CerfaResultatScreen({ screen, goTo, ...props }: ScreenProps<"cerfa">) {
+function OnCerfa({ screen, goTo, ...props }: ScreenProps<"cerfa">) {
   const { locked } = screen;
   return (
-    <CerfaResultat
+    <CerfaScreen
       state={screen.previousState}
       locked={locked}
       completedAt={screen.completedAt}

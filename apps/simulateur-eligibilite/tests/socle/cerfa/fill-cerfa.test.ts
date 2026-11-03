@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
-import { formatDateForField } from "../../../front/socle/cerfa/dates";
-import { fillCerfa } from "../../../front/socle/cerfa/fill-cerfa";
-import { TEXT_SIZES } from "../../../front/socle/cerfa/text-sizes";
+import { formatDateForField } from "../../../front/socle/cerfa/generate-the-cerfa/dates";
+import { fillCerfa } from "../../../front/socle/cerfa/generate-the-cerfa/fill-the-form";
+import { TEXT_SIZES } from "../../../front/socle/cerfa/generate-the-cerfa/text-sizes";
 import {
   drawnSizesOf,
   fontSizeOf,

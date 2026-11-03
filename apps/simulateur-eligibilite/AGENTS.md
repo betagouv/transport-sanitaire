@@ -9,7 +9,7 @@ Le simulateur d'éligibilité au transport sanitaire. Sa pile :
 
 - React 19 + Vite + DSFR (`@codegouvfr/react-dsfr`) ;
 - un questionnaire **déclaré par l'application** (`core/socle/questionnaire-engine/`),
-  que `front/socle/questionnaire-engine/` affiche.
+  que `front/socle/questionnaire/` affiche.
 
 **L'app est entre deux modèles.** Le modèle v9 et ce qui en dépendait sont retirés,
 la v10 n'est pas intégrée : son avancement est dans l'issue 50 du dépôt, ses
@@ -118,14 +118,15 @@ mécanique, sans React ni phrase de l'écran :
 | `given-answers.ts`, `validated-answers.ts` | les deux lectures des réponses, que le modèle reçoit (voir « La décision ») |
 | `page-commit.ts` | ce que deviennent les réponses quand une page est validée, et ce que ça efface (`Reading.commit` le lit) |
 
-`front/socle/questionnaire-engine/` l'affiche :
+`front/socle/questionnaire/` l'affiche, un fichier par capacité :
 
 | Fichier | Ce qu'il porte |
 |---|---|
-| `questionnaire.ts` | le parcours à l'écran : il garde l'état (page ouverte, brouillon) et interroge la lecture pour le reste |
-| `screen-texts.ts` | les phrases de l'écran : « (facultatif) », le message de chaque nature de problème, les libellés des champs d'une adresse |
+| `questionnaire.ts` | le parcours à l'écran (`useQuestionnaire`) : il garde l'état (page ouverte, brouillon) et interroge la lecture pour le reste |
+| `draft-an-answer.ts`, `move-between-pages.ts`, `resume-where-left.ts` | le brouillon d'une page, les actions qui avancent ou reviennent, l'état où le parcours reprend |
+| `advance-alone.ts`, `send-to-analytics.ts` | l'avancement seul d'une page de choix uniques, et ce que le parcours envoie à l'analytics |
+| `label-a-question.ts`, `word-a-problem.ts`, `lay-out-an-address.ts` | les phrases de l'écran : « (facultatif) », le message de chaque nature de problème, les champs d'une adresse et leurs libellés |
 | `QuestionnaireForm.tsx`, `QuestionField.tsx`, `Stepper.tsx` | le formulaire, le champ DSFR de chaque sorte de question, le stepper |
-| `auto-advance.ts`, `questionnaire-tracking.ts` | l'avancement seul d'une page de choix uniques, et ce que le parcours envoie à l'analytics |
 
 Neuf règles à tenir en ajoutant une question :
 
@@ -271,28 +272,33 @@ cadre, à 8 pt, et déborde dessous, par-dessus ce qui s'y trouve (D-94). Il ne
 descend sous 8 pt que pour rester sur la page, jusqu'à 6 pt.
 
 Le modèle traduit les données du simulateur en DTO (`CerfaMapping`, dans
-`front/socle/cerfa-mapping.ts`) : une valeur par entrée (`given…`), que le
+`front/socle/cerfa/generate-the-cerfa/compute-the-dto.ts`) : une valeur par entrée (`given…`), que le
 socle lit sur les questions validées, les faits et les cibles figés au verrou,
 et le jour de complétion (`given.today()`, ADR-21). `bindCerfa`
 lie une définition à son mapping et vérifie qu'ils parlent du même DTO. Le
 simulateur calcule le DTO sous le second résultat et le passe au bouton.
 
+`front/socle/cerfa/` a trois niveaux : ce qu'est un cerfa, sa génération
+(`generate-the-cerfa/`), et ce qu'on fait d'un PDF (`pdf/`).
+
 | Fichier | Ce qu'il porte |
 |---|---|
-| `fill-cerfa.ts` | l'écriture dans un AcroForm : textes et leur commentaire, cases et leurs états d'export. Ce qui ne tient pas dans son cadre |
-| `text-fit.ts` | un texte tient-il dans son champ, et à quelle taille, au besoin rapetissé et sur plusieurs lignes |
-| `overflow.ts` | où et à quelle taille se dessine un texte plus long que le nombre de caractères de son champ |
-| `widget-page.ts` | la page qui porte le widget d'un champ |
-| `text-sizes.ts` | la configuration des tailles (D-68) : la taille visée, 9 pt, la taille réduite, 8 pt, et le plancher d'un texte dessiné hors de son champ, 6 pt. Une version du modèle la modifie, pas le code |
-| `cerfa.ts` | ce qu'est un cerfa : son DTO, son gabarit, et où va chaque entrée |
-| `dates.ts` | une date sur un champ peigné |
-| `box-appearances.ts` | le dessin des cases du gabarit, gardé : un `/Off` vide pour celles qui n'en ont pas, sans quoi `pdf-lib` les redessine (D-140) |
-| `flatten-cerfa.ts` | l'aplatissement du PDF rempli : plus aucun champ, chaque valeur dessinée sur la page (D-84). Puis ce qu'un champ ne sait pas montrer : les marques des cases partagées, les textes sans champ, ceux qui débordent |
-| `generate-cerfa.ts` | la génération : le DTO traduit dans les noms du gabarit, remplir, puis aplatir, avec `pdf-lib` chargé à la demande. Le nom daté du fichier, le téléchargement |
-| `print-pdf.ts` | l'impression d'un PDF dans un cadre invisible : le dialogue du navigateur s'ouvre sur le PDF, pas sur la page |
-| `pdf-preparation.ts` | ce qu'ont en commun les PDF qu'un bouton attend, cerfa et feuille : « Préparation du PDF… » (D-191), et la garde du document quitté pendant la préparation (D-190) |
+| `cerfa.ts` | ce qu'est un cerfa : son DTO, son gabarit, et où va chaque entrée. `templateAt(url)` charge un gabarit servi par l'app |
 | `CerfaDocument.tsx` | les boutons « Imprimer » et « Télécharger », qui génèrent le PDF dès qu'ils s'affichent et portent le même document, puis son aperçu, ou ce que le modèle met à sa place, et ce qui le suit une fois le PDF prêt. L'avertissement d'un commentaire retiré, l'alerte si ça échoue |
 | `CerfaPreview.tsx` | l'aperçu du PDF dans la page, par le lecteur du navigateur ; sans lecteur, une phrase renvoie au téléchargement (D-183) |
+| `generate-the-cerfa/generate-the-cerfa.ts` | la génération : le DTO traduit dans les noms du gabarit, remplir, puis aplatir, avec `pdf-lib` chargé à la demande |
+| `generate-the-cerfa/compute-the-dto.ts` | le DTO calculé des données du simulateur : `CerfaMapping`, `bindCerfa`, `dtoFrom` |
+| `generate-the-cerfa/fill-the-form.ts` | l'écriture dans un AcroForm : textes et leur commentaire, cases et leurs états d'export. Ce qui ne tient pas dans son cadre |
+| `generate-the-cerfa/text-fit.ts` | un texte tient-il dans son champ, et à quelle taille, au besoin rapetissé et sur plusieurs lignes |
+| `generate-the-cerfa/overflow.ts` | où et à quelle taille se dessine un texte plus long que le nombre de caractères de son champ |
+| `generate-the-cerfa/widget-page.ts` | la page qui porte le widget d'un champ |
+| `generate-the-cerfa/text-sizes.ts` | la configuration des tailles (D-68) : la taille visée, 9 pt, la taille réduite, 8 pt, et le plancher d'un texte dessiné hors de son champ, 6 pt. Une version du modèle la modifie, pas le code |
+| `generate-the-cerfa/dates.ts` | une date sur un champ peigné |
+| `generate-the-cerfa/box-appearances.ts` | le dessin des cases du gabarit, gardé : un `/Off` vide pour celles qui n'en ont pas, sans quoi `pdf-lib` les redessine (D-140) |
+| `generate-the-cerfa/flatten-the-form.ts` | l'aplatissement du PDF rempli : plus aucun champ, chaque valeur dessinée sur la page (D-84). Puis ce qu'un champ ne sait pas montrer : les marques des cases partagées, les textes sans champ, ceux qui débordent |
+| `pdf/download-a-pdf.ts` | le nom daté du fichier, le téléchargement |
+| `pdf/print-a-pdf.ts` | l'impression d'un PDF dans un cadre invisible : le dialogue du navigateur s'ouvre sur le PDF, pas sur la page |
+| `pdf/PdfActionButton.tsx` | le bouton qui attend un PDF, cerfa ou feuille : désactivé en attendant, « Préparation du PDF… » s'il le dit (D-191), et la garde du document quitté pendant la préparation (D-190) |
 
 Un formulaire rempli porte des données de santé nominatives. Il se génère **dans le
 navigateur uniquement**, et ce dossier n'adresse jamais `/api`.
@@ -314,18 +320,20 @@ est photographiée par le navigateur, puis coupée là où l'impression coupe.
 Chaque tranche va sur une A4, aux marges des gabarits. Le PDF est une image :
 son texte ne se sélectionne pas.
 
-| Fichier (`front/socle/simulateur/`) | Ce qu'il porte |
+| Fichier (`front/socle/simulateur/sheet/`) | Ce qu'il porte |
 |---|---|
-| `sheet-download.ts` | le téléchargement : l'attente, l'échec, le nom daté du fichier, et rien après qu'on a quitté la feuille |
-| `sheet-pdf.ts` | la mesure, la photo de la copie en papier, ses tranches en JPEG |
-| `sheet-pagination.ts` | où se coupent les pages (`pageSlicesOf`), d'après la mise en page retenue pour l'impression |
-| `sheet-measure.ts` | la copie en papier, posée hors de l'écran le temps de la photo (`onPaperCopy`) |
-| `sheet-photo.ts` | la photo, par `modern-screenshot`, chargé à la demande ; seul fichier qui l'importe |
-| `paper-pdf.ts` | le PDF : une A4 par tranche, par `pdf-lib`, chargé à la demande |
+| `SheetViewer.tsx` | la liseuse de la feuille et ses deux boutons, imprimer et télécharger |
+| `print-the-sheet.ts` | l'impression : la feuille se met en page pour le papier |
+| `download-the-sheet.ts` | le téléchargement : l'attente, l'échec, le nom daté du fichier, et rien après qu'on a quitté la feuille |
+| `make-the-sheet-pdf.ts` | la mesure, la photo de la copie en papier, ses tranches en JPEG |
+| `slice-into-pages.ts` | où se coupent les pages (`pageSlicesOf`), d'après la mise en page retenue pour l'impression |
+| `measure-on-paper.ts` | la copie en papier, posée hors de l'écran le temps de la photo (`onPaperCopy`) |
+| `photograph-a-page.ts` | la photo, par `modern-screenshot`, chargé à la demande ; seul fichier qui l'importe |
+| `assemble-the-pdf.ts` | le PDF : une A4 par tranche, par `pdf-lib`, chargé à la demande |
 
 `modern-screenshot` fige la hauteur de chaque élément qu'il copie : une marge
 basse qui traversait son parent y resterait, et la photo ne tomberait plus sur
-les coupes. `sheet-photo.ts` rend leur hauteur libre à ces parents.
+les coupes. `photograph-a-page.ts` rend leur hauteur libre à ces parents.
 
 *Gardé par* `tests/socle/simulateur/telechargement-de-la-feuille.test.tsx`,
 `pdf-de-la-feuille.test.ts` et `pagination-de-la-feuille.test.ts`. Le

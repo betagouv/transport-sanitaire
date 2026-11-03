@@ -8,7 +8,7 @@ import { evaluateSeed, type Seed } from "../../../core/socle/simulation/seed";
 import { Simulation } from "../../../core/socle/simulation/simulation";
 import { Container } from "../app/Container";
 import type { Model } from "../model";
-import { startingScreen } from "../simulateur/start";
+import { startingScreen } from "../simulateur/screen";
 import { type SeedRow, SeedsTable } from "./SeedsTable";
 
 type Props = {

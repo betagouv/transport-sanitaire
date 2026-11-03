@@ -8,7 +8,7 @@ import type {
   AnyCibles,
   Page,
 } from "../../../core/socle/questionnaire-engine/question/question";
-import { QuestionnaireForm } from "../../../front/socle/questionnaire-engine/QuestionnaireForm";
+import { QuestionnaireForm } from "../../../front/socle/questionnaire/QuestionnaireForm";
 
 /**
  * Affiche ces pages. `reponses` rend ce que le questionnaire a validé, une fois
