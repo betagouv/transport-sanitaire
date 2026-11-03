@@ -29,7 +29,7 @@ d'où viennent ses réponses.
 ## 2. Écrire les réponses
 
 Les réponses se donnent par identifiant de question (`"Q1.2"`), avec les
-valeurs de `questions/catalogue/catalogue.ts`. Un groupe de réponses partagé par
+valeurs que déclare sa question (`questions/p1/questions/q1-2.ts`). Un groupe de réponses partagé par
 plusieurs seeds devient une constante en tête du catalogue (`TAP_1_5`,
 `TRAJET_COURT`).
 

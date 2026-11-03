@@ -107,7 +107,7 @@ mécanique, sans React ni phrase de l'écran :
 | Fichier | Ce qu'il porte |
 |---|---|
 | `question.ts` | ce qu'est une question pour le moteur (`Question` : son id, sa sorte, ses dépendances, et `askedIn`, ce qu'elle donne vu le contexte), une page, une partie, une réponse |
-| `question-factory.ts` | les constructeurs nommés des questions (`questionsOf`) : la sorte vient du constructeur, les options du catalogue du modèle, d'après l'id |
+| `question-factory.ts` | les constructeurs nommés des questions (`questionsOf`) : la sorte vient du constructeur, et une question à choix porte ses options (`.options({ … })`) |
 | `declared-question.ts`, `declared-choices.ts`, `declared-inputs.ts` | une classe par sorte de question déclarée. Chaque réglage (`appliesWhen`, `hint`, `min`…) donne une copie, et `askedIn` tire la question posée de la déclaration |
 | `declared-option.ts`, `declared-page.ts` | les réglages d'une option, par une lambda (`.option(valeur, (option) => …)`), et `page(id, ...questions)`, dont la condition s'ajoute à chacune de ses questions |
 | `condition.ts`, `given.ts` | les conditions : une valeur qui dit ce qu'elle lit (`Value`, `Condition`), se compose par `and`, `or`, `not`, `compute` et `computeWith`, et ses entrées (`given.question(id).answer()`, `given.fait`, `given.cible`, `given.today`) |
@@ -133,16 +133,17 @@ mécanique, sans React ni phrase de l'écran :
 | `label-a-question.ts`, `word-a-problem.ts`, `lay-out-an-address.ts` | les phrases de l'écran : « (facultatif) », le message de chaque nature de problème, les champs d'une adresse et leurs libellés |
 | `QuestionnaireForm.tsx`, `QuestionField.tsx`, `Stepper.tsx` | le formulaire, le champ DSFR de chaque sorte de question, le stepper |
 
-Neuf règles à tenir en ajoutant une question :
+Treize règles à tenir en ajoutant une question :
 
 - **Une question se déclare par son constructeur, un réglage par ligne.**
-  `question.singleChoice("Q1.1", "Concernant son déplacement, le patient :")` :
-  la sorte vient du constructeur, les options du catalogue `OPTIONS` du modèle,
-  d'après l'id. Une option ne se règle que pour ce qu'elle porte de plus, dans
+  `question.singleChoice("Q1.1", "Concernant son déplacement, le patient :")`
+  `.options({ "1_SEUL": "…", "2_AVEC_UN_PROCHE": "…" })` : la sorte vient du
+  constructeur, et la question porte ses options, qui disent le type de sa
+  réponse. Une option ne se règle que pour ce qu'elle porte de plus, dans
   sa lambda : `.option("6_SEANCE", (option) => option.offeredWhen(…))`. `order`
   en garde une partie, dans cet ordre, et `exclusive` met la sienne à part.
   Chaque réglage donne une copie : une déclaration ne change jamais. Le modèle lie ses constructeurs une fois, dans son
-  `questions/question.ts` : `questionsOf<Questions, Faits, Cibles>({ options, faits,
+  `questions/question.ts` : `questionsOf<ReadByObject, Faits, Cibles>({ faits,
   cibles })`. Un seul jeu, avant comme après le verrou. La partie posée après
   le verrou se déclare par `afterLock({ … })` : ses gardes lisent alors les
   cibles figées.
@@ -151,12 +152,21 @@ Neuf règles à tenir en ajoutant une question :
   d'après un fait ou une cible. Une option se propose par `offeredWhen`.
   Jamais dans un composant. Celle d'une page (`page(…).appliesWhen(…)`)
   s'ajoute à chacune de ses questions.
-- **Une condition lit ce qui la précède.** `given.question(id).answer()` voit
+- **Une condition lit ce qui la précède.** `given.question(Q1_2).answer()` voit
   les pages d'avant validées, et sa page telle qu'elle est à l'écran, pour les
   questions posées avant la sienne. Une réponse d'avant le verrou se lit telle
   quelle. Une garde qui lit sa question ou une question d'après s'arrête net.
   Un fait et une cible se lisent sur les questions validées avant elle (figées
   dans la partie `afterLock`).
+- **Une déclaration lit une question par son objet, et la suit.** Le type
+  `Questions` du modèle se tire de ses parties (`questions/reponses.ts`) : les
+  déclarations, qui le précèdent, ne le lisent pas. Elles importent la
+  question (`given.question(Q1_2)`, `AnswerOf<typeof Q1_2>`) ; le front, les
+  tests et les seeds lisent par id ou par objet, avec le `given` de
+  `reponses.ts`. Une condition qui lit une question vit après elle : dans son
+  fichier, ou dans un fichier de `conditions/` que la question n'importe pas.
+  Sinon les deux modules s'importent l'un l'autre, et le chargement casse
+  (`Q2_2_1_INDICATION`, puis `dansLeCircuit`, dans `q2-2-1-indication.ts`).
 - **Une garde lit le fait quand il en existe un.**
   `.mattersWhile(given.fait("fait_permission").isOui())`. Elle ne recompose
   pas, réponse par réponse, ce que le fait établit déjà. Sans fait qui la
@@ -170,9 +180,9 @@ Neuf règles à tenir en ajoutant une question :
   n'y reçoit les réponses (ADR-21).
 - **Un savoir lu à deux endroits.** Une lecture de réponse s'écrit là où elle
   sert, même si une autre partie l'écrit aussi : le libellé de Q1.4 lit
-  `answers.question("Q1.1").is("2_AVEC_UN_PROCHE")` sur place. Une donnée de
-  l'éditeur se partage en donnée, dans le catalogue de son étape (`questions/catalogue/`, `OPTIONS`,
-  `RETIREE_SI_Q21`). Une règle que plusieurs faits reprennent mot pour mot se
+  `answers.question(Q1_1).is("2_AVEC_UN_PROCHE")` sur place. Une donnée de
+  l'éditeur se partage en donnée, là où elle se déclare : les options dans
+  leur question, qu'on lit par `Q1_3.labels`. Une règle que plusieurs faits reprennent mot pour mot se
   nomme dans `faits/communs.ts`. Ce qui ne sert qu'à un endroit y reste
   (`allersRetoursMensuelsAuPlus`, dans `questions/p3/questions/q3-1-3.ts`). Aucun fichier n'est
   commun aux pages et aux faits : mieux vaut une condition écrite deux fois sur
@@ -229,7 +239,7 @@ Ses pièces sont dans `core/socle/`.
 
 | Pièce | Ce qu'elle porte |
 |---|---|
-| `GivenAnswers` (`given-answers.ts`) | les réponses données, lues question par question : `answers.question("Q1.1").is("1_SEUL")`, `.isNot(option)`, `.checked(case)`, `.checkedBoxes()`, `.hasAnswer()`. Une question sans réponse n'est aucune option, sans être un « non » |
+| `GivenAnswers` (`given-answers.ts`) | les réponses données, lues question par question : `answers.question(Q1_1).is("1_SEUL")`, `.isNot(option)`, `.checked(case)`, `.checkedBoxes()`, `.hasAnswer()`. Une question sans réponse n'est aucune option, sans être un « non » |
 | `ValidatedAnswers` (`validated-answers.ts`) | les questions validées, lues de même, avec ce qui se proposait : `.isValidated()`, `.offers(option)`, `.declined(case)` |
 | `LocalDateTime` (`local-date-time.ts`) | une date répondue, lue une fois, sans fuseau : `LocalDateTime.parse(saisie)`, `isBefore`, `isAfter`, `isAtOrBefore`, `equals`, `plusDays`, `plusHours`, `startOfDay`. Une saisie mal écrite n'est comparée à rien : toute comparaison avec elle vaut « non » |
 | `preconisation.faits(answers, validated)` | le modèle reçoit ces deux lectures, jamais les réponses brutes. Il applique, fait par fait, le contrat de l'éditeur |

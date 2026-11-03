@@ -37,7 +37,7 @@ Un contrat ambigu ne se tranche pas dans le code : il se remonte à l'éditeur.
 |---|---|---|
 | un fait | `FAITS`, dans `faits/noms.ts`, à son rang dans les règles | `tests/model/eligibilite/declarations.test.ts` |
 | une cible | `CIBLES` ou `CIBLES_ENUMEREES`, dans `cibles/noms.ts` | le même |
-| une option | `OPTIONS`, dans `questions/catalogue/catalogue.ts` : son numéro au catalogue, puis ce qu'elle veut dire (`"2_AVEC_UN_PROCHE"`) | le même |
+| une option | dans sa question, `.options({ … })` (`questions/p1/questions/q1-1.ts`) : son numéro au catalogue, puis ce qu'elle veut dire (`"2_AVEC_UN_PROCHE"`) | le même |
 
 Ces listes typent le modèle. Un nom absent n'existe pas pour TypeScript.
 

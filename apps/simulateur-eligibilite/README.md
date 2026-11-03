@@ -127,10 +127,10 @@ core/                    le métier, sans React ni DOM : ce qu'un serveur ou un 
                          des réponses au résultat, chacun ouvert sur son
                          vocabulaire ; à la racine, `index.ts` qui assemble et le
                          catalogue de seeds
-      questions/         `catalogue/` (les questions, leurs options et libellés,
-                         dans les mots des règles), `question.ts` (les
-                         constructeurs), `questionnaire.ts` (les parties), puis
-                         une partie par dossier, de la même forme
+      questions/         `question.ts` (les constructeurs), `reponses.ts` (le
+                         type des réponses, tiré des parties),
+                         `questionnaire.ts` (les parties), puis une partie par
+                         dossier, de la même forme
         p1/              l'autonomie et l'état de santé : le mode de transport
         p2/              l'éligibilité
         p3/              le complément du cerfa, après le verrou
