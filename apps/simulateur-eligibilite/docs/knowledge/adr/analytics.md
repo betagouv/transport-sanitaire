@@ -334,5 +334,5 @@ Prérequis : l'écran de rattachement fournit le service (cf.
 ## 8. Vérification
 
 ```bash
-pnpm --filter simulateur-eligibilite exec vitest run tests/socle/analytics tests/socle/cms
+pnpm --filter simulateur-eligibilite exec vitest run tests/socle/analytics
 ```

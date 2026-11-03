@@ -918,7 +918,7 @@ pnpm vitest run tests/model/metier-sous-node.test.ts tests/model/regles-a-jour.t
 pnpm vitest run tests/model/conformite.test.ts tests/socle/questionnaire-engine
 pnpm vitest run tests/socle/decision-engine
 pnpm vitest run tests/model/eligibilite/domaines.test.ts
-pnpm vitest run tests/model/eligibilite/catalogue-des-faits.test.ts
+pnpm vitest run tests/model/eligibilite/faits/catalogue-des-faits.test.ts
 pnpm vitest run tests/model/eligibilite/filtrage-par-le-graphe.test.ts
 pnpm vitest run tests/model/eligibilite/questions-posees-par-seed.test.ts
 ```

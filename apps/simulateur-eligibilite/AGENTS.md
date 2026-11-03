@@ -188,7 +188,7 @@ Neuf règles à tenir en ajoutant une question :
   `SITUATION_PROPOSEE` se partagent, dans `faits/communs.ts` (ADR-22). Les
   provenances qui ne citent rien (`PAS_ENCORE_ETABLI`) restent dans
   `faits/noms.ts`. Une page ne garde que ses questions et ses gardes.
-  `tests/model/eligibilite/catalogue-des-faits.test.ts` le garde.
+  `tests/model/eligibilite/faits/catalogue-des-faits.test.ts` le garde.
 - **Un fait ne lit ni garde, ni cible, ni jour.** Il lit les questions validées
   et d'autres faits ; le catalogue arrête net un fait qui lit une cible, et un
   fait qui se relit, sur une erreur qui le dit. Une garde lit
@@ -243,8 +243,8 @@ Ses pièces sont dans `core/socle/`.
 Le socle dit ce qui a été montré, validé, coché. Il ne conclut rien : c'est le
 modèle qui applique, fait par fait, le contrat de l'éditeur.
 
-*Gardé par* `tests/socle/decision-engine/`, `tests/socle/preconisation.test.ts` et
-`tests/socle/questionnaire-engine/questions-validees.test.tsx` et
+*Gardé par* `tests/socle/decision-engine/`, `tests/socle/simulation/preconisation.test.ts` et
+`tests/socle/questionnaire/questions-validees.test.tsx` et
 `tests/socle/questionnaire-engine/lecture-des-reponses.test.ts`.
 
 ## Le socle PDF
@@ -466,13 +466,26 @@ socle suppose de n'importe quel modèle, et rejoue ses seeds.
 les déclarations du modèle de l'éditeur à ses règles, et rejoue son oracle, en
 faits, contre le moteur.
 
+**Les dossiers de tests sont le miroir des sources** (#292). Sous `tests/socle/`,
+un dossier porte le nom d'un dossier de `front/socle/`, de `core/socle/`, de
+`server/` ou de `shared/` ; sous `tests/model/eligibilite/`, celui d'une étape du
+chemin : `p1/`, `p2/`, `p3/` pour les questions, `faits/`, `cibles/`, `rules/`
+pour le métier, `r2/` avec un dossier par cas (`acceptee/`, `refusee/`,
+`orientee/`) et `r3/` pour l'écran. Un helper vit avec les tests de son sujet
+(`p2/reponses-de-la-permission.ts`, `r2/traces-du-prescripteur.ts`,
+`r3/reponses-du-cerfa.ts`) ; une étape lit ceux des étapes d'avant. Ce qui
+traverse le modèle entier (`parcours.test.tsx`, `domaines.test.ts`,
+`formulaire-du-modele.tsx`) reste à sa racine. `tests/socle/fixtures/` est la
+seule exception : le factice n'a pas de source. `tests/miroir-des-sources.test.ts`
+le garde.
+
 **Une capacité ajoutée au socle arrive avec trois choses** (D-66) : ses tests,
-sur des pages écrites dans le test (`tests/socle/questionnaire-engine/afficher.tsx`),
+sur des pages écrites dans le test (`tests/socle/questionnaire/afficher.tsx`),
 sa page dans le modèle de démonstration, et une seed qui ouvre cette page.
 
 Réutilise les helpers de `tests/socle/` : `modele-de-test.ts` (le modèle que les
 tests injectent), `se-rattacher.ts`, `simulateur/questionnaire.tsx`,
-`cerfa/test-form.ts`, `rattachement/serveur-de-test.ts`.
+`cerfa/test-form.ts`, `server/serveur-de-test.ts`.
 
 **Une situation de référence va dans le `seeds-catalogue.ts` de son modèle,
 pas dans un fichier de test.** C'est un catalogue unique de situations nommées,

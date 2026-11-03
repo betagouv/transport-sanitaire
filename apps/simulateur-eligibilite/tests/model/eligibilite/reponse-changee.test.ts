@@ -22,7 +22,7 @@ import {
   Simulation,
 } from "../../../core/socle/simulation/simulation";
 import { model as frontModel } from "../../../front/models/eligibilite";
-import { MATERNITE_ETABLIE } from "./reponses-de-la-branche";
+import { MATERNITE_ETABLIE } from "./p2/reponses-de-la-branche";
 
 type Reponses = Answers<Questions>;
 

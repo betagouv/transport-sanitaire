@@ -56,8 +56,9 @@ front et le référentiel de rattachement.
 
 Les règles d'écriture et les invariants ne sont pas de la prose, ils sont exécutables.
 On les trouve dans `tests/architecture.test.ts`, pour les frontières, dans
-`tests/taille-du-code.test.ts`, pour les limites de 30 et 300 lignes, et dans `tests/lisibilite.test.ts`, pour la forme des fichiers, les noms
-et les extensions d'import. Lis leur message d'échec : chacun dit ce que sa règle
+`tests/taille-du-code.test.ts`, pour les limites de 30 et 300 lignes, dans `tests/lisibilite.test.ts`, pour la forme des fichiers, les noms
+et les extensions d'import, et dans `tests/miroir-des-sources.test.ts`, pour
+les dossiers de tests, rangés comme les sources. Lis leur message d'échec : chacun dit ce que sa règle
 protège. Ce qu'on attend d'un contributeur est écrit dans [AGENTS.md](AGENTS.md).
 
 De n'importe où dans le dépôt, `tsp dev simulateur` lance le front et le backend en
@@ -94,7 +95,7 @@ posé — `PORT=quatre-mille` ou une `GRIST_DOC_URL` qui n'est pas une URL arrê
 démarrage de la même manière, plutôt que d'échouer plus tard et ailleurs. Une variable
 posée mais vide (`GRIST_API_KEY=` dans un `.env` recopié) compte pour absente. Les autres
 variables ont un défaut documenté ci-dessus : elles ne bloquent jamais le démarrage.
-*Gardé par* [`tests/socle/serveur/configuration.test.ts`](tests/socle/serveur/configuration.test.ts).
+*Gardé par* [`tests/socle/server/configuration.test.ts`](tests/socle/server/configuration.test.ts).
 
 ## Structure (feature-first)
 
