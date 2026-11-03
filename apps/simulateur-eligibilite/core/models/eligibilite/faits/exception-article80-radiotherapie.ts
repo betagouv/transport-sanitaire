@@ -10,22 +10,24 @@
 // `CONTRAT_REPONSES_FAITS.json`.
 
 import { unFait } from "../../../socle/index.ts";
-import { EXCEPTIONS, given } from "./communs.ts";
+import { given } from "./communs.ts";
 import { PAS_ENCORE_ETABLI } from "./noms.ts";
 
 export const exceptionArticle80Radiotherapie = unFait(
   "fait_exception_article80_radiotherapie",
 )
-  .ouiSi(EXCEPTIONS.checked("8_RADIOTHERAPIE"))
-  .nonSiEcartee(EXCEPTIONS, "8_RADIOTHERAPIE")
+  .ouiSi(given.question("Q2.6").answer().checked("8_RADIOTHERAPIE"))
+  .nonSiEcartee(given.question("Q2.6").answer(), "8_RADIOTHERAPIE")
   .nonSi(
-    EXCEPTIONS.isPresent().and(
-      given.question("Q2.6.a").answer().is("1_DEFINITIF"),
-    ),
+    given
+      .question("Q2.6")
+      .answer()
+      .isPresent()
+      .and(given.question("Q2.6.a").answer().is("1_DEFINITIF")),
     "Elle ne s'est pas proposée : transfert définitif.",
   )
   .nonSi(
-    EXCEPTIONS.isPresent(),
+    given.question("Q2.6").answer().isPresent(),
     "Elle ne s'est pas proposée : une admission en HAD n'est pas un transfert provisoire.",
   )
   .sinon(PAS_ENCORE_ETABLI);

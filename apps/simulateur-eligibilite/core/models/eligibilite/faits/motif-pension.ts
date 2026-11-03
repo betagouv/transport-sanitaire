@@ -7,10 +7,10 @@
 // `CONTRAT_REPONSES_FAITS.json`.
 
 import { unFait } from "../../../socle/index.ts";
-import { SOINS } from "./communs.ts";
+import { given } from "./communs.ts";
 import { PAS_ENCORE_ETABLI } from "./noms.ts";
 
 export const motifPension = unFait("fait_motif_pension")
-  .ouiSi(SOINS.checked("9_PENSION_MILITAIRE"))
-  .nonSiEcartee(SOINS, "9_PENSION_MILITAIRE")
+  .ouiSi(given.question("Q2.2.1.b").answer().checked("9_PENSION_MILITAIRE"))
+  .nonSiEcartee(given.question("Q2.2.1.b").answer(), "9_PENSION_MILITAIRE")
   .sinon(PAS_ENCORE_ETABLI);

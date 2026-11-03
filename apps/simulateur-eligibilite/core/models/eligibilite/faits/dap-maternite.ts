@@ -8,7 +8,7 @@
 // `CONTRAT_REPONSES_FAITS.json`.
 
 import { unFait } from "../../../socle/index.ts";
-import { given, SITUATIONS } from "./communs.ts";
+import { given } from "./communs.ts";
 import { PAS_ENCORE_ETABLI } from "./noms.ts";
 
 const ELOIGNEMENT = given.question("Q2.14.eloignement").answer();
@@ -19,8 +19,8 @@ export const dapMaternite = unFait("fait_dap_maternite")
   .nonSi(MOTIF_DE_LA_DAP.checked("3_AUCUNE"), "Aucun motif éligible.")
   .ouiSi(ELOIGNEMENT.isPresent().and(MOTIF_DE_LA_DAP.isPresent()))
   .inconnuSi(
-    SITUATIONS.checked("4_MATERNITE_ELOIGNEE"),
+    given.question("Q2.2.1").answer().checked("4_MATERNITE_ELOIGNEE"),
     "À qualifier dans sa branche.",
   )
-  .nonSiEcartee(SITUATIONS, "4_MATERNITE_ELOIGNEE")
+  .nonSiEcartee(given.question("Q2.2.1").answer(), "4_MATERNITE_ELOIGNEE")
   .sinon(PAS_ENCORE_ETABLI);

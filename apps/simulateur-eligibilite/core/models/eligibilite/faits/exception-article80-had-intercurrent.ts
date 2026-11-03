@@ -8,13 +8,16 @@
 // `CONTRAT_REPONSES_FAITS.json`.
 
 import { unFait } from "../../../socle/index.ts";
-import { EXCEPTIONS } from "./communs.ts";
+import { given } from "./communs.ts";
 import { PAS_ENCORE_ETABLI } from "./noms.ts";
 
 export const exceptionArticle80HadIntercurrent = unFait(
   "fait_exception_article80_had_intercurrent",
 )
-  .ouiSi(EXCEPTIONS.checked("5_HAD"))
-  .nonSiEcartee(EXCEPTIONS, "5_HAD")
-  .inconnuSi(EXCEPTIONS.isPresent(), "« 5_HAD » ne s'est pas proposée.")
+  .ouiSi(given.question("Q2.6").answer().checked("5_HAD"))
+  .nonSiEcartee(given.question("Q2.6").answer(), "5_HAD")
+  .inconnuSi(
+    given.question("Q2.6").answer().isPresent(),
+    "« 5_HAD » ne s'est pas proposée.",
+  )
   .sinon(PAS_ENCORE_ETABLI);

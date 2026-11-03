@@ -6,11 +6,14 @@
 // Il suit `CONTRAT_REPONSES_FAITS.json`.
 
 import { unFait } from "../../../socle/index.ts";
-import { EXCEPTIONS } from "./communs.ts";
+import { given } from "./communs.ts";
 import { PAS_ENCORE_ETABLI } from "./noms.ts";
 
 export const exceptionArticle80Usld = unFait("fait_exception_article80_usld")
-  .ouiSi(EXCEPTIONS.checked("6_USLD"))
-  .nonSiEcartee(EXCEPTIONS, "6_USLD")
-  .inconnuSi(EXCEPTIONS.isPresent(), "« 6_USLD » ne s'est pas proposée.")
+  .ouiSi(given.question("Q2.6").answer().checked("6_USLD"))
+  .nonSiEcartee(given.question("Q2.6").answer(), "6_USLD")
+  .inconnuSi(
+    given.question("Q2.6").answer().isPresent(),
+    "« 6_USLD » ne s'est pas proposée.",
+  )
   .sinon(PAS_ENCORE_ETABLI);

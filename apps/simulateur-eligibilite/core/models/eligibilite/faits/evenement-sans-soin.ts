@@ -8,24 +8,30 @@
 // `CONTRAT_REPONSES_FAITS.json`.
 
 import { unFait } from "../../../socle/index.ts";
-import { MOTIF } from "./communs.ts";
+import { given } from "./communs.ts";
 
 export const evenementSansSoin = unFait("fait_evenement_sans_soin")
   .nonSi(
-    MOTIF.isOneOf(
-      "1_CONSULTATION",
-      "2_DENTISTE_OU_SAGE_FEMME",
-      "3_IMAGERIE",
-      "4_BIOLOGIE",
-      "5_PARAMEDICAL",
-      "6_SEANCE",
-      "7_PSYCHOLOGUE",
-      "8_HOSPITALISATION",
-      "9_TRANSFERT",
-      "10_CAMSP",
-      "14_AUTRE",
-    ),
+    given
+      .question("Q2.1")
+      .answer()
+      .isOneOf(
+        "1_CONSULTATION",
+        "2_DENTISTE_OU_SAGE_FEMME",
+        "3_IMAGERIE",
+        "4_BIOLOGIE",
+        "5_PARAMEDICAL",
+        "6_SEANCE",
+        "7_PSYCHOLOGUE",
+        "8_HOSPITALISATION",
+        "9_TRANSFERT",
+        "10_CAMSP",
+        "14_AUTRE",
+      ),
     "Un soin, pas un événement autonome.",
   )
-  .inconnuSi(MOTIF.isPresent(), "À qualifier dans sa branche.")
+  .inconnuSi(
+    given.question("Q2.1").answer().isPresent(),
+    "À qualifier dans sa branche.",
+  )
   .sinon("Q2.1 n'est pas validée.");

@@ -10,35 +10,36 @@
 // `CONTRAT_REPONSES_FAITS.json`.
 
 import { unFait } from "../../../socle/index.ts";
-import {
-  DEPLACEMENT,
-  EXCEPTIONS,
-  given,
-  UN_SEJOUR_EN_ETABLISSEMENT,
-} from "./communs.ts";
+import { given, UN_SEJOUR_EN_ETABLISSEMENT } from "./communs.ts";
 import { PAS_ENCORE_ETABLI } from "./noms.ts";
 
 export const exceptionArticle80AdmissionSansSejour = unFait(
   "fait_exception_article80_admission_sans_sejour",
 )
-  .ouiSi(EXCEPTIONS.checked("2_ADMISSION_SANS_SEJOUR"))
-  .nonSiEcartee(EXCEPTIONS, "2_ADMISSION_SANS_SEJOUR")
+  .ouiSi(given.question("Q2.6").answer().checked("2_ADMISSION_SANS_SEJOUR"))
+  .nonSiEcartee(given.question("Q2.6").answer(), "2_ADMISSION_SANS_SEJOUR")
   .nonSi(
-    EXCEPTIONS.isPresent().and(UN_SEJOUR_EN_ETABLISSEMENT),
+    given.question("Q2.6").answer().isPresent().and(UN_SEJOUR_EN_ETABLISSEMENT),
     "Elle ne s'est pas proposée : un séjour initial en établissement est coché en Q2.2.1.",
   )
   .nonSi(
-    EXCEPTIONS.isPresent().and(DEPLACEMENT.is("2_AUTRE_DEPLACEMENT")),
+    given
+      .question("Q2.6")
+      .answer()
+      .isPresent()
+      .and(given.question("Q2.5").answer().is("2_AUTRE_DEPLACEMENT")),
     "Elle ne s'est pas proposée : un autre déplacement n'est pas un transfert.",
   )
   .nonSi(
-    EXCEPTIONS.isPresent().and(
-      given.question("Q2.6.a").answer().is("2_PROVISOIRE"),
-    ),
+    given
+      .question("Q2.6")
+      .answer()
+      .isPresent()
+      .and(given.question("Q2.6.a").answer().is("2_PROVISOIRE")),
     "Elle ne s'est pas proposée : un transfert provisoire revient à l'établissement d'origine.",
   )
   .nonSi(
-    EXCEPTIONS.isPresent(),
+    given.question("Q2.6").answer().isPresent(),
     "Elle ne s'est pas proposée : une admission ou un séjour en HAD n'est pas un transfert entre établissements.",
   )
   .sinon(PAS_ENCORE_ETABLI);

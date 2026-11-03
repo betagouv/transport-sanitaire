@@ -9,16 +9,16 @@
 // Il suit `CONTRAT_REPONSES_FAITS.json`.
 
 import { unFait } from "../../../socle/index.ts";
-import { EXCEPTIONS } from "./communs.ts";
+import { given } from "./communs.ts";
 import { PAS_ENCORE_ETABLI } from "./noms.ts";
 
 export const exceptionArticle80AirMer = unFait(
   "fait_exception_article80_air_mer",
 )
-  .ouiSi(EXCEPTIONS.checked("4_AIR_MER"))
-  .nonSiEcartee(EXCEPTIONS, "4_AIR_MER")
+  .ouiSi(given.question("Q2.6").answer().checked("4_AIR_MER"))
+  .nonSiEcartee(given.question("Q2.6").answer(), "4_AIR_MER")
   .ouiSi(
-    EXCEPTIONS.isPresent(),
+    given.question("Q2.6").answer().isPresent(),
     "La ligne régulière de Q2.3.2 se réutilise sans revote.",
   )
   .sinon(PAS_ENCORE_ETABLI);
