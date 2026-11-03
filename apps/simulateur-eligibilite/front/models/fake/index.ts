@@ -3,11 +3,11 @@
 // `core/models/fake/`. `main.tsx` le passe au socle.
 
 import { model as core } from "../../../core/models/fake";
-import type { Cibles } from "../../../core/models/fake/declarations/cibles";
-import type { Faits } from "../../../core/models/fake/declarations/faits";
-import type { Questions } from "../../../core/models/fake/declarations/questions";
-import { SANS_COMMANDE } from "../../../core/models/fake/preconisation";
-import { given } from "../../../core/models/fake/question";
+import { SANS_COMMANDE } from "../../../core/models/fake/cibles/evaluation";
+import type { Cibles } from "../../../core/models/fake/cibles/noms";
+import type { Faits } from "../../../core/models/fake/faits/noms";
+import type { Questions } from "../../../core/models/fake/questions/catalogue";
+import { given } from "../../../core/models/fake/questions/question";
 import { defineModel } from "../../socle";
 import { bonDeCommande } from "./bon-de-commande";
 import {

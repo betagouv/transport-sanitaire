@@ -18,8 +18,8 @@
 // que le Centre 15 a demandé, autre raison d'envoyer le patient à la caisse.
 
 import type { Seed } from "../../socle/index.ts";
-import type { Cibles } from "./declarations/cibles.ts";
-import type { Questions } from "./declarations/questions.ts";
+import type { Cibles } from "./cibles/noms.ts";
+import type { Questions } from "./questions/catalogue/catalogue.ts";
 
 const TRAJET_COURT = {
   "Q2.3.1": "1_CINQUANTE_KM_OU_MOINS",

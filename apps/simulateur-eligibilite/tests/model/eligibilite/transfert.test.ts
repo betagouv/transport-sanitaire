@@ -8,7 +8,7 @@ import { describe, expect, it } from "vitest";
 import {
   cible,
   cibles,
-} from "../../../core/models/eligibilite/evaluation-des-regles";
+} from "../../../core/models/eligibilite/cibles/evaluation";
 import {
   definitif,
   EXCEPTIONS,

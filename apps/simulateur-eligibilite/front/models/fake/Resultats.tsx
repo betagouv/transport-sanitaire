@@ -10,9 +10,9 @@
 // bleu et un encadré blanc.
 
 import type { ReactNode } from "react";
-import type { Cibles } from "../../../core/models/fake/declarations/cibles";
-import { SANS_COMMANDE } from "../../../core/models/fake/preconisation";
-import { given } from "../../../core/models/fake/question";
+import { SANS_COMMANDE } from "../../../core/models/fake/cibles/evaluation";
+import type { Cibles } from "../../../core/models/fake/cibles/noms";
+import { given } from "../../../core/models/fake/questions/question";
 import type { ValueOf } from "../../../core/socle";
 import {
   Disclosure,

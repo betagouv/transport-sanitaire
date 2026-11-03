@@ -11,7 +11,7 @@
 // une cible sans objet valent donc toutes deux `null`.
 
 import { describe, expect, it } from "vitest";
-import type { Cibles } from "../../../core/models/eligibilite/declarations/cibles";
+import type { Cibles } from "../../../core/models/eligibilite/cibles/noms";
 import {
   ALD,
   ALD_NON_EXONERANTE,

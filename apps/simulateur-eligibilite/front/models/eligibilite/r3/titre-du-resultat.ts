@@ -10,8 +10,8 @@
 // La DAP et l'étranger partagent le gabarit S3139h : le titre se lit sur
 // l'issue, pas sur le support.
 
-import type { Cibles } from "../../../../core/models/eligibilite/declarations/cibles";
-import { given } from "../../../../core/models/eligibilite/question";
+import type { Cibles } from "../../../../core/models/eligibilite/cibles/noms";
+import { given } from "../../../../core/models/eligibilite/questions/question";
 
 /** Le titre de R3, selon le document que la préconisation complète. */
 export const TITRE_DU_RESULTAT = given

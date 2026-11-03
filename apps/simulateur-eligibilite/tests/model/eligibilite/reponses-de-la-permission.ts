@@ -1,9 +1,9 @@
 // Les réponses et les lectures que partagent les tests de la permission (Q2.7
 // et Q2.8).
 
-import type { Cibles } from "../../../core/models/eligibilite/declarations/cibles";
-import type { Questions } from "../../../core/models/eligibilite/declarations/questions";
-import { cibles } from "../../../core/models/eligibilite/evaluation-des-regles";
+import { cibles } from "../../../core/models/eligibilite/cibles/evaluation";
+import type { Cibles } from "../../../core/models/eligibilite/cibles/noms";
+import type { Questions } from "../../../core/models/eligibilite/questions/catalogue/catalogue";
 import {
   readIn,
   type Value,

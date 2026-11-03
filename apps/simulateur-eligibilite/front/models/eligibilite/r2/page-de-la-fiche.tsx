@@ -3,8 +3,8 @@
 // patient est une feuille, que le socle pose dans sa liseuse, sous ses logos.
 // Son pied invite le patient à donner son avis, par courriel (TS1014-J01).
 
-import type { CatalogueResultats } from "../../../../core/models/eligibilite/declarations/catalogue-resultats";
 import type { FirstResult, Sheet } from "../../../socle";
+import type { CatalogueResultats } from "./forme-du-catalogue";
 
 // La phrase d'introduction est `patientSheetIntro` du catalogue (point 28).
 type Catalogue = Pick<

@@ -26,7 +26,7 @@
 //   que teste déjà `scenarios-de-demonstration.test.ts`.
 
 import { describe, expect, it } from "vitest";
-import { cibles } from "../../../core/models/eligibilite/evaluation-des-regles";
+import { cibles } from "../../../core/models/eligibilite/cibles/evaluation";
 import { texteDeLaFicheNegative } from "../../../front/models/eligibilite/r2/fiche-negative/texte-de-la-fiche-negative";
 import {
   type IssueAvecFichePositive,

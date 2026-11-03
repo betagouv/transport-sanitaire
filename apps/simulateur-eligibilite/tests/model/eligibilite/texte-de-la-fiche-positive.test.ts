@@ -5,7 +5,7 @@
 // ici.
 
 import { describe, expect, it } from "vitest";
-import { CIBLES_ENUMEREES } from "../../../core/models/eligibilite/declarations/cibles";
+import { CIBLES_ENUMEREES } from "../../../core/models/eligibilite/cibles/noms";
 import {
   AMBULANCE,
   badges,

@@ -7,8 +7,8 @@
 // désaccord remonte sous ce nom.
 
 import { describe, expect, it } from "vitest";
-import type { Cibles } from "../../../core/models/eligibilite/declarations/cibles";
-import { cibles } from "../../../core/models/eligibilite/evaluation-des-regles";
+import { cibles } from "../../../core/models/eligibilite/cibles/evaluation";
+import type { Cibles } from "../../../core/models/eligibilite/cibles/noms";
 import {
   ABSENTS,
   ALD,

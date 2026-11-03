@@ -11,12 +11,12 @@
 // n'a pas de badge (#221) ; en accord préalable, ni cartes ni étapes. Elle lit ce que lisent ces textes
 // (`ce-que-lit-un-texte.ts`).
 
+import { luPar, type TraceDe } from "../ce-que-lit-un-texte";
 import type {
   AucunTexte,
   Bloc,
   CatalogueResultats,
-} from "../../../../../core/models/eligibilite/declarations/catalogue-resultats";
-import { luPar, type TraceDe } from "../ce-que-lit-un-texte";
+} from "../forme-du-catalogue";
 import {
   badgesDuResultat,
   type CarteAffichee,

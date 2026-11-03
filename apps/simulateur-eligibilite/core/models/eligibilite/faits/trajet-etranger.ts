@@ -8,8 +8,8 @@
 // Il suit `CONTRAT_REPONSES_FAITS.json`.
 
 import { unFait } from "../../../socle/index.ts";
-import { PAS_ENCORE_ETABLI } from "../declarations/faits.ts";
 import { given, SITUATIONS } from "./communs.ts";
+import { PAS_ENCORE_ETABLI } from "./noms.ts";
 
 const EXTREMITES = given.question("Q2.2.5").answer();
 

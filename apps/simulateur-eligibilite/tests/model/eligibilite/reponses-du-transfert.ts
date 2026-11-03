@@ -2,8 +2,8 @@
 // des exceptions de l'article 80 (Q2.6.a et Q2.6).
 
 import { model } from "../../../core/models/eligibilite";
-import type { Faits } from "../../../core/models/eligibilite/declarations/faits";
-import type { Questions } from "../../../core/models/eligibilite/declarations/questions";
+import type { Faits } from "../../../core/models/eligibilite/faits/noms";
+import type { Questions } from "../../../core/models/eligibilite/questions/catalogue/catalogue";
 import {
   type Answers,
   pagesOf,

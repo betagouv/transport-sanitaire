@@ -8,9 +8,9 @@
 // ne dit CAMSP ou CMPP. Rien n'est jamais deviné. Elle déclare ce qu'elle lit
 // des cibles (`ce-que-lit-un-texte.ts`).
 
-import type { IssuePositive } from "../../../../../core/models/eligibilite/declarations/catalogue-resultats";
-import { given } from "../../../../../core/models/eligibilite/question";
+import { given } from "../../../../../core/models/eligibilite/questions/question";
 import { luPar, type TraceDe } from "../ce-que-lit-un-texte";
+import type { IssuePositive } from "../forme-du-catalogue";
 import type { ReponsesLues } from "../trace-du-resultat";
 
 /** Ce que lisent les autres termes : l'avion ou le bateau de l'accord. */

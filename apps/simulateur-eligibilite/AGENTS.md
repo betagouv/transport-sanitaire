@@ -18,7 +18,7 @@ S3141 se télécharge rempli. Le simulateur s'ouvre sur le **modèle de
 l'éditeur** (`core/models/eligibilite/` et `front/models/eligibilite/`, D-119). Il
 s'intègre étape par étape, sur la v10.1.5 : ses règles, ses faits, ses cibles et son
 oracle sont là, son questionnaire va jusqu'à P3, le complément du cerfa, qui
-s'ouvre après le verrou (`p3/partie-3.ts`). R2 est posée pour les dix issues : les cinq issues sans fiche patient
+s'ouvre après le verrou (`questions/p3/partie-3.ts`). R2 est posée pour les dix issues : les cinq issues sans fiche patient
 (caisse, établissement, permission à la charge du patient, convocation, transport
 à l'étranger), la fiche négative, et les fiches positives de la prescription
 médicale de transport, du S3141 et des deux demandes d'accord préalable. Les
@@ -46,8 +46,8 @@ l'éditeur, en cours d'intégration. Chacun a un dossier du même nom dans
 `core/models/` et dans `front/models/`. Le métier se charge sous Node, sans
 Vite ni navigateur : `tests/model/metier-sous-node.test.ts` le vérifie.
 
-Le modèle de l'éditeur se range par partie du parcours : `p1/` (le mode),
-`p2/` (l'éligibilité) et `p3/` (le complément du cerfa) dans `core/`, `r2/` (le
+Le modèle de l'éditeur se range par partie du parcours : `questions/p1/` (le mode),
+`questions/p2/` (l'éligibilité) et `questions/p3/` (le complément du cerfa) dans `core/`, `r2/` (le
 résultat, avec un dossier par famille d'issues) et `r3/` (son résultat) dans
 `front/`.
 `core/models/eligibilite/faits/` porte un fichier par fait, au nom du fait sans
@@ -133,7 +133,7 @@ Neuf règles à tenir en ajoutant une question :
   sa lambda : `.option("6_SEANCE", (option) => option.offeredWhen(…))`. `order`
   en garde une partie, dans cet ordre, et `exclusive` met la sienne à part.
   Chaque réglage donne une copie : une déclaration ne change jamais. Le modèle lie ses constructeurs une fois, dans son
-  `question.ts` : `questionsOf<Questions, Faits, Cibles>({ options, faits,
+  `questions/question.ts` : `questionsOf<Questions, Faits, Cibles>({ options, faits,
   cibles })`. Un seul jeu, avant comme après le verrou. La partie posée après
   le verrou se déclare par `afterLock({ … })` : ses gardes lisent alors les
   cibles figées.
@@ -152,9 +152,9 @@ Neuf règles à tenir en ajoutant une question :
   `.mattersWhile(given.fait("fait_permission").isOui())`. Elle ne recompose
   pas, réponse par réponse, ce que le fait établit déjà. Sans fait qui la
   dise, elle se compose de réponses, nommée près de la question qui la lit
-  (`unMineurDeVingtAns`, dans `p2/permission.ts`). Un calcul sur plusieurs
+  (`unMineurDeVingtAns`, dans `questions/p2/permission.ts`). Un calcul sur plusieurs
   valeurs les nomme : `given.all({ sens, repetition }).compute(sensDe)`
-  (`p3/sens-du-trajet.ts`). Chacune garde ce qu'elle lit.
+  (`questions/p3/sens-du-trajet.ts`). Chacune garde ce qu'elle lit.
 - **R2 et R3 lisent des valeurs.** Le socle leur passe `{ read, faits,
   cibles }`. Une rubrique, un champ de cerfa, la trace sont des valeurs, que
   `read` lit sur les questions validées : `read(PRECISIONS)`. Aucune fonction
@@ -162,10 +162,10 @@ Neuf règles à tenir en ajoutant une question :
 - **Un savoir lu à deux endroits.** Une lecture de réponse s'écrit là où elle
   sert, même si une autre partie l'écrit aussi : le libellé de Q1.4 lit
   `answers.question("Q1.1").is("2_AVEC_UN_PROCHE")` sur place. Une donnée de
-  l'éditeur se partage en donnée, dans `declarations/` (`OPTIONS`,
+  l'éditeur se partage en donnée, dans le catalogue de son étape (`questions/catalogue/`, `OPTIONS`,
   `RETIREE_SI_Q21`). Une règle que plusieurs faits reprennent mot pour mot se
   nomme dans `faits/communs.ts`. Ce qui ne sert qu'à un endroit y reste
-  (`trajetsMensuelsAuPlus`, dans `p3/sens-du-trajet.ts`). Aucun fichier n'est
+  (`trajetsMensuelsAuPlus`, dans `questions/p3/sens-du-trajet.ts`). Aucun fichier n'est
   commun aux pages et aux faits : mieux vaut une condition écrite deux fois sur
   la même donnée qu'une abstraction entre les deux (D-208, D-210).
 - **Un fait est une valeur, dans son fichier.** `fait_distance_plus_50` se
@@ -178,7 +178,7 @@ Neuf règles à tenir en ajoutant une question :
   (`uneRegle().nonSi(…)`, placées par `applique`) et la table
   `SITUATION_PROPOSEE` se partagent, dans `faits/communs.ts` (ADR-22). Les
   provenances qui ne citent rien (`PAS_ENCORE_ETABLI`) restent dans
-  `declarations/faits.ts`. Une page ne garde que ses questions et ses gardes.
+  `faits/noms.ts`. Une page ne garde que ses questions et ses gardes.
   `tests/model/eligibilite/catalogue-des-faits.test.ts` le garde.
 - **Un fait ne lit ni garde, ni cible, ni jour.** Il lit les questions validées
   et d'autres faits ; le catalogue arrête net un fait qui lit une cible, et un
@@ -186,7 +186,7 @@ Neuf règles à tenir en ajoutant une question :
   tout le catalogue : la lecture dans l'ordre ne lui montre que les questions
   validées avant elle. La complétude de P1 et de P2 y reste inconnue : la
   constater pose les questions, donc lit leurs gardes. Seule la décision
-  l'impose (`preconisation.ts`).
+  l'impose (`faits/preconisation.ts`).
 - **Une dépendance se déclare dans `dependsOn`.** Sans elle, la réponse survit au
   changement de celle dont elle dépend. Une adresse dont le mode change
   (`abroadIf`) survit de même : elle se relit dans le nouveau mode, sans son

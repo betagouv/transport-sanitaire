@@ -12,9 +12,9 @@
 // reçoit n'a pas ce que l'autre lit, et le typage le refuse. Ce que R2 lit est
 // donc l'union de ce que ses textes déclarent.
 
-import type { Cibles } from "../../../../core/models/eligibilite/declarations/cibles";
-import type { Faits } from "../../../../core/models/eligibilite/declarations/faits";
-import { given } from "../../../../core/models/eligibilite/question";
+import type { Cibles } from "../../../../core/models/eligibilite/cibles/noms";
+import type { Faits } from "../../../../core/models/eligibilite/faits/noms";
+import { given } from "../../../../core/models/eligibilite/questions/question";
 import { constant, type Value, type ValueOf } from "../../../../core/socle";
 import type { ReponsesLues } from "./trace-du-resultat";
 

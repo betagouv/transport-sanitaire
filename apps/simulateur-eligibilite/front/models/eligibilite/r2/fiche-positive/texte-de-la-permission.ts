@@ -8,12 +8,9 @@
 // à sa place. La phrase déclare ce qu'elle lit des cibles
 // (`ce-que-lit-un-texte.ts`) ; le motif n'en lit rien.
 
-import type {
-  AucunTexte,
-  CatalogueResultats,
-} from "../../../../../core/models/eligibilite/declarations/catalogue-resultats";
-import { given } from "../../../../../core/models/eligibilite/question";
+import { given } from "../../../../../core/models/eligibilite/questions/question";
 import { luPar, type TraceDe } from "../ce-que-lit-un-texte";
+import type { AucunTexte, CatalogueResultats } from "../forme-du-catalogue";
 import type { ReponsesLues } from "../trace-du-resultat";
 
 type IssueS3141 = CatalogueResultats["issues"]["ISSUE_S3141"];

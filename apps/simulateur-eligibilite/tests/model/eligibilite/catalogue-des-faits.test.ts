@@ -1,16 +1,18 @@
 // Le catalogue des faits : un fichier par fait sous `faits/`, qui porte son
 // nom sans `fait_`. On y lit tout ce que vaut un fait, sans chercher ailleurs.
-// Seul `communs.ts` n'en déclare pas : ce que plusieurs faits lisent.
+// Autour d'eux, l'étape : `noms.ts` les nomme, `index.ts` les assemble,
+// `preconisation.ts` les évalue, et `communs.ts` tient ce que plusieurs lisent.
 
 import { basename } from "node:path";
 import ts from "typescript";
 import { describe, expect, it } from "vitest";
-import { FAITS } from "../../../core/models/eligibilite/declarations/faits";
+import { FAITS } from "../../../core/models/eligibilite/faits/noms";
 import { astDe, sources, texteDe } from "../../inspection-des-sources";
 
 const DOSSIER = "core/models/eligibilite/faits";
-const INDEX = `${DOSSIER}/index.ts`;
-const COMMUNS = `${DOSSIER}/communs.ts`;
+const ETAPE = ["noms", "index", "preconisation", "communs"].map(
+  (fichier) => `${DOSSIER}/${fichier}.ts`,
+);
 
 const sansPrefixe = (fait: string) => fait.replace(/^fait_/, "");
 const fichierDe = (fait: string) =>
@@ -24,7 +26,7 @@ describe("le catalogue des faits", () => {
   it("à chaque fait répond un fichier, et à chaque fichier un fait", () => {
     expect(
       sources(DOSSIER)
-        .filter((fichier) => fichier !== INDEX && fichier !== COMMUNS)
+        .filter((fichier) => !ETAPE.includes(fichier))
         .sort(),
       "Un fait se trouve par son nom : `fait_distance_plus_50` vit dans " +
         "`faits/distance-plus-50.ts`. Un fichier sans fait n'a pas sa place " +

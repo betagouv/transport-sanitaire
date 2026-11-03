@@ -10,7 +10,6 @@
 // `CONTRAT_REPONSES_FAITS.json`.
 
 import { unFait } from "../../../socle/index.ts";
-import { PAS_ENCORE_ETABLI } from "../declarations/faits.ts";
 import {
   DEPLACEMENT,
   EXCEPTIONS,
@@ -21,6 +20,7 @@ import {
   UNE_PERMISSION_ECARTE_LE_TRANSFERT,
   UNE_SORTIE_VERS_LA_PRISON,
 } from "./communs.ts";
+import { PAS_ENCORE_ETABLI } from "./noms.ts";
 
 export const transfertArticle80 = unFait("fait_transfert_article80")
   .nonSi(

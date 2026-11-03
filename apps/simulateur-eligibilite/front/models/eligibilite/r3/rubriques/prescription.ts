@@ -2,7 +2,7 @@
 // (`cible_date_completion`). Elle se fige pour les téléchargements de ce
 // résultat, et ne remplace aucune date de soins, d'accident ou de permission.
 
-import { given } from "../../../../../core/models/eligibilite/question";
+import { given } from "../../../../../core/models/eligibilite/questions/question";
 import type { Rubrique } from "./rubrique";
 
 export type Prescription = {

@@ -5,8 +5,8 @@
 
 import { describe, expect, it } from "vitest";
 import { model } from "../../../core/models/eligibilite";
-import type { Faits } from "../../../core/models/eligibilite/declarations/faits";
-import type { Questions } from "../../../core/models/eligibilite/declarations/questions";
+import type { Faits } from "../../../core/models/eligibilite/faits/noms";
+import type { Questions } from "../../../core/models/eligibilite/questions/catalogue/catalogue";
 import {
   type Answers,
   pagesOf,

@@ -10,8 +10,8 @@
 // `CONTRAT_REPONSES_FAITS.json`.
 
 import { unFait } from "../../../socle/index.ts";
-import { PAS_ENCORE_ETABLI } from "../declarations/faits.ts";
 import { given, SOINS } from "./communs.ts";
+import { PAS_ENCORE_ETABLI } from "./noms.ts";
 
 const CATEGORIE = given.question("Q2.10").answer();
 const AGREMENT = given.question("Q2.10.a").answer();

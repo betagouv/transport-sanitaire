@@ -13,12 +13,15 @@ import { franchissements } from "../../inspection-des-sources";
 // Les parties sont au métier, les résultats à l'écran.
 const METIER = "core/models/eligibilite";
 const ECRAN = "front/models/eligibilite";
-const P1 = `${METIER}/p1`;
-const P2 = `${METIER}/p2`;
+const P1 = `${METIER}/questions/p1`;
+const P2 = `${METIER}/questions/p2`;
 const R2 = `${ECRAN}/r2`;
-const P3 = `${METIER}/p3`;
+const P3 = `${METIER}/questions/p3`;
 const R3 = `${ECRAN}/r3`;
 const FAITS = `${METIER}/faits`;
+// L'évaluation des faits impose la complétude de P1 et de P2 : elle lit leurs
+// pages. Les faits eux-mêmes ne lisent aucune partie.
+const EVALUATION_DES_FAITS = `${FAITS}/preconisation.ts`;
 const RUBRIQUES = `${R3}/rubriques`;
 // Un dossier par cerfa rempli. La PMT et la DAP y viendront (#160, #161).
 const CERFA_DE_R3 = ["s3141"].map((cerfa) => `${R3}/${cerfa}`);
@@ -49,7 +52,7 @@ describe("les domaines du modèle de l'éditeur", () => {
         "que P3 complète avant R3. Une partie " +
         "qui lit la suivante dépend d'une question qu'on ne lui a pas encore " +
         "posée. Une donnée de l'éditeur qu'elles partagent va dans " +
-        "`declarations/` ; une lecture de réponse s'écrit dans chacune.",
+        "le catalogue de son étape ; une lecture de réponse s'écrit dans chacune.",
     ).toEqual([]);
   });
 
@@ -57,7 +60,7 @@ describe("les domaines du modèle de l'éditeur", () => {
     expect(
       franchissements([FAITS], (cible) =>
         [P1, P2, R2, P3, R3].some((partie) => dans(partie)(cible)),
-      ),
+      ).filter((lien) => !lien.startsWith(`${EVALUATION_DES_FAITS} →`)),
       "Les gardes des parties lisent les faits. Un fait qui lirait une " +
         "partie la ferait dépendre de ses propres gardes. Il ne lit que le " +
         "socle, les déclarations et les concepts : une page ne garde que ses " +

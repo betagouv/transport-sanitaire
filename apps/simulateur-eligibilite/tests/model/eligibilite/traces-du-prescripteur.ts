@@ -5,11 +5,8 @@
 import {
   CIBLES,
   type Cibles,
-} from "../../../core/models/eligibilite/declarations/cibles";
-import {
-  FAITS,
-  type Faits,
-} from "../../../core/models/eligibilite/declarations/faits";
+} from "../../../core/models/eligibilite/cibles/noms";
+import { FAITS, type Faits } from "../../../core/models/eligibilite/faits/noms";
 import { Cible, Fait, Questionnaire, type Value } from "../../../core/socle";
 import type { CibleValues } from "../../../core/socle/decision-engine/cible";
 import { resultReading } from "../../../core/socle/simulation/result-reading";

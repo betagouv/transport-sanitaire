@@ -7,12 +7,12 @@
 // `cible_point_cnam` regroupe les points propres à la caisse. Ces conditions
 // déclarent ce qu'elles lisent (`ce-que-lit-un-texte.ts`).
 
+import { given } from "../../../../../core/models/eligibilite/questions/question";
+import { luPar, type TraceDe } from "../ce-que-lit-un-texte";
 import type {
   IssuePrescripteur,
   ScenarioPrescripteur,
-} from "../../../../../core/models/eligibilite/declarations/catalogue-resultats";
-import { given } from "../../../../../core/models/eligibilite/question";
-import { luPar, type TraceDe } from "../ce-que-lit-un-texte";
+} from "../forme-du-catalogue";
 
 /** Ce que lisent les points ouverts pour la caisse. */
 export const LU_PAR_LA_CAISSE = luPar({

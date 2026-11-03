@@ -3,7 +3,7 @@
 // (`resultat.tsx`), et ce que lit un texte ne compte que pour ses issues
 // (`trace-du-resultat.ts`, #255).
 
-import type { Cibles } from "../../../../core/models/eligibilite/declarations/cibles";
+import type { Cibles } from "../../../../core/models/eligibilite/cibles/noms";
 
 /** Une issue des règles. */
 export type Issue = NonNullable<Cibles["cible_issue_id"]["value"]>;

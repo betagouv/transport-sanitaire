@@ -9,6 +9,7 @@
 // que le prescripteur ne doit pas lire comme des faits du dossier. Il lit ce
 // que lisent les scénarios (`ce-que-lit-un-texte.ts`).
 
+import type { TraceDe } from "../ce-que-lit-un-texte";
 import type {
   AffichageDuPrescripteur,
   AucunScenario,
@@ -17,8 +18,7 @@ import type {
   IssueEtranger,
   IssuePrescripteur,
   ScenarioPrescripteur,
-} from "../../../../../core/models/eligibilite/declarations/catalogue-resultats";
-import type { TraceDe } from "../ce-que-lit-un-texte";
+} from "../forme-du-catalogue";
 import { sansBlancsDeTrop } from "../sans-blancs-de-trop";
 import { issuesDuTexte } from "../texte-de-l-issue";
 import {

@@ -3,9 +3,9 @@
 // chargement en échec donne un titre et une phrase, sans rien inventer. Rien ne
 // le suit : sans textes, rien n'est à compléter.
 
-import type { CatalogueResultats } from "../../../../core/models/eligibilite/declarations/catalogue-resultats";
 import type { FirstResult } from "../../../socle";
 import { catalogueDeLaSession } from "./catalogue-resultats";
+import type { CatalogueResultats } from "./forme-du-catalogue";
 
 export async function avecLeCatalogue(
   compose: (catalogue: CatalogueResultats) => FirstResult,

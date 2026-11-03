@@ -3,7 +3,7 @@
 // n'est jamais « non ».
 
 import { describe, expect, it } from "vitest";
-import type { Faits } from "../../../core/models/eligibilite/declarations/faits";
+import type { Faits } from "../../../core/models/eligibilite/faits/noms";
 import { SEEDS } from "../../../core/models/eligibilite/seeds-catalogue";
 import { Fait } from "../../../core/socle";
 import { catalogueResultats } from "../../../front/models/eligibilite/r2/catalogue-resultats";

@@ -8,8 +8,8 @@
 // si elle n'y tient pas. Le nom du client n'a pas de champ : il se dessine dans
 // son cadre.
 
-import type { Questions } from "../../../core/models/fake/declarations/questions";
-import { given } from "../../../core/models/fake/question";
+import type { Questions } from "../../../core/models/fake/questions/catalogue";
+import { given } from "../../../core/models/fake/questions/question";
 import type { GivenAnswer } from "../../../core/socle";
 import {
   at,

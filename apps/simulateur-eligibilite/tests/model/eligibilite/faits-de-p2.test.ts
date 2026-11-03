@@ -6,9 +6,9 @@
 
 import { describe, expect, it } from "vitest";
 import { model } from "../../../core/models/eligibilite";
-import type { Cibles } from "../../../core/models/eligibilite/declarations/cibles";
-import type { Faits } from "../../../core/models/eligibilite/declarations/faits";
-import type { Questions } from "../../../core/models/eligibilite/declarations/questions";
+import type { Cibles } from "../../../core/models/eligibilite/cibles/noms";
+import type { Faits } from "../../../core/models/eligibilite/faits/noms";
+import type { Questions } from "../../../core/models/eligibilite/questions/catalogue/catalogue";
 import type { Answers } from "../../../core/socle/questionnaire-engine/question/question";
 import { preconisationOf } from "../../../core/socle/simulation/simulation";
 

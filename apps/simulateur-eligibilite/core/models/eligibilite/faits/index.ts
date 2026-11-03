@@ -13,7 +13,6 @@
 // donc lit leurs gardes.
 
 import { FaitCatalogue } from "../../../socle/index.ts";
-import { FAITS, type Faits } from "../declarations/faits.ts";
 import { accompagnant } from "./accompagnant.ts";
 import { aldExonerante3Ou4 } from "./ald-exonerante-3-ou-4.ts";
 import { aldLiee } from "./ald-liee.ts";
@@ -56,6 +55,7 @@ import { mineurSoinsProlongesReconnus } from "./mineur-soins-prolonges-reconnus.
 import { motifCamsp } from "./motif-camsp.ts";
 import { motifPension } from "./motif-pension.ts";
 import { motifSamsah } from "./motif-samsah.ts";
+import { FAITS, type Faits } from "./noms.ts";
 import { p1Complete } from "./p1-complete.ts";
 import { p2Complete } from "./p2-complete.ts";
 import { partageIncompatible } from "./partage-incompatible.ts";

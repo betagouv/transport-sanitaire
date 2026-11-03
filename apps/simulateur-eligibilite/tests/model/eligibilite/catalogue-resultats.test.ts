@@ -7,7 +7,7 @@ import { readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
-import { CIBLES_ENUMEREES } from "../../../core/models/eligibilite/declarations/cibles";
+import { CIBLES_ENUMEREES } from "../../../core/models/eligibilite/cibles/noms";
 import { catalogueResultats } from "../../../front/models/eligibilite/r2/catalogue-resultats";
 
 const rules = join(

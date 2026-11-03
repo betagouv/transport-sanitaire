@@ -9,13 +9,13 @@
 
 import { describe, expect, it } from "vitest";
 import { model } from "../../../core/models/eligibilite";
-import type { Faits } from "../../../core/models/eligibilite/declarations/faits";
+import { cible } from "../../../core/models/eligibilite/cibles/evaluation";
+import { CATALOGUE_DES_FAITS } from "../../../core/models/eligibilite/faits";
+import type { Faits } from "../../../core/models/eligibilite/faits/noms";
 import {
   OPTIONS,
   type Questions,
-} from "../../../core/models/eligibilite/declarations/questions";
-import { cible } from "../../../core/models/eligibilite/evaluation-des-regles";
-import { CATALOGUE_DES_FAITS } from "../../../core/models/eligibilite/faits";
+} from "../../../core/models/eligibilite/questions/catalogue/catalogue";
 import { Fait } from "../../../core/socle";
 import { ValidatedAnswers } from "../../../core/socle/questionnaire-engine/answers/validated-answers";
 import {

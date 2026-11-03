@@ -3,7 +3,7 @@
 // que les règles calculent. `CONTRAT_ELEMENTS_MEDICAUX.json` en v10.1.3.
 
 import { describe, expect, it } from "vitest";
-import type { Faits } from "../../../core/models/eligibilite/declarations/faits";
+import type { Faits } from "../../../core/models/eligibilite/faits/noms";
 import { SEEDS } from "../../../core/models/eligibilite/seeds-catalogue";
 import { Fait } from "../../../core/socle";
 import {

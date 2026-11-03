@@ -119,26 +119,33 @@ core/                    le métier, sans React ni DOM : ce qu'un serveur ou un 
                          peut calculer
   models/                le métier de chaque modèle
     fake/                le modèle de démonstration : une page par capacité du
-                         socle. Ses déclarations (questions, faits, cibles), son
-                         questionnaire, sa préconisation et son catalogue de seeds
-    eligibilite/         le modèle de l'éditeur, en cours d'intégration. À sa racine,
-                         ce qui assemble : le questionnaire, le catalogue des
-                         faits, la préconisation, l'évaluation des règles et le
+                         socle, dans la forme du modèle de l'éditeur
+    eligibilite/         le modèle de l'éditeur. Un dossier par étape du chemin,
+                         des réponses au résultat, chacun ouvert sur son
+                         vocabulaire ; à la racine, `index.ts` qui assemble et le
                          catalogue de seeds
+      questions/         `catalogue/` (les questions, leurs options et libellés,
+                         dans les mots des règles), `question.ts` (les
+                         constructeurs), `questionnaire.ts` (les parties), puis
+                         les questions déclarées par partie
+        p1/              l'autonomie et l'état de santé : les pages du mode de
+                         transport
+        p2/              l'éligibilité : les pages par thème (prestation,
+                         contextes, trajet, transfert, permission, convocation,
+                         retour pénitentiaire, branche)
+        p3/              le complément du cerfa : le trajet, le soin, l'urgence, les
+                         évènements et l'exonération
+      faits/             `noms.ts` (les faits, dans les mots des règles), un
+                         fichier par fait, une valeur faite de règles ;
+                         `communs.ts` porte les lectures et les règles que
+                         plusieurs faits partagent ; `preconisation.ts`, des
+                         réponses validées aux faits
+      cibles/            `noms.ts` (les cibles et leurs valeurs, dans les mots des
+                         règles), `evaluation.ts`, des faits aux cibles par les
+                         règles publicodes
       rules/             le livrable de l'éditeur : le YAML, sa `VERSION`, le
                          catalogue des textes de R2, et `regles.json` et
                          `regles.graphe.json`, que `pnpm regles` calcule du YAML
-      declarations/      les questions, faits et cibles, dans les mots des règles
-      faits/             un fichier par fait, une valeur faite de règles ;
-                         `communs.ts` porte les lectures et les règles que
-                         plusieurs faits partagent
-      p1/                l'autonomie et l'état de santé : les pages du mode de
-                         transport
-      p2/                l'éligibilité : les pages par thème (prestation,
-                         contextes, trajet, transfert, permission, convocation,
-                         retour pénitentiaire, branche)
-      p3/                le complément du cerfa : le trajet, le soin, l'urgence, les
-                         évènements et l'exonération
   socle/                 ce qui ne dépend d'aucune version. `model.ts` est le contrat
                          métier qu'un modèle remplit (`CoreModel`), `index.ts` ce
                          qu'il a le droit d'importer
@@ -154,7 +161,10 @@ core/                    le métier, sans React ni DOM : ce qu'un serveur ou un 
                          inconnue la cible qui en dépend. Le seul
                          fichier qui importe publicodes, pris par le modèle hors de
                          `index.ts`
-    seeds/               ce qu'est une seed, et ce qu'elle confirme ou dément
+    simulation/          une simulation : des réponses lues dans le questionnaire
+                         d'un modèle, leur préconisation, la lecture d'un résultat,
+                         le verrou ; ce qu'est une seed, et ce qu'elle confirme ou
+                         dément
 front/                   le front, bundlé par Vite
   main.tsx               le point d'entrée du navigateur : monte l'app, amorce le traceur
   models/                l'écran de chaque modèle, chacun chargé à la demande

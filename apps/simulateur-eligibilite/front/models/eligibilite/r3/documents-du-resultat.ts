@@ -12,8 +12,8 @@
 // (`PROVENANCE_FORMULAIRES.json`). Les trois se remplissent : le S3141
 // (`s3141/`, #158), la PMT (`s3138g/`, #160) et la DAP (`s3139h/`, #161).
 
-import type { Cibles } from "../../../../core/models/eligibilite/declarations/cibles";
-import { given } from "../../../../core/models/eligibilite/question";
+import type { Cibles } from "../../../../core/models/eligibilite/cibles/noms";
+import { given } from "../../../../core/models/eligibilite/questions/question";
 import { cerfaValue } from "../../../socle";
 import { S3138G } from "./s3138g/s3138g";
 import { S3139H } from "./s3139h/s3139h";

@@ -9,8 +9,8 @@
 // Il suit `CONTRAT_REPONSES_FAITS.json`.
 
 import { unFait } from "../../../socle/index.ts";
-import { PAS_ENCORE_ETABLI } from "../declarations/faits.ts";
 import { EXCEPTIONS } from "./communs.ts";
+import { PAS_ENCORE_ETABLI } from "./noms.ts";
 
 export const exceptionArticle80AirMer = unFait(
   "fait_exception_article80_air_mer",

@@ -8,8 +8,8 @@
 // Il suit `CONTRAT_REPONSES_FAITS.json`.
 
 import { unFait } from "../../../socle/index.ts";
-import { PAS_ENCORE_ETABLI } from "../declarations/faits.ts";
 import { MOTIF, SITUATIONS } from "./communs.ts";
+import { PAS_ENCORE_ETABLI } from "./noms.ts";
 
 export const htnmHorsMaternite = unFait("fait_htnm_hors_maternite")
   .nonSi(

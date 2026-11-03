@@ -3,7 +3,7 @@
 // aller-retour cochée, et non 6 (`CONTRAT_Q31_QUANTITES.json`, D-246). Il ne
 // compte que ceux de ce document : deux documents peuvent former une série.
 
-import { given } from "../../../../../core/models/eligibilite/question";
+import { given } from "../../../../../core/models/eligibilite/questions/question";
 import type { Rubrique } from "./rubrique";
 
 export type Nombre = {

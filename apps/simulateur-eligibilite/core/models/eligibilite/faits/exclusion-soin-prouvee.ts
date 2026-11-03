@@ -8,7 +8,7 @@
 // `CONTRAT_REPONSES_FAITS.json`.
 
 import { unFait } from "../../../socle/index.ts";
-import { SOUS_QUESTIONS_MASQUEES } from "../declarations/faits.ts";
+import { SOUS_QUESTIONS_MASQUEES } from "./noms.ts";
 
 export const exclusionSoinProuvee = unFait("fait_exclusion_soin_prouvee").sinon(
   SOUS_QUESTIONS_MASQUEES,

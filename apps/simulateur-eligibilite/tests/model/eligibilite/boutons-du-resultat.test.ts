@@ -4,7 +4,7 @@
 // testent à l'écran.
 
 import { describe, expect, it } from "vitest";
-import { CIBLES_ENUMEREES } from "../../../core/models/eligibilite/declarations/cibles";
+import { CIBLES_ENUMEREES } from "../../../core/models/eligibilite/cibles/noms";
 import { LIBELLE_DE_COMPLETION } from "../../../front/models/eligibilite/r2/boutons-du-resultat";
 import { lu } from "./traces-du-prescripteur";
 

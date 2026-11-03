@@ -10,13 +10,13 @@
 // `CONTRAT_REPONSES_FAITS.json`.
 
 import { unFait } from "../../../socle/index.ts";
-import { PAS_ENCORE_ETABLI } from "../declarations/faits.ts";
 import {
   DEPLACEMENT,
   EXCEPTIONS,
   given,
   UN_SEJOUR_EN_ETABLISSEMENT,
 } from "./communs.ts";
+import { PAS_ENCORE_ETABLI } from "./noms.ts";
 
 export const exceptionArticle80AdmissionSansSejour = unFait(
   "fait_exception_article80_admission_sans_sejour",

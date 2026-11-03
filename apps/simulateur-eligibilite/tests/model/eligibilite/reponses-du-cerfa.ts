@@ -5,9 +5,9 @@ import { readFile } from "node:fs/promises";
 import { join } from "node:path";
 import { PDFDict, PDFDocument } from "pdf-lib";
 import { model } from "../../../core/models/eligibilite";
-import type { Cibles } from "../../../core/models/eligibilite/declarations/cibles";
-import type { Faits } from "../../../core/models/eligibilite/declarations/faits";
-import type { Questions } from "../../../core/models/eligibilite/declarations/questions";
+import type { Cibles } from "../../../core/models/eligibilite/cibles/noms";
+import type { Faits } from "../../../core/models/eligibilite/faits/noms";
+import type { Questions } from "../../../core/models/eligibilite/questions/catalogue/catalogue";
 import { SEEDS } from "../../../core/models/eligibilite/seeds-catalogue";
 import { cibleValues } from "../../../core/socle/decision-engine/cible";
 import {

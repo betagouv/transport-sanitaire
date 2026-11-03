@@ -3,18 +3,18 @@
 // `front/models/eligibilite/`.
 
 import type { CoreModel, DecisionGraphData } from "../../socle/index.ts";
-import type { Cibles } from "./declarations/cibles.ts";
-import type { Faits } from "./declarations/faits.ts";
-import type { Questions } from "./declarations/questions.ts";
-import { cibles } from "./evaluation-des-regles.ts";
-import { COMPLEMENT } from "./p3/partie-3.ts";
+import { cibles } from "./cibles/evaluation.ts";
+import type { Cibles } from "./cibles/noms.ts";
+import type { Faits } from "./faits/noms.ts";
 import {
   FAITS_IMPOSES,
   faits,
   faitsSansLaDecision,
   LECTURES_DES_FAITS,
-} from "./preconisation.ts";
-import { PARTS } from "./questionnaire.ts";
+} from "./faits/preconisation.ts";
+import type { Questions } from "./questions/catalogue/catalogue.ts";
+import { COMPLEMENT } from "./questions/p3/partie-3.ts";
+import { PARTS } from "./questions/questionnaire.ts";
 import graphe from "./rules/regles.graphe.json" with { type: "json" };
 
 const GRAPHE = graphe as DecisionGraphData;

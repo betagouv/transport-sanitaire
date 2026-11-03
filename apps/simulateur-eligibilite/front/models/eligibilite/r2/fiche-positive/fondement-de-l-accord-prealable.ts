@@ -10,10 +10,10 @@
 // établis, la phrase manque : rien n'est inventé à la place. Chaque texte
 // déclare ce qu'il lit des cibles et des faits (`ce-que-lit-un-texte.ts`).
 
-import type { IssuePositive } from "../../../../../core/models/eligibilite/declarations/catalogue-resultats";
-import type { Cibles } from "../../../../../core/models/eligibilite/declarations/cibles";
-import { given } from "../../../../../core/models/eligibilite/question";
+import type { Cibles } from "../../../../../core/models/eligibilite/cibles/noms";
+import { given } from "../../../../../core/models/eligibilite/questions/question";
 import { luPar, type TraceDe } from "../ce-que-lit-un-texte";
+import type { IssuePositive } from "../forme-du-catalogue";
 import {
   avecLeLexique,
   codesDeContexte,

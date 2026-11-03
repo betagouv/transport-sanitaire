@@ -7,9 +7,9 @@ import { describe, expect, it } from "vitest";
 import {
   CIBLES,
   CIBLES_ENUMEREES,
-} from "../../../core/models/eligibilite/declarations/cibles";
-import { FAITS } from "../../../core/models/eligibilite/declarations/faits";
-import { OPTIONS } from "../../../core/models/eligibilite/declarations/questions";
+} from "../../../core/models/eligibilite/cibles/noms";
+import { FAITS } from "../../../core/models/eligibilite/faits/noms";
+import { OPTIONS } from "../../../core/models/eligibilite/questions/catalogue/catalogue";
 import rules from "../../../core/models/eligibilite/rules/regles.json" with {
   type: "json",
 };

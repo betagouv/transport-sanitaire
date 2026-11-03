@@ -6,12 +6,12 @@
 // ouverts (`scenarios-de-la-caisse.ts`) : il lit ce qu'elle lit
 // (`ce-que-lit-un-texte.ts`).
 
+import type { TraceDe } from "../ce-que-lit-un-texte";
 import type {
   AucunScenario,
   IssuePrescripteur,
   ScenarioPrescripteur,
-} from "../../../../../core/models/eligibilite/declarations/catalogue-resultats";
-import type { TraceDe } from "../ce-que-lit-un-texte";
+} from "../forme-du-catalogue";
 import type { NonProuve } from "../precisions-du-resultat";
 import type { ReponsesLues } from "../trace-du-resultat";
 import {

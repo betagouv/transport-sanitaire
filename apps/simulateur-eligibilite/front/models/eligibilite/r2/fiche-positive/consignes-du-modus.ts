@@ -7,11 +7,8 @@
 // n'y met aucun mot. Le gras et les liens du texte courant restent en place
 // (`segments-du-texte.ts`).
 
-import type {
-  AucunTexte,
-  IssuePositive,
-} from "../../../../../core/models/eligibilite/declarations/catalogue-resultats";
 import { type BlocDeConsigne, blocsDesLignes } from "../blocs-de-consigne";
+import type { AucunTexte, IssuePositive } from "../forme-du-catalogue";
 
 type Etape = {
   readonly numero: number;

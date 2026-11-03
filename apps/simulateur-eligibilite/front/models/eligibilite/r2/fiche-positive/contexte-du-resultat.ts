@@ -7,14 +7,14 @@
 // exactement les codes établis. Les mots viennent du catalogue. Chaque texte
 // déclare ce qu'il lit des cibles (`ce-que-lit-un-texte.ts`).
 
+import type { Cibles } from "../../../../../core/models/eligibilite/cibles/noms";
+import { given } from "../../../../../core/models/eligibilite/questions/question";
+import { luPar, type TraceDe } from "../ce-que-lit-un-texte";
 import type {
   AucunTexte,
   IssuePositive,
   TexteCode,
-} from "../../../../../core/models/eligibilite/declarations/catalogue-resultats";
-import type { Cibles } from "../../../../../core/models/eligibilite/declarations/cibles";
-import { given } from "../../../../../core/models/eligibilite/question";
-import { luPar, type TraceDe } from "../ce-que-lit-un-texte";
+} from "../forme-du-catalogue";
 import { sansBlancsDeTrop } from "../sans-blancs-de-trop";
 import {
   avecLesAutresTermes,

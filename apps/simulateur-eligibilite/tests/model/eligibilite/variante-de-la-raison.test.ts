@@ -2,7 +2,7 @@
 // catalogue la donne, la trace dit si sa situation est prouvée.
 
 import { describe, expect, it } from "vitest";
-import type { Faits } from "../../../core/models/eligibilite/declarations/faits";
+import type { Faits } from "../../../core/models/eligibilite/faits/noms";
 import { catalogueResultats } from "../../../front/models/eligibilite/r2/catalogue-resultats";
 import {
   raisonNonEligible,

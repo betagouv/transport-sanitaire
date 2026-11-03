@@ -13,12 +13,12 @@
 // codée, elle ne devient jamais vraie, et la raison n'est donc jamais choisie. Elle déclare ce qu'elle lit des cibles et
 // des faits (`ce-que-lit-un-texte.ts`).
 
-import type { IssueNegative } from "../../../../../core/models/eligibilite/declarations/catalogue-resultats";
 import {
   given,
   type Inconnu,
-} from "../../../../../core/models/eligibilite/question";
+} from "../../../../../core/models/eligibilite/questions/question";
 import { luPar, type TraceDe } from "../ce-que-lit-un-texte";
+import type { IssueNegative } from "../forme-du-catalogue";
 
 /** Une raison du catalogue : son texte, son code, sa priorité. */
 export type RaisonNonEligible = IssueNegative["reasons"][number];

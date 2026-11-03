@@ -8,8 +8,8 @@
 // prescripteur (Q3.4) a sa propre cellule : le cerfa la joint au texte, et la
 // retire faute de place. Le point final va au dernier des deux.
 
-import { OPTIONS } from "../../../../../core/models/eligibilite/declarations/questions";
-import { given } from "../../../../../core/models/eligibilite/question";
+import { OPTIONS } from "../../../../../core/models/eligibilite/questions/catalogue/catalogue";
+import { given } from "../../../../../core/models/eligibilite/questions/question";
 import type { Address, Unanswered, Value } from "../../../../../core/socle";
 import type { Rubrique } from "./rubrique";
 import { adresseEnParties } from "./trajet";

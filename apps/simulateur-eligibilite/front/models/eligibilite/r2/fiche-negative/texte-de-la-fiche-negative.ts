@@ -7,12 +7,9 @@
 // v10.1.4 (TS1014-J05), ni cartes ni conseil sur l'ALD : le bloc de ce que
 // l'Assurance Maladie ne rembourse pas les remplace.
 
-import type {
-  CatalogueResultats,
-  IssueNegative,
-} from "../../../../../core/models/eligibilite/declarations/catalogue-resultats";
 import { type BlocDeConsigne, blocsDuTexte } from "../blocs-de-consigne";
 import type { TraceDe } from "../ce-que-lit-un-texte";
+import type { CatalogueResultats, IssueNegative } from "../forme-du-catalogue";
 import {
   LU_PAR_LA_RAISON,
   raisonNonEligible,

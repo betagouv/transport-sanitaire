@@ -15,14 +15,14 @@
 //
 // Les deux déclarent ce qu'elles lisent des cibles (`ce-que-lit-un-texte.ts`).
 
+import type { Cibles } from "../../../../../core/models/eligibilite/cibles/noms";
+import { given } from "../../../../../core/models/eligibilite/questions/question";
+import { luPar, type TraceDe } from "../ce-que-lit-un-texte";
 import type {
   AucunTexte,
   CatalogueResultats,
   IssuePositive,
-} from "../../../../../core/models/eligibilite/declarations/catalogue-resultats";
-import type { Cibles } from "../../../../../core/models/eligibilite/declarations/cibles";
-import { given } from "../../../../../core/models/eligibilite/question";
-import { luPar, type TraceDe } from "../ce-que-lit-un-texte";
+} from "../forme-du-catalogue";
 import {
   LU_PAR_LA_PORTEE,
   LU_PAR_LE_PARTAGE,

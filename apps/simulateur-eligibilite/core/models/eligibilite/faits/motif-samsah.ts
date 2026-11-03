@@ -7,8 +7,8 @@
 // `CONTRAT_REPONSES_FAITS.json`.
 
 import { unFait } from "../../../socle/index.ts";
-import { PAS_ENCORE_ETABLI } from "../declarations/faits.ts";
 import { SOINS } from "./communs.ts";
+import { PAS_ENCORE_ETABLI } from "./noms.ts";
 
 export const motifSamsah = unFait("fait_motif_samsah")
   .ouiSi(SOINS.checked("7_SAMSAH"))

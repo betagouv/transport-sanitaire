@@ -11,10 +11,10 @@
 // cibles et des faits est ce que ses textes déclarent (#260). Ce que lit un
 // texte ne compte que pour les issues qui le montrent (#255).
 
-import type { Cibles } from "../../../../core/models/eligibilite/declarations/cibles";
-import type { Faits } from "../../../../core/models/eligibilite/declarations/faits";
-import { dansLeCircuit } from "../../../../core/models/eligibilite/p2/retour-penitentiaire";
-import { given } from "../../../../core/models/eligibilite/question";
+import type { Cibles } from "../../../../core/models/eligibilite/cibles/noms";
+import type { Faits } from "../../../../core/models/eligibilite/faits/noms";
+import { dansLeCircuit } from "../../../../core/models/eligibilite/questions/p2/retour-penitentiaire";
+import { given } from "../../../../core/models/eligibilite/questions/question";
 import type { ValueOf } from "../../../../core/socle";
 import type { ResultatProps } from "../../../socle";
 import { type Lu, luPar, type TraceDe } from "./ce-que-lit-un-texte";

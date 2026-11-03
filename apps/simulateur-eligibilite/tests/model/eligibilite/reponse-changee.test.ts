@@ -8,7 +8,7 @@
 
 import { describe, expect, it } from "vitest";
 import { model } from "../../../core/models/eligibilite";
-import type { Questions } from "../../../core/models/eligibilite/declarations/questions";
+import type { Questions } from "../../../core/models/eligibilite/questions/catalogue/catalogue";
 import {
   type Answers,
   pagesOf,

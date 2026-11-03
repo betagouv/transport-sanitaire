@@ -9,7 +9,6 @@
 // Il suit `CONTRAT_REPONSES_FAITS.json`.
 
 import { unFait } from "../../../socle/index.ts";
-import { PAS_ENCORE_ETABLI } from "../declarations/faits.ts";
 import {
   DEPLACEMENT,
   EXCEPTIONS,
@@ -19,6 +18,7 @@ import {
   UNE_PERMISSION_ECARTE_LE_TRANSFERT,
   UNE_SORTIE_VERS_LA_PRISON,
 } from "./communs.ts";
+import { PAS_ENCORE_ETABLI } from "./noms.ts";
 
 export const centre15Interetablissements = unFait(
   "fait_centre15_interetablissements",

@@ -5,8 +5,8 @@
 
 import { describe, expect, it } from "vitest";
 import { model } from "../../../core/models/eligibilite";
-import { P1 } from "../../../core/models/eligibilite/p1/partie-1";
-import { P2 } from "../../../core/models/eligibilite/p2/partie-2";
+import { P1 } from "../../../core/models/eligibilite/questions/p1/partie-1";
+import { P2 } from "../../../core/models/eligibilite/questions/p2/partie-2";
 import GRAPHE from "../../../core/models/eligibilite/rules/regles.graphe.json";
 import type { DecisionGraphData } from "../../../core/socle/decision-engine/decision-graph/graph";
 import { DecisionGraph } from "../../../core/socle/decision-engine/decision-graph/graph";

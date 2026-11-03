@@ -2,7 +2,7 @@
 // travail ou une maladie professionnelle (AT/MP). La date de l'AT/MP vient de
 // Q3.6.1, qui ne se pose que si P2 a établi le lien.
 
-import { given } from "../../../../../core/models/eligibilite/question";
+import { given } from "../../../../../core/models/eligibilite/questions/question";
 import type { Rubrique } from "./rubrique";
 
 export type Liens = {

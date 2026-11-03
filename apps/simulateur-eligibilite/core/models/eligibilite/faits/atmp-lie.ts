@@ -6,8 +6,8 @@
 // Il suit `CONTRAT_REPONSES_FAITS.json`.
 
 import { unFait } from "../../../socle/index.ts";
-import { PAS_ENCORE_ETABLI } from "../declarations/faits.ts";
 import { SOINS } from "./communs.ts";
+import { PAS_ENCORE_ETABLI } from "./noms.ts";
 
 export const atmpLie = unFait("fait_atmp_lie")
   .ouiSi(SOINS.checked("1_ATMP"))

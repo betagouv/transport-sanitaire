@@ -15,9 +15,9 @@ import {
   natureDu,
   projectionCerfa,
   QUESTIONS_DU_LIEU,
-} from "../../../../../core/models/eligibilite/p3/lieux-du-trajet";
-import { SENS_DU_DOCUMENT } from "../../../../../core/models/eligibilite/p3/sens-du-trajet";
-import { given } from "../../../../../core/models/eligibilite/question";
+} from "../../../../../core/models/eligibilite/questions/p3/lieux-du-trajet";
+import { SENS_DU_DOCUMENT } from "../../../../../core/models/eligibilite/questions/p3/sens-du-trajet";
+import { given } from "../../../../../core/models/eligibilite/questions/question";
 import type { Address, Unanswered, Value } from "../../../../../core/socle";
 import type { Rubrique } from "./rubrique";
 

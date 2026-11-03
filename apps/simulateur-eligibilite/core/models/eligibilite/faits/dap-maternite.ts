@@ -8,8 +8,8 @@
 // `CONTRAT_REPONSES_FAITS.json`.
 
 import { unFait } from "../../../socle/index.ts";
-import { PAS_ENCORE_ETABLI } from "../declarations/faits.ts";
 import { given, SITUATIONS } from "./communs.ts";
+import { PAS_ENCORE_ETABLI } from "./noms.ts";
 
 const ELOIGNEMENT = given.question("Q2.14.eloignement").answer();
 const MOTIF_DE_LA_DAP = given.question("Q2.14.motif").answer();
