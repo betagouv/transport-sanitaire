@@ -4,7 +4,7 @@
 // l'état qu'un prescripteur aurait laissé, « Précédent » et verrou compris.
 
 import { type Preconisation, preconisationOf } from "../../../core/socle/model";
-import type { Answers } from "../../../core/socle/questionnaire-engine/question";
+import type { Answers } from "../../../core/socle/questionnaire-engine/question/question";
 import type {
   QuestionnaireState,
   Reading,

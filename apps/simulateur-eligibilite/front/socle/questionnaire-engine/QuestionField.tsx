@@ -4,12 +4,12 @@ import type { ReactNode } from "react";
 import {
   isAddress,
   withField,
-} from "../../../core/socle/questionnaire-engine/address";
-import type { AskedQuestion } from "../../../core/socle/questionnaire-engine/asked-question";
+} from "../../../core/socle/questionnaire-engine/question/address";
+import type { AskedQuestion } from "../../../core/socle/questionnaire-engine/question/asked/question";
 import type {
   Answer,
   Unanswered,
-} from "../../../core/socle/questionnaire-engine/question";
+} from "../../../core/socle/questionnaire-engine/question/question";
 import { AddressField } from "../ui/AddressField";
 import { CheckboxField } from "../ui/CheckboxField";
 import { DateField } from "../ui/DateField";

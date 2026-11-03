@@ -4,11 +4,11 @@
 // conditions d'affichage et ses dépendances. Le moteur de questionnaire ne
 // connaît aucun identifiant : les génériques ne servent qu'à typer le modèle.
 
-import type { Cible } from "../decision-engine/cible.ts";
+import type { Cible } from "../../decision-engine/cible.ts";
+import type { Reads } from "../conditions/condition.ts";
 import type { Address } from "./address.ts";
-import type { AskedQuestion } from "./asked-question.ts";
-import type { Reads } from "./condition.ts";
-import type { SeenAnswers } from "./question-context.ts";
+import type { SeenAnswers } from "./asked/context.ts";
+import type { AskedQuestion } from "./asked/question.ts";
 
 /**
  * Une réponse : un choix, un nombre, un texte, les cases cochées, une case
@@ -69,7 +69,7 @@ export type IncompatibleOptions = {
 /**
  * Une question, telle que le moteur de questionnaire la lit : elle sait comment
  * elle se pose, et de quelles réponses elle dépend. Le modèle la déclare par
- * ses constructeurs (`question-factory.ts`, `declared-question.ts`).
+ * ses constructeurs (`question/declared/factory.ts`, `question/declared/question.ts`).
  *
  * `askedIn` est écrite en méthode : TypeScript compare alors ses paramètres
  * dans les deux sens, et le moteur de questionnaire peut recevoir les questions
@@ -84,7 +84,7 @@ export type Question<
   readonly kind: AskedQuestion["kind"];
   /**
    * Les questions dont dépend cette réponse. Quand l'une d'elles change, cette
-   * réponse est effacée (`page-commit.ts`).
+   * réponse est effacée (`validate-a-page.ts`).
    */
   readonly dependencies: readonly string[];
   /**
@@ -94,7 +94,7 @@ export type Question<
   readonly guardReads: Reads;
   /**
    * Ce que lisent ses conditions, sans ses options : ce qui décide seul si
-   * elle se pose (`askability.ts`).
+   * elle se pose (`does-a-question-still-matter/can-still-be-asked.ts`).
    */
   readonly conditionReads: Reads;
   /**

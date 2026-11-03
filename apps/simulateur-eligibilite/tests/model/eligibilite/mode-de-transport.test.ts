@@ -12,7 +12,7 @@ import { preconisationOf } from "../../../core/socle/model";
 import {
   type Answers,
   pagesOf,
-} from "../../../core/socle/questionnaire-engine/question";
+} from "../../../core/socle/questionnaire-engine/question/question";
 import { Questionnaire } from "../../../core/socle/questionnaire-engine/questionnaire";
 
 type Reponses = Answers<Questions>;

@@ -12,27 +12,27 @@ export { type FaitDeclare, unFait } from "./decision-engine/fait/declared.ts";
 export { Fait } from "./decision-engine/fait/fait.ts";
 export { uneRegle } from "./decision-engine/fait/regle.ts";
 export type { CoreModel } from "./model.ts";
-export type { Address } from "./questionnaire-engine/address.ts";
+export type {
+  GivenAnswer,
+  GivenAnswers,
+} from "./questionnaire-engine/answers/given-answers.ts";
+export type { ValidatedAnswers } from "./questionnaire-engine/answers/validated-answers.ts";
 export {
   type Condition,
   constant,
   type Value,
   type ValueOf,
-} from "./questionnaire-engine/condition.ts";
-export { page } from "./questionnaire-engine/declared-page.ts";
-export { givenOf } from "./questionnaire-engine/given.ts";
-export type {
-  GivenAnswer,
-  GivenAnswers,
-} from "./questionnaire-engine/given-answers.ts";
+} from "./questionnaire-engine/conditions/condition.ts";
+export { givenOf } from "./questionnaire-engine/conditions/given.ts";
+export { Relevance } from "./questionnaire-engine/does-a-question-still-matter/matters.ts";
+export type { Address } from "./questionnaire-engine/question/address.ts";
+export type { QuestionContext } from "./questionnaire-engine/question/asked/context.ts";
+export { questionsOf } from "./questionnaire-engine/question/declared/factory.ts";
+export { page } from "./questionnaire-engine/question/declared/page.ts";
 export {
   afterLock,
   type QuestionnairePart,
   type Unanswered,
-} from "./questionnaire-engine/question.ts";
-export type { QuestionContext } from "./questionnaire-engine/question-context.ts";
-export { questionsOf } from "./questionnaire-engine/question-factory.ts";
+} from "./questionnaire-engine/question/question.ts";
 export { Questionnaire } from "./questionnaire-engine/questionnaire.ts";
-export { Relevance } from "./questionnaire-engine/relevance.ts";
-export type { ValidatedAnswers } from "./questionnaire-engine/validated-answers.ts";
 export type { Seed } from "./seeds/seed.ts";

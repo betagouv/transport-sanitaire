@@ -12,12 +12,12 @@ import type { Preconisation } from "../../../core/socle/model";
 import {
   type Read,
   readIn,
-} from "../../../core/socle/questionnaire-engine/condition";
+} from "../../../core/socle/questionnaire-engine/conditions/condition";
 import {
   type Answers,
   type AnyCibles,
   pagesOf,
-} from "../../../core/socle/questionnaire-engine/question";
+} from "../../../core/socle/questionnaire-engine/question/question";
 import type {
   Questionnaire,
   QuestionnaireState,

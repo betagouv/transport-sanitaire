@@ -1,6 +1,6 @@
 // Les constructeurs des questions du modèle de démonstration. Les options
 // viennent de son catalogue. Les conditions lisent ses faits, et les cibles
-// que ses règles en tirent (`question-context.ts`).
+// que ses règles en tirent (`question/asked/context.ts`).
 
 import { givenOf, questionsOf } from "../../socle/index.ts";
 import type { Cibles } from "./declarations/cibles.ts";

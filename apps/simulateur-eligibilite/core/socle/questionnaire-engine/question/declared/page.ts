@@ -5,9 +5,9 @@
 // Une condition de page s'ajoute à chacune de ses questions : une page dont
 // aucune question ne se pose est sautée, sans rien de plus à déclarer.
 
-import type { Condition } from "./condition.ts";
-import type { DeclaredQuestion } from "./declared-question.ts";
-import type { AnyQuestions } from "./question.ts";
+import type { Condition } from "../../conditions/condition.ts";
+import type { AnyQuestions } from "../question.ts";
+import type { DeclaredQuestion } from "./question.ts";
 
 /**
  * Une page déclarée. Elle ne change pas : `appliesWhen` et `mattersWhile`

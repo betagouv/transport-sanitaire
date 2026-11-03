@@ -5,14 +5,14 @@
 // résultat, encore inconnu.
 
 import type { ComponentType, ReactNode } from "react";
-import type { AskedQuestion } from "../../../core/socle/questionnaire-engine/asked-question";
+import type { AskedQuestion } from "../../../core/socle/questionnaire-engine/question/asked/question";
 import {
   type Answers,
   type AnyCibles,
   pagesOf,
   type QuestionnairePart,
   type Validated,
-} from "../../../core/socle/questionnaire-engine/question";
+} from "../../../core/socle/questionnaire-engine/question/question";
 import { QuestionField } from "./QuestionField";
 import type {
   QuestionnaireOptions,

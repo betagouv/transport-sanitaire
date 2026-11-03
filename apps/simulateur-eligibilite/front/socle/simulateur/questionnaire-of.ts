@@ -4,7 +4,7 @@
 import {
   type Page,
   pagesOf,
-} from "../../../core/socle/questionnaire-engine/question";
+} from "../../../core/socle/questionnaire-engine/question/question";
 import { Questionnaire } from "../../../core/socle/questionnaire-engine/questionnaire";
 import type { Model } from "../model";
 

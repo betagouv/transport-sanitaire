@@ -4,7 +4,7 @@
 // compte les pages et les questions.
 
 import { preconisationOf } from "../../../core/socle/model";
-import type { Answers } from "../../../core/socle/questionnaire-engine/question";
+import type { Answers } from "../../../core/socle/questionnaire-engine/question/question";
 import { NomEvenement, trackEvenement } from "../analytics/evenements";
 import type { AldIndicator, Model } from "../model";
 import { questionnaireOf } from "./questionnaire-of";

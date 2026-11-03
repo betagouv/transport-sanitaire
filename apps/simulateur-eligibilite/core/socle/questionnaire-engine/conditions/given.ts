@@ -8,10 +8,13 @@
 //
 // `answer()` est la seule lecture d'une réponse. Le socle la choisit selon
 // l'endroit : dans une garde, les questions posées avant elle ; dans un fait,
-// les questions validées (`answer-readings.ts`).
+// les questions validées (`conditions/what-a-condition-sees.ts`).
 
-import type { Cible } from "../decision-engine/cible.ts";
-import type { Fait } from "../decision-engine/fait/fait.ts";
+import type { Cible } from "../../decision-engine/cible.ts";
+import type { Fait } from "../../decision-engine/fait/fait.ts";
+import type { Box, Choice } from "../answers/given-answers.ts";
+import type { ValidatedAnswer } from "../answers/validated-answers.ts";
+import type { AnyQuestions } from "../question/question.ts";
 import {
   all,
   type Condition,
@@ -20,10 +23,7 @@ import {
   type Reading,
   Value,
 } from "./condition.ts";
-import type { Box, Choice } from "./given-answers.ts";
 import { LocalDateTime } from "./local-date-time.ts";
-import type { AnyQuestions } from "./question.ts";
-import type { ValidatedAnswer } from "./validated-answers.ts";
 
 /** La réponse d'une question, telle que l'endroit la voit. */
 class AnswerValue<Given extends Answer> extends Value<ValidatedAnswer<Given>> {

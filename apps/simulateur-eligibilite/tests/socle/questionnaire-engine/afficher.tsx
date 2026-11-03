@@ -7,7 +7,7 @@ import type {
   Answers,
   AnyCibles,
   Page,
-} from "../../../core/socle/questionnaire-engine/question";
+} from "../../../core/socle/questionnaire-engine/question/question";
 import { QuestionnaireForm } from "../../../front/socle/questionnaire-engine/QuestionnaireForm";
 
 /**

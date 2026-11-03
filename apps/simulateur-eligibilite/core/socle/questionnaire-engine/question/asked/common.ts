@@ -3,11 +3,11 @@
 // qu'elle en garde, si elle suffit, ce qui n'y va pas.
 //
 // Une question posée ne porte que des données : elle passe en JSON, telle
-// qu'une API la donnera, et `askedQuestion` la relit (`asked-question.ts`).
+// qu'une API la donnera, et `askedQuestion` la relit (`question/asked/question.ts`).
 // Chaque sorte en dit plus dans sa classe.
 
+import type { Answer, Reminder, Unanswered } from "../question.ts";
 import { type AnswerProblem, type NoError, stated } from "./answer-problem.ts";
-import type { Answer, Reminder, Unanswered } from "./question.ts";
 
 /** Une saisie libre, sans options. */
 type FreeInput = undefined;

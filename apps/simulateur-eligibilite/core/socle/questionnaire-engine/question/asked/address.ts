@@ -11,10 +11,10 @@ import {
   askedFields,
   isAddress,
   isCompleteAddress,
-} from "./address.ts";
+} from "../address.ts";
+import type { Answer, Unanswered } from "../question.ts";
 import { type AnswerProblem, MISSING, type NoError } from "./answer-problem.ts";
-import { AskedCommon, type AskedCommonData } from "./asked-common.ts";
-import type { Answer, Unanswered } from "./question.ts";
+import { AskedCommon, type AskedCommonData } from "./common.ts";
 
 export type AskedAddressData = AskedCommonData & {
   readonly kind: "address";

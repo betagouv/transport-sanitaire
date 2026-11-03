@@ -1,6 +1,6 @@
 import { screen } from "@testing-library/react";
 import { beforeEach, describe, expect, it } from "vitest";
-import { constant } from "../../../core/socle/questionnaire-engine/condition";
+import { constant } from "../../../core/socle/questionnaire-engine/conditions/condition";
 import { initAnalytics } from "../../../front/socle/analytics/matomo";
 import type { AldIndicator, Model } from "../../../front/socle/model";
 import { given, modeleDeTest } from "../modele-de-test";

@@ -11,9 +11,12 @@
 // erreur de déclaration : elle s'arrête net. Une incohérence lit sa question,
 // et se déclare sur la plus tardive de celles qu'elle lit.
 
-import type { AskedQuestion } from "./asked-question.ts";
-import type { Answers, Page, Validated } from "./question.ts";
-import { ValidatedAnswer, type ValidatedAnswers } from "./validated-answers.ts";
+import {
+  ValidatedAnswer,
+  type ValidatedAnswers,
+} from "../answers/validated-answers.ts";
+import type { AskedQuestion } from "../question/asked/question.ts";
+import type { Answers, Page, Validated } from "../question/question.ts";
 
 /** Comment l'endroit voit la réponse d'une question. */
 export type AnswerReading = (id: string) => ValidatedAnswer;

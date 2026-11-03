@@ -8,7 +8,7 @@ import { describe, expect, it } from "vitest";
 import { model as metier } from "../../../core/models/eligibilite";
 import type { Questions } from "../../../core/models/eligibilite/declarations/questions";
 import { preconisationOf } from "../../../core/socle/model";
-import type { Answers } from "../../../core/socle/questionnaire-engine/question";
+import type { Answers } from "../../../core/socle/questionnaire-engine/question/question";
 import { model } from "../../../front/models/eligibilite";
 import { questionnaireOf } from "../../../front/socle/simulateur/questionnaire-of";
 

@@ -1,6 +1,6 @@
 // Ce que toute question déclarée règle, quelle que soit sa sorte, et ce qu'elle
 // en fait quand elle se pose. Chaque sorte en dit plus dans sa classe
-// (`declared-choices.ts`, `declared-inputs.ts`).
+// (`question/declared/choices.ts`, `question/declared/inputs.ts`).
 //
 // Une question se déclare réglage par réglage, chacun sur sa ligne :
 //
@@ -9,11 +9,9 @@
 //     .inconsistentWhen(commenceAvantLHospitalisation, "La permission …");
 //
 // Elle ne change pas : chaque réglage donne une copie. Il n'y a pas d'étape
-// finale : la page la prend telle quelle (`declared-page.ts`), et le moteur de
+// finale : la page la prend telle quelle (`question/declared/page.ts`), et le moteur de
 // questionnaire lui demande comment elle se pose (`askedIn`).
 
-import type { AskedCommonData, InPlace, ShownUnder } from "./asked-common.ts";
-import type { AskedQuestion } from "./asked-question.ts";
 import {
   type Condition,
   NOTHING,
@@ -22,14 +20,16 @@ import {
   readsOf,
   type Text,
   textIn,
-} from "./condition.ts";
-import type { AnyQuestions, NotAsked, Reminder } from "./question.ts";
+} from "../../conditions/condition.ts";
+import { checkReads, readIn } from "../../conditions/reads-in-place.ts";
+import type { AskedCommonData, InPlace, ShownUnder } from "../asked/common.ts";
 import type {
   Pipeline,
   QuestionContext,
   SeenAnswers,
-} from "./question-context.ts";
-import { checkReads, readIn } from "./reads-in-place.ts";
+} from "../asked/context.ts";
+import type { AskedQuestion } from "../asked/question.ts";
+import type { AnyQuestions, NotAsked, Reminder } from "../question.ts";
 
 /** Rien de calculé : le rappel fixe de `reminder` vaut. */
 type NothingComputed = undefined;
@@ -183,7 +183,7 @@ export abstract class DeclaredQuestion<
 
   /**
    * Les questions dont dépend cette réponse. Quand l'une d'elles change, cette
-   * réponse est effacée, et elle seule (`page-commit.ts`). Sur la même page,
+   * réponse est effacée, et elle seule (`validate-a-page.ts`). Sur la même page,
    * elle l'est dès la saisie : son champ se vide à l'écran.
    */
   dependsOn(...ids: (keyof Questions & string)[]): this {

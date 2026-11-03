@@ -6,7 +6,7 @@
 // questionnaire ne repose aucune question d'avant.
 
 import { type ComponentType, type ReactNode, useState } from "react";
-import type { Answers } from "../../../core/socle/questionnaire-engine/question";
+import type { Answers } from "../../../core/socle/questionnaire-engine/question/question";
 import type { Model } from "../model";
 import {
   type DebugTraceProps,

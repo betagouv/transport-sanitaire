@@ -2,15 +2,15 @@
 // Ce fichier lit leurs réponses, pour savoir si elle se pose.
 // Il vérifie aussi qu'aucune condition ne lit une question suivante.
 
-import type { Condition, Reading } from "./condition.ts";
-import type { AnyQuestions } from "./question.ts";
 import {
   contextOf,
   type Pipeline,
   type QuestionContext,
   readingOf,
   type SeenAnswers,
-} from "./question-context.ts";
+} from "../question/asked/context.ts";
+import type { AnyQuestions } from "../question/question.ts";
+import type { Condition, Reading } from "./condition.ts";
 
 // Ce que la question voit des questions précédentes.
 // Leurs réponses, et ce que ses conditions en lisent.

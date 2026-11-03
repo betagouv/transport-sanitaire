@@ -10,7 +10,7 @@ import { model } from "../../../core/models/eligibilite";
 import type { Faits } from "../../../core/models/eligibilite/declarations/faits";
 import type { Questions } from "../../../core/models/eligibilite/declarations/questions";
 import { preconisationOf } from "../../../core/socle/model";
-import type { Answers } from "../../../core/socle/questionnaire-engine/question";
+import type { Answers } from "../../../core/socle/questionnaire-engine/question/question";
 import { lienAld } from "./lien-ald";
 
 type Reponses = Answers<Questions>;

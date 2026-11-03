@@ -9,7 +9,7 @@ import {
   type Read,
   readsOf,
   Value,
-} from "../../core/socle/questionnaire-engine/condition";
+} from "../../core/socle/questionnaire-engine/conditions/condition";
 import type { Cerfa, CerfaDto } from "./cerfa/cerfa";
 
 /** Une valeur par entrée du DTO. */

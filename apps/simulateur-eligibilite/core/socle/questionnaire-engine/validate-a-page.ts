@@ -4,8 +4,8 @@
 // changée sont effacées, et elles seules. Sur la page même, la saisie les
 // efface déjà : leur champ se vide à l'écran.
 
-import { isAddress } from "./address.ts";
-import type { Answer, Answers, Page, Unanswered } from "./question.ts";
+import { isAddress } from "./question/address.ts";
+import type { Answer, Answers, Page, Unanswered } from "./question/question.ts";
 
 /**
  * Les réponses du questionnaire, une fois la page validée. `inputs` porte les

@@ -13,14 +13,14 @@
 // inconnu avec cette provenance. Le fait lit ce que lisent ses règles, et le
 // catalogue le calcule (`establish-the-faits.ts`).
 
+import type { Box } from "../../questionnaire-engine/answers/given-answers.ts";
 import {
   type Condition,
   NOTHING,
   readsOf,
   Value,
-} from "../../questionnaire-engine/condition.ts";
-import type { Box } from "../../questionnaire-engine/given-answers.ts";
-import type { Answer } from "../../questionnaire-engine/question.ts";
+} from "../../questionnaire-engine/conditions/condition.ts";
+import type { Answer } from "../../questionnaire-engine/question/question.ts";
 import { Fait } from "./fait.ts";
 import {
   type AnswerOf,

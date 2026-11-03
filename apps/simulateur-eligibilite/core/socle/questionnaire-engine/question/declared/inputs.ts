@@ -1,17 +1,17 @@
 // Les saisies libres déclarées : un nombre, un texte, une date, une case seule,
 // une adresse. Chacune n'a que ses réglages : `min` n'existe pas sur un texte.
 
-import { AskedAddress } from "./asked-address.ts";
-import type { AskedCommonData } from "./asked-common.ts";
+import { AskedAddress } from "../asked/address.ts";
+import type { AskedCommonData } from "../asked/common.ts";
+import type { QuestionContext } from "../asked/context.ts";
 import {
   AskedCheckbox,
   AskedDate,
   AskedNumber,
   AskedText,
-} from "./asked-inputs.ts";
-import { type CommonSettings, DeclaredQuestion } from "./declared-question.ts";
-import type { AnyQuestions } from "./question.ts";
-import type { QuestionContext } from "./question-context.ts";
+} from "../asked/inputs.ts";
+import type { AnyQuestions } from "../question.ts";
+import { type CommonSettings, DeclaredQuestion } from "./question.ts";
 
 /** Un nombre déclaré. */
 export class DeclaredNumber<

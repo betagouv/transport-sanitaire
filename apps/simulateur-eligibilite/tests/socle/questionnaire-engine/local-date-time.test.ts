@@ -2,7 +2,7 @@
 // qui n'est comparée à rien, et un changement d'heure qui ne décale rien.
 
 import { describe, expect, it } from "vitest";
-import { LocalDateTime } from "../../../core/socle/questionnaire-engine/local-date-time";
+import { LocalDateTime } from "../../../core/socle/questionnaire-engine/conditions/local-date-time";
 
 const date = LocalDateTime.parse;
 

@@ -7,7 +7,7 @@ import { cibles } from "../../../core/models/eligibilite/evaluation-des-regles";
 import {
   readIn,
   type Value,
-} from "../../../core/socle/questionnaire-engine/condition";
+} from "../../../core/socle/questionnaire-engine/conditions/condition";
 import { Questionnaire } from "../../../core/socle/questionnaire-engine/questionnaire";
 import { resultReading } from "../../../core/socle/questionnaire-engine/result-reading";
 import {

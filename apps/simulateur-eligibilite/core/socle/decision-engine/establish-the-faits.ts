@@ -7,14 +7,14 @@
 // faits n'en calcule que deux. Un fait qui se lit lui-même, par d'autres faits
 // ou par une garde, s'arrête net.
 
-import { validatedReading } from "../questionnaire-engine/answer-readings.ts";
+import type { ValidatedAnswers } from "../questionnaire-engine/answers/validated-answers.ts";
 import {
   NOTHING,
   type Reading,
   type Reads,
   readsOf,
-} from "../questionnaire-engine/condition.ts";
-import type { ValidatedAnswers } from "../questionnaire-engine/validated-answers.ts";
+} from "../questionnaire-engine/conditions/condition.ts";
+import { validatedReading } from "../questionnaire-engine/conditions/what-a-condition-sees.ts";
 import type { FaitDeclare } from "./fait/declared.ts";
 
 /** Les faits d'un modèle, chacun sous son nom et avec sa valeur. */

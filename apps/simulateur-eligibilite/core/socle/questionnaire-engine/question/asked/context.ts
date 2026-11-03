@@ -4,18 +4,18 @@
 //
 // Il est le bout du chemin d'une réponse : réponses → validées → faits →
 // cibles. Le moteur fait les deux premières étapes, dans l'ordre des questions
-// (`reading-in-order.ts`). Le modèle fait les deux dernières, par son
+// (`decide-which-questions-to-ask.ts`). Le modèle fait les deux dernières, par son
 // `Pipeline` : son catalogue des faits, puis ses règles. Faits et cibles ne se calculent qu'à la lecture, une fois par
 // contexte. Le catalogue des faits arrête un fait qui se relit par une garde.
 
-import type { FaitCatalogue } from "../decision-engine/establish-the-faits.ts";
-import { Fait } from "../decision-engine/fait/fait.ts";
-import type { AnswerReading } from "./answer-readings.ts";
-import type { Reading } from "./condition.ts";
-import type { GivenAnswers } from "./given-answers.ts";
-import { LocalDateTime } from "./local-date-time.ts";
-import type { AnyCibles, AnyQuestions } from "./question.ts";
-import type { ValidatedAnswers } from "./validated-answers.ts";
+import type { FaitCatalogue } from "../../../decision-engine/establish-the-faits.ts";
+import { Fait } from "../../../decision-engine/fait/fait.ts";
+import type { GivenAnswers } from "../../answers/given-answers.ts";
+import type { ValidatedAnswers } from "../../answers/validated-answers.ts";
+import type { Reading } from "../../conditions/condition.ts";
+import { LocalDateTime } from "../../conditions/local-date-time.ts";
+import type { AnswerReading } from "../../conditions/what-a-condition-sees.ts";
+import type { AnyCibles, AnyQuestions } from "../question.ts";
 
 /** Ce que lisent les conditions et les libellés du moment d'une question. */
 export type QuestionContext<
@@ -42,7 +42,7 @@ export type QuestionContext<
  * Ce qu'une question voit des réponses, avant les étapes du modèle. `cibles` :
  * celles figées au verrou, sur une page posée après lui. Ailleurs :
  * `undefined`. `answer` : la réponse d'une question telle que ses conditions
- * la lisent, à sa place (`answer-readings.ts`).
+ * la lisent, à sa place (`conditions/what-a-condition-sees.ts`).
  */
 export type SeenAnswers<
   Questions extends AnyQuestions = AnyQuestions,

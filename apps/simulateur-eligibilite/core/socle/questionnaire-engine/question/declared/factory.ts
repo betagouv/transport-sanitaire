@@ -14,22 +14,19 @@
 // questions validées, les cibles et les faits. Les faits sont ceux des
 // questions validées jusque-là, calculés seulement si on les lit.
 
-import type { Address } from "./address.ts";
-import {
-  DeclaredMultipleChoice,
-  DeclaredSingleChoice,
-} from "./declared-choices.ts";
+import type { Address } from "../address.ts";
+import type { Pipeline } from "../asked/context.ts";
+import type { AnyQuestions } from "../question.ts";
+import { DeclaredMultipleChoice, DeclaredSingleChoice } from "./choices.ts";
 import {
   DeclaredAddress,
   DeclaredCheckbox,
   DeclaredDate,
   DeclaredNumber,
   DeclaredText,
-} from "./declared-inputs.ts";
-import { DeclaredOptions } from "./declared-option.ts";
-import type { CommonSettings } from "./declared-question.ts";
-import type { AnyQuestions } from "./question.ts";
-import type { Pipeline } from "./question-context.ts";
+} from "./inputs.ts";
+import { DeclaredOptions } from "./option.ts";
+import type { CommonSettings } from "./question.ts";
 
 /** Les libellés des options de chaque question à choix, par valeur. */
 export type Catalogue<Questions extends AnyQuestions> = {
@@ -44,7 +41,7 @@ export type Catalogue<Questions extends AnyQuestions> = {
  * Les constructeurs des questions d'un modèle. `options` : son catalogue.
  * `faits` : son catalogue des faits. `cibles` : ce qui calcule ses cibles sur
  * ces faits. Les conditions lisent les uns et les autres
- * (`question-context.ts`).
+ * (`question/asked/context.ts`).
  */
 export function questionsOf<
   Questions extends AnyQuestions,

@@ -12,12 +12,12 @@
 // l'ordre suffit. Une question morte garde sa réponse absente (COR-02), et sa
 // garde se lit ici comme le questionnaire la lira.
 
-import { validatedReading } from "./answer-readings.ts";
-import { flattened, type Reads } from "./condition.ts";
-import { GivenAnswers } from "./given-answers.ts";
-import type { AnyCibles, Question, Validated } from "./question.ts";
-import type { SeenAnswers } from "./question-context.ts";
-import { ValidatedAnswers } from "./validated-answers.ts";
+import { GivenAnswers } from "../answers/given-answers.ts";
+import { ValidatedAnswers } from "../answers/validated-answers.ts";
+import { flattened, type Reads } from "../conditions/condition.ts";
+import { validatedReading } from "../conditions/what-a-condition-sees.ts";
+import type { SeenAnswers } from "../question/asked/context.ts";
+import type { AnyCibles, Question, Validated } from "../question/question.ts";
 
 /** Ce que lit une question pour dire si les questions qui restent se posent. */
 export type AskabilityPlace = {

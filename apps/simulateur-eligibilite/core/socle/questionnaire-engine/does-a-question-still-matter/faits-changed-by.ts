@@ -17,8 +17,8 @@
 //
 // Un fait qui ne lit rien est une constante : aucune question ne le change.
 
-import type { Reads } from "./condition.ts";
-import type { Question } from "./question.ts";
+import type { Reads } from "../conditions/condition.ts";
+import type { Question } from "../question/question.ts";
 
 /** Pour chaque question, les faits qu'elle change, dans l'ordre du modèle. */
 export function faitsChangedBy(

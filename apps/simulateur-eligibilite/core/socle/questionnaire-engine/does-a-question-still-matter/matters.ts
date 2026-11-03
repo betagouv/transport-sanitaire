@@ -13,7 +13,7 @@
 // prendre une de ses valeurs. Ex. : ce que lit la fiche positive ne compte que
 // tant que l'issue peut encore être positive. S'y ajoute ce que lisent les
 // gardes des questions qui restent et qui comptent : la question elle-même,
-// celles qui la suivent et peuvent encore se poser (`askability.ts`, D-223),
+// celles qui la suivent et peuvent encore se poser (`does-a-question-still-matter/can-still-be-asked.ts`, D-223),
 // et celles d'avant qui attendent leur réponse.
 //
 // Les faits d'une question qui reste sont libres : sa réponse n'est pas encore
@@ -28,17 +28,22 @@
 import type {
   DecisionGraphData,
   FaitValue,
-} from "../decision-engine/decision-graph/graph.ts";
-import { Askability } from "./askability.ts";
-import { flattened, NOTHING, type Reads, readsOf } from "./condition.ts";
-import type { AnyCibles, Page, Validated } from "./question.ts";
+} from "../../decision-engine/decision-graph/graph.ts";
+import { ValidatedAnswers } from "../answers/validated-answers.ts";
+import {
+  flattened,
+  NOTHING,
+  type Reads,
+  readsOf,
+} from "../conditions/condition.ts";
+import type { AnyCibles, Page, Validated } from "../question/question.ts";
+import { Askability } from "./can-still-be-asked.ts";
 import {
   type Fixed,
   type Gate,
   RelevanceGraph,
   type Section,
-} from "./relevance-graph.ts";
-import { ValidatedAnswers } from "./validated-answers.ts";
+} from "./restricted-graph.ts";
 
 /** Ce que la pertinence lit du modèle. */
 export type RelevanceSources = {

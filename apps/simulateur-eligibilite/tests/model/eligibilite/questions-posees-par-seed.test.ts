@@ -4,7 +4,7 @@
 
 import { describe, expect, it } from "vitest";
 import type { Questions } from "../../../core/models/eligibilite/declarations/questions";
-import type { Answers } from "../../../core/socle/questionnaire-engine/question";
+import type { Answers } from "../../../core/socle/questionnaire-engine/question/question";
 import type { Questionnaire } from "../../../core/socle/questionnaire-engine/questionnaire";
 import { model } from "../../../front/models/eligibilite";
 import { questionnaireOf } from "../../../front/socle/simulateur/questionnaire-of";

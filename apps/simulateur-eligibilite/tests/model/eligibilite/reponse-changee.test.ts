@@ -11,13 +11,13 @@ import { model } from "../../../core/models/eligibilite";
 import type { Questions } from "../../../core/models/eligibilite/declarations/questions";
 import { preconisationOf } from "../../../core/socle/model";
 import {
-  answerOnPage,
-  commitPage,
-} from "../../../core/socle/questionnaire-engine/page-commit";
-import {
   type Answers,
   pagesOf,
-} from "../../../core/socle/questionnaire-engine/question";
+} from "../../../core/socle/questionnaire-engine/question/question";
+import {
+  answerOnPage,
+  commitPage,
+} from "../../../core/socle/questionnaire-engine/validate-a-page";
 import { model as frontModel } from "../../../front/models/eligibilite";
 import { questionnaireOf } from "../../../front/socle/simulateur/questionnaire-of";
 import { MATERNITE_ETABLIE } from "./reponses-de-la-branche";

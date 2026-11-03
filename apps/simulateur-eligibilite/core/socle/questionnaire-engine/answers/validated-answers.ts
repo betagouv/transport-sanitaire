@@ -2,8 +2,8 @@
 // proposait. C'est ce qui sépare un « non » d'un fait inconnu : une case
 // proposée et non cochée a été refusée, une case jamais montrée ne l'a pas été.
 
+import type { Answers, AnyQuestions, Validated } from "../question/question.ts";
 import { type Box, type Choice, GivenAnswer } from "./given-answers.ts";
-import type { Answers, AnyQuestions, Validated } from "./question.ts";
 
 /**
  * Une question validée, ou pas : sa réponse, et les options qui se

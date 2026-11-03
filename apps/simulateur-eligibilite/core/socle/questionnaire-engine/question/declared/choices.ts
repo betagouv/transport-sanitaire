@@ -6,13 +6,13 @@
 //
 // `Value` : les valeurs du catalogue. Une autre ne compile pas.
 
-import { AskedMultipleChoice, AskedSingleChoice } from "./asked-choices.ts";
-import type { AskedCommonData } from "./asked-common.ts";
-import type { Reading, Reads } from "./condition.ts";
-import type { DeclaredOption, DeclaredOptions } from "./declared-option.ts";
-import { type CommonSettings, DeclaredQuestion } from "./declared-question.ts";
-import type { AnyQuestions, IncompatibleOptions } from "./question.ts";
-import type { QuestionContext } from "./question-context.ts";
+import type { Reading, Reads } from "../../conditions/condition.ts";
+import { AskedMultipleChoice, AskedSingleChoice } from "../asked/choices.ts";
+import type { AskedCommonData } from "../asked/common.ts";
+import type { QuestionContext } from "../asked/context.ts";
+import type { AnyQuestions, IncompatibleOptions } from "../question.ts";
+import type { DeclaredOption, DeclaredOptions } from "./option.ts";
+import { type CommonSettings, DeclaredQuestion } from "./question.ts";
 
 /** Un choix unique déclaré. */
 export class DeclaredSingleChoice<

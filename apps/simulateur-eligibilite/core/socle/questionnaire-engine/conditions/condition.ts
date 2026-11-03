@@ -6,8 +6,8 @@
 // (`Reading`), qu'il choisit selon l'endroit. Une garde voit les questions
 // posées avant elle, un fait les questions validées (`given.ts`).
 
+import type { ValidatedAnswer } from "../answers/validated-answers.ts";
 import type { LocalDateTime } from "./local-date-time.ts";
-import type { ValidatedAnswer } from "./validated-answers.ts";
 
 /** Ce qu'une valeur lit : des questions, des faits, des cibles. */
 export type Reads = {

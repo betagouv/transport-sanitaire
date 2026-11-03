@@ -5,8 +5,13 @@
 // Une question sans réponse n'a rien de coché et n'est aucune option : ce
 // n'est pas pour autant un « non ». `hasAnswer` le distingue.
 
-import type { Address } from "./address.ts";
-import type { Answer, Answers, AnyQuestions, Unanswered } from "./question.ts";
+import type { Address } from "../question/address.ts";
+import type {
+  Answer,
+  Answers,
+  AnyQuestions,
+  Unanswered,
+} from "../question/question.ts";
 
 /** Ce qu'un choix unique peut valoir : une option, ou la valeur d'une case seule. */
 export type Choice<Given> = Given extends readonly unknown[] | Address

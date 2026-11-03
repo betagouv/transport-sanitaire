@@ -1,5 +1,5 @@
 // Les réponses lues à travers les pages, dans l'ordre : les questions qui se
-// posent, telles qu'elles se posent (`asked-question.ts`), et ce qui en est
+// posent, telles qu'elles se posent (`question/asked/question.ts`), et ce qui en est
 // validé, avec ce qui s'y proposait.
 //
 // Les questions se lisent dans l'ordre. Chacune voit celles qui la précèdent
@@ -8,14 +8,21 @@
 //
 // Seules les pages posées après le verrou reçoivent les cibles figées. Les
 // autres lisent celles que le modèle calcule sur leurs faits
-// (`question-context.ts`), même relues après le verrou.
+// (`question/asked/context.ts`), même relues après le verrou.
 //
 // Avec une pertinence, une question dont la réponse ne change rien de ce qui
-// compte ne se pose pas (`relevance.ts`, #255) : elle n'est jamais validée.
+// compte ne se pose pas (`does-a-question-still-matter/matters.ts`, #255) : elle n'est jamais validée.
 
-import { type GuardPlace, guardReading, Positions } from "./answer-readings.ts";
-import type { AskedQuestion } from "./asked-question.ts";
-import { GivenAnswers } from "./given-answers.ts";
+import { GivenAnswers } from "./answers/given-answers.ts";
+import { ValidatedAnswers } from "./answers/validated-answers.ts";
+import {
+  type GuardPlace,
+  guardReading,
+  Positions,
+} from "./conditions/what-a-condition-sees.ts";
+import type { Relevance } from "./does-a-question-still-matter/matters.ts";
+import type { SeenAnswers } from "./question/asked/context.ts";
+import type { AskedQuestion } from "./question/asked/question.ts";
 import type {
   Answer,
   Answers,
@@ -25,10 +32,7 @@ import type {
   Question,
   Unanswered,
   Validated,
-} from "./question.ts";
-import type { SeenAnswers } from "./question-context.ts";
-import type { Relevance } from "./relevance.ts";
-import { ValidatedAnswers } from "./validated-answers.ts";
+} from "./question/question.ts";
 
 /** Une page lue : ses questions qui se posent, telles qu'elles se posent. */
 export type AskedPage = {

@@ -2,8 +2,8 @@
 // à répondre, et la navigation entre les pages.
 
 import { useState } from "react";
-import type { AskedQuestion } from "../../../core/socle/questionnaire-engine/asked-question";
-import { answerOnPage } from "../../../core/socle/questionnaire-engine/page-commit";
+import type { Relevance } from "../../../core/socle/questionnaire-engine/does-a-question-still-matter/matters";
+import type { AskedQuestion } from "../../../core/socle/questionnaire-engine/question/asked/question";
 import type {
   Answer,
   Answers,
@@ -12,12 +12,12 @@ import type {
   Question,
   Unanswered,
   Validated,
-} from "../../../core/socle/questionnaire-engine/question";
+} from "../../../core/socle/questionnaire-engine/question/question";
 import {
   Questionnaire,
   type QuestionnaireState,
 } from "../../../core/socle/questionnaire-engine/questionnaire";
-import type { Relevance } from "../../../core/socle/questionnaire-engine/relevance";
+import { answerOnPage } from "../../../core/socle/questionnaire-engine/validate-a-page";
 import type { AutoAdvance } from "./auto-advance";
 import { useAutoAdvance } from "./auto-advance";
 import type { QuestionnaireTracking } from "./questionnaire-tracking";

@@ -17,8 +17,8 @@ import {
 } from "../../../core/socle";
 import { decisionGraphOf } from "../../../core/socle/decision-engine/compute-the-cibles";
 import { DecisionGraph } from "../../../core/socle/decision-engine/decision-graph/graph";
-import { faitsChangedBy } from "../../../core/socle/questionnaire-engine/faits-changed-by";
-import { pagesOf } from "../../../core/socle/questionnaire-engine/question";
+import { faitsChangedBy } from "../../../core/socle/questionnaire-engine/does-a-question-still-matter/faits-changed-by";
+import { pagesOf } from "../../../core/socle/questionnaire-engine/question/question";
 import { modeleDeTest } from "../modele-de-test";
 
 describe("ce que change une question", () => {

@@ -6,13 +6,13 @@
 import { describe, expect, it } from "vitest";
 import type { Cible, Fait } from "../../../core/socle";
 import { givenOf, page, questionsOf } from "../../../core/socle";
-import { validatedReading } from "../../../core/socle/questionnaire-engine/answer-readings";
-import type { Reading } from "../../../core/socle/questionnaire-engine/condition";
-import { LocalDateTime } from "../../../core/socle/questionnaire-engine/local-date-time";
+import type { Reading } from "../../../core/socle/questionnaire-engine/conditions/condition";
+import { LocalDateTime } from "../../../core/socle/questionnaire-engine/conditions/local-date-time";
+import { validatedReading } from "../../../core/socle/questionnaire-engine/conditions/what-a-condition-sees";
 import type {
   Answers,
   Page,
-} from "../../../core/socle/questionnaire-engine/question";
+} from "../../../core/socle/questionnaire-engine/question/question";
 import { Questionnaire } from "../../../core/socle/questionnaire-engine/questionnaire";
 
 type Questions = {

@@ -8,8 +8,8 @@
 
 import { type ComponentType, type ReactNode, useEffect, useState } from "react";
 import { type Preconisation, preconisationOf } from "../../../core/socle/model";
-import type { Read } from "../../../core/socle/questionnaire-engine/condition";
-import type { Answers } from "../../../core/socle/questionnaire-engine/question";
+import type { Read } from "../../../core/socle/questionnaire-engine/conditions/condition";
+import type { Answers } from "../../../core/socle/questionnaire-engine/question/question";
 import type { QuestionnaireState } from "../../../core/socle/questionnaire-engine/questionnaire";
 import type { FirstResult, Model } from "../model";
 import type { DebugTraceProps } from "../questionnaire-engine/QuestionnaireForm";

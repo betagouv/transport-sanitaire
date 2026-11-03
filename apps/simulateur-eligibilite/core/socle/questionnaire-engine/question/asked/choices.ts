@@ -2,15 +2,15 @@
 // qui se proposent, sous leur libellé du moment. Une réponse n'en garde que ces
 // options, et l'une d'elles peut bloquer le questionnaire.
 
+import type { OfferedOption } from "../option.ts";
+import type { Answer, IncompatibleOptions, Unanswered } from "../question.ts";
 import {
   type AnswerProblem,
   MISSING,
   type NoError,
   stated,
 } from "./answer-problem.ts";
-import { AskedCommon, type AskedCommonData } from "./asked-common.ts";
-import type { OfferedOption } from "./option.ts";
-import type { Answer, IncompatibleOptions, Unanswered } from "./question.ts";
+import { AskedCommon, type AskedCommonData } from "./common.ts";
 
 export type AskedSingleChoiceData = AskedCommonData & {
   readonly kind: "single choice";

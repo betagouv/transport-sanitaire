@@ -11,13 +11,13 @@ import {
   NOTHING,
   readsOf,
   type Value,
-} from "../../core/socle/questionnaire-engine/condition";
+} from "../../core/socle/questionnaire-engine/conditions/condition";
+import { Relevance } from "../../core/socle/questionnaire-engine/does-a-question-still-matter/matters";
 import {
   type AnyCibles,
   type AnyQuestions,
   pagesOf,
-} from "../../core/socle/questionnaire-engine/question";
-import { Relevance } from "../../core/socle/questionnaire-engine/relevance";
+} from "../../core/socle/questionnaire-engine/question/question";
 import type { BoundCerfa } from "./cerfa-mapping";
 
 /**

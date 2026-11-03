@@ -14,11 +14,11 @@ import { preconisationOf } from "../../../core/socle/model";
 import {
   type Read,
   readIn,
-} from "../../../core/socle/questionnaire-engine/condition";
+} from "../../../core/socle/questionnaire-engine/conditions/condition";
 import {
   type Answers,
   pagesOf,
-} from "../../../core/socle/questionnaire-engine/question";
+} from "../../../core/socle/questionnaire-engine/question/question";
 import { Questionnaire } from "../../../core/socle/questionnaire-engine/questionnaire";
 import { resultReading } from "../../../core/socle/questionnaire-engine/result-reading";
 import type { Rubrique } from "../../../front/models/eligibilite/r3/rubriques/rubrique";

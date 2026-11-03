@@ -8,7 +8,7 @@ import type {
   Answers,
   AnyCibles,
   AnyQuestions,
-} from "../questionnaire-engine/question.ts";
+} from "../questionnaire-engine/question/question.ts";
 
 export type Seed<
   Questions extends AnyQuestions = AnyQuestions,

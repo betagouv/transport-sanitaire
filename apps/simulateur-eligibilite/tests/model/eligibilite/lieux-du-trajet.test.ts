@@ -8,11 +8,11 @@ import type { Questions } from "../../../core/models/eligibilite/declarations/qu
 import { projectionCerfa } from "../../../core/models/eligibilite/p3/lieux-du-trajet";
 import { SEEDS } from "../../../core/models/eligibilite/seeds-catalogue";
 import { preconisationOf } from "../../../core/socle/model";
-import type { AskedQuestion } from "../../../core/socle/questionnaire-engine/asked-question";
+import type { AskedQuestion } from "../../../core/socle/questionnaire-engine/question/asked/question";
 import type {
   Answers,
   AnyCibles,
-} from "../../../core/socle/questionnaire-engine/question";
+} from "../../../core/socle/questionnaire-engine/question/question";
 import { Questionnaire } from "../../../core/socle/questionnaire-engine/questionnaire";
 import { ciblesValant } from "./traces-du-prescripteur";
 

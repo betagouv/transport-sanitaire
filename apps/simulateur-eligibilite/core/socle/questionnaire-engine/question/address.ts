@@ -6,7 +6,7 @@
 // À l'étranger, le pays est attendu, et le code postal est libre : il peut
 // même manquer.
 
-import type { AnswerProblem, NoError } from "./answer-problem.ts";
+import type { AnswerProblem, NoError } from "./asked/answer-problem.ts";
 import type { Unanswered } from "./question.ts";
 
 /**

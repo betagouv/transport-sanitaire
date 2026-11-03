@@ -6,14 +6,14 @@
 import type {
   AddressFieldName,
   AskedField,
-} from "../../../core/socle/questionnaire-engine/address";
-import type { AnswerProblem } from "../../../core/socle/questionnaire-engine/answer-problem";
-import type { AskedAddress } from "../../../core/socle/questionnaire-engine/asked-address";
-import type { AskedQuestion } from "../../../core/socle/questionnaire-engine/asked-question";
+} from "../../../core/socle/questionnaire-engine/question/address";
+import type { AskedAddress } from "../../../core/socle/questionnaire-engine/question/asked/address";
+import type { AnswerProblem } from "../../../core/socle/questionnaire-engine/question/asked/answer-problem";
+import type { AskedQuestion } from "../../../core/socle/questionnaire-engine/question/asked/question";
 import type {
   Answer,
   Unanswered,
-} from "../../../core/socle/questionnaire-engine/question";
+} from "../../../core/socle/questionnaire-engine/question/question";
 
 /** Le libellé tel qu'il s'affiche : une question facultative le dit. */
 export function displayedLabel(label: string, optional?: boolean): string {

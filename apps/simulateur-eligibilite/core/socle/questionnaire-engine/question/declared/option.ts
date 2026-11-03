@@ -12,10 +12,10 @@ import {
   type Reading,
   type Reads,
   readsOf,
-} from "./condition.ts";
-import type { NotOffered, OfferedOption, OptionHelp } from "./option.ts";
-import type { AnyQuestions } from "./question.ts";
-import type { QuestionContext } from "./question-context.ts";
+} from "../../conditions/condition.ts";
+import type { QuestionContext } from "../asked/context.ts";
+import type { NotOffered, OfferedOption, OptionHelp } from "../option.ts";
+import type { AnyQuestions } from "../question.ts";
 
 /** L'option n'a pas d'aide dans ce cas. */
 type NoHelp = undefined;

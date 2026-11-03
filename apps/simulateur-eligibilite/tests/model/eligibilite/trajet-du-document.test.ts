@@ -8,9 +8,9 @@ import type { Cibles } from "../../../core/models/eligibilite/declarations/cible
 import type { Questions } from "../../../core/models/eligibilite/declarations/questions";
 import { SEEDS } from "../../../core/models/eligibilite/seeds-catalogue";
 import { preconisationOf } from "../../../core/socle/model";
-import { answerOnPage } from "../../../core/socle/questionnaire-engine/page-commit";
-import type { Answers } from "../../../core/socle/questionnaire-engine/question";
+import type { Answers } from "../../../core/socle/questionnaire-engine/question/question";
 import { Questionnaire } from "../../../core/socle/questionnaire-engine/questionnaire";
+import { answerOnPage } from "../../../core/socle/questionnaire-engine/validate-a-page";
 import { errorsOf } from "../../../front/socle/questionnaire-engine/screen-texts";
 import { MINEUR, PLUSIEURS_PERMISSIONS } from "./reponses-de-la-permission";
 import { ciblesValant } from "./traces-du-prescripteur";

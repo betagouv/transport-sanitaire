@@ -1,5 +1,5 @@
 // Une option telle qu'elle se propose : sa valeur, son libellé du moment, et ce
-// qu'elle porte de plus. Le modèle la déclare dans `declared-option.ts`.
+// qu'elle porte de plus. Le modèle la déclare dans `question/declared/option.ts`.
 
 /**
  * L'aide d'une option : un intitulé qui se déplie sur une liste. La déplier
