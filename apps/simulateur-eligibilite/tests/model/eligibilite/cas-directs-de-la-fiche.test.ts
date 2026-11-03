@@ -14,12 +14,12 @@
 // avec le contexte ALD ou mineur propre à cette issue.
 
 import { describe, expect, it } from "vitest";
-import { catalogueResultats } from "../../../front/models/eligibilite/r2/catalogue-resultats";
+import { catalogueResultats } from "../../../front/models/eligibilite/r2/components/textes-de-l-editeur";
 import {
   type TexteDeLaFichePositive,
   texteDeLaFichePositive,
-} from "../../../front/models/eligibilite/r2/fiche-positive/texte-de-la-fiche-positive";
-import { traceDuResultat } from "../../../front/models/eligibilite/r2/trace-du-resultat";
+} from "../../../front/models/eligibilite/r2/layouts/acceptee/texte";
+import { R2 } from "../../../front/models/eligibilite/r2/r2";
 import { lienAld } from "./lien-ald";
 import {
   ciblesDe,
@@ -57,7 +57,7 @@ const AVEC_UN_PROCHE = (
 const fiche = (reponses: Reponses): TexteDeLaFichePositive | undefined => {
   return texteDeLaFichePositive(
     catalogue,
-    traceDuResultat(lectureDe(reponses)),
+    R2.of(lectureDe(reponses)).trace,
     "ISSUE_PMT",
   );
 };
@@ -204,7 +204,7 @@ const demande = (reponses: Reponses) => {
     issue,
     texte: texteDeLaFichePositive(
       catalogue,
-      traceDuResultat(lectureDe(reponses)),
+      R2.of(lectureDe(reponses)).trace,
       issue,
     ),
   };

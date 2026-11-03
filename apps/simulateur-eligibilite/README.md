@@ -170,17 +170,25 @@ core/                    le métier, sans React ni DOM : ce qu'un serveur ou un 
 front/                   le front, bundlé par Vite
   main.tsx               le point d'entrée du navigateur : monte l'app, amorce le traceur
   models/                l'écran de chaque modèle, chacun chargé à la demande
-    fake/                les deux résultats de la démonstration et son bon de commande
+    fake/                les deux résultats de la démonstration (`r2.tsx`, `r3.tsx`)
+                         et son bon de commande
     eligibilite/         les deux résultats du modèle de l'éditeur
-      r2/                le résultat : la trace, ses précisions, le catalogue chargé
-                         à la demande, les boutons, et ce que les fiches partagent
-        prescripteur/    les cinq issues sans fiche patient
-        fiche-negative/  `ISSUE_NON_ELIGIBLE`
-        fiche-positive/  la prescription, le S3141 et les deux accords préalables
-      r3/                le résultat du complément : le document de chaque support
+      r2/                `r2.tsx`, l'entité R2 : ce qu'elle lit, sa trace, son cas,
+                         ses textes, sa page
+        components/      ce que les cas partagent : le catalogue chargé à la
+                         demande, les précisions, la page de la fiche, le texte enrichi
+        layouts/         un dossier par cas, avec ses issues, ses précisions, son
+                         texte et sa page
+          acceptee/      la prescription, le S3141 et les deux accords préalables
+          refusee/       `ISSUE_NON_ELIGIBLE`
+          orientee/      les cinq issues sans fiche patient
+      r3/                `r3.tsx`, R3 : ce qu'elle lit, le document de chaque
+                         support, son titre, son bouton de départ, sa page
         rubriques/       ce que les cerfa partagent, sans lien à aucun d'eux (D-138),
                          dont le texte médical de la PMT et de la DAP
         s3141/           le S3141, assemblé de rubriques
+        s3138g/          la PMT, de même
+        s3139h/          la DAP, de même
   socle/                 ce qui ne dépend d'aucune version. `model.ts` est le contrat
                          d'écran qu'un modèle remplit (`Model`), qui porte son
                          métier sous `core`, `index.ts` ce qu'il a le droit d'importer

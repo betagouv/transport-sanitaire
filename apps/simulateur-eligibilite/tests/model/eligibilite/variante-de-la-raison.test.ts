@@ -3,11 +3,11 @@
 
 import { describe, expect, it } from "vitest";
 import type { Faits } from "../../../core/models/eligibilite/faits/noms";
-import { catalogueResultats } from "../../../front/models/eligibilite/r2/catalogue-resultats";
 import {
   raisonNonEligible,
   texteDeLaRaison,
-} from "../../../front/models/eligibilite/r2/fiche-negative/raison-non-eligible";
+} from "../../../front/models/eligibilite/r2/components/raison-non-eligible";
+import { catalogueResultats } from "../../../front/models/eligibilite/r2/components/textes-de-l-editeur";
 import { faux, trace } from "./traces-du-prescripteur";
 
 const { issues } = await catalogueResultats();

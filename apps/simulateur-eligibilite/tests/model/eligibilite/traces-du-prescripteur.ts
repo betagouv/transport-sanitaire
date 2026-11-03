@@ -10,8 +10,8 @@ import { FAITS, type Faits } from "../../../core/models/eligibilite/faits/noms";
 import { Cible, Fait, Questionnaire, type Value } from "../../../core/socle";
 import type { CibleValues } from "../../../core/socle/decision-engine/cible";
 import { resultReading } from "../../../core/socle/simulation/result-reading";
-import type { Precisions } from "../../../front/models/eligibilite/r2/precisions-du-resultat";
-import type { Trace } from "../../../front/models/eligibilite/r2/trace-du-resultat";
+import type { Precisions } from "../../../front/models/eligibilite/r2/components/precisions";
+import type { Trace } from "../../../front/models/eligibilite/r2/r2";
 
 /** Des valeurs de cibles écrites à la main, telles que les règles les donnent. */
 export type ValeursDesCibles = Partial<CibleValues<Cibles>>;

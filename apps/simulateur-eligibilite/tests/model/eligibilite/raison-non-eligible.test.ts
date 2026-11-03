@@ -6,10 +6,10 @@ import { describe, expect, it } from "vitest";
 import type { Faits } from "../../../core/models/eligibilite/faits/noms";
 import { SEEDS } from "../../../core/models/eligibilite/seeds-catalogue";
 import { Fait } from "../../../core/socle";
-import { catalogueResultats } from "../../../front/models/eligibilite/r2/catalogue-resultats";
-import { raisonNonEligible } from "../../../front/models/eligibilite/r2/fiche-negative/raison-non-eligible";
-import type { Precisions } from "../../../front/models/eligibilite/r2/precisions-du-resultat";
-import { traceDuResultat } from "../../../front/models/eligibilite/r2/trace-du-resultat";
+import type { Precisions } from "../../../front/models/eligibilite/r2/components/precisions";
+import { raisonNonEligible } from "../../../front/models/eligibilite/r2/components/raison-non-eligible";
+import { catalogueResultats } from "../../../front/models/eligibilite/r2/components/textes-de-l-editeur";
+import { R2 } from "../../../front/models/eligibilite/r2/r2";
 import { ciblesDe, lectureDe } from "./reponses-de-la-permission";
 import { faux, trace, vrai } from "./traces-du-prescripteur";
 
@@ -207,7 +207,7 @@ describe("de bout en bout, par les réponses", () => {
     const cibles = ciblesDe(answers);
     return {
       issue: cibles.cible_issue_id.value,
-      raison: raisonNonEligible(issue, traceDuResultat(lectureDe(answers))).id,
+      raison: raisonNonEligible(issue, R2.of(lectureDe(answers)).trace).id,
     };
   };
 

@@ -27,17 +27,13 @@
 
 import { describe, expect, it } from "vitest";
 import { cibles } from "../../../core/models/eligibilite/cibles/evaluation";
-import { texteDeLaFicheNegative } from "../../../front/models/eligibilite/r2/fiche-negative/texte-de-la-fiche-negative";
-import {
-  type IssueAvecFichePositive,
-  texteDeLaFichePositive,
-} from "../../../front/models/eligibilite/r2/fiche-positive/texte-de-la-fiche-positive";
-import {
-  type IssueSansFiche,
-  texteDuPrescripteur,
-} from "../../../front/models/eligibilite/r2/prescripteur/texte-du-prescripteur";
-import { sansBlancsDeTrop } from "../../../front/models/eligibilite/r2/sans-blancs-de-trop";
-import type { Trace } from "../../../front/models/eligibilite/r2/trace-du-resultat";
+import { sansBlancsDeTrop } from "../../../front/models/eligibilite/r2/components/sans-blancs-de-trop";
+import type { IssueAcceptee } from "../../../front/models/eligibilite/r2/layouts/acceptee/issues";
+import { texteDeLaFichePositive } from "../../../front/models/eligibilite/r2/layouts/acceptee/texte";
+import type { IssueOrientee } from "../../../front/models/eligibilite/r2/layouts/orientee/issues";
+import { texteDuPrescripteur } from "../../../front/models/eligibilite/r2/layouts/orientee/texte";
+import { texteDeLaFicheNegative } from "../../../front/models/eligibilite/r2/layouts/refusee/texte";
+import type { Trace } from "../../../front/models/eligibilite/r2/r2";
 import { type Changements, faitsDuCas } from "./faits-de-l-oracle";
 import { catalogue } from "./fiches-du-test";
 import DEMONSTRATION from "./scenarios-de-demonstration.json" with {
@@ -98,13 +94,13 @@ function sansBlancs(valeur: unknown): unknown {
 function texteDe(scenario: Scenario): unknown {
   const trace = traceDe(scenario);
   if (scenario.template === "patient-positive") {
-    const issue = scenario.issue as IssueAvecFichePositive;
+    const issue = scenario.issue as IssueAcceptee;
     return fichePositive(texteDeLaFichePositive(catalogue, trace, issue));
   }
   if (scenario.template === "patient-negative") {
     return ficheNegative(texteDeLaFicheNegative(catalogue, trace));
   }
-  const issue = scenario.issue as IssueSansFiche;
+  const issue = scenario.issue as IssueOrientee;
   return prescripteur(texteDuPrescripteur(catalogue, issue, trace));
 }
 

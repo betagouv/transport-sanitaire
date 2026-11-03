@@ -2,13 +2,13 @@
 // écrites à la main, et la lecture de la fiche qu'elles donnent.
 
 import type { Faits } from "../../../core/models/eligibilite/faits/noms";
-import { catalogueResultats } from "../../../front/models/eligibilite/r2/catalogue-resultats";
+import { catalogueResultats } from "../../../front/models/eligibilite/r2/components/textes-de-l-editeur";
+import type { IssueAcceptee } from "../../../front/models/eligibilite/r2/layouts/acceptee/issues";
 import {
-  type IssueAvecFichePositive,
   type TexteDeLaFichePositive,
   texteDeLaFichePositive,
-} from "../../../front/models/eligibilite/r2/fiche-positive/texte-de-la-fiche-positive";
-import type { Trace } from "../../../front/models/eligibilite/r2/trace-du-resultat";
+} from "../../../front/models/eligibilite/r2/layouts/acceptee/texte";
+import type { Trace } from "../../../front/models/eligibilite/r2/r2";
 import { trace, type ValeursDesCibles } from "./traces-du-prescripteur";
 
 export const catalogue = await catalogueResultats();
@@ -35,7 +35,7 @@ const tracer = (cibles: ValeursDesCibles, ajouts: Ajouts = {}): Trace => ({
 export const fiche = (
   cibles: ValeursDesCibles,
   ajouts: Ajouts = {},
-  issue: IssueAvecFichePositive = "ISSUE_PMT",
+  issue: IssueAcceptee = "ISSUE_PMT",
 ): TexteDeLaFichePositive | undefined =>
   texteDeLaFichePositive(catalogue, tracer(cibles, ajouts), issue);
 

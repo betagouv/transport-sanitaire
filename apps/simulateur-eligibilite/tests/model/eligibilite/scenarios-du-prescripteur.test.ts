@@ -4,17 +4,14 @@
 
 import { describe, expect, it } from "vitest";
 import { SEEDS } from "../../../core/models/eligibilite/seeds-catalogue";
-import { catalogueResultats } from "../../../front/models/eligibilite/r2/catalogue-resultats";
-import type { IssuePrescripteur } from "../../../front/models/eligibilite/r2/forme-du-catalogue";
-import type { Precisions } from "../../../front/models/eligibilite/r2/precisions-du-resultat";
+import type { IssuePrescripteur } from "../../../front/models/eligibilite/r2/components/forme-du-catalogue";
+import type { Precisions } from "../../../front/models/eligibilite/r2/components/precisions";
 import {
   type IssueDuPrescripteur,
   scenariosDuPrescripteur,
-} from "../../../front/models/eligibilite/r2/prescripteur/scenarios-du-prescripteur";
-import {
-  type Trace,
-  traceDuResultat,
-} from "../../../front/models/eligibilite/r2/trace-du-resultat";
+} from "../../../front/models/eligibilite/r2/components/scenarios-du-prescripteur";
+import { catalogueResultats } from "../../../front/models/eligibilite/r2/components/textes-de-l-editeur";
+import { R2, type Trace } from "../../../front/models/eligibilite/r2/r2";
 
 type LuParLesScenarios = Parameters<typeof scenariosDuPrescripteur>[2];
 
@@ -26,7 +23,7 @@ const { issues } = await catalogueResultats();
 const traceDeLaSeed = (id: string): LuParLesScenarios => {
   const seed = SEEDS.find((candidate) => candidate.id === id);
   if (!seed) throw new Error(`Seed inconnue : ${id}`);
-  return traceDuResultat(lectureDe(seed.answers));
+  return R2.of(lectureDe(seed.answers)).trace;
 };
 
 const ids = (issue: IssueDuPrescripteur, depuis: LuParLesScenarios) =>

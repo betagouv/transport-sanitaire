@@ -5,7 +5,7 @@
 
 import { describe, expect, it } from "vitest";
 import { CIBLES_ENUMEREES } from "../../../core/models/eligibilite/cibles/noms";
-import { LIBELLE_DE_COMPLETION } from "../../../front/models/eligibilite/r2/boutons-du-resultat";
+import { R3 } from "../../../front/models/eligibilite/r3/r3";
 import { lu } from "./traces-du-prescripteur";
 
 type Issue = (typeof CIBLES_ENUMEREES.cible_issue_id)[number];
@@ -27,7 +27,7 @@ const BOUTONS: Readonly<Record<Issue, string | null>> = {
 };
 
 const libelleDe = (issue: Issue | undefined | null) =>
-  lu(LIBELLE_DE_COMPLETION, { cible_issue_id: issue });
+  lu(R3.boutonDeDepart, { cible_issue_id: issue });
 
 describe("les boutons de chaque issue", () => {
   it("couvre les dix issues des règles", () => {

@@ -9,29 +9,28 @@ import type { Questions } from "../../../core/models/eligibilite/questions/catal
 import { defineModel } from "../../socle";
 import { AVIS } from "./avis";
 import { INDICATEUR_ALD } from "./indicateur-ald";
-import { LIBELLE_DE_COMPLETION } from "./r2/boutons-du-resultat";
-import { eligibilite } from "./r2/resultat";
-import { LU_PAR_R2, type LuParR2 } from "./r2/trace-du-resultat";
-import { DOCUMENT_DU_COMPLEMENT } from "./r3/documents-du-resultat";
-import {
-  PrescriptionPreremplie,
-  RIEN_DES_REPONSES,
-} from "./r3/PrescriptionPreremplie";
-import { TITRE_DU_RESULTAT } from "./r3/titre-du-resultat";
+import { type Lecture, R2 } from "./r2/r2";
+import { R3 } from "./r3/r3";
 
-export const model = defineModel<Questions, Faits, Cibles, LuParR2, object>({
+export const model = defineModel<
+  Questions,
+  Faits,
+  Cibles,
+  Lecture["reading"],
+  object
+>({
   core,
   result: {
     title: "Résultat de l’éligibilité",
-    reading: LU_PAR_R2,
-    content: eligibilite,
+    reading: R2.lit,
+    content: (lecture) => R2.of(lecture).page(),
   },
   cerfa: {
-    form: DOCUMENT_DU_COMPLEMENT,
-    reading: RIEN_DES_REPONSES,
-    title: TITRE_DU_RESULTAT,
-    Resultat: PrescriptionPreremplie,
-    startLabel: LIBELLE_DE_COMPLETION,
+    form: R3.document,
+    reading: R3.lit,
+    title: R3.titre,
+    Resultat: R3.Page,
+    startLabel: R3.boutonDeDepart,
     // `printLabel` et `downloadLabel` de `CONTRAT_RENDU_DOCUMENTAIRE.json`.
     printLabel: "Imprimer",
     downloadLabel: "Télécharger",

@@ -8,8 +8,8 @@
 import { render, screen, within } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 import { SEEDS } from "../../../core/models/eligibilite/seeds-catalogue";
-import { catalogueResultats } from "../../../front/models/eligibilite/r2/catalogue-resultats";
-import { eligibilite } from "../../../front/models/eligibilite/r2/resultat";
+import { catalogueResultats } from "../../../front/models/eligibilite/r2/components/textes-de-l-editeur";
+import { R2 } from "../../../front/models/eligibilite/r2/r2";
 import { SheetViewer } from "../../../front/socle/simulateur/sheet/SheetViewer";
 import { lectureDe, type Reponses } from "./reponses-de-la-permission";
 
@@ -21,7 +21,7 @@ const afficher = async (id: string) => {
   const seed = SEEDS.find((candidate) => candidate.id === id);
   if (!seed) throw new Error(`Seed inconnue : ${id}`);
   const answers = seed.answers as Reponses;
-  const resultat = await eligibilite(lectureDe(answers));
+  const resultat = await R2.of(lectureDe(answers)).page();
   if (!resultat.sheet) throw new Error(`Pas de feuille : ${id}`);
   render(<SheetViewer sheet={resultat.sheet} />);
   return resultat.title;

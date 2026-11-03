@@ -4,8 +4,7 @@
 // `s3139h-rempli.test.ts`.
 
 import { describe, expect, it } from "vitest";
-import { DOCUMENT_DU_COMPLEMENT } from "../../../front/models/eligibilite/r3/documents-du-resultat";
-import { TITRE_DU_RESULTAT } from "../../../front/models/eligibilite/r3/titre-du-resultat";
+import { R3 } from "../../../front/models/eligibilite/r3/r3";
 import { lu } from "./traces-du-prescripteur";
 
 const PRESCRIPTION = "Prescription préremplie prête à imprimer";
@@ -18,7 +17,7 @@ describe("le document de R3", () => {
     ["S3139h", "demande-d-accord-prealable"],
     ["S3141", "prescription-de-permission-de-sortie"],
   ] as const)("du support %s se nomme %s", (support, nom) => {
-    const document = lu(DOCUMENT_DU_COMPLEMENT, { cible_support_id: support });
+    const document = lu(R3.document, { cible_support_id: support });
 
     expect(document?.cerfa.fileName).toBe(nom);
   });
@@ -28,9 +27,7 @@ describe("le document de R3", () => {
     ["sans support", undefined],
     ["sans objet", null],
   ] as const)("%s, il n'y en a pas", (_cas, support) => {
-    expect(
-      lu(DOCUMENT_DU_COMPLEMENT, { cible_support_id: support }),
-    ).toBeNull();
+    expect(lu(R3.document, { cible_support_id: support })).toBeNull();
   });
 });
 
@@ -45,6 +42,6 @@ describe("le titre de R3", () => {
       "Demande d’examen préremplie prête à imprimer",
     ],
   ] as const)("de %s est « %s »", (issue, titre) => {
-    expect(lu(TITRE_DU_RESULTAT, { cible_issue_id: issue })).toBe(titre);
+    expect(lu(R3.titre, { cible_issue_id: issue })).toBe(titre);
   });
 });

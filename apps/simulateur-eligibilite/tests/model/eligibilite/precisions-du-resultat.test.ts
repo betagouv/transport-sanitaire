@@ -3,8 +3,8 @@
 // éditoriales utiles ».
 
 import { describe, expect, it } from "vitest";
-import type { Precisions } from "../../../front/models/eligibilite/r2/precisions-du-resultat";
-import { traceDuResultat } from "../../../front/models/eligibilite/r2/trace-du-resultat";
+import type { Precisions } from "../../../front/models/eligibilite/r2/components/precisions";
+import { R2 } from "../../../front/models/eligibilite/r2/r2";
 import { BRANCARD_20_KM } from "./reponses-de-la-branche";
 import { appareillage, PAR_Q21 } from "./reponses-de-la-convocation";
 import {
@@ -23,7 +23,7 @@ import {
 } from "./reponses-du-transfert";
 
 // La trace de ces réponses, avec les cibles que calculent les règles.
-const traceDe = (reponses: Reponses) => traceDuResultat(lectureDe(reponses));
+const traceDe = (reponses: Reponses) => R2.of(lectureDe(reponses)).trace;
 
 const precisionsDe = (reponses: Reponses): Precisions =>
   traceDe(reponses).precisions;

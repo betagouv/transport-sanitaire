@@ -5,13 +5,13 @@
 // du catalogue de l'éditeur.
 
 import { describe, expect, it } from "vitest";
-import { catalogueResultats } from "../../../front/models/eligibilite/r2/catalogue-resultats";
 import {
   codesDeContexte,
   motifAdministratif,
   phraseDuContexte,
-} from "../../../front/models/eligibilite/r2/fiche-positive/contexte-du-resultat";
-import type { Precisions } from "../../../front/models/eligibilite/r2/precisions-du-resultat";
+} from "../../../front/models/eligibilite/r2/components/contexte-du-resultat";
+import type { Precisions } from "../../../front/models/eligibilite/r2/components/precisions";
+import { catalogueResultats } from "../../../front/models/eligibilite/r2/components/textes-de-l-editeur";
 import { trace, type ValeursDesCibles } from "./traces-du-prescripteur";
 
 const { issues } = await catalogueResultats();

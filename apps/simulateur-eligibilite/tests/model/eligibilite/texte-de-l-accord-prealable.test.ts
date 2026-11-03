@@ -4,7 +4,7 @@
 // recopiés du catalogue de l'éditeur et de ses aperçus PDF.
 
 import { describe, expect, it } from "vitest";
-import { codesDeLAccord } from "../../../front/models/eligibilite/r2/fiche-positive/fondement-de-l-accord-prealable";
+import { codesDeLAccord } from "../../../front/models/eligibilite/r2/components/fondement-de-l-accord-prealable";
 import {
   DIALYSE,
   demande,

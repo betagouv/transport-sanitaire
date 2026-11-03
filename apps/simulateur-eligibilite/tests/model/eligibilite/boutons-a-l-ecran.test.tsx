@@ -8,7 +8,7 @@ import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it } from "vitest";
 import { SEEDS } from "../../../core/models/eligibilite/seeds-catalogue";
 import { model } from "../../../front/models/eligibilite";
-import { catalogueResultats } from "../../../front/models/eligibilite/r2/catalogue-resultats";
+import { catalogueResultats } from "../../../front/models/eligibilite/r2/components/textes-de-l-editeur";
 import { rangerRattachement } from "../../../front/socle/rattachement/rattachement-en-session";
 import { ouvrirLeSimulateur } from "../../socle/simulateur/questionnaire";
 import { MODELE_AUX_GABARITS_DU_DISQUE } from "./modele-aux-gabarits-du-disque";

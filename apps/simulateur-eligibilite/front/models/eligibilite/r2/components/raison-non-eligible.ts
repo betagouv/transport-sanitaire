@@ -1,0 +1,182 @@
+// La raison de la fiche patient négative (#134) : celle des textes de
+// `ISSUE_NON_ELIGIBLE` que la trace prouve. Une fonction pure, sans React.
+//
+// Le catalogue de l'éditeur donne à chaque raison une `condition` en mots, une
+// `priority` et la cible `reason` dont elle explique le code. La plus haute
+// `priority` gagne ; `AUCUN_GENERIQUE` ne sert que de repli. Une raison
+// inactive n'est jamais prise.
+//
+// Une condition n'est vraie que si la trace la PROUVE. Un fait ou une cible
+// inconnus ne sont jamais « non » : ils se lisent par `isOui()` et `isNon()`,
+// une précision par `=== true`, `=== false` ou sa présence. Cinq raisons ne se
+// prouvent par aucune de nos réponses (voir la table) : leur condition est
+// codée, elle ne devient jamais vraie, et la raison n'est donc jamais choisie. Elle déclare ce qu'elle lit des cibles et
+// des faits (`ce-que-lit-un-texte.ts`).
+
+import {
+  given,
+  type Inconnu,
+} from "../../../../../core/models/eligibilite/questions/question";
+import { luPar, type TraceDe } from "./ce-que-lit-un-bloc";
+import type { IssueNegative } from "./forme-du-catalogue";
+
+/** Une raison du catalogue : son texte, son code, sa priorité. */
+export type RaisonNonEligible = IssueNegative["reasons"][number];
+
+/** Ce que lisent le code de la raison et les conditions des raisons. */
+export const LU_PAR_LA_RAISON = luPar({
+  cibles: given.cibles(
+    "cible_reason_code",
+    "cible_issue_id",
+    "cible_motif_transport",
+  ),
+  faits: given.faits(
+    "fait_ald_liee",
+    "fait_ald_exonerante_3_ou_4",
+    "fait_mineur_soins_prolonges_reconnus",
+    "fait_serie_qualifiante",
+    "fait_distance_plus_50",
+    "fait_exclusion_transport_prouvee",
+  ),
+});
+
+/** La raison de la fiche : la plus prioritaire que la trace prouve, ou le repli. */
+export function raisonNonEligible(
+  issue: IssueNegative,
+  trace: LuParLaRaison,
+): RaisonNonEligible {
+  const prouvee = issue.reasons
+    .filter(
+      ({ id, inactive, reason }) =>
+        !inactive &&
+        reason === codeDeLaRaison(trace) &&
+        CONDITIONS[id]?.(trace) === true,
+    )
+    .sort((a, b) => b.priority - a.priority)[0];
+  return prouvee ?? repli(issue);
+}
+
+/**
+ * Le texte de la raison : sa variante quand la trace prouve la situation
+ * qu'elle dit, son texte sinon.
+ */
+export function texteDeLaRaison(
+  raison: RaisonNonEligible,
+  trace: LuParLaRaison,
+): string {
+  const variante = VARIANTES[raison.id]?.(trace);
+  return (variante && raison.variants?.[variante]) ?? raison.text;
+}
+
+// ---- implémentation ----
+
+type LuParLaRaison = TraceDe<typeof LU_PAR_LA_RAISON>;
+
+type Condition = (trace: LuParLaRaison) => boolean;
+
+const REPLI = "AUCUN_GENERIQUE";
+
+// Le code de raison des règles. Avec nos réponses, il reste indéfini : sa
+// première branche lit `cible_care_status`, que trois faits sans question
+// (`fait_exclusion_soin_prouvee`, `fait_prestation_non_couverte_declaree`,
+// `fait_preuve_prestation_absente`) laissent indéfini. Ce n'est pas un « non » :
+// nous ne les posons pas. Une non-éligibilité sans motif de transport
+// (`cible_motif_transport` à « non », la condition même de la règle) vaut alors
+// `AUCUN_MOTIF_TRANSPORT`, comme dans la trace de l'éditeur.
+function codeDeLaRaison({ cibles }: LuParLaRaison): string | Inconnu {
+  const code = cibles.cible_reason_code.value;
+  if (code != null) return code;
+  const sansMotif =
+    cibles.cible_issue_id.is("ISSUE_NON_ELIGIBLE") &&
+    cibles.cible_motif_transport.isNon();
+  return sansMotif ? "AUCUN_MOTIF_TRANSPORT" : undefined;
+}
+
+function repli(issue: IssueNegative): RaisonNonEligible {
+  const raison = issue.reasons.find(({ id }) => id === REPLI);
+  if (!raison) throw new Error(`Le catalogue n'a pas la raison ${REPLI}.`);
+  return raison;
+}
+
+// « Aucun autre motif » n'est lu nulle part ici : `cible_reason_code` vaut
+// `AUCUN_MOTIF_TRANSPORT` seulement quand les règles n'ont trouvé aucun motif.
+function familleDeSoin(numero: number): Condition {
+  return ({ precisions }) => precisions.careFamily === numero;
+}
+
+// Un séjour réel est prouvé : le texte de la dialyse ne dirait plus le vrai.
+function sansSejour({ sejourReel }: LuParLaRaison): boolean {
+  return sejourReel !== true;
+}
+
+function aldConfirmee({ precisions }: LuParLaRaison): boolean {
+  return precisions.aldRecognized === true;
+}
+
+function aldLiee(trace: LuParLaRaison): boolean {
+  return aldConfirmee(trace) && trace.precisions.aldRelated === true;
+}
+
+// La condition de chaque raison, par son identifiant. Une raison qui n'y est
+// pas (les quatre inactives) n'est jamais prise.
+//
+// Jamais prouvées par nos réponses (arbitrages [ÉDITEUR], D-113) :
+// AUCUN_ALD_CADRE_NON_QUALIFIANT, AUCUN_SERIE_NON_QUALIFIANTE,
+// AUCUN_AUTRE_DEPLACEMENT et TRANSPORT_EXCLU.
+const CONDITIONS: Readonly<Record<string, Condition>> = {
+  // « ALD confirmée ; soin sans lien avec cette ALD prouvé ». Q1.3.b le
+  // prouve quand elle dit « sans lien direct ».
+  AUCUN_ALD_SANS_LIEN: (trace) =>
+    aldConfirmee(trace) && trace.precisions.aldRelated === false,
+  // « Lien établi ; Q1.1/Q1.2 prouve l'absence de déficience ». Avec un lien
+  // direct en Q1.3.b, `fait_ald_liee` ne vaut « non » que si Q1.1 dit « seul ».
+  AUCUN_ALD_SANS_DEFICIENCE: (trace) =>
+    aldLiee(trace) && trace.faits.fait_ald_liee.isNon(),
+  // « Réponse prouvée hors fondement 3°/4° ; exception mineur non applicable ».
+  // Q1.3 option 2 dit le 100 % : le fondement n'est jamais prouvé « non ».
+  AUCUN_ALD_CADRE_NON_QUALIFIANT: (trace) =>
+    aldLiee(trace) &&
+    trace.faits.fait_ald_exonerante_3_ou_4.isNon() &&
+    trace.faits.fait_mineur_soins_prolonges_reconnus.isNon(),
+  AUCUN_DIALYSE_NON_HEMO: (trace) =>
+    trace.precisions.dialysisType === "non-hemodialyse" && sansSejour(trace),
+  AUCUN_APPAREILLAGE_HORS_CATEGORIES: ({ precisions }) =>
+    precisions.deviceCategory === "hors-categories",
+  // « Transports répétés effectivement prévus, mais série Q2.3.3 non
+  // qualifiante prouvée ». Seul Q2.3.3 « Oui » prouve des transports répétés,
+  // et il qualifie la série : les deux ne vont jamais ensemble.
+  AUCUN_SERIE_NON_QUALIFIANTE: (trace) =>
+    trace.precisions.repeatedTripsPlanned === true &&
+    trace.faits.fait_serie_qualifiante.isNon(),
+  AUCUN_CONSULTATION: familleDeSoin(1),
+  AUCUN_SOINS_DENTAIRES_SAGE_FEMME: familleDeSoin(2),
+  AUCUN_IMAGERIE: familleDeSoin(3),
+  AUCUN_BIOLOGIE: familleDeSoin(4),
+  AUCUN_PARAMEDICAL: familleDeSoin(5),
+  AUCUN_PSYCHOLOGUE: familleDeSoin(7),
+  AUCUN_AUTRE_SOIN: familleDeSoin(14),
+  // « Q2.1 = 15 prouvé et finalité clarifiée ». Aucune question ne clarifie la
+  // finalité : `eventFinalityClarified` n'est jamais là.
+  AUCUN_AUTRE_DEPLACEMENT: (trace) =>
+    trace.precisions.careFamily === 15 &&
+    trace.precisions.eventFinalityClarified === true,
+  // « fait_exclusion_transport_prouvee = oui + règle officielle datée
+  // conservée en preuve ». Notre fait vaut toujours « non » (D-111).
+  TRANSPORT_EXCLU: (trace) =>
+    trace.faits.fait_exclusion_transport_prouvee.isOui() &&
+    trace.precisions.transportExclusionRule !== undefined,
+};
+
+// La trace ne prouve la situation d'aucune variante : le texte générique reste.
+type SansVariante = undefined;
+
+// La variante de chaque raison, par son identifiant : le nom de son texte au
+// catalogue, quand la trace prouve sa situation.
+const VARIANTES: Readonly<
+  Record<string, (trace: LuParLaRaison) => string | SansVariante>
+> = {
+  // « Le trajet évalué ne dépasse pas 50 km » (TXT-SERIE-COURTE-001) : une
+  // distance inconnue garde le texte générique, qui ne dit aucun seuil.
+  AUCUN_SERIE_NON_QUALIFIANTE: ({ faits }) =>
+    faits.fait_distance_plus_50.isNon() ? "distance_50_ou_moins" : undefined,
+};

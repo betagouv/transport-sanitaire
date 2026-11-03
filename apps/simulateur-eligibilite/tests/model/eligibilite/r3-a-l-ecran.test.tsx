@@ -10,7 +10,7 @@ import { screen, waitFor } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { SEEDS } from "../../../core/models/eligibilite/seeds-catalogue";
 import { model } from "../../../front/models/eligibilite";
-import { catalogueResultats } from "../../../front/models/eligibilite/r2/catalogue-resultats";
+import { catalogueResultats } from "../../../front/models/eligibilite/r2/components/textes-de-l-editeur";
 import { rangerRattachement } from "../../../front/socle/rattachement/rattachement-en-session";
 import {
   detailsDuStepper,

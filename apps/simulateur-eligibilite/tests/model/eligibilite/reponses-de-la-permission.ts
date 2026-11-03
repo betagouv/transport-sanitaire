@@ -10,10 +10,7 @@ import {
 } from "../../../core/socle/questionnaire-engine/conditions/condition";
 import { Questionnaire } from "../../../core/socle/questionnaire-engine/questionnaire";
 import { resultReading } from "../../../core/socle/simulation/result-reading";
-import {
-  type Lecture,
-  LU_PAR_R2,
-} from "../../../front/models/eligibilite/r2/trace-du-resultat";
+import { type Lecture, R2 } from "../../../front/models/eligibilite/r2/r2";
 import { faits, pages, posee, type Reponses } from "./reponses-du-transfert";
 
 export { faits, posee, type Reponses };
@@ -87,7 +84,7 @@ export const luDe = <Of>(
 export const lectureDe = (
   reponses: Reponses,
   forcees: Partial<Cibles> = {},
-): Lecture => ({ reading: luDe(LU_PAR_R2, reponses, forcees) });
+): Lecture => ({ reading: luDe(R2.lit, reponses, forcees) });
 
 export const issue = (reponses: Reponses) =>
   ciblesDe(reponses).cible_issue_id.value;

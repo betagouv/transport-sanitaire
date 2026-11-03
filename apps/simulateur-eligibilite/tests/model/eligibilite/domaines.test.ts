@@ -23,11 +23,15 @@ const FAITS = `${METIER}/faits`;
 // pages. Les faits eux-mêmes ne lisent aucune partie.
 const EVALUATION_DES_FAITS = `${FAITS}/preconisation.ts`;
 const RUBRIQUES = `${R3}/rubriques`;
-// Un dossier par cerfa rempli. La PMT et la DAP y viendront (#160, #161).
-const CERFA_DE_R3 = ["s3141"].map((cerfa) => `${R3}/${cerfa}`);
-const FAMILLES_DE_R2 = ["prescripteur", "fiche-negative", "fiche-positive"].map(
-  (famille) => `${R2}/${famille}`,
+// Un dossier par cerfa rempli (#158, #160, #161).
+const CERFA_DE_R3 = ["s3141", "s3138g", "s3139h"].map(
+  (cerfa) => `${R3}/${cerfa}`,
 );
+// Un dossier par cas de R2 : ses issues, ce qu'elles lisent, leur page.
+const CAS_DE_R2 = ["acceptee", "refusee", "orientee"].map(
+  (cas) => `${R2}/layouts/${cas}`,
+);
+const COMPOSANTS_DE_R2 = `${R2}/components`;
 
 // Un dossier contient ce qui commence par son chemin suivi d'un « / ».
 const dans = (dossier: string) => (cible: string) =>
@@ -68,20 +72,29 @@ describe("les domaines du modèle de l'éditeur", () => {
     ).toEqual([]);
   });
 
-  it("les familles d'issues de R2 ne s'importent pas entre elles", () => {
-    const croisements = FAMILLES_DE_R2.flatMap((famille) =>
+  it("les cas de R2 ne s'importent pas entre eux", () => {
+    const croisements = CAS_DE_R2.flatMap((cas) =>
       franchissements(
-        [famille],
+        [cas],
         (cible) =>
-          FAMILLES_DE_R2.some((autre) => dans(autre)(cible)) &&
-          !dans(famille)(cible),
+          CAS_DE_R2.some((autre) => dans(autre)(cible)) && !dans(cas)(cible),
       ),
     );
     expect(
       croisements,
-      "Le prescripteur, la fiche négative et la fiche positive lisent chacun " +
-        "leurs textes dans le catalogue. Ce qu'ils partagent (la trace, la " +
-        "page de la fiche, le texte enrichi) vit à la racine de `r2/`.",
+      "Les cas acceptée, refusée et orientée lisent chacun leurs textes " +
+        "dans le catalogue. Ce qu'ils partagent (la page de la fiche, le " +
+        "texte enrichi, les précisions) est un composant de `r2/components/`.",
+    ).toEqual([]);
+  });
+
+  it("un composant de R2 ne lit aucun cas", () => {
+    expect(
+      franchissements([COMPOSANTS_DE_R2], (cible) =>
+        CAS_DE_R2.some((cas) => dans(cas)(cible)),
+      ),
+      "Un composant se lit sur la trace, sans savoir quel cas l'affiche : " +
+        "`r2.tsx` choisit le cas, le cas assemble ses composants.",
     ).toEqual([]);
   });
 

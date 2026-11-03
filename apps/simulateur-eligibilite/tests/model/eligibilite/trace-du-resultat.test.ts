@@ -9,13 +9,13 @@
 import { describe, expect, it } from "vitest";
 import { CIBLES_ENUMEREES } from "../../../core/models/eligibilite/cibles/noms";
 import { SEEDS } from "../../../core/models/eligibilite/seeds-catalogue";
-import { traceDuResultat } from "../../../front/models/eligibilite/r2/trace-du-resultat";
+import { R2 } from "../../../front/models/eligibilite/r2/r2";
 import { BRANCARD_20_KM, faits, type Reponses } from "./reponses-de-la-branche";
 import { lectureDe, PATIENT_SEUL } from "./reponses-de-la-permission";
 import { HAD_A_DOMICILE, SEJOUR } from "./reponses-du-transfert";
 
 // La trace de ces réponses, avec les cibles que calculent les règles.
-const traceDe = (reponses: Reponses) => traceDuResultat(lectureDe(reponses));
+const traceDe = (reponses: Reponses) => R2.of(lectureDe(reponses)).trace;
 
 const seed = (id: string): Reponses => {
   const trouvee = SEEDS.find((candidate) => candidate.id === id);

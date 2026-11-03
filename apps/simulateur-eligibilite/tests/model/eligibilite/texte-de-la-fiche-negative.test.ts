@@ -4,9 +4,9 @@
 
 import { describe, expect, it } from "vitest";
 import { SEEDS } from "../../../core/models/eligibilite/seeds-catalogue";
-import { catalogueResultats } from "../../../front/models/eligibilite/r2/catalogue-resultats";
-import { texteDeLaFicheNegative } from "../../../front/models/eligibilite/r2/fiche-negative/texte-de-la-fiche-negative";
-import { traceDuResultat } from "../../../front/models/eligibilite/r2/trace-du-resultat";
+import { catalogueResultats } from "../../../front/models/eligibilite/r2/components/textes-de-l-editeur";
+import { texteDeLaFicheNegative } from "../../../front/models/eligibilite/r2/layouts/refusee/texte";
+import { R2 } from "../../../front/models/eligibilite/r2/r2";
 import { lectureDe } from "./reponses-de-la-permission";
 import { trace } from "./traces-du-prescripteur";
 
@@ -18,7 +18,7 @@ if (!seed) throw new Error("Seed inconnue : issue-non-eligible");
 describe("le texte de la seed issue-non-eligible", () => {
   const texte = texteDeLaFicheNegative(
     catalogue,
-    traceDuResultat(lectureDe(seed.answers)),
+    R2.of(lectureDe(seed.answers)).trace,
   );
 
   it("donne les titres de l'aperçu", () => {

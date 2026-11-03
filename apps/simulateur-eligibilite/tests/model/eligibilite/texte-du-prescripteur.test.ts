@@ -4,22 +4,22 @@
 
 import { describe, expect, it } from "vitest";
 import { SEEDS } from "../../../core/models/eligibilite/seeds-catalogue";
-import { catalogueResultats } from "../../../front/models/eligibilite/r2/catalogue-resultats";
+import { catalogueResultats } from "../../../front/models/eligibilite/r2/components/textes-de-l-editeur";
 import {
-  estSansFiche,
-  type IssueSansFiche,
-  texteDuPrescripteur,
-} from "../../../front/models/eligibilite/r2/prescripteur/texte-du-prescripteur";
-import { traceDuResultat } from "../../../front/models/eligibilite/r2/trace-du-resultat";
+  estOrientee,
+  type IssueOrientee,
+} from "../../../front/models/eligibilite/r2/layouts/orientee/issues";
+import { texteDuPrescripteur } from "../../../front/models/eligibilite/r2/layouts/orientee/texte";
+import { R2 } from "../../../front/models/eligibilite/r2/r2";
 import { lectureDe } from "./reponses-de-la-permission";
 import { faux, trace, vrai } from "./traces-du-prescripteur";
 
 const catalogue = await catalogueResultats();
 
-const texteDeLaSeed = (id: string, issue: IssueSansFiche) => {
+const texteDeLaSeed = (id: string, issue: IssueOrientee) => {
   const seed = SEEDS.find((candidate) => candidate.id === id);
   if (!seed) throw new Error(`Seed inconnue : ${id}`);
-  const depuis = traceDuResultat(lectureDe(seed.answers));
+  const depuis = R2.of(lectureDe(seed.answers)).trace;
   return texteDuPrescripteur(catalogue, issue, depuis);
 };
 
@@ -258,7 +258,7 @@ describe("le texte de la caisse quand plusieurs points sont ouverts", () => {
 
 describe("les issues sans fiche patient", () => {
   it("sont cinq, parmi les dix du catalogue", () => {
-    const sans = Object.keys(catalogue.issues).filter(estSansFiche);
+    const sans = Object.keys(catalogue.issues).filter(estOrientee);
     expect(sans.sort()).toEqual([
       "ISSUE_CAISSE",
       "ISSUE_CONVOCATION",

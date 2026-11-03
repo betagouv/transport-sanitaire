@@ -22,9 +22,9 @@ s'ouvre après le verrou (`questions/p3/partie-3.ts`). R2 est posée pour les di
 (caisse, établissement, permission à la charge du patient, convocation, transport
 à l'étranger), la fiche négative, et les fiches positives de la prescription
 médicale de transport, du S3141 et des deux demandes d'accord préalable. Les
-boutons de chaque issue sont posés (`r2/boutons-du-resultat.ts`) ; « Compléter »
+boutons de chaque issue sont posés (`r3/r3.tsx`) ; « Compléter »
 ouvre P3, dont le résultat (R3) imprime et télécharge le gabarit du support
-(`r3/documents-du-resultat.ts`, #157). Le S3141 se remplit (`r3/s3141/`,
+(`r3/r3.tsx`, #157). Le S3141 se remplit (`r3/s3141/`,
 #158) : il assemble les rubriques que les cerfa partagent (`r3/rubriques/`,
 D-138), qui ne connaissent aucun cerfa. La PMT (`r3/s3138g/`, #160) et la DAP
 (`r3/s3139h/`, #161) les reprennent, avec leurs propres rubriques, dont le
@@ -48,8 +48,13 @@ Vite ni navigateur : `tests/model/metier-sous-node.test.ts` le vérifie.
 
 Le modèle de l'éditeur se range par partie du parcours : `questions/p1/` (le mode),
 `questions/p2/` (l'éligibilité) et `questions/p3/` (le complément du cerfa) dans `core/`, `r2/` (le
-résultat, avec un dossier par famille d'issues) et `r3/` (son résultat) dans
-`front/`. Chaque partie a la même forme : `partie-N.ts`, sa table des matières,
+résultat) et `r3/` (son résultat) dans `front/`. `r2/r2.tsx` est l'entité R2 :
+ce qu'elle lit (`R2.lit`), sa trace, son cas, ses textes, sa page. Un dossier
+par cas dans `r2/layouts/` (`acceptee/`, `refusee/`, `orientee/`), chacun avec
+ses issues (`issues.ts`), ses précisions, son texte et sa page ; ce que les cas
+partagent est un composant de `r2/components/`, qui ne connaît aucun cas.
+`r3/r3.tsx` est R3 : ce qu'elle lit, son document, son titre, son bouton de
+départ, sa page. Chaque partie a la même forme : `partie-N.ts`, sa table des matières,
 les pages dans l'ordre faites de ses questions ; `questions/`, un fichier par
 question, nommé de son numéro (`q2-8-6.ts`), qui porte ses sous-questions
 lettrées et ses gardes ; `conditions/`, ce que plusieurs questions lisent.
