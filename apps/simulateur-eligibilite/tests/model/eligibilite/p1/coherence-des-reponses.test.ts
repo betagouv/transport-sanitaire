@@ -21,7 +21,7 @@ import {
   pagesOf,
 } from "../../../../core/socle/questionnaire-engine/question/question";
 import { Questionnaire } from "../../../../core/socle/questionnaire-engine/questionnaire";
-import { preconisationOf } from "../../../../core/socle/simulation/simulation";
+import { preconisationOf } from "../../../../core/socle/simulation/preconisation";
 
 type Reponses = Answers<Questions>;
 type Critere = Questions["Q1.2"][number];

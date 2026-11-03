@@ -3,9 +3,7 @@
 // Le modèle dit quel parcours compte et lequel finit à la caisse ; le socle
 // compte les pages et les questions.
 
-import type { Answers } from "../../../core/socle/questionnaire-engine/question/question";
-import type { Reading } from "../../../core/socle/questionnaire-engine/questionnaire";
-import { Simulation } from "../../../core/socle/simulation/simulation";
+import type { Simulation } from "../../../core/socle/simulation/simulation";
 import { EventName, trackEvent } from "../analytics/events";
 import type { AldIndicator, Model } from "../model";
 
@@ -19,17 +17,16 @@ export type AldPathway = {
   questions: number;
 };
 
-/** Ce que ces réponses donnent à l'indicateur, sans rien envoyer. */
+/** Ce que cette simulation, sur son premier résultat, donne à l'indicateur, sans rien envoyer. */
 export function aldPathwayOf(
   model: Model,
-  answers: Answers,
+  simulation: Simulation,
 ): AldPathway | null {
   const indicator = model.aldIndicator;
   if (!indicator) return null;
-  const simulation = Simulation.of(model.core, answers);
   const read = simulation.read(new Date());
   if (!read(indicator.counted)) return null;
-  const { pages, questions } = countOf(model, indicator, simulation.reading);
+  const { pages, questions } = countOf(model, indicator, simulation);
   const caisse = read(indicator.caisse);
   return {
     verdict: EventName[verdictOf(caisse, pages, questions, indicator.limit)],
@@ -38,9 +35,9 @@ export function aldPathwayOf(
   };
 }
 
-/** Envoie le verdict de ces réponses, si le parcours compte. */
-export function trackAldPathway(model: Model, answers: Answers): void {
-  const pathway = aldPathwayOf(model, answers);
+/** Envoie le verdict de cette simulation, si le parcours compte. */
+export function trackAldPathway(model: Model, simulation: Simulation): void {
+  const pathway = aldPathwayOf(model, simulation);
   if (pathway) trackEvent(pathway.verdict, pathway.questions);
 }
 
@@ -56,17 +53,17 @@ type AldVerdict =
 function countOf(
   model: Model,
   { parts, subFields = [] }: AldIndicator,
-  reading: Reading,
+  simulation: Simulation,
 ) {
   const counted = new Set(
     model.core.questionnaire
       .filter((part) => parts.includes(part.id))
       .flatMap((part) => part.pages.map((page) => page.id)),
   );
-  const pages = reading.askedPages().filter((page) => counted.has(page.id));
+  const pages = simulation.pages().filter((page) => counted.has(page.id));
   const notCounted = new Set(subFields);
   const questions = pages
-    .flatMap((page) => reading.questionsOn(page))
+    .flatMap((page) => simulation.questionsOn(page))
     .filter((question) => !notCounted.has(question.id)).length;
   return { pages: pages.length, questions };
 }

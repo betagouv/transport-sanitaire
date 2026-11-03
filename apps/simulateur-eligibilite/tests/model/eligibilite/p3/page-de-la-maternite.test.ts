@@ -3,7 +3,6 @@
 // `CONTRAT_Q38_MATERNITE_DOCUMENT.json`, D-251.
 
 import { describe, expect, it } from "vitest";
-import { Questionnaire } from "../../../../core/socle/questionnaire-engine/questionnaire";
 import { Simulation } from "../../../../core/socle/simulation/simulation";
 import { model } from "../../../../front/models/eligibilite";
 import { S3139H } from "../../../../front/models/eligibilite/r3/s3139h/s3139h";
@@ -67,17 +66,16 @@ describe("la page de la maternité (Q3.8)", () => {
 
 // ---- implémentation ----
 
-// La dernière page de P3, et ce qu'elle pose.
+// La dernière page de P3, et ce qu'elle pose. Les réponses d'après le verrou,
+// s'il y en a, passent la simulation derrière lui.
 function apresLeVerrou(reponses: Reponses) {
-  const { cibles } = Simulation.of(model.core, reponses).lock().preconisation;
-  const complement = new Questionnaire(
-    model.core.complement.pages,
-    model.core.relevance,
-  );
-  const read = complement.readWith(reponses, cibles);
-  const derniere = read.askedPages().at(-1);
+  const reprise = Simulation.resume(model.core, reponses);
+  const simulation = "locked" in reprise.stage ? reprise : reprise.lock();
+  const derniere = simulation.pages().at(-1);
   return {
     derniere: derniere?.id,
-    posees: derniere ? read.questionsOn(derniere).map(({ id }) => id) : [],
+    posees: derniere
+      ? simulation.questionsOn(derniere).map(({ id }) => id)
+      : [],
   };
 }

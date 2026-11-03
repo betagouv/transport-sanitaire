@@ -6,18 +6,14 @@
 // secondaires sont à gauche, l'avis et la complétion à droite (V02). Le titre d'un résultat
 // avec feuille et complétion est vert.
 
-import { type ComponentType, type ReactNode, useEffect, useState } from "react";
+import { type ReactNode, useEffect, useState } from "react";
 import type { Read } from "../../../../core/socle/questionnaire-engine/conditions/condition";
 import type { Answers } from "../../../../core/socle/questionnaire-engine/question/question";
-import type { QuestionnaireState } from "../../../../core/socle/questionnaire-engine/questionnaire";
-import {
-  type Locked,
-  Simulation,
-} from "../../../../core/socle/simulation/simulation";
+import type { Simulation } from "../../../../core/socle/simulation/simulation";
 import type { FirstResult, Model } from "../../model";
-import type { DebugTraceProps } from "../../questionnaire/QuestionnaireForm";
 import { NextStep, Stepper } from "../../questionnaire/Stepper";
 import { SecondaryButton } from "../../ui/SecondaryButton";
+import type { ScreenProps } from "../Simulateur";
 import { SheetViewer } from "../sheet/SheetViewer";
 import {
   FeedbackLink,
@@ -27,22 +23,17 @@ import {
 } from "./FeedbackLink";
 import "./resultat-screen.css";
 
-type Props = {
-  model: Model;
-  /** Le questionnaire derrière ce résultat : « Précédent » le rouvre. */
-  state: QuestionnaireState;
-  DebugTrace?: ComponentType<DebugTraceProps>;
-  onReopen: (state: QuestionnaireState) => void;
-  onLock: (locked: Locked) => void;
-  onRestart: () => void;
-};
-
 // Le verrou ne s'annonce pas à l'écran : l'interface nomme l'action, et le
 // « Précédent » de cette page dit ce qui reste ouvert. Sans action qui
 // verrouille, rien ne suit ce résultat : le stepper s'arrête sur lui. Le
 // stepper et les boutons restent pendant le chargement du résultat.
-export function ResultatScreen({ model, state, DebugTrace, ...on }: Props) {
-  const simulation = Simulation.of(model.core, state.answers);
+export function ResultatScreen({
+  model,
+  simulation,
+  onChange,
+  DebugTrace,
+  onRestart,
+}: ScreenProps) {
   const parts = model.core.questionnaire;
   const trace = { title: "résultat", ...simulation.trace() };
   const read = simulation.read(new Date());
@@ -52,7 +43,11 @@ export function ResultatScreen({ model, state, DebugTrace, ...on }: Props) {
         result={resultOf(model, simulation)}
         step={{ title: model.result.title, part: parts.length }}
         startLabel={startLabelOf(model, read)}
-        actions={actionsOf(simulation, state, on)}
+        actions={{
+          onReopen: () => onChange(simulation.reopen()),
+          onLock: () => onChange(simulation.lock()),
+          onRestart,
+        }}
         feedback={feedbackOf(model, read)}
       />
       {DebugTrace && (
@@ -93,7 +88,7 @@ function resultOf(model: Model, simulation: Simulation): Loading {
   return result;
 }
 
-/** Ce que font les boutons de la page. */
+/** Ce que font les boutons de la page : rouvrir le questionnaire, verrouiller, recommencer. */
 type Actions = {
   onReopen: () => void;
   onLock: () => void;
@@ -113,22 +108,6 @@ type Buttons = Actions & {
 type Step = { title: string; part: number };
 
 type Placement = "below" | "above";
-
-type On = Pick<Props, "onReopen" | "onLock" | "onRestart">;
-
-// Ce que font les boutons : rouvrir ce questionnaire, verrouiller ses réponses,
-// ou recommencer.
-function actionsOf(
-  simulation: Simulation,
-  state: QuestionnaireState,
-  on: On,
-): Actions {
-  return {
-    onReopen: () => on.onReopen(state),
-    onLock: () => on.onLock(simulation.lock()),
-    onRestart: on.onRestart,
-  };
-}
 
 type ContentProps = {
   result: Loading;

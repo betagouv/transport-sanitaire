@@ -1,7 +1,10 @@
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { useState } from "react";
 import { describe, expect, it } from "vitest";
 import { page, questionsOf } from "../../../core/socle";
+import type { CoreModel } from "../../../core/socle/model";
+import { Simulation } from "../../../core/socle/simulation/simulation";
 import { QuestionnaireForm } from "../../../front/socle/questionnaire/QuestionnaireForm";
 import { detailsDuStepper } from "../simulateur/questionnaire";
 
@@ -65,15 +68,29 @@ describe("le stepper des pages de questions", () => {
 
 // ---- implémentation ----
 
+// Un modèle sans préconisation, sur sa première page.
+const CORE: CoreModel = {
+  preconisation: { faits: () => ({}), cibles: () => ({}), reads: new Map() },
+  questionnaire: PARTS,
+  complement: { id: "complement", title: "Complément", pages: [] },
+  seeds: async () => [],
+};
+
 function afficherDeuxParties() {
-  render(
+  render(<Formulaire />);
+  return userEvent.setup();
+}
+
+function Formulaire() {
+  const [simulation, setSimulation] = useState(() => Simulation.start(CORE));
+  return (
     <QuestionnaireForm
       parts={PARTS}
       partCount={3}
       endLabel="Terminer"
       tracked={false}
-      onComplete={() => {}}
-    />,
+      simulation={simulation}
+      onChange={setSimulation}
+    />
   );
-  return userEvent.setup();
 }

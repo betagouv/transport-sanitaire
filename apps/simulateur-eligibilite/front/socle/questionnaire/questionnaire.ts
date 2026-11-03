@@ -1,52 +1,42 @@
-// Le questionnaire à l'écran : la page ouverte, son brouillon, ce qu'il reste
-// à répondre, et la navigation entre les pages. Chaque capacité a son
-// fichier ; celui-ci les assemble.
+// Le questionnaire à l'écran : la page ouverte de la simulation, son brouillon,
+// ce qu'il reste à répondre, et ce que font ses boutons. La simulation sait
+// valider une page, avancer et reculer (`core/socle/simulation/`) ; l'écran
+// n'y ajoute que le brouillon, l'avancement automatique et la mesure
+// d'audience.
 
 import { useState } from "react";
-import type { Relevance } from "../../../core/socle/questionnaire-engine/does-a-question-still-matter/matters";
 import type { AskedQuestion } from "../../../core/socle/questionnaire-engine/question/asked/question";
 import type {
   Answer,
   Answers,
-  AnyCibles,
   Page,
   Unanswered,
   Validated,
 } from "../../../core/socle/questionnaire-engine/question/question";
-import {
-  Questionnaire,
-  type QuestionnaireState,
-} from "../../../core/socle/questionnaire-engine/questionnaire";
+import { answerOnPage } from "../../../core/socle/questionnaire-engine/validate-a-page";
+import type { Simulation } from "../../../core/socle/simulation/simulation";
 import {
   isSingleChoicePage,
   useAutoAdvance,
   withRestart,
 } from "./advance-alone";
-import { actions, advance } from "./move-between-pages";
-import { startingState } from "./resume-where-left";
-import { useQuestionnaireTracking } from "./send-to-analytics";
+import { draftOf } from "./draft-an-answer";
+import {
+  type QuestionnaireTracking,
+  useQuestionnaireTracking,
+} from "./send-to-analytics";
 
 export type QuestionnaireOptions = {
-  // Les pages de ce questionnaire, dans l'ordre. Au moins une doit s'afficher.
-  pages: readonly Page[];
-  // Les réponses acquises avant ce questionnaire. Ses pages ne les reposent
-  // pas : les conditions les lisent, rien ne les change. C'est le verrou.
-  lockedAnswers?: Answers;
-  // Les cibles figées au verrou. Les conditions des pages les lisent : une
-  // question peut dépendre de la préconisation.
-  cibles?: AnyCibles;
-  // Ce qu'une question change de ce qui compte : une question qui ne change
-  // rien ne se pose pas (#255). Sans elle, tout compte.
-  relevance?: Relevance;
-  // La reprise d'un questionnaire déjà mené, au retour d'une page de résultat.
-  // Il rouvre sur sa page, réponses intactes, sans réémettre son début.
-  initialState?: QuestionnaireState;
+  // La simulation, sur la page que le questionnaire affiche.
+  simulation: Simulation;
+  // La simulation après un bouton : la page suivante, la précédente, ou
+  // l'étape qui suit quand la dernière page est validée.
+  onChange: (simulation: Simulation) => void;
   // Le questionnaire émet-il ses évènements de mesure d'audience ?
   tracked: boolean;
-  onComplete: (answers: Answers, state: QuestionnaireState) => void;
 };
 
-export type View = {
+type View = {
   page: Page;
   // Les pages affichées, pour la trace de debug.
   pages: readonly Page[];
@@ -76,28 +66,29 @@ export type QuestionnaireScreen = View &
     autoAdvances: boolean;
   };
 
-/** Le questionnaire tel qu'il est : ses réponses validées, sa page, son brouillon. */
-export type State = QuestionnaireState & { readonly draft: Answers };
-
-/** Ce qui dit quelles pages s'affichent : la liste, et les cibles s'il y en a. */
-export type Source = Pick<
-  QuestionnaireOptions,
-  "pages" | "cibles" | "relevance"
->;
-
-export function useQuestionnaire(
-  options: QuestionnaireOptions,
-): QuestionnaireScreen {
-  const [state, setState] = useState<State>(() => startingState(options));
-  const view = read(options, state);
+export function useQuestionnaire({
+  simulation,
+  onChange,
+  tracked,
+}: QuestionnaireOptions): QuestionnaireScreen {
+  const [draft, setDraft] = useState<Answers>(() =>
+    draftOf(simulation.page, simulation.answers),
+  );
+  const view = read(simulation, draft);
+  // Un questionnaire qui a déjà des réponses reprend : son début n'est pas réémis.
+  const resumed = Object.keys(simulation.answers).length > 0;
   const tracking = useQuestionnaireTracking(
     view.pages.indexOf(view.page) + 1,
-    options.tracked,
-    options.initialState !== undefined,
+    tracked,
+    resumed,
   );
-  const handlers = actions({ state, setState, view, options, tracking });
+  const move = (next: Simulation) => {
+    setDraft(draftOf(next.page, next.answers));
+    onChange(next);
+  };
+  const handlers = actions({ simulation, view, tracking, setDraft, move });
   const autoAdvance = useAutoAdvance(
-    state.page,
+    view.page.id,
     isSingleChoicePage(view.questions),
     view.hasPendingQuestions,
     handlers.next,
@@ -107,33 +98,63 @@ export function useQuestionnaire(
 
 // ---- implémentation ----
 
-// L'écran d'une page fait deux lectures : celle des réponses validées, qui
-// dit les pages, et celle où le brouillon passe par-dessus, qui dit ce que la
-// page pose. Une question peut ainsi en révéler une autre sur la même page.
-function read(options: Source, state: State): View {
-  const questionnaire = new Questionnaire(options.pages, options.relevance);
-  const reading = questionnaire.readWith(state.answers, options.cibles);
-  const pages = reading.askedPages();
-  const page = pages.find((p) => p.id === state.page);
-  if (!page) throw new Error(`La page « ${state.page} » ne s'affiche plus.`);
-  const visible = { ...state.answers, ...state.draft };
-  const questions = questionnaire
-    .readWith(visible, options.cibles)
-    .questionsOn(page);
+type Context = {
+  simulation: Simulation;
+  view: View;
+  tracking: QuestionnaireTracking;
+  setDraft: (draft: Answers) => void;
+  move: (next: Simulation) => void;
+};
+
+// Le brouillon passe par-dessus les réponses validées : ce que la page pose
+// peut en dépendre.
+function read(simulation: Simulation, draft: Answers): View {
+  const { page } = simulation;
+  const questions = simulation.questionsOn(page, draft);
   const hasPendingQuestions = questions.some(
-    (question) => !question.isAnsweredBy(state.draft[question.id]),
+    (question) => !question.isAnsweredBy(draft[question.id]),
   );
   return {
     page,
-    pages,
+    pages: simulation.pages(),
     questions,
-    draft: state.draft,
-    answers: state.answers,
-    validated: reading.validated.toJSON(),
-    hasPrevious: pages.indexOf(page) > 0,
+    draft,
+    answers: simulation.answers,
+    validated: simulation.validated.toJSON(),
+    hasPrevious: simulation.hasPrevious(),
     hasPendingQuestions,
-    isLast:
-      !hasPendingQuestions &&
-      advance(options, state, page).following === undefined,
+    isLast: !hasPendingQuestions && ends(simulation, draft),
+  };
+}
+
+// Valider la page avec ce brouillon achève l'étape, au lieu d'en ouvrir une autre.
+function ends(simulation: Simulation, draft: Answers): boolean {
+  return simulation.validate(draft).stage.name !== simulation.stage.name;
+}
+
+function actions({
+  simulation,
+  view,
+  tracking,
+  setDraft,
+  move,
+}: Context): Actions {
+  return {
+    // Une saisie vide les questions de la page qui en dépendent (`dependsOn`).
+    answer: (id, answer) =>
+      setDraft(answerOnPage(view.page, view.draft, id, answer)),
+    next: () => {
+      // Le bouton est déjà désactivé, ceci couvre une soumission au clavier.
+      if (view.hasPendingQuestions) return;
+      const next = simulation.validate(view.draft);
+      if (next.stage.name !== simulation.stage.name) {
+        tracking.questionnaireCompleted();
+      } else {
+        tracking.stepPassed(view.pages.indexOf(view.page) + 2);
+      }
+      move(next);
+    },
+    // Reculer ne valide rien : le brouillon de la page quittée est abandonné.
+    back: () => move(simulation.back()),
   };
 }

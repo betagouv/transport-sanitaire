@@ -27,15 +27,6 @@ import { commitPage } from "./validate-a-page.ts";
 type Finished = undefined;
 
 /**
- * Où en est un questionnaire : ses réponses validées, et la page ouverte. Le
- * parcours le garde d'un écran à l'autre, une seed le reconstruit.
- */
-export type QuestionnaireState = {
-  readonly answers: Answers;
-  readonly page: string;
-};
-
-/**
  * Un questionnaire : ses pages, dans l'ordre. `Questions` : celles du modèle,
  * pour lire ses réponses typées.
  */

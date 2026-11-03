@@ -1,7 +1,5 @@
 import { screen, waitFor } from "@testing-library/react";
 import { afterEach, describe, expect, it } from "vitest";
-import { Simulation } from "../../../core/socle/simulation/simulation";
-import { modeleDeTest } from "../modele-de-test";
 import {
   ACCOMPAGNEMENTS,
   allerAuResultat,
@@ -159,17 +157,6 @@ describe("après le verrou", () => {
 
     await question(BOISSON);
     expect(radio("Un thé")).not.toBeChecked();
-  });
-});
-
-describe("ce que le verrou fige", () => {
-  it("une réponse laissée sans objet par un retour en arrière ne passe pas le verrou", () => {
-    const locked = Simulation.of(modeleDeTest.core, {
-      boisson: "rien",
-      accompagnements: ["lait"],
-    }).lock();
-
-    expect(locked.answers).toEqual({ boisson: "rien" });
   });
 });
 

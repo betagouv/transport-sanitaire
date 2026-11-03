@@ -17,10 +17,8 @@ import {
   answerOnPage,
   commitPage,
 } from "../../../core/socle/questionnaire-engine/validate-a-page";
-import {
-  preconisationOf,
-  Simulation,
-} from "../../../core/socle/simulation/simulation";
+import { preconisationOf } from "../../../core/socle/simulation/preconisation";
+import { readAt } from "../../../core/socle/simulation/stage";
 import { model as frontModel } from "../../../front/models/eligibilite";
 import { MATERNITE_ETABLIE } from "./p2/reponses-de-la-branche";
 
@@ -58,7 +56,7 @@ const effaceesPar = (id: string) => {
 
 // Le parcours tel que l'écran le lit, filtrage par le graphe compris.
 const lire = (reponses: Answers) =>
-  Simulation.of(frontModel.core, reponses).reading;
+  readAt(frontModel.core, { name: "questionnaire" }, reponses);
 
 // Le brouillon d'une page rouverte : ses réponses validées.
 const brouillonDe = (reponses: Reponses, id: string): Reponses =>

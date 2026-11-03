@@ -9,43 +9,28 @@
 
 import type { ComponentType, ReactNode } from "react";
 import type { Read } from "../../../../core/socle/questionnaire-engine/conditions/condition";
-import type { QuestionnaireState } from "../../../../core/socle/questionnaire-engine/questionnaire";
-import {
-  type Locked,
-  Simulation,
-} from "../../../../core/socle/simulation/simulation";
 import { CerfaDocument } from "../../cerfa/CerfaDocument";
 import { dtoFrom } from "../../cerfa/generate-the-cerfa/compute-the-dto";
 import type { CerfaInput, Model } from "../../model";
 import type { DebugTraceProps } from "../../questionnaire/QuestionnaireForm";
 import { Stepper } from "../../questionnaire/Stepper";
 import { SecondaryButton } from "../../ui/SecondaryButton";
+import type { ScreenProps } from "../Simulateur";
 import { FeedbackLink, type FeedbackOffer, feedbackOf } from "./FeedbackLink";
 import "./resultat-screen.css";
-
-type Props = {
-  model: Model;
-  /** Le questionnaire derrière ce résultat : « Précédent » le rouvre. */
-  state: QuestionnaireState;
-  DebugTrace?: ComponentType<DebugTraceProps>;
-  onReopen: (state: QuestionnaireState) => void;
-  onRestart: () => void;
-};
 
 // « Précédent » revient au second questionnaire, jamais avant le verrou. La
 // préconisation affichée est celle que le verrou a figée. Le cerfa se télécharge
 // tel que le résultat l'affiche, daté du jour où le complément a été validé.
 export function CerfaScreen({
   model,
-  state,
-  locked,
+  simulation,
   completedAt,
   DebugTrace,
-  onReopen,
+  onChange,
   onRestart,
-}: Props & { locked: Locked; completedAt: Date }) {
+}: ScreenProps & { completedAt: Date }) {
   const { title, Resultat, reading: lecture } = model.cerfa;
-  const simulation = Simulation.afterLock(model.core, locked, state.answers);
   const trace = { title: "cerfa", ...simulation.trace() };
   const read = simulation.read(completedAt);
   const reading = read(lecture);
@@ -61,7 +46,7 @@ export function CerfaScreen({
         read={read}
         text={<Resultat reading={reading} />}
         input={{ reading, completedAt }}
-        actions={{ onReopen: () => onReopen(state), onRestart }}
+        actions={{ onReopen: () => onChange(simulation.reopen()), onRestart }}
         feedback={feedbackOf(model, read)}
       />
     </Frame>

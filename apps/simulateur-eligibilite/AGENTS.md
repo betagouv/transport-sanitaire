@@ -115,7 +115,7 @@ mécanique, sans React ni phrase de l'écran :
 | `question-context.ts` | le seul objet que reçoivent les libellés, rappels, aides et bornes du moment : `{ answers, validated, cibles, faits }`. Les faits n'y sont calculés que si on les lit |
 | `option.ts` | ce qu'est une option offerte : sa valeur, son libellé, sa description, son aide, ce qu'elle bloque |
 | `address.ts` | ce qu'est une adresse, la seule réponse en objet : ses champs, ceux qui se demandent en France ou à l'étranger, et ce qui ne va pas dans chacun |
-| `questionnaire.ts` | `Questionnaire`, ses pages dans l'ordre, et `Reading`, des réponses lues à travers lui : `questionnaire.readWith(answers, cibles)`. Une lecture se calcule une fois et ne change pas : pages et questions qui se posent (`askedPages`, `questionsOn`), questions validées (`validated`), complétude (`isComplete`), page où l'on rouvre (`openPage`), page suivante (`pageAfter`), réponses d'une page validée (`commit`). Et `QuestionnaireState`, ce que le parcours garde d'un écran à l'autre |
+| `questionnaire.ts` | `Questionnaire`, ses pages dans l'ordre, et `Reading`, des réponses lues à travers lui : `questionnaire.readWith(answers, cibles)`. Une lecture se calcule une fois et ne change pas : pages et questions qui se posent (`askedPages`, `questionsOn`), questions validées (`validated`), complétude (`isComplete`), page où l'on rouvre (`openPage`), page suivante (`pageAfter`), réponses d'une page validée (`commit`) |
 | `asked-question.ts` | `AskedQuestion`, la question telle qu'elle se pose : libellé, rappel, bornes, options, mode d'adresse et incohérences du moment. Elle ne porte aucune fonction : elle passe en JSON, et `askedQuestion` la relit |
 | `asked-common.ts`, `asked-choices.ts`, `asked-inputs.ts`, `asked-address.ts` | une classe par sorte de question posée. Chacune dit ce qu'elle garde d'une réponse (`kept`), si la réponse suffit (`isAnsweredBy`) et ce qui n'y va pas (`problemsWith`) |
 | `answer-problem.ts` | ce qui ne va pas dans une saisie, dit par sa nature (`{ kind: "missing" }`…). Les phrases de l'éditeur y restent telles quelles (`{ kind: "stated", text }`) |
@@ -127,8 +127,8 @@ mécanique, sans React ni phrase de l'écran :
 
 | Fichier | Ce qu'il porte |
 |---|---|
-| `questionnaire.ts` | le parcours à l'écran (`useQuestionnaire`) : il garde l'état (page ouverte, brouillon) et interroge la lecture pour le reste |
-| `draft-an-answer.ts`, `move-between-pages.ts`, `resume-where-left.ts` | le brouillon d'une page, les actions qui avancent ou reviennent, l'état où le parcours reprend |
+| `questionnaire.ts` | la page ouverte à l'écran (`useQuestionnaire`) : il reçoit la simulation, ne garde que le brouillon, et donne la simulation que chaque bouton ouvre (`onChange`) |
+| `draft-an-answer.ts` | le brouillon d'une page : ses réponses validées, une case seule décochée |
 | `advance-alone.ts`, `send-to-analytics.ts` | l'avancement seul d'une page de choix uniques, et ce que le parcours envoie à l'analytics |
 | `label-a-question.ts`, `word-a-problem.ts`, `lay-out-an-address.ts` | les phrases de l'écran : « (facultatif) », le message de chaque nature de problème, les champs d'une adresse et leurs libellés |
 | `QuestionnaireForm.tsx`, `QuestionField.tsx`, `Stepper.tsx` | le formulaire, le champ DSFR de chaque sorte de question, le stepper |
@@ -221,8 +221,10 @@ Treize règles à tenir en ajoutant une question :
   s'affiche sous le groupe, et une erreur de champ passe devant.
 - **Une saisie ne compte qu'une fois la page validée.** Le brouillon vit dans
   `questionnaire.ts`, pas dans le champ.
-- **Le verrou est un montage, pas un drapeau.** Ce qui vient après le verrou est un
-  second `QuestionnaireForm`, qui reçoit `lockedAnswers` et ne repose rien
+- **Le verrou est une étape, pas un drapeau.** La simulation le porte dans son
+  étape (`core/socle/simulation/stage.ts`) : après lui, elle lit toutes les
+  pages sous les cibles figées, et ne pose que celles du complément. L'écran y
+  monte un second `QuestionnaireForm`, qui ne repose rien
   (`front/socle/simulateur/Simulateur.tsx`).
 
 *Gardé par* `tests/socle/simulateur/` et

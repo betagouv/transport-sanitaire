@@ -13,7 +13,7 @@ import type {
   AnyCibles,
 } from "../../../../core/socle/questionnaire-engine/question/question";
 import { Questionnaire } from "../../../../core/socle/questionnaire-engine/questionnaire";
-import { preconisationOf } from "../../../../core/socle/simulation/simulation";
+import { preconisationOf } from "../../../../core/socle/simulation/preconisation";
 import { ciblesValant } from "../r2/traces-du-prescripteur";
 
 type Reponses = Answers<Questions>;

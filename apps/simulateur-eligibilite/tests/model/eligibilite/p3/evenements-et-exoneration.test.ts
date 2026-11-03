@@ -8,7 +8,7 @@ import type { Questions } from "../../../../core/models/eligibilite/questions/re
 import { SEEDS } from "../../../../core/models/eligibilite/seeds-catalogue";
 import type { Answers } from "../../../../core/socle/questionnaire-engine/question/question";
 import { Questionnaire } from "../../../../core/socle/questionnaire-engine/questionnaire";
-import { preconisationOf } from "../../../../core/socle/simulation/simulation";
+import { preconisationOf } from "../../../../core/socle/simulation/preconisation";
 import { BRANCARD_20_KM } from "../p2/reponses-de-la-branche";
 
 type Reponses = Answers<Questions>;

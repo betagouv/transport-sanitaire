@@ -4,11 +4,11 @@
 // seeds en deux sections : celles qui ouvrent un résultat, et celles qui
 // s'arrêtent dans le questionnaire.
 
+import { preconisationOf } from "../../../core/socle/simulation/preconisation";
 import { evaluateSeed, type Seed } from "../../../core/socle/simulation/seed";
 import { Simulation } from "../../../core/socle/simulation/simulation";
 import { Container } from "../app/Container";
 import type { Model } from "../model";
-import { startingScreen } from "../simulateur/screen";
 import { type SeedRow, SeedsTable } from "./SeedsTable";
 
 type Props = {
@@ -80,14 +80,14 @@ function EmptyCatalogue() {
 // Ce que le tableau montre d'une seed : ce que le modèle en préconise, et
 // l'écran où ses réponses mènent. Le parcours le déduit, la seed ne le dit pas.
 function rowOf(model: Model, seed: Seed): SeedRow {
-  const screen = startingScreen(model, seed.answers).name;
+  const { name } = Simulation.resume(model.core, seed.answers).stage;
   return {
     seed,
     evaluation: evaluateSeed(
-      (answers) => Simulation.of(model.core, answers).preconisation.cibles,
+      (answers) => preconisationOf(model.core, answers).cibles,
       seed,
     ),
-    opensOnResultat: screen === "resultat" || screen === "cerfa",
+    opensOnResultat: name === "resultat" || name === "cerfa",
   };
 }
 

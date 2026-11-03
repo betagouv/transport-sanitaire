@@ -5,27 +5,34 @@
 import { describe, expect, it } from "vitest";
 import type { Questions } from "../../../core/models/eligibilite/questions/reponses";
 import type { Answers } from "../../../core/socle/questionnaire-engine/question/question";
-import { Questionnaire } from "../../../core/socle/questionnaire-engine/questionnaire";
-import { Simulation } from "../../../core/socle/simulation/simulation";
+import {
+  lockOf,
+  pagesAt,
+  readAt,
+  type Stage,
+} from "../../../core/socle/simulation/stage";
 import { model } from "../../../front/models/eligibilite";
 
 type Reponses = Answers<Questions>;
 
-const posees = (read: ReturnType<Questionnaire["readWith"]>) =>
-  read
+const avantLeVerrou = (reponses: Reponses) => {
+  const read = readAt(model.core, { name: "questionnaire" }, reponses);
+  return read
     .askedPages()
     .flatMap((page) => read.questionsOn(page).map(({ id }) => id));
+};
 
-const avantLeVerrou = (reponses: Reponses) =>
-  posees(Simulation.of(model.core, reponses).reading);
-
+// Le complément, sous le verrou de ces réponses : rien, quand aucun cerfa ne suit.
 const apresLeVerrou = (reponses: Reponses) => {
-  const { cibles } = Simulation.of(model.core, reponses).lock().preconisation;
-  const complement = new Questionnaire(
-    model.core.complement.pages,
-    model.core.relevance,
+  const avant = readAt(model.core, { name: "questionnaire" }, reponses);
+  const stage: Stage = {
+    name: "complement",
+    locked: lockOf(model.core, avant),
+  };
+  const read = readAt(model.core, stage, reponses);
+  return pagesAt(model.core, stage, read).flatMap((page) =>
+    read.questionsOn(page).map(({ id }) => id),
   );
-  return posees(complement.readWith(reponses, cibles));
 };
 
 const P1 = ["Q0.1", "Q1.1", "Q1.2", "Q1.3"];

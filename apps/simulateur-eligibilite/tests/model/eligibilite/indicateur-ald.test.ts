@@ -11,6 +11,7 @@
 
 import { describe, expect, it } from "vitest";
 import type { Answers } from "../../../core/socle/questionnaire-engine/question/question";
+import { Simulation } from "../../../core/socle/simulation/simulation";
 import { model } from "../../../front/models/eligibilite";
 import { aldPathwayOf } from "../../../front/socle/simulateur/track-the-ald-pathway";
 
@@ -22,7 +23,8 @@ const ALD = {
   "Q1.3.b": "1_LIEN_DIRECT",
 };
 
-const verdictDe = (answers: Answers) => aldPathwayOf(model, answers);
+const verdictDe = (answers: Answers) =>
+  aldPathwayOf(model, Simulation.resume(model.core, answers));
 
 describe("l'indicateur de parcours ALD", () => {
   it("compte le second bloc des situations : six pages, sept questions", () => {

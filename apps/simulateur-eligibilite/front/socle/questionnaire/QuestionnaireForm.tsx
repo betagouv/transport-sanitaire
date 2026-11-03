@@ -1,17 +1,16 @@
 // Le formulaire du questionnaire : le stepper, les champs de la page et les
-// boutons de navigation. L'état est dans `questionnaire.ts`. Le stepper titre
-// l'écran du nom de la partie, et annonce la partie suivante s'il y en a une
-// dans ce questionnaire. La dernière n'annonce rien : ce qui la suit dépend du
-// résultat, encore inconnu.
+// boutons de navigation. La simulation est la sienne ; seul le brouillon de la page
+// vit dans `questionnaire.ts`. Le stepper titre l'écran du nom de la partie, et annonce
+// la partie suivante s'il y en a une dans ce questionnaire. La dernière n'annonce
+// rien : ce qui la suit dépend du résultat, encore inconnu.
 
 import type { ComponentType, ReactNode } from "react";
 import type { AskedQuestion } from "../../../core/socle/questionnaire-engine/question/asked/question";
-import {
-  type Answers,
-  type AnyCibles,
-  pagesOf,
-  type QuestionnairePart,
-  type Validated,
+import type {
+  Answers,
+  AnyCibles,
+  QuestionnairePart,
+  Validated,
 } from "../../../core/socle/questionnaire-engine/question/question";
 import { QuestionField } from "./QuestionField";
 import type {
@@ -22,8 +21,9 @@ import { useQuestionnaire } from "./questionnaire";
 import { NextStep, Stepper } from "./Stepper";
 import { errorsOf } from "./word-a-problem";
 
-type Props = Omit<QuestionnaireOptions, "pages"> & {
-  // Les parties de ce questionnaire, dans l'ordre.
+type Props = QuestionnaireOptions & {
+  // Les parties de ce questionnaire, dans l'ordre : celles de l'étape de la
+  // simulation. Le stepper les titre.
   parts: readonly QuestionnairePart[];
   // Le nombre de parties déjà passées avant ce questionnaire.
   partsBefore?: number;
@@ -64,7 +64,7 @@ export function QuestionnaireForm({
   DebugTrace,
   ...options
 }: Props) {
-  const questionnaire = useQuestionnaire({ ...options, pages: pagesOf(parts) });
+  const questionnaire = useQuestionnaire(options);
   const part = parts.findIndex((p) => p.pages.includes(questionnaire.page));
   const stepper = { parts, part, partsBefore, partCount };
 

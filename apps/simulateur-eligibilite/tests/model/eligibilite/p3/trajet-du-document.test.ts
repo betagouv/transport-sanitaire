@@ -10,7 +10,7 @@ import { SEEDS } from "../../../../core/models/eligibilite/seeds-catalogue";
 import type { Answers } from "../../../../core/socle/questionnaire-engine/question/question";
 import { Questionnaire } from "../../../../core/socle/questionnaire-engine/questionnaire";
 import { answerOnPage } from "../../../../core/socle/questionnaire-engine/validate-a-page";
-import { preconisationOf } from "../../../../core/socle/simulation/simulation";
+import { preconisationOf } from "../../../../core/socle/simulation/preconisation";
 import { errorsOf } from "../../../../front/socle/questionnaire/word-a-problem";
 import { MINEUR, PLUSIEURS_PERMISSIONS } from "../p2/reponses-de-la-permission";
 import { ciblesValant } from "../r2/traces-du-prescripteur";
