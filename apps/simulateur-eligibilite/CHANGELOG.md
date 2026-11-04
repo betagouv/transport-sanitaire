@@ -7,6 +7,26 @@ commit lui-même.
 Le simulateur affiche en bas de page la version qu'il exécute, le commit déployé
 et la version du modèle de règles.
 
+## [0.5.1](https://github.com/betagouv/transport-sanitaire/releases/tag/simulateur-eligibilite%400.5.1), 4 novembre 2026
+
+Le modèle v10.1.6 de l'éditeur et le nouvel écran d'entrée, qui ouvre le
+simulateur dès le choix de l'établissement ou de la structure. 3 commits depuis
+la 0.5.0.
+
+### TL;DR
+
+- L'écran d'entrée propose dans une seule liste les établissements et les structures (libéral, Assurance Maladie, autre) ; un établissement absent de la liste se déclare et rejoint le référentiel.
+- Le simulateur suit la v10.1.6 : le nom de l'hébergement de l'Engagement maternité devient obligatoire quand la DAP en a besoin, chaque page remonte l'écran et porte le focus au titre, et la recette des deux pages des situations particulières est rejouée.
+
+### ✨ Nouveautés
+
+- [1f16743](https://github.com/betagouv/transport-sanitaire/commit/1f16743) : demande à l'entrée l'établissement ou la structure dans une seule liste et ouvre le simulateur dès la sélection ; un service ou un établissement absent de la liste se saisit en toutes lettres, rejoint le référentiel et se retrouve dans la liste à la visite suivante.
+- [f151319](https://github.com/betagouv/transport-sanitaire/commit/f151319) : intègre le modèle v10.1.6 : le nom de l'hébergement de l'Engagement maternité est exigé quand il est le départ ou l'arrivée de la DAP, les réponses de Q2.10 sont ponctuées, chaque nouvelle page remonte l'écran et porte le focus à son titre, un changement de réponse au premier bloc des situations particulières efface le second, et cinq variantes de résultat devenues inatteignables sortent du catalogue.
+
+### ♻️ Sous le capot
+
+- [f734764](https://github.com/betagouv/transport-sanitaire/commit/f734764) : range le code par entités et capacités, moteur de décision, moteur de questionnaire et simulation, pour que l'arborescence dise ce que fait chaque dossier ; rien ne change à l'écran.
+
 ## [0.5.0](https://github.com/betagouv/transport-sanitaire/releases/tag/simulateur-eligibilite%400.5.0), 2 novembre 2026
 
 Le passage au modèle v10 de l'éditeur, de la v10.0.2 à la v10.1.5, sur un
