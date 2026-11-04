@@ -8,8 +8,8 @@ import type { Questions } from "../../../../core/models/eligibilite/questions/re
 import {
   type Answers,
   pagesOf,
-} from "../../../../core/socle/questionnaire-engine/question/question";
-import { Questionnaire } from "../../../../core/socle/questionnaire-engine/questionnaire";
+  Questionnaire,
+} from "../../../../core/socle/questionnaire-engine";
 
 type Reponses = Answers<Questions>;
 

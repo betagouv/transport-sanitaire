@@ -3,8 +3,11 @@
 
 import { model } from "../../../../core/models/eligibilite";
 import type { Questions } from "../../../../core/models/eligibilite/questions/reponses";
-import type { Answers } from "../../../../core/socle/questionnaire-engine/question/question";
-import { Questionnaire } from "../../../../core/socle/questionnaire-engine/questionnaire";
+import {
+  type Answers,
+  Questionnaire,
+} from "../../../../core/socle/questionnaire-engine";
+
 import { ciblesValant } from "../r2/traces-du-prescripteur";
 
 export type Reponses = Answers<Questions>;

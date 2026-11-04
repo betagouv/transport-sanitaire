@@ -4,7 +4,7 @@
 
 import { describe, expect, it } from "vitest";
 import { cible } from "../../../../core/models/eligibilite/cibles/evaluation";
-import { Questionnaire } from "../../../../core/socle/questionnaire-engine/questionnaire";
+import { Questionnaire } from "../../../../core/socle/questionnaire-engine";
 import {
   definitif,
   EXCEPTIONS,

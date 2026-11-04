@@ -11,13 +11,12 @@ import { model } from "../../../core/models/eligibilite";
 import type { Questions } from "../../../core/models/eligibilite/questions/reponses";
 import {
   type Answers,
-  pagesOf,
-} from "../../../core/socle/questionnaire-engine/question/question";
-import { Questionnaire } from "../../../core/socle/questionnaire-engine/questionnaire";
-import {
   answerOnPage,
   commitPage,
-} from "../../../core/socle/questionnaire-engine/validate-a-page";
+  pagesOf,
+  Questionnaire,
+} from "../../../core/socle/questionnaire-engine";
+
 import { preconisationOf } from "../../../core/socle/simulation/preconisation";
 import { model as frontModel } from "../../../front/models/eligibilite";
 import { MATERNITE_ETABLIE } from "./p2/reponses-de-la-branche";

@@ -10,7 +10,7 @@ import {
   flattened,
   type Reads,
   readsOf,
-} from "../../../core/socle/questionnaire-engine/conditions/condition";
+} from "../../../core/socle/questionnaire-engine";
 import { model } from "../../../front/models/eligibilite";
 
 describe("les questions que les résultats lisent telles quelles", () => {

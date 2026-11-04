@@ -2,12 +2,12 @@
 // problème. Le moteur de questionnaire (`core/`) dit ce qu'il constate ; les
 // phrases de l'éditeur lui viennent toutes faites.
 
-import type { AnswerProblem } from "../../../core/socle/questionnaire-engine/question/asked/answer-problem";
-import type { AskedQuestion } from "../../../core/socle/questionnaire-engine/question/asked/question";
 import type {
   Answer,
+  AnswerProblem,
+  AskedQuestion,
   Unanswered,
-} from "../../../core/socle/questionnaire-engine/question/question";
+} from "../../../core/socle/questionnaire-engine";
 
 /** Ce qui ne va pas dans une saisie, un message par ligne sous le champ. */
 export function errorsOf(

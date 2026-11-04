@@ -5,7 +5,7 @@
 // retour, brouillon, effacement des réponses dépendantes et verrou.
 
 import { afterLock, givenOf, page, questionsOf } from "../../../../core/socle";
-import type { QuestionnairePart } from "../../../../core/socle/questionnaire-engine/question/question";
+import type { QuestionnairePart } from "../../../../core/socle/questionnaire-engine";
 import type { Cibles } from "./declarations/cibles";
 import type { Faits } from "./declarations/faits";
 import type { Questions } from "./declarations/questions";

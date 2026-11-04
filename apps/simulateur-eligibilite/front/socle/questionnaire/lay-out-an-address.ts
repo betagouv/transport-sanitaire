@@ -4,9 +4,10 @@
 
 import type {
   AddressFieldName,
+  AskedAddress,
   AskedField,
-} from "../../../core/socle/questionnaire-engine/question/address";
-import type { AskedAddress } from "../../../core/socle/questionnaire-engine/question/asked/address";
+} from "../../../core/socle/questionnaire-engine";
+
 import { displayedLabel } from "./label-a-question";
 
 /** Un champ d'une adresse, tel qu'il se présente. */

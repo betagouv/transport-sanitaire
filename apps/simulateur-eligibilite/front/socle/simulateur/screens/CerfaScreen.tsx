@@ -8,7 +8,7 @@
 // du document.
 
 import type { ComponentType, ReactNode } from "react";
-import type { Read } from "../../../../core/socle/questionnaire-engine/conditions/condition";
+import type { Read } from "../../../../core/socle/questionnaire-engine";
 import { CerfaDocument } from "../../cerfa/CerfaDocument";
 import { dtoFrom } from "../../cerfa/generate-the-cerfa/compute-the-dto";
 import type { CerfaInput, Model } from "../../model";

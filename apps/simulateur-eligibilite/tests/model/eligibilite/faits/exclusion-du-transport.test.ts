@@ -13,7 +13,7 @@ import { cibles } from "../../../../core/models/eligibilite/cibles/evaluation";
 import type { Faits } from "../../../../core/models/eligibilite/faits/noms";
 import type { Questions } from "../../../../core/models/eligibilite/questions/reponses";
 import { Fait } from "../../../../core/socle";
-import type { Answers } from "../../../../core/socle/questionnaire-engine/question/question";
+import type { Answers } from "../../../../core/socle/questionnaire-engine";
 import { preconisationOf } from "../../../../core/socle/simulation/preconisation";
 
 const BRANCARD_20_KM: Answers<Questions> = {

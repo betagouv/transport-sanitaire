@@ -8,11 +8,9 @@ import {
   type AnyCibles,
   type AnyQuestions,
   pagesOf,
-} from "../questionnaire-engine/question/question.ts";
-import {
   Questionnaire,
   type Reading,
-} from "../questionnaire-engine/questionnaire.ts";
+} from "../questionnaire-engine/index.ts";
 
 /** La préconisation de ces réponses, lues dans les parties d'avant le verrou. */
 export function preconisationOf<

@@ -8,7 +8,7 @@
 // Le simulateur ne l'importe pas : `App` la lui passe.
 
 import { cibleValues } from "../../../core/socle/decision-engine";
-import type { Validated } from "../../../core/socle/questionnaire-engine/question/question";
+import type { Validated } from "../../../core/socle/questionnaire-engine";
 import { SHA_COMMIT, VERSION_APP } from "../deployed-version";
 import type { DebugTraceProps } from "../questionnaire/QuestionnaireForm";
 

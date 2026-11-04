@@ -7,7 +7,7 @@ import type {
   Page,
   Question,
   Unanswered,
-} from "../../../core/socle/questionnaire-engine/question/question";
+} from "../../../core/socle/questionnaire-engine";
 
 // Ouvrir une page copie ses réponses validées dans le brouillon. Elle rouvre
 // ainsi telle qu'on l'a quittée. Un « Précédent » sans validation abandonne

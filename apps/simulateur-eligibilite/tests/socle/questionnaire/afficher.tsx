@@ -10,7 +10,7 @@ import type {
   AnyCibles,
   Page,
   QuestionnairePart,
-} from "../../../core/socle/questionnaire-engine/question/question";
+} from "../../../core/socle/questionnaire-engine";
 import { Simulation } from "../../../core/socle/simulation/simulation";
 import { QuestionnaireForm } from "../../../front/socle/questionnaire/QuestionnaireForm";
 

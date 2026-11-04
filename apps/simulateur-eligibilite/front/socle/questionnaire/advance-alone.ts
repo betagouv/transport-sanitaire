@@ -7,11 +7,12 @@
 // renverrait aussitôt d'où l'on vient. Changer la réponse relance l'avancement.
 
 import { useEffect, useRef, useState } from "react";
-import type { AskedQuestion } from "../../../core/socle/questionnaire-engine/question/asked/question";
 import type {
   Answer,
+  AskedQuestion,
   Unanswered,
-} from "../../../core/socle/questionnaire-engine/question/question";
+} from "../../../core/socle/questionnaire-engine";
+
 import type { Actions } from "./questionnaire";
 
 export type AutoAdvance = {

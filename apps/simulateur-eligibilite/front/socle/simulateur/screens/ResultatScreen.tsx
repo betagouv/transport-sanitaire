@@ -7,8 +7,11 @@
 // avec feuille et complétion est vert.
 
 import { type ReactNode, useEffect, useState } from "react";
-import type { Read } from "../../../../core/socle/questionnaire-engine/conditions/condition";
-import type { Answers } from "../../../../core/socle/questionnaire-engine/question/question";
+import type {
+  Answers,
+  Read,
+} from "../../../../core/socle/questionnaire-engine";
+
 import type { Simulation } from "../../../../core/socle/simulation/simulation";
 import type { FirstResult, Model } from "../../model";
 import { NextStep, Stepper } from "../../questionnaire/Stepper";

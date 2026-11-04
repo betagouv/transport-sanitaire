@@ -1,7 +1,7 @@
 import { screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 import { type Address, page, questionsOf } from "../../../core/socle";
-import { Questionnaire } from "../../../core/socle/questionnaire-engine/questionnaire";
+import { Questionnaire } from "../../../core/socle/questionnaire-engine";
 import { afficher } from "./afficher";
 
 // C'est la question qui dit si son adresse est à l'étranger, d'après les

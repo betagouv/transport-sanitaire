@@ -13,8 +13,10 @@ import {
   type DecisionGraphData,
 } from "../../../../core/socle/decision-engine";
 
-import { faitsChangedBy } from "../../../../core/socle/questionnaire-engine/does-a-question-still-matter/faits-changed-by";
-import { pagesOf } from "../../../../core/socle/questionnaire-engine/question/question";
+import {
+  faitsChangedBy,
+  pagesOf,
+} from "../../../../core/socle/questionnaire-engine";
 
 const questions = [
   ...pagesOf(model.questionnaire),

@@ -1,7 +1,7 @@
 import { screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 import { givenOf, page, questionsOf } from "../../../core/socle";
-import { Questionnaire } from "../../../core/socle/questionnaire-engine/questionnaire";
+import { Questionnaire } from "../../../core/socle/questionnaire-engine";
 import { afficher } from "./afficher";
 
 // Le questionnaire relève ce qui est validé : chaque question qui a eu sa

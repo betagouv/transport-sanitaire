@@ -11,14 +11,13 @@ import type { Questions } from "../../../../core/models/eligibilite/questions/re
 import { SEEDS } from "../../../../core/models/eligibilite/seeds-catalogue";
 import { cibleValues } from "../../../../core/socle/decision-engine";
 import {
-  type Read,
-  readIn,
-} from "../../../../core/socle/questionnaire-engine/conditions/condition";
-import {
   type Answers,
   pagesOf,
-} from "../../../../core/socle/questionnaire-engine/question/question";
-import { Questionnaire } from "../../../../core/socle/questionnaire-engine/questionnaire";
+  Questionnaire,
+  type Read,
+  readIn,
+} from "../../../../core/socle/questionnaire-engine";
+
 import { preconisationOf } from "../../../../core/socle/simulation/preconisation";
 import { resultScope } from "../../../../core/socle/simulation/result-scope";
 import type { Rubrique } from "../../../../front/models/eligibilite/r3/rubriques/rubrique";

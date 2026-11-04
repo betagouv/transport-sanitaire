@@ -13,7 +13,7 @@ import { FAITS } from "../../../../core/models/eligibilite/faits/noms";
 import rules from "../../../../core/models/eligibilite/rules/regles.json" with {
   type: "json",
 };
-import { pagesOf } from "../../../../core/socle/questionnaire-engine/question/question";
+import { pagesOf } from "../../../../core/socle/questionnaire-engine";
 
 type Regle = {
   type?: string;

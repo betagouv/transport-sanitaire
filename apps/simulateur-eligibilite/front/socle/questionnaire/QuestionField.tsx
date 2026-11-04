@@ -2,14 +2,13 @@
 
 import type { ReactNode } from "react";
 import {
+  type Answer,
+  type AskedQuestion,
   isAddress,
+  type Unanswered,
   withField,
-} from "../../../core/socle/questionnaire-engine/question/address";
-import type { AskedQuestion } from "../../../core/socle/questionnaire-engine/question/asked/question";
-import type {
-  Answer,
-  Unanswered,
-} from "../../../core/socle/questionnaire-engine/question/question";
+} from "../../../core/socle/questionnaire-engine";
+
 import { AddressField } from "../ui/AddressField";
 import { CheckboxField } from "../ui/CheckboxField";
 import { DateField } from "../ui/DateField";

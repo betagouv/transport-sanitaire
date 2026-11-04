@@ -1,7 +1,7 @@
 import { screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 import { page, questionsOf } from "../../../core/socle";
-import { Questionnaire } from "../../../core/socle/questionnaire-engine/questionnaire";
+import { Questionnaire } from "../../../core/socle/questionnaire-engine";
 import { errorsOf } from "../../../front/socle/questionnaire/word-a-problem";
 import { afficher } from "./afficher";
 

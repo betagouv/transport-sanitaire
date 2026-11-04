@@ -8,16 +8,15 @@
 import type { ComponentType, ReactNode } from "react";
 import type { AnyFaits, CoreModel } from "../../core/socle/model";
 import {
-  NOTHING,
-  readsOf,
-  type Value,
-} from "../../core/socle/questionnaire-engine/conditions/condition";
-import { Relevance } from "../../core/socle/questionnaire-engine/does-a-question-still-matter/matters";
-import {
   type AnyCibles,
   type AnyQuestions,
+  NOTHING,
   pagesOf,
-} from "../../core/socle/questionnaire-engine/question/question";
+  Relevance,
+  readsOf,
+  type Value,
+} from "../../core/socle/questionnaire-engine";
+
 import type { BoundCerfa } from "./cerfa/generate-the-cerfa/compute-the-dto";
 
 /**

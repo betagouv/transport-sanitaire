@@ -5,15 +5,16 @@
 // d'audience.
 
 import { useState } from "react";
-import type { AskedQuestion } from "../../../core/socle/questionnaire-engine/question/asked/question";
-import type {
-  Answer,
-  Answers,
-  Page,
-  Unanswered,
-  Validated,
-} from "../../../core/socle/questionnaire-engine/question/question";
-import { answerOnPage } from "../../../core/socle/questionnaire-engine/validate-a-page";
+import {
+  type Answer,
+  type Answers,
+  type AskedQuestion,
+  answerOnPage,
+  type Page,
+  type Unanswered,
+  type Validated,
+} from "../../../core/socle/questionnaire-engine";
+
 import type { Simulation } from "../../../core/socle/simulation/simulation";
 import {
   isSingleChoicePage,

@@ -15,12 +15,13 @@ import type { Faits } from "../../../../core/models/eligibilite/faits/noms";
 import { Q1_2 } from "../../../../core/models/eligibilite/questions/p1/questions/q1-2";
 import type { Questions } from "../../../../core/models/eligibilite/questions/reponses";
 import { Fait } from "../../../../core/socle";
-import { ValidatedAnswers } from "../../../../core/socle/questionnaire-engine/answers/validated-answers";
 import {
   type Answers,
   pagesOf,
-} from "../../../../core/socle/questionnaire-engine/question/question";
-import { Questionnaire } from "../../../../core/socle/questionnaire-engine/questionnaire";
+  Questionnaire,
+  ValidatedAnswers,
+} from "../../../../core/socle/questionnaire-engine";
+
 import { preconisationOf } from "../../../../core/socle/simulation/preconisation";
 
 type Reponses = Answers<Questions>;

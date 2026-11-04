@@ -6,7 +6,7 @@ import { describe, expect, it } from "vitest";
 import { model } from "../../../../core/models/eligibilite";
 import type { Faits } from "../../../../core/models/eligibilite/faits/noms";
 import type { Questions } from "../../../../core/models/eligibilite/questions/reponses";
-import type { Answers } from "../../../../core/socle/questionnaire-engine/question/question";
+import type { Answers } from "../../../../core/socle/questionnaire-engine";
 import { preconisationOf } from "../../../../core/socle/simulation/preconisation";
 
 type Reponses = Answers<Questions>;

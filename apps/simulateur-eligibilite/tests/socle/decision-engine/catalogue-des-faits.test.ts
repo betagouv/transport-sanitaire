@@ -10,7 +10,7 @@ import {
   givenOf,
   unFait,
 } from "../../../core/socle";
-import { ValidatedAnswers } from "../../../core/socle/questionnaire-engine/answers/validated-answers";
+import { ValidatedAnswers } from "../../../core/socle/questionnaire-engine";
 
 type Questions = { boisson: "the" | "cafe" | "eau" };
 type Faits = { readonly chaude: Fait; readonly servie: Fait };

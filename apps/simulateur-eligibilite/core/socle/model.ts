@@ -6,15 +6,16 @@
 // réponses, les faits et les cibles de l'un à l'autre (`simulation/`).
 
 import type { DecisionGraphData } from "./decision-engine/index.ts";
-import type { GivenAnswers } from "./questionnaire-engine/answers/given-answers.ts";
-import type { ValidatedAnswers } from "./questionnaire-engine/answers/validated-answers.ts";
-import type { Reads } from "./questionnaire-engine/conditions/condition.ts";
-import type { Relevance } from "./questionnaire-engine/does-a-question-still-matter/matters.ts";
 import type {
   AnyCibles,
   AnyQuestions,
+  GivenAnswers,
   QuestionnairePart,
-} from "./questionnaire-engine/question/question.ts";
+  Reads,
+  Relevance,
+  ValidatedAnswers,
+} from "./questionnaire-engine/index.ts";
+
 import type { Seed } from "./simulation/seed.ts";
 
 /** Les faits d'un modèle : ce que ses règles reçoivent. */

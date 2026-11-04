@@ -10,7 +10,7 @@
 // (D-252).
 
 import { describe, expect, it } from "vitest";
-import type { Answers } from "../../../core/socle/questionnaire-engine/question/question";
+import type { Answers } from "../../../core/socle/questionnaire-engine";
 import { Simulation } from "../../../core/socle/simulation/simulation";
 import { model } from "../../../front/models/eligibilite";
 import { aldPathwayOf } from "../../../front/socle/simulateur/track-the-ald-pathway";

@@ -5,13 +5,14 @@
 // rien : ce qui la suit dépend du résultat, encore inconnu.
 
 import type { ComponentType, ReactNode } from "react";
-import type { AskedQuestion } from "../../../core/socle/questionnaire-engine/question/asked/question";
 import type {
   Answers,
   AnyCibles,
+  AskedQuestion,
   QuestionnairePart,
   Validated,
-} from "../../../core/socle/questionnaire-engine/question/question";
+} from "../../../core/socle/questionnaire-engine";
+
 import { QuestionField } from "./QuestionField";
 import type {
   QuestionnaireOptions,

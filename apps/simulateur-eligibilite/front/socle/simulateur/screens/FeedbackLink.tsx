@@ -13,7 +13,7 @@
 //
 // Sans intention connue, aucun lien : on ne la suppose pas.
 
-import type { Read } from "../../../../core/socle/questionnaire-engine/conditions/condition";
+import type { Read } from "../../../../core/socle/questionnaire-engine";
 import type { Intent, Model } from "../../model";
 import "./feedback-link.css";
 

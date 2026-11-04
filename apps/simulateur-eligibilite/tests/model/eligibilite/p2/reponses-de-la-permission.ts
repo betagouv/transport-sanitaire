@@ -5,10 +5,11 @@ import { cibles } from "../../../../core/models/eligibilite/cibles/evaluation";
 import type { Cibles } from "../../../../core/models/eligibilite/cibles/noms";
 import type { Questions } from "../../../../core/models/eligibilite/questions/reponses";
 import {
+  Questionnaire,
   readIn,
   type Value,
-} from "../../../../core/socle/questionnaire-engine/conditions/condition";
-import { Questionnaire } from "../../../../core/socle/questionnaire-engine/questionnaire";
+} from "../../../../core/socle/questionnaire-engine";
+
 import { resultScope } from "../../../../core/socle/simulation/result-scope";
 import { type Lecture, R2 } from "../../../../front/models/eligibilite/r2/r2";
 import { faits, pages, posee, type Reponses } from "./reponses-du-transfert";

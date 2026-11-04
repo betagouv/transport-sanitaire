@@ -8,9 +8,12 @@
 import { readdirSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
-import { askedQuestion } from "../../core/socle/questionnaire-engine/question/asked/question";
-import type { Page } from "../../core/socle/questionnaire-engine/question/question";
-import { Questionnaire } from "../../core/socle/questionnaire-engine/questionnaire";
+import {
+  askedQuestion,
+  type Page,
+  Questionnaire,
+} from "../../core/socle/questionnaire-engine";
+
 import { preconisationOf } from "../../core/socle/simulation/preconisation";
 import { evaluateSeed } from "../../core/socle/simulation/seed";
 import { model as eligibilite } from "../../front/models/eligibilite";

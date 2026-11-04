@@ -4,23 +4,20 @@
 // change celle-ci. L'écran n'y ajoute que le brouillon de la page ouverte.
 
 import type { AnyFaits, CoreModel, Preconisation } from "../model.ts";
-import type { ValidatedAnswers } from "../questionnaire-engine/answers/validated-answers.ts";
-import {
-  type Read,
-  readIn,
-} from "../questionnaire-engine/conditions/condition.ts";
-import type { AskedQuestion } from "../questionnaire-engine/question/asked/question.ts";
 import {
   type Answers,
   type AnyCibles,
+  type AskedQuestion,
   type Page,
   pagesOf,
-  type Validated,
-} from "../questionnaire-engine/question/question.ts";
-import {
   Questionnaire,
+  type Read,
   type Reading,
-} from "../questionnaire-engine/questionnaire.ts";
+  readIn,
+  type Validated,
+  type ValidatedAnswers,
+} from "../questionnaire-engine/index.ts";
+
 import { preconisationFrom } from "./preconisation.ts";
 import { resultScope } from "./result-scope.ts";
 

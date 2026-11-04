@@ -6,8 +6,11 @@ import { describe, expect, it } from "vitest";
 import { model } from "../../../../core/models/eligibilite";
 import type { Questions } from "../../../../core/models/eligibilite/questions/reponses";
 import { SEEDS } from "../../../../core/models/eligibilite/seeds-catalogue";
-import type { Answers } from "../../../../core/socle/questionnaire-engine/question/question";
-import { Questionnaire } from "../../../../core/socle/questionnaire-engine/questionnaire";
+import {
+  type Answers,
+  Questionnaire,
+} from "../../../../core/socle/questionnaire-engine";
+
 import { preconisationOf } from "../../../../core/socle/simulation/preconisation";
 import { BRANCARD_20_KM } from "../p2/reponses-de-la-branche";
 

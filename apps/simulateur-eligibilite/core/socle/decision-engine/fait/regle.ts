@@ -11,18 +11,17 @@
 // la prison. ». Une réponse absente se cite « sans réponse ». Un fait place la
 // règle avec `applique` (`fait/declared.ts`).
 
-import type {
-  Box,
-  Choice,
-} from "../../questionnaire-engine/answers/given-answers.ts";
-import type { ValidatedAnswer } from "../../questionnaire-engine/answers/validated-answers.ts";
 import {
+  type Answer,
+  type Box,
+  type Choice,
   type Condition,
   type Reads,
   type Scope,
+  type ValidatedAnswer,
   Value,
-} from "../../questionnaire-engine/conditions/condition.ts";
-import type { Answer } from "../../questionnaire-engine/question/question.ts";
+} from "../../questionnaire-engine/index.ts";
+
 import { Fait } from "./fait.ts";
 
 /** La règle n'établit pas le fait : elle laisse la main à la suivante. */
