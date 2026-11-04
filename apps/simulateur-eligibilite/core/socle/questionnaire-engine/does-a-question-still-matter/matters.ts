@@ -28,7 +28,7 @@
 import type {
   DecisionGraphData,
   FaitValue,
-} from "../../decision-engine/decision-graph/graph.ts";
+} from "../../decision-engine/index.ts";
 import { ValidatedAnswers } from "../answers/validated-answers.ts";
 import {
   flattened,

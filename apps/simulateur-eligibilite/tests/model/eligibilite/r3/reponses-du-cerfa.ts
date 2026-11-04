@@ -9,7 +9,7 @@ import type { Cibles } from "../../../../core/models/eligibilite/cibles/noms";
 import type { Faits } from "../../../../core/models/eligibilite/faits/noms";
 import type { Questions } from "../../../../core/models/eligibilite/questions/reponses";
 import { SEEDS } from "../../../../core/models/eligibilite/seeds-catalogue";
-import { cibleValues } from "../../../../core/socle/decision-engine/cible";
+import { cibleValues } from "../../../../core/socle/decision-engine";
 import {
   type Read,
   readIn,

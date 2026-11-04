@@ -7,7 +7,7 @@
 // C'est un developer tool, réservé au service qui les déverrouille (`unlock.ts`).
 // Le simulateur ne l'importe pas : `App` la lui passe.
 
-import { cibleValues } from "../../../core/socle/decision-engine/cible";
+import { cibleValues } from "../../../core/socle/decision-engine";
 import type { Validated } from "../../../core/socle/questionnaire-engine/question/question";
 import { SHA_COMMIT, VERSION_APP } from "../deployed-version";
 import type { DebugTraceProps } from "../questionnaire/QuestionnaireForm";

@@ -15,8 +15,8 @@
 // l'endroit : dans une garde, les questions posées avant elle ; dans un fait,
 // les questions validées (`conditions/what-a-condition-sees.ts`).
 
-import type { Cible } from "../../decision-engine/cible.ts";
-import type { Fait } from "../../decision-engine/fait/fait.ts";
+import type { Cible, Fait } from "../../decision-engine/index.ts";
+
 import type { Box, Choice } from "../answers/given-answers.ts";
 import type { ValidatedAnswer } from "../answers/validated-answers.ts";
 import {

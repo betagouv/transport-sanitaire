@@ -8,8 +8,8 @@
 // `Pipeline` : son catalogue des faits, puis ses règles. Faits et cibles ne se calculent qu'à la lecture, une fois par
 // contexte. Le catalogue des faits arrête un fait qui se relit par une garde.
 
-import type { FaitCatalogue } from "../../../decision-engine/establish-the-faits.ts";
-import { Fait } from "../../../decision-engine/fait/fait.ts";
+import { Fait, type FaitCatalogue } from "../../../decision-engine/index.ts";
+
 import type { GivenAnswers } from "../../answers/given-answers.ts";
 import type { ValidatedAnswers } from "../../answers/validated-answers.ts";
 import type { Scope } from "../../conditions/condition.ts";

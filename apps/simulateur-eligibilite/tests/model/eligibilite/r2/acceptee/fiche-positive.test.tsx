@@ -6,7 +6,7 @@
 import { render, screen, within } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 import { SEEDS } from "../../../../../core/models/eligibilite/seeds-catalogue";
-import { Cible } from "../../../../../core/socle/decision-engine/cible";
+import { Cible } from "../../../../../core/socle/decision-engine";
 import { catalogueResultats } from "../../../../../front/models/eligibilite/r2/components/textes-de-l-editeur";
 import { R2 } from "../../../../../front/models/eligibilite/r2/r2";
 import { SheetViewer } from "../../../../../front/socle/simulateur/sheet/SheetViewer";

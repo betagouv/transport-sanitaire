@@ -4,7 +4,7 @@
 // conditions d'affichage et ses dépendances. Le moteur de questionnaire ne
 // connaît aucun identifiant : les génériques ne servent qu'à typer le modèle.
 
-import type { Cible } from "../../decision-engine/cible.ts";
+import type { Cible } from "../../decision-engine/index.ts";
 import type { Reads } from "../conditions/condition.ts";
 import type { Address } from "./address.ts";
 import type { SeenAnswers } from "./asked/context.ts";

@@ -3,7 +3,7 @@
 // La même définition sert aux tests, qui comparent la préconisation aux
 // attendus, et à l'écran des seeds, qui permet de l'ouvrir.
 
-import type { CibleValues } from "../decision-engine/cible.ts";
+import type { CibleValues } from "../decision-engine/index.ts";
 import type {
   Answers,
   AnyCibles,
