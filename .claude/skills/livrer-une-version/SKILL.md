@@ -31,6 +31,11 @@ git merge origin/main
 tsp pr
 ```
 
+Cette PR se fusionne par « Create a merge commit », jamais en squash : un squash
+reporte le contenu de `main` sans son commit, et `main` reste hors de
+l'historique de `staging`. Refais la commande du début après la fusion : elle
+doit afficher `ok`.
+
 ## 2. Lister le périmètre
 
 ```bash
@@ -89,12 +94,15 @@ git push origin simulateur-eligibilite@0.5.0
 Le corps de la release est l'entrée du journal, sans son titre :
 
 ```bash
-git show "$SHA:apps/simulateur-eligibilite/CHANGELOG.md" |
+git show "${SHA}:apps/simulateur-eligibilite/CHANGELOG.md" |
   awk '/^## \[/{n++} n==1' | tail -n +2 |
   gh release create simulateur-eligibilite@0.5.0 \
     --title "simulateur-eligibilite 0.5.0" --verify-tag --notes-file -
 gh release view simulateur-eligibilite@0.5.0 --web
 ```
+
+Les accolades de `${SHA}` comptent : sous zsh, `$SHA:a` lit `:a` comme un
+modificateur de chemin, et la release part vide.
 
 `--verify-tag` refuse la release si le tag n'est pas sur le distant.
 `gh` est épinglé dans `mise.toml`. `gh auth status` dit si tu es connecté.
