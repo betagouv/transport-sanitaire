@@ -38,7 +38,7 @@ const DU_SECOND = [
   "fait_convocation",
 ] as const;
 
-const RETOUR = ["10_RETOUR_PENITENTIAIRE"];
+const RETOUR = ["10_RETOUR_PENITENTIAIRE"] as const;
 
 const reprise = (reponses: Reponses) => Simulation.resume(model.core, reponses);
 
@@ -123,7 +123,7 @@ describe("la recette des deux pages des contextes (REC-Q221-PAGES-1016)", () => 
   });
 
   it("incompatible : la maternité et l'HTNM ensemble ne répondent pas, et restent telles quelles", () => {
-    const ensemble = ["4_MATERNITE_ELOIGNEE", "5_HTNM"];
+    const ensemble = ["4_MATERNITE_ELOIGNEE", "5_HTNM"] as const;
     const contextes = reprise({ ...BRANCARD, "Q2.2.1": ensemble });
     const q221 = question(contextes, "Q2.2.1");
 
