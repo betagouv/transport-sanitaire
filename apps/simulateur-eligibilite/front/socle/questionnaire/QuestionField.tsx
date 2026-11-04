@@ -9,16 +9,19 @@ import {
   withField,
 } from "../../../core/socle/questionnaire-engine";
 
-import { AddressField } from "../ui/AddressField";
-import { CheckboxField } from "../ui/CheckboxField";
-import { DateField } from "../ui/DateField";
-import { LoneCheckbox } from "../ui/LoneCheckbox";
-import { NumberField } from "../ui/NumberField";
-import { RadioField } from "../ui/RadioField";
-import { Reminder } from "../ui/Reminder";
-import { SelectField } from "../ui/SelectField";
-import { TextAreaField } from "../ui/TextAreaField";
-import { TextField } from "../ui/TextField";
+import {
+  AddressField,
+  CheckboxField,
+  DateField,
+  LoneCheckbox,
+  NumberField,
+  RadioField,
+  Reminder,
+  SelectField,
+  TextAreaField,
+  TextField,
+} from "../ui";
+
 import { displayedLabel } from "./label-a-question";
 import { displayedFields } from "./lay-out-an-address";
 import { messageOf } from "./word-a-problem";

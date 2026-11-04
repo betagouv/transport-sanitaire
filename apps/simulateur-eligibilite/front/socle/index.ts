@@ -6,11 +6,7 @@
 // L'écran des seeds et son tableau n'y figurent pas : ils sont chargés à la
 // demande, et les réexporter ici les ramènerait dans le chunk d'entrée.
 
-export {
-  configFromEnv,
-  initAnalytics,
-  loadMatomo,
-} from "./analytics/matomo";
+export { configFromEnv, initAnalytics, loadMatomo } from "./analytics";
 export { App } from "./app/App";
 export type { Models } from "./app/model-choice";
 export {
@@ -38,9 +34,12 @@ export {
   type ResultatProps,
   type Sheet,
 } from "./model";
-export { Disclosure } from "./ui/Disclosure";
-export { type IllustratedCard, IllustratedCards } from "./ui/IllustratedCards";
-export { NumberedCards } from "./ui/NumberedCards";
-export { NumberedSteps } from "./ui/NumberedSteps";
-export { Panel } from "./ui/Panel";
-export { SheetFollowUp } from "./ui/SheetFollowUp";
+export {
+  Disclosure,
+  type IllustratedCard,
+  IllustratedCards,
+  NumberedCards,
+  NumberedSteps,
+  Panel,
+  SheetFollowUp,
+} from "./ui";

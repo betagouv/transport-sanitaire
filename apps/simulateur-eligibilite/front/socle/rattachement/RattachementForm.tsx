@@ -11,9 +11,8 @@ import {
   snapshotReferentiel,
 } from "../../../shared/referentiel";
 import { DeveloperTools, ToolButton } from "../developer-tools/DeveloperTools";
-import { Container } from "../ui/Container";
-import { SelectField } from "../ui/SelectField";
-import { TextField } from "../ui/TextField";
+import { Container, SelectField, TextField } from "../ui";
+
 import type { SaisieRattachement } from "./saisie-rattachement";
 import { useSaisieRattachement } from "./saisie-rattachement";
 

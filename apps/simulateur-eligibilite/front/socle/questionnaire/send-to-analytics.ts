@@ -2,7 +2,7 @@
 // fin, et son abandon si l'onglet est fermé avant.
 
 import { useEffect, useRef } from "react";
-import { EventName, trackEvent } from "../analytics/events";
+import { EventName, trackEvent } from "../analytics";
 
 export type QuestionnaireTracking = {
   stepPassed: (page: number) => void;

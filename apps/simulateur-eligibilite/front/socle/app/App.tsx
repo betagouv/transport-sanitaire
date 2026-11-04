@@ -10,7 +10,7 @@ import { DeveloperTools, ToolButton } from "../developer-tools/DeveloperTools";
 import type { Model } from "../model";
 import { RattachementScreen } from "../rattachement/RattachementScreen";
 import { SeedsScreen } from "../seeds/SeedsScreen";
-import { Container } from "../ui/Container";
+import { Container } from "../ui";
 import { type ModelChoice, type Models, useModelChoice } from "./model-choice";
 import { useModelLoading } from "./model-loading";
 import type { Navigation } from "./navigation";

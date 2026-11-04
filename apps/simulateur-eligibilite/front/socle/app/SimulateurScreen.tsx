@@ -6,7 +6,7 @@
 
 import type { ComponentProps } from "react";
 import { Simulateur } from "../simulateur/Simulateur";
-import { Container } from "../ui/Container";
+import { Container } from "../ui";
 import { Footer } from "./Footer";
 import "./simulateur-screen.css";
 

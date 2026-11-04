@@ -4,7 +4,7 @@
 // compte les pages et les questions.
 
 import type { Simulation } from "../../../core/socle/simulation";
-import { EventName, trackEvent } from "../analytics/events";
+import { EventName, trackEvent } from "../analytics";
 import type { AldIndicator, Model } from "../model";
 
 /**

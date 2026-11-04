@@ -14,7 +14,7 @@ import { dtoFrom } from "../../cerfa/generate-the-cerfa/compute-the-dto";
 import type { CerfaInput, Model } from "../../model";
 import type { DebugTraceProps } from "../../questionnaire/QuestionnaireForm";
 import { Stepper } from "../../questionnaire/Stepper";
-import { SecondaryButton } from "../../ui/SecondaryButton";
+import { SecondaryButton } from "../../ui";
 import type { ScreenProps } from "../Simulateur";
 import { FeedbackLink, type FeedbackOffer, feedbackOf } from "./FeedbackLink";
 import "./resultat-screen.css";

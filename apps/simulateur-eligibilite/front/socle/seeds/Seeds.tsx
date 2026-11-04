@@ -12,7 +12,7 @@ import {
 } from "../../../core/socle/simulation";
 
 import type { Model } from "../model";
-import { Container } from "../ui/Container";
+import { Container } from "../ui";
 import { type SeedRow, SeedsTable } from "./SeedsTable";
 
 type Props = {
