@@ -1,12 +1,16 @@
 // L'écran de rattachement : le formulaire, et ce que sa validation déclenche.
 //
 // À la validation, il range le rattachement en session (pour Matomo), déclare au
-// serveur un service saisi sous « Autre », puis prévient `App`.
+// serveur ce que la saisie apprend au référentiel (service ou établissement
+// saisi), puis prévient `App`.
 // Voir docs/knowledge/adr/identification.md, ADR-1.
 
-import type { RattachementSaisi } from "../../../shared/rattachement-saisi";
+import {
+  enrichitLeReferentiel,
+  type RattachementSaisi,
+} from "../../../shared/rattachement-saisi";
 import type { Referentiel } from "../../../shared/referentiel";
-import { declarerUnService } from "./declarer-un-service";
+import { declarerLaSaisie } from "./declarer-la-saisie";
 import { type AccesRattachement, RattachementForm } from "./RattachementForm";
 import { rangerRattachement } from "./rattachement-en-session";
 import { REFERENTIEL } from "./referentiel";
@@ -20,7 +24,7 @@ type Props = {
 
 export function RattachementScreen({
   referentiel = REFERENTIEL,
-  declarer = declarerUnService,
+  declarer = declarerLaSaisie,
   onRattache,
 }: Props) {
   return (
@@ -28,7 +32,7 @@ export function RattachementScreen({
       referentiel={referentiel}
       onValide={(saisie, acces) => {
         rangerRattachement(saisie);
-        if (saisie.serviceEstAutre) declarer(saisie);
+        if (enrichitLeReferentiel(saisie)) declarer(saisie);
         onRattache(acces);
       }}
     />

@@ -8,7 +8,8 @@ type Props = {
   hint?: string;
   /** Option affichée tant que rien n'est sélectionné. */
   placeholder: string;
-  options: ReadonlyArray<{ value: string; label: string }>;
+  /** Une option `disabled` ne se choisit pas : elle sert de trait ou d'intitulé. */
+  options: ReadonlyArray<{ value: string; label: string; disabled?: boolean }>;
   value: string;
   onChange: (value: string) => void;
   /** Un message par ligne, sous la liste. */
@@ -69,7 +70,11 @@ function Options({
         {placeholder}
       </option>
       {options.map((option) => (
-        <option key={option.value} value={option.value}>
+        <option
+          key={option.value}
+          value={option.value}
+          disabled={option.disabled}
+        >
           {option.label}
         </option>
       ))}

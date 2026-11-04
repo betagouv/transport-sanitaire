@@ -1,7 +1,11 @@
-// Le formulaire de rattachement : établissement, puis service.
+// Le formulaire de rattachement : l'établissement ou la structure, puis ce qui
+// en découle.
 //
-// Chaque réponse dévoile le champ suivant. À la validation, il remonte la saisie
-// à `onValide`. Il ne range rien lui-même : c'est `RattachementScreen`.
+// Chaque réponse dévoile le champ suivant, et le simulateur s'ouvre dès que le
+// choix suffit : un service de la liste ou une structure. Une saisie libre
+// garde un bouton, car on ne sait pas quand elle est finie. Le service n° 4 en
+// garde un aussi : il a deux sorties. Le formulaire remonte la saisie à
+// `onValide` et ne range rien lui-même : c'est `RattachementScreen`.
 //
 // Si le référentiel ne répond pas, il le dit et laisse entrer avec le
 // rattachement dégradé « Autre / Autre ».
@@ -12,13 +16,13 @@ import {
 } from "../../../shared/referentiel";
 import { DeveloperTools, ToolButton } from "../developer-tools";
 import { Container, SelectField, TextField } from "../ui";
-
-import type { SaisieRattachement } from "./saisie-rattachement";
+import { optionsDuChoix } from "./choix";
+import type { Derivation, SaisieRattachement } from "./saisie-rattachement";
 import { useSaisieRattachement } from "./saisie-rattachement";
 
 /**
  * Ce que la validation emporte, en plus du rattachement saisi : l'écran à
- * ouvrir et l'accès aux developer tools. Les deux boutons passent par le même
+ * ouvrir et l'accès aux developer tools. Toutes les entrées passent par le même
  * `onValide` : le rattachement est obligatoire quelle que soit la destination
  * (ADR-1).
  */
@@ -27,6 +31,8 @@ export type AccesRattachement = {
   /** Le service sélectionné déverrouille les developer tools (service n° 4). */
   developerTools: boolean;
 };
+
+type Destination = AccesRattachement["destination"];
 
 type Props = {
   referentiel?: Referentiel;
@@ -41,29 +47,25 @@ export function RattachementForm({
   onValide,
 }: Props) {
   const saisie = useSaisieRattachement(referentiel);
-
-  const entrer = (destination: AccesRattachement["destination"]) => {
-    if (saisie.valide) {
-      onValide(saisie.saisie, {
-        destination,
-        developerTools: saisie.developerTools,
-      });
-    }
-  };
+  const { entrer, modifier } = entrees(saisie, onValide);
 
   return (
     <Container etroit>
       <h1 className="fr-h3">
-        Commencez par renseigner votre établissement et votre service
+        Pour accéder au simulateur, indiquez votre établissement ou votre
+        structure
       </h1>
       <form
         onSubmit={(e) => {
           e.preventDefault();
-          entrer("simulateur");
+          entrer(saisie, "simulateur");
         }}
       >
-        <ProgressiveFields saisie={saisie} />
-        <EntreesDansLApplication saisie={saisie} onEntrer={entrer} />
+        <ProgressiveFields saisie={saisie} modifier={modifier} />
+        <EntreesDansLApplication
+          saisie={saisie}
+          onEntrer={(destination) => entrer(saisie, destination)}
+        />
       </form>
     </Container>
   );
@@ -71,17 +73,41 @@ export function RattachementForm({
 
 // ---- implémentation ----
 
-type FieldsProps = { saisie: SaisieRattachement };
+type Modifier = (
+  champ: Parameters<SaisieRattachement["modifier"]>[0],
+  valeur: string,
+) => void;
+
+type FieldsProps = { saisie: SaisieRattachement; modifier: Modifier };
+
+// Les deux façons d'entrer : valider une dérivation (bouton), ou changer un
+// champ quand la sélection suffit. Le simulateur s'ouvre alors sans bouton.
+function entrees(saisie: SaisieRattachement, onValide: Props["onValide"]) {
+  const entrer = (derivation: Derivation, destination: Destination) => {
+    if (derivation.valide) {
+      onValide(derivation.saisie, {
+        destination,
+        developerTools: derivation.developerTools,
+      });
+    }
+  };
+  const modifier: Modifier = (champ, valeur) => {
+    const suite = saisie.modifier(champ, valeur);
+    if (suite.entreeImmediate) entrer(suite, "simulateur");
+  };
+  return { entrer, modifier };
+}
 
 // Chaque réponse dévoile le champ suivant (workflow §4). Sans référentiel, il
 // n'y a rien à choisir : l'écran le dit, et le rattachement est celui de repli.
-function ProgressiveFields({ saisie }: FieldsProps) {
-  if (saisie.indisponible) return <ReferentielIndisponible />;
+function ProgressiveFields(props: FieldsProps) {
+  if (props.saisie.indisponible) return <ReferentielIndisponible />;
   return (
     <>
-      <EtablissementField saisie={saisie} />
-      <ServiceField saisie={saisie} />
-      <ServiceLibreField saisie={saisie} />
+      <ChoixField {...props} />
+      <ServiceField {...props} />
+      <EtablissementLibreField {...props} />
+      <ServiceLibreField {...props} />
     </>
   );
 }
@@ -97,53 +123,76 @@ function ReferentielIndisponible() {
   );
 }
 
-function EtablissementField({ saisie }: FieldsProps) {
+// Choisir dans cette liste peut ouvrir le simulateur : un changement de
+// contexte, que l'aide annonce (RGAA 7.4).
+function ChoixField({ saisie, modifier }: FieldsProps) {
   return (
     <SelectField
       id="etablissement"
-      label="Établissement"
-      placeholder="Sélectionnez un établissement"
-      value={saisie.champs.etabId}
-      options={options(saisie.etablissements)}
-      onChange={(v) => saisie.modifier("etabId", v)}
+      label="Établissement ou structure"
+      hint="Selon votre choix, le simulateur s'ouvre aussitôt ou un champ de plus s'affiche."
+      placeholder="Sélectionnez..."
+      value={saisie.champs.choix}
+      options={optionsDuChoix(saisie.etablissements, saisie.structures)}
+      onChange={(v) => modifier("choix", v)}
     />
   );
 }
 
-function ServiceField({ saisie }: FieldsProps) {
+function ServiceField({ saisie, modifier }: FieldsProps) {
   if (!saisie.etabChoisi) return null;
   return (
     <SelectField
       id="service"
       label="Nom du service"
-      placeholder="Sélectionnez un service"
+      placeholder="Sélectionnez le nom de votre service"
       value={saisie.champs.serviceId}
-      options={options(saisie.services)}
-      onChange={(v) => saisie.modifier("serviceId", v)}
+      options={saisie.services.map((s) => ({ value: s.id, label: s.libelle }))}
+      onChange={(v) => modifier("serviceId", v)}
     />
   );
 }
 
-function ServiceLibreField({ saisie }: FieldsProps) {
-  if (!saisie.serviceEstAutre) return null;
+function EtablissementLibreField({ saisie, modifier }: FieldsProps) {
+  if (!saisie.etabEstAutre) return null;
+  return (
+    <TextField
+      id="etablissement-libre"
+      label="Renseignez le nom de votre établissement"
+      value={saisie.champs.etabLibre}
+      onChange={(v) => modifier("etabLibre", v)}
+    />
+  );
+}
+
+function ServiceLibreField({ saisie, modifier }: FieldsProps) {
+  if (!saisie.serviceEstAutre && !saisie.etabEstAutre) return null;
   return (
     <TextField
       id="service-libre"
-      label="Nom de votre service / unité"
+      label="Renseignez le nom de votre service"
       value={saisie.champs.serviceLibre}
-      onChange={(v) => saisie.modifier("serviceLibre", v)}
+      onChange={(v) => modifier("serviceLibre", v)}
     />
   );
 }
 
-// Les deux sorties de cet écran sont le simulateur et, pour le service n° 4,
-// les developer tools. Les deux passent par le même `onValide` (ADR-1).
+// Le bouton n'existe que quand la sélection ne suffit pas : sans référentiel,
+// pour une saisie libre, et pour le service n° 4, qui a deux sorties
+// (simulateur et seeds). Les deux passent par le même `onValide` (ADR-1).
 function EntreesDansLApplication({
   saisie,
   onEntrer,
-}: FieldsProps & {
-  onEntrer: (destination: AccesRattachement["destination"]) => void;
+}: {
+  saisie: SaisieRattachement;
+  onEntrer: (destination: Destination) => void;
 }) {
+  const bouton =
+    saisie.indisponible ||
+    saisie.serviceEstAutre ||
+    saisie.etabEstAutre ||
+    saisie.developerTools;
+  if (!bouton) return null;
   return (
     <>
       <div
@@ -165,16 +214,11 @@ function EntreesDansLApplication({
 function DeveloperToolsPanel({
   onEntrer,
 }: {
-  onEntrer: (destination: AccesRattachement["destination"]) => void;
+  onEntrer: (destination: Destination) => void;
 }) {
   return (
     <DeveloperTools>
       <ToolButton onClick={() => onEntrer("seeds")}>Seeds</ToolButton>
     </DeveloperTools>
   );
-}
-
-// Une entrée du référentiel, sous la forme qu'attend `SelectField`.
-function options(entrees: ReadonlyArray<{ id: string; libelle: string }>) {
-  return entrees.map(({ id, libelle }) => ({ value: id, label: libelle }));
 }
