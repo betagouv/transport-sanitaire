@@ -5,8 +5,8 @@
 // rattaché. Voir docs/knowledge/adr/identification.md, ADR-1.
 
 import type { ComponentProps } from "react";
-import { DebugTrace } from "../developer-tools/DebugTrace";
-import { DeveloperTools, ToolButton } from "../developer-tools/DeveloperTools";
+import { DebugTrace, DeveloperTools, ToolButton } from "../developer-tools";
+
 import type { Model } from "../model";
 import { RattachementScreen } from "../rattachement/RattachementScreen";
 import { SeedsScreen } from "../seeds/SeedsScreen";

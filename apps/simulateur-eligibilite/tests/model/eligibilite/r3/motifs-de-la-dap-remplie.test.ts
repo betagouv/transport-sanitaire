@@ -5,7 +5,7 @@
 
 import { describe, expect, it } from "vitest";
 import { S3139H } from "../../../../front/models/eligibilite/r3/s3139h/s3139h";
-import { dtoFrom } from "../../../../front/socle/cerfa/generate-the-cerfa/compute-the-dto";
+import { dtoFrom } from "../../../../front/socle/cerfa";
 import { markedStates, textsOn } from "../../../socle/cerfa/pdf-aplati";
 import type { ValeursDesCibles } from "../r2/traces-du-prescripteur";
 import {

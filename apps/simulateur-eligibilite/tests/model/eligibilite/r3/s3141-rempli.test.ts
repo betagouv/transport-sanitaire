@@ -4,7 +4,7 @@
 
 import { describe, expect, it } from "vitest";
 import { S3141 } from "../../../../front/models/eligibilite/r3/s3141/s3141";
-import { dtoFrom } from "../../../../front/socle/cerfa/generate-the-cerfa/compute-the-dto";
+import { dtoFrom } from "../../../../front/socle/cerfa";
 import {
   drawnOn,
   markedStates,

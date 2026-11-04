@@ -14,8 +14,9 @@ import { S3139H } from "../../../../front/models/eligibilite/r3/s3139h/s3139h";
 import {
   type BoundCerfa,
   dtoFrom,
-} from "../../../../front/socle/cerfa/generate-the-cerfa/compute-the-dto";
-import { generateCerfa } from "../../../../front/socle/cerfa/generate-the-cerfa/generate-the-cerfa";
+  generateCerfa,
+} from "../../../../front/socle/cerfa";
+
 import { markedStates, textsOn } from "../../../socle/cerfa/pdf-aplati";
 import type { ValeursDesCibles } from "../r2/traces-du-prescripteur";
 import { DAP, donnees, gabarit, PMT, type Reponses } from "./reponses-du-cerfa";

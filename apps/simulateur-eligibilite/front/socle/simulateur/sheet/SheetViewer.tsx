@@ -7,7 +7,7 @@
 // l'éditeur en font foi.
 
 import { useRef, useState } from "react";
-import { PdfActionButton } from "../../cerfa/pdf/PdfActionButton";
+import { PdfActionButton } from "../../cerfa";
 import type { Sheet } from "../../model";
 import { useSheetDownload } from "./download-the-sheet";
 import assuranceMaladie from "./logos/assurance-maladie.svg";

@@ -17,7 +17,7 @@ import {
   type Value,
 } from "../../core/socle/questionnaire-engine";
 
-import type { BoundCerfa } from "./cerfa/generate-the-cerfa/compute-the-dto";
+import type { BoundCerfa } from "./cerfa";
 
 /**
  * Ce qu'un résultat reçoit pour s'afficher : ce qu'il lit des questions

@@ -11,10 +11,7 @@ import { type ComponentType, type ReactNode, useState } from "react";
 import type { Answers } from "../../../core/socle/questionnaire-engine";
 import { Simulation } from "../../../core/socle/simulation";
 import type { Model } from "../model";
-import {
-  type DebugTraceProps,
-  QuestionnaireForm,
-} from "../questionnaire/QuestionnaireForm";
+import { type DebugTraceProps, QuestionnaireForm } from "../questionnaire";
 import { CerfaScreen } from "./screens/CerfaScreen";
 import { ResultatScreen } from "./screens/ResultatScreen";
 import { trackAldPathway } from "./track-the-ald-pathway";

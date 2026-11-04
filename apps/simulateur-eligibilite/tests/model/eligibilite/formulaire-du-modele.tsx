@@ -8,7 +8,7 @@ import { useState } from "react";
 import type { Answers } from "../../../core/socle/questionnaire-engine";
 import { Simulation } from "../../../core/socle/simulation";
 import { model } from "../../../front/models/eligibilite";
-import { QuestionnaireForm } from "../../../front/socle/questionnaire/QuestionnaireForm";
+import { QuestionnaireForm } from "../../../front/socle/questionnaire";
 
 type User = ReturnType<typeof userEvent.setup>;
 

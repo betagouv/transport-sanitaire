@@ -9,11 +9,11 @@
 
 import type { ComponentType, ReactNode } from "react";
 import type { Read } from "../../../../core/socle/questionnaire-engine";
-import { CerfaDocument } from "../../cerfa/CerfaDocument";
-import { dtoFrom } from "../../cerfa/generate-the-cerfa/compute-the-dto";
+import { CerfaDocument, dtoFrom } from "../../cerfa";
+
 import type { CerfaInput, Model } from "../../model";
-import type { DebugTraceProps } from "../../questionnaire/QuestionnaireForm";
-import { Stepper } from "../../questionnaire/Stepper";
+import { type DebugTraceProps, Stepper } from "../../questionnaire";
+
 import { SecondaryButton } from "../../ui";
 import type { ScreenProps } from "../Simulateur";
 import { FeedbackLink, type FeedbackOffer, feedbackOf } from "./FeedbackLink";

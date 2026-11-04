@@ -4,8 +4,7 @@
 // sort pas (`cerfa/pdf/PdfActionButton.tsx`). Un échec se dit ; un nouveau clic réessaie.
 
 import { type RefObject, useRef, useState } from "react";
-import { download, fileNameOf } from "../../cerfa/pdf/download-a-pdf";
-import { useShown } from "../../cerfa/pdf/PdfActionButton";
+import { download, fileNameOf, useShown } from "../../cerfa";
 
 /** Où en est le téléchargement. */
 export type DownloadStatus = "idle" | "preparing" | "failed";

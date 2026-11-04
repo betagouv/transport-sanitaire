@@ -11,20 +11,19 @@ export { App } from "./app/App";
 export type { Models } from "./app/model-choice";
 export {
   at,
+  bindCerfa,
   box,
   type Cerfa,
+  type CerfaMapping,
+  cerfaValue,
   commentOn,
   date,
   drawnBox,
   onOneLine,
   templateAt,
   text,
-} from "./cerfa/cerfa";
-export {
-  bindCerfa,
-  type CerfaMapping,
-  cerfaValue,
-} from "./cerfa/generate-the-cerfa/compute-the-dto";
+} from "./cerfa";
+
 export {
   type AldIndicator,
   defineModel,

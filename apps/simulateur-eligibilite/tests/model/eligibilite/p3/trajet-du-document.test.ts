@@ -14,7 +14,7 @@ import {
 } from "../../../../core/socle/questionnaire-engine";
 
 import { preconisationOf } from "../../../../core/socle/simulation";
-import { errorsOf } from "../../../../front/socle/questionnaire/word-a-problem";
+import { errorsOf } from "../../../../front/socle/questionnaire";
 import { MINEUR, PLUSIEURS_PERMISSIONS } from "../p2/reponses-de-la-permission";
 import { ciblesValant } from "../r2/traces-du-prescripteur";
 

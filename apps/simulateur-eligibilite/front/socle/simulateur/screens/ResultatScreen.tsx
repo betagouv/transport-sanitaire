@@ -14,7 +14,7 @@ import type {
 
 import type { Simulation } from "../../../../core/socle/simulation";
 import type { FirstResult, Model } from "../../model";
-import { NextStep, Stepper } from "../../questionnaire/Stepper";
+import { NextStep, Stepper } from "../../questionnaire";
 import { SecondaryButton } from "../../ui";
 import type { ScreenProps } from "../Simulateur";
 import { SheetViewer } from "../sheet/SheetViewer";
