@@ -15,10 +15,10 @@ import {
   questionsOf,
   unFait,
 } from "../../../core/socle";
-import { DecisionGraph } from "../../../core/socle/decision-engine/decision-graph";
-import { decisionGraphOf } from "../../../core/socle/decision-engine/publicodes";
-import { faitsChangedBy } from "../../../core/socle/questionnaire-engine/faits-changed-by";
-import { pagesOf } from "../../../core/socle/questionnaire-engine/question";
+import { DecisionGraph } from "../../../core/socle/decision-engine";
+import { decisionGraphOf } from "../../../core/socle/decision-engine/compute-the-cibles";
+import { faitsChangedBy } from "../../../core/socle/questionnaire-engine/does-a-question-still-matter/faits-changed-by";
+import { pagesOf } from "../../../core/socle/questionnaire-engine/question/question";
 import { modeleDeTest } from "../modele-de-test";
 
 describe("ce que change une question", () => {
@@ -128,17 +128,17 @@ const GRAPHE = new DecisionGraph(
 );
 
 const question = questionsOf<Questions, Faits, Cibles>({
-  options: {
-    boisson: { the: "Un thé", eau: "De l'eau" },
-    taille: { petit: "Petit", grand: "Grand" },
-  },
   faits: FAITS,
   cibles: (faits) => ({ cible_sucre_propose: Cible.of(faits.chaude.isOui()) }),
 });
 
 const grand = given.question("taille").answer().is("grand");
-const TAILLE = question.singleChoice("taille", "Quelle taille ?");
-const BOISSON = question.singleChoice("boisson", "Quelle boisson ?");
+const TAILLE = question
+  .singleChoice("taille", "Quelle taille ?")
+  .options({ petit: "Petit", grand: "Grand" });
+const BOISSON = question
+  .singleChoice("boisson", "Quelle boisson ?")
+  .options({ the: "Un thé", eau: "De l'eau" });
 const SUCRE = question
   .checkbox("sucre", "Du sucre ?", "Oui")
   .appliesWhen(given.cible("cible_sucre_propose").isOui());

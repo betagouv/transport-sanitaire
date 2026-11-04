@@ -7,7 +7,7 @@
 // Il suit `CONTRAT_REPONSES_FAITS.json`.
 
 import { unFait } from "../../../socle/index.ts";
-import { SOUS_QUESTIONS_MASQUEES } from "../declarations/faits.ts";
+import { SOUS_QUESTIONS_MASQUEES } from "./noms.ts";
 
 export const preuvePrestationAbsente = unFait(
   "fait_preuve_prestation_absente",

@@ -29,7 +29,7 @@ d'où viennent ses réponses.
 ## 2. Écrire les réponses
 
 Les réponses se donnent par identifiant de question (`"Q1.2"`), avec les
-valeurs de `declarations/questions.ts`. Un groupe de réponses partagé par
+valeurs que déclare sa question (`questions/p1/questions/q1-2.ts`). Un groupe de réponses partagé par
 plusieurs seeds devient une constante en tête du catalogue (`TAP_1_5`,
 `TRAJET_COURT`).
 
@@ -47,7 +47,7 @@ réponses/faits du paquet, dans `tmp/<version>/package/`. Les helpers de
 ## 3. Écrire les attendus
 
 `expected` ne nomme que les cibles qui caractérisent la seed, avec la valeur
-que les règles donnent. Ce sont les cibles de `declarations/cibles.ts`, pas les
+que les règles donnent. Ce sont les cibles de `cibles/noms.ts`, pas les
 faits.
 
 `label` dit l'écran où elle s'ouvre, puis ce qu'on y voit. `description` dit

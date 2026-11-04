@@ -1,6 +1,6 @@
 import { screen } from "@testing-library/react";
 import { beforeEach, describe, expect, it } from "vitest";
-import { initAnalytics } from "../../../front/socle/analytics/matomo";
+import { initAnalytics } from "../../../front/socle/analytics";
 import {
   ACCOMPAGNEMENTS,
   allerAuResultat,

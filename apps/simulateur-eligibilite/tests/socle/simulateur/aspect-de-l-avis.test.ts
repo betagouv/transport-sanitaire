@@ -10,7 +10,7 @@ import { describe, expect, it } from "vitest";
 import { racine } from "../../inspection-des-sources";
 
 const CSS = readFileSync(
-  join(racine, "front/socle/simulateur/feedback-link.css"),
+  join(racine, "front/socle/simulateur/screens/feedback-link.css"),
   "utf-8",
 );
 

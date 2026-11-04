@@ -56,8 +56,10 @@ front et le référentiel de rattachement.
 
 Les règles d'écriture et les invariants ne sont pas de la prose, ils sont exécutables.
 On les trouve dans `tests/architecture.test.ts`, pour les frontières, dans
-`tests/taille-du-code.test.ts`, pour les limites de 30 et 300 lignes, et dans `tests/lisibilite.test.ts`, pour la forme des fichiers, les noms
-et les extensions d'import. Lis leur message d'échec : chacun dit ce que sa règle
+`tests/taille-du-code.test.ts`, pour les limites de 30 et 300 lignes, dans `tests/lisibilite.test.ts`, pour la forme des fichiers, les noms
+et les extensions d'import, dans `tests/miroir-des-sources.test.ts`, pour
+les dossiers de tests, rangés comme les sources, et dans
+`tests/modules-du-socle.test.ts`, pour l'index de chaque module du socle. Lis leur message d'échec : chacun dit ce que sa règle
 protège. Ce qu'on attend d'un contributeur est écrit dans [AGENTS.md](AGENTS.md).
 
 De n'importe où dans le dépôt, `tsp dev simulateur` lance le front et le backend en
@@ -73,7 +75,7 @@ jamais exposées au front.
 | Variable | Portée | Requis | Défaut / si absente | Usage |
 | --- | --- | --- | --- | --- |
 | `GRIST_API_KEY` | serveur | **prod** | référentiel **snapshot factice** (dev/CI) | Clé API Grist source du référentiel (établissements/services). Jamais exposée au front. |
-| `GRIST_DOC_URL` | serveur | non | doc Grist du projet | Base API du doc Grist (`server/referentiel.ts`). |
+| `GRIST_DOC_URL` | serveur | non | doc Grist du projet | Base API du doc Grist (`server/configuration.ts`). |
 | `VITE_MATOMO_ENABLED` | front | non | `false` (traceur no-op) | Active le tracking Matomo. Actif d'office en build de prod ; à mettre à `true` pour tester en local. |
 | `VITE_MATOMO_URL` | front | non | instance mutualisée beta.gouv | URL de l'instance Matomo. |
 | `VITE_MATOMO_SITE_ID` | front | non | `275` | Identifiant du site Matomo. |
@@ -94,19 +96,24 @@ posé — `PORT=quatre-mille` ou une `GRIST_DOC_URL` qui n'est pas une URL arrê
 démarrage de la même manière, plutôt que d'échouer plus tard et ailleurs. Une variable
 posée mais vide (`GRIST_API_KEY=` dans un `.env` recopié) compte pour absente. Les autres
 variables ont un défaut documenté ci-dessus : elles ne bloquent jamais le démarrage.
-*Gardé par* [`tests/socle/serveur/configuration.test.ts`](tests/socle/serveur/configuration.test.ts).
+*Gardé par* [`tests/socle/server/configuration.test.ts`](tests/socle/server/configuration.test.ts).
 
 ## Structure (feature-first)
 
 Il y a quatre racines de *runtime* : `core/`, le métier, qui se charge sous Node
 comme dans le navigateur, `front/`, le front bundlé par Vite, `server/`, le
 backend Node qui détient la clé Grist, et `shared/`, le contrat commun.
-Chacune est organisée par feature. À côté, `cms/` porte le script que le CMS exécute
-sur ses propres pages : il n'est ni bundlé ni servi par l'app.
+Chacune est organisée par feature : un dossier est un module, une entité (un
+nom) ou une capacité (un verbe), et un fichier porte une responsabilité, nommé
+de ce qu'il exporte. À côté, `tooling/` porte la configuration TypeScript et
+les outils de développement.
 
 `core/` et `front/` ont chacun un `socle/` et un `models/`. Un modèle a son
 dossier des deux côtés, sous le même nom : son métier dans `core/`, son écran
 dans `front/` (ADR [`metier-et-ecran`](docs/knowledge/adr/metier-et-ecran.md)).
+Un module du socle, dossier direct de `core/socle/` ou de `front/socle/`, a son
+`index.ts` : ce qu'il promet au reste du socle, et le seul de ses fichiers
+qu'on importe de l'extérieur (ADR-28).
 
 ```
 shared/                  le contrat front ⇄ back, source unique des types partagés
@@ -119,26 +126,35 @@ core/                    le métier, sans React ni DOM : ce qu'un serveur ou un 
                          peut calculer
   models/                le métier de chaque modèle
     fake/                le modèle de démonstration : une page par capacité du
-                         socle. Ses déclarations (questions, faits, cibles), son
-                         questionnaire, sa préconisation et son catalogue de seeds
-    eligibilite/         le modèle de l'éditeur, en cours d'intégration. À sa racine,
-                         ce qui assemble : le questionnaire, le catalogue des
-                         faits, la préconisation, l'évaluation des règles et le
+                         socle, dans la forme du modèle de l'éditeur
+    eligibilite/         le modèle de l'éditeur. Un dossier par étape du chemin,
+                         des réponses au résultat, chacun ouvert sur son
+                         vocabulaire ; à la racine, `index.ts` qui assemble et le
                          catalogue de seeds
+      questions/         `question.ts` (les constructeurs), `reponses.ts` (le
+                         type des réponses, tiré des parties),
+                         `questionnaire.ts` (les parties), puis une partie par
+                         dossier, de la même forme
+        p1/              l'autonomie et l'état de santé : le mode de transport
+        p2/              l'éligibilité
+        p3/              le complément du cerfa, après le verrou
+          partie-N.ts    la table des matières : les pages, dans l'ordre, faites
+                         des questions
+          questions/     un fichier par question, avec ses sous-questions
+                         lettrées (`q2-8-6.ts` : Q2.8.6, .a, .b) et ses gardes
+          conditions/    ce que plusieurs questions lisent (`sejour.ts`,
+                         `supports-du-complement.ts`), hors des questions
+      faits/             `noms.ts` (les faits, dans les mots des règles), un
+                         fichier par fait, une valeur faite de règles ;
+                         `communs.ts` porte les lectures et les règles que
+                         plusieurs faits partagent ; `preconisation.ts`, des
+                         réponses validées aux faits
+      cibles/            `noms.ts` (les cibles et leurs valeurs, dans les mots des
+                         règles), `evaluation.ts`, des faits aux cibles par les
+                         règles publicodes
       rules/             le livrable de l'éditeur : le YAML, sa `VERSION`, le
                          catalogue des textes de R2, et `regles.json` et
                          `regles.graphe.json`, que `pnpm regles` calcule du YAML
-      declarations/      les questions, faits et cibles, dans les mots des règles
-      faits/             un fichier par fait, une valeur faite de règles ;
-                         `communs.ts` porte les lectures et les règles que
-                         plusieurs faits partagent
-      p1/                l'autonomie et l'état de santé : les pages du mode de
-                         transport
-      p2/                l'éligibilité : les pages par thème (prestation,
-                         contextes, trajet, transfert, permission, convocation,
-                         retour pénitentiaire, branche)
-      p3/                le complément du cerfa : le trajet, le soin, l'urgence, les
-                         évènements et l'exonération
   socle/                 ce qui ne dépend d'aucune version. `model.ts` est le contrat
                          métier qu'un modèle remplit (`CoreModel`), `index.ts` ce
                          qu'il a le droit d'importer
@@ -154,21 +170,34 @@ core/                    le métier, sans React ni DOM : ce qu'un serveur ou un 
                          inconnue la cible qui en dépend. Le seul
                          fichier qui importe publicodes, pris par le modèle hors de
                          `index.ts`
-    seeds/               ce qu'est une seed, et ce qu'elle confirme ou dément
+    simulation/          la simulation, l'agrégat du parcours : un modèle, les
+                         réponses validées, la page ouverte et l'étape (questionnaire,
+                         résultat, complément, cerfa). Valider, reculer, rouvrir et
+                         verrouiller donnent une nouvelle simulation. La
+                         préconisation des réponses, la lecture d'un résultat ; ce
+                         qu'est une seed, et ce qu'elle confirme ou dément
 front/                   le front, bundlé par Vite
   main.tsx               le point d'entrée du navigateur : monte l'app, amorce le traceur
   models/                l'écran de chaque modèle, chacun chargé à la demande
-    fake/                les deux résultats de la démonstration et son bon de commande
+    fake/                les deux résultats de la démonstration (`r2.tsx`, `r3.tsx`)
+                         et son bon de commande
     eligibilite/         les deux résultats du modèle de l'éditeur
-      r2/                le résultat : la trace, ses précisions, le catalogue chargé
-                         à la demande, les boutons, et ce que les fiches partagent
-        prescripteur/    les cinq issues sans fiche patient
-        fiche-negative/  `ISSUE_NON_ELIGIBLE`
-        fiche-positive/  la prescription, le S3141 et les deux accords préalables
-      r3/                le résultat du complément : le document de chaque support
+      r2/                `r2.tsx`, l'entité R2 : ce qu'elle lit, sa trace, son cas,
+                         ses textes, sa page
+        components/      ce que les cas partagent : le catalogue chargé à la
+                         demande, les précisions, la page de la fiche, le texte enrichi
+        layouts/         un dossier par cas, avec ses issues, ses précisions, son
+                         texte et sa page
+          acceptee/      la prescription, le S3141 et les deux accords préalables
+          refusee/       `ISSUE_NON_ELIGIBLE`
+          orientee/      les cinq issues sans fiche patient
+      r3/                `r3.tsx`, R3 : ce qu'elle lit, le document de chaque
+                         support, son titre, son bouton de départ, sa page
         rubriques/       ce que les cerfa partagent, sans lien à aucun d'eux (D-138),
                          dont le texte médical de la PMT et de la DAP
         s3141/           le S3141, assemblé de rubriques
+        s3138g/          la PMT, de même
+        s3139h/          la DAP, de même
   socle/                 ce qui ne dépend d'aucune version. `model.ts` est le contrat
                          d'écran qu'un modèle remplit (`Model`), qui porte son
                          métier sous `core`, `index.ts` ce qu'il a le droit d'importer
@@ -177,11 +206,13 @@ front/                   le front, bundlé par Vite
     rattachement/        LA feature de l'écran de rattachement, miroir de server/rattachement/ :
                          le formulaire à révélation progressive, les deux clients de
                          l'API, le rattachement en mémoire de session (ADR-4)
-    simulateur/          le parcours : questionnaire, résultat, verrou, complément
-    questionnaire-engine/  le questionnaire à l'écran : la page ouverte et son
-                         brouillon, les phrases de l'écran, l'avancement
-                         automatique, le champ qui affiche une question, ce qui part
-                         vers l'analytics
+    simulateur/          le parcours : les écrans de résultat et du cerfa
+                         (screens/), la feuille à remettre au patient et son PDF
+                         (sheet/), le verrou, l'indicateur ALD
+    questionnaire/       le questionnaire à l'écran, un fichier par capacité : la
+                         page ouverte et son brouillon, l'avancement automatique,
+                         les phrases de l'écran, le champ qui affiche une question,
+                         ce qui part vers l'analytics
     ui/                  les champs de formulaire, bâtis sur le DSFR et sans rien
                          savoir du questionnaire : TextField, TextAreaField,
                          SelectField, RadioField, CheckboxField, NumberField,
@@ -192,16 +223,18 @@ front/                   le front, bundlé par Vite
     seeds/               l'écran des seeds. Elles se greffent sur le
                          simulateur, jamais l'inverse : c'est App.tsx qui compose.
     cerfa/               le socle de remplissage d'un PDF : un cerfa et son DTO,
-                         l'écriture dans un AcroForm, le texte qui déborde,
-                         l'aplatissement, les marques et textes dessinés, la
-                         génération et le bouton de téléchargement. Aucun gabarit,
-                         et rien du simulateur.
-    cerfa-mapping.ts     la traduction des données du simulateur en DTO d'un cerfa
+                         sa génération (generate-the-cerfa/ : le DTO calculé des
+                         données du simulateur, l'écriture dans un AcroForm, le
+                         texte qui déborde, l'aplatissement, les marques et textes
+                         dessinés), puis ce qu'on fait d'un PDF (pdf/ : le
+                         télécharger, l'imprimer, le bouton qui l'attend). Aucun
+                         gabarit.
     analytics/           le vocabulaire mesuré, seul import du reste, son transport
-                         vers Matomo, et le choix du prescripteur transmis par le CMS
-cms/                     le script à coller dans Sites Conformes : l'opt-out du pied de
-                         page, qui répond au traceur de l'iframe (voir « Intégrer dans
-                         Sites Conformes »)
+                         vers Matomo, le choix du prescripteur transmis par le CMS, et
+                         consent-cms.js, le script à coller dans Sites Conformes :
+                         l'opt-out du pied de page, qui répond au traceur de l'iframe
+                         (voir « Intégrer dans Sites Conformes »)
+tooling/                 la configuration TypeScript et les outils de développement
 ```
 
 ## Entre deux modèles
@@ -259,15 +292,15 @@ sert à tenir en vie, et sous test, ce que le parcours réel reprendra :
 
 | Comportement | Ce qu'il fait | Où |
 | --- | --- | --- |
-| Avancement automatique | Une page faite de choix uniques avance seule 200 ms après la réponse, sans bouton « Suivant ». Au retour, le bouton reprend la main ; changer la réponse avance aussitôt. | `questionnaire-engine/auto-advance.ts` |
-| Brouillon | Une saisie ne compte qu'une fois la page validée. « Précédent » abandonne le brouillon. | `questionnaire-engine/questionnaire.ts` |
-| Invalidation | Une réponse changée efface les réponses qui en dépendent, et elles seules. | `core/socle/questionnaire-engine/page-commit.ts` |
-| Verrou | Au résultat, « Précédent » rouvre le questionnaire. L'action principale verrouille : le complément est un second parcours, qui ne repose aucune question d'avant et n'a pas de « Précédent » sur sa première page. | `simulateur/Simulateur.tsx` |
-| Stepper | Il compte des parties, jamais des pages. Sur une page de questions, le titre de la partie est le sien, en `h1`, et il annonce la partie suivante du même questionnaire ; la dernière n'annonce rien (D-166). Les résultats l'affichent aussi. | `questionnaire-engine/Stepper.tsx`, `questionnaire-engine/QuestionnaireForm.tsx` |
-| Page du premier résultat | Le socle compose la page : le stepper avec son titre et ce qui suit (« Étape suivante : … » ou « Évaluation terminée. »), puis le `h1`, l'introduction et le corps que le modèle donne (D-124), puis une rangée de boutons sous un trait : « Précédent » et « Faire une nouvelle simulation » à gauche, « Compléter » poussé à droite, les trois empilés sous 768 px (D-168). « Compléter » verrouille ; le modèle le nomme selon la préconisation, ou le retire (libellé `null`), et il n'est posé que si la partie suivante a des pages ou un cerfa, et que le résultat chargé n'est pas `terminal`. Un résultat qui charge ses textes garde le stepper, compté avec l'étape prévisionnelle, sans ligne, et les deux boutons de gauche. Le titre d'un résultat avec feuille et complétion est vert (D-169). Toute fiche à remettre au patient est une feuille (`sheet`, D-125) : les boutons passent au-dessus d'elle, puis la liseuse la pose sur fond gris, sous une barre « Imprimer », et seule la feuille s'imprime : sur une A4 si elle y tient, sinon sur deux, la seconde ouverte au bloc de suivi, d'après une mesure de sa mise en page d'impression (D-178, D-179). « Télécharger », à côté, donne la feuille en PDF sans le dialogue d'impression, avec les pages de l'impression (#129). Le PDF se prépare au clic, sur la feuille affichée : pendant ce temps, le bouton dit « Préparation du PDF… » et attend. Un PDF prêt après qu'on a quitté la feuille ne sort pas. Un échec se dit sous la feuille, qui reste affichée. Le PDF est une image de la feuille : son texte ne se sélectionne pas. | `simulateur/FirstResultat.tsx`, `simulateur/sheet-pagination.ts`, `simulateur/sheet-download.ts` |
-| Impression et téléchargement du cerfa | Sous le second résultat, « Imprimer » et « Télécharger » portent le même cerfa, généré une fois dans le navigateur dès que le résultat s'affiche (D-135). Pendant la génération, « Télécharger » dit « Préparation du PDF… » et les deux boutons sont désactivés (D-191). Un PDF prêt après qu'on a quitté le résultat ne sort pas (D-190). « Imprimer » ouvre le dialogue d'impression sur le PDF, chargé dans un cadre invisible, et non sur la page. Le cerfa porte la date du jour où le complément a été validé, qui ne change pas tant qu'il ne l'est pas à nouveau. Un échec s'affiche sous le résultat. Le PDF est aplati, sans aucun champ : il ne se corrige plus. Sous les deux boutons, l'aperçu de ce même PDF, hors impression de la page, ou ce que le modèle met à sa place (`cerfa.standIn`). Le titre du résultat est celui que le modèle donne à la préconisation : il titre le stepper, qui est le `h1` (D-182). | `cerfa/CerfaDocument.tsx`, `cerfa/CerfaPreview.tsx`, `cerfa/print-pdf.ts`, branchés par `simulateur/Resultats.tsx` |
-| Texte trop long | Un texte n'est jamais coupé, et ne bloque jamais le cerfa. Trop long pour son cadre, il passe de 9 à 8 pt, puis perd son commentaire facultatif : un avertissement le dit au-dessus du bouton, avant tout téléchargement. S'il ne tient toujours pas, il rapetisse et passe à la ligne jusqu'à tenir dans son cadre (D-193). Seul un texte plus long que le nombre de caractères de son champ déborde sous son cadre, par-dessus ce qui s'y trouve, et ne descend sous 8 pt, jusqu'à 6 pt, que pour rester sur la page. | `cerfa/fill-cerfa.ts`, `cerfa/overflow.ts` |
-| Résultat sans suite | Quand la préconisation ne donne pas de libellé pour l'action qui verrouille, pas de partie suivante qui ait des pages ou un cerfa, ou que le résultat se dit `terminal`, le premier résultat est le dernier écran : pas de bouton pour verrouiller, et le stepper s'arrête sur lui. | `simulateur/FirstResultat.tsx` |
+| Avancement automatique | Une page faite de choix uniques avance seule 200 ms après la réponse, sans bouton « Suivant ». Au retour, le bouton reprend la main ; changer la réponse avance aussitôt. | `questionnaire/advance-alone.ts` |
+| Brouillon | Une saisie ne compte qu'une fois la page validée. « Précédent » abandonne le brouillon. | `questionnaire/draft-an-answer.ts` |
+| Invalidation | Une réponse changée efface les réponses qui en dépendent, et elles seules. | `core/socle/questionnaire-engine/validate-a-page.ts` |
+| Verrou | Au résultat, « Précédent » rouvre le questionnaire. L'action principale verrouille : le complément est un second parcours, qui ne repose aucune question d'avant et n'a pas de « Précédent » sur sa première page. | `core/socle/simulation/simulation.ts`, `simulateur/Simulateur.tsx` |
+| Stepper | Il compte des parties, jamais des pages. Sur une page de questions, le titre de la partie est le sien, en `h1`, et il annonce la partie suivante du même questionnaire ; la dernière n'annonce rien (D-166). Les résultats l'affichent aussi. | `questionnaire/Stepper.tsx`, `questionnaire/QuestionnaireForm.tsx` |
+| Page du premier résultat | Le socle compose la page : le stepper avec son titre et ce qui suit (« Étape suivante : … » ou « Évaluation terminée. »), puis le `h1`, l'introduction et le corps que le modèle donne (D-124), puis une rangée de boutons sous un trait : « Précédent » et « Faire une nouvelle simulation » à gauche, « Compléter » poussé à droite, les trois empilés sous 768 px (D-168). « Compléter » verrouille ; le modèle le nomme selon la préconisation, ou le retire (libellé `null`), et il n'est posé que si la partie suivante a des pages ou un cerfa, et que le résultat chargé n'est pas `terminal`. Un résultat qui charge ses textes garde le stepper, compté avec l'étape prévisionnelle, sans ligne, et les deux boutons de gauche. Le titre d'un résultat avec feuille et complétion est vert (D-169). Toute fiche à remettre au patient est une feuille (`sheet`, D-125) : les boutons passent au-dessus d'elle, puis la liseuse la pose sur fond gris, sous une barre « Imprimer », et seule la feuille s'imprime : sur une A4 si elle y tient, sinon sur deux, la seconde ouverte au bloc de suivi, d'après une mesure de sa mise en page d'impression (D-178, D-179). « Télécharger », à côté, donne la feuille en PDF sans le dialogue d'impression, avec les pages de l'impression (#129). Le PDF se prépare au clic, sur la feuille affichée : pendant ce temps, le bouton dit « Préparation du PDF… » et attend. Un PDF prêt après qu'on a quitté la feuille ne sort pas. Un échec se dit sous la feuille, qui reste affichée. Le PDF est une image de la feuille : son texte ne se sélectionne pas. | `simulateur/screens/ResultatScreen.tsx`, `simulateur/sheet/slice-into-pages.ts`, `simulateur/sheet-download.ts` |
+| Impression et téléchargement du cerfa | Sous le second résultat, « Imprimer » et « Télécharger » portent le même cerfa, généré une fois dans le navigateur dès que le résultat s'affiche (D-135). Pendant la génération, « Télécharger » dit « Préparation du PDF… » et les deux boutons sont désactivés (D-191). Un PDF prêt après qu'on a quitté le résultat ne sort pas (D-190). « Imprimer » ouvre le dialogue d'impression sur le PDF, chargé dans un cadre invisible, et non sur la page. Le cerfa porte la date du jour où le complément a été validé, qui ne change pas tant qu'il ne l'est pas à nouveau. Un échec s'affiche sous le résultat. Le PDF est aplati, sans aucun champ : il ne se corrige plus. Sous les deux boutons, l'aperçu de ce même PDF, hors impression de la page, ou ce que le modèle met à sa place (`cerfa.standIn`). Le titre du résultat est celui que le modèle donne à la préconisation : il titre le stepper, qui est le `h1` (D-182). | `cerfa/CerfaDocument.tsx`, `cerfa/CerfaPreview.tsx`, `cerfa/pdf/print-a-pdf.ts`, branchés par `simulateur/screens/CerfaScreen.tsx` |
+| Texte trop long | Un texte n'est jamais coupé, et ne bloque jamais le cerfa. Trop long pour son cadre, il passe de 9 à 8 pt, puis perd son commentaire facultatif : un avertissement le dit au-dessus du bouton, avant tout téléchargement. S'il ne tient toujours pas, il rapetisse et passe à la ligne jusqu'à tenir dans son cadre (D-193). Seul un texte plus long que le nombre de caractères de son champ déborde sous son cadre, par-dessus ce qui s'y trouve, et ne descend sous 8 pt, jusqu'à 6 pt, que pour rester sur la page. | `cerfa/generate-the-cerfa/fill-the-form.ts`, `cerfa/overflow.ts` |
+| Résultat sans suite | Quand la préconisation ne donne pas de libellé pour l'action qui verrouille, pas de partie suivante qui ait des pages ou un cerfa, ou que le résultat se dit `terminal`, le premier résultat est le dernier écran : pas de bouton pour verrouiller, et le stepper s'arrête sur lui. | `simulateur/screens/ResultatScreen.tsx` |
 
 *Gardé par* `tests/socle/simulateur/`.
 
@@ -311,7 +344,7 @@ l'administration du CMS :
    casserait l'opt-out et l'API.
 2. **Installer l'opt-out.** Dans Paramètres → Scripts personnalisés → « Scripts dans
    la section `<body>` », coller le contenu de
-   [`cms/statistiques-simulateur.js`](cms/statistiques-simulateur.js) entre
+   [`front/socle/analytics/consent-cms.js`](front/socle/analytics/consent-cms.js) entre
    `<script type="module">` et `</script>`, après avoir remplacé
    `ORIGINE_SIMULATEUR` par l'origine réelle du simulateur (`https://domaine`, sans
    chemin ni barre finale).

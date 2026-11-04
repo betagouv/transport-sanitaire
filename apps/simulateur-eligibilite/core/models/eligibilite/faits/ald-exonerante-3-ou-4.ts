@@ -7,9 +7,15 @@
 // Il suit `CONTRAT_REPONSES_FAITS.json`.
 
 import { unFait } from "../../../socle/index.ts";
-import { CAS } from "./communs.ts";
+import { given } from "./communs.ts";
 
 export const aldExonerante3Ou4 = unFait("fait_ald_exonerante_3_ou_4")
-  .ouiSi(CAS.checked("2_ALD"), "Pris en charge à 100 %.")
-  .inconnuSi(CAS.isPresent(), "Sans ALD cochée, son statut reste inconnu.")
+  .ouiSi(
+    given.question("Q1.3").answer().checked("2_ALD"),
+    "Pris en charge à 100 %.",
+  )
+  .inconnuSi(
+    given.question("Q1.3").answer().isPresent(),
+    "Sans ALD cochée, son statut reste inconnu.",
+  )
   .sinon("Q1.3 n'est pas encore validée.");

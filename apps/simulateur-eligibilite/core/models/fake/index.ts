@@ -2,16 +2,18 @@
 // ses seeds. Son écran (`front/models/fake/`) s'y ajoute.
 
 import type { CoreModel } from "../../socle/index.ts";
-import type { Cibles } from "./declarations/cibles.ts";
-import type { Faits } from "./declarations/faits.ts";
-import type { Questions } from "./declarations/questions.ts";
-import { CATALOGUE_DES_FAITS } from "./faits.ts";
-import { cibles, faits } from "./preconisation.ts";
-import { COMPLEMENT, PARTS } from "./questionnaire.ts";
+import { cibles } from "./cibles/evaluation.ts";
+import type { Cibles } from "./cibles/noms.ts";
+import { CATALOGUE_DES_FAITS } from "./faits/index.ts";
+import type { Faits } from "./faits/noms.ts";
+import { faits } from "./faits/preconisation.ts";
+import { COMMANDE } from "./questions/p1/partie-1.ts";
+import { COMPLEMENT } from "./questions/p2/partie-2.ts";
+import type { Questions } from "./questions/reponses.ts";
 
 export const model: CoreModel<Questions, Faits, Cibles> = {
   preconisation: { faits, cibles, reads: CATALOGUE_DES_FAITS.reads },
-  questionnaire: PARTS,
+  questionnaire: [COMMANDE],
   complement: COMPLEMENT,
   seeds: () => import("./seeds-catalogue.ts").then((m) => m.SEEDS),
 };

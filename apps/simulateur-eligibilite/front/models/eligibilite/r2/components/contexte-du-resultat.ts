@@ -1,0 +1,154 @@
+// Le contexte d'une fiche patient positive (#135) : la phrase qui dit pourquoi
+// le transport est pris en charge, et le motif administratif que le modus
+// reprend. Des fonctions pures de la trace, sans React.
+//
+// Un code de contexte n'est posé que si la cible qui le justifie est prouvée,
+// jamais par défaut. Le contexte retenu est celui dont les `codes` sont
+// exactement les codes établis. Les mots viennent du catalogue. Chaque texte
+// déclare ce qu'il lit des cibles (`ce-que-lit-un-texte.ts`).
+
+import type { Cibles } from "../../../../../core/models/eligibilite/cibles/noms";
+import { given } from "../../../../../core/models/eligibilite/questions/reponses";
+import {
+  avecLesAutresTermes,
+  LU_PAR_LES_AUTRES_TERMES,
+} from "./autres-termes-du-lexique";
+import { luPar, type TraceDe } from "./ce-que-lit-un-bloc";
+import type {
+  AucunTexte,
+  IssuePositive,
+  TexteCode,
+} from "./forme-du-catalogue";
+import { sansBlancsDeTrop } from "./sans-blancs-de-trop";
+
+// Chaque code, et la cible qui le prouve. Le M ne se pose que pour un mineur
+// reconnu dont l'ALD n'est pas à 100 % : la cible l'établit déjà.
+const CODES = [
+  ["H", "cible_hospitalisation_ou_seances_assimilees"],
+  ["T", "cible_situation_at_mp"],
+  ["A", "cible_ald_juridiquement_qualifiante_3_ou_4_degres"],
+  ["M", "cible_mineur_ald_non_exonerante_reconnue"],
+  ["B", "cible_mode_ambulance"],
+] as const satisfies readonly (readonly [string, keyof Cibles])[];
+
+/** Ce que lisent les codes de contexte : la cible de chaque code. */
+export const LU_PAR_LES_CODES_DE_CONTEXTE = luPar({
+  cibles: given.cibles(...CODES.map(([, cible]) => cible)),
+});
+
+/** Ce que lit le lexique d'un texte. */
+export const LU_PAR_LE_LEXIQUE = luPar({}, LU_PAR_LES_AUTRES_TERMES);
+
+/** Ce que lisent la phrase du contexte et le motif administratif. */
+export const LU_PAR_LE_CONTEXTE = luPar(
+  {},
+  LU_PAR_LES_CODES_DE_CONTEXTE,
+  LU_PAR_LE_LEXIQUE,
+);
+
+/** Les codes de contexte que ces cibles établissent, dans l'ordre H, T, A, M, B. */
+export function codesDeContexte(
+  cibles: TraceDe<typeof LU_PAR_LES_CODES_DE_CONTEXTE>["cibles"],
+): readonly string[] {
+  return CODES.filter(([, cible]) => cibles[cible].isOui()).map(
+    ([code]) => code,
+  );
+}
+
+/** La phrase du contexte, lexique rempli ; absente si aucun contexte ne convient. */
+export function phraseDuContexte(
+  issue: IssuePositive,
+  trace: TraceDe<typeof LU_PAR_LE_CONTEXTE>,
+): string | AucunTexte {
+  const texte = texteDesCodes(issue.contexts, trace.cibles);
+  return texte && avecLeLexique(issue, trace, texte);
+}
+
+/**
+ * Le motif administratif du modus, lexique rempli ; absent si aucun ne
+ * convient. Ses définitions sont celles de `administrativeLexicon` quand
+ * l'issue en porte : le modus ne répète pas « pour le transport » (TS1014-J02).
+ */
+export function motifAdministratif(
+  issue: IssuePositive,
+  trace: TraceDe<typeof LU_PAR_LE_CONTEXTE>,
+): string | AucunTexte {
+  const texte = texteDesCodes(issue.administrativeBases, trace.cibles);
+  const { administrativeLexicon } = issue;
+  const lexique = administrativeLexicon && {
+    ...issue,
+    lexicon: { ...issue.lexicon, ...administrativeLexicon },
+  };
+  return texte && avecLeLexique(lexique ?? issue, trace, texte);
+}
+
+/**
+ * Ce texte, ses repères remplis : `{cadre_hospitalisation}` et `{lien_atmp}`
+ * se lisent dans le lexique, avec le repli du catalogue pour une précision
+ * que les réponses ne prouvent pas (`H-GENERIQUE`, `ATMP`). Les autres termes
+ * de l'accord préalable viennent de `autres-termes-du-lexique.ts`.
+ */
+export function avecLeLexique(
+  issue: IssuePositive,
+  trace: TraceDe<typeof LU_PAR_LE_LEXIQUE>,
+  texte: string,
+): string {
+  const { hospitalisation, atmp } = issue.lexicon;
+  const cadre = definition(
+    hospitalisation,
+    trace.precisions.hospitalisation,
+    "H-GENERIQUE",
+  );
+  const lien = definition(atmp, trace.precisions.atmp, "ATMP");
+  return sansBlancsDeTrop(
+    avecLesAutresTermes(
+      issue,
+      trace,
+      texte
+        .replaceAll("{cadre_hospitalisation}", cadre)
+        .replaceAll("{lien_atmp}", lien),
+    ),
+  );
+}
+
+/** Le texte dont les codes sont exactement ceux-ci, sans lexique. */
+export function texteDuCodeExact(
+  textes: readonly TexteCode[],
+  etablis: readonly string[],
+): string | AucunTexte {
+  return textes.find(({ codes }) => memesCodes(codes, etablis))?.text;
+}
+
+// ---- implémentation ----
+
+// Le texte dont les codes sont exactement ceux de la trace. Sans aucun code
+// établi, aucune phrase ne s'applique.
+function texteDesCodes(
+  textes: readonly TexteCode[],
+  cibles: TraceDe<typeof LU_PAR_LES_CODES_DE_CONTEXTE>["cibles"],
+): string | AucunTexte {
+  const etablis = codesDeContexte(cibles);
+  if (etablis.length === 0) return undefined;
+  return texteDuCodeExact(textes, etablis);
+}
+
+function memesCodes(
+  codes: readonly string[],
+  etablis: readonly string[],
+): boolean {
+  return (
+    codes.length === etablis.length &&
+    etablis.every((code) => codes.includes(code))
+  );
+}
+
+function definition(
+  entrees: readonly { id: string; text: string }[],
+  id: string | undefined,
+  repli: string,
+): string {
+  const trouvee =
+    entrees.find((entree) => entree.id === id) ??
+    entrees.find((entree) => entree.id === repli);
+  return trouvee?.text ?? "";
+}

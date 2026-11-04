@@ -13,18 +13,25 @@ import { franchissements } from "../../inspection-des-sources";
 // Les parties sont au métier, les résultats à l'écran.
 const METIER = "core/models/eligibilite";
 const ECRAN = "front/models/eligibilite";
-const P1 = `${METIER}/p1`;
-const P2 = `${METIER}/p2`;
+const P1 = `${METIER}/questions/p1`;
+const P2 = `${METIER}/questions/p2`;
 const R2 = `${ECRAN}/r2`;
-const P3 = `${METIER}/p3`;
+const P3 = `${METIER}/questions/p3`;
 const R3 = `${ECRAN}/r3`;
 const FAITS = `${METIER}/faits`;
+// L'évaluation des faits impose la complétude de P1 et de P2 : elle lit leurs
+// pages. Les faits eux-mêmes ne lisent aucune partie.
+const EVALUATION_DES_FAITS = `${FAITS}/preconisation.ts`;
 const RUBRIQUES = `${R3}/rubriques`;
-// Un dossier par cerfa rempli. La PMT et la DAP y viendront (#160, #161).
-const CERFA_DE_R3 = ["s3141"].map((cerfa) => `${R3}/${cerfa}`);
-const FAMILLES_DE_R2 = ["prescripteur", "fiche-negative", "fiche-positive"].map(
-  (famille) => `${R2}/${famille}`,
+// Un dossier par cerfa rempli (#158, #160, #161).
+const CERFA_DE_R3 = ["s3141", "s3138g", "s3139h"].map(
+  (cerfa) => `${R3}/${cerfa}`,
 );
+// Un dossier par cas de R2 : ses issues, ce qu'elles lisent, leur page.
+const CAS_DE_R2 = ["acceptee", "refusee", "orientee"].map(
+  (cas) => `${R2}/layouts/${cas}`,
+);
+const COMPOSANTS_DE_R2 = `${R2}/components`;
 
 // Un dossier contient ce qui commence par son chemin suivi d'un « / ».
 const dans = (dossier: string) => (cible: string) =>
@@ -49,7 +56,7 @@ describe("les domaines du modèle de l'éditeur", () => {
         "que P3 complète avant R3. Une partie " +
         "qui lit la suivante dépend d'une question qu'on ne lui a pas encore " +
         "posée. Une donnée de l'éditeur qu'elles partagent va dans " +
-        "`declarations/` ; une lecture de réponse s'écrit dans chacune.",
+        "le catalogue de son étape ; une lecture de réponse s'écrit dans chacune.",
     ).toEqual([]);
   });
 
@@ -57,7 +64,7 @@ describe("les domaines du modèle de l'éditeur", () => {
     expect(
       franchissements([FAITS], (cible) =>
         [P1, P2, R2, P3, R3].some((partie) => dans(partie)(cible)),
-      ),
+      ).filter((lien) => !lien.startsWith(`${EVALUATION_DES_FAITS} →`)),
       "Les gardes des parties lisent les faits. Un fait qui lirait une " +
         "partie la ferait dépendre de ses propres gardes. Il ne lit que le " +
         "socle, les déclarations et les concepts : une page ne garde que ses " +
@@ -65,20 +72,29 @@ describe("les domaines du modèle de l'éditeur", () => {
     ).toEqual([]);
   });
 
-  it("les familles d'issues de R2 ne s'importent pas entre elles", () => {
-    const croisements = FAMILLES_DE_R2.flatMap((famille) =>
+  it("les cas de R2 ne s'importent pas entre eux", () => {
+    const croisements = CAS_DE_R2.flatMap((cas) =>
       franchissements(
-        [famille],
+        [cas],
         (cible) =>
-          FAMILLES_DE_R2.some((autre) => dans(autre)(cible)) &&
-          !dans(famille)(cible),
+          CAS_DE_R2.some((autre) => dans(autre)(cible)) && !dans(cas)(cible),
       ),
     );
     expect(
       croisements,
-      "Le prescripteur, la fiche négative et la fiche positive lisent chacun " +
-        "leurs textes dans le catalogue. Ce qu'ils partagent (la trace, la " +
-        "page de la fiche, le texte enrichi) vit à la racine de `r2/`.",
+      "Les cas acceptée, refusée et orientée lisent chacun leurs textes " +
+        "dans le catalogue. Ce qu'ils partagent (la page de la fiche, le " +
+        "texte enrichi, les précisions) est un composant de `r2/components/`.",
+    ).toEqual([]);
+  });
+
+  it("un composant de R2 ne lit aucun cas", () => {
+    expect(
+      franchissements([COMPOSANTS_DE_R2], (cible) =>
+        CAS_DE_R2.some((cas) => dans(cas)(cible)),
+      ),
+      "Un composant se lit sur la trace, sans savoir quel cas l'affiche : " +
+        "`r2.tsx` choisit le cas, le cas assemble ses composants.",
     ).toEqual([]);
   });
 

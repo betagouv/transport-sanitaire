@@ -1,21 +1,20 @@
 // Le parcours du simulateur : un questionnaire, son résultat, puis, si la
-// préconisation donne un cerfa, un second questionnaire et son résultat.
+// préconisation donne un cerfa, un second questionnaire et son résultat. La
+// simulation dit l'étape (`core/socle/simulation/`) ; chaque écran affiche la
+// sienne, et donne la simulation que ses boutons ouvrent.
 //
 // Depuis le premier résultat, « Précédent » rouvre le questionnaire. L'action
 // principale verrouille : la préconisation est figée, et le second
 // questionnaire ne repose aucune question d'avant.
 
 import { type ComponentType, type ReactNode, useState } from "react";
-import type { Answers } from "../../../core/socle/questionnaire-engine/question";
+import type { Answers } from "../../../core/socle/questionnaire-engine";
+import { Simulation } from "../../../core/socle/simulation";
 import type { Model } from "../model";
-import {
-  type DebugTraceProps,
-  QuestionnaireForm,
-} from "../questionnaire-engine/QuestionnaireForm";
-import { trackAldPathway } from "./ald-indicator";
-import { FirstResultat } from "./FirstResultat";
-import { CerfaResultat } from "./Resultats";
-import { type Screen, startingScreen } from "./start";
+import { type DebugTraceProps, QuestionnaireForm } from "../questionnaire";
+import { CerfaScreen } from "./screens/CerfaScreen";
+import { ResultatScreen } from "./screens/ResultatScreen";
+import { trackAldPathway } from "./track-the-ald-pathway";
 
 type Props = {
   /** La version du modèle que le parcours déroule. */
@@ -32,6 +31,15 @@ type Props = {
   DebugTrace?: ComponentType<DebugTraceProps>;
 };
 
+/** Ce qu'un écran du parcours reçoit : la simulation, et où la mener. */
+export type ScreenProps = {
+  model: Model;
+  simulation: Simulation;
+  onChange: (simulation: Simulation) => void;
+  DebugTrace?: ComponentType<DebugTraceProps>;
+  onRestart: () => void;
+};
+
 export function Simulateur({
   model,
   onNewSimulation,
@@ -39,59 +47,60 @@ export function Simulateur({
   developerToolsPanel,
   DebugTrace,
 }: Props) {
-  const [screen, goTo] = useState<Screen>(() =>
-    startingScreen(model, seedAnswers),
+  const [simulation, setSimulation] = useState(() =>
+    seedAnswers
+      ? Simulation.resume(model.core, seedAnswers)
+      : Simulation.start(model.core),
   );
-  const common = { model, goTo, DebugTrace, onRestart: onNewSimulation };
+  const screen: ScreenProps = {
+    model,
+    simulation,
+    onChange: setSimulation,
+    DebugTrace,
+    onRestart: onNewSimulation,
+  };
 
-  switch (screen.name) {
+  switch (simulation.stage.name) {
     case "questionnaire":
       return (
         <>
-          <FirstQuestionnaire screen={screen} {...common} />
+          <FirstQuestionnaire {...screen} />
           {developerToolsPanel}
         </>
       );
     case "resultat":
-      return <FirstResultatScreen screen={screen} {...common} />;
+      return <ResultatScreen {...screen} />;
     case "complement":
-      return <SecondQuestionnaire screen={screen} {...common} />;
+      return <SecondQuestionnaire {...screen} />;
     default:
-      return <CerfaResultatScreen screen={screen} {...common} />;
+      return (
+        <CerfaScreen {...screen} completedAt={simulation.stage.completedAt} />
+      );
   }
 }
 
 // ---- implémentation ----
 
-type ScreenProps<Name extends Screen["name"]> = {
-  model: Model;
-  screen: Extract<Screen, { name: Name }>;
-  goTo: (screen: Screen) => void;
-  DebugTrace?: ComponentType<DebugTraceProps>;
-  onRestart: () => void;
-};
-
 // Le stepper annonce une partie de plus que celles-ci : tant que rien n'est
-// décidé, le cerfa reste possible.
+// décidé, le cerfa reste possible. Arriver au résultat envoie l'indicateur ALD.
 function FirstQuestionnaire({
   model,
-  screen,
-  goTo,
+  simulation,
+  onChange,
   DebugTrace,
-}: ScreenProps<"questionnaire">) {
+}: ScreenProps) {
   const parts = model.core.questionnaire;
   return (
     <QuestionnaireForm
       parts={parts}
-      relevance={model.core.relevance}
       partCount={parts.length + 1}
-      initialState={screen.resume}
+      simulation={simulation}
       tracked
       endLabel="Voir le résultat"
       DebugTrace={DebugTrace}
-      onComplete={(answers, previousState) => {
-        trackAldPathway(model, answers);
-        goTo({ name: "resultat", previousState });
+      onChange={(next) => {
+        if (next.stage.name === "resultat") trackAldPathway(model, next);
+        onChange(next);
       }}
     />
   );
@@ -100,60 +109,21 @@ function FirstQuestionnaire({
 // Le second questionnaire n'émet pas d'évènement.
 function SecondQuestionnaire({
   model,
-  screen,
-  goTo,
+  simulation,
+  onChange,
   DebugTrace,
-}: ScreenProps<"complement">) {
-  const { locked } = screen;
+}: ScreenProps) {
   const partsBefore = model.core.questionnaire.length;
   return (
     <QuestionnaireForm
       parts={[model.core.complement]}
-      relevance={model.core.relevance}
       partsBefore={partsBefore}
       partCount={partsBefore + 1}
-      lockedAnswers={locked.answers}
-      cibles={locked.preconisation.cibles}
-      initialState={screen.resume}
+      simulation={simulation}
       tracked={false}
       endLabel="Terminer"
       DebugTrace={DebugTrace}
-      onComplete={(_, previousState) =>
-        goTo({
-          name: "cerfa",
-          locked,
-          previousState,
-          completedAt: new Date(),
-        })
-      }
-    />
-  );
-}
-
-function FirstResultatScreen({
-  screen,
-  goTo,
-  ...props
-}: ScreenProps<"resultat">) {
-  return (
-    <FirstResultat
-      state={screen.previousState}
-      onReopen={(resume) => goTo({ name: "questionnaire", resume })}
-      onLock={(locked) => goTo({ name: "complement", locked })}
-      {...props}
-    />
-  );
-}
-
-function CerfaResultatScreen({ screen, goTo, ...props }: ScreenProps<"cerfa">) {
-  const { locked } = screen;
-  return (
-    <CerfaResultat
-      state={screen.previousState}
-      locked={locked}
-      completedAt={screen.completedAt}
-      onReopen={(resume) => goTo({ name: "complement", locked, resume })}
-      {...props}
+      onChange={onChange}
     />
   );
 }

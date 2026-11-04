@@ -4,7 +4,7 @@
 // sait quel code il avait sous les yeux.
 
 import type { CSSProperties } from "react";
-import { SHA_COMMIT, VERSION_APP } from "./deployed-version";
+import { SHA_COMMIT, VERSION_APP } from "../deployed-version";
 
 export function Footer() {
   return (

@@ -7,10 +7,10 @@
 // `CONTRAT_REPONSES_FAITS.json`.
 
 import { unFait } from "../../../socle/index.ts";
-import { PAS_ENCORE_ETABLI } from "../declarations/faits.ts";
-import { SOINS } from "./communs.ts";
+import { given } from "./communs.ts";
+import { PAS_ENCORE_ETABLI } from "./noms.ts";
 
 export const motifSamsah = unFait("fait_motif_samsah")
-  .ouiSi(SOINS.checked("7_SAMSAH"))
-  .nonSiEcartee(SOINS, "7_SAMSAH")
+  .ouiSi(given.question("Q2.2.1.b").answer().checked("7_SAMSAH"))
+  .nonSiEcartee(given.question("Q2.2.1.b").answer(), "7_SAMSAH")
   .sinon(PAS_ENCORE_ETABLI);

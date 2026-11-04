@@ -6,9 +6,9 @@
 // Il suit `CONTRAT_REPONSES_FAITS.json`.
 
 import { unFait } from "../../../socle/index.ts";
-import { CAS } from "./communs.ts";
+import { given } from "./communs.ts";
 
 export const partageIncompatible = unFait("fait_partage_incompatible")
-  .ouiSi(CAS.checked("6_PARTAGE_INCOMPATIBLE"))
-  .nonSi(CAS.isPresent())
+  .ouiSi(given.question("Q1.3").answer().checked("6_PARTAGE_INCOMPATIBLE"))
+  .nonSi(given.question("Q1.3").answer().isPresent())
   .sinon("Q1.3 n'est pas encore validée.");

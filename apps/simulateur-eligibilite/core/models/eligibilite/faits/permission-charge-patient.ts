@@ -7,8 +7,8 @@
 // Il suit `CONTRAT_REPONSES_FAITS.json`.
 
 import { unFait } from "../../../socle/index.ts";
-import { PAS_ENCORE_ETABLI, SANS_PERMISSION } from "../declarations/faits.ts";
 import { given } from "./communs.ts";
+import { PAS_ENCORE_ETABLI, SANS_PERMISSION } from "./noms.ts";
 
 const TRANCHE = given.question("Q2.7").answer();
 const CONFIRMATION = given.question("Q2.7.a").answer();

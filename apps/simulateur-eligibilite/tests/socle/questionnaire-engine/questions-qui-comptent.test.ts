@@ -9,6 +9,7 @@
 import { describe, expect, it } from "vitest";
 import {
   type Cible,
+  type DeclaredPage,
   type Fait,
   FaitCatalogue,
   givenOf,
@@ -18,7 +19,7 @@ import {
   Relevance,
   unFait,
 } from "../../../core/socle";
-import { decisionGraphOf } from "../../../core/socle/decision-engine/publicodes";
+import { decisionGraphOf } from "../../../core/socle/decision-engine/compute-the-cibles";
 
 describe("les questions qui comptent", () => {
   it("pose la distance quand la taille peut encore se poser", () => {
@@ -53,6 +54,7 @@ type Questions = {
 };
 type Faits = { readonly rien: Fait };
 type Cibles = Record<string, Cible<boolean>>;
+type AnyPage = DeclaredPage<Questions, Cibles, Faits>;
 
 const given = givenOf<Questions, Faits, Cibles>();
 
@@ -62,31 +64,32 @@ const FAITS = new FaitCatalogue<Faits>(
 );
 
 const question = questionsOf<Questions, Faits, Cibles>({
-  options: {
-    motif: { consultation: "Une consultation", sejour: "Un séjour" },
-    distance: { pres: "Près", loin: "Loin" },
-    taille: { petit: "Petit", grand: "Grand" },
-    remarque: { oui: "Oui", non: "Non" },
-  },
   faits: FAITS,
   cibles: () => ({}),
 });
 
-const MOTIF = question.singleChoice("motif", "Pour quoi ?");
-const DISTANCE = question.singleChoice("distance", "À quelle distance ?");
+const MOTIF = question
+  .singleChoice("motif", "Pour quoi ?")
+  .options({ consultation: "Une consultation", sejour: "Un séjour" });
+const DISTANCE = question
+  .singleChoice("distance", "À quelle distance ?")
+  .options({ pres: "Près", loin: "Loin" });
 const ENTREE = question
   .checkbox("entree", "Une entrée ?", "Oui")
   .appliesWhen(given.question("motif").answer().is("sejour"));
 const TAILLE = question
   .singleChoice("taille", "Quelle taille ?")
+  .options({ petit: "Petit", grand: "Grand" })
   .appliesWhen(given.question("entree").answer().is(true))
   .option("grand", (option) =>
     option.offeredWhen(given.question("distance").answer().is("loin")),
   );
-const REMARQUE = question.singleChoice("remarque", "Une remarque ?");
+const REMARQUE = question
+  .singleChoice("remarque", "Une remarque ?")
+  .options({ oui: "Oui", non: "Non" });
 
 // Une question par page : chacune se valide avant la suivante.
-const PAGES = [
+const PAGES: readonly AnyPage[] = [
   page("motif", MOTIF),
   page("distance", DISTANCE),
   page("entree", ENTREE),
@@ -94,7 +97,10 @@ const PAGES = [
 ];
 
 // Les questions posées, vu ces réponses.
-function posees(reponses: Partial<Questions>, pages = PAGES) {
+function posees(
+  reponses: Partial<Questions>,
+  pages: readonly AnyPage[] = PAGES,
+) {
   const relevance = new Relevance({
     graph: decisionGraphOf({ rien: { titre: "Rien" } }),
     pages,

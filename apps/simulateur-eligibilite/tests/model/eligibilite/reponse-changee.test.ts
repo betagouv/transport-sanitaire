@@ -8,19 +8,18 @@
 
 import { describe, expect, it } from "vitest";
 import { model } from "../../../core/models/eligibilite";
-import type { Questions } from "../../../core/models/eligibilite/declarations/questions";
-import { preconisationOf } from "../../../core/socle/model";
-import {
-  answerOnPage,
-  commitPage,
-} from "../../../core/socle/questionnaire-engine/page-commit";
+import type { Questions } from "../../../core/models/eligibilite/questions/reponses";
 import {
   type Answers,
+  answerOnPage,
+  commitPage,
   pagesOf,
-} from "../../../core/socle/questionnaire-engine/question";
+  Questionnaire,
+} from "../../../core/socle/questionnaire-engine";
+
+import { preconisationOf } from "../../../core/socle/simulation";
 import { model as frontModel } from "../../../front/models/eligibilite";
-import { questionnaireOf } from "../../../front/socle/simulateur/questionnaire-of";
-import { MATERNITE_ETABLIE } from "./reponses-de-la-branche";
+import { MATERNITE_ETABLIE } from "./p2/reponses-de-la-branche";
 
 type Reponses = Answers<Questions>;
 
@@ -55,7 +54,11 @@ const effaceesPar = (id: string) => {
 };
 
 // Le parcours tel que l'écran le lit, filtrage par le graphe compris.
-const parcours = questionnaireOf(frontModel);
+const lire = (reponses: Answers) =>
+  new Questionnaire(
+    pagesOf(frontModel.core.questionnaire),
+    frontModel.core.relevance,
+  ).readWith(reponses);
 
 // Le brouillon d'une page rouverte : ses réponses validées.
 const brouillonDe = (reponses: Reponses, id: string): Reponses =>
@@ -69,12 +72,13 @@ const brouillonDe = (reponses: Reponses, id: string): Reponses =>
 // Les réponses une fois la page `id` rouverte, changée par `changees`, puis
 // validée : ce que fait « Suivant » après un « Précédent ».
 const valideeAvec = (reponses: Reponses, id: string, changees: Reponses) =>
-  parcours
-    .readWith(reponses)
-    .commit(pageDe(id), { ...brouillonDe(reponses, id), ...changees });
+  lire(reponses).commit(pageDe(id), {
+    ...brouillonDe(reponses, id),
+    ...changees,
+  });
 
 const posees = (reponses: Answers) => {
-  const lues = parcours.readWith(reponses);
+  const lues = lire(reponses);
   return lues
     .askedPages()
     .flatMap((page) => lues.questionsOn(page).map(({ id }) => id));
@@ -208,13 +212,13 @@ describe("une décision atteinte, puis une réponse changée (cas « Certificats
   };
 
   it("une seconde séance en Q1.3 repose Q2.1.f, et garde le reste de P2", () => {
-    expect(parcours.readWith(CHIMIO_SANS_MOTIF).isComplete()).toBe(true);
+    expect(lire(CHIMIO_SANS_MOTIF).isComplete()).toBe(true);
     expect(issue(CHIMIO_SANS_MOTIF)).toBeDefined();
 
     const apres = valideeAvec(CHIMIO_SANS_MOTIF, "P1/3", {
       "Q1.3": ["3_CHIMIOTHERAPIE", "4_RADIOTHERAPIE"],
     });
-    const lues = parcours.readWith(apres);
+    const lues = lire(apres);
 
     expect(lues.isComplete()).toBe(false);
     expect(lues.openPage().id).toBe("P2/prestation");
@@ -225,12 +229,12 @@ describe("une décision atteinte, puis une réponse changée (cas « Certificats
   });
 
   it("une hospitalisation en Q2.1 pose Q2.1.g, et garde le reste de P2", () => {
-    expect(parcours.readWith(SEUL).isComplete()).toBe(true);
+    expect(lire(SEUL).isComplete()).toBe(true);
 
     const apres = valideeAvec(SEUL, "P2/prestation", {
       "Q2.1": "8_HOSPITALISATION",
     });
-    const lues = parcours.readWith(apres);
+    const lues = lire(apres);
 
     expect(lues.openPage().id).toBe("P2/prestation");
     expect(lues.questionsOn(lues.openPage()).map(({ id }) => id)).toEqual([
@@ -252,7 +256,7 @@ describe("une décision atteinte, puis une réponse changée (cas « Certificats
 
     expect(apres).not.toHaveProperty("Q2.1.g");
     expect(apres).toMatchObject(ACQUIS);
-    expect(parcours.readWith(apres).isComplete()).toBe(true);
+    expect(lire(apres).isComplete()).toBe(true);
   });
 });
 

@@ -6,13 +6,13 @@
 import { describe, expect, it } from "vitest";
 import type { Cible, Fait } from "../../../core/socle";
 import { givenOf, page, questionsOf } from "../../../core/socle";
-import { validatedReading } from "../../../core/socle/questionnaire-engine/answer-readings";
-import type { Reading } from "../../../core/socle/questionnaire-engine/condition";
-import { LocalDateTime } from "../../../core/socle/questionnaire-engine/local-date-time";
+import type { Scope } from "../../../core/socle/questionnaire-engine/conditions/condition";
+import { LocalDateTime } from "../../../core/socle/questionnaire-engine/conditions/local-date-time";
+import { validatedReading } from "../../../core/socle/questionnaire-engine/conditions/what-a-condition-sees";
 import type {
   Answers,
   Page,
-} from "../../../core/socle/questionnaire-engine/question";
+} from "../../../core/socle/questionnaire-engine/question/question";
 import { Questionnaire } from "../../../core/socle/questionnaire-engine/questionnaire";
 
 type Questions = {
@@ -25,19 +25,14 @@ type Cibles = { readonly cible_sucre: Cible<boolean> };
 
 const given = givenOf<Questions, Faits, Cibles>();
 
-const question = questionsOf<Questions>({
-  options: {
-    boisson: { the: "Un thé", cafe: "Un café", eau: "De l'eau" },
-    taille: { petit: "Petit", grand: "Grand" },
-  },
-});
+const question = questionsOf<Questions>();
 
 const chaude = given.question("boisson").answer().isOneOf("the", "cafe");
 const grand = given.question("taille").answer().is("grand");
 const livree = given.question("livraison").answer().toDate();
 
 // La lecture d'un fait sur ces pages : les questions validées, le 27 octobre.
-function lecture(pages: readonly Page[], answers: Answers): Reading {
+function lecture(pages: readonly Page[], answers: Answers): Scope {
   const { validated } = new Questionnaire(pages).readWith(answers);
   return {
     answer: validatedReading(validated),
@@ -104,8 +99,12 @@ describe("answer() dans un fait", () => {
   const COMMANDE = [
     page(
       "commande",
-      question.singleChoice("taille", "Quelle taille ?"),
-      question.singleChoice("boisson", "Quelle boisson ?"),
+      question
+        .singleChoice("taille", "Quelle taille ?")
+        .options({ petit: "Petit", grand: "Grand" }),
+      question
+        .singleChoice("boisson", "Quelle boisson ?")
+        .options({ the: "Un thé", cafe: "Un café", eau: "De l'eau" }),
     ),
   ] as Page[];
 

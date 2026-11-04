@@ -6,10 +6,10 @@
 
 import type { RattachementSaisi } from "../../../shared/rattachement-saisi";
 import type { Referentiel } from "../../../shared/referentiel";
-import { declarerViaApi } from "./declaration-http";
+import { declarerUnService } from "./declarer-un-service";
 import { type AccesRattachement, RattachementForm } from "./RattachementForm";
-import { referentielHttp } from "./referentiel-http";
-import { rangerRattachement } from "./session";
+import { rangerRattachement } from "./rattachement-en-session";
+import { REFERENTIEL } from "./referentiel";
 
 type Props = {
   // Injectables pour les tests (défauts = production same-origin).
@@ -19,8 +19,8 @@ type Props = {
 };
 
 export function RattachementScreen({
-  referentiel = referentielHttp,
-  declarer = declarerViaApi,
+  referentiel = REFERENTIEL,
+  declarer = declarerUnService,
   onRattache,
 }: Props) {
   return (

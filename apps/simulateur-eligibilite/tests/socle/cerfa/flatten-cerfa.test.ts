@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { fillCerfa } from "../../../front/socle/cerfa/fill-cerfa";
-import { flattenCerfa } from "../../../front/socle/cerfa/flatten-cerfa";
+import { fillCerfa } from "../../../front/socle/cerfa/generate-the-cerfa/fill-the-form";
+import { flattenCerfa } from "../../../front/socle/cerfa/generate-the-cerfa/flatten-the-form";
 import { drawnOn, markedStates } from "./pdf-aplati";
 import { testForm, withoutOffAppearance } from "./test-form";
 

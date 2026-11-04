@@ -4,9 +4,9 @@
 
 import { afterEach, describe, expect, it, vi } from "vitest";
 import {
-  type ChoixAnalytics,
-  suivreChoixAnalytics,
-} from "../../../front/socle/analytics/choix-analytics";
+  type Consent,
+  followConsent,
+} from "../../../front/socle/analytics/consent";
 
 function pageParente() {
   const iframe = document.createElement("iframe");
@@ -21,9 +21,9 @@ function pageParente() {
   return { parent, demandes, repondre };
 }
 
-function suivre(options: Parameters<typeof suivreChoixAnalytics>[1]) {
-  const choix: ChoixAnalytics[] = [];
-  suivreChoixAnalytics((c) => choix.push(c), options);
+function suivre(options: Parameters<typeof followConsent>[1]) {
+  const choix: Consent[] = [];
+  followConsent((c) => choix.push(c), options);
   return choix;
 }
 

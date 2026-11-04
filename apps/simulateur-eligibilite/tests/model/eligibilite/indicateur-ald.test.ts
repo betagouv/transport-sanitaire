@@ -10,9 +10,10 @@
 // (D-252).
 
 import { describe, expect, it } from "vitest";
-import type { Answers } from "../../../core/socle/questionnaire-engine/question";
+import type { Answers } from "../../../core/socle/questionnaire-engine";
+import { Simulation } from "../../../core/socle/simulation";
 import { model } from "../../../front/models/eligibilite";
-import { aldPathwayOf } from "../../../front/socle/simulateur/ald-indicator";
+import { aldPathwayOf } from "../../../front/socle/simulateur";
 
 const ALD = {
   "Q0.1": "2_VERIFIER_ET_PRESCRIRE",
@@ -22,7 +23,8 @@ const ALD = {
   "Q1.3.b": "1_LIEN_DIRECT",
 };
 
-const verdictDe = (answers: Answers) => aldPathwayOf(model, answers);
+const verdictDe = (answers: Answers) =>
+  aldPathwayOf(model, Simulation.resume(model.core, answers));
 
 describe("l'indicateur de parcours ALD", () => {
   it("compte le second bloc des situations : six pages, sept questions", () => {

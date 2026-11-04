@@ -3,7 +3,7 @@
 // destination réelle (Q3.4.a) ; Non la laisse vide. Elle lit la question
 // telle quelle : Q3.4.a vient après le verrou, et les cibles y sont figées.
 
-import { given } from "../../../../../core/models/eligibilite/question";
+import { given } from "../../../../../core/models/eligibilite/questions/reponses";
 import type { Rubrique } from "./rubrique";
 
 export type CentreDeReference = {

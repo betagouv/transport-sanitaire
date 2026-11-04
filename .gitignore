@@ -39,3 +39,4 @@ apps/simulateur-eligibilite/*.pdf
 # (hébergement, DNS, administration). Le dépôt est public : elle reste locale,
 # et `tools.example.json` versionné sert de gabarit neutre.
 apps/cli/tools.json
+apps/simulateur-eligibilite/architecture.yml

@@ -3,10 +3,10 @@
   // projets. Leurs réglages vivent dans `config/`.
   "files": [],
   "references": [
-    { "path": "./config/tsconfig.app.json" },
-    { "path": "./config/tsconfig.core.json" },
-    { "path": "./config/tsconfig.node.json" },
-    { "path": "./config/tsconfig.server.json" },
-    { "path": "./config/tsconfig.tests.json" }
+    { "path": "./tooling/tsconfig.app.json" },
+    { "path": "./tooling/tsconfig.core.json" },
+    { "path": "./tooling/tsconfig.node.json" },
+    { "path": "./tooling/tsconfig.server.json" },
+    { "path": "./tooling/tsconfig.tests.json" }
   ]
 }

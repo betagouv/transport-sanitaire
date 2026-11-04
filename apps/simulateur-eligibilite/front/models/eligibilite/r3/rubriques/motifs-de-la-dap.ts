@@ -4,7 +4,7 @@
 // s'écrit dans le texte médical (#159). L'Engagement maternité suit sa cible,
 // qui reste vide en pratique (D-129).
 
-import { given } from "../../../../../core/models/eligibilite/question";
+import { given } from "../../../../../core/models/eligibilite/questions/reponses";
 import type { Rubrique } from "./rubrique";
 
 export type MotifsDeLaDap = {

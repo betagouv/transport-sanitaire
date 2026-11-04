@@ -8,7 +8,7 @@ import { beforeEach, describe, expect, it } from "vitest";
 import { page, questionsOf } from "../../../core/socle";
 import { App } from "../../../front/socle/app/App";
 import type { Model } from "../../../front/socle/model";
-import { rangerRattachement } from "../../../front/socle/rattachement/session";
+import { rangerRattachement } from "../../../front/socle/rattachement";
 import { snapshotReferentiel } from "../../../shared/referentiel";
 import { modeleDeTest } from "../modele-de-test";
 import { seRattacher, seRattacherProduit } from "../se-rattacher";
@@ -26,12 +26,7 @@ const CARTE_DES_FROMAGES = "Carte des fromages";
 // Les deux autres modèles ne posent qu'une question, celle de leur mets.
 type Questions = { dessert: "maison"; fromage: "maison" };
 
-const OPTIONS = {
-  dessert: { maison: "Celui de la maison" },
-  fromage: { maison: "Celui de la maison" },
-} as const;
-
-const question = questionsOf<Questions>({ options: OPTIONS });
+const question = questionsOf<Questions>();
 
 const desserts = modeleQuiDemande("dessert");
 const fromages = modeleQuiDemande("fromage");
@@ -186,7 +181,9 @@ function modeleQuiDemande(mets: keyof Questions): Model {
           pages: [
             page(
               mets,
-              question.singleChoice(mets, `Quel ${mets} souhaitez-vous ?`),
+              question
+                .singleChoice(mets, `Quel ${mets} souhaitez-vous ?`)
+                .options({ maison: "Celui de la maison" }),
             ),
           ],
         },

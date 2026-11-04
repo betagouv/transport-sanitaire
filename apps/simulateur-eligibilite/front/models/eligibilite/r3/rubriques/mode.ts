@@ -2,8 +2,8 @@
 // depuis P1. Une cible indéfinie ou sans objet laisse sa case vide : le
 // transport partagé ne se coche que sur une preuve (COR-06).
 
-import type { Cibles } from "../../../../../core/models/eligibilite/declarations/cibles";
-import { given } from "../../../../../core/models/eligibilite/question";
+import type { Cibles } from "../../../../../core/models/eligibilite/cibles/noms";
+import { given } from "../../../../../core/models/eligibilite/questions/reponses";
 import type { Cible } from "../../../../../core/socle";
 import type { Rubrique } from "./rubrique";
 

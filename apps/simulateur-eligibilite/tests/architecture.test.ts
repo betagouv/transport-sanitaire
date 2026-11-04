@@ -23,9 +23,13 @@ const dedans = (cible: string) => (dossier: string) =>
 // Ce qui pose les questions : le parcours et le moteur de questionnaire.
 const PARCOURS = [
   "front/socle/simulateur",
-  "front/socle/questionnaire-engine",
+  "front/socle/questionnaire",
   "core/socle/questionnaire-engine",
 ];
+
+// Le moteur de questionnaire, par son index : ce que le cerfa connaît du socle,
+// pour la valeur que lit son mapping.
+const VALEUR_LUE = "core/socle/questionnaire-engine";
 
 // Le socle, à l'écran et dans le métier.
 const SOCLE = ["front/socle", "core/socle"];
@@ -40,7 +44,7 @@ const OUVERT_AU_MODELE = [
   "front/socle",
   "core/socle",
   "core/socle/index",
-  "core/socle/decision-engine/publicodes",
+  "core/socle/decision-engine/compute-the-cibles",
 ];
 
 // Un nom par modèle : celui de l'éditeur, et le modèle de démonstration. Son
@@ -171,7 +175,7 @@ describe("invariants métier", () => {
     expect(
       fautifs,
       "publicodes est l'outil du socle pour décider, derrière un seul " +
-        "fichier : `core/socle/decision-engine/publicodes.ts`. Le reste du " +
+        "fichier : `core/socle/decision-engine/compute-the-cibles.ts`. Le reste du " +
         "socle et le modèle passent par lui. Un autre import lie du code au " +
         "moteur, et rend son remplacement plus cher.",
     ).toEqual([]);
@@ -180,13 +184,13 @@ describe("invariants métier", () => {
   it("seule la photo de la feuille importe modern-screenshot", () => {
     const fautifs = sources("front", "core").filter(
       (f) =>
-        f !== "front/socle/simulateur/sheet-photo.ts" &&
+        f !== "front/socle/simulateur/sheet/photograph-a-page.ts" &&
         texteDe(f).includes('"modern-screenshot"'),
     );
     expect(
       fautifs,
       "modern-screenshot photographie la feuille pour son PDF, derrière un " +
-        "seul fichier : `front/socle/simulateur/sheet-photo.ts`, qui le charge " +
+        "seul fichier : `front/socle/simulateur/sheet/photograph-a-page.ts`, qui le charge " +
         "à la demande. Passe par lui : l'outil se remplace alors en un endroit.",
     ).toEqual([]);
   });
@@ -195,12 +199,14 @@ describe("invariants métier", () => {
     expect(
       franchissements(
         ["front/socle/cerfa"],
-        (cible) => !cible.startsWith("front/socle/cerfa/"),
+        (cible) =>
+          !cible.startsWith("front/socle/cerfa/") && cible !== VALEUR_LUE,
       ),
       "Remplir un cerfa ne dépend pas du simulateur : il reçoit ses données, " +
-        "d'où qu'elles viennent, et un mapping qui les lit. Le simulateur " +
-        "branche le cerfa, jamais l'inverse. Passe ce qui lui manque en " +
-        "paramètre, ou rends le type générique.",
+        "d'où qu'elles viennent, et un mapping qui les lit, en valeurs du " +
+        `socle (\`${VALEUR_LUE}\`). Le simulateur branche le cerfa, jamais ` +
+        "l'inverse. Passe ce qui lui manque en paramètre, ou rends le type " +
+        "générique.",
     ).toEqual([]);
   });
 
@@ -250,7 +256,7 @@ describe("chaîne d'outillage", () => {
         "fait que si `enablePrePostScripts` est vrai dans le " +
         "`pnpm-workspace.yaml` de la racine. Sans lui, `prebuild` " +
         "(régénération des icônes DSFR) et `postbuild` " +
-        "(`scripts/verifier-bundle.ts`) disparaissent **sans rien dire** : le " +
+        "(`tooling/verifier-bundle.ts`) disparaissent **sans rien dire** : le " +
         "`verifier` reste vert en ayant sauté une porte, et le bundle part en " +
         "production sans avoir été vérifié.",
     ).toBe(true);

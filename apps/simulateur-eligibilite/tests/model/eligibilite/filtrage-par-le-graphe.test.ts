@@ -6,19 +6,19 @@
 
 import { describe, expect, it } from "vitest";
 import { model as metier } from "../../../core/models/eligibilite";
-import type { Questions } from "../../../core/models/eligibilite/declarations/questions";
-import { preconisationOf } from "../../../core/socle/model";
-import type { Answers } from "../../../core/socle/questionnaire-engine/question";
+import type { Questions } from "../../../core/models/eligibilite/questions/reponses";
+import type { Answers } from "../../../core/socle/questionnaire-engine";
+import { preconisationOf, Simulation } from "../../../core/socle/simulation";
+
 import { model } from "../../../front/models/eligibilite";
-import { questionnaireOf } from "../../../front/socle/simulateur/questionnaire-of";
 
 type Reponses = Answers<Questions>;
 
 const posees = (reponses: Reponses) => {
-  const read = questionnaireOf(model).readWith(reponses);
-  return read
-    .askedPages()
-    .flatMap((page) => read.questionsOn(page).map(({ id }) => id));
+  const simulation = Simulation.resume(model.core, reponses);
+  return simulation
+    .pages()
+    .flatMap((page) => simulation.questionsOn(page).map(({ id }) => id));
 };
 
 const preconisation = (reponses: Reponses) =>
