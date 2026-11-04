@@ -10,13 +10,14 @@ export type Service = { id: string; libelle: string };
  * L'accès au référentiel passe par cette interface (§5 de
  * docs/knowledge/adr/identification.md). On peut ainsi changer de source sans
  * toucher aux composants. Le front utilise le client HTTP
- * `front/socle/rattachement/referentiel-http.ts`, vers le backend Grist.
+ * `front/socle/rattachement/referentiel.ts`, vers le backend Grist.
  */
 export interface Referentiel {
   listerEtablissements(): Promise<Etablissement[]>;
   listerServices(etabId: string): Promise<Service[]>;
   /**
-   * Ajoute au référentiel le service saisi sous « Autre ». Optionnel : seule la
+   * Ajoute au référentiel ce que la saisie lui apprend : le service saisi sous
+   * « Autre », ou l'établissement saisi et son service. Optionnel : seule la
    * source Grist l'implémente, le client HTTP du front n'écrit jamais. Voir
    * docs/knowledge/domain/enrichissement-referentiel-rattachement.md.
    */
@@ -46,9 +47,14 @@ const ETABLISSEMENTS: Etablissement[] = [
   { id: "e_chu_grenoble", libelle: "CHU Grenoble Alpes" },
   { id: "e_ch_chambery", libelle: "Centre hospitalier de Chambéry" },
   { id: "e_clinique_belledonne", libelle: "Clinique Belledonne" },
-  // L'établissement fourre-tout, pour les prescripteurs sans établissement. Ils
-  // le sélectionnent, puis choisissent leur service (ou « Autre »).
+  // L'établissement fourre-tout : ses services sont les structures, que l'écran
+  // propose à plat sous les établissements (« Libéral », « Assurance Maladie »,
+  // « Autre »). Lui-même ne s'affiche pas. Voir
+  // front/socle/rattachement/structures.ts.
   { id: "e_liberal_cnam", libelle: "Libéral / CNAM / CPAM / Autre" },
+  // L'établissement du produit : il porte le service qui déverrouille les
+  // developer tools.
+  { id: "e_transport_sanitaire", libelle: "Transport Sanitaire" },
 ];
 
 // Chaque établissement a une entrée « Autre » (service non listé). C'est un
@@ -79,14 +85,24 @@ const SERVICES: SnapshotService[] = [
     etabId: "e_clinique_belledonne",
     libelle: "Autre",
   },
+  // Les structures. Leur « Autre » ouvre le simulateur sans rien demander.
   { id: "s_liberal", etabId: "e_liberal_cnam", libelle: "Libéral" },
-  { id: "s_cnam_cpam", etabId: "e_liberal_cnam", libelle: "CNAM / CPAM" },
+  {
+    id: "s_assurance_maladie",
+    etabId: "e_liberal_cnam",
+    libelle: "Assurance Maladie",
+  },
+  { id: "s_liberal_autre", etabId: "e_liberal_cnam", libelle: "Autre" },
   // Le service du produit : il déverrouille les developer tools. C'est le
   // service Grist `Id2 = 4` en production (voir front/socle/developer-tools/unlock.ts).
   {
     id: "s_transport_sanitaire",
-    etabId: "e_liberal_cnam",
+    etabId: "e_transport_sanitaire",
     libelle: "Transport Sanitaire",
   },
-  { id: "s_liberal_autre", etabId: "e_liberal_cnam", libelle: "Autre" },
+  {
+    id: "s_transport_sanitaire_autre",
+    etabId: "e_transport_sanitaire",
+    libelle: "Autre",
+  },
 ];

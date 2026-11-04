@@ -2,13 +2,14 @@
 // Voir docs/knowledge/adr/identification.md, ADR-5.
 //
 // Tables Grist :
-//   Etablissements   : Id2 (Int), Nom (Text)
-//   Services_Unites  : Id2, Nom, Etablissement (Ref:Etablissements)
+//   Etablissements   : Id2 (Int), Nom (Text), Origine (Text)
+//   Services_Unites  : Id2, Nom, Etablissement (Ref:Etablissements), Origine
 //
 // `etabId` et `serviceId` sont la colonne Id2. Une colonne de référence stocke le
 // rowId Grist, pas l'Id2 : on convertit donc l'Id2 en rowId avant de filtrer.
 
 import {
+  enrichitLeReferentiel,
   normalise,
   type RattachementSaisi,
 } from "../../shared/rattachement-saisi.ts";
@@ -17,7 +18,7 @@ import type {
   Referentiel,
   Service,
 } from "../../shared/referentiel.ts";
-import type { DocGrist } from "./lignes-grist.ts";
+import type { DocGrist, LigneGrist } from "./lignes-grist.ts";
 import { creerLigne, lignes, ouvrirDoc, texte } from "./lignes-grist.ts";
 
 export type GristConfig = {
@@ -63,19 +64,33 @@ async function services(doc: DocGrist, etabId: string): Promise<Service[]> {
     .filter((s) => s.id && s.libelle);
 }
 
-// Service « Autre » avec un vrai service saisi : on crée ce service sous
-// l'établissement, ou on réutilise son homonyme, avec `Origine=formulaire`. Il
-// apparaît dans la liste à la visite suivante. Une sélection issue des listes
-// n'écrit rien. Voir
-// docs/knowledge/domain/enrichissement-referentiel-rattachement.md.
+// Ce que la saisie apprend au référentiel : le vrai service saisi sous
+// « Autre », ou l'établissement saisi et son service. On les crée, ou on
+// réutilise leurs homonymes, avec `Origine=formulaire`. Ils apparaissent dans
+// les listes à la visite suivante. Une sélection issue des listes n'écrit rien.
+// Voir docs/knowledge/domain/enrichissement-referentiel-rattachement.md.
 async function enrichir(
   doc: DocGrist,
   saisie: RattachementSaisi,
 ): Promise<void> {
-  if (!saisie.serviceEstAutre || !saisie.serviceLibre?.trim()) return;
-  const etabRowId = await rowIdDeId2(doc, TABLE.etablissements, saisie.etabId);
+  const service = saisie.serviceLibre?.trim();
+  if (!enrichitLeReferentiel(saisie) || !service) return;
+  const etabRowId = await etablissementDeLaSaisie(doc, saisie);
   if (etabRowId == null) return;
-  await assurerService(doc, etabRowId, saisie.serviceLibre);
+  await assurerService(doc, etabRowId, service);
+}
+
+// L'établissement sous lequel ranger le service : celui du référentiel, ou
+// celui que la saisie nomme, créé ou réutilisé.
+async function etablissementDeLaSaisie(
+  doc: DocGrist,
+  saisie: RattachementSaisi,
+): Promise<number | null> {
+  if (!saisie.etabEstAutre) {
+    return rowIdDeId2(doc, TABLE.etablissements, saisie.etabId);
+  }
+  const nom = saisie.etabLibre?.trim();
+  return nom ? assurerEtablissement(doc, nom) : null;
 }
 
 // Résout un Id2 métier vers le rowId interne Grist de la table donnée.
@@ -99,26 +114,46 @@ async function prochainId2(doc: DocGrist, table: string): Promise<number> {
   return max + 1;
 }
 
+// Réutilise l'établissement homonyme (Nom normalisé), sinon le crée.
+async function assurerEtablissement(
+  doc: DocGrist,
+  nom: string,
+): Promise<number> {
+  const deja = homonyme(await lignes(doc, TABLE.etablissements), nom);
+  if (deja != null) return deja;
+  return creerLigne(doc, TABLE.etablissements, {
+    [COL.id]: await prochainId2(doc, TABLE.etablissements),
+    [COL.nom]: nom.trim(),
+    [COL.origine]: ORIGINE_FORMULAIRE,
+  });
+}
+
 // Réutilise le service homonyme (Nom normalisé) de l'établissement, sinon le crée.
 async function assurerService(
   doc: DocGrist,
   etabRowId: number,
   nom: string,
 ): Promise<number> {
-  const cn = normalise(nom);
   const existants = await lignes(doc, TABLE.services, {
     [COL.refEtablissement]: [etabRowId],
   });
-  const deja = existants.find(
-    (r) => normalise(texte(r.fields[COL.nom])) === cn,
-  );
-  if (deja) return deja.id;
+  const deja = homonyme(existants, nom);
+  if (deja != null) return deja;
   return creerLigne(doc, TABLE.services, {
     [COL.id]: await prochainId2(doc, TABLE.services),
     [COL.nom]: nom.trim(),
     [COL.refEtablissement]: etabRowId,
     [COL.origine]: ORIGINE_FORMULAIRE,
   });
+}
+
+// Le rowId de la ligne qui porte déjà ce nom, à la casse et aux espaces près.
+function homonyme(existantes: LigneGrist[], nom: string): number | null {
+  const cherche = normalise(nom);
+  const deja = existantes.find(
+    (r) => normalise(texte(r.fields[COL.nom])) === cherche,
+  );
+  return deja?.id ?? null;
 }
 
 const TABLE = {

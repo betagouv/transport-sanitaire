@@ -7,82 +7,115 @@ import {
   snapshotReferentiel,
 } from "../../../shared/referentiel";
 
+// L'écran est testé par ce que voit l'utilisateur : choisir, lire le champ
+// suivant, constater l'entrée dans le simulateur (`onValide`).
+
 async function choisir(labelSelect: RegExp, optionLabel: string) {
   const select = screen.getByRole("combobox", { name: labelSelect });
-  await screen.findByRole("option", { name: optionLabel });
+  await within(select).findByRole("option", { name: optionLabel });
   await userEvent.selectOptions(select, optionLabel);
 }
 
-const valider = () =>
-  userEvent.click(
-    screen.getByRole("button", { name: "Accéder au simulateur" }),
-  );
+const ACCEDER = { name: "Accéder au simulateur" } as const;
 
-describe("parcours de rattachement", () => {
-  it("établissement → service suffit", async () => {
-    const onValide = vi.fn();
-    render(<RattachementForm onValide={onValide} />);
+const valider = () => userEvent.click(screen.getByRole("button", ACCEDER));
 
-    await choisir(/Établissement/, "CHU Grenoble Alpes");
-    await choisir(/Nom du service/, "Cardiologie");
-    await valider();
+const saisir = (label: string, texte: string) =>
+  userEvent.type(screen.getByRole("textbox", { name: label }), texte);
 
-    expect(onValide).toHaveBeenCalledWith(
-      { etabId: "e_chu_grenoble", serviceId: "s_grenoble_cardio" },
-      { destination: "simulateur", developerTools: false },
-    );
-  });
+const SIMULATEUR = { destination: "simulateur", developerTools: false };
 
-  it("annonce ce qui est demandé : l'établissement et le service", () => {
+async function optionsDeLaPremiereListe() {
+  const select = screen.getByRole("combobox", { name: /Établissement/ });
+  await within(select).findByRole("option", { name: "CHU Grenoble Alpes" });
+  return within(select).getAllByRole("option");
+}
+
+describe("l'écran de rattachement", () => {
+  it("annonce ce qui est demandé, et que le choix ouvre le simulateur", () => {
     render(<RattachementForm onValide={vi.fn()} />);
 
     expect(
       screen.getByRole("heading", {
-        name: /renseigner votre établissement et votre service/i,
+        name: "Pour accéder au simulateur, indiquez votre établissement ou votre structure",
       }),
+    ).toBeInTheDocument();
+    // RGAA 7.4 : changer d'écran au choix d'une liste est annoncé.
+    expect(
+      screen.getByRole("combobox", { name: /le simulateur s'ouvre aussitôt/ }),
     ).toBeInTheDocument();
   });
 
-  it("propose les developer tools seulement pour le service « Transport Sanitaire »", async () => {
-    // Le service garde l'accès, sur tous les environnements (voir estServiceProduit).
+  it("liste les établissements, puis sous un trait « Autre établissement » et les structures", async () => {
     render(<RattachementForm onValide={vi.fn()} />);
 
-    const seeds = { name: "Seeds" };
-
-    await choisir(/Établissement/, "CHU Grenoble Alpes");
-    await choisir(/Nom du service/, "Cardiologie");
-    expect(screen.queryByRole("button", seeds)).toBeNull();
-
-    await choisir(/Établissement/, "Libéral / CNAM / CPAM / Autre");
-    await choisir(/Nom du service/, "Transport Sanitaire");
-    expect(screen.getByRole("button", seeds)).toBeInTheDocument();
+    const options = await optionsDeLaPremiereListe();
+    expect(options.map((o) => o.textContent)).toEqual([
+      "Centre hospitalier de Chambéry",
+      "CHU Grenoble Alpes",
+      "Clinique Belledonne",
+      "Transport Sanitaire",
+      "──────────",
+      "Autre établissement",
+      "Assurance Maladie",
+      "Libéral",
+      "Autre",
+    ]);
+    // Le trait ne se choisit pas. L'établissement fourre-tout ne s'affiche pas.
+    expect(options[4]).toBeDisabled();
   });
 
-  it("établissement « Libéral / CNAM / CPAM / Autre » → service, sans branche dédiée", async () => {
-    // Le prescripteur sans établissement passe par l'établissement fourre-tout.
+  it("établissement → un service de la liste ouvre le simulateur sans bouton", async () => {
     const onValide = vi.fn();
     render(<RattachementForm onValide={onValide} />);
 
-    await choisir(/Établissement/, "Libéral / CNAM / CPAM / Autre");
-    await choisir(/Nom du service/, "Libéral");
-    await valider();
+    await choisir(/Établissement/, "CHU Grenoble Alpes");
+    expect(screen.queryByRole("button", ACCEDER)).toBeNull();
+    await choisir(/Nom du service/, "Cardiologie");
 
     expect(onValide).toHaveBeenCalledWith(
-      { etabId: "e_liberal_cnam", serviceId: "s_liberal" },
-      { destination: "simulateur", developerTools: false },
+      { etabId: "e_chu_grenoble", serviceId: "s_grenoble_cardio" },
+      SIMULATEUR,
     );
   });
 
-  it("service « Autre » → vrai service saisi", async () => {
+  it("une structure ouvre le simulateur, rattachée au service du fourre-tout", async () => {
+    const onValide = vi.fn();
+    render(<RattachementForm onValide={onValide} />);
+
+    await choisir(/Établissement/, "Libéral");
+
+    expect(onValide).toHaveBeenCalledWith(
+      { etabId: "e_liberal_cnam", serviceId: "s_liberal" },
+      SIMULATEUR,
+    );
+  });
+
+  it("la structure « Autre » ouvre le simulateur sans rien demander", async () => {
+    const onValide = vi.fn();
+    render(<RattachementForm onValide={onValide} />);
+
+    await choisir(/Établissement/, "Autre");
+
+    expect(screen.queryByRole("textbox")).toBeNull();
+    expect(onValide).toHaveBeenCalledWith(
+      { etabId: "e_liberal_cnam", serviceId: "s_liberal_autre" },
+      SIMULATEUR,
+    );
+  });
+
+  it("service « Autre » → le nom du vrai service, puis un bouton", async () => {
     const onValide = vi.fn();
     render(<RattachementForm onValide={onValide} />);
 
     await choisir(/Établissement/, "CHU Grenoble Alpes");
     await choisir(/Nom du service/, "Autre");
-    await userEvent.type(
-      screen.getByRole("textbox", { name: "Nom de votre service / unité" }),
-      "Néphrologie",
-    );
+    expect(onValide).not.toHaveBeenCalled();
+    // Service réel encore vide → bouton désactivé.
+    expect(screen.getByRole("button", ACCEDER)).toBeDisabled();
+
+    await saisir("Renseignez le nom de votre service", "Néphrologie");
+    expect(screen.getByRole("button", ACCEDER)).toBeEnabled();
     await valider();
 
     expect(onValide).toHaveBeenCalledWith(
@@ -92,79 +125,111 @@ describe("parcours de rattachement", () => {
         serviceEstAutre: true,
         serviceLibre: "Néphrologie",
       },
-      { destination: "simulateur", developerTools: false },
+      SIMULATEUR,
     );
   });
 
-  it("service « Autre » : validation désactivée tant que le service réel n'est pas saisi", async () => {
+  it("« Autre établissement » → son nom et celui du service, puis un bouton", async () => {
+    const onValide = vi.fn();
+    render(<RattachementForm onValide={onValide} />);
+
+    await choisir(/Établissement/, "Autre établissement");
+    expect(
+      screen.queryByRole("combobox", { name: /Nom du service/ }),
+    ).toBeNull();
+    expect(screen.getByRole("button", ACCEDER)).toBeDisabled();
+
+    await saisir("Renseignez le nom de votre établissement", "CH de Voiron");
+    expect(screen.getByRole("button", ACCEDER)).toBeDisabled();
+    await saisir("Renseignez le nom de votre service", "Urgences");
+    expect(screen.getByRole("button", ACCEDER)).toBeEnabled();
+    await valider();
+
+    expect(onValide).toHaveBeenCalledWith(
+      {
+        etabId: "",
+        etabEstAutre: true,
+        etabLibre: "CH de Voiron",
+        serviceLibre: "Urgences",
+      },
+      SIMULATEUR,
+    );
+  });
+
+  it("changer le premier choix efface ce qui en découlait", async () => {
+    render(<RattachementForm onValide={vi.fn()} />);
+
+    await choisir(/Établissement/, "Autre établissement");
+    await saisir("Renseignez le nom de votre établissement", "CH de Voiron");
+    await choisir(/Établissement/, "CHU Grenoble Alpes");
+    await choisir(/Nom du service/, "Autre");
+    await choisir(/Établissement/, "Autre établissement");
+
+    expect(
+      screen.getByRole("textbox", {
+        name: "Renseignez le nom de votre établissement",
+      }),
+    ).toHaveValue("");
+  });
+
+  it("trie les services par ordre alphabétique, « Autre » en dernier", async () => {
+    render(<RattachementForm onValide={vi.fn()} />);
+
+    // Le référentiel fournit « Urgences » avant « Médecine interne ».
+    await choisir(/Établissement/, "Centre hospitalier de Chambéry");
+    const select = screen.getByRole("combobox", { name: /Nom du service/ });
+    await within(select).findByRole("option", { name: "Urgences" });
+
+    expect(
+      within(select)
+        .getAllByRole("option")
+        .map((o) => o.textContent),
+    ).toEqual(["Médecine interne", "Urgences", "Autre"]);
+  });
+});
+
+describe("le service n° 4 (developer tools)", () => {
+  it("n'entre pas dès la sélection : il montre le simulateur et les seeds", async () => {
+    const onValide = vi.fn();
+    render(<RattachementForm onValide={onValide} />);
+
+    await choisir(/Établissement/, "Transport Sanitaire");
+    await choisir(/Nom du service/, "Transport Sanitaire");
+
+    expect(onValide).not.toHaveBeenCalled();
+    expect(screen.getByRole("button", ACCEDER)).toBeEnabled();
+    expect(screen.getByRole("button", { name: "Seeds" })).toBeInTheDocument();
+  });
+
+  it("garde ses deux sorties même proposé comme structure (Grist pas encore migré)", async () => {
+    const onValide = vi.fn();
+    const referentiel: Referentiel = {
+      async listerEtablissements() {
+        return [{ id: "11", libelle: "Libéral / CNAM / CPAM / Autre" }];
+      },
+      async listerServices() {
+        return [{ id: "4", libelle: "Transport Sanitaire" }];
+      },
+    };
+    render(<RattachementForm referentiel={referentiel} onValide={onValide} />);
+
+    await choisir(/Établissement/, "Transport Sanitaire");
+    expect(onValide).not.toHaveBeenCalled();
+    await userEvent.click(screen.getByRole("button", { name: "Seeds" }));
+
+    expect(onValide).toHaveBeenCalledWith(
+      { etabId: "11", serviceId: "4" },
+      { destination: "seeds", developerTools: true },
+    );
+  });
+
+  it("n'est pas proposé pour un service ordinaire", async () => {
     render(<RattachementForm onValide={vi.fn()} />);
 
     await choisir(/Établissement/, "CHU Grenoble Alpes");
     await choisir(/Nom du service/, "Autre");
-    // Service réel encore vide → bouton désactivé.
-    expect(
-      screen.getByRole("button", { name: "Accéder au simulateur" }),
-    ).toBeDisabled();
 
-    await userEvent.type(
-      screen.getByRole("textbox", { name: "Nom de votre service / unité" }),
-      "Néphrologie",
-    );
-    expect(
-      screen.getByRole("button", { name: "Accéder au simulateur" }),
-    ).toBeEnabled();
-  });
-
-  it("trie les listes déroulantes par ordre alphabétique", async () => {
-    render(<RattachementForm onValide={vi.fn()} />);
-
-    // Établissements : « Centre hospitalier de Chambéry » avant « CHU Grenoble
-    // Alpes » avant « Clinique Belledonne » (tri insensible à la casse).
-    const selectEtab = screen.getByRole("combobox", { name: /Établissement/ });
-    await within(selectEtab).findByRole("option", {
-      name: "CHU Grenoble Alpes",
-    });
-    const etabs = within(selectEtab)
-      .getAllByRole("option")
-      .map((o) => o.textContent);
-    expect(etabs.indexOf("Centre hospitalier de Chambéry")).toBeLessThan(
-      etabs.indexOf("CHU Grenoble Alpes"),
-    );
-    expect(etabs.indexOf("CHU Grenoble Alpes")).toBeLessThan(
-      etabs.indexOf("Clinique Belledonne"),
-    );
-
-    // Services de Chambéry : triés « Médecine interne » avant « Urgences », alors
-    // que le référentiel les fournit dans l'ordre inverse.
-    await choisir(/Établissement/, "Centre hospitalier de Chambéry");
-    const selectService = screen.getByRole("combobox", {
-      name: /Nom du service/,
-    });
-    await within(selectService).findByRole("option", { name: "Urgences" });
-    const services = within(selectService)
-      .getAllByRole("option")
-      .map((o) => o.textContent);
-    expect(services.indexOf("Médecine interne")).toBeLessThan(
-      services.indexOf("Urgences"),
-    );
-    // « Autre » reste en fin de liste, malgré son rang alphabétique (A…).
-    expect(services.filter((s) => s !== "Sélectionnez un service").at(-1)).toBe(
-      "Autre",
-    );
-  });
-
-  it("désactive la validation tant que la branche est incomplète", async () => {
-    render(<RattachementForm onValide={vi.fn()} />);
-
-    expect(
-      screen.getByRole("button", { name: "Accéder au simulateur" }),
-    ).toBeDisabled();
-
-    await choisir(/Établissement/, "CHU Grenoble Alpes");
-    // service non encore choisi → toujours désactivé
-    expect(
-      screen.getByRole("button", { name: "Accéder au simulateur" }),
-    ).toBeDisabled();
+    expect(screen.queryByRole("button", { name: "Seeds" })).toBeNull();
   });
 });
 
@@ -191,11 +256,11 @@ describe("référentiel indisponible : rattachement dégradé « Autre / Autre �
 
     expect(onValide).toHaveBeenCalledWith(
       { etabId: "autre", serviceId: "autre" },
-      { destination: "simulateur", developerTools: false },
+      SIMULATEUR,
     );
   });
 
-  it("bascule aussi quand les services de l'établissement choisi ne chargent pas", async () => {
+  it("bascule aussi quand les services (donc les structures) ne chargent pas", async () => {
     const onValide = vi.fn();
     const referentiel: Referentiel = {
       ...snapshotReferentiel,
@@ -203,7 +268,6 @@ describe("référentiel indisponible : rattachement dégradé « Autre / Autre �
     };
     render(<RattachementForm referentiel={referentiel} onValide={onValide} />);
 
-    await choisir(/Établissement/, "CHU Grenoble Alpes");
     expect(
       await screen.findByText(/momentanément indisponible/),
     ).toBeInTheDocument();
@@ -211,7 +275,7 @@ describe("référentiel indisponible : rattachement dégradé « Autre / Autre �
 
     expect(onValide).toHaveBeenCalledWith(
       { etabId: "autre", serviceId: "autre" },
-      { destination: "simulateur", developerTools: false },
+      SIMULATEUR,
     );
   });
 });
