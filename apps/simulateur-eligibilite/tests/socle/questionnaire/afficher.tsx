@@ -11,7 +11,7 @@ import type {
   Page,
   QuestionnairePart,
 } from "../../../core/socle/questionnaire-engine";
-import { Simulation } from "../../../core/socle/simulation/simulation";
+import { Simulation } from "../../../core/socle/simulation";
 import { QuestionnaireForm } from "../../../front/socle/questionnaire/QuestionnaireForm";
 
 type ApresVerrou = { lockedAnswers?: Answers; cibles?: AnyCibles };

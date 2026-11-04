@@ -4,9 +4,13 @@
 // seeds en deux sections : celles qui ouvrent un résultat, et celles qui
 // s'arrêtent dans le questionnaire.
 
-import { preconisationOf } from "../../../core/socle/simulation/preconisation";
-import { evaluateSeed, type Seed } from "../../../core/socle/simulation/seed";
-import { Simulation } from "../../../core/socle/simulation/simulation";
+import {
+  evaluateSeed,
+  preconisationOf,
+  type Seed,
+  Simulation,
+} from "../../../core/socle/simulation";
+
 import type { Model } from "../model";
 import { Container } from "../ui/Container";
 import { type SeedRow, SeedsTable } from "./SeedsTable";

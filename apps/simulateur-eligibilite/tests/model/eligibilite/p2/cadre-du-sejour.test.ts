@@ -13,7 +13,7 @@ import {
   Questionnaire,
 } from "../../../../core/socle/questionnaire-engine";
 
-import { preconisationOf } from "../../../../core/socle/simulation/preconisation";
+import { preconisationOf } from "../../../../core/socle/simulation";
 
 type Reponses = Answers<Questions>;
 

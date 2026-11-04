@@ -41,4 +41,4 @@ export {
   type ValueOf,
 } from "./questionnaire-engine/index.ts";
 
-export type { Seed } from "./simulation/seed.ts";
+export type { Seed } from "./simulation/index.ts";

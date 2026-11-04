@@ -17,7 +17,7 @@ import {
   Questionnaire,
 } from "../../../core/socle/questionnaire-engine";
 
-import { preconisationOf } from "../../../core/socle/simulation/preconisation";
+import { preconisationOf } from "../../../core/socle/simulation";
 import { model as frontModel } from "../../../front/models/eligibilite";
 import { MATERNITE_ETABLIE } from "./p2/reponses-de-la-branche";
 

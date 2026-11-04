@@ -15,7 +15,7 @@ import {
   type Validated,
 } from "../../../core/socle/questionnaire-engine";
 
-import type { Simulation } from "../../../core/socle/simulation/simulation";
+import type { Simulation } from "../../../core/socle/simulation";
 import {
   isSingleChoicePage,
   useAutoAdvance,

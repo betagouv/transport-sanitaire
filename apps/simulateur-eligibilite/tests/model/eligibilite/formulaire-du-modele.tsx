@@ -6,7 +6,7 @@ import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { useState } from "react";
 import type { Answers } from "../../../core/socle/questionnaire-engine";
-import { Simulation } from "../../../core/socle/simulation/simulation";
+import { Simulation } from "../../../core/socle/simulation";
 import { model } from "../../../front/models/eligibilite";
 import { QuestionnaireForm } from "../../../front/socle/questionnaire/QuestionnaireForm";
 

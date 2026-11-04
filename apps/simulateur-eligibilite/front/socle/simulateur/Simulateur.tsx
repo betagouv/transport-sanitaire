@@ -9,7 +9,7 @@
 
 import { type ComponentType, type ReactNode, useState } from "react";
 import type { Answers } from "../../../core/socle/questionnaire-engine";
-import { Simulation } from "../../../core/socle/simulation/simulation";
+import { Simulation } from "../../../core/socle/simulation";
 import type { Model } from "../model";
 import {
   type DebugTraceProps,

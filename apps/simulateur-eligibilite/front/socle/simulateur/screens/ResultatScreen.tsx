@@ -12,7 +12,7 @@ import type {
   Read,
 } from "../../../../core/socle/questionnaire-engine";
 
-import type { Simulation } from "../../../../core/socle/simulation/simulation";
+import type { Simulation } from "../../../../core/socle/simulation";
 import type { FirstResult, Model } from "../../model";
 import { NextStep, Stepper } from "../../questionnaire/Stepper";
 import { SecondaryButton } from "../../ui/SecondaryButton";

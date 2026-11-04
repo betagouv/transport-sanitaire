@@ -4,7 +4,7 @@
 // ni le catalogue ni le tableau (`tooling/verifier-bundle.ts` le vérifie).
 
 import { lazy, Suspense, useEffect, useState } from "react";
-import type { Seed } from "../../../core/socle/simulation/seed";
+import type { Seed } from "../../../core/socle/simulation";
 import type { Model } from "../model";
 
 type Props = {

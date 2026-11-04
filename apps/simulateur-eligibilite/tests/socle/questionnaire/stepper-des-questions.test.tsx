@@ -4,7 +4,7 @@ import { useState } from "react";
 import { describe, expect, it } from "vitest";
 import { page, questionsOf } from "../../../core/socle";
 import type { CoreModel } from "../../../core/socle/model";
-import { Simulation } from "../../../core/socle/simulation/simulation";
+import { Simulation } from "../../../core/socle/simulation";
 import { QuestionnaireForm } from "../../../front/socle/questionnaire/QuestionnaireForm";
 import { detailsDuStepper } from "../simulateur/questionnaire";
 

@@ -18,8 +18,11 @@ import {
   readIn,
 } from "../../../../core/socle/questionnaire-engine";
 
-import { preconisationOf } from "../../../../core/socle/simulation/preconisation";
-import { resultScope } from "../../../../core/socle/simulation/result-scope";
+import {
+  preconisationOf,
+  resultScope,
+} from "../../../../core/socle/simulation";
+
 import type { Rubrique } from "../../../../front/models/eligibilite/r3/rubriques/rubrique";
 import type { Cerfa, CerfaDto } from "../../../../front/socle/cerfa/cerfa";
 import { generateCerfa } from "../../../../front/socle/cerfa/generate-the-cerfa/generate-the-cerfa";

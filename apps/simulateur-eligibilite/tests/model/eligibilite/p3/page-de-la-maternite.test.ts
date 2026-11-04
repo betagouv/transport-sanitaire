@@ -3,7 +3,7 @@
 // `CONTRAT_Q38_MATERNITE_DOCUMENT.json`, D-251.
 
 import { describe, expect, it } from "vitest";
-import { Simulation } from "../../../../core/socle/simulation/simulation";
+import { Simulation } from "../../../../core/socle/simulation";
 import { model } from "../../../../front/models/eligibilite";
 import { S3139H } from "../../../../front/models/eligibilite/r3/s3139h/s3139h";
 import { dtoFrom } from "../../../../front/socle/cerfa/generate-the-cerfa/compute-the-dto";

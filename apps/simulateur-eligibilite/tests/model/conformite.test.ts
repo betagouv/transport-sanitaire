@@ -14,8 +14,8 @@ import {
   Questionnaire,
 } from "../../core/socle/questionnaire-engine";
 
-import { preconisationOf } from "../../core/socle/simulation/preconisation";
-import { evaluateSeed } from "../../core/socle/simulation/seed";
+import { evaluateSeed, preconisationOf } from "../../core/socle/simulation";
+
 import { model as eligibilite } from "../../front/models/eligibilite";
 import { model as fake } from "../../front/models/fake";
 import type { Model } from "../../front/socle/model";

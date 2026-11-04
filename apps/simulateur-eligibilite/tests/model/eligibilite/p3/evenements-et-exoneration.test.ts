@@ -11,7 +11,7 @@ import {
   Questionnaire,
 } from "../../../../core/socle/questionnaire-engine";
 
-import { preconisationOf } from "../../../../core/socle/simulation/preconisation";
+import { preconisationOf } from "../../../../core/socle/simulation";
 import { BRANCARD_20_KM } from "../p2/reponses-de-la-branche";
 
 type Reponses = Answers<Questions>;

@@ -16,7 +16,7 @@ import type {
   ValidatedAnswers,
 } from "./questionnaire-engine/index.ts";
 
-import type { Seed } from "./simulation/seed.ts";
+import type { Seed } from "./simulation/index.ts";
 
 /** Les faits d'un modèle : ce que ses règles reçoivent. */
 export type AnyFaits = Readonly<Record<string, unknown>>;

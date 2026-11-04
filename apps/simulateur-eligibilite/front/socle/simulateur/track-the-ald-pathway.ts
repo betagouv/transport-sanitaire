@@ -3,7 +3,7 @@
 // Le modèle dit quel parcours compte et lequel finit à la caisse ; le socle
 // compte les pages et les questions.
 
-import type { Simulation } from "../../../core/socle/simulation/simulation";
+import type { Simulation } from "../../../core/socle/simulation";
 import { EventName, trackEvent } from "../analytics/events";
 import type { AldIndicator, Model } from "../model";
 
