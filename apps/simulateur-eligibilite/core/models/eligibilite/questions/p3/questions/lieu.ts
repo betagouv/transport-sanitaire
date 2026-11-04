@@ -10,6 +10,7 @@ import type {
   Condition,
 } from "../../../../../socle/index.ts";
 import { type Context as Contexte, given, question } from "../../question.ts";
+import { unHebergementDuDispositif } from "../conditions/engagement-maternite.ts";
 import {
   aLEtranger,
   type Extremite,
@@ -61,7 +62,8 @@ const ROLES_CONTRADICTOIRES = ENTREES_DES_LIEUX.compute(
 /**
  * Les quatre questions du lieu. L'arrivée reçoit le départ, qu'elle lit. Le
  * rappel coiffe la première question posée : le nom, ou l'adresse d'un
- * domicile, qui n'en a pas.
+ * domicile, qui n'en a pas. Le nom est facultatif, sauf pour l'hébergement de
+ * l'Engagement maternité.
  */
 export function questionsDuLieu<E extends Extremite>(
   extremite: E,
@@ -70,12 +72,15 @@ export function questionsDuLieu<E extends Extremite>(
 ) {
   const rappel = rappelDe(extremite, libelles.rappel);
   const nature = natureAChoisir(extremite, libelles.nature, depart);
-  const nomUtile = natureDu(extremite, nature).compute(unNomAReporter);
+  const natureDuLieu = natureDu(extremite, nature);
+  const nomUtile = natureDuLieu.compute(unNomAReporter);
   return {
     nature,
     nom: question
       .text(QUESTIONS_DU_LIEU[extremite].nom, "Nom du lieu ou de la structure")
-      .optional()
+      .requiredWhen(
+        unHebergementDuDispositif.and(natureDuLieu.compute(heberge)),
+      )
       .mattersWhile(avecUnDocument.and(nomUtile))
       .reminderFrom(rappel),
     precision: precisionDuLieu(extremite, nature),
@@ -181,6 +186,12 @@ function memeAdresseQue(
     .computeWith(given.question(arrivee).answer(), (a, b) =>
       Boolean(a.value && b.value && memeAdresse(a.value, b.value)),
     );
+}
+
+// Le lieu est un hébergement. Celui de l'Engagement maternité doit porter son
+// nom sur la DAP : Q3.8 ne le redemande pas (TS1016-05).
+function heberge(nature: Nature | undefined): boolean {
+  return nature === "5_HEBERGEMENT_NON_MEDICALISE";
 }
 
 // Un domicile n'a pas de nom à reporter. Tant que la nature manque, le nom
