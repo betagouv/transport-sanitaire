@@ -157,7 +157,7 @@ describe("la recette des deux pages des contextes (REC-Q221-PAGES-1016)", () => 
     expect(boutonSuivant()).toBeDisabled();
   });
 
-  it("retour : Précédent rouvre les pages vues, réponses validées restaurées", () => {
+  it("retour : Précédent rouvre les pages vues, réponses validées restaurées et gardées sans changement", () => {
     const apres = reprise(BRANCARD)
       .validate({ "Q2.2.1": ["0_AUCUNE"] })
       .validate({ "Q2.2.1.b": ["1_ATMP"] });
@@ -169,6 +169,9 @@ describe("la recette des deux pages des contextes (REC-Q221-PAGES-1016)", () => 
     expect(soins.answers["Q2.2.1.b"]).toEqual(["1_ATMP"]);
     expect(contextes.page.id).toBe("P2/contextes");
     expect(contextes.answers["Q2.2.1"]).toEqual(["0_AUCUNE"]);
+    expect(
+      contextes.validate({ "Q2.2.1": ["0_AUCUNE"] }).answers["Q2.2.1.b"],
+    ).toEqual(["1_ATMP"]);
   });
 
   it("retour, à l'écran : Précédent rend le focus au titre du premier bloc", async () => {
@@ -199,7 +202,7 @@ describe("la recette des deux pages des contextes (REC-Q221-PAGES-1016)", () => 
     expect(duSecond(contextes)).toEqual([true, false, false, false, false]);
   });
 
-  it("modification : valider un autre premier bloc efface sa précision, garde le reste, et la repose au besoin", () => {
+  it("modification : valider un autre premier bloc efface sa précision et le second bloc, garde le reste, et les repose au besoin", () => {
     const qualifie: Reponses = {
       ...CONSULTATION,
       "Q2.2.1": RETOUR,
@@ -212,7 +215,9 @@ describe("la recette des deux pages des contextes (REC-Q221-PAGES-1016)", () => 
 
     const sansRetour = contextes.validate({ "Q2.2.1": ["0_AUCUNE"] });
     expect(sansRetour.answers).not.toHaveProperty("Q2.2.1.indication");
+    expect(sansRetour.answers).not.toHaveProperty("Q2.2.1.b");
     expect(sansRetour.answers["Q2.3.1"]).toBe("1_CINQUANTE_KM_OU_MOINS");
+    expect(sansRetour.page.id).toBe("P2/soins");
 
     const deNouveau = sansRetour.back();
     expect(idsSur(deNouveau, { "Q2.2.1": RETOUR })).toContain(

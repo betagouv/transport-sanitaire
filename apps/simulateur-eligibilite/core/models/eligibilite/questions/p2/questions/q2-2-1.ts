@@ -63,7 +63,9 @@ export const Q2_2_1 = question
     "Un même hébergement relève de l’Engagement maternité ou d’un hébergement temporaire non médicalisé, pas des deux. Pour deux hébergements, faites une simulation par trajet.",
   );
 
-// Q2.1 retire le CAMSP et la convocation qu'elle indique déjà.
+// Q2.1 retire le CAMSP et la convocation qu'elle indique déjà. Une autre
+// réponse validée au premier bloc efface celle du second, qui se repose s'il
+// reste utile ; les autres réponses restent (NAV-Q221-PROGRESSIF-001).
 export const Q2_2_1_B = question
   .multipleChoice(
     "Q2.2.1.b",
@@ -85,6 +87,7 @@ export const Q2_2_1_B = question
     "0_AUCUN": "Non, aucun.",
   })
   .exclusive("0_AUCUN")
+  .dependsOn(Q2_2_1)
   .option("6_CAMSP", (option) => option.offeredWhen(motif.is("10_CAMSP").not()))
   .option("13_CONVOCATION", (option) =>
     option.offeredWhen(motif.is("12_CONVOCATION").not()),

@@ -146,19 +146,17 @@ describe("le premier bloc des situations changé (cas « Contextes »)", () => {
     "Q2.2.5",
   ];
 
-  it("« Non, aucune » efface les précisions, et garde le second bloc et le trajet", () => {
+  it("« Non, aucune » efface les précisions et le second bloc, et garde le trajet", () => {
     const apres = valideeAvec(TROIS_SITUATIONS, "P2/contextes", {
       "Q2.2.1": ["0_AUCUNE"],
     });
 
     expect(PRECISIONS.filter((id) => id in apres)).toEqual([]);
-    expect(apres).toMatchObject({
-      "Q2.2.1.b": ["1_ATMP"],
-      "Q2.3.1": "1_CINQUANTE_KM_OU_MOINS",
-    });
+    expect(apres).not.toHaveProperty("Q2.2.1.b");
+    expect(apres["Q2.3.1"]).toBe("1_CINQUANTE_KM_OU_MOINS");
   });
 
-  it("décocher le séjour n'efface que le cadre et la permission du séjour", () => {
+  it("décocher le séjour efface le cadre et la permission du séjour, et le second bloc", () => {
     const apres = valideeAvec(TROIS_SITUATIONS, "P2/contextes", {
       "Q2.2.1": ["2_ETRANGER", "10_RETOUR_PENITENTIAIRE"],
     });
@@ -167,7 +165,7 @@ describe("le premier bloc des situations changé (cas « Contextes »)", () => {
       "Q2.2.1.indication",
       "Q2.2.5",
     ]);
-    expect(apres["Q2.2.1.b"]).toEqual(["1_ATMP"]);
+    expect(apres).not.toHaveProperty("Q2.2.1.b");
   });
 });
 
