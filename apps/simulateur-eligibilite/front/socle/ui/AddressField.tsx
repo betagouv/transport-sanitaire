@@ -30,8 +30,6 @@ type Props<Name extends string> = {
   /** Les champs, dans l'ordre où ils se saisissent. */
   fields: readonly Field<Name>[];
   onChange: (name: Name, value: string) => void;
-  /** Le premier champ prend le focus à l'ouverture de la page. */
-  autoFocus?: boolean;
   /** Met le libellé en avant, quand le groupe est la question de la page. */
   lead?: boolean;
 };
@@ -50,13 +48,9 @@ export function AddressField<Name extends string>(props: Props<Name>) {
       aria-describedby={failing ? `${id}-messages` : undefined}
     >
       <Legend {...props} />
-      {fields.map((field, rank) => (
+      {fields.map((field) => (
         <div key={field.name} className={elementClass(field)}>
-          <FieldInput
-            {...props}
-            field={field}
-            autoFocus={props.autoFocus && rank === 0}
-          />
+          <FieldInput {...props} field={field} />
         </div>
       ))}
       {failing && <GroupMessages id={id} errors={props.errors ?? []} />}
@@ -120,7 +114,6 @@ function FieldInput<Name extends string>({
   id,
   field,
   onChange,
-  autoFocus,
 }: Props<Name> & { field: Field<Name> }) {
   return (
     <Input
@@ -134,7 +127,6 @@ function FieldInput<Name extends string>({
         type: "text",
         value: field.value,
         onChange: (e) => onChange(field.name, e.target.value),
-        autoFocus,
       }}
     />
   );

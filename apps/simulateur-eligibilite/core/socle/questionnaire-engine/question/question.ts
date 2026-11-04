@@ -161,6 +161,11 @@ export type Question<
    * elle n'en a pas.
    */
   readonly inconsistencyReads: Reads | null;
+  /**
+   * Ce que lit la condition qui la rend obligatoire (`requiredWhen`). `null` :
+   * elle n'en a pas.
+   */
+  readonly requirementReads: Reads | null;
   /** Elle se pose même si sa réponse ne change rien de ce qui compte. */
   readonly isAlwaysAsked: boolean;
   /**

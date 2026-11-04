@@ -11,7 +11,6 @@ type Props = {
   onChange: (value: string) => void;
   /** Un message par ligne, sous le champ. */
   errors?: readonly string[];
-  autoFocus?: boolean;
   /** Met le libellé en avant, quand le champ est la question de la page. */
   lead?: boolean;
 };
@@ -32,7 +31,6 @@ export function TextField(props: Props) {
         type: "text",
         value: props.value,
         onChange: (e) => props.onChange(e.target.value),
-        autoFocus: props.autoFocus,
       }}
     />
   );

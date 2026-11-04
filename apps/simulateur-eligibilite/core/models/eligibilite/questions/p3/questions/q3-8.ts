@@ -4,19 +4,17 @@
 //
 // Aucune situation de P2 ne fait de la maternité le départ ou l'arrivée : son
 // nom et son adresse se demandent toujours. Un hébergement du dispositif qui
-// est déjà l'un des deux lieux garde ceux de Q3.2 ou Q3.3.
+// est déjà l'un des deux lieux garde ceux de Q3.2 ou Q3.3, où son nom devient
+// obligatoire (`lieu.ts`, TS1016-05).
 
-import { Q2_14_MOTIF } from "../../p2/questions/q2-14.ts";
-import { given, question } from "../../question.ts";
+import { question } from "../../question.ts";
+import {
+  unEngagementMaternite,
+  unHebergementDuDispositif,
+} from "../conditions/engagement-maternite.ts";
 import { natureDu } from "../conditions/lieux-du-trajet.ts";
-import { uneDap } from "../conditions/supports-du-complement.ts";
 import { Q3_2 } from "./q3-2.ts";
 import { Q3_3 } from "./q3-3.ts";
-
-// La DAP coche le motif Engagement maternité.
-const unEngagementMaternite = uneDap.and(
-  given.cible("cible_dap_motif_engagement_maternite").isOui(),
-);
 
 const unLieuHeberge = natureDu("depart", Q3_2.nature).computeWith(
   natureDu("arrivee", Q3_3.nature),
@@ -26,9 +24,9 @@ const unLieuHeberge = natureDu("depart", Q3_2.nature).computeWith(
 
 // Q2.14 dit le déplacement lié à l'hébergement du dispositif, que ni le
 // départ ni l'arrivée ne sont.
-const unHebergementDistinct = unEngagementMaternite
-  .and(given.question(Q2_14_MOTIF).answer().checked("2_HEBERGEMENT_ENGAGEMENT"))
-  .and(unLieuHeberge.not());
+const unHebergementDistinct = unHebergementDuDispositif.and(
+  unLieuHeberge.not(),
+);
 
 export const Q3_8_MATERNITE_NOM = question
   .text("Q3.8.maternite.nom", "Nom de la maternité")

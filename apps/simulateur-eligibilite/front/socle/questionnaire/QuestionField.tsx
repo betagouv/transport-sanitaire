@@ -37,8 +37,6 @@ type Props = {
    * tant qu'aucun de ses champs n'est fautif.
    */
   errors?: readonly string[];
-  /** Le champ prend le focus à l'ouverture de la page. */
-  autoFocus?: boolean;
   /** Ce qui s'affiche sous une option d'une liste de cases : ses questions. */
   below?: (option: string) => ReactNode;
 };
@@ -67,13 +65,12 @@ type MultipleChoice = Asked<"multiple choice">;
 
 // Ce que tous les champs reçoivent. Le libellé est mis en avant : sur une page
 // du questionnaire, c'est lui qui porte la question.
-function common({ question, errors, autoFocus }: Props) {
+function common({ question, errors }: Props) {
   return {
     id: question.id,
     label: displayedLabel(question.label, question.optional),
     hint: question.hint,
     errors,
-    autoFocus,
     lead: true,
   };
 }
@@ -115,7 +112,6 @@ function AddressQuestionField(props: Props & { question: AddressQuestion }) {
       errors={failing ? [] : props.errors}
       label={displayedLabel(question.label, question.optional)}
       hint={question.hint}
-      autoFocus={props.autoFocus}
       lead
       fields={displayedFields(question).map((field) => {
         const problem = problems[field.name];

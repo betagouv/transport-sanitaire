@@ -116,11 +116,11 @@ function aldLiee(trace: LuParLaRaison): boolean {
 }
 
 // La condition de chaque raison, par son identifiant. Une raison qui n'y est
-// pas (les quatre inactives) n'est jamais prise.
+// pas (les cinq inactives, dont AUCUN_ALD_CADRE_NON_QUALIFIANT depuis la
+// v10.1.6) n'est jamais prise.
 //
 // Jamais prouvées par nos réponses (arbitrages [ÉDITEUR], D-113) :
-// AUCUN_ALD_CADRE_NON_QUALIFIANT, AUCUN_SERIE_NON_QUALIFIANTE,
-// AUCUN_AUTRE_DEPLACEMENT et TRANSPORT_EXCLU.
+// AUCUN_SERIE_NON_QUALIFIANTE, AUCUN_AUTRE_DEPLACEMENT et TRANSPORT_EXCLU.
 const CONDITIONS: Readonly<Record<string, Condition>> = {
   // « ALD confirmée ; soin sans lien avec cette ALD prouvé ». Q1.3.b le
   // prouve quand elle dit « sans lien direct ».
@@ -130,12 +130,6 @@ const CONDITIONS: Readonly<Record<string, Condition>> = {
   // direct en Q1.3.b, `fait_ald_liee` ne vaut « non » que si Q1.1 dit « seul ».
   AUCUN_ALD_SANS_DEFICIENCE: (trace) =>
     aldLiee(trace) && trace.faits.fait_ald_liee.isNon(),
-  // « Réponse prouvée hors fondement 3°/4° ; exception mineur non applicable ».
-  // Q1.3 option 2 dit le 100 % : le fondement n'est jamais prouvé « non ».
-  AUCUN_ALD_CADRE_NON_QUALIFIANT: (trace) =>
-    aldLiee(trace) &&
-    trace.faits.fait_ald_exonerante_3_ou_4.isNon() &&
-    trace.faits.fait_mineur_soins_prolonges_reconnus.isNon(),
   AUCUN_DIALYSE_NON_HEMO: (trace) =>
     trace.precisions.dialysisType === "non-hemodialyse" && sansSejour(trace),
   AUCUN_APPAREILLAGE_HORS_CATEGORIES: ({ precisions }) =>

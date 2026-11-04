@@ -132,6 +132,15 @@ export abstract class DeclaredQuestion<
   }
 
   /**
+   * La question n'attend une réponse que quand cette condition tient ; sinon
+   * elle reste facultative. Comme une incohérence, la condition lit les
+   * questions d'avant et celles de la même page.
+   */
+  requiredWhen(condition: Condition): this {
+    return this.withSettings({ optional: true, requiredWhen: condition });
+  }
+
+  /**
    * La question s'affiche juste sous cette option d'une liste de cases de la
    * même page, et non à son rang. Elle reste une question à part, avec sa
    * légende : sa garde se déclare toujours par `appliesWhen`.
@@ -212,6 +221,11 @@ export abstract class DeclaredQuestion<
     return inconsistencies
       .map(({ condition }) => condition.reads)
       .reduce(readsOf, NOTHING);
+  }
+
+  /** Ce que lit la condition qui la rend obligatoire. `null` : elle n'en a pas. */
+  get requirementReads(): Reads | null {
+    return this.settings.requiredWhen?.reads ?? null;
   }
 
   /** Ce que lisent les gardes de ce que sa sorte ajoute : ses options. */

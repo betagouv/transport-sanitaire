@@ -17,8 +17,6 @@ import type {
 /** Ce que lisent les points ouverts pour la caisse. */
 export const LU_PAR_LA_CAISSE = luPar({
   cibles: given.cibles(
-    "cible_preuve_ald_inconnue_decisive",
-    "cible_reconnaissance_mineur_inconnue_decisive",
     "cible_convocation_inconnue_decisive",
     "cible_couverture_inconnue_decisive",
     "cible_dap_motif_camsp_cmpp",
@@ -67,16 +65,9 @@ type RaisonIssueCaisse = readonly [
 
 // Dans l'ordre de `cible_reason_code`. Les deux scénarios de
 // AUTRE_DROIT_NON_VERIFIABLE se séparent comme `cible_couverture_inconnue_decisive`.
+// Ceux de l'ALD et du mineur sont inactifs depuis la v10.1.6 (TS1016-07) : le
+// questionnaire ne les ouvre plus, Q1.3.a n'ayant plus de réponse inconnue.
 const RAISONS: readonly RaisonIssueCaisse[] = [
-  [
-    "ald-base",
-    ({ cibles }) => cibles.cible_preuve_ald_inconnue_decisive.isOui(),
-  ],
-  [
-    "mineur",
-    ({ cibles }) =>
-      cibles.cible_reconnaissance_mineur_inconnue_decisive.isOui(),
-  ],
   [
     "appareillage",
     ({ cibles }) => cibles.cible_convocation_inconnue_decisive.isOui(),

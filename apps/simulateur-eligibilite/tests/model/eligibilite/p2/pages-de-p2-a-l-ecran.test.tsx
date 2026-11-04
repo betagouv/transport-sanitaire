@@ -69,9 +69,9 @@ describe("les champs qu'une réponse révèle bloquent « Suivant »", () => {
     await page(Q210A);
 
     expect(suivant()).toBeDisabled();
-    await user.click(dans(Q210A, /^Oui$/));
+    await user.click(dans(Q210A, /^Oui\.$/));
     expect(suivant()).toBeDisabled();
-    await user.click(dans(Q210B, /^Podo-orthèse$/));
+    await user.click(dans(Q210B, /^Podo-orthèse\.$/));
     expect(suivant()).toBeEnabled();
   });
 });
