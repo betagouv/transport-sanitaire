@@ -8,6 +8,7 @@
 //     pnpm test grist-ecriture
 //
 // Vérifie l'idempotence : deux enrichissements identiques créent une seule ligne.
+// Prérequis : la colonne `Origine` sur `Etablissements` comme sur `Services_Unites`.
 
 import { describe, expect, it } from "vitest";
 import { lireConfiguration } from "../../../server/configuration.ts";
@@ -40,6 +41,28 @@ describe.skipIf(!actif)(
       const services = await ref.listerServices("11");
       const svc = services.filter((s) => s.libelle === marqueur);
       expect(svc).toHaveLength(1);
+    });
+
+    it("établissement saisi : le crée avec son service, puis les déduplique", async () => {
+      const marqueur = `TEST-ETAB-${Date.now()}`;
+      const sel = {
+        etabId: "",
+        etabEstAutre: true as const,
+        etabLibre: marqueur,
+        serviceLibre: `${marqueur}-SVC`,
+      };
+
+      await ref.enrichirDepuisSaisie!(sel);
+      await ref.enrichirDepuisSaisie!(sel);
+
+      const etabs = (await ref.listerEtablissements()).filter(
+        (e) => e.libelle === marqueur,
+      );
+      expect(etabs).toHaveLength(1);
+      const services = await ref.listerServices(etabs[0]!.id);
+      expect(
+        services.filter((s) => s.libelle === `${marqueur}-SVC`),
+      ).toHaveLength(1);
     });
   },
 );
