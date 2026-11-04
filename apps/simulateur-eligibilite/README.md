@@ -57,8 +57,9 @@ front et le référentiel de rattachement.
 Les règles d'écriture et les invariants ne sont pas de la prose, ils sont exécutables.
 On les trouve dans `tests/architecture.test.ts`, pour les frontières, dans
 `tests/taille-du-code.test.ts`, pour les limites de 30 et 300 lignes, dans `tests/lisibilite.test.ts`, pour la forme des fichiers, les noms
-et les extensions d'import, et dans `tests/miroir-des-sources.test.ts`, pour
-les dossiers de tests, rangés comme les sources. Lis leur message d'échec : chacun dit ce que sa règle
+et les extensions d'import, dans `tests/miroir-des-sources.test.ts`, pour
+les dossiers de tests, rangés comme les sources, et dans
+`tests/modules-du-socle.test.ts`, pour l'index de chaque module du socle. Lis leur message d'échec : chacun dit ce que sa règle
 protège. Ce qu'on attend d'un contributeur est écrit dans [AGENTS.md](AGENTS.md).
 
 De n'importe où dans le dépôt, `tsp dev simulateur` lance le front et le backend en
@@ -110,6 +111,9 @@ les outils de développement.
 `core/` et `front/` ont chacun un `socle/` et un `models/`. Un modèle a son
 dossier des deux côtés, sous le même nom : son métier dans `core/`, son écran
 dans `front/` (ADR [`metier-et-ecran`](docs/knowledge/adr/metier-et-ecran.md)).
+Un module du socle, dossier direct de `core/socle/` ou de `front/socle/`, a son
+`index.ts` : ce qu'il promet au reste du socle, et le seul de ses fichiers
+qu'on importe de l'extérieur (ADR-28).
 
 ```
 shared/                  le contrat front ⇄ back, source unique des types partagés

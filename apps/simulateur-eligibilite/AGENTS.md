@@ -377,6 +377,14 @@ technique se nomme en anglais, le métier en français. Un dossier qu'on ne sait
 pas nommer d'un nom ou d'un verbe range mal : `utils/`, `types/`, `helpers/`
 n'existent pas ici.
 
+**Un module s'ouvre par son index** (ADR-28). Un module du socle est un dossier
+direct de `core/socle/` ou de `front/socle/`. Son `index.ts` dit ce qu'il
+promet au reste du socle, et rien d'autre : hors du module, on n'importe que
+lui, et ce qui manque s'y ajoute. Ses tests, `tests/socle/<module>/`, lisent
+ses fichiers en direct. Une seule porte à part,
+`core/socle/decision-engine/compute-the-cibles.ts`, pour tenir publicodes hors
+du chunk d'entrée. `tests/modules-du-socle.test.ts` le garde.
+
 Hors de ces racines, `tooling/` porte la configuration TypeScript et les outils de
 développement (le script des règles, la vérification du bundle). Le script collé
 dans Sites Conformes, `front/socle/analytics/consent-cms.js`, s'exécute sur les
@@ -443,6 +451,10 @@ Le reste est dans [`tests/architecture.test.ts`](tests/architecture.test.ts) :
   importe, et qui ne s'importent pas entre eux.
 - le socle, qui n'importe rien des modèles, et les deux points d'entrée par
   lesquels un modèle importe le socle.
+
+Les modules du socle et leur index sont dans
+[`tests/modules-du-socle.test.ts`](tests/modules-du-socle.test.ts) : chaque
+module en a un, et personne ne le contourne.
 
 Les limites de 30 et 300 lignes sont à part, dans
 [`tests/taille-du-code.test.ts`](tests/taille-du-code.test.ts).
