@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it } from "vitest";
 import { App } from "../../../front/socle/app/App";
@@ -31,7 +31,7 @@ function setup(referentiel: Referentiel = snapshotReferentiel) {
 
 async function choisir(labelSelect: RegExp, optionLabel: string) {
   const select = screen.getByRole("combobox", { name: labelSelect });
-  await screen.findByRole("option", { name: optionLabel });
+  await within(select).findByRole("option", { name: optionLabel });
   await userEvent.selectOptions(select, optionLabel);
 }
 
@@ -55,12 +55,11 @@ describe("écran de rattachement", () => {
     expect(screen.queryByRole("group", PREMIERE_QUESTION)).toBeNull();
   });
 
-  it("passe au simulateur une fois l'établissement et le service validés", async () => {
-    const { user, declarations } = setup();
+  it("passe au simulateur dès l'établissement et le service choisis", async () => {
+    const { declarations } = setup();
 
     await choisir(/Établissement/, "CHU Grenoble Alpes");
     await choisir(/Nom du service/, "Cardiologie");
-    await acceder(user);
 
     // Le simulateur est monté : une question de la partie 1 apparaît.
     expect(await simulateurMonte()).toBeInTheDocument();
@@ -78,7 +77,9 @@ describe("écran de rattachement", () => {
     await choisir(/Établissement/, "CHU Grenoble Alpes");
     await choisir(/Nom du service/, "Autre");
     await user.type(
-      screen.getByRole("textbox", { name: "Nom de votre service / unité" }),
+      screen.getByRole("textbox", {
+        name: "Renseignez le nom de votre service",
+      }),
       "Néphrologie",
     );
     await acceder(user);
@@ -93,6 +94,36 @@ describe("écran de rattachement", () => {
       },
     ]);
     expect(rattachementEnSession()?.serviceId).toBe("s_grenoble_autre");
+  });
+
+  it("« Autre établissement » : déclare l'établissement et son service, sans attendre", async () => {
+    const { user, declarations } = setup();
+
+    await choisir(/Établissement/, "Autre établissement");
+    await user.type(
+      screen.getByRole("textbox", {
+        name: "Renseignez le nom de votre établissement",
+      }),
+      "CH de Voiron",
+    );
+    await user.type(
+      screen.getByRole("textbox", {
+        name: "Renseignez le nom de votre service",
+      }),
+      "Urgences",
+    );
+    await acceder(user);
+
+    expect(await simulateurMonte()).toBeInTheDocument();
+    const saisie = {
+      etabId: "",
+      etabEstAutre: true,
+      etabLibre: "CH de Voiron",
+      serviceLibre: "Urgences",
+    };
+    expect(declarations).toEqual([saisie]);
+    // Rien n'identifie le service à Matomo : l'événement part sans nom.
+    expect(rattachementEnSession()).toEqual(saisie);
   });
 
   it("référentiel indisponible : entre quand même, rattaché à « Autre / Autre »", async () => {

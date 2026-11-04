@@ -11,7 +11,7 @@ import {
 } from "../../../shared/referentiel.ts";
 import { demarrer, postTo } from "./serveur-de-test.ts";
 
-describe("POST /api/rattachement : enrichissement du référentiel (service « Autre »)", () => {
+describe("POST /api/rattachement : enrichissement du référentiel", () => {
   // Référentiel double : lit le snapshot, capture les appels d'enrichissement.
   const appels: RattachementSaisi[] = [];
   const referentiel: Referentiel = {
@@ -39,6 +39,28 @@ describe("POST /api/rattachement : enrichissement du référentiel (service « A
     const { status } = await postTo(base, "/api/rattachement", sel);
     expect(status).toBe(204);
     expect(appels).toEqual([sel]);
+  });
+
+  it("déclenche l'enrichissement pour un établissement saisi, avec son service", async () => {
+    const sel = {
+      etabId: "",
+      etabEstAutre: true,
+      etabLibre: "CH de Voiron",
+      serviceLibre: "Urgences",
+    };
+    const { status } = await postTo(base, "/api/rattachement", sel);
+    expect(status).toBe(204);
+    expect(appels).toEqual([sel]);
+  });
+
+  it("refuse un établissement saisi sans nom de service", async () => {
+    const { status } = await postTo(base, "/api/rattachement", {
+      etabId: "",
+      etabEstAutre: true,
+      etabLibre: "CH de Voiron",
+    });
+    expect(status).toBe(400);
+    expect(appels).toEqual([]);
   });
 
   it("appelle quand même l'enrichissement pour une sélection issue des listes (no-op côté source)", async () => {

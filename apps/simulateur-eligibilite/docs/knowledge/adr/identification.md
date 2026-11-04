@@ -1,6 +1,13 @@
 # Architecture : Rattachement à un établissement et un service (~~identification du prescripteur~~)
 
-> Statut : **décidé (release officielle)** · Dernière mise à jour : 2026-09-30
+> Statut : **décidé (release officielle)** · Dernière mise à jour : 2026-11-04
+>
+> **Mise à jour 2026-11-04, établissement ou structure (#197).** L'écran demande
+> l'établissement **ou la structure** dans une seule liste, et ouvre le simulateur dès
+> que le choix suffit. Les structures (« Libéral », « Assurance Maladie », « Autre »)
+> sont les services de l'établissement fourre-tout, qui ne s'affiche plus. Un
+> établissement absent de la liste se déclare avec son service, et enrichit Grist
+> (§4, §5).
 >
 > Étape de rattachement **intégrée** au simulateur d'éligibilité, **préalable
 > obligatoire** à toute simulation : le prescripteur déclare son établissement et son
@@ -213,41 +220,71 @@ Composants :
 
 ## 4. Workflow de rattachement (~~& refs pseudonymisées~~)
 
-Le workflow est linéaire, dans un formulaire à révélation progressive :
+Le workflow est un formulaire à révélation progressive, qui ouvre le simulateur dès que
+le choix suffit (révisé le 2026-11-04, #197) :
 
 ```
-Établissement → Service ─┬─ (service du référentiel)
-                         └─ « Autre » → nom du service / de l'unité réels
+Établissement ou structure ─┬─ établissement du référentiel → Service ─┬─ service de la liste → simulateur
+                            │                                          └─ « Autre » → nom du service → bouton
+                            │  ──────── (trait de séparation) ────────
+                            ├─ « Autre établissement » → nom de l'établissement, nom du service → bouton
+                            ├─ « Libéral » → simulateur
+                            ├─ « Assurance Maladie » → simulateur
+                            └─ « Autre » → simulateur
 ```
 
 ~~Après le service venait le prescripteur, choisi dans la liste ou déclaré « pas dans la
 liste » avec son nom et son prénom.~~ Retiré le 2026-09-29.
 
-Le service « Autre » est une entrée du référentiel, un service par établissement, qu'on
-sélectionne comme n'importe quelle autre. Quand il est sélectionné, le prescripteur doit
-saisir son service ou son unité réels. Ce texte libre est alors écrit dans Grist, ce qui
-crée le vrai service, pour qu'à la connexion suivante il apparaisse dans la liste (voir
-la [spec enrichissement](../domain/enrichissement-referentiel-rattachement.md)). C'est
-le seul texte libre du workflow.
+**Entrée dès la sélection.** Un service de la liste ou une structure ouvre le simulateur
+sans bouton. Une saisie libre garde un bouton de validation : on ne sait pas quand elle
+est finie. Changer d'écran au choix d'une liste est un changement de contexte (RGAA 7.4,
+WCAG 3.2.2), assumé par le produit : l'aide de la liste prévient que le choix ouvre le
+simulateur.
 
-Les prescripteurs sans établissement de rattachement, en libéral, à la CNAM ou à la CPAM,
-sélectionnent l'établissement « Libéral / CNAM / CPAM / Autre » du référentiel et suivent
-le même workflow. La branche « non rattaché » dédiée a été supprimée le 2026-07-21.
+**Les structures.** « Libéral », « Assurance Maladie » et « Autre » sont les services de
+l'établissement fourre-tout du référentiel (`Id2 = 11`, libellé « Libéral / CNAM / CPAM /
+Autre »), affichés à plat sous le trait. L'établissement fourre-tout ne s'affiche plus,
+et le front le reconnaît comme il reconnaît le service produit : par son `Id2`, ou par
+son libellé. Le rattachement d'une structure porte donc l'id Grist d'un service, et
+Matomo compte ces visites comme avant. ~~La branche « non rattaché » dédiée a été
+supprimée le 2026-07-21 ; ces prescripteurs sélectionnaient l'établissement fourre-tout
+puis un service.~~
 
-Si le référentiel ne répond pas, liste des établissements ou des services d'un
-établissement, l'écran le dit et laisse entrer avec le **rattachement dégradé**
-`{ etabId: "autre", serviceId: "autre" }`. Le simulateur reste accessible quand Grist
-tombe, et l'analytics range ces visites sous « autre ».
+**Le service « Autre »** est une entrée du référentiel, un service par établissement,
+qu'on sélectionne comme n'importe quelle autre. Quand il est sélectionné, le
+prescripteur saisit son service ou son unité réels. Ce texte libre est écrit dans Grist,
+ce qui crée le vrai service, pour qu'à la visite suivante il apparaisse dans la liste
+(voir la [spec enrichissement](../domain/enrichissement-referentiel-rattachement.md)).
+Le « Autre » des structures n'est pas une saisie libre : il ouvre le simulateur.
 
-- **Saisie** : `{ etabId, serviceId, serviceEstAutre?, serviceLibre? }`, des
-  identifiants du référentiel. Sa complétude se juge par une règle partagée entre le
+**« Autre établissement »** demande le nom de l'établissement, puis celui du service.
+Les deux sont écrits dans Grist, l'établissement puis son service sous lui. À la visite
+suivante, l'établissement est dans la liste, au-dessus du trait, avec son service.
+
+**Le service n° 4** (« Transport Sanitaire », celui du produit) n'entre pas dès la
+sélection : il montre ses deux sorties, le simulateur et les seeds des developer tools.
+Il est rangé sous un établissement dédié dans Grist ; son déverrouillage reste sur son
+`Id2`, et marche aussi s'il est encore proposé comme structure.
+
+Si le référentiel ne répond pas, liste des établissements, des structures ou des
+services d'un établissement, l'écran le dit et laisse entrer avec le **rattachement
+dégradé** `{ etabId: "autre", serviceId: "autre" }`. Le simulateur reste accessible
+quand Grist tombe, et l'analytics range ces visites sous « autre ».
+
+- **Saisie** : `{ etabId, serviceId?, serviceEstAutre?, serviceLibre?, etabEstAutre?,
+  etabLibre? }`. Trois cas : un service du référentiel (ids seuls), le service « Autre »
+  d'un établissement (avec `serviceLibre`), un établissement saisi (`etabId` vide,
+  `etabLibre` et `serviceLibre`). Sa complétude se juge par une règle partagée entre le
   front et le back.
-- **Déclaration** : seul un service « Autre » part au serveur, par
-  `POST /api/rattachement`, sans attente. Le serveur l'ajoute à Grist et répond 204.
+- **Déclaration** : seule une saisie qui enrichit le référentiel, service « Autre » ou
+  établissement saisi, part au serveur, par `POST /api/rattachement`, sans attente. Le
+  serveur l'ajoute à Grist et répond 204.
   ~~La sélection partait à `POST /api/identite-pseudonymisee`, qui renvoyait des refs
   HMAC `{ etabRef, serviceRef, prescripteurRef, v: 2 }`.~~
 - **Interdits** : tout nom de personne, tout identifiant patient et toute donnée de
-  santé. Le service libre saisi sous « Autre » ne part jamais à Matomo.
+  santé. Les noms saisis (`serviceLibre`, `etabLibre`) ne partent jamais à Matomo. Un
+  établissement saisi n'a pas de `serviceId` : son événement part sans nom.
 - **Cycle de vie** : le rattachement est rangé à la validation, conservé en mémoire de
   session (sans `localStorage`) et lu par le traceur au moment d'émettre chaque
   événement.
@@ -260,15 +297,26 @@ erDiagram
     ETABLISSEMENT {
         id id PK
         string libelle
+        string origine "formulaire quand saisi à l'écran"
         string finess "optionnel — migration FINESS"
     }
     SERVICE {
         id id PK
         id etabId FK
         string libelle
+        string origine "formulaire quand saisi à l'écran"
     }
 ```
 
+- Tables Grist : `Etablissements` (`Id2`, `Nom`, `Origine`) et `Services_Unites` (`Id2`,
+  `Nom`, `Etablissement`, `Origine`). `Id2` est l'identifiant métier que l'app expose ;
+  la référence `Etablissement` stocke le rowId Grist.
+- **Deux établissements à part.** Le fourre-tout (`Id2 = 11`) porte les structures
+  (« Libéral », « Assurance Maladie », « Autre ») et ne s'affiche pas. Un établissement
+  dédié porte le service n° 4 du produit.
+- **`Origine`** vaut `formulaire` sur les lignes créées depuis l'écran, établissement
+  comme service : l'admin les repère, les corrige ou les retire dans Grist. Les deux
+  colonnes doivent exister avant la mise en production (geste admin).
 - ~~`PRESCRIPTEUR` (nom, prénom, `rpps?`, rattaché à un service).~~ La table existe
   toujours dans Grist, maintenue par l'admin, mais l'app ne la lit ni ne l'écrit plus
   depuis le 2026-09-29. La migration RPPS prévue n'a donc plus d'objet.
@@ -276,8 +324,8 @@ erDiagram
   vers le référentiel officiel.
 - Le front n'accède au référentiel que via l'API du backend, en same-origin.
 - L'accès au référentiel est masqué derrière une interface (`listerEtablissements()`,
-  `listerServices(etabId)`) pour pouvoir substituer la source, de Grist vers FINESS,
-  sans toucher les consommateurs.
+  `listerServices(etabId)`, `enrichirDepuisSaisie(saisie)`) pour pouvoir substituer la
+  source, de Grist vers FINESS, sans toucher les consommateurs.
 
 ## 6. Intégration iframe — points d'attention
 

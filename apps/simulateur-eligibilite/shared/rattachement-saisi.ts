@@ -1,13 +1,17 @@
 // Ce que le formulaire de rattachement collecte, et quand il est complet.
-// Ce sont des identifiants du référentiel Grist.
+// Ce sont des identifiants du référentiel Grist, ou des noms saisis quand le
+// référentiel ne les a pas encore.
 // Voir docs/knowledge/adr/identification.md, ADR-4.
 
-// Le workflow est linéaire : établissement → service (§4 de
-// docs/knowledge/adr/identification.md). Chaque établissement a un service
-// « Autre ». Les prescripteurs sans établissement (libéral, CNAM, CPAM)
-// choisissent l'établissement « Libéral / CNAM / CPAM / Autre ».
+// Trois cas (§4 de docs/knowledge/adr/identification.md) :
+// - un service du référentiel, sous un établissement du référentiel. Les
+//   structures (« Libéral », « Assurance Maladie », « Autre ») sont les
+//   services de l'établissement fourre-tout ;
+// - le service « Autre » d'un établissement du référentiel, avec le nom du
+//   vrai service saisi ;
+// - un établissement absent de la liste, saisi avec son service.
 export type RattachementSaisi = {
-  /** id établissement du référentiel. */
+  /** id établissement du référentiel. Vide quand l'établissement est saisi. */
   etabId: string;
   /** id service du référentiel (« Autre » compris). */
   serviceId?: string;
@@ -18,11 +22,18 @@ export type RattachementSaisi = {
    */
   serviceEstAutre?: boolean;
   /**
-   * Le vrai service ou unité, obligatoire quand `serviceEstAutre` est vrai. Le
-   * backend le crée ou le réutilise. Il est listé sous son nom à la visite
-   * suivante.
+   * Le vrai service ou unité, obligatoire quand `serviceEstAutre` ou
+   * `etabEstAutre` est vrai. Le backend le crée ou le réutilise. Il est listé
+   * sous son nom à la visite suivante.
    */
   serviceLibre?: string;
+  /** Vrai quand l'établissement n'est pas dans la liste : il est saisi. */
+  etabEstAutre?: boolean;
+  /**
+   * Le nom de l'établissement saisi, obligatoire quand `etabEstAutre` est
+   * vrai. Le backend le crée ou le réutilise, et son service sous lui.
+   */
+  etabLibre?: string;
 };
 
 /**
@@ -35,9 +46,14 @@ export const normalise = (s: string): string =>
 
 /**
  * Vrai quand la saisie est complète. Le front s'en sert pour activer le bouton
- * de validation, le backend pour valider `POST /api/rattachement`.
+ * de validation ou entrer dès la sélection, le backend pour valider
+ * `POST /api/rattachement`.
  */
 export function saisieComplete(saisie: RattachementSaisi): boolean {
+  // établissement saisi → son nom et celui du service, rien d'autre
+  if (saisie.etabEstAutre) {
+    return rempli(saisie.etabLibre) && rempli(saisie.serviceLibre);
+  }
   if (!rempli(saisie.etabId)) return false;
 
   // établissement → service requis
@@ -45,6 +61,14 @@ export function saisieComplete(saisie: RattachementSaisi): boolean {
   // service « Autre » → saisie du service/unité réel obligatoire
   if (saisie.serviceEstAutre && !rempli(saisie.serviceLibre)) return false;
   return true;
+}
+
+/**
+ * Vrai quand la saisie apprend quelque chose au référentiel : un service ou un
+ * établissement saisi. Le front ne déclare que celles-là au serveur.
+ */
+export function enrichitLeReferentiel(saisie: RattachementSaisi): boolean {
+  return saisie.serviceEstAutre === true || saisie.etabEstAutre === true;
 }
 
 // ---- implémentation ----

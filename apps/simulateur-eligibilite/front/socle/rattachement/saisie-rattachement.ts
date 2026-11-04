@@ -1,138 +1,174 @@
-// L'état du formulaire de rattachement : les deux listes chargées depuis le
-// référentiel, les champs saisis, et ce qu'on en déduit.
+// L'état du formulaire de rattachement : les champs saisis, et ce qu'on en
+// déduit d'après les listes du référentiel.
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import {
   type RattachementSaisi,
   saisieComplete,
 } from "../../../shared/rattachement-saisi";
-import type {
-  Etablissement,
-  Referentiel,
-  Service,
-} from "../../../shared/referentiel";
+import type { Referentiel } from "../../../shared/referentiel";
 import { estServiceProduit } from "../developer-tools";
+import { decoderChoix } from "./choix";
+import { estAutre, type Listes, useListes } from "./listes";
 
 type Champs = {
-  etabId: string;
+  // La valeur choisie dans la première liste (voir `choix.ts`).
+  choix: string;
   serviceId: string;
   serviceLibre: string;
+  etabLibre: string;
 };
 
-export type SaisieRattachement = {
-  etablissements: Etablissement[];
-  services: Service[];
-  // Une des listes n'a pas pu se charger. La saisie devient le rattachement de
-  // repli « Autre / Autre », toujours complet.
-  indisponible: boolean;
-  champs: Champs;
-  modifier: (champ: keyof Champs, valeur: string) => void;
-  // Rattachement saisi tel qu'il partira à `onValide`, et s'il est complet.
+// Ce qu'on déduit des champs : le rattachement tel qu'il partira à `onValide`,
+// et ce que l'écran doit montrer.
+export type Derivation = {
   saisie: RattachementSaisi;
   valide: boolean;
+  // Un établissement du référentiel est choisi : la liste de ses services suit.
   etabChoisi: boolean;
-  // « Autre » sélectionné : la saisie du vrai service est obligatoire.
+  // Le service « Autre » d'un établissement : le nom du vrai service suit.
   serviceEstAutre: boolean;
+  // « Autre établissement » : son nom et celui du service suivent.
+  etabEstAutre: boolean;
   // Le service sélectionné déverrouille les developer tools (service n° 4).
   developerTools: boolean;
+  // La sélection suffit : le simulateur s'ouvre sans bouton. Faux pour une
+  // saisie libre, dont on ne sait pas quand elle est finie, et pour le service
+  // n° 4, qui a deux sorties.
+  entreeImmediate: boolean;
 };
+
+export type SaisieRattachement = Derivation &
+  Listes & {
+    champs: Champs;
+    // Modifie un champ, et donne ce qu'on déduit de la saisie ainsi modifiée :
+    // le formulaire entre dès la sélection, sans attendre le rendu suivant.
+    modifier: (champ: keyof Champs, valeur: string) => Derivation;
+  };
 
 export function useSaisieRattachement(
   referentiel: Referentiel,
 ): SaisieRattachement {
   const [champs, setChamps] = useState<Champs>(CHAMPS_VIDES);
-  const listes = useListes(referentiel, champs.etabId);
-  const service = listes.services.find((s) => s.id === champs.serviceId);
-  const serviceEstAutre = estAutre(service?.libelle ?? "");
-  const saisie = listes.indisponible
-    ? RATTACHEMENT_DEGRADE
-    : construireSaisie(champs, serviceEstAutre);
+  const listes = useListes(referentiel, etabChoisiDans(champs.choix));
 
   return {
     ...listes,
+    ...deriver(champs, listes),
     champs,
-    modifier: (champ, valeur) =>
-      setChamps((actuels) =>
-        avecDependantsEffaces({ ...actuels, [champ]: valeur }, champ),
-      ),
-    saisie,
-    valide: saisieComplete(saisie),
-    etabChoisi: champs.etabId !== "",
-    serviceEstAutre,
-    developerTools: !!service && estServiceProduit(service),
+    modifier: (champ, valeur) => {
+      const suivants = avecDependantsEffaces(
+        { ...champs, [champ]: valeur },
+        champ,
+      );
+      setChamps(suivants);
+      return deriver(suivants, listes);
+    },
   };
 }
 
 // ---- implémentation ----
 
-// Les deux listes déroulantes. Celle des services se recharge quand
-// l'établissement change. Elle se vide d'abord, pour ne pas montrer les services
-// du précédent pendant l'appel réseau. Un échec de l'une ou l'autre marque le
-// référentiel indisponible.
-function useListes(referentiel: Referentiel, etabId: string) {
-  const [etablissements, setEtablissements] = useState<Etablissement[]>([]);
-  const [services, setServices] = useState<Service[]>([]);
-  const [indisponible, setIndisponible] = useState(false);
-
-  useEffect(() => {
-    referentiel
-      .listerEtablissements()
-      .then((l) => setEtablissements(triParLibelle(l)))
-      .catch(() => setIndisponible(true));
-  }, [referentiel]);
-
-  useEffect(() => {
-    setServices([]);
-    if (etabId) {
-      referentiel
-        .listerServices(etabId)
-        .then((l) => setServices(triParLibelle(l)))
-        .catch(() => setIndisponible(true));
-    }
-  }, [referentiel, etabId]);
-
-  return { etablissements, services, indisponible };
+function etabChoisiDans(choix: string): string {
+  const decode = decoderChoix(choix);
+  return decode?.type === "etablissement" ? decode.etabId : "";
 }
 
-// Changer un champ efface ce qui en dépend : le service quand l'établissement
-// change, `serviceLibre` quand le service change.
+// Sans référentiel, la saisie est le rattachement de repli, toujours complet.
+function deriver(champs: Champs, listes: Listes): Derivation {
+  if (listes.indisponible) {
+    return { ...AUCUNE, saisie: RATTACHEMENT_DEGRADE, valide: true };
+  }
+  const choix = decoderChoix(champs.choix);
+  switch (choix?.type) {
+    case "etablissement":
+      return deriverService(choix.etabId, champs, listes);
+    case "structure":
+      return deriverStructure(choix.serviceId, listes);
+    case "autre-etablissement":
+      return deriverEtablissementSaisi(champs);
+    default:
+      return AUCUNE;
+  }
+}
+
+// Un établissement du référentiel : son service, puis le nom du vrai service
+// sous « Autre ».
+function deriverService(
+  etabId: string,
+  champs: Champs,
+  listes: Listes,
+): Derivation {
+  const saisie: RattachementSaisi = { etabId };
+  const service = listes.services.find((s) => s.id === champs.serviceId);
+  if (!service) return { ...AUCUNE, saisie, etabChoisi: true };
+
+  saisie.serviceId = service.id;
+  const serviceEstAutre = estAutre(service.libelle);
+  if (serviceEstAutre) {
+    saisie.serviceEstAutre = true;
+    saisie.serviceLibre = champs.serviceLibre;
+  }
+  const developerTools = estServiceProduit(service);
+  return {
+    saisie,
+    valide: saisieComplete(saisie),
+    etabChoisi: true,
+    serviceEstAutre,
+    etabEstAutre: false,
+    developerTools,
+    entreeImmediate: !serviceEstAutre && !developerTools,
+  };
+}
+
+// Une structure : un service du fourre-tout, qui suffit. Son « Autre » n'est
+// pas une saisie libre : il ouvre le simulateur comme les autres.
+function deriverStructure(serviceId: string, listes: Listes): Derivation {
+  const service = listes.structures.find((s) => s.id === serviceId);
+  if (!service || !listes.fourreTout) return AUCUNE;
+  const developerTools = estServiceProduit(service);
+  return {
+    ...AUCUNE,
+    saisie: { etabId: listes.fourreTout.id, serviceId },
+    valide: true,
+    developerTools,
+    entreeImmediate: !developerTools,
+  };
+}
+
+// Un établissement absent de la liste : son nom et celui du service, sans id.
+function deriverEtablissementSaisi(champs: Champs): Derivation {
+  const saisie: RattachementSaisi = {
+    etabId: "",
+    etabEstAutre: true,
+    etabLibre: champs.etabLibre,
+    serviceLibre: champs.serviceLibre,
+  };
+  return {
+    ...AUCUNE,
+    saisie,
+    valide: saisieComplete(saisie),
+    etabEstAutre: true,
+  };
+}
+
+// Changer un champ efface ce qui en dépend : tout le reste quand le premier
+// choix change, `serviceLibre` quand le service change.
 function avecDependantsEffaces(champs: Champs, modifie: keyof Champs): Champs {
   const dependants = DEPENDANTS[modifie];
   if (!dependants) return champs;
   return { ...champs, ...Object.fromEntries(dependants.map((c) => [c, ""])) };
 }
 
-// L'établissement est toujours présent. Le service ne l'est qu'une fois choisi,
-// et `serviceLibre` que sous « Autre ».
-function construireSaisie(
-  champs: Champs,
-  serviceEstAutre: boolean,
-): RattachementSaisi {
-  const saisie: RattachementSaisi = { etabId: champs.etabId };
-  if (!champs.etabId || !champs.serviceId) return saisie;
-  saisie.serviceId = champs.serviceId;
-  if (serviceEstAutre) {
-    saisie.serviceEstAutre = true;
-    saisie.serviceLibre = champs.serviceLibre;
-  }
-  return saisie;
-}
-
-// « Autre » (service non listé) reste toujours en fin de liste.
-function estAutre(libelle: string): boolean {
-  return libelle.trim().toLowerCase() === "autre";
-}
-
-// Tri alphabétique français, sans tenir compte de la casse ni des accents.
-// « Autre » passe en fin de liste.
-function triParLibelle<T extends { libelle: string }>(liste: T[]): T[] {
-  return [...liste].sort((a, b) => {
-    if (estAutre(a.libelle) !== estAutre(b.libelle)) {
-      return estAutre(a.libelle) ? 1 : -1;
-    }
-    return a.libelle.localeCompare(b.libelle, "fr", { sensitivity: "base" });
-  });
-}
+const AUCUNE: Derivation = {
+  saisie: { etabId: "" },
+  valide: false,
+  etabChoisi: false,
+  serviceEstAutre: false,
+  etabEstAutre: false,
+  developerTools: false,
+  entreeImmediate: false,
+};
 
 // Le rattachement de repli quand le référentiel ne répond pas. Le prescripteur
 // entre quand même, et l'analytics range sa visite sous « autre ».
@@ -142,12 +178,13 @@ const RATTACHEMENT_DEGRADE: RattachementSaisi = {
 };
 
 const CHAMPS_VIDES: Champs = {
-  etabId: "",
+  choix: "",
   serviceId: "",
   serviceLibre: "",
+  etabLibre: "",
 };
 
 const DEPENDANTS: Partial<Record<keyof Champs, Array<keyof Champs>>> = {
-  etabId: ["serviceId", "serviceLibre"],
+  choix: ["serviceId", "serviceLibre", "etabLibre"],
   serviceId: ["serviceLibre"],
 };

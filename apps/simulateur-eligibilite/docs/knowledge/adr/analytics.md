@@ -84,9 +84,10 @@ mains (voir R-10).
 **Décision (révisée 2026-09-29).** L'id Grist du service est porté en propriété
 d'événement Matomo : chaque `trackEvent` l'a pour Nom, avec `simulateur` en catégorie
 et le type d'événement en action. Un service saisi sous « Autre » donne l'id de
-l'entrée « Autre » de son établissement, et le rattachement dégradé, quand le
-référentiel ne répond pas, donne `autre` (voir
-[identification.md, ADR-4 et §4](./identification.md)). Le reporting utilise le
+l'entrée « Autre » de son établissement, une structure (libéral, Assurance Maladie,
+autre) donne l'id de son service sous l'établissement fourre-tout, un établissement
+saisi à l'écran ne donne aucun Nom, et le rattachement dégradé, quand le référentiel
+ne répond pas, donne `autre` (voir [identification.md, ADR-4 et §4](./identification.md)). Le reporting utilise le
 rapport Événements, en Catégorie puis Action puis Nom, et la segmentation
 `eventName == <id du service>`. ~~Le Nom portait le `prescripteurRef`, un
 `HMAC-SHA256` calculé côté backend sur l'identité d'un prescripteur nommé.~~

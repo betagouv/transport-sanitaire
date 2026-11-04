@@ -84,14 +84,12 @@ describe("encadré des developer tools, écran de rattachement", () => {
     );
 
     const select = screen.getByRole("combobox", { name: /Établissement/ });
-    await screen.findByRole("option", {
-      name: "Libéral / CNAM / CPAM / Autre",
-    });
-    await user.selectOptions(select, "Libéral / CNAM / CPAM / Autre");
+    await within(select).findByRole("option", { name: "Transport Sanitaire" });
+    await user.selectOptions(select, "Transport Sanitaire");
     expect(screen.queryByRole("region", ENCADRE)).toBeNull();
 
     const service = screen.getByRole("combobox", { name: /Nom du service/ });
-    await screen.findByRole("option", { name: "Transport Sanitaire" });
+    await within(service).findByRole("option", { name: "Transport Sanitaire" });
     await user.selectOptions(service, "Transport Sanitaire");
     expect(screen.getByRole("button", ECRAN_SEEDS)).toBeEnabled();
   });
@@ -110,7 +108,7 @@ describe("encadré des developer tools, écran de rattachement", () => {
     await user.click(screen.getByRole("button", ECRAN_SEEDS));
 
     expect(onValide).toHaveBeenCalledWith(
-      { etabId: "e_liberal_cnam", serviceId: "s_transport_sanitaire" },
+      { etabId: "e_transport_sanitaire", serviceId: "s_transport_sanitaire" },
       {
         destination: "seeds",
         developerTools: true,
@@ -179,10 +177,6 @@ describe("App câble les developer tools", () => {
     );
 
     await remplirRattachement(user);
-    expect(screen.queryByRole("region", ENCADRE)).toBeNull();
-    await user.click(
-      screen.getByRole("button", { name: "Accéder au simulateur" }),
-    );
 
     expect(
       await screen.findByRole("group", {

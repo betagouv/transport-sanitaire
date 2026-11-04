@@ -5,7 +5,8 @@
 
 | Feature | Ce qu'elle fait |
 |---|---|
-| Rattachement | Écran-porte obligatoire : le prescripteur déclare son établissement et son service, sans s'identifier. Le référentiel vient de Grist. |
+| Rattachement | Écran-porte obligatoire : le prescripteur indique son établissement et son service, ou sa structure (libéral, Assurance Maladie, autre), sans s'identifier. Le simulateur s'ouvre dès que le choix suffit. Le référentiel vient de Grist. |
+| Référentiel enrichi | Un service ou un établissement absent de la liste se saisit à l'écran ; il est ajouté à Grist, marqué « formulaire », et listé à la visite suivante. |
 | Rattachement dégradé | Si le référentiel ne répond pas, le prescripteur entre quand même, rattaché à « Autre / Autre ». |
 | Outil prescripteur | Partie 1 du questionnaire, puis le résultat médical : le transport est-il pris en charge, et quel mode est justifié. |
 | Outil secrétariat | Partie 2, puis le cas final : quel document établir, les étapes à suivre, ce qui reste à la charge de l'établissement. |
