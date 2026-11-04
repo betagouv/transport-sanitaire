@@ -46,11 +46,11 @@ export const Q2_10_A = question
     "Q2.10.a",
     "Le fournisseur est-il agréé pour cet appareillage ?",
   )
-  // Pour l'option 6 de Q2.10.
+  // Pour l'option 6 de Q2.10. Chaque réponse finit par un point (TS1016-08).
   .options({
-    "1_OUI": "Oui",
-    "2_NON": "Non",
-    "3_NE_PEUX_PAS_VERIFIER": "Je ne peux pas le vérifier",
+    "1_OUI": "Oui.",
+    "2_NON": "Non.",
+    "3_NE_PEUX_PAS_VERIFIER": "Je ne peux pas le vérifier.",
   })
   .appliesWhen(unAppareillage)
   .dependsOn(Q2_10);
@@ -59,11 +59,11 @@ export const Q2_10_B = question
   .singleChoice("Q2.10.b", "Sélectionnez l’appareillage concerné")
   // Pour l'option 6 de Q2.10.
   .options({
-    "1_PROTHESE_OCULAIRE_FACIALE": "Prothèse oculaire ou faciale",
-    "2_PODO_ORTHESE": "Podo-orthèse",
-    "3_ORTHOPROTHESE": "Orthoprothèse",
-    "4_AUTRE": "Un autre appareillage",
-    "5_NE_PEUX_PAS_PRECISER": "Je ne peux pas le vérifier",
+    "1_PROTHESE_OCULAIRE_FACIALE": "Prothèse oculaire ou faciale.",
+    "2_PODO_ORTHESE": "Podo-orthèse.",
+    "3_ORTHOPROTHESE": "Orthoprothèse.",
+    "4_AUTRE": "Un autre appareillage.",
+    "5_NE_PEUX_PAS_PRECISER": "Je ne peux pas le vérifier.",
   })
   .appliesWhen(unAppareillage)
   .dependsOn(Q2_10);

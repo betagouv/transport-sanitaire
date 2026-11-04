@@ -28,6 +28,8 @@ export type CommonSettings<Questions extends AnyQuestions, Cibles, Faits> = {
   readonly hint?: string;
   readonly reminder?: Reminder;
   readonly optional?: boolean;
+  /** Facultative, sauf quand cette condition tient (`requiredWhen`). */
+  readonly requiredWhen?: Condition;
   readonly alwaysAsked?: boolean;
   readonly under?: ShownUnder;
   labelFrom?(context: QuestionContext<Questions, Cibles, Faits>): string;
@@ -43,8 +45,8 @@ type Inconsistency = {
   readonly message: Text;
 };
 
-// Ce qui se lit autour du champ, vu les réponses : le libellé, le rappel, et
-// les incohérences.
+// Ce qui se lit autour du champ, vu les réponses : le libellé, le rappel, s'il
+// peut rester vide, et les incohérences.
 export function commonIn<Questions extends AnyQuestions, Cibles, Faits>(
   settings: CommonSettings<Questions, Cibles, Faits>,
   context: QuestionContext<Questions, Cibles, Faits>,
@@ -55,7 +57,7 @@ export function commonIn<Questions extends AnyQuestions, Cibles, Faits>(
     label: settings.labelFrom?.(context) ?? settings.label,
     hint: settings.hintFrom?.(context) ?? settings.hint,
     reminder: settings.reminderFrom?.(context) ?? settings.reminder,
-    optional: settings.optional,
+    optional: settings.optional === true && !settings.requiredWhen?.in(earlier),
     under: settings.under,
     inconsistencies: settings.inconsistencies
       .filter(({ condition }) => condition.in(earlier))

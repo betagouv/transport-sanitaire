@@ -16,6 +16,21 @@ import { faux, trace, vrai } from "../traces-du-prescripteur";
 
 const catalogue = await catalogueResultats();
 
+// Le catalogue, avec le scénario de cumul de la caisse actif et porté par ces
+// codes.
+const avecLeCumul = (...codes: readonly string[]): typeof catalogue => {
+  const caisse = catalogue.issues.ISSUE_CAISSE;
+  const scenarios = caisse.scenarios.map((scenario) =>
+    scenario.id === "cumul-htnm-ald"
+      ? { ...scenario, inactive: false, codes: [...codes] }
+      : scenario,
+  );
+  return {
+    ...catalogue,
+    issues: { ...catalogue.issues, ISSUE_CAISSE: { ...caisse, scenarios } },
+  };
+};
+
 const texteDeLaSeed = (id: string, issue: IssueOrientee) => {
   const seed = SEEDS.find((candidate) => candidate.id === id);
   if (!seed) throw new Error(`Seed inconnue : ${id}`);
@@ -184,18 +199,24 @@ const PLUSIEURS_POINTS =
   "Plusieurs points restent à vérifier auprès de l’Assurance Maladie";
 
 describe("le texte de la caisse quand plusieurs points sont ouverts", () => {
-  const ald = { cible_preuve_ald_inconnue_decisive: true } as const;
+  const appareillage = { cible_convocation_inconnue_decisive: true } as const;
   const htnm = {
     fait_htnm_hors_maternite: vrai,
     fait_htnm_segment_verifie: faux,
   } as const;
 
-  // L'oracle a un scénario de cumul pour l'ALD et l'hébergement.
+  // Le seul scénario de cumul de l'oracle, ALD et hébergement, est inactif
+  // depuis la v10.1.6 (TS1016-07), comme le point de l'ALD. Rendu actif et
+  // porté par deux points que le questionnaire ouvre, il passe avant les
+  // scénarios un par un.
   it("prend le scénario de cumul que l'éditeur a écrit pour ces deux points", () => {
     const texte = texteDuPrescripteur(
-      catalogue,
+      avecLeCumul(
+        "CONVOCATION_CONDITION_NON_VERIFIABLE",
+        "CNAM_HTNM_HORS_MATERNITE",
+      ),
       "ISSUE_CAISSE",
-      trace(ald, htnm),
+      trace(appareillage, htnm),
     );
     expect(texte.titre).toBe(PLUSIEURS_POINTS);
     expect(texte.introduction).toMatch(
@@ -224,9 +245,9 @@ describe("le texte de la caisse quand plusieurs points sont ouverts", () => {
     expect(texte.actions).toHaveLength(2);
   });
 
-  // Aucun scénario de cumul n'existe pour trois points.
+  // Aucun scénario de cumul n'existe pour ces trois points.
   it("donne l'introduction pour plusieurs points, puis chaque scénario", () => {
-    const trois = trace(ald, { ...htnm, fait_motif_samsah: vrai });
+    const trois = trace(appareillage, { ...htnm, fait_motif_samsah: vrai });
     const texte = texteDuPrescripteur(catalogue, "ISSUE_CAISSE", trois);
     expect(texte.titre).toBe(PLUSIEURS_POINTS);
     expect(texte.introduction).toBe(
@@ -234,7 +255,7 @@ describe("le texte de la caisse quand plusieurs points sont ouverts", () => {
     );
     expect(texte.pourquoi?.titre).toBe("Points à confirmer");
     expect(texte.pourquoi?.elements.map(({ titre }) => titre)).toEqual([
-      "La catégorie de l’Affection Longue Durée (ALD) n’est pas vérifiée",
+      "Une condition de la convocation ou de l’appareillage est inconnue",
       "Le circuit documentaire du Service d’Accompagnement Médico-Social pour Adultes Handicapés (SAMSAH) doit être précisé",
       "Le segment d’hébergement temporaire nécessite une qualification",
     ]);

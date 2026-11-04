@@ -34,15 +34,6 @@ const PREUVES: readonly [string, Precisions, Partial<Faits>][] = [
     { fait_ald_liee: faux },
   ],
   ["AUCUN_ALD_SANS_DEFICIENCE", ALD, { fait_ald_liee: faux }],
-  [
-    "AUCUN_ALD_CADRE_NON_QUALIFIANT",
-    ALD,
-    {
-      fait_ald_liee: vrai,
-      fait_ald_exonerante_3_ou_4: faux,
-      fait_mineur_soins_prolonges_reconnus: faux,
-    },
-  ],
   ["AUCUN_DIALYSE_NON_HEMO", { dialysisType: "non-hemodialyse" }, {}],
   [
     "AUCUN_APPAREILLAGE_HORS_CATEGORIES",

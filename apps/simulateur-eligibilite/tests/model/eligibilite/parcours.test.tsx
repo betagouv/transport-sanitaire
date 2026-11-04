@@ -260,8 +260,8 @@ describe("le modèle de l'éditeur, déroulé dans le formulaire", () => {
     expect(await page(Q210A)).toBeInTheDocument();
     expect(screen.getByRole("group", { name: Q210B })).toBeInTheDocument();
 
-    await choisirDans(user, Q210A, /^Oui$/);
-    await choisirDans(user, Q210B, /^Podo-orthèse$/);
+    await choisirDans(user, Q210A, /^Oui\.$/);
+    await choisirDans(user, Q210B, /^Podo-orthèse\.$/);
     // Ses sous-champs révélés font de la page une page composée (D-240).
     expect(terminer).not.toHaveBeenCalled();
     await user.click(screen.getByRole("button", { name: "Voir le résultat" }));

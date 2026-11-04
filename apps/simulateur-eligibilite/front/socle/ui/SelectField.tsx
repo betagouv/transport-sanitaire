@@ -13,7 +13,6 @@ type Props = {
   onChange: (value: string) => void;
   /** Un message par ligne, sous la liste. */
   errors?: readonly string[];
-  autoFocus?: boolean;
   /** Met le libellé en avant, quand le champ est la question de la page. */
   lead?: boolean;
 };
@@ -32,8 +31,6 @@ export function SelectField(props: Props) {
         value={props.value}
         onChange={(e) => props.onChange(e.target.value)}
         aria-describedby={invalid ? messageId : undefined}
-        // biome-ignore lint/a11y/noAutofocus: le premier champ sans réponse prend le focus à l'ouverture de la page, comme les autres champs du questionnaire
-        autoFocus={props.autoFocus}
       >
         <Options placeholder={props.placeholder} options={props.options} />
       </select>

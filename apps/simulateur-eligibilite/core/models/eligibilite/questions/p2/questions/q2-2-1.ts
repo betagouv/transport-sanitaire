@@ -33,7 +33,7 @@ export const Q2_2_1 = question
     "Q2.2.1",
     "L’une de ces situations concerne-t-elle le transport du patient ?",
   )
-  // Le premier bloc de `CONTRAT_Q221_PROGRESSIF.json` (v10.1.5). Les
+  // Le premier bloc de `CONTRAT_Q221_PROGRESSIF.json` (v10.1.6). Les
   // situations venues de l'ancien Q2.2.1.b gardent leur numéro parmi les
   // treize du catalogue ; le séjour et l'étranger, leur identifiant d'avant.
   // La réponse négative, sans numéro au catalogue, porte 0.
@@ -63,13 +63,15 @@ export const Q2_2_1 = question
     "Un même hébergement relève de l’Engagement maternité ou d’un hébergement temporaire non médicalisé, pas des deux. Pour deux hébergements, faites une simulation par trajet.",
   );
 
-// Q2.1 retire le CAMSP et la convocation qu'elle indique déjà.
+// Q2.1 retire le CAMSP et la convocation qu'elle indique déjà. Une autre
+// réponse validée au premier bloc efface celle du second, qui se repose s'il
+// reste utile ; les autres réponses restent (NAV-Q221-PROGRESSIF-001).
 export const Q2_2_1_B = question
   .multipleChoice(
     "Q2.2.1.b",
     "L’un de ces soins ou rendez-vous est-il concerné ?",
   )
-  // Le second bloc de `CONTRAT_Q221_PROGRESSIF.json` (v10.1.5). Les options
+  // Le second bloc de `CONTRAT_Q221_PROGRESSIF.json` (v10.1.6). Les options
   // gardent leur numéro parmi les treize du catalogue (S1) ; la réponse
   // négative, sans numéro, porte 0. Le centre de référence (8) n'en est plus
   // depuis la v10.1.2 : il se recueille en P3.
@@ -85,6 +87,7 @@ export const Q2_2_1_B = question
     "0_AUCUN": "Non, aucun.",
   })
   .exclusive("0_AUCUN")
+  .dependsOn(Q2_2_1)
   .option("6_CAMSP", (option) => option.offeredWhen(motif.is("10_CAMSP").not()))
   .option("13_CONVOCATION", (option) =>
     option.offeredWhen(motif.is("12_CONVOCATION").not()),

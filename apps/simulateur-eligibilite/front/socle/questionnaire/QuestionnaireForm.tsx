@@ -3,6 +3,10 @@
 // vit dans `questionnaire.ts`. Le stepper titre l'écran du nom de la partie, et annonce
 // la partie suivante s'il y en a une dans ce questionnaire. La dernière n'annonce
 // rien : ce qui la suit dépend du résultat, encore inconnu.
+//
+// À chaque nouvelle page, en avant comme en arrière, le titre de sa première
+// question prend le focus et l'écran revient en haut, sans animation
+// (NAV-Q221-PROGRESSIF-001).
 
 import type { ComponentType, ReactNode } from "react";
 import type {
@@ -71,22 +75,43 @@ export function QuestionnaireForm({
 
   return (
     <>
-      <PartStepper {...stepper} />
-      <form
-        onSubmit={(e) => {
-          e.preventDefault();
-          questionnaire.next();
-        }}
-      >
-        <QuestionFields questionnaire={questionnaire} />
-        <NavigationButtons questionnaire={questionnaire} endLabel={endLabel} />
-      </form>
+      <div key={questionnaire.page.id} ref={enterPage}>
+        <PartStepper {...stepper} />
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            questionnaire.next();
+          }}
+        >
+          <QuestionFields questionnaire={questionnaire} />
+          <NavigationButtons
+            questionnaire={questionnaire}
+            endLabel={endLabel}
+          />
+        </form>
+      </div>
       {DebugTrace && <DebugTrace {...traceOf(questionnaire)} />}
     </>
   );
 }
 
 // ---- implémentation ----
+
+// L'écran d'une page vient d'apparaître : il revient en haut d'un coup, ce qui
+// respecte la réduction des animations, puis le titre de la première question
+// prend le focus. Ce titre est la légende d'un groupe, ou le libellé d'un champ.
+// Remonter le document entier remonte aussi la page qui l'intègre, s'il y en a.
+function enterPage(screen: HTMLDivElement | null) {
+  if (!screen) return;
+  screen.ownerDocument.documentElement.scrollIntoView({
+    block: "start",
+    behavior: "instant",
+  });
+  const title = screen.querySelector<HTMLElement>("form legend, form label");
+  if (!title) return;
+  title.tabIndex = -1;
+  title.focus({ preventScroll: true });
+}
 
 // Le stepper de la partie ouverte, qui titre l'écran. Il annonce la partie
 // suivante de ce questionnaire, s'il y en a une.
@@ -123,7 +148,7 @@ function traceOf(questionnaire: QuestionnaireScreen): DebugTraceProps {
 }
 
 // La page affiche son brouillon : une saisie ne compte qu'une fois la page
-// validée. La première question sans réponse prend le focus, pour le clavier.
+// validée.
 // Une question qui s'affiche sous une option (`shownUnder`) se pose dans la
 // liste de cette option, si celle-ci est sur la page ; sinon, à son rang.
 function QuestionFields({
@@ -132,7 +157,6 @@ function QuestionFields({
   questionnaire: QuestionnaireScreen;
 }) {
   const { questions, draft } = questionnaire;
-  const toFocus = questions.find(({ id }) => draft[id] === undefined);
   const parentOf = (question: AskedQuestion) =>
     questions.find(({ id }) => id === question.under?.question);
   const field = (question: AskedQuestion): ReactNode => (
@@ -141,7 +165,6 @@ function QuestionFields({
       question={question}
       answer={draft[question.id]}
       errors={errorsOf(question, draft[question.id])}
-      autoFocus={question === toFocus}
       onChange={(answer) => questionnaire.answer(question.id, answer)}
       below={(option) =>
         questions

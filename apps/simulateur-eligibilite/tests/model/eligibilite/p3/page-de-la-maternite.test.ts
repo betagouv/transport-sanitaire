@@ -64,7 +64,46 @@ describe("la page de la maternité (Q3.8)", () => {
   });
 });
 
+// L'hébergement du dispositif qui est l'arrivée garde le nom de Q3.3, qui
+// devient obligatoire : la DAP le porte (TS1016-05).
+describe("le nom de l'hébergement du dispositif", () => {
+  const { "Q3.3.nom": _, ...sansNom } = HEBERGEMENT_DE_MATERNITE;
+  const hebergeALArrivee: Reponses = {
+    ...sansNom,
+    "Q3.3.nature": "5_HEBERGEMENT_NON_MEDICALISE",
+    "Q3.3.precision": "Maison des familles",
+  };
+
+  it("est obligatoire quand cet hébergement est l'arrivée", () => {
+    expect(nomFacultatif(hebergeALArrivee)).toBe(false);
+  });
+
+  it("reste facultatif pour un autre lieu", () => {
+    expect(nomFacultatif(sansNom)).toBe(true);
+  });
+
+  it("reste facultatif quand Q2.14 ne dit pas l'hébergement du dispositif", () => {
+    const sansLeDispositif: Reponses = {
+      ...hebergeALArrivee,
+      "Q2.14.motif": ["1_EXAMEN_DU_HUITIEME_OU_NEUVIEME_MOIS"],
+    };
+
+    expect(nomFacultatif(sansLeDispositif)).toBe(true);
+  });
+});
+
 // ---- implémentation ----
+
+// Le nom de l'arrivée peut-il rester vide ?
+function nomFacultatif(reponses: Reponses): boolean | undefined {
+  const reprise = Simulation.resume(model.core, reponses);
+  const simulation = "locked" in reprise.stage ? reprise : reprise.lock();
+  const arrivee = simulation.pages().find(({ id }) => id === "P3/arrivee");
+  return arrivee
+    ? simulation.questionsOn(arrivee).find(({ id }) => id === "Q3.3.nom")
+        ?.optional
+    : undefined;
+}
 
 // La dernière page de P3, et ce qu'elle pose. Les réponses d'après le verrou,
 // s'il y en a, passent la simulation derrière lui.

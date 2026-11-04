@@ -109,9 +109,7 @@ describe("les cibles et les faits que les résultats lisent", () => {
       "cible_mode_public",
       "cible_motif_transport",
       "cible_personne_accompagnante",
-      "cible_preuve_ald_inconnue_decisive",
       "cible_reason_code",
-      "cible_reconnaissance_mineur_inconnue_decisive",
       "cible_situation_at_mp",
       "cible_transport_partage_incompatible",
     ]);

@@ -174,13 +174,15 @@ function scenarioDeCumul(
 }
 
 // Le titre de l'éditeur pour plusieurs points ; à défaut, celui du premier.
+// Seul un scénario de cumul le porte, et depuis la v10.1.6 il est inactif : on
+// emprunte son titre sans prendre le scénario (TS1016-07, REFERENTIEL/03).
 function titreAuPluriel(
   { scenarios }: IssuePrescripteur,
   premier: ScenarioPrescripteur,
 ): string {
   return (
-    scenarios.find(({ codes, inactive }) => !inactive && codes.length > 1)
-      ?.whyTitle ?? premier.whyTitle
+    scenarios.find(({ codes }) => codes.length > 1)?.whyTitle ??
+    premier.whyTitle
   );
 }
 

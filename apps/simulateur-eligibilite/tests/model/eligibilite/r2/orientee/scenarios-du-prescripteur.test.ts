@@ -136,8 +136,6 @@ describe("le contexte prouvé choisit le scénario le plus précis", () => {
 
 // Chaque point, avec ce que la condition des règles lit.
 const POINTS: readonly [scenario: string, trace: Trace][] = [
-  ["ald-base", trace({ cible_preuve_ald_inconnue_decisive: true })],
-  ["mineur", trace({ cible_reconnaissance_mineur_inconnue_decisive: true })],
   ["appareillage", trace({ cible_convocation_inconnue_decisive: true })],
   [
     "permission-inconnue",
@@ -192,10 +190,10 @@ describe("les points ouverts de la caisse", () => {
 
   it("garde l'ordre des règles quand plusieurs points sont ouverts", () => {
     const cumul = trace(
-      { cible_preuve_ald_inconnue_decisive: true },
+      { cible_convocation_inconnue_decisive: true },
       { fait_htnm_hors_maternite: vrai, fait_htnm_segment_verifie: faux },
     );
-    expect(ids("ISSUE_CAISSE", cumul)).toEqual(["ald-base", "htnm"]);
+    expect(ids("ISSUE_CAISSE", cumul)).toEqual(["appareillage", "htnm"]);
   });
 
   it("ne dit pas le transfert inconnu quand l'article 80 est établi", () => {

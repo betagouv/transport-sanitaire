@@ -18,7 +18,6 @@ type Props = {
   /** Affichée sous la saisie, sans y toucher : la valeur reste celle tapée. */
   /** Un message par ligne, sous le champ. */
   errors?: readonly string[];
-  autoFocus?: boolean;
   /** Met le libellé en avant, quand le champ est la question de la page. */
   lead?: boolean;
 };
@@ -41,7 +40,6 @@ export function NumberField(props: Props) {
         ...constraints(props),
         value: props.value ?? "",
         onChange: (e) => props.onChange(typedNumber(e.target.value)),
-        autoFocus: props.autoFocus,
         // Seule la saisie se borne : le libellé garde la largeur de la page.
         style: { maxWidth: "16rem" },
       }}
