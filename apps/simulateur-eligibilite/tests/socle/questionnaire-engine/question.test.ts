@@ -24,13 +24,9 @@ type Questions = {
 type Figees = { readonly urgence: Cible<boolean> };
 type Cibles = Figees | undefined;
 
-const OPTIONS = { douleur: { oui: "Oui", non: "Non" } } as const;
-
 const given = givenOf<Questions, undefined, Figees>();
 
-const question = questionsOf<Questions, undefined, Cibles>({
-  options: OPTIONS,
-});
+const question = questionsOf<Questions, undefined, Cibles>();
 
 const TOUJOURS = page("adresse", question.text("adresse", "Adresse"));
 
@@ -65,7 +61,9 @@ describe("condition d'une question sur les cibles", () => {
 
 const DOULEUR = page(
   "douleur",
-  question.singleChoice("douleur", "Avez-vous mal ?"),
+  question
+    .singleChoice("douleur", "Avez-vous mal ?")
+    .options({ oui: "Oui", non: "Non" }),
   question
     .text("endroit", "Où ?")
     .appliesWhen(given.question("douleur").answer().is("oui")),

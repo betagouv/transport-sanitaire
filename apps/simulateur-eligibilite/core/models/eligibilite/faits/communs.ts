@@ -6,57 +6,34 @@
 // ni jour : `given` ne les offre pas au typage, et le catalogue s'y arrête net.
 
 import { givenOf, uneRegle } from "../../../socle/index.ts";
-import type { Faits } from "../declarations/faits.ts";
-import type { Questions } from "../declarations/questions.ts";
+import type { Questions } from "../questions/reponses.ts";
+import type { Faits } from "./noms.ts";
 
 /** Les entrées d'un fait : `given.question("Q2.5").answer()`, `given.fait(nom)`. */
 export const given = givenOf<Questions, Faits>();
-
-/** Q1.1 : l'aide dont le patient a besoin pour se déplacer. */
-export const AIDE = given.question("Q1.1").answer();
-
-/** Q1.2 : les critères du transport. Elle ne se pose qu'avec un professionnel. */
-export const CRITERES = given.question("Q1.2").answer();
-
-/** Q1.3 : les cas particuliers du patient. */
-export const CAS = given.question("Q1.3").answer();
-
-/** Q2.1 : le motif du transport. */
-export const MOTIF = given.question("Q2.1").answer();
-
-/** Q2.1.g : l'entrée, la sortie ou l'admission en HAD. */
-export const SOUS_TYPE = given.question("Q2.1.g").answer();
-
-/** Q2.2.1 : les situations particulières du trajet, premier bloc. */
-export const SITUATIONS = given.question("Q2.2.1").answer();
-
-/** Q2.2.1.cadre : le séjour coché, en établissement ou en HAD. */
-const CADRE_DU_SEJOUR = given.question("Q2.2.1.cadre").answer();
 
 /**
  * Un séjour en établissement de santé : « déjà hospitalisé » coché, et le
  * cadre le dit, ou une sortie d'établissement (Q2.1.g) le donne (TS1014-B01).
  */
-export const UN_SEJOUR_EN_ETABLISSEMENT = SITUATIONS.checked(
-  "1_HOSPITALISATION",
-).and(CADRE_DU_SEJOUR.is("1_ETABLISSEMENT").or(SOUS_TYPE.is("2_SORTIE")));
+export const UN_SEJOUR_EN_ETABLISSEMENT = given
+  .question("Q2.2.1")
+  .answer()
+  .checked("1_HOSPITALISATION")
+  .and(
+    given
+      .question("Q2.2.1.cadre")
+      .answer()
+      .is("1_ETABLISSEMENT")
+      .or(given.question("Q2.1.g").answer().is("2_SORTIE")),
+  );
 
 /** « Déjà hospitalisé » coché, en Hospitalisation à Domicile (TS1014-B01). */
-export const UN_SEJOUR_EN_HAD = SITUATIONS.checked("1_HOSPITALISATION").and(
-  CADRE_DU_SEJOUR.is("2_HAD"),
-);
-
-/** Q2.2.1.a : le séjour coché, le trajet est-il une permission ? */
-export const PERMISSION_DU_SEJOUR = given.question("Q2.2.1.a").answer();
-
-/** Q2.2.1.b : les soins et rendez-vous, second bloc. */
-export const SOINS = given.question("Q2.2.1.b").answer();
-
-/** Q2.5 : un transfert entre établissements, ou un autre déplacement. */
-export const DEPLACEMENT = given.question("Q2.5").answer();
-
-/** Q2.6 : les exceptions de l'article 80. */
-export const EXCEPTIONS = given.question("Q2.6").answer();
+export const UN_SEJOUR_EN_HAD = given
+  .question("Q2.2.1")
+  .answer()
+  .checked("1_HOSPITALISATION")
+  .and(given.question("Q2.2.1.cadre").answer().is("2_HAD"));
 
 /**
  * Le départ d'une entrée en établissement (Q2.13) : le domicile, un
@@ -76,9 +53,12 @@ export const UNE_ENTREE_SIMPLE = given
  * Q1.3 est validée sans séance qualifiante : ni chimiothérapie, ni
  * radiothérapie, ni hémodialyse confirmée par Q1.3.a.
  */
-const SANS_SEANCE = CAS.isPresent()
-  .and(CAS.checked("3_CHIMIOTHERAPIE").not())
-  .and(CAS.checked("4_RADIOTHERAPIE").not())
+const SANS_SEANCE = given
+  .question("Q1.3")
+  .answer()
+  .isPresent()
+  .and(given.question("Q1.3").answer().checked("3_CHIMIOTHERAPIE").not())
+  .and(given.question("Q1.3").answer().checked("4_RADIOTHERAPIE").not())
   .and(given.question("Q1.3.a").answer().is("1_OUI").not());
 
 /**
@@ -86,9 +66,19 @@ const SANS_SEANCE = CAS.isPresent()
  * qu'une hospitalisation, ou une admission en HAD, qui n'est pas un séjour
  * (`negation_precise_v1002` de `fait_situation_soins_qualifiante`).
  */
-export const SANS_SEANCE_NI_SEJOUR = MOTIF.isPresent()
+export const SANS_SEANCE_NI_SEJOUR = given
+  .question("Q2.1")
+  .answer()
+  .isPresent()
   .and(SANS_SEANCE)
-  .and(MOTIF.is("8_HOSPITALISATION").not().or(SOUS_TYPE.is("3_ADMISSION_HAD")));
+  .and(
+    given
+      .question("Q2.1")
+      .answer()
+      .is("8_HOSPITALISATION")
+      .not()
+      .or(given.question("Q2.1.g").answer().is("3_ADMISSION_HAD")),
+  );
 
 /**
  * Une sortie d'hospitalisation (Q2.1.g), hors permission, vers la prison
@@ -96,9 +86,12 @@ export const SANS_SEANCE_NI_SEJOUR = MOTIF.isPresent()
  * la permission.
  */
 export const UNE_SORTIE_VERS_LA_PRISON = uneRegle().nonSi(
-  SITUATIONS.checked("10_RETOUR_PENITENTIAIRE")
-    .and(SOUS_TYPE.is("2_SORTIE"))
-    .and(PERMISSION_DU_SEJOUR.is("1_OUI").not()),
+  given
+    .question("Q2.2.1")
+    .answer()
+    .checked("10_RETOUR_PENITENTIAIRE")
+    .and(given.question("Q2.1.g").answer().is("2_SORTIE"))
+    .and(given.question("Q2.2.1.a").answer().is("1_OUI").not()),
   "Sortie définitive vers la prison.",
 );
 
@@ -108,9 +101,18 @@ export const UNE_SORTIE_VERS_LA_PRISON = uneRegle().nonSi(
  * validée, elle décide.
  */
 export const UNE_PERMISSION_ECARTE_LE_TRANSFERT = uneRegle().nonSi(
-  DEPLACEMENT.isValidated()
+  given
+    .question("Q2.5")
+    .answer()
+    .isValidated()
     .not()
-    .and(MOTIF.is("11_PERMISSION").or(PERMISSION_DU_SEJOUR.is("1_OUI"))),
+    .and(
+      given
+        .question("Q2.1")
+        .answer()
+        .is("11_PERMISSION")
+        .or(given.question("Q2.2.1.a").answer().is("1_OUI")),
+    ),
   "Une permission n'est ni un transfert ni un déplacement pour soins.",
 );
 
@@ -119,7 +121,7 @@ export const UNE_PERMISSION_ECARTE_LE_TRANSFERT = uneRegle().nonSi(
  * transfert, le Centre 15 et la permission.
  */
 export const UN_SEJOUR_ECARTE = uneRegle().nonSiEcartee(
-  SITUATIONS,
+  given.question("Q2.2.1").answer(),
   "1_HOSPITALISATION",
   "« déjà hospitalisé » proposé, non coché.",
 );

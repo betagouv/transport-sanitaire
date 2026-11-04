@@ -4,41 +4,37 @@
 
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { model } from "../../../core/models/eligibilite";
-import type { Answers } from "../../../core/socle/questionnaire-engine/question";
-import { QuestionnaireForm } from "../../../front/socle/questionnaire-engine/QuestionnaireForm";
+import { useState } from "react";
+import type { Answers } from "../../../core/socle/questionnaire-engine";
+import { Simulation } from "../../../core/socle/simulation";
+import { model } from "../../../front/models/eligibilite";
+import { QuestionnaireForm } from "../../../front/socle/questionnaire";
 
 type User = ReturnType<typeof userEvent.setup>;
+
+// Sans le graphe de décision : le formulaire pose tout ce que le modèle
+// déclare. Le filtrage par le graphe a ses propres tests.
+const { relevance: _graphe, ...core } = model.core;
 
 export const Q11 = /^Concernant son déplacement/;
 export const Q13 = /^Avant d’établir le mode de transport/;
 
 export function afficherLeQuestionnaire(onComplete: () => void = () => {}) {
   render(
-    <QuestionnaireForm
-      parts={model.questionnaire}
-      partCount={3}
-      endLabel="Voir le résultat"
-      tracked={false}
-      onComplete={onComplete}
-    />,
+    <Formulaire depart={Simulation.start(core)} onComplete={onComplete} />,
   );
   return userEvent.setup();
 }
 
 // Le questionnaire rouvert sur cette page, avec ces réponses : un retour
-// depuis le résultat, sans dérouler les pages d'avant.
+// depuis le résultat, sans dérouler les pages d'avant. Les réponses s'arrêtent
+// avant la page : la simulation reprend dessus.
 export function afficherLaPage(id: string, answers: Answers) {
-  render(
-    <QuestionnaireForm
-      parts={model.questionnaire}
-      partCount={3}
-      endLabel="Voir le résultat"
-      tracked={false}
-      initialState={{ answers, page: id }}
-      onComplete={() => {}}
-    />,
-  );
+  const simulation = Simulation.resume(core, answers);
+  if (simulation.page.id !== id) {
+    throw new Error(`Ces réponses ouvrent ${simulation.page.id}, pas ${id}.`);
+  }
+  render(<Formulaire depart={simulation} onComplete={() => {}} />);
   return userEvent.setup();
 }
 
@@ -63,4 +59,31 @@ export async function avecUnProfessionnel(
   for (const critere of criteres) await cocher(user, critere);
   await suivant(user);
   await page(Q13);
+}
+
+// ---- implémentation ----
+
+// Le formulaire garde la simulation ; atteindre le résultat ne l'enlève pas
+// de l'écran.
+function Formulaire({
+  depart,
+  onComplete,
+}: {
+  depart: Simulation;
+  onComplete: () => void;
+}) {
+  const [simulation, setSimulation] = useState(depart);
+  return (
+    <QuestionnaireForm
+      parts={core.questionnaire}
+      partCount={3}
+      endLabel="Voir le résultat"
+      tracked={false}
+      simulation={simulation}
+      onChange={(next) => {
+        if (next.stage.name === "resultat") onComplete();
+        else setSimulation(next);
+      }}
+    />
+  );
 }

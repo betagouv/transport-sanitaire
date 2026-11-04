@@ -7,10 +7,10 @@
 // Il suit `CONTRAT_REPONSES_FAITS.json`.
 
 import { unFait } from "../../../socle/index.ts";
-import { MOTIF, SOINS } from "./communs.ts";
+import { given } from "./communs.ts";
 
 export const motifCamsp = unFait("fait_motif_camsp")
-  .ouiSi(SOINS.checked("6_CAMSP"))
-  .nonSiEcartee(SOINS, "6_CAMSP")
-  .ouiSi(MOTIF.is("10_CAMSP"))
+  .ouiSi(given.question("Q2.2.1.b").answer().checked("6_CAMSP"))
+  .nonSiEcartee(given.question("Q2.2.1.b").answer(), "6_CAMSP")
+  .ouiSi(given.question("Q2.1").answer().is("10_CAMSP"))
   .sinon("Ni Q2.1, ni Q2.2.1 n'établissent encore le CAMSP.");

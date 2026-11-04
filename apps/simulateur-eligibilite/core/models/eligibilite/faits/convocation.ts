@@ -10,8 +10,8 @@
 // `CONTRAT_REPONSES_FAITS.json`.
 
 import { unFait } from "../../../socle/index.ts";
-import { PAS_ENCORE_ETABLI } from "../declarations/faits.ts";
-import { given, SOINS } from "./communs.ts";
+import { given } from "./communs.ts";
+import { PAS_ENCORE_ETABLI } from "./noms.ts";
 
 const CATEGORIE = given.question("Q2.10").answer();
 const AGREMENT = given.question("Q2.10.a").answer();
@@ -42,6 +42,9 @@ export const convocation = unFait("fait_convocation")
     "L'agrément ou l'appareillage ne peut pas se vérifier ou se préciser. À vérifier.",
   )
   .ouiSi(CATEGORIE.isPresent())
-  .inconnuSi(SOINS.checked("13_CONVOCATION"), "À qualifier dans sa branche.")
-  .nonSiEcartee(SOINS, "13_CONVOCATION")
+  .inconnuSi(
+    given.question("Q2.2.1.b").answer().checked("13_CONVOCATION"),
+    "À qualifier dans sa branche.",
+  )
+  .nonSiEcartee(given.question("Q2.2.1.b").answer(), "13_CONVOCATION")
   .sinon(PAS_ENCORE_ETABLI);

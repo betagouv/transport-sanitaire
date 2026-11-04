@@ -25,13 +25,16 @@
     // (page servie, `main` du package, config du bundler) : les répéter serait du
     // bruit. Restent les entrées qu'il ne peut pas deviner.
     "apps/simulateur-eligibilite": {
-      "entry": ["scripts/*.ts", "tests/**/*.test.{ts,tsx}"],
+      "entry": ["tooling/*.ts", "tests/**/*.test.{ts,tsx}"],
+      // Les helpers des tests comptent : un export du socle que seuls des
+      // tests lisent par l'index d'un module est atteint, pas mort.
       "project": [
         "front/**/*.{ts,tsx}",
         "core/**/*.ts",
         "server/**/*.ts",
         "shared/**/*.ts",
-        "scripts/*.ts"
+        "tooling/*.ts",
+        "tests/**/*.{ts,tsx}"
       ]
     },
 

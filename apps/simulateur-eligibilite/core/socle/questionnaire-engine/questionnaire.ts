@@ -5,32 +5,26 @@
 // Une lecture ne change pas, et se calcule une seule fois : ses accesseurs ne
 // relisent rien. Valider une page donne de nouvelles réponses, qu'on relit.
 
-import type { AskedQuestion } from "./asked-question.ts";
-import { NOTHING, type Reads, readsOf } from "./condition.ts";
-import { answersOf, GivenAnswers } from "./given-answers.ts";
-import { commitPage } from "./page-commit.ts";
+import { answersOf, GivenAnswers } from "./answers/given-answers.ts";
+import { ValidatedAnswers } from "./answers/validated-answers.ts";
+import { NOTHING, type Reads, readsOf } from "./conditions/condition.ts";
+import {
+  type AskedPage,
+  readInOrder,
+} from "./decide-which-questions-to-ask.ts";
+import type { Relevance } from "./does-a-question-still-matter/matters.ts";
+import type { AskedQuestion } from "./question/asked/question.ts";
 import type {
   Answers,
   AnyCibles,
   AnyQuestions,
   Page,
   Validated,
-} from "./question.ts";
-import { type AskedPage, readInOrder } from "./reading-in-order.ts";
-import type { Relevance } from "./relevance.ts";
-import { ValidatedAnswers } from "./validated-answers.ts";
+} from "./question/question.ts";
+import { commitPage } from "./validate-a-page.ts";
 
 /** Le questionnaire s'achève : aucune page ne suit. */
 type Finished = undefined;
-
-/**
- * Où en est un questionnaire : ses réponses validées, et la page ouverte. Le
- * parcours le garde d'un écran à l'autre, une seed le reconstruit.
- */
-export type QuestionnaireState = {
-  readonly answers: Answers;
-  readonly page: string;
-};
 
 /**
  * Un questionnaire : ses pages, dans l'ordre. `Questions` : celles du modèle,
@@ -147,7 +141,7 @@ export class Reading<Questions extends AnyQuestions = AnyQuestions> {
    * Les réponses, une fois cette page validée avec ce brouillon. Une question
    * que la page ne pose plus n'y laisse pas de réponse, ni une option qu'elle
    * ne propose plus. Celles qui dépendaient d'une réponse changée sont
-   * effacées (`page-commit.ts`).
+   * effacées (`validate-a-page.ts`).
    */
   commit(page: Page, draft: Answers): Answers {
     const given = answersOf(this.answers);

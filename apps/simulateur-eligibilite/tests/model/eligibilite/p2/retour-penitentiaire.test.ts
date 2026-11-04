@@ -1,0 +1,226 @@
+// Le retour vers un établissement pénitentiaire (option 10 de Q2.2.1) :
+// TS1012-04 et `CONTRAT_CONTEXTES_V1012.json` du paquet v10.1.2 de l'éditeur,
+// les points 33 et 34 de la v10.1.3 et `CONTRAT_ORIENTATION_ADMINISTRATIVE.json`.
+// Ce qui établit l'indication médicale est notre lecture (D-130).
+
+import { describe, expect, it } from "vitest";
+import type { Cibles } from "../../../../core/models/eligibilite/cibles/noms";
+import { TRANSFERT_VERS_LA_PRISON } from "../../../../core/models/eligibilite/questions/p2/conditions/retour-penitentiaire";
+import { model } from "../../../../front/models/eligibilite";
+import { ciblesDe, lectureDe, luDe } from "./reponses-de-la-permission";
+import {
+  faits,
+  posee,
+  type Reponses,
+  TRAJET,
+  valeurs,
+} from "./reponses-du-transfert";
+
+const AVEC_UN_PROFESSIONNEL: Reponses = {
+  "Q0.1": "1_VERIFIER",
+  "Q1.1": "3_AVEC_UN_PROFESSIONNEL",
+  "Q1.2": ["1_PAS_AUTONOME"],
+  "Q1.3": ["7_AUCUNE"],
+};
+const RETOUR: Reponses = {
+  "Q2.2.1": ["10_RETOUR_PENITENTIAIRE"],
+  "Q2.2.1.b": ["0_AUCUN"],
+};
+const SORTIE: Reponses = {
+  ...AVEC_UN_PROFESSIONNEL,
+  "Q2.1": "8_HOSPITALISATION",
+  "Q2.1.g": "2_SORTIE",
+  ...RETOUR,
+};
+const DE_LA_SORTIE = [
+  "fait_hospitalisation",
+  "fait_transfert_article80",
+  "fait_centre15_interetablissements",
+  "fait_permission",
+] as const;
+
+const incoherences = (page: string, id: keyof Reponses, reponses: Reponses) =>
+  posee(page, id, reponses)?.inconsistencies ?? [];
+
+const SEUL: Reponses = {
+  "Q0.1": "1_VERIFIER",
+  "Q1.1": "1_SEUL",
+  "Q1.3": ["7_AUCUNE"],
+  "Q1.4": "1_VEHICULE_PERSONNEL",
+  "Q2.1": "1_CONSULTATION",
+  ...RETOUR,
+};
+const qualifie = (indication: Reponses["Q2.2.1.indication"]): Reponses => ({
+  ...SEUL,
+  "Q2.2.1.indication": indication,
+  ...TRAJET,
+});
+
+describe("l'indication médicale d'un retour vers la prison (point 33)", () => {
+  it.each([
+    ["seul", SEUL],
+    ["sans soin", { ...SEUL, "Q2.1": "15_AUCUN" }],
+  ] as const)("%s, sans critère en P1, se demande", (_, reponses) => {
+    expect(posee("P2/contextes", "Q2.2.1.indication", reponses)).toBeDefined();
+  });
+
+  it.each([
+    ["un critère de Q1.2", { ...AVEC_UN_PROFESSIONNEL, "Q2.1": "15_AUCUN" }],
+    [
+      "une ALD liée, avec un proche",
+      {
+        ...SEUL,
+        "Q1.1": "2_AVEC_UN_PROCHE",
+        "Q1.3": ["2_ALD"],
+        "Q1.3.b": "1_LIEN_DIRECT",
+      },
+    ],
+    // Une séance du déplacement (TS1015-08, D-245).
+    ["une chimiothérapie", { ...SEUL, "Q1.3": ["3_CHIMIOTHERAPIE"] }],
+    ["une radiothérapie", { ...SEUL, "Q1.3": ["4_RADIOTHERAPIE"] }],
+    ["une hémodialyse", { ...SEUL, "Q1.3": ["5_DIALYSE"], "Q1.3.a": "1_OUI" }],
+  ] as const)("%s l'établit déjà", (_, avant) => {
+    expect(
+      posee("P2/contextes", "Q2.2.1.indication", { ...avant, ...RETOUR }),
+    ).toBeUndefined();
+  });
+
+  // Ni une ALD sans lien, ni une dialyse qui n'est pas une hémodialyse
+  // (TS1015-08, D-245).
+  it.each([
+    [
+      "une ALD sans lien direct",
+      { "Q1.3": ["2_ALD"], "Q1.3.b": "2_SANS_LIEN_DIRECT" },
+    ],
+    [
+      "une ALD liée, patient seul",
+      { "Q1.3": ["2_ALD"], "Q1.3.b": "1_LIEN_DIRECT" },
+    ],
+    [
+      "une dialyse qui n'est pas une hémodialyse",
+      { "Q1.3": ["5_DIALYSE"], "Q1.3.a": "2_AUTRE_DIALYSE" },
+    ],
+  ] as const)("%s ne l'établit pas", (_, cas) => {
+    expect(
+      posee("P2/contextes", "Q2.2.1.indication", { ...SEUL, ...cas }),
+    ).toBeDefined();
+  });
+
+  it("ne se demande pas sans retour vers la prison", () => {
+    expect(
+      posee("P2/contextes", "Q2.2.1.indication", {
+        ...SEUL,
+        "Q2.2.1": ["0_AUCUNE"],
+        "Q2.2.1.b": ["0_AUCUN"],
+      }),
+    ).toBeUndefined();
+  });
+
+  // Un « Non » resté de Q2.2.1.indication contredit la séance de P1 : la
+  // question ne se pose plus, sa réponse ne compte pas, et le trajet reste
+  // dans le circuit de prescription (D-104).
+  it("une indication établie en P1 écarte un « Non » contradictoire", () => {
+    const contradiction: Reponses = {
+      ...qualifie("2_NON"),
+      "Q1.3": ["3_CHIMIOTHERAPIE"],
+    };
+    expect(
+      posee("P2/contextes", "Q2.2.1.indication", contradiction),
+    ).toBeUndefined();
+    expect(posee("P2/trajet", "Q2.3.1", contradiction)).toBeDefined();
+    expect(faits(contradiction).fait_p2_complete.value).toBe(true);
+    expect(ciblesDe(contradiction).cible_issue_id.value).toBe("ISSUE_PMT");
+  });
+
+  it("« Oui » laisse les règles calculer l'issue", () => {
+    expect(ciblesDe(qualifie("1_OUI")).cible_issue_id.value).toBeDefined();
+  });
+});
+
+describe("un retour qui relève de l'organisation pénitentiaire (point 34)", () => {
+  const administratif = qualifie("2_NON");
+  const cibles = ciblesDe(administratif) as Cibles;
+
+  it("ne pose plus rien après les contextes", () => {
+    expect(posee("P2/trajet", "Q2.3.1", administratif)).toBeUndefined();
+  });
+
+  it("ne complète pas P2 : les règles ne concluent pas", () => {
+    expect(faits(administratif).fait_p2_complete.value).toBeUndefined();
+    expect(cibles.cible_issue_id.value).toBeUndefined();
+  });
+
+  it("oriente vers l'administration pénitentiaire, sans rien à compléter", () => {
+    const resultat = model.result.content(lectureDe(administratif));
+    expect(resultat).toMatchObject({
+      title: "Ce retour relève de l’organisation pénitentiaire",
+      body: {
+        props: {
+          children:
+            "Ce déplacement a été identifié comme exclusivement administratif, sans indication médicale de transport. Rapprochez-vous de l’administration pénitentiaire pour organiser le déplacement.",
+        },
+      },
+    });
+    expect(resultat).not.toHaveProperty("sheet");
+    expect(luDe(model.cerfa.startLabel, administratif)).toBeNull();
+  });
+});
+
+describe("une sortie définitive vers la prison", () => {
+  it("établit le séjour, sans transfert, Centre 15 ni permission", () => {
+    expect(valeurs(SORTIE, DE_LA_SORTIE)).toEqual([true, false, false, false]);
+  });
+
+  it("ne pose pas Q2.5, même séjour coché et permission écartée", () => {
+    const sejour: Reponses = {
+      ...SORTIE,
+      "Q2.2.1": ["1_HOSPITALISATION", "10_RETOUR_PENITENTIAIRE"],
+      "Q2.2.1.a": "2_NON",
+    };
+    expect(posee("P2/transfert", "Q2.5", sejour)).toBeUndefined();
+    expect(valeurs(sejour, DE_LA_SORTIE)).toEqual([true, false, false, false]);
+    expect(
+      posee("P2/transfert", "Q2.5", {
+        ...sejour,
+        "Q2.2.1": ["1_HOSPITALISATION"],
+      }),
+    ).toBeDefined();
+  });
+
+  it("laisse une permission à sa branche", () => {
+    const permission: Reponses = {
+      ...SORTIE,
+      "Q2.2.1": ["1_HOSPITALISATION", "10_RETOUR_PENITENTIAIRE"],
+      "Q2.2.1.a": "1_OUI",
+    };
+    expect(faits(permission).fait_permission.value).toBe(true);
+  });
+
+  it("laisse les règles calculer l'issue", () => {
+    expect(
+      ciblesDe({ ...SORTIE, ...TRAJET }).cible_issue_id.value,
+    ).toBeDefined();
+  });
+});
+
+describe("un transfert vers la prison", () => {
+  const transfert = (deplacement: Reponses["Q2.5"]): Reponses => ({
+    ...AVEC_UN_PROFESSIONNEL,
+    "Q2.1": "9_TRANSFERT",
+    ...RETOUR,
+    ...TRAJET,
+    "Q2.5": deplacement,
+  });
+
+  it("entre établissements, se refuse", () => {
+    expect(
+      incoherences("P2/transfert", "Q2.5", transfert("1_TRANSFERT")),
+    ).toEqual([TRANSFERT_VERS_LA_PRISON]);
+  });
+
+  it("pendant l'hospitalisation, suit Q2.5 et Q2.6", () => {
+    expect(
+      incoherences("P2/transfert", "Q2.5", transfert("2_AUTRE_DEPLACEMENT")),
+    ).toEqual([]);
+  });
+});

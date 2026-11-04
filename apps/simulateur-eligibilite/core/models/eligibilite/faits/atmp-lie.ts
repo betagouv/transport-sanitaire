@@ -6,10 +6,10 @@
 // Il suit `CONTRAT_REPONSES_FAITS.json`.
 
 import { unFait } from "../../../socle/index.ts";
-import { PAS_ENCORE_ETABLI } from "../declarations/faits.ts";
-import { SOINS } from "./communs.ts";
+import { given } from "./communs.ts";
+import { PAS_ENCORE_ETABLI } from "./noms.ts";
 
 export const atmpLie = unFait("fait_atmp_lie")
-  .ouiSi(SOINS.checked("1_ATMP"))
-  .nonSiEcartee(SOINS, "1_ATMP")
+  .ouiSi(given.question("Q2.2.1.b").answer().checked("1_ATMP"))
+  .nonSiEcartee(given.question("Q2.2.1.b").answer(), "1_ATMP")
   .sinon(PAS_ENCORE_ETABLI);

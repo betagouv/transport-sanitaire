@@ -7,7 +7,7 @@
 // `CONTRAT_REPONSES_FAITS.json`.
 
 import { unFait } from "../../../socle/index.ts";
-import { SOUS_QUESTIONS_MASQUEES } from "../declarations/faits.ts";
+import { SOUS_QUESTIONS_MASQUEES } from "./noms.ts";
 
 export const sourceOfficielleActive = unFait(
   "fait_source_officielle_active",

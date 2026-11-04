@@ -1,6 +1,6 @@
 # Architecture : le métier et l'écran
 
-> Statut : **décidé (phase expérimentale)** · Dernière mise à jour : 2026-10-29
+> Statut : **décidé (phase expérimentale)** · Dernière mise à jour : 2026-11-04
 >
 > Où vit le métier du simulateur, et comment l'écran s'y branche. Les décisions
 > ont été prises seul par l'agent qui a mené le chantier, sur délégation de
@@ -48,6 +48,22 @@
 > **Mise à jour 2026-10-28, le tri des gardes d'utilité (#256).** Le graphe ne
 > remplace aucun `mattersWhile` : ils restent tous (ADR-24, conséquences). La
 > dernière phrase de l'ADR-23 ne vaut plus. Décision de Simon, au journal D-227.
+>
+> **Mise à jour 2026-11-03, les options dans leur question (#336).** L'ADR-26
+> donne à chaque question à choix ses options, et le catalogue disparaît.
+> L'ADR-9 est précisé : la sorte vient toujours du constructeur, les options
+> ne viennent plus du catalogue. Décision de Simon, au journal D-261.
+
+> **Mise à jour 2026-11-03, l'agrégat du parcours (#336).** L'ADR-27 fait de
+> `Simulation` l'agrégat du parcours : l'étape, le verrou, la page ouverte et
+> les transitions y vivent ; l'écran ne garde que le brouillon. L'ADR-25 est
+> précisé : `Simulation.of` devient `start` et `resume`. Décision de Simon, au
+> journal D-262.
+>
+> **Mise à jour 2026-11-04, l'index de chaque module (#336).** L'ADR-28 donne à
+> chaque module du socle son `index.ts`, le seul fichier qu'on en importe de
+> l'extérieur. L'ADR-25 est précisé : un module a un contrat, pas seulement un
+> nom. Décision de Simon, au journal D-263.
 
 ## 1. Contexte & objectifs
 
@@ -244,9 +260,9 @@ arguments positionnels, et le moteur lisait l'objet par des fonctions libres.
 Rien n'empêchait un `min` sur un texte.
 
 **Décision.** Un constructeur par sorte (`question.singleChoice(id, libellé)`,
-`question.number(…)`, `question.address(…)`…), lié au catalogue du modèle par
-`questionsOf`. La sorte vient du constructeur, les options du catalogue,
-d'après l'id. Chaque réglage s'écrit sur sa ligne et donne une copie : une
+`question.number(…)`, `question.address(…)`…), lié ~~au catalogue~~ du modèle par
+`questionsOf`. La sorte vient du constructeur~~, les options du catalogue,
+d'après l'id~~ ; la question porte ses options (ADR-26). Chaque réglage s'écrit sur sa ligne et donne une copie : une
 déclaration ne change jamais, et deux déclarations tirées d'une même base ne se
 touchent pas. Une sorte n'a que ses réglages : `min` n'existe pas sur un texte,
 au typage comme à l'exécution.
@@ -796,6 +812,161 @@ cache Q2.13.depart, que lisent les cases « départ » du cerfa. Q2.1 et
 Q2.13.depart cachent une réponse qui changerait l'issue ou le cerfa : elles
 remontent à l'éditeur.
 
+### ADR-25 - L'arbre des fichiers dit le chemin
+
+**Contexte.** Les frontières tenaient (ADR-1 à ADR-24), mais l'arbre ne les
+montrait pas : `declarations/` mêlait les trois étapes du modèle, une partie
+tenait dans un fichier de 300 lignes, `reading-in-order.ts` ou `relevance.ts`
+ne disaient pas ce qu'ils font, le parcours n'avait pas d'entité et R2 était
+sept fichiers plats. Les tests, à plat, ne disaient pas ce qu'ils éprouvent
+(#124, #240, #292).
+
+**Décision.** Un dossier est un module, une entité ou une capacité ; un fichier
+porte une responsabilité et se nomme de ce qu'il exporte (D-257). Le modèle se
+lit dans l'ordre du chemin, `questions/`, `faits/`, `cibles/`, `rules/`, et
+chaque partie a la même forme : sa table des matières, un fichier par
+question, ses conditions partagées (D-258). Le socle a ses entités,
+`Simulation` pour le parcours ; l'écran du modèle a les siennes, `R2` et `R3`,
+écrites dans l'ordre du calcul, R2 avec un dossier par cas (D-259). Les tests
+se rangent comme les sources (D-260).
+
+| Option | Pour | Contre |
+|---|---|---|
+| garder l'arbre, documenter le chemin | rien à déplacer | la doc vieillit ; le code ne montre pas le chemin |
+| ranger par sorte de fichier (`types/`, `utils/`, `components/`) | familier | une capacité s'éparpille sur trois dossiers |
+| module, puis entité ou capacité, puis un fichier par responsabilité | le nom du dossier dit ce qu'il fait ; un fichier se trouve sans chercher | des chemins d'import plus longs |
+
+La troisième, choisie par Simon ; elle s'énonce dans `AGENTS.md`, et trois
+tests la gardent : les frontières (`architecture.test.ts`), les domaines du
+modèle (`domaines.test.ts`) et le miroir des tests
+(`miroir-des-sources.test.ts`).
+
+**Conséquences.** Aucun comportement ne change : une PR de neuf commits, un par
+sujet, déplace et renomme. Les entités remplacent des fonctions libres :
+`Simulation.of(core, réponses)` remplace `readOf`, `traceOf` et `lock` ;
+`R2.of(lecture).page()` remplace quatre fonctions. `r2.ts` est `r2.tsx`, parce
+qu'il porte des constantes JSX. Les chemins d'import s'allongent d'un ou deux
+niveaux. Un nouveau dossier de tests sans dossier de sources du même nom fait
+rougir le miroir.
+
+### ADR-26 - Une question à choix porte ses options (~~le catalogue `OPTIONS`~~)
+
+**Contexte.** Les options d'une question vivaient loin d'elle, dans
+`questions/catalogue/`, et le constructeur les retrouvait d'après l'id. Lire
+Q1.1 demandait deux fichiers, et le type des réponses (`Questions`) se
+déclarait à part, avant les questions. Une question appartient à sa
+déclaration : ses options aussi.
+
+**Décision.** Une question à choix déclare ses options :
+`question.singleChoice("Q1.1", "…").options({ "1_SEUL": "…" })`. Elles disent
+le type de sa réponse (`AnswerOf<typeof Q1_1>`). Le type `Questions` du modèle
+se tire de ses parties (`AnswersOf`, `questions/reponses.ts`) ; les
+déclarations, qui le précèdent, lisent les questions par leur objet
+(`ReadByObject`) : `given.question(Q1_2)`, `dependsOn(Q1_1)`,
+`shownUnder(Q1_3, "2_ALD")`. Le front, les tests et les seeds lisent par id ou
+par objet (D-261).
+
+| Option | Pour | Contre |
+|---|---|---|
+| garder le catalogue, le ranger près des parties | rien à changer au socle | la question ne dit toujours pas ses options |
+| les options dans la question, `Questions` toujours déclaré à part | les déclarations lisent par id | le type redit chaque option, deux sources à tenir |
+| les options dans la question, `Questions` tiré des parties | une seule source ; une question se lit dans son fichier | les déclarations importent les questions qu'elles lisent |
+
+La troisième, choisie par Simon.
+
+**Conséquences.** Une condition qui lit une question importe son objet : elle
+vit après elle, dans son fichier, ou dans un fichier de `conditions/` que la
+question n'importe pas. Sinon les deux modules s'importent l'un l'autre, et la
+question lue vaut `undefined` au chargement (R-12). Q2.2.1 donne un fichier à
+chacune de ses précisions, et le circuit du retour pénitentiaire suit
+Q2.2.1.indication dans le sien. Une question qui se lit elle-même se déclare
+en deux temps : `const declaree = question.date(…)`, puis
+`export const Q3_6_1 = declaree.inconsistentWhen(dansLeFutur(declaree), …)`.
+Les libellés des options se lisent sur la question (`Q1_3.labels`). Aucun écran
+ne change.
+
+### ADR-27 - La simulation est l'agrégat du parcours (~~l'état dans l'écran~~)
+
+**Contexte.** L'ADR-25 donnait au parcours son entité, `Simulation`, mais elle
+ne lisait qu'une préconisation : `Simulation.of(core, réponses)`. L'état du
+parcours restait à l'écran : `useQuestionnaire` gardait la page ouverte, le
+brouillon et les réponses ; `screen.ts` devinait l'écran de départ d'une seed ;
+`move-between-pages.ts` et `resume-where-left.ts` avançaient ou reprenaient ;
+le verrou était un drapeau que chaque écran recevait à part (`lockedAnswers`,
+les cibles). Où l'on en est s'écrivait en quatre endroits, et aucun test ne
+l'éprouvait sans DOM.
+
+**Décision.** `Simulation` est l'agrégat du parcours : un modèle, les réponses
+validées, la page ouverte et l'étape. L'étape est une union explicite,
+questionnaire, résultat, complément, cerfa. Le verrou est une étape, pas un
+drapeau : après lui, l'étape porte ce qu'il a figé, les réponses d'avant et
+leur préconisation. Chaque transition, `validate`, `back`, `reopen`, `lock`,
+donne une nouvelle simulation ; `start` et `resume` disent où des réponses
+commencent ou reprennent. L'étape et ses lectures sont privées : seule la
+simulation lit à une étape, et les tests du modèle passent par elle (D-262).
+L'écran n'y ajoute que le brouillon de la page ouverte : `useQuestionnaire`
+reçoit la simulation et donne, par `onChange`, celle que chaque bouton ouvre ;
+`Simulateur.tsx` choisit l'écran sur `stage.name`.
+
+| Option | Pour | Contre |
+|---|---|---|
+| garder l'état dans l'écran, documenter le déroulé | rien à déplacer | quatre endroits pour un savoir ; aucun test sans DOM |
+| une machine à états du socle, que l'écran pilote (`next`, `back`) | le déroulé en un endroit | l'écran garde encore la page et les réponses : deux états à tenir d'accord |
+| un agrégat immuable qui porte tout, l'étape comprise ; l'écran ne garde que le brouillon | un seul état, testable sous Node ; une transition est une méthode | le fichier touche la limite des 300 lignes |
+
+La troisième, choisie par Simon. L'étape a d'abord eu son fichier, `stage.ts`,
+que quatre tests du modèle lisaient à côté de l'agrégat ; Simon l'a repliée
+dans `simulation.ts`, pour qu'un seul fichier porte le concept et qu'aucun
+test ne lise une étape par une porte de côté.
+
+**Conséquences.** `screen.ts`, `move-between-pages.ts`, `resume-where-left.ts`
+et `QuestionnaireState` disparaissent ; `preconisationOf` passe dans
+`preconisation.ts`. `tests/socle/simulation/simulation.test.ts` couvre
+l'agrégat sans DOM. Aucun écran ne change, à une exception près : une seed qui
+mène derrière le verrou y va toujours, parce que le core ne sait pas si le
+modèle donne un cerfa ; avant, l'écran la gardait au résultat. Le résultat
+garde la garde qui ne propose le verrou que si un cerfa suit, et un complément
+sans page ouvre une étape sans page, où l'écran ne monte rien. `simulation.ts`
+tient en 299 lignes : une capacité de plus en sort dans son fichier (R-13).
+
+### ADR-28 - Un module du socle s'ouvre par son index
+
+**Contexte.** L'ADR-25 fait d'un dossier un module, mais rien ne disait ce
+qu'un module promet. Hors de lui, on importait chacun de ses fichiers par son
+chemin : `question/question.ts` depuis soixante fichiers, `unlock.ts` depuis
+l'app, `compute-the-dto.ts` depuis les tests du modèle. Ce qu'un module garde
+pour lui et ce qu'il expose ne se distinguaient pas, une fuite ne se voyait
+pas, et un fichier ne pouvait plus bouger sans toucher tous ses importeurs. Le
+modèle, lui, avait ses deux points d'entrée (ADR-1), et cette frontière
+tenait.
+
+**Décision.** Un module du socle est un dossier direct de `core/socle/` ou de
+`front/socle/`. Son `index.ts` dit ce qu'il promet au reste du socle, et rien
+d'autre. Hors du module, on n'importe que lui ; ce qui manque s'y ajoute. Ses
+tests, `tests/socle/<module>/`, lisent ses fichiers en direct : ils éprouvent
+l'intérieur. Une seule porte à part, avec son pourquoi dans le test :
+`decision-engine/compute-the-cibles.ts`, qui importe publicodes et doit rester
+hors du chunk d'entrée (D-76). Les deux points d'entrée du socle passent
+eux-mêmes par les index (D-263).
+
+| Option | Pour | Contre |
+|---|---|---|
+| laisser les imports profonds, documenter chaque module | rien à déplacer | la frontière n'existe que dans la doc ; une fuite ne se voit pas |
+| un index par module, règle gardée par un test | la frontière se lit en un fichier ; une fuite rougit | des index à tenir ; deux index qui s'importent l'un l'autre se chargent dans un ordre à surveiller |
+| un index par dossier, à tous les niveaux | tout est contrat | trop de portes pour des dossiers de deux fichiers ; l'index répète l'arbre |
+
+La deuxième, choisie par Simon.
+
+**Conséquences.** Douze index, un par module. Le périmètre d'une condition,
+`Reading`, devient `Scope`, parce que deux `Reading` sortaient du même module.
+`Container.tsx` passe dans `ui/` et `deployed-version.ts` à la racine du
+socle : l'app compose les autres modules, et aucun ne doit la lire. Le test du
+CERFA admet l'index du moteur de questionnaire à la place de
+`conditions/condition.ts`. `tests/modules-du-socle.test.ts` garde la règle,
+dans son fichier parce qu'`architecture.test.ts` est à sa limite de taille. Le
+chunk d'entrée ne bouge pas. Un import profond rougit au premier test, qui dit
+d'ajouter ce qui manque à l'index.
+
 ## 3. Architecture cible
 
 ```mermaid
@@ -822,7 +993,7 @@ flowchart LR
 | `Questionnaire` et `Reading` | `core/` | des réponses lues une fois : pages, questions posées, validées, page suivante | nouveau |
 | Question posée (`AskedQuestion`) | `core/` | la question du moment, en données ; ce qu'elle garde d'une réponse et ce qui n'y va pas | nouveau |
 | Question déclarée et ses constructeurs (`questionsOf`) | `core/` | une classe par sorte, réglage par réglage ; elle sait se poser | nouveau |
-| Questionnaire à l'écran | `front/` | page ouverte, brouillon, navigation, phrases, champs | modifié |
+| Questionnaire à l'écran | `front/` | ~~page ouverte, navigation,~~ brouillon, avancement automatique, phrases, champs ; reçoit la simulation (#336, D-262) | modifié |
 | Moteur de décision | `core/` | des faits aux cibles, seul à importer publicodes | déplacé |
 | `Fait` | `core/` | ce qu'on sait d'un fait, en objet valeur figé | modifié |
 | `Cible` | `core/` | ce que les règles donnent pour une cible, en objet valeur figé | nouveau |
@@ -854,6 +1025,13 @@ flowchart LR
 | Pertinence (`Relevance`, `RelevanceGraph`) | `core/` | une question compte-t-elle, vu les faits figés et les branches encore possibles | nouveau |
 | Ce qui peut encore se poser (`Askability`) | `core/` | les questions qui restent et dont la garde n'est pas jouée d'avance | nouveau |
 | Précisions de R2 par texte | `front/models/` | trois valeurs, chacune sous les issues de son texte | modifié |
+| `Simulation` | `core/` | l'agrégat du parcours : un modèle, les réponses validées, la page ouverte et l'étape ; `validate`, `back`, `reopen`, `lock` donnent une nouvelle simulation ; la préconisation, la lecture d'un résultat, la trace | nouveau |
+| Étape (`Stage`, `Locked`) | `core/` | questionnaire, résultat, complément, cerfa ; après le verrou, les réponses d'avant et leur préconisation ; privée à la simulation | nouveau |
+| ~~Écran de départ, navigation, reprise (`screen.ts`, `move-between-pages.ts`, `resume-where-left.ts`)~~ | ~~`front/`~~ | ~~où une seed s'ouvre, avancer, reculer, reprendre~~ | supprimé (#336, D-262) |
+| `R2` et `R3` | `front/models/` | les résultats en entités : ce qu'ils lisent, puis ce qu'ils donnent ; R2 a un dossier par cas | nouveau |
+| Options d'une question (`.options({ … })`) | `core/models/` | les valeurs d'une question à choix et leurs libellés, dans sa déclaration ; elles typent sa réponse | nouveau |
+| ~~Catalogue des options (`OPTIONS`)~~ | ~~`core/models/`~~ | ~~les options de chaque question, d'après l'id~~ | supprimé (#336, D-261) |
+| Index d'un module (`<module>/index.ts`) | `core/`, `front/` | ce qu'un module du socle promet au reste du socle ; le seul de ses fichiers qu'on importe de l'extérieur | nouveau |
 
 ## 4. Ce qui va où
 
@@ -892,6 +1070,10 @@ a-t-il besoin ?**
 | Ce que lisent R2 et R3 | 260 | ✅ |
 | Le filtrage par le graphe | 255 | ✅ |
 | Le tri des gardes d'utilité | 256 | ✅ |
+| L'arbre des fichiers dit le chemin | 336 | ✅ |
+| Les options dans leur question | 336 | ✅ |
+| La simulation, agrégat du parcours | 336 | ✅ |
+| L'index de chaque module du socle | 336 | ✅ |
 
 ## 6. Risques & validations en attente
 
@@ -908,17 +1090,21 @@ a-t-il besoin ?**
 | R-9 | Le banc d'équivalence ne couvre pas la trace de R2 | les tests de la trace et des précisions passent tels quels ; deux tests disent le séjour réel |
 | R-10 | Le filtrage coûte environ 60 ms à froid par lecture, dix fois une lecture sans lui | des caches par place ; à mesurer à l'écran sur un poste lent |
 | R-11 | Une lecture du résultat déclarée hors de sa branche fait poser des questions pour rien | `questions-posees-par-seed.test.ts` liste les questions de chaque seed |
+| R-12 | Une question et une condition de `conditions/` s'importent l'une l'autre : la question lue vaut `undefined` au chargement | le test sous Node et chaque test du modèle chargent le module ; l'erreur lit `id` sur `undefined` |
+| R-13 | `simulation.ts` touche la limite des 300 lignes : une méthode de plus la dépasse | `taille-du-code.test.ts` le garde ; une capacité de plus sort dans son fichier, sous `simulation/` |
+| R-14 | Les index des deux moteurs de `core/socle/` s'importent l'un l'autre : une valeur lue au chargement d'un module vaudrait `undefined` | le test sous Node et les tests du socle chargent les deux ; aucune valeur n'est lue au chargement aujourd'hui, et l'erreur nommerait le symbole |
 
 ## Vérification
 
 ```bash
 cd apps/simulateur-eligibilite
-pnpm vitest run tests/frontieres-des-racines.test.ts tests/architecture.test.ts
+pnpm vitest run tests/frontieres-des-racines.test.ts tests/architecture.test.ts tests/miroir-des-sources.test.ts tests/modules-du-socle.test.ts
 pnpm vitest run tests/model/metier-sous-node.test.ts tests/model/regles-a-jour.test.ts
 pnpm vitest run tests/model/conformite.test.ts tests/socle/questionnaire-engine
 pnpm vitest run tests/socle/decision-engine
 pnpm vitest run tests/model/eligibilite/domaines.test.ts
-pnpm vitest run tests/model/eligibilite/catalogue-des-faits.test.ts
+pnpm vitest run tests/model/eligibilite/faits/catalogue-des-faits.test.ts
 pnpm vitest run tests/model/eligibilite/filtrage-par-le-graphe.test.ts
 pnpm vitest run tests/model/eligibilite/questions-posees-par-seed.test.ts
+pnpm vitest run tests/socle/simulation
 ```

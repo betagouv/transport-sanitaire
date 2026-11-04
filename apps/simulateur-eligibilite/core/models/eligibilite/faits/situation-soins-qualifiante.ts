@@ -8,7 +8,7 @@
 // `CONTRAT_REPONSES_FAITS.json`.
 
 import { unFait } from "../../../socle/index.ts";
-import { CAS, given, SANS_SEANCE_NI_SEJOUR, SOUS_TYPE } from "./communs.ts";
+import { given, SANS_SEANCE_NI_SEJOUR } from "./communs.ts";
 
 export const situationSoinsQualifiante = unFait(
   "fait_situation_soins_qualifiante",
@@ -17,14 +17,20 @@ export const situationSoinsQualifiante = unFait(
     SANS_SEANCE_NI_SEJOUR,
     "Ni séance qualifiante en Q1.3, ni séjour en Q2.1.",
   )
-  .ouiSi(SOUS_TYPE.isOneOf("1_ENTREE", "2_SORTIE"))
-  .ouiSi(CAS.checked("3_CHIMIOTHERAPIE").or(CAS.checked("4_RADIOTHERAPIE")))
+  .ouiSi(given.question("Q2.1.g").answer().isOneOf("1_ENTREE", "2_SORTIE"))
+  .ouiSi(
+    given
+      .question("Q1.3")
+      .answer()
+      .checked("3_CHIMIOTHERAPIE")
+      .or(given.question("Q1.3").answer().checked("4_RADIOTHERAPIE")),
+  )
   .ouiSi(
     given.question("Q1.3.a").answer().is("1_OUI"),
     "Une séance d'hémodialyse.",
   )
   .inconnuSi(
-    CAS.isPresent(),
+    given.question("Q1.3").answer().isPresent(),
     "Aucune séance qualifiante en P1 : Q2.1.g décidera.",
   )
   .sinon("Q1.3 n'est pas encore validée.");

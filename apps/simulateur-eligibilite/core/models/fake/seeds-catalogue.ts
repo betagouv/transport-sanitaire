@@ -4,9 +4,9 @@
 // résultat. L'écran des seeds l'affiche, et le test de conformité la rejoue.
 
 import type { Seed } from "../../socle/index.ts";
-import type { Cibles } from "./declarations/cibles.ts";
-import type { Questions } from "./declarations/questions.ts";
+import type { Cibles } from "./cibles/noms.ts";
 import { dayFromToday } from "./jour.ts";
+import type { Questions } from "./questions/reponses.ts";
 
 // Une commande qui passe le premier résultat, pour ouvrir le complément.
 const CAFE_SUCRE = {

@@ -8,14 +8,18 @@
 // Il suit `CONTRAT_REPONSES_FAITS.json`.
 
 import { unFait } from "../../../socle/index.ts";
-import { PAS_ENCORE_ETABLI } from "../declarations/faits.ts";
-import { MOTIF, SITUATIONS } from "./communs.ts";
+import { given } from "./communs.ts";
+import { PAS_ENCORE_ETABLI } from "./noms.ts";
 
 export const htnmHorsMaternite = unFait("fait_htnm_hors_maternite")
   .nonSi(
-    SITUATIONS.isPresent().and(MOTIF.is("13_MATERNITE")),
+    given
+      .question("Q2.2.1")
+      .answer()
+      .isPresent()
+      .and(given.question("Q2.1").answer().is("13_MATERNITE")),
     "Le même trajet n'est pas un HTNM hors maternité.",
   )
-  .ouiSi(SITUATIONS.checked("5_HTNM"))
-  .nonSiEcartee(SITUATIONS, "5_HTNM")
+  .ouiSi(given.question("Q2.2.1").answer().checked("5_HTNM"))
+  .nonSiEcartee(given.question("Q2.2.1").answer(), "5_HTNM")
   .sinon(PAS_ENCORE_ETABLI);

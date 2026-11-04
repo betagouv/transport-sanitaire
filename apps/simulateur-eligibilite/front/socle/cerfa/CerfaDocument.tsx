@@ -9,7 +9,7 @@
 // commentaire retiré faute de place s'annonce avant toute action (D-85).
 // Pendant la génération, les deux actions attendent, et « Télécharger » dit
 // « Préparation du PDF ». Une action qui attend un PDF ne se fait plus si le
-// document a été quitté entre-temps (pdf-preparation.ts).
+// document a été quitté entre-temps (`pdf/PdfActionButton.tsx`).
 // « Imprimer » vient avant « Télécharger » : côte à côte s'ils tiennent, l'un
 // sous l'autre sinon, le groupe en ligne du DSFR passant à la ligne sans
 // couper un libellé (D-173). Qui l'affiche peut donner de quoi tenir la place
@@ -22,13 +22,12 @@ import { type ReactNode, useEffect, useRef, useState } from "react";
 import { CerfaPreview } from "./CerfaPreview";
 import type { Cerfa, CerfaDto } from "./cerfa";
 import {
-  download,
-  fileNameOf,
   type GeneratedCerfa,
   generateCerfa,
-} from "./generate-cerfa";
-import { PREPARING, useShown } from "./pdf-preparation";
-import { printPdf } from "./print-pdf";
+} from "./generate-the-cerfa/generate-the-cerfa";
+import { download, fileNameOf } from "./pdf/download-a-pdf";
+import { PdfActionButton, useShown } from "./pdf/PdfActionButton";
+import { printPdf } from "./pdf/print-a-pdf";
 
 type Props<Dto extends CerfaDto> = {
   cerfa: Cerfa<Dto>;
@@ -64,20 +63,13 @@ export function CerfaDocument<Dto extends CerfaDto>({
       <Generation settled={settled} text={text} />
       {above?.(ready)}
       {ready && settled.removedComments.length > 0 && <RemovedComment />}
-      <ul className="fr-btns-group fr-btns-group--inline fr-btns-group--icon-left">
-        <ActionButton
-          icon="fr-icon-printer-line"
-          onClick={withPdf && (() => withPdf(print))}
-        >
-          {printLabel}
-        </ActionButton>
-        <ActionButton
-          icon="fr-icon-download-line"
-          onClick={withPdf && (() => withPdf(save))}
-        >
-          {settled === undefined ? PREPARING : downloadLabel}
-        </ActionButton>
-      </ul>
+      <PdfActions
+        withPdf={withPdf}
+        print={print}
+        save={save}
+        printLabel={printLabel}
+        downloadLabel={downloadLabel}
+      />
       {standIn ??
         (settled?.status === "ready" && <CerfaPreview pdf={settled.pdf} />)}
     </div>
@@ -173,30 +165,49 @@ function Generation({
   );
 }
 
-// Une action sur le PDF. Sans `onClick`, le PDF se génère encore : elle attend.
-type ActionButtonProps = {
-  icon: string;
-  onClick: (() => void) | undefined;
-  children: string;
+// L'impression en cours : un nouveau clic la remplace, et quitter le résultat
+// retire son cadre.
+type ActionsProps = {
+  withPdf: ((use: (pdf: Blob) => void) => void) | undefined;
+  print: (pdf: Blob) => void;
+  save: (pdf: Blob) => void;
+  printLabel: string;
+  downloadLabel: string;
 };
 
-function ActionButton({ icon, onClick, children }: ActionButtonProps) {
+// Imprimer et télécharger, en attente tant que le PDF n'est pas prêt.
+function PdfActions({
+  withPdf,
+  print,
+  save,
+  printLabel,
+  downloadLabel,
+}: ActionsProps) {
   return (
-    <li>
-      <button
-        type="button"
-        className={`fr-btn ${icon}`}
-        onClick={onClick}
-        disabled={!onClick}
-      >
-        {children}
-      </button>
-    </li>
+    <ul className="fr-btns-group fr-btns-group--inline fr-btns-group--icon-left">
+      <li>
+        <PdfActionButton
+          className="fr-btn fr-icon-printer-line"
+          waiting={!withPdf}
+          onClick={() => withPdf?.(print)}
+        >
+          {printLabel}
+        </PdfActionButton>
+      </li>
+      <li>
+        <PdfActionButton
+          className="fr-btn fr-icon-download-line"
+          waiting={!withPdf}
+          saysPreparing
+          onClick={() => withPdf?.(save)}
+        >
+          {downloadLabel}
+        </PdfActionButton>
+      </li>
+    </ul>
   );
 }
 
-// L'impression en cours : un nouveau clic la remplace, et quitter le résultat
-// retire son cadre.
 function usePrint(): (pdf: Blob) => void {
   const release = useRef<() => void>(undefined);
   useEffect(() => () => release.current?.(), []);

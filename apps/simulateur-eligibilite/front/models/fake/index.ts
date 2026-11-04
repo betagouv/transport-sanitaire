@@ -3,50 +3,33 @@
 // `core/models/fake/`. `main.tsx` le passe au socle.
 
 import { model as core } from "../../../core/models/fake";
-import type { Cibles } from "../../../core/models/fake/declarations/cibles";
-import type { Faits } from "../../../core/models/fake/declarations/faits";
-import type { Questions } from "../../../core/models/fake/declarations/questions";
-import { SANS_COMMANDE } from "../../../core/models/fake/preconisation";
-import { given } from "../../../core/models/fake/question";
+import type { Cibles } from "../../../core/models/fake/cibles/noms";
+import type { Faits } from "../../../core/models/fake/faits/noms";
+import type { Questions } from "../../../core/models/fake/questions/reponses";
+import { given } from "../../../core/models/fake/questions/reponses";
 import { defineModel } from "../../socle";
-import { bonDeCommande } from "./bon-de-commande";
-import {
-  CommandeCompletee,
-  LU_PAR_LA_COMMANDE_COMPLETEE,
-  LU_PAR_LE_RESULTAT,
-  type LuParLaCommandeCompletee,
-  type LuParLeResultat,
-  resultatDeLaCommande,
-} from "./Resultats";
-
-// La boisson commandée, que lisent le choix du bon, son titre et le bouton.
-const COMMANDE = given.cible("commande");
+import { type Lecture as LectureDeR2, R2 } from "./r2";
+import { type Lecture as LectureDeR3, R3 } from "./r3";
 
 export const model = defineModel<
   Questions,
   Faits,
   Cibles,
-  LuParLeResultat,
-  LuParLaCommandeCompletee
+  LectureDeR2["reading"],
+  LectureDeR3["reading"]
 >({
   core,
   result: {
     title: "Résultat",
-    reading: LU_PAR_LE_RESULTAT,
-    content: resultatDeLaCommande,
+    reading: R2.lit,
+    content: (lecture) => R2.of(lecture).page(),
   },
   cerfa: {
-    // Sans boisson, il n'y a rien à compléter : le premier résultat est le
-    // dernier écran.
-    form: COMMANDE.compute((commande) =>
-      commande.is(SANS_COMMANDE) ? null : bonDeCommande,
-    ),
-    title: COMMANDE.compute(({ value }) => `Commande complétée : ${value}`),
-    reading: LU_PAR_LA_COMMANDE_COMPLETEE,
-    Resultat: CommandeCompletee,
-    startLabel: COMMANDE.compute((commande) =>
-      commande.is(SANS_COMMANDE) ? null : "Compléter la commande",
-    ),
+    form: R3.document,
+    title: R3.titre,
+    reading: R3.lit,
+    Resultat: R3.Page,
+    startLabel: R3.boutonDeDepart,
     printLabel: "Imprimer le bon de commande",
     downloadLabel: "Télécharger le bon de commande",
   },

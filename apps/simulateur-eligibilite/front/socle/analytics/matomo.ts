@@ -1,13 +1,9 @@
 // L'envoi des évènements à Matomo : démarrage du tag, chargement du script, mise
-// en forme d'un `trackEvent`. La liste des évènements est dans `evenements.ts`.
+// en forme d'un `trackEvent`. La liste des évènements est dans `events.ts`.
 
 import type { RattachementSaisi } from "../../../shared/rattachement-saisi";
-import { rattachementEnSession } from "../rattachement/session";
-import {
-  type BridgeOptions,
-  type ChoixAnalytics,
-  suivreChoixAnalytics,
-} from "./choix-analytics";
+import { rattachementEnSession } from "../rattachement";
+import { type BridgeOptions, type Consent, followConsent } from "./consent";
 
 declare global {
   interface Window {
@@ -29,7 +25,7 @@ export type AnalyticsConfig = {
  * demande pas de consentement : la mesure, agrégée par service, reste dans
  * l'exemption CNIL (ADR-3 d'analytics.md).
  */
-export function configDepuisEnv(env: Env = import.meta.env): AnalyticsConfig {
+export function configFromEnv(env: Env = import.meta.env): AnalyticsConfig {
   return {
     enabled: env.PROD === true || env.VITE_MATOMO_ENABLED === "true",
     url: env.VITE_MATOMO_URL || DEFAULT_URL,
@@ -40,9 +36,9 @@ export function configDepuisEnv(env: Env = import.meta.env): AnalyticsConfig {
 export type TrackerOptions = BridgeOptions & {
   /**
    * Charge le script tiers au premier suivi. Rien par défaut : `main.tsx` passe
-   * `chargerMatomo`, et les tests restent sans réseau.
+   * `loadMatomo`, et les tests restent sans réseau.
    */
-  charger?: (url: string) => void;
+  load?: (url: string) => void;
 };
 
 /**
@@ -52,22 +48,22 @@ export type TrackerOptions = BridgeOptions & {
  * refus, il ne charge rien.
  *
  * Le service n'est pas connu ici. Il est lu en session à chaque événement,
- * voir `emettre`.
+ * voir `emit`.
  */
 export function initAnalytics(
   config: AnalyticsConfig,
-  { charger = () => {}, ...bridge }: TrackerOptions = {},
+  { load = () => {}, ...bridge }: TrackerOptions = {},
 ): void {
-  const courant: Etat = { config, charger, choix: "en-attente", enAttente: [] };
+  const courant: Etat = { config, load, choix: "en-attente", enAttente: [] };
   etat = courant;
   if (!config.enabled) return;
-  suivreChoixAnalytics((choix) => {
+  followConsent((choix) => {
     if (etat === courant) appliquer(courant, choix);
   }, bridge);
 }
 
 /** Injecte le script matomo.js, qui traitera la file. Idempotent. */
-export function chargerMatomo(url: string): void {
+export function loadMatomo(url: string): void {
   if (document.getElementById("matomo-js")) return;
   const script = document.createElement("script");
   script.id = "matomo-js";
@@ -81,13 +77,9 @@ export function chargerMatomo(url: string): void {
  * refusé. L'événement porte le service rattaché, lu en session. Tant que le
  * choix n'est pas connu, il attend.
  */
-export function emettre(action: string, valeur?: number): void {
+export function emit(action: string, valeur?: number): void {
   if (!etat.config.enabled || etat.choix === "refus") return;
-  const evenement = construireEvenement(
-    rattachementEnSession(),
-    action,
-    valeur,
-  );
+  const evenement = buildEvent(rattachementEnSession(), action, valeur);
   if (etat.choix === "en-attente") etat.enAttente.push(evenement);
   else filePaq().push(evenement);
 }
@@ -101,7 +93,7 @@ export function emettre(action: string, valeur?: number): void {
  * L'instance mutualisée beta.gouv n'offre pas de custom dimension (risque R-8).
  * Le service est donc porté par l'événement. Exportée pour les tests.
  */
-export function construireEvenement(
+export function buildEvent(
   rattachement: RattachementSaisi | null,
   action: string,
   valeur?: number,
@@ -140,8 +132,8 @@ const DEFAULT_SITE_ID = "275";
 
 type Etat = {
   config: AnalyticsConfig;
-  charger: (url: string) => void;
-  choix: ChoixAnalytics | "en-attente";
+  load: (url: string) => void;
+  choix: Consent | "en-attente";
   // Les événements émis avant le choix, rejoués au suivi.
   enAttente: unknown[][];
   // Le traceur a été amorcé, et matomo.js chargé.
@@ -150,15 +142,15 @@ type Etat = {
 
 let etat: Etat = {
   config: { enabled: false, url: DEFAULT_URL, siteId: DEFAULT_SITE_ID },
-  charger: () => {},
+  load: () => {},
   choix: "en-attente",
   enAttente: [],
 };
 
 // Au premier suivi, amorce le traceur. À chaque suivi, rejoue ce qui attendait.
-// Un refus jette l'attente, et `emettre` n'émet plus rien. Cela suffit :
+// Un refus jette l'attente, et `emit` n'émet plus rien. Cela suffit :
 // matomo.js ne mesure rien de lui-même.
-function appliquer(courant: Etat, choix: ChoixAnalytics) {
+function appliquer(courant: Etat, choix: Consent) {
   const attente = courant.enAttente;
   courant.enAttente = [];
   courant.choix = choix;
@@ -178,6 +170,6 @@ function bootstrap(courant: Etat) {
   paq.push(["setTrackerUrl", `${url}matomo.php`]);
   paq.push(["setSiteId", siteId]);
   paq.push(["trackPageView"]);
-  courant.charger(url);
+  courant.load(url);
   courant.bootstrapped = true;
 }

@@ -6,25 +6,24 @@
 // L'écran des seeds et son tableau n'y figurent pas : ils sont chargés à la
 // demande, et les réexporter ici les ramènerait dans le chunk d'entrée.
 
-export {
-  chargerMatomo,
-  configDepuisEnv,
-  initAnalytics,
-} from "./analytics/matomo";
-export { App } from "./app/App";
-export type { Models } from "./app/model-choice";
+export { configFromEnv, initAnalytics, loadMatomo } from "./analytics";
+export { App, type Models } from "./app";
+
 export {
   at,
+  bindCerfa,
   box,
   type Cerfa,
+  type CerfaMapping,
+  cerfaValue,
   commentOn,
   date,
   drawnBox,
   onOneLine,
+  templateAt,
   text,
-} from "./cerfa/cerfa";
-export { templateAt } from "./cerfa/generate-cerfa";
-export { bindCerfa, type CerfaMapping, cerfaValue } from "./cerfa-mapping";
+} from "./cerfa";
+
 export {
   type AldIndicator,
   defineModel,
@@ -34,9 +33,12 @@ export {
   type ResultatProps,
   type Sheet,
 } from "./model";
-export { Disclosure } from "./ui/Disclosure";
-export { type IllustratedCard, IllustratedCards } from "./ui/IllustratedCards";
-export { NumberedCards } from "./ui/NumberedCards";
-export { NumberedSteps } from "./ui/NumberedSteps";
-export { Panel } from "./ui/Panel";
-export { SheetFollowUp } from "./ui/SheetFollowUp";
+export {
+  Disclosure,
+  type IllustratedCard,
+  IllustratedCards,
+  NumberedCards,
+  NumberedSteps,
+  Panel,
+  SheetFollowUp,
+} from "./ui";

@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   rangerRattachement,
   rattachementEnSession,
-} from "../../../front/socle/rattachement/session";
+} from "../../../front/socle/rattachement/rattachement-en-session";
 import type { RattachementSaisi } from "../../../shared/rattachement-saisi";
 
 const rattachement: RattachementSaisi = { etabId: "7", serviceId: "42" };

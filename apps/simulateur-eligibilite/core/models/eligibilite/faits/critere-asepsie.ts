@@ -6,13 +6,13 @@
 // Il suit `CONTRAT_REPONSES_FAITS.json`.
 
 import { unFait } from "../../../socle/index.ts";
-import { AIDE, CRITERES } from "./communs.ts";
+import { given } from "./communs.ts";
 
 export const critereAsepsie = unFait("fait_critere_asepsie")
-  .ouiSi(CRITERES.checked("11_ASEPSIE"))
-  .nonSi(CRITERES.isPresent())
+  .ouiSi(given.question("Q1.2").answer().checked("11_ASEPSIE"))
+  .nonSi(given.question("Q1.2").answer().isPresent())
   .nonSi(
-    AIDE.isOneOf("1_SEUL", "2_AVEC_UN_PROCHE"),
+    given.question("Q1.1").answer().isOneOf("1_SEUL", "2_AVEC_UN_PROCHE"),
     "Q1.2 ne se pose pas : aucun professionnel n'intervient.",
   )
   .sinon("Q1.2 n'est pas encore validée.");

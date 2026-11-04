@@ -1,0 +1,47 @@
+/* Le premier résultat (ResultatScreen.tsx). Sous le corps, un trait sépare les
+   boutons de lui ; au-dessus d'une feuille, ils la précèdent sans trait. */
+
+.socle-page-actions--below {
+  margin-top: 2.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--border-default-grey);
+}
+
+.socle-page-actions--above {
+  margin-top: 1.5rem;
+}
+
+/* Sur une rangée, l'avis et la complétion se poussent à droite, les
+   secondaires restent à gauche : le premier des deux porte la marge, l'avis
+   s'il est là ; la complétion garde alors l'écart du DSFR. Sous 48em, le DSFR empile tout dans l'ordre du document.
+   Ces sélecteurs sont plus spécifiques que celui du DSFR qui fixe ses marges.
+   La barre de R3 (`CerfaScreen.tsx`) suit la même règle. */
+@media (min-width: 48em) {
+  .socle-page-actions .fr-btns-group .socle-feedback__link,
+  .socle-page-actions .fr-btns-group .socle-page-actions__completion {
+    margin-left: auto;
+  }
+
+  .socle-page-actions
+    .fr-btns-group
+    .socle-feedback__link
+    + .socle-page-actions__completion {
+    margin-left: 0.5rem;
+  }
+}
+
+/* Le titre d'un résultat avec feuille et complétion. `h1` rend ce sélecteur
+   plus spécifique que `.fr-h2`, qui fixe la couleur des titres. */
+h1.socle-result-title--success {
+  color: var(--text-default-success);
+}
+
+/* Le titre d'un refus : rouge foncé, plus sombre que le rouge d'erreur du
+   DSFR, que le thème sombre reprend pour rester lisible. */
+h1.socle-result-title--refusal {
+  color: #a20b1b;
+}
+
+:root[data-fr-theme="dark"] h1.socle-result-title--refusal {
+  color: var(--text-default-error);
+}

@@ -1,7 +1,7 @@
 // L'accident causé par un tiers (Q3.6.2) et sa date (Q3.6.3). Sans réponse,
 // ni Oui ni Non ne se coche.
 
-import { given } from "../../../../../core/models/eligibilite/question";
+import { given } from "../../../../../core/models/eligibilite/questions/reponses";
 import type { Rubrique } from "./rubrique";
 
 export type Accident = {

@@ -12,7 +12,7 @@ import {
   uneRegle,
   unFait,
 } from "../../../core/socle";
-import { ValidatedAnswers } from "../../../core/socle/questionnaire-engine/validated-answers";
+import { ValidatedAnswers } from "../../../core/socle/questionnaire-engine";
 
 type Questions = {
   boisson: "the" | "cafe" | "eau";

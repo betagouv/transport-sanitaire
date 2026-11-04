@@ -1,13 +1,13 @@
 import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
-import { App } from "../../../front/socle/app/App";
+import { App } from "../../../front/socle/app";
 import {
   DeveloperTools,
   ToolButton,
 } from "../../../front/socle/developer-tools/DeveloperTools";
-import { RattachementForm } from "../../../front/socle/rattachement/RattachementForm";
-import { Simulateur } from "../../../front/socle/simulateur/Simulateur";
+import { RattachementForm } from "../../../front/socle/rattachement";
+import { Simulateur } from "../../../front/socle/simulateur";
 import { snapshotReferentiel } from "../../../shared/referentiel";
 import { modeleDeTest, seulModele } from "../modele-de-test";
 import {

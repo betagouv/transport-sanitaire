@@ -14,7 +14,7 @@ import {
   PDFRawStream,
 } from "pdf-lib";
 import { describe, expect, it } from "vitest";
-import { paperPdf } from "../../../front/socle/simulateur/paper-pdf";
+import { paperPdf } from "../../../front/socle/simulateur/sheet/assemble-the-pdf";
 
 describe("le PDF de la feuille", () => {
   it("a une A4 par page", async () => {

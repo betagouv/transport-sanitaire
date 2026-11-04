@@ -1,7 +1,7 @@
 // Le bloc de suivi d'une feuille à remettre : sur un fond gris clair arrondi,
 // ce que le patient fait ensuite et ce qu'il doit savoir. À l'impression, il
 // ouvre la seconde A4 quand la feuille n'en tient pas une, et ne se coupe que
-// s'il est plus haut qu'une page (sheet-pagination.ts). Les gabarits de
+// s'il est plus haut qu'une page (`simulateur/sheet/slice-into-pages.ts`). Les gabarits de
 // l'éditeur en font foi.
 
 import type { ReactNode } from "react";

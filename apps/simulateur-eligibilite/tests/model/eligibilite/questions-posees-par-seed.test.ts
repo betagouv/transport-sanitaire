@@ -3,28 +3,24 @@
 // le parcours : elle se justifie par ce que montre le résultat (D-220 à D-224).
 
 import { describe, expect, it } from "vitest";
-import type { Questions } from "../../../core/models/eligibilite/declarations/questions";
-import type { Answers } from "../../../core/socle/questionnaire-engine/question";
-import type { Questionnaire } from "../../../core/socle/questionnaire-engine/questionnaire";
+import type { Questions } from "../../../core/models/eligibilite/questions/reponses";
+import type { Answers } from "../../../core/socle/questionnaire-engine";
+import { Simulation } from "../../../core/socle/simulation";
 import { model } from "../../../front/models/eligibilite";
-import { questionnaireOf } from "../../../front/socle/simulateur/questionnaire-of";
-import { lock } from "../../../front/socle/simulateur/start";
 
 type Reponses = Answers<Questions>;
 
-const posees = (read: ReturnType<Questionnaire["readWith"]>) =>
-  read
-    .askedPages()
-    .flatMap((page) => read.questionsOn(page).map(({ id }) => id));
+const posees = (simulation: Simulation) =>
+  simulation
+    .pages()
+    .flatMap((page) => simulation.questionsOn(page).map(({ id }) => id));
 
 const avantLeVerrou = (reponses: Reponses) =>
-  posees(questionnaireOf(model).readWith(reponses));
+  posees(Simulation.resume(model.core, reponses));
 
-const apresLeVerrou = (reponses: Reponses) => {
-  const { cibles } = lock(model, reponses).preconisation;
-  const complement = questionnaireOf(model, model.core.complement.pages);
-  return posees(complement.readWith(reponses, cibles));
-};
+// Le complément, sous le verrou de ces réponses : rien, quand aucun cerfa ne suit.
+const apresLeVerrou = (reponses: Reponses) =>
+  posees(Simulation.resume(model.core, reponses).lock());
 
 const P1 = ["Q0.1", "Q1.1", "Q1.2", "Q1.3"];
 const LIEUX = ["Q3.2.nature", "Q3.2.adresse", "Q3.3.nom", "Q3.3.adresse"];

@@ -18,9 +18,9 @@
     "lint:fix": "biome check --write",
     "typecheck": "tsc -b",
     "verifier": "pnpm lint && pnpm typecheck && pnpm knip && pnpm test && pnpm build",
-    "postbuild": "node scripts/verifier-bundle.ts",
-    "verifier-bundle": "node scripts/verifier-bundle.ts",
-    "regles": "node scripts/regles-publicodes.ts",
+    "postbuild": "node tooling/verifier-bundle.ts",
+    "verifier-bundle": "node tooling/verifier-bundle.ts",
+    "regles": "node tooling/regles-publicodes.ts",
     "knip": "knip --directory ../.. --workspace apps/simulateur-eligibilite"
   },
   "engines": {

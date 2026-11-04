@@ -8,17 +8,16 @@
 import type { ComponentType, ReactNode } from "react";
 import type { AnyFaits, CoreModel } from "../../core/socle/model";
 import {
-  NOTHING,
-  readsOf,
-  type Value,
-} from "../../core/socle/questionnaire-engine/condition";
-import {
   type AnyCibles,
   type AnyQuestions,
+  NOTHING,
   pagesOf,
-} from "../../core/socle/questionnaire-engine/question";
-import { Relevance } from "../../core/socle/questionnaire-engine/relevance";
-import type { BoundCerfa } from "./cerfa-mapping";
+  Relevance,
+  readsOf,
+  type Value,
+} from "../../core/socle/questionnaire-engine";
+
+import type { BoundCerfa } from "./cerfa";
 
 /**
  * Ce qu'un résultat reçoit pour s'afficher : ce qu'il lit des questions

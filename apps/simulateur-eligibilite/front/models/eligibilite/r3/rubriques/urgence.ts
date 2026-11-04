@@ -4,7 +4,7 @@
 //
 // Le gabarit n'a pas de champ pour la précision : elle se dessine (D-93).
 
-import { given } from "../../../../../core/models/eligibilite/question";
+import { given } from "../../../../../core/models/eligibilite/questions/reponses";
 import type { Rubrique } from "./rubrique";
 
 /** Rien n'est saisi, ou l'urgence n'est pas « autres » : la place reste vide. */

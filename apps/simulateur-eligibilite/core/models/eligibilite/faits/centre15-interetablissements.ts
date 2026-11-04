@@ -9,16 +9,15 @@
 // Il suit `CONTRAT_REPONSES_FAITS.json`.
 
 import { unFait } from "../../../socle/index.ts";
-import { PAS_ENCORE_ETABLI } from "../declarations/faits.ts";
 import {
-  DEPLACEMENT,
-  EXCEPTIONS,
+  given,
   UN_SEJOUR_ECARTE,
   UN_SEJOUR_EN_HAD,
   UNE_ENTREE_SIMPLE,
   UNE_PERMISSION_ECARTE_LE_TRANSFERT,
   UNE_SORTIE_VERS_LA_PRISON,
 } from "./communs.ts";
+import { PAS_ENCORE_ETABLI } from "./noms.ts";
 
 export const centre15Interetablissements = unFait(
   "fait_centre15_interetablissements",
@@ -26,20 +25,20 @@ export const centre15Interetablissements = unFait(
   .nonSi(UNE_ENTREE_SIMPLE, "Aucun transfert entre établissements.")
   .applique(UNE_SORTIE_VERS_LA_PRISON)
   .applique(UNE_PERMISSION_ECARTE_LE_TRANSFERT)
-  .ouiSi(EXCEPTIONS.checked("3_CENTRE_QUINZE"))
-  .nonSiEcartee(EXCEPTIONS, "3_CENTRE_QUINZE")
+  .ouiSi(given.question("Q2.6").answer().checked("3_CENTRE_QUINZE"))
+  .nonSiEcartee(given.question("Q2.6").answer(), "3_CENTRE_QUINZE")
   .nonSi(
-    UN_SEJOUR_EN_HAD.and(EXCEPTIONS.isPresent()).and(
-      DEPLACEMENT.is("1_TRANSFERT").not(),
+    UN_SEJOUR_EN_HAD.and(given.question("Q2.6").answer().isPresent()).and(
+      given.question("Q2.5").answer().is("1_TRANSFERT").not(),
     ),
     "Une Hospitalisation à Domicile n'est pas un transfert entre établissements.",
   )
   .inconnuSi(
-    DEPLACEMENT.is("1_TRANSFERT"),
+    given.question("Q2.5").answer().is("1_TRANSFERT"),
     "Q2.6 dira si le Centre 15 l'a demandé.",
   )
   .nonSi(
-    DEPLACEMENT.is("2_AUTRE_DEPLACEMENT"),
+    given.question("Q2.5").answer().is("2_AUTRE_DEPLACEMENT"),
     "Ce n'est pas un transfert entre établissements.",
   )
   .applique(UN_SEJOUR_ECARTE)

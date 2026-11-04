@@ -8,16 +8,16 @@
 // `CONTRAT_REPONSES_FAITS.json`.
 
 import { unFait } from "../../../socle/index.ts";
-import { PAS_ENCORE_ETABLI } from "../declarations/faits.ts";
-import { EXCEPTIONS } from "./communs.ts";
+import { given } from "./communs.ts";
+import { PAS_ENCORE_ETABLI } from "./noms.ts";
 
 export const exceptionArticle80DialyseDomicile = unFait(
   "fait_exception_article80_dialyse_domicile",
 )
-  .ouiSi(EXCEPTIONS.checked("9_DIALYSE_A_DOMICILE"))
-  .nonSiEcartee(EXCEPTIONS, "9_DIALYSE_A_DOMICILE")
+  .ouiSi(given.question("Q2.6").answer().checked("9_DIALYSE_A_DOMICILE"))
+  .nonSiEcartee(given.question("Q2.6").answer(), "9_DIALYSE_A_DOMICILE")
   .inconnuSi(
-    EXCEPTIONS.isPresent(),
+    given.question("Q2.6").answer().isPresent(),
     "« 9_DIALYSE_A_DOMICILE » ne s'est pas proposée.",
   )
   .sinon(PAS_ENCORE_ETABLI);

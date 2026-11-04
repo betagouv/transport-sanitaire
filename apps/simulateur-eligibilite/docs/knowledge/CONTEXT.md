@@ -158,7 +158,7 @@ _Chez l'éditeur_: « simulation ». Sa « révision » n'a pas d'équivalent ch
 
 **Condition**:
 Une question oui/non sur les réponses, les faits ou les cibles :
-`given.question("Q2.1").answer().is("8_HOSPITALISATION")`. Elle se compose par
+`given.question(Q2_1).answer().is("8_HOSPITALISATION")`. Elle se compose par
 `and`, `or` et `not`, et dit ce qu'elle lit (`reads`) sans se calculer (ADR-23).
 _Chez l'éditeur_: « condition », le même mot.
 

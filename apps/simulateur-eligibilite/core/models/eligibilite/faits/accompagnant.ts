@@ -6,9 +6,14 @@
 // Il suit `CONTRAT_REPONSES_FAITS.json`.
 
 import { unFait } from "../../../socle/index.ts";
-import { AIDE } from "./communs.ts";
+import { given } from "./communs.ts";
 
 export const accompagnant = unFait("fait_accompagnant")
-  .ouiSi(AIDE.is("2_AVEC_UN_PROCHE"))
-  .nonSi(AIDE.isOneOf("1_SEUL", "3_AVEC_UN_PROFESSIONNEL"))
+  .ouiSi(given.question("Q1.1").answer().is("2_AVEC_UN_PROCHE"))
+  .nonSi(
+    given
+      .question("Q1.1")
+      .answer()
+      .isOneOf("1_SEUL", "3_AVEC_UN_PROFESSIONNEL"),
+  )
   .sinon("Q1.1 n'est pas encore validée.");

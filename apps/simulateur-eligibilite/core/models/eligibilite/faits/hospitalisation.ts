@@ -11,38 +11,49 @@
 
 import { unFait } from "../../../socle/index.ts";
 import {
-  CAS,
-  DEPLACEMENT,
   given,
-  MOTIF,
   SANS_SEANCE_NI_SEJOUR,
-  SITUATIONS,
-  SOUS_TYPE,
   UN_SEJOUR_EN_ETABLISSEMENT,
   UN_SEJOUR_EN_HAD,
 } from "./communs.ts";
 
 const SANS_SEANCE_NI_SEJOUR_HORS_Q21 = SANS_SEANCE_NI_SEJOUR.and(
-  MOTIF.isOneOf("9_TRANSFERT", "11_PERMISSION").not(),
+  given.question("Q2.1").answer().isOneOf("9_TRANSFERT", "11_PERMISSION").not(),
 );
 
 export const hospitalisation = unFait("fait_hospitalisation")
   .ouiSi(UN_SEJOUR_EN_ETABLISSEMENT, "Un séjour effectif en établissement.")
-  .ouiSi(DEPLACEMENT.is("2_AUTRE_DEPLACEMENT").and(UN_SEJOUR_EN_HAD.not()))
+  .ouiSi(
+    given
+      .question("Q2.5")
+      .answer()
+      .is("2_AUTRE_DEPLACEMENT")
+      .and(UN_SEJOUR_EN_HAD.not()),
+  )
   .nonSi(
-    SANS_SEANCE_NI_SEJOUR_HORS_Q21.and(SITUATIONS.isPresent())
-      .and(SITUATIONS.offered("1_HOSPITALISATION"))
-      .and(SITUATIONS.checked("1_HOSPITALISATION").not()),
+    SANS_SEANCE_NI_SEJOUR_HORS_Q21.and(
+      given.question("Q2.2.1").answer().isPresent(),
+    )
+      .and(given.question("Q2.2.1").answer().offered("1_HOSPITALISATION"))
+      .and(
+        given.question("Q2.2.1").answer().checked("1_HOSPITALISATION").not(),
+      ),
     "Ni séance qualifiante en Q1.3, ni séjour en Q2.1 ; « déjà hospitalisé » écarté.",
   )
-  .ouiSi(SOUS_TYPE.isOneOf("1_ENTREE", "2_SORTIE"))
-  .ouiSi(CAS.checked("3_CHIMIOTHERAPIE").or(CAS.checked("4_RADIOTHERAPIE")))
+  .ouiSi(given.question("Q2.1.g").answer().isOneOf("1_ENTREE", "2_SORTIE"))
+  .ouiSi(
+    given
+      .question("Q1.3")
+      .answer()
+      .checked("3_CHIMIOTHERAPIE")
+      .or(given.question("Q1.3").answer().checked("4_RADIOTHERAPIE")),
+  )
   .ouiSi(
     given.question("Q1.3.a").answer().is("1_OUI"),
     "Une séance d'hémodialyse.",
   )
   .inconnuSi(
-    CAS.isPresent(),
+    given.question("Q1.3").answer().isPresent(),
     "Aucune séance qualifiante en P1 : Q2.1.g décidera.",
   )
   .sinon("Q1.3 n'est pas encore validée.");

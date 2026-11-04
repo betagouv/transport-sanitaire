@@ -7,14 +7,18 @@
 // Il suit `CONTRAT_REPONSES_FAITS.json`.
 
 import { unFait } from "../../../socle/index.ts";
-import { CAS, given } from "./communs.ts";
+import { given } from "./communs.ts";
 
 export const typeDialyseNonVerifiable = unFait(
   "fait_type_dialyse_non_verifiable",
 )
   .nonSi(given.question("Q1.3.a").answer().isPresent(), "Q1.3.a est répondue.")
   .nonSi(
-    CAS.isPresent().and(CAS.checked("5_DIALYSE").not()),
+    given
+      .question("Q1.3")
+      .answer()
+      .isPresent()
+      .and(given.question("Q1.3").answer().checked("5_DIALYSE").not()),
     "Q1.3 est validée sans dialyse en centre.",
   )
   .sinon("Q1.3 n'est pas encore validée.");

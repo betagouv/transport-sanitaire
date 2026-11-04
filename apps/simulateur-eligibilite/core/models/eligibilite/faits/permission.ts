@@ -9,10 +9,7 @@
 
 import { unFait } from "../../../socle/index.ts";
 import {
-  MOTIF,
-  PERMISSION_DU_SEJOUR,
-  SITUATIONS,
-  SOUS_TYPE,
+  given,
   UN_SEJOUR_ECARTE,
   UN_SEJOUR_EN_HAD,
   UNE_SORTIE_VERS_LA_PRISON,
@@ -21,7 +18,11 @@ import {
 export const permission = unFait("fait_permission")
   .applique(UNE_SORTIE_VERS_LA_PRISON)
   .nonSi(
-    SITUATIONS.isPresent().and(SOUS_TYPE.is("1_ENTREE")),
+    given
+      .question("Q2.2.1")
+      .answer()
+      .isPresent()
+      .and(given.question("Q2.1.g").answer().is("1_ENTREE")),
     "Aucun séjour en cours, donc aucune permission.",
   )
   .applique(UN_SEJOUR_ECARTE)
@@ -29,7 +30,7 @@ export const permission = unFait("fait_permission")
     UN_SEJOUR_EN_HAD,
     "Une Hospitalisation à Domicile n'ouvre aucune permission.",
   )
-  .ouiSi(PERMISSION_DU_SEJOUR.is("1_OUI"))
-  .nonSi(PERMISSION_DU_SEJOUR.is("2_NON"))
-  .ouiSi(MOTIF.is("11_PERMISSION"))
+  .ouiSi(given.question("Q2.2.1.a").answer().is("1_OUI"))
+  .nonSi(given.question("Q2.2.1.a").answer().is("2_NON"))
+  .ouiSi(given.question("Q2.1").answer().is("11_PERMISSION"))
   .sinon("Ni Q2.1, ni Q2.2.1 n'établissent encore de permission.");

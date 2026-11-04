@@ -1,6 +1,6 @@
 import { render, screen, within } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
-import type { Seed } from "../../../core/socle/seeds/seed";
+import type { Seed } from "../../../core/socle/simulation";
 import { Seeds } from "../../../front/socle/seeds/Seeds";
 import { modeleDeTest } from "../modele-de-test";
 import {

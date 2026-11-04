@@ -2,8 +2,7 @@
 // écrit pour eux dans `fixtures/modele-factice/`. Les tests le prennent tous
 // ici : changer de modèle de test ne touche que ce fichier.
 
-import type { Models } from "../../front/socle/app/model-choice";
-import type { ModelSource } from "../../front/socle/app/model-loading";
+import type { ModelSource, Models } from "../../front/socle/app";
 
 export { model as modeleDeTest } from "./fixtures/modele-factice";
 export { given } from "./fixtures/modele-factice/questionnaire";

@@ -10,7 +10,7 @@ import {
   pageSlicesOf,
   paperAttributes,
   printLayoutOf,
-} from "../../../front/socle/simulateur/sheet-pagination";
+} from "../../../front/socle/simulateur/sheet/slice-into-pages";
 
 describe("la pagination de la feuille", () => {
   it("tient sur une page quand la feuille ne passe pas 278,5 mm", () => {

@@ -9,28 +9,51 @@
 // `CONTRAT_REPONSES_FAITS.json`.
 
 import { unFait } from "../../../socle/index.ts";
-import { AIDE, CAS, CRITERES } from "./communs.ts";
+import { given } from "./communs.ts";
 
 export const mineurSoinsProlongesReconnus = unFait(
   "fait_mineur_soins_prolonges_reconnus",
 )
-  .nonSi(CAS.isPresent().and(CAS.checked("8_MINEUR_SOINS_CONTINUS").not()))
+  .nonSi(
+    given
+      .question("Q1.3")
+      .answer()
+      .isPresent()
+      .and(
+        given
+          .question("Q1.3")
+          .answer()
+          .checked("8_MINEUR_SOINS_CONTINUS")
+          .not(),
+      ),
+  )
   .ouiSi(
-    CAS.checked("8_MINEUR_SOINS_CONTINUS").and(AIDE.is("2_AVEC_UN_PROCHE")),
+    given
+      .question("Q1.3")
+      .answer()
+      .checked("8_MINEUR_SOINS_CONTINUS")
+      .and(given.question("Q1.1").answer().is("2_AVEC_UN_PROCHE")),
     "L'aide d'un proche est nécessaire.",
   )
   .nonSi(
-    CAS.checked("8_MINEUR_SOINS_CONTINUS").and(AIDE.is("1_SEUL")),
+    given
+      .question("Q1.3")
+      .answer()
+      .checked("8_MINEUR_SOINS_CONTINUS")
+      .and(given.question("Q1.1").answer().is("1_SEUL")),
     "Le patient se déplace seul.",
   )
   .ouiSi(
-    CAS.checked("8_MINEUR_SOINS_CONTINUS")
-      .and(AIDE.is("3_AVEC_UN_PROFESSIONNEL"))
-      .and(CRITERES.anyChecked()),
+    given
+      .question("Q1.3")
+      .answer()
+      .checked("8_MINEUR_SOINS_CONTINUS")
+      .and(given.question("Q1.1").answer().is("3_AVEC_UN_PROFESSIONNEL"))
+      .and(given.question("Q1.2").answer().anyChecked()),
     "Un critère de Q1.2 prouve une déficience.",
   )
   .inconnuSi(
-    CAS.checked("8_MINEUR_SOINS_CONTINUS"),
+    given.question("Q1.3").answer().checked("8_MINEUR_SOINS_CONTINUS"),
     "Ni Q1.1 ni Q1.2 n'établissent encore une déficience.",
   )
   .sinon("Q1.3 n'est pas encore validée.");

@@ -1,0 +1,9 @@
+{
+  "extends": "./tsconfig.base.json",
+  "compilerOptions": {
+    "types": ["node"]
+  },
+  // `tooling/` : la configuration et les outils de développement, exécutés par
+  // Node (`node --experimental-strip-types`), hors du bundle front.
+  "include": ["../vite.config.ts", "./*.ts"]
+}

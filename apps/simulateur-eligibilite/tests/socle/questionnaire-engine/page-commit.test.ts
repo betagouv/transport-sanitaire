@@ -14,7 +14,7 @@ type Questions = {
 
 type Id = keyof Questions;
 
-const question = questionsOf<Questions>({ options: {} });
+const question = questionsOf<Questions>();
 
 const texte = (id: Id, ...dependsOn: Id[]) =>
   question.text(id, id).dependsOn(...dependsOn);

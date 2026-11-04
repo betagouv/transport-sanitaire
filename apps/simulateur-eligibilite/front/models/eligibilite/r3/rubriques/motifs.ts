@@ -7,7 +7,7 @@
 // règles ne donnent jamais les deux cases ensemble (#128). L'ALD exonérante et
 // l'AT/MP sont les liens du transport, sous les noms de la PMT.
 
-import { given } from "../../../../../core/models/eligibilite/question";
+import { given } from "../../../../../core/models/eligibilite/questions/reponses";
 import { LIENS } from "./liens";
 import type { Rubrique } from "./rubrique";
 

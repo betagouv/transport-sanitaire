@@ -9,10 +9,8 @@ import {
   onOneLine,
   text,
 } from "../../../front/socle/cerfa/cerfa";
-import {
-  fileNameOf,
-  generateCerfa,
-} from "../../../front/socle/cerfa/generate-cerfa";
+import { generateCerfa } from "../../../front/socle/cerfa/generate-the-cerfa/generate-the-cerfa";
+import { fileNameOf } from "../../../front/socle/cerfa/pdf/download-a-pdf";
 import { drawnOn, markedStates, textsOn } from "./pdf-aplati";
 import { statesOf, testForm } from "./test-form";
 

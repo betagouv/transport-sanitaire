@@ -6,19 +6,27 @@
 // Il suit `CONTRAT_REPONSES_FAITS.json`.
 
 import { unFait } from "../../../socle/index.ts";
-import { AIDE, CRITERES } from "./communs.ts";
+import { given } from "./communs.ts";
 
 export const critereTap = unFait("fait_critere_tap")
   .ouiSi(
-    CRITERES.checked("1_PAS_AUTONOME")
-      .or(CRITERES.checked("2_AIDE_TECHNIQUE"))
-      .or(CRITERES.checked("3_TRANSMISSION_PAR_UN_PROFESSIONNEL"))
-      .or(CRITERES.checked("4_HYGIENE"))
-      .or(CRITERES.checked("5_RISQUE_DE_MALAISE")),
+    given
+      .question("Q1.2")
+      .answer()
+      .checked("1_PAS_AUTONOME")
+      .or(given.question("Q1.2").answer().checked("2_AIDE_TECHNIQUE"))
+      .or(
+        given
+          .question("Q1.2")
+          .answer()
+          .checked("3_TRANSMISSION_PAR_UN_PROFESSIONNEL"),
+      )
+      .or(given.question("Q1.2").answer().checked("4_HYGIENE"))
+      .or(given.question("Q1.2").answer().checked("5_RISQUE_DE_MALAISE")),
   )
-  .nonSi(CRITERES.isPresent())
+  .nonSi(given.question("Q1.2").answer().isPresent())
   .nonSi(
-    AIDE.isOneOf("1_SEUL", "2_AVEC_UN_PROCHE"),
+    given.question("Q1.1").answer().isOneOf("1_SEUL", "2_AVEC_UN_PROCHE"),
     "Q1.2 ne se pose pas : aucun professionnel n'intervient.",
   )
   .sinon("Q1.2 n'est pas encore validée.");

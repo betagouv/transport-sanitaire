@@ -138,7 +138,7 @@ explicite.~~
 ### ADR-4 - Référentiel figé des noms d'évènement, jamais composés
 
 **Décision.** Le nom de chaque évènement Matomo est une valeur fixe d'un
-référentiel unique (`front/socle/analytics/evenements.ts`, `NomEvenement`), jamais
+référentiel unique (`front/socle/analytics/events.ts`, `EventName`), jamais
 composé à la volée par concaténation de chaîne. Ce module n'interprète aucune
 donnée métier — ni l'outil, ni le statut d'un résultat, ni le formulaire d'un
 CERFA : c'est l'appelant qui choisit l'entrée à émettre, via
@@ -232,7 +232,7 @@ Matomo n'a pas de commande pour anonymiser l'IP : c'est un réglage de l'instanc
 Événements `trackEvent` émis par le traceur, en catégorie `simulateur`, portant l'id
 Grist du service en Nom, ou `autre` pour un rattachement dégradé. ~~Ce nom était absent
 si le parcours avait démarré sans rattachement pseudonymisé (API indisponible).~~ Le nom d'action est une valeur fixe du référentiel
-`NomEvenement` (`front/socle/analytics/evenements.ts`, ADR-4) — jamais composé à
+`EventName` (`front/socle/analytics/events.ts`, ADR-4) — jamais composé à
 l'exécution.
 
 **Parcours** (~~un jeu par outil, `prescripteur:…` / `secretariat:…`~~, un seul
@@ -334,5 +334,5 @@ Prérequis : l'écran de rattachement fournit le service (cf.
 ## 8. Vérification
 
 ```bash
-pnpm --filter simulateur-eligibilite exec vitest run tests/socle/analytics tests/socle/cms
+pnpm --filter simulateur-eligibilite exec vitest run tests/socle/analytics
 ```

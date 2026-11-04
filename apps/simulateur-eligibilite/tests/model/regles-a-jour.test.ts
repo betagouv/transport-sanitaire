@@ -1,6 +1,6 @@
 // Les règles qu'importe le code (`rules/regles.json`) sont celles que l'éditeur
 // a livrées (`rules/regles.publicodes`). Le JSON est écrit par
-// `scripts/regles-publicodes.ts` : un YAML recopié sans relancer le script
+// `tooling/regles-publicodes.ts` : un YAML recopié sans relancer le script
 // laisserait le simulateur décider avec l'ancienne version.
 //
 // Le script écrit aussi leur graphe (`rules/regles.graphe.json`, #196). Il
@@ -15,11 +15,11 @@ import { Fait } from "../../core/socle";
 import {
   DecisionGraph,
   type FaitValue,
-} from "../../core/socle/decision-engine/decision-graph";
+} from "../../core/socle/decision-engine";
 import {
   decisionGraphOf,
   publicodesEngine,
-} from "../../core/socle/decision-engine/publicodes";
+} from "../../core/socle/decision-engine/compute-the-cibles";
 import { racine, texteDe } from "../inspection-des-sources";
 
 describe("les règles de chaque modèle", () => {

@@ -4,7 +4,7 @@
 
 import { model } from "../../../front/models/eligibilite";
 import type { Model } from "../../../front/socle/model";
-import { gabarit } from "./reponses-du-cerfa";
+import { gabarit } from "./r3/reponses-du-cerfa";
 
 // Le gabarit de chaque cerfa, par le début du nom de son fichier.
 const SUPPORTS: Readonly<Record<string, string>> = {
