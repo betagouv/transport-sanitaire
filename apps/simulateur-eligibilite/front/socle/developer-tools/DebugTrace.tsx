@@ -9,7 +9,7 @@
 
 import { cibleValues } from "../../../core/socle/decision-engine/cible";
 import type { Validated } from "../../../core/socle/questionnaire-engine/question/question";
-import { SHA_COMMIT, VERSION_APP } from "../app/deployed-version";
+import { SHA_COMMIT, VERSION_APP } from "../deployed-version";
 import type { DebugTraceProps } from "../questionnaire/QuestionnaireForm";
 
 export function DebugTrace(props: DebugTraceProps) {

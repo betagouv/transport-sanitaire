@@ -10,8 +10,8 @@ import {
   type Referentiel,
   snapshotReferentiel,
 } from "../../../shared/referentiel";
-import { Container } from "../app/Container";
 import { DeveloperTools, ToolButton } from "../developer-tools/DeveloperTools";
+import { Container } from "../ui/Container";
 import { SelectField } from "../ui/SelectField";
 import { TextField } from "../ui/TextField";
 import type { SaisieRattachement } from "./saisie-rattachement";
