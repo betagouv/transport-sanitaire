@@ -101,6 +101,18 @@ describe("le verrou", () => {
     expect(simulation.answers).toEqual({ boisson: "rien" });
   });
 
+  it("ouvre un complément sans page quand le modèle n'en pose aucune", () => {
+    const sansComplement = {
+      ...core,
+      complement: { ...core.complement, pages: [] },
+    };
+    const simulation = Simulation.resume(sansComplement, THE_AU_LAIT).lock();
+
+    expect(simulation.stage.name).toBe("complement");
+    expect(ids(simulation)).toEqual([]);
+    expect(() => simulation.page).toThrow("Cette étape ne pose aucune page.");
+  });
+
   it("mène au cerfa, daté, quand le complément est validé", () => {
     const jour = new Date("2026-11-03");
     const simulation = Simulation.resume(core, THE_AU_LAIT)

@@ -9,8 +9,7 @@
 
 import { describe, expect, it } from "vitest";
 import type { Questions } from "../../../../core/models/eligibilite/questions/reponses";
-import type { Questionnaire } from "../../../../core/socle/questionnaire-engine/questionnaire";
-import { readAt } from "../../../../core/socle/simulation/stage";
+import { Simulation } from "../../../../core/socle/simulation/simulation";
 import { model } from "../../../../front/models/eligibilite";
 import { texteDeLaFichePositive } from "../../../../front/models/eligibilite/r2/layouts/acceptee/texte";
 import { R2 } from "../../../../front/models/eligibilite/r2/r2";
@@ -118,13 +117,12 @@ const PROFILS = [
   ],
 ] as const;
 
-const lire = (reponses: Reponses) =>
-  readAt(model.core, { name: "questionnaire" }, reponses);
-
-const posees = (read: ReturnType<Questionnaire["readWith"]>) =>
-  read
-    .askedPages()
-    .flatMap((page) => read.questionsOn(page).map(({ id }) => id));
+const posees = (reponses: Reponses) => {
+  const simulation = Simulation.resume(model.core, reponses);
+  return simulation
+    .pages()
+    .flatMap((page) => simulation.questionsOn(page).map(({ id }) => id));
+};
 
 const resultat = (reponses: Reponses) => {
   const cibles = ciblesDe(reponses);
@@ -148,7 +146,7 @@ describe("les parcours ALD et mineur", () => {
     it.each(PROFILS)("%s", (_id, profil, attendu) => {
       const reponses: Reponses = { "Q0.1": besoin, ...profil };
 
-      expect(posees(lire(reponses))).toEqual(attendu.posees);
+      expect(posees(reponses)).toEqual(attendu.posees);
       expect(resultat(reponses)).toEqual({
         issue: "ISSUE_PMT",
         mode: attendu.mode,

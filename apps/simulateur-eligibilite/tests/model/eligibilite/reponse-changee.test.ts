@@ -13,12 +13,12 @@ import {
   type Answers,
   pagesOf,
 } from "../../../core/socle/questionnaire-engine/question/question";
+import { Questionnaire } from "../../../core/socle/questionnaire-engine/questionnaire";
 import {
   answerOnPage,
   commitPage,
 } from "../../../core/socle/questionnaire-engine/validate-a-page";
 import { preconisationOf } from "../../../core/socle/simulation/preconisation";
-import { readAt } from "../../../core/socle/simulation/stage";
 import { model as frontModel } from "../../../front/models/eligibilite";
 import { MATERNITE_ETABLIE } from "./p2/reponses-de-la-branche";
 
@@ -56,7 +56,10 @@ const effaceesPar = (id: string) => {
 
 // Le parcours tel que l'écran le lit, filtrage par le graphe compris.
 const lire = (reponses: Answers) =>
-  readAt(frontModel.core, { name: "questionnaire" }, reponses);
+  new Questionnaire(
+    pagesOf(frontModel.core.questionnaire),
+    frontModel.core.relevance,
+  ).readWith(reponses);
 
 // Le brouillon d'une page rouverte : ses réponses validées.
 const brouillonDe = (reponses: Reponses, id: string): Reponses =>

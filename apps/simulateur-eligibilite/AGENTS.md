@@ -222,7 +222,7 @@ Treize règles à tenir en ajoutant une question :
 - **Une saisie ne compte qu'une fois la page validée.** Le brouillon vit dans
   `questionnaire.ts`, pas dans le champ.
 - **Le verrou est une étape, pas un drapeau.** La simulation le porte dans son
-  étape (`core/socle/simulation/stage.ts`) : après lui, elle lit toutes les
+  étape (`core/socle/simulation/simulation.ts`) : après lui, elle lit toutes les
   pages sous les cibles figées, et ne pose que celles du complément. L'écran y
   monte un second `QuestionnaireForm`, qui ne repose rien
   (`front/socle/simulateur/Simulateur.tsx`).

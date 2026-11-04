@@ -9,16 +9,16 @@ import { model as metier } from "../../../core/models/eligibilite";
 import type { Questions } from "../../../core/models/eligibilite/questions/reponses";
 import type { Answers } from "../../../core/socle/questionnaire-engine/question/question";
 import { preconisationOf } from "../../../core/socle/simulation/preconisation";
-import { readAt } from "../../../core/socle/simulation/stage";
+import { Simulation } from "../../../core/socle/simulation/simulation";
 import { model } from "../../../front/models/eligibilite";
 
 type Reponses = Answers<Questions>;
 
 const posees = (reponses: Reponses) => {
-  const read = readAt(model.core, { name: "questionnaire" }, reponses);
-  return read
-    .askedPages()
-    .flatMap((page) => read.questionsOn(page).map(({ id }) => id));
+  const simulation = Simulation.resume(model.core, reponses);
+  return simulation
+    .pages()
+    .flatMap((page) => simulation.questionsOn(page).map(({ id }) => id));
 };
 
 const preconisation = (reponses: Reponses) =>
