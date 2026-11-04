@@ -96,15 +96,7 @@ export class Relevance {
     this.#order = questions.map(({ question }) => question.id);
     this.#lock = questions.findIndex(({ page }) => page.afterLock);
     this.#guards = new Map(
-      questions.map(({ question }) => [
-        question.id,
-        flattened(
-          [
-            question.inconsistencyReads ?? NOTHING,
-            question.requirementReads ?? NOTHING,
-          ].reduce(readsOf, question.guardReads),
-        ),
-      ]),
+      questions.map(({ question }) => [question.id, guardsOf(question)]),
     );
     this.#kept = new Set(
       questions
@@ -244,6 +236,17 @@ function memoized(read: (id: string) => Read): (id: string) => Read {
     known.set(id, cached);
     return cached;
   };
+}
+
+// Ce que lisent les gardes d'une question : quand elle se pose, quand elle se
+// contredit, quand elle devient obligatoire.
+function guardsOf(question: Page["questions"][number]): Reads {
+  return flattened(
+    [
+      question.inconsistencyReads ?? NOTHING,
+      question.requirementReads ?? NOTHING,
+    ].reduce(readsOf, question.guardReads),
+  );
 }
 
 function sectionsOf(
