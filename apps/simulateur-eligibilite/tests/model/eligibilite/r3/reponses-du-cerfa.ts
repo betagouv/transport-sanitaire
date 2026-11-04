@@ -43,12 +43,12 @@ import {
 
 export type Reponses = Answers<Questions>;
 
-export const HOPITAL = {
+const HOPITAL = {
   street: "149 rue de Sèvres",
   postalCode: "75015",
   city: "Paris",
 };
-export const DOMICILE = {
+const DOMICILE = {
   street: "3 rue des Lilas",
   postalCode: "69003",
   city: "Lyon",

@@ -4,13 +4,12 @@
 import {
   ciblesDe,
   faits,
-  issue,
   PATIENT_SEUL,
   posee,
   type Reponses,
 } from "./reponses-de-la-permission";
 
-export { ciblesDe, faits, issue, posee, type Reponses };
+export { ciblesDe, faits, type Reponses };
 
 // Un patient seul, dont le motif est la maternité éloignée : les groupes de
 // Q2.14 se posent.

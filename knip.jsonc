@@ -26,12 +26,15 @@
     // bruit. Restent les entrées qu'il ne peut pas deviner.
     "apps/simulateur-eligibilite": {
       "entry": ["tooling/*.ts", "tests/**/*.test.{ts,tsx}"],
+      // Les helpers des tests comptent : un export du socle que seuls des
+      // tests lisent par l'index d'un module est atteint, pas mort.
       "project": [
         "front/**/*.{ts,tsx}",
         "core/**/*.ts",
         "server/**/*.ts",
         "shared/**/*.ts",
-        "tooling/*.ts"
+        "tooling/*.ts",
+        "tests/**/*.{ts,tsx}"
       ]
     },
 

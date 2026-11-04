@@ -9,7 +9,7 @@ import {
   type Reponses,
 } from "./reponses-de-la-permission";
 
-export { ciblesDe, faits, issue, posee, type Reponses };
+export { ciblesDe, issue, posee, type Reponses };
 
 // Un patient seul dont le motif est une convocation : Q2.10 se pose, et le
 // séjour ne s'y propose pas.
