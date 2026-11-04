@@ -13,7 +13,7 @@ import { describe, expect, it } from "vitest";
 import type { Answers } from "../../../core/socle/questionnaire-engine";
 import { Simulation } from "../../../core/socle/simulation";
 import { model } from "../../../front/models/eligibilite";
-import { aldPathwayOf } from "../../../front/socle/simulateur/track-the-ald-pathway";
+import { aldPathwayOf } from "../../../front/socle/simulateur";
 
 const ALD = {
   "Q0.1": "2_VERIFIER_ET_PRESCRIRE",

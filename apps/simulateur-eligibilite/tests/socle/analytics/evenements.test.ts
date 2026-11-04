@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it } from "vitest";
 import { EventName, trackEvent } from "../../../front/socle/analytics/events";
 import { initAnalytics } from "../../../front/socle/analytics/matomo";
-import { rangerRattachement } from "../../../front/socle/rattachement/rattachement-en-session";
+import { rangerRattachement } from "../../../front/socle/rattachement";
 import type { RattachementSaisi } from "../../../shared/rattachement-saisi";
 
 const rattachement: RattachementSaisi = { etabId: "7", serviceId: "42" };

@@ -5,7 +5,7 @@
 // feuille ne laisse pas de page blanche derrière elle (simulateur-screen.css).
 
 import type { ComponentProps } from "react";
-import { Simulateur } from "../simulateur/Simulateur";
+import { Simulateur } from "../simulateur";
 import { Container } from "../ui";
 import { Footer } from "./Footer";
 import "./simulateur-screen.css";

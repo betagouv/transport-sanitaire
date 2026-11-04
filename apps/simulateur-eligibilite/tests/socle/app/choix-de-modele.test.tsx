@@ -8,7 +8,7 @@ import { beforeEach, describe, expect, it } from "vitest";
 import { page, questionsOf } from "../../../core/socle";
 import { App } from "../../../front/socle/app/App";
 import type { Model } from "../../../front/socle/model";
-import { rangerRattachement } from "../../../front/socle/rattachement/rattachement-en-session";
+import { rangerRattachement } from "../../../front/socle/rattachement";
 import { snapshotReferentiel } from "../../../shared/referentiel";
 import { modeleDeTest } from "../modele-de-test";
 import { seRattacher, seRattacherProduit } from "../se-rattacher";

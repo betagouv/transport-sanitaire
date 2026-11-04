@@ -8,8 +8,8 @@ import type { ComponentProps } from "react";
 import { DebugTrace, DeveloperTools, ToolButton } from "../developer-tools";
 
 import type { Model } from "../model";
-import { RattachementScreen } from "../rattachement/RattachementScreen";
-import { SeedsScreen } from "../seeds/SeedsScreen";
+import { RattachementScreen } from "../rattachement";
+import { SeedsScreen } from "../seeds";
 import { Container } from "../ui";
 import { type ModelChoice, type Models, useModelChoice } from "./model-choice";
 import { useModelLoading } from "./model-loading";

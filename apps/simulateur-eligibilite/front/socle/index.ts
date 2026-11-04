@@ -7,8 +7,8 @@
 // demande, et les réexporter ici les ramènerait dans le chunk d'entrée.
 
 export { configFromEnv, initAnalytics, loadMatomo } from "./analytics";
-export { App } from "./app/App";
-export type { Models } from "./app/model-choice";
+export { App, type Models } from "./app";
+
 export {
   at,
   bindCerfa,

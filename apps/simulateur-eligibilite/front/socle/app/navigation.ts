@@ -6,7 +6,7 @@
 import { useState } from "react";
 import type { Answers } from "../../../core/socle/questionnaire-engine";
 import type { Seed } from "../../../core/socle/simulation";
-import type { AccesRattachement } from "../rattachement/RattachementForm";
+import type { AccesRattachement } from "../rattachement";
 
 type Screen = "rattachement" | "seeds" | "simulateur";
 

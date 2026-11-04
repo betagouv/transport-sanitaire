@@ -2,7 +2,7 @@
 // en forme d'un `trackEvent`. La liste des évènements est dans `events.ts`.
 
 import type { RattachementSaisi } from "../../../shared/rattachement-saisi";
-import { rattachementEnSession } from "../rattachement/rattachement-en-session";
+import { rattachementEnSession } from "../rattachement";
 import { type BridgeOptions, type Consent, followConsent } from "./consent";
 
 declare global {
