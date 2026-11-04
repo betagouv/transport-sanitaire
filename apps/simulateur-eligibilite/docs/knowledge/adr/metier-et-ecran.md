@@ -54,6 +54,12 @@
 > L'ADR-9 est précisé : la sorte vient toujours du constructeur, les options
 > ne viennent plus du catalogue. Décision de Simon, au journal D-261.
 
+> **Mise à jour 2026-11-03, l'agrégat du parcours (#336).** L'ADR-27 fait de
+> `Simulation` l'agrégat du parcours : l'étape, le verrou, la page ouverte et
+> les transitions y vivent ; l'écran ne garde que le brouillon. L'ADR-25 est
+> précisé : `Simulation.of` devient `start` et `resume`. Décision de Simon, au
+> journal D-262.
+
 ## 1. Contexte & objectifs
 
 Jusqu'à la v10.1.3, tout le simulateur vit dans `front/`. Le moteur de
@@ -874,6 +880,50 @@ en deux temps : `const declaree = question.date(…)`, puis
 Les libellés des options se lisent sur la question (`Q1_3.labels`). Aucun écran
 ne change.
 
+### ADR-27 - La simulation est l'agrégat du parcours (~~l'état dans l'écran~~)
+
+**Contexte.** L'ADR-25 donnait au parcours son entité, `Simulation`, mais elle
+ne lisait qu'une préconisation : `Simulation.of(core, réponses)`. L'état du
+parcours restait à l'écran : `useQuestionnaire` gardait la page ouverte, le
+brouillon et les réponses ; `screen.ts` devinait l'écran de départ d'une seed ;
+`move-between-pages.ts` et `resume-where-left.ts` avançaient ou reprenaient ;
+le verrou était un drapeau que chaque écran recevait à part (`lockedAnswers`,
+les cibles). Où l'on en est s'écrivait en quatre endroits, et aucun test ne
+l'éprouvait sans DOM.
+
+**Décision.** `Simulation` est l'agrégat du parcours : un modèle, les réponses
+validées, la page ouverte et l'étape. L'étape est une union explicite,
+questionnaire, résultat, complément, cerfa. Le verrou est une étape, pas un
+drapeau : après lui, l'étape porte ce qu'il a figé, les réponses d'avant et
+leur préconisation. Chaque transition, `validate`, `back`, `reopen`, `lock`,
+donne une nouvelle simulation ; `start` et `resume` disent où des réponses
+commencent ou reprennent. L'étape et ses lectures sont privées : seule la
+simulation lit à une étape, et les tests du modèle passent par elle (D-262).
+L'écran n'y ajoute que le brouillon de la page ouverte : `useQuestionnaire`
+reçoit la simulation et donne, par `onChange`, celle que chaque bouton ouvre ;
+`Simulateur.tsx` choisit l'écran sur `stage.name`.
+
+| Option | Pour | Contre |
+|---|---|---|
+| garder l'état dans l'écran, documenter le déroulé | rien à déplacer | quatre endroits pour un savoir ; aucun test sans DOM |
+| une machine à états du socle, que l'écran pilote (`next`, `back`) | le déroulé en un endroit | l'écran garde encore la page et les réponses : deux états à tenir d'accord |
+| un agrégat immuable qui porte tout, l'étape comprise ; l'écran ne garde que le brouillon | un seul état, testable sous Node ; une transition est une méthode | le fichier touche la limite des 300 lignes |
+
+La troisième, choisie par Simon. L'étape a d'abord eu son fichier, `stage.ts`,
+que quatre tests du modèle lisaient à côté de l'agrégat ; Simon l'a repliée
+dans `simulation.ts`, pour qu'un seul fichier porte le concept et qu'aucun
+test ne lise une étape par une porte de côté.
+
+**Conséquences.** `screen.ts`, `move-between-pages.ts`, `resume-where-left.ts`
+et `QuestionnaireState` disparaissent ; `preconisationOf` passe dans
+`preconisation.ts`. `tests/socle/simulation/simulation.test.ts` couvre
+l'agrégat sans DOM. Aucun écran ne change, à une exception près : une seed qui
+mène derrière le verrou y va toujours, parce que le core ne sait pas si le
+modèle donne un cerfa ; avant, l'écran la gardait au résultat. Le résultat
+garde la garde qui ne propose le verrou que si un cerfa suit, et un complément
+sans page ouvre une étape sans page, où l'écran ne monte rien. `simulation.ts`
+tient en 299 lignes : une capacité de plus en sort dans son fichier (R-13).
+
 ## 3. Architecture cible
 
 ```mermaid
@@ -900,7 +950,7 @@ flowchart LR
 | `Questionnaire` et `Reading` | `core/` | des réponses lues une fois : pages, questions posées, validées, page suivante | nouveau |
 | Question posée (`AskedQuestion`) | `core/` | la question du moment, en données ; ce qu'elle garde d'une réponse et ce qui n'y va pas | nouveau |
 | Question déclarée et ses constructeurs (`questionsOf`) | `core/` | une classe par sorte, réglage par réglage ; elle sait se poser | nouveau |
-| Questionnaire à l'écran | `front/` | page ouverte, brouillon, navigation, phrases, champs | modifié |
+| Questionnaire à l'écran | `front/` | ~~page ouverte, navigation,~~ brouillon, avancement automatique, phrases, champs ; reçoit la simulation (#336, D-262) | modifié |
 | Moteur de décision | `core/` | des faits aux cibles, seul à importer publicodes | déplacé |
 | `Fait` | `core/` | ce qu'on sait d'un fait, en objet valeur figé | modifié |
 | `Cible` | `core/` | ce que les règles donnent pour une cible, en objet valeur figé | nouveau |
@@ -932,7 +982,9 @@ flowchart LR
 | Pertinence (`Relevance`, `RelevanceGraph`) | `core/` | une question compte-t-elle, vu les faits figés et les branches encore possibles | nouveau |
 | Ce qui peut encore se poser (`Askability`) | `core/` | les questions qui restent et dont la garde n'est pas jouée d'avance | nouveau |
 | Précisions de R2 par texte | `front/models/` | trois valeurs, chacune sous les issues de son texte | modifié |
-| `Simulation` | `core/` | le parcours : des réponses lues dans le questionnaire d'un modèle, leur préconisation, la lecture d'un résultat, le verrou, la trace | nouveau |
+| `Simulation` | `core/` | l'agrégat du parcours : un modèle, les réponses validées, la page ouverte et l'étape ; `validate`, `back`, `reopen`, `lock` donnent une nouvelle simulation ; la préconisation, la lecture d'un résultat, la trace | nouveau |
+| Étape (`Stage`, `Locked`) | `core/` | questionnaire, résultat, complément, cerfa ; après le verrou, les réponses d'avant et leur préconisation ; privée à la simulation | nouveau |
+| ~~Écran de départ, navigation, reprise (`screen.ts`, `move-between-pages.ts`, `resume-where-left.ts`)~~ | ~~`front/`~~ | ~~où une seed s'ouvre, avancer, reculer, reprendre~~ | supprimé (#336, D-262) |
 | `R2` et `R3` | `front/models/` | les résultats en entités : ce qu'ils lisent, puis ce qu'ils donnent ; R2 a un dossier par cas | nouveau |
 | Options d'une question (`.options({ … })`) | `core/models/` | les valeurs d'une question à choix et leurs libellés, dans sa déclaration ; elles typent sa réponse | nouveau |
 | ~~Catalogue des options (`OPTIONS`)~~ | ~~`core/models/`~~ | ~~les options de chaque question, d'après l'id~~ | supprimé (#336, D-261) |
@@ -976,6 +1028,7 @@ a-t-il besoin ?**
 | Le tri des gardes d'utilité | 256 | ✅ |
 | L'arbre des fichiers dit le chemin | 336 | ✅ |
 | Les options dans leur question | 336 | ✅ |
+| La simulation, agrégat du parcours | 336 | ✅ |
 
 ## 6. Risques & validations en attente
 
@@ -993,6 +1046,7 @@ a-t-il besoin ?**
 | R-10 | Le filtrage coûte environ 60 ms à froid par lecture, dix fois une lecture sans lui | des caches par place ; à mesurer à l'écran sur un poste lent |
 | R-11 | Une lecture du résultat déclarée hors de sa branche fait poser des questions pour rien | `questions-posees-par-seed.test.ts` liste les questions de chaque seed |
 | R-12 | Une question et une condition de `conditions/` s'importent l'une l'autre : la question lue vaut `undefined` au chargement | le test sous Node et chaque test du modèle chargent le module ; l'erreur lit `id` sur `undefined` |
+| R-13 | `simulation.ts` touche la limite des 300 lignes : une méthode de plus la dépasse | `taille-du-code.test.ts` le garde ; une capacité de plus sort dans son fichier, sous `simulation/` |
 
 ## Vérification
 
@@ -1006,4 +1060,5 @@ pnpm vitest run tests/model/eligibilite/domaines.test.ts
 pnpm vitest run tests/model/eligibilite/faits/catalogue-des-faits.test.ts
 pnpm vitest run tests/model/eligibilite/filtrage-par-le-graphe.test.ts
 pnpm vitest run tests/model/eligibilite/questions-posees-par-seed.test.ts
+pnpm vitest run tests/socle/simulation
 ```
