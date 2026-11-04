@@ -24,8 +24,8 @@ export async function demarrerGrist(
     res.json({ records: filtrer(tables[req.params.table] ?? [], filtre) });
   });
   app.post("/tables/:table/records", (req, res) => {
-    tables[req.params.table] ??= [];
-    const table = tables[req.params.table];
+    const table = tables[req.params.table] ?? [];
+    tables[req.params.table] = table;
     const { records } = req.body as {
       records: Array<{ fields: Ligne["fields"] }>;
     };

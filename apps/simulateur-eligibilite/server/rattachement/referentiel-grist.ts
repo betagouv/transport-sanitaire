@@ -120,7 +120,7 @@ async function assurerEtablissement(
   nom: string,
 ): Promise<number> {
   const deja = homonyme(await lignes(doc, TABLE.etablissements), nom);
-  if (deja) return deja.id;
+  if (deja != null) return deja;
   return creerLigne(doc, TABLE.etablissements, {
     [COL.id]: await prochainId2(doc, TABLE.etablissements),
     [COL.nom]: nom.trim(),
@@ -138,7 +138,7 @@ async function assurerService(
     [COL.refEtablissement]: [etabRowId],
   });
   const deja = homonyme(existants, nom);
-  if (deja) return deja.id;
+  if (deja != null) return deja;
   return creerLigne(doc, TABLE.services, {
     [COL.id]: await prochainId2(doc, TABLE.services),
     [COL.nom]: nom.trim(),
@@ -147,15 +147,13 @@ async function assurerService(
   });
 }
 
-// La ligne qui porte déjà ce nom, à la casse et aux espaces près.
-function homonyme(
-  existantes: LigneGrist[],
-  nom: string,
-): LigneGrist | undefined {
+// Le rowId de la ligne qui porte déjà ce nom, à la casse et aux espaces près.
+function homonyme(existantes: LigneGrist[], nom: string): number | null {
   const cherche = normalise(nom);
-  return existantes.find(
+  const deja = existantes.find(
     (r) => normalise(texte(r.fields[COL.nom])) === cherche,
   );
+  return deja?.id ?? null;
 }
 
 const TABLE = {
