@@ -1,6 +1,6 @@
 {
   "schema": "resultats-html-patient/2",
-  "packageVersion": "10.1.5",
+  "packageVersion": "10.1.6",
   "modelSha256": "a7c4d4a93f0a1c57062cc0c36057b3dc35e1f962c74f66ad584d72c73c02225b",
   "sourceDate": "2026-10-20",
   "sources": {
@@ -14724,7 +14724,7 @@
             "extra": null,
             "device": null
           },
-          "inactive": false,
+          "inactive": true,
           "codes": [
             "ALD_BASE_NON_VERIFIABLE"
           ],
@@ -14759,7 +14759,7 @@
             "extra": null,
             "device": null
           },
-          "inactive": false,
+          "inactive": true,
           "codes": [
             "MINEUR_RECONNAISSANCE_NON_VERIFIABLE"
           ],
@@ -15099,7 +15099,7 @@
             "extra": null,
             "device": null
           },
-          "inactive": false,
+          "inactive": true,
           "codes": [
             "ALD_BASE_NON_VERIFIABLE",
             "CNAM_HTNM_HORS_MATERNITE"
@@ -15134,7 +15134,8 @@
           "questions": [],
           "compatibilityOnly": true,
           "currentQuestionnaire": false,
-          "classification": "trace historique ou donnée technique importée ; hors sélecteur courant depuis le 26 octobre 2026"
+          "classification": "trace historique ou donnée technique importée ; hors sélecteur courant depuis le 26 octobre 2026",
+          "currentQuestionnaireScenario": false
         }
       ],
       "multipleIntro": "Plusieurs points restent à confirmer auprès de l’Assurance Maladie avant de déterminer la prise en charge de ce transport. Les éléments établis du dossier restent pris en compte ; aucune conclusion n’est déduite des informations manquantes.",
@@ -15827,7 +15828,9 @@
           "priority": 92,
           "text": "Votre Affection Longue Durée (ALD) ne relève pas, pour ce trajet, des situations permettant la prise en charge des frais de transport. Aucun autre fondement de remboursement n’a été établi.",
           "reason": "AUCUN_MOTIF_TRANSPORT",
-          "inactive": false
+          "inactive": true,
+          "compatibilityOnly": true,
+          "currentQuestionnaireScenario": false
         },
         {
           "id": "AUCUN_DIALYSE_NON_HEMO",
