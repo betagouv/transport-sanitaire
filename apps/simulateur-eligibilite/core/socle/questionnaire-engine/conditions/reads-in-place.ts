@@ -27,13 +27,15 @@ export function readIn<Questions extends AnyQuestions, Cibles, Faits>(
   return { context, scope: readingOf(seen.answer, context, pipeline) };
 }
 
-// Lit d'avance chaque question que citent les conditions et les incohérences.
+// Lit d'avance chaque question que citent les conditions, les incohérences et
+// ce qui rend la réponse obligatoire.
 // Une question suivante arrête tout, même si la condition est fausse.
 // Sans ça, l'erreur ne se verrait que dans certains parcours.
 export function checkReads<Questions extends AnyQuestions, Cibles>(
   settings: {
     readonly conditions: readonly Condition[];
     readonly inconsistencies: readonly { readonly condition: Condition }[];
+    readonly requiredWhen?: Condition;
   },
   seen: SeenAnswers<Questions, Cibles | undefined>,
   earlier: SeenAnswers<Questions, Cibles | undefined>,
@@ -42,5 +44,7 @@ export function checkReads<Questions extends AnyQuestions, Cibles>(
     guards.flatMap((guard) => guard.reads.questions);
   for (const id of readIds(settings.conditions)) seen.answer(id);
   const inconsistencies = settings.inconsistencies.map((i) => i.condition);
-  for (const id of readIds(inconsistencies)) earlier.answer(id);
+  const required = settings.requiredWhen ? [settings.requiredWhen] : [];
+  for (const id of readIds([...inconsistencies, ...required]))
+    earlier.answer(id);
 }

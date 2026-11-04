@@ -99,7 +99,10 @@ export class Relevance {
       questions.map(({ question }) => [
         question.id,
         flattened(
-          readsOf(question.guardReads, question.inconsistencyReads ?? NOTHING),
+          [
+            question.inconsistencyReads ?? NOTHING,
+            question.requirementReads ?? NOTHING,
+          ].reduce(readsOf, question.guardReads),
         ),
       ]),
     );
