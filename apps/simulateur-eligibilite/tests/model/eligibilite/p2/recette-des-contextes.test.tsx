@@ -12,9 +12,7 @@
 // - second-seul et aucun : Q2.2.1 se pose sur tout parcours (D-98), le premier
 //   bloc n'est jamais acquis d'avance et la page du second ne s'atteint pas
 //   sans lui ;
-// - analytics : la mesure d'audience par page n'est pas prévue (#305) ;
-// - retour, le focus au titre : le formulaire porte le focus sur la première
-//   question sans réponse, pas sur le titre de la page.
+// - analytics : la mesure d'audience par page n'est pas prévue (#305).
 
 import { screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
@@ -171,6 +169,20 @@ describe("la recette des deux pages des contextes (REC-Q221-PAGES-1016)", () => 
     expect(soins.answers["Q2.2.1.b"]).toEqual(["1_ATMP"]);
     expect(contextes.page.id).toBe("P2/contextes");
     expect(contextes.answers["Q2.2.1"]).toEqual(["0_AUCUNE"]);
+  });
+
+  it("retour, à l'écran : Précédent rend le focus au titre du premier bloc", async () => {
+    const user = afficherLaPage("P2/contextes", BRANCARD);
+    await page(SITUATIONS);
+    await cocher(user, /^Non, aucune de ces situations/);
+    await suivant(user);
+    await page(SOINS);
+
+    await user.click(screen.getByRole("button", { name: "Précédent" }));
+
+    expect(
+      await screen.findByText(SITUATIONS, { selector: "legend" }),
+    ).toHaveFocus();
   });
 
   it("brouillon : changer le premier bloc sans valider ne touche ni au second ni aux faits", () => {

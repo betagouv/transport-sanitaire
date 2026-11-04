@@ -11,8 +11,6 @@ type Props = {
   onChange: (value: string) => void;
   /** Un message par ligne, sous le groupe. */
   errors?: readonly string[];
-  /** La première option prend le focus à l'affichage. */
-  autoFocus?: boolean;
   /** Met le libellé en avant, quand le champ est la question de la page. */
   lead?: boolean;
   /** Les libellés des options en gras. */
@@ -41,14 +39,13 @@ export function RadioField(props: Props) {
 // ---- implémentation ----
 
 function radios(props: Props): Choice[] {
-  return props.options.map((option, index) => ({
+  return props.options.map((option) => ({
     ...option,
     input: {
       name: props.id,
       value: option.value,
       checked: props.value === option.value,
       onChange: () => props.onChange(option.value),
-      autoFocus: props.autoFocus && index === 0,
     },
   }));
 }
