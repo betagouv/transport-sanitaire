@@ -10,13 +10,13 @@ import {
   type SeenAnswers,
 } from "../question/asked/context.ts";
 import type { AnyQuestions } from "../question/question.ts";
-import type { Condition, Reading } from "./condition.ts";
+import type { Condition, Scope } from "./condition.ts";
 
 // Ce que la question voit des questions précédentes.
 // Leurs réponses, et ce que ses conditions en lisent.
 type ReadAt<Questions extends AnyQuestions, Cibles, Faits> = {
   readonly context: QuestionContext<Questions, Cibles, Faits>;
-  readonly reading: Reading;
+  readonly scope: Scope;
 };
 
 export function readIn<Questions extends AnyQuestions, Cibles, Faits>(
@@ -24,7 +24,7 @@ export function readIn<Questions extends AnyQuestions, Cibles, Faits>(
   pipeline: Pipeline<Faits, Cibles>,
 ): ReadAt<Questions, Cibles, Faits> {
   const context = contextOf(seen, pipeline);
-  return { context, reading: readingOf(seen.answer, context, pipeline) };
+  return { context, scope: readingOf(seen.answer, context, pipeline) };
 }
 
 // Lit d'avance chaque question que citent les conditions et les incohérences.

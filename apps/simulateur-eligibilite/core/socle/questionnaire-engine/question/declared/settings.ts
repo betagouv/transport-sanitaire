@@ -5,7 +5,7 @@
 
 import {
   type Condition,
-  type Reading,
+  type Scope,
   type Text,
   textIn,
 } from "../../conditions/condition.ts";
@@ -48,7 +48,7 @@ type Inconsistency = {
 export function commonIn<Questions extends AnyQuestions, Cibles, Faits>(
   settings: CommonSettings<Questions, Cibles, Faits>,
   context: QuestionContext<Questions, Cibles, Faits>,
-  earlier: Reading,
+  earlier: Scope,
 ): AskedCommonData {
   return {
     id: settings.id,

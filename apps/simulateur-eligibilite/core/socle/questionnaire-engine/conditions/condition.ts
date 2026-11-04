@@ -2,8 +2,8 @@
 // Une condition est une valeur « oui ou non » : elle se compose par `and`,
 // `or` et `not`, et dit toujours ce qu'elle lit, compositions comprises.
 //
-// Une valeur ne lit rien d'elle-même : le socle l'évalue dans une lecture
-// (`Reading`), qu'il choisit selon l'endroit. Une garde voit les questions
+// Une valeur ne lit rien d'elle-même : le socle l'évalue dans un périmètre
+// (`Scope`), qu'il choisit selon l'endroit. Une garde voit les questions
 // posées avant elle, un fait les questions validées (`given.ts`).
 
 import type { ValidatedAnswer } from "../answers/validated-answers.ts";
@@ -33,7 +33,7 @@ type Branch = {
  * question telle que l'endroit la voit, les faits et les cibles de ces
  * réponses, et le jour.
  */
-export type Reading = {
+export type Scope = {
   answer(id: string): ValidatedAnswer;
   fait(nom: string): unknown;
   cible(nom: string): unknown;
@@ -46,21 +46,21 @@ export type Reading = {
 export class Value<Of> {
   /** Ce qu'elle lit. */
   readonly reads: Reads;
-  readonly #evaluate: (reading: Reading) => Of;
+  readonly #evaluate: (scope: Scope) => Of;
 
-  constructor(reads: Reads, evaluate: (reading: Reading) => Of) {
+  constructor(reads: Reads, evaluate: (scope: Scope) => Of) {
     this.reads = reads;
     this.#evaluate = evaluate;
   }
 
   /** Ce qu'elle vaut dans cette lecture. */
-  in(reading: Reading): Of {
-    return this.#evaluate(reading);
+  in(scope: Scope): Of {
+    return this.#evaluate(scope);
   }
 
   /** Une valeur calculée sur celle-ci. `compute` ne reçoit que sa valeur. */
   compute<Computed>(compute: (value: Of) => Computed): Value<Computed> {
-    return new Value(this.reads, (reading) => compute(this.in(reading)));
+    return new Value(this.reads, (scope) => compute(this.in(scope)));
   }
 
   /** Une valeur calculée sur celle-ci et celle-là, qui lit les deux. */
@@ -68,8 +68,8 @@ export class Value<Of> {
     other: Value<Other>,
     compute: (value: Of, other: Other) => Computed,
   ): Value<Computed> {
-    return new Value(readsOf(this.reads, other.reads), (reading) =>
-      compute(this.in(reading), other.in(reading)),
+    return new Value(readsOf(this.reads, other.reads), (scope) =>
+      compute(this.in(scope), other.in(scope)),
     );
   }
 
@@ -80,7 +80,7 @@ export class Value<Of> {
   and(this: Condition, other: Condition): Condition {
     return new Value(
       readsOf(this.reads, other.reads),
-      (reading) => this.in(reading) && other.in(reading),
+      (scope) => this.in(scope) && other.in(scope),
     );
   }
 
@@ -88,7 +88,7 @@ export class Value<Of> {
   or(this: Condition, other: Condition): Condition {
     return new Value(
       readsOf(this.reads, other.reads),
-      (reading) => this.in(reading) || other.in(reading),
+      (scope) => this.in(scope) || other.in(scope),
     );
   }
 
@@ -105,8 +105,8 @@ export type Condition = Value<boolean>;
 export type Text = string | Value<string>;
 
 /** Ce texte dans cette lecture. */
-export function textIn(text: Text, reading: Reading): string {
-  return typeof text === "string" ? text : text.in(reading);
+export function textIn(text: Text, scope: Scope): string {
+  return typeof text === "string" ? text : text.in(scope);
 }
 
 /** Rien de lu. */
@@ -135,9 +135,9 @@ export function all<Values extends Readonly<Record<string, Value<unknown>>>>(
   const entries = Object.entries(values);
   return new Value(
     entries.map(([, value]) => value.reads).reduce(readsOf, NOTHING),
-    (reading) =>
+    (scope) =>
       Object.fromEntries(
-        entries.map(([name, value]) => [name, value.in(reading)]),
+        entries.map(([name, value]) => [name, value.in(scope)]),
       ) as ValuesOf<Values>,
   );
 }
@@ -187,7 +187,7 @@ export function flattened({ branches = [], ...reads }: Reads): Reads {
 /** Ce qu'une valeur vaut, dans la lecture que le socle a choisie. */
 export type Read = <Of>(value: Value<Of>) => Of;
 
-/** La lecture de ces valeurs dans `reading`. */
-export function readIn(reading: Reading): Read {
-  return (value) => value.in(reading);
+/** La lecture de ces valeurs dans `scope`. */
+export function readIn(scope: Scope): Read {
+  return (value) => value.in(scope);
 }

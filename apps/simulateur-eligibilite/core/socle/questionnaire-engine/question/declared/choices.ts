@@ -8,7 +8,7 @@
 //
 // `Value` : les valeurs de ses options. Une autre ne compile pas.
 
-import type { Reading, Reads } from "../../conditions/condition.ts";
+import type { Reads, Scope } from "../../conditions/condition.ts";
 import { AskedMultipleChoice, AskedSingleChoice } from "../asked/choices.ts";
 import type { AskedCommonData } from "../asked/common.ts";
 import type { QuestionContext } from "../asked/context.ts";
@@ -76,7 +76,7 @@ export class DeclaredSingleChoice<
   protected override askedWith(
     common: AskedCommonData,
     context: QuestionContext<Questions, Cibles, Faits>,
-    reading: Reading,
+    scope: Scope,
   ) {
     const { options, dropdown, boldLabels } = this.own;
     return new AskedSingleChoice({
@@ -84,7 +84,7 @@ export class DeclaredSingleChoice<
       kind: this.kind,
       dropdown,
       boldLabels,
-      options: options.offeredIn(context, reading),
+      options: options.offeredIn(context, scope),
     });
   }
 
@@ -171,17 +171,17 @@ export class DeclaredMultipleChoice<
   protected override askedWith(
     common: AskedCommonData,
     context: QuestionContext<Questions, Cibles, Faits>,
-    reading: Reading,
+    scope: Scope,
   ) {
     const { options, exclusive, incompatible } = this.own;
     return new AskedMultipleChoice({
       ...common,
       kind: this.kind,
-      options: options.offeredIn(context, reading, exclusive),
+      options: options.offeredIn(context, scope, exclusive),
       exclusiveOption:
         exclusive === undefined
           ? undefined
-          : options.offeredOneIn(exclusive, context, reading),
+          : options.offeredOneIn(exclusive, context, scope),
       incompatibleOptions: incompatible,
     });
   }

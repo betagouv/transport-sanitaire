@@ -6,7 +6,7 @@
 import { describe, expect, it } from "vitest";
 import type { Cible, Fait } from "../../../core/socle";
 import { givenOf, page, questionsOf } from "../../../core/socle";
-import type { Reading } from "../../../core/socle/questionnaire-engine/conditions/condition";
+import type { Scope } from "../../../core/socle/questionnaire-engine/conditions/condition";
 import { LocalDateTime } from "../../../core/socle/questionnaire-engine/conditions/local-date-time";
 import { validatedReading } from "../../../core/socle/questionnaire-engine/conditions/what-a-condition-sees";
 import type {
@@ -32,7 +32,7 @@ const grand = given.question("taille").answer().is("grand");
 const livree = given.question("livraison").answer().toDate();
 
 // La lecture d'un fait sur ces pages : les questions validées, le 27 octobre.
-function lecture(pages: readonly Page[], answers: Answers): Reading {
+function lecture(pages: readonly Page[], answers: Answers): Scope {
   const { validated } = new Questionnaire(pages).readWith(answers);
   return {
     answer: validatedReading(validated),

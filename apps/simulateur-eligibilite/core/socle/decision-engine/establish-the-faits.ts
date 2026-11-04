@@ -10,9 +10,9 @@
 import type { ValidatedAnswers } from "../questionnaire-engine/answers/validated-answers.ts";
 import {
   NOTHING,
-  type Reading,
   type Reads,
   readsOf,
+  type Scope,
 } from "../questionnaire-engine/conditions/condition.ts";
 import { validatedReading } from "../questionnaire-engine/conditions/what-a-condition-sees.ts";
 import type { FaitDeclare } from "./fait/declared.ts";
@@ -69,14 +69,14 @@ export class FaitCatalogue<Faits extends object> {
    */
   read(validated: ValidatedAnswers, fixed: Partial<Faits> = {}): Faits {
     const faits = {} as Faits;
-    const reading = factReading(validated, faits);
+    const scope = factScope(validated, faits);
     const known = new Map<string, unknown>(Object.entries(fixed));
     for (const name of this.#names) {
       const declare = this.#declares.get(name) as FaitDeclare<string, unknown>;
       Object.defineProperty(faits, name, {
         enumerable: true,
         get: () => {
-          if (!known.has(name)) known.set(name, computed(declare, reading));
+          if (!known.has(name)) known.set(name, computed(declare, scope));
           return known.get(name);
         },
       });
@@ -107,7 +107,7 @@ function indexed(
 
 // Un fait lit les questions validées et les autres faits. Il ne lit ni cible
 // ni jour.
-function factReading(validated: ValidatedAnswers, faits: object): Reading {
+function factScope(validated: ValidatedAnswers, faits: object): Scope {
   const refused = (what: string) => () => {
     throw new Error(`Un fait ne lit pas ${what}.`);
   };
@@ -124,14 +124,14 @@ function factReading(validated: ValidatedAnswers, faits: object): Reading {
 // trouve déjà se lit lui-même : il bouclerait.
 const computing: string[] = [];
 
-function computed(declare: FaitDeclare<string, unknown>, reading: Reading) {
+function computed(declare: FaitDeclare<string, unknown>, scope: Scope) {
   if (computing.includes(declare.nom))
     throw new Error(
       `« ${declare.nom} » se lit lui-même : ${[...computing, declare.nom].join(" → ")}.`,
     );
   computing.push(declare.nom);
   try {
-    return declare.in(reading);
+    return declare.in(scope);
   } finally {
     computing.pop();
   }

@@ -22,7 +22,7 @@ import {
   type Reading,
 } from "../questionnaire-engine/questionnaire.ts";
 import { preconisationFrom } from "./preconisation.ts";
-import { resultReading } from "./result-reading.ts";
+import { resultScope } from "./result-scope.ts";
 
 /** Ce que le verrou fige : les réponses d'avant, et leur préconisation. */
 export type Locked = { answers: Answers; preconisation: Preconisation };
@@ -171,7 +171,7 @@ export class Simulation {
   read(on: Date): Read {
     const { faits, cibles } = this.preconisation;
     const { validated } = this.#reading;
-    return readIn(resultReading({ validated, faits, cibles, on }));
+    return readIn(resultScope({ validated, faits, cibles, on }));
   }
 
   /** Les pages affichées, les réponses, les questions validées, la préconisation. */

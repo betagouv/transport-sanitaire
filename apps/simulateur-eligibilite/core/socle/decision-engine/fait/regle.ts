@@ -18,8 +18,8 @@ import type {
 import type { ValidatedAnswer } from "../../questionnaire-engine/answers/validated-answers.ts";
 import {
   type Condition,
-  type Reading,
   type Reads,
+  type Scope,
   Value,
 } from "../../questionnaire-engine/conditions/condition.ts";
 import type { Answer } from "../../questionnaire-engine/question/question.ts";
@@ -78,19 +78,19 @@ export function uneRegle(): typeof regles {
  * « 1_TRANSFERT », fait_permission : « non » ». Les questions d'abord, puis les
  * faits.
  */
-function citation(reads: Reads, reading: Reading): string {
+function citation(reads: Reads, scope: Scope): string {
   return [
-    ...reads.questions.map((id) => cited(id, reading.answer(id).value)),
-    ...reads.faits.map((nom) => citedFait(nom, reading.fait(nom) as Fait)),
+    ...reads.questions.map((id) => cited(id, scope.answer(id).value)),
+    ...reads.faits.map((nom) => citedFait(nom, scope.fait(nom) as Fait)),
   ].join(", ");
 }
 
 // ---- implémentation ----
 
 function regle(etat: Etat, condition: Condition, raison?: string) {
-  return new RegleDeFait(condition.reads, (reading) =>
-    condition.in(reading)
-      ? Fait[etat](provenance(citation(condition.reads, reading), raison))
+  return new RegleDeFait(condition.reads, (scope) =>
+    condition.in(scope)
+      ? Fait[etat](provenance(citation(condition.reads, scope), raison))
       : undefined,
   );
 }

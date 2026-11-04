@@ -1,9 +1,9 @@
-// La lecture d'un résultat, R2 ou R3 : les réponses validées, les faits et les
-// cibles de la préconisation, et le jour du résultat. Une condition s'y lit
-// comme dans un fait (`given.ts`).
+// Le périmètre d'un résultat, R2 ou R3 : les réponses validées, les faits et
+// les cibles de la préconisation, et le jour du résultat. Une condition s'y
+// lit comme dans un fait (`given.ts`).
 
 import type { ValidatedAnswers } from "../questionnaire-engine/answers/validated-answers.ts";
-import type { Reading } from "../questionnaire-engine/conditions/condition.ts";
+import type { Scope } from "../questionnaire-engine/conditions/condition.ts";
 import { LocalDateTime } from "../questionnaire-engine/conditions/local-date-time.ts";
 import { validatedReading } from "../questionnaire-engine/conditions/what-a-condition-sees.ts";
 
@@ -20,12 +20,12 @@ export type ResultSources = {
  * La lecture de ce résultat. Il lit ses cibles telles qu'elles sont : rien ne
  * s'y suppose.
  */
-export function resultReading({
+export function resultScope({
   validated,
   faits,
   cibles,
   on,
-}: ResultSources): Reading {
+}: ResultSources): Scope {
   return {
     answer: validatedReading(validated),
     fait: (nom) => named(faits, nom),

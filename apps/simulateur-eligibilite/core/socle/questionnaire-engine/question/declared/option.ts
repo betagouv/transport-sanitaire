@@ -9,9 +9,9 @@
 import {
   type Condition,
   NOTHING,
-  type Reading,
   type Reads,
   readsOf,
+  type Scope,
 } from "../../conditions/condition.ts";
 import type { QuestionContext } from "../asked/context.ts";
 import type { NotOffered, OfferedOption, OptionHelp } from "../option.ts";
@@ -84,11 +84,10 @@ export class DeclaredOption<Questions extends AnyQuestions, Cibles, Faits> {
   /** L'option telle qu'elle se propose, si elle se propose. */
   offeredIn(
     context: Context<Questions, Cibles, Faits>,
-    reading: Reading,
+    scope: Scope,
   ): OfferedOption | NotOffered {
     const { value, description, blocks, conditions } = this.#settings;
-    if (!conditions.every((condition) => condition.in(reading)))
-      return undefined;
+    if (!conditions.every((condition) => condition.in(scope))) return undefined;
     const help = this.#settings.helpFrom?.(context);
     return {
       value,
@@ -170,23 +169,23 @@ export class DeclaredOptions<Questions extends AnyQuestions, Cibles, Faits> {
   /** Les options qui se proposent, hors `except`, sous leur libellé du moment. */
   offeredIn(
     context: Context<Questions, Cibles, Faits>,
-    reading: Reading,
+    scope: Scope,
     except?: string,
   ): OfferedOption[] {
     const values = this.#order ?? this.#options.map(({ value }) => value);
     return values
       .filter((value) => value !== except)
-      .flatMap((value) => this.offeredOneIn(value, context, reading) ?? []);
+      .flatMap((value) => this.offeredOneIn(value, context, scope) ?? []);
   }
 
   /** L'option `value`, si elle se propose. */
   offeredOneIn(
     value: string,
     context: Context<Questions, Cibles, Faits>,
-    reading: Reading,
+    scope: Scope,
   ): OfferedOption | NotOffered {
     const option = this.#options.find((each) => each.value === value);
-    return option?.offeredIn(context, reading);
+    return option?.offeredIn(context, scope);
   }
 }
 

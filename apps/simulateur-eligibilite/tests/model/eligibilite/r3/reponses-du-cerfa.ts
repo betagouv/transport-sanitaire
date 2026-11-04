@@ -20,7 +20,7 @@ import {
 } from "../../../../core/socle/questionnaire-engine/question/question";
 import { Questionnaire } from "../../../../core/socle/questionnaire-engine/questionnaire";
 import { preconisationOf } from "../../../../core/socle/simulation/preconisation";
-import { resultReading } from "../../../../core/socle/simulation/result-reading";
+import { resultScope } from "../../../../core/socle/simulation/result-scope";
 import type { Rubrique } from "../../../../front/models/eligibilite/r3/rubriques/rubrique";
 import type { Cerfa, CerfaDto } from "../../../../front/socle/cerfa/cerfa";
 import { generateCerfa } from "../../../../front/socle/cerfa/generate-the-cerfa/generate-the-cerfa";
@@ -156,7 +156,7 @@ export function donnees(
     cibles,
   );
   return readIn(
-    resultReading({
+    resultScope({
       validated: lecture.validated,
       faits: { ...(preconisation.faits as Faits), ...faits },
       cibles,

@@ -12,7 +12,7 @@ import type { FaitCatalogue } from "../../../decision-engine/establish-the-faits
 import { Fait } from "../../../decision-engine/fait/fait.ts";
 import type { GivenAnswers } from "../../answers/given-answers.ts";
 import type { ValidatedAnswers } from "../../answers/validated-answers.ts";
-import type { Reading } from "../../conditions/condition.ts";
+import type { Scope } from "../../conditions/condition.ts";
 import { LocalDateTime } from "../../conditions/local-date-time.ts";
 import type { AnswerReading } from "../../conditions/what-a-condition-sees.ts";
 import type { AnyCibles, AnyQuestions } from "../question.ts";
@@ -91,7 +91,7 @@ export function readingOf<Questions extends AnyQuestions, Cibles, Faits>(
   answer: AnswerReading,
   context: QuestionContext<Questions, Cibles, Faits>,
   pipeline: Pipeline<Faits, Cibles>,
-): Reading {
+): Scope {
   const named = (values: unknown, nom: string) =>
     (values as Readonly<Record<string, unknown>>)[nom];
   return {

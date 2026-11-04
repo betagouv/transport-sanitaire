@@ -16,9 +16,9 @@
 import {
   type Condition,
   NOTHING,
-  type Reading,
   type Reads,
   readsOf,
+  type Scope,
   type Text,
 } from "../../conditions/condition.ts";
 import { checkReads, readIn } from "../../conditions/reads-in-place.ts";
@@ -230,18 +230,18 @@ export abstract class DeclaredQuestion<
     const { settings } = this;
     checkReads(settings, seen, earlier);
     const now = readIn(seen, settings.pipeline);
-    if (!settings.conditions.every((guard) => guard.in(now.reading)))
+    if (!settings.conditions.every((guard) => guard.in(now.scope)))
       return undefined;
     const before = readIn(earlier, settings.pipeline);
-    const common = commonIn(settings, now.context, before.reading);
-    return this.askedWith(common, now.context, now.reading);
+    const common = commonIn(settings, now.context, before.scope);
+    return this.askedWith(common, now.context, now.scope);
   }
 
   /** La question posée, avec ce que sa sorte y ajoute. */
   protected abstract askedWith(
     common: AskedCommonData,
     context: QuestionContext<Questions, Cibles, Faits>,
-    reading: Reading,
+    scope: Scope,
   ): AskedQuestion;
 
   /** La même question, réglée autrement. Chaque sorte la refait. */

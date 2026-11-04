@@ -9,7 +9,7 @@ import {
   type Value,
 } from "../../../../core/socle/questionnaire-engine/conditions/condition";
 import { Questionnaire } from "../../../../core/socle/questionnaire-engine/questionnaire";
-import { resultReading } from "../../../../core/socle/simulation/result-reading";
+import { resultScope } from "../../../../core/socle/simulation/result-scope";
 import { type Lecture, R2 } from "../../../../front/models/eligibilite/r2/r2";
 import { faits, pages, posee, type Reponses } from "./reponses-du-transfert";
 
@@ -77,7 +77,7 @@ export const luDe = <Of>(
     faits: faits(reponses),
     cibles: { ...ciblesDe(reponses), ...forcees },
   };
-  return readIn(resultReading({ validated, ...lus, on: new Date() }))(value);
+  return readIn(resultScope({ validated, ...lus, on: new Date() }))(value);
 };
 
 /** Ce que le socle passe à R2 : ce qu'il lit. */

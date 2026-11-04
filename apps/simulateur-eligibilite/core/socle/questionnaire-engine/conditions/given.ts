@@ -30,7 +30,7 @@ import {
   type Condition,
   NOTHING,
   onBranch,
-  type Reading,
+  type Scope,
   Value,
 } from "./condition.ts";
 import { LocalDateTime } from "./local-date-time.ts";
@@ -41,7 +41,7 @@ class AnswerValue<Given extends Answer> extends Value<ValidatedAnswer<Given>> {
   static of<Given extends Answer>(id: string): AnswerValue<Given> {
     return new AnswerValue(
       { ...NOTHING, questions: [id] },
-      (reading) => reading.answer(id) as ValidatedAnswer<Given>,
+      (scope) => scope.answer(id) as ValidatedAnswer<Given>,
     );
   }
 
@@ -90,7 +90,7 @@ class AnswerValue<Given extends Answer> extends Value<ValidatedAnswer<Given>> {
     const date = this.compute(({ value }) =>
       LocalDateTime.parse(typeof value === "string" ? value : undefined),
     );
-    return new DateValue(date.reads, (reading) => date.in(reading));
+    return new DateValue(date.reads, (scope) => date.in(scope));
   }
 }
 
@@ -98,7 +98,7 @@ class AnswerValue<Given extends Answer> extends Value<ValidatedAnswer<Given>> {
 class DateValue extends Value<LocalDateTime> {
   /** Aujourd'hui, à minuit, à Paris. */
   static today(): DateValue {
-    return new DateValue(NOTHING, (reading) => reading.today());
+    return new DateValue(NOTHING, (scope) => scope.today());
   }
 
   isBefore(other: DateValue): Condition {
@@ -126,7 +126,7 @@ class DateValue extends Value<LocalDateTime> {
   }
 
   private shifted(shift: (date: LocalDateTime) => LocalDateTime): DateValue {
-    return new DateValue(this.reads, (reading) => shift(this.in(reading)));
+    return new DateValue(this.reads, (scope) => shift(this.in(scope)));
   }
 }
 
@@ -135,7 +135,7 @@ class FaitValue<Of extends boolean | number | string> extends Value<Fait<Of>> {
   static of<Of extends boolean | number | string>(nom: string): FaitValue<Of> {
     return new FaitValue(
       { ...NOTHING, faits: [nom] },
-      (reading) => reading.fait(nom) as Fait<Of>,
+      (scope) => scope.fait(nom) as Fait<Of>,
     );
   }
 
@@ -164,7 +164,7 @@ class CibleValue<
 > extends Value<Cible<Of>> {
   readonly #nom: string;
 
-  private constructor(nom: string, evaluate: (reading: Reading) => Cible<Of>) {
+  private constructor(nom: string, evaluate: (scope: Scope) => Cible<Of>) {
     super({ ...NOTHING, cibles: [nom] }, evaluate);
     this.#nom = nom;
   }
@@ -172,7 +172,7 @@ class CibleValue<
   static of<Of extends boolean | string, FaitNom extends string>(
     nom: string,
   ): CibleValue<Of, FaitNom> {
-    return new CibleValue(nom, (reading) => reading.cible(nom) as Cible<Of>);
+    return new CibleValue(nom, (scope) => scope.cible(nom) as Cible<Of>);
   }
 
   /**
@@ -183,7 +183,7 @@ class CibleValue<
     const nom = this.#nom;
     return new CibleValue(
       nom,
-      (reading) => reading.cibleAssuming(nom, fait) as Cible<Of>,
+      (scope) => scope.cibleAssuming(nom, fait) as Cible<Of>,
     );
   }
 
@@ -243,13 +243,11 @@ export function givenOf<
       CibleValue.of<CibleOf<Cibles[Nom]>, FaitNom>(nom),
     /** Ces faits, sous leur nom : ce qu'un texte en lit, et rien d'autre. */
     faits: <Nom extends FaitNom>(...noms: Nom[]) =>
-      named<Pick<Faits, Nom>>(noms, "faits", (reading, nom) =>
-        reading.fait(nom),
-      ),
+      named<Pick<Faits, Nom>>(noms, "faits", (scope, nom) => scope.fait(nom)),
     /** Ces cibles, sous leur nom : ce qu'un texte en lit, et rien d'autre. */
     cibles: <Nom extends keyof Cibles & string>(...noms: Nom[]) =>
-      named<Pick<Cibles, Nom>>(noms, "cibles", (reading, nom) =>
-        reading.cible(nom),
+      named<Pick<Cibles, Nom>>(noms, "cibles", (scope, nom) =>
+        scope.cible(nom),
       ),
     all,
     today: () => DateValue.today(),
@@ -262,12 +260,12 @@ export function givenOf<
 function named<Of>(
   noms: readonly string[],
   kind: "faits" | "cibles",
-  read: (reading: Reading, nom: string) => unknown,
+  read: (scope: Scope, nom: string) => unknown,
 ): Value<Of> {
   return new Value(
     { ...NOTHING, [kind]: noms },
-    (reading) =>
-      Object.fromEntries(noms.map((nom) => [nom, read(reading, nom)])) as Of,
+    (scope) =>
+      Object.fromEntries(noms.map((nom) => [nom, read(scope, nom)])) as Of,
   );
 }
 
