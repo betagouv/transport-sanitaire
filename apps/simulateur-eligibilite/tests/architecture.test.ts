@@ -27,8 +27,9 @@ const PARCOURS = [
   "core/socle/questionnaire-engine",
 ];
 
-// La valeur que lit le mapping d'un cerfa : ce que le cerfa connaît du socle.
-const VALEUR_LUE = "core/socle/questionnaire-engine/conditions/condition";
+// Le moteur de questionnaire, par son index : ce que le cerfa connaît du socle,
+// pour la valeur que lit son mapping.
+const VALEUR_LUE = "core/socle/questionnaire-engine";
 
 // Le socle, à l'écran et dans le métier.
 const SOCLE = ["front/socle", "core/socle"];
