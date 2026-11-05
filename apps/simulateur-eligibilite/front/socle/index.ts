@@ -8,7 +8,6 @@
 
 export { configFromEnv, initAnalytics, loadMatomo } from "./analytics";
 export { App, type Models } from "./app";
-
 export {
   at,
   bindCerfa,
@@ -23,7 +22,6 @@ export {
   templateAt,
   text,
 } from "./cerfa";
-
 export {
   type AldIndicator,
   defineModel,
@@ -33,6 +31,7 @@ export {
   type ResultatProps,
   type Sheet,
 } from "./model";
+export { applyTheme, followHostTheme } from "./theme";
 export {
   Disclosure,
   type IllustratedCard,

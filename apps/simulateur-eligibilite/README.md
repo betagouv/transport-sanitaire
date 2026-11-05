@@ -231,9 +231,11 @@ front/                   le front, bundlé par Vite
                          gabarit.
     analytics/           le vocabulaire mesuré, seul import du reste, son transport
                          vers Matomo, le choix du prescripteur transmis par le CMS, et
-                         consent-cms.js, le script à coller dans Sites Conformes :
-                         l'opt-out du pied de page, qui répond au traceur de l'iframe
-                         (voir « Intégrer dans Sites Conformes »)
+                         cms.js, le script à coller dans Sites Conformes : l'opt-out
+                         du pied de page, qui répond au traceur de l'iframe, et le
+                         thème de la page (voir « Intégrer dans Sites Conformes »)
+    theme/               le thème de l'app, clair par défaut, qui suit celui de la
+                         page qui l'embarque
 tooling/                 la configuration TypeScript et les outils de développement
 ```
 
@@ -336,23 +338,24 @@ C'est le prix du lock unique, et il se compte en secondes.
 
 Le simulateur est embarqué en iframe dans une page Sites Conformes, qui tient aussi
 l'opt-out de la mesure d'audience dans son pied de page (voir
-[analytics.md](docs/knowledge/adr/analytics.md), ADR-5). Tout se règle dans
-l'administration du CMS :
+[analytics.md](docs/knowledge/adr/analytics.md), ADR-5) et dont l'iframe suit le
+thème, clair ou sombre (#342). Tout se règle dans l'administration du CMS :
 
 1. **Embarquer l'app.** Dans la page, un bloc « Iframe » (syntaxe experte) dont l'URL
    est celle du simulateur. Laisser le champ « Paramètres » vide : un `sandbox` y
    casserait l'opt-out et l'API.
-2. **Installer l'opt-out.** Dans Paramètres → Scripts personnalisés → « Scripts dans
+2. **Installer le script.** Dans Paramètres → Scripts personnalisés → « Scripts dans
    la section `<body>` », coller le contenu de
-   [`front/socle/analytics/consent-cms.js`](front/socle/analytics/consent-cms.js) entre
+   [`front/socle/analytics/cms.js`](front/socle/analytics/cms.js) entre
    `<script type="module">` et `</script>`, après avoir remplacé
    `ORIGINE_SIMULATEUR` par l'origine réelle du simulateur (`https://domaine`, sans
-   chemin ni barre finale).
+   chemin ni barre finale). Il porte l'opt-out et transmet le thème de la page.
 3. **Informer.** La politique de confidentialité du site décrit la mesure par service
    et renvoie au bouton du pied de page (R-12 d'analytics.md).
 4. **Recetter.** Le bouton « Désactiver la mesure d'audience du simulateur » apparaît
    à la fin du pied de page. Après un clic, plus aucune requête ne part vers
-   `stats.beta.gouv.fr` depuis l'iframe, même après rechargement.
+   `stats.beta.gouv.fr` depuis l'iframe, même après rechargement. L'iframe a le
+   thème de la page, et le suit quand on le change dans « Paramètres d'affichage ».
 
 Le script vit dans les réglages du CMS, hors de tout déploiement : toute modification
 du fichier se recolle à la main. Il ajoute son bouton dans la liste DSFR du pied de

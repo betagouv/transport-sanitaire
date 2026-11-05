@@ -387,7 +387,7 @@ du chunk d'entrée. `tests/modules-du-socle.test.ts` le garde.
 
 Hors de ces racines, `tooling/` porte la configuration TypeScript et les outils de
 développement (le script des règles, la vérification du bundle). Le script collé
-dans Sites Conformes, `front/socle/analytics/consent-cms.js`, s'exécute sur les
+dans Sites Conformes, `front/socle/analytics/cms.js`, s'exécute sur les
 pages du CMS, pas dans l'app : il n'importe rien et n'est importé par personne,
 ses tests le chargent comme texte.
 
