@@ -16,21 +16,21 @@ import { keepBoxAppearances } from "./box-appearances";
 import { type Box, checkBoxes } from "./check-box";
 import { formatDateForField } from "./dates";
 import type { Drawing } from "./flatten-the-form";
-import { overflowsOf } from "./overflow";
+import { nearOverflowsOf, overflowsOf } from "./overflow";
 import { sizeInField, sizeToFit } from "./text-fit";
+import { SIZE_STEP } from "./text-sizes";
 import { writableIn } from "./writable-text";
 
 /**
  * Une valeur à écrire : un texte dans un champ nommé, ou une case à cocher.
  *
- * Un texte peut porter un commentaire facultatif, écrit à sa suite. C'est la
- * seule chose qui se retire quand le texte ne tient pas dans son cadre (D-85).
+ * Un texte peut porter un commentaire facultatif, écrit à sa suite : la seule
+ * chose qui se retire quand le texte ne tient pas dans son cadre (D-85).
  *
  * `checked` porte l'état d'export à écrire, souvent `On` ou `Yes`. Un gabarit
  * peut aussi mettre plusieurs cases sous un même nom : des boutons radio
- * déguisés, dont chaque widget rend un seul état. La casse compte : un gabarit
- * écrit `/OUI`, un autre `/Oui`. Les états se relèvent en inspectant le
- * gabarit, ils ne se devinent pas.
+ * déguisés, dont chaque widget porte un seul état. La casse compte (`/OUI`,
+ * `/Oui`) : les états se relèvent dans le gabarit, ils ne se devinent pas.
  */
 export type FieldEntry = { readonly field: string } & (
   | { readonly text: string; readonly comment?: string }
@@ -64,11 +64,12 @@ export type Filled = {
  * les volets restent cohérents par construction.
  *
  * Un texte n'est jamais coupé, et ne bloque jamais le PDF (D-85). Il s'écrit à
- * la taille visée, puis réduite. S'il ne tient toujours pas, il perd son
- * commentaire. S'il ne tient toujours pas, il rapetisse et passe à la ligne
- * jusqu'à tenir dans son cadre (D-193). Seul un texte plus long que le nombre
- * de caractères du champ laisse le champ vide : il se dessinera sous son cadre
- * (`overflow.ts`).
+ * la taille visée, puis réduite, puis sans son commentaire, puis rapetissé à la
+ * ligne jusqu'au plancher (D-193). Au-delà, il laisse le champ vide et se
+ * dessine sous son cadre, à la plus grande taille jusqu'au plancher où il en
+ * reste près (`overflow.ts`, #341) ; sinon il rapetisse sous le plancher :
+ * illisible plutôt que sur la ligne suivante du formulaire. Plus long que le
+ * nombre de caractères du champ, il laisse toujours le champ vide.
  */
 export async function fillCerfa(
   template: Uint8Array | ArrayBuffer,
@@ -130,11 +131,9 @@ function asDateIn(document: PDFDocument, dateFields: readonly string[]) {
   };
 }
 
-/**
- * Un gabarit déclare sa police (`/Cour 10 Tf`, par exemple). Mais
- * `showValues` redessine tout champ écrit dans la police par défaut de
- * `pdf-lib`, Helvetica. Le texte se mesure donc dans cette police-là.
- */
+// Un gabarit déclare sa police (`/Cour 10 Tf`, par exemple). Mais `showValues`
+// redessine tout champ écrit dans la police par défaut de `pdf-lib`,
+// Helvetica. Le texte se mesure donc dans cette police-là.
 async function writeTexts(
   document: PDFDocument,
   texts: readonly Text[],
@@ -172,8 +171,7 @@ type WrittenText = {
   readonly withoutComment: boolean;
 };
 
-// Le texte et son commentaire, sinon le texte seul, dans son champ, au besoin
-// rapetissé. Sinon, rien dans le champ : le texte se dessinera sous son cadre.
+// Chaque étape écrit le texte si elle y arrive, sinon passe la main à la suivante.
 function writeText(
   document: PDFDocument,
   font: PDFFont,
@@ -184,6 +182,8 @@ function writeText(
     writeWithComment(field, font, entry) ??
     writeWithoutComment(field, font, entry) ??
     writeShrunk(field, font, entry) ??
+    overflowIfNear(document, field, font, entry) ??
+    writeShrunk(field, font, entry, SIZE_STEP) ??
     overflow(document, field, font, entry)
   );
 }
@@ -223,37 +223,47 @@ function writeWithoutComment(
     : undefined;
 }
 
-// Le texte seul, rapetissé jusqu'à tenir dans le cadre, sur autant de lignes
-// qu'il y faut (D-193).
+// Le texte seul, à la ligne, rapetissé jusqu'à `floor` au plus (D-193, #341).
 function writeShrunk(
   field: PDFTextField,
   font: PDFFont,
   { text, comment }: Text,
+  floor?: number,
 ): WrittenText | NotWritten {
-  const fontSize = sizeToFit(field, font, text);
+  const fontSize = sizeToFit(field, font, text, floor);
   if (fontSize === undefined) return undefined;
   field.enableMultiline();
   write(field, text, fontSize);
   return { overflows: [], withoutComment: Boolean(comment) };
 }
 
-// Rien dans le champ : le texte, sans son commentaire, se dessinera sous
-// chaque widget.
+// Rien dans le champ : le texte seul se dessinera sous chaque widget, s'il en
+// reste près (#341).
+function overflowIfNear(
+  document: PDFDocument,
+  field: PDFTextField,
+  font: PDFFont,
+  { text, comment }: Text,
+): WrittenText | NotWritten {
+  const widgets = field.acroField.getWidgets();
+  const overflows = nearOverflowsOf(document, widgets, font, text);
+  return overflows && { overflows, withoutComment: Boolean(comment) };
+}
+
+// Rien dans le champ : le texte seul se dessinera sous chaque widget.
 function overflow(
   document: PDFDocument,
   field: PDFTextField,
   font: PDFFont,
   { text, comment }: Text,
 ): WrittenText {
-  const widgets = field.acroField.getWidgets();
   return {
-    overflows: overflowsOf(document, widgets, font, text),
+    overflows: overflowsOf(document, field.acroField.getWidgets(), font, text),
     withoutComment: Boolean(comment),
   };
 }
 
-// Écrit `text` à la plus grande taille où il tient dans le cadre, s'il y en a
-// une.
+// Écrit `text` à la plus grande taille où il tient, s'il y en a une.
 function writeIfFits(
   field: PDFTextField,
   font: PDFFont,
@@ -271,9 +281,8 @@ function write(field: PDFTextField, text: string, fontSize: number): void {
   sameSizeOnEveryWidget(field);
 }
 
-// Un widget qui déclare sa propre taille, comme ceux des volets 3 et 4 de la
-// DAP, l'emporte sur celle du champ chez `pdf-lib` : son texte s'y dessinerait
-// à cette taille, coupé par son cadre.
+// Un widget à taille propre (volets 3 et 4 de la DAP) l'emporte sur celle du
+// champ chez `pdf-lib` : son texte s'y dessinerait à sa taille, coupé.
 function sameSizeOnEveryWidget(field: PDFTextField): void {
   const appearance = field.acroField.getDefaultAppearance();
   if (appearance === undefined) return;
