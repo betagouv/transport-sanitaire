@@ -2,18 +2,39 @@
    papier, la page, ce qui ne sort pas, et les sauts. La mise en page de la
    feuille elle-même est dans sheet-paper.css, que la mesure lit aussi. */
 
-/* La feuille s'imprime seule, sans la visionneuse ni le reste de la page,
-   avec les marges des gabarits. Tout le document prend la page nommée : posée
-   sur la seule feuille, elle forcerait un saut de page avant elle, et le reste
-   de la page, masqué, laisserait une page blanche. */
+/* La feuille s'imprime seule, sans la visionneuse ni le reste de la page.
+   Tout le document prend la page nommée : posée sur la seule feuille, elle
+   forcerait un saut de page avant elle, et le reste de la page, masqué,
+   laisserait une page blanche.
+
+   La page n'a pas de marge : le navigateur y écrit sinon son en-tête et son
+   pied, titre, date, adresse et numéro de page, que le patient n'a pas à
+   lire (#344). Les marges des gabarits, 9 mm en haut et en bas, 10 mm sur
+   les côtés, sont celles de la feuille elle-même, en papier. */
 @page socle-sheet {
   size: A4;
-  margin: 9mm 10mm;
+  margin: 0;
 }
 
 @media print {
   body:has(.socle-sheet) {
     page: socle-sheet;
+  }
+
+  .socle-sheet[data-paper] {
+    width: 210mm;
+    padding: 9mm 10mm;
+  }
+
+  /* Le pied d'une page unique se pose dans les marges de la feuille. */
+  .socle-sheet[data-paper][data-print-layout="one-page"] {
+    min-height: 296mm;
+  }
+
+  .socle-sheet[data-paper][data-print-layout="one-page"] .socle-sheet__footer {
+    right: 10mm;
+    bottom: 9mm;
+    left: 10mm;
   }
 
   .fr-container:has(.socle-sheet) {
@@ -52,5 +73,18 @@
 
   .socle-sheet[data-print-layout="flowing"] .socle-sheet-follow-up :is(h3, h4) {
     break-after: avoid;
+  }
+
+  /* La seconde page n'a pas la marge intérieure de la feuille : le bloc de
+     suivi, qui l'ouvre, porte la marge du haut. Pas en marge : Firefox la
+     rogne en haut de page, même après un saut forcé. En bordure transparente,
+     que le fond ne couvre pas, et dont les coins du haut gardent leur rayon
+     une fois la bordure ôtée. */
+  .socle-sheet[data-paper][data-print-layout="two-pages"]
+  .socle-sheet-follow-up {
+    border-top: 9mm solid transparent;
+    border-top-left-radius: 10px calc(10px + 9mm);
+    border-top-right-radius: 10px calc(10px + 9mm);
+    background-clip: padding-box;
   }
 }

@@ -11,13 +11,18 @@ import { createRoot } from "react-dom/client";
 import "./socle/app/dsfr-overrides.css";
 import {
   App,
+  applyTheme,
   configFromEnv,
+  followHostTheme,
   initAnalytics,
   loadMatomo,
   type Models,
 } from "./socle";
 
-startReactDsfr({ defaultColorScheme: "system" });
+// Clair par défaut : le thème est celui de la page qui embarque l'app, qui le
+// transmet dès qu'on le lui demande, puis à chaque changement (#342).
+startReactDsfr({ defaultColorScheme: "light" });
+followHostTheme(applyTheme);
 
 // Prépare le traceur au démarrage, sans cookie. Il demande au CMS le choix du
 // prescripteur et ne charge Matomo que si le suivi est accepté. Le service est

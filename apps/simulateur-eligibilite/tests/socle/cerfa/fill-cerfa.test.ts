@@ -15,6 +15,17 @@ import {
 // refuse, ce qui survit à une relecture. Aucun gabarit réel n'est en jeu.
 
 const LONG = "Un motif médical beaucoup trop long pour ce cadre. ".repeat(8);
+// Tient sur la ligne de `nom` à 7 points : entre la taille réduite et le plancher.
+const MOYEN = "Clinique des Alpes, 12 avenue Victor Hugo, 38000 Grenoble";
+// N'y tient qu'au plancher.
+const AU_PLANCHER =
+  "Centre hospitalier des Alpes, 12 avenue Victor Hugo, 38000 Grenoble";
+// N'y tient pas au plancher ; à la taille réduite, déborde du cadre d'une ligne.
+const SUR_DEUX_LIGNES =
+  "Centre hospitalier universitaire des Alpes, 12 avenue Victor Hugo, 38000 Grenoble";
+// À la taille réduite, déborde du cadre de deux lignes ; au plancher, d'une.
+const SUR_TROIS_LIGNES =
+  "EHPAD, Résidence Les Jardins du Lac, 125 avenue du Général de Gaulle, bâtiment B, 2e étage, 38120 Saint-Égrève";
 
 const remplir = async (...args: Parameters<typeof fillCerfa>) => {
   const filled = await fillCerfa(...args);
@@ -121,26 +132,67 @@ describe("un texte trop long pour son cadre", () => {
 
   it("rapetisse sous la taille réduite jusqu'à tenir dans son cadre", async () => {
     const { pdf, read, overflows } = await remplir(await testForm(), [
+      { field: "nom", text: MOYEN },
+    ]);
+
+    expect(read).toEqual({ nom: MOYEN });
+    expect(overflows).toEqual([]);
+    expect(await fontSizeOf(pdf, "nom")).toBeLessThan(TEXT_SIZES.reduced);
+    expect(await fontSizeOf(pdf, "nom")).toBeGreaterThan(TEXT_SIZES.floor);
+  });
+
+  it("rapetisse jusqu'au plancher, pas en dessous", async () => {
+    const { pdf, read } = await remplir(await testForm(), [
+      { field: "nom", text: AU_PLANCHER },
+    ]);
+
+    expect(read).toEqual({ nom: AU_PLANCHER });
+    expect(await fontSizeOf(pdf, "nom")).toBe(TEXT_SIZES.floor);
+  });
+
+  it("se dessine sous son cadre à la taille réduite plutôt que sous le plancher", async () => {
+    const { read, overflows } = await remplir(await testForm(), [
+      { field: "nom", text: SUR_DEUX_LIGNES },
+    ]);
+
+    expect(read).toEqual({});
+    expect(overflows).toMatchObject([
+      { text: SUR_DEUX_LIGNES, size: TEXT_SIZES.reduced },
+    ]);
+  });
+
+  it("se dessine sous son cadre à la taille où il en reste près, jusqu'au plancher", async () => {
+    const { read, overflows } = await remplir(await testForm(), [
+      { field: "nom", text: SUR_TROIS_LIGNES },
+    ]);
+
+    expect(read).toEqual({});
+    expect(overflows[0]?.size).toBeLessThan(TEXT_SIZES.reduced);
+    expect(overflows[0]?.size).toBeGreaterThanOrEqual(TEXT_SIZES.floor);
+  });
+
+  it("descend sous le plancher plutôt que de déborder de plus d'une ligne", async () => {
+    const { pdf, read, overflows } = await remplir(await testForm(), [
       { field: "nom", text: LONG },
     ]);
 
     expect(read).toEqual({ nom: LONG });
     expect(overflows).toEqual([]);
-    expect(await fontSizeOf(pdf, "nom")).toBeLessThan(TEXT_SIZES.reduced);
+    expect(await fontSizeOf(pdf, "nom")).toBeLessThan(TEXT_SIZES.floor);
   });
 
   it("perd son commentaire avant de rapetisser", async () => {
     const { read, withoutComment } = await remplir(await testForm(), [
-      { field: "nom", text: LONG, comment: "Sans mousse." },
+      { field: "nom", text: MOYEN, comment: "Sans mousse." },
     ]);
 
-    expect(read).toEqual({ nom: LONG });
+    expect(read).toEqual({ nom: MOYEN });
     expect(withoutComment).toEqual(["nom"]);
   });
 
   it("rapetisse de même sur chacun de ses volets", async () => {
     const { pdf } = await fillCerfa(await testForm(), [
-      { field: "adresse", text: LONG },
+      { field: "adresse", text: MOYEN },
     ]);
 
     const [premier, second] = await drawnSizesOf(pdf, "adresse");
