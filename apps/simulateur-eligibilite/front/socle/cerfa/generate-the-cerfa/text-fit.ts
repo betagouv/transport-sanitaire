@@ -33,19 +33,24 @@ export function sizeInField(
 }
 
 /**
- * La plus grande taille, sous la taille réduite et par pas d'un demi-point, à
- * laquelle `text` tient dans la zone de `field` en passant à la ligne (D-193).
- * Aucune si le texte dépasse le nombre maximal de caractères du champ, ou si le
- * champ n'a pas de cadre.
+ * La plus grande taille, de la taille réduite à `floor` par pas d'un
+ * demi-point, à laquelle `text` tient dans la zone de `field` en passant à la
+ * ligne (D-193). Aucune s'il n'y tient pas à `floor` (#341), s'il dépasse le
+ * nombre maximal de caractères du champ, ou si le champ n'a pas de cadre.
  */
 export function sizeToFit(
   field: PDFTextField,
   font: PDFFont,
   text: string,
+  floor: number = TEXT_SIZES.floor,
 ): number | DoesNotFit {
   const bounds = innerBounds(field);
   if (exceedsMaxLength(field, text) || !hasArea(bounds)) return undefined;
-  for (let size = TEXT_SIZES.reduced - SIZE_STEP; size > 0; size -= SIZE_STEP)
+  for (
+    let size = TEXT_SIZES.reduced - SIZE_STEP;
+    size >= floor;
+    size -= SIZE_STEP
+  )
     if (fitsMultiline(text, font, size, bounds)) return size;
   return undefined;
 }

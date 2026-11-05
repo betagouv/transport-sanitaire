@@ -11,6 +11,12 @@
   margin-bottom: 0;
 }
 
+/* Il se détache de l'encadré qui le précède, celui d'un refus, comme les
+   cartes d'une feuille positive, qui portent leur propre espace (#343). */
+.socle-panel + .socle-sheet-follow-up {
+  margin-top: 2rem;
+}
+
 .socle-sheet-follow-up > section > h3 {
   margin-bottom: 3mm;
   font-size: 14.5pt;

@@ -1,16 +1,17 @@
 // Le script que le CMS (Sites Conformes) exécute sur ses pages. Il ajoute
-// l'opt-out au pied de page et répond au simulateur embarqué. Chaque test le
-// charge dans une fenêtre neuve, avec le vrai pied de page DSFR. Le simulateur
-// est une fenêtre qui relève les messages reçus.
+// l'opt-out au pied de page et répond au simulateur embarqué, sur la mesure
+// d'audience et sur le thème. Chaque test le charge dans une fenêtre neuve,
+// avec le vrai pied de page DSFR. Le simulateur est une fenêtre qui relève les
+// messages reçus.
 
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { Window } from "happy-dom";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { racine } from "../../inspection-des-sources";
 
 const SOURCE = readFileSync(
-  join(racine, "front", "socle", "analytics", "consent-cms.js"),
+  join(racine, "front", "socle", "analytics", "cms.js"),
   "utf-8",
 );
 const ORIGINE_SIMULATEUR = /ORIGINE_SIMULATEUR = "([^"]+)"/.exec(SOURCE)?.[1];
@@ -26,17 +27,21 @@ const PIED_DE_PAGE = `
     </div>
   </footer>`;
 
-function pageDuCms({ refusMemorise = false } = {}) {
+function pageDuCms({ refusMemorise = false, theme = "" } = {}) {
   const fenetre = new Window({ url: "https://cms.test/" });
   fenetre.document.body.innerHTML = PIED_DE_PAGE;
+  if (theme)
+    fenetre.document.documentElement.setAttribute("data-fr-theme", theme);
   if (refusMemorise) {
     fenetre.localStorage.setItem("statistiques-simulateur-refusees", "1");
   }
-  new Function("window", "document", "localStorage", SOURCE)(
-    fenetre,
-    fenetre.document,
-    fenetre.localStorage,
-  );
+  new Function(
+    "window",
+    "document",
+    "localStorage",
+    "MutationObserver",
+    SOURCE,
+  )(fenetre, fenetre.document, fenetre.localStorage, fenetre.MutationObserver);
 
   const simulateur = {
     recus: [] as Array<{ message: unknown; origine: string }>,
@@ -44,23 +49,34 @@ function pageDuCms({ refusMemorise = false } = {}) {
       this.recus.push({ message, origine });
     },
   };
-  const demander = (origin = ORIGINE_SIMULATEUR) =>
+  const demander = (
+    origin = ORIGINE_SIMULATEUR,
+    type = "statistiques-simulateur:demande",
+  ) =>
     fenetre.dispatchEvent(
       new fenetre.MessageEvent("message", {
-        data: { type: "statistiques-simulateur:demande" },
+        data: { type },
         origin,
         source: simulateur as never,
       }),
     );
+  const demanderLeTheme = () =>
+    demander(ORIGINE_SIMULATEUR, "theme-simulateur:demande");
+  const changerLeTheme = (theme: string) =>
+    fenetre.document.documentElement.setAttribute("data-fr-theme", theme);
   const bouton = () =>
     fenetre.document.querySelector(
       ".fr-footer__bottom-list li:last-child button",
     ) as unknown as HTMLButtonElement;
-  return { simulateur, demander, bouton };
+  return { simulateur, demander, demanderLeTheme, changerLeTheme, bouton };
 }
 
 const choix = (suivi: boolean) => ({
   message: { type: "statistiques-simulateur:choix", suivi },
+  origine: ORIGINE_SIMULATEUR,
+});
+const theme = (theme: string) => ({
+  message: { type: "theme-simulateur:choix", theme },
   origine: ORIGINE_SIMULATEUR,
 });
 
@@ -113,5 +129,36 @@ describe("opt-out de la mesure d'audience, côté CMS", () => {
     bouton().click();
     bouton().click();
     expect(simulateur.recus.at(-1)).toEqual(choix(true));
+  });
+});
+
+describe("thème de la page, côté CMS", () => {
+  it("répond au simulateur le thème que le DSFR a résolu", () => {
+    const { simulateur, demanderLeTheme } = pageDuCms({ theme: "dark" });
+    demanderLeTheme();
+    expect(simulateur.recus).toEqual([theme("dark")]);
+  });
+
+  it("répond clair tant que le DSFR n'a rien résolu", () => {
+    const { simulateur, demanderLeTheme } = pageDuCms();
+    demanderLeTheme();
+    expect(simulateur.recus).toEqual([theme("light")]);
+  });
+
+  it("prévient le simulateur quand le thème change", async () => {
+    const { simulateur, demanderLeTheme, changerLeTheme } = pageDuCms({
+      theme: "light",
+    });
+    demanderLeTheme();
+    changerLeTheme("dark");
+    await vi.waitFor(() =>
+      expect(simulateur.recus.at(-1)).toEqual(theme("dark")),
+    );
+  });
+
+  it("ne répond le thème qu'au simulateur", () => {
+    const { simulateur, demander } = pageDuCms({ theme: "dark" });
+    demander("https://ailleurs.test", "theme-simulateur:demande");
+    expect(simulateur.recus).toEqual([]);
   });
 });
