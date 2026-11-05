@@ -55,6 +55,10 @@
   padding: 3mm 3.5mm;
 }
 
+.socle-sheet[data-paper] .socle-panel + .socle-sheet-follow-up {
+  margin-top: 4mm;
+}
+
 .socle-sheet[data-paper] .socle-panel--framed {
   margin-top: 3mm;
   padding: 3.5mm 4mm;
