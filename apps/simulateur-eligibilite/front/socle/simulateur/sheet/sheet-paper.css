@@ -4,8 +4,9 @@
    l'impression, où la feuille la porte : la pagination se mesure sur ce qui
    s'imprime. Le PDF (#129) la reprendra telle quelle.
 
-   La feuille prend la largeur utile d'une A4, sans ses marges d'écran, que
-   les marges de la page remplacent (§9.2). Les tailles du texte sont celles du
+   La feuille prend la largeur utile d'une A4, sans ses marges d'écran : à
+   l'impression, elle les reprend (sheet-viewer-print.css), et le PDF les pose
+   lui-même (§9.2). Les tailles du texte sont celles du
    contrat (§9.3) : le corps du bloc de suivi à 9 pt, le texte des cartes à
    9,5 pt, les besoins à 8 pt. Le reste garde sa taille de l'écran, logos,
    espace sous eux et titre compris. */
