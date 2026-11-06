@@ -1,7 +1,8 @@
 // Une simulation, l'agrégat du parcours : un modèle, les réponses validées, la
 // page ouverte et l'étape où l'on en est. Chaque transition (valider la page,
-// reculer, rouvrir, verrouiller) donne une nouvelle simulation ; aucune ne
-// change celle-ci. L'écran n'y ajoute que le brouillon de la page ouverte.
+// reculer, rouvrir une réponse à revoir, aller à une position, verrouiller)
+// donne une nouvelle simulation ; aucune ne change celle-ci. L'écran n'y ajoute
+// que le brouillon de la page ouverte.
 
 import type { AnyFaits, CoreModel, Preconisation } from "../model.ts";
 import {
@@ -10,7 +11,6 @@ import {
   type AskedQuestion,
   type Page,
   pagesOf,
-  Questionnaire,
   type Read,
   type Reading,
   readIn,
@@ -18,27 +18,28 @@ import {
   type ValidatedAnswers,
 } from "../questionnaire-engine/index.ts";
 
+import {
+  keptDraft,
+  type Opened,
+  openingAt,
+  type Refused,
+  whereACorrectionResumes,
+} from "./correction.ts";
+import { type Position, reachedPages, stepOf } from "./position.ts";
 import { preconisationFrom } from "./preconisation.ts";
 import { resultScope } from "./result-scope.ts";
+import {
+  endOf,
+  type Locked,
+  lockOf,
+  pendingIn,
+  readAt,
+  reopenedOf,
+  type Stage,
+  whereAnswersLead,
+} from "./stages.ts";
 
-/** Ce que le verrou fige : les réponses d'avant, et leur préconisation. */
-export type Locked = { answers: Answers; preconisation: Preconisation };
-
-/**
- * Où en est une simulation : avant le verrou, le questionnaire puis son
- * résultat ; après, le complément puis le cerfa. Le verrou est une étape, pas
- * un drapeau : après lui, l'étape porte ce qu'il a figé.
- */
-export type Stage =
-  | { name: "questionnaire" }
-  | { name: "resultat" }
-  | { name: "complement"; locked: Locked }
-  | {
-      name: "cerfa";
-      locked: Locked;
-      /** Le jour où le complément a été validé : figé tant qu'il ne l'est pas à nouveau. */
-      completedAt: Date;
-    };
+export type { Locked, Stage };
 
 /** Ce que la trace de debug lit d'une simulation. */
 export type SimulationTrace = {
@@ -79,6 +80,7 @@ export class Simulation {
   readonly #core: CoreModel;
   readonly #reading: Reading;
   readonly #page: Page | undefined;
+  readonly #opened: Opened;
   #preconisation?: Preconisation;
 
   private constructor(
@@ -87,12 +89,14 @@ export class Simulation {
     answers: Answers,
     reading: Reading,
     page: Page | undefined,
+    opened: Opened = {},
   ) {
     this.#core = core;
     this.stage = stage;
     this.answers = answers;
     this.#reading = reading;
     this.#page = page;
+    this.#opened = opened;
   }
 
   // Cette étape, sur la page où un prescripteur ayant donné ces réponses se
@@ -102,11 +106,7 @@ export class Simulation {
     const reading = readAt(core, stage, answers);
     const blank = new Simulation(core, stage, answers, reading, undefined);
     const pages = blank.pages();
-    const pending = pages.find((page) =>
-      reading
-        .questionsOn(page)
-        .some((question) => !question.isAnsweredBy(answers[question.id])),
-    );
+    const pending = pages.find(pendingIn(reading, answers));
     return blank.#on(stage, pending ?? pages.at(-1));
   }
 
@@ -149,6 +149,25 @@ export class Simulation {
     return this.pages().indexOf(this.page) > 0;
   }
 
+  /** Une correction est en cours : « Suivant » ramène vers son origine. */
+  get correcting(): boolean {
+    return this.#opened.correction !== undefined;
+  }
+
+  /** Le brouillon que la page ouverte retrouve : celui d'avant la correction. */
+  get restoredDraft(): Answers {
+    return this.#opened.draft ?? {};
+  }
+
+  /** Le rang de la page ouverte, et pendant une correction celui de son origine. */
+  get position(): Position {
+    const pages = this.pages();
+    const asked = this.#reading.askedPages();
+    const step = stepOf(this.stage, asked, pages, this.#page);
+    const { correction } = this.#opened;
+    return correction ? { step, returnTo: correction.returnTo } : { step };
+  }
+
   /** Les questions validées, avec ce qui s'y proposait. */
   get validated(): ValidatedAnswers {
     return this.#reading.validated;
@@ -183,27 +202,69 @@ export class Simulation {
 
   /**
    * Valide la page ouverte avec ce brouillon (`validate-a-page.ts` dit ce qui
-   * s'efface), puis ouvre la page qui suit. Sans suivante, l'étape s'achève :
-   * le résultat avant le verrou, le cerfa après, daté de `on`.
+   * s'efface), puis ouvre la page qui suit, ou celle où reprend une correction
+   * (`correction.ts`). Sans suivante, l'étape s'achève : le résultat avant le
+   * verrou, le cerfa après, daté de `on`.
    */
   validate(draft: Answers, on = new Date()): Simulation {
     const answers = this.#reading.commit(this.page, draft);
     const reading = readAt(this.#core, this.stage, answers);
+    const { correction } = this.#opened;
     const following = reading.pageAfter(this.page);
-    const stage = following ? this.stage : endOf(this.stage, on);
-    const page = following ?? this.page;
-    return new Simulation(this.#core, stage, answers, reading, page);
+    const declared = pagesOf(this.#core.questionnaire);
+    const opening = correction
+      ? whereACorrectionResumes(correction, reading, answers, declared)
+      : following && { page: following };
+    const stage = opening ? this.stage : endOf(this.stage, on);
+    const { page = this.page, ...opened } = opening ?? {};
+    return new Simulation(this.#core, stage, answers, reading, page, opened);
   }
 
   /**
    * Reculer ne valide rien : la page qui précède rouvre sur ses réponses
-   * validées. Sur la première page de l'étape, la même simulation.
+   * validées, et une correction en cours s'abandonne. Sur la première page de
+   * l'étape, la même simulation.
    */
   back(): Simulation {
     const pages = this.pages();
     const previous = pages[pages.indexOf(this.page) - 1];
     if (!previous) return this;
     return this.#on(this.stage, previous);
+  }
+
+  /**
+   * Rouvre la page d'avant qui pose cette question validée, pour la revoir
+   * (ADR-30). La page ouverte devient l'origine de la correction, avec ce
+   * brouillon ; une correction en cours garde la sienne. Refusée : pas
+   * avant le verrou, ou pas une question validée d'une page d'avant.
+   */
+  revisit(question: string, draft: Answers): Simulation | Refused {
+    if (this.stage.name !== "questionnaire") return undefined;
+    if (!this.validated.question(question).isValidated()) return undefined;
+    const pages = this.pages();
+    const target = pages.find((page) =>
+      this.questionsOn(page).some(({ id }) => id === question),
+    );
+    if (!target || pages.indexOf(target) >= pages.indexOf(this.page))
+      return undefined;
+    const correction = this.#opened.correction ?? {
+      origin: this.page,
+      draft,
+      returnTo: this.position.step,
+    };
+    return this.#on(this.stage, target, { correction });
+  }
+
+  /** Va à cette position, si elle est posée (`openingAt`). */
+  moveTo(position: Position): Simulation | Refused {
+    if ("locked" in this.stage) return undefined;
+    const pending = pendingIn(this.#reading, this.answers);
+    const reached = reachedPages(this.pages(), pending);
+    const kept = keptDraft(this.#opened, this.#page);
+    const opening = openingAt(position, reached, pending, kept);
+    if (!opening) return undefined;
+    const { page, ...opened } = opening;
+    return this.#on({ name: "questionnaire" }, page, opened);
   }
 
   /**
@@ -223,74 +284,15 @@ export class Simulation {
   }
 
   // La même lecture, à cette étape et sur cette page.
-  #on(stage: Stage, page: Page | undefined): Simulation {
-    return new Simulation(this.#core, stage, this.answers, this.#reading, page);
+  #on(stage: Stage, page: Page | undefined, opened: Opened = {}): Simulation {
+    const { answers } = this;
+    return new Simulation(
+      this.#core,
+      stage,
+      answers,
+      this.#reading,
+      page,
+      opened,
+    );
   }
-}
-
-// ---- implémentation ----
-
-// Ces réponses, lues à cette étape. Avant le verrou : les parties qui mènent
-// au premier résultat. Après : toutes les pages, sous les cibles que le verrou
-// a figées ; les questions d'après le verrou les lisent.
-function readAt(core: CoreModel, stage: Stage, answers: Answers): Reading {
-  const before = pagesOf(core.questionnaire);
-  if (!("locked" in stage)) {
-    return new Questionnaire(before, core.relevance).readWith(answers);
-  }
-  return new Questionnaire(
-    [...before, ...core.complement.pages],
-    core.relevance,
-  ).readWith(answers, stage.locked.preconisation.cibles);
-}
-
-// Ce que verrouille cette lecture : les réponses des questions validées, et
-// leur préconisation. Une réponse qu'un retour en arrière a laissée sans
-// objet ne passe pas le verrou : rien de ce qui suit ne la lit.
-function lockOf(core: CoreModel, reading: Reading): Locked {
-  const answers = reading.validated.answers();
-  const before = new Questionnaire(pagesOf(core.questionnaire), core.relevance);
-  return {
-    answers,
-    preconisation: preconisationFrom(core, before.readWith(answers)),
-  };
-}
-
-// L'étape qui s'ouvre quand la page validée n'a pas de suivante.
-function endOf(stage: Stage, on: Date): Stage {
-  if (stage.name === "questionnaire") return { name: "resultat" };
-  if (stage.name === "complement") {
-    return { name: "cerfa", locked: stage.locked, completedAt: on };
-  }
-  return stage;
-}
-
-// L'étape que « Précédent » rouvre depuis un résultat : celle qui le précède.
-function reopenedOf(stage: Stage): Stage {
-  if (stage.name === "resultat") return { name: "questionnaire" };
-  if (stage.name === "cerfa")
-    return { name: "complement", locked: stage.locked };
-  return stage;
-}
-
-// L'étape où ces réponses mènent : le résultat qu'elles atteignent, ou le
-// questionnaire qu'elles laissent incomplet. Répondre à une question d'après
-// le verrou, c'est l'avoir franchi : le cerfa, ou le complément.
-function whereAnswersLead(core: CoreModel, answers: Answers, on: Date): Stage {
-  const after = core.complement.pages.flatMap((page) =>
-    page.questions.map(({ id }) => id),
-  );
-  const pastLock = Object.keys(answers).some((id) => after.includes(id));
-  if (!pastLock) {
-    const reading = readAt(core, { name: "questionnaire" }, answers);
-    return { name: reading.isComplete() ? "resultat" : "questionnaire" };
-  }
-  const before = Object.fromEntries(
-    Object.entries(answers).filter(([id]) => !after.includes(id)),
-  );
-  const locked = lockOf(core, readAt(core, { name: "questionnaire" }, before));
-  const complement: Stage = { name: "complement", locked };
-  return readAt(core, complement, answers).isComplete()
-    ? endOf(complement, on)
-    : complement;
 }

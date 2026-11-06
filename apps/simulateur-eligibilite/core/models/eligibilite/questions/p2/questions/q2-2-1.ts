@@ -12,7 +12,9 @@
 // (D-98, TS1012-01). Q2.2.1 se pose sur tous les parcours, même quand Q2.1
 // est sautée (D-98).
 
+import { Q1_3 } from "../../p1/questions/q1-3.ts";
 import { given, question } from "../../question.ts";
+import { incoherenceDeLieux } from "../conditions/conflit-de-lieux.ts";
 import { Q2_1, Q2_1_G } from "./q2-1.ts";
 
 const motif = given.question(Q2_1).answer();
@@ -28,7 +30,8 @@ const unSejourAProposer = motif
 // l'hébergement hors maternité ne se proposent alors.
 const pasLaMaternite = motif.is("13_MATERNITE").not();
 
-export const Q2_2_1 = question
+// La question, avant l'incohérence qui lit sa réponse.
+const situations = question
   .multipleChoice(
     "Q2.2.1",
     "L’une de ces situations concerne-t-elle le transport du patient ?",
@@ -62,6 +65,16 @@ export const Q2_2_1 = question
     "5_HTNM",
     "Un même hébergement relève de l’Engagement maternité ou d’un hébergement temporaire non médicalisé, pas des deux. Pour deux hébergements, faites une simulation par trajet.",
   );
+
+// Un hébergement ou un retour pénitentiaire contredit un autre lieu déjà dit.
+export const Q2_2_1 = situations.inconsistentWhen(
+  ...incoherenceDeLieux("situations", {
+    soins: Q1_3,
+    motif: Q2_1,
+    sousType: Q2_1_G,
+    situations,
+  }),
+);
 
 // Q2.1 retire le CAMSP et la convocation qu'elle indique déjà. Une autre
 // réponse validée au premier bloc efface celle du second, qui se repose s'il

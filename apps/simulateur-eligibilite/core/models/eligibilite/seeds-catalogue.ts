@@ -6,7 +6,8 @@
 // l'Engagement maternité, qui mène à Q3.8, une pour le mineur en soins
 // prolongés, qui coche l'ALD non exonérante, une pour l'orientation d'un retour
 // pénitentiaire, qui n'a pas d'issue, et une par cadre du séjour en cours,
-// établissement ou HAD (TS1014-B01). Elles suivent les dix traces de l'oracle
+// établissement ou HAD (TS1014-B01). Une dernière s'arrête sur un conflit de
+// lieux certain, avant R2 (#353). Elles suivent les dix traces de l'oracle
 // de la v10.1.0 : le patient est accompagné d'un professionnel (Q1.1) et ses
 // critères sont ceux de la trace, 1 et 5 pour les quatre premières et
 // l'étranger, 1 pour les autres. Les cibles attendues sont
@@ -376,5 +377,23 @@ export const SEEDS: readonly Seed<Questions, Cibles>[] = [
       cible_financeur: "ETABLISSEMENT",
       cible_mode_id: "AMBULANCE",
     },
+  },
+  {
+    id: "conflit-de-lieux-certain",
+    label: "Situations particulières : lieux incompatibles",
+    description:
+      "S'arrête sur les situations particulières d'une dialyse en centre que Q2.2.1.a dit aussi permission de sortie. Aucun sens du trajet ne concilie les deux lieux : l'alerte bloque Suivant avant R2 (#353).",
+    answers: {
+      "Q0.1": "1_VERIFIER",
+      "Q1.1": "1_SEUL",
+      "Q1.3": ["5_DIALYSE"],
+      "Q1.3.a": "2_AUTRE_DIALYSE",
+      "Q1.4": "1_VEHICULE_PERSONNEL",
+      "Q2.1": "1_CONSULTATION",
+      "Q2.2.1": ["1_HOSPITALISATION"],
+      "Q2.2.1.cadre": "1_ETABLISSEMENT",
+      "Q2.2.1.a": "1_OUI",
+    },
+    expected: {},
   },
 ];

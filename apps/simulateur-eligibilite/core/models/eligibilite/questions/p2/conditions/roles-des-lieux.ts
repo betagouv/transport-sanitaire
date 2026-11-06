@@ -1,38 +1,30 @@
 // Ce que P2 établit des deux lieux du trajet : les rôles de QST-LIEUX-001
-// (`situations-des-lieux.ts`), lus dans le sens que Q3.1.2 ou Q2.8 donne
-// (D-121).
+// (`situations-des-lieux.ts`), lus dans une orientation, l'aller ou le retour
+// (D-121). P3 la tire du sens du document (`p3/conditions/roles-dans-le-sens.ts`).
 //
 // Une nature établie se rappelle sans se redemander. Une nature que P2 borne
 // sans la fixer, comme le lieu de vie d'une permission ou les deux bouts d'un
 // transfert, se choisit parmi celles qu'elle permet. Deux rôles qui se
 // contredisent se refusent.
 //
-// Les règles lisent les réponses de P2 sous leur nom (`Entrees`). Une garde
-// les reçoit de `ENTREES_DES_LIEUX`, un rappel de `entreesDe`.
+// Les règles lisent les réponses sous leur nom (`Entrees`). Ce module n'importe
+// les questions que pour leur type : une question de P2 peut ainsi le lire.
 
-import type {
-  Answered,
-  AnswerOf,
-  GivenAnswer,
-  GivenAnswers,
-  ReadByObject,
-  Value,
-} from "../../../../../socle/index.ts";
-import { Q1_3 } from "../../p1/questions/q1-3.ts";
-import { Q2_1, Q2_1_G } from "../../p2/questions/q2-1.ts";
-import { Q2_2_1 } from "../../p2/questions/q2-2-1.ts";
-import { Q2_2_1_A } from "../../p2/questions/q2-2-1-a.ts";
-import { Q2_2_1_CADRE } from "../../p2/questions/q2-2-1-cadre.ts";
-import { Q2_5 } from "../../p2/questions/q2-5.ts";
-import { Q2_6 } from "../../p2/questions/q2-6.ts";
-import { Q2_8_5 } from "../../p2/questions/q2-8-5.ts";
-import { Q2_13_DEPART } from "../../p2/questions/q2-13.ts";
-import { given } from "../../question.ts";
-import { Q3_1_2 } from "../questions/q3-1-2.ts";
+import type { AnswerOf, GivenAnswer } from "../../../../../socle/index.ts";
+import type { Q1_3 } from "../../p1/questions/q1-3.ts";
+import type { Inconnu } from "../../question.ts";
+import type { Q2_1, Q2_1_G } from "../questions/q2-1.ts";
+import type { Q2_2_1 } from "../questions/q2-2-1.ts";
+import type { Q2_2_1_A } from "../questions/q2-2-1-a.ts";
+import type { Q2_2_1_CADRE } from "../questions/q2-2-1-cadre.ts";
+import type { Q2_5 } from "../questions/q2-5.ts";
+import type { Q2_6 } from "../questions/q2-6.ts";
+import type { Q2_13_DEPART } from "../questions/q2-13.ts";
 import type { Nature } from "./natures-du-lieu.ts";
 import {
   type Etablie,
   type Lieux,
+  type Orientation,
   q26,
   type Role,
   rolesDesSituations,
@@ -40,60 +32,44 @@ import {
 
 export type Extremite = "depart" | "arrivee";
 
-export type { Etablie, Nature };
+export type { Etablie, Nature, Orientation };
 
 /** Les natures que P2 établit, lieu par lieu. */
 type Etablies = { readonly depart?: Etablie; readonly arrivee?: Etablie };
 
-/** Les réponses de P2 dont les lieux se tirent, chacune sous son nom. */
-const LUES = {
-  soins: Q1_3,
-  motif: Q2_1,
-  sousType: Q2_1_G,
-  situations: Q2_2_1,
-  sejour: Q2_2_1_CADRE,
-  enPermission: Q2_2_1_A,
-  transfert: Q2_5,
-  contexte: Q2_6,
-  repetition: Q2_8_5,
-  departDeLEntree: Q2_13_DEPART,
-  sens: Q3_1_2,
-} as const;
-
-/** Ces réponses, lues sous leur nom. */
-export type Entrees = {
-  readonly [Nom in keyof typeof LUES]: GivenAnswer<
-    AnswerOf<(typeof LUES)[Nom]>
-  >;
+/** Les questions dont les lieux se tirent, chacune sous son nom. */
+export type Lues = {
+  readonly soins: typeof Q1_3;
+  readonly motif: typeof Q2_1;
+  readonly sousType: typeof Q2_1_G;
+  readonly situations: typeof Q2_2_1;
+  readonly sejour: typeof Q2_2_1_CADRE;
+  readonly enPermission: typeof Q2_2_1_A;
+  readonly transfert: typeof Q2_5;
+  readonly contexte: typeof Q2_6;
+  readonly departDeLEntree: typeof Q2_13_DEPART;
 };
 
-/** Les entrées des lieux, telles qu'une garde les lit à sa place. */
-export const ENTREES_DES_LIEUX = given.all(
-  Object.fromEntries(
-    Object.entries(LUES).map(([nom, lue]) => [
-      nom,
-      given.question(lue).answer(),
-    ]),
-  ),
-  // `Object.fromEntries` perd les noms : chacun garde la réponse de sa question.
-) as unknown as Value<Entrees>;
-
-/** Les entrées des lieux, lues sur les réponses d'un rappel. */
-export function entreesDe(answers: GivenAnswers<ReadByObject>): Entrees {
-  return Object.fromEntries(
-    (Object.entries(LUES) as [string, Answered][]).map(([nom, lue]) => [
-      nom,
-      answers.question(lue),
-    ]),
-  ) as unknown as Entrees;
-}
+/**
+ * Les réponses dont les lieux se tirent, lues sous leur nom : leur valeur, une
+ * option, une case.
+ */
+export type Entrees = {
+  readonly [Nom in keyof Lues]: Pick<
+    GivenAnswer<AnswerOf<Lues[Nom]>>,
+    "value" | "is" | "checked"
+  >;
+};
 
 /**
  * Les lieux que P2 établit. Chaque situation donne ses rôles ; la première qui
  * établit un lieu le fixe.
  */
-export function lieuxEtablis(entrees: Entrees): Etablies {
-  const roles = rolesDesSituations(entrees);
+export function lieuxEtablis(
+  entrees: Entrees,
+  orientation: Orientation | Inconnu,
+): Etablies {
+  const roles = rolesDesSituations(entrees, orientation);
   return {
     depart: etablieParmi(roles, "depart"),
     arrivee: etablieParmi(roles, "arrivee"),
@@ -105,8 +81,11 @@ export function lieuxEtablis(entrees: Entrees): Etablies {
  * Par exemple, le retour d'une permission arrive à l'établissement, et un
  * retour pénitentiaire à la prison (TS1014-AUDIT-02).
  */
-export function desRolesContradictoires(entrees: Entrees): boolean {
-  const roles = rolesDesSituations(entrees);
+export function desRolesContradictoires(
+  entrees: Entrees,
+  orientation: Orientation | Inconnu,
+): boolean {
+  const roles = rolesDesSituations(entrees, orientation);
   return (["depart", "arrivee"] as const).some((extremite) => {
     const admises = naturesDuLieu(roles, extremite);
     return admises !== undefined && admises.length === 0;
@@ -122,11 +101,15 @@ export function natureAdmise(
   nature: Nature,
   extremite: Extremite,
   entrees: Entrees,
+  orientation: Orientation | Inconnu,
   autre: Nature | undefined,
 ): boolean {
   if (nature === "1_DOMICILE" && autre === "1_DOMICILE") return false;
   if (!dansLeTransfert(nature, entrees)) return false;
-  const bornes = naturesDuLieu(rolesDesSituations(entrees), extremite);
+  const bornes = naturesDuLieu(
+    rolesDesSituations(entrees, orientation),
+    extremite,
+  );
   if (bornes !== undefined && !bornes.includes(nature)) return false;
   if (extremite === "depart" && autre === undefined) return true;
   const manquantes = naturesRequises(entrees).filter((n) => n !== autre);

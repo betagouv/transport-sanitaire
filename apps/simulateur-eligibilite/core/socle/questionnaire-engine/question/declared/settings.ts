@@ -1,15 +1,16 @@
 // Ce que toute question déclarée règle, quelle que soit sa sorte, et ce que
 // ces réglages donnent autour du champ quand elle se pose : le libellé, l'aide,
-// le rappel et les incohérences. La question les tient
-// (`question/declared/question.ts`).
+// le rappel, les incohérences et les réponses qu'elles invitent à revoir. La
+// question les tient (`question/declared/question.ts`).
 
 import {
   type Condition,
   type Scope,
   type Text,
   textIn,
+  type Value,
 } from "../../conditions/condition.ts";
-import type { AskedCommonData, ShownUnder } from "../asked/common.ts";
+import type { AskedCommonData, Revisit, ShownUnder } from "../asked/common.ts";
 import type { Pipeline, QuestionContext } from "../asked/context.ts";
 import type { AnyQuestions, Reminder } from "../question.ts";
 
@@ -39,19 +40,26 @@ export type CommonSettings<Questions extends AnyQuestions, Cibles, Faits> = {
   ): Reminder | NothingComputed;
 };
 
-/** Une incohérence : sa condition, et le message qui dit quoi corriger. */
+/**
+ * Une incohérence : sa condition, le message qui dit quoi corriger, et les
+ * réponses d'avant qu'elle invite à revoir.
+ */
 type Inconsistency = {
   readonly condition: Condition;
   readonly message: Text;
+  readonly revisit?: Value<readonly Revisit[]>;
 };
 
 // Ce qui se lit autour du champ, vu les réponses : le libellé, le rappel, s'il
-// peut rester vide, et les incohérences.
+// peut rester vide, les incohérences et les réponses à revoir.
 export function commonIn<Questions extends AnyQuestions, Cibles, Faits>(
   settings: CommonSettings<Questions, Cibles, Faits>,
   context: QuestionContext<Questions, Cibles, Faits>,
   earlier: Scope,
 ): AskedCommonData {
+  const inconsistent = settings.inconsistencies.filter(({ condition }) =>
+    condition.in(earlier),
+  );
   return {
     id: settings.id,
     label: settings.labelFrom?.(context) ?? settings.label,
@@ -59,8 +67,24 @@ export function commonIn<Questions extends AnyQuestions, Cibles, Faits>(
     reminder: settings.reminderFrom?.(context) ?? settings.reminder,
     optional: settings.optional === true && !settings.requiredWhen?.in(earlier),
     under: settings.under,
-    inconsistencies: settings.inconsistencies
-      .filter(({ condition }) => condition.in(earlier))
-      .map(({ message }) => textIn(message, earlier)),
+    inconsistencies: inconsistent.map(({ message }) =>
+      textIn(message, earlier),
+    ),
+    revisits: revisitsOf(inconsistent, earlier),
   };
+}
+
+// ---- implémentation ----
+
+// Les réponses à revoir, chacune une fois, dans l'ordre où les incohérences
+// les donnent.
+function revisitsOf(
+  inconsistent: readonly Inconsistency[],
+  earlier: Scope,
+): readonly Revisit[] {
+  const all = inconsistent.flatMap(({ revisit }) => revisit?.in(earlier) ?? []);
+  return all.filter(
+    (revisit, index) =>
+      all.findIndex(({ question }) => question === revisit.question) === index,
+  );
 }
