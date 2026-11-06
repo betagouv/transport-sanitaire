@@ -24,6 +24,9 @@
 //
 // Après le verrou, les faits et les cibles sont figés : seul compte ce qui lit
 // la question telle quelle, et les gardes qui lisent ses faits.
+//
+// Une question à plusieurs places compte à la sienne : ce qui la suit dépend
+// de la place. Ses gardes sont celles de toutes ses places (ADR-29).
 
 import type {
   DecisionGraphData,
@@ -36,8 +39,14 @@ import {
   type Reads,
   readsOf,
 } from "../conditions/condition.ts";
-import type { AnyCibles, Page, Validated } from "../question/question.ts";
+import type {
+  AnyCibles,
+  Page,
+  Question,
+  Validated,
+} from "../question/question.ts";
 import { Askability } from "./can-still-be-asked.ts";
+import { faitsReading } from "./faits-changed-by.ts";
 import {
   type Fixed,
   type Gate,
@@ -78,6 +87,7 @@ export type RelevancePlace = {
 export class Relevance {
   readonly #graph: RelevanceGraph;
   readonly #order: readonly string[];
+  readonly #ranks: ReadonlyMap<Question, number>;
   readonly #lock: number;
   readonly #guards: ReadonlyMap<string, Reads>;
   readonly #kept: ReadonlySet<string>;
@@ -94,10 +104,11 @@ export class Relevance {
     );
     this.#graph = new RelevanceGraph(graph);
     this.#order = questions.map(({ question }) => question.id);
-    this.#lock = questions.findIndex(({ page }) => page.afterLock);
-    this.#guards = new Map(
-      questions.map(({ question }) => [question.id, guardsOf(question)]),
+    this.#ranks = new Map(
+      questions.map(({ question }, rank) => [question, rank]),
     );
+    this.#lock = questions.findIndex(({ page }) => page.afterLock);
+    this.#guards = guardsByQuestion(questions.map(({ question }) => question));
     this.#kept = new Set(
       questions
         .filter(
@@ -108,7 +119,7 @@ export class Relevance {
     );
     this.#sections = sectionsOf(shown, []);
     this.#imposed = new Set(faits.imposed);
-    this.#changes = changedBy(faits.reads, this.#imposed);
+    this.#changes = faitsReading(faits.reads, this.#imposed);
     this.#askability = new Askability(
       questions.map(({ question }) => question),
       { reads: faits.reads, imposed: this.#imposed },
@@ -117,17 +128,18 @@ export class Relevance {
   }
 
   /** Cette question, à cette place, peut-elle changer ce qui compte ? */
-  matters(id: string, place: RelevancePlace): boolean {
-    const rank = this.#order.indexOf(id);
+  matters(question: Question, place: RelevancePlace): boolean {
+    const { id } = question;
+    const rank = this.#ranks.get(question) ?? this.#order.indexOf(id);
     if (rank < 0) return true;
-    const later = this.#order.slice(rank + 1);
+    const later = this.#order.slice(rank + 1).filter((other) => other !== id);
     const alive = this.#askability.alive(id, later, place);
     const remaining = [id, ...alive, ...place.pending];
     if (this.#lock >= 0 && rank >= this.#lock) {
       return this.#counts(id, remaining, this.#afterLock(place.cibles ?? {}));
     }
     const fixed = this.#fixed(remaining, place.validated);
-    const key = [id, place.pending, alive, [...fixed.values()]].join("|");
+    const key = [rank, place.pending, alive, [...fixed.values()]].join("|");
     const known = this.#known.get(key);
     if (known !== undefined) return known;
     const matters = this.#counts(id, remaining, this.#beforeLock(fixed));
@@ -238,15 +250,21 @@ function memoized(read: (id: string) => Read): (id: string) => Read {
   };
 }
 
-// Ce que lisent les gardes d'une question : quand elle se pose, quand elle se
-// contredit, quand elle devient obligatoire.
-function guardsOf(question: Page["questions"][number]): Reads {
-  return flattened(
-    [
+// Ce que lisent les gardes de chaque question, à toutes ses places : quand elle
+// se pose, quand elle se contredit, quand elle devient obligatoire.
+function guardsByQuestion(
+  questions: readonly Question[],
+): ReadonlyMap<string, Reads> {
+  const guards = new Map<string, Reads>();
+  for (const question of questions) {
+    const reads = [
       question.inconsistencyReads ?? NOTHING,
       question.requirementReads ?? NOTHING,
-    ].reduce(readsOf, question.guardReads),
-  );
+    ].reduce(readsOf, question.guardReads);
+    const other = guards.get(question.id) ?? NOTHING;
+    guards.set(question.id, flattened(readsOf(other, reads)));
+  }
+  return guards;
 }
 
 function sectionsOf(
@@ -259,32 +277,6 @@ function sectionsOf(
       sectionsOf(inner, [...gates, { cible, values }]),
     ),
   ];
-}
-
-// Pour chaque question, les faits qui la lisent, puis ceux qui les lisent, de
-// proche en proche. Ceux qu'impose la décision n'y sont pas.
-function changedBy(
-  reads: ReadonlyMap<string, Reads>,
-  imposed: ReadonlySet<string>,
-): (id: string) => ReadonlySet<string> {
-  const known = new Map<string, ReadonlySet<string>>();
-  return (id) => {
-    const cached = known.get(id);
-    if (cached) return cached;
-    const changed = new Set<string>();
-    for (let grew = true; grew; ) {
-      grew = false;
-      for (const [nom, lu] of reads) {
-        if (imposed.has(nom) || changed.has(nom)) continue;
-        if (lu.questions.includes(id) || lu.faits.some((f) => changed.has(f))) {
-          changed.add(nom);
-          grew = true;
-        }
-      }
-    }
-    known.set(id, changed);
-    return changed;
-  };
 }
 
 function faitValue(fait: unknown): FaitValue {

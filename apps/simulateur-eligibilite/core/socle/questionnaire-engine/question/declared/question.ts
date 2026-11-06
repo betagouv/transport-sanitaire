@@ -174,6 +174,20 @@ export abstract class DeclaredQuestion<
   }
 
   /**
+   * Une place suivante de la question, déjà déclarée sur une page d'avant : une
+   * seule réponse, sous son id. Elle ne s'y pose que si elle ne s'est pas
+   * posée plus tôt (ADR-29).
+   */
+  unlessAskedBefore(): this {
+    return this.withSettings({ laterPlace: true });
+  }
+
+  /** Une place suivante (`unlessAskedBefore`). */
+  get isLaterPlace(): boolean {
+    return this.settings.laterPlace === true;
+  }
+
+  /**
    * La réponse en contredit une autre quand `condition` tient : `message` dit
    * quoi corriger. Il peut citer les réponses : il les lit alors comme la
    * condition. La règle se déclare sur la plus tardive des questions qu'elle
