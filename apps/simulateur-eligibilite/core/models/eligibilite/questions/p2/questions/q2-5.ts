@@ -5,10 +5,7 @@
 
 import { Q1_3 } from "../../p1/questions/q1-3.ts";
 import { given, question } from "../../question.ts";
-import {
-  LIEUX_INCOMPATIBLES,
-  unConflitDeLieuxApparu,
-} from "../conditions/conflit-de-lieux.ts";
+import { incoherenceDeLieux } from "../conditions/conflit-de-lieux.ts";
 import {
   TRANSFERT_VERS_LA_PRISON,
   unRetourPenitentiaire,
@@ -57,7 +54,7 @@ export const Q2_5 = declaree
   .inconsistentWhen(unTransfertVersLaPrison, TRANSFERT_VERS_LA_PRISON)
   // Un autre déplacement part du séjour, ou y revient.
   .inconsistentWhen(
-    unConflitDeLieuxApparu("transfert", {
+    ...incoherenceDeLieux("transfert", {
       soins: Q1_3,
       sousType: Q2_1_G,
       situations: Q2_2_1,
@@ -65,5 +62,4 @@ export const Q2_5 = declaree
       enPermission: Q2_2_1_A,
       transfert: declaree,
     }),
-    LIEUX_INCOMPATIBLES,
   );

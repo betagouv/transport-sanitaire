@@ -20,9 +20,10 @@ import {
   readsOf,
   type Scope,
   type Text,
+  type Value,
 } from "../../conditions/condition.ts";
 import { checkReads, readIn } from "../../conditions/reads-in-place.ts";
-import type { AskedCommonData, InPlace } from "../asked/common.ts";
+import type { AskedCommonData, InPlace, Revisit } from "../asked/common.ts";
 import type { QuestionContext, SeenAnswers } from "../asked/context.ts";
 import type { AskedQuestion } from "../asked/question.ts";
 import {
@@ -191,10 +192,16 @@ export abstract class DeclaredQuestion<
    * La réponse en contredit une autre quand `condition` tient : `message` dit
    * quoi corriger. Il peut citer les réponses : il les lit alors comme la
    * condition. La règle se déclare sur la plus tardive des questions qu'elle
-   * lit : le socle refuse qu'elle en lise une d'après.
+   * lit : le socle refuse qu'elle en lise une d'après. `revisit` donne les
+   * réponses d'avant à revoir, chacune avec le libellé de son lien. Il lit les
+   * réponses comme la condition.
    */
-  inconsistentWhen(condition: Condition, message: Text): this {
-    const inconsistency = { condition, message };
+  inconsistentWhen(
+    condition: Condition,
+    message: Text,
+    { revisit }: { revisit?: Value<readonly Revisit[]> } = {},
+  ): this {
+    const inconsistency = { condition, message, revisit };
     return this.withSettings({
       inconsistencies: [...this.settings.inconsistencies, inconsistency],
     });
@@ -233,7 +240,8 @@ export abstract class DeclaredQuestion<
     const { inconsistencies } = this.settings;
     if (inconsistencies.length === 0) return null;
     return inconsistencies
-      .map(({ condition }) => condition.reads)
+      .flatMap(({ condition, revisit }) => [condition, revisit ?? condition])
+      .map(({ reads }) => reads)
       .reduce(readsOf, NOTHING);
   }
 

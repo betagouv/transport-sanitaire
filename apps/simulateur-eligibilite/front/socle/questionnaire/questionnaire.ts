@@ -1,8 +1,8 @@
 // Le questionnaire à l'écran : la page ouverte de la simulation, son brouillon,
-// ce qu'il reste à répondre, et ce que font ses boutons. La simulation sait
-// valider une page, avancer et reculer (`core/socle/simulation/`) ; l'écran
-// n'y ajoute que le brouillon, l'avancement automatique et la mesure
-// d'audience.
+// ce qu'il reste à répondre, et ce que font ses boutons et ses liens. La
+// simulation sait valider une page, avancer, reculer et rouvrir une réponse à
+// revoir (`core/socle/simulation/`) ; l'écran n'y ajoute que le brouillon,
+// l'avancement automatique, le focus et la mesure d'audience.
 
 import { useState } from "react";
 import {
@@ -22,6 +22,7 @@ import {
   withRestart,
 } from "./advance-alone";
 import { draftOf } from "./draft-an-answer";
+import { type RevisitLink, revisitLinks } from "./revisit-an-answer";
 import {
   type QuestionnaireTracking,
   useQuestionnaireTracking,
@@ -53,18 +54,25 @@ type View = {
   hasPendingQuestions: boolean;
   // Avancer termine le questionnaire au lieu d'ouvrir une autre page.
   isLast: boolean;
+  // La question qui prend le focus à l'entrée de la page : celle qu'un lien
+  // vient de rouvrir. Aucune : la première.
+  focus: string | undefined;
 };
 
 export type Actions = {
   answer: (id: string, answer: Answer | Unanswered) => void;
   next: () => void;
   back: () => void;
+  // Rouvre la page de cette réponse à revoir.
+  revisit: (question: string) => void;
 };
 
 export type QuestionnaireScreen = View &
   Actions & {
     // La page avancera d'elle-même : le bouton « Suivant » n'a pas à s'afficher.
     autoAdvances: boolean;
+    // Les liens vers les réponses à revoir de cette question.
+    revisitsOf: (question: AskedQuestion) => readonly RevisitLink[];
   };
 
 export function useQuestionnaire({
@@ -72,10 +80,8 @@ export function useQuestionnaire({
   onChange,
   tracked,
 }: QuestionnaireOptions): QuestionnaireScreen {
-  const [draft, setDraft] = useState<Answers>(() =>
-    draftOf(simulation.page, simulation.answers),
-  );
-  const view = read(simulation, draft);
+  const { draft, setDraft, focus, move } = useOpenedPage(simulation, onChange);
+  const view = read(simulation, draft, focus);
   // Un questionnaire qui a déjà des réponses reprend : son début n'est pas réémis.
   const resumed = Object.keys(simulation.answers).length > 0;
   const tracking = useQuestionnaireTracking(
@@ -83,33 +89,68 @@ export function useQuestionnaire({
     tracked,
     resumed,
   );
-  const move = (next: Simulation) => {
-    setDraft(draftOf(next.page, next.answers));
-    onChange(next);
-  };
   const handlers = actions({ simulation, view, tracking, setDraft, move });
+  // Pendant une correction, une sélection seule n'avance pas.
   const autoAdvance = useAutoAdvance(
     view.page.id,
-    isSingleChoicePage(view.questions),
+    isSingleChoicePage(view.questions) && !simulation.correcting,
     view.hasPendingQuestions,
     handlers.next,
   );
-  return { ...view, ...withRestart(handlers, autoAdvance) };
+  return {
+    ...view,
+    ...withRestart(handlers, autoAdvance),
+    revisitsOf: (question) => revisitLinks(simulation, question, draft),
+  };
 }
 
 // ---- implémentation ----
+
+type Move = (next: Simulation, focus?: string) => void;
 
 type Context = {
   simulation: Simulation;
   view: View;
   tracking: QuestionnaireTracking;
   setDraft: (draft: Answers) => void;
-  move: (next: Simulation) => void;
+  move: Move;
 };
+
+// Le brouillon de la page ouverte, et la question qui y prend le focus. Une
+// autre simulation, qu'un bouton ou l'adresse de la page l'ouvre, repart de ses
+// réponses validées, et du brouillon qu'elle retrouve au retour d'une
+// correction.
+function useOpenedPage(
+  simulation: Simulation,
+  onChange: (simulation: Simulation) => void,
+) {
+  const draftOn = (opened: Simulation) =>
+    draftOf(opened.page, { ...opened.answers, ...opened.restoredDraft });
+  const [opened, setOpened] = useState(simulation);
+  const [draft, setDraft] = useState<Answers>(() => draftOn(simulation));
+  const [focus, setFocus] = useState<{ on: Simulation; question: string }>();
+  // Le brouillon de la nouvelle page vaut dès ce rendu : ce qui suit le lit.
+  let shown = draft;
+  if (opened !== simulation) {
+    shown = draftOn(simulation);
+    setOpened(simulation);
+    setDraft(shown);
+  }
+  const move: Move = (next, question) => {
+    setFocus(question === undefined ? undefined : { on: next, question });
+    onChange(next);
+  };
+  const focused = focus?.on === simulation ? focus.question : undefined;
+  return { draft: shown, setDraft, focus: focused, move };
+}
 
 // Le brouillon passe par-dessus les réponses validées : ce que la page pose
 // peut en dépendre.
-function read(simulation: Simulation, draft: Answers): View {
+function read(
+  simulation: Simulation,
+  draft: Answers,
+  focus: string | undefined,
+): View {
   const { page } = simulation;
   const questions = simulation.questionsOn(page, draft);
   const hasPendingQuestions = questions.some(
@@ -125,6 +166,7 @@ function read(simulation: Simulation, draft: Answers): View {
     hasPrevious: simulation.hasPrevious(),
     hasPendingQuestions,
     isLast: !hasPendingQuestions && ends(simulation, draft),
+    focus,
   };
 }
 
@@ -133,6 +175,8 @@ function ends(simulation: Simulation, draft: Answers): boolean {
   return simulation.validate(draft).stage.name !== simulation.stage.name;
 }
 
+// Une correction n'est pas une étape de plus du parcours : elle n'émet rien,
+// sauf la fin du questionnaire si elle y mène.
 function actions({
   simulation,
   view,
@@ -150,12 +194,16 @@ function actions({
       const next = simulation.validate(view.draft);
       if (next.stage.name !== simulation.stage.name) {
         tracking.questionnaireCompleted();
-      } else {
+      } else if (!simulation.correcting) {
         tracking.stepPassed(view.pages.indexOf(view.page) + 2);
       }
       move(next);
     },
     // Reculer ne valide rien : le brouillon de la page quittée est abandonné.
     back: () => move(simulation.back()),
+    revisit: (question) => {
+      const revisited = simulation.revisit(question, view.draft);
+      if (revisited) move(revisited, question);
+    },
   };
 }

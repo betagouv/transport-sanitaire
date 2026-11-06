@@ -6,10 +6,7 @@
 import type { AnswerOf, Condition } from "../../../../../socle/index.ts";
 import { Q1_3 } from "../../p1/questions/q1-3.ts";
 import { given, question } from "../../question.ts";
-import {
-  LIEUX_INCOMPATIBLES,
-  unConflitDeLieuxApparu,
-} from "../conditions/conflit-de-lieux.ts";
+import { incoherenceDeLieux } from "../conditions/conflit-de-lieux.ts";
 import {
   unSejourEnEtablissement,
   unSejourEnHad,
@@ -106,7 +103,7 @@ const EXCEPTIONS_A_PROPOSER: Partial<Record<Exception, Condition>> = {
 
 // Une admission en HAD ou une radiothérapie fixe un lieu : un autre lieu déjà
 // dit la contredit.
-const unConflitDeLieux = unConflitDeLieuxApparu("contexte", {
+const conflitDeLieux = incoherenceDeLieux("contexte", {
   soins: Q1_3,
   sousType: Q2_1_G,
   situations: Q2_2_1,
@@ -126,4 +123,4 @@ export const Q2_6 = (
       declaree.option(exception, (option) => option.offeredWhen(aProposer)),
     exceptions,
   )
-  .inconsistentWhen(unConflitDeLieux, LIEUX_INCOMPATIBLES);
+  .inconsistentWhen(...conflitDeLieux);

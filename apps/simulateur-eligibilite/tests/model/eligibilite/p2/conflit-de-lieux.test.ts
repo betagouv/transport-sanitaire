@@ -106,6 +106,51 @@ describe("un conflit de lieux certain", () => {
   });
 });
 
+// Les liens de l'alerte (NAV-LIEUX-CORRECTION-001) : les réponses d'avant sans
+// lesquelles le conflit ne serait plus certain, un lien par libellé.
+describe("les réponses à revoir d'un conflit certain", () => {
+  const SITUATION = {
+    label: "Revoir la situation particulière",
+    question: "Q1.3",
+  };
+  const SOUS_TYPE = {
+    label: "Revoir la nature du déplacement",
+    question: "Q2.1.g",
+  };
+  const revoir = (page: string, id: keyof Questions, reponses: Reponses) =>
+    posee(page, id, reponses)?.revisits;
+
+  it("la dialyse se revoit à la situation particulière, Q1.3", () => {
+    const reponses: Reponses = {
+      ...DIALYSE,
+      "Q2.1": "1_CONSULTATION",
+      "Q2.2.1": ["5_HTNM"],
+    };
+    expect(revoir("P2/contextes", "Q2.2.1", reponses)).toEqual([SITUATION]);
+  });
+
+  it("une entrée se revoit à la nature du déplacement, Q2.1.g", () => {
+    const reponses: Reponses = {
+      ...SEUL,
+      ...HOSPITALISATION("1_ENTREE"),
+      "Q2.2.1": ["10_RETOUR_PENITENTIAIRE"],
+    };
+    expect(revoir("P2/contextes", "Q2.2.1", reponses)).toEqual([SOUS_TYPE]);
+  });
+
+  it("deux réponses du déplacement : un lien, vers la première", () => {
+    const reponses: Reponses = {
+      ...SEUL,
+      ...HOSPITALISATION("3_ADMISSION_HAD"),
+      ...SEJOUR,
+      "Q2.2.1": ["1_HOSPITALISATION", "5_HTNM"],
+    };
+    expect(revoir("P2/contextes", "Q2.2.1.cadre", reponses)).toEqual([
+      SOUS_TYPE,
+    ]);
+  });
+});
+
 describe("un conflit qu'un sens lèverait", () => {
   it.each<Cas>([
     // Le retour part du centre de dialyse vers le domicile de l'HAD.

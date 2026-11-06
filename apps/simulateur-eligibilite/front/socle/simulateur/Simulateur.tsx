@@ -6,12 +6,16 @@
 // Depuis le premier résultat, « Précédent » rouvre le questionnaire. L'action
 // principale verrouille : la préconisation est figée, et le second
 // questionnaire ne repose aucune question d'avant.
+//
+// L'adresse de la page suit la position de la simulation, et le bouton Retour
+// du navigateur y revient (`follow-the-address.ts`).
 
 import { type ComponentType, type ReactNode, useState } from "react";
 import type { Answers } from "../../../core/socle/questionnaire-engine";
 import { Simulation } from "../../../core/socle/simulation";
 import type { Model } from "../model";
 import { type DebugTraceProps, QuestionnaireForm } from "../questionnaire";
+import { useFollowTheAddress } from "./follow-the-address";
 import { CerfaScreen } from "./screens/CerfaScreen";
 import { ResultatScreen } from "./screens/ResultatScreen";
 import { trackAldPathway } from "./track-the-ald-pathway";
@@ -47,11 +51,7 @@ export function Simulateur({
   developerToolsPanel,
   DebugTrace,
 }: Props) {
-  const [simulation, setSimulation] = useState(() =>
-    seedAnswers
-      ? Simulation.resume(model.core, seedAnswers)
-      : Simulation.start(model.core),
-  );
+  const [simulation, setSimulation] = useSimulation(model, seedAnswers);
   const screen: ScreenProps = {
     model,
     simulation,
@@ -80,6 +80,18 @@ export function Simulateur({
 }
 
 // ---- implémentation ----
+
+// La simulation du parcours, au départ ou sur la seed, que l'adresse de la
+// page suit.
+function useSimulation(model: Model, seedAnswers: Answers | null) {
+  const [simulation, setSimulation] = useState(() =>
+    seedAnswers
+      ? Simulation.resume(model.core, seedAnswers)
+      : Simulation.start(model.core),
+  );
+  useFollowTheAddress(simulation, setSimulation);
+  return [simulation, setSimulation] as const;
+}
 
 // Le stepper annonce une partie de plus que celles-ci : tant que rien n'est
 // décidé, le cerfa reste possible. Arriver au résultat envoie l'indicateur ALD.

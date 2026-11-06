@@ -122,6 +122,18 @@ export const SEEDS: readonly Seed<Questions, Cibles>[] = [
     expected: {},
   },
   {
+    id: "service-cafe-glace",
+    label: "Service : une alerte qui mène à la boisson",
+    description:
+      "S'arrête sur la façon de servir, un café « Glacée » : l'alerte offre « Revoir la boisson ». Le lien rouvre la boisson, le focus sur sa question ; un choix seul n'y avance plus, et « Suivant » ramène au service, sa saisie retrouvée. Depuis la boisson, le bouton Retour du navigateur ramène aussi au service.",
+    answers: {
+      boisson: "cafe",
+      accompagnements: ["sucre"],
+      service: ["glacee"],
+    },
+    expected: {},
+  },
+  {
     id: "commande-de-the",
     label: "Résultat : un thé, avec lait et citron",
     description:
