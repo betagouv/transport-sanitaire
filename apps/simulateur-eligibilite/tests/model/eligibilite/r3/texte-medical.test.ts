@@ -96,7 +96,7 @@ describe("l'autonomie et le mode", () => {
       "Q1.2": ["8_BRANCARDAGE", "1_PAS_AUTONOME", "7_ALLONGE"],
     };
 
-    expect(texte(reponses).elements_medicaux).toBe(SEANCE);
+    expect(texte(reponses).elements_medicaux).toBe(`${SEANCE}.`);
   });
 
   it("n'écrit pas l'équipement bariatrique", () => {
@@ -221,7 +221,9 @@ describe("les compléments", () => {
 });
 
 // N4-05 de la recette de l'éditeur : chaque seed qui ouvre la PMT ou la DAP,
-// P3 répondue comme la PMT, donne un texte sans crochet ni nom de règle.
+// P3 répondue comme la PMT, donne un texte sans crochet ni nom de règle. Le
+// texte peut rester vide : la permission de `sejour-en-etablissement` ne désigne
+// aucun soin, et son brancardage a sa case (D-270).
 describe("le texte médical de chaque seed qui ouvre la PMT ou la DAP", () => {
   const seeds = SEEDS.filter(({ expected }) =>
     ["S3138g", "S3139h"].includes(String(expected.cible_support_id)),
@@ -232,7 +234,6 @@ describe("le texte médical de chaque seed qui ouvre la PMT ou la DAP", () => {
       avecLaP3DeLaPmt(id),
     );
 
-    expect(elements_medicaux).toBeDefined();
     expect(`${elements_medicaux} ${elements_medicaux_precision}`).not.toMatch(
       /[[\]{}]|cible_|fait_|ISSUE_|null|NaN/,
     );
