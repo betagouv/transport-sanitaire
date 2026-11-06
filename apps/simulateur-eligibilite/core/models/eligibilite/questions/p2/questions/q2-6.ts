@@ -4,12 +4,20 @@
 // vivent sous `faits/`.
 
 import type { AnswerOf, Condition } from "../../../../../socle/index.ts";
+import { Q1_3 } from "../../p1/questions/q1-3.ts";
 import { given, question } from "../../question.ts";
+import {
+  LIEUX_INCOMPATIBLES,
+  unConflitDeLieuxApparu,
+} from "../conditions/conflit-de-lieux.ts";
 import {
   unSejourEnEtablissement,
   unSejourEnHad,
 } from "../conditions/sejour.ts";
-import { Q2_1_G } from "./q2-1.ts";
+import { Q2_1, Q2_1_G } from "./q2-1.ts";
+import { Q2_2_1 } from "./q2-2-1.ts";
+import { Q2_2_1_A } from "./q2-2-1-a.ts";
+import { Q2_2_1_CADRE } from "./q2-2-1-cadre.ts";
 import { Q2_3_2 } from "./q2-3-2.ts";
 import { Q2_5 } from "./q2-5.ts";
 
@@ -96,12 +104,27 @@ const EXCEPTIONS_A_PROPOSER: Partial<Record<Exception, Condition>> = {
     .or(unAutreDeplacement),
 };
 
+// Une admission en HAD ou une radiothérapie fixe un lieu : un autre lieu déjà
+// dit la contredit.
+const unConflitDeLieux = unConflitDeLieuxApparu("contexte", {
+  soins: Q1_3,
+  motif: Q2_1,
+  sousType: Q2_1_G,
+  situations: Q2_2_1,
+  sejour: Q2_2_1_CADRE,
+  enPermission: Q2_2_1_A,
+  transfert: Q2_5,
+  contexte: exceptions,
+});
+
 // Chaque exception de la table ne se propose que si sa condition tient. Les
 // autres se proposent toujours.
 export const Q2_6 = (
   Object.entries(EXCEPTIONS_A_PROPOSER) as [Exception, Condition][]
-).reduce(
-  (declaree, [exception, aProposer]) =>
-    declaree.option(exception, (option) => option.offeredWhen(aProposer)),
-  exceptions,
-);
+)
+  .reduce(
+    (declaree, [exception, aProposer]) =>
+      declaree.option(exception, (option) => option.offeredWhen(aProposer)),
+    exceptions,
+  )
+  .inconsistentWhen(unConflitDeLieux, LIEUX_INCOMPATIBLES);

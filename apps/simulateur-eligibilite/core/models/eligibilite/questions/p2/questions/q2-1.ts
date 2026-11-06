@@ -6,6 +6,10 @@
 
 import { Q1_3 } from "../../p1/questions/q1-3.ts";
 import { given, question } from "../../question.ts";
+import {
+  LIEUX_INCOMPATIBLES,
+  unConflitDeLieuxApparu,
+} from "../conditions/conflit-de-lieux.ts";
 
 /**
  * P1 prouve déjà un motif de transport : l'ambulance, une séance qualifiante,
@@ -30,7 +34,8 @@ const plusieursSeances = cas.compute(
   (cochees) => SEANCES.filter((seance) => cochees.checked(seance)).length >= 2,
 );
 
-export const Q2_1 = question
+// La question, avant l'incohérence qui lit sa réponse.
+const prestation = question
   .singleChoice(
     "Q2.1",
     "Quelle situation médicale ou quel événement motive ce déplacement ?",
@@ -64,6 +69,12 @@ export const Q2_1 = question
   // Une séance se coche en Q1.3 : elle ne se vote pas deux fois.
   .option("6_SEANCE", (option) => option.offeredWhen(uneSeance.not()));
 
+// Une permission ou un hébergement de Q2.1 contredit une dialyse de Q1.3.
+export const Q2_1 = prestation.inconsistentWhen(
+  unConflitDeLieuxApparu("motif", { soins: Q1_3, motif: prestation }),
+  LIEUX_INCOMPATIBLES,
+);
+
 export const Q2_1_F = question
   .singleChoice(
     "Q2.1.f",
@@ -80,7 +91,7 @@ export const Q2_1_F = question
     ),
   );
 
-export const Q2_1_G = question
+const sousType = question
   .singleChoice(
     "Q2.1.g",
     "S’agit-il d’une entrée dans un établissement de santé, d’une sortie de cet établissement ou d’une admission en Hospitalisation à Domicile (HAD) à domicile ?",
@@ -93,3 +104,12 @@ export const Q2_1_G = question
   })
   .appliesWhen(given.question(Q2_1).answer().is("8_HOSPITALISATION"))
   .dependsOn(Q2_1);
+
+export const Q2_1_G = sousType.inconsistentWhen(
+  unConflitDeLieuxApparu("sousType", {
+    soins: Q1_3,
+    motif: Q2_1,
+    sousType,
+  }),
+  LIEUX_INCOMPATIBLES,
+);
