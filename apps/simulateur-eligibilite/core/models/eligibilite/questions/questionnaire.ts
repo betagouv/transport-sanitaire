@@ -22,10 +22,10 @@ const P0 = {
         })
         .boldLabels()
         .option("1_VERIFIER", (option) =>
-          option.description("Environ 3 minutes"),
+          option.description("1 minute 30 chrono !"),
         )
         .option("2_VERIFIER_ET_PRESCRIRE", (option) =>
-          option.description("Environ 10 minutes"),
+          option.description("4 minutes"),
         ),
     ),
   ],

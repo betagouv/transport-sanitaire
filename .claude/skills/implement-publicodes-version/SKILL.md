@@ -94,17 +94,17 @@ Chaque garde dit une chose précise. Lis son message avant de toucher au code.
 | Ce qui échoue | Ce que ça veut dire |
 |---|---|
 | `tests/model/regles-a-jour.test.ts` | `pnpm regles` n'a pas été relancé |
-| `tests/model/eligibilite/catalogue-resultats.test.ts` | le catalogue, `VERSION` et le YAML ne sont pas de la même version, ou une issue n'a pas de texte |
-| `tests/model/eligibilite/declarations.test.ts` | un fait, une cible ou une valeur de cible ne sont plus ceux des règles |
-| `tests/model/eligibilite/catalogue-des-faits.test.ts` | un fait n'a pas son fichier sous `faits/`, ou l'inverse |
-| `tests/model/eligibilite/oracle.test.ts` | un cas de l'oracle ne donne plus son issue, en faits |
-| `tests/model/eligibilite/oracle-par-reponses.test.ts` | le même, par les réponses du questionnaire |
+| `tests/model/eligibilite/r2/catalogue-resultats.test.ts` | le catalogue, `VERSION` et le YAML ne sont pas de la même version, ou une issue n'a pas de texte |
+| `tests/model/eligibilite/rules/declarations.test.ts` | un fait, une cible ou une valeur de cible ne sont plus ceux des règles |
+| `tests/model/eligibilite/faits/catalogue-des-faits.test.ts` | un fait n'a pas son fichier sous `faits/`, ou l'inverse |
+| `tests/model/eligibilite/cibles/oracle.test.ts` | un cas de l'oracle ne donne plus son issue, en faits |
+| `tests/model/eligibilite/cibles/oracle-par-reponses.test.ts` | le même, par les réponses du questionnaire |
 | `tests/model/conformite.test.ts` | une seed répond à une question disparue, ou ne donne plus ses cibles attendues |
 | les tests `texte-*` de R2 | un texte du catalogue a changé : l'attendu le suit, mot pour mot |
 
 ## 6. Porter l'oracle
 
-Les cas neufs des tests livrés vont dans `tests/model/eligibilite/`, sous leur
+Les cas neufs des tests livrés vont dans `tests/model/eligibilite/cibles/`, sous leur
 identifiant chez l'éditeur. En faits d'abord (`oracle.test.ts`, sur
 `faits-de-l-oracle.ts`), puis en réponses quand le questionnaire sait les
 produire (`oracle-par-reponses.test.ts`). Un cas qui ne se rejoue pas en

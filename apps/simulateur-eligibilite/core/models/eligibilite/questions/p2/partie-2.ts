@@ -26,6 +26,7 @@ import { Q2_8_3 } from "./questions/q2-8-3.ts";
 import { Q2_8_4 } from "./questions/q2-8-4.ts";
 import { Q2_8_5 } from "./questions/q2-8-5.ts";
 import { Q2_8_6, Q2_8_6_A, Q2_8_6_B } from "./questions/q2-8-6.ts";
+import { Q2_8_DUREE_48H } from "./questions/q2-8-duree-48h.ts";
 import { Q2_10, Q2_10_A, Q2_10_B } from "./questions/q2-10.ts";
 import { Q2_12 } from "./questions/q2-12.ts";
 import { Q2_13_DEPART } from "./questions/q2-13.ts";
@@ -57,6 +58,7 @@ export const P2 = {
         Q2_8_1,
         Q2_8_2,
         Q2_8_3,
+        Q2_8_DUREE_48H,
         Q2_8_4,
         Q2_8_5,
         Q2_8_6,

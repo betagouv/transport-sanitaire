@@ -35,8 +35,9 @@ export const Q3_1_2 = question
     "1_ALLER": "Aller simple",
     "2_RETOUR": "Retour simple",
     "3_ALLER_RETOUR_EQUIVALENT":
-      "Aller-retour équivalent (mêmes faits en tout point, extrémités inversées)",
-    "4_ALLER_RETOUR_DIFFERENT": "Aller-retour différent",
+      "Aller-retour identique (même trajet en sens inverse, mêmes conditions de transport)",
+    "4_ALLER_RETOUR_DIFFERENT":
+      "Aller-retour différent (trajets ou conditions différents à l'aller et au retour)",
   })
   .mattersWhile(unSensAPoser)
   // Un sens ne se propose que s'il s'accorde aux rôles fixés en P2. Sans rôle
@@ -48,7 +49,5 @@ export const Q3_1_2 = question
     option.offeredWhen(versLEtablissement.or(depuisLEtablissement).not()),
   )
   .option("4_ALLER_RETOUR_DIFFERENT", (option) =>
-    option.blocks(
-      "Ces deux trajets nécessitent deux simulations distinctes. Choisissez ici le sens déjà évalué, puis faites une autre simulation pour l’autre sens.",
-    ),
+    option.blocks("Ces deux trajets nécessitent deux simulations distinctes."),
   );

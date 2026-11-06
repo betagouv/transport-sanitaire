@@ -2,8 +2,8 @@
 // case est déjà cochée, seule sa date manque. Elle est documentaire : ni le
 // motif, ni le document, ni la DAP n'en dépendent.
 
+import { DATE_FUTURE, dansLeFutur } from "../../p1/conditions/evenements.ts";
 import { given, question } from "../../question.ts";
-import { DATE_FUTURE, dansLeFutur } from "../conditions/evenements.ts";
 import { avecUnDocument } from "../conditions/supports-du-complement.ts";
 
 // La question, avant la règle qui lit sa réponse.

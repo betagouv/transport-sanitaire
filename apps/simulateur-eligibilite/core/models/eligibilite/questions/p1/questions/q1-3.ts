@@ -1,11 +1,14 @@
 // Q1.3 : les cas particuliers du patient, puis sur la même page Q1.3.b quand
-// l'ALD est cochée, juste sous sa case (QST-ALD-LIEN-001), et Q1.3.a sous la
-// liste quand une dialyse l'est. Décocher la case retire sa question, et sa
-// réponse avec elle. La case ALD ne dit que le statut : le lien du soin avec
-// l'ALD se demande à part.
+// l'ALD est cochée, juste sous sa case (QST-ALD-LIEN-001), la date de
+// l'accident causé par un tiers sous la sienne (QST-Q13-TIERS-20261104), et
+// Q1.3.a sous la liste quand une dialyse l'est. Décocher la case retire sa
+// question, et sa réponse avec elle. La case ALD ne dit que le statut : le lien
+// du soin avec l'ALD se demande à part. L'accident causé par un tiers ne sert
+// qu'aux cerfa : aucun fait ne le lit.
 
 import type { AnswerOf } from "../../../../../socle/index.ts";
 import { given, question } from "../../question.ts";
+import { DATE_FUTURE, dansLeFutur } from "../conditions/evenements.ts";
 import { Q1_2 } from "./q1-2.ts";
 
 // Les critères de Q1.2 qui imposent l'ambulance.
@@ -42,6 +45,7 @@ const ORDRE_DES_CAS = [
   "4_RADIOTHERAPIE",
   "5_DIALYSE",
   "6_PARTAGE_INCOMPATIBLE",
+  "9_ACCIDENT_TIERS",
 ] as const;
 
 export const Q1_3 = question
@@ -62,6 +66,8 @@ export const Q1_3 = question
     "7_AUCUNE": "Aucune de ces situations.",
     "8_MINEUR_SOINS_CONTINUS":
       "Le patient a moins de 18 ans et le service médical de l’Assurance Maladie a reconnu qu’il nécessite des soins continus pendant plus de six mois, en lien avec ce déplacement.",
+    "9_ACCIDENT_TIERS":
+      "Ce transport est en rapport avec un accident causé par un tiers.",
   })
   .order(...ORDRE_DES_CAS)
   .exclusive("7_AUCUNE")
@@ -87,6 +93,20 @@ export const Q1_3_B = question
   })
   .appliesWhen(given.question(Q1_3).answer().checked("2_ALD"))
   .shownUnder(Q1_3, "2_ALD");
+
+// La question, avant la règle qui lit sa réponse.
+const dateDeLAccident = question
+  .date(
+    "Q1.3.accident_tiers_date",
+    "À quelle date cet accident a-t-il eu lieu ?",
+  )
+  .appliesWhen(given.question(Q1_3).answer().checked("9_ACCIDENT_TIERS"))
+  .shownUnder(Q1_3, "9_ACCIDENT_TIERS");
+
+export const Q1_3_ACCIDENT_TIERS_DATE = dateDeLAccident.inconsistentWhen(
+  dansLeFutur(dateDeLAccident),
+  DATE_FUTURE,
+);
 
 export const Q1_3_A = question
   .singleChoice(

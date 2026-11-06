@@ -17,7 +17,7 @@ import {
 import { type Ajouts, fiche, NON_PARTAGE, TAP } from "./fiches-du-test";
 
 const DIALYSE_ET_150_KM =
-  "Votre déplacement est lié à une séance de dialyse, prise en compte comme une hospitalisation pour le transport.";
+  "Votre déplacement est lié à une séance de dialyse, prise en compte comme une hospitalisation.";
 
 describe("la convocation et la permission", () => {
   const PERMISSION = {
@@ -93,7 +93,7 @@ describe("le motif administratif du modus", () => {
     expect(
       motif(demande({ ...DIALYSE, ...LONGUE_DISTANCE }, PRECISION_DIALYSE)),
     ).toBe(
-      "que votre transport sera pris en charge par l’Assurance Maladie au titre d’un transport lié à une séance de dialyse, prise en compte comme une hospitalisation pour le transport, sur un trajet de plus de 150 km ;",
+      "que votre transport sera pris en charge par l’Assurance Maladie au titre d’un transport lié à une séance de dialyse, prise en compte comme une hospitalisation, sur un trajet de plus de 150 km ;",
     );
   });
 
@@ -103,13 +103,13 @@ describe("le motif administratif du modus", () => {
         demande({ ...DIALYSE, ...LONGUE_DISTANCE }, PRECISION_DIALYSE, URGENCE),
       ),
     ).toBe(
-      "que votre transport pourra être pris en charge par l’Assurance Maladie, au titre d’un transport lié à une séance de dialyse, prise en compte comme une hospitalisation pour le transport, sur un trajet de plus de 150 km ;",
+      "que votre transport pourra être pris en charge par l’Assurance Maladie, au titre d’un transport lié à une séance de dialyse, prise en compte comme une hospitalisation, sur un trajet de plus de 150 km ;",
     );
   });
 
   it("sans motif d'accord, la base seule", () => {
     expect(motif(demande(DIALYSE, PRECISION_DIALYSE))).toContain(
-      "au titre d’un transport lié à une séance de dialyse, prise en compte comme une hospitalisation pour le transport ;",
+      "au titre d’un transport lié à une séance de dialyse, prise en compte comme une hospitalisation ;",
     );
   });
 });

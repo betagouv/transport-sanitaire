@@ -16,21 +16,6 @@ import { faux, trace, vrai } from "../traces-du-prescripteur";
 
 const catalogue = await catalogueResultats();
 
-// Le catalogue, avec le scénario de cumul de la caisse actif et porté par ces
-// codes.
-const avecLeCumul = (...codes: readonly string[]): typeof catalogue => {
-  const caisse = catalogue.issues.ISSUE_CAISSE;
-  const scenarios = caisse.scenarios.map((scenario) =>
-    scenario.id === "cumul-htnm-ald"
-      ? { ...scenario, inactive: false, codes: [...codes] }
-      : scenario,
-  );
-  return {
-    ...catalogue,
-    issues: { ...catalogue.issues, ISSUE_CAISSE: { ...caisse, scenarios } },
-  };
-};
-
 const texteDeLaSeed = (id: string, issue: IssueOrientee) => {
   const seed = SEEDS.find((candidate) => candidate.id === id);
   if (!seed) throw new Error(`Seed inconnue : ${id}`);
@@ -205,47 +190,23 @@ describe("le texte de la caisse quand plusieurs points sont ouverts", () => {
     fait_htnm_segment_verifie: faux,
   } as const;
 
-  // Le seul scénario de cumul de l'oracle, ALD et hébergement, est inactif
-  // depuis la v10.1.6 (TS1016-07), comme le point de l'ALD. Rendu actif et
-  // porté par deux points que le questionnaire ouvre, il passe avant les
-  // scénarios un par un.
-  it("prend le scénario de cumul que l'éditeur a écrit pour ces deux points", () => {
-    const texte = texteDuPrescripteur(
-      avecLeCumul(
-        "CONVOCATION_CONDITION_NON_VERIFIABLE",
-        "CNAM_HTNM_HORS_MATERNITE",
-      ),
-      "ISSUE_CAISSE",
-      trace(appareillage, htnm),
-    );
-    expect(texte.titre).toBe(PLUSIEURS_POINTS);
-    expect(texte.introduction).toMatch(
-      /^Le simulateur a identifié deux points/,
-    );
-    expect(texte.pourquoi).toEqual({
-      titre: "Points à confirmer",
-      elements: [
-        {
-          titre:
-            "La catégorie de l’Affection Longue Durée (ALD) n’est pas vérifiée",
-          paragraphes: [
-            "Un lien entre les soins et une Affection Longue Durée (ALD) a été déclaré, mais sa catégorie réglementaire ne peut pas être établie à partir des réponses disponibles. Cette information peut conditionner le droit au transport ou une dispense d’accord préalable.",
-          ],
-        },
-        {
-          titre:
-            "Le segment d’hébergement temporaire nécessite une qualification",
-          paragraphes: [
-            "Le trajet comporte un segment lié à un hébergement temporaire non médicalisé, hors dispositif Engagement maternité. La règle applicable à ce segment exact n’est pas suffisamment vérifiée pour conclure sur son financement.",
-          ],
-        },
-      ],
-    });
-    expect(texte.questions).toHaveLength(4);
-    expect(texte.actions).toHaveLength(2);
+  // Les titres du pourquoi sont des clés communes de la caisse : aucun
+  // scénario n'en est la source (TS1017-16).
+  it("lit le titre du pourquoi dans les clés communes de la caisse", () => {
+    const caisse = catalogue.issues.ISSUE_CAISSE;
+    const whyTitles = { single: "Un point", multiple: "Des points" };
+    const autre = {
+      ...catalogue,
+      issues: { ...catalogue.issues, ISSUE_CAISSE: { ...caisse, whyTitles } },
+    };
+    const titreDuPourquoi = (...points: Parameters<typeof trace>) =>
+      texteDuPrescripteur(autre, "ISSUE_CAISSE", trace(...points)).pourquoi
+        ?.titre;
+    expect(titreDuPourquoi(appareillage)).toBe("Un point");
+    expect(titreDuPourquoi(appareillage, htnm)).toBe("Des points");
   });
 
-  // Aucun scénario de cumul n'existe pour ces trois points.
+  // Trois points ouverts.
   it("donne l'introduction pour plusieurs points, puis chaque scénario", () => {
     const trois = trace(appareillage, { ...htnm, fait_motif_samsah: vrai });
     const texte = texteDuPrescripteur(catalogue, "ISSUE_CAISSE", trois);

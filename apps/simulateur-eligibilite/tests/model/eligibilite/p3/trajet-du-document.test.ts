@@ -86,9 +86,7 @@ describe("les réponses de Q3.1", () => {
 
     expect(
       errorsOf(question("Q3.1.2", "S3138g"), "4_ALLER_RETOUR_DIFFERENT"),
-    ).toEqual([
-      "Ces deux trajets nécessitent deux simulations distinctes. Choisissez ici le sens déjà évalué, puis faites une autre simulation pour l’autre sens.",
-    ]);
+    ).toEqual(["Ces deux trajets nécessitent deux simulations distinctes."]);
     expect(
       new Questionnaire(DU_TRAJET)
         .readWith(reponses, avecLeSupport("S3138g"))
@@ -96,7 +94,7 @@ describe("les réponses de Q3.1", () => {
     ).toBe(false);
   });
 
-  it("« Aller-retour équivalent » se valide", () => {
+  it("« Aller-retour identique » se valide", () => {
     const reponses: Reponses = {
       "Q3.1.1": 2,
       "Q3.1.2": "3_ALLER_RETOUR_EQUIVALENT",
