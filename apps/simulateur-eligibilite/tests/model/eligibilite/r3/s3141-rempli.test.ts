@@ -40,10 +40,11 @@ const CELLULES = [
   ...["structure_identifiant", "date_prescription"],
 ];
 
-// Aucune source fiable : l'identité reste à écrire à la main (D-74).
+// Aucune source fiable : l'identité reste à écrire à la main (D-74), hors
+// l'adresse du domicile (D-268).
 const IDENTITES = [
   ...["beneficiaire_nom_prenom", "beneficiaire_nir", "beneficiaire_naissance"],
-  ...["beneficiaire_adresse", "assure_nom_prenom", "assure_nir"],
+  ...["assure_nom_prenom", "assure_nir"],
   ...["prescripteur_nom_prenom", "prescripteur_rpps", "structure_nom"],
   ...["structure_adresse", "structure_identifiant"],
 ];
@@ -153,6 +154,14 @@ describe("le S3141 de plusieurs permissions", () => {
 
     expect(await markedStates(await gabarit("S3141"), pdf, "rct")).toEqual([
       "Oui",
+    ]);
+  });
+
+  it("écrit l'adresse du domicile d'arrivée dans « adress ben »", async () => {
+    const pdf = await rempli(PERMISSIONS);
+
+    expect(await textsIn(await gabarit("S3141"), pdf, "adress ben")).toEqual([
+      "3 rue des Lilas, 69003 Lyon",
     ]);
   });
 

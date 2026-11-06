@@ -5,6 +5,7 @@
 
 import { describe, expect, it } from "vitest";
 import { ACCIDENT } from "../../../../front/models/eligibilite/r3/rubriques/accident";
+import { BENEFICIAIRE } from "../../../../front/models/eligibilite/r3/rubriques/beneficiaire";
 import { EXONERATION } from "../../../../front/models/eligibilite/r3/rubriques/exoneration";
 import { LIENS } from "../../../../front/models/eligibilite/r3/rubriques/liens";
 import { MODE } from "../../../../front/models/eligibilite/r3/rubriques/mode";
@@ -209,5 +210,33 @@ describe("le trajet", () => {
       arrivee_autre: undefined,
       aller_retour: false,
     });
+  });
+});
+
+describe("l'adresse du bénéficiaire (DOC-DOMICILE-ADRESSE)", () => {
+  it.each([
+    ["d'un départ", PMT],
+    ["d'une arrivée", PERMISSIONS],
+  ])("est celle du domicile %s", (_, reponses) => {
+    expect(cellules(BENEFICIAIRE, reponses)).toEqual({
+      beneficiaire_adresse: "3 rue des Lilas, 69003 Lyon",
+    });
+  });
+
+  it("reste vide sans domicile au trajet, sans prendre l'adresse d'un autre lieu", () => {
+    const reponses: Reponses = {
+      ...PMT,
+      "Q3.2.nature": "3_EHPAD",
+      "Q3.2.nom": "Les Tilleuls",
+      "Q3.2.adresse": EHPAD,
+    };
+
+    expect(
+      cellules(BENEFICIAIRE, reponses).beneficiaire_adresse,
+    ).toBeUndefined();
+  });
+
+  it("reste vide sans P3 répondue", () => {
+    expect(cellules(BENEFICIAIRE, MINEUR).beneficiaire_adresse).toBeUndefined();
   });
 });

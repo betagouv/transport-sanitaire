@@ -46,10 +46,11 @@ const CELLULES = [
   ...["structure_adresse", "structure_identifiant", "date_prescription"],
 ];
 
-// Aucune source fiable : l'identité reste à écrire à la main (D-74).
+// Aucune source fiable : l'identité reste à écrire à la main (D-74), hors
+// l'adresse du domicile (D-268).
 const IDENTITES = [
   ...["beneficiaire_nom_prenom", "beneficiaire_nir", "beneficiaire_naissance"],
-  ...["beneficiaire_adresse", "organisme", "assure_nom_prenom", "assure_nir"],
+  ...["organisme", "assure_nom_prenom", "assure_nir"],
   ...["prescripteur_nom_prenom", "prescripteur_rpps", "structure_nom"],
   ...["structure_adresse", "structure_identifiant"],
 ];
@@ -126,6 +127,17 @@ describe("la PMT d'une dialyse", () => {
     ["transp autre cent", []],
   ])("marque la case « %s » : %j", async (champ, etats) => {
     expect(await marquees(PMT, {}, champ)).toEqual(etats);
+  });
+});
+
+describe("l'adresse du bénéficiaire sur la PMT", () => {
+  it("écrit l'adresse du domicile dans « adresse », sur les deux volets", async () => {
+    const pdf = await rempli(PMT);
+
+    expect(await textsIn(await gabarit("S3138g"), pdf, "adresse")).toEqual([
+      "3 rue des Lilas, 69003 Lyon",
+      "3 rue des Lilas, 69003 Lyon",
+    ]);
   });
 });
 
