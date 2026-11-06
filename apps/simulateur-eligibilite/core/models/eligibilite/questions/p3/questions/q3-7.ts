@@ -30,11 +30,8 @@ export const Q3_7 = question
       "Un transport lié à l’hospitalisation d’un nouveau-né de moins de trente jours.",
     "6_TRAITEMENT_MIEUX_ADAPTE":
       "Un transfert vers un autre établissement d’hospitalisation, pour un traitement mieux adapté à l’état de santé, sauf vers un établissement de soins de suite et de réadaptation.",
-    "7_AUCUN": "Aucun autre cas parmi ceux proposés.",
+    "7_AUCUN": "Non, aucun autre cas",
   })
-  .hint(
-    "Cochez un cas seulement si sa condition propre est vérifiée : un motif d’hospitalisation ne suffit pas.",
-  )
   .mattersWhile(
     avecUnDocument.and(
       given.cible("cible_hospitalisation_ou_seances_assimilees").isOui(),

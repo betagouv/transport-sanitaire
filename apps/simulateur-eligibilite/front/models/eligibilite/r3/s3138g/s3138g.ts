@@ -13,7 +13,7 @@
 //
 // | Cellules | Pourquoi |
 // |---|---|
-// | bénéficiaire, organisme, assuré, prescripteur, structure | aucune source fiable (D-74) |
+// | bénéficiaire hors son adresse, organisme, assuré, prescripteur, structure | aucune source fiable (D-74, D-268) |
 // | `raison sociale VSL`, `adresse VSL`, `fait à`, `date1`, `n° ident` | au transporteur, page 4 |
 // | Engagement maternité | « hors remplissage » pour l'éditeur |
 
@@ -32,6 +32,7 @@ import {
 } from "../../../../socle";
 import gabarit from "../gabarits/S3138g.pdf?url";
 import { ACCIDENT, type Accident } from "../rubriques/accident";
+import { BENEFICIAIRE, type Beneficiaire } from "../rubriques/beneficiaire";
 import {
   CENTRE_DE_REFERENCE,
   type CentreDeReference,
@@ -62,6 +63,7 @@ type Pension = {
 
 type DtoS3138g = {
   fields: Accident &
+    Beneficiaire &
     Motifs &
     Mode &
     Trajet &
@@ -81,6 +83,7 @@ const CERFA: Cerfa<DtoS3138g> = {
   fields: {
     tiers_oui: box("oui", "OUI"),
     tiers_non: box("non", "NON"),
+    beneficiaire_adresse: text("adresse"),
     tiers_date: date("date accident"),
     hospitalisation: box("entré sortie hosp", "NON"),
     ald_exo: box("ALD exo", "OUI"),
@@ -161,6 +164,7 @@ const PENSION: Rubrique<Pension> = {
 const VERS_LA_PMT: CerfaMapping<DtoS3138g> = {
   fields: {
     ...ACCIDENT,
+    ...BENEFICIAIRE,
     ...MOTIFS,
     ...MODE,
     ...TRAJET,

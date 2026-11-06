@@ -88,11 +88,13 @@ function choixVide(): Geste | PageRemplie {
   return choisi && ((user) => user.click(choisi));
 }
 
-// Un groupe de cases sans case cochée, qui propose « Aucun… ».
+// Un groupe de cases sans case cochée, qui propose « Aucun… » ou « Non, aucun… ».
 function casesVides(): Geste | PageRemplie {
   const aucune = groupesDe("checkbox")
     .filter((cases) => cases.every((boite) => !boite.checked))
-    .flatMap((cases) => cases.filter((boite) => /^Aucun/.test(nomDe(boite))))
+    .flatMap((cases) =>
+      cases.filter((boite) => /^(Non, a|A)ucun/.test(nomDe(boite))),
+    )
     .at(0);
   return aucune && ((user) => user.click(aucune));
 }

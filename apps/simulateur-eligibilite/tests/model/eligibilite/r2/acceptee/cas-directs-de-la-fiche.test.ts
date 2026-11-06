@@ -63,9 +63,9 @@ const fiche = (reponses: Reponses): TexteDeLaFichePositive | undefined => {
 };
 
 const ALD =
-  "Les soins à l’origine de ce déplacement sont liés à votre maladie de longue durée reconnue par l’Assurance Maladie. Ce cadre de soins et vos difficultés de déplacement permettent la prise en charge de votre transport par l’Assurance Maladie.";
+  "Les soins à l’origine de ce déplacement sont liés à votre maladie de longue durée reconnue par l’Assurance Maladie. Ce cadre de soins et votre état de santé permettent la prise en charge de votre transport par l’Assurance Maladie.";
 const MINEUR =
-  "Les soins à l’origine de ce déplacement sont liés à votre maladie de longue durée reconnue par l’Assurance Maladie. Votre besoin de soins continus pendant plus de six mois est reconnu par l’Assurance Maladie. Avec vos difficultés de déplacement, il permet la prise en charge de votre transport.";
+  "Les soins à l’origine de ce déplacement sont liés à votre maladie de longue durée reconnue par l’Assurance Maladie. Votre besoin de soins continus pendant plus de six mois est reconnu par l’Assurance Maladie. Avec votre état de santé, il permet la prise en charge de votre transport.";
 const CARTE_TAP =
   "Vous pouvez voyager assis, mais votre état de santé nécessite une aide professionnelle pour vous déplacer ou des précautions particulières pendant le trajet. Votre trajet peut être partagé avec d’autres patients, pour préserver notre système de santé et la planète.";
 const CARTE_PROPRE =

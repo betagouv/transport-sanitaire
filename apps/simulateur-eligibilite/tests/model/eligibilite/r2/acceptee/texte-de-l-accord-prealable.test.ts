@@ -21,7 +21,7 @@ import {
 import { dapSansUrgence, dapUrgence } from "./fiches-du-test";
 
 const DIALYSE_ET_150_KM =
-  "Votre déplacement est lié à une séance de dialyse, prise en compte comme une hospitalisation pour le transport.";
+  "Votre déplacement est lié à une séance de dialyse, prise en compte comme une hospitalisation.";
 
 describe("la raison d'une demande sans urgence", () => {
   it("dit la dialyse, puis la distance de plus de 150 km", () => {
@@ -42,7 +42,7 @@ describe("la raison d'une demande sans urgence", () => {
 
   it("une précision absente prend le repli du catalogue", () => {
     expect(demande({ ...DIALYSE, ...LONGUE_DISTANCE })?.raison).toMatch(
-      /^Votre déplacement est lié à des soins pris en compte comme une hospitalisation pour le transport\. /,
+      /^Votre déplacement est lié à des soins pris en compte comme une hospitalisation\. /,
     );
   });
 });

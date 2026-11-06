@@ -198,6 +198,22 @@ describe("les faits de la permission", () => {
     ).toMatch(/R\.1112-56/);
   });
 
+  // Du 14 au 16 octobre, les dates ne contredisent ni Oui ni Non.
+  it.each([
+    ["1_OUI", true],
+    ["2_NON", false],
+  ] as const)(
+    "Q2.8.duree_48h = %s : l'admissibilité du mineur vaut %s",
+    (duree, admissible) => {
+      const reponses = {
+        ...MINEUR,
+        "Q2.8.3": "2026-10-16",
+        "Q2.8.duree_48h": duree,
+      };
+      expect(deux(reponses)).toEqual([false, admissible]);
+    },
+  );
+
   it("laisse l'admissibilité absente tant que Q2.8 n'est pas validée", () => {
     const { "Q2.8.4": _, "Q2.8.5": __, ...sansAutorisation } = MINEUR;
     expect(deux(sansAutorisation)).toEqual([false, undefined]);

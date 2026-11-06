@@ -33,7 +33,6 @@ const complement = (...entre: string[]) => [
   ...LIEUX,
   "Q3.4",
   ...entre,
-  "Q3.6.2",
   "Q3.7",
 ];
 
@@ -70,16 +69,11 @@ const ATTENDU: Record<string, readonly [string[], string[]]> = {
       "Q2.8.1",
       "Q2.8.2",
       "Q2.8.3",
+      "Q2.8.duree_48h",
       "Q2.8.4",
       "Q2.8.5",
     ]),
-    [
-      "Q3.1.2",
-      "Q3.2.nature",
-      "Q3.2.adresse",
-      "Q3.3.nature",
-      "Q3.3.adresse",
-    ].concat(["Q3.6.2"]),
+    ["Q3.1.2", "Q3.2.nature", "Q3.2.adresse", "Q3.3.nature", "Q3.3.adresse"],
   ],
   "issue-non-eligible": [
     [...P1, "Q2.1", "Q2.2.1", "Q2.2.1.b", ...DISTANCE],
@@ -144,7 +138,6 @@ const ATTENDU: Record<string, readonly [string[], string[]]> = {
       "Q3.3.adresse",
       "Q3.4",
       "Q3.4.a",
-      "Q3.6.2",
       "Q3.8.maternite.nom",
       "Q3.8.maternite.adresse",
       "Q3.8.niveau",
@@ -153,7 +146,7 @@ const ATTENDU: Record<string, readonly [string[], string[]]> = {
   // Sans issue ni document, la distance ne se pose pas.
   "orientation-penitentiaire": [
     ["Q0.1", "Q1.1", "Q1.3", "Q1.4", "Q2.1", "Q2.2.1", "Q2.2.1.indication"],
-    ["Q3.2.adresse", "Q3.3.adresse", "Q3.6.2"],
+    ["Q3.2.adresse", "Q3.3.adresse"],
   ],
   // Le séjour en établissement ouvre la permission (TS1014-B01).
   "sejour-en-etablissement": [
@@ -168,7 +161,6 @@ const ATTENDU: Record<string, readonly [string[], string[]]> = {
       "Q3.3.adresse",
       "Q3.4",
       "Q3.4.a",
-      "Q3.6.2",
       "Q3.7",
     ]),
   ],

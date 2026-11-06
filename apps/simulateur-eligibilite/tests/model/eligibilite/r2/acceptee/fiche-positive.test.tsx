@@ -53,7 +53,7 @@ describe("la fiche de la seed issue-pmt (dialyse, TAP non partagé)", () => {
     await afficher("issue-pmt");
     expect(
       fiche().getByText(
-        "Votre déplacement est lié à une séance de dialyse, prise en compte comme une hospitalisation pour le transport. Cette situation permet la prise en charge de vos frais de transport par l’Assurance Maladie.",
+        "Votre déplacement est lié à une séance de dialyse, prise en compte comme une hospitalisation. Cette situation permet la prise en charge de vos frais de transport par l’Assurance Maladie.",
       ),
     ).toBeInTheDocument();
   });

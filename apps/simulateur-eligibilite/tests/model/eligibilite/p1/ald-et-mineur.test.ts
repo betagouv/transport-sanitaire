@@ -150,6 +150,7 @@ describe("Q1.3 à l'écran", () => {
       "3_CHIMIOTHERAPIE",
       "4_RADIOTHERAPIE",
       "5_DIALYSE",
+      "9_ACCIDENT_TIERS",
     ]);
   });
 

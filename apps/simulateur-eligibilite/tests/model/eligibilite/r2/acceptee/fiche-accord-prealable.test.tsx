@@ -35,7 +35,7 @@ const TITRE =
 const ENVOI =
   "Si le professionnel qui vous a remis la demande d’accord préalable ne l’a pas déjà envoyée, adressez dès que possible les volets 1 et 2 du document sous enveloppe au service médical de votre caisse d’assurance maladie, à l’attention du médecin-conseil. Vous trouverez l’adresse sur ";
 const DIALYSE =
-  "Votre déplacement est lié à une séance de dialyse, prise en compte comme une hospitalisation pour le transport.";
+  "Votre déplacement est lié à une séance de dialyse, prise en compte comme une hospitalisation.";
 const BADGES = [
   "Transport non partagé",
   "Aide professionnelle pour se déplacer",
@@ -104,7 +104,7 @@ describe("la fiche de la seed issue-dap-sans-urgence (dialyse à plus de 150 km)
     ).toBeInTheDocument();
     expect(
       fiche().getByText(
-        `que votre transport sera pris en charge par l’Assurance Maladie au titre d’un transport lié à une séance de dialyse, prise en compte comme une hospitalisation pour le transport, sur un trajet de plus de 150 km ;`,
+        `que votre transport sera pris en charge par l’Assurance Maladie au titre d’un transport lié à une séance de dialyse, prise en compte comme une hospitalisation, sur un trajet de plus de 150 km ;`,
       ),
     ).toBeInTheDocument();
     const liste = fiche().getByRole("list", {
@@ -163,7 +163,7 @@ describe("la fiche de la seed issue-dap-urgence-attestee (urgence attestée en Q
     ).toBeInTheDocument();
     expect(
       fiche().getByText(
-        "que votre transport pourra être pris en charge par l’Assurance Maladie, au titre d’un transport lié à une séance de dialyse, prise en compte comme une hospitalisation pour le transport, sur un trajet de plus de 150 km ;",
+        "que votre transport pourra être pris en charge par l’Assurance Maladie, au titre d’un transport lié à une séance de dialyse, prise en compte comme une hospitalisation, sur un trajet de plus de 150 km ;",
       ),
     ).toBeInTheDocument();
   });

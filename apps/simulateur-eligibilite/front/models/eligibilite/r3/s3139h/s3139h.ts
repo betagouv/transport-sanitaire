@@ -21,7 +21,7 @@
 //
 // | Cellules | Pourquoi |
 // |---|---|
-// | bénéficiaire, organisme, assuré, prescripteur, structure | aucune source fiable (D-74) |
+// | bénéficiaire hors son adresse, organisme, assuré, prescripteur, structure | aucune source fiable (D-74, D-268) |
 // | `acc`, `ac ad`, `motif`, `date avis`, `date avis ad` | à la caisse, pages 2 et 3 |
 // | `raison soc`, `adresse`, `num ident`, `fait à`, `date fait` | au transporteur, page 4 |
 
@@ -42,6 +42,7 @@ import {
   AVION_OU_BATEAU,
   type AvionOuBateau,
 } from "../rubriques/avion-ou-bateau";
+import { BENEFICIAIRE, type Beneficiaire } from "../rubriques/beneficiaire";
 import {
   CENTRE_DE_REFERENCE,
   type CentreDeReference,
@@ -66,6 +67,7 @@ import {
 
 type DtoS3139h = {
   fields: Accident &
+    Beneficiaire &
     MotifsDeLaDap &
     AvionOuBateau &
     Mode &
@@ -87,6 +89,7 @@ const CERFA: Cerfa<DtoS3139h> = {
   fields: {
     tiers_oui: box("rap acc", "non"),
     tiers_non: box("rap acc", "Oui"),
+    beneficiaire_adresse: text("ad"),
     tiers_date: date("DATE AT"),
     longue_distance: drawnBox("km", "Oui"),
     serie: drawnBox("km", "non"),
@@ -139,6 +142,7 @@ const CERFA: Cerfa<DtoS3139h> = {
 const VERS_LA_DAP: CerfaMapping<DtoS3139h> = {
   fields: {
     ...ACCIDENT,
+    ...BENEFICIAIRE,
     ...MOTIFS_DE_LA_DAP,
     ...AVION_OU_BATEAU,
     ...MODE,

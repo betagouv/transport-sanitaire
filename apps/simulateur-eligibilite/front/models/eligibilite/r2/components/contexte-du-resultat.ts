@@ -67,7 +67,7 @@ export function phraseDuContexte(
 /**
  * Le motif administratif du modus, lexique rempli ; absent si aucun ne
  * convient. Ses définitions sont celles de `administrativeLexicon` quand
- * l'issue en porte : le modus ne répète pas « pour le transport » (TS1014-J02).
+ * l'issue en porte (TS1014-J02).
  */
 export function motifAdministratif(
   issue: IssuePositive,

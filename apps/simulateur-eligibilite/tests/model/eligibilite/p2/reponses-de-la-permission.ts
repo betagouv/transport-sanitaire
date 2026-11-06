@@ -31,13 +31,15 @@ export const PATIENT_SEUL: Reponses = {
 };
 
 // Un mineur admissible : hospitalisé le 1er octobre, première permission le
-// 14e jour, de 24 heures, autorisée, sans autre permission.
+// 14e jour, du 14 au 15, d'au plus 48 heures, autorisée, sans autre
+// permission.
 export const MINEUR: Reponses = {
   ...PATIENT_SEUL,
   "Q2.7": "1_MOINS_DE_SEIZE_ANS",
   "Q2.8.1": "2026-10-01",
-  "Q2.8.2": "2026-10-14T09:00",
-  "Q2.8.3": "2026-10-15T09:00",
+  "Q2.8.2": "2026-10-14",
+  "Q2.8.3": "2026-10-15",
+  "Q2.8.duree_48h": "1_OUI",
   "Q2.8.4": "1_OUI",
   "Q2.8.5": "2_NON",
 };

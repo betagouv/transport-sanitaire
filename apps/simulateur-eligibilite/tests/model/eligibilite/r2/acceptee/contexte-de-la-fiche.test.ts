@@ -56,13 +56,13 @@ describe("la phrase du contexte", () => {
 
   it("dit l'hospitalisation avec la précision de la trace", () => {
     expect(phrase(H, { hospitalisation: "H-SEANCE-HE" })).toBe(
-      "Votre déplacement est lié à une séance de dialyse, prise en compte comme une hospitalisation pour le transport. Cette situation permet la prise en charge de vos frais de transport par l’Assurance Maladie.",
+      "Votre déplacement est lié à une séance de dialyse, prise en compte comme une hospitalisation. Cette situation permet la prise en charge de vos frais de transport par l’Assurance Maladie.",
     );
   });
 
   it("prend H-GENERIQUE quand la précision manque", () => {
     expect(phrase(H)).toBe(
-      "Votre déplacement est lié à des soins pris en compte comme une hospitalisation pour le transport. Cette situation permet la prise en charge de vos frais de transport par l’Assurance Maladie.",
+      "Votre déplacement est lié à des soins pris en compte comme une hospitalisation. Cette situation permet la prise en charge de vos frais de transport par l’Assurance Maladie.",
     );
   });
 
@@ -84,13 +84,13 @@ describe("la phrase du contexte", () => {
 
   it("dit l'ALD à 100 %, sans phrase de plus pour l'ambulance", () => {
     expect(phrase({ ...A, ...B })).toBe(
-      "Les soins à l’origine de ce déplacement sont liés à votre maladie de longue durée reconnue par l’Assurance Maladie. Ce cadre de soins et vos difficultés de déplacement permettent la prise en charge de votre transport par l’Assurance Maladie.",
+      "Les soins à l’origine de ce déplacement sont liés à votre maladie de longue durée reconnue par l’Assurance Maladie. Ce cadre de soins et votre état de santé permettent la prise en charge de votre transport par l’Assurance Maladie.",
     );
   });
 
   it("dit le mineur reconnu", () => {
     expect(phrase(M)).toBe(
-      "Les soins à l’origine de ce déplacement sont liés à votre maladie de longue durée reconnue par l’Assurance Maladie. Votre besoin de soins continus pendant plus de six mois est reconnu par l’Assurance Maladie. Avec vos difficultés de déplacement, il permet la prise en charge de votre transport.",
+      "Les soins à l’origine de ce déplacement sont liés à votre maladie de longue durée reconnue par l’Assurance Maladie. Votre besoin de soins continus pendant plus de six mois est reconnu par l’Assurance Maladie. Avec votre état de santé, il permet la prise en charge de votre transport.",
     );
   });
 
@@ -104,7 +104,7 @@ describe("la phrase du contexte", () => {
     expect(
       phrase({ ...H, ...T, ...A, ...B }, { hospitalisation: "H-SEJOUR" }),
     ).toBe(
-      "Votre déplacement est lié à une hospitalisation. Les soins à l’origine de ce déplacement sont en lien avec un accident du travail ou une maladie professionnelle et liés à votre maladie de longue durée reconnue par l’Assurance Maladie. Ce cadre de soins et vos difficultés de déplacement permettent la prise en charge de votre transport par l’Assurance Maladie.",
+      "Votre déplacement est lié à une hospitalisation. Les soins à l’origine de ce déplacement sont en lien avec un accident du travail ou une maladie professionnelle et liés à votre maladie de longue durée reconnue par l’Assurance Maladie. Ce cadre de soins et votre état de santé permettent la prise en charge de votre transport par l’Assurance Maladie.",
     );
   });
 

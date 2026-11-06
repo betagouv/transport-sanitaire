@@ -9,7 +9,7 @@
 //
 // | Cellules | Pourquoi |
 // |---|---|
-// | bénéficiaire, assuré, prescripteur, structure | aucune source fiable (D-74) |
+// | bénéficiaire hors son adresse, assuré, prescripteur, structure | aucune source fiable (D-74, D-268) |
 // | `adresse`, `dat fait le`, `fait lieu`, `num ident transport`, `pério traj`, `raison sociale` | « hors remplissage » pour l'éditeur |
 // | toute rubrique médicale | le S3141 n'en a pas (COR-10) |
 //
@@ -30,6 +30,7 @@ import {
 } from "../../../../socle";
 import gabarit from "../gabarits/S3141.pdf?url";
 import { ACCIDENT, type Accident } from "../rubriques/accident";
+import { BENEFICIAIRE, type Beneficiaire } from "../rubriques/beneficiaire";
 import { EXONERATION, type Exoneration } from "../rubriques/exoneration";
 import { LIENS, type Liens } from "../rubriques/liens";
 import { MODE, type Mode } from "../rubriques/mode";
@@ -53,6 +54,7 @@ type Permission = {
 
 type DtoS3141 = {
   fields: Accident &
+    Beneficiaire &
     Permission &
     Mode &
     Liens &
@@ -68,6 +70,7 @@ const CERFA: Cerfa<DtoS3141> = {
   fields: {
     tiers_oui: box("rct", "non"),
     tiers_non: box("rct", "Oui"),
+    beneficiaire_adresse: text("adress ben"),
     tiers_date: date("date acc"),
     debut_hospitalisation: date("date deb hosp"),
     nombre: text("tr mois"),
@@ -119,6 +122,7 @@ const PERMISSION: Rubrique<Permission> = {
 const VERS_LE_S3141: CerfaMapping<DtoS3141> = {
   fields: {
     ...ACCIDENT,
+    ...BENEFICIAIRE,
     ...PERMISSION,
     ...MODE,
     ...LIENS,

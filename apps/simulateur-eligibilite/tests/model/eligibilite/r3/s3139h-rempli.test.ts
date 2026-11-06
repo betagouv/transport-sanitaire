@@ -49,10 +49,11 @@ const CELLULES = [
   ...["structure_adresse", "structure_identifiant", "date_prescription"],
 ];
 
-// Aucune source fiable : l'identité reste à écrire à la main (D-74).
+// Aucune source fiable : l'identité reste à écrire à la main (D-74), hors
+// l'adresse du domicile (D-268).
 const IDENTITES = [
   ...["beneficiaire_nom_prenom", "beneficiaire_nir", "beneficiaire_naissance"],
-  ...["beneficiaire_adresse", "organisme", "assure_nom_prenom", "assure_nir"],
+  ...["organisme", "assure_nom_prenom", "assure_nir"],
   ...["prescripteur_nom_prenom", "prescripteur_rpps", "structure_nom"],
   ...["structure_adresse", "structure_identifiant"],
 ];
@@ -133,6 +134,18 @@ describe("la DAP d'une dialyse à plus de 150 km", () => {
   });
 });
 
+describe("l'adresse du bénéficiaire sur la DAP", () => {
+  it("écrit l'adresse du domicile dans « ad », sur les trois volets", async () => {
+    const pdf = await rempli(DAP);
+
+    expect(await textsIn(await gabarit("S3139h"), pdf, "ad")).toEqual([
+      "3 rue des Lilas, 69003 Lyon",
+      "3 rue des Lilas, 69003 Lyon",
+      "3 rue des Lilas, 69003 Lyon",
+    ]);
+  });
+});
+
 describe("la DAP de 4 allers-retours", () => {
   // Quatre allers-retours valent 4, et non 8 trajets simples (D-246).
   const QUATRE: Reponses = {
@@ -167,17 +180,19 @@ describe("les cases inversées du gabarit (D-188)", () => {
     expect(await abscisses("S3139h", champ)).toEqual(rangees);
   });
 
-  it.each([
-    ["2_NON", ["Oui"]],
-    ["1_OUI", ["non"]],
-  ] as const)(
-    "l'accident causé par un tiers %s coche %j",
-    async (reponse, etats) => {
-      const reponses: Reponses = { ...DAP, "Q3.6.2": reponse };
+  it("l'accident causé par un tiers laissé décoché en Q1.3 coche l'état « Oui »", async () => {
+    expect(await marquees(DAP, {}, "rap acc")).toEqual(["Oui"]);
+  });
 
-      expect(await marquees(reponses, {}, "rap acc")).toEqual(etats);
-    },
-  );
+  it("l'accident causé par un tiers coché en Q1.3 coche l'état « non »", async () => {
+    const reponses: Reponses = {
+      ...DAP,
+      "Q1.3": ["5_DIALYSE", "6_PARTAGE_INCOMPATIBLE", "9_ACCIDENT_TIERS"],
+      "Q1.3.accident_tiers_date": "2026-09-30",
+    };
+
+    expect(await marquees(reponses, {}, "rap acc")).toEqual(["non"]);
+  });
 
   it("l'ALD exonérante liée à l'avion coche l'état « non »", async () => {
     const cibles = {

@@ -1,4 +1,5 @@
-// La date d'un évènement de Q3.6 : elle est passée.
+// La date d'un accident : elle est passée. L'accident causé par un tiers
+// (Q1.3) et l'AT/MP (Q3.6.1) la lisent.
 
 import type { Answered } from "../../../../../socle/index.ts";
 import { given } from "../../question.ts";

@@ -1,12 +1,13 @@
-// Q2.8.2 : le début de la première permission. Il ne précède ni
-// l'hospitalisation (Q2.8.1), ni son 14e jour.
+// Q2.8.2 : le début de la première permission, une date seule
+// (DATES-SEULES-20261104). Il ne précède ni l'hospitalisation (Q2.8.1), ni son
+// 14e jour.
 
 import { given, question } from "../../question.ts";
 import { unMineurDeVingtAns } from "../conditions/permission.ts";
 import { Q2_8_1 } from "./q2-8-1.ts";
 
 // La question, avant les règles qui lisent sa réponse.
-const declaree = question.datetime(
+const declaree = question.date(
   "Q2.8.2",
   "Quand commence la première permission ?",
 );
@@ -21,7 +22,7 @@ const debut = given.question(declaree).answer().toDate();
 const commenceAvantLHospitalisation = debut.isBefore(hospitalisation);
 
 // Elle commence avant le 14e jour d'hospitalisation. Le jour de
-// l'hospitalisation est le jour 1 : le 14e jour, à minuit, est permis.
+// l'hospitalisation est le jour 1.
 const commenceAvantLeQuatorziemeJour = debut.isBefore(
   hospitalisation.plusDays(PREMIER_JOUR_AUTORISE - 1),
 );
