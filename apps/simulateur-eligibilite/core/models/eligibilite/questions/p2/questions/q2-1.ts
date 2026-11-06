@@ -36,8 +36,9 @@ export const Q2_1 = question
     "Quelle situation médicale ou quel événement motive ce déplacement ?",
   )
   .options({
+    // Sans le suivi de l'ALD : ce choix ne prouve pas le lien (QST-Q21-CONSULTATION).
     "1_CONSULTATION":
-      "Consultation médicale de diagnostic, de traitement ou de suivi, dont suivi de l’Affection Longue Durée (ALD).",
+      "Consultation médicale de diagnostic, de traitement ou de suivi.",
     "2_DENTISTE_OU_SAGE_FEMME":
       "Consultation ou soin réalisé par un chirurgien-dentiste ou une sage-femme.",
     "3_IMAGERIE": "Examen d’imagerie ou autre acte médical technique.",
