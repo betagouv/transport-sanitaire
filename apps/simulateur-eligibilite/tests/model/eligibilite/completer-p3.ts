@@ -92,7 +92,9 @@ function choixVide(): Geste | PageRemplie {
 function casesVides(): Geste | PageRemplie {
   const aucune = groupesDe("checkbox")
     .filter((cases) => cases.every((boite) => !boite.checked))
-    .flatMap((cases) => cases.filter((boite) => /^(Non, a|A)ucun/.test(nomDe(boite))))
+    .flatMap((cases) =>
+      cases.filter((boite) => /^(Non, a|A)ucun/.test(nomDe(boite))),
+    )
     .at(0);
   return aucune && ((user) => user.click(aucune));
 }
