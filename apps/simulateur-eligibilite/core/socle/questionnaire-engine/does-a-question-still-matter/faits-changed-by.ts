@@ -16,6 +16,9 @@
 // Q2.3.1, la distance, change donc les faits qui lisent Q2.3.4.
 //
 // Un fait qui ne lit rien est une constante : aucune question ne le change.
+//
+// `faitsReading` s'en tient aux faits : ceux qui lisent la question, puis ceux
+// qui les lisent.
 
 import type { Reads } from "../conditions/condition.ts";
 import type { Question } from "../question/question.ts";
@@ -34,6 +37,35 @@ export function faitsChangedBy(
   return new Map(
     questions.map(({ id }) => [id, changedFrom(id, links)] as const),
   );
+}
+
+/**
+ * Pour chaque question, les seuls faits qui la lisent, puis ceux qui les
+ * lisent, de proche en proche, sans passer par les gardes. Ceux qu'impose la
+ * décision n'y sont pas. La pertinence les lit (`matters.ts`).
+ */
+export function faitsReading(
+  reads: ReadonlyMap<string, Reads>,
+  imposed: ReadonlySet<string>,
+): (id: string) => ReadonlySet<string> {
+  const known = new Map<string, ReadonlySet<string>>();
+  return (id) => {
+    const cached = known.get(id);
+    if (cached) return cached;
+    const changed = new Set<string>();
+    for (let grew = true; grew; ) {
+      grew = false;
+      for (const [nom, lu] of reads) {
+        if (imposed.has(nom) || changed.has(nom)) continue;
+        if (lu.questions.includes(id) || lu.faits.some((f) => changed.has(f))) {
+          changed.add(nom);
+          grew = true;
+        }
+      }
+    }
+    known.set(id, changed);
+    return changed;
+  };
 }
 
 // ---- implémentation ----
