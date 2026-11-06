@@ -14,6 +14,9 @@ import { given } from "../../../../../core/models/eligibilite/questions/reponses
 import type { Rubrique } from "./rubrique";
 import { adresseEnParties } from "./trajet";
 
+/** Le trajet ne passe pas par le domicile, ou son adresse manque. */
+type SansDomicile = undefined;
+
 export type Beneficiaire = {
   readonly beneficiaire_adresse?: string;
 };
@@ -40,7 +43,7 @@ function adresseDuDomicile(extremite: Extremite) {
       nature: natureDu(extremite, questions.nature),
       adresse: given.question(questions.adresse).answer(),
     })
-    .compute(({ nature, adresse }): string | undefined => {
+    .compute(({ nature, adresse }): string | SansDomicile => {
       if (nature === undefined || projectionCerfa(nature) !== "DOMICILE")
         return undefined;
       const parties = adresseEnParties(adresse.value);
