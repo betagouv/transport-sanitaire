@@ -2,7 +2,7 @@
 // la case du cerfa où chacun se reporte.
 //
 // P2 fixe la nature d'un lieu par le motif du trajet, ses contextes ou Q2.13
-// (`roles-des-lieux.ts`). Elle ne se redemande pas : le lieu se rappelle, et
+// (`roles-dans-le-sens.ts`). Elle ne se redemande pas : le lieu se rappelle, et
 // seuls son nom et son adresse se saisissent.
 
 import type {
@@ -21,7 +21,7 @@ import {
   type Extremite,
   lieuxEtablis,
   type Nature,
-} from "./roles-des-lieux.ts";
+} from "./roles-dans-le-sens.ts";
 
 export type { Entrees, Extremite, Nature };
 
