@@ -10,15 +10,21 @@ import type { Answer, Answers, Page, Unanswered } from "./question/question.ts";
 /**
  * Les réponses du questionnaire, une fois la page validée. `inputs` porte les
  * réponses de la page telles qu'à l'écran. Une question de la page absente
- * d'`inputs` perd sa réponse.
+ * d'`inputs` perd sa réponse, sauf si elle attend une autre de ses places
+ * (`waiting`, ADR-29) : elle n'a alors pas changé.
  */
 export function commitPage(
   pages: readonly Page[],
   answers: Answers,
   page: Page,
   inputs: Answers,
+  waiting: readonly string[] = [],
 ): Answers {
-  const onThePage = new Set(page.questions.map((question) => question.id));
+  const onThePage = new Set(
+    page.questions
+      .map((question) => question.id)
+      .filter((id) => !waiting.includes(id)),
+  );
   const changed = [...onThePage].filter(
     (id) => !sameAnswer(answers[id], inputs[id]),
   );

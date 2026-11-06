@@ -11,6 +11,9 @@
 // Une garde ne lit que des questions d'avant la sienne : un seul passage dans
 // l'ordre suffit. Une question morte garde sa réponse absente (COR-02), et sa
 // garde se lit ici comme le questionnaire la lira.
+//
+// Une question à plusieurs places est vivante tant qu'une de ses places l'est
+// (ADR-29).
 
 import { GivenAnswers } from "../answers/given-answers.ts";
 import { ValidatedAnswers } from "../answers/validated-answers.ts";
@@ -36,8 +39,7 @@ type Sources = {
 
 /** Si les questions qui restent peuvent encore se poser. */
 export class Askability {
-  readonly #questions: ReadonlyMap<string, Question>;
-  readonly #sources: ReadonlyMap<string, Sources | null>;
+  readonly #places: ReadonlyMap<string, readonly Place[]>;
   readonly #known = new Map<string, boolean>();
 
   constructor(
@@ -48,10 +50,13 @@ export class Askability {
     },
   ) {
     const sourcesOf = faitSources(faits.reads, faits.imposed);
-    this.#questions = new Map(questions.map((q) => [q.id, q]));
-    this.#sources = new Map(
-      questions.map((q) => [q.id, sourcesOf(flattened(q.conditionReads))]),
-    );
+    const places = new Map<string, Place[]>();
+    for (const question of questions) {
+      const sources = sourcesOf(flattened(question.conditionReads));
+      const others = places.get(question.id) ?? [];
+      places.set(question.id, [...others, { question, sources }]);
+    }
+    this.#places = places;
   }
 
   /**
@@ -73,40 +78,59 @@ export class Askability {
 
   // ---- implémentation ----
 
+  // Morte à toutes ses places. Une question inconnue reste vivante.
   #isDead(
     other: string,
     open: ReadonlySet<string>,
+    place: AskabilityPlace,
+  ): boolean {
+    const places = this.#places.get(other) ?? [];
+    return (
+      places.length > 0 &&
+      places.every((each, rank) => this.#isDeadAt(each, rank, open, place))
+    );
+  }
+
+  #isDeadAt(
+    { question, sources }: Place,
+    rank: number,
+    open: ReadonlySet<string>,
     { validated, cibles }: AskabilityPlace,
   ): boolean {
-    const sources = this.#sources.get(other);
     if (!sources || (sources.cibles.length > 0 && !cibles)) return false;
     if (sources.questions.some((q) => open.has(q))) return false;
     const read = sources.questions.map((q) => validated[q] ?? null);
     const frozen = sources.cibles.map((c) => cibles?.[c]?.value);
-    const key = JSON.stringify([other, read, frozen]);
+    const key = JSON.stringify([question.id, rank, read, frozen]);
     const known = this.#known.get(key);
     if (known !== undefined) return known;
-    const isDead = !this.#asks(other, validated, cibles);
+    const isDead = !asks(question, validated, cibles);
     this.#known.set(key, isDead);
     return isDead;
   }
+}
 
-  // La question se pose-t-elle sur ces seules réponses validées ?
-  #asks(id: string, validated: Validated, cibles?: AnyCibles): boolean {
-    const question = this.#questions.get(id);
-    if (!question) return true;
-    const read = new ValidatedAnswers(validated);
-    const answers = Object.fromEntries(
-      Object.entries(validated).map(([q, entry]) => [q, entry?.answer]),
-    );
-    const seen: SeenAnswers = {
-      answers: new GivenAnswers(answers),
-      cibles,
-      validated: read,
-      answer: validatedReading(read),
-    };
-    return question.askedIn(seen, seen) !== undefined;
-  }
+// Une place de la question, et ce que lit sa garde. `null` : elle lit un
+// fait qu'impose la décision, ou qu'aucune lecture ne déclare.
+type Place = { readonly question: Question; readonly sources: Sources | null };
+
+// La question se pose-t-elle sur ces seules réponses validées ?
+function asks(
+  question: Question,
+  validated: Validated,
+  cibles?: AnyCibles,
+): boolean {
+  const read = new ValidatedAnswers(validated);
+  const answers = Object.fromEntries(
+    Object.entries(validated).map(([q, entry]) => [q, entry?.answer]),
+  );
+  const seen: SeenAnswers = {
+    answers: new GivenAnswers(answers),
+    cibles,
+    validated: read,
+    answer: validatedReading(read),
+  };
+  return question.askedIn(seen, seen) !== undefined;
 }
 
 // Les questions et les cibles que lit une garde, ses faits ramenés aux

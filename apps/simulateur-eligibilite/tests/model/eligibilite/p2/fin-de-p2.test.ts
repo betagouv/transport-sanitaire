@@ -63,7 +63,7 @@ describe("de bout en bout, par les réponses", () => {
   });
 
   it("maternité éloignée établie, urgence non attestée : demande d'accord préalable", () => {
-    const reponses = { ...MATERNITE_ETABLIE, "Q2.12": "2_NON" } as const;
+    const reponses = { ...MATERNITE_ETABLIE, "Q2.3.4": "2_NON" } as const;
     expect(ciblesDe(reponses).cible_issue_id.value).toBe(
       "ISSUE_DAP_SANS_URGENCE",
     );
