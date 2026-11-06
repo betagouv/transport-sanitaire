@@ -18,6 +18,9 @@ export type Beneficiaire = {
   readonly beneficiaire_adresse?: string;
 };
 
+// Les questions de chaque lieu.
+const LIEUX = { depart: Q3_2, arrivee: Q3_3 } as const;
+
 export const BENEFICIAIRE: Rubrique<Beneficiaire> = {
   beneficiaire_adresse: given
     .all({
@@ -28,8 +31,6 @@ export const BENEFICIAIRE: Rubrique<Beneficiaire> = {
 };
 
 // ---- implémentation ----
-
-const LIEUX = { depart: Q3_2, arrivee: Q3_3 } as const;
 
 // L'adresse de ce lieu en une ligne, s'il est le domicile.
 function adresseDuDomicile(extremite: Extremite) {

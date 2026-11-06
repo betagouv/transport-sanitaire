@@ -139,6 +139,24 @@ describe("l'adresse du bénéficiaire sur la PMT", () => {
       "3 rue des Lilas, 69003 Lyon",
     ]);
   });
+
+  // Le champ n'admet que 100 caractères : l'adresse se dessine dessous (D-85).
+  it("écrit en entier une adresse de plus de 100 caractères", async () => {
+    const reponses: Reponses = {
+      ...PMT,
+      "Q3.2.adresse": {
+        street: "3175 chemin de la Côte-Sainte-Catherine prolongée",
+        complement: "Résidence Les Tilleuls, bâtiment 7, escalier B, porte 12",
+        postalCode: "13009",
+        city: "Marseille",
+      },
+    };
+
+    expect((await drawnOn(await rempli(reponses))).texts.join(" ")).toContain(
+      "3175 chemin de la Côte-Sainte-Catherine prolongée, Résidence Les " +
+        "Tilleuls, bâtiment 7, escalier B, porte 12, 13009 Marseille",
+    );
+  });
 });
 
 describe("la PMT de 4 allers-retours", () => {
