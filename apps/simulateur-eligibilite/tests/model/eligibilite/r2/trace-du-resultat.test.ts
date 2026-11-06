@@ -15,7 +15,11 @@ import {
   faits,
   type Reponses,
 } from "../p2/reponses-de-la-branche";
-import { lectureDe, PATIENT_SEUL } from "../p2/reponses-de-la-permission";
+import {
+  lectureDe,
+  PATIENT_SEUL,
+  SANS_SITUATION,
+} from "../p2/reponses-de-la-permission";
 import { HAD_A_DOMICILE, SEJOUR } from "../p2/reponses-du-transfert";
 
 // La trace de ces réponses, avec les cibles que calculent les règles.
@@ -26,6 +30,9 @@ const seed = (id: string): Reponses => {
   if (!trouvee) throw new Error(`Seed inconnue : ${id}`);
   return trouvee.answers;
 };
+
+// Un séjour en établissement, pour un autre motif de déplacement.
+const SEJOUR_SANS_SOIN = { careFamily: 14, hospitalisation: "H-SEJOUR" };
 
 // Rang dans l'oracle, seed, critères de Q1.2, Q2.8.5, précisions. Les valeurs
 // sont recopiées de l'oracle ; une différence a son commentaire.
@@ -52,8 +59,10 @@ const CAS: readonly [
     undefined,
     { hospitalisation: "H-SEANCE-HE" },
   ],
-  // Oracle : lexical vide, permissionRepeated = false (Q2.8.5 « Non »).
-  [3, "issue-s3141", [1, 5], false, {}],
+  // Oracle : lexical vide, permissionRepeated = false (Q2.8.5 « Non »). Seule
+  // Q2.2.1.a dit la permission, après le séjour de Q2.2.1, et Q2.1 a le motif
+  // 14 (D-272) : nos réponses prouvent les deux.
+  [3, "issue-s3141", [1, 5], false, SEJOUR_SANS_SOIN],
   // Oracle : lexical.careFamily = 1.
   [4, "issue-non-eligible", [1], undefined, { careFamily: 1 }],
   // L'oracle a une ALD de base inconnue et un lexique vide. Nous prenons un
@@ -73,21 +82,26 @@ const CAS: readonly [
     undefined,
     { article80Context: { kind: "transfer", duration: "temporary" } },
   ],
-  // Oracle : permissionContext = { kind: adult-explicit }.
+  // Oracle : permissionContext = { kind: adult-explicit }. Le séjour et le
+  // motif 14 s'y ajoutent, comme pour le S3141.
   [
     7,
     "issue-permission-patient",
     [1],
     undefined,
-    { permissionContext: { kind: "adult-explicit" } },
+    {
+      ...SEJOUR_SANS_SOIN,
+      permissionContext: { kind: "adult-explicit" },
+    },
   ],
-  // Oracle : convocationContext = { kind: control }.
+  // Oracle : convocationContext = { kind: control }. Seule Q2.2.1.b dit la
+  // convocation, et Q2.1 a le motif 14 (D-272).
   [
     8,
     "issue-convocation",
     [1],
     undefined,
-    { convocationContext: { kind: "control" } },
+    { careFamily: 14, convocationContext: { kind: "control" } },
   ],
   // L'oracle a un lexique vide. Notre seed est une dialyse, qui le remplit.
   [
@@ -162,7 +176,7 @@ describe("la trace, quand les réponses manquent ou ne comptent plus", () => {
     // Un patient seul : Q1.2 ne se pose pas. Q2.8.5 ni Q2.7 non plus, hors
     // permission. Leurs réponses restées dans le brouillon ne passent pas.
     const restes = {
-      ...PATIENT_SEUL,
+      ...SANS_SITUATION,
       "Q2.1": "1_CONSULTATION",
       "Q1.2": ["8_BRANCARDAGE"],
       "Q2.7": "4_ADULTE_A_SA_CHARGE",

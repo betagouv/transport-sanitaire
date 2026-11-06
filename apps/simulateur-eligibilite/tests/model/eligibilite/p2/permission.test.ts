@@ -11,6 +11,7 @@ import {
   PATIENT_SEUL,
   posee,
   type Reponses,
+  SANS_SITUATION,
 } from "./reponses-de-la-permission";
 import { SEJOUR } from "./reponses-du-transfert";
 
@@ -29,25 +30,22 @@ const ADULTE_A_SA_CHARGE: Reponses = {
 };
 
 describe("quand Q2.7 se pose", () => {
-  it("pose Q2.7, et aucune des pages du transfert, après une permission de Q2.1", () => {
+  it("pose Q2.7, et aucune des pages du transfert, après une permission de Q2.2.1.a", () => {
     expect(posee("P2/permission", "Q2.7", PATIENT_SEUL)).toBeDefined();
     expect(posee("P2/transfert", "Q2.5", PATIENT_SEUL)).toBeUndefined();
     expect(posee("P2/exceptions", "Q2.6", PATIENT_SEUL)).toBeUndefined();
   });
 
-  it("pose Q2.7 après une permission de Q2.2.1.a", () => {
-    const reponses: Reponses = {
-      ...PATIENT_SEUL,
-      "Q2.1": "1_CONSULTATION",
-      "Q2.2.1": ["1_HOSPITALISATION"],
-      "Q2.2.1.cadre": "1_ETABLISSEMENT",
-      "Q2.2.1.a": "1_OUI",
-    };
+  it("pose Q2.7 quel que soit le motif de Q2.1", () => {
+    const reponses: Reponses = { ...PATIENT_SEUL, "Q2.1": "1_CONSULTATION" };
     expect(posee("P2/permission", "Q2.7", reponses)).toBeDefined();
   });
 
   it.each([
-    ["un motif sans permission", { ...PATIENT_SEUL, "Q2.1": "1_CONSULTATION" }],
+    [
+      "un motif sans permission",
+      { ...SANS_SITUATION, "Q2.1": "1_CONSULTATION" },
+    ],
     [
       "une permission écartée en Q2.2.1.a",
       {
@@ -227,22 +225,12 @@ describe("une permission écarte le transfert et le Centre 15", () => {
   ] as const;
   const PAR_Q221A: Reponses = { ...SEJOUR, "Q2.2.1.a": "1_OUI" };
 
-  it("par Q2.1 = Permission (l'option 9 n'est pas choisie)", () => {
-    for (const nom of DEUX_ECARTES) {
-      expect(unFait(PATIENT_SEUL, nom)).toEqual({
-        value: false,
-        provenance:
-          "Q2.5 : sans réponse, Q2.1 : « 11_PERMISSION », Q2.2.1.a : sans réponse. Une permission n'est ni un transfert ni un déplacement pour soins.",
-      });
-    }
-  });
-
   it("par Q2.2.1.a = Oui (l'option 2 est écartée)", () => {
     for (const nom of DEUX_ECARTES) {
       expect(unFait(PAR_Q221A, nom)).toEqual({
         value: false,
         provenance:
-          "Q2.5 : sans réponse, Q2.1 : sans réponse, Q2.2.1.a : « 1_OUI ». Une permission n'est ni un transfert ni un déplacement pour soins.",
+          "Q2.5 : sans réponse, Q2.2.1.a : « 1_OUI ». Une permission n'est ni un transfert ni un déplacement pour soins.",
       });
     }
   });

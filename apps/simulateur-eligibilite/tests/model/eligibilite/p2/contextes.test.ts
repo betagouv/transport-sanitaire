@@ -33,11 +33,14 @@ const DES_SITUATIONS = [
 ] as const;
 
 describe("les deux blocs", () => {
-  it("proposent chacun cinq situations, dans l'ordre du contrat", () => {
+  // L'examen et l'hébergement de la maternité sont deux cases
+  // (QST-MAT-SEPARATION, D-272).
+  it("proposent six et cinq situations, dans l'ordre du contrat", () => {
     expect(proposees("Q2.2.1", BRANCARD)).toEqual([
       "1_HOSPITALISATION",
       "2_ETRANGER",
-      "4_MATERNITE_ELOIGNEE",
+      "14_EXAMEN_MATERNITE",
+      "15_HEBERGEMENT_MATERNITE",
       "5_HTNM",
       "10_RETOUR_PENITENTIAIRE",
     ]);
@@ -63,7 +66,8 @@ describe("les deux blocs", () => {
     const incompatibles = (id: "Q2.2.1" | "Q2.2.1.b") =>
       posee(id, AUCUNE)?.incompatibleOptions?.map(({ values }) => values);
     expect(incompatibles("Q2.2.1")).toEqual([
-      ["4_MATERNITE_ELOIGNEE", "5_HTNM"],
+      ["14_EXAMEN_MATERNITE", "5_HTNM"],
+      ["15_HEBERGEMENT_MATERNITE", "5_HTNM"],
     ]);
     expect(incompatibles("Q2.2.1.b")).toEqual([["6_CAMSP", "7_SAMSAH"]]);
   });
@@ -101,7 +105,7 @@ describe("les réponses négatives", () => {
   it("« Non » au second bloc laisse la maternité du premier à qualifier", () => {
     const second = {
       ...BRANCARD,
-      "Q2.2.1": ["4_MATERNITE_ELOIGNEE"],
+      "Q2.2.1": ["15_HEBERGEMENT_MATERNITE"],
       "Q2.2.1.b": ["0_AUCUN"],
     } satisfies Reponses;
     expect(valeurs(second, DES_SITUATIONS)).toEqual([
@@ -152,7 +156,8 @@ describe("une situation cochée", () => {
   });
 
   it.each([
-    [["4_MATERNITE_ELOIGNEE"], ["0_AUCUN"], "fait_dap_maternite"],
+    [["14_EXAMEN_MATERNITE"], ["0_AUCUN"], "fait_dap_maternite"],
+    [["15_HEBERGEMENT_MATERNITE"], ["0_AUCUN"], "fait_dap_maternite"],
     [["0_AUCUNE"], ["13_CONVOCATION"], "fait_convocation"],
   ] as const)(
     "%j, %j laissent %s à qualifier dans sa branche",

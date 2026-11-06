@@ -6,13 +6,14 @@ import { describe, expect, it } from "vitest";
 import type { Precisions } from "../../../../front/models/eligibilite/r2/components/precisions";
 import { R2 } from "../../../../front/models/eligibilite/r2/r2";
 import { BRANCARD_20_KM } from "../p2/reponses-de-la-branche";
-import { appareillage, PAR_Q21 } from "../p2/reponses-de-la-convocation";
+import { appareillage, CONVOQUE } from "../p2/reponses-de-la-convocation";
 import {
   lectureDe,
   MINEUR,
   PATIENT_SEUL,
   PLUSIEURS_PERMISSIONS,
   type Reponses,
+  SANS_SITUATION,
 } from "../p2/reponses-de-la-permission";
 import {
   definitif,
@@ -30,7 +31,7 @@ const precisionsDe = (reponses: Reponses): Precisions =>
 
 // Un patient qui se rend à une consultation, et qui n'a rien d'autre à dire.
 const CONSULTATION: Reponses = {
-  ...PATIENT_SEUL,
+  ...SANS_SITUATION,
   "Q2.1": "1_CONSULTATION",
 };
 
@@ -108,8 +109,9 @@ describe("careFamily", () => {
     expect("careFamily" in precisionsDe(BRANCARD_20_KM)).toBe(false);
   });
 
-  it("manque pour une option qui a sa propre branche", () => {
-    expect("careFamily" in precisionsDe(PAR_Q21)).toBe(false);
+  it("manque pour un motif sans phrase de famille, comme l'hospitalisation", () => {
+    const sejour: Reponses = { ...CONSULTATION, "Q2.1": "8_HOSPITALISATION" };
+    expect("careFamily" in precisionsDe(sejour)).toBe(false);
   });
 });
 
@@ -245,7 +247,7 @@ describe("convocationContext et deviceCategory", () => {
     ["5_COMMISSION_RECOURS", "commission"],
   ] as const)("Q2.10 %s donne le genre %s", (categorie, kind) => {
     expect(
-      precisionsDe({ ...PAR_Q21, "Q2.10": categorie }).convocationContext,
+      precisionsDe({ ...CONVOQUE, "Q2.10": categorie }).convocationContext,
     ).toEqual({ kind });
   });
 
@@ -269,7 +271,7 @@ describe("convocationContext et deviceCategory", () => {
   });
 
   it("« Aucune de ces situations » ne donne aucun contexte", () => {
-    const precisions = precisionsDe({ ...PAR_Q21, "Q2.10": "7_AUCUNE" });
+    const precisions = precisionsDe({ ...CONVOQUE, "Q2.10": "7_AUCUNE" });
     expect("convocationContext" in precisions).toBe(false);
     expect("deviceCategory" in precisions).toBe(false);
   });

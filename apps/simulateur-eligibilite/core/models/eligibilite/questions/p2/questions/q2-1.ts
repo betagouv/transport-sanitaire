@@ -3,6 +3,12 @@
 // transport ; Q2.1.f se pose quand même, si plusieurs séances sont cochées.
 // La page s'affiche dès que l'une se pose (D-102). Les faits que la page
 // établit vivent sous `faits/`.
+//
+// Q2.1 ne propose que les neuf motifs généraux (QST-COLLECTE-UNIQUE, D-272).
+// Les situations qu'elle proposait aussi ne se découvrent plus qu'à un
+// endroit : les séances en Q1.3, le CAMSP et la convocation en Q2.2.1.b, la
+// permission en Q2.2.1.a, l'examen et l'hébergement de la maternité en Q2.2.1.
+// Ne pas les choisir ici ne nie aucune d'elles.
 
 import { Q1_3 } from "../../p1/questions/q1-3.ts";
 import { given, question } from "../../question.ts";
@@ -23,9 +29,6 @@ const unMotifDeP1 = given
 // dialyse comprise, sans attendre l'hémodialyse confirmée (TS1014-L04, D-245).
 const cas = given.question(Q1_3).answer();
 const SEANCES = ["3_CHIMIOTHERAPIE", "4_RADIOTHERAPIE", "5_DIALYSE"] as const;
-const uneSeance = SEANCES.map((seance) => cas.checked(seance)).reduce(
-  (une, autre) => une.or(autre),
-);
 const plusieursSeances = cas.compute(
   (cochees) => SEANCES.filter((seance) => cochees.checked(seance)).length >= 2,
 );
@@ -45,25 +48,16 @@ export const Q2_1 = question
     "4_BIOLOGIE": "Analyse ou examen de biologie médicale.",
     "5_PARAMEDICAL":
       "Rééducation, orthophonie, soins infirmiers ou autre soin paramédical.",
-    "6_SEANCE": "Chimiothérapie, radiothérapie ou dialyse.",
     "7_PSYCHOLOGUE": "Séance de psychologue ou dispositif particulier.",
     "8_HOSPITALISATION":
       "Entrée ou sortie d’hospitalisation, ou admission en Hospitalisation à Domicile (HAD).",
     "9_TRANSFERT":
       "Transfert entre établissements, ou déplacement pour soin pendant l’hospitalisation.",
-    "10_CAMSP":
-      "Soin Centre d’Action Médico-Sociale Précoce (CAMSP)/Centre Médico-Psycho-Pédagogique (CMPP), y compris séance en ville organisée dans le parcours de l’enfant.",
-    "11_PERMISSION": "Permission temporaire pendant l’hospitalisation.",
-    "12_CONVOCATION":
-      "Convocation, expertise, audience ou déplacement chez un fournisseur d’appareillage.",
-    "13_MATERNITE":
-      "À un examen obligatoire du 8ᵉ ou du 9ᵉ mois de grossesse en maternité, ou à un hébergement temporaire prévu en raison de l’éloignement de la maternité.",
-    "14_AUTRE": "Autre soin, examen ou séjour.",
-    "15_AUCUN": "Aucun de ces soins ou événements.",
+    // Une seule réponse générique, à la place de 14 et 15
+    // (QST-Q21-AUTRE-MOTIF) : elle ne nie aucune situation cumulable.
+    "14_AUTRE": "Autre motif de déplacement.",
   })
-  .mattersWhile(unMotifDeP1.not())
-  // Une séance se coche en Q1.3 : elle ne se vote pas deux fois.
-  .option("6_SEANCE", (option) => option.offeredWhen(uneSeance.not()));
+  .mattersWhile(unMotifDeP1.not());
 
 export const Q2_1_F = question
   .singleChoice(

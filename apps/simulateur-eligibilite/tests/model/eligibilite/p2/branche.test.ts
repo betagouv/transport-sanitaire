@@ -2,11 +2,16 @@
 // qu'elle établit, et l'issue qui en résulte. `CATALOGUE_COMPLET_QUESTIONS.md`
 // Q2.12, Q2.13 et Q2.14, `CONTRAT_REPONSES_FAITS.json` et
 // `CONTRAT_NEGATIONS_PROUVEES.json` du paquet de l'éditeur (D-110).
+//
+// L'examen du 8ᵉ ou du 9ᵉ mois et l'hébergement de la maternité sont deux
+// cases de Q2.2.1 (QST-MAT-SEPARATION, D-272) : l'examen coché est le motif,
+// Q2.14 n'en demande que l'éloignement.
 
 import { describe, expect, it } from "vitest";
 import {
   ciblesDe,
   ENTREE,
+  EXAMEN,
   faits,
   HTNM,
   incoherences,
@@ -16,28 +21,61 @@ import {
   p2Complete,
   posees,
 } from "./reponses-de-la-branche";
-import { PATIENT_SEUL } from "./reponses-de-la-permission";
+import {
+  PATIENT_SEUL,
+  posee,
+  SANS_SITUATION,
+} from "./reponses-de-la-permission";
 
 const PERMISSION_A_CHARGE_DU_PATIENT = {
-  ...MATERNITE_PAR_Q221,
-  "Q2.1": "11_PERMISSION",
+  ...PATIENT_SEUL,
+  "Q2.1": "1_CONSULTATION",
+  "Q2.2.1": ["1_HOSPITALISATION", "15_HEBERGEMENT_MATERNITE"],
   "Q2.7": "4_ADULTE_A_SA_CHARGE",
   "Q2.7.a": "1_OUI",
 } as const;
 
 const GROUPES = ["Q2.14.eloignement", "Q2.14.motif"];
 
+const motifsProposes = (reponses: typeof MATERNITE) => {
+  const question = posee("P2/branche", "Q2.14.motif", reponses);
+  return question?.kind === "multiple choice"
+    ? [
+        ...question.options.map(({ value }) => value),
+        question.exclusiveOption?.value,
+      ]
+    : [];
+};
+
 describe("Q2.14, les deux groupes de l'Engagement maternité", () => {
-  it("se posent quand Q2.1 dit la maternité éloignée", () => {
-    expect(posees(MATERNITE)).toEqual(GROUPES);
+  it.each([
+    ["l'autre motif", MATERNITE],
+    ["une consultation", MATERNITE_PAR_Q221],
+  ])("se posent pour l'hébergement coché en Q2.2.1, avec %s", (_, base) => {
+    expect(posees(base)).toEqual(GROUPES);
   });
 
-  it("se posent quand Q2.2.1 signale la maternité éloignée", () => {
-    expect(posees(MATERNITE_PAR_Q221)).toEqual(GROUPES);
+  it("pour l'hébergement seul, le motif ne propose que l'hébergement du dispositif ou « Aucune »", () => {
+    expect(motifsProposes(MATERNITE)).toEqual([
+      "2_HEBERGEMENT_ENGAGEMENT",
+      "3_AUCUNE",
+    ]);
+  });
+
+  it("l'examen coché en Q2.2.1 ne pose que l'éloignement : il est le motif", () => {
+    expect(posees(EXAMEN)).toEqual(["Q2.14.eloignement"]);
+  });
+
+  it("l'examen et l'hébergement cochés ensemble ne posent que l'éloignement", () => {
+    const lesDeux = {
+      ...SANS_SITUATION,
+      "Q2.2.1": ["14_EXAMEN_MATERNITE", "15_HEBERGEMENT_MATERNITE"],
+    } as const;
+    expect(posees(lesDeux)).toEqual(["Q2.14.eloignement"]);
   });
 
   it("ne se posent pas sans maternité", () => {
-    expect(posees(PATIENT_SEUL)).toEqual([]);
+    expect(posees(SANS_SITUATION)).toEqual([]);
   });
 
   it("ne se posent pas quand une orientation prioritaire est établie", () => {
@@ -68,13 +106,29 @@ describe("Q2.14, les deux groupes de l'Engagement maternité", () => {
   });
 });
 
+describe("Q2.2.1, l'examen et l'hébergement de la maternité, deux cases", () => {
+  it("les deux proposées et non cochées écartent le dispositif", () => {
+    expect(faits(SANS_SITUATION).fait_dap_maternite.value).toBe(false);
+  });
+
+  // L'une cochée, l'autre non : le dispositif attend Q2.14.
+  it.each([
+    ["l'examen", EXAMEN],
+    ["l'hébergement", MATERNITE],
+  ])("%s coché, l'autre case non cochée ne nie rien", (_, reponses) => {
+    expect(faits(reponses).fait_dap_maternite).toEqual({
+      provenance: expect.stringMatching(/À qualifier dans sa branche/),
+    });
+  });
+});
+
 describe("Q2.14, une condition dans chaque groupe : le dispositif est établi", () => {
-  it("établit la maternité ; Q2.1 = 13 écarte le HTNM hors maternité", () => {
+  it("l'examen et l'éloignement l'établissent ; le HTNM, proposé et non coché, est écarté", () => {
     expect(faits(MATERNITE_ETABLIE).fait_dap_maternite.value).toBe(true);
     expect(faits(MATERNITE_ETABLIE).fait_htnm_hors_maternite.value).toBe(false);
   });
 
-  it("les autres conditions l'établissent aussi", () => {
+  it("l'hébergement du dispositif l'établit aussi", () => {
     const reponses = {
       ...MATERNITE,
       "Q2.14.eloignement": ["2_COMMUNE_DESIGNEE_PAR_L_ARS"],
@@ -84,8 +138,8 @@ describe("Q2.14, une condition dans chaque groupe : le dispositif est établi", 
   });
 
   it("dévoile l'urgence (Q2.12), que la page du trajet avait masquée", () => {
-    expect(posees(MATERNITE)).not.toContain("Q2.12");
-    expect(posees(MATERNITE_ETABLIE)).toEqual([...GROUPES, "Q2.12"]);
+    expect(posees(EXAMEN)).not.toContain("Q2.12");
+    expect(posees(MATERNITE_ETABLIE)).toEqual(["Q2.14.eloignement", "Q2.12"]);
   });
 
   it("sans l'urgence, la décision n'est pas calculable", () => {
@@ -117,7 +171,7 @@ describe("Q2.14, une condition dans chaque groupe : le dispositif est établi", 
       "Q2.3.3": "2_NON",
       "Q2.3.4": "2_NON",
     } as const;
-    expect(posees(longue)).toEqual(GROUPES);
+    expect(posees(longue)).toEqual(["Q2.14.eloignement"]);
     expect(ciblesDe(longue).cible_issue_id.value).toBe(
       "ISSUE_DAP_SANS_URGENCE",
     );
@@ -125,9 +179,9 @@ describe("Q2.14, une condition dans chaque groupe : le dispositif est établi", 
 
   it("un groupe passé à « Aucune » retire Q2.12", () => {
     const reponses = { ...MATERNITE_ETABLIE, "Q2.12": "2_NON" } as const;
-    expect(posees({ ...reponses, "Q2.14.motif": ["3_AUCUNE"] })).not.toContain(
-      "Q2.12",
-    );
+    expect(
+      posees({ ...reponses, "Q2.14.eloignement": ["3_AUCUNE"] }),
+    ).not.toContain("Q2.12");
   });
 });
 
@@ -142,6 +196,11 @@ describe("Q2.14, « Aucune » dans un groupe : le dispositif est écarté", () =
     expect(faits(sansEloignement).fait_dap_maternite.value).toBe(false);
   });
 
+  it("aucun éloignement pour l'examen : le dispositif est écarté", () => {
+    const reponses = { ...EXAMEN, "Q2.14.eloignement": ["3_AUCUNE"] } as const;
+    expect(faits(reponses).fait_dap_maternite.value).toBe(false);
+  });
+
   it("aucun motif : le dispositif est écarté", () => {
     const reponses = {
       ...MATERNITE,
@@ -151,9 +210,9 @@ describe("Q2.14, « Aucune » dans un groupe : le dispositif est écarté", () =
     expect(faits(reponses).fait_dap_maternite.value).toBe(false);
   });
 
-  // Ce n'est plus une contradiction avec Q2.1 (D-129) : la patiente va à la
-  // maternité, sans en remplir les conditions.
-  it("après Q2.1 = 13, rien ne bloque : P2 est complète", () => {
+  // Ce n'est pas une contradiction (D-129) : la patiente va à la maternité,
+  // sans en remplir les conditions.
+  it("sans autre motif, rien ne bloque : P2 est complète", () => {
     expect(incoherences("Q2.14.eloignement", sansEloignement)).toEqual([]);
     expect(p2Complete(sansEloignement)).toBe(true);
     expect(ciblesDe(sansEloignement).cible_issue_id.value).toBe(
@@ -161,7 +220,7 @@ describe("Q2.14, « Aucune » dans un groupe : le dispositif est écarté", () =
     );
   });
 
-  it("signalée en Q2.2.1, sans autre motif : P2 est complète", () => {
+  it("avec une consultation : P2 est complète", () => {
     const reponses = {
       ...MATERNITE_PAR_Q221,
       "Q2.14.eloignement": ["3_AUCUNE"],
@@ -229,6 +288,6 @@ describe("Q2.13, le départ d'une entrée en établissement", () => {
 
 describe("la page de branche", () => {
   it("n'est pas posée sur un trajet ordinaire", () => {
-    expect(posees(PATIENT_SEUL)).toEqual([]);
+    expect(posees(SANS_SITUATION)).toEqual([]);
   });
 });
