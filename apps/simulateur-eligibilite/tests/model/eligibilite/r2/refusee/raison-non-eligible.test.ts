@@ -215,14 +215,10 @@ describe("de bout en bout, par les réponses", () => {
     ["un psychologue", { "Q2.1": "7_PSYCHOLOGUE" }, "AUCUN_PSYCHOLOGUE"],
     ["un autre soin", { "Q2.1": "14_AUTRE" }, "AUCUN_AUTRE_SOIN"],
     [
-      "aucun de ces soins (Q2.1 option 15), dont la finalité n'est pas clarifiée",
-      { "Q2.1": "15_AUCUN" },
-      "AUCUN_GENERIQUE",
-    ],
-    [
       "un appareillage hors des catégories (Q2.10.b)",
       {
-        "Q2.1": "12_CONVOCATION",
+        "Q2.1": "14_AUTRE",
+        "Q2.2.1.b": ["13_CONVOCATION"],
         "Q2.10": "6_APPAREILLAGE",
         "Q2.10.a": "1_OUI",
         "Q2.10.b": "4_AUTRE",

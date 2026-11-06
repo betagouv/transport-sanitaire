@@ -119,8 +119,7 @@ function versLaPrison(): Lieux {
 // de vie se choisit ; la prison s'y ajoute pour un retour pénitentiaire, qui
 // part toujours de l'établissement vers elle (TS1014-E05).
 function permission(entrees: Entrees): Lieux {
-  const acquise =
-    entrees.motif.is("11_PERMISSION") || entrees.enPermission.is("1_OUI");
+  const acquise = entrees.enPermission.is("1_OUI");
   if (!acquise || sensDe(entrees) === undefined) return {};
   const etablissement = hopital(
     entrees,
@@ -166,10 +165,11 @@ function soinsPendantLaHad(entrees: Entrees): Lieux {
   return retour(entrees) ? { arrivee: domicile } : { depart: domicile };
 }
 
-// L'hébergement est l'arrivée de l'aller, le départ du retour.
+// L'HTNM de Q2.2.1 est l'arrivée de l'aller, le départ du retour. Celui de
+// l'Engagement maternité n'est pas forcément un lieu du trajet : Q3.8 le
+// recueille sinon (D-251, D-272).
 function hebergement(entrees: Entrees): Lieux {
-  const acquis =
-    entrees.motif.is("13_MATERNITE") || entrees.situations.checked("5_HTNM");
+  const acquis = entrees.situations.checked("5_HTNM");
   if (!acquis || sensDe(entrees) === undefined) return {};
   const htnm: Etablie = {
     nature: "5_HEBERGEMENT_NON_MEDICALISE",
