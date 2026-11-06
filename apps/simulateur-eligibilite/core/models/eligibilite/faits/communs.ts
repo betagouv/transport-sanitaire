@@ -119,6 +119,6 @@ export const UN_SEJOUR_ECARTE = uneRegle().nonSiEcartee(
   "« déjà hospitalisé » proposé, non coché.",
 );
 
-/** Ni Q2.3.4 ni Q2.12 n'ont de réponse. */
+/** Q2.3.4 n'a pas de réponse. */
 export const URGENCE_EN_ATTENTE =
-  "Ni Q2.3.4 ni Q2.12 n'ont de réponse : elles attendent, ou leur garde les écarte.";
+  "Q2.3.4 n'a pas de réponse : elle attend, ou ses gardes l'écartent.";

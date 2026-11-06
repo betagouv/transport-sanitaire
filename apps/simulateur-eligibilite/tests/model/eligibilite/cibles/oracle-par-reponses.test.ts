@@ -39,8 +39,12 @@ const CAS: readonly [ids: string, reponses: Reponses, issue: string][] = [
   ["D14 D45", definitif(["11_AUCUNE"]), "ISSUE_ETABLISSEMENT"],
   ["D15", definitif(["3_CENTRE_QUINZE"]), "ISSUE_CAISSE"],
   ["D18", { ...BRANCARD_20_KM, "Q2.2.1": ["5_HTNM"] }, "ISSUE_CAISSE"],
-  ["D19", { ...MATERNITE_ETABLIE, "Q2.12": "2_NON" }, "ISSUE_DAP_SANS_URGENCE"],
-  ["D20", { ...MATERNITE_ETABLIE, "Q2.12": "1_OUI" }, "ISSUE_CAISSE"],
+  [
+    "D19",
+    { ...MATERNITE_ETABLIE, "Q2.3.4": "2_NON" },
+    "ISSUE_DAP_SANS_URGENCE",
+  ],
+  ["D20", { ...MATERNITE_ETABLIE, "Q2.3.4": "1_OUI" }, "ISSUE_CAISSE"],
   ["D30", { ...CONVOQUE, "Q2.10": "1_CONTROLE_MEDICAL" }, "ISSUE_CONVOCATION"],
   [
     "D35",

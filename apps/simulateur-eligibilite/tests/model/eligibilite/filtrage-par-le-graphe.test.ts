@@ -96,7 +96,6 @@ describe("le CAMSP", () => {
       "Q2.3.2": false,
       "Q2.3.3": "1_OUI",
       "Q2.3.4": "2_NON",
-      "Q2.12": "2_NON",
     };
     const { cibles } = preconisation(reponses);
 
