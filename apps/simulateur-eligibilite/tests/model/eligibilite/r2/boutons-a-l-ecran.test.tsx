@@ -147,12 +147,7 @@ describe("les boutons du modèle de l'éditeur", DELAI_D_UN_TEST, () => {
     await user.click(screen.getByRole("button", { name: "Suivant" }));
     await user.click(await screen.findByLabelText("Non"));
     await user.click(screen.getByRole("button", { name: "Suivant" }));
-    await screen.findByLabelText(
-      /^Ce transport est-il en rapport avec un accident/,
-    );
-    // Une page à choix unique avance d'elle-même.
-    await user.click(screen.getByLabelText("Non"));
-    await user.click(await screen.findByLabelText(/^Aucun autre cas/));
+    await user.click(await screen.findByLabelText(/^Non, aucun autre cas/));
     await user.click(screen.getByRole("button", { name: "Terminer" }));
 
     expect(
