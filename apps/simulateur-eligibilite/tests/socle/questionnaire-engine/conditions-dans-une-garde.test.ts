@@ -1,8 +1,9 @@
 // `answer()` dans une garde : les questions posées avant elle. Sur sa page,
 // telles que saisies, si elles se posent ; sur les pages d'avant, validées.
 // Une incohérence lit aussi sa propre question, et se déclare sur la plus
-// tardive de celles qu'elle lit. Une cible se lit sur les faits de l'endroit,
-// ou sous une hypothèse. Les pages sont écrites ici.
+// tardive de celles qu'elle lit, ses réponses à revoir comprises. Une cible se
+// lit sur les faits de l'endroit, ou sous une hypothèse. Les pages sont écrites
+// ici.
 
 import { describe, expect, it } from "vitest";
 import {
@@ -148,6 +149,20 @@ describe("answer() dans une incohérence", () => {
   it("se déclare sur la plus tardive des questions qu'elle lit", () => {
     const pages = [
       page("taille", TAILLE.inconsistentWhen(trop, MESSAGE)),
+      page("boisson", BOISSON),
+    ];
+    expect(() => posees(pages, {})).toThrow(
+      "Une incohérence de taille lit boisson, qui se pose après : déclare-la sur boisson.",
+    );
+  });
+
+  it("ne lit pas non plus une question d'après pour ses réponses à revoir", () => {
+    const revisit = given
+      .question("boisson")
+      .answer()
+      .compute(() => [{ label: "Revoir la boisson", question: "boisson" }]);
+    const pages = [
+      page("taille", TAILLE.inconsistentWhen(grand, MESSAGE, { revisit })),
       page("boisson", BOISSON),
     ];
     expect(() => posees(pages, {})).toThrow(

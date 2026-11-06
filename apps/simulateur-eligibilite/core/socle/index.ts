@@ -35,6 +35,7 @@ export {
   questionsOf,
   type ReadByObject,
   Relevance,
+  type Revisit,
   type Unanswered,
   type ValidatedAnswers,
   type Value,

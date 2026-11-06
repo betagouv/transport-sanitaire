@@ -7,10 +7,7 @@
 import { Q1_3 } from "../../p1/questions/q1-3.ts";
 import { given, question } from "../../question.ts";
 import { brancheDecisive } from "../conditions/branche.ts";
-import {
-  LIEUX_INCOMPATIBLES,
-  unConflitDeLieuxApparu,
-} from "../conditions/conflit-de-lieux.ts";
+import { incoherenceDeLieux } from "../conditions/conflit-de-lieux.ts";
 import { Q2_1, Q2_1_G } from "./q2-1.ts";
 import { Q2_2_1 } from "./q2-2-1.ts";
 import { Q2_2_1_A } from "./q2-2-1-a.ts";
@@ -45,7 +42,7 @@ const departDeLEntree = question
 
 // Le départ nommé contredit un départ que P2 fixe déjà.
 export const Q2_13_DEPART = departDeLEntree.inconsistentWhen(
-  unConflitDeLieuxApparu("departDeLEntree", {
+  ...incoherenceDeLieux("departDeLEntree", {
     soins: Q1_3,
     motif: Q2_1,
     sousType: Q2_1_G,
@@ -56,5 +53,4 @@ export const Q2_13_DEPART = departDeLEntree.inconsistentWhen(
     contexte: Q2_6,
     departDeLEntree,
   }),
-  LIEUX_INCOMPATIBLES,
 );

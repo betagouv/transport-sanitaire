@@ -6,10 +6,7 @@
 
 import { Q1_3 } from "../../p1/questions/q1-3.ts";
 import { given, question } from "../../question.ts";
-import {
-  LIEUX_INCOMPATIBLES,
-  unConflitDeLieuxApparu,
-} from "../conditions/conflit-de-lieux.ts";
+import { incoherenceDeLieux } from "../conditions/conflit-de-lieux.ts";
 
 /**
  * P1 prouve déjà un motif de transport : l'ambulance, une séance qualifiante,
@@ -71,8 +68,7 @@ const prestation = question
 
 // Une permission ou un hébergement de Q2.1 contredit une dialyse de Q1.3.
 export const Q2_1 = prestation.inconsistentWhen(
-  unConflitDeLieuxApparu("motif", { soins: Q1_3, motif: prestation }),
-  LIEUX_INCOMPATIBLES,
+  ...incoherenceDeLieux("motif", { soins: Q1_3, motif: prestation }),
 );
 
 export const Q2_1_F = question
@@ -106,10 +102,9 @@ const sousType = question
   .dependsOn(Q2_1);
 
 export const Q2_1_G = sousType.inconsistentWhen(
-  unConflitDeLieuxApparu("sousType", {
+  ...incoherenceDeLieux("sousType", {
     soins: Q1_3,
     motif: Q2_1,
     sousType,
   }),
-  LIEUX_INCOMPATIBLES,
 );

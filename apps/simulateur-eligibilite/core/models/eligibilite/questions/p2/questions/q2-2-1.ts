@@ -14,10 +14,7 @@
 
 import { Q1_3 } from "../../p1/questions/q1-3.ts";
 import { given, question } from "../../question.ts";
-import {
-  LIEUX_INCOMPATIBLES,
-  unConflitDeLieuxApparu,
-} from "../conditions/conflit-de-lieux.ts";
+import { incoherenceDeLieux } from "../conditions/conflit-de-lieux.ts";
 import { Q2_1, Q2_1_G } from "./q2-1.ts";
 
 const motif = given.question(Q2_1).answer();
@@ -71,13 +68,12 @@ const situations = question
 
 // Un hébergement ou un retour pénitentiaire contredit un autre lieu déjà dit.
 export const Q2_2_1 = situations.inconsistentWhen(
-  unConflitDeLieuxApparu("situations", {
+  ...incoherenceDeLieux("situations", {
     soins: Q1_3,
     motif: Q2_1,
     sousType: Q2_1_G,
     situations,
   }),
-  LIEUX_INCOMPATIBLES,
 );
 
 // Q2.1 retire le CAMSP et la convocation qu'elle indique déjà. Une autre
