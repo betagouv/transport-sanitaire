@@ -20,21 +20,22 @@ import {
 } from "./reponses-du-cerfa";
 
 describe("l'accident causé par un tiers", () => {
-  it("coche Oui et donne sa date", () => {
-    const reponses: Reponses = {
-      ...PMT,
-      "Q3.6.2": "1_OUI",
-      "Q3.6.3": "2026-09-30",
-    };
+  // La dialyse de la PMT, et l'accident causé par un tiers coché en Q1.3.
+  const AVEC_UN_TIERS: Reponses = {
+    ...PMT,
+    "Q1.3": ["5_DIALYSE", "6_PARTAGE_INCOMPATIBLE", "9_ACCIDENT_TIERS"],
+    "Q1.3.accident_tiers_date": "2026-09-30",
+  };
 
-    expect(cellules(ACCIDENT, reponses)).toEqual({
+  it("coche Oui et donne la date de Q1.3", () => {
+    expect(cellules(ACCIDENT, AVEC_UN_TIERS)).toEqual({
       tiers_oui: true,
       tiers_non: false,
       tiers_date: "2026-09-30",
     });
   });
 
-  it("coche Non, sans date", () => {
+  it("coche Non, sans date, quand la case de Q1.3 reste décochée", () => {
     expect(cellules(ACCIDENT, PMT)).toEqual({
       tiers_oui: false,
       tiers_non: true,
@@ -42,8 +43,8 @@ describe("l'accident causé par un tiers", () => {
     });
   });
 
-  it("sans réponse, ne coche ni Oui ni Non", () => {
-    const { "Q3.6.2": _, ...sansReponse } = PMT;
+  it("sans Q1.3 validée, ne coche ni Oui ni Non", () => {
+    const { "Q1.3": _, ...sansReponse } = PMT;
 
     expect(cellules(ACCIDENT, sansReponse)).toEqual({
       tiers_oui: false,

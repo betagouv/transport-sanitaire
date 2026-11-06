@@ -69,7 +69,6 @@ const P3_DE_LA_DIALYSE: Reponses = {
   "Q3.3.adresse": HOPITAL,
   "Q3.4": "Dialyse",
   "Q3.4.a": "2_NON",
-  "Q3.6.2": "2_NON",
   "Q3.7": ["7_AUCUN"],
 };
 
@@ -100,7 +99,6 @@ export const PERMISSIONS: Reponses = {
   "Q3.2.adresse": HOPITAL,
   "Q3.3.nature": "1_DOMICILE",
   "Q3.3.adresse": DOMICILE,
-  "Q3.6.2": "2_NON",
 };
 
 // Ce que Q3.8 recueille de la maternité.
@@ -121,7 +119,6 @@ export const EXAMEN_DE_MATERNITE: Reponses = {
   "Q3.2.adresse": DOMICILE,
   "Q3.3.adresse": HOPITAL,
   "Q3.4.a": "2_NON",
-  "Q3.6.2": "2_NON",
 };
 
 // Une consultation signalant la maternité éloignée, pour l'hébergement du
@@ -139,7 +136,6 @@ export const HEBERGEMENT_DE_MATERNITE: Reponses = {
   "Q3.3.nom": "Cabinet du docteur Martin",
   "Q3.3.adresse": HOPITAL,
   "Q3.4.a": "2_NON",
-  "Q3.6.2": "2_NON",
 };
 
 /**

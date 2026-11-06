@@ -81,8 +81,8 @@ describe("le S3141", () => {
 describe("le S3141 de plusieurs permissions", () => {
   const ACCIDENT: Reponses = {
     ...PERMISSIONS,
-    "Q3.6.2": "1_OUI",
-    "Q3.6.3": "2026-09-30",
+    "Q1.3": ["9_ACCIDENT_TIERS"],
+    "Q1.3.accident_tiers_date": "2026-09-30",
   };
 
   it("sort aplati, sans champ", async () => {
@@ -154,13 +154,6 @@ describe("le S3141 de plusieurs permissions", () => {
     expect(await markedStates(await gabarit("S3141"), pdf, "rct")).toEqual([
       "Oui",
     ]);
-  });
-
-  it("sans réponse sur l'accident, ne marque ni Oui ni Non", async () => {
-    const { "Q3.6.2": _, ...sansReponse } = PERMISSIONS;
-    const pdf = await rempli(sansReponse);
-
-    expect(await markedStates(await gabarit("S3141"), pdf, "rct")).toEqual([]);
   });
 
   it("écrit en entier un établissement au nom et à l'adresse très longs", async () => {

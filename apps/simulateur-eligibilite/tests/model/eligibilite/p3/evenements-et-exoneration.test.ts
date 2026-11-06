@@ -1,6 +1,7 @@
 // Les pages des évènements et de l'exonération de P3 (Q3.6, Q3.7, #147),
 // posées selon les cibles figées au verrou. `CATALOGUE_COMPLET_QUESTIONS.md`
-// Q3.6 et Q3.7, `mapping_documents.json` (cases tiers, AT/MP, exonération).
+// Q3.6 et Q3.7, `mapping_documents.json` (AT/MP, exonération). L'accident
+// causé par un tiers se recueille en Q1.3 (#351).
 
 import { describe, expect, it } from "vitest";
 import { model } from "../../../../core/models/eligibilite";
@@ -57,43 +58,29 @@ const ATMP = {
 } as Reponses;
 
 describe("la page des évènements (Q3.6)", () => {
-  it("sans AT/MP, ne demande que l'accident causé par un tiers", () => {
-    expect(ids("P3/evenements", seed("issue-pmt"))).toEqual(["Q3.6.2"]);
-  });
+  it.each(["issue-pmt", "issue-s3141"])(
+    "sans AT/MP, ne se pose pas (%s)",
+    (id) => {
+      expect(ids("P3/evenements", seed(id))).toEqual([]);
+    },
+  );
 
   it("avec un AT/MP établi en P2, demande sa date et rappelle la case cochée", () => {
-    expect(ids("P3/evenements", ATMP)).toEqual(["Q3.6.1", "Q3.6.2"]);
+    expect(ids("P3/evenements", ATMP)).toEqual(["Q3.6.1"]);
     expect(posee("P3/evenements", "Q3.6.1", ATMP).reminder).toBe(
       "Le transport est lié à un accident du travail ou à une maladie professionnelle : la case est déjà cochée.",
     );
   });
 
-  it("le S3141 a aussi la case de l'accident causé par un tiers", () => {
-    expect(ids("P3/evenements", seed("issue-s3141"))).toEqual(["Q3.6.2"]);
+  it("refuse une date d'AT/MP dans le futur, et accepte une date passée", () => {
+    const avec = (date: string) =>
+      posee("P3/evenements", "Q3.6.1", { ...ATMP, "Q3.6.1": date })
+        .inconsistencies;
+    expect(avec("2999-01-01")).toEqual([
+      "Cette date est dans le futur : un accident ne peut pas encore avoir eu lieu.",
+    ]);
+    expect(avec("2020-01-01")).toEqual([]);
   });
-
-  it.each([
-    ["Oui", "1_OUI", ["Q3.6.2", "Q3.6.3"]],
-    ["Non", "2_NON", ["Q3.6.2"]],
-  ] as const)("un accident causé par un tiers : %s", (_, tiers, attendues) => {
-    const reponses: Reponses = { ...seed("issue-pmt"), "Q3.6.2": tiers };
-    expect(ids("P3/evenements", reponses)).toEqual(attendues);
-  });
-
-  it.each([
-    ["Q3.6.1", ATMP],
-    ["Q3.6.3", { ...seed("issue-pmt"), "Q3.6.2": "1_OUI" } as Reponses],
-  ])(
-    "%s refuse une date dans le futur, et accepte une date passée",
-    (id, base) => {
-      const avec = (date: string) =>
-        posee("P3/evenements", id, { ...base, [id]: date }).inconsistencies;
-      expect(avec("2999-01-01")).toEqual([
-        "Cette date est dans le futur : un accident ne peut pas encore avoir eu lieu.",
-      ]);
-      expect(avec("2020-01-01")).toEqual([]);
-    },
-  );
 });
 
 describe("la page de l'exonération (Q3.7)", () => {

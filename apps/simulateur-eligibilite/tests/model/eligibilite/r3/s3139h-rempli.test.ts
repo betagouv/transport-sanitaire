@@ -167,17 +167,19 @@ describe("les cases inversées du gabarit (D-188)", () => {
     expect(await abscisses("S3139h", champ)).toEqual(rangees);
   });
 
-  it.each([
-    ["2_NON", ["Oui"]],
-    ["1_OUI", ["non"]],
-  ] as const)(
-    "l'accident causé par un tiers %s coche %j",
-    async (reponse, etats) => {
-      const reponses: Reponses = { ...DAP, "Q3.6.2": reponse };
+  it("l'accident causé par un tiers laissé décoché en Q1.3 coche l'état « Oui »", async () => {
+    expect(await marquees(DAP, {}, "rap acc")).toEqual(["Oui"]);
+  });
 
-      expect(await marquees(reponses, {}, "rap acc")).toEqual(etats);
-    },
-  );
+  it("l'accident causé par un tiers coché en Q1.3 coche l'état « non »", async () => {
+    const reponses: Reponses = {
+      ...DAP,
+      "Q1.3": ["5_DIALYSE", "6_PARTAGE_INCOMPATIBLE", "9_ACCIDENT_TIERS"],
+      "Q1.3.accident_tiers_date": "2026-09-30",
+    };
+
+    expect(await marquees(reponses, {}, "rap acc")).toEqual(["non"]);
+  });
 
   it("l'ALD exonérante liée à l'avion coche l'état « non »", async () => {
     const cibles = {
