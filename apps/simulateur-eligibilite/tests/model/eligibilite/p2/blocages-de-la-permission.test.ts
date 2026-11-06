@@ -3,7 +3,8 @@
 // Q2.8.6.b. `CATALOGUE_COMPLET_QUESTIONS.md` Q2.8 du paquet de l'éditeur (D-107).
 //
 // Le jour 1 est la date d'hospitalisation, le 1er octobre : le 14e jour est le
-// 14 octobre, à minuit.
+// 14 octobre. Les dates de la permission sont des dates seules, sa durée se
+// déclare (DATES-SEULES-20261104).
 
 import { describe, expect, it } from "vitest";
 import {
@@ -20,8 +21,9 @@ const AVANT_L_HOSPITALISATION =
 const AVANT_LE_QUATORZIEME =
   "La première permission doit commencer au 14e jour d’hospitalisation ou après.";
 const FIN_AVANT_LE_DEBUT =
-  "La fin de la permission doit venir après son début.";
-const PLUS_DE_48_HEURES = "Une permission dure au plus 48 heures.";
+  "La fin de la permission ne peut pas précéder son début.";
+const DUREE_CONTREDITE =
+  "Cette durée ne correspond pas aux dates de la permission.";
 const PERIODE_TROP_COURTE =
   "La période ne peut pas se terminer avant la fin de la première permission.";
 
@@ -38,7 +40,7 @@ const periode = (fin: string): Reponses => ({
 
 describe("le début de la première permission (Q2.8.2)", () => {
   it("avant l'hospitalisation, bloque deux fois : le début et le 14e jour", () => {
-    const reponses = debut("2026-09-30T23:59");
+    const reponses = debut("2026-09-30");
     expect(incoherences("Q2.8.2", reponses)).toEqual([
       AVANT_L_HOSPITALISATION,
       AVANT_LE_QUATORZIEME,
@@ -47,19 +49,19 @@ describe("le début de la première permission (Q2.8.2)", () => {
   });
 
   it("le jour de l'hospitalisation, bloque encore le 14e jour", () => {
-    expect(incoherences("Q2.8.2", debut("2026-10-01T08:00"))).toEqual([
+    expect(incoherences("Q2.8.2", debut("2026-10-01"))).toEqual([
       AVANT_LE_QUATORZIEME,
     ]);
   });
 
-  it("la veille du 14e jour, à 23 h 59, bloque", () => {
-    const reponses = debut("2026-10-13T23:59");
+  it("la veille du 14e jour bloque", () => {
+    const reponses = debut("2026-10-13");
     expect(incoherences("Q2.8.2", reponses)).toEqual([AVANT_LE_QUATORZIEME]);
     expect(validee("Q2.8.4", reponses)).toBe(false);
   });
 
-  it("le 14e jour à minuit pile est accepté", () => {
-    const reponses = debut("2026-10-14T00:00");
+  it("le 14e jour est accepté", () => {
+    const reponses = debut("2026-10-14");
     expect(incoherences("Q2.8.2", reponses)).toEqual([]);
     expect(validee("Q2.8.2", reponses)).toBe(true);
   });
@@ -71,25 +73,53 @@ describe("le début de la première permission (Q2.8.2)", () => {
 });
 
 describe("la fin de la première permission (Q2.8.3)", () => {
-  it.each([
-    ["avant son début", "2026-10-14T09:00", "2026-10-14T08:59"],
-    ["en même temps que son début", "2026-10-14T09:00", "2026-10-14T09:00"],
-  ])("%s, bloque", (_, de, a) => {
-    expect(incoherences("Q2.8.3", permission(de, a))).toEqual([
-      FIN_AVANT_LE_DEBUT,
-    ]);
+  it("avant son début, bloque", () => {
+    const reponses = permission("2026-10-14", "2026-10-13");
+    expect(incoherences("Q2.8.3", reponses)).toEqual([FIN_AVANT_LE_DEBUT]);
+    expect(validee("Q2.8.3", reponses)).toBe(false);
   });
 
-  it("48 heures pile sont acceptées", () => {
-    const reponses = permission("2026-10-14T09:00", "2026-10-16T09:00");
+  it("le jour même de son début est acceptée", () => {
+    const reponses = permission("2026-10-14", "2026-10-14");
     expect(incoherences("Q2.8.3", reponses)).toEqual([]);
     expect(validee("Q2.8.3", reponses)).toBe(true);
   });
+});
 
-  it("48 heures et une minute bloquent", () => {
-    const reponses = permission("2026-10-14T09:00", "2026-10-16T09:01");
-    expect(incoherences("Q2.8.3", reponses)).toEqual([PLUS_DE_48_HEURES]);
-    expect(validee("Q2.8.3", reponses)).toBe(false);
+describe("la durée de la permission (Q2.8.duree_48h)", () => {
+  const duree = (valeur: "1_OUI" | "2_NON", a = "2026-10-15"): Reponses => ({
+    ...permission("2026-10-14", a),
+    "Q2.8.duree_48h": valeur,
+  });
+
+  it("se pose après la date de fin, sur la même page, en Oui et Non", () => {
+    const question = posee("P2/permission-mineur", "Q2.8.duree_48h", MINEUR);
+    expect(question?.label).toBe(
+      "Cette permission dure-t-elle au maximum 48 heures ?",
+    );
+    expect(
+      question?.kind === "single choice" &&
+        question.options.map(({ label }) => label),
+    ).toEqual(["Oui.", "Non."]);
+  });
+
+  it("attend sa réponse pour valider la page", () => {
+    const { "Q2.8.duree_48h": _, ...sansDuree } = MINEUR;
+    expect(validee("Q2.8.4", sansDuree)).toBe(false);
+  });
+
+  it("Non est accepté quand les dates le permettent, sans bloquer la page", () => {
+    const reponses = duree("2_NON", "2026-10-16");
+    expect(incoherences("Q2.8.duree_48h", reponses)).toEqual([]);
+    expect(validee("Q2.8.duree_48h", reponses)).toBe(true);
+  });
+
+  it("une réponse que les dates contredisent bloque", () => {
+    const reponses = duree("2_NON");
+    expect(incoherences("Q2.8.duree_48h", reponses)).toEqual([
+      DUREE_CONTREDITE,
+    ]);
+    expect(validee("Q2.8.duree_48h", reponses)).toBe(false);
   });
 });
 

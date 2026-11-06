@@ -69,6 +69,7 @@ const ATTENDU: Record<string, readonly [string[], string[]]> = {
       "Q2.8.1",
       "Q2.8.2",
       "Q2.8.3",
+      "Q2.8.duree_48h",
       "Q2.8.4",
       "Q2.8.5",
     ]),
