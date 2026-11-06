@@ -1,6 +1,8 @@
 // Le texte médical de la PMT (page 3) et de la DAP (page 2) : les segments que
 // le parcours établit, dans l'ordre de `COMPLETION_DOCUMENTS.md`, joints par
-// « ; » (`CONTRAT_ELEMENTS_MEDICAUX.json`, D-141 à D-147).
+// « ; » (`CONTRAT_ELEMENTS_MEDICAUX.json`, D-141 à D-147). Rien n'y vient de
+// l'autonomie, des critères de Q1.2, du mode, de l'accompagnement ni de son
+// équipement : les cases du mode le disent (DOC-COMMENTAIRES-MEDICAUX-20261104).
 //
 // Un segment reprend le libellé d'une réponse, ou le texte du contrat. Il perd
 // la définition de ses sigles et son point final, et sa majuscule s'il ne
@@ -8,17 +10,10 @@
 // prescripteur (Q3.4) a sa propre cellule : le cerfa la joint au texte, et la
 // retire faute de place. Le point final va au dernier des deux.
 
-import { Q1_1 } from "../../../../../core/models/eligibilite/questions/p1/questions/q1-1";
-import { Q1_2 } from "../../../../../core/models/eligibilite/questions/p1/questions/q1-2";
 import { Q1_3 } from "../../../../../core/models/eligibilite/questions/p1/questions/q1-3";
 import { Q2_1 } from "../../../../../core/models/eligibilite/questions/p2/questions/q2-1";
 import { given } from "../../../../../core/models/eligibilite/questions/reponses";
-import type {
-  Address,
-  AnswerOf,
-  Unanswered,
-  Value,
-} from "../../../../../core/socle";
+import type { Address, Unanswered, Value } from "../../../../../core/socle";
 import type { Rubrique } from "./rubrique";
 import { adresseEnParties } from "./trajet";
 
@@ -49,20 +44,17 @@ const MATERNITE = given
   })
   .compute(coordonneesDeLaMaternite);
 
-// Ce que lit le texte : les réponses du soin et des besoins, et les cibles et
+// Ce que lit le texte : les réponses du soin, et les cibles et
 // les faits qui portent la condition des segments du contrat.
 const ENTREES = given.all({
   motif: given.question("Q2.1").answer(),
   seances: given.question("Q1.3").answer(),
-  aides: given.question("Q1.2").answer(),
-  accompagnement: given.question("Q1.1").answer(),
   motifMaternite: given.question("Q2.14.motif").answer(),
   justification: given
     .question("Q3.4.distance")
     .answer()
     .compute(lueTelleQuelle),
   precision: PRECISION,
-  bariatrique: given.cible("cible_ambulance_equipement_bariatrique").isOui(),
   aldLiee: given.fait("fait_ald_liee").isOui(),
   atmp: given.cible("cible_situation_at_mp").isOui(),
   camsp: given.cible("cible_dap_motif_camsp_cmpp").isOui(),
@@ -85,11 +77,7 @@ export const TEXTE_MEDICAL: Rubrique<TexteMedical> = {
 type Entrees = typeof ENTREES extends Value<infer Lues> ? Lues : never;
 
 function texteMedical(entrees: Entrees): string | AucunSegment {
-  const segments = [
-    ...soin(entrees),
-    ...besoins(entrees),
-    ...complements(entrees),
-  ]
+  const segments = [...soin(entrees), ...complements(entrees)]
     .map(forme)
     .map((segment) => segment.replace(VARIABLE, entrees.justification ?? ""));
   if (segments.length === 0) return undefined;
@@ -101,15 +89,8 @@ function texteMedical(entrees: Entrees): string | AucunSegment {
 
 // Les textes du contrat, tels qu'il les donne.
 const CONTRAT = {
-  allonge: "Position allongée ou semi-assise sur brancard nécessaire",
-  brancard: "Brancardage ou portage nécessaire",
-  surveillance:
-    "Surveillance constante par une personne qualifiée avec matériel de secours",
-  oxygene: "Administration d’oxygène nécessaire pendant le transport",
-  asepsie: "Transport en conditions d’asepsie nécessaire",
   ald: "Soins en lien avec une ALD (Affection Longue Durée) reconnue",
   atmp: "Transport en lien avec un accident du travail ou une maladie professionnelle",
-  bariatrique: "Équipement bariatrique adapté nécessaire",
   camsp:
     "Soins dans le cadre d’un parcours CAMSP (Centre d’Action Médico-Sociale Précoce) ou CMPP (Centre Médico-Psycho-Pédagogique)",
   examen:
@@ -130,17 +111,6 @@ const CONTRAT = {
 // La saisie du prescripteur la remplace, sans prendre la forme des segments.
 const VARIABLE = "[précision du prescripteur]";
 
-type Besoin = AnswerOf<typeof Q1_2>[number];
-
-// Les critères d'ambulance prennent le texte court du contrat (D-142).
-const CRITERES_D_AMBULANCE: Partial<Record<Besoin, string>> = {
-  "7_ALLONGE": CONTRAT.allonge,
-  "8_BRANCARDAGE": CONTRAT.brancard,
-  "9_SURVEILLANCE": CONTRAT.surveillance,
-  "10_OXYGENE": CONTRAT.oxygene,
-  "11_ASEPSIE": CONTRAT.asepsie,
-};
-
 const SEANCES = ["3_CHIMIOTHERAPIE", "4_RADIOTHERAPIE", "5_DIALYSE"] as const;
 const SANS_SOIN: readonly string[] = ["14_AUTRE", "15_AUCUN"];
 
@@ -153,24 +123,12 @@ function soin({ motif, seances }: Entrees): readonly string[] {
   );
 }
 
-// Les besoins de Q1.2 dans leur ordre, puis le proche de Q1.1.
-function besoins({ aides, accompagnement }: Entrees): readonly string[] {
-  const cochees = (Object.keys(Q1_2.labels) as Besoin[])
-    .filter((besoin) => aides.checked(besoin))
-    .map((besoin) => CRITERES_D_AMBULANCE[besoin] ?? Q1_2.labels[besoin]);
-  const proche = accompagnement.is("2_AVEC_UN_PROCHE")
-    ? [Q1_1.labels["2_AVEC_UN_PROCHE"]]
-    : [];
-  return [...cochees, ...proche];
-}
-
 // Les segments du contrat, chacun sur la cible ou le fait qui porte sa
 // condition (D-147). Ce que Q3.8 recueille suit le motif de l'Engagement
 // maternité, avant l'HTNM.
 function complements(entrees: Entrees): readonly string[] {
   return [
     ...etablis([
-      [entrees.bariatrique, CONTRAT.bariatrique],
       [entrees.aldLiee, CONTRAT.ald],
       [entrees.atmp, CONTRAT.atmp],
       [entrees.camsp, CONTRAT.camsp],

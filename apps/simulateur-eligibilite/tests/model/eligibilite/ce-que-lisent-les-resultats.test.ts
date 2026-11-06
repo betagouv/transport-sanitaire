@@ -41,8 +41,6 @@ describe("les questions que les résultats lisent telles quelles", () => {
 
   it("R3 lit son texte et les entrées de ses trois cerfas", () => {
     expect(trie(luParR3())).toEqual([
-      "Q1.1",
-      "Q1.2",
       "Q1.3",
       "Q1.3.accident_tiers_date",
       "Q2.1",
@@ -143,7 +141,6 @@ describe("les cibles et les faits que les résultats lisent", () => {
     expect([...cibles].sort()).toEqual([
       "cible_ald_juridiquement_qualifiante_3_ou_4_degres",
       "cible_ambulance_brancardage_portage",
-      "cible_ambulance_equipement_bariatrique",
       "cible_ambulance_isolement_asepsie",
       "cible_ambulance_oxygene",
       "cible_ambulance_position_allongee_demi_assise",

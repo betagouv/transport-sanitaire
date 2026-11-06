@@ -1,6 +1,6 @@
 // Le texte médical de la PMT et de la DAP (#159) : ses segments, leur ordre et
-// leur forme (D-141 à D-147), depuis les réponses d'un parcours et les cibles
-// que les règles calculent. `CONTRAT_ELEMENTS_MEDICAUX.json` en v10.1.3.
+// leur forme (D-141 à D-147, D-270), depuis les réponses d'un parcours et les
+// cibles que les règles calculent. `CONTRAT_ELEMENTS_MEDICAUX.json` en v10.1.7.
 
 import { describe, expect, it } from "vitest";
 import type { Faits } from "../../../../core/models/eligibilite/faits/noms";
@@ -23,10 +23,6 @@ import {
 } from "./reponses-du-cerfa";
 
 const SEANCE = "Ce déplacement concerne une séance de dialyse en centre";
-const PAS_AUTONOME =
-  "ne peut pas se déplacer de manière autonome sur une longue distance, utiliser seul les transports en commun ou conduire un véhicule personnel en raison de sa pathologie, de son traitement ou d’un handicap";
-const MALAISE =
-  "présente un risque d’effets secondaires, de malaise ou de complications pendant le transport";
 const MINEUR =
   "Mineur nécessitant des soins prolongés en raison d’un handicap, d’une incapacité ou d’un accident";
 
@@ -43,9 +39,9 @@ const HEBERGEMENT_DISTINCT: Reponses = {
 };
 
 describe("le texte médical", () => {
-  it("joint le soin et les besoins par « ; », sans majuscule après", () => {
+  it("donne le soin, sans point quand la précision le suit", () => {
     expect(texte(PMT)).toEqual({
-      elements_medicaux: `${SEANCE} ; ${PAS_AUTONOME} ; ${MALAISE}`,
+      elements_medicaux: SEANCE,
       elements_medicaux_precision: "Dialyse.",
     });
   });
@@ -54,7 +50,7 @@ describe("le texte médical", () => {
     const { "Q3.4": _, ...sansPrecision } = PMT;
 
     expect(texte(sansPrecision)).toEqual({
-      elements_medicaux: `${SEANCE} ; ${PAS_AUTONOME} ; ${MALAISE}.`,
+      elements_medicaux: `${SEANCE}.`,
       elements_medicaux_precision: undefined,
     });
   });
@@ -90,24 +86,23 @@ describe("le soin", () => {
   });
 });
 
-describe("les besoins", () => {
-  it("suivent l'ordre de Q1.2, les critères d'ambulance en mots courts", () => {
+// Les critères de Q1.2, le mode, l'accompagnement et l'équipement ont leurs
+// cases : le texte n'en dit rien (DOC-COMMENTAIRES-MEDICAUX-20261104).
+describe("l'autonomie et le mode", () => {
+  it("n'écrivent ni les critères de Q1.2, ni le proche de Q1.1", () => {
     const reponses: Reponses = {
       ...PMT,
+      "Q1.1": "2_AVEC_UN_PROCHE",
       "Q1.2": ["8_BRANCARDAGE", "1_PAS_AUTONOME", "7_ALLONGE"],
     };
 
-    expect(texte(reponses).elements_medicaux).toBe(
-      `${SEANCE} ; ${PAS_AUTONOME} ; position allongée ou semi-assise sur brancard nécessaire ; brancardage ou portage nécessaire`,
-    );
+    expect(texte(reponses).elements_medicaux).toBe(SEANCE);
   });
 
-  it("comptent le proche de Q1.1", () => {
-    const reponses = { ...ENTREE, "Q1.1": "2_AVEC_UN_PROCHE" } as const;
+  it("n'écrit pas l'équipement bariatrique", () => {
+    const cibles = { cible_ambulance_equipement_bariatrique: true };
 
-    expect(texte(reponses).elements_medicaux).toBe(
-      "Entrée ou sortie d’hospitalisation, ou admission en HAD ; nécessite l’accompagnement d’un proche pour se déplacer ou transmettre les informations nécessaires à l’équipe soignante, sans intervention d’un professionnel pendant le transport.",
-    );
+    expect(texte(PMT, cibles).elements_medicaux).toBe(SEANCE);
   });
 });
 
@@ -115,7 +110,6 @@ describe("les compléments", () => {
   it("suivent l'ordre de COMPLETION_DOCUMENTS, la mention du mineur telle quelle", () => {
     const cibles: ValeursDesCibles = {
       cible_situation_at_mp: true,
-      cible_ambulance_equipement_bariatrique: true,
       cible_dap_motif_camsp_cmpp: true,
       cible_mineur_ald_non_exonerante_reconnue: true,
       cible_issue_id: "ISSUE_DAP_ETRANGER_A_EXAMINER",
@@ -127,9 +121,6 @@ describe("les compléments", () => {
     expect(texte(sansPrecision, cibles, faits).elements_medicaux).toBe(
       [
         SEANCE,
-        PAS_AUTONOME,
-        MALAISE,
-        "équipement bariatrique adapté nécessaire",
         "soins en lien avec une ALD reconnue",
         "transport en lien avec un accident du travail ou une maladie professionnelle",
         "soins dans le cadre d’un parcours CAMSP ou CMPP",
