@@ -3,13 +3,20 @@
 // la permission sans dire de quel déplacement il s'agit. Les faits du
 // transfert vivent sous `faits/`.
 
+import { Q1_3 } from "../../p1/questions/q1-3.ts";
 import { given, question } from "../../question.ts";
+import {
+  LIEUX_INCOMPATIBLES,
+  unConflitDeLieuxApparu,
+} from "../conditions/conflit-de-lieux.ts";
 import {
   TRANSFERT_VERS_LA_PRISON,
   unRetourPenitentiaire,
 } from "../conditions/retour-penitentiaire.ts";
 import { Q2_1, Q2_1_G } from "./q2-1.ts";
+import { Q2_2_1 } from "./q2-2-1.ts";
 import { Q2_2_1_A } from "./q2-2-1-a.ts";
+import { Q2_2_1_CADRE } from "./q2-2-1-cadre.ts";
 
 // La question, avant les règles qui lisent sa réponse.
 const declaree = question
@@ -47,4 +54,16 @@ const unTransfertVersLaPrison = given
 
 export const Q2_5 = declaree
   .appliesWhen(unTransfertAPoser)
-  .inconsistentWhen(unTransfertVersLaPrison, TRANSFERT_VERS_LA_PRISON);
+  .inconsistentWhen(unTransfertVersLaPrison, TRANSFERT_VERS_LA_PRISON)
+  // Un autre déplacement part du séjour, ou y revient.
+  .inconsistentWhen(
+    unConflitDeLieuxApparu("transfert", {
+      soins: Q1_3,
+      sousType: Q2_1_G,
+      situations: Q2_2_1,
+      sejour: Q2_2_1_CADRE,
+      enPermission: Q2_2_1_A,
+      transfert: declaree,
+    }),
+    LIEUX_INCOMPATIBLES,
+  );

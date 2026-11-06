@@ -14,7 +14,12 @@
 // Chaque situation de ces blocs ne se propose qu'ici : Q2.1 n'en dit plus
 // aucune (QST-COLLECTE-UNIQUE, D-272).
 
+import { Q1_3 } from "../../p1/questions/q1-3.ts";
 import { given, question } from "../../question.ts";
+import {
+  LIEUX_INCOMPATIBLES,
+  unConflitDeLieuxApparu,
+} from "../conditions/conflit-de-lieux.ts";
 import { Q2_1_G } from "./q2-1.ts";
 
 // « Déjà hospitalisé » ne se propose pas pour le trajet qui ouvre le séjour
@@ -26,7 +31,8 @@ const unSejourAProposer = given.question(Q2_1_G).answer().is("1_ENTREE").not();
 const PAS_LE_MEME_TRAJET =
   "Un même trajet relève de l’Engagement maternité ou d’un hébergement temporaire non médicalisé, pas des deux. Pour deux trajets, faites une simulation par trajet.";
 
-export const Q2_2_1 = question
+// La question, avant l'incohérence qui lit sa réponse.
+const situations = question
   .multipleChoice(
     "Q2.2.1",
     "L’une de ces situations concerne-t-elle le transport du patient ?",
@@ -57,6 +63,16 @@ export const Q2_2_1 = question
   )
   .incompatible("14_EXAMEN_MATERNITE", "5_HTNM", PAS_LE_MEME_TRAJET)
   .incompatible("15_HEBERGEMENT_MATERNITE", "5_HTNM", PAS_LE_MEME_TRAJET);
+
+// Un hébergement ou un retour pénitentiaire contredit un autre lieu déjà dit.
+export const Q2_2_1 = situations.inconsistentWhen(
+  unConflitDeLieuxApparu("situations", {
+    soins: Q1_3,
+    sousType: Q2_1_G,
+    situations,
+  }),
+  LIEUX_INCOMPATIBLES,
+);
 
 // Une autre réponse validée au premier bloc efface celle du second, qui se
 // repose s'il reste utile ; les autres réponses restent
