@@ -53,10 +53,10 @@ describe(
       ]) {
         expect(screen.getByText(libelle)).toHaveClass("fr-text--bold");
       }
-      expect(screen.getByText("Environ 3 minutes")).toHaveClass("fr-hint-text");
-      expect(screen.getByText("Environ 10 minutes")).toHaveClass(
+      expect(screen.getByText("1 minute 30 chrono !")).toHaveClass(
         "fr-hint-text",
       );
+      expect(screen.getByText("4 minutes")).toHaveClass("fr-hint-text");
     });
 
     it("titre P1, et annonce P2", async () => {

@@ -151,10 +151,14 @@ export type AffichageDuPrescripteur = {
   readonly renderReasonPanels?: boolean;
 };
 
-/** La caisse : ses titres, pour un point et pour plusieurs, et l'introduction de plusieurs. */
+/**
+ * La caisse : ses titres et ceux du pourquoi, pour un point et pour plusieurs,
+ * et l'introduction de plusieurs.
+ */
 export type IssueDeLaCaisse = IssuePrescripteur & {
   readonly multipleIntro: string;
   readonly titles: { readonly single: string; readonly multiple: string };
+  readonly whyTitles: { readonly single: string; readonly multiple: string };
 };
 
 /** Un scénario du résultat du prescripteur, et ce qui le choisit. */

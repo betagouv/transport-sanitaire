@@ -12,11 +12,9 @@
 import type { TraceDe } from "../../components/ce-que-lit-un-bloc";
 import type {
   AffichageDuPrescripteur,
-  AucunScenario,
   CatalogueResultats,
   IssueDeLaCaisse,
   IssueEtranger,
-  IssuePrescripteur,
   ScenarioPrescripteur,
 } from "../../components/forme-du-catalogue";
 import { sansBlancsDeTrop } from "../../components/sans-blancs-de-trop";
@@ -120,12 +118,13 @@ function texteDeLEtranger(issue: IssueEtranger): TexteDuPrescripteur {
 function texteDUnScenario(
   titre: string,
   scenario: ScenarioPrescripteur,
+  titreDuPourquoi = scenario.whyTitle,
 ): TexteDuPrescripteur {
   return {
     titre,
     introduction: scenario.intro,
     pourquoi: {
-      titre: scenario.whyTitle,
+      titre: titreDuPourquoi,
       elements: elementsDuPourquoi(scenario.whyText),
     },
     questions: scenario.questions,
@@ -133,57 +132,31 @@ function texteDUnScenario(
   };
 }
 
-// Aucun point : le titre seul. Un point : son scénario. Plusieurs : le
-// scénario de cumul que l'éditeur a écrit pour ces points, s'il existe ; sinon
-// son introduction pour « plusieurs points », puis chaque scénario. Le titre
-// compte les points, une fois chacun (point 27).
+// Aucun point : le titre seul. Un point : son scénario. Plusieurs : son
+// introduction pour « plusieurs points », puis chaque scénario. Le titre
+// compte les points, une fois chacun (point 27), et celui du pourquoi aussi,
+// lu dans les clés communes de la caisse : aucun scénario n'en est la source
+// (TS1017-16, REFERENTIEL/03).
 function texteDesRaisons(
   issue: IssueDeLaCaisse,
   points: readonly ScenarioPrescripteur[],
 ): TexteDuPrescripteur {
   const [premier, deuxieme] = points;
+  const { titles, whyTitles } = issue;
   if (!premier) return { ...SANS_TEXTE, titre: issue.title };
-  if (!deuxieme) return texteDUnScenario(issue.titles.single, premier);
-  const titre = issue.titles.multiple;
-  const cumul = scenarioDeCumul(issue, points);
-  if (cumul) return texteDUnScenario(titre, cumul);
+  if (!deuxieme) {
+    return texteDUnScenario(titles.single, premier, whyTitles.single);
+  }
   return {
-    titre,
+    titre: titles.multiple,
     introduction: issue.multipleIntro,
     pourquoi: {
-      titre: titreAuPluriel(issue, premier),
+      titre: whyTitles.multiple,
       elements: points.flatMap(({ whyText }) => elementsDuPourquoi(whyText)),
     },
     questions: points.flatMap(({ questions }) => questions),
     actions: sansDoublon(points.flatMap(({ actions }) => actions)),
   };
-}
-
-// Le scénario dont les codes sont exactement ceux de ces points.
-function scenarioDeCumul(
-  { scenarios }: IssuePrescripteur,
-  points: readonly ScenarioPrescripteur[],
-): ScenarioPrescripteur | AucunScenario {
-  const codes = points.flatMap((point) => point.codes).sort();
-  return scenarios.find(
-    (scenario) =>
-      !scenario.inactive &&
-      scenario.codes.length > 1 &&
-      [...scenario.codes].sort().join() === codes.join(),
-  );
-}
-
-// Le titre de l'éditeur pour plusieurs points ; à défaut, celui du premier.
-// Seul un scénario de cumul le porte, et depuis la v10.1.6 il est inactif : on
-// emprunte son titre sans prendre le scénario (TS1016-07, REFERENTIEL/03).
-function titreAuPluriel(
-  { scenarios }: IssuePrescripteur,
-  premier: ScenarioPrescripteur,
-): string {
-  return (
-    scenarios.find(({ codes }) => codes.length > 1)?.whyTitle ??
-    premier.whyTitle
-  );
 }
 
 function sansDoublon(textes: readonly string[]): string[] {
