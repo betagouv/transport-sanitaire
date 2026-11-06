@@ -1,6 +1,6 @@
 // Le sens des transports du document : Q3.1.2 le dit, ou plusieurs
 // permissions, chacune un aller-retour, le donnent sans le redemander (D-120).
-// Les rôles des lieux (`situations-des-lieux.ts`) et le cerfa le lisent.
+// Les rôles des lieux (`roles-dans-le-sens.ts`) et le cerfa le lisent.
 
 import type { AnswerOf, GivenAnswer } from "../../../../../socle/index.ts";
 import { Q2_8_5 } from "../../p2/questions/q2-8-5.ts";

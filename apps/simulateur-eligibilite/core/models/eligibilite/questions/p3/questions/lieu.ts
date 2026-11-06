@@ -9,6 +9,10 @@ import type {
   Answered,
   Condition,
 } from "../../../../../socle/index.ts";
+import {
+  NATURES_DU_LIEU,
+  type Nature,
+} from "../../p2/conditions/natures-du-lieu.ts";
 import { type Context as Contexte, given, question } from "../../question.ts";
 import { unHebergementDuDispositif } from "../conditions/engagement-maternite.ts";
 import {
@@ -20,13 +24,12 @@ import {
   precisionAPoser,
   type QuestionDeNature,
 } from "../conditions/lieux-du-trajet.ts";
-import { NATURES_DU_LIEU, type Nature } from "../conditions/natures-du-lieu.ts";
 import {
   desRolesContradictoires,
   ENTREES_DES_LIEUX,
   entreesDe,
   natureAdmise,
-} from "../conditions/roles-des-lieux.ts";
+} from "../conditions/roles-dans-le-sens.ts";
 import { avecUnDocument } from "../conditions/supports-du-complement.ts";
 
 /** Les libellés propres à un lieu. */
