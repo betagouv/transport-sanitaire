@@ -114,18 +114,22 @@ async function prochainId2(doc: DocGrist, table: string): Promise<number> {
   return max + 1;
 }
 
-// Réutilise l'établissement homonyme (Nom normalisé), sinon le crée.
+// Réutilise l'établissement homonyme (Nom normalisé), sinon le crée avec son
+// service « Autre », comme ceux de l'admin : le prescripteur suivant qui n'y
+// trouve pas son service peut alors le saisir.
 async function assurerEtablissement(
   doc: DocGrist,
   nom: string,
 ): Promise<number> {
   const deja = homonyme(await lignes(doc, TABLE.etablissements), nom);
   if (deja != null) return deja;
-  return creerLigne(doc, TABLE.etablissements, {
+  const etabRowId = await creerLigne(doc, TABLE.etablissements, {
     [COL.id]: await prochainId2(doc, TABLE.etablissements),
     [COL.nom]: nom.trim(),
     [COL.origine]: ORIGINE_FORMULAIRE,
   });
+  await creerService(doc, etabRowId, SERVICE_AUTRE);
+  return etabRowId;
 }
 
 // Réutilise le service homonyme (Nom normalisé) de l'établissement, sinon le crée.
@@ -139,6 +143,14 @@ async function assurerService(
   });
   const deja = homonyme(existants, nom);
   if (deja != null) return deja;
+  return creerService(doc, etabRowId, nom);
+}
+
+async function creerService(
+  doc: DocGrist,
+  etabRowId: number,
+  nom: string,
+): Promise<number> {
   return creerLigne(doc, TABLE.services, {
     [COL.id]: await prochainId2(doc, TABLE.services),
     [COL.nom]: nom.trim(),
@@ -171,3 +183,7 @@ const COL = {
 // Écrit dans la colonne `Origine` des lignes créées par le formulaire, pour les
 // distinguer de celles de l'admin.
 const ORIGINE_FORMULAIRE = "formulaire";
+
+// Le libellé du service par lequel l'écran propose de saisir un service non
+// listé (`estAutre`, dans `front/socle/rattachement/listes.ts`).
+const SERVICE_AUTRE = "Autre";
