@@ -6,20 +6,13 @@
 // Il n'importe rien de `node:*` : le PDF se génère dans le navigateur, et les
 // données du patient ne quittent pas le poste.
 
-import {
-  PDFDocument,
-  type PDFFont,
-  PDFTextField,
-  StandardFonts,
-} from "pdf-lib";
+import { PDFDocument, type PDFFont, StandardFonts } from "pdf-lib";
 import { keepBoxAppearances } from "./box-appearances";
 import { type Box, checkBoxes } from "./check-box";
 import { formatDateForField } from "./dates";
 import type { Drawing } from "./flatten-the-form";
-import { nearOverflowsOf, overflowsOf } from "./overflow";
-import { sizeInField, sizeToFit } from "./text-fit";
-import { SIZE_STEP } from "./text-sizes";
 import { writableIn } from "./writable-text";
+import { type Text, textFieldOf, writeText } from "./write-a-text";
 
 /**
  * Une valeur à écrire : un texte dans un champ nommé, ou une case à cocher.
@@ -44,6 +37,12 @@ export type FillOptions = {
    * sont aplaties sur une ligne.
    */
   readonly singleLineFields?: readonly string[];
+  /**
+   * Champs à passer en multiligne avant toute mesure, même si le gabarit les
+   * déclare sur une ligne : ceux qui portent un commentaire
+   * (DOC-COMMENTAIRE-CAPACITE-20261104, #356).
+   */
+  readonly multilineFields?: readonly string[];
   /** Champs qui reçoivent une date ISO, à écrire selon leurs cases. */
   readonly dateFields?: readonly string[];
 };
@@ -74,10 +73,16 @@ export type Filled = {
 export async function fillCerfa(
   template: Uint8Array | ArrayBuffer,
   entries: readonly FieldEntry[],
-  { singleLineFields = [], dateFields = [] }: FillOptions = {},
+  {
+    singleLineFields = [],
+    multilineFields = [],
+    dateFields = [],
+  }: FillOptions = {},
 ): Promise<Filled> {
   const document = await PDFDocument.load(template);
   keepBoxAppearances(document);
+  for (const field of multilineFields)
+    document.getForm().getTextField(field).enableMultiline();
   checkBoxes(document, entries.filter(isBox));
   const texts = entries
     .filter(isText)
@@ -89,12 +94,6 @@ export async function fillCerfa(
 }
 
 // ---- implémentation ----
-
-type Text = {
-  readonly field: string;
-  readonly text: string;
-  readonly comment?: string;
-};
 
 type Written = Omit<Filled, "pdf">;
 
@@ -164,130 +163,6 @@ function writableWith(font: PDFFont) {
 // lecteurs qui ne régénèrent pas les apparences.
 function showValues(document: PDFDocument): void {
   document.getForm().updateFieldAppearances();
-}
-
-type WrittenText = {
-  readonly overflows: readonly Drawing[];
-  readonly withoutComment: boolean;
-};
-
-// Chaque étape écrit le texte si elle y arrive, sinon passe la main à la suivante.
-function writeText(
-  document: PDFDocument,
-  font: PDFFont,
-  entry: Text,
-): WrittenText {
-  const field = textFieldOf(document, entry.field);
-  return (
-    writeWithComment(field, font, entry) ??
-    writeWithoutComment(field, font, entry) ??
-    writeShrunk(field, font, entry) ??
-    overflowIfNear(document, field, font, entry) ??
-    writeShrunk(field, font, entry, SIZE_STEP) ??
-    overflow(document, field, font, entry)
-  );
-}
-
-function textFieldOf(document: PDFDocument, name: string): PDFTextField {
-  const field = document.getForm().getField(name);
-  if (!(field instanceof PDFTextField)) {
-    throw new Error(`Le champ « ${name} » n'est pas un champ texte.`);
-  }
-  return field;
-}
-
-/** Rien n'est écrit dans le champ : l'étape suivante essaie autrement. */
-type NotWritten = undefined;
-
-// Le texte suivi de son commentaire, s'il tient dans le cadre.
-function writeWithComment(
-  field: PDFTextField,
-  font: PDFFont,
-  { text, comment = "" }: Text,
-): WrittenText | NotWritten {
-  const full = [text, comment].filter((part) => part !== "").join(" ; ");
-  return writeIfFits(field, font, full)
-    ? { overflows: [], withoutComment: false }
-    : undefined;
-}
-
-// Le texte seul, son commentaire retiré, s'il tient dans le cadre.
-function writeWithoutComment(
-  field: PDFTextField,
-  font: PDFFont,
-  { text, comment }: Text,
-): WrittenText | NotWritten {
-  if (!comment) return undefined;
-  return writeIfFits(field, font, text)
-    ? { overflows: [], withoutComment: true }
-    : undefined;
-}
-
-// Le texte seul, à la ligne, rapetissé jusqu'à `floor` au plus (D-193, #341).
-function writeShrunk(
-  field: PDFTextField,
-  font: PDFFont,
-  { text, comment }: Text,
-  floor?: number,
-): WrittenText | NotWritten {
-  const fontSize = sizeToFit(field, font, text, floor);
-  if (fontSize === undefined) return undefined;
-  field.enableMultiline();
-  write(field, text, fontSize);
-  return { overflows: [], withoutComment: Boolean(comment) };
-}
-
-// Rien dans le champ : le texte seul se dessinera sous chaque widget, s'il en
-// reste près (#341).
-function overflowIfNear(
-  document: PDFDocument,
-  field: PDFTextField,
-  font: PDFFont,
-  { text, comment }: Text,
-): WrittenText | NotWritten {
-  const widgets = field.acroField.getWidgets();
-  const overflows = nearOverflowsOf(document, widgets, font, text);
-  return overflows && { overflows, withoutComment: Boolean(comment) };
-}
-
-// Rien dans le champ : le texte seul se dessinera sous chaque widget.
-function overflow(
-  document: PDFDocument,
-  field: PDFTextField,
-  font: PDFFont,
-  { text, comment }: Text,
-): WrittenText {
-  return {
-    overflows: overflowsOf(document, field.acroField.getWidgets(), font, text),
-    withoutComment: Boolean(comment),
-  };
-}
-
-// Écrit `text` à la plus grande taille où il tient, s'il y en a une.
-function writeIfFits(
-  field: PDFTextField,
-  font: PDFFont,
-  text: string,
-): boolean {
-  const fontSize = sizeInField(field, font, text);
-  if (fontSize === undefined) return false;
-  write(field, text, fontSize);
-  return true;
-}
-
-function write(field: PDFTextField, text: string, fontSize: number): void {
-  field.setText(text);
-  field.setFontSize(fontSize);
-  sameSizeOnEveryWidget(field);
-}
-
-// Un widget à taille propre (volets 3 et 4 de la DAP) l'emporte sur celle du
-// champ chez `pdf-lib` : son texte s'y dessinerait à sa taille, coupé.
-function sameSizeOnEveryWidget(field: PDFTextField): void {
-  const appearance = field.acroField.getDefaultAppearance();
-  if (appearance === undefined) return;
-  for (const widget of field.acroField.getWidgets())
-    widget.setDefaultAppearance(appearance);
 }
 
 /** Les champs `singleLineFields` n'affichent qu'une ligne, on aplatit. */
