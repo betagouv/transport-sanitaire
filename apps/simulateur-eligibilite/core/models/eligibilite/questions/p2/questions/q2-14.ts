@@ -1,19 +1,23 @@
 // Q2.14 : les deux groupes de l'Engagement maternité, l'éloignement puis le
 // motif, sur la page de branche. Le motif lit aussi l'éloignement, sur la même
 // page.
+//
+// Q2.2.1 découvre l'examen et l'hébergement, deux cases indépendantes
+// (QST-MAT-SEPARATION, D-272). L'examen coché est déjà la finalité du
+// déplacement : le motif ne se repose pas. L'hébergement seul ne prouve pas
+// son organisation dans le dispositif : le motif ne propose alors que celle-ci.
 
 import { given, question } from "../../question.ts";
 import { brancheDecisive } from "../conditions/branche.ts";
-import { Q2_1 } from "./q2-1.ts";
 import { Q2_2_1 } from "./q2-2-1.ts";
 
-// Le groupe de l'éloignement se pose : Q2.1 dit la maternité, ou Q2.2.1 la
-// signale.
-const unEloignementAPoser = given
-  .question(Q2_1)
-  .answer()
-  .is("13_MATERNITE")
-  .or(given.question(Q2_2_1).answer().checked("4_MATERNITE_ELOIGNEE"))
+const situations = given.question(Q2_2_1).answer();
+const unExamen = situations.checked("14_EXAMEN_MATERNITE");
+
+// Le groupe de l'éloignement se pose : Q2.2.1 signale l'examen ou
+// l'hébergement de la maternité.
+const unEloignementAPoser = unExamen
+  .or(situations.checked("15_HEBERGEMENT_MATERNITE"))
   .and(brancheDecisive);
 
 export const Q2_14_ELOIGNEMENT = question
@@ -33,18 +37,19 @@ export const Q2_14_ELOIGNEMENT = question
   .mattersWhile(unEloignementAPoser)
   .exclusive("3_AUCUNE");
 
-// Le groupe du motif se pose comme l'éloignement, sauf quand celui-ci a déjà
-// écarté le dispositif : le motif ne changerait plus rien.
-const unMotifAPoser = unEloignementAPoser.and(
-  given.question(Q2_14_ELOIGNEMENT).answer().checked("3_AUCUNE").not(),
-);
+// Le groupe du motif se pose pour l'hébergement seul, sauf quand
+// l'éloignement a déjà écarté le dispositif : le motif ne changerait plus rien.
+const unMotifAPoser = unEloignementAPoser
+  .and(unExamen.not())
+  .and(given.question(Q2_14_ELOIGNEMENT).answer().checked("3_AUCUNE").not());
 
 export const Q2_14_MOTIF = question
   .multipleChoice("Q2.14.motif", "Quel motif concerne le déplacement évalué ?")
-  // Le second groupe de Q2.14, `CONTRAT_Q214_GROUPES.json`, groupe `finalite`.
+  // Le second groupe de Q2.14, `CONTRAT_Q214_GROUPES.json`, groupe `finalite`,
+  // tel qu'il se pose pour l'hébergement seul
+  // (`whenAccommodationDiscoveredAndExamNotEstablished`). Son option
+  // `examen_8_9` ne s'y propose pas : l'examen se coche en Q2.2.1.
   .options({
-    "1_EXAMEN_DU_HUITIEME_OU_NEUVIEME_MOIS":
-      "Un examen médical obligatoire réalisé au cours du 8ᵉ ou du 9ᵉ mois de grossesse, dans une unité de gynécologie-obstétrique.",
     "2_HEBERGEMENT_ENGAGEMENT":
       "Un séjour dans un hébergement temporaire non médicalisé organisé dans le cadre du dispositif Engagement maternité.",
     "3_AUCUNE": "Aucune de ces conditions.",

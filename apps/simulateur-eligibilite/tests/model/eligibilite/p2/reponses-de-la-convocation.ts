@@ -4,31 +4,28 @@ import {
   ciblesDe,
   faits,
   issue,
-  PATIENT_SEUL,
   posee,
   type Reponses,
+  SANS_SITUATION,
 } from "./reponses-de-la-permission";
 
 export { ciblesDe, issue, posee, type Reponses };
 
-// Un patient seul dont le motif est une convocation : Q2.10 se pose, et le
-// séjour ne s'y propose pas.
-export const PAR_Q21: Reponses = { ...PATIENT_SEUL, "Q2.1": "12_CONVOCATION" };
-
-// Un patient seul, dont le motif est une consultation, mais qui signale une
-// convocation en Q2.2.1.b.
-export const PAR_Q221B: Reponses = {
-  ...PATIENT_SEUL,
-  "Q2.1": "1_CONSULTATION",
-  "Q2.2.1": ["0_AUCUNE"],
+// Un patient seul, pour un autre motif, convoqué : seule Q2.2.1.b dit la
+// convocation (D-272), et Q2.10 se pose.
+export const CONVOQUE: Reponses = {
+  ...SANS_SITUATION,
   "Q2.2.1.b": ["13_CONVOCATION"],
 };
+
+// Le même, dont le motif est une consultation.
+export const PAR_Q221B: Reponses = { ...CONVOQUE, "Q2.1": "1_CONSULTATION" };
 
 /** Q2.10 = 6, avec l'agrément et l'appareillage donnés. */
 export const appareillage = (
   agrement: Reponses["Q2.10.a"],
   appareil: Reponses["Q2.10.b"],
-  base: Reponses = PAR_Q21,
+  base: Reponses = CONVOQUE,
 ): Reponses => ({
   ...base,
   "Q2.10": "6_APPAREILLAGE",

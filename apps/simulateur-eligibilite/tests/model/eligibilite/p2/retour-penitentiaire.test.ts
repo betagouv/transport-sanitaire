@@ -59,13 +59,13 @@ const qualifie = (indication: Reponses["Q2.2.1.indication"]): Reponses => ({
 describe("l'indication médicale d'un retour vers la prison (point 33)", () => {
   it.each([
     ["seul", SEUL],
-    ["sans soin", { ...SEUL, "Q2.1": "15_AUCUN" }],
+    ["l'autre motif", { ...SEUL, "Q2.1": "14_AUTRE" }],
   ] as const)("%s, sans critère en P1, se demande", (_, reponses) => {
     expect(posee("P2/contextes", "Q2.2.1.indication", reponses)).toBeDefined();
   });
 
   it.each([
-    ["un critère de Q1.2", { ...AVEC_UN_PROFESSIONNEL, "Q2.1": "15_AUCUN" }],
+    ["un critère de Q1.2", { ...AVEC_UN_PROFESSIONNEL, "Q2.1": "14_AUTRE" }],
     [
       "une ALD liée, avec un proche",
       {

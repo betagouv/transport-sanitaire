@@ -4,30 +4,37 @@
 import {
   ciblesDe,
   faits,
-  PATIENT_SEUL,
   posee,
   type Reponses,
+  SANS_SITUATION,
 } from "./reponses-de-la-permission";
 
 export { ciblesDe, faits, type Reponses };
 
-// Un patient seul, dont le motif est la maternité éloignée : les groupes de
-// Q2.14 se posent.
-export const MATERNITE: Reponses = { ...PATIENT_SEUL, "Q2.1": "13_MATERNITE" };
-
-// La maternité, avec une condition cochée dans chaque groupe de Q2.14.
-export const MATERNITE_ETABLIE: Reponses = {
-  ...MATERNITE,
-  "Q2.14.eloignement": ["1_PLUS_DE_QUARANTE_CINQ_MINUTES"],
-  "Q2.14.motif": ["1_EXAMEN_DU_HUITIEME_OU_NEUVIEME_MOIS"],
+// Un patient seul, dont l'hébergement de la maternité est coché en Q2.2.1 :
+// les deux groupes de Q2.14 se posent.
+export const MATERNITE: Reponses = {
+  ...SANS_SITUATION,
+  "Q2.2.1": ["15_HEBERGEMENT_MATERNITE"],
 };
 
-// Une consultation, avec une maternité éloignée signalée en Q2.2.1.
+// L'examen du 8ᵉ ou du 9ᵉ mois coché en Q2.2.1 : il est le motif, seul
+// l'éloignement se pose (D-272).
+export const EXAMEN: Reponses = {
+  ...SANS_SITUATION,
+  "Q2.2.1": ["14_EXAMEN_MATERNITE"],
+};
+
+// L'examen, avec un éloignement coché : le dispositif est établi.
+export const MATERNITE_ETABLIE: Reponses = {
+  ...EXAMEN,
+  "Q2.14.eloignement": ["1_PLUS_DE_QUARANTE_CINQ_MINUTES"],
+};
+
+// Une consultation, avec l'hébergement de la maternité coché en Q2.2.1.
 export const MATERNITE_PAR_Q221: Reponses = {
-  ...PATIENT_SEUL,
+  ...MATERNITE,
   "Q2.1": "1_CONSULTATION",
-  "Q2.2.1": ["4_MATERNITE_ELOIGNEE"],
-  "Q2.2.1.b": ["0_AUCUN"],
 };
 
 // Une consultation, avec un hébergement temporaire non médicalisé en Q2.2.1.
@@ -38,7 +45,7 @@ export const HTNM: Reponses = {
 
 // Une entrée en établissement de santé : le transfert reste à qualifier.
 export const ENTREE: Reponses = {
-  ...PATIENT_SEUL,
+  ...SANS_SITUATION,
   "Q2.1": "8_HOSPITALISATION",
   "Q2.1.g": "1_ENTREE",
 };

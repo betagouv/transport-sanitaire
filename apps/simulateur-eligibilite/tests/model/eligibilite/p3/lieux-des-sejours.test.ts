@@ -55,7 +55,9 @@ describe("les lieux d'un séjour, d'une HAD et d'une permission (QST-LIEUX-001)"
   it("plusieurs permissions du S3141 partent de l'établissement, sans Q3.1.2 ni domicile présumé", () => {
     const S3141 = ciblesValant({ cible_support_id: "S3141" });
     const permissions: Reponses = {
-      "Q2.1": "11_PERMISSION",
+      "Q2.2.1": ["1_HOSPITALISATION"],
+      "Q2.2.1.cadre": "1_ETABLISSEMENT",
+      "Q2.2.1.a": "1_OUI",
       "Q2.8.5": "1_OUI",
     };
     expect(

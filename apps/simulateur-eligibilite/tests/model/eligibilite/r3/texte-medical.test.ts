@@ -10,7 +10,11 @@ import {
   TEXTE_MEDICAL,
   type TexteMedical,
 } from "../../../../front/models/eligibilite/r3/rubriques/texte-medical";
-import { ENTREE, MATERNITE_ETABLIE } from "../p2/reponses-de-la-branche";
+import {
+  ENTREE,
+  MATERNITE_ETABLIE,
+  MATERNITE_PAR_Q221,
+} from "../p2/reponses-de-la-branche";
 import type { ValeursDesCibles } from "../r2/traces-du-prescripteur";
 import {
   donnees,
@@ -78,11 +82,10 @@ describe("le soin", () => {
     );
   });
 
-  it("ne vient ni d'« Autre soin » ni d'« Aucun »", () => {
-    for (const motif of ["14_AUTRE", "15_AUCUN"] as const)
-      expect(texte({ ...ENTREE, "Q2.1": motif }).elements_medicaux).toBe(
-        undefined,
-      );
+  it("ne vient pas de l'autre motif (QST-Q21-AUTRE-MOTIF)", () => {
+    expect(texte({ ...ENTREE, "Q2.1": "14_AUTRE" }).elements_medicaux).toBe(
+      undefined,
+    );
   });
 });
 
@@ -154,15 +157,18 @@ describe("les compléments", () => {
     expect(texte(dap()).elements_medicaux).not.toMatch(/justification|\[/);
   });
 
-  it("disent l'examen de l'Engagement maternité, en doublon du soin (D-146)", () => {
+  // L'examen se coche en Q2.2.1 : l'autre motif de Q2.1 n'écrit aucun soin
+  // (D-272).
+  it("disent l'examen de l'Engagement maternité coché en Q2.2.1", () => {
     expect(texte(MATERNITE_ETABLIE).elements_medicaux).toBe(
-      "À un examen obligatoire du 8ᵉ ou du 9ᵉ mois de grossesse en maternité, ou à un hébergement temporaire prévu en raison de l’éloignement de la maternité ; engagement maternité : examen obligatoire du 8ᵉ ou du 9ᵉ mois de grossesse.",
+      "Engagement maternité : examen obligatoire du 8ᵉ ou du 9ᵉ mois de grossesse.",
     );
   });
 
   it("disent l'hébergement de l'Engagement maternité", () => {
     const reponses: Reponses = {
-      ...MATERNITE_ETABLIE,
+      ...MATERNITE_PAR_Q221,
+      "Q2.14.eloignement": ["1_PLUS_DE_QUARANTE_CINQ_MINUTES"],
       "Q2.14.motif": ["2_HEBERGEMENT_ENGAGEMENT"],
     };
 
@@ -173,7 +179,7 @@ describe("les compléments", () => {
 
   it("reportent la maternité et son niveau après le motif (Q3.8)", () => {
     expect(texte({ ...EXAMEN_DE_MATERNITE, ...Q38 }).elements_medicaux).toMatch(
-      / ; engagement maternité : examen obligatoire du 8ᵉ ou du 9ᵉ mois de grossesse ; maternité : Maternité du Parc — 12 avenue Berthelot, 69007 Lyon ; niveau de maternité requis : type IIA\.$/,
+      /^Engagement maternité : examen obligatoire du 8ᵉ ou du 9ᵉ mois de grossesse ; maternité : Maternité du Parc — 12 avenue Berthelot, 69007 Lyon ; niveau de maternité requis : type IIA\.$/,
     );
   });
 
