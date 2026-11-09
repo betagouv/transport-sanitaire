@@ -9,13 +9,13 @@ import {
   question,
 } from "../simulateur/questionnaire";
 
-// La trace de debug est un developer tool. Elle s'ouvre sur tous les
-// environnements, pour le seul service n° 4. Elle montre le chemin parcouru,
-// les questions validées et leurs réponses, puis les faits et les cibles de la
-// préconisation.
+// La trace de debug est un developer tool. Elle s'ouvre en local, quel que soit
+// le service, jamais sur un build de production (D-279). Elle montre le chemin
+// parcouru, les questions validées et leurs réponses, puis les faits et les
+// cibles de la préconisation.
 //
-// Les tests passent par `App` : ils gardent le câblage, du service choisi au
-// rattachement jusqu'au `DebugTrace` des écrans.
+// Les tests passent par `App` : ils gardent le câblage, du rattachement
+// jusqu'au `DebugTrace` des écrans.
 
 const TRACE_PARCOURS = /^Debug — chemin parcouru/;
 const TRACE_RESULTAT = /^Debug — résultat/;
@@ -28,8 +28,8 @@ function traceExportee() {
 }
 
 describe("traces de debug", () => {
-  it("restent fermées à un service ordinaire", async () => {
-    const user = await ouvrirLeSimulateur();
+  it("restent fermées sur un build de production", async () => {
+    const user = await ouvrirLeSimulateur({ developerTools: false });
     await question(BOISSON);
     expect(screen.queryByText(TRACE_PARCOURS)).toBeNull();
 
@@ -37,8 +37,8 @@ describe("traces de debug", () => {
     expect(screen.queryByText(TRACE_RESULTAT)).toBeNull();
   });
 
-  it("s'ouvrent au service n° 4, sous le questionnaire puis sous le résultat", async () => {
-    const user = await ouvrirLeSimulateur({ produit: true });
+  it("s'ouvrent en local, sous le questionnaire puis sous le résultat", async () => {
+    const user = await ouvrirLeSimulateur();
     await question(BOISSON);
     expect(screen.getByText(TRACE_PARCOURS)).toBeInTheDocument();
 
@@ -51,7 +51,7 @@ describe("traces de debug", () => {
   });
 
   it("nomment la page affichée et ses questions, même sans réponse", async () => {
-    await ouvrirLeSimulateur({ produit: true });
+    await ouvrirLeSimulateur();
     await question(BOISSON);
 
     expect(screen.getByText("Page affichée :")).toBeInTheDocument();
@@ -67,7 +67,7 @@ describe("traces de debug", () => {
   });
 
   it("nomment l'écran affiché sous un résultat", async () => {
-    const user = await ouvrirLeSimulateur({ produit: true });
+    const user = await ouvrirLeSimulateur();
     await allerAuResultat(user);
 
     expect(
@@ -76,7 +76,7 @@ describe("traces de debug", () => {
   });
 
   it("montrent les questions validées, avec ce qui s'y proposait", async () => {
-    const user = await ouvrirLeSimulateur({ produit: true });
+    const user = await ouvrirLeSimulateur();
     await allerAuResultat(user);
 
     expect(screen.getByText("Questions validées :")).toBeInTheDocument();
@@ -85,7 +85,7 @@ describe("traces de debug", () => {
   });
 
   it("s'exportent en un fichier, pour la recette", async () => {
-    const user = await ouvrirLeSimulateur({ produit: true });
+    const user = await ouvrirLeSimulateur();
     await allerAuResultat(user);
 
     const { lien, trace } = traceExportee();

@@ -11,7 +11,7 @@ import {
 } from "../../../shared/rattachement-saisi";
 import type { Referentiel } from "../../../shared/referentiel";
 import { declarerLaSaisie } from "./declarer-la-saisie";
-import { type AccesRattachement, RattachementForm } from "./RattachementForm";
+import { RattachementForm } from "./RattachementForm";
 import { rangerRattachement } from "./rattachement-en-session";
 import { REFERENTIEL } from "./referentiel";
 
@@ -19,7 +19,7 @@ type Props = {
   // Injectables pour les tests (défauts = production same-origin).
   referentiel?: Referentiel;
   declarer?: (saisie: RattachementSaisi) => void;
-  onRattache: (acces: AccesRattachement) => void;
+  onRattache: () => void;
 };
 
 export function RattachementScreen({
@@ -30,10 +30,10 @@ export function RattachementScreen({
   return (
     <RattachementForm
       referentiel={referentiel}
-      onValide={(saisie, acces) => {
+      onValide={(saisie) => {
         rangerRattachement(saisie);
         if (enrichitLeReferentiel(saisie)) declarer(saisie);
-        onRattache(acces);
+        onRattache();
       }}
     />
   );

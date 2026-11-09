@@ -1,121 +1,23 @@
 import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { describe, expect, it, vi } from "vitest";
+import { describe, expect, it } from "vitest";
 import { App } from "../../../front/socle/app";
 import {
   DeveloperTools,
   ToolButton,
 } from "../../../front/socle/developer-tools/DeveloperTools";
-import { RattachementForm } from "../../../front/socle/rattachement";
+import { developerToolsUnlocked } from "../../../front/socle/developer-tools/unlock";
 import { Simulateur } from "../../../front/socle/simulateur";
 import { snapshotReferentiel } from "../../../shared/referentiel";
 import { modeleDeTest, seulModele } from "../modele-de-test";
-import {
-  remplirRattachement,
-  remplirRattachementProduit,
-  seRattacherProduit,
-} from "../se-rattacher";
+import { seRattacher } from "../se-rattacher";
 
 // Les developer tools court-circuitent le questionnaire. Ils sont regroupés dans
-// un encadré à part, distinct des actions normales. Ils existent sur tous les
-// environnements, mais pour le seul service n° 4.
+// un encadré à part, distinct des actions normales. Ils s'ouvrent en local, quel
+// que soit le service, jamais sur un build de production (D-279).
 
 const ENCADRE = { name: "Developer tools" } as const;
 const ECRAN_SEEDS = { name: "Seeds" } as const;
-
-describe("encadré des developer tools, écran de rattachement", () => {
-  it("n'apparaît pas pour un service ordinaire", async () => {
-    const user = userEvent.setup();
-    render(
-      <RattachementForm
-        referentiel={snapshotReferentiel}
-        onValide={() => {}}
-      />,
-    );
-
-    await remplirRattachement(user);
-    expect(screen.queryByRole("region", ENCADRE)).toBeNull();
-  });
-
-  it("apparaît pour le service n° 4, avec l'écran des seeds et lui seul", async () => {
-    const user = userEvent.setup();
-    render(
-      <RattachementForm
-        referentiel={snapshotReferentiel}
-        onValide={() => {}}
-      />,
-    );
-
-    await remplirRattachementProduit(user);
-
-    const encadre = screen.getByRole("region", ENCADRE);
-    expect(
-      within(encadre).getByRole("button", ECRAN_SEEDS),
-    ).toBeInTheDocument();
-    expect(within(encadre).getAllByRole("button")).toHaveLength(1);
-  });
-
-  it("laisse l'action nominale hors de l'encadré", async () => {
-    const user = userEvent.setup();
-    render(
-      <RattachementForm
-        referentiel={snapshotReferentiel}
-        onValide={() => {}}
-      />,
-    );
-
-    await remplirRattachementProduit(user);
-    const encadre = screen.getByRole("region", ENCADRE);
-    const acceder = screen.getByRole("button", {
-      name: "Accéder au simulateur",
-    });
-    expect(encadre).not.toContainElement(acceder);
-  });
-
-  it("n'apparaît qu'une fois l'établissement et le service choisis", async () => {
-    // Y entrer reste une entrée dans l'application : elle passe par l'écran de
-    // rattachement (ADR-1).
-    const user = userEvent.setup();
-    render(
-      <RattachementForm
-        referentiel={snapshotReferentiel}
-        onValide={() => {}}
-      />,
-    );
-
-    const select = screen.getByRole("combobox", { name: /Établissement/ });
-    await within(select).findByRole("option", { name: "Transport Sanitaire" });
-    await user.selectOptions(select, "Transport Sanitaire");
-    expect(screen.queryByRole("region", ENCADRE)).toBeNull();
-
-    const service = screen.getByRole("combobox", { name: /Nom du service/ });
-    await within(service).findByRole("option", { name: "Transport Sanitaire" });
-    await user.selectOptions(service, "Transport Sanitaire");
-    expect(screen.getByRole("button", ECRAN_SEEDS)).toBeEnabled();
-  });
-
-  it("remonte la destination choisie avec le rattachement et l'accès", async () => {
-    const user = userEvent.setup();
-    const onValide = vi.fn();
-    render(
-      <RattachementForm
-        referentiel={snapshotReferentiel}
-        onValide={onValide}
-      />,
-    );
-
-    await remplirRattachementProduit(user);
-    await user.click(screen.getByRole("button", ECRAN_SEEDS));
-
-    expect(onValide).toHaveBeenCalledWith(
-      { etabId: "e_transport_sanitaire", serviceId: "s_transport_sanitaire" },
-      {
-        destination: "seeds",
-        developerTools: true,
-      },
-    );
-  });
-});
 
 describe("encadré des developer tools, début du parcours", () => {
   it("y range l'accès à l'écran des seeds, hors du parcours", () => {
@@ -149,7 +51,7 @@ describe("encadré des developer tools, début du parcours", () => {
 });
 
 describe("App câble les developer tools", () => {
-  it("les reproposent au début du parcours après un rattachement service n° 4", async () => {
+  it("les propose au début du parcours en local, quel que soit le service", async () => {
     const user = userEvent.setup();
     render(
       <App
@@ -158,7 +60,7 @@ describe("App câble les developer tools", () => {
       />,
     );
 
-    await seRattacherProduit(user);
+    await seRattacher(user);
 
     const encadre = await screen.findByRole("region", ENCADRE);
     expect(within(encadre).getAllByRole("button")).toHaveLength(1);
@@ -167,16 +69,17 @@ describe("App câble les developer tools", () => {
     ).toBeInTheDocument();
   });
 
-  it("ne les propose pas après un rattachement ordinaire", async () => {
+  it("ne les propose jamais sur un build de production", async () => {
     const user = userEvent.setup();
     render(
       <App
         models={seulModele(modeleDeTest)}
         referentiel={snapshotReferentiel}
+        developerTools={developerToolsUnlocked({ DEV: false })}
       />,
     );
 
-    await remplirRattachement(user);
+    await seRattacher(user);
 
     expect(
       await screen.findByRole("group", {

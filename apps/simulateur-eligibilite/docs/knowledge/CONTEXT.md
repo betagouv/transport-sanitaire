@@ -316,6 +316,6 @@ _Chez l'éditeur_: aucun mot.
 _Avoid_: trace, seule.
 
 **Developer tools**:
-Les outils internes, ouverts au seul service produit : la trace de debug, l'écran
+Les outils internes, ouverts en local seulement : la trace de debug, l'écran
 des seeds, le choix du modèle.
 _Chez l'éditeur_: aucun mot.

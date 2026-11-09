@@ -62,8 +62,9 @@ cp apps/<app>/.env .claude/worktrees/revue-<n>/apps/<app>/.env   # si l'app en a
 
 Ajouter une entrée `revue-<n>` à `.claude/launch.json`, sur le modèle des
 autres, puis `preview_start`. Le chemin d'accès aux outils de l'app (ex. pour
-le simulateur : service n° 4, puis « Modèle de l'éditeur ») est dans son
-`apps/<app>/AGENTS.md`. Le dire en tête du cahier.
+le simulateur : les developer tools, ouverts en local sous n'importe quel
+service, puis « Modèle de l'éditeur ») est dans son `apps/<app>/AGENTS.md`. Le
+dire en tête du cahier.
 
 Les apps des worktrees s'arrêtent à l'annonce de la fusion (hook local).
 

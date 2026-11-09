@@ -72,8 +72,8 @@ sa page**, pour la valider à l'écran sans dépendre du modèle de l'éditeur.
 **Le socle ne sait pas qu'un modèle est « de démonstration »** (D-83). `main.tsx`
 passe à `App` une seule liste, `models`, où chaque modèle porte son nom et de
 quoi se charger. Le premier s'ouvre au démarrage. À plusieurs, les developer
-tools proposent d'en changer (`front/socle/app/model-choice.ts`) : le choix est
-donc réservé au service n° 4, comme eux.
+tools proposent d'en changer (`front/socle/app/model-choice.ts`) : le choix ne
+se fait donc qu'en local, comme eux.
 
 Le socle ne connaît le modèle que par deux contrats. `CoreModel`
 (`core/socle/model.ts`) porte le métier : les parties d'avant le verrou
@@ -550,11 +550,17 @@ factice.
 L'écran des seeds (`front/socle/seeds/`) et les **traces de debug** sont les deux
 developer tools. Ils partagent :
 
-- la même garde d'accès **sur tous les environnements** (service n° 4 du
-  référentiel, `front/socle/developer-tools/unlock.ts`) ;
-- le même moment : ils sont atteints **après** le rattachement.
+- la même garde d'accès : **en local seulement**, sous le serveur de dev et sous
+  les tests, quel que soit le service choisi. Jamais sur un build de production,
+  donc jamais en staging ni en production (D-279) ;
+- le même moment : ils sont atteints **après** le rattachement, depuis le
+  simulateur.
 
-Pas de conditionnement sur `import.meta.env.DEV`.
+La garde lit `import.meta.env.DEV` à un seul endroit,
+`developerToolsUnlocked(env = import.meta.env)`
+(`front/socle/developer-tools/unlock.ts`). `App` en tire sa prop
+`developerTools`, qu'un test passe à `false` pour voir l'app comme en
+production. L'écran de rattachement n'a pas de developer tools.
 
 Le simulateur ne connaît pas l'écran des seeds. C'est `App.tsx` qui lui passe du contenu
 déjà composé (`developerToolsPanel`).

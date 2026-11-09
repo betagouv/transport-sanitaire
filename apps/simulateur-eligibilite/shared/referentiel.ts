@@ -52,9 +52,6 @@ const ETABLISSEMENTS: Etablissement[] = [
   // « Autre »). Lui-même ne s'affiche pas. Voir
   // front/socle/rattachement/structures.ts.
   { id: "e_liberal_cnam", libelle: "Libéral / CNAM / CPAM / Autre" },
-  // L'établissement du produit : il porte le service qui déverrouille les
-  // developer tools.
-  { id: "e_transport_sanitaire", libelle: "Transport Sanitaire" },
 ];
 
 // Chaque établissement a une entrée « Autre » (service non listé). C'est un
@@ -93,16 +90,4 @@ const SERVICES: SnapshotService[] = [
     libelle: "Assurance Maladie",
   },
   { id: "s_liberal_autre", etabId: "e_liberal_cnam", libelle: "Autre" },
-  // Le service du produit : il déverrouille les developer tools. C'est le
-  // service Grist `Id2 = 4` en production (voir front/socle/developer-tools/unlock.ts).
-  {
-    id: "s_transport_sanitaire",
-    etabId: "e_transport_sanitaire",
-    libelle: "Transport Sanitaire",
-  },
-  {
-    id: "s_transport_sanitaire_autre",
-    etabId: "e_transport_sanitaire",
-    libelle: "Autre",
-  },
 ];

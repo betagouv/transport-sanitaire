@@ -23,8 +23,6 @@ const valider = () => userEvent.click(screen.getByRole("button", ACCEDER));
 const saisir = (label: string, texte: string) =>
   userEvent.type(screen.getByRole("textbox", { name: label }), texte);
 
-const SIMULATEUR = { destination: "simulateur", developerTools: false };
-
 async function optionsDeLaPremiereListe() {
   const select = screen.getByRole("combobox", { name: /Établissement/ });
   await within(select).findByRole("option", { name: "CHU Grenoble Alpes" });
@@ -61,7 +59,6 @@ describe("l'écran de rattachement", () => {
       "Centre hospitalier de Chambéry",
       "CHU Grenoble Alpes",
       "Clinique Belledonne",
-      "Transport Sanitaire",
       "──────────",
       "Autre établissement",
       "Libéral",
@@ -69,7 +66,7 @@ describe("l'écran de rattachement", () => {
       "Autre",
     ]);
     // Le trait ne se choisit pas. L'établissement fourre-tout ne s'affiche pas.
-    expect(options[4]).toBeDisabled();
+    expect(options[3]).toBeDisabled();
   });
 
   it("établissement → un service de la liste ouvre le simulateur sans bouton", async () => {
@@ -80,10 +77,10 @@ describe("l'écran de rattachement", () => {
     expect(screen.queryByRole("button", ACCEDER)).toBeNull();
     await choisir(/Nom du service/, "Cardiologie");
 
-    expect(onValide).toHaveBeenCalledWith(
-      { etabId: "e_chu_grenoble", serviceId: "s_grenoble_cardio" },
-      SIMULATEUR,
-    );
+    expect(onValide).toHaveBeenCalledWith({
+      etabId: "e_chu_grenoble",
+      serviceId: "s_grenoble_cardio",
+    });
   });
 
   it("une structure ouvre le simulateur, rattachée au service du fourre-tout", async () => {
@@ -92,10 +89,10 @@ describe("l'écran de rattachement", () => {
 
     await choisir(/Établissement/, "Libéral");
 
-    expect(onValide).toHaveBeenCalledWith(
-      { etabId: "e_liberal_cnam", serviceId: "s_liberal" },
-      SIMULATEUR,
-    );
+    expect(onValide).toHaveBeenCalledWith({
+      etabId: "e_liberal_cnam",
+      serviceId: "s_liberal",
+    });
   });
 
   it("la structure « Autre » ouvre le simulateur sans rien demander", async () => {
@@ -105,10 +102,10 @@ describe("l'écran de rattachement", () => {
     await choisir(/Établissement/, "Autre");
 
     expect(screen.queryByRole("textbox")).toBeNull();
-    expect(onValide).toHaveBeenCalledWith(
-      { etabId: "e_liberal_cnam", serviceId: "s_liberal_autre" },
-      SIMULATEUR,
-    );
+    expect(onValide).toHaveBeenCalledWith({
+      etabId: "e_liberal_cnam",
+      serviceId: "s_liberal_autre",
+    });
   });
 
   it("service « Autre » → le nom du vrai service, puis un bouton", async () => {
@@ -125,15 +122,12 @@ describe("l'écran de rattachement", () => {
     expect(screen.getByRole("button", ACCEDER)).toBeEnabled();
     await valider();
 
-    expect(onValide).toHaveBeenCalledWith(
-      {
-        etabId: "e_chu_grenoble",
-        serviceId: "s_grenoble_autre",
-        serviceEstAutre: true,
-        serviceLibre: "Néphrologie",
-      },
-      SIMULATEUR,
-    );
+    expect(onValide).toHaveBeenCalledWith({
+      etabId: "e_chu_grenoble",
+      serviceId: "s_grenoble_autre",
+      serviceEstAutre: true,
+      serviceLibre: "Néphrologie",
+    });
   });
 
   it("« Autre établissement » → son nom et celui du service, puis un bouton", async () => {
@@ -152,15 +146,12 @@ describe("l'écran de rattachement", () => {
     expect(screen.getByRole("button", ACCEDER)).toBeEnabled();
     await valider();
 
-    expect(onValide).toHaveBeenCalledWith(
-      {
-        etabId: "",
-        etabEstAutre: true,
-        etabLibre: "CH de Voiron",
-        serviceLibre: "Urgences",
-      },
-      SIMULATEUR,
-    );
+    expect(onValide).toHaveBeenCalledWith({
+      etabId: "",
+      etabEstAutre: true,
+      etabLibre: "CH de Voiron",
+      serviceLibre: "Urgences",
+    });
   });
 
   it("changer le premier choix efface ce qui en découlait", async () => {
@@ -195,29 +186,6 @@ describe("l'écran de rattachement", () => {
   });
 });
 
-describe("le service n° 4 (developer tools)", () => {
-  it("n'entre pas dès la sélection : il montre le simulateur et les seeds", async () => {
-    const onValide = vi.fn();
-    render(<RattachementForm onValide={onValide} />);
-
-    await choisir(/Établissement/, "Transport Sanitaire");
-    await choisir(/Nom du service/, "Transport Sanitaire");
-
-    expect(onValide).not.toHaveBeenCalled();
-    expect(screen.getByRole("button", ACCEDER)).toBeEnabled();
-    expect(screen.getByRole("button", { name: "Seeds" })).toBeInTheDocument();
-  });
-
-  it("n'est pas proposé pour un service ordinaire", async () => {
-    render(<RattachementForm onValide={vi.fn()} />);
-
-    await choisir(/Établissement/, "CHU Grenoble Alpes");
-    await choisir(/Nom du service/, "Autre");
-
-    expect(screen.queryByRole("button", { name: "Seeds" })).toBeNull();
-  });
-});
-
 describe("référentiel indisponible : rattachement dégradé « Autre / Autre »", () => {
   const enPanne = async () => {
     throw new Error("référentiel indisponible");
@@ -239,10 +207,10 @@ describe("référentiel indisponible : rattachement dégradé « Autre / Autre �
     ).toBeNull();
     await valider();
 
-    expect(onValide).toHaveBeenCalledWith(
-      { etabId: "autre", serviceId: "autre" },
-      SIMULATEUR,
-    );
+    expect(onValide).toHaveBeenCalledWith({
+      etabId: "autre",
+      serviceId: "autre",
+    });
   });
 
   it("bascule aussi quand les services (donc les structures) ne chargent pas", async () => {
@@ -258,9 +226,9 @@ describe("référentiel indisponible : rattachement dégradé « Autre / Autre �
     ).toBeInTheDocument();
     await valider();
 
-    expect(onValide).toHaveBeenCalledWith(
-      { etabId: "autre", serviceId: "autre" },
-      SIMULATEUR,
-    );
+    expect(onValide).toHaveBeenCalledWith({
+      etabId: "autre",
+      serviceId: "autre",
+    });
   });
 });

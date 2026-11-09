@@ -8,13 +8,21 @@ import { App } from "../../../front/socle/app";
 import type { FirstResult, Model } from "../../../front/socle/model";
 import { snapshotReferentiel } from "../../../shared/referentiel";
 import { modeleDeTest, seulModele } from "../modele-de-test";
-import { seRattacher, seRattacherProduit } from "../se-rattacher";
+import { seRattacher } from "../se-rattacher";
 
 type User = ReturnType<typeof userEvent.setup>;
 
-/** Monte l'application et franchit l'écran de rattachement. `produit` : service n° 4. */
+/**
+ * Monte l'application et franchit l'écran de rattachement. Les tests tournent
+ * en local : les developer tools sont ouverts, sauf `developerTools: false`,
+ * qui montre l'app comme sur un build de production.
+ */
 export async function ouvrirLeSimulateur(
-  options: { produit?: boolean; seeds?: readonly Seed[]; modele?: Model } = {},
+  options: {
+    developerTools?: boolean;
+    seeds?: readonly Seed[];
+    modele?: Model;
+  } = {},
 ): Promise<User> {
   const user = userEvent.setup();
   render(
@@ -22,9 +30,10 @@ export async function ouvrirLeSimulateur(
       models={seulModele(modeleAvec(options.seeds, options.modele))}
       referentiel={snapshotReferentiel}
       declarer={() => {}}
+      developerTools={options.developerTools}
     />,
   );
-  await (options.produit ? seRattacherProduit(user) : seRattacher(user));
+  await seRattacher(user);
   return user;
 }
 

@@ -8,7 +8,7 @@ en conséquence. Le parcours débute par un rattachement obligatoire à un étab
 > **L'app est entre deux modèles.** Le modèle d'éligibilité v9 et tout ce qui en
 > dépendait ont été retirés, et la v10 s'intègre étape par étape. Le simulateur
 > s'ouvre sur le **modèle de l'éditeur**, encore incomplet. Le modèle de
-> démonstration reste à portée des developer tools. Voir
+> démonstration reste à portée des developer tools, en local seulement. Voir
 > [« Entre deux modèles »](#entre-deux-modèles).
 
 ## Fonctionnement
@@ -218,9 +218,9 @@ front/                   le front, bundlé par Vite
                          savoir du questionnaire : TextField, TextAreaField,
                          SelectField, RadioField, CheckboxField, NumberField,
                          DateField, AddressField
-    developer-tools/      ce qui est réservé au service produit : son encadré, la
-                         trace de debug du parcours et de ses résultats, son export, et le
-                         déverrouillage, garde commune à l'écran des seeds et aux traces
+    developer-tools/      ce qui ne s'ouvre qu'en local : leur encadré, la
+                         trace de debug du parcours et de ses résultats, son export, et la
+                         garde d'environnement, commune à l'écran des seeds et aux traces
     seeds/               l'écran des seeds. Elles se greffent sur le
                          simulateur, jamais l'inverse : c'est App.tsx qui compose.
     cerfa/               le socle de remplissage d'un PDF : un cerfa et son DTO,
@@ -287,7 +287,9 @@ Le modèle de démonstration (`core/models/fake/` et `front/models/fake/`) déro
 boisson, sans rapport avec le transport sanitaire. Il est pérenne : chaque capacité du socle
 y a sa page, et ses seeds ouvrent les pages à montrer. Le modèle de l'éditeur
 s'ouvre par défaut (D-119) ; les developer tools permettent de passer à la
-démonstration.
+démonstration. Ils ne s'ouvrent qu'en local, sous le serveur de dev et sous les
+tests, quel que soit le service choisi : staging et production n'atteignent ni la
+démonstration ni les seeds (D-279).
 
 Les tests du socle tournent sur leur propre factice
 (`tests/socle/fixtures/modele-factice/`), petit et figé : ils ne changent ni

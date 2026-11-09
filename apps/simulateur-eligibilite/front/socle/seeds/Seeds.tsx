@@ -1,4 +1,4 @@
-// Le contenu de l'écran des seeds, réservé au service n° 4.
+// Le contenu de l'écran des seeds, un developer tool : en local seulement.
 //
 // Il rejoue chaque seed dans la préconisation et signale les écarts. Il range les
 // seeds en deux sections : celles qui ouvrent un résultat, et celles qui

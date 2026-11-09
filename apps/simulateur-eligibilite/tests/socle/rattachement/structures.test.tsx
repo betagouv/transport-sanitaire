@@ -71,10 +71,7 @@ describe("les structures sous le trait", () => {
     await optionsSousLeTrait();
     await userEvent.selectOptions(premiereListe(), "Assurance Maladie");
 
-    expect(onValide).toHaveBeenCalledWith(
-      { etabId: "11", serviceId: "12" },
-      { destination: "simulateur", developerTools: false },
-    );
+    expect(onValide).toHaveBeenCalledWith({ etabId: "11", serviceId: "12" });
   });
 
   it("ne montrent pas une structure absente du référentiel", async () => {

@@ -56,7 +56,7 @@ const SANS_ACTION = { model: modeleDeTest, onOpen: () => {}, onBack: () => {} };
 const ouvrir = (seed: Seed) => bouton(`Ouvrir : ${seed.label}`);
 
 async function ouvrirLesSeeds() {
-  const user = await ouvrirLeSimulateur({ produit: true, seeds: SEEDS });
+  const user = await ouvrirLeSimulateur({ seeds: SEEDS });
   await user.click(await screen.findByRole("button", ECRAN_SEEDS));
   await screen.findByRole("heading", ECRAN_SEEDS);
   return user;

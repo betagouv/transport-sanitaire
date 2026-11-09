@@ -38,7 +38,6 @@ async function ouvrirLaSeed(id: string) {
   const seed = SEEDS.find((candidate) => candidate.id === id);
   if (!seed) throw new Error(`Seed inconnue : ${id}`);
   const user = await ouvrirLeSimulateur({
-    produit: true,
     modele: MODELE_AUX_GABARITS_DU_DISQUE,
   });
   await user.click(
