@@ -1,6 +1,6 @@
 // Les listes du référentiel que l'écran affiche : les établissements (sans le
-// fourre-tout), les structures (les services du fourre-tout), et les services
-// de l'établissement choisi. Un échec de l'une marque le référentiel
+// fourre-tout), les structures (certains services du fourre-tout), et les
+// services de l'établissement choisi. Un échec de l'une marque le référentiel
 // indisponible.
 
 import { useEffect, useState } from "react";
@@ -9,7 +9,7 @@ import type {
   Referentiel,
   Service,
 } from "../../../shared/referentiel";
-import { estEtablissementFourreTout } from "./structures";
+import { estEtablissementFourreTout, structuresAffichees } from "./structures";
 
 export type Listes = {
   etablissements: Etablissement[];
@@ -70,7 +70,7 @@ async function chargerTete(referentiel: Referentiel): Promise<Tete> {
     : [];
   return {
     etablissements: triParLibelle(liste.filter((e) => e !== fourreTout)),
-    structures: triParLibelle(structures),
+    structures: structuresAffichees(structures),
     fourreTout,
   };
 }

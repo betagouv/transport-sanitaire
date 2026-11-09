@@ -32,18 +32,25 @@ async function optionsDeLaPremiereListe() {
 }
 
 describe("l'écran de rattachement", () => {
-  it("annonce ce qui est demandé, et que le choix ouvre le simulateur", () => {
+  it("annonce la simulation, la phase expérimentale, puis demande l'établissement", () => {
     render(<RattachementForm onValide={vi.fn()} />);
 
     expect(
       screen.getByRole("heading", {
-        name: "Pour accéder au simulateur, indiquez votre établissement ou votre structure",
+        name: "Faites une simulation pour prescrire le transport adapté",
       }),
     ).toBeInTheDocument();
-    // RGAA 7.4 : changer d'écran au choix d'une liste est annoncé.
+    // L'emoji est décoratif : il est masqué aux lecteurs d'écran.
+    expect(screen.getByText("🙏")).toHaveAttribute("aria-hidden", "true");
     expect(
-      screen.getByRole("combobox", { name: /le simulateur s'ouvre aussitôt/ }),
+      screen.getByText(
+        "Phase expérimentale : partagez vos retours via le bouton orange « Faire une remarque », à droite ou « Donner mon avis » en haut de l'écran",
+        { exact: false },
+      ),
     ).toBeInTheDocument();
+    expect(
+      screen.getByRole("combobox", { name: "Établissement" }),
+    ).toHaveDisplayValue("Sélectionnez un établissement");
   });
 
   it("liste les établissements, puis sous un trait « Autre établissement » et les structures", async () => {
@@ -57,8 +64,8 @@ describe("l'écran de rattachement", () => {
       "Transport Sanitaire",
       "──────────",
       "Autre établissement",
-      "Assurance Maladie",
       "Libéral",
+      "Assurance Maladie",
       "Autre",
     ]);
     // Le trait ne se choisit pas. L'établissement fourre-tout ne s'affiche pas.
@@ -199,28 +206,6 @@ describe("le service n° 4 (developer tools)", () => {
     expect(onValide).not.toHaveBeenCalled();
     expect(screen.getByRole("button", ACCEDER)).toBeEnabled();
     expect(screen.getByRole("button", { name: "Seeds" })).toBeInTheDocument();
-  });
-
-  it("garde ses deux sorties même proposé comme structure (Grist pas encore migré)", async () => {
-    const onValide = vi.fn();
-    const referentiel: Referentiel = {
-      async listerEtablissements() {
-        return [{ id: "11", libelle: "Libéral / CNAM / CPAM / Autre" }];
-      },
-      async listerServices() {
-        return [{ id: "4", libelle: "Transport Sanitaire" }];
-      },
-    };
-    render(<RattachementForm referentiel={referentiel} onValide={onValide} />);
-
-    await choisir(/Établissement/, "Transport Sanitaire");
-    expect(onValide).not.toHaveBeenCalled();
-    await userEvent.click(screen.getByRole("button", { name: "Seeds" }));
-
-    expect(onValide).toHaveBeenCalledWith(
-      { etabId: "11", serviceId: "4" },
-      { destination: "seeds", developerTools: true },
-    );
   });
 
   it("n'est pas proposé pour un service ordinaire", async () => {
