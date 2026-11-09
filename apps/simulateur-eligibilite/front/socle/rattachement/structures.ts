@@ -1,8 +1,8 @@
 // L'établissement fourre-tout du référentiel, et les structures que l'écran
 // propose à plat sous les établissements. Lui-même ne s'affiche pas.
 //
-// Il est reconnu comme le service produit l'est (developer-tools/unlock.ts) :
-// par son `Id2` Grist, ou par son libellé au cas où l'`Id2` changerait.
+// Il est reconnu par son `Id2` Grist, ou par son libellé au cas où l'`Id2`
+// changerait.
 //
 // Ses services ne s'affichent pas tous : les saisies des prescripteurs y
 // arrivent aussi. Seules les structures attendues s'affichent, reconnues à leur

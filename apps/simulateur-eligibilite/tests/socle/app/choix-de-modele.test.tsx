@@ -11,7 +11,7 @@ import type { Model } from "../../../front/socle/model";
 import { rangerRattachement } from "../../../front/socle/rattachement";
 import { snapshotReferentiel } from "../../../shared/referentiel";
 import { modeleDeTest } from "../modele-de-test";
-import { seRattacher, seRattacherProduit } from "../se-rattacher";
+import { seRattacher } from "../se-rattacher";
 
 type User = ReturnType<typeof userEvent.setup>;
 
@@ -31,8 +31,12 @@ const question = questionsOf<Questions>();
 const desserts = modeleQuiDemande("dessert");
 const fromages = modeleQuiDemande("fromage");
 
-// Monte l'app avec trois modèles et compte les chargements du deuxième.
-function monter(source: () => Model | Promise<Model> = () => desserts) {
+// Monte l'app avec trois modèles et compte les chargements du deuxième. Les
+// developer tools sont ouverts, comme en local, sauf `developerTools: false`.
+function monter(
+  source: () => Model | Promise<Model> = () => desserts,
+  developerTools?: boolean,
+) {
   const chargements = { nombre: 0 };
   const user = userEvent.setup();
   const charger = () => {
@@ -48,6 +52,7 @@ function monter(source: () => Model | Promise<Model> = () => desserts) {
       ]}
       referentiel={snapshotReferentiel}
       declarer={() => {}}
+      developerTools={developerTools}
     />,
   );
   return { user, chargements };
@@ -62,8 +67,8 @@ const ouvrirLesDesserts = async (user: User) =>
 beforeEach(() => rangerRattachement(null));
 
 describe("le choix du modèle", () => {
-  it("n'est pas proposé à un service ordinaire", async () => {
-    const { user } = monter();
+  it("n'est pas proposé sur un build de production", async () => {
+    const { user } = monter(() => desserts, false);
 
     await seRattacher(user);
 
@@ -76,16 +81,16 @@ describe("le choix du modèle", () => {
   it("ouvre le premier modèle, sans charger les autres d'avance", async () => {
     const { user, chargements } = monter();
 
-    await seRattacherProduit(user);
+    await seRattacher(user);
 
     expect(await screen.findByRole("group", BOISSON)).toBeInTheDocument();
     expect(chargements.nombre).toBe(0);
   });
 
-  it("propose chaque modèle sous son nom au service n° 4", async () => {
+  it("propose chaque modèle sous son nom", async () => {
     const { user } = monter();
 
-    await seRattacherProduit(user);
+    await seRattacher(user);
 
     const encadre = await screen.findByRole("region", ENCADRE);
     const noms = (pressed: boolean) =>
@@ -98,7 +103,7 @@ describe("le choix du modèle", () => {
 
   it("remplace le modèle ouvert, sans redemander le rattachement", async () => {
     const { user, chargements } = monter();
-    await seRattacherProduit(user);
+    await seRattacher(user);
 
     await ouvrirLesDesserts(user);
 
@@ -117,7 +122,7 @@ describe("le choix du modèle", () => {
           arriver = tenir;
         }),
     );
-    await seRattacherProduit(user);
+    await seRattacher(user);
 
     await ouvrirLesDesserts(user);
     expect(await screen.findByRole("status")).toHaveTextContent(
@@ -131,7 +136,7 @@ describe("le choix du modèle", () => {
 
   it("passe d'un modèle à l'autre, premier compris", async () => {
     const { user } = monter();
-    await seRattacherProduit(user);
+    await seRattacher(user);
     await ouvrirLesDesserts(user);
 
     await user.click(await choix(CARTE_DES_FROMAGES));
@@ -143,7 +148,7 @@ describe("le choix du modèle", () => {
 
   it("repart d'une simulation vierge à chaque changement", async () => {
     const { user } = monter();
-    await seRattacherProduit(user);
+    await seRattacher(user);
     await user.click(await screen.findByRole("radio", { name: "Un thé" }));
     await screen.findByRole("group", { name: /^avec quoi/i });
 
@@ -156,7 +161,7 @@ describe("le choix du modèle", () => {
 
   it("garde la simulation quand on choisit le modèle déjà ouvert", async () => {
     const { user } = monter();
-    await seRattacherProduit(user);
+    await seRattacher(user);
     await user.click(await screen.findByRole("radio", { name: "Un thé" }));
     await screen.findByRole("group", { name: /^avec quoi/i });
 

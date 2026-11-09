@@ -1,24 +1,17 @@
-// Qui voit les developer tools : le service choisi à l'écran de rattachement.
+// Où s'ouvrent les developer tools : en local seulement, quel que soit le
+// service choisi (D-279).
 
-import { normalise } from "../../../shared/rattachement-saisi";
-
-/** Vrai quand le service sélectionné déverrouille les developer tools. */
-export function estServiceProduit(service: {
-  id: string;
-  libelle: string;
-}): boolean {
-  return (
-    service.id === SERVICE_PRODUIT_ID ||
-    normalise(service.libelle) === normalise(SERVICE_PRODUIT_LIBELLE)
-  );
+/**
+ * Vrai en local : sous le serveur de dev de Vite et sous les tests. Faux sur un
+ * build de production, donc en staging comme en production, même avec les
+ * données factices.
+ */
+export function developerToolsUnlocked(env: Env = import.meta.env): boolean {
+  return env.DEV === true;
 }
 
 // ---- implémentation ----
 
-// Le service du référentiel Grist qui déverrouille les developer tools (colonne
-// `Id2`). Le libellé est accepté aussi, au cas où l'`Id2` changerait.
-const SERVICE_PRODUIT_ID = "4";
-const SERVICE_PRODUIT_LIBELLE = "Transport Sanitaire";
-
-// Pas de garde au build : les outils existent sur tous les environnements,
-// production comprise. Le référentiel décide qui les voit.
+// Ce que Vite dit du build : `DEV` vaut vrai sous `vite` et sous Vitest, faux
+// sous `vite build`.
+type Env = { DEV?: boolean };

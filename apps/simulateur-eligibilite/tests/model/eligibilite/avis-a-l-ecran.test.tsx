@@ -110,7 +110,6 @@ async function ouvrirLaSeed(id: string, besoin: string, modele: Model = model) {
   const seed = SEEDS.find((candidate) => candidate.id === id);
   if (!seed) throw new Error(`Seed inconnue : ${id}`);
   const user = await ouvrirLeSimulateur({
-    produit: true,
     modele,
     seeds: [{ ...seed, answers: { ...seed.answers, "Q0.1": besoin } }],
   });

@@ -3,9 +3,9 @@
 //
 // Chaque réponse dévoile le champ suivant, et le simulateur s'ouvre dès que le
 // choix suffit : un service de la liste ou une structure. Une saisie libre
-// garde un bouton, car on ne sait pas quand elle est finie. Le service n° 4 en
-// garde un aussi : il a deux sorties. Le formulaire remonte la saisie à
-// `onValide` et ne range rien lui-même : c'est `RattachementScreen`.
+// garde un bouton, car on ne sait pas quand elle est finie. Le formulaire
+// remonte la saisie à `onValide` et ne range rien lui-même : c'est
+// `RattachementScreen`.
 //
 // Si le référentiel ne répond pas, il le dit et laisse entrer avec le
 // rattachement dégradé « Autre / Autre ».
@@ -14,32 +14,16 @@ import {
   type Referentiel,
   snapshotReferentiel,
 } from "../../../shared/referentiel";
-import { DeveloperTools, ToolButton } from "../developer-tools";
 import { Container, SelectField, TextField } from "../ui";
 import { optionsDuChoix } from "./choix";
 import type { Derivation, SaisieRattachement } from "./saisie-rattachement";
 import { useSaisieRattachement } from "./saisie-rattachement";
 
-/**
- * Ce que la validation emporte, en plus du rattachement saisi : l'écran à
- * ouvrir et l'accès aux developer tools. Toutes les entrées passent par le même
- * `onValide` : le rattachement est obligatoire quelle que soit la destination
- * (ADR-1).
- */
-export type AccesRattachement = {
-  destination: "simulateur" | "seeds";
-  /** Le service sélectionné déverrouille les developer tools (service n° 4). */
-  developerTools: boolean;
-};
-
-type Destination = AccesRattachement["destination"];
-
 type Props = {
   referentiel?: Referentiel;
-  onValide: (
-    saisie: SaisieRattachement["saisie"],
-    acces: AccesRattachement,
-  ) => void;
+  // Toutes les entrées passent par lui : le rattachement est obligatoire
+  // (ADR-1).
+  onValide: (saisie: SaisieRattachement["saisie"]) => void;
 };
 
 export function RattachementForm({
@@ -58,14 +42,11 @@ export function RattachementForm({
       <form
         onSubmit={(e) => {
           e.preventDefault();
-          entrer(saisie, "simulateur");
+          entrer(saisie);
         }}
       >
         <ProgressiveFields saisie={saisie} modifier={modifier} />
-        <EntreesDansLApplication
-          saisie={saisie}
-          onEntrer={(destination) => entrer(saisie, destination)}
-        />
+        <EntreeDansLApplication saisie={saisie} />
       </form>
     </Container>
   );
@@ -83,17 +64,12 @@ type FieldsProps = { saisie: SaisieRattachement; modifier: Modifier };
 // Les deux façons d'entrer : valider une dérivation (bouton), ou changer un
 // champ quand la sélection suffit. Le simulateur s'ouvre alors sans bouton.
 function entrees(saisie: SaisieRattachement, onValide: Props["onValide"]) {
-  const entrer = (derivation: Derivation, destination: Destination) => {
-    if (derivation.valide) {
-      onValide(derivation.saisie, {
-        destination,
-        developerTools: derivation.developerTools,
-      });
-    }
+  const entrer = (derivation: Derivation) => {
+    if (derivation.valide) onValide(derivation.saisie);
   };
   const modifier: Modifier = (champ, valeur) => {
     const suite = saisie.modifier(champ, valeur);
-    if (suite.entreeImmediate) entrer(suite, "simulateur");
+    if (suite.entreeImmediate) entrer(suite);
   };
   return { entrer, modifier };
 }
@@ -188,47 +164,19 @@ function ServiceLibreField({ saisie, modifier }: FieldsProps) {
 }
 
 // Le bouton n'existe que quand la sélection ne suffit pas : sans référentiel,
-// pour une saisie libre, et pour le service n° 4, qui a deux sorties
-// (simulateur et seeds). Les deux passent par le même `onValide` (ADR-1).
-function EntreesDansLApplication({
-  saisie,
-  onEntrer,
-}: {
-  saisie: SaisieRattachement;
-  onEntrer: (destination: Destination) => void;
-}) {
+// et pour une saisie libre.
+function EntreeDansLApplication({ saisie }: { saisie: SaisieRattachement }) {
   const bouton =
-    saisie.indisponible ||
-    saisie.serviceEstAutre ||
-    saisie.etabEstAutre ||
-    saisie.developerTools;
+    saisie.indisponible || saisie.serviceEstAutre || saisie.etabEstAutre;
   if (!bouton) return null;
   return (
-    <>
-      <div
-        className="fr-btns-group fr-btns-group--inline"
-        style={{ marginTop: "2rem" }}
-      >
-        <button type="submit" className="fr-btn" disabled={!saisie.valide}>
-          Accéder au simulateur
-        </button>
-      </div>
-      {saisie.developerTools && <DeveloperToolsPanel onEntrer={onEntrer} />}
-    </>
-  );
-}
-
-// L'écran des seeds est hors des actions normales. Son bouton apparaît une fois
-// le service n° 4 choisi, donc une fois la saisie complète. Les seeds vivent
-// dans `seeds/`, pas ici.
-function DeveloperToolsPanel({
-  onEntrer,
-}: {
-  onEntrer: (destination: Destination) => void;
-}) {
-  return (
-    <DeveloperTools>
-      <ToolButton onClick={() => onEntrer("seeds")}>Seeds</ToolButton>
-    </DeveloperTools>
+    <div
+      className="fr-btns-group fr-btns-group--inline"
+      style={{ marginTop: "2rem" }}
+    >
+      <button type="submit" className="fr-btn" disabled={!saisie.valide}>
+        Accéder au simulateur
+      </button>
+    </div>
   );
 }

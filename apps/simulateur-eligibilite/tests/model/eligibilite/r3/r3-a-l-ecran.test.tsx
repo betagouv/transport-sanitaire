@@ -103,7 +103,6 @@ describe("une nouvelle simulation depuis R3", DELAI_D_UN_TEST, () => {
 
 async function allerEnR3(id: string, completer: string) {
   const user = await ouvrirLeSimulateur({
-    produit: true,
     modele: MODELE_AUX_GABARITS_DU_DISQUE,
   });
   await ouvrirEnR3(user, id, completer);

@@ -136,7 +136,6 @@ async function ouvrir(
   seeds: readonly Omit<Seed, "expected">[],
 ) {
   const user = await ouvrirLeSimulateur({
-    produit: true,
     modele: model,
     seeds: seeds.map((s) => ({ expected: {}, ...s })),
   });

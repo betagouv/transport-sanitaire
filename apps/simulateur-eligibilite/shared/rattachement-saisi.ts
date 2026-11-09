@@ -39,7 +39,7 @@ export type RattachementSaisi = {
 /**
  * Normalise un texte libre : casse et espaces superflus. Deux saisies presque
  * identiques désignent ainsi la même chose. Sert à dédupliquer les services
- * écrits dans Grist et à reconnaître le service produit.
+ * écrits dans Grist et à reconnaître l'établissement fourre-tout.
  */
 export const normalise = (s: string): string =>
   s.trim().replace(/\s+/g, " ").toLowerCase();
