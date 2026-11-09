@@ -33,6 +33,19 @@ describe("les lieux que les contextes de P2 fixent (matrice des lieux)", () => {
     ]);
   });
 
+  it("le sens choisi en Q2.13.sens oriente aussi les lieux (#365)", () => {
+    const penitentiaire: Reponses = {
+      "Q2.13.sens": "2_RETOUR",
+      "Q3.1.1": 1,
+      "Q2.2.1": ["10_RETOUR_PENITENTIAIRE"],
+      "Q2.2.1.b": ["0_AUCUN"],
+    };
+    expect(ids("P3/arrivee", penitentiaire)).toEqual([
+      "Q3.3.nom",
+      "Q3.3.adresse",
+    ]);
+  });
+
   it("un transfert entre établissements ne propose que des établissements", () => {
     const transfert: Reponses = { ...ALLER, "Q2.5": "1_TRANSFERT" };
     expect(naturesDe("P3/depart", "Q3.2.nature", transfert)).toEqual([

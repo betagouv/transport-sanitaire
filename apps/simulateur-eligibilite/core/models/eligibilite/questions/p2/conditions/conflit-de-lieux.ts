@@ -1,11 +1,14 @@
 // Un conflit de lieux certain (NAV-LIEUX-CONFLIT-CERTAIN-20261106, #353) :
-// les réponses de P2 donnent à un lieu des natures inconciliables à l'aller
-// comme au retour. Aucun sens de Q3.1.2 ne le lèverait : il s'arrête avant R2.
-// Un conflit qui dépend du sens attend P3 (`p3/questions/lieu.ts`).
+// les réponses de P2 donnent à un lieu des natures inconciliables dans le sens
+// acquis, ou, sans sens acquis, à l'aller comme au retour. Il s'arrête avant R2.
 //
-// Chaque question dont un lieu se tire porte l'incohérence. Elle ne lit que
-// les réponses d'avant elle et la sienne : celles qui suivent comptent sans
-// réponse, ce qui n'ajoute aucun rôle. L'alerte va à la question dont la
+// Un conflit qu'un seul sens crée demande ce sens avant R2 : Q2.13.sens
+// (QST-LIEUX-CONFLIT-CERTAIN-20261106, #365). Un sens qui ne change rien aux
+// lieux reste une précision de P3.
+//
+// Chaque question dont un lieu ou le sens se tire porte l'incohérence. Elle ne
+// lit que les réponses d'avant elle et la sienne : celles qui suivent comptent
+// sans réponse, ce qui n'ajoute aucun rôle. L'alerte va à la question dont la
 // réponse crée le conflit, pas à celles qui la suivent sur la page. Ses liens
 // mènent aux réponses d'avant qui le fondent (NAV-LIEUX-CORRECTION-001).
 
@@ -15,7 +18,7 @@ import type {
   Revisit,
   Value,
 } from "../../../../../socle/index.ts";
-import { given } from "../../question.ts";
+import { given, type Inconnu } from "../../question.ts";
 import {
   desRolesContradictoires,
   type Entrees,
@@ -48,6 +51,21 @@ export function incoherenceDeLieux(
   return [apparu, LIEUX_INCOMPATIBLES, { revisit }];
 }
 
+/**
+ * Le sens change-t-il la cohérence des lieux ? Aucune réponse ne l'établit, et
+ * les rôles de P2 ne se contredisent que dans l'un des deux.
+ */
+export function unSensQuiChangeLesLieux(lues: LuesJusquIci): Condition {
+  return reponsesDe(lues).compute((reponses) => {
+    const entrees = { ...SANS_REPONSES, ...reponses };
+    if (orientationAcquise(entrees) !== undefined) return false;
+    const enConflit = ORIENTATIONS.filter((orientation) =>
+      desRolesContradictoires(entrees, orientation),
+    );
+    return enConflit.length === 1;
+  });
+}
+
 // ---- implémentation ----
 
 // Les libellés de l'éditeur : Q1.3 dit la situation particulière, les
@@ -57,6 +75,13 @@ const REVOIR_LE_DEPLACEMENT = "Revoir la nature du déplacement";
 
 // Un aller-retour équivalent se lit comme l'aller : deux orientations suffisent.
 const ORIENTATIONS: readonly Orientation[] = ["aller", "retour"];
+
+// Le sens de Q2.13.sens. L'aller-retour différent bloque : il n'en donne aucun.
+const ORIENTATION_DU_SENS: Readonly<Record<string, Orientation>> = {
+  "1_ALLER": "aller",
+  "2_RETOUR": "retour",
+  "3_ALLER_RETOUR_EQUIVALENT": "aller",
+};
 
 // Une question qui n'est pas encore lue : ni valeur, ni option, ni case.
 const SANS_REPONSE = {
@@ -73,13 +98,28 @@ const SANS_REPONSES: Entrees = {
   transfert: SANS_REPONSE,
   contexte: SANS_REPONSE,
   departDeLEntree: SANS_REPONSE,
+  repetition: SANS_REPONSE,
+  trajetEvalue: SANS_REPONSE,
 };
 
 function unConflitCertain(lues: Partial<Entrees>): boolean {
   const entrees = { ...SANS_REPONSES, ...lues };
-  return ORIENTATIONS.every((orientation) =>
+  const acquise = orientationAcquise(entrees);
+  const possibles = acquise === undefined ? ORIENTATIONS : [acquise];
+  return possibles.every((orientation) =>
     desRolesContradictoires(entrees, orientation),
   );
+}
+
+// Le sens que les réponses établissent : Q2.13.sens, ou plusieurs
+// permissions, chacune un aller-retour (D-120).
+function orientationAcquise({
+  trajetEvalue,
+  repetition,
+}: Entrees): Orientation | Inconnu {
+  const sens = trajetEvalue.value;
+  if (sens !== undefined) return ORIENTATION_DU_SENS[sens];
+  return repetition.is("1_OUI") ? "aller" : undefined;
 }
 
 function sans(entrees: Partial<Entrees>, nom: keyof Lues): Partial<Entrees> {

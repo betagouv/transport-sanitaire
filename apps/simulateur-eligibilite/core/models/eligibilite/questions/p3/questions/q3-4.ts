@@ -11,11 +11,11 @@ import type {
 import { Q1_3, Q1_3_A } from "../../p1/questions/q1-3.ts";
 import { Q2_1, Q2_1_F, Q2_1_G } from "../../p2/questions/q2-1.ts";
 import { given, question } from "../../question.ts";
+import { SENS_CHOISI } from "../conditions/sens-du-trajet.ts";
 import { pmtOuDap } from "../conditions/supports-du-complement.ts";
-import { Q3_1_2 } from "./q3-1-2.ts";
 
 // Un retour seul ne va pas vers le centre de référence.
-const unRetourSeul = given.question(Q3_1_2).answer().is("2_RETOUR");
+const unRetourSeul = SENS_CHOISI.compute((sens) => sens === "2_RETOUR");
 
 // Le soin, tel que P2 l'a validé, se rappelle sans se redemander. Aucun code
 // de nomenclature ne s'affiche.
