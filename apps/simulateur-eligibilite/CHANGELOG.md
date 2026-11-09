@@ -7,6 +7,36 @@ commit lui-même.
 Le simulateur affiche en bas de page la version qu'il exécute, le commit déployé
 et la version du modèle de règles.
 
+## [0.6.0](https://github.com/betagouv/transport-sanitaire/releases/tag/simulateur-eligibilite%400.6.0), 9 novembre 2026
+
+Le modèle v10.1.7 de l'éditeur, l'écran d'entrée revu avec le porteur et les
+developer tools réservés au poste local. 11 commits depuis la 0.5.1.
+
+### TL;DR
+
+- Le simulateur suit la v10.1.7 : chaque situation ne se déclare qu'à un endroit, l'accident causé par un tiers passe en Q1.3, les dates de la permission n'ont plus d'heure, et l'adresse du domicile s'écrit sur les cerfa.
+- Un conflit de lieux certain s'arrête avant R2, avec des liens vers les réponses à revoir ; le sens du trajet se demande avant R2 quand il change les lieux.
+- L'écran d'entrée prend le titre et la liste voulus par le porteur : « Libéral », « Assurance Maladie » et « Autre » seulement sous les établissements.
+- Sous Safari, chaque nouvelle page remonte en haut de l'iframe ; la page suit le thème du site qui l'embarque.
+- Les developer tools ne s'ouvrent plus qu'en local.
+
+### ✨ Nouveautés
+
+- [67a8cec](https://github.com/betagouv/transport-sanitaire/commit/67a8cec) : intègre le modèle v10.1.7 : textes des résultats et libellés de P0, Q3.1.2, Q3.7 et de la caisse revus, accident causé par un tiers recueilli en Q1.3, dates de la permission sans heure avec une question sur sa durée, adresse du domicile écrite dans la zone du bénéficiaire des trois cerfa, critères du mode retirés du texte médical.
+- [37c84d9](https://github.com/betagouv/transport-sanitaire/commit/37c84d9) : ne découvre chaque situation qu'à un endroit : Q2.1 garde neuf motifs, la permission se dit sous le séjour en établissement, le CAMSP et la convocation en Q2.2.1.b, l'examen et l'hébergement de la maternité deviennent deux cases de Q2.2.1.
+- [d332b2b](https://github.com/betagouv/transport-sanitaire/commit/d332b2b) : pose l'urgence sous la seule Q2.3.4, au trajet ou à la branche ; Q2.12 disparaît.
+- [d260926](https://github.com/betagouv/transport-sanitaire/commit/d260926) : arrête avant R2 des réponses qui donnent à un lieu des natures inconciliables, et mène par des liens aux réponses à revoir ; l'adresse de la page porte l'étape, et le bouton Retour du navigateur y revient.
+- [435d56d](https://github.com/betagouv/transport-sanitaire/commit/435d56d) : pose le sens du trajet avant R2 (Q2.13.sens) quand il change les lieux ; Q3.1.2 ne le redemande pas.
+- [2bf39c1](https://github.com/betagouv/transport-sanitaire/commit/2bf39c1) : passe le champ médical des cerfa en multiligne avant toute mesure.
+- [95cadae](https://github.com/betagouv/transport-sanitaire/commit/95cadae) : suit les retours du porteur sur l'écran d'entrée : titre « Faites une simulation pour prescrire le transport adapté », mention de la phase expérimentale, marge haute retirée, liste « Établissement » sans phrase d'aide, et sous le trait « Autre établissement », « Libéral », « Assurance Maladie », « Autre » seulement.
+- [fa20593](https://github.com/betagouv/transport-sanitaire/commit/fa20593) : crée le service « Autre » d'un établissement saisi, pour que le collègue suivant puisse y saisir son propre service.
+
+### 🐛 Corrections
+
+- [3b10955](https://github.com/betagouv/transport-sanitaire/commit/3b10955) : corrige quatre retours Marker.io : une adresse longue se dessine lisible sous son cadre au lieu de rapetisser, le simulateur suit le thème du site qui l'embarque, le bloc de suivi se détache de l'encadré de refus, la fiche s'imprime sans en-tête ni pied de page du navigateur.
+- [2d5e024](https://github.com/betagouv/transport-sanitaire/commit/2d5e024) : remonte la page hôte au haut de l'iframe sous Safari à chaque nouvelle page ; le script collé dans Sites Conformes est à recoller.
+- [a955f80](https://github.com/betagouv/transport-sanitaire/commit/a955f80) : ouvre les developer tools en local seulement, quel que soit le service choisi ; ils ne s'ouvrent plus en staging ni en production.
+
 ## [0.5.1](https://github.com/betagouv/transport-sanitaire/releases/tag/simulateur-eligibilite%400.5.1), 4 novembre 2026
 
 Le modèle v10.1.6 de l'éditeur et le nouvel écran d'entrée, qui ouvre le
