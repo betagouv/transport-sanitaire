@@ -321,7 +321,8 @@ simulateur calcule le DTO sous le second résultat et le passe au bouton.
 | `CerfaPreview.tsx` | l'aperçu du PDF dans la page, par le lecteur du navigateur ; sans lecteur, une phrase renvoie au téléchargement (D-183) |
 | `generate-the-cerfa/generate-the-cerfa.ts` | la génération : le DTO traduit dans les noms du gabarit, remplir, puis aplatir, avec `pdf-lib` chargé à la demande |
 | `generate-the-cerfa/compute-the-dto.ts` | le DTO calculé des données du simulateur : `CerfaMapping`, `bindCerfa`, `dtoFrom` |
-| `generate-the-cerfa/fill-the-form.ts` | l'écriture dans un AcroForm : textes et leur commentaire, cases et leurs états d'export. Ce qui ne tient pas dans son cadre |
+| `generate-the-cerfa/fill-the-form.ts` | l'écriture dans un AcroForm : textes et leur commentaire, cases et leurs états d'export. Un champ qui porte un commentaire passe en multiligne avant toute mesure (#356) |
+| `generate-the-cerfa/write-a-text.ts` | l'écriture d'un texte, étape par étape : avec son commentaire, sans, rapetissé, puis sous son cadre. Ce qui ne tient pas dans son cadre |
 | `generate-the-cerfa/text-fit.ts` | un texte tient-il dans son champ, et à quelle taille, au besoin rapetissé et sur plusieurs lignes |
 | `generate-the-cerfa/overflow.ts` | où et à quelle taille se dessine un texte plus long que le nombre de caractères de son champ |
 | `generate-the-cerfa/widget-page.ts` | la page qui porte le widget d'un champ |
