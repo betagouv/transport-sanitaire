@@ -1,8 +1,8 @@
 // Le script que le CMS (Sites Conformes) exécute sur ses pages. Il ajoute
 // l'opt-out au pied de page et répond au simulateur embarqué, sur la mesure
-// d'audience et sur le thème. Chaque test le charge dans une fenêtre neuve,
-// avec le vrai pied de page DSFR. Le simulateur est une fenêtre qui relève les
-// messages reçus.
+// d'audience, sur le thème et sur le retour au haut de l'iframe. Chaque test le
+// charge dans une fenêtre neuve, avec le vrai pied de page DSFR. Le simulateur
+// est une fenêtre qui relève les messages reçus.
 
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
@@ -27,6 +27,16 @@ const PIED_DE_PAGE = `
     </div>
   </footer>`;
 
+function executerLeScript(fenetre: Window) {
+  new Function(
+    "window",
+    "document",
+    "localStorage",
+    "MutationObserver",
+    SOURCE,
+  )(fenetre, fenetre.document, fenetre.localStorage, fenetre.MutationObserver);
+}
+
 function pageDuCms({ refusMemorise = false, theme = "" } = {}) {
   const fenetre = new Window({ url: "https://cms.test/" });
   fenetre.document.body.innerHTML = PIED_DE_PAGE;
@@ -35,13 +45,7 @@ function pageDuCms({ refusMemorise = false, theme = "" } = {}) {
   if (refusMemorise) {
     fenetre.localStorage.setItem("statistiques-simulateur-refusees", "1");
   }
-  new Function(
-    "window",
-    "document",
-    "localStorage",
-    "MutationObserver",
-    SOURCE,
-  )(fenetre, fenetre.document, fenetre.localStorage, fenetre.MutationObserver);
+  executerLeScript(fenetre);
 
   const simulateur = {
     recus: [] as Array<{ message: unknown; origine: string }>,
@@ -160,5 +164,49 @@ describe("thème de la page, côté CMS", () => {
     const { simulateur, demander } = pageDuCms({ theme: "dark" });
     demander("https://ailleurs.test", "theme-simulateur:demande");
     expect(simulateur.recus).toEqual([]);
+  });
+});
+
+// La page du CMS et l'iframe du simulateur, à 1 500 px du haut. La fenêtre de
+// test ne met pas en page : l'iframe dit où elle est d'après le défilement.
+function pageAvecLeSimulateur() {
+  const fenetre = new Window({ url: "https://cms.test/" });
+  fenetre.document.body.innerHTML = `<iframe src="about:blank"></iframe>`;
+  const iframe = fenetre.document.querySelector("iframe");
+  if (!iframe) throw new Error("iframe absente");
+  iframe.getBoundingClientRect = () =>
+    new fenetre.DOMRect(0, 1500 - fenetre.scrollY, 600, 3000);
+  executerLeScript(fenetre);
+  const demanderLeHaut = (source: unknown, origin = ORIGINE_SIMULATEUR) =>
+    fenetre.dispatchEvent(
+      new fenetre.MessageEvent("message", {
+        data: { type: "defilement-simulateur:haut" },
+        origin,
+        source: source as never,
+      }),
+    );
+  return { fenetre, simulateur: iframe.contentWindow, demanderLeHaut };
+}
+
+describe("retour au haut de l'iframe, côté CMS", () => {
+  it("remonte la page au haut de l'iframe qui le demande", () => {
+    const { fenetre, simulateur, demanderLeHaut } = pageAvecLeSimulateur();
+    fenetre.scrollTo({ top: 4100 });
+    demanderLeHaut(simulateur);
+    expect(fenetre.scrollY).toBe(1500);
+  });
+
+  it("ne remonte que pour le simulateur, pas pour une autre origine", () => {
+    const { fenetre, simulateur, demanderLeHaut } = pageAvecLeSimulateur();
+    fenetre.scrollTo({ top: 4100 });
+    demanderLeHaut(simulateur, "https://ailleurs.test");
+    expect(fenetre.scrollY).toBe(4100);
+  });
+
+  it("ne remonte que pour une iframe de la page", () => {
+    const { fenetre, demanderLeHaut } = pageAvecLeSimulateur();
+    fenetre.scrollTo({ top: 4100 });
+    demanderLeHaut(new Window());
+    expect(fenetre.scrollY).toBe(4100);
   });
 });

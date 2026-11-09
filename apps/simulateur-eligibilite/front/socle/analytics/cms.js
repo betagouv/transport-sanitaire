@@ -1,5 +1,6 @@
 // Le script du CMS (Sites Conformes) pour le simulateur qu'il embarque en
-// iframe : l'opt-out de la mesure d'audience, et le thème de la page.
+// iframe : l'opt-out de la mesure d'audience, le thème de la page, et le
+// retour au haut de l'iframe.
 //
 // L'opt-out est dans le pied de page du CMS. Ce script y ajoute le bouton, garde
 // le choix sur le domaine du CMS et le transmet au simulateur par `postMessage`,
@@ -11,6 +12,10 @@
 // choix du lecteur : `data-fr-theme` sur `<html>`. Le simulateur le demande et
 // le reçoit de même, puis à chaque changement (#342). Le protocole est celui de
 // `front/socle/theme/host-theme.ts`.
+//
+// À chaque nouvelle page, le simulateur demande à remonter au haut de son
+// iframe : Safari ne laisse pas l'iframe faire défiler la page (#369). Le
+// protocole est celui de `front/socle/questionnaire/scroll-to-the-top.ts`.
 //
 // À coller dans Sites Conformes : Paramètres → Scripts personnalisés → « Scripts
 // dans la section <body> », entre `<script type="module">` et `</script>`. En
@@ -42,6 +47,7 @@ window.addEventListener("message", (e) => {
     abonner(abonnesAuTheme, e.source);
     envoyerLeTheme(e.source);
   }
+  if (e.data?.type === "defilement-simulateur:haut") remonterAuHaut(e.source);
 });
 
 ajouterAuPiedDePage();
@@ -110,6 +116,17 @@ function envoyerLeTheme(simulateur) {
 function theme() {
   const resolu = document.documentElement.getAttribute("data-fr-theme");
   return resolu === "dark" ? "dark" : "light";
+}
+
+// Le haut de l'iframe du simulateur qui le demande, sous sa bordure : là où
+// Chrome et Firefox ont déjà mené la page. Elle n'y bouge donc plus.
+function remonterAuHaut(simulateur) {
+  const iframe = Array.from(document.querySelectorAll("iframe")).find(
+    (cadre) => cadre.contentWindow === simulateur,
+  );
+  if (!iframe) return;
+  const haut = iframe.getBoundingClientRect().top + iframe.clientTop;
+  window.scrollTo({ top: window.scrollY + haut, behavior: "instant" });
 }
 
 function lireRefus() {
