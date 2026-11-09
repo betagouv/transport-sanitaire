@@ -1,6 +1,11 @@
 # Architecture : Rattachement à un établissement et un service (~~identification du prescripteur~~)
 
-> Statut : **décidé (release officielle)** · Dernière mise à jour : 2026-11-04
+> Statut : **décidé (release officielle)** · Dernière mise à jour : 2026-11-09
+>
+> **Mise à jour 2026-11-09, retours du porteur (#367).** La liste s'appelle
+> « Établissement », sans phrase d'aide. Sous le trait, elle montre toujours
+> « Autre établissement », « Libéral », « Assurance Maladie », « Autre », dans cet
+> ordre : les autres services du fourre-tout ne s'affichent plus (§4).
 >
 > **Mise à jour 2026-11-04, établissement ou structure (#197).** L'écran demande
 > l'établissement **ou la structure** dans une seule liste, et ouvre le simulateur dès
@@ -224,7 +229,7 @@ Le workflow est un formulaire à révélation progressive, qui ouvre le simulate
 le choix suffit (révisé le 2026-11-04, #197) :
 
 ```
-Établissement ou structure ─┬─ établissement du référentiel → Service ─┬─ service de la liste → simulateur
+Établissement ──────────────┬─ établissement du référentiel → Service ─┬─ service de la liste → simulateur
                             │                                          └─ « Autre » → nom du service → bouton
                             │  ──────── (trait de séparation) ────────
                             ├─ « Autre établissement » → nom de l'établissement, nom du service → bouton
@@ -239,12 +244,16 @@ liste » avec son nom et son prénom.~~ Retiré le 2026-09-29.
 **Entrée dès la sélection.** Un service de la liste ou une structure ouvre le simulateur
 sans bouton. Une saisie libre garde un bouton de validation : on ne sait pas quand elle
 est finie. Changer d'écran au choix d'une liste est un changement de contexte (RGAA 7.4,
-WCAG 3.2.2), assumé par le produit : l'aide de la liste prévient que le choix ouvre le
-simulateur.
+WCAG 3.2.2), assumé par le produit. ~~L'aide de la liste prévient que le choix ouvre le
+simulateur.~~ Retirée le 2026-11-09 à la demande du porteur (#367) : rien ne l'annonce
+plus.
 
-**Les structures.** « Libéral », « Assurance Maladie » et « Autre » sont les services de
+**Les structures.** « Libéral », « Assurance Maladie » et « Autre » sont des services de
 l'établissement fourre-tout du référentiel (`Id2 = 11`, libellé « Libéral / CNAM / CPAM /
-Autre »), affichés à plat sous le trait. L'établissement fourre-tout ne s'affiche plus,
+Autre »), affichés à plat sous le trait, toujours dans cet ordre (#367). Le front les
+reconnaît à leur libellé normalisé. Les autres services du fourre-tout (CNAM, CPAM, les
+saisies des prescripteurs) ne s'affichent pas, et une structure absente de Grist non
+plus. L'établissement fourre-tout ne s'affiche plus,
 et le front le reconnaît comme il reconnaît le service produit : par son `Id2`, ou par
 son libellé. Le rattachement d'une structure porte donc l'id Grist d'un service, et
 Matomo compte ces visites comme avant. ~~La branche « non rattaché » dédiée a été
@@ -265,7 +274,8 @@ suivante, l'établissement est dans la liste, au-dessus du trait, avec son servi
 **Le service n° 4** (« Transport Sanitaire », celui du produit) n'entre pas dès la
 sélection : il montre ses deux sorties, le simulateur et les seeds des developer tools.
 Il est rangé sous un établissement dédié dans Grist ; son déverrouillage reste sur son
-`Id2`, et marche aussi s'il est encore proposé comme structure.
+`Id2`. ~~Il marche aussi s'il est encore proposé comme structure.~~ Depuis #367, un
+service du fourre-tout hors des trois structures ne s'affiche plus.
 
 Si le référentiel ne répond pas, liste des établissements, des structures ou des
 services d'un établissement, l'écran le dit et laisse entrer avec le **rattachement

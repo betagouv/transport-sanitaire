@@ -7,10 +7,17 @@ type Props = {
   // Les écrans de saisie tiennent sur une colonne étroite. Les tableaux et les
   // résultats prennent toute la largeur.
   etroit?: boolean;
+  // L'écran d'entrée se colle au haut de l'iframe du CMS : rien au-dessus du
+  // titre.
+  sansMargeHaute?: boolean;
   children: ReactNode;
 };
 
-export function Container({ etroit = false, children }: Props) {
+export function Container({
+  etroit = false,
+  sansMargeHaute = false,
+  children,
+}: Props) {
   return (
     <main
       className="fr-container"
@@ -19,7 +26,7 @@ export function Container({ etroit = false, children }: Props) {
         // Le pied de page se pose ainsi en bas de la fenêtre (voir
         // `SimulateurScreen`). Sans effet hors d'un conteneur flex.
         flex: "1 0 auto",
-        paddingTop: "2rem",
+        paddingTop: sansMargeHaute ? 0 : "2rem",
         paddingBottom: "4rem",
         ...(etroit ? { maxWidth: "60rem" } : {}),
       }}
