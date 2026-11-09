@@ -264,21 +264,24 @@ describe("les groupes de la maternité changés (cas « Maternité »)", () => {
   const URGENCE_DITE: Reponses = { ...MATERNITE_ETABLIE, "Q2.3.4": "2_NON" };
 
   // Une preuve actuelle se réutilise : l'urgence reste dite (ADR-29).
-  it.each([
-    ["Q2.14.eloignement", ["2_COMMUNE_DESIGNEE_PAR_L_ARS"]],
-    ["Q2.14.motif", ["2_HEBERGEMENT_ENGAGEMENT"]],
-  ] as const)("changer %s garde l'urgence", (id, autre) => {
+  // L'examen coché en Q2.2.1 est le motif : seul l'éloignement change.
+  it("changer d'éloignement garde l'urgence", () => {
     const brouillon = brouillonDe(URGENCE_DITE, "P2/branche");
-    const changee = answerOnPage(pageDe("P2/branche"), brouillon, id, autre);
+    const changee = answerOnPage(
+      pageDe("P2/branche"),
+      brouillon,
+      "Q2.14.eloignement",
+      ["2_COMMUNE_DESIGNEE_PAR_L_ARS"],
+    );
     const apres = lire(URGENCE_DITE).commit(pageDe("P2/branche"), changee);
 
     expect(apres).toHaveProperty("Q2.3.4", "2_NON");
     expect(lire(apres).validated.toJSON()["Q2.3.4"]?.answer).toBe("2_NON");
   });
 
-  it("passer un groupe à « Aucune » efface l'urgence", () => {
+  it("passer l'éloignement à « Aucune » efface l'urgence", () => {
     const apres = valideeAvec(URGENCE_DITE, "P2/branche", {
-      "Q2.14.motif": ["3_AUCUNE"],
+      "Q2.14.eloignement": ["3_AUCUNE"],
     });
 
     expect(apres).not.toHaveProperty("Q2.3.4");
