@@ -7,7 +7,6 @@ import {
   saisieComplete,
 } from "../../../shared/rattachement-saisi";
 import type { Referentiel } from "../../../shared/referentiel";
-import { estServiceProduit } from "../developer-tools";
 import { decoderChoix } from "./choix";
 import { estAutre, type Listes, useListes } from "./listes";
 
@@ -30,11 +29,8 @@ export type Derivation = {
   serviceEstAutre: boolean;
   // « Autre établissement » : son nom et celui du service suivent.
   etabEstAutre: boolean;
-  // Le service sélectionné déverrouille les developer tools (service n° 4).
-  developerTools: boolean;
   // La sélection suffit : le simulateur s'ouvre sans bouton. Faux pour une
-  // saisie libre, dont on ne sait pas quand elle est finie, et pour le service
-  // n° 4, qui a deux sorties.
+  // saisie libre, dont on ne sait pas quand elle est finie.
   entreeImmediate: boolean;
 };
 
@@ -109,15 +105,13 @@ function deriverService(
     saisie.serviceEstAutre = true;
     saisie.serviceLibre = champs.serviceLibre;
   }
-  const developerTools = estServiceProduit(service);
   return {
     saisie,
     valide: saisieComplete(saisie),
     etabChoisi: true,
     serviceEstAutre,
     etabEstAutre: false,
-    developerTools,
-    entreeImmediate: !serviceEstAutre && !developerTools,
+    entreeImmediate: !serviceEstAutre,
   };
 }
 
@@ -164,7 +158,6 @@ const AUCUNE: Derivation = {
   etabChoisi: false,
   serviceEstAutre: false,
   etabEstAutre: false,
-  developerTools: false,
   entreeImmediate: false,
 };
 

@@ -1,7 +1,7 @@
 // L'encadré des developer tools, et leurs boutons.
 //
-// Ces outils existent sur tous les environnements, production comprise. Seul le
-// service n° 4 du référentiel les voit (`unlock.ts`).
+// Ces outils ne s'ouvrent qu'en local, quel que soit le service choisi
+// (`unlock.ts`).
 //
 // L'encadré est à part, avec une bordure tiretée : ces boutons ne doivent pas se
 // confondre avec ceux du parcours.
@@ -34,7 +34,7 @@ export function DeveloperTools({ children }: { children: ReactNode }) {
         }}
       >
         <span className="fr-icon-flashlight-line fr-mr-1w" aria-hidden="true" />
-        Developer tools — service Transport Sanitaire
+        Developer tools, en local seulement
       </p>
       <div className="fr-btns-group fr-btns-group--inline fr-btns-group--sm fr-btns-group--icon-left">
         {children}

@@ -34,7 +34,7 @@ console.log(
  * `pdf-lib` (~400 ko) ne se charge qu'à la demande, par import dynamique. Un
  * `import` statique mal placé le ferait télécharger à chaque prescripteur, sans
  * rien casser. Même chose pour modern-screenshot, qui photographie la feuille
- * à remettre pour son PDF, pour l'écran des seeds, réservé au service produit,
+ * à remettre pour son PDF, pour l'écran des seeds, un developer tool,
  * et pour les modèles, qui se chargent pendant l'écran de rattachement. L'énoncé
  * d'une question n'existe que dans le modèle de démonstration, un nom de fait
  * que dans les règles du modèle de l'éditeur, et le schéma de ses textes de R2
@@ -52,7 +52,7 @@ function interdits(): Array<[marqueur: string, quoi: string]> {
     ["resultats-html-patient/2", "le catalogue des textes de R2"],
   ];
   for (const seed of premieresSeeds())
-    marqueurs.push([seed, "un catalogue de seeds (service produit)"]);
+    marqueurs.push([seed, "un catalogue de seeds (developer tools)"]);
   return marqueurs;
 }
 

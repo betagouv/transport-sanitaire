@@ -29,8 +29,8 @@ followHostTheme(applyTheme);
 // rangé en session au rattachement, puis lu à chaque événement.
 initAnalytics(configFromEnv(), { load: loadMatomo });
 
-// Le premier s'ouvre au démarrage. À plusieurs, le service n° 4 peut en changer
-// depuis les developer tools.
+// Le premier s'ouvre au démarrage. À plusieurs, on peut en changer depuis les
+// developer tools, donc en local seulement.
 const models: Models = [
   {
     label: "Modèle de l’éditeur",

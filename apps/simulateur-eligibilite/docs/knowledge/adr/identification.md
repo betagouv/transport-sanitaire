@@ -2,6 +2,12 @@
 
 > Statut : **décidé (release officielle)** · Dernière mise à jour : 2026-11-09
 >
+> **Mise à jour 2026-11-09, developer tools en local (#373, D-279).** Le service
+> n° 4 ne déverrouille plus rien. Les developer tools s'ouvrent en local, quel que
+> soit le service, et jamais sur un build de production. L'écran de rattachement
+> n'a plus de sortie vers les seeds : toute sélection qui suffit ouvre le
+> simulateur, et les seeds s'ouvrent depuis lui (§4, §5).
+>
 > **Mise à jour 2026-11-09, retours du porteur (#367).** La liste s'appelle
 > « Établissement », sans phrase d'aide. Sous le trait, elle montre toujours
 > « Autre établissement », « Libéral », « Assurance Maladie », « Autre », dans cet
@@ -253,9 +259,9 @@ l'établissement fourre-tout du référentiel (`Id2 = 11`, libellé « Libéral 
 Autre »), affichés à plat sous le trait, toujours dans cet ordre (#367). Le front les
 reconnaît à leur libellé normalisé. Les autres services du fourre-tout (CNAM, CPAM, les
 saisies des prescripteurs) ne s'affichent pas, et une structure absente de Grist non
-plus. L'établissement fourre-tout ne s'affiche plus,
-et le front le reconnaît comme il reconnaît le service produit : par son `Id2`, ou par
-son libellé. Le rattachement d'une structure porte donc l'id Grist d'un service, et
+plus. L'établissement fourre-tout ne s'affiche plus, et le front le reconnaît par son
+`Id2`, ou par son libellé. Le rattachement d'une structure porte donc l'id Grist d'un
+service, et
 Matomo compte ces visites comme avant. ~~La branche « non rattaché » dédiée a été
 supprimée le 2026-07-21 ; ces prescripteurs sélectionnaient l'établissement fourre-tout
 puis un service.~~
@@ -272,11 +278,12 @@ Les deux sont écrits dans Grist, l'établissement puis son service sous lui. Un
 établissement créé reçoit aussi son service « Autre » (#368). À la visite suivante,
 l'établissement est dans la liste, au-dessus du trait, avec son service et « Autre ».
 
-**Le service n° 4** (« Transport Sanitaire », celui du produit) n'entre pas dès la
+~~**Le service n° 4** (« Transport Sanitaire », celui du produit) n'entre pas dès la
 sélection : il montre ses deux sorties, le simulateur et les seeds des developer tools.
 Il est rangé sous un établissement dédié dans Grist ; son déverrouillage reste sur son
-`Id2`. ~~Il marche aussi s'il est encore proposé comme structure.~~ Depuis #367, un
-service du fourre-tout hors des trois structures ne s'affiche plus.
+`Id2`. Depuis #367, un service du fourre-tout hors des trois structures ne s'affiche
+plus.~~ Retiré le 2026-11-09 (#373, D-279) : sa ligne Grist est supprimée, et les
+developer tools s'ouvrent en local seulement, depuis le simulateur.
 
 Si le référentiel ne répond pas, liste des établissements, des structures ou des
 services d'un établissement, l'écran le dit et laisse entrer avec le **rattachement
@@ -322,9 +329,10 @@ erDiagram
 - Tables Grist : `Etablissements` (`Id2`, `Nom`, `Origine`) et `Services_Unites` (`Id2`,
   `Nom`, `Etablissement`, `Origine`). `Id2` est l'identifiant métier que l'app expose ;
   la référence `Etablissement` stocke le rowId Grist.
-- **Deux établissements à part.** Le fourre-tout (`Id2 = 11`) porte les structures
-  (« Libéral », « Assurance Maladie », « Autre ») et ne s'affiche pas. Un établissement
-  dédié porte le service n° 4 du produit.
+- **~~Deux établissements~~ Un établissement à part.** Le fourre-tout (`Id2 = 11`)
+  porte les structures (« Libéral », « Assurance Maladie », « Autre ») et ne s'affiche
+  pas. ~~Un établissement dédié porte le service n° 4 du produit.~~ Retiré le
+  2026-11-09 (#373).
 - **`Origine`** vaut `formulaire` sur les lignes créées depuis l'écran, établissement
   comme service : l'admin les repère, les corrige ou les retire dans Grist. Les deux
   colonnes doivent exister avant la mise en production (geste admin).

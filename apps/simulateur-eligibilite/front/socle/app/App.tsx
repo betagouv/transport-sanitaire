@@ -5,7 +5,12 @@
 // rattaché. Voir docs/knowledge/adr/identification.md, ADR-1.
 
 import type { ComponentProps } from "react";
-import { DebugTrace, DeveloperTools, ToolButton } from "../developer-tools";
+import {
+  DebugTrace,
+  DeveloperTools,
+  developerToolsUnlocked,
+  ToolButton,
+} from "../developer-tools";
 
 import type { Model } from "../model";
 import { RattachementScreen } from "../rattachement";
@@ -28,11 +33,22 @@ type Props = Pick<
    * developer tools proposent d'en changer.
    */
   models: Models;
+  /**
+   * Les developer tools s'ouvrent-ils ? En local oui, sur un build de
+   * production jamais (`developerToolsUnlocked`). Un test passe `false` pour
+   * voir l'app comme en production.
+   */
+  developerTools?: boolean;
 };
 
 // Le rattachement n'attend pas le modèle : il se charge pendant que
 // le prescripteur se rattache.
-export function App({ models, referentiel, declarer }: Props) {
+export function App({
+  models,
+  referentiel,
+  declarer,
+  developerTools = developerToolsUnlocked(),
+}: Props) {
   const navigation = useNavigation();
   const opened = useModelChoice(models);
   const { model, failed } = useModelLoading(opened.source);
@@ -51,6 +67,7 @@ export function App({ models, referentiel, declarer }: Props) {
       model={model}
       navigation={navigation}
       modelChoices={opened.choices}
+      developerTools={developerTools}
     />
   );
 }
@@ -76,10 +93,12 @@ function AfterRattachement({
   model,
   navigation,
   modelChoices,
+  developerTools,
 }: {
   model: Model;
   navigation: Navigation;
   modelChoices: ModelChoice[];
+  developerTools: boolean;
 }) {
   if (navigation.screen === "seeds")
     return (
@@ -95,22 +114,25 @@ function AfterRattachement({
       model={model}
       seedAnswers={navigation.seedAnswers}
       onNewSimulation={navigation.restart}
-      developerToolsPanel={developerToolsPanel(navigation, modelChoices)}
-      DebugTrace={navigation.developerTools ? DebugTrace : undefined}
+      developerToolsPanel={
+        developerTools
+          ? developerToolsPanel(navigation, modelChoices)
+          : undefined
+      }
+      DebugTrace={developerTools ? DebugTrace : undefined}
     />
   );
 }
 
 // Le branchement des developer tools sur le simulateur se décide ici. Le
 // simulateur reçoit du contenu déjà composé et n'importe rien de
-// `developer-tools/`. Le service n° 4 déverrouille trois choses : le bouton vers
+// `developer-tools/`. En local, ils ouvrent trois choses : le bouton vers
 // l'écran des seeds, le choix du modèle quand l'app en a plusieurs, et la trace
 // de debug.
 function developerToolsPanel(
   navigation: Navigation,
   modelChoices: ModelChoice[],
 ) {
-  if (!navigation.developerTools) return undefined;
   return (
     <DeveloperTools>
       <ToolButton onClick={navigation.openSeeds}>Seeds</ToolButton>

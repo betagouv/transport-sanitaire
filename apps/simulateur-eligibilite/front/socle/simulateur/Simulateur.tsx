@@ -27,7 +27,7 @@ type Props = {
   // Seed : pré-remplit le parcours, qui s'ouvre là où ses réponses mènent.
   seedAnswers?: Answers | null;
   // L'encadré des developer tools, rendu tel quel sous le questionnaire. `App`
-  // le compose. Absent hors du service produit.
+  // le compose. Absent sur un build de production.
   developerToolsPanel?: ReactNode;
   // La trace de debug, rendue sous le questionnaire et sous les résultats. Même
   // garde que l'encadré. C'est un composant, pas du contenu composé : le

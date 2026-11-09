@@ -1,28 +1,23 @@
 // L'écran affiché, et comment on en change : rattachement, seeds, simulateur.
 //
-// Le rattachement saisi ne passe pas par ici. Il est rangé en session, et
-// `rattacher` ne retient que l'accès aux developer tools.
+// Le rattachement saisi ne passe pas par ici : il est rangé en session.
 
 import { useState } from "react";
 import type { Answers } from "../../../core/socle/questionnaire-engine";
 import type { Seed } from "../../../core/socle/simulation";
-import type { AccesRattachement } from "../rattachement";
 
 type Screen = "rattachement" | "seeds" | "simulateur";
 
 export type Navigation = {
   screen: Screen;
-  // Le service choisi déverrouille-t-il les developer tools (service n° 4) ?
-  // Retenu au rattachement pour les reproposer dans le simulateur. C'est un
-  // booléen, pas une identité.
-  developerTools: boolean;
   // Les réponses de la seed ouverte, qui pré-remplissent le simulateur.
   seedAnswers: Answers | null;
   // Change à chaque nouvelle simulation. `App` s'en sert pour remonter le
   // simulateur et repartir d'un questionnaire vierge.
   simulationNumber: number;
-  // Les developer tools s'ouvrent après le rattachement, comme le simulateur.
-  rattacher: (acces: AccesRattachement) => void;
+  // Le rattachement ouvre le simulateur. Les developer tools s'ouvrent après
+  // lui, depuis le simulateur.
+  rattacher: () => void;
   // Ouvre la seed choisie : son résultat si elle est complète, sinon la
   // première page qu'elle laisse sans réponse.
   openSeed: (seed: Seed) => void;
@@ -34,7 +29,6 @@ export type Navigation = {
 export function useNavigation(): Navigation {
   const [state, setState] = useState<State>({
     screen: "rattachement",
-    developerTools: false,
     seedAnswers: null,
     simulationNumber: 0,
   });
@@ -46,21 +40,14 @@ export function useNavigation(): Navigation {
 
 // ---- implémentation ----
 
-type State = Pick<
-  Navigation,
-  "screen" | "developerTools" | "seedAnswers" | "simulationNumber"
->;
+type State = Pick<Navigation, "screen" | "seedAnswers" | "simulationNumber">;
 
 function actions(
   state: State,
   patch: (partial: Partial<State>) => void,
 ): Omit<Navigation, keyof State> {
   return {
-    rattacher: (acces) =>
-      patch({
-        screen: acces.destination,
-        developerTools: acces.developerTools,
-      }),
+    rattacher: () => patch({ screen: "simulateur" }),
     // Ouvrir une seed commence une simulation. Rouverte, la même seed repart
     // de ses réponses.
     openSeed: (seed) =>
