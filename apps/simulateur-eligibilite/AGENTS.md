@@ -130,6 +130,7 @@ mécanique, sans React ni phrase de l'écran :
 | `questionnaire.ts` | la page ouverte à l'écran (`useQuestionnaire`) : il reçoit la simulation, ne garde que le brouillon, et donne la simulation que chaque bouton ouvre (`onChange`) |
 | `draft-an-answer.ts` | le brouillon d'une page : ses réponses validées, une case seule décochée |
 | `advance-alone.ts`, `send-to-analytics.ts` | l'avancement seul d'une page de choix uniques, et ce que le parcours envoie à l'analytics |
+| `scroll-to-the-top.ts` | le retour en haut à chaque page, et la demande à la page hôte d'en faire autant, que le script du CMS (`../analytics/cms.js`) exécute : Safari ne laisse pas l'iframe la faire défiler |
 | `label-a-question.ts`, `word-a-problem.ts`, `lay-out-an-address.ts` | les phrases de l'écran : « (facultatif) », le message de chaque nature de problème, les champs d'une adresse et leurs libellés |
 | `QuestionnaireForm.tsx`, `QuestionField.tsx`, `Stepper.tsx` | le formulaire, le champ DSFR de chaque sorte de question, le stepper |
 

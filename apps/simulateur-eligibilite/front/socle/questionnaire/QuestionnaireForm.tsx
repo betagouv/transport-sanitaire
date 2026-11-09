@@ -26,6 +26,7 @@ import type {
 import { useQuestionnaire } from "./questionnaire";
 import type { RevisitLink } from "./revisit-an-answer";
 import { NextStep, Stepper } from "./Stepper";
+import { scrollToTheTop } from "./scroll-to-the-top";
 import { errorsOf } from "./word-a-problem";
 
 type Props = QuestionnaireOptions & {
@@ -106,14 +107,11 @@ export function QuestionnaireForm({
 // L'écran d'une page vient d'apparaître : il revient en haut d'un coup, ce qui
 // respecte la réduction des animations, puis le titre de la première question
 // prend le focus, ou celui de la question qu'un lien vient de rouvrir. Ce titre
-// est la légende d'un groupe, ou le libellé d'un champ. Remonter le document
-// entier remonte aussi la page qui l'intègre, s'il y en a.
+// est la légende d'un groupe, ou le libellé d'un champ. La page qui intègre
+// l'écran, s'il y en a une, remonte aussi au haut de l'iframe.
 function enterPage(screen: HTMLDivElement | null) {
   if (!screen) return;
-  screen.ownerDocument.documentElement.scrollIntoView({
-    block: "start",
-    behavior: "instant",
-  });
+  scrollToTheTop(screen.ownerDocument);
   const focused = `[data-question="${screen.dataset.focus}"]`;
   const title =
     screen.querySelector<HTMLElement>(`${focused} legend, ${focused} label`) ??

@@ -212,7 +212,8 @@ front/                   le front, bundlé par Vite
     questionnaire/       le questionnaire à l'écran, un fichier par capacité : la
                          page ouverte et son brouillon, l'avancement automatique,
                          les phrases de l'écran, le champ qui affiche une question,
-                         ce qui part vers l'analytics
+                         ce qui part vers l'analytics, le retour en haut, page hôte
+                         comprise
     ui/                  les champs de formulaire, bâtis sur le DSFR et sans rien
                          savoir du questionnaire : TextField, TextAreaField,
                          SelectField, RadioField, CheckboxField, NumberField,
@@ -232,8 +233,9 @@ front/                   le front, bundlé par Vite
     analytics/           le vocabulaire mesuré, seul import du reste, son transport
                          vers Matomo, le choix du prescripteur transmis par le CMS, et
                          cms.js, le script à coller dans Sites Conformes : l'opt-out
-                         du pied de page, qui répond au traceur de l'iframe, et le
-                         thème de la page (voir « Intégrer dans Sites Conformes »)
+                         du pied de page, qui répond au traceur de l'iframe, le
+                         thème de la page, et le retour au haut de l'iframe (voir
+                         « Intégrer dans Sites Conformes »)
     theme/               le thème de l'app, clair par défaut, qui suit celui de la
                          page qui l'embarque
 tooling/                 la configuration TypeScript et les outils de développement
@@ -338,8 +340,9 @@ C'est le prix du lock unique, et il se compte en secondes.
 
 Le simulateur est embarqué en iframe dans une page Sites Conformes, qui tient aussi
 l'opt-out de la mesure d'audience dans son pied de page (voir
-[analytics.md](docs/knowledge/adr/analytics.md), ADR-5) et dont l'iframe suit le
-thème, clair ou sombre (#342). Tout se règle dans l'administration du CMS :
+[analytics.md](docs/knowledge/adr/analytics.md), ADR-5), dont l'iframe suit le
+thème, clair ou sombre (#342), et qui remonte au haut de l'iframe à chaque
+nouvelle page (#369). Tout se règle dans l'administration du CMS :
 
 1. **Embarquer l'app.** Dans la page, un bloc « Iframe » (syntaxe experte) dont l'URL
    est celle du simulateur. Laisser le champ « Paramètres » vide : un `sandbox` y
@@ -349,13 +352,18 @@ thème, clair ou sombre (#342). Tout se règle dans l'administration du CMS :
    [`front/socle/analytics/cms.js`](front/socle/analytics/cms.js) entre
    `<script type="module">` et `</script>`, après avoir remplacé
    `ORIGINE_SIMULATEUR` par l'origine réelle du simulateur (`https://domaine`, sans
-   chemin ni barre finale). Il porte l'opt-out et transmet le thème de la page.
+   chemin ni barre finale). Il porte l'opt-out, transmet le thème de la page et
+   remonte la page au haut de l'iframe quand le simulateur le demande : Safari ne
+   laisse pas l'iframe le faire elle-même. **Le script a changé avec #369 : il
+   est à recoller.**
 3. **Informer.** La politique de confidentialité du site décrit la mesure par service
    et renvoie au bouton du pied de page (R-12 d'analytics.md).
 4. **Recetter.** Le bouton « Désactiver la mesure d'audience du simulateur » apparaît
    à la fin du pied de page. Après un clic, plus aucune requête ne part vers
    `stats.beta.gouv.fr` depuis l'iframe, même après rechargement. L'iframe a le
    thème de la page, et le suit quand on le change dans « Paramètres d'affichage ».
+   Sous Safari, la page défilée jusqu'au bas de l'iframe remonte à son haut à la
+   question suivante.
 
 Le script vit dans les réglages du CMS, hors de tout déploiement : toute modification
 du fichier se recolle à la main. Il ajoute son bouton dans la liste DSFR du pied de
