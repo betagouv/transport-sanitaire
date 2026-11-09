@@ -1,6 +1,6 @@
 // Les rôles des lieux que P2 établit (`p2/conditions/roles-des-lieux.ts`), lus
-// dans le sens du document : Q3.1.2, ou l'aller-retour de plusieurs
-// permissions (`sens-du-trajet.ts`, D-121).
+// dans le sens du document : Q2.13.sens ou Q3.1.2, ou l'aller-retour de
+// plusieurs permissions (`sens-du-trajet.ts`, D-121).
 //
 // Les règles lisent les réponses sous leur nom (`Entrees`). Une garde les
 // reçoit de `ENTREES_DES_LIEUX`, un rappel de `entreesDe`.
@@ -29,7 +29,7 @@ import { Q2_2_1_CADRE } from "../../p2/questions/q2-2-1-cadre.ts";
 import { Q2_5 } from "../../p2/questions/q2-5.ts";
 import { Q2_6 } from "../../p2/questions/q2-6.ts";
 import { Q2_8_5 } from "../../p2/questions/q2-8-5.ts";
-import { Q2_13_DEPART } from "../../p2/questions/q2-13.ts";
+import { Q2_13_DEPART, Q2_13_SENS } from "../../p2/questions/q2-13.ts";
 import { given, type Inconnu } from "../../question.ts";
 import { Q3_1_2 } from "../questions/q3-1-2.ts";
 import { sensDe } from "./sens-du-trajet.ts";
@@ -51,6 +51,7 @@ const LUES = {
   contexte: Q2_6,
   repetition: Q2_8_5,
   departDeLEntree: Q2_13_DEPART,
+  trajetEvalue: Q2_13_SENS,
   sens: Q3_1_2,
 } as const;
 
