@@ -1,5 +1,6 @@
 // Ce que toute question posée porte, quelle que soit sa sorte : son libellé du
-// moment, son rappel, ses incohérences. Et ce qu'elle sait d'une réponse : ce
+// moment, son rappel, ses incohérences et les réponses qu'elles invitent à
+// revoir. Et ce qu'elle sait d'une réponse : ce
 // qu'elle en garde, si elle suffit, ce qui n'y va pas.
 //
 // Une question posée ne porte que des données : elle passe en JSON, telle
@@ -18,6 +19,12 @@ export type ShownUnder = { readonly question: string; readonly option: string };
 /** La question s'affiche à son rang dans la page. */
 export type InPlace = undefined;
 
+/**
+ * Une réponse d'avant qu'une incohérence invite à revoir : la question, et le
+ * libellé du lien qui y mène.
+ */
+export type Revisit = { readonly label: string; readonly question: string };
+
 /** Ce que toute question posée porte. */
 export type AskedCommonData = {
   readonly id: string;
@@ -27,6 +34,7 @@ export type AskedCommonData = {
   readonly optional?: boolean;
   readonly under?: ShownUnder;
   readonly inconsistencies?: readonly string[];
+  readonly revisits?: readonly Revisit[];
 };
 
 /** Une question telle qu'elle se pose, sans ce que sa sorte y ajoute. */
@@ -47,6 +55,11 @@ export class AskedCommon {
    * incohérence. Tant qu'il en reste, la question n'est pas validée.
    */
   readonly inconsistencies: readonly string[];
+  /**
+   * Les réponses d'avant que ses incohérences invitent à revoir. La simulation
+   * dit lesquelles se rouvrent (`Simulation.revisit`).
+   */
+  readonly revisits: readonly Revisit[];
 
   constructor(data: AskedCommonData) {
     this.id = data.id;
@@ -56,6 +69,7 @@ export class AskedCommon {
     this.optional = data.optional ?? false;
     this.under = data.under;
     this.inconsistencies = data.inconsistencies ?? [];
+    this.revisits = data.revisits ?? [];
   }
 
   /**

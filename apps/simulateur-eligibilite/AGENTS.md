@@ -224,10 +224,17 @@ Quatorze règles à tenir en ajoutant une question :
   une d'après. Elle lit sa propre question et sa page, brouillon compris, et
   les réponses d'avant le verrou. Son message dit quelle question corriger ; il
   peut citer les réponses, s'il est une valeur (`answer().compute(…)`). Une
-  question incohérente n'est
-  pas validée. On corrige par « Précédent » : aucun bouton, aucun saut. Une
-  erreur de format s'affiche seule, avant les incohérences. Celle d'une adresse
-  s'affiche sous le groupe, et une erreur de champ passe devant.
+  question incohérente n'est pas validée. On corrige par « Précédent », ou par
+  un lien de l'alerte, si l'incohérence dit ses réponses à revoir
+  (`{ revisit }`, lu comme la condition). Le lien rouvre leur page
+  (`Simulation.revisit`), et « Suivant » ramène à l'alerte
+  (`core/socle/simulation/correction.ts`, ADR-30). Une erreur de format
+  s'affiche seule, avant les incohérences. Celle d'une adresse s'affiche sous
+  le groupe, et une erreur de champ passe devant.
+- **L'adresse de la page ne porte que la position.** Des rangs (`#/etape/<n>`,
+  `?retour=<m>` pendant une correction), jamais une page ni une réponse.
+  `Simulation.moveTo` valide toute adresse ; l'écran ne fait que la suivre
+  (`front/socle/simulateur/follow-the-address.ts`).
 - **Une saisie ne compte qu'une fois la page validée.** Le brouillon vit dans
   `questionnaire.ts`, pas dans le champ.
 - **Le verrou est une étape, pas un drapeau.** La simulation le porte dans son

@@ -171,6 +171,17 @@ const ATTENDU: Record<string, readonly [string[], string[]]> = {
       "Q3.7",
     ]),
   ],
+  // Le conflit de lieux arrête la seed sur les situations particulières
+  // (#353) : aucune question d'après ne s'y répond.
+  "conflit-de-lieux-certain": [
+    ["Q0.1", "Q1.1", "Q1.3", "Q1.3.a", "Q1.4", "Q2.1", "Q2.2.1"].concat([
+      "Q2.2.1.cadre",
+      "Q2.2.1.a",
+      "Q2.2.1.b",
+      ...DISTANCE,
+    ]),
+    ["Q3.2.adresse", "Q3.3.adresse"],
+  ],
   // La HAD ne l'ouvre pas : Q2.6 qualifie l'article 80 (TS1014-B01).
   "sejour-en-had": [
     ["Q0.1", "Q1.1", "Q1.2", "Q1.3", "Q2.2.1", "Q2.2.1.cadre"].concat([
