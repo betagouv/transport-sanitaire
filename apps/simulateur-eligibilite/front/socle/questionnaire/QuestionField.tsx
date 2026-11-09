@@ -1,4 +1,6 @@
-// Affiche une question avec le champ de `front/socle/ui/` qui lui convient.
+// Affiche une question avec le champ de `front/socle/ui/` qui lui convient. Le
+// groupe porte l'identifiant de sa question : un lien qui la rouvre y pose le
+// focus.
 
 import type { ReactNode } from "react";
 import {
@@ -39,13 +41,20 @@ type Props = {
   errors?: readonly string[];
   /** Ce qui s'affiche sous une option d'une liste de cases : ses questions. */
   below?: (option: string) => ReactNode;
+  /** Ce qui s'affiche sous le champ : les liens vers les réponses à revoir. */
+  after?: ReactNode;
 };
 
 export function QuestionField(props: Props) {
   return (
-    <div className="fr-form-group" style={{ marginBottom: "1.5rem" }}>
+    <div
+      className="fr-form-group"
+      style={{ marginBottom: "1.5rem" }}
+      data-question={props.question.id}
+    >
       <Reminder reminder={props.question.reminder} />
       {render(props)}
+      {props.after}
     </div>
   );
 }

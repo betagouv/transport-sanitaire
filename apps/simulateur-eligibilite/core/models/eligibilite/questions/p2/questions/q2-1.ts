@@ -12,6 +12,7 @@
 
 import { Q1_3 } from "../../p1/questions/q1-3.ts";
 import { given, question } from "../../question.ts";
+import { incoherenceDeLieux } from "../conditions/conflit-de-lieux.ts";
 
 /**
  * P1 prouve déjà un motif de transport : l'ambulance, une séance qualifiante,
@@ -75,7 +76,7 @@ export const Q2_1_F = question
     ),
   );
 
-export const Q2_1_G = question
+const sousType = question
   .singleChoice(
     "Q2.1.g",
     "S’agit-il d’une entrée dans un établissement de santé, d’une sortie de cet établissement ou d’une admission en Hospitalisation à Domicile (HAD) à domicile ?",
@@ -88,3 +89,10 @@ export const Q2_1_G = question
   })
   .appliesWhen(given.question(Q2_1).answer().is("8_HOSPITALISATION"))
   .dependsOn(Q2_1);
+
+export const Q2_1_G = sousType.inconsistentWhen(
+  ...incoherenceDeLieux("sousType", {
+    soins: Q1_3,
+    sousType,
+  }),
+);

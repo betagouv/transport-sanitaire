@@ -6,7 +6,8 @@
 //
 // À chaque nouvelle page, en avant comme en arrière, le titre de sa première
 // question prend le focus et l'écran revient en haut, sans animation
-// (NAV-Q221-PROGRESSIF-001).
+// (NAV-Q221-PROGRESSIF-001). Une page qu'un lien « Revoir… » rouvre donne le
+// focus à la question qu'il vise (ADR-30).
 
 import type { ComponentType, ReactNode } from "react";
 import type {
@@ -23,6 +24,7 @@ import type {
   QuestionnaireScreen,
 } from "./questionnaire";
 import { useQuestionnaire } from "./questionnaire";
+import type { RevisitLink } from "./revisit-an-answer";
 import { NextStep, Stepper } from "./Stepper";
 import { errorsOf } from "./word-a-problem";
 
@@ -75,7 +77,11 @@ export function QuestionnaireForm({
 
   return (
     <>
-      <div key={questionnaire.page.id} ref={enterPage}>
+      <div
+        key={questionnaire.page.id}
+        ref={enterPage}
+        data-focus={questionnaire.focus}
+      >
         <PartStepper {...stepper} />
         <form
           onSubmit={(e) => {
@@ -99,15 +105,19 @@ export function QuestionnaireForm({
 
 // L'écran d'une page vient d'apparaître : il revient en haut d'un coup, ce qui
 // respecte la réduction des animations, puis le titre de la première question
-// prend le focus. Ce titre est la légende d'un groupe, ou le libellé d'un champ.
-// Remonter le document entier remonte aussi la page qui l'intègre, s'il y en a.
+// prend le focus, ou celui de la question qu'un lien vient de rouvrir. Ce titre
+// est la légende d'un groupe, ou le libellé d'un champ. Remonter le document
+// entier remonte aussi la page qui l'intègre, s'il y en a.
 function enterPage(screen: HTMLDivElement | null) {
   if (!screen) return;
   screen.ownerDocument.documentElement.scrollIntoView({
     block: "start",
     behavior: "instant",
   });
-  const title = screen.querySelector<HTMLElement>("form legend, form label");
+  const focused = `[data-question="${screen.dataset.focus}"]`;
+  const title =
+    screen.querySelector<HTMLElement>(`${focused} legend, ${focused} label`) ??
+    screen.querySelector<HTMLElement>("form legend, form label");
   if (!title) return;
   title.tabIndex = -1;
   title.focus({ preventScroll: true });
@@ -148,7 +158,7 @@ function traceOf(questionnaire: QuestionnaireScreen): DebugTraceProps {
 }
 
 // La page affiche son brouillon : une saisie ne compte qu'une fois la page
-// validée.
+// validée. Une question en erreur montre ses liens vers les réponses à revoir.
 // Une question qui s'affiche sous une option (`shownUnder`) se pose dans la
 // liste de cette option, si celle-ci est sur la page ; sinon, à son rang.
 function QuestionFields({
@@ -159,21 +169,59 @@ function QuestionFields({
   const { questions, draft } = questionnaire;
   const parentOf = (question: AskedQuestion) =>
     questions.find(({ id }) => id === question.under?.question);
-  const field = (question: AskedQuestion): ReactNode => (
-    <QuestionField
-      key={question.id}
-      question={question}
-      answer={draft[question.id]}
-      errors={errorsOf(question, draft[question.id])}
-      onChange={(answer) => questionnaire.answer(question.id, answer)}
-      below={(option) =>
-        questions
-          .filter((q) => parentOf(q) === question && q.under?.option === option)
-          .map(field)
-      }
-    />
-  );
+  const field = (question: AskedQuestion): ReactNode => {
+    const errors = errorsOf(question, draft[question.id]);
+    const links = errors.length > 0 ? questionnaire.revisitsOf(question) : [];
+    return (
+      <QuestionField
+        key={question.id}
+        question={question}
+        answer={draft[question.id]}
+        errors={errors}
+        onChange={(answer) => questionnaire.answer(question.id, answer)}
+        below={(option) =>
+          questions
+            .filter(
+              (q) => parentOf(q) === question && q.under?.option === option,
+            )
+            .map(field)
+        }
+        after={<RevisitLinks links={links} onOpen={questionnaire.revisit} />}
+      />
+    );
+  };
   return questions.filter((question) => !parentOf(question)).map(field);
+}
+
+// Les liens vers les réponses d'avant à revoir. Ce sont de vraies adresses :
+// on peut les ouvrir au clavier, et le bouton Retour du navigateur en revient.
+// Le clic passe par la simulation, qui garde le brouillon de la page quittée.
+function RevisitLinks({
+  links,
+  onOpen,
+}: {
+  links: readonly RevisitLink[];
+  onOpen: (question: string) => void;
+}) {
+  if (links.length === 0) return null;
+  return (
+    <ul className="fr-links-group fr-mt-1w">
+      {links.map(({ label, href, question }) => (
+        <li key={question}>
+          <a
+            className="fr-link"
+            href={href}
+            onClick={(event) => {
+              event.preventDefault();
+              onOpen(question);
+            }}
+          >
+            {label}
+          </a>
+        </li>
+      ))}
+    </ul>
+  );
 }
 
 function NavigationButtons({
