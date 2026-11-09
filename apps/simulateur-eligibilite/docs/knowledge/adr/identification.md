@@ -259,8 +259,9 @@ ce qui crée le vrai service, pour qu'à la visite suivante il apparaisse dans l
 Le « Autre » des structures n'est pas une saisie libre : il ouvre le simulateur.
 
 **« Autre établissement »** demande le nom de l'établissement, puis celui du service.
-Les deux sont écrits dans Grist, l'établissement puis son service sous lui. À la visite
-suivante, l'établissement est dans la liste, au-dessus du trait, avec son service.
+Les deux sont écrits dans Grist, l'établissement puis son service sous lui. Un
+établissement créé reçoit aussi son service « Autre » (#368). À la visite suivante,
+l'établissement est dans la liste, au-dessus du trait, avec son service et « Autre ».
 
 **Le service n° 4** (« Transport Sanitaire », celui du produit) n'entre pas dès la
 sélection : il montre ses deux sorties, le simulateur et les seeds des developer tools.

@@ -80,7 +80,7 @@ describe("établissement saisi", () => {
     serviceLibre: "Urgences",
   };
 
-  it("crée l'établissement puis son service, marqués formulaire", async () => {
+  it("crée l'établissement, son service « Autre » et le service saisi, marqués formulaire", async () => {
     const ref = await referentielSur({
       Etablissements: [CHU],
       Services_Unites: [AUTRE],
@@ -93,23 +93,24 @@ describe("établissement saisi", () => {
       Nom: "CH de Voiron",
       Origine: "formulaire",
     });
-    expect(grist.tables.Services_Unites?.at(-1)?.fields).toEqual({
-      Id2: 8,
-      Nom: "Urgences",
-      Etablissement: 2,
-      Origine: "formulaire",
-    });
-    // À la visite suivante, l'établissement est dans la liste, avec son service.
+    expect(grist.tables.Services_Unites?.slice(1).map((l) => l.fields)).toEqual(
+      [
+        { Id2: 8, Nom: "Autre", Etablissement: 2, Origine: "formulaire" },
+        { Id2: 9, Nom: "Urgences", Etablissement: 2, Origine: "formulaire" },
+      ],
+    );
+    // À la visite suivante, l'établissement est dans la liste, avec ses services.
     expect(await ref.listerEtablissements()).toContainEqual({
       id: "11",
       libelle: "CH de Voiron",
     });
     expect(await ref.listerServices("11")).toEqual([
-      { id: "8", libelle: "Urgences" },
+      { id: "8", libelle: "Autre" },
+      { id: "9", libelle: "Urgences" },
     ]);
   });
 
-  it("réutilise l'établissement homonyme, sans doublon", async () => {
+  it("réutilise l'établissement homonyme, sans doublon ni « Autre » de plus", async () => {
     const ref = await referentielSur({
       Etablissements: [
         CHU,
@@ -126,6 +127,45 @@ describe("établissement saisi", () => {
       "ch de voiron",
     ]);
     expect(noms("Services_Unites")).toEqual(["Autre", "Urgences"]);
+  });
+});
+
+describe("établissement saisi, puis retrouvé par un collègue", () => {
+  it("le collègue saisit son service sous « Autre », et chacun voit les deux", async () => {
+    const ref = await referentielSur({
+      Etablissements: [CHU],
+      Services_Unites: [AUTRE],
+    });
+
+    // Le premier saisit l'établissement et son service.
+    await ref.enrichirDepuisSaisie?.({
+      etabId: "",
+      etabEstAutre: true,
+      etabLibre: "CHU Loic",
+      serviceLibre: "Urologie",
+    });
+
+    // Le second le retrouve dans la liste, avec son service et « Autre ».
+    const etabs = await ref.listerEtablissements();
+    const etabId = etabs.find((e) => e.libelle === "CHU Loic")?.id ?? "";
+    const services = await ref.listerServices(etabId);
+    expect(services.map((s) => s.libelle)).toEqual(["Autre", "Urologie"]);
+
+    // Il choisit « Autre » et saisit le sien.
+    await ref.enrichirDepuisSaisie?.({
+      etabId,
+      serviceId: services.find((s) => s.libelle === "Autre")?.id ?? "",
+      serviceEstAutre: true,
+      serviceLibre: "Oncologie",
+    });
+
+    // Le premier, revenu, voit les deux services.
+    const ensuite = await ref.listerServices(etabId);
+    expect(ensuite.map((s) => s.libelle)).toEqual([
+      "Autre",
+      "Urologie",
+      "Oncologie",
+    ]);
   });
 });
 

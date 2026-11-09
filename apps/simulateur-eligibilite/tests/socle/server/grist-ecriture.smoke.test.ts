@@ -43,7 +43,7 @@ describe.skipIf(!actif)(
       expect(svc).toHaveLength(1);
     });
 
-    it("établissement saisi : le crée avec son service, puis les déduplique", async () => {
+    it("établissement saisi : le crée avec son service et « Autre », puis les déduplique", async () => {
       const marqueur = `TEST-ETAB-${Date.now()}`;
       const sel = {
         etabId: "",
@@ -63,6 +63,7 @@ describe.skipIf(!actif)(
       expect(
         services.filter((s) => s.libelle === `${marqueur}-SVC`),
       ).toHaveLength(1);
+      expect(services.filter((s) => s.libelle === "Autre")).toHaveLength(1);
     });
   },
 );
