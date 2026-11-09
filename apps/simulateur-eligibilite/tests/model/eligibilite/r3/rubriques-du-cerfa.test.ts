@@ -15,6 +15,7 @@ import { MINEUR } from "../p2/reponses-de-la-permission";
 import {
   cellules,
   EHPAD,
+  EXAMEN_DE_MATERNITE,
   PERMISSIONS,
   PMT,
   type Reponses,
@@ -132,7 +133,7 @@ describe("l'exonération du ticket modérateur (D-136)", () => {
   });
 
   it("sans Q3.7 posée, ne coche ni Oui ni Non, même avec une réponse restée", () => {
-    const reponses: Reponses = { ...PERMISSIONS, "Q3.7": ["7_AUCUN"] };
+    const reponses: Reponses = { ...EXAMEN_DE_MATERNITE, "Q3.7": ["7_AUCUN"] };
 
     expect(cellules(EXONERATION, reponses)).toEqual({
       exoneration_oui: false,

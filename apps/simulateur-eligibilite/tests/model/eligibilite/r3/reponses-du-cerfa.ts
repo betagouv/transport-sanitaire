@@ -108,8 +108,7 @@ export const Q38: Reponses = {
   "Q3.8.niveau": "2_TYPE_IIA",
 };
 
-// Un examen de l'Engagement maternité, du domicile à l'hébergement que P2
-// établit, sans Q3.8.
+// Un examen de l'Engagement maternité, du domicile à la maternité, sans Q3.8.
 export const EXAMEN_DE_MATERNITE: Reponses = {
   ...MATERNITE_ETABLIE,
   "Q2.12": "2_NON",
@@ -117,11 +116,13 @@ export const EXAMEN_DE_MATERNITE: Reponses = {
   "Q3.1.2": "1_ALLER",
   "Q3.2.nature": "1_DOMICILE",
   "Q3.2.adresse": DOMICILE,
+  "Q3.3.nature": "2_ETABLISSEMENT_DE_SANTE",
+  "Q3.3.nom": "Maternité du Parc",
   "Q3.3.adresse": HOPITAL,
   "Q3.4.a": "2_NON",
 };
 
-// Une consultation signalant la maternité éloignée, pour l'hébergement du
+// Une consultation signalant l'hébergement de la maternité, celui du
 // dispositif : il n'est ni le départ ni l'arrivée. Sans Q3.8.
 export const HEBERGEMENT_DE_MATERNITE: Reponses = {
   ...MATERNITE_PAR_Q221,

@@ -83,9 +83,10 @@ describe("le nom de l'hébergement du dispositif", () => {
   });
 
   it("reste facultatif quand Q2.14 ne dit pas l'hébergement du dispositif", () => {
+    const { "Q2.14.motif": __, ...sansMotif } = hebergeALArrivee;
     const sansLeDispositif: Reponses = {
-      ...hebergeALArrivee,
-      "Q2.14.motif": ["1_EXAMEN_DU_HUITIEME_OU_NEUVIEME_MOIS"],
+      ...sansMotif,
+      "Q2.2.1": ["14_EXAMEN_MATERNITE"],
     };
 
     expect(nomFacultatif(sansLeDispositif)).toBe(true);

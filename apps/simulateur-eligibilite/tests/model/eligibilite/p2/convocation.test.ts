@@ -6,34 +6,33 @@
 import { describe, expect, it } from "vitest";
 import {
   appareillage,
+  CONVOQUE,
   ciblesDe,
   fait,
   issue,
-  PAR_Q21,
   PAR_Q221B,
   posee,
   posees,
   type Reponses,
 } from "./reponses-de-la-convocation";
-import { PATIENT_SEUL } from "./reponses-de-la-permission";
+import { SANS_SITUATION } from "./reponses-de-la-permission";
 
 const PAGE = "P2/convocation";
 
 describe("quand la page de la convocation se pose", () => {
-  it("se pose quand Q2.1 dit une convocation", () => {
-    expect(posees(PAR_Q21)).toEqual(["Q2.10"]);
-  });
-
-  it("se pose quand Q2.2.1.b signale une convocation, même avec un autre motif", () => {
-    expect(posees(PAR_Q221B)).toEqual(["Q2.10"]);
+  it.each([
+    ["l'autre motif", CONVOQUE],
+    ["une consultation", PAR_Q221B],
+  ])("se pose quand Q2.2.1.b signale une convocation, avec %s", (_, base) => {
+    expect(posees(base)).toEqual(["Q2.10"]);
   });
 
   it.each([
-    ["un motif sans convocation", { ...PATIENT_SEUL }],
+    ["un motif sans convocation", { ...SANS_SITUATION }],
     [
       "d'autres soins sans la convocation",
       {
-        ...PATIENT_SEUL,
+        ...SANS_SITUATION,
         "Q2.1": "1_CONSULTATION",
         "Q2.2.1": ["0_AUCUNE"],
         "Q2.2.1.b": ["1_ATMP"],
@@ -41,25 +40,29 @@ describe("quand la page de la convocation se pose", () => {
     ],
     [
       "la convocation proposée et écartée en Q2.2.1",
-      { ...PATIENT_SEUL, "Q2.1": "1_CONSULTATION" },
+      { ...SANS_SITUATION, "Q2.1": "1_CONSULTATION" },
     ],
   ] as const)("ne se pose pas sur %s", (_, reponses) => {
     expect(posees(reponses)).toEqual([]);
   });
 
-  it("ne repropose pas la convocation que Q2.1 a déjà dite", () => {
-    const reponses: Reponses = { ...PAR_Q21, "Q2.2.1": ["0_AUCUNE"] };
-    const question = posee("P2/soins", "Q2.2.1.b", reponses);
-    const valeurs =
-      question?.kind === "multiple choice"
-        ? question.options.map(({ value }) => value)
-        : [];
-    expect(valeurs).not.toContain("13_CONVOCATION");
-    expect(valeurs).toContain("1_ATMP");
-  });
+  // Seule Q2.2.1.b découvre la convocation : elle s'y propose quel que soit
+  // le motif de Q2.1 (QST-COLLECTE-UNIQUE, D-272).
+  it.each(["1_CONSULTATION", "8_HOSPITALISATION", "14_AUTRE"] as const)(
+    "propose la convocation en Q2.2.1.b après Q2.1 = %s",
+    (motif) => {
+      const reponses: Reponses = { ...CONVOQUE, "Q2.1": motif };
+      const question = posee("P2/soins", "Q2.2.1.b", reponses);
+      const valeurs =
+        question?.kind === "multiple choice"
+          ? question.options.map(({ value }) => value)
+          : [];
+      expect(valeurs).toContain("13_CONVOCATION");
+    },
+  );
 
   it("pose les sept catégories de Q2.10, dans l'ordre du catalogue", () => {
-    const question = posee(PAGE, "Q2.10", PAR_Q21);
+    const question = posee(PAGE, "Q2.10", CONVOQUE);
     expect(
       question?.kind === "single choice" &&
         question.options.map(({ value }) => value),
@@ -75,12 +78,12 @@ describe("quand la page de la convocation se pose", () => {
   });
 
   it("pose Q2.10.a et Q2.10.b ensemble, sous l'option 6 seulement", () => {
-    expect(posees({ ...PAR_Q21, "Q2.10": "6_APPAREILLAGE" })).toEqual([
+    expect(posees({ ...CONVOQUE, "Q2.10": "6_APPAREILLAGE" })).toEqual([
       "Q2.10",
       "Q2.10.a",
       "Q2.10.b",
     ]);
-    expect(posees({ ...PAR_Q21, "Q2.10": "1_CONTROLE_MEDICAL" })).toEqual([
+    expect(posees({ ...CONVOQUE, "Q2.10": "1_CONTROLE_MEDICAL" })).toEqual([
       "Q2.10",
     ]);
   });
@@ -88,10 +91,11 @@ describe("quand la page de la convocation se pose", () => {
 
 describe("les faits de la convocation", () => {
   it("laisse le fait comme il était tant que Q2.10 n'est pas validée", () => {
-    expect(fait(PAR_Q21).value).toBeUndefined();
-    expect(fait(PAR_Q221B)).toEqual({
-      provenance: expect.stringMatching(/À qualifier dans sa branche/),
-    });
+    for (const base of [CONVOQUE, PAR_Q221B]) {
+      expect(fait(base)).toEqual({
+        provenance: expect.stringMatching(/À qualifier dans sa branche/),
+      });
+    }
   });
 
   it("ne tient pas Q2.10.a et Q2.10.b pour répondues sans leur page validée", () => {
@@ -123,7 +127,7 @@ describe("les faits de la convocation", () => {
     "4_EXPERT_CONTESTATION",
     "5_COMMISSION_RECOURS",
   ] as const)("%s donne « oui »", (categorie) => {
-    for (const base of [PAR_Q21, PAR_Q221B]) {
+    for (const base of [CONVOQUE, PAR_Q221B]) {
       expect(fait({ ...base, "Q2.10": categorie })).toEqual({
         value: true,
         provenance: `Q2.10 : « ${categorie} ».`,
@@ -179,23 +183,20 @@ describe("les faits de la convocation", () => {
 
   // Point 6 de la v10.1.3 : la même réponse, la même qualification.
   it.each([
-    ["Q2.1", PAR_Q21],
-    ["Q2.2.1.b", PAR_Q221B],
-  ] as const)(
-    "« aucune » vaut « non », la convocation venant de %s",
-    (_, entree) => {
-      expect(fait({ ...entree, "Q2.10": "7_AUCUNE" })).toEqual({
-        value: false,
-        provenance:
-          "Q2.10 : « 7_AUCUNE ». Ce motif de convocation ne s'applique pas.",
-      });
-    },
-  );
+    ["l'autre motif", CONVOQUE],
+    ["une consultation", PAR_Q221B],
+  ] as const)("« aucune » vaut « non », avec %s", (_, entree) => {
+    expect(fait({ ...entree, "Q2.10": "7_AUCUNE" })).toEqual({
+      value: false,
+      provenance:
+        "Q2.10 : « 7_AUCUNE ». Ce motif de convocation ne s'applique pas.",
+    });
+  });
 
   it("n'établit rien quand la page ne se pose pas : le « non » de Q2.2.1.b reste", () => {
     for (const reponses of [
-      PATIENT_SEUL,
-      { ...PATIENT_SEUL, "Q2.10": "1_CONTROLE_MEDICAL" } as const,
+      SANS_SITUATION,
+      { ...SANS_SITUATION, "Q2.10": "1_CONTROLE_MEDICAL" } as const,
     ]) {
       expect(fait(reponses)).toEqual({
         value: false,
@@ -208,7 +209,7 @@ describe("les faits de la convocation", () => {
 
 describe("l'issue des règles", () => {
   it("une catégorie vérifiée donne ISSUE_CONVOCATION", () => {
-    expect(issue({ ...PAR_Q21, "Q2.10": "1_CONTROLE_MEDICAL" })).toBe(
+    expect(issue({ ...CONVOQUE, "Q2.10": "1_CONTROLE_MEDICAL" })).toBe(
       "ISSUE_CONVOCATION",
     );
     expect(issue(appareillage("1_OUI", "3_ORTHOPROTHESE"))).toBe(
@@ -233,8 +234,8 @@ describe("l'issue des règles", () => {
     expect(issue(reponses)).not.toBe("ISSUE_CONVOCATION");
   });
 
-  it("« aucune » après Q2.1 = convocation, sans autre motif, ne donne aucun droit", () => {
-    expect(issue({ ...PAR_Q21, "Q2.10": "7_AUCUNE" })).toBe(
+  it("« aucune » pour une convocation, sans autre motif, ne donne aucun droit", () => {
+    expect(issue({ ...CONVOQUE, "Q2.10": "7_AUCUNE" })).toBe(
       "ISSUE_NON_ELIGIBLE",
     );
   });

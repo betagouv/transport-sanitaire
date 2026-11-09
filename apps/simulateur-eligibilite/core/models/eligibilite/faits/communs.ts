@@ -96,9 +96,8 @@ export const UNE_SORTIE_VERS_LA_PRISON = uneRegle().nonSi(
 );
 
 /**
- * La question qui pose une permission a écarté l'option 9 de Q2.1 (choix
- * unique), ou l'option 2 de Q2.2.1.a. Q2.5 ne se pose pas alors ; si elle est
- * validée, elle décide.
+ * Q2.2.1.a dit une permission : elle a écarté son option 2. Q2.5 ne se pose
+ * pas alors ; si elle est validée, elle décide.
  */
 export const UNE_PERMISSION_ECARTE_LE_TRANSFERT = uneRegle().nonSi(
   given
@@ -106,13 +105,7 @@ export const UNE_PERMISSION_ECARTE_LE_TRANSFERT = uneRegle().nonSi(
     .answer()
     .isValidated()
     .not()
-    .and(
-      given
-        .question("Q2.1")
-        .answer()
-        .is("11_PERMISSION")
-        .or(given.question("Q2.2.1.a").answer().is("1_OUI")),
-    ),
+    .and(given.question("Q2.2.1.a").answer().is("1_OUI")),
   "Une permission n'est ni un transfert ni un déplacement pour soins.",
 );
 

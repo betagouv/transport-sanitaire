@@ -120,18 +120,24 @@ describe("la recette des deux pages des contextes (REC-Q221-PAGES-1016)", () => 
     expect(boutonSuivant()).toBeEnabled();
   });
 
-  it("incompatible : la maternité et l'HTNM ensemble ne répondent pas, et restent telles quelles", () => {
-    const ensemble = ["4_MATERNITE_ELOIGNEE", "5_HTNM"] as const;
-    const contextes = reprise({ ...BRANCARD, "Q2.2.1": ensemble });
-    const q221 = question(contextes, "Q2.2.1");
+  it.each([
+    ["l'examen", "14_EXAMEN_MATERNITE"],
+    ["l'hébergement", "15_HEBERGEMENT_MATERNITE"],
+  ] as const)(
+    "incompatible : %s de la maternité et l'HTNM ensemble ne répondent pas, et restent tels quels",
+    (_, maternite) => {
+      const ensemble = [maternite, "5_HTNM"] as const;
+      const contextes = reprise({ ...BRANCARD, "Q2.2.1": ensemble });
+      const q221 = question(contextes, "Q2.2.1");
 
-    expect(contextes.page.id).toBe("P2/contextes");
-    expect(q221.isAnsweredBy(ensemble)).toBe(false);
-    expect(q221.problemsWith(ensemble)).toEqual([
-      { kind: "stated", text: expect.stringContaining("pas des deux") },
-    ]);
-    expect(contextes.answers["Q2.2.1"]).toEqual(ensemble);
-  });
+      expect(contextes.page.id).toBe("P2/contextes");
+      expect(q221.isAnsweredBy(ensemble)).toBe(false);
+      expect(q221.problemsWith(ensemble)).toEqual([
+        { kind: "stated", text: expect.stringContaining("pas des deux") },
+      ]);
+      expect(contextes.answers["Q2.2.1"]).toEqual(ensemble);
+    },
+  );
 
   it("vide : aucune case ne répond à l'un ou l'autre bloc", () => {
     const contextes = reprise(BRANCARD);

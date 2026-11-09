@@ -37,6 +37,8 @@ const complement = (...entre: string[]) => [
 ];
 
 const DISTANCE = ["Q2.3.1", "Q2.3.2"];
+// Le séjour en établissement, et la permission que seule Q2.2.1.a dit (D-272).
+const PERMISSION = ["Q2.2.1", "Q2.2.1.cadre", "Q2.2.1.a", "Q2.2.1.b"];
 
 // Ce que pose chaque seed : avant le verrou, puis après.
 const ATTENDU: Record<string, readonly [string[], string[]]> = {
@@ -64,8 +66,10 @@ const ATTENDU: Record<string, readonly [string[], string[]]> = {
     [...P1, "Q1.3.a", "Q2.2.1", "Q2.2.1.b", ...DISTANCE, "Q2.3.4"],
     complement("Q3.4.a", "Q3.5"),
   ],
+  // La permission vient du séjour en établissement : l'exonération du ticket
+  // modérateur se pose, comme pour tout séjour (D-272).
   "issue-s3141": [
-    [...P1, "Q2.1", "Q2.2.1", "Q2.2.1.b", ...DISTANCE, "Q2.7"].concat([
+    [...P1, "Q2.1", ...PERMISSION, ...DISTANCE, "Q2.7"].concat([
       "Q2.8.1",
       "Q2.8.2",
       "Q2.8.3",
@@ -73,7 +77,10 @@ const ATTENDU: Record<string, readonly [string[], string[]]> = {
       "Q2.8.4",
       "Q2.8.5",
     ]),
-    ["Q3.1.2", "Q3.2.nature", "Q3.2.adresse", "Q3.3.nature", "Q3.3.adresse"],
+    ["Q3.1.2", "Q3.2.nature", "Q3.2.adresse", "Q3.3.nature"].concat([
+      "Q3.3.adresse",
+      "Q3.7",
+    ]),
   ],
   "issue-non-eligible": [
     [...P1, "Q2.1", "Q2.2.1", "Q2.2.1.b", ...DISTANCE],
@@ -106,7 +113,7 @@ const ATTENDU: Record<string, readonly [string[], string[]]> = {
     [],
   ],
   "issue-permission-patient": [
-    [...P1, "Q2.1", "Q2.2.1", "Q2.2.1.b", ...DISTANCE, "Q2.7", "Q2.7.a"],
+    [...P1, "Q2.1", ...PERMISSION, ...DISTANCE, "Q2.7", "Q2.7.a"],
     [],
   ],
   "issue-convocation": [
@@ -117,8 +124,8 @@ const ATTENDU: Record<string, readonly [string[], string[]]> = {
     [...P1, "Q1.3.a", "Q2.2.1", "Q2.2.5", "Q2.2.1.b", ...DISTANCE],
     complement("Q3.4.a"),
   ],
-  // L'Engagement maternité finit P3 par Q3.8 (D-251). Sans sens, l'hébergement
-  // n'est pas encore l'arrivée.
+  // L'Engagement maternité finit P3 par Q3.8 (D-251). L'examen coché en
+  // Q2.2.1 est le motif : Q2.14 n'en demande que l'éloignement (D-272).
   "dap-engagement-maternite": [
     [
       "Q0.1",
@@ -129,7 +136,7 @@ const ATTENDU: Record<string, readonly [string[], string[]]> = {
       "Q2.2.1",
       "Q2.2.1.b",
       ...DISTANCE,
-    ].concat(["Q2.14.eloignement", "Q2.14.motif", "Q2.12"]),
+    ].concat(["Q2.14.eloignement", "Q2.12"]),
     [
       "Q3.1.2",
       "Q3.2.nature",

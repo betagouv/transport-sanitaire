@@ -118,6 +118,6 @@ describe("la page de l'exonération (Q3.7)", () => {
   });
 
   it("hors contexte hospitalier établi, ne se pose pas", () => {
-    expect(ids("P3/exoneration", seed("issue-s3141"))).toEqual([]);
+    expect(ids("P3/exoneration", seed("dap-engagement-maternite"))).toEqual([]);
   });
 });

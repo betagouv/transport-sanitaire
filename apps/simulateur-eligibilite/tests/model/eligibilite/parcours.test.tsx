@@ -24,6 +24,7 @@ const Q21 = /^Quelle situation médicale ou quel événement/;
 const Q21F = /^Les séances sélectionnées motivent-elles/;
 const Q21G = /^S’agit-il d’une entrée dans un établissement/;
 const Q221 = /^L’une de ces situations concerne-t-elle le transport/;
+const Q221A = /^Ce trajet correspond-il à une permission/;
 const Q221B = /^L’un de ces soins ou rendez-vous/;
 const Q231 = /^Quelle distance sépare les lieux de départ/;
 const Q25 = /^Quel type de déplacement le patient doit-il effectuer/;
@@ -187,9 +188,16 @@ describe("le modèle de l'éditeur, déroulé dans le formulaire", () => {
       await page(/^Le patient pouvant réaliser le trajet/);
       await choisir(user, /^Véhicule personnel/);
       await page(Q21);
-      await choisir(user, /^Permission temporaire pendant l’hospitalisation/);
+      await choisir(user, /^Autre motif de déplacement/);
       await page(Q221);
-      await sansSituation(user);
+      // Seule Q2.2.1.a dit la permission, sous le séjour en établissement.
+      await cocher(user, HOSPITALISE);
+      await choisir(user, /^En séjour dans un établissement de santé/);
+      await choisirDans(user, Q221A, /^Oui\.$/);
+      await suivant(user);
+      await page(Q221B);
+      await cocher(user, /^Non, aucun\./);
+      await suivant(user);
       await page(Q231);
       await choisir(user, /^50 km ou moins/);
       await suivant(user);
@@ -246,9 +254,14 @@ describe("le modèle de l'éditeur, déroulé dans le formulaire", () => {
     await page(/^Le patient pouvant réaliser le trajet/);
     await choisir(user, /^Véhicule personnel/);
     await page(Q21);
-    await choisir(user, /^Convocation, expertise, audience/);
+    await choisir(user, /^Autre motif de déplacement/);
     await page(Q221);
-    await sansSituation(user);
+    // Seule Q2.2.1.b dit la convocation.
+    await cocher(user, /^Non, aucune de ces situations/);
+    await suivant(user);
+    await page(Q221B);
+    await cocher(user, /^Convocation de contrôle/);
+    await suivant(user);
     await page(Q231);
     await choisir(user, /^50 km ou moins/);
     await suivant(user);

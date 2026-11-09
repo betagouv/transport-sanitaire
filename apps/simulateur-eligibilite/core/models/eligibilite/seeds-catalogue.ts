@@ -58,13 +58,21 @@ const DIALYSE_LONGUE = {
 // bateau de ligne régulière : l'accord préalable, sans partie terrestre établie.
 const DIALYSE_EN_LIGNE_REGULIERE = { ...DIALYSE, "Q2.3.2": true } as const;
 
+// Une permission ne se dit qu'en Q2.2.1.a, pendant un séjour en établissement
+// (D-272) : Q2.1 n'y a que l'autre motif.
+const EN_PERMISSION = {
+  "Q1.3": ["7_AUCUNE"],
+  "Q2.1": "14_AUTRE",
+  "Q2.2.1": ["1_HOSPITALISATION"],
+  "Q2.2.1.b": ["0_AUCUN"],
+  "Q2.2.1.cadre": "1_ETABLISSEMENT",
+  "Q2.2.1.a": "1_OUI",
+} as const;
+
 // Un mineur de moins de 16 ans, en permission autorisée, la première.
 const PERMISSION_DU_MINEUR = {
   ...TAP_1_5,
-  "Q1.3": ["7_AUCUNE"],
-  "Q2.1": "11_PERMISSION",
-  "Q2.2.1": ["0_AUCUNE"],
-  "Q2.2.1.b": ["0_AUCUN"],
+  ...EN_PERMISSION,
   ...TRAJET_COURT,
   "Q2.7": "1_MOINS_DE_SEIZE_ANS",
   "Q2.8.1": "2026-10-01",
@@ -223,8 +231,9 @@ export const SEEDS: readonly Seed<Questions, Cibles>[] = [
     description:
       "Ouvre le résultat d'un adulte en permission, dont le transport est demandé par écrit par lui (Q2.7 option 4), conditions de facturation vérifiées (Q2.7.a). Le patient finance.",
     answers: {
-      ...SANS_SOIN,
-      "Q2.1": "11_PERMISSION",
+      ...TAP_1,
+      ...EN_PERMISSION,
+      ...TRAJET_COURT,
       "Q2.7": "4_ADULTE_A_SA_CHARGE",
       "Q2.7.a": "1_OUI",
     },
@@ -239,10 +248,11 @@ export const SEEDS: readonly Seed<Questions, Cibles>[] = [
     id: "issue-convocation",
     label: "Résultat : convocation au contrôle médical",
     description:
-      "Ouvre le résultat d'un patient convoqué au contrôle médical de l'Assurance Maladie (Q2.1 option 12, Q2.10 option 1). L'Assurance Maladie finance, sans document à remplir.",
+      "Ouvre le résultat d'un patient convoqué au contrôle médical de l'Assurance Maladie (Q2.2.1.b option 13, Q2.10 option 1). L'Assurance Maladie finance, sans document à remplir.",
     answers: {
       ...SANS_SOIN,
-      "Q2.1": "12_CONVOCATION",
+      "Q2.1": "14_AUTRE",
+      "Q2.2.1.b": ["13_CONVOCATION"],
       "Q2.10": "1_CONTROLE_MEDICAL",
     },
     expected: {
@@ -274,18 +284,17 @@ export const SEEDS: readonly Seed<Questions, Cibles>[] = [
     id: "dap-engagement-maternite",
     label: "Résultat : accord préalable, Engagement maternité",
     description:
-      "Ouvre le résultat d'une patiente qui se rend seule à l'examen obligatoire du 8ᵉ mois, à plus de 45 minutes de la maternité (Q2.1, Q2.14). L'issue est la demande d'accord préalable (Cerfa S3139h), motif Engagement maternité ; P3 finit par Q3.8 (D-251).",
+      "Ouvre le résultat d'une patiente qui se rend seule à l'examen obligatoire du 8ᵉ mois, à plus de 45 minutes de la maternité (Q2.2.1, Q2.14). L'issue est la demande d'accord préalable (Cerfa S3139h), motif Engagement maternité ; P3 finit par Q3.8 (D-251).",
     answers: {
       "Q0.1": "1_VERIFIER",
       "Q1.1": "1_SEUL",
       "Q1.3": ["7_AUCUNE"],
       "Q1.4": "1_VEHICULE_PERSONNEL",
-      "Q2.1": "13_MATERNITE",
-      "Q2.2.1": ["0_AUCUNE"],
+      "Q2.1": "14_AUTRE",
+      "Q2.2.1": ["14_EXAMEN_MATERNITE"],
       "Q2.2.1.b": ["0_AUCUN"],
       ...TRAJET_COURT,
       "Q2.14.eloignement": ["1_PLUS_DE_QUARANTE_CINQ_MINUTES"],
-      "Q2.14.motif": ["1_EXAMEN_DU_HUITIEME_OU_NEUVIEME_MOIS"],
       "Q2.12": "2_NON",
     },
     expected: {

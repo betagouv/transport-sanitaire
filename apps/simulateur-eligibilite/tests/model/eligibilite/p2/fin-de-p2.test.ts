@@ -12,8 +12,12 @@ import {
   p2Complete,
   posees,
 } from "./reponses-de-la-branche";
-import { PAR_Q21 } from "./reponses-de-la-convocation";
-import { MINEUR, PATIENT_SEUL } from "./reponses-de-la-permission";
+import { CONVOQUE } from "./reponses-de-la-convocation";
+import {
+  MINEUR,
+  PATIENT_SEUL,
+  SANS_SITUATION,
+} from "./reponses-de-la-permission";
 
 describe("fait_p2_complete", () => {
   it("vaut « oui » quand toutes les pages qui se posent sont validées", () => {
@@ -58,7 +62,7 @@ describe("de bout en bout, par les réponses", () => {
   });
 
   it("convocation au contrôle médical (Q2.10 = 1) : ISSUE_CONVOCATION", () => {
-    const reponses = { ...PAR_Q21, "Q2.10": "1_CONTROLE_MEDICAL" } as const;
+    const reponses = { ...CONVOQUE, "Q2.10": "1_CONTROLE_MEDICAL" } as const;
     expect(ciblesDe(reponses).cible_issue_id.value).toBe("ISSUE_CONVOCATION");
   });
 
@@ -78,7 +82,7 @@ describe("de bout en bout, par les réponses", () => {
   // écartent la séance qualifiante ; « déjà hospitalisé » écarté en Q2.2.1
   // écarte l'hospitalisation (D41 et D42 de l'oracle).
   it("consultation ordinaire sans autre motif : ISSUE_NON_ELIGIBLE", () => {
-    const reponses = { ...PATIENT_SEUL, "Q2.1": "1_CONSULTATION" } as const;
+    const reponses = { ...SANS_SITUATION, "Q2.1": "1_CONSULTATION" } as const;
     expect(p2Complete(reponses)).toBe(true);
     expect(ciblesDe(reponses).cible_issue_id.value).toBe("ISSUE_NON_ELIGIBLE");
   });

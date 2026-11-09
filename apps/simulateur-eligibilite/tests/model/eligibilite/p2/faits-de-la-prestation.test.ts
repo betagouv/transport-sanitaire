@@ -28,7 +28,15 @@ const motif = (q21: Questions["Q2.1"], autres: Reponses = {}): Reponses => ({
 
 describe("la permission", () => {
   it.each([
-    ["Q2.1 = permission", motif("11_PERMISSION"), true],
+    [
+      "Q2.2.1.a la dit, pendant un séjour",
+      motif("14_AUTRE", {
+        "Q2.2.1": ["1_HOSPITALISATION"],
+        "Q2.2.1.cadre": "1_ETABLISSEMENT",
+        "Q2.2.1.a": "1_OUI",
+      }),
+      true,
+    ],
     [
       "un autre motif, Q2.2.1 encore à venir",
       motif("1_CONSULTATION"),
@@ -47,12 +55,8 @@ describe("l'événement sans soin", () => {
       motif("8_HOSPITALISATION", { "Q2.1.g": "1_ENTREE" }),
       false,
     ],
-    [
-      "une convocation, à qualifier en Q2.10",
-      motif("12_CONVOCATION"),
-      undefined,
-    ],
-    ["aucun de ces soins ou événements", motif("15_AUCUN"), undefined],
+    // En attendant l'éditeur (D-272).
+    ["l'autre motif", motif("14_AUTRE"), false],
     ["Q2.1 pas encore validée", SEUL, undefined],
   ] as const)("%s", (_, reponses, attendu) => {
     expect(valeur("fait_evenement_sans_soin", reponses)).toBe(attendu);
@@ -61,8 +65,15 @@ describe("l'événement sans soin", () => {
 
 describe("le CAMSP", () => {
   it.each([
-    ["un soin CAMSP ou CMPP en Q2.1", motif("10_CAMSP"), true],
-    ["un autre motif", motif("1_CONSULTATION"), undefined],
+    [
+      "un soin CAMSP ou CMPP coché en Q2.2.1.b",
+      motif("1_CONSULTATION", {
+        "Q2.2.1": ["0_AUCUNE"],
+        "Q2.2.1.b": ["6_CAMSP"],
+      }),
+      true,
+    ],
+    ["un motif, Q2.2.1.b encore à venir", motif("1_CONSULTATION"), undefined],
   ] as const)("%s", (_, reponses, attendu) => {
     expect(valeur("fait_motif_camsp", reponses)).toBe(attendu);
   });

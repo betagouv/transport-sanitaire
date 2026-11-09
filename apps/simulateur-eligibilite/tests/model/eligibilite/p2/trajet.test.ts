@@ -120,17 +120,6 @@ describe("la page du trajet", () => {
     ).toContain("Q2.3.4");
   });
 
-  it("pose l'urgence pour une séance du CAMSP, même à 50 km ou moins", () => {
-    expect(
-      posees({
-        ...SEUL,
-        "Q2.1": "10_CAMSP",
-        "Q2.3.1": "1_CINQUANTE_KM_OU_MOINS",
-        "Q2.3.2": false,
-      }),
-    ).toContain("Q2.3.4");
-  });
-
   it("pose l'urgence pour un CAMSP coché en Q2.2.1.b, même à 50 km ou moins", () => {
     expect(
       posees({

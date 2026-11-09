@@ -84,13 +84,26 @@ describe("Q2.1, le motif du déplacement", () => {
     expect(ids(reponses)).not.toContain("Q2.1");
   });
 
-  it("propose les séances quand Q1.3 n'en coche aucune", () => {
-    expect(optionsDeQ21(SEUL)).toContain("6_SEANCE");
-  });
-
-  it("ne repropose pas les séances déjà cochées en Q1.3", () => {
-    const reponses = assis(["5_DIALYSE"], { "Q1.3.a": "2_AUTRE_DIALYSE" });
-    expect(optionsDeQ21(reponses)).not.toContain("6_SEANCE");
+  // Les séances, le CAMSP, la convocation, la permission et la maternité ne
+  // se découvrent qu'à un autre endroit (QST-COLLECTE-UNIQUE, D-272).
+  it.each([
+    ["sans séance en Q1.3", SEUL],
+    [
+      "avec une séance en Q1.3",
+      assis(["5_DIALYSE"], { "Q1.3.a": "2_AUTRE_DIALYSE" }),
+    ],
+  ] as const)("propose les neuf motifs généraux, %s", (_, reponses) => {
+    expect(optionsDeQ21(reponses)).toEqual([
+      "1_CONSULTATION",
+      "2_DENTISTE_OU_SAGE_FEMME",
+      "3_IMAGERIE",
+      "4_BIOLOGIE",
+      "5_PARAMEDICAL",
+      "7_PSYCHOLOGUE",
+      "8_HOSPITALISATION",
+      "9_TRANSFERT",
+      "14_AUTRE",
+    ]);
   });
 
   it("ne pose ni a à e, ni i à l, ni le régime", () => {
@@ -106,10 +119,9 @@ describe("les sous-questions de Q2.1", () => {
     ]);
   });
 
-  // Son libellé dit déjà la séance organisée dans le parcours de l'enfant
-  // (QST-RACCORDEMENTS-001).
-  it("ne précise pas un soin CAMSP ou CMPP", () => {
-    expect(ids({ ...SEUL, "Q2.1": "10_CAMSP" })).toEqual(["Q2.1"]);
+  // Il ne nie aucune situation cumulable (QST-Q21-AUTRE-MOTIF).
+  it("ne précise pas l'autre motif", () => {
+    expect(ids({ ...SEUL, "Q2.1": "14_AUTRE" })).toEqual(["Q2.1"]);
   });
 
   it("pose f pour plusieurs séances, même quand Q2.1 se saute", () => {

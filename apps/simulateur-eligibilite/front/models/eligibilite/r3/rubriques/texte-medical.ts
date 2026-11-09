@@ -49,7 +49,11 @@ const MATERNITE = given
 const ENTREES = given.all({
   motif: given.question("Q2.1").answer(),
   seances: given.question("Q1.3").answer(),
-  motifMaternite: given.question("Q2.14.motif").answer(),
+  examen: given.question("Q2.2.1").answer().checked("14_EXAMEN_MATERNITE"),
+  hebergement: given
+    .question("Q2.14.motif")
+    .answer()
+    .checked("2_HEBERGEMENT_ENGAGEMENT"),
   justification: given
     .question("Q3.4.distance")
     .answer()
@@ -112,7 +116,8 @@ const CONTRAT = {
 const VARIABLE = "[précision du prescripteur]";
 
 const SEANCES = ["3_CHIMIOTHERAPIE", "4_RADIOTHERAPIE", "5_DIALYSE"] as const;
-const SANS_SOIN: readonly string[] = ["14_AUTRE", "15_AUCUN"];
+// L'autre motif ne dit aucun soin (QST-Q21-AUTRE-MOTIF).
+const SANS_SOIN: readonly string[] = ["14_AUTRE"];
 
 // Le soin : Q2.1 si elle est posée, sinon les séances de Q1.3 (D-143).
 function soin({ motif, seances }: Entrees): readonly string[] {
@@ -125,7 +130,8 @@ function soin({ motif, seances }: Entrees): readonly string[] {
 
 // Les segments du contrat, chacun sur la cible ou le fait qui porte sa
 // condition (D-147). Ce que Q3.8 recueille suit le motif de l'Engagement
-// maternité, avant l'HTNM.
+// maternité, avant l'HTNM. L'examen se coche en Q2.2.1, l'hébergement du
+// dispositif se dit en Q2.14 (D-272).
 function complements(entrees: Entrees): readonly string[] {
   return [
     ...etablis([
@@ -142,15 +148,12 @@ function complements(entrees: Entrees): readonly string[] {
 }
 
 function engagementMaternite(entrees: Entrees): readonly string[] {
-  const { maternite, motifMaternite } = entrees;
+  const { maternite, examen, hebergement } = entrees;
   if (!maternite) return [];
   return [
     ...etablis([
-      [
-        motifMaternite.checked("1_EXAMEN_DU_HUITIEME_OU_NEUVIEME_MOIS"),
-        CONTRAT.examen,
-      ],
-      [motifMaternite.checked("2_HEBERGEMENT_ENGAGEMENT"), CONTRAT.hebergement],
+      [examen, CONTRAT.examen],
+      [hebergement, CONTRAT.hebergement],
     ]),
     ...entrees.coordonnees,
   ];

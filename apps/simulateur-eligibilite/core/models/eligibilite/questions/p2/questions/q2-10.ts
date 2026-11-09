@@ -2,20 +2,18 @@
 // même page, pour l'appareillage, l'agrément du fournisseur (Q2.10.a) et
 // l'appareillage concerné (Q2.10.b) (D-108). Son fait vit sous `faits/`.
 //
-// Q2.10 se pose quand Q2.1 dit une convocation, ou que Q2.2.1.b en signale une
-// (option 13). Elle n'est jamais reproposée si Q2.1 l'a déjà dite : Q2.2.1.b la
-// retire. Sans l'une ni l'autre, elle ne se pose pas : la convocation proposée
-// et écartée en Q2.2.1.b vaut déjà « non ».
+// Q2.10 se pose quand Q2.2.1.b signale une convocation (option 13), le seul
+// endroit où elle se découvre (QST-COLLECTE-UNIQUE, D-272). Sans elle, Q2.10
+// ne se pose pas : la convocation proposée et écartée en Q2.2.1.b vaut déjà
+// « non ».
 
 import { given, question } from "../../question.ts";
-import { Q2_1 } from "./q2-1.ts";
 import { Q2_2_1_B } from "./q2-2-1.ts";
 
 const uneConvocationAnnoncee = given
-  .question(Q2_1)
+  .question(Q2_2_1_B)
   .answer()
-  .is("12_CONVOCATION")
-  .or(given.question(Q2_2_1_B).answer().checked("13_CONVOCATION"));
+  .checked("13_CONVOCATION");
 
 export const Q2_10 = question
   .singleChoice(

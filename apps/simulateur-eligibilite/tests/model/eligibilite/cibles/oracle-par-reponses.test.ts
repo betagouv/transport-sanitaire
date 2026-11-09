@@ -15,7 +15,7 @@ import {
   MATERNITE_ETABLIE,
   type Reponses,
 } from "../p2/reponses-de-la-branche";
-import { PAR_Q21 } from "../p2/reponses-de-la-convocation";
+import { CONVOQUE } from "../p2/reponses-de-la-convocation";
 import { definitif } from "../p2/reponses-du-transfert";
 
 const LONGUE = {
@@ -41,7 +41,7 @@ const CAS: readonly [ids: string, reponses: Reponses, issue: string][] = [
   ["D18", { ...BRANCARD_20_KM, "Q2.2.1": ["5_HTNM"] }, "ISSUE_CAISSE"],
   ["D19", { ...MATERNITE_ETABLIE, "Q2.12": "2_NON" }, "ISSUE_DAP_SANS_URGENCE"],
   ["D20", { ...MATERNITE_ETABLIE, "Q2.12": "1_OUI" }, "ISSUE_CAISSE"],
-  ["D30", { ...PAR_Q21, "Q2.10": "1_CONTROLE_MEDICAL" }, "ISSUE_CONVOCATION"],
+  ["D30", { ...CONVOQUE, "Q2.10": "1_CONTROLE_MEDICAL" }, "ISSUE_CONVOCATION"],
   [
     "D35",
     {

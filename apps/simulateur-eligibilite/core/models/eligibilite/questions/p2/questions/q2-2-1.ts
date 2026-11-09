@@ -8,25 +8,23 @@
 // Chaque bloc a sa réponse négative, qui ne nie que les propositions qu'il
 // affiche (`CONTRAT_Q221_PROGRESSIF.json`). Le second se pose après n'importe
 // quelle réponse au premier, même négative, et le graphe le saute quand plus
-// rien ne peut en dépendre. Ce que Q2.1 indique déjà est retiré, sans rappel
-// (D-98, TS1012-01). Q2.2.1 se pose sur tous les parcours, même quand Q2.1
-// est sautée (D-98).
+// rien ne peut en dépendre. Q2.2.1 se pose sur tous les parcours, même quand
+// Q2.1 est sautée (D-98).
+//
+// Chaque situation de ces blocs ne se propose qu'ici : Q2.1 n'en dit plus
+// aucune (QST-COLLECTE-UNIQUE, D-272).
 
 import { given, question } from "../../question.ts";
-import { Q2_1, Q2_1_G } from "./q2-1.ts";
+import { Q2_1_G } from "./q2-1.ts";
 
-const motif = given.question(Q2_1).answer();
+// « Déjà hospitalisé » ne se propose pas pour le trajet qui ouvre le séjour
+// (D-98).
+const unSejourAProposer = given.question(Q2_1_G).answer().is("1_ENTREE").not();
 
-// « Déjà hospitalisé » ne se propose ni après une permission indiquée en Q2.1,
-// ni pour le trajet qui ouvre le séjour (D-98).
-const unSejourAProposer = motif
-  .is("11_PERMISSION")
-  .not()
-  .and(given.question(Q2_1_G).answer().is("1_ENTREE").not());
-
-// Q2.1 = 13 dit déjà l'Engagement maternité : ni la maternité éloignée, ni
-// l'hébergement hors maternité ne se proposent alors.
-const pasLaMaternite = motif.is("13_MATERNITE").not();
+// Un hébergement hors maternité ne va pas avec une situation de la maternité
+// sur le même trajet (`CONTRAT_Q221_PROGRESSIF.json`).
+const PAS_LE_MEME_TRAJET =
+  "Un même trajet relève de l’Engagement maternité ou d’un hébergement temporaire non médicalisé, pas des deux. Pour deux trajets, faites une simulation par trajet.";
 
 export const Q2_2_1 = question
   .multipleChoice(
@@ -36,14 +34,18 @@ export const Q2_2_1 = question
   // Le premier bloc de `CONTRAT_Q221_PROGRESSIF.json` (v10.1.6). Les
   // situations venues de l'ancien Q2.2.1.b gardent leur numéro parmi les
   // treize du catalogue ; le séjour et l'étranger, leur identifiant d'avant.
-  // La réponse négative, sans numéro au catalogue, porte 0.
+  // L'examen et l'hébergement de la maternité, deux cases depuis la v10.1.7,
+  // prennent 14 et 15 (QST-MAT-SEPARATION). La réponse négative, sans numéro
+  // au catalogue, porte 0.
   .options({
     "1_HOSPITALISATION":
       "Hospitalisation en cours, y compris en Hospitalisation à Domicile (HAD).",
     "2_ETRANGER":
       "Au moins un lieu à l’étranger : départ, arrivée ou lieu de soins.",
-    "4_MATERNITE_ELOIGNEE":
-      "Examen obligatoire du 8ᵉ ou 9ᵉ mois de grossesse en maternité, ou hébergement temporaire lié à l’éloignement de la maternité.",
+    "14_EXAMEN_MATERNITE":
+      "Examen obligatoire du 8ᵉ ou du 9ᵉ mois de grossesse en maternité.",
+    "15_HEBERGEMENT_MATERNITE":
+      "Hébergement temporaire prévu en raison de l’éloignement de la maternité.",
     "5_HTNM":
       "Hébergement temporaire non médicalisé lié aux soins, hors éloignement d’une maternité.",
     "10_RETOUR_PENITENTIAIRE": "Retour vers un établissement pénitentiaire.",
@@ -53,19 +55,12 @@ export const Q2_2_1 = question
   .option("1_HOSPITALISATION", (option) =>
     option.offeredWhen(unSejourAProposer),
   )
-  .option("4_MATERNITE_ELOIGNEE", (option) =>
-    option.offeredWhen(pasLaMaternite),
-  )
-  .option("5_HTNM", (option) => option.offeredWhen(pasLaMaternite))
-  .incompatible(
-    "4_MATERNITE_ELOIGNEE",
-    "5_HTNM",
-    "Un même hébergement relève de l’Engagement maternité ou d’un hébergement temporaire non médicalisé, pas des deux. Pour deux hébergements, faites une simulation par trajet.",
-  );
+  .incompatible("14_EXAMEN_MATERNITE", "5_HTNM", PAS_LE_MEME_TRAJET)
+  .incompatible("15_HEBERGEMENT_MATERNITE", "5_HTNM", PAS_LE_MEME_TRAJET);
 
-// Q2.1 retire le CAMSP et la convocation qu'elle indique déjà. Une autre
-// réponse validée au premier bloc efface celle du second, qui se repose s'il
-// reste utile ; les autres réponses restent (NAV-Q221-PROGRESSIF-001).
+// Une autre réponse validée au premier bloc efface celle du second, qui se
+// repose s'il reste utile ; les autres réponses restent
+// (NAV-Q221-PROGRESSIF-001).
 export const Q2_2_1_B = question
   .multipleChoice(
     "Q2.2.1.b",
@@ -88,10 +83,6 @@ export const Q2_2_1_B = question
   })
   .exclusive("0_AUCUN")
   .dependsOn(Q2_2_1)
-  .option("6_CAMSP", (option) => option.offeredWhen(motif.is("10_CAMSP").not()))
-  .option("13_CONVOCATION", (option) =>
-    option.offeredWhen(motif.is("12_CONVOCATION").not()),
-  )
   .incompatible(
     "6_CAMSP",
     "7_SAMSAH",

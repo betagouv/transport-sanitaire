@@ -18,7 +18,7 @@ import {
 } from "./communs.ts";
 
 const SANS_SEANCE_NI_SEJOUR_HORS_Q21 = SANS_SEANCE_NI_SEJOUR.and(
-  given.question("Q2.1").answer().isOneOf("9_TRANSFERT", "11_PERMISSION").not(),
+  given.question("Q2.1").answer().is("9_TRANSFERT").not(),
 );
 
 export const hospitalisation = unFait("fait_hospitalisation")

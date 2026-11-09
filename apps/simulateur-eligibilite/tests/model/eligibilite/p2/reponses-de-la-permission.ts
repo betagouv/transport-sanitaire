@@ -16,18 +16,26 @@ import { faits, pages, posee, type Reponses } from "./reponses-du-transfert";
 
 export { faits, posee, type Reponses };
 
-// Un patient seul, dont le motif est une permission : le séjour ne s'y propose
-// pas, et ni le transfert ni les exceptions ne se posent.
-export const PATIENT_SEUL: Reponses = {
+// Un patient seul, pour un autre motif, sans aucune situation en Q2.2.1.
+export const SANS_SITUATION: Reponses = {
   "Q0.1": "1_VERIFIER",
   "Q1.1": "1_SEUL",
   "Q1.3": ["7_AUCUNE"],
   "Q1.4": "1_VEHICULE_PERSONNEL",
-  "Q2.1": "11_PERMISSION",
+  "Q2.1": "14_AUTRE",
   "Q2.2.1": ["0_AUCUNE"],
   "Q2.2.1.b": ["0_AUCUN"],
   "Q2.3.1": "1_CINQUANTE_KM_OU_MOINS",
   "Q2.3.2": false,
+};
+
+// Le même, en permission pendant un séjour en établissement : seule Q2.2.1.a
+// la dit (D-272). Ni le transfert ni les exceptions ne se posent.
+export const PATIENT_SEUL: Reponses = {
+  ...SANS_SITUATION,
+  "Q2.2.1": ["1_HOSPITALISATION"],
+  "Q2.2.1.cadre": "1_ETABLISSEMENT",
+  "Q2.2.1.a": "1_OUI",
 };
 
 // Un mineur admissible : hospitalisé le 1er octobre, première permission le

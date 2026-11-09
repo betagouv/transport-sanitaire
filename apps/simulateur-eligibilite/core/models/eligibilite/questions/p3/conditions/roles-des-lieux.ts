@@ -19,7 +19,7 @@ import type {
   Value,
 } from "../../../../../socle/index.ts";
 import { Q1_3 } from "../../p1/questions/q1-3.ts";
-import { Q2_1, Q2_1_G } from "../../p2/questions/q2-1.ts";
+import { Q2_1_G } from "../../p2/questions/q2-1.ts";
 import { Q2_2_1 } from "../../p2/questions/q2-2-1.ts";
 import { Q2_2_1_A } from "../../p2/questions/q2-2-1-a.ts";
 import { Q2_2_1_CADRE } from "../../p2/questions/q2-2-1-cadre.ts";
@@ -48,7 +48,6 @@ type Etablies = { readonly depart?: Etablie; readonly arrivee?: Etablie };
 /** Les réponses de P2 dont les lieux se tirent, chacune sous son nom. */
 const LUES = {
   soins: Q1_3,
-  motif: Q2_1,
   sousType: Q2_1_G,
   situations: Q2_2_1,
   sejour: Q2_2_1_CADRE,
