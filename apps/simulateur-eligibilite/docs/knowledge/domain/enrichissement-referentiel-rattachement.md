@@ -1,7 +1,12 @@
 # Alimenter Grist depuis les noms saisis à l'écran de rattachement
 
 > Statut : **implémenté**. Décisions validées avec le porteur le 2026-07-08, révisées
-> le 2026-09-29 et le 2026-11-04.
+> le 2026-09-29, le 2026-11-04 et le 2026-11-09.
+>
+> **Mise à jour 2026-11-09, service « Autre » de l'établissement saisi (#368).** Un
+> établissement créé depuis la saisie reçoit aussi son service « Autre », comme ceux de
+> l'admin. Le collègue qui le retrouve dans la liste sans y voir son service peut ainsi
+> le saisir.
 >
 > **Mise à jour 2026-11-04, établissement saisi (#197, #199).** L'écran propose « Autre
 > établissement » : le prescripteur dont l'établissement n'est pas listé le saisit avec
@@ -50,6 +55,9 @@ avoir à ressaisir.
   table. On réutilise une ligne existante au lieu d'empiler.
 - **L'établissement d'abord.** Pour un établissement saisi, on crée ou réutilise
   l'établissement, puis son service sous lui.
+- **Un « Autre » par établissement créé.** Créer un établissement crée aussi son
+  service « Autre », avant le service saisi, aux mêmes règles. Un établissement
+  réutilisé n'en reçoit pas : il a déjà le sien.
 - **Non bloquant.** Une écriture Grist qui échoue ne bloque jamais l'accès au
   simulateur. C'est une dégradation gracieuse, et l'erreur est loguée.
 - **Aucune personne dans Grist.** ~~Le nom et le prénom d'un prescripteur hors liste
@@ -69,7 +77,8 @@ avoir à ressaisir.
 | Sélection | Écriture Grist |
 |---|---|
 | service « Autre » + `serviceLibre` | le vrai service, créé ou réutilisé sous l'établissement |
-| « Autre établissement » + `etabLibre` + `serviceLibre` | l'établissement, créé ou réutilisé, puis le service sous lui |
+| « Autre établissement » + `etabLibre` + `serviceLibre`, établissement inconnu | l'établissement créé, son service « Autre », puis le service saisi sous lui |
+| « Autre établissement » + `etabLibre` + `serviceLibre`, établissement homonyme | le service saisi, créé ou réutilisé sous l'établissement existant |
 | tout autre service du référentiel, structures comprises | rien |
 | ~~prescripteur hors liste~~ | ~~prescripteur créé sous le service~~ (retiré le 2026-09-29) |
 | ~~prescripteur listé sous « Autre »~~ | ~~prescripteur déplacé vers le vrai service~~ (retiré le 2026-09-29) |
@@ -87,7 +96,7 @@ snapshot factice et le client HTTP du front n'écrivent jamais.
 # Route et enrichissement, sans Grist (double en mémoire)
 pnpm --filter simulateur-eligibilite exec vitest run tests/socle/server/enrichissement.test.ts
 
-# La source Grist contre un Grist en mémoire servi en HTTP : création, réutilisation, Origine
+# La source Grist contre un Grist en mémoire servi en HTTP : création, « Autre », réutilisation, Origine
 pnpm --filter simulateur-eligibilite exec vitest run tests/socle/server/referentiel-grist.test.ts
 
 # Contre le vrai Grist : crée de vraies lignes, à purger à la main côté admin
