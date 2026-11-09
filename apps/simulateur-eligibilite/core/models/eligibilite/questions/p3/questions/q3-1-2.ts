@@ -1,11 +1,13 @@
 // Q3.1.2 : le sens des transports du document. Il ne se propose que s'il
 // s'accorde aux rôles que P2 a fixés aux lieux. Une seule permission demande
-// son sens, plusieurs ne demandent que leur nombre mensuel (D-120, D-246).
+// son sens, plusieurs ne demandent que leur nombre mensuel (D-120, D-246). Un
+// sens qualifié avant R2, en Q2.13.sens, ne se redemande pas (#365).
 
 import { unRetourPenitentiaire } from "../../p2/conditions/retour-penitentiaire.ts";
 import { Q2_1_G } from "../../p2/questions/q2-1.ts";
 import { Q2_6 } from "../../p2/questions/q2-6.ts";
 import { Q2_8_5 } from "../../p2/questions/q2-8-5.ts";
+import { Q2_13_SENS } from "../../p2/questions/q2-13.ts";
 import { given, question } from "../../question.ts";
 import { pmtOuDap, unS3141 } from "../conditions/supports-du-complement.ts";
 
@@ -40,6 +42,7 @@ export const Q3_1_2 = question
       "Aller-retour différent (trajets ou conditions différents à l'aller et au retour)",
   })
   .mattersWhile(unSensAPoser)
+  .appliesWhen(given.question(Q2_13_SENS).answer().isMissing())
   // Un sens ne se propose que s'il s'accorde aux rôles fixés en P2. Sans rôle
   // fixé, tous se proposent. Un aller-retour change de motif : il ne se propose
   // pas quand un rôle est fixé.

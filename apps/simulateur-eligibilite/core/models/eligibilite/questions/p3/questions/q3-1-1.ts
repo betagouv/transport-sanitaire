@@ -1,19 +1,14 @@
-// Q3.1.1 : le nombre de trajets, que le sens (Q3.1.2) dit en allers simples,
+// Q3.1.1 : le nombre de trajets, que le sens choisi (Q2.13.sens ou Q3.1.2,
+// `sens-du-trajet.ts`) dit en allers simples,
 // retours simples ou allers-retours. Trois allers-retours valent 3
 // (`CONTRAT_Q31_QUANTITES.json`, D-246). Ce nombre ne recalcule pas la série
 // de P2.
 
-import { type Context, given, question } from "../../question.ts";
+import { Q2_13_SENS } from "../../p2/questions/q2-13.ts";
+import { type Context, question } from "../../question.ts";
+import { SENS_CHOISI, sensChoisi } from "../conditions/sens-du-trajet.ts";
 import { pmtOuDap } from "../conditions/supports-du-complement.ts";
 import { Q3_1_2 } from "./q3-1-2.ts";
-
-// Q3.1.1 se pose pour la PMT et la DAP, une fois le sens choisi.
-const uneQuantiteAPoser = pmtOuDap.and(
-  given
-    .question(Q3_1_2)
-    .answer()
-    .isOneOf("1_ALLER", "2_RETOUR", "3_ALLER_RETOUR_EQUIVALENT"),
-);
 
 // Les libellés de Q3.1.1, sens par sens (`CONTRAT_Q31_QUANTITES.json`).
 const QUANTITES = {
@@ -32,10 +27,19 @@ const QUANTITES = {
   },
 } as const;
 
-// Le sens de Q3.1.2 qui a une unité. Q3.1.1 ne se pose qu'avec l'un d'eux
+// Q3.1.1 se pose pour la PMT et la DAP, une fois choisi un sens qui a une
+// unité.
+const uneQuantiteAPoser = pmtOuDap.and(
+  SENS_CHOISI.compute((sens) => sens !== undefined && sens in QUANTITES),
+);
+
+// Le sens choisi qui a une unité. Q3.1.1 ne se pose qu'avec l'un d'eux
 // (`uneQuantiteAPoser`) : l'aller tient lieu de défaut.
-function sensDeQ312(answers: Context["answers"]): keyof typeof QUANTITES {
-  const sens = answers.question(Q3_1_2).value;
+function sensAvecUnite(answers: Context["answers"]): keyof typeof QUANTITES {
+  const sens = sensChoisi({
+    trajetEvalue: answers.question(Q2_13_SENS),
+    sens: answers.question(Q3_1_2),
+  });
   return sens !== undefined && sens in QUANTITES
     ? (sens as keyof typeof QUANTITES)
     : "1_ALLER";
@@ -43,12 +47,12 @@ function sensDeQ312(answers: Context["answers"]): keyof typeof QUANTITES {
 
 // Le libellé de Q3.1.1 : il dit l'unité du sens choisi.
 function quantiteDuSens({ answers }: Context): string {
-  return QUANTITES[sensDeQ312(answers)].question;
+  return QUANTITES[sensAvecUnite(answers)].question;
 }
 
 // L'aide de Q3.1.1 : ce que vaut une unité du sens choisi.
 function aideDuSens({ answers }: Context): string {
-  return QUANTITES[sensDeQ312(answers)].aide;
+  return QUANTITES[sensAvecUnite(answers)].aide;
 }
 
 export const Q3_1_1 = question

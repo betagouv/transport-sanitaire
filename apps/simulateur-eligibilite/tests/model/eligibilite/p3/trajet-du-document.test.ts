@@ -72,6 +72,15 @@ describe("ce que la page du trajet pose (Q3.1)", () => {
     expect(posees("S3141", MINEUR).map(({ id }) => id)).toEqual(["Q3.1.2"]);
   });
 
+  // #365 : un sens qualifié avant R2 ne se redemande pas.
+  it("un sens choisi en Q2.13.sens ne se redemande pas : seul le nombre", () => {
+    const retour: Reponses = { "Q2.13.sens": "2_RETOUR" };
+    expect(posees("S3138g", retour).map(({ id }) => id)).toEqual(["Q3.1.1"]);
+    expect(question("Q3.1.1", "S3138g", retour).label).toBe(
+      "Combien de retours simples cette prescription doit-elle couvrir ?",
+    );
+  });
+
   it("sans support, rien", () => {
     expect(posees("AUCUN")).toEqual([]);
   });
