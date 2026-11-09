@@ -50,11 +50,11 @@ export function RattachementForm({
   const { entrer, modifier } = entrees(saisie, onValide);
 
   return (
-    <Container etroit>
+    <Container etroit sansMargeHaute>
       <h1 className="fr-h3">
-        Pour accéder au simulateur, indiquez votre établissement ou votre
-        structure
+        Faites une simulation pour prescrire le transport adapté
       </h1>
+      <PhaseExperimentale />
       <form
         onSubmit={(e) => {
           e.preventDefault();
@@ -123,15 +123,25 @@ function ReferentielIndisponible() {
   );
 }
 
-// Choisir dans cette liste peut ouvrir le simulateur : un changement de
-// contexte, que l'aide annonce (RGAA 7.4).
+// L'emoji est décoratif : les lecteurs d'écran ne le lisent pas.
+function PhaseExperimentale() {
+  return (
+    <p>
+      <span aria-hidden="true">🙏</span> Phase expérimentale : partagez vos
+      retours via le bouton orange « Faire une remarque », à droite ou « Donner
+      mon avis » en haut de l'écran
+    </p>
+  );
+}
+
+// Choisir dans cette liste peut ouvrir le simulateur, sans aide qui l'annonce
+// (RGAA 7.4) : le porteur l'a retirée (#367).
 function ChoixField({ saisie, modifier }: FieldsProps) {
   return (
     <SelectField
       id="etablissement"
-      label="Établissement ou structure"
-      hint="Selon votre choix, le simulateur s'ouvre aussitôt ou un champ de plus s'affiche."
-      placeholder="Sélectionnez..."
+      label="Établissement"
+      placeholder="Sélectionnez un établissement"
       value={saisie.champs.choix}
       options={optionsDuChoix(saisie.etablissements, saisie.structures)}
       onChange={(v) => modifier("choix", v)}

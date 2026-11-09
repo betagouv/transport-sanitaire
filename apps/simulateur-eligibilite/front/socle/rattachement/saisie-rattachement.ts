@@ -126,13 +126,11 @@ function deriverService(
 function deriverStructure(serviceId: string, listes: Listes): Derivation {
   const service = listes.structures.find((s) => s.id === serviceId);
   if (!service || !listes.fourreTout) return AUCUNE;
-  const developerTools = estServiceProduit(service);
   return {
     ...AUCUNE,
     saisie: { etabId: listes.fourreTout.id, serviceId },
     valide: true,
-    developerTools,
-    entreeImmediate: !developerTools,
+    entreeImmediate: true,
   };
 }
 
