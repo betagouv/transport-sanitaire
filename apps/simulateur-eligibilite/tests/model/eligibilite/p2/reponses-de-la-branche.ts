@@ -1,5 +1,5 @@
-// Les réponses et les lectures que partagent les tests de la branche (Q2.12,
-// Q2.13 et Q2.14) et de la fin de P2.
+// Les réponses et les lectures que partagent les tests de la branche (Q2.13,
+// Q2.14 et l'urgence, Q2.3.4 à sa place suivante) et de la fin de P2.
 
 import {
   ciblesDe,
@@ -65,12 +65,12 @@ export const BRANCARD_20_KM: Reponses = {
 
 const PAGE = "P2/branche";
 
-type Id = "Q2.12" | "Q2.13.depart" | "Q2.14.eloignement" | "Q2.14.motif";
+type Id = "Q2.3.4" | "Q2.13.depart" | "Q2.14.eloignement" | "Q2.14.motif";
 
 /** Les ids posés sur la page de branche, dans l'ordre de la page. */
 export const posees = (reponses: Reponses) =>
   (
-    ["Q2.13.depart", "Q2.14.eloignement", "Q2.14.motif", "Q2.12"] as const
+    ["Q2.13.depart", "Q2.14.eloignement", "Q2.14.motif", "Q2.3.4"] as const
   ).filter((id: Id) => posee(PAGE, id, reponses) !== undefined);
 
 export const incoherences = (id: Id, reponses: Reponses) =>
