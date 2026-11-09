@@ -22,6 +22,12 @@ const FICHE: Cerfa<Fiche> = {
   drawings: {},
 };
 
+// Une erreur technique : le gabarit ne se charge pas.
+const SANS_GABARIT: Cerfa<Fiche> = {
+  ...FICHE,
+  template: () => Promise.reject(new Error("Gabarit introuvable.")),
+};
+
 const TELECHARGER = { name: "Télécharger la fiche" };
 const RETIRE = /le commentaire facultatif ne tient pas sur le document/i;
 const LONG = "Un commentaire beaucoup trop long pour ce cadre. ".repeat(4);
@@ -52,6 +58,15 @@ describe("le commentaire facultatif", () => {
     expect((await drawnOn(await pdfDe(pdf))).texts).toEqual(["Dialyse."]);
   });
 
+  it("ne s'annonce pas quand la génération échoue", async () => {
+    afficher({ motif: "Dialyse.", precisions: LONG }, SANS_GABARIT);
+
+    expect(await screen.findByRole("alert")).toHaveTextContent(
+      "La génération du document a échoué.",
+    );
+    expect(screen.queryByText(RETIRE)).toBeNull();
+  });
+
   it("qui tient ne s'annonce pas", async () => {
     afficher({ motif: "Dialyse.", precisions: "Fauteuil." });
 
@@ -71,10 +86,10 @@ async function genere() {
   return bouton;
 }
 
-function afficher(fields: Fiche["fields"]) {
+function afficher(fields: Fiche["fields"], cerfa = FICHE) {
   render(
     <CerfaDocument
-      cerfa={FICHE}
+      cerfa={cerfa}
       dto={{ fields, drawings: {} }}
       date={new Date("2026-10-14T10:00:00Z")}
       printLabel="Imprimer la fiche"

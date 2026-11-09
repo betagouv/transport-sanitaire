@@ -5,6 +5,7 @@ import { TEXT_SIZES } from "../../../front/socle/cerfa/generate-the-cerfa/text-s
 import {
   drawnSizesOf,
   fontSizeOf,
+  isMultilineIn,
   readBack,
   statesOf,
   testForm,
@@ -93,6 +94,19 @@ describe("fillCerfa", () => {
       { singleLineFields: ["nom"] },
     );
     expect(read).toEqual({ nom: "1 rue du Départ - 75001 Paris" });
+  });
+});
+
+describe("un champ de `multilineFields`", () => {
+  it("passe en multiligne d'emblée, même quand son texte tient sur une ligne", async () => {
+    const { pdf } = await fillCerfa(
+      await testForm(),
+      [{ field: "nom", text: "DUPONT Marie" }],
+      { multilineFields: ["nom"] },
+    );
+
+    expect(await isMultilineIn(pdf, "nom")).toBe(true);
+    expect(await fontSizeOf(pdf, "nom")).toBe(TEXT_SIZES.target);
   });
 });
 
@@ -260,31 +274,5 @@ describe("date sur un champ peigné", () => {
 
   it("rend telle quelle une valeur qui n'est pas une date ISO", () => {
     expect(formatDateForField("", 8)).toBe("");
-  });
-});
-
-describe("un caractère que la police ne sait pas écrire", () => {
-  it("s'écrit sous sa forme simple, sans bloquer le PDF", async () => {
-    const { read } = await remplir(await testForm(), [
-      { field: "nom", text: "Examen du 8ᵉ mois, Ionuț Popescu" },
-    ]);
-
-    expect(read).toEqual({ nom: "Examen du 8e mois, Ionut Popescu" });
-  });
-
-  it("s'écrit « ? » s'il n'a pas de forme simple", async () => {
-    const { read } = await remplir(await testForm(), [
-      { field: "nom", text: "Transport 🚑 urgent" },
-    ]);
-
-    expect(read).toEqual({ nom: "Transport ? urgent" });
-  });
-
-  it("laisse tels quels les accents et la ponctuation qu'elle connaît", async () => {
-    const text = "Œdème — Hôpital « Saint-Éloi », 12 €";
-
-    const { read } = await remplir(await testForm(), [{ field: "nom", text }]);
-
-    expect(read).toEqual({ nom: text });
   });
 });

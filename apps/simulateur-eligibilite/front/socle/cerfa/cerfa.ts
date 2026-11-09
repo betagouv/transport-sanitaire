@@ -48,7 +48,8 @@ export type TextBinding = {
 /**
  * Un commentaire facultatif : il s'écrit à la suite du texte `commentOn`, une
  * autre entrée du DTO, dans le même champ. C'est la seule chose qui se retire
- * quand le texte ne tient pas dans son cadre (D-85).
+ * quand le texte ne tient pas dans son cadre (D-85). Ce champ passe en
+ * multiligne avant toute mesure (DOC-COMMENTAIRE-CAPACITE-20261104, #356).
  */
 export type CommentBinding = { readonly commentOn: string };
 

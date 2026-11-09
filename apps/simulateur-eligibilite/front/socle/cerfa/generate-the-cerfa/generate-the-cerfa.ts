@@ -36,12 +36,11 @@ export async function generateCerfa<Dto extends CerfaDto>(
     import("./fill-the-form"),
     import("./flatten-the-form"),
   ]);
-  const { entries, singleLineFields, dateFields, marks, drawings, commentOf } =
-    instructionsOf(cerfa, dto);
-  const filled = await fillCerfa(template, entries, {
-    singleLineFields,
-    dateFields,
-  });
+  const { entries, marks, drawings, commentOf, ...options } = instructionsOf(
+    cerfa,
+    dto,
+  );
+  const filled = await fillCerfa(template, entries, options);
   const pdf = await flattenCerfa(filled.pdf, {
     marks,
     drawings: [...drawings, ...filled.overflows],
@@ -77,6 +76,9 @@ function instructionsOf<Dto extends CerfaDto>(cerfa: Cerfa<Dto>, dto: Dto) {
     ),
     singleLineFields: bound.flatMap(([, binding]) =>
       "singleLine" in binding && binding.singleLine ? [binding.field] : [],
+    ),
+    multilineFields: bound.flatMap(([key, binding]) =>
+      "field" in binding && comments.has(key) ? [binding.field] : [],
     ),
     dateFields: bound.flatMap(([, binding]) =>
       "date" in binding && binding.date ? [binding.field] : [],

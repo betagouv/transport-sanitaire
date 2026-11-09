@@ -127,6 +127,17 @@ export async function fontSizeOf(
   return Number(fontSize?.[1]);
 }
 
+/** Le champ texte `name` du PDF rempli passe-t-il à la ligne ? */
+export async function isMultilineIn(
+  pdf: Uint8Array,
+  name: string,
+): Promise<boolean> {
+  return (await PDFDocument.load(pdf))
+    .getForm()
+    .getTextField(name)
+    .isMultiline();
+}
+
 /**
  * Le formulaire `pdf`, dont le dernier widget du champ `field` déclare sa
  * propre taille de police, comme ceux des volets 3 et 4 de la DAP.
