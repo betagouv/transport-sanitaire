@@ -114,6 +114,14 @@ export const SEEDS: readonly Seed<Questions, Cibles>[] = [
     expected: {},
   },
   {
+    id: "mignardise-au-service",
+    label: "Service : une question à deux places, posée à la seconde",
+    description:
+      "S'arrête sur la façon de servir, après un thé au lait : la mignardise, qui se pose avec les accompagnements pour un café, se pose ici. Choisie, puis la boisson changée pour un café par « Précédent » : elle revient avec les accompagnements, déjà répondue, et le service ne la repose pas.",
+    answers: { boisson: "the", accompagnements: ["lait"] },
+    expected: {},
+  },
+  {
     id: "commande-de-the",
     label: "Résultat : un thé, avec lait et citron",
     description:

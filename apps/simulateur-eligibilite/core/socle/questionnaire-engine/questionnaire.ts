@@ -8,6 +8,7 @@
 import { answersOf, GivenAnswers } from "./answers/given-answers.ts";
 import { ValidatedAnswers } from "./answers/validated-answers.ts";
 import { NOTHING, type Reads, readsOf } from "./conditions/condition.ts";
+import { Positions } from "./conditions/what-a-condition-sees.ts";
 import {
   type AskedPage,
   readInOrder,
@@ -28,15 +29,19 @@ type Finished = undefined;
 
 /**
  * Un questionnaire : ses pages, dans l'ordre. `Questions` : celles du modèle,
- * pour lire ses réponses typées.
+ * pour lire ses réponses typées. Une question à plusieurs places mal déclarée
+ * l'arrête dès sa construction (`Positions`).
  */
 export class Questionnaire<Questions extends AnyQuestions = AnyQuestions> {
   readonly pages: readonly Page[];
   /** Ce qu'une question change de ce qui compte. Sans elle, tout compte. */
   readonly relevance?: Relevance;
+  /** Où se trouve chaque question, à chacune de ses places. */
+  readonly positions: Positions;
 
   constructor(pages: readonly Page[], relevance?: Relevance) {
     this.pages = pages;
+    this.positions = new Positions(pages);
     if (relevance) this.relevance = relevance;
   }
 
@@ -86,8 +91,8 @@ export class Reading<Questions extends AnyQuestions = AnyQuestions> {
     answers: Answers<Questions>,
     cibles: AnyCibles | undefined,
   ) {
-    const { pages, relevance } = questionnaire;
-    const read = readInOrder(pages, answers, { cibles, relevance });
+    const { relevance } = questionnaire;
+    const read = readInOrder(questionnaire, answers, { cibles, relevance });
     this.answers = new GivenAnswers(answers);
     this.validated = new ValidatedAnswers(
       read.validated as Validated<Questions>,
@@ -141,7 +146,8 @@ export class Reading<Questions extends AnyQuestions = AnyQuestions> {
    * Les réponses, une fois cette page validée avec ce brouillon. Une question
    * que la page ne pose plus n'y laisse pas de réponse, ni une option qu'elle
    * ne propose plus. Celles qui dépendaient d'une réponse changée sont
-   * effacées (`validate-a-page.ts`).
+   * effacées (`validate-a-page.ts`). Une question à plusieurs places garde la
+   * sienne si une place d'avant la pose, ou si une place d'après le peut.
    */
   commit(page: Page, draft: Answers): Answers {
     const given = answersOf(this.answers);
@@ -154,6 +160,26 @@ export class Reading<Questions extends AnyQuestions = AnyQuestions> {
       return answer === undefined ? [] : [[question.id, answer] as const];
     });
     const { pages } = this.#questionnaire;
-    return commitPage(pages, given, page, Object.fromEntries(inputs));
+    const waiting = shown.#waitingOn(page);
+    return commitPage(pages, given, page, Object.fromEntries(inputs), waiting);
+  }
+
+  // ---- implémentation ----
+
+  // Les questions de la page qui ne s'y posent pas, et gardent leur réponse :
+  // une place d'avant les pose, ou une place d'après le peut encore.
+  #waitingOn(page: Page): readonly string[] {
+    const { pages, positions } = this.#questionnaire;
+    const rank = pages.findIndex(({ id }) => id === page.id);
+    const shown = new Set(this.questionsOn(page).map(({ id }) => id));
+    const before = new Set(
+      this.#asked
+        .filter((read) => pages.indexOf(read.page) < rank)
+        .flatMap((read) => read.questions.map(({ id }) => id)),
+    );
+    return page.questions
+      .map(({ id }) => id)
+      .filter((id) => !shown.has(id))
+      .filter((id) => before.has(id) || positions.hasPlaceAfter(id, rank));
   }
 }

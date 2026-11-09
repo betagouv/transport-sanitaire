@@ -57,8 +57,9 @@ describe("ce que change une question du modèle", () => {
     ).toEqual([]);
   });
 
-  // La distance décide aussi si l'urgence se demande (Q2.3.4, Q2.12) : leur
-  // garde lit `cible_question_urgence_a_afficher`, qui dépend des seuils.
+  // La distance décide aussi si l'urgence se demande (Q2.3.4, à ses deux
+  // places) : sa garde lit `cible_question_urgence_a_afficher`, qui dépend des
+  // seuils.
   it("Q2.3.1, la distance, change les seuils, la série et l'urgence", () => {
     expect(changes.get("Q2.3.1")).toEqual([
       "fait_p2_complete",

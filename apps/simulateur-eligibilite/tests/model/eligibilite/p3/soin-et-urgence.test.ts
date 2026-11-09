@@ -167,10 +167,10 @@ describe("la page de l'urgence (Q3.5)", () => {
     });
   });
 
-  it("l'urgence de Q2.12 va à la caisse : aucun document, Q3.5 ne se pose pas", () => {
+  it("l'urgence dite à la branche va à la caisse : aucun document, Q3.5 ne se pose pas", () => {
     const reponses: Reponses = {
       ...MATERNITE_ETABLIE,
-      "Q2.12": "1_OUI",
+      "Q2.3.4": "1_OUI",
     };
     expect(cibles(reponses).cible_support_id.value).toBe("AUCUN");
     expect(ids("P3/urgence", reponses)).toEqual([]);

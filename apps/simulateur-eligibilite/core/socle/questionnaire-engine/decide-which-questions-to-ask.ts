@@ -12,13 +12,17 @@
 //
 // Avec une pertinence, une question dont la réponse ne change rien de ce qui
 // compte ne se pose pas (`does-a-question-still-matter/matters.ts`, #255) : elle n'est jamais validée.
+//
+// Une question à plusieurs places se pose à la première où ses gardes tiennent
+// et qui compte (ADR-29). Une place suivante ne la pose pas si elle s'est déjà
+// posée plus tôt, validée ou en attente.
 
 import { GivenAnswers } from "./answers/given-answers.ts";
 import { ValidatedAnswers } from "./answers/validated-answers.ts";
 import {
   type GuardPlace,
   guardReading,
-  Positions,
+  type Positions,
 } from "./conditions/what-a-condition-sees.ts";
 import type { Relevance } from "./does-a-question-still-matter/matters.ts";
 import type { SeenAnswers } from "./question/asked/context.ts";
@@ -48,15 +52,14 @@ export type AskedPage = {
  * (`questionnaire.ts`).
  */
 export function readInOrder(
-  pages: readonly Page[],
+  { pages, positions }: { pages: readonly Page[]; positions: Positions },
   answers: Answers,
   { cibles, relevance }: { cibles?: AnyCibles; relevance?: Relevance } = {},
 ): { readonly asked: readonly AskedPage[] } & Progress {
   let progress: Progress = { validated: {}, complete: true, pending: [] };
   const asked: AskedPage[] = [];
-  const positions = new Positions(pages);
   for (const [rank, page] of pages.entries()) {
-    const earlier = answersUpTo(pages, rank, answers);
+    const earlier = answersUpTo(positions, rank, answers);
     const frozen = page.afterLock ? cibles : undefined;
     const context = {
       ...{ answers, earlier, cibles: frozen, positions, rank },
@@ -97,6 +100,7 @@ function askPage(page: Page, context: Context, start: Progress) {
   let progress = start;
   const questions: AskedQuestion[] = [];
   for (const [index, declared] of page.questions.entries()) {
+    if (declared.isLaterPlace && askedBefore(declared.id, progress)) continue;
     const place: GuardPlace = {
       id: declared.id,
       at: { page: context.rank, index },
@@ -106,7 +110,7 @@ function askPage(page: Page, context: Context, start: Progress) {
       answers: context.answers,
     };
     const question = askQuestion(declared, context, place);
-    if (!question || !matters(question.id, context, progress)) continue;
+    if (!question || !matters(declared, context, progress)) continue;
     questions.push(question);
     progress = validateInTurn(progress, question, context.answers);
   }
@@ -130,11 +134,20 @@ function askQuestion(
   return declared.askedIn(seenWith(answers, false), seenWith(earlier, true));
 }
 
-// Sans pertinence, toute question qui se pose compte.
-function matters(id: string, context: Context, progress: Progress): boolean {
+// Une place suivante est sautée si la question s'est posée plus tôt.
+function askedBefore(id: string, { validated, pending }: Progress): boolean {
+  return id in validated || pending.includes(id);
+}
+
+// Sans pertinence, toute question qui se pose compte. Elle compte à sa place.
+function matters(
+  declared: Question,
+  context: Context,
+  progress: Progress,
+): boolean {
   const { relevance, cibles } = context;
   const { validated, pending } = progress;
-  return relevance?.matters(id, { validated, pending, cibles }) ?? true;
+  return relevance?.matters(declared, { validated, pending, cibles }) ?? true;
 }
 
 // Une question qui a sa réponse est validée, si aucune n'attend avant elle. La
@@ -171,17 +184,17 @@ function asValidated(question: AskedQuestion, answer: Answer | Unanswered) {
   };
 }
 
-// Les réponses, sans celles des questions des pages qui suivent celle-ci. Les
-// réponses acquises avant le verrou n'ont pas de page ici : elles restent.
+// Les réponses, sans celles des questions dont la première place suit cette
+// page. Les réponses acquises avant le verrou n'ont pas de page ici : elles
+// restent.
 function answersUpTo(
-  pages: readonly Page[],
+  positions: Positions,
   rank: number,
   answers: Answers,
 ): Answers {
-  const later = pages
-    .slice(rank + 1)
-    .flatMap((page) => page.questions.map((question) => question.id));
   return Object.fromEntries(
-    Object.entries(answers).filter(([id]) => !later.includes(id)),
+    Object.entries(answers).filter(
+      ([id]) => (positions.of(id)?.page ?? rank) <= rank,
+    ),
   );
 }

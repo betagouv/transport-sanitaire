@@ -295,7 +295,7 @@ export const SEEDS: readonly Seed<Questions, Cibles>[] = [
       "Q2.2.1.b": ["0_AUCUN"],
       ...TRAJET_COURT,
       "Q2.14.eloignement": ["1_PLUS_DE_QUARANTE_CINQ_MINUTES"],
-      "Q2.12": "2_NON",
+      "Q2.3.4": "2_NON",
     },
     expected: {
       cible_issue_id: "ISSUE_DAP_SANS_URGENCE",

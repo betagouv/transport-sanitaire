@@ -31,6 +31,8 @@ export type CommonSettings<Questions extends AnyQuestions, Cibles, Faits> = {
   /** Facultative, sauf quand cette condition tient (`requiredWhen`). */
   readonly requiredWhen?: Condition;
   readonly alwaysAsked?: boolean;
+  /** Une place suivante : la question y est déjà déclarée plus tôt. */
+  readonly laterPlace?: boolean;
   readonly under?: ShownUnder;
   labelFrom?(context: QuestionContext<Questions, Cibles, Faits>): string;
   hintFrom?(context: QuestionContext<Questions, Cibles, Faits>): string;

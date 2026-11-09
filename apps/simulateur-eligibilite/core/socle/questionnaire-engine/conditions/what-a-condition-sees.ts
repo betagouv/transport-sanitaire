@@ -10,6 +10,10 @@
 // Une garde qui lit sa propre question, ou une question d'après elle, est une
 // erreur de déclaration : elle s'arrête net. Une incohérence lit sa question,
 // et se déclare sur la plus tardive de celles qu'elle lit.
+//
+// Une question peut avoir plusieurs places (ADR-29). « Avant » et « après » se
+// lisent à sa première place. Posée plus haut sur la page de la garde, à une
+// place suivante, elle se lit telle que saisie.
 
 import {
   ValidatedAnswer,
@@ -26,23 +30,35 @@ export function validatedReading(validated: ValidatedAnswers): AnswerReading {
   return (id) => validated.question(id);
 }
 
-/** Où se trouve chaque question : le rang de sa page, puis le sien. */
+/**
+ * Où se trouve chaque question : le rang de sa page, puis le sien. Elle a une
+ * place, ou plusieurs : sa première, puis ses places suivantes, chacune sur sa
+ * page et du même côté du verrou (`unlessAskedBefore`). Une déclaration qui
+ * s'en écarte s'arrête ici, au chargement du questionnaire.
+ */
 export class Positions {
-  readonly #positions: ReadonlyMap<string, Position>;
+  readonly #places: ReadonlyMap<string, readonly Position[]>;
 
   constructor(pages: readonly Page[]) {
-    this.#positions = new Map(
-      pages.flatMap((page, rank) =>
-        page.questions.map((question, index) => [
-          question.id,
-          { page: rank, index },
-        ]),
-      ),
-    );
+    const places = new Map<string, Position[]>();
+    for (const [rank, page] of pages.entries()) {
+      for (const [index, question] of page.questions.entries()) {
+        const earlier = places.get(question.id) ?? [];
+        checkPlace(question, { page, rank }, earlier, pages);
+        places.set(question.id, [...earlier, { page: rank, index }]);
+      }
+    }
+    this.#places = places;
   }
 
+  /** Sa première place : celle où se lisent « avant » et « après ». */
   of(id: string): Position | NotOnAnyPage {
-    return this.#positions.get(id);
+    return this.#places.get(id)?.[0];
+  }
+
+  /** A-t-elle une place sur une page qui suit celle de ce rang ? */
+  hasPlaceAfter(id: string, page: number): boolean {
+    return (this.#places.get(id) ?? []).some((place) => place.page > page);
   }
 }
 
@@ -72,6 +88,8 @@ export function guardReading(
     const position = place.positions.of(id);
     if (position === undefined) return given(id, place.answers[id]);
     if (id === place.id && own) return given(id, place.answers[id]);
+    if (id === place.id) throw readsLater(place.id, id, own);
+    if (place.onPage.has(id)) return onPage(place, id);
     if (!before(position, place.at)) throw readsLater(place.id, id, own);
     if (position.page < place.at.page)
       return new ValidatedAnswer(id, place.validated[id]);
@@ -83,6 +101,35 @@ export function guardReading(
 
 /** La question n'est sur aucune page de ce questionnaire. */
 type NotOnAnyPage = undefined;
+
+// Une place de plus pour cette question : sur une autre page que les
+// précédentes, du même côté du verrou, et marquée comme place suivante.
+function checkPlace(
+  question: Page["questions"][number],
+  { page, rank }: { readonly page: Page; readonly rank: number },
+  earlier: readonly Position[],
+  pages: readonly Page[],
+): void {
+  const { id, isLaterPlace } = question;
+  const [first] = earlier;
+  if (first === undefined) {
+    if (isLaterPlace)
+      throw new Error(
+        `${id} est une place suivante (\`unlessAskedBefore()\`) sur la page ${page.id}, mais aucune page d'avant ne la déclare.`,
+      );
+    return;
+  }
+  if (earlier.some((place) => place.page === rank))
+    throw new Error(`${id} a deux places sur la page ${page.id}.`);
+  if (!isLaterPlace)
+    throw new Error(
+      `${id} se déclare deux fois. Sur la page ${page.id}, c'est une place suivante : déclare-la par \`unlessAskedBefore()\`.`,
+    );
+  if (pages[first.page]?.afterLock !== page.afterLock)
+    throw new Error(
+      `${id} a une place de chaque côté du verrou : le verrou fige sa réponse, elle ne se pose plus après lui.`,
+    );
+}
 
 // Une réponse telle qu'elle est donnée, sans options proposées.
 function given(id: string, answer: Answers[string]) {

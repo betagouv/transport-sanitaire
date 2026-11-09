@@ -111,7 +111,7 @@ export const Q38: Reponses = {
 // Un examen de l'Engagement maternité, du domicile à la maternité, sans Q3.8.
 export const EXAMEN_DE_MATERNITE: Reponses = {
   ...MATERNITE_ETABLIE,
-  "Q2.12": "2_NON",
+  "Q2.3.4": "2_NON",
   "Q3.1.1": 1,
   "Q3.1.2": "1_ALLER",
   "Q3.2.nature": "1_DOMICILE",
@@ -128,7 +128,7 @@ export const HEBERGEMENT_DE_MATERNITE: Reponses = {
   ...MATERNITE_PAR_Q221,
   "Q2.14.eloignement": ["1_PLUS_DE_QUARANTE_CINQ_MINUTES"],
   "Q2.14.motif": ["2_HEBERGEMENT_ENGAGEMENT"],
-  "Q2.12": "2_NON",
+  "Q2.3.4": "2_NON",
   "Q3.1.1": 1,
   "Q3.1.2": "1_ALLER",
   "Q3.2.nature": "1_DOMICILE",

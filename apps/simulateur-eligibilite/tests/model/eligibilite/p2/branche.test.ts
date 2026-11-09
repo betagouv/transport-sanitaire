@@ -1,7 +1,9 @@
-// La page de branche (Q2.12 à Q2.14) : quand chaque question se pose, ce
-// qu'elle établit, et l'issue qui en résulte. `CATALOGUE_COMPLET_QUESTIONS.md`
-// Q2.12, Q2.13 et Q2.14, `CONTRAT_REPONSES_FAITS.json` et
-// `CONTRAT_NEGATIONS_PROUVEES.json` du paquet de l'éditeur (D-110).
+// La page de branche (Q2.13, Q2.14, et l'urgence à sa place suivante) : quand
+// chaque question se pose, ce qu'elle établit, et l'issue qui en résulte.
+// `CATALOGUE_COMPLET_QUESTIONS.md` Q2.12, Q2.13 et Q2.14,
+// `CONTRAT_REPONSES_FAITS.json` et `CONTRAT_NEGATIONS_PROUVEES.json` du paquet
+// de l'éditeur (D-110). Son Q2.12, la reprise de Q2.3, est ici Q2.3.4 à sa
+// place suivante (ADR-29).
 //
 // L'examen du 8ᵉ ou du 9ᵉ mois et l'hébergement de la maternité sont deux
 // cases de Q2.2.1 (QST-MAT-SEPARATION, D-272) : l'examen coché est le motif,
@@ -137,9 +139,9 @@ describe("Q2.14, une condition dans chaque groupe : le dispositif est établi", 
     expect(faits(reponses).fait_dap_maternite.value).toBe(true);
   });
 
-  it("dévoile l'urgence (Q2.12), que la page du trajet avait masquée", () => {
-    expect(posees(EXAMEN)).not.toContain("Q2.12");
-    expect(posees(MATERNITE_ETABLIE)).toEqual(["Q2.14.eloignement", "Q2.12"]);
+  it("dévoile l'urgence (Q2.3.4), que la page du trajet avait masquée", () => {
+    expect(posees(EXAMEN)).not.toContain("Q2.3.4");
+    expect(posees(MATERNITE_ETABLIE)).toEqual(["Q2.14.eloignement", "Q2.3.4"]);
   });
 
   it("sans l'urgence, la décision n'est pas calculable", () => {
@@ -147,16 +149,16 @@ describe("Q2.14, une condition dans chaque groupe : le dispositif est établi", 
     expect(ciblesDe(MATERNITE_ETABLIE).cible_issue_id.value).toBeUndefined();
   });
 
-  it("urgence non attestée (Q2.12) : demande d'accord préalable sans urgence", () => {
-    const reponses = { ...MATERNITE_ETABLIE, "Q2.12": "2_NON" } as const;
+  it("urgence non attestée : demande d'accord préalable sans urgence", () => {
+    const reponses = { ...MATERNITE_ETABLIE, "Q2.3.4": "2_NON" } as const;
     expect(ciblesDe(reponses).cible_issue_id.value).toBe(
       "ISSUE_DAP_SANS_URGENCE",
     );
     expect(p2Complete(reponses)).toBe(true);
   });
 
-  it("urgence attestée (Q2.12) : point à la caisse, Engagement maternité", () => {
-    const reponses = { ...MATERNITE_ETABLIE, "Q2.12": "1_OUI" } as const;
+  it("urgence attestée : point à la caisse, Engagement maternité", () => {
+    const reponses = { ...MATERNITE_ETABLIE, "Q2.3.4": "1_OUI" } as const;
     const cibles = ciblesDe(reponses);
     expect(cibles.cible_issue_id.value).toBe("ISSUE_CAISSE");
     expect(cibles.cible_reason_code.value).toBe(
@@ -177,11 +179,11 @@ describe("Q2.14, une condition dans chaque groupe : le dispositif est établi", 
     );
   });
 
-  it("un groupe passé à « Aucune » retire Q2.12", () => {
-    const reponses = { ...MATERNITE_ETABLIE, "Q2.12": "2_NON" } as const;
+  it("un groupe passé à « Aucune » retire l'urgence", () => {
+    const reponses = { ...MATERNITE_ETABLIE, "Q2.3.4": "2_NON" } as const;
     expect(
       posees({ ...reponses, "Q2.14.eloignement": ["3_AUCUNE"] }),
-    ).not.toContain("Q2.12");
+    ).not.toContain("Q2.3.4");
   });
 });
 

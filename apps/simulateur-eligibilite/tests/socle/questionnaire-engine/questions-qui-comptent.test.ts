@@ -41,6 +41,30 @@ describe("les questions qui comptent", () => {
 
     expect(posees(reponses, pages)).toEqual(["motif", "remarque"]);
   });
+
+  // La distance n'a sa première place que pour une consultation : pour un
+  // séjour, elle se pose à sa place suivante (ADR-29), si la taille la suit.
+  it("juge une place suivante à son propre rang", () => {
+    const premiere = page("distance", DISTANCE.appliesWhen(CONSULTATION));
+    const suivante = page("encore", DISTANCE.unlessAskedBefore());
+    const motif = page("motif", MOTIF);
+    const entree = page("entree", ENTREE);
+    const taille = page("taille", TAILLE);
+    const reponses = { motif: "sejour", entree: true } as const;
+
+    expect(
+      posees(reponses, [motif, premiere, entree, suivante, taille]),
+    ).toEqual(["motif", "entree", "distance", "taille"]);
+    expect(
+      posees({ ...reponses, taille: "petit" }, [
+        motif,
+        premiere,
+        entree,
+        taille,
+        suivante,
+      ]),
+    ).toEqual(["motif", "entree", "taille"]);
+  });
 });
 
 // ---- implémentation ----
@@ -84,6 +108,7 @@ const TAILLE = question
   .option("grand", (option) =>
     option.offeredWhen(given.question("distance").answer().is("loin")),
   );
+const CONSULTATION = given.question("motif").answer().is("consultation");
 const REMARQUE = question
   .singleChoice("remarque", "Une remarque ?")
   .options({ oui: "Oui", non: "Non" });

@@ -28,7 +28,6 @@ import { Q2_8_5 } from "./questions/q2-8-5.ts";
 import { Q2_8_6, Q2_8_6_A, Q2_8_6_B } from "./questions/q2-8-6.ts";
 import { Q2_8_DUREE_48H } from "./questions/q2-8-duree-48h.ts";
 import { Q2_10, Q2_10_A, Q2_10_B } from "./questions/q2-10.ts";
-import { Q2_12 } from "./questions/q2-12.ts";
 import { Q2_13_DEPART } from "./questions/q2-13.ts";
 import { Q2_14_ELOIGNEMENT, Q2_14_MOTIF } from "./questions/q2-14.ts";
 
@@ -67,8 +66,15 @@ export const P2 = {
       ),
       page("P2/convocation", Q2_10, Q2_10_A, Q2_10_B),
       // La page de branche ne s'affiche que si l'une de ses questions se pose
-      // (D-110).
-      page("P2/branche", Q2_13_DEPART, Q2_14_ELOIGNEMENT, Q2_14_MOTIF, Q2_12),
+      // (D-110). L'urgence y a sa place suivante : elle s'y pose si le trajet
+      // ne l'a pas posée (ADR-29).
+      page(
+        "P2/branche",
+        Q2_13_DEPART,
+        Q2_14_ELOIGNEMENT,
+        Q2_14_MOTIF,
+        Q2_3_4.unlessAskedBefore(),
+      ),
     ].map((suivante) => suivante.appliesWhen(dansLeCircuit)),
   ],
 };

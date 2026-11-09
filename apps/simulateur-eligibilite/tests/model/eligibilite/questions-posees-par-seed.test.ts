@@ -136,7 +136,7 @@ const ATTENDU: Record<string, readonly [string[], string[]]> = {
       "Q2.2.1",
       "Q2.2.1.b",
       ...DISTANCE,
-    ].concat(["Q2.14.eloignement", "Q2.12"]),
+    ].concat(["Q2.14.eloignement", "Q2.3.4"]),
     [
       "Q3.1.2",
       "Q3.2.nature",

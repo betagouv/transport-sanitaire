@@ -42,13 +42,16 @@ describe.each(Object.entries(MODELES))("le modèle %s", (_nom, model) => {
   const identifiants = questions.map((question) => question.id);
 
   describe("son questionnaire", () => {
-    it("ne pose pas deux questions sous le même identifiant", () => {
+    it("ne répète un identifiant que pour une place suivante", () => {
+      const premieres = questions.filter((question) => !question.isLaterPlace);
       expect(
-        doublons(identifiants),
+        doublons(premieres.map((question) => question.id)),
         "Les réponses sont rangées par identifiant de question. Deux questions " +
-          "de même identifiant s'écraseraient l'une l'autre, y compris de part " +
-          "et d'autre du verrou.",
+          "de même identifiant s'écraseraient l'une l'autre. Une question qui " +
+          "a plusieurs places les déclare par `unlessAskedBefore()` (ADR-29), " +
+          "jamais de part et d'autre du verrou.",
       ).toEqual([]);
+      expect(() => new Questionnaire(pages)).not.toThrow();
     });
 
     it("ne nomme pas deux pages de la même façon", () => {

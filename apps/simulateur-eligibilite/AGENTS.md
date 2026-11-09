@@ -133,7 +133,7 @@ mécanique, sans React ni phrase de l'écran :
 | `label-a-question.ts`, `word-a-problem.ts`, `lay-out-an-address.ts` | les phrases de l'écran : « (facultatif) », le message de chaque nature de problème, les champs d'une adresse et leurs libellés |
 | `QuestionnaireForm.tsx`, `QuestionField.tsx`, `Stepper.tsx` | le formulaire, le champ DSFR de chaque sorte de question, le stepper |
 
-Treize règles à tenir en ajoutant une question :
+Quatorze règles à tenir en ajoutant une question :
 
 - **Une question se déclare par son constructeur, un réglage par ligne.**
   `question.singleChoice("Q1.1", "Concernant son déplacement, le patient :")`
@@ -158,6 +158,15 @@ Treize règles à tenir en ajoutant une question :
   quelle. Une garde qui lit sa question ou une question d'après s'arrête net.
   Un fait et une cible se lisent sur les questions validées avant elle (figées
   dans la partie `afterLock`).
+- **Une question n'a qu'une réponse, même sur plusieurs pages.** Une question
+  qui revient plus loin s'y déclare par `.unlessAskedBefore()` :
+  `page("P2/branche", …, Q2_3_4.unlessAskedBefore())`. Elle se pose à sa
+  première place où ses gardes tiennent, et chaque place a les siennes ;
+  « avant » et « après » se lisent à la première. Une place qui la cache ne lui
+  fait perdre sa réponse que si c'est la dernière, et qu'aucune place d'avant
+  ne la pose. Le questionnaire refuse dès sa construction un id répété sans
+  `.unlessAskedBefore()`, deux places sur une page, et des places de part et
+  d'autre du verrou (ADR-29).
 - **Une déclaration lit une question par son objet, et la suit.** Le type
   `Questions` du modèle se tire de ses parties (`questions/reponses.ts`) : les
   déclarations, qui le précèdent, ne le lisent pas. Elles importent la

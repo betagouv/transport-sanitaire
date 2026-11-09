@@ -169,6 +169,11 @@ export type Question<
   /** Elle se pose même si sa réponse ne change rien de ce qui compte. */
   readonly isAlwaysAsked: boolean;
   /**
+   * Une place suivante : la question est déclarée sur une page d'avant, et ne
+   * se pose ici que si elle ne s'y est pas posée (`unlessAskedBefore`).
+   */
+  readonly isLaterPlace: boolean;
+  /**
    * La question telle qu'elle se pose, vu les réponses, si elle s'y pose. Ses incohérences lisent `earlier`, sans les pages suivantes.
    */
   askedIn(

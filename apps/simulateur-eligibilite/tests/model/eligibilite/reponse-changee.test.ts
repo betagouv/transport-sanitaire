@@ -177,13 +177,15 @@ describe("la distance changée (cas « Distance/ligne »)", () => {
     "Q2.3.4": "2_NON",
   };
 
-  it("revenir à 50 km ou moins efface la série et l'urgence", () => {
+  // L'urgence garde sa réponse : la page de branche pourrait la poser
+  // (ADR-29). Elle ne compte plus pour autant.
+  it("revenir à 50 km ou moins efface la série, et l'urgence n'est plus validée", () => {
     const apres = valideeAvec(EN_SERIE, "P2/trajet", {
       "Q2.3.1": "1_CINQUANTE_KM_OU_MOINS",
     });
 
     expect(apres).not.toHaveProperty("Q2.3.3");
-    expect(apres).not.toHaveProperty("Q2.3.4");
+    expect(lire(apres).validated.toJSON()).not.toHaveProperty("Q2.3.4");
     expect(posees(apres)).not.toContain("Q2.3.3");
   });
 
@@ -259,17 +261,29 @@ describe("une décision atteinte, puis une réponse changée (cas « Certificats
 });
 
 describe("les groupes de la maternité changés (cas « Maternité »)", () => {
-  const URGENCE_DITE: Reponses = { ...MATERNITE_ETABLIE, "Q2.12": "2_NON" };
+  const URGENCE_DITE: Reponses = { ...MATERNITE_ETABLIE, "Q2.3.4": "2_NON" };
 
-  it.each([
-    ["Q2.14.eloignement", ["2_COMMUNE_DESIGNEE_PAR_L_ARS"]],
-    ["Q2.14.motif", ["2_HEBERGEMENT_ENGAGEMENT"]],
-  ] as const)("changer %s efface l'urgence (Q2.12)", (id, autre) => {
+  // Une preuve actuelle se réutilise : l'urgence reste dite (ADR-29).
+  // L'examen coché en Q2.2.1 est le motif : seul l'éloignement change.
+  it("changer d'éloignement garde l'urgence", () => {
     const brouillon = brouillonDe(URGENCE_DITE, "P2/branche");
+    const changee = answerOnPage(
+      pageDe("P2/branche"),
+      brouillon,
+      "Q2.14.eloignement",
+      ["2_COMMUNE_DESIGNEE_PAR_L_ARS"],
+    );
+    const apres = lire(URGENCE_DITE).commit(pageDe("P2/branche"), changee);
 
-    expect(brouillon).toHaveProperty("Q2.12");
-    expect(
-      answerOnPage(pageDe("P2/branche"), brouillon, id, autre),
-    ).not.toHaveProperty("Q2.12");
+    expect(apres).toHaveProperty("Q2.3.4", "2_NON");
+    expect(lire(apres).validated.toJSON()["Q2.3.4"]?.answer).toBe("2_NON");
+  });
+
+  it("passer l'éloignement à « Aucune » efface l'urgence", () => {
+    const apres = valideeAvec(URGENCE_DITE, "P2/branche", {
+      "Q2.14.eloignement": ["3_AUCUNE"],
+    });
+
+    expect(apres).not.toHaveProperty("Q2.3.4");
   });
 });
