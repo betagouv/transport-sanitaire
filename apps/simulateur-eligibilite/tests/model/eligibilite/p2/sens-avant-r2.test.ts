@@ -27,6 +27,7 @@ const PERMISSION: Reponses = {
   "Q2.2.1.cadre": "1_ETABLISSEMENT",
   "Q2.2.1.a": "1_OUI",
   "Q2.7": "3_ADULTE_AUTORISEE",
+  "Q2.6": ["11_AUCUNE"],
 };
 const DIALYSE: Reponses = {
   "Q1.3": ["5_DIALYSE"],

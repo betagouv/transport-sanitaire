@@ -51,8 +51,10 @@ export const P2 = {
       page("P2/soins", Q2_2_1_B),
       page("P2/trajet", Q2_3_1, Q2_3_2, Q2_3_3, Q2_3_1_FINALITE, Q2_3_4),
       page("P2/transfert", Q2_5),
-      page("P2/exceptions", Q2_6_A, Q2_6),
+      // Les exceptions suivent la permission : celle d'un adulte autorisée
+      // les pose aussi (D-283).
       page("P2/permission", Q2_7, Q2_7_A),
+      page("P2/exceptions", Q2_6_A, Q2_6),
       page(
         "P2/permission-mineur",
         Q2_8_1,

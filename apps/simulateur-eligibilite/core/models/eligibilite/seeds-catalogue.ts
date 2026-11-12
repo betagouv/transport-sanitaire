@@ -383,7 +383,7 @@ export const SEEDS: readonly Seed<Questions, Cibles>[] = [
     id: "sejour-en-etablissement",
     label: "Résultat : permission de sortie d'un patient hospitalisé",
     description:
-      "Ouvre le résultat d'un patient en séjour dans un établissement de santé (Q2.2.1.cadre), dont le trajet est une permission de sortie autorisée. Le séjour en établissement établit l'hospitalisation, et la permission se pose.",
+      "Ouvre le résultat d'un patient en séjour dans un établissement de santé (Q2.2.1.cadre), dont le trajet est une permission de sortie autorisée d'un adulte. Elle relève de l'article 80 : sans exception (Q2.6), l'établissement prend le transport en charge (D-283).",
     answers: {
       "Q0.1": "1_VERIFIER",
       "Q1.1": "3_AVEC_UN_PROFESSIONNEL",
@@ -395,11 +395,12 @@ export const SEEDS: readonly Seed<Questions, Cibles>[] = [
       "Q2.2.1.a": "1_OUI",
       ...TRAJET_COURT,
       "Q2.7": "3_ADULTE_AUTORISEE",
+      "Q2.6": ["11_AUCUNE"],
     },
     expected: {
-      cible_issue_id: "ISSUE_PMT",
-      cible_support_id: "S3138g",
-      cible_financeur: "ASSURANCE_MALADIE",
+      cible_issue_id: "ISSUE_ETABLISSEMENT",
+      cible_support_id: "AUCUN",
+      cible_financeur: "ETABLISSEMENT",
       cible_mode_id: "AMBULANCE",
     },
   },
