@@ -1,27 +1,34 @@
-// L'app Express. Elle monte l'API du rattachement sous `/api`, puis sert le
-// front construit par Vite.
+// L'app Express. Elle monte l'API du rattachement et la collecte du journal
+// sous `/api`, puis sert le front construit par Vite.
 //
-// `creerApp` reçoit le `Referentiel` en paramètre : les tests passent le
-// snapshot, sans mock.
+// `creerApp` reçoit le `Referentiel` et le `Journal` en paramètre : les tests
+// passent le snapshot et le journal en mémoire, sans mock.
 
 import express, { type Express } from "express";
 import type { Referentiel } from "../shared/referentiel.ts";
+import type { Journal } from "./journal/journal.ts";
+import { journalRoutes } from "./journal/routes.ts";
 import { rattachementRoutes } from "./rattachement/routes.ts";
 
 export type AppOptions = {
+  /** Où va le journal des parcours. */
+  journal: Journal;
+  /** L'environnement écrit avec chaque événement : production, staging… */
+  environment: string;
   /** Répertoire du build front à servir (absent en test). */
   dossierDist?: string;
 };
 
 export function creerApp(
   referentiel: Referentiel,
-  { dossierDist }: AppOptions = {},
+  { journal, environment, dossierDist }: AppOptions,
 ): Express {
   const app = express();
   app.use(express.json());
   interdireIndexation(app);
 
   app.use("/api", rattachementRoutes(referentiel));
+  app.use("/api", journalRoutes(journal, environment));
   // Toute autre route sous /api rend un 404 JSON, pour éviter de servir
   // index.html.
   app.use("/api", (_req, res) => {

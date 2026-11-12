@@ -76,6 +76,8 @@ jamais exposées au front.
 | --- | --- | --- | --- | --- |
 | `GRIST_API_KEY` | serveur | **prod** | référentiel **snapshot factice** (dev/CI) | Clé API Grist source du référentiel (établissements/services). Jamais exposée au front. |
 | `GRIST_DOC_URL` | serveur | non | doc Grist du projet | Base API du doc Grist (`server/configuration.ts`). |
+| `JOURNAL_GRIST_DOC_URL` | serveur | non | doc Grist « Simulateur-Parcours » | Base API du doc Grist du journal des parcours, écrit avec la même clé. Sans clé, le journal est en mémoire. |
+| `APP` | serveur | non | `local` | Nom de l'app Scalingo, posé par Scalingo. Écrit comme `environment` de chaque événement du journal. |
 | `VITE_MATOMO_ENABLED` | front | non | `false` (traceur no-op) | Active le tracking Matomo. Actif d'office en build de prod ; à mettre à `true` pour tester en local. |
 | `VITE_MATOMO_URL` | front | non | instance mutualisée beta.gouv | URL de l'instance Matomo. |
 | `VITE_MATOMO_SITE_ID` | front | non | `275` | Identifiant du site Matomo. |
@@ -117,11 +119,17 @@ qu'on importe de l'extérieur (ADR-28).
 
 ```
 shared/                  le contrat front ⇄ back, source unique des types partagés
+  analytics/             le contrat d'un événement du journal (ANA-1015), et son
+                         schéma zod, que seul le serveur importe
 server/                  le backend Node, barrière de sécurité : les secrets vivent ici
                          et ne sont jamais bundlés. Bootstrap, composition,
                          configuration lue une fois et refusée si elle manque en prod.
   rattachement/          LA feature backend : les routes `/api` et la source Grist du
                          référentiel, qu'elle lit et complète
+  journal/               le journal des parcours : sa route de collecte, son port
+                         et ses adaptateurs, Grist et mémoire (ADR-7 d'analytics)
+  grist/                 les lignes d'un doc Grist, lues et écrites, pour le
+                         référentiel comme pour le journal
 core/                    le métier, sans React ni DOM : ce qu'un serveur ou un script
                          peut calculer
   models/                le métier de chaque modèle
@@ -231,7 +239,8 @@ front/                   le front, bundlé par Vite
                          télécharger, l'imprimer, le bouton qui l'attend). Aucun
                          gabarit.
     analytics/           le vocabulaire mesuré, seul import du reste, son transport
-                         vers Matomo, le choix du prescripteur transmis par le CMS, et
+                         vers Matomo, le parcours et son envoi au journal du backend,
+                         le choix du prescripteur transmis par le CMS, et
                          cms.js, le script à coller dans Sites Conformes : l'opt-out
                          du pied de page, qui répond au traceur de l'iframe, le
                          thème de la page, et le retour au haut de l'iframe (voir

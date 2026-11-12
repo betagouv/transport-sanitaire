@@ -1,15 +1,21 @@
-// Démarre une app Express sur un référentiel injecté, sans mock : les tests
-// l'interrogent par de vraies requêtes HTTP, sur un port éphémère.
+// Démarre une app Express sur un référentiel et un journal injectés, sans
+// mock : les tests l'interrogent par de vraies requêtes HTTP, sur un port
+// éphémère.
 
 import type { Server } from "node:http";
 import type { AddressInfo } from "node:net";
 import { creerApp } from "../../../server/app.ts";
+import type { Journal } from "../../../server/journal/journal.ts";
+import { memoryJournal } from "../../../server/journal/memory-journal.ts";
 import type { Referentiel } from "../../../shared/referentiel.ts";
 
 export type AppDeTest = { base: string; close: () => Promise<void> };
 
-export async function demarrer(referentiel: Referentiel): Promise<AppDeTest> {
-  const app = creerApp(referentiel);
+export async function demarrer(
+  referentiel: Referentiel,
+  { journal = memoryJournal() }: { journal?: Journal } = {},
+): Promise<AppDeTest> {
+  const app = creerApp(referentiel, { journal, environment: "test" });
   const srv = await new Promise<Server>((resolve) => {
     // Express 5 passe une éventuelle erreur au callback. `resolve` n'en veut pas.
     const s = app.listen(0, () => resolve(s));

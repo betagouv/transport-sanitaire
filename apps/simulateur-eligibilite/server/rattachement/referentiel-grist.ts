@@ -18,8 +18,8 @@ import type {
   Referentiel,
   Service,
 } from "../../shared/referentiel.ts";
-import type { DocGrist, LigneGrist } from "./lignes-grist.ts";
-import { creerLigne, lignes, ouvrirDoc, texte } from "./lignes-grist.ts";
+import type { DocGrist, LigneGrist } from "../grist/lignes-grist.ts";
+import { creerLigne, lignes, ouvrirDoc, texte } from "../grist/lignes-grist.ts";
 
 export type GristConfig = {
   /** Base API du doc, ex. https://…/api/docs/<docId> */

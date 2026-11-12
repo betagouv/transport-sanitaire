@@ -41,6 +41,12 @@ describe("configuration du serveur en production", () => {
     const config = lireConfiguration(COMPLET);
     expect(config.port).toBe(3000);
     expect(config.grist?.docUrl).toMatch(/^https:\/\/grist\./);
+    expect(config.journal?.docUrl).toMatch(/ihJg4NmHn6kg$/);
+  });
+
+  it("écrit le nom de l'app Scalingo comme environnement du journal", () => {
+    const config = lireConfiguration({ ...COMPLET, APP: "simulateur-staging" });
+    expect(config.environment).toBe("simulateur-staging");
   });
 });
 

@@ -15,8 +15,10 @@ import {
   configFromEnv,
   followHostTheme,
   initAnalytics,
+  initJournal,
   loadMatomo,
   type Models,
+  sendToTheJournal,
 } from "./socle";
 
 // Clair par défaut : le thème est celui de la page qui embarque l'app, qui le
@@ -28,6 +30,10 @@ followHostTheme(applyTheme);
 // prescripteur et ne charge Matomo que si le suivi est accepté. Le service est
 // rangé en session au rattachement, puis lu à chaque événement.
 initAnalytics(configFromEnv(), { load: loadMatomo });
+
+// Le parcours part aussi au journal du backend, sous le même choix du
+// prescripteur (ADR-6 d'analytics.md).
+initJournal(sendToTheJournal());
 
 // Le premier s'ouvre au démarrage. À plusieurs, on peut en changer depuis les
 // developer tools, donc en local seulement.

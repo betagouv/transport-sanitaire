@@ -16,6 +16,10 @@ export type Configuration = {
   port: number;
   /** Accès au doc Grist ; absent ⇒ référentiel snapshot factice (dev/CI). */
   grist: AccesGrist | undefined;
+  /** Accès au journal des parcours ; absent ⇒ journal en mémoire (dev/CI). */
+  journal: AccesGrist | undefined;
+  /** Le nom de l'app Scalingo, écrit avec chaque événement ; `local` hors Scalingo. */
+  environment: string;
 };
 
 /** Ce que l'exploitant doit corriger : une variable par ligne, et pourquoi. */
@@ -39,11 +43,14 @@ export function lireConfiguration(env: Env = process.env): Configuration {
   const lu = schema.safeParse(sansValeursVides(env));
   if (!lu.success) throw new ErreurDeConfiguration(lu.error);
   const variables = lu.data;
+  const cleApi = variables.GRIST_API_KEY;
   return {
     port: variables.PORT,
-    grist: variables.GRIST_API_KEY
-      ? { cleApi: variables.GRIST_API_KEY, docUrl: variables.GRIST_DOC_URL }
-      : sansGrist(),
+    grist: cleApi ? { cleApi, docUrl: variables.GRIST_DOC_URL } : sansGrist(),
+    journal: cleApi
+      ? { cleApi, docUrl: variables.JOURNAL_GRIST_DOC_URL }
+      : undefined,
+    environment: variables.APP,
   };
 }
 
@@ -51,6 +58,8 @@ export function lireConfiguration(env: Env = process.env): Configuration {
 
 const DOC_URL_PAR_DEFAUT =
   "https://grist.numerique.gouv.fr/o/transports-sanitaires/api/docs/gbPomRAyU3M6P5NR6x6Qac";
+const JOURNAL_DOC_URL_PAR_DEFAUT =
+  "https://grist.numerique.gouv.fr/o/transports-sanitaires/api/docs/ihJg4NmHn6kg";
 
 // Les variables qui ont un défaut documenté (README § Configuration). Leur
 // absence n'empêche pas de démarrer.
@@ -63,7 +72,14 @@ const VARIABLES = z.object({
   GRIST_DOC_URL: z
     .url({ error: "doit être une URL" })
     .default(DOC_URL_PAR_DEFAUT),
+  // Le journal des parcours est un autre document, avec la même clé (ADR-6).
+  JOURNAL_GRIST_DOC_URL: z
+    .url({ error: "doit être une URL" })
+    .default(JOURNAL_DOC_URL_PAR_DEFAUT),
   GRIST_API_KEY: z.string().optional(),
+  // Scalingo pose le nom de l'app : il distingue la production de la
+  // préproduction dans le journal, sans variable de plus.
+  APP: z.string().default("local"),
 });
 
 // En production, la variable sans défaut devient obligatoire. C'est la seule

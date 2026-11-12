@@ -2,7 +2,7 @@
 // fin, et son abandon si l'onglet est fermé avant.
 
 import { useEffect, useRef } from "react";
-import { EventName, trackEvent } from "../analytics";
+import { EventName, startASimulation, trackEvent } from "../analytics";
 
 export type QuestionnaireTracking = {
   stepPassed: (page: number) => void;
@@ -25,7 +25,10 @@ export function useQuestionnaireTracking(
   // biome-ignore lint/correctness/useExhaustiveDependencies: amorçage unique au montage
   useEffect(() => {
     if (!tracked) return;
-    if (!resumed) trackEvent(EventName.simulationStart);
+    if (!resumed) {
+      trackEvent(EventName.simulationStart);
+      startASimulation();
+    }
     const onLeave = () => {
       if (!completed.current)
         trackEvent(EventName.simulationAbandon, currentRef.current);

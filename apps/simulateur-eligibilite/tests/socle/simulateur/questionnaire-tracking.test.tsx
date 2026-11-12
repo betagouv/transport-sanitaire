@@ -1,6 +1,7 @@
 import { screen } from "@testing-library/react";
 import { beforeEach, describe, expect, it } from "vitest";
-import { initAnalytics } from "../../../front/socle/analytics";
+import { initAnalytics, initJournal } from "../../../front/socle/analytics";
+import type { AnalyticsEvent } from "../../../shared/analytics/analytics-event";
 import {
   ACCOMPAGNEMENTS,
   allerAuResultat,
@@ -46,6 +47,30 @@ describe("suivi du parcours", () => {
     expect(
       evenements().filter((evenement) => evenement === "simulation_start"),
     ).toHaveLength(1);
+  });
+
+  it("envoie au journal un seul début, avec l'établissement et le service", async () => {
+    const envoyes: AnalyticsEvent[] = [];
+    initJournal(async (evenement) => {
+      envoyes.push(evenement);
+    });
+    const user = await ouvrirLeSimulateur();
+    await allerAuResultat(user);
+
+    await user.click(bouton("Précédent"));
+    await question(ACCOMPAGNEMENTS);
+
+    expect(envoyes).toEqual([
+      expect.objectContaining({
+        type: "simulation_started",
+        sequence: 1,
+        screen: "P0",
+        version: "10.1.7",
+        establishment_id: "e_chu_grenoble",
+        service_id: "s_grenoble_cardio",
+        is_test: false,
+      }),
+    ]);
   });
 
   it("n'émet rien dans le complément", async () => {

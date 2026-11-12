@@ -10,6 +10,7 @@ import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 import {
   franchissements,
+  importsDe,
   racine,
   sources,
   texteDe,
@@ -219,6 +220,21 @@ describe("invariants métier", () => {
       "Le prescripteur y complète des données de santé nominatives : elles ne " +
         "doivent pas quitter le navigateur. Le module ne charge qu'un gabarit " +
         "vierge, servi comme un asset — aucune route `/api` ne doit y apparaître.",
+    ).toEqual([]);
+  });
+
+  it("seul l'adaptateur Grist du journal connaît Grist", () => {
+    const fautifs = sources("server/journal").filter(
+      (f) =>
+        f !== "server/journal/grist-journal.ts" &&
+        importsDe(f).some(commencePar("server/grist/")),
+    );
+    expect(
+      fautifs,
+      "Le journal des parcours est derrière un port, `server/journal/journal.ts` " +
+        "(ADR-7 de docs/knowledge/adr/analytics.md) : Grist n'est que son premier " +
+        "adaptateur, et changera. Le reste du journal ne connaît ni Grist ni ses " +
+        "types : passe par le port, ou ajoute ce qui manque à l'adaptateur.",
     ).toEqual([]);
   });
 

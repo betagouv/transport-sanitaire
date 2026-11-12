@@ -6,7 +6,13 @@
 // L'écran des seeds et son tableau n'y figurent pas : ils sont chargés à la
 // demande, et les réexporter ici les ramènerait dans le chunk d'entrée.
 
-export { configFromEnv, initAnalytics, loadMatomo } from "./analytics";
+export {
+  configFromEnv,
+  initAnalytics,
+  initJournal,
+  loadMatomo,
+  sendToTheJournal,
+} from "./analytics";
 export { App, type Models } from "./app";
 export {
   at,
