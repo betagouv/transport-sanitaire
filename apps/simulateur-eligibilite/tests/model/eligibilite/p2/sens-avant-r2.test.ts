@@ -176,28 +176,25 @@ describe("Q2.13.sens ne se pose pas", () => {
     expect(sensPose(HOSPITALISATION("2_SORTIE"))).toBeUndefined();
     expect(sensPose(SANS_SITUATION)).toBeUndefined();
   });
+});
 
-  // Plusieurs permissions sont chacune un aller-retour (D-120) : le sens est
-  // acquis, et l'aller-retour se lit comme l'aller.
-  it("sur une sortie, plusieurs permissions donnent un aller-retour : pas de conflit", () => {
+// Plusieurs permissions ne disent aucun sens, même chacune un aller-retour
+// (QST-PERMISSION-REPETITION-SENS-20261112, D-284) : sur une sortie, le sens
+// se pose comme pour une seule.
+describe("Q2.13.sens sur une sortie en permission", () => {
+  it.each<[string, Reponses]>([
+    ["une seule permission", MINEUR],
+    ["plusieurs permissions", PLUSIEURS_PERMISSIONS],
+  ])("%s : le sens se pose, sans résultat avant lui", (_, permission) => {
     const sortie: Reponses = {
-      ...PLUSIEURS_PERMISSIONS,
+      ...permission,
       "Q2.1": "8_HOSPITALISATION",
       "Q2.1.g": "2_SORTIE",
     };
-    const simulation = Simulation.resume(model.core, sortie);
 
-    expect(sensPose(sortie)).toBeUndefined();
-    expect(simulation.stage.name).toBe("resultat");
-  });
-
-  it("sur une sortie, une seule permission laisse le sens à poser", () => {
-    expect(
-      sensPose({
-        ...MINEUR,
-        "Q2.1": "8_HOSPITALISATION",
-        "Q2.1.g": "2_SORTIE",
-      }),
-    ).toBeDefined();
+    expect(sensPose(sortie)).toBeDefined();
+    expect(Simulation.resume(model.core, sortie).stage.name).not.toBe(
+      "resultat",
+    );
   });
 });

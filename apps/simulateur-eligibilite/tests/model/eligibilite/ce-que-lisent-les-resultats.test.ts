@@ -54,7 +54,6 @@ describe("les questions que les résultats lisent telles quelles", () => {
       "Q2.5",
       "Q2.6",
       "Q2.8.1",
-      "Q2.8.5",
       "Q2.8.6",
       "Q3.1.1",
       "Q3.1.2",

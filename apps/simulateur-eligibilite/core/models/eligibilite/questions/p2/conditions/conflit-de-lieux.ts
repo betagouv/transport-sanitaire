@@ -98,7 +98,6 @@ const SANS_REPONSES: Entrees = {
   transfert: SANS_REPONSE,
   contexte: SANS_REPONSE,
   departDeLEntree: SANS_REPONSE,
-  repetition: SANS_REPONSE,
   trajetEvalue: SANS_REPONSE,
 };
 
@@ -111,15 +110,11 @@ function unConflitCertain(lues: Partial<Entrees>): boolean {
   );
 }
 
-// Le sens que les réponses établissent : Q2.13.sens, ou plusieurs
-// permissions, chacune un aller-retour (D-120).
-function orientationAcquise({
-  trajetEvalue,
-  repetition,
-}: Entrees): Orientation | Inconnu {
+// Le sens que les réponses établissent : Q2.13.sens seule. Plusieurs
+// permissions n'en disent aucun (D-284).
+function orientationAcquise({ trajetEvalue }: Entrees): Orientation | Inconnu {
   const sens = trajetEvalue.value;
-  if (sens !== undefined) return ORIENTATION_DU_SENS[sens];
-  return repetition.is("1_OUI") ? "aller" : undefined;
+  return sens === undefined ? undefined : ORIENTATION_DU_SENS[sens];
 }
 
 function sans(entrees: Partial<Entrees>, nom: keyof Lues): Partial<Entrees> {

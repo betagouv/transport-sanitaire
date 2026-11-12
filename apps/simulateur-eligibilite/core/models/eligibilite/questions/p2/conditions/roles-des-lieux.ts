@@ -19,7 +19,6 @@ import type { Q2_2_1_A } from "../questions/q2-2-1-a.ts";
 import type { Q2_2_1_CADRE } from "../questions/q2-2-1-cadre.ts";
 import type { Q2_5 } from "../questions/q2-5.ts";
 import type { Q2_6 } from "../questions/q2-6.ts";
-import type { Q2_8_5 } from "../questions/q2-8-5.ts";
 import type { Q2_13_DEPART, Q2_13_SENS } from "../questions/q2-13.ts";
 import type { Nature } from "./natures-du-lieu.ts";
 import {
@@ -39,9 +38,9 @@ export type { Etablie, Nature, Orientation };
 type Etablies = { readonly depart?: Etablie; readonly arrivee?: Etablie };
 
 /**
- * Les questions dont les lieux se tirent, chacune sous son nom. Les deux
- * dernières disent le sens : plusieurs permissions sont des allers-retours
- * (D-120), Q2.13.sens le qualifie avant R2 (#365).
+ * Les questions dont les lieux se tirent, chacune sous son nom. La dernière
+ * dit le sens, qualifié avant R2 (#365). Plusieurs permissions n'en disent
+ * aucun (D-284).
  */
 export type Lues = {
   readonly soins: typeof Q1_3;
@@ -52,7 +51,6 @@ export type Lues = {
   readonly transfert: typeof Q2_5;
   readonly contexte: typeof Q2_6;
   readonly departDeLEntree: typeof Q2_13_DEPART;
-  readonly repetition: typeof Q2_8_5;
   readonly trajetEvalue: typeof Q2_13_SENS;
 };
 

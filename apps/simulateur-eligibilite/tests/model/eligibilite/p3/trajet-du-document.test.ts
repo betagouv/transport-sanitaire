@@ -62,8 +62,10 @@ describe("ce que la page du trajet pose (Q3.1)", () => {
     },
   );
 
-  it("pour le S3141 de plusieurs permissions, le seul nombre mensuel : chacune est un aller-retour", () => {
+  // Q2.8.5 ne dit aucun sens (D-284) : il se demande, puis le nombre mensuel.
+  it("pour le S3141 de plusieurs permissions, le sens et le nombre mensuel", () => {
     expect(posees("S3141", PLUSIEURS_PERMISSIONS).map(({ id }) => id)).toEqual([
+      "Q3.1.2",
       "Q3.1.3",
     ]);
   });

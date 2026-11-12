@@ -91,9 +91,11 @@ export const ETRANGER: Reponses = {
   ...P3_DE_LA_DIALYSE,
 };
 
-// Plusieurs permissions : P2 fixe les lieux, de l'établissement au domicile.
+// Plusieurs permissions, en aller-retour (D-284) : de l'établissement au
+// domicile.
 export const PERMISSIONS: Reponses = {
   ...PLUSIEURS_PERMISSIONS,
+  "Q3.1.2": "3_ALLER_RETOUR_EQUIVALENT",
   "Q3.1.3": 2,
   "Q3.2.nom": "Hôpital Necker",
   "Q3.2.adresse": HOPITAL,

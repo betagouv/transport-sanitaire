@@ -15,7 +15,7 @@ import {
   natureDu,
   projectionCerfa,
 } from "../../../../../core/models/eligibilite/questions/p3/conditions/lieux-du-trajet";
-import { SENS_DU_DOCUMENT } from "../../../../../core/models/eligibilite/questions/p3/conditions/sens-du-trajet";
+import { SENS_CHOISI } from "../../../../../core/models/eligibilite/questions/p3/conditions/sens-du-trajet";
 import { Q3_2 } from "../../../../../core/models/eligibilite/questions/p3/questions/q3-2";
 import { Q3_3 } from "../../../../../core/models/eligibilite/questions/p3/questions/q3-3";
 import { given } from "../../../../../core/models/eligibilite/questions/reponses";
@@ -42,7 +42,7 @@ export const TRAJET: Rubrique<Trajet> = {
   arrivee_domicile: auDomicile("arrivee"),
   arrivee_structure: zone("arrivee", "STRUCTURE_DE_SOINS"),
   arrivee_autre: zone("arrivee", "AUTRE_LIEU"),
-  aller_retour: SENS_DU_DOCUMENT.compute(
+  aller_retour: SENS_CHOISI.compute(
     (sens) => sens === "3_ALLER_RETOUR_EQUIVALENT",
   ),
 };

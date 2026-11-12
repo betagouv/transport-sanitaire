@@ -52,13 +52,15 @@ describe("les lieux d'un séjour, d'une HAD et d'une permission (QST-LIEUX-001)"
     ).toContain("3_EHPAD");
   });
 
-  it("plusieurs permissions du S3141 partent de l'établissement, sans Q3.1.2 ni domicile présumé", () => {
+  // Le sens vient de Q3.1.2, pas de Q2.8.5 (D-284).
+  it("plusieurs permissions du S3141, en aller-retour, partent de l'établissement, sans domicile présumé", () => {
     const S3141 = ciblesValant({ cible_support_id: "S3141" });
     const permissions: Reponses = {
       "Q2.2.1": ["1_HOSPITALISATION"],
       "Q2.2.1.cadre": "1_ETABLISSEMENT",
       "Q2.2.1.a": "1_OUI",
       "Q2.8.5": "1_OUI",
+      "Q3.1.2": "3_ALLER_RETOUR_EQUIVALENT",
     };
     expect(
       posees("P3/depart", permissions, S3141).find(
