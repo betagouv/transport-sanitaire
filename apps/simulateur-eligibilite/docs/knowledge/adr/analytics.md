@@ -1,10 +1,19 @@
 # Architecture : Analytics de parcours
 
-> Statut : **décidé (release officielle)** · Dernière mise à jour : 2026-11-02
+> Statut : **décidé (release officielle)** · Dernière mise à jour : 2026-11-12
 >
 > Suivi analytique du parcours dans le simulateur d'éligibilité.
 > Repose sur le rattachement établissement/service fourni par l'écran de rattachement :
 > voir [identification.md](./identification.md).
+>
+> **Mise à jour 2026-11-12, journal des parcours (#380, #381).** Le simulateur collecte
+> désormais chaque parcours, rattaché à son établissement et à son service, pour le
+> dashboard analytics à venir. Le navigateur envoie les événements à notre backend,
+> qui les écrit dans le document Grist « Simulateur-Parcours » (ADR-6). Aucun contenu
+> de champ libre n'en fait partie. Le responsable du traitement a donné son accord
+> à cette collecte. Cela **révise** le §1 (« aucun backend applicatif ne collecte les
+> événements ») et l'invariant, et **étend** l'opt-out (ADR-5) au journal. Matomo
+> reste en place pour la mesure d'audience (ADR-1).
 >
 > **Mise à jour 2026-10-29, indicateur de parcours ALD.** À chaque arrivée sur le
 > premier résultat, un parcours ALD envoie son verdict, avec le nombre de questions
@@ -43,19 +52,28 @@ On veut suivre le parcours de simulation :
 - qui l'abandonne, et à quelle étape ;
 - le nombre de résultats éligibles et non éligibles par service ;
 - la part des parcours ALD qui arrivent au résultat en six pages et six questions
-  au plus (#148).
+  au plus (#148) ;
+- depuis le 2026-11-12, tout ce que les 62 blocs du dashboard analytics demandent :
+  ce qui a été réellement affiché (P0, questions, R2, R3, boutons), ce qui a été
+  validé ou demandé, et comment le parcours finit. Le dashboard sera livré après le
+  simulateur et recalculera l'historique depuis ce journal (#380).
   ~~par prescripteur~~ (jusqu'au 2026-09-29).
 
 Le découpage par service s'appuie sur l'id du service dans le référentiel Grist,
 fourni par l'étape de rattachement et gardé en mémoire de session (cf.
-[identification.md, ADR-4](./identification.md)). Le simulateur a un backend, pour le
-rattachement, mais l'analytics part directement du navigateur vers Matomo. Aucun
-backend applicatif ne collecte les événements.
+[identification.md, ADR-4](./identification.md)). La mesure d'audience part
+directement du navigateur vers Matomo. Le journal des parcours passe par notre
+backend, qui l'écrit dans Grist (ADR-6). ~~Aucun backend applicatif ne collecte les
+événements.~~ (jusqu'au 2026-11-12)
 
-**Invariant** : aucune donnée patient, aucune PII et aucune réponse détaillée du
-formulaire ne part vers l'analytics. Seuls transitent l'id d'un service du référentiel
-et des compteurs d'événements. Le service libre saisi sous « Autre » n'en fait pas
-partie.
+**Invariant** : aucune donnée patient, aucune PII, aucun contenu de champ libre et
+aucune valeur de réponse ne part, ni vers Matomo ni vers le journal. Transitent les
+ids de l'établissement et du service du référentiel, des identifiants techniques
+opaques (simulation, événement, exposition, révision), les codes des questions
+affichées et l'état de leur validation, et les codes de résultat (issue, motifs,
+mode, support, financeur). Le service libre saisi sous « Autre » n'en fait pas
+partie. ~~Seuls transitent l'id d'un service du référentiel et des compteurs
+d'événements.~~ (jusqu'au 2026-11-12)
 
 ## 2. Décisions (ADR)
 
@@ -78,6 +96,11 @@ et récupérer le `siteId` et l'URL du tracker. Les fonctionnalités disponibles
 instance mutualisée, qui reste à confirmer (voir R-8). Les réglages de
 confidentialité de l'instance, dont l'anonymisation de l'IP, ne sont pas entre nos
 mains (voir R-10).
+
+Depuis le 2026-11-12, Matomo ne porte plus que la mesure d'audience. Il ne garde ni
+identifiant d'événement dédoublonné, ni séquence, ni lien entre un bouton affiché et
+son clic : le journal des parcours qu'attend le dashboard passe par notre backend
+(ADR-6).
 
 ### ADR-2 - Découpage par service via propriété d'événement (~~par prescripteur~~)
 
@@ -199,6 +222,53 @@ CMS, hors de tout déploiement : sa mise à jour se fait à la main, depuis le f
 dépôt. Le refus est mémorisé dans le stockage du CMS, ce que l'exemption autorise pour
 retenir une opposition.
 
+Depuis le 2026-11-12, le même choix vaut pour le journal des parcours (ADR-6) : sur
+refus, le navigateur n'envoie rien au backend, et cesse d'envoyer sur un refus en
+cours de session.
+
+### ADR-6 - Journal des parcours écrit par le backend dans Grist
+
+**Contexte.** Le dashboard analytics sera livré après le simulateur. Il devra
+recalculer ses 62 blocs depuis des événements unitaires, conservés, dédoublonnés et
+reliés entre eux : une simulation de P0 à sa fin, un bouton affiché à son clic, un
+document à son résultat. Matomo ne sait pas le porter (ADR-1). Le plan de marquage
+v10.1.7 et le contrat `analytics/` du paquet de l'éditeur décrivent ces événements.
+Le responsable du traitement a donné son accord à cette collecte.
+
+**Décision.** Le navigateur envoie chaque événement à une route de collecte
+versionnée de notre backend Express. Le backend :
+
+- valide l'événement contre une liste fermée de champs : le contrat du paquet pour
+  le socle, un contrat versionné à part pour nos compléments (`service_id`,
+  exposition des boutons documentaires, mesures typographiques) ;
+- y ajoute ce que le navigateur ne peut pas prouver : la date de réception, la
+  version du schéma, l'environnement ;
+- l'écrit dans le document Grist « Simulateur-Parcours », distinct du référentiel
+  des établissements, en ajout ou mise à jour sur l'`event_id`, ce qui rend un renvoi
+  sans effet ;
+- n'accuse réception qu'une fois l'écriture faite.
+
+Chaque événement porte l'id de l'établissement et celui du service du rattachement.
+Le contrat v0.1 du plan de marquage (16 événements, `p0_viewed`, `cta_exposed`…)
+n'est pas suivi : il est historique.
+
+**Pourquoi Grist.** L'équipe y tient déjà le référentiel, le backend sait déjà y
+écrire (le rattachement « Autre »), et l'app n'a aucune base de données à exploiter.
+Le journal se lit et s'exporte sans outil de plus.
+
+**Conséquences.**
+
+- Le backend devient un point de passage de la collecte : s'il ou Grist ne répond
+  pas, le navigateur garde un nombre borné d'événements à renvoyer, puis les perd en
+  le sachant. La perte se lit dans la couverture.
+- Une nouvelle variable de configuration donne l'adresse du document
+  « Simulateur-Parcours ».
+- Aucune adresse IP ni aucun en-tête du navigateur n'est écrit dans le journal.
+- Grist n'est pas fait pour stocker des événements en masse : le volume est à
+  surveiller (R-13).
+- Un rechargement de la page crée une nouvelle simulation : l'app ne garde rien
+  d'un rechargement à l'autre. La reprise viendra avec #392 (R-14).
+
 ## 3. Architecture cible
 
 ```mermaid
@@ -208,16 +278,31 @@ flowchart TB
         subgraph simu["App simulateur (dans l'iframe CMS)"]
             parcours["Parcours de simulation<br/>(formulaire + résultat)"]
             traceur["Traceur d'analytics, cookieless<br/>(id du service en Nom d'événement)"]
+            emetteur["Émetteur du journal<br/>(simulation, affichages, validations, clics)"]
             parcours -->|"événements de parcours"| traceur
+            parcours -->|"faits affichés et validés"| emetteur
         end
     end
     traceur -->|"postMessage : demande du choix"| optout
     optout -->|"postMessage : suivi ou refus"| traceur
+    optout -->|"postMessage : suivi ou refus"| emetteur
     matomo[("Matomo<br/>(mutualisé beta.gouv, IP anonymisée par l'instance)")]
+    backend["Backend Express<br/>(route de collecte versionnée)"]
+    journal[("Grist « Simulateur-Parcours »<br/>(journal des parcours)")]
 
     rattachement["rattachement établissement/service<br/>(en mémoire de session)"] --> traceur
+    rattachement --> emetteur
     traceur -->|"événements (Nom = id du service)"| matomo
+    emetteur -->|"événements validés par le contrat"| backend
+    backend -->|"ajout ou mise à jour sur event_id"| journal
 ```
+
+| Composant | Rôle | Statut |
+|---|---|---|
+| Traceur Matomo | mesure d'audience | inchangé |
+| Émetteur du journal | crée la simulation, émet les faits réellement affichés, validés ou demandés | ajouté (2026-11-12) |
+| Route de collecte | valide, date la réception, écrit dans Grist | ajouté (2026-11-12) |
+| Grist « Simulateur-Parcours » | conserve le journal, s'exporte | ajouté (2026-11-12) |
 
 ~~Un composant de gestion du consentement autorisait l'initialisation du traceur.~~
 Retiré le 2026-09-29 (ADR-3).
@@ -318,6 +403,10 @@ Retiré le 2026-10-06 avec le téléchargement des trois CERFA.
    testé. *Reste : coller le script dans Sites Conformes avec l'origine réelle du
    simulateur, publier le texte d'information (R-12).*
 
+4. **Journal des parcours.** À faire (#380) : la route de collecte et l'écriture dans
+   Grist (#382), puis la simulation, les questions, R2, R3, les boutons, la
+   typographie et la fin de parcours, chacun dans sa tâche.
+
 Prérequis : l'écran de rattachement fournit le service (cf.
 [identification.md](./identification.md), incréments 1–2 et 6).
 
@@ -331,6 +420,10 @@ Prérequis : l'écran de rattachement fournit le service (cf.
 | **R-10** | **Anonymisation de l'IP** : l'exemption CNIL l'exige, et elle se règle sur l'instance Matomo (Administration → Confidentialité), pas dans le code. À confirmer auprès des admins de stats.beta.gouv.fr pour le site 275. | conformité, **à vérifier avant la release** |
 | **R-11** | **Très petits services** : dans un service d'une ou deux personnes, l'id du service désigne de fait des individus. Réserve mineure, acceptée sans traitement dans le code. | conformité |
 | **R-12** | **Information des prescripteurs** : l'exemption exige de dire ce qui est mesuré et comment s'y opposer. Le texte, dans la politique de confidentialité du CMS, doit décrire la mesure par service et renvoyer à l'opt-out du pied de page. | conformité, **à publier avant la release** |
+| **R-13** | **Volume du journal dans Grist** : une simulation donne des dizaines d'événements. Les limites de taille d'un document et le débit de l'API Grist sont à mesurer avant la communication de l'app, et un archivage à prévoir s'ils approchent. | exploitation |
+| **R-14** | **Reprise après rechargement** : garder le même `simulation_id` après un rechargement demande un stockage dans le navigateur, que l'ADR-3 écarte. D'ici #392 (priorité basse), un rechargement crée une nouvelle simulation et l'ancienne reste sans fin. | décidé, plus tard |
+| **R-15** | **Durée de conservation** du journal : à fixer avec l'équipe responsable des données. | conformité, plus tard |
+| **R-16** | **Droits de la clé d'API** sur « Simulateur-Parcours » : lecture vérifiée le 2026-11-12 (document vide), écriture à vérifier. | exploitation |
 
 ## 8. Vérification
 
