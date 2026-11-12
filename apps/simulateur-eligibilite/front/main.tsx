@@ -8,6 +8,7 @@
 import { startReactDsfr } from "@codegouvfr/react-dsfr/spa";
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
+import { createContainer } from "./container";
 import "./socle/app/dsfr-overrides.css";
 import {
   App,
@@ -18,7 +19,6 @@ import {
   initJournal,
   loadMatomo,
   type Models,
-  ServerJournal,
 } from "./socle";
 
 // Clair par défaut : le thème est celui de la page qui embarque l'app, qui le
@@ -31,9 +31,11 @@ followHostTheme(applyTheme);
 // rangé en session au rattachement, puis lu à chaque événement.
 initAnalytics(configFromEnv(), { load: loadMatomo });
 
-// Le parcours part aussi au journal du backend, sous le même choix du
-// prescripteur (ADR-6 d'analytics.md).
-initJournal(new ServerJournal());
+// Les classes qui parlent au serveur, instanciées une fois. Le parcours part
+// aussi au journal du backend, sous le même choix du prescripteur (ADR-6
+// d'analytics.md).
+const container = createContainer();
+initJournal(container.startASimulation);
 
 // Le premier s'ouvre au démarrage. À plusieurs, on peut en changer depuis les
 // developer tools, donc en local seulement.
@@ -53,6 +55,10 @@ if (!racine) throw new Error("Élément #root absent de index.html.");
 
 createRoot(racine).render(
   <StrictMode>
-    <App models={models} />
+    <App
+      models={models}
+      referentiel={container.referentiel}
+      declarer={container.declarer}
+    />
   </StrictMode>,
 );

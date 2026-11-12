@@ -12,7 +12,7 @@
 
 import { describe, expect, it } from "vitest";
 import { lireConfiguration } from "../../../server/configuration.ts";
-import { choisirReferentiel } from "../../../server/rattachement/referentiel-source.ts";
+import { adaptersFor } from "../../../server/container.ts";
 
 const actif =
   process.env.GRIST_ECRITURE_TEST === "1" &&
@@ -21,7 +21,7 @@ const actif =
 describe.skipIf(!actif)(
   "écriture Grist depuis une saisie libre (smoke)",
   () => {
-    const ref = choisirReferentiel(lireConfiguration().grist);
+    const ref = adaptersFor(lireConfiguration()).referentiel;
 
     it("service « Autre » : crée le vrai service, puis le déduplique", async () => {
       const marqueur = `TEST-SVC-${Date.now()}`;

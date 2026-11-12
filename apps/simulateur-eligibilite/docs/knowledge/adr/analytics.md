@@ -314,7 +314,8 @@ son rôle par son suffixe, et chaque rôle s'écrit en classe ou en interface :
 | `.entity.ts` | une notion du journal et ses règles, sans dépendance | `JournalEntry` : l'événement daté à sa réception, qui sait s'il en répète un autre | `Journey` : la simulation, qui numérote et date ses événements |
 | `.usecase.ts` | une action, qui ne parle qu'aux entités et aux ports | `CollectAnEvent` : garde un nouvel événement, ignore un renvoi, met une collision à part | `StartASimulation` : ouvre un parcours et le signale sur P0 |
 | `.port.ts` | l'interface qu'un use case attend de l'extérieur | `Journal` : retrouver, ajouter, mettre à part | `Journal` : garder un événement |
-| `.adapter.ts` | une classe qui implémente un port, ou une entrée qui appelle un use case | `GristJournal`, `MemoryJournal`, `journalRoutes` | `ServerJournal` : envoi, réessais, opt-out |
+| `.adapter.ts` | une classe qui implémente un port | `GristJournal`, `MemoryJournal` | `ServerJournal` : envoi, réessais, opt-out |
+| `.controller.ts` | une entrée HTTP, qui valide la requête et appelle un use case | `JournalController` : la route de collecte | |
 
 Les adaptateurs parlent HTTP par deux clients préconfigurés (`.client.ts`), qui
 portent l'adresse, l'authentification, le JSON et les erreurs :
@@ -324,9 +325,18 @@ Le référentiel et le rattachement passent aussi par eux. L'adaptateur Grist, s
 connaître le document « Simulateur-Parcours », range chaque événement en colonnes
 communes (`event_id`, `simulation_id`, `sequence`, type, dates, environnement,
 version du schéma, `is_test`) et le reste en JSON dans une colonne `payload`, et les
-collisions dans une table à part. L'adaptateur se choisit au démarrage, dans
-`server/server.ts`. Les fichiers qui assemblent (`server.ts`, `app.ts`,
-`journey-in-session.ts`, `main.tsx`, les `index.ts`) n'ont pas de suffixe.
+collisions dans une table à part.
+
+Chaque côté a un conteneur, `container.ts` à sa racine, qui instancie une fois ses
+classes et les exporte. `server/container.ts` choisit les adaptateurs d'après la
+configuration (`adaptersFor`), puis assemble use case et contrôleur
+(`createContainer`), que `server.ts` donne à `app.ts`. `front/container.ts`
+instancie le client du serveur, le journal, le use case, le référentiel et la
+déclaration du rattachement, que `main.tsx` donne à l'app. Les deux exportent une
+fonction appelée une fois au démarrage, pas des instances, car rien ne doit
+s'exécuter au chargement d'un module (QUAL-004). Les fichiers qui assemblent
+(`container.ts`, `server.ts`, `app.ts`, `journey-in-session.ts`, `main.tsx`, les
+`index.ts`) n'ont pas de suffixe.
 
 **Pourquoi.** Changer de stockage ne doit toucher qu'un adaptateur. Si l'adaptateur
 décidait seul qu'un renvoi est un doublon, la règle partirait avec lui. Le suffixe

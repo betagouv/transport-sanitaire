@@ -1,16 +1,16 @@
-// Le référentiel côté navigateur : il appelle l'API du backend, sur la même
-// origine. Voir docs/knowledge/adr/identification.md, ADR-5.
+// Le référentiel côté navigateur : il appelle l'API du backend, par le client
+// que le conteneur lui donne. Voir docs/knowledge/adr/identification.md, ADR-5.
 
 import type {
   Etablissement,
   Referentiel,
   Service,
 } from "../../../shared/referentiel";
-import { ServerApiClient } from "../server-api";
+import type { ServerApiClient } from "../server-api";
 
-export const REFERENTIEL: Referentiel = {
-  listerEtablissements: () =>
-    new ServerApiClient().get<Etablissement[]>("/etablissements"),
-  listerServices: (etabId) =>
-    new ServerApiClient().get<Service[]>("/services", { etabId }),
-};
+export function referentielDuServeur(api: ServerApiClient): Referentiel {
+  return {
+    listerEtablissements: () => api.get<Etablissement[]>("/etablissements"),
+    listerServices: (etabId) => api.get<Service[]>("/services", { etabId }),
+  };
+}

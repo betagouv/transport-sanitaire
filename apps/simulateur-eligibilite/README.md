@@ -125,10 +125,12 @@ shared/                  le contrat front ⇄ back, source unique des types part
 server/                  le backend Node, barrière de sécurité : les secrets vivent ici
                          et ne sont jamais bundlés. Bootstrap, composition,
                          configuration lue une fois et refusée si elle manque en prod.
+  container.ts           instancie les adaptateurs, le use case et le contrôleur
+                         (ADR-7 d'analytics)
   rattachement/          LA feature backend : les routes `/api` et la source Grist du
                          référentiel, qu'elle lit et complète
   journal/               le journal des parcours en clean architecture : entité,
-                         use case, port et adaptateurs (route, Grist, mémoire),
+                         use case, port, adaptateurs (Grist, mémoire) et route,
                          nommés par leur suffixe (ADR-7 d'analytics)
   grist/                 le client HTTP de l'API Grist, pour le référentiel comme
                          pour le journal
@@ -188,6 +190,8 @@ core/                    le métier, sans React ni DOM : ce qu'un serveur ou un 
                          qu'est une seed, et ce qu'elle confirme ou dément
 front/                   le front, bundlé par Vite
   main.tsx               le point d'entrée du navigateur : monte l'app, amorce le traceur
+  container.ts           instancie ce qui parle au serveur : son client, le journal,
+                         le référentiel et la déclaration du rattachement
   models/                l'écran de chaque modèle, chacun chargé à la demande
     fake/                les deux résultats de la démonstration (`r2.tsx`, `r3.tsx`)
                          et son bon de commande

@@ -23,7 +23,7 @@ import type { Navigation } from "./navigation";
 import { useNavigation } from "./navigation";
 import { SimulateurScreen } from "./SimulateurScreen";
 
-// `referentiel` et `declarer` sont injectables pour les tests.
+// `referentiel` et `declarer` viennent du conteneur ; les tests passent les leurs.
 type Props = Pick<
   ComponentProps<typeof RattachementScreen>,
   "referentiel" | "declarer"

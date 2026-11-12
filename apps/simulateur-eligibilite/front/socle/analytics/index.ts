@@ -5,3 +5,4 @@ export { EventName, trackEvent } from "./events";
 export { initJournal, startASimulation } from "./journey-in-session";
 export { configFromEnv, initAnalytics, loadMatomo } from "./matomo";
 export { ServerJournal } from "./server-journal.adapter";
+export { StartASimulation } from "./start-a-simulation.usecase";

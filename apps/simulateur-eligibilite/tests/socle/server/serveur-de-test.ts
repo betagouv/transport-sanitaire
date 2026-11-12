@@ -5,6 +5,7 @@
 import type { Server } from "node:http";
 import type { AddressInfo } from "node:net";
 import { creerApp } from "../../../server/app.ts";
+import { createContainer } from "../../../server/container.ts";
 import type { Journal } from "../../../server/journal/journal.port.ts";
 import { MemoryJournal } from "../../../server/journal/memory-journal.adapter.ts";
 import type { Referentiel } from "../../../shared/referentiel.ts";
@@ -15,7 +16,9 @@ export async function demarrer(
   referentiel: Referentiel,
   { journal = new MemoryJournal() }: { journal?: Journal } = {},
 ): Promise<AppDeTest> {
-  const app = creerApp(referentiel, { journal, environment: "test" });
+  const app = creerApp(
+    createContainer({ referentiel, journal, environment: "test" }),
+  );
   const srv = await new Promise<Server>((resolve) => {
     // Express 5 passe une éventuelle erreur au callback. `resolve` n'en veut pas.
     const s = app.listen(0, () => resolve(s));

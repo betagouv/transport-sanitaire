@@ -1,35 +1,28 @@
 // L'app Express. Elle monte l'API du rattachement et la collecte du journal
 // sous `/api`, puis sert le front construit par Vite.
 //
-// `creerApp` reçoit le `Referentiel` et le `Journal` en paramètre : les tests
-// passent le snapshot et le journal en mémoire, sans mock.
+// `creerApp` reçoit le conteneur (`container.ts`) : les tests le créent sur le
+// snapshot et le journal en mémoire, sans mock.
 
 import express, { type Express } from "express";
-import type { Referentiel } from "../shared/referentiel.ts";
-import { CollectAnEvent } from "./journal/collect-an-event.usecase.ts";
-import type { Journal } from "./journal/journal.port.ts";
-import { journalRoutes } from "./journal/journal-routes.adapter.ts";
+import type { Container } from "./container.ts";
 import { rattachementRoutes } from "./rattachement/routes.ts";
 
 export type AppOptions = {
-  /** Où va le journal des parcours. */
-  journal: Journal;
-  /** L'environnement écrit avec chaque événement : production, staging… */
-  environment: string;
   /** Répertoire du build front à servir (absent en test). */
   dossierDist?: string;
 };
 
 export function creerApp(
-  referentiel: Referentiel,
-  { journal, environment, dossierDist }: AppOptions,
+  { referentiel, journalController }: Container,
+  { dossierDist }: AppOptions = {},
 ): Express {
   const app = express();
   app.use(express.json());
   interdireIndexation(app);
 
   app.use("/api", rattachementRoutes(referentiel));
-  app.use("/api", journalRoutes(new CollectAnEvent(journal, environment)));
+  app.use("/api", journalController.routes());
   // Toute autre route sous /api rend un 404 JSON, pour éviter de servir
   // index.html.
   app.use("/api", (_req, res) => {

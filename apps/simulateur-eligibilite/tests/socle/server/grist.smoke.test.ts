@@ -9,12 +9,12 @@
 
 import { describe, expect, it } from "vitest";
 import { lireConfiguration } from "../../../server/configuration.ts";
-import { choisirReferentiel } from "../../../server/rattachement/referentiel-source.ts";
+import { adaptersFor } from "../../../server/container.ts";
 
 const cleApi = process.env.GRIST_API_KEY?.trim();
 
 describe.skipIf(!cleApi)("référentiel Grist (smoke)", () => {
-  const ref = choisirReferentiel(lireConfiguration().grist);
+  const ref = adaptersFor(lireConfiguration()).referentiel;
 
   it("renvoie des établissements {id, libelle} non vides", async () => {
     const etabs = await ref.listerEtablissements();

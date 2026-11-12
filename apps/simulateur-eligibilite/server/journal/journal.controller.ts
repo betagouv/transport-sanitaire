@@ -7,23 +7,34 @@ import express, { type Request, type Response, type Router } from "express";
 import { parseAnAnalyticsEvent } from "../../shared/analytics/event-schema.ts";
 import type { CollectAnEvent, Collected } from "./collect-an-event.usecase.ts";
 
-export function journalRoutes(collectAnEvent: CollectAnEvent): Router {
-  const router = express.Router();
-  router.post("/journal/v1/events", (req: Request, res: Response) => {
+export class JournalController {
+  readonly #collectAnEvent: CollectAnEvent;
+
+  constructor(collectAnEvent: CollectAnEvent) {
+    this.#collectAnEvent = collectAnEvent;
+  }
+
+  /** Les routes du journal, à monter sous `/api`. */
+  routes(): Router {
+    const router = express.Router();
+    router.post("/journal/v1/events", (req, res) => this.#collect(req, res));
+    return router;
+  }
+
+  #collect(req: Request, res: Response): void {
     const event = parseAnAnalyticsEvent(req.body);
     if (!event) {
       res.status(400).json({ error: "événement hors contrat" });
       return;
     }
-    collectAnEvent.execute(event).then(
+    this.#collectAnEvent.execute(event).then(
       (collected) => respond(res, collected),
       (err: unknown) => {
         console.error("[simulateur] journal indisponible:", err);
         res.status(503).json({ error: "journal indisponible" });
       },
     );
-  });
-  return router;
+  }
 }
 
 // ---- implémentation ----
