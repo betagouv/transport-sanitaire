@@ -316,6 +316,7 @@ son rôle par son suffixe, et chaque rôle s'écrit en classe ou en interface :
 | `.port.ts` | l'interface qu'un use case attend de l'extérieur | `Journal` : retrouver, ajouter, mettre à part | `Journal` : garder un événement |
 | `.adapter.ts` | une classe qui implémente un port | `GristJournal` ; `DiscardingJournal`, qui ne garde rien, sans doc Grist ; `MemoryJournal`, pour les tests | `ServerJournal` : envoi, réessais, opt-out |
 | `.controller.ts` | une entrée HTTP, qui valide la requête et appelle un use case | `JournalController` : la route de collecte | |
+| `.context.ts` | l'injection d'un use case dans l'arbre React : le contexte, son provider, et le hook qui le lit | | `journal.context.ts` : `JournalProvider`, `useStartASimulation` |
 
 Les adaptateurs parlent HTTP par deux clients préconfigurés (`.client.ts`), qui
 portent l'adresse, l'authentification, le JSON et les erreurs :
@@ -333,12 +334,12 @@ configuration (`adaptersFor`), puis assemble use case et contrôleur
 (`createContainer`), que `server.ts` donne à `app.ts`. `front/container.ts`
 instancie le client du serveur, le journal, le use case, le référentiel et la
 déclaration du rattachement, que `main.tsx` donne à l'app. `App` pose le use case
-dans un contexte React (`journal-context.ts`), où le questionnaire le lit par
+dans un contexte React (`journal.context.ts`), où le questionnaire le lit par
 `useStartASimulation` : aucune variable globale ne le porte. Les deux conteneurs
 exportent une fonction appelée une fois au démarrage, pas des instances, car rien
 ne doit s'exécuter au chargement d'un module (QUAL-004). Les fichiers qui
-assemblent (`container.ts`, `server.ts`, `app.ts`, `journal-context.ts`,
-`main.tsx`, les `index.ts`) n'ont pas de suffixe.
+assemblent (`container.ts`, `server.ts`, `app.ts`, `main.tsx`, les `index.ts`)
+n'ont pas de suffixe.
 
 **Pourquoi.** Changer de stockage ne doit toucher qu'un adaptateur. Si l'adaptateur
 décidait seul qu'un renvoi est un doublon, la règle partirait avec lui. Le suffixe
