@@ -13,7 +13,11 @@
 > de champ libre n'en fait partie. Le responsable du traitement a donné son accord
 > à cette collecte. Cela **révise** le §1 (« aucun backend applicatif ne collecte les
 > événements ») et l'invariant, et **étend** l'opt-out (ADR-5) au journal. Matomo
-> reste en place pour la mesure d'audience (ADR-1).
+> reste en place pour la mesure d'audience (ADR-1). Le même jour, au cadrage de #382 :
+> le journal passe par un port, Grist n'en est que le premier adaptateur (ADR-7) ;
+> notre contrat s'écrit d'après ANA-1015, le code du paquet ne sert qu'aux tests ; le
+> navigateur envoie chaque événement seul et réessaie quelques secondes, sans file ;
+> le journal ne s'exporte pas, le dashboard le lira par une API à venir.
 >
 > **Mise à jour 2026-10-29, indicateur de parcours ALD.** À chaque arrivée sur le
 > premier résultat, un parcours ALD envoie son verdict, avec le nombre de questions
@@ -63,7 +67,7 @@ Le découpage par service s'appuie sur l'id du service dans le référentiel Gri
 fourni par l'étape de rattachement et gardé en mémoire de session (cf.
 [identification.md, ADR-4](./identification.md)). La mesure d'audience part
 directement du navigateur vers Matomo. Le journal des parcours passe par notre
-backend, qui l'écrit dans Grist (ADR-6). ~~Aucun backend applicatif ne collecte les
+backend, qui le conserve, dans Grist pour commencer (ADR-6, ADR-7). ~~Aucun backend applicatif ne collecte les
 événements.~~ (jusqu'au 2026-11-12)
 
 **Invariant** : aucune donnée patient, aucune PII, aucun contenu de champ libre et
@@ -226,7 +230,7 @@ Depuis le 2026-11-12, le même choix vaut pour le journal des parcours (ADR-6) :
 refus, le navigateur n'envoie rien au backend, et cesse d'envoyer sur un refus en
 cours de session.
 
-### ADR-6 - Journal des parcours écrit par le backend dans Grist
+### ADR-6 - Journal des parcours écrit par le backend (~~dans Grist~~)
 
 **Contexte.** Le dashboard analytics sera livré après le simulateur. Il devra
 recalculer ses 62 blocs depuis des événements unitaires, conservés, dédoublonnés et
@@ -238,36 +242,95 @@ Le responsable du traitement a donné son accord à cette collecte.
 **Décision.** Le navigateur envoie chaque événement à une route de collecte
 versionnée de notre backend Express. Le backend :
 
-- valide l'événement contre une liste fermée de champs : le contrat du paquet pour
-  le socle, un contrat versionné à part pour nos compléments (`service_id`,
-  exposition des boutons documentaires, mesures typographiques) ;
+- valide l'événement contre une liste fermée de champs : notre contrat, écrit
+  d'après ANA-1015 (`REFERENTIEL/03` du paquet de l'éditeur) pour le socle, et un
+  contrat versionné à part pour nos compléments (`service_id`, exposition des boutons
+  documentaires, mesures typographiques). ~~Le contrat du paquet pour le socle.~~ ;
 - y ajoute ce que le navigateur ne peut pas prouver : la date de réception, la
   version du schéma, l'environnement ;
-- l'écrit dans le document Grist « Simulateur-Parcours », distinct du référentiel
-  des établissements, en ajout ou mise à jour sur l'`event_id`, ce qui rend un renvoi
-  sans effet ;
+- le conserve dans le journal (ADR-7) : un renvoi identique du même `event_id` est
+  ignoré, le même `event_id` avec un autre contenu est mis à part comme collision ;
+  ~~l'écrit dans le document Grist « Simulateur-Parcours », en ajout ou mise à jour sur
+  l'`event_id`~~ ;
 - n'accuse réception qu'une fois l'écriture faite.
 
 Chaque événement porte l'id de l'établissement et celui du service du rattachement.
 Le contrat v0.1 du plan de marquage (16 événements, `p0_viewed`, `cta_exposed`…)
 n'est pas suivi : il est historique.
 
-**Pourquoi Grist.** L'équipe y tient déjà le référentiel, le backend sait déjà y
-écrire (le rattachement « Autre »), et l'app n'a aucune base de données à exploiter.
-Le journal se lit et s'exporte sans outil de plus.
+Le contrat vit dans `shared/analytics/`, en TypeScript : le navigateur n'en prend que
+les types, le backend valide avec. ANA-1015 le dit lui-même : les fichiers
+`analytics/` du paquet sont ses dérivés. Le validateur et le réducteur
+(`contrat-analytics.mjs`) n'entrent pas dans le code : ses exemples doivent passer
+notre validateur, et son réducteur sert d'oracle dans les tests. Si le texte et le
+code du paquet divergent, le texte fait foi.
+
+Le navigateur envoie chaque événement seul, dans un `fetch` en `keepalive`, qui
+survit à la fermeture de l'onglet. Sur une erreur réseau ou une réponse 5xx, il
+réessaie après 0,5, 1, 2 puis 4 secondes, et abandonne. Un refus du contrat (4xx)
+n'est pas réessayé. Il n'y a ni file ni stockage dans le navigateur.
+
+Le journal ne s'exporte pas. Le dashboard le lira par une API du backend, construite
+avec lui.
+
+**Pourquoi.** Un journal tenu par le backend se dédoublonne, se date et se filtre en
+un seul endroit, que le navigateur ne peut pas contourner. Un contrat à nous suit nos
+règles de code et se teste sur les exemples de l'éditeur à chaque livraison. Le
+réessai sans file couvre une coupure brève pour presque rien : une perte plus longue
+est un cas à la marge, et elle se voit sans rien construire, par un trou dans les
+`sequence` d'une simulation. Une file sur le disque survivrait à l'onglet, mais elle
+écrirait sur le poste du prescripteur, ce que l'ADR-3 écarte. ~~**Pourquoi Grist.**
+L'équipe y tient déjà le référentiel, le backend sait déjà y écrire (le rattachement
+« Autre »), et l'app n'a aucune base de données à exploiter. Le journal se lit et
+s'exporte sans outil de plus.~~ (voir ADR-7)
 
 **Conséquences.**
 
-- Le backend devient un point de passage de la collecte : s'il ou Grist ne répond
-  pas, le navigateur garde un nombre borné d'événements à renvoyer, puis les perd en
-  le sachant. La perte se lit dans la couverture.
-- Une nouvelle variable de configuration donne l'adresse du document
-  « Simulateur-Parcours ».
-- Aucune adresse IP ni aucun en-tête du navigateur n'est écrit dans le journal.
-- Grist n'est pas fait pour stocker des événements en masse : le volume est à
+- Le backend devient un point de passage de la collecte : s'il ne répond pas
+  pendant les quelques secondes du réessai, l'événement est perdu. La perte se lit
+  dans la couverture, par les trous de `sequence`. ~~Le navigateur garde un nombre
+  borné d'événements à renvoyer.~~
+- Si l'onglet se ferme entre deux essais, l'événement est perdu aussi : `keepalive`
+  ne protège que la requête en cours.
+- Chaque événement fait une écriture : pas de lot à constituer, mais un débit à
   surveiller (R-13).
+- Aucune adresse IP ni aucun en-tête du navigateur n'est écrit dans le journal.
 - Un rechargement de la page crée une nouvelle simulation : l'app ne garde rien
   d'un rechargement à l'autre. La reprise viendra avec #392 (R-14).
+
+### ADR-7 - Le journal derrière un port, Grist en premier adaptateur
+
+**Contexte.** Grist sert à démarrer : l'équipe y tient déjà le référentiel, le
+backend sait déjà y écrire, et l'app n'a pas de base de données. Mais il n'est pas
+fait pour stocker des événements en masse, et il ne tiendra probablement pas dans
+la durée.
+
+**Décision.** Le journal suit une architecture hexagonale, comme le référentiel des
+établissements (`Referentiel` et ses deux sources, `server/rattachement/`) :
+
+- le domaine (`server/journal/`) valide l'événement, l'enrichit et décide entre
+  nouvel événement, renvoi ignoré et collision. Il ne connaît que ses propres types :
+  ni ligne, ni colonne, ni JSON, ni Grist ;
+- il parle à un port, une interface qu'il déclare : retrouver un événement par son
+  `event_id`, en ajouter un, mettre une collision à part ;
+- l'adaptateur Grist, seul à connaître le document « Simulateur-Parcours », range
+  chaque événement en colonnes communes (`event_id`, `simulation_id`, `sequence`,
+  type, dates, environnement, version du schéma, `is_test`) et le reste en JSON dans
+  une colonne `payload`, et les collisions dans une table à part ;
+- un adaptateur en mémoire sert aux tests, sans mock, et au développement sans clé ;
+- la route Express n'appelle que le domaine ; l'adaptateur se choisit au démarrage,
+  comme `choisirReferentiel`. L'accès à Grist, partagé avec le référentiel, sort dans
+  `server/grist/`.
+
+**Pourquoi.** Changer de stockage ne doit toucher qu'un adaptateur. Si l'adaptateur
+décidait seul qu'un renvoi est un doublon, la règle partirait avec lui. Colonnes
+communes plus JSON : le journal sert au rejeu, pas à la lecture à l'œil, et la table
+ne bouge pas quand le contrat gagne un champ.
+
+**Conséquences.** Le domaine se teste entièrement sur l'adaptateur en mémoire.
+L'adaptateur Grist n'a que des tests d'aller-retour. Une nouvelle variable de
+configuration donne l'adresse du document « Simulateur-Parcours ». Le test
+d'architecture vérifie que le domaine du journal n'importe rien de `server/grist/`.
 
 ## 3. Architecture cible
 
@@ -294,15 +357,15 @@ flowchart TB
     rattachement --> emetteur
     traceur -->|"événements (Nom = id du service)"| matomo
     emetteur -->|"événements validés par le contrat"| backend
-    backend -->|"ajout ou mise à jour sur event_id"| journal
+    backend -->|"port du journal, adaptateur Grist"| journal
 ```
 
 | Composant | Rôle | Statut |
 |---|---|---|
 | Traceur Matomo | mesure d'audience | inchangé |
 | Émetteur du journal | crée la simulation, émet les faits réellement affichés, validés ou demandés | ajouté (2026-11-12) |
-| Route de collecte | valide, date la réception, écrit dans Grist | ajouté (2026-11-12) |
-| Grist « Simulateur-Parcours » | conserve le journal, s'exporte | ajouté (2026-11-12) |
+| Route de collecte | valide, date la réception, dédoublonne, écrit par le port du journal | ajouté (2026-11-12) |
+| Grist « Simulateur-Parcours » | conserve le journal, premier adaptateur du port (ADR-7) | ajouté (2026-11-12) |
 
 ~~Un composant de gestion du consentement autorisait l'initialisation du traceur.~~
 Retiré le 2026-09-29 (ADR-3).
@@ -423,7 +486,7 @@ Prérequis : l'écran de rattachement fournit le service (cf.
 | **R-13** | **Volume du journal dans Grist** : une simulation donne des dizaines d'événements. Les limites de taille d'un document et le débit de l'API Grist sont à mesurer avant la communication de l'app, et un archivage à prévoir s'ils approchent. | exploitation |
 | **R-14** | **Reprise après rechargement** : garder le même `simulation_id` après un rechargement demande un stockage dans le navigateur, que l'ADR-3 écarte. D'ici #392 (priorité basse), un rechargement crée une nouvelle simulation et l'ancienne reste sans fin. | décidé, plus tard |
 | **R-15** | **Durée de conservation** du journal : à fixer avec l'équipe responsable des données. | conformité, plus tard |
-| **R-16** | **Droits de la clé d'API** sur « Simulateur-Parcours » : lecture vérifiée le 2026-11-12 (document vide), écriture à vérifier. | exploitation |
+| **R-16** | **Droits de la clé d'API** sur « Simulateur-Parcours » : lecture, écriture et création de table vérifiées le 2026-11-12 avec la clé de staging. La clé de production reste à vérifier avant la livraison. | exploitation, **à vérifier avant la release** |
 
 ## 8. Vérification
 
