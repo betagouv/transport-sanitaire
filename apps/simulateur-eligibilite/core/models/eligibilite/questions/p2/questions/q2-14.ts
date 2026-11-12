@@ -1,6 +1,7 @@
 // Q2.14 : les deux groupes de l'Engagement maternité, l'éloignement puis le
 // motif, sur la page de branche. Le motif lit aussi l'éloignement, sur la même
-// page.
+// page. Avant eux, sous Q2.2.1, le déplacement évalué quand la maternité et un
+// HTNM sont cochés ensemble (Q2.14.trajet, TS1018-04).
 //
 // Q2.2.1 découvre l'examen et l'hébergement, deux cases indépendantes
 // (QST-MAT-SEPARATION, D-272). L'examen coché est déjà la finalité du
@@ -13,11 +14,36 @@ import { Q2_2_1 } from "./q2-2-1.ts";
 
 const situations = given.question(Q2_2_1).answer();
 const unExamen = situations.checked("14_EXAMEN_MATERNITE");
+const uneMaternite = unExamen.or(
+  situations.checked("15_HEBERGEMENT_MATERNITE"),
+);
+
+// La maternité et un HTNM hors du dispositif, cochés ensemble, ne disent pas
+// lequel des deux déplacements s'évalue : la question le demande, et deux
+// déplacements font deux simulations (`CONTRAT_Q221_PROGRESSIF.json`,
+// `qualification_maternite_htnm`).
+export const Q2_14_TRAJET = question
+  .singleChoice(
+    "Q2.14.trajet",
+    "Quel déplacement évaluez-vous dans cette simulation ?",
+  )
+  // Les options de `CONTRAT_REPONSES_CONDITIONNELLES.json`.
+  .options({
+    "1_ENGAGEMENT_MATERNITE": "Le déplacement lié à Engagement maternité",
+    "2_HTNM_HORS_MATERNITE":
+      "Le déplacement lié à un HTNM hors Engagement maternité",
+    "3_DEUX_TRAJETS": "Il s’agit de deux déplacements différents",
+  })
+  .mattersWhile(uneMaternite.and(situations.checked("5_HTNM")))
+  .option("3_DEUX_TRAJETS", (option) =>
+    option.blocks("Ces deux trajets nécessitent deux simulations distinctes."),
+  );
 
 // Le groupe de l'éloignement se pose : Q2.2.1 signale l'examen ou
-// l'hébergement de la maternité.
-const unEloignementAPoser = unExamen
-  .or(situations.checked("15_HEBERGEMENT_MATERNITE"))
+// l'hébergement de la maternité, et le déplacement évalué n'est pas celui du
+// HTNM.
+const unEloignementAPoser = uneMaternite
+  .and(given.question(Q2_14_TRAJET).answer().is("2_HTNM_HORS_MATERNITE").not())
   .and(brancheDecisive);
 
 export const Q2_14_ELOIGNEMENT = question

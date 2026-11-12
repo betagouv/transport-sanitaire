@@ -23,11 +23,6 @@ import { Q2_1_G } from "./q2-1.ts";
 // (D-98).
 const unSejourAProposer = given.question(Q2_1_G).answer().is("1_ENTREE").not();
 
-// Un hébergement hors maternité ne va pas avec une situation de la maternité
-// sur le même trajet (`CONTRAT_Q221_PROGRESSIF.json`).
-const PAS_LE_MEME_TRAJET =
-  "Un même trajet relève de l’Engagement maternité ou d’un hébergement temporaire non médicalisé, pas des deux. Pour deux trajets, faites une simulation par trajet.";
-
 // La question, avant l'incohérence qui lit sa réponse.
 const situations = question
   .multipleChoice(
@@ -57,9 +52,7 @@ const situations = question
   .exclusive("0_AUCUNE")
   .option("1_HOSPITALISATION", (option) =>
     option.offeredWhen(unSejourAProposer),
-  )
-  .incompatible("14_EXAMEN_MATERNITE", "5_HTNM", PAS_LE_MEME_TRAJET)
-  .incompatible("15_HEBERGEMENT_MATERNITE", "5_HTNM", PAS_LE_MEME_TRAJET);
+  );
 
 // Un hébergement ou un retour pénitentiaire contredit un autre lieu déjà dit.
 export const Q2_2_1 = situations.inconsistentWhen(

@@ -30,7 +30,11 @@ import { Q2_8_6, Q2_8_6_A, Q2_8_6_B } from "./questions/q2-8-6.ts";
 import { Q2_8_DUREE_48H } from "./questions/q2-8-duree-48h.ts";
 import { Q2_10, Q2_10_A, Q2_10_B } from "./questions/q2-10.ts";
 import { Q2_13_DEPART, Q2_13_SENS } from "./questions/q2-13.ts";
-import { Q2_14_ELOIGNEMENT, Q2_14_MOTIF } from "./questions/q2-14.ts";
+import {
+  Q2_14_ELOIGNEMENT,
+  Q2_14_MOTIF,
+  Q2_14_TRAJET,
+} from "./questions/q2-14.ts";
 
 /** P2 : l'éligibilité. */
 export const P2 = {
@@ -44,6 +48,7 @@ export const P2 = {
       Q2_2_1_CADRE,
       Q2_2_1_A,
       Q2_2_1_INDICATION,
+      Q2_14_TRAJET,
       Q2_2_5,
     ),
     // Hors du circuit de prescription, plus rien ne se pose.
