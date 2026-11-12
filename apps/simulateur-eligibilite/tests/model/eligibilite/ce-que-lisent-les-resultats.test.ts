@@ -59,13 +59,17 @@ describe("les questions que les résultats lisent telles quelles", () => {
       "Q3.1.2",
       "Q3.1.3",
       "Q3.2.adresse",
+      "Q3.2.categorie",
       "Q3.2.nature",
       "Q3.2.nom",
       "Q3.2.precision",
+      "Q3.2.service",
       "Q3.3.adresse",
+      "Q3.3.categorie",
       "Q3.3.nature",
       "Q3.3.nom",
       "Q3.3.precision",
+      "Q3.3.service",
       "Q3.4",
       "Q3.4.a",
       "Q3.4.distance",
@@ -77,6 +81,8 @@ describe("les questions que les résultats lisent telles quelles", () => {
       "Q3.8.maternite.adresse",
       "Q3.8.maternite.nom",
       "Q3.8.niveau",
+      "Q3.lieux.ehpad.cote",
+      "Q3.lieux.usld.cote",
     ]);
   });
 });

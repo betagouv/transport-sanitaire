@@ -135,7 +135,7 @@ describe("la page du soin (Q3.4, Q3.4.a)", () => {
       ...avant,
       "Q3.1.1": 1,
       "Q3.1.2": "1_ALLER",
-      "Q3.2.nature": "1_DOMICILE",
+      "Q3.2.categorie": "1_DOMICILE",
       "Q3.2.adresse": { street: "1 rue A", postalCode: "75001", city: "Paris" },
       "Q3.3.nom": "Centre de dialyse",
       "Q3.3.adresse": { street: "2 rue B", postalCode: "75002", city: "Paris" },

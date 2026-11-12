@@ -1,13 +1,12 @@
-// Q3.3 : le lieu d'arrivée, en quatre questions (`lieu.ts`). Il se choisit
-// après le départ, que son adresse ne répète pas.
+// Q3.3 : le lieu d'arrivée (`lieu.ts`). Il se choisit après le départ, dont
+// il lit la catégorie, et que son adresse ne répète pas.
 
-import { questionsDuLieu } from "./lieu.ts";
+import { lieuDArrivee } from "./lieu.ts";
 import { Q3_2 } from "./q3-2.ts";
 
-export const Q3_3 = questionsDuLieu(
-  "arrivee",
+export const Q3_3 = lieuDArrivee(
   {
-    nature: "Quel est le lieu d’arrivée ?",
+    categorie: "Quel est le lieu d’arrivée ?",
     adresse: "Adresse du lieu d’arrivée",
     rappel: "Lieu d’arrivée",
   },

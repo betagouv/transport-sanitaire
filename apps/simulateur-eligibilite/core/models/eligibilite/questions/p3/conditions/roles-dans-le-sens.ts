@@ -15,12 +15,13 @@ import type {
 } from "../../../../../socle/index.ts";
 import { Q1_3 } from "../../p1/questions/q1-3.ts";
 import {
-  natureAdmise as admiseDans,
   desRolesContradictoires as contradictoiresDans,
   type Extremite,
   lieuxEtablis as etablisDans,
   type Nature,
+  naturesDeQ26,
   type Orientation,
+  naturesPermises as permisesDans,
 } from "../../p2/conditions/roles-des-lieux.ts";
 import { Q2_1_G } from "../../p2/questions/q2-1.ts";
 import { Q2_2_1 } from "../../p2/questions/q2-2-1.ts";
@@ -37,7 +38,10 @@ export type {
   Etablie,
   Extremite,
   Nature,
+  NatureDeQ26,
 } from "../../p2/conditions/roles-des-lieux.ts";
+
+export { naturesDeQ26 };
 
 /** Les réponses dont les lieux se tirent, chacune sous son nom. */
 const LUES = {
@@ -94,15 +98,12 @@ export function desRolesContradictoires(entrees: Entrees): boolean {
   return contradictoiresDans(entrees, orientationDe(entrees));
 }
 
-/** La nature se propose-t-elle, vu P2, le sens et l'autre lieu ? */
-export function natureAdmise(
-  nature: Nature,
+/** Les natures que P2 permet à ce lieu, dans le sens du document. */
+export function naturesPermises(
   extremite: Extremite,
   entrees: Entrees,
-  autre: Nature | undefined,
-): boolean {
-  const orientation = orientationDe(entrees);
-  return admiseDans(nature, extremite, entrees, orientation, autre);
+): readonly Nature[] {
+  return permisesDans(extremite, entrees, orientationDe(entrees));
 }
 
 // ---- implémentation ----

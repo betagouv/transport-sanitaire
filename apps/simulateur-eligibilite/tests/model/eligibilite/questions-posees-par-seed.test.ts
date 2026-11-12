@@ -23,7 +23,13 @@ const apresLeVerrou = (reponses: Reponses) =>
   posees(Simulation.resume(model.core, reponses).lock());
 
 const P1 = ["Q0.1", "Q1.1", "Q1.2", "Q1.3"];
-const LIEUX = ["Q3.2.nature", "Q3.2.adresse", "Q3.3.nom", "Q3.3.adresse"];
+const LIEUX = [
+  "Q3.2.categorie",
+  "Q3.2.adresse",
+  "Q3.3.nom",
+  "Q3.3.service",
+  "Q3.3.adresse",
+];
 
 // Le complément d'une DAP ou d'une PMT : le patient, les lieux, le centre de
 // référence, puis la distance et l'urgence quand elles comptent. Le nombre de
@@ -77,7 +83,7 @@ const ATTENDU: Record<string, readonly [string[], string[]]> = {
       "Q2.8.4",
       "Q2.8.5",
     ]),
-    ["Q3.1.2", "Q3.2.nature", "Q3.2.adresse", "Q3.3.nature"].concat([
+    ["Q3.1.2", "Q3.2.categorie", "Q3.2.adresse", "Q3.3.categorie"].concat([
       "Q3.3.adresse",
       "Q3.7",
     ]),
@@ -93,8 +99,8 @@ const ATTENDU: Record<string, readonly [string[], string[]]> = {
       "Q2.3.1.finalite",
       "Q2.3.4",
     ]),
-    // Ni soin ni séjour : l'arrivée se dit par sa nature, sans Q3.7.
-    ["Q3.1.2", "Q3.2.nature", "Q3.2.adresse", "Q3.3.nature"].concat([
+    // Ni soin ni séjour : l'arrivée se dit par sa catégorie, sans Q3.7.
+    ["Q3.1.2", "Q3.2.categorie", "Q3.2.adresse", "Q3.3.categorie"].concat([
       "Q3.3.adresse",
       "Q3.4",
       "Q3.4.distance",
@@ -160,9 +166,9 @@ const ATTENDU: Record<string, readonly [string[], string[]]> = {
     ].concat(["Q2.14.eloignement", "Q2.3.4"]),
     [
       "Q3.1.2",
-      "Q3.2.nature",
+      "Q3.2.categorie",
       "Q3.2.adresse",
-      "Q3.3.nature",
+      "Q3.3.categorie",
       "Q3.3.adresse",
       "Q3.4",
       "Q3.4.a",

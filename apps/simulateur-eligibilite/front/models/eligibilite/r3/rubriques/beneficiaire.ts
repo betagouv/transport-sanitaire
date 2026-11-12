@@ -3,16 +3,10 @@
 // ou Q3.3, jamais celle d'un assuré ni d'un établissement. Sans domicile au
 // trajet, la cellule reste vide. Un trajet ne va pas du domicile au domicile.
 
-import {
-  type Extremite,
-  natureDu,
-  projectionCerfa,
-} from "../../../../../core/models/eligibilite/questions/p3/conditions/lieux-du-trajet";
-import { Q3_2 } from "../../../../../core/models/eligibilite/questions/p3/questions/q3-2";
-import { Q3_3 } from "../../../../../core/models/eligibilite/questions/p3/questions/q3-3";
+import type { Extremite } from "../../../../../core/models/eligibilite/questions/p3/conditions/lieux-du-trajet";
 import { given } from "../../../../../core/models/eligibilite/questions/reponses";
 import type { Rubrique } from "./rubrique";
-import { adresseEnParties } from "./trajet";
+import { adresseEnParties, auDomicile, LIEUX } from "./trajet";
 
 /** Le trajet ne passe pas par le domicile, ou son adresse manque. */
 type SansDomicile = undefined;
@@ -20,9 +14,6 @@ type SansDomicile = undefined;
 export type Beneficiaire = {
   readonly beneficiaire_adresse?: string;
 };
-
-// Les questions de chaque lieu.
-const LIEUX = { depart: Q3_2, arrivee: Q3_3 } as const;
 
 export const BENEFICIAIRE: Rubrique<Beneficiaire> = {
   beneficiaire_adresse: given
@@ -37,15 +28,13 @@ export const BENEFICIAIRE: Rubrique<Beneficiaire> = {
 
 // L'adresse de ce lieu en une ligne, s'il est le domicile.
 function adresseDuDomicile(extremite: Extremite) {
-  const questions = LIEUX[extremite];
   return given
     .all({
-      nature: natureDu(extremite, questions.nature),
-      adresse: given.question(questions.adresse).answer(),
+      domicile: auDomicile(extremite),
+      adresse: given.question(LIEUX[extremite].adresse).answer(),
     })
-    .compute(({ nature, adresse }): string | SansDomicile => {
-      if (nature === undefined || projectionCerfa(nature) !== "DOMICILE")
-        return undefined;
+    .compute(({ domicile, adresse }): string | SansDomicile => {
+      if (!domicile) return undefined;
       const parties = adresseEnParties(adresse.value);
       return parties.length > 0 ? parties.join(", ") : undefined;
     });
