@@ -117,4 +117,5 @@ export const Q1_3_A = question
     "1_OUI": "Oui.",
     "2_AUTRE_DIALYSE": "Non, il s’agit d’une autre dialyse en centre.",
   })
-  .appliesWhen(given.question(Q1_3).answer().checked("5_DIALYSE"));
+  .appliesWhen(given.question(Q1_3).answer().checked("5_DIALYSE"))
+  .shownUnder(Q1_3, "5_DIALYSE");

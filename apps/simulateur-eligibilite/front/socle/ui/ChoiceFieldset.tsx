@@ -9,6 +9,7 @@
 import { type ComponentProps, Fragment, type ReactNode } from "react";
 import { type Help, OptionHelp } from "./OptionHelp";
 import "./checkbox-card.css";
+import "./choice-fieldset.css";
 
 export type Choice = {
   value: string;
@@ -18,8 +19,9 @@ export type Choice = {
   /** Une aide dépliable, rendue sous l'option. */
   help?: Help;
   /**
-   * Ce qui s'affiche juste sous l'option, après son aide : une question qu'elle
-   * fait apparaître. Hors du libellé, elle garde son propre groupe.
+   * Ce qui s'affiche juste sous l'option, après son aide : les questions
+   * qu'elle fait apparaître, dans leur panneau (`ConditionalPanel`). Hors du
+   * libellé, chacune garde son propre groupe.
    */
   below?: ReactNode;
   /** Ce que la case ou le bouton reçoit : son état, et ce qu'un clic fait. */
@@ -54,9 +56,8 @@ export function ChoiceFieldset(props: Props) {
   return (
     <fieldset
       id={id}
-      className={`fr-fieldset${error ? " fr-fieldset--error" : ""}`}
+      className={`fr-fieldset socle-choice-fieldset${error ? " fr-fieldset--error" : ""}`}
       aria-labelledby={`${id}-legend ${id}-messages`}
-      style={{ marginBottom: "1.5rem" }}
     >
       <Legend {...props} />
       <div className="fr-fieldset__content">
@@ -114,7 +115,7 @@ function ChoiceInput({
           )}
           {choice.description && (
             <span className="fr-hint-text">
-              <Lignes texte={choice.description} />
+              <Lines text={choice.description} />
             </span>
           )}
         </label>
@@ -128,11 +129,11 @@ function ChoiceInput({
 const CARD = { radio: "fr-radio-rich", checkbox: "socle-checkbox-card" };
 
 // Une ligne par saut de ligne du texte.
-function Lignes({ texte }: { texte: string }) {
-  return texte.split("\n").map((ligne, rang) => (
-    <Fragment key={ligne}>
-      {rang > 0 && <br />}
-      {ligne}
+function Lines({ text }: { text: string }) {
+  return text.split("\n").map((line, index) => (
+    <Fragment key={line}>
+      {index > 0 && <br />}
+      {line}
     </Fragment>
   ));
 }

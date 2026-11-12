@@ -1,0 +1,7 @@
+/* L'espace sous un groupe de cases ou de boutons radio (ChoiceFieldset.tsx).
+   Deux classes : la règle passe devant celle du DSFR, quel que soit l'ordre
+   des feuilles. */
+
+.fr-fieldset.socle-choice-fieldset {
+  margin-bottom: 1.5rem;
+}

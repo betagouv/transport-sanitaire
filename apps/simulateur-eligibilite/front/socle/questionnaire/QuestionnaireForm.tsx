@@ -18,6 +18,7 @@ import type {
   Validated,
 } from "../../../core/socle/questionnaire-engine";
 
+import { ConditionalPanel } from "../ui";
 import { QuestionField } from "./QuestionField";
 import type {
   QuestionnaireOptions,
@@ -157,8 +158,8 @@ function traceOf(questionnaire: QuestionnaireScreen): DebugTraceProps {
 
 // La page affiche son brouillon : une saisie ne compte qu'une fois la page
 // validée. Une question en erreur montre ses liens vers les réponses à revoir.
-// Une question qui s'affiche sous une option (`shownUnder`) se pose dans la
-// liste de cette option, si celle-ci est sur la page ; sinon, à son rang.
+// Une question qui s'affiche sous une option (`shownUnder`) se pose dans le
+// panneau de cette option, si celle-ci est sur la page ; sinon, à son rang.
 function QuestionFields({
   questionnaire,
 }: {
@@ -177,13 +178,14 @@ function QuestionFields({
         answer={draft[question.id]}
         errors={errors}
         onChange={(answer) => questionnaire.answer(question.id, answer)}
-        below={(option) =>
-          questions
-            .filter(
-              (q) => parentOf(q) === question && q.under?.option === option,
-            )
-            .map(field)
-        }
+        below={(option) => {
+          const nested = questions.filter(
+            (q) => parentOf(q) === question && q.under?.option === option,
+          );
+          return nested.length > 0 ? (
+            <ConditionalPanel>{nested.map(field)}</ConditionalPanel>
+          ) : null;
+        }}
         after={<RevisitLinks links={links} onOpen={questionnaire.revisit} />}
       />
     );
