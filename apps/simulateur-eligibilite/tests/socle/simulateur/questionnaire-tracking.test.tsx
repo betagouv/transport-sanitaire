@@ -1,10 +1,7 @@
 import { screen } from "@testing-library/react";
 import { beforeEach, describe, expect, it } from "vitest";
-import {
-  initAnalytics,
-  StartASimulation,
-} from "../../../front/socle/analytics";
-import type { AnalyticsEvent } from "../../../shared/analytics/analytics-event";
+import { initAnalytics } from "../../../front/socle/analytics";
+import { journalDeTest } from "../analytics/journal-de-test";
 import {
   ACCOMPAGNEMENTS,
   allerAuResultat,
@@ -53,14 +50,8 @@ describe("suivi du parcours", () => {
   });
 
   it("envoie au journal un seul début, avec l'établissement et le service", async () => {
-    const envoyes: AnalyticsEvent[] = [];
-    const user = await ouvrirLeSimulateur({
-      startASimulation: new StartASimulation({
-        record: async (evenement) => {
-          envoyes.push(evenement);
-        },
-      }),
-    });
+    const { journal, envoyes } = journalDeTest();
+    const user = await ouvrirLeSimulateur({ journal });
     await allerAuResultat(user);
 
     await user.click(bouton("Précédent"));

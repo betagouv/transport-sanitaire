@@ -33,16 +33,16 @@ export const model = defineModel<
     printLabel: "Imprimer le bon de commande",
     downloadLabel: "Télécharger le bon de commande",
   },
-  // L'avis : sous le premier résultat pour un thé, qu'on vient seulement
-  // goûter, et sous le second pour un café, qu'on vient commander. Sans
-  // boisson, rien ne se complète : il suit le premier résultat.
+  // On vient goûter un thé, et commander un café. L'avis suit : sous le
+  // premier résultat pour un thé, sous le second pour un café. Sans boisson,
+  // rien ne se complète : il suit le premier résultat.
+  intent: given
+    .question("boisson")
+    .answer()
+    .is("cafe")
+    .compute((cafe) => (cafe ? "prescribe" : "check")),
   feedback: {
     url: "https://example.com/avis",
     label: "Donnez votre avis sur cette démonstration",
-    intent: given
-      .question("boisson")
-      .answer()
-      .is("cafe")
-      .compute((cafe) => (cafe ? "prescribe" : "check")),
   },
 });

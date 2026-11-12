@@ -311,12 +311,12 @@ son rôle par son suffixe, et chaque rôle s'écrit en classe ou en interface :
 
 | Suffixe | Rôle | Serveur | Écran |
 |---|---|---|---|
-| `.entity.ts` | une notion du journal et ses règles, sans dépendance | `JournalEntry` : l'événement daté à sa réception, qui sait s'il en répète un autre | `Journey` : la simulation, qui numérote et date ses événements |
-| `.usecase.ts` | une action, qui ne parle qu'aux entités et aux ports | `CollectAnEvent` : garde un nouvel événement, ignore un renvoi, met une collision à part | `StartASimulation` : ouvre un parcours et le signale sur P0 |
+| `.entity.ts` | une notion du journal et ses règles, sans dépendance | `JournalEntry` : l'événement daté à sa réception, qui sait s'il en répète un autre | `Journey` : la simulation, qui numérote et date ses événements, et ne garde que sa première intention |
+| `.usecase.ts` | une action, qui ne parle qu'aux entités et aux ports | `CollectAnEvent` : garde un nouvel événement, ignore un renvoi, met une collision à part | `StartASimulation` : ouvre un parcours et le signale sur P0 ; `SelectAnIntent` : signale le premier choix validé en P0 |
 | `.port.ts` | l'interface qu'un use case attend de l'extérieur | `Journal` : retrouver, ajouter, mettre à part | `Journal` : garder un événement |
 | `.adapter.ts` | une classe qui implémente un port | `GristJournal` ; `DiscardingJournal`, qui ne garde rien, sans doc Grist ; `MemoryJournal`, pour les tests | `ServerJournal` : envoi, réessais, opt-out |
 | `.controller.ts` | une entrée HTTP, qui valide la requête et appelle un use case | `JournalController` : la route de collecte | |
-| `.context.ts` | l'injection d'un use case dans l'arbre React : le contexte, son provider, et le hook qui le lit | | `journal.context.ts` : `JournalProvider`, `useStartASimulation` |
+| `.context.ts` | l'injection d'un use case dans l'arbre React : le contexte, son provider, et le hook qui le lit | | `journal.context.ts` : `JournalProvider`, `useJournal` |
 
 Les adaptateurs parlent HTTP par deux clients préconfigurés (`.client.ts`), qui
 portent l'adresse, l'authentification, le JSON et les erreurs :
@@ -332,10 +332,12 @@ Chaque côté a un conteneur, `container.ts` à sa racine, qui instancie une foi
 classes et les exporte. `server/container.ts` choisit les adaptateurs d'après la
 configuration (`adaptersFor`), puis assemble use case et contrôleur
 (`createContainer`), que `server.ts` donne à `app.ts`. `front/container.ts`
-instancie le client du serveur, le journal, le use case, le référentiel et la
-déclaration du rattachement, que `main.tsx` donne à l'app. `App` pose le use case
-dans un contexte React (`journal.context.ts`), où le questionnaire le lit par
-`useStartASimulation` : aucune variable globale ne le porte. Les deux conteneurs
+instancie le client du serveur, le journal, ses use cases, le référentiel et la
+déclaration du rattachement, que `main.tsx` donne à l'app. `App` pose les use cases
+dans un contexte React (`journal.context.ts`), où le simulateur les lit par
+`useJournal` : aucune variable globale ne les porte. Le simulateur garde le
+parcours de sa simulation (`front/socle/simulateur/record-the-journey.ts`) : il
+l'ouvre sur P0 et y signale l'intention que le modèle déclare (`Model.intent`). Les deux conteneurs
 exportent une fonction appelée une fois au démarrage, pas des instances, car rien
 ne doit s'exécuter au chargement d'un module (QUAL-004). Les fichiers qui
 assemblent (`container.ts`, `server.ts`, `app.ts`, `main.tsx`, les `index.ts`)

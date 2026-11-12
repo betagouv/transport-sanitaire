@@ -9,7 +9,9 @@
 export {
   configFromEnv,
   initAnalytics,
+  type JournalUseCases,
   loadMatomo,
+  SelectAnIntent,
   ServerJournal,
   StartASimulation,
 } from "./analytics";

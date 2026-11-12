@@ -191,8 +191,9 @@ core/                    le métier, sans React ni DOM : ce qu'un serveur ou un 
                          qu'est une seed, et ce qu'elle confirme ou dément
 front/                   le front, bundlé par Vite
   main.tsx               le point d'entrée du navigateur : monte l'app, amorce le traceur
-  container.ts           instancie ce qui parle au serveur : son client, le journal,
-                         le référentiel et la déclaration du rattachement
+  container.ts           instancie ce qui parle au serveur : son client, le journal
+                         et ses use cases, le référentiel et la déclaration du
+                         rattachement
   models/                l'écran de chaque modèle, chacun chargé à la demande
     fake/                les deux résultats de la démonstration (`r2.tsx`, `r3.tsx`)
                          et son bon de commande
@@ -223,7 +224,8 @@ front/                   le front, bundlé par Vite
                          l'API, le rattachement en mémoire de session (ADR-4)
     simulateur/          le parcours : les écrans de résultat et du cerfa
                          (screens/), la feuille à remettre au patient et son PDF
-                         (sheet/), le verrou, l'indicateur ALD
+                         (sheet/), le verrou, l'indicateur ALD, le parcours
+                         signalé au journal
     questionnaire/       le questionnaire à l'écran, un fichier par capacité : la
                          page ouverte et son brouillon, l'avancement automatique,
                          les phrases de l'écran, le champ qui affiche une question,
@@ -247,7 +249,7 @@ front/                   le front, bundlé par Vite
                          télécharger, l'imprimer, le bouton qui l'attend). Aucun
                          gabarit.
     analytics/           le vocabulaire mesuré, seul import du reste, son transport
-                         vers Matomo, le journal des parcours (entité, use case, port,
+                         vers Matomo, le journal des parcours (entité, use cases, port,
                          adaptateur vers le backend, ADR-7),
                          le choix du prescripteur transmis par le CMS, et
                          cms.js, le script à coller dans Sites Conformes : l'opt-out

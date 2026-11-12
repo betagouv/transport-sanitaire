@@ -7,7 +7,9 @@ import type { ComponentProps } from "react";
 import {
   type App,
   declarerAuServeur,
+  type JournalUseCases,
   referentielDuServeur,
+  SelectAnIntent,
   ServerApiClient,
   ServerJournal,
   StartASimulation,
@@ -18,7 +20,7 @@ type AppProps = ComponentProps<typeof App>;
 export type Container = {
   serverApi: ServerApiClient;
   journal: ServerJournal;
-  startASimulation: StartASimulation;
+  journalUseCases: JournalUseCases;
   referentiel: AppProps["referentiel"];
   declarer: AppProps["declarer"];
 };
@@ -29,7 +31,10 @@ export function createContainer(): Container {
   return {
     serverApi,
     journal,
-    startASimulation: new StartASimulation(journal),
+    journalUseCases: {
+      startASimulation: new StartASimulation(journal),
+      selectAnIntent: new SelectAnIntent(journal),
+    },
     referentiel: referentielDuServeur(serverApi),
     declarer: declarerAuServeur(serverApi),
   };

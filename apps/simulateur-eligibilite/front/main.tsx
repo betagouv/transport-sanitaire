@@ -57,7 +57,7 @@ createRoot(racine).render(
       models={models}
       referentiel={container.referentiel}
       declarer={container.declarer}
-      startASimulation={container.startASimulation}
+      journal={container.journalUseCases}
     />
   </StrictMode>,
 );

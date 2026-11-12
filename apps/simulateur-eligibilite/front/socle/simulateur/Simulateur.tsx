@@ -16,6 +16,7 @@ import { Simulation } from "../../../core/socle/simulation";
 import type { Model } from "../model";
 import { type DebugTraceProps, QuestionnaireForm } from "../questionnaire";
 import { useFollowTheAddress } from "./follow-the-address";
+import { useRecordTheJourney } from "./record-the-journey";
 import { CerfaScreen } from "./screens/CerfaScreen";
 import { ResultatScreen } from "./screens/ResultatScreen";
 import { trackAldPathway } from "./track-the-ald-pathway";
@@ -52,6 +53,7 @@ export function Simulateur({
   DebugTrace,
 }: Props) {
   const [simulation, setSimulation] = useSimulation(model, seedAnswers);
+  useRecordTheJourney(model, simulation, seedAnswers !== null);
   const screen: ScreenProps = {
     model,
     simulation,

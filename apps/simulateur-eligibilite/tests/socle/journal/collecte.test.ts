@@ -72,3 +72,22 @@ describe("collecte d'un événement", () => {
     expect(await journal.find("s-1:1")).toBeUndefined();
   });
 });
+
+describe("collecte d'une simulation sans début", () => {
+  it("garde un événement dont la simulation n'a pas de début : l'historique se lit incomplet", async () => {
+    const journal = await collecteSur();
+    const intention = {
+      ...simulationStarted,
+      event_id: "s-sans-p0:2",
+      simulation_id: "s-sans-p0",
+      sequence: 2,
+      type: "intent_selected",
+      intent: "eligibilite_seule",
+    };
+
+    const { status } = await collecter(intention);
+
+    expect(status).toBe(204);
+    expect((await journal.find("s-sans-p0:2"))?.event).toEqual(intention);
+  });
+});
