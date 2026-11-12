@@ -6,7 +6,7 @@
 // contenu d'une option dans son libellé. Or l'aide d'une option se rend juste
 // sous elle, et un bouton n'a pas sa place dans un libellé.
 
-import type { ComponentProps, ReactNode } from "react";
+import { type ComponentProps, Fragment, type ReactNode } from "react";
 import { type Help, OptionHelp } from "./OptionHelp";
 import "./checkbox-card.css";
 
@@ -113,7 +113,9 @@ function ChoiceInput({
             choice.label
           )}
           {choice.description && (
-            <span className="fr-hint-text">{choice.description}</span>
+            <span className="fr-hint-text">
+              <Lignes texte={choice.description} />
+            </span>
           )}
         </label>
       </div>
@@ -124,3 +126,13 @@ function ChoiceInput({
 }
 
 const CARD = { radio: "fr-radio-rich", checkbox: "socle-checkbox-card" };
+
+// Une ligne par saut de ligne du texte.
+function Lignes({ texte }: { texte: string }) {
+  return texte.split("\n").map((ligne, rang) => (
+    <Fragment key={ligne}>
+      {rang > 0 && <br />}
+      {ligne}
+    </Fragment>
+  ));
+}

@@ -87,9 +87,9 @@ export const Q1_3_B = question
   )
   .options({
     "1_LIEN_DIRECT":
-      "Soin ou examen directement lié au traitement de cette Affection Longue Durée (ALD) (soin ou examen inscrit au protocole de soins de cette Affection Longue Durée (ALD))",
+      "Soin ou examen directement lié au traitement de cette Affection Longue Durée (ALD)",
     "2_SANS_LIEN_DIRECT":
-      "Soin ou examen sans lien direct avec cette Affection Longue Durée (ALD) (traumatisme distinct, intercurrence, autre affection)",
+      "Soin ou examen sans lien direct avec cette ALD : traumatisme distinct, intercurrence, autre affection",
   })
   .appliesWhen(given.question(Q1_3).answer().checked("2_ALD"))
   .shownUnder(Q1_3, "2_ALD");
