@@ -86,6 +86,27 @@ const ATTENDU: Record<string, readonly [string[], string[]]> = {
     [...P1, "Q2.1", "Q2.2.1", "Q2.2.1.b", ...DISTANCE],
     [],
   ],
+  // Autre motif à plus de 150 km : la finalité se demande après la série, et
+  // Oui seul ouvre l'urgence (TS1018-01).
+  "finalite-longue-distance-oui": [
+    [...P1, "Q2.1", "Q2.2.1", "Q2.2.1.b", ...DISTANCE, "Q2.3.3"].concat([
+      "Q2.3.1.finalite",
+      "Q2.3.4",
+    ]),
+    // Ni soin ni séjour : l'arrivée se dit par sa nature, sans Q3.7.
+    ["Q3.1.2", "Q3.2.nature", "Q3.2.adresse", "Q3.3.nature"].concat([
+      "Q3.3.adresse",
+      "Q3.4",
+      "Q3.4.distance",
+      "Q3.4.a",
+    ]),
+  ],
+  "finalite-longue-distance-non": [
+    [...P1, "Q2.1", "Q2.2.1", "Q2.2.1.b", ...DISTANCE, "Q2.3.3"].concat([
+      "Q2.3.1.finalite",
+    ]),
+    [],
+  ],
   "issue-caisse": [
     [
       ...P1,
