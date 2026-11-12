@@ -47,6 +47,7 @@ import { exceptionArticle80Radiotherapie } from "./exception-article80-radiother
 import { exceptionArticle80Usld } from "./exception-article80-usld.ts";
 import { exclusionSoinProuvee } from "./exclusion-soin-prouvee.ts";
 import { exclusionTransportProuvee } from "./exclusion-transport-prouvee.ts";
+import { finaliteSoinsLongueDistance } from "./finalite-soins-longue-distance.ts";
 import { hospitalisation } from "./hospitalisation.ts";
 import { htnmHorsMaternite } from "./htnm-hors-maternite.ts";
 import { htnmSegmentVerifie } from "./htnm-segment-verifie.ts";
@@ -135,6 +136,7 @@ export const CATALOGUE_DES_FAITS: FaitCatalogue<Faits> = new FaitCatalogue(
     exceptionArticle80AdmissionHad,
     distancePlus50,
     distancePlus150,
+    finaliteSoinsLongueDistance,
     serieQualifiante,
     avionBateauLigne,
     urgenceAttestee,

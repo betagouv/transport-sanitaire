@@ -122,7 +122,7 @@ describe("avec un professionnel : un TAP, une carte et un badge", () => {
       bloc.type === "liste" ? bloc.puces.map(({ texte }) => texte) : [],
     );
     expect(puces?.join("|")).toContain(
-      "que votre transport sera pris en charge par l’Assurance Maladie au titre d’un transport pour des soins continus de plus de six mois reconnus par l’Assurance Maladie, concernant un enfant de moins de 18 ans présentant des difficultés de déplacement ;",
+      "que votre transport sera pris en charge par l’Assurance Maladie au titre d’un transport pour des soins continus de plus de six mois reconnus par l’Assurance Maladie, concernant un enfant de moins de 18 ans dont l’état de santé a été pris en compte ;",
     );
   });
 });
@@ -212,8 +212,8 @@ const demande = (reponses: Reponses) => {
 
 const DISTANCE =
   "La prise en charge de votre transport nécessite l’accord préalable de l’Assurance Maladie car le trajet dépasse 150 km.";
-const ALD_DAP = `Les soins à l’origine de ce déplacement sont liés à votre maladie de longue durée reconnue par l’Assurance Maladie. Vous présentez aussi des difficultés de déplacement. ${DISTANCE}`;
-const MINEUR_DAP = `Les soins à l’origine de ce déplacement sont liés à votre maladie de longue durée reconnue par l’Assurance Maladie. Votre besoin de soins continus pendant plus de six mois est reconnu par l’Assurance Maladie. Vous présentez aussi des difficultés de déplacement. ${DISTANCE}`;
+const ALD_DAP = `Les soins à l’origine de ce déplacement sont liés à votre maladie de longue durée reconnue par l’Assurance Maladie. Votre état de santé a aussi été pris en compte. ${DISTANCE}`;
+const MINEUR_DAP = `Les soins à l’origine de ce déplacement sont liés à votre maladie de longue durée reconnue par l’Assurance Maladie. Votre besoin de soins continus pendant plus de six mois est reconnu par l’Assurance Maladie. Votre état de santé a aussi été pris en compte. ${DISTANCE}`;
 
 describe("les mêmes patients à plus de 150 km : l'accord préalable", () => {
   it.each([

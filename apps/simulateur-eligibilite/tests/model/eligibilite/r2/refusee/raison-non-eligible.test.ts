@@ -51,7 +51,6 @@ const PREUVES: readonly [string, Precisions, Partial<Faits>][] = [
   ["AUCUN_BIOLOGIE", { careFamily: 4 }, {}],
   ["AUCUN_PARAMEDICAL", { careFamily: 5 }, {}],
   ["AUCUN_PSYCHOLOGUE", { careFamily: 7 }, {}],
-  ["AUCUN_AUTRE_SOIN", { careFamily: 14 }, {}],
   [
     "AUCUN_AUTRE_DEPLACEMENT",
     { careFamily: 15, eventFinalityClarified: true },
@@ -213,7 +212,7 @@ describe("de bout en bout, par les réponses", () => {
     ["une biologie", { "Q2.1": "4_BIOLOGIE" }, "AUCUN_BIOLOGIE"],
     ["un soin paramédical", { "Q2.1": "5_PARAMEDICAL" }, "AUCUN_PARAMEDICAL"],
     ["un psychologue", { "Q2.1": "7_PSYCHOLOGUE" }, "AUCUN_PSYCHOLOGUE"],
-    ["un autre soin", { "Q2.1": "14_AUTRE" }, "AUCUN_AUTRE_SOIN"],
+    ["un autre motif, seul", { "Q2.1": "14_AUTRE" }, "AUCUN_GENERIQUE"],
     [
       "un appareillage hors des catégories (Q2.10.b)",
       {

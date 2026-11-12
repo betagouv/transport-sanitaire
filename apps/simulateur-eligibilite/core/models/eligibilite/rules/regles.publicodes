@@ -73,6 +73,8 @@ fait_distance_plus_50:
   titre: Le trajet actuellement évalué dépasse 50 km, la série étant qualifiée séparément
 fait_distance_plus_150:
   titre: Trajet aller dépasse 150 km
+fait_finalite_soins_longue_distance:
+  titre: Déplacement nécessaire pour recevoir des soins ou passer un examen approprié
 fait_serie_qualifiante:
   titre: Au moins quatre transports de plus de 50 km chacun au titre du même traitement, dans les deux mois du premier
 fait_avion_bateau_ligne:
@@ -194,7 +196,7 @@ cible_autre_motif_ald:
     - fait_atmp_lie
     - cible_mineur_soins_prolonges
     - cible_serie
-    - fait_distance_plus_150
+    - cible_dap_motif_longue_distance
     - fait_motif_camsp
     - fait_motif_samsah
     - fait_motif_pension
@@ -209,7 +211,7 @@ cible_autre_motif_hors_mineur:
     - fait_atmp_lie
     - cible_ald_qualifiante
     - cible_serie
-    - fait_distance_plus_150
+    - cible_dap_motif_longue_distance
     - fait_motif_camsp
     - fait_motif_samsah
     - fait_motif_pension
@@ -232,7 +234,7 @@ cible_preuve_ald_inconnue_decisive:
         - fait_ald_liee
         - est non défini: fait_ald_exonerante_3_ou_4
         - cible_serie
-        - fait_distance_plus_150 = non
+        - cible_dap_motif_longue_distance = non
         - fait_avion_bateau_ligne = non
         - fait_motif_camsp = non
         - fait_dap_maternite = non
@@ -290,7 +292,7 @@ cible_exception_article80:
     - fait_exception_article80_radiotherapie
     - fait_exception_article80_dialyse_domicile
     - fait_exception_article80_admission_had
-cible_motif_transport:
+cible_motif_transport_hors_longue_distance:
   une de ces conditions:
     - cible_mode_ambulance
     - fait_hospitalisation
@@ -298,15 +300,59 @@ cible_motif_transport:
     - cible_ald_qualifiante
     - cible_mineur_soins_prolonges
     - cible_serie
-    - fait_distance_plus_150
     - fait_motif_camsp
     - fait_motif_samsah
     - fait_motif_pension
     - fait_dap_maternite
     - fait_convocation
     - fait_permission_mineur_admissible
+cible_motif_transport:
+  une de ces conditions:
+    - cible_motif_transport_hors_longue_distance
+    - toutes ces conditions:
+        - fait_distance_plus_150
+        - cible_finalite_soins_longue_distance_etablie
+# La finalité médicale n'est ni la couverture du soin, ni un diagnostic d'ALD.
+cible_finalite_soins_longue_distance_etablie:
+  valeur:
+    variations:
+      - si:
+          est défini: fait_finalite_soins_longue_distance
+        alors: fait_finalite_soins_longue_distance
+      - si: cible_longue_distance_evenement_sans_soin
+        alors: non
+      - sinon:
+          une de ces conditions:
+            - toutes ces conditions:
+                - est défini: fait_situation_soins_qualifiante
+                - fait_situation_soins_qualifiante
+            - toutes ces conditions:
+                - est défini: fait_ald_liee
+                - fait_ald_liee
+            - toutes ces conditions:
+                - est défini: cible_mineur_soins_prolonges
+                - cible_mineur_soins_prolonges
+            - toutes ces conditions:
+                - est défini: cible_serie
+                - cible_serie
+            - toutes ces conditions:
+                - est défini: fait_motif_camsp
+                - fait_motif_camsp
+cible_longue_distance_evenement_sans_soin:
+  une de ces conditions:
+    - toutes ces conditions:
+        - est défini: fait_evenement_sans_soin
+        - fait_evenement_sans_soin
+    - toutes ces conditions:
+        - est défini: fait_convocation
+        - fait_convocation
+    - toutes ces conditions:
+        - est défini: fait_permission_mineur_admissible
+        - fait_permission_mineur_admissible
 cible_dap_motif_longue_distance:
-  valeur: fait_distance_plus_150
+  toutes ces conditions:
+    - fait_distance_plus_150
+    - cible_motif_transport
 cible_dap_motif_serie:
   toutes ces conditions:
     - cible_serie
@@ -317,13 +363,28 @@ cible_dap_motif_camsp_cmpp:
   valeur: fait_motif_camsp
 cible_dap_motif_engagement_maternite:
   valeur: fait_dap_maternite
-cible_dap_requise:
+cible_dap_requise_hors_longue_distance:
   une de ces conditions:
-    - cible_dap_motif_longue_distance
     - cible_dap_motif_serie
     - cible_dap_motif_avion_bateau
     - cible_dap_motif_camsp_cmpp
     - cible_dap_motif_engagement_maternite
+cible_dap_requise:
+  une de ces conditions:
+    - cible_dap_motif_longue_distance
+    - cible_dap_requise_hors_longue_distance
+# Avant R2 : finalité non établie, et aucune sortie déjà décidée ne la rend inutile.
+cible_finalite_longue_distance_decisive:
+  toutes ces conditions:
+    - est défini: fait_distance_plus_150
+    - fait_distance_plus_150
+    - est non défini: fait_finalite_soins_longue_distance
+    - cible_finalite_soins_longue_distance_etablie = non
+    - cible_longue_distance_evenement_sans_soin = non
+    - cible_orientation_sans_urgence_deja_etablie = non
+    - une de ces conditions:
+        - est non défini: cible_motif_transport_hors_longue_distance
+        - cible_motif_transport_hors_longue_distance = non
 cible_dap_fondement_autonome:
   une de ces conditions:
     - cible_dap_motif_camsp_cmpp
@@ -443,6 +504,7 @@ cible_decision_calculable:
     - fait_p1_complete
     - fait_p2_complete
     - cible_mode_coherent
+    - cible_finalite_longue_distance_decisive = non
     - une de ces conditions:
         - cible_question_urgence_requise = non
         - fait_urgence_repondue
