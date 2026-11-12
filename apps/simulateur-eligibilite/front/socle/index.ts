@@ -9,7 +9,6 @@
 export {
   configFromEnv,
   initAnalytics,
-  initJournal,
   loadMatomo,
   ServerJournal,
   StartASimulation,

@@ -332,11 +332,13 @@ classes et les exporte. `server/container.ts` choisit les adaptateurs d'après l
 configuration (`adaptersFor`), puis assemble use case et contrôleur
 (`createContainer`), que `server.ts` donne à `app.ts`. `front/container.ts`
 instancie le client du serveur, le journal, le use case, le référentiel et la
-déclaration du rattachement, que `main.tsx` donne à l'app. Les deux exportent une
-fonction appelée une fois au démarrage, pas des instances, car rien ne doit
-s'exécuter au chargement d'un module (QUAL-004). Les fichiers qui assemblent
-(`container.ts`, `server.ts`, `app.ts`, `journey-in-session.ts`, `main.tsx`, les
-`index.ts`) n'ont pas de suffixe.
+déclaration du rattachement, que `main.tsx` donne à l'app. `App` pose le use case
+dans un contexte React (`journal-context.ts`), où le questionnaire le lit par
+`useStartASimulation` : aucune variable globale ne le porte. Les deux conteneurs
+exportent une fonction appelée une fois au démarrage, pas des instances, car rien
+ne doit s'exécuter au chargement d'un module (QUAL-004). Les fichiers qui
+assemblent (`container.ts`, `server.ts`, `app.ts`, `journal-context.ts`,
+`main.tsx`, les `index.ts`) n'ont pas de suffixe.
 
 **Pourquoi.** Changer de stockage ne doit toucher qu'un adaptateur. Si l'adaptateur
 décidait seul qu'un renvoi est un doublon, la règle partirait avec lui. Le suffixe

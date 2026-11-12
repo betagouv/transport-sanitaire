@@ -16,7 +16,6 @@ import {
   configFromEnv,
   followHostTheme,
   initAnalytics,
-  initJournal,
   loadMatomo,
   type Models,
 } from "./socle";
@@ -35,7 +34,6 @@ initAnalytics(configFromEnv(), { load: loadMatomo });
 // aussi au journal du backend, sous le même choix du prescripteur (ADR-6
 // d'analytics.md).
 const container = createContainer();
-initJournal(container.startASimulation);
 
 // Le premier s'ouvre au démarrage. À plusieurs, on peut en changer depuis les
 // developer tools, donc en local seulement.
@@ -59,6 +57,7 @@ createRoot(racine).render(
       models={models}
       referentiel={container.referentiel}
       declarer={container.declarer}
+      startASimulation={container.startASimulation}
     />
   </StrictMode>,
 );
