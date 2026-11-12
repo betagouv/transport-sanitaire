@@ -60,10 +60,12 @@ describe("ce que change une question du modèle", () => {
   // La distance décide aussi si l'urgence se demande (Q2.3.4, à ses deux
   // places) : sa garde lit `cible_question_urgence_a_afficher`, qui dépend des
   // seuils. De même pour la finalité au-delà de 150 km (Q2.3.1.finalite) : la
-  // distance, la ligne régulière et la série disent si elle se pose.
+  // distance, la ligne régulière et la série disent si elle se pose. Et
+  // l'Engagement maternité, qui en dépend, établit l'événement sans soin.
   it("Q2.3.1, la distance, change les seuils, la série et l'urgence", () => {
     expect(changes.get("Q2.3.1")).toEqual([
       "fait_p2_complete",
+      "fait_evenement_sans_soin",
       "fait_distance_plus_50",
       "fait_distance_plus_150",
       "fait_finalite_soins_longue_distance",
@@ -81,6 +83,7 @@ describe("ce que change une question du modèle", () => {
   it("Q2.3.2, l'avion ou le bateau, change aussi le transfert", () => {
     expect(changes.get("Q2.3.2")).toEqual([
       "fait_p2_complete",
+      "fait_evenement_sans_soin",
       "fait_finalite_soins_longue_distance",
       "fait_avion_bateau_ligne",
       "fait_appel_centre15",
@@ -103,6 +106,7 @@ describe("ce que change une question du modèle", () => {
   it("Q2.3.3, la série de transports, change la série et l'urgence", () => {
     expect(changes.get("Q2.3.3")).toEqual([
       "fait_p2_complete",
+      "fait_evenement_sans_soin",
       "fait_finalite_soins_longue_distance",
       "fait_serie_qualifiante",
       "fait_dap_maternite",
