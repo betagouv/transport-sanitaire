@@ -76,25 +76,26 @@ jamais exposées au front.
 | Variable | Portée | Requis | Défaut / si absente | Usage |
 | --- | --- | --- | --- | --- |
 | `GRIST_API_KEY` | serveur | **prod** | référentiel **snapshot factice** (dev/CI) | Clé API Grist source du référentiel (établissements/services). Jamais exposée au front. |
-| `GRIST_DOC_URL` | serveur | non | doc Grist du projet | Base API du doc Grist (`server/configuration.ts`). |
-| `JOURNAL_GRIST_DOC_URL` | serveur | non | doc Grist « Simulateur-Parcours » | Base API du doc Grist du journal des parcours, écrit avec la même clé. Sans clé, le journal est en mémoire. |
+| `GRIST_DOC_URL` | serveur | **prod** | référentiel **snapshot factice** (dev/CI) | Base API du doc Grist du référentiel, lu et complété avec la clé. |
+| `JOURNAL_GRIST_DOC_URL` | serveur | non | aucun | Base API du doc Grist « Simulateur-Parcours », où le journal des parcours s'écrit avec la même clé. À poser en production seulement : sans elle, ou sans clé, le serveur accepte les événements sans en garder aucun, et le signale au démarrage. |
 | `APP` | serveur | non | `local` | Nom de l'app Scalingo, posé par Scalingo. Écrit comme `environment` de chaque événement du journal. |
 | `VITE_MATOMO_ENABLED` | front | non | `false` (traceur no-op) | Active le tracking Matomo. Actif d'office en build de prod ; à mettre à `true` pour tester en local. |
 | `VITE_MATOMO_URL` | front | non | instance mutualisée beta.gouv | URL de l'instance Matomo. |
 | `VITE_MATOMO_SITE_ID` | front | non | `275` | Identifiant du site Matomo. |
 
-La variable marquée **prod** n'a pas de valeur par défaut : son repli est un
+Les variables marquées **prod** n'ont pas de valeur par défaut : leur repli est un
 référentiel inventé, ce qui n'a de sens que sur un poste de développement. En production — `NODE_ENV=production`, ce que pose Scalingo —
 `server/configuration.ts` refuse donc de rendre une configuration incomplète : le serveur
 s'arrête au démarrage, avant d'ouvrir son port, sur la liste de ce qui cloche.
 
 ```
 [simulateur] Démarrage impossible — configuration invalide :
+  - GRIST_DOC_URL : sans valeur par défaut, elle doit être posée en production
   - GRIST_API_KEY : sans valeur par défaut, elle doit être posée en production
 ```
 
 La règle est portée par un schéma **zod** : un socle de variables à défaut, et une variante
-de production où la clé Grist est exigée. Le schéma valide aussi la forme de ce qui est
+de production où la clé et le doc Grist sont exigés. Le schéma valide aussi la forme de ce qui est
 posé — `PORT=quatre-mille` ou une `GRIST_DOC_URL` qui n'est pas une URL arrêtent le
 démarrage de la même manière, plutôt que d'échouer plus tard et ailleurs. Une variable
 posée mais vide (`GRIST_API_KEY=` dans un `.env` recopié) compte pour absente. Les autres

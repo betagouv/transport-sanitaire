@@ -1,5 +1,5 @@
-// Le journal en mémoire : pour les tests, et pour le développement sans clé
-// Grist. Il se vide à l'arrêt du serveur.
+// Le journal en mémoire, pour les tests : il garde tout, jusqu'à l'arrêt du
+// serveur. Le serveur sans doc Grist prend `DiscardingJournal`, qui ne garde rien.
 
 import type { Journal, NotInTheJournal } from "./journal.port.ts";
 import type { JournalEntry } from "./journal-entry.entity.ts";

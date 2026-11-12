@@ -11,10 +11,10 @@ import {
 import type { Configuration } from "./configuration.ts";
 import { GristApiClient } from "./grist/grist-api.client.ts";
 import { CollectAnEvent } from "./journal/collect-an-event.usecase.ts";
+import { DiscardingJournal } from "./journal/discarding-journal.adapter.ts";
 import { GristJournal } from "./journal/grist-journal.adapter.ts";
 import { JournalController } from "./journal/journal.controller.ts";
 import type { Journal } from "./journal/journal.port.ts";
-import { MemoryJournal } from "./journal/memory-journal.adapter.ts";
 import { creerReferentielGrist } from "./rattachement/referentiel-grist.ts";
 
 /** Ce que le serveur attend de l'extérieur : ses adaptateurs, et où il tourne. */
@@ -31,8 +31,8 @@ export type Container = {
 };
 
 /**
- * Les adaptateurs que la configuration désigne : Grist quand la clé est posée,
- * sinon le référentiel snapshot et le journal en mémoire.
+ * Les adaptateurs que la configuration désigne : Grist quand la clé et le doc
+ * sont posés, sinon le référentiel snapshot et un journal qui ne garde rien.
  */
 export function adaptersFor({
   grist,
@@ -45,7 +45,7 @@ export function adaptersFor({
       : snapshotReferentiel,
     journal: journal
       ? new GristJournal(new GristApiClient(journal))
-      : new MemoryJournal(),
+      : new DiscardingJournal(),
     environment,
   };
 }

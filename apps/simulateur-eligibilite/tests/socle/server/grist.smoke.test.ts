@@ -1,8 +1,9 @@
 // @vitest-environment node
 //
 // Smoke test de lecture contre le vrai Grist, sans mock. Désactivé sans
-// `GRIST_API_KEY` : il ne tourne pas en CI, mais en local avec la clé exportée :
-//   GRIST_API_KEY=$(grep -E '^GRIST_API_KEY=' .env | cut -d= -f2-) pnpm test
+// `GRIST_API_KEY` ni `GRIST_DOC_URL` : il ne tourne pas en CI, mais en local avec
+// les deux exportées :
+//   export $(grep -E '^GRIST_(API_KEY|DOC_URL)=' .env | xargs) && pnpm test
 //
 // Le référentiel évolue à la main. On vérifie donc la forme et l'enchaînement
 // établissement → service, pas des libellés.
@@ -11,9 +12,10 @@ import { describe, expect, it } from "vitest";
 import { lireConfiguration } from "../../../server/configuration.ts";
 import { adaptersFor } from "../../../server/container.ts";
 
-const cleApi = process.env.GRIST_API_KEY?.trim();
+const actif =
+  !!process.env.GRIST_API_KEY?.trim() && !!process.env.GRIST_DOC_URL?.trim();
 
-describe.skipIf(!cleApi)("référentiel Grist (smoke)", () => {
+describe.skipIf(!actif)("référentiel Grist (smoke)", () => {
   const ref = adaptersFor(lireConfiguration()).referentiel;
 
   it("renvoie des établissements {id, libelle} non vides", async () => {

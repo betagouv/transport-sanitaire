@@ -314,7 +314,7 @@ son rôle par son suffixe, et chaque rôle s'écrit en classe ou en interface :
 | `.entity.ts` | une notion du journal et ses règles, sans dépendance | `JournalEntry` : l'événement daté à sa réception, qui sait s'il en répète un autre | `Journey` : la simulation, qui numérote et date ses événements |
 | `.usecase.ts` | une action, qui ne parle qu'aux entités et aux ports | `CollectAnEvent` : garde un nouvel événement, ignore un renvoi, met une collision à part | `StartASimulation` : ouvre un parcours et le signale sur P0 |
 | `.port.ts` | l'interface qu'un use case attend de l'extérieur | `Journal` : retrouver, ajouter, mettre à part | `Journal` : garder un événement |
-| `.adapter.ts` | une classe qui implémente un port | `GristJournal`, `MemoryJournal` | `ServerJournal` : envoi, réessais, opt-out |
+| `.adapter.ts` | une classe qui implémente un port | `GristJournal` ; `DiscardingJournal`, qui ne garde rien, sans doc Grist ; `MemoryJournal`, pour les tests | `ServerJournal` : envoi, réessais, opt-out |
 | `.controller.ts` | une entrée HTTP, qui valide la requête et appelle un use case | `JournalController` : la route de collecte | |
 
 Les adaptateurs parlent HTTP par deux clients préconfigurés (`.client.ts`), qui
@@ -346,7 +346,11 @@ la table ne bouge pas quand le contrat gagne un champ.
 
 **Conséquences.** Les use cases se testent entièrement sur l'adaptateur en mémoire.
 L'adaptateur Grist n'a que des tests d'aller-retour. Une nouvelle variable de
-configuration donne l'adresse du document « Simulateur-Parcours ». Le test
+configuration, `JOURNAL_GRIST_DOC_URL`, donne l'adresse du document
+« Simulateur-Parcours ». Elle n'a pas de défaut : la collecte n'écrit dans Grist
+que là où on la pose, en production. Ailleurs, staging compris, le serveur prend
+`DiscardingJournal`, qui accepte les événements sans en garder aucun : la mémoire du
+serveur ne grossit pas avec le trafic. Le test
 d'architecture vérifie que les entités, use cases et ports n'importent qu'entre eux
 et depuis `shared/`, et que seul `grist-journal.adapter.ts` importe `server/grist/`.
 Le rattachement n'est pas encore découpé ainsi : il le sera sur ce modèle.

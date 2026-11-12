@@ -1,8 +1,12 @@
 // La configuration du serveur, lue et validée au démarrage.
 //
-// `GRIST_API_KEY` n'a pas de valeur par défaut. En développement, sans elle, le
-// serveur utilise un référentiel factice. En production, il refuse de démarrer :
-// il servirait des établissements inventés.
+// `GRIST_API_KEY` et `GRIST_DOC_URL` n'ont pas de valeur par défaut. En
+// développement, sans elles, le serveur utilise un référentiel factice. En
+// production, il refuse de démarrer : il servirait des établissements inventés.
+//
+// `JOURNAL_GRIST_DOC_URL` n'a pas de défaut non plus : le journal des parcours
+// n'écrit dans Grist que là où on la pose, en production. Ailleurs, staging
+// compris, il accepte les événements sans en garder aucun.
 //
 // Voir le README § « Configuration ».
 
@@ -16,7 +20,7 @@ export type Configuration = {
   port: number;
   /** Accès au doc Grist ; absent ⇒ référentiel snapshot factice (dev/CI). */
   grist: AccesGrist | undefined;
-  /** Accès au journal des parcours ; absent ⇒ journal en mémoire (dev/CI). */
+  /** Accès au journal des parcours ; absent ⇒ journal qui ne garde rien (hors production). */
   journal: AccesGrist | undefined;
   /** Le nom de l'app Scalingo, écrit avec chaque événement ; `local` hors Scalingo. */
   environment: string;
@@ -46,48 +50,49 @@ export function lireConfiguration(env: Env = process.env): Configuration {
   const cleApi = variables.GRIST_API_KEY;
   return {
     port: variables.PORT,
-    grist: cleApi ? { cleApi, docUrl: variables.GRIST_DOC_URL } : sansGrist(),
-    journal: cleApi
-      ? { cleApi, docUrl: variables.JOURNAL_GRIST_DOC_URL }
-      : undefined,
+    grist:
+      cleApi && variables.GRIST_DOC_URL
+        ? { cleApi, docUrl: variables.GRIST_DOC_URL }
+        : sansGrist(),
+    journal:
+      cleApi && variables.JOURNAL_GRIST_DOC_URL
+        ? { cleApi, docUrl: variables.JOURNAL_GRIST_DOC_URL }
+        : journalEnMemoire(),
     environment: variables.APP,
   };
 }
 
 // ---- implémentation ----
 
-const DOC_URL_PAR_DEFAUT =
-  "https://grist.numerique.gouv.fr/o/transports-sanitaires/api/docs/gbPomRAyU3M6P5NR6x6Qac";
-const JOURNAL_DOC_URL_PAR_DEFAUT =
-  "https://grist.numerique.gouv.fr/o/transports-sanitaires/api/docs/ihJg4NmHn6kg";
-
-// Les variables qui ont un défaut documenté (README § Configuration). Leur
-// absence n'empêche pas de démarrer.
+// Les variables du serveur (README § Configuration). Hors production, aucune
+// n'empêche de démarrer : `PORT` et `APP` ont un défaut, et sans Grist le
+// référentiel est factice et le journal ne garde rien.
 const VARIABLES = z.object({
   PORT: z.coerce
     .number({ error: "doit être un numéro de port" })
     .int({ error: "doit être un entier" })
     .positive({ error: "doit être un entier positif" })
     .default(3000),
-  GRIST_DOC_URL: z
-    .url({ error: "doit être une URL" })
-    .default(DOC_URL_PAR_DEFAUT),
+  GRIST_DOC_URL: z.url({ error: "doit être une URL" }).optional(),
   // Le journal des parcours est un autre document, avec la même clé (ADR-6).
-  JOURNAL_GRIST_DOC_URL: z
-    .url({ error: "doit être une URL" })
-    .default(JOURNAL_DOC_URL_PAR_DEFAUT),
+  // Sans défaut : la collecte ne s'active que là où on la pose.
+  JOURNAL_GRIST_DOC_URL: z.url({ error: "doit être une URL" }).optional(),
   GRIST_API_KEY: z.string().optional(),
   // Scalingo pose le nom de l'app : il distingue la production de la
   // préproduction dans le journal, sans variable de plus.
   APP: z.string().default("local"),
 });
 
-// En production, la variable sans défaut devient obligatoire. C'est la seule
-// différence entre les deux environnements.
+// En production, les variables du référentiel deviennent obligatoires. C'est la
+// seule différence entre les deux environnements.
 const SANS_DEFAUT =
   "sans valeur par défaut, elle doit être posée en production";
 
 const EN_PRODUCTION = VARIABLES.extend({
+  GRIST_DOC_URL: z.url({
+    error: (probleme) =>
+      probleme.input === undefined ? SANS_DEFAUT : "doit être une URL",
+  }),
   GRIST_API_KEY: z.string({ error: SANS_DEFAUT }),
 });
 
@@ -105,9 +110,16 @@ function sansValeursVides(env: Env): Env {
   return Object.fromEntries(remplies.map(([nom, brut]) => [nom, brut?.trim()]));
 }
 
+function journalEnMemoire(): undefined {
+  console.warn(
+    "[simulateur] JOURNAL_GRIST_DOC_URL ou GRIST_API_KEY absente — journal des parcours désactivé, aucun événement n'est gardé.",
+  );
+  return undefined;
+}
+
 function sansGrist(): undefined {
   console.warn(
-    "[simulateur] GRIST_API_KEY absente — référentiel snapshot (dev/fallback).",
+    "[simulateur] GRIST_API_KEY ou GRIST_DOC_URL absente — référentiel snapshot (dev/fallback).",
   );
   return undefined;
 }
