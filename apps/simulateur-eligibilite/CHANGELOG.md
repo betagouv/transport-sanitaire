@@ -7,6 +7,28 @@ commit lui-même.
 Le simulateur affiche en bas de page la version qu'il exécute, le commit déployé
 et la version du modèle de règles.
 
+## [0.7.0](https://github.com/betagouv/transport-sanitaire/releases/tag/simulateur-eligibilite%400.7.0), 12 novembre 2026
+
+Le modèle v10.1.8 de l'éditeur, le début du journal des parcours et la trace de
+debug ouverte à l'Assurance Maladie. 4 commits depuis la 0.6.0.
+
+### TL;DR
+
+- Le simulateur suit la v10.1.8 : au-delà de 150 km, l'accord préalable demande une finalité de soins ; les lieux de P3 se rangent en trois catégories, domicile, structure de soins et autre lieu.
+- Les précisions de l'ALD, de la dialyse et de l'accident causé par un tiers se posent dans un panneau sous leur case.
+- Le début de chaque simulation s'écrit dans le journal des parcours, en production seulement.
+- La structure « Assurance Maladie » ouvre la trace de debug sur tous les environnements.
+
+### ✨ Nouveautés
+
+- [c62c5d6](https://github.com/betagouv/transport-sanitaire/commit/c62c5d6) : intègre le modèle v10.1.8 : finalité de soins demandée au-delà de 150 km quand rien ne la prouve, « Autre motif » qui ne dit plus rien du soin, permission d'un adulte autorisée qui aboutit, sens de plusieurs permissions demandé, déplacement évalué entre maternité et HTNM, sous-titres de Q1.4, précisions de Q1.3 dans un panneau, lieux de P3 en trois catégories avec le nom et le service de la structure.
+- [61e2fa3](https://github.com/betagouv/transport-sanitaire/commit/61e2fa3) : écrit le début de chaque simulation, avec l'établissement et le service, dans le journal des parcours, sans réponse ni texte libre ; seule la production le garde, et rien ne part quand le prescripteur s'oppose à la mesure.
+- [3979c27](https://github.com/betagouv/transport-sanitaire/commit/3979c27) : ouvre la trace de debug à qui choisit la structure « Assurance Maladie », en staging et en production ; les seeds et le choix du modèle restent en local.
+
+### 📝 Documentation
+
+- [532c22f](https://github.com/betagouv/transport-sanitaire/commit/532c22f) : décide que le navigateur envoie ses événements au backend, qui les valide et les écrit dans Grist.
+
 ## [0.6.0](https://github.com/betagouv/transport-sanitaire/releases/tag/simulateur-eligibilite%400.6.0), 9 novembre 2026
 
 Le modèle v10.1.7 de l'éditeur, l'écran d'entrée revu avec le porteur et les
