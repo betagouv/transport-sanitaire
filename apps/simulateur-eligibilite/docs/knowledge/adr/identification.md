@@ -1,6 +1,11 @@
 # Architecture : Rattachement à un établissement et un service (~~identification du prescripteur~~)
 
-> Statut : **décidé (release officielle)** · Dernière mise à jour : 2026-11-09
+> Statut : **décidé (release officielle)** · Dernière mise à jour : 2026-11-12
+>
+> **Mise à jour 2026-11-12, trace de debug pour « Assurance Maladie » (#407,
+> D-280).** Choisir la structure « Assurance Maladie » ouvre la trace de debug
+> sur tous les environnements. L'écran de rattachement remonte la structure
+> choisie au simulateur. Les seeds et le choix du modèle restent en local.
 >
 > **Mise à jour 2026-11-09, developer tools en local (#373, D-279).** Le service
 > n° 4 ne déverrouille plus rien. Les developer tools s'ouvrent en local, quel que

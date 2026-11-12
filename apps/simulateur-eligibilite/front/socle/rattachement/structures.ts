@@ -18,12 +18,18 @@ export function estEtablissementFourreTout(etab: Etablissement): boolean {
   );
 }
 
+/** Une structure, sous le libellé du porteur. */
+export type Structure = (typeof STRUCTURES)[number];
+
+/** Une structure affichée : l'id de son service dans Grist, et son libellé. */
+export type StructureAffichee = { id: string; libelle: Structure };
+
 /**
  * Les structures à afficher parmi les services du fourre-tout : l'id de Grist,
  * le libellé et l'ordre du porteur. Une structure absente du référentiel ne
  * s'affiche pas.
  */
-export function structuresAffichees(services: Service[]): Service[] {
+export function structuresAffichees(services: Service[]): StructureAffichee[] {
   return STRUCTURES.flatMap((libelle) => {
     const service = services.find(
       (s) => normalise(s.libelle) === normalise(libelle),
@@ -37,4 +43,4 @@ export function structuresAffichees(services: Service[]): Service[] {
 const FOURRE_TOUT_ID = "11";
 const FOURRE_TOUT_LIBELLE = "Libéral / CNAM / CPAM / Autre";
 
-const STRUCTURES = ["Libéral", "Assurance Maladie", "Autre"];
+const STRUCTURES = ["Libéral", "Assurance Maladie", "Autre"] as const;

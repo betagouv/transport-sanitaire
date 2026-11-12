@@ -9,11 +9,15 @@ import type {
   Referentiel,
   Service,
 } from "../../../shared/referentiel";
-import { estEtablissementFourreTout, structuresAffichees } from "./structures";
+import {
+  estEtablissementFourreTout,
+  type StructureAffichee,
+  structuresAffichees,
+} from "./structures";
 
 export type Listes = {
   etablissements: Etablissement[];
-  structures: Service[];
+  structures: StructureAffichee[];
   // L'établissement fourre-tout, que porte le rattachement d'une structure.
   fourreTout: Etablissement | null;
   services: Service[];

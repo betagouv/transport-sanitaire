@@ -10,7 +10,8 @@ import {
 } from "../simulateur/questionnaire";
 
 // La trace de debug est un developer tool. Elle s'ouvre en local, quel que soit
-// le service, jamais sur un build de production (D-279). Elle montre le chemin
+// le service (D-279). Sur un build de production, elle ne s'ouvre que pour la
+// structure « Assurance Maladie », sans les autres outils (D-280). Elle montre le chemin
 // parcouru, les questions validées et leurs réponses, puis les faits et les
 // cibles de la préconisation.
 //
@@ -35,6 +36,25 @@ describe("traces de debug", () => {
 
     await allerAuResultat(user);
     expect(screen.queryByText(TRACE_RESULTAT)).toBeNull();
+  });
+
+  it("s'ouvrent sur un build de production pour « Assurance Maladie », sans les autres outils", async () => {
+    const user = await ouvrirLeSimulateur({
+      developerTools: false,
+      structure: "Assurance Maladie",
+    });
+    await question(BOISSON);
+    expect(screen.getByText(TRACE_PARCOURS)).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Seeds" })).toBeNull();
+
+    await allerAuResultat(user);
+    expect(screen.getByText(TRACE_RESULTAT)).toBeInTheDocument();
+  });
+
+  it("restent fermées sur un build de production pour une autre structure", async () => {
+    await ouvrirLeSimulateur({ developerTools: false, structure: "Libéral" });
+    await question(BOISSON);
+    expect(screen.queryByText(TRACE_PARCOURS)).toBeNull();
   });
 
   it("s'ouvrent en local, sous le questionnaire puis sous le résultat", async () => {
