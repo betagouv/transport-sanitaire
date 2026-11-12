@@ -79,6 +79,7 @@ jamais exposées au front.
 | `VITE_MATOMO_ENABLED` | front | non | `false` (traceur no-op) | Active le tracking Matomo. Actif d'office en build de prod ; à mettre à `true` pour tester en local. |
 | `VITE_MATOMO_URL` | front | non | instance mutualisée beta.gouv | URL de l'instance Matomo. |
 | `VITE_MATOMO_SITE_ID` | front | non | `275` | Identifiant du site Matomo. |
+| `VITE_BANDEAU_BETA` | front | non | `false` (pas de bandeau) | À `true`, l'écran de rattachement affiche « Version bêta : l'ensemble des données sont des données de test. ». Lue au build : la changer demande un nouveau déploiement. |
 
 La variable marquée **prod** n'a pas de valeur par défaut : son repli est un
 référentiel inventé, ce qui n'a de sens que sur un poste de développement. En production — `NODE_ENV=production`, ce que pose Scalingo —

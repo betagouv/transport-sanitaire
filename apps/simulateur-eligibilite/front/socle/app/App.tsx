@@ -22,10 +22,10 @@ import type { Navigation } from "./navigation";
 import { useNavigation } from "./navigation";
 import { SimulateurScreen } from "./SimulateurScreen";
 
-// `referentiel` et `declarer` sont injectables pour les tests.
+// `referentiel`, `declarer` et `bandeauBeta` sont injectables pour les tests.
 type Props = Pick<
   ComponentProps<typeof RattachementScreen>,
-  "referentiel" | "declarer"
+  "referentiel" | "declarer" | "bandeauBeta"
 > & {
   /**
    * Les modèles que l'app peut dérouler, chacun sous le nom que `main.tsx` lui
@@ -47,6 +47,7 @@ export function App({
   models,
   referentiel,
   declarer,
+  bandeauBeta,
   developerTools = developerToolsUnlocked(),
 }: Props) {
   const navigation = useNavigation();
@@ -58,6 +59,7 @@ export function App({
       <RattachementScreen
         referentiel={referentiel}
         declarer={declarer}
+        bandeauBeta={bandeauBeta}
         onRattache={navigation.rattacher}
       />
     );
