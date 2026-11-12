@@ -5,7 +5,7 @@
 // et ADR-7.
 
 import { afterEach, describe, expect, it } from "vitest";
-import { memoryJournal } from "../../../server/journal/memory-journal.ts";
+import { MemoryJournal } from "../../../server/journal/memory-journal.adapter.ts";
 import { snapshotReferentiel } from "../../../shared/referentiel.ts";
 import { type AppDeTest, demarrer, postTo } from "../server/serveur-de-test.ts";
 import { simulationStarted } from "./evenements.ts";
@@ -13,7 +13,7 @@ import { simulationStarted } from "./evenements.ts";
 let app: AppDeTest;
 afterEach(() => app.close());
 
-async function collecteSur(journal = memoryJournal()) {
+async function collecteSur(journal = new MemoryJournal()) {
   app = await demarrer(snapshotReferentiel, { journal });
   return journal;
 }

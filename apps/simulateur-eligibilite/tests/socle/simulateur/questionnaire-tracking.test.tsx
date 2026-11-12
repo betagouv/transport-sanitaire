@@ -51,8 +51,10 @@ describe("suivi du parcours", () => {
 
   it("envoie au journal un seul début, avec l'établissement et le service", async () => {
     const envoyes: AnalyticsEvent[] = [];
-    initJournal(async (evenement) => {
-      envoyes.push(evenement);
+    initJournal({
+      record: async (evenement) => {
+        envoyes.push(evenement);
+      },
     });
     const user = await ouvrirLeSimulateur();
     await allerAuResultat(user);

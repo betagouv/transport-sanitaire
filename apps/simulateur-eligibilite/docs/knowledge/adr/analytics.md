@@ -14,7 +14,7 @@
 > à cette collecte. Cela **révise** le §1 (« aucun backend applicatif ne collecte les
 > événements ») et l'invariant, et **étend** l'opt-out (ADR-5) au journal. Matomo
 > reste en place pour la mesure d'audience (ADR-1). Le même jour, au cadrage de #382 :
-> le journal passe par un port, Grist n'en est que le premier adaptateur (ADR-7) ;
+> le journal suit la clean architecture, Grist n'en est que le premier adaptateur (ADR-7) ;
 > notre contrat s'écrit d'après ANA-1015, le code du paquet ne sert qu'aux tests ; le
 > navigateur envoie chaque événement seul et réessaie quelques secondes, sans file ;
 > le journal ne s'exporte pas, le dashboard le lira par une API à venir.
@@ -298,39 +298,48 @@ s'exporte sans outil de plus.~~ (voir ADR-7)
 - Un rechargement de la page crée une nouvelle simulation : l'app ne garde rien
   d'un rechargement à l'autre. La reprise viendra avec #392 (R-14).
 
-### ADR-7 - Le journal derrière un port, Grist en premier adaptateur
+### ADR-7 - Le journal en clean architecture, Grist en premier adaptateur
 
 **Contexte.** Grist sert à démarrer : l'équipe y tient déjà le référentiel, le
 backend sait déjà y écrire, et l'app n'a pas de base de données. Mais il n'est pas
 fait pour stocker des événements en masse, et il ne tiendra probablement pas dans
 la durée.
 
-**Décision.** Le journal suit une architecture hexagonale, comme le référentiel des
-établissements (`Referentiel` et ses deux sources, `server/rattachement/`) :
+**Décision.** Le journal suit la clean architecture, côté serveur
+(`server/journal/`) comme côté écran (`front/socle/analytics/`). Chaque fichier dit
+son rôle par son suffixe, et chaque rôle s'écrit en classe ou en interface :
 
-- le domaine (`server/journal/`) valide l'événement, l'enrichit et décide entre
-  nouvel événement, renvoi ignoré et collision. Il ne connaît que ses propres types :
-  ni ligne, ni colonne, ni JSON, ni Grist ;
-- il parle à un port, une interface qu'il déclare : retrouver un événement par son
-  `event_id`, en ajouter un, mettre une collision à part ;
-- l'adaptateur Grist, seul à connaître le document « Simulateur-Parcours », range
-  chaque événement en colonnes communes (`event_id`, `simulation_id`, `sequence`,
-  type, dates, environnement, version du schéma, `is_test`) et le reste en JSON dans
-  une colonne `payload`, et les collisions dans une table à part ;
-- un adaptateur en mémoire sert aux tests, sans mock, et au développement sans clé ;
-- la route Express n'appelle que le domaine ; l'adaptateur se choisit au démarrage,
-  comme `choisirReferentiel`. L'accès à Grist, partagé avec le référentiel, sort dans
-  `server/grist/`.
+| Suffixe | Rôle | Serveur | Écran |
+|---|---|---|---|
+| `.entity.ts` | une notion du journal et ses règles, sans dépendance | `JournalEntry` : l'événement daté à sa réception, qui sait s'il en répète un autre | `Journey` : la simulation, qui numérote et date ses événements |
+| `.usecase.ts` | une action, qui ne parle qu'aux entités et aux ports | `CollectAnEvent` : garde un nouvel événement, ignore un renvoi, met une collision à part | `StartASimulation` : ouvre un parcours et le signale sur P0 |
+| `.port.ts` | l'interface qu'un use case attend de l'extérieur | `Journal` : retrouver, ajouter, mettre à part | `Journal` : garder un événement |
+| `.adapter.ts` | une classe qui implémente un port, ou une entrée qui appelle un use case | `GristJournal`, `MemoryJournal`, `journalRoutes` | `ServerJournal` : envoi, réessais, opt-out |
+
+Les adaptateurs parlent HTTP par deux clients préconfigurés (`.client.ts`), qui
+portent l'adresse, l'authentification, le JSON et les erreurs :
+`server/grist/grist-api.client.ts` (`GristApiClient`, serveur → Grist) et
+`front/socle/server-api/server-api.client.ts` (`ServerApiClient`, écran → serveur).
+Le référentiel et le rattachement passent aussi par eux. L'adaptateur Grist, seul à
+connaître le document « Simulateur-Parcours », range chaque événement en colonnes
+communes (`event_id`, `simulation_id`, `sequence`, type, dates, environnement,
+version du schéma, `is_test`) et le reste en JSON dans une colonne `payload`, et les
+collisions dans une table à part. L'adaptateur se choisit au démarrage, dans
+`server/server.ts`. Les fichiers qui assemblent (`server.ts`, `app.ts`,
+`journey-in-session.ts`, `main.tsx`, les `index.ts`) n'ont pas de suffixe.
 
 **Pourquoi.** Changer de stockage ne doit toucher qu'un adaptateur. Si l'adaptateur
-décidait seul qu'un renvoi est un doublon, la règle partirait avec lui. Colonnes
-communes plus JSON : le journal sert au rejeu, pas à la lecture à l'œil, et la table
-ne bouge pas quand le contrat gagne un champ.
+décidait seul qu'un renvoi est un doublon, la règle partirait avec lui. Le suffixe
+dit au lecteur, avant d'ouvrir le fichier, de quel côté de la frontière il est.
+Colonnes communes plus JSON : le journal sert au rejeu, pas à la lecture à l'œil, et
+la table ne bouge pas quand le contrat gagne un champ.
 
-**Conséquences.** Le domaine se teste entièrement sur l'adaptateur en mémoire.
+**Conséquences.** Les use cases se testent entièrement sur l'adaptateur en mémoire.
 L'adaptateur Grist n'a que des tests d'aller-retour. Une nouvelle variable de
 configuration donne l'adresse du document « Simulateur-Parcours ». Le test
-d'architecture vérifie que le domaine du journal n'importe rien de `server/grist/`.
+d'architecture vérifie que les entités, use cases et ports n'importent qu'entre eux
+et depuis `shared/`, et que seul `grist-journal.adapter.ts` importe `server/grist/`.
+Le rattachement n'est pas encore découpé ainsi : il le sera sur ce modèle.
 
 ## 3. Architecture cible
 

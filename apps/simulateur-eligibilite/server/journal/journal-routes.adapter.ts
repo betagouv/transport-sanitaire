@@ -1,12 +1,13 @@
-// La route de collecte du journal des parcours, montée sous `/api`. Elle
-// n'accuse réception qu'une fois l'événement écrit.
+// La route de collecte du journal des parcours, montée sous `/api` : l'entrée
+// HTTP de la collecte. Elle valide le contrat, confie l'événement au use case,
+// et traduit son issue en statut. Elle n'accuse réception qu'une fois
+// l'événement écrit.
 
 import express, { type Request, type Response, type Router } from "express";
 import { parseAnAnalyticsEvent } from "../../shared/analytics/event-schema.ts";
-import { type Collected, collectAnEvent } from "./collect-an-event.ts";
-import type { Journal } from "./journal.ts";
+import type { CollectAnEvent, Collected } from "./collect-an-event.usecase.ts";
 
-export function journalRoutes(journal: Journal, environment: string): Router {
+export function journalRoutes(collectAnEvent: CollectAnEvent): Router {
   const router = express.Router();
   router.post("/journal/v1/events", (req: Request, res: Response) => {
     const event = parseAnAnalyticsEvent(req.body);
@@ -14,7 +15,7 @@ export function journalRoutes(journal: Journal, environment: string): Router {
       res.status(400).json({ error: "événement hors contrat" });
       return;
     }
-    collectAnEvent(journal, event, environment).then(
+    collectAnEvent.execute(event).then(
       (collected) => respond(res, collected),
       (err: unknown) => {
         console.error("[simulateur] journal indisponible:", err);

@@ -56,6 +56,7 @@ front et le référentiel de rattachement.
 
 Les règles d'écriture et les invariants ne sont pas de la prose, ils sont exécutables.
 On les trouve dans `tests/architecture.test.ts`, pour les frontières, dans
+`tests/journal-en-clean-architecture.test.ts`, pour le domaine du journal, dans
 `tests/taille-du-code.test.ts`, pour les limites de 30 et 300 lignes, dans `tests/lisibilite.test.ts`, pour la forme des fichiers, les noms
 et les extensions d'import, dans `tests/miroir-des-sources.test.ts`, pour
 les dossiers de tests, rangés comme les sources, et dans
@@ -126,10 +127,11 @@ server/                  le backend Node, barrière de sécurité : les secrets 
                          configuration lue une fois et refusée si elle manque en prod.
   rattachement/          LA feature backend : les routes `/api` et la source Grist du
                          référentiel, qu'elle lit et complète
-  journal/               le journal des parcours : sa route de collecte, son port
-                         et ses adaptateurs, Grist et mémoire (ADR-7 d'analytics)
-  grist/                 les lignes d'un doc Grist, lues et écrites, pour le
-                         référentiel comme pour le journal
+  journal/               le journal des parcours en clean architecture : entité,
+                         use case, port et adaptateurs (route, Grist, mémoire),
+                         nommés par leur suffixe (ADR-7 d'analytics)
+  grist/                 le client HTTP de l'API Grist, pour le référentiel comme
+                         pour le journal
 core/                    le métier, sans React ni DOM : ce qu'un serveur ou un script
                          peut calculer
   models/                le métier de chaque modèle
@@ -222,6 +224,7 @@ front/                   le front, bundlé par Vite
                          les phrases de l'écran, le champ qui affiche une question,
                          ce qui part vers l'analytics, le retour en haut, page hôte
                          comprise
+    server-api/          le client HTTP du backend, préconfiguré sous `/api`
     ui/                  les champs de formulaire, bâtis sur le DSFR et sans rien
                          savoir du questionnaire : TextField, TextAreaField,
                          SelectField, RadioField, CheckboxField, NumberField,
@@ -239,7 +242,8 @@ front/                   le front, bundlé par Vite
                          télécharger, l'imprimer, le bouton qui l'attend). Aucun
                          gabarit.
     analytics/           le vocabulaire mesuré, seul import du reste, son transport
-                         vers Matomo, le parcours et son envoi au journal du backend,
+                         vers Matomo, le journal des parcours (entité, use case, port,
+                         adaptateur vers le backend, ADR-7),
                          le choix du prescripteur transmis par le CMS, et
                          cms.js, le script à coller dans Sites Conformes : l'opt-out
                          du pied de page, qui répond au traceur de l'iframe, le

@@ -6,21 +6,11 @@ import type {
   Referentiel,
   Service,
 } from "../../../shared/referentiel";
+import { ServerApiClient } from "../server-api";
 
 export const REFERENTIEL: Referentiel = {
-  listerEtablissements: () => recuperer<Etablissement[]>("/api/etablissements"),
+  listerEtablissements: () =>
+    new ServerApiClient().get<Etablissement[]>("/etablissements"),
   listerServices: (etabId) =>
-    recuperer<Service[]>(`/api/services?etabId=${encoder(etabId)}`),
+    new ServerApiClient().get<Service[]>("/services", { etabId }),
 };
-
-// ---- implémentation ----
-
-async function recuperer<T>(chemin: string): Promise<T> {
-  const response = await fetch(chemin);
-  if (!response.ok) throw new Error(`API ${chemin} → HTTP ${response.status}`);
-  return (await response.json()) as T;
-}
-
-function encoder(valeur: string): string {
-  return encodeURIComponent(valeur);
-}

@@ -18,7 +18,7 @@ import {
   initJournal,
   loadMatomo,
   type Models,
-  sendToTheJournal,
+  ServerJournal,
 } from "./socle";
 
 // Clair par défaut : le thème est celui de la page qui embarque l'app, qui le
@@ -33,7 +33,7 @@ initAnalytics(configFromEnv(), { load: loadMatomo });
 
 // Le parcours part aussi au journal du backend, sous le même choix du
 // prescripteur (ADR-6 d'analytics.md).
-initJournal(sendToTheJournal());
+initJournal(new ServerJournal());
 
 // Le premier s'ouvre au démarrage. À plusieurs, on peut en changer depuis les
 // developer tools, donc en local seulement.

@@ -6,17 +6,10 @@
 // simulateur même si Grist ne répond pas.
 
 import type { RattachementSaisi } from "../../../shared/rattachement-saisi";
+import { ServerApiClient } from "../server-api";
 
 export function declarerLaSaisie(saisie: RattachementSaisi): void {
-  fetch("/api/rattachement", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(saisie),
-  })
-    .then((res) => {
-      if (!res.ok) throw new Error(`/api/rattachement → HTTP ${res.status}`);
-    })
-    .catch((err: unknown) => {
-      console.error("[simulateur] déclaration du rattachement échouée:", err);
-    });
+  new ServerApiClient().post("/rattachement", saisie).catch((err: unknown) => {
+    console.error("[simulateur] déclaration du rattachement échouée:", err);
+  });
 }

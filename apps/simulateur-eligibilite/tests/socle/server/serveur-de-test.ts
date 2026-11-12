@@ -5,15 +5,15 @@
 import type { Server } from "node:http";
 import type { AddressInfo } from "node:net";
 import { creerApp } from "../../../server/app.ts";
-import type { Journal } from "../../../server/journal/journal.ts";
-import { memoryJournal } from "../../../server/journal/memory-journal.ts";
+import type { Journal } from "../../../server/journal/journal.port.ts";
+import { MemoryJournal } from "../../../server/journal/memory-journal.adapter.ts";
 import type { Referentiel } from "../../../shared/referentiel.ts";
 
 export type AppDeTest = { base: string; close: () => Promise<void> };
 
 export async function demarrer(
   referentiel: Referentiel,
-  { journal = memoryJournal() }: { journal?: Journal } = {},
+  { journal = new MemoryJournal() }: { journal?: Journal } = {},
 ): Promise<AppDeTest> {
   const app = creerApp(referentiel, { journal, environment: "test" });
   const srv = await new Promise<Server>((resolve) => {

@@ -6,8 +6,11 @@ import {
   snapshotReferentiel,
 } from "../../shared/referentiel.ts";
 import type { AccesGrist } from "../configuration.ts";
+import { GristApiClient } from "../grist/grist-api.client.ts";
 import { creerReferentielGrist } from "./referentiel-grist.ts";
 
 export function choisirReferentiel(grist: AccesGrist | undefined): Referentiel {
-  return grist ? creerReferentielGrist(grist) : snapshotReferentiel;
+  return grist
+    ? creerReferentielGrist(new GristApiClient(grist))
+    : snapshotReferentiel;
 }

@@ -3,9 +3,10 @@
 // quand Grist ne répond pas. Voir docs/knowledge/adr/analytics.md, ADR-6.
 
 import { afterEach, describe, expect, it } from "vitest";
-import { sendToTheJournal } from "../../../front/socle/analytics/send-to-the-journal";
-import type { Journal } from "../../../server/journal/journal.ts";
-import { memoryJournal } from "../../../server/journal/memory-journal.ts";
+import { ServerJournal } from "../../../front/socle/analytics/server-journal.adapter";
+import type { Journal } from "../../../server/journal/journal.port.ts";
+import type { JournalEntry } from "../../../server/journal/journal-entry.entity.ts";
+import { MemoryJournal } from "../../../server/journal/memory-journal.adapter.ts";
 import type { AnalyticsEvent } from "../../../shared/analytics/analytics-event.ts";
 import { snapshotReferentiel } from "../../../shared/referentiel.ts";
 import { simulationStarted } from "../journal/evenements.ts";
@@ -21,7 +22,7 @@ const evenement = simulationStarted;
 
 // La page de test passe sur l'origine du serveur, comme l'app servie par lui :
 // happy-dom applique la règle de même origine à `fetch`.
-async function journalDuServeur(journal: Journal = memoryJournal()) {
+async function journalDuServeur(journal: Journal = new MemoryJournal()) {
   app = await demarrer(snapshotReferentiel, { journal });
   (window as unknown as HappyDomWindow).happyDOM.setURL(app.base);
   return journal;
@@ -29,23 +30,26 @@ async function journalDuServeur(journal: Journal = memoryJournal()) {
 
 type HappyDomWindow = { happyDOM: { setURL: (url: string) => void } };
 
-// Un journal qui échoue à ses `fois` premières écritures.
-function indisponible(journal: Journal, fois: number): Journal {
-  let echecs = fois;
-  return {
-    ...journal,
-    append: async (recorded) => {
-      if (echecs-- > 0) throw new Error("Grist ne répond pas");
-      return journal.append(recorded);
-    },
-  };
+// Un journal qui échoue à ses `echecs` premières écritures.
+class JournalIndisponible extends MemoryJournal {
+  #echecs: number;
+
+  constructor(echecs: number) {
+    super();
+    this.#echecs = echecs;
+  }
+
+  override async append(entry: JournalEntry): Promise<void> {
+    if (this.#echecs-- > 0) throw new Error("Grist ne répond pas");
+    return super.append(entry);
+  }
 }
 
 describe("envoi au journal des parcours", () => {
   it("réessaie quand le journal ne répond pas, puis l'écrit", async () => {
-    const journal = await journalDuServeur(indisponible(memoryJournal(), 2));
+    const journal = await journalDuServeur(new JournalIndisponible(2));
 
-    await sendToTheJournal({ delays: [0, 0, 0, 0] })(evenement);
+    await new ServerJournal({ delays: [0, 0, 0, 0] }).record(evenement);
 
     expect((await journal.find("s-1:1"))?.event).toEqual(evenement);
   });
@@ -55,7 +59,7 @@ describe("envoi au journal des parcours", () => {
     const horsContrat = { ...evenement, reponse: "domicile" } as AnalyticsEvent;
 
     // Une seule nouvelle tentative ferait attendre une minute.
-    await sendToTheJournal({ delays: [60_000] })(horsContrat);
+    await new ServerJournal({ delays: [60_000] }).record(horsContrat);
 
     expect(await journal.find("s-1:1")).toBeUndefined();
   });
@@ -64,7 +68,7 @@ describe("envoi au journal des parcours", () => {
     const journal = await journalDuServeur();
     const parent = pageQuiRefuse();
 
-    await sendToTheJournal({ parent })(evenement);
+    await new ServerJournal({ parent }).record(evenement);
 
     expect(await journal.find("s-1:1")).toBeUndefined();
   });

@@ -11,7 +11,7 @@ export {
   initAnalytics,
   initJournal,
   loadMatomo,
-  sendToTheJournal,
+  ServerJournal,
 } from "./analytics";
 export { App, type Models } from "./app";
 export {

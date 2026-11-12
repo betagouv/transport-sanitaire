@@ -2,6 +2,6 @@
 // évènements, et le journal des parcours.
 
 export { EventName, trackEvent } from "./events";
-export { initJournal, startASimulation } from "./journey";
+export { initJournal, startASimulation } from "./journey-in-session";
 export { configFromEnv, initAnalytics, loadMatomo } from "./matomo";
-export { sendToTheJournal } from "./send-to-the-journal";
+export { ServerJournal } from "./server-journal.adapter";

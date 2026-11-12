@@ -6,8 +6,9 @@
 
 import express, { type Express } from "express";
 import type { Referentiel } from "../shared/referentiel.ts";
-import type { Journal } from "./journal/journal.ts";
-import { journalRoutes } from "./journal/routes.ts";
+import { CollectAnEvent } from "./journal/collect-an-event.usecase.ts";
+import type { Journal } from "./journal/journal.port.ts";
+import { journalRoutes } from "./journal/journal-routes.adapter.ts";
 import { rattachementRoutes } from "./rattachement/routes.ts";
 
 export type AppOptions = {
@@ -28,7 +29,7 @@ export function creerApp(
   interdireIndexation(app);
 
   app.use("/api", rattachementRoutes(referentiel));
-  app.use("/api", journalRoutes(journal, environment));
+  app.use("/api", journalRoutes(new CollectAnEvent(journal, environment)));
   // Toute autre route sous /api rend un 404 JSON, pour éviter de servir
   // index.html.
   app.use("/api", (_req, res) => {
