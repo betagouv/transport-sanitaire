@@ -4,6 +4,7 @@
 // libre y écrit, et ce qu'elle n'y écrit pas.
 
 import { afterEach, describe, expect, it } from "vitest";
+import { GristApiClient } from "../../../server/grist/grist-api.client.ts";
 import { creerReferentielGrist } from "../../../server/rattachement/referentiel-grist.ts";
 import {
   demarrerGrist,
@@ -22,7 +23,9 @@ afterEach(() => grist.close());
 
 async function referentielSur(tables: Record<string, Ligne[]>) {
   grist = await demarrerGrist(tables);
-  return creerReferentielGrist({ docUrl: grist.docUrl, cleApi: "test" });
+  return creerReferentielGrist(
+    new GristApiClient({ docUrl: grist.docUrl, cleApi: "test" }),
+  );
 }
 
 const noms = (table: string) =>

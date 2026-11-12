@@ -4,24 +4,25 @@
 // lignes dans le référentiel : il ne tourne que sur demande explicite. Les lignes
 // portent `Origine=formulaire` et un suffixe horodaté. Elles se purgent à la main.
 //
-//   GRIST_ECRITURE_TEST=1 GRIST_API_KEY=$(grep -E '^GRIST_API_KEY=' .env | cut -d= -f2-) \
-//     pnpm test grist-ecriture
+//   export $(grep -E '^GRIST_(API_KEY|DOC_URL)=' .env | xargs) && \
+//     GRIST_ECRITURE_TEST=1 pnpm test grist-ecriture
 //
 // Vérifie l'idempotence : deux enrichissements identiques créent une seule ligne.
 // Prérequis : la colonne `Origine` sur `Etablissements` comme sur `Services_Unites`.
 
 import { describe, expect, it } from "vitest";
 import { lireConfiguration } from "../../../server/configuration.ts";
-import { choisirReferentiel } from "../../../server/rattachement/referentiel-source.ts";
+import { adaptersFor } from "../../../server/container.ts";
 
 const actif =
   process.env.GRIST_ECRITURE_TEST === "1" &&
-  !!process.env.GRIST_API_KEY?.trim();
+  !!process.env.GRIST_API_KEY?.trim() &&
+  !!process.env.GRIST_DOC_URL?.trim();
 
 describe.skipIf(!actif)(
   "écriture Grist depuis une saisie libre (smoke)",
   () => {
-    const ref = choisirReferentiel(lireConfiguration().grist);
+    const ref = adaptersFor(lireConfiguration()).referentiel;
 
     it("service « Autre » : crée le vrai service, puis le déduplique", async () => {
       const marqueur = `TEST-SVC-${Date.now()}`;

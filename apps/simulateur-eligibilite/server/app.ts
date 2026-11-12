@@ -1,11 +1,11 @@
-// L'app Express. Elle monte l'API du rattachement sous `/api`, puis sert le
-// front construit par Vite.
+// L'app Express. Elle monte l'API du rattachement et la collecte du journal
+// sous `/api`, puis sert le front construit par Vite.
 //
-// `creerApp` reçoit le `Referentiel` en paramètre : les tests passent le
-// snapshot, sans mock.
+// `creerApp` reçoit le conteneur (`container.ts`) : les tests le créent sur le
+// snapshot et le journal en mémoire, sans mock.
 
 import express, { type Express } from "express";
-import type { Referentiel } from "../shared/referentiel.ts";
+import type { Container } from "./container.ts";
 import { rattachementRoutes } from "./rattachement/routes.ts";
 
 export type AppOptions = {
@@ -14,7 +14,7 @@ export type AppOptions = {
 };
 
 export function creerApp(
-  referentiel: Referentiel,
+  { referentiel, journalController }: Container,
   { dossierDist }: AppOptions = {},
 ): Express {
   const app = express();
@@ -22,6 +22,7 @@ export function creerApp(
   interdireIndexation(app);
 
   app.use("/api", rattachementRoutes(referentiel));
+  app.use("/api", journalController.routes());
   // Toute autre route sous /api rend un 404 JSON, pour éviter de servir
   // index.html.
   app.use("/api", (_req, res) => {
