@@ -14,12 +14,15 @@ import { declarerLaSaisie } from "./declarer-la-saisie";
 import { RattachementForm } from "./RattachementForm";
 import { rangerRattachement } from "./rattachement-en-session";
 import { REFERENTIEL } from "./referentiel";
+import type { Structure } from "./structures";
 
 type Props = {
   // Injectables pour les tests (défauts = production same-origin).
   referentiel?: Referentiel;
   declarer?: (saisie: RattachementSaisi) => void;
-  onRattache: () => void;
+  // La structure choisie, `null` pour un établissement : `App` en tire la
+  // trace de debug (D-280).
+  onRattache: (structure: Structure | null) => void;
 };
 
 export function RattachementScreen({
@@ -30,10 +33,10 @@ export function RattachementScreen({
   return (
     <RattachementForm
       referentiel={referentiel}
-      onValide={(saisie) => {
+      onValide={(saisie, structure) => {
         rangerRattachement(saisie);
         if (enrichitLeReferentiel(saisie)) declarer(saisie);
-        onRattache();
+        onRattache(structure);
       }}
     />
   );

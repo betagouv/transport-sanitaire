@@ -18,12 +18,16 @@ import { Container, SelectField, TextField } from "../ui";
 import { optionsDuChoix } from "./choix";
 import type { Derivation, SaisieRattachement } from "./saisie-rattachement";
 import { useSaisieRattachement } from "./saisie-rattachement";
+import type { Structure } from "./structures";
 
 type Props = {
   referentiel?: Referentiel;
   // Toutes les entrées passent par lui : le rattachement est obligatoire
-  // (ADR-1).
-  onValide: (saisie: SaisieRattachement["saisie"]) => void;
+  // (ADR-1). La structure choisie l'accompagne, `null` pour un établissement.
+  onValide: (
+    saisie: SaisieRattachement["saisie"],
+    structure: Structure | null,
+  ) => void;
 };
 
 export function RattachementForm({
@@ -65,7 +69,7 @@ type FieldsProps = { saisie: SaisieRattachement; modifier: Modifier };
 // champ quand la sélection suffit. Le simulateur s'ouvre alors sans bouton.
 function entrees(saisie: SaisieRattachement, onValide: Props["onValide"]) {
   const entrer = (derivation: Derivation) => {
-    if (derivation.valide) onValide(derivation.saisie);
+    if (derivation.valide) onValide(derivation.saisie, derivation.structure);
   };
   const modifier: Modifier = (champ, valeur) => {
     const suite = saisie.modifier(champ, valeur);

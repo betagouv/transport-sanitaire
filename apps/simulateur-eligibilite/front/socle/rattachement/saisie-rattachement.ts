@@ -9,6 +9,7 @@ import {
 import type { Referentiel } from "../../../shared/referentiel";
 import { decoderChoix } from "./choix";
 import { estAutre, type Listes, useListes } from "./listes";
+import type { Structure } from "./structures";
 
 type Champs = {
   // La valeur choisie dans la première liste (voir `choix.ts`).
@@ -32,6 +33,8 @@ export type Derivation = {
   // La sélection suffit : le simulateur s'ouvre sans bouton. Faux pour une
   // saisie libre, dont on ne sait pas quand elle est finie.
   entreeImmediate: boolean;
+  // La structure choisie, `null` pour un établissement.
+  structure: Structure | null;
 };
 
 export type SaisieRattachement = Derivation &
@@ -106,11 +109,11 @@ function deriverService(
     saisie.serviceLibre = champs.serviceLibre;
   }
   return {
+    ...AUCUNE,
     saisie,
     valide: saisieComplete(saisie),
     etabChoisi: true,
     serviceEstAutre,
-    etabEstAutre: false,
     entreeImmediate: !serviceEstAutre,
   };
 }
@@ -125,6 +128,7 @@ function deriverStructure(serviceId: string, listes: Listes): Derivation {
     saisie: { etabId: listes.fourreTout.id, serviceId },
     valide: true,
     entreeImmediate: true,
+    structure: service.libelle,
   };
 }
 
@@ -159,6 +163,7 @@ const AUCUNE: Derivation = {
   serviceEstAutre: false,
   etabEstAutre: false,
   entreeImmediate: false,
+  structure: null,
 };
 
 // Le rattachement de repli quand le référentiel ne répond pas. Le prescripteur

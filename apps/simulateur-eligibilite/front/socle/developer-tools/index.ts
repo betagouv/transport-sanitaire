@@ -3,4 +3,4 @@
 
 export { DebugTrace } from "./DebugTrace";
 export { DeveloperTools, ToolButton } from "./DeveloperTools";
-export { developerToolsUnlocked } from "./unlock";
+export { debugTraceUnlocked, developerToolsUnlocked } from "./unlock";

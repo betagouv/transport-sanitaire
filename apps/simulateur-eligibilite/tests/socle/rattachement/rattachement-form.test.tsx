@@ -77,10 +77,13 @@ describe("l'écran de rattachement", () => {
     expect(screen.queryByRole("button", ACCEDER)).toBeNull();
     await choisir(/Nom du service/, "Cardiologie");
 
-    expect(onValide).toHaveBeenCalledWith({
-      etabId: "e_chu_grenoble",
-      serviceId: "s_grenoble_cardio",
-    });
+    expect(onValide).toHaveBeenCalledWith(
+      {
+        etabId: "e_chu_grenoble",
+        serviceId: "s_grenoble_cardio",
+      },
+      null,
+    );
   });
 
   it("une structure ouvre le simulateur, rattachée au service du fourre-tout", async () => {
@@ -89,10 +92,13 @@ describe("l'écran de rattachement", () => {
 
     await choisir(/Établissement/, "Libéral");
 
-    expect(onValide).toHaveBeenCalledWith({
-      etabId: "e_liberal_cnam",
-      serviceId: "s_liberal",
-    });
+    expect(onValide).toHaveBeenCalledWith(
+      {
+        etabId: "e_liberal_cnam",
+        serviceId: "s_liberal",
+      },
+      "Libéral",
+    );
   });
 
   it("la structure « Autre » ouvre le simulateur sans rien demander", async () => {
@@ -102,10 +108,13 @@ describe("l'écran de rattachement", () => {
     await choisir(/Établissement/, "Autre");
 
     expect(screen.queryByRole("textbox")).toBeNull();
-    expect(onValide).toHaveBeenCalledWith({
-      etabId: "e_liberal_cnam",
-      serviceId: "s_liberal_autre",
-    });
+    expect(onValide).toHaveBeenCalledWith(
+      {
+        etabId: "e_liberal_cnam",
+        serviceId: "s_liberal_autre",
+      },
+      "Autre",
+    );
   });
 
   it("service « Autre » → le nom du vrai service, puis un bouton", async () => {
@@ -122,12 +131,15 @@ describe("l'écran de rattachement", () => {
     expect(screen.getByRole("button", ACCEDER)).toBeEnabled();
     await valider();
 
-    expect(onValide).toHaveBeenCalledWith({
-      etabId: "e_chu_grenoble",
-      serviceId: "s_grenoble_autre",
-      serviceEstAutre: true,
-      serviceLibre: "Néphrologie",
-    });
+    expect(onValide).toHaveBeenCalledWith(
+      {
+        etabId: "e_chu_grenoble",
+        serviceId: "s_grenoble_autre",
+        serviceEstAutre: true,
+        serviceLibre: "Néphrologie",
+      },
+      null,
+    );
   });
 
   it("« Autre établissement » → son nom et celui du service, puis un bouton", async () => {
@@ -146,12 +158,15 @@ describe("l'écran de rattachement", () => {
     expect(screen.getByRole("button", ACCEDER)).toBeEnabled();
     await valider();
 
-    expect(onValide).toHaveBeenCalledWith({
-      etabId: "",
-      etabEstAutre: true,
-      etabLibre: "CH de Voiron",
-      serviceLibre: "Urgences",
-    });
+    expect(onValide).toHaveBeenCalledWith(
+      {
+        etabId: "",
+        etabEstAutre: true,
+        etabLibre: "CH de Voiron",
+        serviceLibre: "Urgences",
+      },
+      null,
+    );
   });
 
   it("changer le premier choix efface ce qui en découlait", async () => {
@@ -207,10 +222,13 @@ describe("référentiel indisponible : rattachement dégradé « Autre / Autre �
     ).toBeNull();
     await valider();
 
-    expect(onValide).toHaveBeenCalledWith({
-      etabId: "autre",
-      serviceId: "autre",
-    });
+    expect(onValide).toHaveBeenCalledWith(
+      {
+        etabId: "autre",
+        serviceId: "autre",
+      },
+      null,
+    );
   });
 
   it("bascule aussi quand les services (donc les structures) ne chargent pas", async () => {
@@ -226,9 +244,12 @@ describe("référentiel indisponible : rattachement dégradé « Autre / Autre �
     ).toBeInTheDocument();
     await valider();
 
-    expect(onValide).toHaveBeenCalledWith({
-      etabId: "autre",
-      serviceId: "autre",
-    });
+    expect(onValide).toHaveBeenCalledWith(
+      {
+        etabId: "autre",
+        serviceId: "autre",
+      },
+      null,
+    );
   });
 });

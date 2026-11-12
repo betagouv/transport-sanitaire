@@ -289,7 +289,8 @@ y a sa page, et ses seeds ouvrent les pages à montrer. Le modèle de l'éditeur
 s'ouvre par défaut (D-119) ; les developer tools permettent de passer à la
 démonstration. Ils ne s'ouvrent qu'en local, sous le serveur de dev et sous les
 tests, quel que soit le service choisi : staging et production n'atteignent ni la
-démonstration ni les seeds (D-279).
+démonstration ni les seeds (D-279). Seule la trace de debug s'y ouvre, pour la
+structure « Assurance Maladie » (D-280).
 
 Les tests du socle tournent sur leur propre factice
 (`tests/socle/fixtures/modele-factice/`), petit et figé : ils ne changent ni

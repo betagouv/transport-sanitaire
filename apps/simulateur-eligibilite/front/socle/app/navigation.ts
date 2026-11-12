@@ -5,6 +5,7 @@
 import { useState } from "react";
 import type { Answers } from "../../../core/socle/questionnaire-engine";
 import type { Seed } from "../../../core/socle/simulation";
+import type { Structure } from "../rattachement";
 
 type Screen = "rattachement" | "seeds" | "simulateur";
 
@@ -15,9 +16,12 @@ export type Navigation = {
   // Change à chaque nouvelle simulation. `App` s'en sert pour remonter le
   // simulateur et repartir d'un questionnaire vierge.
   simulationNumber: number;
+  // La structure choisie au rattachement, `null` pour un établissement. Retenue
+  // pour ouvrir la trace de debug à « Assurance Maladie » (D-280).
+  structure: Structure | null;
   // Le rattachement ouvre le simulateur. Les developer tools s'ouvrent après
   // lui, depuis le simulateur.
-  rattacher: () => void;
+  rattacher: (structure: Structure | null) => void;
   // Ouvre la seed choisie : son résultat si elle est complète, sinon la
   // première page qu'elle laisse sans réponse.
   openSeed: (seed: Seed) => void;
@@ -31,6 +35,7 @@ export function useNavigation(): Navigation {
     screen: "rattachement",
     seedAnswers: null,
     simulationNumber: 0,
+    structure: null,
   });
   const patch = (partial: Partial<State>) =>
     setState((current) => ({ ...current, ...partial }));
@@ -40,14 +45,17 @@ export function useNavigation(): Navigation {
 
 // ---- implémentation ----
 
-type State = Pick<Navigation, "screen" | "seedAnswers" | "simulationNumber">;
+type State = Pick<
+  Navigation,
+  "screen" | "seedAnswers" | "simulationNumber" | "structure"
+>;
 
 function actions(
   state: State,
   patch: (partial: Partial<State>) => void,
 ): Omit<Navigation, keyof State> {
   return {
-    rattacher: () => patch({ screen: "simulateur" }),
+    rattacher: (structure) => patch({ screen: "simulateur", structure }),
     // Ouvrir une seed commence une simulation. Rouverte, la même seed repart
     // de ses réponses.
     openSeed: (seed) =>
