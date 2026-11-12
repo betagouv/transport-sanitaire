@@ -317,5 +317,6 @@ _Avoid_: trace, seule.
 
 **Developer tools**:
 Les outils internes, ouverts en local seulement : la trace de debug, l'écran
-des seeds, le choix du modèle.
+des seeds, le choix du modèle. La trace s'ouvre aussi partout pour la structure
+« Assurance Maladie » (D-280).
 _Chez l'éditeur_: aucun mot.

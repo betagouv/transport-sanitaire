@@ -562,6 +562,13 @@ La garde lit `import.meta.env.DEV` à un seul endroit,
 `developerTools`, qu'un test passe à `false` pour voir l'app comme en
 production. L'écran de rattachement n'a pas de developer tools.
 
+**Une exception, la trace de debug pour « Assurance Maladie »** (D-280). Choisie
+au rattachement, cette structure ouvre la trace sur tous les environnements,
+production comprise. Les seeds et le choix du modèle restent fermés. L'écran de
+rattachement remonte la structure choisie (`onRattache(structure)`), la
+navigation la retient, et `debugTraceUnlocked(developerTools, structure)`
+(`unlock.ts`) décide.
+
 Le simulateur ne connaît pas l'écran des seeds. C'est `App.tsx` qui lui passe du contenu
 déjà composé (`developerToolsPanel`).
 

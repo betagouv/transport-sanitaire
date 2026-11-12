@@ -13,13 +13,15 @@ import { seRattacher } from "../se-rattacher";
 type User = ReturnType<typeof userEvent.setup>;
 
 /**
- * Monte l'application et franchit l'écran de rattachement. Les tests tournent
- * en local : les developer tools sont ouverts, sauf `developerTools: false`,
- * qui montre l'app comme sur un build de production.
+ * Monte l'application et franchit l'écran de rattachement, par un service ou
+ * par la `structure` donnée. Les tests tournent en local : les developer tools
+ * sont ouverts, sauf `developerTools: false`, qui montre l'app comme sur un
+ * build de production.
  */
 export async function ouvrirLeSimulateur(
   options: {
     developerTools?: boolean;
+    structure?: string;
     seeds?: readonly Seed[];
     modele?: Model;
   } = {},
@@ -33,7 +35,7 @@ export async function ouvrirLeSimulateur(
       developerTools={options.developerTools}
     />,
   );
-  await seRattacher(user);
+  await seRattacher(user, options.structure);
   return user;
 }
 
