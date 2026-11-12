@@ -5,11 +5,11 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { creerApp } from "./app.ts";
 import { type Configuration, lireConfiguration } from "./configuration.ts";
-import { choisirReferentiel } from "./rattachement/referentiel-source.ts";
+import { adaptersFor, createContainer } from "./container.ts";
 
 const configuration = configurationOuArret();
 
-const app = creerApp(choisirReferentiel(configuration.grist), {
+const app = creerApp(createContainer(adaptersFor(configuration)), {
   dossierDist: dossierDist(),
 });
 

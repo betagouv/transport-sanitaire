@@ -18,48 +18,44 @@ import type {
   Referentiel,
   Service,
 } from "../../shared/referentiel.ts";
-import type { DocGrist, LigneGrist } from "./lignes-grist.ts";
-import { creerLigne, lignes, ouvrirDoc, texte } from "./lignes-grist.ts";
+import {
+  cellText,
+  type GristApiClient,
+  type GristRow,
+} from "../grist/grist-api.client.ts";
 
-export type GristConfig = {
-  /** Base API du doc, ex. https://…/api/docs/<docId> */
-  docUrl: string;
-  cleApi: string;
-};
-
-export function creerReferentielGrist({
-  docUrl,
-  cleApi,
-}: GristConfig): Referentiel {
-  const doc = ouvrirDoc(docUrl, cleApi);
+export function creerReferentielGrist(grist: GristApiClient): Referentiel {
   return {
-    listerEtablissements: () => etablissements(doc),
-    listerServices: (etabId) => services(doc, etabId),
-    enrichirDepuisSaisie: (saisie) => enrichir(doc, saisie),
+    listerEtablissements: () => etablissements(grist),
+    listerServices: (etabId) => services(grist, etabId),
+    enrichirDepuisSaisie: (saisie) => enrichir(grist, saisie),
   };
 }
 
 // ---- implémentation ----
 
-async function etablissements(doc: DocGrist): Promise<Etablissement[]> {
-  return (await lignes(doc, TABLE.etablissements))
+async function etablissements(grist: GristApiClient): Promise<Etablissement[]> {
+  return (await grist.rows(TABLE.etablissements))
     .map((r) => ({
-      id: texte(r.fields[COL.id]),
-      libelle: texte(r.fields[COL.nom]),
+      id: cellText(r.fields[COL.id]),
+      libelle: cellText(r.fields[COL.nom]),
     }))
     .filter((e) => e.id && e.libelle);
 }
 
-async function services(doc: DocGrist, etabId: string): Promise<Service[]> {
-  const rowId = await rowIdDeId2(doc, TABLE.etablissements, etabId);
+async function services(
+  grist: GristApiClient,
+  etabId: string,
+): Promise<Service[]> {
+  const rowId = await rowIdDeId2(grist, TABLE.etablissements, etabId);
   if (rowId == null) return [];
-  const trouvees = await lignes(doc, TABLE.services, {
+  const trouvees = await grist.rows(TABLE.services, {
     [COL.refEtablissement]: [rowId],
   });
   return trouvees
     .map((r) => ({
-      id: texte(r.fields[COL.id]),
-      libelle: texte(r.fields[COL.nom]),
+      id: cellText(r.fields[COL.id]),
+      libelle: cellText(r.fields[COL.nom]),
     }))
     .filter((s) => s.id && s.libelle);
 }
@@ -70,43 +66,46 @@ async function services(doc: DocGrist, etabId: string): Promise<Service[]> {
 // les listes à la visite suivante. Une sélection issue des listes n'écrit rien.
 // Voir docs/knowledge/domain/enrichissement-referentiel-rattachement.md.
 async function enrichir(
-  doc: DocGrist,
+  grist: GristApiClient,
   saisie: RattachementSaisi,
 ): Promise<void> {
   const service = saisie.serviceLibre?.trim();
   if (!enrichitLeReferentiel(saisie) || !service) return;
-  const etabRowId = await etablissementDeLaSaisie(doc, saisie);
+  const etabRowId = await etablissementDeLaSaisie(grist, saisie);
   if (etabRowId == null) return;
-  await assurerService(doc, etabRowId, service);
+  await assurerService(grist, etabRowId, service);
 }
 
 // L'établissement sous lequel ranger le service : celui du référentiel, ou
 // celui que la saisie nomme, créé ou réutilisé.
 async function etablissementDeLaSaisie(
-  doc: DocGrist,
+  grist: GristApiClient,
   saisie: RattachementSaisi,
 ): Promise<number | null> {
   if (!saisie.etabEstAutre) {
-    return rowIdDeId2(doc, TABLE.etablissements, saisie.etabId);
+    return rowIdDeId2(grist, TABLE.etablissements, saisie.etabId);
   }
   const nom = saisie.etabLibre?.trim();
-  return nom ? assurerEtablissement(doc, nom) : null;
+  return nom ? assurerEtablissement(grist, nom) : null;
 }
 
 // Résout un Id2 métier vers le rowId interne Grist de la table donnée.
 async function rowIdDeId2(
-  doc: DocGrist,
+  grist: GristApiClient,
   table: string,
   id: string,
 ): Promise<number | null> {
-  const trouvees = await lignes(doc, table, { [COL.id]: [Number(id)] });
+  const trouvees = await grist.rows(table, { [COL.id]: [Number(id)] });
   return trouvees[0]?.id ?? null;
 }
 
 // Le prochain Id2 métier libre de la table (max + 1). La ligne créée est ainsi
 // visible aussitôt : la lecture ne garde que les Id2 non nuls.
-async function prochainId2(doc: DocGrist, table: string): Promise<number> {
-  const trouvees = await lignes(doc, table);
+async function prochainId2(
+  grist: GristApiClient,
+  table: string,
+): Promise<number> {
+  const trouvees = await grist.rows(table);
   const max = trouvees.reduce(
     (m, r) => Math.max(m, Number(r.fields[COL.id]) || 0),
     0,
@@ -118,41 +117,41 @@ async function prochainId2(doc: DocGrist, table: string): Promise<number> {
 // service « Autre », comme ceux de l'admin : le prescripteur suivant qui n'y
 // trouve pas son service peut alors le saisir.
 async function assurerEtablissement(
-  doc: DocGrist,
+  grist: GristApiClient,
   nom: string,
 ): Promise<number> {
-  const deja = homonyme(await lignes(doc, TABLE.etablissements), nom);
+  const deja = homonyme(await grist.rows(TABLE.etablissements), nom);
   if (deja != null) return deja;
-  const etabRowId = await creerLigne(doc, TABLE.etablissements, {
-    [COL.id]: await prochainId2(doc, TABLE.etablissements),
+  const etabRowId = await grist.addRow(TABLE.etablissements, {
+    [COL.id]: await prochainId2(grist, TABLE.etablissements),
     [COL.nom]: nom.trim(),
     [COL.origine]: ORIGINE_FORMULAIRE,
   });
-  await creerService(doc, etabRowId, SERVICE_AUTRE);
+  await creerService(grist, etabRowId, SERVICE_AUTRE);
   return etabRowId;
 }
 
 // Réutilise le service homonyme (Nom normalisé) de l'établissement, sinon le crée.
 async function assurerService(
-  doc: DocGrist,
+  grist: GristApiClient,
   etabRowId: number,
   nom: string,
 ): Promise<number> {
-  const existants = await lignes(doc, TABLE.services, {
+  const existants = await grist.rows(TABLE.services, {
     [COL.refEtablissement]: [etabRowId],
   });
   const deja = homonyme(existants, nom);
   if (deja != null) return deja;
-  return creerService(doc, etabRowId, nom);
+  return creerService(grist, etabRowId, nom);
 }
 
 async function creerService(
-  doc: DocGrist,
+  grist: GristApiClient,
   etabRowId: number,
   nom: string,
 ): Promise<number> {
-  return creerLigne(doc, TABLE.services, {
-    [COL.id]: await prochainId2(doc, TABLE.services),
+  return grist.addRow(TABLE.services, {
+    [COL.id]: await prochainId2(grist, TABLE.services),
     [COL.nom]: nom.trim(),
     [COL.refEtablissement]: etabRowId,
     [COL.origine]: ORIGINE_FORMULAIRE,
@@ -160,10 +159,10 @@ async function creerService(
 }
 
 // Le rowId de la ligne qui porte déjà ce nom, à la casse et aux espaces près.
-function homonyme(existantes: LigneGrist[], nom: string): number | null {
+function homonyme(existantes: GristRow[], nom: string): number | null {
   const cherche = normalise(nom);
   const deja = existantes.find(
-    (r) => normalise(texte(r.fields[COL.nom])) === cherche,
+    (r) => normalise(cellText(r.fields[COL.nom])) === cherche,
   );
   return deja?.id ?? null;
 }

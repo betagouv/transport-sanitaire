@@ -1,5 +1,5 @@
 // Un Grist en mémoire, servi en HTTP sur un port éphémère : la partie de l'API
-// REST que `lignes-grist.ts` utilise (lire des lignes, filtrées ou non, et en
+// REST que `grist-api.client.ts` utilise (lire des lignes, filtrées ou non, et en
 // créer). Les tests de la source Grist y lisent ce qui a été écrit.
 
 import type { Server } from "node:http";

@@ -56,6 +56,7 @@ front et le référentiel de rattachement.
 
 Les règles d'écriture et les invariants ne sont pas de la prose, ils sont exécutables.
 On les trouve dans `tests/architecture.test.ts`, pour les frontières, dans
+`tests/journal-en-clean-architecture.test.ts`, pour le domaine du journal, dans
 `tests/taille-du-code.test.ts`, pour les limites de 30 et 300 lignes, dans `tests/lisibilite.test.ts`, pour la forme des fichiers, les noms
 et les extensions d'import, dans `tests/miroir-des-sources.test.ts`, pour
 les dossiers de tests, rangés comme les sources, et dans
@@ -75,23 +76,26 @@ jamais exposées au front.
 | Variable | Portée | Requis | Défaut / si absente | Usage |
 | --- | --- | --- | --- | --- |
 | `GRIST_API_KEY` | serveur | **prod** | référentiel **snapshot factice** (dev/CI) | Clé API Grist source du référentiel (établissements/services). Jamais exposée au front. |
-| `GRIST_DOC_URL` | serveur | non | doc Grist du projet | Base API du doc Grist (`server/configuration.ts`). |
+| `GRIST_DOC_URL` | serveur | **prod** | référentiel **snapshot factice** (dev/CI) | Base API du doc Grist du référentiel, lu et complété avec la clé. |
+| `JOURNAL_GRIST_DOC_URL` | serveur | non | aucun | Base API du doc Grist « Simulateur-Parcours », où le journal des parcours s'écrit avec la même clé. À poser en production seulement : sans elle, ou sans clé, le serveur accepte les événements sans en garder aucun, et le signale au démarrage. |
+| `APP` | serveur | non | `local` | Nom de l'app Scalingo, posé par Scalingo. Écrit comme `environment` de chaque événement du journal. |
 | `VITE_MATOMO_ENABLED` | front | non | `false` (traceur no-op) | Active le tracking Matomo. Actif d'office en build de prod ; à mettre à `true` pour tester en local. |
 | `VITE_MATOMO_URL` | front | non | instance mutualisée beta.gouv | URL de l'instance Matomo. |
 | `VITE_MATOMO_SITE_ID` | front | non | `275` | Identifiant du site Matomo. |
 
-La variable marquée **prod** n'a pas de valeur par défaut : son repli est un
+Les variables marquées **prod** n'ont pas de valeur par défaut : leur repli est un
 référentiel inventé, ce qui n'a de sens que sur un poste de développement. En production — `NODE_ENV=production`, ce que pose Scalingo —
 `server/configuration.ts` refuse donc de rendre une configuration incomplète : le serveur
 s'arrête au démarrage, avant d'ouvrir son port, sur la liste de ce qui cloche.
 
 ```
 [simulateur] Démarrage impossible — configuration invalide :
+  - GRIST_DOC_URL : sans valeur par défaut, elle doit être posée en production
   - GRIST_API_KEY : sans valeur par défaut, elle doit être posée en production
 ```
 
 La règle est portée par un schéma **zod** : un socle de variables à défaut, et une variante
-de production où la clé Grist est exigée. Le schéma valide aussi la forme de ce qui est
+de production où la clé et le doc Grist sont exigés. Le schéma valide aussi la forme de ce qui est
 posé — `PORT=quatre-mille` ou une `GRIST_DOC_URL` qui n'est pas une URL arrêtent le
 démarrage de la même manière, plutôt que d'échouer plus tard et ailleurs. Une variable
 posée mais vide (`GRIST_API_KEY=` dans un `.env` recopié) compte pour absente. Les autres
@@ -117,11 +121,20 @@ qu'on importe de l'extérieur (ADR-28).
 
 ```
 shared/                  le contrat front ⇄ back, source unique des types partagés
+  analytics/             le contrat d'un événement du journal (ANA-1015), et son
+                         schéma zod, que seul le serveur importe
 server/                  le backend Node, barrière de sécurité : les secrets vivent ici
                          et ne sont jamais bundlés. Bootstrap, composition,
                          configuration lue une fois et refusée si elle manque en prod.
+  container.ts           instancie les adaptateurs, le use case et le contrôleur
+                         (ADR-7 d'analytics)
   rattachement/          LA feature backend : les routes `/api` et la source Grist du
                          référentiel, qu'elle lit et complète
+  journal/               le journal des parcours en clean architecture : entité,
+                         use case, port, adaptateurs (Grist, mémoire) et route,
+                         nommés par leur suffixe (ADR-7 d'analytics)
+  grist/                 le client HTTP de l'API Grist, pour le référentiel comme
+                         pour le journal
 core/                    le métier, sans React ni DOM : ce qu'un serveur ou un script
                          peut calculer
   models/                le métier de chaque modèle
@@ -178,6 +191,8 @@ core/                    le métier, sans React ni DOM : ce qu'un serveur ou un 
                          qu'est une seed, et ce qu'elle confirme ou dément
 front/                   le front, bundlé par Vite
   main.tsx               le point d'entrée du navigateur : monte l'app, amorce le traceur
+  container.ts           instancie ce qui parle au serveur : son client, le journal,
+                         le référentiel et la déclaration du rattachement
   models/                l'écran de chaque modèle, chacun chargé à la demande
     fake/                les deux résultats de la démonstration (`r2.tsx`, `r3.tsx`)
                          et son bon de commande
@@ -214,6 +229,7 @@ front/                   le front, bundlé par Vite
                          les phrases de l'écran, le champ qui affiche une question,
                          ce qui part vers l'analytics, le retour en haut, page hôte
                          comprise
+    server-api/          le client HTTP du backend, préconfiguré sous `/api`
     ui/                  les champs de formulaire, bâtis sur le DSFR et sans rien
                          savoir du questionnaire : TextField, TextAreaField,
                          SelectField, RadioField, CheckboxField, NumberField,
@@ -231,7 +247,9 @@ front/                   le front, bundlé par Vite
                          télécharger, l'imprimer, le bouton qui l'attend). Aucun
                          gabarit.
     analytics/           le vocabulaire mesuré, seul import du reste, son transport
-                         vers Matomo, le choix du prescripteur transmis par le CMS, et
+                         vers Matomo, le journal des parcours (entité, use case, port,
+                         adaptateur vers le backend, ADR-7),
+                         le choix du prescripteur transmis par le CMS, et
                          cms.js, le script à coller dans Sites Conformes : l'opt-out
                          du pied de page, qui répond au traceur de l'iframe, le
                          thème de la page, et le retour au haut de l'iframe (voir

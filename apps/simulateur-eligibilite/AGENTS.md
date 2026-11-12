@@ -470,6 +470,12 @@ Le reste est dans [`tests/architecture.test.ts`](tests/architecture.test.ts) :
 - le socle, qui n'importe rien des modèles, et les deux points d'entrée par
   lesquels un modèle importe le socle.
 
+La clean architecture du journal des parcours est dans
+[`tests/journal-en-clean-architecture.test.ts`](tests/journal-en-clean-architecture.test.ts) :
+ses entités, use cases et ports (`.entity.ts`, `.usecase.ts`, `.port.ts`)
+n'importent qu'entre eux et depuis `shared/`, et seul son adaptateur Grist
+connaît Grist (ADR-7 de `docs/knowledge/adr/analytics.md`).
+
 Les modules du socle et leur index sont dans
 [`tests/modules-du-socle.test.ts`](tests/modules-du-socle.test.ts) : chaque
 module en a un, et personne ne le contourne.

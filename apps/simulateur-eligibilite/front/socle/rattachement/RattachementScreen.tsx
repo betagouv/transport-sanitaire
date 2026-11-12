@@ -10,24 +10,22 @@ import {
   type RattachementSaisi,
 } from "../../../shared/rattachement-saisi";
 import type { Referentiel } from "../../../shared/referentiel";
-import { declarerLaSaisie } from "./declarer-la-saisie";
 import { RattachementForm } from "./RattachementForm";
 import { rangerRattachement } from "./rattachement-en-session";
-import { REFERENTIEL } from "./referentiel";
 import type { Structure } from "./structures";
 
 type Props = {
-  // Injectables pour les tests (défauts = production same-origin).
-  referentiel?: Referentiel;
-  declarer?: (saisie: RattachementSaisi) => void;
+  // Ceux du serveur, donnés par le conteneur ; les tests passent les leurs.
+  referentiel: Referentiel;
+  declarer: (saisie: RattachementSaisi) => void;
   // La structure choisie, `null` pour un établissement : `App` en tire la
   // trace de debug (D-280).
   onRattache: (structure: Structure | null) => void;
 };
 
 export function RattachementScreen({
-  referentiel = REFERENTIEL,
-  declarer = declarerLaSaisie,
+  referentiel,
+  declarer,
   onRattache,
 }: Props) {
   return (

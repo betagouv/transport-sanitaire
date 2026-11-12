@@ -56,6 +56,7 @@ describe("pied de page", () => {
       <App
         models={seulModele(modeleDeTest)}
         referentiel={snapshotReferentiel}
+        declarer={() => {}}
       />,
     );
 

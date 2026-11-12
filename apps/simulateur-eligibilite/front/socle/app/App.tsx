@@ -5,6 +5,7 @@
 // rattaché. Voir docs/knowledge/adr/identification.md, ADR-1.
 
 import type { ComponentProps } from "react";
+import { JournalProvider, type StartASimulation } from "../analytics";
 import {
   DebugTrace,
   DeveloperTools,
@@ -23,8 +24,14 @@ import type { Navigation } from "./navigation";
 import { useNavigation } from "./navigation";
 import { SimulateurScreen } from "./SimulateurScreen";
 
-// `referentiel` et `declarer` sont injectables pour les tests.
-type Props = Pick<
+// `referentiel`, `declarer` et `startASimulation` viennent du conteneur ; les
+// tests passent les leurs.
+type Props = ScreensProps & {
+  /** Le journal des parcours. Absent, aucun journal ne reçoit rien. */
+  startASimulation?: StartASimulation;
+};
+
+type ScreensProps = Pick<
   ComponentProps<typeof RattachementScreen>,
   "referentiel" | "declarer"
 > & {
@@ -42,14 +49,24 @@ type Props = Pick<
   developerTools?: boolean;
 };
 
+export function App({ startASimulation, ...screens }: Props) {
+  return (
+    <JournalProvider value={startASimulation ?? null}>
+      <Screens {...screens} />
+    </JournalProvider>
+  );
+}
+
+// ---- implémentation ----
+
 // Le rattachement n'attend pas le modèle : il se charge pendant que
 // le prescripteur se rattache.
-export function App({
+function Screens({
   models,
   referentiel,
   declarer,
   developerTools = developerToolsUnlocked(),
-}: Props) {
+}: ScreensProps) {
   const navigation = useNavigation();
   const opened = useModelChoice(models);
   const { model, failed } = useModelLoading(opened.source);
@@ -72,8 +89,6 @@ export function App({
     />
   );
 }
-
-// ---- implémentation ----
 
 function ModelPending({ failed }: { failed: boolean }) {
   return (
