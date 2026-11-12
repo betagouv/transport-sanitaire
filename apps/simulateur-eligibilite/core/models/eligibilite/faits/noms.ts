@@ -44,6 +44,7 @@ export const FAITS = [
   "fait_motif_pension",
   "fait_distance_plus_50",
   "fait_distance_plus_150",
+  "fait_finalite_soins_longue_distance",
   "fait_serie_qualifiante",
   "fait_avion_bateau_ligne",
   "fait_centre_reference_destination",

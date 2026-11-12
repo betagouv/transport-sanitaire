@@ -1,19 +1,23 @@
-// Les deux lieux du trajet de P3 (Q3.2, Q3.3) : ce que P2 en établit déjà, et
-// la case du cerfa où chacun se reporte.
+// Les deux lieux du trajet de P3 (Q3.2, Q3.3) : ce que P2 en établit, et la
+// catégorie où chacun se reporte (QST-LIEUX-TROIS-CATEGORIES-20261105).
 //
-// P2 fixe la nature d'un lieu par le motif du trajet, ses contextes ou Q2.13
-// (`roles-dans-le-sens.ts`). Elle ne se redemande pas : le lieu se rappelle, et
-// seuls son nom et son adresse se saisissent.
+// P2 fixe la nature précise d'un lieu par le motif du trajet, ses contextes ou
+// Q2.13 (`roles-dans-le-sens.ts`). Elle ne se redemande pas : le lieu se
+// rappelle, et sa catégorie avec elle. Sinon, P3 ne propose que les catégories
+// que P2 et l'autre lieu laissent, et une seule possible se fixe.
 
 import type {
-  Answered,
-  Condition,
   GivenAnswers,
   ReadByObject,
   Value,
 } from "../../../../../socle/index.ts";
 import { Q2_2_5 } from "../../p2/questions/q2-2-5.ts";
-import { given, type Inconnu } from "../../question.ts";
+import {
+  CATEGORIES,
+  type Categorie,
+  categorieDe,
+} from "./categories-du-lieu.ts";
+import { type Choix, natureDeQ26Au, repartitions } from "./cotes-de-q26.ts";
 import {
   ENTREES_DES_LIEUX,
   type Entrees,
@@ -21,60 +25,75 @@ import {
   type Extremite,
   lieuxEtablis,
   type Nature,
+  naturesDeQ26,
+  naturesPermises,
 } from "./roles-dans-le-sens.ts";
 
-export type { Entrees, Extremite, Nature };
+export type { Choix, Entrees, Extremite, Nature };
 
-/** La case du cerfa où se reporte un lieu : le gabarit n'en a que trois. */
-export type Projection = "DOMICILE" | "STRUCTURE_DE_SOINS" | "AUTRE_LIEU";
+/** Ce qu'on sait d'un lieu en arrivant sur sa page. */
+export type Lieu = {
+  /** Ce que P2 établit, rappelé tel quel. */
+  readonly etablie?: Etablie;
+  /** La nature précise, établie en P2 ou placée par Q2.6. */
+  readonly nature?: Nature;
+  /** Les catégories qui lui restent, dans l'ordre de l'écran. */
+  readonly categories: readonly Categorie[];
+  /** La catégorie certaine : elle ne se demande pas. */
+  readonly fixee?: Categorie;
+};
 
-/** La question de la nature d'un lieu, qui la choisit en P3. */
-export type QuestionDeNature = Answered<Nature>;
-
-/** P2 ne fixe pas la nature du lieu : elle se choisit en P3. */
+/** P2 ne fixe pas la nature du lieu. */
 type NonEtablie = undefined;
 
-/** La nature que P2 établit pour ce lieu. Absente : elle se choisit en P3. */
-export function natureEtablie(
+/** Rien ne prouve la nature précise du lieu. */
+type NonProuvee = undefined;
+
+/**
+ * Ce qu'on sait d'un lieu avant d'en choisir la catégorie. L'arrivée lit
+ * celle du départ : deux domiciles ne font pas un trajet, et l'USLD ou l'EHPAD
+ * de Q2.6 va là où le départ ne l'a pas mise.
+ */
+export function lieuDu(
   extremite: Extremite,
   entrees: Entrees,
-): Etablie | NonEtablie {
-  return lieuxEtablis(entrees)[extremite];
+  depart?: Categorie,
+): Lieu {
+  const etablie = natureEtablie(extremite, entrees);
+  const nature =
+    etablie?.nature ??
+    natureDeQ26Au(extremite, entrees, { categories: { depart } });
+  if (nature !== undefined) {
+    const categorie = categorieDe(nature);
+    return { etablie, nature, categories: [categorie], fixee: categorie };
+  }
+  const categories = categoriesPossibles(extremite, entrees, depart);
+  const [seule] = categories;
+  return {
+    etablie,
+    categories,
+    fixee: categories.length === 1 ? seule : undefined,
+  };
 }
 
-/** La nature que P2 établit pour ce lieu, telle que l'endroit la lit. */
-export function natureEtablieDu(
+/** Cette nature précise, telle que l'endroit la lit. */
+export function natureDuLieuChoisi(
   extremite: Extremite,
-): Value<Etablie | NonEtablie> {
-  return ENTREES_DES_LIEUX.compute((entrees) =>
-    natureEtablie(extremite, entrees),
-  );
-}
-
-/** La nature du lieu : établie en P2, ou choisie plus tôt en P3. */
-export function natureDu(
-  extremite: Extremite,
-  choisie: QuestionDeNature,
-): Value<Nature | Inconnu> {
-  return natureEtChoix(extremite, choisie).compute(
-    ({ etablie, choisie }) => etablie?.nature ?? choisie.value,
+  choix: Value<Choix>,
+): Value<Nature | undefined> {
+  return ENTREES_DES_LIEUX.computeWith(choix, (entrees, lu) =>
+    natureDuLieu(extremite, entrees, lu),
   );
 }
 
 /**
- * La nature s'écrit-elle en toutes lettres sur le cerfa ? Un hébergement ou un
- * autre lieu y porte sa nature (`CONTRAT_LIEUX_CERFA.json`). Seul l'hébergement
- * que P2 établit, le HTNM, la donne déjà.
+ * Q2.6 cite une USLD ou un EHPAD que les lieux ne peuvent pas être : le trajet
+ * se corrige (`contraintes-lieux.mjs`).
  */
-export function precisionAPoser(
-  extremite: Extremite,
-  choisie: QuestionDeNature,
-): Condition {
-  return natureEtChoix(extremite, choisie).compute(({ etablie, choisie }) => {
-    const nature = etablie?.nature ?? choisie.value;
-    if (nature === "8_AUTRE_LIEU") return true;
-    return nature === "5_HEBERGEMENT_NON_MEDICALISE" && etablie === undefined;
-  });
+export function lieuxContrairesAQ26(entrees: Entrees): boolean {
+  return (
+    naturesDeQ26(entrees).length > 0 && repartitions(entrees, {}).length === 0
+  );
 }
 
 /** Q2.2.5 situe-t-elle ce lieu à l'étranger ? Q3.2 et Q3.3 ne le découvrent pas. */
@@ -86,31 +105,47 @@ export function aLEtranger(
   return reponses.question(Q2_2_5).checked(lieu);
 }
 
-/**
- * La case du cerfa de cette nature, selon la convention validée par l'éditeur
- * (`CONTRAT_LIEUX_CERFA.json`, point 39).
- */
-export function projectionCerfa(nature: Nature): Projection {
-  return PROJECTIONS[nature];
-}
-
 // ---- implémentation ----
 
-// La nature que P2 établit, et celle choisie à Q3.x.nature.
-function natureEtChoix(extremite: Extremite, choisie: QuestionDeNature) {
-  return given.all({
-    etablie: natureEtablieDu(extremite),
-    choisie: given.question(choisie).answer(),
-  });
+/** La nature que P2 établit pour ce lieu. */
+function natureEtablie(
+  extremite: Extremite,
+  entrees: Entrees,
+): Etablie | NonEtablie {
+  return lieuxEtablis(entrees)[extremite];
 }
 
-const PROJECTIONS: Record<Nature, Projection> = {
-  "1_DOMICILE": "DOMICILE",
-  "2_ETABLISSEMENT_DE_SANTE": "STRUCTURE_DE_SOINS",
-  "3_EHPAD": "AUTRE_LIEU",
-  "4_USLD": "STRUCTURE_DE_SOINS",
-  "5_HEBERGEMENT_NON_MEDICALISE": "AUTRE_LIEU",
-  "6_ETABLISSEMENT_PENITENTIAIRE": "AUTRE_LIEU",
-  "7_CABINET": "STRUCTURE_DE_SOINS",
-  "8_AUTRE_LIEU": "AUTRE_LIEU",
-};
+/**
+ * La nature précise du lieu, une fois les catégories choisies et le côté de
+ * Q2.6 répondu. Une catégorie seule n'en prouve aucune.
+ */
+function natureDuLieu(
+  extremite: Extremite,
+  entrees: Entrees,
+  choix: Choix,
+): Nature | NonProuvee {
+  return (
+    natureEtablie(extremite, entrees)?.nature ??
+    natureDeQ26Au(extremite, entrees, choix)
+  );
+}
+
+// Les catégories que P2 permet, sauf un second domicile, et sauf celles où
+// l'USLD ou l'EHPAD de Q2.6 n'aurait plus de place.
+function categoriesPossibles(
+  extremite: Extremite,
+  entrees: Entrees,
+  depart: Categorie | undefined,
+): Categorie[] {
+  const autre =
+    extremite === "arrivee" ? depart : lieuDu("arrivee", entrees).fixee;
+  const permises = naturesPermises(extremite, entrees).map(categorieDe);
+  return (Object.keys(CATEGORIES) as Categorie[]).filter(
+    (categorie) =>
+      permises.includes(categorie) &&
+      !(categorie === "1_DOMICILE" && autre === "1_DOMICILE") &&
+      repartitions(entrees, {
+        categories: { depart, [extremite]: categorie },
+      }).length > 0,
+  );
+}

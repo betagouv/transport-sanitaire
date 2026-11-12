@@ -152,7 +152,7 @@ describe("les libellés des options", () => {
     );
     expect(
       libelles.filter((libelle) =>
-        /\bQ\d|à préciser|déduit de|\[Seulement/.test(libelle),
+        /\bQ\d|à préciser en|déduit de|\[Seulement/.test(libelle),
       ),
       "Le catalogue mêle parfois au libellé une consigne pour nous (« à " +
         "préciser en Q2.10 », « déduit de Q1.3… »). Le prescripteur ne doit " +

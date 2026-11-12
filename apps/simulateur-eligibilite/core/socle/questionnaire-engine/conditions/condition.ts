@@ -126,7 +126,7 @@ export type ValuesOf<Values> = {
  * Des valeurs nommées, lues ensemble : un calcul qui lit plusieurs réponses,
  * ou une valeur bâtie sur d'autres. Elle lit ce que lisent ses parties.
  *
- *   all({ motif: given.question("Q2.1").answer(), sens: SENS_DU_DOCUMENT })
+ *   all({ motif: given.question("Q2.1").answer(), sens: SENS_CHOISI })
  *     .compute(({ motif, sens }) => …)
  */
 export function all<Values extends Readonly<Record<string, Value<unknown>>>>(

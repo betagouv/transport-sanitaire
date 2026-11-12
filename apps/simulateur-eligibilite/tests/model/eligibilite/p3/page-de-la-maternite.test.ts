@@ -43,8 +43,8 @@ describe("la page de la maternité (Q3.8)", () => {
   it("ne redemande pas l'hébergement qui est l'arrivée", () => {
     const reponses: Reponses = {
       ...HEBERGEMENT_DE_MATERNITE,
-      "Q3.3.nature": "5_HEBERGEMENT_NON_MEDICALISE",
-      "Q3.3.precision": "Maison des familles",
+      "Q3.3.categorie": "3_AUTRE_LIEU",
+      "Q3.3.nature": "1_HTNM",
     };
 
     expect(apresLeVerrou(reponses).posees).toEqual(MATERNITE);
@@ -64,32 +64,37 @@ describe("la page de la maternité (Q3.8)", () => {
   });
 });
 
-// L'hébergement du dispositif qui est l'arrivée garde le nom de Q3.3, qui
-// devient obligatoire : la DAP le porte (TS1016-05).
-describe("le nom de l'hébergement du dispositif", () => {
+// Le HTNM d'une DAP qui est l'arrivée garde le nom de Q3.3, qui devient
+// obligatoire : la DAP le porte (TS1016-05, TS1018-04).
+describe("le nom de l'hébergement à l'arrivée", () => {
   const { "Q3.3.nom": _, ...sansNom } = HEBERGEMENT_DE_MATERNITE;
   const hebergeALArrivee: Reponses = {
     ...sansNom,
-    "Q3.3.nature": "5_HEBERGEMENT_NON_MEDICALISE",
-    "Q3.3.precision": "Maison des familles",
+    "Q3.3.categorie": "3_AUTRE_LIEU",
+    "Q3.3.nature": "1_HTNM",
   };
 
   it("est obligatoire quand cet hébergement est l'arrivée", () => {
     expect(nomFacultatif(hebergeALArrivee)).toBe(false);
   });
 
-  it("reste facultatif pour un autre lieu", () => {
-    expect(nomFacultatif(sansNom)).toBe(true);
+  it("reste facultatif pour un autre lieu qu'un HTNM", () => {
+    const autreLieu: Reponses = {
+      ...hebergeALArrivee,
+      "Q3.3.nature": "2_AUTRE",
+      "Q3.3.precision": "Foyer",
+    };
+    expect(nomFacultatif(autreLieu)).toBe(true);
   });
 
-  it("reste facultatif quand Q2.14 ne dit pas l'hébergement du dispositif", () => {
+  it("est obligatoire aussi pour un HTNM que Q2.14 ne lie pas au dispositif", () => {
     const { "Q2.14.motif": __, ...sansMotif } = hebergeALArrivee;
     const sansLeDispositif: Reponses = {
       ...sansMotif,
       "Q2.2.1": ["14_EXAMEN_MATERNITE"],
     };
 
-    expect(nomFacultatif(sansLeDispositif)).toBe(true);
+    expect(nomFacultatif(sansLeDispositif)).toBe(false);
   });
 });
 

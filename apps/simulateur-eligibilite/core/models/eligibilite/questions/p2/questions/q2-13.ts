@@ -21,7 +21,6 @@ import { Q2_2_1_A } from "./q2-2-1-a.ts";
 import { Q2_2_1_CADRE } from "./q2-2-1-cadre.ts";
 import { Q2_5 } from "./q2-5.ts";
 import { Q2_6 } from "./q2-6.ts";
-import { Q2_8_5 } from "./q2-8-5.ts";
 
 const unDepartAPoser = given
   .question(Q2_1_G)
@@ -57,7 +56,6 @@ const LIEUX_DE_P2 = {
   enPermission: Q2_2_1_A,
   transfert: Q2_5,
   contexte: Q2_6,
-  repetition: Q2_8_5,
 } as const;
 
 // Le départ nommé contredit un départ que P2 fixe déjà.

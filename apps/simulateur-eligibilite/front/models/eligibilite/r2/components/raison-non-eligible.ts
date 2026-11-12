@@ -116,8 +116,9 @@ function aldLiee(trace: LuParLaRaison): boolean {
 }
 
 // La condition de chaque raison, par son identifiant. Une raison qui n'y est
-// pas (les cinq inactives, dont AUCUN_ALD_CADRE_NON_QUALIFIANT depuis la
-// v10.1.6) n'est jamais prise.
+// pas (les inactives, dont AUCUN_ALD_CADRE_NON_QUALIFIANT depuis la v10.1.6 et
+// AUCUN_AUTRE_SOIN depuis la v10.1.8) n'est jamais prise : « Autre motif » seul
+// garde le texte générique.
 //
 // Jamais prouvées par nos réponses (arbitrages [ÉDITEUR], D-113) :
 // AUCUN_SERIE_NON_QUALIFIANTE, AUCUN_AUTRE_DEPLACEMENT et TRANSPORT_EXCLU.
@@ -146,7 +147,6 @@ const CONDITIONS: Readonly<Record<string, Condition>> = {
   AUCUN_BIOLOGIE: familleDeSoin(4),
   AUCUN_PARAMEDICAL: familleDeSoin(5),
   AUCUN_PSYCHOLOGUE: familleDeSoin(7),
-  AUCUN_AUTRE_SOIN: familleDeSoin(14),
   // « Q2.1 = 15 prouvé et finalité clarifiée ». Aucune question ne clarifie la
   // finalité : `eventFinalityClarified` n'est jamais là.
   AUCUN_AUTRE_DEPLACEMENT: (trace) =>

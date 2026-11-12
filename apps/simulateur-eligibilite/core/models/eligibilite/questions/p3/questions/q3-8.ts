@@ -5,22 +5,18 @@
 // Aucune situation de P2 ne fait de la maternité le départ ou l'arrivée : son
 // nom et son adresse se demandent toujours. Un hébergement du dispositif qui
 // est déjà l'un des deux lieux garde ceux de Q3.2 ou Q3.3, où son nom devient
-// obligatoire (`lieu.ts`, TS1016-05).
+// obligatoire (`champs-du-lieu.ts`, TS1016-05).
 
 import { question } from "../../question.ts";
 import {
   unEngagementMaternite,
   unHebergementDuDispositif,
 } from "../conditions/engagement-maternite.ts";
-import { natureDu } from "../conditions/lieux-du-trajet.ts";
 import { Q3_2 } from "./q3-2.ts";
 import { Q3_3 } from "./q3-3.ts";
 
-const unLieuHeberge = natureDu("depart", Q3_2.nature).computeWith(
-  natureDu("arrivee", Q3_3.nature),
-  (depart, arrivee) =>
-    [depart, arrivee].includes("5_HEBERGEMENT_NON_MEDICALISE"),
-);
+// Le départ ou l'arrivée est un HTNM, prouvé ou choisi sur la DAP.
+const unLieuHeberge = Q3_2.htnm.or(Q3_3.htnm);
 
 // Q2.14 dit le déplacement lié à l'hébergement du dispositif, que ni le
 // départ ni l'arrivée ne sont.

@@ -7,7 +7,8 @@
 // prolongés, qui coche l'ALD non exonérante, une pour l'orientation d'un retour
 // pénitentiaire, qui n'a pas d'issue, et une par cadre du séjour en cours,
 // établissement ou HAD (TS1014-B01). Une dernière s'arrête sur un conflit de
-// lieux certain, avant R2 (#353). Elles suivent les dix traces de l'oracle
+// lieux certain, avant R2 (#353). Deux autres répondent à la finalité de soins
+// d'un autre motif à plus de 150 km, Oui puis Non (TS1018-01). Elles suivent les dix traces de l'oracle
 // de la v10.1.0 : le patient est accompagné d'un professionnel (Q1.1) et ses
 // critères sont ceux de la trace, 1 et 5 pour les quatre premières et
 // l'étranger, 1 pour les autres. Les cibles attendues sont
@@ -104,6 +105,15 @@ const SANS_SOIN = {
   ...TRAJET_COURT,
 } as const;
 
+// Un autre motif à plus de 150 km, sans série : rien ne prouve un soin, la
+// finalité se demande (TS1018-01).
+const LOIN_POUR_UN_AUTRE_MOTIF = {
+  ...SANS_SOIN,
+  "Q2.1": "14_AUTRE",
+  "Q2.3.1": "3_PLUS_DE_CENT_CINQUANTE_KM",
+  "Q2.3.3": "2_NON",
+} as const;
+
 const DOCUMENTS = {
   cible_financeur: "ASSURANCE_MALADIE",
   cible_mode_id: "TAP",
@@ -189,6 +199,36 @@ export const SEEDS: readonly Seed<Questions, Cibles>[] = [
     description:
       "Ouvre le résultat d'un patient TAP qui se rend à une consultation (Q2.1 option 1). Aucun motif ne prend le transport en charge : l'issue est « non éligible ».",
     answers: { ...SANS_SOIN, "Q2.1": "1_CONSULTATION" },
+    expected: {
+      cible_issue_id: "ISSUE_NON_ELIGIBLE",
+      cible_support_id: "AUCUN",
+      cible_financeur: "NON_CONCLU",
+      cible_mode_id: "TAP",
+    },
+  },
+  {
+    id: "finalite-longue-distance-oui",
+    label: "Résultat : accord préalable, pour un autre motif à plus de 150 km",
+    description:
+      "Ouvre le résultat d'un autre motif (Q2.1) à plus de 150 km, sans série. Aucune réponse ne prouve un soin : Q2.3.1.finalite se pose après la série, et Oui ouvre l'accord préalable, puis l'urgence, ici Non (TS1018-01).",
+    answers: {
+      ...LOIN_POUR_UN_AUTRE_MOTIF,
+      "Q2.3.1.finalite": "1_OUI",
+      "Q2.3.4": "2_NON",
+    },
+    expected: {
+      cible_issue_id: "ISSUE_DAP_SANS_URGENCE",
+      cible_support_id: "S3139h",
+      ...DOCUMENTS,
+    },
+  },
+  {
+    id: "finalite-longue-distance-non",
+    label:
+      "Résultat : aucun motif de transport, pour un autre motif à plus de 150 km",
+    description:
+      "Ouvre le résultat d'un autre motif (Q2.1) à plus de 150 km, sans série. Q2.3.1.finalite dit Non : la distance seule n'ouvre pas l'accord préalable, l'issue est « non éligible » (TS1018-01).",
+    answers: { ...LOIN_POUR_UN_AUTRE_MOTIF, "Q2.3.1.finalite": "2_NON" },
     expected: {
       cible_issue_id: "ISSUE_NON_ELIGIBLE",
       cible_support_id: "AUCUN",
@@ -343,7 +383,7 @@ export const SEEDS: readonly Seed<Questions, Cibles>[] = [
     id: "sejour-en-etablissement",
     label: "Résultat : permission de sortie d'un patient hospitalisé",
     description:
-      "Ouvre le résultat d'un patient en séjour dans un établissement de santé (Q2.2.1.cadre), dont le trajet est une permission de sortie autorisée. Le séjour en établissement établit l'hospitalisation, et la permission se pose.",
+      "Ouvre le résultat d'un patient en séjour dans un établissement de santé (Q2.2.1.cadre), dont le trajet est une permission de sortie autorisée d'un adulte. Elle relève de l'article 80 : sans exception (Q2.6), l'établissement prend le transport en charge (D-283).",
     answers: {
       "Q0.1": "1_VERIFIER",
       "Q1.1": "3_AVEC_UN_PROFESSIONNEL",
@@ -355,11 +395,12 @@ export const SEEDS: readonly Seed<Questions, Cibles>[] = [
       "Q2.2.1.a": "1_OUI",
       ...TRAJET_COURT,
       "Q2.7": "3_ADULTE_AUTORISEE",
+      "Q2.6": ["11_AUCUNE"],
     },
     expected: {
-      cible_issue_id: "ISSUE_PMT",
-      cible_support_id: "S3138g",
-      cible_financeur: "ASSURANCE_MALADIE",
+      cible_issue_id: "ISSUE_ETABLISSEMENT",
+      cible_support_id: "AUCUN",
+      cible_financeur: "ETABLISSEMENT",
       cible_mode_id: "AMBULANCE",
     },
   },

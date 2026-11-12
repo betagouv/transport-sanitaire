@@ -1,14 +1,17 @@
 // Les lieux que les contextes de P2 fixent ou bornent en P3 (Q3.2, Q3.3, #145) :
 // la matrice des lieux de `CATALOGUE_COMPLET_QUESTIONS.md`, lue dans le sens
-// du document (D-121).
+// du document (D-121), puis reportée sur les trois catégories
+// (QST-LIEUX-TROIS-CATEGORIES-20261105, #400).
 
 import { describe, expect, it } from "vitest";
-import type { Questions } from "../../../../core/models/eligibilite/questions/reponses";
+import { model } from "../../../../core/models/eligibilite";
+import { preconisationOf } from "../../../../core/socle/simulation";
 import {
   ADRESSE,
   ALLER,
   ids,
-  naturesDe,
+  optionsDe,
+  posee,
   RETOUR,
   type Reponses,
   rappel,
@@ -46,97 +49,15 @@ describe("les lieux que les contextes de P2 fixent (matrice des lieux)", () => {
     ]);
   });
 
-  it("un transfert entre établissements ne propose que des établissements", () => {
+  it("un transfert entre établissements ne propose ni le domicile, ni d'autre lieu que l'EHPAD", () => {
     const transfert: Reponses = { ...ALLER, "Q2.5": "1_TRANSFERT" };
-    expect(naturesDe("P3/depart", "Q3.2.nature", transfert)).toEqual([
-      "2_ETABLISSEMENT_DE_SANTE",
-      "3_EHPAD",
-      "4_USLD",
+    expect(optionsDe("P3/depart", "Q3.2.categorie", transfert)).toEqual([
+      "2_STRUCTURE_DE_SOINS",
+      "3_AUTRE_LIEU",
     ]);
   });
 
-  it("l'USLD de Q2.6 est l'un des deux lieux : l'arrivée l'impose si le départ n'en est pas une", () => {
-    const usld: Reponses = {
-      ...ALLER,
-      "Q2.5": "1_TRANSFERT",
-      "Q2.6": ["6_USLD"],
-    };
-    const depuis = (nature: Questions["Q3.2.nature"]) =>
-      naturesDe("P3/arrivee", "Q3.3.nature", {
-        ...usld,
-        "Q3.2.nature": nature,
-        "Q3.2.adresse": ADRESSE,
-      });
-    expect(depuis("2_ETABLISSEMENT_DE_SANTE")).toEqual(["4_USLD"]);
-    expect(depuis("4_USLD")).toEqual([
-      "2_ETABLISSEMENT_DE_SANTE",
-      "3_EHPAD",
-      "4_USLD",
-    ]);
-  });
-
-  it("une entrée garde l'USLD de Q2.6 : l'arrivée se choisit entre l'établissement et l'USLD", () => {
-    const entree: Reponses = {
-      ...ALLER,
-      "Q2.1.g": "1_ENTREE",
-      "Q2.6": ["6_USLD"],
-    };
-    const depuis = (nature: Questions["Q3.2.nature"]) =>
-      naturesDe("P3/arrivee", "Q3.3.nature", {
-        ...entree,
-        "Q3.2.nature": nature,
-        "Q3.2.adresse": ADRESSE,
-      });
-    expect(depuis("4_USLD")).toEqual(["2_ETABLISSEMENT_DE_SANTE", "4_USLD"]);
-    expect(depuis("1_DOMICILE")).toEqual(["4_USLD"]);
-  });
-
-  it("une sortie aussi : le départ se choisit entre l'établissement et l'USLD", () => {
-    const sortie: Reponses = {
-      ...RETOUR,
-      "Q2.2.1": ["1_HOSPITALISATION"],
-      "Q2.1.g": "2_SORTIE",
-      "Q2.6": ["6_USLD"],
-    };
-    expect(naturesDe("P3/depart", "Q3.2.nature", sortie)).toEqual([
-      "2_ETABLISSEMENT_DE_SANTE",
-      "4_USLD",
-    ]);
-  });
-
-  it("une sortie vers une USLD : quitter l'établissement de santé impose l'USLD à l'arrivée", () => {
-    const sortie = (nature: Questions["Q3.2.nature"]): Reponses => ({
-      ...RETOUR,
-      "Q2.2.1": ["1_HOSPITALISATION"],
-      "Q2.1.g": "2_SORTIE",
-      "Q2.6": ["6_USLD"],
-      "Q3.2.nature": nature,
-      "Q3.2.adresse": ADRESSE,
-    });
-    const versLUsld = sortie("2_ETABLISSEMENT_DE_SANTE");
-    expect(ids("P3/arrivee", versLUsld)).toEqual([
-      "Q3.3.nature",
-      "Q3.3.adresse",
-    ]);
-    expect(naturesDe("P3/arrivee", "Q3.3.nature", versLUsld)).toEqual([
-      "4_USLD",
-    ]);
-    expect(naturesDe("P3/arrivee", "Q3.3.nature", sortie("4_USLD"))).toContain(
-      "1_DOMICILE",
-    );
-  });
-
-  it("l'EHPAD de Q2.6 aussi", () => {
-    const ehpad: Reponses = {
-      ...ALLER,
-      "Q2.6": ["7_EHPAD"],
-      "Q3.2.nature": "8_AUTRE_LIEU",
-      "Q3.2.adresse": ADRESSE,
-    };
-    expect(naturesDe("P3/arrivee", "Q3.3.nature", ehpad)).toEqual(["3_EHPAD"]);
-  });
-
-  it("une radiothérapie en ville part de l'établissement d'origine, vers un centre ou un cabinet", () => {
+  it("une radiothérapie en ville part de l'établissement d'origine, vers une structure de soins", () => {
     const radiotherapie: Reponses = {
       ...ALLER,
       "Q2.5": "1_TRANSFERT",
@@ -148,27 +69,23 @@ describe("les lieux que les contextes de P2 fixent (matrice des lieux)", () => {
         value: "L’établissement d’origine du transfert",
       },
     ]);
-    expect(naturesDe("P3/arrivee", "Q3.3.nature", radiotherapie)).toEqual([
-      "2_ETABLISSEMENT_DE_SANTE",
-      "7_CABINET",
+    expect(ids("P3/arrivee", radiotherapie)).toEqual([
+      "Q3.3.nom",
+      "Q3.3.service",
+      "Q3.3.adresse",
     ]);
-  });
-
-  it("avec une radiothérapie en ville, l'USLD de Q2.6 est l'établissement d'origine", () => {
-    const depuisLUsld: Reponses = {
-      ...ALLER,
-      "Q2.5": "1_TRANSFERT",
-      "Q2.6": ["6_USLD", "8_RADIOTHERAPIE"],
-    };
-    expect(naturesDe("P3/arrivee", "Q3.3.nature", depuisLUsld)).toEqual([
-      "2_ETABLISSEMENT_DE_SANTE",
-      "7_CABINET",
+    expect(rappel("P3/arrivee", "Q3.3.nom", radiotherapie)).toEqual([
+      { label: "Lieu d’arrivée", value: "Structure de soins" },
     ]);
   });
 
   it("une admission en HAD de Q2.6 part de l'établissement quitté vers le domicile, rappelés", () => {
     const had: Reponses = { ...RETOUR, "Q2.6": ["10_ADMISSION_HAD"] };
-    expect(ids("P3/depart", had)).toEqual(["Q3.2.nom", "Q3.2.adresse"]);
+    expect(ids("P3/depart", had)).toEqual([
+      "Q3.2.nom",
+      "Q3.2.service",
+      "Q3.2.adresse",
+    ]);
     expect(ids("P3/arrivee", had)).toEqual(["Q3.3.adresse"]);
     expect(rappel("P3/depart", "Q3.2.nom", had)).toEqual([
       { label: "Lieu de départ", value: "L’établissement de santé quitté" },
@@ -180,5 +97,136 @@ describe("les lieux que les contextes de P2 fixent (matrice des lieux)", () => {
           "Le domicile, pour l’admission en Hospitalisation à Domicile (HAD)",
       },
     ]);
+  });
+});
+
+describe("le côté de l'USLD et de l'EHPAD de Q2.6 (#400)", () => {
+  const sortie: Reponses = {
+    ...RETOUR,
+    "Q2.2.1": ["1_HOSPITALISATION"],
+    "Q2.1.g": "2_SORTIE",
+    "Q2.6": ["6_USLD"],
+    "Q3.2.adresse": ADRESSE,
+  };
+
+  it("retour à domicile depuis une USLD : rien n'est bloqué, aucune question de côté", () => {
+    expect(ids("P3/depart", sortie)).toEqual([
+      "Q3.2.nom",
+      "Q3.2.service",
+      "Q3.2.adresse",
+    ]);
+    expect(optionsDe("P3/arrivee", "Q3.3.categorie", sortie)).toContain(
+      "1_DOMICILE",
+    );
+    expect(
+      ids("P3/arrivee", { ...sortie, "Q3.3.categorie": "1_DOMICILE" }),
+    ).toEqual(["Q3.3.categorie", "Q3.3.adresse"]);
+  });
+
+  it("USLD possible aux deux extrémités : une question de côté, une seule", () => {
+    const versUneStructure: Reponses = {
+      ...sortie,
+      "Q3.3.categorie": "2_STRUCTURE_DE_SOINS",
+    };
+    expect(
+      ids("P3/arrivee", versUneStructure).filter((id) => id.endsWith(".cote")),
+    ).toEqual(["Q3.lieux.usld.cote"]);
+    expect(
+      optionsDe("P3/arrivee", "Q3.lieux.usld.cote", versUneStructure),
+    ).toEqual(["1_DEPART", "2_ARRIVEE"]);
+    expect(
+      posee("P3/arrivee", "Q3.lieux.usld.cote", versUneStructure).label,
+    ).toBe("De quel côté se trouve l’unité de soins de longue durée (USLD) ?");
+  });
+
+  it("le côté répondu fait de ce lieu l'USLD, rappelée nulle part ailleurs", () => {
+    const aLArrivee: Reponses = {
+      ...sortie,
+      "Q3.3.categorie": "2_STRUCTURE_DE_SOINS",
+      "Q3.lieux.usld.cote": "2_ARRIVEE",
+    };
+    expect(ids("P3/arrivee", aLArrivee)).toEqual([
+      "Q3.3.categorie",
+      "Q3.lieux.usld.cote",
+      "Q3.3.nom",
+      "Q3.3.service",
+      "Q3.3.adresse",
+    ]);
+  });
+
+  it("une entrée depuis le domicile place l'USLD à l'arrivée, sans le demander", () => {
+    const entree: Reponses = {
+      ...ALLER,
+      "Q2.1.g": "1_ENTREE",
+      "Q2.6": ["6_USLD"],
+      "Q3.2.categorie": "1_DOMICILE",
+      "Q3.2.adresse": ADRESSE,
+    };
+    expect(ids("P3/arrivee", entree)).toEqual([
+      "Q3.3.nom",
+      "Q3.3.service",
+      "Q3.3.adresse",
+    ]);
+    expect(rappel("P3/arrivee", "Q3.3.nom", entree)).toEqual([
+      {
+        label: "Lieu d’arrivée",
+        value: "Unité de Soins de Longue Durée (USLD)",
+      },
+    ]);
+  });
+
+  it("l'EHPAD de Q2.6 après un départ du domicile est l'arrivée, nommée en toutes lettres", () => {
+    const ehpad: Reponses = {
+      ...ALLER,
+      "Q2.6": ["7_EHPAD"],
+      "Q3.2.categorie": "1_DOMICILE",
+      "Q3.2.adresse": ADRESSE,
+    };
+    expect(ids("P3/arrivee", ehpad)).toEqual(["Q3.3.nom", "Q3.3.adresse"]);
+    expect(rappel("P3/arrivee", "Q3.3.nom", ehpad)).toEqual([
+      {
+        label: "Lieu d’arrivée",
+        value:
+          "Établissement d'Hébergement pour Personnes Âgées Dépendantes (EHPAD)",
+      },
+    ]);
+  });
+
+  it("l'USLD et l'EHPAD ne se placent pas au même lieu", () => {
+    const lesDeux: Reponses = {
+      ...ALLER,
+      "Q2.5": "1_TRANSFERT",
+      "Q2.6": ["6_USLD", "7_EHPAD"],
+      "Q3.2.categorie": "3_AUTRE_LIEU",
+      "Q3.2.adresse": ADRESSE,
+    };
+    expect(ids("P3/arrivee", lesDeux)).toEqual([
+      "Q3.3.nom",
+      "Q3.3.service",
+      "Q3.3.adresse",
+    ]);
+    expect(rappel("P3/arrivee", "Q3.3.nom", lesDeux)).toEqual([
+      {
+        label: "Lieu d’arrivée",
+        value: "Unité de Soins de Longue Durée (USLD)",
+      },
+    ]);
+  });
+
+  it("des lieux qui n'ont pas de place pour l'USLD de Q2.6 se corrigent au départ", () => {
+    const had: Reponses = { ...RETOUR, "Q2.6": ["10_ADMISSION_HAD", "6_USLD"] };
+    expect(posee("P3/depart", "Q3.2.adresse", had).inconsistencies).toContain(
+      "Les lieux contredisent le type de structure établi en Q2.6 : corriger le trajet.",
+    );
+  });
+
+  it("aucun changement de R2 en P3 : le côté répondu ne change pas l'issue", () => {
+    const cibles = (cote: "1_DEPART" | "2_ARRIVEE") =>
+      preconisationOf(model, {
+        ...sortie,
+        "Q3.3.categorie": "2_STRUCTURE_DE_SOINS",
+        "Q3.lieux.usld.cote": cote,
+      }).cibles;
+    expect(cibles("1_DEPART")).toEqual(cibles("2_ARRIVEE"));
   });
 });

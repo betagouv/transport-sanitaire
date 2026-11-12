@@ -5,7 +5,7 @@
 //   given.question("Q2.10").answer().is("6_APPAREILLAGE")
 //   given.fait("fait_permission").isNon()
 //   given.cible("cible_mode_tap_ou_tpmr").assuming("fait_p1_complete").isOui()
-//   given.all({ motif: given.question("Q2.1").answer(), sens: SENS_DU_DOCUMENT })
+//   given.all({ motif: given.question("Q2.1").answer(), sens: SENS_CHOISI })
 //
 // Une question se lit par son objet, ou par son id quand le modèle type ses
 // ids : une déclaration lit les questions d'avant elle par leur objet

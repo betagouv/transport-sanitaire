@@ -189,6 +189,17 @@ describe("les compléments", () => {
     );
   });
 
+  it("gardent deux noms à la même adresse (TS1018-04)", () => {
+    const reponses: Reponses = {
+      ...HEBERGEMENT_DISTINCT,
+      "Q3.8.hebergement.adresse": EHPAD,
+    };
+
+    expect(texte(reponses).elements_medicaux).toMatch(
+      /maternité : Maternité du Parc — 12 avenue Berthelot, 69007 Lyon ; .*hébergement temporaire non médicalisé : Maison des familles — 12 avenue Berthelot, 69007 Lyon\.$/,
+    );
+  });
+
   // L'hébergement de Q3.8 ne dépend que de la nature des lieux du trajet.
   it("gardent l'hébergement de Q3.8 quand l'adresse de l'arrivée change", () => {
     const reponses: Reponses = {
@@ -204,8 +215,9 @@ describe("les compléments", () => {
   it("taisent l'hébergement de Q3.8 quand l'arrivée devient un hébergement non médicalisé", () => {
     const reponses: Reponses = {
       ...HEBERGEMENT_DISTINCT,
-      "Q3.3.nature": "5_HEBERGEMENT_NON_MEDICALISE",
-      "Q3.3.precision": "Maison des familles",
+      "Q3.3.categorie": "3_AUTRE_LIEU",
+      "Q3.3.nature": "1_HTNM",
+      "Q3.3.nom": "Maison des familles",
     };
 
     expect(texte(reponses).elements_medicaux).not.toMatch(/Bellecour/);

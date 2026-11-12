@@ -5,7 +5,9 @@
 // L'examen coché en Q2.2.1 tient lieu de motif : Q2.14.motif ne se repose pas
 // (QST-MAT-SEPARATION, D-272). Un groupe sans réponse le laisse à la
 // maternité signalée en Q2.2.1. L'examen et l'hébergement proposés et non
-// cochés l'écartent tous deux ; un seul ne nie pas l'autre.
+// cochés l'écartent tous deux ; un seul ne nie pas l'autre. Un HTNM coché avec
+// la maternité l'écarte si Q2.14.trajet évalue le déplacement du HTNM
+// (`DEPLACEMENT_EVALUE_EXPLICITE`, TS1018-04).
 //
 // Il suit `CORRECTIF_FAITS_SANS_REPONSE.md`, qui prime sur
 // `CONTRAT_REPONSES_FAITS.json`.
@@ -25,6 +27,10 @@ const DEUX_ECARTEES = SITUATIONS.offered("14_EXAMEN_MATERNITE")
   .and(HEBERGEMENT.not());
 
 export const dapMaternite = unFait("fait_dap_maternite")
+  .nonSi(
+    given.question("Q2.14.trajet").answer().is("2_HTNM_HORS_MATERNITE"),
+    "Le déplacement évalué est celui du HTNM.",
+  )
   .nonSi(ELOIGNEMENT.checked("3_AUCUNE"), "Aucun éloignement éligible.")
   .nonSi(MOTIF_DE_LA_DAP.checked("3_AUCUNE"), "Aucun motif éligible.")
   .ouiSi(ELOIGNEMENT.isPresent().and(MOTIF_DE_LA_DAP.isPresent().or(EXAMEN)))

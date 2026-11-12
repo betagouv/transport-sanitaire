@@ -1,21 +1,19 @@
 // Q3.1.2 : le sens des transports du document. Il ne se propose que s'il
-// s'accorde aux rôles que P2 a fixés aux lieux. Une seule permission demande
-// son sens, plusieurs ne demandent que leur nombre mensuel (D-120, D-246). Un
-// sens qualifié avant R2, en Q2.13.sens, ne se redemande pas (#365).
+// s'accorde aux rôles que P2 a fixés aux lieux. Une permission demande son
+// sens, qu'elle soit seule ou répétée : Q2.8.5 n'en dit aucun (D-284). Un sens
+// qualifié avant R2, en Q2.13.sens, ne se redemande pas (#365).
 
 import { unRetourPenitentiaire } from "../../p2/conditions/retour-penitentiaire.ts";
 import { Q2_1_G } from "../../p2/questions/q2-1.ts";
 import { Q2_6 } from "../../p2/questions/q2-6.ts";
-import { Q2_8_5 } from "../../p2/questions/q2-8-5.ts";
 import { Q2_13_SENS } from "../../p2/questions/q2-13.ts";
 import { given, question } from "../../question.ts";
 import { pmtOuDap, unS3141 } from "../conditions/supports-du-complement.ts";
 
-const unePermissionRepetee = given.question(Q2_8_5).answer().is("1_OUI");
 const sousType = given.question(Q2_1_G).answer();
 
-// Q3.1.2 se pose pour la PMT, la DAP, et le S3141 d'une seule permission.
-const unSensAPoser = pmtOuDap.or(unS3141.and(unePermissionRepetee.not()));
+// Q3.1.2 se pose pour la PMT, la DAP et le S3141.
+const unSensAPoser = pmtOuDap.or(unS3141);
 
 // Les rôles que P2 a fixés aux lieux. Une entrée va vers l'établissement. Une
 // sortie, une admission en HAD et un retour pénitentiaire en reviennent.

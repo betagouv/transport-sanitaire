@@ -137,11 +137,14 @@ describe("les boutons du modèle de l'éditeur", DELAI_D_UN_TEST, () => {
       await screen.findByRole("combobox", {
         name: /^Quel est le lieu de départ/,
       }),
-      "Domicile ou autre lieu de vie",
+      "Domicile",
     );
     await saisirUneAdresse(user, "1 rue A", "75001");
     await user.click(screen.getByRole("button", { name: "Suivant" }));
-    await screen.findByRole("group", { name: /^Adresse du lieu d’arrivée/ });
+    await user.type(
+      await screen.findByLabelText(/^Nom de la structure/),
+      "Hôpital B",
+    );
     await saisirUneAdresse(user, "2 rue B", "75002");
     await user.click(screen.getByRole("button", { name: "Suivant" }));
     await user.click(await screen.findByLabelText("Non"));

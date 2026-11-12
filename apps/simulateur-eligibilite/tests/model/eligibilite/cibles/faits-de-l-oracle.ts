@@ -67,6 +67,7 @@ export const SERIE: Changements = {
 };
 export const LONGUE_DISTANCE: Changements = {
   fait_distance_plus_150: true,
+  fait_finalite_soins_longue_distance: true,
   fait_urgence_repondue: true,
 };
 export const TRANSFERT: Changements = {

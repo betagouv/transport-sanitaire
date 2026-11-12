@@ -49,8 +49,8 @@ export function rappel(
   return posee(pageId, id, reponses).reminder;
 }
 
-/** Les natures qu'une question de nature propose. */
-export function naturesDe(
+/** Les options qu’une question à choix unique propose. */
+export function optionsDe(
   pageId: string,
   id: keyof Questions,
   reponses: Reponses,

@@ -26,7 +26,7 @@ describe("l'urgence à deux places", () => {
 
   it("répondue à la branche, puis le trajet allongé : posée au trajet, déjà répondue", () => {
     const apres = suivant(
-      { ...MATERNITE_ETABLIE, "Q2.3.4": "1_OUI" },
+      { ...MATERNITE_ETABLIE, "Q2.1": "1_CONSULTATION", "Q2.3.4": "1_OUI" },
       "P2/trajet",
       {
         "Q2.3.1": "3_PLUS_DE_CENT_CINQUANTE_KM",
@@ -54,9 +54,12 @@ describe("l'urgence à deux places", () => {
 
 // ---- implémentation ----
 
-// La maternité établie, à plus de 150 km, sans série.
+// La maternité établie, à plus de 150 km, sans série. La consultation prouve la
+// finalité de soins : sans elle, l'examen seul n'ouvre pas l'accord préalable
+// au-delà de 150 km (v10.1.8).
 const LONGUE: Answers<Questions> = {
   ...MATERNITE_ETABLIE,
+  "Q2.1": "1_CONSULTATION",
   "Q2.3.1": "3_PLUS_DE_CENT_CINQUANTE_KM",
   "Q2.3.3": "2_NON",
 };

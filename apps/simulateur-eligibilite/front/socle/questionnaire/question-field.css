@@ -1,0 +1,6 @@
+/* L'espace sous une question (QuestionField.tsx). Deux classes : la règle
+   passe devant celle du DSFR, et un panneau d'option peut l'annuler. */
+
+.fr-form-group.socle-question {
+  margin-bottom: 1.5rem;
+}

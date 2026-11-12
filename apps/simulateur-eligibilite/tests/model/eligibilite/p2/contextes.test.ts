@@ -62,14 +62,14 @@ describe("les deux blocs", () => {
     );
   });
 
-  it("refusent ensemble la maternité et l'HTNM, le CAMSP et le SAMSAH", () => {
-    const incompatibles = (id: "Q2.2.1" | "Q2.2.1.b") =>
-      posee(id, AUCUNE)?.incompatibleOptions?.map(({ values }) => values);
-    expect(incompatibles("Q2.2.1")).toEqual([
-      ["14_EXAMEN_MATERNITE", "5_HTNM"],
-      ["15_HEBERGEMENT_MATERNITE", "5_HTNM"],
-    ]);
-    expect(incompatibles("Q2.2.1.b")).toEqual([["6_CAMSP", "7_SAMSAH"]]);
+  // La maternité et l'HTNM se cochent ensemble depuis la v10.1.8 : le
+  // déplacement évalué se demande en Q2.14.trajet (D-285).
+  it("refusent ensemble le CAMSP et le SAMSAH", () => {
+    expect(
+      posee("Q2.2.1.b", AUCUNE)?.incompatibleOptions?.map(
+        ({ values }) => values,
+      ),
+    ).toEqual([["6_CAMSP", "7_SAMSAH"]]);
   });
 });
 

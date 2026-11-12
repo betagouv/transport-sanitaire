@@ -79,6 +79,43 @@ describe("le S3141", () => {
   });
 });
 
+// Le tiers recueilli en Q1.3, reporté tel quel sur le S3141 pour tous les
+// allers-retours prescrits (TS1018-05, DOC-Q13-TIERS-20261104). Sans réponse
+// à Q1.3, rien ne s'invente : ni case, ni date.
+describe("le tiers sur le S3141", () => {
+  const { "Q1.3": _, ...SANS_Q13 } = PERMISSIONS;
+
+  it.each<[string, Reponses, string[], string[]]>([
+    [
+      "Oui : la case et la date de Q1.3",
+      {
+        ...PERMISSIONS,
+        "Q1.3": ["9_ACCIDENT_TIERS"],
+        "Q1.3.accident_tiers_date": "2026-09-30",
+      },
+      ["non"],
+      ["30092026"],
+    ],
+    ["Non : la case, sans date", PERMISSIONS, ["Oui"], []],
+    [
+      "Non après une date saisie : la date s'efface",
+      { ...PERMISSIONS, "Q1.3.accident_tiers_date": "2026-09-30" },
+      ["Oui"],
+      [],
+    ],
+    ["reprise sans Q1.3 : ni case, ni date", SANS_Q13, [], []],
+  ])("%s", async (_, reponses, cases, date) => {
+    const pdf = await rempli(reponses);
+
+    expect(await markedStates(await gabarit("S3141"), pdf, "rct")).toEqual(
+      cases,
+    );
+    expect(
+      (await textsIn(await gabarit("S3141"), pdf, "date acc")).join(""),
+    ).toBe(date.join(""));
+  });
+});
+
 describe("le S3141 de plusieurs permissions", () => {
   const ACCIDENT: Reponses = {
     ...PERMISSIONS,

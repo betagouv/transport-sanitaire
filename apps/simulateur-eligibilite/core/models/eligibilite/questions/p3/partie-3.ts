@@ -31,8 +31,29 @@ export const COMPLEMENT = afterLock({
   pages: [
     // Le sens vient d'abord, puis le nombre, que le sens dit.
     page("P3/trajet", Q3_1_2, Q3_1_1, Q3_1_3),
-    page("P3/depart", Q3_2.nature, Q3_2.nom, Q3_2.precision, Q3_2.adresse),
-    page("P3/arrivee", Q3_3.nature, Q3_3.nom, Q3_3.precision, Q3_3.adresse),
+    // La catégorie, la nature d'un autre lieu, le nom, le service, l'adresse.
+    // L'arrivée place l'USLD et l'EHPAD de Q2.6 une fois les deux catégories
+    // connues.
+    page(
+      "P3/depart",
+      Q3_2.categorie,
+      Q3_2.nature,
+      Q3_2.precision,
+      Q3_2.nom,
+      Q3_2.service,
+      Q3_2.adresse,
+    ),
+    page(
+      "P3/arrivee",
+      Q3_3.categorie,
+      Q3_3.usld,
+      Q3_3.ehpad,
+      Q3_3.nature,
+      Q3_3.precision,
+      Q3_3.nom,
+      Q3_3.service,
+      Q3_3.adresse,
+    ),
     page("P3/soin", Q3_4, Q3_4_DISTANCE, Q3_4_A),
     page("P3/urgence", Q3_5),
     page("P3/evenements", Q3_6_1),
