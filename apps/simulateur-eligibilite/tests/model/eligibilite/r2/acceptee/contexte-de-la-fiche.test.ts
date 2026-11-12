@@ -123,7 +123,7 @@ describe("la phrase du contexte", () => {
 describe("le motif administratif", () => {
   it("suit les mêmes codes que la phrase", () => {
     expect(motifAdministratif(pmt, trace({ ...A, ...B }))).toBe(
-      "un transport lié à votre maladie de longue durée reconnue par l’Assurance Maladie, avec des difficultés de déplacement et nécessitant médicalement une ambulance",
+      "un transport lié à votre maladie de longue durée reconnue par l’Assurance Maladie, en ambulance pour répondre à votre état de santé",
     );
   });
 

@@ -23,7 +23,13 @@ const apresLeVerrou = (reponses: Reponses) =>
   posees(Simulation.resume(model.core, reponses).lock());
 
 const P1 = ["Q0.1", "Q1.1", "Q1.2", "Q1.3"];
-const LIEUX = ["Q3.2.nature", "Q3.2.adresse", "Q3.3.nom", "Q3.3.adresse"];
+const LIEUX = [
+  "Q3.2.categorie",
+  "Q3.2.adresse",
+  "Q3.3.nom",
+  "Q3.3.service",
+  "Q3.3.adresse",
+];
 
 // Le complément d'une DAP ou d'une PMT : le patient, les lieux, le centre de
 // référence, puis la distance et l'urgence quand elles comptent. Le nombre de
@@ -77,13 +83,34 @@ const ATTENDU: Record<string, readonly [string[], string[]]> = {
       "Q2.8.4",
       "Q2.8.5",
     ]),
-    ["Q3.1.2", "Q3.2.nature", "Q3.2.adresse", "Q3.3.nature"].concat([
+    ["Q3.1.2", "Q3.2.categorie", "Q3.2.adresse", "Q3.3.categorie"].concat([
       "Q3.3.adresse",
       "Q3.7",
     ]),
   ],
   "issue-non-eligible": [
     [...P1, "Q2.1", "Q2.2.1", "Q2.2.1.b", ...DISTANCE],
+    [],
+  ],
+  // Autre motif à plus de 150 km : la finalité se demande après la série, et
+  // Oui seul ouvre l'urgence (TS1018-01).
+  "finalite-longue-distance-oui": [
+    [...P1, "Q2.1", "Q2.2.1", "Q2.2.1.b", ...DISTANCE, "Q2.3.3"].concat([
+      "Q2.3.1.finalite",
+      "Q2.3.4",
+    ]),
+    // Ni soin ni séjour : l'arrivée se dit par sa catégorie, sans Q3.7.
+    ["Q3.1.2", "Q3.2.categorie", "Q3.2.adresse", "Q3.3.categorie"].concat([
+      "Q3.3.adresse",
+      "Q3.4",
+      "Q3.4.distance",
+      "Q3.4.a",
+    ]),
+  ],
+  "finalite-longue-distance-non": [
+    [...P1, "Q2.1", "Q2.2.1", "Q2.2.1.b", ...DISTANCE, "Q2.3.3"].concat([
+      "Q2.3.1.finalite",
+    ]),
     [],
   ],
   "issue-caisse": [
@@ -139,9 +166,9 @@ const ATTENDU: Record<string, readonly [string[], string[]]> = {
     ].concat(["Q2.14.eloignement", "Q2.3.4"]),
     [
       "Q3.1.2",
-      "Q3.2.nature",
+      "Q3.2.categorie",
       "Q3.2.adresse",
-      "Q3.3.nature",
+      "Q3.3.categorie",
       "Q3.3.adresse",
       "Q3.4",
       "Q3.4.a",
@@ -155,7 +182,9 @@ const ATTENDU: Record<string, readonly [string[], string[]]> = {
     ["Q0.1", "Q1.1", "Q1.3", "Q1.4", "Q2.1", "Q2.2.1", "Q2.2.1.indication"],
     ["Q3.2.adresse", "Q3.3.adresse"],
   ],
-  // Le séjour en établissement ouvre la permission (TS1014-B01).
+  // Le séjour en établissement ouvre la permission (TS1014-B01). Celle d'un
+  // adulte, autorisée, pose les exceptions, et sans exception l'établissement
+  // prend le transport en charge : rien ne se pose après (D-283).
   "sejour-en-etablissement": [
     ["Q0.1", "Q1.1", "Q1.2", "Q1.3", "Q2.2.1", "Q2.2.1.cadre"].concat([
       "Q2.2.1.a",
@@ -163,13 +192,9 @@ const ATTENDU: Record<string, readonly [string[], string[]]> = {
       "Q2.3.1",
       "Q2.3.2",
       "Q2.7",
+      "Q2.6",
     ]),
-    ["Q3.1.2", "Q3.2.nature", "Q3.2.adresse", "Q3.3.nature"].concat([
-      "Q3.3.adresse",
-      "Q3.4",
-      "Q3.4.a",
-      "Q3.7",
-    ]),
+    [],
   ],
   // Le conflit de lieux arrête la seed sur les situations particulières
   // (#353) : aucune question d'après ne s'y répond.

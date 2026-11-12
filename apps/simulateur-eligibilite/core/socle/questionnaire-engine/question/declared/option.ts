@@ -44,7 +44,10 @@ export class DeclaredOption<Questions extends AnyQuestions, Cibles, Faits> {
       .reduce(readsOf, NOTHING);
   }
 
-  /** Ce que l'option veut dire, affiché sous son libellé. */
+  /**
+   * Ce que l'option veut dire, affiché sous son libellé. Un saut de ligne
+   * (`\n`) y commence une ligne.
+   */
   description(description: string): DeclaredOption<Questions, Cibles, Faits> {
     return this.#with({ description });
   }

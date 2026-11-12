@@ -32,8 +32,9 @@ export function DateField(props: Props) {
         props.errors?.length ? <ErrorLines errors={props.errors} /> : undefined
       }
       classes={{ label: props.lead ? "fr-text--lead" : undefined }}
-      style={{ maxWidth: "16rem" }}
       nativeInputProps={{
+        // La saisie seule se limite : le libellé garde toute la largeur.
+        style: { maxWidth: "16rem" },
         id: props.id,
         name: props.id,
         // `datetime-local` et non `datetime` : les navigateurs ne rendent que le

@@ -5272,19 +5272,19 @@
       }
     },
     {
-      "id": "ISSUE_NON_ELIGIBLE--AUCUN_AUTRE_SOIN",
+      "id": "ISSUE_NON_ELIGIBLE--AUCUN_GENERIQUE_AUTRE_MOTIF",
       "issue": "ISSUE_NON_ELIGIBLE",
       "template": "patient-negative",
       "criteres": [],
       "permissionRepeated": false,
       "precisions": {
         "careFamily": 14,
-        "eventFinalityClarified": true
+        "eventFinalityClarified": false
       },
       "textes": {
         "title": "Votre transport ne peut pas être pris en charge par l’Assurance Maladie",
         "prescriberTitle": "Le transport de votre patient ne peut pas être pris en charge par l’Assurance Maladie",
-        "eligibility": "Votre déplacement concerne un soin ou un examen qui, à lui seul, ne justifie pas la prise en charge des frais de transport par l’Assurance Maladie.",
+        "eligibility": "Ce déplacement ne correspond pas à une situation ouvrant droit au remboursement du transport par l’Assurance Maladie.",
         "institutionalInformation": {
           "title": "L’Assurance Maladie ne rembourse pas systématiquement les transports :",
           "items": [

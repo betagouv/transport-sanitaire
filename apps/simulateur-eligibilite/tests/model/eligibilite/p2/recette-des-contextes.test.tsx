@@ -12,7 +12,9 @@
 // - second-seul et aucun : Q2.2.1 se pose sur tout parcours (D-98), le premier
 //   bloc n'est jamais acquis d'avance et la page du second ne s'atteint pas
 //   sans lui ;
-// - analytics : la mesure d'audience par page n'est pas prévue (#305).
+// - analytics : la mesure d'audience par page n'est pas prévue (#305) ;
+// - incompatible : la maternité et l'HTNM se cochent ensemble depuis la
+//   v10.1.8, et Q2.14.trajet précise le déplacement évalué (D-285).
 
 import { screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
@@ -124,18 +126,14 @@ describe("la recette des deux pages des contextes (REC-Q221-PAGES-1016)", () => 
     ["l'examen", "14_EXAMEN_MATERNITE"],
     ["l'hébergement", "15_HEBERGEMENT_MATERNITE"],
   ] as const)(
-    "incompatible : %s de la maternité et l'HTNM ensemble ne répondent pas, et restent tels quels",
+    "qualifications : %s de la maternité et l'HTNM ensemble répondent, et le déplacement évalué se précise sur la première page",
     (_, maternite) => {
       const ensemble = [maternite, "5_HTNM"] as const;
       const contextes = reprise({ ...BRANCARD, "Q2.2.1": ensemble });
-      const q221 = question(contextes, "Q2.2.1");
 
       expect(contextes.page.id).toBe("P2/contextes");
-      expect(q221.isAnsweredBy(ensemble)).toBe(false);
-      expect(q221.problemsWith(ensemble)).toEqual([
-        { kind: "stated", text: expect.stringContaining("pas des deux") },
-      ]);
-      expect(contextes.answers["Q2.2.1"]).toEqual(ensemble);
+      expect(question(contextes, "Q2.2.1").isAnsweredBy(ensemble)).toBe(true);
+      expect(idsSur(contextes)).toEqual(["Q2.2.1", "Q2.14.trajet"]);
     },
   );
 

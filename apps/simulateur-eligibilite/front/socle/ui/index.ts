@@ -4,6 +4,7 @@
 
 export { AddressField } from "./AddressField";
 export { CheckboxField } from "./CheckboxField";
+export { ConditionalPanel } from "./ConditionalPanel";
 export { Container } from "./Container";
 export { DateField } from "./DateField";
 export { Disclosure } from "./Disclosure";

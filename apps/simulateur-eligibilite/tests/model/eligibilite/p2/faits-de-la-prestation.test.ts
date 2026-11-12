@@ -55,8 +55,7 @@ describe("l'événement sans soin", () => {
       motif("8_HOSPITALISATION", { "Q2.1.g": "1_ENTREE" }),
       false,
     ],
-    // En attendant l'éditeur (D-272).
-    ["l'autre motif", motif("14_AUTRE"), false],
+    ["l'autre motif, seul", motif("14_AUTRE"), undefined],
     ["Q2.1 pas encore validée", SEUL, undefined],
   ] as const)("%s", (_, reponses, attendu) => {
     expect(valeur("fait_evenement_sans_soin", reponses)).toBe(attendu);

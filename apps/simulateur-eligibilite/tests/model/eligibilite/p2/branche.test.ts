@@ -167,8 +167,10 @@ describe("Q2.14, une condition dans chaque groupe : le dispositif est établi", 
   });
 
   it("ne repose pas l'urgence que le trajet a déjà posée", () => {
+    // La consultation prouve la finalité de soins au-delà de 150 km (v10.1.8).
     const longue = {
       ...MATERNITE_ETABLIE,
+      "Q2.1": "1_CONSULTATION",
       "Q2.3.1": "3_PLUS_DE_CENT_CINQUANTE_KM",
       "Q2.3.3": "2_NON",
       "Q2.3.4": "2_NON",

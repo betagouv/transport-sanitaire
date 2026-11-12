@@ -14,6 +14,7 @@ import { TRAJET } from "../../../../front/models/eligibilite/r3/rubriques/trajet
 import { MINEUR } from "../p2/reponses-de-la-permission";
 import {
   cellules,
+  DAP,
   EHPAD,
   EXAMEN_DE_MATERNITE,
   PERMISSIONS,
@@ -165,10 +166,11 @@ describe("le trajet", () => {
     });
   });
 
-  it("écrit un EHPAD dans l'autre lieu, sous sa mention", () => {
+  it("écrit un autre lieu : sa nature saisie, son nom, puis son adresse", () => {
     const reponses: Reponses = {
       ...PMT,
-      "Q3.2.nature": "3_EHPAD",
+      "Q3.2.categorie": "3_AUTRE_LIEU",
+      "Q3.2.precision": "Foyer",
       "Q3.2.nom": "Les Tilleuls",
       "Q3.2.adresse": EHPAD,
     };
@@ -176,20 +178,32 @@ describe("le trajet", () => {
     expect(cellules(TRAJET, reponses)).toMatchObject({
       depart_domicile: false,
       depart_structure: undefined,
-      depart_autre: "EHPAD, Les Tilleuls, 12 avenue Berthelot, 69007 Lyon",
+      depart_autre: "Foyer, Les Tilleuls, 12 avenue Berthelot, 69007 Lyon",
     });
   });
 
-  it("écrit la nature saisie d'un autre lieu", () => {
+  it("écrit le HTNM choisi sur une DAP en toutes lettres", () => {
     const reponses: Reponses = {
-      ...PMT,
-      "Q3.2.nature": "8_AUTRE_LIEU",
-      "Q3.2.precision": "Lieu de travail",
+      ...DAP,
+      "Q3.2.categorie": "3_AUTRE_LIEU",
+      "Q3.2.nature": "1_HTNM",
+      "Q3.2.nom": "Maison des familles",
       "Q3.2.adresse": EHPAD,
     };
 
     expect(cellules(TRAJET, reponses).depart_autre).toBe(
-      "Lieu de travail, 12 avenue Berthelot, 69007 Lyon",
+      "Hébergement Temporaire Non Médicalisé (HTNM), Maison des familles, 12 avenue Berthelot, 69007 Lyon",
+    );
+  });
+
+  it("écrit une structure de soins avec son service", () => {
+    const reponses: Reponses = {
+      ...PMT,
+      "Q3.3.service": "Néphrologie",
+    };
+
+    expect(cellules(TRAJET, reponses).arrivee_structure).toBe(
+      "Centre de dialyse, Service : Néphrologie, 149 rue de Sèvres, 75015 Paris",
     );
   });
 
@@ -227,8 +241,8 @@ describe("l'adresse du bénéficiaire (DOC-DOMICILE-ADRESSE)", () => {
   it("reste vide sans domicile au trajet, sans prendre l'adresse d'un autre lieu", () => {
     const reponses: Reponses = {
       ...PMT,
-      "Q3.2.nature": "3_EHPAD",
-      "Q3.2.nom": "Les Tilleuls",
+      "Q3.2.categorie": "3_AUTRE_LIEU",
+      "Q3.2.precision": "Foyer",
       "Q3.2.adresse": EHPAD,
     };
 

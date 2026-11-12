@@ -17,10 +17,17 @@ import { Q2_2_1_A } from "./q2-2-1-a.ts";
 import { Q2_2_1_CADRE } from "./q2-2-1-cadre.ts";
 import { Q2_3_2 } from "./q2-3-2.ts";
 import { Q2_5 } from "./q2-5.ts";
+import { Q2_7 } from "./q2-7.ts";
 
 const deplacement = given.question(Q2_5).answer();
 const unTransfert = deplacement.is("1_TRANSFERT");
 const unAutreDeplacement = deplacement.is("2_AUTRE_DEPLACEMENT");
+
+/**
+ * Q2.7 dit la permission d'un adulte, autorisée pour les soins ou
+ * l'organisation de l'établissement : elle relève de l'article 80 (D-283).
+ */
+const unAdulteAutorise = given.question(Q2_7).answer().is("3_ADULTE_AUTORISEE");
 
 /** Q2.5 dit un transfert entre établissements : Q2.6.a se pose alors. */
 const unTypeAPoser = unTransfert;
@@ -40,12 +47,13 @@ const type = given.question(Q2_6_A).answer();
 
 /**
  * Q2.6 se pose dans le champ I de l'article 80 : un transfert, un autre
- * déplacement pendant un séjour en établissement, une admission en HAD que
- * Q2.1.g établit ou un séjour en HAD (TS1014-B01), sans Q2.5. Elle attend le
- * type du transfert quand il se pose.
+ * déplacement pendant un séjour en établissement, la permission d'un adulte
+ * autorisée, une admission en HAD que Q2.1.g établit ou un séjour en HAD
+ * (TS1014-B01), sans Q2.5. Elle attend le type du transfert quand il se pose.
  */
 const desExceptionsAPoser = unTransfert
   .or(unAutreDeplacement.and(unSejourEnEtablissement))
+  .or(unAdulteAutorise)
   .or(given.question(Q2_1_G).answer().is("3_ADMISSION_HAD"))
   .or(unSejourEnHad)
   .and(unTypeAPoser.not().or(type.isPresent()));
@@ -84,8 +92,9 @@ type Exception = AnswerOf<typeof exceptions>[number];
 
 /**
  * Quand une exception se propose. Pour une admission ou un séjour en HAD, sans
- * Q2.5, les options 2, 3 et 8 ne se proposent pas. Les autres se proposent
- * toujours.
+ * Q2.5, les options 2, 3 et 8 ne se proposent pas ; pour la permission d'un
+ * adulte, ni la 2 ni la 3 : elle suppose un séjour, et n'est pas un transfert
+ * entre établissements. Les autres se proposent toujours.
  */
 const EXCEPTIONS_A_PROPOSER: Partial<Record<Exception, Condition>> = {
   "2_ADMISSION_SANS_SEJOUR": unTransfert
@@ -98,7 +107,8 @@ const EXCEPTIONS_A_PROPOSER: Partial<Record<Exception, Condition>> = {
     .compute((ligne) => ligne.isNot(true)),
   "8_RADIOTHERAPIE": unTransfert
     .and(type.is("2_PROVISOIRE"))
-    .or(unAutreDeplacement),
+    .or(unAutreDeplacement)
+    .or(unAdulteAutorise),
 };
 
 // Une admission en HAD ou une radiothérapie fixe un lieu : un autre lieu déjà

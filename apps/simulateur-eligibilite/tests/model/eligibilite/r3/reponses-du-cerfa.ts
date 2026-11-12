@@ -63,7 +63,7 @@ export const EHPAD = {
 const P3_DE_LA_DIALYSE: Reponses = {
   "Q3.1.1": 1,
   "Q3.1.2": "1_ALLER",
-  "Q3.2.nature": "1_DOMICILE",
+  "Q3.2.categorie": "1_DOMICILE",
   "Q3.2.adresse": DOMICILE,
   "Q3.3.nom": "Centre de dialyse",
   "Q3.3.adresse": HOPITAL,
@@ -91,13 +91,15 @@ export const ETRANGER: Reponses = {
   ...P3_DE_LA_DIALYSE,
 };
 
-// Plusieurs permissions : P2 fixe les lieux, de l'établissement au domicile.
+// Plusieurs permissions, en aller-retour (D-284) : de l'établissement au
+// domicile.
 export const PERMISSIONS: Reponses = {
   ...PLUSIEURS_PERMISSIONS,
+  "Q3.1.2": "3_ALLER_RETOUR_EQUIVALENT",
   "Q3.1.3": 2,
   "Q3.2.nom": "Hôpital Necker",
   "Q3.2.adresse": HOPITAL,
-  "Q3.3.nature": "1_DOMICILE",
+  "Q3.3.categorie": "1_DOMICILE",
   "Q3.3.adresse": DOMICILE,
 };
 
@@ -114,9 +116,9 @@ export const EXAMEN_DE_MATERNITE: Reponses = {
   "Q2.3.4": "2_NON",
   "Q3.1.1": 1,
   "Q3.1.2": "1_ALLER",
-  "Q3.2.nature": "1_DOMICILE",
+  "Q3.2.categorie": "1_DOMICILE",
   "Q3.2.adresse": DOMICILE,
-  "Q3.3.nature": "2_ETABLISSEMENT_DE_SANTE",
+  "Q3.3.categorie": "2_STRUCTURE_DE_SOINS",
   "Q3.3.nom": "Maternité du Parc",
   "Q3.3.adresse": HOPITAL,
   "Q3.4.a": "2_NON",
@@ -131,9 +133,9 @@ export const HEBERGEMENT_DE_MATERNITE: Reponses = {
   "Q2.3.4": "2_NON",
   "Q3.1.1": 1,
   "Q3.1.2": "1_ALLER",
-  "Q3.2.nature": "1_DOMICILE",
+  "Q3.2.categorie": "1_DOMICILE",
   "Q3.2.adresse": DOMICILE,
-  "Q3.3.nature": "7_CABINET",
+  "Q3.3.categorie": "2_STRUCTURE_DE_SOINS",
   "Q3.3.nom": "Cabinet du docteur Martin",
   "Q3.3.adresse": HOPITAL,
   "Q3.4.a": "2_NON",

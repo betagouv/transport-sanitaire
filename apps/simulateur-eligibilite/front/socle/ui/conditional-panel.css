@@ -1,0 +1,72 @@
+/* Le panneau des précisions d'une option (ConditionalPanel.tsx), d'après
+   UI-CHAMPS-CONDITIONNELS-20261110 de l'éditeur : le fond de section du DSFR,
+   qui suit le thème, angles droits, sans bordure ni ombre. Il s'aligne sur le
+   libellé de l'option, 8 px sous elle, et laisse 24 px avant l'option
+   suivante, marges confondues. */
+
+.socle-conditional-panel {
+  margin: 0.5rem 0 1.5rem 2.75rem;
+  padding: 1rem;
+  background-color: var(--background-alt-grey);
+}
+
+/* L'option qui l'ouvre ne garde pas sa marge du dessous. */
+.fr-fieldset
+  .fr-fieldset__content
+  .fr-checkbox-group.socle-checkbox-card:has(+ .socle-conditional-panel),
+.fr-fieldset
+  .fr-fieldset__content
+  .fr-radio-group:has(+ .socle-conditional-panel) {
+  margin-bottom: 0;
+}
+
+/* Sa question en 18 px, à 8 px de son premier choix. Le DSFR impose la
+   taille de `fr-text--lead` : seul un `!important` la remplace. */
+.socle-conditional-panel .fr-fieldset__legend.fr-text--lead,
+.socle-conditional-panel .fr-label.fr-text--lead {
+  /* biome-ignore lint/complexity/noImportantStyles: `fr-text--lead` du DSFR est en !important */
+  font-size: 1.125rem !important;
+  /* biome-ignore lint/complexity/noImportantStyles: `fr-text--lead` du DSFR est en !important */
+  line-height: 1.5 !important;
+}
+
+/* Le libellé d'un champ seul garde les 8 px que le DSFR met sous lui. */
+.socle-conditional-panel .fr-input-group .fr-label.fr-text--lead {
+  margin-bottom: 0;
+}
+
+.socle-conditional-panel .fr-fieldset .fr-fieldset__legend {
+  padding-bottom: 0;
+  margin-bottom: 0.5rem;
+}
+
+/* 8 px entre deux choix, et rien sous le dernier ni sous sa question. */
+.socle-conditional-panel .fr-fieldset .fr-fieldset__content .fr-radio-group {
+  margin: 0 0 0.5rem;
+}
+
+.socle-conditional-panel
+  .fr-fieldset
+  .fr-fieldset__content
+  .fr-radio-group:last-child {
+  margin-bottom: 0;
+}
+
+.socle-conditional-panel .fr-form-group.socle-question,
+.socle-conditional-panel .fr-fieldset.socle-choice-fieldset {
+  margin-bottom: 0;
+}
+
+/* 8 px entre deux champs du panneau. */
+
+.socle-conditional-panel > * + * {
+  margin-top: 0.5rem;
+}
+
+@media (max-width: 35.99em) {
+  .socle-conditional-panel {
+    margin-bottom: 1rem;
+    margin-left: 1rem;
+    padding: 0.75rem;
+  }
+}

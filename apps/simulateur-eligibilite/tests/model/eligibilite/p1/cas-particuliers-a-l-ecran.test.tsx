@@ -25,9 +25,26 @@ const HEMODIALYSE = /^Oui\.$/;
 const bouton = (libelle: string) =>
   screen.getByRole("button", { name: libelle });
 const optionsDe = (question: RegExp) =>
-  within(screen.getByRole("group", { name: question })).getAllByRole("radio");
+  within(
+    screen.getByRole("group", { name: question }),
+  ).getAllByRole<HTMLInputElement>("radio");
 
 describe("la page des cas particuliers de P1", () => {
+  // Les libellés de `CONTRAT_Q13_LIEN_ALD.json` (TS1018-10).
+  it("Q1.3.b dit ses deux liens mot pour mot", async () => {
+    const user = afficherLeQuestionnaire();
+    await avecUnProfessionnel(user, [/^Nécessite un brancardage/]);
+    await cocher(user, ALD);
+    await page(Q13B);
+
+    expect(
+      optionsDe(Q13B).map((option) => option.labels?.[0]?.textContent),
+    ).toEqual([
+      "Soin ou examen directement lié au traitement de cette Affection Longue Durée (ALD)",
+      "Soin ou examen sans lien direct avec cette ALD : traumatisme distinct, intercurrence, autre affection",
+    ]);
+  });
+
   it("ALD seule : Q1.3.b apparaît sans réponse, et « Suivant » l'attend", async () => {
     const user = afficherLeQuestionnaire();
     await avecUnProfessionnel(user, [/^Nécessite un brancardage/]);

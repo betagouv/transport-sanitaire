@@ -27,6 +27,7 @@ import {
 import { displayedLabel } from "./label-a-question";
 import { displayedFields } from "./lay-out-an-address";
 import { messageOf } from "./word-a-problem";
+import "./question-field.css";
 
 type Props = {
   question: AskedQuestion;
@@ -48,8 +49,7 @@ type Props = {
 export function QuestionField(props: Props) {
   return (
     <div
-      className="fr-form-group"
-      style={{ marginBottom: "1.5rem" }}
+      className="fr-form-group socle-question"
       data-question={props.question.id}
     >
       <Reminder reminder={props.question.reminder} />

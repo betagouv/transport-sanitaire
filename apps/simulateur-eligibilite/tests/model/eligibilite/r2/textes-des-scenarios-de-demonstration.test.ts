@@ -1,5 +1,5 @@
 // Les textes des scénarios de démonstration de l'éditeur, comparés aux nôtres.
-// Ils viennent de son paquet v10.1.7
+// Ils viennent de son paquet v10.1.8
 // (`integration_resultats/scenarios-demonstration.json`) : pour chaque scénario,
 // le texte que lit le patient ou le prescripteur.
 //
