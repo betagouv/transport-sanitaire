@@ -5,8 +5,8 @@
 // qu'ouvre une position de l'adresse (`Simulation.moveTo`).
 
 import type { Answers, Page, Reading } from "../questionnaire-engine/index.ts";
-import type { Position } from "./position.ts";
-import { pendingIn } from "./stages.ts";
+import type { Position } from "./position.entity.ts";
+import { pendingIn } from "./stage.entity.ts";
 
 /**
  * Une correction en cours : la page qui portait l'alerte, son brouillon, et
