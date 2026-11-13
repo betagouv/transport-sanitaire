@@ -2,7 +2,7 @@
 // formulaire du socle : l'afficher, au début ou sur une page, puis répondre
 // comme un prescripteur.
 
-import { render, screen } from "@testing-library/react";
+import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { type ReactNode, useState } from "react";
 import type { Answers } from "../../../core/socle/questionnaire-engine";
@@ -23,6 +23,7 @@ const { relevance: _graphe, ...core } = model.core;
 
 export const Q11 = /^Concernant son déplacement/;
 export const Q13 = /^Avant d’établir le mode de transport/;
+export const Q21 = /^Quelle situation médicale ou quel événement/;
 
 export function afficherLeQuestionnaire(onComplete: () => void = () => {}) {
   render(
@@ -57,6 +58,29 @@ export const cocher = (user: User, reponse: RegExp) =>
   user.click(screen.getByRole("checkbox", { name: reponse }));
 export const suivant = (user: User) =>
   user.click(screen.getByRole("button", { name: "Suivant" }));
+
+// Le choix de cette réponse, dans le groupe de cette question.
+export const choisirDans = (user: User, question: RegExp, reponse: RegExp) =>
+  user.click(
+    within(screen.getByRole("group", { name: question })).getByRole("radio", {
+      name: reponse,
+    }),
+  );
+
+// Un patient seul, sans cas particulier, en véhicule personnel : jusqu'à Q2.1.
+export async function jusquAQ21(onComplete?: () => void) {
+  const user = afficherLeQuestionnaire(onComplete);
+  await choisir(user, /^Vérifier une éligibilité/);
+  await page(Q11);
+  await choisir(user, /^Peut se déplacer seul/);
+  await page(Q13);
+  await cocher(user, /^Aucune de ces situations/);
+  await suivant(user);
+  await page(/^Le patient pouvant réaliser le trajet/);
+  await choisir(user, /^Véhicule personnel/);
+  await page(Q21);
+  return user;
+}
 
 // Q0.1, puis Q1.1 avec un professionnel, Q1.2 avec ces critères.
 export async function avecUnProfessionnel(
