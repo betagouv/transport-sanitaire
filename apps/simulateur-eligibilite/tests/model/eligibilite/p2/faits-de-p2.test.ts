@@ -10,14 +10,16 @@ import type { Cibles } from "../../../../core/models/eligibilite/cibles/noms";
 import type { Faits } from "../../../../core/models/eligibilite/faits/noms";
 import type { Questions } from "../../../../core/models/eligibilite/questions/reponses";
 import type { Answers } from "../../../../core/socle/questionnaire-engine";
-import { preconisationOf } from "../../../../core/socle/simulation";
+import { EstablishAPreconisation } from "../../../../core/socle/simulation";
 
 type Reponses = Answers<Questions>;
 
 const valeur = (fait: keyof Faits, reponses: Reponses) =>
-  (preconisationOf(model, reponses).faits as Faits)[fait].value;
+  (new EstablishAPreconisation(model).execute(reponses).faits as Faits)[fait]
+    .value;
 const cible = (nom: keyof Cibles, reponses: Reponses) =>
-  (preconisationOf(model, reponses).cibles as Cibles)[nom].value;
+  (new EstablishAPreconisation(model).execute(reponses).cibles as Cibles)[nom]
+    .value;
 
 const BRANCARD: Reponses = {
   "Q0.1": "1_VERIFIER",

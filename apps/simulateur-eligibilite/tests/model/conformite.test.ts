@@ -14,7 +14,10 @@ import {
   Questionnaire,
 } from "../../core/socle/questionnaire-engine";
 
-import { evaluateSeed, preconisationOf } from "../../core/socle/simulation";
+import {
+  EstablishAPreconisation,
+  EvaluateASeed,
+} from "../../core/socle/simulation";
 
 import { model as eligibilite } from "../../front/models/eligibilite";
 import { model as fake } from "../../front/models/fake";
@@ -104,13 +107,12 @@ describe.each(Object.entries(MODELES))("le modèle %s", (_nom, model) => {
 
     it("sont rejouées sans écart avec leurs attendus", () => {
       const ecarts = seeds.flatMap((seed) =>
-        evaluateSeed(
-          (answers) => preconisationOf(model.core, answers).cibles,
-          seed,
-        ).mismatches.map(
-          ({ cible, expected, actual }) =>
-            `${seed.id} : ${cible} vaut ${String(actual)}, attendu ${String(expected)}`,
-        ),
+        new EvaluateASeed(model.core)
+          .execute(seed)
+          .mismatches.map(
+            ({ cible, expected, actual }) =>
+              `${seed.id} : ${cible} vaut ${String(actual)}, attendu ${String(expected)}`,
+          ),
       );
       expect(
         ecarts,
@@ -123,7 +125,9 @@ describe.each(Object.entries(MODELES))("le modèle %s", (_nom, model) => {
     // Le questionnaire se lit sans cibles, le complément avec celles du verrou.
     it("posent des questions qui passent en JSON, et s'y relisent à l'identique", () => {
       const posees = seeds.flatMap((seed) => {
-        const { cibles } = preconisationOf(model.core, seed.answers);
+        const { cibles } = new EstablishAPreconisation(model.core).execute(
+          seed.answers,
+        );
         return [
           new Questionnaire(questionnaire).readWith(seed.answers),
           new Questionnaire(complement).readWith(seed.answers, cibles),

@@ -14,7 +14,7 @@ import {
   Questionnaire,
 } from "../../../../core/socle/questionnaire-engine";
 
-import { preconisationOf } from "../../../../core/socle/simulation";
+import { EstablishAPreconisation } from "../../../../core/socle/simulation";
 
 type Reponses = Answers<Questions>;
 
@@ -37,7 +37,8 @@ const optionsDe = (id: keyof Questions, reponses: Reponses) => {
     : [];
 };
 const modeDe = (reponses: Reponses) =>
-  preconisationOf(model, reponses).cibles.cible_mode_id.value;
+  new EstablishAPreconisation(model).execute(reponses).cibles.cible_mode_id
+    .value;
 
 const SEUL: Reponses = {
   "Q0.1": "1_VERIFIER",

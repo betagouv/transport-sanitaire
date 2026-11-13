@@ -5,7 +5,7 @@
 
 import { describe, expect, it } from "vitest";
 import { model } from "../../../../core/models/eligibilite";
-import { preconisationOf } from "../../../../core/socle/simulation";
+import { EstablishAPreconisation } from "../../../../core/socle/simulation";
 import {
   ADRESSE,
   ALLER,
@@ -244,7 +244,7 @@ describe("le côté de l'USLD et de l'EHPAD de Q2.6 (#400, #421)", () => {
 
   it("aucun changement de R2 en P3 : le côté répondu ne change pas l'issue", () => {
     const cibles = (cote: "1_DEPART" | "2_ARRIVEE" | "3_LES_DEUX") =>
-      preconisationOf(model, {
+      new EstablishAPreconisation(model).execute({
         ...sortie,
         "Q3.3.categorie": "2_STRUCTURE_DE_SOINS",
         "Q3.lieux.usld.cote": cote,

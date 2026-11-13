@@ -23,7 +23,7 @@ import {
   Questionnaire,
 } from "../../../../core/socle/questionnaire-engine";
 
-import { preconisationOf } from "../../../../core/socle/simulation";
+import { EstablishAPreconisation } from "../../../../core/socle/simulation";
 import { lienAld } from "./lien-ald";
 
 type Reponses = Answers<Questions>;
@@ -39,7 +39,7 @@ const q13 = (reponses: Reponses) => {
   return question?.kind === "multiple choice" ? question : undefined;
 };
 const faits = (reponses: Reponses) =>
-  preconisationOf(model, reponses).faits as Faits;
+  new EstablishAPreconisation(model).execute(reponses).faits as Faits;
 
 const BESOIN: Reponses = { "Q0.1": "1_VERIFIER" };
 const CLINIQUE = (cas: Cas): Reponses => ({
