@@ -890,8 +890,8 @@ question n'importe pas. Sinon les deux modules s'importent l'un l'autre, et la
 question lue vaut `undefined` au chargement (R-12). Q2.2.1 donne un fichier à
 chacune de ses précisions, et le circuit du retour pénitentiaire suit
 Q2.2.1.indication dans le sien. Une question qui se lit elle-même se déclare
-en deux temps : `const declaree = question.date(…)`, puis
-`export const Q3_6_1 = declaree.inconsistentWhen(dansLeFutur(declaree), …)`.
+en deux temps : `const expedition = question.address(…)`, puis
+`export const EXPEDITION = expedition.inconsistentWhen(factureRepetee, …)`.
 Les libellés des options se lisent sur la question (`Q1_3.labels`). Aucun écran
 ne change.
 

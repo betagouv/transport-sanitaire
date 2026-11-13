@@ -72,13 +72,19 @@ describe("la page des évènements (Q3.6)", () => {
     );
   });
 
-  it("refuse une date d'AT/MP dans le futur, et accepte une date passée", () => {
+  it("refuse en elle-même une date d'AT/MP future, et accepte aujourd'hui", () => {
+    const aujourdhui = new Date().toLocaleDateString("sv-SE", {
+      timeZone: "Europe/Paris",
+    });
     const avec = (date: string) =>
-      posee("P3/evenements", "Q3.6.1", { ...ATMP, "Q3.6.1": date })
-        .inconsistencies;
+      posee("P3/evenements", "Q3.6.1", {
+        ...ATMP,
+        "Q3.6.1": date,
+      }).formatProblemsWith(date);
     expect(avec("2999-01-01")).toEqual([
-      "Cette date est dans le futur : un accident ne peut pas encore avoir eu lieu.",
+      { kind: "date after", max: aujourdhui },
     ]);
+    expect(avec(aujourdhui)).toEqual([]);
     expect(avec("2020-01-01")).toEqual([]);
   });
 });
