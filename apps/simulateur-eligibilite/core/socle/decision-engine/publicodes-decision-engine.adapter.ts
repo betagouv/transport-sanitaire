@@ -1,5 +1,5 @@
-// Le moteur de décision : des faits aux cibles, par les règles publicodes d'un
-// modèle.
+// Le moteur de décision par publicodes : des faits aux cibles, par les règles
+// d'un modèle. C'est l'adaptateur du port `decision-engine.port.ts`.
 //
 // Le socle ne connaît ni les règles ni leurs noms : le modèle les lui donne.
 // Ce fichier est le seul du socle à importer publicodes. Le modèle le prend
@@ -9,54 +9,52 @@
 import Engine, { type RawPublicodes } from "publicodes";
 import { Cible } from "./cible.ts";
 import { compileDecisionGraph } from "./compile-the-decision-graph.ts";
+import type { DecisionEngine } from "./decision-engine.port.ts";
 import type { DecisionGraphData } from "./decision-graph/graph.ts";
 import type { Fait } from "./fait/fait.ts";
 
 /** Les règles d'un modèle, par nom : les faits, puis les cibles. */
 export type Rules = RawPublicodes<string>;
 
-/**
- * Ce que des règles calculent pour des faits. Chaque cible peut rester
- * inconnue, faute d'un fait dont elle dépend : ce n'est pas une décision.
- */
-export type DecisionEngine<Faits, Cibles> = {
-  /** Toutes les cibles de ces faits : la préconisation. */
-  cibles(faits: Faits): Cibles;
-  /** Une seule cible de ces faits, quand le questionnaire en a besoin en route. */
-  cible<Nom extends keyof Cibles>(faits: Faits, nom: Nom): Cibles[Nom];
-  /**
-   * Les cibles de ces faits, chacune calculée à sa première lecture : celles
-   * qu'une garde lit en route, sans payer les autres.
-   */
-  lazyCibles(faits: Faits): Cibles;
-};
+type AnyFaits = Readonly<Record<string, Fait<boolean | number | string>>>;
 
 /** Le moteur de ces règles, qui calcule ces cibles. */
-export function publicodesEngine<
-  Faits extends Readonly<Record<string, Fait<boolean | number | string>>>,
+export class PublicodesDecisionEngine<
+  Faits extends AnyFaits,
   Cibles extends Readonly<Record<string, Cible>>,
->(
-  rules: Rules,
-  cibles: readonly (keyof Cibles & string)[],
-): DecisionEngine<Faits, Cibles> {
+> implements DecisionEngine<Faits, Cibles>
+{
+  readonly #rules: Rules;
+  readonly #cibles: readonly (keyof Cibles & string)[];
   // Compiler les règles coûte : le moteur est créé au premier calcul, puis gardé.
-  let engine: Engine | undefined;
-  const on = (faits: Faits) => {
-    engine ??= new Engine(rules);
-    engine.setSituation(situationOf(faits));
-    return engine;
-  };
-  return {
-    cibles: (faits) => {
-      const evaluated = on(faits);
-      return Object.fromEntries(
-        cibles.map((cible) => [cible, cibleOf(evaluated, cible)]),
-      ) as Cibles;
-    },
-    cible: (faits, nom) =>
-      cibleOf(on(faits), nom as string) as Cibles[typeof nom],
-    lazyCibles: (faits) => lazily(cibles, (nom) => cibleOf(on(faits), nom)),
-  };
+  #engine?: Engine;
+
+  constructor(rules: Rules, cibles: readonly (keyof Cibles & string)[]) {
+    this.#rules = rules;
+    this.#cibles = cibles;
+  }
+
+  cibles(faits: Faits): Cibles {
+    const evaluated = this.#on(faits);
+    return Object.fromEntries(
+      this.#cibles.map((cible) => [cible, cibleOf(evaluated, cible)]),
+    ) as Cibles;
+  }
+
+  cible<Nom extends keyof Cibles>(faits: Faits, nom: Nom): Cibles[Nom] {
+    return cibleOf(this.#on(faits), nom as string) as Cibles[Nom];
+  }
+
+  lazyCibles(faits: Faits): Cibles {
+    return lazily(this.#cibles, (nom) => cibleOf(this.#on(faits), nom));
+  }
+
+  // Le moteur, sur la situation de ces faits.
+  #on(faits: Faits): Engine {
+    this.#engine ??= new Engine(this.#rules);
+    this.#engine.setSituation(situationOf(faits));
+    return this.#engine;
+  }
 }
 
 /**
@@ -99,9 +97,7 @@ function cibleOf(engine: Engine, nom: string): Cible {
 // Seuls les faits établis partent aux règles : publicodes refuse une valeur
 // `undefined`, et une clé absente laisse indéfini ce qui en dépend. Les règles
 // lisent un booléen comme « oui » ou « non ».
-function situationOf(
-  faits: Readonly<Record<string, Fait<boolean | number | string>>>,
-) {
+function situationOf(faits: AnyFaits) {
   return Object.fromEntries(
     Object.entries(faits).flatMap(([fait, { value }]) =>
       value === undefined ? [] : [[fait, asRuleValue(value)]],

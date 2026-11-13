@@ -1,7 +1,7 @@
 // Les réponses et les lectures que partagent les tests de la permission (Q2.7
 // et Q2.8).
 
-import { cibles } from "../../../../core/models/eligibilite/cibles/evaluation";
+import { decisionEngine } from "../../../../core/models/eligibilite/cibles/evaluation";
 import type { Cibles } from "../../../../core/models/eligibilite/cibles/noms";
 import type { Questions } from "../../../../core/models/eligibilite/questions/reponses";
 import {
@@ -72,7 +72,8 @@ export const validee = (id: keyof Reponses, reponses: Reponses) =>
   undefined;
 
 /** Les cibles des règles, sur les faits que les réponses établissent. */
-export const ciblesDe = (reponses: Reponses) => cibles(faits(reponses));
+export const ciblesDe = (reponses: Reponses) =>
+  decisionEngine.cibles(faits(reponses));
 
 /**
  * Ce que vaut cette valeur d'un résultat, sur ces réponses. `forcees` remplace

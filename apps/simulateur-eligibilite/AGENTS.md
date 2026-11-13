@@ -88,7 +88,8 @@ premier pendant l'écran de rattachement : un modèle reste hors du chunk
 d'entrée. Le socle n'importe rien des modèles. Un modèle n'importe du socle que
 ses deux points d'entrée, `core/socle/index.ts` pour son métier et
 `front/socle/index.ts` pour son écran. Aucun modèle n'importe l'autre.
-Une exception : le moteur de décision, `core/socle/decision-engine/compute-the-cibles.ts`,
+Une exception : l'adaptateur du moteur de décision,
+`core/socle/decision-engine/publicodes-decision-engine.adapter.ts`,
 qu'un modèle prend à la source. C'est le seul fichier qui importe publicodes
 (D-76).
 `tests/architecture.test.ts` garde ces règles.
@@ -266,7 +267,7 @@ Ses pièces sont dans `core/socle/`.
 | `FaitCatalogue` (`decision-engine/establish-the-faits.ts`) | les faits d'un modèle, **une déclaration par fait**. Le modèle le construit une fois avec le nom de ses faits et leur liste (`faits/index.ts`, un fichier par fait), qui n'exporte que sa déclaration et s'ouvre sur le titre de l'éditeur : un doublon, un oubli ou un nom hors du modèle l'arrêtent au chargement. `read(validated, fixed)` calcule chaque fait à sa première lecture, et `fixed` en impose (la complétude). Le moteur de questionnaire reçoit le catalogue lui-même (`questionsOf({ faits: CATALOGUE_DES_FAITS })`, D-207) ; la préconisation le lit avec la complétude. Un fait lit les questions validées et d'autres faits, jamais une cible ni le jour. Un fait qui se relit s'arrête sur une erreur qui donne le chemin. Un fait qu'aucune réponse ne pose se déclare aussi, et sa provenance dit pourquoi |
 | `unFait(nom)` (`decision-engine/fait/declared.ts`) | un fait, valeur nommée faite de règles sur des conditions. La première qui conclut l'emporte : `ouiSi`, `nonSi` et `inconnuSi(condition, raison)`, `nonSiEcartee(réponse, case)` pour une case proposée et non cochée, et `applique(regle)`, qui place une règle écrite ailleurs (`uneRegle().nonSi(condition, raison)`, une seule règle par `RegleDeFait`). `sinon(raison)` clôt le fait : il reste inconnu, pour cette raison. `vaut(valeur)` déclare un fait qui n'a pas d'état (la boisson, en toutes lettres). Une règle écrit sa provenance : ce que lit sa condition, puis sa raison, « Q2.10.b : « 2_PODO_ORTHESE ». », « Q2.6 : sans réponse. », « fait_permission : « non ». » (ADR-22) |
 | `Cible` (`decision-engine/cible.ts`) | ce que les règles donnent pour une cible, en objet valeur figé, que seul `Cible.of` construit. `isOui()` et `isNon()` lisent une cible « oui ou non », `is("TAP")` une cible à constantes, `isInconnue()` et `isSansObjet()` les deux cas qui ne sont pas une décision. Jamais `.value === true` : une cible inconnue n'est pas un « non ». `cibleValues(cibles)` donne leurs valeurs, pour la trace, une seed ou un test |
-| `publicodesEngine` | n'envoie aux règles que les faits établis, et donne chaque cible en `Cible`. Il manque un fait : elle est inconnue, ce qui n'est pas une décision, ni « sans objet » (`null`) |
+| `PublicodesDecisionEngine` (adaptateur du port `DecisionEngine`) | n'envoie aux règles que les faits établis, et donne chaque cible en `Cible`. Il manque un fait : elle est inconnue, ce qui n'est pas une décision, ni « sans objet » (`null`) |
 | `DecisionGraph` (`decision-engine/decision-graph/graph.ts`) | le graphe de décision d'un modèle (#196, D-216) : ce que vaut chaque règle pour chaque façon dont ses faits valent oui, non ou rien. `valueOf(règle, faits)` le lit, sans publicodes. `decisionGraphOf(règles)` le compile (`compile-the-decision-graph.ts`), et `pnpm regles` l'écrit dans `rules/regles.graphe.json`. Le compilateur s'arrête sur un mécanisme qu'il ne traduit pas |
 
 Le socle dit ce qui a été montré, validé, coché. Il ne conclut rien : c'est le
@@ -400,7 +401,7 @@ direct de `core/socle/` ou de `front/socle/`. Son `index.ts` dit ce qu'il
 promet au reste du socle, et rien d'autre : hors du module, on n'importe que
 lui, et ce qui manque s'y ajoute. Ses tests, `tests/socle/<module>/`, lisent
 ses fichiers en direct. Une seule porte à part,
-`core/socle/decision-engine/compute-the-cibles.ts`, pour tenir publicodes hors
+`core/socle/decision-engine/publicodes-decision-engine.adapter.ts`, pour tenir publicodes hors
 du chunk d'entrée. `tests/modules-du-socle.test.ts` le garde.
 
 Hors de ces racines, `tooling/` porte la configuration TypeScript et les outils de

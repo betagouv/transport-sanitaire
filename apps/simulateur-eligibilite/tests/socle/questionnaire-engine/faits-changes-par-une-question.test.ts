@@ -16,7 +16,7 @@ import {
   unFait,
 } from "../../../core/socle";
 import { DecisionGraph } from "../../../core/socle/decision-engine";
-import { decisionGraphOf } from "../../../core/socle/decision-engine/compute-the-cibles";
+import { decisionGraphOf } from "../../../core/socle/decision-engine/publicodes-decision-engine.adapter";
 import { faitsChangedBy } from "../../../core/socle/questionnaire-engine/does-a-question-still-matter/faits-changed-by";
 import { pagesOf } from "../../../core/socle/questionnaire-engine/question/question";
 import { modeleDeTest } from "../modele-de-test";

@@ -7,7 +7,7 @@
 // désaccord remonte sous ce nom.
 
 import { describe, expect, it } from "vitest";
-import { cibles } from "../../../../core/models/eligibilite/cibles/evaluation";
+import { decisionEngine } from "../../../../core/models/eligibilite/cibles/evaluation";
 import type { Cibles } from "../../../../core/models/eligibilite/cibles/noms";
 import {
   ABSENTS,
@@ -220,7 +220,7 @@ describe("les faits inconnus", () => {
   });
 
   it("des faits presque tous absents ne donnent aucune issue", () => {
-    const rendu = cibles(
+    const rendu = decisionEngine.cibles(
       faitsDe({
         ...ABSENTS,
         fait_p1_complete: true,

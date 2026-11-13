@@ -18,8 +18,8 @@ import { existsSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { parse } from "yaml";
-import { decisionGraphOf } from "../core/socle/decision-engine/compute-the-cibles.ts";
 import type { DecisionGraphData } from "../core/socle/decision-engine/decision-graph/graph.ts";
+import { decisionGraphOf } from "../core/socle/decision-engine/publicodes-decision-engine.adapter.ts";
 
 const racine = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 

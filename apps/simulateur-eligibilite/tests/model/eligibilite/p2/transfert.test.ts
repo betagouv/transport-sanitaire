@@ -5,10 +5,7 @@
 // de `tests/test_cinq_retours_a.mjs` du paquet de l'éditeur (D-106).
 
 import { describe, expect, it } from "vitest";
-import {
-  cible,
-  cibles,
-} from "../../../../core/models/eligibilite/cibles/evaluation";
+import { decisionEngine } from "../../../../core/models/eligibilite/cibles/evaluation";
 import {
   definitif,
   EXCEPTIONS,
@@ -25,7 +22,7 @@ describe("article80-bilan-complet", () => {
   const bilan = definitif(["11_AUCUNE"]);
 
   it("un transfert définitif sans exception : ISSUE_ETABLISSEMENT", () => {
-    expect(cibles(faits(bilan)).cible_issue_id.value).toBe(
+    expect(decisionEngine.cibles(faits(bilan)).cible_issue_id.value).toBe(
       "ISSUE_ETABLISSEMENT",
     );
   });
@@ -43,7 +40,9 @@ describe("article80-bilan-complet", () => {
 
   it("définit les huit exceptions, toutes à « non »", () => {
     expect(valeurs(bilan, EXCEPTIONS)).toEqual(Array(8).fill(false));
-    expect(cible(faits(bilan), "cible_exception_article80").value).toBe(false);
+    expect(
+      decisionEngine.cible(faits(bilan), "cible_exception_article80").value,
+    ).toBe(false);
   });
 });
 
@@ -142,7 +141,7 @@ describe("l'ouverture directe par une admission en HAD (Q2.1.g)", () => {
     ).toBeUndefined();
     expect(posee("P2/permission", "Q2.7", HAD_A_DOMICILE)).toBeUndefined();
     expect(faits(HAD_A_DOMICILE).fait_permission.value).toBe(false);
-    const avant = cibles(faits(HAD_A_DOMICILE));
+    const avant = decisionEngine.cibles(faits(HAD_A_DOMICILE));
     expect(avant.cible_issue_id.value).toBeUndefined();
     expect(avant.cible_financeur.value).toBeUndefined();
   });

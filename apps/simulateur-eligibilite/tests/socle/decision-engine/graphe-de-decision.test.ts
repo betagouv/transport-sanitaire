@@ -1,14 +1,14 @@
 import { describe, expect, it } from "vitest";
 import { type Cible, Fait } from "../../../core/socle";
 import {
-  decisionGraphOf,
-  publicodesEngine,
-  type Rules,
-} from "../../../core/socle/decision-engine/compute-the-cibles";
-import {
   DecisionGraph,
   type FaitValue,
 } from "../../../core/socle/decision-engine/decision-graph/graph";
+import {
+  decisionGraphOf,
+  PublicodesDecisionEngine,
+  type Rules,
+} from "../../../core/socle/decision-engine/publicodes-decision-engine.adapter";
 
 // Le graphe de décision, sur des règles écrites ici : chaque mécanisme que le
 // compilateur traduit vaut ce que publicodes calcule, pour chaque façon dont
@@ -54,10 +54,10 @@ const SITUATIONS = FAITS.reduce<Record<string, FaitValue>[]>(
 const CIBLES = Object.keys(REGLES).filter((nom) => nom.startsWith("cible_"));
 
 const graphe = new DecisionGraph(decisionGraphOf(REGLES));
-const moteur = publicodesEngine<Record<string, Fait>, Record<string, Cible>>(
-  REGLES,
-  CIBLES,
-);
+const moteur = new PublicodesDecisionEngine<
+  Record<string, Fait>,
+  Record<string, Cible>
+>(REGLES, CIBLES);
 const faitsDe = (situation: Record<string, FaitValue>) =>
   Object.fromEntries(
     FAITS.map((fait) => {
