@@ -54,6 +54,11 @@ export type Filled = {
   readonly overflows: readonly Drawing[];
   /** Les champs dont le commentaire a été retiré, faute de place. */
   readonly withoutComment: readonly string[];
+  /**
+   * La taille à laquelle chaque texte s'imprime, en points, par nom de champ :
+   * dans son cadre, ou dessiné dessous. Un champ sans widget n'y est pas.
+   */
+  readonly sizes: ReadonlyMap<string, number>;
 };
 
 /**
@@ -147,6 +152,11 @@ async function writeTexts(
     withoutComment: written
       .filter(({ withoutComment }) => withoutComment)
       .map(({ field }) => field),
+    sizes: new Map(
+      written.flatMap(({ field, size }) =>
+        size === null ? [] : [[field, size]],
+      ),
+    ),
   };
 }
 

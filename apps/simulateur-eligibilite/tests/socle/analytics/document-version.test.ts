@@ -40,14 +40,18 @@ function modifierP2(journey: Journey) {
 const unDocument = (quantite: string) => ({
   file: "bon-de-commande-2026-11-13.pdf",
   dto: { fields: { quantite }, drawings: {} },
+  typography: { sizes: { quantite: 9 }, unmeasured: [] },
 });
 
-// Les documents envoyés, en bref : le type, la version et la révision.
+// Les documents envoyés, en bref : le type, la version et la révision. Leur
+// mesure typographique a ses propres tests.
 const documents = (envoyes: AnalyticsEvent[]) =>
-  envoyes.map(
-    ({ type, document_id, revision }) =>
-      `${type} ${document_id ?? "-"} ${revision}`,
-  );
+  envoyes
+    .filter(({ type }) => type !== "document_typography_measured")
+    .map(
+      ({ type, document_id, revision }) =>
+        `${type} ${document_id ?? "-"} ${revision}`,
+    );
 
 describe("les versions du document R3", () => {
   it("un document prêt ouvre la version d1, avec la révision, le support et le mode du R2", () => {
