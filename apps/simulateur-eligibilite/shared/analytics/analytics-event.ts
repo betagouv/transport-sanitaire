@@ -10,7 +10,8 @@ export const ANALYTICS_VERSION = "10.1.7";
  * La version de nos compléments, écrite par le serveur à chaque événement. La 2
  * ajoute l'affichage de page, les jalons de phase et l'invalidation d'une
  * validation (ADR-8), puis le financeur, les motifs et les portions du premier
- * résultat (ADR-9).
+ * résultat (ADR-9), puis les boutons exposés, la fiche patient et ses clics
+ * (ADR-11).
  */
 export const SCHEMA_VERSION = 2;
 
@@ -34,6 +35,10 @@ export const EVENT_TYPES = [
   "simulation_closed",
   // Nos compléments.
   "question_invalidated",
+  "action_exposed",
+  "sheet_print_requested",
+  "sheet_download_requested",
+  "sheet_download_succeeded",
 ] as const;
 
 type EventType = (typeof EVENT_TYPES)[number];
@@ -56,6 +61,11 @@ export type Milestone = (typeof MILESTONES)[number];
 export const PORTIONS = ["LIGNE_REGULIERE", "TERRESTRE"] as const;
 
 export type Portion = (typeof PORTIONS)[number];
+
+/** Ce que fait un bouton exposé de la fiche ou du document (ADR-11). */
+export const ACTIONS = ["print", "download"] as const;
+
+export type Action = (typeof ACTIONS)[number];
 
 export const INTENTS = [
   "eligibilite_seule",
@@ -97,4 +107,6 @@ export type AnalyticsEvent = {
   financeur?: string;
   motifs?: string[];
   portions?: Portion[];
+  sheet_id?: string;
+  action?: Action;
 };

@@ -6,14 +6,16 @@
 // secondaires sont à gauche, l'avis et la complétion à droite (V02). Le titre d'un résultat
 // avec feuille et complétion est vert.
 
-import { type ReactNode, useEffect, useState } from "react";
-import type {
-  Answers,
-  Read,
-} from "../../../../core/socle/questionnaire-engine";
-
-import type { Simulation } from "../../../../core/socle/simulation";
-import { type ResultCodes, useResultTracking } from "../../analytics";
+import type { ReactNode } from "react";
+import type { Read } from "../../../../core/socle/questionnaire-engine";
+import {
+  type Button,
+  type ButtonTracking,
+  type ResultCodes,
+  useResultScreen,
+  useResultTracking,
+} from "../../analytics";
+import type { PdfSignals } from "../../cerfa";
 import type { FirstResult, Model } from "../../model";
 import { NextStep, Stepper } from "../../questionnaire";
 import { SecondaryButton } from "../../ui";
@@ -25,6 +27,7 @@ import {
   feedbackOf,
   onFirstResult,
 } from "./FeedbackLink";
+import { type Loading, resultOf, useLoaded } from "./load-the-result";
 import "./resultat-screen.css";
 
 // Le verrou ne s'annonce pas à l'écran : l'interface nomme l'action, et le
@@ -41,6 +44,7 @@ export function ResultatScreen({
   const parts = model.core.questionnaire;
   const trace = { title: "résultat", ...simulation.trace() };
   const read = simulation.read(new Date());
+  useResultScreen("R2", simulation);
   return (
     <>
       <Content
@@ -75,24 +79,6 @@ function startLabelOf(model: Model, read: Read): string | null {
   return opens ? read(startLabel) : null;
 }
 
-type Loading = FirstResult | Promise<FirstResult>;
-
-// La promesse d'un résultat qui charge, par modèle puis par réponses. Gardée
-// hors de React : chaque rendu de la page relancerait le chargement.
-const loading = new WeakMap<Model, WeakMap<Answers, Promise<FirstResult>>>();
-
-function resultOf(model: Model, simulation: Simulation): Loading {
-  const { answers } = simulation;
-  const known = loading.get(model)?.get(answers);
-  if (known) return known;
-  const reading = simulation.read(new Date())(model.result.reading);
-  const result = model.result.content({ reading });
-  if (!(result instanceof Promise)) return result;
-  const byAnswers = loading.get(model) ?? new WeakMap();
-  loading.set(model, byAnswers.set(answers, result));
-  return result;
-}
-
 /** Ce que font les boutons de la page : rouvrir le questionnaire, verrouiller, recommencer. */
 type Actions = {
   onReopen: () => void;
@@ -107,6 +93,7 @@ type Completion = { label: string } | "none" | "pending";
 type Buttons = Actions & {
   completion: Completion;
   feedback: FeedbackOffer | null;
+  tracking: ButtonTracking;
 };
 
 // Où le stepper en est : le titre du résultat, et la partie qu'il clôt.
@@ -138,9 +125,14 @@ function Content({
   const completion = completionOf(startLabel, loaded);
   const completes = typeof completion === "object";
   const canComplete = completion === "pending" ? null : completes;
-  useResultTracking({ loaded, canComplete, codes });
-  const offer = loaded && onFirstResult(feedback, completes);
-  const buttons = { ...actions, completion, feedback: offer || null };
+  const offer = (loaded && onFirstResult(feedback, completes)) || null;
+  const tracking = useResultTracking({
+    loaded,
+    canComplete,
+    codes,
+    buttons: offered(loaded, offer),
+  });
+  const buttons = { ...actions, completion, feedback: offer, tracking };
   return (
     <section aria-label={loaded?.label}>
       <div className="fr-no-print">
@@ -156,6 +148,26 @@ function Content({
       )}
     </section>
   );
+}
+
+// Les boutons que le résultat chargé offre au journal : ceux de sa fiche, et
+// l'avis.
+function offered(
+  loaded: FirstResult | null,
+  feedback: FeedbackOffer | null,
+): Button[] {
+  return [
+    ...(loaded?.sheet ? (["sheet_print", "sheet_download"] as const) : []),
+    ...(feedback ? (["feedback"] as const) : []),
+  ];
+}
+
+function sheetSignals(tracking: ButtonTracking): PdfSignals {
+  return {
+    onPrint: () => tracking.pressed("sheet_print"),
+    onDownload: () => tracking.pressed("sheet_download"),
+    onDownloaded: () => tracking.delivered("sheet_download"),
+  };
 }
 
 // La complétion n'est offerte qu'une fois le résultat chargé : un résultat qui
@@ -222,25 +234,9 @@ function Page({ result, buttons }: { result: FirstResult; buttons: Buttons }) {
     <>
       <div className="fr-no-print">{page}</div>
       <PageActions placement="above" {...buttons} />
-      <SheetViewer sheet={sheet} />
+      <SheetViewer sheet={sheet} signals={sheetSignals(buttons.tracking)} />
     </>
   );
-}
-
-// Un état plutôt que `use()` : une suspension née dans un `act` synchrone, celui
-// d'un clic sous les tests, ne reprend jamais.
-function useLoaded(result: Loading): FirstResult | null {
-  const [loaded, setLoaded] = useState<{ from: Loading; value: FirstResult }>();
-  useEffect(() => {
-    if (!(result instanceof Promise)) return;
-    let live = true;
-    result.then((value) => live && setLoaded({ from: result, value }));
-    return () => {
-      live = false;
-    };
-  }, [result]);
-  if (!(result instanceof Promise)) return result;
-  return loaded?.from === result ? loaded.value : null;
 }
 
 // Une seule rangée, empilée sur mobile : les secondaires à gauche, l'avis et la
@@ -253,6 +249,7 @@ function PageActions({
   onLock,
   onRestart,
   feedback,
+  tracking,
 }: Buttons & { placement: Placement }) {
   return (
     <div
@@ -263,7 +260,12 @@ function PageActions({
         <SecondaryButton onClick={onRestart}>
           Faire une nouvelle simulation
         </SecondaryButton>
-        {feedback && <FeedbackLink offer={feedback} />}
+        {feedback && (
+          <FeedbackLink
+            offer={feedback}
+            onClick={() => tracking.pressed("feedback")}
+          />
+        )}
         {typeof completion === "object" && (
           <button
             type="button"

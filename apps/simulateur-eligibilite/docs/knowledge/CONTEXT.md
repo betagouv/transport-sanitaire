@@ -264,7 +264,8 @@ complément et le cerfa portent la révision du R2 qui les ouvre. Le journal des
 parcours s'en sert pour compter l'accès au premier résultat sur la première, et
 la répartition des issues sur la dernière valide (#386).
 _Chez l'éditeur_: « révision », « révision courante » (ANA-1015).
-_Avoid_: version, réservé à celle des règles, de l'app et du document R3.
+_Avoid_: version, réservé à celle des règles, de l'app, du document R3 et de la
+fiche patient.
 
 **Version du document**:
 Un document R3 dans une simulation, numéroté `d1`, `d2`… Son contenu et la
@@ -297,6 +298,21 @@ _Avoid_: segment, réservé au texte médical (D-198).
 Ce que le premier résultat donne à remettre au patient, positive ou négative.
 Cinq issues n'en ont pas.
 _Chez l'éditeur_: « fiche patient », le même mot.
+
+**Version de la fiche**:
+Une fiche patient dans une simulation, numérotée `f1`, `f2`…, une par révision
+qui en montre une. Le journal des parcours la reçoit dans l'exposition et les
+clics d'« Imprimer » et de « Télécharger » sur la fiche (#388).
+_Chez l'éditeur_: « identité de rendu » de la fiche.
+_Avoid_: document, réservé au cerfa de R3.
+
+**Exposition**:
+Un bouton ou une question offert au prescripteur, une fois par affichage de page
+et par objet. Son clic, sa saisie ou sa validation s'y rattachent par
+`exposure_id`. Un bouton grisé n'est pas exposé ; la position dans la fenêtre ne
+compte pas (#385, #388).
+_Chez l'éditeur_: « exposition », `exposure_id` (ANA-1015).
+_Avoid_: vue, impression.
 
 **Cerfa**:
 Le formulaire que remplit le second résultat : la PMT (S3138g), la DAP (S3139h)

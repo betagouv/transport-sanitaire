@@ -6,7 +6,9 @@
 // où il entre et qu'il quitte, une fois chacune (ADR-8). Il numérote les
 // révisions du premier résultat, et fait tomber la révision courante quand une
 // page de P1 ou de P2 change les réponses validées (ADR-9). Il numérote les
-// versions du document R3, qui viennent de la révision courante (ADR-10).
+// versions du document R3, qui viennent de la révision courante (ADR-10). R2 et
+// R3 ouvrent un affichage, où leurs boutons sont exposés, et leurs clics s'y
+// rattachent (ADR-11).
 
 import {
   ANALYTICS_VERSION,
@@ -15,15 +17,18 @@ import {
   type Phase,
 } from "../../../shared/analytics/analytics-event";
 import {
-  type DocumentContent,
-  DocumentVersion,
-} from "./document-version.entity";
+  type Button,
+  ButtonExposure,
+  type Exposures,
+} from "./button-exposure.entity";
+import type { DocumentContent } from "./document-version.entity";
 import {
   type AboutAQuestion,
   type OpenedPage,
   PageView,
 } from "./page-view.entity";
-import { Revision, type ShownResult } from "./revision.entity";
+import { Results } from "./results.entity";
+import type { ShownResult } from "./revision.entity";
 
 // Ce qu'un événement dit de lui-même : le parcours fait le reste.
 type EventDetails = Omit<
@@ -51,11 +56,17 @@ export type StageEnded = null;
 /** Aucune page encore ouverte. */
 type NoView = null;
 
-/** Aucune révision : pas de R2 affiché, ou le dernier est tombé. */
-type NoRevision = null;
+/** Un écran de résultat, qui ouvre un affichage sans question. */
+export type ResultScreen = "R2" | "R3";
 
-/** Aucun document encore affiché. */
-type NoDocument = null;
+/** Les boutons exposés, et ce qui en part au journal. */
+export type ExposedButtons = {
+  readonly events: AnalyticsEvent[];
+  readonly exposures: Exposures;
+};
+
+/** Ce qui suit un bouton exposé : son clic, ou le téléchargement réussi. */
+export type Gesture = "requested" | "succeeded";
 
 /** Où le parcours commence : l'établissement et le service du rattachement. */
 export type Entrance = Pick<AnalyticsEvent, "establishment_id" | "service_id">;
@@ -71,9 +82,7 @@ export class Journey {
   readonly #completed = new Set<Phase>();
   // Chaque question validée, et ce qu'en disait sa validation.
   readonly #validations = new Map<string, AboutAQuestion>();
-  #lastRevision: Revision | NoRevision = null;
-  #revision: Revision | NoRevision = null;
-  #document: DocumentVersion | NoDocument = null;
+  readonly #results = new Results();
 
   /**
    * `seeded` : la simulation s'ouvre sur une seed, au milieu du parcours. Elle
@@ -107,9 +116,7 @@ export class Journey {
    * ses questions exposées.
    */
   openAPage(page: OpenedPage): AnalyticsEvent[] {
-    this.#views += 1;
-    const view = new PageView(`${this.simulationId}:v${this.#views}`, page);
-    this.#view = view;
+    const view = this.#open(page);
     return this.#recordAll([
       ...this.#enter(view),
       ...this.#expose(view, page.questions),
@@ -156,11 +163,7 @@ export class Journey {
    * la révision courante.
    */
   displayResult(shown: ShownResult): AnalyticsEvent[] {
-    if (this.#revision) return [];
-    const revision = this.#lastRevision?.next(shown) ?? Revision.first(shown);
-    this.#revision = revision;
-    this.#lastRevision = revision;
-    return this.#recordAll([revision.displayed()]);
+    return this.#recordAll(this.#results.display(shown));
   }
 
   /**
@@ -168,19 +171,58 @@ export class Journey {
    * montre la dernière. Sans révision courante, rien ne part.
    */
   displayDocument(content: DocumentContent): AnalyticsEvent[] {
-    const revision = this.#revision;
-    if (!revision || this.#document?.shows(revision, content)) return [];
-    const document =
-      this.#document?.next(revision, content) ??
-      DocumentVersion.first(revision, content);
-    this.#document = document;
-    return this.#recordAll([revision.documentDisplayed(document.id)]);
+    return this.#recordAll(this.#results.displayDocument(content));
   }
 
   /** Une génération ratée du document R3. Sans révision courante, rien ne part. */
   failADocument(): AnalyticsEvent[] {
-    const revision = this.#revision;
-    return revision ? this.#recordAll([revision.documentFailed()]) : [];
+    return this.#recordAll(this.#results.failADocument());
+  }
+
+  /** R2 ou R3 monté : un affichage de plus, sans question. */
+  openAResultScreen(screen: ResultScreen): void {
+    this.#open({
+      id: screen,
+      part: screen,
+      first: false,
+      last: false,
+      questions: [],
+    });
+  }
+
+  /**
+   * Les boutons offerts sur l'affichage courant, chacun exposé une fois par
+   * version de son objet. Sans révision courante, aucun.
+   */
+  exposeButtons(buttons: readonly Button[]): ExposedButtons {
+    const view = this.#view;
+    const shown = view && this.#results.shownOn(view.place.screen, buttons);
+    if (!view || !shown) return { events: [], exposures: {} };
+    const on = { ...view.place, ...shown };
+    const exposures = buttons.flatMap((b) => ButtonExposure.of(b, on) ?? []);
+    const fresh = view.expose(exposures.map(({ id }) => id));
+    return {
+      events: this.#recordAll(
+        exposures
+          .filter(({ id }) => fresh.includes(id))
+          .map((e) => e.exposed()),
+      ),
+      exposures: Object.fromEntries(exposures.map((e) => [e.button, e])),
+    };
+  }
+
+  /** Un clic sur un bouton exposé, ou le téléchargement qui le suit. */
+  press(exposure: ButtonExposure, gesture: Gesture): AnalyticsEvent[] {
+    const details = exposure[gesture]();
+    return details ? this.#recordAll([details]) : [];
+  }
+
+  // ---- implémentation ----
+
+  #open(page: OpenedPage): PageView {
+    this.#views += 1;
+    this.#view = new PageView(`${this.simulationId}:v${this.#views}`, page);
+    return this.#view;
   }
 
   #enter(view: PageView): EventDetails[] {
@@ -188,7 +230,7 @@ export class Journey {
     if (!phase || this.#entered.has(phase)) return [];
     this.#entered.add(phase);
     // Le complément s'ouvre depuis la révision courante.
-    const revision = phase === "P3" ? this.#revision : null;
+    const revision = phase === "P3" ? this.#results.current : null;
     return [
       {
         type: "phase_entered",
@@ -201,10 +243,8 @@ export class Journey {
   // Une page de P1 ou de P2 qui change les réponses fait tomber la révision.
   #revise(view: PageView, changed: boolean): EventDetails[] {
     const { phase } = view;
-    const revision = this.#revision;
-    if (!revision || !changed || (phase !== "P1" && phase !== "P2")) return [];
-    this.#revision = null;
-    return [revision.invalidated(phase)];
+    if (!changed || (phase !== "P1" && phase !== "P2")) return [];
+    return this.#results.invalidate(phase);
   }
 
   #expose(view: PageView, questions: readonly string[]): EventDetails[] {

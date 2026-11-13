@@ -17,7 +17,9 @@
 //
 // Le DTO se lit une fois : celui d'un résultat ne change pas tant qu'il est
 // affiché. Qui l'affiche apprend chaque PDF prêt et chaque génération ratée,
-// une fois par tentative.
+// une fois par tentative, puis chaque clic sur un PDF prêt et chaque PDF remis
+// au navigateur après lui. Un clic qui relance une génération ratée n'agit pas
+// encore sur un PDF : il ne se signale pas.
 
 import { type ReactNode, useEffect, useRef, useState } from "react";
 import { CerfaPreview } from "./CerfaPreview";
@@ -27,7 +29,11 @@ import {
   generateCerfa,
 } from "./generate-the-cerfa/generate-the-cerfa";
 import { download, fileNameOf } from "./pdf/download-a-pdf";
-import { PdfActionButton, useShown } from "./pdf/PdfActionButton";
+import {
+  PdfActionButton,
+  type PdfSignals,
+  useShown,
+} from "./pdf/PdfActionButton";
 import { printPdf } from "./pdf/print-a-pdf";
 
 type Props<Dto extends CerfaDto> = {
@@ -47,6 +53,7 @@ type Props<Dto extends CerfaDto> = {
   onReady?: () => void;
   /** Une génération a échoué. */
   onFailure?: () => void;
+  signals?: PdfSignals;
 };
 
 export function CerfaDocument<Dto extends CerfaDto>({
@@ -60,12 +67,17 @@ export function CerfaDocument<Dto extends CerfaDto>({
   above,
   onReady,
   onFailure,
+  signals = {},
 }: Props<Dto>) {
   const { settled, withPdf } = useDownloadablePdf(cerfa, dto);
   useSignals(settled, { onReady, onFailure });
   const print = usePrint();
-  const save = (pdf: Blob) => download(pdf, fileNameOf(cerfa.fileName, date));
   const ready = settled?.status === "ready";
+  const signal = ready ? signals : {};
+  const save = (pdf: Blob) => {
+    download(pdf, fileNameOf(cerfa.fileName, date));
+    signal.onDownloaded?.();
+  };
   return (
     <div className="fr-mb-4w fr-no-print">
       <Generation settled={settled} text={text} />
@@ -77,6 +89,7 @@ export function CerfaDocument<Dto extends CerfaDto>({
         save={save}
         printLabel={printLabel}
         downloadLabel={downloadLabel}
+        signals={signal}
       />
       {standIn ??
         (settled?.status === "ready" && <CerfaPreview pdf={settled.pdf} />)}
@@ -193,6 +206,7 @@ type ActionsProps = {
   save: (pdf: Blob) => void;
   printLabel: string;
   downloadLabel: string;
+  signals: PdfSignals;
 };
 
 // Imprimer et télécharger, en attente tant que le PDF n'est pas prêt.
@@ -202,6 +216,7 @@ function PdfActions({
   save,
   printLabel,
   downloadLabel,
+  signals,
 }: ActionsProps) {
   return (
     <ul className="fr-btns-group fr-btns-group--inline fr-btns-group--icon-left">
@@ -209,7 +224,10 @@ function PdfActions({
         <PdfActionButton
           className="fr-btn fr-icon-printer-line"
           waiting={!withPdf}
-          onClick={() => withPdf?.(print)}
+          onClick={() => {
+            signals.onPrint?.();
+            withPdf?.(print);
+          }}
         >
           {printLabel}
         </PdfActionButton>
@@ -219,7 +237,10 @@ function PdfActions({
           className="fr-btn fr-icon-download-line"
           waiting={!withPdf}
           saysPreparing
-          onClick={() => withPdf?.(save)}
+          onClick={() => {
+            signals.onDownload?.();
+            withPdf?.(save);
+          }}
         >
           {downloadLabel}
         </PdfActionButton>

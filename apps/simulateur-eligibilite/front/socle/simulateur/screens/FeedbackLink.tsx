@@ -35,7 +35,14 @@ export function onFirstResult(
   return offer?.intent === "check" || !completes ? offer : null;
 }
 
-export function FeedbackLink({ offer }: { offer: FeedbackOffer }) {
+/** `onClick` : le lien est activé, à la souris, au clavier ou au doigt. */
+export function FeedbackLink({
+  offer,
+  onClick,
+}: {
+  offer: FeedbackOffer;
+  onClick?: () => void;
+}) {
   return (
     <a
       className="fr-btn socle-feedback__link fr-no-print"
@@ -43,6 +50,7 @@ export function FeedbackLink({ offer }: { offer: FeedbackOffer }) {
       target="_blank"
       rel="noopener noreferrer"
       referrerPolicy="no-referrer"
+      onClick={onClick}
     >
       {offer.label}
       <span className="fr-sr-only"> (nouvel onglet)</span>

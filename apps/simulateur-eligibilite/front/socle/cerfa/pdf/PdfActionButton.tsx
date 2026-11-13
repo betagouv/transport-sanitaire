@@ -6,6 +6,16 @@
 
 import { type ReactNode, useEffect, useRef } from "react";
 
+/**
+ * Ce qu'apprend qui affiche un PDF : chaque clic sur « Imprimer » ou
+ * « Télécharger », et chaque PDF remis au navigateur après un clic.
+ */
+export type PdfSignals = {
+  readonly onPrint?: () => void;
+  readonly onDownload?: () => void;
+  readonly onDownloaded?: () => void;
+};
+
 type Props = {
   className: string;
   icon?: ReactNode;

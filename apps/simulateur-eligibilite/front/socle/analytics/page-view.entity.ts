@@ -1,6 +1,8 @@
 // Un affichage de page : une page du modèle, que le simulateur ouvre une fois.
 // Ses questions y sont exposées à leur apparition, sous un id qu'il donne : un
 // rendu de plus ne change rien. Voir docs/knowledge/adr/analytics.md, ADR-8.
+// Un écran de résultat ouvre aussi un affichage, sans question, où ses boutons
+// sont exposés (ADR-11).
 
 import {
   type AnalyticsEvent,
@@ -8,7 +10,6 @@ import {
   PHASES,
   type Phase,
   SCREENS,
-  type Screen,
 } from "../../../shared/analytics/analytics-event";
 
 /** La page que le simulateur ouvre : sa partie, sa place, ses questions. */
@@ -80,12 +81,17 @@ export class PageView {
     return true;
   }
 
+  /** L'écran de l'affichage, s'il en est un, et son id. */
+  get place(): Pick<AnalyticsEvent, "screen" | "page_view_id"> {
+    const screen = SCREENS.find((screen) => screen === this.part);
+    return { ...(screen && { screen }), page_view_id: this.id };
+  }
+
   about(question: string): AboutAQuestion {
     return {
-      screen: SCREENS.find((screen): screen is Screen => screen === this.part),
+      ...this.place,
       question_id: question,
       page_id: this.#page.id,
-      page_view_id: this.id,
       exposure_id: `${this.id}:${question}`,
     };
   }

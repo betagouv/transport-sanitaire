@@ -7,7 +7,7 @@
 // l'éditeur en font foi.
 
 import { useRef, useState } from "react";
-import { PdfActionButton } from "../../cerfa";
+import { PdfActionButton, type PdfSignals } from "../../cerfa";
 import type { Sheet } from "../../model";
 import { useSheetDownload } from "./download-the-sheet";
 import assuranceMaladie from "./logos/assurance-maladie.svg";
@@ -20,13 +20,20 @@ import "./sheet-numbered-steps.css";
 import "./sheet-paper.css";
 import "./sheet-viewer-print.css";
 
-export function SheetViewer({ sheet }: { sheet: Sheet }) {
+/** `signals` : ce qu'apprend qui affiche la feuille, de ses deux boutons. */
+export function SheetViewer({
+  sheet,
+  signals = {},
+}: {
+  sheet: Sheet;
+  signals?: PdfSignals;
+}) {
   const article = useRef<HTMLElement>(null);
   const { layout, print } = usePaperPrint(article);
-  const download = useSheetDownload(article);
+  const download = useSheetDownload(article, signals.onDownloaded);
   return (
     <section aria-label="Aperçu de la fiche patient" className="socle-viewer">
-      <SheetActions print={print} download={download} />
+      <SheetActions print={print} download={download} signals={signals} />
       <div className="socle-viewer__host">
         <article
           aria-label="Fiche explicative patient"
@@ -55,6 +62,7 @@ export function SheetViewer({ sheet }: { sheet: Sheet }) {
 type SheetActionsProps = {
   print: () => void;
   download: ReturnType<typeof useSheetDownload>;
+  signals: PdfSignals;
 };
 
 // Ce que dit la visionneuse sous la feuille quand le PDF échoue, comme le
@@ -64,14 +72,17 @@ const FAILED =
 
 // « Imprimer », puis « Télécharger », qui attend pendant que le PDF se
 // prépare.
-function SheetActions({ print, download }: SheetActionsProps) {
+function SheetActions({ print, download, signals }: SheetActionsProps) {
   return (
     <div className="socle-viewer__actions fr-no-print">
       <PdfActionButton
         className="socle-viewer__button"
         icon={<PrintIcon />}
         waiting={false}
-        onClick={print}
+        onClick={() => {
+          signals.onPrint?.();
+          print();
+        }}
       >
         Imprimer
       </PdfActionButton>
@@ -80,7 +91,10 @@ function SheetActions({ print, download }: SheetActionsProps) {
         icon={<DownloadIcon />}
         waiting={download.status === "preparing"}
         saysPreparing
-        onClick={download.save}
+        onClick={() => {
+          signals.onDownload?.();
+          download.save();
+        }}
       >
         Télécharger
       </PdfActionButton>
