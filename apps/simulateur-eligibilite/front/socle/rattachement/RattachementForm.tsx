@@ -10,6 +10,7 @@
 // Si le référentiel ne répond pas, il le dit et laisse entrer avec le
 // rattachement dégradé « Autre / Autre ».
 
+import { LONGUEUR_MAX_D_UN_NOM } from "../../../shared/rattachement-saisi";
 import {
   type Referentiel,
   snapshotReferentiel,
@@ -150,6 +151,7 @@ function EtablissementLibreField({ saisie, modifier }: FieldsProps) {
       id="etablissement-libre"
       label="Renseignez le nom de votre établissement"
       value={saisie.champs.etabLibre}
+      maxLength={LONGUEUR_MAX_D_UN_NOM}
       onChange={(v) => modifier("etabLibre", v)}
     />
   );
@@ -162,6 +164,7 @@ function ServiceLibreField({ saisie, modifier }: FieldsProps) {
       id="service-libre"
       label="Renseignez le nom de votre service"
       value={saisie.champs.serviceLibre}
+      maxLength={LONGUEUR_MAX_D_UN_NOM}
       onChange={(v) => modifier("serviceLibre", v)}
     />
   );

@@ -64,6 +64,19 @@ export function saisieComplete(saisie: RattachementSaisi): boolean {
 }
 
 /**
+ * La longueur d'un nom saisi. Le champ ne va pas au-delà, et le backend refuse
+ * un nom plus long : il ne s'écrit pas dans le référentiel (#451).
+ */
+export const LONGUEUR_MAX_D_UN_NOM = 150;
+
+/** Vrai quand aucun nom saisi ne dépasse `LONGUEUR_MAX_D_UN_NOM`. */
+export function nomsDansLaLimite(saisie: RattachementSaisi): boolean {
+  return [saisie.etabLibre, saisie.serviceLibre].every(
+    (nom) => (nom ?? "").length <= LONGUEUR_MAX_D_UN_NOM,
+  );
+}
+
+/**
  * Vrai quand la saisie apprend quelque chose au référentiel : un service ou un
  * établissement saisi. Le front ne déclare que celles-là au serveur.
  */
