@@ -21,8 +21,8 @@ type User = ReturnType<typeof userEvent.setup>;
 // déclare. Le filtrage par le graphe a ses propres tests.
 const { relevance: _graphe, ...core } = model.core;
 
-export const Q11 = /^Concernant son déplacement/;
-export const Q13 = /^Avant d’établir le mode de transport/;
+const Q11 = /^Concernant son déplacement/;
+const Q13 = /^Avant d’établir le mode de transport/;
 export const Q21 = /^Quelle situation médicale ou quel événement/;
 
 export function afficherLeQuestionnaire(onComplete: () => void = () => {}) {
