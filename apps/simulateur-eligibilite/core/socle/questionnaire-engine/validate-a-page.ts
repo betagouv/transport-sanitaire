@@ -5,7 +5,14 @@
 // efface déjà : leur champ se vide à l'écran.
 
 import { isAddress } from "./question/address.ts";
-import type { Answer, Answers, Page, Unanswered } from "./question/question.ts";
+import { seenBy } from "./question/declared/dependency.ts";
+import type {
+  Answer,
+  Answers,
+  Dependency,
+  Page,
+  Unanswered,
+} from "./question/question.ts";
 
 /**
  * Les réponses du questionnaire, une fois la page validée. `inputs` porte les
@@ -28,7 +35,7 @@ export function commitPage(
   const changed = [...onThePage].filter(
     (id) => !sameAnswer(answers[id], inputs[id]),
   );
-  const stale = dependentsOf(pages, changed);
+  const stale = dependentsOf(pages, answers, inputs, changed);
   const kept = Object.entries(answers).filter(
     ([id]) => !onThePage.has(id) && !stale.has(id),
   );
@@ -49,7 +56,7 @@ export function answerOnPage(
   const { [id]: _replaced, ...others } = draft;
   const answered = answer === undefined ? others : { ...others, [id]: answer };
   if (sameAnswer(draft[id], answer)) return answered;
-  return forget(page, answered, dependentsOf([page], [id]));
+  return forget(page, answered, dependentsOf([page], draft, answered, [id]));
 }
 
 /**
@@ -72,18 +79,29 @@ export function forget(
 // ---- implémentation ----
 
 // De proche en proche : si B dépend de A et C de B, changer A efface B et C.
+// Une réponse effacée compte comme absente pour celles qui en dépendent.
 function dependentsOf(
   pages: readonly Page[],
+  before: Answers,
+  after: Answers,
   changed: readonly string[],
 ): Set<string> {
   const questions = pages.flatMap((page) => page.questions);
   const stale = new Set<string>();
+  const seenAfter = (id: string) => (stale.has(id) ? undefined : after[id]);
+  const differs = (dependency: Dependency) =>
+    !sameAnswer(
+      seenBy(dependency, before[dependency.id]),
+      seenBy(dependency, seenAfter(dependency.id)),
+    );
   let frontier = changed;
   while (frontier.length > 0) {
     const next = questions
       .filter((question) => !stale.has(question.id))
       .filter((question) =>
-        question.dependencies.some((id) => frontier.includes(id)),
+        question.dependencies.some(
+          (d) => frontier.includes(d.id) && differs(d),
+        ),
       )
       .map((question) => question.id);
     for (const id of next) stale.add(id);

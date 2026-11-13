@@ -30,11 +30,13 @@ import {
   type Answer,
   type AnswerOfRef,
   type AnyQuestions,
+  type Dependency,
   idOf,
   type NotAsked,
   type QuestionRef,
   type Reminder,
 } from "../question.ts";
+import { type DependsOn, dependencyOf } from "./dependency.ts";
 import {
   type CommonSettings,
   commonIn,
@@ -207,19 +209,15 @@ export abstract class DeclaredQuestion<
     });
   }
 
-  /**
-   * Les questions dont dépend cette réponse. Quand l'une d'elles change, cette
-   * réponse est effacée, et elle seule (`validate-a-page.ts`). Sur la même page,
-   * elle l'est dès la saisie : son champ se vide à l'écran.
-   */
-  dependsOn(...questions: QuestionRef<Questions>[]): this {
+  /** Ce dont dépend cette réponse : elle s'efface quand cela change. */
+  dependsOn(...questions: DependsOn<Questions>[]): this {
     return this.withSettings({
-      dependsOn: [...this.settings.dependsOn, ...questions.map(idOf)],
+      dependsOn: [...this.settings.dependsOn, ...questions.map(dependencyOf)],
     });
   }
 
-  /** Les questions dont dépend cette réponse : `dependsOn` les déclare. */
-  get dependencies(): readonly string[] {
+  /** Ce dont dépend cette réponse : `dependsOn` le déclare. */
+  get dependencies(): readonly Dependency[] {
     return this.settings.dependsOn;
   }
 
