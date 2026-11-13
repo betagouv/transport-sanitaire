@@ -58,6 +58,15 @@ export type AnswerOfRef<Questions extends AnyQuestions, Ref> =
       ? Questions[Ref]
       : never;
 
+/**
+ * Une question dont dépend une réponse, réduite au besoin à ces options
+ * (`question/declared/dependency.ts`).
+ */
+export type Dependency = {
+  readonly id: string;
+  readonly options?: readonly string[];
+};
+
 /** L'id de la question que désigne `question`. */
 export function idOf(question: string | Answered): string {
   return typeof question === "string" ? question : question.id;
@@ -142,10 +151,10 @@ export type Question<
   readonly id: keyof Questions & string;
   readonly kind: AskedQuestion["kind"];
   /**
-   * Les questions dont dépend cette réponse. Quand l'une d'elles change, cette
-   * réponse est effacée (`validate-a-page.ts`).
+   * Ce dont dépend cette réponse. Quand cela change, cette réponse est effacée
+   * (`validate-a-page.ts`).
    */
-  readonly dependencies: readonly string[];
+  readonly dependencies: readonly Dependency[];
   /**
    * Ce que lisent ses gardes, celles de ses options comprises : les réponses,
    * les faits et les cibles qui décident si elle se pose, et ce qu'elle propose.

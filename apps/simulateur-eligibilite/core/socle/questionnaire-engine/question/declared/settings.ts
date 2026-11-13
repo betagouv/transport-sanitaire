@@ -12,7 +12,7 @@ import {
 } from "../../conditions/condition.ts";
 import type { AskedCommonData, Revisit, ShownUnder } from "../asked/common.ts";
 import type { Pipeline, QuestionContext } from "../asked/context.ts";
-import type { AnyQuestions, Reminder } from "../question.ts";
+import type { AnyQuestions, Dependency, Reminder } from "../question.ts";
 
 /** Rien de calculé : le rappel fixe de `reminder` vaut. */
 export type NothingComputed = undefined;
@@ -25,7 +25,7 @@ export type CommonSettings<Questions extends AnyQuestions, Cibles, Faits> = {
   readonly pipeline: Pipeline<Faits, Cibles>;
   readonly conditions: readonly Condition[];
   readonly inconsistencies: readonly Inconsistency[];
-  readonly dependsOn: readonly string[];
+  readonly dependsOn: readonly Dependency[];
   readonly hint?: string;
   readonly reminder?: Reminder;
   readonly optional?: boolean;
