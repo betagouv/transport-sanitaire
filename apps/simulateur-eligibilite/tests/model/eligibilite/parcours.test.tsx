@@ -242,6 +242,56 @@ describe("le modèle de l'éditeur, déroulé dans le formulaire", () => {
     PARCOURS_LONG,
   );
 
+  it(
+    "pose à la permission d'un adulte ses seules exceptions, et attend leur réponse pour décider",
+    async () => {
+      const user = afficherLeQuestionnaire();
+      await choisir(user, /^Vérifier une éligibilité/);
+      await page(Q11);
+      await choisir(user, /^Peut se déplacer seul/);
+      await page(Q13);
+      await cocher(user, /^Aucune de ces situations/);
+      await suivant(user);
+      await page(/^Le patient pouvant réaliser le trajet/);
+      await choisir(user, /^Véhicule personnel/);
+      await page(Q21);
+      await choisir(user, /^Autre motif de déplacement/);
+      await page(Q221);
+      await cocher(user, HOSPITALISE);
+      await choisir(user, /^En séjour dans un établissement de santé/);
+      await choisirDans(user, Q221A, /^Oui\.$/);
+      await suivant(user);
+      await page(Q221B);
+      await cocher(user, /^Non, aucun\./);
+      await suivant(user);
+      await page(Q231);
+      await choisir(user, /^50 km ou moins/);
+      await suivant(user);
+
+      await page(Q27);
+      await choisir(user, /^20 ans ou plus : permission autorisée/);
+
+      // Une exception encore inconnue empêche de décider (correctif du
+      // 13 novembre) : ni l'admission sans séjour, ni le Centre 15.
+      expect(await page(Q26)).toBeInTheDocument();
+      expect(
+        screen.queryByRole("checkbox", { name: /^Admission dans un nouvel/ }),
+      ).toBeNull();
+      expect(
+        screen.queryByRole("checkbox", {
+          name: /^Transport sanitaire demandé par le Centre 15/,
+        }),
+      ).toBeNull();
+      expect(screen.getByRole("button", { name: "Suivant" })).toBeDisabled();
+
+      await cocher(user, /^Aucune de ces exceptions/);
+      expect(
+        await screen.findByRole("button", { name: "Voir le résultat" }),
+      ).toBeEnabled();
+    },
+    PARCOURS_LONG,
+  );
+
   it("pose la convocation après le trajet, et révèle l'agrément et l'appareillage sous l'option 6", async () => {
     const terminer = vi.fn();
     const user = afficherLeQuestionnaire(terminer);
