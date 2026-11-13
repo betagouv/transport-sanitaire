@@ -38,7 +38,10 @@ export {
   withField,
 } from "./question/address.ts";
 export type { AskedAddress } from "./question/asked/address.ts";
-export type { AnswerProblem } from "./question/asked/answer-problem.ts";
+export {
+  type AnswerProblem,
+  MISSING,
+} from "./question/asked/answer-problem.ts";
 export type { Revisit } from "./question/asked/common.ts";
 export type { QuestionContext } from "./question/asked/context.ts";
 export {
