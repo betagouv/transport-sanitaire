@@ -83,10 +83,8 @@ const posees = (reponses: Answers) => {
 };
 
 const issue = (reponses: Answers) =>
-  new EstablishAPreconisation({
-    ...model,
-    relevance: frontModel.core.relevance,
-  }).execute(reponses).cibles.cible_issue_id.value;
+  new EstablishAPreconisation(frontModel.core).execute(reponses).cibles
+    .cible_issue_id?.value;
 
 // Un patient seul, pour une consultation à 50 km ou moins, sans situation
 // particulière : le parcours est complet.
