@@ -10,6 +10,7 @@ import { AnswerAQuestion } from "./answer-a-question.usecase";
 import type { Audience } from "./audience.port";
 import { CompleteAQuestionnaire } from "./complete-a-questionnaire.usecase";
 import { CorrectAnAnswer } from "./correct-an-answer.usecase";
+import { DeliverADownload } from "./deliver-a-download.usecase";
 import { DisplayADocument } from "./display-a-document.usecase";
 import { DisplayAResult } from "./display-a-result.usecase";
 import { FailADocument } from "./fail-a-document.usecase";
@@ -17,7 +18,9 @@ import type { Journal } from "./journal.port";
 import type { Journey } from "./journey.entity";
 import { LeaveAQuestionnaire } from "./leave-a-questionnaire.usecase";
 import { OpenAPage } from "./open-a-page.usecase";
+import { OpenAResultScreen } from "./open-a-result-screen.usecase";
 import { PassAStep } from "./pass-a-step.usecase";
+import { PressAButton } from "./press-a-button.usecase";
 import { ReachAnAldResult } from "./reach-an-ald-result.usecase";
 import { RevealQuestions } from "./reveal-questions.usecase";
 import { SelectAnIntent } from "./select-an-intent.usecase";
@@ -38,9 +41,12 @@ export function analyticsUseCases(audience: Audience, journal: Journal) {
     passAStep: new PassAStep(audience, journal),
     correctAnAnswer: new CorrectAnAnswer(journal),
     completeAQuestionnaire: new CompleteAQuestionnaire(audience, journal),
+    openAResultScreen: new OpenAResultScreen(),
     displayAResult: new DisplayAResult(journal),
     displayADocument: new DisplayADocument(journal),
     failADocument: new FailADocument(journal),
+    pressAButton: new PressAButton(journal),
+    deliverADownload: new DeliverADownload(journal),
     leaveAQuestionnaire: new LeaveAQuestionnaire(audience),
     reachAnAldResult: new ReachAnAldResult(audience),
   };

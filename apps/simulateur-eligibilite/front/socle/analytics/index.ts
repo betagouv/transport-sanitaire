@@ -4,6 +4,8 @@
 
 export { useAldResultReached } from "./ald-pathway.hook";
 export { type AldVerdict, EventName } from "./audience-event.entity";
+export type { ButtonTracking } from "./button.hook";
+export type { Button } from "./button-exposure.entity";
 export { CmsConsent } from "./cms-consent.adapter";
 export { DiscardingAudience } from "./discarding-audience.adapter";
 export { useDocumentTracking } from "./document.hook";
@@ -18,6 +20,7 @@ export {
   useQuestionnaireTracking,
 } from "./questionnaire.hook";
 export { useResultTracking } from "./result.hook";
+export { useResultScreen } from "./result-screen.hook";
 export type { ResultCodes } from "./revision.entity";
 export { ServerJournal } from "./server-journal.adapter";
 export {
