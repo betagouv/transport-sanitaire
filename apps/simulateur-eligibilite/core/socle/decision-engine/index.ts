@@ -4,7 +4,7 @@
 // à part : il importe publicodes, qui ne doit entrer que dans le chunk d'un
 // modèle.
 
-export { Cible, type CibleValues, cibleValues } from "./cible.ts";
+export { Cible, type CibleValues } from "./cible.vo.ts";
 export { DecisionDiagram } from "./decision-graph/decision-diagram.service.ts";
 export {
   DecisionGraph,
@@ -12,7 +12,7 @@ export {
   type FaitValue,
   type RuleValue,
 } from "./decision-graph/decision-graph.vo.ts";
-export { FaitCatalogue } from "./establish-the-faits.ts";
-export { type FaitDeclare, unFait } from "./fait/declared.ts";
-export { Fait } from "./fait/fait.ts";
-export { uneRegle } from "./fait/regle.ts";
+export { Fait } from "./fait/fait.vo.ts";
+export { type FaitDeclare, unFait } from "./fait/fait-declare.vo.ts";
+export { uneRegle } from "./fait/regle-de-fait.vo.ts";
+export { FaitCatalogue } from "./fait-catalogue.service.ts";

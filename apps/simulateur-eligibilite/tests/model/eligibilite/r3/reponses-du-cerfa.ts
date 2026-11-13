@@ -9,7 +9,7 @@ import type { Cibles } from "../../../../core/models/eligibilite/cibles/noms";
 import type { Faits } from "../../../../core/models/eligibilite/faits/noms";
 import type { Questions } from "../../../../core/models/eligibilite/questions/reponses";
 import { SEEDS } from "../../../../core/models/eligibilite/seeds-catalogue";
-import { cibleValues } from "../../../../core/socle/decision-engine";
+import { Cible } from "../../../../core/socle/decision-engine";
 import {
   type Answers,
   pagesOf,
@@ -153,7 +153,7 @@ export function donnees(
 ): Read {
   const preconisation = new EstablishAPreconisation(model).execute(reponses);
   const cibles = ciblesValant({
-    ...cibleValues(preconisation.cibles as Cibles),
+    ...Cible.valuesOf(preconisation.cibles as Cibles),
     ...choisies,
   });
   const lecture = new Questionnaire<Questions>(PAGES).readWith(

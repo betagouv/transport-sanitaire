@@ -1,6 +1,6 @@
 // Le catalogue des faits d'un modèle : la liste de ses faits, chacun déclaré
-// une fois (`fait/declared.ts`). Chaque fait lit les questions validées et, au
-// besoin, d'autres faits.
+// une fois (`fait/fait-declare.vo.ts`). Chaque fait lit les questions validées
+// et, au besoin, d'autres faits.
 //
 // Le catalogue refuse un fait déclaré deux fois, oublié, ou qui n'est pas du
 // modèle. Il calcule chaque fait à sa première lecture : une garde qui lit deux
@@ -16,7 +16,7 @@ import {
   validatedReading,
 } from "../questionnaire-engine/index.ts";
 
-import type { FaitDeclare } from "./fait/declared.ts";
+import type { FaitDeclare } from "./fait/fait-declare.vo.ts";
 
 /** Les faits d'un modèle, chacun sous son nom et avec sa valeur. */
 export type FaitsDeclares<Faits> = readonly {
@@ -27,6 +27,9 @@ export type FaitsDeclares<Faits> = readonly {
 export class FaitCatalogue<Faits extends object> {
   readonly #names: readonly (keyof Faits & string)[];
   readonly #declares: ReadonlyMap<string, FaitDeclare<string, unknown>>;
+  // Les faits en cours de calcul, toutes lectures de ce catalogue confondues.
+  // Un fait qui s'y trouve déjà se lit lui-même : il bouclerait.
+  readonly #computing: string[] = [];
 
   /**
    * `names` : tous les faits du modèle, dans l'ordre où ils se lisent. Chacun
@@ -77,16 +80,30 @@ export class FaitCatalogue<Faits extends object> {
       Object.defineProperty(faits, name, {
         enumerable: true,
         get: () => {
-          if (!known.has(name)) known.set(name, computed(declare, scope));
+          if (!known.has(name)) known.set(name, this.#computed(declare, scope));
           return known.get(name);
         },
       });
     }
     return Object.freeze(faits);
   }
-}
 
-// ---- implémentation ----
+  // ---- implémentation ----
+
+  #computed(declare: FaitDeclare<string, unknown>, scope: Scope) {
+    const computing = this.#computing;
+    if (computing.includes(declare.nom))
+      throw new Error(
+        `« ${declare.nom} » se lit lui-même : ${[...computing, declare.nom].join(" → ")}.`,
+      );
+    computing.push(declare.nom);
+    try {
+      return declare.in(scope);
+    } finally {
+      computing.pop();
+    }
+  }
+}
 
 function indexed(
   names: readonly string[],
@@ -119,21 +136,4 @@ function factScope(validated: ValidatedAnswers, faits: object): Scope {
     cibleAssuming: refused("de cible"),
     today: refused("le jour"),
   };
-}
-
-// Les faits en cours de calcul, toutes lectures confondues. Un fait qui s'y
-// trouve déjà se lit lui-même : il bouclerait.
-const computing: string[] = [];
-
-function computed(declare: FaitDeclare<string, unknown>, scope: Scope) {
-  if (computing.includes(declare.nom))
-    throw new Error(
-      `« ${declare.nom} » se lit lui-même : ${[...computing, declare.nom].join(" → ")}.`,
-    );
-  computing.push(declare.nom);
-  try {
-    return declare.in(scope);
-  } finally {
-    computing.pop();
-  }
 }

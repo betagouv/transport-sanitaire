@@ -7,9 +7,9 @@
 // l'autre travail confié à publicodes (`publicodes-graph-compiler.adapter.ts`).
 
 import Engine, { type RawPublicodes } from "publicodes";
-import { Cible } from "./cible.ts";
+import { Cible } from "./cible.vo.ts";
 import type { DecisionEngine } from "./decision-engine.port.ts";
-import type { Fait } from "./fait/fait.ts";
+import type { Fait } from "./fait/fait.vo.ts";
 
 /** Les règles d'un modèle, par nom : les faits, puis les cibles. */
 export type Rules = RawPublicodes<string>;

@@ -7,7 +7,7 @@
 
 import { describe, expect, it } from "vitest";
 import { decisionEngine } from "../../../../core/models/eligibilite/cibles/evaluation";
-import { cibleValues } from "../../../../core/socle";
+import { Cible } from "../../../../core/socle";
 import {
   ABSENTS,
   type Changements,
@@ -117,7 +117,7 @@ const ETATS_PARTIELS: readonly [string, Changements, boolean][] = [
 ];
 
 const partiel = (faits: Changements) =>
-  cibleValues(decisionEngine.cibles(faitsDe({ ...ABSENTS, ...faits })));
+  Cible.valuesOf(decisionEngine.cibles(faitsDe({ ...ABSENTS, ...faits })));
 
 describe("la garde de Q2.3.4, à la page du trajet", () => {
   it.each(ETATS_PARTIELS)("%s", (_id, faits, affichee) => {
