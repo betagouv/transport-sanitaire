@@ -5,13 +5,13 @@
 // modèle.
 
 export { Cible, type CibleValues, cibleValues } from "./cible.ts";
-export { DecisionDiagram } from "./decision-graph/diagram.ts";
+export { DecisionDiagram } from "./decision-graph/decision-diagram.service.ts";
 export {
   DecisionGraph,
   type DecisionGraphData,
   type FaitValue,
   type RuleValue,
-} from "./decision-graph/graph.ts";
+} from "./decision-graph/decision-graph.vo.ts";
 export { FaitCatalogue } from "./establish-the-faits.ts";
 export { type FaitDeclare, unFait } from "./fait/declared.ts";
 export { Fait } from "./fait/fait.ts";

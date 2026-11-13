@@ -11,13 +11,13 @@
 // compare à publicodes, dans les tests de chaque modèle.
 
 import Engine, { type ASTNode, type ParsedRules } from "publicodes";
-import { DecisionDiagram } from "./decision-graph/diagram.ts";
+import { DecisionDiagram } from "./decision-graph/decision-diagram.service.ts";
 import {
   type DecisionGraphData,
   type GraphNode,
   isTest,
   type RuleValue,
-} from "./decision-graph/graph.ts";
+} from "./decision-graph/decision-graph.vo.ts";
 import type { Rules } from "./publicodes-decision-engine.adapter.ts";
 
 /**

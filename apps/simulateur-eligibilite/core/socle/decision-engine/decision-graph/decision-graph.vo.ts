@@ -1,7 +1,7 @@
 // Le graphe de décision : ce que vaut chaque règle d'un modèle, pour chaque
 // façon dont ses faits peuvent valoir oui, non ou rien (#196). Il se compile
-// une fois depuis les règles (`publicodes-graph-compiler.adapter.ts`), s'écrit en JSON à
-// côté d'elles, et se lit sans publicodes.
+// une fois depuis les règles (`publicodes-graph-compiler.adapter.ts`), s'écrit
+// en JSON à côté d'elles, et se lit sans publicodes.
 //
 // Un nœud teste un fait, et mène à trois nœuds : le fait vaut oui, non, ou
 // rien. Une feuille porte la valeur de la règle. Les règles partagent leurs
@@ -37,19 +37,19 @@ export type DecisionGraphData = {
 
 /** Le graphe des règles d'un modèle, lu depuis son JSON. */
 export class DecisionGraph {
-  private readonly data: DecisionGraphData;
+  readonly #data: DecisionGraphData;
 
   constructor(data: DecisionGraphData) {
-    this.data = data;
+    this.#data = data;
   }
 
   /** Ce que vaut cette règle pour ces faits. Un fait absent ne vaut rien. */
   valueOf(rule: string, faits: Readonly<Record<string, FaitValue>>): RuleValue {
-    let node = this.node(this.start(rule));
+    let node = this.#node(this.#start(rule));
     while (isTest(node)) {
       const [fait, oui, non, rien] = node;
-      const value = faits[this.data.faits[fait] ?? ""];
-      node = this.node(value === true ? oui : value === false ? non : rien);
+      const value = faits[this.#data.faits[fait] ?? ""];
+      node = this.#node(value === true ? oui : value === false ? non : rien);
     }
     return node.value;
   }
@@ -58,27 +58,27 @@ export class DecisionGraph {
   faitsTestedBy(rule: string): readonly string[] {
     const tested = new Set<number>();
     const seen = new Set<number>();
-    const pending = [this.start(rule)];
+    const pending = [this.#start(rule)];
     for (let id = pending.pop(); id !== undefined; id = pending.pop()) {
-      const node = this.node(id);
+      const node = this.#node(id);
       if (seen.has(id) || !isTest(node)) continue;
       seen.add(id);
       tested.add(node[0]);
       pending.push(node[1], node[2], node[3]);
     }
-    return this.data.faits.filter((_, fait) => tested.has(fait));
+    return this.#data.faits.filter((_, fait) => tested.has(fait));
   }
 
-  private start(rule: string): number {
-    const start = this.data.rules[rule];
+  #start(rule: string): number {
+    const start = this.#data.rules[rule];
     if (start === undefined) {
       throw new Error(`Le graphe ne calcule pas la règle « ${rule} ».`);
     }
     return start;
   }
 
-  private node(id: number): GraphNode {
-    const node = this.data.nodes[id];
+  #node(id: number): GraphNode {
+    const node = this.#data.nodes[id];
     if (node === undefined) throw new Error(`Le graphe n'a pas de nœud ${id}.`);
     return node;
   }
