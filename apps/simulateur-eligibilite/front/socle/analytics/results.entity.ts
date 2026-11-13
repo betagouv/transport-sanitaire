@@ -5,7 +5,7 @@
 // numérote dans l'ordre du parcours.
 
 import type {
-  AnalyticsEvent,
+  EventDetails,
   Screen,
 } from "../../../shared/analytics/analytics-event";
 import type { Button, ExposedOn } from "./button-exposure.entity";
@@ -16,11 +16,7 @@ import {
 import { Revision, type ShownResult } from "./revision.entity";
 import { SheetVersion } from "./sheet-version.entity";
 
-// Ce qu'un événement dit de lui-même : le parcours le numérote.
-type ResultEvent = Omit<
-  AnalyticsEvent,
-  "event_id" | "simulation_id" | "sequence" | "occurred_at" | "version"
->;
+type ResultEvent = EventDetails;
 
 /** Aucune révision : pas de R2 affiché, ou le dernier est tombé. */
 export type NoRevision = null;

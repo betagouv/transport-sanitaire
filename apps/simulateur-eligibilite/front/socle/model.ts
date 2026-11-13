@@ -115,6 +115,11 @@ export type Model<
 > = {
   /** Le métier : les questions, la préconisation, les seeds. */
   core: CoreModel<Questions, Faits, Cibles>;
+  /**
+   * La version des règles, `10.1.8` : chaque événement du journal des parcours
+   * la porte (ADR-14 d'analytics).
+   */
+  version: string;
   /** Le premier résultat, après les parties du questionnaire. */
   result: {
     /** Le titre du stepper, au-dessus du `h1` que le résultat donne. */

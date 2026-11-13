@@ -6,6 +6,7 @@ import { model as core } from "../../../core/models/eligibilite";
 import type { Cibles } from "../../../core/models/eligibilite/cibles/noms";
 import type { Faits } from "../../../core/models/eligibilite/faits/noms";
 import type { Questions } from "../../../core/models/eligibilite/questions/reponses";
+import VERSION from "../../../core/models/eligibilite/rules/VERSION?raw";
 import { defineModel } from "../../socle";
 import { AVIS } from "./avis";
 import { BESOIN } from "./besoin";
@@ -22,6 +23,8 @@ export const model = defineModel<
   object
 >({
   core,
+  // Celle que l'intégration d'une livraison écrit : rien d'autre à monter.
+  version: VERSION.trim(),
   result: {
     title: "Résultat de l’éligibilité",
     reading: R2.lit,

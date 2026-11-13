@@ -134,6 +134,25 @@ describe("le journal des parcours sur P0", () => {
     ]);
   });
 
+  it("chaque événement dit l'app : les règles du modèle ouvert, la version et le commit du build", async () => {
+    const { analytics, envoyes } = journalDeTest();
+    const user = await ouvrirLeSimulateur({
+      analytics,
+      modele: venuPourUneBoisson,
+    });
+
+    await allerAuResultat(user);
+
+    expect(envoyes.length).toBeGreaterThan(2);
+    for (const evenement of envoyes) {
+      expect(evenement).toMatchObject({
+        version: modeleDeTest.version,
+        app_version: "0.8.0",
+        commit_sha: "f30aafe",
+      });
+    }
+  });
+
   it("deux services de même nom, dans deux établissements, gardent leur identifiant", async () => {
     const services = [];
     for (const etablissement of ["Hôpital Nord", "Hôpital Sud"]) {
