@@ -1,6 +1,6 @@
 // Le modèle de l'éditeur : son métier (`core/models/eligibilite/`), puis ses
-// deux résultats, R2 et R3, l'invitation à donner son avis et l'indicateur de
-// parcours ALD.
+// deux résultats, R2 et R3, le besoin du prescripteur, l'invitation à donner
+// son avis et l'indicateur de parcours ALD.
 
 import { model as core } from "../../../core/models/eligibilite";
 import type { Cibles } from "../../../core/models/eligibilite/cibles/noms";
@@ -8,6 +8,7 @@ import type { Faits } from "../../../core/models/eligibilite/faits/noms";
 import type { Questions } from "../../../core/models/eligibilite/questions/reponses";
 import { defineModel } from "../../socle";
 import { AVIS } from "./avis";
+import { BESOIN } from "./besoin";
 import { INDICATEUR_ALD } from "./indicateur-ald";
 import { type Lecture, R2 } from "./r2/r2";
 import { R3 } from "./r3/r3";
@@ -35,6 +36,7 @@ export const model = defineModel<
     printLabel: "Imprimer",
     downloadLabel: "Télécharger",
   },
+  intent: BESOIN,
   feedback: AVIS,
   aldIndicator: INDICATEUR_ALD,
 });

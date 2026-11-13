@@ -28,7 +28,8 @@ const LIBELLE = "Donnez votre avis";
 
 const venuPour = (intent: Intent | null, modele = modeleDeTest): Model => ({
   ...modele,
-  feedback: { url: ADRESSE, label: LIBELLE, intent: constant(intent) },
+  intent: constant(intent),
+  feedback: { url: ADRESSE, label: LIBELLE },
 });
 
 const avis = () =>

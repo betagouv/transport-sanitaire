@@ -4,9 +4,10 @@
 
 import { afterEach, describe, expect, it, vi } from "vitest";
 import {
-  type Consent,
-  followConsent,
-} from "../../../front/socle/analytics/consent";
+  CmsConsent,
+  type CmsConsentOptions,
+} from "../../../front/socle/analytics/cms-consent.adapter";
+import type { Consent } from "../../../front/socle/analytics/consent.port";
 
 function pageParente() {
   const iframe = document.createElement("iframe");
@@ -21,9 +22,9 @@ function pageParente() {
   return { parent, demandes, repondre };
 }
 
-function suivre(options: Parameters<typeof followConsent>[1]) {
+function suivre(options: CmsConsentOptions) {
   const choix: Consent[] = [];
-  followConsent((c) => choix.push(c), options);
+  new CmsConsent(options).follow((c) => choix.push(c));
   return choix;
 }
 
@@ -65,6 +66,33 @@ describe("choix du prescripteur sur la mesure d'audience", () => {
     const choix = suivre({ parent, delaiMs: 60_000 });
     repondre({ type: "statistiques-simulateur:choix", suivi: false }, autre);
     expect(choix).toEqual([]);
+  });
+
+  it("demande une fois pour tous ceux qui suivent le choix", async () => {
+    const { parent, demandes, repondre } = pageParente();
+    const consentement = new CmsConsent({ parent });
+    const matomo: Consent[] = [];
+    const journal: Consent[] = [];
+    consentement.follow((c) => matomo.push(c));
+    consentement.follow((c) => journal.push(c));
+
+    repondre({ type: "statistiques-simulateur:choix", suivi: false });
+
+    expect(matomo).toEqual(["refus"]);
+    expect(journal).toEqual(["refus"]);
+    await vi.waitFor(() => expect(demandes).toHaveLength(1));
+  });
+
+  it("donne le choix déjà connu à qui le suit ensuite", () => {
+    const { parent, repondre } = pageParente();
+    const consentement = new CmsConsent({ parent });
+    consentement.follow(() => {});
+    repondre({ type: "statistiques-simulateur:choix", suivi: false });
+    const tardif: Consent[] = [];
+
+    consentement.follow((c) => tardif.push(c));
+
+    expect(tardif).toEqual(["refus"]);
   });
 
   it("sans réponse de la page, mesure au bout du délai", async () => {

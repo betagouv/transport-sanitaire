@@ -1,4 +1,4 @@
-// Point d'entrée du navigateur : démarre le traceur, puis monte l'app React
+// Point d'entrée du navigateur : assemble le conteneur, puis monte l'app React
 // sur ses modèles. C'est le seul fichier qui importe à la fois le socle et un
 // modèle, et le seul qui les nomme.
 //
@@ -10,29 +10,16 @@ import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { createContainer } from "./container";
 import "./socle/app/dsfr-overrides.css";
-import {
-  App,
-  applyTheme,
-  configFromEnv,
-  followHostTheme,
-  initAnalytics,
-  loadMatomo,
-  type Models,
-} from "./socle";
+import { App, applyTheme, followHostTheme, type Models } from "./socle";
 
 // Clair par défaut : le thème est celui de la page qui embarque l'app, qui le
 // transmet dès qu'on le lui demande, puis à chaque changement (#342).
 startReactDsfr({ defaultColorScheme: "light" });
 followHostTheme(applyTheme);
 
-// Prépare le traceur au démarrage, sans cookie. Il demande au CMS le choix du
-// prescripteur et ne charge Matomo que si le suivi est accepté. Le service est
-// rangé en session au rattachement, puis lu à chaque événement.
-initAnalytics(configFromEnv(), { load: loadMatomo });
-
-// Les classes qui parlent au serveur, instanciées une fois. Le parcours part
-// aussi au journal du backend, sous le même choix du prescripteur (ADR-6
-// d'analytics.md).
+// Les classes qui parlent à l'extérieur, instanciées une fois. Matomo et le
+// journal du backend suivent le même choix du prescripteur, demandé au CMS
+// (ADR-5 et ADR-6 d'analytics.md).
 const container = createContainer();
 
 // Le premier s'ouvre au démarrage. À plusieurs, on peut en changer depuis les
@@ -57,7 +44,8 @@ createRoot(racine).render(
       models={models}
       referentiel={container.referentiel}
       declarer={container.declarer}
-      startASimulation={container.startASimulation}
+      audience={container.audience}
+      journal={container.journal}
     />
   </StrictMode>,
 );

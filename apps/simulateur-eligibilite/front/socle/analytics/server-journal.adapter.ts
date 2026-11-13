@@ -12,10 +12,10 @@
 
 import type { AnalyticsEvent } from "../../../shared/analytics/analytics-event";
 import { ServerApiClient, ServerApiError } from "../server-api";
-import { type BridgeOptions, type Consent, followConsent } from "./consent";
+import type { Consent, ConsentSource } from "./consent.port";
 import type { Journal } from "./journal.port";
 
-export type ServerJournalOptions = BridgeOptions & {
+export type ServerJournalOptions = {
   api?: ServerApiClient;
   /** Les attentes avant chaque nouvelle tentative, en millisecondes. */
   delays?: number[];
@@ -27,18 +27,17 @@ export class ServerJournal implements Journal {
   readonly #chosen: Promise<void>;
   #choice: Consent | undefined;
 
-  constructor({
-    api = new ServerApiClient(),
-    delays = DELAYS,
-    ...bridge
-  }: ServerJournalOptions = {}) {
+  constructor(
+    consent: ConsentSource,
+    { api = new ServerApiClient(), delays = DELAYS }: ServerJournalOptions = {},
+  ) {
     this.#api = api;
     this.#delays = delays;
     this.#chosen = new Promise((resolve) =>
-      followConsent((choice) => {
+      consent.follow((choice) => {
         this.#choice = choice;
         resolve();
-      }, bridge),
+      }),
     );
   }
 

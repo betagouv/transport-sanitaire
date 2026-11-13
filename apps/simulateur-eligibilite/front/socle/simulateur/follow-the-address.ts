@@ -6,7 +6,7 @@
 // sont perdues et l'on recommence.
 //
 // Rien ne part vers la page parente, ni vers la mesure d'audience : Matomo ne
-// compte qu'une page vue, au démarrage du traceur (`analytics/matomo.ts`).
+// compte qu'une page vue, au démarrage du traceur (`analytics/matomo-audience.adapter.ts`).
 
 import { type RefObject, useEffect, useRef } from "react";
 import type { Simulation } from "../../../core/socle/simulation";

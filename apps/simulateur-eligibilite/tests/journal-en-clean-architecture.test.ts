@@ -1,12 +1,12 @@
-// La clean architecture du journal des parcours (ADR-7 de
-// docs/knowledge/adr/analytics.md), rendue exécutable. Comme dans
+// La clean architecture du journal des parcours et de la mesure d'audience
+// (ADR-7 de docs/knowledge/adr/analytics.md), rendue exécutable. Comme dans
 // `architecture.test.ts`, chaque règle donne son pourquoi dans son message
 // d'échec.
 
 import { describe, expect, it } from "vitest";
 import { importsDe, sources } from "./inspection-des-sources";
 
-// Le journal, côté serveur et côté écran.
+// Le journal, côté serveur et côté écran, et la mesure d'audience.
 const JOURNAL = ["server/journal", "front/socle/analytics"];
 
 // Son domaine : les entités, les use cases et les ports.
@@ -29,7 +29,7 @@ describe("le journal des parcours", () => {
     ).toEqual([]);
   });
 
-  it("le domaine du journal ne dépend que de lui-même et du contrat", () => {
+  it("le domaine du journal et de la mesure d'audience ne dépend que de lui-même et du contrat", () => {
     const fautifs = sources(...JOURNAL)
       .filter(duDomaine)
       .flatMap((f) =>
@@ -40,7 +40,7 @@ describe("le journal des parcours", () => {
     expect(
       fautifs,
       "Entités, use cases et ports (`.entity.ts`, `.usecase.ts`, `.port.ts`) " +
-        "forment le domaine du journal (ADR-7 de docs/knowledge/adr/analytics.md). " +
+        "forment le domaine du journal et de la mesure d'audience (ADR-7 de docs/knowledge/adr/analytics.md). " +
         "Ils ne connaissent ni HTTP, ni Grist, ni l'écran : un adaptateur " +
         "(`.adapter.ts`) les relie à l'extérieur. Passe ce qui manque en " +
         "paramètre, ou déclare-le dans un port.",

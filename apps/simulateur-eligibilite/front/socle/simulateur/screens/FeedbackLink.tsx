@@ -22,8 +22,8 @@ export type FeedbackOffer = { url: string; label: string; intent: Intent };
 
 export function feedbackOf(model: Model, read: Read) {
   const { feedback } = model;
-  if (!feedback) return null;
-  const intent = read(feedback.intent);
+  if (!feedback || !model.intent) return null;
+  const intent = read(model.intent);
   return intent && { url: feedback.url, label: feedback.label, intent };
 }
 

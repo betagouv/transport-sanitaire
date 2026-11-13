@@ -4,7 +4,10 @@
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import type { Seed } from "../../../core/socle/simulation";
-import type { StartASimulation } from "../../../front/socle/analytics";
+import type {
+  AudienceUseCases,
+  JournalUseCases,
+} from "../../../front/socle/analytics";
 import { App } from "../../../front/socle/app";
 import type { FirstResult, Model } from "../../../front/socle/model";
 import { snapshotReferentiel } from "../../../shared/referentiel";
@@ -17,7 +20,8 @@ type User = ReturnType<typeof userEvent.setup>;
  * Monte l'application et franchit l'écran de rattachement, par un service ou
  * par la `structure` donnée. Les tests tournent en local : les developer tools
  * sont ouverts, sauf `developerTools: false`, qui montre l'app comme sur un
- * build de production. Le journal ne reçoit rien, sauf `startASimulation`.
+ * build de production. Ni la mesure d'audience ni le journal ne reçoivent
+ * rien, sauf `audience` et `journal`.
  */
 export async function ouvrirLeSimulateur(
   options: {
@@ -25,7 +29,8 @@ export async function ouvrirLeSimulateur(
     structure?: string;
     seeds?: readonly Seed[];
     modele?: Model;
-    startASimulation?: StartASimulation;
+    audience?: AudienceUseCases;
+    journal?: JournalUseCases;
   } = {},
 ): Promise<User> {
   const user = userEvent.setup();
@@ -35,7 +40,8 @@ export async function ouvrirLeSimulateur(
       referentiel={snapshotReferentiel}
       declarer={() => {}}
       developerTools={options.developerTools}
-      startASimulation={options.startASimulation}
+      audience={options.audience}
+      journal={options.journal}
     />,
   );
   await seRattacher(user, options.structure);

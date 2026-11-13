@@ -13,12 +13,13 @@
 import { type ComponentType, type ReactNode, useState } from "react";
 import type { Answers } from "../../../core/socle/questionnaire-engine";
 import { Simulation } from "../../../core/socle/simulation";
+import { useAldResultReached, useRecordTheJourney } from "../analytics";
 import type { Model } from "../model";
 import { type DebugTraceProps, QuestionnaireForm } from "../questionnaire";
+import { aldPathwayOf } from "./ald-pathway";
 import { useFollowTheAddress } from "./follow-the-address";
 import { CerfaScreen } from "./screens/CerfaScreen";
 import { ResultatScreen } from "./screens/ResultatScreen";
-import { trackAldPathway } from "./track-the-ald-pathway";
 
 type Props = {
   /** La version du modèle que le parcours déroule. */
@@ -52,6 +53,7 @@ export function Simulateur({
   DebugTrace,
 }: Props) {
   const [simulation, setSimulation] = useSimulation(model, seedAnswers);
+  useRecordTheJourney(model, simulation, seedAnswers !== null);
   const screen: ScreenProps = {
     model,
     simulation,
@@ -102,6 +104,7 @@ function FirstQuestionnaire({
   DebugTrace,
 }: ScreenProps) {
   const parts = model.core.questionnaire;
+  const aldResultReached = useAldResultReached();
   return (
     <QuestionnaireForm
       parts={parts}
@@ -111,7 +114,9 @@ function FirstQuestionnaire({
       endLabel="Voir le résultat"
       DebugTrace={DebugTrace}
       onChange={(next) => {
-        if (next.stage.name === "resultat") trackAldPathway(model, next);
+        const pathway =
+          next.stage.name === "resultat" ? aldPathwayOf(model, next) : null;
+        if (pathway) aldResultReached(pathway.verdict, pathway.questions);
         onChange(next);
       }}
     />

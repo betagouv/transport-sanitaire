@@ -38,6 +38,9 @@ export const INTENTS = [
   "eligibilite_et_prescription",
 ] as const;
 
+/** Ce que le prescripteur est venu faire : son premier choix validé en P0. */
+export type AnalyticsIntent = (typeof INTENTS)[number];
+
 /** Ce qu'un événement porte : rien d'autre ne passe. */
 export type AnalyticsEvent = {
   event_id: string;
@@ -48,7 +51,7 @@ export type AnalyticsEvent = {
   type: EventType;
   screen?: (typeof SCREENS)[number];
   revision?: string;
-  intent?: (typeof INTENTS)[number];
+  intent?: AnalyticsIntent;
   establishment_id?: string;
   is_test?: boolean;
   question_id?: string;

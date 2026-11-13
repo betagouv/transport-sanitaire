@@ -17,16 +17,16 @@ import {
 
 import type { Simulation } from "../../../core/socle/simulation";
 import {
+  type QuestionnaireTracking,
+  useQuestionnaireTracking,
+} from "../analytics";
+import {
   isSingleChoicePage,
   useAutoAdvance,
   withRestart,
 } from "./advance-alone";
 import { draftOf } from "./draft-an-answer";
 import { type RevisitLink, revisitLinks } from "./revisit-an-answer";
-import {
-  type QuestionnaireTracking,
-  useQuestionnaireTracking,
-} from "./send-to-analytics";
 
 export type QuestionnaireOptions = {
   // La simulation, sur la page que le questionnaire affiche.

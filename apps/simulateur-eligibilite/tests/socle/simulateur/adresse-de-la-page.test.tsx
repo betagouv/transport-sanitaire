@@ -1,8 +1,8 @@
 import { cleanup, screen, waitFor } from "@testing-library/react";
 import { beforeEach, describe, expect, it } from "vitest";
 import { constant, givenOf, page, questionsOf } from "../../../core/socle";
-import { initAnalytics } from "../../../front/socle/analytics";
 import type { Model } from "../../../front/socle/model";
+import { audienceDeTest, nomsEtValeurs } from "../analytics/audience-de-test";
 import { modeleDeTest } from "../modele-de-test";
 import {
   ACCOMPAGNEMENTS,
@@ -15,26 +15,21 @@ import {
 
 // L'adresse de la page suit la position de la simulation (ADR-30) : un rang,
 // rien de ses réponses. Le bouton Retour du navigateur y revient, une adresse
-// refusée revient à la page ouverte, et un rechargement recommence. Matomo n'en
-// voit rien : ni page vue, ni évènement de plus. Testé par la vraie
+// refusée revient à la page ouverte, et un rechargement recommence. La mesure
+// d'audience n'en voit rien : pas d'évènement de plus. Testé par la vraie
 // application, sur le questionnaire factice.
 
-const lues = (commande: string) =>
-  (window._paq as unknown[][]).filter(([nom]) => nom === commande);
-const evenements = () =>
-  lues("trackEvent").map(([, , nom, , valeur]) =>
-    valeur === undefined ? nom : [nom, valeur],
-  );
+let mesure: ReturnType<typeof audienceDeTest>;
+const evenements = () => nomsEtValeurs(mesure.mesures);
 const adresse = () => window.location.hash;
 
 beforeEach(() => {
-  window._paq = [];
-  initAnalytics({ enabled: true, url: "https://matomo.test/", siteId: "275" });
+  mesure = audienceDeTest();
 });
 
 // Le thé choisi : la page des accompagnements, au rang 2.
 async function choisirUnThe() {
-  const user = await ouvrirLeSimulateur();
+  const user = await ouvrirLeSimulateur({ audience: mesure.audience });
   await question(BOISSON);
   await user.click(radio("Un thé"));
   await question(ACCOMPAGNEMENTS);
@@ -84,22 +79,23 @@ describe("l'adresse de la page", () => {
     expect(adresse()).toBe("#/etape/1");
   });
 
-  it("n'envoie à Matomo ni page vue, ni évènement", async () => {
+  it("ne compte pas d'évènement", async () => {
     await choisirUnThe();
-    const vues = lues("trackPageView").length;
     const envoyes = evenements().length;
 
     window.history.back();
     await question(BOISSON);
 
-    expect(lues("trackPageView")).toHaveLength(vues);
     expect(evenements()).toHaveLength(envoyes);
   });
 });
 
 describe("une correction", () => {
-  it("n'est pas une étape de plus pour Matomo", async () => {
-    const user = await ouvrirLeSimulateur({ modele: AVEC_UNE_ALERTE });
+  it("n'est pas une étape de plus pour la mesure d'audience", async () => {
+    const user = await ouvrirLeSimulateur({
+      modele: AVEC_UNE_ALERTE,
+      audience: mesure.audience,
+    });
     await user.click(await screen.findByLabelText("À domicile"));
     await user.click(await screen.findByLabelText("En espèces"));
 
