@@ -1,9 +1,9 @@
 import { describe, expect, it } from "vitest";
-import { DecisionDiagram } from "../../../core/socle/decision-engine/decision-graph/diagram";
+import { DecisionDiagram } from "../../../core/socle/decision-engine/decision-graph/decision-diagram.service";
 import {
   DecisionGraph,
   type FaitValue,
-} from "../../../core/socle/decision-engine/decision-graph/graph";
+} from "../../../core/socle/decision-engine/decision-graph/decision-graph.vo";
 import { PublicodesGraphCompiler } from "../../../core/socle/decision-engine/publicodes-graph-compiler.adapter";
 
 // Le graphe restreint aux faits qu'on sait déjà (#255) : il vaut ce que vaut

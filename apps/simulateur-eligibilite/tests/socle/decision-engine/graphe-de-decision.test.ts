@@ -3,7 +3,7 @@ import { type Cible, Fait } from "../../../core/socle";
 import {
   DecisionGraph,
   type FaitValue,
-} from "../../../core/socle/decision-engine/decision-graph/graph";
+} from "../../../core/socle/decision-engine/decision-graph/decision-graph.vo";
 import {
   PublicodesDecisionEngine,
   type Rules,
