@@ -5,6 +5,7 @@
 // une variable manquante ou mal formée arrête le démarrage. Sinon le serveur
 // servirait un référentiel factice.
 
+import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import {
   ErreurDeConfiguration,
@@ -70,6 +71,32 @@ describe("configuration du serveur en production", () => {
   it("écrit le nom de l'app Scalingo comme environnement du journal", () => {
     const config = lireConfiguration({ ...COMPLET, APP: "simulateur-staging" });
     expect(config.environment).toBe("simulateur-staging");
+  });
+});
+
+describe("l'app servie, sur le signe de vie du journal", () => {
+  it("prend la version de package.json", () => {
+    const { version } = JSON.parse(
+      readFileSync(new URL("../../../package.json", import.meta.url), "utf8"),
+    ) as { version: string };
+
+    expect(lireConfiguration(COMPLET).build.app_version).toBe(version);
+  });
+
+  it("prend le commit que Scalingo pose sur le conteneur, sur 7 caractères", () => {
+    const config = lireConfiguration({
+      ...COMPLET,
+      CONTAINER_VERSION: "f30aafe9c0de4b1e2a3b4c5d6e7f8091a2b3c4d5",
+    });
+    expect(config.build.commit_sha).toBe("f30aafe");
+  });
+
+  it.each([
+    ["absent", undefined],
+    ["qui n'est pas un commit", "v0.8.0"],
+  ])("avoue un commit inconnu quand il est %s", (_, CONTAINER_VERSION) => {
+    const config = lireConfiguration({ ...COMPLET, CONTAINER_VERSION });
+    expect(config.build.commit_sha).toBe("inconnu");
   });
 });
 

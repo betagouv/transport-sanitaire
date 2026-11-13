@@ -7,7 +7,7 @@
 import { describe, expect, it } from "vitest";
 import { adaptersFor } from "../../../server/container.ts";
 import { JournalEntry } from "../../../server/journal/journal-entry.entity.ts";
-import { simulationStarted } from "./evenements.ts";
+import { BUILD, simulationStarted } from "./evenements.ts";
 
 describe("le journal, sans doc Grist configuré", () => {
   it("ne garde aucun événement", async () => {
@@ -16,6 +16,7 @@ describe("le journal, sans doc Grist configuré", () => {
       grist: undefined,
       journal: undefined,
       environment: "simulateur-staging",
+      build: BUILD,
     });
 
     await journal.append(
