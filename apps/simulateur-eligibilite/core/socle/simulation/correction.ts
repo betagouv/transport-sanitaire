@@ -40,8 +40,8 @@ export type Refused = undefined;
  * Où reprend une correction validée, sur ces réponses relues. D'abord une
  * question devenue nécessaire sur une page d'avant l'origine (`declared` dit
  * l'ordre des pages) : la correction continue. Sinon la page d'origine, si elle
- * se pose encore, avec son brouillon. Si elle ne se pose plus, la page qui
- * attend une réponse.
+ * se pose encore, avec son brouillon relu sur ces réponses (`Reading.restore`).
+ * Si elle ne se pose plus, la page qui attend une réponse.
  */
 export function whereACorrectionResumes(
   correction: Correction,
@@ -54,7 +54,8 @@ export function whereACorrectionResumes(
   const { origin } = correction;
   if (pending && declared.indexOf(pending) < declared.indexOf(origin))
     return { page: pending, correction };
-  if (pages.includes(origin)) return { page: origin, draft: correction.draft };
+  if (pages.includes(origin))
+    return { page: origin, draft: reading.restore(origin, correction.draft) };
   return pending && { page: pending };
 }
 

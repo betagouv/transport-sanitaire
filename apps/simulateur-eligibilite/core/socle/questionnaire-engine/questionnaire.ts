@@ -194,6 +194,26 @@ export class Reading<Questions extends AnyQuestions = AnyQuestions> {
   }
 
   /**
+   * Ce brouillon de la page, gardé de côté, relu sur ces réponses : sans les
+   * réponses des questions devenues inapplicables, ni les options qui ne se
+   * proposent plus (#411). Ce qui tient toujours reste.
+   */
+  restore(page: Page, draft: Answers): Answers {
+    const applicable = this.#onlyApplicable(page, draft);
+    const asked = this.withDraft(page, applicable).questionsOn(page);
+    const restored = Object.fromEntries(
+      Object.entries(applicable).flatMap(([id, answer]) => {
+        const question = asked.find((candidate) => candidate.id === id);
+        const kept = question ? question.kept(answer) : answer;
+        return kept === undefined ? [] : [[id, kept]];
+      }),
+    );
+    // Une option retirée peut exclure une autre question de la page.
+    const same = JSON.stringify(restored) === JSON.stringify(draft);
+    return same ? draft : this.restore(page, restored);
+  }
+
+  /**
    * Ces réponses, avec ce brouillon de la page par-dessus. Le brouillon tient
    * lieu des réponses de la page : celle qu'il a perdue ne revient pas des
    * réponses validées. Une question posée d'abord plus tôt garde la sienne.
