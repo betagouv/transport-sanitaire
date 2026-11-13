@@ -1,8 +1,9 @@
 // Les panneaux des précisions de Q1.3 (UI-CHAMPS-CONDITIONNELS-20261110,
 // TS1018-11) : chaque case qui ouvre une précision la range dans un panneau
-// juste sous elle, hors de son libellé, et la liste reprend après lui. Leur
-// aspect, en clair, en sombre et sur mobile, se compare à l'écran à l'aperçu
-// de l'éditeur.
+// juste sous elle, hors de son libellé, et la liste reprend après lui.
+// Décochée, elle efface sa précision (NAV-SOUS-QUESTIONS-20261112). Leur
+// aspect, en clair, en sombre et sur mobile, se compare à l'écran à l'aperçu de
+// l'éditeur.
 
 import { screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
@@ -65,6 +66,25 @@ describe("les panneaux de Q1.3", () => {
     expect(panneaux()).toHaveLength(0);
     expect(screen.queryByRole("group", { name: Q13B })).toBeNull();
   });
+
+  it.each([
+    [ALD, Q13B, LIEN_DIRECT],
+    [DIALYSE, Q13A, HEMODIALYSE],
+  ])(
+    "%s décochée puis recochée : sa précision revient vide (SQ-02, SQ-03)",
+    async (cas, precision, reponse) => {
+      const user = await surQ13();
+      await cocher(user, cas);
+      await page(precision);
+      await choisir(user, reponse);
+
+      await cocher(user, cas);
+      await cocher(user, cas);
+
+      expect(screen.getByRole("radio", { name: reponse })).not.toBeChecked();
+      expect(screen.getByRole("button", { name: "Suivant" })).toBeDisabled();
+    },
+  );
 });
 
 // ---- implémentation ----
@@ -77,6 +97,7 @@ const Q13A = /^La séance prévue est-elle une séance d’hémodialyse/;
 const Q13B = /^Précisez le lien entre le transport et l'Affection/;
 const DATE = /^À quelle date cet accident a-t-il eu lieu/;
 const LIEN_DIRECT = /^Soin ou examen directement lié/;
+const HEMODIALYSE = /^Oui\./;
 
 // Une précision : un groupe de choix, ou le champ de la date.
 const precisionDe = (precision: RegExp) =>

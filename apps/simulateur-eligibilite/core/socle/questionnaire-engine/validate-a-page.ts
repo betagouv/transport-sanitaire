@@ -49,12 +49,23 @@ export function answerOnPage(
   const { [id]: _replaced, ...others } = draft;
   const answered = answer === undefined ? others : { ...others, [id]: answer };
   if (sameAnswer(draft[id], answer)) return answered;
-  const stale = dependentsOf([page], [id]);
+  return forget(page, answered, dependentsOf([page], [id]));
+}
+
+/**
+ * Ce brouillon de la page, sans les réponses de ces questions. Une case seule
+ * repart décochée.
+ */
+export function forget(
+  page: Page,
+  draft: Answers,
+  forgotten: ReadonlySet<string>,
+): Answers {
   const unchecked = page.questions
-    .filter((question) => stale.has(question.id))
+    .filter((question) => forgotten.has(question.id))
     .filter((question) => question.kind === "checkbox")
     .map((question) => [question.id, false]);
-  const kept = Object.entries(answered).filter(([other]) => !stale.has(other));
+  const kept = Object.entries(draft).filter(([id]) => !forgotten.has(id));
   return Object.fromEntries([...kept, ...unchecked]);
 }
 
