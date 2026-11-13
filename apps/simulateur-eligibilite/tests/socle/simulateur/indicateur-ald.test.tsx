@@ -1,8 +1,8 @@
 import { screen } from "@testing-library/react";
 import { beforeEach, describe, expect, it } from "vitest";
 import { constant } from "../../../core/socle/questionnaire-engine";
-import { initAnalytics } from "../../../front/socle/analytics";
 import type { AldIndicator, Model } from "../../../front/socle/model";
+import { audienceDeTest } from "../analytics/audience-de-test";
 import { given, modeleDeTest } from "../modele-de-test";
 import {
   ACCOMPAGNEMENTS,
@@ -17,7 +17,8 @@ import {
 
 // L'indicateur de parcours ALD (#148), sur le modèle factice : un thé tient lieu
 // de parcours ALD. À chaque arrivée sur le premier résultat, un verdict part
-// vers Matomo, avec le nombre de questions posées et rien des réponses.
+// vers la mesure d'audience, avec le nombre de questions posées et rien des
+// réponses.
 
 const INDICATEUR: AldIndicator = {
   parts: ["commande"],
@@ -31,41 +32,33 @@ const avec = (changement: Partial<AldIndicator> = {}): Model => ({
   aldIndicator: { ...INDICATEUR, ...changement },
 });
 
-const trackEvents = () =>
-  (window._paq as unknown[][]).filter(
-    ([commande]) => commande === "trackEvent",
-  );
-
+let mesure: ReturnType<typeof audienceDeTest>;
+const ouvrir = (modele: Model) =>
+  ouvrirLeSimulateur({ modele, audience: mesure.audience });
 const verdicts = () =>
-  trackEvents()
-    .map(([, , nom]) => nom)
-    .filter((nom) => String(nom).startsWith("parcours_ald_"));
+  mesure.mesures
+    .map(({ name }) => name)
+    .filter((nom) => nom.startsWith("parcours_ald_"));
 
 beforeEach(() => {
-  window._paq = [];
-  initAnalytics({ enabled: true, url: "https://matomo.test/", siteId: "275" });
+  mesure = audienceDeTest();
 });
 
 describe("l'indicateur de parcours ALD", () => {
   it("envoie le verdict avec le service et le nombre de questions, sans réponse", async () => {
-    const user = await ouvrirLeSimulateur({ modele: avec() });
+    const user = await ouvrir(avec());
 
     await allerAuResultat(user);
 
-    const service = trackEvents().find(
-      ([, , nom]) => nom === "simulation_complete",
-    )?.[3];
-    expect(trackEvents().at(-1)).toEqual([
-      "trackEvent",
-      "simulateur",
-      "parcours_ald_dans_la_cible",
-      service,
-      2,
-    ]);
+    expect(mesure.mesures.at(-1)).toEqual({
+      name: "parcours_ald_dans_la_cible",
+      serviceId: "s_grenoble_cardio",
+      value: 2,
+    });
   });
 
   it("dit trop de pages au-delà de la limite", async () => {
-    const user = await ouvrirLeSimulateur({ modele: avec({ limit: 1 }) });
+    const user = await ouvrir(avec({ limit: 1 }));
 
     await allerAuResultat(user);
 
@@ -74,16 +67,16 @@ describe("l'indicateur de parcours ALD", () => {
 
   it("ne compte pas un sous-champ comme une question", async () => {
     const modele = avec({ subFields: ["accompagnements"] });
-    const user = await ouvrirLeSimulateur({ modele });
+    const user = await ouvrir(modele);
 
     await allerAuResultat(user);
 
-    expect(trackEvents().at(-1)?.[4]).toBe(1);
+    expect(mesure.mesures.at(-1)?.value).toBe(1);
   });
 
   it("met à part un parcours qui finit à la caisse", async () => {
     const modele = avec({ caisse: constant(true) });
-    const user = await ouvrirLeSimulateur({ modele });
+    const user = await ouvrir(modele);
 
     await allerAuResultat(user);
 
@@ -91,7 +84,7 @@ describe("l'indicateur de parcours ALD", () => {
   });
 
   it("n'envoie rien pour un parcours qui ne compte pas", async () => {
-    const user = await ouvrirLeSimulateur({ modele: avec() });
+    const user = await ouvrir(avec());
 
     await question(BOISSON);
     await user.click(radio("Un café"));
@@ -104,7 +97,7 @@ describe("l'indicateur de parcours ALD", () => {
   });
 
   it("envoie un verdict à chaque arrivée sur le résultat (D-230)", async () => {
-    const user = await ouvrirLeSimulateur({ modele: avec() });
+    const user = await ouvrir(avec());
     await allerAuResultat(user);
 
     await user.click(bouton("Précédent"));

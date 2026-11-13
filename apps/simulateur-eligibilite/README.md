@@ -56,7 +56,7 @@ front et le référentiel de rattachement.
 
 Les règles d'écriture et les invariants ne sont pas de la prose, ils sont exécutables.
 On les trouve dans `tests/architecture.test.ts`, pour les frontières, dans
-`tests/journal-en-clean-architecture.test.ts`, pour le domaine du journal, dans
+`tests/journal-en-clean-architecture.test.ts`, pour le domaine du journal et de la mesure d'audience, dans
 `tests/taille-du-code.test.ts`, pour les limites de 30 et 300 lignes, dans `tests/lisibilite.test.ts`, pour la forme des fichiers, les noms
 et les extensions d'import, dans `tests/miroir-des-sources.test.ts`, pour
 les dossiers de tests, rangés comme les sources, et dans
@@ -190,9 +190,11 @@ core/                    le métier, sans React ni DOM : ce qu'un serveur ou un 
                          préconisation des réponses, la lecture d'un résultat ; ce
                          qu'est une seed, et ce qu'elle confirme ou dément
 front/                   le front, bundlé par Vite
-  main.tsx               le point d'entrée du navigateur : monte l'app, amorce le traceur
-  container.ts           instancie ce qui parle au serveur : son client, le journal,
-                         le référentiel et la déclaration du rattachement
+  main.tsx               le point d'entrée du navigateur : monte l'app
+  container.ts           instancie ce qui parle à l'extérieur : le client du
+                         serveur, le choix du prescripteur, Matomo et le journal
+                         avec leurs use cases, le référentiel et la déclaration
+                         du rattachement
   models/                l'écran de chaque modèle, chacun chargé à la demande
     fake/                les deux résultats de la démonstration (`r2.tsx`, `r3.tsx`)
                          et son bon de commande
@@ -246,10 +248,11 @@ front/                   le front, bundlé par Vite
                          dessinés), puis ce qu'on fait d'un PDF (pdf/ : le
                          télécharger, l'imprimer, le bouton qui l'attend). Aucun
                          gabarit.
-    analytics/           le vocabulaire mesuré, seul import du reste, son transport
-                         vers Matomo, le journal des parcours (entité, use case, port,
-                         adaptateur vers le backend, ADR-7),
-                         le choix du prescripteur transmis par le CMS, et
+    analytics/           la mesure d'audience et le journal des parcours en
+                         clean architecture (ADR-7) : entités, use cases, ports,
+                         adaptateurs vers Matomo, le backend et le choix du
+                         prescripteur transmis par le CMS, et les contextes où
+                         l'écran les lit, dont le parcours signalé au journal ; et
                          cms.js, le script à coller dans Sites Conformes : l'opt-out
                          du pied de page, qui répond au traceur de l'iframe, le
                          thème de la page, et le retour au haut de l'iframe (voir

@@ -87,17 +87,12 @@ export type Intent = "check" | "prescribe";
 /**
  * L'invitation à donner son avis, après un résultat (#195) : un lien vers
  * l'adresse exacte, sans paramètre, ouvert dans un nouvel onglet. Le socle la
- * place selon ce que le prescripteur est venu faire : en R2 s'il vérifie ou si
- * rien ne se complète, en R3 une fois le document prêt.
+ * place selon ce que le prescripteur est venu faire (`Model.intent`) : en R2
+ * s'il vérifie ou si rien ne se complète, en R3 une fois le document prêt.
  */
 export type Feedback = {
   url: string;
   label: string;
-  /**
-   * Ce qu'il est venu faire, d'après les questions validées. `null` : on ne le
-   * sait pas, l'avis n'est pas proposé. Ce qu'il lit compte (#255).
-   */
-  intent: Value<Intent | null>;
 };
 
 export type Model<
@@ -161,6 +156,12 @@ export type Model<
     printLabel: string;
     downloadLabel: string;
   };
+  /**
+   * Ce que le prescripteur est venu faire, d'après les questions validées.
+   * `null` : on ne le sait pas. L'avis n'est alors pas proposé, et le journal
+   * des parcours n'en reçoit rien. Ce qu'il lit compte (#255).
+   */
+  intent?: Value<Intent | null>;
   /** L'invitation à donner son avis. Sans elle, aucune. */
   feedback?: Feedback;
   /** L'indicateur de parcours ALD. Sans lui, aucun verdict ne part. */
@@ -212,7 +213,7 @@ function withRelevance(model: Model): Model {
   const { core, result, cerfa } = model;
   if (!core.decision) return model;
   const shown = [result.reading, cerfa.form, cerfa.title, cerfa.reading]
-    .concat(cerfa.startLabel, model.feedback?.intent ?? [])
+    .concat(cerfa.startLabel, model.intent ?? [])
     .map((value) => value.reads)
     .reduce(readsOf, NOTHING);
   const relevance = new Relevance({

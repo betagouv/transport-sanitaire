@@ -1,10 +1,25 @@
 # Architecture : Analytics de parcours
 
-> Statut : **décidé (release officielle)** · Dernière mise à jour : 2026-11-12
+> Statut : **décidé (release officielle)** · Dernière mise à jour : 2026-11-13
 >
 > Suivi analytique du parcours dans le simulateur d'éligibilité.
 > Repose sur le rattachement établissement/service fourni par l'écran de rattachement :
 > voir [identification.md](./identification.md).
+>
+> **Mise à jour 2026-11-13, des hooks sans règles (#383, #414).** Les hooks de l'écran
+> (`.hook.ts`) ne font plus que traduire un événement de l'écran en un appel de use
+> case. Ce qui compte ou part descend dans les entités : `QuestionnaireRun` tait le
+> début d'un questionnaire qui reprend et l'abandon d'un questionnaire fini, `Journey`
+> ne garde rien d'une seed. Un use case par action, qui n'en appelle pas d'autre. Les
+> contextes React deviennent un fichier d'assemblage sans suffixe. Cela **précise**
+> l'ADR-7 ; #414 étendra la règle au reste de l'écran.
+>
+> **Mise à jour 2026-11-12, la mesure d'audience en clean architecture (#383).** Matomo
+> suit le même découpage que le journal (ADR-7) : une entité, un use case, un port et
+> son adaptateur, un contexte React. Le choix du prescripteur devient un port partagé,
+> demandé une fois au CMS pour Matomo et pour le journal. Plus aucun état global :
+> le conteneur instancie Matomo quand il est activé, et sinon une mesure qui ne garde rien. Cela **étend**
+> l'ADR-7 à la mesure d'audience et **déplace** le référentiel de l'ADR-4.
 >
 > **Mise à jour 2026-11-12, journal des parcours (#380, #381).** Le simulateur collecte
 > désormais chaque parcours, rattaché à son établissement et à son service, pour le
@@ -166,7 +181,7 @@ explicite.~~
 ### ADR-4 - Référentiel figé des noms d'évènement, jamais composés
 
 **Décision.** Le nom de chaque évènement Matomo est une valeur fixe d'un
-référentiel unique (`front/socle/analytics/events.ts`, `EventName`), jamais
+référentiel unique (`front/socle/analytics/audience-event.entity.ts`, `EventName`), jamais
 composé à la volée par concaténation de chaîne. Ce module n'interprète aucune
 donnée métier — ni l'outil, ni le statut d'un résultat, ni le formulaire d'un
 CERFA : c'est l'appelant qui choisit l'entrée à émettre, via
@@ -306,17 +321,19 @@ fait pour stocker des événements en masse, et il ne tiendra probablement pas d
 la durée.
 
 **Décision.** Le journal suit la clean architecture, côté serveur
-(`server/journal/`) comme côté écran (`front/socle/analytics/`). Chaque fichier dit
-son rôle par son suffixe, et chaque rôle s'écrit en classe ou en interface :
+(`server/journal/`) comme côté écran (`front/socle/analytics/`). Depuis le
+2026-11-12, la mesure d'audience aussi, dans le même dossier de l'écran. Chaque
+fichier dit son rôle par son suffixe, et chaque rôle s'écrit en classe ou en
+interface :
 
 | Suffixe | Rôle | Serveur | Écran |
 |---|---|---|---|
-| `.entity.ts` | une notion du journal et ses règles, sans dépendance | `JournalEntry` : l'événement daté à sa réception, qui sait s'il en répète un autre | `Journey` : la simulation, qui numérote et date ses événements |
-| `.usecase.ts` | une action, qui ne parle qu'aux entités et aux ports | `CollectAnEvent` : garde un nouvel événement, ignore un renvoi, met une collision à part | `StartASimulation` : ouvre un parcours et le signale sur P0 |
-| `.port.ts` | l'interface qu'un use case attend de l'extérieur | `Journal` : retrouver, ajouter, mettre à part | `Journal` : garder un événement |
-| `.adapter.ts` | une classe qui implémente un port | `GristJournal` ; `DiscardingJournal`, qui ne garde rien, sans doc Grist ; `MemoryJournal`, pour les tests | `ServerJournal` : envoi, réessais, opt-out |
+| `.entity.ts` | une notion et ses règles, sans dépendance | `JournalEntry` : l'événement daté à sa réception, qui sait s'il en répète un autre | `Journey` : la simulation, qui numérote et date ses événements, ne garde que sa première intention, et rien d'une seed ; `QuestionnaireRun` : un passage dans le questionnaire, qui tait le début d'une reprise, l'abandon après la fin, et tout le questionnaire du cerfa ; `AudienceEvent` : un événement Matomo, son nom pris dans `EventName`, et l'id du service, jamais le service libre |
+| `.usecase.ts` | une action, qui ne parle qu'aux entités et aux ports | `CollectAnEvent` : garde un nouvel événement, ignore un renvoi, met une collision à part | `StartASimulation` : ouvre un parcours et le signale sur P0 ; `SelectAnIntent` : signale le premier choix validé en P0 ; `StartAQuestionnaire`, `PassAStep`, `CompleteAQuestionnaire`, `LeaveAQuestionnaire` : le début, une étape, la fin et l'abandon d'un questionnaire ; `ReachAnAldResult` : le verdict ALD sur le premier résultat. Un use case n'en appelle pas un autre |
+| `.port.ts` | l'interface qu'un use case ou un adaptateur attend de l'extérieur | `Journal` : retrouver, ajouter, mettre à part | `Journal` : garder un événement ; `Audience` : compter un événement ; `ConsentSource` : suivre le choix du prescripteur |
+| `.adapter.ts` | une classe qui implémente un port | `GristJournal` ; `DiscardingJournal`, qui ne garde rien, sans doc Grist ; `MemoryJournal`, pour les tests | `ServerJournal` : envoi, réessais ; `MatomoAudience` : file `_paq`, amorçage, chargement de matomo.js ; `DiscardingAudience`, qui ne mesure rien, quand Matomo n'est pas activé ; `CmsConsent` : le choix demandé au CMS (ADR-5), que les deux premiers suivent |
 | `.controller.ts` | une entrée HTTP, qui valide la requête et appelle un use case | `JournalController` : la route de collecte | |
-| `.context.ts` | l'injection d'un use case dans l'arbre React : le contexte, son provider, et le hook qui le lit | | `journal.context.ts` : `JournalProvider`, `useStartASimulation` |
+| `.hook.ts` | l'adaptateur primaire de l'écran : du React, et un appel de use case par événement, sans règle métier (#414) | | `journey.hook.ts` : `useRecordTheJourney` ; `questionnaire.hook.ts` : `useQuestionnaireTracking` ; `ald-pathway.hook.ts` : `useAldResultReached` |
 
 Les adaptateurs parlent HTTP par deux clients préconfigurés (`.client.ts`), qui
 portent l'adresse, l'authentification, le JSON et les erreurs :
@@ -332,13 +349,20 @@ Chaque côté a un conteneur, `container.ts` à sa racine, qui instancie une foi
 classes et les exporte. `server/container.ts` choisit les adaptateurs d'après la
 configuration (`adaptersFor`), puis assemble use case et contrôleur
 (`createContainer`), que `server.ts` donne à `app.ts`. `front/container.ts`
-instancie le client du serveur, le journal, le use case, le référentiel et la
-déclaration du rattachement, que `main.tsx` donne à l'app. `App` pose le use case
-dans un contexte React (`journal.context.ts`), où le questionnaire le lit par
-`useStartASimulation` : aucune variable globale ne le porte. Les deux conteneurs
+instancie le client du serveur, le choix du prescripteur, Matomo s'il est activé (sinon une mesure qui ne garde rien), le
+journal, leurs use cases, le référentiel et la déclaration du rattachement, que
+`main.tsx` donne à l'app. `App` pose les use cases dans deux contextes React
+(`use-cases-in-the-tree.ts`), où les hooks les lisent : aucune variable globale ne
+les porte. Le rattachement se lit en session dans les hooks, pas dans le simulateur,
+qui ignore qui prescrit. Le simulateur signale le parcours de sa simulation par
+`useRecordTheJourney`, qui l'ouvre sur P0 et y signale l'intention que le modèle
+déclare (`Model.intent`) ; le questionnaire compte ses étapes par
+`useQuestionnaireTracking`, et le simulateur envoie le verdict ALD qu'il calcule
+(`aldPathwayOf`) par `useAldResultReached`. Les deux conteneurs
 exportent une fonction appelée une fois au démarrage, pas des instances, car rien
 ne doit s'exécuter au chargement d'un module (QUAL-004). Les fichiers qui
-assemblent (`container.ts`, `server.ts`, `app.ts`, `main.tsx`, les `index.ts`)
+assemblent (`container.ts`, `server.ts`, `app.ts`, `main.tsx`, les `index.ts`,
+`use-cases-in-the-tree.ts`)
 n'ont pas de suffixe.
 
 **Pourquoi.** Changer de stockage ne doit toucher qu'un adaptateur. Si l'adaptateur
@@ -368,13 +392,15 @@ flowchart TB
             parcours["Parcours de simulation<br/>(formulaire + résultat)"]
             traceur["Traceur d'analytics, cookieless<br/>(id du service en Nom d'événement)"]
             emetteur["Émetteur du journal<br/>(simulation, affichages, validations, clics)"]
+            choix["Choix du prescripteur<br/>(demandé une fois, suivi par les deux)"]
             parcours -->|"événements de parcours"| traceur
             parcours -->|"faits affichés et validés"| emetteur
         end
     end
-    traceur -->|"postMessage : demande du choix"| optout
-    optout -->|"postMessage : suivi ou refus"| traceur
-    optout -->|"postMessage : suivi ou refus"| emetteur
+    choix -->|"postMessage : demande du choix"| optout
+    optout -->|"postMessage : suivi ou refus"| choix
+    choix --> traceur
+    choix --> emetteur
     matomo[("Matomo<br/>(mutualisé beta.gouv, IP anonymisée par l'instance)")]
     backend["Backend Express<br/>(route de collecte versionnée)"]
     journal[("Grist « Simulateur-Parcours »<br/>(journal des parcours)")]
@@ -407,7 +433,7 @@ Matomo n'a pas de commande pour anonymiser l'IP : c'est un réglage de l'instanc
 Événements `trackEvent` émis par le traceur, en catégorie `simulateur`, portant l'id
 Grist du service en Nom, ou `autre` pour un rattachement dégradé. ~~Ce nom était absent
 si le parcours avait démarré sans rattachement pseudonymisé (API indisponible).~~ Le nom d'action est une valeur fixe du référentiel
-`EventName` (`front/socle/analytics/events.ts`, ADR-4) — jamais composé à
+`EventName` (`front/socle/analytics/audience-event.entity.ts`, ADR-4) — jamais composé à
 l'exécution.
 
 **Parcours** (~~un jeu par outil, `prescripteur:…` / `secretariat:…`~~, un seul
