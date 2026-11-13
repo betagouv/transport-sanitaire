@@ -124,6 +124,7 @@ function cotesDeLArrivee(
 
 // Ce que les champs lisent du lieu dans un contexte.
 type Lecture = {
+  readonly categorie: ReturnType<typeof categorieAChoisir>;
   readonly lire: (contexte: Contexte) => Lieu;
   readonly categorieLue: (contexte: Contexte) => Categorie | NonChoisie;
 };
@@ -148,12 +149,7 @@ function champsDuLieu<E extends Extremite>(
   return {
     nature,
     precision: precisionDuLieu(extremite, etat, nature, sur("nature")),
-    nom: nomDuLieu(
-      extremite,
-      { ...etat, htnm },
-      lecture.categorieLue,
-      sur("nom"),
-    ),
+    nom: nomDuLieu(extremite, { ...etat, htnm }, lecture, sur("nom")),
     service: serviceDuLieu(extremite, etat),
     adresse: adresseDuLieu(extremite, libelles.adresse, sur("adresse")),
     natureDuLieu: etat.nature,
@@ -234,6 +230,7 @@ function lectureDu(
   lire: Lecture["lire"],
 ): Lecture {
   return {
+    categorie,
     lire,
     categorieLue: (contexte) =>
       lire(contexte).fixee ?? contexte.answers.question(categorie).value,
