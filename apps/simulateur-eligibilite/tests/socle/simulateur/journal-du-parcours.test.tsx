@@ -9,7 +9,7 @@ import { App } from "../../../front/socle/app";
 import type { Model } from "../../../front/socle/model";
 import type { AnalyticsEvent } from "../../../shared/analytics/analytics-event";
 import type { Referentiel } from "../../../shared/referentiel";
-import { journalDeTest } from "../analytics/journal-de-test";
+import { chargee, journalDeTest } from "../analytics/journal-de-test";
 import { given, modeleDeTest, seulModele } from "../modele-de-test";
 import {
   ACCOMPAGNEMENTS,
@@ -114,6 +114,24 @@ describe("le journal des parcours sur P0", () => {
     expect(debuts).toHaveLength(2);
     expect(debuts[1]?.simulation_id).not.toBe(debuts[0]?.simulation_id);
     expect(debuts[1]?.sequence).toBe(1);
+  });
+
+  it("ouverte sur une page rechargée, la simulation le dit, et pas la suivante", async () => {
+    const { analytics, envoyes } = journalDeTest(chargee("reload"));
+    const user = await ouvrirLeSimulateur({
+      analytics,
+      modele: venuPourUneBoisson,
+    });
+    await allerAuResultat(user);
+
+    await user.click(bouton("Faire une nouvelle simulation"));
+    await question(BOISSON);
+
+    const debuts = envoyes.filter((e) => e.type === "simulation_started");
+    expect(debuts.map(({ navigation }) => navigation)).toEqual([
+      "reload",
+      undefined,
+    ]);
   });
 
   it("deux services de même nom, dans deux établissements, gardent leur identifiant", async () => {
