@@ -4,7 +4,7 @@
 // donne une nouvelle simulation ; aucune ne change celle-ci. L'écran n'y ajoute
 // que le brouillon de la page ouverte.
 
-import type { CoreModel, Preconisation } from "../model.ts";
+import type { CoreModel } from "../model.ts";
 import {
   type Answer,
   type Answers,
@@ -22,6 +22,7 @@ import { PageOpening, type StageEnds } from "./page-opening.vo.ts";
 import { PagePlaceInPart } from "./page-place-in-part.vo.ts";
 import { PageRefusal } from "./page-refusal.error.ts";
 import { PreconisationService } from "./preconisation.service.ts";
+import type { Preconisation } from "./preconisation.vo.ts";
 import { QuestionnaireReadingService } from "./questionnaire-reading.service.ts";
 import { type Lock, SimulationStage } from "./simulation-stage.vo.ts";
 import { StagePages } from "./stage-pages.vo.ts";

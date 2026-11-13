@@ -2,8 +2,8 @@
 // Une valeur : chaque transition de la simulation en donne une autre
 // (`simulation.entity.ts`).
 
-import type { Preconisation } from "../model.ts";
 import type { Answers } from "../questionnaire-engine/index.ts";
+import type { Preconisation } from "./preconisation.vo.ts";
 
 /** Ce que le verrou fige : les réponses d'avant, et leur préconisation. */
 export class Lock {

@@ -10,6 +10,7 @@ export {
 } from "./evaluate-a-seed.usecase.ts";
 export { JourneyPosition } from "./journey-position.vo.ts";
 export { PageRefusal } from "./page-refusal.error.ts";
+export { Preconisation } from "./preconisation.vo.ts";
 export { QuestionnaireReadingService } from "./questionnaire-reading.service.ts";
 export { Simulation } from "./simulation.entity.ts";
 export { Lock } from "./simulation-stage.vo.ts";
