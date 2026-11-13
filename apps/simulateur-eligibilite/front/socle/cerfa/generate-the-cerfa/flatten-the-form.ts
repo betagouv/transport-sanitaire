@@ -48,18 +48,24 @@ export type Drawn = {
   readonly drawings?: readonly Drawing[];
 };
 
+/** Le PDF aplati, et la taille de chaque texte dessiné, dans leur ordre. */
+export type Flattened = {
+  readonly pdf: Uint8Array;
+  readonly drawnSizes: readonly number[];
+};
+
 /** Le PDF rempli `pdf`, sans aucun champ, avec `drawn` dessiné par-dessus. */
 export async function flattenCerfa(
   pdf: Uint8Array,
   { marks = [], drawings = [] }: Drawn = {},
-): Promise<Uint8Array> {
+): Promise<Flattened> {
   const document = await PDFDocument.load(pdf);
   // Les marques se relèvent avant : l'aplatissement retire les cases.
   const stamps = marks.flatMap((mark) => stampsOf(document, mark));
   document.getForm().flatten();
   for (const stamp of stamps) drawStamp(stamp);
-  await drawTexts(document, drawings);
-  return document.save();
+  const drawnSizes = await drawTexts(document, drawings);
+  return { pdf: await document.save(), drawnSizes };
 }
 
 // ---- implémentation ----
@@ -100,14 +106,15 @@ function drawStamp({ page, widget, appearance }: Stamp): void {
   );
 }
 
+// Dessine chaque texte, et donne la taille de chacun.
 async function drawTexts(
   document: PDFDocument,
   drawings: readonly Drawing[],
-): Promise<void> {
-  if (drawings.length === 0) return;
+): Promise<number[]> {
+  if (drawings.length === 0) return [];
   const font = await document.embedFont(StandardFonts.Helvetica);
   const pages = document.getPages();
-  for (const { text, at, size: wanted, singleLine } of drawings) {
+  return drawings.map(({ text, at, size: wanted, singleLine }) => {
     const page = pages[at.page - 1];
     if (!page) throw new Error(`Le gabarit n'a pas de page ${at.page}.`);
     const size = singleLine
@@ -121,5 +128,6 @@ async function drawTexts(
       maxWidth: at.width,
       lineHeight: size * LINE_HEIGHT,
     });
-  }
+    return size;
+  });
 }

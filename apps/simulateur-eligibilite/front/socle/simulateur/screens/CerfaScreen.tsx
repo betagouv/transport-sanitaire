@@ -137,7 +137,7 @@ function Cerfa({ model, read, text, input, actions, feedback }: CerfaProps) {
       text={text}
       standIn={standIn?.(input)}
       above={aboveTheDocument(actions, feedback, tracking)}
-      onReady={() => tracking.displayed({ file, dto })}
+      onReady={(typography) => tracking.displayed({ file, dto, typography })}
       onFailure={tracking.failed}
       signals={documentSignals(tracking)}
     />

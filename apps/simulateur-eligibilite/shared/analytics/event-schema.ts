@@ -29,6 +29,9 @@ export function parseAnAnalyticsEvent(
 
 const identifier = z.string().trim().min(1);
 
+// La clé d'un champ du cerfa, telle que le code l'écrit : jamais un texte saisi.
+const fieldId = z.string().regex(/^[a-z][a-z0-9_]{0,95}$/);
+
 const EVENT_SCHEMA: z.ZodType<AnalyticsEvent> = z.strictObject({
   event_id: identifier,
   simulation_id: identifier,
@@ -61,4 +64,13 @@ const EVENT_SCHEMA: z.ZodType<AnalyticsEvent> = z.strictObject({
   portions: z.array(z.enum(PORTIONS)).optional(),
   sheet_id: identifier.optional(),
   action: z.enum(ACTIONS).optional(),
+  fields: z
+    .array(
+      z.strictObject({
+        field_id: fieldId,
+        font_size_pt: z.number().positive(),
+      }),
+    )
+    .optional(),
+  unmeasured_field_ids: z.array(fieldId).optional(),
 });

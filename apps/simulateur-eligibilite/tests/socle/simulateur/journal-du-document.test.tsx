@@ -28,10 +28,14 @@ async function ouvrirAvecUnJournal(
   return { user, envoyes };
 }
 
-// Les documents envoyés, en bref : le type, la version et la révision.
+// Les documents envoyés, en bref : le type, la version et la révision. Leur
+// mesure typographique a ses propres tests.
 const documents = (envoyes: AnalyticsEvent[]) =>
   envoyes
-    .filter(({ type }) => type.startsWith("document_"))
+    .filter(
+      ({ type }) =>
+        type.startsWith("document_") && type !== "document_typography_measured",
+    )
     .map(
       ({ type, document_id, revision }) =>
         `${type} ${document_id ?? "-"} ${revision}`,
@@ -79,6 +83,31 @@ describe("le journal du document R3", () => {
       }),
     ]);
     expect(affiches[0]).not.toHaveProperty("support");
+  });
+
+  it("un PDF prêt envoie la taille de ses champs remplis, une fois, sur sa version", async () => {
+    const { user, envoyes } = await ouvrirAvecUnJournal();
+
+    await allerAuDocument(user);
+    await revaliderLeComplement(user);
+
+    const mesures = envoyes.filter(
+      ({ type }) => type === "document_typography_measured",
+    );
+    expect(mesures).toEqual([
+      expect.objectContaining({
+        screen: "R3",
+        document_id: "d1",
+        revision: "r1",
+        status: "complete",
+        unmeasured_field_ids: [],
+      }),
+    ]);
+    expect(mesures[0]?.fields).toEqual([
+      { field_id: "commande", font_size_pt: 9 },
+      { field_id: "quantite", font_size_pt: 9 },
+      { field_id: "date", font_size_pt: 9 },
+    ]);
   });
 
   it("monté comme en production, où React rejoue les effets, le document part une fois", async () => {

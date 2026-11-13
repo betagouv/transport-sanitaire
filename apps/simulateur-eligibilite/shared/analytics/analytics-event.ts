@@ -11,7 +11,7 @@ export const ANALYTICS_VERSION = "10.1.7";
  * ajoute l'affichage de page, les jalons de phase et l'invalidation d'une
  * validation (ADR-8), puis le financeur, les motifs et les portions du premier
  * résultat (ADR-9), puis les boutons exposés, la fiche patient et ses clics
- * (ADR-11).
+ * (ADR-11), puis la taille des champs du document R3 (ADR-12).
  */
 export const SCHEMA_VERSION = 2;
 
@@ -39,6 +39,7 @@ export const EVENT_TYPES = [
   "sheet_print_requested",
   "sheet_download_requested",
   "sheet_download_succeeded",
+  "document_typography_measured",
 ] as const;
 
 type EventType = (typeof EVENT_TYPES)[number];
@@ -66,6 +67,13 @@ export type Portion = (typeof PORTIONS)[number];
 export const ACTIONS = ["print", "download"] as const;
 
 export type Action = (typeof ACTIONS)[number];
+
+/**
+ * La taille réellement imprimée d'un champ rempli du document R3, en points
+ * (ADR-12). `field_id` est la clé du champ dans le DTO du cerfa, jamais son
+ * texte.
+ */
+type FieldSize = { field_id: string; font_size_pt: number };
 
 export const INTENTS = [
   "eligibilite_seule",
@@ -97,6 +105,8 @@ export type AnalyticsEvent = {
   reason_codes?: string[];
   document_id?: string;
   support?: string;
+  /** `complete` ou `partial` : la mesure couvre tous les champs remplis du
+   * document R3, ou non (ADR-12). */
   status?: string;
   field_group?: string;
   font_size_pt?: number;
@@ -109,4 +119,6 @@ export type AnalyticsEvent = {
   portions?: Portion[];
   sheet_id?: string;
   action?: Action;
+  fields?: FieldSize[];
+  unmeasured_field_ids?: string[];
 };

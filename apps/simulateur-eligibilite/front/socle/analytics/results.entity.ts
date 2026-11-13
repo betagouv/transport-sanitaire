@@ -1,6 +1,7 @@
 // Les résultats d'une simulation, tels que le journal les reçoit : les
 // révisions du premier résultat (ADR-9), les versions du document R3 qui en
-// viennent (ADR-10), et celles de la fiche patient (ADR-11). `Journey` les
+// viennent (ADR-10) et leurs tailles imprimées (ADR-12), et les versions de la
+// fiche patient (ADR-11). `Journey` les
 // numérote dans l'ordre du parcours.
 
 import type {
@@ -58,7 +59,10 @@ export class Results {
     return [revision.invalidated(screen)];
   }
 
-  /** Une nouvelle version du document, sauf s'il montre la dernière. */
+  /**
+   * Une nouvelle version du document, et la taille de ses textes imprimés, sauf
+   * s'il montre la dernière.
+   */
   displayDocument(content: DocumentContent): ResultEvent[] {
     const revision = this.#revision;
     if (!revision || this.#document?.shows(revision, content)) return [];
@@ -66,7 +70,10 @@ export class Results {
       this.#document?.next(revision, content) ??
       DocumentVersion.first(revision, content);
     this.#document = document;
-    return [revision.documentDisplayed(document.id)];
+    return [
+      revision.documentDisplayed(document.id),
+      revision.typographyMeasured(document.id, content.typography),
+    ];
   }
 
   failADocument(): ResultEvent[] {

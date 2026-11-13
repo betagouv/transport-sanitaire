@@ -2,12 +2,14 @@
 // `r1`, `r2`… dans une simulation. Elle naît à l'affichage d'un R2, et tombe
 // quand une modification de P1 ou de P2 la rend caduque. Ce qu'elle dit au
 // journal ne vient que des sorties calculées (ADR-9). Les documents qui en
-// viennent portent son support et son mode (ADR-10).
+// viennent portent son support et son mode (ADR-10), puis la taille de leurs
+// textes imprimés (ADR-12).
 
 import type {
   AnalyticsEvent,
   Portion,
 } from "../../../shared/analytics/analytics-event";
+import type { Typography } from "./document-version.entity";
 
 /** Ce que le prescripteur a vu au premier résultat. */
 export type ShownResult = {
@@ -53,7 +55,15 @@ type ResultEvent = Pick<
 
 type DocumentEvent = Pick<
   AnalyticsEvent,
-  "type" | "screen" | "revision" | "document_id" | "support" | "mode"
+  | "type"
+  | "screen"
+  | "revision"
+  | "document_id"
+  | "support"
+  | "mode"
+  | "status"
+  | "fields"
+  | "unmeasured_field_ids"
 >;
 
 export class Revision {
@@ -106,6 +116,30 @@ export class Revision {
       document_id: documentId,
       ...(codes?.support != null && { support: codes.support }),
       ...(codes?.mode != null && { mode: codes.mode }),
+    };
+  }
+
+  /**
+   * La taille des textes imprimés d'une version de son document : complète si
+   * chacun en a une, partielle sinon (ADR-12).
+   */
+  typographyMeasured(
+    documentId: string,
+    { sizes, unmeasured }: Typography,
+  ): DocumentEvent {
+    const codes = this.#shown.codes;
+    return {
+      type: "document_typography_measured",
+      screen: "R3",
+      revision: this.id,
+      document_id: documentId,
+      ...(codes?.support != null && { support: codes.support }),
+      status: unmeasured.length === 0 ? "complete" : "partial",
+      fields: Object.entries(sizes).map(([field_id, font_size_pt]) => ({
+        field_id,
+        font_size_pt,
+      })),
+      unmeasured_field_ids: [...unmeasured],
     };
   }
 

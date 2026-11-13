@@ -91,3 +91,39 @@ describe("collecte d'une simulation sans début", () => {
     expect((await journal.find("s-sans-p0:2"))?.event).toEqual(intention);
   });
 });
+
+describe("collecte de la taille des champs du document R3", () => {
+  const mesure = {
+    ...simulationStarted,
+    event_id: "s-1:9",
+    sequence: 9,
+    type: "document_typography_measured",
+    screen: "R3",
+    revision: "r1",
+    document_id: "d1",
+    status: "partial",
+    fields: [{ field_id: "depart_structure", font_size_pt: 7.5 }],
+    unmeasured_field_ids: ["motif"],
+  };
+
+  it("garde la clé et la taille de chaque champ", async () => {
+    const journal = await collecteSur();
+
+    const { status } = await collecter(mesure);
+
+    expect(status).toBe(204);
+    expect((await journal.find("s-1:9"))?.event).toEqual(mesure);
+  });
+
+  it("refuse un texte saisi à la place de la clé d'un champ", async () => {
+    const journal = await collecteSur();
+
+    const { status } = await collecter({
+      ...mesure,
+      fields: [{ field_id: "M. Dupont, 1 rue des Lilas", font_size_pt: 9 }],
+    });
+
+    expect(status).toBe(400);
+    expect(await journal.find("s-1:9")).toBeUndefined();
+  });
+});

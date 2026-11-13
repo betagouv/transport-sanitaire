@@ -14,7 +14,7 @@ describe("flattenCerfa", () => {
       { field: "motif", text: "Dialyse en centre." },
     ]);
 
-    const pdf = await flattenCerfa(filled.pdf);
+    const { pdf } = await flattenCerfa(filled.pdf);
 
     expect(await drawnOn(pdf)).toEqual({
       fields: 0,
@@ -28,7 +28,7 @@ describe("flattenCerfa", () => {
       { field: "acc", checked: "sucre" },
     ]);
 
-    const pdf = await flattenCerfa(filled.pdf);
+    const { pdf } = await flattenCerfa(filled.pdf);
 
     expect(await markedStates(template, pdf, "acc")).toEqual(["sucre"]);
   });

@@ -24,6 +24,7 @@ const unR2 = {
 const unDocument = (quantite: string) => ({
   file: "bon-de-commande-2026-11-13.pdf",
   dto: { fields: { quantite }, drawings: {} },
+  typography: { sizes: { quantite: 9 }, unmeasured: [] },
 });
 
 const BOUTONS_DE_LA_FICHE: Button[] = ["sheet_print", "sheet_download"];

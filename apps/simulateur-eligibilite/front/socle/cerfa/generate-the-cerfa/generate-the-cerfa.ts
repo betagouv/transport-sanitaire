@@ -18,12 +18,17 @@ import type {
 import type { FieldEntry } from "./fill-the-form";
 import type { Drawing, Mark } from "./flatten-the-form";
 import { TEXT_SIZES } from "./text-sizes";
+import { type Typography, typographyOf } from "./typography";
 
-/** Le cerfa généré, et les commentaires qu'il n'a pas pu garder. */
+/**
+ * Le cerfa généré, les commentaires qu'il n'a pas pu garder, et la taille de
+ * ses textes imprimés.
+ */
 export type GeneratedCerfa = {
   readonly pdf: Blob;
   /** Les entrées du DTO dont le commentaire a été retiré, faute de place. */
   readonly removedComments: readonly string[];
+  readonly typography: Typography;
 };
 
 /** Génère le cerfa rempli d'après `dto`, aplati, prêt à télécharger. */
@@ -41,15 +46,20 @@ export async function generateCerfa<Dto extends CerfaDto>(
     dto,
   );
   const filled = await fillCerfa(template, entries, options);
-  const pdf = await flattenCerfa(filled.pdf, {
+  const { pdf, drawnSizes } = await flattenCerfa(filled.pdf, {
     marks,
-    drawings: [...drawings, ...filled.overflows],
+    drawings: [...drawings.map(([, drawing]) => drawing), ...filled.overflows],
   });
   return {
     // `pdf` est une vue typée trop large pour `BlobPart` : on la repasse telle
     // quelle.
     pdf: new Blob([pdf as BlobPart], { type: "application/pdf" }),
     removedComments: filled.withoutComment.flatMap(commentOf),
+    typography: typographyOf({
+      texts: textsOf(cerfa, entries),
+      fieldSizes: filled.sizes,
+      drawn: drawings.map(([key], index) => [key, drawnSizes[index]]),
+    }),
   };
 }
 
@@ -91,16 +101,33 @@ function instructionsOf<Dto extends CerfaDto>(cerfa: Cerfa<Dto>, dto: Dto) {
   };
 }
 
-// Les textes à dessiner, un par position : un texte se répète sur chaque volet
-// qui le porte.
+// Les textes à dessiner, un par position, avec la clé de leur entrée : un
+// texte se répète sur chaque volet qui le porte.
 function drawingsOf<Dto extends CerfaDto>(cerfa: Cerfa<Dto>, dto: Dto) {
   return Object.entries(cerfa.drawings).flatMap(
-    ([key, { positions, singleLine }]): Drawing[] => {
+    ([key, { positions, singleLine }]): (readonly [string, Drawing])[] => {
       const text = dto.drawings[key];
       if (!isGiven(text)) return [];
       const size = TEXT_SIZES.target;
-      return positions.map((at) => ({ text, at, size, singleLine }));
+      return positions.map((at) => [key, { text, at, size, singleLine }]);
     },
+  );
+}
+
+// Chaque texte écrit dans un champ : la clé de son entrée, et le nom du champ.
+function textsOf<Dto extends CerfaDto>(
+  cerfa: Cerfa<Dto>,
+  entries: readonly FieldEntry[],
+) {
+  const written = new Set(
+    entries.flatMap((entry) => ("text" in entry ? [entry.field] : [])),
+  );
+  return Object.entries(
+    cerfa.fields as Readonly<Record<string, Binding>>,
+  ).flatMap(([key, binding]) =>
+    "field" in binding && !("state" in binding) && written.has(binding.field)
+      ? [[key, binding.field] as const]
+      : [],
   );
 }
 
