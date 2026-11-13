@@ -70,6 +70,9 @@ export const Q2_1_F = question
     "2_NON": "Non, il s’agit de déplacements ou de lieux différents",
   })
   .appliesWhen(plusieursSeances)
+  // Elle porte sur les séances cochées : d'autres séances, et sa réponse ne
+  // vaut plus (NAV-SOUS-QUESTIONS-20261113, SQ-25).
+  .dependsOn(Q1_3)
   .option("2_NON", (option) =>
     option.blocks(
       "Une simulation porte sur un seul déplacement. Corrigez les séances en Q1.3, puis faites une simulation par déplacement.",
