@@ -1,7 +1,8 @@
 // Une révision du premier résultat (docs/knowledge/CONTEXT.md, « Révision ») :
 // `r1`, `r2`… dans une simulation. Elle naît à l'affichage d'un R2, et tombe
 // quand une modification de P1 ou de P2 la rend caduque. Ce qu'elle dit au
-// journal ne vient que des sorties calculées (ADR-9).
+// journal ne vient que des sorties calculées (ADR-9). Les documents qui en
+// viennent portent son support et son mode (ADR-10).
 
 import type {
   AnalyticsEvent,
@@ -50,26 +51,35 @@ type ResultEvent = Pick<
   | "portions"
 >;
 
+type DocumentEvent = Pick<
+  AnalyticsEvent,
+  "type" | "screen" | "revision" | "document_id" | "support" | "mode"
+>;
+
 export class Revision {
   readonly id: string;
   readonly #rank: number;
+  readonly #shown: ShownResult;
 
-  private constructor(rank: number) {
+  private constructor(rank: number, shown: ShownResult) {
     this.#rank = rank;
+    this.#shown = shown;
     this.id = `r${rank}`;
   }
 
-  static first(): Revision {
-    return new Revision(1);
+  /** La première révision, née du R2 affiché. */
+  static first(shown: ShownResult): Revision {
+    return new Revision(1, shown);
   }
 
-  /** La révision qui la suit, quand elle est tombée. */
-  next(): Revision {
-    return new Revision(this.#rank + 1);
+  /** La révision qui la suit, quand elle est tombée, née du R2 affiché. */
+  next(shown: ShownResult): Revision {
+    return new Revision(this.#rank + 1, shown);
   }
 
   /** Son affichage, avec ce que le prescripteur a vu. */
-  displayed(shown: ShownResult): ResultEvent {
+  displayed(): ResultEvent {
+    const shown = this.#shown;
     return {
       type: "result_displayed",
       screen: "R2",
@@ -84,6 +94,30 @@ export class Revision {
   /** Sa chute, depuis la phase dont une page l'a rendue caduque. */
   invalidated(screen: AnalyticsEvent["screen"]): ResultEvent {
     return { type: "result_invalidated", screen, revision: this.id };
+  }
+
+  /** Une version de son document, affichée. */
+  documentDisplayed(documentId: string): DocumentEvent {
+    const codes = this.#shown.codes;
+    return {
+      type: "document_displayed",
+      screen: "R3",
+      revision: this.id,
+      document_id: documentId,
+      ...(codes?.support != null && { support: codes.support }),
+      ...(codes?.mode != null && { mode: codes.mode }),
+    };
+  }
+
+  /** Une génération ratée de son document. */
+  documentFailed(): DocumentEvent {
+    const codes = this.#shown.codes;
+    return {
+      type: "document_generation_failed",
+      screen: "R3",
+      revision: this.id,
+      ...(codes?.support != null && { support: codes.support }),
+    };
   }
 }
 

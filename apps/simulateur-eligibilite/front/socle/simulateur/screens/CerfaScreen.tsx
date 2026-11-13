@@ -9,7 +9,8 @@
 
 import type { ComponentType, ReactNode } from "react";
 import type { Read } from "../../../../core/socle/questionnaire-engine";
-import { CerfaDocument, dtoFrom } from "../../cerfa";
+import { useDocumentTracking } from "../../analytics";
+import { CerfaDocument, dtoFrom, fileNameOf } from "../../cerfa";
 
 import type { CerfaInput, Model } from "../../model";
 import { type DebugTraceProps, Stepper } from "../../questionnaire";
@@ -84,7 +85,8 @@ function CerfaActions({
 // Le cerfa de la préconisation figée, daté du jour où le complément a été
 // validé, rien quand elle n'en donne pas. Le modèle peut tenir la place de son
 // aperçu. Le texte et l'avis attendent que son PDF soit prêt ; les boutons le
-// précèdent. Sans cerfa, le texte et les boutons restent, sans avis.
+// précèdent. Sans cerfa, le texte et les boutons restent, sans avis. Le journal
+// reçoit le document prêt, tel qu'il se télécharge, et chaque échec.
 type CerfaProps = {
   model: Model;
   /** Ce que lisent les entrées du cerfa. */
@@ -98,6 +100,7 @@ type CerfaProps = {
 
 function Cerfa({ model, read, text, input, actions, feedback }: CerfaProps) {
   const { form, standIn, printLabel, downloadLabel } = model.cerfa;
+  const tracking = useDocumentTracking();
   const bound = read(form);
   if (!bound)
     return (
@@ -106,10 +109,12 @@ function Cerfa({ model, read, text, input, actions, feedback }: CerfaProps) {
         <CerfaActions {...actions} feedback={null} />
       </>
     );
+  const dto = dtoFrom(bound.mapping, read);
+  const file = fileNameOf(bound.cerfa.fileName, input.completedAt);
   return (
     <CerfaDocument
       cerfa={bound.cerfa}
-      dto={dtoFrom(bound.mapping, read)}
+      dto={dto}
       date={input.completedAt}
       printLabel={printLabel}
       downloadLabel={downloadLabel}
@@ -118,6 +123,8 @@ function Cerfa({ model, read, text, input, actions, feedback }: CerfaProps) {
       above={(ready) => (
         <CerfaActions {...actions} feedback={ready ? feedback : null} />
       )}
+      onReady={() => tracking.displayed({ file, dto })}
+      onFailure={tracking.failed}
     />
   );
 }

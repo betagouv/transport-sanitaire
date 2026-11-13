@@ -264,7 +264,15 @@ complément et le cerfa portent la révision du R2 qui les ouvre. Le journal des
 parcours s'en sert pour compter l'accès au premier résultat sur la première, et
 la répartition des issues sur la dernière valide (#386).
 _Chez l'éditeur_: « révision », « révision courante » (ANA-1015).
-_Avoid_: version, réservé à celle des règles et de l'app.
+_Avoid_: version, réservé à celle des règles, de l'app et du document R3.
+
+**Version du document**:
+Un document R3 dans une simulation, numéroté `d1`, `d2`… Son contenu et la
+révision dont il vient en font l'empreinte : le même document réaffiché garde
+sa version, un complément changé en ouvre une nouvelle. Une version tombe avec
+sa révision. Le journal des parcours la reçoit quand son PDF est prêt (#387).
+_Chez l'éditeur_: « version documentaire », `document_id` (ANA-1015).
+_Avoid_: révision, réservé au premier résultat.
 
 **Motif**:
 Une raison que le premier résultat affiche, telle que le catalogue de l'éditeur
