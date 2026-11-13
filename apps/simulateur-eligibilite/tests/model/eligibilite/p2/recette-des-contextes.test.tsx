@@ -4,15 +4,15 @@
 // NAV-Q221-PROGRESSIF-001 : le premier bloc et ses précisions sur une page,
 // le second sur la suivante, une validation chacune (D-252).
 //
-// L'éditeur nomme ces pages `P2/contextes-situations` et `P2/contextes-soins`.
-// Elles restent ici `P2/contextes` et `P2/soins` : seule la mesure d'audience,
-// qui n'est pas prévue (#305), lirait ces identifiants.
+// Les pages portent le nom que leur donne l'éditeur, `P2/contextes-situations`
+// et `P2/contextes-soins` : le journal des parcours l'envoie (ADR-8 d'analytics).
 //
 // Les cas qui ne s'appliquent pas :
 // - second-seul et aucun : Q2.2.1 se pose sur tout parcours (D-98), le premier
 //   bloc n'est jamais acquis d'avance et la page du second ne s'atteint pas
 //   sans lui ;
-// - analytics : la mesure d'audience par page n'est pas prévue (#305) ;
+// - analytics : les expositions de chaque page s'éprouvent avec le journal
+//   (`tests/model/eligibilite/journal-des-questions.test.tsx`) ;
 // - incompatible : la maternité et l'HTNM se cochent ensemble depuis la
 //   v10.1.8, et Q2.14.trajet précise le déplacement évalué (D-285).
 
@@ -64,17 +64,17 @@ const boutonSuivant = () => screen.getByRole("button", { name: "Suivant" });
 describe("la recette des deux pages des contextes (REC-Q221-PAGES-1016)", () => {
   it("deux-pages : le second bloc s'ouvre sur sa page, sans réponse", () => {
     const contextes = reprise(BRANCARD);
-    expect(contextes.page.id).toBe("P2/contextes");
+    expect(contextes.page.id).toBe("P2/contextes-situations");
 
     const soins = contextes.validate({ "Q2.2.1": ["0_AUCUNE"] });
 
-    expect(soins.page.id).toBe("P2/soins");
+    expect(soins.page.id).toBe("P2/contextes-soins");
     expect(idsSur(soins)).toEqual(["Q2.2.1.b"]);
     expect(duSecond(soins)).toEqual(Array(5).fill(undefined));
   });
 
   it("deux-pages, à l'écran : un Suivant par page", async () => {
-    const user = afficherLaPage("P2/contextes", BRANCARD);
+    const user = afficherLaPage("P2/contextes-situations", BRANCARD);
     await page(SITUATIONS);
     await cocher(user, /^Non, aucune de ces situations/);
     await suivant(user);
@@ -92,7 +92,7 @@ describe("la recette des deux pages des contextes (REC-Q221-PAGES-1016)", () => 
     });
 
     expect(fin.stage.name).toBe("resultat");
-    expect(fin.pages().map(({ id }) => id)).not.toContain("P2/soins");
+    expect(fin.pages().map(({ id }) => id)).not.toContain("P2/contextes-soins");
     expect(duSecond(fin)).toEqual(Array(5).fill(undefined));
   });
 
@@ -107,11 +107,11 @@ describe("la recette des deux pages des contextes (REC-Q221-PAGES-1016)", () => 
     expect(
       contextes.validate({ ...brouillon, "Q2.2.1.indication": "1_OUI" }).page
         .id,
-    ).toBe("P2/soins");
+    ).toBe("P2/contextes-soins");
   });
 
   it("qualifications, à l'écran : Suivant attend la précision", async () => {
-    const user = afficherLaPage("P2/contextes", CONSULTATION);
+    const user = afficherLaPage("P2/contextes-situations", CONSULTATION);
     await page(SITUATIONS);
     await cocher(user, /^Retour vers un établissement pénitentiaire/);
 
@@ -131,7 +131,7 @@ describe("la recette des deux pages des contextes (REC-Q221-PAGES-1016)", () => 
       const ensemble = [maternite, "5_HTNM"] as const;
       const contextes = reprise({ ...BRANCARD, "Q2.2.1": ensemble });
 
-      expect(contextes.page.id).toBe("P2/contextes");
+      expect(contextes.page.id).toBe("P2/contextes-situations");
       expect(question(contextes, "Q2.2.1").isAnsweredBy(ensemble)).toBe(true);
       expect(idsSur(contextes)).toEqual(["Q2.2.1", "Q2.14.trajet"]);
     },
@@ -151,7 +151,7 @@ describe("la recette des deux pages des contextes (REC-Q221-PAGES-1016)", () => 
   });
 
   it("vide, à l'écran : Suivant reste inactif sur chaque page", async () => {
-    const user = afficherLaPage("P2/contextes", BRANCARD);
+    const user = afficherLaPage("P2/contextes-situations", BRANCARD);
     await page(SITUATIONS);
     expect(boutonSuivant()).toBeDisabled();
 
@@ -169,9 +169,9 @@ describe("la recette des deux pages des contextes (REC-Q221-PAGES-1016)", () => 
     const soins = apres.back();
     const contextes = soins.back();
 
-    expect(soins.page.id).toBe("P2/soins");
+    expect(soins.page.id).toBe("P2/contextes-soins");
     expect(soins.answers["Q2.2.1.b"]).toEqual(["1_ATMP"]);
-    expect(contextes.page.id).toBe("P2/contextes");
+    expect(contextes.page.id).toBe("P2/contextes-situations");
     expect(contextes.answers["Q2.2.1"]).toEqual(["0_AUCUNE"]);
     expect(
       contextes.validate({ "Q2.2.1": ["0_AUCUNE"] }).answers["Q2.2.1.b"],
@@ -179,7 +179,7 @@ describe("la recette des deux pages des contextes (REC-Q221-PAGES-1016)", () => 
   });
 
   it("retour, à l'écran : Précédent rend le focus au titre du premier bloc", async () => {
-    const user = afficherLaPage("P2/contextes", BRANCARD);
+    const user = afficherLaPage("P2/contextes-situations", BRANCARD);
     await page(SITUATIONS);
     await cocher(user, /^Non, aucune de ces situations/);
     await suivant(user);
@@ -215,13 +215,13 @@ describe("la recette des deux pages des contextes (REC-Q221-PAGES-1016)", () => 
       "Q2.3.1": "1_CINQUANTE_KM_OU_MOINS",
     };
     const contextes = reprise(qualifie).back().back();
-    expect(contextes.page.id).toBe("P2/contextes");
+    expect(contextes.page.id).toBe("P2/contextes-situations");
 
     const sansRetour = contextes.validate({ "Q2.2.1": ["0_AUCUNE"] });
     expect(sansRetour.answers).not.toHaveProperty("Q2.2.1.indication");
     expect(sansRetour.answers).not.toHaveProperty("Q2.2.1.b");
     expect(sansRetour.answers["Q2.3.1"]).toBe("1_CINQUANTE_KM_OU_MOINS");
-    expect(sansRetour.page.id).toBe("P2/soins");
+    expect(sansRetour.page.id).toBe("P2/contextes-soins");
 
     const deNouveau = sansRetour.back();
     expect(idsSur(deNouveau, { "Q2.2.1": RETOUR })).toContain(

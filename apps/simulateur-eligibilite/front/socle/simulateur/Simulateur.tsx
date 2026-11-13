@@ -13,7 +13,11 @@
 import { type ComponentType, type ReactNode, useState } from "react";
 import type { Answers } from "../../../core/socle/questionnaire-engine";
 import { Simulation } from "../../../core/socle/simulation";
-import { useAldResultReached, useRecordTheJourney } from "../analytics";
+import {
+  JourneyProvider,
+  useAldResultReached,
+  useRecordTheJourney,
+} from "../analytics";
 import type { Model } from "../model";
 import { type DebugTraceProps, QuestionnaireForm } from "../questionnaire";
 import { aldPathwayOf } from "./ald-pathway";
@@ -53,7 +57,7 @@ export function Simulateur({
   DebugTrace,
 }: Props) {
   const [simulation, setSimulation] = useSimulation(model, seedAnswers);
-  useRecordTheJourney(model, simulation, seedAnswers !== null);
+  const journey = useRecordTheJourney(model, simulation, seedAnswers !== null);
   const screen: ScreenProps = {
     model,
     simulation,
@@ -61,7 +65,24 @@ export function Simulateur({
     DebugTrace,
     onRestart: onNewSimulation,
   };
+  return (
+    <JourneyProvider value={journey}>
+      <Stage screen={screen} developerToolsPanel={developerToolsPanel} />
+    </JourneyProvider>
+  );
+}
 
+// ---- implémentation ----
+
+// L'écran de l'étape où en est la simulation.
+function Stage({
+  screen,
+  developerToolsPanel,
+}: {
+  screen: ScreenProps;
+  developerToolsPanel: ReactNode;
+}) {
+  const { simulation } = screen;
   switch (simulation.stage.name) {
     case "questionnaire":
       return (
@@ -80,8 +101,6 @@ export function Simulateur({
       );
   }
 }
-
-// ---- implémentation ----
 
 // La simulation du parcours, au départ ou sur la seed, que l'adresse de la
 // page suit.
@@ -110,7 +129,7 @@ function FirstQuestionnaire({
       parts={parts}
       partCount={parts.length + 1}
       simulation={simulation}
-      tracked
+      counted
       endLabel="Voir le résultat"
       DebugTrace={DebugTrace}
       onChange={(next) => {
@@ -123,7 +142,8 @@ function FirstQuestionnaire({
   );
 }
 
-// Le second questionnaire n'émet pas d'évènement.
+// Le second questionnaire n'est pas compté par la mesure d'audience : seul le
+// journal le suit.
 function SecondQuestionnaire({
   model,
   simulation,
@@ -137,7 +157,7 @@ function SecondQuestionnaire({
       partsBefore={partsBefore}
       partCount={partsBefore + 1}
       simulation={simulation}
-      tracked={false}
+      counted={false}
       endLabel="Terminer"
       DebugTrace={DebugTrace}
       onChange={onChange}

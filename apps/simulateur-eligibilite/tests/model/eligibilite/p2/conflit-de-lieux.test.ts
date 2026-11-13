@@ -39,19 +39,19 @@ describe("un conflit de lieux certain", () => {
   it.each<Cas>([
     [
       "dialyse et permission de Q2.2.1.a",
-      "P2/contextes",
+      "P2/contextes-situations",
       "Q2.2.1.a",
       { ...DIALYSE, "Q2.1": "1_CONSULTATION", ...SEJOUR, "Q2.2.1.a": "1_OUI" },
     ],
     [
       "dialyse et hébergement",
-      "P2/contextes",
+      "P2/contextes-situations",
       "Q2.2.1",
       { ...DIALYSE, "Q2.1": "1_CONSULTATION", "Q2.2.1": ["5_HTNM"] },
     ],
     [
       "entrée et retour pénitentiaire",
-      "P2/contextes",
+      "P2/contextes-situations",
       "Q2.2.1",
       {
         ...SEUL,
@@ -61,7 +61,7 @@ describe("un conflit de lieux certain", () => {
     ],
     [
       "admission en HAD et retour pénitentiaire",
-      "P2/contextes",
+      "P2/contextes-situations",
       "Q2.2.1",
       {
         ...SEUL,
@@ -71,7 +71,7 @@ describe("un conflit de lieux certain", () => {
     ],
     [
       "admission en HAD, hébergement et séjour",
-      "P2/contextes",
+      "P2/contextes-situations",
       "Q2.2.1.cadre",
       {
         ...SEUL,
@@ -91,8 +91,10 @@ describe("un conflit de lieux certain", () => {
       ...SEJOUR,
       "Q2.2.1.a": "1_OUI",
     };
-    expect(alertes("P2/contextes", "Q2.2.1", reponses)).toEqual([]);
-    expect(alertes("P2/contextes", "Q2.2.1.cadre", reponses)).toEqual([]);
+    expect(alertes("P2/contextes-situations", "Q2.2.1", reponses)).toEqual([]);
+    expect(
+      alertes("P2/contextes-situations", "Q2.2.1.cadre", reponses),
+    ).toEqual([]);
   });
 
   it("bloque Suivant : R2 reste hors d'atteinte", () => {
@@ -102,7 +104,7 @@ describe("un conflit de lieux certain", () => {
       "Q2.2.1": ["5_HTNM"],
     });
     expect(simulation.stage.name).toBe("questionnaire");
-    expect(simulation.page.id).toBe("P2/contextes");
+    expect(simulation.page.id).toBe("P2/contextes-situations");
   });
 });
 
@@ -126,7 +128,9 @@ describe("les réponses à revoir d'un conflit certain", () => {
       "Q2.1": "1_CONSULTATION",
       "Q2.2.1": ["5_HTNM"],
     };
-    expect(revoir("P2/contextes", "Q2.2.1", reponses)).toEqual([SITUATION]);
+    expect(revoir("P2/contextes-situations", "Q2.2.1", reponses)).toEqual([
+      SITUATION,
+    ]);
   });
 
   it("une entrée se revoit à la nature du déplacement, Q2.1.g", () => {
@@ -135,7 +139,9 @@ describe("les réponses à revoir d'un conflit certain", () => {
       ...HOSPITALISATION("1_ENTREE"),
       "Q2.2.1": ["10_RETOUR_PENITENTIAIRE"],
     };
-    expect(revoir("P2/contextes", "Q2.2.1", reponses)).toEqual([SOUS_TYPE]);
+    expect(revoir("P2/contextes-situations", "Q2.2.1", reponses)).toEqual([
+      SOUS_TYPE,
+    ]);
   });
 
   it("deux réponses du déplacement : un lien, vers la première", () => {
@@ -145,9 +151,9 @@ describe("les réponses à revoir d'un conflit certain", () => {
       ...SEJOUR,
       "Q2.2.1": ["1_HOSPITALISATION", "5_HTNM"],
     };
-    expect(revoir("P2/contextes", "Q2.2.1.cadre", reponses)).toEqual([
-      SOUS_TYPE,
-    ]);
+    expect(revoir("P2/contextes-situations", "Q2.2.1.cadre", reponses)).toEqual(
+      [SOUS_TYPE],
+    );
   });
 });
 
@@ -162,7 +168,7 @@ describe("un conflit qu'un sens lèverait", () => {
     ],
     [
       "dialyse et retour pénitentiaire",
-      "P2/contextes",
+      "P2/contextes-situations",
       "Q2.2.1",
       {
         ...DIALYSE,
@@ -172,7 +178,7 @@ describe("un conflit qu'un sens lèverait", () => {
     ],
     [
       "hébergement et retour pénitentiaire",
-      "P2/contextes",
+      "P2/contextes-situations",
       "Q2.2.1",
       {
         ...SEUL,
@@ -182,7 +188,7 @@ describe("un conflit qu'un sens lèverait", () => {
     ],
     [
       "dialyse et soins en HAD",
-      "P2/contextes",
+      "P2/contextes-situations",
       "Q2.2.1.cadre",
       {
         ...DIALYSE,
@@ -194,7 +200,7 @@ describe("un conflit qu'un sens lèverait", () => {
     // Q3.1.2 ne propose que l'aller à une entrée (D-132) : P3 le dit.
     [
       "entrée et hébergement",
-      "P2/contextes",
+      "P2/contextes-situations",
       "Q2.2.1",
       { ...SEUL, ...HOSPITALISATION("1_ENTREE"), "Q2.2.1": ["5_HTNM"] },
     ],

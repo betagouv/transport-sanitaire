@@ -4,10 +4,15 @@
 
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { useState } from "react";
+import { type ReactNode, useState } from "react";
 import type { Answers } from "../../../core/socle/questionnaire-engine";
 import { Simulation } from "../../../core/socle/simulation";
 import { model } from "../../../front/models/eligibilite";
+import {
+  AnalyticsProvider,
+  type AnalyticsUseCases,
+  JourneyProvider,
+} from "../../../front/socle/analytics";
 import { QuestionnaireForm } from "../../../front/socle/questionnaire";
 
 type User = ReturnType<typeof userEvent.setup>;
@@ -28,13 +33,19 @@ export function afficherLeQuestionnaire(onComplete: () => void = () => {}) {
 
 // Le questionnaire rouvert sur cette page, avec ces réponses : un retour
 // depuis le résultat, sans dérouler les pages d'avant. Les réponses s'arrêtent
-// avant la page : la simulation reprend dessus.
-export function afficherLaPage(id: string, answers: Answers) {
+// avant la page : la simulation reprend dessus. Avec `analytics`, un parcours
+// s'ouvre, qui reçoit ce que le formulaire signale.
+export function afficherLaPage(
+  id: string,
+  answers: Answers,
+  analytics?: AnalyticsUseCases,
+) {
   const simulation = Simulation.resume(core, answers);
   if (simulation.page.id !== id) {
     throw new Error(`Ces réponses ouvrent ${simulation.page.id}, pas ${id}.`);
   }
-  render(<Formulaire depart={simulation} onComplete={() => {}} />);
+  const formulaire = <Formulaire depart={simulation} onComplete={() => {}} />;
+  render(analytics ? avecUnParcours(analytics, formulaire) : formulaire);
   return userEvent.setup();
 }
 
@@ -63,6 +74,20 @@ export async function avecUnProfessionnel(
 
 // ---- implémentation ----
 
+function avecUnParcours(analytics: AnalyticsUseCases, formulaire: ReactNode) {
+  const journey = analytics.startASimulation.execute({
+    rattachement: null,
+    seeded: false,
+  });
+  return (
+    <AnalyticsProvider value={analytics}>
+      <JourneyProvider value={{ current: journey }}>
+        {formulaire}
+      </JourneyProvider>
+    </AnalyticsProvider>
+  );
+}
+
 // Le formulaire garde la simulation ; atteindre le résultat ne l'enlève pas
 // de l'écran.
 function Formulaire({
@@ -78,7 +103,7 @@ function Formulaire({
       parts={core.questionnaire}
       partCount={3}
       endLabel="Voir le résultat"
-      tracked={false}
+      counted={false}
       simulation={simulation}
       onChange={(next) => {
         if (next.stage.name === "resultat") onComplete();

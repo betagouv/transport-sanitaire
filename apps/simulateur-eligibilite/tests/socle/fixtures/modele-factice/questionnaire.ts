@@ -22,7 +22,7 @@ const question = questionsOf<Questions, Faits, Cibles>({
 /** Modifiables tant que le résultat n'est pas verrouillé. */
 export const PARTS: readonly QuestionnairePart<Questions, undefined>[] = [
   {
-    id: "commande",
+    id: "P1",
     title: "Questionnaire factice",
     pages: [
       page(
@@ -50,7 +50,7 @@ export const PARTS: readonly QuestionnairePart<Questions, undefined>[] = [
 
 /** Posée après le verrou : elle complète, elle ne décide plus. */
 export const COMPLEMENT: QuestionnairePart<Questions, Cibles> = afterLock({
-  id: "complement",
+  id: "P3",
   title: "Compléter la commande",
   pages: [
     page(

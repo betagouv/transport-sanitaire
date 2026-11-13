@@ -52,7 +52,7 @@ describe("quand la page de la convocation se pose", () => {
     "propose la convocation en Q2.2.1.b après Q2.1 = %s",
     (motif) => {
       const reponses: Reponses = { ...CONVOQUE, "Q2.1": motif };
-      const question = posee("P2/soins", "Q2.2.1.b", reponses);
+      const question = posee("P2/contextes-soins", "Q2.2.1.b", reponses);
       const valeurs =
         question?.kind === "multiple choice"
           ? question.options.map(({ value }) => value)

@@ -88,7 +88,7 @@ function Formulaire() {
       parts={PARTS}
       partCount={3}
       endLabel="Terminer"
-      tracked={false}
+      counted={false}
       simulation={simulation}
       onChange={setSimulation}
     />
