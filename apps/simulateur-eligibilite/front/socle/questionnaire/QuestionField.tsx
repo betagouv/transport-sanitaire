@@ -2,9 +2,10 @@
 // groupe porte l'identifiant de sa question : un lien qui la rouvre y pose le
 // focus.
 
-import type { ReactNode } from "react";
+import { type ReactNode, useState } from "react";
 import {
   type Answer,
+  type AnswerProblem,
   type AskedQuestion,
   isAddress,
   type Unanswered,
@@ -150,14 +151,19 @@ function NumberQuestionField(props: Props & { question: NumberQuestion }) {
   );
 }
 
+// Une date que le navigateur ne lit pas laisse la réponse vide : le message
+// vient du champ, pas de la réponse.
 function DateQuestionField(props: Props & { question: DateQuestion }) {
   const { question } = props;
+  const [unreadable, setUnreadable] = useState(false);
+  const errors = unreadable ? [messageOf(INVALID_DATE)] : props.errors;
   return (
     <DateField
-      {...text(props)}
+      {...text({ ...props, errors })}
       withTime={question.kind === "datetime"}
       min={question.min}
       max={question.max}
+      onBadInput={setUnreadable}
     />
   );
 }
@@ -228,6 +234,8 @@ function SingleCheckboxField(props: Props & { question: CheckboxQuestion }) {
 }
 
 const CHECKED = "coche";
+
+const INVALID_DATE: AnswerProblem = { kind: "invalid date" };
 
 // Ce qu'une saisie de texte reçoit en plus. Un champ vidé n'est plus répondu.
 function text(props: Props) {

@@ -87,6 +87,7 @@ export class AskedDate extends AskedCommon {
 
   protected override formatProblemOf(answer: Answer): AnswerProblem | NoError {
     if (typeof answer !== "string" || answer.trim() === "") return MISSING;
+    if (!isRealDate(answer, this.kind)) return { kind: "invalid date" };
     const { min, max } = this;
     if (min !== undefined && answer < min) return { kind: "date before", min };
     if (max !== undefined && answer > max) return { kind: "date after", max };
@@ -116,4 +117,26 @@ export class AskedCheckbox extends AskedCommon {
   override kept(answer: Answer | Unanswered): Answer | Unanswered {
     return typeof answer === "boolean" ? answer : undefined;
   }
+}
+
+// ---- implémentation ----
+
+const DATE = /^(\d{4})-(\d{2})-(\d{2})$/;
+const DATE_AND_TIME =
+  /^(\d{4})-(\d{2})-(\d{2})T([01]\d|2[0-3]):[0-5]\d(:[0-5]\d)?$/;
+
+// Une date du calendrier, `AAAA-MM-JJ`, suivie de son heure pour une date et
+// heure. `setUTCFullYear` garde les années à deux chiffres que le navigateur
+// donne en cours de saisie (`0020`).
+function isRealDate(answer: string, kind: "date" | "datetime"): boolean {
+  const match = (kind === "date" ? DATE : DATE_AND_TIME).exec(answer);
+  if (!match) return false;
+  const [year, month, day] = match.slice(1, 4).map(Number) as [
+    number,
+    number,
+    number,
+  ];
+  const date = new Date(0);
+  date.setUTCFullYear(year, month - 1, day);
+  return date.getUTCMonth() === month - 1 && date.getUTCDate() === day;
 }

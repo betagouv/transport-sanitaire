@@ -13,6 +13,8 @@ export type AnswerProblem =
   | { readonly kind: "not an integer" }
   | { readonly kind: "number below"; readonly min: number }
   | { readonly kind: "number above"; readonly max: number }
+  /** Une date qui n'est pas au calendrier, comme le 31 février. */
+  | { readonly kind: "invalid date" }
   /** Les bornes d'une date s'écrivent au format ISO, comme la réponse. */
   | { readonly kind: "date before"; readonly min: string }
   | { readonly kind: "date after"; readonly max: string }

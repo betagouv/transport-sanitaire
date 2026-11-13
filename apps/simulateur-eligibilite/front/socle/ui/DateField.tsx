@@ -20,6 +20,12 @@ type Props = {
   errors?: readonly string[];
   /** Met le libellé en avant, quand le champ est la question de la page. */
   lead?: boolean;
+  /**
+   * Le navigateur garde pour lui une date qui n'existe pas (le 31/02), ou
+   * incomplète : sa valeur est vide, seul `badInput` la signale. Dit en
+   * quittant le champ, et levé dès que la saisie redevient lisible.
+   */
+  onBadInput?: (bad: boolean) => void;
 };
 
 export function DateField(props: Props) {
@@ -43,7 +49,11 @@ export function DateField(props: Props) {
         value: props.value,
         min: props.min,
         max: props.max,
-        onChange: (e) => props.onChange(e.target.value),
+        onChange: (e) => {
+          if (!e.target.validity.badInput) props.onBadInput?.(false);
+          props.onChange(e.target.value);
+        },
+        onBlur: (e) => props.onBadInput?.(e.target.validity.badInput),
       }}
     />
   );
