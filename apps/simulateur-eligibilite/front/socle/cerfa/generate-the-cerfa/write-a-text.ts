@@ -18,7 +18,15 @@ export type Text = {
 export type WrittenText = {
   readonly overflows: readonly Drawing[];
   readonly withoutComment: boolean;
+  /**
+   * La taille à laquelle le texte s'imprime, en points : dans son champ, ou la
+   * plus petite de ses dessins sous le cadre (ADR-12 de l'analytics).
+   */
+  readonly size: number | NotPrinted;
 };
+
+/** Le champ n'a aucun widget : le texte ne s'imprime nulle part. */
+type NotPrinted = null;
 
 export function writeText(
   document: PDFDocument,
@@ -56,9 +64,9 @@ function writeWithComment(
   { text, comment = "" }: Text,
 ): WrittenText | NotWritten {
   const full = [text, comment].filter((part) => part !== "").join(" ; ");
-  return writeIfFits(field, font, full)
-    ? { overflows: [], withoutComment: false }
-    : undefined;
+  const size = writeIfFits(field, font, full);
+  if (size === undefined) return undefined;
+  return { overflows: [], withoutComment: false, size };
 }
 
 // Le texte seul, son commentaire retiré, s'il tient dans le cadre.
@@ -68,9 +76,9 @@ function writeWithoutComment(
   { text, comment }: Text,
 ): WrittenText | NotWritten {
   if (!comment) return undefined;
-  return writeIfFits(field, font, text)
-    ? { overflows: [], withoutComment: true }
-    : undefined;
+  const size = writeIfFits(field, font, text);
+  if (size === undefined) return undefined;
+  return { overflows: [], withoutComment: true, size };
 }
 
 // Le texte seul, à la ligne, rapetissé jusqu'à `floor` au plus (D-193, #341).
@@ -84,7 +92,7 @@ function writeShrunk(
   if (fontSize === undefined) return undefined;
   field.enableMultiline();
   write(field, text, fontSize);
-  return { overflows: [], withoutComment: Boolean(comment) };
+  return { overflows: [], withoutComment: Boolean(comment), size: fontSize };
 }
 
 // Rien dans le champ : le texte seul se dessinera sous chaque widget, s'il en
@@ -97,7 +105,7 @@ function overflowIfNear(
 ): WrittenText | NotWritten {
   const widgets = field.acroField.getWidgets();
   const overflows = nearOverflowsOf(document, widgets, font, text);
-  return overflows && { overflows, withoutComment: Boolean(comment) };
+  return overflows && drawn(overflows, comment);
 }
 
 // Rien dans le champ : le texte seul se dessinera sous chaque widget.
@@ -107,22 +115,35 @@ function overflow(
   font: PDFFont,
   { text, comment }: Text,
 ): WrittenText {
+  const widgets = field.acroField.getWidgets();
+  return drawn(overflowsOf(document, widgets, font, text), comment);
+}
+
+// Le texte dessiné sous son cadre : il s'imprime à la plus petite taille de
+// ses dessins.
+function drawn(
+  overflows: readonly Drawing[],
+  comment: string | undefined,
+): WrittenText {
+  const sizes = overflows.map(({ size }) => size);
   return {
-    overflows: overflowsOf(document, field.acroField.getWidgets(), font, text),
+    overflows,
     withoutComment: Boolean(comment),
+    size: sizes.length > 0 ? Math.min(...sizes) : null,
   };
 }
 
-// Écrit `text` à la plus grande taille où il tient, s'il y en a une.
+// Écrit `text` à la plus grande taille où il tient, s'il y en a une : donne
+// cette taille.
 function writeIfFits(
   field: PDFTextField,
   font: PDFFont,
   text: string,
-): boolean {
+): number | NotWritten {
   const fontSize = sizeInField(field, font, text);
-  if (fontSize === undefined) return false;
+  if (fontSize === undefined) return undefined;
   write(field, text, fontSize);
-  return true;
+  return fontSize;
 }
 
 function write(field: PDFTextField, text: string, fontSize: number): void {

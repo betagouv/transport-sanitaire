@@ -28,6 +28,7 @@ import {
   type GeneratedCerfa,
   generateCerfa,
 } from "./generate-the-cerfa/generate-the-cerfa";
+import type { Typography } from "./generate-the-cerfa/typography";
 import { download, fileNameOf } from "./pdf/download-a-pdf";
 import {
   PdfActionButton,
@@ -49,8 +50,8 @@ type Props<Dto extends CerfaDto> = {
   standIn?: ReactNode;
   /** Ce qui précède le document, selon que son PDF est prêt ou non. */
   above?: (ready: boolean) => ReactNode;
-  /** Le PDF est prêt, et affiché. */
-  onReady?: () => void;
+  /** Le PDF est prêt, et affiché : la taille de ses textes imprimés. */
+  onReady?: (typography: Typography) => void;
   /** Une génération a échoué. */
   onFailure?: () => void;
   signals?: PdfSignals;
@@ -169,7 +170,7 @@ function useSignals(
 ) {
   // biome-ignore lint/correctness/useExhaustiveDependencies: un signal par issue arrivée
   useEffect(() => {
-    if (settled?.status === "ready") onReady?.();
+    if (settled?.status === "ready") onReady?.(settled.typography);
     if (settled?.status === "failed") onFailure?.();
   }, [settled]);
 }

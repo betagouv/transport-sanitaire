@@ -275,6 +275,14 @@ sa révision. Le journal des parcours la reçoit quand son PDF est prêt (#387).
 _Chez l'éditeur_: « version documentaire », `document_id` (ANA-1015).
 _Avoid_: révision, réservé au premier résultat.
 
+**Taille imprimée**:
+La taille, en points, où un champ rempli du document R3 s'imprime vraiment,
+après le rapetissement qui le fait tenir. Un texte porté par plusieurs volets
+garde la plus petite. Le journal des parcours la reçoit par version, sous la clé
+du champ dans le DTO, sans son texte (#389).
+_Chez l'éditeur_: « mesure typographique », `font_size_pt`.
+_Avoid_: taille de police, qui dit la taille de départ.
+
 **Motif**:
 Une raison que le premier résultat affiche, telle que le catalogue de l'éditeur
 l'écrit, avec son identifiant : le contexte d'une fiche positive (`E-B`), une
