@@ -71,8 +71,9 @@ export const Q2_1_F = question
   })
   .appliesWhen(plusieursSeances)
   // Elle porte sur les séances cochées : d'autres séances, et sa réponse ne
-  // vaut plus (NAV-SOUS-QUESTIONS-20261113, SQ-25).
-  .dependsOn(Q1_3)
+  // vaut plus ; un motif de plus ne change rien (NAV-SOUS-QUESTIONS-20261113,
+  // SQ-25).
+  .dependsOn({ question: Q1_3, options: SEANCES })
   .option("2_NON", (option) =>
     option.blocks(
       "Une simulation porte sur un seul déplacement. Corrigez les séances en Q1.3, puis faites une simulation par déplacement.",

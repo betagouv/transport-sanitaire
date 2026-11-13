@@ -10,6 +10,7 @@ import { describe, expect, it } from "vitest";
 import { model } from "../../../core/models/eligibilite";
 import type { Questions } from "../../../core/models/eligibilite/questions/reponses";
 import {
+  type Answer,
   type Answers,
   answerOnPage,
   commitPage,
@@ -38,19 +39,16 @@ const TOUT: Answers = Object.fromEntries(
 );
 
 // Les réponses qu'efface la page de `id` validée avec une autre réponse à `id`.
-const effaceesPar = (id: string) => {
+const effaceesPar = (id: string, autre: Answer = "autre", depuis = TOUT) => {
   const page = pages.find((page) =>
     page.questions.some((question) => question.id === id),
   );
   if (page === undefined) throw new Error(`${id} n'est sur aucune page`);
   const surLaPage = Object.fromEntries(
-    page.questions.map((question) => [question.id, TOUT[question.id]]),
+    page.questions.map((question) => [question.id, depuis[question.id]]),
   );
-  const apres = commitPage(pages, TOUT, page, {
-    ...surLaPage,
-    [id]: "une autre réponse",
-  });
-  return Object.keys(TOUT).filter((question) => !(question in apres));
+  const apres = commitPage(pages, depuis, page, { ...surLaPage, [id]: autre });
+  return Object.keys(depuis).filter((question) => !(question in apres));
 };
 
 // Le parcours tel que l'écran le lit, filtrage par le graphe compris.
@@ -124,10 +122,18 @@ describe("une réponse changée en P1 (COR-23)", () => {
   );
 
   // Q2.1.f porte sur les séances cochées : d'autres séances, et sa réponse
-  // ne vaut plus, même si elle se pose encore (NAV-SOUS-QUESTIONS-20261113,
-  // SQ-25).
-  it("Q1.3 efface aussi Q2.1.f, et garde le motif du trajet", () => {
-    expect(effaceesPar("Q1.3")).toEqual(["Q2.1.f", "Q2.2.1.indication"]);
+  // ne vaut plus, même si elle se pose encore ; les mêmes, et elle tient
+  // (NAV-SOUS-QUESTIONS-20261113, SQ-25).
+  const [CHIMIO, RADIO] = ["3_CHIMIOTHERAPIE", "4_RADIOTHERAPIE"];
+  const q13 = (...cas: string[]) =>
+    effaceesPar("Q1.3", cas, { ...TOUT, "Q1.3": [CHIMIO, RADIO] });
+  it("d'autres séances effacent aussi Q2.1.f, et gardent le motif", () => {
+    expect(q13(CHIMIO, "5_DIALYSE")).toEqual(["Q2.1.f", "Q2.2.1.indication"]);
+  });
+  it("les mêmes séances, avec un accident en plus, gardent Q2.1.f", () => {
+    expect(q13(CHIMIO, RADIO, "9_ACCIDENT_TIERS")).toEqual([
+      "Q2.2.1.indication",
+    ]);
   });
 });
 
