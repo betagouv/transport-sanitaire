@@ -6,6 +6,7 @@
 
 import type { AnyFaits, CoreModel, Preconisation } from "../model.ts";
 import {
+  type Answer,
   type Answers,
   type AnyCibles,
   type AskedQuestion,
@@ -130,14 +131,15 @@ export class Simulation {
     return asked.filter((page) => this.#core.complement.pages.includes(page));
   }
 
-  /**
-   * Les questions de cette page. `draft`, le brouillon lu par-dessus les
-   * réponses validées, peut en révéler une autre sur la même page.
-   */
+  /** Les questions de cette page, avec ce brouillon par-dessus ses réponses. */
   questionsOn(page: Page, draft?: Answers): readonly AskedQuestion[] {
-    if (!draft) return this.#reading.questionsOn(page);
-    const shown = { ...this.answers, ...draft };
-    return readAt(this.#core, this.stage, shown).questionsOn(page);
+    const shown = draft ? this.#reading.withDraft(page, draft) : this.#reading;
+    return shown.questionsOn(page);
+  }
+
+  /** Le brouillon de la page ouverte après cette saisie (`Reading.answerOn`). */
+  answerOnPage(draft: Answers, id: string, answer?: Answer): Answers {
+    return this.#reading.answerOn(this.page, draft, id, answer);
   }
 
   /** La place de la page ouverte dans sa partie (`place-in-part.ts`). */
