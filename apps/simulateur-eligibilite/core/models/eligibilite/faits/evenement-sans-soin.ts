@@ -1,14 +1,16 @@
 // fait_evenement_sans_soin : fondement autonome sans soin associé.
 //
-// Seule une qualification positive du même trajet l'établit : une permission
-// d'un mineur admissible, d'un adulte autorisée (Q2.7 = 3), d'un adulte à sa
+// Il dit un fondement autonome qualifié, pas l'absence de tout soin. Une
+// qualification positive du même trajet l'établit : une permission d'un
+// mineur admissible, d'un adulte autorisée (Q2.7 = 3), d'un adulte à sa
 // charge confirmée, une convocation qualifiée en Q2.10, ou l'Engagement
-// maternité. Un soin ordinaire de Q2.1 n'est pas un événement autonome : il
-// vaut « non ». « Autre motif » n'établit rien, ni une convocation seulement
-// signalée : le fait reste inconnu (D-282).
+// maternité. Il vaut « non » quand la permission, la convocation et
+// l'Engagement maternité sont tous trois écartés. Un soin ordinaire de Q2.1
+// n'en écarte aucun, et « Autre motif » n'établit rien : le fait reste alors
+// inconnu.
 //
-// Il suit `CONTRAT_REPONSES_FAITS.json` (son `raccordement_actuel`) et
-// FAIT-EVENEMENT-SANS-SOIN-20261112.
+// Il suit `CONTRAT_REPONSES_FAITS.json`, FAIT-EVENEMENT-SANS-SOIN-20261113
+// (module 01) et `qualifier-evenement-autonome.mjs`.
 
 import { unFait } from "../../../socle/index.ts";
 import { given } from "./communs.ts";
@@ -33,18 +35,10 @@ export const evenementSansSoin = unFait("fait_evenement_sans_soin")
   .ouiSi(given.fait("fait_dap_maternite").isOui(), "L'Engagement maternité.")
   .nonSi(
     given
-      .question("Q2.1")
-      .answer()
-      .isOneOf(
-        "1_CONSULTATION",
-        "2_DENTISTE_OU_SAGE_FEMME",
-        "3_IMAGERIE",
-        "4_BIOLOGIE",
-        "5_PARAMEDICAL",
-        "7_PSYCHOLOGUE",
-        "8_HOSPITALISATION",
-        "9_TRANSFERT",
-      ),
-    "Un soin, pas un événement autonome.",
+      .fait("fait_permission")
+      .isNon()
+      .and(given.fait("fait_convocation").isNon())
+      .and(given.fait("fait_dap_maternite").isNon()),
+    "Ni permission, ni convocation, ni Engagement maternité.",
   )
   .sinon("Aucune qualification positive du trajet.");

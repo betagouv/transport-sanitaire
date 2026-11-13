@@ -81,7 +81,9 @@ describe("le S3141", () => {
 
 // Le tiers recueilli en Q1.3, reporté tel quel sur le S3141 pour tous les
 // allers-retours prescrits (TS1018-05, DOC-Q13-TIERS-20261104). Sans réponse
-// à Q1.3, rien ne s'invente : ni case, ni date.
+// à Q1.3, rien ne s'invente : ni case, ni date. Q1.3 se pose dans tous les
+// parcours, avant le verrou : la reprise en Q3.6 de l'éditeur
+// (DOC-S3141-REPRISE-TIERS-20261113) n'a rien à rattraper (D-290).
 describe("le tiers sur le S3141", () => {
   const { "Q1.3": _, ...SANS_Q13 } = PERMISSIONS;
 

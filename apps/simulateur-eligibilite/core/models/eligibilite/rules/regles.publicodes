@@ -252,8 +252,9 @@ cible_reconnaissance_mineur_inconnue_decisive:
     - est non défini: fait_mineur_soins_prolonges_reconnus
     - cible_autre_motif_hors_mineur = non
 # Les inconnues restantes sont nommées par branche ; pas de drapeau
-# générique inventé par l'interface. Une permission ou une exception
-# article 80 encore inconnue après les questions requises relève de la caisse.
+# générique inventé par l’interface. Une permission non qualifiable conserve
+# son orientation dédiée ; une exception article 80 répondable encore manquante
+# interdit la complétion tant qu’elle peut changer la décision.
 cible_couverture_inconnue_decisive:
   une de ces conditions:
     - toutes ces conditions:
@@ -499,12 +500,47 @@ cible_question_urgence_requise:
     - une de ces conditions:
         - fait_htnm_hors_maternite = non
         - fait_htnm_segment_verifie
+# Une exception encore indéterminée n'est pas une réponse Non.
+# Ne pas bloquer une issue prioritaire déjà établie indépendamment d'article 80.
+cible_exception_article80_inconnue_decisive:
+  valeur:
+    variations:
+      - si:
+          une de ces conditions:
+            - toutes ces conditions:
+                - est défini: fait_exclusion_transport_prouvee
+                - fait_exclusion_transport_prouvee
+            - toutes ces conditions:
+                - est défini: cible_point_cnam
+                - cible_point_cnam
+            - toutes ces conditions:
+                - est défini: cible_incertitude_dialyse_decisive
+                - cible_incertitude_dialyse_decisive
+            - toutes ces conditions:
+                - est défini: cible_preuve_ald_inconnue_decisive
+                - cible_preuve_ald_inconnue_decisive
+            - toutes ces conditions:
+                - est défini: cible_reconnaissance_mineur_inconnue_decisive
+                - cible_reconnaissance_mineur_inconnue_decisive
+            - toutes ces conditions:
+                - est défini: cible_convocation_inconnue_decisive
+                - cible_convocation_inconnue_decisive
+            - toutes ces conditions:
+                - est défini: cible_couverture_inconnue_decisive
+                - cible_couverture_inconnue_decisive
+        alors: non
+      - sinon:
+          toutes ces conditions:
+            - est défini: fait_transfert_article80
+            - fait_transfert_article80
+            - est non défini: cible_exception_article80
 cible_decision_calculable:
   toutes ces conditions:
     - fait_p1_complete
     - fait_p2_complete
     - cible_mode_coherent
     - cible_finalite_longue_distance_decisive = non
+    - cible_exception_article80_inconnue_decisive = non
     - une de ces conditions:
         - cible_question_urgence_requise = non
         - fait_urgence_repondue

@@ -100,7 +100,7 @@ describe("les lieux que les contextes de P2 fixent (matrice des lieux)", () => {
   });
 });
 
-describe("le côté de l'USLD et de l'EHPAD de Q2.6 (#400)", () => {
+describe("le côté de l'USLD et de l'EHPAD de Q2.6 (#400, #421)", () => {
   const sortie: Reponses = {
     ...RETOUR,
     "Q2.2.1": ["1_HOSPITALISATION"],
@@ -133,25 +133,47 @@ describe("le côté de l'USLD et de l'EHPAD de Q2.6 (#400)", () => {
     ).toEqual(["Q3.lieux.usld.cote"]);
     expect(
       optionsDe("P3/arrivee", "Q3.lieux.usld.cote", versUneStructure),
-    ).toEqual(["1_DEPART", "2_ARRIVEE"]);
+    ).toEqual(["1_DEPART", "2_ARRIVEE", "3_LES_DEUX"]);
     expect(
       posee("P3/arrivee", "Q3.lieux.usld.cote", versUneStructure).label,
     ).toBe("De quel côté se trouve l’unité de soins de longue durée (USLD) ?");
   });
 
-  it("le côté répondu fait de ce lieu l'USLD, rappelée nulle part ailleurs", () => {
-    const aLArrivee: Reponses = {
-      ...sortie,
-      "Q3.3.categorie": "2_STRUCTURE_DE_SOINS",
-      "Q3.lieux.usld.cote": "2_ARRIVEE",
+  it.each(["2_ARRIVEE", "3_LES_DEUX"] as const)(
+    "le côté répondu (%s) fait de l'arrivée l'USLD, rappelée nulle part ailleurs",
+    (cote) => {
+      const aLArrivee: Reponses = {
+        ...sortie,
+        "Q3.3.categorie": "2_STRUCTURE_DE_SOINS",
+        "Q3.lieux.usld.cote": cote,
+      };
+      expect(ids("P3/arrivee", aLArrivee)).toEqual([
+        "Q3.3.categorie",
+        "Q3.lieux.usld.cote",
+        "Q3.3.nom",
+        "Q3.3.service",
+        "Q3.3.adresse",
+      ]);
+    },
+  );
+
+  it("l'EHPAD d'un transfert entre deux autres lieux se demande en toutes lettres, les deux côtés compris", () => {
+    const versUnAutreLieu: Reponses = {
+      ...ALLER,
+      "Q2.5": "1_TRANSFERT",
+      "Q2.6": ["7_EHPAD"],
+      "Q3.2.categorie": "3_AUTRE_LIEU",
+      "Q3.2.adresse": ADRESSE,
+      "Q3.3.categorie": "3_AUTRE_LIEU",
     };
-    expect(ids("P3/arrivee", aLArrivee)).toEqual([
-      "Q3.3.categorie",
-      "Q3.lieux.usld.cote",
-      "Q3.3.nom",
-      "Q3.3.service",
-      "Q3.3.adresse",
-    ]);
+    expect(
+      posee("P3/arrivee", "Q3.lieux.ehpad.cote", versUnAutreLieu).label,
+    ).toBe(
+      "De quel côté se trouve l’établissement d’hébergement pour personnes âgées dépendantes (EHPAD) ?",
+    );
+    expect(
+      optionsDe("P3/arrivee", "Q3.lieux.ehpad.cote", versUnAutreLieu),
+    ).toEqual(["1_DEPART", "2_ARRIVEE", "3_LES_DEUX"]);
   });
 
   it("une entrée depuis le domicile place l'USLD à l'arrivée, sans le demander", () => {
@@ -221,12 +243,13 @@ describe("le côté de l'USLD et de l'EHPAD de Q2.6 (#400)", () => {
   });
 
   it("aucun changement de R2 en P3 : le côté répondu ne change pas l'issue", () => {
-    const cibles = (cote: "1_DEPART" | "2_ARRIVEE") =>
+    const cibles = (cote: "1_DEPART" | "2_ARRIVEE" | "3_LES_DEUX") =>
       preconisationOf(model, {
         ...sortie,
         "Q3.3.categorie": "2_STRUCTURE_DE_SOINS",
         "Q3.lieux.usld.cote": cote,
       }).cibles;
     expect(cibles("1_DEPART")).toEqual(cibles("2_ARRIVEE"));
+    expect(cibles("3_LES_DEUX")).toEqual(cibles("2_ARRIVEE"));
   });
 });

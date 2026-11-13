@@ -1,6 +1,7 @@
-// L'événement sans soin (FAIT-EVENEMENT-SANS-SOIN-20261112, v10.1.8) : seule
-// une qualification positive du même trajet l'établit. « Autre motif » seul
-// n'établit rien (D-282).
+// L'événement sans soin (FAIT-EVENEMENT-SANS-SOIN-20261113, correctif v10.1.8) :
+// une qualification positive du même trajet l'établit, et il ne vaut « non »
+// que si la permission, la convocation et l'Engagement maternité sont tous
+// écartés. Un soin ordinaire de Q2.1 n'écarte rien (D-282).
 
 import { describe, expect, it } from "vitest";
 import { MATERNITE_ETABLIE } from "./reponses-de-la-branche";
@@ -32,8 +33,8 @@ describe("l'événement sans soin", () => {
     expect(evenement(reponses)).toBe(true);
   });
 
-  it("« Autre motif » seul n'établit rien, et le transport n'est pas pris en charge", () => {
-    expect(evenement(SANS_SITUATION)).toBeUndefined();
+  it("sans permission, convocation ni maternité, il vaut « non », et le transport n'est pas pris en charge", () => {
+    expect(evenement(SANS_SITUATION)).toBe(false);
     expect(ciblesDe(SANS_SITUATION).cible_issue_id.value).toBe(
       "ISSUE_NON_ELIGIBLE",
     );

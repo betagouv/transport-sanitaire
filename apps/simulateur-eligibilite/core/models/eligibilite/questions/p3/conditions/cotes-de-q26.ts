@@ -1,7 +1,8 @@
 // Le côté de l'USLD et de l'EHPAD que Q2.6 cite (QST-LIEUX-TROIS-CATEGORIES-20261105,
-// `contraintes-lieux.mjs`). Q2.6 prouve la nature de l'un des deux lieux, pas
-// lequel : P2 la place quand elle le peut, les catégories choisies en P3
-// réduisent les côtés possibles, et seul un doute qui reste se demande.
+// QST-COTE-LIEUX-20261113, `contraintes-lieux.mjs`). Q2.6 prouve la nature d'un
+// lieu au moins, pas lequel : un côté, ou les deux quand les deux extrémités
+// la permettent. P2 la place quand elle le peut, les catégories choisies en P3
+// réduisent les placements possibles, et seul un doute qui reste se demande.
 //
 // Une catégorie ne prouve pas une USLD : elle écarte seulement les côtés où
 // elle ne pourrait pas être.
@@ -19,11 +20,14 @@ import {
 
 export type { NatureDeQ26 };
 
-/** Le côté de chaque nature de Q2.6, quand on le connaît. */
 /** Aucune structure de Q2.6 n'est à coup sûr à ce lieu. */
 type PasCertaine = undefined;
 
-export type Repartition = { readonly [Nature in NatureDeQ26]?: Extremite };
+/** Où se trouve une nature de Q2.6 : un côté, ou les deux. */
+export type Placement = Extremite | "les_deux";
+
+/** Le placement de chaque nature de Q2.6, quand on le connaît. */
+export type Repartition = { readonly [Nature in NatureDeQ26]?: Placement };
 
 /** Ce que P3 a déjà dit des lieux : leur catégorie, le côté répondu. */
 export type Choix = {
@@ -40,21 +44,21 @@ export function repartitions(entrees: Entrees, choix: Choix): Repartition[] {
     (partielles, nature) =>
       partielles.flatMap((partielle) =>
         candidats(nature, entrees, choix)
-          .filter((cote) => !Object.values(partielle).includes(cote))
-          .map((cote) => ({ ...partielle, [nature]: cote })),
+          .filter((placement) => !dejaOccupe(partielle, placement))
+          .map((placement) => ({ ...partielle, [nature]: placement })),
       ),
     [{}],
   );
 }
 
-/** Les côtés où cette nature de Q2.6 peut encore être. */
-export function cotesPossibles(
+/** Les placements que cette nature de Q2.6 peut encore prendre. */
+export function placementsPossibles(
   nature: NatureDeQ26,
   entrees: Entrees,
   choix: Choix,
-): Extremite[] {
-  const cotes = repartitions(entrees, choix).map((r) => r[nature]);
-  return EXTREMITES.filter((extremite) => cotes.includes(extremite));
+): Placement[] {
+  const vus = repartitions(entrees, choix).map((r) => r[nature]);
+  return PLACEMENTS.filter((placement) => vus.includes(placement));
 }
 
 /** La nature de Q2.6 que ce lieu est à coup sûr, s'il en est une. */
@@ -63,29 +67,54 @@ export function natureDeQ26Au(
   entrees: Entrees,
   choix: Choix,
 ): NatureDeQ26 | PasCertaine {
-  return naturesDeQ26(entrees).find((nature) => {
-    const cotes = cotesPossibles(nature, entrees, choix);
-    return cotes.length === 1 && cotes[0] === extremite;
-  });
+  const toutes = repartitions(entrees, choix);
+  return naturesDeQ26(entrees).find(
+    (nature) =>
+      toutes.length > 0 &&
+      toutes.every((r) => extremitesDe(r[nature]).includes(extremite)),
+  );
 }
 
 // ---- implémentation ----
 
 const EXTREMITES = ["depart", "arrivee"] as const;
 
-// Le lieu que P2 fixe à cette nature, sinon ceux que P2, la catégorie choisie
-// et le côté répondu laissent.
+const PLACEMENTS: readonly Placement[] = [...EXTREMITES, "les_deux"];
+
+// Les lieux que couvre ce placement.
+function extremitesDe(placement: Placement | undefined): Extremite[] {
+  if (placement === undefined) return [];
+  return placement === "les_deux" ? [...EXTREMITES] : [placement];
+}
+
+// Une autre nature tient déjà l'un de ces lieux.
+function dejaOccupe(partielle: Repartition, placement: Placement): boolean {
+  const pris = Object.values(partielle).flatMap(extremitesDe);
+  return extremitesDe(placement).some((extremite) => pris.includes(extremite));
+}
+
+// Le lieu que P2 fixe à cette nature, ou les deux, sinon ceux que P2 et la
+// catégorie choisie laissent : un côté, ou les deux s'ils le permettent tous
+// deux. Le côté répondu tranche.
 function candidats(
   nature: NatureDeQ26,
   entrees: Entrees,
   { categories = {}, cotes = {} }: Choix,
-): Extremite[] {
+): Placement[] {
   const etablis = lieuxEtablis(entrees);
   const acquis = EXTREMITES.filter((e) => etablis[e]?.nature === nature);
-  return (acquis.length > 0 ? acquis : [...EXTREMITES]).filter(
+  const permis = (acquis.length > 0 ? acquis : [...EXTREMITES]).filter(
     (extremite) =>
-      (cotes[nature] === undefined || cotes[nature] === extremite) &&
       [undefined, categorieDe(nature)].includes(categories[extremite]) &&
       naturesPermises(extremite, entrees).includes(nature),
+  );
+  const placements: Placement[] =
+    acquis.length === 2 && permis.length === 2
+      ? ["les_deux"]
+      : permis.length === 2
+        ? [...permis, "les_deux"]
+        : permis;
+  return placements.filter(
+    (placement) => cotes[nature] === undefined || cotes[nature] === placement,
   );
 }
