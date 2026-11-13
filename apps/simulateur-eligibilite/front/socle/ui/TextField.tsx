@@ -13,6 +13,8 @@ type Props = {
   errors?: readonly string[];
   /** Met le libellé en avant, quand le champ est la question de la page. */
   lead?: boolean;
+  /** Le nombre de caractères au plus. */
+  maxLength?: number;
 };
 
 export function TextField(props: Props) {
@@ -30,6 +32,7 @@ export function TextField(props: Props) {
         name: props.id,
         type: "text",
         value: props.value,
+        maxLength: props.maxLength,
         onChange: (e) => props.onChange(e.target.value),
       }}
     />

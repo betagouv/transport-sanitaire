@@ -1,25 +1,31 @@
 // L'app Express. Elle monte l'API du rattachement et la collecte du journal
-// sous `/api`, puis sert le front construit par Vite.
+// sous `/api`, derrière la garde de `protect-the-api.ts`, puis sert le front
+// construit par Vite.
 //
 // `creerApp` reçoit le conteneur (`container.ts`) : les tests le créent sur le
 // snapshot et le journal en mémoire, sans mock.
 
 import express, { type Express } from "express";
 import type { Container } from "./container.ts";
+import { ApiGuard, type WriteLimits } from "./protect-the-api.ts";
 import { rattachementRoutes } from "./rattachement/routes.ts";
 
 export type AppOptions = {
   /** Répertoire du build front à servir (absent en test). */
   dossierDist?: string;
+  /** Les écritures admises par IP et par minute (des limites basses en test). */
+  writeLimits?: WriteLimits;
 };
 
 export function creerApp(
   { referentiel, journalController }: Container,
-  { dossierDist }: AppOptions = {},
+  { dossierDist, writeLimits }: AppOptions = {},
 ): Express {
   const app = express();
-  app.use(express.json());
+  // Un événement ou un rattachement tient en quelques kilo-octets.
+  app.use(express.json({ limit: "32kb" }));
   interdireIndexation(app);
+  new ApiGuard(writeLimits).mountOn(app);
 
   app.use("/api", rattachementRoutes(referentiel));
   app.use("/api", journalController.routes());

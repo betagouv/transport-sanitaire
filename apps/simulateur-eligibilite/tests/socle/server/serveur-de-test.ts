@@ -8,6 +8,7 @@ import { creerApp } from "../../../server/app.ts";
 import { createContainer } from "../../../server/container.ts";
 import type { Journal } from "../../../server/journal/journal.port.ts";
 import { MemoryJournal } from "../../../server/journal/memory-journal.adapter.ts";
+import type { WriteLimits } from "../../../server/protect-the-api.ts";
 import type { Referentiel } from "../../../shared/referentiel.ts";
 import { BUILD } from "../journal/evenements.ts";
 
@@ -15,7 +16,10 @@ export type AppDeTest = { base: string; close: () => Promise<void> };
 
 export async function demarrer(
   referentiel: Referentiel,
-  { journal = new MemoryJournal() }: { journal?: Journal } = {},
+  {
+    journal = new MemoryJournal(),
+    writeLimits,
+  }: { journal?: Journal; writeLimits?: WriteLimits } = {},
 ): Promise<AppDeTest> {
   const app = creerApp(
     createContainer({
@@ -24,6 +28,7 @@ export async function demarrer(
       environment: "test",
       build: BUILD,
     }),
+    { writeLimits },
   );
   const srv = await new Promise<Server>((resolve) => {
     // Express 5 passe une éventuelle erreur au callback. `resolve` n'en veut pas.
@@ -39,10 +44,15 @@ export async function demarrer(
   };
 }
 
-export async function postTo(base: string, path: string, body: unknown) {
+export async function postTo(
+  base: string,
+  path: string,
+  body: unknown,
+  headers: Record<string, string> = {},
+) {
   const res = await fetch(base + path, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: { "Content-Type": "application/json", ...headers },
     body: JSON.stringify(body),
   });
   return { status: res.status, body: await corpsJson(res) };
