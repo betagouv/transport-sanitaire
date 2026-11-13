@@ -17,6 +17,7 @@ const demarrer = ({ analytics }: ReturnType<typeof journalDeTest>) =>
   analytics.startASimulation.execute({
     rattachement: RATTACHEMENT,
     seeded: false,
+    version: "10.1.8",
   });
 
 describe("le chargement de la page", () => {

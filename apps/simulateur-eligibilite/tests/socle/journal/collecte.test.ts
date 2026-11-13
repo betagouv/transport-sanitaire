@@ -96,6 +96,32 @@ describe("collecte du chargement de la page", () => {
   });
 });
 
+describe("collecte de la provenance d'un événement", () => {
+  it("garde un événement d'un build sans commit connu", async () => {
+    const journal = await collecteSur();
+    const sansCommit = { ...simulationStarted, commit_sha: "inconnu" };
+
+    const { status } = await collecter(sansCommit);
+
+    expect(status).toBe(204);
+    expect((await journal.find("s-1:1"))?.event).toEqual(sansCommit);
+  });
+
+  it.each([
+    ["sans version de l'app", { app_version: undefined }],
+    ["sans commit", { commit_sha: undefined }],
+    ["avec une version des règles qui n'en est pas une", { version: "v10" }],
+    ["avec une version de l'app qui n'en est pas une", { app_version: "0.8" }],
+    ["avec un commit qui n'en est pas un", { commit_sha: "main" }],
+  ])("refuse un événement %s", async (_, provenance) => {
+    await collecteSur();
+
+    const { status } = await collecter({ ...simulationStarted, ...provenance });
+
+    expect(status).toBe(400);
+  });
+});
+
 describe("collecte d'une simulation sans début", () => {
   it("garde un événement dont la simulation n'a pas de début : l'historique se lit incomplet", async () => {
     const journal = await collecteSur();

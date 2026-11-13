@@ -4,6 +4,7 @@
 import { describe, expect, it } from "vitest";
 import { Journey } from "../../../front/socle/analytics/journey.entity";
 import type { AnalyticsEvent } from "../../../shared/analytics/analytics-event";
+import { PROVENANCE } from "./journal-de-test";
 
 // Le R2 affiché : ses codes, sans motif ni portion.
 const unR2 = {
@@ -55,7 +56,7 @@ const documents = (envoyes: AnalyticsEvent[]) =>
 
 describe("les versions du document R3", () => {
   it("un document prêt ouvre la version d1, avec la révision, le support et le mode du R2", () => {
-    const journey = new Journey({ seeded: false });
+    const journey = new Journey({ seeded: false, provenance: PROVENANCE });
     journey.displayResult({ ...unR2, codes: { ...unR2.codes, mode: "VSL" } });
 
     const [affiche] = journey.displayDocument(unDocument("2"));
@@ -71,7 +72,7 @@ describe("les versions du document R3", () => {
   });
 
   it("le même document réaffiché garde sa version, et ne repart pas", () => {
-    const journey = new Journey({ seeded: false });
+    const journey = new Journey({ seeded: false, provenance: PROVENANCE });
     journey.displayResult(unR2);
     journey.displayDocument(unDocument("2"));
 
@@ -79,7 +80,7 @@ describe("les versions du document R3", () => {
   });
 
   it("un document qui change, sans changer le R2, ouvre la version suivante", () => {
-    const journey = new Journey({ seeded: false });
+    const journey = new Journey({ seeded: false, provenance: PROVENANCE });
     journey.displayResult(unR2);
     journey.displayDocument(unDocument("2"));
 
@@ -89,7 +90,7 @@ describe("les versions du document R3", () => {
   });
 
   it("le document d'une révision tombée ne vaut pas pour la suivante : le même contenu y ouvre une version", () => {
-    const journey = new Journey({ seeded: false });
+    const journey = new Journey({ seeded: false, provenance: PROVENANCE });
     journey.displayResult(unR2);
     journey.displayDocument(unDocument("2"));
     modifierP2(journey);
@@ -103,7 +104,7 @@ describe("les versions du document R3", () => {
   });
 
   it("chaque génération ratée part avec la révision et le support, sans ouvrir de version", () => {
-    const journey = new Journey({ seeded: false });
+    const journey = new Journey({ seeded: false, provenance: PROVENANCE });
     journey.displayResult(unR2);
 
     const echecs = [...journey.failADocument(), ...journey.failADocument()];
@@ -123,7 +124,7 @@ describe("les versions du document R3", () => {
   });
 
   it("sans R2 affiché, un document ne fait rien partir", () => {
-    const journey = new Journey({ seeded: false });
+    const journey = new Journey({ seeded: false, provenance: PROVENANCE });
 
     expect([
       ...journey.displayDocument(unDocument("2")),

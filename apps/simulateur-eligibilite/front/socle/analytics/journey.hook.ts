@@ -36,6 +36,7 @@ export function useRecordTheJourney(
     journey.current = useCases.startASimulation.execute({
       rattachement: rattachementEnSession(),
       seeded,
+      version: model.version,
     });
   }, []);
   useLayoutEffect(() => {

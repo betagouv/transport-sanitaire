@@ -59,6 +59,7 @@ export const model = defineModel<
   ValueOf<typeof LA_COMMANDE>,
   ValueOf<typeof LA_QUANTITE>
 >({
+  version: "2.4.0",
   core: {
     preconisation: { faits, cibles, reads: CATALOGUE_DES_FAITS.reads },
     questionnaire: PARTS,

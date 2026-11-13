@@ -32,6 +32,7 @@ export {
   templateAt,
   text,
 } from "./cerfa";
+export { SHA_COMMIT, VERSION_APP } from "./deployed-version";
 export {
   type AldIndicator,
   defineModel,

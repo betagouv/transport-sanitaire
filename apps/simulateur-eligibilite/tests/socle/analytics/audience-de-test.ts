@@ -6,6 +6,7 @@ import {
   analyticsUseCases,
 } from "../../../front/socle/analytics";
 import type { AudienceEvent } from "../../../front/socle/analytics/audience-event.entity";
+import { BUILD } from "./journal-de-test";
 
 export function audienceDeTest(): {
   analytics: AnalyticsUseCases;
@@ -18,6 +19,7 @@ export function audienceDeTest(): {
       port,
       { record: async () => {} },
       { navigation: () => "navigate" },
+      BUILD,
     ),
     mesures,
   };

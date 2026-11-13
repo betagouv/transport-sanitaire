@@ -30,6 +30,9 @@ export function parseAnAnalyticsEvent(
 
 const identifier = z.string().trim().min(1);
 
+// Une version livrée : `10.1.8` pour les règles, `0.7.0` pour l'app.
+const release = z.string().regex(/^\d+\.\d+\.\d+$/);
+
 // La clé d'un champ du cerfa, telle que le code l'écrit : jamais un texte saisi.
 const fieldId = z.string().regex(/^[a-z][a-z0-9_]{0,95}$/);
 
@@ -38,7 +41,7 @@ const EVENT_SCHEMA: z.ZodType<AnalyticsEvent> = z.strictObject({
   simulation_id: identifier,
   sequence: z.number().int().min(1).optional(),
   occurred_at: z.iso.datetime({ offset: true }),
-  version: identifier,
+  version: release,
   type: z.enum(EVENT_TYPES),
   screen: z.enum(SCREENS).optional(),
   revision: identifier.optional(),
@@ -75,4 +78,6 @@ const EVENT_SCHEMA: z.ZodType<AnalyticsEvent> = z.strictObject({
     .optional(),
   unmeasured_field_ids: z.array(fieldId).optional(),
   navigation: z.enum(NAVIGATIONS).optional(),
+  app_version: release,
+  commit_sha: z.string().regex(/^([0-9a-f]{7}|inconnu)$/),
 });

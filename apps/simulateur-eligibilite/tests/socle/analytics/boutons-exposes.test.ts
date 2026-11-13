@@ -6,6 +6,7 @@ import { describe, expect, it } from "vitest";
 import type { Button } from "../../../front/socle/analytics/button-exposure.entity";
 import { Journey } from "../../../front/socle/analytics/journey.entity";
 import type { AnalyticsEvent } from "../../../shared/analytics/analytics-event";
+import { PROVENANCE } from "./journal-de-test";
 
 // Le R2 affiché : ses codes, sans motif ni portion.
 const unR2 = {
@@ -67,7 +68,7 @@ const enBref = (events: AnalyticsEvent[]) =>
 
 describe("les boutons exposés", () => {
   it("le R2 expose les boutons de sa fiche, avec l'écran, l'affichage, la révision et la version f1", () => {
-    const journey = new Journey({ seeded: false });
+    const journey = new Journey({ seeded: false, provenance: PROVENANCE });
 
     const { events } = afficherLeR2(journey);
 
@@ -92,7 +93,7 @@ describe("les boutons exposés", () => {
   });
 
   it("deux affichages et deux clics sur le premier : 1/1 par simulation, 1/2 par affichage", () => {
-    const journey = new Journey({ seeded: false });
+    const journey = new Journey({ seeded: false, provenance: PROVENANCE });
     const premier = afficherLeR2(journey, ["sheet_print"]);
     const second = afficherLeR2(journey, ["sheet_print"]);
     const imprimer = premier.exposures.sheet_print;
@@ -114,7 +115,7 @@ describe("les boutons exposés", () => {
   });
 
   it("un clic sur un ancien affichage reste le sien, pas celui ouvert depuis", () => {
-    const journey = new Journey({ seeded: false });
+    const journey = new Journey({ seeded: false, provenance: PROVENANCE });
     const ancien = afficherLeR2(journey).exposures.sheet_print;
     afficherLeR2(journey);
     if (!ancien) throw new Error("Imprimer n'est pas exposé.");
@@ -132,14 +133,14 @@ describe("les boutons exposés", () => {
   });
 
   it("le même affichage réexposé ne repart pas", () => {
-    const journey = new Journey({ seeded: false });
+    const journey = new Journey({ seeded: false, provenance: PROVENANCE });
     afficherLeR2(journey);
 
     expect(journey.exposeButtons(BOUTONS_DE_LA_FICHE).events).toEqual([]);
   });
 
   it("la fiche garde sa version tant que la révision tient, et passe à f2 avec la suivante", () => {
-    const journey = new Journey({ seeded: false });
+    const journey = new Journey({ seeded: false, provenance: PROVENANCE });
     afficherLeR2(journey);
     const reaffichee = afficherLeR2(journey).events;
     modifierP2(journey);
@@ -154,7 +155,7 @@ describe("les boutons exposés", () => {
   });
 
   it("sans révision courante, aucun bouton n'est exposé", () => {
-    const journey = new Journey({ seeded: false });
+    const journey = new Journey({ seeded: false, provenance: PROVENANCE });
     afficherLeR2(journey);
     modifierP2(journey);
     journey.openAResultScreen("R2");
@@ -166,7 +167,7 @@ describe("les boutons exposés", () => {
   });
 
   it("l'avis en R2 porte la révision, sans fiche ni document", () => {
-    const journey = new Journey({ seeded: false });
+    const journey = new Journey({ seeded: false, provenance: PROVENANCE });
 
     const [avis] = afficherLeR2(journey, ["feedback"]).events;
 
@@ -190,7 +191,7 @@ describe("les boutons du document R3", () => {
   }
 
   it("le document prêt expose ses boutons et l'avis, avec sa version", () => {
-    const journey = new Journey({ seeded: false });
+    const journey = new Journey({ seeded: false, provenance: PROVENANCE });
 
     const { events } = afficherLeR3(journey);
 
@@ -212,7 +213,7 @@ describe("les boutons du document R3", () => {
   });
 
   it("une nouvelle version dans le même affichage expose à nouveau ses boutons", () => {
-    const journey = new Journey({ seeded: false });
+    const journey = new Journey({ seeded: false, provenance: PROVENANCE });
     afficherLeR3(journey);
 
     journey.displayDocument(unDocument("3"));
@@ -226,7 +227,7 @@ describe("les boutons du document R3", () => {
   });
 
   it("seul un téléchargement réussit : l'impression et l'avis n'ont que leur clic", () => {
-    const journey = new Journey({ seeded: false });
+    const journey = new Journey({ seeded: false, provenance: PROVENANCE });
     const { exposures } = afficherLeR3(journey);
     const { document_print, document_download, feedback } = exposures;
     if (!document_print || !document_download || !feedback)
