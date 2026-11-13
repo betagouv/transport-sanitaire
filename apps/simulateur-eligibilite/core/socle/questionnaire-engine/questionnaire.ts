@@ -88,6 +88,7 @@ export class Reading<Questions extends AnyQuestions = AnyQuestions> {
   readonly #cibles: AnyCibles | undefined;
   readonly #asked: readonly AskedPage[];
   readonly #complete: boolean;
+  readonly #inapplicable: ReadonlySet<string>;
 
   constructor(
     questionnaire: Questionnaire<Questions>,
@@ -104,6 +105,15 @@ export class Reading<Questions extends AnyQuestions = AnyQuestions> {
     this.#cibles = cibles;
     this.#asked = read.asked.filter(({ questions }) => questions.length > 0);
     this.#complete = read.complete;
+    this.#inapplicable = read.inapplicable;
+  }
+
+  /**
+   * Les questions devenues inapplicables : leurs gardes ne tiennent plus, à
+   * toutes leurs places (`decide-which-questions-to-ask.ts`).
+   */
+  get inapplicable(): ReadonlySet<string> {
+    return this.#inapplicable;
   }
 
   /** Les pages qui posent au moins une question, dans l'ordre. */
@@ -147,28 +157,32 @@ export class Reading<Questions extends AnyQuestions = AnyQuestions> {
 
   /**
    * Les réponses, une fois cette page validée avec ce brouillon. Une question
-   * que la page ne pose plus n'y laisse pas de réponse, ni une option qu'elle
-   * ne propose plus. Celles qui dépendaient d'une réponse changée sont
-   * effacées (`validate-a-page.ts`). Une question à plusieurs places garde la
-   * sienne si une place d'avant la pose, ou si une place d'après le peut.
+   * devenue inapplicable n'y laisse pas de réponse, sur cette page comme sur
+   * les autres (#411), ni une option que sa question ne propose plus. Celles
+   * qui dépendaient d'une réponse changée sont effacées (`validate-a-page.ts`).
+   * Une question à plusieurs places garde la sienne si une place d'avant la
+   * pose, ou si une place d'après le peut ; une question que le graphe masque
+   * garde la sienne.
    */
   commit(page: Page, draft: Answers): Answers {
     const given = answersOf(this.answers);
     const shown = this.withDraft(page, draft);
-    const inputs = shown.questionsOn(page).flatMap((question) => {
-      const answer = question.kept(draft[question.id]);
-      return answer === undefined ? [] : [[question.id, answer] as const];
-    });
-    const { pages } = this.#questionnaire;
     const waiting = shown.#waitingOn(page);
-    return commitPage(pages, given, page, Object.fromEntries(inputs), waiting);
+    const inputs = Object.fromEntries(shown.#inputsOn(page, draft, waiting));
+    const { pages } = this.#questionnaire;
+    const committed = commitPage(pages, given, page, inputs, waiting);
+    const read = this.#questionnaire.readWith(
+      committed as Answers<Questions>,
+      this.#cibles,
+    );
+    return read.#applicable();
   }
 
   /**
    * Le brouillon de cette page après une saisie (`answerOnPage`). Une question
-   * que la page ne pose plus y perd sa réponse, de proche en proche : reposée,
-   * elle revient vide (#411). Elle la garde si une autre de ses places la pose,
-   * ou le peut encore.
+   * devenue inapplicable y perd sa réponse : reposée, elle revient vide
+   * (#411). Elle la garde si une autre de ses places la pose, ou le peut
+   * encore, et si le graphe seul la masque.
    */
   answerOn(
     page: Page,
@@ -176,7 +190,7 @@ export class Reading<Questions extends AnyQuestions = AnyQuestions> {
     id: string,
     answer: Answer | Unanswered,
   ): Answers {
-    return this.#onlyAsked(page, answerOnPage(page, draft, id, answer));
+    return this.#onlyApplicable(page, answerOnPage(page, draft, id, answer));
   }
 
   /**
@@ -199,21 +213,40 @@ export class Reading<Questions extends AnyQuestions = AnyQuestions> {
 
   // ---- implémentation ----
 
-  // Le brouillon, sans les réponses des questions que la page ne pose plus.
-  // Oublier une réponse peut en cacher une autre : on relit jusqu'à ce que
-  // rien ne change.
-  #onlyAsked(page: Page, draft: Answers): Answers {
-    const shown = this.withDraft(page, draft);
-    const asked = new Set([
-      ...shown.questionsOn(page).map(({ id }) => id),
-      ...shown.#waitingOn(page),
-    ]);
+  // Le brouillon, sans les réponses des questions devenues inapplicables. Les
+  // gardes ne lisent pas une question qui ne se pose pas : oublier sa réponse
+  // n'en exclut aucune autre.
+  #onlyApplicable(page: Page, draft: Answers): Answers {
+    const { inapplicable } = this.withDraft(page, draft);
     const hidden = page.questions
-      .filter(({ id }) => !asked.has(id))
+      .filter(({ id }) => inapplicable.has(id))
       .filter((question) => !isBlank(question, draft[question.id]))
       .map(({ id }) => id);
     if (hidden.length === 0) return draft;
-    return this.#onlyAsked(page, forget(page, draft, new Set(hidden)));
+    return forget(page, draft, new Set(hidden));
+  }
+
+  // Ce que la page enregistre du brouillon : la réponse de chaque question
+  // posée, aux options qu'elle propose, et telle quelle celle d'une question
+  // que le graphe masque. Une question qui attend une autre place n'y est pas.
+  #inputsOn(page: Page, draft: Answers, waiting: readonly string[]) {
+    const asked = this.questionsOn(page);
+    return page.questions
+      .filter(({ id }) => !this.#inapplicable.has(id) && !waiting.includes(id))
+      .flatMap(({ id }) => {
+        const question = asked.find((candidate) => candidate.id === id);
+        const answer = question ? question.kept(draft[id]) : draft[id];
+        return answer === undefined ? [] : [[id, answer] as const];
+      });
+  }
+
+  // Les réponses, sans celles des questions devenues inapplicables.
+  #applicable(): Answers {
+    return Object.fromEntries(
+      Object.entries(answersOf(this.answers)).filter(
+        ([id]) => !this.#inapplicable.has(id),
+      ),
+    );
   }
 
   // Les questions de la page qui ne s'y posent pas, et gardent leur réponse :
