@@ -11,7 +11,11 @@ import type {
   Page,
   QuestionnairePart,
 } from "../../../core/socle/questionnaire-engine";
-import { Lock, Simulation } from "../../../core/socle/simulation";
+import {
+  Lock,
+  Preconisation,
+  Simulation,
+} from "../../../core/socle/simulation";
 import { QuestionnaireForm } from "../../../front/socle/questionnaire/QuestionnaireForm";
 
 type ApresVerrou = { lockedAnswers?: Answers; cibles?: AnyCibles };
@@ -27,10 +31,10 @@ export function afficher(pages: readonly Page[], apresVerrou?: ApresVerrou) {
   const simulation = apresVerrou
     ? Simulation.afterLock(
         core,
-        new Lock(apresVerrou.lockedAnswers ?? {}, {
-          faits: {},
-          cibles: apresVerrou.cibles ?? {},
-        }),
+        new Lock(
+          apresVerrou.lockedAnswers ?? {},
+          new Preconisation({}, apresVerrou.cibles ?? {}),
+        ),
       )
     : Simulation.start(core);
   render(

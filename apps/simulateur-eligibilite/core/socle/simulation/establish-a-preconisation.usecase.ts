@@ -1,13 +1,14 @@
 // Établir la préconisation de réponses, sans parcours : l'écran des seeds et
 // les tests du modèle la demandent sur des réponses données d'un coup.
 
-import type { AnyFaits, CoreModel, Preconisation } from "../model.ts";
+import type { AnyFaits, CoreModel } from "../model.ts";
 import type {
   Answers,
   AnyCibles,
   AnyQuestions,
 } from "../questionnaire-engine/index.ts";
 import { PreconisationService } from "./preconisation.service.ts";
+import type { Preconisation } from "./preconisation.vo.ts";
 
 export class EstablishAPreconisation<
   Questions extends AnyQuestions = AnyQuestions,

@@ -5,7 +5,7 @@
 // Un service : la simulation s'en sert à chaque étape et pour verrouiller, les
 // use cases sur des réponses données d'un coup.
 
-import type { AnyFaits, CoreModel, Preconisation } from "../model.ts";
+import type { AnyFaits, CoreModel } from "../model.ts";
 import {
   type Answers,
   type AnyCibles,
@@ -14,6 +14,7 @@ import {
   Questionnaire,
   type Reading,
 } from "../questionnaire-engine/index.ts";
+import { Preconisation } from "./preconisation.vo.ts";
 import { Lock } from "./simulation-stage.vo.ts";
 
 export class PreconisationService<
@@ -40,7 +41,7 @@ export class PreconisationService<
       read.validated,
       core.relevance,
     );
-    return { faits, cibles: core.preconisation.cibles(faits) };
+    return new Preconisation(faits, core.preconisation.cibles(faits));
   }
 
   /**

@@ -21,12 +21,6 @@ import type { Seed } from "./simulation/index.ts";
 /** Les faits d'un modèle : ce que ses règles reçoivent. */
 export type AnyFaits = Readonly<Record<string, unknown>>;
 
-/** Ce que la préconisation a calculé pour des réponses. */
-export type Preconisation<Faits = AnyFaits, Cibles = AnyCibles> = {
-  faits: Faits;
-  cibles: Cibles;
-};
-
 export type CoreModel<
   Questions extends AnyQuestions = AnyQuestions,
   Faits extends AnyFaits = AnyFaits,
