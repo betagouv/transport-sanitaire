@@ -31,6 +31,15 @@ export class Cible<Of extends Value = Value> {
     return new Cible(value);
   }
 
+  /** La valeur de chacune de ces cibles : ce que la trace montre, ce qu'un test attend. */
+  static valuesOf<Cibles extends Readonly<Record<string, Cible>>>(
+    cibles: Cibles,
+  ): CibleValues<Cibles> {
+    return Object.fromEntries(
+      Object.entries(cibles).map(([nom, cible]) => [nom, cible.value]),
+    ) as CibleValues<Cibles>;
+  }
+
   /** La cible vaut « oui ». */
   isOui(this: Cible<boolean>): boolean {
     return this.value === true;
@@ -68,12 +77,3 @@ export type CibleValues<Cibles> = {
     ? Of | null | Undetermined
     : never;
 };
-
-/** La valeur de chacune de ces cibles : ce que la trace montre, ce qu'un test attend. */
-export function cibleValues<Cibles extends Readonly<Record<string, Cible>>>(
-  cibles: Cibles,
-): CibleValues<Cibles> {
-  return Object.fromEntries(
-    Object.entries(cibles).map(([nom, cible]) => [nom, cible.value]),
-  ) as CibleValues<Cibles>;
-}

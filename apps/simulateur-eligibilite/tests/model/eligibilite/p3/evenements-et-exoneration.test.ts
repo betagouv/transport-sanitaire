@@ -12,7 +12,7 @@ import {
   Questionnaire,
 } from "../../../../core/socle/questionnaire-engine";
 
-import { preconisationOf } from "../../../../core/socle/simulation";
+import { EstablishAPreconisation } from "../../../../core/socle/simulation";
 import { BRANCARD_20_KM } from "../p2/reponses-de-la-branche";
 
 type Reponses = Answers<Questions>;
@@ -27,7 +27,7 @@ const seed = (id: string) => {
 const posees = (pageId: string, reponses: Reponses) => {
   const page = pages.find(({ id }) => id === pageId);
   if (!page) throw new Error(`${pageId} n'existe pas`);
-  const { cibles } = preconisationOf(model, reponses);
+  const { cibles } = new EstablishAPreconisation(model).execute(reponses);
   return new Questionnaire(pages).readWith(reponses, cibles).questionsOn(page);
 };
 const ids = (pageId: string, reponses: Reponses) =>

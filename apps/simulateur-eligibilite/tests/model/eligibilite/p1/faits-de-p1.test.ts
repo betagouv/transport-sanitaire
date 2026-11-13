@@ -10,13 +10,14 @@ import { model } from "../../../../core/models/eligibilite";
 import type { Faits } from "../../../../core/models/eligibilite/faits/noms";
 import type { Questions } from "../../../../core/models/eligibilite/questions/reponses";
 import type { Answers } from "../../../../core/socle/questionnaire-engine";
-import { preconisationOf } from "../../../../core/socle/simulation";
+import { EstablishAPreconisation } from "../../../../core/socle/simulation";
 import { lienAld } from "./lien-ald";
 
 type Reponses = Answers<Questions>;
 
 const valeur = (fait: keyof Faits, reponses: Reponses) =>
-  (preconisationOf(model, reponses).faits as Faits)[fait].value;
+  (new EstablishAPreconisation(model).execute(reponses).faits as Faits)[fait]
+    .value;
 
 const BESOIN: Reponses = { "Q0.1": "1_VERIFIER" };
 const SEUL: Reponses = { ...BESOIN, "Q1.1": "1_SEUL", "Q1.3": ["7_AUCUNE"] };

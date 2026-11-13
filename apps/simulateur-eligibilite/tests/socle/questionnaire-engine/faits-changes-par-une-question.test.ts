@@ -16,7 +16,7 @@ import {
   unFait,
 } from "../../../core/socle";
 import { DecisionGraph } from "../../../core/socle/decision-engine";
-import { decisionGraphOf } from "../../../core/socle/decision-engine/compute-the-cibles";
+import { PublicodesGraphCompiler } from "../../../core/socle/decision-engine/publicodes-graph-compiler.adapter";
 import { faitsChangedBy } from "../../../core/socle/questionnaire-engine/does-a-question-still-matter/faits-changed-by";
 import { pagesOf } from "../../../core/socle/questionnaire-engine/question/question";
 import { modeleDeTest } from "../modele-de-test";
@@ -28,7 +28,9 @@ describe("ce que change une question", () => {
       (each) => each.questions,
     );
     // Le modèle factice n'a pas de règles : ses gardes ne lisent pas de cible.
-    const sansRegles = new DecisionGraph(decisionGraphOf({}));
+    const sansRegles = new DecisionGraph(
+      new PublicodesGraphCompiler({}).compile(),
+    );
 
     const changes = faitsChangedBy(questions, preconisation, sansRegles);
 
@@ -118,13 +120,13 @@ const FAITS = new FaitCatalogue<Faits>(
 
 // Les règles d'où vient la cible : le sucre se propose pour une boisson chaude.
 const GRAPHE = new DecisionGraph(
-  decisionGraphOf({
+  new PublicodesGraphCompiler({
     chaude: { titre: "Boisson chaude" },
     sucre: { titre: "Sucré" },
     matin: { titre: "Le matin" },
     complete: { titre: "Commande complète" },
     cible_sucre_propose: { valeur: "chaude" },
-  }),
+  }).compile(),
 );
 
 const question = questionsOf<Questions, Faits, Cibles>({

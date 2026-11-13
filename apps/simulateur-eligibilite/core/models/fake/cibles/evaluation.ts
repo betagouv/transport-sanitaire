@@ -1,7 +1,7 @@
 // Des faits aux cibles : la commande, en une phrase, et une mise en garde que
 // des règles publicodes décident. Elle ne décide rien du transport.
 
-import { publicodesEngine } from "../../../socle/decision-engine/compute-the-cibles.ts";
+import { PublicodesDecisionEngine } from "../../../socle/decision-engine/publicodes-decision-engine.adapter.ts";
 import { Cible } from "../../../socle/index.ts";
 import type { Faits } from "../faits/noms.ts";
 import type { Cibles } from "./noms.ts";
@@ -29,7 +29,7 @@ function commandeDe(boisson: string | null, avec: readonly string[]) {
 // Les règles de la mise en garde. Le moteur ne reçoit pas un fait absent : avec
 // du lait et un citron à décider au service, la cible reste indéfinie. Sans
 // lait, elle est décidée, citron connu ou non.
-const miseEnGarde = publicodesEngine<
+const miseEnGarde = new PublicodesDecisionEngine<
   Pick<Faits, "lait" | "citron">,
   Pick<Cibles, "lait_tourne">
 >(

@@ -7,7 +7,6 @@
 
 export {
   Cible,
-  cibleValues,
   type DecisionGraphData,
   Fait,
   FaitCatalogue,

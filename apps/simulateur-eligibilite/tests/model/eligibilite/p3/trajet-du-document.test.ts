@@ -13,7 +13,7 @@ import {
   Questionnaire,
 } from "../../../../core/socle/questionnaire-engine";
 
-import { preconisationOf } from "../../../../core/socle/simulation";
+import { EstablishAPreconisation } from "../../../../core/socle/simulation";
 import { errorsOf } from "../../../../front/socle/questionnaire";
 import { MINEUR, PLUSIEURS_PERMISSIONS } from "../p2/reponses-de-la-permission";
 import { ciblesValant } from "../r2/traces-du-prescripteur";
@@ -274,12 +274,14 @@ describe("Q3.1 ne requalifie pas P2", () => {
   } as Reponses;
 
   it("deux documents de deux transports gardent la série qualifiante de P2", () => {
-    const { faits, cibles } = preconisationOf(model, {
+    const { faits, cibles } = new EstablishAPreconisation(model).execute({
       ...SERIE,
       ...PRESCRIPTION,
     });
 
     expect(faits.fait_serie_qualifiante).toMatchObject({ value: true });
-    expect(cibles).toEqual(preconisationOf(model, SERIE).cibles);
+    expect(cibles).toEqual(
+      new EstablishAPreconisation(model).execute(SERIE).cibles,
+    );
   });
 });

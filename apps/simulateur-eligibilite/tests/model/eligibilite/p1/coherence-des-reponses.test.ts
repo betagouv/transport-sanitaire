@@ -9,7 +9,7 @@
 
 import { describe, expect, it } from "vitest";
 import { model } from "../../../../core/models/eligibilite";
-import { cible } from "../../../../core/models/eligibilite/cibles/evaluation";
+import { decisionEngine } from "../../../../core/models/eligibilite/cibles/evaluation";
 import { CATALOGUE_DES_FAITS } from "../../../../core/models/eligibilite/faits";
 import type { Faits } from "../../../../core/models/eligibilite/faits/noms";
 import { Q1_2 } from "../../../../core/models/eligibilite/questions/p1/questions/q1-2";
@@ -22,7 +22,7 @@ import {
   ValidatedAnswers,
 } from "../../../../core/socle/questionnaire-engine";
 
-import { preconisationOf } from "../../../../core/socle/simulation";
+import { EstablishAPreconisation } from "../../../../core/socle/simulation";
 
 type Reponses = Answers<Questions>;
 type Critere = Questions["Q1.2"][number];
@@ -106,7 +106,8 @@ describe("les 2 048 combinaisons de Q1.2", () => {
         fait_p1_complete: Fait.oui("P1 complète."),
       });
       const cle = JSON.stringify(FAITS_DE_P1.map((nom) => faits[nom]));
-      if (!modes.has(cle)) modes.set(cle, cible(faits, "cible_mode_id").value);
+      if (!modes.has(cle))
+        modes.set(cle, decisionEngine.cible(faits, "cible_mode_id").value);
       return modes.get(cle) !== modeAttendu(criteres);
     });
     expect(ecarts).toEqual([]);
@@ -121,7 +122,7 @@ describe("le retour en P1", () => {
     "Q1.3.b": "1_LIEN_DIRECT",
   };
   const faits = (reponses: Reponses) =>
-    preconisationOf(model, reponses).faits as Faits;
+    new EstablishAPreconisation(model).execute(reponses).faits as Faits;
 
   it("au retrait du brancard, efface la corpulence et garde l'ALD et le mineur", () => {
     const sansBrancard = { ...AMBULANCE, "Q1.2": ["1_PAS_AUTONOME"] };

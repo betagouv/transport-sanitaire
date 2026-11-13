@@ -4,13 +4,13 @@
 // quelques-uns. Un fait changé en `undefined` est absent : il n'est pas
 // transmis aux règles.
 
-import { cibles } from "../../../../core/models/eligibilite/cibles/evaluation";
+import { decisionEngine } from "../../../../core/models/eligibilite/cibles/evaluation";
 import type { Cibles } from "../../../../core/models/eligibilite/cibles/noms";
 import {
   FAITS,
   type Faits,
 } from "../../../../core/models/eligibilite/faits/noms";
-import { cibleValues, Fait } from "../../../../core/socle";
+import { Cible, Fait } from "../../../../core/socle";
 
 export type Changements = Partial<Record<keyof Faits, boolean | undefined>>;
 export type Issue = NonNullable<Cibles["cible_issue_id"]["value"]>;
@@ -46,7 +46,7 @@ export const faitsDuCas = (changements: Changements) =>
 
 // La valeur des cibles que les règles calculent pour ces changements.
 export const preconiser = (changements: Changements) =>
-  cibleValues(cibles(faitsDuCas(changements)));
+  Cible.valuesOf(decisionEngine.cibles(faitsDuCas(changements)));
 
 // Aucun profil de code de soin ne prouve à lui seul un motif de transport.
 const SITUATION: Changements = {

@@ -3,7 +3,7 @@
 // réponses reprennent.
 
 import { describe, expect, it } from "vitest";
-import { Simulation } from "../../../core/socle/simulation/simulation";
+import { Simulation } from "../../../core/socle/simulation";
 import { modeleDeTest } from "../modele-de-test";
 
 const core = modeleDeTest.core;

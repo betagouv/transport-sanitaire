@@ -5,8 +5,7 @@
 // s'arrêtent dans le questionnaire.
 
 import {
-  evaluateSeed,
-  preconisationOf,
+  EvaluateASeed,
   type Seed,
   Simulation,
 } from "../../../core/socle/simulation";
@@ -87,10 +86,7 @@ function rowOf(model: Model, seed: Seed): SeedRow {
   const { name } = Simulation.resume(model.core, seed.answers).stage;
   return {
     seed,
-    evaluation: evaluateSeed(
-      (answers) => preconisationOf(model.core, answers).cibles,
-      seed,
-    ),
+    evaluation: new EvaluateASeed(model.core).execute(seed),
     opensOnResultat: name === "resultat" || name === "cerfa",
   };
 }

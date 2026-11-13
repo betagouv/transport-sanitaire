@@ -1,10 +1,16 @@
 // Ce que la simulation promet au reste du socle et à l'écran : l'agrégat du
-// parcours, la préconisation de réponses, le périmètre d'un résultat, les
-// seeds.
+// parcours et ce qui le décrit, la préconisation de réponses, la lecture d'un
+// résultat, les seeds.
 
-export { PageRefused } from "./page-refused.ts";
-export type { Position } from "./position.ts";
-export { preconisationOf } from "./preconisation.ts";
-export { resultScope } from "./result-scope.ts";
-export { evaluateSeed, type Seed, type SeedEvaluation } from "./seed.ts";
-export { Simulation } from "./simulation.ts";
+export { EstablishAPreconisation } from "./establish-a-preconisation.usecase.ts";
+export {
+  EvaluateASeed,
+  type Seed,
+  type SeedEvaluation,
+} from "./evaluate-a-seed.usecase.ts";
+export { JourneyPosition } from "./journey-position.vo.ts";
+export { PageRefusal } from "./page-refusal.error.ts";
+export { Preconisation } from "./preconisation.vo.ts";
+export { QuestionnaireReadingService } from "./questionnaire-reading.service.ts";
+export { Simulation } from "./simulation.entity.ts";
+export { Lock } from "./simulation-stage.vo.ts";

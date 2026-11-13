@@ -1,11 +1,11 @@
 // Les nœuds du graphe de décision, et ce qu'on en construit (#196). Le
-// compilateur y combine les règles (`compile-the-decision-graph.ts`). Le filtrage
-// (#255) y restreint une règle aux faits qu'on sait déjà, puis regarde quels
-// faits elle teste encore.
+// compilateur y combine les règles (`publicodes-graph-compiler.adapter.ts`). Le
+// filtrage (#255) y restreint une règle aux faits qu'on sait déjà, puis regarde
+// quels faits elle teste encore.
 //
 // Les nœuds sont partagés : deux nœuds identiques n'en font qu'un, et un fait
-// dont les trois réponses mènent au même nœud ne se teste pas. Une règle qui
-// ne dépend plus d'un fait ne le teste donc plus.
+// dont les trois réponses mènent au même nœud ne se teste pas. Une règle qui ne
+// dépend plus d'un fait ne le teste donc plus.
 
 import {
   type DecisionGraphData,
@@ -13,7 +13,7 @@ import {
   type GraphNode,
   isTest,
   type RuleValue,
-} from "./graph.ts";
+} from "./decision-graph.vo.ts";
 
 /** Les faits fixés, par leur rang dans le graphe, et ce qu'ils valent. */
 export type FixedFaits = ReadonlyMap<number, FaitValue>;
@@ -21,14 +21,14 @@ export type FixedFaits = ReadonlyMap<number, FaitValue>;
 /** Les nœuds d'un graphe, et les graphes qu'on en tire. */
 export class DecisionDiagram {
   readonly nodes: GraphNode[] = [];
-  private readonly unique = new Map<string, number>();
-  private readonly memo = new Map<string, number>();
+  readonly #unique = new Map<string, number>();
+  readonly #memo = new Map<string, number>();
 
   /** Les nœuds de ce graphe, aux mêmes numéros. */
   static of(data: DecisionGraphData): DecisionDiagram {
     const diagram = new DecisionDiagram();
     for (const node of data.nodes) {
-      if (isTest(node)) diagram.test(node[0], node.slice(1));
+      if (isTest(node)) diagram.#test(node[0], node.slice(1));
       else diagram.leaf(node.value);
     }
     if (diagram.nodes.length !== data.nodes.length) {
@@ -39,12 +39,12 @@ export class DecisionDiagram {
 
   leaf(value: RuleValue): number {
     const key = value === undefined ? "=" : `=${JSON.stringify(value)}`;
-    return this.intern(key, () => (value === undefined ? {} : { value }));
+    return this.#intern(key, () => (value === undefined ? {} : { value }));
   }
 
   fait(fait: number): number {
     const kids = [this.leaf(true), this.leaf(false), this.leaf(undefined)];
-    return this.test(fait, kids);
+    return this.#test(fait, kids);
   }
 
   // Combine ces graphes feuille à feuille, en testant leurs faits dans
@@ -57,21 +57,21 @@ export class DecisionDiagram {
     ids: readonly number[],
   ): number {
     const key = `${operation}|${ids.join(",")}`;
-    const known = this.memo.get(key);
+    const known = this.#memo.get(key);
     if (known !== undefined) return known;
-    const nodes = ids.map((id) => this.at(id));
+    const nodes = ids.map((id) => this.#at(id));
     const tested = nodes.flatMap((node) => (isTest(node) ? [node[0]] : []));
     const result =
       tested.length === 0
         ? this.leaf(combine(...nodes.map((node) => (node as Leaf).value)))
-        : this.branch(operation, combine, ids, Math.min(...tested));
-    this.memo.set(key, result);
+        : this.#branch(operation, combine, ids, Math.min(...tested));
+    this.#memo.set(key, result);
     return result;
   }
 
   /** Ce graphe, quand ces faits valent ce qu'on sait d'eux. */
   restrict(id: number, fixed: FixedFaits): number {
-    return this.restricted(id, fixed, new Map());
+    return this.#restricted(id, fixed, new Map());
   }
 
   /**
@@ -80,39 +80,39 @@ export class DecisionDiagram {
    */
   restrictorTo(fixed: FixedFaits): (id: number) => number {
     const known = new Map<number, number>();
-    return (id) => this.restricted(id, fixed, known);
+    return (id) => this.#restricted(id, fixed, known);
   }
 
   /** Les faits que ces graphes testent, par leur rang. */
   testedFaits(...ids: readonly number[]): ReadonlySet<number> {
     const tested = new Set<number>();
-    this.visit(ids, (node) => isTest(node) && tested.add(node[0]));
+    this.#visit(ids, (node) => isTest(node) && tested.add(node[0]));
     return tested;
   }
 
   /** Les valeurs que ce graphe peut prendre. */
   valuesOf(id: number): ReadonlySet<RuleValue> {
     const values = new Set<RuleValue>();
-    this.visit([id], (node) => isTest(node) || values.add(node.value));
+    this.#visit([id], (node) => isTest(node) || values.add(node.value));
     return values;
   }
 
   // ---- implémentation ----
 
   // Chaque nœud atteint depuis ces graphes, une fois.
-  private visit(ids: readonly number[], see: (node: GraphNode) => unknown) {
+  #visit(ids: readonly number[], see: (node: GraphNode) => unknown) {
     const seen = new Set<number>();
     const pending = [...ids];
     for (let next = pending.pop(); next !== undefined; next = pending.pop()) {
       if (seen.has(next)) continue;
       seen.add(next);
-      const node = this.at(next);
+      const node = this.#at(next);
       see(node);
       if (isTest(node)) pending.push(node[1], node[2], node[3]);
     }
   }
 
-  private branch(
+  #branch(
     operation: string,
     combine: (...values: RuleValue[]) => RuleValue,
     ids: readonly number[],
@@ -123,44 +123,44 @@ export class DecisionDiagram {
         operation,
         combine,
         ids.map((id) => {
-          const node = this.at(id);
+          const node = this.#at(id);
           return isTest(node) && node[0] === fait
             ? (node[answer] as number)
             : id;
         }),
       ),
     );
-    return this.test(fait, kids);
+    return this.#test(fait, kids);
   }
 
   // Un fait fixé ne se teste plus : on suit sa réponse. Les autres gardent
   // leurs trois réponses, restreintes à leur tour.
-  private restricted(
+  #restricted(
     id: number,
     fixed: FixedFaits,
     known: Map<number, number>,
   ): number {
-    const node = this.at(id);
+    const node = this.#at(id);
     if (!isTest(node)) return id;
     const done = known.get(id);
     if (done !== undefined) return done;
     const [fait, ...kids] = node;
     const result = fixed.has(fait)
-      ? this.restricted(kids[answerOf(fixed.get(fait))], fixed, known)
-      : this.test(
+      ? this.#restricted(kids[answerOf(fixed.get(fait))], fixed, known)
+      : this.#test(
           fait,
-          kids.map((kid) => this.restricted(kid, fixed, known)),
+          kids.map((kid) => this.#restricted(kid, fixed, known)),
         );
     known.set(id, result);
     return result;
   }
 
-  private test(fait: number, [oui, non, rien]: readonly number[]): number {
+  #test(fait: number, [oui, non, rien]: readonly number[]): number {
     if (oui === undefined || non === undefined || rien === undefined) {
       throw new Error("Un fait testé mène à trois nœuds.");
     }
     if (oui === non && non === rien) return oui;
-    return this.intern(`?${fait}:${oui},${non},${rien}`, () => [
+    return this.#intern(`?${fait}:${oui},${non},${rien}`, () => [
       fait,
       oui,
       non,
@@ -168,17 +168,17 @@ export class DecisionDiagram {
     ]);
   }
 
-  private at(id: number): GraphNode {
+  #at(id: number): GraphNode {
     const node = this.nodes[id];
     if (node === undefined) throw new Error(`Pas de nœud ${id}.`);
     return node;
   }
 
-  private intern(key: string, make: () => GraphNode): number {
-    const known = this.unique.get(key);
+  #intern(key: string, make: () => GraphNode): number {
+    const known = this.#unique.get(key);
     if (known !== undefined) return known;
     this.nodes.push(make());
-    this.unique.set(key, this.nodes.length - 1);
+    this.#unique.set(key, this.nodes.length - 1);
     return this.nodes.length - 1;
   }
 }
