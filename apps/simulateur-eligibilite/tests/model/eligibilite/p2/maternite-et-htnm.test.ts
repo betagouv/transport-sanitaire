@@ -79,9 +79,9 @@ const avec = (deplacement: Reponses["Q2.14.trajet"]): Reponses => ({
 });
 
 const trajet = (reponses: Reponses) =>
-  posee("P2/contextes", "Q2.14.trajet", reponses);
+  posee("P2/contextes-situations", "Q2.14.trajet", reponses);
 
 const situations = (reponses: Reponses) => {
-  const question = posee("P2/contextes", "Q2.2.1", reponses);
+  const question = posee("P2/contextes-situations", "Q2.2.1", reponses);
   return question?.kind === "multiple choice" ? question : undefined;
 };

@@ -44,8 +44,7 @@ createRoot(racine).render(
       models={models}
       referentiel={container.referentiel}
       declarer={container.declarer}
-      audience={container.audience}
-      journal={container.journal}
+      analytics={container.analytics}
     />
   </StrictMode>,
 );

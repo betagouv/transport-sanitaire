@@ -147,7 +147,7 @@ describe("le premier bloc des situations changé (cas « Contextes »)", () => {
   ];
 
   it("« Non, aucune » efface les précisions et le second bloc, et garde le trajet", () => {
-    const apres = valideeAvec(TROIS_SITUATIONS, "P2/contextes", {
+    const apres = valideeAvec(TROIS_SITUATIONS, "P2/contextes-situations", {
       "Q2.2.1": ["0_AUCUNE"],
     });
 
@@ -157,7 +157,7 @@ describe("le premier bloc des situations changé (cas « Contextes »)", () => {
   });
 
   it("décocher le séjour efface le cadre et la permission du séjour, et le second bloc", () => {
-    const apres = valideeAvec(TROIS_SITUATIONS, "P2/contextes", {
+    const apres = valideeAvec(TROIS_SITUATIONS, "P2/contextes-situations", {
       "Q2.2.1": ["2_ETRANGER", "10_RETOUR_PENITENTIAIRE"],
     });
 

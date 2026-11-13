@@ -7,6 +7,7 @@ import userEvent from "@testing-library/user-event";
 import { describe, expect, it } from "vitest";
 import { App } from "../../../front/socle/app";
 import type { Model } from "../../../front/socle/model";
+import type { AnalyticsEvent } from "../../../shared/analytics/analytics-event";
 import type { Referentiel } from "../../../shared/referentiel";
 import { journalDeTest } from "../analytics/journal-de-test";
 import { given, modeleDeTest, seulModele } from "../modele-de-test";
@@ -34,9 +35,9 @@ const venuPourUneBoisson: Model = {
 };
 
 async function ouvrirAvecUnJournal() {
-  const { journal, envoyes } = journalDeTest();
+  const { analytics, envoyes } = journalDeTest();
   const user = await ouvrirLeSimulateur({
-    journal,
+    analytics,
     modele: venuPourUneBoisson,
   });
   await question(BOISSON);
@@ -45,11 +46,17 @@ async function ouvrirAvecUnJournal() {
 
 const types = (envoyes: { type: string }[]) => envoyes.map((e) => e.type);
 
+// Le début et l'intention, sans les questions ni les phases (ADR-8).
+const duParcours = (envoyes: AnalyticsEvent[]) =>
+  envoyes.filter(({ type }) =>
+    ["simulation_started", "intent_selected"].includes(type),
+  );
+
 describe("le journal des parcours sur P0", () => {
   it("P0 ouverte sans choix : un début, sans intention", async () => {
     const { envoyes } = await ouvrirAvecUnJournal();
 
-    expect(envoyes).toEqual([
+    expect(duParcours(envoyes)).toEqual([
       expect.objectContaining({
         type: "simulation_started",
         sequence: 1,
@@ -66,12 +73,11 @@ describe("le journal des parcours sur P0", () => {
     await user.click(radio("Un thé"));
     await question(ACCOMPAGNEMENTS);
 
-    const [debut, intention] = envoyes;
+    const [debut, intention] = duParcours(envoyes);
     expect(intention).toEqual(
       expect.objectContaining({
         type: "intent_selected",
         simulation_id: debut?.simulation_id,
-        sequence: 2,
         screen: "P0",
         intent: "eligibilite_seule",
       }),
@@ -88,14 +94,15 @@ describe("le journal des parcours sur P0", () => {
     await user.click(radio("Un café"));
     await question(ACCOMPAGNEMENTS);
 
-    expect(types(envoyes)).toEqual(["simulation_started", "intent_selected"]);
-    expect(envoyes[1]?.intent).toBe("eligibilite_seule");
+    const parcours = duParcours(envoyes);
+    expect(types(parcours)).toEqual(["simulation_started", "intent_selected"]);
+    expect(parcours[1]?.intent).toBe("eligibilite_seule");
   });
 
   it("une nouvelle simulation a son propre identifiant", async () => {
-    const { journal, envoyes } = journalDeTest();
+    const { analytics, envoyes } = journalDeTest();
     const user = await ouvrirLeSimulateur({
-      journal,
+      analytics,
       modele: venuPourUneBoisson,
     });
     await allerAuResultat(user);
@@ -137,14 +144,14 @@ const DEUX_CARDIOLOGIES: Referentiel = {
 };
 
 async function seRattacherA(etablissement: string, service: string) {
-  const { journal, envoyes } = journalDeTest();
+  const { analytics, envoyes } = journalDeTest();
   const user = userEvent.setup();
   const { unmount } = render(
     <App
       models={seulModele(modeleDeTest)}
       referentiel={DEUX_CARDIOLOGIES}
       declarer={() => {}}
-      journal={journal}
+      analytics={analytics}
     />,
   );
   await choisir(user, /Établissement/, etablissement);

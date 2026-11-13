@@ -16,7 +16,7 @@ import {
 
 let mesure: ReturnType<typeof audienceDeTest>;
 const evenements = () => nomsEtValeurs(mesure.mesures);
-const ouvrir = () => ouvrirLeSimulateur({ audience: mesure.audience });
+const ouvrir = () => ouvrirLeSimulateur({ analytics: mesure.analytics });
 
 beforeEach(() => {
   mesure = audienceDeTest();
@@ -48,14 +48,15 @@ describe("suivi du parcours", () => {
   });
 
   it("envoie au journal un seul début, avec l'établissement et le service", async () => {
-    const { journal, envoyes } = journalDeTest();
-    const user = await ouvrirLeSimulateur({ journal });
+    const { analytics, envoyes } = journalDeTest();
+    const user = await ouvrirLeSimulateur({ analytics });
     await allerAuResultat(user);
 
     await user.click(bouton("Précédent"));
     await question(ACCOMPAGNEMENTS);
 
-    expect(envoyes).toEqual([
+    const debuts = envoyes.filter(({ type }) => type === "simulation_started");
+    expect(debuts).toEqual([
       expect.objectContaining({
         type: "simulation_started",
         sequence: 1,

@@ -1,15 +1,15 @@
 // Un journal des parcours qui garde ce qu'il reçoit, pour lire ce que l'écran
-// y envoie. Ses use cases sont les vrais.
+// y envoie. Ses use cases sont les vrais ; la mesure d'audience ne garde rien.
 
 import {
-  type JournalUseCases,
-  SelectAnIntent,
-  StartASimulation,
+  type AnalyticsUseCases,
+  analyticsUseCases,
+  DiscardingAudience,
 } from "../../../front/socle/analytics";
 import type { AnalyticsEvent } from "../../../shared/analytics/analytics-event";
 
 export function journalDeTest(): {
-  journal: JournalUseCases;
+  analytics: AnalyticsUseCases;
   envoyes: AnalyticsEvent[];
 } {
   const envoyes: AnalyticsEvent[] = [];
@@ -19,10 +19,7 @@ export function journalDeTest(): {
     },
   };
   return {
-    journal: {
-      startASimulation: new StartASimulation(port),
-      selectAnIntent: new SelectAnIntent(port),
-    },
+    analytics: analyticsUseCases(new DiscardingAudience(), port),
     envoyes,
   };
 }

@@ -61,7 +61,9 @@ describe("l'indication médicale d'un retour vers la prison (point 33)", () => {
     ["seul", SEUL],
     ["l'autre motif", { ...SEUL, "Q2.1": "14_AUTRE" }],
   ] as const)("%s, sans critère en P1, se demande", (_, reponses) => {
-    expect(posee("P2/contextes", "Q2.2.1.indication", reponses)).toBeDefined();
+    expect(
+      posee("P2/contextes-situations", "Q2.2.1.indication", reponses),
+    ).toBeDefined();
   });
 
   it.each([
@@ -81,7 +83,10 @@ describe("l'indication médicale d'un retour vers la prison (point 33)", () => {
     ["une hémodialyse", { ...SEUL, "Q1.3": ["5_DIALYSE"], "Q1.3.a": "1_OUI" }],
   ] as const)("%s l'établit déjà", (_, avant) => {
     expect(
-      posee("P2/contextes", "Q2.2.1.indication", { ...avant, ...RETOUR }),
+      posee("P2/contextes-situations", "Q2.2.1.indication", {
+        ...avant,
+        ...RETOUR,
+      }),
     ).toBeUndefined();
   });
 
@@ -102,13 +107,16 @@ describe("l'indication médicale d'un retour vers la prison (point 33)", () => {
     ],
   ] as const)("%s ne l'établit pas", (_, cas) => {
     expect(
-      posee("P2/contextes", "Q2.2.1.indication", { ...SEUL, ...cas }),
+      posee("P2/contextes-situations", "Q2.2.1.indication", {
+        ...SEUL,
+        ...cas,
+      }),
     ).toBeDefined();
   });
 
   it("ne se demande pas sans retour vers la prison", () => {
     expect(
-      posee("P2/contextes", "Q2.2.1.indication", {
+      posee("P2/contextes-situations", "Q2.2.1.indication", {
         ...SEUL,
         "Q2.2.1": ["0_AUCUNE"],
         "Q2.2.1.b": ["0_AUCUN"],
@@ -125,7 +133,7 @@ describe("l'indication médicale d'un retour vers la prison (point 33)", () => {
       "Q1.3": ["3_CHIMIOTHERAPIE"],
     };
     expect(
-      posee("P2/contextes", "Q2.2.1.indication", contradiction),
+      posee("P2/contextes-situations", "Q2.2.1.indication", contradiction),
     ).toBeUndefined();
     expect(posee("P2/trajet", "Q2.3.1", contradiction)).toBeDefined();
     expect(faits(contradiction).fait_p2_complete.value).toBe(true);
