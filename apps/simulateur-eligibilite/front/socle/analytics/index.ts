@@ -6,6 +6,7 @@ export { useAldResultReached } from "./ald-pathway.hook";
 export { type AldVerdict, EventName } from "./audience-event.entity";
 export { CmsConsent } from "./cms-consent.adapter";
 export { DiscardingAudience } from "./discarding-audience.adapter";
+export { useDocumentTracking } from "./document.hook";
 export { useRecordTheJourney } from "./journey.hook";
 export {
   configFromEnv,
