@@ -1,10 +1,10 @@
 // Ce qu'efface une réponse changée : COR-14 et COR-23 de la v10.1.3 de
-// l'éditeur (D-190), et les cas « Distance/ligne », « Certificats »,
-// « Maternité » et « Contextes » de ses compléments de recette (#149). Le
-// résultat se recalcule des réponses, et le complément repart vierge à chaque
-// verrou : il reste à voir que seules les réponses qui dépendent de la réponse
-// changée, ou que sa page ne pose plus, s'effacent, et qu'une réponse
-// indépendante reste.
+// l'éditeur (D-190), les cas « Distance/ligne », « Certificats », « Maternité »
+// et « Contextes » de ses compléments de recette (#149), et SQ-25
+// (NAV-SOUS-QUESTIONS-20261113). Le résultat se recalcule des réponses, et le
+// complément repart vierge à chaque verrou : il reste à voir que seules les
+// réponses qui dépendent de la réponse changée, ou que sa page ne pose plus,
+// s'effacent, et qu'une réponse indépendante reste.
 
 import { describe, expect, it } from "vitest";
 import { model } from "../../../core/models/eligibilite";
@@ -123,8 +123,11 @@ describe("une réponse changée en P1 (COR-23)", () => {
     },
   );
 
-  it("garde le motif du trajet", () => {
-    expect(effaceesPar("Q1.3")).toEqual(["Q2.2.1.indication"]);
+  // Q2.1.f porte sur les séances cochées : d'autres séances, et sa réponse
+  // ne vaut plus, même si elle se pose encore (NAV-SOUS-QUESTIONS-20261113,
+  // SQ-25).
+  it("Q1.3 efface aussi Q2.1.f, et garde le motif du trajet", () => {
+    expect(effaceesPar("Q1.3")).toEqual(["Q2.1.f", "Q2.2.1.indication"]);
   });
 });
 
