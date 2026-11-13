@@ -15,6 +15,8 @@ import { DiscardingJournal } from "./journal/discarding-journal.adapter.ts";
 import { GristJournal } from "./journal/grist-journal.adapter.ts";
 import { JournalController } from "./journal/journal.controller.ts";
 import type { Journal } from "./journal/journal.port.ts";
+import type { Build } from "./journal/journal-entry.entity.ts";
+import { ReportAlive } from "./journal/report-alive.usecase.ts";
 import { creerReferentielGrist } from "./rattachement/referentiel-grist.ts";
 
 /** Ce que le serveur attend de l'extérieur : ses adaptateurs, et où il tourne. */
@@ -23,11 +25,15 @@ export type Adapters = {
   journal: Journal;
   /** L'environnement écrit avec chaque événement : production, staging… */
   environment: string;
+  /** L'app servie, sur le signe de vie du journal. */
+  build: Build;
 };
 
 export type Container = {
   referentiel: Referentiel;
   journalController: JournalController;
+  /** Le signe de vie de la collecte, que `server.ts` écrit chaque heure. */
+  reportAlive: ReportAlive;
 };
 
 /**
@@ -38,6 +44,7 @@ export function adaptersFor({
   grist,
   journal,
   environment,
+  build,
 }: Configuration): Adapters {
   return {
     referentiel: grist
@@ -47,6 +54,7 @@ export function adaptersFor({
       ? new GristJournal(new GristApiClient(journal))
       : new DiscardingJournal(),
     environment,
+    build,
   };
 }
 
@@ -54,10 +62,12 @@ export function createContainer({
   referentiel,
   journal,
   environment,
+  build,
 }: Adapters): Container {
   const collectAnEvent = new CollectAnEvent(journal, environment);
   return {
     referentiel,
     journalController: new JournalController(collectAnEvent),
+    reportAlive: new ReportAlive(journal, build, environment),
   };
 }

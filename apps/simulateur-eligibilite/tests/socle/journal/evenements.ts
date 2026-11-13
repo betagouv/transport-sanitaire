@@ -1,6 +1,10 @@
 // Des événements du journal, tels que le navigateur les envoie.
 
+import type { Build } from "../../../server/journal/journal-entry.entity.ts";
 import type { AnalyticsEvent } from "../../../shared/analytics/analytics-event.ts";
+
+/** L'app que le serveur sert. */
+export const BUILD: Build = { app_version: "0.8.0", commit_sha: "f30aafe" };
 
 export const simulationStarted: AnalyticsEvent = {
   event_id: "s-1:1",

@@ -42,7 +42,7 @@ function rowOf({
 }: JournalEntry) {
   return {
     event_id: event.event_id,
-    simulation_id: event.simulation_id,
+    simulation_id: event.simulation_id ?? null,
     sequence: event.sequence ?? null,
     type: event.type,
     occurred_at: event.occurred_at,
