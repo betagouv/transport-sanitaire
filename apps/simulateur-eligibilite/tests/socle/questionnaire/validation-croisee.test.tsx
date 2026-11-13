@@ -4,8 +4,9 @@ import { givenOf, page, questionsOf } from "../../../core/socle";
 import { afficher } from "./afficher";
 
 // Une réponse peut en contredire une autre. La question qui vient en dernier
-// déclare ses incohérences, un message chacune. Ici, deux réponses de la même
-// page. Les pages sont écrites ici.
+// déclare ses incohérences, un message chacune. « Suivant » reste actif : le
+// message vient au clic, et la page reste avec ses saisies (SQ-28). Ici, deux
+// réponses de la même page. Les pages sont écrites ici.
 
 type Questions = {
   debut: string;
@@ -49,16 +50,28 @@ const valider = () =>
   screen.getByRole("button", { name: /^(Suivant|Terminer)$/ });
 
 describe("deux réponses de la même page", () => {
-  it("affiche le message sous la fin, et grise le bouton", async () => {
+  it("laisse « Suivant » actif, sans message avant le clic", async () => {
     const { user } = afficher([CRENEAU]);
 
     await user.type(champ("Début du créneau"), "2026-10-12T08:30");
     await user.type(champ("Fin du créneau"), "2026-10-12T07:00");
 
+    expect(valider()).toBeEnabled();
+    expect(screen.queryByText(FIN_AVANT_LE_DEBUT)).toBeNull();
+  });
+
+  it("au clic, affiche le message sous la fin et garde la page", async () => {
+    const { user, reponses } = afficher([CRENEAU]);
+    await user.type(champ("Début du créneau"), "2026-10-12T08:30");
+    await user.type(champ("Fin du créneau"), "2026-10-12T07:00");
+
+    await user.click(valider());
+
     expect(champ("Fin du créneau")).toHaveAccessibleDescription(
       FIN_AVANT_LE_DEBUT,
     );
-    expect(valider()).toBeDisabled();
+    expect(champ("Fin du créneau")).toHaveValue("2026-10-12T07:00");
+    expect(reponses()).toBeUndefined();
   });
 
   it("valide la page une fois la fin corrigée", async () => {
@@ -82,6 +95,7 @@ describe("deux réponses de la même page", () => {
 
     await user.type(champ("Début du créneau"), "2026-10-19T08:30");
     await user.type(champ("Fin du créneau"), "2026-10-18T07:00");
+    await user.click(valider());
 
     expect(screen.getByText(FIN_AVANT_LE_DEBUT)).toBeInTheDocument();
     expect(screen.getByText(FERME_LE_DIMANCHE)).toBeInTheDocument();

@@ -118,6 +118,7 @@ describe("règle sur la même page", () => {
 
     await user.click(screen.getByLabelText("En espèces"));
     await user.click(screen.getByLabelText("À domicile"));
+    await user.click(screen.getByRole("button", { name: "Terminer" }));
 
     expect(screen.getByText("Vu sur la même page.")).toBeInTheDocument();
   });
