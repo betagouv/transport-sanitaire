@@ -5,6 +5,7 @@
 import { describe, expect, it } from "vitest";
 import { Journey } from "../../../front/socle/analytics/journey.entity";
 import type { OpenedPage } from "../../../front/socle/analytics/page-view.entity";
+import { PROVENANCE } from "./journal-de-test";
 
 const entree = { establishment_id: "7", service_id: "42" };
 
@@ -21,7 +22,7 @@ const types = (envoyes: { type: string }[]) => envoyes.map(({ type }) => type);
 
 describe("le parcours d'une simulation", () => {
   it("numérote son début, puis son intention", () => {
-    const journey = new Journey({ seeded: false });
+    const journey = new Journey({ seeded: false, provenance: PROVENANCE });
 
     const debut = journey.start(entree);
     const intention = journey.selectIntent("eligibilite_seule");
@@ -35,14 +36,14 @@ describe("le parcours d'une simulation", () => {
   });
 
   it("garde la première intention, pas un second choix", () => {
-    const journey = new Journey({ seeded: false });
+    const journey = new Journey({ seeded: false, provenance: PROVENANCE });
     journey.selectIntent("eligibilite_seule");
 
     expect(journey.selectIntent("eligibilite_et_prescription")).toBeNull();
   });
 
   it("ouvert sur une seed, ne garde rien", () => {
-    const journey = new Journey({ seeded: true });
+    const journey = new Journey({ seeded: true, provenance: PROVENANCE });
 
     expect([
       journey.start(entree),
@@ -51,7 +52,7 @@ describe("le parcours d'une simulation", () => {
   });
 
   it("une page validée qui reste dans sa phase ne la termine pas", () => {
-    const journey = new Journey({ seeded: false });
+    const journey = new Journey({ seeded: false, provenance: PROVENANCE });
     journey.openAPage(pageDeP2("P2/prestation", ["Q2.1"]));
 
     const validation = journey.validate({
@@ -65,7 +66,7 @@ describe("le parcours d'une simulation", () => {
   });
 
   it("une page de P0 n'entre dans aucune phase, et n'a pas de jalon", () => {
-    const journey = new Journey({ seeded: false });
+    const journey = new Journey({ seeded: false, provenance: PROVENANCE });
 
     const ouverture = journey.openAPage({
       id: "P0",
@@ -82,7 +83,7 @@ describe("le parcours d'une simulation", () => {
   });
 
   it("la dernière page d'une phase vue, puis quittée sans validation, garde son jalon", () => {
-    const journey = new Journey({ seeded: false });
+    const journey = new Journey({ seeded: false, provenance: PROVENANCE });
 
     const [, exposition] = journey.openAPage({
       ...pageDeP2("P2/branche", ["Q2.13.depart"]),
@@ -124,7 +125,7 @@ function valider(journey: Journey, changed: boolean) {
 
 describe("les révisions du premier résultat", () => {
   it("un R2 affiché ouvre la révision r1, avec ses codes connus seulement", () => {
-    const journey = new Journey({ seeded: false });
+    const journey = new Journey({ seeded: false, provenance: PROVENANCE });
 
     const [affiche] = journey.displayResult(unR2);
 
@@ -144,7 +145,7 @@ describe("les révisions du premier résultat", () => {
   });
 
   it("un R2 réaffiché sans modification garde sa révision, et ne repart pas", () => {
-    const journey = new Journey({ seeded: false });
+    const journey = new Journey({ seeded: false, provenance: PROVENANCE });
     journey.displayResult(unR2);
 
     const revalidation = valider(journey, false);
@@ -154,7 +155,7 @@ describe("les révisions du premier résultat", () => {
   });
 
   it("une modification de P2 fait tomber la révision, et le R2 suivant ouvre r2", () => {
-    const journey = new Journey({ seeded: false });
+    const journey = new Journey({ seeded: false, provenance: PROVENANCE });
     journey.displayResult(unR2);
 
     const modification = valider(journey, true);
@@ -171,13 +172,13 @@ describe("les révisions du premier résultat", () => {
   });
 
   it("sans R2 affiché, une modification ne fait rien tomber", () => {
-    const journey = new Journey({ seeded: false });
+    const journey = new Journey({ seeded: false, provenance: PROVENANCE });
 
     expect(types(valider(journey, true))).not.toContain("result_invalidated");
   });
 
   it("l'entrée en P3 porte la révision courante", () => {
-    const journey = new Journey({ seeded: false });
+    const journey = new Journey({ seeded: false, provenance: PROVENANCE });
     journey.displayResult(unR2);
 
     const [entree] = journey.openAPage({
@@ -196,7 +197,7 @@ describe("les révisions du premier résultat", () => {
   });
 
   it("une page de P3 qui change les réponses ne touche pas au R2", () => {
-    const journey = new Journey({ seeded: false });
+    const journey = new Journey({ seeded: false, provenance: PROVENANCE });
     journey.displayResult(unR2);
     journey.openAPage({
       id: "P3/lieux",

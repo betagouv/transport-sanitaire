@@ -26,7 +26,7 @@ import { ReachAnAldResult } from "./reach-an-ald-result.usecase";
 import { RevealQuestions } from "./reveal-questions.usecase";
 import { SelectAnIntent } from "./select-an-intent.usecase";
 import { StartAQuestionnaire } from "./start-a-questionnaire.usecase";
-import { StartASimulation } from "./start-a-simulation.usecase";
+import { type Build, StartASimulation } from "./start-a-simulation.usecase";
 
 /** Un use case par geste de l'écran, qui parle à l'audience, au journal, ou aux deux. */
 export type AnalyticsUseCases = ReturnType<typeof analyticsUseCases>;
@@ -35,9 +35,10 @@ export function analyticsUseCases(
   audience: Audience,
   journal: Journal,
   pageLoad: PageLoad,
+  build: Build,
 ) {
   return {
-    startASimulation: new StartASimulation(journal, pageLoad),
+    startASimulation: new StartASimulation(journal, pageLoad, build),
     selectAnIntent: new SelectAnIntent(journal),
     startAQuestionnaire: new StartAQuestionnaire(audience),
     openAPage: new OpenAPage(journal),

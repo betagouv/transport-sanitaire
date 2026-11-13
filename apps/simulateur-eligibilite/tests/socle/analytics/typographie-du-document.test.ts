@@ -5,6 +5,7 @@ import { describe, expect, it } from "vitest";
 import type { Typography } from "../../../front/socle/analytics/document-version.entity";
 import { Journey } from "../../../front/socle/analytics/journey.entity";
 import type { AnalyticsEvent } from "../../../shared/analytics/analytics-event";
+import { PROVENANCE } from "./journal-de-test";
 
 // Le R2 affiché : ses codes, sans motif ni portion.
 const unR2 = {
@@ -41,7 +42,7 @@ const mesures = (events: AnalyticsEvent[]) =>
 
 describe("la taille des textes du document R3", () => {
   it("une version imprimée deux fois : une mesure, à 7,5 pt au plus petit, et deux champs", () => {
-    const journey = new Journey({ seeded: false });
+    const journey = new Journey({ seeded: false, provenance: PROVENANCE });
     const affiche = afficherLeR3(journey);
     const imprimer = journey.exposeButtons(["document_print"]).exposures
       .document_print;
@@ -75,7 +76,7 @@ describe("la taille des textes du document R3", () => {
   });
 
   it("une mesure partielle le dit, et nomme le champ sans taille", () => {
-    const journey = new Journey({ seeded: false });
+    const journey = new Journey({ seeded: false, provenance: PROVENANCE });
 
     const [mesure] = mesures(
       afficherLeR3(
@@ -92,7 +93,7 @@ describe("la taille des textes du document R3", () => {
   });
 
   it("le même DTO imprimé autrement ouvre une nouvelle version, et sa mesure", () => {
-    const journey = new Journey({ seeded: false });
+    const journey = new Journey({ seeded: false, provenance: PROVENANCE });
     afficherLeR3(journey);
 
     const [mesure] = mesures(
@@ -111,14 +112,14 @@ describe("la taille des textes du document R3", () => {
   });
 
   it("la même version réaffichée ne mesure pas une seconde fois", () => {
-    const journey = new Journey({ seeded: false });
+    const journey = new Journey({ seeded: false, provenance: PROVENANCE });
     afficherLeR3(journey);
 
     expect(journey.displayDocument(unDocument())).toEqual([]);
   });
 
   it("la mesure ne porte aucun texte du document", () => {
-    const journey = new Journey({ seeded: false });
+    const journey = new Journey({ seeded: false, provenance: PROVENANCE });
 
     const [mesure] = mesures(afficherLeR3(journey));
 

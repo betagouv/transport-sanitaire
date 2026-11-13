@@ -19,6 +19,7 @@ export const model = defineModel<
   LectureDeR3["reading"]
 >({
   core,
+  version: "1.0.0",
   result: {
     title: "Résultat",
     reading: R2.lit,

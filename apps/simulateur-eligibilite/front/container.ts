@@ -18,6 +18,8 @@ import {
   referentielDuServeur,
   ServerApiClient,
   ServerJournal,
+  SHA_COMMIT,
+  VERSION_APP,
 } from "./socle";
 
 type AppProps = ComponentProps<typeof App>;
@@ -39,6 +41,7 @@ export function createContainer(): Container {
       audienceOf(consent),
       journal,
       new HostPageLoad(),
+      { app_version: VERSION_APP, commit_sha: SHA_COMMIT },
     ),
     referentiel: referentielDuServeur(serverApi),
     declarer: declarerAuServeur(serverApi),

@@ -10,11 +10,12 @@
 // R3 ouvrent un affichage, où leurs boutons sont exposés, et leurs clics s'y
 // rattachent (ADR-11).
 
-import {
-  ANALYTICS_VERSION,
-  type AnalyticsEvent,
-  type AnalyticsIntent,
-  type Phase,
+import type {
+  AnalyticsEvent,
+  AnalyticsIntent,
+  EventDetails,
+  Phase,
+  Provenance,
 } from "../../../shared/analytics/analytics-event";
 import {
   type Button,
@@ -29,12 +30,6 @@ import {
 } from "./page-view.entity";
 import { Results } from "./results.entity";
 import type { ShownResult } from "./revision.entity";
-
-// Ce qu'un événement dit de lui-même : le parcours fait le reste.
-type EventDetails = Omit<
-  AnalyticsEvent,
-  "event_id" | "simulation_id" | "sequence" | "occurred_at" | "version"
->;
 
 /** Rien à garder au journal : le parcours d'une seed, ou une intention déjà connue. */
 export type NothingToRecord = null;
@@ -77,6 +72,7 @@ export type Entrance = Pick<
 export class Journey {
   readonly simulationId = crypto.randomUUID();
   readonly #seeded: boolean;
+  readonly #provenance: Provenance;
   #sequence = 0;
   #intentSelected = false;
   #views = 0;
@@ -89,10 +85,15 @@ export class Journey {
 
   /**
    * `seeded` : la simulation s'ouvre sur une seed, au milieu du parcours. Elle
-   * n'est pas un parcours de prescripteur : rien n'en part.
+   * n'est pas un parcours de prescripteur : rien n'en part. `provenance` :
+   * l'app qui le produit, sur chaque événement (ADR-14).
    */
-  constructor({ seeded }: { seeded: boolean }) {
+  constructor({
+    seeded,
+    provenance,
+  }: { seeded: boolean; provenance: Provenance }) {
     this.#seeded = seeded;
+    this.#provenance = provenance;
   }
 
   /** Le début du parcours, sur P0. */
@@ -291,7 +292,7 @@ export class Journey {
       simulation_id: this.simulationId,
       sequence: this.#sequence,
       occurred_at: new Date().toISOString(),
-      version: ANALYTICS_VERSION,
+      ...this.#provenance,
       is_test: false,
       ...details,
     };
