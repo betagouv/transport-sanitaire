@@ -92,4 +92,28 @@ export class ValidatedAnswers<Questions extends AnyQuestions = AnyQuestions> {
   toJSON(): Validated<Questions> {
     return this.#validated;
   }
+
+  /**
+   * Les mêmes questions validées, avec les mêmes réponses et les mêmes
+   * options proposées. L'ordre des cases cochées ne compte pas.
+   */
+  sameAs(other: ValidatedAnswers<Questions>): boolean {
+    return canonical(this.#validated) === canonical(other.#validated);
+  }
+}
+
+// ---- implémentation ----
+
+// Une écriture qui ne dépend d'aucun ordre : ni des clés, ni des listes.
+function canonical(value: unknown): string {
+  return JSON.stringify(sorted(value));
+}
+
+function sorted(value: unknown): unknown {
+  if (Array.isArray(value)) return value.map(sorted).sort();
+  if (value === null || typeof value !== "object") return value;
+  return Object.entries(value)
+    .filter(([, entry]) => entry !== undefined)
+    .sort(([a], [b]) => (a < b ? -1 : 1))
+    .map(([key, entry]) => [key, sorted(entry)]);
 }

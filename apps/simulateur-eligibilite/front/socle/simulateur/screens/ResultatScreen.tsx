@@ -13,6 +13,7 @@ import type {
 } from "../../../../core/socle/questionnaire-engine";
 
 import type { Simulation } from "../../../../core/socle/simulation";
+import { type ResultCodes, useResultTracking } from "../../analytics";
 import type { FirstResult, Model } from "../../model";
 import { NextStep, Stepper } from "../../questionnaire";
 import { SecondaryButton } from "../../ui";
@@ -52,6 +53,7 @@ export function ResultatScreen({
           onRestart,
         }}
         feedback={feedbackOf(model, read)}
+        codes={model.resultCodes ? read(model.resultCodes) : null}
       />
       {DebugTrace && (
         <div className="fr-no-print">
@@ -118,20 +120,25 @@ type ContentProps = {
   startLabel: string | null;
   actions: Actions;
   feedback: FeedbackOffer | null;
+  codes: ResultCodes | null;
 };
 
 // L'avis entre dans la barre d'actions, une fois le résultat chargé. La page
-// prend le nom que le résultat lui donne, une fois chargé.
+// prend le nom que le résultat lui donne, une fois chargé. Le journal le
+// reçoit chargé.
 function Content({
   result,
   step,
   startLabel,
   actions,
   feedback,
+  codes,
 }: ContentProps) {
   const loaded = useLoaded(result);
   const completion = completionOf(startLabel, loaded);
   const completes = typeof completion === "object";
+  const canComplete = completion === "pending" ? null : completes;
+  useResultTracking({ loaded, canComplete, codes });
   const offer = loaded && onFirstResult(feedback, completes);
   const buttons = { ...actions, completion, feedback: offer || null };
   return (

@@ -11,6 +11,7 @@
 // n'a pas de badge (#221) ; en accord préalable, ni cartes ni étapes. Elle lit ce que lisent ces textes
 // (`ce-que-lit-un-texte.ts`).
 
+import type { Portion } from "../../../../../socle";
 import {
   badgesDuResultat,
   type CarteAffichee,
@@ -26,9 +27,11 @@ import {
 import {
   LU_PAR_LE_CONTEXTE,
   motifAdministratif,
+  motifDuContexte,
   phraseDuContexte,
 } from "../../components/contexte-du-resultat";
 import {
+  type FondementDeLAccord,
   fondementDeLAccord,
   LU_PAR_LE_FONDEMENT_DE_L_ACCORD,
 } from "../../components/fondement-de-l-accord-prealable";
@@ -37,9 +40,10 @@ import type {
   Bloc,
   CatalogueResultats,
 } from "../../components/forme-du-catalogue";
+import { type Motif, motifDe } from "../../components/motif";
 import {
   LU_PAR_LA_PERMISSION,
-  motifDeLaPermission,
+  motifAdministratifDeLaPermission,
   phraseDeLaPermission,
 } from "../../components/texte-de-la-permission";
 import {
@@ -60,6 +64,10 @@ export type TexteDeLaFichePositive = {
   readonly cartes: readonly CarteAffichee[];
   readonly consignes: Consignes;
   readonly finance: Bloc;
+  /** Les motifs que la raison affiche. */
+  readonly motifs: readonly Motif[];
+  /** Les portions du trajet que la fiche restitue. */
+  readonly portions: readonly Portion[];
 };
 
 /** Ce que lit la fiche positive : ce que lisent ses textes. */
@@ -93,7 +101,7 @@ export function texteDeLaFichePositive(
   const badges = badgesDuResultat(catalogue.badges, trace);
   const consignes = consignesDuModus(
     modus,
-    fondement.motif,
+    fondement.motifAdministratif,
     badges,
     "intro" in issue ? issue.intro : undefined,
   );
@@ -105,6 +113,8 @@ export function texteDeLaFichePositive(
     cartes: sansDetail ? [] : cartesDeLaFiche(issue, trace),
     consignes: sansDetail ? { ...consignes, etapes: [] } : consignes,
     finance: issue.finance,
+    motifs: fondement.motifs,
+    portions: fondement.portions,
   };
 }
 
@@ -125,30 +135,33 @@ function sansCartesNiEtapes(
   );
 }
 
-type Fondement = {
-  readonly raison: string | undefined;
-  readonly motif: string | undefined;
-};
-
 // Pourquoi le transport est pris en charge : le contexte du soin pour la
 // prescription médicale de transport, la permission pour le S3141, le contexte
 // et la justification de l'accord pour une demande d'accord préalable.
+// Seul l'accord préalable restitue des portions du trajet : les autres textes
+// n'en nomment aucune.
 function fondementDe(
   catalogue: CatalogueResultats,
   trace: LuParLaFiche,
   issueId: IssueAcceptee,
-): Fondement {
+): FondementDeLAccord {
   if (issueId === "ISSUE_S3141") {
     const issue = catalogue.issues.ISSUE_S3141;
+    const phrase = phraseDeLaPermission(issue, trace);
     return {
-      raison: phraseDeLaPermission(issue, trace),
-      motif: motifDeLaPermission(issue, trace),
+      raison: phrase?.text,
+      motifAdministratif: motifAdministratifDeLaPermission(issue, trace),
+      motifs: phrase ? [motifDe(phrase)] : [],
+      portions: [],
     };
   }
   const issue = catalogue.issues[issueId];
   if ("intro" in issue) return fondementDeLAccord(issue, trace);
+  const contexte = motifDuContexte(issue, trace);
   return {
     raison: phraseDuContexte(issue, trace),
-    motif: motifAdministratif(issue, trace),
+    motifAdministratif: motifAdministratif(issue, trace),
+    motifs: contexte ? [motifDe(contexte)] : [],
+    portions: [],
   };
 }

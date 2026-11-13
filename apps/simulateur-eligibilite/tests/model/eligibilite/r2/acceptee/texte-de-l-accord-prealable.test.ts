@@ -204,3 +204,28 @@ describe("le lexique de l'accord préalable", () => {
     expect(JSON.stringify(texte)).not.toMatch(/\{[a-z_]+\}|\[INTRO\]/);
   });
 });
+
+// Ce que la demande donne au journal des parcours (#386, ADR-9) : les motifs
+// que sa raison affiche, et les portions du trajet qu'elle restitue.
+describe("les motifs et les portions d'une demande", () => {
+  const AVION_OU_BATEAU = { cible_dap_motif_avion_bateau: true } as const;
+
+  it("le contexte puis la justification, et aucune portion sur la route", () => {
+    expect(demande({ ...DIALYSE, ...LONGUE_DISTANCE })).toMatchObject({
+      motifs: [{ id: "EC-H" }, { id: "ED-L" }],
+      portions: [],
+    });
+  });
+
+  it("sans contexte, le contexte vide ne compte pas", () => {
+    expect(demande(LONGUE_DISTANCE)?.motifs).toEqual([
+      expect.objectContaining({ id: "ED-L" }),
+    ]);
+  });
+
+  it("en ambulance avec un avion ou un bateau : la ligne régulière et la partie terrestre", () => {
+    expect(
+      demande({ cible_mode_ambulance: true, ...AVION_OU_BATEAU })?.portions,
+    ).toEqual(["LIGNE_REGULIERE", "TERRESTRE"]);
+  });
+});
