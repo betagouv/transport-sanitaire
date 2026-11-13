@@ -67,6 +67,47 @@ describe("les questions qui comptent", () => {
   });
 });
 
+// Une question masquée par le graphe garde ses gardes : elle n'est pas devenue
+// inapplicable, et sa réponse reste (NAV-SOUS-QUESTIONS-20261113, D-293).
+describe("une question que le graphe masque", () => {
+  const SEJOUR = {
+    motif: "sejour",
+    distance: "loin",
+    entree: true,
+    taille: "grand",
+  } as const;
+
+  it("garde sa réponse quand une autre page la masque", () => {
+    const apres = lire(SEJOUR).commit(PAGE_DU_MOTIF, { motif: "consultation" });
+
+    expect(apres).toEqual({ motif: "consultation", distance: "loin" });
+  });
+
+  it("la retrouve quand elle compte de nouveau", () => {
+    const masquee = lire(SEJOUR).commit(PAGE_DU_MOTIF, {
+      motif: "consultation",
+    });
+
+    const reposee = lire(masquee).commit(PAGE_DU_MOTIF, { motif: "sejour" });
+
+    expect(reposee).toEqual({ motif: "sejour", distance: "loin" });
+  });
+
+  it("garde sa réponse dans le brouillon de sa page", () => {
+    const trajet = page("trajet", MOTIF, DISTANCE);
+    const pages = [trajet, page("entree", ENTREE), page("taille", TAILLE)];
+
+    const brouillon = lire({}, pages).answerOn(
+      trajet,
+      { motif: "sejour", distance: "loin" },
+      "motif",
+      "consultation",
+    );
+
+    expect(brouillon).toEqual({ motif: "consultation", distance: "loin" });
+  });
+});
+
 // ---- implémentation ----
 
 type Questions = {
@@ -114,8 +155,9 @@ const REMARQUE = question
   .options({ oui: "Oui", non: "Non" });
 
 // Une question par page : chacune se valide avant la suivante.
+const PAGE_DU_MOTIF = page("motif", MOTIF);
 const PAGES: readonly AnyPage[] = [
-  page("motif", MOTIF),
+  PAGE_DU_MOTIF,
   page("distance", DISTANCE),
   page("entree", ENTREE),
   page("taille", TAILLE),
@@ -126,14 +168,19 @@ function posees(
   reponses: Partial<Questions>,
   pages: readonly AnyPage[] = PAGES,
 ) {
+  const read = lire(reponses, pages);
+  return read
+    .askedPages()
+    .flatMap((each) => read.questionsOn(each).map(({ id }) => id));
+}
+
+// Ces réponses, lues avec la pertinence : le résultat ne montre que la taille.
+function lire(reponses: Partial<Questions>, pages: readonly AnyPage[] = PAGES) {
   const relevance = new Relevance({
     graph: decisionGraphOf({ rien: { titre: "Rien" } }),
     pages,
     faits: { reads: FAITS.reads, imposed: [], of: () => ({}) },
     shown: given.question("taille").answer().reads,
   });
-  const read = new Questionnaire(pages, relevance).readWith(reponses);
-  return read
-    .askedPages()
-    .flatMap((each) => read.questionsOn(each).map(({ id }) => id));
+  return new Questionnaire(pages, relevance).readWith(reponses);
 }

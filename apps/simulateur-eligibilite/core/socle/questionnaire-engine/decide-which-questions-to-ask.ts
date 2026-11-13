@@ -55,8 +55,8 @@ export function readInOrder(
   { pages, positions }: { pages: readonly Page[]; positions: Positions },
   answers: Answers,
   { cibles, relevance }: { cibles?: AnyCibles; relevance?: Relevance } = {},
-): { readonly asked: readonly AskedPage[] } & Progress {
-  let progress: Progress = { validated: {}, complete: true, pending: [] };
+): { readonly asked: readonly AskedPage[] } & Progress & Inapplicable {
+  let progress: Progress = { ...START, validated: {} };
   const asked: AskedPage[] = [];
   for (const [rank, page] of pages.entries()) {
     const earlier = answersUpTo(positions, rank, answers);
@@ -69,18 +69,42 @@ export function readInOrder(
     asked.push({ page, questions: read.questions });
     progress = read.progress;
   }
-  return { asked, ...progress };
+  return { asked, ...progress, inapplicable: inapplicableIn(progress) };
 }
+
+/**
+ * Les questions devenues inapplicables : leurs gardes ne tiennent plus, à
+ * toutes leurs places, alors que ce qu'elles lisent est validé. Une question
+ * que le graphe masque (#255), ou qui suit une question en attente sur une
+ * page d'avant, n'en est pas : ses gardes tiennent, ou ne se décident pas
+ * encore.
+ */
+type Inapplicable = { readonly inapplicable: ReadonlySet<string> };
 
 // ---- implémentation ----
 
 // Où en est la lecture du questionnaire : les questions validées jusqu'ici, si
-// aucune n'attend encore sa réponse, et celles qui se posent sans être validées.
+// aucune n'attend encore sa réponse, et celles qui se posent sans être
+// validées. `ruledOut` : les places où les gardes d'une question ne tiennent
+// pas, décidées ; `setAside` : celles où elle ne se pose pas sans être exclue.
 type Progress = {
   readonly validated: Validated;
   readonly complete: boolean;
   readonly pending: readonly string[];
+  readonly ruledOut: readonly string[];
+  readonly setAside: readonly string[];
 };
+
+const START = { complete: true, pending: [], ruledOut: [], setAside: [] };
+
+function inapplicableIn(progress: Progress): ReadonlySet<string> {
+  const kept = new Set([
+    ...Object.keys(progress.validated),
+    ...progress.pending,
+    ...progress.setAside,
+  ]);
+  return new Set(progress.ruledOut.filter((id) => !kept.has(id)));
+}
 
 // Ce que les questions d'une page peuvent lire : les réponses, celles qu'en
 // voient leurs incohérences (sans les pages suivantes), et les cibles.
@@ -95,8 +119,10 @@ type Context = {
 };
 
 // Les questions de la page qui se posent, dans l'ordre. Chacune voit ce que les
-// précédentes ont validé, et celles de la page posées avant elle.
+// précédentes ont validé, et celles de la page posées avant elle. Ses gardes
+// se décident si les pages d'avant n'attendent rien.
 function askPage(page: Page, context: Context, start: Progress) {
+  const decided = start.complete;
   let progress = start;
   const questions: AskedQuestion[] = [];
   for (const [index, declared] of page.questions.entries()) {
@@ -110,7 +136,11 @@ function askPage(page: Page, context: Context, start: Progress) {
       answers: context.answers,
     };
     const question = askQuestion(declared, context, place);
-    if (!question || !matters(declared, context, progress)) continue;
+    const asked = question && matters(declared, context, progress);
+    if (!asked) {
+      progress = notAsked(progress, declared.id, decided && !question);
+      continue;
+    }
     questions.push(question);
     progress = validateInTurn(progress, question, context.answers);
   }
@@ -132,6 +162,14 @@ function askQuestion(
     answer: guardReading(place, { own }),
   });
   return declared.askedIn(seenWith(answers, false), seenWith(earlier, true));
+}
+
+// Une question qui ne se pose pas à cette place : exclue par ses gardes, ou
+// mise de côté.
+function notAsked(progress: Progress, id: string, ruledOut: boolean): Progress {
+  return ruledOut
+    ? { ...progress, ruledOut: [...progress.ruledOut, id] }
+    : { ...progress, setAside: [...progress.setAside, id] };
 }
 
 // Une place suivante est sautée si la question s'est posée plus tôt.
