@@ -51,10 +51,10 @@ export type TexteDuPrescripteur = {
   readonly actions: readonly string[];
   readonly avertissement?: string;
   /**
-   * Les scénarios que la page montre. Le pourquoi de l'étranger n'en a pas :
-   * le catalogue ne donne aucun identifiant à ses points.
+   * Les scénarios que la page montre. Sans liste, ses points n'ont pas
+   * d'identifiant au catalogue : ceux du pourquoi de l'étranger.
    */
-  readonly motifs: readonly Motif[];
+  readonly motifs?: readonly Motif[];
 };
 
 /** Le texte de cette issue, pour cette trace. */
@@ -97,7 +97,7 @@ export function selonLAffichage(
     questions: raisons ? texte.questions : [],
     actions: actions ? texte.actions : [],
     avertissement: raisons ? texte.avertissement : undefined,
-    motifs: texte.motifs,
+    motifs: raisons ? texte.motifs : [],
   };
 }
 
@@ -119,7 +119,6 @@ function texteDeLEtranger(issue: IssueEtranger): TexteDuPrescripteur {
     questions: issue.questions,
     actions: issue.actions,
     avertissement: issue.notice,
-    motifs: [],
   };
 }
 

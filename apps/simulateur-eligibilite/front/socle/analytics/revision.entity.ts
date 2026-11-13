@@ -17,8 +17,10 @@ export type ShownResult = {
   readonly canComplete: boolean;
   /** Les codes que le modèle déclare. Aucun : le modèle n'en déclare pas. */
   readonly codes: ResultCodes | NoCodes;
-  readonly motifs: readonly string[];
-  readonly portions: readonly Portion[];
+  /** Les motifs affichés. Sans liste, on ne sait pas : le champ ne part pas. */
+  readonly motifs?: readonly string[];
+  /** Les portions restituées. Sans liste, on ne sait pas : le champ ne part pas. */
+  readonly portions?: readonly Portion[];
 };
 
 /**
@@ -96,8 +98,8 @@ export class Revision {
       revision: this.id,
       can_complete: shown.canComplete,
       ...(shown.codes && fieldsOf(shown.codes)),
-      motifs: [...shown.motifs],
-      portions: [...shown.portions],
+      ...(shown.motifs && { motifs: [...shown.motifs] }),
+      ...(shown.portions && { portions: [...shown.portions] }),
     };
   }
 

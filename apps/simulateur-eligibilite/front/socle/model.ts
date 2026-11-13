@@ -59,10 +59,14 @@ export type FirstResult = {
   terminal?: boolean;
   /**
    * Les identifiants des motifs que le résultat affiche, tels que son
-   * catalogue les nomme. Le journal des parcours les reçoit (ADR-9).
+   * catalogue les nomme. Le journal des parcours les reçoit (ADR-9). Une liste
+   * vide : aucun motif affiché. Sans liste : on ne sait pas.
    */
   motifs?: readonly string[];
-  /** Les portions du trajet que le résultat restitue à part (ADR-9). */
+  /**
+   * Les portions du trajet que le résultat restitue à part (ADR-9). Une liste
+   * vide : aucune. Sans liste : on ne sait pas.
+   */
   portions?: readonly Portion[];
 };
 

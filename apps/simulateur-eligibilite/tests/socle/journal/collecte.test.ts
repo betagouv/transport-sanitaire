@@ -176,3 +176,36 @@ describe("collecte de la taille des champs du document R3", () => {
     expect(await journal.find("s-1:9")).toBeUndefined();
   });
 });
+
+describe("collecte des portions du premier résultat", () => {
+  const affichage = {
+    ...simulationStarted,
+    event_id: "s-1:5",
+    sequence: 5,
+    type: "result_displayed",
+    screen: "R2",
+    revision: "r1",
+    portions: ["LIGNE_REGULIERE"],
+  };
+
+  it("garde la ligne régulière", async () => {
+    const journal = await collecteSur();
+
+    const { status } = await collecter(affichage);
+
+    expect(status).toBe(204);
+    expect((await journal.find("s-1:5"))?.event).toEqual(affichage);
+  });
+
+  it("reçoit l'envoi d'un onglet d'avant #443, sans la partie terrestre qu'il croyait prouvée", async () => {
+    const journal = await collecteSur();
+
+    const { status } = await collecter({
+      ...affichage,
+      portions: ["LIGNE_REGULIERE", "TERRESTRE"],
+    });
+
+    expect(status).toBe(204);
+    expect((await journal.find("s-1:5"))?.event).toEqual(affichage);
+  });
+});

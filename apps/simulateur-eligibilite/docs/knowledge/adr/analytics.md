@@ -6,6 +6,15 @@
 > Repose sur le rattachement établissement/service fourni par l'écran de rattachement :
 > voir [identification.md](./identification.md).
 >
+> **Mise à jour 2026-11-13, les arbitrages de l'éditeur sur les véhicules et les
+> motifs (#443).** `portions` ne porte plus `TERRESTRE` : la portée M-COMMUN
+> parle des « éventuelles » parties terrestres, et aucune réponse ne prouve leur
+> présence ou leur absence. Le champ manque, ce qui se lit « inconnu », en
+> attendant que l'éditeur dise quelle réponse les établit. Le serveur reçoit
+> encore `TERRESTRE` d'un onglet resté sur une version d'avant, et l'écarte.
+> Une liste de motifs vide dit qu'aucun motif n'est affiché, et son absence
+> qu'on ne sait pas. Voir l'ADR-9.
+>
 > **Mise à jour 2026-11-13, la couverture de la collecte (#384).** Chaque heure,
 > le serveur écrit dans le journal un signe de vie, `alive`. Une heure sans lui
 > ressortira « indisponible » au dashboard, pas « zéro ». Les référentiels ne
@@ -526,8 +535,11 @@ ni quand un R2 est affiché.
 6. **Les compléments.** `financeur`, la cible du même nom. `motifs`, les
    identifiants des motifs du catalogue que le R2 affiche, choisis par le même
    calcul que leur texte (`FirstResult.motifs`). `portions`, les portions du
-   trajet que le R2 restitue : `LIGNE_REGULIERE` et `TERRESTRE`, ou aucune
-   (`FirstResult.portions`).
+   trajet que le R2 restitue : `LIGNE_REGULIERE`, ou aucune
+   (`FirstResult.portions`). ~~`TERRESTRE`~~ ne part plus (#443) : la
+   présence d'une partie terrestre est inconnue, faute de réponse qui la
+   prouve. Une liste vide part : rien n'est affiché. Sans liste, on ne sait
+   pas, et le champ ne part pas.
 7. **Le complément.** `phase_entered` de P3 porte la révision du R2 qui l'ouvre.
 
 **Pourquoi.** Le socle reste aveugle au métier, comme pour l'intention.
@@ -540,10 +552,11 @@ inventée pour le sans objet serait une sortie que le modèle ne calcule pas.
 **Conséquences.** Le contrat de nos compléments reste en version 2, qui n'est pas
 encore livrée : `financeur`, `motifs` et `portions` s'y ajoutent. Le modèle de
 test ne déclare pas de codes : son R2 n'envoie que `revision` et `can_complete`.
-La liste des motifs visibles et la classification des modes restent des
-décisions de l'éditeur : la collecte garde les identifiants source. Les points du
-pourquoi de l'étranger n'ont pas d'identifiant au catalogue : ce R2 n'envoie aucun
-motif.
+L'éditeur a tranché la liste des motifs visibles et la classification des
+modes (#443) : la collecte garde les identifiants source. Le catalogue cache le
+pourquoi de l'étranger : ce R2 envoie une liste de motifs vide. S'il le
+montrait, ses points, sans identifiant au catalogue, ne donneraient pas de
+liste.
 
 ### ADR-10 - Le document R3 et ses versions
 

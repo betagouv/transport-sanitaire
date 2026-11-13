@@ -117,8 +117,8 @@ describe("le journal du premier résultat, sur la seed de chaque issue", () => {
         motifs: ["controle"],
       },
     ],
-    // Les points du pourquoi de l'étranger n'ont pas d'identifiant au
-    // catalogue : aucun motif ne part.
+    // Le catalogue cache le pourquoi de l'étranger : aucun motif n'est
+    // affiché, la liste part vide.
     [
       "issue-dap-etranger-a-examiner",
       {

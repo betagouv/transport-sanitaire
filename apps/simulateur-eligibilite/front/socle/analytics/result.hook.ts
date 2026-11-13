@@ -35,12 +35,8 @@ export function useResultTracking({
   useEffect(() => {
     const journey = journeyOf();
     if (!useCases || !journey || !loaded || canComplete === null) return;
-    const shown = {
-      canComplete,
-      codes,
-      motifs: loaded.motifs ?? [],
-      portions: loaded.portions ?? [],
-    };
+    const { motifs, portions } = loaded;
+    const shown = { canComplete, codes, motifs, portions };
     exposures.current = useCases.displayAResult.execute(
       journey,
       shown,
