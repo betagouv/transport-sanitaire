@@ -16,7 +16,8 @@
 // de l'aperçu, et ce qui précède le tout, selon que le PDF est prêt ou non.
 //
 // Le DTO se lit une fois : celui d'un résultat ne change pas tant qu'il est
-// affiché.
+// affiché. Qui l'affiche apprend chaque PDF prêt et chaque génération ratée,
+// une fois par tentative.
 
 import { type ReactNode, useEffect, useRef, useState } from "react";
 import { CerfaPreview } from "./CerfaPreview";
@@ -42,6 +43,10 @@ type Props<Dto extends CerfaDto> = {
   standIn?: ReactNode;
   /** Ce qui précède le document, selon que son PDF est prêt ou non. */
   above?: (ready: boolean) => ReactNode;
+  /** Le PDF est prêt, et affiché. */
+  onReady?: () => void;
+  /** Une génération a échoué. */
+  onFailure?: () => void;
 };
 
 export function CerfaDocument<Dto extends CerfaDto>({
@@ -53,8 +58,11 @@ export function CerfaDocument<Dto extends CerfaDto>({
   text,
   standIn,
   above,
+  onReady,
+  onFailure,
 }: Props<Dto>) {
   const { settled, withPdf } = useDownloadablePdf(cerfa, dto);
+  useSignals(settled, { onReady, onFailure });
   const print = usePrint();
   const save = (pdf: Blob) => download(pdf, fileNameOf(cerfa.fileName, date));
   const ready = settled?.status === "ready";
@@ -139,6 +147,18 @@ function useSettled(downloadablePdf: Promise<Settled>): Settled | Pending {
     };
   }, [downloadablePdf]);
   return settled;
+}
+
+// Chaque issue arrivée, une fois : une nouvelle tentative en donne une autre.
+function useSignals(
+  settled: Settled | Pending,
+  { onReady, onFailure }: Pick<Props<CerfaDto>, "onReady" | "onFailure">,
+) {
+  // biome-ignore lint/correctness/useExhaustiveDependencies: un signal par issue arrivée
+  useEffect(() => {
+    if (settled?.status === "ready") onReady?.();
+    if (settled?.status === "failed") onFailure?.();
+  }, [settled]);
 }
 
 const GENERATING = "Génération du document en cours…";

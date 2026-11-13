@@ -5,7 +5,8 @@
 // Le parcours suit les affichages de page, les questions validées et les phases
 // où il entre et qu'il quitte, une fois chacune (ADR-8). Il numérote les
 // révisions du premier résultat, et fait tomber la révision courante quand une
-// page de P1 ou de P2 change les réponses validées (ADR-9).
+// page de P1 ou de P2 change les réponses validées (ADR-9). Il numérote les
+// versions du document R3, qui viennent de la révision courante (ADR-10).
 
 import {
   ANALYTICS_VERSION,
@@ -13,6 +14,10 @@ import {
   type AnalyticsIntent,
   type Phase,
 } from "../../../shared/analytics/analytics-event";
+import {
+  type DocumentContent,
+  DocumentVersion,
+} from "./document-version.entity";
 import {
   type AboutAQuestion,
   type OpenedPage,
@@ -49,6 +54,9 @@ type NoView = null;
 /** Aucune révision : pas de R2 affiché, ou le dernier est tombé. */
 type NoRevision = null;
 
+/** Aucun document encore affiché. */
+type NoDocument = null;
+
 /** Où le parcours commence : l'établissement et le service du rattachement. */
 export type Entrance = Pick<AnalyticsEvent, "establishment_id" | "service_id">;
 
@@ -65,6 +73,7 @@ export class Journey {
   readonly #validations = new Map<string, AboutAQuestion>();
   #lastRevision: Revision | NoRevision = null;
   #revision: Revision | NoRevision = null;
+  #document: DocumentVersion | NoDocument = null;
 
   /**
    * `seeded` : la simulation s'ouvre sur une seed, au milieu du parcours. Elle
@@ -148,10 +157,30 @@ export class Journey {
    */
   displayResult(shown: ShownResult): AnalyticsEvent[] {
     if (this.#revision) return [];
-    const revision = this.#lastRevision?.next() ?? Revision.first();
+    const revision = this.#lastRevision?.next(shown) ?? Revision.first(shown);
     this.#revision = revision;
     this.#lastRevision = revision;
-    return this.#recordAll([revision.displayed(shown)]);
+    return this.#recordAll([revision.displayed()]);
+  }
+
+  /**
+   * Le document R3 affiché, son PDF prêt : une nouvelle version, sauf s'il
+   * montre la dernière. Sans révision courante, rien ne part.
+   */
+  displayDocument(content: DocumentContent): AnalyticsEvent[] {
+    const revision = this.#revision;
+    if (!revision || this.#document?.shows(revision, content)) return [];
+    const document =
+      this.#document?.next(revision, content) ??
+      DocumentVersion.first(revision, content);
+    this.#document = document;
+    return this.#recordAll([revision.documentDisplayed(document.id)]);
+  }
+
+  /** Une génération ratée du document R3. Sans révision courante, rien ne part. */
+  failADocument(): AnalyticsEvent[] {
+    const revision = this.#revision;
+    return revision ? this.#recordAll([revision.documentFailed()]) : [];
   }
 
   #enter(view: PageView): EventDetails[] {
