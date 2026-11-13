@@ -6,6 +6,12 @@
 > Repose sur le rattachement établissement/service fourni par l'écran de rattachement :
 > voir [identification.md](./identification.md).
 >
+> **Mise à jour 2026-11-13, la couverture de la collecte (#384).** Chaque heure,
+> le serveur écrit dans le journal un signe de vie, `alive`. Une heure sans lui
+> ressortira « indisponible » au dashboard, pas « zéro ». Les référentiels ne
+> sont pas stockés : ceux d'une version se tirent de son code, et leur lecture
+> vient avec le dashboard (#440). Voir l'ADR-15.
+>
 > **Mise à jour 2026-11-13, les versions de l'app (#416).** Chaque événement dit
 > quelle app l'a produit : `version` est la version des règles, lue dans
 > `rules/VERSION`, et non plus une constante figée à 10.1.7. `app_version` et
@@ -374,8 +380,8 @@ interface :
 
 | Suffixe | Rôle | Serveur | Écran |
 |---|---|---|---|
-| `.entity.ts` | une notion et ses règles, sans dépendance | `JournalEntry` : l'événement daté à sa réception, qui sait s'il en répète un autre | `Journey` : la simulation, qui numérote et date ses événements, ne garde que sa première intention, et rien d'une seed ; elle entre dans chaque phase et la termine une fois, et sait quelles validations une correction fait tomber (ADR-8) ; `PageView` : un affichage de page, qui expose chaque question une fois et porte ses jalons ; `QuestionnaireRun` : un passage dans le questionnaire, qui tait le début d'une reprise, l'abandon après la fin, et tout le questionnaire du cerfa ; `AudienceEvent` : un événement Matomo, son nom pris dans `EventName`, et l'id du service, jamais le service libre |
-| `.usecase.ts` | une action, qui ne parle qu'aux entités et aux ports | `CollectAnEvent` : garde un nouvel événement, ignore un renvoi, met une collision à part | `StartASimulation` : ouvre un parcours et le signale sur P0 ; `SelectAnIntent` : signale le premier choix validé en P0 ; `OpenAPage`, `RevealQuestions`, `AnswerAQuestion` : une page ouverte, les questions qu'une saisie révèle, une saisie ; `StartAQuestionnaire`, `PassAStep`, `CorrectAnAnswer`, `CompleteAQuestionnaire`, `LeaveAQuestionnaire` : le début, une étape, une correction, la fin et l'abandon d'un questionnaire, `PassAStep` et `CompleteAQuestionnaire` parlant à Matomo et au journal ; `ReachAnAldResult` : le verdict ALD sur le premier résultat. Un use case n'en appelle pas un autre |
+| `.entity.ts` | une notion et ses règles, sans dépendance | `JournalEntry` : l'événement daté à sa réception, qui sait s'il en répète un autre, ou le signe de vie de l'heure | `Journey` : la simulation, qui numérote et date ses événements, ne garde que sa première intention, et rien d'une seed ; elle entre dans chaque phase et la termine une fois, et sait quelles validations une correction fait tomber (ADR-8) ; `PageView` : un affichage de page, qui expose chaque question une fois et porte ses jalons ; `QuestionnaireRun` : un passage dans le questionnaire, qui tait le début d'une reprise, l'abandon après la fin, et tout le questionnaire du cerfa ; `AudienceEvent` : un événement Matomo, son nom pris dans `EventName`, et l'id du service, jamais le service libre |
+| `.usecase.ts` | une action, qui ne parle qu'aux entités et aux ports | `CollectAnEvent` : garde un nouvel événement, ignore un renvoi, met une collision à part ; `ReportAlive` : écrit le signe de vie de l'heure (ADR-15) | `StartASimulation` : ouvre un parcours et le signale sur P0 ; `SelectAnIntent` : signale le premier choix validé en P0 ; `OpenAPage`, `RevealQuestions`, `AnswerAQuestion` : une page ouverte, les questions qu'une saisie révèle, une saisie ; `StartAQuestionnaire`, `PassAStep`, `CorrectAnAnswer`, `CompleteAQuestionnaire`, `LeaveAQuestionnaire` : le début, une étape, une correction, la fin et l'abandon d'un questionnaire, `PassAStep` et `CompleteAQuestionnaire` parlant à Matomo et au journal ; `ReachAnAldResult` : le verdict ALD sur le premier résultat. Un use case n'en appelle pas un autre |
 | `.port.ts` | l'interface qu'un use case ou un adaptateur attend de l'extérieur | `Journal` : retrouver, ajouter, mettre à part | `Journal` : garder un événement ; `Audience` : compter un événement ; `ConsentSource` : suivre le choix du prescripteur |
 | `.adapter.ts` | une classe qui implémente un port | `GristJournal` ; `DiscardingJournal`, qui ne garde rien, sans doc Grist ; `MemoryJournal`, pour les tests | `ServerJournal` : envoi, réessais ; `MatomoAudience` : file `_paq`, amorçage, chargement de matomo.js ; `DiscardingAudience`, qui ne mesure rien, quand Matomo n'est pas activé ; `CmsConsent` : le choix demandé au CMS (ADR-5), que les deux premiers suivent |
 | `.controller.ts` | une entrée HTTP, qui valide la requête et appelle un use case | `JournalController` : la route de collecte | |
@@ -756,6 +762,48 @@ encore en production : `app_version` et `commit_sha` s'y ajoutent. Les événeme
 de staging antérieurs n'ont pas ces champs, et portent `10.1.7`. Le modèle de
 démonstration et celui des tests déclarent leur propre version.
 
+### ADR-15 - La couverture de la collecte, et les référentiels tirés du code
+
+**Contexte.** Le dashboard (#440) doit distinguer un zéro d'une collecte absente,
+et montrer à zéro ce qui pouvait arriver sans être arrivé : une question jamais
+affichée, une version sans simulation. Le journal ne dit que ce qui est arrivé.
+Le plan de marquage demande des référentiels versionnés et une couverture : le
+début fiable de la collecte, ses interruptions. Une coupure (serveur arrêté,
+Grist en panne) ne laisse aucune trace dans le journal.
+
+**Décision.**
+
+1. **Un signe de vie par heure.** Le serveur écrit dans le journal, au démarrage
+   puis à chaque heure pleine, un événement `alive` qui porte `app_version` et
+   `commit_sha`. Il passe par le même port que les événements des navigateurs.
+   Une heure sans `alive` est une heure sans collecte. Son identifiant tient
+   l'heure et la version (`alive:2026-11-13T14:0.8.0:f30aafe`) : deux serveurs
+   de la même version n'écrivent qu'une ligne par heure, et une version qui
+   démarre en cours d'heure a la sienne.
+2. **Les versions du serveur.** `app_version` vient du `package.json`, lu au
+   démarrage ; `commit_sha` de `CONTAINER_VERSION`, que Scalingo pose sur le
+   conteneur, sur 7 caractères, ou `inconnu`.
+3. **Aucun référentiel stocké.** Les questions, jalons, issues, motifs, modes,
+   documents et champs d'une version se tirent de son code, relu à son tag
+   `simulateur-eligibilite@<app_version>` ou au `commit_sha` de ses événements
+   (ADR-14). Les établissements et services sont dans le référentiel Grist, et
+   chaque événement porte les deux.
+4. **Les calculs viennent avec le dashboard** (#440) : les zéros, le regroupement
+   des services, les versions listées, les périodes indisponibles.
+
+**Pourquoi.** La couverture se prouve là où l'événement s'écrit : si le journal
+n'écrit plus, le signe de vie manque aussi, sans rien de plus à construire. Le
+code d'une version ne se perd pas : le stocker à côté ne ferait que le recopier.
+Une lecture écrite avant le dashboard devinerait sa forme, et personne ne
+l'appellerait d'ici là.
+
+**Conséquences.** Le journal porte deux sortes d'entrées : les événements de
+parcours et `alive`, qui n'a ni simulation ni séquence. Environ 8 800 lignes de
+plus par an dans Grist (R-13). Un échec d'écriture du signe de vie se lit dans les
+journaux du serveur, sans l'arrêter. Hors production, le journal jette tout,
+`alive` compris. Les périodes de validité des établissements et la règle de
+population référencée restent à trancher (#440).
+
 ## 3. Architecture cible
 
 ```mermaid
@@ -897,8 +945,8 @@ Retiré le 2026-10-06 avec le téléchargement des trois CERFA.
    (#385, ADR-8), le premier résultat et ses révisions (#386, ADR-9), le document R3
    et ses versions (#387, ADR-10), les boutons exposés et leurs clics (#388,
    ADR-11), la taille des champs du document R3 (#389, ADR-12), les rechargements
-   de page (#434, ADR-13), les versions de l'app (#416, ADR-14), puis la fin de
-   parcours, dans sa tâche.
+   de page (#434, ADR-13), les versions de l'app (#416, ADR-14), la couverture de
+   la collecte (#384, ADR-15), puis la fin de parcours, dans sa tâche.
 
 Prérequis : l'écran de rattachement fournit le service (cf.
 [identification.md](./identification.md), incréments 1–2 et 6).

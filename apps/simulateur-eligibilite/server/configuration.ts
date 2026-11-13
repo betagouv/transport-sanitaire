@@ -8,9 +8,14 @@
 // n'écrit dans Grist que là où on la pose, en production. Ailleurs, staging
 // compris, il accepte les événements sans en garder aucun.
 //
+// `CONTAINER_VERSION`, que Scalingo pose sur le conteneur, donne le commit
+// déployé. Sans elle, le commit vaut `inconnu`, comme côté écran (ADR-14).
+//
 // Voir le README § « Configuration ».
 
+import { readFileSync } from "node:fs";
 import { z } from "zod";
+import type { Build } from "./journal/journal-entry.entity.ts";
 
 export type Env = Record<string, string | undefined>;
 
@@ -24,6 +29,8 @@ export type Configuration = {
   journal: AccesGrist | undefined;
   /** Le nom de l'app Scalingo, écrit avec chaque événement ; `local` hors Scalingo. */
   environment: string;
+  /** La version et le commit de l'app servie, sur le signe de vie du journal (ADR-15). */
+  build: Build;
 };
 
 /** Ce que l'exploitant doit corriger : une variable par ligne, et pourquoi. */
@@ -59,6 +66,10 @@ export function lireConfiguration(env: Env = process.env): Configuration {
         ? { cleApi, docUrl: variables.JOURNAL_GRIST_DOC_URL }
         : journalEnMemoire(),
     environment: variables.APP,
+    build: {
+      app_version: versionDeLApp(),
+      commit_sha: variables.CONTAINER_VERSION?.slice(0, 7) ?? "inconnu",
+    },
   };
 }
 
@@ -81,6 +92,13 @@ const VARIABLES = z.object({
   // Scalingo pose le nom de l'app : il distingue la production de la
   // préproduction dans le journal, sans variable de plus.
   APP: z.string().default("local"),
+  // Scalingo pose le commit déployé sur le conteneur qui tourne. Un autre
+  // format n'est pas un commit : on l'avoue `inconnu`.
+  CONTAINER_VERSION: z
+    .string()
+    .regex(/^[0-9a-f]{7,40}$/)
+    .optional()
+    .catch(undefined),
 });
 
 // En production, les variables du référentiel deviennent obligatoires. C'est la
@@ -108,6 +126,16 @@ function enProduction(env: Env): boolean {
 function sansValeursVides(env: Env): Env {
   const remplies = Object.entries(env).filter(([, brut]) => brut?.trim());
   return Object.fromEntries(remplies.map(([nom, brut]) => [nom, brut?.trim()]));
+}
+
+// La version que `package.json` déclare, celle du tag
+// `simulateur-eligibilite@<version>` (ADR-14).
+function versionDeLApp(): string {
+  const chemin = new URL("../package.json", import.meta.url);
+  const { version } = JSON.parse(readFileSync(chemin, "utf8")) as {
+    version: string;
+  };
+  return version;
 }
 
 function journalEnMemoire(): undefined {
