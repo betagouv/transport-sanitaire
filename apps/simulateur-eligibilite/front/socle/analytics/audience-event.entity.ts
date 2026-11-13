@@ -28,6 +28,16 @@ export const EventName = {
 
 export type AudienceEventName = (typeof EventName)[keyof typeof EventName];
 
+/** Le verdict d'un parcours ALD, à son arrivée sur le premier résultat. */
+export type AldVerdict =
+  | typeof EventName.aldWithinTarget
+  | typeof EventName.aldTooManyPages
+  | typeof EventName.aldTooManyQuestions
+  | typeof EventName.aldCaisse;
+
+/** Rien à compter : l'étape ne compte pas, ou plus. */
+export type NothingToCount = null;
+
 export class AudienceEvent {
   readonly name: AudienceEventName;
   readonly serviceId?: string;

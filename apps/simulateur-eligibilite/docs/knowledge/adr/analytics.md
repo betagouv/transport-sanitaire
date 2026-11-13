@@ -1,10 +1,18 @@
 # Architecture : Analytics de parcours
 
-> Statut : **décidé (release officielle)** · Dernière mise à jour : 2026-11-12
+> Statut : **décidé (release officielle)** · Dernière mise à jour : 2026-11-13
 >
 > Suivi analytique du parcours dans le simulateur d'éligibilité.
 > Repose sur le rattachement établissement/service fourni par l'écran de rattachement :
 > voir [identification.md](./identification.md).
+>
+> **Mise à jour 2026-11-13, des hooks sans règles (#383, #414).** Les hooks de l'écran
+> (`.hook.ts`) ne font plus que traduire un événement de l'écran en un appel de use
+> case. Ce qui compte ou part descend dans les entités : `QuestionnaireRun` tait le
+> début d'un questionnaire qui reprend et l'abandon d'un questionnaire fini, `Journey`
+> ne garde rien d'une seed. Un use case par action, qui n'en appelle pas d'autre. Les
+> contextes React deviennent un fichier d'assemblage sans suffixe. Cela **précise**
+> l'ADR-7 ; #414 étendra la règle au reste de l'écran.
 >
 > **Mise à jour 2026-11-12, la mesure d'audience en clean architecture (#383).** Matomo
 > suit le même découpage que le journal (ADR-7) : une entité, un use case, un port et
@@ -320,12 +328,12 @@ interface :
 
 | Suffixe | Rôle | Serveur | Écran |
 |---|---|---|---|
-| `.entity.ts` | une notion et ses règles, sans dépendance | `JournalEntry` : l'événement daté à sa réception, qui sait s'il en répète un autre | `Journey` : la simulation, qui numérote et date ses événements, et ne garde que sa première intention ; `AudienceEvent` : un événement Matomo, son nom pris dans `EventName`, et l'id du service, jamais le service libre |
-| `.usecase.ts` | une action, qui ne parle qu'aux entités et aux ports | `CollectAnEvent` : garde un nouvel événement, ignore un renvoi, met une collision à part | `StartASimulation` : ouvre un parcours et le signale sur P0 ; `SelectAnIntent` : signale le premier choix validé en P0 ; `TrackAnEvent` : compte une étape dans la mesure d'audience |
+| `.entity.ts` | une notion et ses règles, sans dépendance | `JournalEntry` : l'événement daté à sa réception, qui sait s'il en répète un autre | `Journey` : la simulation, qui numérote et date ses événements, ne garde que sa première intention, et rien d'une seed ; `QuestionnaireRun` : un passage dans le questionnaire, qui tait le début d'une reprise, l'abandon après la fin, et tout le questionnaire du cerfa ; `AudienceEvent` : un événement Matomo, son nom pris dans `EventName`, et l'id du service, jamais le service libre |
+| `.usecase.ts` | une action, qui ne parle qu'aux entités et aux ports | `CollectAnEvent` : garde un nouvel événement, ignore un renvoi, met une collision à part | `StartASimulation` : ouvre un parcours et le signale sur P0 ; `SelectAnIntent` : signale le premier choix validé en P0 ; `StartAQuestionnaire`, `PassAStep`, `CompleteAQuestionnaire`, `LeaveAQuestionnaire` : le début, une étape, la fin et l'abandon d'un questionnaire ; `ReachAnAldResult` : le verdict ALD sur le premier résultat. Un use case n'en appelle pas un autre |
 | `.port.ts` | l'interface qu'un use case ou un adaptateur attend de l'extérieur | `Journal` : retrouver, ajouter, mettre à part | `Journal` : garder un événement ; `Audience` : compter un événement ; `ConsentSource` : suivre le choix du prescripteur |
 | `.adapter.ts` | une classe qui implémente un port | `GristJournal` ; `DiscardingJournal`, qui ne garde rien, sans doc Grist ; `MemoryJournal`, pour les tests | `ServerJournal` : envoi, réessais ; `MatomoAudience` : file `_paq`, amorçage, chargement de matomo.js ; `DiscardingAudience`, qui ne mesure rien, quand Matomo n'est pas activé ; `CmsConsent` : le choix demandé au CMS (ADR-5), que les deux premiers suivent |
 | `.controller.ts` | une entrée HTTP, qui valide la requête et appelle un use case | `JournalController` : la route de collecte | |
-| `.context.ts` | l'injection d'un use case dans l'arbre React : le contexte, son provider, et le hook qui le lit | | `journal.context.ts` : `JournalProvider`, `useRecordTheJourney` ; `audience.context.ts` : `AudienceProvider`, `useAudience` |
+| `.hook.ts` | l'adaptateur primaire de l'écran : du React, et un appel de use case par événement, sans règle métier (#414) | | `journey.hook.ts` : `useRecordTheJourney` ; `questionnaire.hook.ts` : `useQuestionnaireTracking` ; `ald-pathway.hook.ts` : `useAldResultReached` |
 
 Les adaptateurs parlent HTTP par deux clients préconfigurés (`.client.ts`), qui
 portent l'adresse, l'authentification, le JSON et les erreurs :
@@ -343,15 +351,18 @@ configuration (`adaptersFor`), puis assemble use case et contrôleur
 (`createContainer`), que `server.ts` donne à `app.ts`. `front/container.ts`
 instancie le client du serveur, le choix du prescripteur, Matomo s'il est activé (sinon une mesure qui ne garde rien), le
 journal, leurs use cases, le référentiel et la déclaration du rattachement, que
-`main.tsx` donne à l'app. `App` pose les use cases dans deux contextes React, où
-l'écran les lit : aucune variable globale ne les porte. Le rattachement se lit en
-session dans les contextes, pas dans le simulateur, qui ignore qui prescrit. Le
-simulateur signale le parcours de sa simulation par `useRecordTheJourney`, qui
-l'ouvre sur P0 et y signale l'intention que le modèle déclare (`Model.intent`) ; le
-questionnaire et l'indicateur ALD comptent leurs étapes par `useAudience`. Les deux conteneurs
+`main.tsx` donne à l'app. `App` pose les use cases dans deux contextes React
+(`use-cases-in-the-tree.ts`), où les hooks les lisent : aucune variable globale ne
+les porte. Le rattachement se lit en session dans les hooks, pas dans le simulateur,
+qui ignore qui prescrit. Le simulateur signale le parcours de sa simulation par
+`useRecordTheJourney`, qui l'ouvre sur P0 et y signale l'intention que le modèle
+déclare (`Model.intent`) ; le questionnaire compte ses étapes par
+`useQuestionnaireTracking`, et le simulateur envoie le verdict ALD qu'il calcule
+(`aldPathwayOf`) par `useAldResultReached`. Les deux conteneurs
 exportent une fonction appelée une fois au démarrage, pas des instances, car rien
 ne doit s'exécuter au chargement d'un module (QUAL-004). Les fichiers qui
-assemblent (`container.ts`, `server.ts`, `app.ts`, `main.tsx`, les `index.ts`)
+assemblent (`container.ts`, `server.ts`, `app.ts`, `main.tsx`, les `index.ts`,
+`use-cases-in-the-tree.ts`)
 n'ont pas de suffixe.
 
 **Pourquoi.** Changer de stockage ne doit toucher qu'un adaptateur. Si l'adaptateur

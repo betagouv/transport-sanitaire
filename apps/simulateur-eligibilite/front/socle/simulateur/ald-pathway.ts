@@ -1,10 +1,10 @@
-// L'indicateur de parcours ALD (#148) : à chaque arrivée sur le premier
-// résultat, un verdict part vers Matomo, avec le nombre de questions posées.
-// Le modèle dit quel parcours compte et lequel finit à la caisse ; le socle
-// compte les pages et les questions.
+// L'indicateur de parcours ALD (#148) : le verdict d'une simulation sur son
+// premier résultat, avec le nombre de questions posées. Le modèle dit quel
+// parcours compte et lequel finit à la caisse ; le socle compte les pages et
+// les questions. La mesure d'audience l'envoie (`useAldResultReached`).
 
 import type { Simulation } from "../../../core/socle/simulation";
-import { EventName, type Track } from "../analytics";
+import { type AldVerdict, EventName } from "../analytics";
 import type { AldIndicator, Model } from "../model";
 
 /**
@@ -12,7 +12,7 @@ import type { AldIndicator, Model } from "../model";
  * dans les parties comptées. `null` : ce parcours ne compte pas.
  */
 export type AldPathway = {
-  verdict: (typeof EventName)[AldVerdict];
+  verdict: AldVerdict;
   pages: number;
   questions: number;
 };
@@ -35,19 +35,9 @@ export function aldPathwayOf(
   };
 }
 
-/** Envoie le verdict de cette simulation, si le parcours compte. */
-export function trackAldPathway(
-  track: Track,
-  model: Model,
-  simulation: Simulation,
-): void {
-  const pathway = aldPathwayOf(model, simulation);
-  if (pathway) track(pathway.verdict, pathway.questions);
-}
-
 // ---- implémentation ----
 
-type AldVerdict =
+type VerdictName =
   | "aldWithinTarget"
   | "aldTooManyPages"
   | "aldTooManyQuestions"
@@ -79,7 +69,7 @@ function verdictOf(
   pages: number,
   questions: number,
   limit: number,
-): AldVerdict {
+): VerdictName {
   if (caisse) return "aldCaisse";
   if (pages > limit) return "aldTooManyPages";
   if (questions > limit) return "aldTooManyQuestions";

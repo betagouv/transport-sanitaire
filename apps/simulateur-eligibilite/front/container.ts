@@ -8,18 +8,22 @@ import {
   type App,
   type AudienceUseCases,
   CmsConsent,
+  CompleteAQuestionnaire,
   configFromEnv,
   DiscardingAudience,
   declarerAuServeur,
   type JournalUseCases,
+  LeaveAQuestionnaire,
   loadMatomo,
   MatomoAudience,
+  PassAStep,
+  ReachAnAldResult,
   referentielDuServeur,
   SelectAnIntent,
   ServerApiClient,
   ServerJournal,
+  StartAQuestionnaire,
   StartASimulation,
-  TrackAnEvent,
 } from "./socle";
 
 type AppProps = ComponentProps<typeof App>;
@@ -55,5 +59,11 @@ function audienceOf(consent: CmsConsent): AudienceUseCases {
   const audience = config.enabled
     ? new MatomoAudience(config, consent, loadMatomo)
     : new DiscardingAudience();
-  return { trackAnEvent: new TrackAnEvent(audience) };
+  return {
+    startAQuestionnaire: new StartAQuestionnaire(audience),
+    passAStep: new PassAStep(audience),
+    completeAQuestionnaire: new CompleteAQuestionnaire(audience),
+    leaveAQuestionnaire: new LeaveAQuestionnaire(audience),
+    reachAnAldResult: new ReachAnAldResult(audience),
+  };
 }

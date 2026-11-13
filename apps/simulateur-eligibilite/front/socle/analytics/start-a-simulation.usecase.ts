@@ -5,6 +5,13 @@ import type { RattachementSaisi } from "../../../shared/rattachement-saisi";
 import type { Journal } from "./journal.port";
 import { Journey } from "./journey.entity";
 
+export type SimulationStart = {
+  /** `null` tant que personne ne s'est rattaché. */
+  rattachement: RattachementSaisi | null;
+  /** La simulation s'ouvre sur une seed : son parcours ne part pas. */
+  seeded: boolean;
+};
+
 export class StartASimulation {
   readonly #journal: Journal;
 
@@ -12,18 +19,14 @@ export class StartASimulation {
     this.#journal = journal;
   }
 
-  /** `rattachement` : `null` tant que personne ne s'est rattaché. */
-  execute(rattachement: RattachementSaisi | null): Journey {
-    const journey = new Journey();
-    void this.#journal.record(
-      journey.next({
-        type: "simulation_started",
-        screen: "P0",
-        // Un établissement saisi n'a pas d'identifiant.
-        establishment_id: rattachement?.etabId || undefined,
-        service_id: rattachement?.serviceId,
-      }),
-    );
+  execute({ rattachement, seeded }: SimulationStart): Journey {
+    const journey = new Journey({ seeded });
+    const event = journey.start({
+      // Un établissement saisi n'a pas d'identifiant.
+      establishment_id: rattachement?.etabId || undefined,
+      service_id: rattachement?.serviceId,
+    });
+    if (event) void this.#journal.record(event);
     return journey;
   }
 }

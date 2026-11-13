@@ -9,15 +9,19 @@
 export {
   type AudienceUseCases,
   CmsConsent,
+  CompleteAQuestionnaire,
   configFromEnv,
   DiscardingAudience,
   type JournalUseCases,
+  LeaveAQuestionnaire,
   loadMatomo,
   MatomoAudience,
+  PassAStep,
+  ReachAnAldResult,
   SelectAnIntent,
   ServerJournal,
+  StartAQuestionnaire,
   StartASimulation,
-  TrackAnEvent,
 } from "./analytics";
 export { App, type Models } from "./app";
 export {
