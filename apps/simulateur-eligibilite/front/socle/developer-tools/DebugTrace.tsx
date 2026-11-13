@@ -7,7 +7,7 @@
 // C'est un developer tool : en local seulement (`unlock.ts`).
 // Le simulateur ne l'importe pas : `App` la lui passe.
 
-import { cibleValues } from "../../../core/socle/decision-engine";
+import { Cible } from "../../../core/socle/decision-engine";
 import type { Validated } from "../../../core/socle/questionnaire-engine";
 import { SHA_COMMIT, VERSION_APP } from "../deployed-version";
 import type { DebugTraceProps } from "../questionnaire";
@@ -28,7 +28,7 @@ export function DebugTrace(props: DebugTraceProps) {
         {props.validated && <ValidatedList validated={props.validated} />}
         {props.faits && <ValueList title="Faits" values={props.faits} />}
         {props.cibles && (
-          <ValueList title="Cibles" values={cibleValues(props.cibles)} />
+          <ValueList title="Cibles" values={Cible.valuesOf(props.cibles)} />
         )}
       </div>
     </details>
@@ -49,7 +49,7 @@ function ExportLink({ trace }: { trace: DebugTraceProps }) {
     app: { version: VERSION_APP, commit: SHA_COMMIT },
     ...rest,
     pages: pages.map((page) => page.id),
-    ...(cibles && { cibles: withUndefinedNamed(cibleValues(cibles)) }),
+    ...(cibles && { cibles: withUndefinedNamed(Cible.valuesOf(cibles)) }),
   };
   const file = encodeURIComponent(JSON.stringify(content, null, 2));
   return (

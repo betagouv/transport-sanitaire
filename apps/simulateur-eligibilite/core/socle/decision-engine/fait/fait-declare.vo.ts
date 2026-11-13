@@ -11,7 +11,7 @@
 // Les règles s'appliquent dans l'ordre : la première qui établit le fait
 // l'emporte. `sinon` clôt le fait : si aucune règle ne l'établit, il reste
 // inconnu avec cette provenance. Le fait lit ce que lisent ses règles, et le
-// catalogue le calcule (`establish-the-faits.ts`).
+// catalogue le calcule (`fait-catalogue.service.ts`).
 
 import {
   type Answer,
@@ -22,13 +22,13 @@ import {
   Value,
 } from "../../questionnaire-engine/index.ts";
 
-import { Fait } from "./fait.ts";
+import { Fait } from "./fait.vo.ts";
 import {
   type AnswerOf,
   type PassesOn,
   type RegleDeFait,
   regles,
-} from "./regle.ts";
+} from "./regle-de-fait.vo.ts";
 
 /** Un fait du catalogue : son nom, et la valeur qui le calcule. */
 export class FaitDeclare<Nom extends string, Of> extends Value<Of> {

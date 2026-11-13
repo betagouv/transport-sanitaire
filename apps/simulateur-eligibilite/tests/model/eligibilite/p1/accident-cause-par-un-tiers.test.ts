@@ -5,7 +5,7 @@
 import { describe, expect, it } from "vitest";
 import { model } from "../../../../core/models/eligibilite";
 import type { Questions } from "../../../../core/models/eligibilite/questions/reponses";
-import { cibleValues } from "../../../../core/socle/decision-engine";
+import { Cible } from "../../../../core/socle/decision-engine";
 import {
   type Answers,
   pagesOf,
@@ -87,7 +87,9 @@ describe("l'accident causé par un tiers en Q1.3", () => {
 
   it("ne change aucune cible", () => {
     const cibles = (reponses: Reponses) =>
-      cibleValues(new EstablishAPreconisation(model).execute(reponses).cibles);
+      Cible.valuesOf(
+        new EstablishAPreconisation(model).execute(reponses).cibles,
+      );
 
     expect(cibles(AVEC_UN_TIERS)).toEqual(cibles(SEUL));
   });

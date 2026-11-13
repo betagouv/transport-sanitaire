@@ -9,7 +9,7 @@
 // Sa provenance cite ce que lit la condition, puis la raison : « Q2.1.g :
 // « 2_SORTIE », Q2.2.1 : « 10_RETOUR_PENITENTIAIRE ». Sortie définitive vers
 // la prison. ». Une réponse absente se cite « sans réponse ». Un fait place la
-// règle avec `applique` (`fait/declared.ts`).
+// règle avec `applique` (`fait/fait-declare.vo.ts`).
 
 import {
   type Answer,
@@ -22,7 +22,7 @@ import {
   Value,
 } from "../../questionnaire-engine/index.ts";
 
-import { Fait } from "./fait.ts";
+import { Fait } from "./fait.vo.ts";
 
 /** La règle n'établit pas le fait : elle laisse la main à la suivante. */
 export type PassesOn = undefined;

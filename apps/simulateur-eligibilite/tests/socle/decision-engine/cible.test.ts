@@ -2,7 +2,7 @@
 // valeur : immuable, égal à toute cible de même valeur, et lu par ses méthodes.
 
 import { describe, expect, it } from "vitest";
-import { Cible, cibleValues } from "../../../core/socle";
+import { Cible } from "../../../core/socle";
 
 const lecture = (cible: Cible<boolean>) => [
   cible.isOui(),
@@ -84,7 +84,7 @@ describe("un objet valeur", () => {
 describe("la valeur de chaque cible", () => {
   it("est celle que les règles donnent, inconnue comprise", () => {
     expect(
-      cibleValues({
+      Cible.valuesOf({
         abri: Cible.of(true),
         table: Cible.of("PETITE"),
         parapluie: Cible.of<boolean>(undefined),
