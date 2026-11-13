@@ -199,10 +199,9 @@ export class Simulation {
   }
 
   /**
-   * Valide la page ouverte avec ce brouillon (`validate-a-page.ts` dit ce qui
-   * s'efface), puis ouvre la page qui suit, ou celle où reprend une correction
-   * (`correction.ts`). Sans suivante, l'étape s'achève : le résultat avant le
-   * verrou, le cerfa après, daté de `on`. Refuse une page en faute.
+   * Valide la page ouverte avec ce brouillon (`validate-a-page.ts`), puis ouvre
+   * la suivante, ou celle où reprend une correction (`correction.ts`). Sans
+   * suivante : le résultat avant le verrou, le cerfa daté de `on` après.
    */
   validate(draft: Answers, on = new Date()): Simulation {
     refuseUnlessAnswered(this.#reading, this.page, draft);
