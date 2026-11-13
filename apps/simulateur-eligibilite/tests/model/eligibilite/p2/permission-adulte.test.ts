@@ -38,6 +38,16 @@ describe("la permission d'un adulte, autorisée", () => {
     ]);
   });
 
+  it("sur une ligne régulière, l'avion ou le bateau suffit : Q2.6 ne se pose pas", () => {
+    const ligne: Reponses = { ...ADULTE, "Q2.3.2": true, "Q2.3.4": "2_NON" };
+    expect([
+      posee("P2/exceptions", "Q2.6", ligne),
+      faits(ligne).fait_exception_article80_air_mer.value,
+      ciblesDe(ligne).cible_decision_calculable.value,
+      issue(ligne),
+    ]).toEqual([undefined, true, true, "ISSUE_DAP_SANS_URGENCE"]);
+  });
+
   it("n'ouvre pas la page du mineur", () => {
     expect(posee("P2/permission-mineur", "Q2.8.1", ADULTE)).toBeUndefined();
   });

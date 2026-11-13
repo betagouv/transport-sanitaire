@@ -59,11 +59,13 @@ describe("les cadres qui décident sans la distance", () => {
     ["7_SAMSAH", avecDesSoins("7_SAMSAH")],
     ["9_PENSION_MILITAIRE", avecDesSoins("9_PENSION_MILITAIRE")],
     ["5_HTNM", { ...SEUL, "Q2.2.1": ["5_HTNM"] }],
-  ] as const)("%s ne pose ni Q2.3.1, ni Q2.3.2, ni Q2.3.3", (_, reponses) => {
+  ] as const)("%s ne pose de Q2.3 que la ligne régulière", (_, reponses) => {
     const questions = posees(reponses);
 
     expect(questions).toContain("Q2.2.1");
-    expect(questions.filter((id) => DISTANCE.includes(id))).toEqual([]);
+    // Une permission d'adulte reste possible : la ligne régulière y établit
+    // une exception de l'article 80 (QST-PERMISSION-EXCEPTIONS-20261113).
+    expect(questions.filter((id) => DISTANCE.includes(id))).toEqual(["Q2.3.2"]);
   });
 
   it("une question sautée ne donne pas « non » : son fait reste absent", () => {
@@ -149,8 +151,8 @@ describe("le second bloc des situations", () => {
   it("se pose encore quand le premier bloc décide sans la distance", () => {
     const htnm: Reponses = { ...SANS_SECOND_BLOC, "Q2.2.1": ["5_HTNM"] };
     const raison = (soin: Questions["Q2.2.1.b"][number]) =>
-      preconisation({ ...htnm, "Q2.2.1.b": [soin] }).cibles.cible_reason_code
-        .value;
+      preconisation({ ...htnm, "Q2.2.1.b": [soin], "Q2.3.2": false }).cibles
+        .cible_reason_code.value;
 
     expect(posees(htnm)).toContain("Q2.2.1.b");
     expect(raison("0_AUCUN")).toBe("CNAM_HTNM_HORS_MATERNITE");
