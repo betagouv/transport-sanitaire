@@ -9,7 +9,11 @@ import { download, fileNameOf, useShown } from "../../cerfa";
 /** Où en est le téléchargement. */
 export type DownloadStatus = "idle" | "preparing" | "failed";
 
-export function useSheetDownload(sheet: RefObject<HTMLElement | null>) {
+/** `onDownloaded` : le PDF est remis au navigateur. */
+export function useSheetDownload(
+  sheet: RefObject<HTMLElement | null>,
+  onDownloaded?: () => void,
+) {
   const [status, setStatus] = useState<DownloadStatus>("idle");
   const preparing = useRef(false);
   const shown = useShown();
@@ -20,7 +24,10 @@ export function useSheetDownload(sheet: RefObject<HTMLElement | null>) {
     const pdf = await prepared(sheet.current);
     preparing.current = false;
     if (!shown.current) return;
-    if (pdf !== FAILED) download(pdf, fileNameOf("fiche-patient", new Date()));
+    if (pdf !== FAILED) {
+      download(pdf, fileNameOf("fiche-patient", new Date()));
+      onDownloaded?.();
+    }
     setStatus(pdf === FAILED ? "failed" : "idle");
   };
   return { status, save };

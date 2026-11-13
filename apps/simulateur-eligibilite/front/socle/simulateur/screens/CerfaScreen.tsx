@@ -9,8 +9,18 @@
 
 import type { ComponentType, ReactNode } from "react";
 import type { Read } from "../../../../core/socle/questionnaire-engine";
-import { useDocumentTracking } from "../../analytics";
-import { CerfaDocument, dtoFrom, fileNameOf } from "../../cerfa";
+import {
+  type Button,
+  type ButtonTracking,
+  useDocumentTracking,
+  useResultScreen,
+} from "../../analytics";
+import {
+  CerfaDocument,
+  dtoFrom,
+  fileNameOf,
+  type PdfSignals,
+} from "../../cerfa";
 
 import type { CerfaInput, Model } from "../../model";
 import { type DebugTraceProps, Stepper } from "../../questionnaire";
@@ -35,6 +45,7 @@ export function CerfaScreen({
   const trace = { title: "cerfa", ...simulation.trace() };
   const read = simulation.read(completedAt);
   const reading = read(lecture);
+  useResultScreen("R3", simulation);
   return (
     <Frame
       title={read(title)}
@@ -66,7 +77,11 @@ function CerfaActions({
   onReopen,
   onRestart,
   feedback,
-}: CerfaActionsProps & { feedback: FeedbackOffer | null }) {
+  onFeedback,
+}: CerfaActionsProps & {
+  feedback: FeedbackOffer | null;
+  onFeedback?: () => void;
+}) {
   return (
     <div className="socle-page-actions fr-no-print">
       <div className="fr-btns-group fr-btns-group--inline-md">
@@ -74,7 +89,7 @@ function CerfaActions({
         <SecondaryButton onClick={onRestart}>
           Faire une nouvelle simulation
         </SecondaryButton>
-        {feedback && <FeedbackLink offer={feedback} />}
+        {feedback && <FeedbackLink offer={feedback} onClick={onFeedback} />}
       </div>
     </div>
   );
@@ -86,7 +101,8 @@ function CerfaActions({
 // validé, rien quand elle n'en donne pas. Le modèle peut tenir la place de son
 // aperçu. Le texte et l'avis attendent que son PDF soit prêt ; les boutons le
 // précèdent. Sans cerfa, le texte et les boutons restent, sans avis. Le journal
-// reçoit le document prêt, tel qu'il se télécharge, et chaque échec.
+// reçoit le document prêt, tel qu'il se télécharge, avec ses boutons, chaque
+// échec, et chaque clic.
 type CerfaProps = {
   model: Model;
   /** Ce que lisent les entrées du cerfa. */
@@ -100,7 +116,7 @@ type CerfaProps = {
 
 function Cerfa({ model, read, text, input, actions, feedback }: CerfaProps) {
   const { form, standIn, printLabel, downloadLabel } = model.cerfa;
-  const tracking = useDocumentTracking();
+  const tracking = useDocumentTracking(offered(feedback));
   const bound = read(form);
   if (!bound)
     return (
@@ -120,13 +136,44 @@ function Cerfa({ model, read, text, input, actions, feedback }: CerfaProps) {
       downloadLabel={downloadLabel}
       text={text}
       standIn={standIn?.(input)}
-      above={(ready) => (
-        <CerfaActions {...actions} feedback={ready ? feedback : null} />
-      )}
+      above={aboveTheDocument(actions, feedback, tracking)}
       onReady={() => tracking.displayed({ file, dto })}
       onFailure={tracking.failed}
+      signals={documentSignals(tracking)}
     />
   );
+}
+
+// Ce qui précède le document : l'avis attend que son PDF soit prêt.
+function aboveTheDocument(
+  actions: CerfaActionsProps,
+  feedback: FeedbackOffer | null,
+  tracking: ButtonTracking,
+) {
+  return (ready: boolean) => (
+    <CerfaActions
+      {...actions}
+      feedback={ready ? feedback : null}
+      onFeedback={() => tracking.pressed("feedback")}
+    />
+  );
+}
+
+// Les boutons que le document prêt offre au journal : les siens, et l'avis.
+function offered(feedback: FeedbackOffer | null): Button[] {
+  return [
+    "document_print",
+    "document_download",
+    ...(feedback ? (["feedback"] as const) : []),
+  ];
+}
+
+function documentSignals(tracking: ButtonTracking): PdfSignals {
+  return {
+    onPrint: () => tracking.pressed("document_print"),
+    onDownload: () => tracking.pressed("document_download"),
+    onDownloaded: () => tracking.delivered("document_download"),
+  };
 }
 
 // Le stepper titre la page du titre du document : c'est son `h1`. Le second

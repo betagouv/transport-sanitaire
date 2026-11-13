@@ -24,4 +24,8 @@ export {
 } from "./generate-the-cerfa/compute-the-dto";
 export { generateCerfa } from "./generate-the-cerfa/generate-the-cerfa";
 export { download, fileNameOf } from "./pdf/download-a-pdf";
-export { PdfActionButton, useShown } from "./pdf/PdfActionButton";
+export {
+  PdfActionButton,
+  type PdfSignals,
+  useShown,
+} from "./pdf/PdfActionButton";

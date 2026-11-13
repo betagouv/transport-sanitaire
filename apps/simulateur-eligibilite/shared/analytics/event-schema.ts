@@ -6,6 +6,7 @@
 
 import { z } from "zod";
 import {
+  ACTIONS,
   type AnalyticsEvent,
   EVENT_TYPES,
   INTENTS,
@@ -58,4 +59,6 @@ const EVENT_SCHEMA: z.ZodType<AnalyticsEvent> = z.strictObject({
   financeur: identifier.optional(),
   motifs: z.array(identifier).optional(),
   portions: z.array(z.enum(PORTIONS)).optional(),
+  sheet_id: identifier.optional(),
+  action: z.enum(ACTIONS).optional(),
 });
