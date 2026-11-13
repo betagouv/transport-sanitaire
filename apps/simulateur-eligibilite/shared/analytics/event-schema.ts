@@ -39,8 +39,9 @@ const release = z.string().regex(/^\d+\.\d+\.\d+$/);
 // l'événement est reçu, sans elle.
 const PORTIONS_RETIREES = ["TERRESTRE"] as const;
 
-const estUnePortion = (portion: string): portion is Portion =>
-  PORTIONS.some((connue) => connue === portion);
+function estUnePortion(portion: string): portion is Portion {
+  return PORTIONS.some((connue) => connue === portion);
+}
 
 // La clé d'un champ du cerfa, telle que le code l'écrit : jamais un texte saisi.
 const fieldId = z.string().regex(/^[a-z][a-z0-9_]{0,95}$/);
