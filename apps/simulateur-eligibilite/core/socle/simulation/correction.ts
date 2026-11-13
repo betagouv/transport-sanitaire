@@ -12,7 +12,7 @@ import { pendingIn } from "./stages.ts";
  * Une correction en cours : la page qui portait l'alerte, son brouillon, et
  * son rang quand la correction a commencé.
  */
-export type Correction = {
+type Correction = {
   readonly origin: Page;
   readonly draft: Answers;
   readonly returnTo: number;
@@ -37,13 +37,30 @@ export type StageEnds = undefined;
 export type Refused = undefined;
 
 /**
+ * La page qu'ouvre la validation de `page`, sur ces réponses relues : celle où
+ * reprend une correction en cours, sinon la suivante.
+ */
+export function openingAfter(
+  page: Page,
+  { correction }: Opened,
+  reading: Reading,
+  answers: Answers,
+  declared: readonly Page[],
+): Opening | StageEnds {
+  if (correction)
+    return whereACorrectionResumes(correction, reading, answers, declared);
+  const following = reading.pageAfter(page);
+  return following && { page: following };
+}
+
+/**
  * Où reprend une correction validée, sur ces réponses relues. D'abord une
  * question devenue nécessaire sur une page d'avant l'origine (`declared` dit
  * l'ordre des pages) : la correction continue. Sinon la page d'origine, si elle
  * se pose encore, avec son brouillon relu sur ces réponses (`Reading.restore`).
  * Si elle ne se pose plus, la page qui attend une réponse.
  */
-export function whereACorrectionResumes(
+function whereACorrectionResumes(
   correction: Correction,
   reading: Reading,
   answers: Answers,

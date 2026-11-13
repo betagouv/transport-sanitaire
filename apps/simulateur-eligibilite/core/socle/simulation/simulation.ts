@@ -4,28 +4,27 @@
 // donne une nouvelle simulation ; aucune ne change celle-ci. L'écran n'y ajoute
 // que le brouillon de la page ouverte.
 
-import type { AnyFaits, CoreModel, Preconisation } from "../model.ts";
+import type { CoreModel, Preconisation } from "../model.ts";
 import {
   type Answer,
   type Answers,
-  type AnyCibles,
   type AskedQuestion,
   type Page,
   pagesOf,
   type Read,
   type Reading,
   readIn,
-  type Validated,
   type ValidatedAnswers,
 } from "../questionnaire-engine/index.ts";
 
 import {
   keptDraft,
   type Opened,
+  openingAfter,
   openingAt,
   type Refused,
-  whereACorrectionResumes,
 } from "./correction.ts";
+import { refuseUnlessAnswered } from "./page-refused.ts";
 import { type PlaceInPart, placeInPart } from "./place-in-part.ts";
 import { type Position, reachedPages, stepOf } from "./position.ts";
 import { preconisationFrom } from "./preconisation.ts";
@@ -42,15 +41,6 @@ import {
 } from "./stages.ts";
 
 export type { Locked, Stage };
-
-/** Ce que la trace de debug lit d'une simulation. */
-export type SimulationTrace = {
-  pages: readonly Page[];
-  answers: Answers;
-  validated: Validated;
-  faits: AnyFaits;
-  cibles: AnyCibles;
-};
 
 export class Simulation {
   /** Aucune réponse : la première page du questionnaire. */
@@ -199,7 +189,7 @@ export class Simulation {
   }
 
   /** Les pages affichées, les réponses, les questions validées, la préconisation. */
-  trace(): SimulationTrace {
+  trace() {
     return {
       pages: this.#reading.askedPages(),
       answers: this.answers,
@@ -209,20 +199,30 @@ export class Simulation {
   }
 
   /**
-   * Valide la page ouverte avec ce brouillon (`validate-a-page.ts` dit ce qui
-   * s'efface), puis ouvre la page qui suit, ou celle où reprend une correction
-   * (`correction.ts`). Sans suivante, l'étape s'achève : le résultat avant le
-   * verrou, le cerfa après, daté de `on`.
+   * Valide la page ouverte avec ce brouillon (`validate-a-page.ts`), puis ouvre
+   * la suivante, ou celle où reprend une correction (`correction.ts`). Sans
+   * suivante : le résultat avant le verrou, le cerfa daté de `on` après.
    */
   validate(draft: Answers, on = new Date()): Simulation {
+    refuseUnlessAnswered(this.#reading, this.page, draft);
+    return this.#advance(draft, on);
+  }
+
+  /** Valider ce brouillon achèverait-il l'étape ? Sans vérifier la page. */
+  endsWith(draft: Answers): boolean {
+    return this.#advance(draft, new Date()).stage.name !== this.stage.name;
+  }
+
+  #advance(draft: Answers, on: Date): Simulation {
     const answers = this.#reading.commit(this.page, draft);
     const reading = readAt(this.#core, this.stage, answers);
-    const { correction } = this.#opened;
-    const following = reading.pageAfter(this.page);
-    const declared = pagesOf(this.#core.questionnaire);
-    const opening = correction
-      ? whereACorrectionResumes(correction, reading, answers, declared)
-      : following && { page: following };
+    const opening = openingAfter(
+      this.page,
+      this.#opened,
+      reading,
+      answers,
+      pagesOf(this.#core.questionnaire),
+    );
     const stage = opening ? this.stage : endOf(this.stage, on);
     const { page = this.page, ...opened } = opening ?? {};
     return new Simulation(this.#core, stage, answers, reading, page, opened);

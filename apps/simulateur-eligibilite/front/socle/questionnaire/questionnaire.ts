@@ -191,14 +191,9 @@ function read(
     hasPrevious: simulation.hasPrevious(),
     hasPendingQuestions,
     hasInconsistencies: !hasPendingQuestions && hasInconsistencies,
-    isLast: !hasPendingQuestions && ends(simulation, draft),
+    isLast: !hasPendingQuestions && simulation.endsWith(draft),
     focus,
   };
-}
-
-// Valider la page avec ce brouillon achève l'étape, au lieu d'en ouvrir une autre.
-function ends(simulation: Simulation, draft: Answers): boolean {
-  return simulation.validate(draft).stage.name !== simulation.stage.name;
 }
 
 // Une correction n'est pas une étape de plus du parcours : la mesure d'audience

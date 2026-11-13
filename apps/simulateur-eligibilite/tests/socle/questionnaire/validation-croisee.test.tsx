@@ -60,6 +60,15 @@ describe("deux réponses de la même page", () => {
     expect(screen.queryByText(FIN_AVANT_LE_DEBUT)).toBeNull();
   });
 
+  it("écrit « Terminer » sur la dernière page, même incohérente", async () => {
+    const { user } = afficher([CRENEAU]);
+
+    await user.type(champ("Début du créneau"), "2026-10-12T08:30");
+    await user.type(champ("Fin du créneau"), "2026-10-12T07:00");
+
+    expect(screen.getByRole("button", { name: "Terminer" })).toBeEnabled();
+  });
+
   it("au clic, affiche le message sous la fin et garde la page", async () => {
     const { user, reponses } = afficher([CRENEAU]);
     await user.type(champ("Début du créneau"), "2026-10-12T08:30");
