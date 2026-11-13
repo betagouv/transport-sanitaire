@@ -229,7 +229,7 @@ Quatorze règles à tenir en ajoutant une question :
   un lien de l'alerte, si l'incohérence dit ses réponses à revoir
   (`{ revisit }`, lu comme la condition). Le lien rouvre leur page
   (`Simulation.revisit`), et « Suivant » ramène à l'alerte
-  (`core/socle/simulation/correction.entity.ts`, ADR-30). Une erreur de format
+  (`core/socle/simulation/answer-correction.vo.ts`, ADR-30). Une erreur de format
   s'affiche seule, avant les incohérences. Celle d'une adresse s'affiche sous
   le groupe, et une erreur de champ passe devant.
 - **L'adresse de la page ne porte que la position.** Des rangs (`#/etape/<n>`,

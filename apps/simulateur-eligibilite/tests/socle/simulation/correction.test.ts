@@ -10,7 +10,7 @@ import type {
   Page,
   QuestionnairePart,
 } from "../../../core/socle/questionnaire-engine";
-import { Simulation } from "../../../core/socle/simulation";
+import { JourneyPosition, Simulation } from "../../../core/socle/simulation";
 
 type Questions = {
   soin: "dialyse" | "rien";
@@ -182,33 +182,37 @@ describe("« Suivant » pendant une correction", () => {
 
 describe("aller à une position", () => {
   it("accepte une page déjà posée, en avant comme en arrière", () => {
-    const surLeSoin = surLeLieu().moveTo({ step: 1 });
+    const surLeSoin = surLeLieu().moveTo(new JourneyPosition(1));
 
     expect(surLeSoin?.page.id).toBe("soin");
-    expect(surLeSoin?.moveTo({ step: 3 })?.page.id).toBe("lieu");
+    expect(surLeSoin?.moveTo(new JourneyPosition(3))?.page.id).toBe("lieu");
   });
 
   it("refuse une page que rien n'a encore posée", () => {
     const surLeMotif = Simulation.start(core).validate({ soin: "dialyse" });
 
-    expect(surLeMotif.moveTo({ step: 3 })).toBeUndefined();
-    expect(surLeMotif.moveTo({ step: 0 })).toBeUndefined();
+    expect(surLeMotif.moveTo(new JourneyPosition(3))).toBeUndefined();
+  });
+
+  it("ne compte aucune position avant la première", () => {
+    expect(() => new JourneyPosition(0)).toThrow();
+    expect(() => new JourneyPosition(1, 0)).toThrow();
   });
 
   it("reprend une correction vers une page plus loin, qui attend sa réponse", () => {
-    const reprise = surLeLieu().moveTo({ step: 1, returnTo: 3 });
+    const reprise = surLeLieu().moveTo(new JourneyPosition(1, 3));
     const repondue = Simulation.resume(core, { ...DIALYSE, lieu: "domicile" });
 
     expect(reprise?.correcting).toBe(true);
     expect(reprise?.validate({ soin: "dialyse" }).page.id).toBe("lieu");
-    expect(surLeLieu().moveTo({ step: 3, returnTo: 1 })).toBeUndefined();
-    expect(repondue.moveTo({ step: 1, returnTo: 3 })).toBeUndefined();
+    expect(surLeLieu().moveTo(new JourneyPosition(3, 1))).toBeUndefined();
+    expect(repondue.moveTo(new JourneyPosition(1, 3))).toBeUndefined();
   });
 
   it("garde le brouillon de l'origine, à l'aller comme au retour", () => {
     const revue = surLeLieu().revisit("soin", A_L_HOPITAL);
-    const revenue = revue?.moveTo({ step: 3 });
-    const repartie = revenue?.moveTo({ step: 1, returnTo: 3 });
+    const revenue = revue?.moveTo(new JourneyPosition(3));
+    const repartie = revenue?.moveTo(new JourneyPosition(1, 3));
 
     expect(revenue?.correcting).toBe(false);
     expect(revenue?.restoredDraft).toEqual(A_L_HOPITAL);
@@ -221,7 +225,7 @@ describe("aller à une position", () => {
     const resultat = Simulation.resume(core, { ...DIALYSE, lieu: "domicile" });
 
     expect(resultat.position).toEqual({ step: 4 });
-    expect(resultat.moveTo({ step: 2 })?.stage).toEqual({
+    expect(resultat.moveTo(new JourneyPosition(2))?.stage).toEqual({
       name: "questionnaire",
     });
   });
@@ -236,6 +240,6 @@ describe("aller à une position", () => {
     expect(verrouillee.validate({ note: "rien" }).position).toEqual({
       step: 6,
     });
-    expect(verrouillee.moveTo({ step: 1 })).toBeUndefined();
+    expect(verrouillee.moveTo(new JourneyPosition(1))).toBeUndefined();
   });
 });

@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import type { ValidatedAnswers } from "../../../core/socle";
 import type { CoreModel } from "../../../core/socle/model";
-import { preconisationOf } from "../../../core/socle/simulation/preconisation.entity";
+import { EstablishAPreconisation } from "../../../core/socle/simulation";
 import { modeleDeTest } from "../modele-de-test";
 
 // La préconisation va des réponses aux faits, puis aux cibles. Pour ses faits,
@@ -33,7 +33,7 @@ const model: CoreModel = {
 describe("le calcul des faits", () => {
   it("reçoit les questions validées, avec ce qui s'y proposait", () => {
     const answers = { boisson: "the", accompagnements: ["lait"] };
-    expect(preconisationOf(model, answers).faits).toEqual({
+    expect(new EstablishAPreconisation(model).execute(answers).faits).toEqual({
       boisson: { offered: ["the", "cafe", "rien"], answer: "the" },
       accompagnements: {
         offered: ["lait", "sucre", "aucun"],
@@ -44,7 +44,9 @@ describe("le calcul des faits", () => {
   });
 
   it("ne reçoit pas une question qui ne s'est pas posée", () => {
-    expect(preconisationOf(model, { boisson: "rien" }).faits).toEqual({
+    expect(
+      new EstablishAPreconisation(model).execute({ boisson: "rien" }).faits,
+    ).toEqual({
       boisson: { offered: ["the", "cafe", "rien"], answer: "rien" },
       accompagnements: "non validée",
       quantite: "non validée",
@@ -53,7 +55,9 @@ describe("le calcul des faits", () => {
 
   it("ne reçoit pas les questions d'après le verrou", () => {
     const answers = { boisson: "the", accompagnements: ["aucun"], quantite: 2 };
-    expect(preconisationOf(model, answers).faits).toMatchObject({
+    expect(
+      new EstablishAPreconisation(model).execute(answers).faits,
+    ).toMatchObject({
       quantite: "non validée",
     });
   });

@@ -15,7 +15,7 @@ import {
   Questionnaire,
 } from "../../../../core/socle/questionnaire-engine";
 
-import { preconisationOf } from "../../../../core/socle/simulation";
+import { EstablishAPreconisation } from "../../../../core/socle/simulation";
 import { ciblesValant } from "../r2/traces-du-prescripteur";
 
 type Reponses = Answers<Questions>;
@@ -217,9 +217,9 @@ describe("les contrôles des deux lieux", () => {
         country: "Belgique",
       },
     } as Reponses;
-    expect(preconisationOf(model, avecLePays).cibles).toEqual(
-      preconisationOf(model, seed.answers).cibles,
-    );
+    expect(
+      new EstablishAPreconisation(model).execute(avecLePays).cibles,
+    ).toEqual(new EstablishAPreconisation(model).execute(seed.answers).cibles);
   });
 });
 

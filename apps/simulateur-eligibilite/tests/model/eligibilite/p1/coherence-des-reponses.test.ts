@@ -22,7 +22,7 @@ import {
   ValidatedAnswers,
 } from "../../../../core/socle/questionnaire-engine";
 
-import { preconisationOf } from "../../../../core/socle/simulation";
+import { EstablishAPreconisation } from "../../../../core/socle/simulation";
 
 type Reponses = Answers<Questions>;
 type Critere = Questions["Q1.2"][number];
@@ -121,7 +121,7 @@ describe("le retour en P1", () => {
     "Q1.3.b": "1_LIEN_DIRECT",
   };
   const faits = (reponses: Reponses) =>
-    preconisationOf(model, reponses).faits as Faits;
+    new EstablishAPreconisation(model).execute(reponses).faits as Faits;
 
   it("au retrait du brancard, efface la corpulence et garde l'ALD et le mineur", () => {
     const sansBrancard = { ...AMBULANCE, "Q1.2": ["1_PAS_AUTONOME"] };

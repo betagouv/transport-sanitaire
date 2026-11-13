@@ -19,8 +19,8 @@ import {
 } from "../../../../core/socle/questionnaire-engine";
 
 import {
-  preconisationOf,
-  resultScope,
+  EstablishAPreconisation,
+  QuestionnaireReadingService,
 } from "../../../../core/socle/simulation";
 
 import type { Rubrique } from "../../../../front/models/eligibilite/r3/rubriques/rubrique";
@@ -151,7 +151,7 @@ export function donnees(
   completedAt = new Date("2026-10-22T10:00:00Z"),
   faits: Partial<Faits> = {},
 ): Read {
-  const preconisation = preconisationOf(model, reponses);
+  const preconisation = new EstablishAPreconisation(model).execute(reponses);
   const cibles = ciblesValant({
     ...cibleValues(preconisation.cibles as Cibles),
     ...choisies,
@@ -161,7 +161,7 @@ export function donnees(
     cibles,
   );
   return readIn(
-    resultScope({
+    QuestionnaireReadingService.ofResult({
       validated: lecture.validated,
       faits: { ...(preconisation.faits as Faits), ...faits },
       cibles,

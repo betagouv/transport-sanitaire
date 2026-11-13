@@ -11,7 +11,7 @@ import {
   pagesOf,
   Questionnaire,
 } from "../../../../core/socle/questionnaire-engine";
-import { preconisationOf } from "../../../../core/socle/simulation";
+import { EstablishAPreconisation } from "../../../../core/socle/simulation";
 
 type Reponses = Answers<Questions>;
 
@@ -87,7 +87,7 @@ describe("l'accident causé par un tiers en Q1.3", () => {
 
   it("ne change aucune cible", () => {
     const cibles = (reponses: Reponses) =>
-      cibleValues(preconisationOf(model, reponses).cibles);
+      cibleValues(new EstablishAPreconisation(model).execute(reponses).cibles);
 
     expect(cibles(AVEC_UN_TIERS)).toEqual(cibles(SEUL));
   });

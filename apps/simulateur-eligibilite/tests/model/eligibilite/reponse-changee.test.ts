@@ -18,7 +18,7 @@ import {
   Questionnaire,
 } from "../../../core/socle/questionnaire-engine";
 
-import { preconisationOf } from "../../../core/socle/simulation";
+import { EstablishAPreconisation } from "../../../core/socle/simulation";
 import { model as frontModel } from "../../../front/models/eligibilite";
 import { MATERNITE_ETABLIE } from "./p2/reponses-de-la-branche";
 
@@ -83,8 +83,10 @@ const posees = (reponses: Answers) => {
 };
 
 const issue = (reponses: Answers) =>
-  preconisationOf({ ...model, relevance: frontModel.core.relevance }, reponses)
-    .cibles.cible_issue_id.value;
+  new EstablishAPreconisation({
+    ...model,
+    relevance: frontModel.core.relevance,
+  }).execute(reponses).cibles.cible_issue_id.value;
 
 // Un patient seul, pour une consultation à 50 km ou moins, sans situation
 // particulière : le parcours est complet.

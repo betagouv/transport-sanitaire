@@ -10,7 +10,7 @@ import {
   Questionnaire,
 } from "../../../../core/socle/questionnaire-engine";
 
-import { preconisationOf } from "../../../../core/socle/simulation";
+import { EstablishAPreconisation } from "../../../../core/socle/simulation";
 
 export type Reponses = Answers<Questions>;
 
@@ -32,7 +32,7 @@ export const proposees = (reponses: Reponses) => {
     : [];
 };
 export const faits = (reponses: Reponses) =>
-  preconisationOf(model, reponses).faits as Faits;
+  new EstablishAPreconisation(model).execute(reponses).faits as Faits;
 export const valeurs = (reponses: Reponses, noms: readonly (keyof Faits)[]) =>
   noms.map((nom) => faits(reponses)[nom].value);
 

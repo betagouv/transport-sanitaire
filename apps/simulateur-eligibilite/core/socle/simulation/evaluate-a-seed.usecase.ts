@@ -1,14 +1,16 @@
-// Ce qu'est une seed : des réponses, et ce qu'on en attend.
+// Évaluer une seed : des réponses, et ce qu'on en attend.
 //
-// La même définition sert aux tests, qui comparent la préconisation aux
+// La même évaluation sert aux tests, qui comparent la préconisation aux
 // attendus, et à l'écran des seeds, qui permet de l'ouvrir.
 
 import type { CibleValues } from "../decision-engine/index.ts";
+import type { CoreModel } from "../model.ts";
 import type {
   Answers,
   AnyCibles,
   AnyQuestions,
 } from "../questionnaire-engine/index.ts";
+import { PreconisationService } from "./preconisation.service.ts";
 
 export type Seed<
   Questions extends AnyQuestions = AnyQuestions,
@@ -47,22 +49,25 @@ export type SeedEvaluation = {
 };
 
 /**
- * Évalue une seed et compare ses cibles à ses attendus.
- *
- * Le calcul est passé en paramètre : une seed ne sait pas comment le modèle
- * préconise, seulement ce qu'elle en attend.
+ * Évalue une seed : rejoue ses réponses, et compare les cibles que la
+ * préconisation en calcule à ses attendus.
  */
-export function evaluateSeed(
-  preconise: (answers: Answers) => AnyCibles,
-  seed: Seed,
-): SeedEvaluation {
-  const cibles = preconise(seed.answers);
-  const mismatches = Object.entries(seed.expected)
-    .map(([cible, expected]) => ({
-      cible,
-      expected,
-      actual: cibles[cible]?.value,
-    }))
-    .filter(({ expected, actual }) => actual !== expected);
-  return { cibles, mismatches };
+export class EvaluateASeed {
+  readonly #preconisation: PreconisationService;
+
+  constructor(model: CoreModel) {
+    this.#preconisation = new PreconisationService(model);
+  }
+
+  execute(seed: Seed): SeedEvaluation {
+    const { cibles } = this.#preconisation.ofAnswers(seed.answers);
+    const mismatches = Object.entries(seed.expected)
+      .map(([cible, expected]) => ({
+        cible,
+        expected,
+        actual: cibles[cible]?.value,
+      }))
+      .filter(({ expected, actual }) => actual !== expected);
+    return { cibles, mismatches };
+  }
 }

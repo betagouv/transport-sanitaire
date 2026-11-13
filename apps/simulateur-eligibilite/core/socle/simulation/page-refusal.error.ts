@@ -17,33 +17,29 @@ type Fault = {
 };
 
 /** La page ne se valide pas : une réponse y manque, ou se contredit. */
-export class PageRefused extends Error {
+export class PageRefusal extends Error {
+  /** Refuse la page si ce brouillon y laisse une question sans sa réponse. */
+  static unlessAnswered(reading: Reading, page: Page, draft: Answers): void {
+    const faults = reading
+      .withDraft(page, draft)
+      .questionsOn(page)
+      .filter((question) => !question.isAnsweredBy(draft[question.id]))
+      .map((question) => {
+        const problems = question.problemsWith(draft[question.id]);
+        const stated = problems.length > 0 ? problems : [MISSING];
+        return { question: question.id, problems: stated };
+      });
+    if (faults.length > 0) throw new PageRefusal(page.id, faults);
+  }
+
   readonly page: string;
   readonly faults: readonly Fault[];
 
   constructor(page: string, faults: readonly Fault[]) {
     const questions = faults.map(({ question }) => question).join(", ");
     super(`La page ${page} ne se valide pas : ${questions}.`);
-    this.name = "PageRefused";
+    this.name = "PageRefusal";
     this.page = page;
     this.faults = faults;
   }
-}
-
-/** Refuse la page si ce brouillon y laisse une question sans sa réponse. */
-export function refuseUnlessAnswered(
-  reading: Reading,
-  page: Page,
-  draft: Answers,
-): void {
-  const faults = reading
-    .withDraft(page, draft)
-    .questionsOn(page)
-    .filter((question) => !question.isAnsweredBy(draft[question.id]))
-    .map((question) => {
-      const problems = question.problemsWith(draft[question.id]);
-      const stated = problems.length > 0 ? problems : [MISSING];
-      return { question: question.id, problems: stated };
-    });
-  if (faults.length > 0) throw new PageRefused(page.id, faults);
 }

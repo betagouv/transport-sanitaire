@@ -8,7 +8,10 @@ import { describe, expect, it } from "vitest";
 import { model as metier } from "../../../core/models/eligibilite";
 import type { Questions } from "../../../core/models/eligibilite/questions/reponses";
 import type { Answers } from "../../../core/socle/questionnaire-engine";
-import { preconisationOf, Simulation } from "../../../core/socle/simulation";
+import {
+  EstablishAPreconisation,
+  Simulation,
+} from "../../../core/socle/simulation";
 
 import { model } from "../../../front/models/eligibilite";
 
@@ -22,7 +25,10 @@ const posees = (reponses: Reponses) => {
 };
 
 const preconisation = (reponses: Reponses) =>
-  preconisationOf({ ...metier, relevance: model.core.relevance }, reponses);
+  new EstablishAPreconisation({
+    ...metier,
+    relevance: model.core.relevance,
+  }).execute(reponses);
 
 const DISTANCE = ["Q2.3.1", "Q2.3.2", "Q2.3.3"];
 
