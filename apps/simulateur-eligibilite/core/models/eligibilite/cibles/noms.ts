@@ -98,6 +98,7 @@ const CIBLES_BOOLEENNES = [
   "cible_orientation_sans_urgence_deja_etablie",
   "cible_question_urgence_a_afficher",
   "cible_question_urgence_requise",
+  "cible_exception_article80_inconnue_decisive",
   "cible_decision_calculable",
   "cible_urgence_attestee",
   "cible_reponse_explicite_caisse",

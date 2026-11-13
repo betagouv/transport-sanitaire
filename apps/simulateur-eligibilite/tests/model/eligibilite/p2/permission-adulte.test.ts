@@ -1,9 +1,11 @@
 // La permission d'un adulte, autorisée pour les soins ou l'organisation de
 // l'établissement (Q2.7 = 3, QST-PERMISSION-ADULTE-20261106, v10.1.8) : elle
 // relève de l'article 80, et pose les exceptions encore inconnues (D-283).
+// Une exception encore inconnue empêche de décider (correctif du 13 novembre).
 
 import { describe, expect, it } from "vitest";
 import {
+  ciblesDe,
   issue,
   PATIENT_SEUL,
   posee,
@@ -38,7 +40,14 @@ describe("la permission d'un adulte, autorisée", () => {
 
   it("laisse les exceptions inconnues tant que Q2.6 n'a pas de réponse", () => {
     expect(faits(ADULTE).fait_exception_article80_usld.value).toBeUndefined();
-    expect(issue(ADULTE)).toBeUndefined();
+  });
+
+  it("ne décide pas tant qu'une exception inconnue peut changer l'issue", () => {
+    expect([
+      ciblesDe(ADULTE).cible_exception_article80_inconnue_decisive.value,
+      ciblesDe(ADULTE).cible_decision_calculable.value,
+      issue(ADULTE),
+    ]).toEqual([true, false, null]);
   });
 
   it("sans exception, le transport est à la charge de l'établissement", () => {
