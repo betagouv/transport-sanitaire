@@ -19,7 +19,7 @@ import {
   Relevance,
   unFait,
 } from "../../../core/socle";
-import { decisionGraphOf } from "../../../core/socle/decision-engine/publicodes-decision-engine.adapter";
+import { PublicodesGraphCompiler } from "../../../core/socle/decision-engine/publicodes-graph-compiler.adapter";
 
 describe("les questions qui comptent", () => {
   it("pose la distance quand la taille peut encore se poser", () => {
@@ -177,7 +177,7 @@ function posees(
 // Ces réponses, lues avec la pertinence : le résultat ne montre que la taille.
 function lire(reponses: Partial<Questions>, pages: readonly AnyPage[] = PAGES) {
   const relevance = new Relevance({
-    graph: decisionGraphOf({ rien: { titre: "Rien" } }),
+    graph: new PublicodesGraphCompiler({ rien: { titre: "Rien" } }).compile(),
     pages,
     faits: { reads: FAITS.reads, imposed: [], of: () => ({}) },
     shown: given.question("taille").answer().reads,

@@ -5,10 +5,10 @@ import {
   type FaitValue,
 } from "../../../core/socle/decision-engine/decision-graph/graph";
 import {
-  decisionGraphOf,
   PublicodesDecisionEngine,
   type Rules,
 } from "../../../core/socle/decision-engine/publicodes-decision-engine.adapter";
+import { PublicodesGraphCompiler } from "../../../core/socle/decision-engine/publicodes-graph-compiler.adapter";
 
 // Le graphe de décision, sur des règles écrites ici : chaque mécanisme que le
 // compilateur traduit vaut ce que publicodes calcule, pour chaque façon dont
@@ -53,7 +53,7 @@ const SITUATIONS = FAITS.reduce<Record<string, FaitValue>[]>(
 );
 const CIBLES = Object.keys(REGLES).filter((nom) => nom.startsWith("cible_"));
 
-const graphe = new DecisionGraph(decisionGraphOf(REGLES));
+const graphe = new DecisionGraph(new PublicodesGraphCompiler(REGLES).compile());
 const moteur = new PublicodesDecisionEngine<
   Record<string, Fait>,
   Record<string, Cible>
@@ -91,25 +91,28 @@ describe("le graphe de décision", () => {
   });
 
   it("deux règles qui disent la même chose partagent leurs nœuds", () => {
-    const { rules } = decisionGraphOf({
+    const { rules } = new PublicodesGraphCompiler({
       ...REGLES,
       cible_parapluie_aussi: { valeur: "fait_pluie" },
-    });
+    }).compile();
     expect(rules.cible_parapluie_aussi).toBe(rules.cible_parapluie);
   });
 
   it("s'arrête sur un mécanisme qu'il ne traduit pas, en nommant la règle", () => {
     expect(() =>
-      decisionGraphOf({ ...REGLES, cible_total: { somme: [1, 2] } }),
+      new PublicodesGraphCompiler({
+        ...REGLES,
+        cible_total: { somme: [1, 2] },
+      }).compile(),
     ).toThrow(/« cible_total »/);
   });
 
   it("s'arrête sur un fait qui ne vaut pas oui ou non", () => {
     expect(() =>
-      decisionGraphOf({
+      new PublicodesGraphCompiler({
         ...REGLES,
         fait_invites: { titre: "Nombre d'invités", type: "nombre" },
-      }),
+      }).compile(),
     ).toThrow(/« fait_invites » est de type « nombre »/);
   });
 });

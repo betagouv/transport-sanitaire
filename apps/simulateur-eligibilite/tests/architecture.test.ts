@@ -174,9 +174,10 @@ describe("invariants métier", () => {
     );
     expect(
       fautifs,
-      "publicodes est l'outil du socle pour décider, derrière un seul " +
-        "fichier : `core/socle/decision-engine/publicodes-decision-engine.adapter.ts`. Le reste du " +
-        "socle et le modèle passent par lui. Un autre import lie du code au " +
+      "publicodes est l'outil du socle pour décider, derrière les " +
+        "adaptateurs du moteur de décision : " +
+        "`core/socle/decision-engine/publicodes-*.adapter.ts`. Le reste du " +
+        "socle et le modèle passent par eux. Un autre import lie du code au " +
         "moteur, et rend son remplacement plus cher.",
     ).toEqual([]);
   });
