@@ -8,9 +8,10 @@
 // ne dit CAMSP ou CMPP. Rien n'est jamais deviné. Elle déclare ce qu'elle lit
 // des cibles (`ce-que-lit-un-texte.ts`).
 //
-// Deux de ces termes restituent une portion du trajet (docs/knowledge/
-// CONTEXT.md, « Portion ») : le segment, la ligne régulière, et la portée de
-// l'ambulance, la partie terrestre quand le trajet prend l'avion ou le bateau.
+// Le segment restitue une portion du trajet (docs/knowledge/CONTEXT.md,
+// « Portion ») : la ligne régulière. La portée de l'ambulance n'en restitue
+// pas : elle parle des « éventuelles » parties terrestres, qu'aucune réponse ne
+// prouve (#443).
 
 import { given } from "../../../../../core/models/eligibilite/questions/reponses";
 import type { Portion } from "../../../../socle";
@@ -50,21 +51,11 @@ export function avecLesAutresTermes(
 }
 
 /** Les portions du trajet que ces textes restituent, termes remplis. */
-export function portionsDesTextes(
-  trace: TraceDe<typeof LU_PAR_LES_AUTRES_TERMES>,
-  textes: readonly string[],
-): Portion[] {
-  const avionBateau = trace.cibles.cible_dap_motif_avion_bateau.isOui();
-  const restitue = (terme: string) =>
-    textes.some((texte) => texte.includes(terme));
-  return [
-    ...(restitue("{segment_ligne_reguliere}")
-      ? (["LIGNE_REGULIERE"] as const)
-      : []),
-    ...(avionBateau && restitue("{portee_ambulance}")
-      ? (["TERRESTRE"] as const)
-      : []),
-  ];
+export function portionsDesTextes(textes: readonly string[]): Portion[] {
+  const restitue = textes.some((texte) =>
+    texte.includes("{segment_ligne_reguliere}"),
+  );
+  return restitue ? ["LIGNE_REGULIERE"] : [];
 }
 
 // ---- implémentation ----

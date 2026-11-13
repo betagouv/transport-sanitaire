@@ -142,7 +142,6 @@ describe("le texte des seeds", () => {
         "ISSUE_DAP_ETRANGER_A_EXAMINER",
       ),
     ).toEqual({
-      motifs: [],
       titre: "Prise en charge spécifique d’un transport à l’étranger",
       introduction:
         "Le départ ou l’arrivée du trajet se situe hors de France. Le simulateur ne peut pas confirmer la prise en charge de ce transport.",

@@ -223,9 +223,9 @@ describe("les motifs et les portions d'une demande", () => {
     ]);
   });
 
-  it("en ambulance avec un avion ou un bateau : la ligne régulière et la partie terrestre", () => {
+  it("en ambulance avec un avion ou un bateau : la ligne régulière, sans partie terrestre, qu'aucune réponse ne prouve", () => {
     expect(
       demande({ cible_mode_ambulance: true, ...AVION_OU_BATEAU })?.portions,
-    ).toEqual(["LIGNE_REGULIERE", "TERRESTRE"]);
+    ).toEqual(["LIGNE_REGULIERE"]);
   });
 });

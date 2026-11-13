@@ -57,8 +57,12 @@ export const MILESTONES = ["first", "last"] as const;
 
 export type Milestone = (typeof MILESTONES)[number];
 
-/** Les portions du trajet que le premier résultat restitue à part (ADR-9). */
-export const PORTIONS = ["LIGNE_REGULIERE", "TERRESTRE"] as const;
+/**
+ * Les portions du trajet que le premier résultat restitue à part (ADR-9) : la
+ * ligne régulière, avion ou bateau. Aucune réponse ne prouve une partie
+ * terrestre : sa présence reste inconnue, et ne part pas (#443).
+ */
+export const PORTIONS = ["LIGNE_REGULIERE"] as const;
 
 export type Portion = (typeof PORTIONS)[number];
 
