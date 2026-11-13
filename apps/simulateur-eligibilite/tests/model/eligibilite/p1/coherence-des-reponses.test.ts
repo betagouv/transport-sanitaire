@@ -9,7 +9,7 @@
 
 import { describe, expect, it } from "vitest";
 import { model } from "../../../../core/models/eligibilite";
-import { cible } from "../../../../core/models/eligibilite/cibles/evaluation";
+import { decisionEngine } from "../../../../core/models/eligibilite/cibles/evaluation";
 import { CATALOGUE_DES_FAITS } from "../../../../core/models/eligibilite/faits";
 import type { Faits } from "../../../../core/models/eligibilite/faits/noms";
 import { Q1_2 } from "../../../../core/models/eligibilite/questions/p1/questions/q1-2";
@@ -106,7 +106,8 @@ describe("les 2 048 combinaisons de Q1.2", () => {
         fait_p1_complete: Fait.oui("P1 complète."),
       });
       const cle = JSON.stringify(FAITS_DE_P1.map((nom) => faits[nom]));
-      if (!modes.has(cle)) modes.set(cle, cible(faits, "cible_mode_id").value);
+      if (!modes.has(cle))
+        modes.set(cle, decisionEngine.cible(faits, "cible_mode_id").value);
       return modes.get(cle) !== modeAttendu(criteres);
     });
     expect(ecarts).toEqual([]);

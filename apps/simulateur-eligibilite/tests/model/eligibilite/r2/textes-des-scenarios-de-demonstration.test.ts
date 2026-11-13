@@ -26,7 +26,7 @@
 //   que teste déjà `scenarios-de-demonstration.test.ts`.
 
 import { describe, expect, it } from "vitest";
-import { cibles } from "../../../../core/models/eligibilite/cibles/evaluation";
+import { decisionEngine } from "../../../../core/models/eligibilite/cibles/evaluation";
 import { sansBlancsDeTrop } from "../../../../front/models/eligibilite/r2/components/sans-blancs-de-trop";
 import type { IssueAcceptee } from "../../../../front/models/eligibilite/r2/layouts/acceptee/issues";
 import { texteDeLaFichePositive } from "../../../../front/models/eligibilite/r2/layouts/acceptee/texte";
@@ -107,7 +107,7 @@ function texteDe(scenario: Scenario): unknown {
 function traceDe(scenario: Scenario): Trace {
   const faits = faitsDuCas(changementsDe(scenario.id));
   return {
-    cibles: cibles(faits),
+    cibles: decisionEngine.cibles(faits),
     faits,
     criteres: scenario.criteres,
     permissionRepeated: scenario.permissionRepeated,

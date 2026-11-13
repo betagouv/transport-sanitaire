@@ -22,7 +22,7 @@ import {
   questionsOf,
   type ReadByObject,
 } from "../../../socle/index.ts";
-import { lazyCibles } from "../cibles/evaluation.ts";
+import { decisionEngine } from "../cibles/evaluation.ts";
 import type { Cibles } from "../cibles/noms.ts";
 import { CATALOGUE_DES_FAITS } from "../faits/index.ts";
 import type { Faits } from "../faits/noms.ts";
@@ -42,5 +42,5 @@ export const given = givenOf<ReadByObject, Faits, Cibles>();
 /** Les constructeurs des questions de P0 à P3. */
 export const question = questionsOf<ReadByObject, Faits, Cibles>({
   faits: CATALOGUE_DES_FAITS,
-  cibles: lazyCibles,
+  cibles: (faits) => decisionEngine.lazyCibles(faits),
 });

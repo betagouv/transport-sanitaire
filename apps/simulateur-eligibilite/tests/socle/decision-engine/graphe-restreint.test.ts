@@ -1,10 +1,10 @@
 import { describe, expect, it } from "vitest";
-import { decisionGraphOf } from "../../../core/socle/decision-engine/compute-the-cibles";
 import { DecisionDiagram } from "../../../core/socle/decision-engine/decision-graph/diagram";
 import {
   DecisionGraph,
   type FaitValue,
 } from "../../../core/socle/decision-engine/decision-graph/graph";
+import { decisionGraphOf } from "../../../core/socle/decision-engine/publicodes-decision-engine.adapter";
 
 // Le graphe restreint aux faits qu'on sait déjà (#255) : il vaut ce que vaut
 // le graphe entier, et ne teste plus que les faits qu'on ne sait pas.

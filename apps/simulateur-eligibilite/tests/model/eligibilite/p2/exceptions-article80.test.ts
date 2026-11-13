@@ -3,7 +3,7 @@
 // exception qui ne s'est pas proposée prend un prédicat structurel (D-106).
 
 import { describe, expect, it } from "vitest";
-import { cible } from "../../../../core/models/eligibilite/cibles/evaluation";
+import { decisionEngine } from "../../../../core/models/eligibilite/cibles/evaluation";
 import { Questionnaire } from "../../../../core/socle/questionnaire-engine";
 import {
   definitif,
@@ -32,7 +32,9 @@ describe("une exception cochée", () => {
       false,
       false,
     ]);
-    expect(cible(faits(had), "cible_exception_article80").value).toBe(true);
+    expect(
+      decisionEngine.cible(faits(had), "cible_exception_article80").value,
+    ).toBe(true);
   });
 
   it("garde la trace de la case cochée et de celle écartée", () => {

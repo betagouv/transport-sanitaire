@@ -4,7 +4,7 @@
 // quelques-uns. Un fait changé en `undefined` est absent : il n'est pas
 // transmis aux règles.
 
-import { cibles } from "../../../../core/models/eligibilite/cibles/evaluation";
+import { decisionEngine } from "../../../../core/models/eligibilite/cibles/evaluation";
 import type { Cibles } from "../../../../core/models/eligibilite/cibles/noms";
 import {
   FAITS,
@@ -46,7 +46,7 @@ export const faitsDuCas = (changements: Changements) =>
 
 // La valeur des cibles que les règles calculent pour ces changements.
 export const preconiser = (changements: Changements) =>
-  cibleValues(cibles(faitsDuCas(changements)));
+  cibleValues(decisionEngine.cibles(faitsDuCas(changements)));
 
 // Aucun profil de code de soin ne prouve à lui seul un motif de transport.
 const SITUATION: Changements = {

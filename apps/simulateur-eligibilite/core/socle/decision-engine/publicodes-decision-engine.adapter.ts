@@ -1,5 +1,5 @@
-// Le moteur de décision : des faits aux cibles, par les règles publicodes d'un
-// modèle.
+// Le moteur de décision par publicodes : des faits aux cibles, par les règles
+// d'un modèle. C'est l'adaptateur du port `decision-engine.port.ts`.
 //
 // Le socle ne connaît ni les règles ni leurs noms : le modèle les lui donne.
 // Ce fichier est le seul du socle à importer publicodes. Le modèle le prend
@@ -9,46 +9,42 @@
 import Engine, { type RawPublicodes } from "publicodes";
 import { Cible } from "./cible.ts";
 import { compileDecisionGraph } from "./compile-the-decision-graph.ts";
+import type { DecisionEngine } from "./decision-engine.port.ts";
 import type { DecisionGraphData } from "./decision-graph/graph.ts";
 import type { Fait } from "./fait/fait.ts";
 
 /** Les règles d'un modèle, par nom : les faits, puis les cibles. */
 export type Rules = RawPublicodes<string>;
 
-/**
- * Ce que des règles calculent pour des faits. Chaque cible peut rester
- * inconnue, faute d'un fait dont elle dépend : ce n'est pas une décision.
- */
-export type DecisionEngine<Faits, Cibles> = {
-  /** Toutes les cibles de ces faits : la préconisation. */
-  cibles(faits: Faits): Cibles;
-  /** Une seule cible de ces faits, quand le questionnaire en a besoin en route. */
-  cible<Nom extends keyof Cibles>(faits: Faits, nom: Nom): Cibles[Nom];
-  /**
-   * Les cibles de ces faits, chacune calculée à sa première lecture : celles
-   * qu'une garde lit en route, sans payer les autres.
-   */
-  lazyCibles(faits: Faits): Cibles;
-};
+type AnyFaits = Readonly<Record<string, Fait<boolean | number | string>>>;
 
 /** Le moteur de ces règles, qui calcule ces cibles. */
-export function publicodesEngine<
-  Faits extends Readonly<Record<string, Fait<boolean | number | string>>>,
+export class PublicodesDecisionEngine<
+  Faits extends AnyFaits,
   Cibles extends Readonly<Record<string, Cible>>,
->(
-  rules: Rules,
-  cibles: readonly (keyof Cibles & string)[],
-): DecisionEngine<Faits, Cibles> {
-  const evaluations = new Evaluations(rules);
-  const cible = (faits: Faits, nom: string) => evaluations.of(faits, nom);
-  return {
-    cibles: (faits) =>
-      Object.fromEntries(
-        cibles.map((nom) => [nom, cible(faits, nom)]),
-      ) as Cibles,
-    cible: (faits, nom) => cible(faits, nom as string) as Cibles[typeof nom],
-    lazyCibles: (faits) => lazily(cibles, (nom) => cible(faits, nom)),
-  };
+> implements DecisionEngine<Faits, Cibles>
+{
+  readonly #evaluations: Evaluations;
+  readonly #cibles: readonly (keyof Cibles & string)[];
+
+  constructor(rules: Rules, cibles: readonly (keyof Cibles & string)[]) {
+    this.#evaluations = new Evaluations(rules);
+    this.#cibles = cibles;
+  }
+
+  cibles(faits: Faits): Cibles {
+    return Object.fromEntries(
+      this.#cibles.map((nom) => [nom, this.#evaluations.of(faits, nom)]),
+    ) as Cibles;
+  }
+
+  cible<Nom extends keyof Cibles>(faits: Faits, nom: Nom): Cibles[Nom] {
+    return this.#evaluations.of(faits, nom as string) as Cibles[Nom];
+  }
+
+  lazyCibles(faits: Faits): Cibles {
+    return lazily(this.#cibles, (nom) => this.#evaluations.of(faits, nom));
+  }
 }
 
 /**
@@ -61,7 +57,6 @@ export function decisionGraphOf(rules: Rules): DecisionGraphData {
 
 // ---- implémentation ----
 
-type AnyFaits = Parameters<typeof situationOf>[0];
 type Situation = ReturnType<typeof situationOf>;
 
 // Ce que les règles donnent, cible par cible, pour chaque situation déjà vue.
@@ -142,9 +137,7 @@ function cibleOf(engine: Engine, nom: string): Cible {
 // Seuls les faits établis partent aux règles : publicodes refuse une valeur
 // `undefined`, et une clé absente laisse indéfini ce qui en dépend. Les règles
 // lisent un booléen comme « oui » ou « non ».
-function situationOf(
-  faits: Readonly<Record<string, Fait<boolean | number | string>>>,
-) {
+function situationOf(faits: AnyFaits) {
   return Object.fromEntries(
     Object.entries(faits).flatMap(([fait, { value }]) =>
       value === undefined ? [] : [[fait, asRuleValue(value)]],

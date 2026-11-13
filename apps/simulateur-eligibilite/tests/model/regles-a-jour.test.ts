@@ -18,8 +18,8 @@ import {
 } from "../../core/socle/decision-engine";
 import {
   decisionGraphOf,
-  publicodesEngine,
-} from "../../core/socle/decision-engine/compute-the-cibles";
+  PublicodesDecisionEngine,
+} from "../../core/socle/decision-engine/publicodes-decision-engine.adapter";
 import { racine, texteDe } from "../inspection-des-sources";
 
 describe("les règles de chaque modèle", () => {
@@ -48,7 +48,7 @@ describe("le graphe de chaque modèle", () => {
       const graphe = yaml.replace(/\.publicodes$/, ".graphe.json");
       const data = JSON.parse(texteDe(graphe));
       const regles = Object.keys(data.rules);
-      const moteur = publicodesEngine(parse(texteDe(yaml)), regles);
+      const moteur = new PublicodesDecisionEngine(parse(texteDe(yaml)), regles);
       const decision = new DecisionGraph(data);
       for (const situation of situationsTirees(data.faits)) {
         const attendu = moteur.cibles(faitsDe(situation));

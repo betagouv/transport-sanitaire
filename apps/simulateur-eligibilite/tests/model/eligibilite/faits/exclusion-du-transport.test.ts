@@ -9,7 +9,7 @@
 
 import { describe, expect, it } from "vitest";
 import { model } from "../../../../core/models/eligibilite";
-import { cibles } from "../../../../core/models/eligibilite/cibles/evaluation";
+import { decisionEngine } from "../../../../core/models/eligibilite/cibles/evaluation";
 import type { Faits } from "../../../../core/models/eligibilite/faits/noms";
 import type { Questions } from "../../../../core/models/eligibilite/questions/reponses";
 import { Fait } from "../../../../core/socle";
@@ -30,7 +30,7 @@ const nos = new EstablishAPreconisation(model).execute(BRANCARD_20_KM)
   .faits as Faits;
 
 const issue = (exclusion: Fait) =>
-  cibles({
+  decisionEngine.cibles({
     ...nos,
     fait_exclusion_transport_prouvee: exclusion,
   }).cible_issue_id.value;

@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { Cible, Fait } from "../../../core/socle";
-import { publicodesEngine } from "../../../core/socle/decision-engine/compute-the-cibles";
+import { PublicodesDecisionEngine } from "../../../core/socle/decision-engine/publicodes-decision-engine.adapter";
 
 // Le moteur de décision, sur des règles écrites ici : il ne connaît celles
 // d'aucun modèle.
@@ -35,7 +35,7 @@ const REGLES = {
   },
 };
 
-const moteur = publicodesEngine<Faits, Cibles>(REGLES, [
+const moteur = new PublicodesDecisionEngine<Faits, Cibles>(REGLES, [
   "cible_parapluie",
   "cible_abri",
   "cible_table",
@@ -100,7 +100,7 @@ describe("le moteur de décision publicodes", () => {
 
   it("revient à une situation déjà vue, pour une cible qu'elle n'avait pas lue", () => {
     const auSec: Faits = { ...SOIREE, fait_pluie: etabli(false) };
-    const autreMoteur = publicodesEngine<Faits, Cibles>(REGLES, [
+    const autreMoteur = new PublicodesDecisionEngine<Faits, Cibles>(REGLES, [
       "cible_parapluie",
       "cible_abri",
     ]);
