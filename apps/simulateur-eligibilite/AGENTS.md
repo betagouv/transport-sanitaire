@@ -90,8 +90,9 @@ ses deux points d'entrée, `core/socle/index.ts` pour son métier et
 `front/socle/index.ts` pour son écran. Aucun modèle n'importe l'autre.
 Une exception : l'adaptateur du moteur de décision,
 `core/socle/decision-engine/publicodes-decision-engine.adapter.ts`,
-qu'un modèle prend à la source. C'est le seul fichier qui importe publicodes
-(D-76).
+qu'un modèle prend à la source. Avec le compilateur du graphe
+(`publicodes-graph-compiler.adapter.ts`), ce sont les seuls fichiers qui
+importent publicodes (D-76).
 `tests/architecture.test.ts` garde ces règles.
 
 Le parcours commence par un **écran de rattachement
@@ -268,7 +269,7 @@ Ses pièces sont dans `core/socle/`.
 | `unFait(nom)` (`decision-engine/fait/declared.ts`) | un fait, valeur nommée faite de règles sur des conditions. La première qui conclut l'emporte : `ouiSi`, `nonSi` et `inconnuSi(condition, raison)`, `nonSiEcartee(réponse, case)` pour une case proposée et non cochée, et `applique(regle)`, qui place une règle écrite ailleurs (`uneRegle().nonSi(condition, raison)`, une seule règle par `RegleDeFait`). `sinon(raison)` clôt le fait : il reste inconnu, pour cette raison. `vaut(valeur)` déclare un fait qui n'a pas d'état (la boisson, en toutes lettres). Une règle écrit sa provenance : ce que lit sa condition, puis sa raison, « Q2.10.b : « 2_PODO_ORTHESE ». », « Q2.6 : sans réponse. », « fait_permission : « non ». » (ADR-22) |
 | `Cible` (`decision-engine/cible.ts`) | ce que les règles donnent pour une cible, en objet valeur figé, que seul `Cible.of` construit. `isOui()` et `isNon()` lisent une cible « oui ou non », `is("TAP")` une cible à constantes, `isInconnue()` et `isSansObjet()` les deux cas qui ne sont pas une décision. Jamais `.value === true` : une cible inconnue n'est pas un « non ». `cibleValues(cibles)` donne leurs valeurs, pour la trace, une seed ou un test |
 | `PublicodesDecisionEngine` (adaptateur du port `DecisionEngine`) | n'envoie aux règles que les faits établis, et donne chaque cible en `Cible`. Il manque un fait : elle est inconnue, ce qui n'est pas une décision, ni « sans objet » (`null`) |
-| `DecisionGraph` (`decision-engine/decision-graph/graph.ts`) | le graphe de décision d'un modèle (#196, D-216) : ce que vaut chaque règle pour chaque façon dont ses faits valent oui, non ou rien. `valueOf(règle, faits)` le lit, sans publicodes. `decisionGraphOf(règles)` le compile (`compile-the-decision-graph.ts`), et `pnpm regles` l'écrit dans `rules/regles.graphe.json`. Le compilateur s'arrête sur un mécanisme qu'il ne traduit pas |
+| `DecisionGraph` (`decision-engine/decision-graph/graph.ts`) | le graphe de décision d'un modèle (#196, D-216) : ce que vaut chaque règle pour chaque façon dont ses faits valent oui, non ou rien. `valueOf(règle, faits)` le lit, sans publicodes. `new PublicodesGraphCompiler(règles).compile()` le compile (`publicodes-graph-compiler.adapter.ts`, adaptateur publicodes sans port : seuls `pnpm regles` et les tests compilent), et `pnpm regles` l'écrit dans `rules/regles.graphe.json`. Le compilateur s'arrête sur un mécanisme qu'il ne traduit pas |
 
 Le socle dit ce qui a été montré, validé, coché. Il ne conclut rien : c'est le
 modèle qui applique, fait par fait, le contrat de l'éditeur.
@@ -400,9 +401,10 @@ n'existent pas ici.
 direct de `core/socle/` ou de `front/socle/`. Son `index.ts` dit ce qu'il
 promet au reste du socle, et rien d'autre : hors du module, on n'importe que
 lui, et ce qui manque s'y ajoute. Ses tests, `tests/socle/<module>/`, lisent
-ses fichiers en direct. Une seule porte à part,
-`core/socle/decision-engine/publicodes-decision-engine.adapter.ts`, pour tenir publicodes hors
-du chunk d'entrée. `tests/modules-du-socle.test.ts` le garde.
+ses fichiers en direct. Deux portes à part, qui importent publicodes :
+`core/socle/decision-engine/publicodes-decision-engine.adapter.ts`, pour le tenir
+hors du chunk d'entrée, et `publicodes-graph-compiler.adapter.ts`, réservée à
+l'outil des règles et aux tests. `tests/modules-du-socle.test.ts` le garde.
 
 Hors de ces racines, `tooling/` porte la configuration TypeScript et les outils de
 développement (le script des règles, la vérification du bundle). Le script collé

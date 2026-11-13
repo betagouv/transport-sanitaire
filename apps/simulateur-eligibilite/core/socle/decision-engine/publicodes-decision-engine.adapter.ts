@@ -2,15 +2,13 @@
 // d'un modèle. C'est l'adaptateur du port `decision-engine.port.ts`.
 //
 // Le socle ne connaît ni les règles ni leurs noms : le modèle les lui donne.
-// Ce fichier est le seul du socle à importer publicodes. Le modèle le prend
-// ici, hors du point d'entrée du socle, pour que publicodes reste hors du
-// chunk d'entrée.
+// Le modèle le prend ici, hors du point d'entrée du socle, pour que
+// publicodes reste hors du chunk d'entrée. Compiler le graphe de décision est
+// l'autre travail confié à publicodes (`publicodes-graph-compiler.adapter.ts`).
 
 import Engine, { type RawPublicodes } from "publicodes";
 import { Cible } from "./cible.ts";
-import { compileDecisionGraph } from "./compile-the-decision-graph.ts";
 import type { DecisionEngine } from "./decision-engine.port.ts";
-import type { DecisionGraphData } from "./decision-graph/graph.ts";
 import type { Fait } from "./fait/fait.ts";
 
 /** Les règles d'un modèle, par nom : les faits, puis les cibles. */
@@ -55,14 +53,6 @@ export class PublicodesDecisionEngine<
     this.#engine.setSituation(situationOf(faits));
     return this.#engine;
   }
-}
-
-/**
- * Le graphe de décision de ces règles (#196). `pnpm regles` l'écrit à côté
- * d'elles : il se lit ensuite sans publicodes.
- */
-export function decisionGraphOf(rules: Rules): DecisionGraphData {
-  return compileDecisionGraph(new Engine(rules).getParsedRules());
 }
 
 // ---- implémentation ----

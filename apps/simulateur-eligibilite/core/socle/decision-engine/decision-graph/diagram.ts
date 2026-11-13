@@ -1,5 +1,5 @@
 // Les nœuds du graphe de décision, et ce qu'on en construit (#196). Le
-// compilateur y combine les règles (`compile-the-decision-graph.ts`). Le filtrage
+// compilateur y combine les règles (`publicodes-graph-compiler.adapter.ts`). Le filtrage
 // (#255) y restreint une règle aux faits qu'on sait déjà, puis regarde quels
 // faits elle teste encore.
 //
