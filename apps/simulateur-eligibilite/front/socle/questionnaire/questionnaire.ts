@@ -5,14 +5,13 @@
 // l'avancement automatique, le focus et la mesure d'audience.
 
 import { useState } from "react";
-import {
-  type Answer,
-  type Answers,
-  type AskedQuestion,
-  answerOnPage,
-  type Page,
-  type Unanswered,
-  type Validated,
+import type {
+  Answer,
+  Answers,
+  AskedQuestion,
+  Page,
+  Unanswered,
+  Validated,
 } from "../../../core/socle/questionnaire-engine";
 
 import type { Simulation } from "../../../core/socle/simulation";
@@ -186,9 +185,10 @@ function actions({
   move,
 }: Context): Actions {
   return {
-    // Une saisie vide les questions de la page qui en dépendent (`dependsOn`).
+    // Une saisie vide les questions de la page qui en dépendent, et celles
+    // qu'elle ne pose plus (`Reading.answerOn`).
     answer: (id, answer) => {
-      setDraft(answerOnPage(view.page, view.draft, id, answer));
+      setDraft(simulation.answerOnPage(view.draft, id, answer));
       tracking.answered(id);
     },
     next: () => {

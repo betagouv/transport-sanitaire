@@ -16,13 +16,16 @@ import {
 import type { Relevance } from "./does-a-question-still-matter/matters.ts";
 import type { AskedQuestion } from "./question/asked/question.ts";
 import type {
+  Answer,
   Answers,
   AnyCibles,
   AnyQuestions,
   Page,
+  Question,
+  Unanswered,
   Validated,
 } from "./question/question.ts";
-import { commitPage } from "./validate-a-page.ts";
+import { answerOnPage, commitPage, forget } from "./validate-a-page.ts";
 
 /** Le questionnaire s'achève : aucune page ne suit. */
 type Finished = undefined;
@@ -151,10 +154,7 @@ export class Reading<Questions extends AnyQuestions = AnyQuestions> {
    */
   commit(page: Page, draft: Answers): Answers {
     const given = answersOf(this.answers);
-    const shown = this.#questionnaire.readWith(
-      { ...given, ...draft },
-      this.#cibles,
-    );
+    const shown = this.withDraft(page, draft);
     const inputs = shown.questionsOn(page).flatMap((question) => {
       const answer = question.kept(draft[question.id]);
       return answer === undefined ? [] : [[question.id, answer] as const];
@@ -164,7 +164,57 @@ export class Reading<Questions extends AnyQuestions = AnyQuestions> {
     return commitPage(pages, given, page, Object.fromEntries(inputs), waiting);
   }
 
+  /**
+   * Le brouillon de cette page après une saisie (`answerOnPage`). Une question
+   * que la page ne pose plus y perd sa réponse, de proche en proche : reposée,
+   * elle revient vide (#411). Elle la garde si une autre de ses places la pose,
+   * ou le peut encore.
+   */
+  answerOn(
+    page: Page,
+    draft: Answers,
+    id: string,
+    answer: Answer | Unanswered,
+  ): Answers {
+    return this.#onlyAsked(page, answerOnPage(page, draft, id, answer));
+  }
+
+  /**
+   * Ces réponses, avec ce brouillon de la page par-dessus. Le brouillon tient
+   * lieu des réponses de la page : celle qu'il a perdue ne revient pas des
+   * réponses validées. Une question posée d'abord plus tôt garde la sienne.
+   */
+  withDraft(page: Page, draft: Answers): Reading<Questions> {
+    const { pages, positions } = this.#questionnaire;
+    const rank = pages.indexOf(page);
+    const others = Object.entries(answersOf(this.answers)).filter(
+      ([id]) => positions.of(id)?.page !== rank,
+    );
+    const shown = { ...Object.fromEntries(others), ...draft };
+    return this.#questionnaire.readWith(
+      shown as Answers<Questions>,
+      this.#cibles,
+    );
+  }
+
   // ---- implémentation ----
+
+  // Le brouillon, sans les réponses des questions que la page ne pose plus.
+  // Oublier une réponse peut en cacher une autre : on relit jusqu'à ce que
+  // rien ne change.
+  #onlyAsked(page: Page, draft: Answers): Answers {
+    const shown = this.withDraft(page, draft);
+    const asked = new Set([
+      ...shown.questionsOn(page).map(({ id }) => id),
+      ...shown.#waitingOn(page),
+    ]);
+    const hidden = page.questions
+      .filter(({ id }) => !asked.has(id))
+      .filter((question) => !isBlank(question, draft[question.id]))
+      .map(({ id }) => id);
+    if (hidden.length === 0) return draft;
+    return this.#onlyAsked(page, forget(page, draft, new Set(hidden)));
+  }
 
   // Les questions de la page qui ne s'y posent pas, et gardent leur réponse :
   // une place d'avant les pose, ou une place d'après le peut encore.
@@ -182,4 +232,9 @@ export class Reading<Questions extends AnyQuestions = AnyQuestions> {
       .filter((id) => !shown.has(id))
       .filter((id) => before.has(id) || positions.hasPlaceAfter(id, rank));
   }
+}
+
+// Sans réponse : rien, ou une case seule décochée.
+function isBlank(question: Question, answer: Answer | Unanswered): boolean {
+  return answer === undefined || (question.kind === "checkbox" && !answer);
 }
