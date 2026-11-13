@@ -88,12 +88,9 @@ export class Journey {
    * n'est pas un parcours de prescripteur : rien n'en part. `provenance` :
    * l'app qui le produit, sur chaque événement (ADR-14).
    */
-  constructor({
-    seeded,
-    provenance,
-  }: { seeded: boolean; provenance: Provenance }) {
-    this.#seeded = seeded;
-    this.#provenance = provenance;
+  constructor(opening: { seeded: boolean; provenance: Provenance }) {
+    this.#seeded = opening.seeded;
+    this.#provenance = opening.provenance;
   }
 
   /** Le début du parcours, sur P0. */
