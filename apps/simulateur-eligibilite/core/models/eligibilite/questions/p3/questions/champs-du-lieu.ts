@@ -3,7 +3,7 @@
 // la nature d'un autre lieu quand rien ne la prouve, son nom, le service d'une
 // structure de soins. `lieu.ts` les assemble.
 
-import type { Condition, Value } from "../../../../../socle/index.ts";
+import type { Answered, Condition, Value } from "../../../../../socle/index.ts";
 import type { Nature } from "../../p2/conditions/natures-du-lieu.ts";
 import { Q2_2_1 } from "../../p2/questions/q2-2-1.ts";
 import { Q2_14_MOTIF } from "../../p2/questions/q2-14.ts";
@@ -25,6 +25,12 @@ import {
 export type Etat = {
   readonly categorie: Value<Categorie | undefined>;
   readonly nature: Value<Nature | undefined>;
+};
+
+/** La catégorie du lieu : sa question, et celle que lit la page. */
+type Categories = {
+  readonly categorie: Answered;
+  readonly categorieLue: (contexte: Contexte) => Categorie | NonChoisie;
 };
 
 /** Le rappel de ce que P2 établit, sur le champ qui le porte. */
@@ -134,12 +140,13 @@ export function precisionDuLieu<E extends Extremite>(
 
 /**
  * Le nom d'une structure de soins ou d'un autre lieu. Il est obligatoire pour
- * une structure, et pour le HTNM d'une DAP.
+ * une structure, et pour le HTNM d'une DAP. Il appartient à sa catégorie : en
+ * changer l'efface, et y revenir ne le rend pas (02 § Q3.2/Q3.3, SQ-26).
  */
 export function nomDuLieu<E extends Extremite>(
   extremite: E,
   etat: Etat & { readonly htnm: Condition },
-  categorieLue: (contexte: Contexte) => Categorie | NonChoisie,
+  { categorie, categorieLue }: Categories,
   rappel: Rappel,
 ) {
   const structure = estUneStructure(etat);
@@ -151,6 +158,7 @@ export function nomDuLieu<E extends Extremite>(
         : "Nom du lieu",
     )
     .requiredWhen(structure.or(uneDap.and(etat.htnm)))
+    .dependsOn(categorie)
     .mattersWhile(
       avecUnDocument.and(
         etat.categorie.compute(

@@ -11,6 +11,7 @@ import {
   type Answers,
   type AnyCibles,
   type AskedQuestion,
+  answerOnPage,
   Questionnaire,
 } from "../../../../core/socle/questionnaire-engine";
 
@@ -219,5 +220,32 @@ describe("les contrôles des deux lieux", () => {
     expect(preconisationOf(model, avecLePays).cibles).toEqual(
       preconisationOf(model, seed.answers).cibles,
     );
+  });
+});
+
+type Categorie = Questions["Q3.2.categorie"];
+
+describe("un changement de catégorie (02 § Q3.2/Q3.3, SQ-26)", () => {
+  const STRUCTURE = "2_STRUCTURE_DE_SOINS" as const;
+  const CLINIQUE = { "Q3.2.nom": "Clinique du Parc", "Q3.2.adresse": ADRESSE };
+  const PAGE = pages.find(({ id }) => id === "P3/depart");
+  if (!PAGE) throw new Error("P3/depart n'existe pas");
+  const choisir = (brouillon: Reponses, categorie: Categorie) =>
+    answerOnPage(PAGE, brouillon, "Q3.2.categorie", categorie);
+  const brouillon: Reponses = { "Q3.2.categorie": STRUCTURE, ...CLINIQUE };
+
+  it("efface le nom, et le retour ne le rend pas ; l'adresse reste", () => {
+    const autreLieu = choisir(brouillon, "3_AUTRE_LIEU");
+    const memeAdresse = { "Q3.2.adresse": ADRESSE };
+    expect(autreLieu).toEqual({
+      "Q3.2.categorie": "3_AUTRE_LIEU",
+      ...memeAdresse,
+    });
+    const retour = choisir(autreLieu, STRUCTURE);
+    expect(retour).toEqual({ "Q3.2.categorie": STRUCTURE, ...memeAdresse });
+  });
+
+  it("la même catégorie choisie à nouveau garde le nom", () => {
+    expect(choisir(brouillon, STRUCTURE)).toEqual(brouillon);
   });
 });
