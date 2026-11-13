@@ -5,7 +5,7 @@
 // (`Simulation.moveTo`).
 
 import type { Page } from "../questionnaire-engine/index.ts";
-import type { Stage } from "./stages.ts";
+import type { Stage } from "./stage.entity.ts";
 
 /**
  * Un rang du parcours, compté depuis 1 : les pages du questionnaire, son

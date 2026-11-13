@@ -1,6 +1,6 @@
 // Les étapes d'une simulation, et ce qui la fait passer de l'une à l'autre :
 // lire des réponses à une étape, verrouiller, achever, rouvrir, reprendre.
-// La simulation s'en sert à chaque transition (`simulation.ts`).
+// La simulation s'en sert à chaque transition (`simulation.entity.ts`).
 
 import type { CoreModel, Preconisation } from "../model.ts";
 import {
@@ -10,7 +10,7 @@ import {
   Questionnaire,
   type Reading,
 } from "../questionnaire-engine/index.ts";
-import { preconisationFrom } from "./preconisation.ts";
+import { preconisationFrom } from "./preconisation.entity.ts";
 
 /** Ce que le verrou fige : les réponses d'avant, et leur préconisation. */
 export type Locked = { answers: Answers; preconisation: Preconisation };

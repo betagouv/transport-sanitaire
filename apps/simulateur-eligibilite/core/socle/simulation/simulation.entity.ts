@@ -23,12 +23,12 @@ import {
   openingAfter,
   openingAt,
   type Refused,
-} from "./correction.ts";
-import { refuseUnlessAnswered } from "./page-refused.ts";
-import { type PlaceInPart, placeInPart } from "./place-in-part.ts";
-import { type Position, reachedPages, stepOf } from "./position.ts";
-import { preconisationFrom } from "./preconisation.ts";
-import { resultScope } from "./result-scope.ts";
+} from "./correction.entity.ts";
+import { refuseUnlessAnswered } from "./page-refused.entity.ts";
+import { type PlaceInPart, placeInPart } from "./place-in-part.entity.ts";
+import { type Position, reachedPages, stepOf } from "./position.entity.ts";
+import { preconisationFrom } from "./preconisation.entity.ts";
+import { resultScope } from "./result-scope.entity.ts";
 import {
   endOf,
   type Locked,
@@ -38,7 +38,7 @@ import {
   reopenedOf,
   type Stage,
   whereAnswersLead,
-} from "./stages.ts";
+} from "./stage.entity.ts";
 
 export type { Locked, Stage };
 
@@ -132,7 +132,7 @@ export class Simulation {
     return this.#reading.answerOn(this.page, draft, id, answer);
   }
 
-  /** La place de la page ouverte dans sa partie (`place-in-part.ts`). */
+  /** La place de la page ouverte dans sa partie (`place-in-part.entity.ts`). */
   get placeInPart(): PlaceInPart {
     return placeInPart(this.#core, this.pages(), this.page);
   }
@@ -200,7 +200,7 @@ export class Simulation {
 
   /**
    * Valide la page ouverte avec ce brouillon (`validate-a-page.ts`), puis ouvre
-   * la suivante, ou celle où reprend une correction (`correction.ts`). Sans
+   * la suivante, ou celle où reprend une correction (`correction.entity.ts`). Sans
    * suivante : le résultat avant le verrou, le cerfa daté de `on` après.
    */
   validate(draft: Answers, on = new Date()): Simulation {

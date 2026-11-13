@@ -1192,7 +1192,7 @@ a-t-il besoin ?**
 | R-10 | Le filtrage coûte environ 60 ms à froid par lecture, dix fois une lecture sans lui | des caches par place ; à mesurer à l'écran sur un poste lent |
 | R-11 | Une lecture du résultat déclarée hors de sa branche fait poser des questions pour rien | `questions-posees-par-seed.test.ts` liste les questions de chaque seed |
 | R-12 | Une question et une condition de `conditions/` s'importent l'une l'autre : la question lue vaut `undefined` au chargement | le test sous Node et chaque test du modèle chargent le module ; l'erreur lit `id` sur `undefined` |
-| R-13 | `simulation.ts` touche la limite des 300 lignes : une méthode de plus la dépasse | `taille-du-code.test.ts` le garde ; une capacité de plus sort dans son fichier, sous `simulation/` |
+| R-13 | `simulation.entity.ts` touche la limite des 300 lignes : une méthode de plus la dépasse | `taille-du-code.test.ts` le garde ; une capacité de plus sort dans son fichier, sous `simulation/` |
 | R-14 | Les index des deux moteurs de `core/socle/` s'importent l'un l'autre : une valeur lue au chargement d'un module vaudrait `undefined` | le test sous Node et les tests du socle chargent les deux ; aucune valeur n'est lue au chargement aujourd'hui, et l'erreur nommerait le symbole |
 
 ## Vérification

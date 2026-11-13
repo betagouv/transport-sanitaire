@@ -229,7 +229,7 @@ Quatorze règles à tenir en ajoutant une question :
   un lien de l'alerte, si l'incohérence dit ses réponses à revoir
   (`{ revisit }`, lu comme la condition). Le lien rouvre leur page
   (`Simulation.revisit`), et « Suivant » ramène à l'alerte
-  (`core/socle/simulation/correction.ts`, ADR-30). Une erreur de format
+  (`core/socle/simulation/correction.entity.ts`, ADR-30). Une erreur de format
   s'affiche seule, avant les incohérences. Celle d'une adresse s'affiche sous
   le groupe, et une erreur de champ passe devant.
 - **L'adresse de la page ne porte que la position.** Des rangs (`#/etape/<n>`,
@@ -239,7 +239,7 @@ Quatorze règles à tenir en ajoutant une question :
 - **Une saisie ne compte qu'une fois la page validée.** Le brouillon vit dans
   `questionnaire.ts`, pas dans le champ.
 - **Le verrou est une étape, pas un drapeau.** La simulation le porte dans son
-  étape (`core/socle/simulation/simulation.ts`) : après lui, elle lit toutes les
+  étape (`core/socle/simulation/simulation.entity.ts`) : après lui, elle lit toutes les
   pages sous les cibles figées, et ne pose que celles du complément. L'écran y
   monte un second `QuestionnaireForm`, qui ne repose rien
   (`front/socle/simulateur/Simulateur.tsx`).
