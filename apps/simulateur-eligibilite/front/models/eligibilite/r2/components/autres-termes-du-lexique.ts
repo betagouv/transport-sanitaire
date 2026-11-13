@@ -7,8 +7,13 @@
 // chaque nom : Q2.3.2 ne distingue pas l'avion du bateau, et aucune question
 // ne dit CAMSP ou CMPP. Rien n'est jamais deviné. Elle déclare ce qu'elle lit
 // des cibles (`ce-que-lit-un-texte.ts`).
+//
+// Deux de ces termes restituent une portion du trajet (docs/knowledge/
+// CONTEXT.md, « Portion ») : le segment, la ligne régulière, et la portée de
+// l'ambulance, la partie terrestre quand le trajet prend l'avion ou le bateau.
 
 import { given } from "../../../../../core/models/eligibilite/questions/reponses";
+import type { Portion } from "../../../../socle";
 import type { ReponsesLues } from "./ce-que-lit-un-bloc";
 import { luPar, type TraceDe } from "./ce-que-lit-un-bloc";
 import type { IssuePositive } from "./forme-du-catalogue";
@@ -42,6 +47,24 @@ export function avecLesAutresTermes(
       terme(issue, "motif_ambulance", avionBateau ? 1 : 0),
     )
     .replaceAll("{portee_ambulance}", avionBateau ? PORTEE_TERRESTRE : "");
+}
+
+/** Les portions du trajet que ces textes restituent, termes remplis. */
+export function portionsDesTextes(
+  trace: TraceDe<typeof LU_PAR_LES_AUTRES_TERMES>,
+  textes: readonly string[],
+): Portion[] {
+  const avionBateau = trace.cibles.cible_dap_motif_avion_bateau.isOui();
+  const restitue = (terme: string) =>
+    textes.some((texte) => texte.includes(terme));
+  return [
+    ...(restitue("{segment_ligne_reguliere}")
+      ? (["LIGNE_REGULIERE"] as const)
+      : []),
+    ...(avionBateau && restitue("{portee_ambulance}")
+      ? (["TERRESTRE"] as const)
+      : []),
+  ];
 }
 
 // ---- implémentation ----

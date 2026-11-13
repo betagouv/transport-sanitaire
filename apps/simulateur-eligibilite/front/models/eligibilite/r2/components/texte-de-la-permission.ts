@@ -1,5 +1,5 @@
-// Les textes propres à `ISSUE_S3141` (#135) : la phrase de la permission et le
-// motif administratif du modus. Des fonctions pures de la trace, sans React.
+// Les textes propres à `ISSUE_S3141` (#135) : la phrase de la permission, son
+// motif (`motif.ts`), et le motif administratif du modus. Des fonctions pures de la trace, sans React.
 //
 // L'éditeur les choisit sur Q2.8.5 (`permissionRepeated`) et sur l'ambulance.
 // Les quatre phrases ne reprennent pas les motifs administratifs de la
@@ -20,11 +20,11 @@ export const LU_PAR_LA_PERMISSION = luPar({
   cibles: given.cibles("cible_mode_ambulance"),
 });
 
-/** La phrase qui dit pourquoi la permission ouvre le transport. */
+/** La phrase qui dit pourquoi la permission ouvre le transport, et son motif. */
 export function phraseDeLaPermission(
   issue: IssueS3141,
   trace: TraceDe<typeof LU_PAR_LA_PERMISSION>,
-): string | AucunTexte {
+): Texte | AucunTexte {
   if (trace.permissionRepeated === undefined) return undefined;
   const repetee = trace.permissionRepeated ? "R" : "U";
   const ambulance = trace.cibles.cible_mode_ambulance.isOui() ? "-B" : "";
@@ -32,20 +32,19 @@ export function phraseDeLaPermission(
 }
 
 /** Le motif administratif du modus : une permission, ou plusieurs. */
-export function motifDeLaPermission(
+export function motifAdministratifDeLaPermission(
   issue: IssueS3141,
   trace: ReponsesLues,
 ): string | AucunTexte {
   if (trace.permissionRepeated === undefined) return undefined;
   const suffixe = trace.permissionRepeated ? "N" : "1";
-  return texte(issue.permissionAdministrative, `MA-S3141-${suffixe}`);
+  return texte(issue.permissionAdministrative, `MA-S3141-${suffixe}`)?.text;
 }
 
 // ---- implémentation ----
 
-function texte(
-  textes: readonly { id: string; text: string }[],
-  id: string,
-): string | AucunTexte {
-  return textes.find((candidat) => candidat.id === id)?.text;
+type Texte = { readonly id: string; readonly text: string };
+
+function texte(textes: readonly Texte[], id: string): Texte | AucunTexte {
+  return textes.find((candidat) => candidat.id === id);
 }

@@ -10,6 +10,7 @@ import { AnswerAQuestion } from "./answer-a-question.usecase";
 import type { Audience } from "./audience.port";
 import { CompleteAQuestionnaire } from "./complete-a-questionnaire.usecase";
 import { CorrectAnAnswer } from "./correct-an-answer.usecase";
+import { DisplayAResult } from "./display-a-result.usecase";
 import type { Journal } from "./journal.port";
 import type { Journey } from "./journey.entity";
 import { LeaveAQuestionnaire } from "./leave-a-questionnaire.usecase";
@@ -35,6 +36,7 @@ export function analyticsUseCases(audience: Audience, journal: Journal) {
     passAStep: new PassAStep(audience, journal),
     correctAnAnswer: new CorrectAnAnswer(journal),
     completeAQuestionnaire: new CompleteAQuestionnaire(audience, journal),
+    displayAResult: new DisplayAResult(journal),
     leaveAQuestionnaire: new LeaveAQuestionnaire(audience),
     reachAnAldResult: new ReachAnAldResult(audience),
   };

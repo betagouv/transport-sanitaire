@@ -9,7 +9,8 @@ export const ANALYTICS_VERSION = "10.1.7";
 /**
  * La version de nos compléments, écrite par le serveur à chaque événement. La 2
  * ajoute l'affichage de page, les jalons de phase et l'invalidation d'une
- * validation (ADR-8).
+ * validation (ADR-8), puis le financeur, les motifs et les portions du premier
+ * résultat (ADR-9).
  */
 export const SCHEMA_VERSION = 2;
 
@@ -51,6 +52,11 @@ export const MILESTONES = ["first", "last"] as const;
 
 export type Milestone = (typeof MILESTONES)[number];
 
+/** Les portions du trajet que le premier résultat restitue à part (ADR-9). */
+export const PORTIONS = ["LIGNE_REGULIERE", "TERRESTRE"] as const;
+
+export type Portion = (typeof PORTIONS)[number];
+
 export const INTENTS = [
   "eligibilite_seule",
   "eligibilite_et_prescription",
@@ -88,4 +94,7 @@ export type AnalyticsEvent = {
   service_id?: string;
   page_view_id?: string;
   milestones?: Milestone[];
+  financeur?: string;
+  motifs?: string[];
+  portions?: Portion[];
 };

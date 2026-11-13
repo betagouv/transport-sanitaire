@@ -16,6 +16,7 @@ import type {
   CatalogueResultats,
   IssueNegative,
 } from "../../components/forme-du-catalogue";
+import { type Motif, motifDe } from "../../components/motif";
 import {
   LU_PAR_LA_RAISON,
   raisonNonEligible,
@@ -40,6 +41,8 @@ export type TexteDeLaFicheNegative = {
     readonly blocs: readonly BlocDeConsigne[];
   };
   readonly finance: Bloc;
+  /** Le motif de la raison. */
+  readonly motifs: readonly Motif[];
 };
 
 /** Le texte de la fiche négative pour cette trace. */
@@ -49,10 +52,11 @@ export function texteDeLaFicheNegative(
 ): TexteDeLaFicheNegative {
   const issue = catalogue.issues.ISSUE_NON_ELIGIBLE;
   const { intro, body } = issue.instructions;
+  const raison = raisonNonEligible(issue, trace);
   return {
     titreDuPrescripteur: issue.prescriberTitle,
     titreDuPatient: issue.title,
-    raison: texteDeLaRaison(raisonNonEligible(issue, trace), trace),
+    raison: texteDeLaRaison(raison, trace),
     informationInstitutionnelle: issue.institutionalInformation,
     consignes: {
       titre: intro.title,
@@ -60,5 +64,6 @@ export function texteDeLaFicheNegative(
       blocs: blocsDuTexte(body),
     },
     finance: issue.finance,
+    motifs: [motifDe(raison)],
   };
 }

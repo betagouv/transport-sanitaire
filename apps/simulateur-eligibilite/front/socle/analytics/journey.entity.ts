@@ -3,7 +3,9 @@
 // numéros dit qu'un événement s'est perdu.
 //
 // Le parcours suit les affichages de page, les questions validées et les phases
-// où il entre et qu'il quitte, une fois chacune (ADR-8).
+// où il entre et qu'il quitte, une fois chacune (ADR-8). Il numérote les
+// révisions du premier résultat, et fait tomber la révision courante quand une
+// page de P1 ou de P2 change les réponses validées (ADR-9).
 
 import {
   ANALYTICS_VERSION,
@@ -16,6 +18,7 @@ import {
   type OpenedPage,
   PageView,
 } from "./page-view.entity";
+import { Revision, type ShownResult } from "./revision.entity";
 
 // Ce qu'un événement dit de lui-même : le parcours fait le reste.
 type EventDetails = Omit<
@@ -33,6 +36,8 @@ export type PageValidation = {
   readonly stillValidated: readonly string[];
   /** La partie de la page qui s'ouvre ensuite. Aucune : l'étape s'achève. */
   readonly nextPart: string | StageEnded;
+  /** Les réponses validées ne sont plus les mêmes après la validation. */
+  readonly changed: boolean;
 };
 
 /** La validation achève l'étape : aucune page ne s'ouvre ensuite. */
@@ -40,6 +45,9 @@ export type StageEnded = null;
 
 /** Aucune page encore ouverte. */
 type NoView = null;
+
+/** Aucune révision : pas de R2 affiché, ou le dernier est tombé. */
+type NoRevision = null;
 
 /** Où le parcours commence : l'établissement et le service du rattachement. */
 export type Entrance = Pick<AnalyticsEvent, "establishment_id" | "service_id">;
@@ -55,6 +63,8 @@ export class Journey {
   readonly #completed = new Set<Phase>();
   // Chaque question validée, et ce qu'en disait sa validation.
   readonly #validations = new Map<string, AboutAQuestion>();
+  #lastRevision: Revision | NoRevision = null;
+  #revision: Revision | NoRevision = null;
 
   /**
    * `seeded` : la simulation s'ouvre sur une seed, au milieu du parcours. Elle
@@ -127,15 +137,45 @@ export class Journey {
     return this.#recordAll([
       ...validated,
       ...this.#invalidate(validation.stillValidated),
+      ...this.#revise(view, validation.changed),
       ...this.#complete(view, validation.nextPart),
     ]);
+  }
+
+  /**
+   * Le premier résultat affiché : une nouvelle révision, sauf s'il réaffiche
+   * la révision courante.
+   */
+  displayResult(shown: ShownResult): AnalyticsEvent[] {
+    if (this.#revision) return [];
+    const revision = this.#lastRevision?.next() ?? Revision.first();
+    this.#revision = revision;
+    this.#lastRevision = revision;
+    return this.#recordAll([revision.displayed(shown)]);
   }
 
   #enter(view: PageView): EventDetails[] {
     const { phase } = view;
     if (!phase || this.#entered.has(phase)) return [];
     this.#entered.add(phase);
-    return [{ type: "phase_entered", screen: phase }];
+    // Le complément s'ouvre depuis la révision courante.
+    const revision = phase === "P3" ? this.#revision : null;
+    return [
+      {
+        type: "phase_entered",
+        screen: phase,
+        ...(revision && { revision: revision.id }),
+      },
+    ];
+  }
+
+  // Une page de P1 ou de P2 qui change les réponses fait tomber la révision.
+  #revise(view: PageView, changed: boolean): EventDetails[] {
+    const { phase } = view;
+    const revision = this.#revision;
+    if (!revision || !changed || (phase !== "P1" && phase !== "P2")) return [];
+    this.#revision = null;
+    return [revision.invalidated(phase)];
   }
 
   #expose(view: PageView, questions: readonly string[]): EventDetails[] {

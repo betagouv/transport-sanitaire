@@ -1,6 +1,7 @@
 // Ce que dit la fiche d'une demande d'accord préalable (#136) : la raison que
-// lit le patient, et le motif que reprend le modus. Des
-// fonctions pures de la trace, sans React.
+// lit le patient, ses motifs (`motif.ts`), le motif administratif que reprend
+// le modus, et les portions du trajet que les deux restituent. Des fonctions
+// pures de la trace, sans React.
 //
 // Les mots viennent du catalogue de l'éditeur. La raison suit la page
 // « Éligibilité » : le contexte du soin, puis la convocation et la permission
@@ -12,20 +13,31 @@
 
 import type { Cibles } from "../../../../../core/models/eligibilite/cibles/noms";
 import { given } from "../../../../../core/models/eligibilite/questions/reponses";
+import type { Portion } from "../../../../socle";
+import { portionsDesTextes } from "./autres-termes-du-lexique";
 import { luPar, type TraceDe } from "./ce-que-lit-un-bloc";
 import {
   avecLeLexique,
   codesDeContexte,
   LU_PAR_LE_LEXIQUE,
   LU_PAR_LES_CODES_DE_CONTEXTE,
-  texteDuCodeExact,
+  motifDuCodeExact,
 } from "./contexte-du-resultat";
-import type { IssuePositive } from "./forme-du-catalogue";
+import type {
+  AucunTexte,
+  IssuePositive,
+  TexteCode,
+} from "./forme-du-catalogue";
+import { type Motif, motifDe } from "./motif";
 
 /** Pourquoi le transport demande un accord, et le motif que reprend le modus. */
 export type FondementDeLAccord = {
   readonly raison: string | undefined;
-  readonly motif: string | undefined;
+  readonly motifAdministratif: string | undefined;
+  /** Les motifs que la raison affiche : le contexte, puis la justification. */
+  readonly motifs: readonly Motif[];
+  /** Les portions du trajet que la raison et le motif administratif restituent. */
+  readonly portions: readonly Portion[];
 };
 
 // Chaque code de motif, et la cible qui le prouve.
@@ -70,9 +82,22 @@ export function fondementDeLAccord(
   issue: IssuePositive,
   trace: LuParLeFondement,
 ): FondementDeLAccord {
+  const contexte = motifDuCodeExact(
+    issue.contexts,
+    codesDeContexte(trace.cibles),
+  );
+  const justification = motifDuCodeExact(
+    issue.dapPhrases,
+    codesDeLAccord(trace.cibles),
+  );
+  const raison = raisonDeLAccord(issue, trace, [contexte, justification]);
+  const motif = motifDeLAccord(issue, trace);
+  const textes = [raison, motif].filter((texte) => texte !== undefined);
   return {
-    raison: raisonDeLAccord(issue, trace),
-    motif: motifDeLAccord(issue, trace),
+    raison: raison && avecLeLexique(issue, trace, raison),
+    motifAdministratif: motif && avecLeLexique(issue, trace, motif),
+    motifs: affiches(contexte, justification),
+    portions: portionsDesTextes(trace, textes),
   };
 }
 
@@ -82,42 +107,52 @@ type LuParLeFondement = TraceDe<typeof LU_PAR_LE_FONDEMENT_DE_L_ACCORD>;
 
 const SANS_COMPLEMENT = "un transport";
 
+type Choisi = TexteCode | undefined;
+
 // Le contexte (vide sans aucun code), la convocation, la permission, puis la
-// justification. Les composantes vides disparaissent.
-function raisonDeLAccord(issue: IssuePositive, trace: LuParLeFondement) {
-  const contexte = texteDuCodeExact(
-    issue.contexts,
-    codesDeContexte(trace.cibles),
-  );
-  const justification = texteDuCodeExact(
-    issue.dapPhrases,
-    codesDeLAccord(trace.cibles),
-  );
+// justification, avant le lexique. Les composantes vides disparaissent.
+function raisonDeLAccord(
+  issue: IssuePositive,
+  trace: LuParLeFondement,
+  [contexte, justification]: readonly [Choisi, Choisi],
+): string | AucunTexte {
   const raison = [
-    contexte,
+    contexte?.text,
     ...complements(issue.contextExtras, trace),
-    justification,
+    justification?.text,
   ]
     .filter((texte) => texte)
     .join(" ");
-  return raison === "" ? undefined : avecLeLexique(issue, trace, raison);
+  return raison === "" ? undefined : raison;
+}
+
+// Les motifs que la raison affiche : ceux qui ont un texte. Le contexte sans
+// aucun code est vide, la raison ne le montre pas.
+function affiches(...motifs: readonly Choisi[]): Motif[] {
+  return motifs
+    .filter(
+      (motif): motif is TexteCode => motif !== undefined && motif.text !== "",
+    )
+    .map(motifDe);
 }
 
 // La base du contexte, puis les clauses : convocation, permission, motifs
-// d'accord. Après « un transport » seul, un espace ; après une base détaillée,
-// une virgule.
-function motifDeLAccord(issue: IssuePositive, trace: LuParLeFondement) {
+// d'accord, avant le lexique. Après « un transport » seul, un espace ; après
+// une base détaillée, une virgule.
+function motifDeLAccord(
+  issue: IssuePositive,
+  trace: LuParLeFondement,
+): string | AucunTexte {
   const codes = codesDeContexte(trace.cibles);
-  const base = texteDuCodeExact(issue.administrativeBases, codes);
+  const base = motifDuCodeExact(issue.administrativeBases, codes)?.text;
   if (base === undefined) return undefined;
   const clauses = [
     ...complements(issue.administrativeExtras, trace),
-    texteDuCodeExact(issue.administrativeDap, codesDeLAccord(trace.cibles)),
+    motifDuCodeExact(issue.administrativeDap, codesDeLAccord(trace.cibles))
+      ?.text,
   ].filter((clause): clause is string => !!clause);
   const separateur = base === SANS_COMPLEMENT ? " " : ", ";
-  const motif =
-    clauses.length === 0 ? base : `${base}${separateur}${relier(clauses)}`;
-  return avecLeLexique(issue, trace, motif);
+  return clauses.length === 0 ? base : `${base}${separateur}${relier(clauses)}`;
 }
 
 // Les textes de la convocation (K) et de la permission (P) quand les faits

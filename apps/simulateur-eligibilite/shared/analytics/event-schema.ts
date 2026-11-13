@@ -10,6 +10,7 @@ import {
   EVENT_TYPES,
   INTENTS,
   MILESTONES,
+  PORTIONS,
   SCREENS,
 } from "./analytics-event.ts";
 
@@ -54,4 +55,7 @@ const EVENT_SCHEMA: z.ZodType<AnalyticsEvent> = z.strictObject({
   service_id: identifier.optional(),
   page_view_id: identifier.optional(),
   milestones: z.array(z.enum(MILESTONES)).min(1).optional(),
+  financeur: identifier.optional(),
+  motifs: z.array(identifier).optional(),
+  portions: z.array(z.enum(PORTIONS)).optional(),
 });

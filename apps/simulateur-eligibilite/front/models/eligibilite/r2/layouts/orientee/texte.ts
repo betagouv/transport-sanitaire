@@ -17,6 +17,7 @@ import type {
   IssueEtranger,
   ScenarioPrescripteur,
 } from "../../components/forme-du-catalogue";
+import { type Motif, motifDe } from "../../components/motif";
 import { sansBlancsDeTrop } from "../../components/sans-blancs-de-trop";
 import {
   LU_PAR_LES_SCENARIOS,
@@ -49,6 +50,11 @@ export type TexteDuPrescripteur = {
   readonly questions: readonly string[];
   readonly actions: readonly string[];
   readonly avertissement?: string;
+  /**
+   * Les scénarios que la page montre. Le pourquoi de l'étranger n'en a pas :
+   * le catalogue ne donne aucun identifiant à ses points.
+   */
+  readonly motifs: readonly Motif[];
 };
 
 /** Le texte de cette issue, pour cette trace. */
@@ -91,12 +97,13 @@ export function selonLAffichage(
     questions: raisons ? texte.questions : [],
     actions: actions ? texte.actions : [],
     avertissement: raisons ? texte.avertissement : undefined,
+    motifs: texte.motifs,
   };
 }
 
 // ---- implémentation ----
 
-const SANS_TEXTE = { questions: [], actions: [] } as const;
+const SANS_TEXTE = { questions: [], actions: [], motifs: [] } as const;
 
 function texteDeLEtranger(issue: IssueEtranger): TexteDuPrescripteur {
   return {
@@ -112,6 +119,7 @@ function texteDeLEtranger(issue: IssueEtranger): TexteDuPrescripteur {
     questions: issue.questions,
     actions: issue.actions,
     avertissement: issue.notice,
+    motifs: [],
   };
 }
 
@@ -129,6 +137,7 @@ function texteDUnScenario(
     },
     questions: scenario.questions,
     actions: scenario.actions,
+    motifs: [motifDe(scenario)],
   };
 }
 
@@ -156,6 +165,7 @@ function texteDesRaisons(
     },
     questions: points.flatMap(({ questions }) => questions),
     actions: sansDoublon(points.flatMap(({ actions }) => actions)),
+    motifs: points.map(motifDe),
   };
 }
 
