@@ -19,6 +19,7 @@ import type { Journey } from "./journey.entity";
 import { LeaveAQuestionnaire } from "./leave-a-questionnaire.usecase";
 import { OpenAPage } from "./open-a-page.usecase";
 import { OpenAResultScreen } from "./open-a-result-screen.usecase";
+import type { PageLoad } from "./page-load.port";
 import { PassAStep } from "./pass-a-step.usecase";
 import { PressAButton } from "./press-a-button.usecase";
 import { ReachAnAldResult } from "./reach-an-ald-result.usecase";
@@ -30,9 +31,13 @@ import { StartASimulation } from "./start-a-simulation.usecase";
 /** Un use case par geste de l'écran, qui parle à l'audience, au journal, ou aux deux. */
 export type AnalyticsUseCases = ReturnType<typeof analyticsUseCases>;
 
-export function analyticsUseCases(audience: Audience, journal: Journal) {
+export function analyticsUseCases(
+  audience: Audience,
+  journal: Journal,
+  pageLoad: PageLoad,
+) {
   return {
-    startASimulation: new StartASimulation(journal),
+    startASimulation: new StartASimulation(journal, pageLoad),
     selectAnIntent: new SelectAnIntent(journal),
     startAQuestionnaire: new StartAQuestionnaire(audience),
     openAPage: new OpenAPage(journal),

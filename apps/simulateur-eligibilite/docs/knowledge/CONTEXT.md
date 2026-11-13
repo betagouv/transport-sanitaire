@@ -283,6 +283,12 @@ du champ dans le DTO, sans son texte (#389).
 _Chez l'éditeur_: « mesure typographique », `font_size_pt`.
 _Avoid_: taille de police, qui dit la taille de départ.
 
+**Rechargement**:
+La page du CMS rechargée par le prescripteur, qui ouvre une nouvelle simulation
+et laisse l'ancienne sans fin. La première simulation de la page le dit au
+journal des parcours, par `navigation` (#434). « Faire une nouvelle simulation »
+n'en est pas un : la page reste.
+
 **Motif**:
 Une raison que le premier résultat affiche, telle que le catalogue de l'éditeur
 l'écrit, avec son identifiant : le contexte d'une fiche positive (`E-B`), une
