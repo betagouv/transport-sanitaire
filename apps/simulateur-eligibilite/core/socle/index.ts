@@ -29,6 +29,7 @@ export {
   type GivenAnswer,
   type GivenAnswers,
   givenOf,
+  LocalDateTime,
   page,
   type QuestionContext,
   Questionnaire,

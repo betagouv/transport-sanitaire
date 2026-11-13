@@ -8,7 +8,7 @@
 
 import type { AnswerOf } from "../../../../../socle/index.ts";
 import { given, question } from "../../question.ts";
-import { DATE_FUTURE, dansLeFutur } from "../conditions/evenements.ts";
+import { jusquAujourdhui } from "../conditions/evenements.ts";
 import { Q1_2 } from "./q1-2.ts";
 
 // Les critères de Q1.2 qui imposent l'ambulance.
@@ -94,19 +94,14 @@ export const Q1_3_B = question
   .appliesWhen(given.question(Q1_3).answer().checked("2_ALD"))
   .shownUnder(Q1_3, "2_ALD");
 
-// La question, avant la règle qui lit sa réponse.
-const dateDeLAccident = question
+export const Q1_3_ACCIDENT_TIERS_DATE = question
   .date(
     "Q1.3.accident_tiers_date",
     "À quelle date cet accident a-t-il eu lieu ?",
   )
+  .boundsFrom(jusquAujourdhui)
   .appliesWhen(given.question(Q1_3).answer().checked("9_ACCIDENT_TIERS"))
   .shownUnder(Q1_3, "9_ACCIDENT_TIERS");
-
-export const Q1_3_ACCIDENT_TIERS_DATE = dateDeLAccident.inconsistentWhen(
-  dansLeFutur(dateDeLAccident),
-  DATE_FUTURE,
-);
 
 export const Q1_3_A = question
   .singleChoice(

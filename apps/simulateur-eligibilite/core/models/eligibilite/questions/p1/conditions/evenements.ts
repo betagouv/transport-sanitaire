@@ -1,14 +1,11 @@
-// La date d'un accident : elle est passée. L'accident causé par un tiers
-// (Q1.3) et l'AT/MP (Q3.6.1) la lisent.
+// La date d'un accident : réelle, et au plus tard aujourd'hui, au jour civil de
+// Paris (module 02, SQ-27). Une date future est une erreur de la saisie
+// elle-même : elle grise « Suivant », et le calendrier ne la propose pas.
+// L'accident causé par un tiers (Q1.3) et l'AT/MP (Q3.6.1) la bornent ainsi.
 
-import type { Answered } from "../../../../../socle/index.ts";
-import { given } from "../../question.ts";
+import { LocalDateTime } from "../../../../../socle/index.ts";
 
-/** Le message d'une date d'accident à venir. */
-export const DATE_FUTURE =
-  "Cette date est dans le futur : un accident ne peut pas encore avoir eu lieu.";
-
-/** La date répondue est après aujourd'hui, à Paris. */
-export function dansLeFutur(date: Answered<string>) {
-  return given.question(date).answer().toDate().isAfter(given.today());
+/** Au plus tard aujourd'hui, à Paris. */
+export function jusquAujourdhui(): { max?: string } {
+  return { max: LocalDateTime.dayInParis(new Date()).day() };
 }

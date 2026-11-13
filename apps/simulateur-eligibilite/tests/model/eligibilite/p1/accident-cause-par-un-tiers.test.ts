@@ -74,13 +74,14 @@ describe("l'accident causé par un tiers en Q1.3", () => {
     );
   });
 
-  it("refuse une date dans le futur, et accepte une date passée", () => {
+  it("refuse en elle-même une date future, et accepte aujourd'hui", () => {
     const avec = (jour: string) =>
-      date({ ...AVEC_UN_TIERS, [DATE]: jour })?.inconsistencies;
+      date({ ...AVEC_UN_TIERS, [DATE]: jour })?.formatProblemsWith(jour);
 
     expect(avec("2999-01-01")).toEqual([
-      "Cette date est dans le futur : un accident ne peut pas encore avoir eu lieu.",
+      { kind: "date after", max: aujourdhui() },
     ]);
+    expect(avec(aujourdhui())).toEqual([]);
     expect(avec("2020-01-01")).toEqual([]);
   });
 
@@ -91,3 +92,9 @@ describe("l'accident causé par un tiers en Q1.3", () => {
     expect(cibles(AVEC_UN_TIERS)).toEqual(cibles(SEUL));
   });
 });
+
+// ---- implémentation ----
+
+// Le jour civil à Paris, comme la borne de la date.
+const aujourdhui = () =>
+  new Date().toLocaleDateString("sv-SE", { timeZone: "Europe/Paris" });
