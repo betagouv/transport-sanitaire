@@ -29,6 +29,15 @@ const unAutreDeplacement = deplacement.is("2_AUTRE_DEPLACEMENT");
  */
 const unAdulteAutorise = given.question(Q2_7).answer().is("3_ADULTE_AUTORISEE");
 
+/**
+ * Q2.3.2 ne dit pas de ligne régulière. Une ligne régulière établit déjà
+ * l'exception de l'avion ou du bateau, sans revote.
+ */
+const sansLigneReguliere = given
+  .question(Q2_3_2)
+  .answer()
+  .compute((ligne) => ligne.isNot(true));
+
 /** Q2.5 dit un transfert entre établissements : Q2.6.a se pose alors. */
 const unTypeAPoser = unTransfert;
 
@@ -50,10 +59,13 @@ const type = given.question(Q2_6_A).answer();
  * déplacement pendant un séjour en établissement, la permission d'un adulte
  * autorisée, une admission en HAD que Q2.1.g établit ou un séjour en HAD
  * (TS1014-B01), sans Q2.5. Elle attend le type du transfert quand il se pose.
+ * Pour la permission d'un adulte, une ligne régulière établit déjà une
+ * exception : les autres ne changent plus l'issue
+ * (QST-PERMISSION-EXCEPTIONS-20261113).
  */
 const desExceptionsAPoser = unTransfert
   .or(unAutreDeplacement.and(unSejourEnEtablissement))
-  .or(unAdulteAutorise)
+  .or(unAdulteAutorise.and(sansLigneReguliere))
   .or(given.question(Q2_1_G).answer().is("3_ADMISSION_HAD"))
   .or(unSejourEnHad)
   .and(unTypeAPoser.not().or(type.isPresent()));
@@ -101,10 +113,7 @@ const EXCEPTIONS_A_PROPOSER: Partial<Record<Exception, Condition>> = {
     .and(type.is("1_DEFINITIF"))
     .and(unSejourEnEtablissement.not()),
   "3_CENTRE_QUINZE": unTransfert,
-  "4_AIR_MER": given
-    .question(Q2_3_2)
-    .answer()
-    .compute((ligne) => ligne.isNot(true)),
+  "4_AIR_MER": sansLigneReguliere,
   "8_RADIOTHERAPIE": unTransfert
     .and(type.is("2_PROVISOIRE"))
     .or(unAutreDeplacement)

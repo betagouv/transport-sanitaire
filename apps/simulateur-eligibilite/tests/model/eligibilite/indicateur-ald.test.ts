@@ -85,8 +85,9 @@ describe("l'indicateur de parcours ALD", () => {
         ...ALD,
         "Q2.2.1": ["5_HTNM"],
         "Q2.2.1.b": ["0_AUCUN"],
+        "Q2.3.2": false,
       }),
-    ).toEqual({ verdict: "parcours_ald_caisse", pages: 5, questions: 5 });
+    ).toEqual({ verdict: "parcours_ald_caisse", pages: 6, questions: 6 });
   });
 
   it("ne compte pas le mineur en soins continus", () => {
