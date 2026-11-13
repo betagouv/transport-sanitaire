@@ -9,12 +9,19 @@ import type {
   Unanswered,
 } from "../../../core/socle/questionnaire-engine";
 
-/** Ce qui ne va pas dans une saisie, un message par ligne sous le champ. */
+/**
+ * Ce qui ne va pas dans une saisie, un message par ligne sous le champ. Ses
+ * incohérences avec d'autres réponses, seulement si elles s'affichent.
+ */
 export function errorsOf(
   question: AskedQuestion,
   answer: Answer | Unanswered,
+  withInconsistencies = true,
 ): readonly string[] {
-  return question.problemsWith(answer).map(messageOf);
+  const problems = withInconsistencies
+    ? question.problemsWith(answer)
+    : question.formatProblemsWith(answer);
+  return problems.map(messageOf);
 }
 
 /** Le message d'un problème de saisie. */

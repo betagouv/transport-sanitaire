@@ -157,7 +157,9 @@ function traceOf(questionnaire: QuestionnaireScreen): DebugTraceProps {
 }
 
 // La page affiche son brouillon : une saisie ne compte qu'une fois la page
-// validée. Une question en erreur montre ses liens vers les réponses à revoir.
+// validée. Une erreur de saisie s'affiche aussitôt, une incohérence au clic sur
+// « Suivant ». Une question en erreur montre ses liens vers les réponses à
+// revoir.
 // Une question qui s'affiche sous une option (`shownUnder`) se pose dans le
 // panneau de cette option, si celle-ci est sur la page ; sinon, à son rang.
 function QuestionFields({
@@ -169,7 +171,11 @@ function QuestionFields({
   const parentOf = (question: AskedQuestion) =>
     questions.find(({ id }) => id === question.under?.question);
   const field = (question: AskedQuestion): ReactNode => {
-    const errors = errorsOf(question, draft[question.id]);
+    const errors = errorsOf(
+      question,
+      draft[question.id],
+      questionnaire.showsInconsistencies,
+    );
     const links = errors.length > 0 ? questionnaire.revisitsOf(question) : [];
     return (
       <QuestionField

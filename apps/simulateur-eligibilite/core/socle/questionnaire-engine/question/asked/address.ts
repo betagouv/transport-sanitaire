@@ -57,9 +57,9 @@ export class AskedAddress extends AskedCommon {
     return isAddress(answer) ? askedAddress(this, answer) : undefined;
   }
 
-  override isAnsweredBy(answer: Answer | Unanswered): boolean {
+  override isFilledBy(answer: Answer | Unanswered): boolean {
     const kept = this.kept(answer);
-    if (!super.isAnsweredBy(answer)) return false;
+    if (!super.isFilledBy(answer)) return false;
     return !isAddress(kept) || isCompleteAddress(this, kept);
   }
 

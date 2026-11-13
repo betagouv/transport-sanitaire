@@ -50,8 +50,12 @@ type View = {
   // Les questions validées, pour la trace de debug.
   validated: Validated;
   hasPrevious: boolean;
-  // Une question affichée attend encore sa réponse : on ne peut pas avancer.
+  // Une question affichée attend encore sa réponse, ou une réponse bien
+  // formée : « Suivant » est grisé.
   hasPendingQuestions: boolean;
+  // Une réponse saisie en contredit une autre : « Suivant » le dit au clic, et
+  // la page reste (SQ-28).
+  hasInconsistencies: boolean;
   // Avancer termine le questionnaire au lieu d'ouvrir une autre page.
   isLast: boolean;
   // La question qui prend le focus à l'entrée de la page : celle qu'un lien
@@ -71,6 +75,9 @@ export type QuestionnaireScreen = View &
   Actions & {
     // La page avancera d'elle-même : le bouton « Suivant » n'a pas à s'afficher.
     autoAdvances: boolean;
+    // Les incohérences s'affichent : on a tenté de quitter la page. Une page
+    // qui avance d'elle-même le tente à chaque choix.
+    showsInconsistencies: boolean;
     // Les liens vers les réponses à revoir de cette question.
     revisitsOf: (question: AskedQuestion) => readonly RevisitLink[];
   };
@@ -80,7 +87,10 @@ export function useQuestionnaire({
   onChange,
   counted,
 }: QuestionnaireOptions): QuestionnaireScreen {
-  const { draft, setDraft, focus, move } = useOpenedPage(simulation, onChange);
+  const { draft, setDraft, focus, move, checked, check } = useOpenedPage(
+    simulation,
+    onChange,
+  );
   const view = read(simulation, draft, focus);
   const tracking = useQuestionnaireTracking({
     simulation,
@@ -89,17 +99,19 @@ export function useQuestionnaire({
     // Un questionnaire qui a déjà des réponses reprend : son début n'est pas réémis.
     resumed: Object.keys(simulation.answers).length > 0,
   });
-  const handlers = actions({ simulation, view, tracking, setDraft, move });
+  const context = { simulation, view, tracking, setDraft, move, check };
+  const handlers = actions(context);
   // Pendant une correction, une sélection seule n'avance pas.
   const autoAdvance = useAutoAdvance(
     view.page.id,
     isSingleChoicePage(view.questions) && !simulation.correcting,
-    view.hasPendingQuestions,
+    view.hasPendingQuestions || view.hasInconsistencies,
     handlers.next,
   );
   return {
     ...view,
     ...withRestart(handlers, autoAdvance),
+    showsInconsistencies: checked || autoAdvance.autoAdvances,
     revisitsOf: (question) => revisitLinks(simulation, question, draft),
   };
 }
@@ -114,6 +126,8 @@ type Context = {
   tracking: QuestionnaireTracking;
   setDraft: (draft: Answers) => void;
   move: Move;
+  // Montre les incohérences de la page : on a tenté de la quitter.
+  check: () => void;
 };
 
 // Le brouillon de la page ouverte, et la question qui y prend le focus. Une
@@ -129,6 +143,7 @@ function useOpenedPage(
   const [opened, setOpened] = useState(simulation);
   const [draft, setDraft] = useState<Answers>(() => draftOn(simulation));
   const [focus, setFocus] = useState<{ on: Simulation; question: string }>();
+  const [checkedOn, setCheckedOn] = useState<Simulation>();
   // Le brouillon de la nouvelle page vaut dès ce rendu : ce qui suit le lit.
   let shown = draft;
   if (opened !== simulation) {
@@ -141,7 +156,14 @@ function useOpenedPage(
     onChange(next);
   };
   const focused = focus?.on === simulation ? focus.question : undefined;
-  return { draft: shown, setDraft, focus: focused, move };
+  return {
+    draft: shown,
+    setDraft,
+    focus: focused,
+    move,
+    checked: checkedOn === simulation,
+    check: () => setCheckedOn(simulation),
+  };
 }
 
 // Le brouillon passe par-dessus les réponses validées : ce que la page pose
@@ -154,6 +176,9 @@ function read(
   const { page } = simulation;
   const questions = simulation.questionsOn(page, draft);
   const hasPendingQuestions = questions.some(
+    (question) => !question.isFilledBy(draft[question.id]),
+  );
+  const hasInconsistencies = questions.some(
     (question) => !question.isAnsweredBy(draft[question.id]),
   );
   return {
@@ -165,6 +190,7 @@ function read(
     validated: simulation.validated.toJSON(),
     hasPrevious: simulation.hasPrevious(),
     hasPendingQuestions,
+    hasInconsistencies: !hasPendingQuestions && hasInconsistencies,
     isLast: !hasPendingQuestions && ends(simulation, draft),
     focus,
   };
@@ -183,6 +209,7 @@ function actions({
   tracking,
   setDraft,
   move,
+  check,
 }: Context): Actions {
   return {
     // Une saisie vide les questions de la page qui en dépendent, et celles
@@ -194,6 +221,8 @@ function actions({
     next: () => {
       // Le bouton est déjà désactivé, ceci couvre une soumission au clavier.
       if (view.hasPendingQuestions) return;
+      // Une incohérence se dit au clic, et la page reste avec ses saisies.
+      if (view.hasInconsistencies) return check();
       const next = simulation.validate(view.draft);
       if (next.stage.name !== simulation.stage.name) {
         tracking.questionnaireCompleted(next);

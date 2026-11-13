@@ -5,7 +5,7 @@ import { Questionnaire } from "../../../core/socle/questionnaire-engine";
 import { afficher } from "./afficher";
 
 // Une adresse incohérente avec une autre réponse affiche son message sous le
-// groupe de champs. Une erreur de champ passe devant. Les pages sont écrites
+// groupe de champs, au clic sur « Suivant ». Une erreur de champ passe devant. Les pages sont écrites
 // ici.
 
 type Questions = { depart: Address; arrivee: Address };
@@ -42,8 +42,8 @@ describe("adresse incohérente", () => {
     Commune: LILAS.city,
   };
 
-  it("affiche son message sous le groupe, et bloque", async () => {
-    const { user } = afficher([page("arrivee", ARRIVEE)], {
+  it("affiche son message sous le groupe au clic, et bloque", async () => {
+    const { user, reponses } = afficher([page("arrivee", ARRIVEE)], {
       lockedAnswers: { depart: LILAS },
     });
     for (const [nom, texte] of Object.entries(champs))
@@ -52,11 +52,13 @@ describe("adresse incohérente", () => {
         texte,
       );
 
+    await user.click(valider());
+
     const groupe = screen.getByRole("group", { name: "Adresse d'arrivée" });
     expect(
       within(groupe).getByText("L'arrivée répète le départ."),
     ).toBeVisible();
-    expect(valider()).toBeDisabled();
+    expect(reponses()).toBeUndefined();
   });
 
   it("ne compte pas comme répondue", () => {
