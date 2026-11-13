@@ -13,6 +13,7 @@ import {
   MILESTONES,
   NAVIGATIONS,
   PORTIONS,
+  type Portion,
   SCREENS,
 } from "./analytics-event.ts";
 
@@ -32,6 +33,14 @@ const identifier = z.string().trim().min(1);
 
 // Une version livrée : `10.1.8` pour les règles, `0.7.0` pour l'app.
 const release = z.string().regex(/^\d+\.\d+\.\d+$/);
+
+// Une portion qui ne part plus : `TERRESTRE` ne prouvait pas de partie
+// terrestre (#443). Un onglet resté sur une version d'avant l'envoie encore :
+// l'événement est reçu, sans elle.
+const PORTIONS_RETIREES = ["TERRESTRE"] as const;
+
+const estUnePortion = (portion: string): portion is Portion =>
+  PORTIONS.some((connue) => connue === portion);
 
 // La clé d'un champ du cerfa, telle que le code l'écrit : jamais un texte saisi.
 const fieldId = z.string().regex(/^[a-z][a-z0-9_]{0,95}$/);
@@ -65,7 +74,10 @@ const EVENT_SCHEMA: z.ZodType<AnalyticsEvent> = z.strictObject({
   milestones: z.array(z.enum(MILESTONES)).min(1).optional(),
   financeur: identifier.optional(),
   motifs: z.array(identifier).optional(),
-  portions: z.array(z.enum(PORTIONS)).optional(),
+  portions: z
+    .array(z.enum([...PORTIONS, ...PORTIONS_RETIREES]))
+    .transform((portions) => portions.filter(estUnePortion))
+    .optional(),
   sheet_id: identifier.optional(),
   action: z.enum(ACTIONS).optional(),
   fields: z

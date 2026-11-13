@@ -97,7 +97,7 @@ export function fondementDeLAccord(
     raison: raison && avecLeLexique(issue, trace, raison),
     motifAdministratif: motif && avecLeLexique(issue, trace, motif),
     motifs: affiches(contexte, justification),
-    portions: portionsDesTextes(trace, textes),
+    portions: portionsDesTextes(textes),
   };
 }
 

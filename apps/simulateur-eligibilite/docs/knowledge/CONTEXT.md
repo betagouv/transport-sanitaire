@@ -303,7 +303,8 @@ la raison en clause, pour la réservation.
 
 **Portion**:
 Une partie du trajet que le premier résultat restitue à part : la ligne
-régulière, avion ou bateau, et la partie terrestre en ambulance (#386).
+régulière, avion ou bateau (#386). La partie terrestre n'en est pas une :
+aucune réponse ne prouve sa présence (#443).
 _Chez l'éditeur_: « segment » (« un segment en ligne régulière ») et
 « portions terrestres ».
 _Avoid_: segment, réservé au texte médical (D-198).
