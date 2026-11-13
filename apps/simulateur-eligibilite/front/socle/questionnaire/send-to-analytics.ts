@@ -2,7 +2,7 @@
 // fin, et son abandon si l'onglet est fermé avant.
 
 import { useEffect, useRef } from "react";
-import { EventName, trackEvent } from "../analytics";
+import { EventName, useAudience } from "../analytics";
 
 export type QuestionnaireTracking = {
   stepPassed: (page: number) => void;
@@ -18,6 +18,7 @@ export function useQuestionnaireTracking(
   tracked: boolean,
   resumed: boolean,
 ): QuestionnaireTracking {
+  const track = useAudience();
   const completed = useRef(false);
   // Une ref donne la valeur fraîche au gestionnaire, sans redéclarer l'écouteur.
   const currentRef = useRef(current);
@@ -25,10 +26,10 @@ export function useQuestionnaireTracking(
   // biome-ignore lint/correctness/useExhaustiveDependencies: amorçage unique au montage
   useEffect(() => {
     if (!tracked) return;
-    if (!resumed) trackEvent(EventName.simulationStart);
+    if (!resumed) track(EventName.simulationStart);
     const onLeave = () => {
       if (!completed.current)
-        trackEvent(EventName.simulationAbandon, currentRef.current);
+        track(EventName.simulationAbandon, currentRef.current);
     };
     window.addEventListener("pagehide", onLeave);
     return () => window.removeEventListener("pagehide", onLeave);
@@ -36,11 +37,11 @@ export function useQuestionnaireTracking(
 
   return {
     stepPassed: (page) => {
-      if (tracked) trackEvent(EventName.simulationStep, page);
+      if (tracked) track(EventName.simulationStep, page);
     },
     questionnaireCompleted: () => {
       completed.current = true;
-      if (tracked) trackEvent(EventName.simulationComplete);
+      if (tracked) track(EventName.simulationComplete);
     },
   };
 }

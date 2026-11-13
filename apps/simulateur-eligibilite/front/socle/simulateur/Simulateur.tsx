@@ -13,10 +13,10 @@
 import { type ComponentType, type ReactNode, useState } from "react";
 import type { Answers } from "../../../core/socle/questionnaire-engine";
 import { Simulation } from "../../../core/socle/simulation";
+import { useAudience, useRecordTheJourney } from "../analytics";
 import type { Model } from "../model";
 import { type DebugTraceProps, QuestionnaireForm } from "../questionnaire";
 import { useFollowTheAddress } from "./follow-the-address";
-import { useRecordTheJourney } from "./record-the-journey";
 import { CerfaScreen } from "./screens/CerfaScreen";
 import { ResultatScreen } from "./screens/ResultatScreen";
 import { trackAldPathway } from "./track-the-ald-pathway";
@@ -104,6 +104,7 @@ function FirstQuestionnaire({
   DebugTrace,
 }: ScreenProps) {
   const parts = model.core.questionnaire;
+  const track = useAudience();
   return (
     <QuestionnaireForm
       parts={parts}
@@ -113,7 +114,7 @@ function FirstQuestionnaire({
       endLabel="Voir le résultat"
       DebugTrace={DebugTrace}
       onChange={(next) => {
-        if (next.stage.name === "resultat") trackAldPathway(model, next);
+        if (next.stage.name === "resultat") trackAldPathway(track, model, next);
         onChange(next);
       }}
     />

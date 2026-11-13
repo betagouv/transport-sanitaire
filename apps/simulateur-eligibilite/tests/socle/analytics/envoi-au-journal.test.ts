@@ -11,14 +11,13 @@ import type { AnalyticsEvent } from "../../../shared/analytics/analytics-event.t
 import { snapshotReferentiel } from "../../../shared/referentiel.ts";
 import { simulationStarted } from "../journal/evenements.ts";
 import { type AppDeTest, demarrer } from "../server/serveur-de-test.ts";
+import { ConsentementDeTest } from "./consentement-de-test.ts";
 
 let app: AppDeTest;
-afterEach(async () => {
-  await app.close();
-  document.body.innerHTML = "";
-});
+afterEach(() => app.close());
 
 const evenement = simulationStarted;
+const suivi = new ConsentementDeTest("suivi");
 
 // La page de test passe sur l'origine du serveur, comme l'app servie par lui :
 // happy-dom applique la règle de même origine à `fetch`.
@@ -49,7 +48,7 @@ describe("envoi au journal des parcours", () => {
   it("réessaie quand le journal ne répond pas, puis l'écrit", async () => {
     const journal = await journalDuServeur(new JournalIndisponible(2));
 
-    await new ServerJournal({ delays: [0, 0, 0, 0] }).record(evenement);
+    await new ServerJournal(suivi, { delays: [0, 0, 0, 0] }).record(evenement);
 
     expect((await journal.find("s-1:1"))?.event).toEqual(evenement);
   });
@@ -59,33 +58,17 @@ describe("envoi au journal des parcours", () => {
     const horsContrat = { ...evenement, reponse: "domicile" } as AnalyticsEvent;
 
     // Une seule nouvelle tentative ferait attendre une minute.
-    await new ServerJournal({ delays: [60_000] }).record(horsContrat);
+    await new ServerJournal(suivi, { delays: [60_000] }).record(horsContrat);
 
     expect(await journal.find("s-1:1")).toBeUndefined();
   });
 
   it("n'envoie rien quand le prescripteur s'oppose à la mesure", async () => {
     const journal = await journalDuServeur();
-    const parent = pageQuiRefuse();
+    const refus = new ConsentementDeTest("refus");
 
-    await new ServerJournal({ parent }).record(evenement);
+    await new ServerJournal(refus).record(evenement);
 
     expect(await journal.find("s-1:1")).toBeUndefined();
   });
 });
-
-// La page du CMS, dans une vraie iframe : elle répond « refus » à la demande.
-function pageQuiRefuse(): Window {
-  const iframe = document.createElement("iframe");
-  document.body.appendChild(iframe);
-  const parent = iframe.contentWindow as Window;
-  parent.addEventListener("message", () =>
-    window.dispatchEvent(
-      new MessageEvent("message", {
-        data: { type: "statistiques-simulateur:choix", suivi: false },
-        source: parent,
-      }),
-    ),
-  );
-  return parent;
-}

@@ -7,13 +7,17 @@
 // demande, et les réexporter ici les ramènerait dans le chunk d'entrée.
 
 export {
+  type AudienceUseCases,
+  CmsConsent,
   configFromEnv,
-  initAnalytics,
+  DiscardingAudience,
   type JournalUseCases,
   loadMatomo,
+  MatomoAudience,
   SelectAnIntent,
   ServerJournal,
   StartASimulation,
+  TrackAnEvent,
 } from "./analytics";
 export { App, type Models } from "./app";
 export {

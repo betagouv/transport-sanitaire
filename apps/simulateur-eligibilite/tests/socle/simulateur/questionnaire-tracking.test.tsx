@@ -1,6 +1,6 @@
 import { screen } from "@testing-library/react";
 import { beforeEach, describe, expect, it } from "vitest";
-import { initAnalytics } from "../../../front/socle/analytics";
+import { audienceDeTest, nomsEtValeurs } from "../analytics/audience-de-test";
 import { journalDeTest } from "../analytics/journal-de-test";
 import {
   ACCOMPAGNEMENTS,
@@ -11,22 +11,20 @@ import {
   question,
 } from "./questionnaire";
 
-// Ce que le questionnaire signale à Matomo, lu dans la file `_paq` : son début,
-// ses étapes, sa fin. Le service est celui du rattachement de test.
+// Ce que le questionnaire compte dans la mesure d'audience : son début, ses
+// étapes, sa fin.
 
-const evenements = () =>
-  (window._paq as unknown[][])
-    .filter(([commande]) => commande === "trackEvent")
-    .map(([, , nom, , valeur]) => (valeur === undefined ? nom : [nom, valeur]));
+let mesure: ReturnType<typeof audienceDeTest>;
+const evenements = () => nomsEtValeurs(mesure.mesures);
+const ouvrir = () => ouvrirLeSimulateur({ audience: mesure.audience });
 
 beforeEach(() => {
-  window._paq = [];
-  initAnalytics({ enabled: true, url: "https://matomo.test/", siteId: "275" });
+  mesure = audienceDeTest();
 });
 
 describe("suivi du parcours", () => {
   it("émet le début, chaque étape franchie et la conclusion", async () => {
-    const user = await ouvrirLeSimulateur();
+    const user = await ouvrir();
 
     await allerAuResultat(user);
 
@@ -38,7 +36,7 @@ describe("suivi du parcours", () => {
   });
 
   it("ne réémet pas de début au retour depuis le résultat", async () => {
-    const user = await ouvrirLeSimulateur();
+    const user = await ouvrir();
     await allerAuResultat(user);
 
     await user.click(bouton("Précédent"));
@@ -71,7 +69,7 @@ describe("suivi du parcours", () => {
   });
 
   it("n'émet rien dans le complément", async () => {
-    const user = await ouvrirLeSimulateur();
+    const user = await ouvrir();
     await allerAuResultat(user);
     const avant = evenements();
 

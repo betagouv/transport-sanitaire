@@ -5,7 +5,12 @@
 // rattaché. Voir docs/knowledge/adr/identification.md, ADR-1.
 
 import type { ComponentProps } from "react";
-import { JournalProvider, type JournalUseCases } from "../analytics";
+import {
+  AudienceProvider,
+  type AudienceUseCases,
+  JournalProvider,
+  type JournalUseCases,
+} from "../analytics";
 import {
   DebugTrace,
   DeveloperTools,
@@ -24,9 +29,11 @@ import type { Navigation } from "./navigation";
 import { useNavigation } from "./navigation";
 import { SimulateurScreen } from "./SimulateurScreen";
 
-// `referentiel`, `declarer` et `journal` viennent du conteneur ; les tests
-// passent les leurs.
+// `referentiel`, `declarer`, `audience` et `journal` viennent du conteneur ;
+// les tests passent les leurs.
 type Props = ScreensProps & {
+  /** La mesure d'audience. Absente, rien n'est mesuré. */
+  audience?: AudienceUseCases;
   /** Le journal des parcours. Absent, aucun journal ne reçoit rien. */
   journal?: JournalUseCases;
 };
@@ -49,11 +56,13 @@ type ScreensProps = Pick<
   developerTools?: boolean;
 };
 
-export function App({ journal, ...screens }: Props) {
+export function App({ audience, journal, ...screens }: Props) {
   return (
-    <JournalProvider value={journal ?? null}>
-      <Screens {...screens} />
-    </JournalProvider>
+    <AudienceProvider value={audience ?? null}>
+      <JournalProvider value={journal ?? null}>
+        <Screens {...screens} />
+      </JournalProvider>
+    </AudienceProvider>
   );
 }
 

@@ -4,7 +4,7 @@
 // compte les pages et les questions.
 
 import type { Simulation } from "../../../core/socle/simulation";
-import { EventName, trackEvent } from "../analytics";
+import { EventName, type Track } from "../analytics";
 import type { AldIndicator, Model } from "../model";
 
 /**
@@ -36,9 +36,13 @@ export function aldPathwayOf(
 }
 
 /** Envoie le verdict de cette simulation, si le parcours compte. */
-export function trackAldPathway(model: Model, simulation: Simulation): void {
+export function trackAldPathway(
+  track: Track,
+  model: Model,
+  simulation: Simulation,
+): void {
   const pathway = aldPathwayOf(model, simulation);
-  if (pathway) trackEvent(pathway.verdict, pathway.questions);
+  if (pathway) track(pathway.verdict, pathway.questions);
 }
 
 // ---- implémentation ----
