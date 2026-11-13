@@ -75,3 +75,26 @@ describe("les champs qu'une réponse révèle bloquent « Suivant »", () => {
     expect(suivant()).toBeEnabled();
   });
 });
+
+// Des dates valides une à une, mais qui se contredisent : « Suivant » reste
+// actif, et le message vient au clic, sans quitter la page (SQ-28).
+describe("une permission qui finit avant de commencer", () => {
+  const Q283 = /^Quand se termine cette première permission/;
+  const FIN_AVANT_LE_DEBUT =
+    "La fin de la permission ne peut pas précéder son début.";
+
+  it("laisse « Suivant » actif, puis le dit au clic et garde la page", async () => {
+    const user = afficherLaPage("P2/permission-mineur", {
+      ...MINEUR,
+      "Q2.8.3": "2026-10-13",
+    });
+    await page(Q284);
+    expect(screen.queryByText(FIN_AVANT_LE_DEBUT)).toBeNull();
+
+    await user.click(suivant());
+
+    expect(screen.getByText(FIN_AVANT_LE_DEBUT)).toBeInTheDocument();
+    expect(screen.getByLabelText(Q283)).toHaveValue("2026-10-13");
+    expect(suivant()).toBeEnabled();
+  });
+});

@@ -88,11 +88,20 @@ export class AskedCommon {
     return undefined;
   }
 
-  /** La réponse suffit-elle à quitter la question ? */
+  /** La réponse suffit-elle à quitter la question ? Saisie, et cohérente. */
   isAnsweredBy(answer: Answer | Unanswered): boolean {
+    if (!this.isFilledBy(answer)) return false;
+    return this.problemsWith(this.kept(answer)).length === 0;
+  }
+
+  /**
+   * La saisie est complète, et rien n'y va mal en elle-même. Elle peut encore
+   * contredire une autre réponse.
+   */
+  isFilledBy(answer: Answer | Unanswered): boolean {
     const kept = this.kept(answer);
     if (kept === undefined) return this.optional;
-    return this.problemsWith(kept).length === 0;
+    return this.formatProblemsWith(kept).length === 0;
   }
 
   /**
@@ -101,10 +110,16 @@ export class AskedCommon {
    * chaque incohérence avec une autre réponse a la sienne.
    */
   problemsWith(answer: Answer | Unanswered): readonly AnswerProblem[] {
+    const own = this.formatProblemsWith(answer);
+    if (answer === undefined || own.length > 0) return own;
+    return this.inconsistencies.map(stated);
+  }
+
+  /** Ce qui ne va pas dans la saisie elle-même, sans ses incohérences. */
+  formatProblemsWith(answer: Answer | Unanswered): readonly AnswerProblem[] {
     if (answer === undefined) return [];
     const problem = this.formatProblemOf(answer);
-    if (problem !== undefined) return [problem];
-    return this.inconsistencies.map(stated);
+    return problem === undefined ? [] : [problem];
   }
 
   /** Ce qui ne va pas dans la saisie elle-même. Chaque sorte dit le sien. */
