@@ -73,6 +73,29 @@ describe("collecte d'un événement", () => {
   });
 });
 
+describe("collecte du chargement de la page", () => {
+  it("garde le chargement d'une page rechargée", async () => {
+    const journal = await collecteSur();
+    const recharge = { ...simulationStarted, navigation: "reload" };
+
+    const { status } = await collecter(recharge);
+
+    expect(status).toBe(204);
+    expect((await journal.find("s-1:1"))?.event).toEqual(recharge);
+  });
+
+  it("refuse un chargement que le contrat ne connaît pas", async () => {
+    await collecteSur();
+
+    const { status } = await collecter({
+      ...simulationStarted,
+      navigation: "prerender",
+    });
+
+    expect(status).toBe(400);
+  });
+});
+
 describe("collecte d'une simulation sans début", () => {
   it("garde un événement dont la simulation n'a pas de début : l'historique se lit incomplet", async () => {
     const journal = await collecteSur();

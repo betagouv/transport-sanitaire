@@ -12,6 +12,7 @@ import {
   configFromEnv,
   DiscardingAudience,
   declarerAuServeur,
+  HostPageLoad,
   loadMatomo,
   MatomoAudience,
   referentielDuServeur,
@@ -34,7 +35,11 @@ export function createContainer(): Container {
   const journal = new ServerJournal(consent, { api: serverApi });
   return {
     serverApi,
-    analytics: analyticsUseCases(audienceOf(consent), journal),
+    analytics: analyticsUseCases(
+      audienceOf(consent),
+      journal,
+      new HostPageLoad(),
+    ),
     referentiel: referentielDuServeur(serverApi),
     declarer: declarerAuServeur(serverApi),
   };

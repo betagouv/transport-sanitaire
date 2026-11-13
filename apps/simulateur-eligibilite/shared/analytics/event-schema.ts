@@ -11,6 +11,7 @@ import {
   EVENT_TYPES,
   INTENTS,
   MILESTONES,
+  NAVIGATIONS,
   PORTIONS,
   SCREENS,
 } from "./analytics-event.ts";
@@ -73,4 +74,5 @@ const EVENT_SCHEMA: z.ZodType<AnalyticsEvent> = z.strictObject({
     )
     .optional(),
   unmeasured_field_ids: z.array(fieldId).optional(),
+  navigation: z.enum(NAVIGATIONS).optional(),
 });

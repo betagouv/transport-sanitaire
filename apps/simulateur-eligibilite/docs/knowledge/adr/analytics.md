@@ -6,6 +6,12 @@
 > Repose sur le rattachement établissement/service fourni par l'écran de rattachement :
 > voir [identification.md](./identification.md).
 >
+> **Mise à jour 2026-11-13, les rechargements de page (#434).** La première
+> simulation d'une page dit comment la page s'est chargée : ouverte, rechargée,
+> ou rouverte par l'historique. Dans l'iframe, c'est le script du CMS qui le
+> donne. La mesure dira si la reprise après rechargement (#392) vaut d'être
+> faite. Voir l'ADR-13.
+>
 > **Mise à jour 2026-11-13, la taille des champs du document R3 (#389).** Le journal
 > reçoit, pour chaque version du document R3, la taille réellement imprimée de
 > chaque champ rempli, sous la clé du champ dans le DTO, jamais son texte. Une
@@ -275,6 +281,9 @@ Depuis le 2026-11-12, le même choix vaut pour le journal des parcours (ADR-6) :
 refus, le navigateur n'envoie rien au backend, et cesse d'envoyer sur un refus en
 cours de session.
 
+Depuis le 2026-11-13, le même script donne aussi au simulateur le chargement de la
+page du CMS (ADR-13).
+
 ### ADR-6 - Journal des parcours écrit par le backend (~~dans Grist~~)
 
 **Contexte.** Le dashboard analytics sera livré après le simulateur. Il devra
@@ -341,7 +350,8 @@ s'exporte sans outil de plus.~~ (voir ADR-7)
   surveiller (R-13).
 - Aucune adresse IP ni aucun en-tête du navigateur n'est écrit dans le journal.
 - Un rechargement de la page crée une nouvelle simulation : l'app ne garde rien
-  d'un rechargement à l'autre. La reprise viendra avec #392 (R-14).
+  d'un rechargement à l'autre. La reprise viendra avec #392 si les rechargements
+  le justifient (R-14, ADR-13).
 
 ### ADR-7 - Le journal en clean architecture, Grist en premier adaptateur
 
@@ -660,6 +670,47 @@ l'éditeur. Les noms du plan de marquage se lisent ainsi : `artifact_version_id`
 est `document_id`, `measurement_status` est `status`. Aucun texte, aucune
 longueur de texte ne part.
 
+### ADR-13 - Les rechargements de page
+
+**Contexte.** Un rechargement crée une nouvelle simulation, et l'ancienne reste
+sans fin (R-14). La reprise (#392) garderait l'état du parcours dans le
+navigateur : plusieurs jours de travail, des textes médicaux et l'adresse du
+patient dans le stockage de session, et une révision des ADR-3 et ADR-4. Rien ne
+dit encore que les prescripteurs rechargent. Le navigateur donne le type de
+chargement d'une page (`PerformanceNavigationTiming.type`) : `navigate`,
+`reload` ou `back_forward`. Mais dans l'iframe du CMS, vérifié sous Chrome, un
+rechargement de la page du CMS laisse l'iframe se dire `navigate`.
+
+**Décision.**
+
+1. **Mesurer avant de reprendre.** #392 attend les chiffres. Si les
+   rechargements sont rares, elle ne se fait pas.
+2. **Le complément.** `simulation_started` porte `navigation` : `navigate`,
+   `reload` ou `back_forward`. Un type inconnu, ou pas de réponse, et le
+   complément manque.
+3. **La première simulation seulement.** « Faire une nouvelle simulation » ne
+   recharge pas la page : les simulations suivantes de la page ne portent pas
+   `navigation`.
+4. **Le CMS le donne.** Le simulateur demande
+   `chargement-simulateur:demande` à la page qui l'embarque, au démarrage. Le
+   script du CMS répond `chargement-simulateur:type`, avec le type de sa propre
+   page. Hors iframe, le simulateur lit le sien.
+
+**Pourquoi.** Une mesure coûte quelques lignes, la reprise plusieurs jours et des
+données de santé dans le navigateur. Le type du navigateur est le seul signal
+fiable d'un rechargement : sans stockage, une simulation ne sait rien de la
+précédente. Seule la page du CMS voit le sien, d'où la question au script qui
+répond déjà au simulateur (ADR-5). La demande part avec le conteneur, bien avant
+que le rattachement ouvre la simulation : la réponse est là, sans délai à
+attendre. Seule la page parente est écoutée, sans vérifier son origine : le
+message ne porte qu'un type que le contrat borne.
+
+**Conséquences.** Le contrat de nos compléments reste en version 2 :
+`navigation` s'y ajoute. Le script du CMS est à recoller dans Sites Conformes ;
+d'ici là, dans l'iframe, `navigation` manque. La part des `reload` parmi les
+premières simulations se lit dans le journal. Un rechargement par le navigateur
+d'un onglet resté ouvert (mise en veille, mémoire) compte aussi en `reload`.
+
 ## 3. Architecture cible
 
 ```mermaid
@@ -800,8 +851,8 @@ Retiré le 2026-10-06 avec le téléchargement des trois CERFA.
    Grist (#382), la simulation et son intention (#383), les questions et les jalons
    (#385, ADR-8), le premier résultat et ses révisions (#386, ADR-9), le document R3
    et ses versions (#387, ADR-10), les boutons exposés et leurs clics (#388,
-   ADR-11), la taille des champs du document R3 (#389, ADR-12), puis la fin de
-   parcours, dans sa tâche.
+   ADR-11), la taille des champs du document R3 (#389, ADR-12), les rechargements
+   de page (#434, ADR-13), puis la fin de parcours, dans sa tâche.
 
 Prérequis : l'écran de rattachement fournit le service (cf.
 [identification.md](./identification.md), incréments 1–2 et 6).
@@ -817,7 +868,7 @@ Prérequis : l'écran de rattachement fournit le service (cf.
 | **R-11** | **Très petits services** : dans un service d'une ou deux personnes, l'id du service désigne de fait des individus. Réserve mineure, acceptée sans traitement dans le code. | conformité |
 | **R-12** | **Information des prescripteurs** : l'exemption exige de dire ce qui est mesuré et comment s'y opposer. Le texte, dans la politique de confidentialité du CMS, doit décrire la mesure par service et renvoyer à l'opt-out du pied de page. | conformité, **à publier avant la release** |
 | **R-13** | **Volume du journal dans Grist** : une simulation donne des dizaines d'événements. Les limites de taille d'un document et le débit de l'API Grist sont à mesurer avant la communication de l'app, et un archivage à prévoir s'ils approchent. | exploitation |
-| **R-14** | **Reprise après rechargement** : garder le même `simulation_id` après un rechargement demande un stockage dans le navigateur, que l'ADR-3 écarte. D'ici #392 (priorité basse), un rechargement crée une nouvelle simulation et l'ancienne reste sans fin. | décidé, plus tard |
+| **R-14** | **Reprise après rechargement** : garder le même `simulation_id` après un rechargement demande un stockage dans le navigateur, que l'ADR-3 écarte. D'ici #392 (priorité basse), un rechargement crée une nouvelle simulation et l'ancienne reste sans fin. La première simulation d'une page dit si elle a été rechargée (ADR-13) : #392 attend ces chiffres. | décidé, plus tard |
 | **R-15** | **Durée de conservation** du journal : à fixer avec l'équipe responsable des données. | conformité, plus tard |
 | **R-16** | **Droits de la clé d'API** sur « Simulateur-Parcours » : lecture, écriture et création de table vérifiées le 2026-11-12 avec la clé de staging. La clé de production reste à vérifier avant la livraison. | exploitation, **à vérifier avant la release** |
 

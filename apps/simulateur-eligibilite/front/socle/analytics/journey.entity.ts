@@ -68,8 +68,11 @@ export type ExposedButtons = {
 /** Ce qui suit un bouton exposé : son clic, ou le téléchargement réussi. */
 export type Gesture = "requested" | "succeeded";
 
-/** Où le parcours commence : l'établissement et le service du rattachement. */
-export type Entrance = Pick<AnalyticsEvent, "establishment_id" | "service_id">;
+/** Où le parcours commence : le rattachement, et le chargement de la page. */
+export type Entrance = Pick<
+  AnalyticsEvent,
+  "establishment_id" | "service_id" | "navigation"
+>;
 
 export class Journey {
   readonly simulationId = crypto.randomUUID();

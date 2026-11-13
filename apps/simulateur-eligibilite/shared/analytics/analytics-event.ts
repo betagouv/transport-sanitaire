@@ -11,7 +11,8 @@ export const ANALYTICS_VERSION = "10.1.7";
  * ajoute l'affichage de page, les jalons de phase et l'invalidation d'une
  * validation (ADR-8), puis le financeur, les motifs et les portions du premier
  * résultat (ADR-9), puis les boutons exposés, la fiche patient et ses clics
- * (ADR-11), puis la taille des champs du document R3 (ADR-12).
+ * (ADR-11), puis la taille des champs du document R3 (ADR-12), puis le
+ * chargement de la page (ADR-13).
  */
 export const SCHEMA_VERSION = 2;
 
@@ -75,6 +76,15 @@ export type Action = (typeof ACTIONS)[number];
  */
 type FieldSize = { field_id: string; font_size_pt: number };
 
+/**
+ * Comment la page du simulateur s'est chargée, tel que le navigateur le dit
+ * (`PerformanceNavigationTiming.type`) : ouverte, rechargée, ou rouverte par
+ * l'historique (ADR-13).
+ */
+export const NAVIGATIONS = ["navigate", "reload", "back_forward"] as const;
+
+export type Navigation = (typeof NAVIGATIONS)[number];
+
 export const INTENTS = [
   "eligibilite_seule",
   "eligibilite_et_prescription",
@@ -121,4 +131,5 @@ export type AnalyticsEvent = {
   action?: Action;
   fields?: FieldSize[];
   unmeasured_field_ids?: string[];
+  navigation?: Navigation;
 };

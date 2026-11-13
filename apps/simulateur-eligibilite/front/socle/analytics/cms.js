@@ -1,6 +1,6 @@
 // Le script du CMS (Sites Conformes) pour le simulateur qu'il embarque en
-// iframe : l'opt-out de la mesure d'audience, le thème de la page, et le
-// retour au haut de l'iframe.
+// iframe : l'opt-out de la mesure d'audience, le thème de la page, le retour au
+// haut de l'iframe, et le chargement de la page.
 //
 // L'opt-out est dans le pied de page du CMS. Ce script y ajoute le bouton, garde
 // le choix sur le domaine du CMS et le transmet au simulateur par `postMessage`,
@@ -16,6 +16,11 @@
 // À chaque nouvelle page, le simulateur demande à remonter au haut de son
 // iframe : Safari ne laisse pas l'iframe faire défiler la page (#369). Le
 // protocole est celui de `front/socle/questionnaire/scroll-to-the-top.ts`.
+//
+// Le simulateur demande comment la page s'est chargée : ouverte, rechargée, ou
+// rouverte par l'historique. Dans l'iframe, il se dit toujours ouvert, même
+// quand le lecteur recharge la page du CMS (#434). Le protocole est celui de
+// `front/socle/analytics/host-page-load.adapter.ts`, ADR-13.
 //
 // À coller dans Sites Conformes : Paramètres → Scripts personnalisés → « Scripts
 // dans la section <body> », entre `<script type="module">` et `</script>`. En
@@ -48,6 +53,9 @@ window.addEventListener("message", (e) => {
     envoyerLeTheme(e.source);
   }
   if (e.data?.type === "defilement-simulateur:haut") remonterAuHaut(e.source);
+  if (e.data?.type === "chargement-simulateur:demande") {
+    envoyerLeChargement(e.source);
+  }
 });
 
 ajouterAuPiedDePage();
@@ -127,6 +135,15 @@ function remonterAuHaut(simulateur) {
   if (!iframe) return;
   const haut = iframe.getBoundingClientRect().top + iframe.clientTop;
   window.scrollTo({ top: window.scrollY + haut, behavior: "instant" });
+}
+
+// Le type que le navigateur donne au chargement de la page du CMS, ou rien.
+function envoyerLeChargement(simulateur) {
+  const [entree] = window.performance?.getEntriesByType?.("navigation") ?? [];
+  simulateur.postMessage(
+    { type: "chargement-simulateur:type", navigation: entree?.type },
+    ORIGINE_SIMULATEUR,
+  );
 }
 
 function lireRefus() {

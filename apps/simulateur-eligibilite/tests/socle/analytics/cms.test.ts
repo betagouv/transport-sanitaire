@@ -1,6 +1,7 @@
 // Le script que le CMS (Sites Conformes) exécute sur ses pages. Il ajoute
 // l'opt-out au pied de page et répond au simulateur embarqué, sur la mesure
-// d'audience, sur le thème et sur le retour au haut de l'iframe. Chaque test le
+// d'audience, sur le thème, sur le retour au haut de l'iframe et sur le
+// chargement de la page. Chaque test le
 // charge dans une fenêtre neuve, avec le vrai pied de page DSFR. Le simulateur
 // est une fenêtre qui relève les messages reçus.
 
@@ -37,8 +38,19 @@ function executerLeScript(fenetre: Window) {
   )(fenetre, fenetre.document, fenetre.localStorage, fenetre.MutationObserver);
 }
 
-function pageDuCms({ refusMemorise = false, theme = "" } = {}) {
+// `chargement` : le type que le navigateur donne au chargement de la page.
+function pageDuCms({
+  refusMemorise = false,
+  theme = "",
+  chargement = "",
+} = {}) {
   const fenetre = new Window({ url: "https://cms.test/" });
+  Object.defineProperty(fenetre, "performance", {
+    value: {
+      getEntriesByType: (type: string) =>
+        type === "navigation" && chargement ? [{ type: chargement }] : [],
+    },
+  });
   fenetre.document.body.innerHTML = PIED_DE_PAGE;
   if (theme)
     fenetre.document.documentElement.setAttribute("data-fr-theme", theme);
@@ -208,5 +220,30 @@ describe("retour au haut de l'iframe, côté CMS", () => {
     fenetre.scrollTo({ top: 4100 });
     demanderLeHaut(new Window());
     expect(fenetre.scrollY).toBe(4100);
+  });
+});
+
+const chargement = (navigation: string | undefined) => ({
+  message: { type: "chargement-simulateur:type", navigation },
+  origine: ORIGINE_SIMULATEUR,
+});
+
+describe("chargement de la page, côté CMS", () => {
+  it("répond au simulateur que la page du CMS a été rechargée", () => {
+    const { simulateur, demander } = pageDuCms({ chargement: "reload" });
+    demander(ORIGINE_SIMULATEUR, "chargement-simulateur:demande");
+    expect(simulateur.recus).toEqual([chargement("reload")]);
+  });
+
+  it("répond sans type quand le navigateur ne dit rien", () => {
+    const { simulateur, demander } = pageDuCms();
+    demander(ORIGINE_SIMULATEUR, "chargement-simulateur:demande");
+    expect(simulateur.recus).toEqual([chargement(undefined)]);
+  });
+
+  it("ne répond le chargement qu'au simulateur", () => {
+    const { simulateur, demander } = pageDuCms({ chargement: "reload" });
+    demander("https://ailleurs.test", "chargement-simulateur:demande");
+    expect(simulateur.recus).toEqual([]);
   });
 });

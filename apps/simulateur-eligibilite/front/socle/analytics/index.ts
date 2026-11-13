@@ -9,6 +9,7 @@ export type { Button } from "./button-exposure.entity";
 export { CmsConsent } from "./cms-consent.adapter";
 export { DiscardingAudience } from "./discarding-audience.adapter";
 export { useDocumentTracking } from "./document.hook";
+export { HostPageLoad } from "./host-page-load.adapter";
 export { useRecordTheJourney } from "./journey.hook";
 export {
   configFromEnv,
