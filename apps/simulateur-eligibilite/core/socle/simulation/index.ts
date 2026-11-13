@@ -2,7 +2,7 @@
 // parcours, la préconisation de réponses, le périmètre d'un résultat, les
 // seeds.
 
-export { type Fault, PageRefused } from "./page-refused.ts";
+export { PageRefused } from "./page-refused.ts";
 export type { Position } from "./position.ts";
 export { preconisationOf } from "./preconisation.ts";
 export { resultScope } from "./result-scope.ts";

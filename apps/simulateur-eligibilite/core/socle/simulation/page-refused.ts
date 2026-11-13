@@ -11,7 +11,7 @@ import {
 } from "../questionnaire-engine/index.ts";
 
 /** Une question en faute, et ce qui ne va pas dans sa réponse. */
-export type Fault = {
+type Fault = {
   readonly question: string;
   readonly problems: readonly AnswerProblem[];
 };

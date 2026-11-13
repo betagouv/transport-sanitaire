@@ -12,7 +12,7 @@ import { pendingIn } from "./stages.ts";
  * Une correction en cours : la page qui portait l'alerte, son brouillon, et
  * son rang quand la correction a commencé.
  */
-export type Correction = {
+type Correction = {
   readonly origin: Page;
   readonly draft: Answers;
   readonly returnTo: number;
@@ -60,7 +60,7 @@ export function openingAfter(
  * se pose encore, avec son brouillon relu sur ces réponses (`Reading.restore`).
  * Si elle ne se pose plus, la page qui attend une réponse.
  */
-export function whereACorrectionResumes(
+function whereACorrectionResumes(
   correction: Correction,
   reading: Reading,
   answers: Answers,
