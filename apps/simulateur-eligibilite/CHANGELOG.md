@@ -7,6 +7,48 @@ commit lui-même.
 Le simulateur affiche en bas de page la version qu'il exécute, le commit déployé
 et la version du modèle de règles.
 
+## [1.0.0](https://github.com/betagouv/transport-sanitaire/releases/tag/simulateur-eligibilite%401.0.0), 13 novembre 2026
+
+Le correctif v10.1.8 de l'éditeur, l'effacement des sous-questions qu'il a
+spécifié et recetté, et le journal des parcours complet pour le dashboard.
+22 commits depuis la 0.7.0.
+
+### TL;DR
+
+- Une réponse qui ne vaut plus s'efface : sous-question que la page ne pose plus, question devenue inapplicable sur une autre page, précision rattachée à d'autres séances, nom d'un lieu qui change de catégorie. Reposée, la question revient vide.
+- « Suivant » ne se grise plus que pour une réponse qui manque ou qui ne va pas en elle-même ; une incohérence se dit au clic, et le moteur refuse lui-même une page incomplète ou incohérente.
+- Une date d'accident future ou une date qui n'existe pas au calendrier est refusée près du champ.
+- Le simulateur suit le correctif v10.1.8 du 13 novembre : garde de l'article 80, fondement autonome, côté de l'USLD et de l'EHPAD aux deux lieux, Q2.6 retirée à la permission d'un adulte sur une ligne régulière.
+- Le journal des parcours reçoit l'intention, les questions affichées, les résultats, les documents R3, les boutons et leurs clics, le chargement de la page, les versions de l'app, et un signe de vie chaque heure.
+
+### ✨ Nouveautés
+
+- [622fe8b](https://github.com/betagouv/transport-sanitaire/commit/622fe8b) : intègre le correctif v10.1.8 du 13 novembre : une exception de l'article 80 encore inconnue et décisive empêche de décider, le fondement autonome ne vaut « non » que sans permission, convocation ni maternité, le côté de l'USLD et de l'EHPAD propose « Au départ et à l'arrivée ».
+- [8fc59e4](https://github.com/betagouv/transport-sanitaire/commit/8fc59e4) : ne pose plus Q2.6 à la permission d'un adulte sur une ligne régulière : l'avion ou le bateau de Q2.3.2 établit l'exception, et la décision se calcule.
+- [458482d](https://github.com/betagouv/transport-sanitaire/commit/458482d) : efface la réponse d'une sous-question que la page ne pose plus, dès la saisie et de proche en proche : décocher ALD efface Q1.3.b, qui revient vide une fois recochée.
+- [efa7d06](https://github.com/betagouv/transport-sanitaire/commit/efa7d06) : efface à la validation la réponse d'une question devenue inapplicable sur une autre page ; reposée, elle revient vide.
+- [e8ea6d1](https://github.com/betagouv/transport-sanitaire/commit/e8ea6d1) : relit sur les réponses corrigées le brouillon qu'une correction restaure : ce qui ne se pose plus en sort, et ne revient pas à la correction suivante.
+- [183e5a8](https://github.com/betagouv/transport-sanitaire/commit/183e5a8) : dit une incohérence au clic sur « Suivant », qui ne se grise plus que pour une réponse manquante ou fausse en elle-même.
+- [c4fc489](https://github.com/betagouv/transport-sanitaire/commit/c4fc489) : refuse dans le moteur une page incomplète ou incohérente, quel que soit l'appelant : aucun résultat ni cerfa ne sort d'une combinaison non validée.
+- [ff1715d](https://github.com/betagouv/transport-sanitaire/commit/ff1715d) : refuse près du champ une date d'accident future (Q1.3, Q3.6.1), avec « Suivant » grisé ; le calendrier ne propose plus les jours futurs.
+- [6b5948b](https://github.com/betagouv/transport-sanitaire/commit/6b5948b) : signale une date qui n'existe pas au calendrier, comme le 31/02 : « Indiquez une date complète, qui existe au calendrier. »
+- [3d34543](https://github.com/betagouv/transport-sanitaire/commit/3d34543) : envoie au journal l'intention du premier choix validé en P0, et range la mesure d'audience en clean architecture.
+- [8b4aa0b](https://github.com/betagouv/transport-sanitaire/commit/8b4aa0b) : envoie au journal les questions affichées, les saisies, les validations, les validations qu'une correction fait tomber, et l'entrée et la fin de chaque phase.
+- [ea61a6e](https://github.com/betagouv/transport-sanitaire/commit/ea61a6e) : envoie au journal chaque révision du premier résultat, avec l'issue, le mode, les motifs affichés, le support et le financeur, et la révision qu'une correction fait tomber.
+- [f222276](https://github.com/betagouv/transport-sanitaire/commit/f222276) : envoie au journal chaque version du document R3 affiché, et chaque génération ratée.
+- [f681ebf](https://github.com/betagouv/transport-sanitaire/commit/f681ebf) : envoie au journal les boutons exposés du R2 et du R3, « Imprimer », « Télécharger » et « Donner mon avis », et chacun de leurs clics.
+- [278d061](https://github.com/betagouv/transport-sanitaire/commit/278d061) : envoie au journal la taille où chaque champ rempli du document R3 s'imprime, jamais son texte.
+- [f30aafe](https://github.com/betagouv/transport-sanitaire/commit/f30aafe) : envoie au journal le chargement de la page, ouverte, rechargée ou revenue par l'historique, y compris dans l'iframe du CMS.
+- [d4c6f0e](https://github.com/betagouv/transport-sanitaire/commit/d4c6f0e) : envoie avec chaque événement du journal la version des règles, celle de l'app et le commit déployé.
+- [bb44010](https://github.com/betagouv/transport-sanitaire/commit/bb44010) : écrit chaque heure le signe de vie de la collecte : une heure sans lui est une heure sans collecte.
+
+### 🐛 Corrections
+
+- [7f5be69](https://github.com/betagouv/transport-sanitaire/commit/7f5be69) : efface Q2.1.f quand les séances cochées en Q1.3 changent.
+- [41c8ed5](https://github.com/betagouv/transport-sanitaire/commit/41c8ed5) : garde Q2.1.f quand seules d'autres options de Q1.3 changent, comme un accident coché en plus.
+- [2ae3127](https://github.com/betagouv/transport-sanitaire/commit/2ae3127) : efface le nom d'un lieu quand sa catégorie change, de structure de soins à autre lieu ou l'inverse ; y revenir ne le rend pas, l'adresse reste.
+- [289f205](https://github.com/betagouv/transport-sanitaire/commit/289f205) : n'envoie plus au journal de partie terrestre que rien ne prouve ; une liste de motifs vide dit qu'aucun n'est affiché.
+
 ## [0.7.0](https://github.com/betagouv/transport-sanitaire/releases/tag/simulateur-eligibilite%400.7.0), 12 novembre 2026
 
 Le modèle v10.1.8 de l'éditeur, le début du journal des parcours et la trace de
