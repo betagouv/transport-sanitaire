@@ -27,6 +27,7 @@ describe("le texte des seeds", () => {
   it("dit l'établissement, comme le scénario transfert-provisoire", () => {
     expect(texteDeLaSeed("issue-etablissement", "ISSUE_ETABLISSEMENT")).toEqual(
       {
+        motifs: [{ id: "transfert-provisoire" }],
         titre: "Ce transport relève de la prise en charge de l’établissement",
         introduction:
           "Le trajet a été qualifié comme un transfert entre établissements de moins de 48 heures. Aucune exception applicable n’a été établie : l’établissement est le financeur identifié. Contactez son service de coordination pour organiser le déplacement ; aucun formulaire Assurance Maladie n’est à compléter dans ce simulateur.",
@@ -55,6 +56,7 @@ describe("le texte des seeds", () => {
     expect(
       texteDeLaSeed("issue-permission-patient", "ISSUE_PERMISSION_PATIENT"),
     ).toEqual({
+      motifs: [{ id: "demande-adulte" }],
       titre: "Le transport lié à cette permission est à la charge du patient",
       introduction:
         "La permission concerne un patient adulte et une prestation exceptionnelle expressément demandée, dont la facturation au patient est établie. Informez-le des conditions tarifaires et contactez le service de l’établissement pour organiser la sortie ; aucun formulaire de transport remboursable n’est produit dans ce simulateur.",
@@ -80,6 +82,7 @@ describe("le texte des seeds", () => {
 
   it("dit la convocation, comme le scénario controle", () => {
     expect(texteDeLaSeed("issue-convocation", "ISSUE_CONVOCATION")).toEqual({
+      motifs: [{ id: "controle" }],
       titre:
         "Ce déplacement relève d’une convocation ou d’un appareillage réglementaire",
       introduction:
@@ -106,6 +109,7 @@ describe("le texte des seeds", () => {
   // L'oracle a une ALD de base inconnue ; la seed a un transfert du Centre 15.
   it("dit la caisse, comme le scénario centre15", () => {
     expect(texteDeLaSeed("issue-caisse", "ISSUE_CAISSE")).toEqual({
+      motifs: [{ id: "centre15" }],
       titre: "Un point précis reste à vérifier auprès de l’Assurance Maladie",
       introduction:
         "Le simulateur a identifié le point déterminant qui reste à confirmer : la règle de financement d’un transport entre établissements demandé par le Centre 15. Cette incertitude peut modifier le financeur ou le document applicable ; une vérification ciblée permet de poursuivre l’orientation en sécurité.",
@@ -138,6 +142,7 @@ describe("le texte des seeds", () => {
         "ISSUE_DAP_ETRANGER_A_EXAMINER",
       ),
     ).toEqual({
+      motifs: [],
       titre: "Prise en charge spécifique d’un transport à l’étranger",
       introduction:
         "Le départ ou l’arrivée du trajet se situe hors de France. Le simulateur ne peut pas confirmer la prise en charge de ce transport.",
@@ -231,6 +236,7 @@ describe("le texte de la caisse quand plusieurs points sont ouverts", () => {
   // aucun texte à montrer, et rien n'est inventé. Le titre seul reste.
   it("ne montre que le titre quand aucun point ne se relit", () => {
     expect(texteDuPrescripteur(catalogue, "ISSUE_CAISSE", trace({}))).toEqual({
+      motifs: [],
       titre: "Un point précis reste à vérifier auprès de l’Assurance Maladie",
       questions: [],
       actions: [],

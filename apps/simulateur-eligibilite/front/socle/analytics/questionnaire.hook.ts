@@ -153,5 +153,6 @@ function validationOf(
     questions,
     stillValidated: Object.keys(next.validated.toJSON()),
     nextPart: sameStage ? next.placeInPart.part : null,
+    changed: !next.validated.sameAs(simulation.validated),
   };
 }

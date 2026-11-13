@@ -1,6 +1,7 @@
 // Le contexte d'une fiche patient positive (#135) : la phrase qui dit pourquoi
-// le transport est pris en charge, et le motif administratif que le modus
-// reprend. Des fonctions pures de la trace, sans React.
+// le transport est pris en charge, son motif (`motif.ts`), et le motif
+// administratif que le modus reprend. Des fonctions pures de la trace, sans
+// React.
 //
 // Un code de contexte n'est posé que si la cible qui le justifie est prouvée,
 // jamais par défaut. Le contexte retenu est celui dont les `codes` sont
@@ -55,12 +56,20 @@ export function codesDeContexte(
   );
 }
 
+/** Le contexte que la phrase affiche ; absent si aucun ne convient. */
+export function motifDuContexte(
+  issue: IssuePositive,
+  trace: TraceDe<typeof LU_PAR_LES_CODES_DE_CONTEXTE>,
+): TexteCode | AucunTexte {
+  return motifDesCodes(issue.contexts, trace.cibles);
+}
+
 /** La phrase du contexte, lexique rempli ; absente si aucun contexte ne convient. */
 export function phraseDuContexte(
   issue: IssuePositive,
   trace: TraceDe<typeof LU_PAR_LE_CONTEXTE>,
 ): string | AucunTexte {
-  const texte = texteDesCodes(issue.contexts, trace.cibles);
+  const texte = motifDuContexte(issue, trace)?.text;
   return texte && avecLeLexique(issue, trace, texte);
 }
 
@@ -73,7 +82,7 @@ export function motifAdministratif(
   issue: IssuePositive,
   trace: TraceDe<typeof LU_PAR_LE_CONTEXTE>,
 ): string | AucunTexte {
-  const texte = texteDesCodes(issue.administrativeBases, trace.cibles);
+  const texte = motifDesCodes(issue.administrativeBases, trace.cibles)?.text;
   const { administrativeLexicon } = issue;
   const lexique = administrativeLexicon && {
     ...issue,
@@ -112,24 +121,24 @@ export function avecLeLexique(
 }
 
 /** Le texte dont les codes sont exactement ceux-ci, sans lexique. */
-export function texteDuCodeExact(
+export function motifDuCodeExact(
   textes: readonly TexteCode[],
   etablis: readonly string[],
-): string | AucunTexte {
-  return textes.find(({ codes }) => memesCodes(codes, etablis))?.text;
+): TexteCode | AucunTexte {
+  return textes.find(({ codes }) => memesCodes(codes, etablis));
 }
 
 // ---- implémentation ----
 
 // Le texte dont les codes sont exactement ceux de la trace. Sans aucun code
 // établi, aucune phrase ne s'applique.
-function texteDesCodes(
+function motifDesCodes(
   textes: readonly TexteCode[],
   cibles: TraceDe<typeof LU_PAR_LES_CODES_DE_CONTEXTE>["cibles"],
-): string | AucunTexte {
+): TexteCode | AucunTexte {
   const etablis = codesDeContexte(cibles);
   if (etablis.length === 0) return undefined;
-  return texteDuCodeExact(textes, etablis);
+  return motifDuCodeExact(textes, etablis);
 }
 
 function memesCodes(

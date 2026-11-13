@@ -16,6 +16,8 @@ export {
   type QuestionnaireTracking,
   useQuestionnaireTracking,
 } from "./questionnaire.hook";
+export { useResultTracking } from "./result.hook";
+export type { ResultCodes } from "./revision.entity";
 export { ServerJournal } from "./server-journal.adapter";
 export {
   AnalyticsProvider,

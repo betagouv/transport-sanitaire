@@ -256,6 +256,35 @@ _Chez l'éditeur_: « trace d'audit », « trace technique », que décrit son
 révision.
 _Avoid_: trace, seule (D-23) ; trace d'audit, réservé à celle de l'éditeur.
 
+**Révision**:
+Une version du premier résultat dans une simulation, numérotée `r1`, `r2`…
+Un R2 réaffiché sans modification garde sa révision ; une modification
+validée de P1 ou de P2 l'invalide, et le R2 suivant en ouvre une nouvelle. Le
+complément et le cerfa portent la révision du R2 qui les ouvre. Le journal des
+parcours s'en sert pour compter l'accès au premier résultat sur la première, et
+la répartition des issues sur la dernière valide (#386).
+_Chez l'éditeur_: « révision », « révision courante » (ANA-1015).
+_Avoid_: version, réservé à celle des règles et de l'app.
+
+**Motif**:
+Une raison que le premier résultat affiche, telle que le catalogue de l'éditeur
+l'écrit, avec son identifiant : le contexte d'une fiche positive (`E-B`), une
+phrase d'accord préalable, un scénario de la caisse, une raison de refus. Le
+même calcul choisit le motif affiché et celui que reçoit le journal des
+parcours (#386).
+_Chez l'éditeur_: « contexte », « scénario », « raison » ou « whyItem » selon
+l'issue ; « motif » pour un code de raison (`reason_codes`).
+_Avoid_: raison, réservé à `cible_reason_code`, le code que les règles
+calculent. Le « motif administratif » du modus n'est pas un motif : il reprend
+la raison en clause, pour la réservation.
+
+**Portion**:
+Une partie du trajet que le premier résultat restitue à part : la ligne
+régulière, avion ou bateau, et la partie terrestre en ambulance (#386).
+_Chez l'éditeur_: « segment » (« un segment en ligne régulière ») et
+« portions terrestres ».
+_Avoid_: segment, réservé au texte médical (D-198).
+
 **Fiche patient**:
 Ce que le premier résultat donne à remettre au patient, positive ou négative.
 Cinq issues n'en ont pas.

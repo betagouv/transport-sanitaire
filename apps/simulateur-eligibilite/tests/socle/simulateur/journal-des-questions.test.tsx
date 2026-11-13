@@ -54,6 +54,7 @@ describe("le journal des questions", () => {
       "question_interacted accompagnements",
       "question_validated accompagnements",
       "phase_completed P1",
+      "result_displayed R2",
     ]);
   });
 
@@ -91,6 +92,7 @@ describe("le journal des questions", () => {
       "question_interacted accompagnements",
       "question_validated accompagnements",
       "phase_completed P1",
+      "result_displayed R2",
     ]);
   });
 

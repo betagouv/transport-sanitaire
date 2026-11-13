@@ -17,7 +17,11 @@ import {
   type Value,
 } from "../../core/socle/questionnaire-engine";
 
+import type { Portion } from "../../shared/analytics/analytics-event";
+import type { ResultCodes } from "./analytics";
 import type { BoundCerfa } from "./cerfa";
+
+export type { Portion, ResultCodes };
 
 /**
  * Ce qu'un résultat reçoit pour s'afficher : ce qu'il lit des questions
@@ -53,6 +57,13 @@ export type FirstResult = {
    * pu conclure. Ni étape suivante ni complétion.
    */
   terminal?: boolean;
+  /**
+   * Les identifiants des motifs que le résultat affiche, tels que son
+   * catalogue les nomme. Le journal des parcours les reçoit (ADR-9).
+   */
+  motifs?: readonly string[];
+  /** Les portions du trajet que le résultat restitue à part (ADR-9). */
+  portions?: readonly Portion[];
 };
 
 /**
@@ -162,6 +173,11 @@ export type Model<
    * des parcours n'en reçoit rien. Ce qu'il lit compte (#255).
    */
   intent?: Value<Intent | null>;
+  /**
+   * Les codes du premier résultat, pour le journal des parcours. Sans eux, il
+   * ne reçoit que la révision. Ce qu'ils lisent ne fait poser aucune question.
+   */
+  resultCodes?: Value<ResultCodes>;
   /** L'invitation à donner son avis. Sans elle, aucune. */
   feedback?: Feedback;
   /** L'indicateur de parcours ALD. Sans lui, aucun verdict ne part. */

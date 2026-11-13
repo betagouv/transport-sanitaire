@@ -6,6 +6,12 @@
 > Repose sur le rattachement établissement/service fourni par l'écran de rattachement :
 > voir [identification.md](./identification.md).
 >
+> **Mise à jour 2026-11-13, le premier résultat et ses révisions (#386).** Le journal
+> reçoit chaque R2 affiché, avec sa révision, ses codes, ses motifs et les portions
+> du trajet qu'il restitue, et l'invalidation d'une révision qu'une modification de
+> P1 ou de P2 rend caduque. Voir l'ADR-9. Cela **étend** l'ADR-8 : trois compléments
+> de champ.
+>
 > **Mise à jour 2026-11-13, les questions et les jalons affichés (#385).** Le journal
 > reçoit ce que le prescripteur voit et fait de chaque question : son affichage, sa
 > première saisie, sa validation, et l'invalidation d'une validation qu'une
@@ -444,6 +450,62 @@ déduire. Un use case par geste garde le hook sans règle (#414).
 celui du cerfa, ne mesure toujours rien dans Matomo, mais il alimente le journal.
 Aucune réponse ne part : seulement des identifiants de question et de page.
 
+### ADR-9 - Le premier résultat et ses révisions
+
+**Contexte.** Le dashboard compte l'accès au premier résultat sur le premier R2
+d'une simulation, et la répartition des issues sur le dernier R2 encore valide
+(#386). Le contrat de l'éditeur donne `result_displayed`, avec `revision`,
+`can_complete`, `issue`, `mode`, `reason_codes` et `support`, et
+`result_invalidated`. Il dit qu'une modification de P1 ou de P2 invalide le R2,
+que ces codes ne viennent que des sorties calculées, et qu'un champ absent vaut
+« inconnu ». Il ne dit ni qui fournit les codes, ni quelle modification compte,
+ni quand un R2 est affiché.
+
+**Décision.**
+
+1. **Les codes.** Le modèle déclare ce que le R2 donne au journal
+   (`Model.resultCodes`), en une valeur calculée sur ses cibles : l'issue, le
+   mode, les codes de raison, le support et le financeur. Le socle l'évalue à
+   l'affichage et l'envoie, sans connaître les cibles. Comme pour l'indicateur
+   ALD, ce qu'elle lit ne fait poser aucune question : la mesure suit le
+   parcours.
+2. **La révision.** `Journey` numérote les révisions du premier résultat, `r1`,
+   `r2`… Un R2 réaffiché sans modification garde sa révision, et une révision
+   tombée ne revient pas, même si les réponses redeviennent celles d'avant.
+3. **L'invalidation.** Une révision tombe à la validation d'une page de P1 ou de
+   P2 dont les réponses validées changent (`ValidatedAnswers.sameAs`) :
+   `result_invalidated` part aussitôt, avec la révision. Revalider sans rien
+   changer, ou reculer, ne fait rien tomber. Le complément ne touche pas au R2.
+4. **L'affichage.** `result_displayed` part quand le contenu du R2 est chargé,
+   une fois par révision. `can_complete` vaut ce que le socle affiche : le
+   bouton qui verrouille, ou rien.
+5. **Les états.** Un code part s'il a une valeur. Une cible sans valeur laisse
+   le champ absent, ce que le contrat lit « inconnu ». Le dashboard sépare le
+   sans objet du manquant par l'issue. `reason_codes` part dès que les règles
+   l'ont calculé : une liste vide dit qu'elles n'ont donné aucun code, et son
+   absence qu'il leur manquait un fait.
+6. **Les compléments.** `financeur`, la cible du même nom. `motifs`, les
+   identifiants des motifs du catalogue que le R2 affiche, choisis par le même
+   calcul que leur texte (`FirstResult.motifs`). `portions`, les portions du
+   trajet que le R2 restitue : `LIGNE_REGULIERE` et `TERRESTRE`, ou aucune
+   (`FirstResult.portions`).
+7. **Le complément.** `phase_entered` de P3 porte la révision du R2 qui l'ouvre.
+
+**Pourquoi.** Le socle reste aveugle au métier, comme pour l'intention.
+Seul le moteur sait qu'une validation change les réponses : l'écran ne compare
+rien. Envoyer au chargement est le seul moment où `can_complete` est connu et où
+le prescripteur a vu le résultat. Les motifs et les portions viennent du calcul
+qui les affiche : le journal et l'écran ne peuvent pas diverger. Une valeur
+inventée pour le sans objet serait une sortie que le modèle ne calcule pas.
+
+**Conséquences.** Le contrat de nos compléments reste en version 2, qui n'est pas
+encore livrée : `financeur`, `motifs` et `portions` s'y ajoutent. Le modèle de
+test ne déclare pas de codes : son R2 n'envoie que `revision` et `can_complete`.
+La liste des motifs visibles et la classification des modes restent des
+décisions de l'éditeur : la collecte garde les identifiants source. Les points du
+pourquoi de l'étranger n'ont pas d'identifiant au catalogue : ce R2 n'envoie aucun
+motif.
+
 ## 3. Architecture cible
 
 ```mermaid
@@ -582,7 +644,7 @@ Retiré le 2026-10-06 avec le téléchargement des trois CERFA.
 
 4. **Journal des parcours.** En cours (#380) : la route de collecte et l'écriture dans
    Grist (#382), la simulation et son intention (#383), les questions et les jalons
-   (#385, ADR-8), puis la simulation, les questions, R2, R3, les boutons, la
+   (#385, ADR-8), le premier résultat et ses révisions (#386, ADR-9), puis la simulation, les questions, R2, R3, les boutons, la
    typographie et la fin de parcours, chacun dans sa tâche.
 
 Prérequis : l'écran de rattachement fournit le service (cf.

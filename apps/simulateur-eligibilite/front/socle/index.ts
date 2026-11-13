@@ -37,7 +37,9 @@ export {
   type Feedback,
   type FirstResult,
   type Intent,
+  type Portion,
   type ResultatProps,
+  type ResultCodes,
   type Sheet,
 } from "./model";
 export { declarerAuServeur, referentielDuServeur } from "./rattachement";
