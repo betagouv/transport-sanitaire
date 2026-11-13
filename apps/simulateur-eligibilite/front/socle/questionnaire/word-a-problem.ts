@@ -39,6 +39,8 @@ export function messageOf(problem: AnswerProblem): string {
       return `Indiquez un nombre d’au moins ${problem.min}.`;
     case "number above":
       return `Indiquez un nombre d’au plus ${problem.max}.`;
+    case "invalid date":
+      return "Indiquez une date complète, qui existe au calendrier.";
     case "date before":
       return `Indiquez une date à partir du ${displayedDate(problem.min)}.`;
     case "date after":
