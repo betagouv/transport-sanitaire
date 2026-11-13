@@ -16,7 +16,9 @@
 // La case de l'accident causé par un tiers suit le libellé imprimé, pas
 // l'état d'export : le gabarit imprime « non » puis « oui », mais nomme `Oui`
 // la case de gauche et `non` celle de droite. Suivre les états cocherait
-// « non » pour un accident causé par un tiers (D-139).
+// « non » pour un accident causé par un tiers (D-139). L'éditeur renomme
+// plutôt les états dans sa copie (`remplir-tiers-s3141.mjs`) ; le cerfa sort
+// aplati, et seule la case visible compte (D-290).
 
 import { given } from "../../../../../core/models/eligibilite/questions/reponses";
 import {

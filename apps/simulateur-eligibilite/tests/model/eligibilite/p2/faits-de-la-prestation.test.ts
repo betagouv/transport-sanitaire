@@ -49,11 +49,11 @@ describe("la permission", () => {
 
 describe("l'événement sans soin", () => {
   it.each([
-    ["une consultation, un soin ordinaire", motif("1_CONSULTATION"), false],
+    ["une consultation, un soin ordinaire", motif("1_CONSULTATION"), undefined],
     [
       "une hospitalisation",
       motif("8_HOSPITALISATION", { "Q2.1.g": "1_ENTREE" }),
-      false,
+      undefined,
     ],
     ["l'autre motif, seul", motif("14_AUTRE"), undefined],
     ["Q2.1 pas encore validée", SEUL, undefined],

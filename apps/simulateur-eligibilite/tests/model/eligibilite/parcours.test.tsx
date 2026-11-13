@@ -4,57 +4,36 @@
 // et ceux du socle éprouvent chaque mécanisme sur des pages écrites pour eux.
 // Ceux-ci vérifient l'assemblage : les conditions du modèle, lues par le
 // formulaire, avec son brouillon, son avance automatique et ses blocages. Ils
-// sont peu nombreux à dessein : un parcours par mécanisme de P2.
+// sont peu nombreux à dessein : un parcours par mécanisme de P2. La permission
+// a les siens (`parcours-de-la-permission.test.tsx`).
 
-import { screen, waitFor, within } from "@testing-library/react";
+import { screen, waitFor } from "@testing-library/react";
 import type userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
 import {
   afficherLeQuestionnaire,
   avecUnProfessionnel,
   choisir,
+  choisirDans,
   cocher,
+  jusquAQ21,
   page,
-  Q11,
-  Q13,
+  Q21,
   suivant,
 } from "./formulaire-du-modele";
 
-const Q21 = /^Quelle situation médicale ou quel événement/;
 const Q21F = /^Les séances sélectionnées motivent-elles/;
 const Q21G = /^S’agit-il d’une entrée dans un établissement/;
 const Q221 = /^L’une de ces situations concerne-t-elle le transport/;
-const Q221A = /^Ce trajet correspond-il à une permission/;
+const HOSPITALISE = /^Hospitalisation en cours/;
 const Q221B = /^L’un de ces soins ou rendez-vous/;
 const Q231 = /^Quelle distance sépare les lieux de départ/;
 const Q25 = /^Quel type de déplacement le patient doit-il effectuer/;
 const Q26A = /^Le transfert est-il définitif ou provisoire/;
 const Q26 = /^Quelle situation précise et quelles exceptions/;
-const Q27 = /^Âge du patient pendant la période prescrite/;
-const Q284 = /^Cette permission a-t-elle été autorisée/;
-const Q2848H = /^Cette permission dure-t-elle au maximum 48 heures/;
-const Q285 = /^La prescription couvre-t-elle plusieurs permissions/;
-const Q286B = /^Le patient restera-t-il âgé de moins de 20 ans/;
 const Q210 = /^Quelle convocation, quel avis d’audience/;
 const Q210A = /^Le fournisseur est-il agréé/;
 const Q210B = /^Sélectionnez l’appareillage concerné/;
-const HOSPITALISE = /^Hospitalisation en cours/;
-
-const champ = (libelle: RegExp) => screen.getByLabelText(libelle);
-const choisirDans = (
-  user: ReturnType<typeof userEvent.setup>,
-  question: RegExp,
-  reponse: RegExp,
-) =>
-  user.click(
-    within(screen.getByRole("group", { name: question })).getByRole("radio", {
-      name: reponse,
-    }),
-  );
-
-// Le parcours du mineur remplit une vingtaine de champs : sous la charge de la
-// suite entière, il dépasse les 5 s par défaut.
-const PARCOURS_LONG = 15_000;
 
 // « Non » aux deux blocs des situations particulières, une page chacun.
 async function sansSituation(user: ReturnType<typeof userEvent.setup>) {
@@ -67,16 +46,7 @@ async function sansSituation(user: ReturnType<typeof userEvent.setup>) {
 
 describe("le modèle de l'éditeur, déroulé dans le formulaire", () => {
   it("révèle Q2.1.g sur la page de Q2.1, puis attend « Suivant »", async () => {
-    const user = afficherLeQuestionnaire();
-    await choisir(user, /^Vérifier une éligibilité/);
-    await page(Q11);
-    await choisir(user, /^Peut se déplacer seul/);
-    await page(Q13);
-    await cocher(user, /^Aucune de ces situations/);
-    await suivant(user);
-    await page(/^Le patient pouvant réaliser le trajet/);
-    await choisir(user, /^Véhicule personnel/);
-    await page(Q21);
+    const user = await jusquAQ21();
 
     await choisir(user, /^Entrée ou sortie d’hospitalisation/);
     expect(await page(Q21G)).toBeInTheDocument();
@@ -138,16 +108,7 @@ describe("le modèle de l'éditeur, déroulé dans le formulaire", () => {
   });
 
   it("pose le type du transfert, puis ses exceptions, après le trajet", async () => {
-    const user = afficherLeQuestionnaire();
-    await choisir(user, /^Vérifier une éligibilité/);
-    await page(Q11);
-    await choisir(user, /^Peut se déplacer seul/);
-    await page(Q13);
-    await cocher(user, /^Aucune de ces situations/);
-    await suivant(user);
-    await page(/^Le patient pouvant réaliser le trajet/);
-    await choisir(user, /^Véhicule personnel/);
-    await page(Q21);
+    const user = await jusquAQ21();
     await choisir(user, /^Transfert entre établissements/);
     await page(Q221);
     await sansSituation(user);
@@ -175,85 +136,9 @@ describe("le modèle de l'éditeur, déroulé dans le formulaire", () => {
       await screen.findByRole("button", { name: "Voir le résultat" }),
     ).toBeEnabled();
   });
-  it(
-    "pose la permission du mineur sur une page, et révèle la période quand il y en a plusieurs",
-    async () => {
-      const user = afficherLeQuestionnaire();
-      await choisir(user, /^Vérifier une éligibilité/);
-      await page(Q11);
-      await choisir(user, /^Peut se déplacer seul/);
-      await page(Q13);
-      await cocher(user, /^Aucune de ces situations/);
-      await suivant(user);
-      await page(/^Le patient pouvant réaliser le trajet/);
-      await choisir(user, /^Véhicule personnel/);
-      await page(Q21);
-      await choisir(user, /^Autre motif de déplacement/);
-      await page(Q221);
-      // Seule Q2.2.1.a dit la permission, sous le séjour en établissement.
-      await cocher(user, HOSPITALISE);
-      await choisir(user, /^En séjour dans un établissement de santé/);
-      await choisirDans(user, Q221A, /^Oui\.$/);
-      await suivant(user);
-      await page(Q221B);
-      await cocher(user, /^Non, aucun\./);
-      await suivant(user);
-      await page(Q231);
-      await choisir(user, /^50 km ou moins/);
-      await suivant(user);
-
-      await page(Q27);
-      await choisir(user, /^Moins de 16 ans/);
-      await page(Q284);
-      expect(
-        screen.queryByLabelText(/^Jusqu’à quelle date ces permissions/),
-      ).toBeNull();
-
-      await user.type(champ(/^Depuis quelle date/), "2026-10-01");
-      await user.type(champ(/^Quand commence la première/), "2026-10-14");
-      await user.type(champ(/^Quand se termine cette première/), "2026-10-15");
-      await choisirDans(user, Q2848H, /^Oui\./);
-      await choisirDans(user, Q284, /^Oui\./);
-      await choisirDans(user, Q285, /^Oui\./);
-
-      expect(champ(/^Jusqu’à quelle date ces permissions/)).toBeInTheDocument();
-      expect(champ(/^Une permission aller-retour/)).toBeInTheDocument();
-      expect(screen.getByRole("group", { name: Q286B })).toBeInTheDocument();
-      expect(screen.getByRole("button", { name: "Suivant" })).toBeDisabled();
-
-      await user.type(
-        champ(/^Jusqu’à quelle date ces permissions/),
-        "2026-12-01",
-      );
-      await user.type(champ(/^Une permission aller-retour/), "2");
-      await choisirDans(user, Q286B, /^Non\./);
-      expect(
-        await screen.findByText(
-          /La période doit se terminer avant le vingtième/,
-        ),
-      ).toBeInTheDocument();
-      expect(screen.getByRole("button", { name: "Suivant" })).toBeDisabled();
-
-      await choisirDans(user, Q286B, /^Oui\./);
-      expect(
-        await screen.findByRole("button", { name: "Voir le résultat" }),
-      ).toBeEnabled();
-    },
-    PARCOURS_LONG,
-  );
-
   it("pose la convocation après le trajet, et révèle l'agrément et l'appareillage sous l'option 6", async () => {
     const terminer = vi.fn();
-    const user = afficherLeQuestionnaire(terminer);
-    await choisir(user, /^Vérifier une éligibilité/);
-    await page(Q11);
-    await choisir(user, /^Peut se déplacer seul/);
-    await page(Q13);
-    await cocher(user, /^Aucune de ces situations/);
-    await suivant(user);
-    await page(/^Le patient pouvant réaliser le trajet/);
-    await choisir(user, /^Véhicule personnel/);
-    await page(Q21);
+    const user = await jusquAQ21(terminer);
     await choisir(user, /^Autre motif de déplacement/);
     await page(Q221);
     // Seule Q2.2.1.b dit la convocation.
