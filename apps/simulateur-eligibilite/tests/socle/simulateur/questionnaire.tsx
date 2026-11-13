@@ -3,11 +3,9 @@
 
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { StrictMode } from "react";
 import type { Seed } from "../../../core/socle/simulation";
-import type {
-  AudienceUseCases,
-  JournalUseCases,
-} from "../../../front/socle/analytics";
+import type { AnalyticsUseCases } from "../../../front/socle/analytics";
 import { App } from "../../../front/socle/app";
 import type { FirstResult, Model } from "../../../front/socle/model";
 import { snapshotReferentiel } from "../../../shared/referentiel";
@@ -21,7 +19,8 @@ type User = ReturnType<typeof userEvent.setup>;
  * par la `structure` donnée. Les tests tournent en local : les developer tools
  * sont ouverts, sauf `developerTools: false`, qui montre l'app comme sur un
  * build de production. Ni la mesure d'audience ni le journal ne reçoivent
- * rien, sauf `audience` et `journal`.
+ * rien, sauf avec `analytics`. `strictMode` monte l'app comme `main.tsx` : React
+ * y rejoue chaque effet.
  */
 export async function ouvrirLeSimulateur(
   options: {
@@ -29,21 +28,21 @@ export async function ouvrirLeSimulateur(
     structure?: string;
     seeds?: readonly Seed[];
     modele?: Model;
-    audience?: AudienceUseCases;
-    journal?: JournalUseCases;
+    analytics?: AnalyticsUseCases;
+    strictMode?: boolean;
   } = {},
 ): Promise<User> {
   const user = userEvent.setup();
-  render(
+  const app = (
     <App
       models={seulModele(modeleAvec(options.seeds, options.modele))}
       referentiel={snapshotReferentiel}
       declarer={() => {}}
       developerTools={options.developerTools}
-      audience={options.audience}
-      journal={options.journal}
-    />,
+      analytics={options.analytics}
+    />
   );
+  render(options.strictMode ? <StrictMode>{app}</StrictMode> : app);
   await seRattacher(user, options.structure);
   return user;
 }

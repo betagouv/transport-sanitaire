@@ -21,7 +21,7 @@ import {
 // réponses.
 
 const INDICATEUR: AldIndicator = {
-  parts: ["commande"],
+  parts: ["P1"],
   limit: 2,
   counted: given.question("boisson").answer().is("the"),
   caisse: constant(false),
@@ -34,7 +34,7 @@ const avec = (changement: Partial<AldIndicator> = {}): Model => ({
 
 let mesure: ReturnType<typeof audienceDeTest>;
 const ouvrir = (modele: Model) =>
-  ouvrirLeSimulateur({ modele, audience: mesure.audience });
+  ouvrirLeSimulateur({ modele, analytics: mesure.analytics });
 const verdicts = () =>
   mesure.mesures
     .map(({ name }) => name)

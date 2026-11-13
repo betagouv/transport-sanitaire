@@ -17,7 +17,7 @@ export type Reponses = Answers<Questions>;
 
 const pages = pagesOf(model.questionnaire);
 const DES_CONTEXTES = pages.filter(({ id }) =>
-  ["P2/contextes", "P2/soins"].includes(id),
+  ["P2/contextes-situations", "P2/contextes-soins"].includes(id),
 );
 export const posee = (id: keyof Questions, reponses: Reponses) => {
   const lues = new Questionnaire(pages).readWith(reponses);

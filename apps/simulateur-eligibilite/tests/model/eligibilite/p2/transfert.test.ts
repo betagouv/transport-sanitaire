@@ -137,7 +137,9 @@ describe("l'ouverture directe par une admission en HAD (Q2.1.g)", () => {
   });
 
   it("ne propose aucune permission, et ne conclut rien avant Q2.6", () => {
-    expect(posee("P2/contextes", "Q2.2.1.a", HAD_A_DOMICILE)).toBeUndefined();
+    expect(
+      posee("P2/contextes-situations", "Q2.2.1.a", HAD_A_DOMICILE),
+    ).toBeUndefined();
     expect(posee("P2/permission", "Q2.7", HAD_A_DOMICILE)).toBeUndefined();
     expect(faits(HAD_A_DOMICILE).fait_permission.value).toBe(false);
     const avant = cibles(faits(HAD_A_DOMICILE));

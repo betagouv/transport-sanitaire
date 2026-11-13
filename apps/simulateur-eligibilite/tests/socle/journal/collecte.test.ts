@@ -32,7 +32,7 @@ describe("collecte d'un événement", () => {
       event: simulationStarted,
       receivedAt: expect.stringMatching(/^\d{4}-\d\d-\d\dT/),
       environment: "test",
-      schemaVersion: 1,
+      schemaVersion: 2,
     });
   });
 

@@ -6,6 +6,13 @@
 > Repose sur le rattachement établissement/service fourni par l'écran de rattachement :
 > voir [identification.md](./identification.md).
 >
+> **Mise à jour 2026-11-13, les questions et les jalons affichés (#385).** Le journal
+> reçoit ce que le prescripteur voit et fait de chaque question : son affichage, sa
+> première saisie, sa validation, et l'invalidation d'une validation qu'une
+> correction rend caduque. Il reçoit aussi l'entrée et la fin de P1, P2 et P3, et le
+> marquage de la première et de la dernière page de chaque phase. Voir l'ADR-8. Cela
+> **étend** l'ADR-6 : deux compléments de champ et un type d'événement de plus.
+>
 > **Mise à jour 2026-11-13, des hooks sans règles (#383, #414).** Les hooks de l'écran
 > (`.hook.ts`) ne font plus que traduire un événement de l'écran en un appel de use
 > case. Ce qui compte ou part descend dans les entités : `QuestionnaireRun` tait le
@@ -328,8 +335,8 @@ interface :
 
 | Suffixe | Rôle | Serveur | Écran |
 |---|---|---|---|
-| `.entity.ts` | une notion et ses règles, sans dépendance | `JournalEntry` : l'événement daté à sa réception, qui sait s'il en répète un autre | `Journey` : la simulation, qui numérote et date ses événements, ne garde que sa première intention, et rien d'une seed ; `QuestionnaireRun` : un passage dans le questionnaire, qui tait le début d'une reprise, l'abandon après la fin, et tout le questionnaire du cerfa ; `AudienceEvent` : un événement Matomo, son nom pris dans `EventName`, et l'id du service, jamais le service libre |
-| `.usecase.ts` | une action, qui ne parle qu'aux entités et aux ports | `CollectAnEvent` : garde un nouvel événement, ignore un renvoi, met une collision à part | `StartASimulation` : ouvre un parcours et le signale sur P0 ; `SelectAnIntent` : signale le premier choix validé en P0 ; `StartAQuestionnaire`, `PassAStep`, `CompleteAQuestionnaire`, `LeaveAQuestionnaire` : le début, une étape, la fin et l'abandon d'un questionnaire ; `ReachAnAldResult` : le verdict ALD sur le premier résultat. Un use case n'en appelle pas un autre |
+| `.entity.ts` | une notion et ses règles, sans dépendance | `JournalEntry` : l'événement daté à sa réception, qui sait s'il en répète un autre | `Journey` : la simulation, qui numérote et date ses événements, ne garde que sa première intention, et rien d'une seed ; elle entre dans chaque phase et la termine une fois, et sait quelles validations une correction fait tomber (ADR-8) ; `PageView` : un affichage de page, qui expose chaque question une fois et porte ses jalons ; `QuestionnaireRun` : un passage dans le questionnaire, qui tait le début d'une reprise, l'abandon après la fin, et tout le questionnaire du cerfa ; `AudienceEvent` : un événement Matomo, son nom pris dans `EventName`, et l'id du service, jamais le service libre |
+| `.usecase.ts` | une action, qui ne parle qu'aux entités et aux ports | `CollectAnEvent` : garde un nouvel événement, ignore un renvoi, met une collision à part | `StartASimulation` : ouvre un parcours et le signale sur P0 ; `SelectAnIntent` : signale le premier choix validé en P0 ; `OpenAPage`, `RevealQuestions`, `AnswerAQuestion` : une page ouverte, les questions qu'une saisie révèle, une saisie ; `StartAQuestionnaire`, `PassAStep`, `CorrectAnAnswer`, `CompleteAQuestionnaire`, `LeaveAQuestionnaire` : le début, une étape, une correction, la fin et l'abandon d'un questionnaire, `PassAStep` et `CompleteAQuestionnaire` parlant à Matomo et au journal ; `ReachAnAldResult` : le verdict ALD sur le premier résultat. Un use case n'en appelle pas un autre |
 | `.port.ts` | l'interface qu'un use case ou un adaptateur attend de l'extérieur | `Journal` : retrouver, ajouter, mettre à part | `Journal` : garder un événement ; `Audience` : compter un événement ; `ConsentSource` : suivre le choix du prescripteur |
 | `.adapter.ts` | une classe qui implémente un port | `GristJournal` ; `DiscardingJournal`, qui ne garde rien, sans doc Grist ; `MemoryJournal`, pour les tests | `ServerJournal` : envoi, réessais ; `MatomoAudience` : file `_paq`, amorçage, chargement de matomo.js ; `DiscardingAudience`, qui ne mesure rien, quand Matomo n'est pas activé ; `CmsConsent` : le choix demandé au CMS (ADR-5), que les deux premiers suivent |
 | `.controller.ts` | une entrée HTTP, qui valide la requête et appelle un use case | `JournalController` : la route de collecte | |
@@ -351,13 +358,15 @@ configuration (`adaptersFor`), puis assemble use case et contrôleur
 (`createContainer`), que `server.ts` donne à `app.ts`. `front/container.ts`
 instancie le client du serveur, le choix du prescripteur, Matomo s'il est activé (sinon une mesure qui ne garde rien), le
 journal, leurs use cases, le référentiel et la déclaration du rattachement, que
-`main.tsx` donne à l'app. `App` pose les use cases dans deux contextes React
+`main.tsx` donne à l'app. Les use cases forment un seul ensemble
+(`analyticsUseCases`, ADR-8), qu'`App` pose dans un contexte React
 (`use-cases-in-the-tree.ts`), où les hooks les lisent : aucune variable globale ne
-les porte. Le rattachement se lit en session dans les hooks, pas dans le simulateur,
+les porte. Le simulateur y pose aussi le parcours de sa simulation, où le
+questionnaire signale ses pages. Le rattachement se lit en session dans les hooks, pas dans le simulateur,
 qui ignore qui prescrit. Le simulateur signale le parcours de sa simulation par
 `useRecordTheJourney`, qui l'ouvre sur P0 et y signale l'intention que le modèle
-déclare (`Model.intent`) ; le questionnaire compte ses étapes par
-`useQuestionnaireTracking`, et le simulateur envoie le verdict ALD qu'il calcule
+déclare (`Model.intent`) ; le questionnaire signale ses pages, ses saisies et ses
+validations par `useQuestionnaireTracking`, et le simulateur envoie le verdict ALD qu'il calcule
 (`aldPathwayOf`) par `useAldResultReached`. Les deux conteneurs
 exportent une fonction appelée une fois au démarrage, pas des instances, car rien
 ne doit s'exécuter au chargement d'un module (QUAL-004). Les fichiers qui
@@ -381,6 +390,59 @@ serveur ne grossit pas avec le trafic. Le test
 d'architecture vérifie que les entités, use cases et ports n'importent qu'entre eux
 et depuis `shared/`, et que seul `grist-journal.adapter.ts` importe `server/grist/`.
 Le rattachement n'est pas encore découpé ainsi : il le sera sur ce modèle.
+
+### ADR-8 - Les questions, les affichages et les jalons de phase
+
+**Contexte.** Les funnels par question du dashboard (P07 à P09) demandent, par
+phase, la première et la dernière question applicables vues, l'arrêt avant
+validation, et des validations qui restent justes après une correction (#385). Le
+contrat de l'éditeur donne `question_exposed`, `question_interacted`,
+`question_validated`, `phase_entered` et `phase_completed`, avec `question_id`,
+`page_id` et `exposure_id`. Il ne dit ni quelle page ferme une phase, ni quel
+affichage de page porte une exposition, ni qu'une validation ne vaut plus.
+
+**Décision.**
+
+1. **Jalons.** La première et la dernière page d'une phase se marquent à
+   l'affichage. `Simulation` dit, pour la page ouverte, si elle est la première ou
+   la dernière de sa partie parmi les pages qui se posent avec les réponses
+   validées. Chaque `question_exposed` de la page en porte le complément
+   `milestones` (`first`, `last`, ou les deux). Les phases sont les parties du
+   modèle dont l'id est une phase du contrat (`P1`, `P2`, `P3`) : aucune étiquette
+   de funnel sur les questions, la partie les range déjà. Si une réponse sur la
+   page marquée « dernière » ouvre une page de plus, c'est la dernière exposition
+   de la phase qui compte.
+2. **`page_id`.** C'est l'id de la page du modèle, sans traduction. Les deux pages
+   que le contrat nomme portent son nom : `P2/contextes-situations` (Q2.2.1) et
+   `P2/contextes-soins` (Q2.2.1.b). L'urgence est `Q2.3.4` à ses deux places.
+3. **Affichages.** Un affichage de page naît quand le simulateur ouvre une page :
+   un bouton, un lien de correction ou le bouton Retour du navigateur, jamais un
+   rendu. Il porte le complément `page_view_id`. Une question y est exposée une
+   fois, à son apparition, sous `exposure_id = page_view_id:question_id`. Une
+   sous-question qu'un brouillon révèle est exposée dans le même affichage. Une
+   saisie émet `question_interacted` quand elle change de question, et une page
+   validée émet `question_validated` pour chaque question affichée.
+4. **Invalidation.** Après chaque validation, les questions validées qui ne le
+   sont plus (`Simulation.validated`) émettent le type complémentaire
+   `question_invalidated`, avec l'`exposure_id` de la validation qu'il annule.
+5. **Matomo et journal.** Un geste de l'écran est un use case, qui reçoit la
+   mesure d'audience et le journal : « Suivant » fait avancer `QuestionnaireRun`
+   vers Matomo et le parcours vers le journal.
+6. **Phases.** `phase_entered` part au premier affichage d'une page de la phase,
+   `phase_completed` à la première validation qui la quitte. Une fois chacun par
+   simulation : un retour n'en émet plus. L'entrée en P3 portera la `revision` du
+   R2 qui l'ouvre avec #386.
+
+**Pourquoi.** Le simulateur sait déjà quelles pages se posent : marquer à
+l'affichage évite au dashboard de recalculer le parcours. Une exposition tirée de
+son affichage n'a rien à mémoriser, et un rendu redonne le même id. Seul le moteur
+sait quelle validation une correction fait tomber : le dashboard ne peut pas la
+déduire. Un use case par geste garde le hook sans règle (#414).
+
+**Conséquences.** Le contrat de nos compléments passe en version 2 :
+`page_view_id`, `milestones` et `question_invalidated`. Le second questionnaire,
+celui du cerfa, ne mesure toujours rien dans Matomo, mais il alimente le journal.
+Aucune réponse ne part : seulement des identifiants de question et de page.
 
 ## 3. Architecture cible
 
@@ -518,8 +580,9 @@ Retiré le 2026-10-06 avec le téléchargement des trois CERFA.
    testé. *Reste : coller le script dans Sites Conformes avec l'origine réelle du
    simulateur, publier le texte d'information (R-12).*
 
-4. **Journal des parcours.** À faire (#380) : la route de collecte et l'écriture dans
-   Grist (#382), puis la simulation, les questions, R2, R3, les boutons, la
+4. **Journal des parcours.** En cours (#380) : la route de collecte et l'écriture dans
+   Grist (#382), la simulation et son intention (#383), les questions et les jalons
+   (#385, ADR-8), puis la simulation, les questions, R2, R3, les boutons, la
    typographie et la fin de parcours, chacun dans sa tâche.
 
 Prérequis : l'écran de rattachement fournit le service (cf.

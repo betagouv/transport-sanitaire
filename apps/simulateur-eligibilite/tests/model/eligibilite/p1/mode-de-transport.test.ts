@@ -68,8 +68,8 @@ describe("les pages de P0 et P1, jusqu'au trajet", () => {
       "P1/3",
       "P1/4",
       "P2/prestation",
-      "P2/contextes",
-      "P2/soins",
+      "P2/contextes-situations",
+      "P2/contextes-soins",
       "P2/trajet",
     ]);
   });
@@ -81,8 +81,8 @@ describe("les pages de P0 et P1, jusqu'au trajet", () => {
       "P1/3",
       "P1/4",
       "P2/prestation",
-      "P2/contextes",
-      "P2/soins",
+      "P2/contextes-situations",
+      "P2/contextes-soins",
       "P2/trajet",
     ]);
   });
@@ -93,8 +93,8 @@ describe("les pages de P0 et P1, jusqu'au trajet", () => {
       "P1/1",
       "P1/2",
       "P1/3",
-      "P2/contextes",
-      "P2/soins",
+      "P2/contextes-situations",
+      "P2/contextes-soins",
       "P2/trajet",
     ]);
   });

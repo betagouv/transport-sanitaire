@@ -82,7 +82,7 @@ function Formulaire({
       parts={parts}
       partCount={1}
       endLabel="Terminer"
-      tracked={false}
+      counted={false}
       simulation={simulation}
       onChange={(next) => {
         if (next.stage.name !== simulation.stage.name) onComplete(next.answers);

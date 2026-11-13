@@ -43,7 +43,7 @@ export const P2 = {
   pages: [
     page("P2/prestation", Q2_1, Q2_1_F, Q2_1_G),
     page(
-      "P2/contextes",
+      "P2/contextes-situations",
       Q2_2_1,
       Q2_2_1_CADRE,
       Q2_2_1_A,
@@ -53,7 +53,7 @@ export const P2 = {
     ),
     // Hors du circuit de prescription, plus rien ne se pose.
     ...[
-      page("P2/soins", Q2_2_1_B),
+      page("P2/contextes-soins", Q2_2_1_B),
       page("P2/trajet", Q2_3_1, Q2_3_2, Q2_3_3, Q2_3_1_FINALITE, Q2_3_4),
       page("P2/transfert", Q2_5),
       // Les exceptions suivent la permission : celle d'un adulte autorisée

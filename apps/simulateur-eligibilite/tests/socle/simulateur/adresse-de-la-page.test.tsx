@@ -29,7 +29,7 @@ beforeEach(() => {
 
 // Le thé choisi : la page des accompagnements, au rang 2.
 async function choisirUnThe() {
-  const user = await ouvrirLeSimulateur({ audience: mesure.audience });
+  const user = await ouvrirLeSimulateur({ analytics: mesure.analytics });
   await question(BOISSON);
   await user.click(radio("Un thé"));
   await question(ACCOMPAGNEMENTS);
@@ -94,7 +94,7 @@ describe("une correction", () => {
   it("n'est pas une étape de plus pour la mesure d'audience", async () => {
     const user = await ouvrirLeSimulateur({
       modele: AVEC_UNE_ALERTE,
-      audience: mesure.audience,
+      analytics: mesure.analytics,
     });
     await user.click(await screen.findByLabelText("À domicile"));
     await user.click(await screen.findByLabelText("En espèces"));

@@ -34,8 +34,9 @@ export type QuestionnaireOptions = {
   // La simulation après un bouton : la page suivante, la précédente, ou
   // l'étape qui suit quand la dernière page est validée.
   onChange: (simulation: Simulation) => void;
-  // Le questionnaire émet-il ses évènements de mesure d'audience ?
-  tracked: boolean;
+  // La mesure d'audience compte-t-elle ce questionnaire ? Le journal les suit
+  // tous les deux.
+  counted: boolean;
 };
 
 type View = {
@@ -78,17 +79,17 @@ export type QuestionnaireScreen = View &
 export function useQuestionnaire({
   simulation,
   onChange,
-  tracked,
+  counted,
 }: QuestionnaireOptions): QuestionnaireScreen {
   const { draft, setDraft, focus, move } = useOpenedPage(simulation, onChange);
   const view = read(simulation, draft, focus);
-  // Un questionnaire qui a déjà des réponses reprend : son début n'est pas réémis.
-  const resumed = Object.keys(simulation.answers).length > 0;
-  const tracking = useQuestionnaireTracking(
-    view.pages.indexOf(view.page) + 1,
-    tracked,
-    resumed,
-  );
+  const tracking = useQuestionnaireTracking({
+    simulation,
+    questions: view.questions.map(({ id }) => id),
+    counted,
+    // Un questionnaire qui a déjà des réponses reprend : son début n'est pas réémis.
+    resumed: Object.keys(simulation.answers).length > 0,
+  });
   const handlers = actions({ simulation, view, tracking, setDraft, move });
   // Pendant une correction, une sélection seule n'avance pas.
   const autoAdvance = useAutoAdvance(
@@ -175,8 +176,8 @@ function ends(simulation: Simulation, draft: Answers): boolean {
   return simulation.validate(draft).stage.name !== simulation.stage.name;
 }
 
-// Une correction n'est pas une étape de plus du parcours : elle n'émet rien,
-// sauf la fin du questionnaire si elle y mène.
+// Une correction n'est pas une étape de plus du parcours : la mesure d'audience
+// n'en compte que la fin du questionnaire, si elle y mène.
 function actions({
   simulation,
   view,
@@ -186,16 +187,20 @@ function actions({
 }: Context): Actions {
   return {
     // Une saisie vide les questions de la page qui en dépendent (`dependsOn`).
-    answer: (id, answer) =>
-      setDraft(answerOnPage(view.page, view.draft, id, answer)),
+    answer: (id, answer) => {
+      setDraft(answerOnPage(view.page, view.draft, id, answer));
+      tracking.answered(id);
+    },
     next: () => {
       // Le bouton est déjà désactivé, ceci couvre une soumission au clavier.
       if (view.hasPendingQuestions) return;
       const next = simulation.validate(view.draft);
       if (next.stage.name !== simulation.stage.name) {
-        tracking.questionnaireCompleted();
-      } else if (!simulation.correcting) {
-        tracking.stepPassed(view.pages.indexOf(view.page) + 2);
+        tracking.questionnaireCompleted(next);
+      } else if (simulation.correcting) {
+        tracking.answerCorrected(next);
+      } else {
+        tracking.stepPassed(next);
       }
       move(next);
     },

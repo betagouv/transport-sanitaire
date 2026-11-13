@@ -4,35 +4,44 @@
 // simulation » remonte le simulateur et en ouvre un autre. Ce qui part ou non
 // est décidé par `Journey`.
 //
+// Le parcours s'ouvre et lit l'intention avant les effets des écrans du
+// simulateur (`useLayoutEffect`) : le début précède la première page, et
+// l'intention la page qui suit P0. Le simulateur le pose dans l'arbre
+// (`JourneyProvider`) pour que le questionnaire y signale ses pages.
+//
 // Le rattachement se lit ici, en session : il ne transite pas par le
 // simulateur, qui ignore qui prescrit.
 
-import { useEffect, useRef } from "react";
+import { useLayoutEffect, useRef } from "react";
 import type { Simulation } from "../../../core/socle/simulation";
 import type { Model } from "../model";
 import { rattachementEnSession } from "../rattachement";
 import type { Journey } from "./journey.entity";
-import { useJournalUseCases } from "./use-cases-in-the-tree";
+import {
+  type OpenedJourney,
+  useAnalyticsUseCases,
+} from "./use-cases-in-the-tree";
 
 export function useRecordTheJourney(
   model: Model,
   simulation: Simulation,
   seeded: boolean,
-): void {
-  const useCases = useJournalUseCases();
+): OpenedJourney {
+  const useCases = useAnalyticsUseCases();
   const journey = useRef<Journey | null>(null);
   // La ref garde le parcours si React rejoue l'effet (StrictMode).
   // biome-ignore lint/correctness/useExhaustiveDependencies: un parcours par montage
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (!useCases || journey.current) return;
     journey.current = useCases.startASimulation.execute({
       rattachement: rattachementEnSession(),
       seeded,
     });
   }, []);
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (!useCases || !journey.current || !model.intent) return;
     const intent = simulation.read(new Date())(model.intent);
     if (intent) useCases.selectAnIntent.execute(journey.current, intent);
   }, [useCases, model, simulation]);
+  return journey;
 }

@@ -25,6 +25,7 @@ import {
   type Refused,
   whereACorrectionResumes,
 } from "./correction.ts";
+import { type PlaceInPart, placeInPart } from "./place-in-part.ts";
 import { type Position, reachedPages, stepOf } from "./position.ts";
 import { preconisationFrom } from "./preconisation.ts";
 import { resultScope } from "./result-scope.ts";
@@ -137,6 +138,11 @@ export class Simulation {
     if (!draft) return this.#reading.questionsOn(page);
     const shown = { ...this.answers, ...draft };
     return readAt(this.#core, this.stage, shown).questionsOn(page);
+  }
+
+  /** La place de la page ouverte dans sa partie (`place-in-part.ts`). */
+  get placeInPart(): PlaceInPart {
+    return placeInPart(this.#core, this.pages(), this.page);
   }
 
   /** Toutes les questions qui se posent ont-elles leur réponse ? */
@@ -285,14 +291,7 @@ export class Simulation {
 
   // La même lecture, à cette étape et sur cette page.
   #on(stage: Stage, page: Page | undefined, opened: Opened = {}): Simulation {
-    const { answers } = this;
-    return new Simulation(
-      this.#core,
-      stage,
-      answers,
-      this.#reading,
-      page,
-      opened,
-    );
+    const [core, reading] = [this.#core, this.#reading];
+    return new Simulation(core, stage, this.answers, reading, page, opened);
   }
 }

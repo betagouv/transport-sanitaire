@@ -5,33 +5,25 @@
 
 import type { ComponentProps } from "react";
 import {
+  type AnalyticsUseCases,
   type App,
-  type AudienceUseCases,
+  analyticsUseCases,
   CmsConsent,
-  CompleteAQuestionnaire,
   configFromEnv,
   DiscardingAudience,
   declarerAuServeur,
-  type JournalUseCases,
-  LeaveAQuestionnaire,
   loadMatomo,
   MatomoAudience,
-  PassAStep,
-  ReachAnAldResult,
   referentielDuServeur,
-  SelectAnIntent,
   ServerApiClient,
   ServerJournal,
-  StartAQuestionnaire,
-  StartASimulation,
 } from "./socle";
 
 type AppProps = ComponentProps<typeof App>;
 
 export type Container = {
   serverApi: ServerApiClient;
-  audience: AudienceUseCases;
-  journal: JournalUseCases;
+  analytics: AnalyticsUseCases;
   referentiel: AppProps["referentiel"];
   declarer: AppProps["declarer"];
 };
@@ -42,11 +34,7 @@ export function createContainer(): Container {
   const journal = new ServerJournal(consent, { api: serverApi });
   return {
     serverApi,
-    audience: audienceOf(consent),
-    journal: {
-      startASimulation: new StartASimulation(journal),
-      selectAnIntent: new SelectAnIntent(journal),
-    },
+    analytics: analyticsUseCases(audienceOf(consent), journal),
     referentiel: referentielDuServeur(serverApi),
     declarer: declarerAuServeur(serverApi),
   };
@@ -54,16 +42,9 @@ export function createContainer(): Container {
 
 // Matomo ne mesure qu'en build de prod, ou en local sur demande
 // (`configFromEnv`). Il ne charge matomo.js qu'au suivi accepté.
-function audienceOf(consent: CmsConsent): AudienceUseCases {
+function audienceOf(consent: CmsConsent) {
   const config = configFromEnv();
-  const audience = config.enabled
+  return config.enabled
     ? new MatomoAudience(config, consent, loadMatomo)
     : new DiscardingAudience();
-  return {
-    startAQuestionnaire: new StartAQuestionnaire(audience),
-    passAStep: new PassAStep(audience),
-    completeAQuestionnaire: new CompleteAQuestionnaire(audience),
-    leaveAQuestionnaire: new LeaveAQuestionnaire(audience),
-    reachAnAldResult: new ReachAnAldResult(audience),
-  };
 }
