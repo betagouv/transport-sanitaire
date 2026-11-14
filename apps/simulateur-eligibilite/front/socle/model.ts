@@ -10,10 +10,9 @@ import type { AnyFaits, CoreModel } from "../../core/socle/model";
 import {
   type AnyCibles,
   type AnyQuestions,
-  NOTHING,
   pagesOf,
+  Reads,
   Relevance,
-  readsOf,
   type Value,
 } from "../../core/socle/questionnaire-engine";
 
@@ -237,10 +236,10 @@ export function defineModel<
 function withRelevance(model: Model): Model {
   const { core, result, cerfa } = model;
   if (!core.decision) return model;
-  const shown = [result.reading, cerfa.form, cerfa.title, cerfa.reading]
+  const values = [result.reading, cerfa.form, cerfa.title, cerfa.reading]
     .concat(cerfa.startLabel, model.intent ?? [])
-    .map((value) => value.reads)
-    .reduce(readsOf, NOTHING);
+    .map((value) => value.reads);
+  const shown = Reads.union(...values);
   const relevance = new Relevance({
     graph: core.decision.graph,
     pages: [...pagesOf(core.questionnaire), ...core.complement.pages],

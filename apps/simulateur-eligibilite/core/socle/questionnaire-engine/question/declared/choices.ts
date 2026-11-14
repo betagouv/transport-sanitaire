@@ -8,7 +8,8 @@
 //
 // `Value` : les valeurs de ses options. Une autre ne compile pas.
 
-import type { Reads, Scope } from "../../conditions/condition.ts";
+import type { Scope } from "../../conditions/condition.ts";
+import type { Reads } from "../../conditions/reads.vo.ts";
 import { AskedMultipleChoice, AskedSingleChoice } from "../asked/choices.ts";
 import type { AskedCommonData } from "../asked/common.ts";
 import type { QuestionContext } from "../asked/context.ts";

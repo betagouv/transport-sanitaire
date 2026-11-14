@@ -8,25 +8,7 @@
 
 import type { ValidatedAnswer } from "../answers/validated-answers.ts";
 import type { LocalDateTime } from "./local-date-time.ts";
-
-/** Ce qu'une valeur lit : des questions, des faits, des cibles. */
-export type Reads = {
-  readonly questions: readonly string[];
-  readonly faits: readonly string[];
-  readonly cibles: readonly string[];
-  /** Ce qu'elle ne lit que dans une branche (`onBranch`). */
-  readonly branches?: readonly Branch[];
-};
-
-/**
- * Ce qui ne compte que quand une cible vaut l'une de ces valeurs (#255). Ex. :
- * ce que lit la fiche positive ne compte que pour une issue positive.
- */
-type Branch = {
-  readonly cible: string;
-  readonly values: readonly unknown[];
-  readonly reads: Reads;
-};
+import { Reads } from "./reads.vo.ts";
 
 /**
  * Ce dans quoi une valeur se lit. Le socle la donne : la réponse d'une
@@ -68,7 +50,7 @@ export class Value<Of> {
     other: Value<Other>,
     compute: (value: Of, other: Other) => Computed,
   ): Value<Computed> {
-    return new Value(readsOf(this.reads, other.reads), (scope) =>
+    return new Value(this.reads.with(other.reads), (scope) =>
       compute(this.in(scope), other.in(scope)),
     );
   }
@@ -79,7 +61,7 @@ export class Value<Of> {
    */
   and(this: Condition, other: Condition): Condition {
     return new Value(
-      readsOf(this.reads, other.reads),
+      this.reads.with(other.reads),
       (scope) => this.in(scope) && other.in(scope),
     );
   }
@@ -87,7 +69,7 @@ export class Value<Of> {
   /** Cette condition, ou celle-là, qui ne se lit que si celle-ci ne tient pas. */
   or(this: Condition, other: Condition): Condition {
     return new Value(
-      readsOf(this.reads, other.reads),
+      this.reads.with(other.reads),
       (scope) => this.in(scope) || other.in(scope),
     );
   }
@@ -108,9 +90,6 @@ export type Text = string | Value<string>;
 export function textIn(text: Text, scope: Scope): string {
   return typeof text === "string" ? text : text.in(scope);
 }
-
-/** Rien de lu. */
-export const NOTHING: Reads = { questions: [], faits: [], cibles: [] };
 
 /** Ce que vaut cette valeur. */
 export type ValueOf<Read> = Read extends Value<infer Of> ? Of : never;
@@ -134,7 +113,7 @@ export function all<Values extends Readonly<Record<string, Value<unknown>>>>(
 ): Value<ValuesOf<Values>> {
   const entries = Object.entries(values);
   return new Value(
-    entries.map(([, value]) => value.reads).reduce(readsOf, NOTHING),
+    Reads.union(...entries.map(([, value]) => value.reads)),
     (scope) =>
       Object.fromEntries(
         entries.map(([name, value]) => [name, value.in(scope)]),
@@ -144,21 +123,7 @@ export function all<Values extends Readonly<Record<string, Value<unknown>>>>(
 
 /** Une valeur qui ne lit rien, et vaut toujours `of`. */
 export function constant<Of>(of: Of): Value<Of> {
-  return new Value(NOTHING, () => of);
-}
-
-/** Ce que lisent ces deux valeurs, chaque chose une fois. */
-export function readsOf(a: Reads, b: Reads): Reads {
-  const union = (x: readonly string[], y: readonly string[]) => [
-    ...new Set([...x, ...y]),
-  ];
-  const branches = [...(a.branches ?? []), ...(b.branches ?? [])];
-  return {
-    questions: union(a.questions, b.questions),
-    faits: union(a.faits, b.faits),
-    cibles: union(a.cibles, b.cibles),
-    ...(branches.length > 0 && { branches }),
-  };
+  return new Value(Reads.none(), () => of);
 }
 
 /**
@@ -171,17 +136,8 @@ export function onBranch<Of>(
   values: readonly unknown[],
   value: Value<Of>,
 ): Value<Of> {
-  const branch = { cible, values, reads: value.reads };
-  return new Value({ ...NOTHING, cibles: [cible], branches: [branch] }, (r) =>
-    value.in(r),
-  );
-}
-
-/** Tout ce que lit une valeur, branches comprises, chaque chose une fois. */
-export function flattened({ branches = [], ...reads }: Reads): Reads {
-  return branches
-    .map((branch) => flattened(branch.reads))
-    .reduce(readsOf, reads);
+  const reads = Reads.onBranch(cible, values, value.reads);
+  return new Value(reads, (scope) => value.in(scope));
 }
 
 /** Ce qu'une valeur vaut, dans la lecture que le socle a choisie. */

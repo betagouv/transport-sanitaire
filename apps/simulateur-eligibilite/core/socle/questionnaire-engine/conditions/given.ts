@@ -28,19 +28,19 @@ import {
 import {
   all,
   type Condition,
-  NOTHING,
   onBranch,
   type Scope,
   Value,
 } from "./condition.ts";
 import { LocalDateTime } from "./local-date-time.ts";
+import { Reads } from "./reads.vo.ts";
 
 /** La réponse d'une question, telle que l'endroit la voit. */
 class AnswerValue<Given extends Answer> extends Value<ValidatedAnswer<Given>> {
   /** La réponse de la question `id`. */
   static of<Given extends Answer>(id: string): AnswerValue<Given> {
     return new AnswerValue(
-      { ...NOTHING, questions: [id] },
+      Reads.ofQuestion(id),
       (scope) => scope.answer(id) as ValidatedAnswer<Given>,
     );
   }
@@ -98,7 +98,7 @@ class AnswerValue<Given extends Answer> extends Value<ValidatedAnswer<Given>> {
 class DateValue extends Value<LocalDateTime> {
   /** Aujourd'hui, à minuit, à Paris. */
   static today(): DateValue {
-    return new DateValue(NOTHING, (scope) => scope.today());
+    return new DateValue(Reads.none(), (scope) => scope.today());
   }
 
   isBefore(other: DateValue): Condition {
@@ -134,7 +134,7 @@ class DateValue extends Value<LocalDateTime> {
 class FaitValue<Of extends boolean | number | string> extends Value<Fait<Of>> {
   static of<Of extends boolean | number | string>(nom: string): FaitValue<Of> {
     return new FaitValue(
-      { ...NOTHING, faits: [nom] },
+      Reads.ofFait(nom),
       (scope) => scope.fait(nom) as Fait<Of>,
     );
   }
@@ -165,7 +165,7 @@ class CibleValue<
   readonly #nom: string;
 
   private constructor(nom: string, evaluate: (scope: Scope) => Cible<Of>) {
-    super({ ...NOTHING, cibles: [nom] }, evaluate);
+    super(Reads.ofCible(nom), evaluate);
     this.#nom = nom;
   }
 
@@ -243,10 +243,12 @@ export function givenOf<
       CibleValue.of<CibleOf<Cibles[Nom]>, FaitNom>(nom),
     /** Ces faits, sous leur nom : ce qu'un texte en lit, et rien d'autre. */
     faits: <Nom extends FaitNom>(...noms: Nom[]) =>
-      named<Pick<Faits, Nom>>(noms, "faits", (scope, nom) => scope.fait(nom)),
+      named<Pick<Faits, Nom>>(noms, Reads.ofFait, (scope, nom) =>
+        scope.fait(nom),
+      ),
     /** Ces cibles, sous leur nom : ce qu'un texte en lit, et rien d'autre. */
     cibles: <Nom extends keyof Cibles & string>(...noms: Nom[]) =>
-      named<Pick<Cibles, Nom>>(noms, "cibles", (scope, nom) =>
+      named<Pick<Cibles, Nom>>(noms, Reads.ofCible, (scope, nom) =>
         scope.cible(nom),
       ),
     all,
@@ -259,11 +261,11 @@ export function givenOf<
 // Des faits ou des cibles, chacun sous son nom.
 function named<Of>(
   noms: readonly string[],
-  kind: "faits" | "cibles",
+  reads: (nom: string) => Reads,
   read: (scope: Scope, nom: string) => unknown,
 ): Value<Of> {
   return new Value(
-    { ...NOTHING, [kind]: noms },
+    Reads.union(...noms.map(reads)),
     (scope) =>
       Object.fromEntries(noms.map((nom) => [nom, read(scope, nom)])) as Of,
   );

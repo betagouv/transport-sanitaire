@@ -33,12 +33,7 @@ import type {
   FaitValue,
 } from "../../decision-engine/index.ts";
 import { ValidatedAnswers } from "../answers/validated-answers.ts";
-import {
-  flattened,
-  NOTHING,
-  type Reads,
-  readsOf,
-} from "../conditions/condition.ts";
+import { Reads } from "../conditions/reads.vo.ts";
 import type {
   AnyCibles,
   Page,
@@ -211,7 +206,7 @@ export class Relevance {
   }
 
   #guard(id: string): Reads {
-    return this.#guards.get(id) ?? NOTHING;
+    return this.#guards.get(id) ?? Reads.none();
   }
 
   // Les faits figés : ceux des questions validées, hors des faits libres.
@@ -257,23 +252,21 @@ function guardsByQuestion(
 ): ReadonlyMap<string, Reads> {
   const guards = new Map<string, Reads>();
   for (const question of questions) {
-    const reads = [
-      question.inconsistencyReads ?? NOTHING,
-      question.requirementReads ?? NOTHING,
-    ].reduce(readsOf, question.guardReads);
-    const other = guards.get(question.id) ?? NOTHING;
-    guards.set(question.id, flattened(readsOf(other, reads)));
+    const reads = Reads.union(
+      guards.get(question.id) ?? Reads.none(),
+      question.guardReads,
+      question.inconsistencyReads ?? Reads.none(),
+      question.requirementReads ?? Reads.none(),
+    );
+    guards.set(question.id, reads.flattened());
   }
   return guards;
 }
 
-function sectionsOf(
-  { branches = [], ...reads }: Reads,
-  gates: readonly Gate[],
-): Section[] {
+function sectionsOf(reads: Reads, gates: readonly Gate[]): Section[] {
   return [
-    { reads, gates },
-    ...branches.flatMap(({ cible, values, reads: inner }) =>
+    { reads: reads.withoutBranches(), gates },
+    ...reads.branches.flatMap(({ cible, values, reads: inner }) =>
       sectionsOf(inner, [...gates, { cible, values }]),
     ),
   ];

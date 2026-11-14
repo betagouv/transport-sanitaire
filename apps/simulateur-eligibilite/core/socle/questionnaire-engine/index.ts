@@ -15,18 +15,15 @@ export {
 export {
   type Condition,
   constant,
-  flattened,
-  NOTHING,
   type Read,
-  type Reads,
   readIn,
-  readsOf,
   type Scope,
   Value,
   type ValueOf,
 } from "./conditions/condition.ts";
 export { givenOf } from "./conditions/given.ts";
 export { LocalDateTime } from "./conditions/local-date-time.ts";
+export { Reads } from "./conditions/reads.vo.ts";
 export { validatedReading } from "./conditions/what-a-condition-sees.ts";
 export { faitsChangedBy } from "./does-a-question-still-matter/faits-changed-by.ts";
 export { Relevance } from "./does-a-question-still-matter/matters.ts";

@@ -17,7 +17,7 @@
 
 import { GivenAnswers } from "../answers/given-answers.ts";
 import { ValidatedAnswers } from "../answers/validated-answers.ts";
-import { flattened, type Reads } from "../conditions/condition.ts";
+import type { Reads } from "../conditions/reads.vo.ts";
 import { validatedReading } from "../conditions/what-a-condition-sees.ts";
 import type { SeenAnswers } from "../question/asked/context.ts";
 import type { AnyCibles, Question, Validated } from "../question/question.ts";
@@ -52,7 +52,7 @@ export class Askability {
     const sourcesOf = faitSources(faits.reads, faits.imposed);
     const places = new Map<string, Place[]>();
     for (const question of questions) {
-      const sources = sourcesOf(flattened(question.conditionReads));
+      const sources = sourcesOf(question.conditionReads.flattened());
       const others = places.get(question.id) ?? [];
       places.set(question.id, [...others, { question, sources }]);
     }

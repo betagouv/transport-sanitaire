@@ -5,9 +5,8 @@
 // cibles figés au verrou, au jour de la complétion (`given.today()`).
 
 import {
-  NOTHING,
   type Read,
-  readsOf,
+  Reads,
   Value,
 } from "../../../../core/socle/questionnaire-engine";
 import type { Cerfa, CerfaDto } from "../cerfa";
@@ -46,9 +45,8 @@ export function bindCerfa<Dto extends CerfaDto>(
  */
 export function cerfaValue(bound: BoundCerfa): Value<BoundCerfa> {
   const { fields, drawings } = bound.mapping;
-  const reads = [...Object.values(fields), ...Object.values(drawings)]
-    .map((value) => value.reads)
-    .reduce(readsOf, NOTHING);
+  const values = [...Object.values(fields), ...Object.values(drawings)];
+  const reads = Reads.union(...values.map((value) => value.reads));
   return new Value(reads, () => bound);
 }
 

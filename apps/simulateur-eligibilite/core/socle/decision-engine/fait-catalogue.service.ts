@@ -8,9 +8,7 @@
 // ou par une garde, s'arrête net.
 
 import {
-  NOTHING,
-  type Reads,
-  readsOf,
+  Reads,
   type Scope,
   type ValidatedAnswers,
   validatedReading,
@@ -59,9 +57,9 @@ export class FaitCatalogue<Faits extends object> {
     return new Map(
       this.#names.map((name) => [
         name,
-        readsOf(
-          this.#declares.get(name)?.reads ?? NOTHING,
-          imposed[name] ?? NOTHING,
+        Reads.union(
+          this.#declares.get(name)?.reads ?? Reads.none(),
+          imposed[name] ?? Reads.none(),
         ),
       ]),
     );

@@ -7,7 +7,7 @@
 
 import { answersOf, GivenAnswers } from "./answers/given-answers.ts";
 import { ValidatedAnswers } from "./answers/validated-answers.ts";
-import { NOTHING, type Reads, readsOf } from "./conditions/condition.ts";
+import { Reads } from "./conditions/reads.vo.ts";
 import { Positions } from "./conditions/what-a-condition-sees.ts";
 import {
   type AskedPage,
@@ -53,12 +53,12 @@ export class Questionnaire<Questions extends AnyQuestions = AnyQuestions> {
    * qui décident si chacune se pose.
    */
   get reads(): Reads {
-    return this.pages
-      .flatMap((page) => page.questions)
-      .map(({ id, guardReads }) =>
-        readsOf({ ...NOTHING, questions: [id] }, guardReads),
-      )
-      .reduce(readsOf, NOTHING);
+    const questions = this.pages.flatMap((page) => page.questions);
+    return Reads.union(
+      ...questions.map(({ id, guardReads }) =>
+        Reads.ofQuestion(id).with(guardReads),
+      ),
+    );
   }
 
   /**

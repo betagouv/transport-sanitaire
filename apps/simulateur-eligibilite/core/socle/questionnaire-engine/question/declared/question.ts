@@ -13,15 +13,13 @@
 // finale : la page la prend telle quelle (`question/declared/page.ts`), et le moteur de
 // questionnaire lui demande comment elle se pose (`askedIn`).
 
-import {
-  type Condition,
-  NOTHING,
-  type Reads,
-  readsOf,
-  type Scope,
-  type Text,
-  type Value,
+import type {
+  Condition,
+  Scope,
+  Text,
+  Value,
 } from "../../conditions/condition.ts";
+import { Reads } from "../../conditions/reads.vo.ts";
 import { checkReads, readIn } from "../../conditions/reads-in-place.ts";
 import type { AskedCommonData, InPlace, Revisit } from "../asked/common.ts";
 import type { QuestionContext, SeenAnswers } from "../asked/context.ts";
@@ -223,24 +221,23 @@ export abstract class DeclaredQuestion<
 
   /** Ce que lisent ses gardes, celles de ses options comprises. */
   get guardReads(): Reads {
-    return readsOf(this.conditionReads, this.ownGuardReads());
+    return this.conditionReads.with(this.ownGuardReads());
   }
 
   /** Ce que lisent ses conditions, sans ses options. */
   get conditionReads(): Reads {
-    return this.settings.conditions
-      .map((guard) => guard.reads)
-      .reduce(readsOf, NOTHING);
+    return Reads.union(...this.settings.conditions.map(({ reads }) => reads));
   }
 
   /** Ce que lisent ses incohérences. `null` : elle n'en a pas. */
   get inconsistencyReads(): Reads | null {
     const { inconsistencies } = this.settings;
     if (inconsistencies.length === 0) return null;
-    return inconsistencies
-      .flatMap(({ condition, revisit }) => [condition, revisit ?? condition])
-      .map(({ reads }) => reads)
-      .reduce(readsOf, NOTHING);
+    const guards = inconsistencies.flatMap(({ condition, revisit }) => [
+      condition,
+      revisit ?? condition,
+    ]);
+    return Reads.union(...guards.map(({ reads }) => reads));
   }
 
   /** Ce que lit la condition qui la rend obligatoire. `null` : elle n'en a pas. */
@@ -250,7 +247,7 @@ export abstract class DeclaredQuestion<
 
   /** Ce que lisent les gardes de ce que sa sorte ajoute : ses options. */
   protected ownGuardReads(): Reads {
-    return NOTHING;
+    return Reads.none();
   }
 
   /**

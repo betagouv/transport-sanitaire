@@ -20,7 +20,7 @@
 // `faitsReading` s'en tient aux faits : ceux qui lisent la question, puis ceux
 // qui les lisent.
 
-import type { Reads } from "../conditions/condition.ts";
+import type { Reads } from "../conditions/reads.vo.ts";
 import type { Question } from "../question/question.ts";
 
 /** Pour chaque question, les faits qu'elle change, dans l'ordre du modèle. */

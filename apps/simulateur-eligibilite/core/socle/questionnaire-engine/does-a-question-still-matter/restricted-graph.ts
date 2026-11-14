@@ -8,7 +8,7 @@ import {
   type RuleValue,
 } from "../../decision-engine/index.ts";
 
-import type { Reads } from "../conditions/condition.ts";
+import type { Reads } from "../conditions/reads.vo.ts";
 
 /** Les faits figés, par leur rang dans le graphe. */
 export type Fixed = ReadonlyMap<number, FaitValue>;

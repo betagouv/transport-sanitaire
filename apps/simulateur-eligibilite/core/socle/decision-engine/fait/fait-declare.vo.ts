@@ -17,8 +17,7 @@ import {
   type Answer,
   type Box,
   type Condition,
-  NOTHING,
-  readsOf,
+  Reads,
   Value,
 } from "../../questionnaire-engine/index.ts";
 
@@ -90,7 +89,7 @@ class FaitEnCours<Nom extends string> {
   /** Clôt le fait : si aucune règle ne l'établit, il est inconnu, pour cette raison. */
   sinon(raison: string): FaitDeclare<Nom, Fait> {
     const regles = this.#regles;
-    const reads = regles.map((regle) => regle.reads).reduce(readsOf, NOTHING);
+    const reads = Reads.union(...regles.map((regle) => regle.reads));
     return new FaitDeclare(
       this.#nom,
       new Value(reads, (reading) => {
