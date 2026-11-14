@@ -4,8 +4,8 @@
 //
 // Trois cas ont une page (`layouts/`) : acceptée, une fiche patient positive
 // (#135, #136) ; refusée, une fiche patient négative (#134) ; orientée, la page
-// du prescripteur, sans fiche (#133). Chaque cas dit ses issues : les dix ont
-// la leur. Deux situations n'en ont pas : les règles n'ont pas conclu, ou un
+// du prescripteur, sans fiche (#133). Chaque issue a sa famille, donc son cas
+// (`issue.vo.ts`). Deux situations n'en ont pas : les règles n'ont pas conclu, ou un
 // retour pénitentiaire sort du circuit de prescription, et R2 oriente vers
 // l'administration pénitentiaire (point 34).
 //
@@ -17,10 +17,13 @@
 // paquet, l'empreinte du modèle et la révision (D-104). Un fait inconnu est
 // une clé absente, jamais un « non ».
 
-import type {
-  Cibles,
+import {
+  ACCEPTED_ISSUES,
   Issue,
-} from "../../../../core/models/eligibilite/cibles/noms";
+  ORIENTED_ISSUES,
+  REFUSED_ISSUES,
+} from "../../../../core/models/eligibilite/cibles/issue.vo";
+import type { Cibles } from "../../../../core/models/eligibilite/cibles/noms";
 import type { Faits } from "../../../../core/models/eligibilite/faits/noms";
 import { dansLeCircuit } from "../../../../core/models/eligibilite/questions/p2/questions/q2-2-1-indication";
 import { given } from "../../../../core/models/eligibilite/questions/reponses";
@@ -35,15 +38,12 @@ import {
 import type { CatalogueResultats } from "./components/forme-du-catalogue";
 import { type Precisions, UN_SEJOUR_REEL } from "./components/precisions";
 import { catalogueDeLaSession } from "./components/textes-de-l-editeur";
-import { estAcceptee, ISSUES_ACCEPTEES } from "./layouts/acceptee/issues";
 import { pageAcceptee } from "./layouts/acceptee/page";
 import { PRECISIONS_DE_LA_FICHE_POSITIVE } from "./layouts/acceptee/precisions";
 import { LU_PAR_LA_FICHE_POSITIVE } from "./layouts/acceptee/texte";
-import { ISSUES_ORIENTEES } from "./layouts/orientee/issues";
 import { pageOrientee } from "./layouts/orientee/page";
 import { PRECISIONS_DU_PRESCRIPTEUR } from "./layouts/orientee/precisions";
 import { LU_PAR_LE_PRESCRIPTEUR } from "./layouts/orientee/texte";
-import { estRefusee, ISSUES_REFUSEES } from "./layouts/refusee/issues";
 import { pageRefusee } from "./layouts/refusee/page";
 import { PRECISIONS_DE_LA_FICHE_NEGATIVE } from "./layouts/refusee/precisions";
 import { LU_PAR_LA_FICHE_NEGATIVE } from "./layouts/refusee/texte";
@@ -89,11 +89,12 @@ export class R2 {
   }
 
   get cas(): Cas {
-    const { dansLeCircuit, issue } = this.lecture.reading;
+    const { dansLeCircuit, issue: cible } = this.lecture.reading;
     if (!dansLeCircuit) return "hors circuit";
-    if (!issue.value) return "sans issue";
-    if (estAcceptee(issue.value)) return "acceptée";
-    return estRefusee(issue.value) ? "refusée" : "orientée";
+    const issue = Issue.of(cible);
+    if (!issue) return "sans issue";
+    if (issue.isAccepted()) return "acceptée";
+    return issue.isRefused() ? "refusée" : "orientée";
   }
 
   /** Les textes de l'éditeur, chargés à la demande (D-112). */
@@ -103,7 +104,7 @@ export class R2 {
 
   /** La page du cas : son titre, son corps, sa fiche s'il en a une. */
   page(): FirstResult | Promise<FirstResult> {
-    const issue = this.lecture.reading.issue.value;
+    const issue = Issue.of(this.lecture.reading.issue);
     if (this.cas === "hors circuit") return ORIENTATION_PENITENTIAIRE;
     if (!issue) return SANS_ISSUE;
     return this.textes().then((chargement) =>
@@ -114,9 +115,11 @@ export class R2 {
   }
 
   private pageDe(issue: Issue, catalogue: CatalogueResultats): FirstResult {
-    if (estAcceptee(issue)) return pageAcceptee(catalogue, this.trace, issue);
-    if (estRefusee(issue)) return pageRefusee(catalogue, this.trace);
-    return pageOrientee(catalogue, this.trace, issue);
+    if (issue.isAccepted())
+      return pageAcceptee(catalogue, this.trace, issue.id);
+    if (issue.isOriented())
+      return pageOrientee(catalogue, this.trace, issue.id);
+    return pageRefusee(catalogue, this.trace);
   }
 }
 
@@ -140,9 +143,9 @@ const REPETITION = given
 // Les précisions de chaque cas, sous ses issues (D-224).
 const PRECISIONS = given
   .all({
-    acceptee: ISSUE.branch(ISSUES_ACCEPTEES, PRECISIONS_DE_LA_FICHE_POSITIVE),
-    refusee: ISSUE.branch(ISSUES_REFUSEES, PRECISIONS_DE_LA_FICHE_NEGATIVE),
-    orientee: ISSUE.branch(ISSUES_ORIENTEES, PRECISIONS_DU_PRESCRIPTEUR),
+    acceptee: ISSUE.branch(ACCEPTED_ISSUES, PRECISIONS_DE_LA_FICHE_POSITIVE),
+    refusee: ISSUE.branch(REFUSED_ISSUES, PRECISIONS_DE_LA_FICHE_NEGATIVE),
+    orientee: ISSUE.branch(ORIENTED_ISSUES, PRECISIONS_DU_PRESCRIPTEUR),
   })
   .compute(
     ({ acceptee, refusee, orientee }): Precisions => ({
@@ -176,9 +179,9 @@ const LU_DES_REPONSES = given
 // Ce que lisent les blocs des trois cas, chacun sous ses issues.
 const LU_PAR_LES_CAS = luPar(
   {},
-  ISSUE.branch(ISSUES_ACCEPTEES, LU_PAR_LA_FICHE_POSITIVE),
-  ISSUE.branch(ISSUES_REFUSEES, LU_PAR_LA_FICHE_NEGATIVE),
-  ISSUE.branch(ISSUES_ORIENTEES, LU_PAR_LE_PRESCRIPTEUR),
+  ISSUE.branch(ACCEPTED_ISSUES, LU_PAR_LA_FICHE_POSITIVE),
+  ISSUE.branch(REFUSED_ISSUES, LU_PAR_LA_FICHE_NEGATIVE),
+  ISSUE.branch(ORIENTED_ISSUES, LU_PAR_LE_PRESCRIPTEUR),
 );
 
 // Le circuit, l'issue qui choisit le cas, ce que lisent les cas, et ce qu'ils

@@ -27,10 +27,12 @@
 
 import { describe, expect, it } from "vitest";
 import { decisionEngine } from "../../../../core/models/eligibilite/cibles/evaluation";
+import type {
+  AcceptedIssueId,
+  OrientedIssueId,
+} from "../../../../core/models/eligibilite/cibles/issue.vo";
 import { sansBlancsDeTrop } from "../../../../front/models/eligibilite/r2/components/sans-blancs-de-trop";
-import type { IssueAcceptee } from "../../../../front/models/eligibilite/r2/layouts/acceptee/issues";
 import { texteDeLaFichePositive } from "../../../../front/models/eligibilite/r2/layouts/acceptee/texte";
-import type { IssueOrientee } from "../../../../front/models/eligibilite/r2/layouts/orientee/issues";
 import { texteDuPrescripteur } from "../../../../front/models/eligibilite/r2/layouts/orientee/texte";
 import { texteDeLaFicheNegative } from "../../../../front/models/eligibilite/r2/layouts/refusee/texte";
 import type { Trace } from "../../../../front/models/eligibilite/r2/r2";
@@ -94,13 +96,13 @@ function sansBlancs(valeur: unknown): unknown {
 function texteDe(scenario: Scenario): unknown {
   const trace = traceDe(scenario);
   if (scenario.template === "patient-positive") {
-    const issue = scenario.issue as IssueAcceptee;
+    const issue = scenario.issue as AcceptedIssueId;
     return fichePositive(texteDeLaFichePositive(catalogue, trace, issue));
   }
   if (scenario.template === "patient-negative") {
     return ficheNegative(texteDeLaFicheNegative(catalogue, trace));
   }
-  const issue = scenario.issue as IssueOrientee;
+  const issue = scenario.issue as OrientedIssueId;
   return prescripteur(texteDuPrescripteur(catalogue, issue, trace));
 }
 

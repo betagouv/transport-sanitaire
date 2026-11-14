@@ -9,6 +9,7 @@
 // que le prescripteur ne doit pas lire comme des faits du dossier. Il lit ce
 // que lisent les scénarios (`ce-que-lit-un-bloc.ts`).
 
+import type { OrientedIssueId } from "../../../../../../core/models/eligibilite/cibles/issue.vo";
 import type { TraceDe } from "../../components/ce-que-lit-un-bloc";
 import type {
   AffichageDuPrescripteur,
@@ -23,7 +24,6 @@ import {
   LU_PAR_LES_SCENARIOS,
   scenariosDuPrescripteur,
 } from "../../components/scenarios-du-prescripteur";
-import type { IssueOrientee } from "./issues";
 
 /** Ce que lit le texte du prescripteur : ce que lisent ses scénarios. */
 export const LU_PAR_LE_PRESCRIPTEUR = LU_PAR_LES_SCENARIOS;
@@ -60,7 +60,7 @@ export type TexteDuPrescripteur = {
 /** Le texte de cette issue, pour cette trace. */
 export function texteDuPrescripteur(
   catalogue: CatalogueResultats,
-  issue: IssueOrientee,
+  issue: OrientedIssueId,
   trace: TraceDe<typeof LU_PAR_LE_PRESCRIPTEUR>,
 ): TexteDuPrescripteur {
   if (issue === "ISSUE_DAP_ETRANGER_A_EXAMINER") {

@@ -3,12 +3,12 @@
 // change sans que son oracle change échoue ici.
 
 import { describe, expect, it } from "vitest";
+import {
+  ORIENTED_ISSUES,
+  type OrientedIssueId,
+} from "../../../../../core/models/eligibilite/cibles/issue.vo";
 import { SEEDS } from "../../../../../core/models/eligibilite/seeds-catalogue";
 import { catalogueResultats } from "../../../../../front/models/eligibilite/r2/components/textes-de-l-editeur";
-import {
-  estOrientee,
-  type IssueOrientee,
-} from "../../../../../front/models/eligibilite/r2/layouts/orientee/issues";
 import { texteDuPrescripteur } from "../../../../../front/models/eligibilite/r2/layouts/orientee/texte";
 import { R2 } from "../../../../../front/models/eligibilite/r2/r2";
 import { lectureDe } from "../../p2/reponses-de-la-permission";
@@ -16,7 +16,7 @@ import { faux, trace, vrai } from "../traces-du-prescripteur";
 
 const catalogue = await catalogueResultats();
 
-const texteDeLaSeed = (id: string, issue: IssueOrientee) => {
+const texteDeLaSeed = (id: string, issue: OrientedIssueId) => {
   const seed = SEEDS.find((candidate) => candidate.id === id);
   if (!seed) throw new Error(`Seed inconnue : ${id}`);
   const depuis = R2.of(lectureDe(seed.answers)).trace;
@@ -245,8 +245,8 @@ describe("le texte de la caisse quand plusieurs points sont ouverts", () => {
 
 describe("les issues sans fiche patient", () => {
   it("sont cinq, parmi les dix du catalogue", () => {
-    const sans = Object.keys(catalogue.issues).filter(estOrientee);
-    expect(sans.sort()).toEqual([
+    const sans = ORIENTED_ISSUES.filter((id) => id in catalogue.issues);
+    expect([...sans].sort()).toEqual([
       "ISSUE_CAISSE",
       "ISSUE_CONVOCATION",
       "ISSUE_DAP_ETRANGER_A_EXAMINER",
