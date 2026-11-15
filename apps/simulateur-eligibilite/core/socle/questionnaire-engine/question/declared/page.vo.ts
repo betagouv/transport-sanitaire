@@ -12,7 +12,7 @@
 import type { Condition } from "../../conditions/condition.ts";
 import { QuestionnaireDeclarationError } from "../../questionnaire-declaration.error.ts";
 import type { Answer, AnyQuestions } from "../question.ts";
-import type { DeclaredQuestion } from "./question.ts";
+import type { DeclaredQuestion } from "./question.vo.ts";
 
 /**
  * Une page déclarée. Elle ne change pas : `appliesWhen` et `mattersWhile`

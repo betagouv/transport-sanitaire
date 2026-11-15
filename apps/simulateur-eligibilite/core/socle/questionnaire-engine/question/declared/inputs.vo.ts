@@ -12,7 +12,7 @@ import {
   AskedText,
 } from "../asked/inputs.vo.ts";
 import type { AnyQuestions } from "../question.ts";
-import { DeclaredQuestion } from "./question.ts";
+import { DeclaredQuestion } from "./question.vo.ts";
 import type { CommonSettings } from "./settings.ts";
 
 /** Un nombre déclaré. */

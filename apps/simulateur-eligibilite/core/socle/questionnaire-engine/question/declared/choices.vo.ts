@@ -19,8 +19,8 @@ import type { AnyQuestions, IncompatiblePossibleAnswers } from "../question.ts";
 import {
   type DeclaredPossibleAnswer,
   DeclaredPossibleAnswers,
-} from "./possible-answer.ts";
-import { DeclaredQuestion } from "./question.ts";
+} from "./possible-answer.vo.ts";
+import { DeclaredQuestion } from "./question.vo.ts";
 import type { CommonSettings } from "./settings.ts";
 
 /** Un choix unique déclaré. */

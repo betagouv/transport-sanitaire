@@ -1,6 +1,6 @@
 // Ce que toute question déclarée règle, quelle que soit sa sorte. La question
 // les tient, et en tire ce qui se lit autour du champ quand elle se pose
-// (`question/declared/question.ts`).
+// (`question/declared/question.vo.ts`).
 
 import type { Condition } from "../../conditions/condition.ts";
 import type { ShownUnder } from "../asked/common.vo.ts";

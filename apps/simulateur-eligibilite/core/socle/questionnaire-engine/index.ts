@@ -46,7 +46,7 @@ export {
   askedQuestion,
 } from "./question/asked/question.vo.ts";
 export { questionsOf } from "./question/declared/factory.ts";
-export { type DeclaredPage, page } from "./question/declared/page.ts";
+export { type DeclaredPage, page } from "./question/declared/page.vo.ts";
 export {
   type Answer,
   type Answered,

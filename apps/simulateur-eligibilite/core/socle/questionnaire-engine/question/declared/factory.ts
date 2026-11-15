@@ -21,7 +21,7 @@
 
 import type { Pipeline } from "../asked/context.ts";
 import type { AnyQuestions, ReadByObject } from "../question.ts";
-import { DeclaredMultipleChoice, DeclaredSingleChoice } from "./choices.ts";
+import { DeclaredMultipleChoice, DeclaredSingleChoice } from "./choices.vo.ts";
 import { Inconsistencies } from "./inconsistencies.vo.ts";
 import {
   DeclaredAddress,
@@ -29,8 +29,8 @@ import {
   DeclaredDate,
   DeclaredNumber,
   DeclaredText,
-} from "./inputs.ts";
-import { DeclaredPossibleAnswers } from "./possible-answer.ts";
+} from "./inputs.vo.ts";
+import { DeclaredPossibleAnswers } from "./possible-answer.vo.ts";
 import type { CommonSettings } from "./settings.ts";
 
 /**

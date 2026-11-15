@@ -1,6 +1,6 @@
 // Une réponse possible telle qu'elle se propose : sa valeur, son libellé du
 // moment, et ce qu'elle porte de plus. Le modèle la déclare dans
-// `question/declared/possible-answer.ts`.
+// `question/declared/possible-answer.vo.ts`.
 
 /**
  * L'aide d'une réponse possible : un intitulé qui se déplie sur une liste. La

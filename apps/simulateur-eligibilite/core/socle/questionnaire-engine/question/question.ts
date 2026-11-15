@@ -36,8 +36,8 @@ export type AnyQuestions = Readonly<Record<string, Answer>>;
 
 /**
  * Une question vue de ce qui lit sa réponse : son id, et le type de sa
- * réponse. Une question déclarée en est une (`question/declared/question.ts`).
- * `~answer` n'existe qu'au typage.
+ * réponse. Une question déclarée en est une
+ * (`question/declared/question.vo.ts`). `~answer` n'existe qu'au typage.
  */
 export type Answered<Given extends Answer = Answer> = {
   readonly id: string;
@@ -139,7 +139,7 @@ export type IncompatiblePossibleAnswers = {
 /**
  * Une question, telle que le moteur de questionnaire la lit : elle sait comment
  * elle se pose, et de quelles réponses elle dépend. Le modèle la déclare par
- * ses constructeurs (`question/declared/factory.ts`, `question/declared/question.ts`).
+ * ses constructeurs (`question/declared/factory.ts`, `question/declared/question.vo.ts`).
  *
  * `askedIn` est écrite en méthode : TypeScript compare alors ses paramètres
  * dans les deux sens, et le moteur de questionnaire peut recevoir les questions

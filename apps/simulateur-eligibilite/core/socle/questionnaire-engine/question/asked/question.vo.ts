@@ -4,7 +4,7 @@
 // questionnaire, et l'écran, ne lisent que cette forme.
 //
 // La question déclarée porte des fonctions : ses conditions, ses libellés du
-// moment (`question/declared/question.ts`). La question posée n'en porte aucune. Elle
+// moment (`question/declared/question.vo.ts`). La question posée n'en porte aucune. Elle
 // passe en JSON, telle qu'une API la donnera, et `askedQuestion` la relit.
 
 import { AskedAddress, type AskedAddressData } from "./address.vo.ts";

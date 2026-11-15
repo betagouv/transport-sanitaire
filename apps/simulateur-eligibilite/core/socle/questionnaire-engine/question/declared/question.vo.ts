@@ -1,7 +1,7 @@
 // La question déclarée : ses réglages, quelle que soit sa sorte
 // (`question/declared/settings.ts`), et ce qu'elle en fait quand elle se pose.
-// Chaque sorte en dit plus dans sa classe (`question/declared/choices.ts`,
-// `question/declared/inputs.ts`).
+// Chaque sorte en dit plus dans sa classe (`question/declared/choices.vo.ts`,
+// `question/declared/inputs.vo.ts`).
 //
 // Une question se déclare réglage par réglage, chacun sur sa ligne :
 //
@@ -10,7 +10,7 @@
 //     .inconsistentWhen(commenceAvantLHospitalisation, "La permission …");
 //
 // Elle ne change pas : chaque réglage donne une copie. Il n'y a pas d'étape
-// finale : la page la prend telle quelle (`question/declared/page.ts`), et le moteur de
+// finale : la page la prend telle quelle (`question/declared/page.vo.ts`), et le moteur de
 // questionnaire lui demande comment elle se pose (`askedIn`).
 
 import type {

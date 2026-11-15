@@ -20,7 +20,7 @@ const CATALOGUE_DE_SEEDS = /^core\/models\/[^/]+\/seeds-catalogue\.ts$/;
 // Les fichiers d'un seul sujet qui dépassent quand même 300 lignes : chacun a
 // son plafond, et la raison pour laquelle le couper serait artificiel.
 const PLAFONDS: Readonly<Record<string, { lignes: number; raison: string }>> = {
-  "core/socle/questionnaire-engine/question/declared/question.ts": {
+  "core/socle/questionnaire-engine/question/declared/question.vo.ts": {
     lignes: 311,
     raison:
       "ses réglages sont son interface ; l'incohérence en est déjà sortie",
