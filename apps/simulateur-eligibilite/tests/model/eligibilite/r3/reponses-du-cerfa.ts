@@ -185,9 +185,16 @@ export function cellules<Cellules>(
   ) as Cellules;
 }
 
-/** Le gabarit d'un support, lu sur le disque. */
-export const gabarit = (support: string) =>
-  readFile(join(racine, `front/models/eligibilite/r3/gabarits/${support}.pdf`));
+/** Le gabarit d'un support, lu sur le disque une fois. */
+export function gabarit(support: string): Promise<Uint8Array> {
+  const lu =
+    GABARITS.get(support) ??
+    readFile(
+      join(racine, `front/models/eligibilite/r3/gabarits/${support}.pdf`),
+    );
+  GABARITS.set(support, lu);
+  return lu;
+}
 
 /** L'abscisse arrondie de chaque case du champ, par état d'export. */
 export async function abscisses(
@@ -210,9 +217,26 @@ export async function abscisses(
 
 /**
  * Le cerfa généré depuis son gabarit lu sur le disque : le navigateur de test
- * ne sert pas les assets de l'app.
+ * ne sert pas les assets de l'app. Les mêmes données donnent le même PDF : il
+ * n'est généré qu'une fois, et les tests qui le relisent le partagent.
  */
-export async function genere(
+export function genere(
+  cerfa: Cerfa<CerfaDto>,
+  support: string,
+  dto: CerfaDto,
+): Promise<Uint8Array> {
+  const cle = `${support} ${JSON.stringify(dto)}`;
+  const connu = GENERES.get(cle) ?? generation(cerfa, support, dto);
+  GENERES.set(cle, connu);
+  return connu;
+}
+
+// ---- implémentation ----
+
+const GABARITS = new Map<string, Promise<Uint8Array>>();
+const GENERES = new Map<string, Promise<Uint8Array>>();
+
+async function generation(
   cerfa: Cerfa<CerfaDto>,
   support: string,
   dto: CerfaDto,
@@ -221,8 +245,6 @@ export async function genere(
   const { pdf } = await generateCerfa(depuisLeDisque, dto);
   return new Uint8Array(await pdf.arrayBuffer());
 }
-
-// ---- implémentation ----
 
 // Les réponses de P0 à P2 de la seed `id`.
 function reponsesDe(id: string): Reponses {

@@ -21,6 +21,17 @@ export default defineConfig({
   test: {
     environment: "happy-dom",
     setupFiles: ["./tests/setup.ts"],
+    // Les parcours à l'écran prennent plusieurs secondes, et davantage sur une
+    // machine chargée : le délai par défaut (5 s) les faisait échouer au hasard.
+    testTimeout: 30_000,
+    // Les fichiers d'un worker partagent leurs modules : le moteur des règles
+    // et le graphe de décision ne se reconstruisent pas à chaque fichier. En
+    // échange, un test défait ce qu'il pose hors de lui : horloge, stockage,
+    // adresse de la page.
+    isolate: false,
+    // En local, un worker par thread fige le poste et ralentit chaque test.
+    // La CI garde le défaut de vitest : sa machine n'a rien d'autre à faire.
+    ...(process.env.CI ? {} : { maxWorkers: 3 }),
   },
 });
 

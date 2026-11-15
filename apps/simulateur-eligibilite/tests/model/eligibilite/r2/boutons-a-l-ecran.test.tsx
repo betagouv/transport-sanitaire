@@ -26,32 +26,22 @@ const ACCORD = "Compléter la demande d’accord préalable";
 // l'ont.
 const TELECHARGER = "Télécharger";
 
-// L'écran des seeds liste une trentaine de situations : sous la charge de la
-// suite entière, il met plus que la seconde par défaut. Un test attend trois
-// fois : son délai couvre les trois.
-const ATTENTE = { timeout: 4000 };
-const DELAI_D_UN_TEST = { timeout: 3 * ATTENTE.timeout };
-
 beforeEach(() => rangerRattachement(null));
 
 async function ouvrirLaSeed(id: string) {
   const seed = SEEDS.find((candidate) => candidate.id === id);
   if (!seed) throw new Error(`Seed inconnue : ${id}`);
+  // L'écran des seeds rejoue chacune de celles qu'il liste : il n'a que celle-ci.
   const user = await ouvrirLeSimulateur({
     modele: MODELE_AUX_GABARITS_DU_DISQUE,
+    seeds: [seed],
   });
+  await user.click(await screen.findByRole("button", { name: "Seeds" }));
   await user.click(
-    await screen.findByRole("button", { name: "Seeds" }, ATTENTE),
-  );
-  await user.click(
-    await screen.findByRole(
-      "button",
-      { name: `Ouvrir : ${seed.label}` },
-      ATTENTE,
-    ),
+    await screen.findByRole("button", { name: `Ouvrir : ${seed.label}` }),
   );
   // Le `h1` vient avec le résultat, une fois ses textes chargés.
-  await screen.findByRole("heading", { level: 1 }, ATTENTE);
+  await screen.findByRole("heading", { level: 1 });
 }
 
 // Les boutons que le résultat peut poser, dans l'ordre où il les pose. Ceux des
@@ -66,7 +56,7 @@ const boutonsDuResultat = () =>
     TELECHARGER,
   ].filter((nom) => screen.queryByRole("button", { name: nom }) !== null);
 
-describe("les boutons du modèle de l'éditeur", DELAI_D_UN_TEST, () => {
+describe("les boutons du modèle de l'éditeur", () => {
   it.each([
     ["issue-caisse", [PRECEDENT, NOUVELLE]],
     ["issue-etablissement", [PRECEDENT, NOUVELLE]],
@@ -160,11 +150,7 @@ describe("les boutons du modèle de l'éditeur", DELAI_D_UN_TEST, () => {
     ).toBeInTheDocument();
     // Le texte attend le PDF (D-250).
     expect(
-      await screen.findByText(
-        /^Le document est prêt à être imprimé\./,
-        {},
-        ATTENTE,
-      ),
+      await screen.findByText(/^Le document est prêt à être imprimé\./),
     ).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Imprimer" })).toBeVisible();
     expect(

@@ -89,13 +89,26 @@ describe("le moteur de décision publicodes", () => {
     expect(moteur.cible(SOIREE, "cible_table")).toEqual(Cible.of("GRANDE"));
   });
 
-  it("ne garde rien d'un calcul à l'autre", () => {
+  it("ne mêle pas les cibles de deux situations", () => {
     moteur.cibles(SOIREE);
     expect(
       moteur
         .cible({ ...SOIREE, fait_pluie: etabli(false) }, "cible_parapluie")
         .isNon(),
     ).toBe(true);
+  });
+
+  it("revient à une situation déjà vue, pour une cible qu'elle n'avait pas lue", () => {
+    const auSec: Faits = { ...SOIREE, fait_pluie: etabli(false) };
+    const autreMoteur = publicodesEngine<Faits, Cibles>(REGLES, [
+      "cible_parapluie",
+      "cible_abri",
+    ]);
+
+    expect(autreMoteur.cible(SOIREE, "cible_parapluie").isOui()).toBe(true);
+    expect(autreMoteur.cible(auSec, "cible_parapluie").isNon()).toBe(true);
+    expect(autreMoteur.cible(SOIREE, "cible_abri").isOui()).toBe(true);
+    expect(autreMoteur.cible(auSec, "cible_abri").isNon()).toBe(true);
   });
 });
 
