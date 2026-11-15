@@ -164,8 +164,8 @@ _Chez l'éditeur_: « condition », le même mot.
 
 **Garde**:
 La condition qui dit si une question se pose (`appliesWhen`, `mattersWhile`) ou
-si une option se propose (`offeredWhen`). Elle ne lit que les questions posées
-avant elle (D-213, D-214).
+si une réponse possible se propose (`offeredWhen`). Elle ne lit que les
+questions posées avant elle (D-213, D-214).
 _Chez l'éditeur_: « condition d'affichage ».
 
 ### La décision

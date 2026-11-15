@@ -122,8 +122,9 @@ export class Reading<Questions extends AnyQuestions = AnyQuestions> {
   }
 
   /**
-   * Les questions de cette page qui se posent, telles qu'elles se posent :
-   * sous leur libellé du moment, avec les seules options qui se proposent.
+   * Les questions de cette page qui se posent, telles qu'elles se posent : sous
+   * leur libellé du moment, avec les seules réponses possibles qui se
+   * proposent.
    */
   questionsOn(page: Page): readonly AskedQuestion[] {
     return this.#asked.find((read) => read.page === page)?.questions ?? [];
@@ -158,11 +159,11 @@ export class Reading<Questions extends AnyQuestions = AnyQuestions> {
   /**
    * Les réponses, une fois cette page validée avec ce brouillon. Une question
    * devenue inapplicable n'y laisse pas de réponse, sur cette page comme sur
-   * les autres (#411), ni une option que sa question ne propose plus. Celles
-   * qui dépendaient d'une réponse changée sont effacées (`validate-a-page.ts`).
-   * Une question à plusieurs places garde la sienne si une place d'avant la
-   * pose, ou si une place d'après le peut ; une question que le graphe masque
-   * garde la sienne.
+   * les autres (#411), ni une réponse possible que sa question ne propose plus.
+   * Celles qui dépendaient d'une réponse changée sont effacées
+   * (`validate-a-page.ts`). Une question à plusieurs places garde la sienne si
+   * une place d'avant la pose, ou si une place d'après le peut ; une question
+   * que le graphe masque garde la sienne.
    */
   commit(page: Page, draft: Answers): Answers {
     const given = answersOf(this.answers);
@@ -195,8 +196,8 @@ export class Reading<Questions extends AnyQuestions = AnyQuestions> {
 
   /**
    * Ce brouillon de la page, gardé de côté, relu sur ces réponses : sans les
-   * réponses des questions devenues inapplicables, ni les options qui ne se
-   * proposent plus (#411). Ce qui tient toujours reste.
+   * réponses des questions devenues inapplicables, ni les réponses possibles
+   * qui ne se proposent plus (#411). Ce qui tient toujours reste.
    */
   restore(page: Page, draft: Answers): Answers {
     const applicable = this.#onlyApplicable(page, draft);
@@ -208,7 +209,7 @@ export class Reading<Questions extends AnyQuestions = AnyQuestions> {
         return kept === undefined ? [] : [[id, kept]];
       }),
     );
-    // Une option retirée peut exclure une autre question de la page.
+    // Une réponse possible retirée peut exclure une autre question de la page.
     const same = JSON.stringify(restored) === JSON.stringify(draft);
     return same ? draft : this.restore(page, restored);
   }
@@ -247,8 +248,9 @@ export class Reading<Questions extends AnyQuestions = AnyQuestions> {
   }
 
   // Ce que la page enregistre du brouillon : la réponse de chaque question
-  // posée, aux options qu'elle propose, et telle quelle celle d'une question
-  // que le graphe masque. Une question qui attend une autre place n'y est pas.
+  // posée, aux réponses possibles qu'elle propose, et telle quelle celle d'une
+  // question que le graphe masque. Une question qui attend une autre place n'y
+  // est pas.
   #inputsOn(page: Page, draft: Answers, waiting: readonly string[]) {
     const asked = this.questionsOn(page);
     return page.questions

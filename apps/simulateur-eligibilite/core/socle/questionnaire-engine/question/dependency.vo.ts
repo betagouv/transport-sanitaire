@@ -1,6 +1,6 @@
 // Ce dont dépend une réponse (`dependsOn`) : une question entière, ou certaines
-// de ses options seulement. Quand ce qu'on en voit change, la réponse s'efface
-// (`validate-a-page.ts`).
+// de ses réponses possibles seulement. Quand ce qu'on en voit change, la
+// réponse s'efface (`validate-a-page.ts`).
 
 import {
   type Answer,
@@ -11,9 +11,9 @@ import {
 } from "./question.ts";
 
 /**
- * Ce que `dependsOn` reçoit : une question, ou une question et les options qui
- * comptent. `{ question: Q1_3, options: SEANCES }` : cocher un accident en plus
- * ne change rien, cocher une autre séance efface la réponse.
+ * Ce que `dependsOn` reçoit : une question, ou une question et les réponses
+ * possibles qui comptent. `{ question: Q1_3, options: SEANCES }` : cocher un
+ * accident en plus ne change rien, cocher une autre séance efface la réponse.
  */
 export type DependsOn<Questions extends AnyQuestions> =
   | QuestionRef<Questions>
@@ -22,7 +22,10 @@ export type DependsOn<Questions extends AnyQuestions> =
       readonly possibleAnswers: readonly string[];
     };
 
-/** Une question dont dépend une réponse, réduite au besoin à ces options. */
+/**
+ * Une question dont dépend une réponse, réduite au besoin à ces réponses
+ * possibles.
+ */
 export class Dependency {
   static of<Questions extends AnyQuestions>(
     dependsOn: DependsOn<Questions>,
@@ -44,7 +47,8 @@ export class Dependency {
 
   /**
    * La réponse telle que la dépendance la voit : entière, ou réduite aux
-   * options qui comptent. Rien de coché parmi elles vaut une liste vide.
+   * réponses possibles qui comptent. Rien de coché parmi elles vaut une liste
+   * vide.
    */
   seen(answer: Answer | Unanswered): Answer | Unanswered {
     const { possibleAnswers } = this;

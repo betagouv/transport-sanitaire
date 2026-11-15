@@ -1,6 +1,7 @@
-// Les questions à choix telles qu'elles se posent : avec les seules options
-// qui se proposent, sous leur libellé du moment. Une réponse n'en garde que ces
-// options, et l'une d'elles peut bloquer le questionnaire.
+// Les questions à choix telles qu'elles se posent : avec les seules réponses
+// possibles qui se proposent, sous leur libellé du moment. Une réponse n'en
+// garde que ces réponses possibles, et l'une d'elles peut bloquer le
+// questionnaire.
 
 import type { OfferedPossibleAnswer } from "../possible-answer.ts";
 import type {
@@ -29,7 +30,7 @@ export class AskedSingleChoice extends AskedCommon {
   readonly possibleAnswers: readonly OfferedPossibleAnswer[];
   /** Affiché en liste déroulante, et non en boutons radio. */
   readonly dropdown: boolean;
-  /** Les libellés des options en gras. */
+  /** Les libellés des réponses possibles en gras. */
   readonly boldLabels: boolean;
 
   constructor(data: AskedSingleChoiceData) {
@@ -68,7 +69,7 @@ export class AskedMultipleChoice extends AskedCommon {
   readonly possibleAnswers: readonly OfferedPossibleAnswer[];
   /** La cocher décoche les autres. Absente : elle ne se propose pas. */
   readonly exclusivePossibleAnswer: OfferedPossibleAnswer | undefined;
-  /** Les options qui s'excluent deux à deux. */
+  /** Les réponses possibles qui s'excluent deux à deux. */
   readonly incompatiblePossibleAnswers: readonly IncompatiblePossibleAnswers[];
 
   constructor(data: AskedMultipleChoiceData) {
@@ -102,8 +103,8 @@ export class AskedMultipleChoice extends AskedCommon {
     );
   }
 
-  // L'écran ne laisse pas cocher deux options incompatibles. Ceci couvre une
-  // réponse venue d'ailleurs, comme une seed.
+  // L'écran ne laisse pas cocher deux réponses possibles incompatibles. Ceci
+  // couvre une réponse venue d'ailleurs, comme une seed.
   #incompatibilityOf(checked: readonly string[]): AnswerProblem | NoError {
     const incompatible = this.incompatiblePossibleAnswers.find(({ values }) =>
       values.every((value) => checked.includes(value)),
@@ -114,7 +115,8 @@ export class AskedMultipleChoice extends AskedCommon {
 
 // ---- implémentation ----
 
-// Le blocage de la première option choisie qui bloque, s'il y en a une.
+// Le blocage de la première réponse possible choisie qui bloque, s'il y en a
+// une.
 function blockOf(
   possibleAnswers: readonly OfferedPossibleAnswer[],
   chosen: readonly string[],

@@ -1,11 +1,12 @@
 // fait_exception_article80_air_mer : segment aérien ou maritime relevant de
 // l'exception.
 //
-// L'option 4 de Q2.6 le dit, une fois Q2.6 validée : cochée, elle l'établit ;
-// proposée et écartée, elle vaut « non ». Sans Q2.6, il reste absent.
-// Elle ne se propose pas quand Q2.3.2 dit déjà une ligne régulière : il vaut
-// alors « oui ». Pour la permission d'un adulte, Q2.6 ne se pose pas sur une
-// ligne régulière : il vaut « oui » sans elle (QST-PERMISSION-EXCEPTIONS-20261113).
+// La réponse possible 4 de Q2.6 le dit, une fois Q2.6 validée : cochée, elle
+// l'établit ; proposée et écartée, elle vaut « non ». Sans Q2.6, il reste
+// absent. Elle ne se propose pas quand Q2.3.2 dit déjà une ligne régulière : il
+// vaut alors « oui ». Pour la permission d'un adulte, Q2.6 ne se pose pas sur
+// une ligne régulière : il vaut « oui » sans elle
+// (QST-PERMISSION-EXCEPTIONS-20261113).
 //
 // Il suit `CONTRAT_REPONSES_FAITS.json`.
 

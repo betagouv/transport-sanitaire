@@ -99,7 +99,7 @@ describe("atmp", () => {
 });
 
 describe("careFamily", () => {
-  it("vaut le numéro de l'option de Q2.1 d'un soin", () => {
+  it("vaut le numéro de la réponse possible de Q2.1 d'un soin", () => {
     expect(
       precisionsDe({ ...CONSULTATION, "Q2.1": "4_BIOLOGIE" }).careFamily,
     ).toBe(4);
@@ -213,7 +213,7 @@ describe("article80Context", () => {
 });
 
 describe("permissionContext et permissionRepeated", () => {
-  it("une demande expresse d'adulte (Q2.7 option 4) donne son contexte", () => {
+  it("une demande expresse d'adulte (Q2.7 réponse possible 4) donne son contexte", () => {
     const reponses = {
       ...PATIENT_SEUL,
       "Q2.7": "4_ADULTE_A_SA_CHARGE",

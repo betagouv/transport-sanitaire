@@ -1,6 +1,6 @@
 // Les réponses et les lectures des tests des situations particulières
 // (Q2.2.1, Q2.2.1.b) : la question posée sur l'une de leurs deux pages, ses
-// options proposées, et les faits qu'elles établissent.
+// réponses possibles proposées, et les faits qu'elles établissent.
 
 import { model } from "../../../../core/models/eligibilite";
 import type { Faits } from "../../../../core/models/eligibilite/faits/noms";

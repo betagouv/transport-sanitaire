@@ -86,7 +86,7 @@ export class GuardPlace {
   }
 }
 
-// Une réponse telle qu'elle est donnée, sans options proposées.
+// Une réponse telle qu'elle est donnée, sans réponses possibles proposées.
 function given(id: string, answer: Answers[string]): ValidatedAnswer {
   return new ValidatedAnswer(id, answer === undefined ? undefined : { answer });
 }

@@ -28,12 +28,13 @@ export const PRECISIONS_DE_LA_FICHE_NEGATIVE: Value<Precisions> = lues(
 
 // ---- implémentation ----
 
-// Le numéro de l'option de Q2.1, pour les soins qui ont une phrase de famille.
+// Le numéro de la réponse possible de Q2.1, pour les soins qui ont une phrase
+// de famille.
 const FAMILLES_DE_SOIN = [1, 2, 3, 4, 5, 6, 7, 14, 15];
 
 function familleDeSoin({ motif }: Pick<Entrees, "motif">): number | NonProuve {
   if (!motif.hasAnswer()) return undefined;
-  // Le slug porte en tête le numéro de l'option au catalogue (D-75).
+  // Le slug porte en tête le numéro de la réponse possible au catalogue (D-75).
   const numero = Number.parseInt(motif.value, 10);
   return FAMILLES_DE_SOIN.includes(numero) ? numero : undefined;
 }
@@ -58,8 +59,8 @@ function seriePrevue({ serie }: Pick<Entrees, "serie">): true | NonProuve {
   return serie.is("1_OUI") ? true : undefined;
 }
 
-// Q1.3 option 2 dit que l'ALD est reconnue, Q1.3.b si le soin y est lié
-// (MET-ALD-LIEN-001). Non cochée, elle ne dit rien de l'ALD. Le lien ne se
+// Q1.3 réponse possible 2 dit que l'ALD est reconnue, Q1.3.b si le soin y est
+// lié (MET-ALD-LIEN-001). Non cochée, elle ne dit rien de l'ALD. Le lien ne se
 // déduit jamais de `fait_ald_liee`, qui y mêle la déficience.
 function aldDeQ13({
   soins,

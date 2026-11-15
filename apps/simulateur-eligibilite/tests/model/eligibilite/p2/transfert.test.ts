@@ -146,7 +146,7 @@ describe("l'ouverture directe par une admission en HAD (Q2.1.g)", () => {
     expect(avant.cible_financeur.value).toBeUndefined();
   });
 
-  it("ne propose ni l'option 2, ni la 3, ni la 8", () => {
+  it("ne propose ni la réponse possible 2, ni la 3, ni la 8", () => {
     expect(proposees(HAD_A_DOMICILE)).toEqual([
       "4_AIR_MER",
       "5_HAD",

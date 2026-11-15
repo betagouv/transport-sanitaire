@@ -14,8 +14,8 @@ import {
 import { type Box, type Choice, GivenAnswer } from "./given-answers.vo.ts";
 
 /**
- * Une question validée, ou pas : sa réponse, et les options qui se
- * proposaient. Non validée, elle n'a ni réponse ni option.
+ * Une question validée, ou pas : sa réponse, et les réponses possibles qui se
+ * proposaient. Non validée, elle n'a ni réponse ni réponse possible.
  */
 export class ValidatedAnswer<
   Given extends AnyQuestions[string] = AnyQuestions[string],
@@ -37,12 +37,14 @@ export class ValidatedAnswer<
     return this.#validated;
   }
 
-  /** Cette option se proposait. Non validée : aucune ne se proposait. */
+  /**
+   * Cette réponse possible se proposait. Non validée : aucune ne se proposait.
+   */
   offers(possibleAnswer: Choice<Given> | Box<Given>): boolean {
     return this.#offered?.includes(possibleAnswer as string) ?? false;
   }
 
-  /** Les options qui se proposaient. Non validée : aucune. */
+  /** Les réponses possibles qui se proposaient. Non validée : aucune. */
   offeredPossibleAnswers(): readonly (Choice<Given> | Box<Given>)[] {
     return (this.#offered ?? []) as (Choice<Given> | Box<Given>)[];
   }
@@ -101,7 +103,7 @@ export class ValidatedAnswers<Questions extends AnyQuestions = AnyQuestions> {
 
   /**
    * Les mêmes questions validées, avec les mêmes réponses et les mêmes
-   * options proposées. L'ordre des cases cochées ne compte pas.
+   * réponses possibles proposées. L'ordre des cases cochées ne compte pas.
    */
   sameAs(other: ValidatedAnswers<Questions>): boolean {
     return canonical(this.#validated) === canonical(other.#validated);

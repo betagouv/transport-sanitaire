@@ -1,8 +1,9 @@
 // fait_exception_article80_dialyse_domicile : patient pratiquant la dialyse à
 // domicile.
 //
-// L'option 9 de Q2.6 le dit, une fois Q2.6 validée : cochée, elle l'établit ;
-// proposée et écartée, elle vaut « non ». Sans Q2.6, il reste absent.
+// La réponse possible 9 de Q2.6 le dit, une fois Q2.6 validée : cochée, elle
+// l'établit ; proposée et écartée, elle vaut « non ». Sans Q2.6, il reste
+// absent.
 //
 // Il suit `CORRECTIF_FAITS_SANS_REPONSE.md`, qui prime sur
 // `CONTRAT_REPONSES_FAITS.json`.

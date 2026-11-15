@@ -3,8 +3,8 @@ import { describe, expect, it } from "vitest";
 import { page, questionsOf } from "../../../core/socle";
 import { afficher } from "./afficher";
 
-// Une option peut porter une aide : un lien, juste sous elle, qui déplie une
-// liste. La déplier n'est pas répondre. Les pages sont écrites ici.
+// Une réponse possible peut porter une aide : un lien, juste sous elle, qui
+// déplie une liste. La déplier n'est pas répondre. Les pages sont écrites ici.
 
 type Questions = {
   age: "oui" | "non";
@@ -57,15 +57,15 @@ const precede = (avant: Element, apres: Element) =>
     avant.compareDocumentPosition(apres) & Node.DOCUMENT_POSITION_FOLLOWING,
   );
 
-describe("aide dépliable d'une option", () => {
-  it("se place juste sous son option, avant la suivante", () => {
+describe("aide dépliable d'une réponse possible", () => {
+  it("se place juste sous sa réponse possible, avant la suivante", () => {
     afficher([SITUATIONS]);
 
     expect(precede(caseACocher(/^une autre situation/i), aide())).toBe(true);
     expect(precede(aide(), caseACocher(/^aucune de ces/i))).toBe(true);
   });
 
-  it("reste hors du libellé de son option", () => {
+  it("reste hors du libellé de sa réponse possible", () => {
     afficher([SITUATIONS]);
 
     expect(aide().closest("label")).toBeNull();

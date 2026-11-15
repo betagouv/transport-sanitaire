@@ -40,7 +40,10 @@ type Props = {
    * tant qu'aucun de ses champs n'est fautif.
    */
   errors?: readonly string[];
-  /** Ce qui s'affiche sous une option d'une liste de cases : ses questions. */
+  /**
+   * Ce qui s'affiche sous une réponse possible d'une liste de cases : ses
+   * questions.
+   */
   below?: (possibleAnswer: string) => ReactNode;
   /** Ce qui s'affiche sous le champ : les liens vers les réponses à revoir. */
   after?: ReactNode;

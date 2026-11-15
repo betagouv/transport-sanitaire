@@ -1,7 +1,7 @@
-// Les constructeurs des questions : la sorte et les options viennent du
-// constructeur et du catalogue, puis chaque réglage s'écrit sur sa ligne. Les
-// conditions lisent un seul objet, et les faits qu'elles y lisent sont ceux des
-// questions validées avant elles.
+// Les constructeurs des questions : la sorte et les réponses possibles viennent
+// du constructeur et du catalogue, puis chaque réglage s'écrit sur sa ligne.
+// Les conditions lisent un seul objet, et les faits qu'elles y lisent sont ceux
+// des questions validées avant elles.
 
 import { describe, expect, it } from "vitest";
 import {
@@ -87,7 +87,7 @@ const poseesSur = (
 ) => new Questionnaire(PAGES).readWith({ boisson }).questionsOn(surLaPage);
 
 describe("un constructeur", () => {
-  it("donne la sorte et les options du catalogue, dans son ordre", () => {
+  it("donne la sorte et les réponses possibles du catalogue, dans son ordre", () => {
     const [boisson] = poseesSur(BOISSON, "the");
     expect(boisson).toMatchObject({ id: "boisson", kind: "single choice" });
     expect(
@@ -99,7 +99,7 @@ describe("un constructeur", () => {
     ]);
   });
 
-  it("ne garde que les options de `order`, dans cet ordre, et met l'exclusive à part", () => {
+  it("ne garde que les réponses possibles de `order`, dans cet ordre, et met l'exclusive à part", () => {
     const [accompagnements] = poseesSur(ACCOMPAGNEMENTS, "the");
     if (accompagnements?.kind !== "multiple choice")
       throw new Error("choix multiple attendu");
@@ -114,7 +114,7 @@ describe("un constructeur", () => {
     });
   });
 
-  it("passe le contexte aux libellés et aux options du moment", () => {
+  it("passe le contexte aux libellés et aux réponses possibles du moment", () => {
     const [accompagnements] = poseesSur(ACCOMPAGNEMENTS, "cafe");
     if (accompagnements?.kind !== "multiple choice")
       throw new Error("choix multiple attendu");
@@ -142,7 +142,7 @@ describe("un constructeur", () => {
     expect(lire(bornee)).toMatchObject({ min: 2 });
   });
 
-  it("refuse, au typage, une option inconnue ou un réglage d'une autre sorte", () => {
+  it("refuse, au typage, une réponse possible inconnue ou un réglage d'une autre sorte", () => {
     const boisson = question
       .singleChoice("boisson", "Quoi ?")
       .possibleAnswers({ the: "Un thé", cafe: "Un café" });
@@ -196,7 +196,7 @@ describe("une incohérence", () => {
   });
 });
 
-describe("les options du catalogue", () => {
+describe("les réponses possibles du catalogue", () => {
   it("refusent une valeur qui a l'air d'un entier : elle passerait avant les autres", () => {
     const entiers = questionsOf<{ choix: "a" | "1" }>();
     expect(() =>

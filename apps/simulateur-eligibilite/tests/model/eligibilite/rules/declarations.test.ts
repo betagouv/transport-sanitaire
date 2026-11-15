@@ -22,7 +22,8 @@ type Regle = {
 
 const regles = rules as Record<string, Regle>;
 
-// Les options de chaque question à choix du modèle : leur slug, et leur libellé.
+// Les réponses possibles de chaque question à choix du modèle : leur slug, et
+// leur libellé.
 const REPONSES_POSSIBLES: Readonly<
   Record<string, Readonly<Record<string, string>>>
 > = Object.fromEntries(
@@ -90,13 +91,13 @@ describe("les cibles déclarées", () => {
   );
 });
 
-describe("les options déclarées", () => {
+describe("les réponses possibles déclarées", () => {
   // Q2.2.1 et Q2.2.1.b se partagent les situations du catalogue : chacune
   // garde son numéro, l'examen et l'hébergement de la maternité prennent le
   // 14 et le 15, et la réponse négative de chaque bloc est la 0
   // (`CONTRAT_Q221_PROGRESSIF.json`, D-252, D-272). Q2.1 garde les numéros de
   // ses neuf motifs, et Q2.14.motif ceux qui restent sans l'examen
-  // (QST-COLLECTE-UNIQUE, D-272). Q2.6 pose son option 1, le type du
+  // (QST-COLLECTE-UNIQUE, D-272). Q2.6 pose sa réponse possible 1, le type du
   // transfert, à part (D-106).
   const A_PART = ["Q2.1", "Q2.2.1", "Q2.2.1.b", "Q2.6", "Q2.14.motif"];
   const suivies = Object.entries(REPONSES_POSSIBLES).filter(
@@ -150,7 +151,7 @@ describe("les options déclarées", () => {
   );
 });
 
-describe("les libellés des options", () => {
+describe("les libellés des réponses possibles", () => {
   it("ne portent aucune consigne destinée aux développeurs", () => {
     const libelles = Object.values(REPONSES_POSSIBLES).flatMap(
       (possibleAnswers) => Object.values(possibleAnswers),

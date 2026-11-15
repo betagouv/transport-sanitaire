@@ -28,8 +28,8 @@ export type CoreModel<
 > = {
   /**
    * Ce qui calcule la préconisation : des réponses aux faits, puis aux cibles.
-   * Les faits lisent aussi les questions validées : une option qui ne s'est pas
-   * proposée n'a pas été refusée.
+   * Les faits lisent aussi les questions validées : une réponse possible qui ne
+   * s'est pas proposée n'a pas été refusée.
    */
   preconisation: {
     faits: (

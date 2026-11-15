@@ -1,10 +1,10 @@
 // fait_exception_article80_admission_sans_sejour : admission dans le nouvel
 // établissement sans prestation initiale.
 //
-// L'option 2 de Q2.6 le dit, une fois Q2.6 validée : cochée, elle l'établit ;
-// proposée et écartée, elle vaut « non ». Sans Q2.6, il reste absent.
-// Elle ne se propose que pour un transfert définitif sans séjour initial :
-// sinon, il vaut « non », avec sa raison.
+// La réponse possible 2 de Q2.6 le dit, une fois Q2.6 validée : cochée, elle
+// l'établit ; proposée et écartée, elle vaut « non ». Sans Q2.6, il reste
+// absent. Elle ne se propose que pour un transfert définitif sans séjour
+// initial : sinon, il vaut « non », avec sa raison.
 //
 // Il suit `CORRECTIF_FAITS_SANS_REPONSE.md`, qui prime sur
 // `CONTRAT_REPONSES_FAITS.json`.

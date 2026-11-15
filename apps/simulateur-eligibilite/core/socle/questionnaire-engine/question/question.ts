@@ -108,7 +108,9 @@ export type AnyCibles = Readonly<Record<string, Cible>>;
  */
 export type Validated<Questions extends AnyQuestions = AnyQuestions> = {
   readonly [Id in keyof Questions]?: {
-    /** Les options qui se proposaient. Absente : une saisie libre. */
+    /**
+     * Les réponses possibles qui se proposaient. Absente : une saisie libre.
+     */
     readonly offered?: readonly string[];
     /** Absente : la question, facultative, est restée sans réponse. */
     readonly answer?: Questions[Id];
@@ -124,7 +126,10 @@ export type Reminder =
   | string
   | ReadonlyArray<{ readonly label: string; readonly value: string }>;
 
-/** Deux options d'un choix multiple qui ne vont pas ensemble, et pourquoi. */
+/**
+ * Deux réponses possibles d'un choix multiple qui ne vont pas ensemble, et
+ * pourquoi.
+ */
 export type IncompatiblePossibleAnswers = {
   readonly values: readonly [string, string];
   /** Affichée quand cocher l'une vient de décocher l'autre. */
@@ -153,13 +158,15 @@ export type Question<
    */
   readonly dependencies: readonly Dependency[];
   /**
-   * Ce que lisent ses gardes, celles de ses options comprises : les réponses,
-   * les faits et les cibles qui décident si elle se pose, et ce qu'elle propose.
+   * Ce que lisent ses gardes, celles de ses réponses possibles comprises : les
+   * réponses, les faits et les cibles qui décident si elle se pose, et ce
+   * qu'elle propose.
    */
   readonly guardReads: Reads;
   /**
-   * Ce que lisent ses conditions, sans ses options : ce qui décide seul si
-   * elle se pose (`does-a-question-still-matter/can-still-be-asked.ts`).
+   * Ce que lisent ses conditions, sans ses réponses possibles : ce qui décide
+   * seul si elle se pose
+   * (`does-a-question-still-matter/can-still-be-asked.ts`).
    */
   readonly conditionReads: Reads;
   /**

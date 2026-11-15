@@ -3,8 +3,8 @@ import { describe, expect, it } from "vitest";
 import { page, questionsOf } from "../../../core/socle";
 import { afficher } from "./afficher";
 
-// Un choix unique peut mettre le libellé de ses options en gras, leur
-// description restant grise dessous. Les pages sont écrites ici.
+// Un choix unique peut mettre le libellé de ses réponses possibles en gras,
+// leur description restant grise dessous. Les pages sont écrites ici.
 
 type Questions = { besoin: "verifier" | "prescrire" };
 
@@ -18,8 +18,8 @@ const besoin = () =>
       possibleAnswer.description("Environ 3 minutes"),
     );
 
-describe("libellés d'options en gras", () => {
-  it("met le libellé de chaque option en gras, et sa description en gris dessous", () => {
+describe("libellés de réponses possibles en gras", () => {
+  it("met le libellé de chaque réponse possible en gras, et sa description en gris dessous", () => {
     afficher([page("besoin", besoin().boldLabels())]);
 
     expect(enGras("Vérifier")).toBe(true);

@@ -109,7 +109,7 @@ describe("answer() dans une garde", () => {
     ).toEqual(["sucre"]);
   });
 
-  it("sait quelles options se proposaient sur sa page", () => {
+  it("sait quelles réponses possibles se proposaient sur sa page", () => {
     const pages = [
       page("taille", TAILLE),
       page(

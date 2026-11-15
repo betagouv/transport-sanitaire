@@ -211,8 +211,8 @@ function validateInTurn(
   };
 }
 
-// Ce qu'on retient d'une question validée : ses options du moment, et sa
-// réponse s'il y en a une.
+// Ce qu'on retient d'une question validée : ses réponses possibles du moment,
+// et sa réponse s'il y en a une.
 function asValidated(question: AskedQuestion, answer: Answer | Unanswered) {
   const offered = question.offeredValues();
   const given = question.kept(answer);

@@ -125,7 +125,7 @@ describe("un mineur de Q1.3 face à une permission adulte (TSREF-20261015-05)", 
     ]);
   });
 
-  it("retire les deux options adultes quand Q1.3 dit un patient de moins de 18 ans", () => {
+  it("retire les deux réponses possibles adultes quand Q1.3 dit un patient de moins de 18 ans", () => {
     const mineur: Reponses = {
       ...PATIENT_SEUL,
       "Q1.3": ["8_MINEUR_SOINS_CONTINUS"],
@@ -225,7 +225,7 @@ describe("une permission écarte le transfert et le Centre 15", () => {
   ] as const;
   const PAR_Q221A: Reponses = { ...SEJOUR, "Q2.2.1.a": "1_OUI" };
 
-  it("par Q2.2.1.a = Oui (l'option 2 est écartée)", () => {
+  it("par Q2.2.1.a = Oui (la réponse possible 2 est écartée)", () => {
     for (const nom of DEUX_ECARTES) {
       expect(unFait(PAR_Q221A, nom)).toEqual({
         value: false,

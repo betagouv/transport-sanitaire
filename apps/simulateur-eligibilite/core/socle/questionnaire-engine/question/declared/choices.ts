@@ -1,12 +1,14 @@
-// Les questions à choix déclarées. Elles portent leurs options, valeur et
-// libellé, dans l'ordre du catalogue de l'éditeur, puis règlent celles qui en
-// disent plus :
+// Les questions à choix déclarées. Elles portent leurs réponses possibles,
+// valeur et libellé, dans l'ordre du catalogue de l'éditeur, puis règlent
+// celles qui en disent plus :
 //
 //   question.singleChoice("Q2.7", "Dans quelle tranche d'âge …")
 //     .possibleAnswers({ "1_MINEUR": "…", "3_ADULTE_AUTORISEE": "…" })
-//     .possibleAnswer("3_ADULTE_AUTORISEE", (possibleAnswer) => possibleAnswer.offeredWhen(desAdultesAProposer))
+//     .possibleAnswer("3_ADULTE_AUTORISEE", (possibleAnswer) =>
+//       possibleAnswer.offeredWhen(desAdultesAProposer),
+//     )
 //
-// `Value` : les valeurs de ses options. Une autre ne compile pas.
+// `Value` : les valeurs de ses réponses possibles. Une autre ne compile pas.
 
 import type { Scope } from "../../conditions/condition.ts";
 import type { Reads } from "../../conditions/reads.vo.ts";
@@ -39,8 +41,9 @@ export class DeclaredSingleChoice<
   readonly kind = "single choice";
 
   /**
-   * Ses options : chaque clé est une valeur, chaque valeur son libellé, dans
-   * l'ordre du catalogue. Une clé qui a l'air d'un entier est refusée.
+   * Ses réponses possibles : chaque clé est une valeur, chaque valeur son
+   * libellé, dans l'ordre du catalogue. Une clé qui a l'air d'un entier est
+   * refusée.
    */
   possibleAnswers<const Labels extends Readonly<Record<string, string>>>(
     labels: Labels,
@@ -56,19 +59,22 @@ export class DeclaredSingleChoice<
     });
   }
 
-  /** Le libellé de chacune de ses options, par valeur. */
+  /** Le libellé de chacune de ses réponses possibles, par valeur. */
   get labels(): Readonly<Record<Value, string>> {
     return this.own.possibleAnswers.labels;
   }
 
-  /** Règle l'option `value` : sa description, sa condition, son blocage. */
+  /**
+   * Règle la réponse possible `value` : sa description, sa condition, son
+   * blocage.
+   */
   possibleAnswer(value: Value, settle: Settle<Questions, Cibles, Faits>): this {
     return this.withOwn({
       possibleAnswers: this.own.possibleAnswers.settled(value, settle),
     });
   }
 
-  /** Les seules options proposées, dans cet ordre. Sans : toutes. */
+  /** Les seules réponses possibles proposées, dans cet ordre. Sans : toutes. */
   order(...values: Value[]): this {
     return this.withOwn({
       possibleAnswers: this.own.possibleAnswers.ordered(values),
@@ -83,7 +89,10 @@ export class DeclaredSingleChoice<
     return this.withOwn({ dropdown: true });
   }
 
-  /** Les libellés des options en gras ; leur description reste dessous. */
+  /**
+   * Les libellés des réponses possibles en gras ; leur description reste
+   * dessous.
+   */
   boldLabels(): this {
     return this.withOwn({ boldLabels: true });
   }
@@ -133,8 +142,9 @@ export class DeclaredMultipleChoice<
   readonly kind = "multiple choice";
 
   /**
-   * Ses options : chaque clé est une valeur, chaque valeur son libellé, dans
-   * l'ordre du catalogue. Une clé qui a l'air d'un entier est refusée.
+   * Ses réponses possibles : chaque clé est une valeur, chaque valeur son
+   * libellé, dans l'ordre du catalogue. Une clé qui a l'air d'un entier est
+   * refusée.
    */
   possibleAnswers<const Labels extends Readonly<Record<string, string>>>(
     labels: Labels,
@@ -156,19 +166,22 @@ export class DeclaredMultipleChoice<
     });
   }
 
-  /** Le libellé de chacune de ses options, par valeur. */
+  /** Le libellé de chacune de ses réponses possibles, par valeur. */
   get labels(): Readonly<Record<Value, string>> {
     return this.own.possibleAnswers.labels;
   }
 
-  /** Règle l'option `value` : sa description, sa condition, son blocage. */
+  /**
+   * Règle la réponse possible `value` : sa description, sa condition, son
+   * blocage.
+   */
   possibleAnswer(value: Value, settle: Settle<Questions, Cibles, Faits>): this {
     return this.withOwn({
       possibleAnswers: this.own.possibleAnswers.settled(value, settle),
     });
   }
 
-  /** Les seules options proposées, dans cet ordre. Sans : toutes. */
+  /** Les seules réponses possibles proposées, dans cet ordre. Sans : toutes. */
   order(...values: Value[]): this {
     return this.withOwn({
       possibleAnswers: this.own.possibleAnswers.ordered(values),
@@ -176,16 +189,16 @@ export class DeclaredMultipleChoice<
   }
 
   /**
-   * L'option exclusive, « Aucune » souvent : la cocher décoche les autres, et
-   * inversement. Elle se règle comme les autres.
+   * La réponse possible exclusive, « Aucune » souvent : la cocher décoche les
+   * autres, et inversement. Elle se règle comme les autres.
    */
   exclusive(value: Value): this {
     return this.withOwn({ exclusive: value });
   }
 
   /**
-   * Deux options qui s'excluent : cocher l'une décoche l'autre, sans toucher
-   * au reste, et `explanation` s'affiche.
+   * Deux réponses possibles qui s'excluent : cocher l'une décoche l'autre, sans
+   * toucher au reste, et `explanation` s'affiche.
    */
   incompatible(first: Value, second: Value, explanation: string): this {
     const incompatible = { values: [first, second] as const, explanation };
@@ -240,7 +253,8 @@ export type MultipleOwn<Questions extends AnyQuestions, Cibles, Faits> = {
 
 // ---- implémentation ----
 
-// Ce qui règle une option : la lambda reçoit l'option, et la donne réglée.
+// Ce qui règle une réponse possible : la lambda reçoit la réponse possible, et
+// la donne réglée.
 type Settle<Questions extends AnyQuestions, Cibles, Faits> = (
   possibleAnswer: DeclaredPossibleAnswer<Questions, Cibles, Faits>,
 ) => DeclaredPossibleAnswer<Questions, Cibles, Faits>;

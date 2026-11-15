@@ -1,7 +1,8 @@
-// Le retour vers un établissement pénitentiaire (option 10 de Q2.2.1) :
-// TS1012-04 et `CONTRAT_CONTEXTES_V1012.json` du paquet v10.1.2 de l'éditeur,
-// les points 33 et 34 de la v10.1.3 et `CONTRAT_ORIENTATION_ADMINISTRATIVE.json`.
-// Ce qui établit l'indication médicale est notre lecture (D-130).
+// Le retour vers un établissement pénitentiaire (réponse possible 10 de Q2.2.1)
+// : TS1012-04 et `CONTRAT_CONTEXTES_V1012.json` du paquet v10.1.2 de l'éditeur,
+// les points 33 et 34 de la v10.1.3 et
+// `CONTRAT_ORIENTATION_ADMINISTRATIVE.json`. Ce qui établit l'indication
+// médicale est notre lecture (D-130).
 
 import { describe, expect, it } from "vitest";
 import type { Cibles } from "../../../../core/models/eligibilite/cibles/noms";

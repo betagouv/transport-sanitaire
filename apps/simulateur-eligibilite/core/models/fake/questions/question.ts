@@ -1,6 +1,6 @@
 // Les constructeurs des questions du modèle de démonstration. Chaque question
-// porte ses options. Les conditions lisent ses faits, et les cibles que ses
-// règles en tirent (`question/asked/context.ts`).
+// porte ses réponses possibles. Les conditions lisent ses faits, et les cibles
+// que ses règles en tirent (`question/asked/context.ts`).
 //
 // Une question lit celles d'avant par leur objet : `given.question(BOISSON)`.
 // Le type `Questions` se tire des parties (`reponses.ts`) : le lire ici

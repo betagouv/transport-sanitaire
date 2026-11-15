@@ -3,8 +3,8 @@
 // reste, peut encore se poser et compte elle-même (D-221, D-223).
 //
 // Ici, le résultat ne montre que la taille. La distance n'en change que les
-// options, et la taille ne se pose que pour une entrée en établissement, qui ne
-// se demande que pour un séjour.
+// réponses possibles, et la taille ne se pose que pour une entrée en
+// établissement, qui ne se demande que pour un séjour.
 
 import { describe, expect, it } from "vitest";
 import {

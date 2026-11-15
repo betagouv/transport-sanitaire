@@ -27,7 +27,7 @@ export const Q2_14_TRAJET = question
     "Q2.14.trajet",
     "Quel déplacement évaluez-vous dans cette simulation ?",
   )
-  // Les options de `CONTRAT_REPONSES_CONDITIONNELLES.json`.
+  // Les réponses possibles de `CONTRAT_REPONSES_CONDITIONNELLES.json`.
   .possibleAnswers({
     "1_ENGAGEMENT_MATERNITE": "Le déplacement lié à Engagement maternité",
     "2_HTNM_HORS_MATERNITE":
@@ -75,7 +75,7 @@ export const Q2_14_MOTIF = question
   .multipleChoice("Q2.14.motif", "Quel motif concerne le déplacement évalué ?")
   // Le second groupe de Q2.14, `CONTRAT_Q214_GROUPES.json`, groupe `finalite`,
   // tel qu'il se pose pour l'hébergement seul
-  // (`whenAccommodationDiscoveredAndExamNotEstablished`). Son option
+  // (`whenAccommodationDiscoveredAndExamNotEstablished`). Sa réponse possible
   // `examen_8_9` ne s'y propose pas : l'examen se coche en Q2.2.1.
   .possibleAnswers({
     "2_HEBERGEMENT_ENGAGEMENT":

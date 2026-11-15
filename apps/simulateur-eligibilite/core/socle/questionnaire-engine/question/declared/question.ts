@@ -42,7 +42,7 @@ import {
 
 /**
  * Une question déclarée, sans ce que sa sorte y ajoute. `Id` : son id.
- * `Given` : le type de sa réponse, que sa sorte et ses options disent.
+ * `Given` : le type de sa réponse, dit par sa sorte et ses réponses possibles.
  * `Questions` : ce que ses rappels et ses libellés lisent par id, rien pour un
  * modèle dont les questions se lisent par leur objet (`ReadByObject`).
  */
@@ -141,9 +141,9 @@ export abstract class DeclaredQuestion<
   }
 
   /**
-   * La question s'affiche juste sous cette option d'une liste de cases de la
-   * même page, et non à son rang. Elle reste une question à part, avec sa
-   * légende : sa garde se déclare toujours par `appliesWhen`.
+   * La question s'affiche juste sous cette réponse possible d'une liste de
+   * cases de la même page, et non à son rang. Elle reste une question à part,
+   * avec sa légende : sa garde se déclare toujours par `appliesWhen`.
    */
   shownUnder<Ref extends QuestionRef<Questions>>(
     question: Ref,
@@ -156,7 +156,7 @@ export abstract class DeclaredQuestion<
     });
   }
 
-  /** La question qui l'affiche sous l'une de ses options (`shownUnder`). */
+  /** La question qui l'affiche sous une réponse possible (`shownUnder`). */
   get shownUnderQuestion(): string | InPlace {
     return this.settings.under?.question;
   }
@@ -223,12 +223,12 @@ export abstract class DeclaredQuestion<
     return this.settings.dependsOn;
   }
 
-  /** Ce que lisent ses gardes, celles de ses options comprises. */
+  /** Ce que lisent ses gardes, celles de ses réponses possibles comprises. */
   get guardReads(): Reads {
     return this.conditionReads.with(this.ownGuardReads());
   }
 
-  /** Ce que lisent ses conditions, sans ses options. */
+  /** Ce que lisent ses conditions, sans ses réponses possibles. */
   get conditionReads(): Reads {
     return Reads.union(...this.settings.conditions.map(({ reads }) => reads));
   }
@@ -249,7 +249,7 @@ export abstract class DeclaredQuestion<
     return this.settings.requiredWhen?.reads ?? null;
   }
 
-  /** Ce que lisent les gardes de ce que sa sorte ajoute : ses options. */
+  /** Ce que lisent les gardes de ses réponses possibles, si elle en a. */
   protected ownGuardReads(): Reads {
     return Reads.none();
   }

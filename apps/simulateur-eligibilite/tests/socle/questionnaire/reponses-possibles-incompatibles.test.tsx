@@ -5,8 +5,8 @@ import { Questionnaire } from "../../../core/socle/questionnaire-engine";
 import { errorsOf } from "../../../front/socle/questionnaire/word-a-problem";
 import { afficher } from "./afficher";
 
-// Deux options d'un choix multiple peuvent s'exclure : cocher l'une décoche
-// l'autre, avec une explication. Les pages sont écrites ici.
+// Deux réponses possibles d'un choix multiple peuvent s'exclure : cocher l'une
+// décoche l'autre, avec une explication. Les pages sont écrites ici.
 
 type Questions = {
   criteres: readonly ("fauteuil" | "brancard" | "oxygene")[];
@@ -30,7 +30,7 @@ const PAGE = page("criteres", CRITERES);
 
 const caseACocher = (name: string) => screen.getByRole("checkbox", { name });
 
-describe("options incompatibles", () => {
+describe("réponses possibles incompatibles", () => {
   it("décoche l'autre, explique pourquoi, et garde le reste", async () => {
     const { user } = afficher([PAGE]);
     await user.click(caseACocher("Dans son fauteuil"));

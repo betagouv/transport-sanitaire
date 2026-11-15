@@ -83,7 +83,8 @@ const ORIENTATION_DU_SENS: Readonly<Record<string, Orientation>> = {
   "3_ALLER_RETOUR_EQUIVALENT": "aller",
 };
 
-// Une question qui n'est pas encore lue : ni valeur, ni option, ni case.
+// Une question qui n'est pas encore lue : ni valeur, ni réponse possible, ni
+// case.
 const SANS_REPONSE = {
   value: undefined,
   is: () => false,

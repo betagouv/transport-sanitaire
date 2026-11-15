@@ -98,7 +98,7 @@ function hospitalisation(entrees: Entrees): Lieux {
     : { arrivee: DOMICILE_HAD };
 }
 
-// Q2.6 option 10 : un départ hospitalier vers le domicile.
+// Q2.6 réponse possible 10 : un départ hospitalier vers le domicile.
 function admissionEnHad(): Lieux {
   return {
     depart: {
@@ -109,8 +109,8 @@ function admissionEnHad(): Lieux {
   };
 }
 
-// Q2.6 option 8 : un transfert provisoire, qui part de l'établissement
-// d'origine et y revient.
+// Q2.6 réponse possible 8 : un transfert provisoire, qui part de
+// l'établissement d'origine et y revient.
 function radiotherapie(
   entrees: Entrees,
   orientation: Orientation | Inconnu,
@@ -123,7 +123,7 @@ function radiotherapie(
   return orientation === "retour" ? { arrivee: origine } : { depart: origine };
 }
 
-// L'option 10 de Q2.2.1 fixe l'arrivée pénitentiaire.
+// La réponse possible 10 de Q2.2.1 fixe l'arrivée pénitentiaire.
 function versLaPrison(): Lieux {
   return {
     arrivee: {
@@ -245,7 +245,7 @@ function sejourEnEtablissement(entrees: Entrees): boolean {
   );
 }
 
-// L'option 10 de Q2.2.1 est cochée (`p2/retour-penitentiaire.ts`).
+// La réponse possible 10 de Q2.2.1 est cochée (`p2/retour-penitentiaire.ts`).
 function retourPenitentiaire({ situations }: Entrees): boolean {
   return situations.checked("10_RETOUR_PENITENTIAIRE");
 }

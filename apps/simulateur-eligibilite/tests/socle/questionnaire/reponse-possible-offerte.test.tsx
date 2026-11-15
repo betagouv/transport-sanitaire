@@ -3,8 +3,8 @@ import { describe, expect, it } from "vitest";
 import { givenOf, page, questionsOf } from "../../../core/socle";
 import { afficher } from "./afficher";
 
-// Une option peut ne se proposer que pour certaines réponses. Le questionnaire
-// factice n'en a pas, les pages sont donc écrites ici.
+// Une réponse possible peut ne se proposer que pour certaines réponses. Le
+// questionnaire factice n'en a pas, les pages sont donc écrites ici.
 
 type Questions = {
   regime: "tout" | "vegetarien";
@@ -40,7 +40,7 @@ const radio = (name: string) => screen.getByRole("radio", { name });
 const caseACocher = (name: string) => screen.getByRole("checkbox", { name });
 const bouton = (name: string) => screen.getByRole("button", { name });
 
-describe("option qui dépend des réponses", () => {
+describe("réponse possible qui dépend des réponses", () => {
   it("se propose quand les réponses le permettent", async () => {
     const { user } = afficher([REGIME, PLATS]);
 

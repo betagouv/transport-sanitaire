@@ -77,7 +77,7 @@ describe("quand la page de la convocation se pose", () => {
     ]);
   });
 
-  it("pose Q2.10.a et Q2.10.b ensemble, sous l'option 6 seulement", () => {
+  it("pose Q2.10.a et Q2.10.b ensemble, sous la réponse possible 6 seulement", () => {
     expect(posees({ ...CONVOQUE, "Q2.10": "6_APPAREILLAGE" })).toEqual([
       "Q2.10",
       "Q2.10.a",

@@ -161,7 +161,8 @@ const LU_DES_REPONSES = given
     criteres: given
       .question("Q1.2")
       .answer()
-      // Le slug porte en tête le numéro de l'option au catalogue (D-75).
+      // Le slug porte en tête le numéro de la réponse possible au catalogue
+      // (D-75).
       .compute((aides) =>
         aides
           .checkedBoxes()

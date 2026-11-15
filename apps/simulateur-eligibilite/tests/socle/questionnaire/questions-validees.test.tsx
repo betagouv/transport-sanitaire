@@ -76,7 +76,7 @@ describe("les questions validées", () => {
     expect(allergies).toEqual({ offered: ["gluten", "arachide"] });
   });
 
-  it("ne retiennent que les options qui se proposaient", () => {
+  it("ne retiennent que les réponses possibles qui se proposaient", () => {
     const answers = {
       regime: "vegetarien",
       proteines: "Tofu",
@@ -88,7 +88,7 @@ describe("les questions validées", () => {
     });
   });
 
-  it("ne donnent pas d'options à une saisie libre", () => {
+  it("ne donnent pas de réponses possibles à une saisie libre", () => {
     const answers = { regime: "tout", plats: ["steak"], dessert: "Une tarte" };
     expect(QUESTIONNAIRE.readWith(answers).validated.toJSON().dessert).toEqual({
       answer: "Une tarte",

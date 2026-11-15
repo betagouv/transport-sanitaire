@@ -1,6 +1,6 @@
-// P0 et P1 du modèle de l'éditeur : les pages qui s'affichent, les options qui
-// se proposent, les faits que les réponses établissent, et le mode que les
-// règles en tirent.
+// P0 et P1 du modèle de l'éditeur : les pages qui s'affichent, les réponses
+// possibles qui se proposent, les faits que les réponses établissent, et le
+// mode que les règles en tirent.
 //
 // Le catalogue de l'éditeur fait foi pour les questions, et
 // `CONTRAT_REPONSES_FAITS.json` avec son correctif pour les faits.
@@ -113,7 +113,7 @@ describe("le mode de transport", () => {
   });
 });
 
-describe("les options de Q1.2", () => {
+describe("les réponses possibles de Q1.2", () => {
   // Les cas `exclusivite-6-7` et `exclusivite-4-11` de la recette N2 de
   // l'éditeur (D-232) : cocher l'une décoche l'autre.
   it("s'excluent deux à deux : fauteuil et allongé, hygiène et asepsie", () => {
@@ -129,7 +129,7 @@ describe("les options de Q1.2", () => {
   });
 });
 
-describe("les options de Q1.3", () => {
+describe("les réponses possibles de Q1.3", () => {
   it.each([
     [
       "un transport assis professionnel",

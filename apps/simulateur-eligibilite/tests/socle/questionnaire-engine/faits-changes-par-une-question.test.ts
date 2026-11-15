@@ -1,7 +1,7 @@
 // Ce que change une question : les faits qui la lisent, et ceux des questions
 // dont une garde la lit, de proche en proche (#254). Le modèle factice montre
 // le lien par une garde de question. Les pages et les règles écrites ici
-// montrent celui par une garde d'option, par une cible, par un fait
+// montrent celui par une garde de réponse possible, par une cible, par un fait
 // qu'impose la décision, et la constante.
 
 import { describe, expect, it } from "vitest";
@@ -43,7 +43,7 @@ describe("ce que change une question", () => {
     });
   });
 
-  it("passe par la garde d'une option, et ne change pas une constante", () => {
+  it("passe par la garde d'une réponse possible, et ne change pas une constante", () => {
     const changes = faitsChangedBy(
       [
         TAILLE,

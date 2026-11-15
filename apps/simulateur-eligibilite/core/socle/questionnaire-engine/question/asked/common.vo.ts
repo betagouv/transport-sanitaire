@@ -14,10 +14,12 @@ import {
   stated,
 } from "./answer-problem.vo.ts";
 
-/** Une saisie libre, sans options. */
+/** Une saisie libre, sans réponses possibles. */
 type FreeInput = undefined;
 
-/** L'option d'une liste de cases sous laquelle la question s'affiche. */
+/**
+ * La réponse possible d'une liste de cases sous laquelle la question s'affiche.
+ */
 export type ShownUnder = {
   readonly question: string;
   readonly possibleAnswer: string;
@@ -55,7 +57,7 @@ export class AskedCommon {
   readonly reminder: Reminder | undefined;
   /** La question peut rester sans réponse : sa page se valide sans elle. */
   readonly optional: boolean;
-  /** L'option sous laquelle elle s'affiche, sur la même page. */
+  /** La réponse possible sous laquelle elle s'affiche, sur la même page. */
   readonly under: ShownUnder | InPlace;
   /**
    * Ce qui, dans la réponse, en contredit une autre : un message par
@@ -80,16 +82,16 @@ export class AskedCommon {
   }
 
   /**
-   * Ce que la question garde de cette réponse : les seules options qui s'y
-   * proposent, les seuls champs qui s'y demandent. `undefined` : rien.
+   * Ce que la question garde de cette réponse : les seules réponses possibles
+   * qui s'y proposent, les seuls champs qui s'y demandent. `undefined` : rien.
    */
   kept(answer: Answer | Unanswered): Answer | Unanswered {
     return answer;
   }
 
   /**
-   * Les valeurs qu'une réponse peut porter, l'option exclusive comprise.
-   * Sans options : une saisie libre.
+   * Les valeurs qu'une réponse peut porter, la réponse possible exclusive
+   * comprise. Sans réponses possibles : une saisie libre.
    */
   offeredValues(): readonly string[] | FreeInput {
     return undefined;

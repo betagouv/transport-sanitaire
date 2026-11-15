@@ -23,12 +23,12 @@ export class AnswerValue<Given extends Answer> extends Value<
     );
   }
 
-  /** La réponse est cette option. Sans réponse : non. */
+  /** La réponse est cette réponse possible. Sans réponse : non. */
   is(possibleAnswer: Choice<Given>): Condition {
     return this.compute((answer) => answer.is(possibleAnswer));
   }
 
-  /** La réponse est l'une de ces options. Sans réponse : non. */
+  /** La réponse est l'une de ces réponses possibles. Sans réponse : non. */
   isOneOf(...possibleAnswers: readonly Choice<Given>[]): Condition {
     return this.compute((answer) => answer.isOneOf(...possibleAnswers));
   }
@@ -58,7 +58,7 @@ export class AnswerValue<Given extends Answer> extends Value<
     return this.compute((answer) => answer.checked(box));
   }
 
-  /** Cette option se proposait. */
+  /** Cette réponse possible se proposait. */
   offered(possibleAnswer: Choice<Given> | Box<Given>): Condition {
     return this.compute((answer) => answer.offers(possibleAnswer));
   }

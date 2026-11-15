@@ -1,7 +1,7 @@
 // Q2.6.a, le type du transfert, posée à part, puis Q2.6, les exceptions de
 // l'article 80, sur la même page (D-106). Les exceptions attendent le type
-// quand il se pose : leurs options en dépendent. Les faits de l'article 80
-// vivent sous `faits/`.
+// quand il se pose : leurs réponses possibles en dépendent. Les faits de
+// l'article 80 vivent sous `faits/`.
 
 import type { AnswerOf, Condition } from "../../../../../socle/index.ts";
 import { Q1_3 } from "../../p1/questions/q1-3.ts";
@@ -43,8 +43,8 @@ const unTypeAPoser = unTransfert;
 
 export const Q2_6_A = question
   .singleChoice("Q2.6.a", "Le transfert est-il définitif ou provisoire ?")
-  // Le type du transfert : l'option 1 du catalogue de Q2.6, posée à part
-  // (D-106).
+  // Le type du transfert : la réponse possible 1 du catalogue de Q2.6, posée à
+  // part (D-106).
   .possibleAnswers({
     "1_DEFINITIF": "Définitif (au moins 48 heures).",
     "2_PROVISOIRE":
@@ -70,14 +70,15 @@ const desExceptionsAPoser = unTransfert
   .or(unSejourEnHad)
   .and(unTypeAPoser.not().or(type.isPresent()));
 
-// Q2.6 et ses options, avant les conditions de ses options.
+// Q2.6 et ses réponses possibles, avant les conditions de ses réponses
+// possibles.
 const exceptions = question
   .multipleChoice(
     "Q2.6",
     "Quelle situation précise et quelles exceptions s’appliquent à ce déplacement ?",
   )
-  // Les options gardent leur numéro du catalogue, où le type est l'option 1.
-  // L'option 4 est la nôtre (D-106).
+  // Les réponses possibles gardent leur numéro du catalogue, où le type est la
+  // réponse possible 1. La réponse possible 4 est la nôtre (D-106).
   .possibleAnswers({
     "2_ADMISSION_SANS_SEJOUR":
       "Admission dans un nouvel établissement, sans hospitalisation dans l’établissement de départ.",
@@ -104,9 +105,9 @@ type Exception = AnswerOf<typeof exceptions>[number];
 
 /**
  * Quand une exception se propose. Pour une admission ou un séjour en HAD, sans
- * Q2.5, les options 2, 3 et 8 ne se proposent pas ; pour la permission d'un
- * adulte, ni la 2 ni la 3 : elle suppose un séjour, et n'est pas un transfert
- * entre établissements. Les autres se proposent toujours.
+ * Q2.5, les réponses possibles 2, 3 et 8 ne se proposent pas ; pour la
+ * permission d'un adulte, ni la 2 ni la 3 : elle suppose un séjour, et n'est
+ * pas un transfert entre établissements. Les autres se proposent toujours.
  */
 const EXCEPTIONS_A_PROPOSER: Partial<Record<Exception, Condition>> = {
   "2_ADMISSION_SANS_SEJOUR": unTransfert

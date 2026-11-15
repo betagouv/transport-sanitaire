@@ -96,7 +96,7 @@ describe("un fait", () => {
     expect(lu(fait, { boisson: "cafe" })).toBe("cafe");
   });
 
-  it("refuse, au typage, une option inconnue", () => {
+  it("refuse, au typage, une réponse possible inconnue", () => {
     // @ts-expect-error « chocolat » n'est pas une boisson.
     BOISSON.is("chocolat");
     // @ts-expect-error « sucre » n'est pas un accompagnement.

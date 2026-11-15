@@ -1,7 +1,8 @@
 // fait_appel_centre15 : appel effectif au SAMU-Centre 15.
 //
-// L'option 3 de Q2.6 le dit, une fois Q2.6 validée : cochée, elle l'établit ;
-// proposée et écartée, elle vaut « non ». Non proposée, il reste absent.
+// La réponse possible 3 de Q2.6 le dit, une fois Q2.6 validée : cochée, elle
+// l'établit ; proposée et écartée, elle vaut « non ». Non proposée, il reste
+// absent.
 //
 // Il suit `CONTRAT_REPONSES_FAITS.json`.
 

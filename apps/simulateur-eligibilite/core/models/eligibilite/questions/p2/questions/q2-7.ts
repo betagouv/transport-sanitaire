@@ -5,8 +5,8 @@
 import { Q1_3 } from "../../p1/questions/q1-3.ts";
 import { given, question } from "../../question.ts";
 
-// Les options adultes de Q2.7 se proposent, sauf si Q1.3 dit un patient de
-// moins de 18 ans : un fait acquis retire les choix qu'il contredit.
+// Les réponses possibles adultes de Q2.7 se proposent, sauf si Q1.3 dit un
+// patient de moins de 18 ans : un fait acquis retire les choix qu'il contredit.
 const desAdultesAProposer = given
   .question(Q1_3)
   .answer()
@@ -42,7 +42,7 @@ export const Q2_7_A = question
     "Q2.7.a",
     "L’établissement confirme-t-il que ce transport correspond à une prestation exceptionnelle facturable au patient ?",
   )
-  // La confirmation de l'option 4 de Q2.7, nommée par nous (D-107).
+  // La confirmation de la réponse possible 4 de Q2.7, nommée par nous (D-107).
   .possibleAnswers({
     "1_OUI": "Oui, les conditions de facturation ont été vérifiées.",
     "2_NON": "Non.",

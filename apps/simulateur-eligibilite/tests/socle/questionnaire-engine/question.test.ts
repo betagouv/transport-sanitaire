@@ -85,7 +85,7 @@ describe("pages auxquelles tout est répondu", () => {
     expect(repondu({ douleur: "oui" })).toBe(false);
   });
 
-  it("ne le sont pas pour une réponse hors des options", () => {
+  it("ne le sont pas pour une réponse hors des réponses possibles", () => {
     expect(repondu({ douleur: "peut-être" })).toBe(false);
   });
 });

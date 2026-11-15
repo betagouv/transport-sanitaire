@@ -3,9 +3,10 @@ import { describe, expect, it } from "vitest";
 import { givenOf, page, questionsOf } from "../../../core/socle";
 import { afficher } from "./afficher";
 
-// Une question peut s'afficher juste sous l'option d'une liste de cases qui la
-// fait apparaître, et non à son rang (`shownUnder`). Elle reste une question à
-// part : sa légende, son groupe, sa garde. Les pages sont écrites ici.
+// Une question peut s'afficher juste sous la réponse possible d'une liste de
+// cases qui la fait apparaître, et non à son rang (`shownUnder`). Elle reste
+// une question à part : sa légende, son groupe, sa garde. Les pages sont
+// écrites ici.
 
 type Questions = {
   situations: readonly ("ald" | "autre" | "aucune")[];
@@ -42,8 +43,8 @@ const precede = (avant: Element, apres: Element) =>
     avant.compareDocumentPosition(apres) & Node.DOCUMENT_POSITION_FOLLOWING,
   );
 
-describe("une question sous une option", () => {
-  it("s'affiche juste sous son option, avant la suivante", async () => {
+describe("une question sous une réponse possible", () => {
+  it("s'affiche juste sous sa réponse possible, avant la suivante", async () => {
     const { user } = afficher([SOUS_UNE_REPONSE_POSSIBLE]);
 
     await user.click(caseACocher(/^une affection/i));
@@ -52,7 +53,7 @@ describe("une question sous une option", () => {
     expect(precede(groupeDuLien(), caseACocher(/^une autre/i))).toBe(true);
   });
 
-  it("reste un groupe à part, hors du libellé de l'option", async () => {
+  it("reste un groupe à part, hors du libellé de la réponse possible", async () => {
     const { user } = afficher([SOUS_UNE_REPONSE_POSSIBLE]);
 
     await user.click(caseACocher(/^une affection/i));
@@ -63,7 +64,7 @@ describe("une question sous une option", () => {
     ).toEqual([groupeDuLien(), groupeDuLien()]);
   });
 
-  it("suit sa garde : l'option décochée, elle disparaît", async () => {
+  it("suit sa garde : la réponse possible décochée, elle disparaît", async () => {
     const { user } = afficher([SOUS_UNE_REPONSE_POSSIBLE]);
 
     await user.click(caseACocher(/^une affection/i));
@@ -80,7 +81,7 @@ describe("une question sous une option", () => {
     expect(precede(caseACocher(/^aucune de ces/i), groupeDuLien())).toBe(true);
   });
 
-  it("ne se déclare pas avant la liste de son option", () => {
+  it("ne se déclare pas avant la liste de sa réponse possible", () => {
     expect(() =>
       page("situations", LIEN.shownUnder("situations", "ald"), SITUATIONS),
     ).toThrow(

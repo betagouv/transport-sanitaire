@@ -51,7 +51,8 @@ function contexteDeLArticle80({
   return sousType.is("3_ADMISSION_HAD") ? { kind: "had" } : undefined;
 }
 
-// Q2.7 option 4 : un transport exceptionnel demandé par écrit par le patient.
+// Q2.7 réponse possible 4 : un transport exceptionnel demandé par écrit par le
+// patient.
 function contexteDeLaPermission({
   tranche,
 }: Pick<Entrees, "tranche">): Contexte | NonProuve {

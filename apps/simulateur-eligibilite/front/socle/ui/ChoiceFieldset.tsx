@@ -46,7 +46,9 @@ type Props = {
   message?: Message;
   /** Met la légende en avant, quand le champ est la question de la page. */
   lead?: boolean;
-  /** Les libellés des options en gras ; leur description reste grise, dessous. */
+  /**
+   * Les libellés des options en gras ; leur description reste grise, dessous.
+   */
   boldLabels?: boolean;
 };
 
@@ -94,8 +96,9 @@ function Legend({ id, legend, hint, lead }: Props) {
   );
 }
 
-// Une option, son aide, puis ce qui s'affiche dessous. L'aide est sœur de l'option, pas son enfant : le
-// DSFR espace les options d'après leur rang dans le groupe.
+// Une option, son aide, puis ce qui s'affiche dessous. L'aide est sœur de
+// l'option, pas son enfant : le DSFR espace les options d'après leur rang dans
+// le groupe.
 function ChoiceInput({
   id,
   type,

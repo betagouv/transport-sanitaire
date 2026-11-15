@@ -3,9 +3,9 @@ import { describe, expect, it } from "vitest";
 import { page, questionsOf } from "../../../core/socle";
 import { afficher } from "./afficher";
 
-// Une option peut porter une explication, affichée sous son libellé : ce sont
-// les cartes radio du DSFR. Le questionnaire factice n'en a pas, la page est
-// donc écrite ici.
+// Une réponse possible peut porter une explication, affichée sous son libellé :
+// ce sont les cartes radio du DSFR. Le questionnaire factice n'en a pas, la
+// page est donc écrite ici.
 
 type Questions = { duree: "peu" | "beaucoup" };
 
@@ -21,8 +21,8 @@ const DUREE = page(
     ),
 );
 
-describe("explication d'une option", () => {
-  it("se lit avec le libellé de l'option qui la porte", () => {
+describe("explication d'une réponse possible", () => {
+  it("se lit avec le libellé de la réponse possible qui la porte", () => {
     afficher([DUREE]);
 
     expect(
@@ -30,7 +30,7 @@ describe("explication d'une option", () => {
     ).toBeInTheDocument();
   });
 
-  it("ne change rien à une option qui n'en a pas", () => {
+  it("ne change rien à une réponse possible qui n'en a pas", () => {
     afficher([DUREE]);
 
     expect(screen.getByRole("radio", { name: "Beaucoup" })).toBeInTheDocument();

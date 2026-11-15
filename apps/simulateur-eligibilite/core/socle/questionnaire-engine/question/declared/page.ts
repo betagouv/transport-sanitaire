@@ -1,6 +1,10 @@
 // Une page déclarée : son id, et ses questions dans l'ordre.
 //
-//   page("P2.2", question.singleChoice("Q2.2", "…"), question.number("Q2.3", "…"))
+//   page(
+//     "P2.2",
+//     question.singleChoice("Q2.2", "…"),
+//     question.number("Q2.3", "…"),
+//   )
 //
 // Une condition de page s'ajoute à chacune de ses questions : une page dont
 // aucune question ne se pose est sautée, sans rien de plus à déclarer.
@@ -56,7 +60,8 @@ export class DeclaredPage<
 
 /**
  * La page `id`, avec ces questions dans cet ordre. Une question qui s'affiche
- * sous une option (`shownUnder`) suit la liste de cette option, sur la page.
+ * sous une réponse possible (`shownUnder`) suit la liste de cette réponse
+ * possible, sur la page.
  */
 export function page<
   Questions extends AnyQuestions,

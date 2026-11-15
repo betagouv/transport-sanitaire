@@ -2,10 +2,10 @@
 // du paquet, et `validateAnswers` et `reconcileAfterP1`, qui servent d'oracle.
 //
 // L'éditeur refuse une réponse incohérente sur sa page, avant « Suivant ». Le
-// socle le fait déjà : une incompatibilité (`incompatiblePossibleAnswers`), un blocage
-// (`blocks`), ou une question qui ne se pose pas (`appliesWhen`, `offeredWhen`). Les
-// contradictions des pages encore à poser (permission, implantation, pays,
-// dates…) arrivent avec leurs questions.
+// socle le fait déjà : une incompatibilité (`incompatiblePossibleAnswers`), un
+// blocage (`blocks`), ou une question qui ne se pose pas (`appliesWhen`,
+// `offeredWhen`). Les contradictions des pages encore à poser (permission,
+// implantation, pays, dates…) arrivent avec leurs questions.
 
 import { describe, expect, it } from "vitest";
 import { model } from "../../../../core/models/eligibilite";

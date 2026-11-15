@@ -2,12 +2,17 @@
 // sorte, son id et son libellé, puis réglage par réglage :
 //
 //   question.singleChoice("Q1.1", "Concernant son déplacement, le patient :")
-//     .possibleAnswers({ "1_SEUL": "Peut se déplacer seul…", "2_AVEC_UN_PROCHE": "…" })
-//     .possibleAnswer("2_AVEC_UN_PROCHE", (possibleAnswer) => possibleAnswer.description("…"))
+//     .possibleAnswers({
+//       "1_SEUL": "Peut se déplacer seul…",
+//       "2_AVEC_UN_PROCHE": "…",
+//     })
+//     .possibleAnswer("2_AVEC_UN_PROCHE", (possibleAnswer) =>
+//       possibleAnswer.description("…"),
+//     )
 //     .mattersWhile(given.fait("fait_situation_soins_qualifiante").isNon())
 //
-// Une question à choix porte ses options : elles disent le type de sa réponse.
-// Une saisie le tient de sa sorte : un nombre, un texte, une case.
+// Une question à choix porte ses réponses possibles : elles disent le type de
+// sa réponse. Une saisie le tient de sa sorte : un nombre, un texte, une case.
 //
 // Les gardes et les incohérences sont des conditions (`given.ts`). Les libellés,
 // rappels, aides et bornes calculés reçoivent un seul objet : les réponses, les

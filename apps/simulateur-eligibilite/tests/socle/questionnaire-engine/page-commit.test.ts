@@ -33,7 +33,7 @@ const PAGES = [
 ];
 const QUESTIONNAIRE = new Questionnaire(PAGES);
 
-// Une réponse qui ne dépend que de certaines options d'une autre.
+// Une réponse qui ne dépend que de certaines réponses possibles d'une autre.
 const CASES = page(
   "cases",
   question
@@ -105,14 +105,14 @@ describe("validation d'une page", () => {
     ).toEqual({ source: { ...adresse, city: "Lyon" }, independante: "d" });
   });
 
-  it("garde une réponse quand seules d'autres options changent", () => {
+  it("garde une réponse quand seules d'autres réponses possibles changent", () => {
     expect(cochees(["a"], ["a", "c"])).toEqual({
       cases: ["a", "c"],
       "selon-a-et-b": "x",
     });
   });
 
-  it("efface une réponse quand l'une de ses options change", () => {
+  it("efface une réponse quand l'une de ses réponses possibles change", () => {
     expect(cochees(["a", "c"], ["b", "c"])).toEqual({ cases: ["b", "c"] });
   });
 

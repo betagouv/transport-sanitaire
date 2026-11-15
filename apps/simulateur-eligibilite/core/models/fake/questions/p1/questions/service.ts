@@ -1,6 +1,6 @@
-// Le service : un rappel, une aide dépliable, des options incompatibles, une
-// alerte qui mène à une réponse d'avant, et la question qui s'affiche sous
-// l'option qui l'ouvre.
+// Le service : un rappel, une aide dépliable, des réponses possibles
+// incompatibles, une alerte qui mène à une réponse d'avant, et la question qui
+// s'affiche sous la réponse possible qui l'ouvre.
 
 import { constant } from "../../../../../socle/index.ts";
 import { cibles } from "../../../cibles/evaluation.ts";
@@ -13,7 +13,7 @@ const boisson = given.question(BOISSON).answer();
 // Une boisson est choisie : la commande se poursuit.
 const commandeEnCours = boisson.isPresent().and(boisson.is("rien").not());
 
-// La question et ses options, avant la règle qui lit sa réponse.
+// La question et ses réponses possibles, avant la règle qui lit sa réponse.
 const service = question
   .multipleChoice("service", "Comment la servir ?")
   .possibleAnswers({

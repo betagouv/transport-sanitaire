@@ -71,10 +71,10 @@ export const Q2_2_1_B = question
     "Q2.2.1.b",
     "L’un de ces soins ou rendez-vous est-il concerné ?",
   )
-  // Le second bloc de `CONTRAT_Q221_PROGRESSIF.json` (v10.1.6). Les options
-  // gardent leur numéro parmi les treize du catalogue (S1) ; la réponse
-  // négative, sans numéro, porte 0. Le centre de référence (8) n'en est plus
-  // depuis la v10.1.2 : il se recueille en P3.
+  // Le second bloc de `CONTRAT_Q221_PROGRESSIF.json` (v10.1.6). Les réponses
+  // possibles gardent leur numéro parmi les treize du catalogue (S1) ; la
+  // réponse négative, sans numéro, porte 0. Le centre de référence (8) n'en est
+  // plus depuis la v10.1.2 : il se recueille en P3.
   .possibleAnswers({
     "1_ATMP": "Accident du travail ou maladie professionnelle.",
     "6_CAMSP":

@@ -144,21 +144,22 @@ Quatorze règles à tenir en ajoutant une question :
 
 - **Une question se déclare par son constructeur, un réglage par ligne.**
   `question.singleChoice("Q1.1", "Concernant son déplacement, le patient :")`
-  `.possibleAnswers({ "1_SEUL": "…", "2_AVEC_UN_PROCHE": "…" })` : la sorte vient du
-  constructeur, et la question porte ses options, qui disent le type de sa
-  réponse. Une option ne se règle que pour ce qu'elle porte de plus, dans
-  sa lambda : `.possibleAnswer("6_SEANCE", (possibleAnswer) => possibleAnswer.offeredWhen(…))`. `order`
-  en garde une partie, dans cet ordre, et `exclusive` met la sienne à part.
-  Chaque réglage donne une copie : une déclaration ne change jamais. Le modèle lie ses constructeurs une fois, dans son
+  `.possibleAnswers({ "1_SEUL": "…", "2_AVEC_UN_PROCHE": "…" })` : la sorte
+  vient du constructeur, et la question porte ses réponses possibles, qui disent
+  le type de sa réponse. Une réponse possible ne se règle que pour ce qu'elle
+  porte de plus, dans sa lambda : `.possibleAnswer("6_SEANCE", (possibleAnswer)
+  => possibleAnswer.offeredWhen(…))`. `order` en garde une partie, dans cet
+  ordre, et `exclusive` met la sienne à part. Chaque réglage donne une copie :
+  une déclaration ne change jamais. Le modèle lie ses constructeurs une fois, dans son
   `questions/question.ts` : `questionsOf<ReadByObject, Faits, Cibles>({ faits,
   cibles })`. Un seul jeu, avant comme après le verrou. La partie posée après
   le verrou se déclare par `afterLock({ … })` : ses gardes lisent alors les
   cibles figées.
 - **Une garde est une condition.** `appliesWhen` dit quand la question a un
   sens, d'après les réponses ; `mattersWhile` quand elle est encore utile,
-  d'après un fait ou une cible. Une option se propose par `offeredWhen`.
-  Jamais dans un composant. Celle d'une page (`page(…).appliesWhen(…)`)
-  s'ajoute à chacune de ses questions.
+  d'après un fait ou une cible. Une réponse possible se propose par
+  `offeredWhen`. Jamais dans un composant. Celle d'une page
+  (`page(…).appliesWhen(…)`) s'ajoute à chacune de ses questions.
 - **Une condition lit ce qui la précède.** `given.question(Q1_2).answer()` voit
   les pages d'avant validées, et sa page telle qu'elle est à l'écran, pour les
   questions posées avant la sienne. Une réponse d'avant le verrou se lit telle
@@ -197,8 +198,8 @@ Quatorze règles à tenir en ajoutant une question :
 - **Un savoir lu à deux endroits.** Une lecture de réponse s'écrit là où elle
   sert, même si une autre partie l'écrit aussi : le libellé de Q1.4 lit
   `answers.question(Q1_1).is("2_AVEC_UN_PROCHE")` sur place. Une donnée de
-  l'éditeur se partage en donnée, là où elle se déclare : les options dans
-  leur question, qu'on lit par `Q1_3.labels`. Une règle que plusieurs faits reprennent mot pour mot se
+  l'éditeur se partage en donnée, là où elle se déclare : les réponses
+  possibles dans leur question, qu'on lit par `Q1_3.labels`. Une règle que plusieurs faits reprennent mot pour mot se
   nomme dans `faits/communs.ts`. Ce qui ne sert qu'à un endroit y reste
   (`allersRetoursMensuelsAuPlus`, dans `questions/p3/questions/q3-1-3.ts`). Aucun fichier n'est
   commun aux pages et aux faits : mieux vaut une condition écrite deux fois sur

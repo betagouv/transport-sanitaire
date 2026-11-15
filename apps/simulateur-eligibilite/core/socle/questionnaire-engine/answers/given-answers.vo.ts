@@ -2,8 +2,8 @@
 // reçu, sans fouiller la structure qui les garde. Le modèle les reçoit ainsi
 // dans ses conditions, ses faits et ses résultats.
 //
-// Une question sans réponse n'a rien de coché et n'est aucune option : ce
-// n'est pas pour autant un « non ». `hasAnswer` le distingue.
+// Une question sans réponse n'a rien de coché et n'est aucune réponse possible
+// : ce n'est pas pour autant un « non ». `hasAnswer` le distingue.
 
 import type { AddressData } from "../question/address.vo.ts";
 import {
@@ -15,7 +15,10 @@ import {
   type Unanswered,
 } from "../question/question.ts";
 
-/** Ce qu'un choix unique peut valoir : une option, ou la valeur d'une case seule. */
+/**
+ * Ce qu'un choix unique peut valoir : une réponse possible, ou la valeur d'une
+ * case seule.
+ */
 export type Choice<Given> = Given extends readonly unknown[] | AddressData
   ? never
   : Given;
@@ -46,17 +49,17 @@ export class GivenAnswer<Given extends Answer = Answer> {
     return this.value !== undefined;
   }
 
-  /** La réponse est cette option. Sans réponse : non. */
+  /** La réponse est cette réponse possible. Sans réponse : non. */
   is(possibleAnswer: Choice<Given>): boolean {
     return this.value === possibleAnswer;
   }
 
-  /** La réponse n'est pas cette option. Sans réponse : oui. */
+  /** La réponse n'est pas cette réponse possible. Sans réponse : oui. */
   isNot(possibleAnswer: Choice<Given>): boolean {
     return !this.is(possibleAnswer);
   }
 
-  /** La réponse est l'une de ces options. Sans réponse : non. */
+  /** La réponse est l'une de ces réponses possibles. Sans réponse : non. */
   isOneOf(...possibleAnswers: readonly Choice<Given>[]): boolean {
     return possibleAnswers.some((possibleAnswer) => this.is(possibleAnswer));
   }

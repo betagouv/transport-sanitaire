@@ -3,8 +3,9 @@ import { describe, expect, it } from "vitest";
 import { givenOf, page, questionsOf } from "../../../core/socle";
 import { afficher } from "./afficher";
 
-// Le libellé d'une option peut dépendre des réponses. L'option exclusive aussi,
-// et elle peut ne pas se proposer. Les pages sont écrites ici.
+// Le libellé d'une réponse possible peut dépendre des réponses. La réponse
+// possible exclusive aussi, et elle peut ne pas se proposer. Les pages sont
+// écrites ici.
 
 type Questions = {
   hospitalise: "oui" | "non";
@@ -66,7 +67,7 @@ const caseACocher = (name: string) => screen.getByRole("checkbox", { name });
 const sansCase = (name: string) =>
   screen.queryByRole("checkbox", { name }) === null;
 
-describe("libellé d'une option selon les réponses", () => {
+describe("libellé d'une réponse possible selon les réponses", () => {
   it("garde son libellé quand rien ne le change", async () => {
     const { user } = afficher([HOSPITALISATION, SITUATIONS]);
 
@@ -77,7 +78,7 @@ describe("libellé d'une option selon les réponses", () => {
     expect(caseACocher("Aucune de ces situations")).toBeInTheDocument();
   });
 
-  it("change avec les réponses, option exclusive comprise", async () => {
+  it("change avec les réponses, réponse possible exclusive comprise", async () => {
     const { user } = afficher([HOSPITALISATION, SITUATIONS]);
 
     await user.click(radio("Oui"));
@@ -90,7 +91,7 @@ describe("libellé d'une option selon les réponses", () => {
   });
 });
 
-describe("option exclusive conditionnelle", () => {
+describe("réponse possible exclusive conditionnelle", () => {
   it("se propose quand les réponses le permettent", async () => {
     const { user } = afficher([HOSPITALISATION, EXONERATIONS]);
 

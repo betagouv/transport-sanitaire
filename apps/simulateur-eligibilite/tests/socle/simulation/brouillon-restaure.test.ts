@@ -1,8 +1,8 @@
 // Le brouillon que retrouve la page d'une alerte, à la fin d'une correction
 // (ADR-30), se relit sur les réponses corrigées : une question devenue
-// inapplicable y perd sa réponse, une option qui ne se propose plus en sort, et
-// le reste tient (NAV-SOUS-QUESTIONS-20261113, SQ-24). Les pages sont écrites
-// ici.
+// inapplicable y perd sa réponse, une réponse possible qui ne se propose plus
+// en sort, et le reste tient (NAV-SOUS-QUESTIONS-20261113, SQ-24). Les pages
+// sont écrites ici.
 
 import { describe, expect, it } from "vitest";
 import { givenOf, page, questionsOf } from "../../../core/socle";

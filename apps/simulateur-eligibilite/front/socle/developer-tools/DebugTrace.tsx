@@ -114,7 +114,7 @@ function PageList({
 }
 
 // Chaque question validée : sa réponse, et ce qui s'y proposait. C'est ce qui
-// distingue une option refusée d'une option jamais montrée.
+// distingue une réponse possible refusée d'une réponse possible jamais montrée.
 function ValidatedList({ validated }: { validated: Validated }) {
   const entries = Object.entries(validated);
   return (

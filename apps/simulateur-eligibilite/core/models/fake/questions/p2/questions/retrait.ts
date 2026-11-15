@@ -4,7 +4,7 @@
 import { given, question } from "../../question.ts";
 import { LIEU } from "./lieu.ts";
 
-// La question et ses options, avant la règle qui lit sa réponse.
+// La question et ses réponses possibles, avant la règle qui lit sa réponse.
 const retrait = question
   .singleChoice("retrait", "Comment la récupérer ?")
   .possibleAnswers({

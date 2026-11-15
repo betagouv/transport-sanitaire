@@ -95,7 +95,7 @@ describe("Q2.13.sens, le sens qui change la cohérence des lieux", () => {
     ).toContain("Q2.13.sens");
   });
 
-  it("a le libellé et les options de l'éditeur", () => {
+  it("a le libellé et les réponses possibles de l'éditeur", () => {
     const [[, reponses]] = CINQ_CAS as [Cas];
     const question = sensPose(reponses);
 

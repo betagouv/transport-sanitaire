@@ -63,7 +63,8 @@ export const CHAMPS_DU_LIEU = {
 
 /**
  * La catégorie, parmi celles que P2 et l'autre lieu laissent. Une seule
- * possible se fixe sans se demander ; aucune, et l'adresse dit la contradiction.
+ * possible se fixe sans se demander ; aucune, et l'adresse dit la
+ * contradiction.
  */
 export function categorieAChoisir<E extends Extremite>(
   extremite: E,

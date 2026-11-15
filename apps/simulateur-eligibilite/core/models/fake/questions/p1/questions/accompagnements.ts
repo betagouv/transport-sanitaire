@@ -1,5 +1,5 @@
-// Les accompagnements : des libellés et des options qui dépendent de la
-// boisson.
+// Les accompagnements : des libellés et des réponses possibles qui dépendent de
+// la boisson.
 
 import { given, question } from "../../question.ts";
 import { BOISSON } from "./boisson.ts";

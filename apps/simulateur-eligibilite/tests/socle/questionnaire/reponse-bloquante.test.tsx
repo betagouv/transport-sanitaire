@@ -3,8 +3,8 @@ import { describe, expect, it } from "vitest";
 import { page, questionsOf } from "../../../core/socle";
 import { afficher } from "./afficher";
 
-// Une option peut arrêter le questionnaire : son message s'affiche, et on
-// n'avance plus. Les pages sont écrites ici.
+// Une réponse possible peut arrêter le questionnaire : son message s'affiche,
+// et on n'avance plus. Les pages sont écrites ici.
 
 type Questions = {
   nombre: number;

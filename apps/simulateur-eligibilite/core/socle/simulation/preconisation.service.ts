@@ -1,6 +1,7 @@
 // La préconisation : les faits de réponses, puis leurs cibles. Seules les
 // parties d'avant le verrou la font. Ses faits lisent aussi les questions
-// validées : une option qui ne s'est pas proposée n'a pas été refusée.
+// validées : une réponse possible qui ne s'est pas proposée n'a pas été
+// refusée.
 //
 // Un service : la simulation s'en sert à chaque étape et pour verrouiller, les
 // use cases sur des réponses données d'un coup.

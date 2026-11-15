@@ -28,7 +28,7 @@ const valider = () =>
   screen.getByRole("button", { name: /^(Suivant|Terminer)$/ });
 
 describe("liste déroulante", () => {
-  it("propose les options dans une liste, sans bouton radio", () => {
+  it("propose les réponses possibles dans une liste, sans bouton radio", () => {
     afficher([LIEU]);
 
     const options = within(liste()).getAllByRole("option");
