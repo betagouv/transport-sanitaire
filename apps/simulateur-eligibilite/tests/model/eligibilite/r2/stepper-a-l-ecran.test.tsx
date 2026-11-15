@@ -21,78 +21,67 @@ import { PATIENT_SEUL } from "../p2/reponses-de-la-permission";
 // pas ses 900 ko.
 await catalogueResultats();
 
-// L'écran des seeds met plus que la seconde par défaut sous la charge de la
-// suite entière. Un test attend trois fois : son délai couvre les trois.
-const ATTENTE = { timeout: 4000 };
-const DELAI_D_UN_TEST = { timeout: 3 * ATTENTE.timeout };
-
 beforeEach(() => rangerRattachement(null));
 
-describe(
-  "le stepper des parties du modèle de l'éditeur",
-  DELAI_D_UN_TEST,
-  () => {
-    it("titre P0 « Mon besoin », et annonce P1", async () => {
-      await ouvrirSur({});
+describe("le stepper des parties du modèle de l'éditeur", () => {
+  it("titre P0 « Mon besoin », et annonce P1", async () => {
+    await ouvrirSur({});
 
-      expect(titreDeLEcran()).toBe("Mon besoin Étape 1 sur 4");
-      expect(detailsDuStepper()).toBe(
-        "Étape suivante : Autonomie et état de santé",
-      );
-    });
+    expect(titreDeLEcran()).toBe("Mon besoin Étape 1 sur 4");
+    expect(detailsDuStepper()).toBe(
+      "Étape suivante : Autonomie et état de santé",
+    );
+  });
 
-    it("pose P0 : la question en titre de page, les libellés en gras, les durées sans point", async () => {
-      await ouvrirSur({});
+  it("pose P0 : la question en titre de page, les libellés en gras, les durées sans point", async () => {
+    await ouvrirSur({});
 
-      expect(
-        screen.getByRole("group", { name: /^Quel est votre besoin \?/ }),
-      ).toBeInTheDocument();
-      for (const libelle of [
-        "Vérifier une éligibilité",
-        "Vérifier et prescrire si la situation le permet",
-      ]) {
-        expect(screen.getByText(libelle)).toHaveClass("fr-text--bold");
-      }
-      expect(screen.getByText("1 minute 30 chrono !")).toHaveClass(
-        "fr-hint-text",
-      );
-      expect(screen.getByText("4 minutes")).toHaveClass("fr-hint-text");
-    });
+    expect(
+      screen.getByRole("group", { name: /^Quel est votre besoin \?/ }),
+    ).toBeInTheDocument();
+    for (const libelle of [
+      "Vérifier une éligibilité",
+      "Vérifier et prescrire si la situation le permet",
+    ]) {
+      expect(screen.getByText(libelle)).toHaveClass("fr-text--bold");
+    }
+    expect(screen.getByText("1 minute 30 chrono !")).toHaveClass(
+      "fr-hint-text",
+    );
+    expect(screen.getByText("4 minutes")).toHaveClass("fr-hint-text");
+  });
 
-    it("titre P1, et annonce P2", async () => {
-      await ouvrirSur({ "Q0.1": "1_VERIFIER" });
+  it("titre P1, et annonce P2", async () => {
+    await ouvrirSur({ "Q0.1": "1_VERIFIER" });
 
-      expect(titreDeLEcran()).toBe("Autonomie et état de santé Étape 2 sur 4");
-      expect(detailsDuStepper()).toBe("Étape suivante : Éligibilité");
-    });
+    expect(titreDeLEcran()).toBe("Autonomie et état de santé Étape 2 sur 4");
+    expect(detailsDuStepper()).toBe("Étape suivante : Éligibilité");
+  });
 
-    it("titre P2, sans ligne : la complétion n'y est pas encore connue", async () => {
-      await ouvrirSur(sansP2(PATIENT_SEUL));
+  it("titre P2, sans ligne : la complétion n'y est pas encore connue", async () => {
+    await ouvrirSur(sansP2(PATIENT_SEUL));
 
-      expect(titreDeLEcran()).toBe("Éligibilité Étape 3 sur 4");
-      expect(detailsDuStepper()).toBeUndefined();
-    });
+    expect(titreDeLEcran()).toBe("Éligibilité Étape 3 sur 4");
+    expect(detailsDuStepper()).toBeUndefined();
+  });
 
-    it("titre P3, sans ligne", async () => {
-      await ouvrirLaSeed("issue-pmt");
-      await userEvent
-        .setup()
-        .click(
-          screen.getByRole("button", { name: "Compléter la prescription" }),
-        );
+  it("titre P3, sans ligne", async () => {
+    await ouvrirLaSeed("issue-pmt");
+    await userEvent
+      .setup()
+      .click(screen.getByRole("button", { name: "Compléter la prescription" }));
 
-      expect(
-        await screen.findByRole("heading", {
-          level: 1,
-          name: "Informations permettant de compléter la prescription Étape 4 sur 4",
-        }),
-      ).toBeInTheDocument();
-      expect(detailsDuStepper()).toBeUndefined();
-    });
-  },
-);
+    expect(
+      await screen.findByRole("heading", {
+        level: 1,
+        name: "Informations permettant de compléter la prescription Étape 4 sur 4",
+      }),
+    ).toBeInTheDocument();
+    expect(detailsDuStepper()).toBeUndefined();
+  });
+});
 
-describe("la couleur du titre de R2", DELAI_D_UN_TEST, () => {
+describe("la couleur du titre de R2", () => {
   it.each([
     ["issue-pmt", true],
     ["issue-s3141", true],
@@ -119,16 +108,16 @@ describe("la couleur du titre de R2", DELAI_D_UN_TEST, () => {
 async function ouvrirSur(answers: Seed["answers"]) {
   const seed = { id: "test", label: "Seed du test", description: "", answers };
   await ouvrir(seed, [seed]);
-  await screen.findByRole("heading", { level: 1 }, ATTENTE);
+  await screen.findByRole("heading", { level: 1 });
 }
 
 // Ouvre une seed du catalogue, et attend son résultat.
 async function ouvrirLaSeed(id: string) {
   const seed = SEEDS.find((candidate) => candidate.id === id);
   if (!seed) throw new Error(`Seed inconnue : ${id}`);
-  await ouvrir(seed, SEEDS);
+  await ouvrir(seed, [seed]);
   // Le `h1` vient avec le résultat, une fois ses textes chargés.
-  await screen.findByRole("heading", { level: 1 }, ATTENTE);
+  await screen.findByRole("heading", { level: 1 });
 }
 
 async function ouvrir(
@@ -139,15 +128,9 @@ async function ouvrir(
     modele: model,
     seeds: seeds.map((s) => ({ expected: {}, ...s })),
   });
+  await user.click(await screen.findByRole("button", { name: "Seeds" }));
   await user.click(
-    await screen.findByRole("button", { name: "Seeds" }, ATTENTE),
-  );
-  await user.click(
-    await screen.findByRole(
-      "button",
-      { name: `Ouvrir : ${seed.label}` },
-      ATTENTE,
-    ),
+    await screen.findByRole("button", { name: `Ouvrir : ${seed.label}` }),
   );
 }
 

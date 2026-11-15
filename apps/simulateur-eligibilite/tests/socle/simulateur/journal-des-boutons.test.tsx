@@ -206,7 +206,7 @@ describe("les boutons du document R3", () => {
     });
     await allerAuCerfa(user);
     // Le texte du second résultat ne vient qu'avec le PDF prêt.
-    await screen.findByText(/^Commande : thé, lait/, {}, { timeout: 4000 });
+    await screen.findByText(/^Commande : thé, lait/);
     const { telechargements, arreter } = ecouterLesTelechargements();
 
     await user.click(bouton("Imprimer le bon de commande"));

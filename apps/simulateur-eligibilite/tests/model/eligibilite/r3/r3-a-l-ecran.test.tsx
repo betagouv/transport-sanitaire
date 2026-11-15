@@ -25,9 +25,6 @@ import { MODELE_AUX_GABARITS_DU_DISQUE } from "../modele-aux-gabarits-du-disque"
 await catalogueResultats();
 await model.core.seeds();
 
-const ATTENTE = { timeout: 4000 };
-const DELAI_D_UN_TEST = { timeout: 6 * ATTENTE.timeout };
-
 const PRESCRIPTION = "Prescription préremplie prête à imprimer";
 const ACCORD_PREALABLE =
   "Demande d’accord préalable préremplie prête à imprimer";
@@ -43,7 +40,7 @@ beforeEach(() => {
 
 afterEach(() => ecoute.arreter());
 
-describe("R3 du modèle de l'éditeur", DELAI_D_UN_TEST, () => {
+describe("R3 du modèle de l'éditeur", () => {
   it.each([
     ["issue-pmt", "Compléter la prescription", PRESCRIPTION],
     ["issue-s3141", "Compléter la prescription", PRESCRIPTION],
@@ -74,7 +71,7 @@ describe("R3 du modèle de l'éditeur", DELAI_D_UN_TEST, () => {
   );
 });
 
-describe("une nouvelle simulation depuis R3", DELAI_D_UN_TEST, () => {
+describe("une nouvelle simulation depuis R3", () => {
   it("ne montre que le document de la nouvelle seed", async () => {
     const user = await allerEnR3("issue-pmt", "Compléter la prescription");
     await user.click(
@@ -90,7 +87,7 @@ describe("une nouvelle simulation depuis R3", DELAI_D_UN_TEST, () => {
     expect(titreDeLEcran()).toBe(`${ACCORD_PREALABLE} Étape 4 sur 4`);
     expect(screen.getAllByText(/^Le document est prêt/)).toHaveLength(1);
     await user.click(
-      await screen.findByRole("button", { name: "Télécharger" }, ATTENTE),
+      await screen.findByRole("button", { name: "Télécharger" }),
     );
     await waitFor(() => expect(ecoute.telechargements).toHaveLength(1));
     expect(ecoute.telechargements[0]?.nom).toMatch(
@@ -101,9 +98,22 @@ describe("une nouvelle simulation depuis R3", DELAI_D_UN_TEST, () => {
 
 // ---- implémentation ----
 
+// L'écran des seeds rejoue chacune de celles qu'il liste : il n'a que celles
+// que ces tests ouvrent.
+const OUVERTES = SEEDS.filter(({ id }) =>
+  [
+    "issue-pmt",
+    "issue-s3141",
+    "issue-dap-sans-urgence",
+    "issue-dap-urgence-attestee",
+    "issue-dap-etranger-a-examiner",
+  ].includes(id),
+);
+
 async function allerEnR3(id: string, completer: string) {
   const user = await ouvrirLeSimulateur({
     modele: MODELE_AUX_GABARITS_DU_DISQUE,
+    seeds: OUVERTES,
   });
   await ouvrirEnR3(user, id, completer);
   return user;
@@ -113,25 +123,13 @@ async function allerEnR3(id: string, completer: string) {
 async function ouvrirEnR3(user: User, id: string, completer: string) {
   const seed = SEEDS.find((candidate) => candidate.id === id);
   if (!seed) throw new Error(`Seed inconnue : ${id}`);
+  await user.click(await screen.findByRole("button", { name: "Seeds" }));
   await user.click(
-    await screen.findByRole("button", { name: "Seeds" }, ATTENTE),
+    await screen.findByRole("button", { name: `Ouvrir : ${seed.label}` }),
   );
-  await user.click(
-    await screen.findByRole(
-      "button",
-      { name: `Ouvrir : ${seed.label}` },
-      ATTENTE,
-    ),
-  );
-  await user.click(
-    await screen.findByRole("button", { name: completer }, ATTENTE),
-  );
+  await user.click(await screen.findByRole("button", { name: completer }));
   await completerP3(user);
-  await screen.findByText(
-    /^Le document est prêt à être imprimé\./,
-    {},
-    ATTENTE,
-  );
+  await screen.findByText(/^Le document est prêt à être imprimé\./);
 }
 
 function titreDeLEcran() {

@@ -39,23 +39,15 @@ export function publicodesEngine<
   rules: Rules,
   cibles: readonly (keyof Cibles & string)[],
 ): DecisionEngine<Faits, Cibles> {
-  // Compiler les règles coûte : le moteur est créé au premier calcul, puis gardé.
-  let engine: Engine | undefined;
-  const on = (faits: Faits) => {
-    engine ??= new Engine(rules);
-    engine.setSituation(situationOf(faits));
-    return engine;
-  };
+  const evaluations = new Evaluations(rules);
+  const cible = (faits: Faits, nom: string) => evaluations.of(faits, nom);
   return {
-    cibles: (faits) => {
-      const evaluated = on(faits);
-      return Object.fromEntries(
-        cibles.map((cible) => [cible, cibleOf(evaluated, cible)]),
-      ) as Cibles;
-    },
-    cible: (faits, nom) =>
-      cibleOf(on(faits), nom as string) as Cibles[typeof nom],
-    lazyCibles: (faits) => lazily(cibles, (nom) => cibleOf(on(faits), nom)),
+    cibles: (faits) =>
+      Object.fromEntries(
+        cibles.map((nom) => [nom, cible(faits, nom)]),
+      ) as Cibles,
+    cible: (faits, nom) => cible(faits, nom as string) as Cibles[typeof nom],
+    lazyCibles: (faits) => lazily(cibles, (nom) => cible(faits, nom)),
   };
 }
 
@@ -68,6 +60,57 @@ export function decisionGraphOf(rules: Rules): DecisionGraphData {
 }
 
 // ---- implémentation ----
+
+type AnyFaits = Parameters<typeof situationOf>[0];
+type Situation = ReturnType<typeof situationOf>;
+
+// Ce que les règles donnent, cible par cible, pour chaque situation déjà vue.
+// Une lecture du questionnaire redemande les mêmes cibles sur les mêmes faits,
+// question après question : publicodes ne les recalcule pas.
+class Evaluations {
+  // Au-delà, tout est oublié : une session ne voit que quelques situations.
+  static readonly #KEPT = 64;
+  readonly #rules: Rules;
+  readonly #known = new Map<string, Map<string, Cible>>();
+  // Compiler les règles coûte : le moteur est créé au premier calcul, puis gardé.
+  #engine: Engine | undefined;
+  // La situation que le moteur porte : la changer efface ce qu'il a calculé.
+  #current: string | undefined;
+
+  constructor(rules: Rules) {
+    this.#rules = rules;
+  }
+
+  of(faits: AnyFaits, nom: string): Cible {
+    const situation = situationOf(faits);
+    // Ce qui distingue ces faits d'autres, tels que publicodes les reçoit.
+    const key = JSON.stringify(situation);
+    const cibles = this.#ciblesOf(key);
+    const known = cibles.get(nom);
+    if (known) return known;
+    const cible = cibleOf(this.#engineOn(situation, key), nom);
+    cibles.set(nom, cible);
+    return cible;
+  }
+
+  #ciblesOf(key: string): Map<string, Cible> {
+    const known = this.#known.get(key);
+    if (known) return known;
+    if (this.#known.size >= Evaluations.#KEPT) this.#known.clear();
+    const cibles = new Map<string, Cible>();
+    this.#known.set(key, cibles);
+    return cibles;
+  }
+
+  #engineOn(situation: Situation, key: string): Engine {
+    this.#engine ??= new Engine(this.#rules);
+    if (this.#current !== key) {
+      this.#engine.setSituation(situation);
+      this.#current = key;
+    }
+    return this.#engine;
+  }
+}
 
 // Un objet dont chaque clé se calcule à sa première lecture, une seule fois.
 function lazily<Values>(

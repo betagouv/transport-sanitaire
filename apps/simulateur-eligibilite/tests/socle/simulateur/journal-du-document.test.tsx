@@ -43,9 +43,7 @@ const documents = (envoyes: AnalyticsEvent[]) =>
 
 // Le texte du second résultat ne vient qu'avec le PDF prêt, qui se génère
 // plus lentement sous charge.
-const ATTENTE_DU_DOCUMENT = { timeout: 4000 };
-const documentPret = () =>
-  screen.findByText(/^Commande : thé, lait/, {}, ATTENTE_DU_DOCUMENT);
+const documentPret = () => screen.findByText(/^Commande : thé, lait/);
 
 // Va jusqu'au second résultat, et attend son PDF.
 async function allerAuDocument(user: User) {
