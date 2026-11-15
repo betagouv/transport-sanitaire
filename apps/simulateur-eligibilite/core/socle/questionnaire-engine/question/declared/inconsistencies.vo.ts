@@ -6,7 +6,7 @@
 
 import {
   type Condition,
-  type Scope,
+  type Context,
   type Text,
   textIn,
   type Value,
@@ -47,7 +47,7 @@ export class Inconsistencies {
   }
 
   /** Celles qui tiennent vu ces réponses : leurs messages, et quoi revoir. */
-  in(earlier: Scope): Stated {
+  in(earlier: Context): Stated {
     const holding = this.#all.filter(({ condition }) => condition.in(earlier));
     const revisits = holding.flatMap(
       ({ revisit }) => revisit?.in(earlier) ?? [],

@@ -2,9 +2,10 @@
 // Une condition est une valeur « oui ou non » : elle se compose par `and`,
 // `or` et `not`, et dit toujours ce qu'elle lit, compositions comprises.
 //
-// Une valeur ne lit rien d'elle-même : le socle l'évalue dans un périmètre
-// (`Scope`), qu'il choisit selon l'endroit. Une garde voit les questions
-// posées avant elle, un fait les questions validées (`given.ts`).
+// Une valeur ne lit rien d'elle-même : elle se lit dans un contexte
+// (`Context`), celui de l'endroit. Une question voit les questions posées
+// avant elle (`question/asked/context.vo.ts`), un fait et un résultat les
+// questions validées.
 
 import type { ValidatedAnswer } from "../answers/validated-answers.vo.ts";
 import type { LocalDateTime } from "./local-date-time.vo.ts";
@@ -14,11 +15,11 @@ import { Reads } from "./reads.vo.ts";
 export type AnswerReading = (id: string) => ValidatedAnswer;
 
 /**
- * Ce dans quoi une valeur se lit. Le socle la donne : la réponse d'une
- * question telle que l'endroit la voit, les faits et les cibles de ces
- * réponses, et le jour.
+ * Le contexte où une valeur se lit, selon l'endroit : la réponse d'une
+ * question telle qu'on l'y voit, les faits, les cibles et le jour. Une
+ * question, un fait et un résultat ont chacun le leur.
  */
-export type Scope = {
+export type Context = {
   answer: AnswerReading;
   fait(nom: string): unknown;
   cible(nom: string): unknown;
@@ -31,21 +32,21 @@ export type Scope = {
 export class Value<Of> {
   /** Ce qu'elle lit. */
   readonly reads: Reads;
-  readonly #evaluate: (scope: Scope) => Of;
+  readonly #evaluate: (context: Context) => Of;
 
-  constructor(reads: Reads, evaluate: (scope: Scope) => Of) {
+  constructor(reads: Reads, evaluate: (context: Context) => Of) {
     this.reads = reads;
     this.#evaluate = evaluate;
   }
 
   /** Ce qu'elle vaut dans cette lecture. */
-  in(scope: Scope): Of {
-    return this.#evaluate(scope);
+  in(context: Context): Of {
+    return this.#evaluate(context);
   }
 
   /** Une valeur calculée sur celle-ci. `compute` ne reçoit que sa valeur. */
   compute<Computed>(compute: (value: Of) => Computed): Value<Computed> {
-    return new Value(this.reads, (scope) => compute(this.in(scope)));
+    return new Value(this.reads, (context) => compute(this.in(context)));
   }
 
   /** Une valeur calculée sur celle-ci et celle-là, qui lit les deux. */
@@ -53,8 +54,8 @@ export class Value<Of> {
     other: Value<Other>,
     compute: (value: Of, other: Other) => Computed,
   ): Value<Computed> {
-    return new Value(this.reads.with(other.reads), (scope) =>
-      compute(this.in(scope), other.in(scope)),
+    return new Value(this.reads.with(other.reads), (context) =>
+      compute(this.in(context), other.in(context)),
     );
   }
 
@@ -65,7 +66,7 @@ export class Value<Of> {
   and(this: Condition, other: Condition): Condition {
     return new Value(
       this.reads.with(other.reads),
-      (scope) => this.in(scope) && other.in(scope),
+      (context) => this.in(context) && other.in(context),
     );
   }
 
@@ -73,7 +74,7 @@ export class Value<Of> {
   or(this: Condition, other: Condition): Condition {
     return new Value(
       this.reads.with(other.reads),
-      (scope) => this.in(scope) || other.in(scope),
+      (context) => this.in(context) || other.in(context),
     );
   }
 
@@ -90,8 +91,8 @@ export type Condition = Value<boolean>;
 export type Text = string | Value<string>;
 
 /** Ce texte dans cette lecture. */
-export function textIn(text: Text, scope: Scope): string {
-  return typeof text === "string" ? text : text.in(scope);
+export function textIn(text: Text, context: Context): string {
+  return typeof text === "string" ? text : text.in(context);
 }
 
 /** Ce que vaut cette valeur. */
@@ -117,9 +118,9 @@ export function all<Values extends Readonly<Record<string, Value<unknown>>>>(
   const entries = Object.entries(values);
   return new Value(
     Reads.union(...entries.map(([, value]) => value.reads)),
-    (scope) =>
+    (context) =>
       Object.fromEntries(
-        entries.map(([name, value]) => [name, value.in(scope)]),
+        entries.map(([name, value]) => [name, value.in(context)]),
       ) as ValuesOf<Values>,
   );
 }
@@ -140,13 +141,13 @@ export function onBranch<Of>(
   value: Value<Of>,
 ): Value<Of> {
   const reads = Reads.onBranch(cible, values, value.reads);
-  return new Value(reads, (scope) => value.in(scope));
+  return new Value(reads, (context) => value.in(context));
 }
 
 /** Ce qu'une valeur vaut, dans la lecture que le socle a choisie. */
 export type Read = <Of>(value: Value<Of>) => Of;
 
-/** La lecture de ces valeurs dans `scope`. */
-export function readIn(scope: Scope): Read {
-  return (value) => value.in(scope);
+/** La lecture de ces valeurs dans `context`. */
+export function readIn(context: Context): Read {
+  return (value) => value.in(context);
 }

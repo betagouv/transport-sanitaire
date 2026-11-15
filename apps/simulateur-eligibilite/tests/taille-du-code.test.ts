@@ -21,7 +21,7 @@ const CATALOGUE_DE_SEEDS = /^core\/models\/[^/]+\/seeds-catalogue\.ts$/;
 // son plafond, et la raison pour laquelle le couper serait artificiel.
 const PLAFONDS: Readonly<Record<string, { lignes: number; raison: string }>> = {
   "core/socle/questionnaire-engine/question/declared/question.vo.ts": {
-    lignes: 311,
+    lignes: 303,
     raison:
       "ses réglages sont son interface ; l'incohérence en est déjà sortie",
   },

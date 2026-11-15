@@ -117,7 +117,7 @@ mécanique, sans React ni phrase de l'écran :
 | `conditions/guard-place.vo.ts`, `conditions/guard-reading.service.ts` | ce que lit `answer()` selon l'endroit : dans une garde, les questions posées avant elle ; dans un fait, les questions validées (`ValidatedAnswers.reading`). Le service vérifie qu'aucune condition ne lit une question d'après |
 | `conditions/question-positions.vo.ts` | la place de chaque question, et ce qui refuse une place mal déclarée |
 | `questionnaire-declaration.error.ts` | l'erreur d'une déclaration qui ne tient pas : elle s'arrête au chargement ou à la première lecture |
-| `question/asked/context.ts` | le seul objet que reçoivent les libellés, rappels, aides et bornes du moment : `{ answers, validated, cibles, faits }`. Les faits n'y sont calculés que si on les lit |
+| `question/asked/context.vo.ts` | `QuestionContext`, le contexte d'une question : `{ answers, validated, cibles, faits }`. Ses libellés, rappels, aides et bornes du moment le reçoivent, et ses conditions s'y lisent (`condition.in(context)`). Les faits n'y sont calculés que si on les lit. Un fait et un résultat ont chacun leur contexte (`FaitContext`, `ResultContext`) |
 | `question/possible-answer.ts` | ce qu'est une réponse possible offerte (`OfferedPossibleAnswer`) : sa valeur, son libellé, sa description, son aide, ce qu'elle bloque |
 | `question/address.vo.ts` | `Address`, une adresse, la seule réponse en objet : elle se lit et se modifie champ par champ, et se garde en JSON (`AddressData`, par `toJSON()`) |
 | `question/dependency.vo.ts` | `Dependency`, ce dont dépend une réponse (`dependsOn`) : une question entière, ou certaines de ses réponses possibles, et ce qu'elle en voit (`seen`) |

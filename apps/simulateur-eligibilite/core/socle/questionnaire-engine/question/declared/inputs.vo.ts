@@ -4,7 +4,7 @@
 import type { AddressData } from "../address.vo.ts";
 import { AskedAddress } from "../asked/address.vo.ts";
 import type { AskedCommonData } from "../asked/common.vo.ts";
-import type { QuestionContext } from "../asked/context.ts";
+import type { QuestionContext } from "../asked/context.vo.ts";
 import {
   AskedCheckbox,
   AskedDate,

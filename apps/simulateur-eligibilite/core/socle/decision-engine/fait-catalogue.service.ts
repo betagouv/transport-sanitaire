@@ -7,12 +7,9 @@
 // faits n'en calcule que deux. Un fait qui se lit lui-même, par d'autres faits
 // ou par une garde, s'arrête net.
 
-import {
-  Reads,
-  type Scope,
-  type ValidatedAnswers,
-} from "../questionnaire-engine/index.ts";
+import { Reads, type ValidatedAnswers } from "../questionnaire-engine/index.ts";
 
+import { FaitContext } from "./fait/fait-context.vo.ts";
 import type { FaitDeclare } from "./fait/fait-declare.vo.ts";
 
 /** Les faits d'un modèle, chacun sous son nom et avec sa valeur. */
@@ -70,14 +67,15 @@ export class FaitCatalogue<Faits extends object> {
    */
   read(validated: ValidatedAnswers, fixed: Partial<Faits> = {}): Faits {
     const faits = {} as Faits;
-    const scope = factScope(validated, faits);
+    const context = new FaitContext(validated, faits);
     const known = new Map<string, unknown>(Object.entries(fixed));
     for (const name of this.#names) {
       const declare = this.#declares.get(name) as FaitDeclare<string, unknown>;
       Object.defineProperty(faits, name, {
         enumerable: true,
         get: () => {
-          if (!known.has(name)) known.set(name, this.#computed(declare, scope));
+          if (!known.has(name))
+            known.set(name, this.#computed(declare, context));
           return known.get(name);
         },
       });
@@ -87,7 +85,7 @@ export class FaitCatalogue<Faits extends object> {
 
   // ---- implémentation ----
 
-  #computed(declare: FaitDeclare<string, unknown>, scope: Scope) {
+  #computed(declare: FaitDeclare<string, unknown>, context: FaitContext) {
     const computing = this.#computing;
     if (computing.includes(declare.nom))
       throw new Error(
@@ -95,7 +93,7 @@ export class FaitCatalogue<Faits extends object> {
       );
     computing.push(declare.nom);
     try {
-      return declare.in(scope);
+      return declare.in(context);
     } finally {
       computing.pop();
     }
@@ -118,19 +116,4 @@ function indexed(
   if (missing.length > 0)
     throw new Error(`Ces faits ne sont pas déclarés : ${missing.join(", ")}.`);
   return all;
-}
-
-// Un fait lit les questions validées et les autres faits. Il ne lit ni cible
-// ni jour.
-function factScope(validated: ValidatedAnswers, faits: object): Scope {
-  const refused = (what: string) => () => {
-    throw new Error(`Un fait ne lit pas ${what}.`);
-  };
-  return {
-    answer: validated.reading(),
-    fait: (nom) => (faits as Readonly<Record<string, unknown>>)[nom],
-    cible: refused("de cible"),
-    cibleAssuming: refused("de cible"),
-    today: refused("le jour"),
-  };
 }

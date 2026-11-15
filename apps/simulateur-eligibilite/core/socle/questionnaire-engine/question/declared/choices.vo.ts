@@ -10,11 +10,10 @@
 //
 // `Value` : les valeurs de ses réponses possibles. Une autre ne compile pas.
 
-import type { Scope } from "../../conditions/condition.ts";
 import type { Reads } from "../../conditions/reads.vo.ts";
 import { AskedMultipleChoice, AskedSingleChoice } from "../asked/choices.vo.ts";
 import type { AskedCommonData } from "../asked/common.vo.ts";
-import type { QuestionContext } from "../asked/context.ts";
+import type { QuestionContext } from "../asked/context.vo.ts";
 import type { AnyQuestions, IncompatiblePossibleAnswers } from "../question.ts";
 import {
   type DeclaredPossibleAnswer,
@@ -100,7 +99,6 @@ export class DeclaredSingleChoice<
   protected override askedWith(
     common: AskedCommonData,
     context: QuestionContext<Questions, Cibles, Faits>,
-    scope: Scope,
   ) {
     const { possibleAnswers, dropdown, boldLabels } = this.own;
     return new AskedSingleChoice({
@@ -108,7 +106,7 @@ export class DeclaredSingleChoice<
       kind: this.kind,
       dropdown,
       boldLabels,
-      possibleAnswers: possibleAnswers.offeredIn(context, scope),
+      possibleAnswers: possibleAnswers.offeredIn(context),
     });
   }
 
@@ -210,17 +208,16 @@ export class DeclaredMultipleChoice<
   protected override askedWith(
     common: AskedCommonData,
     context: QuestionContext<Questions, Cibles, Faits>,
-    scope: Scope,
   ) {
     const { possibleAnswers, exclusive, incompatible } = this.own;
     return new AskedMultipleChoice({
       ...common,
       kind: this.kind,
-      possibleAnswers: possibleAnswers.offeredIn(context, scope, exclusive),
+      possibleAnswers: possibleAnswers.offeredIn(context, exclusive),
       exclusivePossibleAnswer:
         exclusive === undefined
           ? undefined
-          : possibleAnswers.offeredOneIn(exclusive, context, scope),
+          : possibleAnswers.offeredOneIn(exclusive, context),
       incompatiblePossibleAnswers: incompatible,
     });
   }

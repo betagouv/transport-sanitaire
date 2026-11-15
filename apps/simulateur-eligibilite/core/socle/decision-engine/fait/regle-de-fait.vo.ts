@@ -16,8 +16,8 @@ import {
   type Box,
   type Choice,
   type Condition,
+  type Context,
   type Reads,
-  type Scope,
   type ValidatedAnswer,
   Value,
 } from "../../questionnaire-engine/index.ts";
@@ -77,19 +77,19 @@ export function uneRegle(): typeof regles {
  * « 1_TRANSFERT », fait_permission : « non » ». Les questions d'abord, puis les
  * faits.
  */
-function citation(reads: Reads, scope: Scope): string {
+function citation(reads: Reads, context: Context): string {
   return [
-    ...reads.questions.map((id) => cited(id, scope.answer(id).value)),
-    ...reads.faits.map((nom) => citedFait(nom, scope.fait(nom) as Fait)),
+    ...reads.questions.map((id) => cited(id, context.answer(id).value)),
+    ...reads.faits.map((nom) => citedFait(nom, context.fait(nom) as Fait)),
   ].join(", ");
 }
 
 // ---- implémentation ----
 
 function regle(etat: Etat, condition: Condition, raison?: string) {
-  return new RegleDeFait(condition.reads, (scope) =>
-    condition.in(scope)
-      ? Fait[etat](provenance(citation(condition.reads, scope), raison))
+  return new RegleDeFait(condition.reads, (context) =>
+    condition.in(context)
+      ? Fait[etat](provenance(citation(condition.reads, context), raison))
       : undefined,
   );
 }

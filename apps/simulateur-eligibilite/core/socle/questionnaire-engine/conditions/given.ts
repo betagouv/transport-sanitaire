@@ -23,7 +23,7 @@ import {
   idOf,
   type QuestionRef,
 } from "../question/question.ts";
-import { all, type Scope, Value } from "./condition.ts";
+import { all, type Context, Value } from "./condition.ts";
 import {
   AnswerValue,
   CibleValue,
@@ -53,13 +53,13 @@ export function givenOf<
       CibleValue.of<CibleOf<Cibles[Nom]>, FaitNom>(nom),
     /** Ces faits, sous leur nom : ce qu'un texte en lit, et rien d'autre. */
     faits: <Nom extends FaitNom>(...noms: Nom[]) =>
-      named<Pick<Faits, Nom>>(noms, Reads.ofFait, (scope, nom) =>
-        scope.fait(nom),
+      named<Pick<Faits, Nom>>(noms, Reads.ofFait, (context, nom) =>
+        context.fait(nom),
       ),
     /** Ces cibles, sous leur nom : ce qu'un texte en lit, et rien d'autre. */
     cibles: <Nom extends keyof Cibles & string>(...noms: Nom[]) =>
-      named<Pick<Cibles, Nom>>(noms, Reads.ofCible, (scope, nom) =>
-        scope.cible(nom),
+      named<Pick<Cibles, Nom>>(noms, Reads.ofCible, (context, nom) =>
+        context.cible(nom),
       ),
     all,
     today: () => DateValue.today(),
@@ -72,12 +72,12 @@ export function givenOf<
 function named<Of>(
   noms: readonly string[],
   reads: (nom: string) => Reads,
-  read: (scope: Scope, nom: string) => unknown,
+  read: (context: Context, nom: string) => unknown,
 ): Value<Of> {
   return new Value(
     Reads.union(...noms.map(reads)),
-    (scope) =>
-      Object.fromEntries(noms.map((nom) => [nom, read(scope, nom)])) as Of,
+    (context) =>
+      Object.fromEntries(noms.map((nom) => [nom, read(context, nom)])) as Of,
   );
 }
 

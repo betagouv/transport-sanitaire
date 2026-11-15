@@ -1,17 +1,15 @@
-// Ce que les conditions d'une question voient des questions d'avant elle :
-// leurs réponses à sa place (`guard-place.vo.ts`), les faits et les cibles de
-// son contexte. Le service vérifie aussi, avant toute lecture, qu'aucune de ses
+// Le contexte où se lisent les conditions d'une question : les réponses des
+// questions d'avant elle, à sa place (`guard-place.vo.ts`), leurs faits et
+// leurs cibles. Le service vérifie aussi, avant toute lecture, qu'aucune de ses
 // conditions ne lit une question suivante.
 
 import {
-  contextOf,
   type Pipeline,
-  type QuestionContext,
-  readingOf,
+  QuestionContext,
   type SeenAnswers,
-} from "../question/asked/context.ts";
+} from "../question/asked/context.vo.ts";
 import type { AnyQuestions } from "../question/question.ts";
-import type { Condition, Scope, Value } from "./condition.ts";
+import type { Condition, Value } from "./condition.ts";
 
 /** Les conditions qu'une question déclare, et ce qui calcule ce qu'elles lisent. */
 type Guards<Faits, Cibles> = {
@@ -20,12 +18,6 @@ type Guards<Faits, Cibles> = {
   /** Les incohérences : ce qu'elles lisent, réponses à revoir comprises. */
   readonly inconsistencies: { readonly guards: readonly Value<unknown>[] };
   readonly requiredWhen?: Condition;
-};
-
-/** Ce que la question voit des précédentes, et ce que ses conditions en lisent. */
-type ReadAt<Questions extends AnyQuestions, Cibles, Faits> = {
-  readonly context: QuestionContext<Questions, Cibles, Faits>;
-  readonly scope: Scope;
 };
 
 export class GuardReadingService<Faits, Cibles> {
@@ -52,13 +44,11 @@ export class GuardReadingService<Faits, Cibles> {
       earlier.answer(id);
   }
 
-  /** Ce que la question voit de ces réponses, et le périmètre de ses conditions. */
-  readAt<Questions extends AnyQuestions>(
+  /** Le contexte de la question, vu ces réponses. */
+  contextOf<Questions extends AnyQuestions>(
     seen: SeenAnswers<Questions, Cibles | undefined>,
-  ): ReadAt<Questions, Cibles, Faits> {
-    const { pipeline } = this.#guards;
-    const context = contextOf(seen, pipeline);
-    return { context, scope: readingOf(seen.answer, context, pipeline) };
+  ): QuestionContext<Questions, Cibles, Faits> {
+    return new QuestionContext(seen, this.#guards.pipeline);
   }
 }
 

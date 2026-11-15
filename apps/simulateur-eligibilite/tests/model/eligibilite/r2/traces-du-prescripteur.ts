@@ -12,7 +12,7 @@ import {
 } from "../../../../core/models/eligibilite/faits/noms";
 import { Cible, Fait, Questionnaire, type Value } from "../../../../core/socle";
 import type { CibleValues } from "../../../../core/socle/decision-engine";
-import { QuestionnaireReadingService } from "../../../../core/socle/simulation";
+import { ResultContext } from "../../../../core/socle/simulation";
 import type { Precisions } from "../../../../front/models/eligibilite/r2/components/precisions";
 import type { Trace } from "../../../../front/models/eligibilite/r2/r2";
 
@@ -39,7 +39,7 @@ export const lu = <Of>(
   faits: Partial<Faits> = {},
 ): Of =>
   value.in(
-    QuestionnaireReadingService.ofResult({
+    new ResultContext({
       validated: new Questionnaire([]).readWith({}).validated,
       faits: { ...AUCUN_FAIT, ...faits },
       cibles: ciblesValant(cibles),

@@ -13,16 +13,11 @@
 // finale : la page la prend telle quelle (`question/declared/page.vo.ts`), et le moteur de
 // questionnaire lui demande comment elle se pose (`askedIn`).
 
-import type {
-  Condition,
-  Scope,
-  Text,
-  Value,
-} from "../../conditions/condition.ts";
+import type { Condition, Text, Value } from "../../conditions/condition.ts";
 import { GuardReadingService } from "../../conditions/guard-reading.service.ts";
 import { Reads } from "../../conditions/reads.vo.ts";
 import type { AskedCommonData, InPlace, Revisit } from "../asked/common.vo.ts";
-import type { QuestionContext, SeenAnswers } from "../asked/context.ts";
+import type { QuestionContext, SeenAnswers } from "../asked/context.vo.ts";
 import type { AskedQuestion } from "../asked/question.vo.ts";
 import { Dependency, type DependsOn } from "../dependency.vo.ts";
 import {
@@ -255,19 +250,16 @@ export abstract class DeclaredQuestion<
     const { settings } = this;
     const guards = new GuardReadingService(settings);
     guards.checkReads(seen, earlier);
-    const now = guards.readAt(seen);
-    if (!settings.conditions.every((guard) => guard.in(now.scope)))
-      return undefined;
-    const before = guards.readAt(earlier);
-    const common = this.#commonIn(now.context, before.scope);
-    return this.askedWith(common, now.context, now.scope);
+    const now = guards.contextOf(seen);
+    if (!settings.conditions.every((guard) => guard.in(now))) return undefined;
+    const common = this.#commonIn(now, guards.contextOf(earlier));
+    return this.askedWith(common, now);
   }
 
   /** La question posée, avec ce que sa sorte y ajoute. */
   protected abstract askedWith(
     common: AskedCommonData,
     context: QuestionContext<Questions, Cibles, Faits>,
-    scope: Scope,
   ): AskedQuestion;
 
   /** La même question, réglée autrement. Chaque sorte la refait. */
@@ -285,7 +277,7 @@ export abstract class DeclaredQuestion<
   // incohérences et les réponses à revoir : vu aussi celles de sa page.
   #commonIn(
     context: QuestionContext<Questions, Cibles, Faits>,
-    earlier: Scope,
+    earlier: QuestionContext<Questions, Cibles, Faits>,
   ): AskedCommonData {
     const { settings } = this;
     const { messages, revisits } = settings.inconsistencies.in(earlier);

@@ -20,7 +20,7 @@ import {
 
 import {
   EstablishAPreconisation,
-  QuestionnaireReadingService,
+  ResultContext,
 } from "../../../../core/socle/simulation";
 
 import type { Rubrique } from "../../../../front/models/eligibilite/r3/rubriques/rubrique";
@@ -161,7 +161,7 @@ export function donnees(
     cibles,
   );
   return readIn(
-    QuestionnaireReadingService.ofResult({
+    new ResultContext({
       validated: lecture.validated,
       faits: { ...(preconisation.faits as Faits), ...faits },
       cibles,

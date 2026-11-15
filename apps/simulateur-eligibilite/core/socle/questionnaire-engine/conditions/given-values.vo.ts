@@ -7,7 +7,7 @@ import type { Cible, Fait } from "../../decision-engine/index.ts";
 import type { Box, Choice } from "../answers/given-answers.vo.ts";
 import type { ValidatedAnswer } from "../answers/validated-answers.vo.ts";
 import type { AnyQuestions } from "../question/question.ts";
-import { type Condition, onBranch, type Scope, Value } from "./condition.ts";
+import { type Condition, type Context, onBranch, Value } from "./condition.ts";
 import { LocalDateTime } from "./local-date-time.vo.ts";
 import { Reads } from "./reads.vo.ts";
 
@@ -19,7 +19,7 @@ export class AnswerValue<Given extends Answer> extends Value<
   static of<Given extends Answer>(id: string): AnswerValue<Given> {
     return new AnswerValue(
       Reads.ofQuestion(id),
-      (scope) => scope.answer(id) as ValidatedAnswer<Given>,
+      (context) => context.answer(id) as ValidatedAnswer<Given>,
     );
   }
 
@@ -68,7 +68,7 @@ export class AnswerValue<Given extends Answer> extends Value<
     const date = this.compute(({ value }) =>
       LocalDateTime.parse(typeof value === "string" ? value : undefined),
     );
-    return new DateValue(date.reads, (scope) => date.in(scope));
+    return new DateValue(date.reads, (context) => date.in(context));
   }
 }
 
@@ -76,7 +76,7 @@ export class AnswerValue<Given extends Answer> extends Value<
 export class DateValue extends Value<LocalDateTime> {
   /** Aujourd'hui, à minuit, à Paris. */
   static today(): DateValue {
-    return new DateValue(Reads.none(), (scope) => scope.today());
+    return new DateValue(Reads.none(), (context) => context.today());
   }
 
   isBefore(other: DateValue): Condition {
@@ -104,7 +104,7 @@ export class DateValue extends Value<LocalDateTime> {
   }
 
   private shifted(shift: (date: LocalDateTime) => LocalDateTime): DateValue {
-    return new DateValue(this.reads, (scope) => shift(this.in(scope)));
+    return new DateValue(this.reads, (context) => shift(this.in(context)));
   }
 }
 
@@ -115,7 +115,7 @@ export class FaitValue<Of extends boolean | number | string> extends Value<
   static of<Of extends boolean | number | string>(nom: string): FaitValue<Of> {
     return new FaitValue(
       Reads.ofFait(nom),
-      (scope) => scope.fait(nom) as Fait<Of>,
+      (context) => context.fait(nom) as Fait<Of>,
     );
   }
 
@@ -144,7 +144,7 @@ export class CibleValue<
 > extends Value<Cible<Of>> {
   readonly #nom: string;
 
-  private constructor(nom: string, evaluate: (scope: Scope) => Cible<Of>) {
+  private constructor(nom: string, evaluate: (context: Context) => Cible<Of>) {
     super(Reads.ofCible(nom), evaluate);
     this.#nom = nom;
   }
@@ -152,7 +152,7 @@ export class CibleValue<
   static of<Of extends boolean | string, FaitNom extends string>(
     nom: string,
   ): CibleValue<Of, FaitNom> {
-    return new CibleValue(nom, (scope) => scope.cible(nom) as Cible<Of>);
+    return new CibleValue(nom, (context) => context.cible(nom) as Cible<Of>);
   }
 
   /**
@@ -163,7 +163,7 @@ export class CibleValue<
     const nom = this.#nom;
     return new CibleValue(
       nom,
-      (scope) => scope.cibleAssuming(nom, fait) as Cible<Of>,
+      (context) => context.cibleAssuming(nom, fait) as Cible<Of>,
     );
   }
 

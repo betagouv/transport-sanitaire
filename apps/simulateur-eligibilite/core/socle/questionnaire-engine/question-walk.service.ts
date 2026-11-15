@@ -8,7 +8,7 @@
 //
 // Seules les pages posées après le verrou reçoivent les cibles figées. Les
 // autres lisent celles que le modèle calcule sur leurs faits
-// (`question/asked/context.ts`), même relues après le verrou.
+// (`question/asked/context.vo.ts`), même relues après le verrou.
 //
 // Avec une pertinence, une question dont la réponse ne change rien de ce qui
 // compte ne se pose pas (`does-a-question-still-matter/relevance.service.ts`, #255) :
@@ -23,7 +23,7 @@ import { ValidatedAnswers } from "./answers/validated-answers.vo.ts";
 import { GuardPlace } from "./conditions/guard-place.vo.ts";
 import type { QuestionPositions } from "./conditions/question-positions.vo.ts";
 import type { Relevance } from "./does-a-question-still-matter/relevance.service.ts";
-import type { SeenAnswers } from "./question/asked/context.ts";
+import type { SeenAnswers } from "./question/asked/context.vo.ts";
 import type { AskedQuestion } from "./question/asked/question.vo.ts";
 import type {
   Answers,

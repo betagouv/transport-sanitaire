@@ -7,7 +7,7 @@
 import type { Cible } from "../../decision-engine/index.ts";
 import type { Reads } from "../conditions/reads.vo.ts";
 import type { AddressData } from "./address.vo.ts";
-import type { SeenAnswers } from "./asked/context.ts";
+import type { SeenAnswers } from "./asked/context.vo.ts";
 import type { AskedQuestion } from "./asked/question.vo.ts";
 import type { Dependency } from "./dependency.vo.ts";
 

@@ -8,10 +8,10 @@
 //
 // Une réponse possible ne change pas : chaque réglage donne une copie.
 
-import type { Condition, Scope } from "../../conditions/condition.ts";
+import type { Condition } from "../../conditions/condition.ts";
 import { Reads } from "../../conditions/reads.vo.ts";
 import { QuestionnaireDeclarationError } from "../../questionnaire-declaration.error.ts";
-import type { QuestionContext } from "../asked/context.ts";
+import type { QuestionContext } from "../asked/context.vo.ts";
 import type {
   NotOffered,
   OfferedPossibleAnswer,
@@ -101,10 +101,10 @@ export class DeclaredPossibleAnswer<
   /** La réponse possible telle qu'elle se propose, si elle se propose. */
   offeredIn(
     context: Context<Questions, Cibles, Faits>,
-    scope: Scope,
   ): OfferedPossibleAnswer | NotOffered {
     const { value, description, blocks, conditions } = this.#settings;
-    if (!conditions.every((condition) => condition.in(scope))) return undefined;
+    if (!conditions.every((condition) => condition.in(context)))
+      return undefined;
     const help = this.#settings.helpFrom?.(context);
     return {
       value,
@@ -202,23 +202,21 @@ export class DeclaredPossibleAnswers<
    */
   offeredIn(
     context: Context<Questions, Cibles, Faits>,
-    scope: Scope,
     except?: string,
   ): OfferedPossibleAnswer[] {
     const values = this.#order ?? this.#options.map(({ value }) => value);
     return values
       .filter((value) => value !== except)
-      .flatMap((value) => this.offeredOneIn(value, context, scope) ?? []);
+      .flatMap((value) => this.offeredOneIn(value, context) ?? []);
   }
 
   /** La réponse possible `value`, si elle se propose. */
   offeredOneIn(
     value: string,
     context: Context<Questions, Cibles, Faits>,
-    scope: Scope,
   ): OfferedPossibleAnswer | NotOffered {
     const possibleAnswer = this.#options.find((each) => each.value === value);
-    return possibleAnswer?.offeredIn(context, scope);
+    return possibleAnswer?.offeredIn(context);
   }
 }
 

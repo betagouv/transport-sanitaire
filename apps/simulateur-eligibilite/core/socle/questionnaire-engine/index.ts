@@ -1,6 +1,6 @@
 // Ce que le moteur de questionnaire promet au reste du socle : déclarer des
 // pages et des questions, lire des réponses (`Questionnaire`, `Reading`), les
-// conditions et leur périmètre, ce qu'une question change.
+// conditions et le contexte où elles se lisent, les questions qui comptent.
 
 export type {
   Box,
@@ -14,10 +14,10 @@ export {
 } from "./answers/validated-answers.vo.ts";
 export {
   type Condition,
+  type Context,
   constant,
   type Read,
   readIn,
-  type Scope,
   Value,
   type ValueOf,
 } from "./conditions/condition.ts";
@@ -40,7 +40,7 @@ export {
   MISSING,
 } from "./question/asked/answer-problem.vo.ts";
 export type { Revisit } from "./question/asked/common.vo.ts";
-export type { QuestionContext } from "./question/asked/context.ts";
+export { QuestionContext } from "./question/asked/context.vo.ts";
 export {
   type AskedQuestion,
   askedQuestion,

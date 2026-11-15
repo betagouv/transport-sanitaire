@@ -19,7 +19,7 @@
 // questions validées, les cibles et les faits. Les faits sont ceux des
 // questions validées jusque-là, calculés seulement si on les lit.
 
-import type { Pipeline } from "../asked/context.ts";
+import type { Pipeline } from "../asked/context.vo.ts";
 import type { AnyQuestions, ReadByObject } from "../question.ts";
 import { DeclaredMultipleChoice, DeclaredSingleChoice } from "./choices.vo.ts";
 import { Inconsistencies } from "./inconsistencies.vo.ts";
@@ -36,7 +36,7 @@ import type { CommonSettings } from "./settings.ts";
 /**
  * Les constructeurs des questions d'un modèle. `faits` : son catalogue des
  * faits. `cibles` : ce qui calcule ses cibles sur ces faits. Les conditions
- * lisent les uns et les autres (`question/asked/context.ts`). `Questions` :
+ * lisent les uns et les autres (`question/asked/context.vo.ts`). `Questions` :
  * ce que les rappels et les libellés calculés lisent par id. Par défaut, rien :
  * ils lisent les questions par leur objet.
  */

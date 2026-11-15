@@ -24,6 +24,7 @@ import { PageRefusal } from "./page-refusal.error.ts";
 import { PreconisationService } from "./preconisation.service.ts";
 import type { Preconisation } from "./preconisation.vo.ts";
 import { QuestionnaireReadingService } from "./questionnaire-reading.service.ts";
+import { ResultContext } from "./result-context.vo.ts";
 import { type Lock, SimulationStage } from "./simulation-stage.vo.ts";
 import { StagePages } from "./stage-pages.vo.ts";
 
@@ -162,7 +163,7 @@ export class Simulation {
     const { faits, cibles } = this.preconisation;
     const { validated } = this.#reading;
     const sources = { validated, faits, cibles, on };
-    return readIn(QuestionnaireReadingService.ofResult(sources));
+    return readIn(new ResultContext(sources));
   }
 
   /** Les pages affichées, les réponses, les questions validées, la préconisation. */
