@@ -1,7 +1,8 @@
 // Ce que le moteur de questionnaire promet au reste du socle : déclarer des
-// pages et des questions, lire des réponses (`Questionnaire`, `Reading`), les
+// pages et des questions, lire des réponses (`Questionnaire`, `AnsweredQuestionnaire`), les
 // conditions et le contexte où elles se lisent, les questions qui comptent.
 
+export type { AnsweredQuestionnaire } from "./answered-questionnaire.vo.ts";
 export type {
   Box,
   Choice,
@@ -64,4 +65,4 @@ export {
   type Unanswered,
   type Validated,
 } from "./question/question.ts";
-export { Questionnaire, type Reading } from "./questionnaire.vo.ts";
+export { Questionnaire } from "./questionnaire.vo.ts";

@@ -8,12 +8,12 @@
 
 import type { AnyFaits, CoreModel } from "../model.ts";
 import {
+  type AnsweredQuestionnaire,
   type Answers,
   type AnyCibles,
   type AnyQuestions,
   pagesOf,
   Questionnaire,
-  type Reading,
 } from "../questionnaire-engine/index.ts";
 import { Preconisation } from "./preconisation.vo.ts";
 import { Lock } from "./simulation-stage.vo.ts";
@@ -35,7 +35,7 @@ export class PreconisationService<
   }
 
   /** La préconisation d'une lecture déjà faite des parties d'avant le verrou. */
-  of(read: Reading<Questions>): Preconisation<Faits, Cibles> {
+  of(read: AnsweredQuestionnaire<Questions>): Preconisation<Faits, Cibles> {
     const core = this.#core;
     const faits = core.preconisation.faits(
       read.answers,
@@ -50,7 +50,7 @@ export class PreconisationService<
    * leur préconisation. Une réponse qu'un retour en arrière a laissée sans
    * objet ne passe pas le verrou : rien de ce qui suit ne la lit.
    */
-  lock(reading: Reading<Questions>): Lock {
+  lock(reading: AnsweredQuestionnaire<Questions>): Lock {
     const answers = reading.validated.answers();
     return new Lock(answers, this.ofAnswers(answers));
   }

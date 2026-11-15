@@ -3,11 +3,11 @@
 // SQ-30). Le refus dit quelles questions sont en faute, et pourquoi.
 
 import {
+  type AnsweredQuestionnaire,
   type AnswerProblem,
   type Answers,
   MISSING,
   type Page,
-  type Reading,
 } from "../questionnaire-engine/index.ts";
 
 /** Une question en faute, et ce qui ne va pas dans sa réponse. */
@@ -19,7 +19,11 @@ type Fault = {
 /** La page ne se valide pas : une réponse y manque, ou se contredit. */
 export class PageRefusal extends Error {
   /** Refuse la page si ce brouillon y laisse une question sans sa réponse. */
-  static unlessAnswered(reading: Reading, page: Page, draft: Answers): void {
+  static unlessAnswered(
+    reading: AnsweredQuestionnaire,
+    page: Page,
+    draft: Answers,
+  ): void {
     const faults = reading
       .withDraft(page, draft)
       .questionsOn(page)

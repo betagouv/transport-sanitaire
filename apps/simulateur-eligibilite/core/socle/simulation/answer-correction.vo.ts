@@ -3,7 +3,11 @@
 // ramène vers la page qui portait l'alerte. La simulation tient la correction
 // en cours (`Simulation.revisit`) ; elle dit où elle reprend.
 
-import type { Answers, Page, Reading } from "../questionnaire-engine/index.ts";
+import type {
+  AnsweredQuestionnaire,
+  Answers,
+  Page,
+} from "../questionnaire-engine/index.ts";
 import { PageOpening, type StageEnds } from "./page-opening.vo.ts";
 import type { StagePages } from "./stage-pages.vo.ts";
 
@@ -26,13 +30,13 @@ export class AnswerCorrection {
    * Où elle reprend une fois validée, sur ces pages relues. D'abord une
    * question devenue nécessaire sur une page d'avant l'origine (`declared` dit
    * l'ordre des pages) : la correction continue. Sinon la page d'origine, si
-   * elle se pose encore, avec son brouillon relu (`Reading.restore`). Si elle
+   * elle se pose encore, avec son brouillon relu (`AnsweredQuestionnaire.restore`). Si elle
    * ne se pose plus, la page qui attend une réponse. Aucune : l'étape
    * s'achève.
    */
   resumeOn(
     pages: StagePages,
-    reading: Reading,
+    reading: AnsweredQuestionnaire,
     declared: readonly Page[],
   ): PageOpening | StageEnds {
     const pending = pages.firstPending();

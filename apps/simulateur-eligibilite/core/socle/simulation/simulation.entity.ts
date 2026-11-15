@@ -7,12 +7,12 @@
 import type { CoreModel } from "../model.ts";
 import {
   type Answer,
+  type AnsweredQuestionnaire,
   type Answers,
   type AskedQuestion,
   type Page,
   pagesOf,
   type Read,
-  type Reading,
   readIn,
   type ValidatedAnswers,
 } from "../questionnaire-engine/index.ts";
@@ -57,7 +57,7 @@ export class Simulation {
   readonly #core: CoreModel;
   readonly #readingService: QuestionnaireReadingService;
   readonly #preconisationService: PreconisationService;
-  readonly #reading: Reading;
+  readonly #reading: AnsweredQuestionnaire;
   readonly #opening: PageOpening | undefined;
   #preconisation?: Preconisation;
 
@@ -67,7 +67,7 @@ export class Simulation {
     stage: SimulationStage,
     answers: Answers,
     opening?: PageOpening,
-    reading?: Reading,
+    reading?: AnsweredQuestionnaire,
   ) {
     const preconisation = new PreconisationService(core);
     this.#core = core;
@@ -102,7 +102,7 @@ export class Simulation {
     return shown.questionsOn(page);
   }
 
-  /** Le brouillon de la page ouverte après cette saisie (`Reading.answerOn`). */
+  /** Le brouillon de la page ouverte après cette saisie (`answerOn`). */
   answerOnPage(draft: Answers, id: string, answer?: Answer): Answers {
     return this.#reading.answerOn(this.page, draft, id, answer);
   }
@@ -265,13 +265,13 @@ export class Simulation {
   #stagePages(): StagePages {
     const { complement } = this.#core;
     const within = this.stage.isLocked() ? complement.pages : undefined;
-    return StagePages.of(this.#reading, this.answers, within);
+    return StagePages.of(this.#reading, within);
   }
 
   #advance(draft: Answers, on: Date): Simulation {
     const answers = this.#reading.commit(this.page, draft);
     const reading = this.#readingService.at(this.stage, answers);
-    const opening = this.#openingAfter(reading, answers);
+    const opening = this.#openingAfter(reading);
     const stage = opening ? this.stage : this.stage.next(on);
     const opened = opening ?? new PageOpening(this.page);
     return new Simulation(this.#core, stage, answers, opened, reading);
@@ -280,11 +280,11 @@ export class Simulation {
   // La page qu'ouvre la validation de la page ouverte, sur ces réponses
   // relues : celle où reprend une correction en cours, sinon la suivante.
   // Aucune : l'étape s'achève.
-  #openingAfter(reading: Reading, answers: Answers): PageOpening | StageEnds {
+  #openingAfter(reading: AnsweredQuestionnaire): PageOpening | StageEnds {
     const correction = this.#opening?.correction;
     if (correction) {
       const declared = pagesOf(this.#core.questionnaire);
-      const pages = StagePages.of(reading, answers);
+      const pages = StagePages.of(reading);
       return correction.resumeOn(pages, reading, declared);
     }
     const following = reading.pageAfter(this.page);

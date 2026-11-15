@@ -2,46 +2,43 @@
 // et celles qui attendent encore une réponse. La simulation y cherche la page à
 // ouvrir : au départ, après « Suivant », à une adresse.
 
-import type { Answers, Page, Reading } from "../questionnaire-engine/index.ts";
+import type {
+  AnsweredQuestionnaire,
+  Page,
+} from "../questionnaire-engine/index.ts";
 
 /** Aucune page ne répond à la demande. */
 type NoPage = undefined;
 
 export class StagePages {
   /**
-   * Les pages posées de cette lecture, à ces réponses. `within` : seulement
+   * Les pages posées de ce questionnaire répondu. `within` : seulement
    * celles-ci, après le verrou celles du complément.
    */
   static of(
-    reading: Reading,
-    answers: Answers,
+    reading: AnsweredQuestionnaire,
     within?: readonly Page[],
   ): StagePages {
     const asked = reading.askedPages();
     const list = within ? asked.filter((page) => within.includes(page)) : asked;
-    return new StagePages(list, reading, answers);
+    return new StagePages(list, reading);
   }
 
   /** Les pages, dans l'ordre. */
   readonly list: readonly Page[];
-  readonly #reading: Reading;
-  readonly #answers: Answers;
+  readonly #reading: AnsweredQuestionnaire;
 
-  private constructor(
-    list: readonly Page[],
-    reading: Reading,
-    answers: Answers,
-  ) {
+  private constructor(list: readonly Page[], reading: AnsweredQuestionnaire) {
     this.list = list;
     this.#reading = reading;
-    this.#answers = answers;
   }
 
   /** Cette page attend-elle encore une réponse ? */
   isPending(page: Page): boolean {
+    const { answers } = this.#reading;
     return this.#reading
       .questionsOn(page)
-      .some((question) => !question.isAnsweredBy(this.#answers[question.id]));
+      .some((asked) => !asked.isAnsweredBy(answers.question(asked.id).value));
   }
 
   /** La première page qui attend une réponse. */

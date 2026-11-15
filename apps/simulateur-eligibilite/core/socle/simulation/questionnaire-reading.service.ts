@@ -4,10 +4,10 @@
 
 import type { CoreModel } from "../model.ts";
 import {
+  type AnsweredQuestionnaire,
   type Answers,
   pagesOf,
   Questionnaire,
-  type Reading,
 } from "../questionnaire-engine/index.ts";
 import type { PreconisationService } from "./preconisation.service.ts";
 import { SimulationStage } from "./simulation-stage.vo.ts";
@@ -26,7 +26,7 @@ export class QuestionnaireReadingService {
    * au premier résultat. Après : toutes les pages, sous les cibles que le
    * verrou a figées ; les questions d'après le verrou les lisent.
    */
-  at(stage: SimulationStage, answers: Answers): Reading {
+  at(stage: SimulationStage, answers: Answers): AnsweredQuestionnaire {
     const core = this.#core;
     const before = pagesOf(core.questionnaire);
     if (!stage.isLocked()) {
