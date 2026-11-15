@@ -156,8 +156,23 @@ l'ouverture. Elle ne se partage pas et ne se reprend pas (D-104).
 _Chez l'éditeur_: « simulation ». Sa « révision » n'a pas d'équivalent chez nous
 (D-192).
 
+**Lecture**:
+Ce qu'on tire des réponses, des faits ou des cibles :
+`given.question(Q2_1).answer()`. Elle dit ce qu'elle lit (`reads`) et ne vaut
+quelque chose qu'une fois lue dans un contexte (`in(context)`). Une condition
+est une lecture qui vaut oui ou non ; un texte du résultat, une lecture qui vaut
+une phrase.
+_Chez l'éditeur_: aucun mot.
+
+**Contexte**:
+Ce qu'une lecture voit, selon l'endroit. Une question voit les questions posées
+avant elle. Un fait et un résultat voient les questions validées ; le résultat
+voit aussi les faits, les cibles et le jour.
+_Chez l'éditeur_: **faux ami**. Son « contexte » est un motif de fiche positive,
+et son « contexte fiable » ce que le livrable tient pour sûr (D-74).
+
 **Condition**:
-Une question oui/non sur les réponses, les faits ou les cibles :
+Une lecture qui vaut oui ou non, sur les réponses, les faits ou les cibles :
 `given.question(Q2_1).answer().is("8_HOSPITALISATION")`. Elle se compose par
 `and`, `or` et `not`, et dit ce qu'elle lit (`reads`) sans se calculer (ADR-23).
 _Chez l'éditeur_: « condition », le même mot.
