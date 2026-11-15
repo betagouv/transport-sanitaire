@@ -169,20 +169,20 @@ const given = givenOf<Questions>();
 
 const URGENCE = question
   .singleChoice("urgence", "Urgent ?")
-  .options({ oui: "Oui", non: "Non" });
+  .possibleAnswers({ oui: "Oui", non: "Non" });
 
 const TRAJET = page(
   "trajet",
   question
     .singleChoice("trajet", "Quel trajet ?")
-    .options({ court: "Court", long: "Long" }),
+    .possibleAnswers({ court: "Court", long: "Long" }),
   URGENCE.appliesWhen(given.question("trajet").answer().is("long")),
 );
 const BRANCHE = page(
   "branche",
   question
     .singleChoice("branche", "Une branche ?")
-    .options({ oui: "Oui", non: "Non" }),
+    .possibleAnswers({ oui: "Oui", non: "Non" }),
   URGENCE.unlessAskedBefore().appliesWhen(
     given.question("branche").answer().is("oui"),
   ),

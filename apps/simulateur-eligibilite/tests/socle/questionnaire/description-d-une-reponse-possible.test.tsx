@@ -15,8 +15,10 @@ const DUREE = page(
   "duree",
   question
     .singleChoice("duree", "Combien de temps avez-vous ?")
-    .options({ peu: "Peu", beaucoup: "Beaucoup" })
-    .option("peu", (option) => option.description("Environ 2 minutes.")),
+    .possibleAnswers({ peu: "Peu", beaucoup: "Beaucoup" })
+    .possibleAnswer("peu", (possibleAnswer) =>
+      possibleAnswer.description("Environ 2 minutes."),
+    ),
 );
 
 describe("explication d'une option", () => {

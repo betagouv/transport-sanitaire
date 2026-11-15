@@ -17,21 +17,21 @@ const AGE = page(
   "age",
   question
     .singleChoice("age", "Le patient est-il majeur ?")
-    .options({ oui: "Oui", non: "Non" }),
+    .possibleAnswers({ oui: "Oui", non: "Non" }),
 );
 
 const SITUATIONS = page(
   "situations",
   question
     .multipleChoice("situations", "Quelles situations concernent ce trajet ?")
-    .options({
+    .possibleAnswers({
       hospitalise: "Le patient est déjà hospitalisé",
       autre: "Une autre situation particulière",
       aucune: "Aucune de ces situations",
     })
     .exclusive("aucune")
-    .option("autre", (option) =>
-      option.helpFrom(({ answers }) => ({
+    .possibleAnswer("autre", (possibleAnswer) =>
+      possibleAnswer.helpFrom(({ answers }) => ({
         label: "Voir les situations concernées",
         items: answers.question("age").is("non")
           ? ["Accident du travail", "Suivi en CAMSP ou en CMPP"]

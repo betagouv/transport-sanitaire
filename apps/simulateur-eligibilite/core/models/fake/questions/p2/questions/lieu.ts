@@ -4,7 +4,7 @@ import { question } from "../../question.ts";
 
 export const LIEU = question
   .singleChoice("lieu", "Où la servir ?")
-  .options({
+  .possibleAnswers({
     salle: "En salle",
     terrasse: "En terrasse",
     comptoir: "Au comptoir",

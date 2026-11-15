@@ -30,21 +30,23 @@ const PAGES = [
     "soin",
     question
       .singleChoice("soin", "Quel soin ?")
-      .options({ dialyse: "Une dialyse", rien: "Rien" }),
+      .possibleAnswers({ dialyse: "Une dialyse", rien: "Rien" }),
   ),
   page(
     "lieu",
     question
       .singleChoice("lieu", "Où ?")
-      .options({ hopital: "À l'hôpital", domicile: "À domicile" }),
+      .possibleAnswers({ hopital: "À l'hôpital", domicile: "À domicile" }),
     question
       .singleChoice("seance", "Quelle séance ?")
-      .options({ hemodialyse: "Une hémodialyse", autre: "Une autre" })
+      .possibleAnswers({ hemodialyse: "Une hémodialyse", autre: "Une autre" })
       .appliesWhen(DIALYSE),
     question
       .multipleChoice("transport", "Quel transport ?")
-      .options({ taxi: "Un taxi", vsl: "Un VSL" })
-      .option("vsl", (option) => option.offeredWhen(DIALYSE)),
+      .possibleAnswers({ taxi: "Un taxi", vsl: "Un VSL" })
+      .possibleAnswer("vsl", (possibleAnswer) =>
+        possibleAnswer.offeredWhen(DIALYSE),
+      ),
   ),
 ] as Page[];
 

@@ -16,7 +16,7 @@ const commandeEnCours = boisson.isPresent().and(boisson.is("rien").not());
 // La question et ses options, avant la règle qui lit sa réponse.
 const service = question
   .multipleChoice("service", "Comment la servir ?")
-  .options({
+  .possibleAnswers({
     chaude: "Très chaude",
     glacee: "Glacée",
     "grande-tasse": "Dans une grande tasse",
@@ -38,8 +38,8 @@ export const SERVICE = service
   )
   .appliesWhen(commandeEnCours)
   .dependsOn(BOISSON, ACCOMPAGNEMENTS)
-  .option("preparation", (option) =>
-    option
+  .possibleAnswer("preparation", (possibleAnswer) =>
+    possibleAnswer
       .description("À préciser au moment du service.")
       .helpFrom(({ answers }) => ({
         label: "Voir les préparations possibles",
@@ -48,8 +48,8 @@ export const SERVICE = service
           : ["Allongé", "Serré", "Avec un verre d'eau"],
       })),
   )
-  .option("rien", (option) =>
-    option
+  .possibleAnswer("rien", (possibleAnswer) =>
+    possibleAnswer
       .labelFrom(({ answers }) =>
         answers.question(ACCOMPAGNEMENTS).checked("aucun")
           ? "Rien de particulier"
@@ -75,7 +75,7 @@ export const SERVICE = service
 
 export const QUELLE_PREPARATION = question
   .singleChoice("quelle-preparation", "Où la préparer ?")
-  .options({
+  .possibleAnswers({
     comptoir: "Préparée au comptoir",
     table: "Préparée à table, devant vous",
   })

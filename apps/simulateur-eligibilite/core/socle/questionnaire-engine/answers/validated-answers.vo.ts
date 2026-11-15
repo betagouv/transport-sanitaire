@@ -38,12 +38,12 @@ export class ValidatedAnswer<
   }
 
   /** Cette option se proposait. Non validée : aucune ne se proposait. */
-  offers(option: Choice<Given> | Box<Given>): boolean {
-    return this.#offered?.includes(option as string) ?? false;
+  offers(possibleAnswer: Choice<Given> | Box<Given>): boolean {
+    return this.#offered?.includes(possibleAnswer as string) ?? false;
   }
 
   /** Les options qui se proposaient. Non validée : aucune. */
-  offeredOptions(): readonly (Choice<Given> | Box<Given>)[] {
+  offeredPossibleAnswers(): readonly (Choice<Given> | Box<Given>)[] {
     return (this.#offered ?? []) as (Choice<Given> | Box<Given>)[];
   }
 

@@ -2,8 +2,12 @@
 // qui se proposent, sous leur libellé du moment. Une réponse n'en garde que ces
 // options, et l'une d'elles peut bloquer le questionnaire.
 
-import type { OfferedOption } from "../option.ts";
-import type { Answer, IncompatibleOptions, Unanswered } from "../question.ts";
+import type { OfferedPossibleAnswer } from "../possible-answer.ts";
+import type {
+  Answer,
+  IncompatiblePossibleAnswers,
+  Unanswered,
+} from "../question.ts";
 import {
   type AnswerProblem,
   MISSING,
@@ -14,7 +18,7 @@ import { AskedCommon, type AskedCommonData } from "./common.vo.ts";
 
 export type AskedSingleChoiceData = AskedCommonData & {
   readonly kind: "single choice";
-  readonly options: readonly OfferedOption[];
+  readonly possibleAnswers: readonly OfferedPossibleAnswer[];
   readonly dropdown?: boolean;
   readonly boldLabels?: boolean;
 };
@@ -22,7 +26,7 @@ export type AskedSingleChoiceData = AskedCommonData & {
 /** Un choix unique, tel qu'il se pose. */
 export class AskedSingleChoice extends AskedCommon {
   readonly kind = "single choice";
-  readonly options: readonly OfferedOption[];
+  readonly possibleAnswers: readonly OfferedPossibleAnswer[];
   /** Affiché en liste déroulante, et non en boutons radio. */
   readonly dropdown: boolean;
   /** Les libellés des options en gras. */
@@ -30,7 +34,7 @@ export class AskedSingleChoice extends AskedCommon {
 
   constructor(data: AskedSingleChoiceData) {
     super(data);
-    this.options = data.options;
+    this.possibleAnswers = data.possibleAnswers;
     this.dropdown = data.dropdown ?? false;
     this.boldLabels = data.boldLabels ?? false;
   }
@@ -42,36 +46,36 @@ export class AskedSingleChoice extends AskedCommon {
   }
 
   override offeredValues(): readonly string[] {
-    return this.options.map((option) => option.value);
+    return this.possibleAnswers.map((possibleAnswer) => possibleAnswer.value);
   }
 
   protected override formatProblemOf(answer: Answer) {
     if (typeof answer !== "string" || answer.trim() === "") return MISSING;
-    return blockOf(this.options, [answer]);
+    return blockOf(this.possibleAnswers, [answer]);
   }
 }
 
 export type AskedMultipleChoiceData = AskedCommonData & {
   readonly kind: "multiple choice";
-  readonly options: readonly OfferedOption[];
-  readonly exclusiveOption?: OfferedOption;
-  readonly incompatibleOptions?: readonly IncompatibleOptions[];
+  readonly possibleAnswers: readonly OfferedPossibleAnswer[];
+  readonly exclusivePossibleAnswer?: OfferedPossibleAnswer;
+  readonly incompatiblePossibleAnswers?: readonly IncompatiblePossibleAnswers[];
 };
 
 /** Un choix multiple, tel qu'il se pose. */
 export class AskedMultipleChoice extends AskedCommon {
   readonly kind = "multiple choice";
-  readonly options: readonly OfferedOption[];
+  readonly possibleAnswers: readonly OfferedPossibleAnswer[];
   /** La cocher décoche les autres. Absente : elle ne se propose pas. */
-  readonly exclusiveOption: OfferedOption | undefined;
+  readonly exclusivePossibleAnswer: OfferedPossibleAnswer | undefined;
   /** Les options qui s'excluent deux à deux. */
-  readonly incompatibleOptions: readonly IncompatibleOptions[];
+  readonly incompatiblePossibleAnswers: readonly IncompatiblePossibleAnswers[];
 
   constructor(data: AskedMultipleChoiceData) {
     super(data);
-    this.options = data.options;
-    this.exclusiveOption = data.exclusiveOption;
-    this.incompatibleOptions = data.incompatibleOptions ?? [];
+    this.possibleAnswers = data.possibleAnswers;
+    this.exclusivePossibleAnswer = data.exclusivePossibleAnswer;
+    this.incompatiblePossibleAnswers = data.incompatiblePossibleAnswers ?? [];
   }
 
   override kept(answer: Answer | Unanswered): Answer | Unanswered {
@@ -82,20 +86,26 @@ export class AskedMultipleChoice extends AskedCommon {
   }
 
   override offeredValues(): readonly string[] {
-    const exclusive = this.exclusiveOption ? [this.exclusiveOption] : [];
-    return [...this.options, ...exclusive].map((option) => option.value);
+    const exclusive = this.exclusivePossibleAnswer
+      ? [this.exclusivePossibleAnswer]
+      : [];
+    return [...this.possibleAnswers, ...exclusive].map(
+      (possibleAnswer) => possibleAnswer.value,
+    );
   }
 
   protected override formatProblemOf(answer: Answer) {
     if (!Array.isArray(answer) || answer.length === 0)
       return { kind: "nothing checked" } as const;
-    return this.#incompatibilityOf(answer) ?? blockOf(this.options, answer);
+    return (
+      this.#incompatibilityOf(answer) ?? blockOf(this.possibleAnswers, answer)
+    );
   }
 
   // L'écran ne laisse pas cocher deux options incompatibles. Ceci couvre une
   // réponse venue d'ailleurs, comme une seed.
   #incompatibilityOf(checked: readonly string[]): AnswerProblem | NoError {
-    const incompatible = this.incompatibleOptions.find(({ values }) =>
+    const incompatible = this.incompatiblePossibleAnswers.find(({ values }) =>
       values.every((value) => checked.includes(value)),
     );
     return incompatible && stated(incompatible.explanation);
@@ -106,11 +116,13 @@ export class AskedMultipleChoice extends AskedCommon {
 
 // Le blocage de la première option choisie qui bloque, s'il y en a une.
 function blockOf(
-  options: readonly OfferedOption[],
+  possibleAnswers: readonly OfferedPossibleAnswer[],
   chosen: readonly string[],
 ): AnswerProblem | NoError {
-  const blocking = options.find(
-    (option) => option.blocks !== undefined && chosen.includes(option.value),
+  const blocking = possibleAnswers.find(
+    (possibleAnswer) =>
+      possibleAnswer.blocks !== undefined &&
+      chosen.includes(possibleAnswer.value),
   );
   return blocking?.blocks === undefined ? undefined : stated(blocking.blocks);
 }

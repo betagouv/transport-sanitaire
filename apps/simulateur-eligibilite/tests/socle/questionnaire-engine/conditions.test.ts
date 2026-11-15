@@ -100,10 +100,10 @@ describe("answer() dans un fait", () => {
       "commande",
       question
         .singleChoice("taille", "Quelle taille ?")
-        .options({ petit: "Petit", grand: "Grand" }),
+        .possibleAnswers({ petit: "Petit", grand: "Grand" }),
       question
         .singleChoice("boisson", "Quelle boisson ?")
-        .options({ the: "Un thé", cafe: "Un café", eau: "De l'eau" }),
+        .possibleAnswers({ the: "Un thé", cafe: "Un café", eau: "De l'eau" }),
     ),
   ] as Page[];
 

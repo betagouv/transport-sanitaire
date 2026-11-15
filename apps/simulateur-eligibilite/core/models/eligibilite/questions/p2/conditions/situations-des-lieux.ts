@@ -41,9 +41,9 @@ export function rolesDesSituations(
 /** Q2.6 cite cette exception de l'article 80. */
 export function q26(
   entrees: Entrees,
-  option: AnswerOf<typeof Q2_6>[number],
+  possibleAnswer: AnswerOf<typeof Q2_6>[number],
 ): boolean {
-  return entrees.contexte.checked(option);
+  return entrees.contexte.checked(possibleAnswer);
 }
 
 // ---- implémentation ----

@@ -72,14 +72,14 @@ export function categorieAChoisir<E extends Extremite>(
 ) {
   return (Object.keys(CATEGORIES) as Categorie[]).reduce(
     (declaree, categorie) =>
-      declaree.option(categorie, (option) =>
-        option.offeredWhen(
+      declaree.possibleAnswer(categorie, (possibleAnswer) =>
+        possibleAnswer.offeredWhen(
           lieu.compute(({ categories }) => categories.includes(categorie)),
         ),
       ),
     question
       .singleChoice(CHAMPS_DU_LIEU[extremite].categorie, label)
-      .options(CATEGORIES)
+      .possibleAnswers(CATEGORIES)
       .dropdown()
       .mattersWhile(
         avecUnDocument.and(
@@ -100,7 +100,7 @@ export function natureAChoisir<E extends Extremite>(
 ) {
   return question
     .singleChoice(CHAMPS_DU_LIEU[extremite].nature, "Nature du lieu")
-    .options({ "1_HTNM": HTNM, "2_AUTRE": "Autre nature à préciser" })
+    .possibleAnswers({ "1_HTNM": HTNM, "2_AUTRE": "Autre nature à préciser" })
     .mattersWhile(avecUnDocument.and(uneDap).and(aPreciser(etat)))
     .reminderFrom(rappel);
 }

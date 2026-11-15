@@ -23,14 +23,14 @@ const MESSAGE = "Les espèces ne se paient pas à la livraison.";
 
 const LIVRAISON = question
   .singleChoice("livraison", "Comment livrer ?")
-  .options({ domicile: "À domicile", relais: "En point relais" });
+  .possibleAnswers({ domicile: "À domicile", relais: "En point relais" });
 
 const SUITE = [
   page(
     "mode",
     question
       .singleChoice("mode", "Comment payer ?")
-      .options({ carte: "Par carte", especes: "En espèces" })
+      .possibleAnswers({ carte: "Par carte", especes: "En espèces" })
       .inconsistentWhen(
         given
           .question("livraison")

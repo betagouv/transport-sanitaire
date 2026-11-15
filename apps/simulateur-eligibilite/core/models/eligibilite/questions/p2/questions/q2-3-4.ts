@@ -9,7 +9,7 @@ import { given, question } from "../../question.ts";
 
 export const Q2_3_4 = question
   .singleChoice("Q2.3.4", "Attestez-vous que ce transport est urgent ?")
-  .options({
+  .possibleAnswers({
     "1_OUI": "Oui.",
     "2_NON": "Non.",
   })

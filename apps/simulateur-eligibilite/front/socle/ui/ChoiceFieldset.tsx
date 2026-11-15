@@ -7,7 +7,7 @@
 // sous elle, et un bouton n'a pas sa place dans un libellé.
 
 import { type ComponentProps, Fragment, type ReactNode } from "react";
-import { type Help, OptionHelp } from "./OptionHelp";
+import { type Help, PossibleAnswerHelp } from "./PossibleAnswerHelp";
 import "./checkbox-card.css";
 import "./choice-fieldset.css";
 
@@ -120,7 +120,7 @@ function ChoiceInput({
           )}
         </label>
       </div>
-      {choice.help && <OptionHelp help={choice.help} />}
+      {choice.help && <PossibleAnswerHelp help={choice.help} />}
       {choice.below}
     </>
   );

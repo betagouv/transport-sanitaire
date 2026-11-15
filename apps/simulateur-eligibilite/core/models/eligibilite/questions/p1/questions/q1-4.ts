@@ -16,7 +16,7 @@ export const Q1_4 = question
     "Q1.4",
     "Le patient pouvant réaliser le trajet sans intervention d’un professionnel, merci de préciser sa préférence en matière de transport.",
   )
-  .options({
+  .possibleAnswers({
     "1_VEHICULE_PERSONNEL": "Véhicule personnel.",
     "2_TRANSPORTS_EN_COMMUN": "Transports en commun terrestres.",
   })
@@ -29,8 +29,8 @@ export const Q1_4 = question
   )
   // Sous chaque choix, son sous-titre, une phrase par ligne (module 02,
   // « Sous-titres des choix de transport », TS1018-10). Il n'informe que.
-  .option("1_VEHICULE_PERSONNEL", (option) =>
-    option.description(
+  .possibleAnswer("1_VEHICULE_PERSONNEL", (possibleAnswer) =>
+    possibleAnswer.description(
       [
         "Véhicule du patient ou celui d’un proche.",
         "Prise en charge sur la base de 0,30 €/km, plus les frais de parking et de péage sur justificatifs.",
@@ -38,8 +38,8 @@ export const Q1_4 = question
       ].join("\n"),
     ),
   )
-  .option("2_TRANSPORTS_EN_COMMUN", (option) =>
-    option.description(
+  .possibleAnswer("2_TRANSPORTS_EN_COMMUN", (possibleAnswer) =>
+    possibleAnswer.description(
       [
         "Prise en charge sur la base du prix du ticket de transport en commun ou du billet de train en 2e classe.",
         REMBOURSEMENT,

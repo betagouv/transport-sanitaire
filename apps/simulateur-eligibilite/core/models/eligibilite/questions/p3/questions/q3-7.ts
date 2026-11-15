@@ -17,7 +17,7 @@ export const Q3_7 = question
   )
   // Les cas reprennent les notices des cerfa, seuils compris (D-123). Les cas
   // 3 et 4 sont ceux de la PMT et du S3141, le cas 6 celui de la DAP.
-  .options({
+  .possibleAnswers({
     "1_ACTE_LOURD":
       "Un acte réalisé lors de l’hospitalisation a un coefficient égal ou supérieur à K60, ou un tarif égal ou supérieur à 120 euros.",
     "2_TRANSFERT_CONSECUTIF":
@@ -39,11 +39,13 @@ export const Q3_7 = question
   )
   // La notice de la DAP n'a ni l'urgence hospitalière, ni la HAD ou la
   // radiothérapie. Elle seule a le traitement mieux adapté.
-  .option("3_URGENCE_HOSPITALIERE", (option) =>
-    option.offeredWhen(uneDap.not()),
+  .possibleAnswer("3_URGENCE_HOSPITALIERE", (possibleAnswer) =>
+    possibleAnswer.offeredWhen(uneDap.not()),
   )
-  .option("4_HAD_OU_RADIOTHERAPIE", (option) =>
-    option.offeredWhen(uneDap.not()),
+  .possibleAnswer("4_HAD_OU_RADIOTHERAPIE", (possibleAnswer) =>
+    possibleAnswer.offeredWhen(uneDap.not()),
   )
-  .option("6_TRAITEMENT_MIEUX_ADAPTE", (option) => option.offeredWhen(uneDap))
+  .possibleAnswer("6_TRAITEMENT_MIEUX_ADAPTE", (possibleAnswer) =>
+    possibleAnswer.offeredWhen(uneDap),
+  )
   .exclusive("7_AUCUN");

@@ -35,7 +35,7 @@ const departDeLEntree = question
   .singleChoice("Q2.13.depart", "Le patient devra effectuer son départ depuis…")
   // Les libellés sont ceux de WORDING-07 et WORDING-P2-04 (v10.1.4), sigles
   // après leur libellé.
-  .options({
+  .possibleAnswers({
     "1_DOMICILE": "Son domicile ou un autre lieu de vie",
     "2_ETABLISSEMENT_DE_SANTE": "Un établissement de santé.",
     "3_EHPAD":
@@ -73,7 +73,7 @@ const trajetEvalue = question
     "Q2.13.sens",
     "Quel trajet évaluez-vous dans cette simulation ?",
   )
-  .options({
+  .possibleAnswers({
     "1_ALLER": "L’aller vers le lieu de soins, de séjour ou de permission.",
     "2_RETOUR": "Le retour depuis ce lieu.",
     "3_ALLER_RETOUR_EQUIVALENT":
@@ -84,8 +84,10 @@ const trajetEvalue = question
   .appliesWhen(
     unSensQuiChangeLesLieux({ ...LIEUX_DE_P2, departDeLEntree: Q2_13_DEPART }),
   )
-  .option("4_ALLER_RETOUR_DIFFERENT", (option) =>
-    option.blocks("Ces deux trajets nécessitent deux simulations distinctes."),
+  .possibleAnswer("4_ALLER_RETOUR_DIFFERENT", (possibleAnswer) =>
+    possibleAnswer.blocks(
+      "Ces deux trajets nécessitent deux simulations distinctes.",
+    ),
   );
 
 // Le sens choisi rend certain le conflit qu'il crée.

@@ -1,8 +1,8 @@
 // Les options d'une question à choix déclarée : leurs valeurs et leurs
-// libellés, que la question déclare (`.options`). Le modèle en règle chacune
+// libellés, que la question déclare (`.possibleAnswers`). Le modèle en règle chacune
 // par une lambda, tous ses réglages au même endroit :
 //
-//   .option("6_SEANCE", (option) => option.description("…").offeredWhen(…))
+//   .possibleAnswer("6_SEANCE", (possibleAnswer) => possibleAnswer.description("…").offeredWhen(…))
 //
 // Une option ne change pas : chaque réglage donne une copie.
 
@@ -10,17 +10,25 @@ import type { Condition, Scope } from "../../conditions/condition.ts";
 import { Reads } from "../../conditions/reads.vo.ts";
 import { QuestionnaireDeclarationError } from "../../questionnaire-declaration.error.ts";
 import type { QuestionContext } from "../asked/context.ts";
-import type { NotOffered, OfferedOption, OptionHelp } from "../option.ts";
+import type {
+  NotOffered,
+  OfferedPossibleAnswer,
+  PossibleAnswerHelp,
+} from "../possible-answer.ts";
 import type { AnyQuestions } from "../question.ts";
 
 /** L'option n'a pas d'aide dans ce cas. */
 type NoHelp = undefined;
 
 /** Une option déclarée : son libellé, ce qui la fait se proposer, son aide. */
-export class DeclaredOption<Questions extends AnyQuestions, Cibles, Faits> {
-  readonly #settings: OptionSettings<Questions, Cibles, Faits>;
+export class DeclaredPossibleAnswer<
+  Questions extends AnyQuestions,
+  Cibles,
+  Faits,
+> {
+  readonly #settings: PossibleAnswerSettings<Questions, Cibles, Faits>;
 
-  constructor(settings: OptionSettings<Questions, Cibles, Faits>) {
+  constructor(settings: PossibleAnswerSettings<Questions, Cibles, Faits>) {
     this.#settings = settings;
   }
 
@@ -42,7 +50,9 @@ export class DeclaredOption<Questions extends AnyQuestions, Cibles, Faits> {
    * Ce que l'option veut dire, affiché sous son libellé. Un saut de ligne
    * (`\n`) y commence une ligne.
    */
-  description(description: string): DeclaredOption<Questions, Cibles, Faits> {
+  description(
+    description: string,
+  ): DeclaredPossibleAnswer<Questions, Cibles, Faits> {
     return this.#with({ description });
   }
 
@@ -50,7 +60,9 @@ export class DeclaredOption<Questions extends AnyQuestions, Cibles, Faits> {
    * L'option se propose quand cette condition tient. Chaque appel en ajoute
    * une. Une réponse qui la portait la perd quand elle ne se propose plus.
    */
-  offeredWhen(condition: Condition): DeclaredOption<Questions, Cibles, Faits> {
+  offeredWhen(
+    condition: Condition,
+  ): DeclaredPossibleAnswer<Questions, Cibles, Faits> {
     return this.#with({
       conditions: [...this.#settings.conditions, condition],
     });
@@ -59,7 +71,7 @@ export class DeclaredOption<Questions extends AnyQuestions, Cibles, Faits> {
   /** Le libellé, quand il dépend des réponses. */
   labelFrom(
     label: (context: Context<Questions, Cibles, Faits>) => string,
-  ): DeclaredOption<Questions, Cibles, Faits> {
+  ): DeclaredPossibleAnswer<Questions, Cibles, Faits> {
     return this.#with({ labelFrom: label });
   }
 
@@ -67,14 +79,16 @@ export class DeclaredOption<Questions extends AnyQuestions, Cibles, Faits> {
    * Choisir cette option arrête le questionnaire sur sa page : ce message
    * s'affiche, et on n'avance plus tant qu'elle reste choisie.
    */
-  blocks(message: string): DeclaredOption<Questions, Cibles, Faits> {
+  blocks(message: string): DeclaredPossibleAnswer<Questions, Cibles, Faits> {
     return this.#with({ blocks: message });
   }
 
   /** L'aide dépliable de l'option, qui dépend des réponses. */
   helpFrom(
-    help: (context: Context<Questions, Cibles, Faits>) => OptionHelp | NoHelp,
-  ): DeclaredOption<Questions, Cibles, Faits> {
+    help: (
+      context: Context<Questions, Cibles, Faits>,
+    ) => PossibleAnswerHelp | NoHelp,
+  ): DeclaredPossibleAnswer<Questions, Cibles, Faits> {
     return this.#with({ helpFrom: help });
   }
 
@@ -82,7 +96,7 @@ export class DeclaredOption<Questions extends AnyQuestions, Cibles, Faits> {
   offeredIn(
     context: Context<Questions, Cibles, Faits>,
     scope: Scope,
-  ): OfferedOption | NotOffered {
+  ): OfferedPossibleAnswer | NotOffered {
     const { value, description, blocks, conditions } = this.#settings;
     if (!conditions.every((condition) => condition.in(scope))) return undefined;
     const help = this.#settings.helpFrom?.(context);
@@ -95,8 +109,8 @@ export class DeclaredOption<Questions extends AnyQuestions, Cibles, Faits> {
     };
   }
 
-  #with(changes: Partial<OptionSettings<Questions, Cibles, Faits>>) {
-    return new DeclaredOption({ ...this.#settings, ...changes });
+  #with(changes: Partial<PossibleAnswerSettings<Questions, Cibles, Faits>>) {
+    return new DeclaredPossibleAnswer({ ...this.#settings, ...changes });
   }
 }
 
@@ -105,8 +119,16 @@ export class DeclaredOption<Questions extends AnyQuestions, Cibles, Faits> {
  * modèle choisit. L'ordre ne retire rien : une option hors de l'ordre se règle
  * encore, et peut servir d'option exclusive.
  */
-export class DeclaredOptions<Questions extends AnyQuestions, Cibles, Faits> {
-  readonly #options: readonly DeclaredOption<Questions, Cibles, Faits>[];
+export class DeclaredPossibleAnswers<
+  Questions extends AnyQuestions,
+  Cibles,
+  Faits,
+> {
+  readonly #options: readonly DeclaredPossibleAnswer<
+    Questions,
+    Cibles,
+    Faits
+  >[];
   readonly #order: readonly string[] | undefined;
 
   /**
@@ -117,15 +139,21 @@ export class DeclaredOptions<Questions extends AnyQuestions, Cibles, Faits> {
    */
   static of<Questions extends AnyQuestions, Cibles, Faits>(
     labels: Readonly<Record<string, string>>,
-  ): DeclaredOptions<Questions, Cibles, Faits> {
-    return new DeclaredOptions(optionsOf<Questions, Cibles, Faits>(labels));
+  ): DeclaredPossibleAnswers<Questions, Cibles, Faits> {
+    return new DeclaredPossibleAnswers(
+      possibleAnswersOf<Questions, Cibles, Faits>(labels),
+    );
   }
 
   private constructor(
-    options: readonly DeclaredOption<Questions, Cibles, Faits>[],
+    possibleAnswers: readonly DeclaredPossibleAnswer<
+      Questions,
+      Cibles,
+      Faits
+    >[],
     order?: readonly string[],
   ) {
-    this.#options = options;
+    this.#options = possibleAnswers;
     this.#order = order;
   }
 
@@ -145,20 +173,20 @@ export class DeclaredOptions<Questions extends AnyQuestions, Cibles, Faits> {
   settled(
     value: string,
     settle: (
-      option: DeclaredOption<Questions, Cibles, Faits>,
-    ) => DeclaredOption<Questions, Cibles, Faits>,
-  ): DeclaredOptions<Questions, Cibles, Faits> {
-    const options = this.#options.map((option) =>
-      option.value === value ? settle(option) : option,
+      possibleAnswer: DeclaredPossibleAnswer<Questions, Cibles, Faits>,
+    ) => DeclaredPossibleAnswer<Questions, Cibles, Faits>,
+  ): DeclaredPossibleAnswers<Questions, Cibles, Faits> {
+    const possibleAnswers = this.#options.map((possibleAnswer) =>
+      possibleAnswer.value === value ? settle(possibleAnswer) : possibleAnswer,
     );
-    return new DeclaredOptions(options, this.#order);
+    return new DeclaredPossibleAnswers(possibleAnswers, this.#order);
   }
 
   /** Les mêmes, proposées seulement pour `values`, dans cet ordre. */
   ordered(
     values: readonly string[],
-  ): DeclaredOptions<Questions, Cibles, Faits> {
-    return new DeclaredOptions(this.#options, values);
+  ): DeclaredPossibleAnswers<Questions, Cibles, Faits> {
+    return new DeclaredPossibleAnswers(this.#options, values);
   }
 
   /** Les options qui se proposent, hors `except`, sous leur libellé du moment. */
@@ -166,7 +194,7 @@ export class DeclaredOptions<Questions extends AnyQuestions, Cibles, Faits> {
     context: Context<Questions, Cibles, Faits>,
     scope: Scope,
     except?: string,
-  ): OfferedOption[] {
+  ): OfferedPossibleAnswer[] {
     const values = this.#order ?? this.#options.map(({ value }) => value);
     return values
       .filter((value) => value !== except)
@@ -178,9 +206,9 @@ export class DeclaredOptions<Questions extends AnyQuestions, Cibles, Faits> {
     value: string,
     context: Context<Questions, Cibles, Faits>,
     scope: Scope,
-  ): OfferedOption | NotOffered {
-    const option = this.#options.find((each) => each.value === value);
-    return option?.offeredIn(context, scope);
+  ): OfferedPossibleAnswer | NotOffered {
+    const possibleAnswer = this.#options.find((each) => each.value === value);
+    return possibleAnswer?.offeredIn(context, scope);
   }
 }
 
@@ -193,19 +221,21 @@ type Context<Questions extends AnyQuestions, Cibles, Faits> = QuestionContext<
 >;
 
 // Ce qu'une option déclarée règle.
-type OptionSettings<Questions extends AnyQuestions, Cibles, Faits> = {
+type PossibleAnswerSettings<Questions extends AnyQuestions, Cibles, Faits> = {
   readonly value: string;
   readonly label: string;
   readonly conditions: readonly Condition[];
   readonly description?: string;
   readonly blocks?: string;
   labelFrom?(context: Context<Questions, Cibles, Faits>): string;
-  helpFrom?(context: Context<Questions, Cibles, Faits>): OptionHelp | NoHelp;
+  helpFrom?(
+    context: Context<Questions, Cibles, Faits>,
+  ): PossibleAnswerHelp | NoHelp;
 };
 
-function optionsOf<Questions extends AnyQuestions, Cibles, Faits>(
+function possibleAnswersOf<Questions extends AnyQuestions, Cibles, Faits>(
   labels: Readonly<Record<string, string>>,
-): DeclaredOption<Questions, Cibles, Faits>[] {
+): DeclaredPossibleAnswer<Questions, Cibles, Faits>[] {
   const values = Object.keys(labels);
   const integer = values.find((value) => /^(0|[1-9]\d*)$/.test(value));
   if (integer !== undefined) {
@@ -215,7 +245,7 @@ function optionsOf<Questions extends AnyQuestions, Cibles, Faits>(
   }
   return values.map(
     (value) =>
-      new DeclaredOption({
+      new DeclaredPossibleAnswer({
         value,
         label: labels[value] ?? value,
         conditions: [],

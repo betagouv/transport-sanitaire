@@ -63,7 +63,7 @@ const DOULEUR = page(
   "douleur",
   question
     .singleChoice("douleur", "Avez-vous mal ?")
-    .options({ oui: "Oui", non: "Non" }),
+    .possibleAnswers({ oui: "Oui", non: "Non" }),
   question
     .text("endroit", "Où ?")
     .appliesWhen(given.question("douleur").answer().is("oui")),

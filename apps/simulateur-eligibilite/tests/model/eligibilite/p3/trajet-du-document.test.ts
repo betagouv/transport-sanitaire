@@ -177,7 +177,7 @@ describe("les sens que les rôles de P2 permettent (Q3.1.2)", () => {
   const sensProposes = (reponses: Reponses) => {
     const sens = question("Q3.1.2", "S3138g", reponses);
     return sens.kind === "single choice"
-      ? sens.options.map(({ value }) => value)
+      ? sens.possibleAnswers.map(({ value }) => value)
       : [];
   };
   const PENITENTIAIRE: Reponses = {

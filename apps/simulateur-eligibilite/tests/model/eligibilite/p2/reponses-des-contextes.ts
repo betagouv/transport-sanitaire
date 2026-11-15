@@ -27,7 +27,7 @@ export const posee = (id: keyof Questions, reponses: Reponses) => {
   return question?.kind === "multiple choice" ? question : undefined;
 };
 export const proposees = (id: keyof Questions, reponses: Reponses) =>
-  posee(id, reponses)?.options.map(({ value }) => value);
+  posee(id, reponses)?.possibleAnswers.map(({ value }) => value);
 export const faits = (reponses: Reponses) =>
   new EstablishAPreconisation(model).execute(reponses).faits as Faits;
 export const valeurs = (reponses: Reponses, noms: readonly (keyof Faits)[]) =>

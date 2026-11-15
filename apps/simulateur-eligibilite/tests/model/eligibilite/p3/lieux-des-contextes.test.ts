@@ -10,11 +10,11 @@ import {
   ADRESSE,
   ALLER,
   ids,
-  optionsDe,
   posee,
   RETOUR,
   type Reponses,
   rappel,
+  reponsesPossiblesDe,
 } from "./questions-des-lieux";
 
 describe("les lieux que les contextes de P2 fixent (matrice des lieux)", () => {
@@ -51,10 +51,9 @@ describe("les lieux que les contextes de P2 fixent (matrice des lieux)", () => {
 
   it("un transfert entre établissements ne propose ni le domicile, ni d'autre lieu que l'EHPAD", () => {
     const transfert: Reponses = { ...ALLER, "Q2.5": "1_TRANSFERT" };
-    expect(optionsDe("P3/depart", "Q3.2.categorie", transfert)).toEqual([
-      "2_STRUCTURE_DE_SOINS",
-      "3_AUTRE_LIEU",
-    ]);
+    expect(
+      reponsesPossiblesDe("P3/depart", "Q3.2.categorie", transfert),
+    ).toEqual(["2_STRUCTURE_DE_SOINS", "3_AUTRE_LIEU"]);
   });
 
   it("une radiothérapie en ville part de l'établissement d'origine, vers une structure de soins", () => {
@@ -115,9 +114,9 @@ describe("le côté de l'USLD et de l'EHPAD de Q2.6 (#400, #421)", () => {
       "Q3.2.service",
       "Q3.2.adresse",
     ]);
-    expect(optionsDe("P3/arrivee", "Q3.3.categorie", sortie)).toContain(
-      "1_DOMICILE",
-    );
+    expect(
+      reponsesPossiblesDe("P3/arrivee", "Q3.3.categorie", sortie),
+    ).toContain("1_DOMICILE");
     expect(
       ids("P3/arrivee", { ...sortie, "Q3.3.categorie": "1_DOMICILE" }),
     ).toEqual(["Q3.3.categorie", "Q3.3.adresse"]);
@@ -132,7 +131,7 @@ describe("le côté de l'USLD et de l'EHPAD de Q2.6 (#400, #421)", () => {
       ids("P3/arrivee", versUneStructure).filter((id) => id.endsWith(".cote")),
     ).toEqual(["Q3.lieux.usld.cote"]);
     expect(
-      optionsDe("P3/arrivee", "Q3.lieux.usld.cote", versUneStructure),
+      reponsesPossiblesDe("P3/arrivee", "Q3.lieux.usld.cote", versUneStructure),
     ).toEqual(["1_DEPART", "2_ARRIVEE", "3_LES_DEUX"]);
     expect(
       posee("P3/arrivee", "Q3.lieux.usld.cote", versUneStructure).label,
@@ -172,7 +171,7 @@ describe("le côté de l'USLD et de l'EHPAD de Q2.6 (#400, #421)", () => {
       "De quel côté se trouve l’établissement d’hébergement pour personnes âgées dépendantes (EHPAD) ?",
     );
     expect(
-      optionsDe("P3/arrivee", "Q3.lieux.ehpad.cote", versUnAutreLieu),
+      reponsesPossiblesDe("P3/arrivee", "Q3.lieux.ehpad.cote", versUnAutreLieu),
     ).toEqual(["1_DEPART", "2_ARRIVEE", "3_LES_DEUX"]);
   });
 

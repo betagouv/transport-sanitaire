@@ -20,7 +20,7 @@ const DESTINATION = page(
   "destination",
   question
     .singleChoice("destination", "Où va le patient ?")
-    .options({ france: "En France", etranger: "À l'étranger" }),
+    .possibleAnswers({ france: "En France", etranger: "À l'étranger" }),
 );
 
 const ARRIVEE = question

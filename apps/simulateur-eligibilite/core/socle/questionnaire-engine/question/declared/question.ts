@@ -147,11 +147,13 @@ export abstract class DeclaredQuestion<
    */
   shownUnder<Ref extends QuestionRef<Questions>>(
     question: Ref,
-    option: AnswerOfRef<Questions, Ref> extends readonly (infer O)[]
+    possibleAnswer: AnswerOfRef<Questions, Ref> extends readonly (infer O)[]
       ? O & string
       : never,
   ): this {
-    return this.withSettings({ under: { question: idOf(question), option } });
+    return this.withSettings({
+      under: { question: idOf(question), possibleAnswer },
+    });
   }
 
   /** La question qui l'affiche sous l'une de ses options (`shownUnder`). */

@@ -19,7 +19,7 @@ const EXPLICATION =
 
 const CRITERES = question
   .multipleChoice("criteres", "Quels critères ?")
-  .options({
+  .possibleAnswers({
     fauteuil: "Dans son fauteuil",
     brancard: "Sur un brancard",
     oxygene: "Sous oxygène",

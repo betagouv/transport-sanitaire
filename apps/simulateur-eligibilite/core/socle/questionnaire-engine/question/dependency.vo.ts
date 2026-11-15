@@ -19,7 +19,7 @@ export type DependsOn<Questions extends AnyQuestions> =
   | QuestionRef<Questions>
   | {
       readonly question: QuestionRef<Questions>;
-      readonly options: readonly string[];
+      readonly possibleAnswers: readonly string[];
     };
 
 /** Une question dont dépend une réponse, réduite au besoin à ces options. */
@@ -30,15 +30,15 @@ export class Dependency {
     if (typeof dependsOn === "string" || !("question" in dependsOn)) {
       return new Dependency(idOf(dependsOn));
     }
-    return new Dependency(idOf(dependsOn.question), dependsOn.options);
+    return new Dependency(idOf(dependsOn.question), dependsOn.possibleAnswers);
   }
 
   readonly id: string;
-  readonly options?: readonly string[];
+  readonly possibleAnswers?: readonly string[];
 
-  private constructor(id: string, options?: readonly string[]) {
+  private constructor(id: string, possibleAnswers?: readonly string[]) {
     this.id = id;
-    if (options) this.options = options;
+    if (possibleAnswers) this.possibleAnswers = possibleAnswers;
     Object.freeze(this);
   }
 
@@ -47,12 +47,12 @@ export class Dependency {
    * options qui comptent. Rien de coché parmi elles vaut une liste vide.
    */
   seen(answer: Answer | Unanswered): Answer | Unanswered {
-    const { options } = this;
-    if (!options) return answer;
+    const { possibleAnswers } = this;
+    if (!possibleAnswers) return answer;
     const values = Array.isArray(answer) ? answer : [answer];
     return values.filter(
       (value): value is string =>
-        typeof value === "string" && options.includes(value),
+        typeof value === "string" && possibleAnswers.includes(value),
     );
   }
 }

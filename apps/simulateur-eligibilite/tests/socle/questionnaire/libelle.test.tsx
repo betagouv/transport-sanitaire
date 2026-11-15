@@ -18,7 +18,7 @@ const COMPAGNIE = page(
   "compagnie",
   question
     .singleChoice("compagnie", "Venez-vous seul ?")
-    .options({ seul: "Seul", accompagne: "Accompagné" }),
+    .possibleAnswers({ seul: "Seul", accompagne: "Accompagné" }),
 );
 
 const HEURE = page(

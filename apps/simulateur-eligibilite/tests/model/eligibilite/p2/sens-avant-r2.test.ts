@@ -104,7 +104,7 @@ describe("Q2.13.sens, le sens qui change la cohérence des lieux", () => {
     );
     expect(
       question?.kind === "single choice"
-        ? question.options.map(({ label }) => label)
+        ? question.possibleAnswers.map(({ label }) => label)
         : [],
     ).toEqual([
       "L’aller vers le lieu de soins, de séjour ou de permission.",
@@ -153,7 +153,7 @@ describe("Q2.13.sens, le sens qui change la cohérence des lieux", () => {
     });
     expect(
       question?.kind === "single choice"
-        ? question.options.find(
+        ? question.possibleAnswers.find(
             ({ value }) => value === "4_ALLER_RETOUR_DIFFERENT",
           )?.blocks
         : undefined,

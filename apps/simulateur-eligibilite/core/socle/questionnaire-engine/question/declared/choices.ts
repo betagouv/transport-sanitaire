@@ -3,8 +3,8 @@
 // disent plus :
 //
 //   question.singleChoice("Q2.7", "Dans quelle tranche d'âge …")
-//     .options({ "1_MINEUR": "…", "3_ADULTE_AUTORISEE": "…" })
-//     .option("3_ADULTE_AUTORISEE", (option) => option.offeredWhen(desAdultesAProposer))
+//     .possibleAnswers({ "1_MINEUR": "…", "3_ADULTE_AUTORISEE": "…" })
+//     .possibleAnswer("3_ADULTE_AUTORISEE", (possibleAnswer) => possibleAnswer.offeredWhen(desAdultesAProposer))
 //
 // `Value` : les valeurs de ses options. Une autre ne compile pas.
 
@@ -13,8 +13,11 @@ import type { Reads } from "../../conditions/reads.vo.ts";
 import { AskedMultipleChoice, AskedSingleChoice } from "../asked/choices.vo.ts";
 import type { AskedCommonData } from "../asked/common.vo.ts";
 import type { QuestionContext } from "../asked/context.ts";
-import type { AnyQuestions, IncompatibleOptions } from "../question.ts";
-import { type DeclaredOption, DeclaredOptions } from "./option.ts";
+import type { AnyQuestions, IncompatiblePossibleAnswers } from "../question.ts";
+import {
+  type DeclaredPossibleAnswer,
+  DeclaredPossibleAnswers,
+} from "./possible-answer.ts";
 import { DeclaredQuestion } from "./question.ts";
 import type { CommonSettings } from "./settings.ts";
 
@@ -39,26 +42,37 @@ export class DeclaredSingleChoice<
    * Ses options : chaque clé est une valeur, chaque valeur son libellé, dans
    * l'ordre du catalogue. Une clé qui a l'air d'un entier est refusée.
    */
-  options<const Labels extends Readonly<Record<string, string>>>(
+  possibleAnswers<const Labels extends Readonly<Record<string, string>>>(
     labels: Labels,
   ): DeclaredSingleChoice<Questions, Cibles, Faits, keyof Labels & string, Id> {
-    const options = DeclaredOptions.of<Questions, Cibles, Faits>(labels);
-    return new DeclaredSingleChoice(this.settings, { ...this.own, options });
+    const possibleAnswers = DeclaredPossibleAnswers.of<
+      Questions,
+      Cibles,
+      Faits
+    >(labels);
+    return new DeclaredSingleChoice(this.settings, {
+      ...this.own,
+      possibleAnswers,
+    });
   }
 
   /** Le libellé de chacune de ses options, par valeur. */
   get labels(): Readonly<Record<Value, string>> {
-    return this.own.options.labels;
+    return this.own.possibleAnswers.labels;
   }
 
   /** Règle l'option `value` : sa description, sa condition, son blocage. */
-  option(value: Value, settle: Settle<Questions, Cibles, Faits>): this {
-    return this.withOwn({ options: this.own.options.settled(value, settle) });
+  possibleAnswer(value: Value, settle: Settle<Questions, Cibles, Faits>): this {
+    return this.withOwn({
+      possibleAnswers: this.own.possibleAnswers.settled(value, settle),
+    });
   }
 
   /** Les seules options proposées, dans cet ordre. Sans : toutes. */
   order(...values: Value[]): this {
-    return this.withOwn({ options: this.own.options.ordered(values) });
+    return this.withOwn({
+      possibleAnswers: this.own.possibleAnswers.ordered(values),
+    });
   }
 
   /**
@@ -79,18 +93,18 @@ export class DeclaredSingleChoice<
     context: QuestionContext<Questions, Cibles, Faits>,
     scope: Scope,
   ) {
-    const { options, dropdown, boldLabels } = this.own;
+    const { possibleAnswers, dropdown, boldLabels } = this.own;
     return new AskedSingleChoice({
       ...common,
       kind: this.kind,
       dropdown,
       boldLabels,
-      options: options.offeredIn(context, scope),
+      possibleAnswers: possibleAnswers.offeredIn(context, scope),
     });
   }
 
   protected override ownGuardReads(): Reads {
-    return this.own.options.guardReads;
+    return this.own.possibleAnswers.guardReads;
   }
 
   protected override rebuilt(
@@ -122,7 +136,7 @@ export class DeclaredMultipleChoice<
    * Ses options : chaque clé est une valeur, chaque valeur son libellé, dans
    * l'ordre du catalogue. Une clé qui a l'air d'un entier est refusée.
    */
-  options<const Labels extends Readonly<Record<string, string>>>(
+  possibleAnswers<const Labels extends Readonly<Record<string, string>>>(
     labels: Labels,
   ): DeclaredMultipleChoice<
     Questions,
@@ -131,23 +145,34 @@ export class DeclaredMultipleChoice<
     keyof Labels & string,
     Id
   > {
-    const options = DeclaredOptions.of<Questions, Cibles, Faits>(labels);
-    return new DeclaredMultipleChoice(this.settings, { ...this.own, options });
+    const possibleAnswers = DeclaredPossibleAnswers.of<
+      Questions,
+      Cibles,
+      Faits
+    >(labels);
+    return new DeclaredMultipleChoice(this.settings, {
+      ...this.own,
+      possibleAnswers,
+    });
   }
 
   /** Le libellé de chacune de ses options, par valeur. */
   get labels(): Readonly<Record<Value, string>> {
-    return this.own.options.labels;
+    return this.own.possibleAnswers.labels;
   }
 
   /** Règle l'option `value` : sa description, sa condition, son blocage. */
-  option(value: Value, settle: Settle<Questions, Cibles, Faits>): this {
-    return this.withOwn({ options: this.own.options.settled(value, settle) });
+  possibleAnswer(value: Value, settle: Settle<Questions, Cibles, Faits>): this {
+    return this.withOwn({
+      possibleAnswers: this.own.possibleAnswers.settled(value, settle),
+    });
   }
 
   /** Les seules options proposées, dans cet ordre. Sans : toutes. */
   order(...values: Value[]): this {
-    return this.withOwn({ options: this.own.options.ordered(values) });
+    return this.withOwn({
+      possibleAnswers: this.own.possibleAnswers.ordered(values),
+    });
   }
 
   /**
@@ -174,21 +199,21 @@ export class DeclaredMultipleChoice<
     context: QuestionContext<Questions, Cibles, Faits>,
     scope: Scope,
   ) {
-    const { options, exclusive, incompatible } = this.own;
+    const { possibleAnswers, exclusive, incompatible } = this.own;
     return new AskedMultipleChoice({
       ...common,
       kind: this.kind,
-      options: options.offeredIn(context, scope, exclusive),
-      exclusiveOption:
+      possibleAnswers: possibleAnswers.offeredIn(context, scope, exclusive),
+      exclusivePossibleAnswer:
         exclusive === undefined
           ? undefined
-          : options.offeredOneIn(exclusive, context, scope),
-      incompatibleOptions: incompatible,
+          : possibleAnswers.offeredOneIn(exclusive, context, scope),
+      incompatiblePossibleAnswers: incompatible,
     });
   }
 
   protected override ownGuardReads(): Reads {
-    return this.own.options.guardReads;
+    return this.own.possibleAnswers.guardReads;
   }
 
   protected override rebuilt(
@@ -201,21 +226,21 @@ export class DeclaredMultipleChoice<
 
 /** Ce qu'un choix unique règle de plus qu'une question. */
 export type SingleOwn<Questions extends AnyQuestions, Cibles, Faits> = {
-  readonly options: DeclaredOptions<Questions, Cibles, Faits>;
+  readonly possibleAnswers: DeclaredPossibleAnswers<Questions, Cibles, Faits>;
   readonly dropdown?: boolean;
   readonly boldLabels?: boolean;
 };
 
 /** Ce qu'un choix multiple règle de plus qu'une question. */
 export type MultipleOwn<Questions extends AnyQuestions, Cibles, Faits> = {
-  readonly options: DeclaredOptions<Questions, Cibles, Faits>;
+  readonly possibleAnswers: DeclaredPossibleAnswers<Questions, Cibles, Faits>;
   readonly exclusive?: string;
-  readonly incompatible: readonly IncompatibleOptions[];
+  readonly incompatible: readonly IncompatiblePossibleAnswers[];
 };
 
 // ---- implémentation ----
 
 // Ce qui règle une option : la lambda reçoit l'option, et la donne réglée.
 type Settle<Questions extends AnyQuestions, Cibles, Faits> = (
-  option: DeclaredOption<Questions, Cibles, Faits>,
-) => DeclaredOption<Questions, Cibles, Faits>;
+  possibleAnswer: DeclaredPossibleAnswer<Questions, Cibles, Faits>,
+) => DeclaredPossibleAnswer<Questions, Cibles, Faits>;

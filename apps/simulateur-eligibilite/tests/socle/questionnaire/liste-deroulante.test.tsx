@@ -14,7 +14,10 @@ const LIEU = page(
   "lieu",
   question
     .singleChoice("lieu", "Quel est le lieu de départ ?")
-    .options({ domicile: "Domicile", etablissement: "Établissement de soins" })
+    .possibleAnswers({
+      domicile: "Domicile",
+      etablissement: "Établissement de soins",
+    })
     .dropdown()
     .hint("Le lieu où le patient est pris en charge."),
 );

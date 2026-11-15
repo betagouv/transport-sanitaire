@@ -163,7 +163,9 @@ const LU_DES_REPONSES = given
       .answer()
       // Le slug porte en tête le numéro de l'option au catalogue (D-75).
       .compute((aides) =>
-        aides.checkedBoxes().map((option) => Number.parseInt(option, 10)),
+        aides
+          .checkedBoxes()
+          .map((possibleAnswer) => Number.parseInt(possibleAnswer, 10)),
       ),
     repetition: REPETITION,
     sejourReel: UN_SEJOUR_REEL,

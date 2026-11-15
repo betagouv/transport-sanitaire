@@ -13,8 +13,10 @@ const question = questionsOf<Questions>();
 const besoin = () =>
   question
     .singleChoice("besoin", "Quel est votre besoin ?")
-    .options({ verifier: "Vérifier", prescrire: "Prescrire" })
-    .option("verifier", (option) => option.description("Environ 3 minutes"));
+    .possibleAnswers({ verifier: "Vérifier", prescrire: "Prescrire" })
+    .possibleAnswer("verifier", (possibleAnswer) =>
+      possibleAnswer.description("Environ 3 minutes"),
+    );
 
 describe("libellés d'options en gras", () => {
   it("met le libellé de chaque option en gras, et sa description en gris dessous", () => {

@@ -45,7 +45,12 @@ describe("ce que change une question", () => {
 
   it("passe par la garde d'une option, et ne change pas une constante", () => {
     const changes = faitsChangedBy(
-      [TAILLE, BOISSON.option("eau", (option) => option.offeredWhen(grand))],
+      [
+        TAILLE,
+        BOISSON.possibleAnswer("eau", (possibleAnswer) =>
+          possibleAnswer.offeredWhen(grand),
+        ),
+      ],
       FAITS,
       GRAPHE,
     );
@@ -137,10 +142,10 @@ const question = questionsOf<Questions, Faits, Cibles>({
 const grand = given.question("taille").answer().is("grand");
 const TAILLE = question
   .singleChoice("taille", "Quelle taille ?")
-  .options({ petit: "Petit", grand: "Grand" });
+  .possibleAnswers({ petit: "Petit", grand: "Grand" });
 const BOISSON = question
   .singleChoice("boisson", "Quelle boisson ?")
-  .options({ the: "Un thé", eau: "De l'eau" });
+  .possibleAnswers({ the: "Un thé", eau: "De l'eau" });
 const SUCRE = question
   .checkbox("sucre", "Du sucre ?", "Oui")
   .appliesWhen(given.cible("cible_sucre_propose").isOui());

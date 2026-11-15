@@ -43,7 +43,7 @@ const BOISSON = page(
   "boisson",
   question
     .singleChoice("boisson", "Quelle boisson ?")
-    .options({ the: "Un thé", cafe: "Un café", eau: "De l'eau" }),
+    .possibleAnswers({ the: "Un thé", cafe: "Un café", eau: "De l'eau" }),
 );
 
 const SUCRE = page(

@@ -94,15 +94,15 @@ function coteDe<Id extends string>(
 ) {
   return question
     .singleChoice(id, libelle)
-    .options(COTES)
-    .option("1_DEPART", (option) =>
-      option.offeredWhen(offert(placements, "depart")),
+    .possibleAnswers(COTES)
+    .possibleAnswer("1_DEPART", (possibleAnswer) =>
+      possibleAnswer.offeredWhen(offert(placements, "depart")),
     )
-    .option("2_ARRIVEE", (option) =>
-      option.offeredWhen(offert(placements, "arrivee")),
+    .possibleAnswer("2_ARRIVEE", (possibleAnswer) =>
+      possibleAnswer.offeredWhen(offert(placements, "arrivee")),
     )
-    .option("3_LES_DEUX", (option) =>
-      option.offeredWhen(offert(placements, "les_deux")),
+    .possibleAnswer("3_LES_DEUX", (possibleAnswer) =>
+      possibleAnswer.offeredWhen(offert(placements, "les_deux")),
     )
     .mattersWhile(avecUnDocument.and(enDoute(placements)));
 }

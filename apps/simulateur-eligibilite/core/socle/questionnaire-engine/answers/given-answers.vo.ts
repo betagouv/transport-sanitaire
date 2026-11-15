@@ -21,8 +21,8 @@ export type Choice<Given> = Given extends readonly unknown[] | AddressData
   : Given;
 
 /** Les cases d'un choix multiple. */
-export type Box<Given> = Given extends readonly (infer Option)[]
-  ? Option
+export type Box<Given> = Given extends readonly (infer PossibleAnswer)[]
+  ? PossibleAnswer
   : never;
 
 /** La réponse qu'une question a reçue, ou pas encore. */
@@ -47,18 +47,18 @@ export class GivenAnswer<Given extends Answer = Answer> {
   }
 
   /** La réponse est cette option. Sans réponse : non. */
-  is(option: Choice<Given>): boolean {
-    return this.value === option;
+  is(possibleAnswer: Choice<Given>): boolean {
+    return this.value === possibleAnswer;
   }
 
   /** La réponse n'est pas cette option. Sans réponse : oui. */
-  isNot(option: Choice<Given>): boolean {
-    return !this.is(option);
+  isNot(possibleAnswer: Choice<Given>): boolean {
+    return !this.is(possibleAnswer);
   }
 
   /** La réponse est l'une de ces options. Sans réponse : non. */
-  isOneOf(...options: readonly Choice<Given>[]): boolean {
-    return options.some((option) => this.is(option));
+  isOneOf(...possibleAnswers: readonly Choice<Given>[]): boolean {
+    return possibleAnswers.some((possibleAnswer) => this.is(possibleAnswer));
   }
 
   /** Cette case est cochée. Sans réponse : non. */

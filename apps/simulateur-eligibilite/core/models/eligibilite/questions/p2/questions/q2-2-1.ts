@@ -35,7 +35,7 @@ const situations = question
   // L'examen et l'hébergement de la maternité, deux cases depuis la v10.1.7,
   // prennent 14 et 15 (QST-MAT-SEPARATION). La réponse négative, sans numéro
   // au catalogue, porte 0.
-  .options({
+  .possibleAnswers({
     "1_HOSPITALISATION":
       "Hospitalisation en cours, y compris en Hospitalisation à Domicile (HAD).",
     "2_ETRANGER":
@@ -50,8 +50,8 @@ const situations = question
     "0_AUCUNE": "Non, aucune de ces situations",
   })
   .exclusive("0_AUCUNE")
-  .option("1_HOSPITALISATION", (option) =>
-    option.offeredWhen(unSejourAProposer),
+  .possibleAnswer("1_HOSPITALISATION", (possibleAnswer) =>
+    possibleAnswer.offeredWhen(unSejourAProposer),
   );
 
 // Un hébergement ou un retour pénitentiaire contredit un autre lieu déjà dit.
@@ -75,7 +75,7 @@ export const Q2_2_1_B = question
   // gardent leur numéro parmi les treize du catalogue (S1) ; la réponse
   // négative, sans numéro, porte 0. Le centre de référence (8) n'en est plus
   // depuis la v10.1.2 : il se recueille en P3.
-  .options({
+  .possibleAnswers({
     "1_ATMP": "Accident du travail ou maladie professionnelle.",
     "6_CAMSP":
       "Soins Centre d’Action Médico-Sociale Précoce (CAMSP) ou Centre Médico-Psycho-Pédagogique (CMPP), y compris les séances en ville organisées dans le parcours de l’enfant.",

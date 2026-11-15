@@ -50,14 +50,14 @@ export function rappel(
 }
 
 /** Les options qu’une question à choix unique propose. */
-export function optionsDe(
+export function reponsesPossiblesDe(
   pageId: string,
   id: keyof Questions,
   reponses: Reponses,
 ) {
   const question = posee(pageId, id, reponses);
   return question.kind === "single choice"
-    ? question.options.map(({ value }) => value)
+    ? question.possibleAnswers.map(({ value }) => value)
     : [];
 }
 

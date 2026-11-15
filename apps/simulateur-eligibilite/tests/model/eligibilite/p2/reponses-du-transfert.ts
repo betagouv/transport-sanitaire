@@ -28,7 +28,7 @@ export const posee = (
 export const proposees = (reponses: Reponses) => {
   const question = posee("P2/exceptions", "Q2.6", reponses);
   return question?.kind === "multiple choice"
-    ? question.options.map(({ value }) => value)
+    ? question.possibleAnswers.map(({ value }) => value)
     : [];
 };
 export const faits = (reponses: Reponses) =>

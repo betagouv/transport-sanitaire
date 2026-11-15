@@ -134,7 +134,7 @@ describe("précision obligatoire restée vide", () => {
     "raisons",
     question
       .multipleChoice("raisons", "Pourquoi ?")
-      .options({ panne: "Une panne", autre: "Autre chose" }),
+      .possibleAnswers({ panne: "Une panne", autre: "Autre chose" }),
     question
       .text("precision", "Précisez")
       .appliesWhen(given.question("raisons").answer().checked("autre")),

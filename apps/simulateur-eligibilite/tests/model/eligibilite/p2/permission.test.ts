@@ -92,7 +92,7 @@ describe("Q2.7.a et Q2.8.4", () => {
   const valeurs = (idDePage: string, id: "Q2.7.a" | "Q2.8.4", r: Reponses) => {
     const question = posee(idDePage, id, r);
     return question?.kind === "single choice"
-      ? question.options.map(({ value }) => value)
+      ? question.possibleAnswers.map(({ value }) => value)
       : [];
   };
 
@@ -112,7 +112,7 @@ describe("un mineur de Q1.3 face à une permission adulte (TSREF-20261015-05)", 
   const proposees = (reponses: Reponses) => {
     const question = posee("P2/permission", "Q2.7", reponses);
     return question?.kind === "single choice"
-      ? question.options.map(({ value }) => value)
+      ? question.possibleAnswers.map(({ value }) => value)
       : [];
   };
 

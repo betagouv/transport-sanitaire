@@ -15,7 +15,7 @@ const desAdultesAProposer = given
 
 export const Q2_7 = question
   .singleChoice("Q2.7", "Âge du patient pendant la période prescrite")
-  .options({
+  .possibleAnswers({
     "1_MOINS_DE_SEIZE_ANS": "Moins de 16 ans.",
     "2_SEIZE_A_DIX_NEUF_ANS": "De 16 à 19 ans.",
     "3_ADULTE_AUTORISEE":
@@ -24,11 +24,11 @@ export const Q2_7 = question
       "20 ans ou plus : transport exceptionnel demandé par écrit par le patient, sans fondement médical, pouvant lui être facturé.",
   })
   .mattersWhile(given.fait("fait_permission").isOui())
-  .option("3_ADULTE_AUTORISEE", (option) =>
-    option.offeredWhen(desAdultesAProposer),
+  .possibleAnswer("3_ADULTE_AUTORISEE", (possibleAnswer) =>
+    possibleAnswer.offeredWhen(desAdultesAProposer),
   )
-  .option("4_ADULTE_A_SA_CHARGE", (option) =>
-    option.offeredWhen(desAdultesAProposer),
+  .possibleAnswer("4_ADULTE_A_SA_CHARGE", (possibleAnswer) =>
+    possibleAnswer.offeredWhen(desAdultesAProposer),
   );
 
 // Q2.7 dit un adulte qui demande par écrit un transport exceptionnel.
@@ -43,7 +43,7 @@ export const Q2_7_A = question
     "L’établissement confirme-t-il que ce transport correspond à une prestation exceptionnelle facturable au patient ?",
   )
   // La confirmation de l'option 4 de Q2.7, nommée par nous (D-107).
-  .options({
+  .possibleAnswers({
     "1_OUI": "Oui, les conditions de facturation ont été vérifiées.",
     "2_NON": "Non.",
   })

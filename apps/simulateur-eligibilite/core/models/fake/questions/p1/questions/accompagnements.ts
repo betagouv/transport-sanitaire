@@ -14,7 +14,7 @@ const avecDuThe = boisson.is("the");
 
 export const ACCOMPAGNEMENTS = question
   .multipleChoice("accompagnements", "Avec quoi ?")
-  .options({
+  .possibleAnswers({
     lait: "Du lait",
     sucre: "Du sucre",
     citron: "Une rondelle de citron",
@@ -36,13 +36,17 @@ export const ACCOMPAGNEMENTS = question
   )
   .appliesWhen(commandeEnCours)
   .dependsOn(BOISSON)
-  .option("lait", (option) =>
-    option.labelFrom(({ answers }) =>
+  .possibleAnswer("lait", (possibleAnswer) =>
+    possibleAnswer.labelFrom(({ answers }) =>
       answers.question(BOISSON).is("the") ? "Un nuage de lait" : "Du lait",
     ),
   )
-  .option("citron", (option) => option.offeredWhen(avecDuThe))
-  .option("citron-a-voir", (option) => option.offeredWhen(avecDuThe))
+  .possibleAnswer("citron", (possibleAnswer) =>
+    possibleAnswer.offeredWhen(avecDuThe),
+  )
+  .possibleAnswer("citron-a-voir", (possibleAnswer) =>
+    possibleAnswer.offeredWhen(avecDuThe),
+  )
   .incompatible(
     "citron",
     "citron-a-voir",

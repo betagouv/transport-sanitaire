@@ -109,16 +109,16 @@ mécanique, sans React ni phrase de l'écran :
 | Fichier | Ce qu'il porte |
 |---|---|
 | `question.ts` | ce qu'est une question pour le moteur (`Question` : son id, sa sorte, ses dépendances, et `askedIn`, ce qu'elle donne vu le contexte), une page, une partie, une réponse |
-| `question-factory.ts` | les constructeurs nommés des questions (`questionsOf`) : la sorte vient du constructeur, et une question à choix porte ses options (`.options({ … })`) |
+| `question-factory.ts` | les constructeurs nommés des questions (`questionsOf`) : la sorte vient du constructeur, et une question à choix porte ses réponses possibles (`.possibleAnswers({ … })`) |
 | `declared-question.ts`, `declared-choices.ts`, `declared-inputs.ts` | une classe par sorte de question déclarée. Chaque réglage (`appliesWhen`, `hint`, `min`…) donne une copie, et `askedIn` tire la question posée de la déclaration |
-| `declared-option.ts`, `declared-page.ts` | les réglages d'une option, par une lambda (`.option(valeur, (option) => …)`), et `page(id, ...questions)`, dont la condition s'ajoute à chacune de ses questions |
+| `declared/possible-answer.ts`, `declared-page.ts` | les réglages d'une réponse possible, par une lambda (`.possibleAnswer(valeur, (possibleAnswer) => …)`), et `page(id, ...questions)`, dont la condition s'ajoute à chacune de ses questions |
 | `conditions/condition.ts`, `conditions/reads.vo.ts` | les conditions : une valeur qui dit ce qu'elle lit (`Value`, `Condition`, `Reads`), et se compose par `and`, `or`, `not`, `compute` et `computeWith` |
 | `conditions/given.ts`, `conditions/given-values.vo.ts` | leurs entrées (`given.question(id).answer()`, `given.fait`, `given.cible`, `given.today`), et la valeur que chacune donne |
 | `conditions/guard-place.vo.ts`, `conditions/guard-reading.service.ts` | ce que lit `answer()` selon l'endroit : dans une garde, les questions posées avant elle ; dans un fait, les questions validées (`ValidatedAnswers.reading`). Le service vérifie qu'aucune condition ne lit une question d'après |
 | `conditions/question-positions.vo.ts` | la place de chaque question, et ce qui refuse une place mal déclarée |
 | `questionnaire-declaration.error.ts` | l'erreur d'une déclaration qui ne tient pas : elle s'arrête au chargement ou à la première lecture |
 | `question-context.ts` | le seul objet que reçoivent les libellés, rappels, aides et bornes du moment : `{ answers, validated, cibles, faits }`. Les faits n'y sont calculés que si on les lit |
-| `option.ts` | ce qu'est une option offerte : sa valeur, son libellé, sa description, son aide, ce qu'elle bloque |
+| `question/possible-answer.ts` | ce qu'est une réponse possible offerte (`OfferedPossibleAnswer`) : sa valeur, son libellé, sa description, son aide, ce qu'elle bloque |
 | `question/address.vo.ts` | `Address`, une adresse, la seule réponse en objet : elle se lit et se modifie champ par champ, et se garde en JSON (`AddressData`, par `toJSON()`) |
 | `question/dependency.vo.ts` | `Dependency`, ce dont dépend une réponse (`dependsOn`) : une question entière, ou certaines de ses options, et ce qu'elle en voit (`seen`) |
 | `questionnaire.ts` | `Questionnaire`, ses pages dans l'ordre, et `Reading`, des réponses lues à travers lui : `questionnaire.readWith(answers, cibles)`. Une lecture se calcule une fois et ne change pas : pages et questions qui se posent (`askedPages`, `questionsOn`), questions validées (`validated`), complétude (`isComplete`), page où l'on rouvre (`openPage`), page suivante (`pageAfter`), réponses d'une page validée (`commit`) |
@@ -144,10 +144,10 @@ Quatorze règles à tenir en ajoutant une question :
 
 - **Une question se déclare par son constructeur, un réglage par ligne.**
   `question.singleChoice("Q1.1", "Concernant son déplacement, le patient :")`
-  `.options({ "1_SEUL": "…", "2_AVEC_UN_PROCHE": "…" })` : la sorte vient du
+  `.possibleAnswers({ "1_SEUL": "…", "2_AVEC_UN_PROCHE": "…" })` : la sorte vient du
   constructeur, et la question porte ses options, qui disent le type de sa
   réponse. Une option ne se règle que pour ce qu'elle porte de plus, dans
-  sa lambda : `.option("6_SEANCE", (option) => option.offeredWhen(…))`. `order`
+  sa lambda : `.possibleAnswer("6_SEANCE", (possibleAnswer) => possibleAnswer.offeredWhen(…))`. `order`
   en garde une partie, dans cet ordre, et `exclusive` met la sienne à part.
   Chaque réglage donne une copie : une déclaration ne change jamais. Le modèle lie ses constructeurs une fois, dans son
   `questions/question.ts` : `questionsOf<ReadByObject, Faits, Cibles>({ faits,
@@ -264,8 +264,8 @@ Ses pièces sont dans `core/socle/`.
 
 | Pièce | Ce qu'elle porte |
 |---|---|
-| `GivenAnswers` (`answers/given-answers.vo.ts`) | les réponses données, lues question par question : `answers.question(Q1_1).is("1_SEUL")`, `.isNot(option)`, `.checked(case)`, `.checkedBoxes()`, `.hasAnswer()`. Une question sans réponse n'est aucune option, sans être un « non » |
-| `ValidatedAnswers` (`answers/validated-answers.vo.ts`) | les questions validées, lues de même, avec ce qui se proposait : `.isValidated()`, `.offers(option)`, `.declined(case)` |
+| `GivenAnswers` (`answers/given-answers.vo.ts`) | les réponses données, lues question par question : `answers.question(Q1_1).is("1_SEUL")`, `.isNot(possibleAnswer)`, `.checked(case)`, `.checkedBoxes()`, `.hasAnswer()`. Une question sans réponse n'est aucune option, sans être un « non » |
+| `ValidatedAnswers` (`answers/validated-answers.vo.ts`) | les questions validées, lues de même, avec ce qui se proposait : `.isValidated()`, `.offers(possibleAnswer)`, `.declined(case)` |
 | `LocalDateTime` (`local-date-time.vo.ts`) | une date répondue, lue une fois, sans fuseau : `LocalDateTime.parse(saisie)`, `isBefore`, `isAfter`, `isAtOrBefore`, `equals`, `plusDays`, `plusHours`, `startOfDay`. Une saisie mal écrite n'est comparée à rien : toute comparaison avec elle vaut « non » |
 | `preconisation.faits(answers, validated)` | le modèle reçoit ces deux lectures, jamais les réponses brutes. Il applique, fait par fait, le contrat de l'éditeur |
 | `Fait` (`decision-engine/fait/fait.vo.ts`) | ce qu'on sait d'un fait, en objet valeur figé : sa valeur si elle est établie, et sa provenance. `Fait.oui`, `Fait.non`, `Fait.inconnu` et `Fait.valant` le construisent ; `isOui()`, `isNon()` et `isInconnu()` le lisent, jamais `.value === true`. `avecProvenance` en donne une copie, `equals` compare valeur et provenance |

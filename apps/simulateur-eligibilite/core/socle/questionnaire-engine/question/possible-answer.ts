@@ -1,11 +1,11 @@
 // Une option telle qu'elle se propose : sa valeur, son libellé du moment, et ce
-// qu'elle porte de plus. Le modèle la déclare dans `question/declared/option.ts`.
+// qu'elle porte de plus. Le modèle la déclare dans `question/declared/possible-answer.ts`.
 
 /**
  * L'aide d'une option : un intitulé qui se déplie sur une liste. La déplier
  * n'est pas répondre.
  */
-export type OptionHelp = {
+export type PossibleAnswerHelp = {
   readonly label: string;
   readonly items: readonly string[];
 };
@@ -17,10 +17,10 @@ export type NotOffered = undefined;
  * Une option telle qu'elle se propose : sous son libellé et avec son aide du
  * moment. Elle ne porte que des données.
  */
-export type OfferedOption = {
+export type OfferedPossibleAnswer = {
   readonly value: string;
   readonly label: string;
   readonly description?: string;
   readonly blocks?: string;
-  readonly help?: OptionHelp;
+  readonly help?: PossibleAnswerHelp;
 };

@@ -25,10 +25,10 @@ const REGIME = page(
   "regime",
   question
     .singleChoice("regime", "Quel est votre régime ?")
-    .options({ tout: "Je mange de tout", vegetarien: "Végétarien" }),
+    .possibleAnswers({ tout: "Je mange de tout", vegetarien: "Végétarien" }),
   question
     .multipleChoice("allergies", "Des allergies ?")
-    .options({ gluten: "Au gluten", arachide: "À l'arachide" })
+    .possibleAnswers({ gluten: "Au gluten", arachide: "À l'arachide" })
     .optional(),
   question
     .text("proteines", "Quelles protéines ?")
@@ -40,8 +40,10 @@ const PLATS = page(
   "plats",
   question
     .multipleChoice("plats", "Quels plats ?")
-    .options({ salade: "Une salade", steak: "Un steak", rien: "Rien" })
-    .option("steak", (option) => option.offeredWhen(regime.is("tout")))
+    .possibleAnswers({ salade: "Une salade", steak: "Un steak", rien: "Rien" })
+    .possibleAnswer("steak", (possibleAnswer) =>
+      possibleAnswer.offeredWhen(regime.is("tout")),
+    )
     .exclusive("rien"),
 );
 

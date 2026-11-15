@@ -45,7 +45,7 @@ export const Q2_6_A = question
   .singleChoice("Q2.6.a", "Le transfert est-il définitif ou provisoire ?")
   // Le type du transfert : l'option 1 du catalogue de Q2.6, posée à part
   // (D-106).
-  .options({
+  .possibleAnswers({
     "1_DEFINITIF": "Définitif (au moins 48 heures).",
     "2_PROVISOIRE":
       "Provisoire (moins de 48 heures avec retour dans l’établissement d’origine).",
@@ -78,7 +78,7 @@ const exceptions = question
   )
   // Les options gardent leur numéro du catalogue, où le type est l'option 1.
   // L'option 4 est la nôtre (D-106).
-  .options({
+  .possibleAnswers({
     "2_ADMISSION_SANS_SEJOUR":
       "Admission dans un nouvel établissement, sans hospitalisation dans l’établissement de départ.",
     "3_CENTRE_QUINZE":
@@ -139,7 +139,9 @@ export const Q2_6 = (
 )
   .reduce(
     (declaree, [exception, aProposer]) =>
-      declaree.option(exception, (option) => option.offeredWhen(aProposer)),
+      declaree.possibleAnswer(exception, (possibleAnswer) =>
+        possibleAnswer.offeredWhen(aProposer),
+      ),
     exceptions,
   )
   .inconsistentWhen(...conflitDeLieux);

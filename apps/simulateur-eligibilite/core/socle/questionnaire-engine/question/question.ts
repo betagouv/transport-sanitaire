@@ -125,7 +125,7 @@ export type Reminder =
   | ReadonlyArray<{ readonly label: string; readonly value: string }>;
 
 /** Deux options d'un choix multiple qui ne vont pas ensemble, et pourquoi. */
-export type IncompatibleOptions = {
+export type IncompatiblePossibleAnswers = {
   readonly values: readonly [string, string];
   /** Affichée quand cocher l'une vient de décocher l'autre. */
   readonly explanation: string;

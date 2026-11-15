@@ -55,7 +55,7 @@ describe("quand la page de la convocation se pose", () => {
       const question = posee("P2/contextes-soins", "Q2.2.1.b", reponses);
       const valeurs =
         question?.kind === "multiple choice"
-          ? question.options.map(({ value }) => value)
+          ? question.possibleAnswers.map(({ value }) => value)
           : [];
       expect(valeurs).toContain("13_CONVOCATION");
     },
@@ -65,7 +65,7 @@ describe("quand la page de la convocation se pose", () => {
     const question = posee(PAGE, "Q2.10", CONVOQUE);
     expect(
       question?.kind === "single choice" &&
-        question.options.map(({ value }) => value),
+        question.possibleAnswers.map(({ value }) => value),
     ).toEqual([
       "1_CONTROLE_MEDICAL",
       "2_EXPERT_JURIDICTION",

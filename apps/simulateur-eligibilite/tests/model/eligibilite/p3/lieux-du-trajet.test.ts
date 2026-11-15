@@ -46,19 +46,17 @@ const posee = (pageId: string, id: keyof Questions, reponses: Reponses) => {
   if (!trouvee) throw new Error(`${id} ne se pose pas`);
   return trouvee;
 };
-const options = (question: AskedQuestion) =>
+const possibleAnswers = (question: AskedQuestion) =>
   question.kind === "single choice"
-    ? question.options.map(({ value }) => value)
+    ? question.possibleAnswers.map(({ value }) => value)
     : [];
 
 describe("ce que P2 établit d'un lieu (Q2.13, Q3.3)", () => {
   it("sans fait de P2, la catégorie se choisit d'abord, puis ses champs", () => {
     expect(ids("P3/depart", ALLER)).toEqual(["Q3.2.categorie", "Q3.2.adresse"]);
-    expect(options(posee("P3/depart", "Q3.2.categorie", ALLER))).toEqual([
-      "1_DOMICILE",
-      "2_STRUCTURE_DE_SOINS",
-      "3_AUTRE_LIEU",
-    ]);
+    expect(
+      possibleAnswers(posee("P3/depart", "Q3.2.categorie", ALLER)),
+    ).toEqual(["1_DOMICILE", "2_STRUCTURE_DE_SOINS", "3_AUTRE_LIEU"]);
     expect(
       ids("P3/depart", { ...ALLER, "Q3.2.categorie": "2_STRUCTURE_DE_SOINS" }),
     ).toEqual(["Q3.2.categorie", "Q3.2.nom", "Q3.2.service", "Q3.2.adresse"]);
@@ -152,9 +150,9 @@ describe("ce que P2 établit d'un lieu (Q2.13, Q3.3)", () => {
           "Le domicile, pour l’admission en Hospitalisation à Domicile (HAD)",
       },
     ]);
-    expect(options(posee("P3/depart", "Q3.2.categorie", had))).not.toContain(
-      "1_DOMICILE",
-    );
+    expect(
+      possibleAnswers(posee("P3/depart", "Q3.2.categorie", had)),
+    ).not.toContain("1_DOMICILE");
   });
 });
 
@@ -167,7 +165,7 @@ describe("les contrôles des deux lieux", () => {
 
   it("après un départ du domicile, l'arrivée ne propose plus le domicile", () => {
     expect(
-      options(posee("P3/arrivee", "Q3.3.categorie", depuisLeDomicile)),
+      possibleAnswers(posee("P3/arrivee", "Q3.3.categorie", depuisLeDomicile)),
     ).toEqual(["2_STRUCTURE_DE_SOINS", "3_AUTRE_LIEU"]);
   });
 

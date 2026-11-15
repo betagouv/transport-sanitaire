@@ -19,17 +19,17 @@ const REGIME = page(
   "regime",
   question
     .singleChoice("regime", "Quel est votre régime ?")
-    .options({ tout: "Je mange de tout", vegetarien: "Végétarien" }),
+    .possibleAnswers({ tout: "Je mange de tout", vegetarien: "Végétarien" }),
 );
 
 const PLATS = page(
   "plats",
   question
     .multipleChoice("plats", "Quels plats ?")
-    .options({ salade: "Une salade", steak: "Un steak", rien: "Rien" })
+    .possibleAnswers({ salade: "Une salade", steak: "Un steak", rien: "Rien" })
     .exclusive("rien")
-    .option("steak", (option) =>
-      option.offeredWhen(given.question("regime").answer().is("tout")),
+    .possibleAnswer("steak", (possibleAnswer) =>
+      possibleAnswer.offeredWhen(given.question("regime").answer().is("tout")),
     ),
 );
 

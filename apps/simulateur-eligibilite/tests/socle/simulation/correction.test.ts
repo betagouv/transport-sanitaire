@@ -28,7 +28,7 @@ const REVOIR = { label: "Revoir le soin", question: "soin" };
 // Le lieu contredit la dialyse : son alerte invite à revoir le soin.
 const LIEU = question
   .singleChoice("lieu", "Où ?")
-  .options({ hopital: "À l'hôpital", domicile: "À domicile" })
+  .possibleAnswers({ hopital: "À l'hôpital", domicile: "À domicile" })
   .appliesWhen(given.question("motif").answer().is("consultation"))
   .inconsistentWhen(
     given
@@ -45,21 +45,25 @@ const PAGES = [
     "soin",
     question
       .singleChoice("soin", "Quel soin ?")
-      .options({ dialyse: "Une dialyse", rien: "Rien" }),
+      .possibleAnswers({ dialyse: "Une dialyse", rien: "Rien" }),
   ),
   // Ne se pose que sans dialyse : la changer la rend nécessaire.
   page(
     "frequence",
     question
       .singleChoice("frequence", "À quelle fréquence ?")
-      .options({ hebdomadaire: "Chaque semaine", ponctuelle: "Une fois" })
+      .possibleAnswers({
+        hebdomadaire: "Chaque semaine",
+        ponctuelle: "Une fois",
+      })
       .appliesWhen(given.question("soin").answer().is("rien")),
   ),
   page(
     "motif",
-    question
-      .singleChoice("motif", "Pour quoi ?")
-      .options({ consultation: "Une consultation", autre: "Autre chose" }),
+    question.singleChoice("motif", "Pour quoi ?").possibleAnswers({
+      consultation: "Une consultation",
+      autre: "Autre chose",
+    }),
   ),
   page("lieu", LIEU),
 ] as Page[];

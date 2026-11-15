@@ -18,7 +18,10 @@ import {
 type FreeInput = undefined;
 
 /** L'option d'une liste de cases sous laquelle la question s'affiche. */
-export type ShownUnder = { readonly question: string; readonly option: string };
+export type ShownUnder = {
+  readonly question: string;
+  readonly possibleAnswer: string;
+};
 
 /** La question s'affiche à son rang dans la page. */
 export type InPlace = undefined;

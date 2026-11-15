@@ -22,7 +22,7 @@ const sejour = question
     "Dans quel cadre le patient est-il actuellement hospitalisé ?",
   )
   // Le `hospitalStayQuestion` de l'éditeur (TS1014-B01).
-  .options({
+  .possibleAnswers({
     "1_ETABLISSEMENT": "En séjour dans un établissement de santé.",
     "2_HAD": "En Hospitalisation à Domicile (HAD).",
   })

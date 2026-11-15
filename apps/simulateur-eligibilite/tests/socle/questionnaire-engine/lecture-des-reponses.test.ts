@@ -65,7 +65,7 @@ describe("une question validée", () => {
     expect(accompagnements.isValidated()).toBe(true);
     expect(accompagnements.offers("sucre")).toBe(true);
     expect(accompagnements.offers("citron")).toBe(false);
-    expect(accompagnements.offeredOptions()).toEqual(["lait", "sucre"]);
+    expect(accompagnements.offeredPossibleAnswers()).toEqual(["lait", "sucre"]);
   });
 
   it("a écarté une case proposée et non cochée, pas une case jamais montrée", () => {
@@ -79,6 +79,6 @@ describe("une question validée", () => {
     const quantite = validees.question("quantite");
     expect(quantite.isValidated()).toBe(false);
     expect(quantite.hasAnswer()).toBe(false);
-    expect(quantite.offeredOptions()).toEqual([]);
+    expect(quantite.offeredPossibleAnswers()).toEqual([]);
   });
 });

@@ -13,7 +13,7 @@ import { modeleDeTest } from "../modele-de-test";
 const lue = (validated: ValidatedAnswers, id: string) => {
   const question = validated.question(id);
   if (!question.isValidated()) return "non validée";
-  return { offered: question.offeredOptions(), answer: question.value };
+  return { offered: question.offeredPossibleAnswers(), answer: question.value };
 };
 
 // Un modèle dont les faits sont ce qu'il lit, pour le lire ici.

@@ -61,10 +61,10 @@ const grand = given.question("taille").answer().is("grand");
 
 const TAILLE = question
   .singleChoice("taille", "Quelle taille ?")
-  .options({ petit: "Petit", grand: "Grand" });
+  .possibleAnswers({ petit: "Petit", grand: "Grand" });
 const BOISSON = question
   .singleChoice("boisson", "Quelle boisson ?")
-  .options({ the: "Un thé", cafe: "Un café", eau: "De l'eau" });
+  .possibleAnswers({ the: "Un thé", cafe: "Un café", eau: "De l'eau" });
 const sucreSi = (condition: Condition) =>
   question.checkbox("sucre", "Du sucre ?", "Oui").appliesWhen(condition);
 
@@ -114,7 +114,9 @@ describe("answer() dans une garde", () => {
       page("taille", TAILLE),
       page(
         "commande",
-        BOISSON.option("eau", (option) => option.offeredWhen(grand)),
+        BOISSON.possibleAnswer("eau", (possibleAnswer) =>
+          possibleAnswer.offeredWhen(grand),
+        ),
         sucreSi(given.question("boisson").answer().offered("eau")),
       ),
     ];

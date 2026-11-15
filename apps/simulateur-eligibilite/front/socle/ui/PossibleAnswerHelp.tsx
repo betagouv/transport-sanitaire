@@ -7,7 +7,7 @@ export type Help = { label: string; items: readonly string[] };
 
 type Props = { help: Help };
 
-export function OptionHelp({ help }: Props) {
+export function PossibleAnswerHelp({ help }: Props) {
   const [open, setOpen] = useState(false);
   const listId = useId();
   return (

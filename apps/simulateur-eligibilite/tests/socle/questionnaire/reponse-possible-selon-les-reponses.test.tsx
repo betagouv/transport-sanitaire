@@ -19,28 +19,28 @@ const HOSPITALISATION = page(
   "hospitalisation",
   question
     .singleChoice("hospitalise", "Le patient est-il hospitalisé ?")
-    .options({ oui: "Oui", non: "Non" }),
+    .possibleAnswers({ oui: "Oui", non: "Non" }),
 );
 
 const SITUATIONS = page(
   "situations",
   question
     .multipleChoice("situations", "Quelles situations concernent ce trajet ?")
-    .options({
+    .possibleAnswers({
       etranger: "Un lieu à l'étranger",
       autre: "Une autre situation",
       aucune: "Aucune de ces situations",
     })
     .exclusive("aucune")
-    .option("etranger", (option) =>
-      option.labelFrom(({ answers }) =>
+    .possibleAnswer("etranger", (possibleAnswer) =>
+      possibleAnswer.labelFrom(({ answers }) =>
         answers.question("hospitalise").is("oui")
           ? "Un établissement à l'étranger"
           : "Un lieu à l'étranger",
       ),
     )
-    .option("aucune", (option) =>
-      option.labelFrom(({ answers }) =>
+    .possibleAnswer("aucune", (possibleAnswer) =>
+      possibleAnswer.labelFrom(({ answers }) =>
         answers.question("hospitalise").is("oui")
           ? "Aucune autre situation parmi celles proposées"
           : "Aucune de ces situations",
@@ -52,10 +52,10 @@ const EXONERATIONS = page(
   "exonerations",
   question
     .multipleChoice("exonerations", "Quels cas d'exonération ?")
-    .options({ ald: "Une affection de longue durée", aucun: "Aucun" })
+    .possibleAnswers({ ald: "Une affection de longue durée", aucun: "Aucun" })
     .exclusive("aucun")
-    .option("aucun", (option) =>
-      option.offeredWhen(
+    .possibleAnswer("aucun", (possibleAnswer) =>
+      possibleAnswer.offeredWhen(
         given.question("hospitalise").answer().is("oui").not(),
       ),
     ),

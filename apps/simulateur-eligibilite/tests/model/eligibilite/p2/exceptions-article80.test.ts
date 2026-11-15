@@ -72,26 +72,26 @@ describe("les options de Q2.6", () => {
   });
 
   it("un transfert définitif sans séjour propose l'option 2, pas la 8", () => {
-    const options = proposees(definitif([], URGENCES));
-    expect(options).toContain("2_ADMISSION_SANS_SEJOUR");
-    expect(options).not.toContain("8_RADIOTHERAPIE");
+    const possibleAnswers = proposees(definitif([], URGENCES));
+    expect(possibleAnswers).toContain("2_ADMISSION_SANS_SEJOUR");
+    expect(possibleAnswers).not.toContain("8_RADIOTHERAPIE");
   });
 
   it("un transfert provisoire retire la 2 et propose la 8", () => {
-    const options = proposees(provisoire([], URGENCES));
-    expect(options).not.toContain("2_ADMISSION_SANS_SEJOUR");
-    expect(options).toContain("8_RADIOTHERAPIE");
-    expect(options).toContain("3_CENTRE_QUINZE");
+    const possibleAnswers = proposees(provisoire([], URGENCES));
+    expect(possibleAnswers).not.toContain("2_ADMISSION_SANS_SEJOUR");
+    expect(possibleAnswers).toContain("8_RADIOTHERAPIE");
+    expect(possibleAnswers).toContain("3_CENTRE_QUINZE");
   });
 
   it("un autre déplacement propose la 8, pas la 2 ni la 3", () => {
-    const options = proposees({
+    const possibleAnswers = proposees({
       ...SEJOUR,
       "Q2.5": "2_AUTRE_DEPLACEMENT",
     });
-    expect(options).toContain("8_RADIOTHERAPIE");
-    expect(options).not.toContain("2_ADMISSION_SANS_SEJOUR");
-    expect(options).not.toContain("3_CENTRE_QUINZE");
+    expect(possibleAnswers).toContain("8_RADIOTHERAPIE");
+    expect(possibleAnswers).not.toContain("2_ADMISSION_SANS_SEJOUR");
+    expect(possibleAnswers).not.toContain("3_CENTRE_QUINZE");
   });
 
   it("l'option « Aucune » est exclusive, et Q2.6 attend le type", () => {
@@ -100,7 +100,8 @@ describe("les options de Q2.6", () => {
     expect(posee("P2/exceptions", "Q2.6", sansType)).toBeUndefined();
     const question = posee("P2/exceptions", "Q2.6", definitif([]));
     expect(
-      question?.kind === "multiple choice" && question.exclusiveOption?.value,
+      question?.kind === "multiple choice" &&
+        question.exclusivePossibleAnswer?.value,
     ).toBe("11_AUCUNE");
   });
 

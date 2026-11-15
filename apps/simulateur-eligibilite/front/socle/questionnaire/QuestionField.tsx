@@ -41,7 +41,7 @@ type Props = {
    */
   errors?: readonly string[];
   /** Ce qui s'affiche sous une option d'une liste de cases : ses questions. */
-  below?: (option: string) => ReactNode;
+  below?: (possibleAnswer: string) => ReactNode;
   /** Ce qui s'affiche sous le champ : les liens vers les réponses à revoir. */
   after?: ReactNode;
 };
@@ -177,7 +177,7 @@ function SingleChoiceField(props: Props & { question: SingleChoice }) {
       <SelectField
         {...common(props)}
         placeholder="Sélectionnez une option"
-        options={question.options}
+        options={question.possibleAnswers}
         value={value ?? ""}
         onChange={onChange}
       />
@@ -186,7 +186,7 @@ function SingleChoiceField(props: Props & { question: SingleChoice }) {
     <RadioField
       {...common(props)}
       boldLabels={question.boldLabels}
-      options={question.options}
+      options={question.possibleAnswers}
       value={value}
       onChange={onChange}
     />
@@ -199,12 +199,12 @@ function MultipleChoiceField(props: Props & { question: MultipleChoice }) {
   return (
     <CheckboxField
       {...common(props)}
-      options={question.options.map((option) => ({
-        ...option,
-        below: props.below?.(option.value),
+      options={question.possibleAnswers.map((possibleAnswer) => ({
+        ...possibleAnswer,
+        below: props.below?.(possibleAnswer.value),
       }))}
-      exclusiveOption={question.exclusiveOption}
-      incompatibleOptions={question.incompatibleOptions}
+      exclusiveOption={question.exclusivePossibleAnswer}
+      incompatibleOptions={question.incompatiblePossibleAnswers}
       values={Array.isArray(answer) ? answer : []}
       onChange={(values) => onChange(values.length > 0 ? values : undefined)}
     />

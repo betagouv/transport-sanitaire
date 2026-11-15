@@ -35,7 +35,7 @@ export type Etat = "oui" | "non" | "inconnu";
 
 /** Une case, lue comme le contrat de l'éditeur la lit. */
 export type AnswerOf<Given extends Answer> = Value<ValidatedAnswer<Given>> & {
-  offered(option: Choice<Given> | Box<Given>): Condition;
+  offered(possibleAnswer: Choice<Given> | Box<Given>): Condition;
   checked(box: Box<Given>): Condition;
 };
 

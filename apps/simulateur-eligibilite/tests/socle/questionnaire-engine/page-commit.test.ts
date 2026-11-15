@@ -36,11 +36,13 @@ const QUESTIONNAIRE = new Questionnaire(PAGES);
 // Une réponse qui ne dépend que de certaines options d'une autre.
 const CASES = page(
   "cases",
-  question.multipleChoice("cases", "cases").options({ a: "a", b: "b", c: "c" }),
+  question
+    .multipleChoice("cases", "cases")
+    .possibleAnswers({ a: "a", b: "b", c: "c" }),
 );
 const SELON_A_ET_B = question
   .text("selon-a-et-b", "selon-a-et-b")
-  .dependsOn({ question: "cases", options: ["a", "b"] });
+  .dependsOn({ question: "cases", possibleAnswers: ["a", "b"] });
 const AVEC_CASES = new Questionnaire([CASES, page("selon", SELON_A_ET_B)]);
 const cochees = (avant: Questions["cases"], apres: Questions["cases"]) =>
   AVEC_CASES.readWith({ cases: avant, "selon-a-et-b": "x" }).commit(CASES, {

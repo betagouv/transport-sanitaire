@@ -46,15 +46,15 @@ describe("l'accident causé par un tiers en Q1.3", () => {
     const q13 = lecture(SEUL)
       .questionsOn(P1_3)
       .find(({ id }) => id === "Q1.3");
-    const options =
+    const possibleAnswers =
       q13?.kind === "multiple choice"
-        ? q13.options.map(({ value }) => value)
+        ? q13.possibleAnswers.map(({ value }) => value)
         : [];
 
-    expect(options.at(-1)).toBe("9_ACCIDENT_TIERS");
-    expect(q13?.kind === "multiple choice" && q13.exclusiveOption?.value).toBe(
-      "7_AUCUNE",
-    );
+    expect(possibleAnswers.at(-1)).toBe("9_ACCIDENT_TIERS");
+    expect(
+      q13?.kind === "multiple choice" && q13.exclusivePossibleAnswer?.value,
+    ).toBe("7_AUCUNE");
   });
 
   it("demande sa date sur la même page, seulement si la case est cochée", () => {

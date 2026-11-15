@@ -4,15 +4,19 @@ import { question } from "../../question.ts";
 
 export const BOISSON = question
   .singleChoice("boisson", "Quelle boisson souhaitez-vous ?")
-  .options({ the: "Un thé", cafe: "Un café", rien: "Rien" })
+  .possibleAnswers({ the: "Un thé", cafe: "Un café", rien: "Rien" })
   .hint(
     "Démontre : des libellés en gras, une description grise sous chaque option, et l'avance immédiate après un choix unique.",
   )
   .boldLabels()
-  .option("the", (option) =>
-    option.description("Servi en théière, à infuser trois minutes."),
+  .possibleAnswer("the", (possibleAnswer) =>
+    possibleAnswer.description("Servi en théière, à infuser trois minutes."),
   )
-  .option("cafe", (option) => option.description("Un expresso, servi court."))
-  .option("rien", (option) =>
-    option.description("Le questionnaire s'arrête au premier résultat."),
+  .possibleAnswer("cafe", (possibleAnswer) =>
+    possibleAnswer.description("Un expresso, servi court."),
+  )
+  .possibleAnswer("rien", (possibleAnswer) =>
+    possibleAnswer.description(
+      "Le questionnaire s'arrête au premier résultat.",
+    ),
   );

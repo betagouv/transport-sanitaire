@@ -135,24 +135,24 @@ const question = questionsOf<Questions, Faits, Cibles>({
 
 const MOTIF = question
   .singleChoice("motif", "Pour quoi ?")
-  .options({ consultation: "Une consultation", sejour: "Un séjour" });
+  .possibleAnswers({ consultation: "Une consultation", sejour: "Un séjour" });
 const DISTANCE = question
   .singleChoice("distance", "À quelle distance ?")
-  .options({ pres: "Près", loin: "Loin" });
+  .possibleAnswers({ pres: "Près", loin: "Loin" });
 const ENTREE = question
   .checkbox("entree", "Une entrée ?", "Oui")
   .appliesWhen(given.question("motif").answer().is("sejour"));
 const TAILLE = question
   .singleChoice("taille", "Quelle taille ?")
-  .options({ petit: "Petit", grand: "Grand" })
+  .possibleAnswers({ petit: "Petit", grand: "Grand" })
   .appliesWhen(given.question("entree").answer().is(true))
-  .option("grand", (option) =>
-    option.offeredWhen(given.question("distance").answer().is("loin")),
+  .possibleAnswer("grand", (possibleAnswer) =>
+    possibleAnswer.offeredWhen(given.question("distance").answer().is("loin")),
   );
 const CONSULTATION = given.question("motif").answer().is("consultation");
 const REMARQUE = question
   .singleChoice("remarque", "Une remarque ?")
-  .options({ oui: "Oui", non: "Non" });
+  .possibleAnswers({ oui: "Oui", non: "Non" });
 
 // Une question par page : chacune se valide avant la suivante.
 const PAGE_DU_MOTIF = page("motif", MOTIF);

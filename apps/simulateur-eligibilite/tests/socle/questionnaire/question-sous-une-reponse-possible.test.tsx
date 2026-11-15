@@ -17,7 +17,7 @@ const given = givenOf<Questions>();
 
 const SITUATIONS = question
   .multipleChoice("situations", "Quelles situations concernent ce trajet ?")
-  .options({
+  .possibleAnswers({
     ald: "Une affection de longue durée",
     autre: "Une autre situation",
     aucune: "Aucune de ces situations",
@@ -25,10 +25,10 @@ const SITUATIONS = question
   .exclusive("aucune");
 const LIEN = question
   .singleChoice("lien", "Quel lien avec l'affection ?")
-  .options({ direct: "Un lien direct", indirect: "Un lien indirect" })
+  .possibleAnswers({ direct: "Un lien direct", indirect: "Un lien indirect" })
   .appliesWhen(given.question("situations").answer().checked("ald"));
 
-const SOUS_L_OPTION = page(
+const SOUS_UNE_REPONSE_POSSIBLE = page(
   "situations",
   SITUATIONS,
   LIEN.shownUnder("situations", "ald"),
@@ -44,7 +44,7 @@ const precede = (avant: Element, apres: Element) =>
 
 describe("une question sous une option", () => {
   it("s'affiche juste sous son option, avant la suivante", async () => {
-    const { user } = afficher([SOUS_L_OPTION]);
+    const { user } = afficher([SOUS_UNE_REPONSE_POSSIBLE]);
 
     await user.click(caseACocher(/^une affection/i));
 
@@ -53,7 +53,7 @@ describe("une question sous une option", () => {
   });
 
   it("reste un groupe à part, hors du libellé de l'option", async () => {
-    const { user } = afficher([SOUS_L_OPTION]);
+    const { user } = afficher([SOUS_UNE_REPONSE_POSSIBLE]);
 
     await user.click(caseACocher(/^une affection/i));
 
@@ -64,7 +64,7 @@ describe("une question sous une option", () => {
   });
 
   it("suit sa garde : l'option décochée, elle disparaît", async () => {
-    const { user } = afficher([SOUS_L_OPTION]);
+    const { user } = afficher([SOUS_UNE_REPONSE_POSSIBLE]);
 
     await user.click(caseACocher(/^une affection/i));
     await user.click(caseACocher(/^une affection/i));

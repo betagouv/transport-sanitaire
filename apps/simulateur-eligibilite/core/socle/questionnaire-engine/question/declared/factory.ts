@@ -2,8 +2,8 @@
 // sorte, son id et son libellé, puis réglage par réglage :
 //
 //   question.singleChoice("Q1.1", "Concernant son déplacement, le patient :")
-//     .options({ "1_SEUL": "Peut se déplacer seul…", "2_AVEC_UN_PROCHE": "…" })
-//     .option("2_AVEC_UN_PROCHE", (option) => option.description("…"))
+//     .possibleAnswers({ "1_SEUL": "Peut se déplacer seul…", "2_AVEC_UN_PROCHE": "…" })
+//     .possibleAnswer("2_AVEC_UN_PROCHE", (possibleAnswer) => possibleAnswer.description("…"))
 //     .mattersWhile(given.fait("fait_situation_soins_qualifiante").isNon())
 //
 // Une question à choix porte ses options : elles disent le type de sa réponse.
@@ -24,7 +24,7 @@ import {
   DeclaredNumber,
   DeclaredText,
 } from "./inputs.ts";
-import { DeclaredOptions } from "./option.ts";
+import { DeclaredPossibleAnswers } from "./possible-answer.ts";
 import type { CommonSettings } from "./settings.ts";
 
 /**
@@ -45,12 +45,12 @@ export function questionsOf<
     singleChoice: <Id extends string>(id: Id, label: string) =>
       new DeclaredSingleChoice<Questions, Cibles, Faits, never, Id>(
         settingsOf(id, label),
-        { options: DeclaredOptions.of({}) },
+        { possibleAnswers: DeclaredPossibleAnswers.of({}) },
       ),
     multipleChoice: <Id extends string>(id: Id, label: string) =>
       new DeclaredMultipleChoice<Questions, Cibles, Faits, never, Id>(
         settingsOf(id, label),
-        { options: DeclaredOptions.of({}), incompatible: [] },
+        { possibleAnswers: DeclaredPossibleAnswers.of({}), incompatible: [] },
       ),
     ...inputs<Questions, Cibles, Faits>(settingsOf),
   };

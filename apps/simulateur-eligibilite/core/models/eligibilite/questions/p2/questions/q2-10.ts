@@ -20,7 +20,7 @@ export const Q2_10 = question
     "Q2.10",
     "Quelle convocation, quel avis d’audience ou quel appareillage motive ce trajet ?",
   )
-  .options({
+  .possibleAnswers({
     "1_CONTROLE_MEDICAL":
       "Convocation au contrôle médical de l’Assurance Maladie.",
     "2_EXPERT_JURIDICTION":
@@ -45,7 +45,7 @@ export const Q2_10_A = question
     "Le fournisseur est-il agréé pour cet appareillage ?",
   )
   // Pour l'option 6 de Q2.10. Chaque réponse finit par un point (TS1016-08).
-  .options({
+  .possibleAnswers({
     "1_OUI": "Oui.",
     "2_NON": "Non.",
     "3_NE_PEUX_PAS_VERIFIER": "Je ne peux pas le vérifier.",
@@ -56,7 +56,7 @@ export const Q2_10_A = question
 export const Q2_10_B = question
   .singleChoice("Q2.10.b", "Sélectionnez l’appareillage concerné")
   // Pour l'option 6 de Q2.10.
-  .options({
+  .possibleAnswers({
     "1_PROTHESE_OCULAIRE_FACIALE": "Prothèse oculaire ou faciale.",
     "2_PODO_ORTHESE": "Podo-orthèse.",
     "3_ORTHOPROTHESE": "Orthoprothèse.",

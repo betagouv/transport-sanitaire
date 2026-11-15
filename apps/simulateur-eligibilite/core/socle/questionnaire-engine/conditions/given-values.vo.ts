@@ -24,13 +24,13 @@ export class AnswerValue<Given extends Answer> extends Value<
   }
 
   /** La réponse est cette option. Sans réponse : non. */
-  is(option: Choice<Given>): Condition {
-    return this.compute((answer) => answer.is(option));
+  is(possibleAnswer: Choice<Given>): Condition {
+    return this.compute((answer) => answer.is(possibleAnswer));
   }
 
   /** La réponse est l'une de ces options. Sans réponse : non. */
-  isOneOf(...options: readonly Choice<Given>[]): Condition {
-    return this.compute((answer) => answer.isOneOf(...options));
+  isOneOf(...possibleAnswers: readonly Choice<Given>[]): Condition {
+    return this.compute((answer) => answer.isOneOf(...possibleAnswers));
   }
 
   /** La question n'a pas de réponse : pas encore, ou elle ne se pose pas. */
@@ -59,8 +59,8 @@ export class AnswerValue<Given extends Answer> extends Value<
   }
 
   /** Cette option se proposait. */
-  offered(option: Choice<Given> | Box<Given>): Condition {
-    return this.compute((answer) => answer.offers(option));
+  offered(possibleAnswer: Choice<Given> | Box<Given>): Condition {
+    return this.compute((answer) => answer.offers(possibleAnswer));
   }
 
   /** La date répondue. Sans réponse, ou mal écrite, elle est illisible. */

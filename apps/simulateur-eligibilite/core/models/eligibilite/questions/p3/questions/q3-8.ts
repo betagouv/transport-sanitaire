@@ -38,7 +38,7 @@ export const Q3_8_NIVEAU = question
     "Quel niveau de maternité est requis pour cette patiente ?",
   )
   // Le niveau de `CONTRAT_Q38_MATERNITE_DOCUMENT.json`.
-  .options({
+  .possibleAnswers({
     "1_TYPE_I":
       "Type I — soins obstétricaux et accueil du nouveau-né sans unité de néonatologie.",
     "2_TYPE_IIA": "Type IIA — unité de néonatologie.",
