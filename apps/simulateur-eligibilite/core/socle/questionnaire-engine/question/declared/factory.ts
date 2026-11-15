@@ -22,6 +22,7 @@
 import type { Pipeline } from "../asked/context.ts";
 import type { AnyQuestions, ReadByObject } from "../question.ts";
 import { DeclaredMultipleChoice, DeclaredSingleChoice } from "./choices.ts";
+import { Inconsistencies } from "./inconsistencies.vo.ts";
 import {
   DeclaredAddress,
   DeclaredCheckbox,
@@ -77,7 +78,7 @@ function settingsFor<Cibles, Faits>(
     label,
     pipeline,
     conditions: [],
-    inconsistencies: [],
+    inconsistencies: Inconsistencies.none(),
     dependsOn: [],
   });
 }

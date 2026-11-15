@@ -34,11 +34,7 @@ import {
   type QuestionRef,
   type Reminder,
 } from "../question.ts";
-import {
-  type CommonSettings,
-  commonIn,
-  type NothingComputed,
-} from "./settings.ts";
+import type { CommonSettings, NothingComputed } from "./settings.ts";
 
 /**
  * Une question déclarée, sans ce que sa sorte y ajoute. `Id` : son id.
@@ -202,9 +198,9 @@ export abstract class DeclaredQuestion<
     message: Text,
     { revisit }: { revisit?: Value<readonly Revisit[]> } = {},
   ): this {
-    const inconsistency = { condition, message, revisit };
+    const { inconsistencies } = this.settings;
     return this.withSettings({
-      inconsistencies: [...this.settings.inconsistencies, inconsistency],
+      inconsistencies: inconsistencies.with({ condition, message, revisit }),
     });
   }
 
@@ -235,13 +231,7 @@ export abstract class DeclaredQuestion<
 
   /** Ce que lisent ses incohérences. `null` : elle n'en a pas. */
   get inconsistencyReads(): Reads | null {
-    const { inconsistencies } = this.settings;
-    if (inconsistencies.length === 0) return null;
-    const guards = inconsistencies.flatMap(({ condition, revisit }) => [
-      condition,
-      revisit ?? condition,
-    ]);
-    return Reads.union(...guards.map(({ reads }) => reads));
+    return this.settings.inconsistencies.reads;
   }
 
   /** Ce que lit la condition qui la rend obligatoire. `null` : elle n'en a pas. */
@@ -269,7 +259,7 @@ export abstract class DeclaredQuestion<
     if (!settings.conditions.every((guard) => guard.in(now.scope)))
       return undefined;
     const before = guards.readAt(earlier);
-    const common = commonIn(settings, now.context, before.scope);
+    const common = this.#commonIn(now.context, before.scope);
     return this.askedWith(common, now.context, now.scope);
   }
 
@@ -289,6 +279,27 @@ export abstract class DeclaredQuestion<
   /** La même question, avec ce réglage de sa sorte en plus. */
   protected withOwn(changes: Partial<Own>): this {
     return this.rebuilt(this.settings, { ...this.own, ...changes });
+  }
+
+  // Ce qui se lit autour du champ, vu les réponses. S'il peut rester vide, ses
+  // incohérences et les réponses à revoir : vu aussi celles de sa page.
+  #commonIn(
+    context: QuestionContext<Questions, Cibles, Faits>,
+    earlier: Scope,
+  ): AskedCommonData {
+    const { settings } = this;
+    const { messages, revisits } = settings.inconsistencies.in(earlier);
+    return {
+      id: settings.id,
+      label: settings.labelFrom?.(context) ?? settings.label,
+      hint: settings.hintFrom?.(context) ?? settings.hint,
+      reminder: settings.reminderFrom?.(context) ?? settings.reminder,
+      optional:
+        settings.optional === true && !settings.requiredWhen?.in(earlier),
+      under: settings.under,
+      inconsistencies: messages,
+      revisits,
+    };
   }
 
   private withSettings(

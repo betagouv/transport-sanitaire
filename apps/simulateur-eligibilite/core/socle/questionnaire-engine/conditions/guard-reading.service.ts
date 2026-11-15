@@ -17,10 +17,8 @@ import type { Condition, Scope, Value } from "./condition.ts";
 type Guards<Faits, Cibles> = {
   readonly pipeline: Pipeline<Faits, Cibles>;
   readonly conditions: readonly Condition[];
-  readonly inconsistencies: readonly {
-    readonly condition: Condition;
-    readonly revisit?: Value<unknown>;
-  }[];
+  /** Les incohérences : ce qu'elles lisent, réponses à revoir comprises. */
+  readonly inconsistencies: { readonly guards: readonly Value<unknown>[] };
   readonly requiredWhen?: Condition;
 };
 
@@ -49,12 +47,9 @@ export class GuardReadingService<Faits, Cibles> {
   ): void {
     const { conditions, inconsistencies, requiredWhen } = this.#guards;
     for (const id of readIds(conditions)) seen.answer(id);
-    const revisited = inconsistencies.flatMap(({ condition, revisit }) => [
-      condition,
-      revisit ?? condition,
-    ]);
     const required = requiredWhen ? [requiredWhen] : [];
-    for (const id of readIds([...revisited, ...required])) earlier.answer(id);
+    for (const id of readIds([...inconsistencies.guards, ...required]))
+      earlier.answer(id);
   }
 
   /** Ce que la question voit de ces réponses, et le périmètre de ses conditions. */
