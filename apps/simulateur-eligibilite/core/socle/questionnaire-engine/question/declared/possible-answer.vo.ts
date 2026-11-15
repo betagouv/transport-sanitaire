@@ -8,7 +8,7 @@
 //
 // Une réponse possible ne change pas : chaque réglage donne une copie.
 
-import type { Condition } from "../../conditions/condition.ts";
+import type { Condition } from "../../conditions/reading.vo.ts";
 import { Reads } from "../../conditions/reads.vo.ts";
 import { QuestionnaireDeclarationError } from "../../questionnaire-declaration.error.ts";
 import type { QuestionContext } from "../asked/context.vo.ts";

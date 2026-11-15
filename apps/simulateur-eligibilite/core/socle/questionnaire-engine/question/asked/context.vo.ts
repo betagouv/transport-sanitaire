@@ -1,7 +1,7 @@
 // Le contexte d'une question : ce qu'elle voit à sa place. Les réponses, les
 // questions validées, les faits et les cibles. Ses libellés, ses rappels et
 // ses bornes du moment le reçoivent, et ses conditions s'y lisent
-// (`conditions/condition.ts`). Rien d'autre ne leur parvient.
+// (`conditions/reading.vo.ts`). Rien d'autre ne leur parvient.
 //
 // Il est le bout du chemin d'une réponse : réponses → validées → faits →
 // cibles. Le moteur fait les deux premières étapes, dans l'ordre des questions
@@ -17,8 +17,8 @@ import type {
   ValidatedAnswer,
   ValidatedAnswers,
 } from "../../answers/validated-answers.vo.ts";
-import type { AnswerReading, Context } from "../../conditions/condition.ts";
 import { LocalDateTime } from "../../conditions/local-date-time.vo.ts";
+import type { Context, ReadAnswer } from "../../conditions/reading.vo.ts";
 import { QuestionnaireDeclarationError } from "../../questionnaire-declaration.error.ts";
 import type { AnyCibles, AnyQuestions } from "../question.ts";
 
@@ -35,7 +35,7 @@ export type SeenAnswers<
   readonly answers: GivenAnswers<Questions>;
   readonly validated: ValidatedAnswers<Questions>;
   readonly cibles: Cibles;
-  readonly answer: AnswerReading;
+  readonly answer: ReadAnswer;
 };
 
 /** Ce qui calcule les cibles d'un modèle sur ses faits : ses règles. */

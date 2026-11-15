@@ -8,7 +8,7 @@
 //       possibleAnswer.offeredWhen(desAdultesAProposer),
 //     )
 //
-// `Value` : les valeurs de ses réponses possibles. Une autre ne compile pas.
+// `Reading` : les valeurs de ses réponses possibles. Une autre ne compile pas.
 
 import type { Reads } from "../../conditions/reads.vo.ts";
 import { AskedMultipleChoice, AskedSingleChoice } from "../asked/choices.vo.ts";
@@ -27,7 +27,7 @@ export class DeclaredSingleChoice<
   Questions extends AnyQuestions,
   Cibles,
   Faits,
-  Value extends string,
+  Reading extends string,
   Id extends string = string,
 > extends DeclaredQuestion<
   Questions,
@@ -35,7 +35,7 @@ export class DeclaredSingleChoice<
   Faits,
   SingleOwn<Questions, Cibles, Faits>,
   Id,
-  Value
+  Reading
 > {
   readonly kind = "single choice";
 
@@ -59,7 +59,7 @@ export class DeclaredSingleChoice<
   }
 
   /** Le libellé de chacune de ses réponses possibles, par valeur. */
-  get labels(): Readonly<Record<Value, string>> {
+  get labels(): Readonly<Record<Reading, string>> {
     return this.own.possibleAnswers.labels;
   }
 
@@ -67,14 +67,17 @@ export class DeclaredSingleChoice<
    * Règle la réponse possible `value` : sa description, sa condition, son
    * blocage.
    */
-  possibleAnswer(value: Value, settle: Settle<Questions, Cibles, Faits>): this {
+  possibleAnswer(
+    value: Reading,
+    settle: Settle<Questions, Cibles, Faits>,
+  ): this {
     return this.withOwn({
       possibleAnswers: this.own.possibleAnswers.settled(value, settle),
     });
   }
 
   /** Les seules réponses possibles proposées, dans cet ordre. Sans : toutes. */
-  order(...values: Value[]): this {
+  order(...values: Reading[]): this {
     return this.withOwn({
       possibleAnswers: this.own.possibleAnswers.ordered(values),
     });
@@ -127,7 +130,7 @@ export class DeclaredMultipleChoice<
   Questions extends AnyQuestions,
   Cibles,
   Faits,
-  Value extends string,
+  Reading extends string,
   Id extends string = string,
 > extends DeclaredQuestion<
   Questions,
@@ -135,7 +138,7 @@ export class DeclaredMultipleChoice<
   Faits,
   MultipleOwn<Questions, Cibles, Faits>,
   Id,
-  readonly Value[]
+  readonly Reading[]
 > {
   readonly kind = "multiple choice";
 
@@ -165,7 +168,7 @@ export class DeclaredMultipleChoice<
   }
 
   /** Le libellé de chacune de ses réponses possibles, par valeur. */
-  get labels(): Readonly<Record<Value, string>> {
+  get labels(): Readonly<Record<Reading, string>> {
     return this.own.possibleAnswers.labels;
   }
 
@@ -173,14 +176,17 @@ export class DeclaredMultipleChoice<
    * Règle la réponse possible `value` : sa description, sa condition, son
    * blocage.
    */
-  possibleAnswer(value: Value, settle: Settle<Questions, Cibles, Faits>): this {
+  possibleAnswer(
+    value: Reading,
+    settle: Settle<Questions, Cibles, Faits>,
+  ): this {
     return this.withOwn({
       possibleAnswers: this.own.possibleAnswers.settled(value, settle),
     });
   }
 
   /** Les seules réponses possibles proposées, dans cet ordre. Sans : toutes. */
-  order(...values: Value[]): this {
+  order(...values: Reading[]): this {
     return this.withOwn({
       possibleAnswers: this.own.possibleAnswers.ordered(values),
     });
@@ -190,7 +196,7 @@ export class DeclaredMultipleChoice<
    * La réponse possible exclusive, « Aucune » souvent : la cocher décoche les
    * autres, et inversement. Elle se règle comme les autres.
    */
-  exclusive(value: Value): this {
+  exclusive(value: Reading): this {
     return this.withOwn({ exclusive: value });
   }
 
@@ -198,7 +204,7 @@ export class DeclaredMultipleChoice<
    * Deux réponses possibles qui s'excluent : cocher l'une décoche l'autre, sans
    * toucher au reste, et `explanation` s'affiche.
    */
-  incompatible(first: Value, second: Value, explanation: string): this {
+  incompatible(first: Reading, second: Reading, explanation: string): this {
     const incompatible = { values: [first, second] as const, explanation };
     return this.withOwn({
       incompatible: [...this.own.incompatible, incompatible],

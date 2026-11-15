@@ -17,11 +17,11 @@ import { ValidatedAnswer } from "../answers/validated-answers.vo.ts";
 import type { AskedQuestion } from "../question/asked/question.vo.ts";
 import type { Answers, Validated } from "../question/question.ts";
 import { QuestionnaireDeclarationError } from "../questionnaire-declaration.error.ts";
-import type { AnswerReading } from "./condition.ts";
 import type {
   QuestionPosition,
   QuestionPositions,
 } from "./question-positions.vo.ts";
+import type { ReadAnswer } from "./reading.vo.ts";
 
 type Parts = {
   readonly id: string;
@@ -57,7 +57,7 @@ export class GuardPlace {
    * La lecture d'une garde à cette place. `own` : celle d'une incohérence, qui
    * lit aussi sa propre question.
    */
-  reading({ own }: { readonly own: boolean }): AnswerReading {
+  reading({ own }: { readonly own: boolean }): ReadAnswer {
     return (id) => {
       const position = this.#positions.of(id);
       if (position === undefined) return given(id, this.#answers[id]);

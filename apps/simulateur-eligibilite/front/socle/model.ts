@@ -11,9 +11,9 @@ import {
   type AnyCibles,
   type AnyQuestions,
   pagesOf,
+  type Reading,
   Reads,
   Relevance,
-  type Value,
 } from "../../core/socle/questionnaire-engine";
 
 import type { Portion } from "../../shared/analytics/analytics-event";
@@ -128,7 +128,7 @@ export type Model<
     /** Le titre du stepper, au-dessus du `h1` que le résultat donne. */
     title: string;
     /** Ce que le résultat lit des questions validées, en une valeur. */
-    reading: Value<FirstReading>;
+    reading: Reading<FirstReading>;
     /**
      * Le résultat de ces réponses. Une promesse quand il charge ses textes :
      * elle ne rejette pas, un échec de chargement est un résultat comme un
@@ -144,17 +144,17 @@ export type Model<
      * Le cerfa de cette préconisation. `null` : rien ne suit le premier
      * résultat. Le choix lit ce qu'il déclare, comme chaque entrée du cerfa.
      */
-    form: Value<BoundCerfa | null>;
+    form: Reading<BoundCerfa | null>;
     /**
      * Le titre du second résultat, selon le document que la préconisation
      * donne : celui de son stepper, qui est le `h1` de la page.
      */
-    title: Value<string>;
+    title: Reading<string>;
     /**
      * Ce que le texte du second résultat et ce qui tient la place de l'aperçu
      * lisent des questions validées, des faits et des cibles, en une valeur.
      */
-    reading: Value<CerfaReading>;
+    reading: Reading<CerfaReading>;
     /**
      * Le texte du second résultat, sous le stepper, avant les boutons. Avec un
      * cerfa, il attend que son PDF soit prêt (D-250).
@@ -170,7 +170,7 @@ export type Model<
      * complète rien, le bouton n'est pas posé. Il ne l'est pas non plus tant que
      * le complément n'a ni page ni cerfa : le verrou n'ouvre pas un écran vide.
      */
-    startLabel: Value<string | null>;
+    startLabel: Reading<string | null>;
     /** Les libellés des deux actions sur le cerfa, qui portent le même PDF. */
     printLabel: string;
     downloadLabel: string;
@@ -180,12 +180,12 @@ export type Model<
    * `null` : on ne le sait pas. L'avis n'est alors pas proposé, et le journal
    * des parcours n'en reçoit rien. Ce qu'il lit compte (#255).
    */
-  intent?: Value<Intent | null>;
+  intent?: Reading<Intent | null>;
   /**
    * Les codes du premier résultat, pour le journal des parcours. Sans eux, il
    * ne reçoit que la révision. Ce qu'ils lisent ne fait poser aucune question.
    */
-  resultCodes?: Value<ResultCodes>;
+  resultCodes?: Reading<ResultCodes>;
   /** L'invitation à donner son avis. Sans elle, aucune. */
   feedback?: Feedback;
   /** L'indicateur de parcours ALD. Sans lui, aucun verdict ne part. */
@@ -209,9 +209,9 @@ export type AldIndicator = {
    */
   subFields?: readonly string[];
   /** Le parcours est-il un parcours ALD ? Sinon, aucun verdict. */
-  counted: Value<boolean>;
+  counted: Reading<boolean>;
   /** Finit-il à la caisse, sans conclusion sur le droit ? */
-  caisse: Value<boolean>;
+  caisse: Reading<boolean>;
 };
 
 /**

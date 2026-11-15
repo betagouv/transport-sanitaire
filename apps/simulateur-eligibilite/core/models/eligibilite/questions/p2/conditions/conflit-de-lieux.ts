@@ -15,8 +15,8 @@
 import type {
   Answered,
   Condition,
+  Reading,
   Revisit,
-  Value,
 } from "../../../../../socle/index.ts";
 import { given, type Inconnu } from "../../question.ts";
 import {
@@ -41,7 +41,7 @@ type LuesJusquIci = { readonly [Nom in keyof Lues]?: Answered };
 export function incoherenceDeLieux(
   propre: keyof Lues,
   lues: LuesJusquIci,
-): readonly [Condition, string, { revisit: Value<readonly Revisit[]> }] {
+): readonly [Condition, string, { revisit: Reading<readonly Revisit[]> }] {
   const reponses = reponsesDe(lues);
   const apparu = reponses.compute(
     (entrees) =>
@@ -142,7 +142,7 @@ function aRevoir(
   );
 }
 
-function reponsesDe(lues: LuesJusquIci): Value<Partial<Entrees>> {
+function reponsesDe(lues: LuesJusquIci): Reading<Partial<Entrees>> {
   return given.all(
     Object.fromEntries(
       Object.entries(lues).map(([nom, lue]) => [
@@ -151,5 +151,5 @@ function reponsesDe(lues: LuesJusquIci): Value<Partial<Entrees>> {
       ]),
     ),
     // `Object.fromEntries` perd les noms : chacun garde la réponse de sa question.
-  ) as unknown as Value<Partial<Entrees>>;
+  ) as unknown as Reading<Partial<Entrees>>;
 }

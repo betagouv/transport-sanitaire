@@ -15,7 +15,11 @@
 import type { Cibles } from "../../../../../core/models/eligibilite/cibles/noms";
 import type { Faits } from "../../../../../core/models/eligibilite/faits/noms";
 import { given } from "../../../../../core/models/eligibilite/questions/reponses";
-import { constant, type Value, type ValueOf } from "../../../../../core/socle";
+import {
+  constant,
+  type Reading,
+  type ValueOf,
+} from "../../../../../core/socle";
 import type { Precisions } from "./precisions";
 
 type CibleNom = keyof Cibles & string;
@@ -61,14 +65,14 @@ export type TraceDe<Lit> = ValueOf<Lit> & ReponsesLues;
 export function luPar<
   C extends CibleNom = never,
   F extends FaitNom = never,
-  const Avec extends readonly Value<Lu<never, never>>[] = [],
+  const Avec extends readonly Reading<Lu<never, never>>[] = [],
 >(
   lit: {
-    readonly cibles?: Value<Pick<Cibles, C>>;
-    readonly faits?: Value<Pick<Faits, F>>;
+    readonly cibles?: Reading<Pick<Cibles, C>>;
+    readonly faits?: Reading<Pick<Faits, F>>;
   },
   ...avec: Avec
-): Value<Lu<C | CiblesDe<Avec[number]>, F | FaitsDe<Avec[number]>>> {
+): Reading<Lu<C | CiblesDe<Avec[number]>, F | FaitsDe<Avec[number]>>> {
   const propre = given.all({
     cibles: lit.cibles ?? RIEN,
     faits: lit.faits ?? RIEN,
@@ -76,7 +80,7 @@ export function luPar<
   const parts = [propre, ...avec];
   return given
     .all(Object.fromEntries(parts.map((part, rang) => [rang, part])))
-    .compute((lus) => reunis(Object.values(lus))) as Value<
+    .compute((lus) => reunis(Object.values(lus))) as Reading<
     Lu<C | CiblesDe<Avec[number]>, F | FaitsDe<Avec[number]>>
   >;
 }
@@ -84,9 +88,9 @@ export function luPar<
 // ---- implémentation ----
 
 type CiblesDe<Lit> =
-  Lit extends Value<{ cibles: infer Lues }> ? keyof Lues & CibleNom : never;
+  Lit extends Reading<{ cibles: infer Lues }> ? keyof Lues & CibleNom : never;
 type FaitsDe<Lit> =
-  Lit extends Value<{ faits: infer Lus }> ? keyof Lus & FaitNom : never;
+  Lit extends Reading<{ faits: infer Lus }> ? keyof Lus & FaitNom : never;
 
 const RIEN = constant({});
 

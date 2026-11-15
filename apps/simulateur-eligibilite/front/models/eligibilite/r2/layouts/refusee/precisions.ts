@@ -1,7 +1,7 @@
 // Les précisions de la fiche négative (D-111) : ce qui dit pourquoi. Elles ne
 // se lisent que sous l'issue refusée (D-224).
 
-import type { Value } from "../../../../../../core/socle";
+import type { Reading } from "../../../../../../core/socle";
 import {
   cle,
   type Entrees,
@@ -11,7 +11,7 @@ import {
 } from "../../components/precisions";
 
 /** Les précisions de la fiche négative : ce qui dit pourquoi. */
-export const PRECISIONS_DE_LA_FICHE_NEGATIVE: Value<Precisions> = lues(
+export const PRECISIONS_DE_LA_FICHE_NEGATIVE: Reading<Precisions> = lues(
   "motif",
   "dialyse",
   "appareil",

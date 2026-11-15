@@ -7,10 +7,10 @@
 import {
   type Condition,
   type Context,
+  type Reading,
   type Text,
   textIn,
-  type Value,
-} from "../../conditions/condition.ts";
+} from "../../conditions/reading.vo.ts";
 import { Reads } from "../../conditions/reads.vo.ts";
 import type { Revisit } from "../asked/common.vo.ts";
 
@@ -18,7 +18,7 @@ import type { Revisit } from "../asked/common.vo.ts";
 export type Inconsistency = {
   readonly condition: Condition;
   readonly message: Text;
-  readonly revisit?: Value<readonly Revisit[]>;
+  readonly revisit?: Reading<readonly Revisit[]>;
 };
 
 /** Ce que disent les incohérences qui tiennent. */
@@ -62,7 +62,7 @@ export class Inconsistencies {
   }
 
   /** Ce qu'elles lisent, leurs réponses à revoir comprises. */
-  get guards(): readonly Value<unknown>[] {
+  get guards(): readonly Reading<unknown>[] {
     return this.#all.flatMap(({ condition, revisit }) =>
       revisit ? [condition, revisit] : [condition],
     );

@@ -13,8 +13,8 @@
 // finale : la page la prend telle quelle (`question/declared/page.vo.ts`), et le moteur de
 // questionnaire lui demande comment elle se pose (`askedIn`).
 
-import type { Condition, Text, Value } from "../../conditions/condition.ts";
 import { GuardReadingService } from "../../conditions/guard-reading.service.ts";
+import type { Condition, Reading, Text } from "../../conditions/reading.vo.ts";
 import { Reads } from "../../conditions/reads.vo.ts";
 import type { AskedCommonData, InPlace, Revisit } from "../asked/common.vo.ts";
 import type { QuestionContext, SeenAnswers } from "../asked/context.vo.ts";
@@ -191,7 +191,7 @@ export abstract class DeclaredQuestion<
   inconsistentWhen(
     condition: Condition,
     message: Text,
-    { revisit }: { revisit?: Value<readonly Revisit[]> } = {},
+    { revisit }: { revisit?: Reading<readonly Revisit[]> } = {},
   ): this {
     const { inconsistencies } = this.settings;
     return this.withSettings({

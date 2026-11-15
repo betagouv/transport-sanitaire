@@ -13,17 +13,17 @@ export {
   type ValidatedAnswer,
   ValidatedAnswers,
 } from "./answers/validated-answers.vo.ts";
+export { givenOf } from "./conditions/given.ts";
+export { LocalDateTime } from "./conditions/local-date-time.vo.ts";
 export {
   type Condition,
   type Context,
   constant,
   type Read,
+  Reading,
   readIn,
-  Value,
   type ValueOf,
-} from "./conditions/condition.ts";
-export { givenOf } from "./conditions/given.ts";
-export { LocalDateTime } from "./conditions/local-date-time.vo.ts";
+} from "./conditions/reading.vo.ts";
 export { Reads } from "./conditions/reads.vo.ts";
 export { Relevance } from "./does-a-question-still-matter/relevance.service.ts";
 export { PageCommitService } from "./page-commit.service.ts";

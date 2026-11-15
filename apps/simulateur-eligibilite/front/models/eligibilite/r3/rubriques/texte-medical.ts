@@ -13,7 +13,11 @@
 import { Q1_3 } from "../../../../../core/models/eligibilite/questions/p1/questions/q1-3";
 import { Q2_1 } from "../../../../../core/models/eligibilite/questions/p2/questions/q2-1";
 import { given } from "../../../../../core/models/eligibilite/questions/reponses";
-import type { AddressData, Unanswered, Value } from "../../../../../core/socle";
+import type {
+  AddressData,
+  Reading,
+  Unanswered,
+} from "../../../../../core/socle";
 import type { Rubrique } from "./rubrique";
 import { adresseEnParties } from "./trajet";
 
@@ -78,7 +82,7 @@ export const TEXTE_MEDICAL: Rubrique<TexteMedical> = {
 
 // ---- implémentation ----
 
-type Entrees = typeof ENTREES extends Value<infer Lues> ? Lues : never;
+type Entrees = typeof ENTREES extends Reading<infer Lues> ? Lues : never;
 
 function texteMedical(entrees: Entrees): string | AucunSegment {
   const segments = [...soin(entrees), ...complements(entrees)]

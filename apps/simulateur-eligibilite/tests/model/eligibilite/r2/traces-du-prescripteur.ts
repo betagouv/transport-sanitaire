@@ -10,7 +10,12 @@ import {
   FAITS,
   type Faits,
 } from "../../../../core/models/eligibilite/faits/noms";
-import { Cible, Fait, Questionnaire, type Value } from "../../../../core/socle";
+import {
+  Cible,
+  Fait,
+  Questionnaire,
+  type Reading,
+} from "../../../../core/socle";
 import type { CibleValues } from "../../../../core/socle/decision-engine";
 import { ResultContext } from "../../../../core/socle/simulation";
 import type { Precisions } from "../../../../front/models/eligibilite/r2/components/precisions";
@@ -34,7 +39,7 @@ const AUCUN_FAIT = Object.fromEntries(
  * la main, sans aucune réponse.
  */
 export const lu = <Of>(
-  value: Value<Of>,
+  value: Reading<Of>,
   cibles: ValeursDesCibles,
   faits: Partial<Faits> = {},
 ): Of =>

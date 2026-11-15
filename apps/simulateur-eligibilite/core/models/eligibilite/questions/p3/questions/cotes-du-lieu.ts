@@ -5,7 +5,7 @@
 // USLD n'en pose aucune. « Au départ et à l'arrivée » se propose quand les deux
 // extrémités permettent la structure.
 
-import type { Condition, Value } from "../../../../../socle/index.ts";
+import type { Condition, Reading } from "../../../../../socle/index.ts";
 import { given, question } from "../../question.ts";
 import {
   type Choix,
@@ -31,7 +31,7 @@ type SansCote = undefined;
  * Les deux questions de côté, et le choix des lieux une fois répondues. Celle
  * de l'EHPAD lit celle de l'USLD : deux natures ne se placent pas au même lieu.
  */
-export function cotesDesStructures(categories: Value<Choix>) {
+export function cotesDesStructures(categories: Reading<Choix>) {
   const usld = coteDeLUsld(possibles("4_USLD", categories));
   const avecUsld = avecLeCote(
     "4_USLD",
@@ -55,21 +55,21 @@ const PLACEMENTS: Record<Cote, Placement> = {
   "3_LES_DEUX": "les_deux",
 };
 
-function possibles(nature: NatureDeQ26, choix: Value<Choix>) {
+function possibles(nature: NatureDeQ26, choix: Reading<Choix>) {
   return ENTREES_DES_LIEUX.computeWith(choix, (entrees, lu) =>
     placementsPossibles(nature, entrees, lu),
   );
 }
 
-function enDoute(placements: Value<Placement[]>): Condition {
+function enDoute(placements: Reading<Placement[]>): Condition {
   return placements.compute((possibles) => possibles.length > 1);
 }
 
-function offert(placements: Value<Placement[]>, placement: Placement) {
+function offert(placements: Reading<Placement[]>, placement: Placement) {
   return placements.compute((possibles) => possibles.includes(placement));
 }
 
-function coteDeLUsld(placements: Value<Placement[]>) {
+function coteDeLUsld(placements: Reading<Placement[]>) {
   return coteDe(
     "Q3.lieux.usld.cote",
     "De quel côté se trouve l’unité de soins de longue durée (USLD) ?",
@@ -77,7 +77,7 @@ function coteDeLUsld(placements: Value<Placement[]>) {
   );
 }
 
-function coteDeLEhpad(placements: Value<Placement[]>) {
+function coteDeLEhpad(placements: Reading<Placement[]>) {
   return coteDe(
     "Q3.lieux.ehpad.cote",
     "De quel côté se trouve l’établissement d’hébergement pour personnes âgées dépendantes (EHPAD) ?",
@@ -90,7 +90,7 @@ function coteDeLEhpad(placements: Value<Placement[]>) {
 function coteDe<Id extends string>(
   id: Id,
   libelle: string,
-  placements: Value<Placement[]>,
+  placements: Reading<Placement[]>,
 ) {
   return question
     .singleChoice(id, libelle)
@@ -115,9 +115,9 @@ function placementDe(reponse: { readonly value?: Cote }): Placement | SansCote {
 // Le choix, avec le placement que cette question donne.
 function avecLeCote(
   nature: NatureDeQ26,
-  choix: Value<Choix>,
-  cote: Value<Placement | undefined>,
-): Value<Choix> {
+  choix: Reading<Choix>,
+  cote: Reading<Placement | undefined>,
+): Reading<Choix> {
   return choix.computeWith(cote, (lu, extremite) => ({
     ...lu,
     cotes: { ...lu.cotes, [nature]: extremite },

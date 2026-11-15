@@ -1,5 +1,5 @@
 // Les entrées des conditions d'un modèle : une réponse, un fait, une cible, le
-// jour. Chacune donne une valeur qui sait ce qu'elle lit (`given-values.vo.ts`).
+// jour. Chacune donne une lecture, qui sait ce qu'elle lit (`given-readings.vo.ts`).
 //
 //   given.question(Q2_10).answer().is("6_APPAREILLAGE")
 //   given.question("Q2.10").answer().is("6_APPAREILLAGE")
@@ -23,13 +23,13 @@ import {
   idOf,
   type QuestionRef,
 } from "../question/question.ts";
-import { all, type Context, Value } from "./condition.ts";
 import {
-  AnswerValue,
-  CibleValue,
-  DateValue,
-  FaitValue,
-} from "./given-values.vo.ts";
+  AnswerReading,
+  CibleReading,
+  DateReading,
+  FaitReading,
+} from "./given-readings.vo.ts";
+import { all, type Context, Reading } from "./reading.vo.ts";
 import { Reads } from "./reads.vo.ts";
 
 /**
@@ -45,12 +45,13 @@ export function givenOf<
   type FaitNom = keyof Faits & string;
   return {
     question: <Ref extends QuestionRef<Questions>>(question: Ref) => ({
-      answer: () => AnswerValue.of<AnswerOfRef<Questions, Ref>>(idOf(question)),
+      answer: () =>
+        AnswerReading.of<AnswerOfRef<Questions, Ref>>(idOf(question)),
     }),
     fait: <Nom extends FaitNom>(nom: Nom) =>
-      FaitValue.of<FaitValueOf<Faits[Nom]>>(nom),
+      FaitReading.of<FaitValueOf<Faits[Nom]>>(nom),
     cible: <Nom extends keyof Cibles & string>(nom: Nom) =>
-      CibleValue.of<CibleOf<Cibles[Nom]>, FaitNom>(nom),
+      CibleReading.of<CibleOf<Cibles[Nom]>, FaitNom>(nom),
     /** Ces faits, sous leur nom : ce qu'un texte en lit, et rien d'autre. */
     faits: <Nom extends FaitNom>(...noms: Nom[]) =>
       named<Pick<Faits, Nom>>(noms, Reads.ofFait, (context, nom) =>
@@ -62,7 +63,7 @@ export function givenOf<
         context.cible(nom),
       ),
     all,
-    today: () => DateValue.today(),
+    today: () => DateReading.today(),
   };
 }
 
@@ -73,8 +74,8 @@ function named<Of>(
   noms: readonly string[],
   reads: (nom: string) => Reads,
   read: (context: Context, nom: string) => unknown,
-): Value<Of> {
-  return new Value(
+): Reading<Of> {
+  return new Reading(
     Reads.union(...noms.map(reads)),
     (context) =>
       Object.fromEntries(noms.map((nom) => [nom, read(context, nom)])) as Of,

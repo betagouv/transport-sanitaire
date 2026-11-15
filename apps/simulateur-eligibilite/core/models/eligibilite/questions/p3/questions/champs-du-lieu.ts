@@ -3,7 +3,11 @@
 // la nature d'un autre lieu quand rien ne la prouve, son nom, le service d'une
 // structure de soins. `lieu.ts` les assemble.
 
-import type { Answered, Condition, Value } from "../../../../../socle/index.ts";
+import type {
+  Answered,
+  Condition,
+  Reading,
+} from "../../../../../socle/index.ts";
 import type { Nature } from "../../p2/conditions/natures-du-lieu.ts";
 import { Q2_2_1 } from "../../p2/questions/q2-2-1.ts";
 import { Q2_14_MOTIF } from "../../p2/questions/q2-14.ts";
@@ -23,8 +27,8 @@ import {
 
 /** Ce que les champs savent du lieu à leur place sur la page. */
 export type Etat = {
-  readonly categorie: Value<Categorie | undefined>;
-  readonly nature: Value<Nature | undefined>;
+  readonly categorie: Reading<Categorie | undefined>;
+  readonly nature: Reading<Nature | undefined>;
 };
 
 /** La catégorie du lieu : sa question, et celle que lit la page. */
@@ -69,7 +73,7 @@ export const CHAMPS_DU_LIEU = {
 export function categorieAChoisir<E extends Extremite>(
   extremite: E,
   label: string,
-  lieu: Value<Lieu>,
+  lieu: Reading<Lieu>,
 ) {
   return (Object.keys(CATEGORIES) as Categorie[]).reduce(
     (declaree, categorie) =>

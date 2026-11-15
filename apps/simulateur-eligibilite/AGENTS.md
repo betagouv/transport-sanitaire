@@ -112,8 +112,8 @@ mécanique, sans React ni phrase de l'écran :
 | `question/declared/factory.ts` | les constructeurs nommés des questions (`questionsOf`) : la sorte vient du constructeur, et une question à choix porte ses réponses possibles (`.possibleAnswers({ … })`) |
 | `question/declared/question.vo.ts`, `choices.vo.ts`, `inputs.vo.ts` | une classe par sorte de question déclarée. Chaque réglage (`appliesWhen`, `hint`, `min`…) donne une copie, et `askedIn` tire la question posée de la déclaration. Ses réglages communs sont dans `settings.ts`, ses incohérences dans `inconsistencies.vo.ts` |
 | `question/declared/possible-answer.vo.ts`, `page.vo.ts` | les réglages d'une réponse possible, par une lambda (`.possibleAnswer(valeur, (possibleAnswer) => …)`), et `page(id, ...questions)`, dont la condition s'ajoute à chacune de ses questions |
-| `conditions/condition.ts`, `conditions/reads.vo.ts` | les conditions : une valeur qui dit ce qu'elle lit (`Value`, `Condition`, `Reads`), et se compose par `and`, `or`, `not`, `compute` et `computeWith` |
-| `conditions/given.ts`, `conditions/given-values.vo.ts` | leurs entrées (`given.question(id).answer()`, `given.fait`, `given.cible`, `given.today`), et la valeur que chacune donne |
+| `conditions/reading.vo.ts`, `conditions/reads.vo.ts` | les conditions : une lecture qui dit ce qu'elle lit (`Reading`, `Condition`, `Reads`), et se compose par `and`, `or`, `not`, `compute` et `computeWith` |
+| `conditions/given.ts`, `conditions/given-readings.vo.ts` | leurs entrées (`given.question(id).answer()`, `given.fait`, `given.cible`, `given.today`), et la valeur que chacune donne |
 | `conditions/guard-place.vo.ts`, `conditions/guard-reading.service.ts` | ce que lit `answer()` selon l'endroit : dans une garde, les questions posées avant elle ; dans un fait, les questions validées (`ValidatedAnswers.reading`). Le service vérifie qu'aucune condition ne lit une question d'après |
 | `conditions/question-positions.vo.ts` | la place de chaque question, et ce qui refuse une place mal déclarée |
 | `questionnaire-declaration.error.ts` | l'erreur d'une déclaration qui ne tient pas : elle s'arrête au chargement ou à la première lecture |

@@ -85,7 +85,7 @@ function ShownPage({ title, currentPage, questions, draft }: DebugTraceProps) {
           {questions.map(({ id, label }) => (
             <li key={id}>
               <code>{id}</code> {label}{" "}
-              <Value value={draft?.[id]} absent="sans réponse" />
+              <Reading value={draft?.[id]} absent="sans réponse" />
             </li>
           ))}
         </ul>
@@ -125,7 +125,7 @@ function ValidatedList({ validated }: { validated: Validated }) {
         {entries.map(([id, question]) => (
           <li key={id}>
             <code>{id}</code>{" "}
-            <Value value={question?.answer} absent="sans réponse" />
+            <Reading value={question?.answer} absent="sans réponse" />
             {question?.offered && (
               <>
                 , proposées : <code>{question.offered.join(", ")}</code>
@@ -153,7 +153,7 @@ function ValueList({
         {entries.length === 0 && <li>(aucune)</li>}
         {entries.map(([id, value]) => (
           <li key={id}>
-            <code>{id}</code> <Value value={value} absent={UNDEFINED} />
+            <code>{id}</code> <Reading value={value} absent={UNDEFINED} />
           </li>
         ))}
       </ul>
@@ -163,7 +163,7 @@ function ValueList({
 
 // Une valeur telle qu'elle est écrite dans le code, ou ce qui se dit quand il
 // n'y en a pas.
-function Value({ value, absent }: { value: unknown; absent: string }) {
+function Reading({ value, absent }: { value: unknown; absent: string }) {
   if (value === undefined)
     return (
       <>

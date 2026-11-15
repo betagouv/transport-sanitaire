@@ -9,7 +9,7 @@
 // Une condition de page s'ajoute à chacune de ses questions : une page dont
 // aucune question ne se pose est sautée, sans rien de plus à déclarer.
 
-import type { Condition } from "../../conditions/condition.ts";
+import type { Condition } from "../../conditions/reading.vo.ts";
 import { QuestionnaireDeclarationError } from "../../questionnaire-declaration.error.ts";
 import type { Answer, AnyQuestions } from "../question.ts";
 import type { DeclaredQuestion } from "./question.vo.ts";

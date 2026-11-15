@@ -9,14 +9,14 @@ import {
   type SeenAnswers,
 } from "../question/asked/context.vo.ts";
 import type { AnyQuestions } from "../question/question.ts";
-import type { Condition, Value } from "./condition.ts";
+import type { Condition, Reading } from "./reading.vo.ts";
 
 /** Les conditions qu'une question déclare, et ce qui calcule ce qu'elles lisent. */
 type Guards<Faits, Cibles> = {
   readonly pipeline: Pipeline<Faits, Cibles>;
   readonly conditions: readonly Condition[];
   /** Les incohérences : ce qu'elles lisent, réponses à revoir comprises. */
-  readonly inconsistencies: { readonly guards: readonly Value<unknown>[] };
+  readonly inconsistencies: { readonly guards: readonly Reading<unknown>[] };
   readonly requiredWhen?: Condition;
 };
 
@@ -54,6 +54,6 @@ export class GuardReadingService<Faits, Cibles> {
 
 // ---- implémentation ----
 
-function readIds(guards: readonly Value<unknown>[]): string[] {
+function readIds(guards: readonly Reading<unknown>[]): string[] {
   return guards.flatMap((guard) => guard.reads.questions);
 }

@@ -34,11 +34,11 @@ export {
   Questionnaire,
   questionsOf,
   type ReadByObject,
+  type Reading,
   Relevance,
   type Revisit,
   type Unanswered,
   type ValidatedAnswers,
-  type Value,
   type ValueOf,
 } from "./questionnaire-engine/index.ts";
 

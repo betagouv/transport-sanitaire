@@ -1,4 +1,4 @@
-// Les valeurs que donnent les entrées des conditions (`given.ts`) : la réponse
+// Les lectures que donnent les entrées des conditions (`given.ts`) : la réponse
 // d'une question, le jour, un fait, une cible. Chacune sait ce qu'elle lit, et
 // donne les conditions qui la comparent.
 
@@ -7,17 +7,22 @@ import type { Cible, Fait } from "../../decision-engine/index.ts";
 import type { Box, Choice } from "../answers/given-answers.vo.ts";
 import type { ValidatedAnswer } from "../answers/validated-answers.vo.ts";
 import type { AnyQuestions } from "../question/question.ts";
-import { type Condition, type Context, onBranch, Value } from "./condition.ts";
 import { LocalDateTime } from "./local-date-time.vo.ts";
+import {
+  type Condition,
+  type Context,
+  onBranch,
+  Reading,
+} from "./reading.vo.ts";
 import { Reads } from "./reads.vo.ts";
 
 /** La réponse d'une question, telle que l'endroit la voit. */
-export class AnswerValue<Given extends Answer> extends Value<
+export class AnswerReading<Given extends Answer> extends Reading<
   ValidatedAnswer<Given>
 > {
   /** La réponse de la question `id`. */
-  static of<Given extends Answer>(id: string): AnswerValue<Given> {
-    return new AnswerValue(
+  static of<Given extends Answer>(id: string): AnswerReading<Given> {
+    return new AnswerReading(
       Reads.ofQuestion(id),
       (context) => context.answer(id) as ValidatedAnswer<Given>,
     );
@@ -64,56 +69,58 @@ export class AnswerValue<Given extends Answer> extends Value<
   }
 
   /** La date répondue. Sans réponse, ou mal écrite, elle est illisible. */
-  toDate(): DateValue {
+  toDate(): DateReading {
     const date = this.compute(({ value }) =>
       LocalDateTime.parse(typeof value === "string" ? value : undefined),
     );
-    return new DateValue(date.reads, (context) => date.in(context));
+    return new DateReading(date.reads, (context) => date.in(context));
   }
 }
 
 /** Une date lue. Illisible, toute comparaison avec elle vaut « non ». */
-export class DateValue extends Value<LocalDateTime> {
+export class DateReading extends Reading<LocalDateTime> {
   /** Aujourd'hui, à minuit, à Paris. */
-  static today(): DateValue {
-    return new DateValue(Reads.none(), (context) => context.today());
+  static today(): DateReading {
+    return new DateReading(Reads.none(), (context) => context.today());
   }
 
-  isBefore(other: DateValue): Condition {
+  isBefore(other: DateReading): Condition {
     return this.computeWith(other, (a, b) => a.isBefore(b));
   }
 
-  isAfter(other: DateValue): Condition {
+  isAfter(other: DateReading): Condition {
     return this.computeWith(other, (a, b) => a.isAfter(b));
   }
 
-  isAtOrBefore(other: DateValue): Condition {
+  isAtOrBefore(other: DateReading): Condition {
     return this.computeWith(other, (a, b) => a.isAtOrBefore(b));
   }
 
-  plusDays(days: number): DateValue {
+  plusDays(days: number): DateReading {
     return this.shifted((date) => date.plusDays(days));
   }
 
-  plusHours(hours: number): DateValue {
+  plusHours(hours: number): DateReading {
     return this.shifted((date) => date.plusHours(hours));
   }
 
-  startOfDay(): DateValue {
+  startOfDay(): DateReading {
     return this.shifted((date) => date.startOfDay());
   }
 
-  private shifted(shift: (date: LocalDateTime) => LocalDateTime): DateValue {
-    return new DateValue(this.reads, (context) => shift(this.in(context)));
+  private shifted(shift: (date: LocalDateTime) => LocalDateTime): DateReading {
+    return new DateReading(this.reads, (context) => shift(this.in(context)));
   }
 }
 
 /** Un fait, tel que les réponses de l'endroit le donnent. */
-export class FaitValue<Of extends boolean | number | string> extends Value<
+export class FaitReading<Of extends boolean | number | string> extends Reading<
   Fait<Of>
 > {
-  static of<Of extends boolean | number | string>(nom: string): FaitValue<Of> {
-    return new FaitValue(
+  static of<Of extends boolean | number | string>(
+    nom: string,
+  ): FaitReading<Of> {
+    return new FaitReading(
       Reads.ofFait(nom),
       (context) => context.fait(nom) as Fait<Of>,
     );
@@ -138,10 +145,10 @@ export class FaitValue<Of extends boolean | number | string> extends Value<
 }
 
 /** Une cible, telle que les règles la donnent sur les faits de l'endroit. */
-export class CibleValue<
+export class CibleReading<
   Of extends boolean | string,
   FaitNom extends string,
-> extends Value<Cible<Of>> {
+> extends Reading<Cible<Of>> {
   readonly #nom: string;
 
   private constructor(nom: string, evaluate: (context: Context) => Cible<Of>) {
@@ -151,17 +158,17 @@ export class CibleValue<
 
   static of<Of extends boolean | string, FaitNom extends string>(
     nom: string,
-  ): CibleValue<Of, FaitNom> {
-    return new CibleValue(nom, (context) => context.cible(nom) as Cible<Of>);
+  ): CibleReading<Of, FaitNom> {
+    return new CibleReading(nom, (context) => context.cible(nom) as Cible<Of>);
   }
 
   /**
    * La cible, si ce fait valait « oui ». Une garde ne suppose une partie finie
    * que pour lire une règle qui attend sa fin : le commentaire dit pourquoi.
    */
-  assuming(fait: FaitNom): CibleValue<Of, FaitNom> {
+  assuming(fait: FaitNom): CibleReading<Of, FaitNom> {
     const nom = this.#nom;
-    return new CibleValue(
+    return new CibleReading(
       nom,
       (context) => context.cibleAssuming(nom, fait) as Cible<Of>,
     );
@@ -186,8 +193,8 @@ export class CibleValue<
    */
   branch<Branched>(
     values: readonly Of[],
-    value: Value<Branched>,
-  ): Value<Branched> {
+    value: Reading<Branched>,
+  ): Reading<Branched> {
     return onBranch(this.#nom, values, value);
   }
 

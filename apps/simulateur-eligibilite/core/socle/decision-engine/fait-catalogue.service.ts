@@ -54,7 +54,7 @@ export class FaitCatalogue<Faits extends object> {
       this.#names.map((name) => [
         name,
         Reads.union(
-          this.#declares.get(name)?.reads ?? Reads.none(),
+          this.#declares.get(name)?.reading.reads ?? Reads.none(),
           imposed[name] ?? Reads.none(),
         ),
       ]),
@@ -93,7 +93,7 @@ export class FaitCatalogue<Faits extends object> {
       );
     computing.push(declare.nom);
     try {
-      return declare.in(context);
+      return declare.reading.in(context);
     } finally {
       computing.pop();
     }

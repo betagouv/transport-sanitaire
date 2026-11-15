@@ -6,8 +6,8 @@
 import { describe, expect, it } from "vitest";
 import type { Cible, Fait } from "../../../core/socle";
 import { givenOf, page, questionsOf } from "../../../core/socle";
-import type { Context } from "../../../core/socle/questionnaire-engine/conditions/condition";
 import { LocalDateTime } from "../../../core/socle/questionnaire-engine/conditions/local-date-time.vo";
+import type { Context } from "../../../core/socle/questionnaire-engine/conditions/reading.vo";
 import type {
   Answers,
   Page,

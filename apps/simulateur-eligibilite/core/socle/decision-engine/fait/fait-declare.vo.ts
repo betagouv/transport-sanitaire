@@ -1,4 +1,4 @@
-// Un fait : une valeur nommée, faite de règles écrites comme le contrat de
+// Un fait : un nom et une lecture, faite de règles écrites comme le contrat de
 // l'éditeur les décrit. Ce qui le met à « oui », ce qui le met à « non », ce
 // qui le laisse inconnu.
 //
@@ -17,8 +17,8 @@ import {
   type Answer,
   type Box,
   type Condition,
+  Reading,
   Reads,
-  Value,
 } from "../../questionnaire-engine/index.ts";
 
 import { Fait } from "./fait.vo.ts";
@@ -29,13 +29,15 @@ import {
   regles,
 } from "./regle-de-fait.vo.ts";
 
-/** Un fait du catalogue : son nom, et la valeur qui le calcule. */
-export class FaitDeclare<Nom extends string, Of> extends Value<Of> {
+/** Un fait du catalogue : son nom, et la lecture qui le calcule. */
+export class FaitDeclare<Nom extends string, Of> {
   readonly nom: Nom;
+  readonly reading: Reading<Of>;
 
-  constructor(nom: Nom, value: Value<Of>) {
-    super(value.reads, (reading) => value.in(reading));
+  constructor(nom: Nom, reading: Reading<Of>) {
     this.nom = nom;
+    this.reading = reading;
+    Object.freeze(this);
   }
 }
 
@@ -92,7 +94,7 @@ class FaitEnCours<Nom extends string> {
     const reads = Reads.union(...regles.map((regle) => regle.reads));
     return new FaitDeclare(
       this.#nom,
-      new Value(reads, (reading) => {
+      new Reading(reads, (reading) => {
         for (const regle of regles) {
           const fait: Fait | PassesOn = regle.in(reading);
           if (fait) return fait;
@@ -103,7 +105,7 @@ class FaitEnCours<Nom extends string> {
   }
 
   /** Un fait qui n'a pas d'état, mais une valeur : la boisson, en toutes lettres. */
-  vaut<Of>(value: Value<Of>): FaitDeclare<Nom, Of> {
+  vaut<Of>(value: Reading<Of>): FaitDeclare<Nom, Of> {
     return new FaitDeclare(this.#nom, value);
   }
 }

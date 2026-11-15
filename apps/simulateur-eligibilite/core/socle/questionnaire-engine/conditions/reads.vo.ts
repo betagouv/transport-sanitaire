@@ -1,4 +1,4 @@
-// Ce qu'une valeur lit : des questions, des faits, des cibles, et ce qu'elle ne
+// Ce qu'une lecture lit : des questions, des faits, des cibles, et ce qu'elle ne
 // lit que dans une branche (`onBranch`). C'est un objet valeur : il ne change
 // pas, et ce que lisent deux valeurs se compose en un nouveau, chaque chose une
 // fois.

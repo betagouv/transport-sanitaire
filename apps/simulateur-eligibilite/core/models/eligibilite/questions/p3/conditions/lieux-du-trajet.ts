@@ -9,7 +9,7 @@
 import type {
   GivenAnswers,
   ReadByObject,
-  Value,
+  Reading,
 } from "../../../../../socle/index.ts";
 import { Q2_2_5 } from "../../p2/questions/q2-2-5.ts";
 import {
@@ -79,8 +79,8 @@ export function lieuDu(
 /** Cette nature précise, telle que l'endroit la lit. */
 export function natureDuLieuChoisi(
   extremite: Extremite,
-  choix: Value<Choix>,
-): Value<Nature | undefined> {
+  choix: Reading<Choix>,
+): Reading<Nature | undefined> {
   return ENTREES_DES_LIEUX.computeWith(choix, (entrees, lu) =>
     natureDuLieu(extremite, entrees, lu),
   );

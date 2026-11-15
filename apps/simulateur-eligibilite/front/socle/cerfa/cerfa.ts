@@ -64,7 +64,7 @@ export type BoxBinding = {
   readonly drawn?: boolean;
 };
 
-type Binding<Value> = [Value] extends [boolean]
+type Binding<Reading> = [Reading] extends [boolean]
   ? BoxBinding
   : TextBinding | CommentBinding;
 

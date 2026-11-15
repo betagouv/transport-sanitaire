@@ -2,7 +2,7 @@
 // les tient, et en tire ce qui se lit autour du champ quand elle se pose
 // (`question/declared/question.vo.ts`).
 
-import type { Condition } from "../../conditions/condition.ts";
+import type { Condition } from "../../conditions/reading.vo.ts";
 import type { ShownUnder } from "../asked/common.vo.ts";
 import type { Pipeline, QuestionContext } from "../asked/context.vo.ts";
 import type { Dependency } from "../dependency.vo.ts";

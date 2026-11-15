@@ -6,8 +6,8 @@ import type { Cibles } from "../../../../core/models/eligibilite/cibles/noms";
 import type { Questions } from "../../../../core/models/eligibilite/questions/reponses";
 import {
   Questionnaire,
+  type Reading,
   readIn,
-  type Value,
 } from "../../../../core/socle/questionnaire-engine";
 
 import { ResultContext } from "../../../../core/socle/simulation";
@@ -80,7 +80,7 @@ export const ciblesDe = (reponses: Reponses) =>
  * des cibles des règles.
  */
 export const luDe = <Of>(
-  value: Value<Of>,
+  value: Reading<Of>,
   reponses: Reponses,
   forcees: Partial<Cibles> = {},
 ): Of => {

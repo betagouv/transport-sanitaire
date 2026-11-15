@@ -17,9 +17,9 @@ import {
   type Choice,
   type Condition,
   type Context,
+  Reading,
   type Reads,
   type ValidatedAnswer,
-  Value,
 } from "../../questionnaire-engine/index.ts";
 
 import { Fait } from "./fait.vo.ts";
@@ -28,13 +28,13 @@ import { Fait } from "./fait.vo.ts";
 export type PassesOn = undefined;
 
 /** Une règle de fait : ce qu'elle donne au fait, ou rien. */
-export class RegleDeFait extends Value<Fait | PassesOn> {}
+export class RegleDeFait extends Reading<Fait | PassesOn> {}
 
 /** Ce qu'une règle donne au fait quand sa condition tient. */
 export type Etat = "oui" | "non" | "inconnu";
 
 /** Une case, lue comme le contrat de l'éditeur la lit. */
-export type AnswerOf<Given extends Answer> = Value<ValidatedAnswer<Given>> & {
+export type AnswerOf<Given extends Answer> = Reading<ValidatedAnswer<Given>> & {
   offered(possibleAnswer: Choice<Given> | Box<Given>): Condition;
   checked(box: Box<Given>): Condition;
 };
