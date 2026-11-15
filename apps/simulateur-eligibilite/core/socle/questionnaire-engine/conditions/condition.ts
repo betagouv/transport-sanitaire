@@ -6,7 +6,7 @@
 // (`Scope`), qu'il choisit selon l'endroit. Une garde voit les questions
 // posées avant elle, un fait les questions validées (`given.ts`).
 
-import type { ValidatedAnswer } from "../answers/validated-answers.ts";
+import type { ValidatedAnswer } from "../answers/validated-answers.vo.ts";
 import type { LocalDateTime } from "./local-date-time.vo.ts";
 import { Reads } from "./reads.vo.ts";
 

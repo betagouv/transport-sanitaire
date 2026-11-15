@@ -6,7 +6,7 @@
 // adresses.
 
 import type {
-  Address,
+  AddressData,
   Answered,
   Condition,
   Value,
@@ -239,8 +239,8 @@ function lectureDu(
 
 // Le départ et l'arrivée ont la même adresse.
 function memeAdresseQue(
-  depart: Answered<Address>,
-  arrivee: Answered<Address>,
+  depart: Answered<AddressData>,
+  arrivee: Answered<AddressData>,
 ): Condition {
   return given
     .question(depart)
@@ -250,7 +250,7 @@ function memeAdresseQue(
     );
 }
 
-function memeAdresse(a: Address, b: Address): boolean {
+function memeAdresse(a: AddressData, b: AddressData): boolean {
   const champs = [
     "street",
     "complement",
@@ -258,7 +258,7 @@ function memeAdresse(a: Address, b: Address): boolean {
     "city",
     "country",
   ] as const;
-  const lu = (adresse: Address, champ: (typeof champs)[number]) =>
+  const lu = (adresse: AddressData, champ: (typeof champs)[number]) =>
     (adresse[champ] ?? "").trim().toLocaleLowerCase("fr");
   return champs.every((champ) => lu(a, champ) === lu(b, champ));
 }

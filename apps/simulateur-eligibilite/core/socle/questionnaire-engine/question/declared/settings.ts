@@ -10,9 +10,14 @@ import {
   textIn,
   type Value,
 } from "../../conditions/condition.ts";
-import type { AskedCommonData, Revisit, ShownUnder } from "../asked/common.ts";
+import type {
+  AskedCommonData,
+  Revisit,
+  ShownUnder,
+} from "../asked/common.vo.ts";
 import type { Pipeline, QuestionContext } from "../asked/context.ts";
-import type { AnyQuestions, Dependency, Reminder } from "../question.ts";
+import type { Dependency } from "../dependency.vo.ts";
+import type { AnyQuestions, Reminder } from "../question.ts";
 
 /** Rien de calculé : le rappel fixe de `reminder` vaut. */
 export type NothingComputed = undefined;

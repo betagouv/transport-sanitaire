@@ -4,12 +4,11 @@
 
 import { type ReactNode, useState } from "react";
 import {
+  Address,
   type Answer,
   type AnswerProblem,
   type AskedQuestion,
-  isAddress,
   type Unanswered,
-  withField,
 } from "../../../core/socle/questionnaire-engine";
 
 import {
@@ -113,7 +112,7 @@ function render(props: Props) {
 // erreur de champ passe devant le message de groupe.
 function AddressQuestionField(props: Props & { question: AddressQuestion }) {
   const { question, onChange } = props;
-  const address = isAddress(props.answer) ? props.answer : undefined;
+  const address = Address.of(props.answer);
   const problems = address ? question.fieldProblems(address) : {};
   const failing = Object.keys(problems).length > 0;
   return (
@@ -127,11 +126,13 @@ function AddressQuestionField(props: Props & { question: AddressQuestion }) {
         const problem = problems[field.name];
         return {
           ...field,
-          value: address?.[field.name] ?? "",
+          value: address?.field(field.name) ?? "",
           error: problem && messageOf(problem),
         };
       })}
-      onChange={(name, text) => onChange(withField(address, name, text))}
+      onChange={(name, text) =>
+        onChange((address ?? Address.empty()).withField(name, text)?.toJSON())
+      }
     />
   );
 }

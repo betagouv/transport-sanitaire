@@ -119,13 +119,14 @@ mécanique, sans React ni phrase de l'écran :
 | `questionnaire-declaration.error.ts` | l'erreur d'une déclaration qui ne tient pas : elle s'arrête au chargement ou à la première lecture |
 | `question-context.ts` | le seul objet que reçoivent les libellés, rappels, aides et bornes du moment : `{ answers, validated, cibles, faits }`. Les faits n'y sont calculés que si on les lit |
 | `option.ts` | ce qu'est une option offerte : sa valeur, son libellé, sa description, son aide, ce qu'elle bloque |
-| `address.ts` | ce qu'est une adresse, la seule réponse en objet : ses champs, ceux qui se demandent en France ou à l'étranger, et ce qui ne va pas dans chacun |
+| `question/address.vo.ts` | `Address`, une adresse, la seule réponse en objet : elle se lit et se modifie champ par champ, et se garde en JSON (`AddressData`, par `toJSON()`) |
+| `question/dependency.vo.ts` | `Dependency`, ce dont dépend une réponse (`dependsOn`) : une question entière, ou certaines de ses options, et ce qu'elle en voit (`seen`) |
 | `questionnaire.ts` | `Questionnaire`, ses pages dans l'ordre, et `Reading`, des réponses lues à travers lui : `questionnaire.readWith(answers, cibles)`. Une lecture se calcule une fois et ne change pas : pages et questions qui se posent (`askedPages`, `questionsOn`), questions validées (`validated`), complétude (`isComplete`), page où l'on rouvre (`openPage`), page suivante (`pageAfter`), réponses d'une page validée (`commit`) |
-| `asked-question.ts` | `AskedQuestion`, la question telle qu'elle se pose : libellé, rappel, bornes, options, mode d'adresse et incohérences du moment. Elle ne porte aucune fonction : elle passe en JSON, et `askedQuestion` la relit |
-| `asked-common.ts`, `asked-choices.ts`, `asked-inputs.ts`, `asked-address.ts` | une classe par sorte de question posée. Chacune dit ce qu'elle garde d'une réponse (`kept`), si la réponse suffit (`isAnsweredBy`) et ce qui n'y va pas (`problemsWith`) |
-| `answer-problem.ts` | ce qui ne va pas dans une saisie, dit par sa nature (`{ kind: "missing" }`…). Les phrases de l'éditeur y restent telles quelles (`{ kind: "stated", text }`) |
+| `question/asked/question.vo.ts` | `AskedQuestion`, la question telle qu'elle se pose : libellé, rappel, bornes, options, mode d'adresse et incohérences du moment. Elle ne porte aucune fonction : elle passe en JSON, et `askedQuestion` la relit |
+| `question/asked/common.vo.ts`, `choices.vo.ts`, `inputs.vo.ts`, `address.vo.ts` | une classe par sorte de question posée. Chacune dit ce qu'elle garde d'une réponse (`kept`), si la réponse suffit (`isAnsweredBy`) et ce qui n'y va pas (`problemsWith`). `AskedAddress` dit les champs qui se demandent, en France ou à l'étranger, et ce qui ne va pas dans chacun |
+| `question/asked/answer-problem.vo.ts` | ce qui ne va pas dans une saisie, dit par sa nature (`{ kind: "missing" }`…). Les phrases de l'éditeur y restent telles quelles (`{ kind: "stated", text }`) |
 | `reading-in-order.ts` | la lecture dans l'ordre, que `Reading` fait une fois : chaque question posée voit les validées d'avant elle, et les questions validées gardent ce qui s'y proposait |
-| `given-answers.ts`, `validated-answers.ts` | les deux lectures des réponses, que le modèle reçoit (voir « La décision ») |
+| `answers/given-answers.vo.ts`, `answers/validated-answers.vo.ts` | les deux lectures des réponses, que le modèle reçoit (voir « La décision ») |
 | `page-commit.ts` | ce que deviennent les réponses quand une page est validée, et ce que ça efface (`Reading.commit` le lit) |
 
 `front/socle/questionnaire/` l'affiche, un fichier par capacité :
@@ -263,8 +264,8 @@ Ses pièces sont dans `core/socle/`.
 
 | Pièce | Ce qu'elle porte |
 |---|---|
-| `GivenAnswers` (`given-answers.ts`) | les réponses données, lues question par question : `answers.question(Q1_1).is("1_SEUL")`, `.isNot(option)`, `.checked(case)`, `.checkedBoxes()`, `.hasAnswer()`. Une question sans réponse n'est aucune option, sans être un « non » |
-| `ValidatedAnswers` (`validated-answers.ts`) | les questions validées, lues de même, avec ce qui se proposait : `.isValidated()`, `.offers(option)`, `.declined(case)` |
+| `GivenAnswers` (`answers/given-answers.vo.ts`) | les réponses données, lues question par question : `answers.question(Q1_1).is("1_SEUL")`, `.isNot(option)`, `.checked(case)`, `.checkedBoxes()`, `.hasAnswer()`. Une question sans réponse n'est aucune option, sans être un « non » |
+| `ValidatedAnswers` (`answers/validated-answers.vo.ts`) | les questions validées, lues de même, avec ce qui se proposait : `.isValidated()`, `.offers(option)`, `.declined(case)` |
 | `LocalDateTime` (`local-date-time.vo.ts`) | une date répondue, lue une fois, sans fuseau : `LocalDateTime.parse(saisie)`, `isBefore`, `isAfter`, `isAtOrBefore`, `equals`, `plusDays`, `plusHours`, `startOfDay`. Une saisie mal écrite n'est comparée à rien : toute comparaison avec elle vaut « non » |
 | `preconisation.faits(answers, validated)` | le modèle reçoit ces deux lectures, jamais les réponses brutes. Il applique, fait par fait, le contrat de l'éditeur |
 | `Fait` (`decision-engine/fait/fait.vo.ts`) | ce qu'on sait d'un fait, en objet valeur figé : sa valeur si elle est établie, et sa provenance. `Fait.oui`, `Fait.non`, `Fait.inconnu` et `Fait.valant` le construisent ; `isOui()`, `isNon()` et `isInconnu()` le lisent, jamais `.value === true`. `avecProvenance` en donne une copie, `equals` compare valeur et provenance |

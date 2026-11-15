@@ -23,7 +23,7 @@ import { SENS_CHOISI } from "../../../../../core/models/eligibilite/questions/p3
 import { Q3_2 } from "../../../../../core/models/eligibilite/questions/p3/questions/q3-2";
 import { Q3_3 } from "../../../../../core/models/eligibilite/questions/p3/questions/q3-3";
 import { given } from "../../../../../core/models/eligibilite/questions/reponses";
-import type { Address, Unanswered, Value } from "../../../../../core/socle";
+import type { AddressData, Unanswered, Value } from "../../../../../core/socle";
 import type { Rubrique } from "./rubrique";
 
 export type Trajet = {
@@ -125,7 +125,7 @@ function autreLieu({ htnm, nature, nom, precision }: Lieu) {
  * Les parties saisies de l'adresse. Le code postal et la commune vont
  * ensemble, comme sur une enveloppe.
  */
-export function adresseEnParties(adresse: Address | Unanswered): string[] {
+export function adresseEnParties(adresse: AddressData | Unanswered): string[] {
   if (adresse === undefined) return [];
   const ville = [adresse.postalCode, adresse.city].filter(Boolean).join(" ");
   return [

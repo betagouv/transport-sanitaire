@@ -6,15 +6,21 @@
 
 import type { Cible } from "../../decision-engine/index.ts";
 import type { Reads } from "../conditions/reads.vo.ts";
-import type { Address } from "./address.ts";
+import type { AddressData } from "./address.vo.ts";
 import type { SeenAnswers } from "./asked/context.ts";
-import type { AskedQuestion } from "./asked/question.ts";
+import type { AskedQuestion } from "./asked/question.vo.ts";
+import type { Dependency } from "./dependency.vo.ts";
 
 /**
  * Une réponse : un choix, un nombre, un texte, les cases cochées, une case
  * seule, ou une adresse.
  */
-export type Answer = string | number | boolean | readonly string[] | Address;
+export type Answer =
+  | string
+  | number
+  | boolean
+  | readonly string[]
+  | AddressData;
 
 /**
  * Pas de réponse : la question ne l'a pas encore reçue, ou ne se pose pas. Ce
@@ -57,15 +63,6 @@ export type AnswerOfRef<Questions extends AnyQuestions, Ref> =
     : Ref extends keyof Questions
       ? Questions[Ref]
       : never;
-
-/**
- * Une question dont dépend une réponse, réduite au besoin à ces options
- * (`question/declared/dependency.ts`).
- */
-export type Dependency = {
-  readonly id: string;
-  readonly options?: readonly string[];
-};
 
 /** L'id de la question que désigne `question`. */
 export function idOf(question: string | Answered): string {

@@ -21,20 +21,19 @@ import type {
 } from "../../conditions/condition.ts";
 import { GuardReadingService } from "../../conditions/guard-reading.service.ts";
 import { Reads } from "../../conditions/reads.vo.ts";
-import type { AskedCommonData, InPlace, Revisit } from "../asked/common.ts";
+import type { AskedCommonData, InPlace, Revisit } from "../asked/common.vo.ts";
 import type { QuestionContext, SeenAnswers } from "../asked/context.ts";
-import type { AskedQuestion } from "../asked/question.ts";
+import type { AskedQuestion } from "../asked/question.vo.ts";
+import { Dependency, type DependsOn } from "../dependency.vo.ts";
 import {
   type Answer,
   type AnswerOfRef,
   type AnyQuestions,
-  type Dependency,
   idOf,
   type NotAsked,
   type QuestionRef,
   type Reminder,
 } from "../question.ts";
-import { type DependsOn, dependencyOf } from "./dependency.ts";
 import {
   type CommonSettings,
   commonIn,
@@ -210,7 +209,10 @@ export abstract class DeclaredQuestion<
   /** Ce dont dépend cette réponse : elle s'efface quand cela change. */
   dependsOn(...questions: DependsOn<Questions>[]): this {
     return this.withSettings({
-      dependsOn: [...this.settings.dependsOn, ...questions.map(dependencyOf)],
+      dependsOn: [
+        ...this.settings.dependsOn,
+        ...questions.map((q) => Dependency.of(q)),
+      ],
     });
   }
 

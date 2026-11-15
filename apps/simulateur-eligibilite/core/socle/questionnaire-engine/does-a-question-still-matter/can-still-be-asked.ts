@@ -15,8 +15,8 @@
 // Une question à plusieurs places est vivante tant qu'une de ses places l'est
 // (ADR-29).
 
-import { GivenAnswers } from "../answers/given-answers.ts";
-import { ValidatedAnswers } from "../answers/validated-answers.ts";
+import { GivenAnswers } from "../answers/given-answers.vo.ts";
+import { ValidatedAnswers } from "../answers/validated-answers.vo.ts";
 import type { Reads } from "../conditions/reads.vo.ts";
 import type { SeenAnswers } from "../question/asked/context.ts";
 import type { AnyCibles, Question, Validated } from "../question/question.ts";

@@ -4,8 +4,8 @@
 
 import type { Cible, Fait } from "../../decision-engine/index.ts";
 
-import type { Box, Choice } from "../answers/given-answers.ts";
-import type { ValidatedAnswer } from "../answers/validated-answers.ts";
+import type { Box, Choice } from "../answers/given-answers.vo.ts";
+import type { ValidatedAnswer } from "../answers/validated-answers.vo.ts";
 import type { AnyQuestions } from "../question/question.ts";
 import { type Condition, onBranch, type Scope, Value } from "./condition.ts";
 import { LocalDateTime } from "./local-date-time.vo.ts";

@@ -13,8 +13,8 @@
 // lisent à sa première place. Posée plus haut sur la page de la garde, à une
 // place suivante, elle se lit telle que saisie.
 
-import { ValidatedAnswer } from "../answers/validated-answers.ts";
-import type { AskedQuestion } from "../question/asked/question.ts";
+import { ValidatedAnswer } from "../answers/validated-answers.vo.ts";
+import type { AskedQuestion } from "../question/asked/question.vo.ts";
 import type { Answers, Validated } from "../question/question.ts";
 import { QuestionnaireDeclarationError } from "../questionnaire-declaration.error.ts";
 import type { AnswerReading } from "./condition.ts";

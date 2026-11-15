@@ -10,8 +10,8 @@
 
 import type { Scope } from "../../conditions/condition.ts";
 import type { Reads } from "../../conditions/reads.vo.ts";
-import { AskedMultipleChoice, AskedSingleChoice } from "../asked/choices.ts";
-import type { AskedCommonData } from "../asked/common.ts";
+import { AskedMultipleChoice, AskedSingleChoice } from "../asked/choices.vo.ts";
+import type { AskedCommonData } from "../asked/common.vo.ts";
 import type { QuestionContext } from "../asked/context.ts";
 import type { AnyQuestions, IncompatibleOptions } from "../question.ts";
 import { type DeclaredOption, DeclaredOptions } from "./option.ts";

@@ -1,6 +1,6 @@
 import { screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
-import { type Address, page, questionsOf } from "../../../core/socle";
+import { type AddressData, page, questionsOf } from "../../../core/socle";
 import { Questionnaire } from "../../../core/socle/questionnaire-engine";
 import { afficher } from "./afficher";
 
@@ -10,7 +10,7 @@ import { afficher } from "./afficher";
 
 type Questions = {
   destination: "france" | "etranger";
-  arrivee: Address;
+  arrivee: AddressData;
   remarque: string;
 };
 

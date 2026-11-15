@@ -10,8 +10,8 @@
 
 import { Fait, type FaitCatalogue } from "../../../decision-engine/index.ts";
 
-import type { GivenAnswers } from "../../answers/given-answers.ts";
-import type { ValidatedAnswers } from "../../answers/validated-answers.ts";
+import type { GivenAnswers } from "../../answers/given-answers.vo.ts";
+import type { ValidatedAnswers } from "../../answers/validated-answers.vo.ts";
 import type { AnswerReading, Scope } from "../../conditions/condition.ts";
 import { LocalDateTime } from "../../conditions/local-date-time.vo.ts";
 import { QuestionnaireDeclarationError } from "../../questionnaire-declaration.error.ts";

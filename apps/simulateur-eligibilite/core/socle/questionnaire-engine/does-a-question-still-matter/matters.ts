@@ -32,7 +32,7 @@ import type {
   DecisionGraphData,
   FaitValue,
 } from "../../decision-engine/index.ts";
-import { ValidatedAnswers } from "../answers/validated-answers.ts";
+import { ValidatedAnswers } from "../answers/validated-answers.vo.ts";
 import { Reads } from "../conditions/reads.vo.ts";
 import type {
   AnyCibles,

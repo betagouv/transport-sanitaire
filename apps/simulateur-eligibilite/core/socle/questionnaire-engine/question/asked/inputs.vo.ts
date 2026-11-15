@@ -2,8 +2,12 @@
 // date, une case seule. Chacune dit ce qui ne va pas dans sa saisie.
 
 import type { Answer, Unanswered } from "../question.ts";
-import { type AnswerProblem, MISSING, type NoError } from "./answer-problem.ts";
-import { AskedCommon, type AskedCommonData } from "./common.ts";
+import {
+  type AnswerProblem,
+  MISSING,
+  type NoError,
+} from "./answer-problem.vo.ts";
+import { AskedCommon, type AskedCommonData } from "./common.vo.ts";
 
 export type AskedNumberData = AskedCommonData & {
   readonly kind: "number";

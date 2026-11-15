@@ -8,7 +8,11 @@
 // Chaque sorte en dit plus dans sa classe.
 
 import type { Answer, Reminder, Unanswered } from "../question.ts";
-import { type AnswerProblem, type NoError, stated } from "./answer-problem.ts";
+import {
+  type AnswerProblem,
+  type NoError,
+  stated,
+} from "./answer-problem.vo.ts";
 
 /** Une saisie libre, sans options. */
 type FreeInput = undefined;

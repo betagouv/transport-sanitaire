@@ -4,8 +4,8 @@
 // ne dit rien.
 
 import { describe, expect, it } from "vitest";
-import { GivenAnswers } from "../../../core/socle/questionnaire-engine/answers/given-answers";
-import { ValidatedAnswers } from "../../../core/socle/questionnaire-engine/answers/validated-answers";
+import { GivenAnswers } from "../../../core/socle/questionnaire-engine/answers/given-answers.vo";
+import { ValidatedAnswers } from "../../../core/socle/questionnaire-engine/answers/validated-answers.vo";
 
 type Questions = {
   boisson: "the" | "cafe";

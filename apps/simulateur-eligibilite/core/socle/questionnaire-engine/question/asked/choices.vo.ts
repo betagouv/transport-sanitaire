@@ -9,8 +9,8 @@ import {
   MISSING,
   type NoError,
   stated,
-} from "./answer-problem.ts";
-import { AskedCommon, type AskedCommonData } from "./common.ts";
+} from "./answer-problem.vo.ts";
+import { AskedCommon, type AskedCommonData } from "./common.vo.ts";
 
 export type AskedSingleChoiceData = AskedCommonData & {
   readonly kind: "single choice";

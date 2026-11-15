@@ -7,13 +7,13 @@
 // moment (`question/declared/question.ts`). La question posée n'en porte aucune. Elle
 // passe en JSON, telle qu'une API la donnera, et `askedQuestion` la relit.
 
-import { AskedAddress, type AskedAddressData } from "./address.ts";
+import { AskedAddress, type AskedAddressData } from "./address.vo.ts";
 import {
   AskedMultipleChoice,
   type AskedMultipleChoiceData,
   AskedSingleChoice,
   type AskedSingleChoiceData,
-} from "./choices.ts";
+} from "./choices.vo.ts";
 import {
   AskedCheckbox,
   type AskedCheckboxData,
@@ -23,7 +23,7 @@ import {
   type AskedNumberData,
   AskedText,
   type AskedTextData,
-} from "./inputs.ts";
+} from "./inputs.vo.ts";
 
 /** Une question telle qu'elle se pose. Sa sorte la distingue : `kind`. */
 export type AskedQuestion =

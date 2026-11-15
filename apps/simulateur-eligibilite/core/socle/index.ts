@@ -17,7 +17,7 @@ export {
 
 export type { CoreModel } from "./model.ts";
 export {
-  type Address,
+  type AddressData,
   type Answered,
   type AnswerOf,
   type AnswersOf,

@@ -1,13 +1,13 @@
 import { screen, within } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
-import { type Address, page, questionsOf } from "../../../core/socle";
+import { type AddressData, page, questionsOf } from "../../../core/socle";
 import { afficher } from "./afficher";
 
 // Une adresse se saisit champ par champ, et sa réponse est un objet. En France,
 // le code postal fait cinq chiffres. À l'étranger, le pays est attendu et le
 // code postal est libre et facultatif. Les pages sont écrites ici.
 
-type Questions = { depart: Address };
+type Questions = { depart: AddressData };
 
 const question = questionsOf<Questions>();
 

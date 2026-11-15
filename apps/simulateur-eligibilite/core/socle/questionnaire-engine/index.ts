@@ -7,11 +7,11 @@ export type {
   Choice,
   GivenAnswer,
   GivenAnswers,
-} from "./answers/given-answers.ts";
+} from "./answers/given-answers.vo.ts";
 export {
   type ValidatedAnswer,
   ValidatedAnswers,
-} from "./answers/validated-answers.ts";
+} from "./answers/validated-answers.vo.ts";
 export {
   type Condition,
   constant,
@@ -27,23 +27,24 @@ export { Reads } from "./conditions/reads.vo.ts";
 export { faitsChangedBy } from "./does-a-question-still-matter/faits-changed-by.ts";
 export { Relevance } from "./does-a-question-still-matter/matters.ts";
 export {
-  type Address,
+  Address,
+  type AddressData,
   type AddressFieldName,
-  type AskedField,
-  isAddress,
-  withField,
-} from "./question/address.ts";
-export type { AskedAddress } from "./question/asked/address.ts";
+} from "./question/address.vo.ts";
+export type {
+  AskedAddress,
+  AskedField,
+} from "./question/asked/address.vo.ts";
 export {
   type AnswerProblem,
   MISSING,
-} from "./question/asked/answer-problem.ts";
-export type { Revisit } from "./question/asked/common.ts";
+} from "./question/asked/answer-problem.vo.ts";
+export type { Revisit } from "./question/asked/common.vo.ts";
 export type { QuestionContext } from "./question/asked/context.ts";
 export {
   type AskedQuestion,
   askedQuestion,
-} from "./question/asked/question.ts";
+} from "./question/asked/question.vo.ts";
 export { questionsOf } from "./question/declared/factory.ts";
 export { type DeclaredPage, page } from "./question/declared/page.ts";
 export {

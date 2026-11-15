@@ -5,8 +5,8 @@
 // Une lecture ne change pas, et se calcule une seule fois : ses accesseurs ne
 // relisent rien. Valider une page donne de nouvelles réponses, qu'on relit.
 
-import { answersOf, GivenAnswers } from "./answers/given-answers.ts";
-import { ValidatedAnswers } from "./answers/validated-answers.ts";
+import { answersOf, GivenAnswers } from "./answers/given-answers.vo.ts";
+import { ValidatedAnswers } from "./answers/validated-answers.vo.ts";
 import { QuestionPositions } from "./conditions/question-positions.vo.ts";
 import { Reads } from "./conditions/reads.vo.ts";
 import {
@@ -14,7 +14,7 @@ import {
   readInOrder,
 } from "./decide-which-questions-to-ask.ts";
 import type { Relevance } from "./does-a-question-still-matter/matters.ts";
-import type { AskedQuestion } from "./question/asked/question.ts";
+import type { AskedQuestion } from "./question/asked/question.vo.ts";
 import type {
   Answer,
   Answers,

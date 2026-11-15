@@ -4,15 +4,9 @@
 // changée sont effacées, et elles seules. Sur la page même, la saisie les
 // efface déjà : leur champ se vide à l'écran.
 
-import { isAddress } from "./question/address.ts";
-import { seenBy } from "./question/declared/dependency.ts";
-import type {
-  Answer,
-  Answers,
-  Dependency,
-  Page,
-  Unanswered,
-} from "./question/question.ts";
+import { Address } from "./question/address.vo.ts";
+import type { Dependency } from "./question/dependency.vo.ts";
+import type { Answer, Answers, Page, Unanswered } from "./question/question.ts";
 
 /**
  * Les réponses du questionnaire, une fois la page validée. `inputs` porte les
@@ -91,8 +85,8 @@ function dependentsOf(
   const seenAfter = (id: string) => (stale.has(id) ? undefined : after[id]);
   const differs = (dependency: Dependency) =>
     !sameAnswer(
-      seenBy(dependency, before[dependency.id]),
-      seenBy(dependency, seenAfter(dependency.id)),
+      dependency.seen(before[dependency.id]),
+      dependency.seen(seenAfter(dependency.id)),
     );
   let frontier = changed;
   while (frontier.length > 0) {
@@ -117,7 +111,8 @@ function sameAnswer(a: Answer | Unanswered, b: Answer | Unanswered): boolean {
 // Une adresse est la même quel que soit l'ordre où ses champs sont écrits :
 // une seed ne les range pas forcément comme l'écran.
 function comparable(answer: Answer | Unanswered) {
-  return isAddress(answer)
-    ? Object.entries(answer).sort(([a], [b]) => a.localeCompare(b))
+  const address = Address.of(answer);
+  return address
+    ? Object.entries(address.toJSON()).sort(([a], [b]) => a.localeCompare(b))
     : answer;
 }

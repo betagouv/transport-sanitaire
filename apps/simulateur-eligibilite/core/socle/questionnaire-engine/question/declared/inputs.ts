@@ -1,16 +1,16 @@
 // Les saisies libres déclarées : un nombre, un texte, une date, une case seule,
 // une adresse. Chacune n'a que ses réglages : `min` n'existe pas sur un texte.
 
-import type { Address } from "../address.ts";
-import { AskedAddress } from "../asked/address.ts";
-import type { AskedCommonData } from "../asked/common.ts";
+import type { AddressData } from "../address.vo.ts";
+import { AskedAddress } from "../asked/address.vo.ts";
+import type { AskedCommonData } from "../asked/common.vo.ts";
 import type { QuestionContext } from "../asked/context.ts";
 import {
   AskedCheckbox,
   AskedDate,
   AskedNumber,
   AskedText,
-} from "../asked/inputs.ts";
+} from "../asked/inputs.vo.ts";
 import type { AnyQuestions } from "../question.ts";
 import { DeclaredQuestion } from "./question.ts";
 import type { CommonSettings } from "./settings.ts";
@@ -155,7 +155,7 @@ export class DeclaredCheckbox<
   }
 }
 
-/** Une adresse déclarée, saisie champ par champ (`address.ts`). */
+/** Une adresse déclarée, saisie champ par champ (`question/address.vo.ts`). */
 export class DeclaredAddress<
   Questions extends AnyQuestions,
   Cibles,
@@ -167,7 +167,7 @@ export class DeclaredAddress<
   Faits,
   AddressOwn<Questions, Cibles, Faits>,
   Id,
-  Address
+  AddressData
 > {
   readonly kind = "address";
 

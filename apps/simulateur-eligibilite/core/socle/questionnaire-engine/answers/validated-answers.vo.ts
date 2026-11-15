@@ -11,7 +11,7 @@ import {
   idOf,
   type Validated,
 } from "../question/question.ts";
-import { type Box, type Choice, GivenAnswer } from "./given-answers.ts";
+import { type Box, type Choice, GivenAnswer } from "./given-answers.vo.ts";
 
 /**
  * Une question validée, ou pas : sa réponse, et les options qui se
