@@ -1,6 +1,6 @@
-// P0 et P1 du modèle de l'éditeur : les pages qui s'affichent, les options qui
-// se proposent, les faits que les réponses établissent, et le mode que les
-// règles en tirent.
+// P0 et P1 du modèle de l'éditeur : les pages qui s'affichent, les réponses
+// possibles qui se proposent, les faits que les réponses établissent, et le
+// mode que les règles en tirent.
 //
 // Le catalogue de l'éditeur fait foi pour les questions, et
 // `CONTRAT_REPONSES_FAITS.json` avec son correctif pour les faits.
@@ -14,7 +14,7 @@ import {
   Questionnaire,
 } from "../../../../core/socle/questionnaire-engine";
 
-import { preconisationOf } from "../../../../core/socle/simulation";
+import { EstablishAPreconisation } from "../../../../core/socle/simulation";
 
 type Reponses = Answers<Questions>;
 
@@ -30,14 +30,15 @@ const question = (id: keyof Questions, reponses: Reponses) => {
   );
   return posees.find((posee) => posee.id === id);
 };
-const optionsDe = (id: keyof Questions, reponses: Reponses) => {
+const reponsesPossiblesDe = (id: keyof Questions, reponses: Reponses) => {
   const posee = question(id, reponses);
-  return posee && "options" in posee
-    ? posee.options.map((option) => option.value)
+  return posee && "possibleAnswers" in posee
+    ? posee.possibleAnswers.map((possibleAnswer) => possibleAnswer.value)
     : [];
 };
 const modeDe = (reponses: Reponses) =>
-  preconisationOf(model, reponses).cibles.cible_mode_id.value;
+  new EstablishAPreconisation(model).execute(reponses).cibles.cible_mode_id
+    .value;
 
 const SEUL: Reponses = {
   "Q0.1": "1_VERIFIER",
@@ -112,7 +113,7 @@ describe("le mode de transport", () => {
   });
 });
 
-describe("les options de Q1.2", () => {
+describe("les réponses possibles de Q1.2", () => {
   // Les cas `exclusivite-6-7` et `exclusivite-4-11` de la recette N2 de
   // l'éditeur (D-232) : cocher l'une décoche l'autre.
   it("s'excluent deux à deux : fauteuil et allongé, hygiène et asepsie", () => {
@@ -120,7 +121,7 @@ describe("les options de Q1.2", () => {
 
     expect(
       q12?.kind === "multiple choice" &&
-        q12.incompatibleOptions?.map(({ values }) => values),
+        q12.incompatiblePossibleAnswers?.map(({ values }) => values),
     ).toEqual([
       ["6_FAUTEUIL_SANS_TRANSFERT", "7_ALLONGE"],
       ["4_HYGIENE", "11_ASEPSIE"],
@@ -128,7 +129,7 @@ describe("les options de Q1.2", () => {
   });
 });
 
-describe("les options de Q1.3", () => {
+describe("les réponses possibles de Q1.3", () => {
   it.each([
     [
       "un transport assis professionnel",
@@ -139,18 +140,26 @@ describe("les options de Q1.3", () => {
       avecUnProfessionnel(["6_FAUTEUIL_SANS_TRANSFERT"]),
     ],
   ] as const)("le transport partagé se propose pour %s", (_, reponses) => {
-    expect(optionsDe("Q1.3", reponses)).toContain("6_PARTAGE_INCOMPATIBLE");
+    expect(reponsesPossiblesDe("Q1.3", reponses)).toContain(
+      "6_PARTAGE_INCOMPATIBLE",
+    );
   });
 
   it("le transport partagé ne se propose ni avec l'ambulance, ni sans professionnel", () => {
-    expect(optionsDe("Q1.3", BRANCARD)).not.toContain("6_PARTAGE_INCOMPATIBLE");
-    expect(optionsDe("Q1.3", SEUL)).not.toContain("6_PARTAGE_INCOMPATIBLE");
+    expect(reponsesPossiblesDe("Q1.3", BRANCARD)).not.toContain(
+      "6_PARTAGE_INCOMPATIBLE",
+    );
+    expect(reponsesPossiblesDe("Q1.3", SEUL)).not.toContain(
+      "6_PARTAGE_INCOMPATIBLE",
+    );
   });
 
   it("la forte corpulence ne se propose qu'avec un critère d'ambulance", () => {
-    expect(optionsDe("Q1.3", BRANCARD)).toContain("1_FORTE_CORPULENCE");
+    expect(reponsesPossiblesDe("Q1.3", BRANCARD)).toContain(
+      "1_FORTE_CORPULENCE",
+    );
     expect(
-      optionsDe("Q1.3", avecUnProfessionnel(["1_PAS_AUTONOME"])),
+      reponsesPossiblesDe("Q1.3", avecUnProfessionnel(["1_PAS_AUTONOME"])),
     ).not.toContain("1_FORTE_CORPULENCE");
   });
 

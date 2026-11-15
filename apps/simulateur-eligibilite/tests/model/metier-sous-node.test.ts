@@ -34,14 +34,12 @@ type Bilan = { rejouees: number; dementies: string[] };
 const SCRIPT = `
 const [nom] = process.argv.slice(1);
 const { model } = await import(\`./core/models/\${nom}/index.ts\`);
-const { preconisationOf } = await import("./core/socle/simulation/index.ts");
-const { evaluateSeed } = await import("./core/socle/simulation/index.ts");
+const { EvaluateASeed } = await import("./core/socle/simulation/index.ts");
 const avecAttendus = (await model.seeds()).filter(
   (seed) => Object.keys(seed.expected).length > 0,
 );
-const preconise = (answers) => preconisationOf(model, answers).cibles;
 const dementies = avecAttendus
-  .filter((seed) => evaluateSeed(preconise, seed).mismatches.length > 0)
+  .filter((seed) => new EvaluateASeed(model).execute(seed).mismatches.length > 0)
   .map((seed) => seed.id);
 console.log(JSON.stringify({ rejouees: avecAttendus.length, dementies }));
 `;

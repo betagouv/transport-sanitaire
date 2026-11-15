@@ -3,7 +3,11 @@
 // la nature d'un autre lieu quand rien ne la prouve, son nom, le service d'une
 // structure de soins. `lieu.ts` les assemble.
 
-import type { Answered, Condition, Value } from "../../../../../socle/index.ts";
+import type {
+  Answered,
+  Condition,
+  Reading,
+} from "../../../../../socle/index.ts";
 import type { Nature } from "../../p2/conditions/natures-du-lieu.ts";
 import { Q2_2_1 } from "../../p2/questions/q2-2-1.ts";
 import { Q2_14_MOTIF } from "../../p2/questions/q2-14.ts";
@@ -23,8 +27,8 @@ import {
 
 /** Ce que les champs savent du lieu à leur place sur la page. */
 export type Etat = {
-  readonly categorie: Value<Categorie | undefined>;
-  readonly nature: Value<Nature | undefined>;
+  readonly categorie: Reading<Categorie | undefined>;
+  readonly nature: Reading<Nature | undefined>;
 };
 
 /** La catégorie du lieu : sa question, et celle que lit la page. */
@@ -63,23 +67,24 @@ export const CHAMPS_DU_LIEU = {
 
 /**
  * La catégorie, parmi celles que P2 et l'autre lieu laissent. Une seule
- * possible se fixe sans se demander ; aucune, et l'adresse dit la contradiction.
+ * possible se fixe sans se demander ; aucune, et l'adresse dit la
+ * contradiction.
  */
 export function categorieAChoisir<E extends Extremite>(
   extremite: E,
   label: string,
-  lieu: Value<Lieu>,
+  lieu: Reading<Lieu>,
 ) {
   return (Object.keys(CATEGORIES) as Categorie[]).reduce(
     (declaree, categorie) =>
-      declaree.option(categorie, (option) =>
-        option.offeredWhen(
+      declaree.possibleAnswer(categorie, (possibleAnswer) =>
+        possibleAnswer.offeredWhen(
           lieu.compute(({ categories }) => categories.includes(categorie)),
         ),
       ),
     question
       .singleChoice(CHAMPS_DU_LIEU[extremite].categorie, label)
-      .options(CATEGORIES)
+      .possibleAnswers(CATEGORIES)
       .dropdown()
       .mattersWhile(
         avecUnDocument.and(
@@ -100,7 +105,7 @@ export function natureAChoisir<E extends Extremite>(
 ) {
   return question
     .singleChoice(CHAMPS_DU_LIEU[extremite].nature, "Nature du lieu")
-    .options({ "1_HTNM": HTNM, "2_AUTRE": "Autre nature à préciser" })
+    .possibleAnswers({ "1_HTNM": HTNM, "2_AUTRE": "Autre nature à préciser" })
     .mattersWhile(avecUnDocument.and(uneDap).and(aPreciser(etat)))
     .reminderFrom(rappel);
 }

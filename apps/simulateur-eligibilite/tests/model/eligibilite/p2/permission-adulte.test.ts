@@ -23,9 +23,10 @@ describe("la permission d'un adulte, autorisée", () => {
     ]).toEqual([true, false, false]);
   });
 
-  // Comme le test de l'éditeur (`post_audit_20261110.mjs`, « permission adulte :
-  // Q2.6 avec les seules exceptions non établies ») : sept options, ni la 2, que
-  // le séjour écarte, ni le Centre 15, qui exige un transfert.
+  // Comme le test de l'éditeur (`post_audit_20261110.mjs`, « permission adulte
+  // : Q2.6 avec les seules exceptions non établies ») : sept réponses
+  // possibles, ni la 2, que le séjour écarte, ni le Centre 15, qui exige un
+  // transfert.
   it("pose les exceptions, sauf l'admission sans séjour et le Centre 15", () => {
     expect(proposees(ADULTE)).toEqual([
       "4_AIR_MER",

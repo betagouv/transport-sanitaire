@@ -15,7 +15,7 @@ const enPermission = question
     "Q2.2.1.a",
     "Ce trajet correspond-il à une permission temporaire de sortie de l’hôpital ?",
   )
-  .options({
+  .possibleAnswers({
     "1_OUI": "Oui.",
     "2_NON": "Non.",
   })

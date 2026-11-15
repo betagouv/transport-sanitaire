@@ -26,7 +26,7 @@ const AVIS = page(
   "avis",
   question
     .singleChoice("avis", "Un avis ?")
-    .options({ bien: "Bien", mal: "Mal" })
+    .possibleAnswers({ bien: "Bien", mal: "Mal" })
     .optional(),
 );
 
@@ -35,7 +35,7 @@ const LIEU = page(
   "lieu",
   question
     .singleChoice("lieu", "Quel lieu ?")
-    .options({ domicile: "Domicile", foyer: "Foyer" }),
+    .possibleAnswers({ domicile: "Domicile", foyer: "Foyer" }),
   question
     .text("nom", "Nom")
     .requiredWhen(given.question("lieu").answer().is("foyer")),

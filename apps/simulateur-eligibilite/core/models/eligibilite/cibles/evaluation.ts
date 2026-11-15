@@ -2,9 +2,9 @@
 // calculent, par le moteur de décision du socle.
 
 import {
-  publicodesEngine,
+  PublicodesDecisionEngine,
   type Rules,
-} from "../../../socle/decision-engine/compute-the-cibles.ts";
+} from "../../../socle/decision-engine/publicodes-decision-engine.adapter.ts";
 import type { Faits } from "../faits/noms.ts";
 import rules from "../rules/regles.json" with { type: "json" };
 import { CIBLES, type Cibles } from "./noms.ts";
@@ -13,7 +13,7 @@ import { CIBLES, type Cibles } from "./noms.ts";
  * Toutes les cibles, une seule cible, et les cibles lues à la demande, de
  * faits donnés.
  */
-export const { cibles, cible, lazyCibles } = publicodesEngine<Faits, Cibles>(
+export const decisionEngine = new PublicodesDecisionEngine<Faits, Cibles>(
   rules as Rules,
   CIBLES,
 );

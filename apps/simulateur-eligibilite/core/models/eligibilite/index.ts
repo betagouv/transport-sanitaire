@@ -3,7 +3,7 @@
 // `front/models/eligibilite/`.
 
 import type { CoreModel, DecisionGraphData } from "../../socle/index.ts";
-import { cibles } from "./cibles/evaluation.ts";
+import { decisionEngine } from "./cibles/evaluation.ts";
 import type { Cibles } from "./cibles/noms.ts";
 import type { Faits } from "./faits/noms.ts";
 import {
@@ -20,7 +20,11 @@ import graphe from "./rules/regles.graphe.json" with { type: "json" };
 const GRAPHE = graphe as DecisionGraphData;
 
 export const model: CoreModel<Questions, Faits, Cibles> = {
-  preconisation: { faits, cibles, reads: LECTURES_DES_FAITS },
+  preconisation: {
+    faits,
+    cibles: (faits) => decisionEngine.cibles(faits),
+    reads: LECTURES_DES_FAITS,
+  },
   questionnaire: PARTS,
   complement: COMPLEMENT,
   seeds: () => import("./seeds-catalogue.ts").then((m) => m.SEEDS),

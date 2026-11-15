@@ -5,16 +5,22 @@
 // connaît aucun identifiant : les génériques ne servent qu'à typer le modèle.
 
 import type { Cible } from "../../decision-engine/index.ts";
-import type { Reads } from "../conditions/condition.ts";
-import type { Address } from "./address.ts";
-import type { SeenAnswers } from "./asked/context.ts";
-import type { AskedQuestion } from "./asked/question.ts";
+import type { Reads } from "../conditions/reads.vo.ts";
+import type { AddressData } from "./address.vo.ts";
+import type { SeenAnswers } from "./asked/context.vo.ts";
+import type { AskedQuestion } from "./asked/question.vo.ts";
+import type { Dependency } from "./dependency.vo.ts";
 
 /**
  * Une réponse : un choix, un nombre, un texte, les cases cochées, une case
  * seule, ou une adresse.
  */
-export type Answer = string | number | boolean | readonly string[] | Address;
+export type Answer =
+  | string
+  | number
+  | boolean
+  | readonly string[]
+  | AddressData;
 
 /**
  * Pas de réponse : la question ne l'a pas encore reçue, ou ne se pose pas. Ce
@@ -30,8 +36,8 @@ export type AnyQuestions = Readonly<Record<string, Answer>>;
 
 /**
  * Une question vue de ce qui lit sa réponse : son id, et le type de sa
- * réponse. Une question déclarée en est une (`question/declared/question.ts`).
- * `~answer` n'existe qu'au typage.
+ * réponse. Une question déclarée en est une
+ * (`question/declared/question.vo.ts`). `~answer` n'existe qu'au typage.
  */
 export type Answered<Given extends Answer = Answer> = {
   readonly id: string;
@@ -57,15 +63,6 @@ export type AnswerOfRef<Questions extends AnyQuestions, Ref> =
     : Ref extends keyof Questions
       ? Questions[Ref]
       : never;
-
-/**
- * Une question dont dépend une réponse, réduite au besoin à ces options
- * (`question/declared/dependency.ts`).
- */
-export type Dependency = {
-  readonly id: string;
-  readonly options?: readonly string[];
-};
 
 /** L'id de la question que désigne `question`. */
 export function idOf(question: string | Answered): string {
@@ -111,7 +108,9 @@ export type AnyCibles = Readonly<Record<string, Cible>>;
  */
 export type Validated<Questions extends AnyQuestions = AnyQuestions> = {
   readonly [Id in keyof Questions]?: {
-    /** Les options qui se proposaient. Absente : une saisie libre. */
+    /**
+     * Les réponses possibles qui se proposaient. Absente : une saisie libre.
+     */
     readonly offered?: readonly string[];
     /** Absente : la question, facultative, est restée sans réponse. */
     readonly answer?: Questions[Id];
@@ -127,8 +126,11 @@ export type Reminder =
   | string
   | ReadonlyArray<{ readonly label: string; readonly value: string }>;
 
-/** Deux options d'un choix multiple qui ne vont pas ensemble, et pourquoi. */
-export type IncompatibleOptions = {
+/**
+ * Deux réponses possibles d'un choix multiple qui ne vont pas ensemble, et
+ * pourquoi.
+ */
+export type IncompatiblePossibleAnswers = {
   readonly values: readonly [string, string];
   /** Affichée quand cocher l'une vient de décocher l'autre. */
   readonly explanation: string;
@@ -137,7 +139,7 @@ export type IncompatibleOptions = {
 /**
  * Une question, telle que le moteur de questionnaire la lit : elle sait comment
  * elle se pose, et de quelles réponses elle dépend. Le modèle la déclare par
- * ses constructeurs (`question/declared/factory.ts`, `question/declared/question.ts`).
+ * ses constructeurs (`question/declared/factory.ts`, `question/declared/question.vo.ts`).
  *
  * `askedIn` est écrite en méthode : TypeScript compare alors ses paramètres
  * dans les deux sens, et le moteur de questionnaire peut recevoir les questions
@@ -152,17 +154,19 @@ export type Question<
   readonly kind: AskedQuestion["kind"];
   /**
    * Ce dont dépend cette réponse. Quand cela change, cette réponse est effacée
-   * (`validate-a-page.ts`).
+   * (`page-commit.service.ts`).
    */
   readonly dependencies: readonly Dependency[];
   /**
-   * Ce que lisent ses gardes, celles de ses options comprises : les réponses,
-   * les faits et les cibles qui décident si elle se pose, et ce qu'elle propose.
+   * Ce que lisent ses gardes, celles de ses réponses possibles comprises : les
+   * réponses, les faits et les cibles qui décident si elle se pose, et ce
+   * qu'elle propose.
    */
   readonly guardReads: Reads;
   /**
-   * Ce que lisent ses conditions, sans ses options : ce qui décide seul si
-   * elle se pose (`does-a-question-still-matter/can-still-be-asked.ts`).
+   * Ce que lisent ses conditions, sans ses réponses possibles : ce qui décide
+   * seul si elle se pose
+   * (`does-a-question-still-matter/askability.service.ts`).
    */
   readonly conditionReads: Reads;
   /**

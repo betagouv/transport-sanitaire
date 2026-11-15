@@ -1,7 +1,7 @@
 // L'expédition : une seconde adresse, refusée quand elle répète la première.
 // L'incohérence se déclare sur la plus tardive des deux questions.
 
-import type { Address } from "../../../../../socle/index.ts";
+import type { AddressData } from "../../../../../socle/index.ts";
 import { given, question } from "../../question.ts";
 import { ADRESSE } from "./adresse.ts";
 
@@ -32,11 +32,11 @@ export const EXPEDITION = expedition
 // Deux adresses sont les mêmes quand leur voie, leur code postal et leur
 // commune le sont, sans égard aux accents ni à la casse.
 function sameAddress(
-  first: Address | undefined,
-  second: Address | undefined,
+  first: AddressData | undefined,
+  second: AddressData | undefined,
 ): boolean {
   if (!first || !second) return false;
-  const key = ({ street, postalCode, city }: Address) =>
+  const key = ({ street, postalCode, city }: AddressData) =>
     [street, postalCode ?? "", city]
       .map((part) =>
         part

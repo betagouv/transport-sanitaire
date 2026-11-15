@@ -54,10 +54,10 @@ describe("les deux blocs", () => {
   });
 
   it("ont chacun leur réponse négative exclusive", () => {
-    expect(posee("Q2.2.1", BRANCARD)?.exclusiveOption?.label).toBe(
+    expect(posee("Q2.2.1", BRANCARD)?.exclusivePossibleAnswer?.label).toBe(
       "Non, aucune de ces situations",
     );
-    expect(posee("Q2.2.1.b", AUCUNE)?.exclusiveOption?.label).toBe(
+    expect(posee("Q2.2.1.b", AUCUNE)?.exclusivePossibleAnswer?.label).toBe(
       "Non, aucun.",
     );
   });
@@ -66,7 +66,7 @@ describe("les deux blocs", () => {
   // déplacement évalué se demande en Q2.14.trajet (D-285).
   it("refusent ensemble le CAMSP et le SAMSAH", () => {
     expect(
-      posee("Q2.2.1.b", AUCUNE)?.incompatibleOptions?.map(
+      posee("Q2.2.1.b", AUCUNE)?.incompatiblePossibleAnswers?.map(
         ({ values }) => values,
       ),
     ).toEqual([["6_CAMSP", "7_SAMSAH"]]);

@@ -14,7 +14,7 @@ const declaree = question
     "Q2.8.duree_48h",
     "Cette permission dure-t-elle au maximum 48 heures ?",
   )
-  .options({
+  .possibleAnswers({
     "1_OUI": "Oui.",
     "2_NON": "Non.",
   });

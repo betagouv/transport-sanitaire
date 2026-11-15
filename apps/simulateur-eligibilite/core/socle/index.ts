@@ -7,7 +7,6 @@
 
 export {
   Cible,
-  cibleValues,
   type DecisionGraphData,
   Fait,
   FaitCatalogue,
@@ -18,13 +17,12 @@ export {
 
 export type { CoreModel } from "./model.ts";
 export {
-  type Address,
+  type AddressData,
   type Answered,
   type AnswerOf,
   type AnswersOf,
   afterLock,
   type Condition,
-  constant,
   type DeclaredPage,
   type GivenAnswer,
   type GivenAnswers,
@@ -35,11 +33,11 @@ export {
   Questionnaire,
   questionsOf,
   type ReadByObject,
+  Reading,
   Relevance,
   type Revisit,
   type Unanswered,
   type ValidatedAnswers,
-  type Value,
   type ValueOf,
 } from "./questionnaire-engine/index.ts";
 

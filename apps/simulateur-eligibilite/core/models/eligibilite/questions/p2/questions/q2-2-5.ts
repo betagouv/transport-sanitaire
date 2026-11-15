@@ -8,7 +8,7 @@ export const Q2_2_5 = question
     "Q2.2.5",
     "Sélectionnez la ou les adresses situées à l’étranger",
   )
-  .options({
+  .possibleAnswers({
     "1_DEPART": "Adresse de départ située à l’étranger.",
     "2_ARRIVEE": "Adresse d’arrivée située à l’étranger.",
     "3_LIEU_DES_SOINS":

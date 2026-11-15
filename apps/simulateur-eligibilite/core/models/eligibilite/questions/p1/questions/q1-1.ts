@@ -5,7 +5,7 @@ import { question } from "../../question.ts";
 
 export const Q1_1 = question
   .singleChoice("Q1.1", "Concernant son déplacement, le patient :")
-  .options({
+  .possibleAnswers({
     "1_SEUL":
       "Peut se déplacer seul, sans aide technique ou humaine et sans besoin particulier sur l’entièreté du trajet.",
     "2_AVEC_UN_PROCHE":

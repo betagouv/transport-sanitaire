@@ -1,6 +1,11 @@
 import { screen, within } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
-import { type Address, givenOf, page, questionsOf } from "../../../core/socle";
+import {
+  type AddressData,
+  givenOf,
+  page,
+  questionsOf,
+} from "../../../core/socle";
 import { Questionnaire } from "../../../core/socle/questionnaire-engine";
 import { afficher } from "./afficher";
 
@@ -8,7 +13,7 @@ import { afficher } from "./afficher";
 // groupe de champs, au clic sur « Suivant ». Une erreur de champ passe devant. Les pages sont écrites
 // ici.
 
-type Questions = { depart: Address; arrivee: Address };
+type Questions = { depart: AddressData; arrivee: AddressData };
 
 const question = questionsOf<Questions>();
 const given = givenOf<Questions>();
@@ -18,7 +23,7 @@ const valider = () =>
 
 describe("adresse incohérente", () => {
   const DEPART = question.address("depart", "Adresse de départ");
-  const memeVoie = (adresse: Address | undefined) => adresse?.street;
+  const memeVoie = (adresse: AddressData | undefined) => adresse?.street;
   const ARRIVEE = question
     .address("arrivee", "Adresse d'arrivée")
     .inconsistentWhen(

@@ -2,10 +2,10 @@
 // même page, pour l'appareillage, l'agrément du fournisseur (Q2.10.a) et
 // l'appareillage concerné (Q2.10.b) (D-108). Son fait vit sous `faits/`.
 //
-// Q2.10 se pose quand Q2.2.1.b signale une convocation (option 13), le seul
-// endroit où elle se découvre (QST-COLLECTE-UNIQUE, D-272). Sans elle, Q2.10
-// ne se pose pas : la convocation proposée et écartée en Q2.2.1.b vaut déjà
-// « non ».
+// Q2.10 se pose quand Q2.2.1.b signale une convocation (réponse possible 13),
+// le seul endroit où elle se découvre (QST-COLLECTE-UNIQUE, D-272). Sans elle,
+// Q2.10 ne se pose pas : la convocation proposée et écartée en Q2.2.1.b vaut
+// déjà « non ».
 
 import { given, question } from "../../question.ts";
 import { Q2_2_1_B } from "./q2-2-1.ts";
@@ -20,7 +20,7 @@ export const Q2_10 = question
     "Q2.10",
     "Quelle convocation, quel avis d’audience ou quel appareillage motive ce trajet ?",
   )
-  .options({
+  .possibleAnswers({
     "1_CONTROLE_MEDICAL":
       "Convocation au contrôle médical de l’Assurance Maladie.",
     "2_EXPERT_JURIDICTION":
@@ -44,8 +44,9 @@ export const Q2_10_A = question
     "Q2.10.a",
     "Le fournisseur est-il agréé pour cet appareillage ?",
   )
-  // Pour l'option 6 de Q2.10. Chaque réponse finit par un point (TS1016-08).
-  .options({
+  // Pour la réponse possible 6 de Q2.10. Chaque réponse finit par un point
+  // (TS1016-08).
+  .possibleAnswers({
     "1_OUI": "Oui.",
     "2_NON": "Non.",
     "3_NE_PEUX_PAS_VERIFIER": "Je ne peux pas le vérifier.",
@@ -55,8 +56,8 @@ export const Q2_10_A = question
 
 export const Q2_10_B = question
   .singleChoice("Q2.10.b", "Sélectionnez l’appareillage concerné")
-  // Pour l'option 6 de Q2.10.
-  .options({
+  // Pour la réponse possible 6 de Q2.10.
+  .possibleAnswers({
     "1_PROTHESE_OCULAIRE_FACIALE": "Prothèse oculaire ou faciale.",
     "2_PODO_ORTHESE": "Podo-orthèse.",
     "3_ORTHOPROTHESE": "Orthoprothèse.",

@@ -7,7 +7,7 @@
 // C'est un developer tool : en local seulement (`unlock.ts`).
 // Le simulateur ne l'importe pas : `App` la lui passe.
 
-import { cibleValues } from "../../../core/socle/decision-engine";
+import { Cible } from "../../../core/socle/decision-engine";
 import type { Validated } from "../../../core/socle/questionnaire-engine";
 import { SHA_COMMIT, VERSION_APP } from "../deployed-version";
 import type { DebugTraceProps } from "../questionnaire";
@@ -28,7 +28,7 @@ export function DebugTrace(props: DebugTraceProps) {
         {props.validated && <ValidatedList validated={props.validated} />}
         {props.faits && <ValueList title="Faits" values={props.faits} />}
         {props.cibles && (
-          <ValueList title="Cibles" values={cibleValues(props.cibles)} />
+          <ValueList title="Cibles" values={Cible.valuesOf(props.cibles)} />
         )}
       </div>
     </details>
@@ -49,7 +49,7 @@ function ExportLink({ trace }: { trace: DebugTraceProps }) {
     app: { version: VERSION_APP, commit: SHA_COMMIT },
     ...rest,
     pages: pages.map((page) => page.id),
-    ...(cibles && { cibles: withUndefinedNamed(cibleValues(cibles)) }),
+    ...(cibles && { cibles: withUndefinedNamed(Cible.valuesOf(cibles)) }),
   };
   const file = encodeURIComponent(JSON.stringify(content, null, 2));
   return (
@@ -85,7 +85,7 @@ function ShownPage({ title, currentPage, questions, draft }: DebugTraceProps) {
           {questions.map(({ id, label }) => (
             <li key={id}>
               <code>{id}</code> {label}{" "}
-              <Value value={draft?.[id]} absent="sans réponse" />
+              <Reading value={draft?.[id]} absent="sans réponse" />
             </li>
           ))}
         </ul>
@@ -114,7 +114,7 @@ function PageList({
 }
 
 // Chaque question validée : sa réponse, et ce qui s'y proposait. C'est ce qui
-// distingue une option refusée d'une option jamais montrée.
+// distingue une réponse possible refusée d'une réponse possible jamais montrée.
 function ValidatedList({ validated }: { validated: Validated }) {
   const entries = Object.entries(validated);
   return (
@@ -125,7 +125,7 @@ function ValidatedList({ validated }: { validated: Validated }) {
         {entries.map(([id, question]) => (
           <li key={id}>
             <code>{id}</code>{" "}
-            <Value value={question?.answer} absent="sans réponse" />
+            <Reading value={question?.answer} absent="sans réponse" />
             {question?.offered && (
               <>
                 , proposées : <code>{question.offered.join(", ")}</code>
@@ -153,7 +153,7 @@ function ValueList({
         {entries.length === 0 && <li>(aucune)</li>}
         {entries.map(([id, value]) => (
           <li key={id}>
-            <code>{id}</code> <Value value={value} absent={UNDEFINED} />
+            <code>{id}</code> <Reading value={value} absent={UNDEFINED} />
           </li>
         ))}
       </ul>
@@ -163,7 +163,7 @@ function ValueList({
 
 // Une valeur telle qu'elle est écrite dans le code, ou ce qui se dit quand il
 // n'y en a pas.
-function Value({ value, absent }: { value: unknown; absent: string }) {
+function Reading({ value, absent }: { value: unknown; absent: string }) {
   if (value === undefined)
     return (
       <>

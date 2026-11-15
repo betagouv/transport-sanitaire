@@ -22,7 +22,9 @@ const MODULES = SOCLE.flatMap((socle) =>
 // leur pourquoi.
 const PORTES = [
   // Importe publicodes, qui ne doit entrer que dans le chunk d'un modèle.
-  "core/socle/decision-engine/compute-the-cibles",
+  "core/socle/decision-engine/publicodes-decision-engine.adapter",
+  // Importe publicodes, pour l'outil des règles et les tests seulement.
+  "core/socle/decision-engine/publicodes-graph-compiler.adapter",
 ];
 
 const moduleDe = (fichier: string) =>

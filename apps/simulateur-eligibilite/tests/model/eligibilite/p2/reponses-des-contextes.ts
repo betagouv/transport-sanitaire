@@ -1,6 +1,6 @@
 // Les réponses et les lectures des tests des situations particulières
 // (Q2.2.1, Q2.2.1.b) : la question posée sur l'une de leurs deux pages, ses
-// options proposées, et les faits qu'elles établissent.
+// réponses possibles proposées, et les faits qu'elles établissent.
 
 import { model } from "../../../../core/models/eligibilite";
 import type { Faits } from "../../../../core/models/eligibilite/faits/noms";
@@ -11,7 +11,7 @@ import {
   Questionnaire,
 } from "../../../../core/socle/questionnaire-engine";
 
-import { preconisationOf } from "../../../../core/socle/simulation";
+import { EstablishAPreconisation } from "../../../../core/socle/simulation";
 
 export type Reponses = Answers<Questions>;
 
@@ -27,9 +27,9 @@ export const posee = (id: keyof Questions, reponses: Reponses) => {
   return question?.kind === "multiple choice" ? question : undefined;
 };
 export const proposees = (id: keyof Questions, reponses: Reponses) =>
-  posee(id, reponses)?.options.map(({ value }) => value);
+  posee(id, reponses)?.possibleAnswers.map(({ value }) => value);
 export const faits = (reponses: Reponses) =>
-  preconisationOf(model, reponses).faits as Faits;
+  new EstablishAPreconisation(model).execute(reponses).faits as Faits;
 export const valeurs = (reponses: Reponses, noms: readonly (keyof Faits)[]) =>
   noms.map((nom) => faits(reponses)[nom].value);
 

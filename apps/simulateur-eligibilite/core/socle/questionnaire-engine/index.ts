@@ -1,55 +1,50 @@
 // Ce que le moteur de questionnaire promet au reste du socle : déclarer des
-// pages et des questions, lire des réponses (`Questionnaire`, `Reading`), les
-// conditions et leur périmètre, ce qu'une question change.
+// pages et des questions, lire des réponses (`Questionnaire`, `AnsweredQuestionnaire`), les
+// conditions et le contexte où elles se lisent, les questions qui comptent.
 
+export type { AnsweredQuestionnaire } from "./answered-questionnaire.vo.ts";
 export type {
   Box,
   Choice,
   GivenAnswer,
   GivenAnswers,
-} from "./answers/given-answers.ts";
+} from "./answers/given-answers.vo.ts";
 export {
   type ValidatedAnswer,
   ValidatedAnswers,
-} from "./answers/validated-answers.ts";
+} from "./answers/validated-answers.vo.ts";
+export { givenOf } from "./conditions/given.ts";
+export { LocalDateTime } from "./conditions/local-date-time.vo.ts";
 export {
   type Condition,
-  constant,
-  flattened,
-  NOTHING,
-  type Read,
-  type Reads,
-  readIn,
-  readsOf,
-  type Scope,
-  Value,
+  type Context,
+  Reading,
   type ValueOf,
-} from "./conditions/condition.ts";
-export { givenOf } from "./conditions/given.ts";
-export { LocalDateTime } from "./conditions/local-date-time.ts";
-export { validatedReading } from "./conditions/what-a-condition-sees.ts";
-export { faitsChangedBy } from "./does-a-question-still-matter/faits-changed-by.ts";
-export { Relevance } from "./does-a-question-still-matter/matters.ts";
+} from "./conditions/reading.vo.ts";
+export { Reads } from "./conditions/reads.vo.ts";
+export { Relevance } from "./does-a-question-still-matter/relevance.service.ts";
+export { PageCommitService } from "./page-commit.service.ts";
 export {
-  type Address,
+  Address,
+  type AddressData,
   type AddressFieldName,
-  type AskedField,
-  isAddress,
-  withField,
-} from "./question/address.ts";
-export type { AskedAddress } from "./question/asked/address.ts";
+} from "./question/address.vo.ts";
+export type {
+  AskedAddress,
+  AskedField,
+} from "./question/asked/address.vo.ts";
 export {
   type AnswerProblem,
   MISSING,
-} from "./question/asked/answer-problem.ts";
-export type { Revisit } from "./question/asked/common.ts";
-export type { QuestionContext } from "./question/asked/context.ts";
+} from "./question/asked/answer-problem.vo.ts";
+export type { Revisit } from "./question/asked/common.vo.ts";
+export { QuestionContext } from "./question/asked/context.vo.ts";
 export {
   type AskedQuestion,
   askedQuestion,
-} from "./question/asked/question.ts";
+} from "./question/asked/question.vo.ts";
 export { questionsOf } from "./question/declared/factory.ts";
-export { type DeclaredPage, page } from "./question/declared/page.ts";
+export { type DeclaredPage, page } from "./question/declared/page.vo.ts";
 export {
   type Answer,
   type Answered,
@@ -67,5 +62,4 @@ export {
   type Unanswered,
   type Validated,
 } from "./question/question.ts";
-export { Questionnaire, type Reading } from "./questionnaire.ts";
-export { answerOnPage, commitPage } from "./validate-a-page.ts";
+export { Questionnaire } from "./questionnaire.vo.ts";

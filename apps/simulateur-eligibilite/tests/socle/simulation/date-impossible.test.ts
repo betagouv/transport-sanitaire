@@ -12,7 +12,7 @@ import type {
   Page,
   QuestionnairePart,
 } from "../../../core/socle/questionnaire-engine";
-import { PageRefused, Simulation } from "../../../core/socle/simulation";
+import { PageRefusal, Simulation } from "../../../core/socle/simulation";
 
 type Questions = { jour: string; rendezVous: string };
 
@@ -60,7 +60,7 @@ describe("une date impossible", () => {
         jour: "2026-02-31",
         rendezVous: "2026-02-28T08:30",
       }),
-    ).toThrow(PageRefused);
+    ).toThrow(PageRefusal);
   });
 });
 

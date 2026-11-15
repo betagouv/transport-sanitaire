@@ -15,7 +15,7 @@ export const Q2_3_1_FINALITE = question
     "Q2.3.1.finalite",
     "Ce déplacement est-il nécessaire pour recevoir des soins ou passer un examen adapté à l’état de santé du patient ?",
   )
-  .options({
+  .possibleAnswers({
     "1_OUI": "Oui.",
     "2_NON": "Non.",
   })

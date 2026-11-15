@@ -25,7 +25,7 @@ const PARTS = [
         "boisson",
         question
           .singleChoice("boisson", "Laquelle ?")
-          .options({ the: "Un thé", cafe: "Un café" }),
+          .possibleAnswers({ the: "Un thé", cafe: "Un café" }),
       ),
     ],
   },

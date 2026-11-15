@@ -1,0 +1,115 @@
+// Lire les réponses données, question par question : ce qu'une question a
+// reçu, sans fouiller la structure qui les garde. Le modèle les reçoit ainsi
+// dans ses conditions, ses faits et ses résultats.
+//
+// Une question sans réponse n'a rien de coché et n'est aucune réponse possible
+// : ce n'est pas pour autant un « non ». `hasAnswer` le distingue.
+
+import type { AddressData } from "../question/address.vo.ts";
+import {
+  type Answer,
+  type Answered,
+  type Answers,
+  type AnyQuestions,
+  idOf,
+  type Unanswered,
+} from "../question/question.ts";
+
+/**
+ * Ce qu'un choix unique peut valoir : une réponse possible, ou la valeur d'une
+ * case seule.
+ */
+export type Choice<Given> = Given extends readonly unknown[] | AddressData
+  ? never
+  : Given;
+
+/** Les cases d'un choix multiple. */
+export type Box<Given> = Given extends readonly (infer PossibleAnswer)[]
+  ? PossibleAnswer
+  : never;
+
+/** La réponse qu'une question a reçue, ou pas encore. */
+export class GivenAnswer<Given extends Answer = Answer> {
+  /** L'id de la question : « Q2.1 ». */
+  readonly id: string;
+
+  /** La réponse telle quelle : un nombre, une date, un texte, une adresse. */
+  readonly value: Given | Unanswered;
+
+  constructor(id: string, value: Given | Unanswered) {
+    this.id = id;
+    this.value = value;
+  }
+
+  /**
+   * La question a reçu sa réponse. Ce n'est pas `isAnsweredBy`, qui dit si une
+   * réponse suffit à quitter sa page.
+   */
+  hasAnswer(): this is { readonly value: Given } {
+    return this.value !== undefined;
+  }
+
+  /** La réponse est cette réponse possible. Sans réponse : non. */
+  is(possibleAnswer: Choice<Given>): boolean {
+    return this.value === possibleAnswer;
+  }
+
+  /** La réponse n'est pas cette réponse possible. Sans réponse : oui. */
+  isNot(possibleAnswer: Choice<Given>): boolean {
+    return !this.is(possibleAnswer);
+  }
+
+  /** La réponse est l'une de ces réponses possibles. Sans réponse : non. */
+  isOneOf(...possibleAnswers: readonly Choice<Given>[]): boolean {
+    return possibleAnswers.some((possibleAnswer) => this.is(possibleAnswer));
+  }
+
+  /** Cette case est cochée. Sans réponse : non. */
+  checked(box: Box<Given>): boolean {
+    return this.checkedBoxes().includes(box);
+  }
+
+  /** Au moins une case est cochée. */
+  hasAnyChecked(): boolean {
+    return this.checkedBoxes().length > 0;
+  }
+
+  /** Les cases cochées. Sans réponse : aucune. */
+  checkedBoxes(): readonly Box<Given>[] {
+    return Array.isArray(this.value) ? (this.value as Box<Given>[]) : [];
+  }
+}
+
+/** Les réponses données, à lire question par question. */
+export class GivenAnswers<Questions extends AnyQuestions = AnyQuestions> {
+  constructor(answers: Answers<Questions>) {
+    RAW.set(this, answers);
+  }
+
+  /** La réponse que cette question a reçue, ou pas encore. */
+  question<Given extends Answer>(question: Answered<Given>): GivenAnswer<Given>;
+  question<Id extends keyof Questions & string>(
+    id: Id,
+  ): GivenAnswer<Questions[Id]>;
+  question(question: string | Answered): GivenAnswer {
+    const id = idOf(question);
+    const answers: Answers = answersOf(this);
+    return new GivenAnswer(id, answers[id]);
+  }
+}
+
+/**
+ * Les réponses telles que le moteur de questionnaire les garde. Le socle seul
+ * les lit : le point d'entrée ne l'expose pas au modèle.
+ */
+export function answersOf<Questions extends AnyQuestions>(
+  given: GivenAnswers<Questions>,
+): Answers<Questions> {
+  return RAW.get(given) as Answers<Questions>;
+}
+
+// ---- implémentation ----
+
+// Les réponses de chaque lecture. Hors de la classe : un champ, même privé,
+// se lirait encore par `given["answers"]`.
+const RAW = new WeakMap<object, Answers>();

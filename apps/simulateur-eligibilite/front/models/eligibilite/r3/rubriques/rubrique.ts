@@ -11,9 +11,9 @@
 // validées : une réponse restée d'une question qui ne se pose plus, après un
 // retour en arrière, ne s'écrit pas. Son jour est celui de la complétion.
 
-import type { Value } from "../../../../../core/socle";
+import type { Reading } from "../../../../../core/socle";
 
 /** La valeur de chaque cellule d'une rubrique. */
 export type Rubrique<Cellules> = {
-  readonly [Cellule in keyof Cellules]-?: Value<Cellules[Cellule]>;
+  readonly [Cellule in keyof Cellules]-?: Reading<Cellules[Cellule]>;
 };

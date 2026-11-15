@@ -8,7 +8,7 @@
 
 import { fireEvent, screen } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
-import { constant } from "../../../core/socle";
+import { Reading } from "../../../core/socle";
 import type { Intent, Model } from "../../../front/socle/model";
 import type { AnalyticsEvent } from "../../../shared/analytics/analytics-event";
 import { journalDeTest } from "../analytics/journal-de-test";
@@ -27,7 +27,7 @@ const LIBELLE = "Donnez votre avis";
 // Le modèle de test, venu pour cette intention, qui invite à donner son avis.
 const venuPour = (intent: Intent, modele = modeleDeTest): Model => ({
   ...modele,
-  intent: constant(intent),
+  intent: Reading.constant(intent),
   feedback: { url: "https://exemple.test/avis", label: LIBELLE },
 });
 

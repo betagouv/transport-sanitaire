@@ -8,7 +8,7 @@ export const Q2_3_3 = question
     "Q2.3.3",
     "Pour le même traitement, prévoyez-vous de prescrire au moins 4 transports de plus de 50 km chacun sur une période de 2 mois ?",
   )
-  .options({
+  .possibleAnswers({
     "1_OUI": "Oui.",
     "2_NON": "Non.",
   })

@@ -99,7 +99,7 @@ describe("la durée de la permission (Q2.8.duree_48h)", () => {
     );
     expect(
       question?.kind === "single choice" &&
-        question.options.map(({ label }) => label),
+        question.possibleAnswers.map(({ label }) => label),
     ).toEqual(["Oui.", "Non."]);
   });
 
@@ -181,7 +181,7 @@ describe("la période et sa fréquence (Q2.8.5 = Oui)", () => {
     expect(question?.kind).toBe("single choice");
     expect(
       question?.kind === "single choice" &&
-        question.options.find(({ value }) => value === "2_NON")?.blocks,
+        question.possibleAnswers.find(({ value }) => value === "2_NON")?.blocks,
     ).toBe(
       "La période doit se terminer avant le vingtième anniversaire du patient. Raccourcissez-la, puis faites une autre simulation pour la période suivante.",
     );

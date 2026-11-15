@@ -1,5 +1,5 @@
 // Une page ne se valide qu'entière et cohérente, même par un appel direct au
-// moteur : `validate` lève `PageRefused`, avec les questions en faute et ce qui
+// moteur : `validate` lève `PageRefusal`, avec les questions en faute et ce qui
 // ne va pas dans chacune. Aucun résultat ne sort d'une page refusée
 // (NAV-SOUS-QUESTIONS-20261113, SQ-30). Les pages sont écrites ici.
 
@@ -10,7 +10,7 @@ import type {
   Page,
   QuestionnairePart,
 } from "../../../core/socle/questionnaire-engine";
-import { PageRefused, Simulation } from "../../../core/socle/simulation";
+import { PageRefusal, Simulation } from "../../../core/socle/simulation";
 
 type Questions = { debut: string; fin: string; motif: string };
 
@@ -54,7 +54,7 @@ describe("une page refusée", () => {
   it("ne passe pas à la page suivante", () => {
     const surLeCreneau = Simulation.start(modele([CRENEAU, MOTIF]));
 
-    expect(() => surLeCreneau.validate(FIN_AVANT)).toThrow(PageRefused);
+    expect(() => surLeCreneau.validate(FIN_AVANT)).toThrow(PageRefusal);
   });
 
   it("dit la réponse qui manque", () => {
@@ -94,11 +94,11 @@ function modele(pages: readonly unknown[]): CoreModel {
   };
 }
 
-function refusDe(valider: () => unknown): PageRefused {
+function refusDe(valider: () => unknown): PageRefusal {
   try {
     valider();
   } catch (refus) {
-    if (refus instanceof PageRefused) return refus;
+    if (refus instanceof PageRefusal) return refus;
     throw refus;
   }
   throw new Error("La page s'est validée.");

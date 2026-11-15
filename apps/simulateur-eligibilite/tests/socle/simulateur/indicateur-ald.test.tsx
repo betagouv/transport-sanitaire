@@ -1,6 +1,6 @@
 import { screen } from "@testing-library/react";
 import { beforeEach, describe, expect, it } from "vitest";
-import { constant } from "../../../core/socle/questionnaire-engine";
+import { Reading } from "../../../core/socle/questionnaire-engine";
 import type { AldIndicator, Model } from "../../../front/socle/model";
 import { audienceDeTest } from "../analytics/audience-de-test";
 import { given, modeleDeTest } from "../modele-de-test";
@@ -24,7 +24,7 @@ const INDICATEUR: AldIndicator = {
   parts: ["P1"],
   limit: 2,
   counted: given.question("boisson").answer().is("the"),
-  caisse: constant(false),
+  caisse: Reading.constant(false),
 };
 
 const avec = (changement: Partial<AldIndicator> = {}): Model => ({
@@ -75,7 +75,7 @@ describe("l'indicateur de parcours ALD", () => {
   });
 
   it("met à part un parcours qui finit à la caisse", async () => {
-    const modele = avec({ caisse: constant(true) });
+    const modele = avec({ caisse: Reading.constant(true) });
     const user = await ouvrir(modele);
 
     await allerAuResultat(user);

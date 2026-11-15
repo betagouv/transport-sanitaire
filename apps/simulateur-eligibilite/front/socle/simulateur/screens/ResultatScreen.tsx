@@ -7,7 +7,7 @@
 // avec feuille et complétion est vert.
 
 import type { ReactNode } from "react";
-import type { Read } from "../../../../core/socle/questionnaire-engine";
+import type { Context } from "../../../../core/socle/questionnaire-engine";
 import {
   type Button,
   type ButtonTracking,
@@ -43,21 +43,21 @@ export function ResultatScreen({
 }: ScreenProps) {
   const parts = model.core.questionnaire;
   const trace = { title: "résultat", ...simulation.trace() };
-  const read = simulation.read(new Date());
+  const context = simulation.resultContext(new Date());
   useResultScreen("R2", simulation);
   return (
     <>
       <Content
         result={resultOf(model, simulation)}
         step={{ title: model.result.title, part: parts.length }}
-        startLabel={startLabelOf(model, read)}
+        startLabel={startLabelOf(model, context)}
         actions={{
           onReopen: () => onChange(simulation.reopen()),
           onLock: () => onChange(simulation.lock()),
           onRestart,
         }}
-        feedback={feedbackOf(model, read)}
-        codes={model.resultCodes ? read(model.resultCodes) : null}
+        feedback={feedbackOf(model, context)}
+        codes={model.resultCodes ? model.resultCodes.in(context) : null}
       />
       {DebugTrace && (
         <div className="fr-no-print">
@@ -73,10 +73,11 @@ export function ResultatScreen({
 // L'action qui verrouille, si elle a de quoi ouvrir la partie suivante : une
 // page à poser, ou un cerfa à remplir. Un modèle peut donner un libellé sans
 // avoir encore de partie à ouvrir ; le verrou ne mène pas à un écran vide.
-function startLabelOf(model: Model, read: Read): string | null {
+function startLabelOf(model: Model, context: Context): string | null {
   const { form, startLabel } = model.cerfa;
-  const opens = model.core.complement.pages.length > 0 || read(form) !== null;
-  return opens ? read(startLabel) : null;
+  const opens =
+    model.core.complement.pages.length > 0 || form.in(context) !== null;
+  return opens ? startLabel.in(context) : null;
 }
 
 /** Ce que font les boutons de la page : rouvrir le questionnaire, verrouiller, recommencer. */

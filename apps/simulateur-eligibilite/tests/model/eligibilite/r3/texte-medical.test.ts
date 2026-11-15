@@ -265,12 +265,11 @@ function texte(
   cibles: ValeursDesCibles = {},
   faits: Partial<Faits> = {},
 ): TexteMedical {
-  const read = donnees(reponses, cibles, undefined, faits);
+  const context = donnees(reponses, cibles, undefined, faits);
   return {
-    elements_medicaux: read(TEXTE_MEDICAL.elements_medicaux),
-    elements_medicaux_precision: read(
-      TEXTE_MEDICAL.elements_medicaux_precision,
-    ),
+    elements_medicaux: TEXTE_MEDICAL.elements_medicaux.in(context),
+    elements_medicaux_precision:
+      TEXTE_MEDICAL.elements_medicaux_precision.in(context),
   };
 }
 

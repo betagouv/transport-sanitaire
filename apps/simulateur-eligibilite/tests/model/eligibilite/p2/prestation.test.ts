@@ -19,9 +19,11 @@ const page = pages.find(({ id }) => id === "P2/prestation");
 const posees = (reponses: Reponses) =>
   page ? new Questionnaire(pages).readWith(reponses).questionsOn(page) : [];
 const ids = (reponses: Reponses) => posees(reponses).map(({ id }) => id);
-const optionsDeQ21 = (reponses: Reponses) => {
+const reponsesPossiblesDeQ21 = (reponses: Reponses) => {
   const q21 = posees(reponses).find(({ id }) => id === "Q2.1");
-  return q21 && "options" in q21 ? q21.options.map(({ value }) => value) : [];
+  return q21 && "possibleAnswers" in q21
+    ? q21.possibleAnswers.map(({ value }) => value)
+    : [];
 };
 
 const SEUL: Reponses = {
@@ -93,7 +95,7 @@ describe("Q2.1, le motif du déplacement", () => {
       assis(["5_DIALYSE"], { "Q1.3.a": "2_AUTRE_DIALYSE" }),
     ],
   ] as const)("propose les neuf motifs généraux, %s", (_, reponses) => {
-    expect(optionsDeQ21(reponses)).toEqual([
+    expect(reponsesPossiblesDeQ21(reponses)).toEqual([
       "1_CONSULTATION",
       "2_DENTISTE_OU_SAGE_FEMME",
       "3_IMAGERIE",
@@ -150,8 +152,8 @@ describe("les sous-questions de Q2.1", () => {
       ({ id }) => id === "Q2.1.f",
     );
     const non =
-      f && "options" in f
-        ? f.options.find(({ value }) => value === "2_NON")
+      f && "possibleAnswers" in f
+        ? f.possibleAnswers.find(({ value }) => value === "2_NON")
         : undefined;
     expect(non?.blocks).toContain("une simulation par déplacement");
   });

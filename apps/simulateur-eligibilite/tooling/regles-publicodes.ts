@@ -18,8 +18,8 @@ import { existsSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { parse } from "yaml";
-import { decisionGraphOf } from "../core/socle/decision-engine/compute-the-cibles.ts";
-import type { DecisionGraphData } from "../core/socle/decision-engine/decision-graph/graph.ts";
+import type { DecisionGraphData } from "../core/socle/decision-engine/decision-graph/decision-graph.vo.ts";
+import { PublicodesGraphCompiler } from "../core/socle/decision-engine/publicodes-graph-compiler.adapter.ts";
 
 const racine = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 
@@ -28,7 +28,10 @@ for (const yaml of reglesLivrees()) {
   const regles = parse(readFileSync(join(racine, yaml), "utf-8"));
   writeFileSync(join(racine, json), `${JSON.stringify(regles, null, 2)}\n`);
   const graphe = yaml.replace(/\.publicodes$/, ".graphe.json");
-  writeFileSync(join(racine, graphe), texteDuGraphe(decisionGraphOf(regles)));
+  writeFileSync(
+    join(racine, graphe),
+    texteDuGraphe(new PublicodesGraphCompiler(regles).compile()),
+  );
   console.log(`${yaml} → ${json}, ${graphe}`);
 }
 

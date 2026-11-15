@@ -208,7 +208,7 @@ function actions({
 }: Context): Actions {
   return {
     // Une saisie vide les questions de la page qui en dépendent, et celles
-    // qu'elle ne pose plus (`Reading.answerOn`).
+    // qu'elle ne pose plus (`AnsweredQuestionnaire.answerOn`).
     answer: (id, answer) => {
       setDraft(simulation.answerOnPage(view.draft, id, answer));
       tracking.answered(id);

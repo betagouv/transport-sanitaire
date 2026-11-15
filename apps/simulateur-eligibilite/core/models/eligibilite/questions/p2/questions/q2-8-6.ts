@@ -51,14 +51,14 @@ export const Q2_8_6_B = question
     "Q2.8.6.b",
     "Le patient restera-t-il âgé de moins de 20 ans durant toute la période ?",
   )
-  .options({
+  .possibleAnswers({
     "1_OUI": "Oui.",
     "2_NON": "Non.",
   })
   .appliesWhen(plusieursPermissions)
   .dependsOn(Q2_8_5)
-  .option("2_NON", (option) =>
-    option.blocks(
+  .possibleAnswer("2_NON", (possibleAnswer) =>
+    possibleAnswer.blocks(
       "La période doit se terminer avant le vingtième anniversaire du patient. Raccourcissez-la, puis faites une autre simulation pour la période suivante.",
     ),
   );

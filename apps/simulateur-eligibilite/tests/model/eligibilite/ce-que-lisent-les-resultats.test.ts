@@ -6,18 +6,14 @@
 // document et les entrées de ses cerfas.
 
 import { describe, expect, it } from "vitest";
-import {
-  flattened,
-  type Reads,
-  readsOf,
-} from "../../../core/socle/questionnaire-engine";
+import { Reads } from "../../../core/socle/questionnaire-engine";
 import { model } from "../../../front/models/eligibilite";
 
 describe("les questions que les résultats lisent telles quelles", () => {
   // Le circuit (Q2.2.1.indication), les critères de Q1.2, la répétition de
   // Q2.8.5, et ce dont la trace tire ses précisions.
   it("R2 lit le circuit, les critères, la répétition et les précisions", () => {
-    expect(trie(flattened(model.result.reading.reads))).toEqual([
+    expect(trie(model.result.reading.reads.flattened())).toEqual([
       "Q1.2",
       "Q1.3",
       "Q1.3.a",
@@ -91,7 +87,7 @@ describe("les cibles et les faits que les résultats lisent", () => {
   // Le circuit et l'issue, puis ce que lisent les deux fiches et le
   // prescripteur.
   it("R2 lit ce que ses textes déclarent", () => {
-    const { cibles, faits } = flattened(model.result.reading.reads);
+    const { cibles, faits } = model.result.reading.reads.flattened();
     expect([...cibles].sort()).toEqual([
       "cible_ald_juridiquement_qualifiante_3_ou_4_degres",
       "cible_ambulance_equipement_bariatrique",
@@ -184,9 +180,10 @@ describe("les cibles et les faits que les résultats lisent", () => {
 // support.
 function luParR3(): Reads {
   const { reading, form, title, startLabel } = model.cerfa;
-  return [form, title, startLabel]
-    .map((value) => flattened(value.reads))
-    .reduce(readsOf, reading.reads);
+  const flattened = [form, title, startLabel].map((value) =>
+    value.reads.flattened(),
+  );
+  return Reads.union(reading.reads, ...flattened);
 }
 
 function trie(lu: Reads): string[] {

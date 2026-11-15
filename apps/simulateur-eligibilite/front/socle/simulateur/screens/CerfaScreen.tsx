@@ -8,7 +8,7 @@
 // du document.
 
 import type { ComponentType, ReactNode } from "react";
-import type { Read } from "../../../../core/socle/questionnaire-engine";
+import type { Context } from "../../../../core/socle/questionnaire-engine";
 import {
   type Button,
   type ButtonTracking,
@@ -43,23 +43,23 @@ export function CerfaScreen({
 }: ScreenProps & { completedAt: Date }) {
   const { title, Resultat, reading: lecture } = model.cerfa;
   const trace = { title: "cerfa", ...simulation.trace() };
-  const read = simulation.read(completedAt);
-  const reading = read(lecture);
+  const context = simulation.resultContext(completedAt);
+  const reading = lecture.in(context);
   useResultScreen("R3", simulation);
   return (
     <Frame
-      title={read(title)}
+      title={title.in(context)}
       part={model.core.questionnaire.length + 1}
       trace={trace}
       DebugTrace={DebugTrace}
     >
       <Cerfa
         model={model}
-        read={read}
+        context={context}
         text={<Resultat reading={reading} />}
         input={{ reading, completedAt }}
         actions={{ onReopen: () => onChange(simulation.reopen()), onRestart }}
-        feedback={feedbackOf(model, read)}
+        feedback={feedbackOf(model, context)}
       />
     </Frame>
   );
@@ -105,8 +105,8 @@ function CerfaActions({
 // échec, et chaque clic.
 type CerfaProps = {
   model: Model;
-  /** Ce que lisent les entrées du cerfa. */
-  read: Read;
+  /** Le contexte où se lisent les entrées du cerfa. */
+  context: Context;
   /** Le texte du résultat. */
   text: ReactNode;
   input: CerfaInput;
@@ -114,10 +114,10 @@ type CerfaProps = {
   feedback: FeedbackOffer | null;
 };
 
-function Cerfa({ model, read, text, input, actions, feedback }: CerfaProps) {
+function Cerfa({ model, context, text, input, actions, feedback }: CerfaProps) {
   const { form, standIn, printLabel, downloadLabel } = model.cerfa;
   const tracking = useDocumentTracking(offered(feedback));
-  const bound = read(form);
+  const bound = form.in(context);
   if (!bound)
     return (
       <>
@@ -125,7 +125,7 @@ function Cerfa({ model, read, text, input, actions, feedback }: CerfaProps) {
         <CerfaActions {...actions} feedback={null} />
       </>
     );
-  const dto = dtoFrom(bound.mapping, read);
+  const dto = dtoFrom(bound.mapping, context);
   const file = fileNameOf(bound.cerfa.fileName, input.completedAt);
   return (
     <CerfaDocument

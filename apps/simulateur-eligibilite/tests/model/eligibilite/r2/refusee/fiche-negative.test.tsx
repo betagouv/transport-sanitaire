@@ -24,7 +24,8 @@ const afficher = async (answers: Reponses) => {
   return resultat;
 };
 
-// Une ALD, le patient se déplaçant seul : Q1.3 option 2 établit l'ALD.
+// Une ALD, le patient se déplaçant seul : Q1.3 réponse possible 2 établit
+// l'ALD.
 const AVEC_ALD = {
   ...seed.answers,
   "Q1.1": "1_SEUL",

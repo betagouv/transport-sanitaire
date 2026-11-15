@@ -1,8 +1,8 @@
-// Le service : un rappel, une aide dépliable, des options incompatibles, une
-// alerte qui mène à une réponse d'avant, et la question qui s'affiche sous
-// l'option qui l'ouvre.
+// Le service : un rappel, une aide dépliable, des réponses possibles
+// incompatibles, une alerte qui mène à une réponse d'avant, et la question qui
+// s'affiche sous la réponse possible qui l'ouvre.
 
-import { constant } from "../../../../../socle/index.ts";
+import { Reading } from "../../../../../socle/index.ts";
 import { cibles } from "../../../cibles/evaluation.ts";
 import { given, question } from "../../question.ts";
 import { ACCOMPAGNEMENTS } from "./accompagnements.ts";
@@ -13,10 +13,10 @@ const boisson = given.question(BOISSON).answer();
 // Une boisson est choisie : la commande se poursuit.
 const commandeEnCours = boisson.isPresent().and(boisson.is("rien").not());
 
-// La question et ses options, avant la règle qui lit sa réponse.
+// La question et ses réponses possibles, avant la règle qui lit sa réponse.
 const service = question
   .multipleChoice("service", "Comment la servir ?")
-  .options({
+  .possibleAnswers({
     chaude: "Très chaude",
     glacee: "Glacée",
     "grande-tasse": "Dans une grande tasse",
@@ -38,8 +38,8 @@ export const SERVICE = service
   )
   .appliesWhen(commandeEnCours)
   .dependsOn(BOISSON, ACCOMPAGNEMENTS)
-  .option("preparation", (option) =>
-    option
+  .possibleAnswer("preparation", (possibleAnswer) =>
+    possibleAnswer
       .description("À préciser au moment du service.")
       .helpFrom(({ answers }) => ({
         label: "Voir les préparations possibles",
@@ -48,8 +48,8 @@ export const SERVICE = service
           : ["Allongé", "Serré", "Avec un verre d'eau"],
       })),
   )
-  .option("rien", (option) =>
-    option
+  .possibleAnswer("rien", (possibleAnswer) =>
+    possibleAnswer
       .labelFrom(({ answers }) =>
         answers.question(ACCOMPAGNEMENTS).checked("aucun")
           ? "Rien de particulier"
@@ -69,13 +69,15 @@ export const SERVICE = service
     cafeGlace,
     "Le café ne se sert pas glacé. Choisissez une autre façon de le servir, ou revoyez la boisson.",
     {
-      revisit: constant([{ label: "Revoir la boisson", question: BOISSON.id }]),
+      revisit: Reading.constant([
+        { label: "Revoir la boisson", question: BOISSON.id },
+      ]),
     },
   );
 
 export const QUELLE_PREPARATION = question
   .singleChoice("quelle-preparation", "Où la préparer ?")
-  .options({
+  .possibleAnswers({
     comptoir: "Préparée au comptoir",
     table: "Préparée à table, devant vous",
   })

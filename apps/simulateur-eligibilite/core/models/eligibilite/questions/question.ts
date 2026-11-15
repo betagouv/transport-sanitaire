@@ -1,13 +1,13 @@
 // Les constructeurs des questions du modèle : `question.singleChoice("Q1.1",
-// "Concernant son déplacement, le patient :")`, ses options, puis un réglage
-// par ligne. Les gardes lisent les faits des questions validées avant elles,
-// et les cibles que les règles en tirent : figées au verrou, sinon calculées
-// sur ces faits.
+// "Concernant son déplacement, le patient :")`, ses réponses possibles, puis un
+// réglage par ligne. Les gardes lisent les faits des questions validées avant
+// elles, et les cibles que les règles en tirent : figées au verrou, sinon
+// calculées sur ces faits.
 //
-// Une option se répond par un slug : son numéro dans le catalogue de l'éditeur,
-// puis ce qu'elle veut dire. Le libellé est celui du catalogue, mot pour mot.
-// Les options se déclarent dans l'ordre du catalogue : c'est l'ordre de l'écran,
-// sauf quand le catalogue en donne un autre (Q1.3).
+// Une réponse possible se répond par un slug : son numéro dans le catalogue de
+// l'éditeur, puis ce qu'elle veut dire. Le libellé est celui du catalogue, mot
+// pour mot. Les réponses possibles se déclarent dans l'ordre du catalogue :
+// c'est l'ordre de l'écran, sauf quand le catalogue en donne un autre (Q1.3).
 //
 // Une question lit celles d'avant par leur objet : `given.question(Q1_1)`. Le
 // type `Questions` se tire des parties (`reponses.ts`) : le lire ici tournerait
@@ -22,7 +22,7 @@ import {
   questionsOf,
   type ReadByObject,
 } from "../../../socle/index.ts";
-import { lazyCibles } from "../cibles/evaluation.ts";
+import { decisionEngine } from "../cibles/evaluation.ts";
 import type { Cibles } from "../cibles/noms.ts";
 import { CATALOGUE_DES_FAITS } from "../faits/index.ts";
 import type { Faits } from "../faits/noms.ts";
@@ -42,5 +42,5 @@ export const given = givenOf<ReadByObject, Faits, Cibles>();
 /** Les constructeurs des questions de P0 à P3. */
 export const question = questionsOf<ReadByObject, Faits, Cibles>({
   faits: CATALOGUE_DES_FAITS,
-  cibles: lazyCibles,
+  cibles: (faits) => decisionEngine.lazyCibles(faits),
 });

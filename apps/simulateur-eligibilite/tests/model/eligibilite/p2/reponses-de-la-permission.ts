@@ -1,16 +1,15 @@
 // Les réponses et les lectures que partagent les tests de la permission (Q2.7
 // et Q2.8).
 
-import { cibles } from "../../../../core/models/eligibilite/cibles/evaluation";
+import { decisionEngine } from "../../../../core/models/eligibilite/cibles/evaluation";
 import type { Cibles } from "../../../../core/models/eligibilite/cibles/noms";
 import type { Questions } from "../../../../core/models/eligibilite/questions/reponses";
 import {
   Questionnaire,
-  readIn,
-  type Value,
+  type Reading,
 } from "../../../../core/socle/questionnaire-engine";
 
-import { resultScope } from "../../../../core/socle/simulation";
+import { ResultContext } from "../../../../core/socle/simulation";
 import { type Lecture, R2 } from "../../../../front/models/eligibilite/r2/r2";
 import { faits, pages, posee, type Reponses } from "./reponses-du-transfert";
 
@@ -72,14 +71,15 @@ export const validee = (id: keyof Reponses, reponses: Reponses) =>
   undefined;
 
 /** Les cibles des règles, sur les faits que les réponses établissent. */
-export const ciblesDe = (reponses: Reponses) => cibles(faits(reponses));
+export const ciblesDe = (reponses: Reponses) =>
+  decisionEngine.cibles(faits(reponses));
 
 /**
  * Ce que vaut cette valeur d'un résultat, sur ces réponses. `forcees` remplace
  * des cibles des règles.
  */
 export const luDe = <Of>(
-  value: Value<Of>,
+  value: Reading<Of>,
   reponses: Reponses,
   forcees: Partial<Cibles> = {},
 ): Of => {
@@ -88,7 +88,7 @@ export const luDe = <Of>(
     faits: faits(reponses),
     cibles: { ...ciblesDe(reponses), ...forcees },
   };
-  return readIn(resultScope({ validated, ...lus, on: new Date() }))(value);
+  return value.in(new ResultContext({ validated, ...lus, on: new Date() }));
 };
 
 /** Ce que le socle passe à R2 : ce qu'il lit. */

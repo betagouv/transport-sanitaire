@@ -3,19 +3,19 @@
 // au socle le titre du prescripteur, sa phrase d'introduction, la feuille du
 // patient, et ses motifs et portions pour le journal des parcours.
 
+import type { AcceptedIssueId } from "../../../../../../core/models/eligibilite/cibles/issue.vo";
 import type { FirstResult } from "../../../../../socle";
 import type { TraceDe } from "../../components/ce-que-lit-un-bloc";
 import type { CatalogueResultats } from "../../components/forme-du-catalogue";
 import { identifiantsDes } from "../../components/motif";
 import { pageDeLaFeuille } from "../../components/page-de-la-fiche";
 import { FichePositive } from "./FichePositive";
-import type { IssueAcceptee } from "./issues";
 import { type LU_PAR_LA_FICHE_POSITIVE, texteDeLaFichePositive } from "./texte";
 
 export function pageAcceptee(
   catalogue: CatalogueResultats,
   trace: TraceDe<typeof LU_PAR_LA_FICHE_POSITIVE>,
-  issue: IssueAcceptee,
+  issue: AcceptedIssueId,
 ): FirstResult {
   const texte = texteDeLaFichePositive(catalogue, trace, issue);
   if (!texte) return SANS_MODE;

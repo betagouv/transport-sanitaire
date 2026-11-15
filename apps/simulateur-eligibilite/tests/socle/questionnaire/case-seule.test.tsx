@@ -19,7 +19,7 @@ const given = givenOf<Questions>();
 
 const DISTANCE = question
   .singleChoice("distance", "Quelle distance ?")
-  .options({ courte: "Courte", longue: "Longue" });
+  .possibleAnswers({ courte: "Courte", longue: "Longue" });
 
 const AVION = question.checkbox(
   "avion",

@@ -23,7 +23,7 @@ export const MIGNARDISE_AU_SERVICE = mignardise()
 function mignardise() {
   return question
     .singleChoice("mignardise", "Une mignardise avec ?")
-    .options({
+    .possibleAnswers({
       speculoos: "Un spéculoos",
       chocolat: "Un carré de chocolat",
     })

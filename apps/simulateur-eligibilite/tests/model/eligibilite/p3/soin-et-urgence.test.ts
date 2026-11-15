@@ -11,7 +11,7 @@ import {
   Questionnaire,
 } from "../../../../core/socle/questionnaire-engine";
 
-import { preconisationOf } from "../../../../core/socle/simulation";
+import { EstablishAPreconisation } from "../../../../core/socle/simulation";
 import { MATERNITE_ETABLIE } from "../p2/reponses-de-la-branche";
 
 type Reponses = Answers<Questions>;
@@ -23,7 +23,8 @@ const seed = (id: string) => {
   if (!trouvee) throw new Error(`seed ${id} absente`);
   return trouvee.answers as Reponses;
 };
-const cibles = (reponses: Reponses) => preconisationOf(model, reponses).cibles;
+const cibles = (reponses: Reponses) =>
+  new EstablishAPreconisation(model).execute(reponses).cibles;
 // Les cibles sont celles du verrou : `figees` les donne, `reponses` les complète.
 const posees = (pageId: string, reponses: Reponses, figees = reponses) => {
   const page = pages.find(({ id }) => id === pageId);

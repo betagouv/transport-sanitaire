@@ -1,6 +1,6 @@
 import { screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
-import { constant, givenOf, page, questionsOf } from "../../../core/socle";
+import { givenOf, page, questionsOf, Reading } from "../../../core/socle";
 import { afficher } from "./afficher";
 
 // L'alerte d'une incohérence offre un lien vers chaque réponse d'avant à
@@ -23,14 +23,14 @@ const MESSAGE = "Les espèces ne se paient pas à la livraison.";
 
 const LIVRAISON = question
   .singleChoice("livraison", "Comment livrer ?")
-  .options({ domicile: "À domicile", relais: "En point relais" });
+  .possibleAnswers({ domicile: "À domicile", relais: "En point relais" });
 
 const SUITE = [
   page(
     "mode",
     question
       .singleChoice("mode", "Comment payer ?")
-      .options({ carte: "Par carte", especes: "En espèces" })
+      .possibleAnswers({ carte: "Par carte", especes: "En espèces" })
       .inconsistentWhen(
         given
           .question("livraison")
@@ -39,7 +39,7 @@ const SUITE = [
           .and(given.question("mode").answer().is("especes")),
         MESSAGE,
         {
-          revisit: constant([
+          revisit: Reading.constant([
             { label: "Revoir la livraison", question: "livraison" },
           ]),
         },

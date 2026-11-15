@@ -5,20 +5,19 @@
 // cibles figés au verrou, au jour de la complétion (`given.today()`).
 
 import {
-  NOTHING,
-  type Read,
-  readsOf,
-  Value,
+  type Context,
+  Reading,
+  Reads,
 } from "../../../../core/socle/questionnaire-engine";
 import type { Cerfa, CerfaDto } from "../cerfa";
 
 /** Une valeur par entrée du DTO. */
 export type CerfaMapping<Dto extends CerfaDto> = {
   readonly fields: {
-    readonly [Key in keyof Dto["fields"]]-?: Value<Dto["fields"][Key]>;
+    readonly [Key in keyof Dto["fields"]]-?: Reading<Dto["fields"][Key]>;
   };
   readonly drawings: {
-    readonly [Key in keyof Dto["drawings"]]-?: Value<Dto["drawings"][Key]>;
+    readonly [Key in keyof Dto["drawings"]]-?: Reading<Dto["drawings"][Key]>;
   };
 };
 
@@ -44,19 +43,21 @@ export function bindCerfa<Dto extends CerfaDto>(
  * Ce cerfa, en valeur qui lit ce que lisent ses entrées. Le choix du document
  * la donne : ce que lit un cerfa compte quand la préconisation le choisit.
  */
-export function cerfaValue(bound: BoundCerfa): Value<BoundCerfa> {
+export function cerfaValue(bound: BoundCerfa): Reading<BoundCerfa> {
   const { fields, drawings } = bound.mapping;
-  const reads = [...Object.values(fields), ...Object.values(drawings)]
-    .map((value) => value.reads)
-    .reduce(readsOf, NOTHING);
-  return new Value(reads, () => bound);
+  const values = [...Object.values(fields), ...Object.values(drawings)];
+  const reads = Reads.union(...values.map((value) => value.reads));
+  return new Reading(reads, () => bound);
 }
 
-/** Le DTO que `mapping` donne, chaque valeur lue par `read`. */
-export function dtoFrom(mapping: CerfaMapping<CerfaDto>, read: Read): CerfaDto {
-  const apply = (values: Readonly<Record<string, Value<unknown>>>) =>
+/** Le DTO que `mapping` donne, chaque entrée lue dans `context`. */
+export function dtoFrom(
+  mapping: CerfaMapping<CerfaDto>,
+  context: Context,
+): CerfaDto {
+  const apply = (values: Readonly<Record<string, Reading<unknown>>>) =>
     Object.fromEntries(
-      Object.entries(values).map(([key, value]) => [key, read(value)]),
+      Object.entries(values).map(([key, value]) => [key, value.in(context)]),
     );
   return {
     fields: apply(mapping.fields) as CerfaDto["fields"],

@@ -13,7 +13,9 @@ import {
 
 describe("la maternité et un HTNM cochés ensemble", () => {
   it("se cochent ensemble : plus d'incompatibilité", () => {
-    expect(situations(EXAMEN_ET_HTNM)?.incompatibleOptions ?? []).toEqual([]);
+    expect(
+      situations(EXAMEN_ET_HTNM)?.incompatiblePossibleAnswers ?? [],
+    ).toEqual([]);
   });
 
   it.each<[string, Reponses]>([
@@ -50,8 +52,9 @@ describe("la maternité et un HTNM cochés ensemble", () => {
     const question = trajet(EXAMEN_ET_HTNM);
     expect(
       question?.kind === "single choice"
-        ? question.options.find(({ value }) => value === "3_DEUX_TRAJETS")
-            ?.blocks
+        ? question.possibleAnswers.find(
+            ({ value }) => value === "3_DEUX_TRAJETS",
+          )?.blocks
         : undefined,
     ).toBe("Ces deux trajets nécessitent deux simulations distinctes.");
   });

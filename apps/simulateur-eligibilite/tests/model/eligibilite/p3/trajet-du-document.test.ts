@@ -9,11 +9,11 @@ import type { Questions } from "../../../../core/models/eligibilite/questions/re
 import { SEEDS } from "../../../../core/models/eligibilite/seeds-catalogue";
 import {
   type Answers,
-  answerOnPage,
+  PageCommitService,
   Questionnaire,
 } from "../../../../core/socle/questionnaire-engine";
 
-import { preconisationOf } from "../../../../core/socle/simulation";
+import { EstablishAPreconisation } from "../../../../core/socle/simulation";
 import { errorsOf } from "../../../../front/socle/questionnaire";
 import { MINEUR, PLUSIEURS_PERMISSIONS } from "../p2/reponses-de-la-permission";
 import { ciblesValant } from "../r2/traces-du-prescripteur";
@@ -161,7 +161,14 @@ describe("les réponses de Q3.1", () => {
       "Q3.1.1": 3,
     };
 
-    expect(answerOnPage(PAGE, allersRetours, "Q3.1.2", "1_ALLER")).toEqual({
+    expect(
+      new PageCommitService([PAGE]).answerOn(
+        PAGE,
+        allersRetours,
+        "Q3.1.2",
+        "1_ALLER",
+      ),
+    ).toEqual({
       "Q3.1.2": "1_ALLER",
     });
   });
@@ -177,7 +184,7 @@ describe("les sens que les rôles de P2 permettent (Q3.1.2)", () => {
   const sensProposes = (reponses: Reponses) => {
     const sens = question("Q3.1.2", "S3138g", reponses);
     return sens.kind === "single choice"
-      ? sens.options.map(({ value }) => value)
+      ? sens.possibleAnswers.map(({ value }) => value)
       : [];
   };
   const PENITENTIAIRE: Reponses = {
@@ -274,12 +281,14 @@ describe("Q3.1 ne requalifie pas P2", () => {
   } as Reponses;
 
   it("deux documents de deux transports gardent la série qualifiante de P2", () => {
-    const { faits, cibles } = preconisationOf(model, {
+    const { faits, cibles } = new EstablishAPreconisation(model).execute({
       ...SERIE,
       ...PRESCRIPTION,
     });
 
     expect(faits.fait_serie_qualifiante).toMatchObject({ value: true });
-    expect(cibles).toEqual(preconisationOf(model, SERIE).cibles);
+    expect(cibles).toEqual(
+      new EstablishAPreconisation(model).execute(SERIE).cibles,
+    );
   });
 });

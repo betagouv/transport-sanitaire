@@ -136,7 +136,7 @@ describe("le modèle de l'éditeur, déroulé dans le formulaire", () => {
       await screen.findByRole("button", { name: "Voir le résultat" }),
     ).toBeEnabled();
   });
-  it("pose la convocation après le trajet, et révèle l'agrément et l'appareillage sous l'option 6", async () => {
+  it("pose la convocation après le trajet, et révèle l'agrément et l'appareillage sous la réponse possible 6", async () => {
     const terminer = vi.fn();
     const user = await jusquAQ21(terminer);
     await choisir(user, /^Autre motif de déplacement/);

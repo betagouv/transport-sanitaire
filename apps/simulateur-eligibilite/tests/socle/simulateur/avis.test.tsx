@@ -7,7 +7,7 @@
 
 import { screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
-import { constant } from "../../../core/socle";
+import { Reading } from "../../../core/socle";
 import type { Intent, Model } from "../../../front/socle/model";
 import { modeleDeTest } from "../modele-de-test";
 import { auGabarit, gabaritRetenu } from "./gabarit-retenu";
@@ -28,7 +28,7 @@ const LIBELLE = "Donnez votre avis";
 
 const venuPour = (intent: Intent | null, modele = modeleDeTest): Model => ({
   ...modele,
-  intent: constant(intent),
+  intent: Reading.constant(intent),
   feedback: { url: ADRESSE, label: LIBELLE },
 });
 

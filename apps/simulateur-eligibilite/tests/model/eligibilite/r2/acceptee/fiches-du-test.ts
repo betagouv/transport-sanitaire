@@ -1,9 +1,9 @@
 // Les aides des tests du texte de la fiche patient positive (#135) : des traces
 // écrites à la main, et la lecture de la fiche qu'elles donnent.
 
+import type { AcceptedIssueId } from "../../../../../core/models/eligibilite/cibles/issue.vo";
 import type { Faits } from "../../../../../core/models/eligibilite/faits/noms";
 import { catalogueResultats } from "../../../../../front/models/eligibilite/r2/components/textes-de-l-editeur";
-import type { IssueAcceptee } from "../../../../../front/models/eligibilite/r2/layouts/acceptee/issues";
 import {
   type TexteDeLaFichePositive,
   texteDeLaFichePositive,
@@ -35,7 +35,7 @@ const tracer = (cibles: ValeursDesCibles, ajouts: Ajouts = {}): Trace => ({
 export const fiche = (
   cibles: ValeursDesCibles,
   ajouts: Ajouts = {},
-  issue: IssueAcceptee = "ISSUE_PMT",
+  issue: AcceptedIssueId = "ISSUE_PMT",
 ): TexteDeLaFichePositive | undefined =>
   texteDeLaFichePositive(catalogue, tracer(cibles, ajouts), issue);
 

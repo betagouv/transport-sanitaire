@@ -27,16 +27,18 @@ export const Q2_14_TRAJET = question
     "Q2.14.trajet",
     "Quel déplacement évaluez-vous dans cette simulation ?",
   )
-  // Les options de `CONTRAT_REPONSES_CONDITIONNELLES.json`.
-  .options({
+  // Les réponses possibles de `CONTRAT_REPONSES_CONDITIONNELLES.json`.
+  .possibleAnswers({
     "1_ENGAGEMENT_MATERNITE": "Le déplacement lié à Engagement maternité",
     "2_HTNM_HORS_MATERNITE":
       "Le déplacement lié à un HTNM hors Engagement maternité",
     "3_DEUX_TRAJETS": "Il s’agit de deux déplacements différents",
   })
   .mattersWhile(uneMaternite.and(situations.checked("5_HTNM")))
-  .option("3_DEUX_TRAJETS", (option) =>
-    option.blocks("Ces deux trajets nécessitent deux simulations distinctes."),
+  .possibleAnswer("3_DEUX_TRAJETS", (possibleAnswer) =>
+    possibleAnswer.blocks(
+      "Ces deux trajets nécessitent deux simulations distinctes.",
+    ),
   );
 
 // Le groupe de l'éloignement se pose : Q2.2.1 signale l'examen ou
@@ -53,7 +55,7 @@ export const Q2_14_ELOIGNEMENT = question
   )
   // Le premier groupe de Q2.14, `CONTRAT_Q214_GROUPES.json`, groupe
   // `eloignement`.
-  .options({
+  .possibleAnswers({
     "1_PLUS_DE_QUARANTE_CINQ_MINUTES":
       "Sa résidence se situe à plus de 45 minutes de trajet motorisé, dans les conditions habituelles, de la maternité la plus proche adaptée à son état de santé.",
     "2_COMMUNE_DESIGNEE_PAR_L_ARS":
@@ -73,9 +75,9 @@ export const Q2_14_MOTIF = question
   .multipleChoice("Q2.14.motif", "Quel motif concerne le déplacement évalué ?")
   // Le second groupe de Q2.14, `CONTRAT_Q214_GROUPES.json`, groupe `finalite`,
   // tel qu'il se pose pour l'hébergement seul
-  // (`whenAccommodationDiscoveredAndExamNotEstablished`). Son option
+  // (`whenAccommodationDiscoveredAndExamNotEstablished`). Sa réponse possible
   // `examen_8_9` ne s'y propose pas : l'examen se coche en Q2.2.1.
-  .options({
+  .possibleAnswers({
     "2_HEBERGEMENT_ENGAGEMENT":
       "Un séjour dans un hébergement temporaire non médicalisé organisé dans le cadre du dispositif Engagement maternité.",
     "3_AUCUNE": "Aucune de ces conditions.",

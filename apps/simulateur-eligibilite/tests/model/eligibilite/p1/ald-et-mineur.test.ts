@@ -23,7 +23,7 @@ import {
   Questionnaire,
 } from "../../../../core/socle/questionnaire-engine";
 
-import { preconisationOf } from "../../../../core/socle/simulation";
+import { EstablishAPreconisation } from "../../../../core/socle/simulation";
 import { lienAld } from "./lien-ald";
 
 type Reponses = Answers<Questions>;
@@ -39,7 +39,7 @@ const q13 = (reponses: Reponses) => {
   return question?.kind === "multiple choice" ? question : undefined;
 };
 const faits = (reponses: Reponses) =>
-  preconisationOf(model, reponses).faits as Faits;
+  new EstablishAPreconisation(model).execute(reponses).faits as Faits;
 
 const BESOIN: Reponses = { "Q0.1": "1_VERIFIER" };
 const CLINIQUE = (cas: Cas): Reponses => ({
@@ -120,14 +120,14 @@ describe("les cas Q1.3 de l'éditeur", () => {
   });
 
   it("aucune-et-ald : « Aucune » ne se coche qu'à part", () => {
-    expect(q13(CLINIQUE(["7_AUCUNE"]))?.exclusiveOption?.value).toBe(
+    expect(q13(CLINIQUE(["7_AUCUNE"]))?.exclusivePossibleAnswer?.value).toBe(
       "7_AUCUNE",
     );
   });
 
   it("bariatrique-tap : la corpulence ne se propose pas sans ambulance", () => {
-    const valeurs = q13(CLINIQUE(["7_AUCUNE"]))?.options.map(
-      (option) => option.value,
+    const valeurs = q13(CLINIQUE(["7_AUCUNE"]))?.possibleAnswers.map(
+      (possibleAnswer) => possibleAnswer.value,
     );
     expect(valeurs).not.toContain("1_FORTE_CORPULENCE");
   });
@@ -143,7 +143,11 @@ describe("Q1.3 à l'écran", () => {
       ...CLINIQUE(["7_AUCUNE"]),
       "Q1.2": ["8_BRANCARDAGE"],
     };
-    expect(q13(brancard)?.options.map((option) => option.value)).toEqual([
+    expect(
+      q13(brancard)?.possibleAnswers.map(
+        (possibleAnswer) => possibleAnswer.value,
+      ),
+    ).toEqual([
       "1_FORTE_CORPULENCE",
       "2_ALD",
       "8_MINEUR_SOINS_CONTINUS",

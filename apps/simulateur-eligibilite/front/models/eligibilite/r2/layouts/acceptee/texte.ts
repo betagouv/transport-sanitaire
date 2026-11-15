@@ -11,6 +11,7 @@
 // n'a pas de badge (#221) ; en accord préalable, ni cartes ni étapes. Elle lit ce que lisent ces textes
 // (`ce-que-lit-un-texte.ts`).
 
+import type { AcceptedIssueId } from "../../../../../../core/models/eligibilite/cibles/issue.vo";
 import type { Portion } from "../../../../../socle";
 import {
   badgesDuResultat,
@@ -53,7 +54,6 @@ import {
   porteeDuTrajet,
   rangDuTitreDuPrescripteur,
 } from "../../components/variante-du-resultat";
-import type { IssueAcceptee } from "./issues";
 
 /** La fiche patient positive, et le titre que le prescripteur lit au-dessus. */
 export type TexteDeLaFichePositive = {
@@ -88,7 +88,7 @@ export const LU_PAR_LA_FICHE_POSITIVE = luPar(
 export function texteDeLaFichePositive(
   catalogue: CatalogueResultats,
   trace: LuParLaFiche,
-  issueId: IssueAcceptee,
+  issueId: AcceptedIssueId,
 ): TexteDeLaFichePositive | AucunTexte {
   const issue = catalogue.issues[issueId];
   const libelle = libelleDeLaFiche(trace);
@@ -125,7 +125,7 @@ type LuParLaFiche = TraceDe<typeof LU_PAR_LA_FICHE_POSITIVE>;
 // Une demande d'accord préalable en ligne régulière ne garde que son
 // introduction : ni cartes ni étapes (TS1014-J04).
 function sansCartesNiEtapes(
-  issue: CatalogueResultats["issues"][IssueAcceptee],
+  issue: CatalogueResultats["issues"][AcceptedIssueId],
   trace: LuParLaFiche,
 ): boolean {
   return (
@@ -143,7 +143,7 @@ function sansCartesNiEtapes(
 function fondementDe(
   catalogue: CatalogueResultats,
   trace: LuParLaFiche,
-  issueId: IssueAcceptee,
+  issueId: AcceptedIssueId,
 ): FondementDeLAccord {
   if (issueId === "ISSUE_S3141") {
     const issue = catalogue.issues.ISSUE_S3141;

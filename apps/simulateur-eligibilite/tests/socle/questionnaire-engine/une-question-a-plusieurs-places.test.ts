@@ -10,7 +10,8 @@
 import { describe, expect, it } from "vitest";
 import { afterLock, givenOf, page, questionsOf } from "../../../core/socle";
 import type { Answers } from "../../../core/socle/questionnaire-engine/question/question";
-import { Questionnaire } from "../../../core/socle/questionnaire-engine/questionnaire";
+import { Questionnaire } from "../../../core/socle/questionnaire-engine/questionnaire.vo";
+import { QuestionnaireDeclarationError } from "../../../core/socle/questionnaire-engine/questionnaire-declaration.error";
 
 describe("une question à plusieurs places", () => {
   it("se pose à sa première place, quand ses gardes y tiennent", () => {
@@ -109,9 +110,10 @@ describe("la validation d'une page où elle ne se pose pas", () => {
 
 describe("la déclaration de ses places", () => {
   it("refuse une place suivante sans première", () => {
-    expect(
-      () => new Questionnaire([page("branche", URGENCE.unlessAskedBefore())]),
-    ).toThrow("urgence est une place suivante");
+    const sansPremiere = () =>
+      new Questionnaire([page("branche", URGENCE.unlessAskedBefore())]);
+    expect(sansPremiere).toThrow(QuestionnaireDeclarationError);
+    expect(sansPremiere).toThrow("urgence est une place suivante");
   });
 
   it("refuse deux places sur une même page", () => {
@@ -167,20 +169,20 @@ const given = givenOf<Questions>();
 
 const URGENCE = question
   .singleChoice("urgence", "Urgent ?")
-  .options({ oui: "Oui", non: "Non" });
+  .possibleAnswers({ oui: "Oui", non: "Non" });
 
 const TRAJET = page(
   "trajet",
   question
     .singleChoice("trajet", "Quel trajet ?")
-    .options({ court: "Court", long: "Long" }),
+    .possibleAnswers({ court: "Court", long: "Long" }),
   URGENCE.appliesWhen(given.question("trajet").answer().is("long")),
 );
 const BRANCHE = page(
   "branche",
   question
     .singleChoice("branche", "Une branche ?")
-    .options({ oui: "Oui", non: "Non" }),
+    .possibleAnswers({ oui: "Oui", non: "Non" }),
   URGENCE.unlessAskedBefore().appliesWhen(
     given.question("branche").answer().is("oui"),
   ),

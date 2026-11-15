@@ -6,7 +6,7 @@ import {
   page,
   questionsOf,
 } from "../../../core/socle";
-import { Questionnaire } from "../../../core/socle/questionnaire-engine/questionnaire";
+import { Questionnaire } from "../../../core/socle/questionnaire-engine/questionnaire.vo";
 
 // Après le verrou, une question peut dépendre de la préconisation : sa condition
 // lit les cibles figées, en plus des réponses. Ses pages sont marquées
@@ -63,7 +63,7 @@ const DOULEUR = page(
   "douleur",
   question
     .singleChoice("douleur", "Avez-vous mal ?")
-    .options({ oui: "Oui", non: "Non" }),
+    .possibleAnswers({ oui: "Oui", non: "Non" }),
   question
     .text("endroit", "Où ?")
     .appliesWhen(given.question("douleur").answer().is("oui")),
@@ -85,7 +85,7 @@ describe("pages auxquelles tout est répondu", () => {
     expect(repondu({ douleur: "oui" })).toBe(false);
   });
 
-  it("ne le sont pas pour une réponse hors des options", () => {
+  it("ne le sont pas pour une réponse hors des réponses possibles", () => {
     expect(repondu({ douleur: "peut-être" })).toBe(false);
   });
 });

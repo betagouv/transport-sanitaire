@@ -13,13 +13,13 @@ import {
   Questionnaire,
 } from "../../../../core/socle/questionnaire-engine";
 
-import { preconisationOf } from "../../../../core/socle/simulation";
+import { EstablishAPreconisation } from "../../../../core/socle/simulation";
 
 type Reponses = Answers<Questions>;
 
 const pages = pagesOf(model.questionnaire);
 const faits = (reponses: Reponses) =>
-  preconisationOf(model, reponses).faits as Faits;
+  new EstablishAPreconisation(model).execute(reponses).faits as Faits;
 
 const CONSULTATION: Reponses = {
   "Q0.1": "1_VERIFIER",

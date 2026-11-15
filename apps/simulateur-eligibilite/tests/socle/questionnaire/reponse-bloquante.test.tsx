@@ -3,8 +3,8 @@ import { describe, expect, it } from "vitest";
 import { page, questionsOf } from "../../../core/socle";
 import { afficher } from "./afficher";
 
-// Une option peut arrêter le questionnaire : son message s'affiche, et on
-// n'avance plus. Les pages sont écrites ici.
+// Une réponse possible peut arrêter le questionnaire : son message s'affiche,
+// et on n'avance plus. Les pages sont écrites ici.
 
 type Questions = {
   nombre: number;
@@ -20,8 +20,13 @@ const MESSAGE =
 
 const ORGANISATION = question
   .singleChoice("organisation", "Comment le trajet est-il organisé ?")
-  .options({ aller: "Aller simple", different: "Aller-retour différent" })
-  .option("different", (option) => option.blocks(MESSAGE));
+  .possibleAnswers({
+    aller: "Aller simple",
+    different: "Aller-retour différent",
+  })
+  .possibleAnswer("different", (possibleAnswer) =>
+    possibleAnswer.blocks(MESSAGE),
+  );
 
 const TRAJET = page(
   "trajet",
@@ -37,8 +42,10 @@ const EQUIPEMENTS = page(
   "equipements",
   question
     .multipleChoice("equipements", "Quels équipements ?")
-    .options({ fauteuil: "Un fauteuil", autre: "Un autre" })
-    .option("autre", (option) => option.blocks("Précisez avec la caisse.")),
+    .possibleAnswers({ fauteuil: "Un fauteuil", autre: "Un autre" })
+    .possibleAnswer("autre", (possibleAnswer) =>
+      possibleAnswer.blocks("Précisez avec la caisse."),
+    ),
 );
 
 const radio = (name: string) => screen.getByRole("radio", { name });

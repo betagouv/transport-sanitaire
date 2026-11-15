@@ -3,9 +3,9 @@
 // badges de la fiche, pour les deux besoins de Q0.1.
 //
 // Ce sont les profils de la recette N2 de l'éditeur (#149, D-232), sous leur
-// identifiant chez lui (`Recette_parcours_N2.json`, v10.1.3). Ses numéros
-// d'option sont ceux de nos identifiants : l'option 8 de Q1.2 est
-// `8_BRANCARDAGE`.
+// identifiant chez lui (`Recette_parcours_N2.json`, v10.1.3). Ses numéros de
+// réponse possible sont ceux de nos identifiants : la réponse possible 8 de
+// Q1.2 est `8_BRANCARDAGE`.
 
 import { describe, expect, it } from "vitest";
 import type { Questions } from "../../../../core/models/eligibilite/questions/reponses";

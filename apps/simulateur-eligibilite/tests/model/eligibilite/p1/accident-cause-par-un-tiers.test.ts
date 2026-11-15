@@ -5,13 +5,13 @@
 import { describe, expect, it } from "vitest";
 import { model } from "../../../../core/models/eligibilite";
 import type { Questions } from "../../../../core/models/eligibilite/questions/reponses";
-import { cibleValues } from "../../../../core/socle/decision-engine";
+import { Cible } from "../../../../core/socle/decision-engine";
 import {
   type Answers,
   pagesOf,
   Questionnaire,
 } from "../../../../core/socle/questionnaire-engine";
-import { preconisationOf } from "../../../../core/socle/simulation";
+import { EstablishAPreconisation } from "../../../../core/socle/simulation";
 
 type Reponses = Answers<Questions>;
 
@@ -46,15 +46,15 @@ describe("l'accident causé par un tiers en Q1.3", () => {
     const q13 = lecture(SEUL)
       .questionsOn(P1_3)
       .find(({ id }) => id === "Q1.3");
-    const options =
+    const possibleAnswers =
       q13?.kind === "multiple choice"
-        ? q13.options.map(({ value }) => value)
+        ? q13.possibleAnswers.map(({ value }) => value)
         : [];
 
-    expect(options.at(-1)).toBe("9_ACCIDENT_TIERS");
-    expect(q13?.kind === "multiple choice" && q13.exclusiveOption?.value).toBe(
-      "7_AUCUNE",
-    );
+    expect(possibleAnswers.at(-1)).toBe("9_ACCIDENT_TIERS");
+    expect(
+      q13?.kind === "multiple choice" && q13.exclusivePossibleAnswer?.value,
+    ).toBe("7_AUCUNE");
   });
 
   it("demande sa date sur la même page, seulement si la case est cochée", () => {
@@ -87,7 +87,9 @@ describe("l'accident causé par un tiers en Q1.3", () => {
 
   it("ne change aucune cible", () => {
     const cibles = (reponses: Reponses) =>
-      cibleValues(preconisationOf(model, reponses).cibles);
+      Cible.valuesOf(
+        new EstablishAPreconisation(model).execute(reponses).cibles,
+      );
 
     expect(cibles(AVEC_UN_TIERS)).toEqual(cibles(SEUL));
   });

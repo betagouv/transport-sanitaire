@@ -10,9 +10,14 @@ import {
   FAITS,
   type Faits,
 } from "../../../../core/models/eligibilite/faits/noms";
-import { Cible, Fait, Questionnaire, type Value } from "../../../../core/socle";
+import {
+  Cible,
+  Fait,
+  Questionnaire,
+  type Reading,
+} from "../../../../core/socle";
 import type { CibleValues } from "../../../../core/socle/decision-engine";
-import { resultScope } from "../../../../core/socle/simulation";
+import { ResultContext } from "../../../../core/socle/simulation";
 import type { Precisions } from "../../../../front/models/eligibilite/r2/components/precisions";
 import type { Trace } from "../../../../front/models/eligibilite/r2/r2";
 
@@ -34,12 +39,12 @@ const AUCUN_FAIT = Object.fromEntries(
  * la main, sans aucune réponse.
  */
 export const lu = <Of>(
-  value: Value<Of>,
+  value: Reading<Of>,
   cibles: ValeursDesCibles,
   faits: Partial<Faits> = {},
 ): Of =>
   value.in(
-    resultScope({
+    new ResultContext({
       validated: new Questionnaire([]).readWith({}).validated,
       faits: { ...AUCUN_FAIT, ...faits },
       cibles: ciblesValant(cibles),

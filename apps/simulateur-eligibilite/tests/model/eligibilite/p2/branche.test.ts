@@ -43,8 +43,8 @@ const motifsProposes = (reponses: typeof MATERNITE) => {
   const question = posee("P2/branche", "Q2.14.motif", reponses);
   return question?.kind === "multiple choice"
     ? [
-        ...question.options.map(({ value }) => value),
-        question.exclusiveOption?.value,
+        ...question.possibleAnswers.map(({ value }) => value),
+        question.exclusivePossibleAnswer?.value,
       ]
     : [];
 };

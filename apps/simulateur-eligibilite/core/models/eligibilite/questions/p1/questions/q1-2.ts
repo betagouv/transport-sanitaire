@@ -14,7 +14,7 @@ export const Q1_2 = question
     "Q1.2",
     "Quelles aides ou conditions particulières sont nécessaires pendant le transport ?",
   )
-  .options({
+  .possibleAnswers({
     "1_PAS_AUTONOME":
       "Ne peut pas se déplacer de manière autonome sur une longue distance, utiliser seul les transports en commun ou conduire un véhicule personnel en raison de sa pathologie, de son traitement ou d’un handicap.",
     "2_AIDE_TECHNIQUE":

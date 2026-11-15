@@ -22,17 +22,19 @@ type Regle = {
 
 const regles = rules as Record<string, Regle>;
 
-// Les options de chaque question à choix du modèle : leur slug, et leur libellé.
-const OPTIONS: Readonly<Record<string, Readonly<Record<string, string>>>> =
-  Object.fromEntries(
-    [...pagesOf(model.questionnaire), ...model.complement.pages]
-      .flatMap((page): readonly object[] => page.questions)
-      .flatMap((question) =>
-        "labels" in question && "id" in question
-          ? [[question.id, question.labels]]
-          : [],
-      ),
-  );
+// Les réponses possibles de chaque question à choix du modèle : leur slug, et
+// leur libellé.
+const REPONSES_POSSIBLES: Readonly<
+  Record<string, Readonly<Record<string, string>>>
+> = Object.fromEntries(
+  [...pagesOf(model.questionnaire), ...model.complement.pages]
+    .flatMap((page): readonly object[] => page.questions)
+    .flatMap((question) =>
+      "labels" in question && "id" in question
+        ? [[question.id, question.labels]]
+        : [],
+    ),
+);
 const nomsCommencantPar = (prefixe: string) =>
   Object.keys(regles).filter((nom) => nom.startsWith(prefixe));
 const tries = (noms: readonly string[]) => [...noms].sort();
@@ -89,25 +91,27 @@ describe("les cibles déclarées", () => {
   );
 });
 
-describe("les options déclarées", () => {
+describe("les réponses possibles déclarées", () => {
   // Q2.2.1 et Q2.2.1.b se partagent les situations du catalogue : chacune
   // garde son numéro, l'examen et l'hébergement de la maternité prennent le
   // 14 et le 15, et la réponse négative de chaque bloc est la 0
   // (`CONTRAT_Q221_PROGRESSIF.json`, D-252, D-272). Q2.1 garde les numéros de
   // ses neuf motifs, et Q2.14.motif ceux qui restent sans l'examen
-  // (QST-COLLECTE-UNIQUE, D-272). Q2.6 pose son option 1, le type du
+  // (QST-COLLECTE-UNIQUE, D-272). Q2.6 pose sa réponse possible 1, le type du
   // transfert, à part (D-106).
   const A_PART = ["Q2.1", "Q2.2.1", "Q2.2.1.b", "Q2.6", "Q2.14.motif"];
-  const suivies = Object.entries(OPTIONS).filter(
+  const suivies = Object.entries(REPONSES_POSSIBLES).filter(
     ([id]) => !A_PART.includes(id),
   );
   const numerosDe = (id: string) =>
-    Object.keys(OPTIONS[id] ?? {}).map((slug) => Number(slug.split("_")[0]));
+    Object.keys(REPONSES_POSSIBLES[id] ?? {}).map((slug) =>
+      Number(slug.split("_")[0]),
+    );
 
   it.each(suivies)(
     "%s numérote ses options comme le catalogue, de 1 en 1",
-    (_, options) => {
-      const slugs = Object.keys(options);
+    (_, possibleAnswers) => {
+      const slugs = Object.keys(possibleAnswers);
       expect(
         slugs.map((slug) => slug.split("_")[0]),
         "Un slug commence par le numéro de l'option dans le catalogue de " +
@@ -133,11 +137,13 @@ describe("les options déclarées", () => {
     expect(numerosDe("Q2.6")).toEqual([2, 3, 4, 5, 6, 7, 8, 9, 10, 11]);
   });
 
-  it.each(Object.entries(OPTIONS))(
+  it.each(Object.entries(REPONSES_POSSIBLES))(
     "%s nomme chaque option après son numéro",
-    (_, options) => {
+    (_, possibleAnswers) => {
       expect(
-        Object.keys(options).filter((slug) => !/^\d+_[A-Z][A-Z_]*$/.test(slug)),
+        Object.keys(possibleAnswers).filter(
+          (slug) => !/^\d+_[A-Z][A-Z_]*$/.test(slug),
+        ),
         "Le numéro seul ne dit rien à la lecture : le slug le fait suivre " +
           "de ce que l'option veut dire, en majuscules.",
       ).toEqual([]);
@@ -145,10 +151,10 @@ describe("les options déclarées", () => {
   );
 });
 
-describe("les libellés des options", () => {
+describe("les libellés des réponses possibles", () => {
   it("ne portent aucune consigne destinée aux développeurs", () => {
-    const libelles = Object.values(OPTIONS).flatMap((options) =>
-      Object.values(options),
+    const libelles = Object.values(REPONSES_POSSIBLES).flatMap(
+      (possibleAnswers) => Object.values(possibleAnswers),
     );
     expect(
       libelles.filter((libelle) =>

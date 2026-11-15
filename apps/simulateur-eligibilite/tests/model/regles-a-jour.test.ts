@@ -16,10 +16,8 @@ import {
   DecisionGraph,
   type FaitValue,
 } from "../../core/socle/decision-engine";
-import {
-  decisionGraphOf,
-  publicodesEngine,
-} from "../../core/socle/decision-engine/compute-the-cibles";
+import { PublicodesDecisionEngine } from "../../core/socle/decision-engine/publicodes-decision-engine.adapter";
+import { PublicodesGraphCompiler } from "../../core/socle/decision-engine/publicodes-graph-compiler.adapter";
 import { racine, texteDe } from "../inspection-des-sources";
 
 describe("les règles de chaque modèle", () => {
@@ -39,7 +37,7 @@ describe("le graphe de chaque modèle", () => {
     expect(
       JSON.parse(texteDe(graphe)),
       `\`${graphe}\` n'est pas le graphe de \`${yaml}\`. Relance \`pnpm regles\`.`,
-    ).toEqual(decisionGraphOf(parse(texteDe(yaml))));
+    ).toEqual(new PublicodesGraphCompiler(parse(texteDe(yaml))).compile());
   });
 
   it.each(reglesLivrees())(
@@ -48,7 +46,7 @@ describe("le graphe de chaque modèle", () => {
       const graphe = yaml.replace(/\.publicodes$/, ".graphe.json");
       const data = JSON.parse(texteDe(graphe));
       const regles = Object.keys(data.rules);
-      const moteur = publicodesEngine(parse(texteDe(yaml)), regles);
+      const moteur = new PublicodesDecisionEngine(parse(texteDe(yaml)), regles);
       const decision = new DecisionGraph(data);
       for (const situation of situationsTirees(data.faits)) {
         const attendu = moteur.cibles(faitsDe(situation));

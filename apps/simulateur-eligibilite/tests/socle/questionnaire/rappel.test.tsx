@@ -21,7 +21,7 @@ const SEANCE = page(
   "seance",
   question
     .singleChoice("seance", "Quelle séance motive ce trajet ?")
-    .options({ dialyse: "Une dialyse", aucune: "Aucune" }),
+    .possibleAnswers({ dialyse: "Une dialyse", aucune: "Aucune" }),
 );
 
 const RAPPEL = "Séance indiquée : une dialyse.";
