@@ -4,12 +4,11 @@
 // vérifie ce qu'elles lisent (`conditions/guard-reading.service.ts`), et le
 // graphe s'en sert (`does-a-question-still-matter/`).
 
-import {
-  type Condition,
-  type Context,
-  type Reading,
-  type Text,
-  textIn,
+import type {
+  Condition,
+  Context,
+  Reading,
+  Text,
 } from "../../conditions/reading.vo.ts";
 import { Reads } from "../../conditions/reads.vo.ts";
 import type { Revisit } from "../asked/common.vo.ts";
@@ -53,7 +52,9 @@ export class Inconsistencies {
       ({ revisit }) => revisit?.in(earlier) ?? [],
     );
     return {
-      messages: holding.map(({ message }) => textIn(message, earlier)),
+      messages: holding.map(({ message }) =>
+        typeof message === "string" ? message : message.in(earlier),
+      ),
       revisits: revisits.filter(
         ({ question }, index) =>
           revisits.findIndex((other) => other.question === question) === index,

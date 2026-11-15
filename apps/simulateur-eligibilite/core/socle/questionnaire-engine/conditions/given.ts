@@ -29,7 +29,7 @@ import {
   DateReading,
   FaitReading,
 } from "./given-readings.vo.ts";
-import { all, type Context, Reading } from "./reading.vo.ts";
+import { type Context, Reading } from "./reading.vo.ts";
 import { Reads } from "./reads.vo.ts";
 
 /**
@@ -62,7 +62,7 @@ export function givenOf<
       named<Pick<Cibles, Nom>>(noms, Reads.ofCible, (context, nom) =>
         context.cible(nom),
       ),
-    all,
+    all: Reading.all,
     today: () => DateReading.today(),
   };
 }

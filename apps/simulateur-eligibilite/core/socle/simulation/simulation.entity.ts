@@ -12,8 +12,6 @@ import {
   type AskedQuestion,
   type Page,
   pagesOf,
-  type Read,
-  readIn,
   type ValidatedAnswers,
 } from "../questionnaire-engine/index.ts";
 import { AnswerCorrection } from "./answer-correction.vo.ts";
@@ -156,14 +154,14 @@ export class Simulation {
   }
 
   /**
-   * Ce qu'un résultat lit, au jour `on` : les questions validées, les faits
-   * et les cibles de la préconisation.
+   * Le contexte où un résultat se lit, au jour `on` : les questions validées,
+   * les faits et les cibles de la préconisation.
    */
-  read(on: Date): Read {
+  resultContext(on: Date): ResultContext {
     const { faits, cibles } = this.preconisation;
     const { validated } = this.#reading;
     const sources = { validated, faits, cibles, on };
-    return readIn(new ResultContext(sources));
+    return new ResultContext(sources);
   }
 
   /** Les pages affichées, les réponses, les questions validées, la préconisation. */

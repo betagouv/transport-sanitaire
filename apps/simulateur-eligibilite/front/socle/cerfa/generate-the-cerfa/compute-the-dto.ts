@@ -5,7 +5,7 @@
 // cibles figés au verrou, au jour de la complétion (`given.today()`).
 
 import {
-  type Read,
+  type Context,
   Reading,
   Reads,
 } from "../../../../core/socle/questionnaire-engine";
@@ -50,11 +50,14 @@ export function cerfaValue(bound: BoundCerfa): Reading<BoundCerfa> {
   return new Reading(reads, () => bound);
 }
 
-/** Le DTO que `mapping` donne, chaque valeur lue par `read`. */
-export function dtoFrom(mapping: CerfaMapping<CerfaDto>, read: Read): CerfaDto {
+/** Le DTO que `mapping` donne, chaque entrée lue dans `context`. */
+export function dtoFrom(
+  mapping: CerfaMapping<CerfaDto>,
+  context: Context,
+): CerfaDto {
   const apply = (values: Readonly<Record<string, Reading<unknown>>>) =>
     Object.fromEntries(
-      Object.entries(values).map(([key, value]) => [key, read(value)]),
+      Object.entries(values).map(([key, value]) => [key, value.in(context)]),
     );
   return {
     fields: apply(mapping.fields) as CerfaDto["fields"],

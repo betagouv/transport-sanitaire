@@ -7,7 +7,6 @@ import type { Questions } from "../../../../core/models/eligibilite/questions/re
 import {
   Questionnaire,
   type Reading,
-  readIn,
 } from "../../../../core/socle/questionnaire-engine";
 
 import { ResultContext } from "../../../../core/socle/simulation";
@@ -89,9 +88,7 @@ export const luDe = <Of>(
     faits: faits(reponses),
     cibles: { ...ciblesDe(reponses), ...forcees },
   };
-  return readIn(new ResultContext({ validated, ...lus, on: new Date() }))(
-    value,
-  );
+  return value.in(new ResultContext({ validated, ...lus, on: new Date() }));
 };
 
 /** Ce que le socle passe à R2 : ce qu'il lit. */

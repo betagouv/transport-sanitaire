@@ -17,7 +17,7 @@ export function resultOf(model: Model, simulation: Simulation): Loading {
   const { answers } = simulation;
   const known = loading.get(model)?.get(answers);
   if (known) return known;
-  const reading = simulation.read(new Date())(model.result.reading);
+  const reading = model.result.reading.in(simulation.resultContext(new Date()));
   const result = model.result.content({ reading });
   if (!(result instanceof Promise)) return result;
   const byAnswers = loading.get(model) ?? new WeakMap();

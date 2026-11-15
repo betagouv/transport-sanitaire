@@ -1,6 +1,6 @@
 import { cleanup, screen, waitFor } from "@testing-library/react";
 import { beforeEach, describe, expect, it } from "vitest";
-import { constant, givenOf, page, questionsOf } from "../../../core/socle";
+import { givenOf, page, questionsOf, Reading } from "../../../core/socle";
 import type { Model } from "../../../front/socle/model";
 import { audienceDeTest, nomsEtValeurs } from "../analytics/audience-de-test";
 import { modeleDeTest } from "../modele-de-test";
@@ -158,7 +158,7 @@ const AVEC_UNE_ALERTE: Model = {
                   .and(given.question("mode").answer().is("especes")),
                 "Les espèces ne se paient pas à la livraison.",
                 {
-                  revisit: constant([
+                  revisit: Reading.constant([
                     { label: "Revoir la livraison", question: "livraison" },
                   ]),
                 },

@@ -15,11 +15,7 @@
 import type { Cibles } from "../../../../../core/models/eligibilite/cibles/noms";
 import type { Faits } from "../../../../../core/models/eligibilite/faits/noms";
 import { given } from "../../../../../core/models/eligibilite/questions/reponses";
-import {
-  constant,
-  type Reading,
-  type ValueOf,
-} from "../../../../../core/socle";
+import { Reading, type ValueOf } from "../../../../../core/socle";
 import type { Precisions } from "./precisions";
 
 type CibleNom = keyof Cibles & string;
@@ -92,7 +88,7 @@ type CiblesDe<Lit> =
 type FaitsDe<Lit> =
   Lit extends Reading<{ faits: infer Lus }> ? keyof Lus & FaitNom : never;
 
-const RIEN = constant({});
+const RIEN = Reading.constant({});
 
 function reunis(lus: readonly Lu<never, never>[]): Lu<never, never> {
   return {

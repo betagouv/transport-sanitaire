@@ -18,10 +18,7 @@ export { LocalDateTime } from "./conditions/local-date-time.vo.ts";
 export {
   type Condition,
   type Context,
-  constant,
-  type Read,
   Reading,
-  readIn,
   type ValueOf,
 } from "./conditions/reading.vo.ts";
 export { Reads } from "./conditions/reads.vo.ts";

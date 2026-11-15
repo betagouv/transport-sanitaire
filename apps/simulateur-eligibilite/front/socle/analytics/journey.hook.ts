@@ -41,7 +41,7 @@ export function useRecordTheJourney(
   }, []);
   useLayoutEffect(() => {
     if (!useCases || !journey.current || !model.intent) return;
-    const intent = simulation.read(new Date())(model.intent);
+    const intent = model.intent.in(simulation.resultContext(new Date()));
     if (intent) useCases.selectAnIntent.execute(journey.current, intent);
   }, [useCases, model, simulation]);
   return journey;

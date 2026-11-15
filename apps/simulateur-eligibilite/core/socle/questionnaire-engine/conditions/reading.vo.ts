@@ -31,6 +31,32 @@ export type Context = {
 
 /** Une lecture : ce qu'elle lit, et comment elle se calcule. */
 export class Reading<Of> {
+  /**
+   * Des lectures nommées, faites ensemble : un calcul qui lit plusieurs
+   * réponses, ou une lecture bâtie sur d'autres. Elle lit ce que lisent ses
+   * parties.
+   *
+   *   given.all({ motif: given.question("Q2.1").answer(), sens: SENS_CHOISI })
+   *     .compute(({ motif, sens }) => …)
+   */
+  static all<Readings extends Readonly<Record<string, Reading<unknown>>>>(
+    readings: Readings,
+  ): Reading<ValuesOf<Readings>> {
+    const entries = Object.entries(readings);
+    return new Reading(
+      Reads.union(...entries.map(([, reading]) => reading.reads)),
+      (context) =>
+        Object.fromEntries(
+          entries.map(([name, reading]) => [name, reading.in(context)]),
+        ) as ValuesOf<Readings>,
+    );
+  }
+
+  /** Une lecture qui ne lit rien, et vaut toujours `of`. */
+  static constant<Of>(of: Of): Reading<Of> {
+    return new Reading(Reads.none(), () => of);
+  }
+
   /** Ce qu'elle lit. */
   readonly reads: Reads;
   readonly #evaluate: (context: Context) => Of;
@@ -58,6 +84,16 @@ export class Reading<Of> {
     return new Reading(this.reads.with(other.reads), (context) =>
       compute(this.in(context), other.in(context)),
     );
+  }
+
+  /**
+   * Cette lecture, qui ne compte que quand la cible `cible` vaut l'une de
+   * `values`. Elle se calcule toujours : c'est celui qui l'affiche qui choisit
+   * la branche sur cette cible. La cible, elle, compte toujours.
+   */
+  onBranch(cible: string, values: readonly unknown[]): Reading<Of> {
+    const reads = Reads.onBranch(cible, values, this.reads);
+    return new Reading(reads, (context) => this.in(context));
   }
 
   /**
@@ -91,11 +127,6 @@ export type Condition = Reading<boolean>;
 /** Un texte qui dépend des réponses, ou qui n'en dépend pas. */
 export type Text = string | Reading<string>;
 
-/** Ce texte dans ce contexte. */
-export function textIn(text: Text, context: Context): string {
-  return typeof text === "string" ? text : text.in(context);
-}
-
 /** Ce que vaut cette lecture. */
 export type ValueOf<Read> = Read extends Reading<infer Of> ? Of : never;
 
@@ -105,50 +136,3 @@ export type ValuesOf<Values> = {
     ? Of
     : never;
 };
-
-/**
- * Des lectures nommées, faites ensemble : un calcul qui lit plusieurs réponses,
- * ou une lecture bâtie sur d'autres. Elle lit ce que lisent ses parties.
- *
- *   all({ motif: given.question("Q2.1").answer(), sens: SENS_CHOISI })
- *     .compute(({ motif, sens }) => …)
- */
-export function all<Values extends Readonly<Record<string, Reading<unknown>>>>(
-  values: Values,
-): Reading<ValuesOf<Values>> {
-  const entries = Object.entries(values);
-  return new Reading(
-    Reads.union(...entries.map(([, value]) => value.reads)),
-    (context) =>
-      Object.fromEntries(
-        entries.map(([name, value]) => [name, value.in(context)]),
-      ) as ValuesOf<Values>,
-  );
-}
-
-/** Une lecture qui ne lit rien, et vaut toujours `of`. */
-export function constant<Of>(of: Of): Reading<Of> {
-  return new Reading(Reads.none(), () => of);
-}
-
-/**
- * `value`, qui ne compte que quand la cible `cible` vaut l'une de `values`.
- * Elle se calcule toujours : c'est celui qui l'affiche qui choisit la branche
- * sur cette cible. La cible, elle, compte toujours.
- */
-export function onBranch<Of>(
-  cible: string,
-  values: readonly unknown[],
-  value: Reading<Of>,
-): Reading<Of> {
-  const reads = Reads.onBranch(cible, values, value.reads);
-  return new Reading(reads, (context) => value.in(context));
-}
-
-/** Ce qu'une lecture vaut, dans le contexte que le socle a choisi. */
-export type Read = <Of>(value: Reading<Of>) => Of;
-
-/** La lecture de ces valeurs dans `context`. */
-export function readIn(context: Context): Read {
-  return (value) => value.in(context);
-}

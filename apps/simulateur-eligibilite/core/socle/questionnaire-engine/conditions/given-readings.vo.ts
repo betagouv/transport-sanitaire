@@ -8,12 +8,7 @@ import type { Box, Choice } from "../answers/given-answers.vo.ts";
 import type { ValidatedAnswer } from "../answers/validated-answers.vo.ts";
 import type { AnyQuestions } from "../question/question.ts";
 import { LocalDateTime } from "./local-date-time.vo.ts";
-import {
-  type Condition,
-  type Context,
-  onBranch,
-  Reading,
-} from "./reading.vo.ts";
+import { type Condition, type Context, Reading } from "./reading.vo.ts";
 import { Reads } from "./reads.vo.ts";
 
 /** La réponse d'une question, telle que l'endroit la voit. */
@@ -195,7 +190,7 @@ export class CibleReading<
     values: readonly Of[],
     value: Reading<Branched>,
   ): Reading<Branched> {
-    return onBranch(this.#nom, values, value);
+    return value.onBranch(this.#nom, values);
   }
 
   /** Il manque un fait pour la calculer. */

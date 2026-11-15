@@ -14,8 +14,6 @@ import {
   type Answers,
   pagesOf,
   Questionnaire,
-  type Read,
-  readIn,
 } from "../../../../core/socle/questionnaire-engine";
 
 import {
@@ -150,7 +148,7 @@ export function donnees(
   choisies: ValeursDesCibles = {},
   completedAt = new Date("2026-10-22T10:00:00Z"),
   faits: Partial<Faits> = {},
-): Read {
+): ResultContext {
   const preconisation = new EstablishAPreconisation(model).execute(reponses);
   const cibles = ciblesValant({
     ...Cible.valuesOf(preconisation.cibles as Cibles),
@@ -160,14 +158,12 @@ export function donnees(
     reponses,
     cibles,
   );
-  return readIn(
-    new ResultContext({
-      validated: lecture.validated,
-      faits: { ...(preconisation.faits as Faits), ...faits },
-      cibles,
-      on: completedAt,
-    }),
-  );
+  return new ResultContext({
+    validated: lecture.validated,
+    faits: { ...(preconisation.faits as Faits), ...faits },
+    cibles,
+    on: completedAt,
+  });
 }
 
 /** Chaque cellule de la rubrique, calculée sur ces données. */
@@ -177,10 +173,10 @@ export function cellules<Cellules>(
   cibles: ValeursDesCibles = {},
   completedAt?: Date,
 ): Cellules {
-  const read = donnees(reponses, cibles, completedAt);
+  const context = donnees(reponses, cibles, completedAt);
   return Object.fromEntries(
     Object.entries<Rubrique<Cellules>[keyof Cellules]>(rubrique).map(
-      ([cellule, valeur]) => [cellule, read(valeur)],
+      ([cellule, valeur]) => [cellule, valeur.in(context)],
     ),
   ) as Cellules;
 }

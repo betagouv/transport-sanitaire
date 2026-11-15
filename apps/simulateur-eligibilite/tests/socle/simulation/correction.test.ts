@@ -3,7 +3,7 @@
 // « Suivant » reprend. Les pages sont écrites ici.
 
 import { describe, expect, it } from "vitest";
-import { constant, givenOf, page, questionsOf } from "../../../core/socle";
+import { givenOf, page, questionsOf, Reading } from "../../../core/socle";
 import type { CoreModel } from "../../../core/socle/model";
 import type {
   Answers,
@@ -37,7 +37,7 @@ const LIEU = question
       .is("dialyse")
       .and(given.question("lieu").answer().is("hopital")),
     MESSAGE,
-    { revisit: constant([REVOIR, REVOIR]) },
+    { revisit: Reading.constant([REVOIR, REVOIR]) },
   );
 
 const PAGES = [

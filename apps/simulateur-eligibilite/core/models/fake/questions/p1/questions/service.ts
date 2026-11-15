@@ -2,7 +2,7 @@
 // incompatibles, une alerte qui mène à une réponse d'avant, et la question qui
 // s'affiche sous la réponse possible qui l'ouvre.
 
-import { constant } from "../../../../../socle/index.ts";
+import { Reading } from "../../../../../socle/index.ts";
 import { cibles } from "../../../cibles/evaluation.ts";
 import { given, question } from "../../question.ts";
 import { ACCOMPAGNEMENTS } from "./accompagnements.ts";
@@ -69,7 +69,9 @@ export const SERVICE = service
     cafeGlace,
     "Le café ne se sert pas glacé. Choisissez une autre façon de le servir, ou revoyez la boisson.",
     {
-      revisit: constant([{ label: "Revoir la boisson", question: BOISSON.id }]),
+      revisit: Reading.constant([
+        { label: "Revoir la boisson", question: BOISSON.id },
+      ]),
     },
   );
 

@@ -24,10 +24,10 @@ export function aldPathwayOf(
 ): AldPathway | null {
   const indicator = model.aldIndicator;
   if (!indicator) return null;
-  const read = simulation.read(new Date());
-  if (!read(indicator.counted)) return null;
+  const context = simulation.resultContext(new Date());
+  if (!indicator.counted.in(context)) return null;
   const { pages, questions } = countOf(model, indicator, simulation);
-  const caisse = read(indicator.caisse);
+  const caisse = indicator.caisse.in(context);
   return {
     verdict: EventName[verdictOf(caisse, pages, questions, indicator.limit)],
     pages,

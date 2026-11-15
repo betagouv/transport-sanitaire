@@ -7,7 +7,7 @@
 
 import { screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
-import { constant } from "../../../core/socle";
+import { Reading } from "../../../core/socle";
 import type { FirstResult, Model } from "../../../front/socle/model";
 import { modeleDeTest } from "../modele-de-test";
 import {
@@ -61,7 +61,7 @@ describe("les boutons du premier résultat", () => {
   });
 
   it("retirent l'action qui complète quand son libellé est `null`, et le stepper s'arrête", async () => {
-    const modele = avec({ second: { startLabel: constant(null) } });
+    const modele = avec({ second: { startLabel: Reading.constant(null) } });
     const user = await ouvrirLeSimulateur({ modele });
     await allerAuResultat(user);
 
@@ -73,7 +73,7 @@ describe("les boutons du premier résultat", () => {
   it("ne verrouillent pas vers une partie sans page ni cerfa", async () => {
     const modele = avec({
       core: { complement: { ...modeleDeTest.core.complement, pages: [] } },
-      second: { form: constant(null) },
+      second: { form: Reading.constant(null) },
     });
     const user = await ouvrirLeSimulateur({ modele });
     await allerAuResultat(user);
