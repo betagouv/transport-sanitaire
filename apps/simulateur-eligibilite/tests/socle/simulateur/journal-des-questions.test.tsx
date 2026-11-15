@@ -157,7 +157,11 @@ describe("le journal des questions", () => {
     await user.click(bouton("Terminer"));
     await screen.findByRole("button", { name: "Imprimer le bon de commande" });
 
-    expect(enBref(envoyes.slice(avant))).toEqual([
+    // Le document de R3 suit, plus ou moins vite : il a son propre journal.
+    const duComplement = envoyes
+      .slice(avant)
+      .filter(({ screen }) => screen === "P3");
+    expect(enBref(duComplement)).toEqual([
       "phase_entered P3",
       "question_exposed quantite",
       "question_interacted quantite",

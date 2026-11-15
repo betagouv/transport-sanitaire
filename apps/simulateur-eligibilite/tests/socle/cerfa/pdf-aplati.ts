@@ -19,7 +19,7 @@ import {
 export async function drawnOn(
   pdf: Uint8Array,
 ): Promise<{ fields: number; texts: string[] }> {
-  const document = await PDFDocument.load(pdf);
+  const document = await parsed(pdf);
   const texts = document.context
     .enumerateIndirectObjects()
     .flatMap(([, object]) =>
@@ -36,7 +36,7 @@ export async function textsOn(
   pdf: Uint8Array,
   number: number,
 ): Promise<string[]> {
-  const page = (await PDFDocument.load(pdf)).getPage(number - 1);
+  const page = (await parsed(pdf)).getPage(number - 1);
   const objects = page.node
     .Resources()
     ?.lookupMaybe(PDFName.of("XObject"), PDFDict);
@@ -59,7 +59,7 @@ export async function markedStates(
   field: string,
   page?: number,
 ): Promise<string[]> {
-  const boxes = (await PDFDocument.load(template))
+  const boxes = (await parsed(template))
     .getForm()
     .getField(field)
     .acroField.getWidgets()
@@ -75,7 +75,7 @@ export async function markedStates(
           drawn: `${normal.get(state)} à ${x},${y}`,
         }));
     });
-  const drawn = (await PDFDocument.load(pdf))
+  const drawn = (await parsed(pdf))
     .getPages()
     .filter((_, rank) => page === undefined || rank === page - 1)
     .flatMap(drawnObjects)
@@ -93,7 +93,7 @@ export async function textsIn(
   pdf: Uint8Array,
   field: string,
 ): Promise<string[]> {
-  const places = (await PDFDocument.load(template))
+  const places = (await parsed(template))
     .getForm()
     .getField(field)
     .acroField.getWidgets()
@@ -101,7 +101,7 @@ export async function textsIn(
       const { x, y } = widget.getRectangle();
       return `${x},${y}`;
     });
-  const document = await PDFDocument.load(pdf);
+  const document = await parsed(pdf);
   return document
     .getPages()
     .flatMap(drawnObjects)
@@ -113,6 +113,16 @@ export async function textsIn(
 }
 
 // ---- implémentation ----
+
+// Relire un PDF coûte : les mêmes octets ne se relisent qu'une fois. Rien ici
+// ne modifie le document relu.
+const PARSED = new WeakMap<Uint8Array, Promise<PDFDocument>>();
+
+function parsed(pdf: Uint8Array): Promise<PDFDocument> {
+  const known = PARSED.get(pdf) ?? PDFDocument.load(pdf);
+  PARSED.set(pdf, known);
+  return known;
+}
 
 // Les textes qu'un flux dessine. `pdf-lib` les écrit en hexadécimal, encodés
 // en WinAnsi, qui ne diffère pas de Latin-1 pour les lettres accentuées.

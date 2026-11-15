@@ -20,9 +20,6 @@ import { MODELE_AUX_GABARITS_DU_DISQUE } from "./modele-aux-gabarits-du-disque";
 await catalogueResultats();
 await model.core.seeds();
 
-const ATTENTE = { timeout: 4000 };
-const DELAI_D_UN_TEST = { timeout: 6 * ATTENTE.timeout };
-
 // Le § 2.3 de `REFERENTIEL/03` de la v10.1.4 : le libellé et l'adresse.
 const LIBELLE = "Donner mon avis";
 const ADRESSE =
@@ -33,7 +30,7 @@ const PRESCRIRE = "2_VERIFIER_ET_PRESCRIRE";
 
 beforeEach(() => rangerRattachement(null));
 
-describe("l'avis du modèle de l'éditeur en R2", DELAI_D_UN_TEST, () => {
+describe("l'avis du modèle de l'éditeur en R2", () => {
   it.each([
     ["issue-pmt", VERIFIER, 1],
     ["issue-pmt", PRESCRIRE, 0],
@@ -72,7 +69,7 @@ describe("l'avis du modèle de l'éditeur en R2", DELAI_D_UN_TEST, () => {
   });
 });
 
-describe("l'avis du modèle de l'éditeur en R3", DELAI_D_UN_TEST, () => {
+describe("l'avis du modèle de l'éditeur en R3", () => {
   it.each([
     ["issue-pmt", VERIFIER, "Compléter la prescription"],
     ["issue-pmt", PRESCRIRE, "Compléter la prescription"],
@@ -89,9 +86,7 @@ describe("l'avis du modèle de l'éditeur en R3", DELAI_D_UN_TEST, () => {
         besoin,
         MODELE_AUX_GABARITS_DU_DISQUE,
       );
-      await user.click(
-        await screen.findByRole("button", { name: completer }, ATTENTE),
-      );
+      await user.click(await screen.findByRole("button", { name: completer }));
       await completerP3(user);
 
       expect(avis()).toHaveLength(1);
@@ -113,17 +108,11 @@ async function ouvrirLaSeed(id: string, besoin: string, modele: Model = model) {
     modele,
     seeds: [{ ...seed, answers: { ...seed.answers, "Q0.1": besoin } }],
   });
+  await user.click(await screen.findByRole("button", { name: "Seeds" }));
   await user.click(
-    await screen.findByRole("button", { name: "Seeds" }, ATTENTE),
-  );
-  await user.click(
-    await screen.findByRole(
-      "button",
-      { name: `Ouvrir : ${seed.label}` },
-      ATTENTE,
-    ),
+    await screen.findByRole("button", { name: `Ouvrir : ${seed.label}` }),
   );
   // Le `h1` vient avec le résultat, une fois ses textes chargés.
-  await screen.findByRole("heading", { level: 1 }, ATTENTE);
+  await screen.findByRole("heading", { level: 1 });
   return user;
 }
