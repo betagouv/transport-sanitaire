@@ -1,9 +1,9 @@
 // Ce qui ne va pas dans une saisie, dit par sa nature. L'écran en écrit le
-// message (`front/socle/questionnaire-engine/screen-texts.ts`). Les phrases
+// message (`front/socle/questionnaire/word-a-problem.ts`). Les phrases
 // livrées par l'éditeur (un blocage, une incompatibilité, une incohérence)
 // restent ici, telles quelles : une API doit pouvoir les donner.
 //
-// Chaque sorte de question dit les siens (`question/asked/question.ts`).
+// Chaque sorte de question dit les siens (`question/asked/question.vo.ts`).
 
 /** Ce qui ne va pas dans une saisie. */
 export type AnswerProblem =
