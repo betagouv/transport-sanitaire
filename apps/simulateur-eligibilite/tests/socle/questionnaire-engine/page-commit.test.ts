@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { page, questionsOf } from "../../../core/socle";
-import { Questionnaire } from "../../../core/socle/questionnaire-engine/questionnaire";
+import { Questionnaire } from "../../../core/socle/questionnaire-engine/questionnaire.vo";
 
 // Une réponse qui change n'efface que les réponses qui en dépendent. Les pages
 // sont écrites ici : le questionnaire factice n'a qu'une seule dépendance.

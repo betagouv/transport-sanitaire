@@ -9,7 +9,7 @@ import type { Questions } from "../../../../core/models/eligibilite/questions/re
 import { SEEDS } from "../../../../core/models/eligibilite/seeds-catalogue";
 import {
   type Answers,
-  answerOnPage,
+  PageCommitService,
   Questionnaire,
 } from "../../../../core/socle/questionnaire-engine";
 
@@ -161,7 +161,14 @@ describe("les réponses de Q3.1", () => {
       "Q3.1.1": 3,
     };
 
-    expect(answerOnPage(PAGE, allersRetours, "Q3.1.2", "1_ALLER")).toEqual({
+    expect(
+      new PageCommitService([PAGE]).answerOn(
+        PAGE,
+        allersRetours,
+        "Q3.1.2",
+        "1_ALLER",
+      ),
+    ).toEqual({
       "Q3.1.2": "1_ALLER",
     });
   });

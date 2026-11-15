@@ -6,7 +6,7 @@ import {
   page,
   questionsOf,
 } from "../../../core/socle";
-import { Questionnaire } from "../../../core/socle/questionnaire-engine/questionnaire";
+import { Questionnaire } from "../../../core/socle/questionnaire-engine/questionnaire.vo";
 
 // Après le verrou, une question peut dépendre de la préconisation : sa condition
 // lit les cibles figées, en plus des réponses. Ses pages sont marquées

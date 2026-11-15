@@ -4,7 +4,7 @@
 //
 // Il est le bout du chemin d'une réponse : réponses → validées → faits →
 // cibles. Le moteur fait les deux premières étapes, dans l'ordre des questions
-// (`decide-which-questions-to-ask.ts`). Le modèle fait les deux dernières, par son
+// (`question-walk.service.ts`). Le modèle fait les deux dernières, par son
 // `Pipeline` : son catalogue des faits, puis ses règles. Faits et cibles ne se calculent qu'à la lecture, une fois par
 // contexte. Le catalogue des faits arrête un fait qui se relit par une garde.
 

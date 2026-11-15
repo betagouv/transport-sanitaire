@@ -1,6 +1,6 @@
 // Ce dont dépend une réponse (`dependsOn`) : une question entière, ou certaines
 // de ses réponses possibles seulement. Quand ce qu'on en voit change, la
-// réponse s'efface (`validate-a-page.ts`).
+// réponse s'efface (`page-commit.service.ts`).
 
 import {
   type Answer,

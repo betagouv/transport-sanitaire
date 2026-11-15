@@ -9,11 +9,8 @@ import { answersOf, GivenAnswers } from "./answers/given-answers.vo.ts";
 import { ValidatedAnswers } from "./answers/validated-answers.vo.ts";
 import { QuestionPositions } from "./conditions/question-positions.vo.ts";
 import { Reads } from "./conditions/reads.vo.ts";
-import {
-  type AskedPage,
-  readInOrder,
-} from "./decide-which-questions-to-ask.ts";
 import type { Relevance } from "./does-a-question-still-matter/matters.ts";
+import { PageCommitService } from "./page-commit.service.ts";
 import type { AskedQuestion } from "./question/asked/question.vo.ts";
 import type {
   Answer,
@@ -25,7 +22,10 @@ import type {
   Unanswered,
   Validated,
 } from "./question/question.ts";
-import { answerOnPage, commitPage, forget } from "./validate-a-page.ts";
+import {
+  type AskedPage,
+  QuestionWalkService,
+} from "./question-walk.service.ts";
 
 /** Le questionnaire s'achève : aucune page ne suit. */
 type Finished = undefined;
@@ -85,6 +85,7 @@ export class Reading<Questions extends AnyQuestions = AnyQuestions> {
   /** Les questions validées, avec ce qui s'y proposait. */
   readonly validated: ValidatedAnswers<Questions>;
   readonly #questionnaire: Questionnaire<Questions>;
+  readonly #pageCommit: PageCommitService;
   readonly #cibles: AnyCibles | undefined;
   readonly #asked: readonly AskedPage[];
   readonly #complete: boolean;
@@ -96,21 +97,23 @@ export class Reading<Questions extends AnyQuestions = AnyQuestions> {
     cibles: AnyCibles | undefined,
   ) {
     const { relevance } = questionnaire;
-    const read = readInOrder(questionnaire, answers, { cibles, relevance });
+    const walk = new QuestionWalkService(questionnaire, { cibles, relevance });
+    const { asked, progress } = walk.walk(answers);
     this.answers = new GivenAnswers(answers);
     this.validated = new ValidatedAnswers(
-      read.validated as Validated<Questions>,
+      progress.validated as Validated<Questions>,
     );
     this.#questionnaire = questionnaire;
+    this.#pageCommit = new PageCommitService(questionnaire.pages);
     this.#cibles = cibles;
-    this.#asked = read.asked.filter(({ questions }) => questions.length > 0);
-    this.#complete = read.complete;
-    this.#inapplicable = read.inapplicable;
+    this.#asked = asked.filter(({ questions }) => questions.length > 0);
+    this.#complete = progress.complete;
+    this.#inapplicable = progress.inapplicable();
   }
 
   /**
    * Les questions devenues inapplicables : leurs gardes ne tiennent plus, à
-   * toutes leurs places (`decide-which-questions-to-ask.ts`).
+   * toutes leurs places (`walk-progress.vo.ts`).
    */
   get inapplicable(): ReadonlySet<string> {
     return this.#inapplicable;
@@ -161,7 +164,7 @@ export class Reading<Questions extends AnyQuestions = AnyQuestions> {
    * devenue inapplicable n'y laisse pas de réponse, sur cette page comme sur
    * les autres (#411), ni une réponse possible que sa question ne propose plus.
    * Celles qui dépendaient d'une réponse changée sont effacées
-   * (`validate-a-page.ts`). Une question à plusieurs places garde la sienne si
+   * (`page-commit.service.ts`). Une question à plusieurs places garde la sienne si
    * une place d'avant la pose, ou si une place d'après le peut ; une question
    * que le graphe masque garde la sienne.
    */
@@ -170,8 +173,7 @@ export class Reading<Questions extends AnyQuestions = AnyQuestions> {
     const shown = this.withDraft(page, draft);
     const waiting = shown.#waitingOn(page);
     const inputs = Object.fromEntries(shown.#inputsOn(page, draft, waiting));
-    const { pages } = this.#questionnaire;
-    const committed = commitPage(pages, given, page, inputs, waiting);
+    const committed = this.#pageCommit.commit(given, page, inputs, waiting);
     const read = this.#questionnaire.readWith(
       committed as Answers<Questions>,
       this.#cibles,
@@ -180,7 +182,7 @@ export class Reading<Questions extends AnyQuestions = AnyQuestions> {
   }
 
   /**
-   * Le brouillon de cette page après une saisie (`answerOnPage`). Une question
+   * Le brouillon de cette page après une saisie (`PageCommitService.answerOn`). Une question
    * devenue inapplicable y perd sa réponse : reposée, elle revient vide
    * (#411). Elle la garde si une autre de ses places la pose, ou le peut
    * encore, et si le graphe seul la masque.
@@ -191,7 +193,8 @@ export class Reading<Questions extends AnyQuestions = AnyQuestions> {
     id: string,
     answer: Answer | Unanswered,
   ): Answers {
-    return this.#onlyApplicable(page, answerOnPage(page, draft, id, answer));
+    const answered = this.#pageCommit.answerOn(page, draft, id, answer);
+    return this.#onlyApplicable(page, answered);
   }
 
   /**
@@ -244,7 +247,7 @@ export class Reading<Questions extends AnyQuestions = AnyQuestions> {
       .filter((question) => !isBlank(question, draft[question.id]))
       .map(({ id }) => id);
     if (hidden.length === 0) return draft;
-    return forget(page, draft, new Set(hidden));
+    return this.#pageCommit.forget(page, draft, new Set(hidden));
   }
 
   // Ce que la page enregistre du brouillon : la réponse de chaque question

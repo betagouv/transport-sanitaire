@@ -176,7 +176,7 @@ export class Simulation {
   }
 
   /**
-   * Valide la page ouverte avec ce brouillon (`validate-a-page.ts`), puis ouvre
+   * Valide la page ouverte avec ce brouillon (`page-commit.service.ts`), puis ouvre
    * la suivante, ou celle où reprend une correction. Sans suivante : le
    * résultat avant le verrou, le cerfa daté de `on` après.
    */

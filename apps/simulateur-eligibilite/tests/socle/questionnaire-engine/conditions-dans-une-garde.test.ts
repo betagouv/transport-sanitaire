@@ -20,7 +20,7 @@ import type {
   Answers,
   Page,
 } from "../../../core/socle/questionnaire-engine/question/question";
-import { Questionnaire } from "../../../core/socle/questionnaire-engine/questionnaire";
+import { Questionnaire } from "../../../core/socle/questionnaire-engine/questionnaire.vo";
 
 type Questions = {
   boisson: "the" | "cafe" | "eau";

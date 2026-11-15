@@ -26,6 +26,7 @@ export { LocalDateTime } from "./conditions/local-date-time.vo.ts";
 export { Reads } from "./conditions/reads.vo.ts";
 export { faitsChangedBy } from "./does-a-question-still-matter/faits-changed-by.ts";
 export { Relevance } from "./does-a-question-still-matter/matters.ts";
+export { PageCommitService } from "./page-commit.service.ts";
 export {
   Address,
   type AddressData,
@@ -64,5 +65,4 @@ export {
   type Unanswered,
   type Validated,
 } from "./question/question.ts";
-export { Questionnaire, type Reading } from "./questionnaire.ts";
-export { answerOnPage, commitPage } from "./validate-a-page.ts";
+export { Questionnaire, type Reading } from "./questionnaire.vo.ts";

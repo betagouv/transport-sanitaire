@@ -154,7 +154,7 @@ export type Question<
   readonly kind: AskedQuestion["kind"];
   /**
    * Ce dont dépend cette réponse. Quand cela change, cette réponse est effacée
-   * (`validate-a-page.ts`).
+   * (`page-commit.service.ts`).
    */
   readonly dependencies: readonly Dependency[];
   /**

@@ -11,7 +11,7 @@ import {
   type Answers,
   type AnyCibles,
   type AskedQuestion,
-  answerOnPage,
+  PageCommitService,
   Questionnaire,
 } from "../../../../core/socle/questionnaire-engine";
 
@@ -229,7 +229,12 @@ describe("un changement de catégorie (02 § Q3.2/Q3.3, SQ-26)", () => {
   const PAGE = pages.find(({ id }) => id === "P3/depart");
   if (!PAGE) throw new Error("P3/depart n'existe pas");
   const choisir = (brouillon: Reponses, categorie: Categorie) =>
-    answerOnPage(PAGE, brouillon, "Q3.2.categorie", categorie);
+    new PageCommitService([PAGE]).answerOn(
+      PAGE,
+      brouillon,
+      "Q3.2.categorie",
+      categorie,
+    );
   const brouillon: Reponses = { "Q3.2.categorie": STRUCTURE, ...CLINIQUE };
 
   it("efface le nom, et le retour ne le rend pas ; l'adresse reste", () => {
