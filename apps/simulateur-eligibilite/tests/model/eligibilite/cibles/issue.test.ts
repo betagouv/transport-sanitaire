@@ -8,7 +8,10 @@ import {
   ORIENTED_ISSUES,
   REFUSED_ISSUES,
 } from "../../../../core/models/eligibilite/cibles/issue.vo";
-import { CIBLES_ENUMEREES } from "../../../../core/models/eligibilite/cibles/noms";
+import {
+  CIBLES_ENUMEREES,
+  type IssueId,
+} from "../../../../core/models/eligibilite/cibles/noms";
 import { Cible } from "../../../../core/socle";
 
 const familleDe = (issue: Issue) => [
@@ -44,8 +47,8 @@ describe("une issue", () => {
   });
 
   it("n'existe pas tant que les règles ne concluent pas", () => {
-    expect(Issue.of(Cible.of(undefined))).toBeUndefined();
-    expect(Issue.of(Cible.of(null))).toBeUndefined();
+    expect(Issue.of(Cible.of<IssueId>(undefined))).toBeUndefined();
+    expect(Issue.of(Cible.of<IssueId>(null))).toBeUndefined();
   });
 
   it("chaque issue des règles est dans une famille, et une seule", () => {
