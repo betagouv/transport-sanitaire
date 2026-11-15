@@ -13,7 +13,7 @@
 // prendre une de ses valeurs. Ex. : ce que lit la fiche positive ne compte que
 // tant que l'issue peut encore être positive. S'y ajoute ce que lisent les
 // gardes des questions qui restent et qui comptent : la question elle-même,
-// celles qui la suivent et peuvent encore se poser (`does-a-question-still-matter/can-still-be-asked.ts`, D-223),
+// celles qui la suivent et peuvent encore se poser (`does-a-question-still-matter/askability.service.ts`, D-223),
 // et celles d'avant qui attendent leur réponse.
 //
 // Les faits d'une question qui reste sont libres : sa réponse n'est pas encore
@@ -40,14 +40,13 @@ import type {
   Question,
   Validated,
 } from "../question/question.ts";
-import { Askability } from "./can-still-be-asked.ts";
-import { faitsReading } from "./faits-changed-by.ts";
+import { Askability } from "./askability.service.ts";
 import {
   type Fixed,
   type Gate,
   RelevanceGraph,
   type Section,
-} from "./restricted-graph.ts";
+} from "./relevance-graph.vo.ts";
 
 /** Ce que la pertinence lit du modèle. */
 export type RelevanceSources = {
@@ -87,7 +86,8 @@ export class Relevance {
   readonly #guards: ReadonlyMap<string, Reads>;
   readonly #kept: ReadonlySet<string>;
   readonly #sections: readonly Section[];
-  readonly #changes: (id: string) => ReadonlySet<string>;
+  readonly #reads: ReadonlyMap<string, Reads>;
+  readonly #changed = new Map<string, ReadonlySet<string>>();
   readonly #of: RelevanceSources["faits"]["of"];
   readonly #imposed: ReadonlySet<string>;
   readonly #askability: Askability;
@@ -114,7 +114,7 @@ export class Relevance {
     );
     this.#sections = sectionsOf(shown, []);
     this.#imposed = new Set(faits.imposed);
-    this.#changes = faitsReading(faits.reads, this.#imposed);
+    this.#reads = faits.reads;
     this.#askability = new Askability(
       questions.map(({ question }) => question),
       { reads: faits.reads, imposed: this.#imposed },
@@ -203,6 +203,26 @@ export class Relevance {
       return { questions: reads.questions, faits: new Set(reads.faits) };
     };
     return { shown, guard: memoized(guard) };
+  }
+
+  // Les faits qui lisent la question, puis ceux qui les lisent, de proche en
+  // proche, sans passer par les gardes. Ceux qu'impose la décision n'y sont pas.
+  #changes(id: string): ReadonlySet<string> {
+    const cached = this.#changed.get(id);
+    if (cached) return cached;
+    const changed = new Set<string>();
+    for (let grew = true; grew; ) {
+      grew = false;
+      for (const [nom, lu] of this.#reads) {
+        if (this.#imposed.has(nom) || changed.has(nom)) continue;
+        if (lu.questions.includes(id) || lu.faits.some((f) => changed.has(f))) {
+          changed.add(nom);
+          grew = true;
+        }
+      }
+    }
+    this.#changed.set(id, changed);
+    return changed;
   }
 
   #guard(id: string): Reads {

@@ -11,7 +11,7 @@
 // (`question/asked/context.ts`), même relues après le verrou.
 //
 // Avec une pertinence, une question dont la réponse ne change rien de ce qui
-// compte ne se pose pas (`does-a-question-still-matter/matters.ts`, #255) :
+// compte ne se pose pas (`does-a-question-still-matter/relevance.service.ts`, #255) :
 // elle n'est jamais validée.
 //
 // Une question à plusieurs places se pose à la première où ses gardes tiennent
@@ -22,7 +22,7 @@ import { GivenAnswers } from "./answers/given-answers.vo.ts";
 import { ValidatedAnswers } from "./answers/validated-answers.vo.ts";
 import { GuardPlace } from "./conditions/guard-place.vo.ts";
 import type { QuestionPositions } from "./conditions/question-positions.vo.ts";
-import type { Relevance } from "./does-a-question-still-matter/matters.ts";
+import type { Relevance } from "./does-a-question-still-matter/relevance.service.ts";
 import type { SeenAnswers } from "./question/asked/context.ts";
 import type { AskedQuestion } from "./question/asked/question.vo.ts";
 import type {

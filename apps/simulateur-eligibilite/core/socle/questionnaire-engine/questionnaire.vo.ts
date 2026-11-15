@@ -9,7 +9,7 @@ import { answersOf, GivenAnswers } from "./answers/given-answers.vo.ts";
 import { ValidatedAnswers } from "./answers/validated-answers.vo.ts";
 import { QuestionPositions } from "./conditions/question-positions.vo.ts";
 import { Reads } from "./conditions/reads.vo.ts";
-import type { Relevance } from "./does-a-question-still-matter/matters.ts";
+import type { Relevance } from "./does-a-question-still-matter/relevance.service.ts";
 import { PageCommitService } from "./page-commit.service.ts";
 import type { AskedQuestion } from "./question/asked/question.vo.ts";
 import type {

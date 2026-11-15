@@ -166,7 +166,7 @@ export type Question<
   /**
    * Ce que lisent ses conditions, sans ses réponses possibles : ce qui décide
    * seul si elle se pose
-   * (`does-a-question-still-matter/can-still-be-asked.ts`).
+   * (`does-a-question-still-matter/askability.service.ts`).
    */
   readonly conditionReads: Reads;
   /**

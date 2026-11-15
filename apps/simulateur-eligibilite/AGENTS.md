@@ -117,19 +117,18 @@ mécanique, sans React ni phrase de l'écran :
 | `conditions/guard-place.vo.ts`, `conditions/guard-reading.service.ts` | ce que lit `answer()` selon l'endroit : dans une garde, les questions posées avant elle ; dans un fait, les questions validées (`ValidatedAnswers.reading`). Le service vérifie qu'aucune condition ne lit une question d'après |
 | `conditions/question-positions.vo.ts` | la place de chaque question, et ce qui refuse une place mal déclarée |
 | `questionnaire-declaration.error.ts` | l'erreur d'une déclaration qui ne tient pas : elle s'arrête au chargement ou à la première lecture |
-| `question-context.ts` | le seul objet que reçoivent les libellés, rappels, aides et bornes du moment : `{ answers, validated, cibles, faits }`. Les faits n'y sont calculés que si on les lit |
+| `question/asked/context.ts` | le seul objet que reçoivent les libellés, rappels, aides et bornes du moment : `{ answers, validated, cibles, faits }`. Les faits n'y sont calculés que si on les lit |
 | `question/possible-answer.ts` | ce qu'est une réponse possible offerte (`OfferedPossibleAnswer`) : sa valeur, son libellé, sa description, son aide, ce qu'elle bloque |
 | `question/address.vo.ts` | `Address`, une adresse, la seule réponse en objet : elle se lit et se modifie champ par champ, et se garde en JSON (`AddressData`, par `toJSON()`) |
 | `question/dependency.vo.ts` | `Dependency`, ce dont dépend une réponse (`dependsOn`) : une question entière, ou certaines de ses réponses possibles, et ce qu'elle en voit (`seen`) |
 | `questionnaire.vo.ts` | `Questionnaire`, ses pages dans l'ordre, et `Reading`, des réponses lues à travers lui : `questionnaire.readWith(answers, cibles)`. Une lecture se calcule une fois et ne change pas : pages et questions qui se posent (`askedPages`, `questionsOn`), questions validées (`validated`), complétude (`isComplete`), page où l'on rouvre (`openPage`), page suivante (`pageAfter`), réponses d'une page validée (`commit`) |
 | `question-walk.service.ts`, `walk-progress.vo.ts` | le parcours des pages dans l'ordre (`QuestionWalkService.walk`) : ce qui se pose, et son avancement question après question (`WalkProgress`) : validées, en attente, inapplicables |
+| `does-a-question-still-matter/relevance.service.ts`, `askability.service.ts`, `relevance-graph.vo.ts` | la pertinence : une question ne se pose que si sa réponse peut changer ce que montre le résultat, ou la garde d'une question qui reste (`Relevance.matters`). Les questions d'après dont la garde est jouée d'avance ne comptent pas (`Askability`), et le graphe de décision se restreint aux faits figés (`RelevanceGraph`) |
 | `page-commit.service.ts` | `PageCommitService` : les réponses d'une page validée (`commit`), le brouillon après une saisie (`answerOn`), et l'effacement des réponses qui dépendaient d'une réponse changée |
 | `question/asked/question.vo.ts` | `AskedQuestion`, la question telle qu'elle se pose : libellé, rappel, bornes, réponses possibles, mode d'adresse et incohérences du moment. Elle ne porte aucune fonction : elle passe en JSON, et `askedQuestion` la relit |
 | `question/asked/common.vo.ts`, `choices.vo.ts`, `inputs.vo.ts`, `address.vo.ts` | une classe par sorte de question posée. Chacune dit ce qu'elle garde d'une réponse (`kept`), si la réponse suffit (`isAnsweredBy`) et ce qui n'y va pas (`problemsWith`). `AskedAddress` dit les champs qui se demandent, en France ou à l'étranger, et ce qui ne va pas dans chacun |
 | `question/asked/answer-problem.vo.ts` | ce qui ne va pas dans une saisie, dit par sa nature (`{ kind: "missing" }`…). Les phrases de l'éditeur y restent telles quelles (`{ kind: "stated", text }`) |
-| `reading-in-order.ts` | la lecture dans l'ordre, que `Reading` fait une fois : chaque question posée voit les validées d'avant elle, et les questions validées gardent ce qui s'y proposait |
 | `answers/given-answers.vo.ts`, `answers/validated-answers.vo.ts` | les deux lectures des réponses, que le modèle reçoit (voir « La décision ») |
-| `page-commit.ts` | ce que deviennent les réponses quand une page est validée, et ce que ça efface (`Reading.commit` le lit) |
 
 `front/socle/questionnaire/` l'affiche, un fichier par capacité :
 
