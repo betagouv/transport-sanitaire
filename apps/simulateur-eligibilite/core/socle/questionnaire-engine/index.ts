@@ -24,7 +24,6 @@ export {
 export { givenOf } from "./conditions/given.ts";
 export { LocalDateTime } from "./conditions/local-date-time.vo.ts";
 export { Reads } from "./conditions/reads.vo.ts";
-export { faitsChangedBy } from "./does-a-question-still-matter/faits-changed-by.ts";
 export { Relevance } from "./does-a-question-still-matter/relevance.service.ts";
 export { PageCommitService } from "./page-commit.service.ts";
 export {
