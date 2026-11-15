@@ -62,12 +62,7 @@ export function decisionGraphOf(rules: Rules): DecisionGraphData {
 // ---- implémentation ----
 
 type AnyFaits = Parameters<typeof situationOf>[0];
-
-// Des faits tels que publicodes les reçoit, et ce qui les distingue d'autres.
-type Situation = {
-  readonly key: string;
-  readonly situation: ReturnType<typeof situationOf>;
-};
+type Situation = ReturnType<typeof situationOf>;
 
 // Ce que les règles donnent, cible par cible, pour chaque situation déjà vue.
 // Une lecture du questionnaire redemande les mêmes cibles sur les mêmes faits,
@@ -77,7 +72,6 @@ class Evaluations {
   static readonly #KEPT = 64;
   readonly #rules: Rules;
   readonly #known = new Map<string, Map<string, Cible>>();
-  readonly #situations = new WeakMap<AnyFaits, Situation>();
   // Compiler les règles coûte : le moteur est créé au premier calcul, puis gardé.
   #engine: Engine | undefined;
   // La situation que le moteur porte : la changer efface ce qu'il a calculé.
@@ -88,24 +82,15 @@ class Evaluations {
   }
 
   of(faits: AnyFaits, nom: string): Cible {
-    const { key, situation } = this.#situationOf(faits);
+    const situation = situationOf(faits);
+    // Ce qui distingue ces faits d'autres, tels que publicodes les reçoit.
+    const key = JSON.stringify(situation);
     const cibles = this.#ciblesOf(key);
     const known = cibles.get(nom);
     if (known) return known;
     const cible = cibleOf(this.#engineOn(situation, key), nom);
     cibles.set(nom, cible);
     return cible;
-  }
-
-  // Les mêmes faits se relisent cible après cible : leur situation ne s'écrit
-  // qu'une fois.
-  #situationOf(faits: AnyFaits): Situation {
-    const known = this.#situations.get(faits);
-    if (known) return known;
-    const situation = situationOf(faits);
-    const read = { key: JSON.stringify(situation), situation };
-    this.#situations.set(faits, read);
-    return read;
   }
 
   #ciblesOf(key: string): Map<string, Cible> {
@@ -117,7 +102,7 @@ class Evaluations {
     return cibles;
   }
 
-  #engineOn(situation: Situation["situation"], key: string): Engine {
+  #engineOn(situation: Situation, key: string): Engine {
     this.#engine ??= new Engine(this.#rules);
     if (this.#current !== key) {
       this.#engine.setSituation(situation);
