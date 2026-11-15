@@ -18,7 +18,6 @@
 import { GivenAnswers } from "../answers/given-answers.ts";
 import { ValidatedAnswers } from "../answers/validated-answers.ts";
 import type { Reads } from "../conditions/reads.vo.ts";
-import { validatedReading } from "../conditions/what-a-condition-sees.ts";
 import type { SeenAnswers } from "../question/asked/context.ts";
 import type { AnyCibles, Question, Validated } from "../question/question.ts";
 
@@ -128,7 +127,7 @@ function asks(
     answers: new GivenAnswers(answers),
     cibles,
     validated: read,
-    answer: validatedReading(read),
+    answer: read.reading(),
   };
   return question.askedIn(seen, seen) !== undefined;
 }

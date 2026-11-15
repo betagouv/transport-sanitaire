@@ -19,11 +19,8 @@
 
 import { GivenAnswers } from "./answers/given-answers.ts";
 import { ValidatedAnswers } from "./answers/validated-answers.ts";
-import {
-  type GuardPlace,
-  guardReading,
-  type Positions,
-} from "./conditions/what-a-condition-sees.ts";
+import { GuardPlace } from "./conditions/guard-place.vo.ts";
+import type { QuestionPositions } from "./conditions/question-positions.vo.ts";
 import type { Relevance } from "./does-a-question-still-matter/matters.ts";
 import type { SeenAnswers } from "./question/asked/context.ts";
 import type { AskedQuestion } from "./question/asked/question.ts";
@@ -52,7 +49,10 @@ export type AskedPage = {
  * (`questionnaire.ts`).
  */
 export function readInOrder(
-  { pages, positions }: { pages: readonly Page[]; positions: Positions },
+  {
+    pages,
+    positions,
+  }: { pages: readonly Page[]; positions: QuestionPositions },
   answers: Answers,
   { cibles, relevance }: { cibles?: AnyCibles; relevance?: Relevance } = {},
 ): { readonly asked: readonly AskedPage[] } & Progress & Inapplicable {
@@ -113,7 +113,7 @@ type Context = {
   readonly answers: Answers;
   readonly earlier: Answers;
   readonly cibles?: AnyCibles;
-  readonly positions: Positions;
+  readonly positions: QuestionPositions;
   readonly rank: number;
   readonly relevance?: Relevance;
 };
@@ -127,14 +127,14 @@ function askPage(page: Page, context: Context, start: Progress) {
   const questions: AskedQuestion[] = [];
   for (const [index, declared] of page.questions.entries()) {
     if (declared.isLaterPlace && askedBefore(declared.id, progress)) continue;
-    const place: GuardPlace = {
+    const place = new GuardPlace({
       id: declared.id,
       at: { page: context.rank, index },
       positions: context.positions,
       onPage: new Map(questions.map((asked) => [asked.id, asked])),
       validated: progress.validated,
       answers: context.answers,
-    };
+    });
     const question = askQuestion(declared, context, place);
     const asked = question && matters(declared, context, progress);
     if (!asked) {
@@ -159,7 +159,7 @@ function askQuestion(
     answers: new GivenAnswers(given),
     cibles,
     validated: read,
-    answer: guardReading(place, { own }),
+    answer: place.reading({ own }),
   });
   return declared.askedIn(seenWith(answers, false), seenWith(earlier, true));
 }
@@ -226,7 +226,7 @@ function asValidated(question: AskedQuestion, answer: Answer | Unanswered) {
 // page. Les réponses acquises avant le verrou n'ont pas de page ici : elles
 // restent.
 function answersUpTo(
-  positions: Positions,
+  positions: QuestionPositions,
   rank: number,
   answers: Answers,
 ): Answers {

@@ -19,8 +19,8 @@ import type {
   Text,
   Value,
 } from "../../conditions/condition.ts";
+import { GuardReadingService } from "../../conditions/guard-reading.service.ts";
 import { Reads } from "../../conditions/reads.vo.ts";
-import { checkReads, readIn } from "../../conditions/reads-in-place.ts";
 import type { AskedCommonData, InPlace, Revisit } from "../asked/common.ts";
 import type { QuestionContext, SeenAnswers } from "../asked/context.ts";
 import type { AskedQuestion } from "../asked/question.ts";
@@ -259,11 +259,12 @@ export abstract class DeclaredQuestion<
     earlier: SeenAnswers<Questions, Cibles | undefined>,
   ): AskedQuestion | NotAsked {
     const { settings } = this;
-    checkReads(settings, seen, earlier);
-    const now = readIn(seen, settings.pipeline);
+    const guards = new GuardReadingService(settings);
+    guards.checkReads(seen, earlier);
+    const now = guards.readAt(seen);
     if (!settings.conditions.every((guard) => guard.in(now.scope)))
       return undefined;
-    const before = readIn(earlier, settings.pipeline);
+    const before = guards.readAt(earlier);
     const common = commonIn(settings, now.context, before.scope);
     return this.askedWith(common, now.context, now.scope);
   }

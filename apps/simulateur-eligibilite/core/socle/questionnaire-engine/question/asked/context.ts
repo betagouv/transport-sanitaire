@@ -12,9 +12,9 @@ import { Fait, type FaitCatalogue } from "../../../decision-engine/index.ts";
 
 import type { GivenAnswers } from "../../answers/given-answers.ts";
 import type { ValidatedAnswers } from "../../answers/validated-answers.ts";
-import type { Scope } from "../../conditions/condition.ts";
-import { LocalDateTime } from "../../conditions/local-date-time.ts";
-import type { AnswerReading } from "../../conditions/what-a-condition-sees.ts";
+import type { AnswerReading, Scope } from "../../conditions/condition.ts";
+import { LocalDateTime } from "../../conditions/local-date-time.vo.ts";
+import { QuestionnaireDeclarationError } from "../../questionnaire-declaration.error.ts";
 import type { AnyCibles, AnyQuestions } from "../question.ts";
 
 /** Ce que lisent les conditions et les libellés du moment d'une question. */
@@ -42,7 +42,7 @@ export type QuestionContext<
  * Ce qu'une question voit des réponses, avant les étapes du modèle. `cibles` :
  * celles figées au verrou, sur une page posée après lui. Ailleurs :
  * `undefined`. `answer` : la réponse d'une question telle que ses conditions
- * la lisent, à sa place (`conditions/what-a-condition-sees.ts`).
+ * la lisent, à sa place (`conditions/guard-place.vo.ts`).
  */
 export type SeenAnswers<
   Questions extends AnyQuestions = AnyQuestions,
@@ -112,7 +112,9 @@ function assuming<Questions extends AnyQuestions, Cibles, Faits>(
   fait: string,
 ): Cibles {
   if (!cibles)
-    throw new Error("Ce modèle n'a pas de règles : il n'a pas de cibles.");
+    throw new QuestionnaireDeclarationError(
+      "Ce modèle n'a pas de règles : il n'a pas de cibles.",
+    );
   const supposed = Fait.oui(`Supposé pour la garde : ${fait}.`);
   return cibles({ ...context.faits, [fait]: supposed });
 }
@@ -123,7 +125,7 @@ function faitsThrough<Questions extends AnyQuestions, Faits>(
   { validated }: SeenAnswers<Questions, unknown>,
 ): Faits {
   if (!faits)
-    throw new Error(
+    throw new QuestionnaireDeclarationError(
       "Cette question ne connaît pas ses faits : déclare-la par les constructeurs de son modèle.",
     );
   return faits.read(validated);

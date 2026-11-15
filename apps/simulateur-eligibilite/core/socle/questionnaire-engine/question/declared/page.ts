@@ -6,6 +6,7 @@
 // aucune question ne se pose est sautée, sans rien de plus à déclarer.
 
 import type { Condition } from "../../conditions/condition.ts";
+import { QuestionnaireDeclarationError } from "../../questionnaire-declaration.error.ts";
 import type { Answer, AnyQuestions } from "../question.ts";
 import type { DeclaredQuestion } from "./question.ts";
 
@@ -70,7 +71,7 @@ export function page<
     const parent = question.shownUnderQuestion;
     if (parent === undefined) return;
     if (!questions.slice(0, rang).some(({ id }) => id === parent))
-      throw new Error(
+      throw new QuestionnaireDeclarationError(
         `${question.id} s'affiche sous ${parent}, qui ne la précède pas sur la page ${id}.`,
       );
   });

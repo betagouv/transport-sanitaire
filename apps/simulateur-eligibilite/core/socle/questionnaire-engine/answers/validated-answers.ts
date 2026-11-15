@@ -2,6 +2,7 @@
 // proposait. C'est ce qui sépare un « non » d'un fait inconnu : une case
 // proposée et non cochée a été refusée, une case jamais montrée ne l'a pas été.
 
+import type { AnswerReading } from "../conditions/condition.ts";
 import {
   type Answer,
   type Answered,
@@ -71,6 +72,11 @@ export class ValidatedAnswers<Questions extends AnyQuestions = AnyQuestions> {
     const id = idOf(question);
     const validated: Validated = this.#validated;
     return new ValidatedAnswer(id, validated[id]);
+  }
+
+  /** La lecture d'un fait, de R2 ou de R3 : la réponse validée. */
+  reading(): AnswerReading {
+    return (id) => this.question(id);
   }
 
   /**

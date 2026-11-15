@@ -11,7 +11,6 @@ import {
   type Reading,
   type Scope,
   type ValidatedAnswers,
-  validatedReading,
 } from "../questionnaire-engine/index.ts";
 import type { PreconisationService } from "./preconisation.service.ts";
 import { SimulationStage } from "./simulation-stage.vo.ts";
@@ -86,7 +85,7 @@ export class QuestionnaireReadingService {
     const named = (values: unknown, nom: string): unknown =>
       (values as Readonly<Record<string, unknown>>)[nom];
     return {
-      answer: validatedReading(validated),
+      answer: validated.reading(),
       fait: (nom) => named(faits, nom),
       cible: (nom) => named(cibles, nom),
       cibleAssuming: (nom) => {

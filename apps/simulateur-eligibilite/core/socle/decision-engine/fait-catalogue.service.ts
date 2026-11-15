@@ -11,7 +11,6 @@ import {
   Reads,
   type Scope,
   type ValidatedAnswers,
-  validatedReading,
 } from "../questionnaire-engine/index.ts";
 
 import type { FaitDeclare } from "./fait/fait-declare.vo.ts";
@@ -128,7 +127,7 @@ function factScope(validated: ValidatedAnswers, faits: object): Scope {
     throw new Error(`Un fait ne lit pas ${what}.`);
   };
   return {
-    answer: validatedReading(validated),
+    answer: validated.reading(),
     fait: (nom) => (faits as Readonly<Record<string, unknown>>)[nom],
     cible: refused("de cible"),
     cibleAssuming: refused("de cible"),

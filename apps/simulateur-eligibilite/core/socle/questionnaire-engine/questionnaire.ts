@@ -7,8 +7,8 @@
 
 import { answersOf, GivenAnswers } from "./answers/given-answers.ts";
 import { ValidatedAnswers } from "./answers/validated-answers.ts";
+import { QuestionPositions } from "./conditions/question-positions.vo.ts";
 import { Reads } from "./conditions/reads.vo.ts";
-import { Positions } from "./conditions/what-a-condition-sees.ts";
 import {
   type AskedPage,
   readInOrder,
@@ -33,18 +33,18 @@ type Finished = undefined;
 /**
  * Un questionnaire : ses pages, dans l'ordre. `Questions` : celles du modèle,
  * pour lire ses réponses typées. Une question à plusieurs places mal déclarée
- * l'arrête dès sa construction (`Positions`).
+ * l'arrête dès sa construction (`QuestionPositions`).
  */
 export class Questionnaire<Questions extends AnyQuestions = AnyQuestions> {
   readonly pages: readonly Page[];
   /** Ce qu'une question change de ce qui compte. Sans elle, tout compte. */
   readonly relevance?: Relevance;
   /** Où se trouve chaque question, à chacune de ses places. */
-  readonly positions: Positions;
+  readonly positions: QuestionPositions;
 
   constructor(pages: readonly Page[], relevance?: Relevance) {
     this.pages = pages;
-    this.positions = new Positions(pages);
+    this.positions = new QuestionPositions(pages);
     if (relevance) this.relevance = relevance;
   }
 

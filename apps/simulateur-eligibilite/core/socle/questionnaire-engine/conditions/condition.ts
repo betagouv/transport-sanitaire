@@ -7,8 +7,11 @@
 // posées avant elle, un fait les questions validées (`given.ts`).
 
 import type { ValidatedAnswer } from "../answers/validated-answers.ts";
-import type { LocalDateTime } from "./local-date-time.ts";
+import type { LocalDateTime } from "./local-date-time.vo.ts";
 import { Reads } from "./reads.vo.ts";
+
+/** Comment l'endroit voit la réponse d'une question. */
+export type AnswerReading = (id: string) => ValidatedAnswer;
 
 /**
  * Ce dans quoi une valeur se lit. Le socle la donne : la réponse d'une
@@ -16,7 +19,7 @@ import { Reads } from "./reads.vo.ts";
  * réponses, et le jour.
  */
 export type Scope = {
-  answer(id: string): ValidatedAnswer;
+  answer: AnswerReading;
   fait(nom: string): unknown;
   cible(nom: string): unknown;
   /** Cette cible, si ce fait valait « oui ». */

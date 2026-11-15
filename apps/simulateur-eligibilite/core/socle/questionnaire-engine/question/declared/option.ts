@@ -8,6 +8,7 @@
 
 import type { Condition, Scope } from "../../conditions/condition.ts";
 import { Reads } from "../../conditions/reads.vo.ts";
+import { QuestionnaireDeclarationError } from "../../questionnaire-declaration.error.ts";
 import type { QuestionContext } from "../asked/context.ts";
 import type { NotOffered, OfferedOption, OptionHelp } from "../option.ts";
 import type { AnyQuestions } from "../question.ts";
@@ -208,7 +209,7 @@ function optionsOf<Questions extends AnyQuestions, Cibles, Faits>(
   const values = Object.keys(labels);
   const integer = values.find((value) => /^(0|[1-9]\d*)$/.test(value));
   if (integer !== undefined) {
-    throw new Error(
+    throw new QuestionnaireDeclarationError(
       `« ${integer} » a l'air d'un entier : il passerait avant les autres options.`,
     );
   }

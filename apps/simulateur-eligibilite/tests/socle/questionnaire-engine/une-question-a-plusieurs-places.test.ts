@@ -11,6 +11,7 @@ import { describe, expect, it } from "vitest";
 import { afterLock, givenOf, page, questionsOf } from "../../../core/socle";
 import type { Answers } from "../../../core/socle/questionnaire-engine/question/question";
 import { Questionnaire } from "../../../core/socle/questionnaire-engine/questionnaire";
+import { QuestionnaireDeclarationError } from "../../../core/socle/questionnaire-engine/questionnaire-declaration.error";
 
 describe("une question à plusieurs places", () => {
   it("se pose à sa première place, quand ses gardes y tiennent", () => {
@@ -109,9 +110,10 @@ describe("la validation d'une page où elle ne se pose pas", () => {
 
 describe("la déclaration de ses places", () => {
   it("refuse une place suivante sans première", () => {
-    expect(
-      () => new Questionnaire([page("branche", URGENCE.unlessAskedBefore())]),
-    ).toThrow("urgence est une place suivante");
+    const sansPremiere = () =>
+      new Questionnaire([page("branche", URGENCE.unlessAskedBefore())]);
+    expect(sansPremiere).toThrow(QuestionnaireDeclarationError);
+    expect(sansPremiere).toThrow("urgence est une place suivante");
   });
 
   it("refuse deux places sur une même page", () => {

@@ -7,8 +7,7 @@ import { describe, expect, it } from "vitest";
 import type { Cible, Fait } from "../../../core/socle";
 import { givenOf, page, questionsOf } from "../../../core/socle";
 import type { Scope } from "../../../core/socle/questionnaire-engine/conditions/condition";
-import { LocalDateTime } from "../../../core/socle/questionnaire-engine/conditions/local-date-time";
-import { validatedReading } from "../../../core/socle/questionnaire-engine/conditions/what-a-condition-sees";
+import { LocalDateTime } from "../../../core/socle/questionnaire-engine/conditions/local-date-time.vo";
 import type {
   Answers,
   Page,
@@ -35,7 +34,7 @@ const livree = given.question("livraison").answer().toDate();
 function lecture(pages: readonly Page[], answers: Answers): Scope {
   const { validated } = new Questionnaire(pages).readWith(answers);
   return {
-    answer: validatedReading(validated),
+    answer: validated.reading(),
     fait: () => undefined,
     cible: () => undefined,
     cibleAssuming: () => undefined,
