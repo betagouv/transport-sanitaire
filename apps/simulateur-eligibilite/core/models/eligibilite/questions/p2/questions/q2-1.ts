@@ -39,7 +39,7 @@ export const Q2_1 = question
     "Q2.1",
     "Quelle situation médicale ou quel événement motive ce déplacement ?",
   )
-  .options({
+  .possibleAnswers({
     // Sans le suivi de l'ALD : ce choix ne prouve pas le lien (QST-Q21-CONSULTATION).
     "1_CONSULTATION":
       "Consultation médicale de diagnostic, de traitement ou de suivi.",
@@ -65,7 +65,7 @@ export const Q2_1_F = question
     "Q2.1.f",
     "Les séances sélectionnées motivent-elles le même déplacement vers le même lieu de soins ?",
   )
-  .options({
+  .possibleAnswers({
     "1_OUI": "Oui, il s’agit du même déplacement et du même lieu",
     "2_NON": "Non, il s’agit de déplacements ou de lieux différents",
   })
@@ -73,9 +73,9 @@ export const Q2_1_F = question
   // Elle porte sur les séances cochées : d'autres séances, et sa réponse ne
   // vaut plus ; un motif de plus ne change rien (NAV-SOUS-QUESTIONS-20261113,
   // SQ-25).
-  .dependsOn({ question: Q1_3, options: SEANCES })
-  .option("2_NON", (option) =>
-    option.blocks(
+  .dependsOn({ question: Q1_3, possibleAnswers: SEANCES })
+  .possibleAnswer("2_NON", (possibleAnswer) =>
+    possibleAnswer.blocks(
       "Une simulation porte sur un seul déplacement. Corrigez les séances en Q1.3, puis faites une simulation par déplacement.",
     ),
   );
@@ -85,7 +85,7 @@ const sousType = question
     "Q2.1.g",
     "S’agit-il d’une entrée dans un établissement de santé, d’une sortie de cet établissement ou d’une admission en Hospitalisation à Domicile (HAD) à domicile ?",
   )
-  .options({
+  .possibleAnswers({
     "1_ENTREE": "Une entrée dans un établissement de santé",
     "2_SORTIE": "Une sortie de cet établissement",
     "3_ADMISSION_HAD":

@@ -41,7 +41,7 @@ export const Q3_4_A = question
     "Q3.4.a",
     "Le transport à prescrire comprend-il un trajet vers un centre de référence pour une maladie rare ?",
   )
-  .options({
+  .possibleAnswers({
     "1_OUI": "Oui",
     "2_NON": "Non",
   })

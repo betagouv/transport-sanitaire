@@ -2,9 +2,9 @@
 // établissements, sous-cas provisoire.
 //
 // Une entrée simple (Q2.13), la sortie vers la prison ou la permission
-// l'écartent. Sinon, l'option 3 de Q2.6 le dit. Un transfert entre
-// établissements (Q2.5) attend Q2.6 ; un autre déplacement ni une HAD n'en sont un. Le
-// séjour proposé et écarté le met à « non ».
+// l'écartent. Sinon, la réponse possible 3 de Q2.6 le dit. Un transfert entre
+// établissements (Q2.5) attend Q2.6 ; un autre déplacement ni une HAD n'en sont
+// un. Le séjour proposé et écarté le met à « non ».
 //
 // Il suit `CONTRAT_REPONSES_FAITS.json`.
 

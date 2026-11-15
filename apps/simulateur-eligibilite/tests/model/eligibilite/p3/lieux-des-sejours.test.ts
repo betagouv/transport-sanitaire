@@ -10,19 +10,19 @@ import {
   ADRESSE,
   ALLER,
   ids,
-  optionsDe,
   posee,
   posees,
   RETOUR,
   type Reponses,
   rappel,
+  reponsesPossiblesDe,
 } from "./questions-des-lieux";
 
 describe("les lieux d'un séjour, d'une HAD et d'une permission (QST-LIEUX-001)", () => {
   it("une admission en HAD de Q2.1.g arrive au domicile sans présumer l'hôpital au départ", () => {
     const had: Reponses = { ...RETOUR, "Q2.1.g": "3_ADMISSION_HAD" };
     expect(ids("P3/depart", had)).toContain("Q3.2.categorie");
-    expect(optionsDe("P3/depart", "Q3.2.categorie", had)).toContain(
+    expect(reponsesPossiblesDe("P3/depart", "Q3.2.categorie", had)).toContain(
       "3_AUTRE_LIEU",
     );
     expect(ids("P3/arrivee", had)).toEqual(["Q3.3.adresse"]);
@@ -42,11 +42,11 @@ describe("les lieux d'un séjour, d'une HAD et d'une permission (QST-LIEUX-001)"
 
   it("un EHPAD, autre lieu, se choisit au départ comme à l'arrivée d'un transfert", () => {
     const transfert: Reponses = { ...ALLER, "Q2.5": "1_TRANSFERT" };
-    expect(optionsDe("P3/depart", "Q3.2.categorie", transfert)).toContain(
-      "3_AUTRE_LIEU",
-    );
     expect(
-      optionsDe("P3/arrivee", "Q3.3.categorie", {
+      reponsesPossiblesDe("P3/depart", "Q3.2.categorie", transfert),
+    ).toContain("3_AUTRE_LIEU");
+    expect(
+      reponsesPossiblesDe("P3/arrivee", "Q3.3.categorie", {
         ...transfert,
         "Q3.2.categorie": "2_STRUCTURE_DE_SOINS",
         "Q3.2.adresse": ADRESSE,
@@ -81,7 +81,7 @@ describe("les lieux d'un séjour, d'une HAD et d'une permission (QST-LIEUX-001)"
 
   it("le lieu de vie d'une permission se choisit, sans domicile présumé", () => {
     const aller: Reponses = { ...ALLER, "Q2.2.1.a": "1_OUI" };
-    expect(optionsDe("P3/arrivee", "Q3.3.categorie", aller)).toEqual([
+    expect(reponsesPossiblesDe("P3/arrivee", "Q3.3.categorie", aller)).toEqual([
       "1_DOMICILE",
       "3_AUTRE_LIEU",
     ]);
@@ -89,7 +89,7 @@ describe("les lieux d'un séjour, d'une HAD et d'une permission (QST-LIEUX-001)"
 
   it("le retour d'une permission part du lieu de vie, choisi", () => {
     const retour: Reponses = { ...RETOUR, "Q2.2.1.a": "1_OUI" };
-    expect(optionsDe("P3/depart", "Q3.2.categorie", retour)).toEqual([
+    expect(reponsesPossiblesDe("P3/depart", "Q3.2.categorie", retour)).toEqual([
       "1_DOMICILE",
       "3_AUTRE_LIEU",
     ]);
@@ -190,9 +190,9 @@ describe("les lieux d'un séjour, d'une HAD et d'une permission (QST-LIEUX-001)"
       "Q3.2.service",
       "Q3.2.adresse",
     ]);
-    expect(optionsDe("P3/arrivee", "Q3.3.categorie", aller)).toContain(
-      "1_DOMICILE",
-    );
+    expect(
+      reponsesPossiblesDe("P3/arrivee", "Q3.3.categorie", aller),
+    ).toContain("1_DOMICILE");
     const depuisLeDomicile = { "Q3.2.categorie": "1_DOMICILE" } as const;
     expect(
       ids("P3/arrivee", { ...RETOUR, ...usld, ...depuisLeDomicile }),
@@ -207,11 +207,12 @@ describe("les lieux d'un séjour, d'une HAD et d'une permission (QST-LIEUX-001)"
   ])("%s sans séjour en cours ne part pas de l'hôpital", (_cas, seance) => {
     const aller = { ...ALLER, ...seance };
     expect(ids("P3/depart", aller)).toEqual(["Q3.2.categorie", "Q3.2.adresse"]);
-    expect(optionsDe("P3/depart", "Q3.2.categorie", aller)).toContain(
+    expect(reponsesPossiblesDe("P3/depart", "Q3.2.categorie", aller)).toContain(
       "1_DOMICILE",
     );
+    const retour = { ...RETOUR, ...seance };
     expect(
-      optionsDe("P3/arrivee", "Q3.3.categorie", { ...RETOUR, ...seance }),
+      reponsesPossiblesDe("P3/arrivee", "Q3.3.categorie", retour),
     ).toContain("1_DOMICILE");
   });
 
@@ -222,9 +223,9 @@ describe("les lieux d'un séjour, d'une HAD et d'une permission (QST-LIEUX-001)"
       "Q2.2.1.cadre": "2_HAD",
     };
     expect(ids("P3/depart", had)).toEqual(["Q3.2.adresse"]);
-    expect(optionsDe("P3/arrivee", "Q3.3.categorie", had)).not.toContain(
-      "1_DOMICILE",
-    );
+    expect(
+      reponsesPossiblesDe("P3/arrivee", "Q3.3.categorie", had),
+    ).not.toContain("1_DOMICILE");
   });
 
   const CONTRADICTION = [

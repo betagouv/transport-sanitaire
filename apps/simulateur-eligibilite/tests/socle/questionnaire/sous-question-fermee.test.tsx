@@ -21,11 +21,11 @@ const SITUATIONS = page(
   "situations",
   question
     .multipleChoice("situations", "Quelles situations ?")
-    .options({ ald: "Une ALD", autre: "Une autre", aucune: "Aucune" })
+    .possibleAnswers({ ald: "Une ALD", autre: "Une autre", aucune: "Aucune" })
     .exclusive("aucune"),
   question
     .singleChoice("lien", "Quel lien ?")
-    .options({ direct: "Direct", indirect: "Indirect" })
+    .possibleAnswers({ direct: "Direct", indirect: "Indirect" })
     .appliesWhen(given.question("situations").answer().checked("ald"))
     .shownUnder("situations", "ald"),
   question

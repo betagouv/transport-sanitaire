@@ -59,7 +59,7 @@ export type Lues = {
 
 /**
  * Les réponses dont les lieux se tirent, lues sous leur nom : leur valeur, une
- * option, une case.
+ * réponse possible, une case.
  */
 export type Entrees = {
   readonly [Nom in keyof Lues]: Pick<

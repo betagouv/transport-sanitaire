@@ -129,7 +129,7 @@ const CIBLES_BOOLEENNES = [
 type CibleEnumeree = keyof typeof CIBLES_ENUMEREES;
 
 /** Une issue des règles : la valeur de `cible_issue_id` quand elles concluent. */
-export type Issue = (typeof CIBLES_ENUMEREES.cible_issue_id)[number];
+export type IssueId = (typeof CIBLES_ENUMEREES.cible_issue_id)[number];
 
 /**
  * Ce que les règles donnent pour des faits : chaque cible, « oui ou non » ou à

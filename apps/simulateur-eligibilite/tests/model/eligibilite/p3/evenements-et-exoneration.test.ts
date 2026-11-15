@@ -12,7 +12,7 @@ import {
   Questionnaire,
 } from "../../../../core/socle/questionnaire-engine";
 
-import { preconisationOf } from "../../../../core/socle/simulation";
+import { EstablishAPreconisation } from "../../../../core/socle/simulation";
 import { BRANCARD_20_KM } from "../p2/reponses-de-la-branche";
 
 type Reponses = Answers<Questions>;
@@ -27,7 +27,7 @@ const seed = (id: string) => {
 const posees = (pageId: string, reponses: Reponses) => {
   const page = pages.find(({ id }) => id === pageId);
   if (!page) throw new Error(`${pageId} n'existe pas`);
-  const { cibles } = preconisationOf(model, reponses);
+  const { cibles } = new EstablishAPreconisation(model).execute(reponses);
   return new Questionnaire(pages).readWith(reponses, cibles).questionsOn(page);
 };
 const ids = (pageId: string, reponses: Reponses) =>
@@ -41,8 +41,8 @@ const cases = (reponses: Reponses) => {
   const question = posee("P3/exoneration", "Q3.7", reponses);
   return question.kind === "multiple choice"
     ? {
-        proposees: question.options.map(({ value }) => value),
-        exclusive: question.exclusiveOption?.value,
+        proposees: question.possibleAnswers.map(({ value }) => value),
+        exclusive: question.exclusivePossibleAnswer?.value,
       }
     : undefined;
 };
@@ -117,8 +117,9 @@ describe("la page de l'exonération (Q3.7)", () => {
 
   it("l'acte lourd cite le seuil des notices", () => {
     const question = posee("P3/exoneration", "Q3.7", seed("issue-pmt"));
-    const options = question.kind === "multiple choice" ? question.options : [];
-    expect(options[0]?.label).toBe(
+    const possibleAnswers =
+      question.kind === "multiple choice" ? question.possibleAnswers : [];
+    expect(possibleAnswers[0]?.label).toBe(
       "Un acte réalisé lors de l’hospitalisation a un coefficient égal ou supérieur à K60, ou un tarif égal ou supérieur à 120 euros.",
     );
   });

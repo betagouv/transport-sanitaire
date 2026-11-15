@@ -96,8 +96,8 @@ export const UNE_SORTIE_VERS_LA_PRISON = uneRegle().nonSi(
 );
 
 /**
- * Q2.2.1.a dit une permission : elle a écarté son option 2. Q2.5 ne se pose
- * pas alors ; si elle est validée, elle décide.
+ * Q2.2.1.a dit une permission : elle a écarté sa réponse possible 2. Q2.5 ne se
+ * pose pas alors ; si elle est validée, elle décide.
  */
 export const UNE_PERMISSION_ECARTE_LE_TRANSFERT = uneRegle().nonSi(
   given

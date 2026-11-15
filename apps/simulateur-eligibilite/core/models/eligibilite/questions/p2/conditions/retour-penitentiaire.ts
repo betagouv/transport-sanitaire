@@ -1,10 +1,10 @@
-// Le retour vers un établissement pénitentiaire (option 10 de Q2.2.1) : ce
-// qui qualifie son circuit avant R2 (points 33 et 34 de la v10.1.3,
+// Le retour vers un établissement pénitentiaire (réponse possible 10 de Q2.2.1)
+// : ce qui qualifie son circuit avant R2 (points 33 et 34 de la v10.1.3,
 // `CONTRAT_CONTEXTES_V1012.json` et `CONTRAT_ORIENTATION_ADMINISTRATIVE.json`).
 // La sortie définitive vers la prison est une règle des faits
 // (`faits/communs.ts`).
 //
-// Cocher l'option ne donne aucun fait, ni aucun financeur.
+// Cocher la réponse possible ne donne aucun fait, ni aucun financeur.
 //
 // - Une preuve qualifiée de P1, ou une séance médicale du déplacement,
 //   établit déjà l'indication médicale du transport. Sinon,

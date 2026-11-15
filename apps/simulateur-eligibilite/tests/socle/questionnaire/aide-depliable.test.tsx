@@ -3,8 +3,8 @@ import { describe, expect, it } from "vitest";
 import { page, questionsOf } from "../../../core/socle";
 import { afficher } from "./afficher";
 
-// Une option peut porter une aide : un lien, juste sous elle, qui déplie une
-// liste. La déplier n'est pas répondre. Les pages sont écrites ici.
+// Une réponse possible peut porter une aide : un lien, juste sous elle, qui
+// déplie une liste. La déplier n'est pas répondre. Les pages sont écrites ici.
 
 type Questions = {
   age: "oui" | "non";
@@ -17,21 +17,21 @@ const AGE = page(
   "age",
   question
     .singleChoice("age", "Le patient est-il majeur ?")
-    .options({ oui: "Oui", non: "Non" }),
+    .possibleAnswers({ oui: "Oui", non: "Non" }),
 );
 
 const SITUATIONS = page(
   "situations",
   question
     .multipleChoice("situations", "Quelles situations concernent ce trajet ?")
-    .options({
+    .possibleAnswers({
       hospitalise: "Le patient est déjà hospitalisé",
       autre: "Une autre situation particulière",
       aucune: "Aucune de ces situations",
     })
     .exclusive("aucune")
-    .option("autre", (option) =>
-      option.helpFrom(({ answers }) => ({
+    .possibleAnswer("autre", (possibleAnswer) =>
+      possibleAnswer.helpFrom(({ answers }) => ({
         label: "Voir les situations concernées",
         items: answers.question("age").is("non")
           ? ["Accident du travail", "Suivi en CAMSP ou en CMPP"]
@@ -57,15 +57,15 @@ const precede = (avant: Element, apres: Element) =>
     avant.compareDocumentPosition(apres) & Node.DOCUMENT_POSITION_FOLLOWING,
   );
 
-describe("aide dépliable d'une option", () => {
-  it("se place juste sous son option, avant la suivante", () => {
+describe("aide dépliable d'une réponse possible", () => {
+  it("se place juste sous sa réponse possible, avant la suivante", () => {
     afficher([SITUATIONS]);
 
     expect(precede(caseACocher(/^une autre situation/i), aide())).toBe(true);
     expect(precede(aide(), caseACocher(/^aucune de ces/i))).toBe(true);
   });
 
-  it("reste hors du libellé de son option", () => {
+  it("reste hors du libellé de sa réponse possible", () => {
     afficher([SITUATIONS]);
 
     expect(aide().closest("label")).toBeNull();

@@ -2,7 +2,7 @@
 // Elles ne se lisent que sous les issues orientées (D-224).
 
 import type { Questions } from "../../../../../../core/models/eligibilite/questions/reponses";
-import type { Value } from "../../../../../../core/socle";
+import type { Reading } from "../../../../../../core/socle";
 import {
   type Contexte,
   cle,
@@ -13,7 +13,7 @@ import {
 } from "../../components/precisions";
 
 /** Les précisions du prescripteur : le contexte de chaque scénario. */
-export const PRECISIONS_DU_PRESCRIPTEUR: Value<Precisions> = lues(
+export const PRECISIONS_DU_PRESCRIPTEUR: Reading<Precisions> = lues(
   "deplacement",
   "transfert",
   "sousType",
@@ -51,7 +51,8 @@ function contexteDeLArticle80({
   return sousType.is("3_ADMISSION_HAD") ? { kind: "had" } : undefined;
 }
 
-// Q2.7 option 4 : un transport exceptionnel demandé par écrit par le patient.
+// Q2.7 réponse possible 4 : un transport exceptionnel demandé par écrit par le
+// patient.
 function contexteDeLaPermission({
   tranche,
 }: Pick<Entrees, "tranche">): Contexte | NonProuve {

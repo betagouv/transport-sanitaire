@@ -11,7 +11,7 @@ import type {
   GivenAnswer,
   GivenAnswers,
   ReadByObject,
-  Value,
+  Reading,
 } from "../../../../../socle/index.ts";
 import { Q1_3 } from "../../p1/questions/q1-3.ts";
 import {
@@ -73,7 +73,7 @@ export const ENTREES_DES_LIEUX = given.all(
     ]),
   ),
   // `Object.fromEntries` perd les noms : chacun garde la réponse de sa question.
-) as unknown as Value<Entrees>;
+) as unknown as Reading<Entrees>;
 
 /** Les entrées des lieux, lues sur les réponses d'un rappel. */
 export function entreesDe(answers: GivenAnswers<ReadByObject>): Entrees {

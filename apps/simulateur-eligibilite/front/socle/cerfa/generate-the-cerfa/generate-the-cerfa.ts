@@ -168,7 +168,7 @@ function commentsOf(
   return comments;
 }
 
-function isGiven<Value>(value: Value | undefined): value is Value {
+function isGiven<Reading>(value: Reading | undefined): value is Reading {
   return value !== undefined && value !== "" && value !== false;
 }
 

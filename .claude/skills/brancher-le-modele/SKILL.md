@@ -1,6 +1,6 @@
 ---
 name: brancher-le-modele
-description: Brancher le code sur une règle du modèle d'éligibilité (apps/simulateur-eligibilite/core/models/eligibilite/rules/regles.publicodes) : déclarer un fait, une cible ou une option, écrire le fichier d'un fait, poser une question, lire une cible. À charger dès qu'un fait, une cible ou une question de l'éditeur entre, sort ou change, ou qu'il s'agit de toucher au modèle métier.
+description: Brancher le code sur une règle du modèle d'éligibilité (apps/simulateur-eligibilite/core/models/eligibilite/rules/regles.publicodes) : déclarer un fait, une cible ou une réponse possible, écrire le fichier d'un fait, poser une question, lire une cible. À charger dès qu'un fait, une cible ou une question de l'éditeur entre, sort ou change, ou qu'il s'agit de toucher au modèle métier.
 ---
 
 # Brancher le modèle
@@ -27,7 +27,7 @@ Les chemins ci-dessous partent de `apps/simulateur-eligibilite/core/models/eligi
 |---|---|
 | un fait | sa règle dans le YAML, et sa ligne de `CONTRAT_REPONSES_FAITS.json` : ce qui le met à « oui », à « non », et ce qui le laisse absent |
 | une cible | sa règle dans le YAML, et `dictionnaire_cibles.json` |
-| une question ou une option | `CATALOGUE_COMPLET_QUESTIONS.md`, mot pour mot |
+| une question ou une réponse possible | `CATALOGUE_COMPLET_QUESTIONS.md`, mot pour mot |
 
 Un contrat ambigu ne se tranche pas dans le code : il se remonte à l'éditeur.
 
@@ -37,7 +37,7 @@ Un contrat ambigu ne se tranche pas dans le code : il se remonte à l'éditeur.
 |---|---|---|
 | un fait | `FAITS`, dans `faits/noms.ts`, à son rang dans les règles | `tests/model/eligibilite/declarations.test.ts` |
 | une cible | `CIBLES` ou `CIBLES_ENUMEREES`, dans `cibles/noms.ts` | le même |
-| une option | dans sa question, `.options({ … })` (`questions/p1/questions/q1-1.ts`) : son numéro au catalogue, puis ce qu'elle veut dire (`"2_AVEC_UN_PROCHE"`) | le même |
+| une réponse possible | dans sa question, `.possibleAnswers({ … })` (`questions/p1/questions/q1-1.ts`) : son numéro au catalogue, puis ce qu'elle veut dire (`"2_AVEC_UN_PROCHE"`) | le même |
 
 Ces listes typent le modèle. Un nom absent n'existe pas pour TypeScript.
 

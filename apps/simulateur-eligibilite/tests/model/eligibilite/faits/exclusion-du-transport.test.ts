@@ -9,12 +9,12 @@
 
 import { describe, expect, it } from "vitest";
 import { model } from "../../../../core/models/eligibilite";
-import { cibles } from "../../../../core/models/eligibilite/cibles/evaluation";
+import { decisionEngine } from "../../../../core/models/eligibilite/cibles/evaluation";
 import type { Faits } from "../../../../core/models/eligibilite/faits/noms";
 import type { Questions } from "../../../../core/models/eligibilite/questions/reponses";
 import { Fait } from "../../../../core/socle";
 import type { Answers } from "../../../../core/socle/questionnaire-engine";
-import { preconisationOf } from "../../../../core/socle/simulation";
+import { EstablishAPreconisation } from "../../../../core/socle/simulation";
 
 const BRANCARD_20_KM: Answers<Questions> = {
   "Q0.1": "1_VERIFIER",
@@ -26,10 +26,11 @@ const BRANCARD_20_KM: Answers<Questions> = {
   "Q2.3.1": "1_CINQUANTE_KM_OU_MOINS",
   "Q2.3.2": false,
 };
-const nos = preconisationOf(model, BRANCARD_20_KM).faits as Faits;
+const nos = new EstablishAPreconisation(model).execute(BRANCARD_20_KM)
+  .faits as Faits;
 
 const issue = (exclusion: Fait) =>
-  cibles({
+  decisionEngine.cibles({
     ...nos,
     fait_exclusion_transport_prouvee: exclusion,
   }).cible_issue_id.value;

@@ -21,7 +21,7 @@ const declaree = question
     "Q2.5",
     "Quel type de déplacement le patient doit-il effectuer ?",
   )
-  .options({
+  .possibleAnswers({
     "1_TRANSFERT": "Un transfert entre établissements.",
     "2_AUTRE_DEPLACEMENT": "Autre déplacement",
   });

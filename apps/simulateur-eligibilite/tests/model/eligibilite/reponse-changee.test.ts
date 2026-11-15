@@ -12,13 +12,12 @@ import type { Questions } from "../../../core/models/eligibilite/questions/repon
 import {
   type Answer,
   type Answers,
-  answerOnPage,
-  commitPage,
+  PageCommitService,
   pagesOf,
   Questionnaire,
 } from "../../../core/socle/questionnaire-engine";
 
-import { preconisationOf } from "../../../core/socle/simulation";
+import { EstablishAPreconisation } from "../../../core/socle/simulation";
 import { model as frontModel } from "../../../front/models/eligibilite";
 import { MATERNITE_ETABLIE } from "./p2/reponses-de-la-branche";
 
@@ -47,7 +46,8 @@ const effaceesPar = (id: string, autre: Answer = "autre", depuis = TOUT) => {
   const surLaPage = Object.fromEntries(
     page.questions.map((question) => [question.id, depuis[question.id]]),
   );
-  const apres = commitPage(pages, depuis, page, { ...surLaPage, [id]: autre });
+  const inputs = { ...surLaPage, [id]: autre };
+  const apres = new PageCommitService(pages).commit(depuis, page, inputs);
   return Object.keys(depuis).filter((question) => !(question in apres));
 };
 
@@ -83,8 +83,8 @@ const posees = (reponses: Answers) => {
 };
 
 const issue = (reponses: Answers) =>
-  preconisationOf({ ...model, relevance: frontModel.core.relevance }, reponses)
-    .cibles.cible_issue_id.value;
+  new EstablishAPreconisation(frontModel.core).execute(reponses).cibles
+    .cible_issue_id?.value;
 
 // Un patient seul, pour une consultation à 50 km ou moins, sans situation
 // particulière : le parcours est complet.
@@ -276,7 +276,7 @@ describe("les groupes de la maternité changés (cas « Maternité »)", () => {
   // L'examen coché en Q2.2.1 est le motif : seul l'éloignement change.
   it("changer d'éloignement garde l'urgence", () => {
     const brouillon = brouillonDe(URGENCE_DITE, "P2/branche");
-    const changee = answerOnPage(
+    const changee = new PageCommitService(pages).answerOn(
       pageDe("P2/branche"),
       brouillon,
       "Q2.14.eloignement",

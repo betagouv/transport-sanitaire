@@ -18,7 +18,7 @@ const PAGES = [
     "lieu",
     question
       .singleChoice("lieu", "Quel lieu ?")
-      .options({ domicile: "Domicile", foyer: "Foyer" }),
+      .possibleAnswers({ domicile: "Domicile", foyer: "Foyer" }),
   ),
 ];
 

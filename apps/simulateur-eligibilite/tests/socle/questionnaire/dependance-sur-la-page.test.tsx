@@ -19,7 +19,7 @@ const TRAJET = page(
   "trajet",
   question
     .singleChoice("sens", "Quel sens ?")
-    .options({ aller: "Aller", retour: "Retour" }),
+    .possibleAnswers({ aller: "Aller", retour: "Retour" }),
   question.number("nombre", "Combien ?").dependsOn("sens"),
   question
     .checkbox("accompagne", "Accompagné.", "Oui, accompagné.")

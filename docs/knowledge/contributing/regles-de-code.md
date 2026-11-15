@@ -323,6 +323,11 @@ export function documentPour(cas: CasFinal): Document {
 > Raison : couper un fichier au point où il dépasse 300 lignes produit deux
 > fichiers dont aucun n'a de sujet. Le second n'est nommable que par sa position.
 
+La limite bloque : elle force à chercher les sujets du fichier. Un fichier qui
+n'en a qu'un, une fois ce qui pouvait en sortir sorti, prend un plafond à lui
+dans la garde, avec sa raison. Le plafond se relit en revue ; il ne remplace pas
+la recherche. Un avertissement ne la forcerait pas : on ne le lit plus.
+
 **Exemples**
 
 ```

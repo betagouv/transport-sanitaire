@@ -6,10 +6,10 @@
 // adresses.
 
 import type {
-  Address,
+  AddressData,
   Answered,
   Condition,
-  Value,
+  Reading,
 } from "../../../../../socle/index.ts";
 import { NATURES_DU_LIEU } from "../../p2/conditions/natures-du-lieu.ts";
 import { type Context as Contexte, given, question } from "../../question.ts";
@@ -112,7 +112,7 @@ export function lieuDArrivee(
 // Les côtés de l'USLD et de l'EHPAD, une fois les deux catégories connues.
 function cotesDeLArrivee(
   depart: ReturnType<typeof lieuDeDepart>,
-  categorieDuLieu: Value<Categorie | NonChoisie>,
+  categorieDuLieu: Reading<Categorie | NonChoisie>,
 ) {
   return cotesDesStructures(
     depart.categorieDuLieu.computeWith(
@@ -134,7 +134,7 @@ type Lecture = {
 function champsDuLieu<E extends Extremite>(
   extremite: E,
   libelles: Libelles,
-  choix: Value<Choix>,
+  choix: Reading<Choix>,
   lecture: Lecture,
 ) {
   const etat: Etat = {
@@ -215,9 +215,9 @@ function premierChamp({ fixee, nature }: Lieu): Champ {
 
 // La catégorie fixée, sinon celle que la question donne.
 function categorieRetenue(
-  lieu: Value<Lieu>,
+  lieu: Reading<Lieu>,
   categorie: ReturnType<typeof categorieAChoisir>,
-): Value<Categorie | NonChoisie> {
+): Reading<Categorie | NonChoisie> {
   return lieu.computeWith(
     given.question(categorie).answer(),
     (lu, reponse) => lu.fixee ?? reponse.value,
@@ -239,8 +239,8 @@ function lectureDu(
 
 // Le départ et l'arrivée ont la même adresse.
 function memeAdresseQue(
-  depart: Answered<Address>,
-  arrivee: Answered<Address>,
+  depart: Answered<AddressData>,
+  arrivee: Answered<AddressData>,
 ): Condition {
   return given
     .question(depart)
@@ -250,7 +250,7 @@ function memeAdresseQue(
     );
 }
 
-function memeAdresse(a: Address, b: Address): boolean {
+function memeAdresse(a: AddressData, b: AddressData): boolean {
   const champs = [
     "street",
     "complement",
@@ -258,7 +258,7 @@ function memeAdresse(a: Address, b: Address): boolean {
     "city",
     "country",
   ] as const;
-  const lu = (adresse: Address, champ: (typeof champs)[number]) =>
+  const lu = (adresse: AddressData, champ: (typeof champs)[number]) =>
     (adresse[champ] ?? "").trim().toLocaleLowerCase("fr");
   return champs.every((champ) => lu(a, champ) === lu(b, champ));
 }

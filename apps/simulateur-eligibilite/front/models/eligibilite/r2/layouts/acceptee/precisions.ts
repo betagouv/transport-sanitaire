@@ -1,7 +1,7 @@
 // Les précisions de la fiche positive (D-111) : le séjour ou les séances,
 // l'AT-MP. Elles ne se lisent que sous les issues acceptées (D-224).
 
-import type { Value } from "../../../../../../core/socle";
+import type { Reading } from "../../../../../../core/socle";
 import {
   cle,
   type Entrees,
@@ -11,7 +11,7 @@ import {
 } from "../../components/precisions";
 
 /** Les précisions de la fiche positive : le séjour ou les séances, l'AT-MP. */
-export const PRECISIONS_DE_LA_FICHE_POSITIVE: Value<Precisions> = lues(
+export const PRECISIONS_DE_LA_FICHE_POSITIVE: Reading<Precisions> = lues(
   "soins",
   "dialyse",
   "memeDeplacement",

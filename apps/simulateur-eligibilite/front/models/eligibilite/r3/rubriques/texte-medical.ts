@@ -13,7 +13,11 @@
 import { Q1_3 } from "../../../../../core/models/eligibilite/questions/p1/questions/q1-3";
 import { Q2_1 } from "../../../../../core/models/eligibilite/questions/p2/questions/q2-1";
 import { given } from "../../../../../core/models/eligibilite/questions/reponses";
-import type { Address, Unanswered, Value } from "../../../../../core/socle";
+import type {
+  AddressData,
+  Reading,
+  Unanswered,
+} from "../../../../../core/socle";
 import type { Rubrique } from "./rubrique";
 import { adresseEnParties } from "./trajet";
 
@@ -78,7 +82,7 @@ export const TEXTE_MEDICAL: Rubrique<TexteMedical> = {
 
 // ---- implémentation ----
 
-type Entrees = typeof ENTREES extends Value<infer Lues> ? Lues : never;
+type Entrees = typeof ENTREES extends Reading<infer Lues> ? Lues : never;
 
 function texteMedical(entrees: Entrees): string | AucunSegment {
   const segments = [...soin(entrees), ...complements(entrees)]
@@ -167,10 +171,10 @@ function etablis(
 
 type Coordonnees = {
   readonly nom: string | undefined;
-  readonly adresse: { readonly value: Address | Unanswered };
+  readonly adresse: { readonly value: AddressData | Unanswered };
   readonly niveau: { readonly value: keyof typeof TYPES | Unanswered };
   readonly nomHebergement: string | undefined;
-  readonly adresseHebergement: { readonly value: Address | Unanswered };
+  readonly adresseHebergement: { readonly value: AddressData | Unanswered };
 };
 
 // Le niveau tel que le contrat l'écrit, après « type ».
@@ -198,7 +202,7 @@ function coordonneesDeLaMaternite(lues: Coordonnees): readonly string[] {
 function lieu(
   intitule: string,
   nom: string | undefined,
-  adresse: Address | Unanswered,
+  adresse: AddressData | Unanswered,
 ): string | AucunSegment {
   const parties = adresseEnParties(adresse);
   if (nom === undefined || parties.length === 0) return undefined;

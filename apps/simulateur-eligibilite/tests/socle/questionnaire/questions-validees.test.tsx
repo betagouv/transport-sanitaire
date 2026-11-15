@@ -25,10 +25,10 @@ const REGIME = page(
   "regime",
   question
     .singleChoice("regime", "Quel est votre régime ?")
-    .options({ tout: "Je mange de tout", vegetarien: "Végétarien" }),
+    .possibleAnswers({ tout: "Je mange de tout", vegetarien: "Végétarien" }),
   question
     .multipleChoice("allergies", "Des allergies ?")
-    .options({ gluten: "Au gluten", arachide: "À l'arachide" })
+    .possibleAnswers({ gluten: "Au gluten", arachide: "À l'arachide" })
     .optional(),
   question
     .text("proteines", "Quelles protéines ?")
@@ -40,8 +40,10 @@ const PLATS = page(
   "plats",
   question
     .multipleChoice("plats", "Quels plats ?")
-    .options({ salade: "Une salade", steak: "Un steak", rien: "Rien" })
-    .option("steak", (option) => option.offeredWhen(regime.is("tout")))
+    .possibleAnswers({ salade: "Une salade", steak: "Un steak", rien: "Rien" })
+    .possibleAnswer("steak", (possibleAnswer) =>
+      possibleAnswer.offeredWhen(regime.is("tout")),
+    )
     .exclusive("rien"),
 );
 
@@ -74,7 +76,7 @@ describe("les questions validées", () => {
     expect(allergies).toEqual({ offered: ["gluten", "arachide"] });
   });
 
-  it("ne retiennent que les options qui se proposaient", () => {
+  it("ne retiennent que les réponses possibles qui se proposaient", () => {
     const answers = {
       regime: "vegetarien",
       proteines: "Tofu",
@@ -86,7 +88,7 @@ describe("les questions validées", () => {
     });
   });
 
-  it("ne donnent pas d'options à une saisie libre", () => {
+  it("ne donnent pas de réponses possibles à une saisie libre", () => {
     const answers = { regime: "tout", plats: ["steak"], dessert: "Une tarte" };
     expect(QUESTIONNAIRE.readWith(answers).validated.toJSON().dessert).toEqual({
       answer: "Une tarte",

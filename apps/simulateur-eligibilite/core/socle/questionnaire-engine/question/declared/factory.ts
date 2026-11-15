@@ -2,35 +2,41 @@
 // sorte, son id et son libellé, puis réglage par réglage :
 //
 //   question.singleChoice("Q1.1", "Concernant son déplacement, le patient :")
-//     .options({ "1_SEUL": "Peut se déplacer seul…", "2_AVEC_UN_PROCHE": "…" })
-//     .option("2_AVEC_UN_PROCHE", (option) => option.description("…"))
+//     .possibleAnswers({
+//       "1_SEUL": "Peut se déplacer seul…",
+//       "2_AVEC_UN_PROCHE": "…",
+//     })
+//     .possibleAnswer("2_AVEC_UN_PROCHE", (possibleAnswer) =>
+//       possibleAnswer.description("…"),
+//     )
 //     .mattersWhile(given.fait("fait_situation_soins_qualifiante").isNon())
 //
-// Une question à choix porte ses options : elles disent le type de sa réponse.
-// Une saisie le tient de sa sorte : un nombre, un texte, une case.
+// Une question à choix porte ses réponses possibles : elles disent le type de
+// sa réponse. Une saisie le tient de sa sorte : un nombre, un texte, une case.
 //
 // Les gardes et les incohérences sont des conditions (`given.ts`). Les libellés,
 // rappels, aides et bornes calculés reçoivent un seul objet : les réponses, les
 // questions validées, les cibles et les faits. Les faits sont ceux des
 // questions validées jusque-là, calculés seulement si on les lit.
 
-import type { Pipeline } from "../asked/context.ts";
+import type { Pipeline } from "../asked/context.vo.ts";
 import type { AnyQuestions, ReadByObject } from "../question.ts";
-import { DeclaredMultipleChoice, DeclaredSingleChoice } from "./choices.ts";
+import { DeclaredMultipleChoice, DeclaredSingleChoice } from "./choices.vo.ts";
+import { Inconsistencies } from "./inconsistencies.vo.ts";
 import {
   DeclaredAddress,
   DeclaredCheckbox,
   DeclaredDate,
   DeclaredNumber,
   DeclaredText,
-} from "./inputs.ts";
-import { DeclaredOptions } from "./option.ts";
+} from "./inputs.vo.ts";
+import { DeclaredPossibleAnswers } from "./possible-answer.vo.ts";
 import type { CommonSettings } from "./settings.ts";
 
 /**
  * Les constructeurs des questions d'un modèle. `faits` : son catalogue des
  * faits. `cibles` : ce qui calcule ses cibles sur ces faits. Les conditions
- * lisent les uns et les autres (`question/asked/context.ts`). `Questions` :
+ * lisent les uns et les autres (`question/asked/context.vo.ts`). `Questions` :
  * ce que les rappels et les libellés calculés lisent par id. Par défaut, rien :
  * ils lisent les questions par leur objet.
  */
@@ -45,12 +51,12 @@ export function questionsOf<
     singleChoice: <Id extends string>(id: Id, label: string) =>
       new DeclaredSingleChoice<Questions, Cibles, Faits, never, Id>(
         settingsOf(id, label),
-        { options: DeclaredOptions.of({}) },
+        { possibleAnswers: DeclaredPossibleAnswers.of({}) },
       ),
     multipleChoice: <Id extends string>(id: Id, label: string) =>
       new DeclaredMultipleChoice<Questions, Cibles, Faits, never, Id>(
         settingsOf(id, label),
-        { options: DeclaredOptions.of({}), incompatible: [] },
+        { possibleAnswers: DeclaredPossibleAnswers.of({}), incompatible: [] },
       ),
     ...inputs<Questions, Cibles, Faits>(settingsOf),
   };
@@ -72,7 +78,7 @@ function settingsFor<Cibles, Faits>(
     label,
     pipeline,
     conditions: [],
-    inconsistencies: [],
+    inconsistencies: Inconsistencies.none(),
     dependsOn: [],
   });
 }

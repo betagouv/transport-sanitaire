@@ -188,7 +188,7 @@ function modeleQuiDemande(mets: keyof Questions): Model {
               mets,
               question
                 .singleChoice(mets, `Quel ${mets} souhaitez-vous ?`)
-                .options({ maison: "Celui de la maison" }),
+                .possibleAnswers({ maison: "Celui de la maison" }),
             ),
           ],
         },

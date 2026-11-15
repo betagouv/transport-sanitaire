@@ -54,7 +54,7 @@ export const Q1_3 = question
     "Avant d’établir le mode de transport adéquat, sélectionnez tous les éventuels cas particuliers concernant le patient.",
   )
   // Dans l'ordre que le catalogue lui donne, et non celui des numéros.
-  .options({
+  .possibleAnswers({
     "1_FORTE_CORPULENCE": "Présente une forte corpulence (plus de 150 kg).",
     "2_ALD":
       "Le patient est en Affection Longue Durée (ALD) exonérante reconnue.",
@@ -73,11 +73,11 @@ export const Q1_3 = question
   .exclusive("7_AUCUNE")
   // La corpulence ne compte qu'avec un motif d'ambulance. Retiré en Q1.2, il
   // emporte la réponse.
-  .option("1_FORTE_CORPULENCE", (option) =>
-    option.offeredWhen(unCritereDAmbulance),
+  .possibleAnswer("1_FORTE_CORPULENCE", (possibleAnswer) =>
+    possibleAnswer.offeredWhen(unCritereDAmbulance),
   )
-  .option("6_PARTAGE_INCOMPATIBLE", (option) =>
-    option.offeredWhen(unModePartageable),
+  .possibleAnswer("6_PARTAGE_INCOMPATIBLE", (possibleAnswer) =>
+    possibleAnswer.offeredWhen(unModePartageable),
   );
 
 export const Q1_3_B = question
@@ -85,7 +85,7 @@ export const Q1_3_B = question
     "Q1.3.b",
     "Précisez le lien entre le transport et l'Affection Longue Durée (ALD) de votre patient",
   )
-  .options({
+  .possibleAnswers({
     "1_LIEN_DIRECT":
       "Soin ou examen directement lié au traitement de cette Affection Longue Durée (ALD)",
     "2_SANS_LIEN_DIRECT":
@@ -108,7 +108,7 @@ export const Q1_3_A = question
     "Q1.3.a",
     "La séance prévue est-elle une séance d’hémodialyse ?",
   )
-  .options({
+  .possibleAnswers({
     "1_OUI": "Oui.",
     "2_AUTRE_DIALYSE": "Non, il s’agit d’une autre dialyse en centre.",
   })

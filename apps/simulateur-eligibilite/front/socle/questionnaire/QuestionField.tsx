@@ -4,12 +4,11 @@
 
 import { type ReactNode, useState } from "react";
 import {
+  Address,
   type Answer,
   type AnswerProblem,
   type AskedQuestion,
-  isAddress,
   type Unanswered,
-  withField,
 } from "../../../core/socle/questionnaire-engine";
 
 import {
@@ -41,8 +40,11 @@ type Props = {
    * tant qu'aucun de ses champs n'est fautif.
    */
   errors?: readonly string[];
-  /** Ce qui s'affiche sous une option d'une liste de cases : ses questions. */
-  below?: (option: string) => ReactNode;
+  /**
+   * Ce qui s'affiche sous une réponse possible d'une liste de cases : ses
+   * questions.
+   */
+  below?: (possibleAnswer: string) => ReactNode;
   /** Ce qui s'affiche sous le champ : les liens vers les réponses à revoir. */
   after?: ReactNode;
 };
@@ -113,7 +115,7 @@ function render(props: Props) {
 // erreur de champ passe devant le message de groupe.
 function AddressQuestionField(props: Props & { question: AddressQuestion }) {
   const { question, onChange } = props;
-  const address = isAddress(props.answer) ? props.answer : undefined;
+  const address = Address.of(props.answer);
   const problems = address ? question.fieldProblems(address) : {};
   const failing = Object.keys(problems).length > 0;
   return (
@@ -127,11 +129,13 @@ function AddressQuestionField(props: Props & { question: AddressQuestion }) {
         const problem = problems[field.name];
         return {
           ...field,
-          value: address?.[field.name] ?? "",
+          value: address?.field(field.name) ?? "",
           error: problem && messageOf(problem),
         };
       })}
-      onChange={(name, text) => onChange(withField(address, name, text))}
+      onChange={(name, text) =>
+        onChange((address ?? Address.empty()).withField(name, text)?.toJSON())
+      }
     />
   );
 }
@@ -176,7 +180,7 @@ function SingleChoiceField(props: Props & { question: SingleChoice }) {
       <SelectField
         {...common(props)}
         placeholder="Sélectionnez une option"
-        options={question.options}
+        options={question.possibleAnswers}
         value={value ?? ""}
         onChange={onChange}
       />
@@ -185,7 +189,7 @@ function SingleChoiceField(props: Props & { question: SingleChoice }) {
     <RadioField
       {...common(props)}
       boldLabels={question.boldLabels}
-      options={question.options}
+      options={question.possibleAnswers}
       value={value}
       onChange={onChange}
     />
@@ -198,12 +202,12 @@ function MultipleChoiceField(props: Props & { question: MultipleChoice }) {
   return (
     <CheckboxField
       {...common(props)}
-      options={question.options.map((option) => ({
-        ...option,
-        below: props.below?.(option.value),
+      options={question.possibleAnswers.map((possibleAnswer) => ({
+        ...possibleAnswer,
+        below: props.below?.(possibleAnswer.value),
       }))}
-      exclusiveOption={question.exclusiveOption}
-      incompatibleOptions={question.incompatibleOptions}
+      exclusiveOption={question.exclusivePossibleAnswer}
+      incompatibleOptions={question.incompatiblePossibleAnswers}
       values={Array.isArray(answer) ? answer : []}
       onChange={(values) => onChange(values.length > 0 ? values : undefined)}
     />

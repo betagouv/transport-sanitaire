@@ -12,7 +12,7 @@
 // négative ; pour une issue acceptée, elle ne compte pas.
 
 import { given } from "../../../../../core/models/eligibilite/questions/reponses";
-import type { Condition, Value } from "../../../../../core/socle";
+import type { Condition, Reading } from "../../../../../core/socle";
 
 /** Les réponses ne prouvent pas ce cas : la précision ne s'écrit pas. */
 export type NonProuve = undefined;
@@ -97,15 +97,15 @@ type Lues = typeof LUES;
 
 /** La valeur de chaque réponse lue. */
 export type Entrees = {
-  [K in keyof Lues]: Lues[K] extends Value<infer V> ? V : never;
+  [K in keyof Lues]: Lues[K] extends Reading<infer V> ? V : never;
 };
 
 /** Les seules entrées que lit une précision. */
 export function lues<K extends keyof Lues>(
   ...noms: K[]
-): Value<Pick<Entrees, K>> {
+): Reading<Pick<Entrees, K>> {
   const choisies = Object.fromEntries(noms.map((nom) => [nom, LUES[nom]]));
-  return given.all(choisies as Pick<Lues, K>) as Value<Pick<Entrees, K>>;
+  return given.all(choisies as Pick<Lues, K>) as Reading<Pick<Entrees, K>>;
 }
 
 /** Une clé n'existe que si sa valeur est prouvée : jamais `undefined`. */

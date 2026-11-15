@@ -1,7 +1,8 @@
 // fait_exception_article80_ehpad : EHPAD hors même implantation.
 //
-// L'option 7 de Q2.6 le dit, une fois Q2.6 validée : cochée, elle l'établit ;
-// proposée et écartée, elle vaut « non ». Sans Q2.6, il reste absent.
+// La réponse possible 7 de Q2.6 le dit, une fois Q2.6 validée : cochée, elle
+// l'établit ; proposée et écartée, elle vaut « non ». Sans Q2.6, il reste
+// absent.
 //
 // Il suit `CONTRAT_REPONSES_FAITS.json`.
 

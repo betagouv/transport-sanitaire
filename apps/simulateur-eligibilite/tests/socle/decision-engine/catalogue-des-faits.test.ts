@@ -23,7 +23,7 @@ let calculs: string[] = [];
 // Le fait, qui note chacun de ses calculs.
 const compte = <Nom extends keyof Faits>(fait: FaitDeclare<Nom, Fait>) =>
   unFait(fait.nom).vaut(
-    fait.compute((valeur) => {
+    fait.reading.compute((valeur) => {
       calculs.push(fait.nom);
       return valeur;
     }),

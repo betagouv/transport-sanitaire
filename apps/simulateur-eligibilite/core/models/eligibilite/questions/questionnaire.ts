@@ -15,17 +15,17 @@ const P0 = {
       "P0/1",
       question
         .singleChoice("Q0.1", "Quel est votre besoin ?")
-        .options({
+        .possibleAnswers({
           "1_VERIFIER": "Vérifier une éligibilité",
           "2_VERIFIER_ET_PRESCRIRE":
             "Vérifier et prescrire si la situation le permet",
         })
         .boldLabels()
-        .option("1_VERIFIER", (option) =>
-          option.description("1 minute 30 chrono !"),
+        .possibleAnswer("1_VERIFIER", (possibleAnswer) =>
+          possibleAnswer.description("1 minute 30 chrono !"),
         )
-        .option("2_VERIFIER_ET_PRESCRIRE", (option) =>
-          option.description("4 minutes"),
+        .possibleAnswer("2_VERIFIER_ET_PRESCRIRE", (possibleAnswer) =>
+          possibleAnswer.description("4 minutes"),
         ),
     ),
   ],

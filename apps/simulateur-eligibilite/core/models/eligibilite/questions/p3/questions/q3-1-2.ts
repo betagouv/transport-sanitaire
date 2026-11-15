@@ -31,7 +31,7 @@ export const Q3_1_2 = question
   .singleChoice("Q3.1.2", "Quel trajet cette prescription doit-elle couvrir ?")
   // Le deuxième point du catalogue de Q3.1. « Aller-retour différent » bloque
   // : une autre simulation traite l'autre sens (TS1001-03).
-  .options({
+  .possibleAnswers({
     "1_ALLER": "Aller simple",
     "2_RETOUR": "Retour simple",
     "3_ALLER_RETOUR_EQUIVALENT":
@@ -44,11 +44,19 @@ export const Q3_1_2 = question
   // Un sens ne se propose que s'il s'accorde aux rôles fixés en P2. Sans rôle
   // fixé, tous se proposent. Un aller-retour change de motif : il ne se propose
   // pas quand un rôle est fixé.
-  .option("1_ALLER", (option) => option.offeredWhen(depuisLEtablissement.not()))
-  .option("2_RETOUR", (option) => option.offeredWhen(versLEtablissement.not()))
-  .option("3_ALLER_RETOUR_EQUIVALENT", (option) =>
-    option.offeredWhen(versLEtablissement.or(depuisLEtablissement).not()),
+  .possibleAnswer("1_ALLER", (possibleAnswer) =>
+    possibleAnswer.offeredWhen(depuisLEtablissement.not()),
   )
-  .option("4_ALLER_RETOUR_DIFFERENT", (option) =>
-    option.blocks("Ces deux trajets nécessitent deux simulations distinctes."),
+  .possibleAnswer("2_RETOUR", (possibleAnswer) =>
+    possibleAnswer.offeredWhen(versLEtablissement.not()),
+  )
+  .possibleAnswer("3_ALLER_RETOUR_EQUIVALENT", (possibleAnswer) =>
+    possibleAnswer.offeredWhen(
+      versLEtablissement.or(depuisLEtablissement).not(),
+    ),
+  )
+  .possibleAnswer("4_ALLER_RETOUR_DIFFERENT", (possibleAnswer) =>
+    possibleAnswer.blocks(
+      "Ces deux trajets nécessitent deux simulations distinctes.",
+    ),
   );

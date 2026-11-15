@@ -29,13 +29,13 @@ export const PARTS: readonly QuestionnairePart<Questions, undefined>[] = [
         "boisson",
         question
           .singleChoice("boisson", "Quelle boisson souhaitez-vous ?")
-          .options({ the: "Un thé", cafe: "Un café", rien: "Rien" }),
+          .possibleAnswers({ the: "Un thé", cafe: "Un café", rien: "Rien" }),
       ),
       page(
         "accompagnements",
         question
           .multipleChoice("accompagnements", "Avec quoi ?")
-          .options({
+          .possibleAnswers({
             lait: "Du lait",
             sucre: "Du sucre",
             aucun: "Rien de plus",

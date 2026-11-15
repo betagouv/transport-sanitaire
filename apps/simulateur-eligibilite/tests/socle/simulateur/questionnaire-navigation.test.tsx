@@ -127,7 +127,7 @@ describe("brouillon d'une page", () => {
 });
 
 describe("choix multiple", () => {
-  it("l'option exclusive décoche les autres, et inversement", async () => {
+  it("la réponse possible exclusive décoche les autres, et inversement", async () => {
     const user = await ouvrirLeSimulateur();
     await user.click(radio("Un thé"));
     await question(ACCOMPAGNEMENTS);

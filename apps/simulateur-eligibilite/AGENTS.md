@@ -88,9 +88,11 @@ premier pendant l'écran de rattachement : un modèle reste hors du chunk
 d'entrée. Le socle n'importe rien des modèles. Un modèle n'importe du socle que
 ses deux points d'entrée, `core/socle/index.ts` pour son métier et
 `front/socle/index.ts` pour son écran. Aucun modèle n'importe l'autre.
-Une exception : le moteur de décision, `core/socle/decision-engine/compute-the-cibles.ts`,
-qu'un modèle prend à la source. C'est le seul fichier qui importe publicodes
-(D-76).
+Une exception : l'adaptateur du moteur de décision,
+`core/socle/decision-engine/publicodes-decision-engine.adapter.ts`,
+qu'un modèle prend à la source. Avec le compilateur du graphe
+(`publicodes-graph-compiler.adapter.ts`), ce sont les seuls fichiers qui
+importent publicodes (D-76).
 `tests/architecture.test.ts` garde ces règles.
 
 Le parcours commence par un **écran de rattachement
@@ -106,22 +108,28 @@ mécanique, sans React ni phrase de l'écran :
 
 | Fichier | Ce qu'il porte |
 |---|---|
-| `question.ts` | ce qu'est une question pour le moteur (`Question` : son id, sa sorte, ses dépendances, et `askedIn`, ce qu'elle donne vu le contexte), une page, une partie, une réponse |
-| `question-factory.ts` | les constructeurs nommés des questions (`questionsOf`) : la sorte vient du constructeur, et une question à choix porte ses options (`.options({ … })`) |
-| `declared-question.ts`, `declared-choices.ts`, `declared-inputs.ts` | une classe par sorte de question déclarée. Chaque réglage (`appliesWhen`, `hint`, `min`…) donne une copie, et `askedIn` tire la question posée de la déclaration |
-| `declared-option.ts`, `declared-page.ts` | les réglages d'une option, par une lambda (`.option(valeur, (option) => …)`), et `page(id, ...questions)`, dont la condition s'ajoute à chacune de ses questions |
-| `condition.ts`, `given.ts` | les conditions : une valeur qui dit ce qu'elle lit (`Value`, `Condition`), se compose par `and`, `or`, `not`, `compute` et `computeWith`, et ses entrées (`given.question(id).answer()`, `given.fait`, `given.cible`, `given.today`) |
-| `answer-readings.ts` | ce que lit `answer()` selon l'endroit : dans une garde, les questions posées avant elle ; dans un fait, les questions validées |
-| `question-context.ts` | le seul objet que reçoivent les libellés, rappels, aides et bornes du moment : `{ answers, validated, cibles, faits }`. Les faits n'y sont calculés que si on les lit |
-| `option.ts` | ce qu'est une option offerte : sa valeur, son libellé, sa description, son aide, ce qu'elle bloque |
-| `address.ts` | ce qu'est une adresse, la seule réponse en objet : ses champs, ceux qui se demandent en France ou à l'étranger, et ce qui ne va pas dans chacun |
-| `questionnaire.ts` | `Questionnaire`, ses pages dans l'ordre, et `Reading`, des réponses lues à travers lui : `questionnaire.readWith(answers, cibles)`. Une lecture se calcule une fois et ne change pas : pages et questions qui se posent (`askedPages`, `questionsOn`), questions validées (`validated`), complétude (`isComplete`), page où l'on rouvre (`openPage`), page suivante (`pageAfter`), réponses d'une page validée (`commit`) |
-| `asked-question.ts` | `AskedQuestion`, la question telle qu'elle se pose : libellé, rappel, bornes, options, mode d'adresse et incohérences du moment. Elle ne porte aucune fonction : elle passe en JSON, et `askedQuestion` la relit |
-| `asked-common.ts`, `asked-choices.ts`, `asked-inputs.ts`, `asked-address.ts` | une classe par sorte de question posée. Chacune dit ce qu'elle garde d'une réponse (`kept`), si la réponse suffit (`isAnsweredBy`) et ce qui n'y va pas (`problemsWith`) |
-| `answer-problem.ts` | ce qui ne va pas dans une saisie, dit par sa nature (`{ kind: "missing" }`…). Les phrases de l'éditeur y restent telles quelles (`{ kind: "stated", text }`) |
-| `reading-in-order.ts` | la lecture dans l'ordre, que `Reading` fait une fois : chaque question posée voit les validées d'avant elle, et les questions validées gardent ce qui s'y proposait |
-| `given-answers.ts`, `validated-answers.ts` | les deux lectures des réponses, que le modèle reçoit (voir « La décision ») |
-| `page-commit.ts` | ce que deviennent les réponses quand une page est validée, et ce que ça efface (`Reading.commit` le lit) |
+| `question/question.ts` | ce qu'est une question pour le moteur (`Question` : son id, sa sorte, ses dépendances, et `askedIn`, ce qu'elle donne vu le contexte), une page, une partie, une réponse |
+| `question/declared/factory.ts` | les constructeurs nommés des questions (`questionsOf`) : la sorte vient du constructeur, et une question à choix porte ses réponses possibles (`.possibleAnswers({ … })`) |
+| `question/declared/question.vo.ts`, `choices.vo.ts`, `inputs.vo.ts` | une classe par sorte de question déclarée. Chaque réglage (`appliesWhen`, `hint`, `min`…) donne une copie, et `askedIn` tire la question posée de la déclaration. Ses réglages communs sont dans `settings.ts`, ses incohérences dans `inconsistencies.vo.ts` |
+| `question/declared/possible-answer.vo.ts`, `page.vo.ts` | les réglages d'une réponse possible, par une lambda (`.possibleAnswer(valeur, (possibleAnswer) => …)`), et `page(id, ...questions)`, dont la condition s'ajoute à chacune de ses questions |
+| `conditions/reading.vo.ts`, `conditions/reads.vo.ts` | les conditions : une lecture qui dit ce qu'elle lit (`Reading`, `Condition`, `Reads`), et se compose par `and`, `or`, `not`, `compute` et `computeWith` |
+| `conditions/given.ts`, `conditions/given-readings.vo.ts` | leurs entrées (`given.question(id).answer()`, `given.fait`, `given.cible`, `given.today`), et la valeur que chacune donne |
+| `conditions/guard-place.vo.ts`, `conditions/guard-reading.service.ts` | ce que lit `answer()` selon l'endroit : dans une garde, les questions posées avant elle ; dans un fait, les questions validées (`ValidatedAnswers.reading`). Le service vérifie qu'aucune condition ne lit une question d'après |
+| `conditions/question-positions.vo.ts` | la place de chaque question, et ce qui refuse une place mal déclarée |
+| `questionnaire-declaration.error.ts` | l'erreur d'une déclaration qui ne tient pas : elle s'arrête au chargement ou à la première lecture |
+| `question/asked/context.vo.ts` | `QuestionContext`, le contexte d'une question : `{ answers, validated, cibles, faits }`. Ses libellés, rappels, aides et bornes du moment le reçoivent, et ses conditions s'y lisent (`condition.in(context)`). Les faits n'y sont calculés que si on les lit. Un fait et un résultat ont chacun leur contexte (`FaitContext`, `ResultContext`) |
+| `question/possible-answer.ts` | ce qu'est une réponse possible offerte (`OfferedPossibleAnswer`) : sa valeur, son libellé, sa description, son aide, ce qu'elle bloque |
+| `question/address.vo.ts` | `Address`, une adresse, la seule réponse en objet : elle se lit et se modifie champ par champ, et se garde en JSON (`AddressData`, par `toJSON()`) |
+| `question/dependency.vo.ts` | `Dependency`, ce dont dépend une réponse (`dependsOn`) : une question entière, ou certaines de ses réponses possibles, et ce qu'elle en voit (`seen`) |
+| `questionnaire.vo.ts` | `Questionnaire`, ses pages dans l'ordre. Des réponses s'y lisent : `questionnaire.readWith(answers, cibles)` |
+| `answered-questionnaire.vo.ts` | `AnsweredQuestionnaire`, des réponses lues à travers un questionnaire. Il se calcule une fois et ne change pas : pages et questions qui se posent (`askedPages`, `questionsOn`), questions validées (`validated`), complétude (`isComplete`), page où l'on rouvre (`openPage`), page suivante (`pageAfter`), réponses d'une page validée (`commit`) |
+| `question-walk.service.ts`, `walk-progress.vo.ts` | le parcours des pages dans l'ordre (`QuestionWalkService.walk`) : ce qui se pose, et son avancement question après question (`WalkProgress`) : validées, en attente, inapplicables |
+| `does-a-question-still-matter/relevance.service.ts`, `askability.service.ts`, `relevance-graph.vo.ts` | la pertinence : une question ne se pose que si sa réponse peut changer ce que montre le résultat, ou la garde d'une question qui reste (`Relevance.matters`). Les questions d'après dont la garde est jouée d'avance ne comptent pas (`Askability`), et le graphe de décision se restreint aux faits figés (`RelevanceGraph`) |
+| `page-commit.service.ts` | `PageCommitService` : les réponses d'une page validée (`commit`), le brouillon après une saisie (`answerOn`), et l'effacement des réponses qui dépendaient d'une réponse changée |
+| `question/asked/question.vo.ts` | `AskedQuestion`, la question telle qu'elle se pose : libellé, rappel, bornes, réponses possibles, mode d'adresse et incohérences du moment. Elle ne porte aucune fonction : elle passe en JSON, et `askedQuestion` la relit |
+| `question/asked/common.vo.ts`, `choices.vo.ts`, `inputs.vo.ts`, `address.vo.ts` | une classe par sorte de question posée. Chacune dit ce qu'elle garde d'une réponse (`kept`), si la réponse suffit (`isAnsweredBy`) et ce qui n'y va pas (`problemsWith`). `AskedAddress` dit les champs qui se demandent, en France ou à l'étranger, et ce qui ne va pas dans chacun |
+| `question/asked/answer-problem.vo.ts` | ce qui ne va pas dans une saisie, dit par sa nature (`{ kind: "missing" }`…). Les phrases de l'éditeur y restent telles quelles (`{ kind: "stated", text }`) |
+| `answers/given-answers.vo.ts`, `answers/validated-answers.vo.ts` | les deux lectures des réponses, que le modèle reçoit (voir « La décision ») |
 
 `front/socle/questionnaire/` l'affiche, un fichier par capacité :
 
@@ -138,21 +146,22 @@ Quatorze règles à tenir en ajoutant une question :
 
 - **Une question se déclare par son constructeur, un réglage par ligne.**
   `question.singleChoice("Q1.1", "Concernant son déplacement, le patient :")`
-  `.options({ "1_SEUL": "…", "2_AVEC_UN_PROCHE": "…" })` : la sorte vient du
-  constructeur, et la question porte ses options, qui disent le type de sa
-  réponse. Une option ne se règle que pour ce qu'elle porte de plus, dans
-  sa lambda : `.option("6_SEANCE", (option) => option.offeredWhen(…))`. `order`
-  en garde une partie, dans cet ordre, et `exclusive` met la sienne à part.
-  Chaque réglage donne une copie : une déclaration ne change jamais. Le modèle lie ses constructeurs une fois, dans son
+  `.possibleAnswers({ "1_SEUL": "…", "2_AVEC_UN_PROCHE": "…" })` : la sorte
+  vient du constructeur, et la question porte ses réponses possibles, qui disent
+  le type de sa réponse. Une réponse possible ne se règle que pour ce qu'elle
+  porte de plus, dans sa lambda : `.possibleAnswer("6_SEANCE", (possibleAnswer)
+  => possibleAnswer.offeredWhen(…))`. `order` en garde une partie, dans cet
+  ordre, et `exclusive` met la sienne à part. Chaque réglage donne une copie :
+  une déclaration ne change jamais. Le modèle lie ses constructeurs une fois, dans son
   `questions/question.ts` : `questionsOf<ReadByObject, Faits, Cibles>({ faits,
   cibles })`. Un seul jeu, avant comme après le verrou. La partie posée après
   le verrou se déclare par `afterLock({ … })` : ses gardes lisent alors les
   cibles figées.
 - **Une garde est une condition.** `appliesWhen` dit quand la question a un
   sens, d'après les réponses ; `mattersWhile` quand elle est encore utile,
-  d'après un fait ou une cible. Une option se propose par `offeredWhen`.
-  Jamais dans un composant. Celle d'une page (`page(…).appliesWhen(…)`)
-  s'ajoute à chacune de ses questions.
+  d'après un fait ou une cible. Une réponse possible se propose par
+  `offeredWhen`. Jamais dans un composant. Celle d'une page
+  (`page(…).appliesWhen(…)`) s'ajoute à chacune de ses questions.
 - **Une condition lit ce qui la précède.** `given.question(Q1_2).answer()` voit
   les pages d'avant validées, et sa page telle qu'elle est à l'écran, pour les
   questions posées avant la sienne. Une réponse d'avant le verrou se lit telle
@@ -191,8 +200,8 @@ Quatorze règles à tenir en ajoutant une question :
 - **Un savoir lu à deux endroits.** Une lecture de réponse s'écrit là où elle
   sert, même si une autre partie l'écrit aussi : le libellé de Q1.4 lit
   `answers.question(Q1_1).is("2_AVEC_UN_PROCHE")` sur place. Une donnée de
-  l'éditeur se partage en donnée, là où elle se déclare : les options dans
-  leur question, qu'on lit par `Q1_3.labels`. Une règle que plusieurs faits reprennent mot pour mot se
+  l'éditeur se partage en donnée, là où elle se déclare : les réponses
+  possibles dans leur question, qu'on lit par `Q1_3.labels`. Une règle que plusieurs faits reprennent mot pour mot se
   nomme dans `faits/communs.ts`. Ce qui ne sert qu'à un endroit y reste
   (`allersRetoursMensuelsAuPlus`, dans `questions/p3/questions/q3-1-3.ts`). Aucun fichier n'est
   commun aux pages et aux faits : mieux vaut une condition écrite deux fois sur
@@ -229,7 +238,7 @@ Quatorze règles à tenir en ajoutant une question :
   un lien de l'alerte, si l'incohérence dit ses réponses à revoir
   (`{ revisit }`, lu comme la condition). Le lien rouvre leur page
   (`Simulation.revisit`), et « Suivant » ramène à l'alerte
-  (`core/socle/simulation/correction.ts`, ADR-30). Une erreur de format
+  (`core/socle/simulation/answer-correction.vo.ts`, ADR-30). Une erreur de format
   s'affiche seule, avant les incohérences. Celle d'une adresse s'affiche sous
   le groupe, et une erreur de champ passe devant.
 - **L'adresse de la page ne porte que la position.** Des rangs (`#/etape/<n>`,
@@ -239,7 +248,7 @@ Quatorze règles à tenir en ajoutant une question :
 - **Une saisie ne compte qu'une fois la page validée.** Le brouillon vit dans
   `questionnaire.ts`, pas dans le champ.
 - **Le verrou est une étape, pas un drapeau.** La simulation le porte dans son
-  étape (`core/socle/simulation/simulation.ts`) : après lui, elle lit toutes les
+  étape (`core/socle/simulation/simulation.entity.ts`) : après lui, elle lit toutes les
   pages sous les cibles figées, et ne pose que celles du complément. L'écran y
   monte un second `QuestionnaireForm`, qui ne repose rien
   (`front/socle/simulateur/Simulateur.tsx`).
@@ -258,16 +267,16 @@ Ses pièces sont dans `core/socle/`.
 
 | Pièce | Ce qu'elle porte |
 |---|---|
-| `GivenAnswers` (`given-answers.ts`) | les réponses données, lues question par question : `answers.question(Q1_1).is("1_SEUL")`, `.isNot(option)`, `.checked(case)`, `.checkedBoxes()`, `.hasAnswer()`. Une question sans réponse n'est aucune option, sans être un « non » |
-| `ValidatedAnswers` (`validated-answers.ts`) | les questions validées, lues de même, avec ce qui se proposait : `.isValidated()`, `.offers(option)`, `.declined(case)` |
-| `LocalDateTime` (`local-date-time.ts`) | une date répondue, lue une fois, sans fuseau : `LocalDateTime.parse(saisie)`, `isBefore`, `isAfter`, `isAtOrBefore`, `equals`, `plusDays`, `plusHours`, `startOfDay`. Une saisie mal écrite n'est comparée à rien : toute comparaison avec elle vaut « non » |
+| `GivenAnswers` (`answers/given-answers.vo.ts`) | les réponses données, lues question par question : `answers.question(Q1_1).is("1_SEUL")`, `.isNot(possibleAnswer)`, `.checked(case)`, `.checkedBoxes()`, `.hasAnswer()`. Une question sans réponse n'est aucune réponse possible, sans être un « non » |
+| `ValidatedAnswers` (`answers/validated-answers.vo.ts`) | les questions validées, lues de même, avec ce qui se proposait : `.isValidated()`, `.offers(possibleAnswer)`, `.declined(case)` |
+| `LocalDateTime` (`local-date-time.vo.ts`) | une date répondue, lue une fois, sans fuseau : `LocalDateTime.parse(saisie)`, `isBefore`, `isAfter`, `isAtOrBefore`, `equals`, `plusDays`, `plusHours`, `startOfDay`. Une saisie mal écrite n'est comparée à rien : toute comparaison avec elle vaut « non » |
 | `preconisation.faits(answers, validated)` | le modèle reçoit ces deux lectures, jamais les réponses brutes. Il applique, fait par fait, le contrat de l'éditeur |
-| `Fait` (`decision-engine/fait/fait.ts`) | ce qu'on sait d'un fait, en objet valeur figé : sa valeur si elle est établie, et sa provenance. `Fait.oui`, `Fait.non`, `Fait.inconnu` et `Fait.valant` le construisent ; `isOui()`, `isNon()` et `isInconnu()` le lisent, jamais `.value === true`. `avecProvenance` en donne une copie, `equals` compare valeur et provenance |
-| `FaitCatalogue` (`decision-engine/establish-the-faits.ts`) | les faits d'un modèle, **une déclaration par fait**. Le modèle le construit une fois avec le nom de ses faits et leur liste (`faits/index.ts`, un fichier par fait), qui n'exporte que sa déclaration et s'ouvre sur le titre de l'éditeur : un doublon, un oubli ou un nom hors du modèle l'arrêtent au chargement. `read(validated, fixed)` calcule chaque fait à sa première lecture, et `fixed` en impose (la complétude). Le moteur de questionnaire reçoit le catalogue lui-même (`questionsOf({ faits: CATALOGUE_DES_FAITS })`, D-207) ; la préconisation le lit avec la complétude. Un fait lit les questions validées et d'autres faits, jamais une cible ni le jour. Un fait qui se relit s'arrête sur une erreur qui donne le chemin. Un fait qu'aucune réponse ne pose se déclare aussi, et sa provenance dit pourquoi |
-| `unFait(nom)` (`decision-engine/fait/declared.ts`) | un fait, valeur nommée faite de règles sur des conditions. La première qui conclut l'emporte : `ouiSi`, `nonSi` et `inconnuSi(condition, raison)`, `nonSiEcartee(réponse, case)` pour une case proposée et non cochée, et `applique(regle)`, qui place une règle écrite ailleurs (`uneRegle().nonSi(condition, raison)`, une seule règle par `RegleDeFait`). `sinon(raison)` clôt le fait : il reste inconnu, pour cette raison. `vaut(valeur)` déclare un fait qui n'a pas d'état (la boisson, en toutes lettres). Une règle écrit sa provenance : ce que lit sa condition, puis sa raison, « Q2.10.b : « 2_PODO_ORTHESE ». », « Q2.6 : sans réponse. », « fait_permission : « non ». » (ADR-22) |
-| `Cible` (`decision-engine/cible.ts`) | ce que les règles donnent pour une cible, en objet valeur figé, que seul `Cible.of` construit. `isOui()` et `isNon()` lisent une cible « oui ou non », `is("TAP")` une cible à constantes, `isInconnue()` et `isSansObjet()` les deux cas qui ne sont pas une décision. Jamais `.value === true` : une cible inconnue n'est pas un « non ». `cibleValues(cibles)` donne leurs valeurs, pour la trace, une seed ou un test |
-| `publicodesEngine` | n'envoie aux règles que les faits établis, et donne chaque cible en `Cible`. Il manque un fait : elle est inconnue, ce qui n'est pas une décision, ni « sans objet » (`null`) |
-| `DecisionGraph` (`decision-engine/decision-graph/graph.ts`) | le graphe de décision d'un modèle (#196, D-216) : ce que vaut chaque règle pour chaque façon dont ses faits valent oui, non ou rien. `valueOf(règle, faits)` le lit, sans publicodes. `decisionGraphOf(règles)` le compile (`compile-the-decision-graph.ts`), et `pnpm regles` l'écrit dans `rules/regles.graphe.json`. Le compilateur s'arrête sur un mécanisme qu'il ne traduit pas |
+| `Fait` (`decision-engine/fait/fait.vo.ts`) | ce qu'on sait d'un fait, en objet valeur figé : sa valeur si elle est établie, et sa provenance. `Fait.oui`, `Fait.non`, `Fait.inconnu` et `Fait.valant` le construisent ; `isOui()`, `isNon()` et `isInconnu()` le lisent, jamais `.value === true`. `avecProvenance` en donne une copie, `equals` compare valeur et provenance |
+| `FaitCatalogue` (`decision-engine/fait-catalogue.service.ts`) | les faits d'un modèle, **une déclaration par fait**. Le modèle le construit une fois avec le nom de ses faits et leur liste (`faits/index.ts`, un fichier par fait), qui n'exporte que sa déclaration et s'ouvre sur le titre de l'éditeur : un doublon, un oubli ou un nom hors du modèle l'arrêtent au chargement. `read(validated, fixed)` calcule chaque fait à sa première lecture, et `fixed` en impose (la complétude). Le moteur de questionnaire reçoit le catalogue lui-même (`questionsOf({ faits: CATALOGUE_DES_FAITS })`, D-207) ; la préconisation le lit avec la complétude. Un fait lit les questions validées et d'autres faits, jamais une cible ni le jour. Un fait qui se relit s'arrête sur une erreur qui donne le chemin. Un fait qu'aucune réponse ne pose se déclare aussi, et sa provenance dit pourquoi |
+| `unFait(nom)` (`decision-engine/fait/fait-declare.vo.ts`) | un fait, valeur nommée faite de règles sur des conditions. La première qui conclut l'emporte : `ouiSi`, `nonSi` et `inconnuSi(condition, raison)`, `nonSiEcartee(réponse, case)` pour une case proposée et non cochée, et `applique(regle)`, qui place une règle écrite ailleurs (`uneRegle().nonSi(condition, raison)`, une seule règle par `RegleDeFait`). `sinon(raison)` clôt le fait : il reste inconnu, pour cette raison. `vaut(valeur)` déclare un fait qui n'a pas d'état (la boisson, en toutes lettres). Une règle écrit sa provenance : ce que lit sa condition, puis sa raison, « Q2.10.b : « 2_PODO_ORTHESE ». », « Q2.6 : sans réponse. », « fait_permission : « non ». » (ADR-22) |
+| `Cible` (`decision-engine/cible.vo.ts`) | ce que les règles donnent pour une cible, en objet valeur figé, que seul `Cible.of` construit. `isOui()` et `isNon()` lisent une cible « oui ou non », `is("TAP")` une cible à constantes, `isInconnue()` et `isSansObjet()` les deux cas qui ne sont pas une décision. Jamais `.value === true` : une cible inconnue n'est pas un « non ». `Cible.valuesOf(cibles)` donne leurs valeurs, pour la trace, une seed ou un test |
+| `PublicodesDecisionEngine` (adaptateur du port `DecisionEngine`) | n'envoie aux règles que les faits établis, et donne chaque cible en `Cible`. Il manque un fait : elle est inconnue, ce qui n'est pas une décision, ni « sans objet » (`null`) |
+| `DecisionGraph` (`decision-engine/decision-graph/decision-graph.vo.ts`) | le graphe de décision d'un modèle (#196, D-216) : ce que vaut chaque règle pour chaque façon dont ses faits valent oui, non ou rien. `valueOf(règle, faits)` le lit, sans publicodes. `new PublicodesGraphCompiler(règles).compile()` le compile (`publicodes-graph-compiler.adapter.ts`, adaptateur publicodes sans port : seuls `pnpm regles` et les tests compilent), et `pnpm regles` l'écrit dans `rules/regles.graphe.json`. Le compilateur s'arrête sur un mécanisme qu'il ne traduit pas |
 
 Le socle dit ce qui a été montré, validé, coché. Il ne conclut rien : c'est le
 modèle qui applique, fait par fait, le contrat de l'éditeur.
@@ -389,7 +398,7 @@ Découpage **par fonctionnalité**, à l'intérieur de quatre racines :
 **L'arbre dit le chemin** (ADR-25). Sous une racine, un dossier est un module
 (`socle/`, `models/<nom>/`), une entité, nommée d'un nom (`question/`, `fait/`,
 `simulation/`, `r2/`), ou une capacité, nommée d'un verbe
-(`validate-a-page.ts`, `does-a-question-still-matter/`, `draft-an-answer.ts`).
+(`does-a-question-still-matter/`, `draft-an-answer.ts`).
 Un fichier porte une responsabilité et se nomme de ce qu'il exporte. Le
 technique se nomme en anglais, le métier en français. Un dossier qu'on ne sait
 pas nommer d'un nom ou d'un verbe range mal : `utils/`, `types/`, `helpers/`
@@ -399,9 +408,10 @@ n'existent pas ici.
 direct de `core/socle/` ou de `front/socle/`. Son `index.ts` dit ce qu'il
 promet au reste du socle, et rien d'autre : hors du module, on n'importe que
 lui, et ce qui manque s'y ajoute. Ses tests, `tests/socle/<module>/`, lisent
-ses fichiers en direct. Une seule porte à part,
-`core/socle/decision-engine/compute-the-cibles.ts`, pour tenir publicodes hors
-du chunk d'entrée. `tests/modules-du-socle.test.ts` le garde.
+ses fichiers en direct. Deux portes à part, qui importent publicodes :
+`core/socle/decision-engine/publicodes-decision-engine.adapter.ts`, pour le tenir
+hors du chunk d'entrée, et `publicodes-graph-compiler.adapter.ts`, réservée à
+l'outil des règles et aux tests. `tests/modules-du-socle.test.ts` le garde.
 
 Hors de ces racines, `tooling/` porte la configuration TypeScript et les outils de
 développement (le script des règles, la vérification du bundle). Le script collé

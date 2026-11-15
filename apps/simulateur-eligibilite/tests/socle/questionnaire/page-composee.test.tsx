@@ -19,15 +19,15 @@ const given = givenOf<Questions>();
 
 const BOISSON = question
   .singleChoice("boisson", "Quelle boisson ?")
-  .options({ cafe: "Café", the: "Thé" });
+  .possibleAnswers({ cafe: "Café", the: "Thé" });
 const TAILLE = question
   .singleChoice("taille", "Quelle taille ?")
-  .options({ petite: "Petite", grande: "Grande" });
+  .possibleAnswers({ petite: "Petite", grande: "Grande" });
 const SUITE = page(
   "suite",
   question
     .singleChoice("suite", "Une suite ?")
-    .options({ oui: "Oui", non: "Non" }),
+    .possibleAnswers({ oui: "Oui", non: "Non" }),
 );
 
 const suivant = () => screen.getByRole("button", { name: "Suivant" });

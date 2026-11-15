@@ -1,7 +1,7 @@
-// Les constructeurs des questions : la sorte et les options viennent du
-// constructeur et du catalogue, puis chaque réglage s'écrit sur sa ligne. Les
-// conditions lisent un seul objet, et les faits qu'elles y lisent sont ceux des
-// questions validées avant elles.
+// Les constructeurs des questions : la sorte et les réponses possibles viennent
+// du constructeur et du catalogue, puis chaque réglage s'écrit sur sa ligne.
+// Les conditions lisent un seul objet, et les faits qu'elles y lisent sont ceux
+// des questions validées avant elles.
 
 import { describe, expect, it } from "vitest";
 import {
@@ -12,7 +12,7 @@ import {
   questionsOf,
   unFait,
 } from "../../../core/socle";
-import { Questionnaire } from "../../../core/socle/questionnaire-engine/questionnaire";
+import { Questionnaire } from "../../../core/socle/questionnaire-engine/questionnaire.vo";
 
 type Questions = {
   boisson: "the" | "cafe" | "eau";
@@ -48,14 +48,14 @@ const BOISSON = page(
   "boisson",
   question
     .singleChoice("boisson", "Quelle boisson ?")
-    .options({ the: "Un thé", cafe: "Un café", eau: "De l'eau" }),
+    .possibleAnswers({ the: "Un thé", cafe: "Un café", eau: "De l'eau" }),
 );
 
 const ACCOMPAGNEMENTS = page(
   "accompagnements",
   question
     .multipleChoice("accompagnements", "Avec quoi ?")
-    .options({
+    .possibleAnswers({
       lait: "Du lait",
       sucre: "Du sucre",
       citron: "Du citron",
@@ -69,7 +69,9 @@ const ACCOMPAGNEMENTS = page(
     .mattersWhile(given.fait("chaude").isOui())
     .order("sucre", "lait")
     .exclusive("rien")
-    .option("lait", (option) => option.offeredWhen(boisson.is("the"))),
+    .possibleAnswer("lait", (possibleAnswer) =>
+      possibleAnswer.offeredWhen(boisson.is("the")),
+    ),
 );
 
 const QUANTITE = page(
@@ -85,38 +87,43 @@ const poseesSur = (
 ) => new Questionnaire(PAGES).readWith({ boisson }).questionsOn(surLaPage);
 
 describe("un constructeur", () => {
-  it("donne la sorte et les options du catalogue, dans son ordre", () => {
+  it("donne la sorte et les réponses possibles du catalogue, dans son ordre", () => {
     const [boisson] = poseesSur(BOISSON, "the");
     expect(boisson).toMatchObject({ id: "boisson", kind: "single choice" });
-    expect(boisson?.kind === "single choice" && boisson.options).toEqual([
+    expect(
+      boisson?.kind === "single choice" && boisson.possibleAnswers,
+    ).toEqual([
       { value: "the", label: "Un thé" },
       { value: "cafe", label: "Un café" },
       { value: "eau", label: "De l'eau" },
     ]);
   });
 
-  it("ne garde que les options de `order`, dans cet ordre, et met l'exclusive à part", () => {
+  it("ne garde que les réponses possibles de `order`, dans cet ordre, et met l'exclusive à part", () => {
     const [accompagnements] = poseesSur(ACCOMPAGNEMENTS, "the");
     if (accompagnements?.kind !== "multiple choice")
       throw new Error("choix multiple attendu");
-    expect(accompagnements.options.map((option) => option.value)).toEqual([
-      "sucre",
-      "lait",
-    ]);
-    expect(accompagnements.exclusiveOption).toEqual({
+    expect(
+      accompagnements.possibleAnswers.map(
+        (possibleAnswer) => possibleAnswer.value,
+      ),
+    ).toEqual(["sucre", "lait"]);
+    expect(accompagnements.exclusivePossibleAnswer).toEqual({
       value: "rien",
       label: "Rien",
     });
   });
 
-  it("passe le contexte aux libellés et aux options du moment", () => {
+  it("passe le contexte aux libellés et aux réponses possibles du moment", () => {
     const [accompagnements] = poseesSur(ACCOMPAGNEMENTS, "cafe");
     if (accompagnements?.kind !== "multiple choice")
       throw new Error("choix multiple attendu");
     expect(accompagnements.label).toBe("Avec votre café ?");
-    expect(accompagnements.options.map((option) => option.value)).toEqual([
-      "sucre",
-    ]);
+    expect(
+      accompagnements.possibleAnswers.map(
+        (possibleAnswer) => possibleAnswer.value,
+      ),
+    ).toEqual(["sucre"]);
   });
 
   it("donne aussi la sorte d'une saisie, avec ses réglages", () => {
@@ -135,14 +142,14 @@ describe("un constructeur", () => {
     expect(lire(bornee)).toMatchObject({ min: 2 });
   });
 
-  it("refuse, au typage, une option inconnue ou un réglage d'une autre sorte", () => {
+  it("refuse, au typage, une réponse possible inconnue ou un réglage d'une autre sorte", () => {
     const boisson = question
       .singleChoice("boisson", "Quoi ?")
-      .options({ the: "Un thé", cafe: "Un café" });
+      .possibleAnswers({ the: "Un thé", cafe: "Un café" });
     // @ts-expect-error « citron » n'est pas une boisson.
     boisson.order("citron");
     // @ts-expect-error « citron » n'est pas une boisson.
-    boisson.option("citron", (o) => o);
+    boisson.possibleAnswer("citron", (o) => o);
     expect(() =>
       // @ts-expect-error un texte n'a pas de borne.
       question.text("remarque", "Une remarque ?").min(1),
@@ -189,11 +196,13 @@ describe("une incohérence", () => {
   });
 });
 
-describe("les options du catalogue", () => {
+describe("les réponses possibles du catalogue", () => {
   it("refusent une valeur qui a l'air d'un entier : elle passerait avant les autres", () => {
     const entiers = questionsOf<{ choix: "a" | "1" }>();
     expect(() =>
-      entiers.singleChoice("choix", "Lequel ?").options({ a: "A", "1": "Un" }),
+      entiers
+        .singleChoice("choix", "Lequel ?")
+        .possibleAnswers({ a: "A", "1": "Un" }),
     ).toThrow("« 1 » a l'air d'un entier");
   });
 });

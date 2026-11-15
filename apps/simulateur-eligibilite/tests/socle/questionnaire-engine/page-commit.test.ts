@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { page, questionsOf } from "../../../core/socle";
-import { Questionnaire } from "../../../core/socle/questionnaire-engine/questionnaire";
+import { Questionnaire } from "../../../core/socle/questionnaire-engine/questionnaire.vo";
 
 // Une réponse qui change n'efface que les réponses qui en dépendent. Les pages
 // sont écrites ici : le questionnaire factice n'a qu'une seule dépendance.
@@ -33,14 +33,16 @@ const PAGES = [
 ];
 const QUESTIONNAIRE = new Questionnaire(PAGES);
 
-// Une réponse qui ne dépend que de certaines options d'une autre.
+// Une réponse qui ne dépend que de certaines réponses possibles d'une autre.
 const CASES = page(
   "cases",
-  question.multipleChoice("cases", "cases").options({ a: "a", b: "b", c: "c" }),
+  question
+    .multipleChoice("cases", "cases")
+    .possibleAnswers({ a: "a", b: "b", c: "c" }),
 );
 const SELON_A_ET_B = question
   .text("selon-a-et-b", "selon-a-et-b")
-  .dependsOn({ question: "cases", options: ["a", "b"] });
+  .dependsOn({ question: "cases", possibleAnswers: ["a", "b"] });
 const AVEC_CASES = new Questionnaire([CASES, page("selon", SELON_A_ET_B)]);
 const cochees = (avant: Questions["cases"], apres: Questions["cases"]) =>
   AVEC_CASES.readWith({ cases: avant, "selon-a-et-b": "x" }).commit(CASES, {
@@ -103,14 +105,14 @@ describe("validation d'une page", () => {
     ).toEqual({ source: { ...adresse, city: "Lyon" }, independante: "d" });
   });
 
-  it("garde une réponse quand seules d'autres options changent", () => {
+  it("garde une réponse quand seules d'autres réponses possibles changent", () => {
     expect(cochees(["a"], ["a", "c"])).toEqual({
       cases: ["a", "c"],
       "selon-a-et-b": "x",
     });
   });
 
-  it("efface une réponse quand l'une de ses options change", () => {
+  it("efface une réponse quand l'une de ses réponses possibles change", () => {
     expect(cochees(["a", "c"], ["b", "c"])).toEqual({ cases: ["b", "c"] });
   });
 

@@ -9,7 +9,7 @@ export const Q2_8_5 = question
     "Q2.8.5",
     "La prescription couvre-t-elle plusieurs permissions ?",
   )
-  .options({
+  .possibleAnswers({
     "1_OUI": "Oui.",
     "2_NON": "Non.",
   })

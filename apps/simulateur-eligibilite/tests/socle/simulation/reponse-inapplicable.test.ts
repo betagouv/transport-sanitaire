@@ -28,13 +28,13 @@ const PAGES = [
     "deplacement",
     question
       .singleChoice("deplacement", "Quel déplacement ?")
-      .options({ transfert: "Un transfert", autre: "Autre chose" }),
+      .possibleAnswers({ transfert: "Un transfert", autre: "Autre chose" }),
   ),
   page(
     "type",
     question
       .singleChoice("type", "Quel type ?")
-      .options({ definitif: "Définitif", provisoire: "Provisoire" })
+      .possibleAnswers({ definitif: "Définitif", provisoire: "Provisoire" })
       .appliesWhen(given.question("deplacement").answer().is("transfert")),
   ),
   page("motif", question.text("motif", "Quel motif ?")),

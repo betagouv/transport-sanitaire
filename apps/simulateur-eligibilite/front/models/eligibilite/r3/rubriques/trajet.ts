@@ -23,7 +23,11 @@ import { SENS_CHOISI } from "../../../../../core/models/eligibilite/questions/p3
 import { Q3_2 } from "../../../../../core/models/eligibilite/questions/p3/questions/q3-2";
 import { Q3_3 } from "../../../../../core/models/eligibilite/questions/p3/questions/q3-3";
 import { given } from "../../../../../core/models/eligibilite/questions/reponses";
-import type { Address, Unanswered, Value } from "../../../../../core/socle";
+import type {
+  AddressData,
+  Reading,
+  Unanswered,
+} from "../../../../../core/socle";
 import type { Rubrique } from "./rubrique";
 
 export type Trajet = {
@@ -52,7 +56,7 @@ export const TRAJET: Rubrique<Trajet> = {
 };
 
 /** La case du domicile. Sans catégorie, aucune rubrique ne reçoit le lieu. */
-export function auDomicile(extremite: Extremite): Value<boolean> {
+export function auDomicile(extremite: Extremite): Reading<boolean> {
   return LIEUX[extremite].categorieDuLieu.compute(
     (categorie) => categorie === "1_DOMICILE",
   );
@@ -64,7 +68,7 @@ export function auDomicile(extremite: Extremite): Value<boolean> {
 type ZoneVide = undefined;
 
 /** Ce que P3 sait d'un lieu : sa catégorie, sa nature, ses champs. */
-type Lieu = ReturnType<typeof lieu> extends Value<infer Lu> ? Lu : never;
+type Lieu = ReturnType<typeof lieu> extends Reading<infer Lu> ? Lu : never;
 
 const USLD = "Unité de Soins de Longue Durée (USLD)";
 
@@ -125,7 +129,7 @@ function autreLieu({ htnm, nature, nom, precision }: Lieu) {
  * Les parties saisies de l'adresse. Le code postal et la commune vont
  * ensemble, comme sur une enveloppe.
  */
-export function adresseEnParties(adresse: Address | Unanswered): string[] {
+export function adresseEnParties(adresse: AddressData | Unanswered): string[] {
   if (adresse === undefined) return [];
   const ville = [adresse.postalCode, adresse.city].filter(Boolean).join(" ");
   return [

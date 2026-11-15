@@ -20,12 +20,12 @@ const given = givenOf<Questions>();
 
 const LIVRAISON = question
   .singleChoice("livraison", "Comment livrer ?")
-  .options({ domicile: "À domicile", relais: "En point relais" });
+  .possibleAnswers({ domicile: "À domicile", relais: "En point relais" });
 
 // Le mode de paiement, sans règle.
 const PAIEMENT = question
   .singleChoice("mode", "Comment payer ?")
-  .options({ carte: "Par carte", especes: "En espèces" });
+  .possibleAnswers({ carte: "Par carte", especes: "En espèces" });
 
 const MODE = PAIEMENT.inconsistentWhen(
   given

@@ -18,7 +18,7 @@ export const Q2_2_1_INDICATION = question
     "Ce retour nécessite-t-il un transport pour raison médicale, indépendamment des contraintes d’escorte pénitentiaire ?",
   )
   // Le `Q2.2.1.prison-medical` de l'éditeur (point 33, v10.1.3).
-  .options({
+  .possibleAnswers({
     "1_OUI": "Oui.",
     "2_NON": "Non.",
   })

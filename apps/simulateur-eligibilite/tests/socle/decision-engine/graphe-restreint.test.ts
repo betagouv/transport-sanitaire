@@ -1,15 +1,15 @@
 import { describe, expect, it } from "vitest";
-import { decisionGraphOf } from "../../../core/socle/decision-engine/compute-the-cibles";
-import { DecisionDiagram } from "../../../core/socle/decision-engine/decision-graph/diagram";
+import { DecisionDiagram } from "../../../core/socle/decision-engine/decision-graph/decision-diagram.service";
 import {
   DecisionGraph,
   type FaitValue,
-} from "../../../core/socle/decision-engine/decision-graph/graph";
+} from "../../../core/socle/decision-engine/decision-graph/decision-graph.vo";
+import { PublicodesGraphCompiler } from "../../../core/socle/decision-engine/publicodes-graph-compiler.adapter";
 
 // Le graphe restreint aux faits qu'on sait déjà (#255) : il vaut ce que vaut
 // le graphe entier, et ne teste plus que les faits qu'on ne sait pas.
 
-const DONNEES = decisionGraphOf({
+const DONNEES = new PublicodesGraphCompiler({
   fait_pluie: { titre: "Il pleut" },
   fait_vent: { titre: "Il vente" },
   fait_froid: { titre: "Il fait froid" },
@@ -24,7 +24,7 @@ const DONNEES = decisionGraphOf({
       ],
     },
   },
-});
+}).compile();
 const [PLUIE, VENT, FROID] = ["fait_pluie", "fait_vent", "fait_froid"].map(
   (nom) => DONNEES.faits.indexOf(nom),
 ) as [number, number, number];

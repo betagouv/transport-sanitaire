@@ -32,7 +32,7 @@
 
 import type {
   Cibles,
-  Issue,
+  IssueId,
 } from "../../../../core/models/eligibilite/cibles/noms";
 import { given } from "../../../../core/models/eligibilite/questions/reponses";
 import { cerfaValue } from "../../../socle";
@@ -61,7 +61,7 @@ const ACCORD_PREALABLE =
   "Demande d’accord préalable préremplie prête à imprimer";
 
 // Les issues qui ont un document. R3 ne s'ouvre pas pour les autres.
-const TITRES: Partial<Record<Issue, string>> = {
+const TITRES: Partial<Record<IssueId, string>> = {
   ISSUE_PMT: PRESCRIPTION,
   ISSUE_S3141: PRESCRIPTION,
   ISSUE_DAP_SANS_URGENCE: ACCORD_PREALABLE,
@@ -73,7 +73,7 @@ const COMPLETER_LA_PRESCRIPTION = "Compléter la prescription";
 const COMPLETER_L_ACCORD = "Compléter la demande d’accord préalable";
 
 // Les issues positives, et le document que P3 complète pour chacune.
-const BOUTONS: Partial<Record<Issue, string>> = {
+const BOUTONS: Partial<Record<IssueId, string>> = {
   ISSUE_PMT: COMPLETER_LA_PRESCRIPTION,
   ISSUE_S3141: COMPLETER_LA_PRESCRIPTION,
   ISSUE_DAP_SANS_URGENCE: COMPLETER_L_ACCORD,

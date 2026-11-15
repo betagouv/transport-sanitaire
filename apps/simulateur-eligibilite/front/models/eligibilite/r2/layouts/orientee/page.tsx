@@ -4,11 +4,11 @@
 // l'éditeur (TS1014-TERMINOLOGIE-PRESCRIPTEUR). Le journal des parcours reçoit
 // ses scénarios, et aucune portion du trajet : la page n'en restitue pas.
 
+import type { OrientedIssueId } from "../../../../../../core/models/eligibilite/cibles/issue.vo";
 import type { FirstResult } from "../../../../../socle";
 import type { TraceDe } from "../../components/ce-que-lit-un-bloc";
 import type { CatalogueResultats } from "../../components/forme-du-catalogue";
 import { identifiantsDes } from "../../components/motif";
-import type { IssueOrientee } from "./issues";
 import { PageDuPrescripteur } from "./PageDuPrescripteur";
 import {
   type LU_PAR_LE_PRESCRIPTEUR,
@@ -19,7 +19,7 @@ import {
 export function pageOrientee(
   catalogue: CatalogueResultats,
   trace: TraceDe<typeof LU_PAR_LE_PRESCRIPTEUR>,
-  issue: IssueOrientee,
+  issue: OrientedIssueId,
 ): FirstResult {
   const texte = selonLAffichage(
     texteDuPrescripteur(catalogue, issue, trace),

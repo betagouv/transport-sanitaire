@@ -3,21 +3,21 @@
 // seulement : ni page, ni réponse, ni donnée. La simulation dit lesquels elle
 // accepte (`Simulation.moveTo`).
 
-import type { Position } from "../../../core/socle/simulation";
+import { JourneyPosition } from "../../../core/socle/simulation";
 
 /** Le hash de cette position. */
-export function hashOf({ step, returnTo }: Position): string {
+export function hashOf({ step, returnTo }: JourneyPosition): string {
   const hash = `#/etape/${step}`;
   return returnTo === undefined ? hash : `${hash}?retour=${returnTo}`;
 }
 
 /** La position que dit ce hash. */
-export function positionIn(hash: string): Position | NotAPosition {
+export function positionIn(hash: string): JourneyPosition | NotAPosition {
   const lue = HASH.exec(hash);
   if (!lue) return undefined;
   const [, step, returnTo] = lue;
-  if (returnTo === undefined) return { step: Number(step) };
-  return { step: Number(step), returnTo: Number(returnTo) };
+  if (returnTo === undefined) return new JourneyPosition(Number(step));
+  return new JourneyPosition(Number(step), Number(returnTo));
 }
 
 // ---- implémentation ----

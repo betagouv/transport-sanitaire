@@ -160,8 +160,8 @@ function traceOf(questionnaire: QuestionnaireScreen): DebugTraceProps {
 // validée. Une erreur de saisie s'affiche aussitôt, une incohérence au clic sur
 // « Suivant ». Une question en erreur montre ses liens vers les réponses à
 // revoir.
-// Une question qui s'affiche sous une option (`shownUnder`) se pose dans le
-// panneau de cette option, si celle-ci est sur la page ; sinon, à son rang.
+// Une question qui s'affiche sous une réponse possible (`shownUnder`) se pose
+// dans son panneau, si celle-ci est sur la page ; sinon, à son rang.
 function QuestionFields({
   questionnaire,
 }: {
@@ -184,10 +184,8 @@ function QuestionFields({
         answer={draft[question.id]}
         errors={errors}
         onChange={(answer) => questionnaire.answer(question.id, answer)}
-        below={(option) => {
-          const nested = questions.filter(
-            (q) => parentOf(q) === question && q.under?.option === option,
-          );
+        below={(value) => {
+          const nested = questions.filter(shownUnder(question, value));
           return nested.length > 0 ? (
             <ConditionalPanel>{nested.map(field)}</ConditionalPanel>
           ) : null;
@@ -197,6 +195,12 @@ function QuestionFields({
     );
   };
   return questions.filter((question) => !parentOf(question)).map(field);
+}
+
+// Les questions qui s'affichent sous cette réponse possible de `parent`.
+function shownUnder(parent: AskedQuestion, value: string) {
+  return ({ under }: AskedQuestion) =>
+    under?.question === parent.id && under.possibleAnswer === value;
 }
 
 // Les liens vers les réponses d'avant à revoir. Ce sont de vraies adresses :

@@ -740,7 +740,7 @@ Une garde dit pourquoi elle tient (D-214) :
 |---|---|---|
 | `appliesWhen` | la question a un sens, d'après les réponses | `page(…).appliesWhen(…)`, ajoutée à chacune de ses questions (ADR-11) |
 | `mattersWhile` | sa réponse peut encore changer le résultat, d'après un fait, une cible ou un support | `.mattersWhile(given.fait("fait_permission").isOui())` |
-| `offeredWhen` | une option se propose | `option.offeredWhen(unModePartageable)` |
+| `offeredWhen` | une option se propose | `possibleAnswer.offeredWhen(unModePartageable)` |
 | `inconsistentWhen` | une réponse contredit une autre | Q3.1.3 au-delà de la fréquence de Q2.8.6.a |
 
 La complétude de P1 et de P2 reste inconnue pour une garde (ADR-14). Une seule
@@ -1130,7 +1130,7 @@ flowchart LR
 | Étape (`Stage`, `Locked`) | `core/` | questionnaire, résultat, complément, cerfa ; après le verrou, les réponses d'avant et leur préconisation ; privée à la simulation | nouveau |
 | ~~Écran de départ, navigation, reprise (`screen.ts`, `move-between-pages.ts`, `resume-where-left.ts`)~~ | ~~`front/`~~ | ~~où une seed s'ouvre, avancer, reculer, reprendre~~ | supprimé (#336, D-262) |
 | `R2` et `R3` | `front/models/` | les résultats en entités : ce qu'ils lisent, puis ce qu'ils donnent ; R2 a un dossier par cas | nouveau |
-| Options d'une question (`.options({ … })`) | `core/models/` | les valeurs d'une question à choix et leurs libellés, dans sa déclaration ; elles typent sa réponse | nouveau |
+| Options d'une question (`.possibleAnswers({ … })`) | `core/models/` | les valeurs d'une question à choix et leurs libellés, dans sa déclaration ; elles typent sa réponse | nouveau |
 | ~~Catalogue des options (`OPTIONS`)~~ | ~~`core/models/`~~ | ~~les options de chaque question, d'après l'id~~ | supprimé (#336, D-261) |
 | Index d'un module (`<module>/index.ts`) | `core/`, `front/` | ce qu'un module du socle promet au reste du socle ; le seul de ses fichiers qu'on importe de l'extérieur | nouveau |
 
@@ -1192,7 +1192,7 @@ a-t-il besoin ?**
 | R-10 | Le filtrage coûte environ 60 ms à froid par lecture, dix fois une lecture sans lui | des caches par place ; à mesurer à l'écran sur un poste lent |
 | R-11 | Une lecture du résultat déclarée hors de sa branche fait poser des questions pour rien | `questions-posees-par-seed.test.ts` liste les questions de chaque seed |
 | R-12 | Une question et une condition de `conditions/` s'importent l'une l'autre : la question lue vaut `undefined` au chargement | le test sous Node et chaque test du modèle chargent le module ; l'erreur lit `id` sur `undefined` |
-| R-13 | `simulation.ts` touche la limite des 300 lignes : une méthode de plus la dépasse | `taille-du-code.test.ts` le garde ; une capacité de plus sort dans son fichier, sous `simulation/` |
+| R-13 | `simulation.entity.ts` touche la limite des 300 lignes : une méthode de plus la dépasse | `taille-du-code.test.ts` le garde ; une capacité de plus sort dans son fichier, sous `simulation/` |
 | R-14 | Les index des deux moteurs de `core/socle/` s'importent l'un l'autre : une valeur lue au chargement d'un module vaudrait `undefined` | le test sous Node et les tests du socle chargent les deux ; aucune valeur n'est lue au chargement aujourd'hui, et l'erreur nommerait le symbole |
 
 ## Vérification

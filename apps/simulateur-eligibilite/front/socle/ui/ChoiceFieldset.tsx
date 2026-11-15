@@ -7,7 +7,7 @@
 // sous elle, et un bouton n'a pas sa place dans un libellé.
 
 import { type ComponentProps, Fragment, type ReactNode } from "react";
-import { type Help, OptionHelp } from "./OptionHelp";
+import { type Help, PossibleAnswerHelp } from "./PossibleAnswerHelp";
 import "./checkbox-card.css";
 import "./choice-fieldset.css";
 
@@ -46,7 +46,9 @@ type Props = {
   message?: Message;
   /** Met la légende en avant, quand le champ est la question de la page. */
   lead?: boolean;
-  /** Les libellés des options en gras ; leur description reste grise, dessous. */
+  /**
+   * Les libellés des options en gras ; leur description reste grise, dessous.
+   */
   boldLabels?: boolean;
 };
 
@@ -94,8 +96,9 @@ function Legend({ id, legend, hint, lead }: Props) {
   );
 }
 
-// Une option, son aide, puis ce qui s'affiche dessous. L'aide est sœur de l'option, pas son enfant : le
-// DSFR espace les options d'après leur rang dans le groupe.
+// Une option, son aide, puis ce qui s'affiche dessous. L'aide est sœur de
+// l'option, pas son enfant : le DSFR espace les options d'après leur rang dans
+// le groupe.
 function ChoiceInput({
   id,
   type,
@@ -120,7 +123,7 @@ function ChoiceInput({
           )}
         </label>
       </div>
-      {choice.help && <OptionHelp help={choice.help} />}
+      {choice.help && <PossibleAnswerHelp help={choice.help} />}
       {choice.below}
     </>
   );

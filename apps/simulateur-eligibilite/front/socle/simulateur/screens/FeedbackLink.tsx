@@ -13,17 +13,17 @@
 //
 // Sans intention connue, aucun lien : on ne la suppose pas.
 
-import type { Read } from "../../../../core/socle/questionnaire-engine";
+import type { Context } from "../../../../core/socle/questionnaire-engine";
 import type { Intent, Model } from "../../model";
 import "./feedback-link.css";
 
 /** L'avis que le modèle propose pour ces réponses. `null` : aucun. */
 export type FeedbackOffer = { url: string; label: string; intent: Intent };
 
-export function feedbackOf(model: Model, read: Read) {
+export function feedbackOf(model: Model, context: Context) {
   const { feedback } = model;
   if (!feedback || !model.intent) return null;
-  const intent = read(model.intent);
+  const intent = model.intent.in(context);
   return intent && { url: feedback.url, label: feedback.label, intent };
 }
 

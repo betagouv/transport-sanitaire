@@ -24,7 +24,7 @@ const HEMODIALYSE = /^Oui\.$/;
 
 const bouton = (libelle: string) =>
   screen.getByRole("button", { name: libelle });
-const optionsDe = (question: RegExp) =>
+const reponsesPossiblesDe = (question: RegExp) =>
   within(
     screen.getByRole("group", { name: question }),
   ).getAllByRole<HTMLInputElement>("radio");
@@ -38,7 +38,9 @@ describe("la page des cas particuliers de P1", () => {
     await page(Q13B);
 
     expect(
-      optionsDe(Q13B).map((option) => option.labels?.[0]?.textContent),
+      reponsesPossiblesDe(Q13B).map(
+        (possibleAnswer) => possibleAnswer.labels?.[0]?.textContent,
+      ),
     ).toEqual([
       "Soin ou examen directement lié au traitement de cette Affection Longue Durée (ALD)",
       "Soin ou examen sans lien direct avec cette ALD : traumatisme distinct, intercurrence, autre affection",
@@ -52,7 +54,8 @@ describe("la page des cas particuliers de P1", () => {
     await cocher(user, ALD);
 
     expect(await page(Q13B)).toBeInTheDocument();
-    for (const option of optionsDe(Q13B)) expect(option).not.toBeChecked();
+    for (const possibleAnswer of reponsesPossiblesDe(Q13B))
+      expect(possibleAnswer).not.toBeChecked();
     expect(bouton("Suivant")).toBeDisabled();
 
     await choisir(user, LIEN_DIRECT);
@@ -95,6 +98,7 @@ describe("la page des cas particuliers de P1", () => {
     expect(screen.queryByRole("group", { name: Q13B })).toBeNull();
     await cocher(user, ALD);
     expect(await page(Q13B)).toBeInTheDocument();
-    for (const option of optionsDe(Q13B)) expect(option).not.toBeChecked();
+    for (const possibleAnswer of reponsesPossiblesDe(Q13B))
+      expect(possibleAnswer).not.toBeChecked();
   });
 });

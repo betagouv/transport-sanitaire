@@ -20,7 +20,7 @@ import type {
   Answers,
   Page,
 } from "../../../core/socle/questionnaire-engine/question/question";
-import { Questionnaire } from "../../../core/socle/questionnaire-engine/questionnaire";
+import { Questionnaire } from "../../../core/socle/questionnaire-engine/questionnaire.vo";
 
 type Questions = {
   boisson: "the" | "cafe" | "eau";
@@ -61,10 +61,10 @@ const grand = given.question("taille").answer().is("grand");
 
 const TAILLE = question
   .singleChoice("taille", "Quelle taille ?")
-  .options({ petit: "Petit", grand: "Grand" });
+  .possibleAnswers({ petit: "Petit", grand: "Grand" });
 const BOISSON = question
   .singleChoice("boisson", "Quelle boisson ?")
-  .options({ the: "Un thé", cafe: "Un café", eau: "De l'eau" });
+  .possibleAnswers({ the: "Un thé", cafe: "Un café", eau: "De l'eau" });
 const sucreSi = (condition: Condition) =>
   question.checkbox("sucre", "Du sucre ?", "Oui").appliesWhen(condition);
 
@@ -109,12 +109,14 @@ describe("answer() dans une garde", () => {
     ).toEqual(["sucre"]);
   });
 
-  it("sait quelles options se proposaient sur sa page", () => {
+  it("sait quelles réponses possibles se proposaient sur sa page", () => {
     const pages = [
       page("taille", TAILLE),
       page(
         "commande",
-        BOISSON.option("eau", (option) => option.offeredWhen(grand)),
+        BOISSON.possibleAnswer("eau", (possibleAnswer) =>
+          possibleAnswer.offeredWhen(grand),
+        ),
         sucreSi(given.question("boisson").answer().offered("eau")),
       ),
     ];

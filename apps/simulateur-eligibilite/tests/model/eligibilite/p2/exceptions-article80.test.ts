@@ -1,9 +1,10 @@
-// Les exceptions de l'article 80 (Q2.6.a et Q2.6) : leurs options, et le fait de
-// chacune. Une exception proposée vaut « oui » cochée, « non » sinon. Une
-// exception qui ne s'est pas proposée prend un prédicat structurel (D-106).
+// Les exceptions de l'article 80 (Q2.6.a et Q2.6) : leurs réponses possibles,
+// et le fait de chacune. Une exception proposée vaut « oui » cochée, « non »
+// sinon. Une exception qui ne s'est pas proposée prend un prédicat structurel
+// (D-106).
 
 import { describe, expect, it } from "vitest";
-import { cible } from "../../../../core/models/eligibilite/cibles/evaluation";
+import { decisionEngine } from "../../../../core/models/eligibilite/cibles/evaluation";
 import { Questionnaire } from "../../../../core/socle/questionnaire-engine";
 import {
   definitif,
@@ -32,7 +33,9 @@ describe("une exception cochée", () => {
       false,
       false,
     ]);
-    expect(cible(faits(had), "cible_exception_article80").value).toBe(true);
+    expect(
+      decisionEngine.cible(faits(had), "cible_exception_article80").value,
+    ).toBe(true);
   });
 
   it("garde la trace de la case cochée et de celle écartée", () => {
@@ -56,7 +59,7 @@ describe("une exception cochée", () => {
   });
 });
 
-describe("les options de Q2.6", () => {
+describe("les réponses possibles de Q2.6", () => {
   it("un transfert définitif depuis un séjour : ni 2, ni 8", () => {
     expect(proposees(definitif([]))).toEqual([
       "3_CENTRE_QUINZE",
@@ -69,36 +72,37 @@ describe("les options de Q2.6", () => {
     ]);
   });
 
-  it("un transfert définitif sans séjour propose l'option 2, pas la 8", () => {
-    const options = proposees(definitif([], URGENCES));
-    expect(options).toContain("2_ADMISSION_SANS_SEJOUR");
-    expect(options).not.toContain("8_RADIOTHERAPIE");
+  it("un transfert définitif sans séjour propose la réponse possible 2, pas la 8", () => {
+    const possibleAnswers = proposees(definitif([], URGENCES));
+    expect(possibleAnswers).toContain("2_ADMISSION_SANS_SEJOUR");
+    expect(possibleAnswers).not.toContain("8_RADIOTHERAPIE");
   });
 
   it("un transfert provisoire retire la 2 et propose la 8", () => {
-    const options = proposees(provisoire([], URGENCES));
-    expect(options).not.toContain("2_ADMISSION_SANS_SEJOUR");
-    expect(options).toContain("8_RADIOTHERAPIE");
-    expect(options).toContain("3_CENTRE_QUINZE");
+    const possibleAnswers = proposees(provisoire([], URGENCES));
+    expect(possibleAnswers).not.toContain("2_ADMISSION_SANS_SEJOUR");
+    expect(possibleAnswers).toContain("8_RADIOTHERAPIE");
+    expect(possibleAnswers).toContain("3_CENTRE_QUINZE");
   });
 
   it("un autre déplacement propose la 8, pas la 2 ni la 3", () => {
-    const options = proposees({
+    const possibleAnswers = proposees({
       ...SEJOUR,
       "Q2.5": "2_AUTRE_DEPLACEMENT",
     });
-    expect(options).toContain("8_RADIOTHERAPIE");
-    expect(options).not.toContain("2_ADMISSION_SANS_SEJOUR");
-    expect(options).not.toContain("3_CENTRE_QUINZE");
+    expect(possibleAnswers).toContain("8_RADIOTHERAPIE");
+    expect(possibleAnswers).not.toContain("2_ADMISSION_SANS_SEJOUR");
+    expect(possibleAnswers).not.toContain("3_CENTRE_QUINZE");
   });
 
-  it("l'option « Aucune » est exclusive, et Q2.6 attend le type", () => {
+  it("la réponse possible « Aucune » est exclusive, et Q2.6 attend le type", () => {
     const sansType = { ...SEJOUR, "Q2.5": "1_TRANSFERT" } as const;
     expect(posee("P2/exceptions", "Q2.6.a", sansType)).toBeDefined();
     expect(posee("P2/exceptions", "Q2.6", sansType)).toBeUndefined();
     const question = posee("P2/exceptions", "Q2.6", definitif([]));
     expect(
-      question?.kind === "multiple choice" && question.exclusiveOption?.value,
+      question?.kind === "multiple choice" &&
+        question.exclusivePossibleAnswer?.value,
     ).toBe("11_AUCUNE");
   });
 
@@ -115,7 +119,7 @@ describe("les options de Q2.6", () => {
 });
 
 describe("ce que les exceptions non proposées valent", () => {
-  it("l'option 2 est « non » avec un séjour initial coché", () => {
+  it("la réponse possible 2 est « non » avec un séjour initial coché", () => {
     expect(
       faits(definitif(["11_AUCUNE"]))
         .fait_exception_article80_admission_sans_sejour,
@@ -125,7 +129,7 @@ describe("ce que les exceptions non proposées valent", () => {
     });
   });
 
-  it("l'option 2 est « non » pour un transfert provisoire", () => {
+  it("la réponse possible 2 est « non » pour un transfert provisoire", () => {
     const fait = faits(
       provisoire(["11_AUCUNE"], URGENCES),
     ).fait_exception_article80_admission_sans_sejour;
@@ -133,7 +137,7 @@ describe("ce que les exceptions non proposées valent", () => {
     expect(fait.provenance).toMatch(/transfert provisoire/);
   });
 
-  it("l'option 2 est « non » pour un autre déplacement", () => {
+  it("la réponse possible 2 est « non » pour un autre déplacement", () => {
     const autre = {
       ...SEJOUR,
       "Q2.5": "2_AUTRE_DEPLACEMENT",
@@ -144,7 +148,7 @@ describe("ce que les exceptions non proposées valent", () => {
     ).toBe(false);
   });
 
-  it("l'option 8 est « non » pour un transfert définitif", () => {
+  it("la réponse possible 8 est « non » pour un transfert définitif", () => {
     const fait = faits(
       definitif(["11_AUCUNE"]),
     ).fait_exception_article80_radiotherapie;
@@ -152,7 +156,7 @@ describe("ce que les exceptions non proposées valent", () => {
     expect(fait.provenance).toMatch(/transfert définitif/);
   });
 
-  it("l'option 8 cochée pour un transfert provisoire vaut « oui »", () => {
+  it("la réponse possible 8 cochée pour un transfert provisoire vaut « oui »", () => {
     expect(
       faits(provisoire(["8_RADIOTHERAPIE"], URGENCES))
         .fait_exception_article80_radiotherapie.value,
@@ -168,7 +172,7 @@ describe("l'avion ou le bateau (Q2.3.2)", () => {
     "Q2.3.4": "2_NON",
   });
 
-  it("retire l'option 4", () => {
+  it("retire la réponse possible 4", () => {
     expect(proposees(ligne)).not.toContain("4_AIR_MER");
   });
 
@@ -181,7 +185,7 @@ describe("l'avion ou le bateau (Q2.3.2)", () => {
   });
 });
 
-describe("l'option 3, le Centre 15", () => {
+describe("la réponse possible 3, le Centre 15", () => {
   it("cochée, établit le transfert interétablissements et l'appel", () => {
     expect(
       valeurs(definitif(["3_CENTRE_QUINZE"]), [

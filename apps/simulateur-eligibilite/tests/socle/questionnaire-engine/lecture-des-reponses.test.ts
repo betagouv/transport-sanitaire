@@ -1,11 +1,11 @@
 // Ce que le modèle lit des réponses : la réponse d'une question, ses cases
 // cochées, et, une fois validée, ce qui s'y proposait. Une question sans
-// réponse n'est aucune option, sans être un « non ». Une case jamais montrée
-// ne dit rien.
+// réponse n'est aucune réponse possible, sans être un « non ». Une case jamais
+// montrée ne dit rien.
 
 import { describe, expect, it } from "vitest";
-import { GivenAnswers } from "../../../core/socle/questionnaire-engine/answers/given-answers";
-import { ValidatedAnswers } from "../../../core/socle/questionnaire-engine/answers/validated-answers";
+import { GivenAnswers } from "../../../core/socle/questionnaire-engine/answers/given-answers.vo";
+import { ValidatedAnswers } from "../../../core/socle/questionnaire-engine/answers/validated-answers.vo";
 
 type Questions = {
   boisson: "the" | "cafe";
@@ -24,7 +24,7 @@ const validees = new ValidatedAnswers<Questions>({
 });
 
 describe("une réponse donnée", () => {
-  it("est l'option choisie, et aucune autre", () => {
+  it("est la réponse possible choisie, et aucune autre", () => {
     const boisson = donnees.question("boisson");
     expect(boisson.is("the")).toBe(true);
     expect(boisson.is("cafe")).toBe(false);
@@ -41,7 +41,7 @@ describe("une réponse donnée", () => {
     expect(accompagnements.checkedBoxes()).toEqual(["lait"]);
   });
 
-  it("absente, n'est aucune option et n'a rien de coché", () => {
+  it("absente, n'est aucune réponse possible et n'a rien de coché", () => {
     const quantite = donnees.question("quantite");
     expect(quantite.hasAnswer()).toBe(false);
     expect(quantite.value).toBeUndefined();
@@ -65,7 +65,7 @@ describe("une question validée", () => {
     expect(accompagnements.isValidated()).toBe(true);
     expect(accompagnements.offers("sucre")).toBe(true);
     expect(accompagnements.offers("citron")).toBe(false);
-    expect(accompagnements.offeredOptions()).toEqual(["lait", "sucre"]);
+    expect(accompagnements.offeredPossibleAnswers()).toEqual(["lait", "sucre"]);
   });
 
   it("a écarté une case proposée et non cochée, pas une case jamais montrée", () => {
@@ -75,10 +75,10 @@ describe("une question validée", () => {
     expect(accompagnements.declined("citron")).toBe(false);
   });
 
-  it("non validée, n'a ni réponse ni option", () => {
+  it("non validée, n'a ni réponse ni réponse possible", () => {
     const quantite = validees.question("quantite");
     expect(quantite.isValidated()).toBe(false);
     expect(quantite.hasAnswer()).toBe(false);
-    expect(quantite.offeredOptions()).toEqual([]);
+    expect(quantite.offeredPossibleAnswers()).toEqual([]);
   });
 });

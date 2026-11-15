@@ -1,8 +1,8 @@
 // Le brouillon que retrouve la page d'une alerte, à la fin d'une correction
 // (ADR-30), se relit sur les réponses corrigées : une question devenue
-// inapplicable y perd sa réponse, une option qui ne se propose plus en sort, et
-// le reste tient (NAV-SOUS-QUESTIONS-20261113, SQ-24). Les pages sont écrites
-// ici.
+// inapplicable y perd sa réponse, une réponse possible qui ne se propose plus
+// en sort, et le reste tient (NAV-SOUS-QUESTIONS-20261113, SQ-24). Les pages
+// sont écrites ici.
 
 import { describe, expect, it } from "vitest";
 import { givenOf, page, questionsOf } from "../../../core/socle";
@@ -30,21 +30,23 @@ const PAGES = [
     "soin",
     question
       .singleChoice("soin", "Quel soin ?")
-      .options({ dialyse: "Une dialyse", rien: "Rien" }),
+      .possibleAnswers({ dialyse: "Une dialyse", rien: "Rien" }),
   ),
   page(
     "lieu",
     question
       .singleChoice("lieu", "Où ?")
-      .options({ hopital: "À l'hôpital", domicile: "À domicile" }),
+      .possibleAnswers({ hopital: "À l'hôpital", domicile: "À domicile" }),
     question
       .singleChoice("seance", "Quelle séance ?")
-      .options({ hemodialyse: "Une hémodialyse", autre: "Une autre" })
+      .possibleAnswers({ hemodialyse: "Une hémodialyse", autre: "Une autre" })
       .appliesWhen(DIALYSE),
     question
       .multipleChoice("transport", "Quel transport ?")
-      .options({ taxi: "Un taxi", vsl: "Un VSL" })
-      .option("vsl", (option) => option.offeredWhen(DIALYSE)),
+      .possibleAnswers({ taxi: "Un taxi", vsl: "Un VSL" })
+      .possibleAnswer("vsl", (possibleAnswer) =>
+        possibleAnswer.offeredWhen(DIALYSE),
+      ),
   ),
 ] as Page[];
 
