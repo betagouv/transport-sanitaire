@@ -3,6 +3,7 @@
 
 import express, { type Request, type Response, type Router } from "express";
 import {
+  nomsDansLaLimite,
   type RattachementSaisi,
   saisieComplete,
 } from "../../shared/rattachement-saisi.ts";
@@ -32,6 +33,10 @@ function rattacher(referentiel: Referentiel) {
     const saisie = (req.body ?? {}) as RattachementSaisi;
     if (!saisieComplete(saisie)) {
       res.status(400).json({ error: "sélection de rattachement incomplète" });
+      return;
+    }
+    if (!nomsDansLaLimite(saisie)) {
+      res.status(400).json({ error: "nom saisi trop long" });
       return;
     }
     await enrichir(referentiel, saisie);
