@@ -1,0 +1,32 @@
+name: Signe de vie de la collecte
+
+# La collecte peut tomber sans que personne ne le voie : le simulateur continue
+# de répondre, seul le journal ne reçoit plus rien. Le serveur y écrit un signe
+# de vie toutes les heures (ADR-15). Ce workflow demande à la production si elle
+# le retrouve, et échoue sinon : GitHub prévient alors par courriel ceux qui
+# suivent le dépôt.
+#
+# Un workflow planifié ne tourne que depuis la branche par défaut : il veille
+# donc à partir de la livraison qui l'amène dans `main`.
+on:
+  schedule:
+    # À la demie : le signe de vie de l'heure est écrit au démarrage puis à
+    # chaque heure, la sonde accepte aussi celui de l'heure d'avant.
+    - cron: "30 * * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  sonde:
+    runs-on: ubuntu-latest
+    steps:
+      # 200 : le signe de vie est dans le journal. 503 : il manque, ou le
+      # journal ne répond pas. Trois essais espacés, pour qu'un redémarrage de
+      # l'app ne sonne pas l'alerte.
+      - name: La production retrouve son signe de vie
+        run: |
+          curl --fail --silent --show-error \
+            --max-time 30 --retry 3 --retry-delay 60 --retry-all-errors \
+            https://simulateur.transportsanitaire.beta.gouv.fr/api/journal/v1/alive
