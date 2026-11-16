@@ -15,7 +15,7 @@
 
 import { ValidatedAnswer } from "../answers/validated-answers.vo.ts";
 import type { AskedQuestion } from "../question/asked/question.vo.ts";
-import type { Answers, Validated } from "../question/question.ts";
+import type { Answers, Validated } from "../question/question.types.ts";
 import { QuestionnaireDeclarationError } from "../questionnaire-declaration.error.ts";
 import type {
   QuestionPosition,

@@ -17,12 +17,12 @@
 
 import type { Cible, Fait } from "../../decision-engine/index.ts";
 
-import {
-  type AnswerOfRef,
-  type AnyQuestions,
-  idOf,
-  type QuestionRef,
-} from "../question/question.ts";
+import type {
+  AnswerOfRef,
+  AnyQuestions,
+  QuestionRef,
+} from "../question/question.types.ts";
+import { QuestionId } from "../question/question-id.vo.ts";
 import {
   AnswerReading,
   CibleReading,
@@ -48,7 +48,9 @@ export class ReadingFactory<
   question<Ref extends QuestionRef<Questions>>(question: Ref) {
     return {
       answer: () =>
-        AnswerReading.of<AnswerOfRef<Questions, Ref>>(idOf(question)),
+        AnswerReading.of<AnswerOfRef<Questions, Ref>>(
+          QuestionId.of(question).value,
+        ),
     };
   }
 

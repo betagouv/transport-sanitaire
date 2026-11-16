@@ -6,7 +6,7 @@ import type { Cible, Fait } from "../../decision-engine/index.ts";
 
 import type { Box, Choice } from "../answers/given-answers.vo.ts";
 import type { ValidatedAnswer } from "../answers/validated-answers.vo.ts";
-import type { AnyQuestions } from "../question/question.ts";
+import type { AnyQuestions } from "../question/question.types.ts";
 import { LocalDateTime } from "./local-date-time.vo.ts";
 import { type Condition, type Context, Reading } from "./reading.vo.ts";
 import { Reads } from "./reads.vo.ts";

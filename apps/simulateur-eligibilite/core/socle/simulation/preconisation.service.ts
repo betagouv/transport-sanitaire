@@ -12,7 +12,6 @@ import {
   type Answers,
   type AnyCibles,
   type AnyQuestions,
-  pagesOf,
   Questionnaire,
 } from "../questionnaire-engine/index.ts";
 import { Preconisation } from "./preconisation.vo.ts";
@@ -59,7 +58,7 @@ export class PreconisationService<
   #before(): Questionnaire<Questions> {
     const core = this.#core;
     return new Questionnaire<Questions>(
-      pagesOf(core.questionnaire),
+      Questionnaire.pagesOf(core.questionnaire),
       core.relevance,
     );
   }

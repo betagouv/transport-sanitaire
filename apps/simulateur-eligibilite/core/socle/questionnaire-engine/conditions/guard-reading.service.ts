@@ -8,7 +8,7 @@ import {
   QuestionContext,
   type SeenAnswers,
 } from "../question/asked/context.vo.ts";
-import type { AnyQuestions } from "../question/question.ts";
+import type { AnyQuestions } from "../question/question.types.ts";
 import type { Condition, Reading } from "./reading.vo.ts";
 
 /** Les conditions qu'une question déclare, et ce qui calcule ce qu'elles lisent. */

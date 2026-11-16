@@ -14,7 +14,7 @@ import {
   QuestionFactory,
   ReadingFactory,
 } from "../../../core/socle";
-import type { Answers } from "../../../core/socle/questionnaire-engine/question/question";
+import type { Answers } from "../../../core/socle/questionnaire-engine/question/question.types";
 import { Questionnaire } from "../../../core/socle/questionnaire-engine/questionnaire.vo";
 import { QuestionnaireDeclarationError } from "../../../core/socle/questionnaire-engine/questionnaire-declaration.error";
 

@@ -17,7 +17,6 @@ import type { Questions } from "../../../../core/models/eligibilite/questions/re
 import { Fait } from "../../../../core/socle";
 import {
   type Answers,
-  pagesOf,
   Questionnaire,
   ValidatedAnswers,
 } from "../../../../core/socle/questionnaire-engine";
@@ -27,7 +26,7 @@ import { EstablishAPreconisation } from "../../../../core/socle/simulation";
 type Reponses = Answers<Questions>;
 type Critere = Questions["Q1.2"][number];
 
-const pages = pagesOf(model.questionnaire);
+const pages = Questionnaire.pagesOf(model.questionnaire);
 const PRO: Reponses = {
   "Q0.1": "1_VERIFIER",
   "Q1.1": "3_AVEC_UN_PROFESSIONNEL",

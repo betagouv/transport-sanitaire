@@ -6,7 +6,6 @@ import type { CoreModel } from "../model.types.ts";
 import {
   type AnsweredQuestionnaire,
   type Answers,
-  pagesOf,
   Questionnaire,
 } from "../questionnaire-engine/index.ts";
 import type { PreconisationService } from "./preconisation.service.ts";
@@ -28,7 +27,7 @@ export class QuestionnaireReadingService {
    */
   at(stage: SimulationStage, answers: Answers): AnsweredQuestionnaire {
     const core = this.#core;
-    const before = pagesOf(core.questionnaire);
+    const before = Questionnaire.pagesOf(core.questionnaire);
     if (!stage.isLocked()) {
       return new Questionnaire(before, core.relevance).readWith(answers);
     }

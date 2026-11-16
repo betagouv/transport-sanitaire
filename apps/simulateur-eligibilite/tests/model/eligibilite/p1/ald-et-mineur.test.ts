@@ -19,7 +19,6 @@ import type { Faits } from "../../../../core/models/eligibilite/faits/noms";
 import type { Questions } from "../../../../core/models/eligibilite/questions/reponses";
 import {
   type Answers,
-  pagesOf,
   Questionnaire,
 } from "../../../../core/socle/questionnaire-engine";
 
@@ -29,7 +28,7 @@ import { lienAld } from "./lien-ald";
 type Reponses = Answers<Questions>;
 type Cas = Questions["Q1.3"];
 
-const pages = pagesOf(model.questionnaire);
+const pages = Questionnaire.pagesOf(model.questionnaire);
 const posees = (reponses: Reponses) =>
   pages.flatMap((page) =>
     new Questionnaire(pages).readWith(reponses).questionsOn(page),

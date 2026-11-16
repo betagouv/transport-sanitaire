@@ -4,7 +4,11 @@
 // lue donne un nouvel avancement.
 
 import type { AskedQuestion } from "./question/asked/question.vo.ts";
-import type { Answer, Unanswered, Validated } from "./question/question.ts";
+import type {
+  Answer,
+  Unanswered,
+  Validated,
+} from "./question/question.types.ts";
 
 type WalkProgressData = {
   readonly validated: Validated;

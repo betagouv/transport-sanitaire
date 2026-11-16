@@ -31,7 +31,7 @@ import type {
   NotAsked,
   Page,
   Question,
-} from "./question/question.ts";
+} from "./question/question.types.ts";
 import { WalkProgress } from "./walk-progress.vo.ts";
 
 /** Une page lue : ses questions qui se posent, telles qu'elles se posent. */

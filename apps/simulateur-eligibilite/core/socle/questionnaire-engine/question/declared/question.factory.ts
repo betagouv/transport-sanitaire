@@ -20,7 +20,7 @@
 // questions validées jusque-là, calculés seulement si on les lit.
 
 import type { Pipeline } from "../asked/context.vo.ts";
-import type { AnyQuestions, ReadByObject } from "../question.ts";
+import type { AnyQuestions, ReadByObject } from "../question.types.ts";
 import { DeclaredMultipleChoice, DeclaredSingleChoice } from "./choices.vo.ts";
 import { Inconsistencies } from "./inconsistencies.vo.ts";
 import {

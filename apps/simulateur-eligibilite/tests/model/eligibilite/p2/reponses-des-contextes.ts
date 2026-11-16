@@ -7,7 +7,6 @@ import type { Faits } from "../../../../core/models/eligibilite/faits/noms";
 import type { Questions } from "../../../../core/models/eligibilite/questions/reponses";
 import {
   type Answers,
-  pagesOf,
   Questionnaire,
 } from "../../../../core/socle/questionnaire-engine";
 
@@ -15,7 +14,7 @@ import { EstablishAPreconisation } from "../../../../core/socle/simulation";
 
 export type Reponses = Answers<Questions>;
 
-const pages = pagesOf(model.questionnaire);
+const pages = Questionnaire.pagesOf(model.questionnaire);
 const DES_CONTEXTES = pages.filter(({ id }) =>
   ["P2/contextes-situations", "P2/contextes-soins"].includes(id),
 );
