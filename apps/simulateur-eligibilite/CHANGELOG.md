@@ -7,6 +7,29 @@ commit lui-même.
 Le simulateur affiche en bas de page la version qu'il exécute, le commit déployé
 et la version du modèle de règles.
 
+## [1.0.1](https://github.com/betagouv/transport-sanitaire/releases/tag/simulateur-eligibilite%401.0.1), 16 novembre 2026
+
+La garde de l'API contre les abus, une suite de tests stable et le moteur du
+questionnaire rangé par rôle. 3 commits depuis la 1.0.0.
+
+### TL;DR
+
+- L'API refuse une écriture venue d'un autre site, limite les écritures par adresse IP et par minute, et plafonne la taille de ce qu'elle reçoit.
+- Rien ne change à l'écran pour le prescripteur, hors le nom saisi sous « Autre », borné à 150 caractères.
+- Le moteur du questionnaire et la simulation sont rangés par rôle, sans changement de comportement ; la suite de tests ne dépasse plus ses délais.
+
+### ✨ Nouveautés
+
+- [5ad2a06](https://github.com/betagouv/transport-sanitaire/commit/5ad2a06) : protège l'API contre les abus : une écriture venue d'un autre site reçoit un 403, chaque adresse IP a droit à 60 rattachements et 600 événements par minute, un envoi ne dépasse pas 32 ko et le nom saisi sous « Autre » 150 caractères.
+
+### ♻️ Sous le capot
+
+- [cc39376](https://github.com/betagouv/transport-sanitaire/commit/cc39376) : range la simulation, le moteur de décision et le moteur du questionnaire par rôle (entité, objet valeur, service, use case), et nomme « réponses possibles » les options d'une question ; aucun comportement ne change.
+
+### ✅ Tests
+
+- [a89dabe](https://github.com/betagouv/transport-sanitaire/commit/a89dabe) : stabilise la suite de tests, qui dépassait ses délais presque à chaque fois, et la ramène de 4 min 19 à environ 1 min 50 ; le moteur des règles garde les cibles déjà calculées pour une même situation.
+
 ## [1.0.0](https://github.com/betagouv/transport-sanitaire/releases/tag/simulateur-eligibilite%401.0.0), 13 novembre 2026
 
 Le correctif v10.1.8 de l'éditeur, l'effacement des sous-questions qu'il a
