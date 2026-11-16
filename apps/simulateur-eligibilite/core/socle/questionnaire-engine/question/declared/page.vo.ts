@@ -11,7 +11,7 @@
 
 import type { Condition } from "../../conditions/reading.vo.ts";
 import { QuestionnaireDeclarationError } from "../../questionnaire-declaration.error.ts";
-import type { Answer, AnyQuestions } from "../question.ts";
+import type { Answer, AnyQuestions } from "../question.types.ts";
 import type { DeclaredQuestion } from "./question.vo.ts";
 
 /**
@@ -81,6 +81,26 @@ export function page<
       );
   });
   return new DeclaredPage(id, questions);
+}
+
+/**
+ * Cette partie, posée après le verrou : ses pages lisent les cibles figées, et
+ * plus celles des faits d'avant elles. Elle complète, elle ne décide plus.
+ */
+export function afterLock<
+  Part extends {
+    readonly pages: readonly {
+      readonly id: string;
+      readonly questions: unknown;
+    }[];
+  },
+>(part: Part): Part {
+  const pages = part.pages.map(({ id, questions }) => ({
+    id,
+    questions,
+    afterLock: true as const,
+  }));
+  return { ...part, pages } as Part;
 }
 
 // ---- implémentation ----

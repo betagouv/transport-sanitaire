@@ -1,9 +1,9 @@
 // Une révision du premier résultat (docs/knowledge/CONTEXT.md, « Révision ») :
 // `r1`, `r2`… dans une simulation. Elle naît à l'affichage d'un R2, et tombe
 // quand une modification de P1 ou de P2 la rend caduque. Ce qu'elle dit au
-// journal ne vient que des sorties calculées (ADR-9). Les documents qui en
-// viennent portent son support et son mode (ADR-10), puis la taille de leurs
-// textes imprimés (ADR-12).
+// journal ne vient que des sorties calculées (ADR-0045). Les documents qui en
+// viennent portent son support et son mode (ADR-0046), puis la taille de leurs
+// textes imprimés (ADR-0048).
 
 import type {
   AnalyticsEvent,
@@ -123,7 +123,7 @@ export class Revision {
 
   /**
    * La taille des textes imprimés d'une version de son document : complète si
-   * chacun en a une, partielle sinon (ADR-12).
+   * chacun en a une, partielle sinon (ADR-0048).
    */
   typographyMeasured(
     documentId: string,

@@ -10,7 +10,7 @@ Ce skill ne porte que la marche à suivre. Les règles sont ailleurs :
 | Ce qu'il faut savoir | Où |
 |---|---|
 | où ranger le paquet et nos notes, ce que le dépôt garde du paquet, ce qui fait foi, comment répondre à l'éditeur | [`docs/knowledge/domain/livrable-de-l-editeur.md`](../../../apps/simulateur-eligibilite/docs/knowledge/domain/livrable-de-l-editeur.md) |
-| où vit le modèle, ce qu'il a le droit d'importer | `apps/simulateur-eligibilite/AGENTS.md`, ADR [`metier-et-ecran`](../../../apps/simulateur-eligibilite/docs/knowledge/adr/metier-et-ecran.md) |
+| où vit le modèle, ce qu'il a le droit d'importer | `apps/simulateur-eligibilite/AGENTS.md`, [ADR-0012](../../../apps/simulateur-eligibilite/docs/knowledge/adr/0012-le-metier-ne-depend-pas-de-l-ecran-et-vit-dans-core.md) |
 | les décisions de la v10 (D-70, D-79, D-103…) | [`journal-des-decisions-v10.md`](../../../apps/simulateur-eligibilite/docs/knowledge/adr/journal-des-decisions-v10.md) |
 
 Les chemins ci-dessous partent de `apps/simulateur-eligibilite/`, sauf `tmp/`,

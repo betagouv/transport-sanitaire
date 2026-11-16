@@ -1,4 +1,4 @@
-// La taille des textes imprimés du document R3 (ADR-12) : une mesure par
+// La taille des textes imprimés du document R3 (ADR-0048) : une mesure par
 // version, liée à ses impressions par la version, sans aucun texte.
 
 import { describe, expect, it } from "vitest";

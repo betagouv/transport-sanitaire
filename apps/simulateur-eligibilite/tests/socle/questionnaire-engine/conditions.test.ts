@@ -5,13 +5,13 @@
 
 import { describe, expect, it } from "vitest";
 import type { Cible, Fait } from "../../../core/socle";
-import { givenOf, page, questionsOf } from "../../../core/socle";
+import { page, QuestionFactory, ReadingFactory } from "../../../core/socle";
 import { LocalDateTime } from "../../../core/socle/questionnaire-engine/conditions/local-date-time.vo";
 import type { Context } from "../../../core/socle/questionnaire-engine/conditions/reading.vo";
 import type {
   Answers,
   Page,
-} from "../../../core/socle/questionnaire-engine/question/question";
+} from "../../../core/socle/questionnaire-engine/question/question.types";
 import { Questionnaire } from "../../../core/socle/questionnaire-engine/questionnaire.vo";
 
 type Questions = {
@@ -22,9 +22,9 @@ type Questions = {
 type Faits = { readonly chaude: Fait };
 type Cibles = { readonly cible_sucre: Cible<boolean> };
 
-const given = givenOf<Questions, Faits, Cibles>();
+const given = new ReadingFactory<Questions, Faits, Cibles>();
 
-const question = questionsOf<Questions>();
+const question = new QuestionFactory<Questions>();
 
 const chaude = given.question("boisson").answer().isOneOf("the", "cafe");
 const grand = given.question("taille").answer().is("grand");

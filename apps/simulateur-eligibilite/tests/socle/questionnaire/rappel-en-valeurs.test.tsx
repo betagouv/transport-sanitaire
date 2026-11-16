@@ -1,6 +1,6 @@
 import { screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
-import { afterLock, Cible, page, questionsOf } from "../../../core/socle";
+import { afterLock, Cible, page, QuestionFactory } from "../../../core/socle";
 import { afficher } from "./afficher";
 
 // Un rappel peut prendre la forme de valeurs avec leur intitulé : ce qui est
@@ -16,7 +16,7 @@ type Questions = {
 // Les cibles figées au verrou. Avant lui : aucune.
 type Cibles = { readonly nature: Cible<string> } | undefined;
 
-const question = questionsOf<Questions, undefined, Cibles>();
+const question = new QuestionFactory<Questions, undefined, Cibles>();
 
 // La page du lieu d'arrivée, posée après le verrou : elle lit les cibles figées.
 const ARRIVEE = afterLock({

@@ -7,7 +7,7 @@
 // À chaque nouvelle page, en avant comme en arrière, le titre de sa première
 // question prend le focus et l'écran revient en haut, sans animation
 // (NAV-Q221-PROGRESSIF-001). Une page qu'un lien « Revoir… » rouvre donne le
-// focus à la question qu'il vise (ADR-30).
+// focus à la question qu'il vise (ADR-0041).
 
 import type { ComponentType, ReactNode } from "react";
 import type {

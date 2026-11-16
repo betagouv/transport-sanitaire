@@ -1,6 +1,6 @@
 import { screen, within } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
-import { page, questionsOf } from "../../../core/socle";
+import { page, QuestionFactory } from "../../../core/socle";
 import { afficher } from "./afficher";
 
 // Un choix unique peut s'afficher en liste déroulante. Les pages sont écrites
@@ -8,7 +8,7 @@ import { afficher } from "./afficher";
 
 type Questions = { lieu: "domicile" | "etablissement" };
 
-const question = questionsOf<Questions>();
+const question = new QuestionFactory<Questions>();
 
 const LIEU = page(
   "lieu",

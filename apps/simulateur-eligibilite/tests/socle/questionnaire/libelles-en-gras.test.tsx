@@ -1,6 +1,6 @@
 import { screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
-import { page, questionsOf } from "../../../core/socle";
+import { page, QuestionFactory } from "../../../core/socle";
 import { afficher } from "./afficher";
 
 // Un choix unique peut mettre le libellé de ses réponses possibles en gras,
@@ -8,7 +8,7 @@ import { afficher } from "./afficher";
 
 type Questions = { besoin: "verifier" | "prescrire" };
 
-const question = questionsOf<Questions>();
+const question = new QuestionFactory<Questions>();
 
 const besoin = () =>
   question

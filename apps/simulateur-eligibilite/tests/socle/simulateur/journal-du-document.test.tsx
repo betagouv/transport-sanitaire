@@ -1,6 +1,6 @@
 // Ce que le document R3 envoie au journal des parcours (#387) : chaque version
 // affichée, une fois son PDF prêt, et chaque génération ratée. Voir
-// docs/knowledge/adr/analytics.md, ADR-10.
+// ADR-0046.
 //
 // Le modèle de test ne déclare pas de codes : son document ne porte ni support
 // ni mode.

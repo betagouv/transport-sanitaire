@@ -9,7 +9,7 @@
 
 import { describe, expect, it } from "vitest";
 import { model } from "../../../core/models/eligibilite";
-import { pagesOf } from "../../../core/socle/questionnaire-engine";
+import { Questionnaire } from "../../../core/socle/questionnaire-engine";
 
 const SEANCES = ["3_CHIMIOTHERAPIE", "4_RADIOTHERAPIE", "5_DIALYSE"];
 
@@ -133,7 +133,7 @@ describe("les dépendances entre réponses du modèle", () => {
 type Dependance = string | readonly [string, readonly string[]];
 
 const DECLAREES_PAR_QUESTION = [
-  ...pagesOf(model.questionnaire),
+  ...Questionnaire.pagesOf(model.questionnaire),
   ...model.complement.pages,
 ].flatMap((page) => page.questions);
 

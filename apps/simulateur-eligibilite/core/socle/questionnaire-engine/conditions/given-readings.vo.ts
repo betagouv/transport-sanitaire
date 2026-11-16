@@ -1,4 +1,4 @@
-// Les lectures que donnent les entrées des conditions (`given.ts`) : la réponse
+// Les lectures que donnent les entrées des conditions (`reading.factory.ts`) : la réponse
 // d'une question, le jour, un fait, une cible. Chacune sait ce qu'elle lit, et
 // donne les conditions qui la comparent.
 
@@ -6,7 +6,7 @@ import type { Cible, Fait } from "../../decision-engine/index.ts";
 
 import type { Box, Choice } from "../answers/given-answers.vo.ts";
 import type { ValidatedAnswer } from "../answers/validated-answers.vo.ts";
-import type { AnyQuestions } from "../question/question.ts";
+import type { AnyQuestions } from "../question/question.types.ts";
 import { LocalDateTime } from "./local-date-time.vo.ts";
 import { type Condition, type Context, Reading } from "./reading.vo.ts";
 import { Reads } from "./reads.vo.ts";

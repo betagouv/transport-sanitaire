@@ -5,7 +5,7 @@
 import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it } from "vitest";
-import { page, questionsOf } from "../../../core/socle";
+import { page, QuestionFactory } from "../../../core/socle";
 import { App } from "../../../front/socle/app/App";
 import type { Model } from "../../../front/socle/model";
 import { rangerRattachement } from "../../../front/socle/rattachement";
@@ -26,7 +26,7 @@ const CARTE_DES_FROMAGES = "Carte des fromages";
 // Les deux autres modèles ne posent qu'une question, celle de leur mets.
 type Questions = { dessert: "maison"; fromage: "maison" };
 
-const question = questionsOf<Questions>();
+const question = new QuestionFactory<Questions>();
 
 const desserts = modeleQuiDemande("dessert");
 const fromages = modeleQuiDemande("fromage");

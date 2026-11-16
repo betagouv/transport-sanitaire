@@ -26,7 +26,7 @@
 // la question telle quelle, et les gardes qui lisent ses faits.
 //
 // Une question à plusieurs places compte à la sienne : ce qui la suit dépend
-// de la place. Ses gardes sont celles de toutes ses places (ADR-29).
+// de la place. Ses gardes sont celles de toutes ses places (ADR-0040).
 
 import type {
   DecisionGraphData,
@@ -39,7 +39,7 @@ import type {
   Page,
   Question,
   Validated,
-} from "../question/question.ts";
+} from "../question/question.types.ts";
 import { Askability } from "./askability.service.ts";
 import {
   type Fixed,

@@ -92,7 +92,7 @@ describe("les panneaux de Q1.3", () => {
 const ALD = /^Le patient est en Affection Longue Durée/;
 const DIALYSE = /^Ce déplacement concerne une séance de dialyse/;
 const TIERS =
-  /^Ce transport est en rapport avec un accident causé par un tiers/;
+  /^Ce déplacement est en rapport avec un accident causé par un tiers/;
 const Q13A = /^La séance prévue est-elle une séance d’hémodialyse/;
 const Q13B = /^Précisez le lien entre le transport et l'Affection/;
 const DATE = /^À quelle date cet accident a-t-il eu lieu/;

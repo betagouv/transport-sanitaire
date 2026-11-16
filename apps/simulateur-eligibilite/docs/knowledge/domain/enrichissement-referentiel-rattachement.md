@@ -14,8 +14,8 @@
 > sous « Autre ». Le document s'appelait « Alimenter Grist depuis le service saisi ».
 >
 > **Mise à jour 2026-09-29, rattachement sans identité.** L'écran de rattachement ne demande plus
-> qui réalise la simulation (voir [l'ADR d'identification](../adr/identification.md),
-> ADR-3). Les branches qui écrivaient un **prescripteur** dans Grist disparaissent :
+> qui réalise la simulation (voir [l’ADR-0006](../adr/0006-le-rattachement-est-declaratif-et-sans-identite.md)).
+> Les branches qui écrivaient un **prescripteur** dans Grist disparaissent :
 > plus de création d'un prescripteur « hors liste », plus de déplacement d'un
 > prescripteur listé sous « Autre » vers son vrai service. Seule reste l'écriture du
 > **service** saisi sous « Autre ». Le document s'appelait

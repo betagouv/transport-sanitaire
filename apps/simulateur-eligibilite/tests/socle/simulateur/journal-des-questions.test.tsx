@@ -1,7 +1,7 @@
 // Ce que le questionnaire envoie au journal des parcours (#385) : chaque page
 // ouverte et ses questions, chaque saisie, chaque validation et celles qu'une
 // correction fait tomber, l'entrée et la fin de chaque phase. Voir
-// docs/knowledge/adr/analytics.md, ADR-8.
+// ADR-0044.
 //
 // Le modèle de test pose P1 (la boisson, puis les accompagnements, sauf pour
 // « Rien ») et P3 (la quantité).

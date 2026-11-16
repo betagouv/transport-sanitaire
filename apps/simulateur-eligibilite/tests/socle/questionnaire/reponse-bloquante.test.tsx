@@ -1,6 +1,6 @@
 import { screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
-import { page, questionsOf } from "../../../core/socle";
+import { page, QuestionFactory } from "../../../core/socle";
 import { afficher } from "./afficher";
 
 // Une réponse possible peut arrêter le questionnaire : son message s'affiche,
@@ -13,7 +13,7 @@ type Questions = {
   equipements: readonly ("fauteuil" | "autre")[];
 };
 
-const question = questionsOf<Questions>();
+const question = new QuestionFactory<Questions>();
 
 const MESSAGE =
   "Un retour différent demande une autre simulation, pour l'autre sens.";

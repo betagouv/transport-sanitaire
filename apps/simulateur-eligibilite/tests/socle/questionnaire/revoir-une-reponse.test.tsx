@@ -1,10 +1,15 @@
 import { screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
-import { givenOf, page, questionsOf, Reading } from "../../../core/socle";
+import {
+  page,
+  QuestionFactory,
+  Reading,
+  ReadingFactory,
+} from "../../../core/socle";
 import { afficher } from "./afficher";
 
 // L'alerte d'une incohérence offre un lien vers chaque réponse d'avant à
-// revoir (ADR-30). Le lien rouvre sa page, le focus sur sa question ; pendant
+// revoir (ADR-0041). Le lien rouvre sa page, le focus sur sa question ; pendant
 // la correction, un choix seul n'avance pas, et « Suivant » ramène à la page de
 // l'alerte. Les pages sont écrites ici ; `correction.test.ts` dit où « Suivant »
 // reprend.
@@ -16,8 +21,8 @@ type Questions = {
   debut: string;
 };
 
-const question = questionsOf<Questions>();
-const given = givenOf<Questions>();
+const question = new QuestionFactory<Questions>();
+const given = new ReadingFactory<Questions>();
 
 const MESSAGE = "Les espèces ne se paient pas à la livraison.";
 

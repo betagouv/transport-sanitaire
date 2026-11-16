@@ -145,7 +145,7 @@ describe("Q2.13.sens, le sens qui change la cohérence des lieux", () => {
     ]);
   });
 
-  it("un aller-retour différent bloque : deux simulations", () => {
+  it("un aller-retour différent bloque, et propose une nouvelle simulation (#486)", () => {
     const [[, reponses]] = CINQ_CAS as [Cas];
     const question = sensPose({
       ...reponses,
@@ -158,6 +158,8 @@ describe("Q2.13.sens, le sens qui change la cohérence des lieux", () => {
           )?.blocks
         : undefined,
     ).toBe("Ces deux trajets nécessitent deux simulations distinctes.");
+    expect(question?.offersRestartOn("4_ALLER_RETOUR_DIFFERENT")).toBe(true);
+    expect(question?.offersRestartOn("1_ALLER")).toBe(false);
   });
 
   // Les conflits qu'un sens lève, que #353 laissait à P3 : le sens les change

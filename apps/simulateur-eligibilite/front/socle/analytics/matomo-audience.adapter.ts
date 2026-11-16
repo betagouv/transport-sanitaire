@@ -23,7 +23,7 @@ export type MatomoConfig = {
  * Lit la configuration dans l'environnement. Le traceur n'est activé qu'en
  * build de prod, ou avec `VITE_MATOMO_ENABLED=true` pour tester en local. Il ne
  * demande pas de consentement : la mesure, agrégée par service, reste dans
- * l'exemption CNIL (ADR-3 d'analytics.md).
+ * l'exemption CNIL (ADR-0003).
  */
 export function configFromEnv(env: Env = import.meta.env): MatomoConfig {
   return {

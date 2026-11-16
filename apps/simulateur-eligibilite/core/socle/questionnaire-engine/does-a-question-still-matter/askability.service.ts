@@ -13,13 +13,17 @@
 // garde se lit ici comme le questionnaire la lira.
 //
 // Une question à plusieurs places est vivante tant qu'une de ses places l'est
-// (ADR-29).
+// (ADR-0040).
 
 import { GivenAnswers } from "../answers/given-answers.vo.ts";
 import { ValidatedAnswers } from "../answers/validated-answers.vo.ts";
 import type { Reads } from "../conditions/reads.vo.ts";
 import type { SeenAnswers } from "../question/asked/context.vo.ts";
-import type { AnyCibles, Question, Validated } from "../question/question.ts";
+import type {
+  AnyCibles,
+  Question,
+  Validated,
+} from "../question/question.types.ts";
 
 /** Ce que lit une question pour dire si les questions qui restent se posent. */
 export type AskabilityPlace = {

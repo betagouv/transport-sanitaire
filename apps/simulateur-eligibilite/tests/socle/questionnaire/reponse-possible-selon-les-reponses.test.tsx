@@ -1,6 +1,6 @@
 import { screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
-import { givenOf, page, questionsOf } from "../../../core/socle";
+import { page, QuestionFactory, ReadingFactory } from "../../../core/socle";
 import { afficher } from "./afficher";
 
 // Le libellé d'une réponse possible peut dépendre des réponses. La réponse
@@ -13,8 +13,8 @@ type Questions = {
   exonerations: readonly ("ald" | "aucun")[];
 };
 
-const question = questionsOf<Questions>();
-const given = givenOf<Questions>();
+const question = new QuestionFactory<Questions>();
+const given = new ReadingFactory<Questions>();
 
 const HOSPITALISATION = page(
   "hospitalisation",

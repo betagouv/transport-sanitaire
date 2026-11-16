@@ -17,10 +17,10 @@
 // questions, donc lit leurs gardes. Le catalogue la laisse inconnue.
 
 import {
-  givenOf,
   type QuestionContext,
-  questionsOf,
+  QuestionFactory,
   type ReadByObject,
+  ReadingFactory,
 } from "../../../socle/index.ts";
 import { decisionEngine } from "../cibles/evaluation.ts";
 import type { Cibles } from "../cibles/noms.ts";
@@ -37,10 +37,10 @@ export type Context = QuestionContext<ReadByObject, Cibles, Faits>;
  * Les entrées des conditions : `given.question(Q1_1).answer()`,
  * `given.fait(nom)`, `given.cible(nom)`, `given.today()`.
  */
-export const given = givenOf<ReadByObject, Faits, Cibles>();
+export const given = new ReadingFactory<ReadByObject, Faits, Cibles>();
 
 /** Les constructeurs des questions de P0 à P3. */
-export const question = questionsOf<ReadByObject, Faits, Cibles>({
+export const question = new QuestionFactory<ReadByObject, Faits, Cibles>({
   faits: CATALOGUE_DES_FAITS,
   cibles: (faits) => decisionEngine.lazyCibles(faits),
 });

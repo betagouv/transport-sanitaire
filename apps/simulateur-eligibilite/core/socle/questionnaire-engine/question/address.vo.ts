@@ -3,7 +3,7 @@
 // modifie champ par champ. Ce qui se demande, et ce qui ne va pas dans chaque
 // champ, dépend de la question : `AskedAddress` le dit.
 
-import type { Unanswered } from "./question.ts";
+import type { Unanswered } from "./question.types.ts";
 
 /**
  * Une adresse en JSON. Un champ qui ne se demande pas est absent, comme un

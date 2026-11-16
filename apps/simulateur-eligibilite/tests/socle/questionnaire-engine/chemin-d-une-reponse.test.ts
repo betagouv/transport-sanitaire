@@ -8,12 +8,12 @@ import {
   afterLock,
   Cible,
   FaitCatalogue,
-  givenOf,
   page,
-  questionsOf,
+  QuestionFactory,
+  ReadingFactory,
   unFait,
 } from "../../../core/socle";
-import type { Page } from "../../../core/socle/questionnaire-engine/question/question";
+import type { Page } from "../../../core/socle/questionnaire-engine/question/question.types";
 import { Questionnaire } from "../../../core/socle/questionnaire-engine/questionnaire.vo";
 
 type Questions = { boisson: "the" | "cafe" | "eau"; sucre: boolean };
@@ -22,9 +22,9 @@ type Cibles = { readonly cible_sucre_propose: Cible<boolean> };
 
 let calculs = 0;
 
-const given = givenOf<Questions, Faits, Cibles>();
+const given = new ReadingFactory<Questions, Faits, Cibles>();
 
-const question = questionsOf<Questions, Faits, Cibles>({
+const question = new QuestionFactory<Questions, Faits, Cibles>({
   faits: new FaitCatalogue<Faits>(
     ["chaude"],
     [

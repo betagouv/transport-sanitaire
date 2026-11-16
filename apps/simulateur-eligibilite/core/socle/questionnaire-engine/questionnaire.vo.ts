@@ -12,7 +12,8 @@ import type {
   AnyCibles,
   AnyQuestions,
   Page,
-} from "./question/question.ts";
+  QuestionnairePart,
+} from "./question/question.types.ts";
 
 /**
  * Un questionnaire : ses pages, dans l'ordre. `Questions` : celles du modèle,
@@ -30,6 +31,11 @@ export class Questionnaire<Questions extends AnyQuestions = AnyQuestions> {
     this.pages = pages;
     this.positions = new QuestionPositions(pages);
     if (relevance) this.relevance = relevance;
+  }
+
+  /** Les pages de ces parties, dans l'ordre du questionnaire. */
+  static pagesOf(parts: readonly QuestionnairePart[]): Page[] {
+    return parts.flatMap((part) => part.pages);
   }
 
   /**

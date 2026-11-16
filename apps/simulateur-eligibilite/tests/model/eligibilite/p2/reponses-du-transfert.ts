@@ -6,7 +6,6 @@ import type { Faits } from "../../../../core/models/eligibilite/faits/noms";
 import type { Questions } from "../../../../core/models/eligibilite/questions/reponses";
 import {
   type Answers,
-  pagesOf,
   Questionnaire,
 } from "../../../../core/socle/questionnaire-engine";
 
@@ -14,7 +13,7 @@ import { EstablishAPreconisation } from "../../../../core/socle/simulation";
 
 export type Reponses = Answers<Questions>;
 
-export const pages = pagesOf(model.questionnaire);
+export const pages = Questionnaire.pagesOf(model.questionnaire);
 export const posee = (
   idDePage: string,
   id: keyof Questions,

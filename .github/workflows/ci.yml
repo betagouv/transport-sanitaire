@@ -19,10 +19,10 @@ jobs:
   simulateur-eligibilite:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: pnpm/action-setup@v4
+      - uses: actions/checkout@v7
+      - uses: pnpm/action-setup@v6
         # La version de pnpm vient de `packageManager` à la racine, pas d'ici.
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v7
         with:
           # La version supportée est déclarée par la racine (`engines.node`), pas ici.
           node-version-file: package.json
@@ -39,16 +39,16 @@ jobs:
   navigateur:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: pnpm/action-setup@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v7
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v7
         with:
           node-version-file: package.json
           cache: pnpm
       - run: pnpm install --frozen-lockfile
       - run: pnpm --filter simulateur-eligibilite exec playwright install --with-deps chromium webkit
       - run: pnpm --filter simulateur-eligibilite test:navigateur
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         if: failure()
         with:
           name: parcours-en-navigateur
@@ -58,9 +58,9 @@ jobs:
   data-analyzer:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: pnpm/action-setup@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v7
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v7
         with:
           node-version-file: package.json
           cache: pnpm
@@ -70,9 +70,9 @@ jobs:
   glossaire-notion:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: pnpm/action-setup@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v7
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v7
         with:
           node-version-file: package.json
           cache: pnpm
@@ -82,9 +82,9 @@ jobs:
   cli:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: pnpm/action-setup@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v7
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v7
         with:
           node-version-file: package.json
           cache: pnpm
@@ -99,9 +99,9 @@ jobs:
   audit:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: pnpm/action-setup@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v7
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v7
         with:
           node-version-file: package.json
           cache: pnpm
@@ -121,7 +121,7 @@ jobs:
   secrets:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           fetch-depth: 0
       - name: gitleaks

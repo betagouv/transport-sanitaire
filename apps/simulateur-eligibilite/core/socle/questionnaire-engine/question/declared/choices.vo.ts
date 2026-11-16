@@ -14,13 +14,16 @@ import type { Reads } from "../../conditions/reads.vo.ts";
 import { AskedMultipleChoice, AskedSingleChoice } from "../asked/choices.vo.ts";
 import type { AskedCommonData } from "../asked/common.vo.ts";
 import type { QuestionContext } from "../asked/context.vo.ts";
-import type { AnyQuestions, IncompatiblePossibleAnswers } from "../question.ts";
+import type {
+  AnyQuestions,
+  IncompatiblePossibleAnswers,
+} from "../question.types.ts";
 import {
   type DeclaredPossibleAnswer,
   DeclaredPossibleAnswers,
 } from "./possible-answer.vo.ts";
 import { DeclaredQuestion } from "./question.vo.ts";
-import type { CommonSettings } from "./settings.ts";
+import type { CommonSettings } from "./settings.types.ts";
 
 /** Un choix unique déclaré. */
 export class DeclaredSingleChoice<

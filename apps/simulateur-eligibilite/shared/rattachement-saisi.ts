@@ -1,9 +1,9 @@
 // Ce que le formulaire de rattachement collecte, et quand il est complet.
 // Ce sont des identifiants du référentiel Grist, ou des noms saisis quand le
 // référentiel ne les a pas encore.
-// Voir docs/knowledge/adr/identification.md, ADR-4.
+// Voir ADR-0007.
 
-// Trois cas (§4 de docs/knowledge/adr/identification.md) :
+// Trois cas (docs/knowledge/domain/rattachement.md) :
 // - un service du référentiel, sous un établissement du référentiel. Les
 //   structures (« Libéral », « Assurance Maladie », « Autre ») sont les
 //   services de l'établissement fourre-tout ;
@@ -34,6 +34,13 @@ export type RattachementSaisi = {
    * vrai. Le backend le crée ou le réutilise, et son service sous lui.
    */
   etabLibre?: string;
+  /**
+   * Le nom de l'établissement choisi dans la liste, tel que l'écran le montre.
+   * Le journal des parcours l'écrit à côté de son id.
+   */
+  etabLibelle?: string;
+  /** Le nom du service choisi dans la liste, « Autre » compris. */
+  serviceLibelle?: string;
 };
 
 /**

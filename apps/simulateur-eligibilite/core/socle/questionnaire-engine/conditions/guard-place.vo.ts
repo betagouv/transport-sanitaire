@@ -9,13 +9,13 @@
 // erreur de déclaration : elle s'arrête net. Une incohérence lit sa question,
 // et se déclare sur la plus tardive de celles qu'elle lit.
 //
-// Une question peut avoir plusieurs places (ADR-29). « Avant » et « après » se
+// Une question peut avoir plusieurs places (ADR-0040). « Avant » et « après » se
 // lisent à sa première place. Posée plus haut sur la page de la garde, à une
 // place suivante, elle se lit telle que saisie.
 
 import { ValidatedAnswer } from "../answers/validated-answers.vo.ts";
 import type { AskedQuestion } from "../question/asked/question.vo.ts";
-import type { Answers, Validated } from "../question/question.ts";
+import type { Answers, Validated } from "../question/question.types.ts";
 import { QuestionnaireDeclarationError } from "../questionnaire-declaration.error.ts";
 import type {
   QuestionPosition,

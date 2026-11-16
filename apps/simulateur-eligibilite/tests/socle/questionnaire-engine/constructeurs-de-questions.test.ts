@@ -7,9 +7,9 @@ import { describe, expect, it } from "vitest";
 import {
   Fait,
   FaitCatalogue,
-  givenOf,
   page,
-  questionsOf,
+  QuestionFactory,
+  ReadingFactory,
   unFait,
 } from "../../../core/socle";
 import { Questionnaire } from "../../../core/socle/questionnaire-engine/questionnaire.vo";
@@ -25,10 +25,10 @@ type Faits = { readonly chaude: Fait };
 
 let calculs = 0;
 
-const given = givenOf<Questions, Faits, undefined>();
+const given = new ReadingFactory<Questions, Faits, undefined>();
 const boisson = given.question("boisson").answer();
 
-const question = questionsOf<Questions, Faits>({
+const question = new QuestionFactory<Questions, Faits>({
   faits: new FaitCatalogue<Faits>(
     ["chaude"],
     [
@@ -198,7 +198,7 @@ describe("une incohérence", () => {
 
 describe("les réponses possibles du catalogue", () => {
   it("refusent une valeur qui a l'air d'un entier : elle passerait avant les autres", () => {
-    const entiers = questionsOf<{ choix: "a" | "1" }>();
+    const entiers = new QuestionFactory<{ choix: "a" | "1" }>();
     expect(() =>
       entiers
         .singleChoice("choix", "Lequel ?")

@@ -12,7 +12,6 @@ import { SEEDS } from "../../../../core/models/eligibilite/seeds-catalogue";
 import { Cible } from "../../../../core/socle/decision-engine";
 import {
   type Answers,
-  pagesOf,
   Questionnaire,
 } from "../../../../core/socle/questionnaire-engine";
 
@@ -250,4 +249,7 @@ function reponsesDe(id: string): Reponses {
 }
 
 // Toutes les pages du parcours, comme le socle les lit au résultat.
-const PAGES = [...pagesOf(model.questionnaire), ...model.complement.pages];
+const PAGES = [
+  ...Questionnaire.pagesOf(model.questionnaire),
+  ...model.complement.pages,
+];

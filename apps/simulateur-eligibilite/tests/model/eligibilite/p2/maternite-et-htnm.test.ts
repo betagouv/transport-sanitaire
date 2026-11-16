@@ -48,7 +48,7 @@ describe("la maternité et un HTNM cochés ensemble", () => {
     expect(posees(htnm)).not.toContain("Q2.14.eloignement");
   });
 
-  it("deux déplacements bloquent : deux simulations", () => {
+  it("deux déplacements bloquent, et proposent une nouvelle simulation (#486)", () => {
     const question = trajet(EXAMEN_ET_HTNM);
     expect(
       question?.kind === "single choice"
@@ -56,7 +56,9 @@ describe("la maternité et un HTNM cochés ensemble", () => {
             ({ value }) => value === "3_DEUX_TRAJETS",
           )?.blocks
         : undefined,
-    ).toBe("Ces deux trajets nécessitent deux simulations distinctes.");
+    ).toBe("Ces deux déplacements nécessitent deux simulations distinctes.");
+    expect(question?.offersRestartOn("3_DEUX_TRAJETS")).toBe(true);
+    expect(question?.offersRestartOn("1_ENGAGEMENT_MATERNITE")).toBe(false);
   });
 });
 

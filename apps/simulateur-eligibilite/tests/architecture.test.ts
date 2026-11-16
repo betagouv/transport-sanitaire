@@ -145,7 +145,7 @@ describe("invariants métier", () => {
         commencePar("front/socle/rattachement/"),
       ),
       "Le moteur d'éligibilité raisonne sur une situation médicale, jamais " +
-        "sur une identité (docs/knowledge/adr/identification.md). L'analytics, " +
+        "sur une identité (ADR-0009). L'analytics, " +
         "lui, est admis : il lit le rattachement en session de son côté, sans " +
         "le faire transiter ici.",
     ).toEqual([]);

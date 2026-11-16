@@ -1,6 +1,6 @@
 import { screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
-import { givenOf, page, questionsOf } from "../../../core/socle";
+import { page, QuestionFactory, ReadingFactory } from "../../../core/socle";
 import { afficher } from "./afficher";
 
 // Une sous-question que la page ne pose plus perd sa réponse dès la saisie,
@@ -14,8 +14,8 @@ type Questions = {
   autre: string;
 };
 
-const question = questionsOf<Questions>();
-const given = givenOf<Questions>();
+const question = new QuestionFactory<Questions>();
+const given = new ReadingFactory<Questions>();
 
 const SITUATIONS = page(
   "situations",

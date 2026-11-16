@@ -6,13 +6,12 @@
 // Un service : la simulation s'en sert à chaque étape et pour verrouiller, les
 // use cases sur des réponses données d'un coup.
 
-import type { AnyFaits, CoreModel } from "../model.ts";
+import type { AnyFaits, CoreModel } from "../model.types.ts";
 import {
   type AnsweredQuestionnaire,
   type Answers,
   type AnyCibles,
   type AnyQuestions,
-  pagesOf,
   Questionnaire,
 } from "../questionnaire-engine/index.ts";
 import { Preconisation } from "./preconisation.vo.ts";
@@ -59,7 +58,7 @@ export class PreconisationService<
   #before(): Questionnaire<Questions> {
     const core = this.#core;
     return new Questionnaire<Questions>(
-      pagesOf(core.questionnaire),
+      Questionnaire.pagesOf(core.questionnaire),
       core.relevance,
     );
   }

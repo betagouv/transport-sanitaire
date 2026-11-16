@@ -1,6 +1,6 @@
 import { screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
-import { page, questionsOf } from "../../../core/socle";
+import { page, QuestionFactory } from "../../../core/socle";
 import { Questionnaire } from "../../../core/socle/questionnaire-engine";
 import { errorsOf } from "../../../front/socle/questionnaire/word-a-problem";
 import { afficher } from "./afficher";
@@ -12,7 +12,7 @@ type Questions = {
   criteres: readonly ("fauteuil" | "brancard" | "oxygene")[];
 };
 
-const question = questionsOf<Questions>();
+const question = new QuestionFactory<Questions>();
 
 const EXPLICATION =
   "Le patient voyage dans son fauteuil ou sur un brancard, pas les deux.";

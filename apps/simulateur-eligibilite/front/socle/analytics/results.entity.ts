@@ -1,7 +1,7 @@
 // Les résultats d'une simulation, tels que le journal les reçoit : les
-// révisions du premier résultat (ADR-9), les versions du document R3 qui en
-// viennent (ADR-10) et leurs tailles imprimées (ADR-12), et les versions de la
-// fiche patient (ADR-11). `Journey` les
+// révisions du premier résultat (ADR-0045), les versions du document R3 qui en
+// viennent (ADR-0046) et leurs tailles imprimées (ADR-0048), et les versions de la
+// fiche patient (ADR-0047). `Journey` les
 // numérote dans l'ordre du parcours.
 
 import type {

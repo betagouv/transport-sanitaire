@@ -8,7 +8,6 @@ import { describe, expect, it } from "vitest";
 import type { Questions } from "../../../../core/models/eligibilite/questions/reponses";
 import {
   type Answers,
-  pagesOf,
   Questionnaire,
 } from "../../../../core/socle/questionnaire-engine";
 import { model } from "../../../../front/models/eligibilite";
@@ -77,7 +76,7 @@ const AUTRE_MOTIF: Reponses = {
   "Q2.3.3": "2_NON",
 };
 
-const pages = pagesOf(model.core.questionnaire);
+const pages = Questionnaire.pagesOf(model.core.questionnaire);
 const trajet = pages.find(({ id }) => id === "P2/trajet");
 
 const lire = (reponses: Reponses) =>

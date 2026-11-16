@@ -5,7 +5,7 @@ import {
   Cible,
   FaitCatalogue,
   type GivenAnswers,
-  givenOf,
+  ReadingFactory,
   unFait,
   type ValidatedAnswers,
 } from "../../../../core/socle";
@@ -15,7 +15,7 @@ import type { Questions } from "./declarations/questions";
 
 // Ce que les faits lisent. `given` ne vient pas de `questionnaire.ts`, qui lit
 // ce fichier.
-const given = givenOf<Questions, Faits>();
+const given = new ReadingFactory<Questions, Faits>();
 
 const BOISSONS: Record<Questions["boisson"], string | null> = {
   the: "thé",

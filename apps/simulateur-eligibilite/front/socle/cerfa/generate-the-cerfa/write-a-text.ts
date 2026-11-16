@@ -20,7 +20,7 @@ export type WrittenText = {
   readonly withoutComment: boolean;
   /**
    * La taille à laquelle le texte s'imprime, en points : dans son champ, ou la
-   * plus petite de ses dessins sous le cadre (ADR-12 de l'analytics).
+   * plus petite de ses dessins sous le cadre (ADR-0048).
    */
   readonly size: number | NotPrinted;
 };
