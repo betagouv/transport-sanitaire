@@ -7,6 +7,38 @@ commit lui-même.
 Le simulateur affiche en bas de page la version qu'il exécute, le commit déployé
 et la version du modèle de règles.
 
+## [1.1.0](https://github.com/betagouv/transport-sanitaire/releases/tag/simulateur-eligibilite%401.1.0), 16 novembre 2026
+
+Deux correctifs de l'audit de production du 16 novembre, l'urgence du cerfa et
+la sortie du blocage de l'aller-retour différent, et de quoi voir une collecte
+qui tombe. 7 commits depuis la 1.0.1.
+
+### TL;DR
+
+- Sur une demande d'accord préalable urgente sans appel au Centre 15 établi, le cerfa coche « autres » et écrit la précision saisie.
+- Le blocage « aller-retour différent » de l'étape de prescription propose « Faire une nouvelle simulation ».
+- Un journal des parcours qui cesse d'écrire se voit dans l'heure, et un envoi refusé pour débit est réessayé.
+- Des parcours sont rejoués dans de vrais navigateurs à chaque PR.
+
+### ✨ Nouveautés
+
+- [3d85e7b](https://github.com/betagouv/transport-sanitaire/commit/3d85e7b) : propose « Faire une nouvelle simulation » quand « aller-retour différent » bloque l'étape de prescription : le bouton ouvre une simulation vide et garde l'établissement.
+- [fe2d9bc](https://github.com/betagouv/transport-sanitaire/commit/fe2d9bc) : signale une collecte qui tombe : un appel à Grist est abandonné au bout de dix secondes, le navigateur réessaie un envoi refusé pour débit, et un contrôle interroge chaque heure le signe de vie du journal en production.
+
+### 🐛 Corrections
+
+- [862081a](https://github.com/betagouv/transport-sanitaire/commit/862081a) : coche « autres » et écrit la précision de l'urgence sur la demande d'accord préalable quand l'urgence est attestée sans appel au Centre 15 établi ; la case du Centre 15 reste vide.
+- [2551786](https://github.com/betagouv/transport-sanitaire/commit/2551786) : rétablit les tests du dialogue avec la page hôte, que la montée de happy-dom faisait échouer ; rien ne change à l'écran.
+
+### ♻️ Sous le capot
+
+- [6789079](https://github.com/betagouv/transport-sanitaire/commit/6789079) : renomme `test:navigateur` le script des parcours en navigateur, pour le trouver à côté de `test`.
+
+### ✅ Tests
+
+- [6e939f3](https://github.com/betagouv/transport-sanitaire/commit/6e939f3) : déroule six parcours dans Chromium et WebKit, le simulateur servi dans l'iframe d'une page d'une autre origine comme en production : rattachement, premier résultat, fiche en PDF, étape de prescription, thème et refus de la mesure d'audience.
+- [547c537](https://github.com/betagouv/transport-sanitaire/commit/547c537) : fait échouer la suite quand une question entre dans le modèle sans que ses dépendances envers les autres réponses aient été pesées.
+
 ## [1.0.1](https://github.com/betagouv/transport-sanitaire/releases/tag/simulateur-eligibilite%401.0.1), 16 novembre 2026
 
 La garde de l'API contre les abus, une suite de tests stable et le moteur du
