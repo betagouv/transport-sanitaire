@@ -32,6 +32,29 @@ jobs:
       # (+ vérification de bundle en `postbuild`).
       - run: pnpm --filter simulateur-eligibilite verifier
 
+  # Les parcours en navigateur réel, sous Chromium et WebKit : le simulateur
+  # construit, embarqué en iframe dans une page d'une autre origine. Ils ont
+  # leur job, hors du `verifier` : ils demandent des navigateurs installés, que
+  # le poste d'un contributeur n'a pas forcément (voir l'AGENTS.md de l'app).
+  navigateur:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: package.json
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm --filter simulateur-eligibilite exec playwright install --with-deps chromium webkit
+      - run: pnpm --filter simulateur-eligibilite navigateur
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: parcours-en-navigateur
+          path: apps/simulateur-eligibilite/navigateur/resultats
+          retention-days: 7
+
   data-analyzer:
     runs-on: ubuntu-latest
     steps:

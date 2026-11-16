@@ -1,0 +1,10 @@
+{
+  "extends": "./tsconfig.base.json",
+  "compilerOptions": {
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "types": ["node"]
+  },
+  // Les parcours en navigateur réel : exécutés par Playwright sous Node, avec
+  // des fonctions qu'il envoie dans la page, d'où le DOM.
+  "include": ["../playwright.config.ts", "../navigateur"]
+}

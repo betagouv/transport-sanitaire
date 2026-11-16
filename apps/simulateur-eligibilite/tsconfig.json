@@ -1,5 +1,5 @@
 {
-  // Fichier de solution : il ne compile rien lui-même, il énumère les cinq
+  // Fichier de solution : il ne compile rien lui-même, il énumère les six
   // projets. Leurs réglages vivent dans `config/`.
   "files": [],
   "references": [
@@ -7,6 +7,7 @@
     { "path": "./tooling/tsconfig.core.json" },
     { "path": "./tooling/tsconfig.node.json" },
     { "path": "./tooling/tsconfig.server.json" },
-    { "path": "./tooling/tsconfig.tests.json" }
+    { "path": "./tooling/tsconfig.tests.json" },
+    { "path": "./tooling/tsconfig.navigateur.json" }
   ]
 }
