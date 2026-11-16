@@ -2,7 +2,7 @@
 //
 // La couverture de la collecte (ADR-15) : chaque heure, le serveur écrit dans
 // le journal un signe de vie. Une heure sans lui ressort « indisponible »,
-// pas « zéro ».
+// pas « zéro ». Une sonde externe demande au serveur s'il y est.
 
 import { afterEach, describe, expect, it } from "vitest";
 import { GristApiClient } from "../../../server/grist/grist-api.client.ts";
@@ -10,7 +10,13 @@ import { GristJournal } from "../../../server/journal/grist-journal.adapter.ts";
 import type { Journal } from "../../../server/journal/journal.port.ts";
 import { MemoryJournal } from "../../../server/journal/memory-journal.adapter.ts";
 import { ReportAlive } from "../../../server/journal/report-alive.usecase.ts";
+import { snapshotReferentiel } from "../../../shared/referentiel.ts";
 import { demarrerGrist, type GristDeTest } from "../server/grist-de-test.ts";
+import {
+  type AppDeTest,
+  demarrer,
+  getFrom,
+} from "../server/serveur-de-test.ts";
 import { BUILD } from "./evenements.ts";
 
 const a = (heure: string) => new Date(`2026-11-13T${heure}:00.000Z`);
@@ -103,5 +109,56 @@ describe("le signe de vie dans Grist", () => {
     await expect(signeDeVie(journal).execute(a("14:20"))).rejects.toThrow();
 
     grist = await demarrerGrist({});
+  });
+});
+
+describe("la sonde du signe de vie", () => {
+  let app: AppDeTest;
+  afterEach(() => app.close());
+
+  const HEURE = 60 * 60 * 1000;
+  const ilYA = (heures: number) => new Date(Date.now() - heures * HEURE);
+
+  // Le serveur de test tourne sur `BUILD`, dans l'environnement « test ».
+  async function sonde(journal: Journal) {
+    app = await demarrer(snapshotReferentiel, { journal });
+    return getFrom(app.base, "/api/journal/v1/alive");
+  }
+
+  it("répond 200 quand le signe de vie de l'heure est écrit", async () => {
+    const journal = new MemoryJournal();
+    await signeDeVie(journal).execute(new Date());
+
+    expect(await sonde(journal)).toEqual({
+      status: 200,
+      body: { alive: true },
+    });
+  });
+
+  it("se contente du signe de vie de l'heure d'avant", async () => {
+    const journal = new MemoryJournal();
+    await signeDeVie(journal).execute(ilYA(1));
+
+    expect((await sonde(journal)).status).toBe(200);
+  });
+
+  it("répond 503 quand le dernier signe de vie a deux heures", async () => {
+    const journal = new MemoryJournal();
+    await signeDeVie(journal).execute(ilYA(2));
+
+    expect(await sonde(journal)).toEqual({
+      status: 503,
+      body: { alive: false },
+    });
+  });
+
+  it("répond 503 quand le journal ne répond pas", async () => {
+    class JournalMuet extends MemoryJournal {
+      override async find(): Promise<never> {
+        throw new Error("Grist ne répond pas");
+      }
+    }
+
+    expect((await sonde(new JournalMuet())).status).toBe(503);
   });
 });
