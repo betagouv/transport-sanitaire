@@ -1,7 +1,7 @@
 // Les modules du socle et leur index, rendus exécutables.
 //
 // Un module du socle est un dossier direct de `core/socle/` ou `front/socle/`.
-// Son `index.ts` dit ce qu'il promet au reste du socle (ADR-28). Ce fichier
+// Son `index.ts` dit ce qu'il promet au reste du socle (ADR-0039). Ce fichier
 // vérifie que chaque module en a un, et que personne ne le contourne.
 
 import { existsSync, readdirSync } from "node:fs";

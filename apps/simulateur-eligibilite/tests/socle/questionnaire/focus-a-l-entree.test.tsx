@@ -1,6 +1,6 @@
 import { screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
-import { page, questionsOf } from "../../../core/socle";
+import { page, QuestionFactory } from "../../../core/socle";
 import { afficher } from "./afficher";
 
 // À chaque nouvelle page, en avant comme en arrière, le titre de sa première
@@ -10,7 +10,7 @@ import { afficher } from "./afficher";
 
 type Questions = { voie: string; lieu: "domicile" | "foyer" };
 
-const question = questionsOf<Questions>();
+const question = new QuestionFactory<Questions>();
 
 const PAGES = [
   page("adresse", question.text("voie", "Numéro et voie")),

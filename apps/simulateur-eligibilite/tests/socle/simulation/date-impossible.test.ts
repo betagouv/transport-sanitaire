@@ -5,8 +5,8 @@
 // jsdom ne simule pas. Les pages sont écrites ici.
 
 import { describe, expect, it } from "vitest";
-import { page, questionsOf } from "../../../core/socle";
-import type { CoreModel } from "../../../core/socle/model";
+import { page, QuestionFactory } from "../../../core/socle";
+import type { CoreModel } from "../../../core/socle/model.types";
 import type {
   Answers,
   Page,
@@ -16,7 +16,7 @@ import { PageRefusal, Simulation } from "../../../core/socle/simulation";
 
 type Questions = { jour: string; rendezVous: string };
 
-const question = questionsOf<Questions>();
+const question = new QuestionFactory<Questions>();
 
 const AGENDA = page(
   "agenda",

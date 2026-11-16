@@ -2,7 +2,7 @@
 // question, sous son identifiant, tiré des parties. Les faits, l'écran et les
 // seeds les lisent par identifiant, avec `given`.
 
-import { type AnswersOf, givenOf } from "../../../socle/index.ts";
+import { type AnswersOf, ReadingFactory } from "../../../socle/index.ts";
 import type { Cibles } from "../cibles/noms.ts";
 import type { Faits } from "../faits/noms.ts";
 import type { COMMANDE } from "./p1/partie-1.ts";
@@ -12,4 +12,4 @@ export type Questions = AnswersOf<typeof COMMANDE> &
   AnswersOf<typeof COMPLEMENT>;
 
 /** Les entrées des lectures du modèle, une question lue par identifiant. */
-export const given = givenOf<Questions, Faits, Cibles>();
+export const given = new ReadingFactory<Questions, Faits, Cibles>();

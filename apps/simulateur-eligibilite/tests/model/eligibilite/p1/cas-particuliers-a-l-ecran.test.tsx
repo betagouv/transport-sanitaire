@@ -42,8 +42,8 @@ describe("la page des cas particuliers de P1", () => {
         (possibleAnswer) => possibleAnswer.labels?.[0]?.textContent,
       ),
     ).toEqual([
-      "Soin ou examen directement lié au traitement de cette Affection Longue Durée (ALD)",
-      "Soin ou examen sans lien direct avec cette ALD : traumatisme distinct, intercurrence, autre affection",
+      "Soin ou examen directement lié au traitement de cette ALD (soin ou examen inscrit au protocole de soins de cette ALD)",
+      "Soin ou examen sans lien direct avec cette ALD (traumatisme distinct, intercurrence, autre affection)",
     ]);
   });
 

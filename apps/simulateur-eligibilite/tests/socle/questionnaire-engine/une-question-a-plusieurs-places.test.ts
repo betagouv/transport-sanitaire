@@ -1,4 +1,4 @@
-// Une question à plusieurs places (ADR-29) : déclarée sur deux pages, sous une
+// Une question à plusieurs places (ADR-0040) : déclarée sur deux pages, sous une
 // seule réponse. Elle se pose à la première place où ses gardes tiennent ; la
 // seconde ne la repose pas. Une place cachée ne lui fait perdre sa réponse que
 // si c'est la dernière, et qu'aucune place d'avant ne la pose. Les pages sont
@@ -8,8 +8,13 @@
 // branche la rend utile.
 
 import { describe, expect, it } from "vitest";
-import { afterLock, givenOf, page, questionsOf } from "../../../core/socle";
-import type { Answers } from "../../../core/socle/questionnaire-engine/question/question";
+import {
+  afterLock,
+  page,
+  QuestionFactory,
+  ReadingFactory,
+} from "../../../core/socle";
+import type { Answers } from "../../../core/socle/questionnaire-engine/question/question.types";
 import { Questionnaire } from "../../../core/socle/questionnaire-engine/questionnaire.vo";
 import { QuestionnaireDeclarationError } from "../../../core/socle/questionnaire-engine/questionnaire-declaration.error";
 
@@ -164,8 +169,8 @@ type Questions = {
   dependante: string;
 };
 
-const question = questionsOf<Questions>();
-const given = givenOf<Questions>();
+const question = new QuestionFactory<Questions>();
+const given = new ReadingFactory<Questions>();
 
 const URGENCE = question
   .singleChoice("urgence", "Urgent ?")

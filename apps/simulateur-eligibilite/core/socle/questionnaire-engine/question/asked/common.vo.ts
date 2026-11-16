@@ -7,7 +7,7 @@
 // qu'une API la donnera, et `askedQuestion` la relit (`question/asked/question.vo.ts`).
 // Chaque sorte en dit plus dans sa classe.
 
-import type { Answer, Reminder, Unanswered } from "../question.ts";
+import type { Answer, Reminder, Unanswered } from "../question.types.ts";
 import {
   type AnswerProblem,
   type NoError,

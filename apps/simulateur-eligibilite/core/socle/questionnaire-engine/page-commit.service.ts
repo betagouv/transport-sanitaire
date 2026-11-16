@@ -7,7 +7,12 @@
 
 import { Address } from "./question/address.vo.ts";
 import type { Dependency } from "./question/dependency.vo.ts";
-import type { Answer, Answers, Page, Unanswered } from "./question/question.ts";
+import type {
+  Answer,
+  Answers,
+  Page,
+  Unanswered,
+} from "./question/question.types.ts";
 
 /** Les réponses des pages d'un questionnaire, page par page. */
 export class PageCommitService {
@@ -22,7 +27,7 @@ export class PageCommitService {
    * Les réponses du questionnaire, une fois la page validée. `inputs` porte
    * les réponses de la page telles qu'à l'écran. Une question de la page
    * absente d'`inputs` perd sa réponse, sauf si elle attend une autre de ses
-   * places (`waiting`, ADR-29) : elle n'a alors pas changé.
+   * places (`waiting`, ADR-0040) : elle n'a alors pas changé.
    */
   commit(
     answers: Answers,

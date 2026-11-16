@@ -1,7 +1,7 @@
 // Ce que le journal des parcours reçoit des pages du modèle de l'éditeur
 // (#385) : l'id de page qu'il nomme, et une précision qu'un brouillon révèle,
 // exposée dans le même affichage que sa question. Voir
-// docs/knowledge/adr/analytics.md, ADR-8.
+// ADR-0044.
 
 import { describe, expect, it } from "vitest";
 import { journalDeTest } from "../../socle/analytics/journal-de-test";

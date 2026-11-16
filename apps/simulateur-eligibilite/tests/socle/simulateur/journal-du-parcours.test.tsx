@@ -1,6 +1,6 @@
 // Ce que le simulateur envoie au journal des parcours sur P0 (#383) : le début
 // d'une simulation, une seule fois, et l'intention du premier choix validé.
-// Voir docs/knowledge/adr/analytics.md, ADR-6 et ADR-7.
+// Voir ADR-0042 et ADR-0043.
 
 import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
@@ -46,7 +46,7 @@ async function ouvrirAvecUnJournal() {
 
 const types = (envoyes: { type: string }[]) => envoyes.map((e) => e.type);
 
-// Le début et l'intention, sans les questions ni les phases (ADR-8).
+// Le début et l'intention, sans les questions ni les phases (ADR-0044).
 const duParcours = (envoyes: AnalyticsEvent[]) =>
   envoyes.filter(({ type }) =>
     ["simulation_started", "intent_selected"].includes(type),
@@ -62,9 +62,26 @@ describe("le journal des parcours sur P0", () => {
         sequence: 1,
         screen: "P0",
         establishment_id: "e_chu_grenoble",
+        establishment_name: "CHU Grenoble Alpes",
         service_id: "s_grenoble_cardio",
+        service_name: "Cardiologie",
       }),
     ]);
+  });
+
+  it("chaque événement porte l'établissement et le service du rattachement", async () => {
+    const { user, envoyes } = await ouvrirAvecUnJournal();
+
+    await user.click(radio("Un thé"));
+    await question(ACCOMPAGNEMENTS);
+
+    expect(envoyes.length).toBeGreaterThan(2);
+    for (const evenement of envoyes) {
+      expect(evenement).toMatchObject({
+        establishment_name: "CHU Grenoble Alpes",
+        service_name: "Cardiologie",
+      });
+    }
   });
 
   it("le premier choix validé donne l'intention, dans la même simulation", async () => {

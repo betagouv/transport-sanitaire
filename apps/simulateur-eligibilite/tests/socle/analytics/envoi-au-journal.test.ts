@@ -1,6 +1,6 @@
 // L'envoi d'un événement au journal des parcours, contre le vrai serveur de
 // test. Son journal peut être indisponible : la route répond alors 503, comme
-// quand Grist ne répond pas. Voir docs/knowledge/adr/analytics.md, ADR-6.
+// quand Grist ne répond pas. Voir ADR-0042.
 
 import type { Server } from "node:http";
 import type { AddressInfo } from "node:net";

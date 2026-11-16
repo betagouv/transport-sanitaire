@@ -1,8 +1,8 @@
 // @vitest-environment node
 //
 // La route de collecte du journal des parcours, sur le vrai serveur Express et
-// le journal en mémoire, sans mock. Voir docs/knowledge/adr/analytics.md, ADR-6
-// et ADR-7.
+// le journal en mémoire, sans mock. Voir ADR-0042
+// et ADR-0043.
 
 import { afterEach, describe, expect, it } from "vitest";
 import { MemoryJournal } from "../../../server/journal/memory-journal.adapter.ts";
@@ -32,7 +32,7 @@ describe("collecte d'un événement", () => {
       event: simulationStarted,
       receivedAt: expect.stringMatching(/^\d{4}-\d\d-\d\dT/),
       environment: "test",
-      schemaVersion: 2,
+      schemaVersion: 3,
     });
   });
 
@@ -70,6 +70,31 @@ describe("collecte d'un événement", () => {
 
     expect(status).toBe(400);
     expect(await journal.find("s-1:1")).toBeUndefined();
+  });
+
+  it("garde le nom de l'établissement et celui du service", async () => {
+    const journal = await collecteSur();
+    const nomme = {
+      ...simulationStarted,
+      establishment_name: "CHU Grenoble Alpes",
+      service_name: "Cardiologie",
+    };
+
+    const { status } = await collecter(nomme);
+
+    expect(status).toBe(204);
+    expect((await journal.find("s-1:1"))?.event).toEqual(nomme);
+  });
+
+  it("refuse un nom plus long que la borne", async () => {
+    await collecteSur();
+
+    const { status } = await collecter({
+      ...simulationStarted,
+      service_name: "a".repeat(301),
+    });
+
+    expect(status).toBe(400);
   });
 });
 

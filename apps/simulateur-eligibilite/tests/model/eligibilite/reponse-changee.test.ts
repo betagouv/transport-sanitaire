@@ -13,7 +13,6 @@ import {
   type Answer,
   type Answers,
   PageCommitService,
-  pagesOf,
   Questionnaire,
 } from "../../../core/socle/questionnaire-engine";
 
@@ -23,7 +22,7 @@ import { MATERNITE_ETABLIE } from "./p2/reponses-de-la-branche";
 
 type Reponses = Answers<Questions>;
 
-const pages = pagesOf(model.questionnaire);
+const pages = Questionnaire.pagesOf(model.questionnaire);
 const pageDe = (id: string) => {
   const page = pages.find((candidate) => candidate.id === id);
   if (page === undefined) throw new Error(`Page inconnue : ${id}`);
@@ -54,7 +53,7 @@ const effaceesPar = (id: string, autre: Answer = "autre", depuis = TOUT) => {
 // Le parcours tel que l'écran le lit, filtrage par le graphe compris.
 const lire = (reponses: Answers) =>
   new Questionnaire(
-    pagesOf(frontModel.core.questionnaire),
+    Questionnaire.pagesOf(frontModel.core.questionnaire),
     frontModel.core.relevance,
   ).readWith(reponses);
 
@@ -187,7 +186,7 @@ describe("la distance changée (cas « Distance/ligne »)", () => {
   };
 
   // L'urgence garde sa réponse : la page de branche pourrait la poser
-  // (ADR-29). Elle ne compte plus pour autant.
+  // (ADR-0040). Elle ne compte plus pour autant.
   it("revenir à 50 km ou moins efface la série, et l'urgence n'est plus validée", () => {
     const apres = valideeAvec(EN_SERIE, "P2/trajet", {
       "Q2.3.1": "1_CINQUANTE_KM_OU_MOINS",
@@ -272,7 +271,7 @@ describe("une décision atteinte, puis une réponse changée (cas « Certificats
 describe("les groupes de la maternité changés (cas « Maternité »)", () => {
   const URGENCE_DITE: Reponses = { ...MATERNITE_ETABLIE, "Q2.3.4": "2_NON" };
 
-  // Une preuve actuelle se réutilise : l'urgence reste dite (ADR-29).
+  // Une preuve actuelle se réutilise : l'urgence reste dite (ADR-0040).
   // L'examen coché en Q2.2.1 est le motif : seul l'éloignement change.
   it("changer d'éloignement garde l'urgence", () => {
     const brouillon = brouillonDe(URGENCE_DITE, "P2/branche");

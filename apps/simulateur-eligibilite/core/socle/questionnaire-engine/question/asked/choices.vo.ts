@@ -3,12 +3,12 @@
 // garde que ces réponses possibles, et l'une d'elles peut bloquer le
 // questionnaire.
 
-import type { OfferedPossibleAnswer } from "../possible-answer.ts";
+import type { OfferedPossibleAnswer } from "../possible-answer.types.ts";
 import type {
   Answer,
   IncompatiblePossibleAnswers,
   Unanswered,
-} from "../question.ts";
+} from "../question.types.ts";
 import {
   type AnswerProblem,
   MISSING,

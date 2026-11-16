@@ -1,13 +1,13 @@
 import { screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
-import { page, questionsOf } from "../../../core/socle";
+import { page, QuestionFactory } from "../../../core/socle";
 import { afficher } from "./afficher";
 
 // Un texte peut se saisir sur plusieurs lignes. Les pages sont écrites ici.
 
 type Questions = { precisions: string };
 
-const question = questionsOf<Questions>();
+const question = new QuestionFactory<Questions>();
 
 const PRECISIONS = page(
   "precisions",

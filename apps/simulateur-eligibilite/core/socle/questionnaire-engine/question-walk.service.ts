@@ -15,7 +15,7 @@
 // elle n'est jamais validée.
 //
 // Une question à plusieurs places se pose à la première où ses gardes tiennent
-// et qui compte (ADR-29). Une place suivante ne la pose pas si elle s'est déjà
+// et qui compte (ADR-0040). Une place suivante ne la pose pas si elle s'est déjà
 // posée plus tôt, validée ou en attente.
 
 import { GivenAnswers } from "./answers/given-answers.vo.ts";
@@ -31,7 +31,7 @@ import type {
   NotAsked,
   Page,
   Question,
-} from "./question/question.ts";
+} from "./question/question.types.ts";
 import { WalkProgress } from "./walk-progress.vo.ts";
 
 /** Une page lue : ses questions qui se posent, telles qu'elles se posent. */

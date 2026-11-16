@@ -35,8 +35,9 @@ const unModePartageable = given
   .assuming("fait_p1_complete")
   .isOui();
 
-// L'ordre d'écran de Q1.3, que son contrat fixe : le mineur suit l'ALD. Les
-// slugs gardent le numéro du catalogue, et « Aucune » ferme la liste.
+// L'ordre d'écran de Q1.3, que son contrat fixe : le mineur suit l'ALD, et le
+// partage vient juste avant « Aucune », qui ferme la liste (TS-1020-03). Les
+// slugs gardent le numéro du catalogue.
 const ORDRE_DES_CAS = [
   "1_FORTE_CORPULENCE",
   "2_ALD",
@@ -44,14 +45,14 @@ const ORDRE_DES_CAS = [
   "3_CHIMIOTHERAPIE",
   "4_RADIOTHERAPIE",
   "5_DIALYSE",
-  "6_PARTAGE_INCOMPATIBLE",
   "9_ACCIDENT_TIERS",
+  "6_PARTAGE_INCOMPATIBLE",
 ] as const;
 
 export const Q1_3 = question
   .multipleChoice(
     "Q1.3",
-    "Avant d’établir le mode de transport adéquat, sélectionnez tous les éventuels cas particuliers concernant le patient.",
+    "Avant d’établir le mode de transport adéquat, sélectionnez les éventuels cas particuliers concernant le patient.",
   )
   // Dans l'ordre que le catalogue lui donne, et non celui des numéros.
   .possibleAnswers({
@@ -67,7 +68,7 @@ export const Q1_3 = question
     "8_MINEUR_SOINS_CONTINUS":
       "Le patient a moins de 18 ans et le service médical de l’Assurance Maladie a reconnu qu’il nécessite des soins continus pendant plus de six mois, en lien avec ce déplacement.",
     "9_ACCIDENT_TIERS":
-      "Ce transport est en rapport avec un accident causé par un tiers.",
+      "Ce déplacement est en rapport avec un accident causé par un tiers.",
   })
   .order(...ORDRE_DES_CAS)
   .exclusive("7_AUCUNE")
@@ -87,9 +88,9 @@ export const Q1_3_B = question
   )
   .possibleAnswers({
     "1_LIEN_DIRECT":
-      "Soin ou examen directement lié au traitement de cette Affection Longue Durée (ALD)",
+      "Soin ou examen directement lié au traitement de cette ALD (soin ou examen inscrit au protocole de soins de cette ALD)",
     "2_SANS_LIEN_DIRECT":
-      "Soin ou examen sans lien direct avec cette ALD : traumatisme distinct, intercurrence, autre affection",
+      "Soin ou examen sans lien direct avec cette ALD (traumatisme distinct, intercurrence, autre affection)",
   })
   .appliesWhen(given.question(Q1_3).answer().checked("2_ALD"))
   .shownUnder(Q1_3, "2_ALD");

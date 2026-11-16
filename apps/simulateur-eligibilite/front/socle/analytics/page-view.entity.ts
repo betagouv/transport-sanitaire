@@ -1,8 +1,8 @@
 // Un affichage de page : une page du modèle, que le simulateur ouvre une fois.
 // Ses questions y sont exposées à leur apparition, sous un id qu'il donne : un
-// rendu de plus ne change rien. Voir docs/knowledge/adr/analytics.md, ADR-8.
+// rendu de plus ne change rien. Voir ADR-0044.
 // Un écran de résultat ouvre aussi un affichage, sans question, où ses boutons
-// sont exposés (ADR-11).
+// sont exposés (ADR-0047).
 
 import {
   type AnalyticsEvent,

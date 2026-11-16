@@ -1,5 +1,5 @@
 // L'urgence, Q2.3.4, a deux places : la page du trajet, puis celle de la
-// branche (ADR-29). Elle se pose à la première où sa garde tient, sous une
+// branche (ADR-0040). Elle se pose à la première où sa garde tient, sous une
 // seule réponse. Une correction qui la déplace d'une place à l'autre la garde
 // répondue.
 //
@@ -9,7 +9,6 @@ import { describe, expect, it } from "vitest";
 import type { Questions } from "../../../../core/models/eligibilite/questions/reponses";
 import {
   type Answers,
-  pagesOf,
   Questionnaire,
 } from "../../../../core/socle/questionnaire-engine";
 import { model } from "../../../../front/models/eligibilite";
@@ -64,7 +63,7 @@ const LONGUE: Answers<Questions> = {
   "Q2.3.3": "2_NON",
 };
 
-const pages = pagesOf(model.core.questionnaire);
+const pages = Questionnaire.pagesOf(model.core.questionnaire);
 
 const lire = (reponses: Answers) =>
   new Questionnaire(pages, model.core.relevance).readWith(reponses);

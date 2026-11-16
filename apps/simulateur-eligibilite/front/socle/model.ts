@@ -1,16 +1,16 @@
 // Ce que le socle attend d'une version du modèle : son métier
-// (`core/socle/model.ts`), et ce qu'il affiche, ses deux résultats.
+// (`core/socle/model.types.ts`), et ce qu'il affiche, ses deux résultats.
 //
 // Le socle déroule le parcours et ne lit aucune clé du modèle. Il transporte les
 // réponses, les faits et les cibles de l'un à l'autre, et donne à chaque
 // résultat ce qu'il déclare lire.
 
 import type { ComponentType, ReactNode } from "react";
-import type { AnyFaits, CoreModel } from "../../core/socle/model";
+import type { AnyFaits, CoreModel } from "../../core/socle/model.types";
 import {
   type AnyCibles,
   type AnyQuestions,
-  pagesOf,
+  Questionnaire,
   type Reading,
   Reads,
   Relevance,
@@ -58,12 +58,12 @@ export type FirstResult = {
   terminal?: boolean;
   /**
    * Les identifiants des motifs que le résultat affiche, tels que son
-   * catalogue les nomme. Le journal des parcours les reçoit (ADR-9). Une liste
+   * catalogue les nomme. Le journal des parcours les reçoit (ADR-0045). Une liste
    * vide : aucun motif affiché. Sans liste : on ne sait pas.
    */
   motifs?: readonly string[];
   /**
-   * Les portions du trajet que le résultat restitue à part (ADR-9). Une liste
+   * Les portions du trajet que le résultat restitue à part (ADR-0045). Une liste
    * vide : aucune. Sans liste : on ne sait pas.
    */
   portions?: readonly Portion[];
@@ -120,7 +120,7 @@ export type Model<
   core: CoreModel<Questions, Faits, Cibles>;
   /**
    * La version des règles, `10.1.8` : chaque événement du journal des parcours
-   * la porte (ADR-14 d'analytics).
+   * la porte (ADR-0050).
    */
   version: string;
   /** Le premier résultat, après les parties du questionnaire. */
@@ -242,7 +242,10 @@ function withRelevance(model: Model): Model {
   const shown = Reads.union(...values);
   const relevance = new Relevance({
     graph: core.decision.graph,
-    pages: [...pagesOf(core.questionnaire), ...core.complement.pages],
+    pages: [
+      ...Questionnaire.pagesOf(core.questionnaire),
+      ...core.complement.pages,
+    ],
     faits: {
       reads: core.preconisation.reads,
       imposed: core.decision.imposed,

@@ -1,13 +1,13 @@
 import { screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
-import { page, questionsOf } from "../../../core/socle";
+import { page, QuestionFactory } from "../../../core/socle";
 import { afficher } from "./afficher";
 
 // Un nombre peut n'accepter qu'un entier. Les pages sont écrites ici.
 
 type Questions = { transports: number; poids: number };
 
-const question = questionsOf<Questions>();
+const question = new QuestionFactory<Questions>();
 
 const TRANSPORTS = page(
   "transports",

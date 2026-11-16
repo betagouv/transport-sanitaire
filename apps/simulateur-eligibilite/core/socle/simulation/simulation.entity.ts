@@ -4,14 +4,14 @@
 // donne une nouvelle simulation ; aucune ne change celle-ci. L'écran n'y ajoute
 // que le brouillon de la page ouverte.
 
-import type { CoreModel } from "../model.ts";
+import type { CoreModel } from "../model.types.ts";
 import {
   type Answer,
   type AnsweredQuestionnaire,
   type Answers,
   type AskedQuestion,
   type Page,
-  pagesOf,
+  Questionnaire,
   type ValidatedAnswers,
 } from "../questionnaire-engine/index.ts";
 import { AnswerCorrection } from "./answer-correction.vo.ts";
@@ -202,7 +202,7 @@ export class Simulation {
 
   /**
    * Rouvre la page d'avant qui pose cette question validée, pour la revoir
-   * (ADR-30). La page ouverte devient l'origine de la correction, avec ce
+   * (ADR-0041). La page ouverte devient l'origine de la correction, avec ce
    * brouillon ; une correction en cours garde la sienne. Refusée : pas
    * avant le verrou, ou pas une question validée d'une page d'avant.
    */
@@ -281,7 +281,7 @@ export class Simulation {
   #openingAfter(reading: AnsweredQuestionnaire): PageOpening | StageEnds {
     const correction = this.#opening?.correction;
     if (correction) {
-      const declared = pagesOf(this.#core.questionnaire);
+      const declared = Questionnaire.pagesOf(this.#core.questionnaire);
       const pages = StagePages.of(reading);
       return correction.resumeOn(pages, reading, declared);
     }

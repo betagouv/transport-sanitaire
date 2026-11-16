@@ -1,5 +1,5 @@
 // La question déclarée : ses réglages, quelle que soit sa sorte
-// (`question/declared/settings.ts`), et ce qu'elle en fait quand elle se pose.
+// (`question/declared/settings.types.ts`), et ce qu'elle en fait quand elle se pose.
 // Chaque sorte en dit plus dans sa classe (`question/declared/choices.vo.ts`,
 // `question/declared/inputs.vo.ts`).
 //
@@ -20,16 +20,16 @@ import type { AskedCommonData, InPlace, Revisit } from "../asked/common.vo.ts";
 import type { QuestionContext, SeenAnswers } from "../asked/context.vo.ts";
 import type { AskedQuestion } from "../asked/question.vo.ts";
 import { Dependency, type DependsOn } from "../dependency.vo.ts";
-import {
-  type Answer,
-  type AnswerOfRef,
-  type AnyQuestions,
-  idOf,
-  type NotAsked,
-  type QuestionRef,
-  type Reminder,
-} from "../question.ts";
-import type { CommonSettings, NothingComputed } from "./settings.ts";
+import type {
+  Answer,
+  AnswerOfRef,
+  AnyQuestions,
+  NotAsked,
+  QuestionRef,
+  Reminder,
+} from "../question.types.ts";
+import { QuestionId } from "../question-id.vo.ts";
+import type { CommonSettings, NothingComputed } from "./settings.types.ts";
 
 /**
  * Une question déclarée, sans ce que sa sorte y ajoute. `Id` : son id.
@@ -143,7 +143,7 @@ export abstract class DeclaredQuestion<
       : never,
   ): this {
     return this.withSettings({
-      under: { question: idOf(question), possibleAnswer },
+      under: { question: QuestionId.of(question).value, possibleAnswer },
     });
   }
 
@@ -169,7 +169,7 @@ export abstract class DeclaredQuestion<
   /**
    * Une place suivante de la question, déjà déclarée sur une page d'avant : une
    * seule réponse, sous son id. Elle ne s'y pose que si elle ne s'est pas
-   * posée plus tôt (ADR-29).
+   * posée plus tôt (ADR-0040).
    */
   unlessAskedBefore(): this {
     return this.withSettings({ laterPlace: true });

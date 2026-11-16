@@ -2,9 +2,9 @@ import { screen, within } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 import {
   type AddressData,
-  givenOf,
   page,
-  questionsOf,
+  QuestionFactory,
+  ReadingFactory,
 } from "../../../core/socle";
 import { Questionnaire } from "../../../core/socle/questionnaire-engine";
 import { afficher } from "./afficher";
@@ -15,8 +15,8 @@ import { afficher } from "./afficher";
 
 type Questions = { depart: AddressData; arrivee: AddressData };
 
-const question = questionsOf<Questions>();
-const given = givenOf<Questions>();
+const question = new QuestionFactory<Questions>();
+const given = new ReadingFactory<Questions>();
 
 const valider = () =>
   screen.getByRole("button", { name: /^(Suivant|Terminer)$/ });

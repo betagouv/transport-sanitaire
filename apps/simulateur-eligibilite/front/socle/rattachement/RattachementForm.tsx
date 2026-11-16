@@ -24,7 +24,7 @@ import type { Structure } from "./structures";
 type Props = {
   referentiel?: Referentiel;
   // Toutes les entrées passent par lui : le rattachement est obligatoire
-  // (ADR-1). La structure choisie l'accompagne, `null` pour un établissement.
+  // (ADR-0004). La structure choisie l'accompagne, `null` pour un établissement.
   onValide: (
     saisie: SaisieRattachement["saisie"],
     structure: Structure | null,
@@ -79,7 +79,7 @@ function entrees(saisie: SaisieRattachement, onValide: Props["onValide"]) {
   return { entrer, modifier };
 }
 
-// Chaque réponse dévoile le champ suivant (workflow §4). Sans référentiel, il
+// Chaque réponse dévoile le champ suivant (docs/knowledge/domain/rattachement.md). Sans référentiel, il
 // n'y a rien à choisir : l'écran le dit, et le rattachement est celui de repli.
 function ProgressiveFields(props: FieldsProps) {
   if (props.saisie.indisponible) return <ReferentielIndisponible />;

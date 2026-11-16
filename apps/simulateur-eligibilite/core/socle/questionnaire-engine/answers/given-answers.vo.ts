@@ -6,14 +6,14 @@
 // : ce n'est pas pour autant un « non ». `hasAnswer` le distingue.
 
 import type { AddressData } from "../question/address.vo.ts";
-import {
-  type Answer,
-  type Answered,
-  type Answers,
-  type AnyQuestions,
-  idOf,
-  type Unanswered,
-} from "../question/question.ts";
+import type {
+  Answer,
+  Answered,
+  Answers,
+  AnyQuestions,
+  Unanswered,
+} from "../question/question.types.ts";
+import { QuestionId } from "../question/question-id.vo.ts";
 
 /**
  * Ce qu'un choix unique peut valoir : une réponse possible, ou la valeur d'une
@@ -92,7 +92,7 @@ export class GivenAnswers<Questions extends AnyQuestions = AnyQuestions> {
     id: Id,
   ): GivenAnswer<Questions[Id]>;
   question(question: string | Answered): GivenAnswer {
-    const id = idOf(question);
+    const id = QuestionId.of(question).value;
     const answers: Answers = answersOf(this);
     return new GivenAnswer(id, answers[id]);
   }

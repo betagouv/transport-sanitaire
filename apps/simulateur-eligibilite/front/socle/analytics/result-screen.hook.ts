@@ -1,4 +1,4 @@
-// L'affichage d'un écran de résultat, R2 ou R3 (ADR-11) : il s'ouvre au
+// L'affichage d'un écran de résultat, R2 ou R3 (ADR-0047) : il s'ouvre au
 // montage de l'écran, une fois par simulation affichée, comme une page du
 // questionnaire. La ref garde la simulation ouverte si React rejoue l'effet
 // (StrictMode). Il s'ouvre avant les effets de l'écran (`useLayoutEffect`) :

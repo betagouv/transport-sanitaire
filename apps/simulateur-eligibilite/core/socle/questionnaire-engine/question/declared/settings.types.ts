@@ -6,7 +6,7 @@ import type { Condition } from "../../conditions/reading.vo.ts";
 import type { ShownUnder } from "../asked/common.vo.ts";
 import type { Pipeline, QuestionContext } from "../asked/context.vo.ts";
 import type { Dependency } from "../dependency.vo.ts";
-import type { AnyQuestions, Reminder } from "../question.ts";
+import type { AnyQuestions, Reminder } from "../question.types.ts";
 import type { Inconsistencies } from "./inconsistencies.vo.ts";
 
 /** Rien de calculé : le rappel fixe de `reminder` vaut. */

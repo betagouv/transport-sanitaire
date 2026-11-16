@@ -1,4 +1,4 @@
-// La position d'une simulation dans son parcours, en rangs (ADR-30) : de quoi
+// La position d'une simulation dans son parcours, en rangs (ADR-0041) : de quoi
 // la situer, dans l'adresse de la page par exemple, sans rien dire de ses
 // réponses ni de ses pages. La simulation la donne (`Simulation.position`), et
 // n'accepte d'y aller que vers une page déjà posée, avant le verrou

@@ -1,5 +1,5 @@
 // Le référentiel, lu et complété dans un doc Grist. Côté serveur uniquement.
-// Voir docs/knowledge/adr/identification.md, ADR-5.
+// Voir ADR-0008.
 //
 // Tables Grist :
 //   Etablissements   : Id2 (Int), Nom (Text), Origine (Text)

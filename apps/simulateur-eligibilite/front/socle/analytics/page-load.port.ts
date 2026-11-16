@@ -1,7 +1,7 @@
 // Le port du chargement de la page, côté écran : comment la page qui embarque
 // le simulateur s'est chargée. Le CMS en est l'adaptateur, ou le navigateur hors
-// iframe (`host-page-load.adapter.ts`). Voir docs/knowledge/adr/analytics.md,
-// ADR-13.
+// iframe (`host-page-load.adapter.ts`). Voir
+// ADR-0049.
 
 import type { Navigation } from "../../../shared/analytics/analytics-event";
 

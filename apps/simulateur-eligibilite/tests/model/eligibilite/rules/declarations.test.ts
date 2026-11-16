@@ -13,7 +13,7 @@ import { FAITS } from "../../../../core/models/eligibilite/faits/noms";
 import rules from "../../../../core/models/eligibilite/rules/regles.json" with {
   type: "json",
 };
-import { pagesOf } from "../../../../core/socle/questionnaire-engine";
+import { Questionnaire } from "../../../../core/socle/questionnaire-engine";
 
 type Regle = {
   type?: string;
@@ -27,7 +27,7 @@ const regles = rules as Record<string, Regle>;
 const REPONSES_POSSIBLES: Readonly<
   Record<string, Readonly<Record<string, string>>>
 > = Object.fromEntries(
-  [...pagesOf(model.questionnaire), ...model.complement.pages]
+  [...Questionnaire.pagesOf(model.questionnaire), ...model.complement.pages]
     .flatMap((page): readonly object[] => page.questions)
     .flatMap((question) =>
       "labels" in question && "id" in question

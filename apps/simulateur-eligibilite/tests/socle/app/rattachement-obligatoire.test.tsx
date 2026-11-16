@@ -66,7 +66,9 @@ describe("écran de rattachement", () => {
     // Le service part tel quel à l'analytics. Le référentiel n'apprend rien.
     expect(rattachementEnSession()).toEqual({
       etabId: "e_chu_grenoble",
+      etabLibelle: "CHU Grenoble Alpes",
       serviceId: "s_grenoble_cardio",
+      serviceLibelle: "Cardiologie",
     });
     expect(declarations).toEqual([]);
   });
@@ -88,7 +90,9 @@ describe("écran de rattachement", () => {
     expect(declarations).toEqual([
       {
         etabId: "e_chu_grenoble",
+        etabLibelle: "CHU Grenoble Alpes",
         serviceId: "s_grenoble_autre",
+        serviceLibelle: "Autre",
         serviceEstAutre: true,
         serviceLibre: "Néphrologie",
       },

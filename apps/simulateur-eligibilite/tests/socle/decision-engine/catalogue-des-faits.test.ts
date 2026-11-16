@@ -7,7 +7,7 @@ import {
   Fait,
   FaitCatalogue,
   type FaitDeclare,
-  givenOf,
+  ReadingFactory,
   unFait,
 } from "../../../core/socle";
 import { ValidatedAnswers } from "../../../core/socle/questionnaire-engine";
@@ -16,7 +16,7 @@ type Questions = { boisson: "the" | "cafe" | "eau" };
 type Faits = { readonly chaude: Fait; readonly servie: Fait };
 
 const NOMS = ["chaude", "servie"] as const;
-const given = givenOf<Questions, Faits>();
+const given = new ReadingFactory<Questions, Faits>();
 
 let calculs: string[] = [];
 
@@ -98,9 +98,11 @@ describe("le catalogue des faits", () => {
   });
 
   it("refuse qu'un fait lise une cible", () => {
-    const cible = givenOf<Questions, Faits, { cible_x: Fait }>().cible(
-      "cible_x",
-    );
+    const cible = new ReadingFactory<
+      Questions,
+      Faits,
+      { cible_x: Fait }
+    >().cible("cible_x");
     const lit = new FaitCatalogue<Faits>(NOMS, [
       unFait("chaude").ouiSi(cible.isOui()).sinon("…"),
       SERVIE,

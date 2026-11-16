@@ -1,7 +1,7 @@
 // Ce que les boutons des écrans de résultat envoient au journal des parcours
 // (#388) : leur exposition, une fois par affichage et par version de leur
 // objet, puis chaque clic, au clavier comme à la souris, avec la même
-// exposition. Voir docs/knowledge/adr/analytics.md, ADR-11.
+// exposition. Voir ADR-0047.
 //
 // Le navigateur de test ne met pas en page : le PDF de la fiche y échoue
 // toujours, et son téléchargement n'y réussit jamais.

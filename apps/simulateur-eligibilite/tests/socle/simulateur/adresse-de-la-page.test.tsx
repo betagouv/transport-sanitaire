@@ -1,6 +1,11 @@
 import { cleanup, screen, waitFor } from "@testing-library/react";
 import { beforeEach, describe, expect, it } from "vitest";
-import { givenOf, page, questionsOf, Reading } from "../../../core/socle";
+import {
+  page,
+  QuestionFactory,
+  Reading,
+  ReadingFactory,
+} from "../../../core/socle";
 import type { Model } from "../../../front/socle/model";
 import { audienceDeTest, nomsEtValeurs } from "../analytics/audience-de-test";
 import { modeleDeTest } from "../modele-de-test";
@@ -13,7 +18,7 @@ import {
   radio,
 } from "./questionnaire";
 
-// L'adresse de la page suit la position de la simulation (ADR-30) : un rang,
+// L'adresse de la page suit la position de la simulation (ADR-0041) : un rang,
 // rien de ses réponses. Le bouton Retour du navigateur y revient, une adresse
 // refusée revient à la page ouverte, et un rechargement recommence. La mesure
 // d'audience n'en voit rien : pas d'évènement de plus. Testé par la vraie
@@ -122,8 +127,8 @@ type Questions = {
   note: string;
 };
 
-const nouvelle = questionsOf<Questions>();
-const given = givenOf<Questions>();
+const nouvelle = new QuestionFactory<Questions>();
+const given = new ReadingFactory<Questions>();
 
 // Le modèle de test, sur un questionnaire dont la deuxième page peut
 // contredire la première.

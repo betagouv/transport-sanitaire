@@ -1,5 +1,5 @@
 // Ce que le parcours d'une simulation garde au journal : un début, une seule
-// intention, puis ses pages, ses questions et ses phases (ADR-8). Une seed
+// intention, puis ses pages, ses questions et ses phases (ADR-0044). Une seed
 // n'est pas un parcours de prescripteur.
 
 import { describe, expect, it } from "vitest";
@@ -7,7 +7,16 @@ import { Journey } from "../../../front/socle/analytics/journey.entity";
 import type { OpenedPage } from "../../../front/socle/analytics/page-view.entity";
 import { PROVENANCE } from "./journal-de-test";
 
-const entree = { establishment_id: "7", service_id: "42" };
+const entree = { navigation: "navigate" as const };
+
+// Un parcours rattaché à un service du référentiel.
+const RATTACHE = {
+  ...PROVENANCE,
+  establishment_id: "7",
+  establishment_name: "CHU Grenoble Alpes",
+  service_id: "42",
+  service_name: "Cardiologie",
+};
 
 // Une page de P2 qui n'est ni la première ni la dernière de la phase.
 const pageDeP2 = (id: string, questions: string[]): OpenedPage => ({
@@ -33,6 +42,22 @@ describe("le parcours d'une simulation", () => {
       intent: "eligibilite_seule",
       simulation_id: journey.simulationId,
     });
+  });
+
+  it("écrit son rattachement sur chaque événement, ids et noms", () => {
+    const journey = new Journey({ seeded: false, provenance: RATTACHE });
+
+    const debut = journey.start(entree);
+    const ouverture = journey.openAPage(pageDeP2("P2/prestation", ["Q2.1"]));
+
+    for (const evenement of [debut, ...ouverture]) {
+      expect(evenement).toMatchObject({
+        establishment_id: "7",
+        establishment_name: "CHU Grenoble Alpes",
+        service_id: "42",
+        service_name: "Cardiologie",
+      });
+    }
   });
 
   it("garde la première intention, pas un second choix", () => {

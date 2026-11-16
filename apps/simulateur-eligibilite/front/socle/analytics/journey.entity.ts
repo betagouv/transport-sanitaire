@@ -3,12 +3,12 @@
 // numéros dit qu'un événement s'est perdu.
 //
 // Le parcours suit les affichages de page, les questions validées et les phases
-// où il entre et qu'il quitte, une fois chacune (ADR-8). Il numérote les
+// où il entre et qu'il quitte, une fois chacune (ADR-0044). Il numérote les
 // révisions du premier résultat, et fait tomber la révision courante quand une
-// page de P1 ou de P2 change les réponses validées (ADR-9). Il numérote les
-// versions du document R3, qui viennent de la révision courante (ADR-10). R2 et
+// page de P1 ou de P2 change les réponses validées (ADR-0045). Il numérote les
+// versions du document R3, qui viennent de la révision courante (ADR-0046). R2 et
 // R3 ouvrent un affichage, où leurs boutons sont exposés, et leurs clics s'y
-// rattachent (ADR-11).
+// rattachent (ADR-0047).
 
 import type {
   AnalyticsEvent,
@@ -63,11 +63,8 @@ export type ExposedButtons = {
 /** Ce qui suit un bouton exposé : son clic, ou le téléchargement réussi. */
 export type Gesture = "requested" | "succeeded";
 
-/** Où le parcours commence : le rattachement, et le chargement de la page. */
-export type Entrance = Pick<
-  AnalyticsEvent,
-  "establishment_id" | "service_id" | "navigation"
->;
+/** Comment la page s'est chargée, pour le premier parcours de la page. */
+export type Entrance = Pick<AnalyticsEvent, "navigation">;
 
 export class Journey {
   readonly simulationId = crypto.randomUUID();
@@ -86,7 +83,8 @@ export class Journey {
   /**
    * `seeded` : la simulation s'ouvre sur une seed, au milieu du parcours. Elle
    * n'est pas un parcours de prescripteur : rien n'en part. `provenance` :
-   * l'app qui le produit, sur chaque événement (ADR-14).
+   * l'app qui le produit et son rattachement, sur chaque événement (ADR-0050,
+   * ADR-0053).
    */
   constructor(opening: { seeded: boolean; provenance: Provenance }) {
     this.#seeded = opening.seeded;
@@ -98,7 +96,7 @@ export class Journey {
     return this.#record({
       type: "simulation_started",
       screen: "P0",
-      ...entrance,
+      navigation: entrance.navigation,
     });
   }
 

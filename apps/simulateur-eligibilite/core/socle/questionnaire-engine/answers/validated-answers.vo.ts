@@ -3,14 +3,14 @@
 // proposée et non cochée a été refusée, une case jamais montrée ne l'a pas été.
 
 import type { ReadAnswer } from "../conditions/reading.vo.ts";
-import {
-  type Answer,
-  type Answered,
-  type Answers,
-  type AnyQuestions,
-  idOf,
-  type Validated,
-} from "../question/question.ts";
+import type {
+  Answer,
+  Answered,
+  Answers,
+  AnyQuestions,
+  Validated,
+} from "../question/question.types.ts";
+import { QuestionId } from "../question/question-id.vo.ts";
 import { type Box, type Choice, GivenAnswer } from "./given-answers.vo.ts";
 
 /**
@@ -71,7 +71,7 @@ export class ValidatedAnswers<Questions extends AnyQuestions = AnyQuestions> {
     id: Id,
   ): ValidatedAnswer<Questions[Id]>;
   question(question: string | Answered): ValidatedAnswer {
-    const id = idOf(question);
+    const id = QuestionId.of(question).value;
     const validated: Validated = this.#validated;
     return new ValidatedAnswer(id, validated[id]);
   }

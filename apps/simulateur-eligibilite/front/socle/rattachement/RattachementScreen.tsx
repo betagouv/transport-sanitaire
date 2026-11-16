@@ -1,9 +1,9 @@
 // L'écran de rattachement : le formulaire, et ce que sa validation déclenche.
 //
-// À la validation, il range le rattachement en session (pour Matomo), déclare au
+// À la validation, il range le rattachement en session (pour Matomo et le journal), déclare au
 // serveur ce que la saisie apprend au référentiel (service ou établissement
 // saisi), puis prévient `App`.
-// Voir docs/knowledge/adr/identification.md, ADR-1.
+// Voir ADR-0004.
 
 import {
   enrichitLeReferentiel,

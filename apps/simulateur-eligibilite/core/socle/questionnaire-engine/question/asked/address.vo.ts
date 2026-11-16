@@ -12,7 +12,7 @@ import {
   type AddressData,
   type AddressFieldName,
 } from "../address.vo.ts";
-import type { Answer, Unanswered } from "../question.ts";
+import type { Answer, Unanswered } from "../question.types.ts";
 import {
   type AnswerProblem,
   MISSING,
