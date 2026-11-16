@@ -20,6 +20,12 @@ export default defineConfig({
   },
   test: {
     environment: "happy-dom",
+    // happy-dom 21 ne charge plus la page d'une iframe sans qu'on le demande.
+    // Les tests du dialogue avec la page hôte en créent une, vide : ils ne
+    // chargent rien du réseau.
+    environmentOptions: {
+      happyDOM: { settings: { enableIframePageLoading: true } },
+    },
     setupFiles: ["./tests/setup.ts"],
     // Les parcours à l'écran prennent plusieurs secondes, et davantage sur une
     // machine chargée : le délai par défaut (5 s) les faisait échouer au hasard.
