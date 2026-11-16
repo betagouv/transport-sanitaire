@@ -2,7 +2,7 @@
 // tools sur le simulateur.
 //
 // L'écran de rattachement passe en premier : on ne simule pas sans s'être
-// rattaché. Voir docs/knowledge/adr/identification.md, ADR-1.
+// rattaché. Voir ADR-0004.
 
 import type { ComponentProps } from "react";
 import { AnalyticsProvider, type AnalyticsUseCases } from "../analytics";

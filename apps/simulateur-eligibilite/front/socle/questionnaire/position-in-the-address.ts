@@ -1,4 +1,4 @@
-// La position de la simulation dans l'adresse de la page, en hash (ADR-30) :
+// La position de la simulation dans l'adresse de la page, en hash (ADR-0041) :
 // `#/etape/<n>`, et pendant une correction `#/etape/<n>?retour=<m>`. Des rangs
 // seulement : ni page, ni réponse, ni donnée. La simulation dit lesquels elle
 // accepte (`Simulation.moveTo`).

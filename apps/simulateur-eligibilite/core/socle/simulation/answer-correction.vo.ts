@@ -1,5 +1,5 @@
 // Corriger une réponse d'avant depuis une alerte (NAV-LIEUX-CORRECTION-001,
-// ADR-30) : un lien rouvre la page de la réponse à revoir, et « Suivant »
+// ADR-0041) : un lien rouvre la page de la réponse à revoir, et « Suivant »
 // ramène vers la page qui portait l'alerte. La simulation tient la correction
 // en cours (`Simulation.revisit`) ; elle dit où elle reprend.
 

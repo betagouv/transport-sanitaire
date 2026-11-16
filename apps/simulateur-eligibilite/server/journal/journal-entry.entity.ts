@@ -1,7 +1,7 @@
 // Une entrée du journal des parcours : un événement tel que le navigateur l'a
 // envoyé, daté à sa réception par le serveur, ou le signe de vie que le
-// serveur écrit chaque heure. Voir docs/knowledge/adr/analytics.md, ADR-6 et
-// ADR-15.
+// serveur écrit chaque heure. Voir ADR-0042 et
+// ADR-0051.
 
 import { isDeepStrictEqual } from "node:util";
 import {
@@ -14,7 +14,7 @@ export type Build = Pick<AnalyticsEvent, "app_version" | "commit_sha">;
 
 /**
  * Le signe de vie de la collecte : le serveur l'écrit chaque heure. Une heure
- * sans lui est une heure sans collecte, pas une heure sans usage (ADR-15). Il
+ * sans lui est une heure sans collecte, pas une heure sans usage (ADR-0051). Il
  * n'appartient à aucune simulation.
  */
 export type AliveEvent = Build & {

@@ -169,7 +169,7 @@ export abstract class DeclaredQuestion<
   /**
    * Une place suivante de la question, déjà déclarée sur une page d'avant : une
    * seule réponse, sous son id. Elle ne s'y pose que si elle ne s'est pas
-   * posée plus tôt (ADR-29).
+   * posée plus tôt (ADR-0040).
    */
   unlessAskedBefore(): this {
     return this.withSettings({ laterPlace: true });

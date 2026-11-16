@@ -1,5 +1,5 @@
 // Ce que le parcours d'une simulation garde au journal : un début, une seule
-// intention, puis ses pages, ses questions et ses phases (ADR-8). Une seed
+// intention, puis ses pages, ses questions et ses phases (ADR-0044). Une seed
 // n'est pas un parcours de prescripteur.
 
 import { describe, expect, it } from "vitest";

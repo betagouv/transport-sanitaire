@@ -19,7 +19,7 @@ followHostTheme(applyTheme);
 
 // Les classes qui parlent à l'extérieur, instanciées une fois. Matomo et le
 // journal du backend suivent le même choix du prescripteur, demandé au CMS
-// (ADR-5 et ADR-6 d'analytics.md).
+// (ADR-0011 et ADR-0042).
 const container = createContainer();
 
 // Le premier s'ouvre au démarrage. À plusieurs, on peut en changer depuis les

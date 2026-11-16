@@ -13,7 +13,7 @@
 // garde se lit ici comme le questionnaire la lira.
 //
 // Une question à plusieurs places est vivante tant qu'une de ses places l'est
-// (ADR-29).
+// (ADR-0040).
 
 import { GivenAnswers } from "../answers/given-answers.vo.ts";
 import { ValidatedAnswers } from "../answers/validated-answers.vo.ts";

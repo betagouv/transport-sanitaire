@@ -1,5 +1,5 @@
 // Le référentiel côté navigateur : il appelle l'API du backend, par le client
-// que le conteneur lui donne. Voir docs/knowledge/adr/identification.md, ADR-5.
+// que le conteneur lui donne. Voir ADR-0008.
 
 import type {
   Etablissement,

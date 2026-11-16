@@ -1,4 +1,4 @@
-// Un bouton exposé sur un écran de résultat (ADR-11) : « Imprimer » ou
+// Un bouton exposé sur un écran de résultat (ADR-0047) : « Imprimer » ou
 // « Télécharger » sur la fiche patient ou le document R3, ou « Donner mon
 // avis ». Il est exposé une fois par affichage et par version de son objet, et
 // ses clics s'y rattachent, quel que soit l'affichage ouvert depuis.

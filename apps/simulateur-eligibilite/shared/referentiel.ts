@@ -7,9 +7,8 @@ export type Etablissement = { id: string; libelle: string };
 export type Service = { id: string; libelle: string };
 
 /**
- * L'accès au référentiel passe par cette interface (§5 de
- * docs/knowledge/adr/identification.md). On peut ainsi changer de source sans
- * toucher aux composants. Le front utilise le client HTTP
+ * L'accès au référentiel passe par cette interface (ADR-0008). On peut ainsi
+ * changer de source sans toucher aux composants. Le front utilise le client HTTP
  * `front/socle/rattachement/referentiel.ts`, vers le backend Grist.
  */
 export interface Referentiel {

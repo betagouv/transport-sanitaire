@@ -202,7 +202,7 @@ export class Simulation {
 
   /**
    * Rouvre la page d'avant qui pose cette question validée, pour la revoir
-   * (ADR-30). La page ouverte devient l'origine de la correction, avec ce
+   * (ADR-0041). La page ouverte devient l'origine de la correction, avec ce
    * brouillon ; une correction en cours garde la sienne. Refusée : pas
    * avant le verrou, ou pas une question validée d'une page d'avant.
    */

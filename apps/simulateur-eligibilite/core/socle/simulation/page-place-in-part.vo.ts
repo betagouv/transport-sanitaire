@@ -1,6 +1,6 @@
 // La place d'une page dans sa partie, parmi les pages de la partie qui se posent
 // avec les réponses validées : la première, la dernière. Le journal des
-// parcours en tire les jalons de chaque phase (ADR-8 d'analytics). Une réponse
+// parcours en tire les jalons de chaque phase (ADR-0044). Une réponse
 // sur la dernière peut encore ouvrir une page de plus : la place change alors.
 
 import type { CoreModel } from "../model.types.ts";

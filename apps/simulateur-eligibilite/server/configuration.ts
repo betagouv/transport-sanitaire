@@ -9,7 +9,7 @@
 // compris, il accepte les événements sans en garder aucun.
 //
 // `CONTAINER_VERSION`, que Scalingo pose sur le conteneur, donne le commit
-// déployé. Sans elle, le commit vaut `inconnu`, comme côté écran (ADR-14).
+// déployé. Sans elle, le commit vaut `inconnu`, comme côté écran (ADR-0050).
 //
 // Voir le README § « Configuration ».
 
@@ -29,7 +29,7 @@ export type Configuration = {
   journal: AccesGrist | undefined;
   /** Le nom de l'app Scalingo, écrit avec chaque événement ; `local` hors Scalingo. */
   environment: string;
-  /** La version et le commit de l'app servie, sur le signe de vie du journal (ADR-15). */
+  /** La version et le commit de l'app servie, sur le signe de vie du journal (ADR-0051). */
   build: Build;
 };
 
@@ -85,7 +85,7 @@ const VARIABLES = z.object({
     .positive({ error: "doit être un entier positif" })
     .default(3000),
   GRIST_DOC_URL: z.url({ error: "doit être une URL" }).optional(),
-  // Le journal des parcours est un autre document, avec la même clé (ADR-6).
+  // Le journal des parcours est un autre document, avec la même clé (ADR-0042).
   // Sans défaut : la collecte ne s'active que là où on la pose.
   JOURNAL_GRIST_DOC_URL: z.url({ error: "doit être une URL" }).optional(),
   GRIST_API_KEY: z.string().optional(),
@@ -129,7 +129,7 @@ function sansValeursVides(env: Env): Env {
 }
 
 // La version que `package.json` déclare, celle du tag
-// `simulateur-eligibilite@<version>` (ADR-14).
+// `simulateur-eligibilite@<version>` (ADR-0050).
 function versionDeLApp(): string {
   const chemin = new URL("../package.json", import.meta.url);
   const { version } = JSON.parse(readFileSync(chemin, "utf8")) as {

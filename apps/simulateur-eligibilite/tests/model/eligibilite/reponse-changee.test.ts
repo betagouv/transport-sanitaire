@@ -186,7 +186,7 @@ describe("la distance changée (cas « Distance/ligne »)", () => {
   };
 
   // L'urgence garde sa réponse : la page de branche pourrait la poser
-  // (ADR-29). Elle ne compte plus pour autant.
+  // (ADR-0040). Elle ne compte plus pour autant.
   it("revenir à 50 km ou moins efface la série, et l'urgence n'est plus validée", () => {
     const apres = valideeAvec(EN_SERIE, "P2/trajet", {
       "Q2.3.1": "1_CINQUANTE_KM_OU_MOINS",
@@ -271,7 +271,7 @@ describe("une décision atteinte, puis une réponse changée (cas « Certificats
 describe("les groupes de la maternité changés (cas « Maternité »)", () => {
   const URGENCE_DITE: Reponses = { ...MATERNITE_ETABLIE, "Q2.3.4": "2_NON" };
 
-  // Une preuve actuelle se réutilise : l'urgence reste dite (ADR-29).
+  // Une preuve actuelle se réutilise : l'urgence reste dite (ADR-0040).
   // L'examen coché en Q2.2.1 est le motif : seul l'éloignement change.
   it("changer d'éloignement garde l'urgence", () => {
     const brouillon = brouillonDe(URGENCE_DITE, "P2/branche");

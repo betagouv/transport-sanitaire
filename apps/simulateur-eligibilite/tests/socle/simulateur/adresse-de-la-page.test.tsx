@@ -18,7 +18,7 @@ import {
   radio,
 } from "./questionnaire";
 
-// L'adresse de la page suit la position de la simulation (ADR-30) : un rang,
+// L'adresse de la page suit la position de la simulation (ADR-0041) : un rang,
 // rien de ses réponses. Le bouton Retour du navigateur y revient, une adresse
 // refusée revient à la page ouverte, et un rechargement recommence. La mesure
 // d'audience n'en voit rien : pas d'évènement de plus. Testé par la vraie

@@ -2,7 +2,7 @@ name: Signe de vie de la collecte
 
 # La collecte peut tomber sans que personne ne le voie : le simulateur continue
 # de répondre, seul le journal ne reçoit plus rien. Le serveur y écrit un signe
-# de vie toutes les heures (ADR-15). Ce workflow demande à la production si elle
+# de vie toutes les heures (ADR-0051). Ce workflow demande à la production si elle
 # le retrouve, et échoue sinon : GitHub prévient alors par courriel ceux qui
 # suivent le dépôt.
 #
