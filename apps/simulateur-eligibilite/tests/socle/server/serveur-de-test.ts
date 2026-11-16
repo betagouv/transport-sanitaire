@@ -19,7 +19,12 @@ export async function demarrer(
   {
     journal = new MemoryJournal(),
     writeLimits,
-  }: { journal?: Journal; writeLimits?: WriteLimits } = {},
+    cmsOrigins,
+  }: {
+    journal?: Journal;
+    writeLimits?: WriteLimits;
+    cmsOrigins?: readonly string[];
+  } = {},
 ): Promise<AppDeTest> {
   const app = creerApp(
     createContainer({
@@ -28,7 +33,7 @@ export async function demarrer(
       environment: "test",
       build: BUILD,
     }),
-    { writeLimits },
+    { writeLimits, cmsOrigins },
   );
   const srv = await new Promise<Server>((resolve) => {
     // Express 5 passe une éventuelle erreur au callback. `resolve` n'en veut pas.
