@@ -19,8 +19,7 @@ enablePrePostScripts: true
 # un `verifier` qui passe dans l'une et pas dans l'autre. Monter une version se
 # fait sur une ligne, pour toutes les apps à la fois.
 #
-# Une dépendance propre à une app (`express`, `publicodes`, `notion-client`,
-# `xlsx`) n'a rien à faire ici : elle reste dans son `package.json`.
+# Une dépendance propre à une app (`express`, `publicodes`, `xlsx`) n'a rien à faire ici : elle reste dans son `package.json`.
 catalog:
   # Le socle commun aux apps.
   "@biomejs/biome": 2.5.9
@@ -29,7 +28,7 @@ catalog:
   vitest: ^4.1.12
   "@types/node": ^24.13.3
 
-  # Le front : simulateur et glossaire.
+  # Le front du simulateur.
   react: ^19.2.7
   react-dom: ^19.2.7
   "@types/react": ^19.2.17

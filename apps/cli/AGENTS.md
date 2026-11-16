@@ -58,7 +58,7 @@ relecture.
 4. Une commande de lecture passe par `emit`, pour répondre à `--json`.
 
 Une **action** n'est pas une commande à écrire : c'est un script du
-`package.json` de l'app. `tsp dev glossaire` lance son script `dev`.
+`package.json` de l'app. `tsp dev simulateur` lance son script `dev`.
 
 ## Ce qu'il ne faut pas casser
 

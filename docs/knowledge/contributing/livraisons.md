@@ -10,7 +10,7 @@ versions. Il n'y a pas de tag global : chaque app porte sa version dans son
 `package.json` et suit son propre cycle.
 
 C'est la livraison qui appelle un journal, pas la présence d'un `package.json`.
-Seul le simulateur est livré aujourd'hui. `glossaire-notion` et `cli` portent un
+Seul le simulateur est livré aujourd'hui. `cli` porte un
 numéro sans journal ni tag, et `data-analyzer`, en `0.0.0`, tourne sans être
 livrée.
 
