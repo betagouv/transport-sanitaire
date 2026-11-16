@@ -13,7 +13,7 @@ import {
   ReadingFactory,
   unFait,
 } from "../../../core/socle";
-import type { Page } from "../../../core/socle/questionnaire-engine/question/question";
+import type { Page } from "../../../core/socle/questionnaire-engine/question/question.types";
 import { Questionnaire } from "../../../core/socle/questionnaire-engine/questionnaire.vo";
 
 type Questions = { boisson: "the" | "cafe" | "eau"; sucre: boolean };

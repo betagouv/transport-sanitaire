@@ -11,7 +11,7 @@ import {
   AskedNumber,
   AskedText,
 } from "../asked/inputs.vo.ts";
-import type { AnyQuestions } from "../question.ts";
+import type { AnyQuestions } from "../question.types.ts";
 import { DeclaredQuestion } from "./question.vo.ts";
 import type { CommonSettings } from "./settings.types.ts";
 

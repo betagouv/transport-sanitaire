@@ -20,15 +20,15 @@ import type { AskedCommonData, InPlace, Revisit } from "../asked/common.vo.ts";
 import type { QuestionContext, SeenAnswers } from "../asked/context.vo.ts";
 import type { AskedQuestion } from "../asked/question.vo.ts";
 import { Dependency, type DependsOn } from "../dependency.vo.ts";
-import {
-  type Answer,
-  type AnswerOfRef,
-  type AnyQuestions,
-  idOf,
-  type NotAsked,
-  type QuestionRef,
-  type Reminder,
-} from "../question.ts";
+import type {
+  Answer,
+  AnswerOfRef,
+  AnyQuestions,
+  NotAsked,
+  QuestionRef,
+  Reminder,
+} from "../question.types.ts";
+import { QuestionId } from "../question-id.vo.ts";
 import type { CommonSettings, NothingComputed } from "./settings.types.ts";
 
 /**
@@ -143,7 +143,7 @@ export abstract class DeclaredQuestion<
       : never,
   ): this {
     return this.withSettings({
-      under: { question: idOf(question), possibleAnswer },
+      under: { question: QuestionId.of(question).value, possibleAnswer },
     });
   }
 

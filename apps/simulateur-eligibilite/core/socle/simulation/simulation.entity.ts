@@ -11,7 +11,7 @@ import {
   type Answers,
   type AskedQuestion,
   type Page,
-  pagesOf,
+  Questionnaire,
   type ValidatedAnswers,
 } from "../questionnaire-engine/index.ts";
 import { AnswerCorrection } from "./answer-correction.vo.ts";
@@ -281,7 +281,7 @@ export class Simulation {
   #openingAfter(reading: AnsweredQuestionnaire): PageOpening | StageEnds {
     const correction = this.#opening?.correction;
     if (correction) {
-      const declared = pagesOf(this.#core.questionnaire);
+      const declared = Questionnaire.pagesOf(this.#core.questionnaire);
       const pages = StagePages.of(reading);
       return correction.resumeOn(pages, reading, declared);
     }

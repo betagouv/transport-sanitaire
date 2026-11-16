@@ -7,7 +7,12 @@
 
 import { Address } from "./question/address.vo.ts";
 import type { Dependency } from "./question/dependency.vo.ts";
-import type { Answer, Answers, Page, Unanswered } from "./question/question.ts";
+import type {
+  Answer,
+  Answers,
+  Page,
+  Unanswered,
+} from "./question/question.types.ts";
 
 /** Les réponses des pages d'un questionnaire, page par page. */
 export class PageCommitService {

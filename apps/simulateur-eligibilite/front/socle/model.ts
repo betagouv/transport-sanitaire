@@ -10,7 +10,7 @@ import type { AnyFaits, CoreModel } from "../../core/socle/model.types";
 import {
   type AnyCibles,
   type AnyQuestions,
-  pagesOf,
+  Questionnaire,
   type Reading,
   Reads,
   Relevance,
@@ -242,7 +242,10 @@ function withRelevance(model: Model): Model {
   const shown = Reads.union(...values);
   const relevance = new Relevance({
     graph: core.decision.graph,
-    pages: [...pagesOf(core.questionnaire), ...core.complement.pages],
+    pages: [
+      ...Questionnaire.pagesOf(core.questionnaire),
+      ...core.complement.pages,
+    ],
     faits: {
       reads: core.preconisation.reads,
       imposed: core.decision.imposed,

@@ -2,13 +2,13 @@
 // de ses réponses possibles seulement. Quand ce qu'on en voit change, la
 // réponse s'efface (`page-commit.service.ts`).
 
-import {
-  type Answer,
-  type AnyQuestions,
-  idOf,
-  type QuestionRef,
-  type Unanswered,
-} from "./question.ts";
+import type {
+  Answer,
+  AnyQuestions,
+  QuestionRef,
+  Unanswered,
+} from "./question.types.ts";
+import { QuestionId } from "./question-id.vo.ts";
 
 /**
  * Ce que `dependsOn` reçoit : une question, ou une question et les réponses
@@ -31,9 +31,12 @@ export class Dependency {
     dependsOn: DependsOn<Questions>,
   ): Dependency {
     if (typeof dependsOn === "string" || !("question" in dependsOn)) {
-      return new Dependency(idOf(dependsOn));
+      return new Dependency(QuestionId.of(dependsOn).value);
     }
-    return new Dependency(idOf(dependsOn.question), dependsOn.possibleAnswers);
+    return new Dependency(
+      QuestionId.of(dependsOn.question).value,
+      dependsOn.possibleAnswers,
+    );
   }
 
   readonly id: string;

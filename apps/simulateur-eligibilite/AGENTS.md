@@ -108,7 +108,7 @@ mécanique, sans React ni phrase de l'écran :
 
 | Fichier | Ce qu'il porte |
 |---|---|
-| `question/question.ts` | ce qu'est une question pour le moteur (`Question` : son id, sa sorte, ses dépendances, et `askedIn`, ce qu'elle donne vu le contexte), une page, une partie, une réponse |
+| `question/question.types.ts` | ce qu'est une question pour le moteur (`Question` : son id, sa sorte, ses dépendances, et `askedIn`, ce qu'elle donne vu le contexte), une page, une partie, une réponse |
 | `question/declared/question.factory.ts` | les constructeurs nommés des questions (`QuestionFactory`) : la sorte vient du constructeur, et une question à choix porte ses réponses possibles (`.possibleAnswers({ … })`) |
 | `question/declared/question.vo.ts`, `choices.vo.ts`, `inputs.vo.ts` | une classe par sorte de question déclarée. Chaque réglage (`appliesWhen`, `hint`, `min`…) donne une copie, et `askedIn` tire la question posée de la déclaration. Ses réglages communs sont dans `settings.types.ts`, ses incohérences dans `inconsistencies.vo.ts` |
 | `question/declared/possible-answer.vo.ts`, `page.vo.ts` | les réglages d'une réponse possible, par une lambda (`.possibleAnswer(valeur, (possibleAnswer) => …)`), et `page(id, ...questions)`, dont la condition s'ajoute à chacune de ses questions |

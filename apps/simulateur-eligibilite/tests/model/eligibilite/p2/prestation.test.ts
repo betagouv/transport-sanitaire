@@ -6,7 +6,6 @@ import { model } from "../../../../core/models/eligibilite";
 import type { Questions } from "../../../../core/models/eligibilite/questions/reponses";
 import {
   type Answers,
-  pagesOf,
   Questionnaire,
 } from "../../../../core/socle/questionnaire-engine";
 
@@ -14,7 +13,7 @@ import { lienAld } from "../p1/lien-ald";
 
 type Reponses = Answers<Questions>;
 
-const pages = pagesOf(model.questionnaire);
+const pages = Questionnaire.pagesOf(model.questionnaire);
 const page = pages.find(({ id }) => id === "P2/prestation");
 const posees = (reponses: Reponses) =>
   page ? new Questionnaire(pages).readWith(reponses).questionsOn(page) : [];

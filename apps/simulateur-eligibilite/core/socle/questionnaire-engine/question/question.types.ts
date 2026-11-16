@@ -64,11 +64,6 @@ export type AnswerOfRef<Questions extends AnyQuestions, Ref> =
       ? Questions[Ref]
       : never;
 
-/** L'id de la question que désigne `question`. */
-export function idOf(question: string | Answered): string {
-  return typeof question === "string" ? question : question.id;
-}
-
 /**
  * Aucun id typé : les questions se lisent par leur objet. Ce sont les
  * déclarations d'un modèle qui ne voient que celles-là. Son type `Questions`
@@ -220,28 +215,3 @@ export type QuestionnairePart<
   readonly title: string;
   readonly pages: readonly Page<Questions, Cibles>[];
 };
-
-/**
- * Cette partie, posée après le verrou : ses pages lisent les cibles figées, et
- * plus celles des faits d'avant elles. Elle complète, elle ne décide plus.
- */
-export function afterLock<
-  Part extends {
-    readonly pages: readonly {
-      readonly id: string;
-      readonly questions: unknown;
-    }[];
-  },
->(part: Part): Part {
-  const pages = part.pages.map(({ id, questions }) => ({
-    id,
-    questions,
-    afterLock: true as const,
-  }));
-  return { ...part, pages } as Part;
-}
-
-/** Les pages de ces parties, dans l'ordre du questionnaire. */
-export function pagesOf(parts: readonly QuestionnairePart[]): Page[] {
-  return parts.flatMap((part) => part.pages);
-}

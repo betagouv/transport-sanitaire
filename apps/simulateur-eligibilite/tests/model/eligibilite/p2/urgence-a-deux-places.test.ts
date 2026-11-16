@@ -9,7 +9,6 @@ import { describe, expect, it } from "vitest";
 import type { Questions } from "../../../../core/models/eligibilite/questions/reponses";
 import {
   type Answers,
-  pagesOf,
   Questionnaire,
 } from "../../../../core/socle/questionnaire-engine";
 import { model } from "../../../../front/models/eligibilite";
@@ -64,7 +63,7 @@ const LONGUE: Answers<Questions> = {
   "Q2.3.3": "2_NON",
 };
 
-const pages = pagesOf(model.core.questionnaire);
+const pages = Questionnaire.pagesOf(model.core.questionnaire);
 
 const lire = (reponses: Answers) =>
   new Questionnaire(pages, model.core.relevance).readWith(reponses);

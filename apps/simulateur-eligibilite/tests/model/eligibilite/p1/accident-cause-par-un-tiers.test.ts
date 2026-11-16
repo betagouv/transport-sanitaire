@@ -8,14 +8,13 @@ import type { Questions } from "../../../../core/models/eligibilite/questions/re
 import { Cible } from "../../../../core/socle/decision-engine";
 import {
   type Answers,
-  pagesOf,
   Questionnaire,
 } from "../../../../core/socle/questionnaire-engine";
 import { EstablishAPreconisation } from "../../../../core/socle/simulation";
 
 type Reponses = Answers<Questions>;
 
-const pages = pagesOf(model.questionnaire);
+const pages = Questionnaire.pagesOf(model.questionnaire);
 const P1_3 = pages.find(({ id }) => id === "P1/3");
 if (!P1_3) throw new Error("P1/3 n'existe pas");
 

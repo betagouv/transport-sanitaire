@@ -13,7 +13,6 @@ import {
   type Answer,
   type Answers,
   PageCommitService,
-  pagesOf,
   Questionnaire,
 } from "../../../core/socle/questionnaire-engine";
 
@@ -23,7 +22,7 @@ import { MATERNITE_ETABLIE } from "./p2/reponses-de-la-branche";
 
 type Reponses = Answers<Questions>;
 
-const pages = pagesOf(model.questionnaire);
+const pages = Questionnaire.pagesOf(model.questionnaire);
 const pageDe = (id: string) => {
   const page = pages.find((candidate) => candidate.id === id);
   if (page === undefined) throw new Error(`Page inconnue : ${id}`);
@@ -54,7 +53,7 @@ const effaceesPar = (id: string, autre: Answer = "autre", depuis = TOUT) => {
 // Le parcours tel que l'écran le lit, filtrage par le graphe compris.
 const lire = (reponses: Answers) =>
   new Questionnaire(
-    pagesOf(frontModel.core.questionnaire),
+    Questionnaire.pagesOf(frontModel.core.questionnaire),
     frontModel.core.relevance,
   ).readWith(reponses);
 

@@ -17,7 +17,7 @@ import type {
   Question,
   Unanswered,
   Validated,
-} from "./question/question.ts";
+} from "./question/question.types.ts";
 import {
   type AskedPage,
   QuestionWalkService,

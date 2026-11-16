@@ -3,7 +3,7 @@
 // ses places suivantes, chacune sur sa page et du même côté du verrou.
 // « Avant » et « après » se lisent à sa première place.
 
-import type { Page } from "../question/question.ts";
+import type { Page } from "../question/question.types.ts";
 import { QuestionnaireDeclarationError } from "../questionnaire-declaration.error.ts";
 
 /**
