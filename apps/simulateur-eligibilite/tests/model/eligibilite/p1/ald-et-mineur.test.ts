@@ -176,7 +176,7 @@ describe("Q1.3 à l'écran", () => {
     ]);
   });
 
-  it("a le titre et le libellé du tiers de la v10.2.0 (TS-1020-03)", () => {
+  it("a le titre et le libellé du tiers du livrable (TS-1020-03)", () => {
     const question = q13(CLINIQUE(["7_AUCUNE"]));
     expect(question?.label).toBe(
       "Avant d’établir le mode de transport adéquat, sélectionnez les éventuels cas particuliers concernant le patient.",
