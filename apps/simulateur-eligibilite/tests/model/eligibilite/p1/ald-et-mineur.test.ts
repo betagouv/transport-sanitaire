@@ -158,6 +158,38 @@ describe("Q1.3 à l'écran", () => {
     ]);
   });
 
+  it("met le partage après le tiers, en fin de liste, avant « Aucune » (TS-1020-03)", () => {
+    const assis: Reponses = {
+      ...CLINIQUE(["7_AUCUNE"]),
+      "Q1.2": ["1_PAS_AUTONOME"],
+    };
+    expect(
+      q13(assis)?.possibleAnswers.map((possibleAnswer) => possibleAnswer.value),
+    ).toEqual([
+      "2_ALD",
+      "8_MINEUR_SOINS_CONTINUS",
+      "3_CHIMIOTHERAPIE",
+      "4_RADIOTHERAPIE",
+      "5_DIALYSE",
+      "9_ACCIDENT_TIERS",
+      "6_PARTAGE_INCOMPATIBLE",
+    ]);
+  });
+
+  it("a le titre et le libellé du tiers de la v10.2.0 (TS-1020-03)", () => {
+    const question = q13(CLINIQUE(["7_AUCUNE"]));
+    expect(question?.label).toBe(
+      "Avant d’établir le mode de transport adéquat, sélectionnez les éventuels cas particuliers concernant le patient.",
+    );
+    expect(
+      question?.possibleAnswers.find(
+        ({ value }) => value === "9_ACCIDENT_TIERS",
+      )?.label,
+    ).toBe(
+      "Ce déplacement est en rapport avec un accident causé par un tiers.",
+    );
+  });
+
   it("ne pose que le lien Q1.3.b de plus pour une ALD en ambulance", () => {
     const ambulance = (cas: Cas): Reponses => ({
       ...CLINIQUE(cas),
