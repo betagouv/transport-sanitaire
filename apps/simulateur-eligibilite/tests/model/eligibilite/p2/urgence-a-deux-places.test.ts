@@ -1,5 +1,5 @@
 // L'urgence, Q2.3.4, a deux places : la page du trajet, puis celle de la
-// branche (ADR-29). Elle se pose à la première où sa garde tient, sous une
+// branche (ADR-0040). Elle se pose à la première où sa garde tient, sous une
 // seule réponse. Une correction qui la déplace d'une place à l'autre la garde
 // répondue.
 //

@@ -1,4 +1,4 @@
-// Les boutons exposés sur les écrans de résultat, et leurs clics (ADR-11) : une
+// Les boutons exposés sur les écrans de résultat, et leurs clics (ADR-0047) : une
 // exposition par affichage et par version de son objet, et chaque clic garde
 // celle du bouton cliqué.
 

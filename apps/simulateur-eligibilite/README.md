@@ -57,7 +57,7 @@ front et le référentiel de rattachement.
 
 Les règles d'écriture et les invariants ne sont pas de la prose, ils sont exécutables.
 On les trouve dans `tests/architecture.test.ts`, pour les frontières, dans
-`tests/journal-en-clean-architecture.test.ts`, pour le domaine du journal et de la mesure d'audience, dans
+`tests/clean-architecture.test.ts`, pour le sens des dépendances du socle et le domaine du journal et de la mesure d'audience, dans
 `tests/taille-du-code.test.ts`, pour les limites de 30 et 300 lignes, dans `tests/lisibilite.test.ts`, pour la forme des fichiers, les noms
 et les extensions d'import, dans `tests/miroir-des-sources.test.ts`, pour
 les dossiers de tests, rangés comme les sources, et dans
@@ -78,7 +78,7 @@ jamais exposées au front.
 | --- | --- | --- | --- | --- |
 | `GRIST_API_KEY` | serveur | **prod** | référentiel **snapshot factice** (dev/CI) | Clé API Grist source du référentiel (établissements/services). Jamais exposée au front. |
 | `GRIST_DOC_URL` | serveur | **prod** | référentiel **snapshot factice** (dev/CI) | Base API du doc Grist du référentiel, lu et complété avec la clé. |
-| `JOURNAL_GRIST_DOC_URL` | serveur | non | aucun | Base API du doc Grist « Simulateur-Parcours », où le journal des parcours s'écrit avec la même clé. À poser en production seulement : sans elle, ou sans clé, le serveur accepte les événements sans en garder aucun, et le signale au démarrage. Ses tables `Evenements` et `Collisions` portent les colonnes `establishment` et `service` : sans elles, Grist refuse chaque écriture (ADR-16 d'`analytics.md`). |
+| `JOURNAL_GRIST_DOC_URL` | serveur | non | aucun | Base API du doc Grist « Simulateur-Parcours », où le journal des parcours s'écrit avec la même clé. À poser en production seulement : sans elle, ou sans clé, le serveur accepte les événements sans en garder aucun, et le signale au démarrage. Ses tables `Evenements` et `Collisions` portent les colonnes `establishment` et `service` : sans elles, Grist refuse chaque écriture (ADR-0053). |
 | `APP` | serveur | non | `local` | Nom de l'app Scalingo, posé par Scalingo. Écrit comme `environment` de chaque événement du journal. |
 | `CONTAINER_VERSION` | serveur | non | commit `inconnu` | Commit déployé, posé par Scalingo sur le conteneur. Écrit, sur 7 caractères, sur le signe de vie horaire du journal. |
 | `VITE_MATOMO_ENABLED` | front | non | `false` (traceur no-op) | Active le tracking Matomo. Actif d'office en build de prod ; à mettre à `true` pour tester en local. |
@@ -116,10 +116,10 @@ les outils de développement.
 
 `core/` et `front/` ont chacun un `socle/` et un `models/`. Un modèle a son
 dossier des deux côtés, sous le même nom : son métier dans `core/`, son écran
-dans `front/` (ADR [`metier-et-ecran`](docs/knowledge/adr/metier-et-ecran.md)).
+dans `front/` (ADR-0012, ADR-0016).
 Un module du socle, dossier direct de `core/socle/` ou de `front/socle/`, a son
 `index.ts` : ce qu'il promet au reste du socle, et le seul de ses fichiers
-qu'on importe de l'extérieur (ADR-28).
+qu'on importe de l'extérieur (ADR-0039).
 
 ```
 shared/                  le contrat front ⇄ back, source unique des types partagés
@@ -129,12 +129,12 @@ server/                  le backend Node, barrière de sécurité : les secrets 
                          et ne sont jamais bundlés. Bootstrap, composition,
                          configuration lue une fois et refusée si elle manque en prod.
   container.ts           instancie les adaptateurs, le use case et le contrôleur
-                         (ADR-7 d'analytics)
+                         (ADR-0043)
   rattachement/          LA feature backend : les routes `/api` et la source Grist du
                          référentiel, qu'elle lit et complète
   journal/               le journal des parcours en clean architecture : entité,
                          use case, port, adaptateurs (Grist, mémoire) et route,
-                         nommés par leur suffixe (ADR-7 d'analytics)
+                         nommés par leur suffixe (ADR-0043)
   grist/                 le client HTTP de l'API Grist, pour le référentiel comme
                          pour le journal
 core/                    le métier, sans React ni DOM : ce qu'un serveur ou un script
@@ -224,7 +224,7 @@ front/                   le front, bundlé par Vite
                          le conteneur de page, le pied de page
     rattachement/        LA feature de l'écran de rattachement, miroir de server/rattachement/ :
                          le formulaire à révélation progressive, les deux clients de
-                         l'API, le rattachement en mémoire de session (ADR-4)
+                         l'API, le rattachement en mémoire de session (ADR-0007)
     simulateur/          le parcours : les écrans de résultat et du cerfa
                          (screens/), la feuille à remettre au patient et son PDF
                          (sheet/), le verrou, l'indicateur ALD
@@ -251,7 +251,7 @@ front/                   le front, bundlé par Vite
                          télécharger, l'imprimer, le bouton qui l'attend). Aucun
                          gabarit.
     analytics/           la mesure d'audience et le journal des parcours en
-                         clean architecture (ADR-7) : entités, use cases, ports,
+                         clean architecture (ADR-0043) : entités, use cases, ports,
                          adaptateurs vers Matomo, le backend et le choix du
                          prescripteur transmis par le CMS, et les contextes où
                          l'écran les lit, dont le parcours signalé au journal ; et
@@ -349,7 +349,7 @@ Scalingo construit et sert cette app, et déploie depuis `main`.
 4. **Surveiller la collecte.** Le workflow `.github/workflows/signe-de-vie.yml`
    demande chaque heure à la production si le journal porte son signe de vie
    (`GET /api/journal/v1/alive`), et échoue sinon : GitHub prévient par
-   courriel (ADR-15 d'[analytics.md](docs/knowledge/adr/analytics.md)).
+   courriel (ADR-0051).
 5. **Tenir la variable de production**, `GRIST_API_KEY`. Elle n'a pas de défaut, et le
    serveur refuse de démarrer sans elle (cf. [Configuration](#configuration)).
 6. **Relire le pied de page en production.** Il annonce la version de l'app et le sha du
@@ -369,8 +369,7 @@ C'est le prix du lock unique, et il se compte en secondes.
 ## Intégrer dans Sites Conformes
 
 Le simulateur est embarqué en iframe dans une page Sites Conformes, qui tient aussi
-l'opt-out de la mesure d'audience dans son pied de page (voir
-[analytics.md](docs/knowledge/adr/analytics.md), ADR-5), dont l'iframe suit le
+l'opt-out de la mesure d'audience dans son pied de page (voir l'ADR-0011), dont l'iframe suit le
 thème, clair ou sombre (#342), et qui remonte au haut de l'iframe à chaque
 nouvelle page (#369). Tout se règle dans l'administration du CMS :
 
@@ -387,7 +386,7 @@ nouvelle page (#369). Tout se règle dans l'administration du CMS :
    laisse pas l'iframe le faire elle-même. **Le script a changé avec #369 : il
    est à recoller.**
 3. **Informer.** La politique de confidentialité du site décrit la mesure par service
-   et renvoie au bouton du pied de page (R-12 d'analytics.md).
+   et renvoie au bouton du pied de page (R-12 de l'ADR-0003).
 4. **Recetter.** Le bouton « Désactiver la mesure d'audience du simulateur » apparaît
    à la fin du pied de page. Après un clic, plus aucune requête ne part vers
    `stats.beta.gouv.fr` depuis l'iframe, même après rechargement. L'iframe a le

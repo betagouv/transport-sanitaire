@@ -1,5 +1,5 @@
-// La version des règles que le journal des parcours reçoit (ADR-14
-// d'analytics) : celle que l'intégration d'une livraison écrit dans
+// La version des règles que le journal des parcours reçoit (ADR-0050
+//) : celle que l'intégration d'une livraison écrit dans
 // `rules/VERSION`. Une montée du modèle la change sans toucher à la collecte.
 
 import { readFileSync } from "node:fs";

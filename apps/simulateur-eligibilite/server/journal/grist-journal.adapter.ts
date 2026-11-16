@@ -1,4 +1,4 @@
-// L'adaptateur Grist du journal (ADR-7) : le seul à connaître les tables du
+// L'adaptateur Grist du journal (ADR-0043) : le seul à connaître les tables du
 // document « Simulateur-Parcours ». Chaque entrée y est une ligne : des
 // colonnes communes à tous les types, pour filtrer, et l'événement entier en
 // JSON dans `payload`, pour le relire tel quel. La table ne change pas quand
@@ -6,7 +6,7 @@
 //
 // L'établissement et le service ont chacun leur colonne, en JSON brut, qui
 // s'exploite sans ouvrir `payload` : `{"id":"12","name":"CHU Grenoble Alpes"}`
-// (ADR-16).
+// (ADR-0053).
 
 import type { RattachementDuParcours } from "../../shared/analytics/analytics-event.ts";
 import type { GristApiClient, GristRow } from "../grist/grist-api.client.ts";

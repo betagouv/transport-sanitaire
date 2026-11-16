@@ -2,7 +2,7 @@
 //
 // L'adaptateur Grist du journal, contre un Grist en mémoire servi en HTTP : un
 // événement écrit se relit tel quel, une collision va dans sa table, et
-// l'établissement et le service ont chacun leur colonne (ADR-16).
+// l'établissement et le service ont chacun leur colonne (ADR-0053).
 
 import { afterEach, describe, expect, it } from "vitest";
 import { GristApiClient } from "../../../server/grist/grist-api.client.ts";

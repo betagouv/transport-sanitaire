@@ -1,13 +1,13 @@
 // Démarrer une simulation : ouvrir un parcours, et le signaler au journal sur
 // P0. Le parcours garde l'établissement et le service du rattachement, ids et
-// noms, et les écrit sur chacun de ses événements (ADR-16).
+// noms, et les écrit sur chacun de ses événements (ADR-0053).
 //
 // La première simulation de la page dit aussi comment la page s'est chargée
-// (ADR-13) : une simulation ouverte sur une page rechargée vient souvent d'une
+// (ADR-0049) : une simulation ouverte sur une page rechargée vient souvent d'une
 // autre, perdue. « Faire une nouvelle simulation » ne recharge pas la page :
 // les suivantes ne le disent pas.
 //
-// Chaque événement dit quelle app l'a produit (ADR-14) : la version des règles
+// Chaque événement dit quelle app l'a produit (ADR-0050) : la version des règles
 // du modèle ouvert, et le build, sa version et son commit.
 
 import type {

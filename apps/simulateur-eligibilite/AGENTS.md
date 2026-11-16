@@ -33,8 +33,7 @@ C03 (#223) : le stepper titré du document, le texte, la navigation,
 « Imprimer » et « Télécharger », puis l'aperçu du PDF.
 Le [README](README.md) § « Entre deux modèles » dit ce qui est parti et ce qui reste.
 
-Le simulateur a deux racines, et chacune a deux dossiers (ADR
-[`metier-et-ecran`](docs/knowledge/adr/metier-et-ecran.md)) :
+Le simulateur a deux racines, et chacune a deux dossiers (ADR-0012, ADR-0016) :
 
 | | `socle/` : ce qui ne dépend d'aucune version du modèle | `models/` : un dossier par modèle |
 |---|---|---|
@@ -176,7 +175,7 @@ Quatorze règles à tenir en ajoutant une question :
   fait perdre sa réponse que si c'est la dernière, et qu'aucune place d'avant
   ne la pose. Le questionnaire refuse dès sa construction un id répété sans
   `.unlessAskedBefore()`, deux places sur une page, et des places de part et
-  d'autre du verrou (ADR-29).
+  d'autre du verrou (ADR-0040).
 - **Une déclaration lit une question par son objet, et la suit.** Le type
   `Questions` du modèle se tire de ses parties (`questions/reponses.ts`) : les
   déclarations, qui le précèdent, ne le lisent pas. Elles importent la
@@ -196,7 +195,7 @@ Quatorze règles à tenir en ajoutant une question :
 - **R2 et R3 lisent des valeurs.** Le socle leur passe `{ read, faits,
   cibles }`. Une rubrique, un champ de cerfa, la trace sont des valeurs, que
   `read` lit sur les questions validées : `read(PRECISIONS)`. Aucune fonction
-  n'y reçoit les réponses (ADR-21).
+  n'y reçoit les réponses (ADR-0032).
 - **Un savoir lu à deux endroits.** Une lecture de réponse s'écrit là où elle
   sert, même si une autre partie l'écrit aussi : le libellé de Q1.4 lit
   `answers.question(Q1_1).is("2_AVEC_UN_PROCHE")` sur place. Une donnée de
@@ -214,7 +213,7 @@ Quatorze règles à tenir en ajoutant une question :
   (`distancePlus50`). Chaque fait écrit ses règles ; seuls les lectures
   (`MOTIF`, `SITUATIONS`), les règles reprises mot pour mot
   (`uneRegle().nonSi(…)`, placées par `applique`) et la table
-  `SITUATION_PROPOSEE` se partagent, dans `faits/communs.ts` (ADR-22). Les
+  `SITUATION_PROPOSEE` se partagent, dans `faits/communs.ts` (ADR-0033). Les
   provenances qui ne citent rien (`PAS_ENCORE_ETABLI`) restent dans
   `faits/noms.ts`. Une page ne garde que ses questions et ses gardes.
   `tests/model/eligibilite/faits/catalogue-des-faits.test.ts` le garde.
@@ -238,7 +237,7 @@ Quatorze règles à tenir en ajoutant une question :
   un lien de l'alerte, si l'incohérence dit ses réponses à revoir
   (`{ revisit }`, lu comme la condition). Le lien rouvre leur page
   (`Simulation.revisit`), et « Suivant » ramène à l'alerte
-  (`core/socle/simulation/answer-correction.vo.ts`, ADR-30). Une erreur de format
+  (`core/socle/simulation/answer-correction.vo.ts`, ADR-0041). Une erreur de format
   s'affiche seule, avant les incohérences. Celle d'une adresse s'affiche sous
   le groupe, et une erreur de champ passe devant.
 - **L'adresse de la page ne porte que la position.** Des rangs (`#/etape/<n>`,
@@ -273,7 +272,7 @@ Ses pièces sont dans `core/socle/`.
 | `preconisation.faits(answers, validated)` | le modèle reçoit ces deux lectures, jamais les réponses brutes. Il applique, fait par fait, le contrat de l'éditeur |
 | `Fait` (`decision-engine/fait/fait.vo.ts`) | ce qu'on sait d'un fait, en objet valeur figé : sa valeur si elle est établie, et sa provenance. `Fait.oui`, `Fait.non`, `Fait.inconnu` et `Fait.valant` le construisent ; `isOui()`, `isNon()` et `isInconnu()` le lisent, jamais `.value === true`. `avecProvenance` en donne une copie, `equals` compare valeur et provenance |
 | `FaitCatalogue` (`decision-engine/fait-catalogue.service.ts`) | les faits d'un modèle, **une déclaration par fait**. Le modèle le construit une fois avec le nom de ses faits et leur liste (`faits/index.ts`, un fichier par fait), qui n'exporte que sa déclaration et s'ouvre sur le titre de l'éditeur : un doublon, un oubli ou un nom hors du modèle l'arrêtent au chargement. `read(validated, fixed)` calcule chaque fait à sa première lecture, et `fixed` en impose (la complétude). Le moteur de questionnaire reçoit le catalogue lui-même (`new QuestionFactory({ faits: CATALOGUE_DES_FAITS })`, D-207) ; la préconisation le lit avec la complétude. Un fait lit les questions validées et d'autres faits, jamais une cible ni le jour. Un fait qui se relit s'arrête sur une erreur qui donne le chemin. Un fait qu'aucune réponse ne pose se déclare aussi, et sa provenance dit pourquoi |
-| `unFait(nom)` (`decision-engine/fait/fait-declare.vo.ts`) | un fait, valeur nommée faite de règles sur des conditions. La première qui conclut l'emporte : `ouiSi`, `nonSi` et `inconnuSi(condition, raison)`, `nonSiEcartee(réponse, case)` pour une case proposée et non cochée, et `applique(regle)`, qui place une règle écrite ailleurs (`uneRegle().nonSi(condition, raison)`, une seule règle par `RegleDeFait`). `sinon(raison)` clôt le fait : il reste inconnu, pour cette raison. `vaut(valeur)` déclare un fait qui n'a pas d'état (la boisson, en toutes lettres). Une règle écrit sa provenance : ce que lit sa condition, puis sa raison, « Q2.10.b : « 2_PODO_ORTHESE ». », « Q2.6 : sans réponse. », « fait_permission : « non ». » (ADR-22) |
+| `unFait(nom)` (`decision-engine/fait/fait-declare.vo.ts`) | un fait, valeur nommée faite de règles sur des conditions. La première qui conclut l'emporte : `ouiSi`, `nonSi` et `inconnuSi(condition, raison)`, `nonSiEcartee(réponse, case)` pour une case proposée et non cochée, et `applique(regle)`, qui place une règle écrite ailleurs (`uneRegle().nonSi(condition, raison)`, une seule règle par `RegleDeFait`). `sinon(raison)` clôt le fait : il reste inconnu, pour cette raison. `vaut(valeur)` déclare un fait qui n'a pas d'état (la boisson, en toutes lettres). Une règle écrit sa provenance : ce que lit sa condition, puis sa raison, « Q2.10.b : « 2_PODO_ORTHESE ». », « Q2.6 : sans réponse. », « fait_permission : « non ». » (ADR-0033) |
 | `Cible` (`decision-engine/cible.vo.ts`) | ce que les règles donnent pour une cible, en objet valeur figé, que seul `Cible.of` construit. `isOui()` et `isNon()` lisent une cible « oui ou non », `is("TAP")` une cible à constantes, `isInconnue()` et `isSansObjet()` les deux cas qui ne sont pas une décision. Jamais `.value === true` : une cible inconnue n'est pas un « non ». `Cible.valuesOf(cibles)` donne leurs valeurs, pour la trace, une seed ou un test |
 | `PublicodesDecisionEngine` (adaptateur du port `DecisionEngine`) | n'envoie aux règles que les faits établis, et donne chaque cible en `Cible`. Il manque un fait : elle est inconnue, ce qui n'est pas une décision, ni « sans objet » (`null`) |
 | `DecisionGraph` (`decision-engine/decision-graph/decision-graph.vo.ts`) | le graphe de décision d'un modèle (#196, D-216) : ce que vaut chaque règle pour chaque façon dont ses faits valent oui, non ou rien. `valueOf(règle, faits)` le lit, sans publicodes. `new PublicodesGraphCompiler(règles).compile()` le compile (`publicodes-graph-compiler.adapter.ts`, adaptateur publicodes sans port : seuls `pnpm regles` et les tests compilent), et `pnpm regles` l'écrit dans `rules/regles.graphe.json`. Le compilateur s'arrête sur un mécanisme qu'il ne traduit pas |
@@ -317,7 +316,7 @@ descend sous 8 pt que pour rester sur la page, jusqu'à 6 pt.
 Le modèle traduit les données du simulateur en DTO (`CerfaMapping`, dans
 `front/socle/cerfa/generate-the-cerfa/compute-the-dto.ts`) : une valeur par entrée (`given…`), que le
 socle lit sur les questions validées, les faits et les cibles figés au verrou,
-et le jour de complétion (`given.today()`, ADR-21). `bindCerfa`
+et le jour de complétion (`given.today()`, ADR-0032). `bindCerfa`
 lie une définition à son mapping et vérifie qu'ils parlent du même DTO. Le
 simulateur calcule le DTO sous le second résultat et le passe au bouton.
 
@@ -395,7 +394,7 @@ Découpage **par fonctionnalité**, à l'intérieur de quatre racines :
 | `server/` | le backend, qui détient la clé Grist |
 | `shared/` | le contrat front ⇄ back, chargé des deux côtés |
 
-**L'arbre dit le chemin** (ADR-25). Sous une racine, un dossier est un module
+**L'arbre dit le chemin** (ADR-0036). Sous une racine, un dossier est un module
 (`socle/`, `models/<nom>/`), une entité, nommée d'un nom (`question/`, `fait/`,
 `simulation/`, `r2/`), ou une capacité, nommée d'un verbe
 (`does-a-question-still-matter/`, `draft-an-answer.ts`).
@@ -404,7 +403,7 @@ technique se nomme en anglais, le métier en français. Un dossier qu'on ne sait
 pas nommer d'un nom ou d'un verbe range mal : `utils/`, `types/`, `helpers/`
 n'existent pas ici.
 
-**Un module s'ouvre par son index** (ADR-28). Un module du socle est un dossier
+**Un module s'ouvre par son index** (ADR-0039). Un module du socle est un dossier
 direct de `core/socle/` ou de `front/socle/`. Son `index.ts` dit ce qu'il
 promet au reste du socle, et rien d'autre : hors du module, on n'importe que
 lui, et ce qui manque s'y ajoute. Ses tests, `tests/socle/<module>/`, lisent
@@ -421,8 +420,8 @@ ses tests le chargent comme texte.
 
 À lire à côté :
 
-- [`docs/knowledge/adr/identification.md`](docs/knowledge/adr/identification.md)
-- [`docs/knowledge/adr/analytics.md`](docs/knowledge/adr/analytics.md)
+- [`docs/knowledge/adr/`](docs/knowledge/adr/), une décision par fichier
+- [`docs/knowledge/domain/`](docs/knowledge/domain/) : le rattachement, la mesure d'audience et le journal des parcours
 - le [README](README.md), pour l'arborescence commentée
 
 ## Commandes
@@ -482,11 +481,13 @@ Le reste est dans [`tests/architecture.test.ts`](tests/architecture.test.ts) :
 - le socle, qui n'importe rien des modèles, et les deux points d'entrée par
   lesquels un modèle importe le socle.
 
-La clean architecture du journal des parcours est dans
-[`tests/journal-en-clean-architecture.test.ts`](tests/journal-en-clean-architecture.test.ts) :
-ses entités, use cases et ports (`.entity.ts`, `.usecase.ts`, `.port.ts`)
+La clean architecture est dans
+[`tests/clean-architecture.test.ts`](tests/clean-architecture.test.ts). Dans
+`core/socle/`, seul un adaptateur (`.adapter.ts`) importe un paquet, et rien
+d'autre qu'un index n'importe un adaptateur (ADR-0052). Pour le journal des
+parcours, ses entités, use cases et ports (`.entity.ts`, `.usecase.ts`, `.port.ts`)
 n'importent qu'entre eux et depuis `shared/`, et seul son adaptateur Grist
-connaît Grist (ADR-7 de `docs/knowledge/adr/analytics.md`).
+connaît Grist (ADR-0043).
 
 Les modules du socle et leur index sont dans
 [`tests/modules-du-socle.test.ts`](tests/modules-du-socle.test.ts) : chaque

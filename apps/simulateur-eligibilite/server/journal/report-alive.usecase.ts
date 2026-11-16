@@ -1,6 +1,6 @@
 // Dire que la collecte marche : écrire dans le journal le signe de vie de
 // l'heure, s'il n'y est pas déjà. Une heure sans signe de vie ressort
-// « indisponible », pas « zéro » (ADR-15). Si le journal n'écrit plus, le signe
+// « indisponible », pas « zéro » (ADR-0051). Si le journal n'écrit plus, le signe
 // de vie manque aussi : la coupure se voit sans rien de plus.
 
 import type { Journal } from "./journal.port.ts";

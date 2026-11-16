@@ -43,7 +43,7 @@ describe("les questions qui comptent", () => {
   });
 
   // La distance n'a sa première place que pour une consultation : pour un
-  // séjour, elle se pose à sa place suivante (ADR-29), si la taille la suit.
+  // séjour, elle se pose à sa place suivante (ADR-0040), si la taille la suit.
   it("juge une place suivante à son propre rang", () => {
     const premiere = page("distance", DISTANCE.appliesWhen(CONSULTATION));
     const suivante = page("encore", DISTANCE.unlessAskedBefore());

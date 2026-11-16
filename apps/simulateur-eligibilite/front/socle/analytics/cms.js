@@ -5,8 +5,7 @@
 // L'opt-out est dans le pied de page du CMS. Ce script y ajoute le bouton, garde
 // le choix sur le domaine du CMS et le transmet au simulateur par `postMessage`,
 // quand celui-ci le demande puis à chaque changement. Le protocole est celui de
-// `front/socle/analytics/consent.ts`. Voir docs/knowledge/adr/analytics.md,
-// ADR-5.
+// `front/socle/analytics/consent.ts`. Voir ADR-0011.
 //
 // Le thème est celui que le DSFR du CMS a résolu, clair ou sombre, d'après le
 // choix du lecteur : `data-fr-theme` sur `<html>`. Le simulateur le demande et
@@ -20,7 +19,7 @@
 // Le simulateur demande comment la page s'est chargée : ouverte, rechargée, ou
 // rouverte par l'historique. Dans l'iframe, il se dit toujours ouvert, même
 // quand le lecteur recharge la page du CMS (#434). Le protocole est celui de
-// `front/socle/analytics/host-page-load.adapter.ts`, ADR-13.
+// `front/socle/analytics/host-page-load.adapter.ts`, ADR-0049.
 //
 // À coller dans Sites Conformes : Paramètres → Scripts personnalisés → « Scripts
 // dans la section <body> », entre `<script type="module">` et `</script>`. En

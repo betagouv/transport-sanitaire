@@ -205,7 +205,7 @@ describe("le lexique de l'accord préalable", () => {
   });
 });
 
-// Ce que la demande donne au journal des parcours (#386, ADR-9) : les motifs
+// Ce que la demande donne au journal des parcours (#386, ADR-0045) : les motifs
 // que sa raison affiche, et les portions du trajet qu'elle restitue.
 describe("les motifs et les portions d'une demande", () => {
   const AVION_OU_BATEAU = { cible_dap_motif_avion_bateau: true } as const;

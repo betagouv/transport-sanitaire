@@ -2,7 +2,7 @@
 //
 // L'app tourne dans une iframe du CMS. C'est le CMS qui propose l'opt-out et qui
 // nous transmet le choix par `postMessage`. Son script est `cms.js`, ici.
-// Voir docs/knowledge/adr/analytics.md, ADR-5.
+// Voir ADR-0011.
 
 import type { Consent, ConsentSource } from "./consent.port";
 

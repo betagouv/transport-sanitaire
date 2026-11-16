@@ -1,4 +1,4 @@
-// Une version de la fiche patient (ADR-11) : `f1`, `f2`… dans une simulation,
+// Une version de la fiche patient (ADR-0047) : `f1`, `f2`… dans une simulation,
 // une par révision qui en montre une. La fiche ne vient que du premier
 // résultat : ce qui la changerait fait tomber sa révision.
 

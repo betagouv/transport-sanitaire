@@ -1,6 +1,6 @@
 // Ce que le premier résultat envoie au journal des parcours (#386) : chaque
 // révision affichée, une fois chargée, et sa chute quand une modification de
-// P1 la rend caduque. Voir docs/knowledge/adr/analytics.md, ADR-9.
+// P1 la rend caduque. Voir ADR-0045.
 //
 // Le modèle de test ne déclare pas de codes : son R2 n'envoie que sa révision
 // et la complétion.

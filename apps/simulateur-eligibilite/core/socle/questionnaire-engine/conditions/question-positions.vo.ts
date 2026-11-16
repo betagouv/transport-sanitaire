@@ -1,5 +1,5 @@
 // Où se trouve chaque question du questionnaire : le rang de sa page, puis le
-// sien. Une question peut avoir plusieurs places (ADR-29) : sa première, puis
+// sien. Une question peut avoir plusieurs places (ADR-0040) : sa première, puis
 // ses places suivantes, chacune sur sa page et du même côté du verrou.
 // « Avant » et « après » se lisent à sa première place.
 

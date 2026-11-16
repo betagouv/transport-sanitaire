@@ -1,4 +1,4 @@
-// La taille des textes imprimés d'un cerfa, par entrée de son DTO (ADR-12 du
+// La taille des textes imprimés d'un cerfa, par entrée de son DTO (ADR-0048 du
 // document analytics). Elle sert à mesurer ce que le prescripteur imprime :
 // jamais le texte, seulement sa clé et sa taille.
 //

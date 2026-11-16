@@ -1,7 +1,7 @@
 // Un motif du premier résultat (docs/knowledge/CONTEXT.md, « Motif ») : une
 // raison que R2 affiche, telle que le catalogue de l'éditeur l'écrit. Le
 // calcul qui choisit son texte choisit aussi son identifiant, que reçoit le
-// journal des parcours (ADR-9 de docs/knowledge/adr/analytics.md).
+// journal des parcours (ADR-0045).
 
 /** Un motif affiché : son identifiant au catalogue. */
 export type Motif = { readonly id: string };

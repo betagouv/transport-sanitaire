@@ -17,5 +17,5 @@ export function rattachementEnSession(): RattachementSaisi | null {
 // ---- implémentation ----
 
 // En mémoire seulement, pas de localStorage. Voir
-// docs/knowledge/adr/identification.md, ADR-4.
+// ADR-0007.
 let rattachementCourant: RattachementSaisi | null = null;

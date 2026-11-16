@@ -1,6 +1,6 @@
 // @vitest-environment node
 //
-// La couverture de la collecte (ADR-15) : chaque heure, le serveur écrit dans
+// La couverture de la collecte (ADR-0051) : chaque heure, le serveur écrit dans
 // le journal un signe de vie. Une heure sans lui ressort « indisponible »,
 // pas « zéro ». Une sonde externe demande au serveur s'il y est.
 

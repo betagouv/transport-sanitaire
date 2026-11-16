@@ -9,7 +9,7 @@ import {
 import { afficher } from "./afficher";
 
 // L'alerte d'une incohérence offre un lien vers chaque réponse d'avant à
-// revoir (ADR-30). Le lien rouvre sa page, le focus sur sa question ; pendant
+// revoir (ADR-0041). Le lien rouvre sa page, le focus sur sa question ; pendant
 // la correction, un choix seul n'avance pas, et « Suivant » ramène à la page de
 // l'alerte. Les pages sont écrites ici ; `correction.test.ts` dit où « Suivant »
 // reprend.

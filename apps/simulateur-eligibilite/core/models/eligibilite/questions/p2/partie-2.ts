@@ -76,7 +76,7 @@ export const P2 = {
       // La page de branche ne s'affiche que si l'une de ses questions se pose
       // (D-110). Le sens y suit le départ, qu'il lit. La finalité au-delà de
       // 150 km et l'urgence y ont leur place suivante : elles s'y posent si le
-      // trajet ne les a pas posées (ADR-29).
+      // trajet ne les a pas posées (ADR-0040).
       page(
         "P2/branche",
         Q2_13_DEPART,
