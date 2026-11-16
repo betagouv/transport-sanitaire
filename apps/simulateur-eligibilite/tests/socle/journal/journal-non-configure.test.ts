@@ -17,6 +17,7 @@ describe("le journal, sans doc Grist configuré", () => {
       journal: undefined,
       environment: "simulateur-staging",
       build: BUILD,
+      cmsOrigins: [],
     });
 
     await journal.append(

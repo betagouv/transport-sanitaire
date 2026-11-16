@@ -100,6 +100,35 @@ describe("l'app servie, sur le signe de vie du journal", () => {
   });
 });
 
+describe("les sites qui embarquent le simulateur", () => {
+  it("n'en nomme aucun sans la variable", () => {
+    expect(lireConfiguration({}).cmsOrigins).toEqual([]);
+  });
+
+  it("lit une origine, ou plusieurs séparées par des virgules", () => {
+    expect(
+      lireConfiguration({ CMS_ORIGINS: "https://cms.example" }).cmsOrigins,
+    ).toEqual(["https://cms.example"]);
+    expect(
+      lireConfiguration({
+        CMS_ORIGINS: "https://cms.example, https://recette.cms.example",
+      }).cmsOrigins,
+    ).toEqual(["https://cms.example", "https://recette.cms.example"]);
+  });
+
+  it("refuse ce qui n'est pas une origine", () => {
+    for (const valeur of [
+      "cms.example",
+      "https://cms.example/",
+      "https://cms.example/page",
+    ]) {
+      expect(() => lireConfiguration({ CMS_ORIGINS: valeur })).toThrow(
+        /CMS_ORIGINS : doit lister des origines/,
+      );
+    }
+  });
+});
+
 describe("variables mal formées", () => {
   it("refuse un port qui n'est pas un entier positif", () => {
     expect(() => lireConfiguration({ PORT: "quatre-mille" })).toThrow(/PORT/);

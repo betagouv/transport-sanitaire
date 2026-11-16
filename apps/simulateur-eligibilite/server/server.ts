@@ -10,7 +10,10 @@ import { adaptersFor, createContainer } from "./container.ts";
 const configuration = configurationOuArret();
 
 const container = createContainer(adaptersFor(configuration));
-const app = creerApp(container, { dossierDist: dossierDist() });
+const app = creerApp(container, {
+  dossierDist: dossierDist(),
+  cmsOrigins: configuration.cmsOrigins,
+});
 
 app.listen(configuration.port, () => {
   console.log(`[simulateur] à l'écoute sur le port ${configuration.port}`);

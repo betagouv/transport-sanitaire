@@ -15,15 +15,18 @@ export type AppOptions = {
   dossierDist?: string;
   /** Les écritures admises par IP et par minute (des limites basses en test). */
   writeLimits?: WriteLimits;
+  /** Les sites qui peuvent embarquer l'app en iframe ; aucun ⇒ tous. */
+  cmsOrigins?: readonly string[];
 };
 
 export function creerApp(
   { referentiel, journalController }: Container,
-  { dossierDist, writeLimits }: AppOptions = {},
+  { dossierDist, writeLimits, cmsOrigins = [] }: AppOptions = {},
 ): Express {
   const app = express();
   // Un événement ou un rattachement tient en quelques kilo-octets.
   app.use(express.json({ limit: "32kb" }));
+  reserverLIframeAuCms(app, cmsOrigins);
   interdireIndexation(app);
   new ApiGuard(writeLimits).mountOn(app);
 
@@ -47,6 +50,18 @@ export function creerApp(
 }
 
 // ---- implémentation ----
+
+// Seul le CMS embarque l'app en iframe : le navigateur refuse de l'afficher
+// dans la page d'un autre site (#489). Sans origine déclarée, rien n'est
+// interdit : le poste de développement et les environnements sans CMS.
+function reserverLIframeAuCms(app: Express, origines: readonly string[]) {
+  if (origines.length === 0) return;
+  const politique = `frame-ancestors ${origines.join(" ")}`;
+  app.use((_req, res, next) => {
+    res.setHeader("Content-Security-Policy", politique);
+    next();
+  });
+}
 
 // L'app est embarquée en iframe dans le CMS. Pour les moteurs de recherche, la
 // page de référence est celle du CMS. L'en-tête est posé sur toutes les réponses
