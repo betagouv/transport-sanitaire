@@ -49,6 +49,24 @@ const EQUIPEMENTS = page(
 );
 
 const radio = (name: string) => screen.getByRole("radio", { name });
+const RECOMMENCER = question
+  .singleChoice("organisation", "Comment le trajet est-il organisé ?")
+  .possibleAnswers({
+    aller: "Aller simple",
+    different: "Aller-retour différent",
+  })
+  .possibleAnswer("different", (possibleAnswer) =>
+    possibleAnswer.blocks(MESSAGE).offersRestart(),
+  );
+
+const A_RECOMMENCER = page(
+  "trajet",
+  question.number("nombre", "Combien de transports ?"),
+  RECOMMENCER,
+);
+
+const recommencer = () =>
+  screen.queryByRole("button", { name: "Faire une nouvelle simulation" });
 const valider = () =>
   screen.getByRole("button", { name: /^(Suivant|Terminer)$/ });
 const unInstant = () => new Promise((fini) => setTimeout(fini, 300));
@@ -94,5 +112,32 @@ describe("réponse qui bloque", () => {
 
     expect(screen.getByText("Précisez avec la caisse.")).toBeInTheDocument();
     expect(valider()).toBeDisabled();
+  });
+
+  it("ne propose pas de nouvelle simulation sans que la réponse le déclare", async () => {
+    const { user } = afficher([TRAJET]);
+
+    await user.click(radio("Aller-retour différent"));
+
+    expect(recommencer()).toBeNull();
+  });
+
+  it("propose une nouvelle simulation quand la réponse le déclare", async () => {
+    const { user, recommencements } = afficher([A_RECOMMENCER]);
+    expect(recommencer()).toBeNull();
+
+    await user.click(radio("Aller-retour différent"));
+    await user.click(recommencer() as HTMLElement);
+
+    expect(recommencements()).toBe(1);
+  });
+
+  it("retire la proposition dès qu'une autre réponse est choisie", async () => {
+    const { user } = afficher([A_RECOMMENCER]);
+    await user.click(radio("Aller-retour différent"));
+
+    await user.click(radio("Aller simple"));
+
+    expect(recommencer()).toBeNull();
   });
 });

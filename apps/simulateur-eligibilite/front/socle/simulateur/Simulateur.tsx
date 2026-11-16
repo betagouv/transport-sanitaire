@@ -121,6 +121,7 @@ function FirstQuestionnaire({
   simulation,
   onChange,
   DebugTrace,
+  onRestart,
 }: ScreenProps) {
   const parts = model.core.questionnaire;
   const aldResultReached = useAldResultReached();
@@ -131,6 +132,7 @@ function FirstQuestionnaire({
       simulation={simulation}
       counted
       endLabel="Voir le résultat"
+      onRestart={onRestart}
       DebugTrace={DebugTrace}
       onChange={(next) => {
         const pathway =
@@ -149,6 +151,7 @@ function SecondQuestionnaire({
   simulation,
   onChange,
   DebugTrace,
+  onRestart,
 }: ScreenProps) {
   const partsBefore = model.core.questionnaire.length;
   return (
@@ -159,6 +162,7 @@ function SecondQuestionnaire({
       simulation={simulation}
       counted={false}
       endLabel="Terminer"
+      onRestart={onRestart}
       DebugTrace={DebugTrace}
       onChange={onChange}
     />

@@ -50,6 +50,13 @@ export class AskedSingleChoice extends AskedCommon {
     return this.possibleAnswers.map((possibleAnswer) => possibleAnswer.value);
   }
 
+  override offersRestartOn(answer: Answer | Unanswered): boolean {
+    return (
+      typeof answer === "string" &&
+      blockingOf(this.possibleAnswers, [answer])?.offersRestart === true
+    );
+  }
+
   protected override formatProblemOf(answer: Answer) {
     if (typeof answer !== "string" || answer.trim() === "") return MISSING;
     return blockOf(this.possibleAnswers, [answer]);
@@ -95,6 +102,13 @@ export class AskedMultipleChoice extends AskedCommon {
     );
   }
 
+  override offersRestartOn(answer: Answer | Unanswered): boolean {
+    return (
+      Array.isArray(answer) &&
+      blockingOf(this.possibleAnswers, answer)?.offersRestart === true
+    );
+  }
+
   protected override formatProblemOf(answer: Answer) {
     if (!Array.isArray(answer) || answer.length === 0)
       return { kind: "nothing checked" } as const;
@@ -115,16 +129,26 @@ export class AskedMultipleChoice extends AskedCommon {
 
 // ---- implémentation ----
 
-// Le blocage de la première réponse possible choisie qui bloque, s'il y en a
-// une.
-function blockOf(
+/** Aucune réponse possible choisie ne bloque. */
+type NoneBlocks = undefined;
+
+// La première réponse possible choisie qui bloque, s'il y en a une.
+function blockingOf(
   possibleAnswers: readonly OfferedPossibleAnswer[],
   chosen: readonly string[],
-): AnswerProblem | NoError {
-  const blocking = possibleAnswers.find(
+): OfferedPossibleAnswer | NoneBlocks {
+  return possibleAnswers.find(
     (possibleAnswer) =>
       possibleAnswer.blocks !== undefined &&
       chosen.includes(possibleAnswer.value),
   );
+}
+
+// Son blocage, s'il y en a un.
+function blockOf(
+  possibleAnswers: readonly OfferedPossibleAnswer[],
+  chosen: readonly string[],
+): AnswerProblem | NoError {
+  const blocking = blockingOf(possibleAnswers, chosen);
   return blocking?.blocks === undefined ? undefined : stated(blocking.blocks);
 }

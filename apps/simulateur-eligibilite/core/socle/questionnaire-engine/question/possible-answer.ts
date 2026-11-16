@@ -23,5 +23,7 @@ export type OfferedPossibleAnswer = {
   readonly label: string;
   readonly description?: string;
   readonly blocks?: string;
+  /** Son blocage propose de faire une nouvelle simulation. */
+  readonly offersRestart?: true;
   readonly help?: PossibleAnswerHelp;
 };

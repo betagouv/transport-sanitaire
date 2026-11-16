@@ -56,6 +56,9 @@ type View = {
   // Une réponse saisie en contredit une autre : « Suivant » le dit au clic, et
   // la page reste (SQ-28).
   hasInconsistencies: boolean;
+  // Une réponse de la page bloque, et son blocage propose de faire une
+  // nouvelle simulation.
+  offersRestart: boolean;
   // Avancer termine le questionnaire au lieu d'ouvrir une autre page.
   isLast: boolean;
   // La question qui prend le focus à l'entrée de la page : celle qu'un lien
@@ -191,6 +194,9 @@ function read(
     hasPrevious: simulation.hasPrevious(),
     hasPendingQuestions,
     hasInconsistencies: !hasPendingQuestions && hasInconsistencies,
+    offersRestart: questions.some((question) =>
+      question.offersRestartOn(draft[question.id]),
+    ),
     isLast: !hasPendingQuestions && simulation.endsWith(draft),
     focus,
   };

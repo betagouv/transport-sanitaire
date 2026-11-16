@@ -91,6 +91,7 @@ function Formulaire() {
       counted={false}
       simulation={simulation}
       onChange={setSimulation}
+      onRestart={() => {}}
     />
   );
 }
