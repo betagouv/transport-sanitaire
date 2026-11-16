@@ -32,7 +32,7 @@ describe("collecte d'un événement", () => {
       event: simulationStarted,
       receivedAt: expect.stringMatching(/^\d{4}-\d\d-\d\dT/),
       environment: "test",
-      schemaVersion: 2,
+      schemaVersion: 3,
     });
   });
 
@@ -70,6 +70,31 @@ describe("collecte d'un événement", () => {
 
     expect(status).toBe(400);
     expect(await journal.find("s-1:1")).toBeUndefined();
+  });
+
+  it("garde le nom de l'établissement et celui du service", async () => {
+    const journal = await collecteSur();
+    const nomme = {
+      ...simulationStarted,
+      establishment_name: "CHU Grenoble Alpes",
+      service_name: "Cardiologie",
+    };
+
+    const { status } = await collecter(nomme);
+
+    expect(status).toBe(204);
+    expect((await journal.find("s-1:1"))?.event).toEqual(nomme);
+  });
+
+  it("refuse un nom plus long que la borne", async () => {
+    await collecteSur();
+
+    const { status } = await collecter({
+      ...simulationStarted,
+      service_name: "a".repeat(301),
+    });
+
+    expect(status).toBe(400);
   });
 });
 

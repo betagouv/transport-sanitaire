@@ -72,7 +72,12 @@ describe("les structures sous le trait", () => {
     await userEvent.selectOptions(premiereListe(), "Assurance Maladie");
 
     expect(onValide).toHaveBeenCalledWith(
-      { etabId: "11", serviceId: "12" },
+      {
+        etabId: "11",
+        etabLibelle: "Libéral / CNAM / CPAM / Autre",
+        serviceId: "12",
+        serviceLibelle: "Assurance Maladie",
+      },
       "Assurance Maladie",
     );
   });

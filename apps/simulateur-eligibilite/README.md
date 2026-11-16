@@ -78,7 +78,7 @@ jamais exposées au front.
 | --- | --- | --- | --- | --- |
 | `GRIST_API_KEY` | serveur | **prod** | référentiel **snapshot factice** (dev/CI) | Clé API Grist source du référentiel (établissements/services). Jamais exposée au front. |
 | `GRIST_DOC_URL` | serveur | **prod** | référentiel **snapshot factice** (dev/CI) | Base API du doc Grist du référentiel, lu et complété avec la clé. |
-| `JOURNAL_GRIST_DOC_URL` | serveur | non | aucun | Base API du doc Grist « Simulateur-Parcours », où le journal des parcours s'écrit avec la même clé. À poser en production seulement : sans elle, ou sans clé, le serveur accepte les événements sans en garder aucun, et le signale au démarrage. |
+| `JOURNAL_GRIST_DOC_URL` | serveur | non | aucun | Base API du doc Grist « Simulateur-Parcours », où le journal des parcours s'écrit avec la même clé. À poser en production seulement : sans elle, ou sans clé, le serveur accepte les événements sans en garder aucun, et le signale au démarrage. Ses tables `Evenements` et `Collisions` portent les colonnes `establishment` et `service` : sans elles, Grist refuse chaque écriture (ADR-16 d'`analytics.md`). |
 | `APP` | serveur | non | `local` | Nom de l'app Scalingo, posé par Scalingo. Écrit comme `environment` de chaque événement du journal. |
 | `CONTAINER_VERSION` | serveur | non | commit `inconnu` | Commit déployé, posé par Scalingo sur le conteneur. Écrit, sur 7 caractères, sur le signe de vie horaire du journal. |
 | `VITE_MATOMO_ENABLED` | front | non | `false` (traceur no-op) | Active le tracking Matomo. Actif d'office en build de prod ; à mettre à `true` pour tester en local. |

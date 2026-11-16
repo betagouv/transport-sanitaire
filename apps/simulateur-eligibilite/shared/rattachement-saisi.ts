@@ -34,6 +34,13 @@ export type RattachementSaisi = {
    * vrai. Le backend le crée ou le réutilise, et son service sous lui.
    */
   etabLibre?: string;
+  /**
+   * Le nom de l'établissement choisi dans la liste, tel que l'écran le montre.
+   * Le journal des parcours l'écrit à côté de son id.
+   */
+  etabLibelle?: string;
+  /** Le nom du service choisi dans la liste, « Autre » compris. */
+  serviceLibelle?: string;
 };
 
 /**
