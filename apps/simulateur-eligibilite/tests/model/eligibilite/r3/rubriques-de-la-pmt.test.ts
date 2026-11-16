@@ -100,6 +100,18 @@ describe("l'urgence", () => {
     });
   });
 
+  it("coche « autres » pour l'urgence attestée, quand l'appel au Centre 15 n'est pas établi (#464)", () => {
+    const cibles = { cible_urgence_attestee: true };
+
+    expect(cellules(URGENCE, PRECISION, cibles)).toEqual({
+      urgence_appel15: false,
+      urgence_autre: true,
+    });
+    expect(cellules(PRECISION_DE_L_URGENCE, PRECISION, cibles)).toEqual({
+      urgence_precision: "Douleur thoracique",
+    });
+  });
+
   it("coche l'appel au Centre 15 établi, sans précision", () => {
     const cibles = { cible_urgence_appel15: true, cible_urgence_autre: false };
 

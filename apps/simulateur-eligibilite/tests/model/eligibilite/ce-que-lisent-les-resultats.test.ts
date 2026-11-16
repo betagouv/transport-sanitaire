@@ -165,6 +165,7 @@ describe("les cibles et les faits que les résultats lisent", () => {
       "cible_support_id",
       "cible_transport_partage_incompatible",
       "cible_urgence_appel15",
+      "cible_urgence_attestee",
       "cible_urgence_autre",
     ]);
     expect([...faits].sort()).toEqual([
