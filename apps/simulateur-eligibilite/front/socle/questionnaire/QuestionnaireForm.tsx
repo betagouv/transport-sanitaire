@@ -41,6 +41,8 @@ type Props = QuestionnaireOptions & {
   partCount: number;
   // Libellé du bouton de la dernière page.
   endLabel: string;
+  // Ouvre une simulation vide. Un blocage qui le propose en montre le bouton.
+  onRestart: () => void;
   // La trace de debug, un developer tool. Le questionnaire sait où l'afficher
   // et quoi lui donner, pas à qui elle s'ouvre. Absente, rien n'est rendu.
   DebugTrace?: ComponentType<DebugTraceProps>;
@@ -70,6 +72,7 @@ export function QuestionnaireForm({
   partsBefore = 0,
   partCount,
   endLabel,
+  onRestart,
   DebugTrace,
   ...options
 }: Props) {
@@ -95,6 +98,7 @@ export function QuestionnaireForm({
           <NavigationButtons
             questionnaire={questionnaire}
             endLabel={endLabel}
+            onRestart={onRestart}
           />
         </form>
       </div>
@@ -237,9 +241,11 @@ function RevisitLinks({
 function NavigationButtons({
   questionnaire,
   endLabel,
+  onRestart,
 }: {
   questionnaire: QuestionnaireScreen;
   endLabel: string;
+  onRestart: () => void;
 }) {
   return (
     <div
@@ -255,6 +261,7 @@ function NavigationButtons({
           Précédent
         </button>
       )}
+      {questionnaire.offersRestart && <RestartButton onClick={onRestart} />}
       {/* Une page à choix unique avance d'elle-même : lui donner un bouton de
           validation contredirait le geste qu'on attend du prescripteur. */}
       {!questionnaire.autoAdvances && (
@@ -267,5 +274,18 @@ function NavigationButtons({
         </button>
       )}
     </div>
+  );
+}
+
+// Le blocage demande une autre simulation : il en donne le moyen.
+function RestartButton({ onClick }: { onClick: () => void }) {
+  return (
+    <button
+      type="button"
+      className="fr-btn fr-btn--secondary"
+      onClick={onClick}
+    >
+      Faire une nouvelle simulation
+    </button>
   );
 }

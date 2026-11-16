@@ -56,7 +56,7 @@ export const Q3_1_2 = question
     ),
   )
   .possibleAnswer("4_ALLER_RETOUR_DIFFERENT", (possibleAnswer) =>
-    possibleAnswer.blocks(
-      "Ces deux trajets nécessitent deux simulations distinctes.",
-    ),
+    possibleAnswer
+      .blocks("Ces deux trajets nécessitent deux simulations distinctes.")
+      .offersRestart(),
   );

@@ -89,6 +89,14 @@ export class DeclaredPossibleAnswer<
     return this.#with({ blocks: message });
   }
 
+  /**
+   * Le blocage de cette réponse possible propose de faire une nouvelle
+   * simulation : elle seule en sort, aucune correction ne le lève.
+   */
+  offersRestart(): DeclaredPossibleAnswer<Questions, Cibles, Faits> {
+    return this.#with({ offersRestart: true });
+  }
+
   /** L'aide dépliable de la réponse possible, qui dépend des réponses. */
   helpFrom(
     help: (
@@ -103,6 +111,7 @@ export class DeclaredPossibleAnswer<
     context: Context<Questions, Cibles, Faits>,
   ): OfferedPossibleAnswer | NotOffered {
     const { value, description, blocks, conditions } = this.#settings;
+    const offersRestart = blocks !== undefined && this.#settings.offersRestart;
     if (!conditions.every((condition) => condition.in(context)))
       return undefined;
     const help = this.#settings.helpFrom?.(context);
@@ -111,6 +120,7 @@ export class DeclaredPossibleAnswer<
       label: this.#settings.labelFrom?.(context) ?? this.#settings.label,
       ...(description !== undefined && { description }),
       ...(blocks !== undefined && { blocks }),
+      ...(offersRestart && { offersRestart }),
       ...(help !== undefined && { help }),
     };
   }
@@ -235,6 +245,7 @@ type PossibleAnswerSettings<Questions extends AnyQuestions, Cibles, Faits> = {
   readonly conditions: readonly Condition[];
   readonly description?: string;
   readonly blocks?: string;
+  readonly offersRestart?: true;
   labelFrom?(context: Context<Questions, Cibles, Faits>): string;
   helpFrom?(
     context: Context<Questions, Cibles, Faits>,

@@ -131,6 +131,14 @@ export class AskedCommon {
     return problem === undefined ? [] : [problem];
   }
 
+  /**
+   * Cette réponse bloque-t-elle sur une réponse possible qui propose de faire
+   * une nouvelle simulation ? Seule une question à choix peut le dire.
+   */
+  offersRestartOn(_answer: Answer | Unanswered): boolean {
+    return false;
+  }
+
   /** Ce qui ne va pas dans la saisie elle-même. Chaque sorte dit le sien. */
   protected formatProblemOf(_answer: Answer): AnswerProblem | NoError {
     return undefined;

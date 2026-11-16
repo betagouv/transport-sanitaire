@@ -134,6 +134,7 @@ function Formulaire({
         if (next.stage.name === "resultat") onComplete();
         else setSimulation(next);
       }}
+      onRestart={() => {}}
     />
   );
 }

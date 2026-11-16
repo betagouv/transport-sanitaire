@@ -89,7 +89,7 @@ describe("ce que la page du trajet pose (Q3.1)", () => {
 });
 
 describe("les réponses de Q3.1", () => {
-  it("« Aller-retour différent » bloque, avec le message des deux simulations", () => {
+  it("« Aller-retour différent » bloque, et propose une nouvelle simulation (#466)", () => {
     const reponses: Reponses = {
       "Q3.1.1": 2,
       "Q3.1.2": "4_ALLER_RETOUR_DIFFERENT",
@@ -98,6 +98,8 @@ describe("les réponses de Q3.1", () => {
     expect(
       errorsOf(question("Q3.1.2", "S3138g"), "4_ALLER_RETOUR_DIFFERENT"),
     ).toEqual(["Ces deux trajets nécessitent deux simulations distinctes."]);
+    const trajet = question("Q3.1.2", "S3138g");
+    expect(trajet.offersRestartOn("4_ALLER_RETOUR_DIFFERENT")).toBe(true);
     expect(
       new Questionnaire(DU_TRAJET)
         .readWith(reponses, avecLeSupport("S3138g"))
