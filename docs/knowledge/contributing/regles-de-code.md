@@ -1,10 +1,10 @@
 # Les règles de code
 
-> Les 17 règles `QUAL-*`. Les conventions du dépôt sont dans
+> Les 19 règles `QUAL-*`. Les conventions du dépôt sont dans
 > [`../../AGENTS.md`](../../AGENTS.md), les règles de commit dans
 > [`regles-git.md`](regles-git.md).
 
-**17 règles**. Chacune a son identifiant. Cite-le en revue ou en commit
+**19 règles**. Chacune a son identifiant. Cite-le en revue ou en commit
 (« corrige QUAL-006 ») plutôt que de reformuler la règle.
 
 | Id | Règle | Garde |
@@ -26,8 +26,10 @@
 | QUAL-015 | Une suppression nomme sa règle et sa raison | Biome |
 | QUAL-016 | Dossiers et fichiers en kebab-case, sauf un composant React | `lisibilite.test.ts` |
 | QUAL-017 | Un retour qui peut manquer nomme son absence | `lisibilite.test.ts` |
+| QUAL-018 | Un fichier dit son rôle par son suffixe | `roles-par-suffixe.test.ts` (`core/socle/` seulement) |
+| QUAL-019 | Hors de React, une notion est une classe | aucune |
 
-Six règles n'ont aucune garde. Ce sont des règles de jugement : une assertion
+Sept règles n'ont aucune garde. Ce sont des règles de jugement : une assertion
 dirait *qu'*on a coupé, jamais *si* on a coupé au bon endroit. Elles restent à la
 revue, et le tableau le dit plutôt que de le laisser croire.
 
@@ -540,3 +542,75 @@ function sizeInField(field: PDFTextField, text: string): number | undefined {
 
 *Gardé par* `tests/lisibilite.test.ts › aucun retour ne finit par un \`undefined\`
 sans nom`, dans `apps/simulateur-eligibilite`.
+
+---
+
+### QUAL-018 - Un fichier dit son rôle par son suffixe
+
+> Raison : sans suffixe, il faut ouvrir un fichier pour savoir s'il porte une
+> notion, un calcul ou un accès à l'extérieur. Et un fichier sans rôle finit par
+> en mélanger plusieurs.
+
+Cette règle ne vaut que pour `apps/simulateur-eligibilite`, hors composants et
+hooks React.
+
+| Suffixe | Ce que le fichier porte |
+|---|---|
+| `.entity.ts` | une notion qui a une identité et qui change |
+| `.vo.ts` | une notion qui ne vaut que par sa valeur, et ne change pas |
+| `.service.ts` | un calcul du métier qui n'appartient à aucune notion seule |
+| `.usecase.ts` | un geste de l'application, par sa méthode `execute` |
+| `.port.ts` | ce que le métier demande à l'extérieur |
+| `.adapter.ts` | ce qui répond à un port |
+| `.error.ts` | une erreur du métier |
+| `.factory.ts` | ce qui fabrique une notion |
+| `.types.ts` | des types, et rien d'autre |
+
+Un `index.ts` s'en passe : il ne fait que réexporter. Une fabrique porte le nom
+de ce qu'elle fabrique et vit dans son dossier.
+
+**Exemples**
+
+```
+✅ OK : chaque fichier dit ce qu'il porte, la fabrique est à côté de sa notion
+question/declared/question.vo.ts
+question/declared/question.factory.ts
+question/question.types.ts
+```
+
+```
+❌ KO : rien ne dit que le premier fabrique, ni que le second mêle types et fonctions
+question/declared/factory.ts
+question/question.ts
+```
+
+*Gardé par* `tests/roles-par-suffixe.test.ts › un fichier dit son rôle par son
+suffixe`, dans `apps/simulateur-eligibilite`. La garde ne couvre encore que
+`core/socle/` : un dossier la rejoint quand il suit la règle.
+
+---
+
+### QUAL-019 - Hors de React, une notion est une classe
+
+> Raison : une notion faite d'un type et de fonctions éparses n'a pas d'endroit
+> à elle. Ce qu'on peut lui demander se cherche dans tout le dossier, et chaque
+> appelant refait ses vérifications.
+
+Cette règle ne vaut que pour `apps/simulateur-eligibilite`. Une notion du métier
+est une classe qui porte ses données et ce qu'on lui demande. Un composant ou un
+hook React reste une fonction, et un hook ne porte aucune règle : il appelle une
+classe.
+
+**Exemples**
+
+```ts
+// ✅ OK : l'id d'une question se demande à sa classe
+QuestionId.of(question).value;
+```
+
+```ts
+// ❌ KO : une fonction seule, dans un fichier de types
+idOf(question);
+```
+
+*Aucune garde.* C'est du jugement, pas de la forme.

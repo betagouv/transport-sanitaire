@@ -141,12 +141,12 @@ franciser coûterait plus que ça ne clarifierait.
 
 ## Écrire du code et commiter
 
-24 règles numérotées vivent dans `docs/knowledge/contributing/`. **À lire avant
+26 règles numérotées vivent dans `docs/knowledge/contributing/`. **À lire avant
 d'écrire une ligne ou de commiter.**
 
 | Fichier | Ce qu'il porte |
 |---|---|
-| [`regles-de-code.md`](docs/knowledge/contributing/regles-de-code.md) | les 17 `QUAL-*` : forme d'un fichier, découpage, noms, exports, suppressions de lint |
+| [`regles-de-code.md`](docs/knowledge/contributing/regles-de-code.md) | les 19 `QUAL-*` : forme d'un fichier, découpage, noms, rôles, exports, suppressions de lint |
 | [`regles-git.md`](docs/knowledge/contributing/regles-git.md) | les 7 `GIT-*` : branche et PR vers `staging`, forme du message, métadonnée d'IA, confidentialité |
 | [`ecrire-une-regle.md`](docs/knowledge/contributing/ecrire-une-regle.md) | le format d'une règle, pour en ajouter, modifier ou retirer une |
 | [`ecrire-une-decision.md`](docs/knowledge/contributing/ecrire-une-decision.md) | une ligne du journal des décisions ou un ADR : où l'écrire, sa forme, les décisions renversées |
@@ -215,7 +215,7 @@ Une règle de jugement, elle, ne se mécanise pas. Une assertion dirait *qu'*on 
 coupé, jamais *si* on a coupé au bon endroit. Elle écrit alors `*Aucune garde.*`
 en toutes lettres, plutôt que de laisser croire qu'elle en a une.
 
-L'état de chaque règle des 24 de
+L'état de chaque règle des 26 de
 [`docs/knowledge/contributing/`](docs/knowledge/contributing/) se lit dans la
 colonne « Garde » de son tableau, pas ici : recopier cet état dans ce fichier
 créerait deux sources à tenir à jour au lieu d'une.
