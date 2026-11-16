@@ -23,10 +23,12 @@ type ApresVerrou = { lockedAnswers?: Answers; cibles?: AnyCibles };
 /**
  * Affiche ces pages. `reponses` donne ce que le questionnaire a validé, une
  * fois fini. `apresVerrou` les affiche comme après le verrou : sur des réponses
- * acquises et des cibles figées.
+ * acquises et des cibles figées. `recommencements` compte les nouvelles
+ * simulations demandées.
  */
 export function afficher(pages: readonly Page[], apresVerrou?: ApresVerrou) {
   let validees: Answers | undefined;
+  let recommencements = 0;
   const core = modeleDe(pages, apresVerrou);
   const simulation = apresVerrou
     ? Simulation.afterLock(
@@ -44,9 +46,16 @@ export function afficher(pages: readonly Page[], apresVerrou?: ApresVerrou) {
       onComplete={(answers) => {
         validees = answers;
       }}
+      onRestart={() => {
+        recommencements += 1;
+      }}
     />,
   );
-  return { user: userEvent.setup(), reponses: () => validees };
+  return {
+    user: userEvent.setup(),
+    reponses: () => validees,
+    recommencements: () => recommencements,
+  };
 }
 
 // ---- implémentation ----
@@ -76,10 +85,12 @@ function Formulaire({
   core,
   depart,
   onComplete,
+  onRestart,
 }: {
   core: CoreModel;
   depart: Simulation;
   onComplete: (answers: Answers) => void;
+  onRestart: () => void;
 }) {
   const [simulation, setSimulation] = useState(depart);
   const parts =
@@ -90,6 +101,7 @@ function Formulaire({
       partCount={1}
       endLabel="Terminer"
       counted={false}
+      onRestart={onRestart}
       simulation={simulation}
       onChange={(next) => {
         if (next.stage.name !== simulation.stage.name) onComplete(next.answers);
