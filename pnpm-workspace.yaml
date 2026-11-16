@@ -24,9 +24,9 @@ enablePrePostScripts: true
 catalog:
   # Le socle commun aux apps.
   "@biomejs/biome": 2.5.9
-  knip: ^6.32.2
+  knip: ^6.45.1
   typescript: ^6.0.3
-  vitest: ^4.1.9
+  vitest: ^4.1.12
   "@types/node": ^24.13.3
 
   # Le front : simulateur et glossaire.
@@ -35,8 +35,8 @@ catalog:
   "@types/react": ^19.2.17
   "@types/react-dom": ^19.2.3
   "@vitejs/plugin-react": ^6.0.2
-  vite: ^8.0.16
-  happy-dom: ^20.10.4
+  vite: ^8.2.4
+  happy-dom: ^21.0.4
   "@testing-library/jest-dom": ^6.9.1
   "@testing-library/react": ^16.3.2
   "@testing-library/user-event": ^14.6.1

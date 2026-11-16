@@ -1,0 +1,38 @@
+# Les montées de dépendances arrivent en PR, une fois par semaine, au lieu de
+# s'accumuler en alertes que personne ne lit. Une PR par écosystème et non une
+# par paquet : le lock est unique au dépôt, dix PR qui le touchent se marchent
+# dessus.
+#
+# Les PR visent `staging`, comme toute PR du dépôt (GIT-009), et portent un
+# sujet en `chore(deps)` (GIT-003).
+version: 2
+updates:
+  # Le workspace pnpm : un seul lock à la racine, le catalogue compris.
+  - package-ecosystem: npm
+    directory: /
+    target-branch: staging
+    schedule:
+      interval: weekly
+      day: monday
+    commit-message:
+      prefix: chore
+      include: scope
+    groups:
+      # Mineures et correctifs ensemble : la CI dit si le lot passe.
+      mineures:
+        update-types: [minor, patch]
+      # Une majeure casse plus souvent : chacune a sa PR, par défaut.
+
+  # Les actions des workflows.
+  - package-ecosystem: github-actions
+    directory: /
+    target-branch: staging
+    schedule:
+      interval: weekly
+      day: monday
+    commit-message:
+      prefix: chore
+      include: scope
+    groups:
+      actions:
+        patterns: ["*"]
