@@ -1,8 +1,10 @@
 name: CI
 
 on:
+  # `staging` aussi : une PR fusionnée en squash y laisse un commit neuf, que
+  # `main` n'accepte qu'avec ses checks verts (voir GIT-009).
   push:
-    branches: [main]
+    branches: [main, staging]
   pull_request:
 
 # Le dépôt est un **workspace pnpm** : une seule installation à la racine, un
