@@ -17,7 +17,7 @@ reformuler la règle.
 | GIT-006 | Terminer par l'état de vérification | aucune |
 | GIT-007 | Aucune métadonnée d'IA | hook `commit-msg` |
 | GIT-008 | Relire le diff et le message avant de commiter sur `data-analyzer` | aucune |
-| GIT-009 | Toujours passer par une branche, fusionnée par PR vers `staging` | hook `pre-commit` |
+| GIT-009 | Toujours passer par une branche, fusionnée par PR vers `staging` | hook `pre-commit`, rulesets GitHub |
 
 GIT-003 et GIT-007 sont gardées par [`.githooks/commit-msg`](../../../.githooks/commit-msg),
 GIT-009 par [`.githooks/pre-commit`](../../../.githooks/pre-commit). Le `prepare`
@@ -221,3 +221,12 @@ git commit -m "fix(simulateur): corrige le libellé de l'article 80"
 *Gardé par* `.githooks/pre-commit`. Il refuse tout commit sur `main` ou
 `staging`, sauf celui qui conclut une fusion en conflit : c'est ainsi que
 `staging` rejoint `main`. `tsp pr` impose `staging` comme cible.
+
+Le hook ne garde que le poste. Deux rulesets GitHub gardent le distant :
+
+| Branche | Ce que le ruleset refuse |
+|---|---|
+| `staging` | un push sans PR, une PR dont un job de la CI n'est pas vert, le push forcé, la suppression |
+| `main` | un commit dont un job de la CI n'est pas vert, le push forcé, la suppression |
+
+`main` n'exige pas de PR : elle avance par le push de `staging`, à la livraison.

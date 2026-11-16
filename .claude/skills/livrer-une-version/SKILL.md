@@ -79,6 +79,9 @@ tsp pr
 Si `staging` reçoit un commit de l'app pendant que la PR est ouverte, ajoute-le
 au journal et refais le compte.
 
+La PR ne se fusionne qu'une fois la CI verte : `gh pr checks --watch`. `staging`
+refuse de toute façon une PR dont un check manque.
+
 ## 5. Poser le tag et la release
 
 Une fois la PR fusionnée, le tag se pose sur le commit qu'elle a laissé sur
@@ -109,7 +112,14 @@ modificateur de chemin, et la release part vide.
 
 ## 6. Mettre en production
 
-`staging` rejoint `main` en avance rapide :
+Attends d'abord la CI du commit de `staging`. `main` refuse un commit dont les
+checks ne sont pas verts :
+
+```bash
+gh run watch --exit-status "$(gh run list --workflow CI --branch staging --commit "${SHA}" --json databaseId --jq '.[0].databaseId')"
+```
+
+`staging` rejoint ensuite `main` en avance rapide :
 
 ```bash
 git push origin origin/staging:refs/heads/main
