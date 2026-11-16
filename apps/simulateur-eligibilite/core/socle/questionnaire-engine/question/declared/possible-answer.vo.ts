@@ -16,7 +16,7 @@ import type {
   NotOffered,
   OfferedPossibleAnswer,
   PossibleAnswerHelp,
-} from "../possible-answer.ts";
+} from "../possible-answer.types.ts";
 import type { AnyQuestions } from "../question.ts";
 
 /** La réponse possible n'a pas d'aide dans ce cas. */

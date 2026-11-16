@@ -4,8 +4,8 @@
 // (NAV-SOUS-QUESTIONS-20261113, SQ-30). Les pages sont écrites ici.
 
 import { describe, expect, it } from "vitest";
-import { givenOf, page, questionsOf } from "../../../core/socle";
-import type { CoreModel } from "../../../core/socle/model";
+import { page, QuestionFactory, ReadingFactory } from "../../../core/socle";
+import type { CoreModel } from "../../../core/socle/model.types";
 import type {
   Page,
   QuestionnairePart,
@@ -14,8 +14,8 @@ import { PageRefusal, Simulation } from "../../../core/socle/simulation";
 
 type Questions = { debut: string; fin: string; motif: string };
 
-const question = questionsOf<Questions>();
-const given = givenOf<Questions>();
+const question = new QuestionFactory<Questions>();
+const given = new ReadingFactory<Questions>();
 
 const FIN_AVANT_LE_DEBUT = "La fin précède le début.";
 

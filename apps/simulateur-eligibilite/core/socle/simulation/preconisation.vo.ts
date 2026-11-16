@@ -5,7 +5,7 @@
 // Un objet valeur : immuable, sans identité. Le service l'établit
 // (`preconisation.service.ts`).
 
-import type { AnyFaits } from "../model.ts";
+import type { AnyFaits } from "../model.types.ts";
 import type { AnyCibles } from "../questionnaire-engine/index.ts";
 
 export class Preconisation<Faits = AnyFaits, Cibles = AnyCibles> {

@@ -11,9 +11,9 @@ import {
   type Condition,
   Fait,
   FaitCatalogue,
-  givenOf,
   page,
-  questionsOf,
+  QuestionFactory,
+  ReadingFactory,
   unFait,
 } from "../../../core/socle";
 import type {
@@ -30,10 +30,10 @@ type Questions = {
 type Faits = { readonly chaude: Fait; readonly matin: Fait };
 type Cibles = { readonly cible_sucre: Cible<boolean> };
 
-const given = givenOf<Questions, Faits, Cibles>();
+const given = new ReadingFactory<Questions, Faits, Cibles>();
 
 // Le sucre se propose pour une boisson chaude, une fois qu'on sait l'heure.
-const question = questionsOf<Questions, Faits, Cibles>({
+const question = new QuestionFactory<Questions, Faits, Cibles>({
   faits: new FaitCatalogue<Faits>(
     ["chaude", "matin"],
     [

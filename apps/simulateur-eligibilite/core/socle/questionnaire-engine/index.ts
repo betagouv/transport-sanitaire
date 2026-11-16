@@ -13,8 +13,8 @@ export {
   type ValidatedAnswer,
   ValidatedAnswers,
 } from "./answers/validated-answers.vo.ts";
-export { givenOf } from "./conditions/given.ts";
 export { LocalDateTime } from "./conditions/local-date-time.vo.ts";
+export { ReadingFactory } from "./conditions/reading.factory.ts";
 export {
   type Condition,
   type Context,
@@ -43,8 +43,8 @@ export {
   type AskedQuestion,
   askedQuestion,
 } from "./question/asked/question.vo.ts";
-export { questionsOf } from "./question/declared/factory.ts";
 export { type DeclaredPage, page } from "./question/declared/page.vo.ts";
+export { QuestionFactory } from "./question/declared/question.factory.ts";
 export {
   type Answer,
   type Answered,

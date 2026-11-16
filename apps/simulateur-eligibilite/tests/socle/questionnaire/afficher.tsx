@@ -4,7 +4,7 @@
 import { render } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { useState } from "react";
-import type { CoreModel } from "../../../core/socle/model";
+import type { CoreModel } from "../../../core/socle/model.types";
 import type {
   Answers,
   AnyCibles,

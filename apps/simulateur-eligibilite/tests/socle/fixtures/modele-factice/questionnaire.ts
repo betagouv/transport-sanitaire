@@ -4,17 +4,22 @@
 // Il garde sous test la mécanique du questionnaire : avancement automatique,
 // retour, brouillon, effacement des réponses dépendantes et verrou.
 
-import { afterLock, givenOf, page, questionsOf } from "../../../../core/socle";
+import {
+  afterLock,
+  page,
+  QuestionFactory,
+  ReadingFactory,
+} from "../../../../core/socle";
 import type { QuestionnairePart } from "../../../../core/socle/questionnaire-engine";
 import type { Cibles } from "./declarations/cibles";
 import type { Faits } from "./declarations/faits";
 import type { Questions } from "./declarations/questions";
 import { CATALOGUE_DES_FAITS, cibles } from "./preconisation";
 
-export const given = givenOf<Questions, Faits, Cibles>();
+export const given = new ReadingFactory<Questions, Faits, Cibles>();
 const boisson = given.question("boisson").answer();
 
-const question = questionsOf<Questions, Faits, Cibles>({
+const question = new QuestionFactory<Questions, Faits, Cibles>({
   faits: CATALOGUE_DES_FAITS,
   cibles,
 });

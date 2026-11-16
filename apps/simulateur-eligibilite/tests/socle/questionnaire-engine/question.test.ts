@@ -2,9 +2,9 @@ import { describe, expect, it } from "vitest";
 import {
   afterLock,
   Cible,
-  givenOf,
   page,
-  questionsOf,
+  QuestionFactory,
+  ReadingFactory,
 } from "../../../core/socle";
 import { Questionnaire } from "../../../core/socle/questionnaire-engine/questionnaire.vo";
 
@@ -24,9 +24,9 @@ type Questions = {
 type Figees = { readonly urgence: Cible<boolean> };
 type Cibles = Figees | undefined;
 
-const given = givenOf<Questions, undefined, Figees>();
+const given = new ReadingFactory<Questions, undefined, Figees>();
 
-const question = questionsOf<Questions, undefined, Cibles>();
+const question = new QuestionFactory<Questions, undefined, Cibles>();
 
 const TOUJOURS = page("adresse", question.text("adresse", "Adresse"));
 

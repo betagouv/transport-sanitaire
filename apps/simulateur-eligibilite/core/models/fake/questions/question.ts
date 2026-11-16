@@ -7,9 +7,9 @@
 // tournerait en rond.
 
 import {
-  givenOf,
-  questionsOf,
+  QuestionFactory,
   type ReadByObject,
+  ReadingFactory,
 } from "../../../socle/index.ts";
 import { cibles } from "../cibles/evaluation.ts";
 import type { Cibles } from "../cibles/noms.ts";
@@ -17,9 +17,9 @@ import { CATALOGUE_DES_FAITS } from "../faits/index.ts";
 import type { Faits } from "../faits/noms.ts";
 
 /** Les entrées des conditions du modèle de démonstration. */
-export const given = givenOf<ReadByObject, Faits, Cibles>();
+export const given = new ReadingFactory<ReadByObject, Faits, Cibles>();
 
-export const question = questionsOf<ReadByObject, Faits, Cibles>({
+export const question = new QuestionFactory<ReadByObject, Faits, Cibles>({
   faits: CATALOGUE_DES_FAITS,
   cibles,
 });

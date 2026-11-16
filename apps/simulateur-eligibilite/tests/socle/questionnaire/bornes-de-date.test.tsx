@@ -1,6 +1,6 @@
 import { screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
-import { page, questionsOf } from "../../../core/socle";
+import { page, QuestionFactory } from "../../../core/socle";
 import { afficher } from "./afficher";
 
 // Une date, avec ou sans heure, peut avoir des bornes. Elles sont fixes, ou
@@ -8,7 +8,7 @@ import { afficher } from "./afficher";
 
 type Questions = { accident: string; debut: string; fin: string };
 
-const question = questionsOf<Questions>();
+const question = new QuestionFactory<Questions>();
 
 const ACCIDENT = page(
   "accident",

@@ -1,6 +1,6 @@
 import { screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
-import { page, questionsOf } from "../../../core/socle";
+import { page, QuestionFactory } from "../../../core/socle";
 import { afficher } from "./afficher";
 
 // Le libellé et l'aide d'une question peuvent dépendre des réponses. Le questionnaire
@@ -12,7 +12,7 @@ type Questions = {
   duree: string;
 };
 
-const question = questionsOf<Questions>();
+const question = new QuestionFactory<Questions>();
 
 const COMPAGNIE = page(
   "compagnie",

@@ -3,8 +3,13 @@
 // « Suivant » reprend. Les pages sont écrites ici.
 
 import { describe, expect, it } from "vitest";
-import { givenOf, page, questionsOf, Reading } from "../../../core/socle";
-import type { CoreModel } from "../../../core/socle/model";
+import {
+  page,
+  QuestionFactory,
+  Reading,
+  ReadingFactory,
+} from "../../../core/socle";
+import type { CoreModel } from "../../../core/socle/model.types";
 import type {
   Answers,
   Page,
@@ -19,8 +24,8 @@ type Questions = {
   lieu: "hopital" | "domicile";
 };
 
-const question = questionsOf<Questions>();
-const given = givenOf<Questions>();
+const question = new QuestionFactory<Questions>();
+const given = new ReadingFactory<Questions>();
 
 const MESSAGE = "Une dialyse ne se fait pas à l'hôpital ici.";
 const REVOIR = { label: "Revoir le soin", question: "soin" };

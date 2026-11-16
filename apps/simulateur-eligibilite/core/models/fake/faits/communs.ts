@@ -4,11 +4,11 @@
 // Un fait lit les questions validées. `given` ne vient pas de
 // `questions/question.ts` : un fait ne lit pas de cible.
 
-import { givenOf } from "../../../socle/index.ts";
+import { ReadingFactory } from "../../../socle/index.ts";
 import type { Questions } from "../questions/reponses.ts";
 import type { Faits } from "./noms.ts";
 
-const given = givenOf<Questions, Faits>();
+const given = new ReadingFactory<Questions, Faits>();
 
 /** La boisson commandée. */
 export const BOISSON = given.question("boisson").answer();

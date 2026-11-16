@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { page, questionsOf } from "../../../core/socle";
+import { page, QuestionFactory } from "../../../core/socle";
 import { Questionnaire } from "../../../core/socle/questionnaire-engine/questionnaire.vo";
 
 // Une réponse qui change n'efface que les réponses qui en dépendent. Les pages
@@ -16,7 +16,7 @@ type Questions = {
 
 type Id = keyof Questions;
 
-const question = questionsOf<Questions>();
+const question = new QuestionFactory<Questions>();
 
 const texte = (id: Id, ...dependsOn: Id[]) =>
   question.text(id, id).dependsOn(...dependsOn);
