@@ -4,8 +4,9 @@
 // JSON dans `payload`, pour le relire tel quel. La table ne change pas quand
 // le contrat gagne un champ.
 //
-// L'établissement et le service ont chacun leur colonne, qui se lit sans
-// ouvrir le JSON : le nom, puis l'id entre parenthèses (ADR-16).
+// L'établissement et le service ont chacun leur colonne, en JSON brut, qui
+// s'exploite sans ouvrir `payload` : `{"id":"12","name":"CHU Grenoble Alpes"}`
+// (ADR-16).
 
 import type { RattachementDuParcours } from "../../shared/analytics/analytics-event.ts";
 import type { GristApiClient, GristRow } from "../grist/grist-api.client.ts";
@@ -67,16 +68,15 @@ type EmptyCell = null;
 function rattachementOf(event: JournalEntry["event"]) {
   const of: RattachementDuParcours = event.type === "alive" ? {} : event;
   return {
-    establishment: named(of.establishment_name, of.establishment_id),
-    service: named(of.service_name, of.service_id),
+    establishment: json(of.establishment_id, of.establishment_name),
+    service: json(of.service_id, of.service_name),
   };
 }
 
-// « CHU Grenoble Alpes (12) ». Un établissement saisi n'a pas d'id, et un
-// rattachement de repli n'a pas de nom.
-function named(name?: string, id?: string): string | EmptyCell {
-  if (name && id) return `${name} (${id})`;
-  return name ?? (id ? `(${id})` : null);
+// `{"id":"12","name":"CHU Grenoble Alpes"}`. Un établissement saisi n'a pas
+// d'id, et un rattachement de repli n'a pas de nom : la clé manque.
+function json(id?: string, name?: string): string | EmptyCell {
+  return id || name ? JSON.stringify({ id, name }) : null;
 }
 
 function entryOf({ fields }: GristRow): JournalEntry {

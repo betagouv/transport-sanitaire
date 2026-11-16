@@ -43,7 +43,7 @@ describe("journal dans Grist", () => {
     ]);
   });
 
-  it("écrit l'établissement et le service en colonnes, le nom puis l'id", async () => {
+  it("écrit l'établissement et le service en colonnes, en JSON", async () => {
     grist = await demarrerGrist({});
     const journal = new GristJournal(
       new GristApiClient({ docUrl: grist.docUrl, cleApi: "test" }),
@@ -67,10 +67,10 @@ describe("journal dans Grist", () => {
 
     expect(colonnes(grist.tables.Evenements)).toEqual([
       [
-        "CHU Grenoble Alpes (e_chu_grenoble)",
-        "Cardiologie (s_grenoble_cardio)",
+        '{"id":"e_chu_grenoble","name":"CHU Grenoble Alpes"}',
+        '{"id":"s_grenoble_cardio","name":"Cardiologie"}',
       ],
-      ["Clinique des Cèdres", "(autre)"],
+      ['{"name":"Clinique des Cèdres"}', '{"id":"autre"}'],
     ]);
   });
 
