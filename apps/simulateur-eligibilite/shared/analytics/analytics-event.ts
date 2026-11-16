@@ -10,9 +10,10 @@
  * résultat (ADR-9), puis les boutons exposés, la fiche patient et ses clics
  * (ADR-11), puis la taille des champs du document R3 (ADR-12), puis le
  * chargement de la page (ADR-13), puis la version de l'app et le commit
- * déployé (ADR-14).
+ * déployé (ADR-14). La 3 ajoute le nom de l'établissement et celui du
+ * service, et pose le rattachement sur chaque événement (ADR-16).
  */
-export const SCHEMA_VERSION = 2;
+export const SCHEMA_VERSION = 3;
 
 export const EVENT_TYPES = [
   "simulation_started",
@@ -125,6 +126,10 @@ export type AnalyticsEvent = {
   font_size_pt?: number;
   // Nos compléments.
   service_id?: string;
+  /** Le nom de l'établissement, lu dans la liste ou saisi (ADR-16). */
+  establishment_name?: string;
+  /** Le nom du service, lu dans la liste ou saisi (ADR-16). */
+  service_name?: string;
   page_view_id?: string;
   milestones?: Milestone[];
   financeur?: string;
@@ -141,11 +146,24 @@ export type AnalyticsEvent = {
   commit_sha: string;
 };
 
-/** L'app qui produit les événements : ses règles, sa version, son commit (ADR-14). */
+/**
+ * Le rattachement du parcours, sur chacun de ses événements (ADR-16) : les ids
+ * du référentiel, quand il en a, et les noms.
+ */
+export type RattachementDuParcours = Pick<
+  AnalyticsEvent,
+  "establishment_id" | "service_id" | "establishment_name" | "service_name"
+>;
+
+/**
+ * D'où vient un parcours, sur chacun de ses événements : l'app qui le produit,
+ * ses règles, sa version, son commit (ADR-14), et son rattachement (ADR-16).
+ */
 export type Provenance = Pick<
   AnalyticsEvent,
   "version" | "app_version" | "commit_sha"
->;
+> &
+  RattachementDuParcours;
 
 /** Ce qu'un événement dit de lui-même : le parcours le numérote, le date, et dit sa provenance. */
 export type EventDetails = Omit<

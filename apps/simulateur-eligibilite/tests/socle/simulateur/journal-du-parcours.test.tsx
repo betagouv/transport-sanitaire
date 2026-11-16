@@ -62,9 +62,26 @@ describe("le journal des parcours sur P0", () => {
         sequence: 1,
         screen: "P0",
         establishment_id: "e_chu_grenoble",
+        establishment_name: "CHU Grenoble Alpes",
         service_id: "s_grenoble_cardio",
+        service_name: "Cardiologie",
       }),
     ]);
+  });
+
+  it("chaque événement porte l'établissement et le service du rattachement", async () => {
+    const { user, envoyes } = await ouvrirAvecUnJournal();
+
+    await user.click(radio("Un thé"));
+    await question(ACCOMPAGNEMENTS);
+
+    expect(envoyes.length).toBeGreaterThan(2);
+    for (const evenement of envoyes) {
+      expect(evenement).toMatchObject({
+        establishment_name: "CHU Grenoble Alpes",
+        service_name: "Cardiologie",
+      });
+    }
   });
 
   it("le premier choix validé donne l'intention, dans la même simulation", async () => {
