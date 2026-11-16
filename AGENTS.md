@@ -93,7 +93,9 @@ plusieurs les portent.
 `tsp verifier <app>`. **C'est la commande à passer avant de dire que c'est
 fait.** Elle lance le script `verifier` de l'app, et la CI lance exactement le
 même : un `verifier` vert ici l'est là-bas. Une porte à ajouter se met dans ce
-script, jamais dans le YAML.
+script, jamais dans le YAML. Seule exception : les parcours en navigateur du
+simulateur (`pnpm navigateur`), qui demandent des navigateurs installés et ont
+leur job en CI.
 
 `tsp verifier` sans app le passe sur toutes les apps, une à la fois.
 
