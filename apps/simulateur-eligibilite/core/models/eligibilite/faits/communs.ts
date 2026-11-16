@@ -5,12 +5,12 @@
 // Un fait lit les questions validées et les autres faits. Il ne lit ni cible
 // ni jour : `given` ne les offre pas au typage, et le catalogue s'y arrête net.
 
-import { givenOf, uneRegle } from "../../../socle/index.ts";
+import { ReadingFactory, uneRegle } from "../../../socle/index.ts";
 import type { Questions } from "../questions/reponses.ts";
 import type { Faits } from "./noms.ts";
 
 /** Les entrées d'un fait : `given.question("Q2.5").answer()`, `given.fait(nom)`. */
-export const given = givenOf<Questions, Faits>();
+export const given = new ReadingFactory<Questions, Faits>();
 
 /**
  * Un séjour en établissement de santé : « déjà hospitalisé » coché, et le

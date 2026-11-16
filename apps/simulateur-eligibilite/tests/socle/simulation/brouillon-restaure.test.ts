@@ -5,8 +5,8 @@
 // sont écrites ici.
 
 import { describe, expect, it } from "vitest";
-import { givenOf, page, questionsOf } from "../../../core/socle";
-import type { CoreModel } from "../../../core/socle/model";
+import { page, QuestionFactory, ReadingFactory } from "../../../core/socle";
+import type { CoreModel } from "../../../core/socle/model.types";
 import type {
   Answers,
   Page,
@@ -21,8 +21,8 @@ type Questions = {
   transport: readonly ("taxi" | "vsl")[];
 };
 
-const question = questionsOf<Questions>();
-const given = givenOf<Questions>();
+const question = new QuestionFactory<Questions>();
+const given = new ReadingFactory<Questions>();
 const DIALYSE = given.question("soin").answer().is("dialyse");
 
 const PAGES = [

@@ -2,7 +2,7 @@
 // une étape, savoir où elles mènent. Un service : il fait le pont entre la
 // simulation et le moteur.
 
-import type { CoreModel } from "../model.ts";
+import type { CoreModel } from "../model.types.ts";
 import {
   type AnsweredQuestionnaire,
   type Answers,

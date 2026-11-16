@@ -9,10 +9,10 @@ import {
   type DeclaredPage,
   Fait,
   FaitCatalogue,
-  givenOf,
   page,
+  QuestionFactory,
   Questionnaire,
-  questionsOf,
+  ReadingFactory,
   Relevance,
   unFait,
 } from "../../../core/socle";
@@ -44,7 +44,7 @@ type Questions = { boisson: "the" | "eau"; sucre: boolean };
 type Faits = { readonly chaude: Fait; readonly matin: Fait };
 type Cibles = { readonly cible_sucre_propose: Cible<boolean> };
 
-const given = givenOf<Questions, Faits, Cibles>();
+const given = new ReadingFactory<Questions, Faits, Cibles>();
 
 // `matin` ne lit rien : aucune question ne le change.
 const FAITS = new FaitCatalogue<Faits>(
@@ -68,7 +68,7 @@ const GRAPHE = new PublicodesGraphCompiler({
   cible_sucre_propose: { valeur: "chaude" },
 }).compile();
 
-const question = questionsOf<Questions, Faits, Cibles>({
+const question = new QuestionFactory<Questions, Faits, Cibles>({
   faits: FAITS,
   cibles: (faits) => ({ cible_sucre_propose: Cible.of(faits.chaude.isOui()) }),
 });

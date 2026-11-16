@@ -8,7 +8,7 @@ import {
   Fait,
   FaitCatalogue,
   type FaitDeclare,
-  givenOf,
+  ReadingFactory,
   uneRegle,
   unFait,
 } from "../../../core/socle";
@@ -21,7 +21,7 @@ type Questions = {
 };
 type Faits = { readonly chaude: Fait; readonly servie: Fait };
 
-const given = givenOf<Questions, Faits>();
+const given = new ReadingFactory<Questions, Faits>();
 const BOISSON = given.question("boisson").answer();
 const SUCRE = given.question("sucre").answer();
 const ACCOMPAGNEMENTS = given.question("accompagnements").answer();

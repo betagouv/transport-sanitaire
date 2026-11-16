@@ -170,7 +170,7 @@ core/                    le métier, sans React ni DOM : ce qu'un serveur ou un 
       rules/             le livrable de l'éditeur : le YAML, sa `VERSION`, le
                          catalogue des textes de R2, et `regles.json` et
                          `regles.graphe.json`, que `pnpm regles` calcule du YAML
-  socle/                 ce qui ne dépend d'aucune version. `model.ts` est le contrat
+  socle/                 ce qui ne dépend d'aucune version. `model.types.ts` est le contrat
                          métier qu'un modèle remplit (`CoreModel`), `index.ts` ce
                          qu'il a le droit d'importer
     questionnaire-engine/  le moteur de questionnaire : ce qu'est une question, une

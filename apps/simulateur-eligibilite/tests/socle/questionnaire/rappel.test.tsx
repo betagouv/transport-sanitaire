@@ -1,6 +1,6 @@
 import { screen, waitFor } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
-import { givenOf, page, questionsOf } from "../../../core/socle";
+import { page, QuestionFactory, ReadingFactory } from "../../../core/socle";
 import { afficher } from "./afficher";
 
 // Un rappel redit un fait déjà connu, en clair, avant la question qu'il aide à
@@ -13,8 +13,8 @@ type Questions = {
   precision: string;
 };
 
-const question = questionsOf<Questions>();
-const given = givenOf<Questions>();
+const question = new QuestionFactory<Questions>();
+const given = new ReadingFactory<Questions>();
 const seance = given.question("seance").answer();
 
 const SEANCE = page(

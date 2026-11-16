@@ -12,10 +12,10 @@ import {
   type DeclaredPage,
   type Fait,
   FaitCatalogue,
-  givenOf,
   page,
+  QuestionFactory,
   Questionnaire,
-  questionsOf,
+  ReadingFactory,
   Relevance,
   unFait,
 } from "../../../core/socle";
@@ -121,14 +121,14 @@ type Faits = { readonly rien: Fait };
 type Cibles = Record<string, Cible<boolean>>;
 type AnyPage = DeclaredPage<Questions, Cibles, Faits>;
 
-const given = givenOf<Questions, Faits, Cibles>();
+const given = new ReadingFactory<Questions, Faits, Cibles>();
 
 const FAITS = new FaitCatalogue<Faits>(
   ["rien"],
   [unFait("rien").sinon("Aucune question ne le dit.")],
 );
 
-const question = questionsOf<Questions, Faits, Cibles>({
+const question = new QuestionFactory<Questions, Faits, Cibles>({
   faits: FAITS,
   cibles: () => ({}),
 });

@@ -34,37 +34,49 @@ import { Reads } from "./reads.vo.ts";
 
 /**
  * Les entrées des conditions d'un modèle, typées par ses questions, ses faits
- * et ses cibles : `export const given = givenOf<Questions, Faits, Cibles>()`.
- * Avec `ReadByObject`, une question ne se lit que par son objet.
+ * et ses cibles : `export const given = new ReadingFactory<Questions, Faits,
+ * Cibles>()`. Avec `ReadByObject`, une question ne se lit que par son objet.
  */
-export function givenOf<
+export class ReadingFactory<
   Questions extends AnyQuestions,
   Faits = undefined,
   Cibles = undefined,
->() {
-  type FaitNom = keyof Faits & string;
-  return {
-    question: <Ref extends QuestionRef<Questions>>(question: Ref) => ({
+> {
+  /** Toutes ces lectures, sous leur nom. */
+  readonly all = Reading.all;
+
+  question<Ref extends QuestionRef<Questions>>(question: Ref) {
+    return {
       answer: () =>
         AnswerReading.of<AnswerOfRef<Questions, Ref>>(idOf(question)),
-    }),
-    fait: <Nom extends FaitNom>(nom: Nom) =>
-      FaitReading.of<FaitValueOf<Faits[Nom]>>(nom),
-    cible: <Nom extends keyof Cibles & string>(nom: Nom) =>
-      CibleReading.of<CibleOf<Cibles[Nom]>, FaitNom>(nom),
-    /** Ces faits, sous leur nom : ce qu'un texte en lit, et rien d'autre. */
-    faits: <Nom extends FaitNom>(...noms: Nom[]) =>
-      named<Pick<Faits, Nom>>(noms, Reads.ofFait, (context, nom) =>
-        context.fait(nom),
-      ),
-    /** Ces cibles, sous leur nom : ce qu'un texte en lit, et rien d'autre. */
-    cibles: <Nom extends keyof Cibles & string>(...noms: Nom[]) =>
-      named<Pick<Cibles, Nom>>(noms, Reads.ofCible, (context, nom) =>
-        context.cible(nom),
-      ),
-    all: Reading.all,
-    today: () => DateReading.today(),
-  };
+    };
+  }
+
+  fait<Nom extends keyof Faits & string>(nom: Nom) {
+    return FaitReading.of<FaitValueOf<Faits[Nom]>>(nom);
+  }
+
+  cible<Nom extends keyof Cibles & string>(nom: Nom) {
+    return CibleReading.of<CibleOf<Cibles[Nom]>, keyof Faits & string>(nom);
+  }
+
+  /** Ces faits, sous leur nom : ce qu'un texte en lit, et rien d'autre. */
+  faits<Nom extends keyof Faits & string>(...noms: Nom[]) {
+    return named<Pick<Faits, Nom>>(noms, Reads.ofFait, (context, nom) =>
+      context.fait(nom),
+    );
+  }
+
+  /** Ces cibles, sous leur nom : ce qu'un texte en lit, et rien d'autre. */
+  cibles<Nom extends keyof Cibles & string>(...noms: Nom[]) {
+    return named<Pick<Cibles, Nom>>(noms, Reads.ofCible, (context, nom) =>
+      context.cible(nom),
+    );
+  }
+
+  today() {
+    return DateReading.today();
+  }
 }
 
 // ---- implémentation ----

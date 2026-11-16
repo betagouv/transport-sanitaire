@@ -15,7 +15,7 @@ export {
   unFait,
 } from "./decision-engine/index.ts";
 
-export type { CoreModel } from "./model.ts";
+export type { CoreModel } from "./model.types.ts";
 export {
   type AddressData,
   type Answered,
@@ -26,14 +26,14 @@ export {
   type DeclaredPage,
   type GivenAnswer,
   type GivenAnswers,
-  givenOf,
   LocalDateTime,
   page,
   type QuestionContext,
+  QuestionFactory,
   Questionnaire,
-  questionsOf,
   type ReadByObject,
   Reading,
+  ReadingFactory,
   Relevance,
   type Revisit,
   type Unanswered,

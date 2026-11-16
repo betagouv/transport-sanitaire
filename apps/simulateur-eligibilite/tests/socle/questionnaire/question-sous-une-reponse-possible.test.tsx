@@ -1,6 +1,6 @@
 import { screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
-import { givenOf, page, questionsOf } from "../../../core/socle";
+import { page, QuestionFactory, ReadingFactory } from "../../../core/socle";
 import { afficher } from "./afficher";
 
 // Une question peut s'afficher juste sous la réponse possible d'une liste de
@@ -13,8 +13,8 @@ type Questions = {
   lien: "direct" | "indirect";
 };
 
-const question = questionsOf<Questions>();
-const given = givenOf<Questions>();
+const question = new QuestionFactory<Questions>();
+const given = new ReadingFactory<Questions>();
 
 const SITUATIONS = question
   .multipleChoice("situations", "Quelles situations concernent ce trajet ?")

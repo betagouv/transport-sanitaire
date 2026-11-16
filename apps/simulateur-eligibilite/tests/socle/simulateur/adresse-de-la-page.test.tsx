@@ -1,6 +1,11 @@
 import { cleanup, screen, waitFor } from "@testing-library/react";
 import { beforeEach, describe, expect, it } from "vitest";
-import { givenOf, page, questionsOf, Reading } from "../../../core/socle";
+import {
+  page,
+  QuestionFactory,
+  Reading,
+  ReadingFactory,
+} from "../../../core/socle";
 import type { Model } from "../../../front/socle/model";
 import { audienceDeTest, nomsEtValeurs } from "../analytics/audience-de-test";
 import { modeleDeTest } from "../modele-de-test";
@@ -122,8 +127,8 @@ type Questions = {
   note: string;
 };
 
-const nouvelle = questionsOf<Questions>();
-const given = givenOf<Questions>();
+const nouvelle = new QuestionFactory<Questions>();
+const given = new ReadingFactory<Questions>();
 
 // Le modèle de test, sur un questionnaire dont la deuxième page peut
 // contredire la première.

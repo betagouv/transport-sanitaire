@@ -1,6 +1,6 @@
 import { screen, within } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
-import { type AddressData, page, questionsOf } from "../../../core/socle";
+import { type AddressData, page, QuestionFactory } from "../../../core/socle";
 import { afficher } from "./afficher";
 
 // Une adresse se saisit champ par champ, et sa réponse est un objet. En France,
@@ -9,7 +9,7 @@ import { afficher } from "./afficher";
 
 type Questions = { depart: AddressData };
 
-const question = questionsOf<Questions>();
+const question = new QuestionFactory<Questions>();
 
 const DEPART = question.address("depart", "Adresse de départ");
 

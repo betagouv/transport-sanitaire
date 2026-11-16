@@ -20,7 +20,7 @@ import {
   DeclaredPossibleAnswers,
 } from "./possible-answer.vo.ts";
 import { DeclaredQuestion } from "./question.vo.ts";
-import type { CommonSettings } from "./settings.ts";
+import type { CommonSettings } from "./settings.types.ts";
 
 /** Un choix unique déclaré. */
 export class DeclaredSingleChoice<

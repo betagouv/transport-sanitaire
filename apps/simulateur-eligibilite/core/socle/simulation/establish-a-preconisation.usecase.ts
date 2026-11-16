@@ -1,7 +1,7 @@
 // Établir la préconisation de réponses, sans parcours : l'écran des seeds et
 // les tests du modèle la demandent sur des réponses données d'un coup.
 
-import type { AnyFaits, CoreModel } from "../model.ts";
+import type { AnyFaits, CoreModel } from "../model.types.ts";
 import type {
   Answers,
   AnyCibles,

@@ -1,4 +1,4 @@
-// Les lectures que donnent les entrées des conditions (`given.ts`) : la réponse
+// Les lectures que donnent les entrées des conditions (`reading.factory.ts`) : la réponse
 // d'une question, le jour, un fait, une cible. Chacune sait ce qu'elle lit, et
 // donne les conditions qui la comparent.
 

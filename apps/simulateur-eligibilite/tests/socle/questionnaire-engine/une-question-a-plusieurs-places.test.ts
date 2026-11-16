@@ -8,7 +8,12 @@
 // branche la rend utile.
 
 import { describe, expect, it } from "vitest";
-import { afterLock, givenOf, page, questionsOf } from "../../../core/socle";
+import {
+  afterLock,
+  page,
+  QuestionFactory,
+  ReadingFactory,
+} from "../../../core/socle";
 import type { Answers } from "../../../core/socle/questionnaire-engine/question/question";
 import { Questionnaire } from "../../../core/socle/questionnaire-engine/questionnaire.vo";
 import { QuestionnaireDeclarationError } from "../../../core/socle/questionnaire-engine/questionnaire-declaration.error";
@@ -164,8 +169,8 @@ type Questions = {
   dependante: string;
 };
 
-const question = questionsOf<Questions>();
-const given = givenOf<Questions>();
+const question = new QuestionFactory<Questions>();
+const given = new ReadingFactory<Questions>();
 
 const URGENCE = question
   .singleChoice("urgence", "Urgent ?")

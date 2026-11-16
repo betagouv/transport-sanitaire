@@ -1,6 +1,6 @@
 import { screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
-import { page, questionsOf } from "../../../core/socle";
+import { page, QuestionFactory } from "../../../core/socle";
 import { afficher } from "./afficher";
 
 // Une réponse possible peut porter une explication, affichée sous son libellé :
@@ -9,7 +9,7 @@ import { afficher } from "./afficher";
 
 type Questions = { duree: "peu" | "beaucoup" };
 
-const question = questionsOf<Questions>();
+const question = new QuestionFactory<Questions>();
 
 const DUREE = page(
   "duree",
