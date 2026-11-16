@@ -1,4 +1,4 @@
-// Ce que le début d'une simulation dit de son rattachement (ADR-16) : les ids
+// Ce que le début d'une simulation dit de son rattachement (ADR-0053) : les ids
 // du référentiel quand il en a, et les noms, lus dans la liste ou saisis.
 
 import { describe, expect, it } from "vitest";

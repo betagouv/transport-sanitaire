@@ -5,7 +5,7 @@
 // le second sur la suivante, une validation chacune (D-252).
 //
 // Les pages portent le nom que leur donne l'éditeur, `P2/contextes-situations`
-// et `P2/contextes-soins` : le journal des parcours l'envoie (ADR-8 d'analytics).
+// et `P2/contextes-soins` : le journal des parcours l'envoie (ADR-0044).
 //
 // Les cas qui ne s'appliquent pas :
 // - second-seul et aucun : Q2.2.1 se pose sur tout parcours (D-98), le premier

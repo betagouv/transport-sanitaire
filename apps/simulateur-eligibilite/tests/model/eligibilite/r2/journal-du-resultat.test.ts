@@ -1,7 +1,7 @@
 // Ce que le premier résultat du modèle de l'éditeur donne au journal des
 // parcours (#386), sur la seed de chaque issue : ses codes, calculés par les
 // règles, les motifs du catalogue que la page affiche, et les portions du
-// trajet qu'elle restitue. Voir docs/knowledge/adr/analytics.md, ADR-9.
+// trajet qu'elle restitue. Voir ADR-0045.
 
 import { describe, expect, it } from "vitest";
 import { SEEDS } from "../../../../core/models/eligibilite/seeds-catalogue";

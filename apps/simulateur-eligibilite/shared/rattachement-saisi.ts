@@ -1,9 +1,9 @@
 // Ce que le formulaire de rattachement collecte, et quand il est complet.
 // Ce sont des identifiants du référentiel Grist, ou des noms saisis quand le
 // référentiel ne les a pas encore.
-// Voir docs/knowledge/adr/identification.md, ADR-4.
+// Voir ADR-0007.
 
-// Trois cas (§4 de docs/knowledge/adr/identification.md) :
+// Trois cas (docs/knowledge/domain/rattachement.md) :
 // - un service du référentiel, sous un établissement du référentiel. Les
 //   structures (« Libéral », « Assurance Maladie », « Autre ») sont les
 //   services de l'établissement fourre-tout ;

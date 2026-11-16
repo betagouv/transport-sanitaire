@@ -1,5 +1,5 @@
 // Le journal des parcours tenu par le backend, par sa route de collecte
-// (ADR-6 d'analytics.md).
+// (ADR-0042).
 //
 // Chaque événement part seul, en `keepalive`, qui survit à la fermeture de
 // l'onglet. Sur une erreur réseau ou une réponse 5xx, il réessaie après chaque
@@ -9,7 +9,7 @@
 // n'y a ni file ni stockage : une perte se lit dans le
 // journal, par un trou dans les `sequence` d'une simulation.
 //
-// L'opt-out du CMS vaut aussi pour le journal (ADR-5) : rien ne part avant le
+// L'opt-out du CMS vaut aussi pour le journal (ADR-0011) : rien ne part avant le
 // choix du prescripteur, ni après un refus.
 
 import type { AnalyticsEvent } from "../../../shared/analytics/analytics-event";

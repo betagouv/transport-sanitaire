@@ -1,6 +1,6 @@
 // Un événement de la mesure d'audience : son nom, pris dans une liste fermée, le
 // service rattaché, et une valeur numérique. Rien des réponses.
-// Voir docs/knowledge/adr/analytics.md, ADR-2 et §4.
+// Voir ADR-0002, et docs/knowledge/domain/mesure-d-audience.md.
 
 import type { RattachementSaisi } from "../../../shared/rattachement-saisi";
 

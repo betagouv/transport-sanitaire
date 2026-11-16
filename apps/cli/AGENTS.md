@@ -5,7 +5,7 @@
 
 `tsp`, le point d'entrée du dépôt. Le mode d'emploi est dans le
 [README](README.md), les décisions dans
-[`docs/knowledge/adr/cli.md`](../../docs/knowledge/adr/cli.md).
+[`docs/knowledge/adr/`](../../docs/knowledge/adr/).
 
 ## Ce que c'est
 

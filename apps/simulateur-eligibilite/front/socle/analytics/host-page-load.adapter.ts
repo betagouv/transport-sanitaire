@@ -1,4 +1,4 @@
-// Comment la page s'est chargée (ADR-13). L'app tourne dans une iframe du CMS :
+// Comment la page s'est chargée (ADR-0049). L'app tourne dans une iframe du CMS :
 // quand le prescripteur recharge la page du CMS, l'iframe se dit ouverte, pas
 // rechargée. C'est donc le CMS qui donne son propre chargement, par
 // `postMessage`, à la demande. Son script est `cms.js`. Hors iframe, l'app lit

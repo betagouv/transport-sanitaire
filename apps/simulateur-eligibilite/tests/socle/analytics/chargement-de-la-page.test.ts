@@ -1,4 +1,4 @@
-// Le chargement de la page, au début de la simulation (ADR-13) : ouverte,
+// Le chargement de la page, au début de la simulation (ADR-0049) : ouverte,
 // rechargée ou rouverte par l'historique. Seule la première simulation de la
 // page le porte. Dans l'iframe, c'est la page du CMS qui le donne : la page
 // parente est une vraie fenêtre d'iframe, qui répond par de vrais évènements

@@ -58,12 +58,12 @@ export type FirstResult = {
   terminal?: boolean;
   /**
    * Les identifiants des motifs que le résultat affiche, tels que son
-   * catalogue les nomme. Le journal des parcours les reçoit (ADR-9). Une liste
+   * catalogue les nomme. Le journal des parcours les reçoit (ADR-0045). Une liste
    * vide : aucun motif affiché. Sans liste : on ne sait pas.
    */
   motifs?: readonly string[];
   /**
-   * Les portions du trajet que le résultat restitue à part (ADR-9). Une liste
+   * Les portions du trajet que le résultat restitue à part (ADR-0045). Une liste
    * vide : aucune. Sans liste : on ne sait pas.
    */
   portions?: readonly Portion[];
@@ -120,7 +120,7 @@ export type Model<
   core: CoreModel<Questions, Faits, Cibles>;
   /**
    * La version des règles, `10.1.8` : chaque événement du journal des parcours
-   * la porte (ADR-14 d'analytics).
+   * la porte (ADR-0050).
    */
   version: string;
   /** Le premier résultat, après les parties du questionnaire. */

@@ -1,4 +1,4 @@
-// Les liens d'une alerte vers les réponses d'avant à revoir (ADR-30). La
+// Les liens d'une alerte vers les réponses d'avant à revoir (ADR-0041). La
 // simulation dit lesquels se rouvrent : une question validée, sur une page
 // d'avant, avant le verrou. Les autres ne s'affichent pas. Chaque lien est une
 // vraie adresse, la position que la correction ouvre.

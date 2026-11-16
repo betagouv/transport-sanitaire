@@ -1,7 +1,7 @@
 // Le port du journal des parcours : ce que la collecte attend d'un stockage.
 // Il ne dit ni table, ni colonne, ni JSON. Grist en est le premier adaptateur
 // (`grist-journal.adapter.ts`), la mémoire le second
-// (`memory-journal.adapter.ts`). Voir docs/knowledge/adr/analytics.md, ADR-7.
+// (`memory-journal.adapter.ts`). Voir ADR-0043.
 
 import type { JournalEntry } from "./journal-entry.entity.ts";
 

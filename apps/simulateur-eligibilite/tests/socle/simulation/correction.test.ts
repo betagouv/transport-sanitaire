@@ -1,4 +1,4 @@
-// Corriger une réponse d'avant depuis une alerte (ADR-30), sans écran : les
+// Corriger une réponse d'avant depuis une alerte (ADR-0041), sans écran : les
 // réponses que l'incohérence invite à revoir, la page qu'un lien rouvre, et où
 // « Suivant » reprend. Les pages sont écrites ici.
 

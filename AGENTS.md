@@ -160,12 +160,13 @@ revue et en commit : « corrige QUAL-006 ».
 
 | Ce que tu veux écrire | Où ça va |
 |---|---|
-| Une décision d'architecture | `docs/knowledge/adr/` de l'app concernée, ou celui de la racine si la décision traverse plusieurs apps, au format de [`ecrire-une-decision.md`](docs/knowledge/contributing/ecrire-une-decision.md) |
+| Une décision d'architecture | un fichier par décision, sans détail d'implémentation, dans `docs/knowledge/adr/` de l'app concernée, ou celui de la racine si la décision traverse plusieurs apps, au format de [`ecrire-une-decision.md`](docs/knowledge/contributing/ecrire-une-decision.md) |
 | Le cadrage d'un chantier | le corps de son issue GitHub, que `tsp issue new` ouvre. Jamais un fichier du dépôt |
 | Le découpage d'un chantier | ses sous-issues, une par PR, que `tsp issue add` ouvre |
 | L'état d'un chantier | **nulle part** : il se déduit de l'issue, de sa branche et de sa PR. `tsp issue show <n>` l'affiche, et `tsp` le projette dans le tableau GitHub Project |
 | Ce qu'une app sait faire | son `docs/knowledge/features.md`, un tableau « feature, ce qu'elle fait » que lit `tsp features` |
-| Une connaissance métier actée | `docs/knowledge/domain/` de l'app concernée, ou celui de la racine si elle traverse plusieurs apps |
+| Une connaissance métier actée | `docs/knowledge/domain/` de l'app concernée, ou celui de la racine si elle traverse plusieurs apps. Ce qu'une décision d'architecture change pour le métier y va aussi |
+| Le détail d'une implémentation | le code, que ses tests documentent. Ni un ADR ni un README |
 | Le mode d'emploi d'une app | son `README.md` |
 | Ce qu'une version apporte | le `CHANGELOG.md` de l'app, au format de [`livraisons.md`](docs/knowledge/contributing/livraisons.md) |
 | Une règle pour l'IA | `AGENTS.md`, celui de la racine ou celui de l'app |

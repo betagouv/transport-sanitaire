@@ -1,4 +1,4 @@
-// L'adresse de la page suit la simulation (ADR-30). Chaque nouvelle position
+// L'adresse de la page suit la simulation (ADR-0041). Chaque nouvelle position
 // s'y inscrit dans l'historique : le bouton Retour du navigateur y revient. Une
 // adresse que l'historique rouvre passe par la simulation, qui l'accepte ou la
 // refuse ; refusée, l'adresse revient à la position courante. Au montage,
