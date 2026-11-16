@@ -4,6 +4,9 @@
 //
 // Il détient la clé d'API : il reste côté serveur. Il ne connaît pas le
 // métier. Les noms de tables et de colonnes lui sont passés.
+//
+// Un appel a un délai maximal. Un Grist lent, sans être en panne, laisserait
+// sinon chaque requête du simulateur pendre avec lui.
 
 import type { AccesGrist } from "../configuration.ts";
 
@@ -15,10 +18,16 @@ export type GristFilter = Record<string, Array<string | number>>;
 export class GristApiClient {
   readonly #base: string;
   readonly #apiKey: string;
+  readonly #timeout: number;
 
-  constructor({ docUrl, cleApi }: AccesGrist) {
+  constructor(
+    { docUrl, cleApi }: AccesGrist,
+    // Le délai maximal d'un appel, en millisecondes.
+    { timeout = TIMEOUT }: { timeout?: number } = {},
+  ) {
     this.#base = docUrl.replace(/\/$/, "");
     this.#apiKey = cleApi;
+    this.#timeout = timeout;
   }
 
   async rows(table: string, filter?: GristFilter): Promise<GristRow[]> {
@@ -48,6 +57,7 @@ export class GristApiClient {
   async #request<T>(path: string, init: RequestInit = {}): Promise<T> {
     const response = await fetch(`${this.#base}${path}`, {
       ...init,
+      signal: AbortSignal.timeout(this.#timeout),
       headers: {
         Authorization: `Bearer ${this.#apiKey}`,
         "Content-Type": "application/json",
@@ -73,3 +83,9 @@ export function cellText(value: unknown): string {
       ? ""
       : String(value);
 }
+
+// ---- implémentation ----
+
+// Grist répond d'ordinaire en moins d'une seconde. Dix laissent passer un
+// document chargé, et rendent la main avant que le navigateur n'abandonne.
+const TIMEOUT = 10_000;

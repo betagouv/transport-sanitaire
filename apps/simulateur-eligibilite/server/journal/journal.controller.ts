@@ -1,24 +1,40 @@
-// La route de collecte du journal des parcours, montée sous `/api` : l'entrée
-// HTTP de la collecte. Elle valide le contrat, confie l'événement au use case,
-// et traduit son issue en statut. Elle n'accuse réception qu'une fois
-// l'événement écrit.
+// Les routes du journal des parcours, montées sous `/api`. La collecte valide
+// le contrat, confie l'événement au use case, et traduit son issue en statut.
+// Elle n'accuse réception qu'une fois l'événement écrit. Le signe de vie répond
+// à une sonde externe : 200 si la collecte écrit, 503 sinon.
 
 import express, { type Request, type Response, type Router } from "express";
 import { parseAnAnalyticsEvent } from "../../shared/analytics/event-schema.ts";
+import type { CheckAlive } from "./check-alive.usecase.ts";
 import type { CollectAnEvent, Collected } from "./collect-an-event.usecase.ts";
 
 export class JournalController {
   readonly #collectAnEvent: CollectAnEvent;
+  readonly #checkAlive: CheckAlive;
 
-  constructor(collectAnEvent: CollectAnEvent) {
+  constructor(collectAnEvent: CollectAnEvent, checkAlive: CheckAlive) {
     this.#collectAnEvent = collectAnEvent;
+    this.#checkAlive = checkAlive;
   }
 
   /** Les routes du journal, à monter sous `/api`. */
   routes(): Router {
     const router = express.Router();
     router.post("/journal/v1/events", (req, res) => this.#collect(req, res));
+    router.get("/journal/v1/alive", (_req, res) => this.#alive(res));
     return router;
+  }
+
+  // Un journal qui ne répond pas vaut un signe de vie qui manque : la sonde
+  // alerte dans les deux cas.
+  #alive(res: Response): void {
+    this.#checkAlive.execute(new Date()).then(
+      (alive) => res.status(alive ? 200 : 503).json({ alive }),
+      (err: unknown) => {
+        console.error("[simulateur] journal indisponible:", err);
+        res.status(503).json({ alive: false });
+      },
+    );
   }
 
   #collect(req: Request, res: Response): void {

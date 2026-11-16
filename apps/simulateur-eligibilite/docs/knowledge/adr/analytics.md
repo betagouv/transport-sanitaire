@@ -803,6 +803,13 @@ Grist en panne) ne laisse aucune trace dans le journal.
    chaque événement porte les deux.
 4. **Les calculs viennent avec le dashboard** (#440) : les zéros, le regroupement
    des services, les versions listées, les périodes indisponibles.
+5. **Une sonde qui alerte** (#461). `GET /api/journal/v1/alive` répond 200 si
+   le journal porte le signe de vie de l'heure ou de l'heure d'avant, 503 sinon,
+   ou si le journal ne répond pas. Le workflow planifié
+   `.github/workflows/signe-de-vie.yml` l'interroge en production toutes les
+   heures et échoue sur un 503 : GitHub prévient alors par courriel. Un appel à
+   Grist est abandonné au bout de dix secondes, et le navigateur réessaie un
+   envoi que la limite de débit a refusé (429).
 
 **Pourquoi.** La couverture se prouve là où l'événement s'écrit : si le journal
 n'écrit plus, le signe de vie manque aussi, sans rien de plus à construire. Le
@@ -814,7 +821,8 @@ l'appellerait d'ici là.
 parcours et `alive`, qui n'a ni simulation ni séquence. Environ 8 800 lignes de
 plus par an dans Grist (R-13). Un échec d'écriture du signe de vie se lit dans les
 journaux du serveur, sans l'arrêter. Hors production, le journal jette tout,
-`alive` compris. Les périodes de validité des établissements et la règle de
+`alive` compris : la sonde y répond donc 503, et le workflow ne regarde que la
+production. Les périodes de validité des établissements et la règle de
 population référencée restent à trancher (#440).
 
 ## 3. Architecture cible
