@@ -85,9 +85,9 @@ const trajetEvalue = question
     unSensQuiChangeLesLieux({ ...LIEUX_DE_P2, departDeLEntree: Q2_13_DEPART }),
   )
   .possibleAnswer("4_ALLER_RETOUR_DIFFERENT", (possibleAnswer) =>
-    possibleAnswer.blocks(
-      "Ces deux trajets nécessitent deux simulations distinctes.",
-    ),
+    possibleAnswer
+      .blocks("Ces deux trajets nécessitent deux simulations distinctes.")
+      .offersRestart(),
   );
 
 // Le sens choisi rend certain le conflit qu'il crée.
