@@ -45,9 +45,6 @@ export const Q3_4_A = question
     "1_OUI": "Oui",
     "2_NON": "Non",
   })
-  .hint(
-    "Oui pour un aller, ou un aller-retour, vers ce centre. Une maladie rare ne suffit pas.",
-  )
   // Un retour seul ne va pas vers le centre : Non, sans question.
   .mattersWhile(pmtOuDap.and(unRetourSeul.not()));
 
