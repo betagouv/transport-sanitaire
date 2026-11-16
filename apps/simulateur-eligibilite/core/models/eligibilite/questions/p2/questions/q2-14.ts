@@ -36,9 +36,11 @@ export const Q2_14_TRAJET = question
   })
   .mattersWhile(uneMaternite.and(situations.checked("5_HTNM")))
   .possibleAnswer("3_DEUX_TRAJETS", (possibleAnswer) =>
-    possibleAnswer.blocks(
-      "Ces deux trajets nécessitent deux simulations distinctes.",
-    ),
+    // Le message nomme la cause : deux déplacements, pas deux sens d'un trajet
+    // (complément 08 du 16 novembre 2026, § 6).
+    possibleAnswer
+      .blocks("Ces deux déplacements nécessitent deux simulations distinctes.")
+      .offersRestart(),
   );
 
 // Le groupe de l'éloignement se pose : Q2.2.1 signale l'examen ou
