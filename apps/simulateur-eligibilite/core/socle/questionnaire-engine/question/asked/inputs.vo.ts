@@ -1,7 +1,7 @@
 // Les saisies libres telles qu'elles se posent : un nombre, un texte, une
 // date, une case seule. Chacune dit ce qui ne va pas dans sa saisie.
 
-import type { Answer, Unanswered } from "../question.ts";
+import type { Answer, Unanswered } from "../question.types.ts";
 import {
   type AnswerProblem,
   MISSING,

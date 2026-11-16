@@ -10,7 +10,6 @@ import { model } from "../../../../core/models/eligibilite";
 import type { Questions } from "../../../../core/models/eligibilite/questions/reponses";
 import {
   type Answers,
-  pagesOf,
   Questionnaire,
 } from "../../../../core/socle/questionnaire-engine";
 
@@ -18,7 +17,7 @@ import { EstablishAPreconisation } from "../../../../core/socle/simulation";
 
 type Reponses = Answers<Questions>;
 
-const pages = pagesOf(model.questionnaire);
+const pages = Questionnaire.pagesOf(model.questionnaire);
 const pagesAffichees = (reponses: Reponses) =>
   new Questionnaire(pages)
     .readWith(reponses)

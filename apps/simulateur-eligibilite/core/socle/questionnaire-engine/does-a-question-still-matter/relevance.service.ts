@@ -39,7 +39,7 @@ import type {
   Page,
   Question,
   Validated,
-} from "../question/question.ts";
+} from "../question/question.types.ts";
 import { Askability } from "./askability.service.ts";
 import {
   type Fixed,

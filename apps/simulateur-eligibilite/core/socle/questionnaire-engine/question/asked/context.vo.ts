@@ -20,7 +20,7 @@ import type {
 import { LocalDateTime } from "../../conditions/local-date-time.vo.ts";
 import type { Context, ReadAnswer } from "../../conditions/reading.vo.ts";
 import { QuestionnaireDeclarationError } from "../../questionnaire-declaration.error.ts";
-import type { AnyCibles, AnyQuestions } from "../question.ts";
+import type { AnyCibles, AnyQuestions } from "../question.types.ts";
 
 /**
  * Ce qu'une question voit des réponses, avant les étapes du modèle. `cibles` :

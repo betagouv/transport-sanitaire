@@ -8,7 +8,7 @@ import type {
   Answer,
   IncompatiblePossibleAnswers,
   Unanswered,
-} from "../question.ts";
+} from "../question.types.ts";
 import {
   type AnswerProblem,
   MISSING,

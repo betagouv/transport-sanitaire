@@ -11,7 +11,7 @@ import type { Context } from "../../../core/socle/questionnaire-engine/condition
 import type {
   Answers,
   Page,
-} from "../../../core/socle/questionnaire-engine/question/question";
+} from "../../../core/socle/questionnaire-engine/question/question.types";
 import { Questionnaire } from "../../../core/socle/questionnaire-engine/questionnaire.vo";
 
 type Questions = {
