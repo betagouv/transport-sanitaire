@@ -430,6 +430,7 @@ ses tests le chargent comme texte.
 | Commande | Ce qu'elle fait |
 |---|---|
 | `pnpm verifier` | **À passer avant de dire que c'est fait.** lint → typecheck → knip → tests → build (+ vérification de bundle). Exactement ce que lance la CI. |
+| `pnpm navigateur` | Les parcours en navigateur réel (Playwright), sur le front construit. Hors du `verifier` : voir [Tests](#tests) |
 | `pnpm dev` | Front et backend ensemble : c'est `tsp dev simulateur` |
 | `pnpm dev:front` | Serveur Vite, <http://localhost:5173> (proxy `/api` → `:3000`) |
 | `pnpm dev:server` | Backend Express, <http://localhost:3000> |
@@ -439,7 +440,8 @@ ses tests le chargent comme texte.
 
 `pnpm build` enchaîne trois étapes :
 
-1. `tsc -b` sur les cinq projets : front, métier, node, serveur, tests ;
+1. `tsc -b` sur les six projets : front, métier, node, serveur, tests,
+   parcours en navigateur ;
 2. Vite ;
 3. `verifier-bundle` : `pdf-lib`, `modern-screenshot`, le modèle et le
    catalogue de seeds doivent rester hors du chunk d'entrée.
@@ -545,6 +547,17 @@ traverse le modèle entier (`parcours.test.tsx`, `domaines.test.ts`,
 `formulaire-du-modele.tsx`) reste à sa racine. `tests/socle/fixtures/` est la
 seule exception : le factice n'a pas de source. `tests/miroir-des-sources.test.ts`
 le garde.
+
+**Quelques parcours tournent dans un vrai navigateur** (#461), dans
+`navigateur/` : le simulateur construit, servi par son serveur, embarqué en
+iframe dans une page d'une autre origine qui charge le script du CMS, sous
+Chromium et WebKit. Ils vérifient ce que happy-dom ne peut pas dire : l'iframe,
+les messages échangés avec la page, le PDF, l'accessibilité vue par axe. Ils
+restent peu nombreux : la logique s'éprouve dans `tests/`. `pnpm navigateur`
+les lance, après `pnpm exec playwright install chromium webkit` la première
+fois. Ils ne sont pas dans le `verifier` : ils demandent des navigateurs
+installés, et WebKit ne s'installe pas sur tous les postes. La CI les passe dans
+son job `navigateur`.
 
 **Une capacité ajoutée au socle arrive avec trois choses** (D-66) : ses tests,
 sur des pages écrites dans le test (`tests/socle/questionnaire/afficher.tsx`),

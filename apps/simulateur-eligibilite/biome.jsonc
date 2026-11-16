@@ -13,6 +13,7 @@
       "shared/**",
       "tooling/**",
       "tests/**",
+      "navigateur/**",
       "*.ts",
       "*.json",
       "*.jsonc",
@@ -43,7 +44,12 @@
       }
     },
     {
-      "includes": ["vite.config.ts", "tooling/**", "server/**"],
+      "includes": [
+        "vite.config.ts",
+        "playwright.config.ts",
+        "tooling/**",
+        "server/**"
+      ],
       "linter": {
         "rules": {
           "style": {

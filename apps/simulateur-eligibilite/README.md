@@ -48,6 +48,7 @@ front et le référentiel de rattachement.
 | `pnpm dev:front` | Le front de dev, sur le port 5173, qui proxifie `/api` vers `:3000` |
 | `pnpm dev:server` | Le backend de dev, sur le port 3000, en `--watch`, qui charge `.env` s'il est présent |
 | `pnpm test` | Vitest. Le smoke Grist est ignoré sans `GRIST_API_KEY`. |
+| `pnpm navigateur` | Les parcours en navigateur réel (Playwright, Chromium et WebKit) : le front construit, embarqué en iframe dans une page d'une autre origine. Demande `pnpm exec playwright install chromium webkit` la première fois. La CI les passe dans son job `navigateur`. |
 | `pnpm lint` | Biome : format, tri des imports et lint. `lint:fix` applique les corrections sûres. Le socle est commun aux apps du dépôt, dans `biome.base.jsonc` à la racine. |
 | `pnpm knip` | Les exports, fichiers et dépendances que plus personne n'atteint |
 | `pnpm typecheck` | `tsc -b` sur les quatre projets : front, node, serveur et tests |
@@ -345,9 +346,13 @@ Scalingo construit et sert cette app, et déploie depuis `main`.
    lancée dans le sous-dossier n'y aurait accès à aucun des deux. Elle installerait des
    versions non verrouillées. Le réglage à tenir côté Scalingo est `PROJECT_DIR`, qui doit
    rester *vide*.
-4. **Tenir la variable de production**, `GRIST_API_KEY`. Elle n'a pas de défaut, et le
+4. **Surveiller la collecte.** Le workflow `.github/workflows/signe-de-vie.yml`
+   demande chaque heure à la production si le journal porte son signe de vie
+   (`GET /api/journal/v1/alive`), et échoue sinon : GitHub prévient par
+   courriel (ADR-15 d'[analytics.md](docs/knowledge/adr/analytics.md)).
+5. **Tenir la variable de production**, `GRIST_API_KEY`. Elle n'a pas de défaut, et le
    serveur refuse de démarrer sans elle (cf. [Configuration](#configuration)).
-5. **Relire le pied de page en production.** Il annonce la version de l'app et le sha du
+6. **Relire le pied de page en production.** Il annonce la version de l'app et le sha du
    commit livré.
 
 Trois fichiers de la racine portent ce déploiement :
