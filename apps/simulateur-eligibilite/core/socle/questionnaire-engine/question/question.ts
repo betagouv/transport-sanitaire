@@ -139,7 +139,7 @@ export type IncompatiblePossibleAnswers = {
 /**
  * Une question, telle que le moteur de questionnaire la lit : elle sait comment
  * elle se pose, et de quelles réponses elle dépend. Le modèle la déclare par
- * ses constructeurs (`question/declared/factory.ts`, `question/declared/question.vo.ts`).
+ * ses constructeurs (`question/declared/question.factory.ts`, `question/declared/question.vo.ts`).
  *
  * `askedIn` est écrite en méthode : TypeScript compare alors ses paramètres
  * dans les deux sens, et le moteur de questionnaire peut recevoir les questions

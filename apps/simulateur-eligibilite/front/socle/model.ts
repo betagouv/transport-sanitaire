@@ -1,12 +1,12 @@
 // Ce que le socle attend d'une version du modèle : son métier
-// (`core/socle/model.ts`), et ce qu'il affiche, ses deux résultats.
+// (`core/socle/model.types.ts`), et ce qu'il affiche, ses deux résultats.
 //
 // Le socle déroule le parcours et ne lit aucune clé du modèle. Il transporte les
 // réponses, les faits et les cibles de l'un à l'autre, et donne à chaque
 // résultat ce qu'il déclare lire.
 
 import type { ComponentType, ReactNode } from "react";
-import type { AnyFaits, CoreModel } from "../../core/socle/model";
+import type { AnyFaits, CoreModel } from "../../core/socle/model.types";
 import {
   type AnyCibles,
   type AnyQuestions,

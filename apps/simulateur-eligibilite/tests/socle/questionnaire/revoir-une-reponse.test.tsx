@@ -1,6 +1,11 @@
 import { screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
-import { givenOf, page, questionsOf, Reading } from "../../../core/socle";
+import {
+  page,
+  QuestionFactory,
+  Reading,
+  ReadingFactory,
+} from "../../../core/socle";
 import { afficher } from "./afficher";
 
 // L'alerte d'une incohérence offre un lien vers chaque réponse d'avant à
@@ -16,8 +21,8 @@ type Questions = {
   debut: string;
 };
 
-const question = questionsOf<Questions>();
-const given = givenOf<Questions>();
+const question = new QuestionFactory<Questions>();
+const given = new ReadingFactory<Questions>();
 
 const MESSAGE = "Les espèces ne se paient pas à la livraison.";
 

@@ -1,5 +1,5 @@
 // La question déclarée : ses réglages, quelle que soit sa sorte
-// (`question/declared/settings.ts`), et ce qu'elle en fait quand elle se pose.
+// (`question/declared/settings.types.ts`), et ce qu'elle en fait quand elle se pose.
 // Chaque sorte en dit plus dans sa classe (`question/declared/choices.vo.ts`,
 // `question/declared/inputs.vo.ts`).
 //
@@ -29,7 +29,7 @@ import {
   type QuestionRef,
   type Reminder,
 } from "../question.ts";
-import type { CommonSettings, NothingComputed } from "./settings.ts";
+import type { CommonSettings, NothingComputed } from "./settings.types.ts";
 
 /**
  * Une question déclarée, sans ce que sa sorte y ajoute. `Id` : son id.

@@ -4,7 +4,7 @@
 // attendus, et à l'écran des seeds, qui permet de l'ouvrir.
 
 import type { CibleValues } from "../decision-engine/index.ts";
-import type { CoreModel } from "../model.ts";
+import type { CoreModel } from "../model.types.ts";
 import type {
   Answers,
   AnyCibles,

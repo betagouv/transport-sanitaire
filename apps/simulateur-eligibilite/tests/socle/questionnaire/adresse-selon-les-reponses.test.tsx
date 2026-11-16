@@ -1,6 +1,6 @@
 import { screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
-import { type AddressData, page, questionsOf } from "../../../core/socle";
+import { type AddressData, page, QuestionFactory } from "../../../core/socle";
 import { Questionnaire } from "../../../core/socle/questionnaire-engine";
 import { afficher } from "./afficher";
 
@@ -14,7 +14,7 @@ type Questions = {
   remarque: string;
 };
 
-const question = questionsOf<Questions>();
+const question = new QuestionFactory<Questions>();
 
 const DESTINATION = page(
   "destination",

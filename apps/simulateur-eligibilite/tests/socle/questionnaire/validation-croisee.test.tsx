@@ -1,6 +1,6 @@
 import { screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
-import { givenOf, page, questionsOf } from "../../../core/socle";
+import { page, QuestionFactory, ReadingFactory } from "../../../core/socle";
 import { afficher } from "./afficher";
 
 // Une réponse peut en contredire une autre. La question qui vient en dernier
@@ -16,8 +16,8 @@ type Questions = {
   precision: string;
 };
 
-const question = questionsOf<Questions>();
-const given = givenOf<Questions>();
+const question = new QuestionFactory<Questions>();
+const given = new ReadingFactory<Questions>();
 
 const FIN_AVANT_LE_DEBUT = "La fin précède le début.";
 const FERME_LE_DIMANCHE = "Le magasin est fermé le dimanche.";

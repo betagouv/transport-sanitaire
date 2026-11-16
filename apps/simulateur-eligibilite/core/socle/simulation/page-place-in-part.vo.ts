@@ -3,7 +3,7 @@
 // parcours en tire les jalons de chaque phase (ADR-8 d'analytics). Une réponse
 // sur la dernière peut encore ouvrir une page de plus : la place change alors.
 
-import type { CoreModel } from "../model.ts";
+import type { CoreModel } from "../model.types.ts";
 import type { Page } from "../questionnaire-engine/index.ts";
 
 export class PagePlaceInPart {

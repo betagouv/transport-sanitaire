@@ -2,8 +2,8 @@ import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { useState } from "react";
 import { describe, expect, it } from "vitest";
-import { page, questionsOf } from "../../../core/socle";
-import type { CoreModel } from "../../../core/socle/model";
+import { page, QuestionFactory } from "../../../core/socle";
+import type { CoreModel } from "../../../core/socle/model.types";
 import { Simulation } from "../../../core/socle/simulation";
 import { QuestionnaireForm } from "../../../front/socle/questionnaire/QuestionnaireForm";
 import { detailsDuStepper } from "../simulateur/questionnaire";
@@ -14,7 +14,7 @@ import { detailsDuStepper } from "../simulateur/questionnaire";
 
 type Questions = { boisson: "the" | "cafe"; quantite: number };
 
-const question = questionsOf<Questions>();
+const question = new QuestionFactory<Questions>();
 
 const PARTS = [
   {

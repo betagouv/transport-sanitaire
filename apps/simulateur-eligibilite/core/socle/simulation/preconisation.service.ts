@@ -6,7 +6,7 @@
 // Un service : la simulation s'en sert à chaque étape et pour verrouiller, les
 // use cases sur des réponses données d'un coup.
 
-import type { AnyFaits, CoreModel } from "../model.ts";
+import type { AnyFaits, CoreModel } from "../model.types.ts";
 import {
   type AnsweredQuestionnaire,
   type Answers,

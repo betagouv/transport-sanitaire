@@ -4,7 +4,7 @@
 // donne une nouvelle simulation ; aucune ne change celle-ci. L'écran n'y ajoute
 // que le brouillon de la page ouverte.
 
-import type { CoreModel } from "../model.ts";
+import type { CoreModel } from "../model.types.ts";
 import {
   type Answer,
   type AnsweredQuestionnaire,

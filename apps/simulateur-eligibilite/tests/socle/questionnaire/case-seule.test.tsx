@@ -1,6 +1,6 @@
 import { screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
-import { givenOf, page, questionsOf } from "../../../core/socle";
+import { page, QuestionFactory, ReadingFactory } from "../../../core/socle";
 import { Questionnaire } from "../../../core/socle/questionnaire-engine";
 import { afficher } from "./afficher";
 
@@ -14,8 +14,8 @@ type Questions = {
   escale: string;
 };
 
-const question = questionsOf<Questions>();
-const given = givenOf<Questions>();
+const question = new QuestionFactory<Questions>();
+const given = new ReadingFactory<Questions>();
 
 const DISTANCE = question
   .singleChoice("distance", "Quelle distance ?")

@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import type { ValidatedAnswers } from "../../../core/socle";
-import type { CoreModel } from "../../../core/socle/model";
+import type { CoreModel } from "../../../core/socle/model.types";
 import { EstablishAPreconisation } from "../../../core/socle/simulation";
 import { modeleDeTest } from "../modele-de-test";
 

@@ -13,7 +13,7 @@ import {
 } from "../asked/inputs.vo.ts";
 import type { AnyQuestions } from "../question.ts";
 import { DeclaredQuestion } from "./question.vo.ts";
-import type { CommonSettings } from "./settings.ts";
+import type { CommonSettings } from "./settings.types.ts";
 
 /** Un nombre déclaré. */
 export class DeclaredNumber<

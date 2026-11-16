@@ -1,6 +1,6 @@
 import { screen, within } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
-import { page, questionsOf } from "../../../core/socle";
+import { page, QuestionFactory } from "../../../core/socle";
 import { afficher } from "./afficher";
 
 // Une réponse possible peut porter une aide : un lien, juste sous elle, qui
@@ -11,7 +11,7 @@ type Questions = {
   situations: readonly ("hospitalise" | "autre" | "aucune")[];
 };
 
-const question = questionsOf<Questions>();
+const question = new QuestionFactory<Questions>();
 
 const AGE = page(
   "age",

@@ -1,6 +1,6 @@
 import { screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
-import { page, questionsOf } from "../../../core/socle";
+import { page, QuestionFactory } from "../../../core/socle";
 import { afficher } from "./afficher";
 
 // Une réponse qui dépend d'une autre sur la même page (`dependsOn`) se vide à
@@ -13,7 +13,7 @@ type Questions = {
   note: string;
 };
 
-const question = questionsOf<Questions>();
+const question = new QuestionFactory<Questions>();
 
 const TRAJET = page(
   "trajet",
