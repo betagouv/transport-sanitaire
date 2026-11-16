@@ -9,7 +9,7 @@
 > **Mise à jour 2026-11-16, l'établissement et le service en colonnes (#491).**
 > Chaque événement d'un parcours porte désormais son rattachement : les ids du
 > référentiel, et les noms de l'établissement et du service. Le journal Grist
-> les écrit dans deux colonnes, `establishment` et `service`, le nom puis l'id.
+> les écrit dans deux colonnes, `establishment` et `service`, en JSON brut.
 > Un nom saisi à l'écran de rattachement part donc au journal : cela **révise**
 > l'invariant du §1. Voir l'ADR-16.
 >
@@ -860,22 +860,23 @@ référentiel, qui est un autre document.
    garde le libellé choisi avec son id. Un nom saisi passe devant celui de la
    liste : sous « Autre », c'est lui qui dit le service.
 3. **Deux colonnes dans Grist.** L'adaptateur écrit `establishment` et
-   `service`, dans `Evenements` et dans `Collisions` : le nom, puis l'id entre
-   parenthèses.
+   `service`, dans `Evenements` et dans `Collisions`, en JSON brut : `id` et
+   `name`, et une clé qui manque quand la valeur manque. Un texte « nom (id) »,
+   d'abord écrit, se lisait mais ne s'exploitait pas sans le redécouper.
 
    | Rattachement | `establishment` | `service` |
    |---|---|---|
-   | un service de la liste | `CHU Grenoble Alpes (12)` | `Cardiologie (48)` |
-   | un service saisi sous « Autre » | `CHU Grenoble Alpes (12)` | `Néphrologie (51)`, où 51 est l'id d'« Autre » |
-   | un établissement saisi | `Clinique des Cèdres` | `Urgences` |
-   | le repli, sans référentiel | `(autre)` | `(autre)` |
+   | un service de la liste | `{"id":"12","name":"CHU Grenoble Alpes"}` | `{"id":"48","name":"Cardiologie"}` |
+   | un service saisi sous « Autre » | `{"id":"12","name":"CHU Grenoble Alpes"}` | `{"id":"51","name":"Néphrologie"}`, où 51 est l'id d'« Autre » |
+   | un établissement saisi | `{"name":"Clinique des Cèdres"}` | `{"name":"Urgences"}` |
+   | le repli, sans référentiel | `{"id":"autre"}` | `{"id":"autre"}` |
    | le signe de vie | vide | vide |
 
 4. **Le serveur borne les noms.** 300 caractères au plus, là où l'écran borne
    une saisie à 150 : un nom long du référentiel ne fait pas perdre l'événement.
 
-**Pourquoi.** Une ligne du journal se lit et se filtre seule, sans ouvrir le
-JSON ni joindre le début du parcours. Le navigateur a les noms sous la main : le
+**Pourquoi.** Une ligne du journal se lit et se filtre seule, sans ouvrir
+`payload` ni joindre le début du parcours. Le navigateur a les noms sous la main : le
 serveur n'a ni lecture de plus dans Grist ni cache à tenir.
 
 Écarté : le serveur qui trouve le nom dans le référentiel d'après l'id. Le
