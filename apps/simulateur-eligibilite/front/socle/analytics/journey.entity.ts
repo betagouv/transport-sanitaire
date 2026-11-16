@@ -63,11 +63,8 @@ export type ExposedButtons = {
 /** Ce qui suit un bouton exposé : son clic, ou le téléchargement réussi. */
 export type Gesture = "requested" | "succeeded";
 
-/** Où le parcours commence : le rattachement, et le chargement de la page. */
-export type Entrance = Pick<
-  AnalyticsEvent,
-  "establishment_id" | "service_id" | "navigation"
->;
+/** Comment la page s'est chargée, pour le premier parcours de la page. */
+export type Entrance = Pick<AnalyticsEvent, "navigation">;
 
 export class Journey {
   readonly simulationId = crypto.randomUUID();
@@ -86,7 +83,8 @@ export class Journey {
   /**
    * `seeded` : la simulation s'ouvre sur une seed, au milieu du parcours. Elle
    * n'est pas un parcours de prescripteur : rien n'en part. `provenance` :
-   * l'app qui le produit, sur chaque événement (ADR-14).
+   * l'app qui le produit et son rattachement, sur chaque événement (ADR-14,
+   * ADR-16).
    */
   constructor(opening: { seeded: boolean; provenance: Provenance }) {
     this.#seeded = opening.seeded;
@@ -98,7 +96,7 @@ export class Journey {
     return this.#record({
       type: "simulation_started",
       screen: "P0",
-      ...entrance,
+      navigation: entrance.navigation,
     });
   }
 

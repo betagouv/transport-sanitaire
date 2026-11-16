@@ -1,10 +1,17 @@
 # Architecture : Analytics de parcours
 
-> Statut : **décidé (release officielle)** · Dernière mise à jour : 2026-11-13
+> Statut : **décidé (release officielle)** · Dernière mise à jour : 2026-11-16
 >
 > Suivi analytique du parcours dans le simulateur d'éligibilité.
 > Repose sur le rattachement établissement/service fourni par l'écran de rattachement :
 > voir [identification.md](./identification.md).
+>
+> **Mise à jour 2026-11-16, l'établissement et le service en colonnes (#491).**
+> Chaque événement d'un parcours porte désormais son rattachement : les ids du
+> référentiel, et les noms de l'établissement et du service. Le journal Grist
+> les écrit dans deux colonnes, `establishment` et `service`, le nom puis l'id.
+> Un nom saisi à l'écran de rattachement part donc au journal : cela **révise**
+> l'invariant du §1. Voir l'ADR-16.
 >
 > **Mise à jour 2026-11-13, les arbitrages de l'éditeur sur les véhicules et les
 > motifs (#443).** `portions` ne porte plus `TERRESTRE` : la portée M-COMMUN
@@ -147,8 +154,11 @@ aucune valeur de réponse ne part, ni vers Matomo ni vers le journal. Transitent
 ids de l'établissement et du service du référentiel, des identifiants techniques
 opaques (simulation, événement, exposition, révision), les codes des questions
 affichées et l'état de leur validation, et les codes de résultat (issue, motifs,
-mode, support, financeur). Le service libre saisi sous « Autre » n'en fait pas
-partie. ~~Seuls transitent l'id d'un service du référentiel et des compteurs
+mode, support, financeur). Depuis le 2026-11-16, le journal reçoit aussi le nom
+de l'établissement et celui du service, lus dans la liste ou saisis à l'écran de
+rattachement (ADR-16) : c'est le seul texte saisi qui parte, et Matomo ne le
+reçoit pas. ~~Le service libre saisi sous « Autre » n'en fait pas
+partie.~~ (jusqu'au 2026-11-16) ~~Seuls transitent l'id d'un service du référentiel et des compteurs
 d'événements.~~ (jusqu'au 2026-11-12)
 
 ## 2. Décisions (ADR)
@@ -329,7 +339,8 @@ versionnée de notre backend Express. Le backend :
   l'`event_id`~~ ;
 - n'accuse réception qu'une fois l'écriture faite.
 
-Chaque événement porte l'id de l'établissement et celui du service du rattachement.
+Chaque événement porte l'id de l'établissement et celui du service du rattachement,
+et leurs noms (ADR-16). Jusqu'au 2026-11-16, seul `simulation_started` les portait.
 Le contrat v0.1 du plan de marquage (16 événements, `p0_viewed`, `cta_exposed`…)
 n'est pas suivi : il est historique.
 
@@ -403,8 +414,8 @@ portent l'adresse, l'authentification, le JSON et les erreurs :
 Le référentiel et le rattachement passent aussi par eux. L'adaptateur Grist, seul à
 connaître le document « Simulateur-Parcours », range chaque événement en colonnes
 communes (`event_id`, `simulation_id`, `sequence`, type, dates, environnement,
-version du schéma, `is_test`) et le reste en JSON dans une colonne `payload`, et les
-collisions dans une table à part.
+version du schéma, `is_test`, puis `establishment` et `service`, ADR-16) et le reste
+en JSON dans une colonne `payload`, et les collisions dans une table à part.
 
 Chaque côté a un conteneur, `container.ts` à sa racine, qui instancie une fois ses
 classes et les exporte. `server/container.ts` choisit les adaptateurs d'après la
@@ -824,6 +835,67 @@ journaux du serveur, sans l'arrêter. Hors production, le journal jette tout,
 `alive` compris : la sonde y répond donc 503, et le workflow ne regarde que la
 production. Les périodes de validité des établissements et la règle de
 population référencée restent à trancher (#440).
+
+### ADR-16 - L'établissement et le service sur chaque événement, et en colonnes
+
+**Contexte.** Dans le Grist du journal, on ne voyait ni l'établissement ni le
+service d'une simulation (#491). Les deux ids n'étaient que dans le JSON de
+`payload`, et seulement sur `simulation_started`. Leur nom se lisait dans le
+référentiel, qui est un autre document.
+
+**Décision.**
+
+1. **Le rattachement sur chaque événement.** Le parcours le reçoit à son
+   ouverture, avec sa provenance (ADR-14), et l'écrit sur tous les événements
+   qu'il numérote :
+
+   | Champ | Ce qu'il dit | Quand il manque |
+   |---|---|---|
+   | `establishment_id` | l'id de l'établissement dans le référentiel | l'établissement est saisi à l'écran |
+   | `establishment_name` | son nom, lu dans la liste ou saisi | le référentiel ne répondait pas |
+   | `service_id` | l'id du service, celui d'« Autre » sous un service saisi | l'établissement est saisi à l'écran |
+   | `service_name` | son nom, lu dans la liste ou saisi | le référentiel ne répondait pas |
+
+2. **Le navigateur envoie les noms.** L'écran de rattachement les a déjà : il
+   garde le libellé choisi avec son id. Un nom saisi passe devant celui de la
+   liste : sous « Autre », c'est lui qui dit le service.
+3. **Deux colonnes dans Grist.** L'adaptateur écrit `establishment` et
+   `service`, dans `Evenements` et dans `Collisions` : le nom, puis l'id entre
+   parenthèses.
+
+   | Rattachement | `establishment` | `service` |
+   |---|---|---|
+   | un service de la liste | `CHU Grenoble Alpes (12)` | `Cardiologie (48)` |
+   | un service saisi sous « Autre » | `CHU Grenoble Alpes (12)` | `Néphrologie (51)`, où 51 est l'id d'« Autre » |
+   | un établissement saisi | `Clinique des Cèdres` | `Urgences` |
+   | le repli, sans référentiel | `(autre)` | `(autre)` |
+   | le signe de vie | vide | vide |
+
+4. **Le serveur borne les noms.** 300 caractères au plus, là où l'écran borne
+   une saisie à 150 : un nom long du référentiel ne fait pas perdre l'événement.
+
+**Pourquoi.** Une ligne du journal se lit et se filtre seule, sans ouvrir le
+JSON ni joindre le début du parcours. Le navigateur a les noms sous la main : le
+serveur n'a ni lecture de plus dans Grist ni cache à tenir.
+
+Écarté : le serveur qui trouve le nom dans le référentiel d'après l'id. Le
+contrat restait fait d'ids, mais chaque écriture relisait Grist, ou demandait un
+cache, et un établissement saisi restait sans nom.
+
+**Conséquences.**
+
+- Le serveur écrit un nom qu'il ne vérifie pas : un client peut en envoyer un
+  autre que celui du référentiel. L'id reste la clé, le nom une aide à la
+  lecture.
+- Un nom saisi à l'écran de rattachement part au journal. L'enrichissement
+  l'écrivait déjà dans le référentiel. Un très petit service peut désigner une
+  ou deux personnes (R-11).
+- Matomo ne change pas : il ne reçoit que l'id du service (ADR-2).
+- Le contrat de nos compléments passe en version 3. Les lignes d'avant gardent
+  leurs colonnes vides : elles ne sont pas reprises.
+- Les deux colonnes doivent exister dans le document du journal avant le
+  déploiement. Grist refuse une écriture vers une colonne inconnue, et la
+  collecte s'arrêterait.
 
 ## 3. Architecture cible
 

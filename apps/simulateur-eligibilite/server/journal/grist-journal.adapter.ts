@@ -3,7 +3,11 @@
 // colonnes communes à tous les types, pour filtrer, et l'événement entier en
 // JSON dans `payload`, pour le relire tel quel. La table ne change pas quand
 // le contrat gagne un champ.
+//
+// L'établissement et le service ont chacun leur colonne, qui se lit sans
+// ouvrir le JSON : le nom, puis l'id entre parenthèses (ADR-16).
 
+import type { RattachementDuParcours } from "../../shared/analytics/analytics-event.ts";
 import type { GristApiClient, GristRow } from "../grist/grist-api.client.ts";
 import type { Journal, NotInTheJournal } from "./journal.port.ts";
 import { JournalEntry } from "./journal-entry.entity.ts";
@@ -50,8 +54,29 @@ function rowOf({
     environment,
     schema_version: schemaVersion,
     is_test: event.is_test ?? null,
+    ...rattachementOf(event),
     payload: JSON.stringify(event),
   };
+}
+
+/** Ni nom ni id : la cellule reste vide. */
+type EmptyCell = null;
+
+// Les deux colonnes du rattachement. Le signe de vie n'appartient à aucun
+// parcours : il n'en a pas.
+function rattachementOf(event: JournalEntry["event"]) {
+  const of: RattachementDuParcours = event.type === "alive" ? {} : event;
+  return {
+    establishment: named(of.establishment_name, of.establishment_id),
+    service: named(of.service_name, of.service_id),
+  };
+}
+
+// « CHU Grenoble Alpes (12) ». Un établissement saisi n'a pas d'id, et un
+// rattachement de repli n'a pas de nom.
+function named(name?: string, id?: string): string | EmptyCell {
+  if (name && id) return `${name} (${id})`;
+  return name ?? (id ? `(${id})` : null);
 }
 
 function entryOf({ fields }: GristRow): JournalEntry {
