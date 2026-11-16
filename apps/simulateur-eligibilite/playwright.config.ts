@@ -1,4 +1,4 @@
-// Les parcours en navigateur réel (`pnpm navigateur`) : le simulateur construit,
+// Les parcours en navigateur réel (`pnpm test:navigateur`) : le simulateur construit,
 // servi par son serveur, embarqué en iframe dans une page d'une autre origine,
 // sous Chromium et WebKit.
 //
@@ -28,7 +28,7 @@ export default defineConfig({
   ],
   webServer: [
     {
-      // Le front construit : `pnpm navigateur` le construit avant.
+      // Le front construit : `pnpm test:navigateur` le construit avant.
       command: "node server/server.ts",
       env: { PORT: String(PORT_SIMULATEUR) },
       url: `${ORIGINE_SIMULATEUR}/robots.txt`,

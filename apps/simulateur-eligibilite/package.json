@@ -12,7 +12,7 @@
     "build": "tsc -b && vite build",
     "preview": "vite preview",
     "test": "vitest run",
-    "navigateur": "pnpm build && playwright test",
+    "test:navigateur": "pnpm build && playwright test",
     "start": "node server/server.ts",
     "format": "biome format --write",
     "lint": "biome check",

@@ -94,7 +94,7 @@ plusieurs les portent.
 fait.** Elle lance le script `verifier` de l'app, et la CI lance exactement le
 même : un `verifier` vert ici l'est là-bas. Une porte à ajouter se met dans ce
 script, jamais dans le YAML. Seule exception : les parcours en navigateur du
-simulateur (`pnpm navigateur`), qui demandent des navigateurs installés et ont
+simulateur (`pnpm test:navigateur`), qui demandent des navigateurs installés et ont
 leur job en CI.
 
 `tsp verifier` sans app le passe sur toutes les apps, une à la fois.
