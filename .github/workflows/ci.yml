@@ -47,7 +47,7 @@ jobs:
           cache: pnpm
       - run: pnpm install --frozen-lockfile
       - run: pnpm --filter simulateur-eligibilite exec playwright install --with-deps chromium webkit
-      - run: pnpm --filter simulateur-eligibilite navigateur
+      - run: pnpm --filter simulateur-eligibilite test:navigateur
       - uses: actions/upload-artifact@v4
         if: failure()
         with:

@@ -31,7 +31,7 @@ apps/data-analyzer/mapping.json
 # `npm run apercu-cerfa` (documents de travail). Le gabarit officiel, lui, est
 # versionné sous front/cerfa/gabarit/ et n'est pas concerné par ce motif.
 apps/simulateur-eligibilite/*.pdf
-# Traces et captures des parcours en navigateur (`pnpm navigateur`).
+# Traces et captures des parcours en navigateur (`pnpm test:navigateur`).
 apps/simulateur-eligibilite/navigateur/resultats
 
 # Réglages Claude Code personnels (le settings.json du dépôt, lui, est versionné).
