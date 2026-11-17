@@ -14,20 +14,36 @@ import {
 import { modeleDeTest, seulModele } from "../modele-de-test";
 
 // L'écran de rattachement : on n'atteint pas le simulateur sans s'être rattaché.
-// Le référentiel est le snapshot. La déclaration capture ce qui partirait au
-// serveur : il n'y a pas de backend en test.
+// Le référentiel est le snapshot, qui n'enregistre rien, ou un double qui
+// enregistre la saisie libre et donne les ids qu'il crée.
 function setup(referentiel: Referentiel = snapshotReferentiel) {
   const user = userEvent.setup();
-  const declarations: RattachementSaisi[] = [];
-  render(
-    <App
-      models={seulModele(modeleDeTest)}
-      referentiel={referentiel}
-      declarer={(saisie) => declarations.push(saisie)}
-    />,
-  );
-  return { user, declarations };
+  render(<App models={seulModele(modeleDeTest)} referentiel={referentiel} />);
+  return { user };
 }
+
+// Un référentiel qui enregistre la saisie libre quand le test le décide.
+function referentielQuiEnregistre() {
+  const enregistrements: RattachementSaisi[] = [];
+  let repondre = () => {};
+  const referentiel: Referentiel = {
+    ...snapshotReferentiel,
+    enrichirDepuisSaisie(saisie) {
+      enregistrements.push(saisie);
+      const ids = { etabId: saisie.etabId || "e_cree", serviceId: "s_cree" };
+      return new Promise((resolve) => {
+        repondre = () => resolve(ids);
+      });
+    },
+  };
+  return { referentiel, enregistrements, repondre: () => repondre() };
+}
+
+const saisir = (
+  user: ReturnType<typeof userEvent.setup>,
+  champ: string,
+  texte: string,
+) => user.type(screen.getByRole("textbox", { name: champ }), texte);
 
 async function choisir(labelSelect: RegExp, optionLabel: string) {
   const select = screen.getByRole("combobox", { name: labelSelect });
@@ -56,36 +72,38 @@ describe("écran de rattachement", () => {
   });
 
   it("passe au simulateur dès l'établissement et le service choisis", async () => {
-    const { declarations } = setup();
+    setup();
 
     await choisir(/Établissement/, "CHU Grenoble Alpes");
     await choisir(/Nom du service/, "Cardiologie");
 
     // Le simulateur est monté : une question de la partie 1 apparaît.
     expect(await simulateurMonte()).toBeInTheDocument();
-    // Le service part tel quel à l'analytics. Le référentiel n'apprend rien.
-    expect(rattachementEnSession()).toEqual({
+    expect(rattachementEnSession()).toMatchObject({
       etabId: "e_chu_grenoble",
       serviceId: "s_grenoble_cardio",
     });
-    expect(declarations).toEqual([]);
   });
 
-  it("service « Autre » : déclare le service saisi au serveur, sans attendre sa réponse", async () => {
-    const { user, declarations } = setup();
+  it("service « Autre » : attend que le référentiel crée le service, puis entre avec son id", async () => {
+    const { referentiel, enregistrements, repondre } =
+      referentielQuiEnregistre();
+    const { user } = setup(referentiel);
 
     await choisir(/Établissement/, "CHU Grenoble Alpes");
     await choisir(/Nom du service/, "Autre");
-    await user.type(
-      screen.getByRole("textbox", {
-        name: "Renseignez le nom de votre service",
-      }),
-      "Néphrologie",
-    );
+    await saisir(user, "Renseignez le nom de votre service", "Néphrologie");
     await acceder(user);
 
+    // L'attente se lit sur le bouton, sans autre écran.
+    expect(
+      screen.getByRole("button", { name: "Ouverture du simulateur…" }),
+    ).toBeDisabled();
+    expect(screen.queryByRole("group", PREMIERE_QUESTION)).toBeNull();
+    repondre();
+
     expect(await simulateurMonte()).toBeInTheDocument();
-    expect(declarations).toEqual([
+    expect(enregistrements).toEqual([
       {
         etabId: "e_chu_grenoble",
         serviceId: "s_grenoble_autre",
@@ -93,41 +111,52 @@ describe("écran de rattachement", () => {
         serviceLibre: "Néphrologie",
       },
     ]);
-    expect(rattachementEnSession()?.serviceId).toBe("s_grenoble_autre");
+    expect(rattachementEnSession()).toMatchObject({
+      etabId: "e_chu_grenoble",
+      serviceId: "s_cree",
+    });
   });
 
-  it("« Autre établissement » : déclare l'établissement et son service, sans attendre", async () => {
-    const { user, declarations } = setup();
+  it("« Autre établissement » : entre avec l'établissement et le service créés", async () => {
+    const { referentiel, repondre } = referentielQuiEnregistre();
+    const { user } = setup(referentiel);
 
     await choisir(/Établissement/, "Autre établissement");
-    await user.type(
-      screen.getByRole("textbox", {
-        name: "Renseignez le nom de votre établissement",
-      }),
+    await saisir(
+      user,
+      "Renseignez le nom de votre établissement",
       "CH de Voiron",
     );
-    await user.type(
-      screen.getByRole("textbox", {
-        name: "Renseignez le nom de votre service",
-      }),
-      "Urgences",
+    await saisir(user, "Renseignez le nom de votre service", "Urgences");
+    await acceder(user);
+    repondre();
+
+    expect(await simulateurMonte()).toBeInTheDocument();
+    expect(rattachementEnSession()).toMatchObject({
+      etabId: "e_cree",
+      serviceId: "s_cree",
+    });
+  });
+
+  it("référentiel muet : la saisie libre entre quand même, sans id", async () => {
+    const { user } = setup();
+
+    await choisir(/Établissement/, "Autre établissement");
+    await saisir(
+      user,
+      "Renseignez le nom de votre établissement",
+      "CH de Voiron",
     );
+    await saisir(user, "Renseignez le nom de votre service", "Urgences");
     await acceder(user);
 
     expect(await simulateurMonte()).toBeInTheDocument();
-    const saisie = {
-      etabId: "",
-      etabEstAutre: true,
-      etabLibre: "CH de Voiron",
-      serviceLibre: "Urgences",
-    };
-    expect(declarations).toEqual([saisie]);
-    // Rien n'identifie le service à Matomo : l'événement part sans nom.
-    expect(rattachementEnSession()).toEqual(saisie);
+    expect(rattachementEnSession()?.etabId).toBeUndefined();
+    expect(rattachementEnSession()?.serviceId).toBeUndefined();
   });
 
-  it("référentiel indisponible : entre quand même, rattaché à « Autre / Autre »", async () => {
-    const { user, declarations } = setup({
+  it("référentiel indisponible : entre quand même, sans rattachement de repli", async () => {
+    const { user } = setup({
       ...snapshotReferentiel,
       listerEtablissements: async () => {
         throw new Error("Grist indisponible");
@@ -138,10 +167,7 @@ describe("écran de rattachement", () => {
     await acceder(user);
 
     expect(await simulateurMonte()).toBeInTheDocument();
-    expect(rattachementEnSession()).toEqual({
-      etabId: "autre",
-      serviceId: "autre",
-    });
-    expect(declarations).toEqual([]);
+    expect(rattachementEnSession()?.etabId).toBeUndefined();
+    expect(rattachementEnSession()?.serviceId).toBeUndefined();
   });
 });

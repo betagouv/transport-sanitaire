@@ -3,9 +3,12 @@ import {
   rangerRattachement,
   rattachementEnSession,
 } from "../../../front/socle/rattachement/rattachement-en-session";
-import type { RattachementSaisi } from "../../../shared/rattachement-saisi";
+import { RattachementDuReferentiel } from "../../../shared/rattachement-du-referentiel.vo";
 
-const rattachement: RattachementSaisi = { etabId: "7", serviceId: "42" };
+const rattachement = RattachementDuReferentiel.choisi({
+  etabId: "7",
+  serviceId: "42",
+});
 
 describe("session de rattachement", () => {
   it("conserve le rattachement renseigné", () => {

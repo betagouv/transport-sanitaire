@@ -208,7 +208,6 @@ async function seRattacherA(etablissement: string, service: string) {
     <App
       models={seulModele(modeleDeTest)}
       referentiel={DEUX_CARDIOLOGIES}
-      declarer={() => {}}
       analytics={analytics}
     />,
   );

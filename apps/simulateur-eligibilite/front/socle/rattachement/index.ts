@@ -2,7 +2,6 @@
 // structure qu'il remonte, le rattachement gardé en session, et ce qui parle
 // au serveur, que le conteneur instancie.
 
-export { declarerAuServeur } from "./declarer-la-saisie";
 export { RattachementScreen } from "./RattachementScreen";
 export {
   rangerRattachement,
