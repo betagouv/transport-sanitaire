@@ -1,7 +1,7 @@
 // Un passage dans le questionnaire, tel que la mesure d'audience le compte : son
 // début, ses étapes, sa fin, ou son abandon.
 
-import type { RattachementSaisi } from "../../../shared/rattachement-saisi";
+import type { RattachementDuReferentiel } from "../../../shared/rattachement-du-referentiel.vo";
 import {
   AudienceEvent,
   type AudienceEventName,
@@ -11,7 +11,7 @@ import {
 
 export type QuestionnaireRunOptions = {
   /** `null` tant que personne ne s'est rattaché. */
-  rattachement: RattachementSaisi | null;
+  rattachement: RattachementDuReferentiel | null;
   /** Le questionnaire est-il compté ? Le second, celui du cerfa, ne l'est pas. */
   counted: boolean;
   /** Le questionnaire a déjà des réponses : il reprend, il ne commence pas. */
@@ -19,7 +19,7 @@ export type QuestionnaireRunOptions = {
 };
 
 export class QuestionnaireRun {
-  readonly #rattachement: RattachementSaisi | null;
+  readonly #rattachement: RattachementDuReferentiel | null;
   readonly #counted: boolean;
   readonly #resumed: boolean;
   #completed = false;

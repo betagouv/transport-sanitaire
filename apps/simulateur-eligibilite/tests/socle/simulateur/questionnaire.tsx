@@ -37,7 +37,6 @@ export async function ouvrirLeSimulateur(
     <App
       models={seulModele(modeleAvec(options.seeds, options.modele))}
       referentiel={snapshotReferentiel}
-      declarer={() => {}}
       developerTools={options.developerTools}
       analytics={options.analytics}
     />

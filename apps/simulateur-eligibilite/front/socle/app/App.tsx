@@ -24,7 +24,7 @@ import type { Navigation } from "./navigation";
 import { useNavigation } from "./navigation";
 import { SimulateurScreen } from "./SimulateurScreen";
 
-// `referentiel`, `declarer` et `analytics` viennent du conteneur ; les tests
+// `referentiel` et `analytics` viennent du conteneur ; les tests
 // passent les leurs.
 type Props = ScreensProps & {
   /** La mesure d'audience et le journal des parcours. Absents, rien ne part. */
@@ -33,7 +33,7 @@ type Props = ScreensProps & {
 
 type ScreensProps = Pick<
   ComponentProps<typeof RattachementScreen>,
-  "referentiel" | "declarer"
+  "referentiel"
 > & {
   /**
    * Les modèles que l'app peut dérouler, chacun sous le nom que `main.tsx` lui
@@ -64,7 +64,6 @@ export function App({ analytics, ...screens }: Props) {
 function Screens({
   models,
   referentiel,
-  declarer,
   developerTools = developerToolsUnlocked(),
 }: ScreensProps) {
   const navigation = useNavigation();
@@ -75,7 +74,6 @@ function Screens({
     return (
       <RattachementScreen
         referentiel={referentiel}
-        declarer={declarer}
         onRattache={navigation.rattacher}
       />
     );

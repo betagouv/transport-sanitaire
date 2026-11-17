@@ -23,11 +23,7 @@ function chargement() {
   });
   const user = userEvent.setup();
   render(
-    <App
-      models={seulModele(promesse)}
-      referentiel={snapshotReferentiel}
-      declarer={() => {}}
-    />,
+    <App models={seulModele(promesse)} referentiel={snapshotReferentiel} />,
   );
   return { user, resolve, reject };
 }

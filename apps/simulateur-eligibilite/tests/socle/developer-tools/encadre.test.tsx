@@ -57,7 +57,6 @@ describe("App câble les developer tools", () => {
       <App
         models={seulModele(modeleDeTest)}
         referentiel={snapshotReferentiel}
-        declarer={() => {}}
       />,
     );
 
@@ -76,7 +75,6 @@ describe("App câble les developer tools", () => {
       <App
         models={seulModele(modeleDeTest)}
         referentiel={snapshotReferentiel}
-        declarer={() => {}}
         developerTools={developerToolsUnlocked({ DEV: false })}
       />,
     );

@@ -1,24 +1,20 @@
 // Ce que le début d'une simulation dit de son rattachement (ADR-0053) : les ids
-// du référentiel quand il en a. Les noms ne partent pas : le contrat v10.2.2
-// ne les connaît pas (#497).
+// du référentiel, et rien d'autre. Les noms ne partent pas : le contrat v10.2.2
+// ne les connaît pas (#497). Une saisie libre part avec les ids que le
+// référentiel lui donne, jamais celui de l'entrée « Autre » (#506).
 
 import { describe, expect, it } from "vitest";
+import { RegisterTheRattachement } from "../../../front/socle/rattachement/register-the-rattachement.usecase";
 import type { RattachementSaisi } from "../../../shared/rattachement-saisi";
+import {
+  type Referentiel,
+  snapshotReferentiel,
+} from "../../../shared/referentiel";
 import { journalDeTest } from "./journal-de-test";
 
-function demarrer(rattachement: RattachementSaisi | null) {
-  const { analytics, envoyes } = journalDeTest();
-  analytics.startASimulation.execute({
-    rattachement,
-    seeded: false,
-    modelVersion: "10.2.1",
-  });
-  return envoyes[0];
-}
-
 describe("le rattachement d'un parcours", () => {
-  it("un service de la liste : les deux ids", () => {
-    const debut = demarrer({
+  it("un service de la liste : les deux ids", async () => {
+    const debut = await demarrer(QUI_ENREGISTRE, {
       etabId: "e_chu_grenoble",
       serviceId: "s_grenoble_cardio",
     });
@@ -29,38 +25,107 @@ describe("le rattachement d'un parcours", () => {
     });
   });
 
-  it("un service saisi sous « Autre » : l'id d'« Autre »", () => {
-    const debut = demarrer({
-      etabId: "e_chu_grenoble",
-      serviceId: "s_grenoble_autre",
-      serviceEstAutre: true,
-      serviceLibre: " Néphrologie ",
+  it("une structure : l'établissement fourre-tout et le service de la structure", async () => {
+    const debut = await demarrer(QUI_ENREGISTRE, {
+      etabId: "e_liberal_cnam",
+      serviceId: "s_assurance_maladie",
     });
+
+    expect(debut).toMatchObject({
+      establishment_id: "e_liberal_cnam",
+      service_id: "s_assurance_maladie",
+    });
+  });
+
+  it("un service saisi sous « Autre » : l'id du service créé, jamais celui d'« Autre »", async () => {
+    const debut = await demarrer(QUI_ENREGISTRE, SERVICE_SAISI);
 
     expect(debut).toMatchObject({
       establishment_id: "e_chu_grenoble",
-      service_id: "s_grenoble_autre",
+      service_id: "s_cree",
     });
   });
 
-  it("un établissement saisi : sans id", () => {
-    const debut = demarrer({
-      etabId: "",
-      etabEstAutre: true,
-      etabLibre: "Clinique des Cèdres",
-      serviceLibre: "Urgences",
-    });
-
-    expect(debut?.establishment_id).toBeUndefined();
-    expect(debut?.service_id).toBeUndefined();
-  });
-
-  it("le rattachement de repli, sans référentiel : ses ids", () => {
-    const debut = demarrer({ etabId: "autre", serviceId: "autre" });
+  it("un établissement saisi : les ids de l'établissement et du service créés", async () => {
+    const debut = await demarrer(QUI_ENREGISTRE, ETABLISSEMENT_SAISI);
 
     expect(debut).toMatchObject({
-      establishment_id: "autre",
-      service_id: "autre",
+      establishment_id: "e_cree",
+      service_id: "s_cree",
     });
   });
+
+  it("un service saisi sous « Autre », référentiel muet : l'établissement seul", async () => {
+    const debut = await demarrer(MUET, SERVICE_SAISI);
+
+    expect(debut?.establishment_id).toBe("e_chu_grenoble");
+    expect(debut).not.toHaveProperty("service_id");
+  });
+
+  it("un établissement saisi, référentiel muet : sans id", async () => {
+    const debut = await demarrer(MUET, ETABLISSEMENT_SAISI);
+
+    expect(debut).not.toHaveProperty("establishment_id");
+    expect(debut).not.toHaveProperty("service_id");
+  });
+
+  it("une saisie libre, sur une source qui n'écrit pas : comme un référentiel muet", async () => {
+    const debut = await demarrer(snapshotReferentiel, SERVICE_SAISI);
+
+    expect(debut?.establishment_id).toBe("e_chu_grenoble");
+    expect(debut).not.toHaveProperty("service_id");
+  });
+
+  it("sans liste des établissements : sans id, pas de rattachement de repli", async () => {
+    const debut = await demarrer(MUET, { etabId: "" });
+
+    expect(debut).not.toHaveProperty("establishment_id");
+    expect(debut).not.toHaveProperty("service_id");
+  });
 });
+
+// ---- implémentation ----
+
+const SERVICE_SAISI: RattachementSaisi = {
+  etabId: "e_chu_grenoble",
+  serviceId: "s_grenoble_autre",
+  serviceEstAutre: true,
+  serviceLibre: " Néphrologie ",
+};
+
+const ETABLISSEMENT_SAISI: RattachementSaisi = {
+  etabId: "",
+  etabEstAutre: true,
+  etabLibre: "Clinique des Cèdres",
+  serviceLibre: "Urgences",
+};
+
+// Un référentiel qui enregistre la saisie libre : il donne l'établissement de
+// la saisie, ou celui qu'il crée, et le service qu'il crée.
+const QUI_ENREGISTRE: Referentiel = {
+  ...snapshotReferentiel,
+  async enrichirDepuisSaisie({ etabId }) {
+    return { etabId: etabId || "e_cree", serviceId: "s_cree" };
+  },
+};
+
+const MUET: Referentiel = {
+  ...snapshotReferentiel,
+  async enrichirDepuisSaisie() {
+    throw new Error("Grist ne répond pas");
+  },
+};
+
+// Le prescripteur se rattache, puis la simulation démarre.
+async function demarrer(referentiel: Referentiel, saisie: RattachementSaisi) {
+  const rattachement = await new RegisterTheRattachement(referentiel).execute(
+    saisie,
+  );
+  const { analytics, envoyes } = journalDeTest();
+  analytics.startASimulation.execute({
+    rattachement,
+    seeded: false,
+    modelVersion: "10.2.1",
+  });
+  return envoyes[0];
+}

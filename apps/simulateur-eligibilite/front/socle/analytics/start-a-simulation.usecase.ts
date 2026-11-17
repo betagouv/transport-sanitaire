@@ -10,13 +10,13 @@ import type {
   Provenance,
   RattachementDuParcours,
 } from "../../../shared/analytics/analytics-event";
-import type { RattachementSaisi } from "../../../shared/rattachement-saisi";
+import type { RattachementDuReferentiel } from "../../../shared/rattachement-du-referentiel.vo";
 import type { Journal } from "./journal.port";
 import { Journey } from "./journey.entity";
 
 export type SimulationStart = {
   /** `null` tant que personne ne s'est rattaché. */
-  rattachement: RattachementSaisi | null;
+  rattachement: RattachementDuReferentiel | null;
   /** La simulation s'ouvre sur une seed : son parcours ne part pas. */
   seeded: boolean;
   /** La version des règles du modèle ouvert. */
@@ -50,13 +50,14 @@ export class StartASimulation {
 
 // ---- implémentation ----
 
-// Ce que le parcours dit de son rattachement : les ids du référentiel. Un
-// établissement saisi n'en a pas.
-function rattachementDuParcours(
-  saisie: RattachementSaisi,
-): RattachementDuParcours {
+// Ce que le parcours dit de son rattachement : les ids du référentiel qu'il a,
+// et aucun autre champ.
+function rattachementDuParcours({
+  etabId,
+  serviceId,
+}: RattachementDuReferentiel): RattachementDuParcours {
   return {
-    establishment_id: saisie.etabId || undefined,
-    service_id: saisie.serviceId,
+    ...(etabId && { establishment_id: etabId }),
+    ...(serviceId && { service_id: serviceId }),
   };
 }

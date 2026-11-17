@@ -169,6 +169,23 @@ describe("l'écran de rattachement", () => {
     );
   });
 
+  it("attend l'entrée sur un bouton « en cours », sans entrer deux fois", async () => {
+    const onValide = vi.fn(() => new Promise<void>(() => {}));
+    render(<RattachementForm onValide={onValide} />);
+
+    await choisir(/Établissement/, "CHU Grenoble Alpes");
+    await choisir(/Nom du service/, "Autre");
+    await saisir("Renseignez le nom de votre service", "Néphrologie");
+    await valider();
+
+    const enCours = screen.getByRole("button", {
+      name: "Ouverture du simulateur…",
+    });
+    expect(enCours).toBeDisabled();
+    await userEvent.click(enCours);
+    expect(onValide).toHaveBeenCalledTimes(1);
+  });
+
   it("changer le premier choix efface ce qui en découlait", async () => {
     render(<RattachementForm onValide={vi.fn()} />);
 
@@ -201,7 +218,7 @@ describe("l'écran de rattachement", () => {
   });
 });
 
-describe("référentiel indisponible : rattachement dégradé « Autre / Autre »", () => {
+describe("référentiel indisponible : entrée sans rattachement", () => {
   const enPanne = async () => {
     throw new Error("référentiel indisponible");
   };
@@ -222,13 +239,7 @@ describe("référentiel indisponible : rattachement dégradé « Autre / Autre �
     ).toBeNull();
     await valider();
 
-    expect(onValide).toHaveBeenCalledWith(
-      {
-        etabId: "autre",
-        serviceId: "autre",
-      },
-      null,
-    );
+    expect(onValide).toHaveBeenCalledWith({ etabId: "" }, null);
   });
 
   it("bascule aussi quand les services (donc les structures) ne chargent pas", async () => {
@@ -244,12 +255,6 @@ describe("référentiel indisponible : rattachement dégradé « Autre / Autre �
     ).toBeInTheDocument();
     await valider();
 
-    expect(onValide).toHaveBeenCalledWith(
-      {
-        etabId: "autre",
-        serviceId: "autre",
-      },
-      null,
-    );
+    expect(onValide).toHaveBeenCalledWith({ etabId: "" }, null);
   });
 });

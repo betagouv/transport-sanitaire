@@ -46,7 +46,7 @@ export {
   type TransportComposition,
   type TypographicFieldId,
 } from "./model";
-export { declarerAuServeur, referentielDuServeur } from "./rattachement";
+export { referentielDuServeur } from "./rattachement";
 export { ServerApiClient } from "./server-api";
 export { applyTheme, followHostTheme } from "./theme";
 export {

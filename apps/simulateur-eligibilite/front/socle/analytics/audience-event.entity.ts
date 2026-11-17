@@ -2,7 +2,7 @@
 // service rattaché, et une valeur numérique. Rien des réponses.
 // Voir ADR-0002, et docs/knowledge/domain/mesure-d-audience.md.
 
-import type { RattachementSaisi } from "../../../shared/rattachement-saisi";
+import type { RattachementDuReferentiel } from "../../../shared/rattachement-du-referentiel.vo";
 
 /**
  * La liste des événements. Chaque nom est fixe : un nom composé à l'appel ne
@@ -50,13 +50,13 @@ export class AudienceEvent {
   }
 
   /**
-   * L'événement, avec l'id du service rattaché s'il y en a un. Le service libre
-   * saisi sous « Autre » ne part jamais : l'événement garde l'id de l'entrée
-   * « Autre ».
+   * L'événement, avec l'id du service rattaché s'il y en a un. Le nom d'un
+   * service saisi ne part jamais : l'événement porte l'id que le référentiel
+   * lui a donné.
    */
   static of(
     name: AudienceEventName,
-    rattachement: RattachementSaisi | null,
+    rattachement: RattachementDuReferentiel | null,
     value?: number,
   ): AudienceEvent {
     return new AudienceEvent(name, rattachement?.serviceId, value);
