@@ -173,6 +173,12 @@ export type Model<
      * le complément n'a ni page ni cerfa : le verrou n'ouvre pas un écran vide.
      */
     startLabel: Reading<string | null>;
+    /**
+     * Les questions du complément dont la réponse s'écrit telle quelle dans un
+     * texte strict du cerfa, chacune vers son entrée du DTO : leur saisie a un
+     * compteur, mesuré sur le cerfa (#480). Sans elles, aucun compteur.
+     */
+    measured?: Readonly<Record<string, string>>;
     /** Les libellés des deux actions sur le cerfa, qui portent le même PDF. */
     printLabel: string;
     downloadLabel: string;

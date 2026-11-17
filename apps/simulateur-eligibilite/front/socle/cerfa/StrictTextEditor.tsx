@@ -1,8 +1,10 @@
 // L'éditeur d'un texte strict qui ne tient pas sur le cerfa (D-302, D-304) :
-// toute la cellule, au-dessus de l'aperçu, avec son compteur « caractères
-// saisis / maximum ». Trop long, le compteur passe en rouge, l'erreur
-// s'affiche et « Valider » attend. Rien ne tronque la saisie, pas même un
-// collage (spec médicale § 8).
+// tout le texte, au-dessus de l'aperçu, avec son compteur « caractères saisis
+// / maximum ». Trop long, ou vide quand il est requis, le compteur passe en
+// rouge, l'erreur s'affiche et « Valider » attend. Rien ne tronque la saisie,
+// pas même un collage (spec médicale § 8). Un texte sur une ligne se saisit
+// aussi dans une zone de texte, comme chez l'éditeur : son retour à la ligne
+// s'y voit, et s'y corrige.
 //
 // Chaque frappe remonte le brouillon : qui affiche l'éditeur le garde. La
 // mesure est celle du PDF ; tant qu'elle se charge, le maximum est celui de la
@@ -10,10 +12,12 @@
 // fois, pas à chaque frappe. Rien de la saisie ne part au journal.
 
 import { useId } from "react";
+import type { Strict } from "./cerfa";
 import type { StrictMeasure } from "./generate-the-cerfa/strict-text";
+import { verdictOf } from "./strict-verdict";
 
 type Props = {
-  readonly label: string;
+  readonly strict: Strict;
   readonly text: string;
   /** La mesure du texte saisi. */
   readonly measured: StrictMeasure;
@@ -28,7 +32,7 @@ export function StrictTextEditor({ onValidate, ...cell }: Props) {
       <button
         type="button"
         className="fr-btn"
-        disabled={!cell.measured.fits}
+        disabled={!verdictOf(cell.strict, cell.text, cell.measured).valid}
         onClick={onValidate}
       >
         Valider
@@ -40,60 +44,56 @@ export function StrictTextEditor({ onValidate, ...cell }: Props) {
 // ---- implémentation ----
 
 // Le champ, son libellé, et ce qu'en dit la mesure, qui le décrit.
-function Cell({ label, text, measured, onEdit }: Omit<Props, "onValidate">) {
+function Cell({ strict, text, measured, onEdit }: Omit<Props, "onValidate">) {
   const id = useId();
   const [counter, error] = [`${id}-compteur`, `${id}-erreur`];
-  const { fits } = measured;
+  const { valid } = verdictOf(strict, text, measured);
   return (
-    <div className={`fr-input-group${fits ? "" : " fr-input-group--error"}`}>
+    <div className={`fr-input-group${valid ? "" : " fr-input-group--error"}`}>
       <label className="fr-label" htmlFor={id}>
-        {label}
+        {strict.label}
       </label>
       <textarea
         id={id}
-        className={`fr-input${fits ? "" : " fr-input--error"}`}
-        rows={4}
+        className={`fr-input${valid ? "" : " fr-input--error"}`}
+        rows={strict.oneLine ? 2 : 4}
         value={text}
-        aria-invalid={!fits}
-        aria-describedby={fits ? counter : `${error} ${counter}`}
+        aria-invalid={!valid}
+        aria-describedby={valid ? counter : `${error} ${counter}`}
         onChange={(event) => onEdit(event.target.value)}
       />
-      <MeasureOf {...{ label, text, measured }} ids={{ counter, error }} />
+      <MeasureOf {...{ strict, text, measured }} ids={{ counter, error }} />
     </div>
   );
 }
 
-// Ce que dit la mesure sous le champ : le compteur, rouge quand le texte
-// déborde, l'erreur, et l'annonce du passage d'un état à l'autre.
+// Ce que dit la mesure sous le champ : le compteur, rouge quand le texte ne
+// se valide pas, l'erreur, et l'annonce du passage d'un état à l'autre.
 function MeasureOf({
-  label,
+  strict,
   text,
-  measured: { fits, maximum },
+  measured,
   ids: { counter, error },
-}: Pick<Props, "label" | "text" | "measured"> & {
+}: Pick<Props, "strict" | "text" | "measured"> & {
   ids: { counter: string; error: string };
 }) {
+  const { valid, message } = verdictOf(strict, text, measured);
   return (
     <>
       <p
         id={counter}
-        className={`fr-message ${fits ? "fr-message--info" : "fr-message--error"}`}
+        className={`fr-message ${valid ? "fr-message--info" : "fr-message--error"}`}
       >
-        {Array.from(text).length} / {maximum} caractères
+        {Array.from(text).length} / {measured.maximum} caractères
       </p>
-      {!fits && (
+      {message && (
         <p id={error} className="fr-error-text">
-          {overflowMessage(label)}
+          {message}
         </p>
       )}
       <p className="fr-sr-only" role="status">
-        {fits ? "Le texte tient sur le document." : overflowMessage(label)}
+        {message ?? "Le texte tient sur le document."}
       </p>
     </>
   );
-}
-
-/** Le message d'un texte strict qui déborde (spec médicale § 8). */
-function overflowMessage(label: string): string {
-  return `Raccourcissez le texte présent dans '${label}' pour pouvoir imprimer ou télécharger le document.`;
 }

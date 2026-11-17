@@ -12,12 +12,14 @@ import type {
   BoxBinding,
   Cerfa,
   CerfaDto,
+  DrawingBinding,
   StrictTextBinding,
   TextBinding,
 } from "../cerfa";
 import type { FieldEntry, StrictOverflow } from "./fill-the-form";
 import type { Drawing, Mark } from "./flatten-the-form";
-import type { StrictMeasure } from "./strict-text";
+import { layoutOf, strictEntriesOf, textOf } from "./strict-entries";
+import type { StrictMeasure, StrictMeasurer } from "./strict-text";
 import { TEXT_SIZES } from "./text-sizes";
 import { type Typography, typographyOf } from "./typography";
 
@@ -55,15 +57,17 @@ export async function generateCerfa<Dto extends CerfaDto>(
   dto: Dto,
   { preview = false }: { preview?: boolean } = {},
 ): Promise<GeneratedCerfa> {
-  const [template, { fillCerfa }, { flattenCerfa }] = await Promise.all([
-    cerfa.template(),
-    import("./fill-the-form"),
-    import("./flatten-the-form"),
-  ]);
-  const { entries, marks, drawings, overflowingOf, ...options } =
-    instructionsOf(cerfa, dto);
+  const { template, fillCerfa, flattenCerfa, lines } = await loaded(cerfa);
+  const { entries, marks, overflowingOf, ...options } = instructionsOf(
+    cerfa,
+    dto,
+  );
   const filled = await fillCerfa(template, entries, options);
-  const overflowing = filled.overflowing.map(overflowingOf);
+  const { drawings, ...drawn } = drawingsOf(cerfa, dto, lines);
+  const overflowing = [
+    ...filled.overflowing.map(overflowingOf),
+    ...drawn.overflowing,
+  ];
   const marked = preview || overflowing.length > 0;
   const { pdf, drawnSizes } = await flattenCerfa(filled.pdf, {
     marks,
@@ -83,17 +87,6 @@ export async function generateCerfa<Dto extends CerfaDto>(
   };
 }
 
-/** Un texte strict du cerfa : son entrée du DTO, et le nom de sa rubrique. */
-export type StrictEntry = { readonly entry: string; readonly label: string };
-
-/** Les textes stricts du cerfa. */
-export function strictEntriesOf(cerfa: Cerfa<CerfaDto>): StrictEntry[] {
-  return (Object.entries(cerfa.fields) as [string, Binding][]).flatMap(
-    ([entry, binding]) =>
-      "strict" in binding ? [{ entry, label: binding.strict.label }] : [],
-  );
-}
-
 /**
  * La mesure des textes stricts du cerfa, par entrée du DTO : `pdf-lib` et le
  * gabarit se chargent avec elle.
@@ -101,18 +94,27 @@ export function strictEntriesOf(cerfa: Cerfa<CerfaDto>): StrictEntry[] {
 export async function measureOf(
   cerfa: Cerfa<CerfaDto>,
 ): Promise<(entry: string, text: string) => StrictMeasure> {
-  const bindings = cerfa.fields as Record<string, Binding>;
-  const fieldOf = (entry: string) => bindings[entry]?.field ?? entry;
   const [template, { measureStrictTexts }] = await Promise.all([
     cerfa.template(),
     import("./measure-strict-texts"),
   ]);
-  const strict = strictEntriesOf(cerfa).map(({ entry }) => fieldOf(entry));
-  const measure = await measureStrictTexts(template, strict);
-  return (entry, text) => measure(fieldOf(entry), text);
+  return measureStrictTexts(template, strictEntriesOf(cerfa));
 }
 
 // ---- implémentation ----
+
+// Le gabarit, et ce qui le remplit, l'aplatit et mesure ses textes dessinés.
+async function loaded(cerfa: Cerfa<CerfaDto>) {
+  const [template, { fillCerfa }, { flattenCerfa }, lines] = await Promise.all([
+    cerfa.template(),
+    import("./fill-the-form"),
+    import("./flatten-the-form"),
+    import("./measure-strict-texts").then(({ lineMeasurersOf }) =>
+      lineMeasurersOf(strictEntriesOf(cerfa)),
+    ),
+  ]);
+  return { template, fillCerfa, flattenCerfa, lines };
+}
 
 type Binding = TextBinding | StrictTextBinding | BoxBinding;
 
@@ -141,22 +143,41 @@ function instructionsOf<Dto extends CerfaDto>(cerfa: Cerfa<Dto>, dto: Dto) {
     marks: bound.flatMap(([key, binding]): Mark[] =>
       "drawn" in binding && binding.drawn && givenValue(key) ? [binding] : [],
     ),
-    drawings: drawingsOf(cerfa, dto),
     overflowingOf: overflowingOf(bound, dto),
   };
 }
 
 // Les textes à dessiner, un par position, avec la clé de leur entrée : un
-// texte se répète sur chaque volet qui le porte.
-function drawingsOf<Dto extends CerfaDto>(cerfa: Cerfa<Dto>, dto: Dto) {
-  return Object.entries(cerfa.drawings).flatMap(
-    ([key, { positions, singleLine }]): (readonly [string, Drawing])[] => {
-      const text = dto.drawings[key];
-      if (!isGiven(text)) return [];
-      const size = TEXT_SIZES.target;
-      return positions.map((at) => [key, { text, at, size, singleLine }]);
-    },
-  );
+// texte se répète sur chaque volet qui le porte. Un texte strict s'y dessine
+// à sa taille, ou son plus long début qui tient : il déborde.
+function drawingsOf<Dto extends CerfaDto>(
+  cerfa: Cerfa<Dto>,
+  dto: Dto,
+  lines: ReadonlyMap<string, StrictMeasurer>,
+) {
+  const overflowing: Overflowing[] = [];
+  const drawings = Object.entries(cerfa.drawings).flatMap(([key, binding]) => {
+    const text = dto.drawings[key];
+    if (!isGiven(text)) return [];
+    const line = lines.get(key);
+    if (!binding.strict || !line) return drawn(key, binding, text);
+    const { written, fits, maximum } = line.fitting(text);
+    const { label } = binding.strict;
+    if (!fits) overflowing.push({ entry: key, label, text, maximum });
+    const { size } = layoutOf(binding.strict);
+    return drawn(key, { ...binding, singleLine: true }, written, size);
+  });
+  return { drawings, overflowing };
+}
+
+// Un texte dessiné à chacune de ses positions.
+function drawn(
+  key: string,
+  { positions, singleLine }: DrawingBinding,
+  text: string,
+  size: number = TEXT_SIZES.target,
+): (readonly [string, Drawing])[] {
+  return positions.map((at) => [key, { text, at, size, singleLine }]);
 }
 
 // Chaque texte écrit dans un champ : la clé de son entrée, et le nom du champ.
@@ -188,8 +209,7 @@ function overflowingOf(
     if (!found || !("strict" in found[1]))
       throw new Error(`« ${field} » n'est pas un texte strict du cerfa.`);
     const [entry, { strict }] = found;
-    const text = String(dto.fields[entry] ?? "");
-    return { entry, label: strict.label, text, maximum };
+    return { entry, label: strict.label, text: textOf(dto, entry), maximum };
   };
 }
 
@@ -208,6 +228,7 @@ function entryOf(
       ? [{ field: binding.field, checked: binding.state }]
       : [];
   if (value === undefined) return [];
-  const strict = "strict" in binding ? { strict: true } : {};
+  const strict =
+    "strict" in binding ? { strict: layoutOf(binding.strict) } : {};
   return [{ field: binding.field, text: String(value), ...strict }];
 }

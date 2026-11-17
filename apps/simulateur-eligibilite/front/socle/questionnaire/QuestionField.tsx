@@ -45,6 +45,8 @@ type Props = {
    * questions.
    */
   below?: (possibleAnswer: string) => ReactNode;
+  /** Le compteur d'un texte long : « 12 / 54 caractères ». */
+  counter?: string;
   /** Ce qui s'affiche sous le champ : les liens vers les réponses à revoir. */
   after?: ReactNode;
 };
@@ -104,7 +106,7 @@ function render(props: Props) {
     case "datetime":
       return <DateQuestionField {...props} question={question} />;
     case "long text":
-      return <TextAreaField {...text(props)} />;
+      return <TextAreaField {...text(props)} counter={props.counter} />;
     default:
       return <TextField {...text(props)} />;
   }

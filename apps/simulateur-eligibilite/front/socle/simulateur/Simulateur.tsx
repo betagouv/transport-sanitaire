@@ -18,6 +18,7 @@ import {
   useAldResultReached,
   useRecordTheJourney,
 } from "../analytics";
+import { useTextCounters } from "../cerfa";
 import type { Model } from "../model";
 import { type DebugTraceProps, QuestionnaireForm } from "../questionnaire";
 import { aldPathwayOf } from "./ald-pathway";
@@ -154,9 +155,15 @@ function SecondQuestionnaire({
   onRestart,
 }: ScreenProps) {
   const partsBefore = model.core.questionnaire.length;
+  const bound = model.cerfa.form.in(simulation.resultContext(new Date()));
+  const counterOf = useTextCounters(
+    bound?.cerfa ?? null,
+    model.cerfa.measured ?? {},
+  );
   return (
     <QuestionnaireForm
       parts={[model.core.complement]}
+      counterOf={counterOf}
       partsBefore={partsBefore}
       partCount={partsBefore + 1}
       simulation={simulation}

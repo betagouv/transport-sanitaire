@@ -8,10 +8,16 @@ import type userEvent from "@testing-library/user-event";
 
 type User = ReturnType<typeof userEvent.setup>;
 
-/** Remplit P3, page après page, jusqu'au texte de R3. */
-export async function completerP3(user: User) {
+/**
+ * Remplit P3, page après page, jusqu'au texte de R3, ou jusqu'à ce que
+ * `arrive` le dise.
+ */
+export async function completerP3(
+  user: User,
+  arrive = () => screen.queryByText(TEXTE_DE_R3) !== null,
+) {
   for (let geste = 0; geste < 60; geste++) {
-    if (screen.queryByText(TEXTE_DE_R3)) return;
+    if (arrive()) return;
     const manque = premierChampVide();
     if (manque) await manque(user);
     else await valider(user);

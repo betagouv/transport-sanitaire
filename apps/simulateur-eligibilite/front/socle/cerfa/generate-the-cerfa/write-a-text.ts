@@ -1,18 +1,19 @@
 // Écrit un texte dans son champ (D-85, D-193, #341) : chaque étape l'écrit si
 // elle y arrive, sinon passe la main à la suivante. Un texte strict n'a pas ces
-// étapes (D-302) : il s'écrit à la taille visée, ou pas (`strict-text.ts`).
+// étapes (D-302) : il s'écrit à sa taille, ou pas (`strict-text.ts`).
 
 import { type PDFDocument, type PDFFont, PDFTextField } from "pdf-lib";
 import type { Drawing } from "./flatten-the-form";
 import { nearOverflowsOf, overflowsOf } from "./overflow";
+import type { StrictLayout } from "./strict-text";
 import { sizeInField, sizeToFit } from "./text-fit";
 import { SIZE_STEP } from "./text-sizes";
 
-/** Un texte à écrire dans un champ nommé. `strict` : à la taille visée ou pas. */
+/** Un texte à écrire dans un champ nommé. `strict` : à sa taille ou pas. */
 export type Text = {
   readonly field: string;
   readonly text: string;
-  readonly strict?: boolean;
+  readonly strict?: StrictLayout;
 };
 
 export type WrittenText = {
