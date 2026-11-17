@@ -221,7 +221,7 @@ const CAS: [string, Event, Event][] = [
   ],
 ];
 
-describe("les règles croisées du contrat v10.2.2", () => {
+describe("les règles croisées du contrat de l'éditeur", () => {
   it.each(CAS)("règle %s", (_regle, respecte, enfreint) => {
     expect(parseAnAnalyticsEvent(respecte)).toEqual(respecte);
     expect(parseAnAnalyticsEvent(enfreint)).toBeUndefined();
