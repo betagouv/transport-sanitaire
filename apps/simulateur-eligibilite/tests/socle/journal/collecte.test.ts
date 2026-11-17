@@ -52,7 +52,7 @@ describe("collecte d'un événement", () => {
   it("met à part un autre événement qui reprend le même identifiant", async () => {
     const journal = await collecteSur();
     await collecter(simulationStarted);
-    const autre = { ...simulationStarted, service_id: "s_grenoble_pneumo" };
+    const autre = { ...simulationStarted, service_id: "s_grenoble_onco" };
 
     const { status } = await collecter(autre);
 

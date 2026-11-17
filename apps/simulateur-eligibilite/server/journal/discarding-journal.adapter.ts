@@ -16,4 +16,6 @@ export class DiscardingJournal implements Journal {
   async append(): Promise<void> {}
 
   async setAside(): Promise<void> {}
+
+  async quarantine(): Promise<void> {}
 }
