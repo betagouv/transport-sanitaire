@@ -5,7 +5,7 @@
 // support toujours, sans quoi elle ne naît pas (contrat v10.2.2). Les documents qui en
 // viennent portent son support, sa composition du transport et son mode
 // (ADR-0046, ANA22-04), puis la taille de leurs textes imprimés (ADR-0048,
-// ANA22-03).
+// ANA22-03), sous leur version et la révision du document (R13).
 
 import type {
   AnalyticsEvent,
@@ -15,7 +15,7 @@ import type {
   TransportComposition,
 } from "../../../shared/analytics/analytics-event";
 import { isDocumentSupport } from "../../../shared/analytics/typographic-fields";
-import type { Typography } from "./document-version.entity";
+import type { ShownDocument, Typography } from "./document-version.entity";
 
 /** Ce que le prescripteur a vu au premier résultat. */
 export type ShownResult = {
@@ -122,19 +122,38 @@ export class Revision {
     };
   }
 
+  /** Son document R3 n'a de support que celui d'un cerfa (ANA22-04). */
+  get hasADocument(): boolean {
+    return isDocumentSupport(this.#shown.codes.support);
+  }
+
   /** Sa chute, depuis la phase dont une page l'a rendue caduque. */
   invalidated(screen: AnalyticsEvent["screen"]): ResultEvent {
     return { type: "result_invalidated", screen, revision: this.id };
   }
 
+  /**
+   * Son document invalidé par une page de P3 : la révision du document qu'on
+   * attend désormais (R13).
+   */
+  documentInvalidated(expected: string): DocumentEvent {
+    return {
+      type: "document_invalidated",
+      screen: "P3",
+      revision: this.id,
+      document_revision: expected,
+    };
+  }
+
   /** Une version de son document, affichée. */
-  documentDisplayed(documentId: string): DocumentEvent {
+  documentDisplayed(document: ShownDocument): DocumentEvent {
     const codes = this.#shown.codes;
     return {
       type: "document_displayed",
       screen: "R3",
       revision: this.id,
-      document_id: documentId,
+      document_revision: document.revisionId,
+      document_id: document.id,
       support: codes.support,
       transport_composition: codes.transportComposition,
       ...(codes.mode !== null && { mode: codes.mode }),
@@ -146,11 +165,9 @@ export class Revision {
    * identifiants fermés de son support : les champs remplis sont attendus,
    * ceux dont la taille s'est lue sont mesurés (ADR-0048). Sans support de
    * document, elle ne part pas : ses identifiants n'auraient pas de préfixe.
-   * La révision du document vaut sa version, tant qu'une modification de P3
-   * en ouvre une nouvelle.
    */
   typographyMeasured(
-    documentId: string,
+    document: ShownDocument,
     { sizes, unmeasured }: Typography,
   ): DocumentEvent[] {
     const support = this.#shown.codes.support;
@@ -163,8 +180,8 @@ export class Revision {
         type: "document_typography_measured",
         screen: "R3",
         revision: this.id,
-        document_revision: documentId,
-        document_id: documentId,
+        document_revision: document.revisionId,
+        document_id: document.id,
         support,
         expected_field_ids: [...Object.keys(sizes), ...unmeasured],
         field_measurements: measurements,
@@ -176,13 +193,16 @@ export class Revision {
    * L'impression ou le téléchargement de son document lancés, ou son PDF remis
    * au navigateur : des gestes de l'app, pas des clics (ANA22-02).
    */
-  aboutItsDocument(type: DocumentGesture, documentId: string): DocumentEvent {
+  aboutItsDocument(
+    type: DocumentGesture,
+    document: ShownDocument,
+  ): DocumentEvent {
     return {
       type,
       screen: "R3",
       revision: this.id,
-      document_revision: documentId,
-      document_id: documentId,
+      document_revision: document.revisionId,
+      document_id: document.id,
     };
   }
 

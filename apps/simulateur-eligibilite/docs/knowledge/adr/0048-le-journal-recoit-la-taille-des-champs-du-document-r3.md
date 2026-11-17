@@ -47,6 +47,11 @@ longueur de texte ne part.
 
 ## Mises à jour
 
+> **Mise à jour 2026-11-17, la révision du document (#497).** La mesure porte
+> la révision du document de l'[ADR-0046](./0046-le-journal-recoit-le-document-r3-et-ses-versions.md),
+> distincte de `document_id` : un même DTO imprimé autrement ouvre une
+> nouvelle version, et sa mesure, sous la même révision.
+
 > **Mise à jour 2026-11-17, la taille des champs sous leur identifiant fermé (#508).**
 > Le contrat v10.2.2 (ANA22-03) **révise** les points 2 et 4. Un champ se nomme
 > par un identifiant de la liste fermée de l'éditeur, `<support>.<champ>`

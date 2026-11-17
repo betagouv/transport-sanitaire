@@ -55,6 +55,11 @@ autre fait, à décider s'il est demandé.
 
 ## Mises à jour
 
+> **Mise à jour 2026-11-17, la révision du document (#497).** En R3,
+> `document_revision` n'est plus `document_id` : c'est la révision du document
+> de l'[ADR-0046](./0046-le-journal-recoit-le-document-r3-et-ses-versions.md).
+> L'avis en R3 la porte aussi.
+
 > **Mise à jour 2026-11-17, les boutons exposés et cliqués du contrat (#507).** Le
 > contrat v10.2.2 (ANA22-02) **révise** les points 2 à 6. Les boutons de la fiche
 > et du document sont exposés par `button_exposed` et cliqués par

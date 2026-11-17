@@ -83,7 +83,7 @@ describe("les boutons du document R3", () => {
       button_id: "document_print",
       activity_origin: "user",
       document_id: "d1",
-      document_revision: "d1",
+      document_revision: "dr1",
       artifact_id: "d1",
     });
     const [lanceALaSouris, lanceAuClavier] = sansRang(

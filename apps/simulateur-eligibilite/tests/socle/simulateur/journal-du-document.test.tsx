@@ -134,7 +134,7 @@ describe("le journal du document R3", () => {
     expect(documents(envoyes)).toEqual(["document_displayed d1 r1"]);
   });
 
-  it("un complément changé remplace le document : la version d2 garde la révision", async () => {
+  it("un complément changé invalide le document : la version d2 garde la révision du R2, sous la révision du document suivante", async () => {
     const { user, envoyes } = await ouvrirAvecUnJournal();
     await allerAuDocument(user);
 
@@ -142,8 +142,14 @@ describe("le journal du document R3", () => {
 
     expect(documents(envoyes)).toEqual([
       "document_displayed d1 r1",
+      "document_invalidated - r1",
       "document_displayed d2 r1",
     ]);
+    expect(
+      envoyes
+        .filter(({ type }) => type.startsWith("document_"))
+        .map(({ document_revision }) => document_revision),
+    ).toEqual(["dr1", "dr1", "dr2", "dr2", "dr2"]);
   });
 
   it("une génération ratée part avec la révision, sans version, et ne compte pas comme affichée", async () => {
