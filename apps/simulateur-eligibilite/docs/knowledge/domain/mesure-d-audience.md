@@ -45,8 +45,8 @@ pas partie. ~~Le journal recevait leur nom (ADR-0053).~~ (du 2026-11-16 au
 
 ## Les événements de la mesure d'audience
 
-Chaque événement part en catégorie `simulateur`. Son nom est l'id du service, ou
-`autre` pour un rattachement dégradé. Son action est une valeur fixe, jamais
+Chaque événement part en catégorie `simulateur`. Son nom est l'id du service,
+absent quand le parcours n'a pas de service (#506). Son action est une valeur fixe, jamais
 composée (ADR-0010).
 
 | Action | Valeur | Moment du parcours |
