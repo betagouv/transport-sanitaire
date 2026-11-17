@@ -65,10 +65,6 @@ const PARTIES_D_UN_LIEU = ["depart", "arrivee"].flatMap((extremite) =>
   ),
 );
 
-// La précision facultative du texte médical : une cellule à nous, que le
-// cerfa retire faute de place (#159).
-const COMMENTAIRE = "elements_medicaux_precision";
-
 const SEANCE = "Ce déplacement concerne une séance de dialyse en centre";
 const ARRIVEE = "Centre de dialyse, 149 rue de Sèvres, 75015 Paris";
 const VOLETS = [2, 3, 4];
@@ -91,10 +87,10 @@ describe("la DAP", () => {
     expect(sansRaison).toEqual([]);
   });
 
-  it("ne porte que des cellules de l'éditeur, et la précision du texte médical", () => {
-    expect(portees.filter((cellule) => !CELLULES.includes(cellule))).toEqual([
-      COMMENTAIRE,
-    ]);
+  it("ne porte que des cellules de l'éditeur", () => {
+    expect(portees.filter((cellule) => !CELLULES.includes(cellule))).toEqual(
+      [],
+    );
   });
 });
 

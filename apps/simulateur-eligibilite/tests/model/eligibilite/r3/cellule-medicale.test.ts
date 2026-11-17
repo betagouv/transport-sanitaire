@@ -1,8 +1,7 @@
-// La précision du prescripteur (Q3.4) sur la PMT et la DAP remplies : elle
-// suit le texte médical tant qu'elle tient dans son cadre, et seul un
-// commentaire qui ne tient pas est retiré et signalé (TS1017-08,
-// DOC-COMMENTAIRE-CAPACITE-20261104, #356). L'erreur technique, sans alerte
-// de longueur, se teste avec l'écran (`avertissement-du-commentaire.test.tsx`).
+// La cellule médicale de la PMT et de la DAP remplies (#403, D-302) : un seul
+// texte, la précision du prescripteur (Q3.4) à sa suite, écrit à 9 pt. Un texte
+// qui n'y tient pas fait du cerfa un aperçu : seul son plus long début s'écrit,
+// et la génération le signale avec son maximum.
 
 import { describe, expect, it } from "vitest";
 import type { Faits } from "../../../../core/models/eligibilite/faits/noms";
@@ -13,6 +12,7 @@ import {
   type BoundCerfa,
   dtoFrom,
   generateCerfa,
+  type Overflowing,
 } from "../../../../front/socle/cerfa";
 import { textsIn } from "../../../socle/cerfa/pdf-aplati";
 import { DAP, donnees, gabarit, PMT, type Reponses } from "./reponses-du-cerfa";
@@ -38,58 +38,71 @@ const SUPPORTS: readonly Support[] = [
   { nom: "S3139h", cerfa: S3139H, reponses: DAP_COURTE, champ: "elmedic" },
 ];
 
-describe.each(SUPPORTS)("la précision du texte médical, $nom", (support) => {
-  it("vide : rien n'est retiré", async () => {
+describe.each(SUPPORTS)("la cellule médicale, $nom", (support) => {
+  it("sans précision : le texte seul, qui tient", async () => {
     const { "Q3.4": _, ...reponses } = support.reponses;
 
-    const { texte, removedComments } = await rempli(support, reponses);
+    const { texte, overflowing } = await rempli(support, reponses);
 
     expect(texte).toBe(`${SEANCE}.`);
-    expect(removedComments).toEqual([]);
+    expect(overflowing).toEqual([]);
   });
 
-  it("« Test » seul : suit le texte, sans alerte", async () => {
+  it("« Test » suit le texte, et tient", async () => {
     const reponses = { ...support.reponses, "Q3.4": "Test" };
 
-    const { texte, removedComments } = await rempli(support, reponses);
+    const { texte, overflowing } = await rempli(support, reponses);
 
     expect(texte).toBe(`${SEANCE} ; Test.`);
-    expect(removedComments).toEqual([]);
+    expect(overflowing).toEqual([]);
   });
 
-  it("« Test » après la mention de l'ALD : suit le texte, sans alerte", async () => {
+  it("« Test » suit la mention de l'ALD", async () => {
     const reponses = { ...support.reponses, "Q3.4": "Test" };
     const faits = { fait_ald_liee: Fait.oui("test") };
 
-    const { texte, removedComments } = await rempli(support, reponses, faits);
+    const { texte, overflowing } = await rempli(support, reponses, faits);
 
     expect(texte).toBe(`${SEANCE} ; ${ALD} ; Test.`);
-    expect(removedComments).toEqual([]);
+    expect(overflowing).toEqual([]);
   });
 
-  it("trop longue pour le cadre : retirée, et signalée", async () => {
+  it("trop longue : seul le début s'écrit, et la cellule est signalée", async () => {
     const reponses = { ...support.reponses, "Q3.4": LONG };
 
-    const { texte, removedComments } = await rempli(support, reponses);
+    const { texte, overflowing } = await rempli(support, reponses);
 
-    expect(texte).not.toContain("Suivi pluridisciplinaire");
-    expect(removedComments).toEqual(["elements_medicaux_precision"]);
+    const [cellule] = overflowing;
+    expect(cellule).toMatchObject({
+      entry: "elements_medicaux",
+      label: "Éléments d’ordre médical et commentaires",
+      text: `${SEANCE} ; ${LONG}.`,
+    });
+    expect(cellule?.maximum).toBeLessThan(
+      Array.from(cellule?.text ?? "").length,
+    );
+    expect(texte.replace(/\s+/g, " ")).toBe(
+      Array.from(cellule?.text ?? "")
+        .slice(0, cellule?.maximum)
+        .join("")
+        .replace(/\s+/g, " ")
+        .trim(),
+    );
   });
 });
 
 // ---- implémentation ----
 
-// Le support rempli : le texte de son champ médical, et les commentaires
-// retirés.
+// Le support rempli : le texte de son champ médical, et ce qui en déborde.
 async function rempli(
   { nom, cerfa, champ }: Support,
   reponses: Reponses,
   faits: Partial<Faits> = {},
-): Promise<{ texte: string; removedComments: readonly string[] }> {
+): Promise<{ texte: string; overflowing: readonly Overflowing[] }> {
   const dto = dtoFrom(cerfa.mapping, donnees(reponses, {}, undefined, faits));
   const depuisLeDisque = { ...cerfa.cerfa, template: () => gabarit(nom) };
   const genere = await generateCerfa(depuisLeDisque, dto);
   const pdf = new Uint8Array(await genere.pdf.arrayBuffer());
   const texte = (await textsIn(await gabarit(nom), pdf, champ)).join(" ");
-  return { texte, removedComments: genere.removedComments };
+  return { texte, overflowing: genere.overflowing };
 }

@@ -8,10 +8,10 @@ export {
   box,
   type Cerfa,
   type CerfaDto,
-  commentOn,
   date,
   drawnBox,
   onOneLine,
+  strictText,
   templateAt,
   text,
 } from "./cerfa";
@@ -22,10 +22,14 @@ export {
   cerfaValue,
   dtoFrom,
 } from "./generate-the-cerfa/compute-the-dto";
-export { generateCerfa } from "./generate-the-cerfa/generate-the-cerfa";
+export {
+  generateCerfa,
+  type Overflowing,
+} from "./generate-the-cerfa/generate-the-cerfa";
 export { download, fileNameOf } from "./pdf/download-a-pdf";
 export {
   PdfActionButton,
   type PdfSignals,
   useShown,
 } from "./pdf/PdfActionButton";
+export type { StrictTextEdits } from "./StrictTexts";

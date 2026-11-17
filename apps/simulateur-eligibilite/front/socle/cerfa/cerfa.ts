@@ -46,12 +46,15 @@ export type TextBinding = {
 };
 
 /**
- * Un commentaire facultatif : il s'écrit à la suite du texte `commentOn`, une
- * autre entrée du DTO, dans le même champ. C'est la seule chose qui se retire
- * quand le texte ne tient pas dans son cadre (D-85). Ce champ passe en
- * multiligne avant toute mesure (DOC-COMMENTAIRE-CAPACITE-20261104, #356).
+ * Un texte strict (D-302) : il s'écrit dans son champ, passé en multiligne, à
+ * la taille visée et à aucune autre, ou il ne s'écrit pas. Le cerfa qui en
+ * déborde n'est qu'un aperçu, et le prescripteur le réécrit. `label` le nomme
+ * à l'écran : c'est le titre de sa rubrique sur le cerfa.
  */
-export type CommentBinding = { readonly commentOn: string };
+export type StrictTextBinding = {
+  readonly field: string;
+  readonly strict: { readonly label: string };
+};
 
 /**
  * Où va une case : le nom exact du champ, et l'état d'export qui la coche.
@@ -66,7 +69,7 @@ export type BoxBinding = {
 
 type Binding<Reading> = [Reading] extends [boolean]
   ? BoxBinding
-  : TextBinding | CommentBinding;
+  : TextBinding | StrictTextBinding;
 
 /** Un cerfa à remplir d'après son DTO. */
 export type Cerfa<Dto extends CerfaDto> = {
@@ -103,9 +106,9 @@ export function date(field: string): TextBinding {
   return { field, date: true };
 }
 
-/** Le commentaire facultatif du texte `entry`, une entrée du DTO. */
-export function commentOn(entry: string): CommentBinding {
-  return { commentOn: entry };
+/** Un texte strict écrit dans le champ `field`, nommé `label` à l'écran. */
+export function strictText(field: string, label: string): StrictTextBinding {
+  return { field, strict: { label } };
 }
 
 /** Une case du champ `field`, cochée par son état d'export `state`. */

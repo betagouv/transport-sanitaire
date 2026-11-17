@@ -296,7 +296,7 @@ entrée dans le gabarit (`Cerfa<Dto>`) :
 | Le DTO dit | La définition garde | Exemple |
 |---|---|---|
 | un texte | le nom exact du champ | `motif: text("elements medicaux")` |
-| un commentaire facultatif | le texte qu'il suit, dans le même champ | `commentaire: commentOn("motif")` |
+| un texte strict, à réécrire s'il ne tient pas | le champ, et le nom de sa rubrique pour l'écran | `elements_medicaux: strictText("comm évent", "Éléments d’ordre médical et commentaires")` |
 | une case cochée | le champ et son état d'export | `en_ald: box("ald", "Oui")` |
 | une case qui partage son champ | le champ et son état : la marque est dessinée | `longue_distance: drawnBox("km", "Oui")` |
 | une date | le champ, qui l'écrit selon ses cases | `date_prescription: date("dat pmt")` |
@@ -305,13 +305,21 @@ entrée dans le gabarit (`Cerfa<Dto>`) :
 Un gabarit qui renomme un champ ne change que la définition, jamais le DTO.
 
 Un texte n'est jamais coupé, et ne bloque jamais le PDF (D-85, D-193). Il
-s'écrit dans son champ à 9 pt, puis à 8 pt. S'il n'y tient pas, il perd son
-commentaire facultatif, et le bouton le dit avant tout téléchargement. S'il
-n'y tient toujours pas, il rapetisse par demi-point, sans plancher, et passe à
-la ligne jusqu'à tenir dans son champ. Seul un texte plus long que le nombre
+s'écrit dans son champ à 9 pt, puis à 8 pt. S'il n'y tient pas, il rapetisse
+par demi-point, sans plancher, et passe à la ligne jusqu'à tenir dans son
+champ. Seul un texte plus long que le nombre
 de caractères du champ laisse le champ vide : il se dessine depuis le haut du
 cadre, à 8 pt, et déborde dessous, par-dessus ce qui s'y trouve (D-94). Il ne
 descend sous 8 pt que pour rester sur la page, jusqu'à 6 pt.
+
+Un texte strict ne suit pas ces étapes (D-302). Il s'écrit à 9 pt, sur
+plusieurs lignes, ou pas : la génération dit alors quels textes stricts
+débordent, avec le maximum de leur compteur, et le PDF n'est qu'un aperçu,
+marqué « Aperçu – texte à valider » sur chaque page, où n'est écrit que le plus
+long début qui tient. L'écran ouvre un éditeur par texte qui déborde, au-dessus
+de l'aperçu, et suspend les exports. « Valider » ne s'active que pour un texte
+qui tient ; le document se régénère alors avec lui (D-304). La simulation
+garde le brouillon et le texte validé (`TextEdits`, D-303).
 
 Le modèle traduit les données du simulateur en DTO (`CerfaMapping`, dans
 `front/socle/cerfa/generate-the-cerfa/compute-the-dto.ts`) : une valeur par entrée (`given…`), que le
@@ -326,12 +334,15 @@ simulateur calcule le DTO sous le second résultat et le passe au bouton.
 | Fichier | Ce qu'il porte |
 |---|---|
 | `cerfa.ts` | ce qu'est un cerfa : son DTO, son gabarit, et où va chaque entrée. `templateAt(url)` charge un gabarit servi par l'app |
-| `CerfaDocument.tsx` | les boutons « Imprimer » et « Télécharger », qui génèrent le PDF dès qu'ils s'affichent et portent le même document, puis son aperçu, ou ce que le modèle met à sa place, et ce qui le suit une fois le PDF prêt. L'avertissement d'un commentaire retiré, l'alerte si ça échoue |
+| `CerfaDocument.tsx` | les boutons « Imprimer » et « Télécharger », qui génèrent le PDF dès qu'ils s'affichent et portent le même document, puis son aperçu, ou ce que le modèle met à sa place, et ce qui le suit une fois le PDF prêt. Les éditeurs des textes stricts qui débordent, l'alerte si ça échoue |
+| `StrictTexts.tsx`, `StrictTextEditor.tsx` | l'éditeur d'un texte strict qui déborde : toute la cellule, son compteur « saisis / maximum », le message, « Valider » (D-304) |
 | `CerfaPreview.tsx` | l'aperçu du PDF dans la page, par le lecteur du navigateur ; sans lecteur, une phrase renvoie au téléchargement (D-183) |
 | `generate-the-cerfa/generate-the-cerfa.ts` | la génération : le DTO traduit dans les noms du gabarit, remplir, puis aplatir, avec `pdf-lib` chargé à la demande |
 | `generate-the-cerfa/compute-the-dto.ts` | le DTO calculé des données du simulateur : `CerfaMapping`, `bindCerfa`, `dtoFrom` |
-| `generate-the-cerfa/fill-the-form.ts` | l'écriture dans un AcroForm : textes et leur commentaire, cases et leurs états d'export. Un champ qui porte un commentaire passe en multiligne avant toute mesure (#356) |
-| `generate-the-cerfa/write-a-text.ts` | l'écriture d'un texte, étape par étape : avec son commentaire, sans, rapetissé, puis sous son cadre. Ce qui ne tient pas dans son cadre |
+| `generate-the-cerfa/fill-the-form.ts` | l'écriture dans un AcroForm : textes, textes stricts et ceux qui en débordent, cases et leurs états d'export |
+| `generate-the-cerfa/write-a-text.ts` | l'écriture d'un texte, étape par étape : à sa taille, rapetissé, puis sous son cadre. Ce qui ne tient pas dans son cadre |
+| `generate-the-cerfa/strict-text.ts` | la mesure et l'écriture d'un texte strict : 9 pt en multiligne, ou son plus long début, et le maximum de son compteur (D-302) |
+| `generate-the-cerfa/measure-strict-texts.ts` | la même mesure pour l'éditeur de l'écran, sur une copie du gabarit |
 | `generate-the-cerfa/text-fit.ts` | un texte tient-il dans son champ, et à quelle taille, au besoin rapetissé et sur plusieurs lignes |
 | `generate-the-cerfa/overflow.ts` | où et à quelle taille se dessine un texte plus long que le nombre de caractères de son champ |
 | `generate-the-cerfa/widget-page.ts` | la page qui porte le widget d'un champ |

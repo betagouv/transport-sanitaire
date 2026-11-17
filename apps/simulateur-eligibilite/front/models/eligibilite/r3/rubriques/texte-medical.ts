@@ -7,8 +7,9 @@
 // Un segment reprend le libellé d'une réponse, ou le texte du contrat. Il perd
 // la définition de ses sigles et son point final, et sa majuscule s'il ne
 // commence pas le texte. La mention du mineur reste littérale. La précision du
-// prescripteur (Q3.4) a sa propre cellule : le cerfa la joint au texte, et la
-// retire faute de place. Le point final va au dernier des deux.
+// prescripteur (Q3.4) suit, telle quelle : la cellule est un seul texte, que
+// le prescripteur réécrit s'il ne tient pas (D-302). Le point final va à la
+// fin du tout.
 
 import { Q1_3 } from "../../../../../core/models/eligibilite/questions/p1/questions/q1-3";
 import { Q2_1 } from "../../../../../core/models/eligibilite/questions/p2/questions/q2-1";
@@ -26,7 +27,6 @@ type AucunSegment = undefined;
 
 export type TexteMedical = {
   readonly elements_medicaux: string | AucunSegment;
-  readonly elements_medicaux_precision: string | AucunSegment;
 };
 
 // La précision du prescripteur (Q3.4), saisie telle quelle.
@@ -75,9 +75,6 @@ const ENTREES = given.all({
 
 export const TEXTE_MEDICAL: Rubrique<TexteMedical> = {
   elements_medicaux: ENTREES.compute(texteMedical),
-  elements_medicaux_precision: PRECISION.compute((saisie) =>
-    saisie === undefined ? undefined : `${saisie}.`,
-  ),
 };
 
 // ---- implémentation ----
@@ -88,11 +85,11 @@ function texteMedical(entrees: Entrees): string | AucunSegment {
   const segments = [...soin(entrees), ...complements(entrees)]
     .map(forme)
     .map((segment) => segment.replace(VARIABLE, entrees.justification ?? ""));
-  if (segments.length === 0) return undefined;
   const texte = segments
     .map((segment, rang) => (rang === 0 ? segment : enMinuscule(segment)))
+    .concat(entrees.precision ?? [])
     .join(" ; ");
-  return entrees.precision === undefined ? `${texte}.` : texte;
+  return texte === "" ? undefined : `${texte}.`;
 }
 
 // Les textes du contrat, tels qu'il les donne.

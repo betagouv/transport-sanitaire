@@ -97,38 +97,31 @@ describe("fillCerfa", () => {
   });
 });
 
-describe("un champ de `multilineFields`", () => {
-  it("passe en multiligne d'emblée, même quand son texte tient sur une ligne", async () => {
-    const { pdf } = await fillCerfa(
-      await testForm(),
-      [{ field: "nom", text: "DUPONT Marie" }],
-      { multilineFields: ["nom"] },
-    );
-
-    expect(await isMultilineIn(pdf, "nom")).toBe(true);
-    expect(await fontSizeOf(pdf, "nom")).toBe(TEXT_SIZES.target);
-  });
-});
-
-describe("un commentaire facultatif", () => {
-  it("s'écrit à la suite du texte quand tout tient", async () => {
-    const { read, withoutComment } = await remplir(await testForm(), [
-      { field: "motif", text: "Dialyse.", comment: "Fauteuil." },
+describe("un texte strict", () => {
+  it("s'écrit à la taille visée, en multiligne, quand il tient", async () => {
+    const { pdf, read, overflowing } = await remplir(await testForm(), [
+      { field: "motif", text: "Dialyse.", strict: true },
     ]);
 
-    expect(read).toEqual({ motif: "Dialyse. ; Fauteuil." });
-    expect(withoutComment).toEqual([]);
+    expect(read).toEqual({ motif: "Dialyse." });
+    expect(overflowing).toEqual([]);
+    expect(await isMultilineIn(pdf, "motif")).toBe(true);
+    expect(await fontSizeOf(pdf, "motif")).toBe(TEXT_SIZES.target);
   });
 
-  it("est retiré quand le texte ne tient pas avec lui, et le dit", async () => {
-    const { read, withoutComment, overflows } = await remplir(
+  it("n'écrit que son plus long début qui tient, à la taille visée, et le dit", async () => {
+    const { pdf, read, overflowing, overflows } = await remplir(
       await testForm(),
-      [{ field: "motif", text: "Dialyse en centre.", comment: LONG }],
+      [{ field: "motif", text: LONG, strict: true }],
     );
 
-    expect(read).toEqual({ motif: "Dialyse en centre." });
-    expect(withoutComment).toEqual(["motif"]);
+    const [deborde] = overflowing;
+    expect(deborde?.field).toBe("motif");
+    expect(read.motif).toBe(
+      Array.from(LONG).slice(0, deborde?.maximum).join(""),
+    );
     expect(overflows).toEqual([]);
+    expect(await fontSizeOf(pdf, "motif")).toBe(TEXT_SIZES.target);
   });
 });
 
@@ -193,15 +186,6 @@ describe("un texte trop long pour son cadre", () => {
     expect(read).toEqual({ nom: LONG });
     expect(overflows).toEqual([]);
     expect(await fontSizeOf(pdf, "nom")).toBeLessThan(TEXT_SIZES.floor);
-  });
-
-  it("perd son commentaire avant de rapetisser", async () => {
-    const { read, withoutComment } = await remplir(await testForm(), [
-      { field: "nom", text: MOYEN, comment: "Sans mousse." },
-    ]);
-
-    expect(read).toEqual({ nom: MOYEN });
-    expect(withoutComment).toEqual(["nom"]);
   });
 
   it("rapetisse de même sur chacun de ses volets", async () => {

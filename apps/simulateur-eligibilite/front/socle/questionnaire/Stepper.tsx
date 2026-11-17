@@ -4,7 +4,7 @@
 // l'écran : son titre est le `h1`. Un résultat a le sien, le stepper passe en
 // `h2`.
 
-import type { ReactNode } from "react";
+import type { ReactNode, Ref } from "react";
 
 type Props = {
   part: number;
@@ -13,13 +13,23 @@ type Props = {
   /** Le niveau du titre. `1` quand le stepper titre l'écran. */
   level?: 1 | 2;
   details?: ReactNode;
+  /** Le titre, que l'écran peut focaliser : il le reçoit alors au clavier. */
+  titleRef?: Ref<HTMLHeadingElement>;
 };
 
-export function Stepper({ part, total, title, level = 2, details }: Props) {
+export function Stepper({
+  part,
+  total,
+  title,
+  level = 2,
+  details,
+  titleRef,
+}: Props) {
   const Title = level === 1 ? "h1" : "h2";
+  const focusable = titleRef ? { ref: titleRef, tabIndex: -1 } : {};
   return (
     <div className="fr-stepper" style={{ marginBottom: "2rem" }}>
-      <Title className="fr-stepper__title">
+      <Title className="fr-stepper__title" {...focusable}>
         {title && `${title} `}
         <span className="fr-stepper__state">
           Étape {part} sur {total}

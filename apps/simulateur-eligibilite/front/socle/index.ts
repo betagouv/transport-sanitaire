@@ -25,10 +25,10 @@ export {
   type Cerfa,
   type CerfaMapping,
   cerfaValue,
-  commentOn,
   date,
   drawnBox,
   onOneLine,
+  strictText,
   templateAt,
   text,
 } from "./cerfa";

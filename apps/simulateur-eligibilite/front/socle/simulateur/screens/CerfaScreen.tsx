@@ -6,9 +6,15 @@
 // « Précédent », « Faire une nouvelle simulation » et, à droite, l'avis
 // une fois le document prêt (V02) ; « Imprimer » et « Télécharger » ; l'aperçu
 // du document.
+//
+// Un texte strict qui ne tient pas se réécrit au-dessus des actions (D-302,
+// D-304). La simulation garde son brouillon et son texte validé (D-303) : le
+// texte validé remplace celui du modèle, et chaque validation remonte le
+// document, régénéré. Le focus va alors au titre de la page.
 
-import type { ComponentType, ReactNode } from "react";
+import { type ComponentType, type ReactNode, type Ref, useRef } from "react";
 import type { Context } from "../../../../core/socle/questionnaire-engine";
+import type { Simulation } from "../../../../core/socle/simulation";
 import {
   type Button,
   type ButtonTracking,
@@ -17,9 +23,11 @@ import {
 } from "../../analytics";
 import {
   CerfaDocument,
+  type CerfaDto,
   dtoFrom,
   fileNameOf,
   type PdfSignals,
+  type StrictTextEdits,
 } from "../../cerfa";
 
 import type { CerfaInput, Model } from "../../model";
@@ -45,13 +53,16 @@ export function CerfaScreen({
   const trace = { title: "cerfa", ...simulation.trace() };
   const context = simulation.resultContext(completedAt);
   const reading = lecture.in(context);
+  const titleRef = useRef<HTMLHeadingElement>(null);
   useResultScreen("R3", simulation);
+  const edits = editsOf(simulation, onChange, () => titleRef.current?.focus());
   return (
     <Frame
       title={title.in(context)}
       part={model.core.questionnaire.length + 1}
       trace={trace}
       DebugTrace={DebugTrace}
+      titleRef={titleRef}
     >
       <Cerfa
         model={model}
@@ -60,6 +71,7 @@ export function CerfaScreen({
         input={{ reading, completedAt }}
         actions={{ onReopen: () => onChange(simulation.reopen()), onRestart }}
         feedback={feedbackOf(model, context)}
+        edits={edits}
       />
     </Frame>
   );
@@ -97,6 +109,26 @@ function CerfaActions({
 
 // ---- implémentation ----
 
+// Les textes réécrits de la simulation : chaque frappe et chaque validation
+// donnent une nouvelle simulation.
+function editsOf(
+  simulation: Simulation,
+  onChange: (next: Simulation) => void,
+  onValidated: () => void,
+): Edits {
+  const { edits } = simulation;
+  return {
+    drafts: edits.drafts,
+    accepted: edits.accepted,
+    onEdit: (entry, text) =>
+      onChange(simulation.withEdits(edits.draft(entry, text))),
+    onValidate: (entry) => {
+      onChange(simulation.withEdits(edits.accept(entry)));
+      onValidated();
+    },
+  };
+}
+
 // Le cerfa de la préconisation figée, daté du jour où le complément a été
 // validé, rien quand elle n'en donne pas. Le modèle peut tenir la place de son
 // aperçu. Le texte et l'avis attendent que son PDF soit prêt ; les boutons le
@@ -112,9 +144,27 @@ type CerfaProps = {
   input: CerfaInput;
   actions: CerfaActionsProps;
   feedback: FeedbackOffer | null;
+  edits: Edits;
 };
 
-function Cerfa({ model, context, text, input, actions, feedback }: CerfaProps) {
+// Les textes réécrits, et ceux qui sont validés.
+type Edits = StrictTextEdits & { readonly accepted: Texts };
+type Texts = Readonly<Record<string, string>>;
+
+// Le DTO du modèle, où chaque texte validé remplace le sien.
+function withAccepted<Dto extends CerfaDto>(dto: Dto, accepted: Texts): Dto {
+  return { ...dto, fields: { ...dto.fields, ...accepted } };
+}
+
+function Cerfa({
+  model,
+  context,
+  text,
+  input,
+  actions,
+  feedback,
+  edits,
+}: CerfaProps) {
   const { form, standIn, printLabel, downloadLabel } = model.cerfa;
   const tracking = useDocumentTracking(offered(feedback));
   const bound = form.in(context);
@@ -125,12 +175,14 @@ function Cerfa({ model, context, text, input, actions, feedback }: CerfaProps) {
         <CerfaActions {...actions} feedback={null} />
       </>
     );
-  const dto = dtoFrom(bound.mapping, context);
+  const dto = withAccepted(dtoFrom(bound.mapping, context), edits.accepted);
   const file = fileNameOf(bound.cerfa.fileName, input.completedAt);
   return (
     <CerfaDocument
+      key={JSON.stringify(edits.accepted)}
       cerfa={bound.cerfa}
       dto={dto}
+      edits={edits}
       date={input.completedAt}
       printLabel={printLabel}
       downloadLabel={downloadLabel}
@@ -183,8 +235,10 @@ function Frame({
   part,
   trace,
   DebugTrace,
+  titleRef,
   children,
 }: {
+  titleRef: Ref<HTMLHeadingElement>;
   title: string;
   part: number;
   trace: DebugTraceProps;
@@ -199,6 +253,7 @@ function Frame({
           level={1}
           part={part}
           total={part}
+          titleRef={titleRef}
           details={<span className="fr-text--bold">Préparation terminée.</span>}
         />
       </div>

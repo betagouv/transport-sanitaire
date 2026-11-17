@@ -3,10 +3,10 @@
 //
 // Le DTO parle en mots clairs (`avec_lait`). Le gabarit, lui, range les trois
 // accompagnements sous un même nom de champ, `acc` : comme les cases groupées
-// de la DAP, ils se marquent par un dessin. La remarque est le commentaire
-// facultatif des instructions : elle les suit dans leur cadre, et s'en retire
-// si elle n'y tient pas. Le nom du client n'a pas de champ : il se dessine dans
-// son cadre.
+// de la DAP, ils se marquent par un dessin. Les instructions sont un texte
+// strict (D-302), suivies de la remarque : s'il ne tient pas, le client le
+// réécrit avant tout téléchargement. Le nom du client n'a pas de champ : il se
+// dessine dans son cadre.
 
 import type { Questions } from "../../../core/models/fake/questions/reponses";
 import { given } from "../../../core/models/fake/questions/reponses";
@@ -16,8 +16,8 @@ import {
   bindCerfa,
   type Cerfa,
   type CerfaMapping,
-  commentOn,
   drawnBox,
+  strictText,
   templateAt,
   text,
 } from "../../socle";
@@ -34,7 +34,6 @@ type BonDeCommande = {
     avec_sucre: boolean;
     avec_citron: boolean;
     instructions?: string;
-    remarque?: string;
   };
   drawings: { au_nom_de?: string };
 };
@@ -50,8 +49,7 @@ const BON_DE_COMMANDE: Cerfa<BonDeCommande> = {
     avec_lait: drawnBox("acc", "lait"),
     avec_sucre: drawnBox("acc", "sucre"),
     avec_citron: drawnBox("acc", "citron"),
-    instructions: text("instructions"),
-    remarque: commentOn("instructions"),
+    instructions: strictText("instructions", "Instructions"),
   },
   drawings: { au_nom_de: at({ page: 1, x: 36, y: 174, width: 348 }) },
 };
@@ -72,9 +70,9 @@ const VERS_LE_BON_DE_COMMANDE: CerfaMapping<BonDeCommande> = {
         lieu: reponse("lieu"),
         retrait: reponse("retrait"),
         jour: reponse("jour"),
+        remarque: reponse("remarque"),
       })
       .compute(instructionsDe),
-    remarque: reponse("remarque").compute(({ value }) => value),
   },
   drawings: { au_nom_de: reponse("nom").compute(({ value }) => value) },
 };
@@ -107,14 +105,18 @@ function reponse<Id extends keyof Questions & string>(id: Id) {
 }
 
 type Service = {
-  readonly [Id in "lieu" | "retrait" | "jour"]: GivenAnswer<Questions[Id]>;
+  readonly [Id in "lieu" | "retrait" | "jour" | "remarque"]: GivenAnswer<
+    Questions[Id]
+  >;
 };
 
-// Le lieu, le retrait et le jour, une fois tous trois donnés.
-function instructionsDe({ lieu, retrait, jour }: Service): string | Incomplet {
+// Le lieu, le retrait et le jour, une fois tous trois donnés, puis la remarque.
+function instructionsDe(service: Service): string | Incomplet {
+  const { lieu, retrait, jour, remarque } = service;
   if (!lieu.hasAnswer() || !retrait.hasAnswer() || !jour.hasAnswer())
     return undefined;
-  return `Servie ${LIEUX[lieu.value]}, ${RETRAITS[retrait.value]}, le ${enFrancais(jour.value)}`;
+  const servie = `Servie ${LIEUX[lieu.value]}, ${RETRAITS[retrait.value]}, le ${enFrancais(jour.value)}`;
+  return remarque.hasAnswer() ? `${servie}. ${remarque.value}` : servie;
 }
 
 // Un jour `AAAA-MM-JJ`, écrit à la française : « 14/10/2026 ».

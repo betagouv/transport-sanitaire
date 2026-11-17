@@ -6,11 +6,11 @@ import {
   at,
   box,
   type Cerfa,
-  commentOn,
   date,
   drawnBox,
   onOneLine,
   type Position,
+  strictText,
   text,
 } from "../../../front/socle/cerfa/cerfa";
 import { generateCerfa } from "../../../front/socle/cerfa/generate-the-cerfa/generate-the-cerfa";
@@ -21,7 +21,6 @@ type Fiche = {
   fields: {
     nom?: string;
     motif?: string;
-    precisions?: string;
     en_ald?: boolean;
     avec_lait?: boolean;
     echeance?: string;
@@ -39,8 +38,7 @@ async function fiche(...consigne: Position[]): Promise<Cerfa<Fiche>> {
     fileName: "fiche",
     fields: {
       nom: text("nom"),
-      motif: text("motif"),
-      precisions: commentOn("motif"),
+      motif: strictText("motif", "Motif"),
       en_ald: box("ald", ald ?? ""),
       avec_lait: drawnBox("acc", "lait"),
       echeance: date("echeance"),
@@ -85,13 +83,10 @@ describe("la taille des textes imprimés d'un cerfa", () => {
     expect(typographie).toEqual({ sizes: {}, unmeasured: [] });
   });
 
-  it("mesure un commentaire avec le texte qu'il suit, dans le même champ", async () => {
-    const { sizes } = await tailles({
-      fields: { motif: "Dialyse.", precisions: "Fauteuil." },
-      drawings: {},
-    });
+  it("mesure un texte strict à la taille visée, même quand il déborde", async () => {
+    const { sizes } = await tailles({ fields: { motif: LONG }, drawings: {} });
 
-    expect(Object.keys(sizes)).toEqual(["motif"]);
+    expect(sizes).toEqual({ motif: 9 });
   });
 
   it("donne la taille où le texte s'imprime, pas celle de départ", async () => {

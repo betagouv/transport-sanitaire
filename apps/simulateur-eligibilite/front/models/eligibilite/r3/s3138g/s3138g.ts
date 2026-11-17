@@ -24,9 +24,9 @@ import {
   box,
   type Cerfa,
   type CerfaMapping,
-  commentOn,
   date,
   onOneLine,
+  strictText,
   templateAt,
   text,
 } from "../../../../socle";
@@ -132,8 +132,10 @@ const CERFA: Cerfa<DtoS3138g> = {
     nombre: text("nbr transp"),
     urgence_appel15: box("Urg SAMU centre 15", "On"),
     urgence_autre: box("autres", "On"),
-    elements_medicaux: text("comm évent"),
-    elements_medicaux_precision: commentOn("elements_medicaux"),
+    elements_medicaux: strictText(
+      "comm évent",
+      "Éléments d’ordre médical et commentaires",
+    ),
     centre_rare: box("transp autre cent", "On"),
     exoneration_oui: box("oui1", "OUI"),
     exoneration_non: box("oui1", "NON"),

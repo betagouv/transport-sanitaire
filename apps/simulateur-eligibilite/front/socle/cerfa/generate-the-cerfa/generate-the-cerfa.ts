@@ -12,49 +12,69 @@ import type {
   BoxBinding,
   Cerfa,
   CerfaDto,
-  CommentBinding,
+  StrictTextBinding,
   TextBinding,
 } from "../cerfa";
-import type { FieldEntry } from "./fill-the-form";
+import type { FieldEntry, StrictOverflow } from "./fill-the-form";
 import type { Drawing, Mark } from "./flatten-the-form";
+import type { StrictMeasure } from "./strict-text";
 import { TEXT_SIZES } from "./text-sizes";
 import { type Typography, typographyOf } from "./typography";
 
 /**
- * Le cerfa généré, les commentaires qu'il n'a pas pu garder, et la taille de
- * ses textes imprimés.
+ * Le cerfa généré, les textes stricts qui en débordent, et la taille de ses
+ * textes imprimés. Un texte strict qui déborde fait du PDF un aperçu.
  */
 export type GeneratedCerfa = {
   readonly pdf: Blob;
-  /** Les entrées du DTO dont le commentaire a été retiré, faute de place. */
-  readonly removedComments: readonly string[];
+  readonly overflowing: readonly Overflowing[];
   readonly typography: Typography;
 };
 
-/** Génère le cerfa rempli d'après `dto`, aplati, prêt à télécharger. */
+/**
+ * Un texte strict qui déborde (D-302) : son entrée du DTO, le nom de sa
+ * rubrique, le texte, et le maximum de son compteur.
+ */
+export type Overflowing = {
+  readonly entry: string;
+  readonly label: string;
+  readonly text: string;
+  readonly maximum: number;
+};
+
+/** La marque de chaque page d'un aperçu (D-304). */
+export const PREVIEW_MARK = "Aperçu – texte à valider";
+
+/**
+ * Génère le cerfa rempli d'après `dto`, aplati, prêt à télécharger. Il n'est
+ * qu'un aperçu, marqué sur chaque page, si un texte strict en déborde, ou si
+ * `preview` le demande : un texte s'y réécrit encore.
+ */
 export async function generateCerfa<Dto extends CerfaDto>(
   cerfa: Cerfa<Dto>,
   dto: Dto,
+  { preview = false }: { preview?: boolean } = {},
 ): Promise<GeneratedCerfa> {
   const [template, { fillCerfa }, { flattenCerfa }] = await Promise.all([
     cerfa.template(),
     import("./fill-the-form"),
     import("./flatten-the-form"),
   ]);
-  const { entries, marks, drawings, commentOf, ...options } = instructionsOf(
-    cerfa,
-    dto,
-  );
+  const { entries, marks, drawings, overflowingOf, ...options } =
+    instructionsOf(cerfa, dto);
   const filled = await fillCerfa(template, entries, options);
+  const overflowing = filled.overflowing.map(overflowingOf);
+  const marked = preview || overflowing.length > 0;
   const { pdf, drawnSizes } = await flattenCerfa(filled.pdf, {
     marks,
     drawings: [...drawings.map(([, drawing]) => drawing), ...filled.overflows],
+    ...(marked ? { watermark: PREVIEW_MARK } : {}),
   });
   return {
     // `pdf` est une vue typée trop large pour `BlobPart` : on la repasse telle
     // quelle.
     pdf: new Blob([pdf as BlobPart], { type: "application/pdf" }),
-    removedComments: filled.withoutComment.flatMap(commentOf),
+    overflowing,
     typography: typographyOf({
       texts: textsOf(cerfa, entries),
       fieldSizes: filled.sizes,
@@ -63,9 +83,38 @@ export async function generateCerfa<Dto extends CerfaDto>(
   };
 }
 
+/** Un texte strict du cerfa : son entrée du DTO, et le nom de sa rubrique. */
+export type StrictEntry = { readonly entry: string; readonly label: string };
+
+/** Les textes stricts du cerfa. */
+export function strictEntriesOf(cerfa: Cerfa<CerfaDto>): StrictEntry[] {
+  return (Object.entries(cerfa.fields) as [string, Binding][]).flatMap(
+    ([entry, binding]) =>
+      "strict" in binding ? [{ entry, label: binding.strict.label }] : [],
+  );
+}
+
+/**
+ * La mesure des textes stricts du cerfa, par entrée du DTO : `pdf-lib` et le
+ * gabarit se chargent avec elle.
+ */
+export async function measureOf(
+  cerfa: Cerfa<CerfaDto>,
+): Promise<(entry: string, text: string) => StrictMeasure> {
+  const bindings = cerfa.fields as Record<string, Binding>;
+  const fieldOf = (entry: string) => bindings[entry]?.field ?? entry;
+  const [template, { measureStrictTexts }] = await Promise.all([
+    cerfa.template(),
+    import("./measure-strict-texts"),
+  ]);
+  const strict = strictEntriesOf(cerfa).map(({ entry }) => fieldOf(entry));
+  const measure = await measureStrictTexts(template, strict);
+  return (entry, text) => measure(fieldOf(entry), text);
+}
+
 // ---- implémentation ----
 
-type Binding = TextBinding | CommentBinding | BoxBinding;
+type Binding = TextBinding | StrictTextBinding | BoxBinding;
 
 /**
  * Traduit ce que le DTO demande au PDF dans les noms du gabarit. Une entrée
@@ -75,20 +124,16 @@ function instructionsOf<Dto extends CerfaDto>(cerfa: Cerfa<Dto>, dto: Dto) {
   const bound = Object.entries(
     cerfa.fields as Readonly<Record<string, Binding>>,
   );
-  const comments = commentsOf(bound);
   const givenValue = (key: string) => {
     const value = dto.fields[key];
     return isGiven(value) ? value : undefined;
   };
   return {
     entries: bound.flatMap(([key, binding]) =>
-      entryOf(binding, givenValue(key), givenValue(comments.get(key) ?? "")),
+      entryOf(binding, givenValue(key)),
     ),
     singleLineFields: bound.flatMap(([, binding]) =>
       "singleLine" in binding && binding.singleLine ? [binding.field] : [],
-    ),
-    multilineFields: bound.flatMap(([key, binding]) =>
-      "field" in binding && comments.has(key) ? [binding.field] : [],
     ),
     dateFields: bound.flatMap(([, binding]) =>
       "date" in binding && binding.date ? [binding.field] : [],
@@ -97,7 +142,7 @@ function instructionsOf<Dto extends CerfaDto>(cerfa: Cerfa<Dto>, dto: Dto) {
       "drawn" in binding && binding.drawn && givenValue(key) ? [binding] : [],
     ),
     drawings: drawingsOf(cerfa, dto),
-    commentOf: commentOf(bound, comments),
+    overflowingOf: overflowingOf(bound, dto),
   };
 }
 
@@ -131,41 +176,21 @@ function textsOf<Dto extends CerfaDto>(
   );
 }
 
-// Retrouve, d'un champ qui a perdu son commentaire, l'entrée du DTO qui le
-// portait.
-function commentOf(
+// Retrouve, d'un champ strict qui déborde, l'entrée du DTO qui l'écrit.
+function overflowingOf(
   bound: readonly (readonly [string, Binding])[],
-  comments: ReadonlyMap<string, string>,
-): (field: string) => string[] {
-  return (field) =>
-    bound.flatMap(([key, binding]) => {
-      const comment = comments.get(key);
-      return "field" in binding && binding.field === field && comment
-        ? [comment]
-        : [];
-    });
-}
-
-// Relie chaque texte commenté à l'entrée qui porte son commentaire. Refuse un
-// commentaire qui ne suit aucun texte du cerfa.
-function commentsOf(
-  bound: readonly (readonly [string, Binding])[],
-): Map<string, string> {
-  const texts = new Set(
-    bound.flatMap(([key, binding]) =>
-      "field" in binding && !("state" in binding) ? [key] : [],
-    ),
-  );
-  const comments = new Map<string, string>();
-  for (const [key, binding] of bound) {
-    if (!("commentOn" in binding)) continue;
-    if (!texts.has(binding.commentOn))
-      throw new Error(
-        `« ${key} » commente « ${binding.commentOn} », qui n'est pas un texte du cerfa.`,
-      );
-    comments.set(binding.commentOn, key);
-  }
-  return comments;
+  dto: CerfaDto,
+): (overflow: StrictOverflow) => Overflowing {
+  return ({ field, maximum }) => {
+    const found = bound.find(
+      ([, binding]) => "strict" in binding && binding.field === field,
+    );
+    if (!found || !("strict" in found[1]))
+      throw new Error(`« ${field} » n'est pas un texte strict du cerfa.`);
+    const [entry, { strict }] = found;
+    const text = String(dto.fields[entry] ?? "");
+    return { entry, label: strict.label, text, maximum };
+  };
 }
 
 function isGiven<Reading>(value: Reading | undefined): value is Reading {
@@ -173,24 +198,16 @@ function isGiven<Reading>(value: Reading | undefined): value is Reading {
 }
 
 // Traduit une entrée du DTO en valeur à écrire dans un champ. Une case
-// dessinée n'en donne aucune : elle part dans les marques. Un commentaire non
-// plus : il s'écrit avec le texte qu'il suit.
+// dessinée n'en donne aucune : elle part dans les marques.
 function entryOf(
   binding: Binding,
   value: string | boolean | undefined,
-  comment: string | boolean | undefined,
 ): FieldEntry[] {
-  if ("commentOn" in binding) return [];
   if ("state" in binding)
     return value && !binding.drawn
       ? [{ field: binding.field, checked: binding.state }]
       : [];
-  if (value === undefined && comment === undefined) return [];
-  return [
-    {
-      field: binding.field,
-      text: value === undefined ? "" : String(value),
-      ...(comment === undefined ? {} : { comment: String(comment) }),
-    },
-  ];
+  if (value === undefined) return [];
+  const strict = "strict" in binding ? { strict: true } : {};
+  return [{ field: binding.field, text: String(value), ...strict }];
 }
