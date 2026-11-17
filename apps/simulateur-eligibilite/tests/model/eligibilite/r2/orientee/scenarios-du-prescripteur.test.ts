@@ -58,6 +58,13 @@ describe("les scénarios des seeds", () => {
       "centre15",
     ]);
   });
+
+  // R31 (v10.2.1) : le scénario n'a pas de codes, sa raison le choisit.
+  it("prend le circuit à confirmer pour l'étranger sans motif d'accord préalable", () => {
+    expect(ids("ISSUE_CAISSE", traceDeLaSeed("issue-caisse-etranger"))).toEqual(
+      ["etranger-circuit"],
+    );
+  });
 });
 
 describe("le contexte prouvé choisit le scénario le plus précis", () => {

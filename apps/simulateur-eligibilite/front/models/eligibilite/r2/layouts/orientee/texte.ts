@@ -72,8 +72,8 @@ export function texteDuPrescripteur(
     return texteDesRaisons(issues[issue], scenarios);
   }
   const [scenario] = scenarios;
-  return scenario
-    ? texteDUnScenario(issues[issue].title, scenario)
+  return scenario?.whyTitle
+    ? texteDUnScenario(issues[issue].title, scenario, scenario.whyTitle)
     : { ...SANS_TEXTE, titre: issues[issue].title };
 }
 
@@ -125,7 +125,7 @@ function texteDeLEtranger(issue: IssueEtranger): TexteDuPrescripteur {
 function texteDUnScenario(
   titre: string,
   scenario: ScenarioPrescripteur,
-  titreDuPourquoi = scenario.whyTitle,
+  titreDuPourquoi: string,
 ): TexteDuPrescripteur {
   return {
     titre,

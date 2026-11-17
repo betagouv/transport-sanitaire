@@ -1,6 +1,6 @@
 // Les motifs que la DAP remplie coche (#161) : les fondements que les règles
-// établissent, l'Engagement maternité, rien pour la demande d'examen à
-// l'étranger, et l'avion ou le bateau avec ses cases. Le reste de la DAP se
+// établissent, l'Engagement maternité, le seul motif de la demande d'examen
+// à l'étranger, et l'avion ou le bateau avec ses cases. Le reste de la DAP se
 // vérifie dans `s3139h-rempli.test.ts`.
 
 import { describe, expect, it } from "vitest";
@@ -38,8 +38,10 @@ describe("les motifs de la DAP", () => {
     expect(await marquees(reponses, {}, "km")).toEqual(["engag"]);
   });
 
-  it("ne cochent rien pour le transport à l'étranger à examiner", async () => {
-    expect(await marquees(ETRANGER, {}, "km")).toEqual([]);
+  // Depuis R31 (v10.2.1), l'étranger à examiner a toujours un motif : ici la
+  // série (« non » est l'état de sa case dans le gabarit).
+  it("cochent le seul motif établi du transport à l'étranger à examiner", async () => {
+    expect(await marquees(ETRANGER, {}, "km")).toEqual(["non"]);
     expect(await marquees(ETRANGER, {}, "bat ou av")).toEqual([]);
   });
 

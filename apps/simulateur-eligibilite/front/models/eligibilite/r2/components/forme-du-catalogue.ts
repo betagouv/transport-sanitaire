@@ -11,7 +11,7 @@ export type AucunTexte = undefined;
 /** Aucun scénario du catalogue ne correspond à ce cas. */
 export type AucunScenario = undefined;
 
-/** Le catalogue : sa version, ses sources, et les textes de chaque issue. */
+/** Le catalogue : sa version et les textes de chaque issue. */
 export type CatalogueResultats = {
   readonly schema: string;
   /** La version du modèle, celle de `rules/VERSION`. */
@@ -19,7 +19,6 @@ export type CatalogueResultats = {
   /** L'empreinte SHA-256 de `rules/regles.publicodes`. */
   readonly modelSha256: string;
   readonly sourceDate: string;
-  readonly sources: Readonly<Record<string, Source>>;
   /** La phrase qui annonce la fiche à remettre au patient. */
   readonly patientSheetIntro: string;
   /** L'invitation au patient à donner son avis, au pied de sa fiche. */
@@ -45,17 +44,6 @@ export type CatalogueResultats = {
     readonly nonShared: string;
     readonly bari: string;
   };
-};
-
-/** La page de l'éditeur d'où vient un texte, et son empreinte. */
-type Source = {
-  readonly id: string;
-  readonly title: string;
-  readonly url: string;
-  readonly edited: string;
-  readonly sha256: string;
-  readonly blank?: boolean;
-  readonly parent?: string;
 };
 
 /** Un texte, et les codes de contexte qui le choisissent. */
@@ -161,12 +149,16 @@ export type IssueDeLaCaisse = IssuePrescripteur & {
   readonly whyTitles: { readonly single: string; readonly multiple: string };
 };
 
-/** Un scénario du résultat du prescripteur, et ce qui le choisit. */
+/**
+ * Un scénario du résultat du prescripteur, et ce qui le choisit. Celui de
+ * l'étranger (v10.2.1) n'a ni libellé, ni titre du pourquoi, ni paramètres, ni
+ * codes : il n'existe que pour la caisse, qui le choisit par sa raison.
+ */
 export type ScenarioPrescripteur = {
   readonly id: string;
-  readonly label: string;
+  readonly label?: string;
   readonly intro: string;
-  readonly whyTitle: string;
+  readonly whyTitle?: string;
   readonly whyText: string;
   readonly sourceKeys: readonly string[];
   readonly reason: string;
@@ -175,10 +167,10 @@ export type ScenarioPrescripteur = {
    * Les paramètres du scénario ; `null` : il n'en demande pas la preuve.
    * Absents d'un scénario gardé pour la compatibilité, comme celui de la dialyse.
    */
-  readonly params: Readonly<Partial<Record<string, string | null>>>;
+  readonly params?: Readonly<Partial<Record<string, string | null>>>;
   /** Un scénario inactif n'est jamais montré. */
-  readonly inactive: boolean;
-  readonly codes: readonly string[];
+  readonly inactive?: boolean;
+  readonly codes?: readonly string[];
   readonly questions: readonly string[];
 };
 

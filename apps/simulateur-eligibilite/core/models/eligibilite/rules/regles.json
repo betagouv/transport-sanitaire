@@ -1031,6 +1031,15 @@
           "alors": "'ISSUE_NON_ELIGIBLE'"
         },
         {
+          "si": {
+            "toutes ces conditions": [
+              "fait_trajet_etranger",
+              "cible_dap_requise = non"
+            ]
+          },
+          "alors": "'ISSUE_CAISSE'"
+        },
+        {
           "si": "fait_trajet_etranger",
           "alors": "'ISSUE_DAP_ETRANGER_A_EXAMINER'"
         },
@@ -1219,6 +1228,22 @@
         {
           "si": "cible_issue_id = 'ISSUE_DAP_ETRANGER_A_EXAMINER'",
           "alors": "'TRANSPORT_ETRANGER_EXAMEN_CAISSE'"
+        },
+        {
+          "si": {
+            "toutes ces conditions": [
+              "cible_issue_id = 'ISSUE_CAISSE'",
+              "fait_trajet_etranger",
+              "cible_dap_requise = non",
+              "cible_point_cnam = non",
+              "cible_incertitude_dialyse_decisive = non",
+              "cible_preuve_ald_inconnue_decisive = non",
+              "cible_reconnaissance_mineur_inconnue_decisive = non",
+              "cible_convocation_inconnue_decisive = non",
+              "cible_couverture_inconnue_decisive = non"
+            ]
+          },
+          "alors": "'TRANSPORT_ETRANGER_CIRCUIT_A_CONFIRMER'"
         },
         {
           "si": "cible_preuve_ald_inconnue_decisive",

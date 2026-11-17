@@ -70,11 +70,9 @@ const CAS: readonly [id: string, faits: Changements, issue: Issue][] = [
   ["D24", CONVOCATION, "ISSUE_CONVOCATION"],
   ["D25", BRANCARD, "ISSUE_PMT"],
   ["D26", { ...BRANCARD, fait_bariatrique: true }, "ISSUE_PMT"],
-  [
-    "D27",
-    { ...BRANCARD, fait_trajet_etranger: true },
-    "ISSUE_DAP_ETRANGER_A_EXAMINER",
-  ],
+  // R31 (v10.2.1) : sans motif de DAP, l'étranger va vers la caisse. L'oracle
+  // du paquet attend encore ISSUE_DAP_ETRANGER_A_EXAMINER.
+  ["D27", { ...BRANCARD, fait_trajet_etranger: true }, "ISSUE_CAISSE"],
   [
     "D28",
     { ...LONGUE_DISTANCE, fait_trajet_etranger: true },
@@ -154,6 +152,7 @@ describe("l'oracle de l'éditeur", () => {
 
   it.each([
     ["D22", "MINEUR_RECONNAISSANCE_NON_VERIFIABLE"],
+    ["D27", "TRANSPORT_ETRANGER_CIRCUIT_A_CONFIRMER"],
     ["D46", "AUCUN_MOTIF_TRANSPORT"],
   ] as const)("%s donne sa raison", (id, raison) => {
     const [, faits] = CAS.find(([cas]) => cas === id) ?? [];
