@@ -11,7 +11,7 @@ import { verdictOf } from "./strict-verdict";
 import { useMeasure } from "./use-measure";
 
 /** Ce que dit le compteur sous le champ. */
-export type TextCounter = {
+type TextCounter = {
   /** « 12 / 54 caractères ». */
   readonly text: string;
   /** Le message de la règle, quand le texte ne tient pas. */
@@ -19,13 +19,10 @@ export type TextCounter = {
 };
 
 /** La question n'a pas de compteur, ou sa mesure se charge encore. */
-export type NoCounter = undefined;
+type NoCounter = undefined;
 
 /** Le compteur de cette question pour ce texte. */
-export type CounterOf = (
-  question: string,
-  text: string,
-) => TextCounter | NoCounter;
+type CounterOf = (question: string, text: string) => TextCounter | NoCounter;
 
 /**
  * Les compteurs des questions de `measured`, chacune vers son entrée du DTO,

@@ -10,7 +10,6 @@ export {
   type CerfaDto,
   date,
   drawnBox,
-  onOneLine,
   type StrictOptions,
   strictDrawing,
   strictText,
@@ -36,4 +35,4 @@ export {
   useShown,
 } from "./pdf/PdfActionButton";
 export type { StrictTextEdits } from "./StrictTexts";
-export { type CounterOf, useTextCounters } from "./use-text-counters";
+export { useTextCounters } from "./use-text-counters";
