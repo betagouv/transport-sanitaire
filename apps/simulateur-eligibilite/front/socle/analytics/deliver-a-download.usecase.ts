@@ -1,7 +1,6 @@
-// Remettre au navigateur le PDF qu'un clic sur « Télécharger » a demandé. Le
-// journal reçoit la réussite, avec l'exposition de la demande.
+// Remettre au navigateur le PDF du document R3 dont l'app a lancé le
+// téléchargement. Le journal reçoit la réussite, avec le document remis.
 
-import type { ButtonExposure } from "./button-exposure.entity";
 import type { Journal } from "./journal.port";
 import type { Journey } from "./journey.entity";
 
@@ -12,8 +11,8 @@ export class DeliverADownload {
     this.#journal = journal;
   }
 
-  execute(journey: Journey, exposure: ButtonExposure): void {
-    for (const event of journey.press(exposure, "succeeded"))
+  execute(journey: Journey): void {
+    for (const event of journey.deliverDocument())
       void this.#journal.record(event);
   }
 }

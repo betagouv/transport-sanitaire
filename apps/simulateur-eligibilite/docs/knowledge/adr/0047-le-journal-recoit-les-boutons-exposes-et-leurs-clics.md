@@ -55,6 +55,25 @@ autre fait, à décider s'il est demandé.
 
 ## Mises à jour
 
+> **Mise à jour 2026-11-17, les boutons exposés et cliqués du contrat (#507).** Le
+> contrat v10.2.2 (ANA22-02) **révise** les points 2 à 6. Les boutons de la fiche
+> et du document sont exposés par `button_exposed` et cliqués par
+> `button_clicked`, sous quatre `button_id` fermés (`patient_sheet_print`,
+> `patient_sheet_download`, `document_print`, `document_download`) ;
+> `action_exposed`, `action` et les trois `sheet_*` disparaissent. L'objet du
+> bouton est `artifact_id` : la version de la fiche en R2, le document en R3, où
+> il vaut `document_id` et porte `document_revision`. Le clic porte
+> `activity_origin = user`. Une exposition ne change plus à chaque affichage :
+> `exposure_id` (`<simulation>:b<n>`) n'est nouveau qu'après une vraie
+> disparition (écran quitté, document en édition ou en aperçu, régénéré), une
+> autre version de l'objet ou une autre révision. Un remontage technique garde
+> la sienne. Un bouton grisé n'est ni exposé ni cliqué. Sur R3,
+> `document_print_requested` et `document_download_requested` partent quand
+> l'app lance vraiment l'impression ou le téléchargement, avec le même
+> `document_id`, après le `button_clicked`. Le clic qui relance une génération
+> ratée ne part pas, mais l'impression ou le téléchargement qu'il lance, une fois
+> le document prêt, oui. Hypothèse du point 21 du retour à l'éditeur, à valider.
+
 > **Mise à jour 2026-11-13, les boutons exposés et leurs clics (#388).** Le journal
 > reçoit l'exposition et le clic d'« Imprimer » et de « Télécharger », sur la fiche
 > patient de R2 et sur le document R3, et de « Donner mon avis ». R2 et R3 ouvrent

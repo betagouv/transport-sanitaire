@@ -30,7 +30,7 @@ export function SheetViewer({
 }) {
   const article = useRef<HTMLElement>(null);
   const { layout, print } = usePaperPrint(article);
-  const download = useSheetDownload(article, signals.onDownloaded);
+  const download = useSheetDownload(article);
   return (
     <section aria-label="Aperçu de la fiche patient" className="socle-viewer">
       <SheetActions print={print} download={download} signals={signals} />

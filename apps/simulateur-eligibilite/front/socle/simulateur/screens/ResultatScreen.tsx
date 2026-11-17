@@ -158,16 +158,17 @@ function offered(
   feedback: FeedbackOffer | null,
 ): Button[] {
   return [
-    ...(loaded?.sheet ? (["sheet_print", "sheet_download"] as const) : []),
+    ...(loaded?.sheet
+      ? (["patient_sheet_print", "patient_sheet_download"] as const)
+      : []),
     ...(feedback ? (["feedback"] as const) : []),
   ];
 }
 
 function sheetSignals(tracking: ButtonTracking): PdfSignals {
   return {
-    onPrint: () => tracking.pressed("sheet_print"),
-    onDownload: () => tracking.pressed("sheet_download"),
-    onDownloaded: () => tracking.delivered("sheet_download"),
+    onPrint: () => tracking.pressed("patient_sheet_print"),
+    onDownload: () => tracking.pressed("patient_sheet_download"),
   };
 }
 
