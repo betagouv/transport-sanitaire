@@ -64,6 +64,27 @@ export const BOUNDARIES = ["first", "last"] as const;
 
 export type Boundary = (typeof BOUNDARIES)[number];
 
+/** Les issues du premier résultat, celles de `cible_issue_id`. */
+export const ISSUES = [
+  "ISSUE_PMT",
+  "ISSUE_DAP_SANS_URGENCE",
+  "ISSUE_DAP_URGENCE_ATTESTEE",
+  "ISSUE_S3141",
+  "ISSUE_NON_ELIGIBLE",
+  "ISSUE_CAISSE",
+  "ISSUE_ETABLISSEMENT",
+  "ISSUE_PERMISSION_PATIENT",
+  "ISSUE_CONVOCATION",
+  "ISSUE_DAP_ETRANGER_A_EXAMINER",
+] as const;
+
+export type Issue = (typeof ISSUES)[number];
+
+/** Les supports du premier résultat : trois documents, ou aucun. */
+export const SUPPORTS = ["S3138g", "S3139h", "S3141", "AUCUN"] as const;
+
+export type Support = (typeof SUPPORTS)[number];
+
 /** Les cinq modes terrestres : `mode` ne dit jamais la ligne régulière. */
 export const MODES = [
   "TAP",
@@ -159,12 +180,12 @@ export type AnalyticsEvent = {
   page_id?: string;
   exposure_id?: string;
   can_complete?: boolean;
-  issue?: string;
+  issue?: Issue;
   mode?: Mode;
   transport_composition?: TransportComposition;
   reason_codes?: string[];
   document_id?: string;
-  support?: string;
+  support?: Support;
   /** Les champs remplis du document R3, sous leur identifiant fermé (ADR-0048). */
   expected_field_ids?: string[];
   /** La taille de chaque champ attendu qui a pu se mesurer (ADR-0048). */

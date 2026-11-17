@@ -5,14 +5,17 @@
 import { describe, expect, it } from "vitest";
 import type { Typography } from "../../../front/socle/analytics/document-version.entity";
 import { Journey } from "../../../front/socle/analytics/journey.entity";
-import type { AnalyticsEvent } from "../../../shared/analytics/analytics-event";
+import type {
+  AnalyticsEvent,
+  Support,
+} from "../../../shared/analytics/analytics-event";
 import { PROVENANCE } from "./journal-de-test";
 
 // Le R2 affiché d'une PMT : ses codes, sans motif.
-const unR2 = (support: string | null = "S3138g") => ({
+const unR2 = (support: Support = "S3138g") => ({
   canComplete: true,
   codes: {
-    issue: "ISSUE_PMT",
+    issue: "ISSUE_PMT" as const,
     mode: null,
     transportComposition: "unknown" as const,
     reasonCodes: [],
@@ -123,7 +126,7 @@ describe("la taille des textes du document R3", () => {
   it("sans support de document, la mesure ne part pas", () => {
     const journey = new Journey({ seeded: false, provenance: PROVENANCE });
 
-    const affiche = afficherLeR3(journey, unDocument(), unR2(null));
+    const affiche = afficherLeR3(journey, unDocument(), unR2("AUCUN"));
 
     expect(mesures(affiche)).toEqual([]);
   });
