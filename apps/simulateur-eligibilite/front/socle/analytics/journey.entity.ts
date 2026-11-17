@@ -231,10 +231,12 @@ export class Journey {
     ];
   }
 
-  // Une page de P1 ou de P2 qui change les réponses fait tomber la révision.
+  // Une page de P1 ou de P2 qui change les réponses fait tomber la révision ;
+  // une page de P3, le document (R13).
   #revise(view: PageView, changed: boolean): EventDetails[] {
     const { phase } = view;
-    if (!changed || (phase !== "P1" && phase !== "P2")) return [];
+    if (!changed || !phase) return [];
+    if (phase === "P3") return this.#results.invalidateTheDocument();
     return this.#results.invalidate(phase);
   }
 

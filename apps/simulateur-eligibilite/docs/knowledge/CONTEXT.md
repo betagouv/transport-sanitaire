@@ -290,7 +290,16 @@ révision dont il vient en font l'empreinte : le même document réaffiché gard
 sa version, un complément changé en ouvre une nouvelle. Une version tombe avec
 sa révision. Le journal des parcours la reçoit quand son PDF est prêt (#387).
 _Chez l'éditeur_: « version documentaire », `document_id` (ANA-1015).
-_Avoid_: révision, réservé au premier résultat.
+_Avoid_: révision, réservé au premier résultat et à la révision du document.
+
+**Révision du document**:
+L'état du complément dont viennent les versions du document R3, numéroté
+`dr1`, `dr2`… dans une simulation. Elle naît sous une révision du R2, au
+premier document affiché ; une page de P3 validée qui change les réponses
+l'invalide et annonce la suivante (R13, #497). Un même DTO imprimé autrement
+change de version, pas de révision du document.
+_Chez l'éditeur_: `document_revision`.
+_Avoid_: version, réservé au PDF.
 
 **Taille imprimée**:
 La taille, en points, où un champ rempli du document R3 s'imprime vraiment,

@@ -8,6 +8,7 @@ import type {
   AnalyticsEvent,
   ButtonId,
 } from "../../../shared/analytics/analytics-event";
+import type { ShownDocument } from "./document-version.entity";
 
 /** Un bouton de la fiche ou du document, ou l'avis. */
 export type Button = ButtonId | "feedback";
@@ -20,7 +21,7 @@ export type Button = ButtonId | "feedback";
 export type ExposedOn = Pick<AnalyticsEvent, "screen" | "revision"> & {
   readonly view: string;
   readonly sheet: string | NoVersion;
-  readonly document: string | NoVersion;
+  readonly document: ShownDocument | NoVersion;
 };
 
 /** L'écran ne montre pas de fiche, ou pas de document. */
@@ -58,7 +59,10 @@ export class ButtonPlace {
       if (!place.revision) return null;
       return new ButtonPlace(button, view, {
         ...place,
-        ...(document && { document_id: document }),
+        ...(document && {
+          document_revision: document.revisionId,
+          document_id: document.id,
+        }),
       });
     }
     const fields = { button_id: button, ...place };
@@ -69,9 +73,9 @@ export class ButtonPlace {
     if (!document) return null;
     return new ButtonPlace(button, view, {
       ...fields,
-      artifact_id: document,
-      document_revision: document,
-      document_id: document,
+      artifact_id: document.id,
+      document_revision: document.revisionId,
+      document_id: document.id,
     });
   }
 

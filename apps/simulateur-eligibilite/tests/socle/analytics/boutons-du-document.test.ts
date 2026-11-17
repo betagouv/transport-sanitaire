@@ -36,8 +36,8 @@ describe("les boutons du document R3", () => {
     );
     // L'avis garde son contrat : il n'a pas de révision du document.
     expect(exposes.slice(0, 2)).toEqual([
-      expect.objectContaining({ document_revision: "d1" }),
-      expect.objectContaining({ document_revision: "d1" }),
+      expect.objectContaining({ document_revision: "dr1" }),
+      expect.objectContaining({ document_revision: "dr1" }),
     ]);
   });
 
@@ -118,7 +118,7 @@ describe("les boutons du document R3", () => {
         expect.objectContaining({
           screen: "R3",
           revision: "r1",
-          document_revision: "d1",
+          document_revision: "dr1",
           document_id: "d1",
         }),
       ),

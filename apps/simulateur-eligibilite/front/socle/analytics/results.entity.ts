@@ -1,7 +1,7 @@
 // Les résultats d'une simulation, tels que le journal les reçoit : les
-// révisions du premier résultat (ADR-0045), les versions du document R3 qui en
-// viennent (ADR-0046) et leurs tailles imprimées (ADR-0048), et les versions de la
-// fiche patient (ADR-0047). `Journey` les
+// révisions du premier résultat (ADR-0045), les révisions du document R3 qui en
+// viennent (R13), ses versions (ADR-0046) et leurs tailles imprimées
+// (ADR-0048), et les versions de la fiche patient (ADR-0047). `Journey` les
 // numérote dans l'ordre du parcours.
 
 import type {
@@ -9,6 +9,7 @@ import type {
   Screen,
 } from "../../../shared/analytics/analytics-event";
 import type { Button, ExposedOn } from "./button-place.vo";
+import { DocumentRevision } from "./document-revision.entity";
 import {
   type DocumentContent,
   DocumentVersion,
@@ -34,6 +35,7 @@ export type ShownOn = Pick<ExposedOn, "revision" | "sheet" | "document">;
 export class Results {
   #lastRevision: Revision | NoRevision = null;
   #revision: Revision | NoRevision = null;
+  #documentRevision: DocumentRevision | NoVersion = null;
   #document: DocumentVersion | NoVersion = null;
   #sheet: SheetVersion | NoVersion = null;
 
@@ -64,19 +66,33 @@ export class Results {
 
   /**
    * Une nouvelle version du document, et la taille de ses textes imprimés, sauf
-   * s'il montre la dernière.
+   * s'il montre la dernière. Sans support de cerfa, aucun document.
    */
   displayDocument(content: DocumentContent): ResultEvent[] {
     const revision = this.#revision;
-    if (!revision || this.#document?.shows(revision, content)) return [];
+    if (!revision?.hasADocument) return [];
+    const expected = this.#expectedFrom(revision);
+    if (this.#document?.shows(expected, content)) return [];
     const document =
-      this.#document?.next(revision, content) ??
-      DocumentVersion.first(revision, content);
+      this.#document?.next(expected, content) ??
+      DocumentVersion.first(expected, content);
     this.#document = document;
     return [
-      revision.documentDisplayed(document.id),
-      ...revision.typographyMeasured(document.id, content.typography),
+      revision.documentDisplayed(document),
+      ...revision.typographyMeasured(document, content.typography),
     ];
+  }
+
+  /**
+   * Le document affiché tombe, quand une page de P3 change les réponses : la
+   * révision suivante du document est attendue. Sans document, rien.
+   */
+  invalidateTheDocument(): ResultEvent[] {
+    const revision = this.#revision;
+    const current = this.#documentRevision;
+    if (!revision || !current || !this.#documentOf(revision)) return [];
+    this.#documentRevision = current.next(revision);
+    return [revision.documentInvalidated(this.#documentRevision.id)];
   }
 
   failADocument(): ResultEvent[] {
@@ -92,7 +108,7 @@ export class Results {
     const revision = this.#revision;
     const document = this.#documentOf(revision);
     return revision && document
-      ? [revision.aboutItsDocument(gesture, document.id)]
+      ? [revision.aboutItsDocument(gesture, document)]
       : [];
   }
 
@@ -110,7 +126,7 @@ export class Results {
       return {
         revision: revision.id,
         sheet: null,
-        document: this.#documentOf(revision)?.id ?? null,
+        document: this.#documentOf(revision),
       };
     const onSheet = buttons.some((button) =>
       button.startsWith("patient_sheet_"),
@@ -121,10 +137,23 @@ export class Results {
 
   // ---- implémentation ----
 
-  // Le dernier document, s'il vient de la révision.
+  // La révision du document attendue sous ce R2 : la courante, ou la suivante.
+  #expectedFrom(revision: Revision): DocumentRevision {
+    if (this.#documentRevision?.of(revision)) return this.#documentRevision;
+    this.#documentRevision =
+      this.#documentRevision?.next(revision) ??
+      DocumentRevision.first(revision);
+    return this.#documentRevision;
+  }
+
+  // Le dernier document, s'il vient de la révision du document attendue sous
+  // ce R2.
   #documentOf(revision: Revision | NoRevision): DocumentVersion | NoVersion {
     const document = this.#document;
-    return revision && document?.of(revision) ? document : null;
+    const expected = this.#documentRevision;
+    return revision && expected?.of(revision) && document?.of(expected)
+      ? document
+      : null;
   }
 
   #sheetOf(revision: Revision): SheetVersion {

@@ -136,15 +136,16 @@ function placesItsButton(event: AnalyticsEvent): boolean {
   );
 }
 
-// L'impression et le téléchargement du document lancés, et le PDF remis.
-// `document_displayed` y viendra avec sa révision du document (#497).
+// Le document affiché, son impression et son téléchargement lancés, et le PDF
+// remis.
 const OF_A_DOCUMENT: readonly AnalyticsEvent["type"][] = [
+  "document_displayed",
   "document_print_requested",
   "document_download_requested",
   "document_download_succeeded",
 ];
 
-// L'impression ou le téléchargement lancés disent leur document et sa révision.
+// Ces événements disent leur document et sa révision.
 function namesItsDocument(event: AnalyticsEvent): boolean {
   if (!OF_A_DOCUMENT.includes(event.type)) return true;
   return (

@@ -34,6 +34,7 @@ export const EVENT_TYPES = [
   "question_validated",
   "result_displayed",
   "result_invalidated",
+  "document_invalidated",
   "document_displayed",
   "document_print_requested",
   "document_download_requested",
