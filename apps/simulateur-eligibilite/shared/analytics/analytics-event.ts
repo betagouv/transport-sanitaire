@@ -12,9 +12,11 @@
  * chargement de la page (ADR-0049), puis la version de l'app et le commit
  * déployé (ADR-0050). La 3 ajoute le nom de l'établissement et celui du
  * service, et pose le rattachement sur chaque événement (ADR-0053), puis
- * prend les boutons exposés et cliqués du contrat v10.2.2 (ADR-0047, #507).
+ * prend les boutons exposés et cliqués du contrat v10.2.2 (ADR-0047, #507). La
+ * 4 est le contrat v10.2.2 entier : son enveloppe, ses champs fermés et ses
+ * règles croisées, sans nos compléments (#497).
  */
-export const SCHEMA_VERSION = 3;
+export const SCHEMA_VERSION = 4;
 
 /**
  * La version du contrat de parcours et de mesure que l'app respecte, celle du
