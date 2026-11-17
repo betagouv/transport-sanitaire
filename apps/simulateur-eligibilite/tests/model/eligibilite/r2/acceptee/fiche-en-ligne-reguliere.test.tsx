@@ -1,9 +1,13 @@
 // La fiche patient d'une demande d'accord préalable dont une partie du trajet
-// se fait en avion ou en bateau de ligne régulière (#221). Les seeds
-// `issue-dap-avion-ou-bateau` et `issue-dap-avion-ou-bateau-urgence-attestee`
-// suivent la projection de l'éditeur (`projection-positive.mjs`) : titres et
-// modus de la ligne régulière, ni cartes ni étapes (TS1014-J04), aucun badge
-// terrestre. Les textes sont ceux du catalogue, recopiés ici.
+// se fait en avion ou en bateau de ligne régulière (#221). Les seeds suivent
+// la projection de l'éditeur (`projection-positive.mjs`, v10.2.1) :
+// - `issue-dap-avion-ou-bateau` et `issue-dap-avion-ou-bateau-urgence-attestee`,
+//   sans partie terrestre : titres et modus de la ligne régulière, ni cartes ni
+//   étapes (TS1014-J04), aucun badge terrestre, la ligne dite comme mode (R03) ;
+// - `issue-dap-trajet-mixte`, avec une partie terrestre : les titres de la
+//   ligne régulière, sans cartes, puis la partie terrestre en texte, avec les
+//   étapes et les badges de son mode (R01).
+// Les textes sont ceux du catalogue, recopiés ici.
 
 import { render, screen, within } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
@@ -31,6 +35,11 @@ const fiche = () =>
 
 const SANS_URGENCE = "issue-dap-avion-ou-bateau";
 const URGENCE = "issue-dap-avion-ou-bateau-urgence-attestee";
+const MIXTE = "issue-dap-trajet-mixte";
+
+const MODE_EN_LIGNE_REGULIERE =
+  "Mode de transport : Avion ou bateau de ligne régulière";
+const BESOINS = "Besoins particuliers à signaler lors de la réservation";
 
 const CARTES = [
   "Véhicule personnel ou transports en commun",
@@ -73,6 +82,12 @@ describe("la fiche de la seed issue-dap-avion-ou-bateau (sans urgence attestée)
       fiche().getByText("Attendez l’accord avant d’effectuer votre transport."),
     ).toBeInTheDocument();
     expect(fiche().queryByRole("heading", { name: /^\d\. / })).toBeNull();
+  });
+
+  it("dit la ligne régulière comme mode, sans partie terrestre", async () => {
+    await afficher(SANS_URGENCE);
+    expect(fiche().getByText(MODE_EN_LIGNE_REGULIERE)).toBeInTheDocument();
+    expect(fiche().queryByText(/^Partie terrestre/)).toBeNull();
   });
 
   it("n'a aucun badge terrestre, ni la puce des besoins", async () => {
@@ -126,6 +141,49 @@ describe("la fiche de la seed issue-dap-avion-ou-bateau-urgence-attestee", () =>
   });
 });
 
+describe("la fiche de la seed issue-dap-trajet-mixte (avec une partie terrestre)", () => {
+  it("garde les titres de la ligne régulière", async () => {
+    expect(await afficher(MIXTE)).toBe(
+      "Le transport de votre patient peut être pris en charge sous réserve de l’accord préalable de l’Assurance Maladie",
+    );
+    expect(
+      fiche().getByRole("heading", {
+        level: 2,
+        name: "Votre transport peut être pris en charge sous réserve de l’accord préalable de l’Assurance Maladie",
+      }),
+    ).toBeInTheDocument();
+  });
+
+  it("n'a pas de cartes de mode, même pour la partie terrestre", async () => {
+    await afficher(MIXTE);
+    expect(cartes()).toEqual([]);
+  });
+
+  it("dit la ligne régulière comme mode, puis la partie terrestre", async () => {
+    await afficher(MIXTE);
+    expect(fiche().getByText(MODE_EN_LIGNE_REGULIERE)).toBeInTheDocument();
+    expect(
+      fiche().getByText("Partie terrestre : TAP non partagé"),
+    ).toBeInTheDocument();
+  });
+
+  it("donne les étapes du mode terrestre", async () => {
+    await afficher(MIXTE);
+    expect(fiche().getAllByRole("heading", { name: /^\d\. / })).toHaveLength(2);
+    expect(
+      fiche().getByText(/transport assis professionnalisé/),
+    ).toBeInTheDocument();
+  });
+
+  it("signale les besoins de la partie terrestre", async () => {
+    await afficher(MIXTE);
+    const besoins = fiche().getByRole("list", { name: BESOINS });
+    expect(
+      within(besoins).getByText("Transport non partagé"),
+    ).toBeInTheDocument();
+  });
+});
+
 describe("une demande d'accord préalable sur un trajet terrestre", () => {
   it.each(["issue-dap-sans-urgence", "issue-dap-urgence-attestee"])(
     "%s : garde ses trois cartes, sans préfixe",
@@ -133,6 +191,7 @@ describe("une demande d'accord préalable sur un trajet terrestre", () => {
       await afficher(id);
       expect(cartes()).toHaveLength(3);
       expect(fiche().queryByText(/éventuelles parties terrestres/)).toBeNull();
+      expect(fiche().queryByText(/^Mode de transport/)).toBeNull();
     },
   );
 });

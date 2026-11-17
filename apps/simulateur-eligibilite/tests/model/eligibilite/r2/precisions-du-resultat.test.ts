@@ -288,10 +288,4 @@ describe("les précisions qu'aucune question ne pose", () => {
     ])
       expect(cle in precisions).toBe(false);
   });
-
-  it("ne donnent pas de partie terrestre : Q2.3.2 dit la ligne, pas ce qui l'entoure", () => {
-    expect(
-      "partieTerrestre" in traceDe({ ...BRANCARD_20_KM, "Q2.3.2": true }),
-    ).toBe(false);
-  });
 });
