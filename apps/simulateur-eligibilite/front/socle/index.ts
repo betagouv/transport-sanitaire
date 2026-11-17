@@ -27,7 +27,6 @@ export {
   cerfaValue,
   date,
   drawnBox,
-  onOneLine,
   type StrictOptions,
   strictDrawing,
   strictText,
