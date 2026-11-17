@@ -1,8 +1,9 @@
 // Une simulation, l'agrégat du parcours : un modèle, les réponses validées, la
-// page ouverte et l'étape où l'on en est. Chaque transition (valider la page,
-// reculer, rouvrir une réponse à revoir, aller à une position, verrouiller)
-// donne une nouvelle simulation ; aucune ne change celle-ci. L'écran n'y ajoute
-// que le brouillon de la page ouverte.
+// page ouverte, l'étape où l'on en est, et les textes réécrits sur un
+// résultat (D-303). Chaque transition (valider la page, reculer, rouvrir une
+// réponse à revoir, aller à une position, verrouiller) donne une nouvelle
+// simulation ; aucune ne change celle-ci. L'écran n'y ajoute que le brouillon
+// de la page ouverte.
 
 import type { CoreModel } from "../model.types.ts";
 import {
@@ -16,7 +17,7 @@ import {
 } from "../questionnaire-engine/index.ts";
 import { AnswerCorrection } from "./answer-correction.vo.ts";
 import { JourneyPosition, type Refused } from "./journey-position.vo.ts";
-import { PageOpening, type StageEnds } from "./page-opening.vo.ts";
+import { PageOpening } from "./page-opening.vo.ts";
 import { PagePlaceInPart } from "./page-place-in-part.vo.ts";
 import { PageRefusal } from "./page-refusal.error.ts";
 import { PreconisationService } from "./preconisation.service.ts";
@@ -25,6 +26,7 @@ import { QuestionnaireReadingService } from "./questionnaire-reading.service.ts"
 import { ResultContext } from "./result-context.vo.ts";
 import { type Lock, SimulationStage } from "./simulation-stage.vo.ts";
 import { StagePages } from "./stage-pages.vo.ts";
+import { TextEdits } from "./text-edits.vo.ts";
 
 export class Simulation {
   /** Aucune réponse : la première page du questionnaire. */
@@ -52,6 +54,8 @@ export class Simulation {
   /** Les réponses validées, telles qu'elles sont données. */
   readonly answers: Answers;
   readonly stage: SimulationStage;
+  /** Les textes réécrits sur un résultat : ils suivent chaque transition. */
+  readonly edits: TextEdits;
   readonly #core: CoreModel;
   readonly #readingService: QuestionnaireReadingService;
   readonly #preconisationService: PreconisationService;
@@ -66,6 +70,7 @@ export class Simulation {
     answers: Answers,
     opening?: PageOpening,
     reading?: AnsweredQuestionnaire,
+    edits = TextEdits.none(),
   ) {
     const preconisation = new PreconisationService(core);
     this.#core = core;
@@ -75,6 +80,7 @@ export class Simulation {
     this.answers = answers;
     this.#reading = reading ?? this.#readingService.at(stage, answers);
     this.#opening = opening;
+    this.edits = edits;
   }
 
   /**
@@ -159,9 +165,7 @@ export class Simulation {
    */
   resultContext(on: Date): ResultContext {
     const { faits, cibles } = this.preconisation;
-    const { validated } = this.#reading;
-    const sources = { validated, faits, cibles, on };
-    return new ResultContext(sources);
+    return new ResultContext({ validated: this.validated, faits, cibles, on });
   }
 
   /** Les pages affichées, les réponses, les questions validées, la préconisation. */
@@ -209,12 +213,8 @@ export class Simulation {
   revisit(question: string, draft: Answers): Simulation | Refused {
     if (this.stage.name !== "questionnaire") return undefined;
     if (!this.validated.question(question).isValidated()) return undefined;
-    const pages = this.pages();
-    const target = pages.find((page) =>
-      this.questionsOn(page).some(({ id }) => id === question),
-    );
-    if (!target || pages.indexOf(target) >= pages.indexOf(this.page))
-      return undefined;
+    const target = this.#stagePages().asking(question, this.page);
+    if (!target) return undefined;
     const correction =
       this.#opening?.correction ??
       new AnswerCorrection(this.page, draft, this.position.step);
@@ -237,6 +237,11 @@ export class Simulation {
   reopen(): Simulation {
     const page = this.#opening?.page;
     return this.#on(this.stage.previous(), page && new PageOpening(page));
+  }
+
+  /** La même simulation, avec ces textes réécrits. */
+  withEdits(edits: TextEdits): Simulation {
+    return this.#on(this.stage, this.#opening, edits);
   }
 
   /**
@@ -269,29 +274,21 @@ export class Simulation {
   #advance(draft: Answers, on: Date): Simulation {
     const answers = this.#reading.commit(this.page, draft);
     const reading = this.#readingService.at(this.stage, answers);
-    const opening = this.#openingAfter(reading);
+    const declared = Questionnaire.pagesOf(this.#core.questionnaire);
+    const opening = this.#opening?.next(reading, declared);
     const stage = opening ? this.stage : this.stage.next(on);
     const opened = opening ?? new PageOpening(this.page);
-    return new Simulation(this.#core, stage, answers, opened, reading);
-  }
-
-  // La page qu'ouvre la validation de la page ouverte, sur ces réponses
-  // relues : celle où reprend une correction en cours, sinon la suivante.
-  // Aucune : l'étape s'achève.
-  #openingAfter(reading: AnsweredQuestionnaire): PageOpening | StageEnds {
-    const correction = this.#opening?.correction;
-    if (correction) {
-      const declared = Questionnaire.pagesOf(this.#core.questionnaire);
-      const pages = StagePages.of(reading);
-      return correction.resumeOn(pages, reading, declared);
-    }
-    const following = reading.pageAfter(this.page);
-    return following && new PageOpening(following);
+    const core = this.#core;
+    return new Simulation(core, stage, answers, opened, reading, this.edits);
   }
 
   // La même lecture, à cette étape et sur cette page.
-  #on(stage: SimulationStage, opening: PageOpening | undefined): Simulation {
+  #on(
+    stage: SimulationStage,
+    opening: PageOpening | undefined,
+    edits = this.edits,
+  ): Simulation {
     const [core, reading] = [this.#core, this.#reading];
-    return new Simulation(core, stage, this.answers, opening, reading);
+    return new Simulation(core, stage, this.answers, opening, reading, edits);
   }
 }

@@ -64,6 +64,14 @@ export class StagePages {
     return index > 0 ? this.list[index - 1] : undefined;
   }
 
+  /** La page d'avant `page` qui pose cette question. */
+  asking(question: string, page: Page): Page | NoPage {
+    const before = this.list.slice(0, Math.max(this.list.indexOf(page), 0));
+    return before.find((earlier) =>
+      this.#reading.questionsOn(earlier).some(({ id }) => id === question),
+    );
+  }
+
   /**
    * Les pages où l'on peut aller sans rien répondre de plus : jusqu'à la
    * première qui attend une réponse, elle comprise.

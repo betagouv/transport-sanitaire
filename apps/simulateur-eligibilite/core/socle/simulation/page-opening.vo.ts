@@ -2,8 +2,13 @@
 // correction : la correction encore en cours, ou le brouillon que la page
 // d'origine retrouve à la fin (`answer-correction.vo.ts`).
 
-import type { Answers, Page } from "../questionnaire-engine/index.ts";
+import type {
+  AnsweredQuestionnaire,
+  Answers,
+  Page,
+} from "../questionnaire-engine/index.ts";
 import type { AnswerCorrection } from "./answer-correction.vo.ts";
+import { StagePages } from "./stage-pages.vo.ts";
 
 /** La transition n'ouvre aucune page de l'étape : elle s'achève. */
 export type StageEnds = undefined;
@@ -24,6 +29,22 @@ export class PageOpening {
     this.page = page;
     this.correction = correction;
     this.draft = draft;
+  }
+
+  /**
+   * La page qu'ouvre la validation de celle-ci, sur ces réponses relues :
+   * celle où reprend une correction en cours, sinon la suivante. Aucune :
+   * l'étape s'achève. `declared` : les pages déclarées avant le verrou.
+   */
+  next(
+    reading: AnsweredQuestionnaire,
+    declared: readonly Page[],
+  ): PageOpening | StageEnds {
+    const { correction } = this;
+    if (correction)
+      return correction.resumeOn(StagePages.of(reading), reading, declared);
+    const following = reading.pageAfter(this.page);
+    return following && new PageOpening(following);
   }
 
   /** Le brouillon gardé : celui de la correction, qui suit son origine, ou le sien. */
