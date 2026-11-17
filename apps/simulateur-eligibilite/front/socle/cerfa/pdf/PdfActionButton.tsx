@@ -8,11 +8,15 @@ import { type ReactNode, useEffect, useRef } from "react";
 
 /**
  * Ce qu'apprend qui affiche un PDF : chaque clic sur « Imprimer » ou
- * « Télécharger », et chaque PDF remis au navigateur après un clic.
+ * « Télécharger ». Le document R3 dit aussi quand il lance vraiment
+ * l'impression ou le téléchargement, après le clic ou après la génération que
+ * le clic a relancée, et quand il remet le PDF au navigateur.
  */
 export type PdfSignals = {
   readonly onPrint?: () => void;
   readonly onDownload?: () => void;
+  readonly onPrintLaunched?: () => void;
+  readonly onDownloadLaunched?: () => void;
   readonly onDownloaded?: () => void;
 };
 

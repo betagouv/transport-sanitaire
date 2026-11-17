@@ -6,8 +6,9 @@
 
 import { z } from "zod";
 import {
-  ACTIONS,
+  ACTIVITY_ORIGINS,
   type AnalyticsEvent,
+  BUTTON_IDS,
   EVENT_TYPES,
   INTENTS,
   MILESTONES,
@@ -89,6 +90,9 @@ const EVENT_SCHEMA: z.ZodType<AnalyticsEvent> = z
       .optional(),
     field_group: identifier.optional(),
     font_size_pt: z.number().positive().optional(),
+    button_id: z.enum(BUTTON_IDS).optional(),
+    artifact_id: identifier.optional(),
+    activity_origin: z.enum(ACTIVITY_ORIGINS).optional(),
     service_id: identifier.optional(),
     establishment_name: name.optional(),
     service_name: name.optional(),
@@ -96,13 +100,13 @@ const EVENT_SCHEMA: z.ZodType<AnalyticsEvent> = z
     milestones: z.array(z.enum(MILESTONES)).min(1).optional(),
     financeur: identifier.optional(),
     motifs: z.array(identifier).optional(),
-    sheet_id: identifier.optional(),
-    action: z.enum(ACTIONS).optional(),
     navigation: z.enum(NAVIGATIONS).optional(),
     app_version: release,
     commit_sha: z.string().regex(/^([0-9a-f]{7}|inconnu)$/),
   })
-  .refine(measuresItsOwnFields);
+  .refine(measuresItsOwnFields)
+  .refine(placesItsButton)
+  .refine(namesItsDocument);
 
 // Le collecteur refuse un champ d'un autre support, un champ attendu ou mesuré
 // deux fois, et la mesure d'un champ qui n'est pas attendu (ANA22-03).
@@ -118,5 +122,41 @@ function measuresItsOwnFields({
     new Set(expected).size === expected.length &&
     new Set(measured).size === measured.length &&
     measured.every((id) => expected.includes(id))
+  );
+}
+
+// Un bouton exposé ou cliqué dit lequel, son exposition, sa révision et l'objet
+// qu'il montre, sur son écran : la fiche sur R2, le document sur R3, qui est
+// alors son objet. Son clic vient du prescripteur (ANA22-02).
+function placesItsButton(event: AnalyticsEvent): boolean {
+  const { type, button_id, screen, document_id } = event;
+  if (type !== "button_exposed" && type !== "button_clicked") return true;
+  const { exposure_id, revision, artifact_id } = event;
+  if (!button_id || !exposure_id || !revision || !artifact_id) return false;
+  if (type === "button_clicked" && event.activity_origin !== "user")
+    return false;
+  if (button_id.startsWith("patient_sheet_")) return screen === "R2";
+  return (
+    screen === "R3" &&
+    event.document_revision !== undefined &&
+    artifact_id === document_id
+  );
+}
+
+// L'impression et le téléchargement du document lancés, et le PDF remis.
+// `document_displayed` y viendra avec sa révision du document (#497).
+const OF_A_DOCUMENT: readonly AnalyticsEvent["type"][] = [
+  "document_print_requested",
+  "document_download_requested",
+  "document_download_succeeded",
+];
+
+// L'impression ou le téléchargement lancés disent leur document et sa révision.
+function namesItsDocument(event: AnalyticsEvent): boolean {
+  if (!OF_A_DOCUMENT.includes(event.type)) return true;
+  return (
+    event.revision !== undefined &&
+    event.document_revision !== undefined &&
+    event.document_id !== undefined
   );
 }

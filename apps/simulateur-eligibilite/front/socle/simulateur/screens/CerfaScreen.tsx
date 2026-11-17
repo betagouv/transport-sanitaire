@@ -18,6 +18,7 @@ import type { Simulation } from "../../../../core/socle/simulation";
 import {
   type Button,
   type ButtonTracking,
+  type DocumentTracking,
   useDocumentTracking,
   useResultScreen,
 } from "../../analytics";
@@ -207,6 +208,7 @@ function Cerfa({
       above={aboveTheDocument(actions, feedback, tracking)}
       onReady={(typography) => tracking.displayed({ file, dto, typography })}
       onFailure={tracking.failed}
+      onWithdrawn={tracking.withdrawn}
       signals={documentSignals(tracking)}
     />
   );
@@ -236,11 +238,13 @@ function offered(feedback: FeedbackOffer | null): Button[] {
   ];
 }
 
-function documentSignals(tracking: ButtonTracking): PdfSignals {
+function documentSignals(tracking: DocumentTracking): PdfSignals {
   return {
     onPrint: () => tracking.pressed("document_print"),
     onDownload: () => tracking.pressed("document_download"),
-    onDownloaded: () => tracking.delivered("document_download"),
+    onPrintLaunched: () => tracking.launched("print"),
+    onDownloadLaunched: () => tracking.launched("download"),
+    onDownloaded: tracking.delivered,
   };
 }
 

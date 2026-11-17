@@ -8,12 +8,16 @@ import type {
   EventDetails,
   Screen,
 } from "../../../shared/analytics/analytics-event";
-import type { Button, ExposedOn } from "./button-exposure.entity";
+import type { Button, ExposedOn } from "./button-place.vo";
 import {
   type DocumentContent,
   DocumentVersion,
 } from "./document-version.entity";
-import { Revision, type ShownResult } from "./revision.entity";
+import {
+  type DocumentGesture,
+  Revision,
+  type ShownResult,
+} from "./revision.entity";
 import { SheetVersion } from "./sheet-version.entity";
 
 type ResultEvent = EventDetails;
@@ -78,6 +82,18 @@ export class Results {
   }
 
   /**
+   * Ce que l'app fait du dernier document affiché. Sans révision courante, ou
+   * sans document qui en vienne, rien.
+   */
+  handleTheDocument(gesture: DocumentGesture): ResultEvent[] {
+    const revision = this.#revision;
+    const document = this.#documentOf(revision);
+    return revision && document
+      ? [revision.aboutItsDocument(gesture, document.id)]
+      : [];
+  }
+
+  /**
    * Ce que montre l'écran où des boutons sont offerts : en R3, le document ; en
    * R2, la fiche, si un bouton y porte. Sans révision courante, aucun bouton.
    */
@@ -91,14 +107,22 @@ export class Results {
       return {
         revision: revision.id,
         sheet: null,
-        document: this.#document?.id ?? null,
+        document: this.#documentOf(revision)?.id ?? null,
       };
-    const onSheet = buttons.some((button) => button.startsWith("sheet_"));
+    const onSheet = buttons.some((button) =>
+      button.startsWith("patient_sheet_"),
+    );
     const sheet = onSheet ? this.#sheetOf(revision).id : null;
     return { revision: revision.id, sheet, document: null };
   }
 
   // ---- implémentation ----
+
+  // Le dernier document, s'il vient de la révision.
+  #documentOf(revision: Revision | NoRevision): DocumentVersion | NoVersion {
+    const document = this.#document;
+    return revision && document?.of(revision) ? document : null;
+  }
 
   #sheetOf(revision: Revision): SheetVersion {
     if (this.#sheet?.of(revision)) return this.#sheet;

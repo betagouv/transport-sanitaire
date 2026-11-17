@@ -28,17 +28,28 @@ export type Typography = {
 export class DocumentVersion {
   readonly id: string;
   readonly #rank: number;
+  readonly #revision: Revision;
   readonly #fingerprint: string;
 
-  private constructor(rank: number, fingerprint: string) {
+  private constructor(
+    rank: number,
+    revision: Revision,
+    content: DocumentContent,
+  ) {
     this.#rank = rank;
-    this.#fingerprint = fingerprint;
+    this.#revision = revision;
+    this.#fingerprint = fingerprintOf(revision, content);
     this.id = `d${rank}`;
   }
 
   /** La première version d'une simulation. */
   static first(revision: Revision, content: DocumentContent): DocumentVersion {
-    return new DocumentVersion(1, fingerprintOf(revision, content));
+    return new DocumentVersion(1, revision, content);
+  }
+
+  /** La version vient de cette révision. */
+  of(revision: Revision): boolean {
+    return this.#revision === revision;
   }
 
   /** Ce contenu, de cette révision, est celui de la version. */
@@ -48,10 +59,7 @@ export class DocumentVersion {
 
   /** La version qui la remplace. */
   next(revision: Revision, content: DocumentContent): DocumentVersion {
-    return new DocumentVersion(
-      this.#rank + 1,
-      fingerprintOf(revision, content),
-    );
+    return new DocumentVersion(this.#rank + 1, revision, content);
   }
 }
 

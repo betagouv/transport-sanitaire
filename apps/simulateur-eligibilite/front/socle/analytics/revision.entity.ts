@@ -40,6 +40,14 @@ export type ResultCodes = {
   readonly financeur: string | null;
 };
 
+/** Ce que l'app lance sur le document : l'impression ou le téléchargement. */
+export type DocumentRequest = "print" | "download";
+
+/** Ce que l'app fait du document : le lancer, ou remettre son PDF. */
+export type DocumentGesture =
+  | `document_${DocumentRequest}_requested`
+  | "document_download_succeeded";
+
 /** Le modèle ne déclare pas les codes de son premier résultat. */
 type NoCodes = null;
 
@@ -154,6 +162,20 @@ export class Revision {
         field_measurements: measurements,
       },
     ];
+  }
+
+  /**
+   * L'impression ou le téléchargement de son document lancés, ou son PDF remis
+   * au navigateur : des gestes de l'app, pas des clics (ANA22-02).
+   */
+  aboutItsDocument(type: DocumentGesture, documentId: string): DocumentEvent {
+    return {
+      type,
+      screen: "R3",
+      revision: this.id,
+      document_revision: documentId,
+      document_id: documentId,
+    };
   }
 
   /** Une génération ratée de son document. */

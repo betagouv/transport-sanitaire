@@ -10,9 +10,10 @@
 // (D-302, `StrictTexts.tsx`) : le PDF n'est plus qu'un aperçu marqué, et les
 // deux actions attendent, sans texte du résultat, jusqu'à ce que qui l'affiche
 // remonte le document avec le texte validé (D-304). Les brouillons présents au
-// montage font aussi du PDF un aperçu. Pendant la génération, les deux actions attendent, et « Télécharger » dit
-// « Préparation du PDF ». Une action qui attend un PDF ne se fait plus si le
-// document a été quitté entre-temps (`pdf/PdfActionButton.tsx`).
+// montage font aussi du PDF un aperçu. Pendant la génération, les deux actions
+// attendent, et « Télécharger » dit « Préparation du PDF ». Une action qui
+// attend un PDF ne se fait plus si le document a été quitté entre-temps
+// (`use-downloadable-pdf.ts`).
 // « Imprimer » vient avant « Télécharger » : côte à côte s'ils tiennent, l'un
 // sous l'autre sinon, le groupe en ligne du DSFR passant à la ligne sans
 // couper un libellé (D-173). Qui l'affiche peut donner de quoi tenir la place
@@ -20,26 +21,26 @@
 //
 // Le DTO se lit une fois : celui d'un résultat ne change pas tant qu'il est
 // affiché. Qui l'affiche apprend chaque PDF prêt et chaque génération ratée,
-// une fois par tentative, puis chaque clic sur un PDF prêt et chaque PDF remis
-// au navigateur après lui. Un clic qui relance une génération ratée n'agit pas
-// encore sur un PDF : il ne se signale pas.
+// une fois par tentative, et le PDF prêt retiré. Il apprend chaque clic sur un
+// PDF prêt, puis l'impression ou le téléchargement lancés, et le PDF remis au
+// navigateur. Un clic qui relance une génération ratée ne se signale pas : ce
+// qu'il lance, une fois le document prêt, si.
 
-import { type ReactNode, useEffect, useRef, useState } from "react";
+import { type ReactNode, useEffect, useRef } from "react";
 import { CerfaPreview } from "./CerfaPreview";
 import type { Cerfa, CerfaDto } from "./cerfa";
-import {
-  type GeneratedCerfa,
-  generateCerfa,
-} from "./generate-the-cerfa/generate-the-cerfa";
 import type { Typography } from "./generate-the-cerfa/typography";
 import { download, fileNameOf } from "./pdf/download-a-pdf";
-import {
-  PdfActionButton,
-  type PdfSignals,
-  useShown,
-} from "./pdf/PdfActionButton";
+import { PdfActionButton, type PdfSignals } from "./pdf/PdfActionButton";
 import { printPdf } from "./pdf/print-a-pdf";
 import { editorsOf, type StrictTextEdits, StrictTexts } from "./StrictTexts";
+import {
+  type PdfAction,
+  type Pending,
+  type Settled,
+  useAwaitedAction,
+  useDownloadablePdf,
+} from "./use-downloadable-pdf";
 
 type Props<Dto extends CerfaDto> = {
   cerfa: Cerfa<Dto>;
@@ -58,6 +59,8 @@ type Props<Dto extends CerfaDto> = {
   onReady?: (typography: Typography) => void;
   /** Une génération a échoué. */
   onFailure?: () => void;
+  /** Le PDF prêt n'est plus affiché : en édition, régénéré, ou quitté. */
+  onWithdrawn?: () => void;
   signals?: PdfSignals;
   /** Les textes stricts réécrits : sans eux, aucun éditeur ne s'ouvre. */
   edits?: StrictTextEdits;
@@ -80,32 +83,31 @@ export function CerfaDocument<Dto extends CerfaDto>({
   above,
   onReady,
   onFailure,
+  onWithdrawn,
   signals = {},
   edits = NO_EDITS,
 }: Props<Dto>) {
   const preview = Object.keys(edits.drafts).length > 0;
-  const { settled, withPdf } = useDownloadablePdf(cerfa, dto, preview);
+  const { settled, retry, awaited } = useDownloadablePdf(cerfa, dto, preview);
   const generated = settled?.status === "ready" ? settled : undefined;
   const editors = editorsOf(cerfa, dto, edits.drafts, generated?.overflowing);
   const editing = preview || editors.length > 0;
   useSignals(editing ? undefined : settled, { onReady, onFailure });
-  const print = usePrint();
   const ready = generated !== undefined && !editing;
   const signal = ready ? signals : {};
-  const save = (pdf: Blob) => {
-    download(pdf, fileNameOf(cerfa.fileName, date));
-    signal.onDownloaded?.();
-  };
+  const act = useAct(signal, fileNameOf(cerfa.fileName, date));
+  useAwaitedAction(awaited, ready ? generated?.pdf : undefined, act);
+  useWithdrawal(ready, onWithdrawn);
+  const onAction = (action: PdfAction) =>
+    generated ? act(action, generated.pdf) : retry(action);
   return (
     <div className="fr-mb-4w fr-no-print">
       <Generation settled={settled} text={editing ? null : text} />
       {above?.(ready)}
       <StrictTexts cerfa={cerfa} editors={editors} edits={edits} />
       <PdfActions
-        withPdf={editing ? undefined : withPdf}
+        onAction={editing || !settled ? undefined : onAction}
         suspended={editing}
-        print={print}
-        save={save}
         printLabel={printLabel}
         downloadLabel={downloadLabel}
         signals={signal}
@@ -117,72 +119,28 @@ export function CerfaDocument<Dto extends CerfaDto>({
 
 // ---- implémentation ----
 
-type Settled = ({ status: "ready" } & GeneratedCerfa) | { status: "failed" };
-
-// Une génération qui ne rejette jamais : son échec est un état de l'écran. Un
-// PDF vide n'est pas prêt.
-function generate<Dto extends CerfaDto>(
-  cerfa: Cerfa<Dto>,
-  dto: Dto,
-  preview: boolean,
-): Promise<Settled> {
-  return generateCerfa(cerfa, dto, { preview }).then(
-    (generated): Settled => {
-      if (generated.pdf.size > 0) return { status: "ready", ...generated };
-      console.error("[cerfa] Le PDF généré est vide.");
-      return { status: "failed" };
-    },
-    (cause): Settled => {
-      console.error("[cerfa] Génération impossible.", cause);
-      return { status: "failed" };
-    },
-  );
+// L'impression ou le téléchargement du PDF, et ce qui s'en signale.
+function useAct(signal: PdfSignals, fileName: string) {
+  const print = usePrint();
+  return (action: PdfAction, pdf: Blob) => {
+    if (action === "print") {
+      signal.onPrintLaunched?.();
+      print(pdf);
+      return;
+    }
+    signal.onDownloadLaunched?.();
+    download(pdf, fileName);
+    signal.onDownloaded?.();
+  };
 }
 
-// Le PDF du cerfa, généré dès le montage. `withPdf` le passe à une action, et
-// le génère à nouveau si la première tentative a échoué : l'action attend alors
-// le PDF, et ne se fait pas si le document n'est plus affiché. `withPdf` manque
-// tant que la génération se fait attendre.
-function useDownloadablePdf<Dto extends CerfaDto>(
-  cerfa: Cerfa<Dto>,
-  dto: Dto,
-  preview: boolean,
-) {
-  const [downloadablePdf, setDownloadablePdf] = useState(() =>
-    generate(cerfa, dto, preview),
-  );
-  const settled = useSettled(downloadablePdf);
-  const shown = useShown();
-  async function ready(): Promise<Settled> {
-    if (settled?.status === "ready") return settled;
-    const retry = generate(cerfa, dto, false);
-    setDownloadablePdf(retry);
-    return retry;
-  }
-  async function withPdf(action: (pdf: Blob) => void) {
-    const result = await ready();
-    if (result.status === "ready" && shown.current) action(result.pdf);
-  }
-  return { settled, withPdf: settled === undefined ? undefined : withPdf };
-}
-
-/** Ce qui est attendu n'est pas encore arrivé. */
-type Pending = undefined;
-
-// L'issue de `downloadablePdf`, une fois arrivée.
-function useSettled(downloadablePdf: Promise<Settled>): Settled | Pending {
-  const [settled, setSettled] = useState<Settled>();
+// Le PDF prêt retiré : il passe en édition, se régénère, ou le document se
+// quitte.
+function useWithdrawal(ready: boolean, onWithdrawn?: () => void) {
+  // biome-ignore lint/correctness/useExhaustiveDependencies: un retrait par PDF prêt
   useEffect(() => {
-    let current = true;
-    setSettled(undefined);
-    downloadablePdf.then((result) => {
-      if (current) setSettled(result);
-    });
-    return () => {
-      current = false;
-    };
-  }, [downloadablePdf]);
-  return settled;
+    if (ready) return () => onWithdrawn?.();
+  }, [ready]);
 }
 
 // Chaque issue arrivée, une fois : une nouvelle tentative en donne une autre.
@@ -224,11 +182,10 @@ function Generation({
 // L'impression en cours : un nouveau clic la remplace, et quitter le résultat
 // retire son cadre.
 type ActionsProps = {
-  withPdf: ((use: (pdf: Blob) => void) => void) | undefined;
+  /** L'action sur le PDF ; aucune tant qu'il se fait attendre. */
+  onAction: ((action: PdfAction) => void) | undefined;
   /** Un texte se réécrit : les actions attendent sans « Préparation du PDF ». */
   suspended: boolean;
-  print: (pdf: Blob) => void;
-  save: (pdf: Blob) => void;
   printLabel: string;
   downloadLabel: string;
   signals: PdfSignals;
@@ -236,10 +193,8 @@ type ActionsProps = {
 
 // Imprimer et télécharger, en attente tant que le PDF n'est pas prêt.
 function PdfActions({
-  withPdf,
+  onAction,
   suspended,
-  print,
-  save,
   printLabel,
   downloadLabel,
   signals,
@@ -249,10 +204,10 @@ function PdfActions({
       <li>
         <PdfActionButton
           className="fr-btn fr-icon-printer-line"
-          waiting={!withPdf}
+          waiting={!onAction}
           onClick={() => {
             signals.onPrint?.();
-            withPdf?.(print);
+            onAction?.("print");
           }}
         >
           {printLabel}
@@ -261,11 +216,11 @@ function PdfActions({
       <li>
         <PdfActionButton
           className="fr-btn fr-icon-download-line"
-          waiting={!withPdf}
+          waiting={!onAction}
           saysPreparing={!suspended}
           onClick={() => {
             signals.onDownload?.();
-            withPdf?.(save);
+            onAction?.("download");
           }}
         >
           {downloadLabel}

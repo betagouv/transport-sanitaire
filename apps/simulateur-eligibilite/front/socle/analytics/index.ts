@@ -5,10 +5,10 @@
 export { useAldResultReached } from "./ald-pathway.hook";
 export { type AldVerdict, EventName } from "./audience-event.entity";
 export type { ButtonTracking } from "./button.hook";
-export type { Button } from "./button-exposure.entity";
+export type { Button } from "./button-place.vo";
 export { CmsConsent } from "./cms-consent.adapter";
 export { DiscardingAudience } from "./discarding-audience.adapter";
-export { useDocumentTracking } from "./document.hook";
+export { type DocumentTracking, useDocumentTracking } from "./document.hook";
 export { HostPageLoad } from "./host-page-load.adapter";
 export { useRecordTheJourney } from "./journey.hook";
 export {

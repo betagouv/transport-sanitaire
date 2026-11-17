@@ -7,8 +7,8 @@
 // révisions du premier résultat, et fait tomber la révision courante quand une
 // page de P1 ou de P2 change les réponses validées (ADR-0045). Il numérote les
 // versions du document R3, qui viennent de la révision courante (ADR-0046). R2 et
-// R3 ouvrent un affichage, où leurs boutons sont exposés, et leurs clics s'y
-// rattachent (ADR-0047).
+// R3 ouvrent un affichage, où leurs boutons sont exposés tant qu'ils y restent,
+// et leurs clics s'y rattachent (ADR-0047).
 
 import type {
   AnalyticsEvent,
@@ -17,19 +17,16 @@ import type {
   Phase,
   Provenance,
 } from "../../../shared/analytics/analytics-event";
-import {
-  type Button,
-  ButtonExposure,
-  type Exposures,
-} from "./button-exposure.entity";
+import type { Button, ExposedOn } from "./button-place.vo";
 import type { DocumentContent } from "./document-version.entity";
+import { ExposedButtons, type NotShown } from "./exposed-buttons.entity";
 import {
   type AboutAQuestion,
   type OpenedPage,
   PageView,
 } from "./page-view.entity";
 import { Results } from "./results.entity";
-import type { ShownResult } from "./revision.entity";
+import type { DocumentRequest, ShownResult } from "./revision.entity";
 
 /** Rien à garder au journal : le parcours d'une seed, ou une intention déjà connue. */
 export type NothingToRecord = null;
@@ -54,15 +51,6 @@ type NoView = null;
 /** Un écran de résultat, qui ouvre un affichage sans question. */
 export type ResultScreen = "R2" | "R3";
 
-/** Les boutons exposés, et ce qui en part au journal. */
-export type ExposedButtons = {
-  readonly events: AnalyticsEvent[];
-  readonly exposures: Exposures;
-};
-
-/** Ce qui suit un bouton exposé : son clic, ou le téléchargement réussi. */
-export type Gesture = "requested" | "succeeded";
-
 /** Comment la page s'est chargée, pour le premier parcours de la page. */
 export type Entrance = Pick<AnalyticsEvent, "navigation">;
 
@@ -79,6 +67,7 @@ export class Journey {
   // Chaque question validée, et ce qu'en disait sa validation.
   readonly #validations = new Map<string, AboutAQuestion>();
   readonly #results = new Results();
+  readonly #buttons = new ExposedButtons(this.simulationId);
 
   /**
    * `seeded` : la simulation s'ouvre sur une seed, au milieu du parcours. Elle
@@ -190,35 +179,43 @@ export class Journey {
   }
 
   /**
-   * Les boutons offerts sur l'affichage courant, chacun exposé une fois par
-   * version de son objet. Sans révision courante, aucun.
+   * Les boutons offerts sur l'affichage courant : chacun exposé tant qu'il y
+   * reste sur le même objet. Sans révision courante, aucun.
    */
-  exposeButtons(buttons: readonly Button[]): ExposedButtons {
-    const view = this.#view;
-    const shown = view && this.#results.shownOn(view.place.screen, buttons);
-    if (!view || !shown) return { events: [], exposures: {} };
-    const on = { ...view.place, ...shown };
-    const exposures = buttons.flatMap((b) => ButtonExposure.of(b, on) ?? []);
-    const fresh = view.expose(exposures.map(({ id }) => id));
-    return {
-      events: this.#recordAll(
-        exposures
-          .filter(({ id }) => fresh.includes(id))
-          .map((e) => e.exposed()),
-      ),
-      exposures: Object.fromEntries(exposures.map((e) => [e.button, e])),
-    };
+  exposeButtons(buttons: readonly Button[]): AnalyticsEvent[] {
+    const on = this.#shownOn(buttons);
+    return on ? this.#recordAll(this.#buttons.expose(buttons, on)) : [];
   }
 
-  /** Un clic sur un bouton exposé, ou le téléchargement qui le suit. */
-  press(exposure: ButtonExposure, gesture: Gesture): AnalyticsEvent[] {
-    const details = exposure[gesture]();
-    return details ? this.#recordAll([details]) : [];
+  /** Les boutons d'un écran ne sont plus affichés : leurs clics ne partent plus. */
+  withdrawButtons(screen: ResultScreen): void {
+    this.#buttons.withdraw(screen);
+  }
+
+  /** Un clic, sur le bouton exposé là où l'écran le montre encore. */
+  click(button: Button): AnalyticsEvent[] {
+    return this.#recordAll(
+      this.#buttons.click(button, this.#shownOn([button])),
+    );
+  }
+
+  /** L'impression ou le téléchargement du document, que l'app lance. */
+  requestDocument(request: DocumentRequest): AnalyticsEvent[] {
+    const gesture = `document_${request}_requested` as const;
+    return this.#recordAll(this.#results.handleTheDocument(gesture));
+  }
+
+  /** Le PDF du document remis au navigateur. */
+  deliverDocument(): AnalyticsEvent[] {
+    const gesture = "document_download_succeeded";
+    return this.#recordAll(this.#results.handleTheDocument(gesture));
   }
 
   // ---- implémentation ----
 
+  // Un affichage remplace le précédent, et ses boutons.
   #open(page: OpenedPage): PageView {
+    this.#buttons.withdraw();
     this.#views += 1;
     this.#view = new PageView(`${this.simulationId}:v${this.#views}`, page);
     return this.#view;
@@ -272,6 +269,13 @@ export class Journey {
       return [];
     this.#completed.add(phase);
     return [{ type: "phase_completed", screen: phase }];
+  }
+
+  // Ce que montre l'affichage courant, où ces boutons sont offerts.
+  #shownOn(buttons: readonly Button[]): ExposedOn | NotShown {
+    const view = this.#view;
+    const shown = view && this.#results.shownOn(view.place.screen, buttons);
+    return view && shown ? { ...view.place, ...shown } : null;
   }
 
   #recordAll(details: EventDetails[]): AnalyticsEvent[] {

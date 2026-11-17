@@ -1,6 +1,6 @@
-// Ce que les boutons des écrans de résultat envoient au journal des parcours
-// (#388) : leur exposition, une fois par affichage et par version de leur
-// objet, puis chaque clic, au clavier comme à la souris, avec la même
+// Ce que les boutons du premier résultat envoient au journal des parcours
+// (#388, #507) : leur exposition, une fois tant qu'ils restent affichés sur la
+// même fiche, puis chaque clic, au clavier comme à la souris, avec la même
 // exposition. Voir ADR-0047.
 //
 // Le navigateur de test ne met pas en page : le PDF de la fiche y échoue
@@ -8,42 +8,26 @@
 
 import { fireEvent, screen } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
-import { Reading } from "../../../core/socle";
-import type { Intent, Model } from "../../../front/socle/model";
-import type { AnalyticsEvent } from "../../../shared/analytics/analytics-event";
-import { journalDeTest } from "../analytics/journal-de-test";
-import { modeleDeTest } from "../modele-de-test";
 import {
-  allerAuCerfa,
+  boutons,
+  LIBELLE_DE_L_AVIS,
+  ouvrirAvecUnJournal,
+  sansDialogue,
+  sansRang,
+  venuPour,
+} from "./boutons-envoyes";
+import {
   bouton,
-  ouvrirLeSimulateur,
+  type ouvrirLeSimulateur,
   qui,
   repondreJusquAuResultat,
 } from "./questionnaire";
-import { ecouterLesTelechargements } from "./telechargements";
-
-const LIBELLE = "Donnez votre avis";
-
-// Le modèle de test, venu pour cette intention, qui invite à donner son avis.
-const venuPour = (intent: Intent, modele = modeleDeTest): Model => ({
-  ...modele,
-  intent: Reading.constant(intent),
-  feedback: { url: "https://exemple.test/avis", label: LIBELLE },
-});
 
 // Un premier résultat qui montre une fiche.
 const avecUneFiche = qui(async () => ({
   title: "Le résultat",
   sheet: { title: "Votre commande", body: "Un contenu" },
 }));
-
-async function ouvrirAvecUnJournal(
-  options: Parameters<typeof ouvrirLeSimulateur>[0] = {},
-) {
-  const { analytics, envoyes } = journalDeTest();
-  const user = await ouvrirLeSimulateur({ analytics, ...options });
-  return { user, envoyes };
-}
 
 async function allerALaFiche(
   user: Awaited<ReturnType<typeof ouvrirLeSimulateur>>,
@@ -52,39 +36,14 @@ async function allerALaFiche(
   await screen.findByRole("heading", { level: 1, name: "Le résultat" });
 }
 
-// Les événements des boutons, sans ceux des questions.
-const desBoutons = (envoyes: AnalyticsEvent[]) =>
-  envoyes.filter(
-    ({ type, exposure_id }) => exposure_id && !type.startsWith("question_"),
-  );
-
-// Les événements des boutons, en bref : le type, l'action, l'objet et l'écran.
-const boutons = (envoyes: AnalyticsEvent[]) =>
-  desBoutons(envoyes).map(
-    ({ type, action, sheet_id, document_id, revision, screen }) =>
-      `${type}${action ? `/${action}` : ""} ${sheet_id ?? document_id ?? revision} ${screen}`,
-  );
-
-const exposition = (envoyes: AnalyticsEvent[], type: string) =>
-  envoyes.find((event) => event.type === type)?.exposure_id;
-
-// Le dialogue d'impression, que le navigateur de test n'a pas, et l'onglet que
-// l'avis ouvrirait : ni l'un ni l'autre ne s'ouvre ici.
-const sansOnglet = (event: Event) => {
-  if (event.target instanceof HTMLAnchorElement && event.target.target)
-    event.preventDefault();
-};
+let dialogue: ReturnType<typeof sansDialogue>;
 beforeEach(() => {
-  window.print = () => {};
-  document.addEventListener("click", sansOnglet);
+  dialogue = sansDialogue();
 });
-afterEach(() => {
-  Reflect.deleteProperty(window, "print");
-  document.removeEventListener("click", sansOnglet);
-});
+afterEach(() => dialogue.arreter());
 
 describe("les boutons de la fiche patient", () => {
-  it("le R2 expose « Imprimer » et « Télécharger » sur la version f1, avec son affichage", async () => {
+  it("le R2 expose « Imprimer » et « Télécharger » sur la version f1 de la fiche", async () => {
     const { user, envoyes } = await ouvrirAvecUnJournal({
       modele: avecUneFiche,
     });
@@ -92,16 +51,12 @@ describe("les boutons de la fiche patient", () => {
     await allerALaFiche(user);
 
     expect(boutons(envoyes)).toEqual([
-      "action_exposed/print f1 R2",
-      "action_exposed/download f1 R2",
+      "button_exposed patient_sheet_print f1 R2",
+      "button_exposed patient_sheet_download f1 R2",
     ]);
-    const [imprimer] = desBoutons(envoyes);
-    expect(imprimer?.exposure_id).toBe(
-      `${imprimer?.page_view_id}:sheet_print:f1`,
-    );
   });
 
-  it("chaque clic part avec l'exposition du bouton, à la souris comme au clavier", async () => {
+  it("la souris et le clavier envoient le même clic, avec l'exposition du bouton", async () => {
     const { user, envoyes } = await ouvrirAvecUnJournal({
       modele: avecUneFiche,
     });
@@ -110,24 +65,23 @@ describe("les boutons de la fiche patient", () => {
     await user.click(bouton("Imprimer"));
     bouton("Imprimer").focus();
     await user.keyboard("{Enter}");
+    await user.keyboard(" ");
 
-    const clics = envoyes.filter(
-      ({ type }) => type === "sheet_print_requested",
-    );
-    expect(clics).toHaveLength(2);
-    expect(clics).toEqual(
-      clics.map(() =>
-        expect.objectContaining({
-          screen: "R2",
-          revision: "r1",
-          sheet_id: "f1",
-          exposure_id: exposition(envoyes, "action_exposed"),
-        }),
-      ),
-    );
+    const [souris, ...clavier] = sansRang(envoyes, "button_clicked");
+    expect(clavier).toEqual([souris, souris]);
+    expect(souris).toMatchObject({
+      button_id: "patient_sheet_print",
+      activity_origin: "user",
+      screen: "R2",
+      revision: "r1",
+      artifact_id: "f1",
+      exposure_id: envoyes.find(
+        ({ button_id }) => button_id === "patient_sheet_print",
+      )?.exposure_id,
+    });
   });
 
-  it("le téléchargement demandé part, et rien d'autre quand son PDF échoue", async () => {
+  it("le téléchargement cliqué part comme un clic, et rien d'autre quand son PDF échoue", async () => {
     const { user, envoyes } = await ouvrirAvecUnJournal({
       modele: avecUneFiche,
     });
@@ -137,11 +91,11 @@ describe("les boutons de la fiche patient", () => {
     await screen.findByText(/^Le téléchargement a échoué/);
 
     expect(boutons(envoyes).slice(2)).toEqual([
-      "sheet_download_requested f1 R2",
+      "button_clicked patient_sheet_download f1 R2",
     ]);
   });
 
-  it("un second affichage du R2 expose à nouveau, sur la même version de la fiche", async () => {
+  it("le R2 quitté puis réaffiché expose à nouveau, sur la même version de la fiche", async () => {
     const { user, envoyes } = await ouvrirAvecUnJournal({
       modele: avecUneFiche,
     });
@@ -154,12 +108,17 @@ describe("les boutons de la fiche patient", () => {
     await screen.findByRole("heading", { level: 1, name: "Le résultat" });
     await user.click(bouton("Imprimer"));
 
-    const imprimer = envoyes.filter(({ action }) => action === "print");
-    expect(imprimer.map(({ sheet_id }) => sheet_id)).toEqual(["f1", "f1"]);
-    expect(imprimer[0]?.page_view_id).not.toBe(imprimer[1]?.page_view_id);
-    expect(exposition(envoyes, "sheet_print_requested")).toBe(
-      imprimer[1]?.exposure_id,
+    const imprimer = envoyes.filter(
+      ({ button_id }) => button_id === "patient_sheet_print",
     );
+    expect(boutons(imprimer)).toEqual([
+      "button_exposed patient_sheet_print f1 R2",
+      "button_exposed patient_sheet_print f1 R2",
+      "button_clicked patient_sheet_print f1 R2",
+    ]);
+    const [premiere, seconde, clic] = imprimer;
+    expect(premiere?.exposure_id).not.toBe(seconde?.exposure_id);
+    expect(clic?.exposure_id).toBe(seconde?.exposure_id);
   });
 
   it("monté comme en production, où React rejoue les effets, chaque bouton est exposé une fois", async () => {
@@ -169,10 +128,12 @@ describe("les boutons de la fiche patient", () => {
     });
 
     await allerALaFiche(user);
+    await user.click(bouton("Imprimer"));
 
     expect(boutons(envoyes)).toEqual([
-      "action_exposed/print f1 R2",
-      "action_exposed/download f1 R2",
+      "button_exposed patient_sheet_print f1 R2",
+      "button_exposed patient_sheet_download f1 R2",
+      "button_clicked patient_sheet_print f1 R2",
     ]);
   });
 });
@@ -184,50 +145,18 @@ describe("l'avis", () => {
     });
     await repondreJusquAuResultat(user);
     const avis = await screen.findByRole("link", {
-      name: `${LIBELLE} (nouvel onglet)`,
+      name: `${LIBELLE_DE_L_AVIS} (nouvel onglet)`,
     });
 
     await user.click(avis);
 
     expect(boutons(envoyes)).toEqual([
-      "feedback_exposed r1 R2",
-      "feedback_clicked r1 R2",
+      "feedback_exposed - r1 R2",
+      "feedback_clicked - r1 R2",
     ]);
-    expect(exposition(envoyes, "feedback_clicked")).toBe(
-      exposition(envoyes, "feedback_exposed"),
+    const [expose, clic] = envoyes.filter(({ type }) =>
+      type.startsWith("feedback_"),
     );
-  });
-});
-
-describe("les boutons du document R3", () => {
-  it("le document prêt expose ses boutons et l'avis sur sa version, et chaque clic part avec", async () => {
-    const { user, envoyes } = await ouvrirAvecUnJournal({
-      modele: venuPour("prescribe"),
-    });
-    await allerAuCerfa(user);
-    // Le texte du second résultat ne vient qu'avec le PDF prêt.
-    await screen.findByText(/^Commande : thé, lait/);
-    const { telechargements, arreter } = ecouterLesTelechargements();
-
-    await user.click(bouton("Imprimer le bon de commande"));
-    await user.click(bouton("Télécharger le bon de commande"));
-    await user.click(
-      screen.getByRole("link", { name: `${LIBELLE} (nouvel onglet)` }),
-    );
-    arreter();
-
-    expect(telechargements).toHaveLength(1);
-    expect(boutons(envoyes)).toEqual([
-      "action_exposed/print d1 R3",
-      "action_exposed/download d1 R3",
-      "feedback_exposed d1 R3",
-      "document_print_requested d1 R3",
-      "document_download_requested d1 R3",
-      "document_download_succeeded d1 R3",
-      "feedback_clicked d1 R3",
-    ]);
-    expect(exposition(envoyes, "document_download_succeeded")).toBe(
-      envoyes.find(({ action }) => action === "download")?.exposure_id,
-    );
+    expect(clic?.exposure_id).toBe(expose?.exposure_id);
   });
 });

@@ -52,13 +52,10 @@ describe("la taille des textes du document R3", () => {
   it("une version imprimée deux fois : une mesure, sous les identifiants de son support", () => {
     const journey = new Journey({ seeded: false, provenance: PROVENANCE });
     const affiche = afficherLeR3(journey);
-    const imprimer = journey.exposeButtons(["document_print"]).exposures
-      .document_print;
-    if (!imprimer) throw new Error("Imprimer n'est pas exposé.");
 
     const impressions = [
-      ...journey.press(imprimer, "requested"),
-      ...journey.press(imprimer, "requested"),
+      ...journey.requestDocument("print"),
+      ...journey.requestDocument("print"),
     ];
 
     expect(mesures(affiche)).toEqual([
