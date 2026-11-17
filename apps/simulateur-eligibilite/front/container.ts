@@ -11,7 +11,6 @@ import {
   CmsConsent,
   configFromEnv,
   DiscardingAudience,
-  declarerAuServeur,
   loadMatomo,
   MatomoAudience,
   referentielDuServeur,
@@ -26,7 +25,6 @@ export type Container = {
   serverApi: ServerApiClient;
   analytics: AnalyticsUseCases;
   referentiel: AppProps["referentiel"];
-  declarer: AppProps["declarer"];
 };
 
 export function createContainer(): Container {
@@ -39,7 +37,6 @@ export function createContainer(): Container {
       app_version: VERSION_APP,
     }),
     referentiel: referentielDuServeur(serverApi),
-    declarer: declarerAuServeur(serverApi),
   };
 }
 

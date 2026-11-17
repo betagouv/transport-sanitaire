@@ -38,6 +38,21 @@ export class ServerApiClient {
     });
   }
 
+  /** Envoie `body`, et lit la réponse. `timeout`, en ms, l'abandonne. */
+  async postAndRead<T>(
+    path: string,
+    body: unknown,
+    { timeout }: { timeout: number },
+  ): Promise<T> {
+    const response = await this.#request(path, {
+      method: "POST",
+      signal: AbortSignal.timeout(timeout),
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body),
+    });
+    return (await response.json()) as T;
+  }
+
   async #request(path: string, init?: RequestInit): Promise<Response> {
     const response = await fetch(`${this.#base}${path}`, init);
     if (!response.ok) throw new ServerApiError(path, response.status);

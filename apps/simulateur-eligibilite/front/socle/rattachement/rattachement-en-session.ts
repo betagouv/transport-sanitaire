@@ -1,16 +1,17 @@
 // Le rattachement, gardé le temps de la session. L'écran de rattachement
-// l'écrit, l'analytics le relit à chaque évènement.
+// l'écrit, l'analytics le relit à chaque évènement : les ids du référentiel,
+// sans aucun nom.
 
-import type { RattachementSaisi } from "../../../shared/rattachement-saisi";
+import type { RattachementDuReferentiel } from "../../../shared/rattachement-du-referentiel.vo";
 
 export function rangerRattachement(
-  rattachement: RattachementSaisi | null,
+  rattachement: RattachementDuReferentiel | null,
 ): void {
   rattachementCourant = rattachement;
 }
 
 /** `null` tant que personne ne s'est rattaché. */
-export function rattachementEnSession(): RattachementSaisi | null {
+export function rattachementEnSession(): RattachementDuReferentiel | null {
   return rattachementCourant;
 }
 
@@ -18,4 +19,4 @@ export function rattachementEnSession(): RattachementSaisi | null {
 
 // En mémoire seulement, pas de localStorage. Voir
 // ADR-0007.
-let rattachementCourant: RattachementSaisi | null = null;
+let rattachementCourant: RattachementDuReferentiel | null = null;

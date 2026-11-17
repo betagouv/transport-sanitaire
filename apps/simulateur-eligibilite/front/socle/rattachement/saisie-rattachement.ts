@@ -73,11 +73,10 @@ function etabChoisiDans(choix: string): string {
   return decode?.type === "etablissement" ? decode.etabId : "";
 }
 
-// Sans référentiel, la saisie est le rattachement de repli, toujours complet.
+// Sans référentiel, la saisie est vide mais valide : le prescripteur entre
+// quand même, et son parcours part sans établissement ni service.
 function deriver(champs: Champs, listes: Listes): Derivation {
-  if (listes.indisponible) {
-    return { ...AUCUNE, saisie: RATTACHEMENT_DEGRADE, valide: true };
-  }
+  if (listes.indisponible) return { ...AUCUNE, valide: true };
   const choix = decoderChoix(champs.choix);
   switch (choix?.type) {
     case "etablissement":
@@ -164,13 +163,6 @@ const AUCUNE: Derivation = {
   etabEstAutre: false,
   entreeImmediate: false,
   structure: null,
-};
-
-// Le rattachement de repli quand le référentiel ne répond pas. Le prescripteur
-// entre quand même, et l'analytics range sa visite sous « autre ».
-const RATTACHEMENT_DEGRADE: RattachementSaisi = {
-  etabId: "autre",
-  serviceId: "autre",
 };
 
 const CHAMPS_VIDES: Champs = {

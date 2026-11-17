@@ -5,11 +5,13 @@
 // choix suffit : un service de la liste ou une structure. Une saisie libre
 // garde un bouton, car on ne sait pas quand elle est finie. Le formulaire
 // remonte la saisie à `onValide` et ne range rien lui-même : c'est
-// `RattachementScreen`.
+// `RattachementScreen`. Le temps que `onValide` aboutisse, le bouton dit que le
+// simulateur s'ouvre, et ne se clique plus.
 //
-// Si le référentiel ne répond pas, il le dit et laisse entrer avec le
-// rattachement dégradé « Autre / Autre ».
+// Si le référentiel ne répond pas, il le dit et laisse entrer sans
+// rattachement.
 
+import { useState } from "react";
 import { LONGUEUR_MAX_D_UN_NOM } from "../../../shared/rattachement-saisi";
 import {
   type Referentiel,
@@ -28,7 +30,7 @@ type Props = {
   onValide: (
     saisie: SaisieRattachement["saisie"],
     structure: Structure | null,
-  ) => void;
+  ) => void | Promise<void>;
 };
 
 export function RattachementForm({
@@ -36,7 +38,12 @@ export function RattachementForm({
   onValide,
 }: Props) {
   const saisie = useSaisieRattachement(referentiel);
-  const { entrer, modifier } = entrees(saisie, onValide);
+  const [enCours, setEnCours] = useState(false);
+  const { entrer, modifier } = entrees(saisie, async (...validee) => {
+    if (enCours) return;
+    setEnCours(true);
+    await onValide(...validee);
+  });
 
   return (
     <Container etroit sansMargeHaute>
@@ -51,7 +58,7 @@ export function RattachementForm({
         }}
       >
         <ProgressiveFields saisie={saisie} modifier={modifier} />
-        <EntreeDansLApplication saisie={saisie} />
+        <EntreeDansLApplication saisie={saisie} enCours={enCours} />
       </form>
     </Container>
   );
@@ -70,7 +77,9 @@ type FieldsProps = { saisie: SaisieRattachement; modifier: Modifier };
 // champ quand la sélection suffit. Le simulateur s'ouvre alors sans bouton.
 function entrees(saisie: SaisieRattachement, onValide: Props["onValide"]) {
   const entrer = (derivation: Derivation) => {
-    if (derivation.valide) onValide(derivation.saisie, derivation.structure);
+    if (derivation.valide) {
+      void onValide(derivation.saisie, derivation.structure);
+    }
   };
   const modifier: Modifier = (champ, valeur) => {
     const suite = saisie.modifier(champ, valeur);
@@ -80,7 +89,7 @@ function entrees(saisie: SaisieRattachement, onValide: Props["onValide"]) {
 }
 
 // Chaque réponse dévoile le champ suivant (docs/knowledge/domain/rattachement.md). Sans référentiel, il
-// n'y a rien à choisir : l'écran le dit, et le rattachement est celui de repli.
+// n'y a rien à choisir : l'écran le dit, et laisse entrer sans rattachement.
 function ProgressiveFields(props: FieldsProps) {
   if (props.saisie.indisponible) return <ReferentielIndisponible />;
   return (
@@ -171,8 +180,14 @@ function ServiceLibreField({ saisie, modifier }: FieldsProps) {
 }
 
 // Le bouton n'existe que quand la sélection ne suffit pas : sans référentiel,
-// et pour une saisie libre.
-function EntreeDansLApplication({ saisie }: { saisie: SaisieRattachement }) {
+// et pour une saisie libre. Il dit l'attente de l'entrée, sans autre écran.
+function EntreeDansLApplication({
+  saisie,
+  enCours,
+}: {
+  saisie: SaisieRattachement;
+  enCours: boolean;
+}) {
   const bouton =
     saisie.indisponible || saisie.serviceEstAutre || saisie.etabEstAutre;
   if (!bouton) return null;
@@ -181,8 +196,12 @@ function EntreeDansLApplication({ saisie }: { saisie: SaisieRattachement }) {
       className="fr-btns-group fr-btns-group--inline"
       style={{ marginTop: "2rem" }}
     >
-      <button type="submit" className="fr-btn" disabled={!saisie.valide}>
-        Accéder au simulateur
+      <button
+        type="submit"
+        className="fr-btn"
+        disabled={!saisie.valide || enCours}
+      >
+        {enCours ? "Ouverture du simulateur…" : "Accéder au simulateur"}
       </button>
     </div>
   );

@@ -43,7 +43,6 @@ createRoot(racine).render(
     <App
       models={models}
       referentiel={container.referentiel}
-      declarer={container.declarer}
       analytics={container.analytics}
     />
   </StrictMode>,

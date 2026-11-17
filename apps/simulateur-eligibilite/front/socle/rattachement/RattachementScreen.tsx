@@ -1,39 +1,35 @@
 // L'écran de rattachement : le formulaire, et ce que sa validation déclenche.
 //
-// À la validation, il range le rattachement en session (pour Matomo et le journal), déclare au
-// serveur ce que la saisie apprend au référentiel (service ou établissement
-// saisi), puis prévient `App`.
+// À la validation, il tire de la saisie les ids du référentiel, en attendant
+// que le référentiel enregistre une saisie libre. Il les range en session pour
+// Matomo et le journal, puis prévient `App`.
 // Voir ADR-0004.
 
-import {
-  enrichitLeReferentiel,
-  type RattachementSaisi,
-} from "../../../shared/rattachement-saisi";
+import { useMemo } from "react";
 import type { Referentiel } from "../../../shared/referentiel";
 import { RattachementForm } from "./RattachementForm";
 import { rangerRattachement } from "./rattachement-en-session";
+import { RegisterTheRattachement } from "./register-the-rattachement.usecase";
 import type { Structure } from "./structures";
 
 type Props = {
-  // Ceux du serveur, donnés par le conteneur ; les tests passent les leurs.
+  // Celui du serveur, donné par le conteneur ; les tests passent le leur.
   referentiel: Referentiel;
-  declarer: (saisie: RattachementSaisi) => void;
   // La structure choisie, `null` pour un établissement : `App` en tire la
   // trace de debug (D-280).
   onRattache: (structure: Structure | null) => void;
 };
 
-export function RattachementScreen({
-  referentiel,
-  declarer,
-  onRattache,
-}: Props) {
+export function RattachementScreen({ referentiel, onRattache }: Props) {
+  const enregistrement = useMemo(
+    () => new RegisterTheRattachement(referentiel),
+    [referentiel],
+  );
   return (
     <RattachementForm
       referentiel={referentiel}
-      onValide={(saisie, structure) => {
-        rangerRattachement(saisie);
-        if (enrichitLeReferentiel(saisie)) declarer(saisie);
+      onValide={async (saisie, structure) => {
+        rangerRattachement(await enregistrement.execute(saisie));
         onRattache(structure);
       }}
     />

@@ -51,7 +51,6 @@ function monter(
         { label: CARTE_DES_FROMAGES, load: () => fromages },
       ]}
       referentiel={snapshotReferentiel}
-      declarer={() => {}}
       developerTools={developerTools}
     />,
   );
