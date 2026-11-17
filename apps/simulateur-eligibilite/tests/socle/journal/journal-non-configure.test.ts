@@ -20,7 +20,11 @@ describe("le journal, sans doc Grist configuré", () => {
     });
 
     await journal.append(
-      JournalEntry.receivedNow(simulationStarted, "simulateur-staging"),
+      JournalEntry.receivedNow(
+        simulationStarted,
+        "simulateur-staging",
+        "f30aafe",
+      ),
     );
 
     expect(await journal.find(simulationStarted.event_id)).toBeUndefined();

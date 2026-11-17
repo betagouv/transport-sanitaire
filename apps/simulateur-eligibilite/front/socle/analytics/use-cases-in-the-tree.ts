@@ -8,6 +8,7 @@
 import { createContext, type RefObject, useContext } from "react";
 import { AnswerAQuestion } from "./answer-a-question.usecase";
 import type { Audience } from "./audience.port";
+import { CloseASimulation } from "./close-a-simulation.usecase";
 import { CompleteAQuestionnaire } from "./complete-a-questionnaire.usecase";
 import { CorrectAnAnswer } from "./correct-an-answer.usecase";
 import { DeliverADownload } from "./deliver-a-download.usecase";
@@ -40,6 +41,7 @@ export function analyticsUseCases(
   return {
     startASimulation: new StartASimulation(journal, build),
     selectAnIntent: new SelectAnIntent(journal),
+    closeASimulation: new CloseASimulation(journal),
     startAQuestionnaire: new StartAQuestionnaire(audience),
     openAPage: new OpenAPage(journal),
     revealQuestions: new RevealQuestions(journal),

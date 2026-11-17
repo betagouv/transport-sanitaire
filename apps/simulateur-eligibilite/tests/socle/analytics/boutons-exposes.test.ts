@@ -36,7 +36,8 @@ describe("les boutons de la fiche patient", () => {
     ]);
     expect(exposes[0]?.exposure_id).not.toBe(exposes[1]?.exposure_id);
     expect(exposes[0]).not.toHaveProperty("document_id");
-    expect(exposes[0]).not.toHaveProperty("activity_origin");
+    // Une exposition est passive : seul le clic vient du prescripteur.
+    expect(exposes[0]?.activity_origin).toBe("background");
   });
 
   it("deux clics sur une exposition : deux clics, une exposition cliquée", () => {
@@ -151,7 +152,8 @@ describe("l'avis", () => {
     expect(clic).toMatchObject({
       type: "feedback_clicked",
       exposure_id: avis?.exposure_id,
+      activity_origin: "user",
     });
-    expect(clic).not.toHaveProperty("activity_origin");
+    expect(avis?.activity_origin).toBe("background");
   });
 });

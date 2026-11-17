@@ -9,7 +9,7 @@ export type { Button } from "./button-place.vo";
 export { CmsConsent } from "./cms-consent.adapter";
 export { DiscardingAudience } from "./discarding-audience.adapter";
 export { type DocumentTracking, useDocumentTracking } from "./document.hook";
-export { useRecordTheJourney } from "./journey.hook";
+export { useNewSimulation, useRecordTheJourney } from "./journey.hook";
 export {
   configFromEnv,
   loadMatomo,

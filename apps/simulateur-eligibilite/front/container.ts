@@ -17,7 +17,6 @@ import {
   referentielDuServeur,
   ServerApiClient,
   ServerJournal,
-  SHA_COMMIT,
   VERSION_APP,
 } from "./socle";
 
@@ -38,7 +37,6 @@ export function createContainer(): Container {
     serverApi,
     analytics: analyticsUseCases(audienceOf(consent), journal, {
       app_version: VERSION_APP,
-      commit_sha: SHA_COMMIT,
     }),
     referentiel: referentielDuServeur(serverApi),
     declarer: declarerAuServeur(serverApi),

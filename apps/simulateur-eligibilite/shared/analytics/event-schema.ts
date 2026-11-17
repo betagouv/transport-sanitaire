@@ -10,6 +10,8 @@ import {
   type AnalyticsEvent,
   BOUNDARIES,
   BUTTON_IDS,
+  CLOSURE_REASONS,
+  CONTRACT_VERSION,
   EVENT_TYPES,
   INTENTS,
   MODES,
@@ -32,7 +34,7 @@ export function parseAnAnalyticsEvent(
 
 const identifier = z.string().trim().min(1);
 
-// Une version livrée : `10.1.8` pour les règles, `0.7.0` pour l'app.
+// Une version livrée : `10.2.1` pour le modèle, `0.7.0` pour l'app.
 const release = z.string().regex(/^\d+\.\d+\.\d+$/);
 
 // Les portions ne partent plus : la composition du transport les remplace
@@ -51,9 +53,12 @@ const EVENT_SCHEMA: z.ZodType<AnalyticsEvent> = z
   .strictObject({
     event_id: identifier,
     simulation_id: identifier,
-    sequence: z.number().int().min(1).optional(),
+    sequence: z.number().int().min(1).max(Number.MAX_SAFE_INTEGER),
     occurred_at: z.iso.datetime({ offset: true }),
-    version: release,
+    version: z.literal(CONTRACT_VERSION),
+    model_version: release,
+    app_version: release,
+    activity_origin: z.enum(ACTIVITY_ORIGINS),
     type: z.enum(EVENT_TYPES),
     screen: z.enum(SCREENS).optional(),
     revision: identifier.optional(),
@@ -86,11 +91,9 @@ const EVENT_SCHEMA: z.ZodType<AnalyticsEvent> = z
     font_size_pt: z.number().positive().optional(),
     button_id: z.enum(BUTTON_IDS).optional(),
     artifact_id: identifier.optional(),
-    activity_origin: z.enum(ACTIVITY_ORIGINS).optional(),
-    service_id: identifier.optional(),
     boundary: z.enum(BOUNDARIES).optional(),
-    app_version: release,
-    commit_sha: z.string().regex(/^([0-9a-f]{7}|inconnu)$/),
+    closure_reason: z.enum(CLOSURE_REASONS).optional(),
+    service_id: identifier.optional(),
   })
   .refine(measuresItsOwnFields)
   .refine(placesItsButton)

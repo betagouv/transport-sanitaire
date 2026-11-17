@@ -61,7 +61,7 @@ describe("suivi du parcours", () => {
         type: "simulation_started",
         sequence: 1,
         screen: "P0",
-        version: "2.4.0",
+        model_version: "2.4.0",
         establishment_id: "e_chu_grenoble",
         service_id: "s_grenoble_cardio",
         is_test: false,

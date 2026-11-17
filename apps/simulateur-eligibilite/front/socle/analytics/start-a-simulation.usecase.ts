@@ -3,7 +3,8 @@
 // rattachement, et les écrit sur chacun de ses événements (ADR-0053).
 //
 // Chaque événement dit quelle app l'a produit (ADR-0050) : la version des règles
-// du modèle ouvert, et le build, sa version et son commit.
+// du modèle ouvert, et celle du build. Le commit déployé, le serveur l'écrit à
+// la réception.
 
 import type {
   Provenance,
@@ -19,11 +20,11 @@ export type SimulationStart = {
   /** La simulation s'ouvre sur une seed : son parcours ne part pas. */
   seeded: boolean;
   /** La version des règles du modèle ouvert. */
-  version: string;
+  modelVersion: string;
 };
 
-/** L'app construite : sa version et son commit, figés au build. */
-export type Build = Pick<Provenance, "app_version" | "commit_sha">;
+/** L'app construite : sa version, figée au build. */
+export type Build = Pick<Provenance, "app_version">;
 
 export class StartASimulation {
   readonly #journal: Journal;
@@ -34,10 +35,10 @@ export class StartASimulation {
     this.#build = build;
   }
 
-  execute({ rattachement, seeded, version }: SimulationStart): Journey {
+  execute({ rattachement, seeded, modelVersion }: SimulationStart): Journey {
     const provenance = {
       ...this.#build,
-      version,
+      model_version: modelVersion,
       ...(rattachement && rattachementDuParcours(rattachement)),
     };
     const journey = new Journey({ seeded, provenance });

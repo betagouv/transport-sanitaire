@@ -3,7 +3,7 @@
 import type { Build } from "../../../server/journal/journal-entry.entity.ts";
 import type { AnalyticsEvent } from "../../../shared/analytics/analytics-event.ts";
 
-/** L'app que le serveur sert. */
+/** L'app que le serveur sert : sa version, et son commit. */
 export const BUILD: Build = { app_version: "0.8.0", commit_sha: "f30aafe" };
 
 export const simulationStarted: AnalyticsEvent = {
@@ -11,9 +11,10 @@ export const simulationStarted: AnalyticsEvent = {
   simulation_id: "s-1",
   sequence: 1,
   occurred_at: "2026-11-12T10:00:00.000+01:00",
-  version: "10.1.8",
+  version: "10.2.2",
+  model_version: "10.2.1",
   app_version: "0.8.0",
-  commit_sha: "f30aafe",
+  activity_origin: "user",
   type: "simulation_started",
   screen: "P0",
   establishment_id: "e_chu_grenoble",

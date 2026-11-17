@@ -6,8 +6,7 @@
 import type { AnalyticsEvent } from "../../../shared/analytics/analytics-event";
 import type { ButtonPlace, Placed } from "./button-place.vo";
 
-type ButtonEvent = Placed &
-  Pick<AnalyticsEvent, "type" | "exposure_id" | "activity_origin">;
+type ButtonEvent = Placed & Pick<AnalyticsEvent, "type" | "exposure_id">;
 
 export class ButtonExposure {
   readonly id: string;
@@ -35,13 +34,8 @@ export class ButtonExposure {
 
   /** Son clic, qui vient toujours du prescripteur. */
   clicked(): ButtonEvent {
-    if (this.#isFeedback())
-      return { type: "feedback_clicked", ...this.#about() };
-    return {
-      type: "button_clicked",
-      activity_origin: "user",
-      ...this.#about(),
-    };
+    const type = this.#isFeedback() ? "feedback_clicked" : "button_clicked";
+    return { type, ...this.#about() };
   }
 
   // ---- implémentation ----
