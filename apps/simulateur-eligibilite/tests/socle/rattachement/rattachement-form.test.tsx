@@ -80,9 +80,7 @@ describe("l'écran de rattachement", () => {
     expect(onValide).toHaveBeenCalledWith(
       {
         etabId: "e_chu_grenoble",
-        etabLibelle: "CHU Grenoble Alpes",
         serviceId: "s_grenoble_cardio",
-        serviceLibelle: "Cardiologie",
       },
       null,
     );
@@ -97,9 +95,7 @@ describe("l'écran de rattachement", () => {
     expect(onValide).toHaveBeenCalledWith(
       {
         etabId: "e_liberal_cnam",
-        etabLibelle: "Libéral / CNAM / CPAM / Autre",
         serviceId: "s_liberal",
-        serviceLibelle: "Libéral",
       },
       "Libéral",
     );
@@ -115,9 +111,7 @@ describe("l'écran de rattachement", () => {
     expect(onValide).toHaveBeenCalledWith(
       {
         etabId: "e_liberal_cnam",
-        etabLibelle: "Libéral / CNAM / CPAM / Autre",
         serviceId: "s_liberal_autre",
-        serviceLibelle: "Autre",
       },
       "Autre",
     );
@@ -140,9 +134,7 @@ describe("l'écran de rattachement", () => {
     expect(onValide).toHaveBeenCalledWith(
       {
         etabId: "e_chu_grenoble",
-        etabLibelle: "CHU Grenoble Alpes",
         serviceId: "s_grenoble_autre",
-        serviceLibelle: "Autre",
         serviceEstAutre: true,
         serviceLibre: "Néphrologie",
       },

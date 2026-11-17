@@ -20,9 +20,7 @@ describe("le rattachement d'un parcours", () => {
   it("un service de la liste : les deux ids", () => {
     const debut = demarrer({
       etabId: "e_chu_grenoble",
-      etabLibelle: "CHU Grenoble Alpes",
       serviceId: "s_grenoble_cardio",
-      serviceLibelle: "Cardiologie",
     });
 
     expect(debut).toMatchObject({
@@ -34,9 +32,7 @@ describe("le rattachement d'un parcours", () => {
   it("un service saisi sous « Autre » : l'id d'« Autre »", () => {
     const debut = demarrer({
       etabId: "e_chu_grenoble",
-      etabLibelle: "CHU Grenoble Alpes",
       serviceId: "s_grenoble_autre",
-      serviceLibelle: "Autre",
       serviceEstAutre: true,
       serviceLibre: " Néphrologie ",
     });

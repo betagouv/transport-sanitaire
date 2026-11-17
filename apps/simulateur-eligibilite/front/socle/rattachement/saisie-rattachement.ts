@@ -98,13 +98,11 @@ function deriverService(
   champs: Champs,
   listes: Listes,
 ): Derivation {
-  const etab = listes.etablissements.find((e) => e.id === etabId);
-  const saisie: RattachementSaisi = { etabId, etabLibelle: etab?.libelle };
+  const saisie: RattachementSaisi = { etabId };
   const service = listes.services.find((s) => s.id === champs.serviceId);
   if (!service) return { ...AUCUNE, saisie, etabChoisi: true };
 
   saisie.serviceId = service.id;
-  saisie.serviceLibelle = service.libelle;
   const serviceEstAutre = estAutre(service.libelle);
   if (serviceEstAutre) {
     saisie.serviceEstAutre = true;
@@ -127,12 +125,7 @@ function deriverStructure(serviceId: string, listes: Listes): Derivation {
   if (!service || !listes.fourreTout) return AUCUNE;
   return {
     ...AUCUNE,
-    saisie: {
-      etabId: listes.fourreTout.id,
-      serviceId,
-      etabLibelle: listes.fourreTout.libelle,
-      serviceLibelle: service.libelle,
-    },
+    saisie: { etabId: listes.fourreTout.id, serviceId },
     valide: true,
     entreeImmediate: true,
     structure: service.libelle,
