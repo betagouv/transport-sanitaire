@@ -74,7 +74,7 @@ function scenarioDuContexte(
         : meilleur,
     undefined,
   );
-  return precis ?? actifs.find(({ params }) => params.kind === "fallback");
+  return precis ?? actifs.find(({ params }) => params?.kind === "fallback");
 }
 
 // Le repli n'est pas un contexte : il se prend quand aucun autre ne tient.
@@ -82,7 +82,7 @@ function estProuve(
   scenario: ScenarioPrescripteur,
   contexte: Contexte,
 ): boolean {
-  if (scenario.params.kind === "fallback") return false;
+  if (scenario.params?.kind === "fallback") return false;
   return parametres(scenario).every(
     ([nom, valeur]) => contexte[nom] === valeur,
   );
@@ -90,7 +90,7 @@ function estProuve(
 
 // Les paramètres dont le scénario demande la preuve.
 function parametres({ params }: ScenarioPrescripteur): [string, string][] {
-  return Object.entries(params).flatMap(([nom, valeur]) =>
+  return Object.entries(params ?? {}).flatMap(([nom, valeur]) =>
     nom !== "scenario_id" && valeur != null ? [[nom, valeur]] : [],
   );
 }

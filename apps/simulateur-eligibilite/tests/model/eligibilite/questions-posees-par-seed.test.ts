@@ -148,8 +148,21 @@ const ATTENDU: Record<string, readonly [string[], string[]]> = {
     [],
   ],
   "issue-dap-etranger-a-examiner": [
-    [...P1, "Q1.3.a", "Q2.2.1", "Q2.2.5", "Q2.2.1.b", ...DISTANCE],
+    [
+      ...P1,
+      "Q1.3.a",
+      "Q2.2.1",
+      "Q2.2.5",
+      "Q2.2.1.b",
+      ...DISTANCE,
+      "Q2.3.3",
+      "Q2.3.4",
+    ],
     complement("Q3.4.a"),
+  ],
+  "issue-caisse-etranger": [
+    [...P1, "Q1.3.a", "Q2.2.1", "Q2.2.5", "Q2.2.1.b", ...DISTANCE],
+    [],
   ],
   // L'Engagement maternité finit P3 par Q3.8 (D-251). L'examen coché en
   // Q2.2.1 est le motif : Q2.14 n'en demande que l'éloignement (D-272).

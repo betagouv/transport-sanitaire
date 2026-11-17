@@ -126,8 +126,19 @@ function parSaRaison(
   { cibles }: LuParLaCaisse,
 ): readonly ScenarioPrescripteur[] {
   const raison = cibles.cible_reason_code.value;
-  const portent = actifs.filter(
-    ({ codes }) => codes.length === 1 && codes[0] === raison,
-  );
+  const portent = actifs.filter((scenario) => saRaison(scenario) === raison);
   return portent.length === 1 ? portent : [];
+}
+
+// Un cumul de codes : le scénario ne porte pas une raison seule.
+type PlusieursRaisons = undefined;
+
+// La raison d'un scénario : son seul code, ou sa raison s'il n'a pas de codes,
+// comme celui de l'étranger (v10.2.1).
+function saRaison({
+  codes,
+  reason,
+}: ScenarioPrescripteur): string | PlusieursRaisons {
+  if (!codes) return reason;
+  return codes.length === 1 ? codes[0] : undefined;
 }

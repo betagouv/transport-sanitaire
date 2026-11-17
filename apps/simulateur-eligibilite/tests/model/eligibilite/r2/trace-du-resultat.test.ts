@@ -109,7 +109,7 @@ const CAS: readonly [
     "issue-dap-etranger-a-examiner",
     [1, 5],
     undefined,
-    { hospitalisation: "H-SEANCE-HE" },
+    { hospitalisation: "H-SEANCE-HE", repeatedTripsPlanned: true },
   ],
 ];
 

@@ -46,10 +46,16 @@ describe("les motifs de la DAP", () => {
     ]);
   });
 
-  it("ne cochent rien pour le transport à l'étranger à examiner", () => {
-    expect(
-      Object.values(cellules(MOTIFS_DE_LA_DAP, ETRANGER)).some(Boolean),
-    ).toBe(false);
+  // Depuis R31 (v10.2.1), l'étranger à examiner a toujours un motif : sans
+  // lui, il va vers la caisse. Le seul motif établi, ici la série, est coché.
+  it("cochent le seul motif établi du transport à l'étranger à examiner", () => {
+    expect(cellules(MOTIFS_DE_LA_DAP, ETRANGER)).toEqual({
+      longue_distance: false,
+      serie: true,
+      camsp_cmpp: false,
+      engagement_maternite: false,
+      avion_bateau: false,
+    });
   });
 });
 
