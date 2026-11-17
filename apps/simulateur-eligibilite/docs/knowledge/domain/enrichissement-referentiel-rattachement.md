@@ -1,7 +1,13 @@
 # Alimenter Grist depuis les noms saisis à l'écran de rattachement
 
 > Statut : **implémenté**. Décisions validées avec le porteur le 2026-07-08, révisées
-> le 2026-09-29, le 2026-11-04 et le 2026-11-09.
+> le 2026-09-29, le 2026-11-04, le 2026-11-09 et le 2026-11-17.
+>
+> **Mise à jour 2026-11-17, les ids de la saisie dès la première visite (#506,
+> ANA22-01).** L'entrée attend désormais que le référentiel crée la saisie, pour que
+> le parcours porte ses ids dès cette visite. L'id de l'entrée « Autre » ne part
+> plus, et le repli « Autre / Autre » disparaît. La collecte met en quarantaine un
+> événement dont le rattachement n'est pas au référentiel.
 >
 > **Mise à jour 2026-11-09, service « Autre » de l'établissement saisi (#368).** Un
 > établissement créé depuis la saisie reçoit aussi son service « Autre », comme ceux de
@@ -59,18 +65,28 @@ avoir à ressaisir.
   service « Autre », avant le service saisi, aux mêmes règles. Un établissement
   réutilisé n'en reçoit pas : il a déjà le sien.
 - **Non bloquant.** Une écriture Grist qui échoue ne bloque jamais l'accès au
-  simulateur. C'est une dégradation gracieuse, et l'erreur est loguée.
+  simulateur : le prescripteur entre sans les ids de sa saisie, et l'erreur est
+  loguée.
 - **Aucune personne dans Grist.** ~~Le nom et le prénom d'un prescripteur hors liste
   étaient écrits en clair dans la table `Prescripteurs`.~~ Depuis le 2026-09-29, l'app
   n'écrit plus aucune donnée de personne, et ne lit plus cette table.
-- **Sans attente.** Le front déclare la saisie (`POST /api/rattachement`) et entre
-  dans le simulateur sans attendre la réponse. Seules les saisies qui enrichissent le
-  référentiel sont déclarées : un service choisi dans la liste n'apprend rien.
-- **Analytics.** Matomo reçoit l'id de l'entrée « Autre » du référentiel, le vrai
-  service n'ayant pas encore d'id à la validation. La première visite est donc
-  comptée sous « Autre », les suivantes sous le vrai service. Pour un établissement
-  saisi, rien n'a d'id : l'événement part sans nom. C'est un décrochage mineur,
-  assumé. Aucun nom saisi ne part à Matomo.
+- **Une attente bornée.** ~~Le front déclarait la saisie et entrait sans attendre
+  la réponse.~~ Depuis le 2026-11-17 (#506), il envoie la saisie
+  (`POST /api/rattachement`) et attend les ids créés, cinq secondes au plus. Le
+  bouton affiche « Ouverture du simulateur… » pendant ce temps. Seules les saisies
+  qui enrichissent le référentiel sont envoyées : un service choisi dans la liste
+  n'apprend rien.
+- **Les ids créés, dès la première visite.** ~~Matomo recevait l'id de l'entrée
+  « Autre », et rien pour un établissement saisi.~~ Depuis le 2026-11-17 (#506),
+  le parcours porte l'id du service créé, et celui de l'établissement créé. L'id
+  de l'entrée « Autre » ne part jamais. Si le référentiel ne répond pas, un
+  service saisi garde son établissement seul, et un établissement saisi part sans
+  id. Aucun nom saisi ne part, ni à Matomo, ni au journal.
+- **Quarantaine à la collecte.** Le journal vérifie chaque paire contre le
+  référentiel, lu en cache dix minutes : un id inconnu y relit le référentiel,
+  pour qu'une saisie tout juste créée passe. Un établissement inconnu, ou un
+  service hors de son établissement, va dans la table `Quarantaine`, avec sa
+  raison, et ne compte pas parmi les événements valides.
 
 ## Ce qui s'écrit
 
@@ -83,12 +99,17 @@ avoir à ressaisir.
 | ~~prescripteur hors liste~~ | ~~prescripteur créé sous le service~~ (retiré le 2026-09-29) |
 | ~~prescripteur listé sous « Autre »~~ | ~~prescripteur déplacé vers le vrai service~~ (retiré le 2026-09-29) |
 
-La route délègue toujours l'enrichissement à la source du référentiel ; c'est la
-source Grist qui décide de ne rien écrire pour une sélection issue des listes. Le
-snapshot factice et le client HTTP du front n'écrivent jamais.
+| La route répond | Quand |
+|---|---|
+| 200, `{etabId, serviceId}` | la saisie est créée ou réutilisée |
+| 400 | la saisie est incomplète, trop longue, ou vient des listes |
+| 502 | Grist échoue, ou l'établissement de la saisie n'est pas au référentiel |
+| 503 | la source n'écrit pas : le snapshot factice, en local et en recette sans Grist |
 
 **Prérequis Grist** : la colonne `Origine` doit exister sur `Services_Unites` et sur
-`Etablissements`.
+`Etablissements`. Le document du journal doit avoir une table `Quarantaine`, aux
+colonnes de `Collisions` plus `reason` (texte) : sans elle, la collecte d'un
+événement hors référentiel répond 503.
 
 ## Vérification
 
@@ -98,6 +119,9 @@ pnpm --filter simulateur-eligibilite exec vitest run tests/socle/server/enrichis
 
 # La source Grist contre un Grist en mémoire servi en HTTP : création, « Autre », réutilisation, Origine
 pnpm --filter simulateur-eligibilite exec vitest run tests/socle/server/referentiel-grist.test.ts
+
+# Les ids au parcours, l'attente de l'écran, la quarantaine à la collecte
+pnpm --filter simulateur-eligibilite exec vitest run rattachement-du-parcours enregistrement-au-serveur rattachement-obligatoire collecte-du-rattachement referentiel-en-cache
 
 # Contre le vrai Grist : crée de vraies lignes, à purger à la main côté admin
 GRIST_ECRITURE_TEST=1 GRIST_API_KEY=… pnpm --filter simulateur-eligibilite exec vitest run grist-ecriture
