@@ -37,11 +37,6 @@ export function StrictTextEditor({ onValidate, ...cell }: Props) {
   );
 }
 
-/** Le message d'un texte strict qui déborde (spec médicale § 8). */
-export function overflowMessage(label: string): string {
-  return `Raccourcissez le texte présent dans '${label}' pour pouvoir imprimer ou télécharger le document.`;
-}
-
 // ---- implémentation ----
 
 // Le champ, son libellé, et ce qu'en dit la mesure, qui le décrit.
@@ -96,4 +91,9 @@ function MeasureOf({
       </p>
     </>
   );
+}
+
+/** Le message d'un texte strict qui déborde (spec médicale § 8). */
+function overflowMessage(label: string): string {
+  return `Raccourcissez le texte présent dans '${label}' pour pouvoir imprimer ou télécharger le document.`;
 }
