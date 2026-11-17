@@ -10,6 +10,7 @@ import {
 } from "../shared/referentiel.ts";
 import type { Configuration } from "./configuration.ts";
 import { GristApiClient } from "./grist/grist-api.client.ts";
+import { CachedReferentiel } from "./journal/cached-referentiel.adapter.ts";
 import { CheckAlive } from "./journal/check-alive.usecase.ts";
 import { CollectAnEvent } from "./journal/collect-an-event.usecase.ts";
 import { DiscardingJournal } from "./journal/discarding-journal.adapter.ts";
@@ -65,7 +66,12 @@ export function createContainer({
   environment,
   build,
 }: Adapters): Container {
-  const collectAnEvent = new CollectAnEvent(journal, environment, build);
+  const collectAnEvent = new CollectAnEvent(
+    journal,
+    new CachedReferentiel(referentiel),
+    environment,
+    build,
+  );
   return {
     referentiel,
     journalController: new JournalController(

@@ -1,8 +1,9 @@
 // @vitest-environment node
 //
 // L'adaptateur Grist du journal, contre un Grist en mémoire servi en HTTP : un
-// événement écrit se relit tel quel, une collision va dans sa table, et
-// l'établissement et le service ont chacun leur colonne (ADR-0053).
+// événement écrit se relit tel quel, une collision et une quarantaine vont
+// dans leur table, et l'établissement et le service ont chacun leur colonne
+// (ADR-0053).
 
 import { afterEach, describe, expect, it } from "vitest";
 import { GristApiClient } from "../../../server/grist/grist-api.client.ts";
@@ -41,6 +42,26 @@ describe("journal dans Grist", () => {
     expect(await journal.find("s-1:2")).toBeUndefined();
     expect(grist.tables.Collisions?.map((l) => l.fields.payload)).toEqual([
       JSON.stringify(collision.event),
+    ]);
+  });
+
+  it("met en quarantaine un événement hors du référentiel, avec sa raison", async () => {
+    grist = await demarrerGrist({});
+    const journal = new GristJournal(
+      new GristApiClient({ docUrl: grist.docUrl, cleApi: "test" }),
+    );
+    const horsReferentiel = recu({ establishment_id: "e_inconnu" });
+
+    await journal.quarantine(horsReferentiel, "unknown_establishment");
+
+    expect(await journal.find("s-1:1")).toBeUndefined();
+    expect(grist.tables.Quarantaine?.map((l) => l.fields)).toEqual([
+      expect.objectContaining({
+        event_id: "s-1:1",
+        establishment: '{"id":"e_inconnu"}',
+        reason: "unknown_establishment",
+        payload: JSON.stringify(horsReferentiel.event),
+      }),
     ]);
   });
 
