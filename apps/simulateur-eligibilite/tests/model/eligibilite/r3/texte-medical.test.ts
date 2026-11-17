@@ -43,22 +43,8 @@ const HEBERGEMENT_DISTINCT: Reponses = {
 };
 
 describe("le texte médical", () => {
-  it("donne le soin, puis la précision, et finit par un point", () => {
-    expect(texte(PMT)).toEqual({ elements_medicaux: `${SEANCE} ; Dialyse.` });
-  });
-
-  it("finit par un point quand il n'a pas de précision", () => {
-    const { "Q3.4": _, ...sansPrecision } = PMT;
-
-    expect(texte(sansPrecision)).toEqual({ elements_medicaux: `${SEANCE}.` });
-  });
-
-  it("garde la casse de la précision, et normalise ses espaces", () => {
-    const reponses = { ...PMT, "Q3.4": "  Centre de\n dialyse  Necker. " };
-
-    expect(texte(reponses).elements_medicaux).toBe(
-      `${SEANCE} ; Centre de dialyse Necker.`,
-    );
+  it("donne le soin, et finit par un point", () => {
+    expect(texte(PMT)).toEqual({ elements_medicaux: `${SEANCE}.` });
   });
 
   it("ne donne rien quand aucun segment n'est établi", () => {
@@ -96,7 +82,7 @@ describe("l'autonomie et le mode", () => {
   it("n'écrit pas l'équipement bariatrique", () => {
     const cibles = { cible_ambulance_equipement_bariatrique: true };
 
-    expect(texte(PMT, cibles).elements_medicaux).toBe(`${SEANCE} ; Dialyse.`);
+    expect(texte(PMT, cibles).elements_medicaux).toBe(`${SEANCE}.`);
   });
 });
 
@@ -108,11 +94,9 @@ describe("les compléments", () => {
       cible_mineur_ald_non_exonerante_reconnue: true,
       cible_issue_id: "ISSUE_DAP_ETRANGER_A_EXAMINER",
     };
-    const { "Q3.4": _, ...sansPrecision } = PMT;
-
     const faits = { fait_ald_liee: Fait.oui("test") };
 
-    expect(texte(sansPrecision, cibles, faits).elements_medicaux).toBe(
+    expect(texte(PMT, cibles, faits).elements_medicaux).toBe(
       [
         SEANCE,
         "soins en lien avec une ALD reconnue",

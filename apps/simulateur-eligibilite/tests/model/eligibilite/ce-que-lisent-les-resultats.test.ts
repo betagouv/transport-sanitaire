@@ -68,7 +68,6 @@ describe("les questions que les résultats lisent telles quelles", () => {
       "Q3.3.nom",
       "Q3.3.precision",
       "Q3.3.service",
-      "Q3.4",
       "Q3.4.a",
       "Q3.4.distance",
       "Q3.5",

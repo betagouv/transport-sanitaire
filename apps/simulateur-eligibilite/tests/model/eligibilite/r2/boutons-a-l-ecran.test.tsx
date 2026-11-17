@@ -137,8 +137,8 @@ describe("les boutons du modèle de l'éditeur", () => {
     );
     await saisirUneAdresse(user, "2 rue B", "75002");
     await user.click(screen.getByRole("button", { name: "Suivant" }));
+    // Le centre de référence, seul sur sa page, avance de lui-même.
     await user.click(await screen.findByLabelText("Non"));
-    await user.click(screen.getByRole("button", { name: "Suivant" }));
     await user.click(await screen.findByLabelText(/^Non, aucun autre cas/));
     await user.click(screen.getByRole("button", { name: "Terminer" }));
 
