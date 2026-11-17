@@ -86,9 +86,11 @@ function MeasureOf({
       >
         {Array.from(text).length} / {maximum} caractères
       </p>
-      <p id={error} className="fr-error-text" hidden={fits}>
-        {overflowMessage(label)}
-      </p>
+      {!fits && (
+        <p id={error} className="fr-error-text">
+          {overflowMessage(label)}
+        </p>
+      )}
       <p className="fr-sr-only" role="status">
         {fits ? "Le texte tient sur le document." : overflowMessage(label)}
       </p>
