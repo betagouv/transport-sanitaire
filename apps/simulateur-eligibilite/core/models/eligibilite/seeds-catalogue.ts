@@ -307,9 +307,12 @@ export const SEEDS: readonly Seed<Questions, Cibles>[] = [
     id: "issue-dap-etranger-a-examiner",
     label: "Résultat : transport à l'étranger, demande d'examen",
     description:
-      "Ouvre le résultat d'une dialyse dont le départ est à l'étranger (Q2.2.1, Q2.2.5). La caisse examine la demande (Cerfa S3139h) : le financeur n'est pas conclu.",
+      "Ouvre le résultat d'une série de dialyses à plus de 50 km dont le départ est à l'étranger (Q2.2.1, Q2.2.5). La série demande l'accord préalable : la caisse examine la demande (Cerfa S3139h), le financeur n'est pas conclu.",
     answers: {
       ...DIALYSE,
+      "Q2.3.1": "2_PLUS_DE_CINQUANTE_KM",
+      "Q2.3.3": "1_OUI",
+      "Q2.3.4": "2_NON",
       "Q2.2.1": ["2_ETRANGER"],
       "Q2.2.1.b": ["0_AUCUN"],
       "Q2.2.5": ["1_DEPART"],
@@ -317,6 +320,24 @@ export const SEEDS: readonly Seed<Questions, Cibles>[] = [
     expected: {
       cible_issue_id: "ISSUE_DAP_ETRANGER_A_EXAMINER",
       cible_support_id: "S3139h",
+      cible_financeur: "NON_CONCLU",
+      cible_mode_id: "TAP",
+    },
+  },
+  {
+    id: "issue-caisse-etranger",
+    label: "Résultat : transport à l'étranger, circuit à confirmer",
+    description:
+      "Ouvre le résultat d'une dialyse proche dont le départ est à l'étranger (Q2.2.1, Q2.2.5). Aucun motif de demande d'accord préalable n'est établi : la caisse confirme le circuit, sans document (R31, v10.2.1).",
+    answers: {
+      ...DIALYSE,
+      "Q2.2.1": ["2_ETRANGER"],
+      "Q2.2.1.b": ["0_AUCUN"],
+      "Q2.2.5": ["1_DEPART"],
+    },
+    expected: {
+      cible_issue_id: "ISSUE_CAISSE",
+      cible_support_id: "AUCUN",
       cible_financeur: "NON_CONCLU",
       cible_mode_id: "TAP",
     },

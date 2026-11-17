@@ -68,11 +68,8 @@ const SCENARIOS: readonly [id: string, faits: Changements, attendu: Attendu][] =
       PERMISSION_PATIENT,
     ],
     ["B09", CONVOCATION, ["ISSUE_CONVOCATION", "AUCUN", "ASSURANCE_MALADIE"]],
-    [
-      "B10",
-      { ...BRANCARD, fait_trajet_etranger: true },
-      ["ISSUE_DAP_ETRANGER_A_EXAMINER", "S3139h", "NON_CONCLU"],
-    ],
+    // R31 (v10.2.1) : sans motif de DAP, l'étranger va vers la caisse.
+    ["B10", { ...BRANCARD, fait_trajet_etranger: true }, CAISSE],
     ["B11", { ...PERMISSION_DU_MINEUR, ...LONGUE_DISTANCE }, DAP],
     [
       "B12",

@@ -11,6 +11,10 @@
 // avec `?? null`. Une cible inconnue et une cible sans objet valent donc toutes
 // deux `null`.
 //
+// Le paquet v10.2.1 n'a pas régénéré la fixture. Son R31 fait passer
+// l'étranger sans motif de DAP en ISSUE_CAISSE : on applique aux attendus le
+// même écart que son test du moteur (`tests/moteur_v1021_a.mjs`).
+//
 // Le reste de la trace de l'éditeur n'est pas testé : les réponses, les
 // précisions, la partie terrestre. Il les fixe au départ, nos règles ne les
 // calculent pas.
@@ -41,7 +45,7 @@ describe("les scénarios de démonstration de l'éditeur", () => {
       const obtenues = Object.fromEntries(
         Object.keys(cibles).map((cible) => [cible, valeurs[cible] ?? null]),
       );
-      expect(obtenues).toEqual(cibles);
+      expect(obtenues).toEqual(selonR31(cibles));
     },
   );
 });
@@ -53,4 +57,23 @@ function changementsDe(faits: Scenario["faits"]): Changements {
   return Object.fromEntries(
     Object.entries(faits).map(([fait, value]) => [fait, value ?? undefined]),
   );
+}
+
+// R31 (v10.2.1) : l'étranger sans motif de DAP va vers la caisse, sans
+// document ni attente d'accord.
+function selonR31(cibles: Scenario["cibles"]): Scenario["cibles"] {
+  if (
+    cibles.cible_issue_id !== "ISSUE_DAP_ETRANGER_A_EXAMINER" ||
+    cibles.cible_dap_requise !== false
+  ) {
+    return cibles;
+  }
+  return {
+    ...cibles,
+    cible_issue_id: "ISSUE_CAISSE",
+    cible_support_id: "AUCUN",
+    cible_reason_code: "TRANSPORT_ETRANGER_CIRCUIT_A_CONFIRMER",
+    cible_attente_accord: null,
+    cible_reponse_explicite_caisse: null,
+  };
 }

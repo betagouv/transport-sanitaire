@@ -43,7 +43,8 @@ describe("l'indicateur de parcours ALD", () => {
     });
   });
 
-  it("compte une question de trop au-delà de cinquante kilomètres", () => {
+  // Sans motif d'accord préalable, l'étranger va vers la caisse (R31, v10.2.1).
+  it("compte la question de l'étranger, qui va vers la caisse", () => {
     expect(
       verdictDe({
         ...ALD,
@@ -54,7 +55,7 @@ describe("l'indicateur de parcours ALD", () => {
         "Q2.3.2": false,
       }),
     ).toEqual({
-      verdict: "parcours_ald_trop_de_questions",
+      verdict: "parcours_ald_caisse",
       pages: 6,
       questions: 8,
     });
