@@ -43,6 +43,7 @@ export function SheetViewer({
         >
           <Logos />
           <h2 className="socle-sheet__title">{sheet.title}</h2>
+          {sheet.preamble}
           {sheet.intro && <p className="socle-sheet__intro">{sheet.intro}</p>}
           {sheet.body}
           {sheet.footer && (

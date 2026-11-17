@@ -3,10 +3,11 @@
 // la projection de l'éditeur (`projection-positive.mjs`, v10.2.1) :
 // - `issue-dap-avion-ou-bateau` et `issue-dap-avion-ou-bateau-urgence-attestee`,
 //   sans partie terrestre : titres et modus de la ligne régulière, ni cartes ni
-//   étapes (TS1014-J04), aucun badge terrestre, la ligne dite comme mode (R03) ;
+//   étapes (TS1014-J04), aucun badge terrestre, la ligne dite comme mode avant
+//   la raison (R03) ;
 // - `issue-dap-trajet-mixte`, avec une partie terrestre : les titres de la
-//   ligne régulière, sans cartes, puis la partie terrestre en texte, avec les
-//   étapes et les badges de son mode (R01).
+//   ligne régulière, sans cartes, la partie terrestre en texte après la
+//   raison, puis ses étapes à part, sans badge (R01, `rendu-resultats.mjs`).
 // Les textes sont ceux du catalogue, recopiés ici.
 
 import { render, screen, within } from "@testing-library/react";
@@ -40,6 +41,13 @@ const MIXTE = "issue-dap-trajet-mixte";
 const MODE_EN_LIGNE_REGULIERE =
   "Mode de transport : Avion ou bateau de ligne régulière";
 const BESOINS = "Besoins particuliers à signaler lors de la réservation";
+const RAISON = /^Votre déplacement est lié à une séance de dialyse/;
+
+// Vrai si `avant` précède `apres` dans la fiche.
+const precede = (avant: Element, apres: Element) =>
+  Boolean(
+    avant.compareDocumentPosition(apres) & Node.DOCUMENT_POSITION_FOLLOWING,
+  );
 
 const CARTES = [
   "Véhicule personnel ou transports en commun",
@@ -84,10 +92,16 @@ describe("la fiche de la seed issue-dap-avion-ou-bateau (sans urgence attestée)
     expect(fiche().queryByRole("heading", { name: /^\d\. / })).toBeNull();
   });
 
-  it("dit la ligne régulière comme mode, sans partie terrestre", async () => {
+  it("dit la ligne régulière comme mode, avant la raison, sans partie terrestre", async () => {
     await afficher(SANS_URGENCE);
-    expect(fiche().getByText(MODE_EN_LIGNE_REGULIERE)).toBeInTheDocument();
+    const mode = fiche().getByText(MODE_EN_LIGNE_REGULIERE);
+    expect(precede(mode, fiche().getByText(RAISON))).toBe(true);
     expect(fiche().queryByText(/^Partie terrestre/)).toBeNull();
+    expect(
+      fiche().queryByRole("region", {
+        name: "Pour la partie terrestre du trajet",
+      }),
+    ).toBeNull();
   });
 
   it("n'a aucun badge terrestre, ni la puce des besoins", async () => {
@@ -159,28 +173,41 @@ describe("la fiche de la seed issue-dap-trajet-mixte (avec une partie terrestre)
     expect(cartes()).toEqual([]);
   });
 
-  it("dit la ligne régulière comme mode, puis la partie terrestre", async () => {
+  it("dit la ligne régulière comme mode, la raison, puis la partie terrestre", async () => {
     await afficher(MIXTE);
-    expect(fiche().getByText(MODE_EN_LIGNE_REGULIERE)).toBeInTheDocument();
-    expect(
-      fiche().getByText("Partie terrestre : TAP non partagé"),
-    ).toBeInTheDocument();
+    const mode = fiche().getByText(MODE_EN_LIGNE_REGULIERE);
+    const raison = fiche().getByText(RAISON);
+    const terrestre = fiche().getByText("Partie terrestre : TAP non partagé");
+    expect(precede(mode, raison)).toBe(true);
+    expect(precede(raison, terrestre)).toBe(true);
   });
 
-  it("donne les étapes du mode terrestre", async () => {
+  it("donne les étapes du mode terrestre à part, avant les consignes de l'accord", async () => {
     await afficher(MIXTE);
-    expect(fiche().getAllByRole("heading", { name: /^\d\. / })).toHaveLength(2);
+    const partie = fiche().getByRole("region", {
+      name: "Pour la partie terrestre du trajet",
+    });
     expect(
-      fiche().getByText(/transport assis professionnalisé/),
+      within(partie).getAllByRole("heading", { name: /^\d\. / }),
+    ).toHaveLength(2);
+    expect(
+      within(partie).getByText(/transport assis professionnalisé/),
     ).toBeInTheDocument();
+    const accord = fiche().getByText(
+      "Attendez l’accord avant d’effectuer votre transport.",
+    );
+    expect(precede(partie, accord)).toBe(true);
+    expect(
+      within(accord.closest("section") as HTMLElement).queryByRole("heading", {
+        name: /^\d\. /,
+      }),
+    ).toBeNull();
   });
 
-  it("signale les besoins de la partie terrestre", async () => {
+  it("ne signale aucun besoin : l'éditeur n'a pas de badge en ligne régulière", async () => {
     await afficher(MIXTE);
-    const besoins = fiche().getByRole("list", { name: BESOINS });
-    expect(
-      within(besoins).getByText("Transport non partagé"),
-    ).toBeInTheDocument();
+    expect(fiche().queryByRole("list", { name: BESOINS })).toBeNull();
+    expect(fiche().queryByText(/besoins particuliers/)).toBeNull();
   });
 });
 

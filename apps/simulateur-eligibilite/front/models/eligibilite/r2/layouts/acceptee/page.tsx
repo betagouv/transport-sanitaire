@@ -21,6 +21,7 @@ export function pageAcceptee(
   if (!texte) return SANS_MODE;
   const page = pageDeLaFeuille(catalogue, texte.titreDuPrescripteur, {
     title: texte.titreDuPatient,
+    preamble: texte.modeDuTrajet && <p>{texte.modeDuTrajet}</p>,
     intro: texte.raison,
     body: <FichePositive texte={texte} />,
   });

@@ -71,12 +71,14 @@ export type FirstResult = {
 
 /**
  * La feuille à remettre au patient, que le socle pose sur une A4 sous les
- * logos : son titre, sa phrase d'introduction, puis son contenu. Son pied,
- * centré et en petit, la clôt : au bas de la page quand elle en tient une,
- * sous le dernier bloc sur deux.
+ * logos : son titre, son préambule, sa phrase d'introduction, puis son
+ * contenu. Son pied, centré et en petit, la clôt : au bas de la page quand
+ * elle en tient une, sous le dernier bloc sur deux.
  */
 export type Sheet = {
   title: string;
+  /** Ce qui se lit entre le titre et l'introduction, posé tel quel. */
+  preamble?: ReactNode;
   intro?: ReactNode;
   body: ReactNode;
   footer?: ReactNode;
