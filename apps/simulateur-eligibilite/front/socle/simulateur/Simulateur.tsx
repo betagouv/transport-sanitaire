@@ -16,6 +16,7 @@ import { Simulation } from "../../../core/socle/simulation";
 import {
   JourneyProvider,
   useAldResultReached,
+  useNewSimulation,
   useRecordTheJourney,
 } from "../analytics";
 import { useTextCounters } from "../cerfa";
@@ -64,7 +65,7 @@ export function Simulateur({
     simulation,
     onChange: setSimulation,
     DebugTrace,
-    onRestart: onNewSimulation,
+    onRestart: useNewSimulation(journey, onNewSimulation),
   };
   return (
     <JourneyProvider value={journey}>

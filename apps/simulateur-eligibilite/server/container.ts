@@ -65,7 +65,7 @@ export function createContainer({
   environment,
   build,
 }: Adapters): Container {
-  const collectAnEvent = new CollectAnEvent(journal, environment);
+  const collectAnEvent = new CollectAnEvent(journal, environment, build);
   return {
     referentiel,
     journalController: new JournalController(

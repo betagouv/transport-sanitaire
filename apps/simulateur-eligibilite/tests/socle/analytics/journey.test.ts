@@ -67,7 +67,8 @@ describe("le parcours d'une simulation", () => {
     expect([
       journey.start(),
       journey.selectIntent("eligibilite_seule"),
-    ]).toEqual([null, null]);
+      journey.close("new_simulation"),
+    ]).toEqual([null, null, null]);
   });
 
   it("une page validée qui reste dans sa phase ne la termine pas", () => {

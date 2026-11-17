@@ -32,6 +32,7 @@ describe("collecte d'un événement", () => {
       event: simulationStarted,
       receivedAt: expect.stringMatching(/^\d{4}-\d\d-\d\dT/),
       environment: "test",
+      commitSha: "f30aafe",
       schemaVersion: 3,
     });
   });
@@ -73,23 +74,15 @@ describe("collecte d'un événement", () => {
   });
 });
 
-describe("collecte de la provenance d'un événement", () => {
-  it("garde un événement d'un build sans commit connu", async () => {
-    const journal = await collecteSur();
-    const sansCommit = { ...simulationStarted, commit_sha: "inconnu" };
-
-    const { status } = await collecter(sansCommit);
-
-    expect(status).toBe(204);
-    expect((await journal.find("s-1:1"))?.event).toEqual(sansCommit);
-  });
-
+describe("collecte de l'enveloppe d'un événement", () => {
   it.each([
     ["sans version de l'app", { app_version: undefined }],
-    ["sans commit", { commit_sha: undefined }],
-    ["avec une version des règles qui n'en est pas une", { version: "v10" }],
+    ["sans version du modèle", { model_version: undefined }],
+    ["sous une autre version du contrat", { version: "10.2.1" }],
     ["avec une version de l'app qui n'en est pas une", { app_version: "0.8" }],
-    ["avec un commit qui n'en est pas un", { commit_sha: "main" }],
+    ["sans numéro", { sequence: undefined }],
+    ["sans origine", { activity_origin: undefined }],
+    ["d'une origine inconnue", { activity_origin: "robot" }],
   ])("refuse un événement %s", async (_, provenance) => {
     await collecteSur();
 

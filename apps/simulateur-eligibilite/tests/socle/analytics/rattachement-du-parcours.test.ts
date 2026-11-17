@@ -11,7 +11,7 @@ function demarrer(rattachement: RattachementSaisi | null) {
   analytics.startASimulation.execute({
     rattachement,
     seeded: false,
-    version: "10.1.8",
+    modelVersion: "10.2.1",
   });
   return envoyes[0];
 }

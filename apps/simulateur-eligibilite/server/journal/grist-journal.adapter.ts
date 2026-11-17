@@ -5,7 +5,9 @@
 // le contrat gagne un champ.
 //
 // L'établissement et le service ont chacun leur colonne, en JSON brut, qui
-// s'exploite sans ouvrir `payload` : `{"id":"12"}` (ADR-0053).
+// s'exploite sans ouvrir `payload` : `{"id":"12"}` (ADR-0053). Le commit du
+// serveur qui a reçu l'événement a la sienne, `commit_sha` : le contrat ne le
+// porte pas (ADR-0050).
 
 import type { RattachementDuParcours } from "../../shared/analytics/analytics-event.ts";
 import type { GristApiClient, GristRow } from "../grist/grist-api.client.ts";
@@ -56,6 +58,7 @@ function rowOf({
   event,
   receivedAt,
   environment,
+  commitSha,
   schemaVersion,
 }: JournalEntry) {
   return {
@@ -66,6 +69,7 @@ function rowOf({
     occurred_at: event.occurred_at,
     received_at: receivedAt,
     environment,
+    commit_sha: commitSha,
     schema_version: schemaVersion,
     is_test: event.is_test ?? null,
     ...rattachementOf(event),
@@ -96,6 +100,7 @@ function entryOf({ fields }: GristRow): JournalEntry {
     JSON.parse(String(fields.payload)),
     String(fields.received_at),
     String(fields.environment),
+    String(fields.commit_sha),
     Number(fields.schema_version),
   );
 }

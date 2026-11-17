@@ -16,6 +16,13 @@
  */
 export const SCHEMA_VERSION = 3;
 
+/**
+ * La version du contrat de parcours et de mesure que l'app respecte, celle du
+ * schéma de l'éditeur (`analytics/schema-evenement.json`). Le modèle a la
+ * sienne, `model_version`, et le build la sienne, `app_version` (ADR-0050).
+ */
+export const CONTRACT_VERSION = "10.2.2";
+
 export const EVENT_TYPES = [
   "simulation_started",
   "intent_selected",
@@ -99,7 +106,16 @@ export type ButtonId = (typeof BUTTON_IDS)[number];
 /** D'où vient une activité : du prescripteur, de l'app seule, ou d'un rejeu. */
 export const ACTIVITY_ORIGINS = ["user", "background", "replay"] as const;
 
-type ActivityOrigin = (typeof ACTIVITY_ORIGINS)[number];
+export type ActivityOrigin = (typeof ACTIVITY_ORIGINS)[number];
+
+/** Pourquoi une simulation se ferme : l'inactivité, une nouvelle simulation, ou sa fin. */
+export const CLOSURE_REASONS = [
+  "inactivity",
+  "new_simulation",
+  "explicit_end",
+] as const;
+
+export type ClosureReason = (typeof CLOSURE_REASONS)[number];
 
 /**
  * La taille réellement imprimée d'un champ rempli du document R3, en points
@@ -120,10 +136,17 @@ export type AnalyticsIntent = (typeof INTENTS)[number];
 export type AnalyticsEvent = {
   event_id: string;
   simulation_id: string;
-  sequence?: number;
+  /** Le rang de l'événement dans sa simulation, strictement croissant. */
+  sequence: number;
   occurred_at: string;
+  /** La version du contrat, `CONTRACT_VERSION` (ADR-0050). */
+  version: typeof CONTRACT_VERSION;
   /** La version des règles du modèle, celle de `rules/VERSION` (ADR-0050). */
-  version: string;
+  model_version: string;
+  /** La version de l'app, celle de `package.json` (ADR-0050). */
+  app_version: string;
+  /** Le prescripteur, ou l'app seule : seul le premier fait vivre la simulation. */
+  activity_origin: ActivityOrigin;
   type: EventType;
   screen?: Screen;
   revision?: string;
@@ -151,14 +174,9 @@ export type AnalyticsEvent = {
   button_id?: ButtonId;
   /** Ce que le bouton montre : la version de la fiche, ou celle du document. */
   artifact_id?: string;
-  activity_origin?: ActivityOrigin;
-  // Nos compléments.
-  service_id?: string;
   boundary?: Boundary;
-  /** La version de l'app, celle de `package.json` (ADR-0050). */
-  app_version: string;
-  /** Le commit déployé, sur 7 caractères, ou `inconnu` (ADR-0050). */
-  commit_sha: string;
+  closure_reason?: ClosureReason;
+  service_id?: string;
 };
 
 /**
@@ -171,17 +189,23 @@ export type RattachementDuParcours = Pick<
 >;
 
 /**
- * D'où vient un parcours, sur chacun de ses événements : l'app qui le produit,
- * ses règles, sa version, son commit (ADR-0050), et son rattachement (ADR-0053).
+ * D'où vient un parcours, sur chacun de ses événements : la version de son
+ * modèle et celle de l'app (ADR-0050), et son rattachement (ADR-0053).
  */
-export type Provenance = Pick<
-  AnalyticsEvent,
-  "version" | "app_version" | "commit_sha"
-> &
+export type Provenance = Pick<AnalyticsEvent, "model_version" | "app_version"> &
   RattachementDuParcours;
 
-/** Ce qu'un événement dit de lui-même : le parcours le numérote, le date, et dit sa provenance. */
+/**
+ * Ce qu'un événement dit de lui-même : le parcours le numérote, le date, dit
+ * le contrat, sa provenance et son origine.
+ */
 export type EventDetails = Omit<
   AnalyticsEvent,
-  "event_id" | "simulation_id" | "sequence" | "occurred_at" | keyof Provenance
+  | "event_id"
+  | "simulation_id"
+  | "sequence"
+  | "occurred_at"
+  | "version"
+  | "activity_origin"
+  | keyof Provenance
 >;
