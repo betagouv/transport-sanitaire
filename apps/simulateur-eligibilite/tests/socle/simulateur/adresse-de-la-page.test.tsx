@@ -32,12 +32,15 @@ beforeEach(() => {
   mesure = audienceDeTest();
 });
 
-// Le thé choisi : la page des accompagnements, au rang 2.
+// Le thé choisi : la page des accompagnements, au rang 2. L'adresse s'inscrit
+// dans l'historique après l'affichage de la page : on l'attend, sinon un retour
+// du navigateur peut partir avant elle.
 async function choisirUnThe() {
   const user = await ouvrirLeSimulateur({ analytics: mesure.analytics });
   await question(BOISSON);
   await user.click(radio("Un thé"));
   await question(ACCOMPAGNEMENTS);
+  await waitFor(() => expect(adresse()).toBe("#/etape/2"));
   return user;
 }
 
