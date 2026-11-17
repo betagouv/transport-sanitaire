@@ -338,6 +338,13 @@ l'exposition et les clics d'« Imprimer » et de « Télécharger » sur la fich
 _Chez l'éditeur_: « identité de rendu » de la fiche, `artifact_id` (ANA22-02).
 _Avoid_: document, réservé au cerfa de R3.
 
+**Limite de phase**:
+La première ou la dernière page d'une phase, au moment où le prescripteur la
+voit. La dernière se lit d'après les réponses validées : une réponse peut en
+ouvrir une autre, qui devient à son tour la dernière (#497).
+_Chez l'éditeur_: `phase_boundary_displayed`, `boundary` (`first`, `last`).
+_Avoid_: jalon, l'ancien complément `milestones`.
+
 **Exposition**:
 Un bouton ou une question offert au prescripteur. Une question l'est une fois
 par affichage de page. Un bouton l'est tant qu'il reste à sa place : une
