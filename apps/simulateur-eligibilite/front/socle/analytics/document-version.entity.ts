@@ -17,8 +17,8 @@ export type DocumentContent = {
 };
 
 /**
- * La taille de chaque texte imprimé, en points, par clé du DTO, et les clés
- * des textes imprimés dont la taille ne s'est pas lue (ADR-0048).
+ * La taille de chaque texte imprimé, en points, par identifiant fermé, et les
+ * identifiants des textes imprimés dont la taille ne s'est pas lue (ADR-0048).
  */
 export type Typography = {
   readonly sizes: Readonly<Record<string, number>>;

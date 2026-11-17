@@ -86,4 +86,25 @@ describe("journal dans Grist", () => {
 
     expect(colonnes(grist.tables.Evenements)).toEqual([[null, null]]);
   });
+
+  it("retrouve la mesure d'un document de la simulation, et seulement elle", async () => {
+    grist = await demarrerGrist({});
+    const journal = new GristJournal(
+      new GristApiClient({ docUrl: grist.docUrl, cleApi: "test" }),
+    );
+    const mesure = (eventId: string, documentId: string) =>
+      recu({
+        event_id: eventId,
+        type: "document_typography_measured",
+        document_id: documentId,
+      });
+    await journal.append(recu({ event_id: "s-1:2", document_id: "d1" }));
+    await journal.append(mesure("s-1:3", "d1"));
+    await journal.append(mesure("s-1:4", "d2"));
+
+    expect(await journal.findMeasurement("s-1", "d2")).toEqual(
+      mesure("s-1:4", "d2"),
+    );
+    expect(await journal.findMeasurement("s-2", "d1")).toBeUndefined();
+  });
 });

@@ -47,6 +47,21 @@ longueur de texte ne part.
 
 ## Mises à jour
 
+> **Mise à jour 2026-11-17, la taille des champs sous leur identifiant fermé (#508).**
+> Le contrat v10.2.2 (ANA22-03) **révise** les points 2 et 4. Un champ se nomme
+> par un identifiant de la liste fermée de l'éditeur, `<support>.<champ>`
+> (`shared/analytics/typographic-fields.ts`), que chaque cerfa du modèle donne à
+> ses textes : la structure et l'autre adresse d'une extrémité sont un seul
+> champ, `*_adresse_native`, à la plus petite taille. `expected_field_ids` nomme
+> les champs remplis, `field_measurements` la taille de ceux qui se sont
+> mesurés : `status`, `fields` et `unmeasured_field_ids` disparaissent. La mesure
+> porte aussi `document_revision`, qui vaut `document_id` en attendant la
+> révision du document (#497), et ne part que pour un document d'un support
+> connu. Le collecteur refuse un champ hors liste, d'un autre support, en double,
+> ou mesuré sans être attendu. Un `document_id` n'a qu'une mesure : la même,
+> rejouée sous un autre `event_id`, est ignorée, une autre est mise à part comme
+> une collision.
+
 > **Mise à jour 2026-11-13, la taille des champs du document R3 (#389).** Le journal
 > reçoit, pour chaque version du document R3, la taille réellement imprimée de
 > chaque champ rempli, sous la clé du champ dans le DTO, jamais son texte. Une

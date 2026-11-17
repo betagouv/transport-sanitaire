@@ -12,6 +12,15 @@ export class MemoryJournal implements Journal {
     return this.#entries.get(eventId);
   }
 
+  async findMeasurement(
+    simulationId: string,
+    documentId: string,
+  ): Promise<JournalEntry | NotInTheJournal> {
+    return [...this.#entries.values()].find((entry) =>
+      entry.measures(simulationId, documentId),
+    );
+  }
+
   async append(entry: JournalEntry): Promise<void> {
     this.#entries.set(entry.eventId, entry);
   }
