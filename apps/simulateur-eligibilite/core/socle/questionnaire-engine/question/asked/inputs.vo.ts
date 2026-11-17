@@ -6,6 +6,7 @@ import {
   type AnswerProblem,
   MISSING,
   type NoError,
+  stated,
 } from "./answer-problem.vo.ts";
 import { AskedCommon, type AskedCommonData } from "./common.vo.ts";
 
@@ -48,21 +49,27 @@ export class AskedNumber extends AskedCommon {
 
 export type AskedTextData = AskedCommonData & {
   readonly kind: "text" | "long text";
+  readonly missingMessage?: string;
 };
 
-/** Un texte, sur une ligne ou sur plusieurs. */
+/**
+ * Un texte, sur une ligne ou sur plusieurs. Une saisie blanche manque : elle
+ * se dit avec la phrase de l'éditeur, s'il en a une.
+ */
 export class AskedText extends AskedCommon {
   readonly kind: "text" | "long text";
+  readonly #missing: AnswerProblem;
 
   constructor(data: AskedTextData) {
     super(data);
     this.kind = data.kind;
+    this.#missing = data.missingMessage ? stated(data.missingMessage) : MISSING;
   }
 
   protected override formatProblemOf(answer: Answer) {
     return typeof answer === "string" && answer.trim() !== ""
       ? undefined
-      : MISSING;
+      : this.#missing;
   }
 }
 
