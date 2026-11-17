@@ -26,9 +26,7 @@ export type StrictEntry = {
   readonly place: StrictPlace;
 };
 
-export type StrictPlace =
-  | { readonly field: string }
-  | { readonly width: number };
+type StrictPlace = { readonly field: string } | { readonly width: number };
 
 /** Les textes stricts du cerfa : ceux de ses champs, puis ses dessins. */
 export function strictEntriesOf(cerfa: Cerfa<CerfaDto>): StrictEntry[] {

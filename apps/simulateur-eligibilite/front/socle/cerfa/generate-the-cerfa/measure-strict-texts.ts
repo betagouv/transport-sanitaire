@@ -30,10 +30,23 @@ export async function measureStrictTexts(
 }
 
 /**
- * La mesure de chaque texte strict, par entrée : dans son champ de `document`,
- * ou sur une ligne de sa place dessinée.
+ * La mesure des textes stricts dessinés de `entries` : sans champ, Helvetica
+ * suffit, sans gabarit.
  */
-export function measurersOf(
+export async function lineMeasurersOf(
+  entries: readonly StrictEntry[],
+): Promise<Map<string, StrictMeasurer>> {
+  const document = await PDFDocument.create();
+  const font = await document.embedFont(StandardFonts.Helvetica);
+  const drawn = entries.filter(({ place }) => "width" in place);
+  return measurersOf(document, font, drawn);
+}
+
+// ---- implémentation ----
+
+// La mesure de chaque texte strict, par entrée : dans son champ de `document`,
+// ou sur une ligne de sa place dessinée.
+function measurersOf(
   document: PDFDocument,
   font: PDFFont,
   entries: readonly StrictEntry[],
@@ -48,17 +61,4 @@ export function measurersOf(
       return [entry, measurer];
     }),
   );
-}
-
-/**
- * La mesure des textes stricts dessinés de `entries` : sans champ, Helvetica
- * suffit, sans gabarit.
- */
-export async function lineMeasurersOf(
-  entries: readonly StrictEntry[],
-): Promise<Map<string, StrictMeasurer>> {
-  const document = await PDFDocument.create();
-  const font = await document.embedFont(StandardFonts.Helvetica);
-  const drawn = entries.filter(({ place }) => "width" in place);
-  return measurersOf(document, font, drawn);
 }
