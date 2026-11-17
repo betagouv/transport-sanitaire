@@ -1,5 +1,6 @@
-// La taille des textes imprimés du document R3 (ADR-0048) : une mesure par
-// version, liée à ses impressions par la version, sans aucun texte.
+// La taille des textes imprimés du document R3 (ADR-0048, ANA22-03) : une
+// mesure par version, sous les identifiants fermés de son support, liée à ses
+// impressions par la version, sans aucun texte.
 
 import { describe, expect, it } from "vitest";
 import type { Typography } from "../../../front/socle/analytics/document-version.entity";
@@ -7,32 +8,39 @@ import { Journey } from "../../../front/socle/analytics/journey.entity";
 import type { AnalyticsEvent } from "../../../shared/analytics/analytics-event";
 import { PROVENANCE } from "./journal-de-test";
 
-// Le R2 affiché : ses codes, sans motif.
-const unR2 = {
+// Le R2 affiché d'une PMT : ses codes, sans motif.
+const unR2 = (support: string | null = "S3138g") => ({
   canComplete: true,
   codes: {
     issue: "ISSUE_PMT",
     mode: null,
-    transportComposition: "unknown",
+    transportComposition: "unknown" as const,
     reasonCodes: [],
-    support: "S3138g",
+    support,
     financeur: null,
   },
   motifs: [],
-} as const;
+});
 
-// Un bon de commande : la quantité à 9 pt, l'adresse rapetissée à 7,5 pt.
-const LU: Typography = { sizes: { quantite: 9, adresse: 7.5 }, unmeasured: [] };
+// Une PMT : le nombre de transports à 9 pt, l'adresse d'arrivée rapetissée à
+// 7,5 pt.
+const LU: Typography = {
+  sizes: { "S3138g.nombre": 9, "S3138g.arrivee_adresse_native": 7.5 },
+  unmeasured: [],
+};
 
 const unDocument = (typography = LU) => ({
-  file: "bon-de-commande-2026-11-13.pdf",
-  dto: { fields: { quantite: "2", adresse: "1 rue des Lilas" }, drawings: {} },
+  file: "prescription-medicale-de-transport-2026-11-17.pdf",
+  dto: {
+    fields: { nombre: "2", arrivee_structure: "Centre de dialyse, Lyon" },
+    drawings: {},
+  },
   typography,
 });
 
 // Le R3 ouvert, son document prêt.
-function afficherLeR3(journey: Journey, document = unDocument()) {
-  journey.displayResult(unR2);
+function afficherLeR3(journey: Journey, document = unDocument(), r2 = unR2()) {
+  journey.displayResult(r2);
   journey.openAResultScreen("R3");
   return journey.displayDocument(document);
 }
@@ -41,7 +49,7 @@ const mesures = (events: AnalyticsEvent[]) =>
   events.filter(({ type }) => type === "document_typography_measured");
 
 describe("la taille des textes du document R3", () => {
-  it("une version imprimée deux fois : une mesure, à 7,5 pt au plus petit, et deux champs", () => {
+  it("une version imprimée deux fois : une mesure, sous les identifiants de son support", () => {
     const journey = new Journey({ seeded: false, provenance: PROVENANCE });
     const affiche = afficherLeR3(journey);
     const imprimer = journey.exposeButtons(["document_print"]).exposures
@@ -53,43 +61,76 @@ describe("la taille des textes du document R3", () => {
       ...journey.press(imprimer, "requested"),
     ];
 
-    const [mesure, ...autres] = mesures(affiche);
-    expect(autres).toEqual([]);
-    expect(mesure).toMatchObject({
-      screen: "R3",
-      document_id: "d1",
-      revision: "r1",
-      support: "S3138g",
-      status: "complete",
-      fields: [
-        { field_id: "quantite", font_size_pt: 9 },
-        { field_id: "adresse", font_size_pt: 7.5 },
-      ],
-      unmeasured_field_ids: [],
-    });
-    const tailles = mesure?.fields?.map(({ font_size_pt }) => font_size_pt);
-    expect(Math.min(...(tailles ?? []))).toBe(7.5);
+    expect(mesures(affiche)).toEqual([
+      expect.objectContaining({
+        screen: "R3",
+        revision: "r1",
+        document_revision: "d1",
+        document_id: "d1",
+        support: "S3138g",
+        expected_field_ids: ["S3138g.nombre", "S3138g.arrivee_adresse_native"],
+        field_measurements: [
+          { field_id: "S3138g.nombre", font_size_pt: 9 },
+          { field_id: "S3138g.arrivee_adresse_native", font_size_pt: 7.5 },
+        ],
+      }),
+    ]);
+    expect(mesures(affiche)[0]).not.toHaveProperty("status");
     expect(impressions.map(({ document_id }) => document_id)).toEqual([
       "d1",
       "d1",
     ]);
   });
 
-  it("une mesure partielle le dit, et nomme le champ sans taille", () => {
+  it("part avec l'affichage de la version, avant tout clic", () => {
+    const journey = new Journey({ seeded: false, provenance: PROVENANCE });
+
+    const types = afficherLeR3(journey).map(({ type }) => type);
+
+    expect(types).toEqual([
+      "document_displayed",
+      "document_typography_measured",
+    ]);
+  });
+
+  it("une mesure partielle attend le champ sans taille, sans le mesurer", () => {
     const journey = new Journey({ seeded: false, provenance: PROVENANCE });
 
     const [mesure] = mesures(
       afficherLeR3(
         journey,
-        unDocument({ sizes: { quantite: 9 }, unmeasured: ["adresse"] }),
+        unDocument({
+          sizes: { "S3138g.nombre": 9 },
+          unmeasured: ["S3138g.arrivee_adresse_native"],
+        }),
       ),
     );
 
     expect(mesure).toMatchObject({
-      status: "partial",
-      fields: [{ field_id: "quantite", font_size_pt: 9 }],
-      unmeasured_field_ids: ["adresse"],
+      expected_field_ids: ["S3138g.nombre", "S3138g.arrivee_adresse_native"],
+      field_measurements: [{ field_id: "S3138g.nombre", font_size_pt: 9 }],
     });
+  });
+
+  it("un document sans champ rempli part, sans champ attendu ni mesuré", () => {
+    const journey = new Journey({ seeded: false, provenance: PROVENANCE });
+
+    const [mesure] = mesures(
+      afficherLeR3(journey, unDocument({ sizes: {}, unmeasured: [] })),
+    );
+
+    expect(mesure).toMatchObject({
+      expected_field_ids: [],
+      field_measurements: [],
+    });
+  });
+
+  it("sans support de document, la mesure ne part pas", () => {
+    const journey = new Journey({ seeded: false, provenance: PROVENANCE });
+
+    const affiche = afficherLeR3(journey, unDocument(), unR2(null));
+
+    expect(mesures(affiche)).toEqual([]);
   });
 
   it("le même DTO imprimé autrement ouvre une nouvelle version, et sa mesure", () => {
@@ -98,15 +139,19 @@ describe("la taille des textes du document R3", () => {
 
     const [mesure] = mesures(
       journey.displayDocument(
-        unDocument({ sizes: { quantite: 9, adresse: 7 }, unmeasured: [] }),
+        unDocument({
+          sizes: { "S3138g.nombre": 9, "S3138g.arrivee_adresse_native": 7 },
+          unmeasured: [],
+        }),
       ),
     );
 
     expect(mesure).toMatchObject({
+      document_revision: "d2",
       document_id: "d2",
-      fields: [
-        { field_id: "quantite", font_size_pt: 9 },
-        { field_id: "adresse", font_size_pt: 7 },
+      field_measurements: [
+        { field_id: "S3138g.nombre", font_size_pt: 9 },
+        { field_id: "S3138g.arrivee_adresse_native", font_size_pt: 7 },
       ],
     });
   });
@@ -118,11 +163,13 @@ describe("la taille des textes du document R3", () => {
     expect(journey.displayDocument(unDocument())).toEqual([]);
   });
 
-  it("la mesure ne porte aucun texte du document", () => {
+  it("la mesure ne porte ni texte ni longueur de texte du document", () => {
     const journey = new Journey({ seeded: false, provenance: PROVENANCE });
 
     const [mesure] = mesures(afficherLeR3(journey));
 
-    expect(JSON.stringify(mesure)).not.toContain("Lilas");
+    expect(JSON.stringify(mesure)).not.toContain("dialyse");
+    for (const champ of mesure?.field_measurements ?? [])
+      expect(Object.keys(champ)).toEqual(["field_id", "font_size_pt"]);
   });
 });

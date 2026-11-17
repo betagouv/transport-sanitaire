@@ -25,6 +25,19 @@ export class GristJournal implements Journal {
     return row && entryOf(row);
   }
 
+  async findMeasurement(
+    simulationId: string,
+    documentId: string,
+  ): Promise<JournalEntry | NotInTheJournal> {
+    const rows = await this.#grist.rows(EVENTS, {
+      simulation_id: [simulationId],
+      type: [MEASUREMENT],
+    });
+    return rows
+      .map(entryOf)
+      .find((entry) => entry.measures(simulationId, documentId));
+  }
+
   async append(entry: JournalEntry): Promise<void> {
     await this.#grist.addRow(EVENTS, rowOf(entry));
   }
@@ -38,6 +51,7 @@ export class GristJournal implements Journal {
 
 const EVENTS = "Evenements";
 const COLLISIONS = "Collisions";
+const MEASUREMENT = "document_typography_measured";
 
 function rowOf({
   event,

@@ -3,13 +3,15 @@
 // quand une modification de P1 ou de P2 la rend caduque. Ce qu'elle dit au
 // journal ne vient que des sorties calculées (ADR-0045). Les documents qui en
 // viennent portent son support, sa composition du transport et son mode
-// (ADR-0046, ANA22-04), puis la taille de leurs textes imprimés (ADR-0048).
+// (ADR-0046, ANA22-04), puis la taille de leurs textes imprimés (ADR-0048,
+// ANA22-03).
 
 import type {
   AnalyticsEvent,
   Mode,
   TransportComposition,
 } from "../../../shared/analytics/analytics-event";
+import { isDocumentSupport } from "../../../shared/analytics/typographic-fields";
 import type { Typography } from "./document-version.entity";
 
 /** Ce que le prescripteur a vu au premier résultat. */
@@ -61,13 +63,13 @@ type DocumentEvent = Pick<
   | "type"
   | "screen"
   | "revision"
+  | "document_revision"
   | "document_id"
   | "support"
   | "transport_composition"
   | "mode"
-  | "status"
-  | "fields"
-  | "unmeasured_field_ids"
+  | "expected_field_ids"
+  | "field_measurements"
 >;
 
 export class Revision {
@@ -124,27 +126,34 @@ export class Revision {
   }
 
   /**
-   * La taille des textes imprimés d'une version de son document : complète si
-   * chacun en a une, partielle sinon (ADR-0048).
+   * La taille des textes imprimés d'une version de son document, sous les
+   * identifiants fermés de son support : les champs remplis sont attendus,
+   * ceux dont la taille s'est lue sont mesurés (ADR-0048). Sans support de
+   * document, elle ne part pas : ses identifiants n'auraient pas de préfixe.
+   * La révision du document vaut sa version, tant qu'une modification de P3
+   * en ouvre une nouvelle.
    */
   typographyMeasured(
     documentId: string,
     { sizes, unmeasured }: Typography,
-  ): DocumentEvent {
-    const codes = this.#shown.codes;
-    return {
-      type: "document_typography_measured",
-      screen: "R3",
-      revision: this.id,
-      document_id: documentId,
-      ...(codes?.support != null && { support: codes.support }),
-      status: unmeasured.length === 0 ? "complete" : "partial",
-      fields: Object.entries(sizes).map(([field_id, font_size_pt]) => ({
-        field_id,
-        font_size_pt,
-      })),
-      unmeasured_field_ids: [...unmeasured],
-    };
+  ): DocumentEvent[] {
+    const support = this.#shown.codes?.support;
+    if (!isDocumentSupport(support)) return [];
+    const measurements = Object.entries(sizes).map(
+      ([field_id, font_size_pt]) => ({ field_id, font_size_pt }),
+    );
+    return [
+      {
+        type: "document_typography_measured",
+        screen: "R3",
+        revision: this.id,
+        document_revision: documentId,
+        document_id: documentId,
+        support,
+        expected_field_ids: [...Object.keys(sizes), ...unmeasured],
+        field_measurements: measurements,
+      },
+    ];
   }
 
   /** Une génération ratée de son document. */

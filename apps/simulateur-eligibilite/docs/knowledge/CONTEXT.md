@@ -293,8 +293,9 @@ _Avoid_: révision, réservé au premier résultat.
 **Taille imprimée**:
 La taille, en points, où un champ rempli du document R3 s'imprime vraiment,
 après le rapetissement qui le fait tenir. Un texte porté par plusieurs volets
-garde la plus petite. Le journal des parcours la reçoit par version, sous la clé
-du champ dans le DTO, sans son texte (#389).
+garde la plus petite. Le journal des parcours la reçoit par version, sous
+l'identifiant fermé du champ, `<support>.<champ>`, sans son texte (#389, #508).
+Les deux parties d'une adresse de départ ou d'arrivée y sont un seul champ.
 _Chez l'éditeur_: « mesure typographique », `font_size_pt`.
 _Avoid_: taille de police, qui dit la taille de départ.
 

@@ -10,6 +10,11 @@ export type NotInTheJournal = undefined;
 
 export interface Journal {
   find(eventId: string): Promise<JournalEntry | NotInTheJournal>;
+  /** La taille des champs d'un document de la simulation (ANA22-03). */
+  findMeasurement(
+    simulationId: string,
+    documentId: string,
+  ): Promise<JournalEntry | NotInTheJournal>;
   append(entry: JournalEntry): Promise<void>;
   /** Garde à part une entrée qui reprend l'`event_id` d'une autre. */
   setAside(collision: JournalEntry): Promise<void>;

@@ -74,8 +74,50 @@ export class JournalEntry {
     return this.event.event_id;
   }
 
-  /** Vrai si l'autre entrée porte le même événement : c'est un renvoi. */
-  repeats(other: JournalEntry): boolean {
-    return isDeepStrictEqual(this.event, other.event);
+  /** Vrai si elle porte la taille des champs de ce document (ANA22-03). */
+  measures(simulationId: string, documentId: string): boolean {
+    const { event } = this;
+    return (
+      event.type === MEASUREMENT &&
+      event.simulation_id === simulationId &&
+      event.document_id === documentId
+    );
   }
+
+  /**
+   * Vrai si l'autre entrée porte le même événement : c'est un renvoi. Une
+   * mesure l'est aussi quand elle redit celle du même document, sous un autre
+   * `event_id` : son contenu ne change pas (ANA22-03).
+   */
+  repeats(other: JournalEntry): boolean {
+    const measure = measureOf(this.event);
+    return (
+      isDeepStrictEqual(this.event, other.event) ||
+      (measure !== undefined &&
+        isDeepStrictEqual(measure, measureOf(other.event)))
+    );
+  }
+}
+
+// ---- implémentation ----
+
+const MEASUREMENT = "document_typography_measured";
+
+/** L'entrée ne porte pas de mesure. */
+type NoMeasure = undefined;
+
+/** Une mesure, sans ce qui date ou numérote son envoi. */
+type Measure = Omit<AnalyticsEvent, "event_id" | "sequence" | "occurred_at">;
+
+// Ce qu'une mesure dit de son document : deux envois de la même mesure ne
+// diffèrent que par leur identifiant, leur rang et leur date.
+function measureOf(event: JournalEntry["event"]): Measure | NoMeasure {
+  if (event.type !== MEASUREMENT) return undefined;
+  const {
+    event_id: _id,
+    sequence: _rank,
+    occurred_at: _at,
+    ...measure
+  } = event;
+  return measure;
 }

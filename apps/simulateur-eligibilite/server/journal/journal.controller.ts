@@ -59,7 +59,7 @@ export class JournalController {
 // est une erreur du client, qu'il ne réessaie pas.
 function respond(res: Response, collected: Collected) {
   if (collected === "collision") {
-    console.warn("[simulateur] journal : même event_id, autre contenu");
+    console.warn("[simulateur] journal : même identité, autre contenu");
     res.status(409).json({ error: "identifiant déjà pris" });
     return;
   }
