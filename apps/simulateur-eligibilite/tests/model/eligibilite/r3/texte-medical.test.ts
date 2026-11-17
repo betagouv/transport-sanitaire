@@ -43,35 +43,26 @@ const HEBERGEMENT_DISTINCT: Reponses = {
 };
 
 describe("le texte médical", () => {
-  it("donne le soin, sans point quand la précision le suit", () => {
-    expect(texte(PMT)).toEqual({
-      elements_medicaux: SEANCE,
-      elements_medicaux_precision: "Dialyse.",
-    });
+  it("donne le soin, puis la précision, et finit par un point", () => {
+    expect(texte(PMT)).toEqual({ elements_medicaux: `${SEANCE} ; Dialyse.` });
   });
 
   it("finit par un point quand il n'a pas de précision", () => {
     const { "Q3.4": _, ...sansPrecision } = PMT;
 
-    expect(texte(sansPrecision)).toEqual({
-      elements_medicaux: `${SEANCE}.`,
-      elements_medicaux_precision: undefined,
-    });
+    expect(texte(sansPrecision)).toEqual({ elements_medicaux: `${SEANCE}.` });
   });
 
   it("garde la casse de la précision, et normalise ses espaces", () => {
     const reponses = { ...PMT, "Q3.4": "  Centre de\n dialyse  Necker. " };
 
-    expect(texte(reponses).elements_medicaux_precision).toBe(
-      "Centre de dialyse Necker.",
+    expect(texte(reponses).elements_medicaux).toBe(
+      `${SEANCE} ; Centre de dialyse Necker.`,
     );
   });
 
   it("ne donne rien quand aucun segment n'est établi", () => {
-    expect(texte({})).toEqual({
-      elements_medicaux: undefined,
-      elements_medicaux_precision: undefined,
-    });
+    expect(texte({})).toEqual({ elements_medicaux: undefined });
   });
 });
 
@@ -105,7 +96,7 @@ describe("l'autonomie et le mode", () => {
   it("n'écrit pas l'équipement bariatrique", () => {
     const cibles = { cible_ambulance_equipement_bariatrique: true };
 
-    expect(texte(PMT, cibles).elements_medicaux).toBe(SEANCE);
+    expect(texte(PMT, cibles).elements_medicaux).toBe(`${SEANCE} ; Dialyse.`);
   });
 });
 
@@ -149,7 +140,7 @@ describe("les compléments", () => {
     };
 
     expect(texte(reponses).elements_medicaux).toMatch(
-      / ; justification médicale du lieu de soins éloigné : Seul le CHU \(centre hospitalier universitaire\) de Lyon$/,
+      / ; justification médicale du lieu de soins éloigné : Seul le CHU \(centre hospitalier universitaire\) de Lyon(?: ; [^;]*)?\.$/,
     );
   });
 
@@ -248,11 +239,9 @@ describe("le texte médical de chaque seed qui ouvre la PMT ou la DAP", () => {
   ).map(({ id }) => id);
 
   it.each(seeds)("%s : ni crochet, ni accolade, ni nom de règle", (id) => {
-    const { elements_medicaux, elements_medicaux_precision } = texte(
-      avecLaP3DeLaPmt(id),
-    );
+    const { elements_medicaux } = texte(avecLaP3DeLaPmt(id));
 
-    expect(`${elements_medicaux} ${elements_medicaux_precision}`).not.toMatch(
+    expect(`${elements_medicaux}`).not.toMatch(
       /[[\]{}]|cible_|fait_|ISSUE_|null|NaN/,
     );
   });
@@ -268,8 +257,6 @@ function texte(
   const context = donnees(reponses, cibles, undefined, faits);
   return {
     elements_medicaux: TEXTE_MEDICAL.elements_medicaux.in(context),
-    elements_medicaux_precision:
-      TEXTE_MEDICAL.elements_medicaux_precision.in(context),
   };
 }
 

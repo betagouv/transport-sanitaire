@@ -3,13 +3,16 @@ import {
   at,
   box,
   type Cerfa,
-  commentOn,
   date,
   drawnBox,
   onOneLine,
+  strictText,
   text,
 } from "../../../front/socle/cerfa/cerfa";
-import { generateCerfa } from "../../../front/socle/cerfa/generate-the-cerfa/generate-the-cerfa";
+import {
+  generateCerfa,
+  PREVIEW_MARK,
+} from "../../../front/socle/cerfa/generate-the-cerfa/generate-the-cerfa";
 import { fileNameOf } from "../../../front/socle/cerfa/pdf/download-a-pdf";
 import { drawnOn, markedStates, textsOn } from "./pdf-aplati";
 import { statesOf, testForm } from "./test-form";
@@ -22,7 +25,6 @@ type Fiche = {
   fields: {
     nom?: string;
     motif?: string;
-    precisions?: string;
     en_ald?: boolean;
     avec_lait?: boolean;
     avec_sucre?: boolean;
@@ -41,8 +43,7 @@ async function fiche(): Promise<Cerfa<Fiche>> {
     fileName: "fiche",
     fields: {
       nom: text("nom"),
-      motif: text("motif"),
-      precisions: commentOn("motif"),
+      motif: strictText("motif", "Motif"),
       en_ald: box("ald", ald ?? ""),
       avec_lait: drawnBox("acc", "lait"),
       avec_sucre: drawnBox("acc", "sucre"),
@@ -59,10 +60,10 @@ async function fiche(): Promise<Cerfa<Fiche>> {
   };
 }
 
+const pdfDe = async (pdf: Blob) => new Uint8Array(await pdf.arrayBuffer());
+
 const generer = async (dto: Fiche) =>
-  new Uint8Array(
-    await (await generateCerfa(await fiche(), dto)).pdf.arrayBuffer(),
-  );
+  pdfDe((await generateCerfa(await fiche(), dto)).pdf);
 
 const LONG = "Un motif médical beaucoup trop long pour ce cadre. ".repeat(4);
 
@@ -167,22 +168,47 @@ describe("générer un cerfa", () => {
     expect(lignes.map((ligne) => ligne.trim()).join(" ")).toBe(consigne.trim());
   });
 
-  it("écrit le commentaire à la suite du texte qu'il suit", async () => {
-    const pdf = await generer({
-      fields: { motif: "Dialyse.", precisions: "Fauteuil." },
+  it("écrit un texte strict qui tient, sans marque d'aperçu", async () => {
+    const genere = await generateCerfa(await fiche(), {
+      fields: { motif: "Dialyse." },
       drawings: {},
     });
 
-    expect((await drawnOn(pdf)).texts).toEqual(["Dialyse. ; Fauteuil."]);
+    const { texts } = await drawnOn(await pdfDe(genere.pdf));
+    expect(genere.overflowing).toEqual([]);
+    expect(texts).toContain("Dialyse.");
+    expect(texts).not.toContain(PREVIEW_MARK);
   });
 
-  it("retire le commentaire qui ne tient pas, et dit lequel", async () => {
+  it("signale un texte strict qui déborde, avec son maximum, et n'en écrit que le début", async () => {
     const genere = await generateCerfa(await fiche(), {
-      fields: { motif: "Dialyse.", precisions: LONG },
+      fields: { motif: LONG },
       drawings: {},
     });
 
-    expect(genere.removedComments).toEqual(["precisions"]);
+    const [deborde] = genere.overflowing;
+    const { texts } = await drawnOn(await pdfDe(genere.pdf));
+    expect(deborde).toMatchObject({
+      entry: "motif",
+      label: "Motif",
+      text: LONG,
+    });
+    expect(deborde?.maximum).toBeGreaterThan(0);
+    expect(deborde?.maximum).toBeLessThan(Array.from(LONG).length);
+    expect(texts.join(" ")).toContain(LONG.slice(0, deborde?.maximum).trim());
+    expect(texts).toContain(PREVIEW_MARK);
+  });
+
+  it("marque l'aperçu demandé, même quand tout tient", async () => {
+    const genere = await generateCerfa(
+      await fiche(),
+      { fields: { motif: "Dialyse." }, drawings: {} },
+      { preview: true },
+    );
+
+    expect((await drawnOn(await pdfDe(genere.pdf))).texts).toContain(
+      PREVIEW_MARK,
+    );
   });
 
   it("écrit en entier, sur plusieurs lignes de son cadre, un texte qui n'y tient pas", async () => {
@@ -192,20 +218,6 @@ describe("générer un cerfa", () => {
     expect(fields).toBe(0);
     expect(texts.length).toBeGreaterThan(1);
     expect(texts.map((line) => line.trim()).join(" ")).toBe(LONG.trim());
-  });
-
-  it("refuse un commentaire qui ne suit aucun texte du cerfa", async () => {
-    const cerfa = await fiche();
-    const fautive = {
-      ...cerfa,
-      fields: { ...cerfa.fields, precisions: commentOn("en_ald") },
-    };
-
-    await expect(
-      generateCerfa(fautive, { fields: { precisions: "?" }, drawings: {} }),
-    ).rejects.toThrow(
-      "« precisions » commente « en_ald », qui n'est pas un texte du cerfa.",
-    );
   });
 
   it("date le nom du fichier au jour de Paris", () => {

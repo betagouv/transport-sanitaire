@@ -2,7 +2,6 @@
 // document analytics). Elle sert à mesurer ce que le prescripteur imprime :
 // jamais le texte, seulement sa clé et sa taille.
 //
-// Un commentaire s'imprime dans le champ de son texte : il se mesure avec lui.
 // Un texte porté par plusieurs volets garde sa plus petite taille.
 
 /** Les tailles des textes imprimés d'un cerfa, et ceux qui n'en ont pas. */

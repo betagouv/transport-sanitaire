@@ -33,6 +33,19 @@ export function sizeInField(
 }
 
 /**
+ * `text` tient-il dans la zone de `field` à `fontSize`, et à aucune autre
+ * taille ? Le nombre maximal de caractères du champ compte aussi (D-302).
+ */
+export function fitsAtSize(
+  field: PDFTextField,
+  font: PDFFont,
+  text: string,
+  fontSize: number,
+): boolean {
+  return !exceedsMaxLength(field, text) && fits(field, font, fontSize, text);
+}
+
+/**
  * La plus grande taille, de la taille réduite à `floor` par pas d'un
  * demi-point, à laquelle `text` tient dans la zone de `field` en passant à la
  * ligne (D-193). Aucune s'il n'y tient pas à `floor` (#341), s'il dépasse le

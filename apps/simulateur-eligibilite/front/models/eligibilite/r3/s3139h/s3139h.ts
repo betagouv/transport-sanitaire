@@ -30,9 +30,9 @@ import {
   box,
   type Cerfa,
   type CerfaMapping,
-  commentOn,
   date,
   drawnBox,
+  strictText,
   templateAt,
   text,
 } from "../../../../socle";
@@ -127,8 +127,10 @@ const CERFA: Cerfa<DtoS3139h> = {
     urgence_appel15: box("samu", "Oui"),
     urgence_autre: box("samu", "non"),
     urgence_precision: text("préc"),
-    elements_medicaux: text("elmedic"),
-    elements_medicaux_precision: commentOn("elements_medicaux"),
+    elements_medicaux: strictText(
+      "elmedic",
+      "Éléments d’ordre médical et commentaires",
+    ),
     // Le widget n'a pas d'état d'export valide : sa marque est dessinée.
     centre_rare: drawnBox("malrare", "Oui"),
     exoneration_oui: box("ETM", "Oui"),

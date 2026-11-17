@@ -1,7 +1,8 @@
 // La consigne transitoire du mineur en ALD non exonérante (#128), sur la PMT
 // et la DAP remplies. Le mineur reconnu en soins prolongés coche « ALD non
-// exonérante » sur chaque volet, et sa mention s'écrit une fois, sur le seul
-// volet médical (`COMPLETION_DOCUMENTS.md`, `mapping_documents.json`).
+// exonérante » sur chaque volet, et sa mention entre une fois dans le texte
+// du seul volet médical (`COMPLETION_DOCUMENTS.md`, `mapping_documents.json`).
+// Avec elle, ce texte ne tient pas à 9 pt : le prescripteur le réécrit (D-302).
 //
 // Quand la cible vaut oui se teste contre les règles (`mineur.test.ts`,
 // `ald-et-mineur.test.ts`) : jamais avec une ALD à 100 % établie, ni sans le
@@ -15,6 +16,7 @@ import {
   type BoundCerfa,
   dtoFrom,
   generateCerfa,
+  type Overflowing,
 } from "../../../../front/socle/cerfa";
 
 import { markedStates, textsOn } from "../../../socle/cerfa/pdf-aplati";
@@ -77,26 +79,15 @@ describe("le mineur reconnu en soins prolongés (#128)", () => {
   );
 
   it.each(SUPPORTS)(
-    "$nom : écrit la mention une fois, sur le seul volet médical",
+    "$nom : met la mention une fois dans le texte médical à réécrire, sur aucun autre volet",
     async (support) => {
-      const { pdf } = await rempli(support, MINEUR);
+      const { pdf, overflowing } = await rempli(support, MINEUR);
 
-      for (const page of support.volets)
-        expect(await mentions(pdf, page)).toBe(
-          page === support.medical ? 1 : 0,
-        );
-    },
-  );
-
-  it.each(SUPPORTS)(
-    "$nom : garde la mention quand la précision est retirée faute de place",
-    async (support) => {
-      const longue = "Suivi pluridisciplinaire au long cours ".repeat(20);
-      const reponses = { ...support.reponses, "Q3.4": longue };
-      const genere = await rempli({ ...support, reponses }, MINEUR);
-
-      expect(genere.removedComments).toEqual(["elements_medicaux_precision"]);
-      expect(await mentions(genere.pdf, support.medical)).toBe(1);
+      const [cellule] = overflowing;
+      expect(cellule?.entry).toBe("elements_medicaux");
+      expect(cellule?.text.split(MENTION)).toHaveLength(2);
+      for (const page of support.volets.filter((p) => p !== support.medical))
+        expect(await mentions(pdf, page)).toBe(0);
     },
   );
 });
@@ -141,11 +132,11 @@ describe("hors du mineur reconnu (#128)", () => {
 
 // ---- implémentation ----
 
-// Le support rempli pour son parcours, et les commentaires qu'il a retirés.
+// Le support rempli pour son parcours, et ses textes qui débordent.
 async function rempli(
   { nom, cerfa, reponses, cibles }: Support,
   choisies: ValeursDesCibles,
-): Promise<{ pdf: Uint8Array; removedComments: readonly string[] }> {
+): Promise<{ pdf: Uint8Array; overflowing: readonly Overflowing[] }> {
   const dto = dtoFrom(
     cerfa.mapping,
     donnees(reponses, { ...cibles, ...choisies }),
@@ -153,7 +144,7 @@ async function rempli(
   const depuisLeDisque = { ...cerfa.cerfa, template: () => gabarit(nom) };
   const genere = await generateCerfa(depuisLeDisque, dto);
   const pdf = new Uint8Array(await genere.pdf.arrayBuffer());
-  return { pdf, removedComments: genere.removedComments };
+  return { pdf, overflowing: genere.overflowing };
 }
 
 // Les états marqués de la case `champ`, sur la page `page` ou sur toutes.

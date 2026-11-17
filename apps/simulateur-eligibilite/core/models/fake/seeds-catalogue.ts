@@ -267,7 +267,7 @@ export const SEEDS: readonly Seed<Questions, Cibles>[] = [
     id: "commande-trop-longue",
     label: "Résultat : des textes trop longs pour leur cadre",
     description:
-      "S'ouvre sur la commande complétée, avec une adresse et une remarque trop longues. Un avertissement dit, avant tout téléchargement, que la remarque ne figure pas sur le bon : elle ne tenait pas avec les instructions. L'adresse, elle, s'écrit en entier : elle déborde sous son cadre, par-dessus ce qui s'y trouve.",
+      "S'ouvre sur la commande complétée, avec une adresse et une remarque trop longues. Les instructions et la remarque ne tiennent pas dans leur cadre : le bon n'est qu'un aperçu marqué, et un champ demande de les raccourcir avant tout téléchargement. L'adresse, elle, s'écrit en entier : elle déborde sous son cadre, par-dessus ce qui s'y trouve.",
     answers: {
       ...COMPLETE,
       adresse: {
