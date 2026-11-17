@@ -102,7 +102,7 @@ function avecUnParcours(analytics: AnalyticsUseCases, formulaire: ReactNode) {
   const journey = analytics.startASimulation.execute({
     rattachement: null,
     seeded: false,
-    version: "10.1.8",
+    modelVersion: "10.2.1",
   });
   return (
     <AnalyticsProvider value={analytics}>

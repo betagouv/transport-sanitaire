@@ -152,7 +152,8 @@ prescription »). Son « complément » est celui d'une adresse.
 
 **Simulation**:
 Un passage complet dans le simulateur, fait en une fois, sur le modèle chargé à
-l'ouverture. Elle ne se partage pas et ne se reprend pas (D-104).
+l'ouverture. Elle ne se partage pas et ne se reprend pas (D-104). « Faire une
+nouvelle simulation » la ferme au journal des parcours (#497).
 _Chez l'éditeur_: « simulation ». Sa « révision » n'a pas d'équivalent chez nous
 (D-192).
 

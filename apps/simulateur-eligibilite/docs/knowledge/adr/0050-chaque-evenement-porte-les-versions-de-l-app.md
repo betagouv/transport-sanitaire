@@ -41,6 +41,22 @@ démonstration et celui des tests déclarent leur propre version.
 
 ## Mises à jour
 
+> **Mise à jour 2026-11-17, l'enveloppe du contrat v10.2.2 (#497).** Cela
+> **révise** les points 1, 3 et 4. `version` est désormais la version du
+> contrat, la constante `10.2.2`, et la version des règles part en
+> `model_version`, toujours lue dans `rules/VERSION`. `app_version` reste.
+> `commit_sha` quitte l'événement, que le contrat ferme : le serveur écrit en
+> colonne `commit_sha` le commit de celui qui reçoit l'événement, dans
+> `Evenements` et dans `Collisions`. Un onglet resté sur un ancien build garde
+> sa propre `app_version`, mais la colonne dit le serveur, pas l'onglet. Chaque
+> événement porte aussi `sequence` et `activity_origin` (point 18 du retour
+> v10.2.2) : `user` pour un geste ou un affichage que le prescripteur voit,
+> `background` pour ce que l'app fait seule (une exposition de bouton ou
+> d'avis, une mesure, un échec de génération, un PDF remis). Le serveur exige
+> `version`, `model_version`, `app_version`, `sequence` et `activity_origin`.
+> La colonne `commit_sha` doit exister dans les deux tables avant le
+> déploiement.
+
 > **Mise à jour 2026-11-13, les versions de l'app (#416).** Chaque événement dit
 > quelle app l'a produit : `version` est la version des règles, lue dans
 > `rules/VERSION`, et non plus une constante figée à 10.1.7. `app_version` et

@@ -126,6 +126,12 @@ Matomo n'a pas de commande pour anonymiser l'IP : c'est un réglage de l'instanc
 
 ## Mises à jour
 
+> **Mise à jour 2026-11-17, la fermeture d'une simulation (#497).**
+> « Faire une nouvelle simulation » ferme la simulation en cours au journal :
+> `simulation_closed`, `closure_reason = new_simulation`, sous le numéro qui
+> suit son dernier événement. Plus rien ne part ensuite sous elle. La nouvelle
+> simulation repart à 1. L'inactivité et la fin explicite attendent #390.
+
 > **Mise à jour 2026-11-12, journal des parcours (#380, #381).** Le simulateur collecte
 > désormais chaque parcours, rattaché à son établissement et à son service, pour le
 > dashboard analytics à venir. Le navigateur envoie les événements à notre backend,

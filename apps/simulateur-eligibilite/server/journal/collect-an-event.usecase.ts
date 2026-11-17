@@ -7,21 +7,27 @@
 
 import type { AnalyticsEvent } from "../../shared/analytics/analytics-event.ts";
 import type { Journal } from "./journal.port.ts";
-import { JournalEntry } from "./journal-entry.entity.ts";
+import { type Build, JournalEntry } from "./journal-entry.entity.ts";
 
 export type Collected = "added" | "duplicate" | "collision";
 
 export class CollectAnEvent {
   readonly #journal: Journal;
   readonly #environment: string;
+  readonly #build: Build;
 
-  constructor(journal: Journal, environment: string) {
+  constructor(journal: Journal, environment: string, build: Build) {
     this.#journal = journal;
     this.#environment = environment;
+    this.#build = build;
   }
 
   async execute(event: AnalyticsEvent): Promise<Collected> {
-    const entry = JournalEntry.receivedNow(event, this.#environment);
+    const entry = JournalEntry.receivedNow(
+      event,
+      this.#environment,
+      this.#build.commit_sha,
+    );
     const known =
       (await this.#journal.find(entry.eventId)) ??
       (await this.#measureOfItsDocument(event));

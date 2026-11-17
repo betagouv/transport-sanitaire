@@ -1,8 +1,8 @@
 // Le parcours d'une simulation, signalé au journal (#383) : ouvert au montage
 // du simulateur, une seule fois, puis l'intention dès que le modèle la donne.
 // « Précédent » et le retour à P0 gardent le parcours, « Faire une nouvelle
-// simulation » remonte le simulateur et en ouvre un autre. Ce qui part ou non
-// est décidé par `Journey`.
+// simulation » le ferme, remonte le simulateur et en ouvre un autre. Ce qui
+// part ou non est décidé par `Journey`.
 //
 // Le parcours s'ouvre et lit l'intention avant les effets des écrans du
 // simulateur (`useLayoutEffect`) : le début précède la première page, et
@@ -36,7 +36,7 @@ export function useRecordTheJourney(
     journey.current = useCases.startASimulation.execute({
       rattachement: rattachementEnSession(),
       seeded,
-      version: model.version,
+      modelVersion: model.version,
     });
   }, []);
   useLayoutEffect(() => {
@@ -45,4 +45,20 @@ export function useRecordTheJourney(
     if (intent) useCases.selectAnIntent.execute(journey.current, intent);
   }, [useCases, model, simulation]);
   return journey;
+}
+
+/**
+ * « Faire une nouvelle simulation » : le parcours ouvert se ferme au journal,
+ * puis le simulateur se remonte sur un nouveau.
+ */
+export function useNewSimulation(
+  journey: OpenedJourney,
+  onNewSimulation: () => void,
+): () => void {
+  const useCases = useAnalyticsUseCases();
+  return () => {
+    if (useCases && journey.current)
+      useCases.closeASimulation.execute(journey.current, "new_simulation");
+    onNewSimulation();
+  };
 }

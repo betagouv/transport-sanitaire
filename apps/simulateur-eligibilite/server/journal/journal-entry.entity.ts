@@ -1,7 +1,7 @@
 // Une entrée du journal des parcours : un événement tel que le navigateur l'a
-// envoyé, daté à sa réception par le serveur, ou le signe de vie que le
-// serveur écrit chaque heure. Voir ADR-0042 et
-// ADR-0051.
+// envoyé, daté à sa réception par le serveur, avec le commit du serveur qui l'a
+// reçu, ou le signe de vie que le serveur écrit chaque heure. Voir ADR-0042,
+// ADR-0050 et ADR-0051.
 
 import { isDeepStrictEqual } from "node:util";
 import {
@@ -9,8 +9,11 @@ import {
   SCHEMA_VERSION,
 } from "../../shared/analytics/analytics-event.ts";
 
-/** Ce que le serveur sait de l'app qu'il sert : sa version et son commit. */
-export type Build = Pick<AnalyticsEvent, "app_version" | "commit_sha">;
+/**
+ * Ce que le serveur sait de l'app qu'il sert : sa version, et son commit sur 7
+ * caractères, ou `inconnu`.
+ */
+export type Build = { app_version: string; commit_sha: string };
 
 /**
  * Le signe de vie de la collecte : le serveur l'écrit chaque heure. Une heure
@@ -31,6 +34,8 @@ export class JournalEntry {
   readonly receivedAt: string;
   /** Où le serveur tourne : production, staging, local… */
   readonly environment: string;
+  /** Le commit du serveur qui l'a reçu : le contrat ne le porte pas. */
+  readonly commitSha: string;
   /** La version de nos compléments au contrat d'ANA-1015. */
   readonly schemaVersion: number;
 
@@ -38,17 +43,24 @@ export class JournalEntry {
     event: AnalyticsEvent | AliveEvent,
     receivedAt: string,
     environment: string,
+    commitSha: string,
     schemaVersion: number = SCHEMA_VERSION,
   ) {
     this.event = event;
     this.receivedAt = receivedAt;
     this.environment = environment;
+    this.commitSha = commitSha;
     this.schemaVersion = schemaVersion;
   }
 
-  /** L'événement, reçu à l'instant. */
-  static receivedNow(event: AnalyticsEvent, environment: string): JournalEntry {
-    return new JournalEntry(event, new Date().toISOString(), environment);
+  /** L'événement, reçu à l'instant par le serveur de ce commit. */
+  static receivedNow(
+    event: AnalyticsEvent,
+    environment: string,
+    commitSha: string,
+  ): JournalEntry {
+    const at = new Date().toISOString();
+    return new JournalEntry(event, at, environment, commitSha);
   }
 
   /**
@@ -67,7 +79,7 @@ export class JournalEntry {
       app_version,
       commit_sha,
     };
-    return new JournalEntry(event, at, environment);
+    return new JournalEntry(event, at, environment, commit_sha);
   }
 
   get eventId(): string {

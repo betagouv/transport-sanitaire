@@ -1,6 +1,5 @@
 // Le parcours d'un prescripteur, tel que le journal le reçoit : une
-// simulation, et ses événements numérotés dans l'ordre. Un trou dans les
-// numéros dit qu'un événement s'est perdu.
+// simulation, et ses événements (`EventSequence`), jusqu'à sa fermeture.
 //
 // Le parcours suit les affichages de page, les questions validées, les phases
 // où il entre et qu'il quitte, une fois chacune, et leurs limites affichées
@@ -14,20 +13,19 @@
 import type {
   AnalyticsEvent,
   AnalyticsIntent,
+  ClosureReason,
   EventDetails,
   Phase,
   Provenance,
 } from "../../../shared/analytics/analytics-event";
 import type { Button, ExposedOn } from "./button-place.vo";
 import type { DocumentContent } from "./document-version.entity";
+import { EventSequence, type NothingToRecord } from "./event-sequence.entity";
 import { ExposedButtons, type NotShown } from "./exposed-buttons.entity";
 import { type OpenedPage, PageView } from "./page-view.entity";
 import { PhaseBoundaries } from "./phase-boundaries.entity";
 import { Results } from "./results.entity";
 import type { DocumentRequest, ShownResult } from "./revision.entity";
-
-/** Rien à garder au journal : le parcours d'une seed, ou une intention déjà connue. */
-export type NothingToRecord = null;
 
 /** Une page validée : ses questions affichées, et ce qui s'ouvre ensuite. */
 export type PageValidation = {
@@ -48,10 +46,7 @@ type NoView = null;
 export type ResultScreen = "R2" | "R3";
 
 export class Journey {
-  readonly simulationId = crypto.randomUUID();
-  readonly #seeded: boolean;
-  readonly #provenance: Provenance;
-  #sequence = 0;
+  readonly #events: EventSequence;
   #intentSelected = false;
   #views = 0;
   #view: PageView | NoView = null;
@@ -59,7 +54,7 @@ export class Journey {
   readonly #completed = new Set<Phase>();
   readonly #boundaries = new PhaseBoundaries();
   readonly #results = new Results();
-  readonly #buttons = new ExposedButtons(this.simulationId);
+  readonly #buttons: ExposedButtons;
 
   /**
    * `seeded` : la simulation s'ouvre sur une seed, au milieu du parcours. Elle
@@ -68,13 +63,22 @@ export class Journey {
    * ADR-0053).
    */
   constructor(opening: { seeded: boolean; provenance: Provenance }) {
-    this.#seeded = opening.seeded;
-    this.#provenance = opening.provenance;
+    this.#events = new EventSequence(opening);
+    this.#buttons = new ExposedButtons(this.simulationId);
+  }
+
+  get simulationId(): string {
+    return this.#events.simulationId;
   }
 
   /** Le début du parcours, sur P0. */
   start(): AnalyticsEvent | NothingToRecord {
-    return this.#record({ type: "simulation_started", screen: "P0" });
+    return this.#events.record({ type: "simulation_started", screen: "P0" });
+  }
+
+  /** La fin du parcours : rien ne part plus ensuite. */
+  close(reason: ClosureReason): AnalyticsEvent | NothingToRecord {
+    return this.#events.close(reason);
   }
 
   /**
@@ -84,7 +88,11 @@ export class Journey {
   selectIntent(intent: AnalyticsIntent): AnalyticsEvent | NothingToRecord {
     if (this.#intentSelected) return null;
     this.#intentSelected = true;
-    return this.#record({ type: "intent_selected", screen: "P0", intent });
+    return this.#events.record({
+      type: "intent_selected",
+      screen: "P0",
+      intent,
+    });
   }
 
   /**
@@ -253,21 +261,6 @@ export class Journey {
   }
 
   #recordAll(details: EventDetails[]): AnalyticsEvent[] {
-    return details.flatMap((each) => this.#record(each) ?? []);
-  }
-
-  // L'événement suivant du parcours, numéroté et daté.
-  #record(details: EventDetails): AnalyticsEvent | NothingToRecord {
-    if (this.#seeded) return null;
-    this.#sequence += 1;
-    return {
-      event_id: `${this.simulationId}:${this.#sequence}`,
-      simulation_id: this.simulationId,
-      sequence: this.#sequence,
-      occurred_at: new Date().toISOString(),
-      ...this.#provenance,
-      is_test: false,
-      ...details,
-    };
+    return this.#events.recordAll(details);
   }
 }

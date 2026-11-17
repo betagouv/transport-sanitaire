@@ -19,6 +19,7 @@ const recu = (event: object) =>
     { ...simulationStarted, ...event },
     "2026-11-12T09:00:01.000Z",
     "staging",
+    "f30aafe",
     1,
   );
 
@@ -63,6 +64,19 @@ describe("journal dans Grist", () => {
       ['{"id":"e_chu_grenoble"}', '{"id":"s_grenoble_cardio"}'],
       [null, null],
     ]);
+  });
+
+  it("écrit en colonne le commit du serveur qui a reçu l'événement", async () => {
+    grist = await demarrerGrist({});
+    const journal = new GristJournal(
+      new GristApiClient({ docUrl: grist.docUrl, cleApi: "test" }),
+    );
+
+    await journal.append(recu({}));
+    await journal.setAside(recu({ service_id: "s_grenoble_pneumo" }));
+
+    expect(grist.tables.Evenements?.[0]?.fields.commit_sha).toBe("f30aafe");
+    expect(grist.tables.Collisions?.[0]?.fields.commit_sha).toBe("f30aafe");
   });
 
   it("laisse les deux colonnes vides sur le signe de vie", async () => {

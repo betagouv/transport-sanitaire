@@ -131,7 +131,30 @@ describe("le journal des parcours sur P0", () => {
     expect(debuts[1]?.sequence).toBe(1);
   });
 
-  it("chaque événement dit l'app : les règles du modèle ouvert, la version et le commit du build", async () => {
+  it("une nouvelle simulation ferme la précédente, à la suite de ses numéros", async () => {
+    const { analytics, envoyes } = journalDeTest();
+    const user = await ouvrirLeSimulateur({
+      analytics,
+      modele: venuPourUneBoisson,
+    });
+    await allerAuResultat(user);
+    const premiere = [...envoyes];
+
+    await user.click(bouton("Faire une nouvelle simulation"));
+    await question(BOISSON);
+
+    const [fermeture, debut] = envoyes.slice(premiere.length);
+    expect(fermeture).toMatchObject({
+      type: "simulation_closed",
+      closure_reason: "new_simulation",
+      simulation_id: premiere[0]?.simulation_id,
+      sequence: premiere.length + 1,
+      activity_origin: "user",
+    });
+    expect(debut?.type).toBe("simulation_started");
+  });
+
+  it("chaque événement dit le contrat, le modèle ouvert, le build et son origine", async () => {
     const { analytics, envoyes } = journalDeTest();
     const user = await ouvrirLeSimulateur({
       analytics,
@@ -143,9 +166,10 @@ describe("le journal des parcours sur P0", () => {
     expect(envoyes.length).toBeGreaterThan(2);
     for (const evenement of envoyes) {
       expect(evenement).toMatchObject({
-        version: modeleDeTest.version,
+        version: "10.2.2",
+        model_version: modeleDeTest.version,
         app_version: "0.8.0",
-        commit_sha: "f30aafe",
+        activity_origin: "user",
       });
     }
   });
