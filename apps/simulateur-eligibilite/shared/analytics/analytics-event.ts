@@ -91,10 +91,10 @@ export type Action = (typeof ACTIONS)[number];
 
 /**
  * La taille réellement imprimée d'un champ rempli du document R3, en points
- * (ADR-0048). `field_id` est la clé du champ dans le DTO du cerfa, jamais son
- * texte.
+ * (ADR-0048). `field_id` est son identifiant fermé, `<support>.<champ>`
+ * (`typographic-fields.ts`), jamais son texte.
  */
-type FieldSize = { field_id: string; font_size_pt: number };
+type FieldMeasurement = { field_id: string; font_size_pt: number };
 
 /**
  * Comment la page du simulateur s'est chargée, tel que le navigateur le dit
@@ -124,6 +124,8 @@ export type AnalyticsEvent = {
   type: EventType;
   screen?: Screen;
   revision?: string;
+  /** La révision du document R3, à côté de celle du R2 (ADR-0048). */
+  document_revision?: string;
   intent?: AnalyticsIntent;
   establishment_id?: string;
   is_test?: boolean;
@@ -137,9 +139,10 @@ export type AnalyticsEvent = {
   reason_codes?: string[];
   document_id?: string;
   support?: string;
-  /** `complete` ou `partial` : la mesure couvre tous les champs remplis du
-   * document R3, ou non (ADR-0048). */
-  status?: string;
+  /** Les champs remplis du document R3, sous leur identifiant fermé (ADR-0048). */
+  expected_field_ids?: string[];
+  /** La taille de chaque champ attendu qui a pu se mesurer (ADR-0048). */
+  field_measurements?: FieldMeasurement[];
   field_group?: string;
   font_size_pt?: number;
   // Nos compléments.
@@ -154,8 +157,6 @@ export type AnalyticsEvent = {
   motifs?: string[];
   sheet_id?: string;
   action?: Action;
-  fields?: FieldSize[];
-  unmeasured_field_ids?: string[];
   navigation?: Navigation;
   /** La version de l'app, celle de `package.json` (ADR-0050). */
   app_version: string;

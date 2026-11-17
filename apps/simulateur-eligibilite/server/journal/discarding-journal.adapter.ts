@@ -9,6 +9,10 @@ export class DiscardingJournal implements Journal {
     return undefined;
   }
 
+  async findMeasurement(): Promise<NotInTheJournal> {
+    return undefined;
+  }
+
   async append(): Promise<void> {}
 
   async setAside(): Promise<void> {}

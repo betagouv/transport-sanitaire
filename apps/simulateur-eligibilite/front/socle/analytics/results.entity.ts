@@ -68,7 +68,7 @@ export class Results {
     this.#document = document;
     return [
       revision.documentDisplayed(document.id),
-      revision.typographyMeasured(document.id, content.typography),
+      ...revision.typographyMeasured(document.id, content.typography),
     ];
   }
 
