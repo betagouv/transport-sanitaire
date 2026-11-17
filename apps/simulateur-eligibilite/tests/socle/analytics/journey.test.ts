@@ -83,7 +83,7 @@ describe("le parcours d'une simulation", () => {
     expect(types(validation)).toEqual(["question_validated"]);
   });
 
-  it("une page de P0 n'entre dans aucune phase, et n'a pas de jalon", () => {
+  it("une page de P0 n'entre dans aucune phase, et n'en affiche aucune limite", () => {
     const journey = new Journey({ seeded: false, provenance: PROVENANCE });
 
     const ouverture = journey.openAPage({
@@ -97,21 +97,56 @@ describe("le parcours d'une simulation", () => {
     expect(ouverture).toEqual([
       expect.objectContaining({ type: "question_exposed", screen: "P0" }),
     ]);
-    expect(ouverture[0]).not.toHaveProperty("milestones");
   });
 
-  it("la dernière page d'une phase vue, puis quittée sans validation, garde son jalon", () => {
+  it("la dernière page d'une phase affichée part comme sa limite, avant ses questions", () => {
     const journey = new Journey({ seeded: false, provenance: PROVENANCE });
 
-    const [, exposition] = journey.openAPage({
+    const ouverture = journey.openAPage({
       ...pageDeP2("P2/branche", ["Q2.13.depart"]),
       last: true,
     });
 
-    expect(exposition).toMatchObject({
-      type: "question_exposed",
+    expect(types(ouverture)).toEqual([
+      "phase_entered",
+      "phase_boundary_displayed",
+      "question_exposed",
+    ]);
+    expect(ouverture[1]).toMatchObject({
+      screen: "P2",
+      boundary: "last",
       page_id: "P2/branche",
-      milestones: ["last"],
+    });
+  });
+
+  it("une page à la fois première et dernière affiche les deux limites", () => {
+    const journey = new Journey({ seeded: false, provenance: PROVENANCE });
+
+    const ouverture = journey.openAPage({
+      ...pageDeP2("P2/seule", ["Q2.1"]),
+      first: true,
+      last: true,
+    });
+
+    expect(
+      ouverture
+        .filter(({ type }) => type === "phase_boundary_displayed")
+        .map(({ boundary }) => boundary),
+    ).toEqual(["first", "last"]);
+  });
+
+  it("une autre page devenue la dernière affiche à son tour la limite", () => {
+    const journey = new Journey({ seeded: false, provenance: PROVENANCE });
+    const derniere = (id: string) => ({ ...pageDeP2(id, ["Q"]), last: true });
+    journey.openAPage(derniere("P2/branche"));
+
+    const rouverte = journey.openAPage(derniere("P2/branche"));
+    const suivante = journey.openAPage(derniere("P2/suite"));
+
+    expect(types(rouverte)).toEqual(["question_exposed"]);
+    expect(suivante[0]).toMatchObject({
+      type: "phase_boundary_displayed",
+      page_id: "P2/suite",
     });
   });
 });
