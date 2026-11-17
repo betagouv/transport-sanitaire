@@ -1,6 +1,6 @@
 {
   "schema": "resultats-html-patient/2",
-  "packageVersion": "10.2.1",
+  "packageVersion": "10.2.2",
   "modelSha256": "26dd3a3ee92ab9e508e57e921000e3c246715ca2b868251e8a875c2b3be38c42",
   "sourceDate": "2026-11-17",
   "issues": {
@@ -15370,15 +15370,13 @@
     "text": "Cette fiche explicative est toute neuve, aidez-nous à l’améliorer ! Envoyez-nous vos remarques sur ",
     "email": "contact@transportsanitaire.beta.gouv.fr"
   },
-  "preparationTarget": "10.1.4",
-  "validationStatus": "EN_COURS_VALIDATION_VISUELLE_LOIC",
   "q13aTwoAnswers": {
     "date": "2026-10-26",
     "legacyCase": "dialyse-type-inconnu",
     "legacyPatientWordingsPreserved": true
   },
   "sourcePreparationVersion": 34,
-  "currentAuthority": "REFERENTIEL/04_TEXTES_RESULTATS_ET_FICHES.md",
+  "currentAuthority": "REFERENTIEL/13_RELEASE_10_2_2.md",
   "amendments": "REFERENTIEL/10_RELEASE_10_2_1.md",
   "legacySourceSnapshots": {
     "issues_liste": {
@@ -16125,5 +16123,6 @@
       "path": "REFERENTIEL/10_RELEASE_10_2_1.md",
       "sha256": "d6f00b257f3bc62d8c3ec990f90eaaff3795108cb967efb3b4c6a761840ced1d"
     }
-  }
+  },
+  "deliveryStatus": "PRET_INTEGRATION_N2_N5_A_EXECUTER"
 }
