@@ -74,9 +74,7 @@ describe("les structures sous le trait", () => {
     expect(onValide).toHaveBeenCalledWith(
       {
         etabId: "11",
-        etabLibelle: "Libéral / CNAM / CPAM / Autre",
         serviceId: "12",
-        serviceLibelle: "Assurance Maladie",
       },
       "Assurance Maladie",
     );
