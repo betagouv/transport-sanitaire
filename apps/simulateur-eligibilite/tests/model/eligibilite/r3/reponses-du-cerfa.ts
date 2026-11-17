@@ -64,7 +64,6 @@ const P3_DE_LA_DIALYSE: Reponses = {
   "Q3.2.adresse": DOMICILE,
   "Q3.3.nom": "Centre de dialyse",
   "Q3.3.adresse": HOPITAL,
-  "Q3.4": "Dialyse",
   "Q3.4.a": "2_NON",
   "Q3.7": ["7_AUCUN"],
 };

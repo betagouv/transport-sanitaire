@@ -1,7 +1,10 @@
-// Q3.4 : les précisions du soin, et ses sous-questions, la justification d'un
-// lieu éloigné (Q3.4.distance) et le centre de référence (Q3.4.a). Elles
-// précisent le volet médical de la PMT et de la DAP : le S3141 n'en a pas.
-// Rien de ce qu'elles recueillent ne requalifie P2.
+// Q3.4 : les précisions du soin qui manquent au volet médical de la PMT et de
+// la DAP, la justification d'un lieu éloigné (Q3.4.distance) et le centre de
+// référence (Q3.4.a). Q3.4 n'est plus une question : la précision générique
+// facultative est retirée (TXT-PARCOURS-COMPLETION-20261116, #478). Le
+// prescripteur réécrit la cellule médicale en R3 s'il veut préciser (#403).
+// Le S3141 n'a pas de volet médical. Rien de ce qu'elles recueillent ne
+// requalifie P2.
 
 import type {
   Answered,
@@ -17,24 +20,16 @@ import { pmtOuDap } from "../conditions/supports-du-complement.ts";
 // Un retour seul ne va pas vers le centre de référence.
 const unRetourSeul = SENS_CHOISI.compute((sens) => sens === "2_RETOUR");
 
-// Le soin, tel que P2 l'a validé, se rappelle sans se redemander. Aucun code
-// de nomenclature ne s'affiche.
-export const Q3_4 = question
-  .longText(
-    "Q3.4",
-    "Quelles précisions sur le soin et le trajet doivent figurer sur la prescription ?",
-  )
-  .hint(
-    "Seulement ce qui manque encore à la prescription. Une précision qui change le soin ou le motif demande une nouvelle simulation.",
-  )
-  .optional()
-  .mattersWhile(pmtOuDap)
-  .reminderFrom(({ answers }) => recapitulatifDuSoin(answers));
+// La DAP au-delà de 150 km demande pourquoi le lieu de soins est éloigné.
+const JUSTIFICATION_EXIGEE = given
+  .cible("cible_dap_motif_longue_distance")
+  .isOui();
 
 export const Q3_4_DISTANCE = question
   .longText("Q3.4.distance", "Justification médicale du lieu de soins éloigné")
   .hint("Au-delà de 150 km, la demande d’accord préalable l’exige.")
-  .mattersWhile(given.cible("cible_dap_motif_longue_distance").isOui());
+  .mattersWhile(JUSTIFICATION_EXIGEE)
+  .reminderFrom(({ answers }) => recapitulatifDuSoin(answers));
 
 export const Q3_4_A = question
   .singleChoice(
@@ -46,7 +41,12 @@ export const Q3_4_A = question
     "2_NON": "Non",
   })
   // Un retour seul ne va pas vers le centre : Non, sans question.
-  .mattersWhile(pmtOuDap.and(unRetourSeul.not()));
+  .mattersWhile(pmtOuDap.and(unRetourSeul.not()))
+  .reminderFrom((contexte) =>
+    JUSTIFICATION_EXIGEE.in(contexte)
+      ? undefined
+      : recapitulatifDuSoin(contexte.answers),
+  );
 
 // ---- implémentation ----
 
@@ -57,8 +57,10 @@ type AChoix = Answered<string> & {
   readonly labels: Readonly<Record<string, string>>;
 };
 
-// Le motif de Q2.1, les faits qui le précisent, et les séances que P1 a
-// prouvées. Q2.1.l n'est pas codée : il n'y a pas d'intitulé à rappeler.
+// Le soin, tel que P2 l'a validé, se rappelle sans se redemander, au-dessus
+// de la première question que pose la page. Aucun code de nomenclature ne
+// s'affiche. Le motif de Q2.1, les faits qui le précisent, et les séances que
+// P1 a prouvées. Q2.1.l n'est pas codée : il n'y a pas d'intitulé à rappeler.
 // L'intitulé de chaque fait rappelé est le nôtre (D-122).
 function recapitulatifDuSoin(reponses: GivenAnswers<ReadByObject>) {
   const lu = (rappelee: AChoix, intitule: string) => {

@@ -1,7 +1,9 @@
 // La cellule médicale de la PMT et de la DAP remplies (#403, D-302) : un seul
-// texte, la précision du prescripteur (Q3.4) à sa suite, écrit à 9 pt. Un texte
-// qui n'y tient pas fait du cerfa un aperçu : seul son plus long début s'écrit,
-// et la génération le signale avec son maximum.
+// texte, écrit à 9 pt. Un texte qui n'y tient pas fait du cerfa un aperçu :
+// seul son plus long début s'écrit, et la génération le signale avec son
+// maximum. Seule la justification du lieu éloigné (Q3.4.distance) y entre en
+// saisie libre (#478) : la DAP la porte, et la PMT déborde avec la mention du
+// mineur (`consigne-du-mineur.test.ts`).
 
 import { describe, expect, it } from "vitest";
 import type { Faits } from "../../../../core/models/eligibilite/faits/noms";
@@ -19,6 +21,7 @@ import { DAP, donnees, gabarit, PMT, type Reponses } from "./reponses-du-cerfa";
 
 const SEANCE = "Ce déplacement concerne une séance de dialyse en centre";
 const ALD = "soins en lien avec une ALD reconnue";
+const ELOIGNEMENT = "justification médicale du lieu de soins éloigné : ";
 const LONG = "Suivi pluridisciplinaire au long cours ".repeat(20).trim();
 
 // Un support, son parcours et son champ médical.
@@ -33,55 +36,55 @@ type Support = {
 // attend l'éditeur (#348) : la DAP perd la justification de la distance.
 const { "Q3.4.distance": _distance, ...DAP_COURTE } = DAP;
 
+const LA_DAP: Support = {
+  nom: "S3139h",
+  cerfa: S3139H,
+  reponses: DAP_COURTE,
+  champ: "elmedic",
+};
 const SUPPORTS: readonly Support[] = [
   { nom: "S3138g", cerfa: S3138G, reponses: PMT, champ: "comm évent" },
-  { nom: "S3139h", cerfa: S3139H, reponses: DAP_COURTE, champ: "elmedic" },
+  LA_DAP,
 ];
 
 describe.each(SUPPORTS)("la cellule médicale, $nom", (support) => {
-  it("sans précision : le texte seul, qui tient", async () => {
-    const { "Q3.4": _, ...reponses } = support.reponses;
-
-    const { texte, overflowing } = await rempli(support, reponses);
+  it("le texte seul, qui tient", async () => {
+    const { texte, overflowing } = await rempli(support, support.reponses);
 
     expect(texte).toBe(`${SEANCE}.`);
     expect(overflowing).toEqual([]);
   });
 
-  it("« Test » suit le texte, et tient", async () => {
-    const reponses = { ...support.reponses, "Q3.4": "Test" };
-
-    const { texte, overflowing } = await rempli(support, reponses);
-
-    expect(texte).toBe(`${SEANCE} ; Test.`);
-    expect(overflowing).toEqual([]);
-  });
-
-  it("« Test » suit la mention de l'ALD", async () => {
-    const reponses = { ...support.reponses, "Q3.4": "Test" };
+  it("la mention de l'ALD suit le soin, et tient", async () => {
     const faits = { fait_ald_liee: Fait.oui("test") };
 
-    const { texte, overflowing } = await rempli(support, reponses, faits);
+    const { texte, overflowing } = await rempli(
+      support,
+      support.reponses,
+      faits,
+    );
 
-    expect(texte).toBe(`${SEANCE} ; ${ALD} ; Test.`);
+    expect(texte).toBe(`${SEANCE} ; ${ALD}.`);
     expect(overflowing).toEqual([]);
   });
+});
 
-  it("trop longue : seul le début s'écrit, et la cellule est signalée", async () => {
-    const reponses = { ...support.reponses, "Q3.4": LONG };
+describe("la cellule médicale trop longue, S3139h", () => {
+  it("seul le début s'écrit, et la cellule est signalée", async () => {
+    const reponses = { ...DAP, "Q3.4.distance": LONG };
 
-    const { texte, overflowing } = await rempli(support, reponses);
+    const { texte, overflowing } = await rempli(LA_DAP, reponses);
 
     const [cellule] = overflowing;
     expect(cellule).toMatchObject({
       entry: "elements_medicaux",
       label: "Éléments d’ordre médical et commentaires",
-      text: `${SEANCE} ; ${LONG}.`,
+      text: `${SEANCE} ; ${ELOIGNEMENT}${LONG}.`,
     });
     expect(cellule?.maximum).toBeLessThan(
       Array.from(cellule?.text ?? "").length,
     );
-    expect(texte.replace(/\s+/g, " ")).toBe(
+    expect(texte.replace(/\s+/g, " ").trim()).toBe(
       Array.from(cellule?.text ?? "")
         .slice(0, cellule?.maximum)
         .join("")

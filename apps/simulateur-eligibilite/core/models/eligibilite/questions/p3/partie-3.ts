@@ -12,7 +12,7 @@ import { Q3_1_2 } from "./questions/q3-1-2.ts";
 import { Q3_1_3 } from "./questions/q3-1-3.ts";
 import { Q3_2 } from "./questions/q3-2.ts";
 import { Q3_3 } from "./questions/q3-3.ts";
-import { Q3_4, Q3_4_A, Q3_4_DISTANCE } from "./questions/q3-4.ts";
+import { Q3_4_A, Q3_4_DISTANCE } from "./questions/q3-4.ts";
 import { Q3_5 } from "./questions/q3-5.ts";
 import { Q3_6_1 } from "./questions/q3-6-1.ts";
 import { Q3_7 } from "./questions/q3-7.ts";
@@ -54,7 +54,9 @@ export const COMPLEMENT = afterLock({
       Q3_3.service,
       Q3_3.adresse,
     ),
-    page("P3/soin", Q3_4, Q3_4_DISTANCE, Q3_4_A),
+    // Le soin ne se redemande pas : il se rappelle au-dessus de la première
+    // précision qui manque. Sans précision à demander, la page est sautée.
+    page("P3/soin", Q3_4_DISTANCE, Q3_4_A),
     page("P3/urgence", Q3_5),
     page("P3/evenements", Q3_6_1),
     page("P3/exoneration", Q3_7),
