@@ -1,10 +1,14 @@
 // Les routes du journal des parcours, montées sous `/api`. La collecte valide
 // le contrat, confie l'événement au use case, et traduit son issue en statut.
+// Un envoi refusé laisse sa raison dans les traces, sans son contenu.
 // Elle n'accuse réception qu'une fois l'événement écrit. Le signe de vie répond
 // à une sonde externe : 200 si la collecte écrit, 503 sinon.
 
 import express, { type Request, type Response, type Router } from "express";
-import { parseAnAnalyticsEvent } from "../../shared/analytics/event-schema.ts";
+import {
+  explainARefusal,
+  parseAnAnalyticsEvent,
+} from "../../shared/analytics/event-schema.ts";
 import type { CheckAlive } from "./check-alive.usecase.ts";
 import type { CollectAnEvent, Collected } from "./collect-an-event.usecase.ts";
 
@@ -40,6 +44,8 @@ export class JournalController {
   #collect(req: Request, res: Response): void {
     const event = parseAnAnalyticsEvent(req.body);
     if (!event) {
+      const reason = explainARefusal(req.body);
+      console.warn(`[simulateur] journal : envoi refusé, ${reason}`);
       res.status(400).json({ error: "événement hors contrat" });
       return;
     }

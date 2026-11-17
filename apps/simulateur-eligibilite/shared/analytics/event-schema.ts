@@ -1,6 +1,8 @@
-// La validation d'un événement du journal : une liste fermée de champs, et
-// leurs types. Un champ hors de la liste refuse l'événement entier : c'est ce
-// qui empêche une réponse ou un texte libre d'entrer dans le journal.
+// La validation d'un événement du journal : une liste fermée de champs, leurs
+// types, et les règles croisées du contrat v10.2.2. Un champ hors de la liste
+// refuse l'événement entier : c'est ce qui empêche une réponse ou un texte libre
+// d'entrer dans le journal. Un onglet ouvert sur un contrat d'avant est refusé
+// de même : il n'y a qu'une forme reçue, celle du contrat courant.
 //
 // Seul le serveur l'importe : le navigateur ne prend que les types, sans zod.
 
@@ -20,6 +22,7 @@ import {
   SUPPORTS,
   TRANSPORT_COMPOSITIONS,
 } from "./analytics-event.ts";
+import { CONTRACT_RULES } from "./contract-rule.vo.ts";
 import { TYPOGRAPHIC_FIELDS } from "./typographic-fields.ts";
 
 /** Ce qui est reçu sort du contrat : un champ en trop, ou mal formé. */
@@ -28,8 +31,22 @@ type OutOfContract = undefined;
 export function parseAnAnalyticsEvent(
   received: unknown,
 ): AnalyticsEvent | OutOfContract {
-  const parsed = EVENT_SCHEMA.safeParse(sansLesPortions(received));
+  const parsed = EVENT_SCHEMA.safeParse(received);
   return parsed.success ? parsed.data : undefined;
+}
+
+/**
+ * Pourquoi un envoi est refusé, à écrire dans les traces du serveur : un onglet
+ * d'un autre contrat, ou les champs et les règles en cause. Rien de ce qu'il
+ * porte n'en sort, sauf une version bien formée.
+ */
+export function explainARefusal(received: unknown): string {
+  const version = (received as { version?: unknown } | null)?.version;
+  if (version !== CONTRACT_VERSION)
+    return `onglet d'un autre contrat (${releaseOrUnknown(version)})`;
+  const parsed = EVENT_SCHEMA.safeParse(received);
+  if (parsed.success) return "aucune raison";
+  return `hors contrat (${parsed.error.issues.map(causeOf).join(", ")})`;
 }
 
 // ---- implémentation ----
@@ -39,13 +56,21 @@ const identifier = z.string().trim().min(1);
 // Une version livrée : `10.2.1` pour le modèle, `0.7.0` pour l'app.
 const release = z.string().regex(/^\d+\.\d+\.\d+$/);
 
-// Les portions ne partent plus : la composition du transport les remplace
-// (#509). Un onglet resté sur une version d'avant les envoie encore :
-// l'événement est reçu, sans elles.
-function sansLesPortions(received: unknown): unknown {
-  if (typeof received !== "object" || received === null) return received;
-  const { portions: _, ...event } = received as Record<string, unknown>;
-  return event;
+function releaseOrUnknown(version: unknown): string {
+  return release.safeParse(version).success ? String(version) : "inconnu";
+}
+
+// Une cause sans valeur : la règle enfreinte, le champ mal formé, ou le nom
+// d'un champ inconnu, s'il a la forme d'un nom de champ.
+function causeOf(issue: z.core.$ZodIssue): string {
+  if (issue.code === "custom") return issue.message;
+  if (issue.code === "unrecognized_keys")
+    return issue.keys.map(nameOrUnknown).join(", ");
+  return issue.path.map(String).map(nameOrUnknown).join(".");
+}
+
+function nameOrUnknown(key: string): string {
+  return /^[a-z_]{1,40}$/.test(key) ? key : "champ inconnu";
 }
 
 // Un champ de la liste fermée : jamais un texte saisi, ni une clé de notre DTO.
@@ -97,60 +122,32 @@ const EVENT_SCHEMA: z.ZodType<AnalyticsEvent> = z
     closure_reason: z.enum(CLOSURE_REASONS).optional(),
     service_id: identifier.optional(),
   })
-  .refine(measuresItsOwnFields)
-  .refine(placesItsButton)
-  .refine(namesItsDocument);
+  .superRefine((event, context) => {
+    for (const rule of CONTRACT_RULES)
+      if (rule.brokenBy(event))
+        context.addIssue({ code: "custom", message: `règle ${rule.number}` });
+  })
+  .refine(measuresEachFieldOnce, { message: "mesure en double" })
+  .refine(showsItsDocument, { message: "bouton sur un autre document" });
 
-// Le collecteur refuse un champ d'un autre support, un champ attendu ou mesuré
-// deux fois, et la mesure d'un champ qui n'est pas attendu (ANA22-03).
-function measuresItsOwnFields({
-  support,
+// Une mesure n'attend ni ne mesure un champ deux fois, et ne mesure que ce
+// qu'elle attend (ANA22-03).
+function measuresEachFieldOnce({
   expected_field_ids: expected = [],
   field_measurements = [],
 }: AnalyticsEvent): boolean {
   const measured = field_measurements.map(({ field_id }) => field_id);
-  const ofItsSupport = (id: string) => id.startsWith(`${support}.`);
   return (
-    [...expected, ...measured].every(ofItsSupport) &&
     new Set(expected).size === expected.length &&
     new Set(measured).size === measured.length &&
     measured.every((id) => expected.includes(id))
   );
 }
 
-// Un bouton exposé ou cliqué dit lequel, son exposition, sa révision et l'objet
-// qu'il montre, sur son écran : la fiche sur R2, le document sur R3, qui est
-// alors son objet. Son clic vient du prescripteur (ANA22-02).
-function placesItsButton(event: AnalyticsEvent): boolean {
-  const { type, button_id, screen, document_id } = event;
-  if (type !== "button_exposed" && type !== "button_clicked") return true;
-  const { exposure_id, revision, artifact_id } = event;
-  if (!button_id || !exposure_id || !revision || !artifact_id) return false;
-  if (type === "button_clicked" && event.activity_origin !== "user")
-    return false;
-  if (button_id.startsWith("patient_sheet_")) return screen === "R2";
-  return (
-    screen === "R3" &&
-    event.document_revision !== undefined &&
-    artifact_id === document_id
-  );
-}
-
-// Le document affiché, son impression et son téléchargement lancés, et le PDF
-// remis.
-const OF_A_DOCUMENT: readonly AnalyticsEvent["type"][] = [
-  "document_displayed",
-  "document_print_requested",
-  "document_download_requested",
-  "document_download_succeeded",
-];
-
-// Ces événements disent leur document et sa révision.
-function namesItsDocument(event: AnalyticsEvent): boolean {
-  if (!OF_A_DOCUMENT.includes(event.type)) return true;
-  return (
-    event.revision !== undefined &&
-    event.document_revision !== undefined &&
-    event.document_id !== undefined
-  );
+// Un bouton du document a ce document pour objet (ANA22-02).
+function showsItsDocument(event: AnalyticsEvent): boolean {
+  const { button_id, artifact_id, document_id } = event;
+  if (button_id !== "document_print" && button_id !== "document_download")
+    return true;
+  return artifact_id === document_id;
 }

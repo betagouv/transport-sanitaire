@@ -126,6 +126,20 @@ Matomo n'a pas de commande pour anonymiser l'IP : c'est un réglage de l'instanc
 
 ## Mises à jour
 
+> **Mise à jour 2026-11-17, le contrat v10.2.2 entier (#497).** Cela
+> **révise** le premier point de la décision. La collecte valide le schéma de
+> l'éditeur entier : ses champs fermés et ses 26 règles croisées (`allOf`),
+> dans `shared/analytics/contract-rule.vo.ts`, sous leur numéro. Nos
+> compléments sortent : `schema_version` passe à 4. Un onglet ouvert avant le
+> déploiement, qui envoie une autre `version` (la 10.2.1 de ses règles), son
+> `commit_sha` ou ses `portions`, est refusé en 400 comme tout envoi hors
+> contrat, sans tolérance ni réécriture : une seule forme reçue. Le serveur
+> écrit la raison d'un refus dans ses traces, sans rien du contenu reçu : la
+> version si elle est bien formée, le nom des champs en cause, le numéro de la
+> règle enfreinte. Le journal de test valide chaque événement de même. Les
+> contrôles qui suivent toute une simulation (séquence strictement croissante,
+> révision connue) restent au dashboard.
+
 > **Mise à jour 2026-11-17, la fermeture d'une simulation (#497).**
 > « Faire une nouvelle simulation » ferme la simulation en cours au journal :
 > `simulation_closed`, `closure_reason = new_simulation`, sous le numéro qui
