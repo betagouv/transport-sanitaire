@@ -44,9 +44,9 @@ dès que le choix suffit (#197, #367).
 |---|---|
 | un service de la liste, ou une structure | le simulateur s'ouvre sans bouton |
 | une saisie libre | un bouton valide : on ne sait pas quand une saisie est finie |
-| le service « Autre » d'un établissement | le prescripteur saisit son service réel, qui est écrit dans le référentiel et apparaît dans la liste à la visite suivante |
-| « Autre établissement » | le prescripteur saisit l'établissement puis le service ; les deux sont écrits, et l'établissement reçoit son service « Autre » (#368) |
-| le référentiel ne répond pas | l'écran le dit et laisse entrer avec un rattachement dégradé, « autre / autre » |
+| le service « Autre » d'un établissement | le prescripteur saisit son service réel, qui est écrit dans le référentiel et apparaît dans la liste à la visite suivante ; le parcours porte l'id du service créé (#506) |
+| « Autre établissement » | le prescripteur saisit l'établissement puis le service ; les deux sont écrits, l'établissement reçoit son service « Autre » (#368), et le parcours porte leurs ids (#506) |
+| le référentiel ne répond pas | l'écran le dit et laisse entrer ; le parcours part sans établissement ni service (#506) |
 
 Changer d'écran au choix d'une liste est un changement de contexte (RGAA 7.4,
 WCAG 3.2.2), assumé par le produit. Rien ne l'annonce, à la demande du porteur

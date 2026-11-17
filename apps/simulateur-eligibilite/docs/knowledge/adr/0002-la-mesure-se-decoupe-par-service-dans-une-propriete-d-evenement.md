@@ -37,6 +37,12 @@ la gouvernance des données, hors de ce document.
 
 ## Mises à jour
 
+> **Mise à jour 2026-11-17, l'id du service créé (#506).** Un service saisi sous
+> « Autre » donne désormais l'id du service que le référentiel crée, et un
+> établissement saisi celui de son service créé. Si le référentiel ne répond
+> pas, l'événement part sans Nom : le rattachement dégradé, et son `autre`,
+> disparaissent.
+
 > **Mise à jour 2026-09-29, mesure par service, sans bandeau.** Le Nom d'événement
 > porte désormais l'id Grist du service, en clair, et non plus le `prescripteurRef`
 > pseudonymisé, retiré avec l'identification individuelle. Cela **révise** l'ADR-0002 (découpage par service) et

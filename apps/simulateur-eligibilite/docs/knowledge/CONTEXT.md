@@ -72,11 +72,15 @@ _Avoid_: Identification, identité. Ces mots sont réservés à une éventuelle
 authentification individuelle future (ProConnect, AgentConnect), non implémentée.
 Les employer pour le rattachement laisserait croire qu'une personne est identifiée.
 
-**Rattachement dégradé**:
-Le rattachement « Autre / Autre » donné d'office quand le référentiel ne répond pas.
-Le prescripteur entre quand même dans le simulateur, et l'analytics range sa visite
-sous « autre ».
-_Avoid_: rattachement vide, anonyme. Il est bien là, simplement non renseigné.
+**Quarantaine**:
+Ce que la collecte garde à part : un événement dont l'établissement n'est pas au
+référentiel, ou dont le service n'est pas sous son établissement (ANA22-01). Il
+ne compte pas parmi les événements valides.
+_Avoid_: collision, réservé à deux contenus sous le même `event_id`.
+
+~~**Rattachement dégradé**~~ (retiré le 2026-11-17, #506) : le rattachement
+« Autre / Autre » donné d'office quand le référentiel ne répondait pas. Le
+prescripteur entre toujours, mais son parcours part sans rattachement.
 
 **Établissement**:
 Celui que le prescripteur déclare au rattachement (D-24).

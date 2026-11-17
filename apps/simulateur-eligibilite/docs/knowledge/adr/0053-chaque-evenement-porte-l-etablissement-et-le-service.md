@@ -64,6 +64,20 @@ cache, et un établissement saisi restait sans nom.
 
 ## Mises à jour
 
+> **Mise à jour 2026-11-17, les ids du référentiel, vérifiés à la collecte
+> (#506, ANA22-01).** Une saisie libre attend que le référentiel la crée : un
+> service saisi sous « Autre » part avec l'id du service créé, jamais celui
+> d'« Autre », et un établissement saisi avec les ids de l'établissement et du
+> service créés. Si le référentiel ne répond pas, un service saisi garde son
+> établissement seul, un établissement saisi part sans id. Le repli
+> `{"id":"autre"}` disparaît : sans liste, le parcours part sans rattachement.
+> Les structures gardent leurs ids. La collecte vérifie la paire contre le
+> référentiel, lu en cache : un établissement inconnu, ou un service hors de
+> son établissement, va dans la table `Quarantaine`, avec sa raison en colonne
+> `reason`, et la collecte répond 422. Arbitrages au ticket Notion
+> du chantier (points 3 et 4). Voir
+> [`enrichissement-referentiel-rattachement.md`](../domain/enrichissement-referentiel-rattachement.md).
+
 > **Mise à jour 2026-11-17, les noms retirés (#497).** Le contrat v10.2.2 ferme
 > ses champs : cela **révoque** les points 2 et 4, et la clé `name` du point 3.
 > `establishment_name` et `service_name` ne partent plus. Chaque événement garde
