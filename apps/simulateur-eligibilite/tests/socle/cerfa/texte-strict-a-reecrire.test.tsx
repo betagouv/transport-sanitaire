@@ -90,6 +90,7 @@ describe("un texte strict qui déborde", () => {
     expect(champ).not.toHaveAccessibleDescription(
       expect.stringContaining(MESSAGE),
     );
+    expect(screen.queryByText(MESSAGE)).toBeNull();
     expect(screen.getByRole("button", TELECHARGER)).toBeDisabled();
     await user.click(screen.getByRole("button", VALIDER));
     await user.click(await genere());
