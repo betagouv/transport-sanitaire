@@ -36,7 +36,7 @@ describe.each([PMT_, DAP_])("la précision de l'urgence, $nom", (support) => {
     const genere = await rempli(support, COURTE);
 
     expect(debordeDe(genere)).toEqual([]);
-    expect(genere.typography.sizes.urgence_precision).toBe(8);
+    expect(genere.typography.sizes[`${support.nom}.urgence_precision`]).toBe(8);
     for (const page of support.volets)
       expect(await textsOn(await pdfDe(genere), page)).toContain(COURTE);
   });

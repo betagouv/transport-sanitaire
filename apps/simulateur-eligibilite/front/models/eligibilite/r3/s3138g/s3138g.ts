@@ -27,6 +27,7 @@ import {
   date,
   strictDrawing,
   strictText,
+  type TypographicFieldId,
   templateAt,
   text,
 } from "../../../../socle";
@@ -159,6 +160,21 @@ const CERFA: Cerfa<DtoS3138g> = {
       PRECISION_STRICTE,
     ),
   },
+  // Les identifiants de `champs-typographiques.json` (ANA22-03) : les deux
+  // parties d'une extrémité sont son adresse native.
+  typographicIds: {
+    beneficiaire_adresse: "S3138g.beneficiaire_adresse",
+    tiers_date: "S3138g.tiers_date",
+    atmp_date: "S3138g.atmp_date",
+    depart_structure: "S3138g.depart_adresse_native",
+    depart_autre: "S3138g.depart_adresse_native",
+    arrivee_structure: "S3138g.arrivee_adresse_native",
+    arrivee_autre: "S3138g.arrivee_adresse_native",
+    nombre: "S3138g.nombre",
+    urgence_precision: "S3138g.urgence_precision",
+    elements_medicaux: "S3138g.elements_medicaux",
+    date_prescription: "S3138g.date_prescription",
+  } satisfies Record<string, TypographicFieldId<"S3138g">>,
 };
 
 const pension = given.cible("cible_situation_pension_militaire");

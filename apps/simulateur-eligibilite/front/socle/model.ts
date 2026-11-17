@@ -20,10 +20,11 @@ import type {
   Mode,
   TransportComposition,
 } from "../../shared/analytics/analytics-event";
+import type { TypographicFieldId } from "../../shared/analytics/typographic-fields";
 import type { ResultCodes } from "./analytics";
 import type { BoundCerfa } from "./cerfa";
 
-export type { Mode, ResultCodes, TransportComposition };
+export type { Mode, ResultCodes, TransportComposition, TypographicFieldId };
 
 /**
  * Ce qu'un résultat reçoit pour s'afficher : ce qu'il lit des questions
