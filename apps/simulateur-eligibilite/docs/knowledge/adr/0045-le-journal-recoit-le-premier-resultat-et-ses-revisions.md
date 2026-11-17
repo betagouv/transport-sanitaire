@@ -62,6 +62,16 @@ liste.
 
 ## Mises à jour
 
+> **Mise à jour 2026-11-17, l'issue et le support toujours présents (#497).**
+> Cela **révise** les points 2 et 5. Le contrat v10.2.2 exige `issue`,
+> `support` et `transport_composition` sur chaque `result_displayed`, en
+> listes fermées. Quand les règles ne donnent ni l'issue ni le support, ou que
+> le modèle ne déclare pas ses codes, le R2 ne part pas et n'ouvre pas de
+> révision : ni bouton, ni avis, ni document ne s'y rattache. Le premier R2
+> dont les règles décident ouvre `r1`. `reason_codes` vaut
+> `[cible_reason_code]` (point 22 du retour v10.2.2). Le modèle de test donne
+> désormais ses codes : une PMT en taxi, ou un refus quand rien n'est commandé.
+
 > **Mise à jour 2026-11-17, les compléments hors contrat retirés (#497).** Le
 > contrat v10.2.2 ferme ses champs : cela **révoque** le point 6. `financeur` et
 > `motifs` ne partent plus. Le motif affiché reste choisi par le calcul de son

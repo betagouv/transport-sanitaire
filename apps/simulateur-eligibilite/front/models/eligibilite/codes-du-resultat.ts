@@ -1,6 +1,6 @@
 // Les codes que R2 donne au journal des parcours (ADR-0045) : l'issue, le mode,
 // le code de raison et le support, tels que les règles les calculent, et la
-// composition du transport (ANA22-04). Une cible sans objet ou inconnue ne
+// composition du transport (ANA22-04). Sans issue ou sans support, le R2 ne
 // part pas. Le code de raison part en liste : vide quand les règles n'en
 // donnent aucun, absente quand il leur manque un fait. Le mode ne part que
 // quand la composition en demande un.
@@ -38,7 +38,7 @@ export const CODES_DU_RESULTAT = given
 
 // ---- implémentation ----
 
-function valeurDe(cible: Cible<string>): string | null {
+function valeurDe<Value extends string>(cible: Cible<Value>): Value | null {
   return cible.value ?? null;
 }
 

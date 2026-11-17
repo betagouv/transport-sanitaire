@@ -2,13 +2,14 @@
 // révision affichée, une fois chargée, et sa chute quand une modification de
 // P1 la rend caduque. Voir ADR-0045.
 //
-// Le modèle de test ne déclare pas de codes : son R2 n'envoie que sa révision
-// et la complétion.
+// Le modèle de test donne une PMT en taxi, ou un refus quand rien n'est
+// commandé. Un modèle qui ne déclare pas ses codes n'envoie pas de R2.
 
 import { screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 import type { AnalyticsEvent } from "../../../shared/analytics/analytics-event";
 import { journalDeTest } from "../analytics/journal-de-test";
+import { modeleDeTest } from "../modele-de-test";
 import {
   ACCOMPAGNEMENTS,
   allerAuResultat,
@@ -44,7 +45,7 @@ async function revenirAuxAccompagnements(
 }
 
 describe("le journal du premier résultat", () => {
-  it("un R2 affiché part avec sa révision et la complétion, sans code ni composition que le modèle ne déclare pas", async () => {
+  it("un R2 affiché part avec sa révision, la complétion et les codes du modèle", async () => {
     const { user, envoyes } = await ouvrirAvecUnJournal();
 
     await allerAuResultat(user);
@@ -55,10 +56,23 @@ describe("le journal du premier résultat", () => {
         screen: "R2",
         revision: "r1",
         can_complete: true,
+        issue: "ISSUE_PMT",
+        support: "S3138g",
+        transport_composition: "terrestrial_only",
+        mode: "TAP",
+        reason_codes: [],
       }),
     ]);
-    expect(affiches[0]).not.toHaveProperty("reason_codes");
-    expect(affiches[0]).not.toHaveProperty("transport_composition");
+  });
+
+  it("un modèle qui ne déclare pas ses codes n'envoie pas de R2", async () => {
+    const { analytics, envoyes } = journalDeTest();
+    const { resultCodes: _codes, ...sansCodes } = modeleDeTest;
+    const user = await ouvrirLeSimulateur({ analytics, modele: sansCodes });
+
+    await allerAuResultat(user);
+
+    expect(envoyes.map(({ type }) => type)).not.toContain("result_displayed");
   });
 
   it("monté comme en production, où React rejoue les effets, le R2 part une fois", async () => {

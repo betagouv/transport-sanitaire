@@ -2,8 +2,9 @@
 // affichée, une fois son PDF prêt, et chaque génération ratée. Voir
 // ADR-0046.
 //
-// Le modèle de test ne déclare pas de codes : son document ne porte ni support
-// ni mode, et sa taille imprimée ne part pas. Elle se teste sur le parcours
+// Le modèle de test donne une PMT en taxi : son document porte le support
+// S3138g et le mode TAP, et sa taille imprimée part sous les identifiants de
+// la PMT. Le détail de la mesure se teste sur le parcours
 // (`analytics/typographie-du-document.test.ts`) et sur les cerfa du modèle de
 // l'éditeur (`r3/taille-des-champs.test.ts`).
 
@@ -31,10 +32,14 @@ async function ouvrirAvecUnJournal(
   return { user, envoyes };
 }
 
-// Les documents envoyés, en bref : le type, la version et la révision.
+// Les documents envoyés, en bref : le type, la version et la révision. La
+// taille imprimée, qui suit chaque version affichée, n'y est pas.
 const documents = (envoyes: AnalyticsEvent[]) =>
   envoyes
-    .filter(({ type }) => type.startsWith("document_"))
+    .filter(
+      ({ type }) =>
+        type.startsWith("document_") && type !== "document_typography_measured",
+    )
     .map(
       ({ type, document_id, revision }) =>
         `${type} ${document_id ?? "-"} ${revision}`,
@@ -64,7 +69,7 @@ async function revaliderLeComplement(user: User, quantite?: string) {
 }
 
 describe("le journal du document R3", () => {
-  it("un PDF prêt ouvre la version d1, avec la révision du R2", async () => {
+  it("un PDF prêt ouvre la version d1, avec la révision, le support et le mode du R2", async () => {
     const { user, envoyes } = await ouvrirAvecUnJournal();
 
     await allerAuDocument(user);
@@ -77,9 +82,25 @@ describe("le journal du document R3", () => {
         screen: "R3",
         document_id: "d1",
         revision: "r1",
+        support: "S3138g",
+        transport_composition: "terrestrial_only",
+        mode: "TAP",
       }),
     ]);
-    expect(affiches[0]).not.toHaveProperty("support");
+  });
+
+  it("la taille imprimée de la version part sous les identifiants de son support", async () => {
+    const { user, envoyes } = await ouvrirAvecUnJournal();
+
+    await allerAuDocument(user);
+
+    const mesure = envoyes.find(
+      ({ type }) => type === "document_typography_measured",
+    );
+    expect(mesure).toMatchObject({ document_id: "d1", support: "S3138g" });
+    expect(mesure?.expected_field_ids).toEqual(
+      expect.arrayContaining(["S3138g.elements_medicaux", "S3138g.nombre"]),
+    );
   });
 
   it("monté comme en production, où React rejoue les effets, le document part une fois", async () => {

@@ -14,8 +14,10 @@ import {
   CONTRACT_VERSION,
   EVENT_TYPES,
   INTENTS,
+  ISSUES,
   MODES,
   SCREENS,
+  SUPPORTS,
   TRANSPORT_COMPOSITIONS,
 } from "./analytics-event.ts";
 import { TYPOGRAPHIC_FIELDS } from "./typographic-fields.ts";
@@ -70,14 +72,14 @@ const EVENT_SCHEMA: z.ZodType<AnalyticsEvent> = z
     page_id: identifier.optional(),
     exposure_id: identifier.optional(),
     can_complete: z.boolean().optional(),
-    issue: identifier.optional(),
+    issue: z.enum(ISSUES).optional(),
     mode: z.enum(MODES).optional(),
     transport_composition: z.enum(TRANSPORT_COMPOSITIONS).optional(),
     reason_codes: z
       .array(z.string().regex(/^[A-Z][A-Z0-9_]{0,95}$/))
       .optional(),
     document_id: identifier.optional(),
-    support: identifier.optional(),
+    support: z.enum(SUPPORTS).optional(),
     expected_field_ids: z.array(fieldId).optional(),
     field_measurements: z
       .array(
