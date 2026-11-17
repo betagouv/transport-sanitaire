@@ -6,15 +6,12 @@
 // La mesure se charge avec le premier éditeur, une fois : `pdf-lib` et le
 // gabarit, comme pour la génération.
 
-import { useEffect, useState } from "react";
-import type { Cerfa, CerfaDto } from "./cerfa";
-import {
-  measureOf,
-  type Overflowing,
-  strictEntriesOf,
-} from "./generate-the-cerfa/generate-the-cerfa";
+import type { Cerfa, CerfaDto, Strict } from "./cerfa";
+import type { Overflowing } from "./generate-the-cerfa/generate-the-cerfa";
+import { strictEntriesOf, textOf } from "./generate-the-cerfa/strict-entries";
 import type { StrictMeasure } from "./generate-the-cerfa/strict-text";
 import { StrictTextEditor } from "./StrictTextEditor";
+import { useMeasure } from "./use-measure";
 
 /** Les brouillons des textes stricts, par entrée du DTO. */
 export type Drafts = Readonly<Record<string, string>>;
@@ -28,7 +25,7 @@ export type StrictTextEdits = {
 
 type Editor = {
   readonly entry: string;
-  readonly label: string;
+  readonly strict: Strict;
   readonly text: string;
   readonly fallback: number;
 };
@@ -43,12 +40,12 @@ export function editorsOf(
   drafts: Drafts,
   overflowing: readonly Overflowing[] | undefined,
 ): Editor[] {
-  return strictEntriesOf(cerfa).flatMap(({ entry, label }) => {
+  return strictEntriesOf(cerfa).flatMap(({ entry, strict }) => {
     const overflow = overflowing?.find((found) => found.entry === entry);
     const draft = drafts[entry];
     if (draft === undefined && !overflow) return [];
-    const text = draft ?? String(dto.fields[entry] ?? "");
-    return [{ entry, label, text, fallback: overflow?.maximum ?? 0 }];
+    const text = draft ?? textOf(dto, entry);
+    return [{ entry, strict, text, fallback: overflow?.maximum ?? 0 }];
   });
 }
 
@@ -62,10 +59,10 @@ export function StrictTexts({
   edits: StrictTextEdits;
 }) {
   const measure = useMeasure(cerfa, editors.length > 0);
-  return editors.map(({ entry, label, text, fallback }) => (
+  return editors.map(({ entry, strict, text, fallback }) => (
     <StrictTextEditor
       key={entry}
-      label={label}
+      strict={strict}
       text={text}
       measured={measure?.(entry, text) ?? estimate(text, fallback)}
       onEdit={(edited) => edits.onEdit(entry, edited)}
@@ -75,25 +72,6 @@ export function StrictTexts({
 }
 
 // ---- implémentation ----
-
-type Measure = (entry: string, text: string) => StrictMeasure;
-
-// La mesure du cerfa, chargée au premier éditeur.
-function useMeasure(cerfa: Cerfa<CerfaDto>, wanted: boolean) {
-  const [measure, setMeasure] = useState<Measure>();
-  useEffect(() => {
-    if (!wanted || measure) return;
-    let current = true;
-    measureOf(cerfa).then(
-      (loaded) => current && setMeasure(() => loaded),
-      (cause) => console.error("[cerfa] Mesure impossible.", cause),
-    );
-    return () => {
-      current = false;
-    };
-  }, [cerfa, wanted, measure]);
-  return measure;
-}
 
 // Tant que la mesure se charge : le maximum de la génération, et rien ne se
 // valide.

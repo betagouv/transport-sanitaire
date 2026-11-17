@@ -36,6 +36,7 @@ export const model = defineModel<
     title: R3.titre,
     Resultat: R3.Page,
     startLabel: R3.boutonDeDepart,
+    measured: R3.mesurees,
     // `printLabel` et `downloadLabel` de `CONTRAT_RENDU_DOCUMENTAIRE.json`.
     printLabel: "Imprimer",
     downloadLabel: "Télécharger",

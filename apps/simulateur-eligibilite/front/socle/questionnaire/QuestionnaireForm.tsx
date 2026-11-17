@@ -19,6 +19,7 @@ import type {
 } from "../../../core/socle/questionnaire-engine";
 
 import { ConditionalPanel } from "../ui";
+import { type CounterOf, counted } from "./count-a-text";
 import { QuestionField } from "./QuestionField";
 import type {
   QuestionnaireOptions,
@@ -46,6 +47,8 @@ type Props = QuestionnaireOptions & {
   // La trace de debug, un developer tool. Le questionnaire sait où l'afficher
   // et quoi lui donner, pas à qui elle s'ouvre. Absente, rien n'est rendu.
   DebugTrace?: ComponentType<DebugTraceProps>;
+  // Le compteur d'une question, pour sa saisie. Sans lui, aucun.
+  counterOf?: CounterOf;
 };
 
 /** Ce qu'un écran du simulateur donne à lire à la trace de debug. */
@@ -74,6 +77,7 @@ export function QuestionnaireForm({
   endLabel,
   onRestart,
   DebugTrace,
+  counterOf,
   ...options
 }: Props) {
   const questionnaire = useQuestionnaire(options);
@@ -94,7 +98,7 @@ export function QuestionnaireForm({
             questionnaire.next();
           }}
         >
-          <QuestionFields questionnaire={questionnaire} />
+          <QuestionFields questionnaire={questionnaire} counterOf={counterOf} />
           <NavigationButtons
             questionnaire={questionnaire}
             endLabel={endLabel}
@@ -168,25 +172,29 @@ function traceOf(questionnaire: QuestionnaireScreen): DebugTraceProps {
 // dans son panneau, si celle-ci est sur la page ; sinon, à son rang.
 function QuestionFields({
   questionnaire,
+  counterOf,
 }: {
   questionnaire: QuestionnaireScreen;
+  counterOf?: CounterOf;
 }) {
   const { questions, draft } = questionnaire;
   const parentOf = (question: AskedQuestion) =>
     questions.find(({ id }) => id === question.under?.question);
   const field = (question: AskedQuestion): ReactNode => {
-    const errors = errorsOf(
-      question,
-      draft[question.id],
-      questionnaire.showsInconsistencies,
-    );
+    const answer = draft[question.id];
+    const counter = counted(counterOf, question.id, answer);
+    const errors = [
+      ...errorsOf(question, answer, questionnaire.showsInconsistencies),
+      ...counter.errors,
+    ];
     const links = errors.length > 0 ? questionnaire.revisitsOf(question) : [];
     return (
       <QuestionField
         key={question.id}
         question={question}
-        answer={draft[question.id]}
+        answer={answer}
         errors={errors}
+        counter={counter.text}
         onChange={(answer) => questionnaire.answer(question.id, answer)}
         below={(value) => {
           const nested = questions.filter(shownUnder(question, value));
