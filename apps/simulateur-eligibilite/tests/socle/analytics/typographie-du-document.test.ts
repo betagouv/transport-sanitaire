@@ -7,19 +7,19 @@ import { Journey } from "../../../front/socle/analytics/journey.entity";
 import type { AnalyticsEvent } from "../../../shared/analytics/analytics-event";
 import { PROVENANCE } from "./journal-de-test";
 
-// Le R2 affiché : ses codes, sans motif ni portion.
+// Le R2 affiché : ses codes, sans motif.
 const unR2 = {
   canComplete: true,
   codes: {
     issue: "ISSUE_PMT",
     mode: null,
+    transportComposition: "unknown",
     reasonCodes: [],
     support: "S3138g",
     financeur: null,
   },
   motifs: [],
-  portions: [],
-};
+} as const;
 
 // Un bon de commande : la quantité à 9 pt, l'adresse rapetissée à 7,5 pt.
 const LU: Typography = { sizes: { quantite: 9, adresse: 7.5 }, unmeasured: [] };

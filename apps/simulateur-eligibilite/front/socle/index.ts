@@ -40,10 +40,11 @@ export {
   type Feedback,
   type FirstResult,
   type Intent,
-  type Portion,
+  type Mode,
   type ResultatProps,
   type ResultCodes,
   type Sheet,
+  type TransportComposition,
 } from "./model";
 export { declarerAuServeur, referentielDuServeur } from "./rattachement";
 export { ServerApiClient } from "./server-api";

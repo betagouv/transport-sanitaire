@@ -1,7 +1,6 @@
 // Ce que dit la fiche d'une demande d'accord préalable (#136) : la raison que
-// lit le patient, ses motifs (`motif.ts`), le motif administratif que reprend
-// le modus, et les portions du trajet que les deux restituent. Des fonctions
-// pures de la trace, sans React.
+// lit le patient, ses motifs (`motif.ts`) et le motif administratif que
+// reprend le modus. Des fonctions pures de la trace, sans React.
 //
 // Les mots viennent du catalogue de l'éditeur. La raison suit la page
 // « Éligibilité » : le contexte du soin, puis la convocation et la permission
@@ -13,8 +12,6 @@
 
 import type { Cibles } from "../../../../../core/models/eligibilite/cibles/noms";
 import { given } from "../../../../../core/models/eligibilite/questions/reponses";
-import type { Portion } from "../../../../socle";
-import { portionsDesTextes } from "./autres-termes-du-lexique";
 import { luPar, type TraceDe } from "./ce-que-lit-un-bloc";
 import {
   avecLeLexique,
@@ -36,8 +33,6 @@ export type FondementDeLAccord = {
   readonly motifAdministratif: string | undefined;
   /** Les motifs que la raison affiche : le contexte, puis la justification. */
   readonly motifs: readonly Motif[];
-  /** Les portions du trajet que la raison et le motif administratif restituent. */
-  readonly portions: readonly Portion[];
 };
 
 // Chaque code de motif, et la cible qui le prouve.
@@ -92,12 +87,10 @@ export function fondementDeLAccord(
   );
   const raison = raisonDeLAccord(issue, trace, [contexte, justification]);
   const motif = motifDeLAccord(issue, trace);
-  const textes = [raison, motif].filter((texte) => texte !== undefined);
   return {
     raison: raison && avecLeLexique(issue, trace, raison),
     motifAdministratif: motif && avecLeLexique(issue, trace, motif),
     motifs: affiches(contexte, justification),
-    portions: portionsDesTextes(textes),
   };
 }
 

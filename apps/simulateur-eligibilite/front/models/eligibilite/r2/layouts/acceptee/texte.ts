@@ -15,7 +15,6 @@
 // ce que lisent ces textes (`ce-que-lit-un-texte.ts`).
 
 import type { AcceptedIssueId } from "../../../../../../core/models/eligibilite/cibles/issue.vo";
-import type { Portion } from "../../../../../socle";
 import {
   badgesDuResultat,
   type CarteAffichee,
@@ -77,8 +76,6 @@ export type TexteDeLaFichePositive = {
   readonly finance: Bloc;
   /** Les motifs que la raison affiche. */
   readonly motifs: readonly Motif[];
-  /** Les portions du trajet que la fiche restitue. */
-  readonly portions: readonly Portion[];
 };
 
 /** La partie terrestre : son mode en texte, puis les étapes de ce mode. */
@@ -133,7 +130,6 @@ export function texteDeLaFichePositive(
     consignes: sansCartes ? { ...consignes, etapes: [] } : consignes,
     finance: issue.finance,
     motifs: fondement.motifs,
-    portions: fondement.portions,
   };
 }
 
@@ -197,8 +193,6 @@ function sansCartesNiEtapes(
 // Pourquoi le transport est pris en charge : le contexte du soin pour la
 // prescription médicale de transport, la permission pour le S3141, le contexte
 // et la justification de l'accord pour une demande d'accord préalable.
-// Seul l'accord préalable restitue des portions du trajet : les autres textes
-// n'en nomment aucune.
 function fondementDe(
   catalogue: CatalogueResultats,
   trace: LuParLaFiche,
@@ -211,7 +205,6 @@ function fondementDe(
       raison: phrase?.text,
       motifAdministratif: motifAdministratifDeLaPermission(issue, trace),
       motifs: phrase ? [motifDe(phrase)] : [],
-      portions: [],
     };
   }
   const issue = catalogue.issues[issueId];
@@ -221,6 +214,5 @@ function fondementDe(
     raison: phraseDuContexte(issue, trace),
     motifAdministratif: motifAdministratif(issue, trace),
     motifs: contexte ? [motifDe(contexte)] : [],
-    portions: [],
   };
 }

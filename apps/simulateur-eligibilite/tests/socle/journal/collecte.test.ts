@@ -202,7 +202,7 @@ describe("collecte de la taille des champs du document R3", () => {
   });
 });
 
-describe("collecte des portions du premier résultat", () => {
+describe("collecte de la composition du transport", () => {
   const affichage = {
     ...simulationStarted,
     event_id: "s-1:5",
@@ -210,10 +210,12 @@ describe("collecte des portions du premier résultat", () => {
     type: "result_displayed",
     screen: "R2",
     revision: "r1",
-    portions: ["LIGNE_REGULIERE"],
+    support: "S3139h",
+    transport_composition: "mixed",
+    mode: "TAP",
   };
 
-  it("garde la ligne régulière", async () => {
+  it("garde la composition et le mode terrestre", async () => {
     const journal = await collecteSur();
 
     const { status } = await collecter(affichage);
@@ -222,15 +224,32 @@ describe("collecte des portions du premier résultat", () => {
     expect((await journal.find("s-1:5"))?.event).toEqual(affichage);
   });
 
-  it("reçoit l'envoi d'un onglet d'avant #443, sans la partie terrestre qu'il croyait prouvée", async () => {
+  it.each([
+    [
+      "une composition que le contrat ne connaît pas",
+      { transport_composition: "air_only" },
+    ],
+    ["un mode qui n'est pas terrestre", { mode: "AVION" }],
+  ])("refuse %s", async (_, champ) => {
+    await collecteSur();
+
+    const { status } = await collecter({ ...affichage, ...champ });
+
+    expect(status).toBe(400);
+  });
+
+  it("reçoit l'envoi d'un onglet d'avant #509, sans ses portions", async () => {
     const journal = await collecteSur();
+    const { transport_composition: _, ...avant } = affichage;
 
     const { status } = await collecter({
-      ...affichage,
+      ...avant,
       portions: ["LIGNE_REGULIERE", "TERRESTRE"],
     });
 
     expect(status).toBe(204);
-    expect((await journal.find("s-1:5"))?.event).toEqual(affichage);
+    const recu = (await journal.find("s-1:5"))?.event;
+    expect(recu).toEqual(avant);
+    expect(recu).not.toHaveProperty("portions");
   });
 });

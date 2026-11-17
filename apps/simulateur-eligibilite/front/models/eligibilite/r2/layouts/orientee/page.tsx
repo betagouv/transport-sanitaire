@@ -31,6 +31,5 @@ export function pageOrientee(
     body: <PageDuPrescripteur texte={texte} />,
     label: "Résultat pour le prescripteur",
     motifs: texte.motifs && identifiantsDes(texte.motifs),
-    portions: [],
   };
 }

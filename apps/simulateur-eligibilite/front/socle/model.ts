@@ -16,11 +16,14 @@ import {
   Relevance,
 } from "../../core/socle/questionnaire-engine";
 
-import type { Portion } from "../../shared/analytics/analytics-event";
+import type {
+  Mode,
+  TransportComposition,
+} from "../../shared/analytics/analytics-event";
 import type { ResultCodes } from "./analytics";
 import type { BoundCerfa } from "./cerfa";
 
-export type { Portion, ResultCodes };
+export type { Mode, ResultCodes, TransportComposition };
 
 /**
  * Ce qu'un résultat reçoit pour s'afficher : ce qu'il lit des questions
@@ -62,11 +65,6 @@ export type FirstResult = {
    * vide : aucun motif affiché. Sans liste : on ne sait pas.
    */
   motifs?: readonly string[];
-  /**
-   * Les portions du trajet que le résultat restitue à part (ADR-0045). Une liste
-   * vide : aucune. Sans liste : on ne sait pas.
-   */
-  portions?: readonly Portion[];
 };
 
 /**

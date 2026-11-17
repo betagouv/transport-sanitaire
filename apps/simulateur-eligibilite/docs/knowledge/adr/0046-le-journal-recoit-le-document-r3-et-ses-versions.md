@@ -41,6 +41,11 @@ pas la suivante, puisque sa révision ne vaut plus la révision courante.
 
 ## Mises à jour
 
+> **Mise à jour 2026-11-17, la composition du transport (#509).**
+> `document_displayed` porte aussi `transport_composition`, celle de sa
+> révision : un document garde la composition de son propre R2, jamais celle
+> d'un R2 plus récent (ANA22-04). Son `mode` suit les règles de l'ADR-0045.
+
 > **Mise à jour 2026-11-13, le document R3 et ses versions (#387).** Le journal reçoit
 > chaque version du document R3 affichée, `d1`, `d2`…, avec la révision du R2 dont
 > elle vient, et chaque échec de sa génération. Une version tombe avec son R2, et

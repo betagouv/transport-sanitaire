@@ -129,13 +129,13 @@ const unR2 = {
   codes: {
     issue: "ISSUE_PMT",
     mode: null,
+    transportComposition: "unknown",
     reasonCodes: [],
     support: "S3138g",
     financeur: null,
   },
   motifs: ["E-B"],
-  portions: [],
-};
+} as const;
 
 // La dernière page de P2 validée, ses réponses changées ou non.
 function valider(journey: Journey, changed: boolean) {
@@ -163,10 +163,25 @@ describe("les révisions du premier résultat", () => {
       support: "S3138g",
       reason_codes: [],
       motifs: ["E-B"],
-      portions: [],
+      transport_composition: "unknown",
     });
     expect(affiche).not.toHaveProperty("mode");
     expect(affiche).not.toHaveProperty("financeur");
+  });
+
+  it("un R2 part avec la composition du transport et son mode terrestre", () => {
+    const journey = new Journey({ seeded: false, provenance: PROVENANCE });
+    const mixte = {
+      ...unR2,
+      codes: { ...unR2.codes, transportComposition: "mixed", mode: "TAP" },
+    } as const;
+
+    const [affiche] = journey.displayResult(mixte);
+
+    expect(affiche).toMatchObject({
+      transport_composition: "mixed",
+      mode: "TAP",
+    });
   });
 
   it("un R2 réaffiché sans modification garde sa révision, et ne repart pas", () => {

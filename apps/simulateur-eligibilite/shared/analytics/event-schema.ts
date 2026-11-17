@@ -11,10 +11,10 @@ import {
   EVENT_TYPES,
   INTENTS,
   MILESTONES,
+  MODES,
   NAVIGATIONS,
-  PORTIONS,
-  type Portion,
   SCREENS,
+  TRANSPORT_COMPOSITIONS,
 } from "./analytics-event.ts";
 
 /** Ce qui est reçu sort du contrat : un champ en trop, ou mal formé. */
@@ -23,7 +23,7 @@ type OutOfContract = undefined;
 export function parseAnAnalyticsEvent(
   received: unknown,
 ): AnalyticsEvent | OutOfContract {
-  const parsed = EVENT_SCHEMA.safeParse(received);
+  const parsed = EVENT_SCHEMA.safeParse(sansLesPortions(received));
   return parsed.success ? parsed.data : undefined;
 }
 
@@ -39,13 +39,13 @@ const name = z.string().trim().min(1).max(300);
 // Une version livrée : `10.1.8` pour les règles, `0.7.0` pour l'app.
 const release = z.string().regex(/^\d+\.\d+\.\d+$/);
 
-// Une portion qui ne part plus : `TERRESTRE` ne prouvait pas de partie
-// terrestre (#443). Un onglet resté sur une version d'avant l'envoie encore :
-// l'événement est reçu, sans elle.
-const PORTIONS_RETIREES = ["TERRESTRE"] as const;
-
-function estUnePortion(portion: string): portion is Portion {
-  return PORTIONS.some((connue) => connue === portion);
+// Les portions ne partent plus : la composition du transport les remplace
+// (#509). Un onglet resté sur une version d'avant les envoie encore :
+// l'événement est reçu, sans elles.
+function sansLesPortions(received: unknown): unknown {
+  if (typeof received !== "object" || received === null) return received;
+  const { portions: _, ...event } = received as Record<string, unknown>;
+  return event;
 }
 
 // La clé d'un champ du cerfa, telle que le code l'écrit : jamais un texte saisi.
@@ -68,7 +68,8 @@ const EVENT_SCHEMA: z.ZodType<AnalyticsEvent> = z.strictObject({
   exposure_id: identifier.optional(),
   can_complete: z.boolean().optional(),
   issue: identifier.optional(),
-  mode: identifier.optional(),
+  mode: z.enum(MODES).optional(),
+  transport_composition: z.enum(TRANSPORT_COMPOSITIONS).optional(),
   reason_codes: z.array(z.string().regex(/^[A-Z][A-Z0-9_]{0,95}$/)).optional(),
   document_id: identifier.optional(),
   support: identifier.optional(),
@@ -82,10 +83,6 @@ const EVENT_SCHEMA: z.ZodType<AnalyticsEvent> = z.strictObject({
   milestones: z.array(z.enum(MILESTONES)).min(1).optional(),
   financeur: identifier.optional(),
   motifs: z.array(identifier).optional(),
-  portions: z
-    .array(z.enum([...PORTIONS, ...PORTIONS_RETIREES]))
-    .transform((portions) => portions.filter(estUnePortion))
-    .optional(),
   sheet_id: identifier.optional(),
   action: z.enum(ACTIONS).optional(),
   fields: z
