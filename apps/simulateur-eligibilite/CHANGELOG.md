@@ -7,6 +7,73 @@ commit lui-même.
 Le simulateur affiche en bas de page la version qu'il exécute, le commit déployé
 et la version du modèle de règles.
 
+## [1.2.0](https://github.com/betagouv/transport-sanitaire/releases/tag/simulateur-eligibilite%401.2.0), 17 novembre 2026
+
+Le modèle v10.2.1 puis v10.2.2 de l'éditeur, la réécriture des textes qui ne
+tiennent pas sur le cerfa, et le journal des parcours selon le contrat
+analytics v10.2.2. 38 commits depuis la 1.1.0.
+
+### TL;DR
+
+- Le simulateur suit le modèle v10.2.2 : un trajet à l'étranger sans motif d'accord préalable va vers la caisse, et un trajet en avion ou bateau de ligne demande et affiche sa partie terrestre.
+- Une cellule médicale ou une précision sur l'urgence qui ne tient pas sur le cerfa se réécrit en R3 avant d'imprimer ; Q3.5 compte ses caractères et demande « Précisez l'urgence. » quand elle reste vide.
+- Q1.3, Q1.3.b et Q3.4.a prennent les libellés de la v10.2.0, et les blocages de Q2.13 et Q2.14 proposent « Faire une nouvelle simulation ».
+- Le journal des parcours suit le contrat analytics v10.2.2 de l'éditeur, et la collecte en vérifie les 26 règles ; un onglet ouvert avant le déploiement ne journalise plus rien jusqu'à son rechargement.
+- Un établissement ou un service saisi à la main part au journal sous son vrai identifiant dès la première visite ; un événement hors du référentiel est mis en quarantaine.
+
+### ✨ Nouveautés
+
+- [73f1a1f](https://github.com/betagouv/transport-sanitaire/commit/73f1a1f) : intègre le modèle v10.2.1 : un trajet à l'étranger sans motif d'accord préalable va vers la caisse, sans document ; avec un motif, il reste à examiner sur la DAP.
+- [df50aa9](https://github.com/betagouv/transport-sanitaire/commit/df50aa9) : demande la partie terrestre d'un trajet en avion ou bateau de ligne, sous la case de la ligne régulière, et l'ajoute à la fiche avec ses étapes et les badges de son mode.
+- [4c69a05](https://github.com/betagouv/transport-sanitaire/commit/4c69a05) : suit les libellés de la v10.2.0 : titre et ordre des réponses de Q1.3, lien avec l'ALD précisé en Q1.3.b, aide retirée de Q3.4.a.
+- [e3cb72d](https://github.com/betagouv/transport-sanitaire/commit/e3cb72d) : propose « Faire une nouvelle simulation » quand « aller et retour différents » (Q2.13) ou « deux déplacements différents » (Q2.14) bloquent ; Q2.14 dit « Ces deux déplacements nécessitent deux simulations distinctes. »
+- [b652785](https://github.com/betagouv/transport-sanitaire/commit/b652785) : garde dans la simulation les textes réécrits pour le cerfa ; une nouvelle simulation repart sans.
+- [21e5d73](https://github.com/betagouv/transport-sanitaire/commit/21e5d73) : fait réécrire en R3 la cellule médicale qui ne tient pas sur la PMT ou la DAP : compteur, « Valider » seulement quand le texte tient, impression et téléchargement suspendus, aperçu marqué « Aperçu – texte à valider » en attendant.
+- [e8199c2](https://github.com/betagouv/transport-sanitaire/commit/e8199c2) : demande « Précisez l'urgence. » sous Q3.5 laissée vide, à la place du message générique.
+- [463d551](https://github.com/betagouv/transport-sanitaire/commit/463d551) : fait raccourcir la précision sur l'urgence qui ne tient pas sur une ligne des volets des deux cerfas : Q3.5 compte ses caractères, R3 ouvre l'éditeur avant d'imprimer.
+- [5ce155f](https://github.com/betagouv/transport-sanitaire/commit/5ce155f) : écrit l'établissement et le service de chaque événement en deux colonnes du journal, pour les lire sans ouvrir le JSON de la simulation.
+- [086e8ea](https://github.com/betagouv/transport-sanitaire/commit/086e8ea) : écrit ces deux colonnes en JSON, prêtes à exploiter.
+- [53998a3](https://github.com/betagouv/transport-sanitaire/commit/53998a3) : envoie au journal la composition du transport, terrestre, ligne régulière seule ou mixte, calculée par le modèle et non plus tirée du texte affiché.
+- [0a47974](https://github.com/betagouv/transport-sanitaire/commit/0a47974) : mesure chaque texte du cerfa sous l'identifiant de champ fixé par l'éditeur ; la structure et l'adresse d'une extrémité comptent pour un champ.
+- [553200d](https://github.com/betagouv/transport-sanitaire/commit/553200d) : envoie pour chaque version du cerfa les champs remplis et leur taille imprimée ; la collecte refuse un champ hors liste, et ne garde qu'une mesure par document.
+- [d98d4e5](https://github.com/betagouv/transport-sanitaire/commit/d98d4e5) : envoie les boutons Imprimer et Télécharger de la fiche patient et du cerfa sous leurs noms du contrat, vus puis cliqués ; sur le cerfa, l'impression ou le téléchargement lancés partent à part du clic.
+- [f49ecf6](https://github.com/betagouv/transport-sanitaire/commit/f49ecf6) : n'envoie plus au journal ce que le contrat ne prévoit pas : noms de l'établissement et du service, financeur, motifs, chargement de la page, question invalidée.
+- [336cb37](https://github.com/betagouv/transport-sanitaire/commit/336cb37) : envoie la première et la dernière page affichées de chaque phase, une fois chacune.
+- [9cf479b](https://github.com/betagouv/transport-sanitaire/commit/9cf479b) : envoie avec chaque événement la version du contrat, du modèle et de l'app, son rang dans la simulation, et s'il vient d'un geste du prescripteur ; « Faire une nouvelle simulation » ferme la précédente.
+- [0cddd37](https://github.com/betagouv/transport-sanitaire/commit/0cddd37) : envoie toujours l'issue et le support du premier résultat ; un résultat dont les règles ne les donnent pas ne part plus.
+- [140ae49](https://github.com/betagouv/transport-sanitaire/commit/140ae49) : distingue la révision du cerfa de sa version : une page de P3 validée qui change les réponses invalide le document, une autre mise en page du même document n'en change que la version.
+- [a3521c5](https://github.com/betagouv/transport-sanitaire/commit/a3521c5) : fait vérifier par la collecte les 26 règles du contrat v10.2.2 ; un envoi hors contrat, comme celui d'un onglet ouvert avant le déploiement, est refusé.
+- [2697f21](https://github.com/betagouv/transport-sanitaire/commit/2697f21) : fait enregistrer au référentiel l'établissement ou le service saisi à la main, et renvoyer son identifiant.
+- [e02e5b1](https://github.com/betagouv/transport-sanitaire/commit/e02e5b1) : attend, 5 secondes au plus, l'identifiant d'un établissement ou d'un service saisi à la main, avec « Ouverture du simulateur… » sur le bouton ; sans réponse du référentiel, le prescripteur entre sans identifiant plutôt que sous « Autre ».
+- [0ddac43](https://github.com/betagouv/transport-sanitaire/commit/0ddac43) : met en quarantaine un événement dont l'établissement est inconnu du référentiel, ou dont le service n'est pas sous son établissement.
+
+### 🐛 Corrections
+
+- [60e0a7d](https://github.com/betagouv/transport-sanitaire/commit/60e0a7d) : retire le message d'erreur de la cellule médicale dès que le texte tient.
+- [2f4e700](https://github.com/betagouv/transport-sanitaire/commit/2f4e700) : range la partie terrestre comme l'éditeur : après la ligne régulière, sous « Pour la partie terrestre du trajet », sans badge sur la ligne.
+- [6505955](https://github.com/betagouv/transport-sanitaire/commit/6505955) : retire des exports que plus rien ne lit ; rien ne change à l'écran.
+
+### ♻️ Sous le capot
+
+- [3b8892e](https://github.com/betagouv/transport-sanitaire/commit/3b8892e) : fait des fabriques du questionnaire des classes nommées ; aucun comportement ne change.
+- [8000ddb](https://github.com/betagouv/transport-sanitaire/commit/8000ddb) : donne un objet valeur à l'identifiant d'une question ; aucun comportement ne change.
+- [eea1469](https://github.com/betagouv/transport-sanitaire/commit/eea1469) : garde privé le message de l'éditeur de la cellule.
+- [208cff0](https://github.com/betagouv/transport-sanitaire/commit/208cff0) : recopie le modèle v10.2.2, aux règles identiques à la v10.2.1 ; seules les métadonnées du catalogue changent.
+- [cace15f](https://github.com/betagouv/transport-sanitaire/commit/cace15f) : ne garde plus les noms de l'établissement et du service saisis, que le journal n'écrit plus.
+
+### ✅ Tests
+
+- [6872f91](https://github.com/betagouv/transport-sanitaire/commit/6872f91) : retire la version du modèle du titre d'un test de Q1.3.
+- [69e24a0](https://github.com/betagouv/transport-sanitaire/commit/69e24a0) : retire la version du contrat des titres de deux tests.
+
+### 📝 Documentation
+
+- [434c870](https://github.com/betagouv/transport-sanitaire/commit/434c870) : écrit QUAL-018 et QUAL-019 : un fichier dit son rôle par son suffixe, et hors de React une notion est une classe.
+- [d992316](https://github.com/betagouv/transport-sanitaire/commit/d992316) : écrit un ADR par fichier, et l'ADR-0052 sur le sens des dépendances du socle.
+- [b46051f](https://github.com/betagouv/transport-sanitaire/commit/b46051f) : note le cadrage de l'éditeur de la cellule médicale (D-302 à D-304).
+- [7a3aa07](https://github.com/betagouv/transport-sanitaire/commit/7a3aa07) : retire le badge de la seed du trajet mixte.
+- [3f01fb4](https://github.com/betagouv/transport-sanitaire/commit/3f01fb4) : décrit l'attente des identifiants saisis, la quarantaine et la table Grist à créer.
+
 ## [1.1.0](https://github.com/betagouv/transport-sanitaire/releases/tag/simulateur-eligibilite%401.1.0), 16 novembre 2026
 
 Deux correctifs de l'audit de production du 16 novembre, l'urgence du cerfa et
