@@ -1,7 +1,7 @@
 // La page des issues acceptées : `ISSUE_PMT` et `ISSUE_S3141` (#135),
 // `ISSUE_DAP_SANS_URGENCE` et `ISSUE_DAP_URGENCE_ATTESTEE` (#136). Elle donne
 // au socle le titre du prescripteur, sa phrase d'introduction, la feuille du
-// patient, et ses motifs et portions pour le journal des parcours.
+// patient, et ses motifs pour le journal des parcours.
 
 import type { AcceptedIssueId } from "../../../../../../core/models/eligibilite/cibles/issue.vo";
 import type { FirstResult } from "../../../../../socle";
@@ -25,11 +25,7 @@ export function pageAcceptee(
     intro: texte.raison,
     body: <FichePositive texte={texte} />,
   });
-  return {
-    ...page,
-    motifs: identifiantsDes(texte.motifs),
-    portions: texte.portions,
-  };
+  return { ...page, motifs: identifiantsDes(texte.motifs) };
 }
 
 // ---- implémentation ----

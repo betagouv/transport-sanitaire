@@ -62,6 +62,16 @@ liste.
 
 ## Mises à jour
 
+> **Mise à jour 2026-11-17, la composition du transport (#509).** `portions` ne
+> part plus : `transport_composition` (ANA22-04, v10.2.2) la remplace sur
+> chaque R2. Le modèle la calcule avec ses codes (`ResultCodes`), de
+> `fait_avion_bateau_ligne`, de Q2.3.2.terrestre et des cibles du support et
+> du mode, jamais du texte affiché. `mode` ne porte plus que l'un des cinq
+> modes terrestres, et seulement pour `terrestrial_only` et `mixed`. Sans
+> support (`AUCUN`), la composition vaut `not_applicable` : hypothèse, point 23
+> du retour v10.2.2, à confirmer par l'éditeur. Le serveur reçoit encore
+> `portions` d'un onglet d'avant, et l'écarte.
+
 > **Mise à jour 2026-11-13, les arbitrages de l'éditeur sur les véhicules et les
 > motifs (#443).** `portions` ne porte plus `TERRESTRE` : la portée M-COMMUN
 > parle des « éventuelles » parties terrestres, et aucune réponse ne prouve leur

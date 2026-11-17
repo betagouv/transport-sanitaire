@@ -316,13 +316,13 @@ _Avoid_: raison, réservé à `cible_reason_code`, le code que les règles
 calculent. Le « motif administratif » du modus n'est pas un motif : il reprend
 la raison en clause, pour la réservation.
 
-**Portion**:
-Une partie du trajet que le premier résultat restitue à part : la ligne
-régulière, avion ou bateau (#386). La partie terrestre n'en est pas une :
-aucune réponse ne prouve sa présence (#443).
-_Chez l'éditeur_: « segment » (« un segment en ligne régulière ») et
-« portions terrestres ».
-_Avoid_: segment, réservé au texte médical (D-198).
+**Composition du transport**:
+Ce que le trajet d'un résultat combine, pour le journal des parcours :
+terrestre seul, ligne régulière seule, les deux (mixte), inconnue faute de
+preuve, ou sans objet (#509). Q2.3.2 prouve la ligne régulière,
+Q2.3.2.terrestre sa partie terrestre.
+_Chez l'éditeur_: `transport_composition` (ANA22-04).
+_Avoid_: portion, qui ne part plus au journal.
 
 **Fiche patient**:
 Ce que le premier résultat donne à remettre au patient, positive ou négative.
