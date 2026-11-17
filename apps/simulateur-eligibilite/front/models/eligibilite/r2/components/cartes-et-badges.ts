@@ -7,11 +7,12 @@
 // le véhicule personnel), Q1.2 ne s'est pas posée : il n'y a ni critère ni
 // badge. Les mots viennent du catalogue.
 //
-// Un trajet en avion ou en bateau de ligne régulière, sans partie terrestre
-// établie, garde la carte de son mode. Le préfixe de sa portée la limite aux
+// Un trajet en avion ou en bateau de ligne régulière garde la carte de son
+// mode. Le préfixe de sa portée la limite à la partie terrestre, ou aux
 // éventuelles parties terrestres, sur les trois cartes comme dans la
-// projection de l'éditeur. Il n'a aucun badge : aucun besoin terrestre n'est
-// établi (§7.3 du contrat).
+// projection de l'éditeur. Sans partie terrestre établie, il n'a aucun badge :
+// aucun besoin terrestre n'est établi (§7.3 du contrat). Avec elle, les badges
+// sont ceux de cette partie (R03).
 //
 // Les deux déclarent ce qu'elles lisent des cibles (`ce-que-lit-un-texte.ts`).
 
@@ -75,7 +76,8 @@ export function cartesDeLaFiche(
 /**
  * Les besoins à signaler au transporteur : le partage et le fauteuil, puis la
  * corpulence, puis les critères de Q1.2 dans l'ordre. Chacun exige le fait qui
- * le justifie. Un trajet en ligne régulière n'en a aucun.
+ * le justifie. Un trajet en ligne régulière sans partie terrestre établie n'en
+ * a aucun.
  */
 export function badgesDuResultat(
   badges: CatalogueResultats["badges"],
@@ -83,7 +85,7 @@ export function badgesDuResultat(
 ): readonly string[] {
   const { cibles } = trace;
   const mode = cibles.cible_mode_id.value;
-  if (!estSanitaire(mode) || porteeDuTrajet(trace) !== "L") return [];
+  if (!estSanitaire(mode) || porteeDuTrajet(trace) === "M-COMMUN") return [];
   const fauteuil = cibles.cible_fauteuil_roulant.isOui();
   return [
     ...(mode !== "AMBULANCE" && partageDuTransport(cibles) === "incompatible"

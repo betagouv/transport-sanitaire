@@ -169,6 +169,7 @@ describe("l'avion ou le bateau (Q2.3.2)", () => {
   const ligne = definitif(["11_AUCUNE"], {
     ...SEJOUR,
     "Q2.3.2": true,
+    "Q2.3.2.terrestre": "2_NON",
     "Q2.3.4": "2_NON",
   });
 

@@ -16,10 +16,11 @@ export type Partage = "incompatible" | "possible" | "inconnu";
 
 /**
  * La portée du trajet, sous sa clé de `cardPrefixes` dans le catalogue. « L » :
- * le trajet est terrestre. « M-COMMUN » : une partie se fait en avion ou en
- * bateau de ligne régulière, et aucune réponse n'établit de partie terrestre.
+ * le trajet est terrestre. « M-TERRE » : une partie se fait en avion ou en
+ * bateau de ligne régulière, et Q2.3.2.terrestre dit une partie terrestre.
+ * « M-COMMUN » : la ligne régulière, sans partie terrestre établie.
  */
-export type Portee = "L" | "M-COMMUN";
+export type Portee = "L" | "M-TERRE" | "M-COMMUN";
 
 /** Les règles n'ont pas donné de mode. */
 type SansMode = undefined;
@@ -55,16 +56,17 @@ export const LU_PAR_LE_RANG_DU_TITRE = luPar(
 );
 
 /**
- * La portée de ce trajet. Q2.3.2 dit la ligne régulière, et aucune question ne
- * dit la partie terrestre (D-111) : elle n'est jamais établie, et « M-TERRE »
- * ne se donne pas. « U », une ligne régulière que les réponses ne disent pas,
- * n'arrive pas : Q2.3.2 est une case seule, validée avec la distance, avant
- * toute issue à fiche positive.
+ * La portée de ce trajet. Q2.3.2 dit la ligne régulière, Q2.3.2.terrestre sa
+ * partie terrestre (v10.2.1). Une réponse absente n'est jamais un « non »,
+ * mais seul Oui établit la partie terrestre (R03). « U », une ligne régulière
+ * que les réponses ne disent pas, n'arrive pas : Q2.3.2 est une case seule,
+ * validée avec la distance, avant toute issue à fiche positive.
  */
 export function porteeDuTrajet(
   trace: TraceDe<typeof LU_PAR_LA_PORTEE>,
 ): Portee {
-  return trace.faits.fait_avion_bateau_ligne.isOui() ? "M-COMMUN" : "L";
+  if (!trace.faits.fait_avion_bateau_ligne.isOui()) return "L";
+  return trace.partieTerrestre === true ? "M-TERRE" : "M-COMMUN";
 }
 
 /**
@@ -77,6 +79,16 @@ export function libelleDeLaFiche(
   const libelle = libelleDuMode(trace.cibles);
   if (libelle === undefined || porteeDuTrajet(trace) === "L") return libelle;
   return LIGNE_REGULIERE;
+}
+
+/**
+ * Le libellé du mode des règles, sans la ligne régulière : celui de la partie
+ * terrestre d'un trajet mixte. Absent si les règles n'ont pas de mode.
+ */
+export function libelleDuModeTerrestre(
+  trace: TraceDe<typeof LU_PAR_LE_LIBELLE>,
+): string | SansMode {
+  return libelleDuMode(trace.cibles);
 }
 
 /**

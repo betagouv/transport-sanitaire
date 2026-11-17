@@ -16,6 +16,7 @@ import { Q2_2_5 } from "./questions/q2-2-5.ts";
 import { Q2_3_1 } from "./questions/q2-3-1.ts";
 import { Q2_3_1_FINALITE } from "./questions/q2-3-1-finalite.ts";
 import { Q2_3_2 } from "./questions/q2-3-2.ts";
+import { Q2_3_2_TERRESTRE } from "./questions/q2-3-2-terrestre.ts";
 import { Q2_3_3 } from "./questions/q2-3-3.ts";
 import { Q2_3_4 } from "./questions/q2-3-4.ts";
 import { Q2_5 } from "./questions/q2-5.ts";
@@ -54,7 +55,15 @@ export const P2 = {
     // Hors du circuit de prescription, plus rien ne se pose.
     ...[
       page("P2/contextes-soins", Q2_2_1_B),
-      page("P2/trajet", Q2_3_1, Q2_3_2, Q2_3_3, Q2_3_1_FINALITE, Q2_3_4),
+      page(
+        "P2/trajet",
+        Q2_3_1,
+        Q2_3_2,
+        Q2_3_2_TERRESTRE,
+        Q2_3_3,
+        Q2_3_1_FINALITE,
+        Q2_3_4,
+      ),
       page("P2/transfert", Q2_5),
       // Les exceptions suivent la permission : celle d'un adulte autorisée
       // les pose aussi (D-283).

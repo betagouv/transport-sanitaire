@@ -38,11 +38,10 @@ export type ReponsesLues = {
   /** La réponse à Q2.8.5, si elle est validée. */
   readonly permissionRepeated?: boolean;
   /**
-   * Une partie terrestre d'un trajet en ligne régulière est prouvée. Aucune
-   * question ne la pose : Q2.3.2 dit la ligne régulière, pas ce qui l'entoure.
-   * La clé reste donc absente.
+   * La réponse à Q2.3.2.terrestre : le trajet en ligne régulière a une partie
+   * terrestre, ou n'en a pas. Absente tant qu'elle n'est pas validée.
    */
-  readonly partieTerrestre?: true;
+  readonly partieTerrestre?: boolean;
   /**
    * Un séjour réel est prouvé. Ce n'est pas une clé de l'éditeur : un texte de
    * R2 le lit ici, plutôt que de redécouper l'identifiant du lexique.

@@ -6,10 +6,12 @@
 // fichier choisit le titre, la phrase du contexte, la carte, les badges et le
 // modus, puis les range : il n'en écrit aucun. Les blocs propres à l'accord
 // préalable sont l'introduction (dans les consignes) et la justification dans
-// la raison. Un trajet en avion ou en bateau de ligne
-// régulière prend ses titres et son modus, ses cartes ont leur préfixe et il
-// n'a pas de badge (#221) ; en accord préalable, ni cartes ni étapes. Elle lit ce que lisent ces textes
-// (`ce-que-lit-un-texte.ts`).
+// la raison. Un trajet en avion ou en bateau de ligne régulière prend ses
+// titres et son modus, ses cartes ont leur préfixe et il n'a pas de badge
+// (#221) ; en accord préalable, ni cartes ni étapes. Son mode se dit en texte.
+// Avec une partie terrestre (Q2.3.2.terrestre), celle-ci se dit aussi en texte,
+// suivie des étapes et des badges de son mode (v10.2.1, R01 et R03). Elle lit
+// ce que lisent ces textes (`ce-que-lit-un-texte.ts`).
 
 import type { AcceptedIssueId } from "../../../../../../core/models/eligibilite/cibles/issue.vo";
 import type { Portion } from "../../../../../socle";
@@ -51,6 +53,7 @@ import {
   LU_PAR_LE_LIBELLE,
   LU_PAR_LE_RANG_DU_TITRE,
   libelleDeLaFiche,
+  libelleDuModeTerrestre,
   porteeDuTrajet,
   rangDuTitreDuPrescripteur,
 } from "../../components/variante-du-resultat";
@@ -62,6 +65,11 @@ export type TexteDeLaFichePositive = {
   /** Absente quand la trace n'établit aucun contexte, ni phrase de permission. */
   readonly raison?: string;
   readonly cartes: readonly CarteAffichee[];
+  /**
+   * Le mode d'un trajet en ligne régulière, puis sa partie terrestre, en
+   * texte. Vide pour un trajet terrestre : ses cartes disent son mode.
+   */
+  readonly modeDuTrajet: readonly string[];
   readonly consignes: Consignes;
   readonly finance: Bloc;
   /** Les motifs que la raison affiche. */
@@ -93,7 +101,8 @@ export function texteDeLaFichePositive(
   const issue = catalogue.issues[issueId];
   const libelle = libelleDeLaFiche(trace);
   const titre = libelle && issue.titles[libelle];
-  const modus = libelle && modusDuMode(issue, libelle);
+  const terrestre = libelleDeLaPartieTerrestre(trace);
+  const modus = libelle && modusDuMode(issue, terrestre ?? libelle);
   const titreDuPrescripteur =
     issue.prescriberTitles[rangDuTitreDuPrescripteur(trace)];
   if (!titre || !modus || !titreDuPrescripteur) return undefined;
@@ -105,13 +114,15 @@ export function texteDeLaFichePositive(
     badges,
     "intro" in issue ? issue.intro : undefined,
   );
-  const sansDetail = sansCartesNiEtapes(issue, trace);
+  const sansCartes = sansCartesNiEtapes(issue, trace);
+  const sansEtapes = sansCartes && terrestre === undefined;
   return {
     titreDuPrescripteur,
     titreDuPatient: titre,
     ...(fondement.raison !== undefined && { raison: fondement.raison }),
-    cartes: sansDetail ? [] : cartesDeLaFiche(issue, trace),
-    consignes: sansDetail ? { ...consignes, etapes: [] } : consignes,
+    cartes: sansCartes ? [] : cartesDeLaFiche(issue, trace),
+    modeDuTrajet: modeDuTrajet(trace, terrestre),
+    consignes: sansEtapes ? { ...consignes, etapes: [] } : consignes,
     finance: issue.finance,
     motifs: fondement.motifs,
     portions: fondement.portions,
@@ -122,8 +133,34 @@ export function texteDeLaFichePositive(
 
 type LuParLaFiche = TraceDe<typeof LU_PAR_LA_FICHE_POSITIVE>;
 
-// Une demande d'accord préalable en ligne régulière ne garde que son
-// introduction : ni cartes ni étapes (TS1014-J04).
+// Le mode d'un trajet en ligne régulière, et celui de sa partie terrestre. Ces
+// mots ne sont pas dans le catalogue : ce sont ceux de la projection de
+// l'éditeur (`integration_resultats/projection-positive.mjs`, v10.2.1).
+const MODE_EN_LIGNE_REGULIERE =
+  "Mode de transport : Avion ou bateau de ligne régulière";
+const PARTIE_TERRESTRE = "Partie terrestre : ";
+
+// Le libellé du mode de la partie terrestre, si Q2.3.2.terrestre l'établit.
+// Il choisit le modus : ses étapes sont celles de cette partie (R01).
+function libelleDeLaPartieTerrestre(trace: LuParLaFiche): string | AucunTexte {
+  return porteeDuTrajet(trace) === "M-TERRE"
+    ? libelleDuModeTerrestre(trace)
+    : undefined;
+}
+
+function modeDuTrajet(
+  trace: LuParLaFiche,
+  terrestre: string | AucunTexte,
+): readonly string[] {
+  if (porteeDuTrajet(trace) === "L") return [];
+  return terrestre === undefined
+    ? [MODE_EN_LIGNE_REGULIERE]
+    : [MODE_EN_LIGNE_REGULIERE, PARTIE_TERRESTRE + terrestre];
+}
+
+// Une demande d'accord préalable en ligne régulière n'a pas de cartes, même
+// avec une partie terrestre (TS1014-J04, R01). Sans partie terrestre établie,
+// elle n'a pas non plus d'étapes : elle ne garde que son introduction.
 function sansCartesNiEtapes(
   issue: CatalogueResultats["issues"][AcceptedIssueId],
   trace: LuParLaFiche,

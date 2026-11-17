@@ -140,6 +140,17 @@ const REPETITION = given
     return {};
   });
 
+// Q2.3.2.terrestre dit si le trajet en ligne régulière a une partie
+// terrestre. Sans réponse, la clé reste absente : jamais un « non » (R03).
+const PARTIE_TERRESTRE = given
+  .question("Q2.3.2.terrestre")
+  .answer()
+  .compute((terrestre): { partieTerrestre?: boolean } => {
+    if (terrestre.is("1_OUI")) return { partieTerrestre: true };
+    if (terrestre.is("2_NON")) return { partieTerrestre: false };
+    return {};
+  });
+
 // Les précisions de chaque cas, sous ses issues (D-224).
 const PRECISIONS = given
   .all({
@@ -169,12 +180,14 @@ const LU_DES_REPONSES = given
           .map((possibleAnswer) => Number.parseInt(possibleAnswer, 10)),
       ),
     repetition: REPETITION,
+    terrestre: PARTIE_TERRESTRE,
     sejourReel: UN_SEJOUR_REEL,
     precisions: PRECISIONS,
   })
-  .compute(({ criteres, repetition, sejourReel, precisions }) => ({
+  .compute(({ criteres, repetition, terrestre, sejourReel, precisions }) => ({
     criteres,
     ...repetition,
+    ...terrestre,
     ...(sejourReel && { sejourReel: true as const }),
     precisions,
   }));

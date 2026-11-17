@@ -10,9 +10,10 @@ import { Reads } from "../../../core/socle/questionnaire-engine";
 import { model } from "../../../front/models/eligibilite";
 
 describe("les questions que les résultats lisent telles quelles", () => {
-  // Le circuit (Q2.2.1.indication), les critères de Q1.2, la répétition de
-  // Q2.8.5, et ce dont la trace tire ses précisions.
-  it("R2 lit le circuit, les critères, la répétition et les précisions", () => {
+  // Le circuit (Q2.2.1.indication), les critères de Q1.2, la partie terrestre
+  // de Q2.3.2.terrestre, la répétition de Q2.8.5, et ce dont la trace tire ses
+  // précisions.
+  it("R2 lit le circuit, les critères, la partie terrestre, la répétition et les précisions", () => {
     expect(trie(model.result.reading.reads.flattened())).toEqual([
       "Q1.2",
       "Q1.3",
@@ -27,6 +28,7 @@ describe("les questions que les résultats lisent telles quelles", () => {
       "Q2.2.1.b",
       "Q2.2.1.cadre",
       "Q2.2.1.indication",
+      "Q2.3.2.terrestre",
       "Q2.3.3",
       "Q2.5",
       "Q2.6.a",

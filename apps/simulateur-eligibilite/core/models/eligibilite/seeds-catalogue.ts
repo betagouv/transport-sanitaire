@@ -57,8 +57,13 @@ const DIALYSE_LONGUE = {
 } as const;
 
 // La même dialyse, sur un trajet court dont une partie se fait en avion ou en
-// bateau de ligne régulière : l'accord préalable, sans partie terrestre établie.
-const DIALYSE_EN_LIGNE_REGULIERE = { ...DIALYSE, "Q2.3.2": true } as const;
+// bateau de ligne régulière : l'accord préalable. Sans partie terrestre
+// (Q2.3.2.terrestre), le trajet n'est que la ligne régulière.
+const DIALYSE_EN_LIGNE_REGULIERE = {
+  ...DIALYSE,
+  "Q2.3.2": true,
+  "Q2.3.2.terrestre": "2_NON",
+} as const;
 
 // Une permission ne se dit qu'en Q2.2.1.a, pendant un séjour en établissement
 // (D-272) : Q2.1 n'y a que l'autre motif.
@@ -160,8 +165,25 @@ export const SEEDS: readonly Seed<Questions, Cibles>[] = [
     id: "issue-dap-avion-ou-bateau",
     label: "Résultat : accord préalable, en avion ou bateau de ligne régulière",
     description:
-      "Ouvre le résultat d'une dialyse dont une partie du trajet se fait en avion ou en bateau de ligne régulière (Q2.3.2), sans urgence attestée. La fiche prend les titres et le modus de la ligne régulière, ses cartes le préfixe des parties terrestres, sans badge.",
+      "Ouvre le résultat d'une dialyse dont une partie du trajet se fait en avion ou en bateau de ligne régulière (Q2.3.2), sans partie terrestre (Q2.3.2.terrestre), sans urgence attestée. La fiche prend les titres de la ligne régulière, la dit en texte comme mode de transport, et n'a ni carte, ni étape, ni badge.",
     answers: { ...DIALYSE_EN_LIGNE_REGULIERE, "Q2.3.4": "2_NON" },
+    expected: {
+      cible_issue_id: "ISSUE_DAP_SANS_URGENCE",
+      cible_support_id: "S3139h",
+      ...DOCUMENTS,
+    },
+  },
+  {
+    id: "issue-dap-trajet-mixte",
+    label:
+      "Résultat : accord préalable, en avion ou bateau de ligne régulière avec une partie terrestre",
+    description:
+      "Ouvre le résultat d'une dialyse dont une partie du trajet se fait en avion ou en bateau de ligne régulière (Q2.3.2), avec une partie terrestre (Q2.3.2.terrestre), sans urgence attestée. La fiche prend les titres de la ligne régulière, sans carte ; elle dit en texte la partie terrestre en TAP non partagé, puis ses étapes et ses badges (R01).",
+    answers: {
+      ...DIALYSE_EN_LIGNE_REGULIERE,
+      "Q2.3.2.terrestre": "1_OUI",
+      "Q2.3.4": "2_NON",
+    },
     expected: {
       cible_issue_id: "ISSUE_DAP_SANS_URGENCE",
       cible_support_id: "S3139h",
@@ -173,7 +195,7 @@ export const SEEDS: readonly Seed<Questions, Cibles>[] = [
     label:
       "Résultat : accord préalable, en avion ou bateau de ligne régulière, urgence attestée",
     description:
-      "Ouvre le résultat d'une dialyse dont une partie du trajet se fait en avion ou en bateau de ligne régulière (Q2.3.2), avec une urgence attestée en Q2.3.4. La fiche prend les titres et le modus de la ligne régulière dans l'urgence, ses cartes le préfixe des parties terrestres, sans badge.",
+      "Ouvre le résultat d'une dialyse dont une partie du trajet se fait en avion ou en bateau de ligne régulière (Q2.3.2), sans partie terrestre (Q2.3.2.terrestre), avec une urgence attestée en Q2.3.4. La fiche prend les titres de la ligne régulière dans l'urgence, la dit en texte comme mode de transport, et n'a ni carte, ni étape, ni badge.",
     answers: { ...DIALYSE_EN_LIGNE_REGULIERE, "Q2.3.4": "1_OUI" },
     expected: {
       cible_issue_id: "ISSUE_DAP_URGENCE_ATTESTEE",
