@@ -150,7 +150,7 @@ describe("collecte de la composition du transport", () => {
     expect(status).toBe(400);
   });
 
-  it("refuse l'envoi d'un onglet d'avant le contrat v10.2.2, sans rien écrire", async () => {
+  it("refuse l'envoi d'un onglet d'un contrat précédent, sans rien écrire", async () => {
     const journal = await collecteSur();
 
     const { status } = await collecter({
