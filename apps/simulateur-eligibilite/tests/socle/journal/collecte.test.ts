@@ -33,7 +33,7 @@ describe("collecte d'un événement", () => {
       receivedAt: expect.stringMatching(/^\d{4}-\d\d-\d\dT/),
       environment: "test",
       commitSha: "f30aafe",
-      schemaVersion: 3,
+      schemaVersion: 4,
     });
   });
 
@@ -79,6 +79,7 @@ describe("collecte de l'enveloppe d'un événement", () => {
     ["sans version de l'app", { app_version: undefined }],
     ["sans version du modèle", { model_version: undefined }],
     ["sous une autre version du contrat", { version: "10.2.1" }],
+    ["avec le commit de son build, hors du contrat", { commit_sha: "f30aafe" }],
     ["avec une version de l'app qui n'en est pas une", { app_version: "0.8" }],
     ["sans numéro", { sequence: undefined }],
     ["sans origine", { activity_origin: undefined }],
@@ -119,6 +120,8 @@ describe("collecte de la composition du transport", () => {
     type: "result_displayed",
     screen: "R2",
     revision: "r1",
+    can_complete: true,
+    issue: "ISSUE_DAP_SANS_URGENCE",
     support: "S3139h",
     transport_composition: "mixed",
     mode: "TAP",
@@ -147,18 +150,17 @@ describe("collecte de la composition du transport", () => {
     expect(status).toBe(400);
   });
 
-  it("reçoit l'envoi d'un onglet d'avant #509, sans ses portions", async () => {
+  it("refuse l'envoi d'un onglet d'avant le contrat v10.2.2, sans rien écrire", async () => {
     const journal = await collecteSur();
-    const { transport_composition: _, ...avant } = affichage;
 
     const { status } = await collecter({
-      ...avant,
-      portions: ["LIGNE_REGULIERE", "TERRESTRE"],
+      ...affichage,
+      version: "10.2.1",
+      commit_sha: "f30aafe",
+      portions: ["LIGNE_REGULIERE"],
     });
 
-    expect(status).toBe(204);
-    const recu = (await journal.find("s-1:5"))?.event;
-    expect(recu).toEqual(avant);
-    expect(recu).not.toHaveProperty("portions");
+    expect(status).toBe(400);
+    expect(await journal.find("s-1:5")).toBeUndefined();
   });
 });

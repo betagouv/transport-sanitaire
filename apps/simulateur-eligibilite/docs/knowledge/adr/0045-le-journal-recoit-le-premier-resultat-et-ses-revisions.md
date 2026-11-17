@@ -84,8 +84,9 @@ liste.
 > du mode, jamais du texte affiché. `mode` ne porte plus que l'un des cinq
 > modes terrestres, et seulement pour `terrestrial_only` et `mixed`. Sans
 > support (`AUCUN`), la composition vaut `not_applicable` : hypothèse, point 23
-> du retour v10.2.2, à confirmer par l'éditeur. Le serveur reçoit encore
-> `portions` d'un onglet d'avant, et l'écarte.
+> du retour v10.2.2, à confirmer par l'éditeur. ~~Le serveur reçoit encore
+> `portions` d'un onglet d'avant, et l'écarte.~~ Depuis #497, un onglet d'avant
+> est refusé (ADR-0042).
 
 > **Mise à jour 2026-11-13, les arbitrages de l'éditeur sur les véhicules et les
 > motifs (#443).** `portions` ne porte plus `TERRESTRE` : la portée M-COMMUN
