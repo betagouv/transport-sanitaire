@@ -14,3 +14,4 @@ export { Preconisation } from "./preconisation.vo.ts";
 export { ResultContext } from "./result-context.vo.ts";
 export { Simulation } from "./simulation.entity.ts";
 export { Lock } from "./simulation-stage.vo.ts";
+export { TextEdits } from "./text-edits.vo.ts";
