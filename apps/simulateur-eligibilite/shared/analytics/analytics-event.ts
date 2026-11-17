@@ -21,6 +21,7 @@ export const EVENT_TYPES = [
   "intent_selected",
   "phase_entered",
   "phase_completed",
+  "phase_boundary_displayed",
   "question_exposed",
   "question_interacted",
   "question_validated",
@@ -46,15 +47,15 @@ export const SCREENS = ["P0", "P1", "P2", "R2", "P3", "R3"] as const;
 
 export type Screen = (typeof SCREENS)[number];
 
-/** Les phases du parcours : leurs pages ont une entrée, une fin et des jalons. */
+/** Les phases du parcours : elles ont une entrée, une fin et deux limites. */
 export const PHASES = ["P1", "P2", "P3"] as const;
 
 export type Phase = (typeof PHASES)[number];
 
-/** Les jalons d'une page dans sa phase : sa première, sa dernière, ou les deux. */
-export const MILESTONES = ["first", "last"] as const;
+/** Les limites d'une phase : sa première page, sa dernière. */
+export const BOUNDARIES = ["first", "last"] as const;
 
-export type Milestone = (typeof MILESTONES)[number];
+export type Boundary = (typeof BOUNDARIES)[number];
 
 /** Les cinq modes terrestres : `mode` ne dit jamais la ligne régulière. */
 export const MODES = [
@@ -153,7 +154,7 @@ export type AnalyticsEvent = {
   activity_origin?: ActivityOrigin;
   // Nos compléments.
   service_id?: string;
-  milestones?: Milestone[];
+  boundary?: Boundary;
   /** La version de l'app, celle de `package.json` (ADR-0050). */
   app_version: string;
   /** Le commit déployé, sur 7 caractères, ou `inconnu` (ADR-0050). */

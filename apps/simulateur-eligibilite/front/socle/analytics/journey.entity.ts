@@ -2,8 +2,9 @@
 // simulation, et ses événements numérotés dans l'ordre. Un trou dans les
 // numéros dit qu'un événement s'est perdu.
 //
-// Le parcours suit les affichages de page, les questions validées et les phases
-// où il entre et qu'il quitte, une fois chacune (ADR-0044). Il numérote les
+// Le parcours suit les affichages de page, les questions validées, les phases
+// où il entre et qu'il quitte, une fois chacune, et leurs limites affichées
+// (ADR-0044). Il numérote les
 // révisions du premier résultat, et fait tomber la révision courante quand une
 // page de P1 ou de P2 change les réponses validées (ADR-0045). Il numérote les
 // versions du document R3, qui viennent de la révision courante (ADR-0046). R2 et
@@ -21,6 +22,7 @@ import type { Button, ExposedOn } from "./button-place.vo";
 import type { DocumentContent } from "./document-version.entity";
 import { ExposedButtons, type NotShown } from "./exposed-buttons.entity";
 import { type OpenedPage, PageView } from "./page-view.entity";
+import { PhaseBoundaries } from "./phase-boundaries.entity";
 import { Results } from "./results.entity";
 import type { DocumentRequest, ShownResult } from "./revision.entity";
 
@@ -55,6 +57,7 @@ export class Journey {
   #view: PageView | NoView = null;
   readonly #entered = new Set<Phase>();
   readonly #completed = new Set<Phase>();
+  readonly #boundaries = new PhaseBoundaries();
   readonly #results = new Results();
   readonly #buttons = new ExposedButtons(this.simulationId);
 
@@ -85,13 +88,14 @@ export class Journey {
   }
 
   /**
-   * Un affichage de page : l'entrée dans sa phase si c'est la première fois, et
-   * ses questions exposées.
+   * Un affichage de page : l'entrée dans sa phase si c'est la première fois,
+   * les limites de la phase qu'il montre, et ses questions exposées.
    */
   openAPage(page: OpenedPage): AnalyticsEvent[] {
     const view = this.#open(page);
     return this.#recordAll([
       ...this.#enter(view),
+      ...this.#boundaries.display(view),
       ...this.#expose(view, page.questions),
     ]);
   }
@@ -227,11 +231,9 @@ export class Journey {
   }
 
   #expose(view: PageView, questions: readonly string[]): EventDetails[] {
-    const milestones = view.milestones;
     return view.expose(questions).map((question) => ({
       type: "question_exposed",
       ...view.about(question),
-      ...(milestones.length > 0 ? { milestones } : {}),
     }));
   }
 

@@ -6,7 +6,7 @@
 
 import {
   type AnalyticsEvent,
-  type Milestone,
+  type Boundary,
   PHASES,
   type Phase,
   SCREENS,
@@ -55,8 +55,13 @@ export class PageView {
     return PHASES.find((phase) => phase === this.#page.part) ?? null;
   }
 
-  /** Les jalons de la page dans sa phase. Hors d'une phase : aucun. */
-  get milestones(): Milestone[] {
+  /** L'id de la page du modèle. */
+  get pageId(): string {
+    return this.#page.id;
+  }
+
+  /** Les limites de sa phase que la page montre. Hors d'une phase : aucune. */
+  get boundaries(): Boundary[] {
     if (!this.phase) return [];
     const { first, last } = this.#page;
     return [
@@ -91,7 +96,7 @@ export class PageView {
     return {
       ...this.place,
       question_id: question,
-      page_id: this.#page.id,
+      page_id: this.pageId,
       exposure_id: `${this.id}:${question}`,
     };
   }

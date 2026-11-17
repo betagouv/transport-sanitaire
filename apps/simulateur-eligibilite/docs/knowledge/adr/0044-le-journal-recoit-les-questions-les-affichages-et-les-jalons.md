@@ -55,6 +55,15 @@ Aucune réponse ne part : seulement des identifiants de question et de page.
 
 ## Mises à jour
 
+> **Mise à jour 2026-11-17, les limites de phase affichées (#497).** Le contrat
+> v10.2.2 remplace les jalons par un événement : cela **révise** le point 1.
+> `phase_boundary_displayed` part avec l'affichage de la première ou de la
+> dernière page d'une phase, avant ses questions, avec `screen` (P1, P2 ou P3),
+> `boundary` (`first` ou `last`) et le `page_id` de la page. La page reste
+> marquée comme avant, d'après les réponses validées. Une limite part une fois
+> par page : une page rouverte ne la redit pas, une autre page devenue la
+> dernière la dit à son tour. `question_exposed` ne porte plus `milestones`.
+
 > **Mise à jour 2026-11-17, les compléments hors contrat retirés (#497).** Le
 > contrat v10.2.2 ferme ses champs (`additionalProperties: false`) : cela
 > **révoque** les points 3 et 4 pour ce qui part au journal. `page_view_id` ne part

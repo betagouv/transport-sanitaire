@@ -8,10 +8,10 @@ import { z } from "zod";
 import {
   ACTIVITY_ORIGINS,
   type AnalyticsEvent,
+  BOUNDARIES,
   BUTTON_IDS,
   EVENT_TYPES,
   INTENTS,
-  MILESTONES,
   MODES,
   SCREENS,
   TRANSPORT_COMPOSITIONS,
@@ -88,7 +88,7 @@ const EVENT_SCHEMA: z.ZodType<AnalyticsEvent> = z
     artifact_id: identifier.optional(),
     activity_origin: z.enum(ACTIVITY_ORIGINS).optional(),
     service_id: identifier.optional(),
-    milestones: z.array(z.enum(MILESTONES)).min(1).optional(),
+    boundary: z.enum(BOUNDARIES).optional(),
     app_version: release,
     commit_sha: z.string().regex(/^([0-9a-f]{7}|inconnu)$/),
   })
