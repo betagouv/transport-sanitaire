@@ -9,7 +9,6 @@ export type { Button } from "./button-place.vo";
 export { CmsConsent } from "./cms-consent.adapter";
 export { DiscardingAudience } from "./discarding-audience.adapter";
 export { type DocumentTracking, useDocumentTracking } from "./document.hook";
-export { HostPageLoad } from "./host-page-load.adapter";
 export { useRecordTheJourney } from "./journey.hook";
 export {
   configFromEnv,

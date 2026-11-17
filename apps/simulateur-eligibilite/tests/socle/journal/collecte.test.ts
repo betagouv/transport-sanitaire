@@ -71,54 +71,6 @@ describe("collecte d'un événement", () => {
     expect(status).toBe(400);
     expect(await journal.find("s-1:1")).toBeUndefined();
   });
-
-  it("garde le nom de l'établissement et celui du service", async () => {
-    const journal = await collecteSur();
-    const nomme = {
-      ...simulationStarted,
-      establishment_name: "CHU Grenoble Alpes",
-      service_name: "Cardiologie",
-    };
-
-    const { status } = await collecter(nomme);
-
-    expect(status).toBe(204);
-    expect((await journal.find("s-1:1"))?.event).toEqual(nomme);
-  });
-
-  it("refuse un nom plus long que la borne", async () => {
-    await collecteSur();
-
-    const { status } = await collecter({
-      ...simulationStarted,
-      service_name: "a".repeat(301),
-    });
-
-    expect(status).toBe(400);
-  });
-});
-
-describe("collecte du chargement de la page", () => {
-  it("garde le chargement d'une page rechargée", async () => {
-    const journal = await collecteSur();
-    const recharge = { ...simulationStarted, navigation: "reload" };
-
-    const { status } = await collecter(recharge);
-
-    expect(status).toBe(204);
-    expect((await journal.find("s-1:1"))?.event).toEqual(recharge);
-  });
-
-  it("refuse un chargement que le contrat ne connaît pas", async () => {
-    await collecteSur();
-
-    const { status } = await collecter({
-      ...simulationStarted,
-      navigation: "prerender",
-    });
-
-    expect(status).toBe(400);
-  });
 });
 
 describe("collecte de la provenance d'un événement", () => {

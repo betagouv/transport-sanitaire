@@ -19,9 +19,7 @@ const unR2 = {
     transportComposition: "unknown",
     reasonCodes: [],
     support: "S3138g",
-    financeur: null,
   },
-  motifs: [],
 } as const;
 
 // Un R2 de cette composition du transport, et de ce mode terrestre.
@@ -41,7 +39,6 @@ function modifierP2(journey: Journey) {
   });
   journey.validate({
     questions: ["Q2.1"],
-    stillValidated: ["Q2.1"],
     nextPart: null,
     changed: true,
   });

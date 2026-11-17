@@ -20,22 +20,16 @@ import type {
 import type { Button, ExposedOn } from "./button-place.vo";
 import type { DocumentContent } from "./document-version.entity";
 import { ExposedButtons, type NotShown } from "./exposed-buttons.entity";
-import {
-  type AboutAQuestion,
-  type OpenedPage,
-  PageView,
-} from "./page-view.entity";
+import { type OpenedPage, PageView } from "./page-view.entity";
 import { Results } from "./results.entity";
 import type { DocumentRequest, ShownResult } from "./revision.entity";
 
 /** Rien à garder au journal : le parcours d'une seed, ou une intention déjà connue. */
 export type NothingToRecord = null;
 
-/** Une page validée : ses questions affichées, et ce qui reste validé ensuite. */
+/** Une page validée : ses questions affichées, et ce qui s'ouvre ensuite. */
 export type PageValidation = {
   readonly questions: readonly string[];
-  /** Les questions validées après la validation, celles de la page comprises. */
-  readonly stillValidated: readonly string[];
   /** La partie de la page qui s'ouvre ensuite. Aucune : l'étape s'achève. */
   readonly nextPart: string | StageEnded;
   /** Les réponses validées ne sont plus les mêmes après la validation. */
@@ -51,9 +45,6 @@ type NoView = null;
 /** Un écran de résultat, qui ouvre un affichage sans question. */
 export type ResultScreen = "R2" | "R3";
 
-/** Comment la page s'est chargée, pour le premier parcours de la page. */
-export type Entrance = Pick<AnalyticsEvent, "navigation">;
-
 export class Journey {
   readonly simulationId = crypto.randomUUID();
   readonly #seeded: boolean;
@@ -64,8 +55,6 @@ export class Journey {
   #view: PageView | NoView = null;
   readonly #entered = new Set<Phase>();
   readonly #completed = new Set<Phase>();
-  // Chaque question validée, et ce qu'en disait sa validation.
-  readonly #validations = new Map<string, AboutAQuestion>();
   readonly #results = new Results();
   readonly #buttons = new ExposedButtons(this.simulationId);
 
@@ -81,12 +70,8 @@ export class Journey {
   }
 
   /** Le début du parcours, sur P0. */
-  start(entrance: Entrance): AnalyticsEvent | NothingToRecord {
-    return this.#record({
-      type: "simulation_started",
-      screen: "P0",
-      navigation: entrance.navigation,
-    });
+  start(): AnalyticsEvent | NothingToRecord {
+    return this.#record({ type: "simulation_started", screen: "P0" });
   }
 
   /**
@@ -127,20 +112,18 @@ export class Journey {
   }
 
   /**
-   * La page validée : chacune de ses questions, celles qui ne sont plus
-   * validées, et la fin de sa phase si la page suivante la quitte.
+   * La page validée : chacune de ses questions, et la fin de sa phase si la
+   * page suivante la quitte.
    */
   validate(validation: PageValidation): AnalyticsEvent[] {
     const view = this.#view;
     if (!view) return [];
-    const validated = validation.questions.map((question) => {
-      const about = view.about(question);
-      this.#validations.set(question, about);
-      return { type: "question_validated" as const, ...about };
-    });
+    const validated = validation.questions.map((question) => ({
+      type: "question_validated" as const,
+      ...view.about(question),
+    }));
     return this.#recordAll([
       ...validated,
-      ...this.#invalidate(validation.stillValidated),
       ...this.#revise(view, validation.changed),
       ...this.#complete(view, validation.nextPart),
     ]);
@@ -252,17 +235,6 @@ export class Journey {
     }));
   }
 
-  // Les validations qu'une réponse changée a fait tomber.
-  #invalidate(stillValidated: readonly string[]): EventDetails[] {
-    const fallen = [...this.#validations].filter(
-      ([question]) => !stillValidated.includes(question),
-    );
-    return fallen.map(([question, about]) => {
-      this.#validations.delete(question);
-      return { type: "question_invalidated", ...about };
-    });
-  }
-
   #complete(view: PageView, nextPart: string | StageEnded): EventDetails[] {
     const { phase } = view;
     if (!phase || nextPart === view.part || this.#completed.has(phase))
@@ -275,7 +247,7 @@ export class Journey {
   #shownOn(buttons: readonly Button[]): ExposedOn | NotShown {
     const view = this.#view;
     const shown = view && this.#results.shownOn(view.place.screen, buttons);
-    return view && shown ? { ...view.place, ...shown } : null;
+    return view && shown ? { ...view.place, view: view.id, ...shown } : null;
   }
 
   #recordAll(details: EventDetails[]): AnalyticsEvent[] {

@@ -49,6 +49,13 @@ d'un onglet resté ouvert (mise en veille, mémoire) compte aussi en `reload`.
 
 ## Mises à jour
 
+> **Mise à jour 2026-11-17, le complément retiré (#497).** Le contrat v10.2.2
+> ferme ses champs : cela **révoque** les points 2 à 4. `simulation_started` ne
+> porte plus `navigation`, et le simulateur ne demande plus rien au script du
+> CMS. Le script recollé dans Sites Conformes peut perdre sa réponse
+> `chargement-simulateur:type`, sans urgence : plus personne ne la demande. La
+> reprise après rechargement (#392) attend une autre mesure.
+
 > **Mise à jour 2026-11-13, les rechargements de page (#434).** La première
 > simulation d'une page dit comment la page s'est chargée : ouverte, rechargée,
 > ou rouverte par l'historique. Dans l'iframe, c'est le script du CMS qui le

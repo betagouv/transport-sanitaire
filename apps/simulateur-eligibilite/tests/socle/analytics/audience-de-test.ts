@@ -15,12 +15,7 @@ export function audienceDeTest(): {
   const mesures: AudienceEvent[] = [];
   const port = { track: (evenement: AudienceEvent) => mesures.push(evenement) };
   return {
-    analytics: analyticsUseCases(
-      port,
-      { record: async () => {} },
-      { navigation: () => "navigate" },
-      BUILD,
-    ),
+    analytics: analyticsUseCases(port, { record: async () => {} }, BUILD),
     mesures,
   };
 }

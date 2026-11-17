@@ -1,13 +1,12 @@
 // La page des issues acceptées : `ISSUE_PMT` et `ISSUE_S3141` (#135),
 // `ISSUE_DAP_SANS_URGENCE` et `ISSUE_DAP_URGENCE_ATTESTEE` (#136). Elle donne
 // au socle le titre du prescripteur, sa phrase d'introduction, la feuille du
-// patient, et ses motifs pour le journal des parcours.
+// patient.
 
 import type { AcceptedIssueId } from "../../../../../../core/models/eligibilite/cibles/issue.vo";
 import type { FirstResult } from "../../../../../socle";
 import type { TraceDe } from "../../components/ce-que-lit-un-bloc";
 import type { CatalogueResultats } from "../../components/forme-du-catalogue";
-import { identifiantsDes } from "../../components/motif";
 import { pageDeLaFeuille } from "../../components/page-de-la-fiche";
 import { FichePositive } from "./FichePositive";
 import { type LU_PAR_LA_FICHE_POSITIVE, texteDeLaFichePositive } from "./texte";
@@ -19,13 +18,12 @@ export function pageAcceptee(
 ): FirstResult {
   const texte = texteDeLaFichePositive(catalogue, trace, issue);
   if (!texte) return SANS_MODE;
-  const page = pageDeLaFeuille(catalogue, texte.titreDuPrescripteur, {
+  return pageDeLaFeuille(catalogue, texte.titreDuPrescripteur, {
     title: texte.titreDuPatient,
     preamble: texte.modeDuTrajet && <p>{texte.modeDuTrajet}</p>,
     intro: texte.raison,
     body: <FichePositive texte={texte} />,
   });
-  return { ...page, motifs: identifiantsDes(texte.motifs) };
 }
 
 // ---- implémentation ----

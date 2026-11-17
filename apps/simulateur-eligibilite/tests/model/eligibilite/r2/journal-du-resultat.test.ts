@@ -1,20 +1,11 @@
 // Ce que le premier résultat du modèle de l'éditeur donne au journal des
 // parcours (#386), sur la seed de chaque issue : ses codes, calculés par les
-// règles, les motifs du catalogue que la page affiche, et la composition du
-// transport (ANA22-04, #509). Voir ADR-0045.
+// règles, et la composition du transport (ANA22-04, #509). Voir ADR-0045.
 
 import { describe, expect, it } from "vitest";
 import { SEEDS } from "../../../../core/models/eligibilite/seeds-catalogue";
 import { CODES_DU_RESULTAT } from "../../../../front/models/eligibilite/codes-du-resultat";
-import { catalogueResultats } from "../../../../front/models/eligibilite/r2/components/textes-de-l-editeur";
-import { R2 } from "../../../../front/models/eligibilite/r2/r2";
-import {
-  lectureDe,
-  luDe,
-  type Reponses,
-} from "../p2/reponses-de-la-permission";
-
-await catalogueResultats();
+import { luDe, type Reponses } from "../p2/reponses-de-la-permission";
 
 // Les réponses de la seed.
 function reponsesDe(id: string): Reponses {
@@ -24,10 +15,8 @@ function reponsesDe(id: string): Reponses {
 }
 
 // Ce que le R2 de la seed donne au journal.
-async function journalDe(id: string) {
-  const reponses = reponsesDe(id);
-  const page = await R2.of(lectureDe(reponses)).page();
-  return { ...luDe(CODES_DU_RESULTAT, reponses), motifs: page.motifs };
+function journalDe(id: string) {
+  return luDe(CODES_DU_RESULTAT, reponsesDe(id));
 }
 
 // La composition du transport de ces réponses, et son mode terrestre.
@@ -36,11 +25,10 @@ function compositionDe(reponses: Reponses) {
   return { transportComposition, mode };
 }
 
-// Le transport assis, et l'Assurance Maladie qui paie : le cas commun.
+// Le transport assis : le cas commun.
 const COMMUN = {
   mode: "TAP",
   transportComposition: "terrestrial_only",
-  financeur: "ASSURANCE_MALADIE",
 } as const;
 const QUALIFIE = { ...COMMUN, reasonCodes: ["MOTIF_QUALIFIE"] } as const;
 // Sans support, aucun mode ne s'applique (hypothèse, point 23 du retour
@@ -53,17 +41,13 @@ const SANS_SUPPORT = {
 
 describe("le journal du premier résultat, sur la seed de chaque issue", () => {
   it.each([
-    [
-      "issue-pmt",
-      { issue: "ISSUE_PMT", ...QUALIFIE, support: "S3138g", motifs: ["E-H"] },
-    ],
+    ["issue-pmt", { issue: "ISSUE_PMT", ...QUALIFIE, support: "S3138g" }],
     [
       "issue-dap-sans-urgence",
       {
         issue: "ISSUE_DAP_SANS_URGENCE",
         ...QUALIFIE,
         support: "S3139h",
-        motifs: ["EC-H", "ED-L"],
       },
     ],
     [
@@ -72,7 +56,6 @@ describe("le journal du premier résultat, sur la seed de chaque issue", () => {
         issue: "ISSUE_DAP_URGENCE_ATTESTEE",
         ...QUALIFIE,
         support: "S3139h",
-        motifs: ["EC-H", "EU-L"],
       },
     ],
     [
@@ -82,7 +65,6 @@ describe("le journal du premier résultat, sur la seed de chaque issue", () => {
         ...COMMUN,
         reasonCodes: ["PERMISSION_MINEUR"],
         support: "S3141",
-        motifs: ["E-S3141-U"],
       },
     ],
     [
@@ -91,8 +73,6 @@ describe("le journal du premier résultat, sur la seed de chaque issue", () => {
         issue: "ISSUE_NON_ELIGIBLE",
         ...SANS_SUPPORT,
         reasonCodes: ["AUCUN_MOTIF_TRANSPORT"],
-        financeur: "NON_CONCLU",
-        motifs: ["AUCUN_CONSULTATION"],
       },
     ],
     [
@@ -101,8 +81,6 @@ describe("le journal du premier résultat, sur la seed de chaque issue", () => {
         issue: "ISSUE_CAISSE",
         ...SANS_SUPPORT,
         reasonCodes: ["CNAM_CENTRE15_INTERETABLISSEMENT"],
-        financeur: "NON_CONCLU",
-        motifs: ["centre15"],
       },
     ],
     [
@@ -111,8 +89,6 @@ describe("le journal du premier résultat, sur la seed de chaque issue", () => {
         issue: "ISSUE_ETABLISSEMENT",
         ...SANS_SUPPORT,
         reasonCodes: ["ARTICLE80_ETABLISSEMENT"],
-        financeur: "ETABLISSEMENT",
-        motifs: ["transfert-provisoire"],
       },
     ],
     [
@@ -121,8 +97,6 @@ describe("le journal du premier résultat, sur la seed de chaque issue", () => {
         issue: "ISSUE_PERMISSION_PATIENT",
         ...SANS_SUPPORT,
         reasonCodes: ["MOTIF_QUALIFIE"],
-        financeur: "PATIENT",
-        motifs: ["demande-adulte"],
       },
     ],
     [
@@ -131,11 +105,8 @@ describe("le journal du premier résultat, sur la seed de chaque issue", () => {
         issue: "ISSUE_CONVOCATION",
         ...QUALIFIE,
         ...SANS_SUPPORT,
-        motifs: ["controle"],
       },
     ],
-    // Le catalogue cache le pourquoi de l'étranger : aucun motif n'est
-    // affiché, la liste part vide.
     [
       "issue-dap-etranger-a-examiner",
       {
@@ -144,18 +115,10 @@ describe("le journal du premier résultat, sur la seed de chaque issue", () => {
         transportComposition: "terrestrial_only",
         reasonCodes: ["TRANSPORT_ETRANGER_EXAMEN_CAISSE"],
         support: "S3139h",
-        financeur: "NON_CONCLU",
-        motifs: [],
       },
     ],
-  ])("%s", async (seed, attendu) => {
-    expect(await journalDe(seed)).toEqual(attendu);
-  });
-
-  it("un trajet en ligne régulière donne les motifs de la ligne régulière", async () => {
-    expect(await journalDe("issue-dap-avion-ou-bateau")).toMatchObject({
-      motifs: ["EC-H", "ED-V"],
-    });
+  ])("%s", (seed, attendu) => {
+    expect(journalDe(seed)).toEqual(attendu);
   });
 });
 

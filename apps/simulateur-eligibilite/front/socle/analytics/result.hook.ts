@@ -34,7 +34,7 @@ export function useResultTracking({
   useEffect(() => {
     const journey = journeyOf();
     if (!useCases || !journey || !loaded || canComplete === null) return;
-    const shown = { canComplete, codes, motifs: loaded.motifs };
+    const shown = { canComplete, codes };
     useCases.displayAResult.execute(journey, shown, buttons);
   }, [loaded, canComplete]);
   return useButtonTracking();

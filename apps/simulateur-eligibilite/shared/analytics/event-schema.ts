@@ -13,7 +13,6 @@ import {
   INTENTS,
   MILESTONES,
   MODES,
-  NAVIGATIONS,
   SCREENS,
   TRANSPORT_COMPOSITIONS,
 } from "./analytics-event.ts";
@@ -32,11 +31,6 @@ export function parseAnAnalyticsEvent(
 // ---- implémentation ----
 
 const identifier = z.string().trim().min(1);
-
-// Le nom d'un établissement ou d'un service : celui d'une liste du référentiel,
-// ou un nom saisi, que l'écran borne à `LONGUEUR_MAX_D_UN_NOM`. La borne d'ici
-// est plus large : un nom long du référentiel ne fait pas perdre l'événement.
-const name = z.string().trim().min(1).max(300);
 
 // Une version livrée : `10.1.8` pour les règles, `0.7.0` pour l'app.
 const release = z.string().regex(/^\d+\.\d+\.\d+$/);
@@ -94,13 +88,7 @@ const EVENT_SCHEMA: z.ZodType<AnalyticsEvent> = z
     artifact_id: identifier.optional(),
     activity_origin: z.enum(ACTIVITY_ORIGINS).optional(),
     service_id: identifier.optional(),
-    establishment_name: name.optional(),
-    service_name: name.optional(),
-    page_view_id: identifier.optional(),
     milestones: z.array(z.enum(MILESTONES)).min(1).optional(),
-    financeur: identifier.optional(),
-    motifs: z.array(identifier).optional(),
-    navigation: z.enum(NAVIGATIONS).optional(),
     app_version: release,
     commit_sha: z.string().regex(/^([0-9a-f]{7}|inconnu)$/),
   })
