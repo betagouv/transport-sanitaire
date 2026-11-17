@@ -4,10 +4,14 @@
 // la condition même qui pose Q3.5, pour qu'une précision demandée s'écrive
 // (#464).
 //
-// Le gabarit n'a pas de champ pour la précision : elle se dessine (D-93).
+// La précision est un texte strict (T06, R04) : sur une ligne, en 8 pt, ou le
+// prescripteur la raccourcit en R3. Elle s'écrit telle que saisie, retours à
+// la ligne compris : un retour à la ligne ne s'imprime pas, il se corrige.
+// Le gabarit de la PMT n'a pas de champ pour elle : elle s'y dessine (D-93).
 
 import { uneUrgenceHorsCentre15 } from "../../../../../core/models/eligibilite/questions/p3/conditions/urgence-hors-centre15";
 import { given } from "../../../../../core/models/eligibilite/questions/reponses";
+import type { StrictOptions } from "../../../../socle";
 import type { Rubrique } from "./rubrique";
 
 /** Rien n'est saisi, ou l'urgence n'est pas « autres » : la place reste vide. */
@@ -34,10 +38,23 @@ export const PRECISION_DE_L_URGENCE: Rubrique<PrecisionDeLUrgence> = {
   ),
 };
 
+/** Le nom de la précision à l'écran (`editeur-urgence.mjs` de l'éditeur). */
+export const LIBELLE_DE_LA_PRECISION = "Précision sur l’urgence";
+
+/**
+ * Comment la précision s'écrit sur le cerfa, et ce qu'en dit l'écran : les
+ * mots de l'éditeur (T06, R04 ; `editeur-urgence.mjs`).
+ */
+export const PRECISION_STRICTE: StrictOptions = {
+  size: 8,
+  overflowMessage:
+    "Raccourcissez la précision sur l’urgence pour pouvoir imprimer ou télécharger le document.",
+  requiredMessage: "Précisez l’urgence.",
+};
+
 // ---- implémentation ----
 
-// La saisie telle quelle, ses espaces normalisés.
+// La saisie telle quelle : une saisie blanche n'en est pas une.
 function saisie(texte: string | undefined): string | SansPrecision {
-  const normale = texte?.replace(/\s+/g, " ").trim();
-  return normale ? normale : undefined;
+  return texte?.trim() ? texte : undefined;
 }

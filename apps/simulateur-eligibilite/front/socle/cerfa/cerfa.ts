@@ -26,11 +26,13 @@ export type Position = {
 /**
  * Où se dessine un texte : une position par volet qui le porte. `singleLine` :
  * il reste sur une ligne, quitte à rapetisser jusqu'au plancher, et ne passe à
- * la ligne qu'au-delà.
+ * la ligne qu'au-delà. `strict` : il tient sur une ligne de chaque position, à
+ * sa taille, ou il ne se dessine pas (`strictDrawing`).
  */
 export type DrawingBinding = {
   readonly positions: readonly Position[];
   readonly singleLine?: boolean;
+  readonly strict?: Strict;
 };
 
 /** Où va un texte : le nom exact du champ, et comment l'écrire. */
@@ -46,14 +48,33 @@ export type TextBinding = {
 };
 
 /**
- * Un texte strict (D-302) : il s'écrit dans son champ, passé en multiligne, à
- * la taille visée et à aucune autre, ou il ne s'écrit pas. Le cerfa qui en
- * déborde n'est qu'un aperçu, et le prescripteur le réécrit. `label` le nomme
- * à l'écran : c'est le titre de sa rubrique sur le cerfa.
+ * Un texte strict (D-302) : il s'écrit dans son champ à sa taille et à aucune
+ * autre, ou il ne s'écrit pas. Le cerfa qui en déborde n'est qu'un aperçu, et
+ * le prescripteur le réécrit.
  */
 export type StrictTextBinding = {
   readonly field: string;
-  readonly strict: { readonly label: string };
+  readonly strict: Strict;
+};
+
+/** Comment un texte strict s'écrit, et ce que l'écran en dit. */
+export type Strict = StrictOptions & {
+  /** Son nom à l'écran : le titre de sa rubrique sur le cerfa. */
+  readonly label: string;
+};
+
+export type StrictOptions = {
+  /** Sa taille, en points. La taille visée sans elle. */
+  readonly size?: number;
+  /**
+   * Il tient sur une ligne : un retour à la ligne n'y passe pas. Sans elle,
+   * son champ passe en multiligne.
+   */
+  readonly oneLine?: boolean;
+  /** Le message d'un texte qui déborde. Celui de la cellule médicale sans lui. */
+  readonly overflowMessage?: string;
+  /** Le message d'un texte vide. Sans lui, un texte vide se valide. */
+  readonly requiredMessage?: string;
 };
 
 /**
@@ -107,8 +128,12 @@ export function date(field: string): TextBinding {
 }
 
 /** Un texte strict écrit dans le champ `field`, nommé `label` à l'écran. */
-export function strictText(field: string, label: string): StrictTextBinding {
-  return { field, strict: { label } };
+export function strictText(
+  field: string,
+  label: string,
+  options: StrictOptions = {},
+): StrictTextBinding {
+  return { field, strict: { label, ...options } };
 }
 
 /** Une case du champ `field`, cochée par son état d'export `state`. */
@@ -137,6 +162,18 @@ export function at(...positions: readonly Position[]): DrawingBinding {
  */
 export function onOneLine(drawing: DrawingBinding): DrawingBinding {
   return { ...drawing, singleLine: true };
+}
+
+/**
+ * Le texte dessiné `drawing`, strict : sur une ligne de chaque position, à sa
+ * taille, ou il ne se dessine pas, et le prescripteur le réécrit (D-302).
+ */
+export function strictDrawing(
+  drawing: DrawingBinding,
+  label: string,
+  options: Omit<StrictOptions, "oneLine"> = {},
+): DrawingBinding {
+  return { ...drawing, strict: { label, ...options, oneLine: true } };
 }
 
 /**

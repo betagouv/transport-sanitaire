@@ -11,6 +11,8 @@ export {
   date,
   drawnBox,
   onOneLine,
+  type StrictOptions,
+  strictDrawing,
   strictText,
   templateAt,
   text,
@@ -23,6 +25,7 @@ export {
   dtoFrom,
 } from "./generate-the-cerfa/compute-the-dto";
 export {
+  type GeneratedCerfa,
   generateCerfa,
   type Overflowing,
 } from "./generate-the-cerfa/generate-the-cerfa";
@@ -33,3 +36,4 @@ export {
   useShown,
 } from "./pdf/PdfActionButton";
 export type { StrictTextEdits } from "./StrictTexts";
+export { type CounterOf, useTextCounters } from "./use-text-counters";

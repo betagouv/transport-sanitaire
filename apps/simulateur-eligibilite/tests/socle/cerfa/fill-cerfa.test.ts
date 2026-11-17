@@ -98,9 +98,11 @@ describe("fillCerfa", () => {
 });
 
 describe("un texte strict", () => {
+  const MULTILIGNE = { size: TEXT_SIZES.target, oneLine: false };
+
   it("s'écrit à la taille visée, en multiligne, quand il tient", async () => {
     const { pdf, read, overflowing } = await remplir(await testForm(), [
-      { field: "motif", text: "Dialyse.", strict: true },
+      { field: "motif", text: "Dialyse.", strict: MULTILIGNE },
     ]);
 
     expect(read).toEqual({ motif: "Dialyse." });
@@ -112,7 +114,7 @@ describe("un texte strict", () => {
   it("n'écrit que son plus long début qui tient, à la taille visée, et le dit", async () => {
     const { pdf, read, overflowing, overflows } = await remplir(
       await testForm(),
-      [{ field: "motif", text: LONG, strict: true }],
+      [{ field: "motif", text: LONG, strict: MULTILIGNE }],
     );
 
     const [deborde] = overflowing;

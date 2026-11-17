@@ -11,8 +11,7 @@ import { keepBoxAppearances } from "./box-appearances";
 import { type Box, checkBoxes } from "./check-box";
 import { formatDateForField } from "./dates";
 import type { Drawing } from "./flatten-the-form";
-import { StrictText } from "./strict-text";
-import { TEXT_SIZES } from "./text-sizes";
+import { type StrictLayout, StrictText } from "./strict-text";
 import { writableIn } from "./writable-text";
 import {
   type Text,
@@ -23,7 +22,7 @@ import {
 
 /**
  * Une valeur à écrire : un texte dans un champ nommé, ou une case à cocher.
- * Un texte strict s'écrit à la taille visée, ou pas (D-302).
+ * Un texte strict s'écrit à sa taille, ou pas (D-302).
  *
  * `checked` porte l'état d'export à écrire, souvent `On` ou `Yes`. Un gabarit
  * peut aussi mettre plusieurs cases sous un même nom : des boutons radio
@@ -31,7 +30,7 @@ import {
  * `/Oui`) : les états se relèvent dans le gabarit, ils ne se devinent pas.
  */
 export type FieldEntry = { readonly field: string } & (
-  | { readonly text: string; readonly strict?: boolean }
+  | { readonly text: string; readonly strict?: StrictLayout }
   | { readonly checked: string }
 );
 
@@ -82,7 +81,7 @@ export type StrictOverflow = {
  * reste près (`overflow.ts`, #341) ; sinon il rapetisse sous le plancher :
  * illisible plutôt que sur la ligne suivante du formulaire. Plus long que le
  * nombre de caractères du champ, il laisse toujours le champ vide. Un texte
- * strict, lui, s'écrit à la taille visée ou en partie (`strict-text.ts`).
+ * strict, lui, s'écrit à sa taille ou en partie (`strict-text.ts`).
  */
 export async function fillCerfa(
   template: Uint8Array | ArrayBuffer,
@@ -169,9 +168,10 @@ function writeOne(
       text: writableIn(font, text.text),
     });
   const field = textFieldOf(document, text.field);
-  const { fits, maximum } = new StrictText(field, font).write(text.text);
+  const strict = new StrictText(field, font, text.strict);
+  const { fits, maximum } = strict.write(text.text);
   const size =
-    field.acroField.getWidgets().length > 0 ? TEXT_SIZES.target : null;
+    field.acroField.getWidgets().length > 0 ? text.strict.size : null;
   return { overflows: [], size, ...(fits ? {} : { maximum }) };
 }
 

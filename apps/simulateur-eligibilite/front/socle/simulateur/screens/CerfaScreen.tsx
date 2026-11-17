@@ -22,6 +22,7 @@ import {
   useResultScreen,
 } from "../../analytics";
 import {
+  type BoundCerfa,
   CerfaDocument,
   type CerfaDto,
   dtoFrom,
@@ -151,9 +152,24 @@ type CerfaProps = {
 type Edits = StrictTextEdits & { readonly accepted: Texts };
 type Texts = Readonly<Record<string, string>>;
 
-// Le DTO du modèle, où chaque texte validé remplace le sien.
-function withAccepted<Dto extends CerfaDto>(dto: Dto, accepted: Texts): Dto {
-  return { ...dto, fields: { ...dto.fields, ...accepted } };
+// Le DTO du cerfa, où chaque texte validé remplace le sien : dans les champs,
+// ou dans les dessins pour un texte que le cerfa dessine.
+function dtoWithAccepted(
+  { mapping, cerfa }: BoundCerfa,
+  context: Context,
+  accepted: Texts,
+): CerfaDto {
+  const dto = dtoFrom(mapping, context);
+  const drawn = cerfa.drawings;
+  const among = (inDrawings: boolean) =>
+    Object.fromEntries(
+      Object.entries(accepted).filter(([key]) => key in drawn === inDrawings),
+    );
+  return {
+    ...dto,
+    fields: { ...dto.fields, ...among(false) },
+    drawings: { ...dto.drawings, ...among(true) },
+  };
 }
 
 function Cerfa({
@@ -175,7 +191,7 @@ function Cerfa({
         <CerfaActions {...actions} feedback={null} />
       </>
     );
-  const dto = withAccepted(dtoFrom(bound.mapping, context), edits.accepted);
+  const dto = dtoWithAccepted(bound, context, edits.accepted);
   const file = fileNameOf(bound.cerfa.fileName, input.completedAt);
   return (
     <CerfaDocument

@@ -28,6 +28,8 @@ export {
   date,
   drawnBox,
   onOneLine,
+  type StrictOptions,
+  strictDrawing,
   strictText,
   templateAt,
   text,

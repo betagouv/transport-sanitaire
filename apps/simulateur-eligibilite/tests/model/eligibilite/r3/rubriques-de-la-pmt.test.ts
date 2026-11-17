@@ -86,9 +86,9 @@ describe("le nombre de transports", () => {
 });
 
 describe("l'urgence", () => {
-  const PRECISION: Reponses = { ...PMT, "Q3.5": "  Douleur\n thoracique  " };
+  const PRECISION: Reponses = { ...PMT, "Q3.5": "Douleur\nthoracique" };
 
-  it("coche « autres » hors appel au Centre 15, avec la précision de Q3.5", () => {
+  it("coche « autres » hors appel au Centre 15, avec la précision de Q3.5 telle que saisie", () => {
     const cibles = { cible_urgence_appel15: false, cible_urgence_autre: true };
 
     expect(cellules(URGENCE, PRECISION, cibles)).toEqual({
@@ -96,7 +96,7 @@ describe("l'urgence", () => {
       urgence_autre: true,
     });
     expect(cellules(PRECISION_DE_L_URGENCE, PRECISION, cibles)).toEqual({
-      urgence_precision: "Douleur thoracique",
+      urgence_precision: "Douleur\nthoracique",
     });
   });
 
@@ -108,7 +108,7 @@ describe("l'urgence", () => {
       urgence_autre: true,
     });
     expect(cellules(PRECISION_DE_L_URGENCE, PRECISION, cibles)).toEqual({
-      urgence_precision: "Douleur thoracique",
+      urgence_precision: "Douleur\nthoracique",
     });
   });
 

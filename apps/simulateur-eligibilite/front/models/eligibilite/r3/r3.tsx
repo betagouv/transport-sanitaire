@@ -92,6 +92,11 @@ export const R3 = {
   document: SUPPORT.computeWith(DOCUMENTS, ({ value: support }, documents) =>
     support == null || support === "AUCUN" ? null : documents[support],
   ),
+  /**
+   * La précision de l'urgence s'écrit telle que saisie : Q3.5 a un compteur,
+   * mesuré sur le document (T06, R04).
+   */
+  mesurees: { "Q3.5": "urgence_precision" },
   /** Le titre de R3, selon le document que la préconisation complète. */
   titre: ISSUE.compute(
     ({ value: issue }) => (issue && TITRES[issue]) ?? PRESCRIPTION,

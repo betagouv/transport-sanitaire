@@ -25,7 +25,7 @@ import {
   type Cerfa,
   type CerfaMapping,
   date,
-  onOneLine,
+  strictDrawing,
   strictText,
   templateAt,
   text,
@@ -46,7 +46,9 @@ import type { Rubrique } from "../rubriques/rubrique";
 import { TEXTE_MEDICAL, type TexteMedical } from "../rubriques/texte-medical";
 import { TRAJET, type Trajet } from "../rubriques/trajet";
 import {
+  LIBELLE_DE_LA_PRECISION,
   PRECISION_DE_L_URGENCE,
+  PRECISION_STRICTE,
   type PrecisionDeLUrgence,
   URGENCE,
   type Urgence,
@@ -143,14 +145,18 @@ const CERFA: Cerfa<DtoS3138g> = {
     pension_militaire_non: box("oui2", "NON"),
     date_prescription: date("date"),
   },
-  // À la suite de « autres (précisez) : », jusqu'au cadre, sur chaque volet.
-  // Une seconde ligne passerait sur le titre de la rubrique suivante (D-187).
+  // À la suite de « autres (précisez) : », sur chaque volet. Une seconde ligne
+  // passerait sur le titre de la rubrique suivante (D-187). La place est celle
+  // que l'éditeur mesure : 220 points, moins un point de marge de chaque côté
+  // (`urgence-document.mjs`).
   drawings: {
-    urgence_precision: onOneLine(
+    urgence_precision: strictDrawing(
       at(
-        { page: 3, x: 334, y: 322, width: 234 },
-        { page: 4, x: 337, y: 322, width: 231 },
+        { page: 3, x: 334, y: 322, width: 218 },
+        { page: 4, x: 337, y: 322, width: 218 },
       ),
+      LIBELLE_DE_LA_PRECISION,
+      PRECISION_STRICTE,
     ),
   },
 };

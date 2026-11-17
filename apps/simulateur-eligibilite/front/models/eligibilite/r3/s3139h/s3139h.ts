@@ -59,7 +59,9 @@ import { PRESCRIPTION, type Prescription } from "../rubriques/prescription";
 import { TEXTE_MEDICAL, type TexteMedical } from "../rubriques/texte-medical";
 import { TRAJET, type Trajet } from "../rubriques/trajet";
 import {
+  LIBELLE_DE_LA_PRECISION,
   PRECISION_DE_L_URGENCE,
+  PRECISION_STRICTE,
   type PrecisionDeLUrgence,
   URGENCE,
   type Urgence,
@@ -126,7 +128,10 @@ const CERFA: Cerfa<DtoS3139h> = {
     nombre: text("nom tra"),
     urgence_appel15: box("samu", "Oui"),
     urgence_autre: box("samu", "non"),
-    urgence_precision: text("préc"),
+    urgence_precision: strictText("préc", LIBELLE_DE_LA_PRECISION, {
+      ...PRECISION_STRICTE,
+      oneLine: true,
+    }),
     elements_medicaux: strictText(
       "elmedic",
       "Éléments d’ordre médical et commentaires",
