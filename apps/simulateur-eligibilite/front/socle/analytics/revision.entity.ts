@@ -1,14 +1,17 @@
 // Une révision du premier résultat (docs/knowledge/CONTEXT.md, « Révision ») :
 // `r1`, `r2`… dans une simulation. Elle naît à l'affichage d'un R2, et tombe
 // quand une modification de P1 ou de P2 la rend caduque. Ce qu'elle dit au
-// journal ne vient que des sorties calculées (ADR-0045). Les documents qui en
+// journal ne vient que des sorties calculées (ADR-0045) : son issue et son
+// support toujours, sans quoi elle ne naît pas (contrat v10.2.2). Les documents qui en
 // viennent portent son support, sa composition du transport et son mode
 // (ADR-0046, ANA22-04), puis la taille de leurs textes imprimés (ADR-0048,
 // ANA22-03).
 
 import type {
   AnalyticsEvent,
+  Issue,
   Mode,
+  Support,
   TransportComposition,
 } from "../../../shared/analytics/analytics-event";
 import { isDocumentSupport } from "../../../shared/analytics/typographic-fields";
@@ -24,17 +27,23 @@ export type ShownResult = {
 
 /**
  * Ce que le premier résultat donne au journal, des sorties calculées
- * seulement. `null` : la cible n'a pas de valeur, le champ ne part pas. Une
+ * seulement. `null` : la cible n'a pas de valeur. Sans issue ou sans support,
+ * le premier résultat ne part pas ; sans mode, le champ ne part pas. Une
  * liste de codes vide part : les règles n'en ont donné aucun. Sans liste, il
  * leur manquait un fait. La composition du transport part toujours, et le mode
  * terrestre seulement quand elle en a un (ANA22-04).
  */
 export type ResultCodes = {
-  readonly issue: string | null;
+  readonly issue: Issue | null;
   readonly mode: Mode | null;
   readonly transportComposition: TransportComposition;
   readonly reasonCodes: readonly string[] | null;
-  readonly support: string | null;
+  readonly support: Support | null;
+};
+
+/** Un premier résultat dont les règles ont donné l'issue et le support. */
+type ReportedResult = ShownResult & {
+  readonly codes: ResultCodes & { issue: Issue; support: Support };
 };
 
 /** Ce que l'app lance sur le document : l'impression ou le téléchargement. */
@@ -78,21 +87,26 @@ type DocumentEvent = Pick<
 export class Revision {
   readonly id: string;
   readonly #rank: number;
-  readonly #shown: ShownResult;
+  readonly #shown: ReportedResult;
 
-  private constructor(rank: number, shown: ShownResult) {
+  private constructor(rank: number, shown: ReportedResult) {
     this.#rank = rank;
     this.#shown = shown;
     this.id = `r${rank}`;
   }
 
+  /** Vrai si le journal peut recevoir ce R2 : son issue et son support. */
+  static canReport(shown: ShownResult): shown is ReportedResult {
+    return shown.codes?.issue != null && shown.codes.support !== null;
+  }
+
   /** La première révision, née du R2 affiché. */
-  static first(shown: ShownResult): Revision {
+  static first(shown: ReportedResult): Revision {
     return new Revision(1, shown);
   }
 
   /** La révision qui la suit, quand elle est tombée, née du R2 affiché. */
-  next(shown: ShownResult): Revision {
+  next(shown: ReportedResult): Revision {
     return new Revision(this.#rank + 1, shown);
   }
 
@@ -104,7 +118,7 @@ export class Revision {
       screen: "R2",
       revision: this.id,
       can_complete: shown.canComplete,
-      ...(shown.codes && fieldsOf(shown.codes)),
+      ...fieldsOf(shown.codes),
     };
   }
 
@@ -121,9 +135,9 @@ export class Revision {
       screen: "R3",
       revision: this.id,
       document_id: documentId,
-      ...(codes?.support != null && { support: codes.support }),
-      ...(codes && { transport_composition: codes.transportComposition }),
-      ...(codes?.mode != null && { mode: codes.mode }),
+      support: codes.support,
+      transport_composition: codes.transportComposition,
+      ...(codes.mode !== null && { mode: codes.mode }),
     };
   }
 
@@ -139,7 +153,7 @@ export class Revision {
     documentId: string,
     { sizes, unmeasured }: Typography,
   ): DocumentEvent[] {
-    const support = this.#shown.codes?.support;
+    const support = this.#shown.codes.support;
     if (!isDocumentSupport(support)) return [];
     const measurements = Object.entries(sizes).map(
       ([field_id, font_size_pt]) => ({ field_id, font_size_pt }),
@@ -174,12 +188,11 @@ export class Revision {
 
   /** Une génération ratée de son document. */
   documentFailed(): DocumentEvent {
-    const codes = this.#shown.codes;
     return {
       type: "document_generation_failed",
       screen: "R3",
       revision: this.id,
-      ...(codes?.support != null && { support: codes.support }),
+      support: this.#shown.codes.support,
     };
   }
 }
@@ -187,13 +200,15 @@ export class Revision {
 // ---- implémentation ----
 
 // Un code sans valeur ne part pas : le contrat lit son absence « inconnu ».
-function fieldsOf(codes: ResultCodes): Omit<ResultEvent, "type"> {
+function fieldsOf(
+  codes: ReportedResult["codes"],
+): Omit<ResultEvent, "type" | "screen" | "revision" | "can_complete"> {
   const { issue, mode, transportComposition, reasonCodes, support } = codes;
   return {
-    ...(issue !== null && { issue }),
-    ...(mode !== null && { mode }),
+    issue,
+    support,
     transport_composition: transportComposition,
+    ...(mode !== null && { mode }),
     ...(reasonCodes !== null && { reason_codes: [...reasonCodes] }),
-    ...(support !== null && { support }),
   };
 }

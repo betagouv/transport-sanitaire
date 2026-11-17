@@ -1,8 +1,15 @@
 // Le modèle factice : un questionnaire sans rapport avec le transport
 // sanitaire, écrit dans le contrat `Model`. Les tests du socle tournent sur lui.
+// Il donne au journal les codes d'une PMT terrestre, ou d'un refus quand rien
+// n'est commandé, et mesure son bon sous les identifiants de la PMT.
 
 import type { ValueOf } from "../../../../core/socle";
-import { bindCerfa, defineModel, text } from "../../../../front/socle";
+import {
+  bindCerfa,
+  defineModel,
+  type ResultCodes,
+  text,
+} from "../../../../front/socle";
 import type { Cibles } from "./declarations/cibles";
 import type { Faits } from "./declarations/faits";
 import type { Questions } from "./declarations/questions";
@@ -35,6 +42,11 @@ const BON_DE_COMMANDE = bindCerfa<{
       date: text("date"),
     },
     drawings: {},
+    typographicIds: {
+      commande: "S3138g.elements_medicaux",
+      quantite: "S3138g.nombre",
+      date: "S3138g.date_prescription",
+    },
   },
   {
     fields: {
@@ -52,6 +64,22 @@ const BON_DE_COMMANDE = bindCerfa<{
 // La boisson commandée, que lisent le choix du bon, son titre et le bouton.
 const COMMANDE = given.cible("commande");
 
+// Une boisson commandée donne une PMT en taxi ; rien de commandé, un refus.
+const PMT: ResultCodes = {
+  issue: "ISSUE_PMT",
+  mode: "TAP",
+  transportComposition: "terrestrial_only",
+  reasonCodes: [],
+  support: "S3138g",
+};
+const REFUS: ResultCodes = {
+  issue: "ISSUE_NON_ELIGIBLE",
+  mode: null,
+  transportComposition: "not_applicable",
+  reasonCodes: ["SANS_COMMANDE"],
+  support: "AUCUN",
+};
+
 export const model = defineModel<
   Questions,
   Faits,
@@ -66,6 +94,9 @@ export const model = defineModel<
     complement: COMPLEMENT,
     seeds: () => import("./seeds-catalogue").then((m) => m.SEEDS),
   },
+  resultCodes: COMMANDE.compute((commande) =>
+    commande.is(SANS_COMMANDE) ? REFUS : PMT,
+  ),
   result: {
     title: "Résultat",
     reading: LA_COMMANDE,

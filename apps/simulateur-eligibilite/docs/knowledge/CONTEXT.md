@@ -278,7 +278,8 @@ Un R2 réaffiché sans modification garde sa révision ; une modification
 validée de P1 ou de P2 l'invalide, et le R2 suivant en ouvre une nouvelle. Le
 complément et le cerfa portent la révision du R2 qui les ouvre. Le journal des
 parcours s'en sert pour compter l'accès au premier résultat sur la première, et
-la répartition des issues sur la dernière valide (#386).
+la répartition des issues sur la dernière valide (#386). Un R2 sans issue ou
+sans support n'en ouvre pas (#497).
 _Chez l'éditeur_: « révision », « révision courante » (ANA-1015).
 _Avoid_: version, réservé à celle des règles, de l'app, du document R3 et de la
 fiche patient.

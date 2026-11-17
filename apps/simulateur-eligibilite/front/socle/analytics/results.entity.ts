@@ -42,9 +42,12 @@ export class Results {
     return this.#revision;
   }
 
-  /** Une nouvelle révision, sauf s'il réaffiche la révision courante. */
+  /**
+   * Une nouvelle révision, sauf s'il réaffiche la révision courante, ou que
+   * les règles n'en donnent ni l'issue ni le support.
+   */
   display(shown: ShownResult): ResultEvent[] {
-    if (this.#revision) return [];
+    if (this.#revision || !Revision.canReport(shown)) return [];
     const revision = this.#lastRevision?.next(shown) ?? Revision.first(shown);
     this.#revision = revision;
     this.#lastRevision = revision;
