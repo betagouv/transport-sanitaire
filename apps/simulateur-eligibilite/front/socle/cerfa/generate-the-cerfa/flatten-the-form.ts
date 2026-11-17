@@ -4,9 +4,11 @@
 // sait pas montrer se dessine ensuite : la marque d'une case qui partage son
 // champ, un texte là où le gabarit n'a pas de champ, et un texte trop long
 // pour son cadre. Le PDF s'imprime tel quel, et rien ne s'y corrige plus dans
-// un lecteur.
+// un lecteur. Un aperçu porte en plus sa marque en travers de chaque page
+// (D-304).
 
 import {
+  degrees,
   drawObject,
   PDFCheckBox,
   PDFDict,
@@ -17,6 +19,7 @@ import {
   type PDFWidgetAnnotation,
   popGraphicsState,
   pushGraphicsState,
+  rgb,
   StandardFonts,
   translate,
 } from "pdf-lib";
@@ -46,6 +49,8 @@ export const LINE_HEIGHT = 1.2;
 export type Drawn = {
   readonly marks?: readonly Mark[];
   readonly drawings?: readonly Drawing[];
+  /** La marque d'un aperçu, en travers de chaque page. */
+  readonly watermark?: string;
 };
 
 /** Le PDF aplati, et la taille de chaque texte dessiné, dans leur ordre. */
@@ -57,7 +62,7 @@ export type Flattened = {
 /** Le PDF rempli `pdf`, sans aucun champ, avec `drawn` dessiné par-dessus. */
 export async function flattenCerfa(
   pdf: Uint8Array,
-  { marks = [], drawings = [] }: Drawn = {},
+  { marks = [], drawings = [], watermark }: Drawn = {},
 ): Promise<Flattened> {
   const document = await PDFDocument.load(pdf);
   // Les marques se relèvent avant : l'aplatissement retire les cases.
@@ -65,6 +70,7 @@ export async function flattenCerfa(
   document.getForm().flatten();
   for (const stamp of stamps) drawStamp(stamp);
   const drawnSizes = await drawTexts(document, drawings);
+  if (watermark) await drawWatermark(document, watermark);
   return { pdf: await document.save(), drawnSizes };
 }
 
@@ -130,4 +136,25 @@ async function drawTexts(
     });
     return size;
   });
+}
+
+// La marque, en diagonale, centrée sur chaque page, grise et transparente : ce
+// qu'elle couvre reste lisible.
+async function drawWatermark(document: PDFDocument, text: string) {
+  const font = await document.embedFont(StandardFonts.HelveticaBold);
+  const angle = Math.PI / 4;
+  for (const page of document.getPages()) {
+    const { width, height } = page.getSize();
+    const size = Math.min(width, height) / 12;
+    const half = font.widthOfTextAtSize(text, size) / 2;
+    page.drawText(text, {
+      x: width / 2 - half * Math.cos(angle) + (size / 3) * Math.sin(angle),
+      y: height / 2 - half * Math.sin(angle) - (size / 3) * Math.cos(angle),
+      size,
+      font,
+      rotate: degrees(45),
+      color: rgb(0.5, 0.5, 0.5),
+      opacity: 0.35,
+    });
+  }
 }

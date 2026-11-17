@@ -7,9 +7,10 @@ export const TEXT_SIZES = {
   /** La taille visée : tout texte s'écrit à cette taille s'il y tient. */
   target: 9,
   /**
-   * La taille réduite : un texte trop long pour son cadre y descend avant de
-   * perdre son commentaire facultatif, puis rapetisse en dessous jusqu'à tenir
-   * (D-85, D-193). C'est aussi la taille d'un texte dessiné hors de son champ.
+   * La taille réduite : un texte trop long pour son cadre y descend, puis
+   * rapetisse en dessous jusqu'à tenir (D-85, D-193). C'est aussi la taille
+   * d'un texte dessiné hors de son champ. Un texte strict n'y descend jamais
+   * (D-302).
    */
   reduced: 8,
   /**
