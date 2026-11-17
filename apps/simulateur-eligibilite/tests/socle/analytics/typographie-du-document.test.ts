@@ -17,9 +17,7 @@ const unR2 = (support: string | null = "S3138g") => ({
     transportComposition: "unknown" as const,
     reasonCodes: [],
     support,
-    financeur: null,
   },
-  motifs: [],
 });
 
 // Une PMT : le nombre de transports à 9 pt, l'adresse d'arrivée rapetissée à

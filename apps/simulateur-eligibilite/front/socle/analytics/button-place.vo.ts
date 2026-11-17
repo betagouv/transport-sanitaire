@@ -14,12 +14,11 @@ export type Button = ButtonId | "feedback";
 
 /**
  * Ce que montre l'écran où le bouton est offert : l'écran et son affichage, la
- * révision, et les versions de la fiche et du document.
+ * révision, et les versions de la fiche et du document. L'affichage ne part
+ * pas au journal : il dit seulement si le bouton est resté à sa place.
  */
-export type ExposedOn = Pick<
-  AnalyticsEvent,
-  "screen" | "page_view_id" | "revision"
-> & {
+export type ExposedOn = Pick<AnalyticsEvent, "screen" | "revision"> & {
+  readonly view: string;
   readonly sheet: string | NoVersion;
   readonly document: string | NoVersion;
 };
@@ -32,7 +31,6 @@ export type Placed = Pick<
   AnalyticsEvent,
   | "button_id"
   | "screen"
-  | "page_view_id"
   | "revision"
   | "artifact_id"
   | "document_revision"
@@ -45,18 +43,20 @@ type NotOffered = null;
 export class ButtonPlace {
   readonly button: Button;
   readonly fields: Placed;
+  readonly #view: string;
 
-  private constructor(button: Button, fields: Placed) {
+  private constructor(button: Button, view: string, fields: Placed) {
     this.button = button;
+    this.#view = view;
     this.fields = fields;
   }
 
   /** La place du bouton sur l'écran, s'il y montre son objet. */
   static of(button: Button, on: ExposedOn): ButtonPlace | NotOffered {
-    const { sheet, document, ...place } = on;
+    const { view, sheet, document, ...place } = on;
     if (button === "feedback") {
       if (!place.revision) return null;
-      return new ButtonPlace(button, {
+      return new ButtonPlace(button, view, {
         ...place,
         ...(document && { document_id: document }),
       });
@@ -64,10 +64,10 @@ export class ButtonPlace {
     const fields = { button_id: button, ...place };
     if (button.startsWith("patient_sheet_"))
       return sheet
-        ? new ButtonPlace(button, { ...fields, artifact_id: sheet })
+        ? new ButtonPlace(button, view, { ...fields, artifact_id: sheet })
         : null;
     if (!document) return null;
-    return new ButtonPlace(button, {
+    return new ButtonPlace(button, view, {
       ...fields,
       artifact_id: document,
       document_revision: document,
@@ -76,6 +76,9 @@ export class ButtonPlace {
   }
 
   equals(other: ButtonPlace): boolean {
-    return JSON.stringify(this.fields) === JSON.stringify(other.fields);
+    return (
+      this.#view === other.#view &&
+      JSON.stringify(this.fields) === JSON.stringify(other.fields)
+    );
   }
 }

@@ -62,6 +62,11 @@ liste.
 
 ## Mises à jour
 
+> **Mise à jour 2026-11-17, les compléments hors contrat retirés (#497).** Le
+> contrat v10.2.2 ferme ses champs : cela **révoque** le point 6. `financeur` et
+> `motifs` ne partent plus. Le motif affiché reste choisi par le calcul de son
+> texte, sans rien dire au journal.
+
 > **Mise à jour 2026-11-17, la composition du transport (#509).** `portions` ne
 > part plus : `transport_composition` (ANA22-04, v10.2.2) la remplace sur
 > chaque R2. Le modèle la calcule avec ses codes (`ResultCodes`), de

@@ -301,16 +301,16 @@ _Avoid_: taille de police, qui dit la taille de départ.
 
 **Rechargement**:
 La page du CMS rechargée par le prescripteur, qui ouvre une nouvelle simulation
-et laisse l'ancienne sans fin. La première simulation de la page le dit au
-journal des parcours, par `navigation` (#434). « Faire une nouvelle simulation »
-n'en est pas un : la page reste.
+et laisse l'ancienne sans fin. Le journal des parcours ne le reçoit plus : le
+contrat v10.2.2 n'a pas de champ pour le dire (#497). « Faire une nouvelle
+simulation » n'en est pas un : la page reste.
 
 **Motif**:
 Une raison que le premier résultat affiche, telle que le catalogue de l'éditeur
 l'écrit, avec son identifiant : le contexte d'une fiche positive (`E-B`), une
 phrase d'accord préalable, un scénario de la caisse, une raison de refus. Le
-même calcul choisit le motif affiché et celui que reçoit le journal des
-parcours (#386).
+même calcul choisit son texte et son identifiant. Le journal des parcours ne
+reçoit que le code de raison (#497).
 _Chez l'éditeur_: « contexte », « scénario », « raison » ou « whyItem » selon
 l'issue ; « motif » pour un code de raison (`reason_codes`).
 _Avoid_: raison, réservé à `cible_reason_code`, le code que les règles

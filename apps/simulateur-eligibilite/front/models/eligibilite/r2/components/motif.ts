@@ -1,7 +1,6 @@
 // Un motif du premier résultat (docs/knowledge/CONTEXT.md, « Motif ») : une
 // raison que R2 affiche, telle que le catalogue de l'éditeur l'écrit. Le
-// calcul qui choisit son texte choisit aussi son identifiant, que reçoit le
-// journal des parcours (ADR-0045).
+// calcul qui choisit son texte choisit aussi son identifiant.
 
 /** Un motif affiché : son identifiant au catalogue. */
 export type Motif = { readonly id: string };
@@ -12,9 +11,4 @@ export type Motif = { readonly id: string };
  */
 export function motifDe({ id }: Motif): Motif {
   return { id };
-}
-
-/** Les identifiants de ces motifs, dans l'ordre où R2 les affiche. */
-export function identifiantsDes(motifs: readonly Motif[]): string[] {
-  return motifs.map(({ id }) => id);
 }

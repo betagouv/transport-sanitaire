@@ -49,28 +49,19 @@ describe("journal dans Grist", () => {
       new GristApiClient({ docUrl: grist.docUrl, cleApi: "test" }),
     );
 
-    await journal.append(
-      recu({
-        establishment_name: "CHU Grenoble Alpes",
-        service_name: "Cardiologie",
-      }),
-    );
-    // Un établissement saisi n'a pas d'id, et un repli n'a pas de nom.
+    await journal.append(recu({}));
+    // Un établissement saisi n'a pas d'id.
     await journal.append(
       recu({
         event_id: "s-2:1",
         establishment_id: undefined,
-        establishment_name: "Clinique des Cèdres",
-        service_id: "autre",
+        service_id: undefined,
       }),
     );
 
     expect(colonnes(grist.tables.Evenements)).toEqual([
-      [
-        '{"id":"e_chu_grenoble","name":"CHU Grenoble Alpes"}',
-        '{"id":"s_grenoble_cardio","name":"Cardiologie"}',
-      ],
-      ['{"name":"Clinique des Cèdres"}', '{"id":"autre"}'],
+      ['{"id":"e_chu_grenoble"}', '{"id":"s_grenoble_cardio"}'],
+      [null, null],
     ]);
   });
 

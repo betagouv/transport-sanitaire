@@ -60,12 +60,6 @@ export type FirstResult = {
    * pu conclure. Ni étape suivante ni complétion.
    */
   terminal?: boolean;
-  /**
-   * Les identifiants des motifs que le résultat affiche, tels que son
-   * catalogue les nomme. Le journal des parcours les reçoit (ADR-0045). Une liste
-   * vide : aucun motif affiché. Sans liste : on ne sait pas.
-   */
-  motifs?: readonly string[];
 };
 
 /**

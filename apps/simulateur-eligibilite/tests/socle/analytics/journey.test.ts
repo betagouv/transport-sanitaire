@@ -7,15 +7,11 @@ import { Journey } from "../../../front/socle/analytics/journey.entity";
 import type { OpenedPage } from "../../../front/socle/analytics/page-view.entity";
 import { PROVENANCE } from "./journal-de-test";
 
-const entree = { navigation: "navigate" as const };
-
 // Un parcours rattaché à un service du référentiel.
 const RATTACHE = {
   ...PROVENANCE,
   establishment_id: "7",
-  establishment_name: "CHU Grenoble Alpes",
   service_id: "42",
-  service_name: "Cardiologie",
 };
 
 // Une page de P2 qui n'est ni la première ni la dernière de la phase.
@@ -33,7 +29,7 @@ describe("le parcours d'une simulation", () => {
   it("numérote son début, puis son intention", () => {
     const journey = new Journey({ seeded: false, provenance: PROVENANCE });
 
-    const debut = journey.start(entree);
+    const debut = journey.start();
     const intention = journey.selectIntent("eligibilite_seule");
 
     expect([debut?.sequence, intention?.sequence]).toEqual([1, 2]);
@@ -44,18 +40,16 @@ describe("le parcours d'une simulation", () => {
     });
   });
 
-  it("écrit son rattachement sur chaque événement, ids et noms", () => {
+  it("écrit son rattachement sur chaque événement", () => {
     const journey = new Journey({ seeded: false, provenance: RATTACHE });
 
-    const debut = journey.start(entree);
+    const debut = journey.start();
     const ouverture = journey.openAPage(pageDeP2("P2/prestation", ["Q2.1"]));
 
     for (const evenement of [debut, ...ouverture]) {
       expect(evenement).toMatchObject({
         establishment_id: "7",
-        establishment_name: "CHU Grenoble Alpes",
         service_id: "42",
-        service_name: "Cardiologie",
       });
     }
   });
@@ -71,7 +65,7 @@ describe("le parcours d'une simulation", () => {
     const journey = new Journey({ seeded: true, provenance: PROVENANCE });
 
     expect([
-      journey.start(entree),
+      journey.start(),
       journey.selectIntent("eligibilite_seule"),
     ]).toEqual([null, null]);
   });
@@ -82,7 +76,6 @@ describe("le parcours d'une simulation", () => {
 
     const validation = journey.validate({
       questions: ["Q2.1"],
-      stillValidated: ["Q2.1"],
       nextPart: "P2",
       changed: true,
     });
@@ -132,9 +125,7 @@ const unR2 = {
     transportComposition: "unknown",
     reasonCodes: [],
     support: "S3138g",
-    financeur: null,
   },
-  motifs: ["E-B"],
 } as const;
 
 // La dernière page de P2 validée, ses réponses changées ou non.
@@ -142,7 +133,6 @@ function valider(journey: Journey, changed: boolean) {
   journey.openAPage(pageDeP2("P2/prestation", ["Q2.1"]));
   return journey.validate({
     questions: ["Q2.1"],
-    stillValidated: ["Q2.1"],
     nextPart: null,
     changed,
   });
@@ -162,11 +152,9 @@ describe("les révisions du premier résultat", () => {
       issue: "ISSUE_PMT",
       support: "S3138g",
       reason_codes: [],
-      motifs: ["E-B"],
       transport_composition: "unknown",
     });
     expect(affiche).not.toHaveProperty("mode");
-    expect(affiche).not.toHaveProperty("financeur");
   });
 
   it("un R2 part avec la composition du transport et son mode terrestre", () => {
@@ -249,7 +237,6 @@ describe("les révisions du premier résultat", () => {
 
     const validation = journey.validate({
       questions: ["Q3.1"],
-      stillValidated: ["Q3.1"],
       nextPart: null,
       changed: true,
     });

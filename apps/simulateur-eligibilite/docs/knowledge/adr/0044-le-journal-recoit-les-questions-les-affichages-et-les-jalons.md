@@ -55,6 +55,14 @@ Aucune réponse ne part : seulement des identifiants de question et de page.
 
 ## Mises à jour
 
+> **Mise à jour 2026-11-17, les compléments hors contrat retirés (#497).** Le
+> contrat v10.2.2 ferme ses champs (`additionalProperties: false`) : cela
+> **révoque** les points 3 et 4 pour ce qui part au journal. `page_view_id` ne part
+> plus. L'affichage d'une page reste, dans le navigateur, ce qui fait une
+> exposition, et `exposure_id` le garde en préfixe. `question_invalidated`
+> disparaît, comme l'éditeur le demande au point 24 du retour v10.2.2 : une
+> validation qu'une correction fait tomber ne se dit plus.
+
 > **Mise à jour 2026-11-13, les questions et les jalons affichés (#385).** Le journal
 > reçoit ce que le prescripteur voit et fait de chaque question : son affichage, sa
 > première saisie, sa validation, et l'invalidation d'une validation qu'une

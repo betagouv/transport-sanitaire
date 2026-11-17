@@ -151,7 +151,6 @@ function validationOf(
   const sameStage = next.stage.name === simulation.stage.name;
   return {
     questions,
-    stillValidated: Object.keys(next.validated.toJSON()),
     nextPart: sameStage ? next.placeInPart.part : null,
     changed: !next.validated.sameAs(simulation.validated),
   };

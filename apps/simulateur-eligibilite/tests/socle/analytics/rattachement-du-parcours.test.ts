@@ -1,5 +1,6 @@
 // Ce que le début d'une simulation dit de son rattachement (ADR-0053) : les ids
-// du référentiel quand il en a, et les noms, lus dans la liste ou saisis.
+// du référentiel quand il en a. Les noms ne partent pas : le contrat v10.2.2
+// ne les connaît pas (#497).
 
 import { describe, expect, it } from "vitest";
 import type { RattachementSaisi } from "../../../shared/rattachement-saisi";
@@ -16,7 +17,7 @@ function demarrer(rattachement: RattachementSaisi | null) {
 }
 
 describe("le rattachement d'un parcours", () => {
-  it("un service de la liste : les deux ids, et les noms de la liste", () => {
+  it("un service de la liste : les deux ids", () => {
     const debut = demarrer({
       etabId: "e_chu_grenoble",
       etabLibelle: "CHU Grenoble Alpes",
@@ -26,13 +27,11 @@ describe("le rattachement d'un parcours", () => {
 
     expect(debut).toMatchObject({
       establishment_id: "e_chu_grenoble",
-      establishment_name: "CHU Grenoble Alpes",
       service_id: "s_grenoble_cardio",
-      service_name: "Cardiologie",
     });
   });
 
-  it("un service saisi sous « Autre » : l'id d'« Autre », et le nom saisi", () => {
+  it("un service saisi sous « Autre » : l'id d'« Autre »", () => {
     const debut = demarrer({
       etabId: "e_chu_grenoble",
       etabLibelle: "CHU Grenoble Alpes",
@@ -43,12 +42,12 @@ describe("le rattachement d'un parcours", () => {
     });
 
     expect(debut).toMatchObject({
+      establishment_id: "e_chu_grenoble",
       service_id: "s_grenoble_autre",
-      service_name: "Néphrologie",
     });
   });
 
-  it("un établissement saisi : ses noms, sans id", () => {
+  it("un établissement saisi : sans id", () => {
     const debut = demarrer({
       etabId: "",
       etabEstAutre: true,
@@ -56,22 +55,16 @@ describe("le rattachement d'un parcours", () => {
       serviceLibre: "Urgences",
     });
 
-    expect(debut).toMatchObject({
-      establishment_name: "Clinique des Cèdres",
-      service_name: "Urgences",
-    });
     expect(debut?.establishment_id).toBeUndefined();
     expect(debut?.service_id).toBeUndefined();
   });
 
-  it("le rattachement de repli, sans référentiel : ses ids, sans nom", () => {
+  it("le rattachement de repli, sans référentiel : ses ids", () => {
     const debut = demarrer({ etabId: "autre", serviceId: "autre" });
 
     expect(debut).toMatchObject({
       establishment_id: "autre",
       service_id: "autre",
     });
-    expect(debut?.establishment_name).toBeUndefined();
-    expect(debut?.service_name).toBeUndefined();
   });
 });

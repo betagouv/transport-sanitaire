@@ -64,6 +64,14 @@ cache, et un établissement saisi restait sans nom.
 
 ## Mises à jour
 
+> **Mise à jour 2026-11-17, les noms retirés (#497).** Le contrat v10.2.2 ferme
+> ses champs : cela **révoque** les points 2 et 4, et la clé `name` du point 3.
+> `establishment_name` et `service_name` ne partent plus. Chaque événement garde
+> `establishment_id` et `service_id`, choisis comme avant (#506 les revoit). Les
+> colonnes `establishment` et `service` ne gardent que l'id, `{"id":"12"}`, et
+> restent vides pour un établissement saisi. Un nom saisi ne part plus au
+> journal.
+
 > **Mise à jour 2026-11-16, l'établissement et le service en colonnes (#491).**
 > Chaque événement d'un parcours porte désormais son rattachement : les ids du
 > référentiel, et les noms de l'établissement et du service. Le journal Grist
