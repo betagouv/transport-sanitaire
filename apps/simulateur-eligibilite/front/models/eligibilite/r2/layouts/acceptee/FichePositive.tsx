@@ -1,8 +1,9 @@
 // La fiche patient positive, à remettre au patient : la prescription médicale
 // de transport et le formulaire S3141 (#135), puis les deux demandes d'accord
-// préalable (#136). Le socle la pose sur sa feuille, sous les logos, son titre
-// et sa raison. Le composant range un `TexteDeLaFichePositive` dans les blocs
-// du socle ; il n'écrit aucun texte de l'éditeur.
+// préalable (#136). Le socle la pose sur sa feuille, sous les logos, son titre,
+// le mode d'un trajet en ligne régulière et sa raison. Le composant range un
+// `TexteDeLaFichePositive` dans les blocs du socle ; il n'écrit aucun texte de
+// l'éditeur.
 
 import {
   IllustratedCards,
@@ -15,13 +16,16 @@ import type { CarteAffichee } from "../../components/cartes-et-badges";
 import type { Consignes } from "../../components/consignes-du-modus";
 import { illustrationDuMode } from "../../components/illustrations-des-modes";
 import { TexteEnrichi } from "../../components/TexteEnrichi";
-import type { TexteDeLaFichePositive } from "./texte";
+import type { PartieTerrestre, TexteDeLaFichePositive } from "./texte";
 
 export function FichePositive({ texte }: { texte: TexteDeLaFichePositive }) {
   return (
     <>
-      <ModeDuTrajet lignes={texte.modeDuTrajet} />
+      {texte.partieTerrestre && <p>{texte.partieTerrestre.mode}</p>}
       <Cartes cartes={texte.cartes} />
+      {texte.partieTerrestre && (
+        <EtapesTerrestres partie={texte.partieTerrestre} />
+      )}
       <SheetFollowUp>
         <ConsignesDuPatient consignes={texte.consignes} />
         <Panel variant="white" title={texte.finance.title} titleLevel={3}>
@@ -34,15 +38,13 @@ export function FichePositive({ texte }: { texte: TexteDeLaFichePositive }) {
 
 // ---- implémentation ----
 
-// Le mode d'un trajet en ligne régulière, et sa partie terrestre, en texte :
-// aucune carte ne les montre (R01, R03).
-function ModeDuTrajet({ lignes }: { lignes: readonly string[] }) {
-  if (lignes.length === 0) return null;
+// Les étapes de la partie terrestre d'un trajet en ligne régulière, à part
+// des consignes de l'accord préalable (R01).
+function EtapesTerrestres({ partie }: { partie: PartieTerrestre }) {
   return (
-    <section aria-label="Le mode de transport">
-      {lignes.map((ligne) => (
-        <p key={ligne}>{ligne}</p>
-      ))}
+    <section aria-labelledby="partie-terrestre-titre">
+      <h3 id="partie-terrestre-titre">{partie.titre}</h3>
+      <Etapes etapes={partie.etapes} />
     </section>
   );
 }
@@ -74,16 +76,22 @@ function ConsignesDuPatient({ consignes }: { consignes: Consignes }) {
           <TexteEnrichi texte={paragraphe} />
         </p>
       ))}
-      <NumberedSteps
-        titleLevel={4}
-        steps={consignes.etapes.map((etape) => ({
-          title: etape.titre,
-          content: etape.blocs.map((bloc, rang) => (
-            // Les blocs d'une étape ne changent jamais d'ordre.
-            <BlocDeConsigne bloc={bloc} key={`${etape.numero}-${rang}`} />
-          )),
-        }))}
-      />
+      <Etapes etapes={consignes.etapes} />
     </section>
+  );
+}
+
+function Etapes({ etapes }: { etapes: Consignes["etapes"] }) {
+  return (
+    <NumberedSteps
+      titleLevel={4}
+      steps={etapes.map((etape) => ({
+        title: etape.titre,
+        content: etape.blocs.map((bloc, rang) => (
+          // Les blocs d'une étape ne changent jamais d'ordre.
+          <BlocDeConsigne bloc={bloc} key={`${etape.numero}-${rang}`} />
+        )),
+      }))}
+    />
   );
 }

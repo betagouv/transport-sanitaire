@@ -8,9 +8,10 @@
 // préalable sont l'introduction (dans les consignes) et la justification dans
 // la raison. Un trajet en avion ou en bateau de ligne régulière prend ses
 // titres et son modus, ses cartes ont leur préfixe et il n'a pas de badge
-// (#221) ; en accord préalable, ni cartes ni étapes. Son mode se dit en texte.
-// Avec une partie terrestre (Q2.3.2.terrestre), celle-ci se dit aussi en texte,
-// suivie des étapes et des badges de son mode (v10.2.1, R01 et R03). Elle lit
+// (#221) ; en accord préalable, ni cartes ni étapes. Son mode se dit en texte,
+// avant la raison. Avec une partie terrestre (Q2.3.2.terrestre), celle-ci se
+// dit aussi en texte, après la raison, et ses étapes viennent à part, sans
+// badge (v10.2.1, R01 et R03 ; `rendu-resultats.mjs` de l'éditeur). Elle lit
 // ce que lisent ces textes (`ce-que-lit-un-texte.ts`).
 
 import type { AcceptedIssueId } from "../../../../../../core/models/eligibilite/cibles/issue.vo";
@@ -66,16 +67,25 @@ export type TexteDeLaFichePositive = {
   readonly raison?: string;
   readonly cartes: readonly CarteAffichee[];
   /**
-   * Le mode d'un trajet en ligne régulière, puis sa partie terrestre, en
-   * texte. Vide pour un trajet terrestre : ses cartes disent son mode.
+   * Le mode d'un trajet en ligne régulière, en texte, avant la raison. Absent
+   * pour un trajet terrestre : ses cartes disent son mode.
    */
-  readonly modeDuTrajet: readonly string[];
+  readonly modeDuTrajet?: string;
+  /** La partie terrestre d'un trajet en ligne régulière, si elle est établie. */
+  readonly partieTerrestre?: PartieTerrestre;
   readonly consignes: Consignes;
   readonly finance: Bloc;
   /** Les motifs que la raison affiche. */
   readonly motifs: readonly Motif[];
   /** Les portions du trajet que la fiche restitue. */
   readonly portions: readonly Portion[];
+};
+
+/** La partie terrestre : son mode en texte, puis les étapes de ce mode. */
+export type PartieTerrestre = {
+  readonly mode: string;
+  readonly titre: string;
+  readonly etapes: Consignes["etapes"];
 };
 
 /** Ce que lit la fiche positive : ce que lisent ses textes. */
@@ -101,8 +111,7 @@ export function texteDeLaFichePositive(
   const issue = catalogue.issues[issueId];
   const libelle = libelleDeLaFiche(trace);
   const titre = libelle && issue.titles[libelle];
-  const terrestre = libelleDeLaPartieTerrestre(trace);
-  const modus = libelle && modusDuMode(issue, terrestre ?? libelle);
+  const modus = libelle && modusDuMode(issue, libelle);
   const titreDuPrescripteur =
     issue.prescriberTitles[rangDuTitreDuPrescripteur(trace)];
   if (!titre || !modus || !titreDuPrescripteur) return undefined;
@@ -115,14 +124,13 @@ export function texteDeLaFichePositive(
     "intro" in issue ? issue.intro : undefined,
   );
   const sansCartes = sansCartesNiEtapes(issue, trace);
-  const sansEtapes = sansCartes && terrestre === undefined;
   return {
     titreDuPrescripteur,
     titreDuPatient: titre,
     ...(fondement.raison !== undefined && { raison: fondement.raison }),
     cartes: sansCartes ? [] : cartesDeLaFiche(issue, trace),
-    modeDuTrajet: modeDuTrajet(trace, terrestre),
-    consignes: sansEtapes ? { ...consignes, etapes: [] } : consignes,
+    ...modeDuTrajet(issue, trace, fondement.motifAdministratif),
+    consignes: sansCartes ? { ...consignes, etapes: [] } : consignes,
     finance: issue.finance,
     motifs: fondement.motifs,
     portions: fondement.portions,
@@ -134,33 +142,47 @@ export function texteDeLaFichePositive(
 type LuParLaFiche = TraceDe<typeof LU_PAR_LA_FICHE_POSITIVE>;
 
 // Le mode d'un trajet en ligne régulière, et celui de sa partie terrestre. Ces
-// mots ne sont pas dans le catalogue : ce sont ceux de la projection de
-// l'éditeur (`integration_resultats/projection-positive.mjs`, v10.2.1).
+// mots ne sont pas dans le catalogue : ce sont ceux de la projection et du
+// rendu de l'éditeur (`integration_resultats/projection-positive.mjs` et
+// `rendu-resultats.mjs`, v10.2.1).
 const MODE_EN_LIGNE_REGULIERE =
   "Mode de transport : Avion ou bateau de ligne régulière";
 const PARTIE_TERRESTRE = "Partie terrestre : ";
+const TITRE_DE_LA_PARTIE_TERRESTRE = "Pour la partie terrestre du trajet";
 
-// Le libellé du mode de la partie terrestre, si Q2.3.2.terrestre l'établit.
-// Il choisit le modus : ses étapes sont celles de cette partie (R01).
-function libelleDeLaPartieTerrestre(trace: LuParLaFiche): string | AucunTexte {
-  return porteeDuTrajet(trace) === "M-TERRE"
-    ? libelleDuModeTerrestre(trace)
-    : undefined;
-}
+type ModeDuTrajet = Pick<
+  TexteDeLaFichePositive,
+  "modeDuTrajet" | "partieTerrestre"
+>;
 
+// Le mode d'un trajet en ligne régulière, et sa partie terrestre si
+// Q2.3.2.terrestre l'établit. Ses étapes sont celles du modus de son mode,
+// sans badge : l'éditeur n'en donne aucun en ligne régulière (R01).
 function modeDuTrajet(
+  issue: CatalogueResultats["issues"][AcceptedIssueId],
   trace: LuParLaFiche,
-  terrestre: string | AucunTexte,
-): readonly string[] {
-  if (porteeDuTrajet(trace) === "L") return [];
-  return terrestre === undefined
-    ? [MODE_EN_LIGNE_REGULIERE]
-    : [MODE_EN_LIGNE_REGULIERE, PARTIE_TERRESTRE + terrestre];
+  motif: string | undefined,
+): ModeDuTrajet {
+  if (porteeDuTrajet(trace) === "L") return {};
+  const mode = { modeDuTrajet: MODE_EN_LIGNE_REGULIERE };
+  const terrestre =
+    porteeDuTrajet(trace) === "M-TERRE" && libelleDuModeTerrestre(trace);
+  const modus = terrestre && modusDuMode(issue, terrestre);
+  if (!terrestre || !modus) return mode;
+  const { etapes } = consignesDuModus(modus, motif, SANS_BADGE);
+  const partieTerrestre = {
+    mode: PARTIE_TERRESTRE + terrestre,
+    titre: TITRE_DE_LA_PARTIE_TERRESTRE,
+    etapes,
+  };
+  return { ...mode, partieTerrestre };
 }
+
+const SANS_BADGE: readonly string[] = [];
 
 // Une demande d'accord préalable en ligne régulière n'a pas de cartes, même
-// avec une partie terrestre (TS1014-J04, R01). Sans partie terrestre établie,
-// elle n'a pas non plus d'étapes : elle ne garde que son introduction.
+// avec une partie terrestre (TS1014-J04, R01), ni étapes : elle ne garde que
+// son introduction. Les étapes de la partie terrestre viennent à part.
 function sansCartesNiEtapes(
   issue: CatalogueResultats["issues"][AcceptedIssueId],
   trace: LuParLaFiche,
