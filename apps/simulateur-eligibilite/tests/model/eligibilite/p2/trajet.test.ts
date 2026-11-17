@@ -65,6 +65,7 @@ describe("la page du trajet", () => {
       expect(posees({ ...SEUL, "Q2.3.1": distance, "Q2.3.2": true })).toEqual([
         "Q2.3.1",
         "Q2.3.2",
+        "Q2.3.2.terrestre",
         "Q2.3.3",
         "Q2.3.4",
       ]);

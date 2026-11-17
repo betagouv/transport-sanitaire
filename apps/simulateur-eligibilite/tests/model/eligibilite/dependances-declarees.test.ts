@@ -22,6 +22,7 @@ const DEPENDANCES: Record<string, readonly Dependance[]> = {
   "Q2.1.g": ["Q2.1"],
   "Q2.2.1.indication": ["Q1.1", "Q1.2", "Q1.3"],
   "Q2.2.1.b": ["Q2.2.1"],
+  "Q2.3.2.terrestre": ["Q2.3.2"],
   "Q2.7.a": ["Q2.7"],
   "Q2.8.6": ["Q2.8.5"],
   "Q2.8.6.a": ["Q2.8.5"],

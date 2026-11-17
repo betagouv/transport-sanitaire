@@ -43,6 +43,8 @@ const complement = (...entre: string[]) => [
 ];
 
 const DISTANCE = ["Q2.3.1", "Q2.3.2"];
+// La ligne régulière cochée, et sa partie terrestre sous la case.
+const LIGNE_REGULIERE = [...DISTANCE, "Q2.3.2.terrestre"];
 // Le séjour en établissement, et la permission que seule Q2.2.1.a dit (D-272).
 const PERMISSION = ["Q2.2.1", "Q2.2.1.cadre", "Q2.2.1.a", "Q2.2.1.b"];
 
@@ -65,11 +67,15 @@ const ATTENDU: Record<string, readonly [string[], string[]]> = {
     complement("Q3.4.distance", "Q3.4.a", "Q3.5"),
   ],
   "issue-dap-avion-ou-bateau": [
-    [...P1, "Q1.3.a", "Q2.2.1", "Q2.2.1.b", ...DISTANCE, "Q2.3.4"],
+    [...P1, "Q1.3.a", "Q2.2.1", "Q2.2.1.b", ...LIGNE_REGULIERE, "Q2.3.4"],
+    complement("Q3.4.a"),
+  ],
+  "issue-dap-trajet-mixte": [
+    [...P1, "Q1.3.a", "Q2.2.1", "Q2.2.1.b", ...LIGNE_REGULIERE, "Q2.3.4"],
     complement("Q3.4.a"),
   ],
   "issue-dap-avion-ou-bateau-urgence-attestee": [
-    [...P1, "Q1.3.a", "Q2.2.1", "Q2.2.1.b", ...DISTANCE, "Q2.3.4"],
+    [...P1, "Q1.3.a", "Q2.2.1", "Q2.2.1.b", ...LIGNE_REGULIERE, "Q2.3.4"],
     complement("Q3.4.a", "Q3.5"),
   ],
   // La permission vient du séjour en établissement : l'exonération du ticket

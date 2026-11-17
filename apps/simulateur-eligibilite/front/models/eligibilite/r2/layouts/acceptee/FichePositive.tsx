@@ -20,6 +20,7 @@ import type { TexteDeLaFichePositive } from "./texte";
 export function FichePositive({ texte }: { texte: TexteDeLaFichePositive }) {
   return (
     <>
+      <ModeDuTrajet lignes={texte.modeDuTrajet} />
       <Cartes cartes={texte.cartes} />
       <SheetFollowUp>
         <ConsignesDuPatient consignes={texte.consignes} />
@@ -32,6 +33,19 @@ export function FichePositive({ texte }: { texte: TexteDeLaFichePositive }) {
 }
 
 // ---- implémentation ----
+
+// Le mode d'un trajet en ligne régulière, et sa partie terrestre, en texte :
+// aucune carte ne les montre (R01, R03).
+function ModeDuTrajet({ lignes }: { lignes: readonly string[] }) {
+  if (lignes.length === 0) return null;
+  return (
+    <section aria-label="Le mode de transport">
+      {lignes.map((ligne) => (
+        <p key={ligne}>{ligne}</p>
+      ))}
+    </section>
+  );
+}
 
 // Les trois modes de transport, chacun avec son dessin ; celui du patient est
 // marqué « Votre situation ».
