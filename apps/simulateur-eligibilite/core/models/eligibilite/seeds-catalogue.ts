@@ -178,7 +178,7 @@ export const SEEDS: readonly Seed<Questions, Cibles>[] = [
     label:
       "Résultat : accord préalable, en avion ou bateau de ligne régulière avec une partie terrestre",
     description:
-      "Ouvre le résultat d'une dialyse dont une partie du trajet se fait en avion ou en bateau de ligne régulière (Q2.3.2), avec une partie terrestre (Q2.3.2.terrestre), sans urgence attestée. La fiche prend les titres de la ligne régulière, sans carte ; elle dit en texte la partie terrestre en TAP non partagé, puis ses étapes et ses badges (R01).",
+      "Ouvre le résultat d'une dialyse dont une partie du trajet se fait en avion ou en bateau de ligne régulière (Q2.3.2), avec une partie terrestre (Q2.3.2.terrestre), sans urgence attestée. La fiche prend les titres de la ligne régulière, sans carte ; elle dit en texte la partie terrestre en TAP non partagé, puis ses étapes à part, sans badge (R01).",
     answers: {
       ...DIALYSE_EN_LIGNE_REGULIERE,
       "Q2.3.2.terrestre": "1_OUI",
