@@ -86,7 +86,6 @@ const SANS_DEPENDANCE = [
   "Q3.3.precision",
   "Q3.3.service",
   "Q3.3.adresse",
-  "Q3.4",
   "Q3.4.distance",
   "Q3.4.a",
   "Q3.5",

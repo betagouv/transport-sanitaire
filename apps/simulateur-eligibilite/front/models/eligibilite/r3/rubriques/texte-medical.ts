@@ -6,10 +6,10 @@
 //
 // Un segment reprend le libellé d'une réponse, ou le texte du contrat. Il perd
 // la définition de ses sigles et son point final, et sa majuscule s'il ne
-// commence pas le texte. La mention du mineur reste littérale. La précision du
-// prescripteur (Q3.4) suit, telle quelle : la cellule est un seul texte, que
-// le prescripteur réécrit s'il ne tient pas (D-302). Le point final va à la
-// fin du tout.
+// commence pas le texte. La mention du mineur reste littérale. Le point final
+// va à la fin du tout. Aucune précision libre ne s'y ajoute : la cellule est
+// un seul texte, que le prescripteur réécrit en R3 s'il veut la préciser, ou
+// s'il ne tient pas (D-302, D-305).
 
 import { Q1_3 } from "../../../../../core/models/eligibilite/questions/p1/questions/q1-3";
 import { Q2_1 } from "../../../../../core/models/eligibilite/questions/p2/questions/q2-1";
@@ -28,9 +28,6 @@ type AucunSegment = undefined;
 export type TexteMedical = {
   readonly elements_medicaux: string | AucunSegment;
 };
-
-// La précision du prescripteur (Q3.4), saisie telle quelle.
-const PRECISION = given.question("Q3.4").answer().compute(lueTelleQuelle);
 
 // La maternité de l'Engagement maternité, son niveau, et l'hébergement du
 // dispositif s'il n'est pas un lieu du trajet (Q3.8, D-251). Le lieu du trajet
@@ -62,7 +59,6 @@ const ENTREES = given.all({
     .question("Q3.4.distance")
     .answer()
     .compute(lueTelleQuelle),
-  precision: PRECISION,
   aldLiee: given.fait("fait_ald_liee").isOui(),
   atmp: given.cible("cible_situation_at_mp").isOui(),
   camsp: given.cible("cible_dap_motif_camsp_cmpp").isOui(),
@@ -87,7 +83,6 @@ function texteMedical(entrees: Entrees): string | AucunSegment {
     .map((segment) => segment.replace(VARIABLE, entrees.justification ?? ""));
   const texte = segments
     .map((segment, rang) => (rang === 0 ? segment : enMinuscule(segment)))
-    .concat(entrees.precision ?? [])
     .join(" ; ");
   return texte === "" ? undefined : `${texte}.`;
 }

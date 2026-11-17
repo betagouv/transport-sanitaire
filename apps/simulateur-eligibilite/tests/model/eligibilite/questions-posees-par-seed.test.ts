@@ -37,7 +37,6 @@ const LIEUX = [
 const complement = (...entre: string[]) => [
   "Q3.1.2",
   ...LIEUX,
-  "Q3.4",
   ...entre,
   "Q3.7",
 ];
@@ -108,7 +107,6 @@ const ATTENDU: Record<string, readonly [string[], string[]]> = {
     // Ni soin ni séjour : l'arrivée se dit par sa catégorie, sans Q3.7.
     ["Q3.1.2", "Q3.2.categorie", "Q3.2.adresse", "Q3.3.categorie"].concat([
       "Q3.3.adresse",
-      "Q3.4",
       "Q3.4.distance",
       "Q3.4.a",
     ]),
@@ -189,7 +187,6 @@ const ATTENDU: Record<string, readonly [string[], string[]]> = {
       "Q3.2.adresse",
       "Q3.3.categorie",
       "Q3.3.adresse",
-      "Q3.4",
       "Q3.4.a",
       "Q3.8.maternite.nom",
       "Q3.8.maternite.adresse",

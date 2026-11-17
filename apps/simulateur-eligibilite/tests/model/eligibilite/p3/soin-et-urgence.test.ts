@@ -1,6 +1,8 @@
-// Les pages du soin et de l'urgence de P3 (Q3.4, Q3.4.a, Q3.5, #146), posées
-// selon les cibles figées au verrou. `CATALOGUE_COMPLET_QUESTIONS.md` Q3.4,
-// Q3.4.a et Q3.5, `CONTRAT_CONTEXTES_V1012.json` (`centreReference`).
+// Les pages du soin et de l'urgence de P3 (Q3.4.distance, Q3.4.a, Q3.5, #146),
+// posées selon les cibles figées au verrou. `CATALOGUE_COMPLET_QUESTIONS.md`
+// Q3.4, Q3.4.a et Q3.5, `CONTRAT_CONTEXTES_V1012.json` (`centreReference`).
+// Q3.4 ne demande que les précisions qui manquent, et rappelle le soin au-dessus
+// de la première (TXT-PARCOURS-COMPLETION-20261116, #478).
 
 import { describe, expect, it } from "vitest";
 import { model } from "../../../../core/models/eligibilite";
@@ -42,14 +44,13 @@ const SEANCE = {
 };
 const HEMODIALYSE = { label: "Séance d’hémodialyse", value: "Oui." };
 
-describe("la page du soin (Q3.4, Q3.4.a)", () => {
-  it("pour la PMT, la précision et le centre de référence", () => {
-    expect(ids("P3/soin", seed("issue-pmt"))).toEqual(["Q3.4", "Q3.4.a"]);
+describe("la page du soin (Q3.4.distance, Q3.4.a)", () => {
+  it("pour la PMT, le centre de référence seul", () => {
+    expect(ids("P3/soin", seed("issue-pmt"))).toEqual(["Q3.4.a"]);
   });
 
   it("au-delà de 150 km, la DAP demande aussi la raison du lieu éloigné", () => {
     expect(ids("P3/soin", seed("issue-dap-sans-urgence"))).toEqual([
-      "Q3.4",
       "Q3.4.distance",
       "Q3.4.a",
     ]);
@@ -60,8 +61,17 @@ describe("la page du soin (Q3.4, Q3.4.a)", () => {
   });
 
   it("rappelle la séance que P1 a prouvée et son hémodialyse, sans les redemander", () => {
-    const [precision] = posees("P3/soin", seed("issue-pmt"));
-    expect(precision?.reminder).toEqual([SEANCE, HEMODIALYSE]);
+    const [centre] = posees("P3/soin", seed("issue-pmt"));
+    expect(centre?.reminder).toEqual([SEANCE, HEMODIALYSE]);
+  });
+
+  it("rappelle le soin une fois, au-dessus de la justification du lieu éloigné", () => {
+    const [justification, centre] = posees(
+      "P3/soin",
+      seed("issue-dap-sans-urgence"),
+    );
+    expect(justification?.reminder).toEqual([SEANCE, HEMODIALYSE]);
+    expect(centre?.reminder).toBeUndefined();
   });
 
   it("rappelle le motif de Q2.1 quand il s'est posé", () => {
@@ -71,8 +81,8 @@ describe("la page du soin (Q3.4, Q3.4.a)", () => {
       "Q2.1": "8_HOSPITALISATION",
       "Q2.1.g": "1_ENTREE",
     };
-    const [precision] = posees("P3/soin", entree, pmt);
-    expect(precision?.reminder).toEqual([
+    const [centre] = posees("P3/soin", entree, pmt);
+    expect(centre?.reminder).toEqual([
       {
         label: "Motif",
         value:
@@ -90,8 +100,8 @@ describe("la page du soin (Q3.4, Q3.4.a)", () => {
   it("rappelle aussi le déplacement des séances de Q2.1", () => {
     const pmt = seed("issue-pmt");
     const precise: Reponses = { ...pmt, "Q2.1.f": "1_OUI" };
-    const [precision] = posees("P3/soin", precise, pmt);
-    expect(precision?.reminder).toEqual([
+    const [centre] = posees("P3/soin", precise, pmt);
+    expect(centre?.reminder).toEqual([
       SEANCE,
       HEMODIALYSE,
       {
@@ -101,12 +111,17 @@ describe("la page du soin (Q3.4, Q3.4.a)", () => {
     ]);
   });
 
-  it("un retour simple ne va pas vers le centre de référence : Q3.4.a ne se pose pas", () => {
+  it("un retour simple ne va pas vers le centre de référence : sans précision à demander, la page est sautée", () => {
     const pmt = seed("issue-pmt");
     const retour: Reponses = { ...pmt, "Q3.1.1": 1, "Q3.1.2": "2_RETOUR" };
-    expect(posees("P3/soin", retour, pmt).map(({ id }) => id)).toEqual([
-      "Q3.4",
-    ]);
+    const pagesPosees = new Questionnaire(pages)
+      .readWith(retour, cibles(pmt))
+      .askedPages()
+      .map(({ id }) => id);
+    expect(pagesPosees).toEqual(
+      expect.arrayContaining(["P3/trajet", "P3/arrivee"]),
+    );
+    expect(pagesPosees).not.toContain("P3/soin");
   });
 
   it("la justification du lieu éloigné reprend le catalogue, et vide, elle bloque", () => {
