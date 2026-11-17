@@ -83,6 +83,7 @@ export async function generateCerfa<Dto extends CerfaDto>(
       texts: textsOf(cerfa, entries),
       fieldSizes: filled.sizes,
       drawn: drawings.map(([key], index) => [key, drawnSizes[index]]),
+      ids: cerfa.typographicIds,
     }),
   };
 }

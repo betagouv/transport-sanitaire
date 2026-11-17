@@ -1,14 +1,16 @@
-// La taille des textes imprimés d'un cerfa, par entrée de son DTO (ADR-0048 du
-// document analytics). Elle sert à mesurer ce que le prescripteur imprime :
-// jamais le texte, seulement sa clé et sa taille.
+// La taille des textes imprimés d'un cerfa, par identifiant de mesure (ADR-0048
+// du document analytics). Elle sert à mesurer ce que le prescripteur imprime :
+// jamais le texte, seulement son identifiant et sa taille. Un texte sans
+// identifiant se mesure sous sa clé du DTO.
 //
-// Un texte porté par plusieurs volets garde sa plus petite taille.
+// Un texte porté par plusieurs volets, ou deux textes du même identifiant,
+// gardent la plus petite taille.
 
 /** Les tailles des textes imprimés d'un cerfa, et ceux qui n'en ont pas. */
 export type Typography = {
-  /** La taille de chaque texte imprimé, en points, par clé du DTO. */
+  /** La taille de chaque texte imprimé, en points, par identifiant. */
   readonly sizes: Readonly<Record<string, number>>;
-  /** Les clés des textes imprimés dont la taille n'a pas pu se lire. */
+  /** Les identifiants des textes imprimés dont la taille n'a pas pu se lire. */
   readonly unmeasured: readonly string[];
 };
 
@@ -23,17 +25,20 @@ type Printed = {
   readonly fieldSizes: ReadonlyMap<string, number>;
   /** Chaque texte dessiné hors des champs : sa clé du DTO, et sa taille. */
   readonly drawn: readonly (readonly [key: string, size: number | Unread])[];
+  /** L'identifiant de mesure de chaque texte, par clé du DTO. */
+  readonly ids?: Readonly<Record<string, string>>;
 };
 
 export function typographyOf({
   texts,
   fieldSizes,
   drawn,
+  ids = {},
 }: Printed): Typography {
   const measured = [
     ...texts.map(([key, field]) => [key, fieldSizes.get(field)] as const),
     ...drawn,
-  ];
+  ].map(([key, size]) => [ids[key] ?? key, size] as const);
   const sizes: Record<string, number> = {};
   const unmeasured = new Set<string>();
   for (const [key, size] of measured) {

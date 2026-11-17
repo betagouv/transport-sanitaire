@@ -109,7 +109,26 @@ export type Cerfa<Dto extends CerfaDto> = {
   readonly drawings: {
     readonly [Key in keyof Dto["drawings"]]-?: DrawingBinding;
   };
+  /**
+   * L'identifiant sous lequel chaque texte se mesure, que la taille imprimée
+   * prend à la place de sa clé du DTO. Deux textes du même identifiant en sont
+   * un, à la plus petite taille. Sans eux, la clé du DTO.
+   */
+  readonly typographicIds?: {
+    readonly [Key in TextKey<Dto>]-?: string;
+  };
 };
+
+/** La clé d'un texte du DTO : écrit dans un champ, ou dessiné. */
+type TextKey<Dto extends CerfaDto> =
+  | {
+      [Key in keyof Dto["fields"]]-?: [
+        NonNullable<Dto["fields"][Key]>,
+      ] extends [boolean]
+        ? never
+        : Key;
+    }[keyof Dto["fields"]]
+  | keyof Dto["drawings"];
 
 /** Un texte écrit dans le champ `field`. */
 export function text(
