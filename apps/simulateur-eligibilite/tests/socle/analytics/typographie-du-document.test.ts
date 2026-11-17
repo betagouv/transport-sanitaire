@@ -63,7 +63,7 @@ describe("la taille des textes du document R3", () => {
       expect.objectContaining({
         screen: "R3",
         revision: "r1",
-        document_revision: "d1",
+        document_revision: "dr1",
         document_id: "d1",
         support: "S3138g",
         expected_field_ids: ["S3138g.nombre", "S3138g.arrivee_adresse_native"],
@@ -131,7 +131,7 @@ describe("la taille des textes du document R3", () => {
     expect(mesures(affiche)).toEqual([]);
   });
 
-  it("le même DTO imprimé autrement ouvre une nouvelle version, et sa mesure", () => {
+  it("le même DTO imprimé autrement ouvre une nouvelle version, et sa mesure, sous la même révision du document", () => {
     const journey = new Journey({ seeded: false, provenance: PROVENANCE });
     afficherLeR3(journey);
 
@@ -145,7 +145,7 @@ describe("la taille des textes du document R3", () => {
     );
 
     expect(mesure).toMatchObject({
-      document_revision: "d2",
+      document_revision: "dr1",
       document_id: "d2",
       field_measurements: [
         { field_id: "S3138g.nombre", font_size_pt: 9 },

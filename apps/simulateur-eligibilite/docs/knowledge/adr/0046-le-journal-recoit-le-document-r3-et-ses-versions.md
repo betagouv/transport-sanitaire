@@ -41,6 +41,20 @@ pas la suivante, puisque sa révision ne vaut plus la révision courante.
 
 ## Mises à jour
 
+> **Mise à jour 2026-11-17, la révision du document (#497).** Cela **révise**
+> les points 1, 2 et 3, d'après R13 du référentiel v10.2.1. Une révision du
+> document, `dr1`, `dr2`… dans une simulation, naît sous la révision du R2 au
+> premier document affiché. Une page de P3 validée qui change les réponses
+> l'invalide : `document_invalidated` part, avec la `revision` du R2 et la
+> nouvelle `document_revision` attendue. Revalider sans rien changer, ou
+> reculer, n'invalide rien, et sans document affiché il n'y a rien à
+> invalider. La version garde son rôle : elle change dès que le PDF change, même
+> rendu autrement sous la même révision du document, dont l'identifiant entre
+> dans son empreinte. `document_displayed`, la mesure, les gestes sur le
+> document, ses boutons et l'avis en R3 portent `document_revision` et
+> `document_id`. `document_displayed` exige un support de cerfa : sans lui,
+> aucune version ne s'ouvre.
+
 > **Mise à jour 2026-11-17, la composition du transport (#509).**
 > `document_displayed` porte aussi `transport_composition`, celle de sa
 > révision : un document garde la composition de son propre R2, jamais celle
