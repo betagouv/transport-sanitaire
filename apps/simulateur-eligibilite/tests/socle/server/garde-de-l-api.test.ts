@@ -6,18 +6,34 @@
 import { afterEach, describe, expect, it } from "vitest";
 import type { WriteLimits } from "../../../server/protect-the-api.ts";
 import { LONGUEUR_MAX_D_UN_NOM } from "../../../shared/rattachement-saisi.ts";
-import { snapshotReferentiel } from "../../../shared/referentiel.ts";
+import {
+  type Referentiel,
+  snapshotReferentiel,
+} from "../../../shared/referentiel.ts";
 import { simulationStarted } from "../journal/evenements.ts";
 import { type AppDeTest, demarrer, postTo } from "./serveur-de-test.ts";
 
 let app: AppDeTest;
 afterEach(() => app.close());
 
+// Le snapshot, qui enregistre la saisie libre sans rien écrire.
+const REFERENTIEL: Referentiel = {
+  ...snapshotReferentiel,
+  async enrichirDepuisSaisie({ etabId }) {
+    return { etabId, serviceId: "s_cree" };
+  },
+};
+
 async function serveur(writeLimits?: WriteLimits) {
-  app = await demarrer(snapshotReferentiel, { writeLimits });
+  app = await demarrer(REFERENTIEL, { writeLimits });
 }
 
-const SELECTION = { etabId: "e_chu_grenoble", serviceId: "s_grenoble_cardio" };
+const SELECTION = {
+  etabId: "e_chu_grenoble",
+  serviceId: "s_grenoble_autre",
+  serviceEstAutre: true,
+  serviceLibre: "Néphrologie",
+};
 
 const rattacher = (body: unknown, headers?: Record<string, string>) =>
   postTo(app.base, "/api/rattachement", body, headers);
@@ -46,7 +62,7 @@ describe("origine d'une écriture", () => {
 
     const { status } = await rattacher(SELECTION, { Origin: app.base });
 
-    expect(status).toBe(204);
+    expect(status).toBe(200);
   });
 });
 
@@ -97,7 +113,6 @@ describe("taille d'une écriture", () => {
 
     const { status, body } = await rattacher({
       ...SELECTION,
-      serviceEstAutre: true,
       serviceLibre: "x".repeat(LONGUEUR_MAX_D_UN_NOM + 1),
     });
 

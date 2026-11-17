@@ -76,10 +76,10 @@ describe("POST /api/rattachement", () => {
     serviceId: "s_grenoble_cardio",
   };
 
-  it("accepte le rattachement sans rien renvoyer", async () => {
+  it("refuse une sélection des listes : rien à enregistrer", async () => {
     const { status, body } = await post("/api/rattachement", selection);
-    expect(status).toBe(204);
-    expect(body).toBeUndefined();
+    expect(status).toBe(400);
+    expect(body.error).toMatch(/rien à enregistrer/);
   });
 
   it("service « Autre » sans service réel saisi → 400 (saisie obligatoire)", async () => {

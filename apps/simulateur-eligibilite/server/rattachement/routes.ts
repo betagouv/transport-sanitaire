@@ -1,8 +1,9 @@
 // Les routes du rattachement, montées sous `/api` : lire le référentiel, et
-// recevoir un rattachement saisi.
+// y enregistrer une saisie libre.
 
 import express, { type Request, type Response, type Router } from "express";
 import {
+  enrichitLeReferentiel,
   nomsDansLaLimite,
   type RattachementSaisi,
   saisieComplete,
@@ -26,22 +27,38 @@ export function rattachementRoutes(referentiel: Referentiel): Router {
 
 // ---- implémentation ----
 
-// Reçoit le rattachement saisi pour compléter le référentiel. Rien à renvoyer :
-// le front n'attend pas la réponse.
+// Enregistre dans le référentiel la saisie libre : le service saisi sous
+// « Autre », ou l'établissement saisi et son service. Donne leurs ids, que le
+// front range pour le parcours. Il attend la réponse avant d'ouvrir le
+// simulateur, et entre sans ids si elle échoue. Voir
+// docs/knowledge/domain/enrichissement-referentiel-rattachement.md.
 function rattacher(referentiel: Referentiel) {
   return async (req: Request, res: Response) => {
     const saisie = (req.body ?? {}) as RattachementSaisi;
-    if (!saisieComplete(saisie)) {
-      res.status(400).json({ error: "sélection de rattachement incomplète" });
+    const refus = refusDe(saisie);
+    if (refus) {
+      res.status(400).json({ error: refus });
       return;
     }
-    if (!nomsDansLaLimite(saisie)) {
-      res.status(400).json({ error: "nom saisi trop long" });
+    if (!referentiel.enrichirDepuisSaisie) {
+      res.status(503).json({ error: "referentiel en lecture seule" });
       return;
     }
-    await enrichir(referentiel, saisie);
-    res.status(204).end();
+    res.json(await referentiel.enrichirDepuisSaisie(saisie));
   };
+}
+
+/** La saisie est recevable : rien à lui reprocher. */
+type Recevable = undefined;
+
+// Ce qui rend la saisie irrecevable, s'il y a quelque chose.
+function refusDe(saisie: RattachementSaisi): string | Recevable {
+  if (!saisieComplete(saisie)) return "sélection de rattachement incomplète";
+  if (!nomsDansLaLimite(saisie)) return "nom saisi trop long";
+  if (!enrichitLeReferentiel(saisie)) {
+    return "rien à enregistrer : la sélection vient des listes";
+  }
+  return undefined;
 }
 
 // Les services d'un établissement : l'établissement est obligatoire en query.
@@ -54,17 +71,6 @@ function servicesDe(referentiel: Referentiel) {
     }
     res.json(await referentiel.listerServices(etabId));
   };
-}
-
-// Ajoute au référentiel le service saisi sous « Autre », s'il y en a un. Un
-// échec d'écriture ne bloque jamais l'accès au simulateur. Voir
-// docs/knowledge/domain/enrichissement-referentiel-rattachement.md.
-async function enrichir(referentiel: Referentiel, saisie: RattachementSaisi) {
-  try {
-    await referentiel.enrichirDepuisSaisie?.(saisie);
-  } catch (err) {
-    console.error("[simulateur] enrichissement référentiel échoué:", err);
-  }
 }
 
 // Enrobe un handler async pour router les rejets vers une réponse d'erreur.
