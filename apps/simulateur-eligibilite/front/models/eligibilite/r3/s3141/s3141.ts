@@ -27,6 +27,7 @@ import {
   type Cerfa,
   type CerfaMapping,
   date,
+  type TypographicFieldId,
   templateAt,
   text,
 } from "../../../../socle";
@@ -103,6 +104,21 @@ const CERFA: Cerfa<DtoS3141> = {
     date_prescription: date("dat pmt"),
   },
   drawings: {},
+  // Les identifiants de `champs-typographiques.json` (ANA22-03) : les deux
+  // parties d'une extrémité sont son adresse native.
+  typographicIds: {
+    beneficiaire_adresse: "S3141.beneficiaire_adresse",
+    tiers_date: "S3141.tiers_date",
+    debut_hospitalisation: "S3141.debut_hospitalisation",
+    nombre: "S3141.nombre",
+    periode_fin: "S3141.periode_fin",
+    lien_atmp_date: "S3141.lien_atmp_date",
+    depart_structure: "S3141.depart_adresse_native",
+    depart_autre: "S3141.depart_adresse_native",
+    arrivee_structure: "S3141.arrivee_adresse_native",
+    arrivee_autre: "S3141.arrivee_adresse_native",
+    date_prescription: "S3141.date_prescription",
+  } satisfies Record<string, TypographicFieldId<"S3141">>,
 };
 
 const PERMISSION: Rubrique<Permission> = {

@@ -107,6 +107,31 @@ describe("la taille des textes imprimés d'un cerfa", () => {
     expect(surLesDeux.sizes.consigne).toBe(surLEtroit.sizes.consigne);
   });
 
+  it("mesure chaque texte sous l'identifiant que le cerfa lui donne, deux textes d'un même identifiant à la plus petite taille", async () => {
+    const dto = {
+      fields: { nom: LONG, echeance: "2026-10-06" },
+      drawings: { consigne: CONSIGNE },
+    };
+    const nomme: Cerfa<Fiche> = {
+      ...(await fiche(LARGE)),
+      typographicIds: {
+        nom: "F.identite",
+        motif: "F.motif",
+        echeance: "F.echeance",
+        consigne: "F.identite",
+      },
+    };
+
+    const sansNom = await tailles(dto, fiche(LARGE));
+    const { sizes } = (await generateCerfa(nomme, dto)).typography;
+
+    expect(sansNom.sizes.consigne).toBe(9);
+    expect(sizes).toEqual({
+      "F.identite": sansNom.sizes.nom,
+      "F.echeance": 9,
+    });
+  });
+
   it("dit, une fois, quel texte imprimé n'a pas de taille, même lue sur un autre volet", () => {
     const typographie = typographyOf({
       texts: [

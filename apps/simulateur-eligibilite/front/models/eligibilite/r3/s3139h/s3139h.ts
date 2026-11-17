@@ -33,6 +33,7 @@ import {
   date,
   drawnBox,
   strictText,
+  type TypographicFieldId,
   templateAt,
   text,
 } from "../../../../socle";
@@ -143,6 +144,22 @@ const CERFA: Cerfa<DtoS3139h> = {
     date_prescription: date("date id"),
   },
   drawings: {},
+  // Les identifiants de `champs-typographiques.json` (ANA22-03) : les deux
+  // parties d'une extrémité sont son adresse native.
+  typographicIds: {
+    beneficiaire_adresse: "S3139h.beneficiaire_adresse",
+    tiers_date: "S3139h.tiers_date",
+    air_atmp_date: "S3139h.air_atmp_date",
+    lien_atmp_date: "S3139h.lien_atmp_date",
+    depart_structure: "S3139h.depart_adresse_native",
+    depart_autre: "S3139h.depart_adresse_native",
+    arrivee_structure: "S3139h.arrivee_adresse_native",
+    arrivee_autre: "S3139h.arrivee_adresse_native",
+    nombre: "S3139h.nombre",
+    urgence_precision: "S3139h.urgence_precision",
+    elements_medicaux: "S3139h.elements_medicaux",
+    date_prescription: "S3139h.date_prescription",
+  } satisfies Record<string, TypographicFieldId<"S3139h">>,
 };
 
 // Le DTO de la DAP, rubrique par rubrique.

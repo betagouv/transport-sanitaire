@@ -45,6 +45,7 @@ export {
   type ResultCodes,
   type Sheet,
   type TransportComposition,
+  type TypographicFieldId,
 } from "./model";
 export { declarerAuServeur, referentielDuServeur } from "./rattachement";
 export { ServerApiClient } from "./server-api";
