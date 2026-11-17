@@ -15,6 +15,7 @@ import {
 } from "../../shared/rattachement-saisi.ts";
 import type {
   Etablissement,
+  RattachementEnregistre,
   Referentiel,
   Service,
 } from "../../shared/referentiel.ts";
@@ -62,31 +63,43 @@ async function services(
 
 // Ce que la saisie apprend au référentiel : le vrai service saisi sous
 // « Autre », ou l'établissement saisi et son service. On les crée, ou on
-// réutilise leurs homonymes, avec `Origine=formulaire`. Ils apparaissent dans
-// les listes à la visite suivante. Une sélection issue des listes n'écrit rien.
+// réutilise leurs homonymes, avec `Origine=formulaire`, et on donne leurs Id2 :
+// le parcours les porte dès cette visite. Une sélection issue des listes
+// n'apprend rien : elle est refusée, comme un établissement absent.
 // Voir docs/knowledge/domain/enrichissement-referentiel-rattachement.md.
 async function enrichir(
   grist: GristApiClient,
   saisie: RattachementSaisi,
-): Promise<void> {
+): Promise<RattachementEnregistre> {
   const service = saisie.serviceLibre?.trim();
-  if (!enrichitLeReferentiel(saisie) || !service) return;
-  const etabRowId = await etablissementDeLaSaisie(grist, saisie);
-  if (etabRowId == null) return;
-  await assurerService(grist, etabRowId, service);
+  if (!enrichitLeReferentiel(saisie) || !service) {
+    throw new Error("la saisie n'apprend rien au référentiel");
+  }
+  const etab = await etablissementDeLaSaisie(grist, saisie);
+  if (!etab) throw new Error("établissement absent du référentiel");
+  const serviceId = await assurerService(grist, etab.rowId, service);
+  return { etabId: etab.id2, serviceId };
 }
+
+// Une ligne du référentiel : son rowId Grist, pour les références, et son Id2,
+// pour le parcours.
+type Ligne = { rowId: number; id2: string };
+
+/** Aucune ligne ne porte cet Id2, ou ce nom. */
+type Absente = undefined;
 
 // L'établissement sous lequel ranger le service : celui du référentiel, ou
 // celui que la saisie nomme, créé ou réutilisé.
 async function etablissementDeLaSaisie(
   grist: GristApiClient,
   saisie: RattachementSaisi,
-): Promise<number | null> {
+): Promise<Ligne | Absente> {
   if (!saisie.etabEstAutre) {
-    return rowIdDeId2(grist, TABLE.etablissements, saisie.etabId);
+    const rowId = await rowIdDeId2(grist, TABLE.etablissements, saisie.etabId);
+    return rowId == null ? undefined : { rowId, id2: saisie.etabId };
   }
   const nom = saisie.etabLibre?.trim();
-  return nom ? assurerEtablissement(grist, nom) : null;
+  return nom ? assurerEtablissement(grist, nom) : undefined;
 }
 
 // Résout un Id2 métier vers le rowId interne Grist de la table donnée.
@@ -119,29 +132,31 @@ async function prochainId2(
 async function assurerEtablissement(
   grist: GristApiClient,
   nom: string,
-): Promise<number> {
+): Promise<Ligne> {
   const deja = homonyme(await grist.rows(TABLE.etablissements), nom);
-  if (deja != null) return deja;
-  const etabRowId = await grist.addRow(TABLE.etablissements, {
-    [COL.id]: await prochainId2(grist, TABLE.etablissements),
+  if (deja) return deja;
+  const id2 = await prochainId2(grist, TABLE.etablissements);
+  const rowId = await grist.addRow(TABLE.etablissements, {
+    [COL.id]: id2,
     [COL.nom]: nom.trim(),
     [COL.origine]: ORIGINE_FORMULAIRE,
   });
-  await creerService(grist, etabRowId, SERVICE_AUTRE);
-  return etabRowId;
+  await creerService(grist, rowId, SERVICE_AUTRE);
+  return { rowId, id2: String(id2) };
 }
 
-// Réutilise le service homonyme (Nom normalisé) de l'établissement, sinon le crée.
+// Réutilise le service homonyme (Nom normalisé) de l'établissement, sinon le
+// crée. Donne son Id2.
 async function assurerService(
   grist: GristApiClient,
   etabRowId: number,
   nom: string,
-): Promise<number> {
+): Promise<string> {
   const existants = await grist.rows(TABLE.services, {
     [COL.refEtablissement]: [etabRowId],
   });
   const deja = homonyme(existants, nom);
-  if (deja != null) return deja;
+  if (deja) return deja.id2;
   return creerService(grist, etabRowId, nom);
 }
 
@@ -149,22 +164,24 @@ async function creerService(
   grist: GristApiClient,
   etabRowId: number,
   nom: string,
-): Promise<number> {
-  return grist.addRow(TABLE.services, {
-    [COL.id]: await prochainId2(grist, TABLE.services),
+): Promise<string> {
+  const id2 = await prochainId2(grist, TABLE.services);
+  await grist.addRow(TABLE.services, {
+    [COL.id]: id2,
     [COL.nom]: nom.trim(),
     [COL.refEtablissement]: etabRowId,
     [COL.origine]: ORIGINE_FORMULAIRE,
   });
+  return String(id2);
 }
 
-// Le rowId de la ligne qui porte déjà ce nom, à la casse et aux espaces près.
-function homonyme(existantes: GristRow[], nom: string): number | null {
+// La ligne qui porte déjà ce nom, à la casse et aux espaces près.
+function homonyme(existantes: GristRow[], nom: string): Ligne | Absente {
   const cherche = normalise(nom);
   const deja = existantes.find(
     (r) => normalise(cellText(r.fields[COL.nom])) === cherche,
   );
-  return deja?.id ?? null;
+  return deja && { rowId: deja.id, id2: cellText(deja.fields[COL.id]) };
 }
 
 const TABLE = {

@@ -1,7 +1,7 @@
 // @vitest-environment node
 //
 // La source Grist du référentiel, contre un Grist en mémoire : ce qu'une saisie
-// libre y écrit, et ce qu'elle n'y écrit pas.
+// libre y écrit, les ids qu'elle donne au parcours, et ce qu'elle n'y écrit pas.
 
 import { afterEach, describe, expect, it } from "vitest";
 import { GristApiClient } from "../../../server/grist/grist-api.client.ts";
@@ -45,8 +45,9 @@ describe("service saisi sous « Autre »", () => {
       Services_Unites: [AUTRE],
     });
 
-    await ref.enrichirDepuisSaisie?.(saisie);
+    const enregistre = await ref.enrichirDepuisSaisie?.(saisie);
 
+    expect(enregistre).toEqual({ etabId: "10", serviceId: "8" });
     expect(grist.tables.Services_Unites?.at(-1)?.fields).toEqual({
       Id2: 8,
       Nom: "Néphrologie",
@@ -69,9 +70,22 @@ describe("service saisi sous « Autre »", () => {
     });
 
     await ref.enrichirDepuisSaisie?.(saisie);
-    await ref.enrichirDepuisSaisie?.(saisie);
+    const enregistre = await ref.enrichirDepuisSaisie?.(saisie);
 
     expect(noms("Services_Unites")).toEqual(["Autre", "néphrologie"]);
+    expect(enregistre).toEqual({ etabId: "10", serviceId: "8" });
+  });
+
+  it("refuse un établissement absent du référentiel, sans rien écrire", async () => {
+    const ref = await referentielSur({
+      Etablissements: [CHU],
+      Services_Unites: [AUTRE],
+    });
+
+    await expect(
+      ref.enrichirDepuisSaisie?.({ ...saisie, etabId: "99" }),
+    ).rejects.toThrow(/établissement/);
+    expect(noms("Services_Unites")).toEqual(["Autre"]);
   });
 });
 
@@ -89,8 +103,10 @@ describe("établissement saisi", () => {
       Services_Unites: [AUTRE],
     });
 
-    await ref.enrichirDepuisSaisie?.(saisie);
+    const enregistre = await ref.enrichirDepuisSaisie?.(saisie);
 
+    // Le parcours porte l'établissement et le service créés, jamais « Autre ».
+    expect(enregistre).toEqual({ etabId: "11", serviceId: "9" });
     expect(grist.tables.Etablissements?.at(-1)?.fields).toEqual({
       Id2: 11,
       Nom: "CH de Voiron",
@@ -123,8 +139,9 @@ describe("établissement saisi", () => {
     });
 
     await ref.enrichirDepuisSaisie?.(saisie);
-    await ref.enrichirDepuisSaisie?.(saisie);
+    const enregistre = await ref.enrichirDepuisSaisie?.(saisie);
 
+    expect(enregistre).toEqual({ etabId: "11", serviceId: "8" });
     expect(noms("Etablissements")).toEqual([
       "CHU Grenoble Alpes",
       "ch de voiron",
@@ -173,13 +190,15 @@ describe("établissement saisi, puis retrouvé par un collègue", () => {
 });
 
 describe("sélection issue des listes", () => {
-  it("n'écrit rien", async () => {
+  it("n'écrit rien : elle n'apprend rien au référentiel", async () => {
     const ref = await referentielSur({
       Etablissements: [CHU],
       Services_Unites: [AUTRE],
     });
 
-    await ref.enrichirDepuisSaisie?.({ etabId: "10", serviceId: "7" });
+    await expect(
+      ref.enrichirDepuisSaisie?.({ etabId: "10", serviceId: "7" }),
+    ).rejects.toThrow(/rien/);
 
     expect(noms("Etablissements")).toEqual(["CHU Grenoble Alpes"]);
     expect(noms("Services_Unites")).toEqual(["Autre"]);
