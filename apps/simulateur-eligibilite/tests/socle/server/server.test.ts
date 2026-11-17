@@ -70,6 +70,29 @@ describe("non-indexation par les moteurs", () => {
   });
 });
 
+describe("l'embarquement en iframe", () => {
+  it("n'interdit rien tant qu'aucun CMS n'est déclaré", async () => {
+    const res = await fetch(`${app.base}/api/etablissements`);
+    expect(res.headers.get("content-security-policy")).toBeNull();
+  });
+
+  it("réserve l'iframe aux sites déclarés, sur toutes les réponses", async () => {
+    const reservee = await demarrer(snapshotReferentiel, {
+      cmsOrigins: ["https://cms.example", "https://recette.cms.example"],
+    });
+    try {
+      for (const chemin of ["/api/etablissements", "/robots.txt"]) {
+        const res = await fetch(`${reservee.base}${chemin}`);
+        expect(res.headers.get("content-security-policy")).toBe(
+          "frame-ancestors https://cms.example https://recette.cms.example",
+        );
+      }
+    } finally {
+      await reservee.close();
+    }
+  });
+});
+
 describe("POST /api/rattachement", () => {
   const selection = {
     etabId: "e_chu_grenoble",

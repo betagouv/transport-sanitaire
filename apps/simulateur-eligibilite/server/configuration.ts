@@ -11,6 +11,9 @@
 // `CONTAINER_VERSION`, que Scalingo pose sur le conteneur, donne le commit
 // déployé. Sans elle, le commit vaut `inconnu`, comme côté écran (ADR-0050).
 //
+// `CMS_ORIGINS` nomme les sites qui ont le droit d'embarquer le simulateur en
+// iframe. Sans elle, n'importe quel site le peut (#489).
+//
 // Voir le README § « Configuration ».
 
 import { readFileSync } from "node:fs";
@@ -31,6 +34,8 @@ export type Configuration = {
   environment: string;
   /** La version et le commit de l'app servie, sur le signe de vie du journal (ADR-0051). */
   build: Build;
+  /** Les sites qui peuvent embarquer le simulateur en iframe ; aucun ⇒ tous. */
+  cmsOrigins: readonly string[];
 };
 
 /** Ce que l'exploitant doit corriger : une variable par ligne, et pourquoi. */
@@ -66,6 +71,7 @@ export function lireConfiguration(env: Env = process.env): Configuration {
         ? { cleApi, docUrl: variables.JOURNAL_GRIST_DOC_URL }
         : journalEnMemoire(),
     environment: variables.APP,
+    cmsOrigins: variables.CMS_ORIGINS,
     build: {
       app_version: versionDeLApp(),
       commit_sha: variables.CONTAINER_VERSION?.slice(0, 7) ?? "inconnu",
@@ -99,6 +105,19 @@ const VARIABLES = z.object({
     .regex(/^[0-9a-f]{7,40}$/)
     .optional()
     .catch(undefined),
+  // Les origines du CMS, séparées par des virgules : `https://domaine`, sans
+  // chemin ni barre finale.
+  CMS_ORIGINS: z
+    .string()
+    .default("")
+    .transform(enListe)
+    .pipe(
+      z.array(
+        z.string().refine(estUneOrigine, {
+          error: "doit lister des origines (https://domaine), sans chemin",
+        }),
+      ),
+    ),
 });
 
 // En production, les variables du référentiel deviennent obligatoires. C'est la
@@ -126,6 +145,17 @@ function enProduction(env: Env): boolean {
 function sansValeursVides(env: Env): Env {
   const remplies = Object.entries(env).filter(([, brut]) => brut?.trim());
   return Object.fromEntries(remplies.map(([nom, brut]) => [nom, brut?.trim()]));
+}
+
+function enListe(brut: string): string[] {
+  return brut
+    .split(",")
+    .map((valeur) => valeur.trim())
+    .filter(Boolean);
+}
+
+function estUneOrigine(valeur: string): boolean {
+  return URL.canParse(valeur) && new URL(valeur).origin === valeur;
 }
 
 // La version que `package.json` déclare, celle du tag
