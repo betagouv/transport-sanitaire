@@ -5,8 +5,7 @@
 // le contrat gagne un champ.
 //
 // L'établissement et le service ont chacun leur colonne, en JSON brut, qui
-// s'exploite sans ouvrir `payload` : `{"id":"12","name":"CHU Grenoble Alpes"}`
-// (ADR-0053).
+// s'exploite sans ouvrir `payload` : `{"id":"12"}` (ADR-0053).
 
 import type { RattachementDuParcours } from "../../shared/analytics/analytics-event.ts";
 import type { GristApiClient, GristRow } from "../grist/grist-api.client.ts";
@@ -74,7 +73,7 @@ function rowOf({
   };
 }
 
-/** Ni nom ni id : la cellule reste vide. */
+/** Pas d'id : la cellule reste vide. */
 type EmptyCell = null;
 
 // Les deux colonnes du rattachement. Le signe de vie n'appartient à aucun
@@ -82,15 +81,14 @@ type EmptyCell = null;
 function rattachementOf(event: JournalEntry["event"]) {
   const of: RattachementDuParcours = event.type === "alive" ? {} : event;
   return {
-    establishment: json(of.establishment_id, of.establishment_name),
-    service: json(of.service_id, of.service_name),
+    establishment: json(of.establishment_id),
+    service: json(of.service_id),
   };
 }
 
-// `{"id":"12","name":"CHU Grenoble Alpes"}`. Un établissement saisi n'a pas
-// d'id, et un rattachement de repli n'a pas de nom : la clé manque.
-function json(id?: string, name?: string): string | EmptyCell {
-  return id || name ? JSON.stringify({ id, name }) : null;
+// `{"id":"12"}`. Un établissement saisi n'a pas d'id.
+function json(id?: string): string | EmptyCell {
+  return id ? JSON.stringify({ id }) : null;
 }
 
 function entryOf({ fields }: GristRow): JournalEntry {

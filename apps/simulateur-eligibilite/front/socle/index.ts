@@ -12,7 +12,6 @@ export {
   CmsConsent,
   configFromEnv,
   DiscardingAudience,
-  HostPageLoad,
   loadMatomo,
   MatomoAudience,
   ServerJournal,

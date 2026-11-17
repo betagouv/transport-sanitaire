@@ -1,5 +1,5 @@
-// Les codes que R2 donne au journal des parcours (ADR-0045) : l'issue, le mode, le code de raison, le
-// support et le financeur, tels que les règles les calculent, et la
+// Les codes que R2 donne au journal des parcours (ADR-0045) : l'issue, le mode,
+// le code de raison et le support, tels que les règles les calculent, et la
 // composition du transport (ANA22-04). Une cible sans objet ou inconnue ne
 // part pas. Le code de raison part en liste : vide quand les règles n'en
 // donnent aucun, absente quand il leur manque un fait. Le mode ne part que
@@ -19,14 +19,13 @@ export const CODES_DU_RESULTAT = given
     mode: given.cible("cible_mode_id"),
     raison: given.cible("cible_reason_code"),
     support: given.cible("cible_support_id"),
-    financeur: given.cible("cible_financeur"),
     ligneReguliere: given.fait("fait_avion_bateau_ligne"),
     partieTerrestre: given
       .question("Q2.3.2.terrestre")
       .answer()
       .compute(partieTerrestreDe),
   })
-  .compute(({ issue, raison, financeur, ...preuves }): ResultCodes => {
+  .compute(({ issue, raison, ...preuves }): ResultCodes => {
     const composition = CompositionDuTransport.of(preuves);
     return {
       issue: valeurDe(issue),
@@ -34,7 +33,6 @@ export const CODES_DU_RESULTAT = given
       transportComposition: composition.code,
       reasonCodes: codesDe(raison),
       support: valeurDe(preuves.support),
-      financeur: valeurDe(financeur),
     };
   });
 

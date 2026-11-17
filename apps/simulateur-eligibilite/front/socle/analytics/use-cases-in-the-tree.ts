@@ -20,7 +20,6 @@ import { LaunchADocument } from "./launch-a-document.usecase";
 import { LeaveAQuestionnaire } from "./leave-a-questionnaire.usecase";
 import { OpenAPage } from "./open-a-page.usecase";
 import { OpenAResultScreen } from "./open-a-result-screen.usecase";
-import type { PageLoad } from "./page-load.port";
 import { PassAStep } from "./pass-a-step.usecase";
 import { PressAButton } from "./press-a-button.usecase";
 import { ReachAnAldResult } from "./reach-an-ald-result.usecase";
@@ -36,11 +35,10 @@ export type AnalyticsUseCases = ReturnType<typeof analyticsUseCases>;
 export function analyticsUseCases(
   audience: Audience,
   journal: Journal,
-  pageLoad: PageLoad,
   build: Build,
 ) {
   return {
-    startASimulation: new StartASimulation(journal, pageLoad, build),
+    startASimulation: new StartASimulation(journal, build),
     selectAnIntent: new SelectAnIntent(journal),
     startAQuestionnaire: new StartAQuestionnaire(audience),
     openAPage: new OpenAPage(journal),

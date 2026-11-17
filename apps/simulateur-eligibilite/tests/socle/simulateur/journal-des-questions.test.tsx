@@ -1,7 +1,6 @@
 // Ce que le questionnaire envoie au journal des parcours (#385) : chaque page
-// ouverte et ses questions, chaque saisie, chaque validation et celles qu'une
-// correction fait tomber, l'entrée et la fin de chaque phase. Voir
-// ADR-0044.
+// ouverte et ses questions, chaque saisie, chaque validation, l'entrée et la
+// fin de chaque phase. Voir ADR-0044.
 //
 // Le modèle de test pose P1 (la boisson, puis les accompagnements, sauf pour
 // « Rien ») et P3 (la quantité).
@@ -28,6 +27,10 @@ async function ouvrirAvecUnJournal({ strictMode = false } = {}) {
   await question(BOISSON);
   return { user, envoyes };
 }
+
+// L'affichage d'une exposition : son id, sans la question.
+const affichageDe = (exposition?: AnalyticsEvent) =>
+  exposition?.exposure_id?.replace(/:[^:]+$/, "");
 
 const duType = (envoyes: AnalyticsEvent[], type: AnalyticsEvent["type"]) =>
   envoyes.filter((envoye) => envoye.type === type);
@@ -68,13 +71,13 @@ describe("le journal des questions", () => {
       expect.objectContaining({
         screen: "P1",
         page_id: "boisson",
-        exposure_id: `${boisson?.page_view_id}:boisson`,
+        exposure_id: expect.stringMatching(/:boisson$/),
         // Sans réponse, les accompagnements ne se posent pas encore.
         milestones: ["first", "last"],
       }),
     );
     expect(accompagnements?.milestones).toEqual(["last"]);
-    expect(accompagnements?.page_view_id).not.toBe(boisson?.page_view_id);
+    expect(affichageDe(accompagnements)).not.toBe(affichageDe(boisson));
   });
 
   it("monté comme en production, où React rejoue les effets, le parcours part une fois", async () => {
@@ -126,10 +129,9 @@ describe("le journal des questions", () => {
     expect(duType(envoyes, "phase_entered")).toHaveLength(1);
   });
 
-  it("une validation tombée part avec l'exposition qu'elle annule, et la phase ne se termine qu'une fois", async () => {
+  it("une correction qui change la fin de la phase ne la termine pas une seconde fois", async () => {
     const { user, envoyes } = await ouvrirAvecUnJournal();
     await allerAuResultat(user);
-    const [, validation] = duType(envoyes, "question_validated");
 
     await user.click(bouton("Précédent"));
     await question(ACCOMPAGNEMENTS);
@@ -138,12 +140,6 @@ describe("le journal des questions", () => {
     await user.click(radio("Rien"));
     await screen.findByRole("heading", { level: 1, name: "Votre commande" });
 
-    expect(duType(envoyes, "question_invalidated")).toEqual([
-      expect.objectContaining({
-        question_id: "accompagnements",
-        exposure_id: validation?.exposure_id,
-      }),
-    ]);
     expect(duType(envoyes, "phase_completed")).toHaveLength(1);
   });
 

@@ -20,8 +20,6 @@ export type ShownResult = {
   readonly canComplete: boolean;
   /** Les codes que le modèle déclare. Aucun : le modèle n'en déclare pas. */
   readonly codes: ResultCodes | NoCodes;
-  /** Les motifs affichés. Sans liste, on ne sait pas : le champ ne part pas. */
-  readonly motifs?: readonly string[];
 };
 
 /**
@@ -37,7 +35,6 @@ export type ResultCodes = {
   readonly transportComposition: TransportComposition;
   readonly reasonCodes: readonly string[] | null;
   readonly support: string | null;
-  readonly financeur: string | null;
 };
 
 /** Ce que l'app lance sur le document : l'impression ou le téléchargement. */
@@ -62,8 +59,6 @@ type ResultEvent = Pick<
   | "transport_composition"
   | "reason_codes"
   | "support"
-  | "financeur"
-  | "motifs"
 >;
 
 type DocumentEvent = Pick<
@@ -110,7 +105,6 @@ export class Revision {
       revision: this.id,
       can_complete: shown.canComplete,
       ...(shown.codes && fieldsOf(shown.codes)),
-      ...(shown.motifs && { motifs: [...shown.motifs] }),
     };
   }
 
@@ -194,14 +188,12 @@ export class Revision {
 
 // Un code sans valeur ne part pas : le contrat lit son absence « inconnu ».
 function fieldsOf(codes: ResultCodes): Omit<ResultEvent, "type"> {
-  const { issue, mode, transportComposition, reasonCodes, support, financeur } =
-    codes;
+  const { issue, mode, transportComposition, reasonCodes, support } = codes;
   return {
     ...(issue !== null && { issue }),
     ...(mode !== null && { mode }),
     transport_composition: transportComposition,
     ...(reasonCodes !== null && { reason_codes: [...reasonCodes] }),
     ...(support !== null && { support }),
-    ...(financeur !== null && { financeur }),
   };
 }

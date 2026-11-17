@@ -37,7 +37,6 @@ export const EVENT_TYPES = [
   "button_clicked",
   "simulation_closed",
   // Nos compléments.
-  "question_invalidated",
   "document_typography_measured",
 ] as const;
 
@@ -108,15 +107,6 @@ type ActivityOrigin = (typeof ACTIVITY_ORIGINS)[number];
  */
 type FieldMeasurement = { field_id: string; font_size_pt: number };
 
-/**
- * Comment la page du simulateur s'est chargée, tel que le navigateur le dit
- * (`PerformanceNavigationTiming.type`) : ouverte, rechargée, ou rouverte par
- * l'historique (ADR-0049).
- */
-export const NAVIGATIONS = ["navigate", "reload", "back_forward"] as const;
-
-export type Navigation = (typeof NAVIGATIONS)[number];
-
 export const INTENTS = [
   "eligibilite_seule",
   "eligibilite_et_prescription",
@@ -163,15 +153,7 @@ export type AnalyticsEvent = {
   activity_origin?: ActivityOrigin;
   // Nos compléments.
   service_id?: string;
-  /** Le nom de l'établissement, lu dans la liste ou saisi (ADR-0053). */
-  establishment_name?: string;
-  /** Le nom du service, lu dans la liste ou saisi (ADR-0053). */
-  service_name?: string;
-  page_view_id?: string;
   milestones?: Milestone[];
-  financeur?: string;
-  motifs?: string[];
-  navigation?: Navigation;
   /** La version de l'app, celle de `package.json` (ADR-0050). */
   app_version: string;
   /** Le commit déployé, sur 7 caractères, ou `inconnu` (ADR-0050). */
@@ -180,11 +162,11 @@ export type AnalyticsEvent = {
 
 /**
  * Le rattachement du parcours, sur chacun de ses événements (ADR-0053) : les ids
- * du référentiel, quand il en a, et les noms.
+ * du référentiel, quand il en a.
  */
 export type RattachementDuParcours = Pick<
   AnalyticsEvent,
-  "establishment_id" | "service_id" | "establishment_name" | "service_name"
+  "establishment_id" | "service_id"
 >;
 
 /**

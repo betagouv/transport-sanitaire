@@ -37,13 +37,11 @@ Ce qui part :
 - des identifiants techniques opaques : simulation, événement, exposition,
   révision ;
 - les codes des questions affichées et l'état de leur validation ;
-- les codes de résultat : issue, motifs, mode, support, financeur ;
-- vers le journal seulement, le nom de l'établissement et celui du service,
-  lus dans la liste ou saisis à l'écran de rattachement (ADR-0053). C'est le
-  seul texte saisi qui parte, et Matomo ne le reçoit pas.
+- les codes de résultat : issue, code de raison, mode, support.
 
-~~Le service saisi sous « Autre » et l'établissement saisi à l'écran n'en font
-pas partie.~~ (jusqu'au 2026-11-16)
+Le service saisi sous « Autre » et l'établissement saisi à l'écran n'en font
+pas partie. ~~Le journal recevait leur nom (ADR-0053).~~ (du 2026-11-16 au
+2026-11-17, #497)
 
 ## Les événements de la mesure d'audience
 

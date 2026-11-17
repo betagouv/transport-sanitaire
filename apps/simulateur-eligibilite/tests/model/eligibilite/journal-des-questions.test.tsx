@@ -41,17 +41,16 @@ describe("le journal des questions du modèle", () => {
     const [situations, indication] = envoyes.filter(
       ({ type }) => type === "question_exposed",
     );
-    expect(indication).toEqual(
-      expect.objectContaining({
-        question_id: "Q2.2.1.indication",
-        page_view_id: situations?.page_view_id,
-        exposure_id: `${situations?.page_view_id}:Q2.2.1.indication`,
-      }),
-    );
+    expect(indication?.question_id).toBe("Q2.2.1.indication");
+    expect(affichageDe(indication)).toBe(affichageDe(situations));
   });
 });
 
 // ---- implémentation ----
+
+// L'affichage d'une exposition : son id, sans la question.
+const affichageDe = (exposition?: { exposure_id?: string }) =>
+  exposition?.exposure_id?.replace(/:[^:]+$/, "");
 
 const expositions = (
   envoyes: { type: string; question_id?: string; page_id?: string }[],

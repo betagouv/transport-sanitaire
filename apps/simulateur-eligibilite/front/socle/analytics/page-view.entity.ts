@@ -27,7 +27,7 @@ export type OpenedPage = {
 /** Ce qu'un événement dit d'une question de l'affichage. */
 export type AboutAQuestion = Pick<
   AnalyticsEvent,
-  "screen" | "question_id" | "page_id" | "page_view_id" | "exposure_id"
+  "screen" | "question_id" | "page_id" | "exposure_id"
 >;
 
 /** La partie de la page n'est pas une phase : P0, ou un modèle de test. */
@@ -81,10 +81,10 @@ export class PageView {
     return true;
   }
 
-  /** L'écran de l'affichage, s'il en est un, et son id. */
-  get place(): Pick<AnalyticsEvent, "screen" | "page_view_id"> {
+  /** L'écran de l'affichage, s'il en est un. */
+  get place(): Pick<AnalyticsEvent, "screen"> {
     const screen = SCREENS.find((screen) => screen === this.part);
-    return { ...(screen && { screen }), page_view_id: this.id };
+    return screen ? { screen } : {};
   }
 
   about(question: string): AboutAQuestion {
