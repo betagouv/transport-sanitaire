@@ -3,6 +3,10 @@
 // sa précision ne change rien à l'issue. La référence du Centre 15 ne se
 // demande pas : un appel au Centre 15 entre établissements va toujours à la
 // caisse, sans document à compléter.
+//
+// Le compteur de la précision, mesurée sur le cerfa, est à l'écran
+// (`Model.cerfa.measured`). Vide, elle se dit avec la phrase de l'éditeur
+// (T06, R04).
 
 import { question } from "../../question.ts";
 import { pmtOuDap } from "../conditions/supports-du-complement.ts";
@@ -14,4 +18,5 @@ export const Q3_5 = question
     "Quelle précision faut-il apporter sur l’urgence déjà attestée ?",
   )
   .hint("La nature de l’urgence médicale attestée.")
+  .whenMissing("Précisez l’urgence.")
   .mattersWhile(pmtOuDap.and(uneUrgenceHorsCentre15));

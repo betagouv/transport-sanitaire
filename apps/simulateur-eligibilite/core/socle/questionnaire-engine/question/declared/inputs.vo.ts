@@ -65,8 +65,13 @@ export class DeclaredText<
     return this.own.kind;
   }
 
+  /** Ce que dit l'écran d'une saisie blanche : la phrase de l'éditeur. */
+  whenMissing(missingMessage: string): this {
+    return this.withOwn({ missingMessage });
+  }
+
   protected override askedWith(common: AskedCommonData) {
-    return new AskedText({ ...common, kind: this.kind });
+    return new AskedText({ ...common, ...this.own });
   }
 
   protected override rebuilt(
@@ -222,7 +227,10 @@ export type NumberOwn = {
 };
 
 /** Ce qu'un texte règle de plus qu'une question : sa sorte. */
-export type TextOwn = { readonly kind: "text" | "long text" };
+export type TextOwn = {
+  readonly kind: "text" | "long text";
+  readonly missingMessage?: string;
+};
 
 /** Ce qu'une date règle de plus qu'une question. */
 export type DateOwn<
