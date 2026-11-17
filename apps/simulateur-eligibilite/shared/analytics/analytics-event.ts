@@ -58,14 +58,31 @@ export const MILESTONES = ["first", "last"] as const;
 
 export type Milestone = (typeof MILESTONES)[number];
 
-/**
- * Les portions du trajet que le premier résultat restitue à part (ADR-0045) : la
- * ligne régulière, avion ou bateau. Aucune réponse ne prouve une partie
- * terrestre : sa présence reste inconnue, et ne part pas (#443).
- */
-export const PORTIONS = ["LIGNE_REGULIERE"] as const;
+/** Les cinq modes terrestres : `mode` ne dit jamais la ligne régulière. */
+export const MODES = [
+  "TAP",
+  "TPMR",
+  "AMBULANCE",
+  "VEHICULE_PERSONNEL",
+  "TRANSPORT_COMMUN",
+] as const;
 
-export type Portion = (typeof PORTIONS)[number];
+export type Mode = (typeof MODES)[number];
+
+/**
+ * La composition du transport d'un résultat ou de son document (ANA22-04) :
+ * terrestre seul, ligne régulière seule, les deux, inconnue faute de preuve, ou
+ * sans objet. Les deux premières et la dernière disent si `mode` part.
+ */
+export const TRANSPORT_COMPOSITIONS = [
+  "terrestrial_only",
+  "regular_line_only",
+  "mixed",
+  "unknown",
+  "not_applicable",
+] as const;
+
+export type TransportComposition = (typeof TRANSPORT_COMPOSITIONS)[number];
 
 /** Ce que fait un bouton exposé de la fiche ou du document (ADR-0047). */
 export const ACTIONS = ["print", "download"] as const;
@@ -115,7 +132,8 @@ export type AnalyticsEvent = {
   exposure_id?: string;
   can_complete?: boolean;
   issue?: string;
-  mode?: string;
+  mode?: Mode;
+  transport_composition?: TransportComposition;
   reason_codes?: string[];
   document_id?: string;
   support?: string;
@@ -134,7 +152,6 @@ export type AnalyticsEvent = {
   milestones?: Milestone[];
   financeur?: string;
   motifs?: string[];
-  portions?: Portion[];
   sheet_id?: string;
   action?: Action;
   fields?: FieldSize[];

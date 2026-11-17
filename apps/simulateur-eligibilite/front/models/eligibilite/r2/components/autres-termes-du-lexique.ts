@@ -7,14 +7,8 @@
 // chaque nom : Q2.3.2 ne distingue pas l'avion du bateau, et aucune question
 // ne dit CAMSP ou CMPP. Rien n'est jamais deviné. Elle déclare ce qu'elle lit
 // des cibles (`ce-que-lit-un-texte.ts`).
-//
-// Le segment restitue une portion du trajet (docs/knowledge/CONTEXT.md,
-// « Portion ») : la ligne régulière. La portée de l'ambulance n'en restitue
-// pas : elle parle des « éventuelles » parties terrestres, qu'aucune réponse ne
-// prouve (#443).
 
 import { given } from "../../../../../core/models/eligibilite/questions/reponses";
-import type { Portion } from "../../../../socle";
 import type { ReponsesLues } from "./ce-que-lit-un-bloc";
 import { luPar, type TraceDe } from "./ce-que-lit-un-bloc";
 import type { IssuePositive } from "./forme-du-catalogue";
@@ -48,14 +42,6 @@ export function avecLesAutresTermes(
       terme(issue, "motif_ambulance", avionBateau ? 1 : 0),
     )
     .replaceAll("{portee_ambulance}", avionBateau ? PORTEE_TERRESTRE : "");
-}
-
-/** Les portions du trajet que ces textes restituent, termes remplis. */
-export function portionsDesTextes(textes: readonly string[]): Portion[] {
-  const restitue = textes.some((texte) =>
-    texte.includes("{segment_ligne_reguliere}"),
-  );
-  return restitue ? ["LIGNE_REGULIERE"] : [];
 }
 
 // ---- implémentation ----

@@ -44,7 +44,7 @@ async function revenirAuxAccompagnements(
 }
 
 describe("le journal du premier résultat", () => {
-  it("un R2 affiché part avec sa révision et la complétion, sans code, motif ni portion que le modèle ne déclare pas", async () => {
+  it("un R2 affiché part avec sa révision et la complétion, sans code, motif ni composition que le modèle ne déclare pas", async () => {
     const { user, envoyes } = await ouvrirAvecUnJournal();
 
     await allerAuResultat(user);
@@ -59,7 +59,7 @@ describe("le journal du premier résultat", () => {
     ]);
     expect(affiches[0]).not.toHaveProperty("reason_codes");
     expect(affiches[0]).not.toHaveProperty("motifs");
-    expect(affiches[0]).not.toHaveProperty("portions");
+    expect(affiches[0]).not.toHaveProperty("transport_composition");
   });
 
   it("monté comme en production, où React rejoue les effets, le R2 part une fois", async () => {

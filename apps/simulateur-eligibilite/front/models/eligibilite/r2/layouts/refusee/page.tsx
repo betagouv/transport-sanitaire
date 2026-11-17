@@ -26,6 +26,5 @@ export function pageRefusee(
     ...page,
     tone: "refusal",
     motifs: identifiantsDes(texte.motifs),
-    portions: [],
   };
 }

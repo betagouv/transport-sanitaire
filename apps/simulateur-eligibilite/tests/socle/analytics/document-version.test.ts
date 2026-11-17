@@ -3,22 +3,32 @@
 
 import { describe, expect, it } from "vitest";
 import { Journey } from "../../../front/socle/analytics/journey.entity";
-import type { AnalyticsEvent } from "../../../shared/analytics/analytics-event";
+import type {
+  AnalyticsEvent,
+  Mode,
+  TransportComposition,
+} from "../../../shared/analytics/analytics-event";
 import { PROVENANCE } from "./journal-de-test";
 
-// Le R2 affiché : ses codes, sans motif ni portion.
+// Le R2 affiché : ses codes, sans motif.
 const unR2 = {
   canComplete: true,
   codes: {
     issue: "ISSUE_PMT",
     mode: null,
+    transportComposition: "unknown",
     reasonCodes: [],
     support: "S3138g",
     financeur: null,
   },
   motifs: [],
-  portions: [],
-};
+} as const;
+
+// Un R2 de cette composition du transport, et de ce mode terrestre.
+const unR2Compose = (
+  transportComposition: TransportComposition,
+  mode: Mode | null,
+) => ({ ...unR2, codes: { ...unR2.codes, transportComposition, mode } });
 
 // La dernière page de P2 validée, ses réponses changées : le R2 tombe.
 function modifierP2(journey: Journey) {
@@ -55,9 +65,9 @@ const documents = (envoyes: AnalyticsEvent[]) =>
     );
 
 describe("les versions du document R3", () => {
-  it("un document prêt ouvre la version d1, avec la révision, le support et le mode du R2", () => {
+  it("un document prêt ouvre la version d1, avec la révision, le support, la composition et le mode du R2", () => {
     const journey = new Journey({ seeded: false, provenance: PROVENANCE });
-    journey.displayResult({ ...unR2, codes: { ...unR2.codes, mode: "VSL" } });
+    journey.displayResult(unR2Compose("mixed", "TAP"));
 
     const [affiche] = journey.displayDocument(unDocument("2"));
 
@@ -67,8 +77,39 @@ describe("les versions du document R3", () => {
       document_id: "d1",
       revision: "r1",
       support: "S3138g",
-      mode: "VSL",
+      transport_composition: "mixed",
+      mode: "TAP",
     });
+  });
+
+  it("un document garde la composition de son propre R2, pas celle d'un R2 plus récent", () => {
+    const journey = new Journey({ seeded: false, provenance: PROVENANCE });
+    journey.displayResult(unR2Compose("mixed", "TAP"));
+    const [premier] = journey.displayDocument(unDocument("2"));
+    journey.displayResult(unR2Compose("regular_line_only", null));
+    const [meme] = journey.displayDocument(unDocument("3"));
+    modifierP2(journey);
+    journey.displayResult(unR2Compose("regular_line_only", null));
+    const [suivant] = journey.displayDocument(unDocument("3"));
+
+    expect([premier, meme, suivant]).toEqual([
+      expect.objectContaining({
+        document_id: "d1",
+        transport_composition: "mixed",
+        mode: "TAP",
+      }),
+      expect.objectContaining({
+        document_id: "d2",
+        transport_composition: "mixed",
+        mode: "TAP",
+      }),
+      expect.objectContaining({
+        document_id: "d3",
+        revision: "r2",
+        transport_composition: "regular_line_only",
+      }),
+    ]);
+    expect(suivant).not.toHaveProperty("mode");
   });
 
   it("le même document réaffiché garde sa version, et ne repart pas", () => {

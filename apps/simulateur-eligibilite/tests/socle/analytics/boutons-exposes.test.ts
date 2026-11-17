@@ -8,19 +8,19 @@ import { Journey } from "../../../front/socle/analytics/journey.entity";
 import type { AnalyticsEvent } from "../../../shared/analytics/analytics-event";
 import { PROVENANCE } from "./journal-de-test";
 
-// Le R2 affiché : ses codes, sans motif ni portion.
+// Le R2 affiché : ses codes, sans motif.
 const unR2 = {
   canComplete: true,
   codes: {
     issue: "ISSUE_PMT",
     mode: null,
+    transportComposition: "unknown",
     reasonCodes: [],
     support: "S3138g",
     financeur: null,
   },
   motifs: [],
-  portions: [],
-};
+} as const;
 
 const unDocument = (quantite: string) => ({
   file: "bon-de-commande-2026-11-13.pdf",
