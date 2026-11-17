@@ -5,6 +5,14 @@
 
 import type { JournalEntry } from "./journal-entry.entity.ts";
 
+/**
+ * Pourquoi un événement va en quarantaine : son établissement n'est pas au
+ * référentiel, ou son service n'est pas sous son établissement (ANA22-01).
+ */
+export type QuarantineReason =
+  | "unknown_establishment"
+  | "service_outside_establishment";
+
 /** Aucune entrée ne porte cet `event_id`. */
 export type NotInTheJournal = undefined;
 
@@ -18,4 +26,6 @@ export interface Journal {
   append(entry: JournalEntry): Promise<void>;
   /** Garde à part une entrée qui reprend l'`event_id` d'une autre. */
   setAside(collision: JournalEntry): Promise<void>;
+  /** Garde à part, avec sa raison, une entrée hors du référentiel. */
+  quarantine(entry: JournalEntry, reason: QuarantineReason): Promise<void>;
 }

@@ -4,6 +4,9 @@
 // JSON dans `payload`, pour le relire tel quel. La table ne change pas quand
 // le contrat gagne un champ.
 //
+// Une collision va dans `Collisions`, un événement hors du référentiel dans
+// `Quarantaine`, avec sa raison en colonne `reason` (ANA22-01).
+//
 // L'établissement et le service ont chacun leur colonne, en JSON brut, qui
 // s'exploite sans ouvrir `payload` : `{"id":"12"}` (ADR-0053). Le commit du
 // serveur qui a reçu l'événement a la sienne, `commit_sha` : le contrat ne le
@@ -11,7 +14,11 @@
 
 import type { RattachementDuParcours } from "../../shared/analytics/analytics-event.ts";
 import type { GristApiClient, GristRow } from "../grist/grist-api.client.ts";
-import type { Journal, NotInTheJournal } from "./journal.port.ts";
+import type {
+  Journal,
+  NotInTheJournal,
+  QuarantineReason,
+} from "./journal.port.ts";
 import { JournalEntry } from "./journal-entry.entity.ts";
 
 export class GristJournal implements Journal {
@@ -46,12 +53,17 @@ export class GristJournal implements Journal {
   async setAside(collision: JournalEntry): Promise<void> {
     await this.#grist.addRow(COLLISIONS, rowOf(collision));
   }
+
+  async quarantine(entry: JournalEntry, reason: QuarantineReason) {
+    await this.#grist.addRow(QUARANTINE, { ...rowOf(entry), reason });
+  }
 }
 
 // ---- implémentation ----
 
 const EVENTS = "Evenements";
 const COLLISIONS = "Collisions";
+const QUARANTINE = "Quarantaine";
 const MEASUREMENT = "document_typography_measured";
 
 function rowOf({

@@ -55,6 +55,19 @@ describe("le rattachement d'un parcours", () => {
     });
   });
 
+  it("aucun nom, saisi ou choisi, ne part avec l'événement", async () => {
+    const debuts = [
+      await demarrer(QUI_ENREGISTRE, SERVICE_SAISI),
+      await demarrer(QUI_ENREGISTRE, ETABLISSEMENT_SAISI),
+      await demarrer(MUET, ETABLISSEMENT_SAISI),
+    ];
+
+    const envoye = JSON.stringify(debuts);
+    for (const nom of ["Néphrologie", "Clinique des Cèdres", "Urgences"]) {
+      expect(envoye).not.toContain(nom);
+    }
+  });
+
   it("un service saisi sous « Autre », référentiel muet : l'établissement seul", async () => {
     const debut = await demarrer(MUET, SERVICE_SAISI);
 

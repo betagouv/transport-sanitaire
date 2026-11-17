@@ -61,9 +61,15 @@ export class JournalController {
 
 // ---- implémentation ----
 
-// Un renvoi est un succès : le navigateur n'a pas à le savoir. Une collision
-// est une erreur du client, qu'il ne réessaie pas.
+// Un renvoi est un succès : le navigateur n'a pas à le savoir. Une collision,
+// ou un événement hors du référentiel, est une erreur du client, qu'il ne
+// réessaie pas.
 function respond(res: Response, collected: Collected) {
+  if (collected === "quarantined") {
+    console.warn("[simulateur] journal : rattachement hors du référentiel");
+    res.status(422).json({ error: "rattachement hors du référentiel" });
+    return;
+  }
   if (collected === "collision") {
     console.warn("[simulateur] journal : même identité, autre contenu");
     res.status(409).json({ error: "identifiant déjà pris" });
