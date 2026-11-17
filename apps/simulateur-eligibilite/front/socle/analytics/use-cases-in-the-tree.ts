@@ -16,6 +16,7 @@ import { DisplayAResult } from "./display-a-result.usecase";
 import { FailADocument } from "./fail-a-document.usecase";
 import type { Journal } from "./journal.port";
 import type { Journey } from "./journey.entity";
+import { LaunchADocument } from "./launch-a-document.usecase";
 import { LeaveAQuestionnaire } from "./leave-a-questionnaire.usecase";
 import { OpenAPage } from "./open-a-page.usecase";
 import { OpenAResultScreen } from "./open-a-result-screen.usecase";
@@ -27,6 +28,7 @@ import { RevealQuestions } from "./reveal-questions.usecase";
 import { SelectAnIntent } from "./select-an-intent.usecase";
 import { StartAQuestionnaire } from "./start-a-questionnaire.usecase";
 import { type Build, StartASimulation } from "./start-a-simulation.usecase";
+import { WithdrawADocument } from "./withdraw-a-document.usecase";
 
 /** Un use case par geste de l'écran, qui parle à l'audience, au journal, ou aux deux. */
 export type AnalyticsUseCases = ReturnType<typeof analyticsUseCases>;
@@ -51,7 +53,9 @@ export function analyticsUseCases(
     displayAResult: new DisplayAResult(journal),
     displayADocument: new DisplayADocument(journal),
     failADocument: new FailADocument(journal),
+    withdrawADocument: new WithdrawADocument(),
     pressAButton: new PressAButton(journal),
+    launchADocument: new LaunchADocument(journal),
     deliverADownload: new DeliverADownload(journal),
     leaveAQuestionnaire: new LeaveAQuestionnaire(audience),
     reachAnAldResult: new ReachAnAldResult(audience),

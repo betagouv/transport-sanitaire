@@ -7,7 +7,7 @@
 // (`analytics/typographie-du-document.test.ts`) et sur les cerfa du modèle de
 // l'éditeur (`r3/taille-des-champs.test.ts`).
 
-import { screen } from "@testing-library/react";
+import { screen, waitFor } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 import type { AnalyticsEvent } from "../../../shared/analytics/analytics-event";
 import { journalDeTest } from "../analytics/journal-de-test";
@@ -19,6 +19,7 @@ import {
   ouvrirLeSimulateur,
   QUANTITE,
 } from "./questionnaire";
+import { ecouterLesTelechargements } from "./telechargements";
 
 type User = Awaited<ReturnType<typeof ouvrirLeSimulateur>>;
 
@@ -140,21 +141,26 @@ describe("le journal du document R3", () => {
     ).toMatchObject({ screen: "R3" });
   });
 
-  it("chaque tentative part : l'échec, puis le document qu'une nouvelle tentative a généré", async () => {
+  it("chaque tentative part : l'échec, le document qu'une nouvelle tentative a généré, puis son téléchargement", async () => {
     const gabarit = gabaritRetenu({ echoueDAbord: true });
     const { user, envoyes } = await ouvrirAvecUnJournal({
       modele: auGabarit(gabarit.charge),
     });
     await allerAuCerfa(user);
     await screen.findByRole("alert");
+    const ecoute = ecouterLesTelechargements();
 
     await user.click(bouton("Télécharger le bon de commande"));
     gabarit.lache();
     await documentPret();
+    await waitFor(() => expect(ecoute.telechargements).toHaveLength(1));
+    ecoute.arreter();
 
     expect(documents(envoyes)).toEqual([
       "document_generation_failed - r1",
       "document_displayed d1 r1",
+      "document_download_requested d1 r1",
+      "document_download_succeeded d1 r1",
     ]);
   });
 });

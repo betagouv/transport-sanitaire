@@ -332,16 +332,20 @@ _Chez l'éditeur_: « fiche patient », le même mot.
 
 **Version de la fiche**:
 Une fiche patient dans une simulation, numérotée `f1`, `f2`…, une par révision
-qui en montre une. Le journal des parcours la reçoit dans l'exposition et les
-clics d'« Imprimer » et de « Télécharger » sur la fiche (#388).
-_Chez l'éditeur_: « identité de rendu » de la fiche.
+qui en montre une. Le journal des parcours la reçoit en `artifact_id` dans
+l'exposition et les clics d'« Imprimer » et de « Télécharger » sur la fiche
+(#388, #507).
+_Chez l'éditeur_: « identité de rendu » de la fiche, `artifact_id` (ANA22-02).
 _Avoid_: document, réservé au cerfa de R3.
 
 **Exposition**:
-Un bouton ou une question offert au prescripteur, une fois par affichage de page
-et par objet. Son clic, sa saisie ou sa validation s'y rattachent par
-`exposure_id`. Un bouton grisé n'est pas exposé ; la position dans la fenêtre ne
-compte pas (#385, #388).
+Un bouton ou une question offert au prescripteur. Une question l'est une fois
+par affichage de page. Un bouton l'est tant qu'il reste à sa place : une
+nouvelle exposition ne vient qu'après une vraie disparition, une autre version
+de son objet ou une autre révision, jamais d'un remontage technique. Son clic,
+sa saisie ou sa validation s'y rattachent par `exposure_id`. Un bouton grisé
+n'est ni exposé ni cliqué ; la position dans la fenêtre ne compte pas (#385,
+#388, #507).
 _Chez l'éditeur_: « exposition », `exposure_id` (ANA-1015).
 _Avoid_: vue, impression.
 

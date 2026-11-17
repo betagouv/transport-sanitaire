@@ -9,9 +9,9 @@ import { importsDe, sources, texteDe } from "./inspection-des-sources";
 // Le journal, côté serveur et côté écran, et la mesure d'audience.
 const JOURNAL = ["server/journal", "front/socle/analytics"];
 
-// Son domaine : les entités, les use cases et les ports.
+// Son domaine : les entités, les objets-valeurs, les use cases et les ports.
 const duDomaine = (cible: string) =>
-  /\.(entity|usecase|port)(\.ts)?$/.test(cible);
+  /\.(entity|vo|usecase|port)(\.ts)?$/.test(cible);
 
 // Ce que le sens des dépendances garde aujourd'hui.
 const GARDES = ["core/socle"];
@@ -82,7 +82,8 @@ describe("le journal des parcours", () => {
       );
     expect(
       fautifs,
-      "Entités, use cases et ports (`.entity.ts`, `.usecase.ts`, `.port.ts`) " +
+      "Entités, objets-valeurs, use cases et ports (`.entity.ts`, `.vo.ts`, " +
+        "`.usecase.ts`, `.port.ts`) " +
         "forment le domaine du journal et de la mesure d'audience (ADR-0043). " +
         "Ils ne connaissent ni HTTP, ni Grist, ni l'écran : un adaptateur " +
         "(`.adapter.ts`) les relie à l'extérieur. Passe ce qui manque en " +

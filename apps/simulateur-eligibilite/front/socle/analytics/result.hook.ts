@@ -2,10 +2,10 @@
 // contenu chargé et la complétion connue, et les boutons qu'il offre, puis
 // leurs clics. Ce qui part ou non est décidé par `Journey`.
 
-import { useEffect, useRef } from "react";
+import { useEffect } from "react";
 import type { FirstResult } from "../model";
 import { type ButtonTracking, useButtonTracking } from "./button.hook";
-import type { Button, Exposures } from "./button-exposure.entity";
+import type { Button } from "./button-place.vo";
 import type { ResultCodes } from "./revision.entity";
 import { useAnalyticsUseCases, useJourney } from "./use-cases-in-the-tree";
 
@@ -30,17 +30,12 @@ export function useResultTracking({
 }: ResultTracking): ButtonTracking {
   const useCases = useAnalyticsUseCases();
   const journeyOf = useJourney();
-  const exposures = useRef<Exposures>({});
   // biome-ignore lint/correctness/useExhaustiveDependencies: un affichage par résultat chargé
   useEffect(() => {
     const journey = journeyOf();
     if (!useCases || !journey || !loaded || canComplete === null) return;
     const shown = { canComplete, codes, motifs: loaded.motifs };
-    exposures.current = useCases.displayAResult.execute(
-      journey,
-      shown,
-      buttons,
-    );
+    useCases.displayAResult.execute(journey, shown, buttons);
   }, [loaded, canComplete]);
-  return useButtonTracking(exposures);
+  return useButtonTracking();
 }

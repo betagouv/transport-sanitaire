@@ -11,7 +11,8 @@
  * (ADR-0047), puis la taille des champs du document R3 (ADR-0048), puis le
  * chargement de la page (ADR-0049), puis la version de l'app et le commit
  * déployé (ADR-0050). La 3 ajoute le nom de l'établissement et celui du
- * service, et pose le rattachement sur chaque événement (ADR-0053).
+ * service, et pose le rattachement sur chaque événement (ADR-0053), puis
+ * prend les boutons exposés et cliqués du contrat v10.2.2 (ADR-0047, #507).
  */
 export const SCHEMA_VERSION = 3;
 
@@ -32,13 +33,11 @@ export const EVENT_TYPES = [
   "document_generation_failed",
   "feedback_exposed",
   "feedback_clicked",
+  "button_exposed",
+  "button_clicked",
   "simulation_closed",
   // Nos compléments.
   "question_invalidated",
-  "action_exposed",
-  "sheet_print_requested",
-  "sheet_download_requested",
-  "sheet_download_succeeded",
   "document_typography_measured",
 ] as const;
 
@@ -84,10 +83,23 @@ export const TRANSPORT_COMPOSITIONS = [
 
 export type TransportComposition = (typeof TRANSPORT_COMPOSITIONS)[number];
 
-/** Ce que fait un bouton exposé de la fiche ou du document (ADR-0047). */
-export const ACTIONS = ["print", "download"] as const;
+/**
+ * Les boutons de la fiche patient (R2) et du document (R3), exposés et cliqués
+ * (ADR-0047, ANA22-02). L'avis a ses propres types.
+ */
+export const BUTTON_IDS = [
+  "patient_sheet_print",
+  "patient_sheet_download",
+  "document_print",
+  "document_download",
+] as const;
 
-export type Action = (typeof ACTIONS)[number];
+export type ButtonId = (typeof BUTTON_IDS)[number];
+
+/** D'où vient une activité : du prescripteur, de l'app seule, ou d'un rejeu. */
+export const ACTIVITY_ORIGINS = ["user", "background", "replay"] as const;
+
+type ActivityOrigin = (typeof ACTIVITY_ORIGINS)[number];
 
 /**
  * La taille réellement imprimée d'un champ rempli du document R3, en points
@@ -145,6 +157,10 @@ export type AnalyticsEvent = {
   field_measurements?: FieldMeasurement[];
   field_group?: string;
   font_size_pt?: number;
+  button_id?: ButtonId;
+  /** Ce que le bouton montre : la version de la fiche, ou celle du document. */
+  artifact_id?: string;
+  activity_origin?: ActivityOrigin;
   // Nos compléments.
   service_id?: string;
   /** Le nom de l'établissement, lu dans la liste ou saisi (ADR-0053). */
@@ -155,8 +171,6 @@ export type AnalyticsEvent = {
   milestones?: Milestone[];
   financeur?: string;
   motifs?: string[];
-  sheet_id?: string;
-  action?: Action;
   navigation?: Navigation;
   /** La version de l'app, celle de `package.json` (ADR-0050). */
   app_version: string;
