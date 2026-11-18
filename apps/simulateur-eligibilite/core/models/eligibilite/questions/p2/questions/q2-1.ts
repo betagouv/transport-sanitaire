@@ -92,7 +92,8 @@ const sousType = question
       "Une admission en Hospitalisation à Domicile (HAD) à domicile",
   })
   .appliesWhen(given.question(Q2_1).answer().is("8_HOSPITALISATION"))
-  .dependsOn(Q2_1);
+  .dependsOn(Q2_1)
+  .shownUnder(Q2_1, "8_HOSPITALISATION");
 
 export const Q2_1_G = sousType.inconsistentWhen(
   ...incoherenceDeLieux("sousType", {

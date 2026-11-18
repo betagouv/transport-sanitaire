@@ -48,4 +48,5 @@ export const Q2_7_A = question
     "2_NON": "Non.",
   })
   .appliesWhen(aLaChargeDuPatient)
-  .dependsOn(Q2_7);
+  .dependsOn(Q2_7)
+  .shownUnder(Q2_7, "4_ADULTE_A_SA_CHARGE");

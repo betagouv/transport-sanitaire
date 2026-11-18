@@ -26,7 +26,8 @@ const sejour = question
     "1_ETABLISSEMENT": "En séjour dans un établissement de santé.",
     "2_HAD": "En Hospitalisation à Domicile (HAD).",
   })
-  .appliesWhen(unCadreAPoser);
+  .appliesWhen(unCadreAPoser)
+  .shownUnder(Q2_2_1, "1_HOSPITALISATION");
 
 // Un séjour fixe l'établissement, ou le domicile d'une HAD.
 export const Q2_2_1_CADRE = sejour.inconsistentWhen(

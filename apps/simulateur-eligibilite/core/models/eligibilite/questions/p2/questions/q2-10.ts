@@ -52,7 +52,8 @@ export const Q2_10_A = question
     "3_NE_PEUX_PAS_VERIFIER": "Je ne peux pas le vérifier.",
   })
   .appliesWhen(unAppareillage)
-  .dependsOn(Q2_10);
+  .dependsOn(Q2_10)
+  .shownUnder(Q2_10, "6_APPAREILLAGE");
 
 export const Q2_10_B = question
   .singleChoice("Q2.10.b", "Sélectionnez l’appareillage concerné")
@@ -65,4 +66,5 @@ export const Q2_10_B = question
     "5_NE_PEUX_PAS_PRECISER": "Je ne peux pas le vérifier.",
   })
   .appliesWhen(unAppareillage)
-  .dependsOn(Q2_10);
+  .dependsOn(Q2_10)
+  .shownUnder(Q2_10, "6_APPAREILLAGE");
