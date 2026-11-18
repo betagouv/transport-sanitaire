@@ -14,4 +14,5 @@ export const Q2_2_5 = question
     "3_LIEU_DES_SOINS":
       "Adresse du lieu de soins située à l’étranger (à ne sélectionner que si elle est différente des adresses de départ et d’arrivée).",
   })
-  .appliesWhen(given.question(Q2_2_1).answer().checked("2_ETRANGER"));
+  .appliesWhen(given.question(Q2_2_1).answer().checked("2_ETRANGER"))
+  .shownUnder(Q2_2_1, "2_ETRANGER");

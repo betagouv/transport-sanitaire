@@ -19,7 +19,9 @@ const enPermission = question
     "1_OUI": "Oui.",
     "2_NON": "Non.",
   })
-  .appliesWhen(unSejourEnEtablissement);
+  .appliesWhen(unSejourEnEtablissement)
+  // Dans le panneau du séjour, après son cadre (NAV-PANNEAUX-20261116).
+  .shownUnder(Q2_2_1, "1_HOSPITALISATION");
 
 // Une permission va de l'établissement au lieu de vie, ou en revient : une
 // dialyse ou un hébergement la contredit.

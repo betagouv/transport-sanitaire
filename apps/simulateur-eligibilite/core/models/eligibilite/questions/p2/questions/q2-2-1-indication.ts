@@ -11,6 +11,7 @@ import { Q1_2 } from "../../p1/questions/q1-2.ts";
 import { Q1_3 } from "../../p1/questions/q1-3.ts";
 import { given, question } from "../../question.ts";
 import { uneIndicationAPoser } from "../conditions/retour-penitentiaire.ts";
+import { Q2_2_1 } from "./q2-2-1.ts";
 
 export const Q2_2_1_INDICATION = question
   .singleChoice(
@@ -23,6 +24,7 @@ export const Q2_2_1_INDICATION = question
     "2_NON": "Non.",
   })
   .appliesWhen(uneIndicationAPoser)
+  .shownUnder(Q2_2_1, "10_RETOUR_PENITENTIAIRE")
   // Une modification clinique invalide la qualification (point 33).
   .dependsOn(Q1_1, Q1_2, Q1_3);
 
