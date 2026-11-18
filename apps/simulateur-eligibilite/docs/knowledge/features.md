@@ -18,4 +18,5 @@
 | Galerie de seeds | Le catalogue des situations de référence, ouvertes depuis une galerie. Un developer tool : en local seulement. |
 | Trace de debug | Sous le questionnaire et les résultats, les pages, les réponses, les faits et les cibles du parcours, exportables en JSON. En local, et partout pour la structure « Assurance Maladie ». |
 | Analytics | Les événements du parcours partent vers Matomo, rangés par service. Le prescripteur peut s'y opposer depuis le site. |
+| Journal des parcours | Chaque événement du parcours est gardé dans une base PostgreSQL, et se relit page par page avec un jeton, pour le tableau de bord. |
 | Intégration au site | Le simulateur s'affiche dans une page Sites Conformes, qui lui transmet le choix du prescripteur sur la mesure d'audience. |

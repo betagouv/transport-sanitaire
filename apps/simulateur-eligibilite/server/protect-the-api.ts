@@ -9,7 +9,8 @@
 // - Chaque écriture est limitée par IP et par minute. Les limites sont
 //   larges : un hôpital met beaucoup de postes derrière une seule IP.
 // - La sonde du signe de vie lit le journal à chaque appel : elle est limitée
-//   de même, au débit d'une sonde.
+//   de même, au débit d'une sonde. La lecture du journal aussi, au débit d'un
+//   tableau de bord, ce qui borne l'essai de jetons.
 
 import type { Express, NextFunction, Request, Response } from "express";
 import { rateLimit } from "express-rate-limit";
@@ -35,6 +36,7 @@ export class ApiGuard {
     app.post("/api/rattachement", perMinute(this.#limits.rattachement));
     app.post("/api/journal/v1/events", perMinute(this.#limits.journal));
     app.get("/api/journal/v1/alive", perMinute(PROBES));
+    app.get("/api/journal/v1/events", perMinute(READS));
   }
 }
 
@@ -43,6 +45,9 @@ export class ApiGuard {
 // Une sonde passe au plus chaque minute. Dix laissent de la marge à deux
 // sondes et à un essai à la main.
 const PROBES = 10;
+
+// Un tableau de bord qui rattrape le journal enchaîne les pages.
+const READS = 120;
 
 function refuseOtherOrigins(req: Request, res: Response, next: NextFunction) {
   const origin = req.get("origin");

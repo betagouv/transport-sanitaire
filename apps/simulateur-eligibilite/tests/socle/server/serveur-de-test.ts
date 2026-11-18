@@ -7,6 +7,7 @@ import type { AddressInfo } from "node:net";
 import { creerApp } from "../../../server/app.ts";
 import { createContainer } from "../../../server/container.ts";
 import type { Journal } from "../../../server/journal/journal.port.ts";
+import type { JournalPages } from "../../../server/journal/journal-pages.port.ts";
 import { MemoryJournal } from "../../../server/journal/memory-journal.adapter.ts";
 import type { WriteLimits } from "../../../server/protect-the-api.ts";
 import type { Referentiel } from "../../../shared/referentiel.ts";
@@ -18,13 +19,19 @@ export async function demarrer(
   referentiel: Referentiel,
   {
     journal = new MemoryJournal(),
+    journalReadToken,
     writeLimits,
-  }: { journal?: Journal; writeLimits?: WriteLimits } = {},
+  }: {
+    journal?: Journal & JournalPages;
+    journalReadToken?: string;
+    writeLimits?: WriteLimits;
+  } = {},
 ): Promise<AppDeTest> {
   const app = creerApp(
     createContainer({
       referentiel,
       journal,
+      journalReadToken,
       environment: "test",
       build: BUILD,
     }),
@@ -58,8 +65,12 @@ export async function postTo(
   return { status: res.status, body: await corpsJson(res) };
 }
 
-export async function getFrom(base: string, path: string) {
-  const res = await fetch(base + path);
+export async function getFrom(
+  base: string,
+  path: string,
+  headers: Record<string, string> = {},
+) {
+  const res = await fetch(base + path, { headers });
   return { status: res.status, body: await res.json() };
 }
 

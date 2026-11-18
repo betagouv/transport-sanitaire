@@ -15,6 +15,7 @@ describe("le journal, sans base configurée", () => {
       port: 3000,
       grist: undefined,
       journal: undefined,
+      journalReadToken: undefined,
       environment: "simulateur-staging",
       build: BUILD,
     });

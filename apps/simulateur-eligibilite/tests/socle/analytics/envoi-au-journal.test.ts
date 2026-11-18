@@ -9,7 +9,6 @@ import { afterEach, describe, expect, it } from "vitest";
 import { ServerJournal } from "../../../front/socle/analytics/server-journal.adapter";
 import { creerApp } from "../../../server/app.ts";
 import { createContainer } from "../../../server/container.ts";
-import type { Journal } from "../../../server/journal/journal.port.ts";
 import type { JournalEntry } from "../../../server/journal/journal-entry.entity.ts";
 import { MemoryJournal } from "../../../server/journal/memory-journal.adapter.ts";
 import type { AnalyticsEvent } from "../../../shared/analytics/analytics-event.ts";
@@ -26,7 +25,7 @@ const suivi = new ConsentementDeTest("suivi");
 
 // La page de test passe sur l'origine du serveur, comme l'app servie par lui :
 // happy-dom applique la règle de même origine à `fetch`.
-async function journalDuServeur(journal: Journal = new MemoryJournal()) {
+async function journalDuServeur(journal = new MemoryJournal()) {
   app = await demarrer(snapshotReferentiel, { journal });
   (window as unknown as HappyDomWindow).happyDOM.setURL(app.base);
   return journal;
@@ -44,14 +43,14 @@ class JournalIndisponible extends MemoryJournal {
   }
 
   override async append(entry: JournalEntry): Promise<void> {
-    if (this.#echecs-- > 0) throw new Error("Grist ne répond pas");
+    if (this.#echecs-- > 0) throw new Error("la base ne répond pas");
     return super.append(entry);
   }
 }
 
 // Le vrai serveur, derrière une limite qui répond 429 à ses `refus` premières
 // écritures : la limite de débit, sans attendre la minute.
-async function serveurSature(refus: number, journal: Journal) {
+async function serveurSature(refus: number, journal: MemoryJournal) {
   const sature = express();
   sature.post("/api/journal/v1/events", (_req, res, next) => {
     if (refus-- > 0) res.status(429).json({ error: "trop de requêtes" });
@@ -62,6 +61,7 @@ async function serveurSature(refus: number, journal: Journal) {
       createContainer({
         referentiel: snapshotReferentiel,
         journal,
+        journalReadToken: undefined,
         environment: "test",
         build: BUILD,
       }),
