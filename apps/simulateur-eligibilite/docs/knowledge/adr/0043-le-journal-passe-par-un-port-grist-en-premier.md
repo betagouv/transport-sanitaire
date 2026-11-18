@@ -87,3 +87,17 @@ Le rattachement n'est pas encore découpé ainsi : il le sera sur ce modèle.
 > ne garde rien d'une seed. Un use case par action, qui n'en appelle pas d'autre. Les
 > contextes React deviennent un fichier d'assemblage sans suffixe. Cela **précise**
 > l'ADR-0043 ; #414 étendra la règle au reste de l'écran.
+
+> **Mise à jour 2026-11-18, le journal passe dans PostgreSQL (#521).** Grist ne tient
+> pas le volume du journal. Le journal s'écrit dans la base PostgreSQL que l'addon de
+> Scalingo fournit, par un nouvel adaptateur, `PostgresJournal` : le port et les use
+> cases ne changent pas. Ses trois tables reprennent celles de Grist, en snake_case
+> (`journal_events`, `journal_collisions`, `journal_quarantine`), avec l'établissement
+> et le service en deux colonnes d'id et l'événement en `jsonb`. Elles se créent à la
+> première requête, sans outil de migration. Un `event_id` unique laisse la base
+> écarter un renvoi simultané que `find` n'a pas vu. Le pilote `pg` reste derrière
+> `server/postgres/postgres.client.ts` ; l'adaptateur reçoit `Sql`, une requête et
+> ses lignes, que PGlite remplit dans les tests. `SCALINGO_POSTGRESQL_URL` remplace
+> `JOURNAL_GRIST_DOC_URL`, et l'adaptateur Grist du journal est retiré : la bascule
+> est nette, sans reprise de l'historique de « Simulateur-Parcours ». Cela **remplace**
+> Grist comme adaptateur du journal ; le référentiel reste dans Grist.

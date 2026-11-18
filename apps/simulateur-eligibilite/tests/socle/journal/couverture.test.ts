@@ -4,14 +4,13 @@
 // le journal un signe de vie. Une heure sans lui ressort « indisponible »,
 // pas « zéro ». Une sonde externe demande au serveur s'il y est.
 
+import { PGlite } from "@electric-sql/pglite";
 import { afterEach, describe, expect, it } from "vitest";
-import { GristApiClient } from "../../../server/grist/grist-api.client.ts";
-import { GristJournal } from "../../../server/journal/grist-journal.adapter.ts";
 import type { Journal } from "../../../server/journal/journal.port.ts";
 import { MemoryJournal } from "../../../server/journal/memory-journal.adapter.ts";
+import { PostgresJournal } from "../../../server/journal/postgres-journal.adapter.ts";
 import { ReportAlive } from "../../../server/journal/report-alive.usecase.ts";
 import { snapshotReferentiel } from "../../../shared/referentiel.ts";
-import { demarrerGrist, type GristDeTest } from "../server/grist-de-test.ts";
 import {
   type AppDeTest,
   demarrer,
@@ -79,36 +78,36 @@ describe("le signe de vie de la collecte", () => {
   });
 });
 
-describe("le signe de vie dans Grist", () => {
-  let grist: GristDeTest;
-  afterEach(() => grist.close());
-
-  const journalSur = ({ docUrl }: GristDeTest) =>
-    new GristJournal(new GristApiClient({ docUrl, cleApi: "test" }));
+describe("le signe de vie dans PostgreSQL", () => {
+  let base: PGlite;
+  afterEach(async () => {
+    if (!base.closed) await base.close();
+  });
 
   it("s'écrit dans la table des événements, sans simulation", async () => {
-    grist = await demarrerGrist({});
+    base = new PGlite();
 
-    await signeDeVie(journalSur(grist)).execute(a("14:20"));
+    await signeDeVie(new PostgresJournal(base)).execute(a("14:20"));
 
-    expect(grist.tables.Evenements?.map((l) => l.fields)).toEqual([
-      expect.objectContaining({
+    const { rows } = await base.query(
+      "SELECT event_id, type, simulation_id, sequence FROM journal_events",
+    );
+    expect(rows).toEqual([
+      {
         event_id: "alive:2026-11-13T14:0.8.0:f30aafe",
         type: "alive",
         simulation_id: null,
         sequence: null,
-      }),
+      },
     ]);
   });
 
   it("manque quand le journal n'écrit plus", async () => {
-    grist = await demarrerGrist({});
-    const journal = journalSur(grist);
-    await grist.close();
+    base = new PGlite();
+    const journal = new PostgresJournal(base);
+    await base.close();
 
     await expect(signeDeVie(journal).execute(a("14:20"))).rejects.toThrow();
-
-    grist = await demarrerGrist({});
   });
 });
 

@@ -1,5 +1,5 @@
 // Le journal en mémoire, pour les tests : il garde tout, jusqu'à l'arrêt du
-// serveur. Le serveur sans doc Grist prend `DiscardingJournal`, qui ne garde rien.
+// serveur. Le serveur sans base prend `DiscardingJournal`, qui ne garde rien.
 
 import type {
   Journal,

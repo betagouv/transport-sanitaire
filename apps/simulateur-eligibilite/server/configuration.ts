@@ -4,9 +4,9 @@
 // développement, sans elles, le serveur utilise un référentiel factice. En
 // production, il refuse de démarrer : il servirait des établissements inventés.
 //
-// `JOURNAL_GRIST_DOC_URL` n'a pas de défaut non plus : le journal des parcours
-// n'écrit dans Grist que là où on la pose, en production. Ailleurs, staging
-// compris, il accepte les événements sans en garder aucun.
+// `SCALINGO_POSTGRESQL_URL`, que Scalingo pose avec l'addon PostgreSQL, donne
+// la base du journal des parcours. Sans elle, le journal accepte les
+// événements sans en garder aucun.
 //
 // `CONTAINER_VERSION`, que Scalingo pose sur le conteneur, donne le commit
 // déployé. Sans elle, le commit vaut `inconnu`, comme côté écran (ADR-0050).
@@ -25,8 +25,8 @@ export type Configuration = {
   port: number;
   /** Accès au doc Grist ; absent ⇒ référentiel snapshot factice (dev/CI). */
   grist: AccesGrist | undefined;
-  /** Accès au journal des parcours ; absent ⇒ journal qui ne garde rien (hors production). */
-  journal: AccesGrist | undefined;
+  /** L'URL de la base du journal des parcours ; absente ⇒ journal qui ne garde rien. */
+  journal: string | undefined;
   /** Le nom de l'app Scalingo, écrit avec chaque événement ; `local` hors Scalingo. */
   environment: string;
   /** La version et le commit de l'app servie, sur le signe de vie du journal (ADR-0051). */
@@ -61,10 +61,7 @@ export function lireConfiguration(env: Env = process.env): Configuration {
       cleApi && variables.GRIST_DOC_URL
         ? { cleApi, docUrl: variables.GRIST_DOC_URL }
         : sansGrist(),
-    journal:
-      cleApi && variables.JOURNAL_GRIST_DOC_URL
-        ? { cleApi, docUrl: variables.JOURNAL_GRIST_DOC_URL }
-        : journalEnMemoire(),
+    journal: variables.SCALINGO_POSTGRESQL_URL ?? sansJournal(),
     environment: variables.APP,
     build: {
       app_version: versionDeLApp(),
@@ -85,9 +82,9 @@ const VARIABLES = z.object({
     .positive({ error: "doit être un entier positif" })
     .default(3000),
   GRIST_DOC_URL: z.url({ error: "doit être une URL" }).optional(),
-  // Le journal des parcours est un autre document, avec la même clé (ADR-0042).
-  // Sans défaut : la collecte ne s'active que là où on la pose.
-  JOURNAL_GRIST_DOC_URL: z.url({ error: "doit être une URL" }).optional(),
+  // La base du journal des parcours, posée par l'addon PostgreSQL de Scalingo.
+  // Sans défaut : la collecte ne garde rien là où l'addon manque.
+  SCALINGO_POSTGRESQL_URL: z.url({ error: "doit être une URL" }).optional(),
   GRIST_API_KEY: z.string().optional(),
   // Scalingo pose le nom de l'app : il distingue la production de la
   // préproduction dans le journal, sans variable de plus.
@@ -138,9 +135,9 @@ function versionDeLApp(): string {
   return version;
 }
 
-function journalEnMemoire(): undefined {
+function sansJournal(): undefined {
   console.warn(
-    "[simulateur] JOURNAL_GRIST_DOC_URL ou GRIST_API_KEY absente — journal des parcours désactivé, aucun événement n'est gardé.",
+    "[simulateur] SCALINGO_POSTGRESQL_URL absente — journal des parcours désactivé, aucun événement n'est gardé.",
   );
   return undefined;
 }

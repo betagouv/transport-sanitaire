@@ -78,7 +78,7 @@ jamais exposées au front.
 | --- | --- | --- | --- | --- |
 | `GRIST_API_KEY` | serveur | **prod** | référentiel **snapshot factice** (dev/CI) | Clé API Grist source du référentiel (établissements/services). Jamais exposée au front. |
 | `GRIST_DOC_URL` | serveur | **prod** | référentiel **snapshot factice** (dev/CI) | Base API du doc Grist du référentiel, lu et complété avec la clé. |
-| `JOURNAL_GRIST_DOC_URL` | serveur | non | aucun | Base API du doc Grist « Simulateur-Parcours », où le journal des parcours s'écrit avec la même clé. À poser en production seulement : sans elle, ou sans clé, le serveur accepte les événements sans en garder aucun, et le signale au démarrage. Ses tables `Evenements` et `Collisions` portent les colonnes `establishment` et `service` : sans elles, Grist refuse chaque écriture (ADR-0053). Sa table `Quarantaine` reprend les colonnes de `Collisions`, plus `reason` : elle garde les événements dont le rattachement n'est pas au référentiel (#506). |
+| `SCALINGO_POSTGRESQL_URL` | serveur | non | aucun | URL de la base PostgreSQL du journal des parcours, posée par l'addon PostgreSQL de Scalingo. Sans elle, le serveur accepte les événements sans en garder aucun, et le signale au démarrage. Les tables `journal_events`, `journal_collisions` et `journal_quarantine` se créent à la première écriture (ADR-0043). |
 | `APP` | serveur | non | `local` | Nom de l'app Scalingo, posé par Scalingo. Écrit comme `environment` de chaque événement du journal. |
 | `CONTAINER_VERSION` | serveur | non | commit `inconnu` | Commit déployé, posé par Scalingo sur le conteneur. Écrit, sur 7 caractères, sur le signe de vie horaire du journal. |
 | `VITE_MATOMO_ENABLED` | front | non | `false` (traceur no-op) | Active le tracking Matomo. Actif d'office en build de prod ; à mettre à `true` pour tester en local. |
@@ -133,10 +133,10 @@ server/                  le backend Node, barrière de sécurité : les secrets 
   rattachement/          LA feature backend : les routes `/api` et la source Grist du
                          référentiel, qu'elle lit et complète
   journal/               le journal des parcours en clean architecture : entité,
-                         use case, port, adaptateurs (Grist, mémoire) et route,
+                         use case, port, adaptateurs (PostgreSQL, mémoire) et route,
                          nommés par leur suffixe (ADR-0043)
-  grist/                 le client HTTP de l'API Grist, pour le référentiel comme
-                         pour le journal
+  grist/                 le client HTTP de l'API Grist, pour le référentiel
+  postgres/              le client PostgreSQL, pour le journal
 core/                    le métier, sans React ni DOM : ce qu'un serveur ou un script
                          peut calculer
   models/                le métier de chaque modèle
