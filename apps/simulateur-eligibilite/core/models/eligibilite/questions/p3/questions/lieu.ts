@@ -91,7 +91,7 @@ export function lieuDArrivee(
     ),
   );
   const categorieDuLieu = categorieRetenue(lieu, categorie);
-  const cotes = cotesDeLArrivee(depart, categorieDuLieu);
+  const cotes = cotesDeLArrivee(depart, categorie, categorieDuLieu);
   const champs = champsDuLieu("arrivee", libelles, cotes.choix, lecture);
   return {
     categorie,
@@ -110,16 +110,28 @@ export function lieuDArrivee(
 // ---- implémentation ----
 
 // Les côtés de l'USLD et de l'EHPAD, une fois les deux catégories connues.
+// Ils précèdent les champs de la catégorie choisie, dans son panneau : ils
+// disent la nature du lieu.
 function cotesDeLArrivee(
   depart: ReturnType<typeof lieuDeDepart>,
+  categorie: ReturnType<typeof categorieAChoisir>,
   categorieDuLieu: Reading<Categorie | NonChoisie>,
 ) {
-  return cotesDesStructures(
+  const { usld, ehpad, choix } = cotesDesStructures(
     depart.categorieDuLieu.computeWith(
       categorieDuLieu,
       (d, arrivee): Choix => ({ categories: { depart: d, arrivee } }),
     ),
   );
+  return {
+    usld: usld
+      .shownUnder(categorie, STRUCTURE)
+      .shownUnder(categorie, AUTRE_LIEU),
+    ehpad: ehpad
+      .shownUnder(categorie, STRUCTURE)
+      .shownUnder(categorie, AUTRE_LIEU),
+    choix,
+  };
 }
 
 // Ce que les champs lisent du lieu dans un contexte.
@@ -130,7 +142,10 @@ type Lecture = {
 };
 
 // Les champs après la catégorie. La nature du lieu tient compte de ce que les
-// catégories et les côtés ont dit.
+// catégories et les côtés ont dit. Ceux d'une structure ou d'un autre lieu
+// s'affichent dans le panneau de la catégorie choisie ; l'adresse, commune
+// aux trois, reste dessous (NAV-PANNEAUX-20261116). Une catégorie fixée ne se
+// choisit pas : ses champs se posent à leur rang.
 function champsDuLieu<E extends Extremite>(
   extremite: E,
   libelles: Libelles,
@@ -142,20 +157,35 @@ function champsDuLieu<E extends Extremite>(
     nature: natureDuLieuChoisi(extremite, choix),
   };
   const sur = (champ: Champ) => rappelSur(champ, lecture, libelles.rappel);
-  const nature = natureAChoisir(extremite, etat, sur("nature"));
+  const { categorie } = lecture;
+  const nature = natureAChoisir(extremite, etat, sur("nature")).shownUnder(
+    categorie,
+    AUTRE_LIEU,
+  );
   const htnm = etat.nature
     .compute((n) => n === "5_HEBERGEMENT_NON_MEDICALISE")
     .or(given.question(nature).answer().is("1_HTNM"));
   return {
     nature,
-    precision: precisionDuLieu(extremite, etat, nature, sur("nature")),
-    nom: nomDuLieu(extremite, { ...etat, htnm }, lecture, sur("nom")),
-    service: serviceDuLieu(extremite, etat),
+    precision: precisionDuLieu(
+      extremite,
+      etat,
+      nature,
+      sur("nature"),
+    ).shownUnder(categorie, AUTRE_LIEU),
+    nom: nomDuLieu(extremite, { ...etat, htnm }, lecture, sur("nom"))
+      .shownUnder(categorie, STRUCTURE)
+      .shownUnder(categorie, AUTRE_LIEU),
+    service: serviceDuLieu(extremite, etat).shownUnder(categorie, STRUCTURE),
     adresse: adresseDuLieu(extremite, libelles.adresse, sur("adresse")),
     natureDuLieu: etat.nature,
     htnm,
   };
 }
+
+// Les catégories qui ouvrent un panneau.
+const STRUCTURE = "2_STRUCTURE_DE_SOINS";
+const AUTRE_LIEU = "3_AUTRE_LIEU";
 
 // L'adresse. Celle du départ dit les lieux que P2 contredit.
 function adresseDuLieu<E extends Extremite>(
