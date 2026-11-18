@@ -1,6 +1,7 @@
 // Le service : un rappel, une aide dépliable, des réponses possibles
-// incompatibles, une alerte qui mène à une réponse d'avant, et la question qui
-// s'affiche sous la réponse possible qui l'ouvre.
+// incompatibles, une alerte qui mène à une réponse d'avant, la question qui
+// s'affiche sous la réponse possible qui l'ouvre, et celle que deux réponses
+// possibles ouvrent.
 
 import { Reading } from "../../../../../socle/index.ts";
 import { cibles } from "../../../cibles/evaluation.ts";
@@ -86,3 +87,15 @@ export const QUELLE_PREPARATION = question
   )
   .appliesWhen(given.question(SERVICE).answer().checked("preparation"))
   .shownUnder(SERVICE, "preparation");
+
+const servie = given.question(SERVICE).answer();
+
+export const SOUS_VERRE = question
+  .singleChoice("sous-verre", "Avec un sous-verre ?")
+  .possibleAnswers({ oui: "Oui", non: "Non" })
+  .hint(
+    "Démontre : une question que deux options font apparaître, dans un seul panneau. Elle s'affiche sous la première cochée, y reste quand on coche l'autre, et passe sous l'autre, sa réponse gardée, quand on décoche la première.",
+  )
+  .appliesWhen(servie.checked("glacee").or(servie.checked("grande-tasse")))
+  .shownUnder(SERVICE, "glacee")
+  .shownUnder(SERVICE, "grande-tasse");

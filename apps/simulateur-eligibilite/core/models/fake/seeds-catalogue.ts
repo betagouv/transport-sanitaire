@@ -114,6 +114,18 @@ export const SEEDS: readonly Seed<Questions, Cibles>[] = [
     expected: {},
   },
   {
+    id: "service-avec-sous-verre",
+    label: "Service : une question sous deux options",
+    description:
+      "S'arrête sur la façon de servir, un thé glacé dans une grande tasse : « Avec un sous-verre ? » s'affiche sous « Glacée », cochée la première. Décocher « Glacée » la fait passer sous « Dans une grande tasse », sa réponse gardée.",
+    answers: {
+      boisson: "the",
+      accompagnements: ["aucun"],
+      service: ["glacee", "grande-tasse"],
+    },
+    expected: {},
+  },
+  {
     id: "mignardise-au-service",
     label: "Service : une question à deux places, posée à la seconde",
     description:

@@ -3,10 +3,10 @@
 // (`question/declared/question.vo.ts`).
 
 import type { Condition } from "../../conditions/reading.vo.ts";
-import type { ShownUnder } from "../asked/common.vo.ts";
 import type { Pipeline, QuestionContext } from "../asked/context.vo.ts";
 import type { Dependency } from "../dependency.vo.ts";
 import type { AnyQuestions, Reminder } from "../question.types.ts";
+import type { Anchors } from "./anchors.vo.ts";
 import type { Inconsistencies } from "./inconsistencies.vo.ts";
 
 /** Rien de calculé : le rappel fixe de `reminder` vaut. */
@@ -29,7 +29,8 @@ export type CommonSettings<Questions extends AnyQuestions, Cibles, Faits> = {
   readonly alwaysAsked?: boolean;
   /** Une place suivante : la question y est déjà déclarée plus tôt. */
   readonly laterPlace?: boolean;
-  readonly under?: ShownUnder;
+  /** Les réponses sous lesquelles elle s'affiche (`shownUnder`). */
+  readonly under?: Anchors;
   labelFrom?(context: QuestionContext<Questions, Cibles, Faits>): string;
   hintFrom?(context: QuestionContext<Questions, Cibles, Faits>): string;
   reminderFrom?(

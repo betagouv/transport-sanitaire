@@ -37,7 +37,7 @@ export {
   type AnswerProblem,
   MISSING,
 } from "./question/asked/answer-problem.vo.ts";
-export type { Revisit } from "./question/asked/common.vo.ts";
+export type { Revisit, ShownUnder } from "./question/asked/common.vo.ts";
 export { QuestionContext } from "./question/asked/context.vo.ts";
 export {
   type AskedQuestion,

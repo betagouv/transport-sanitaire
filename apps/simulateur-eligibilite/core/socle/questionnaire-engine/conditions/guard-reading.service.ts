@@ -18,6 +18,8 @@ type Guards<Faits, Cibles> = {
   /** Les incohérences : ce qu'elles lisent, réponses à revoir comprises. */
   readonly inconsistencies: { readonly guards: readonly Reading<unknown>[] };
   readonly requiredWhen?: Condition;
+  /** Les places de la question sous une réponse, et ce qui les restreint. */
+  readonly under?: { readonly conditions: readonly Condition[] };
 };
 
 export class GuardReadingService<Faits, Cibles> {
@@ -28,17 +30,19 @@ export class GuardReadingService<Faits, Cibles> {
   }
 
   /**
-   * Lit d'avance chaque question que citent les conditions, les incohérences,
-   * les réponses qu'elles invitent à revoir et ce qui rend la réponse
-   * obligatoire. Une question suivante arrête tout, même si la condition est
-   * fausse : sans ça, l'erreur ne se verrait que dans certains parcours.
+   * Lit d'avance chaque question que citent les conditions, celles de ses
+   * places sous une réponse, les incohérences, les réponses qu'elles invitent
+   * à revoir et ce qui rend la réponse obligatoire. Une question suivante
+   * arrête tout, même si la condition est fausse : sans ça, l'erreur ne se
+   * verrait que dans certains parcours.
    */
   checkReads<Questions extends AnyQuestions>(
     seen: SeenAnswers<Questions, Cibles | undefined>,
     earlier: SeenAnswers<Questions, Cibles | undefined>,
   ): void {
-    const { conditions, inconsistencies, requiredWhen } = this.#guards;
-    for (const id of readIds(conditions)) seen.answer(id);
+    const { conditions, inconsistencies, requiredWhen, under } = this.#guards;
+    const places = under?.conditions ?? [];
+    for (const id of readIds([...conditions, ...places])) seen.answer(id);
     const required = requiredWhen ? [requiredWhen] : [];
     for (const id of readIds([...inconsistencies.guards, ...required]))
       earlier.answer(id);
