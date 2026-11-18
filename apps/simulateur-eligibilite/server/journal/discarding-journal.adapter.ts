@@ -3,8 +3,9 @@
 // que la mémoire du serveur ne grossisse pas avec le trafic.
 
 import type { Journal, NotInTheJournal } from "./journal.port.ts";
+import type { JournalPage, JournalPages } from "./journal-pages.port.ts";
 
-export class DiscardingJournal implements Journal {
+export class DiscardingJournal implements Journal, JournalPages {
   async find(): Promise<NotInTheJournal> {
     return undefined;
   }
@@ -18,4 +19,8 @@ export class DiscardingJournal implements Journal {
   async setAside(): Promise<void> {}
 
   async quarantine(): Promise<void> {}
+
+  async pageAfter(): Promise<JournalPage> {
+    return { entries: [], next: null };
+  }
 }

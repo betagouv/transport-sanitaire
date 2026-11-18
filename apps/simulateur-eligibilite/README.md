@@ -79,6 +79,7 @@ jamais exposées au front.
 | `GRIST_API_KEY` | serveur | **prod** | référentiel **snapshot factice** (dev/CI) | Clé API Grist source du référentiel (établissements/services). Jamais exposée au front. |
 | `GRIST_DOC_URL` | serveur | **prod** | référentiel **snapshot factice** (dev/CI) | Base API du doc Grist du référentiel, lu et complété avec la clé. |
 | `SCALINGO_POSTGRESQL_URL` | serveur | non | aucun | URL de la base PostgreSQL du journal des parcours, posée par l'addon PostgreSQL de Scalingo. Sans elle, le serveur accepte les événements sans en garder aucun, et le signale au démarrage. Les tables `journal_events`, `journal_collisions` et `journal_quarantine` se créent à la première écriture (ADR-0043). |
+| `JOURNAL_READ_TOKEN` | serveur | non | pas de lecture | Jeton du tableau de bord qui lit le journal : `GET /api/journal/v1/events?after=<curseur>&limit=<1..1000>`, avec `Authorization: Bearer <jeton>`. La réponse donne `entries` et `next`, le curseur de la page suivante, `null` en fin de journal. Au moins 32 caractères (`openssl rand -hex 32`). Sans lui, la route n'existe pas. |
 | `APP` | serveur | non | `local` | Nom de l'app Scalingo, posé par Scalingo. Écrit comme `environment` de chaque événement du journal. |
 | `CONTAINER_VERSION` | serveur | non | commit `inconnu` | Commit déployé, posé par Scalingo sur le conteneur. Écrit, sur 7 caractères, sur le signe de vie horaire du journal. |
 | `VITE_MATOMO_ENABLED` | front | non | `false` (traceur no-op) | Active le tracking Matomo. Actif d'office en build de prod ; à mettre à `true` pour tester en local. |
@@ -350,9 +351,11 @@ Scalingo construit et sert cette app, et déploie depuis `main`.
    demande chaque heure à la production si le journal porte son signe de vie
    (`GET /api/journal/v1/alive`), et échoue sinon : GitHub prévient par
    courriel (ADR-0051).
-5. **Tenir la variable de production**, `GRIST_API_KEY`. Elle n'a pas de défaut, et le
+5. **Brancher l'addon PostgreSQL.** Il pose `SCALINGO_POSTGRESQL_URL`, la base du
+   journal des parcours ; les tables se créent à la première écriture.
+6. **Tenir la variable de production**, `GRIST_API_KEY`. Elle n'a pas de défaut, et le
    serveur refuse de démarrer sans elle (cf. [Configuration](#configuration)).
-6. **Relire le pied de page en production.** Il annonce la version de l'app et le sha du
+7. **Relire le pied de page en production.** Il annonce la version de l'app et le sha du
    commit livré.
 
 Trois fichiers de la racine portent ce déploiement :

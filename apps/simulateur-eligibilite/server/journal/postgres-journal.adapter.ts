@@ -18,8 +18,14 @@ import type {
   QuarantineReason,
 } from "./journal.port.ts";
 import { JournalEntry } from "./journal-entry.entity.ts";
+import type {
+  Cursor,
+  FromTheStart,
+  JournalPage,
+  JournalPages,
+} from "./journal-pages.port.ts";
 
-export class PostgresJournal implements Journal {
+export class PostgresJournal implements Journal, JournalPages {
   readonly #sql: Sql;
   #tables: Promise<void> | undefined;
 
@@ -62,6 +68,20 @@ export class PostgresJournal implements Journal {
       `INSERT INTO ${QUARANTINE} (${COLUMNS}, reason) VALUES (${placeholders(values)})`,
       values,
     );
+  }
+
+  // Le curseur est l'id de la ligne, que la base attribue dans l'ordre des
+  // écritures.
+  async pageAfter(
+    after: Cursor | FromTheStart,
+    size: number,
+  ): Promise<JournalPage> {
+    const rows = await this.#select("WHERE id > $1 ORDER BY id LIMIT $2", [
+      after ?? "0",
+      size,
+    ]);
+    const last = rows.length === size ? rows.at(-1) : undefined;
+    return { entries: rows.map(entryOf), next: last?.cursor ?? null };
   }
 
   async #select(where: string, params: unknown[]): Promise<StoredRow[]> {
@@ -164,13 +184,16 @@ function valuesOf(entry: JournalEntry): unknown[] {
   ];
 }
 
-const placeholders = (values: unknown[]) =>
-  values.map((_, i) => `$${i + 1}`).join(", ");
+function placeholders(values: unknown[]): string {
+  return values.map((_, i) => `$${i + 1}`).join(", ");
+}
 
 // Ce qu'une ligne relue rend à l'entrée.
-const STORED = "payload, received_at, environment, commit_sha, schema_version";
+const STORED =
+  "id::text AS cursor, payload, received_at, environment, commit_sha, schema_version";
 
 type StoredRow = {
+  cursor: Cursor;
   payload: JournalEntry["event"];
   received_at: Date;
   environment: string;

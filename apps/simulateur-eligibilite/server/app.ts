@@ -18,7 +18,7 @@ export type AppOptions = {
 };
 
 export function creerApp(
-  { referentiel, journalController }: Container,
+  { referentiel, journalController, journalReadingController }: Container,
   { dossierDist, writeLimits }: AppOptions = {},
 ): Express {
   const app = express();
@@ -29,6 +29,9 @@ export function creerApp(
 
   app.use("/api", rattachementRoutes(referentiel));
   app.use("/api", journalController.routes());
+  if (journalReadingController) {
+    app.use("/api", journalReadingController.routes());
+  }
   // Toute autre route sous /api rend un 404 JSON, pour éviter de servir
   // index.html.
   app.use("/api", (_req, res) => {

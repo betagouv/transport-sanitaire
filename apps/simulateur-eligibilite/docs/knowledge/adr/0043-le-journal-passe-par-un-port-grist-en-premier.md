@@ -101,3 +101,10 @@ Le rattachement n'est pas encore découpé ainsi : il le sera sur ce modèle.
 > `JOURNAL_GRIST_DOC_URL`, et l'adaptateur Grist du journal est retiré : la bascule
 > est nette, sans reprise de l'historique de « Simulateur-Parcours ». Cela **remplace**
 > Grist comme adaptateur du journal ; le référentiel reste dans Grist.
+>
+> Le journal se relit aussi : un second port, `JournalPages`, donne les entrées dans
+> l'ordre d'arrivée, par curseur et non par numéro de page, car le journal grossit
+> pendant qu'on le lit. Le use case `ReadAPage` borne la page à 1 000 entrées ;
+> `JournalReadingController` sert `GET /api/journal/v1/events` au tableau de bord,
+> derrière un jeton partagé (`JOURNAL_READ_TOKEN`). Sans jeton, la route n'est pas
+> montée.

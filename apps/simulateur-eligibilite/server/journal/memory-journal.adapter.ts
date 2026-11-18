@@ -7,8 +7,14 @@ import type {
   QuarantineReason,
 } from "./journal.port.ts";
 import type { JournalEntry } from "./journal-entry.entity.ts";
+import type {
+  Cursor,
+  FromTheStart,
+  JournalPage,
+  JournalPages,
+} from "./journal-pages.port.ts";
 
-export class MemoryJournal implements Journal {
+export class MemoryJournal implements Journal, JournalPages {
   readonly collisions: JournalEntry[] = [];
   readonly quarantined: { entry: JournalEntry; reason: QuarantineReason }[] =
     [];
@@ -29,6 +35,17 @@ export class MemoryJournal implements Journal {
 
   async append(entry: JournalEntry): Promise<void> {
     this.#entries.set(entry.eventId, entry);
+  }
+
+  // Le curseur est le rang de la dernière entrée lue.
+  async pageAfter(
+    after: Cursor | FromTheStart,
+    size: number,
+  ): Promise<JournalPage> {
+    const start = Number(after ?? 0);
+    const entries = [...this.#entries.values()].slice(start, start + size);
+    const full = entries.length === size;
+    return { entries, next: full ? String(start + size) : null };
   }
 
   async setAside(collision: JournalEntry): Promise<void> {
