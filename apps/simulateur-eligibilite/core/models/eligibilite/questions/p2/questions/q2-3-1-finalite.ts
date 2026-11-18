@@ -6,9 +6,11 @@
 //
 // Elle a deux places, comme l'urgence (ADR-0040) : la page du trajet, après la
 // distance et la série, qui peut la rendre inutile, avant l'urgence ; puis
-// celle de la branche, si le trajet ne l'a pas posée.
+// celle de la branche, si le trajet ne l'a pas posée. Sur le trajet, elle
+// s'affiche dans le panneau de « Plus de 150 km. » (NAV-PANNEAUX-GENERAL-20261116).
 
 import { given, question } from "../../question.ts";
+import { Q2_3_1 } from "./q2-3-1.ts";
 
 export const Q2_3_1_FINALITE = question
   .singleChoice(
@@ -19,4 +21,5 @@ export const Q2_3_1_FINALITE = question
     "1_OUI": "Oui.",
     "2_NON": "Non.",
   })
-  .mattersWhile(given.cible("cible_finalite_longue_distance_decisive").isOui());
+  .mattersWhile(given.cible("cible_finalite_longue_distance_decisive").isOui())
+  .shownUnder(Q2_3_1, "3_PLUS_DE_CENT_CINQUANTE_KM");

@@ -26,4 +26,5 @@ export const Q2_3_2_TERRESTRE = question
     "Par exemple, en voiture, transports en commun, taxi/VSL, TPMR ou ambulance, pour rejoindre ou quitter l’aéroport ou le port.",
   )
   .appliesWhen(given.question(Q2_3_2).answer().is(true))
-  .dependsOn(Q2_3_2);
+  .dependsOn(Q2_3_2)
+  .shownUnder(Q2_3_2);
