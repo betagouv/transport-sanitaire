@@ -30,7 +30,12 @@ export function useFocusReturn(): (event: FocusEvent<HTMLElement>) => void {
 
 // ---- implémentation ----
 
-function focusedIn(field: Element): Focused | undefined {
+/** Le champ focalisé n'est dans aucun panneau. */
+type OutsideAPanel = undefined;
+/** Aucun champ ne précède le panneau. */
+type NoTrigger = undefined;
+
+function focusedIn(field: Element): Focused | OutsideAPanel {
   const panel = field.closest(".socle-conditional-panel");
   const trigger = panel && triggerOf(panel);
   return trigger ? { field, trigger } : undefined;
@@ -39,7 +44,7 @@ function focusedIn(field: Element): Focused | undefined {
 // La réponse qui ouvre un panneau : le premier champ qui le précède, dans
 // l'option, la case ou la liste qu'il suit. L'aide d'une option, entre les
 // deux, n'a pas de champ.
-function triggerOf(panel: Element): HTMLElement | undefined {
+function triggerOf(panel: Element): HTMLElement | NoTrigger {
   for (
     let sibling = panel.previousElementSibling;
     sibling !== null;

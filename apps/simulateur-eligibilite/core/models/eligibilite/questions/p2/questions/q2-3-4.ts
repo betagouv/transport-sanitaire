@@ -18,9 +18,6 @@ import { Q2_3_1 } from "./q2-3-1.ts";
 import { Q2_3_2 } from "./q2-3-2.ts";
 import { Q2_14_ELOIGNEMENT, Q2_14_MOTIF } from "./q2-14.ts";
 
-const motif = (cible: Parameters<typeof given.cible>[0]) => ({
-  while: given.cible(cible).isOui(),
-});
 const serie = motif("cible_dap_motif_serie");
 const maternite = motif("cible_dap_motif_engagement_maternite");
 
@@ -42,3 +39,10 @@ export const Q2_3_4 = question
   .shownUnder(Q2_14_ELOIGNEMENT, "1_PLUS_DE_QUARANTE_CINQ_MINUTES", maternite)
   .shownUnder(Q2_14_ELOIGNEMENT, "2_COMMUNE_DESIGNEE_PAR_L_ARS", maternite)
   .shownUnder(Q2_14_MOTIF, "2_HEBERGEMENT_ENGAGEMENT", maternite);
+
+// ---- implémentation ----
+
+// Une place qui ne vaut que tant que ce motif d'accord préalable tient.
+function motif(cible: Parameters<typeof given.cible>[0]) {
+  return { while: given.cible(cible).isOui() };
+}
