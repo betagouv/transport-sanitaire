@@ -7,6 +7,40 @@ commit lui-même.
 Le simulateur affiche en bas de page la version qu'il exécute, le commit déployé
 et la version du modèle de règles.
 
+## [1.3.0](https://github.com/betagouv/transport-sanitaire/releases/tag/simulateur-eligibilite%401.3.0), 18 novembre 2026
+
+Le journal des parcours passe de Grist à PostgreSQL, avec une lecture ouverte
+au futur tableau de bord, et chaque question s'ouvre sous la réponse qui la
+déclenche. 9 commits depuis la 1.2.0.
+
+### TL;DR
+
+- Le journal des parcours s'écrit dans la base PostgreSQL de Scalingo (`SCALINGO_POSTGRESQL_URL`) et plus dans Grist ; ses tables se créent au démarrage, sans reprise de l'historique.
+- Le tableau de bord lit le journal page par page par `GET /api/journal/v1/events`, avec le jeton `JOURNAL_READ_TOKEN`.
+- Une réponse choisie ouvre juste sous elle le panneau des questions qu'elle déclenche, en P2 comme en P3.
+- Q3.4 ne demande plus de précision libre sur le soin et le trajet.
+
+### ✨ Nouveautés
+
+- [2bc36f6](https://github.com/betagouv/transport-sanitaire/commit/2bc36f6) : écrit le journal des parcours dans PostgreSQL : un nouvel adaptateur du port, trois tables créées à la première requête, l'événement entier en `jsonb` ; `SCALINGO_POSTGRESQL_URL` remplace `JOURNAL_GRIST_DOC_URL`, et l'adaptateur Grist du journal est retiré.
+- [fef48fa](https://github.com/betagouv/transport-sanitaire/commit/fef48fa) : ouvre la lecture du journal au tableau de bord : `GET /api/journal/v1/events`, page par page par curseur, derrière le jeton `JOURNAL_READ_TOKEN` ; sans jeton, la route n'existe pas.
+- [5505ce3](https://github.com/betagouv/transport-sanitaire/commit/5505ce3) : ouvre le panneau d'une question sous chacun de ses déclencheurs : une question à plusieurs déclencheurs se pose sous le premier devenu effectif, et passe sous le suivant, sa réponse gardée, quand on retire le sien.
+- [be0602a](https://github.com/betagouv/transport-sanitaire/commit/be0602a) : place les questions de P2 sous leur déclencheur, d'après l'inventaire des panneaux de l'éditeur ; l'urgence, Q2.3.4, a une place par motif d'accord préalable.
+- [131eea4](https://github.com/betagouv/transport-sanitaire/commit/131eea4) : place les champs de P3 sous leur déclencheur : le nombre de trajets sous le sens choisi, les champs d'un lieu sous sa catégorie, au départ comme à l'arrivée.
+- [f250c1a](https://github.com/betagouv/transport-sanitaire/commit/f250c1a) : retire la précision générique facultative de Q3.4 : le prescripteur réécrit la cellule médicale en R3 s'il veut préciser.
+
+### ♻️ Sous le capot
+
+- [321d330](https://github.com/betagouv/transport-sanitaire/commit/321d330) : nomme les absences des panneaux et hisse l'aide de Q2.3.4, pour les règles de lisibilité.
+
+### ✅ Tests
+
+- [7b6b11f](https://github.com/betagouv/transport-sanitaire/commit/7b6b11f) : rapporte les 63 lignes de l'inventaire des panneaux de l'éditeur aux questions du modèle : aucune question n'en sort, sauf le côté de l'USLD ou de l'EHPAD.
+
+### 📝 Documentation
+
+- [50ee29b](https://github.com/betagouv/transport-sanitaire/commit/50ee29b) : note le retrait de la précision générique de Q3.4 au journal des décisions (D-305).
+
 ## [1.2.0](https://github.com/betagouv/transport-sanitaire/releases/tag/simulateur-eligibilite%401.2.0), 17 novembre 2026
 
 Le modèle v10.2.1 puis v10.2.2 de l'éditeur, la réécriture des textes qui ne
