@@ -63,4 +63,9 @@ export const Q3_1_1 = question
   .min(1)
   .mattersWhile(uneQuantiteAPoser)
   // Un autre sens change l'unité : le nombre se ressaisit.
-  .dependsOn(Q3_1_2);
+  .dependsOn(Q3_1_2)
+  // Sous le sens choisi sur la page (NAV-PANNEAUX-20261116). Le sens de
+  // Q2.13 ne se choisit pas ici : le nombre se pose alors à son rang.
+  .shownUnder(Q3_1_2, "1_ALLER")
+  .shownUnder(Q3_1_2, "2_RETOUR")
+  .shownUnder(Q3_1_2, "3_ALLER_RETOUR_EQUIVALENT");
