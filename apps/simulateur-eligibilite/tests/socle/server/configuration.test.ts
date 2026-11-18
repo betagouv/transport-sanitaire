@@ -52,20 +52,18 @@ describe("configuration du serveur en production", () => {
     expect(config.port).toBe(3000);
   });
 
-  it("garde le journal en mémoire tant que son doc n'est pas donné", () => {
+  it("ne garde aucun événement du journal tant que sa base n'est pas donnée", () => {
     const config = lireConfiguration(COMPLET);
     expect(config.journal).toBeUndefined();
   });
 
-  it("écrit le journal dans le doc donné, avec la clé Grist", () => {
+  it("écrit le journal dans la base que pose l'addon PostgreSQL", () => {
+    const base = "postgres://u:p@db.example:5432/journal?sslmode=prefer";
     const config = lireConfiguration({
       ...COMPLET,
-      JOURNAL_GRIST_DOC_URL: "https://grist.example/api/docs/journal",
+      SCALINGO_POSTGRESQL_URL: base,
     });
-    expect(config.journal).toEqual({
-      cleApi: CLE,
-      docUrl: "https://grist.example/api/docs/journal",
-    });
+    expect(config.journal).toBe(base);
   });
 
   it("écrit le nom de l'app Scalingo comme environnement du journal", () => {

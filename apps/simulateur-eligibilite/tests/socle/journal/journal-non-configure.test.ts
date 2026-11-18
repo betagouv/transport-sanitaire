@@ -1,6 +1,6 @@
 // @vitest-environment node
 //
-// Sans `JOURNAL_GRIST_DOC_URL`, en staging comme en développement, le serveur
+// Sans `SCALINGO_POSTGRESQL_URL`, en staging comme en développement, le serveur
 // accepte les événements mais n'en garde aucun : la mémoire du serveur ne grossit
 // pas avec le trafic. Voir ADR-0043.
 
@@ -9,7 +9,7 @@ import { adaptersFor } from "../../../server/container.ts";
 import { JournalEntry } from "../../../server/journal/journal-entry.entity.ts";
 import { BUILD, simulationStarted } from "./evenements.ts";
 
-describe("le journal, sans doc Grist configuré", () => {
+describe("le journal, sans base configurée", () => {
   it("ne garde aucun événement", async () => {
     const { journal } = adaptersFor({
       port: 3000,

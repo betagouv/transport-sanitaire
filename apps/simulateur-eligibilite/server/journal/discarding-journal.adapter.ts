@@ -1,4 +1,4 @@
-// Le journal qui ne garde rien : celui du serveur sans doc Grist, en staging
+// Le journal qui ne garde rien : celui du serveur sans base, en staging
 // comme en développement. Il accepte chaque événement et l'oublie aussitôt, pour
 // que la mémoire du serveur ne grossisse pas avec le trafic.
 

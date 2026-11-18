@@ -1,6 +1,6 @@
 // Le port du journal des parcours : ce que la collecte attend d'un stockage.
-// Il ne dit ni table, ni colonne, ni JSON. Grist en est le premier adaptateur
-// (`grist-journal.adapter.ts`), la mémoire le second
+// Il ne dit ni table, ni colonne, ni JSON. PostgreSQL en est l'adaptateur
+// (`postgres-journal.adapter.ts`), après Grist, et la mémoire celui des tests
 // (`memory-journal.adapter.ts`). Voir ADR-0043.
 
 import type { JournalEntry } from "./journal-entry.entity.ts";

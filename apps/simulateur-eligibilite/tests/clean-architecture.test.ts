@@ -57,18 +57,34 @@ describe("le sens des dépendances", () => {
 });
 
 describe("le journal des parcours", () => {
-  it("seul l'adaptateur Grist du journal connaît Grist", () => {
+  it("seul l'adaptateur PostgreSQL du journal connaît la base", () => {
     const fautifs = sources("server/journal").filter(
       (f) =>
-        f !== "server/journal/grist-journal.adapter.ts" &&
-        importsDe(f).some((cible) => cible.startsWith("server/grist/")),
+        f !== "server/journal/postgres-journal.adapter.ts" &&
+        importsDe(f).some(
+          (cible) =>
+            cible.startsWith("server/postgres/") ||
+            cible.startsWith("server/grist/"),
+        ),
     );
     expect(
       fautifs,
       "Le journal des parcours est derrière un port, `server/journal/journal.port.ts` " +
-        "(ADR-0043) : Grist n'est que son premier " +
-        "adaptateur, et changera. Le reste du journal ne connaît ni Grist ni ses " +
-        "types : passe par le port, ou ajoute ce qui manque à l'adaptateur.",
+        "(ADR-0043) : PostgreSQL n'est que son adaptateur du moment, après " +
+        "Grist. Le reste du journal ne connaît ni la base ni ses types : passe " +
+        "par le port, ou ajoute ce qui manque à l'adaptateur.",
+    ).toEqual([]);
+  });
+
+  it("seul le client PostgreSQL importe le pilote de la base", () => {
+    const fautifs = sources("server")
+      .filter((f) => f !== "server/postgres/postgres.client.ts")
+      .filter((f) => paquetsDe(f).some((paquet) => paquet === "pg"));
+    expect(
+      fautifs,
+      "Le pilote `pg` reste derrière `server/postgres/postgres.client.ts`, " +
+        "comme Grist derrière son client : un adaptateur reçoit `Sql`, que " +
+        "la base des tests (PGlite) remplit aussi.",
     ).toEqual([]);
   });
 
