@@ -28,6 +28,9 @@ type OpenedPage = {
   readonly questions: readonly AskedQuestion[];
 };
 
+/** La question s'affiche à son rang : aucune de ses places n'est effective. */
+type InPlace = undefined;
+
 export class Placement {
   static none(): Placement {
     return new Placement([], new Map());
@@ -90,7 +93,7 @@ export class Placement {
     return other.#key() === this.#key();
   }
 
-  #placeOf({ id }: AskedQuestion): ShownUnder | undefined {
+  #placeOf({ id }: AskedQuestion): ShownUnder | InPlace {
     return this.#effective.get(id)?.[0];
   }
 
