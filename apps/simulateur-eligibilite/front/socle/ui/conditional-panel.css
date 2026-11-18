@@ -10,6 +10,12 @@
   background-color: var(--background-alt-grey);
 }
 
+/* Sous une liste déroulante, le panneau ne s'aligne sur aucun libellé
+   d'option : 24 px de retrait (NAV-PANNEAUX-GENERAL-20261116). */
+.fr-select-group > .socle-conditional-panel {
+  margin-left: 1.5rem;
+}
+
 /* L'option qui l'ouvre ne garde pas sa marge du dessous. */
 .fr-fieldset
   .fr-fieldset__content
@@ -64,7 +70,8 @@
 }
 
 @media (max-width: 35.99em) {
-  .socle-conditional-panel {
+  .socle-conditional-panel,
+  .fr-select-group > .socle-conditional-panel {
     margin-bottom: 1rem;
     margin-left: 1rem;
     padding: 0.75rem;

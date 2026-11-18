@@ -9,27 +9,24 @@
 // (NAV-Q221-PROGRESSIF-001). Une page qu'un lien « Revoir… » rouvre donne le
 // focus à la question qu'il vise (ADR-0041).
 
-import type { ComponentType, ReactNode } from "react";
+import type { ComponentType, FormEvent } from "react";
 import type {
   Answers,
   AnyCibles,
-  AskedQuestion,
   QuestionnairePart,
   Validated,
 } from "../../../core/socle/questionnaire-engine";
 
-import { ConditionalPanel } from "../ui";
-import { type CounterOf, counted } from "./count-a-text";
-import { QuestionField } from "./QuestionField";
+import type { CounterOf } from "./count-a-text";
+import { QuestionFields } from "./QuestionFields";
 import type {
   QuestionnaireOptions,
   QuestionnaireScreen,
 } from "./questionnaire";
 import { useQuestionnaire } from "./questionnaire";
-import type { RevisitLink } from "./revisit-an-answer";
+import { useFocusReturn } from "./return-the-focus";
 import { NextStep, Stepper } from "./Stepper";
 import { scrollToTheTop } from "./scroll-to-the-top";
-import { errorsOf } from "./word-a-problem";
 
 type Props = QuestionnaireOptions & {
   // Les parties de ce questionnaire, dans l'ordre : celles de l'étape de la
@@ -81,6 +78,7 @@ export function QuestionnaireForm({
   ...options
 }: Props) {
   const questionnaire = useQuestionnaire(options);
+  const pageForm = usePageForm(questionnaire);
   const part = parts.findIndex((p) => p.pages.includes(questionnaire.page));
   const stepper = { parts, part, partsBefore, partCount };
 
@@ -92,12 +90,7 @@ export function QuestionnaireForm({
         data-focus={questionnaire.focus}
       >
         <PartStepper {...stepper} />
-        <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            questionnaire.next();
-          }}
-        >
+        <form {...pageForm}>
           <QuestionFields questionnaire={questionnaire} counterOf={counterOf} />
           <NavigationButtons
             questionnaire={questionnaire}
@@ -112,6 +105,17 @@ export function QuestionnaireForm({
 }
 
 // ---- implémentation ----
+
+// « Suivant » valide la page ; le focus d'un champ retiré de son panneau revient
+// à la réponse qui l'ouvrait.
+function usePageForm(questionnaire: QuestionnaireScreen) {
+  const onFocus = useFocusReturn();
+  const onSubmit = (event: FormEvent) => {
+    event.preventDefault();
+    questionnaire.next();
+  };
+  return { onFocus, onSubmit };
+}
 
 // L'écran d'une page vient d'apparaître : il revient en haut d'un coup, ce qui
 // respecte la réduction des animations, puis le titre de la première question
@@ -162,88 +166,6 @@ function traceOf(questionnaire: QuestionnaireScreen): DebugTraceProps {
     answers: questionnaire.answers,
     validated: questionnaire.validated,
   };
-}
-
-// La page affiche son brouillon : une saisie ne compte qu'une fois la page
-// validée. Une erreur de saisie s'affiche aussitôt, une incohérence au clic sur
-// « Suivant ». Une question en erreur montre ses liens vers les réponses à
-// revoir.
-// Une question qui s'affiche sous une réponse possible (`shownUnder`) se pose
-// dans son panneau, si celle-ci est sur la page ; sinon, à son rang.
-function QuestionFields({
-  questionnaire,
-  counterOf,
-}: {
-  questionnaire: QuestionnaireScreen;
-  counterOf?: CounterOf;
-}) {
-  const { questions, draft } = questionnaire;
-  const parentOf = (question: AskedQuestion) =>
-    questions.find(({ id }) => id === question.under?.question);
-  const field = (question: AskedQuestion): ReactNode => {
-    const answer = draft[question.id];
-    const counter = counted(counterOf, question.id, answer);
-    const errors = [
-      ...errorsOf(question, answer, questionnaire.showsInconsistencies),
-      ...counter.errors,
-    ];
-    const links = errors.length > 0 ? questionnaire.revisitsOf(question) : [];
-    return (
-      <QuestionField
-        key={question.id}
-        question={question}
-        answer={answer}
-        errors={errors}
-        counter={counter.text}
-        onChange={(answer) => questionnaire.answer(question.id, answer)}
-        below={(value) => {
-          const nested = questions.filter(shownUnder(question, value));
-          return nested.length > 0 ? (
-            <ConditionalPanel>{nested.map(field)}</ConditionalPanel>
-          ) : null;
-        }}
-        after={<RevisitLinks links={links} onOpen={questionnaire.revisit} />}
-      />
-    );
-  };
-  return questions.filter((question) => !parentOf(question)).map(field);
-}
-
-// Les questions qui s'affichent sous cette réponse possible de `parent`.
-function shownUnder(parent: AskedQuestion, value: string) {
-  return ({ under }: AskedQuestion) =>
-    under?.question === parent.id && under.possibleAnswer === value;
-}
-
-// Les liens vers les réponses d'avant à revoir. Ce sont de vraies adresses :
-// on peut les ouvrir au clavier, et le bouton Retour du navigateur en revient.
-// Le clic passe par la simulation, qui garde le brouillon de la page quittée.
-function RevisitLinks({
-  links,
-  onOpen,
-}: {
-  links: readonly RevisitLink[];
-  onOpen: (question: string) => void;
-}) {
-  if (links.length === 0) return null;
-  return (
-    <ul className="fr-links-group fr-mt-1w">
-      {links.map(({ label, href, question }) => (
-        <li key={question}>
-          <a
-            className="fr-link"
-            href={href}
-            onClick={(event) => {
-              event.preventDefault();
-              onOpen(question);
-            }}
-          >
-            {label}
-          </a>
-        </li>
-      ))}
-    </ul>
-  );
 }
 
 function NavigationButtons({

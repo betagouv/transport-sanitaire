@@ -1,5 +1,6 @@
 // Une liste déroulante : le `fr-select` du DSFR.
 
+import type { ReactNode } from "react";
 import { ErrorLines } from "./ErrorLines";
 
 type Props = {
@@ -16,6 +17,11 @@ type Props = {
   errors?: readonly string[];
   /** Met le libellé en avant, quand le champ est la question de la page. */
   lead?: boolean;
+  /**
+   * Ce qui s'affiche juste sous la liste : les questions de l'option choisie,
+   * dans leur panneau (`ConditionalPanel`).
+   */
+  below?: ReactNode;
 };
 
 export function SelectField(props: Props) {
@@ -40,6 +46,7 @@ export function SelectField(props: Props) {
           <ErrorLines errors={props.errors} />
         </p>
       )}
+      {props.below}
     </div>
   );
 }

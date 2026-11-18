@@ -4,6 +4,7 @@
 // reprend les classes du groupe du DSFR, sans en être un : une case seule n'a
 // pas de légende, et son nom lui vient de son propre libellé.
 
+import type { ReactNode } from "react";
 import "./checkbox-card.css";
 
 type Props = {
@@ -14,6 +15,11 @@ type Props = {
   onChange: (checked: boolean) => void;
   /** Un message par ligne, sous la case. */
   errors?: readonly string[];
+  /**
+   * Ce qui s'affiche juste sous la case cochée : ses questions, dans leur
+   * panneau (`ConditionalPanel`).
+   */
+  below?: ReactNode;
 };
 
 export function LoneCheckbox(props: Props) {
@@ -41,6 +47,7 @@ export function LoneCheckbox(props: Props) {
             {props.hint && <span className="fr-hint-text">{props.hint}</span>}
           </label>
         </div>
+        {props.below}
       </div>
       <Messages id={`${id}-messages`} errors={errors} />
     </div>

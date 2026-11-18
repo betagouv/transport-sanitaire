@@ -16,7 +16,7 @@
 import { GuardReadingService } from "../../conditions/guard-reading.service.ts";
 import type { Condition, Reading, Text } from "../../conditions/reading.vo.ts";
 import { Reads } from "../../conditions/reads.vo.ts";
-import type { AskedCommonData, InPlace, Revisit } from "../asked/common.vo.ts";
+import type { AskedCommonData, Revisit } from "../asked/common.vo.ts";
 import type { QuestionContext, SeenAnswers } from "../asked/context.vo.ts";
 import type { AskedQuestion } from "../asked/question.vo.ts";
 import { Dependency, type DependsOn } from "../dependency.vo.ts";
@@ -29,6 +29,7 @@ import type {
   Reminder,
 } from "../question.types.ts";
 import { QuestionId } from "../question-id.vo.ts";
+import { Anchors, type UnderArgs } from "./anchors.vo.ts";
 import type { CommonSettings, NothingComputed } from "./settings.types.ts";
 
 /**
@@ -132,24 +133,22 @@ export abstract class DeclaredQuestion<
   }
 
   /**
-   * La question s'affiche juste sous cette réponse possible d'une liste de
-   * cases de la même page, et non à son rang. Elle reste une question à part,
-   * avec sa légende : sa garde se déclare toujours par `appliesWhen`.
+   * La question s'affiche juste sous cette réponse d'une question d'avant de
+   * la page (`anchors.vo.ts`), et non à son rang. Elle reste une question à
+   * part : sa garde se déclare toujours par `appliesWhen` ou `mattersWhile`.
    */
   shownUnder<Ref extends QuestionRef<Questions>>(
     question: Ref,
-    possibleAnswer: AnswerOfRef<Questions, Ref> extends readonly (infer O)[]
-      ? O & string
-      : never,
+    ...where: UnderArgs<AnswerOfRef<Questions, Ref>>
   ): this {
-    return this.withSettings({
-      under: { question: QuestionId.of(question).value, possibleAnswer },
-    });
+    const under = this.settings.under ?? Anchors.none();
+    const id = QuestionId.of(question).value;
+    return this.withSettings({ under: under.with(id, where) });
   }
 
-  /** La question qui l'affiche sous une réponse possible (`shownUnder`). */
-  get shownUnderQuestion(): string | InPlace {
-    return this.settings.under?.question;
+  /** Les réponses sous lesquelles elle peut s'afficher (`shownUnder`). */
+  get places(): Anchors["places"] {
+    return this.settings.under?.places ?? [];
   }
 
   /**
@@ -288,7 +287,7 @@ export abstract class DeclaredQuestion<
       reminder: settings.reminderFrom?.(context) ?? settings.reminder,
       optional:
         settings.optional === true && !settings.requiredWhen?.in(earlier),
-      under: settings.under,
+      under: settings.under?.in(context),
       inconsistencies: messages,
       revisits,
     };

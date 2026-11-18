@@ -60,8 +60,9 @@ export class DeclaredPage<
 
 /**
  * La page `id`, avec ces questions dans cet ordre. Une question qui s'affiche
- * sous une réponse possible (`shownUnder`) suit la liste de cette réponse
- * possible, sur la page.
+ * sous une réponse (`shownUnder`) suit la question de cette réponse, si elle
+ * est sur la page. Une réponse d'une autre page ne la place pas : sur celle-ci,
+ * elle s'affiche à son rang.
  */
 export function page<
   Questions extends AnyQuestions,
@@ -72,13 +73,13 @@ export function page<
   id: string,
   ...questions: Declared & readonly AnyDeclared<Questions, Cibles, Faits>[]
 ): DeclaredPage<Questions, Cibles, Faits, Declared[number]> {
+  const ids = questions.map((question) => question.id);
   questions.forEach((question, rang) => {
-    const parent = question.shownUnderQuestion;
-    if (parent === undefined) return;
-    if (!questions.slice(0, rang).some(({ id }) => id === parent))
-      throw new QuestionnaireDeclarationError(
-        `${question.id} s'affiche sous ${parent}, qui ne la précède pas sur la page ${id}.`,
-      );
+    for (const { question: parent } of question.places)
+      if (ids.lastIndexOf(parent) >= rang)
+        throw new QuestionnaireDeclarationError(
+          `${question.id} s'affiche sous ${parent}, qui ne la précède pas sur la page ${id}.`,
+        );
   });
   return new DeclaredPage(id, questions);
 }
