@@ -118,4 +118,18 @@ describe("journal dans PostgreSQL", () => {
       { simulation_id: null, establishment_id: null, service_id: null },
     ]);
   });
+
+  it("donne les entrées dans l'ordre d'arrivée, page par page", async () => {
+    for (const n of [1, 2, 3]) {
+      await journal.append(recu({ event_id: `s-1:${n}`, sequence: n }));
+    }
+
+    const premiere = await journal.pageAfter(undefined, 2);
+    const derniere = await journal.pageAfter(premiere.next ?? undefined, 2);
+
+    expect(
+      [premiere, derniere].map(({ entries }) => entries.map((e) => e.eventId)),
+    ).toEqual([["s-1:1", "s-1:2"], ["s-1:3"]]);
+    expect(derniere.next).toBeNull();
+  });
 });

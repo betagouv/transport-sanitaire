@@ -119,7 +119,7 @@ describe("la sonde du signe de vie", () => {
   const ilYA = (heures: number) => new Date(Date.now() - heures * HEURE);
 
   // Le serveur de test tourne sur `BUILD`, dans l'environnement « test ».
-  async function sonde(journal: Journal) {
+  async function sonde(journal: MemoryJournal) {
     app = await demarrer(snapshotReferentiel, { journal });
     return getFrom(app.base, "/api/journal/v1/alive");
   }
@@ -154,7 +154,7 @@ describe("la sonde du signe de vie", () => {
   it("répond 503 quand le journal ne répond pas", async () => {
     class JournalMuet extends MemoryJournal {
       override async find(): Promise<never> {
-        throw new Error("Grist ne répond pas");
+        throw new Error("la base ne répond pas");
       }
     }
 

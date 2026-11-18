@@ -27,6 +27,8 @@ export type Configuration = {
   grist: AccesGrist | undefined;
   /** L'URL de la base du journal des parcours ; absente ⇒ journal qui ne garde rien. */
   journal: string | undefined;
+  /** Le jeton qui ouvre la lecture du journal ; absent ⇒ pas de lecture. */
+  journalReadToken: string | undefined;
   /** Le nom de l'app Scalingo, écrit avec chaque événement ; `local` hors Scalingo. */
   environment: string;
   /** La version et le commit de l'app servie, sur le signe de vie du journal (ADR-0051). */
@@ -62,6 +64,7 @@ export function lireConfiguration(env: Env = process.env): Configuration {
         ? { cleApi, docUrl: variables.GRIST_DOC_URL }
         : sansGrist(),
     journal: variables.SCALINGO_POSTGRESQL_URL ?? sansJournal(),
+    journalReadToken: variables.JOURNAL_READ_TOKEN,
     environment: variables.APP,
     build: {
       app_version: versionDeLApp(),
@@ -85,6 +88,12 @@ const VARIABLES = z.object({
   // La base du journal des parcours, posée par l'addon PostgreSQL de Scalingo.
   // Sans défaut : la collecte ne garde rien là où l'addon manque.
   SCALINGO_POSTGRESQL_URL: z.url({ error: "doit être une URL" }).optional(),
+  // Le jeton du tableau de bord qui lit le journal. Long, pour ne pas se
+  // deviner : `openssl rand -hex 32` en donne un.
+  JOURNAL_READ_TOKEN: z
+    .string()
+    .min(32, { error: "doit compter au moins 32 caractères" })
+    .optional(),
   GRIST_API_KEY: z.string().optional(),
   // Scalingo pose le nom de l'app : il distingue la production de la
   // préproduction dans le journal, sans variable de plus.
