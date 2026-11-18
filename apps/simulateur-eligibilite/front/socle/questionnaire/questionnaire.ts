@@ -25,6 +25,7 @@ import {
   withRestart,
 } from "./advance-alone";
 import { draftOf } from "./draft-an-answer";
+import { type Placement, usePlacement } from "./place-under-a-response";
 import { type RevisitLink, revisitLinks } from "./revisit-an-answer";
 
 export type QuestionnaireOptions = {
@@ -83,6 +84,9 @@ export type QuestionnaireScreen = View &
     showsInconsistencies: boolean;
     // Les liens vers les réponses à revoir de cette question.
     revisitsOf: (question: AskedQuestion) => readonly RevisitLink[];
+    // Où chaque question s'affiche : à son rang, ou dans le panneau d'une
+    // réponse de la page.
+    placement: Placement;
   };
 
 export function useQuestionnaire({
@@ -102,8 +106,9 @@ export function useQuestionnaire({
     // Un questionnaire qui a déjà des réponses reprend : son début n'est pas réémis.
     resumed: Object.keys(simulation.answers).length > 0,
   });
+  const placed = usePlacement(view, draft);
   const context = { simulation, view, tracking, setDraft, move, check };
-  const handlers = actions(context);
+  const handlers = withRemembered(actions(context), placed.remember);
   // Pendant une correction, une sélection seule n'avance pas.
   const autoAdvance = useAutoAdvance(
     view.page.id,
@@ -116,6 +121,7 @@ export function useQuestionnaire({
     ...withRestart(handlers, autoAdvance),
     showsInconsistencies: checked || autoAdvance.autoAdvances,
     revisitsOf: (question) => revisitLinks(simulation, question, draft),
+    placement: placed.placement,
   };
 }
 
@@ -199,6 +205,18 @@ function read(
     ),
     isLast: !hasPendingQuestions && simulation.endsWith(draft),
     focus,
+  };
+}
+
+// Valider la page garde l'ordre de ses sélections : un retour la rouvre avec
+// ses panneaux à la même place.
+function withRemembered(handlers: Actions, remember: () => void): Actions {
+  return {
+    ...handlers,
+    next: () => {
+      remember();
+      handlers.next();
+    },
   };
 }
 

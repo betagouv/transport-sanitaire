@@ -5,7 +5,11 @@ import { page } from "../../../../socle/index.ts";
 import { ACCOMPAGNEMENTS } from "./questions/accompagnements.ts";
 import { BOISSON } from "./questions/boisson.ts";
 import { MIGNARDISE, MIGNARDISE_AU_SERVICE } from "./questions/mignardise.ts";
-import { QUELLE_PREPARATION, SERVICE } from "./questions/service.ts";
+import {
+  QUELLE_PREPARATION,
+  SERVICE,
+  SOUS_VERRE,
+} from "./questions/service.ts";
 
 /** Modifiable tant que le résultat n'est pas verrouillé. */
 export const COMMANDE = {
@@ -14,6 +18,12 @@ export const COMMANDE = {
   pages: [
     page("boisson", BOISSON),
     page("accompagnements", ACCOMPAGNEMENTS, MIGNARDISE),
-    page("service", SERVICE, QUELLE_PREPARATION, MIGNARDISE_AU_SERVICE),
+    page(
+      "service",
+      SERVICE,
+      QUELLE_PREPARATION,
+      SOUS_VERRE,
+      MIGNARDISE_AU_SERVICE,
+    ),
   ],
 } as const;

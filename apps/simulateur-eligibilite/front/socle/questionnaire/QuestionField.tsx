@@ -41,10 +41,10 @@ type Props = {
    */
   errors?: readonly string[];
   /**
-   * Ce qui s'affiche sous une réponse possible d'une liste de cases : ses
-   * questions.
+   * Ce qui s'affiche sous une réponse sélectionnée : ses questions, dans leur
+   * panneau. Une case seule n'a pas de réponse possible.
    */
-  below?: (possibleAnswer: string) => ReactNode;
+  below?: (possibleAnswer?: string) => ReactNode;
   /** Le compteur d'un texte long : « 12 / 54 caractères ». */
   counter?: string;
   /** Ce qui s'affiche sous le champ : les liens vers les réponses à revoir. */
@@ -185,13 +185,17 @@ function SingleChoiceField(props: Props & { question: SingleChoice }) {
         options={question.possibleAnswers}
         value={value ?? ""}
         onChange={onChange}
+        below={value !== undefined && props.below?.(value)}
       />
     );
   return (
     <RadioField
       {...common(props)}
       boldLabels={question.boldLabels}
-      options={question.possibleAnswers}
+      options={question.possibleAnswers.map((possibleAnswer) => ({
+        ...possibleAnswer,
+        below: possibleAnswer.value === value && props.below?.(value),
+      }))}
       value={value}
       onChange={onChange}
     />
@@ -218,21 +222,23 @@ function MultipleChoiceField(props: Props & { question: MultipleChoice }) {
 
 // Une case seule : une seule case sous son libellé, ou portant son libellé
 // quand elle n'a pas de texte à elle. Décochée, elle répond `false`, pas une
-// absence de réponse.
+// absence de réponse. Cochée, ses questions s'affichent sous elle.
 function SingleCheckboxField(props: Props & { question: CheckboxQuestion }) {
   const { question, answer, onChange } = props;
+  const below = answer === true && props.below?.();
   if (question.box === undefined)
     return (
       <LoneCheckbox
         {...common(props)}
         checked={answer === true}
         onChange={onChange}
+        below={below}
       />
     );
   return (
     <CheckboxField
       {...common(props)}
-      options={[{ value: CHECKED, label: question.box }]}
+      options={[{ value: CHECKED, label: question.box, below }]}
       values={answer === true ? [CHECKED] : []}
       onChange={(values) => onChange(values.includes(CHECKED))}
     />

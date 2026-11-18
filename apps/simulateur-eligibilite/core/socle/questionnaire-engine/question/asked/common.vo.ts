@@ -18,15 +18,13 @@ import {
 type FreeInput = undefined;
 
 /**
- * La réponse possible d'une liste de cases sous laquelle la question s'affiche.
+ * Une réponse sous laquelle la question peut s'afficher : la réponse possible
+ * d'un choix, ou la case cochée d'une case seule, sans réponse possible.
  */
 export type ShownUnder = {
   readonly question: string;
-  readonly possibleAnswer: string;
+  readonly possibleAnswer?: string;
 };
-
-/** La question s'affiche à son rang dans la page. */
-export type InPlace = undefined;
 
 /**
  * Une réponse d'avant qu'une incohérence invite à revoir : la question, et le
@@ -41,7 +39,7 @@ export type AskedCommonData = {
   readonly hint?: string;
   readonly reminder?: Reminder;
   readonly optional?: boolean;
-  readonly under?: ShownUnder;
+  readonly under?: readonly ShownUnder[];
   readonly inconsistencies?: readonly string[];
   readonly revisits?: readonly Revisit[];
 };
@@ -57,8 +55,12 @@ export class AskedCommon {
   readonly reminder: Reminder | undefined;
   /** La question peut rester sans réponse : sa page se valide sans elle. */
   readonly optional: boolean;
-  /** La réponse possible sous laquelle elle s'affiche, sur la même page. */
-  readonly under: ShownUnder | InPlace;
+  /**
+   * Les réponses sous lesquelles elle peut s'afficher, dans l'ordre déclaré :
+   * celles dont la condition tient. L'écran la place sous celle de sa page
+   * sélectionnée la première, sinon à son rang.
+   */
+  readonly under: readonly ShownUnder[];
   /**
    * Ce qui, dans la réponse, en contredit une autre : un message par
    * incohérence. Tant qu'il en reste, la question n'est pas validée.
@@ -76,7 +78,7 @@ export class AskedCommon {
     this.hint = data.hint;
     this.reminder = data.reminder;
     this.optional = data.optional ?? false;
-    this.under = data.under;
+    this.under = data.under ?? [];
     this.inconsistencies = data.inconsistencies ?? [];
     this.revisits = data.revisits ?? [];
   }
