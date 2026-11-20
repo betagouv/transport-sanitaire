@@ -52,13 +52,6 @@
       "project": ["src/**/*.ts"]
     },
 
-    // La popup est le seul point d'entrée du navigateur ; knip le déduit
-    // d'`index.html`. Restent les tests.
-    "apps/glossaire-notion": {
-      "entry": ["tests/**/*.test.{ts,tsx}"],
-      "project": ["src/**/*.{ts,tsx}"]
-    },
-
     // Le lanceur shell `bin/tsp` exécute `src/main.ts` : aucun script du
     // package ne le nomme, knip ne peut donc pas le déduire.
     "apps/cli": {

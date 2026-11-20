@@ -76,9 +76,9 @@ Transverses :
 ## Les apps et leurs actions
 
 Une app se nomme en entier ou par un début sans ambiguïté : `simulateur`,
-`data`, `glossaire`, `cli`.
+`data`, `cli`.
 
-**Une action est un script du `package.json` de l'app.** `tsp dev glossaire`
+**Une action est un script du `package.json` de l'app.** `tsp dev simulateur`
 lance son script `dev`. Pour qu'une app porte une action, il suffit d'écrire le
 script. `install` fait exception : il appelle `pnpm install`.
 

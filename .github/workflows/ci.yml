@@ -67,18 +67,6 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - run: pnpm --filter data-analyzer verifier
 
-  glossaire-notion:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v7
-      - uses: pnpm/action-setup@v6
-      - uses: actions/setup-node@v7
-        with:
-          node-version-file: package.json
-          cache: pnpm
-      - run: pnpm install --frozen-lockfile
-      - run: pnpm --filter glossaire-notion verifier
-
   cli:
     runs-on: ubuntu-latest
     steps:

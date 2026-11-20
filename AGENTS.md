@@ -52,7 +52,7 @@ une app (`express`, `publicodes`, `xlsx`) reste chez elle.
 **pnpm ne résout pas les dépendances fantômes.** Un paquet utilisé sans être
 déclaré marchait sous npm, par hoisting. Ici il casse.
 
-Exemple : `glossaire-notion` compilait avec `types: ["node"]` sans avoir jamais
+Exemple : l'ancienne app `glossaire-notion` compilait avec `types: ["node"]` sans avoir jamais
 listé `@types/node`. La correction est toujours de déclarer la dépendance.
 
 **Avant de toucher à `apps/X`, lis `apps/X/AGENTS.md`.** Ce fichier-ci ne décrit
@@ -62,7 +62,6 @@ aucune app.
 |---|---|
 | `apps/simulateur-eligibilite` | Le produit. Simulateur d'éligibilité au transport sanitaire : règles publicodes, front React/DSFR, backend Express, rattachement à un établissement et un service, remplissage du CERFA. |
 | `apps/data-analyzer` | L'ETL qui calcule la part des trajets réalisés via les plateformes. Code public, **données et fournisseurs privés**. |
-| `apps/glossaire-notion` | Une extension de navigateur qui affiche le glossaire tenu dans Notion. |
 | `apps/cli` | `tsp`, le point d'entrée du dépôt. Sans dépendance d'exécution, **sans tests**. |
 
 ## `tsp`, le point d'entrée
@@ -133,11 +132,9 @@ anglais : `RattachementForm`, `SeedsTable`, `seedAnswers`.
 
 Aucun test ne garde cette règle : elle se tient à la relecture.
 
-**Deux dérogations assumées.** `apps/cli` écrit ses identifiants techniques en
+**Une dérogation assumée.** `apps/cli` écrit ses identifiants techniques en
 anglais et garde le français pour le métier (`recueil`, `tache`, `etat`) : voir
-son `AGENTS.md`. Et `apps/glossaire-notion` est entièrement en anglais.
-Elle n'a pas de vocabulaire métier propre. C'est un lecteur de base Notion, et la
-franciser coûterait plus que ça ne clarifierait.
+son `AGENTS.md`.
 
 ## Écrire du code et commiter
 
