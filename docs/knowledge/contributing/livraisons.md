@@ -77,7 +77,7 @@ déjà être sur `origin/staging`.
 
 ### ✨ Nouveautés
 
-- [e55fbc7](https://github.com/betagouv/transport-sanitaire/commit/e55fbc7) : rapetisse un texte jusqu'à ce qu'il tienne dans son cadre. …
+- [1d9e225](https://github.com/betagouv/transport-sanitaire/commit/1d9e225) : rapetisse un texte jusqu'à ce qu'il tienne dans son cadre. …
 ```
 
 - Le `@` du tag s'écrit `%40` dans le lien du titre : c'est l'adresse sous

@@ -8,10 +8,10 @@ pourquoi.
 
 | Version | Commits | Ce qu'il faut en retenir |
 |---|---|---|
-| v10.0.2 | `a241d718` (#61), `39f69036` (#62) | le premier modèle de l'éditeur, posé en deux temps : le noyau, puis P0 et P1 |
-| v10.1.1 | `3cc7b542`, `2a0d57d3` (#126) | un refactor préalable sort les faits de l'oracle dans un fichier partagé ; la v10.1.0 est sautée, la v10.1.1 la contient |
-| v10.1.2 | `b05c3ab8` (#181) | le YAML ne bouge pas : seuls `VERSION` et le catalogue changent, et les corrections tiennent à l'écran |
-| v10.1.3 | `35ee0b14`, `a80d10bc`, `29efd1e9` (#193), fusionnés par `03be39a6` (#194) | une PR, un commit par couche : le modèle, R2, les questions de P2 |
+| v10.0.2 | `ffc6e751` (#61), `6b013956` (#62) | le premier modèle de l'éditeur, posé en deux temps : le noyau, puis P0 et P1 |
+| v10.1.1 | `22c75b7e`, `48abf421` (#126) | un refactor préalable sort les faits de l'oracle dans un fichier partagé ; la v10.1.0 est sautée, la v10.1.1 la contient |
+| v10.1.2 | `b96ebed1` (#181) | le YAML ne bouge pas : seuls `VERSION` et le catalogue changent, et les corrections tiennent à l'écran |
+| v10.1.3 | `35ee0b14`, `a80d10bc`, `29efd1e9` (#193), fusionnés par `dbbfc648` (#194) | une PR, un commit par couche : le modèle, R2, les questions de P2 |
 
 ## Les leçons
 
