@@ -10,7 +10,7 @@ import type { MappingEntry } from "../src/types.ts";
 
 const dirs: string[] = [];
 function tmp(): string {
-  const d = mkdtempSync(join(tmpdir(), "data-analyzer-ght-"));
+  const d = mkdtempSync(join(tmpdir(), "datahub-ght-"));
   dirs.push(d);
   return d;
 }

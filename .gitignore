@@ -12,20 +12,25 @@ dist
 tmp
 spec
 
-# apps/data-analyzer : le code de l'ETL est public, mais ni les données ni l'identité
+# apps/datahub : le code de l'ETL est public, mais ni les données ni l'identité
 # des fournisseurs ne le sont. On versionne les référentiels publics (ref/, dont l'open
 # data GHT ref/ght/). Restent ignorés :
 #  - data/ : sources brutes des fournisseurs ;
 #  - build/ : tous les artefacts, dont le mart (contient de vrais établissements) ;
 #  - mapping.json : lie fichiers réels + fournisseurs aux formats (mapping.example.json
 #    versionné sert de gabarit neutre).
-apps/data-analyzer/data/
-apps/data-analyzer/build/
-!apps/data-analyzer/ref/**
-apps/data-analyzer/mapping.json
+apps/datahub/data/
+apps/datahub/build/
+!apps/datahub/ref/**
+apps/datahub/mapping.json
 # La doc métier de l'app, elle, est publique : elle ne nomme aucun fournisseur et le
 # README y renvoie. Elle échappe donc au motif `spec` ci-dessus.
-!apps/data-analyzer/spec/
+!apps/datahub/spec/
+# Ancien nom de l'app : les clones existants y gardent leurs données privées.
+# Ces motifs évitent qu'elles deviennent commitables après le renommage.
+apps/data-analyzer/data/
+apps/data-analyzer/build/
+apps/data-analyzer/mapping.json
 
 # apps/simulateur-eligibilite : CERFA générés à la racine de l'app par
 # `npm run apercu-cerfa` (documents de travail). Le gabarit officiel, lui, est

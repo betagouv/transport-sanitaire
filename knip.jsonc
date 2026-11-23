@@ -47,7 +47,7 @@
     // Chaque étape du pipeline est lançable seule (`pnpm extract`, `staging`,
     // …) : ce sont autant de points d'entrée. knip les déduit des scripts du
     // package, restent les tests.
-    "apps/data-analyzer": {
+    "apps/datahub": {
       "entry": ["tests/**/*.test.ts"],
       "project": ["src/**/*.ts"]
     },

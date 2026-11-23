@@ -16,7 +16,7 @@ reformuler la règle.
 | GIT-005 | Corps argumenté : ce qui change, et surtout pourquoi | aucune |
 | GIT-006 | Terminer par l'état de vérification | aucune |
 | GIT-007 | Aucune métadonnée d'IA | hook `commit-msg` |
-| GIT-008 | Relire le diff et le message avant de commiter sur `data-analyzer` | aucune |
+| GIT-008 | Relire le diff et le message avant de commiter sur `datahub` | aucune |
 | GIT-009 | Toujours passer par une branche, fusionnée par PR vers `staging` | hook `pre-commit`, rulesets GitHub |
 
 GIT-003 et GIT-007 sont gardées par [`.githooks/commit-msg`](../../../.githooks/commit-msg),
@@ -32,7 +32,7 @@ restent à la relecture.
 > Raison : le type dit d'un coup d'œil si le commit change le produit. Le journal
 > des versions groupe ses lignes par type, et se construit à partir de là.
 
-Le scope va entre parenthèses (`simulateur`, `data-analyzer`, `identification`)
+Le scope va entre parenthèses (`simulateur`, `datahub`, `identification`)
 quand le changement est circonscrit à une app. Un changement qui traverse le
 dépôt n'en porte pas.
 
@@ -167,25 +167,25 @@ dans le corps passe.
 
 ---
 
-### GIT-008 - Relire le diff et le message avant de commiter sur `data-analyzer`
+### GIT-008 - Relire le diff et le message avant de commiter sur `datahub`
 
 > Raison : le monorepo est public, les données et l'identité des fournisseurs ne
 > le sont pas. Un nom de fournisseur fuite par un commentaire, un nom de
 > variable, un fichier de test ou le message lui-même.
 
 Relire les deux, pas seulement le diff. Voir
-[`apps/data-analyzer/AGENTS.md`](../../apps/data-analyzer/AGENTS.md).
+[`apps/datahub/AGENTS.md`](../../apps/datahub/AGENTS.md).
 
 **Exemples**
 
 ```
 ✅ OK : le message ne nomme qu'un rôle
-feat(data-analyzer): rattache la plateforme au niveau GHT par mapping manuel
+feat(datahub): rattache la plateforme au niveau GHT par mapping manuel
 ```
 
 ```
 ❌ KO : le message nomme le fournisseur
-feat(data-analyzer): rattache les GHT de <nom du fournisseur> par mapping manuel
+feat(datahub): rattache les GHT de <nom du fournisseur> par mapping manuel
 ```
 
 *Aucune garde.* `gitleaks` scanne les secrets, pas les noms de fournisseurs. La

@@ -55,7 +55,9 @@ jobs:
           path: apps/simulateur-eligibilite/navigateur/resultats
           retention-days: 7
 
-  data-analyzer:
+  datahub:
+    # Nom attendu par les rulesets GitHub. À retirer quand ils exigent `datahub`.
+    name: data-analyzer
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
@@ -65,7 +67,7 @@ jobs:
           node-version-file: package.json
           cache: pnpm
       - run: pnpm install --frozen-lockfile
-      - run: pnpm --filter data-analyzer verifier
+      - run: pnpm --filter datahub verifier
 
   glossaire-notion:
     runs-on: ubuntu-latest
