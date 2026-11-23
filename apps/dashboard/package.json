@@ -1,0 +1,17 @@
+{
+  "name": "dashboard",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "start": "vite preview --host 0.0.0.0 --port ${PORT:-4173} --strictPort"
+  },
+  "engines": {
+    "node": "24.x"
+  },
+  "dependencies": {
+    "vite": "catalog:"
+  }
+}

@@ -9,7 +9,7 @@
   "scripts": {
     "prepare": "git config core.hooksPath .githooks || true",
     "verifier": "pnpm --recursive --workspace-concurrency=1 run verifier",
-    "build": "pnpm --filter simulateur-eligibilite run build",
-    "start": "pnpm --filter simulateur-eligibilite run start"
+    "build": "pnpm --filter \"${DEPLOY_APP:-simulateur-eligibilite}\" run build",
+    "start": "pnpm --filter \"${DEPLOY_APP:-simulateur-eligibilite}\" run start"
   }
 }
