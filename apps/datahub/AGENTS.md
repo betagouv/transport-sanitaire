@@ -1,4 +1,4 @@
-# AGENTS.md - data-analyzer
+# AGENTS.md - datahub
 
 > Les conventions du dépôt sont dans [`../../AGENTS.md`](../../AGENTS.md). Ici,
 > ce qui est propre à cette app.

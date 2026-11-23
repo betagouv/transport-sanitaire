@@ -61,7 +61,7 @@ aucune app.
 | App | Ce que c'est |
 |---|---|
 | `apps/simulateur-eligibilite` | Le produit. Simulateur d'éligibilité au transport sanitaire : règles publicodes, front React/DSFR, backend Express, rattachement à un établissement et un service, remplissage du CERFA. |
-| `apps/data-analyzer` | L'ETL qui calcule la part des trajets réalisés via les plateformes. Code public, **données et fournisseurs privés**. |
+| `apps/datahub` | L'ETL qui calcule la part des trajets réalisés via les plateformes. Code public, **données et fournisseurs privés**. |
 | `apps/glossaire-notion` | Une extension de navigateur qui affiche le glossaire tenu dans Notion. |
 | `apps/cli` | `tsp`, le point d'entrée du dépôt. Sans dépendance d'exécution, **sans tests**. |
 
@@ -186,7 +186,7 @@ Cette chaîne classe ce qui *décrit* le dépôt. `AGENTS.md` et
 code : c'est le code qui a tort contre eux.
 
 Les specs se périment. Exemple : `etl-part-plateformes.md` annonce 5 marts, le
-README de `data-analyzer` en documente 6. Corrige la source la moins à jour, ne
+README de `datahub` en documente 6. Corrige la source la moins à jour, ne
 t'y fie pas.
 
 ## Marches à suivre

@@ -1,6 +1,6 @@
-# data-analyzer — ETL « part des trajets via les plateformes »
+# datahub — ETL « part des trajets via les plateformes »
 
-data-analyzer calcule la part des trajets sanitaires réalisés via les plateformes : au
+datahub calcule la part des trajets sanitaires réalisés via les plateformes : au
 numérateur les trajets qu'elles déclarent, au dénominateur le référentiel national de
 remboursement. Le résultat est ventilé par établissement ou GHT, par année, par type de
 transport et par enveloppe, et sort en dix-huit marts CSV. Un pipeline de cinq étapes les

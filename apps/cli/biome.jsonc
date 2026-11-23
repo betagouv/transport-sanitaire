@@ -11,7 +11,7 @@
   "overrides": [
     {
       // `noNonNullAssertion` est éteinte pour la même raison que dans
-      // `data-analyzer` : le tsconfig active `noUncheckedIndexedAccess`, qui
+      // `datahub` : le tsconfig active `noUncheckedIndexedAccess`, qui
       // rend `cellules[0]` potentiellement `undefined`. C'est la garantie
       // forte, et on la garde. Le `!` en est le prix, sur une case qu'on vient
       // de compter.

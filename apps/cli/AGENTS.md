@@ -13,7 +13,7 @@
   `mise`. Il ne demande qu'un shell et `git`. `setup` pose un lien vers lui dans
   `~/.local/bin` : c'est ce lien qu'on appelle ensuite.
 - **Du TypeScript exécuté directement par Node 24**, sans build, comme
-  `data-analyzer`.
+  `datahub`.
 - **Aucune dépendance d'exécution.** Les arguments se lisent avec
   `node:util.parseArgs`, Notion se joint par `fetch`. N'en ajoute pas : la CLI
   doit démarrer sur un dépôt dont les dépendances ne sont pas encore installées.
