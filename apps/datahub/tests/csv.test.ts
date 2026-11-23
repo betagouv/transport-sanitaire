@@ -8,7 +8,7 @@ import { Csv } from "../src/csv.ts";
 
 const dirs: string[] = [];
 function tmp(): string {
-  const d = mkdtempSync(join(tmpdir(), "data-analyzer-"));
+  const d = mkdtempSync(join(tmpdir(), "datahub-"));
   dirs.push(d);
   return d;
 }

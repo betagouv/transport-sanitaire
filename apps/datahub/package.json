@@ -1,5 +1,5 @@
 {
-  "name": "data-analyzer",
+  "name": "datahub",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -17,7 +17,7 @@
     "lint:fix": "biome check --write",
     "typecheck": "tsc -b",
     "verifier": "pnpm lint && pnpm typecheck && pnpm knip && pnpm test",
-    "knip": "knip --directory ../.. --workspace apps/data-analyzer"
+    "knip": "knip --directory ../.. --workspace apps/datahub"
   },
   "engines": {
     "node": "24.x"

@@ -37,7 +37,7 @@ d'architecture, une connaissance métier dans `domain/`.
   modifications de l'issue en tient lieu.
 - Sans réseau ou sans `gh`, l'avancement ne se lit plus.
 - Le dépôt est public : une issue l'est aussi. La confidentialité de
-  `data-analyzer` vaut pour elle comme pour un commit.
+  `datahub` vaut pour elle comme pour un commit.
 - Le numéro d'issue se lit à deux endroits, la CLI et le workflow de fermeture.
   Ils doivent le lire de la même façon.
 

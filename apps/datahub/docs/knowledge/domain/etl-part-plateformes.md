@@ -1,7 +1,7 @@
 # Spec — ETL versionné : part des trajets réalisés via les plateformes
 
 > Statut : cadrage validé avec le porteur le 2026-07-22. Le code est dans
-> `apps/data-analyzer`, voir son README. **Livré** : le référentiel finess vers GHT
+> `apps/datahub`, voir son README. **Livré** : le référentiel finess vers GHT
 > (source `referentiel-ght`, 888 finess et 135 GHT) ; `reconcile`, qui aligne les finess
 > des trajets sur le référentiel et les rattache au GHT ; et **5 marts**
 > (`mart_geographique`, `mart_juridique`, `mart_ght`, `mart_hors_ght`, `mart_article80`).
@@ -81,7 +81,7 @@ des trajets Article 80. La règle de calcul, validée par le porteur, est la sui
 
 ## Décisions de cadrage
 
-1. **Stack.** TypeScript et Node, isolés dans `apps/data-analyzer`, ce qui est cohérent
+1. **Stack.** TypeScript et Node, isolés dans `apps/datahub`, ce qui est cohérent
    avec le monorepo. Node 24 exécute le TS nativement. Le parsing xlsx passe par SheetJS,
    et les CSV UTF-16 sont décodés explicitement.
 2. **Générique, piloté par la donnée.** Le code ne connaît que des rôles et des formats.
@@ -129,7 +129,7 @@ dans `build/`. La connaissance propre à une source est entièrement dans son ad
 les étapes 2 à 4 sont génériques et ne raisonnent que sur les rôles.
 
 ```
-apps/data-analyzer/
+apps/datahub/
   mapping.json               # (NON versionné) fichiers réels → rôle + format + options
   mapping.example.json       # gabarit neutre versionné
   ref/                       # référentiels publics figés (open data) — ex. ght.csv (à venir)
@@ -232,7 +232,7 @@ grain GHT. Le détail et des exemples sont dans
 
 ## Vérification
 
-1. `pnpm --filter data-analyzer etl`, sans aucune étape réseau puisque les
+1. `pnpm --filter datahub etl`, sans aucune étape réseau puisque les
    référentiels sont dans `ref/` : les 4 étapes s'enchaînent sans erreur et régénèrent
    `build/`, dont les 5 marts.
 2. Contrôles de cohérence : les totaux par source sont conservés entre extract et staging ;
