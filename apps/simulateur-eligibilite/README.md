@@ -362,8 +362,8 @@ Trois fichiers de la racine portent ce déploiement :
 
 | Fichier | Ce qu'il donne à Scalingo |
 | --- | --- |
-| `package.json` | `packageManager` (la version de pnpm), `engines.node`, et deux scripts d'aiguillage : `build` et `start`, qui délèguent tous deux à cette app par `--filter` |
-| `Procfile` | `web: pnpm --filter simulateur-eligibilite run start` |
+| `package.json` | `packageManager` (la version de pnpm), `engines.node`, et deux scripts d'aiguillage : `build` et `start`, qui délèguent tous deux par `--filter` à l'app nommée par `DEPLOY_APP`, cette app si la variable est absente |
+| `Procfile` | `web: pnpm --filter "${DEPLOY_APP:-simulateur-eligibilite}" run start` |
 | `pnpm-lock.yaml` | les versions exactes de toutes les apps |
 
 Le build installe donc aussi les dépendances de `datahub` et de `glossaire-notion`.

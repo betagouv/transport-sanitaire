@@ -1,1 +1,1 @@
-web: pnpm --filter simulateur-eligibilite run start
+web: pnpm --filter "${DEPLOY_APP:-simulateur-eligibilite}" run start
