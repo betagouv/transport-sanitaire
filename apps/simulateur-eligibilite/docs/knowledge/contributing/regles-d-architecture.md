@@ -95,8 +95,14 @@ manque à son contrat s'ajoute à l'index. Les tests d'un module
 - Le domaine (entité, objet valeur, service, use case, erreur, port) n'importe
   aucun `.adapter.ts`. Il déclare ce qu'il attend dans un port et reçoit
   l'adaptateur en paramètre.
-- Seul un adaptateur importe un paquet, dans `core/`. À l'écran, un composant
-  importe React et le DSFR ; au serveur, un contrôleur importe Express.
+- Seul un adaptateur importe un paquet. Dans `core/`, tout fichier qui n'est pas
+  un adaptateur. Dans `front/`, `server/` et `shared/`, le domaine seulement :
+  un fichier au suffixe `.entity`, `.vo`, `.service`, `.usecase`, `.port`,
+  `.error`, `.factory` ou `.types`. Un import `type` compte, et `node:*` aussi.
+- Sont exemptés : le composant `.tsx` (il importe React et le DSFR), le `.hook.ts`
+  (l'adaptateur de l'écran), le `.controller.ts` (il importe Express et zod à la
+  porte du serveur) et le `.client.ts` (l'accès à l'extérieur). Un fichier sans
+  suffixe hors de `core/` n'est pas jugé : il n'a pas encore de rôle.
 - Un `index.ts` peut exporter un adaptateur, et un `container.ts` assemble ceux de
   sa racine.
 - Une seule porte : un modèle charge l'adaptateur publicodes sans index, pour
@@ -110,9 +116,8 @@ que par les deux adaptateurs qui l'implémentent
 ```
 
 *Gardé par* `tests/clean-architecture.test.ts › le sens des dépendances`, sur les
-quatre racines pour les adaptateurs, sur `core/` pour les paquets, et
-`› le journal des parcours`. Le contrat `shared/analytics/event-schema.ts` importe
-`zod` : la garde des paquets n'y va pas.
+quatre racines pour les adaptateurs, sur `core/` et le domaine des trois autres
+pour les paquets, et `› le journal des parcours`.
 
 ---
 

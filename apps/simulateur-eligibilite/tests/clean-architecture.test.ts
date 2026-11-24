@@ -16,9 +16,19 @@ const duDomaine = (cible: string) =>
 // Les racines où le domaine n'importe aucun adaptateur.
 const RACINES = ["core", "front", "server", "shared"];
 
-// Les racines où seul un adaptateur importe un paquet. À l'écran, un composant
-// importe React et le DSFR ; au serveur, un contrôleur importe Express.
-const SANS_PAQUET = ["core"];
+// Où seul un adaptateur importe un paquet. Dans `core/`, tout fichier qui n'est
+// pas un adaptateur. Ailleurs, le domaine seulement : un fichier qui porte un
+// rôle du domaine par son suffixe. Les autres rôles sont exemptés, chacun pour
+// sa raison : un composant (`.tsx`) importe React et le DSFR, un hook
+// (`.hook.ts`) est l'adaptateur de l'écran, un contrôleur (`.controller.ts`)
+// importe Express et zod à la porte du serveur, un client (`.client.ts`) est
+// l'accès à l'extérieur. Un fichier sans suffixe hors de `core/` n'a pas de
+// rôle (QUAL-018 ne vaut que pour certains dossiers) : il n'est pas jugé.
+const SANS_PAQUET_PARTOUT = ["core"];
+const SANS_PAQUET_DANS_LE_DOMAINE = ["front", "server", "shared"];
+
+const dansLeDomaine = (fichier: string) =>
+  /\.(entity|vo|service|usecase|port|error|factory|types)\.ts$/.test(fichier);
 
 const estUnAdaptateur = (fichier: string) => /\.adapter(\.ts)?$/.test(fichier);
 
@@ -58,9 +68,10 @@ describe("le sens des dépendances", () => {
   });
 
   it("une bibliothèque externe reste derrière un port", () => {
-    const fautifs = sources(...SANS_PAQUET)
-      .filter((f) => !estUnAdaptateur(f))
-      .flatMap((f) => paquetsDe(f).map((paquet) => `${f} → ${paquet}`));
+    const fautifs = [
+      ...sources(...SANS_PAQUET_PARTOUT).filter((f) => !estUnAdaptateur(f)),
+      ...sources(...SANS_PAQUET_DANS_LE_DOMAINE).filter(dansLeDomaine),
+    ].flatMap((f) => paquetsDe(f).map((paquet) => `${f} → ${paquet}`));
     expect(
       fautifs,
       "Seul un adaptateur (`.adapter.ts`) importe un paquet (ARCH-004) : le " +

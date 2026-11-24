@@ -19,6 +19,7 @@ import type { Journal } from "./journal/journal.port.ts";
 import type { Build } from "./journal/journal-entry.entity.ts";
 import type { JournalPages } from "./journal/journal-pages.port.ts";
 import { JournalReadingController } from "./journal/journal-reading.controller.ts";
+import { NodeSameContent } from "./journal/node-same-content.adapter.ts";
 import { PostgresJournal } from "./journal/postgres-journal.adapter.ts";
 import { ReadAPage } from "./journal/read-a-page.usecase.ts";
 import { ReportAlive } from "./journal/report-alive.usecase.ts";
@@ -81,6 +82,7 @@ export function createContainer({
   const collectAnEvent = new CollectAnEvent(
     journal,
     new CachedReferentiel(referentiel),
+    new NodeSameContent(),
     environment,
     build,
   );
