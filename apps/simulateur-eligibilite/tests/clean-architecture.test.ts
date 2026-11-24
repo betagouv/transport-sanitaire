@@ -27,6 +27,16 @@ const RACINES = ["core", "front", "server", "shared"];
 const SANS_PAQUET_PARTOUT = ["core"];
 const SANS_PAQUET_DANS_LE_DOMAINE = ["front", "server", "shared"];
 
+// Exemption : le domaine de `server/` peut importer un module `node:*`. C'est la
+// bibliothèque standard de l'environnement, pas une infrastructure qu'on
+// remplacerait. Le risque accepté : qu'un import comme `node:http` s'y glisse.
+// `core/`, `front/` et `shared/` tournent aussi dans le navigateur, où un import
+// `node:*` casserait l'écran : ils restent sous la règle.
+const estUnModuleNodeDuServeur = (
+  fichier: string,
+  paquet: string | undefined,
+) => fichier.startsWith("server/") && paquet?.startsWith("node:");
+
 const dansLeDomaine = (fichier: string) =>
   /\.(entity|vo|service|usecase|port|error|factory|types)\.ts$/.test(fichier);
 
@@ -71,7 +81,11 @@ describe("le sens des dépendances", () => {
     const fautifs = [
       ...sources(...SANS_PAQUET_PARTOUT).filter((f) => !estUnAdaptateur(f)),
       ...sources(...SANS_PAQUET_DANS_LE_DOMAINE).filter(dansLeDomaine),
-    ].flatMap((f) => paquetsDe(f).map((paquet) => `${f} → ${paquet}`));
+    ].flatMap((f) =>
+      paquetsDe(f)
+        .filter((paquet) => !estUnModuleNodeDuServeur(f, paquet))
+        .map((paquet) => `${f} → ${paquet}`),
+    );
     expect(
       fautifs,
       "Seul un adaptateur (`.adapter.ts`) importe un paquet (ARCH-004) : le " +
