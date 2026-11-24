@@ -8,7 +8,7 @@
   // tient dans ses propres dépendances, en `catalog:`, donc à la même version
   // que les autres, sans que personne ait à y penser. Ce fichier ne
   // partage que la configuration.
-  "$schema": "https://biomejs.dev/schemas/2.5.9/schema.json",
+  "$schema": "https://biomejs.dev/schemas/2.6.8/schema.json",
   "formatter": {
     "enabled": true,
     "indentStyle": "space",
@@ -36,7 +36,7 @@
     "rules": {
       "preset": "recommended",
       "correctness": {
-        "useExhaustiveDependencies": "warn",
+        "useExhaustiveDependencies": "error",
         "useHookAtTopLevel": "error",
         "noUnusedImports": "error",
         "noUnusedVariables": "error"
@@ -55,7 +55,7 @@
       "suspicious": {
         "noExplicitAny": "error",
         "noConsole": {
-          "level": "warn",
+          "level": "error",
           "options": {
             "allow": ["warn", "error"]
           }
