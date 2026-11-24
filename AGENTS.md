@@ -158,7 +158,7 @@ d'écrire une ligne ou de commiter.**
 | [`regles-de-code.md`](docs/knowledge/contributing/regles-de-code.md) | les 19 `QUAL-*` : forme d'un fichier, découpage, noms, rôles, exports, suppressions de lint |
 | [`regles-git.md`](docs/knowledge/contributing/regles-git.md) | les 7 `GIT-*` : branche et PR vers `staging`, forme du message, métadonnée d'IA, confidentialité |
 | [`ecrire-une-regle.md`](docs/knowledge/contributing/ecrire-une-regle.md) | le format d'une règle, pour en ajouter, modifier ou retirer une |
-| [`ecrire-une-decision.md`](docs/knowledge/contributing/ecrire-une-decision.md) | une ligne du journal des décisions ou un ADR : où l'écrire, sa forme, les décisions renversées |
+| [`ecrire-une-decision.md`](docs/knowledge/contributing/ecrire-une-decision.md) | où écrire une décision, quand elle mérite un ADR, la forme d'un ADR, les décisions renversées |
 | [`livraisons.md`](docs/knowledge/contributing/livraisons.md) | ce qu'une livraison produit, son ordre de mise en production, le format du journal, du tag et de la release |
 
 Chaque règle porte un identifiant, sa raison, un exemple juste, un exemple faux,
@@ -169,7 +169,8 @@ revue et en commit : « corrige QUAL-006 ».
 
 | Ce que tu veux écrire | Où ça va |
 |---|---|
-| Une décision d'architecture | un fichier par décision, sans détail d'implémentation, dans `docs/knowledge/adr/` de l'app concernée, ou celui de la racine si la décision traverse plusieurs apps, au format de [`ecrire-une-decision.md`](docs/knowledge/contributing/ecrire-une-decision.md) |
+| Une décision courante | le corps du message du commit (le pourquoi) et le ticket Notion du chantier. Pas de `D-<n>`, ni dans le code ni dans un commentaire : le journal des décisions de la v10 est clos |
+| Une décision d'architecture coûteuse à défaire et surprenante | un fichier par décision, sans détail d'implémentation, dans `docs/knowledge/adr/` de l'app concernée, ou celui de la racine si la décision traverse plusieurs apps, au format de [`ecrire-une-decision.md`](docs/knowledge/contributing/ecrire-une-decision.md) |
 | Le cadrage d'un chantier | le corps de son issue GitHub, que `tsp issue new` ouvre. Jamais un fichier du dépôt |
 | Le découpage d'un chantier | ses sous-issues, une par PR, que `tsp issue add` ouvre |
 | L'état d'un chantier | **nulle part** : il se déduit de l'issue, de sa branche et de sa PR. `tsp issue show <n>` l'affiche, et `tsp` le projette dans le tableau GitHub Project |
@@ -209,7 +210,7 @@ demande plutôt que recopié ici :
 | `brancher-le-modele` | Brancher le code sur les règles de l'éditeur : déclarer le fait, la cible ou l'option, écrire le fichier du fait, poser la question, lire la cible |
 | `ajouter-une-seed` | Ajouter une seed à un modèle : ses réponses, ses cibles attendues, et ce qui la rejoue |
 | `implement-publicodes-version` | Intégrer une version du modèle livrée par l'éditeur : le paquet dans `tmp/<version>/package/`, le diff, la recopie, l'oracle, le retour à l'éditeur |
-| `ecrire-une-decision` | Écrire une décision : une ligne du journal d'un chantier, ou un ADR de `docs/knowledge/adr/`, décisions renversées gardées et barrées |
+| `ecrire-une-decision` | Écrire une décision : dire si elle mérite un ADR de `docs/knowledge/adr/`, puis l'écrire, décisions renversées gardées |
 | `livrer-une-version` | Livrer une app : numéro, journal des versions, PR vers `staging`, tag `<app>@<version>` et release, puis fusion de `staging` dans `main` |
 | `revue-d-une-issue` | Revoir une issue et sa PR : fonctionnel puis technique, écarts à l'issue, couverture, cahier de tests à cocher, app lancée à la tête de la PR, verdict |
 

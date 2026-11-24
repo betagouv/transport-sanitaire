@@ -82,7 +82,7 @@ Les apps des worktrees s'arrêtent à l'annonce de la fusion (hook local).
    comportements, pas une copie du HTML ou du CSS : ils vivent dans des
    composants génériques du socle. Ex. pour #176 : dans l'aperçu, « Pourquoi
    ce résultat ? » est un panneau gris à filet bleu ; dans la PR, un titre et
-   un paragraphe nus. Un écart que le journal ne décide pas est un bloquant.
+   un paragraphe nus. Un écart qu'aucune décision (message de commit, ticket, ADR) n'acte est un bloquant.
    Sans maquette, le dire.
 4. **Couverture** : un tableau de ce que les tests automatiques couvrent déjà
    (`grep -n "describe(\|it(" <fichiers de test du diff>`). Puis vérifier à
@@ -106,7 +106,7 @@ vérification.
 1. **Points clés d'implémentation** : les fichiers et fonctions qui portent le
    changement, les choix faits, avec des liens `fichier:ligne`.
 2. **Conformité** : relire le diff contre les règles du dépôt (`tsp rules`),
-   l'`AGENTS.md` de l'app, et les décisions que la PR cite (journal, ADR).
+   l'`AGENTS.md` de l'app, et les décisions que la PR cite (corps de commit, ADR).
 3. **Vérification** : la CI dit si `verifier` passe. Ne pas relancer la suite
    quand elle est verte.
 

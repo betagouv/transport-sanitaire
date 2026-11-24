@@ -13,7 +13,8 @@ Le simulateur d'éligibilité au transport sanitaire. Sa pile :
 
 **L'app est entre deux modèles.** Le modèle v9 et ce qui en dépendait sont retirés,
 la v10 n'est pas intégrée : son avancement est dans l'issue 50 du dépôt, ses
-décisions dans `docs/knowledge/adr/journal-des-decisions-v10.md`. Seul le
+décisions dans `docs/knowledge/adr/journal-des-decisions-v10.md`, clos le
+2026-11-24 (les nouvelles vont dans le message du commit). Seul le
 S3141 se télécharge rempli. Le simulateur s'ouvre sur le **modèle de
 l'éditeur** (`core/models/eligibilite/` et `front/models/eligibilite/`, D-119). Il
 s'intègre étape par étape, sur la v10.2.2 (livraison du 17 novembre) : ses règles, ses faits, ses cibles et son
