@@ -68,8 +68,7 @@ remontent à l'éditeur.
 > **Mise à jour 2026-10-28, le filtrage par le graphe (#255).** L'ADR-0035 écrit
 > la phase 2 de #196 : le graphe des règles compilé au build, ce que lit
 > chaque morceau du résultat, et le socle qui saute une question dont la
-> réponse ne change rien de ce que montre le résultat. L'ADR-0030 est précisé :
-> chaque précision de R2 se lit sous les issues de son texte. Décisions de
+> réponse ne change rien de ce que montre le résultat. Chaque précision de R2 se lit sous les issues de son texte. Décisions de
 > Simon, au journal D-216 à D-226.
 
 > **Mise à jour 2026-10-28, le tri des gardes d'utilité (#256).** Le graphe ne

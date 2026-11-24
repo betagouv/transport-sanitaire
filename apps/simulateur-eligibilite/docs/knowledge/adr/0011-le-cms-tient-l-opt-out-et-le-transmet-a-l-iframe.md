@@ -37,9 +37,6 @@ Depuis le 2026-11-12, le même choix vaut pour le journal des parcours (ADR-0042
 refus, le navigateur n'envoie rien au backend, et cesse d'envoyer sur un refus en
 cours de session.
 
-Depuis le 2026-11-13, le même script donne aussi au simulateur le chargement de la
-page du CMS (ADR-0049).
-
 ## Mises à jour
 
 > **Mise à jour 2026-09-30, opt-out dans le pied de page du CMS.** L'exemption CNIL

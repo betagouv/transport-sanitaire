@@ -1,6 +1,6 @@
 # ADR-0010 - `tsp` se réduit à ce que rien d'autre ne fait
 
-> Statut : **décidé** · 2026-11-24 · Remplace les ADR-0002 et ADR-0006
+> Statut : **décidé** · 2026-11-24 · Remplace les lanceurs d'actions et les commandes de lecture de `tsp`
 
 **Contexte.** Les agents passaient 4 à 100 fois plus souvent par `pnpm`, `gh` et
 `git` que par `tsp`. Les lanceurs doublaient les scripts `pnpm`, les commandes

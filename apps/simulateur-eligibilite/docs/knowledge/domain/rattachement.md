@@ -2,7 +2,7 @@
 
 > Ce que le prescripteur déclare avant de simuler, ce que montre l'écran, et ce
 > que porte le référentiel. Les décisions techniques sont dans
-> [`../adr/`](../adr/), ADR-0004 à ADR-0009. Ce que l'écran écrit dans Grist est
+> [`../adr/`](../adr/), ADR-0006 et ADR-0009. Ce que l'écran écrit dans Grist est
 > dans [`enrichissement-referentiel-rattachement.md`](enrichissement-referentiel-rattachement.md).
 > Le vocabulaire est fixé dans [`../CONTEXT.md`](../CONTEXT.md).
 
@@ -69,7 +69,14 @@ Les noms saisis, d'un service ou d'un établissement, ne partent jamais à la
 de service, son événement part sans nom.
 
 Le rattachement vit le temps de la session, en mémoire. Rien n'est gardé dans
-le navigateur.
+le navigateur : ni `localStorage`, ni URL.
+
+Les identifiants du référentiel partent en clair, sans HMAC. Un HMAC protégeait
+une personne, le prescripteur. Sans elle, il ne masquerait que des organisations,
+et un id Grist se retrouve dans le référentiel sans secret. Il ne réglerait pas
+non plus le cas d'un très petit service, qu'un HMAC déterministe désigne
+toujours. Le rattachement est déclaratif et non signé : il n'a aucune valeur
+probante.
 
 ## Le référentiel
 
@@ -98,5 +105,11 @@ erDiagram
   comme service : l'admin la repère, la corrige ou la retire dans Grist.
 - Une table des prescripteurs existe encore dans Grist, tenue par l'admin.
   L'app ne la lit ni ne l'écrit depuis le 2026-09-29.
+- Le navigateur ne peut pas parler à Grist : sa clé est toute-puissante et Grist
+  bloque le CORS. Le backend de l'app la détient, et sert le référentiel en
+  same-origin. En production, il refuse de démarrer sans la clé ni l'adresse du
+  document : son repli, un référentiel factice, n'est bon que pour un poste de
+  développement, et le servir en production donnerait un simulateur
+  silencieusement faux (`server/configuration.ts`).
 - Le champ `finess` est prévu, en optionnel, pour une migration vers le
   référentiel officiel.

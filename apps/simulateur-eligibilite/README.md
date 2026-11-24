@@ -225,7 +225,7 @@ front/                   le front, bundlé par Vite
                          le conteneur de page, le pied de page
     rattachement/        LA feature de l'écran de rattachement, miroir de server/rattachement/ :
                          le formulaire à révélation progressive, les deux clients de
-                         l'API, le rattachement en mémoire de session (ADR-0007)
+                         l'API, le rattachement en mémoire de session
     simulateur/          le parcours : les écrans de résultat et du cerfa
                          (screens/), la feuille à remettre au patient et son PDF
                          (sheet/), le verrou, l'indicateur ALD
@@ -350,7 +350,7 @@ Scalingo construit et sert cette app, et déploie depuis `main`.
 4. **Surveiller la collecte.** Le workflow `.github/workflows/signe-de-vie.yml`
    demande chaque heure à la production si le journal porte son signe de vie
    (`GET /api/journal/v1/alive`), et échoue sinon : GitHub prévient par
-   courriel (ADR-0051).
+   courriel (voir [`journal-des-parcours.md`](docs/knowledge/domain/journal-des-parcours.md)).
 5. **Brancher l'addon PostgreSQL.** Il pose `SCALINGO_POSTGRESQL_URL`, la base du
    journal des parcours ; les tables se créent à la première écriture.
 6. **Tenir la variable de production**, `GRIST_API_KEY`. Elle n'a pas de défaut, et le

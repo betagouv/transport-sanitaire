@@ -108,8 +108,15 @@ directement, sans build et sans dépendance d'exécution.
 - **Sans `mise`**, seul `setup` passe : c'est lui qui l'installe, par
   `bin/setup.sh`, le seul morceau de `setup` écrit en shell.
 
+**Pourquoi un lanceur shell.** `tsp` doit être le premier geste sur une machine
+neuve, alors que Node vient de `mise` : la CLI ne peut pas s'amorcer elle-même.
+Un `bin` de paquet n'existerait qu'après `pnpm install`. Un binaire compilé
+demanderait un build par plateforme pour une CLI interne. Le Node déjà présent
+sur la machine n'a pas de version garantie, et l'exécution directe de
+TypeScript en dépend.
+
 La CI et le `Procfile` appellent `pnpm` en direct. La production ne dépend pas
-de la CLI.
+de la CLI, et une panne de la CLI ne casse ni un déploiement ni une CI.
 
 ## Vérifier
 
