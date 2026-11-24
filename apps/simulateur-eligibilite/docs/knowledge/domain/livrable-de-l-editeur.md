@@ -56,6 +56,20 @@ Le reste du paquet est **retranscrit** dans le code, selon les règles du dépô
 | l'oracle, dans le dossier `tests/` du paquet | `tests/model/eligibilite/`, en faits et en réponses (D-79) |
 | le mapping des gabarits | les cerfa de `front/models/eligibilite/r3/` |
 
+## Brancher un fait, une cible ou une question
+
+1. Lis ce que dit le paquet, mot pour mot : la règle du YAML, puis la ligne
+   de `CONTRAT_REPONSES_FAITS.json`, de `dictionnaire_cibles.json` ou de
+   `CATALOGUE_COMPLET_QUESTIONS.md`.
+2. Déclare le nom, à son rang dans les règles : `FAITS` (`faits/noms.ts`) ou
+   `CIBLES` (`cibles/noms.ts`). Ces listes typent le modèle, et
+   `tests/model/eligibilite/rules/declarations.test.ts` les compare au YAML. Une
+   réponse possible se déclare dans sa question : son numéro du catalogue, puis
+   son sens (`"2_AVEC_UN_PROCHE"`).
+3. Écris le fichier du fait, et réunis-le dans `faits/index.ts`.
+4. Teste le fait par les réponses qui l'établissent, dans le test de sa partie.
+   Un cas de l'éditeur qui le traverse va dans l'oracle.
+
 ## Ce qui fait foi
 
 - **Les règles, les contrats et les documents du paquet** : le YAML, les

@@ -11,7 +11,6 @@ Ce skill ne porte que la marche à suivre. Les règles sont ailleurs :
 |---|---|
 | où ranger le paquet et nos notes, ce que le dépôt garde du paquet, ce qui fait foi, comment répondre à l'éditeur | [`docs/knowledge/domain/livrable-de-l-editeur.md`](../../../apps/simulateur-eligibilite/docs/knowledge/domain/livrable-de-l-editeur.md) |
 | où vit le modèle, ce qu'il a le droit d'importer | `apps/simulateur-eligibilite/AGENTS.md`, [ADR-0012](../../../apps/simulateur-eligibilite/docs/knowledge/adr/0012-le-metier-ne-depend-pas-de-l-ecran-et-vit-dans-core.md) |
-| les décisions de la v10 (D-70, D-79, D-103…) | [`journal-des-decisions-v10.md`](../../../apps/simulateur-eligibilite/docs/knowledge/adr/journal-des-decisions-v10.md) |
 
 Les chemins ci-dessous partent de `apps/simulateur-eligibilite/`, sauf `tmp/`,
 qui est à la racine du dépôt. Le livrable se dépose dans
@@ -26,9 +25,6 @@ Les intégrations passées sont dans
 ```bash
 cd tmp/<version>/package && sha256sum -c --quiet MANIFEST.sha256
 ```
-
-N'écris rien dans `package/`, et n'y lance pas les tests de l'éditeur : un
-fichier de plus, et le manifeste ne tient plus.
 
 Lis ensuite, dans cet ordre :
 
@@ -64,7 +60,7 @@ Pose au diff ces questions, et montre les réponses avant de coder :
 ## 3. Découper
 
 Une version s'intègre sous un ticket Notion, découpé en une ligne de sa liste à
-cocher par PR (à la main, ou `/to-tasks` avec le diff en contexte). La première est
+cocher par PR. La première est
 toujours la recopie : elle casse tout ce qui nomme le modèle, et rien n'est vert
 tant qu'elle ne l'est pas. Chaque point du changelog qui change un comportement
 mérite ensuite la sienne.
@@ -110,16 +106,15 @@ identifiant chez l'éditeur. En faits d'abord (`oracle.test.ts`, sur
 produire (`oracle-par-reponses.test.ts`). Un cas qui ne se rejoue pas en
 réponses le dit dans l'en-tête du fichier, avec sa raison.
 
-Les seeds suivent : skill `ajouter-une-seed`.
+Les seeds suivent : `AGENTS.md` du simulateur, § « Tests ».
 
 ## 7. Vérifier
 
-Lance les tests du fichier écrit, `pnpm lint` et `pnpm typecheck`, puis pousse :
-la CI dit le reste. Voir `AGENTS.md` (racine), section « Vérifier ».
+Voir `AGENTS.md` (racine), section « Vérifier ».
 
 ## 8. Répondre à l'éditeur
 
 Écris le retour au moment où tu constates, pas de mémoire, dans
-`tmp/<version>/retour-editeur/` : `message.md`, et une annexe au besoin. Sa
-forme est dans
-`docs/knowledge/domain/livrable-de-l-editeur.md` § « Répondre à l'éditeur ».
+`tmp/<version>/retour-editeur/`. Sa forme est dans
+[`livrable-de-l-editeur.md`](../../../apps/simulateur-eligibilite/docs/knowledge/domain/livrable-de-l-editeur.md)
+§ « Répondre à l'éditeur ».

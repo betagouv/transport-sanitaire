@@ -31,9 +31,7 @@ git merge origin/main
 tsp pr
 ```
 
-Cette PR se fusionne par « Create a merge commit », jamais en squash : un squash
-reporte le contenu de `main` sans son commit, et `main` reste hors de
-l'historique de `staging`. Refais la commande du début après la fusion : elle
+Cette PR se fusionne par « Create a merge commit », jamais en squash. Refais la commande du début après la fusion : elle
 doit afficher `ok`.
 
 ## 2. Lister le périmètre
@@ -70,8 +68,7 @@ awk '/^## \[/{n++} n==1' CHANGELOG.md | grep -c '^- \[[0-9a-f]\{7\}\]'
 Le `pnpm-lock.yaml` ne doit pas bouger : il ne porte pas le numéro des apps. S'il
 bouge, regarde pourquoi avant de commiter.
 
-Avant de commiter : tests ciblés, `pnpm lint`, `pnpm typecheck`, puis la CI
-(`AGENTS.md` de la racine, section « Vérifier »).
+Avant de commiter : `AGENTS.md` de la racine, section « Vérifier ».
 
 ```bash
 git commit -am "chore(simulateur): livre la version 0.5.0"   # corps : GIT-005, GIT-006
@@ -107,10 +104,8 @@ gh release view simulateur-eligibilite@0.5.0 --web
 ```
 
 Les accolades de `${SHA}` comptent : sous zsh, `$SHA:a` lit `:a` comme un
-modificateur de chemin, et la release part vide.
-
-`--verify-tag` refuse la release si le tag n'est pas sur le distant.
-`gh` est épinglé dans `mise.toml`. `gh auth status` dit si tu es connecté.
+modificateur de chemin, et la release part vide. `gh auth status` dit si tu es
+connecté.
 
 ## 6. Mettre en production
 

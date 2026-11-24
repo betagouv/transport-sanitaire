@@ -19,9 +19,9 @@ pourquoi.
   les réponses de l'éditeur du 15 octobre. On a intégré la plus récente seule.
 - **Un YAML identique n'est pas une version vide.** La v10.1.2 ne changeait que
   le catalogue et des libellés. Le diff des contrats et du guide reste à faire.
-- **Un défaut du livrable se recopie tel quel** (D-126). Le lien
+- **Un défaut du livrable se recopie tel quel**. Le lien
   `contact-cpam.fr` abîmé en v10.1.3 est resté abîmé, en attendant l'éditeur.
-- **Le contrat l'emporte sur un texte du catalogue** (D-127). En v10.1.3,
+- **Le contrat l'emporte sur un texte du catalogue**. En v10.1.3,
   `CONTRAT_RENDU_DOCUMENTAIRE.json` disait le libellé du bouton de complétion,
   et le catalogue en disait un autre.
 

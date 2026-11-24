@@ -12,7 +12,7 @@ Le simulateur d'éligibilité au transport sanitaire. Sa pile :
   que `front/socle/questionnaire/` affiche.
 
 **L'app est entre deux modèles.** Le modèle v9 et ce qui en dépendait sont retirés,
-la v10 n'est pas intégrée : son avancement est dans l'issue 50 du dépôt, ses
+la v10 n'est pas intégrée : son avancement est dans son ticket Notion, ses
 décisions dans `docs/knowledge/adr/journal-des-decisions-v10.md`, clos le
 2026-11-24 (les nouvelles vont dans le message du commit). Seul le
 S3141 se télécharge rempli. Le simulateur s'ouvre sur le **modèle de
@@ -596,6 +596,16 @@ pas dans un fichier de test.** C'est un catalogue unique de situations nommées,
 ([`core/models/fake/seeds-catalogue.ts`](core/models/fake/seeds-catalogue.ts))
 ouvre les pages à montrer. Les tests de l'écran des seeds écrivent leurs propres seeds, sur le parcours
 factice.
+
+Les réponses d'une seed se donnent par identifiant de question (`"Q1.2"`).
+Complètes, elles ouvrent un résultat, et `expected` annonce les seules cibles qui
+caractérisent la seed. Incomplètes, elles s'arrêtent sur la première question
+sans réponse, et n'annoncent rien. Un groupe de réponses que plusieurs seeds
+partagent devient une constante en tête du catalogue. Pour un cas de l'oracle,
+les réponses suivent le contrat réponses/faits du paquet. `pnpm test conformite
+metier-sous-node` rejoue la seed. Sur un écart, ne corrige pas l'attendu pour
+qu'il passe : lis la règle et le contrat
+([`livrable-de-l-editeur.md`](docs/knowledge/domain/livrable-de-l-editeur.md)).
 
 ## Les developer tools
 
