@@ -366,7 +366,7 @@ Trois fichiers de la racine portent ce déploiement :
 | `Procfile` | `web: pnpm --filter "${DEPLOY_APP:-simulateur-eligibilite}" run start` |
 | `pnpm-lock.yaml` | les versions exactes de toutes les apps |
 
-Le build installe donc aussi les dépendances de `datahub` et de `glossaire-notion`.
+Le build installe donc aussi les dépendances de `datahub`.
 C'est le prix du lock unique, et il se compte en secondes.
 
 ## Intégrer dans Sites Conformes
