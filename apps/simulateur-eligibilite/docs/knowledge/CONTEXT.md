@@ -396,6 +396,15 @@ Une page à renseigner d'un cerfa. Un même champ se recopie sur chaque volet
 (D-185).
 _Chez l'éditeur_: « volet », le même mot.
 
+**Texte strict**:
+Un texte du cerfa que le socle ne rapetisse ni ne coupe : il s'écrit à 9 pt dans
+son champ, ou ne s'écrit pas (la cellule médicale de la PMT et de la DAP). Quand
+il déborde, la génération le dit avec son maximum de caractères, le PDF n'est
+qu'un aperçu marqué « Aperçu – texte à valider », et l'écran fait réécrire le
+texte avant d'ouvrir les exports. Les autres textes rapetissent jusqu'à tenir
+(D-85, D-302).
+_Chez l'éditeur_: aucun mot.
+
 **Segment**:
 Un morceau du texte médical du cerfa : le soin, un besoin, un critère
 d'ambulance. Les segments se joignent par « ; » (D-141, D-198).

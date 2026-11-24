@@ -24,24 +24,13 @@
 
 ## Le dépôt
 
-Monorepo en **workspace pnpm**. Le `pnpm-workspace.yaml` de la racine déclare
-`apps/*`. Il en découle :
-
-- une seule installation, à la racine ;
-- un seul `pnpm-lock.yaml` ;
-- un magasin de paquets mutualisé.
-
-Le toolchain vient de `mise` :
-
-- Node 24
-- pnpm
-- `gh`, pour les PR et la release d'une livraison
+Monorepo en **workspace pnpm** (`apps/*`) : une seule installation, à la
+racine, et un seul `pnpm-lock.yaml`. Le toolchain vient de `mise` : Node 24, pnpm,
+et `gh` pour les PR et la release d'une livraison.
 
 Les apps restent **indépendantes de code**. Aucune n'importe une autre. Chacune a
 son `package.json`, son job CI et son `pnpm verifier`. Le workspace mutualise
 l'installation, pas les frontières.
-
-Deux conséquences qui ne sont pas cosmétiques.
 
 **Une version d'outil partagé s'écrit dans le `catalog:` du
 `pnpm-workspace.yaml`**, jamais dans une app. Les apps y renvoient par
@@ -50,10 +39,7 @@ avec un `verifier` vert dans l'une et rouge dans l'autre. Une dépendance propre
 une app (`express`, `publicodes`, `xlsx`) reste chez elle.
 
 **pnpm ne résout pas les dépendances fantômes.** Un paquet utilisé sans être
-déclaré marchait sous npm, par hoisting. Ici il casse.
-
-Exemple : l'ancienne app `glossaire-notion` compilait avec `types: ["node"]` sans avoir jamais
-listé `@types/node`. La correction est toujours de déclarer la dépendance.
+déclaré marchait sous npm, par hoisting. Ici il casse : on le déclare.
 
 **Avant de toucher à `apps/X`, lis `apps/X/AGENTS.md`.** Ce fichier-ci ne décrit
 aucune app.
@@ -62,47 +48,47 @@ aucune app.
 |---|---|
 | `apps/simulateur-eligibilite` | Le produit. Simulateur d'éligibilité au transport sanitaire : règles publicodes, front React/DSFR, backend Express, rattachement à un établissement et un service, remplissage du CERFA. |
 | `apps/datahub` | L'ETL qui calcule la part des trajets réalisés via les plateformes. Code public, **données et fournisseurs privés**. |
-| `apps/cli` | `tsp`, cinq commandes : `setup`, `doctor`, `open`, `branch`, `pr`. Sans dépendance d'exécution, **sans tests**. |
+| `apps/cli` | `tsp`, la CLI du dépôt. Sans dépendance d'exécution, **sans tests**. |
 
-## `tsp`, le point d'entrée
-
-`tsp` est la CLI d'`apps/cli`. Elle ne fait que ce que rien d'autre ne fait :
-cinq commandes. Sur une machine neuve, `apps/cli/bin/tsp setup` installe `mise`,
-le toolchain, les dépendances, les hooks, et rend `tsp` appelable de partout.
+**`tsp` ne fait que ce que rien d'autre ne fait.** Sur une machine neuve,
+`apps/cli/bin/tsp setup` installe `mise`, le toolchain, les dépendances, les
+hooks, et rend `tsp` appelable de partout.
 
 | Besoin | Commande |
 |---|---|
 | Préparer et diagnostiquer la machine | `tsp setup`, `tsp doctor` |
-| Ouvrir un outil du projet (site, préprod, hébergeur) | `tsp open [outil]` |
+| Ouvrir un outil du projet | `tsp open [outil]` |
 | Tirer une branche de `staging` | `tsp branch <type>/<sujet>` |
 | Pousser et ouvrir la PR vers `staging` | `tsp pr` |
 
-Tout le reste passe par les outils eux-mêmes : `pnpm --filter <app> <script>`
-pour une action d'app, `gh` pour GitHub, et la lecture des fichiers pour les
-règles, les skills et la doc. `tsp help` liste les cinq commandes.
+Le reste passe par les outils eux-mêmes : `pnpm --filter <app> <script>`, `gh`,
+et la lecture des fichiers.
+
+**Ce qui traîne se nettoie.**
+
+- Un worktree est supprimé à la fusion de sa PR, avec sa branche locale.
+- `tmp/` ne garde que le livrable de l'éditeur en cours et le précédent.
+- Pas de dossier `spec/` à la racine : le cadrage d'un chantier vit dans son
+  ticket Notion. `apps/datahub/spec/` est autre chose : il est suivi par git.
 
 ## Vérifier
 
 **La CI est la porte.** Avant de pousser, on lance seulement ce qui est rapide :
+les tests du ou des fichiers qu'on vient d'écrire, `pnpm lint` en entier, et
+`pnpm typecheck`. On pousse, et la CI dit le reste en 3 minutes.
 
-- les tests du ou des fichiers qu'on vient d'écrire ;
-- `pnpm lint`, en entier ;
-- `pnpm typecheck`.
-
-On pousse, et la CI dit le reste en 3 minutes. Elle passe une à une les étapes du
-script `verifier` de chaque app (lint, typecheck, knip, test, build), sous leur
-nom : un échec se lit sans ouvrir le journal. Une porte ajoutée au `verifier`
+Elle passe une à une les étapes du script `verifier` de chaque app (lint,
+typecheck, knip, test, build), sous leur nom. Une porte ajoutée au `verifier`
 d'une app s'ajoute aussi à son job, sous le même nom.
 
 On ne lance pas la suite entière en local, ni deux commandes de test en même
-temps, autres sessions comprises. Le script `verifier` (`pnpm --filter <app> verifier`)
-reste disponible, sans être un geste obligatoire.
+temps, autres sessions comprises.
 
 Les parcours en navigateur du simulateur (`pnpm test:navigateur`) demandent des
 navigateurs installés et ont leur propre job en CI.
 
-La CI et le `Procfile` appellent `pnpm` en direct, pas `tsp` : la production ne
-dépend pas de la CLI.
+La CI et le `Procfile` appellent `pnpm`, pas `tsp` : la production ne dépend pas
+de la CLI.
 
 `pnpm audit` ne se scope pas à une app : il lit le lock, et le lock est unique
 au dépôt. Il a son job de CI à la racine.
@@ -120,15 +106,10 @@ au dépôt. Il a son job de CI à la racine.
   `referentiel`, `cerfa`, `seed`, `simulateur`.
 
 **L'anglais** porte le vocabulaire technique des identifiants, celui que
-l'industrie nomme déjà ainsi. Le franciser produit des mots que personne n'emploie.
-
-| En anglais | Exemples |
-|---|---|
-| les composants d'interface | `TextField`, `SelectField`, `Stepper`, `Container`, `Footer`, `RattachementForm` |
-| les écrans | `RattachementScreen`, `SeedsScreen`, `SimulateurScreen` |
-| la mécanique du questionnaire | `Questionnaire`, `QuestionnaireState`, `Answer`, `draft`, `lockedAnswers`, `askedIf`, `dependsOn` |
-| la navigation et l'état | `screen`, `goTo`, `restart`, `state` |
-| ce qu'une API tierce nomme | `useX`, `Props`, `track*`, `nativeInputProps`, `rowId` |
+l'industrie nomme déjà ainsi : composants d'interface (`TextField`, `Stepper`),
+écrans (`SeedsScreen`), mécanique du questionnaire (`Answer`, `draft`,
+`dependsOn`), navigation et état, et ce qu'une API tierce nomme (`useX`, `Props`).
+Le franciser produit des mots que personne n'emploie.
 
 Un nom qui mêle les deux garde le terme métier tel quel et met le reste en
 anglais : `RattachementForm`, `SeedsTable`, `seedAnswers`.
@@ -144,17 +125,15 @@ son `AGENTS.md`.
 27 règles numérotées vivent dans `docs/knowledge/contributing/`. **À lire avant
 d'écrire une ligne ou de commiter.**
 
-| Fichier | Ce qu'il porte |
-|---|---|
-| [`regles-de-code.md`](docs/knowledge/contributing/regles-de-code.md) | les 20 `QUAL-*` : forme d'un fichier, découpage, noms, rôles, exports, suppressions de lint |
-| [`regles-git.md`](docs/knowledge/contributing/regles-git.md) | les 7 `GIT-*` : branche et PR vers `staging`, forme du message, métadonnée d'IA, confidentialité |
-| [`ecrire-une-regle.md`](docs/knowledge/contributing/ecrire-une-regle.md) | le format d'une règle, pour en ajouter, modifier ou retirer une |
-| [`ecrire-une-decision.md`](docs/knowledge/contributing/ecrire-une-decision.md) | où écrire une décision, quand elle mérite un ADR, la forme d'un ADR, les décisions renversées |
-| [`livraisons.md`](docs/knowledge/contributing/livraisons.md) | ce qu'une livraison produit, son ordre de mise en production, le format du journal, du tag et de la release |
+- [`regles-de-code.md`](docs/knowledge/contributing/regles-de-code.md) : les 20 `QUAL-*`
+- [`regles-git.md`](docs/knowledge/contributing/regles-git.md) : les 7 `GIT-*`
+- [`ecrire-une-regle.md`](docs/knowledge/contributing/ecrire-une-regle.md) et
+  [`ecrire-une-decision.md`](docs/knowledge/contributing/ecrire-une-decision.md) :
+  écrire une règle, une décision ou un ADR
+- [`livraisons.md`](docs/knowledge/contributing/livraisons.md) : ce qu'une livraison produit
 
-Chaque règle porte un identifiant, sa raison, un exemple juste, un exemple faux,
-et la garde qui l'applique. **Ne les recopie pas ici.** Cite l'identifiant en
-revue et en commit : « corrige QUAL-006 ».
+**Ne recopie pas les règles ici.** Cite l'identifiant en revue et en commit :
+« corrige QUAL-006 ».
 
 ## Où écrire quoi
 
@@ -168,13 +147,17 @@ revue et en commit : « corrige QUAL-006 ».
 | Le détail d'une implémentation | le code, que ses tests documentent. Ni un ADR ni un README. Un code obscur se corrige (un nom, une étape explicite), il ne s'explique pas dans une doc |
 | Le mode d'emploi d'une app | son `README.md` |
 | Ce qu'une version apporte | le `CHANGELOG.md` de l'app, au format de [`livraisons.md`](docs/knowledge/contributing/livraisons.md) |
-| Une règle pour l'IA | `AGENTS.md`, celui de la racine ou celui de l'app |
+| Une consigne aux agents | `AGENTS.md`, celui de la racine ou celui de l'app, selon le critère ci-dessous |
 | Une règle de code ou de commit | `docs/knowledge/contributing/`, au format de [`ecrire-une-regle.md`](docs/knowledge/contributing/ecrire-une-regle.md) |
 | Une garde | **un test**, pas une phrase |
 
-Ce que `docs/knowledge/` contient aujourd'hui ne se recopie pas ici : liste les
-dossiers `adr/` et `domain/` de la racine et de chaque app plutôt que de te fier
-à un inventaire, qui se périmerait au premier fichier ajouté ou déplacé.
+**Un `AGENTS.md` garde le pourquoi et les contraintes qu'on ne peut pas déduire du
+code, des tests ou des docs.** Tout ce qui décrit ce que fait le code en sort :
+table de fichiers, état d'avancement, détail d'une implémentation. Avant d'y
+ajouter une ligne, cherche le test ou le fichier qui la dit déjà.
+
+Ce que `docs/knowledge/` contient ne se recopie pas ici : liste les dossiers
+`adr/` et `domain/` plutôt que de te fier à un inventaire.
 
 **Quand deux sources se contredisent**, l'ordre d'autorité est :
 
@@ -184,9 +167,7 @@ Cette chaîne classe ce qui *décrit* le dépôt. `AGENTS.md` et
 `docs/knowledge/contributing/` *prescrivent*. Ils ne se périment pas contre le
 code : c'est le code qui a tort contre eux.
 
-Les specs se périment. Exemple : `etl-part-plateformes.md` annonce 5 marts, le
-README de `datahub` en documente 6. Corrige la source la moins à jour, ne
-t'y fie pas.
+Les specs se périment : corrige la source la moins à jour, ne t'y fie pas.
 
 ## Marches à suivre
 
@@ -208,16 +189,11 @@ de l'éditeur et l'`AGENTS.md` du simulateur).
 ## Toute règle nomme sa garde
 
 **Une règle de forme nomme l'assertion qui la garde. Sans assertion, elle
-n'existe pas.** Mieux vaut l'écrire dans un test que la répéter ici.
-
-Exemple : neuf fichiers ouvraient sur un `import` pendant des mois, sous une
-règle qui l'interdisait, parce que rien ne la vérifiait.
-
-Une règle de jugement, elle, ne se mécanise pas. Une assertion dirait *qu'*on a
-coupé, jamais *si* on a coupé au bon endroit. Elle écrit alors `*Aucune garde.*`
-en toutes lettres, plutôt que de laisser croire qu'elle en a une.
+n'existe pas.** Mieux vaut l'écrire dans un test que la répéter ici. Une règle de
+jugement, que rien ne mécanise, écrit `*Aucune garde.*` en toutes lettres plutôt
+que de laisser croire qu'elle en a une.
 
 L'état de chaque règle des 27 de
 [`docs/knowledge/contributing/`](docs/knowledge/contributing/) se lit dans la
-colonne « Garde » de son tableau, pas ici : recopier cet état dans ce fichier
-créerait deux sources à tenir à jour au lieu d'une.
+colonne « Garde » de son tableau, pas ici : le recopier créerait deux sources à
+tenir à jour.

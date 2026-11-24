@@ -56,36 +56,20 @@ Le métier ne s'écrit plus dans le README : il va dans `spec/`.
 
 ## Le pipeline
 
-C'est du **TypeScript exécuté directement par Node 24** (effacement de types),
-sans build. Les dossiers portent leur ordre :
+Du **TypeScript exécuté directement par Node 24**, sans build. Les dossiers
+`src/01-extract/` à `src/05-publish/` portent l'ordre des étapes, et le
+[README](README.md) dit comment les lancer.
 
-| Étape | Ce qu'elle fait |
-|---|---|
-| `src/01-extract/` | applique à chaque fichier l'**adaptateur de son format** → lignes normalisées. Un format = un adaptateur dans `adapteurs/`, déclaré dans `registry.ts`. |
-| `src/02-staging/` | normalise et empile |
-| `src/03-reconcile/` | **aligne les finess sur le référentiel**, qui fait autorité, puis rattache au GHT |
-| `src/04-marts/` | le même calcul à différents grains, un fichier par mart |
-| `src/05-publish/` | publication Grist (document cible **privé**) |
-
-`pnpm etl` enchaîne tout. Chaque étape est aussi lançable seule : `pnpm extract`,
-`staging`, `reconcile`, `marts`, `publish-grist`.
-
-`pnpm fetch-ght` rafraîchit `ref/ght/`. Elle est hors chaîne parce que `ref/` est
-versionné : l'ETL tourne donc sans réseau.
-
-## Vérifier
-
-`pnpm verifier` : lint (Biome), typecheck, knip, tests. Il n'y a pas de build.
+- **Un format de fichier = un adaptateur**, déclaré dans
+  `src/01-extract/adapteurs/registry.ts`. Le code ne connaît jamais un fournisseur.
+- **Le référentiel fait autorité** : l'étape `03-reconcile` aligne les finess sur lui.
+- **Le document Grist cible est privé** (`05-publish`).
+- **`pnpm fetch-ght` est hors chaîne** parce que `ref/` est versionné : l'ETL
+  tourne donc sans réseau.
 
 ## Tests
 
-**Sans mock** :
-
-- lecture de vrais bundles FHIR,
-- aller-retour CSV RFC 4180,
-- calcul de marts en mémoire.
-
-Aucune donnée réelle dans les fixtures.
+**Sans mock**, et **aucune donnée réelle dans les fixtures**.
 
 ## Dette nommée
 

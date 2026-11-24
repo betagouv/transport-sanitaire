@@ -81,7 +81,7 @@ cd apps/simulateur-eligibilite && pnpm regles
 ```
 
 Puis mets à jour la version annoncée dans `apps/simulateur-eligibilite/README.md`
-(« Entre deux modèles ») et dans `apps/simulateur-eligibilite/AGENTS.md`.
+(« Entre deux modèles »).
 
 ## 5. Lire ce qui tombe
 

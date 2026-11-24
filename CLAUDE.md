@@ -1,6 +1,5 @@
 # CLAUDE.md
 
-Ce fichier guide Claude Code (claude.ai/code) dans ce dépôt.
+Claude Code ne charge pas un lien Markdown, mais un import `@` : les instructions sont dans AGENTS.md.
 
-Les instructions sont dans [AGENTS.md](AGENTS.md). Pour chaque app, elles sont
-dans son propre `apps/<app>/AGENTS.md`, à lire avant d'y toucher.
+@AGENTS.md
