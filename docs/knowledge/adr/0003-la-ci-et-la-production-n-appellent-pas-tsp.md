@@ -2,6 +2,9 @@
 
 > Statut : **décidé** · 2026-10-12 · Anciennement ADR-3 de `cli.md`
 
+> **Mise à jour 2026-11-24, la CI est la porte.** La CI appelle toujours `pnpm`,
+> mais les étapes du `verifier` une à une, plus le script d'un bloc.
+
 **Décision.** La CI et le `Procfile` appellent `pnpm` en direct. `tsp` remplace
 les tâches `mise`, qui n'étaient qu'un autre point d'entrée pour un humain.
 

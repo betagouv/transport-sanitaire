@@ -75,8 +75,5 @@ l'éditeur qui te semble fausse ne se corrige pas chez nous :
 Ouvre ensuite la seed sur l'écran des seeds (`pnpm dev`, puis les developer
 tools) : elle doit tomber sur l'écran que dit son `label`.
 
-Puis :
-
-```bash
-tsp verifier simulateur
-```
+Puis : lance les tests du fichier écrit, `pnpm lint` et `pnpm typecheck`, puis pousse :
+la CI dit le reste. Voir `AGENTS.md` (racine), section « Vérifier ».

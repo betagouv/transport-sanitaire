@@ -2,6 +2,10 @@
 
 > Statut : **décidé** · 2026-10-12 · Anciennement ADR-2 de `cli.md`
 
+> **Mise à jour 2026-11-24, la CI est la porte.** La CI ne lance plus le script
+> `verifier` d'un bloc : elle en passe les étapes une à une, sous leur nom. Le
+> script reste celui de l'app, et une porte ajoutée s'ajoute aussi à son job.
+
 **Contexte.** Les apps ne savent pas faire les mêmes choses. Il faut que `tsp`
 sache ce que chacune porte.
 
