@@ -98,11 +98,16 @@ manque à son contrat s'ajoute à l'index. Les tests d'un module
 - Seul un adaptateur importe un paquet. Dans `core/`, tout fichier qui n'est pas
   un adaptateur. Dans `front/`, `server/` et `shared/`, le domaine seulement :
   un fichier au suffixe `.entity`, `.vo`, `.service`, `.usecase`, `.port`,
-  `.error`, `.factory` ou `.types`. Un import `type` compte, et `node:*` aussi.
+  `.error`, `.factory` ou `.types`. Un import `type` compte, et `node:*` aussi,
+  sauf dans le domaine de `server/` (voir plus bas).
 - Sont exemptés : le composant `.tsx` (il importe React et le DSFR), le `.hook.ts`
   (l'adaptateur de l'écran), le `.controller.ts` (il importe Express et zod à la
   porte du serveur) et le `.client.ts` (l'accès à l'extérieur). Un fichier sans
   suffixe hors de `core/` n'est pas jugé : il n'a pas encore de rôle.
+- Le domaine de `server/` peut importer un module `node:*` : c'est la bibliothèque
+  standard de l'environnement, pas une infrastructure à remplacer. `core/`,
+  `front/` et `shared/` restent sous la règle, car ils tournent aussi dans le
+  navigateur. Risque accepté : qu'un import comme `node:http` s'y glisse.
 - Un `index.ts` peut exporter un adaptateur, et un `container.ts` assemble ceux de
   sa racine.
 - Une seule porte : un modèle charge l'adaptateur publicodes sans index, pour
