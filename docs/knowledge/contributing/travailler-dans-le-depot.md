@@ -43,6 +43,7 @@ Aucun test ne garde cette règle : elle se tient à la relecture.
 **La CI est la porte.** Avant de pousser, on lance seulement ce qui est rapide :
 les tests du ou des fichiers qu'on vient d'écrire, puis `pnpm --filter <app> lint` et
 `pnpm --filter <app> typecheck` pour l'app touchée. On pousse, et la CI dit le reste.
+Le lint n'a pas d'avertissement : une règle est une erreur, ou éteinte avec sa raison.
 
 - Elle passe une à une les étapes du script `verifier` de chaque app (lint,
   typecheck, knip, test, build), sous leur nom. Une porte ajoutée au `verifier`

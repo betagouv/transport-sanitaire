@@ -5,8 +5,8 @@
   "type": "module",
   "description": "tsp, le point d'entrée du dépôt : préparer et diagnostiquer la machine, ouvrir les outils, tirer une branche, ouvrir une PR",
   "scripts": {
-    "lint": "biome check",
-    "lint:fix": "biome check --write",
+    "lint": "biome check --error-on-warnings",
+    "lint:fix": "biome check --write --error-on-warnings",
     "typecheck": "tsc -b",
     "verifier": "pnpm lint && pnpm typecheck && pnpm knip",
     "knip": "knip --directory ../.. --workspace apps/cli"

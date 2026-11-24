@@ -1,5 +1,5 @@
 {
-  "$schema": "https://biomejs.dev/schemas/2.5.9/schema.json",
+  "$schema": "https://biomejs.dev/schemas/2.6.8/schema.json",
   // La racine porte désormais sa propre configuration, pour la garde de
   // style de la documentation. Biome exige qu'une configuration imbriquée
   // se déclare telle : sans ça, il voit deux racines et refuse de tourner.
@@ -33,6 +33,13 @@
       "includes": ["src/**"],
       "linter": {
         "rules": {
+          "complexity": {
+            // `Csv`, `Xlsx`, `Paths` et `Mapping` sont des modules écrits en
+            // classes statiques, appelés plus de quatre-vingts fois dans une
+            // quinzaine de fichiers. Les passer en fonctions exportées n'est
+            // pas mécanique : `Paths` garde un état et des accesseurs.
+            "noStaticOnlyClass": "off"
+          },
           "style": {
             "noNonNullAssertion": "off"
           },
