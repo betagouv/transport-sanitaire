@@ -1,6 +1,6 @@
 # ADR-0009 - Le suivi des chantiers se tient dans Notion
 
-> Statut : **décidé** · 2026-11-24 · Remplace les ADR-0004, ADR-0007 et ADR-0008
+> Statut : **décidé** · 2026-11-24 · Remplace le suivi par issues GitHub, par sous-issues et par tableau de projet
 
 **Contexte.** Un chantier était une issue GitHub, ses tâches des sous-issues, son
 état déduit par `tsp` et projeté dans un GitHub Project, puis recopié dans un
