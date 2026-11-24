@@ -12,6 +12,7 @@ import type { AnalyticsEvent } from "../../shared/analytics/analytics-event.ts";
 import type { Journal, QuarantineReason } from "./journal.port.ts";
 import { type Build, JournalEntry } from "./journal-entry.entity.ts";
 import type { KnownRattachements } from "./known-rattachements.port.ts";
+import type { SameContent } from "./same-content.port.ts";
 
 export type Collected = "added" | "duplicate" | "collision" | "quarantined";
 
@@ -21,17 +22,20 @@ type InTheReferentiel = undefined;
 export class CollectAnEvent {
   readonly #journal: Journal;
   readonly #rattachements: KnownRattachements;
+  readonly #content: SameContent;
   readonly #environment: string;
   readonly #build: Build;
 
   constructor(
     journal: Journal,
     rattachements: KnownRattachements,
+    content: SameContent,
     environment: string,
     build: Build,
   ) {
     this.#journal = journal;
     this.#rattachements = rattachements;
+    this.#content = content;
     this.#environment = environment;
     this.#build = build;
   }
@@ -54,7 +58,7 @@ export class CollectAnEvent {
       await this.#journal.append(entry);
       return "added";
     }
-    if (entry.repeats(known)) return "duplicate";
+    if (entry.repeats(known, this.#content)) return "duplicate";
     await this.#journal.setAside(entry);
     return "collision";
   }
