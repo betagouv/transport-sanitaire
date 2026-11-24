@@ -3,11 +3,11 @@
 // reçu, ou le signe de vie que le serveur écrit chaque heure. Voir ADR-0042,
 // ADR-0050 et ADR-0051.
 
+import { isDeepStrictEqual } from "node:util";
 import {
   type AnalyticsEvent,
   SCHEMA_VERSION,
 } from "../../shared/analytics/analytics-event.ts";
-import type { SameContent } from "./same-content.port.ts";
 
 /**
  * Ce que le serveur sait de l'app qu'il sert : sa version, et son commit sur 7
@@ -101,11 +101,12 @@ export class JournalEntry {
    * mesure l'est aussi quand elle redit celle du même document, sous un autre
    * `event_id` : son contenu ne change pas (ANA22-03).
    */
-  repeats(other: JournalEntry, content: SameContent): boolean {
+  repeats(other: JournalEntry): boolean {
     const measure = measureOf(this.event);
     return (
-      content.equal(this.event, other.event) ||
-      (measure !== undefined && content.equal(measure, measureOf(other.event)))
+      isDeepStrictEqual(this.event, other.event) ||
+      (measure !== undefined &&
+        isDeepStrictEqual(measure, measureOf(other.event)))
     );
   }
 }
