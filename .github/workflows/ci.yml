@@ -82,27 +82,6 @@ jobs:
       - name: test
         run: pnpm --filter datahub test
 
-  glossaire-notion:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v7
-      - uses: pnpm/action-setup@v6
-      - uses: actions/setup-node@v7
-        with:
-          node-version-file: package.json
-          cache: pnpm
-      - run: pnpm install --frozen-lockfile
-      - name: lint
-        run: pnpm --filter glossaire-notion lint
-      - name: typecheck
-        run: pnpm --filter glossaire-notion typecheck
-      - name: knip
-        run: pnpm --filter glossaire-notion knip
-      - name: test
-        run: pnpm --filter glossaire-notion test
-      - name: build
-        run: pnpm --filter glossaire-notion build
-
   cli:
     runs-on: ubuntu-latest
     steps:

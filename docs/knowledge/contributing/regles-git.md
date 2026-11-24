@@ -98,7 +98,7 @@ Ne pas dépasser deux paragraphes.
 ```
 ✅ OK
 pnpm ne résout pas les dépendances fantômes, ce qui a révélé une déclaration
-manquante : `glossaire-notion` compilait avec `types: ["node"]` sans avoir
+manquante : l'ancienne app `glossaire-notion` compilait avec `types: ["node"]` sans avoir
 jamais listé `@types/node`, que le hoisting npm lui fournissait. La dépendance
 est déclarée.
 ```
