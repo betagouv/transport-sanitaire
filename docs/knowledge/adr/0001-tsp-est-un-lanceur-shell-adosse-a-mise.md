@@ -99,3 +99,9 @@ flowchart LR
 > **Mise à jour 2026-10-12, emplacement du lanceur.** Le lanceur a quitté la
 > racine du dépôt pour le dossier de la CLI. L'ADR-0001 tient toujours : seul
 > l'endroit change, et le premier geste s'allonge d'un chemin.
+
+> **Mise à jour 2026-11-24, `tsp` se réduit.** La décision du lanceur tient. Le
+> schéma et le tableau des composants ne montrent plus Notion, le GitHub
+> Project, le workflow de fermeture, ni la lecture de la documentation : la CLI
+> ne garde que `setup`, `doctor`, `open`, `branch` et `pr`, et passe par `git`,
+> `gh` et `mise`. Voir les ADR-0009 et ADR-0010.

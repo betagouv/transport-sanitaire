@@ -9,13 +9,8 @@ type Options = {
   /** Répond oui à toute confirmation. */
   yes: boolean;
   help: boolean;
-  app?: string;
   title?: string;
   bodyFile?: string;
-  /** Le numéro de l'issue qu'une branche sert. */
-  issue?: string;
-  /** Les numéros des issues qui en bloquent une, séparés par des virgules. */
-  blockedBy?: string;
 };
 
 export type Invocation = {
@@ -25,8 +20,6 @@ export type Invocation = {
   cwd: string;
   /** Les arguments positionnels, après le nom de la commande. */
   args: string[];
-  /** Ce qui suit `--`, transmis tel quel au script d'une app. */
-  passthrough: string[];
   options: Options;
 };
 
@@ -37,10 +30,8 @@ export function readInvocation(argv: string[]): {
   name: string | undefined;
   invocation: Invocation;
 } {
-  const cut = argv.indexOf("--");
-  const own = cut === -1 ? argv : argv.slice(0, cut);
   const { values, positionals } = parseArgs({
-    args: own,
+    args: argv,
     allowPositionals: true,
     options: FLAGS,
   });
@@ -53,16 +44,12 @@ export function readInvocation(argv: string[]): {
       // d'origine par l'environnement.
       cwd: process.env.TSP_CWD ?? process.cwd(),
       args,
-      passthrough: cut === -1 ? [] : argv.slice(cut + 1),
       options: {
         json: values.json,
         yes: values.yes,
         help: values.help,
-        app: values.app,
         title: values.title,
         bodyFile: values["body-file"],
-        issue: values.issue,
-        blockedBy: values["blocked-by"],
       },
     },
   };
@@ -74,9 +61,6 @@ const FLAGS = {
   json: { type: "boolean", default: false },
   yes: { type: "boolean", short: "y", default: false },
   help: { type: "boolean", short: "h", default: false },
-  app: { type: "string" },
   title: { type: "string" },
   "body-file": { type: "string" },
-  issue: { type: "string" },
-  "blocked-by": { type: "string" },
 } as const;

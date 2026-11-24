@@ -442,7 +442,7 @@ ses tests le chargent comme texte.
 |---|---|
 | `pnpm verifier` | Enchaîne lint → typecheck → knip → tests → build (+ vérification de bundle). La CI en passe les étapes une à une, sous leur nom : voir « Vérifier » dans l'[AGENTS.md](../../AGENTS.md) de la racine. Avant de pousser, on lance seulement les tests ciblés, `pnpm lint` et `pnpm typecheck`. |
 | `pnpm test:navigateur` | Les parcours en navigateur réel (Playwright), sur le front construit. Hors du `verifier` : voir [Tests](#tests) |
-| `pnpm dev` | Front et backend ensemble : c'est `tsp dev simulateur` |
+| `pnpm dev` | Front et backend ensemble |
 | `pnpm dev:front` | Serveur Vite, <http://localhost:5173> (proxy `/api` → `:3000`) |
 | `pnpm dev:server` | Backend Express, <http://localhost:3000> |
 | `pnpm start` | Serveur de production (`node server/server.ts`) |

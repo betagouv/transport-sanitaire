@@ -1,7 +1,6 @@
 # Features du simulateur
 
-> Ce que l'app sait faire, vu par celui qui s'en sert. `tsp features simulateur`
-> affiche ce tableau. Le détail est dans le [README](../../README.md).
+> Ce que l'app sait faire, vu par celui qui s'en sert. Le détail est dans le [README](../../README.md).
 
 | Feature | Ce qu'elle fait |
 |---|---|

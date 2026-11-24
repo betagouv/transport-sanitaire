@@ -63,30 +63,24 @@ aucune app.
 | `apps/simulateur-eligibilite` | Le produit. Simulateur d'éligibilité au transport sanitaire : règles publicodes, front React/DSFR, backend Express, rattachement à un établissement et un service, remplissage du CERFA. |
 | `apps/datahub` | L'ETL qui calcule la part des trajets réalisés via les plateformes. Code public, **données et fournisseurs privés**. |
 | `apps/glossaire-notion` | Une extension de navigateur qui affiche le glossaire tenu dans Notion. |
-| `apps/cli` | `tsp`, le point d'entrée du dépôt. Sans dépendance d'exécution, **sans tests**. |
+| `apps/cli` | `tsp`, cinq commandes : `setup`, `doctor`, `open`, `branch`, `pr`. Sans dépendance d'exécution, **sans tests**. |
 
 ## `tsp`, le point d'entrée
 
-**Tout geste sur le dépôt passe par `tsp`**, la CLI d'`apps/cli`. Sur une
-machine neuve, `apps/cli/bin/tsp setup` installe `mise`, le toolchain, les dépendances, les
-hooks, et rend `tsp` appelable de partout.
+`tsp` est la CLI d'`apps/cli`. Elle ne fait que ce que rien d'autre ne fait :
+cinq commandes. Sur une machine neuve, `apps/cli/bin/tsp setup` installe `mise`,
+le toolchain, les dépendances, les hooks, et rend `tsp` appelable de partout.
 
 | Besoin | Commande |
 |---|---|
-| Lancer une action sur une app | `tsp <install\|build\|start\|test\|dev\|verifier> [app]` |
-| Savoir ce qu'une app sait faire | `tsp apps`, `tsp features [app]` |
-| Lire les règles, les skills, la doc | `tsp rules [recueil\|id]`, `tsp skills [skill]`, `tsp docs [app]` |
-| Voir le travail en cours, à prendre | `tsp wip`, `tsp next` |
-| Voir où en est un chantier | `tsp issue list`, `tsp issue show <n>` |
-| Tenir un chantier | `tsp issue new`, `tsp issue add`, `tsp issue sync` |
+| Préparer et diagnostiquer la machine | `tsp setup`, `tsp doctor` |
 | Ouvrir un outil du projet (site, préprod, hébergeur) | `tsp open [outil]` |
-| Brancher, proposer | `tsp branch <type>/<sujet> [--issue <n>]`, `tsp pr`, `tsp pr status` |
-| Diagnostiquer la machine | `tsp doctor` |
+| Tirer une branche de `staging` | `tsp branch <type>/<sujet>` |
+| Pousser et ouvrir la PR vers `staging` | `tsp pr` |
 
-`tsp help` les liste toutes. Les commandes de lecture acceptent `--json`.
-Sans app, une action passe sur toutes les apps qui la portent, une à la fois.
-`dev` et `start` ne rendent pas la main : ils demandent une app dès que
-plusieurs les portent.
+Tout le reste passe par les outils eux-mêmes : `pnpm --filter <app> <script>`
+pour une action d'app, `gh` pour GitHub, et la lecture des fichiers pour les
+règles, les skills et la doc. `tsp help` liste les cinq commandes.
 
 ## Vérifier
 
@@ -102,8 +96,8 @@ nom : un échec se lit sans ouvrir le journal. Une porte ajoutée au `verifier`
 d'une app s'ajoute aussi à son job, sous le même nom.
 
 On ne lance pas la suite entière en local, ni deux commandes de test en même
-temps, autres sessions comprises. Le script `verifier` et `tsp verifier [app]`
-restent disponibles, sans être un geste obligatoire.
+temps, autres sessions comprises. Le script `verifier` (`pnpm --filter <app> verifier`)
+reste disponible, sans être un geste obligatoire.
 
 Les parcours en navigateur du simulateur (`pnpm test:navigateur`) demandent des
 navigateurs installés et ont leur propre job en CI.
@@ -171,10 +165,8 @@ revue et en commit : « corrige QUAL-006 ».
 |---|---|
 | Une décision courante | le corps du message du commit (le pourquoi) et le ticket Notion du chantier. Pas de `D-<n>`, ni dans le code ni dans un commentaire : le journal des décisions de la v10 est clos |
 | Une décision d'architecture coûteuse à défaire et surprenante | un fichier par décision, sans détail d'implémentation, dans `docs/knowledge/adr/` de l'app concernée, ou celui de la racine si la décision traverse plusieurs apps, au format de [`ecrire-une-decision.md`](docs/knowledge/contributing/ecrire-une-decision.md) |
-| Le cadrage d'un chantier | le corps de son issue GitHub, que `tsp issue new` ouvre. Jamais un fichier du dépôt |
-| Le découpage d'un chantier | ses sous-issues, une par PR, que `tsp issue add` ouvre |
-| L'état d'un chantier | **nulle part** : il se déduit de l'issue, de sa branche et de sa PR. `tsp issue show <n>` l'affiche, et `tsp` le projette dans le tableau GitHub Project |
-| Ce qu'une app sait faire | son `docs/knowledge/features.md`, un tableau « feature, ce qu'elle fait » que lit `tsp features` |
+| Le cadrage, le découpage et l'état d'un chantier | son ticket Notion, tenu à la main, avec une liste à cocher d'une ligne par PR. La PR cite le ticket dans son corps. Jamais un fichier du dépôt, ni une issue GitHub |
+| Ce qu'une app sait faire | son `docs/knowledge/features.md`, un tableau « feature, ce qu'elle fait » |
 | Une connaissance métier actée | `docs/knowledge/domain/` de l'app concernée, ou celui de la racine si elle traverse plusieurs apps. Ce qu'une décision d'architecture change pour le métier y va aussi |
 | Le détail d'une implémentation | le code, que ses tests documentent. Ni un ADR ni un README |
 | Le mode d'emploi d'une app | son `README.md` |

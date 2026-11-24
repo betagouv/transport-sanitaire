@@ -44,7 +44,7 @@ front et le référentiel de rattachement.
 | Commande | Ce qu'elle fait |
 | --- | --- |
 | `pnpm verifier` | **La vérification complète** : lint, typecheck, knip, tests, build et sa vérification de bundle. Sa CI en passe les étapes une à une. En local, on lance seulement les tests ciblés, `pnpm lint` et `pnpm typecheck`, puis la CI dit le reste. |
-| `pnpm dev` | Le front et le backend de dev ensemble. C'est ce que lance `tsp dev simulateur`. |
+| `pnpm dev` | Le front et le backend de dev ensemble. |
 | `pnpm dev:front` | Le front de dev, sur le port 5173, qui proxifie `/api` vers `:3000` |
 | `pnpm dev:server` | Le backend de dev, sur le port 3000, en `--watch`, qui charge `.env` s'il est présent |
 | `pnpm test` | Vitest. Le smoke Grist est ignoré sans `GRIST_API_KEY`. |
@@ -64,9 +64,9 @@ les dossiers de tests, rangés comme les sources, et dans
 `tests/modules-du-socle.test.ts`, pour l'index de chaque module du socle. Lis leur message d'échec : chacun dit ce que sa règle
 protège. Ce qu'on attend d'un contributeur est écrit dans [AGENTS.md](AGENTS.md).
 
-De n'importe où dans le dépôt, `tsp dev simulateur` lance le front et le backend en
-parallèle, et `tsp verifier` passe la vérification sur toutes les apps. Voir
-[`apps/cli`](../cli/README.md).
+De n'importe où dans le dépôt, `pnpm --filter simulateur-eligibilite dev` lance le front
+et le backend en parallèle, et `pnpm verifier` passe la vérification sur toutes
+les apps. Voir [`apps/cli`](../cli/README.md) pour `tsp`.
 
 ## Configuration
 

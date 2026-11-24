@@ -6,7 +6,6 @@ import path from "node:path";
 import type { Invocation } from "../core/invocation.ts";
 import { columns, emit } from "../core/output.ts";
 import { captureProgram } from "../core/run-program.ts";
-import { notionAccess } from "../notion/notion.ts";
 import { isLinked, isOnPath, linkPath } from "./launcher-link.ts";
 import { missingLocalFiles } from "./local-files.ts";
 
@@ -36,7 +35,6 @@ function runChecks(root: string): Check[] {
     localFiles(root),
     launcher(),
     githubAuth(root),
-    notion(root),
   ];
 }
 
@@ -66,7 +64,7 @@ function dependencies(root: string): Check {
     ok,
     required: true,
     detail: ok ? "installées" : "node_modules absent",
-    fix: "tsp install",
+    fix: "pnpm install",
   };
 }
 
@@ -114,22 +112,8 @@ function githubAuth(root: string): Check {
     name: "GitHub",
     ok,
     required: false,
-    detail: ok ? "gh authentifié" : "gh non authentifié : wip et pr dégradés",
+    detail: ok ? "gh authentifié" : "gh non authentifié : pr dégradée",
     fix: "gh auth login",
-  };
-}
-
-function notion(root: string): Check {
-  const access = notionAccess(root);
-  const ok = typeof access !== "string";
-  return {
-    name: "Notion",
-    ok,
-    required: false,
-    detail: ok
-      ? "jeton et base présents"
-      : `${access} : wip, next et sync dégradés`,
-    fix: "renseigne NOTION_TOKEN et NOTION_DATABASE_ID dans .env",
   };
 }
 

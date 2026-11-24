@@ -10,4 +10,5 @@ gh = "2.98.0"
 pnpm = "11.23.0"
 
 # Ce fichier ne porte que le toolchain. Les gestes du dépôt (installer, lancer,
-# vérifier) passent par `tsp` : voir apps/cli/README.md.
+# vérifier) passent par `pnpm`, et `tsp` prépare la machine : voir
+# apps/cli/README.md.
