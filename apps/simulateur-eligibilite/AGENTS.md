@@ -5,513 +5,137 @@
 
 ## Ce que c'est
 
-Le simulateur d'éligibilité au transport sanitaire. Sa pile :
+Le simulateur d'éligibilité au transport sanitaire : React 19, Vite, DSFR, et un
+questionnaire **déclaré par l'application** (`core/socle/questionnaire-engine/`),
+que `front/socle/questionnaire/` affiche. Un **backend Node/Express** (`server/` :
+le front et `/api/*`) le sert, sur **Scalingo**. Ce n'est pas un site statique.
+Le parcours commence par un rattachement obligatoire, sans identifier la personne
+([`rattachement.md`](docs/knowledge/domain/rattachement.md)).
 
-- React 19 + Vite + DSFR (`@codegouvfr/react-dsfr`) ;
-- un questionnaire **déclaré par l'application** (`core/socle/questionnaire-engine/`),
-  que `front/socle/questionnaire/` affiche.
+**L'app est entre deux modèles.** La v9 est retirée et la v10 s'intègre étape par
+étape. Son avancement est dans son ticket Notion, ce qui est parti et ce qui reste
+dans le [README](README.md) § « Entre deux modèles ». Le vocabulaire est dans
+[`CONTEXT.md`](docs/knowledge/CONTEXT.md).
 
-**L'app est entre deux modèles.** Le modèle v9 et ce qui en dépendait sont retirés,
-la v10 n'est pas intégrée : son avancement est dans son ticket Notion, ses
-décisions dans `docs/knowledge/adr/journal-des-decisions-v10.md`, clos le
-2026-11-24 (les nouvelles vont dans le message du commit). Seul le
-S3141 se télécharge rempli. Le simulateur s'ouvre sur le **modèle de
-l'éditeur** (`core/models/eligibilite/` et `front/models/eligibilite/`, D-119). Il
-s'intègre étape par étape, sur la v10.2.2 (livraison du 17 novembre) : ses règles, ses faits, ses cibles et son
-oracle sont là, son questionnaire va jusqu'à P3, le complément du cerfa, qui
-s'ouvre après le verrou (`questions/p3/partie-3.ts`). R2 est posée pour les dix issues : les cinq issues sans fiche patient
-(caisse, établissement, permission à la charge du patient, convocation, transport
-à l'étranger), la fiche négative, et les fiches positives de la prescription
-médicale de transport, du S3141 et des deux demandes d'accord préalable. Les
-boutons de chaque issue sont posés (`r3/r3.tsx`) ; « Compléter »
-ouvre P3, dont le résultat (R3) imprime et télécharge le gabarit du support
-(`r3/r3.tsx`, #157). Le S3141 se remplit (`r3/s3141/`,
-#158) : il assemble les rubriques que les cerfa partagent (`r3/rubriques/`,
-D-138), qui ne connaissent aucun cerfa. La PMT (`r3/s3138g/`, #160) et la DAP
-(`r3/s3139h/`, #161) les reprennent, avec leurs propres rubriques, dont le
-texte médical (`r3/rubriques/texte-medical.ts`, #159, D-141 à D-147). R3 suit
-C03 (#223) : le stepper titré du document, le texte, la navigation,
-« Imprimer » et « Télécharger », puis l'aperçu du PDF.
-Le [README](README.md) § « Entre deux modèles » dit ce qui est parti et ce qui reste.
+## Le socle et les modèles
 
-Le simulateur a deux racines, et chacune a deux dossiers (ADR-0012, ADR-0016) :
+`core/` et `front/` ont chacun un `socle/`, qui ne dépend d'aucune version du
+modèle, et un `models/`, un dossier par modèle, du même nom des deux côtés
+(ADR-0012, ADR-0016). Les modèles sont `eligibilite/`, celui de l'éditeur, qui
+s'ouvre au démarrage, et `fake/`, celui de démonstration.
 
-| | `socle/` : ce qui ne dépend d'aucune version du modèle | `models/` : un dossier par modèle |
-|---|---|---|
-| `core/`, le métier | moteur de questionnaire, moteur de décision, seeds, contrat `CoreModel` | les déclarations, les questions, les faits, les règles et les seeds |
-| `front/`, l'écran | rattachement, parcours, affichage des questions, analytics, outils PDF, developer tools, contrat `Model` | les deux résultats et le cerfa |
-
-Les modèles sont `fake/`, celui de démonstration, et `eligibilite/`, celui de
-l'éditeur, en cours d'intégration. Chacun a un dossier du même nom dans
-`core/models/` et dans `front/models/`. Le métier se charge sous Node, sans
-Vite ni navigateur : `tests/model/metier-sous-node.test.ts` le vérifie.
-
-Le modèle de l'éditeur se range par partie du parcours : `questions/p1/` (le mode),
-`questions/p2/` (l'éligibilité) et `questions/p3/` (le complément du cerfa) dans `core/`, `r2/` (le
-résultat) et `r3/` (son résultat) dans `front/`. `r2/r2.tsx` est l'entité R2 :
-ce qu'elle lit (`R2.lit`), sa trace, son cas, ses textes, sa page. Un dossier
-par cas dans `r2/layouts/` (`acceptee/`, `refusee/`, `orientee/`), chacun avec
-ses issues (`issues.ts`), ses précisions, son texte et sa page ; ce que les cas
-partagent est un composant de `r2/components/`, qui ne connaît aucun cas.
-`r3/r3.tsx` est R3 : ce qu'elle lit, son document, son titre, son bouton de
-départ, sa page. Chaque partie a la même forme : `partie-N.ts`, sa table des matières,
-les pages dans l'ordre faites de ses questions ; `questions/`, un fichier par
-question, nommé de son numéro (`q2-8-6.ts`), qui porte ses sous-questions
-lettrées et ses gardes ; `conditions/`, ce que plusieurs questions lisent.
-`core/models/eligibilite/faits/` porte un fichier par fait, au nom du fait sans
-`fait_`, et `communs.ts`, ce que plusieurs faits lisent : les faits
-n'appartiennent à aucune partie, et n'en lisent aucune. Les
-racines des deux dossiers les assemblent. Une partie
-ne lit pas celle qui la suit, et les familles de R2 ne s'importent pas entre
-elles, ni les cerfa de R3, et une rubrique de R3 n'importe aucun cerfa :
-`tests/model/eligibilite/domaines.test.ts` le garde.
-
-Le modèle de démonstration est pérenne (D-82). **Chaque capacité du socle y a
-sa page**, pour la valider à l'écran sans dépendre du modèle de l'éditeur.
-
-**Le socle ne sait pas qu'un modèle est « de démonstration »** (D-83). `main.tsx`
-passe à `App` une seule liste, `models`, où chaque modèle porte son nom et de
-quoi se charger. Le premier s'ouvre au démarrage. À plusieurs, les developer
-tools proposent d'en changer (`front/socle/app/model-choice.ts`) : le choix ne
-se fait donc qu'en local, comme eux.
-
-Le socle ne connaît le modèle que par deux contrats. `CoreModel`
-(`core/socle/model.types.ts`) porte le métier : les parties d'avant le verrou
-(`questionnaire`), celle d'après (`complement`), ce qui calcule la préconisation
-(des réponses aux faits, des faits aux cibles) et les seeds. `Model`
-(`front/socle/model.ts`) le porte sous `core`, et y ajoute les deux résultats,
-`result` et `cerfa`, et l'invitation à donner son avis, `feedback`, que le
-socle place après l'un ou l'autre (`front/socle/simulateur/screens/FeedbackLink.tsx`,
-D-196). `front/main.tsx` est le seul fichier qui importe le socle
-et les modèles. Il dit à `App` comment charger chaque modèle, et `App` charge le
-premier pendant l'écran de rattachement : un modèle reste hors du chunk
-d'entrée. Le socle n'importe rien des modèles. Un modèle n'importe du socle que
-ses deux points d'entrée, `core/socle/index.ts` pour son métier et
-`front/socle/index.ts` pour son écran. Aucun modèle n'importe l'autre.
-Une exception : l'adaptateur du moteur de décision,
-`core/socle/decision-engine/publicodes-decision-engine.adapter.ts`,
-qu'un modèle prend à la source. Avec le compilateur du graphe
-(`publicodes-graph-compiler.adapter.ts`), ce sont les seuls fichiers qui
-importent publicodes (D-76).
-`tests/architecture.test.ts` garde ces règles.
-
-**Le socle est celui du simulateur des transports sanitaires.** L'outillage
-stable (publicodes, DSFR, pdf-lib) y vit, derrière un fichier dédié. Ce qui ne
-change pas avec le modèle (logos, mise en page, impression) y vit aussi. Le
-modèle ne porte que ce que l'éditeur livre : règles, déclarations, textes.
-
-Le parcours commence par un **écran de rattachement
-obligatoire** : établissement et service, sans identifier la personne
-(`front/socle/rattachement/`, référentiel Grist). Le tout est servi par
-un **backend Node/Express** (`server/` : le front et `/api/*`) déployé sur
-**Scalingo**. Ce n'est pas un site statique.
-
-## Le questionnaire
-
-Le moteur est en deux moitiés. `core/socle/questionnaire-engine/` porte la
-mécanique, sans React ni phrase de l'écran :
-
-| Fichier | Ce qu'il porte |
-|---|---|
-| `question/question.types.ts` | ce qu'est une question pour le moteur (`Question` : son id, sa sorte, ses dépendances, et `askedIn`, ce qu'elle donne vu le contexte), une page, une partie, une réponse |
-| `question/declared/question.factory.ts` | les constructeurs nommés des questions (`QuestionFactory`) : la sorte vient du constructeur, et une question à choix porte ses réponses possibles (`.possibleAnswers({ … })`) |
-| `question/declared/question.vo.ts`, `choices.vo.ts`, `inputs.vo.ts` | une classe par sorte de question déclarée. Chaque réglage (`appliesWhen`, `hint`, `min`…) donne une copie, et `askedIn` tire la question posée de la déclaration. Ses réglages communs sont dans `settings.types.ts`, ses incohérences dans `inconsistencies.vo.ts` |
-| `question/declared/possible-answer.vo.ts`, `page.vo.ts` | les réglages d'une réponse possible, par une lambda (`.possibleAnswer(valeur, (possibleAnswer) => …)`), et `page(id, ...questions)`, dont la condition s'ajoute à chacune de ses questions |
-| `conditions/reading.vo.ts`, `conditions/reads.vo.ts` | les conditions : une lecture qui dit ce qu'elle lit (`Reading`, `Condition`, `Reads`), et se compose par `and`, `or`, `not`, `compute` et `computeWith` |
-| `conditions/reading.factory.ts`, `conditions/given-readings.vo.ts` | leurs entrées (`given.question(id).answer()`, `given.fait`, `given.cible`, `given.today`), et la valeur que chacune donne |
-| `conditions/guard-place.vo.ts`, `conditions/guard-reading.service.ts` | ce que lit `answer()` selon l'endroit : dans une garde, les questions posées avant elle ; dans un fait, les questions validées (`ValidatedAnswers.reading`). Le service vérifie qu'aucune condition ne lit une question d'après |
-| `conditions/question-positions.vo.ts` | la place de chaque question, et ce qui refuse une place mal déclarée |
-| `questionnaire-declaration.error.ts` | l'erreur d'une déclaration qui ne tient pas : elle s'arrête au chargement ou à la première lecture |
-| `question/asked/context.vo.ts` | `QuestionContext`, le contexte d'une question : `{ answers, validated, cibles, faits }`. Ses libellés, rappels, aides et bornes du moment le reçoivent, et ses conditions s'y lisent (`condition.in(context)`). Les faits n'y sont calculés que si on les lit. Un fait et un résultat ont chacun leur contexte (`FaitContext`, `ResultContext`) |
-| `question/possible-answer.types.ts` | ce qu'est une réponse possible offerte (`OfferedPossibleAnswer`) : sa valeur, son libellé, sa description, son aide, ce qu'elle bloque |
-| `question/address.vo.ts` | `Address`, une adresse, la seule réponse en objet : elle se lit et se modifie champ par champ, et se garde en JSON (`AddressData`, par `toJSON()`) |
-| `question/dependency.vo.ts` | `Dependency`, ce dont dépend une réponse (`dependsOn`) : une question entière, ou certaines de ses réponses possibles, et ce qu'elle en voit (`seen`) |
-| `questionnaire.vo.ts` | `Questionnaire`, ses pages dans l'ordre. Des réponses s'y lisent : `questionnaire.readWith(answers, cibles)` |
-| `answered-questionnaire.vo.ts` | `AnsweredQuestionnaire`, des réponses lues à travers un questionnaire. Il se calcule une fois et ne change pas : pages et questions qui se posent (`askedPages`, `questionsOn`), questions validées (`validated`), complétude (`isComplete`), page où l'on rouvre (`openPage`), page suivante (`pageAfter`), réponses d'une page validée (`commit`) |
-| `question-walk.service.ts`, `walk-progress.vo.ts` | le parcours des pages dans l'ordre (`QuestionWalkService.walk`) : ce qui se pose, et son avancement question après question (`WalkProgress`) : validées, en attente, inapplicables |
-| `does-a-question-still-matter/relevance.service.ts`, `askability.service.ts`, `relevance-graph.vo.ts` | la pertinence : une question ne se pose que si sa réponse peut changer ce que montre le résultat, ou la garde d'une question qui reste (`Relevance.matters`). Les questions d'après dont la garde est jouée d'avance ne comptent pas (`Askability`), et le graphe de décision se restreint aux faits figés (`RelevanceGraph`) |
-| `page-commit.service.ts` | `PageCommitService` : les réponses d'une page validée (`commit`), le brouillon après une saisie (`answerOn`), et l'effacement des réponses qui dépendaient d'une réponse changée |
-| `question/asked/question.vo.ts` | `AskedQuestion`, la question telle qu'elle se pose : libellé, rappel, bornes, réponses possibles, mode d'adresse et incohérences du moment. Elle ne porte aucune fonction : elle passe en JSON, et `askedQuestion` la relit |
-| `question/asked/common.vo.ts`, `choices.vo.ts`, `inputs.vo.ts`, `address.vo.ts` | une classe par sorte de question posée. Chacune dit ce qu'elle garde d'une réponse (`kept`), si la réponse suffit (`isAnsweredBy`) et ce qui n'y va pas (`problemsWith`). `AskedAddress` dit les champs qui se demandent, en France ou à l'étranger, et ce qui ne va pas dans chacun |
-| `question/asked/answer-problem.vo.ts` | ce qui ne va pas dans une saisie, dit par sa nature (`{ kind: "missing" }`…). Les phrases de l'éditeur y restent telles quelles (`{ kind: "stated", text }`) |
-| `answers/given-answers.vo.ts`, `answers/validated-answers.vo.ts` | les deux lectures des réponses, que le modèle reçoit (voir « La décision ») |
-
-`front/socle/questionnaire/` l'affiche, un fichier par capacité :
-
-| Fichier | Ce qu'il porte |
-|---|---|
-| `questionnaire.ts` | la page ouverte à l'écran (`useQuestionnaire`) : il reçoit la simulation, ne garde que le brouillon, et donne la simulation que chaque bouton ouvre (`onChange`) |
-| `draft-an-answer.ts` | le brouillon d'une page : ses réponses validées, une case seule décochée |
-| `advance-alone.ts` | l'avancement seul d'une page de choix uniques. Ce que le questionnaire signale à la mesure d'audience et au journal passe par `useQuestionnaireTracking` (`../analytics/questionnaire.hook.ts`) |
-| `scroll-to-the-top.ts` | le retour en haut à chaque page, et la demande à la page hôte d'en faire autant, que le script du CMS (`../analytics/cms.js`) exécute : Safari ne laisse pas l'iframe la faire défiler |
-| `label-a-question.ts`, `word-a-problem.ts`, `lay-out-an-address.ts` | les phrases de l'écran : « (facultatif) », le message de chaque nature de problème, les champs d'une adresse et leurs libellés |
-| `QuestionnaireForm.tsx`, `QuestionField.tsx`, `Stepper.tsx` | le formulaire, le champ DSFR de chaque sorte de question, le stepper |
-
-Quatorze règles à tenir en ajoutant une question :
-
-- **Une question se déclare par son constructeur, un réglage par ligne.**
-  `question.singleChoice("Q1.1", "Concernant son déplacement, le patient :")`
-  `.possibleAnswers({ "1_SEUL": "…", "2_AVEC_UN_PROCHE": "…" })` : la sorte
-  vient du constructeur, et la question porte ses réponses possibles, qui disent
-  le type de sa réponse. Une réponse possible ne se règle que pour ce qu'elle
-  porte de plus, dans sa lambda : `.possibleAnswer("6_SEANCE", (possibleAnswer)
-  => possibleAnswer.offeredWhen(…))`. `order` en garde une partie, dans cet
-  ordre, et `exclusive` met la sienne à part. Chaque réglage donne une copie :
-  une déclaration ne change jamais. Le modèle lie ses constructeurs une fois, dans son
-  `questions/question.ts` : `new QuestionFactory<ReadByObject, Faits, Cibles>({ faits,
-  cibles })`. Un seul jeu, avant comme après le verrou. La partie posée après
-  le verrou se déclare par `afterLock({ … })` : ses gardes lisent alors les
-  cibles figées.
-- **Une garde est une condition.** `appliesWhen` dit quand la question a un
-  sens, d'après les réponses ; `mattersWhile` quand elle est encore utile,
-  d'après un fait ou une cible. Une réponse possible se propose par
-  `offeredWhen`. Jamais dans un composant. Celle d'une page
-  (`page(…).appliesWhen(…)`) s'ajoute à chacune de ses questions.
-- **Une condition lit ce qui la précède.** `given.question(Q1_2).answer()` voit
-  les pages d'avant validées, et sa page telle qu'elle est à l'écran, pour les
-  questions posées avant la sienne. Une réponse d'avant le verrou se lit telle
-  quelle. Une garde qui lit sa question ou une question d'après s'arrête net.
-  Un fait et une cible se lisent sur les questions validées avant elle (figées
-  dans la partie `afterLock`).
-- **Une question n'a qu'une réponse, même sur plusieurs pages.** Une question
-  qui revient plus loin s'y déclare par `.unlessAskedBefore()` :
-  `page("P2/branche", …, Q2_3_4.unlessAskedBefore())`. Elle se pose à sa
-  première place où ses gardes tiennent, et chaque place a les siennes ;
-  « avant » et « après » se lisent à la première. Une place qui la cache ne lui
-  fait perdre sa réponse que si c'est la dernière, et qu'aucune place d'avant
-  ne la pose. Le questionnaire refuse dès sa construction un id répété sans
-  `.unlessAskedBefore()`, deux places sur une page, et des places de part et
-  d'autre du verrou (ADR-0040).
-- **Une déclaration lit une question par son objet, et la suit.** Le type
-  `Questions` du modèle se tire de ses parties (`questions/reponses.ts`) : les
-  déclarations, qui le précèdent, ne le lisent pas. Elles importent la
-  question (`given.question(Q1_2)`, `AnswerOf<typeof Q1_2>`) ; le front, les
-  tests et les seeds lisent par id ou par objet, avec le `given` de
-  `reponses.ts`. Une condition qui lit une question vit après elle : dans son
-  fichier, ou dans un fichier de `conditions/` que la question n'importe pas.
-  Sinon les deux modules s'importent l'un l'autre, et le chargement casse
-  (`Q2_2_1_INDICATION`, puis `dansLeCircuit`, dans `q2-2-1-indication.ts`).
-- **Une garde lit le fait quand il en existe un.**
-  `.mattersWhile(given.fait("fait_permission").isOui())`. Elle ne recompose
-  pas, réponse par réponse, ce que le fait établit déjà. Sans fait qui la
-  dise, elle se compose de réponses, nommée près de la question qui la lit
-  (`unMineurDeVingtAns`, dans `questions/p2/conditions/permission.ts`). Un calcul sur plusieurs
-  valeurs les nomme : `given.all({ sens, repetition }).compute(sensDe)`
-  (`questions/p3/conditions/sens-du-trajet.ts`). Chacune garde ce qu'elle lit.
-- **R2 et R3 lisent des valeurs.** Le socle leur passe `{ read, faits,
-  cibles }`. Une rubrique, un champ de cerfa, la trace sont des valeurs, que
-  `read` lit sur les questions validées : `read(PRECISIONS)`. Aucune fonction
-  n'y reçoit les réponses (ADR-0032).
-- **Un savoir lu à deux endroits.** Une lecture de réponse s'écrit là où elle
-  sert, même si une autre partie l'écrit aussi : le libellé de Q1.4 lit
-  `answers.question(Q1_1).is("2_AVEC_UN_PROCHE")` sur place. Une donnée de
-  l'éditeur se partage en donnée, là où elle se déclare : les réponses
-  possibles dans leur question, qu'on lit par `Q1_3.labels`. Une règle que plusieurs faits reprennent mot pour mot se
-  nomme dans `faits/communs.ts`. Ce qui ne sert qu'à un endroit y reste
-  (`allersRetoursMensuelsAuPlus`, dans `questions/p3/questions/q3-1-3.ts`). Aucun fichier n'est
-  commun aux pages et aux faits : mieux vaut une condition écrite deux fois sur
-  la même donnée qu'une abstraction entre les deux (D-208, D-210).
-- **Un fait est une valeur, dans son fichier.** `fait_distance_plus_50` se
-  déclare dans `faits/distance-plus-50.ts`, et nulle part ailleurs :
-  `unFait("fait_distance_plus_50").ouiSi(…).nonSi(…).sinon(…)`, sans fonction
-  ni `switch`. Le fichier s'ouvre sur le titre que l'éditeur donne au fait, dit
-  ce qui l'établit et le contrat qu'il suit, et n'exporte que sa déclaration
-  (`distancePlus50`). Chaque fait écrit ses règles ; seuls les lectures
-  (`MOTIF`, `SITUATIONS`), les règles reprises mot pour mot
-  (`uneRegle().nonSi(…)`, placées par `applique`) et la table
-  `SITUATION_PROPOSEE` se partagent, dans `faits/communs.ts` (ADR-0033). Les
-  provenances qui ne citent rien (`PAS_ENCORE_ETABLI`) restent dans
-  `faits/noms.ts`. Une page ne garde que ses questions et ses gardes.
-  `tests/model/eligibilite/faits/catalogue-des-faits.test.ts` le garde.
-- **Un fait ne lit ni garde, ni cible, ni jour.** Il lit les questions validées
-  et d'autres faits ; le catalogue arrête net un fait qui lit une cible, et un
-  fait qui se relit, sur une erreur qui le dit. Une garde lit
-  tout le catalogue : la lecture dans l'ordre ne lui montre que les questions
-  validées avant elle. La complétude de P1 et de P2 y reste inconnue : la
-  constater pose les questions, donc lit leurs gardes. Seule la décision
-  l'impose (`faits/preconisation.ts`).
-- **Une dépendance se déclare dans `dependsOn`.** Sans elle, la réponse survit au
-  changement de celle dont elle dépend. Une adresse dont le mode change
-  (`abroadIf`) survit de même : elle se relit dans le nouveau mode, sans son
-  pays si elle revient en France.
-- **Une incohérence se déclare par `inconsistentWhen(condition, message)`, sur
-  la plus tardive des questions qu'elle lit.** Le socle refuse qu'elle en lise
-  une d'après. Elle lit sa propre question et sa page, brouillon compris, et
-  les réponses d'avant le verrou. Son message dit quelle question corriger ; il
-  peut citer les réponses, s'il est une valeur (`answer().compute(…)`). Une
-  question incohérente n'est pas validée. On corrige par « Précédent », ou par
-  un lien de l'alerte, si l'incohérence dit ses réponses à revoir
-  (`{ revisit }`, lu comme la condition). Le lien rouvre leur page
-  (`Simulation.revisit`), et « Suivant » ramène à l'alerte
-  (`core/socle/simulation/answer-correction.vo.ts`, ADR-0041). Une erreur de format
-  s'affiche seule, avant les incohérences. Celle d'une adresse s'affiche sous
-  le groupe, et une erreur de champ passe devant.
-- **L'adresse de la page ne porte que la position.** Des rangs (`#/etape/<n>`,
-  `?retour=<m>` pendant une correction), jamais une page ni une réponse.
-  `Simulation.moveTo` valide toute adresse ; l'écran ne fait que la suivre
-  (`front/socle/simulateur/follow-the-address.ts`).
-- **Une saisie ne compte qu'une fois la page validée.** Le brouillon vit dans
-  `questionnaire.ts`, pas dans le champ.
-- **Le verrou est une étape, pas un drapeau.** La simulation le porte dans son
-  étape (`core/socle/simulation/simulation.entity.ts`) : après lui, elle lit toutes les
-  pages sous les cibles figées, et ne pose que celles du complément. L'écran y
-  monte un second `QuestionnaireForm`, qui ne repose rien
-  (`front/socle/simulateur/Simulateur.tsx`).
-
-*Gardé par* `tests/socle/simulateur/` et
-`tests/socle/questionnaire-engine/constructeurs-de-questions.test.ts`. Le
-typage refuse une question écrite en objet : le moteur ne reçoit que des
-questions déclarées, qui savent se poser.
-
-## La décision
-
-Un fait a trois états : vrai, faux, ou absent. Absent, il ne vaut jamais « non ».
-Une cible de même, avec un quatrième : sans objet.
-
-Ses pièces sont dans `core/socle/`.
-
-| Pièce | Ce qu'elle porte |
-|---|---|
-| `GivenAnswers` (`answers/given-answers.vo.ts`) | les réponses données, lues question par question : `answers.question(Q1_1).is("1_SEUL")`, `.isNot(possibleAnswer)`, `.checked(case)`, `.checkedBoxes()`, `.hasAnswer()`. Une question sans réponse n'est aucune réponse possible, sans être un « non » |
-| `ValidatedAnswers` (`answers/validated-answers.vo.ts`) | les questions validées, lues de même, avec ce qui se proposait : `.isValidated()`, `.offers(possibleAnswer)`, `.declined(case)` |
-| `LocalDateTime` (`local-date-time.vo.ts`) | une date répondue, lue une fois, sans fuseau : `LocalDateTime.parse(saisie)`, `isBefore`, `isAfter`, `isAtOrBefore`, `equals`, `plusDays`, `plusHours`, `startOfDay`. Une saisie mal écrite n'est comparée à rien : toute comparaison avec elle vaut « non » |
-| `preconisation.faits(answers, validated)` | le modèle reçoit ces deux lectures, jamais les réponses brutes. Il applique, fait par fait, le contrat de l'éditeur |
-| `Fait` (`decision-engine/fait/fait.vo.ts`) | ce qu'on sait d'un fait, en objet valeur figé : sa valeur si elle est établie, et sa provenance. `Fait.oui`, `Fait.non`, `Fait.inconnu` et `Fait.valant` le construisent ; `isOui()`, `isNon()` et `isInconnu()` le lisent, jamais `.value === true`. `avecProvenance` en donne une copie, `equals` compare valeur et provenance |
-| `FaitCatalogue` (`decision-engine/fait-catalogue.service.ts`) | les faits d'un modèle, **une déclaration par fait**. Le modèle le construit une fois avec le nom de ses faits et leur liste (`faits/index.ts`, un fichier par fait), qui n'exporte que sa déclaration et s'ouvre sur le titre de l'éditeur : un doublon, un oubli ou un nom hors du modèle l'arrêtent au chargement. `read(validated, fixed)` calcule chaque fait à sa première lecture, et `fixed` en impose (la complétude). Le moteur de questionnaire reçoit le catalogue lui-même (`new QuestionFactory({ faits: CATALOGUE_DES_FAITS })`, D-207) ; la préconisation le lit avec la complétude. Un fait lit les questions validées et d'autres faits, jamais une cible ni le jour. Un fait qui se relit s'arrête sur une erreur qui donne le chemin. Un fait qu'aucune réponse ne pose se déclare aussi, et sa provenance dit pourquoi |
-| `unFait(nom)` (`decision-engine/fait/fait-declare.vo.ts`) | un fait, valeur nommée faite de règles sur des conditions. La première qui conclut l'emporte : `ouiSi`, `nonSi` et `inconnuSi(condition, raison)`, `nonSiEcartee(réponse, case)` pour une case proposée et non cochée, et `applique(regle)`, qui place une règle écrite ailleurs (`uneRegle().nonSi(condition, raison)`, une seule règle par `RegleDeFait`). `sinon(raison)` clôt le fait : il reste inconnu, pour cette raison. `vaut(valeur)` déclare un fait qui n'a pas d'état (la boisson, en toutes lettres). Une règle écrit sa provenance : ce que lit sa condition, puis sa raison, « Q2.10.b : « 2_PODO_ORTHESE ». », « Q2.6 : sans réponse. », « fait_permission : « non ». » (ADR-0033) |
-| `Cible` (`decision-engine/cible.vo.ts`) | ce que les règles donnent pour une cible, en objet valeur figé, que seul `Cible.of` construit. `isOui()` et `isNon()` lisent une cible « oui ou non », `is("TAP")` une cible à constantes, `isInconnue()` et `isSansObjet()` les deux cas qui ne sont pas une décision. Jamais `.value === true` : une cible inconnue n'est pas un « non ». `Cible.valuesOf(cibles)` donne leurs valeurs, pour la trace, une seed ou un test |
-| `PublicodesDecisionEngine` (adaptateur du port `DecisionEngine`) | n'envoie aux règles que les faits établis, et donne chaque cible en `Cible`. Il manque un fait : elle est inconnue, ce qui n'est pas une décision, ni « sans objet » (`null`) |
-| `DecisionGraph` (`decision-engine/decision-graph/decision-graph.vo.ts`) | le graphe de décision d'un modèle (#196, D-216) : ce que vaut chaque règle pour chaque façon dont ses faits valent oui, non ou rien. `valueOf(règle, faits)` le lit, sans publicodes. `new PublicodesGraphCompiler(règles).compile()` le compile (`publicodes-graph-compiler.adapter.ts`, adaptateur publicodes sans port : seuls `pnpm regles` et les tests compilent), et `pnpm regles` l'écrit dans `rules/regles.graphe.json`. Le compilateur s'arrête sur un mécanisme qu'il ne traduit pas |
-
-Le socle dit ce qui a été montré, validé, coché. Il ne conclut rien : c'est le
-modèle qui applique, fait par fait, le contrat de l'éditeur.
-
-*Gardé par* `tests/socle/decision-engine/`, `tests/socle/simulation/preconisation.test.ts` et
-`tests/socle/questionnaire/questions-validees.test.tsx` et
-`tests/socle/questionnaire-engine/lecture-des-reponses.test.ts`.
-
-## Le socle PDF
-
-`front/socle/cerfa/` remplit un cerfa et le télécharge. Il ne porte aucun
-formulaire, et **ne sait rien du simulateur** : il reçoit un DTO, d'où qu'il
-vienne. Il n'importe rien du reste du socle.
-
-Chaque cerfa a son DTO, en mots clairs, et une définition qui dit où va chaque
-entrée dans le gabarit (`Cerfa<Dto>`) :
-
-| Le DTO dit | La définition garde | Exemple |
-|---|---|---|
-| un texte | le nom exact du champ | `motif: text("elements medicaux")` |
-| un texte strict, à réécrire s'il ne tient pas | le champ, et le nom de sa rubrique pour l'écran | `elements_medicaux: strictText("comm évent", "Éléments d’ordre médical et commentaires")` |
-| une case cochée | le champ et son état d'export | `en_ald: box("ald", "Oui")` |
-| une case qui partage son champ | le champ et son état : la marque est dessinée | `longue_distance: drawnBox("km", "Oui")` |
-| une date | le champ, qui l'écrit selon ses cases | `date_prescription: date("dat pmt")` |
-| un texte sans champ | sa position sur la page | `remarque: at({ page: 1, x: 36, y: 104, width: 348 })` |
-
-Un gabarit qui renomme un champ ne change que la définition, jamais le DTO.
-
-Un texte n'est jamais coupé, et ne bloque jamais le PDF (D-85, D-193). Il
-s'écrit dans son champ à 9 pt, puis à 8 pt. S'il n'y tient pas, il rapetisse
-par demi-point, sans plancher, et passe à la ligne jusqu'à tenir dans son
-champ. Seul un texte plus long que le nombre
-de caractères du champ laisse le champ vide : il se dessine depuis le haut du
-cadre, à 8 pt, et déborde dessous, par-dessus ce qui s'y trouve (D-94). Il ne
-descend sous 8 pt que pour rester sur la page, jusqu'à 6 pt.
-
-Un texte strict ne suit pas ces étapes (D-302). Il s'écrit à 9 pt, sur
-plusieurs lignes, ou pas : la génération dit alors quels textes stricts
-débordent, avec le maximum de leur compteur, et le PDF n'est qu'un aperçu,
-marqué « Aperçu – texte à valider » sur chaque page, où n'est écrit que le plus
-long début qui tient. L'écran ouvre un éditeur par texte qui déborde, au-dessus
-de l'aperçu, et suspend les exports. « Valider » ne s'active que pour un texte
-qui tient ; le document se régénère alors avec lui (D-304). La simulation
-garde le brouillon et le texte validé (`TextEdits`, D-303).
-
-Le modèle traduit les données du simulateur en DTO (`CerfaMapping`, dans
-`front/socle/cerfa/generate-the-cerfa/compute-the-dto.ts`) : une valeur par entrée (`given…`), que le
-socle lit sur les questions validées, les faits et les cibles figés au verrou,
-et le jour de complétion (`given.today()`, ADR-0032). `bindCerfa`
-lie une définition à son mapping et vérifie qu'ils parlent du même DTO. Le
-simulateur calcule le DTO sous le second résultat et le passe au bouton.
-
-`front/socle/cerfa/` a trois niveaux : ce qu'est un cerfa, sa génération
-(`generate-the-cerfa/`), et ce qu'on fait d'un PDF (`pdf/`).
-
-| Fichier | Ce qu'il porte |
-|---|---|
-| `cerfa.ts` | ce qu'est un cerfa : son DTO, son gabarit, et où va chaque entrée. `templateAt(url)` charge un gabarit servi par l'app |
-| `CerfaDocument.tsx` | les boutons « Imprimer » et « Télécharger », qui génèrent le PDF dès qu'ils s'affichent et portent le même document, puis son aperçu, ou ce que le modèle met à sa place, et ce qui le suit une fois le PDF prêt. Les éditeurs des textes stricts qui débordent, l'alerte si ça échoue |
-| `StrictTexts.tsx`, `StrictTextEditor.tsx` | l'éditeur d'un texte strict qui déborde : toute la cellule, son compteur « saisis / maximum », le message, « Valider » (D-304) |
-| `CerfaPreview.tsx` | l'aperçu du PDF dans la page, par le lecteur du navigateur ; sans lecteur, une phrase renvoie au téléchargement (D-183) |
-| `generate-the-cerfa/generate-the-cerfa.ts` | la génération : le DTO traduit dans les noms du gabarit, remplir, puis aplatir, avec `pdf-lib` chargé à la demande |
-| `generate-the-cerfa/compute-the-dto.ts` | le DTO calculé des données du simulateur : `CerfaMapping`, `bindCerfa`, `dtoFrom` |
-| `generate-the-cerfa/fill-the-form.ts` | l'écriture dans un AcroForm : textes, textes stricts et ceux qui en débordent, cases et leurs états d'export |
-| `generate-the-cerfa/write-a-text.ts` | l'écriture d'un texte, étape par étape : à sa taille, rapetissé, puis sous son cadre. Ce qui ne tient pas dans son cadre |
-| `generate-the-cerfa/strict-text.ts` | la mesure et l'écriture d'un texte strict : 9 pt en multiligne, ou son plus long début, et le maximum de son compteur (D-302) |
-| `generate-the-cerfa/measure-strict-texts.ts` | la même mesure pour l'éditeur de l'écran, sur une copie du gabarit |
-| `generate-the-cerfa/text-fit.ts` | un texte tient-il dans son champ, et à quelle taille, au besoin rapetissé et sur plusieurs lignes |
-| `generate-the-cerfa/overflow.ts` | où et à quelle taille se dessine un texte plus long que le nombre de caractères de son champ |
-| `generate-the-cerfa/widget-page.ts` | la page qui porte le widget d'un champ |
-| `generate-the-cerfa/text-sizes.ts` | la configuration des tailles (D-68) : la taille visée, 9 pt, la taille réduite, 8 pt, et le plancher d'un texte dessiné hors de son champ, 6 pt. Une version du modèle la modifie, pas le code |
-| `generate-the-cerfa/dates.ts` | une date sur un champ peigné |
-| `generate-the-cerfa/box-appearances.ts` | le dessin des cases du gabarit, gardé : un `/Off` vide pour celles qui n'en ont pas, sans quoi `pdf-lib` les redessine (D-140) |
-| `generate-the-cerfa/flatten-the-form.ts` | l'aplatissement du PDF rempli : plus aucun champ, chaque valeur dessinée sur la page (D-84). Puis ce qu'un champ ne sait pas montrer : les marques des cases partagées, les textes sans champ, ceux qui débordent |
-| `pdf/download-a-pdf.ts` | le nom daté du fichier, le téléchargement |
-| `pdf/print-a-pdf.ts` | l'impression d'un PDF dans un cadre invisible : le dialogue du navigateur s'ouvre sur le PDF, pas sur la page |
-| `pdf/PdfActionButton.tsx` | le bouton qui attend un PDF, cerfa ou feuille : désactivé en attendant, « Préparation du PDF… » s'il le dit (D-191), et la garde du document quitté pendant la préparation (D-190) |
-
-Un formulaire rempli porte des données de santé nominatives. Il se génère **dans le
-navigateur uniquement**, et ce dossier n'adresse jamais `/api`.
-
-Qui fournit le cerfa dit d'où vient son gabarit : `template` est un chargeur,
-appelé quand le bouton s'affiche. `templateAt(url)` charge un asset servi par l'app.
-
-*Gardé par* `tests/socle/cerfa/`, sur des formulaires fabriqués,
-`tests/socle/simulateur/telechargement-du-cerfa.test.tsx`, et
-`tests/architecture.test.ts`.
-
-### La feuille en PDF
-
-« Télécharger », sous la liseuse de la feuille à remettre au patient, donne
-la feuille en PDF, sans le dialogue d'impression (#129). Le PDF se prépare au
-clic, sur la feuille affichée : il est toujours à jour. Il a les pages de
-l'impression : la feuille se mesure comme pour imprimer, sa copie en papier
-est photographiée par le navigateur, puis coupée là où l'impression coupe.
-Chaque tranche va sur une A4, aux marges des gabarits. Le PDF est une image :
-son texte ne se sélectionne pas.
-
-| Fichier (`front/socle/simulateur/sheet/`) | Ce qu'il porte |
-|---|---|
-| `SheetViewer.tsx` | la liseuse de la feuille et ses deux boutons, imprimer et télécharger |
-| `print-the-sheet.ts` | l'impression : la feuille se met en page pour le papier |
-| `download-the-sheet.ts` | le téléchargement : l'attente, l'échec, le nom daté du fichier, et rien après qu'on a quitté la feuille |
-| `make-the-sheet-pdf.ts` | la mesure, la photo de la copie en papier, ses tranches en JPEG |
-| `slice-into-pages.ts` | où se coupent les pages (`pageSlicesOf`), d'après la mise en page retenue pour l'impression |
-| `measure-on-paper.ts` | la copie en papier, posée hors de l'écran le temps de la photo (`onPaperCopy`) |
-| `photograph-a-page.ts` | la photo, par `modern-screenshot`, chargé à la demande ; seul fichier qui l'importe |
-| `assemble-the-pdf.ts` | le PDF : une A4 par tranche, par `pdf-lib`, chargé à la demande |
-
-`modern-screenshot` fige la hauteur de chaque élément qu'il copie : une marge
-basse qui traversait son parent y resterait, et la photo ne tomberait plus sur
-les coupes. `photograph-a-page.ts` rend leur hauteur libre à ces parents.
-
-*Gardé par* `tests/socle/simulateur/telechargement-de-la-feuille.test.tsx`,
-`pdf-de-la-feuille.test.ts` et `pagination-de-la-feuille.test.ts`. Le
-navigateur de test ne met pas en page : la photo et ses coupes se vérifient
-dans Chrome.
+- **Le socle ne connaît un modèle que par deux contrats** : `CoreModel`
+  (`core/socle/model.types.ts`), le métier, et `Model` (`front/socle/model.ts`),
+  qui le porte et ajoute les écrans. Un modèle n'importe du socle que
+  `core/socle/index.ts` et `front/socle/index.ts`. Le socle n'importe rien d'un
+  modèle, et aucun modèle n'importe l'autre.
+- **`front/main.tsx` est le seul fichier qui importe le socle et les modèles.** Un
+  modèle reste hors du chunk d'entrée : `App` ne charge le premier que pendant le
+  rattachement.
+- **Le socle est celui des transports sanitaires.** L'outillage stable (publicodes,
+  DSFR, pdf-lib) et ce qui ne change pas avec le modèle (logos, mise en page,
+  impression) y vivent. Le modèle ne porte que ce que l'éditeur livre : règles,
+  déclarations, textes.
+- **Le modèle de démonstration est pérenne.** Chaque capacité du socle y a sa page,
+  pour la valider à l'écran sans dépendre de l'éditeur. Le socle ne sait pas qu'un
+  modèle est « de démonstration ».
 
 ## Les quatre racines de runtime
 
-Découpage **par fonctionnalité**, à l'intérieur de quatre racines :
-
 | Racine | Ce que c'est |
 |---|---|
-| `core/` | le métier : les moteurs et la logique des modèles. Il se charge sous Node comme dans le navigateur, sans React ni DOM |
+| `core/` | le métier : les moteurs et la logique des modèles. Sous Node comme dans le navigateur, sans React ni DOM |
 | `front/` | le navigateur, bundlé par Vite |
 | `server/` | le backend, qui détient la clé Grist |
 | `shared/` | le contrat front ⇄ back, chargé des deux côtés |
 
-**L'arbre dit le chemin** (ADR-0036). Sous une racine, un dossier est un module
-(`socle/`, `models/<nom>/`), une entité, nommée d'un nom (`question/`, `fait/`,
-`simulation/`, `r2/`), ou une capacité, nommée d'un verbe
-(`does-a-question-still-matter/`, `draft-an-answer.ts`).
-Un fichier porte une responsabilité et se nomme de ce qu'il exporte. Le
-technique se nomme en anglais, le métier en français. Un dossier qu'on ne sait
-pas nommer d'un nom ou d'un verbe range mal : `utils/`, `types/`, `helpers/`
+Le script `front/socle/analytics/cms.js` s'exécute sur les pages du CMS, pas dans
+l'app : il n'importe rien et personne ne l'importe.
+
+**L'arbre dit le chemin** (ADR-0036) : sous une racine, un dossier est un module,
+une entité (un nom) ou une capacité (un verbe). Un fichier porte une
+responsabilité et se nomme de ce qu'il exporte. `utils/`, `types/` et `helpers/`
 n'existent pas ici.
 
-**Un module s'ouvre par son index** (ADR-0039). Un module du socle est un dossier
-direct de `core/socle/` ou de `front/socle/`. Son `index.ts` dit ce qu'il
-promet au reste du socle, et rien d'autre : hors du module, on n'importe que
-lui, et ce qui manque s'y ajoute. Ses tests, `tests/socle/<module>/`, lisent
-ses fichiers en direct. Deux portes à part, qui importent publicodes :
-`core/socle/decision-engine/publicodes-decision-engine.adapter.ts`, pour le tenir
-hors du chunk d'entrée, et `publicodes-graph-compiler.adapter.ts`, réservée à
-l'outil des règles et aux tests. `tests/modules-du-socle.test.ts` le garde.
-
-Hors de ces racines, `tooling/` porte la configuration TypeScript et les outils de
-développement (le script des règles, la vérification du bundle). Le script collé
-dans Sites Conformes, `front/socle/analytics/cms.js`, s'exécute sur les
-pages du CMS, pas dans l'app : il n'importe rien et n'est importé par personne,
-ses tests le chargent comme texte.
-
-À lire à côté :
-
-- [`docs/knowledge/adr/`](docs/knowledge/adr/), une décision par fichier
-- [`docs/knowledge/domain/`](docs/knowledge/domain/) : le rattachement, la mesure d'audience et le journal des parcours
-- le [README](README.md), pour l'arborescence commentée
+**Un module du socle s'ouvre par son index** (ADR-0039) : hors du module, on
+n'importe que lui. Ses tests lisent ses fichiers en direct. Seul un adaptateur
+(`.adapter.ts`) importe un paquet, et seul un index importe un adaptateur
+(ADR-0052).
 
 ## Commandes
 
 | Commande | Ce qu'elle fait |
 |---|---|
-| `pnpm verifier` | Enchaîne lint → typecheck → knip → tests → build (+ vérification de bundle). La CI en passe les étapes une à une, sous leur nom : voir « Vérifier » dans l'[AGENTS.md](../../AGENTS.md) de la racine. Avant de pousser, on lance seulement les tests ciblés, `pnpm lint` et `pnpm typecheck`. |
-| `pnpm test:navigateur` | Les parcours en navigateur réel (Playwright), sur le front construit. Hors du `verifier` : voir [Tests](#tests) |
-| `pnpm dev` | Front et backend ensemble |
-| `pnpm dev:front` | Serveur Vite, <http://localhost:5173> (proxy `/api` → `:3000`) |
-| `pnpm dev:server` | Backend Express, <http://localhost:3000> |
-| `pnpm start` | Serveur de production (`node server/server.ts`) |
-| `pnpm lint:fix` | Applique tous les correctifs sûrs de Biome |
-| `pnpm regles` | Recalcule le `regles.json` et le `regles.graphe.json` de chaque modèle d'après son `regles.publicodes`. À lancer après toute retouche des règles : un test les compare |
+| `pnpm verifier` | lint, typecheck, knip, tests, build. La CI en passe les étapes une à une : voir « Vérifier » dans l'[AGENTS.md](../../AGENTS.md) de la racine |
+| `pnpm test:navigateur` | les parcours en navigateur réel, hors du `verifier` : voir [Tests](#tests) |
+| `pnpm dev` | front et backend ensemble |
+| `pnpm regles` | recalcule le `regles.json` et le `regles.graphe.json` de chaque modèle d'après son `regles.publicodes`. À lancer après toute retouche des règles : un test les compare |
 
-`pnpm build` enchaîne trois étapes :
-
-1. `tsc -b` sur les six projets : front, métier, node, serveur, tests,
-   parcours en navigateur ;
-2. Vite ;
-3. `verifier-bundle` : `pdf-lib`, `modern-screenshot`, le modèle et le
-   catalogue de seeds doivent rester hors du chunk d'entrée.
-
-Si tu remplaces un `import()` par un import statique, c'est l'étape 3 qui te le
-dit.
+`pnpm build` finit par `verifier-bundle` : `pdf-lib`, `modern-screenshot`, le
+modèle et le catalogue de seeds doivent rester hors du chunk d'entrée. Remplacer
+un `import()` par un import statique fait échouer cette étape.
 
 ## Versions
 
-`package.json` porte la version de l'app. Une livraison se marque par un tag
-`simulateur-eligibilite@<version>` : le monorepo n'a pas de tag global. Ce
-qu'elle apporte s'écrit dans [`CHANGELOG.md`](CHANGELOG.md), sous la forme d'un
-TL;DR puis d'une ligne par commit, groupée par type.
+Une livraison se marque par un tag `simulateur-eligibilite@<version>` : le monorepo
+n'a pas de tag global. Les règles sont dans
+[`livraisons.md`](../../docs/knowledge/contributing/livraisons.md), la marche à
+suivre dans le skill `livrer-une-version`.
 
-Le pied de page du simulateur affiche deux valeurs : cette version et le commit
-déployé. Voir le [README](README.md) § « Savoir
-ce qui tourne ».
+## Le questionnaire et la décision
 
-Les règles d'une livraison sont dans
-[`docs/knowledge/contributing/livraisons.md`](../../docs/knowledge/contributing/livraisons.md),
-la marche à suivre dans le skill `livrer-une-version`.
+Ce que le code et ses tests ne disent pas :
+
+- **Une garde est une condition, jamais un `if` dans un composant.** Elle lit ce
+  qui la précède. Ce qui se déclare (constructeurs, `appliesWhen`, `mattersWhile`,
+  `dependsOn`, `inconsistentWhen`, `unlessAskedBefore`) est dans ADR-0020 à
+  ADR-0022, ADR-0034, ADR-0040 et ADR-0041.
+- **Une garde lit le fait quand il en existe un** (`given.fait("fait_permission")`).
+  Elle ne recompose pas, réponse par réponse, ce que le fait établit déjà.
+- **Une déclaration lit une question par son objet**, et l'importe. Une condition
+  qui lit une question vit après elle : dans son fichier, ou dans un `conditions/`
+  que la question n'importe pas. Sinon les deux modules s'importent l'un l'autre
+  et le chargement casse.
+- **Mieux vaut une condition écrite deux fois qu'une abstraction entre les pages
+  et les faits.** Une donnée de l'éditeur se partage là où elle se déclare (les
+  réponses possibles, dans leur question). Une règle que plusieurs faits reprennent
+  mot pour mot se nomme dans `faits/communs.ts`.
+- **Un fait absent n'est jamais « non »**, une cible inconnue non plus. On lit
+  `isOui()`, `isNon()`, `isInconnu()`, jamais `.value === true`.
+- **Le socle dit ce qui a été montré, validé, coché. Il ne conclut rien** : le
+  modèle reçoit les réponses par `GivenAnswers` et `ValidatedAnswers`, jamais
+  brutes, et applique le contrat de l'éditeur fait par fait.
+- **R2 et R3 lisent des valeurs**, pas les réponses (ADR-0032).
+- **Le verrou est une étape, pas un drapeau** (ADR-0038). Une saisie ne compte
+  qu'une fois la page validée.
+
+## Le PDF
+
+- **Un formulaire rempli porte des données de santé nominatives.** Il se génère
+  dans le navigateur uniquement, et `front/socle/cerfa/` n'adresse jamais `/api`.
+- **Un texte n'est jamais coupé en silence.** Il rapetisse jusqu'à tenir, sauf le
+  texte strict (voir `CONTEXT.md`), que la génération signale et que
+  l'écran fait réécrire.
+- **La feuille en PDF est une image** du navigateur : son texte ne se sélectionne
+  pas. `modern-screenshot` fige la hauteur de chaque élément qu'il copie : une
+  marge basse qui traversait son parent y resterait, et la photo ne tomberait plus
+  sur les coupes. `photograph-a-page.ts` rend leur hauteur libre à ces parents.
+  Le navigateur de test ne met pas en page : la photo et ses coupes se vérifient
+  dans Chrome.
 
 ## Les invariants
 
 Ils sont **exécutables**. Les frontières entre `core/`, `front/`, `server/` et
 `shared/` sont dans
-[`tests/frontieres-des-racines.test.ts`](tests/frontieres-des-racines.test.ts).
-Le reste est dans [`tests/architecture.test.ts`](tests/architecture.test.ts) :
-
-- le simulateur, qui ignore qui prescrit ;
-- les seeds et les developer tools, greffés sur le simulateur et jamais l'inverse ;
-- le socle PDF, qui ne dépend que de lui-même et n'adresse jamais `/api` ;
-- les règles publicodes, qui ne portent que de l'éligibilité ;
-- publicodes, que seul le moteur de décision du socle importe ;
-- modern-screenshot, que seule la photo de la feuille importe ;
-- les modèles de `core/models/` et de `front/models/`, que seul `tests/model/`
-  importe, et qui ne s'importent pas entre eux.
-- le socle, qui n'importe rien des modèles, et les deux points d'entrée par
-  lesquels un modèle importe le socle.
-
-La clean architecture est dans
-[`tests/clean-architecture.test.ts`](tests/clean-architecture.test.ts). Dans
-`core/socle/`, seul un adaptateur (`.adapter.ts`) importe un paquet, et rien
-d'autre qu'un index n'importe un adaptateur (ADR-0052). Pour le journal des
-parcours, ses entités, use cases et ports (`.entity.ts`, `.usecase.ts`, `.port.ts`)
-n'importent qu'entre eux et depuis `shared/`, et seul son adaptateur Grist
-connaît Grist (ADR-0043).
-
-Les modules du socle et leur index sont dans
-[`tests/modules-du-socle.test.ts`](tests/modules-du-socle.test.ts) : chaque
-module en a un, et personne ne le contourne.
-
-Les limites de 30 et 300 lignes sont à part, dans
-[`tests/taille-du-code.test.ts`](tests/taille-du-code.test.ts).
+[`tests/frontieres-des-racines.test.ts`](tests/frontieres-des-racines.test.ts), le
+reste dans [`tests/architecture.test.ts`](tests/architecture.test.ts) : le socle
+et les modèles, publicodes et `modern-screenshot` qui n'ont qu'un importeur, le
+socle PDF, les règles qui ne portent que de l'éligibilité, les seeds et les
+developer tools greffés sur le simulateur. La clean architecture est dans
+[`tests/clean-architecture.test.ts`](tests/clean-architecture.test.ts), les
+modules du socle dans
+[`tests/modules-du-socle.test.ts`](tests/modules-du-socle.test.ts), les limites de
+30 et 300 lignes dans [`tests/taille-du-code.test.ts`](tests/taille-du-code.test.ts).
 
 **Ne les recopie pas ici.** Lis le fichier. Lis surtout le message d'échec avant
 de contourner une règle : il dit ce qu'elle protège.
@@ -519,7 +143,8 @@ de contourner une règle : il dit ce qu'elle protège.
 ## Pièges
 
 **Extensions d'import.** Il en faut une (`.ts`) partout où Node peut atteindre le
-fichier, et nulle part ailleurs dans `front/`.
+fichier, et nulle part ailleurs dans `front/`. Node ne résout pas les extensions,
+Vite si. `tests/lisibilite.test.ts` calcule ce qui est accessible.
 
 | Emplacement | Extension |
 |---|---|
@@ -527,16 +152,13 @@ fichier, et nulle part ailleurs dans `front/`.
 | ce qu'un script tire dans `front/` | `.ts` |
 | le reste de `front/` | aucune |
 
-Node ne résout pas les extensions, Vite si. Ce n'est pas une affaire de dossier
-mais d'accessibilité, et `tests/lisibilite.test.ts` la calcule.
-
 **Les maquettes de l'éditeur font foi pour l'aspect et le comportement**, pas
 seulement pour les textes. On en tire des composants génériques du socle, on ne
 recopie pas leur HTML ni leur CSS. Une revue compare chaque page à sa maquette,
 à l'écran.
 
 **DSFR pour toute l'interface.** Emprunte la forme des props au composant appelé
-(`ComponentProps<typeof Checkbox>`) plutôt que de la recopier. Une recopie dérive
+(`ComponentProps<typeof Checkbox>`) plutôt que de la recopier : une recopie dérive
 d'une version à l'autre.
 
 ## Tests
@@ -548,97 +170,42 @@ d'une version à l'autre.
   un référentiel injecté.
 - Les tests du socle PDF remplissent un vrai PDF, fabriqué par `pdf-lib`.
 
-Les tests ont deux dossiers. `tests/socle/` éprouve le socle sur un modèle qu'on
-lui injecte : le factice, écrit pour eux dans `tests/socle/fixtures/modele-factice/`.
-Il est petit et figé, pour que ces tests ne changent pas quand le modèle de
-démonstration gagne une page. `tests/model/` vérifie chaque modèle, dans
-`core/models/` et `front/models/` : `conformite.test.ts` y contrôle ce que le
-socle suppose de n'importe quel modèle, et rejoue ses seeds.
-`metier-sous-node.test.ts` les rejoue sous Node, sur le seul métier. `tests/model/eligibilite/` compare
-les déclarations du modèle de l'éditeur à ses règles, et rejoue son oracle, en
-faits, contre le moteur.
+`tests/socle/` éprouve le socle sur un modèle qu'on lui injecte : le factice, dans
+`tests/socle/fixtures/modele-factice/`. Il est petit et figé, pour que ces tests ne
+changent pas quand le modèle de démonstration gagne une page. `tests/model/`
+vérifie chaque modèle : `conformite.test.ts` contrôle ce que le socle suppose de
+n'importe quel modèle et rejoue ses seeds, `tests/model/eligibilite/` rejoue
+l'oracle de l'éditeur, en faits, contre le moteur.
 
-**Les dossiers de tests sont le miroir des sources** (#292). Sous `tests/socle/`,
-un dossier porte le nom d'un dossier de `front/socle/`, de `core/socle/`, de
-`server/` ou de `shared/` ; sous `tests/model/eligibilite/`, celui d'une étape du
-chemin : `p1/`, `p2/`, `p3/` pour les questions, `faits/`, `cibles/`, `rules/`
-pour le métier, `r2/` avec un dossier par cas (`acceptee/`, `refusee/`,
-`orientee/`) et `r3/` pour l'écran. Un helper vit avec les tests de son sujet
-(`p2/reponses-de-la-permission.ts`, `r2/traces-du-prescripteur.ts`,
-`r3/reponses-du-cerfa.ts`) ; une étape lit ceux des étapes d'avant. Ce qui
-traverse le modèle entier (`parcours.test.tsx`, `domaines.test.ts`,
-`formulaire-du-modele.tsx`) reste à sa racine. `tests/socle/fixtures/` est la
-seule exception : le factice n'a pas de source. `tests/miroir-des-sources.test.ts`
-le garde.
+**Quelques parcours tournent dans un vrai navigateur**, dans `navigateur/` :
+Chromium et WebKit, le simulateur construit en iframe dans une page d'une autre
+origine qui charge le script du CMS. Ils vérifient ce que happy-dom ne peut pas
+dire : l'iframe, les messages avec la page, le PDF, l'accessibilité vue par axe.
+Ils restent peu nombreux : la logique s'éprouve dans `tests/`. Après
+`pnpm exec playwright install chromium webkit` la première fois, `pnpm
+test:navigateur` les lance. La CI les passe dans son job `navigateur`.
 
-**Quelques parcours tournent dans un vrai navigateur** (#461), dans
-`navigateur/` : le simulateur construit, servi par son serveur, embarqué en
-iframe dans une page d'une autre origine qui charge le script du CMS, sous
-Chromium et WebKit. Ils vérifient ce que happy-dom ne peut pas dire : l'iframe,
-les messages échangés avec la page, le PDF, l'accessibilité vue par axe. Ils
-restent peu nombreux : la logique s'éprouve dans `tests/`. `pnpm test:navigateur`
-les lance, après `pnpm exec playwright install chromium webkit` la première
-fois. Ils ne sont pas dans le `verifier` : ils demandent des navigateurs
-installés, et WebKit ne s'installe pas sur tous les postes. La CI les passe dans
-son job `navigateur`.
+**Une capacité ajoutée au socle arrive avec trois choses** : ses tests, sur des
+pages écrites dans le test (`tests/socle/questionnaire/afficher.tsx`), sa page
+dans le modèle de démonstration, et une seed qui ouvre cette page.
 
-**Une capacité ajoutée au socle arrive avec trois choses** (D-66) : ses tests,
-sur des pages écrites dans le test (`tests/socle/questionnaire/afficher.tsx`),
-sa page dans le modèle de démonstration, et une seed qui ouvre cette page.
-
-Réutilise les helpers de `tests/socle/` : `modele-de-test.ts` (le modèle que les
-tests injectent), `se-rattacher.ts`, `simulateur/questionnaire.tsx`,
-`cerfa/test-form.ts`, `server/serveur-de-test.ts`.
-
-**Une situation de référence va dans le `seeds-catalogue.ts` de son modèle,
-pas dans un fichier de test.** C'est un catalogue unique de situations nommées,
-*avec leurs cibles attendues*. Celui du modèle de démonstration
-([`core/models/fake/seeds-catalogue.ts`](core/models/fake/seeds-catalogue.ts))
-ouvre les pages à montrer. Les tests de l'écran des seeds écrivent leurs propres seeds, sur le parcours
-factice.
-
-Les réponses d'une seed se donnent par identifiant de question (`"Q1.2"`).
-Complètes, elles ouvrent un résultat, et `expected` annonce les seules cibles qui
-caractérisent la seed. Incomplètes, elles s'arrêtent sur la première question
-sans réponse, et n'annoncent rien. Un groupe de réponses que plusieurs seeds
-partagent devient une constante en tête du catalogue. Pour un cas de l'oracle,
-les réponses suivent le contrat réponses/faits du paquet. `pnpm test conformite
-metier-sous-node` rejoue la seed. Sur un écart, ne corrige pas l'attendu pour
-qu'il passe : lis la règle et le contrat
+**Une situation de référence va dans le `seeds-catalogue.ts` de son modèle, pas
+dans un fichier de test.** C'est un catalogue unique de situations nommées, *avec
+leurs cibles attendues*. Les réponses d'une seed se donnent par identifiant de
+question (`"Q1.2"`). Complètes, elles ouvrent un résultat et `expected` annonce les
+seules cibles qui la caractérisent. Incomplètes, elles s'arrêtent sur la première
+question sans réponse et n'annoncent rien. Sur un écart, ne corrige pas l'attendu
+pour qu'il passe : lis la règle et le contrat
 ([`livrable-de-l-editeur.md`](docs/knowledge/domain/livrable-de-l-editeur.md)).
 
 ## Les developer tools
 
-L'écran des seeds (`front/socle/seeds/`) et les **traces de debug** sont les deux
-developer tools. Ils partagent :
+L'écran des seeds et les **traces de debug** s'ouvrent **en local seulement**,
+sous le serveur de dev et sous les tests, quel que soit le service. Jamais sur un
+build de production, donc jamais en staging ni en production. La garde lit
+`import.meta.env.DEV` à un seul endroit, `developerToolsUnlocked`
+(`front/socle/developer-tools/unlock.ts`).
 
-- la même garde d'accès : **en local seulement**, sous le serveur de dev et sous
-  les tests, quel que soit le service choisi. Jamais sur un build de production,
-  donc jamais en staging ni en production (D-279) ;
-- le même moment : ils sont atteints **après** le rattachement, depuis le
-  simulateur.
-
-La garde lit `import.meta.env.DEV` à un seul endroit,
-`developerToolsUnlocked(env = import.meta.env)`
-(`front/socle/developer-tools/unlock.ts`). `App` en tire sa prop
-`developerTools`, qu'un test passe à `false` pour voir l'app comme en
-production. L'écran de rattachement n'a pas de developer tools.
-
-**Une exception, la trace de debug pour « Assurance Maladie »** (D-280). Choisie
-au rattachement, cette structure ouvre la trace sur tous les environnements,
-production comprise. Les seeds et le choix du modèle restent fermés. L'écran de
-rattachement remonte la structure choisie (`onRattache(structure)`), la
-navigation la retient, et `debugTraceUnlocked(developerTools, structure)`
-(`unlock.ts`) décide.
-
-Le simulateur ne connaît pas l'écran des seeds. C'est `App.tsx` qui lui passe du contenu
-déjà composé (`developerToolsPanel`).
-
-La trace de debug vit aussi dans `front/socle/developer-tools/` (`DebugTrace.tsx`). Elle
-lit l'état vivant du parcours, qu'`App` n'a pas sous la main : `App` passe donc au
-simulateur le composant lui-même (`DebugTrace`), et chaque écran lui donne son
-état à afficher. Sans composant passé, aucune trace ne s'affiche.
-
-Elle montre les questions validées et ce qui s'y proposait, les faits avec leur
-provenance, et dit d'une cible qu'elle est indéfinie. Son lien « Exporter la
-trace » fabrique un fichier JSON dans le navigateur, pour la recette.
+**Une exception : la trace de debug pour « Assurance Maladie »** s'ouvre sur tous
+les environnements, choisie au rattachement. Les seeds et le choix du modèle
+restent fermés.
