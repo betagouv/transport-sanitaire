@@ -76,7 +76,7 @@ Le lint n'a pas d'avertissement : une règle est une erreur, ou éteinte avec sa
 | Le détail d'une implémentation | le code, que ses tests documentent. Ni un ADR ni un README. Un code obscur se corrige (un nom, une étape explicite), il ne s'explique pas dans une doc |
 | Ce qu'une version apporte | le `CHANGELOG.md` de l'app : voir [`livraisons.md`](livraisons.md) |
 | Une règle de code ou de commit | ce dossier : voir [`ecrire-une-regle.md`](ecrire-une-regle.md) |
-| Une garde | **un test**, pas une phrase |
+| Une garde, quand la règle en a une | **un test ou une règle de lint**, pas une phrase. Elle n'est pas obligatoire : voir [`ecrire-une-regle.md`](ecrire-une-regle.md#la-garde) |
 | Une consigne aux agents | la source de la connaissance qu'elle porte, parmi les lignes ci-dessus. Les `AGENTS.md` sont générés par `pnpm agents` : on ne les édite jamais |
 
 ### Quand deux sources se contredisent

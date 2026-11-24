@@ -104,22 +104,21 @@ cerfa/lieux-du-trajet.ts
 
 ## La garde
 
-Toute règle finit par une ligne de garde. Il n'y a que trois cas.
+Une règle peut avoir une garde : un test, une règle de lint. Elle n'y est pas
+obligée. Toute règle finit pourtant par une ligne qui dit où elle en est.
 
 | Cas | Ce qu'on écrit |
 |---|---|
-| Une assertion l'applique | `*Gardé par* <chemin du test> › <nom de l'assertion>` |
-| Rien ne peut l'appliquer | `*Aucune garde.* C'est du jugement, pas de la forme.` |
-| Une assertion est possible, pas encore écrite | `*Aucune garde.* <ce qui la porterait>` |
+| Une garde l'applique | `*Gardé par* <chemin du test ou règle du linter> › <nom de l'assertion>` |
+| Une garde n'en couvre qu'une partie | `*Gardé par* <la garde>, *seulement* <ce qu'elle vérifie>.` |
+| Aucune garde | `*Aucune garde.* <pourquoi, en une phrase>` |
 
-Le troisième cas est une dette, pas un statut. Avant de l'écrire, demande-toi si
-la règle vaut mieux qu'un test. Une règle de forme mécanisable devrait naître
-avec son assertion.
-
-**Une règle de forme nomme l'assertion qui la garde. Sans assertion, elle
-n'existe pas.** Mieux vaut l'écrire dans un test que la répéter ici. Une règle de
-jugement, que rien ne mécanise, écrit `*Aucune garde.*` en toutes lettres plutôt
-que de laisser croire qu'elle en a une.
+- **La ligne dit exactement ce que la garde vérifie, pas plus.** Une garde qui
+  ne voit qu'un côté de la règle le dit (« garde seulement … »), pour ne pas
+  laisser croire que le reste est tenu.
+- **Une garde n'est pas obligatoire.** On n'en écrit pas quand elle serait trop
+  complexe à tenir, ou trop restrictive : elle refuserait des cas légitimes. La
+  règle écrit alors `*Aucune garde.*`. Ce n'est pas une dette, c'est un choix.
 
 L'état de chaque règle se lit dans la colonne « Garde » du tableau de son recueil,
 et nulle part ailleurs : le recopier créerait deux sources à tenir à jour.
