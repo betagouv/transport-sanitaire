@@ -75,9 +75,8 @@ Une cible se lit par `Cible` : `isOui()`, `isNon()`, `is("TAP")`,
 
 ## 7. Vérifier
 
-```bash
-tsp verifier simulateur
-```
+Lance les tests du fichier écrit, `pnpm lint` et `pnpm typecheck`, puis pousse :
+la CI dit le reste. Voir `AGENTS.md` (racine), section « Vérifier ».
 
 ## Ce qui trahit une erreur
 

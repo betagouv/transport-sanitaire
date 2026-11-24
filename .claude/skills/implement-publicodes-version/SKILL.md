@@ -114,9 +114,8 @@ Les seeds suivent : skill `ajouter-une-seed`.
 
 ## 7. Vérifier
 
-```bash
-tsp verifier simulateur
-```
+Lance les tests du fichier écrit, `pnpm lint` et `pnpm typecheck`, puis pousse :
+la CI dit le reste. Voir `AGENTS.md` (racine), section « Vérifier ».
 
 ## 8. Répondre à l'éditeur
 

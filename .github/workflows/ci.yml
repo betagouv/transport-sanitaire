@@ -9,9 +9,9 @@ on:
 
 # Le dépôt est un **workspace pnpm** : une seule installation à la racine, un
 # seul `pnpm-lock.yaml`, un magasin mutualisé. Chaque app garde en revanche son
-# job et son **`pnpm verifier`**, la même commande que localement. C'est ce qui
-# garantit qu'un `verifier` vert ici l'est aussi là-bas. Toute porte ajoutée se
-# met dans le script, jamais dans ce fichier.
+# job, qui passe une à une les étapes de son script `verifier` : un échec se lit
+# au nom de l'étape, sans ouvrir le journal. Une porte ajoutée au `verifier`
+# d'une app s'ajoute aussi à son job, sous le même nom.
 #
 # `--filter <app>` cible une app. `pnpm install` reste global : le lock l'est, et
 # le cache pnpm rend la répétition entre jobs peu coûteuse.
@@ -28,9 +28,17 @@ jobs:
           node-version-file: package.json
           cache: pnpm
       - run: pnpm install --frozen-lockfile
-      # lint → typecheck → knip → tests → build
-      # (+ vérification de bundle en `postbuild`).
-      - run: pnpm --filter simulateur-eligibilite verifier
+      # Le `build` passe aussi la vérification de bundle, en `postbuild`.
+      - name: lint
+        run: pnpm --filter simulateur-eligibilite lint
+      - name: typecheck
+        run: pnpm --filter simulateur-eligibilite typecheck
+      - name: knip
+        run: pnpm --filter simulateur-eligibilite knip
+      - name: test
+        run: pnpm --filter simulateur-eligibilite test
+      - name: build
+        run: pnpm --filter simulateur-eligibilite build
 
   # Les parcours en navigateur réel, sous Chromium et WebKit : le simulateur
   # construit, embarqué en iframe dans une page d'une autre origine. Ils ont
@@ -65,7 +73,14 @@ jobs:
           node-version-file: package.json
           cache: pnpm
       - run: pnpm install --frozen-lockfile
-      - run: pnpm --filter datahub verifier
+      - name: lint
+        run: pnpm --filter datahub lint
+      - name: typecheck
+        run: pnpm --filter datahub typecheck
+      - name: knip
+        run: pnpm --filter datahub knip
+      - name: test
+        run: pnpm --filter datahub test
 
   glossaire-notion:
     runs-on: ubuntu-latest
@@ -77,7 +92,16 @@ jobs:
           node-version-file: package.json
           cache: pnpm
       - run: pnpm install --frozen-lockfile
-      - run: pnpm --filter glossaire-notion verifier
+      - name: lint
+        run: pnpm --filter glossaire-notion lint
+      - name: typecheck
+        run: pnpm --filter glossaire-notion typecheck
+      - name: knip
+        run: pnpm --filter glossaire-notion knip
+      - name: test
+        run: pnpm --filter glossaire-notion test
+      - name: build
+        run: pnpm --filter glossaire-notion build
 
   cli:
     runs-on: ubuntu-latest
@@ -89,8 +113,13 @@ jobs:
           node-version-file: package.json
           cache: pnpm
       - run: pnpm install --frozen-lockfile
-      # lint → typecheck → knip. Pas de tests : voir apps/cli/AGENTS.md.
-      - run: pnpm --filter cli verifier
+      # Pas de tests : voir apps/cli/AGENTS.md.
+      - name: lint
+        run: pnpm --filter cli lint
+      - name: typecheck
+        run: pnpm --filter cli typecheck
+      - name: knip
+        run: pnpm --filter cli knip
 
   # L'audit ne se scope pas : `pnpm audit` lit le lock, et le lock est unique au
   # dépôt depuis le passage en workspace. Le répéter dans chaque job

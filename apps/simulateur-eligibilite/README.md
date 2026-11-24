@@ -43,7 +43,7 @@ front et le référentiel de rattachement.
 
 | Commande | Ce qu'elle fait |
 | --- | --- |
-| `pnpm verifier` | **La vérification complète** : lint, typecheck, knip, tests, build et sa vérification de bundle. C'est la commande que lance la CI, telle quelle : ce qui passe ici passe là-bas. |
+| `pnpm verifier` | **La vérification complète** : lint, typecheck, knip, tests, build et sa vérification de bundle. Sa CI en passe les étapes une à une. En local, on lance seulement les tests ciblés, `pnpm lint` et `pnpm typecheck`, puis la CI dit le reste. |
 | `pnpm dev` | Le front et le backend de dev ensemble. C'est ce que lance `tsp dev simulateur`. |
 | `pnpm dev:front` | Le front de dev, sur le port 5173, qui proxifie `/api` vers `:3000` |
 | `pnpm dev:server` | Le backend de dev, sur le port 3000, en `--watch`, qui charge `.env` s'il est présent |
@@ -339,7 +339,7 @@ sert à tenir en vie, et sous test, ce que le parcours réel reprendra :
 
 Scalingo construit et sert cette app, et déploie depuis `main`.
 
-1. **Passer la vérification.** `pnpm verifier` doit être vert, comme en CI.
+1. **Attendre la CI verte.** Elle passe les étapes du `verifier` sur `staging` : c'est elle qui fait foi avant de pousser sur `main`.
 2. **Pousser sur `main`.** Scalingo part de là, sans action manuelle.
 3. **Laisser construire depuis la racine du dépôt**, et non depuis
    `apps/simulateur-eligibilite/`. C'est ce qu'impose le workspace pnpm : le

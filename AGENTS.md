@@ -90,14 +90,23 @@ plusieurs les portent.
 
 ## Vérifier
 
-`tsp verifier <app>`. **C'est la commande à passer avant de dire que c'est
-fait.** Elle lance le script `verifier` de l'app, et la CI lance exactement le
-même : un `verifier` vert ici l'est là-bas. Une porte à ajouter se met dans ce
-script, jamais dans le YAML. Seule exception : les parcours en navigateur du
-simulateur (`pnpm test:navigateur`), qui demandent des navigateurs installés et ont
-leur job en CI.
+**La CI est la porte.** Avant de pousser, on lance seulement ce qui est rapide :
 
-`tsp verifier` sans app le passe sur toutes les apps, une à la fois.
+- les tests du ou des fichiers qu'on vient d'écrire ;
+- `pnpm lint`, en entier ;
+- `pnpm typecheck`.
+
+On pousse, et la CI dit le reste en 3 minutes. Elle passe une à une les étapes du
+script `verifier` de chaque app (lint, typecheck, knip, test, build), sous leur
+nom : un échec se lit sans ouvrir le journal. Une porte ajoutée au `verifier`
+d'une app s'ajoute aussi à son job, sous le même nom.
+
+On ne lance pas la suite entière en local, ni deux commandes de test en même
+temps, autres sessions comprises. Le script `verifier` et `tsp verifier [app]`
+restent disponibles, sans être un geste obligatoire.
+
+Les parcours en navigateur du simulateur (`pnpm test:navigateur`) demandent des
+navigateurs installés et ont leur propre job en CI.
 
 La CI et le `Procfile` appellent `pnpm` en direct, pas `tsp` : la production ne
 dépend pas de la CLI.
