@@ -4,9 +4,8 @@ Glossaire des termes propres à ce contexte : le parcours de simulation d'éligi
 au transport sanitaire, et son écran de rattachement.
 
 Chaque terme dit ce que l'éditeur du modèle emploie pour la même notion
-(« Chez l'éditeur »). Le vocabulaire a été arbitré au chantier 01 de la v10
-(issue 51), puis précisé à l'issue 91 : les numéros D-… renvoient au
-[journal des décisions](adr/journal-des-decisions-v10.md), clos le 2026-11-24.
+(« Chez l'éditeur »). Le vocabulaire du dépôt est dans
+[`../../../../docs/knowledge/CONTEXT.md`](../../../../docs/knowledge/CONTEXT.md).
 
 ## Language
 
@@ -20,24 +19,22 @@ _Chez l'éditeur_: aucun mot. Le socle est de nous.
 **Modèle**:
 Tout ce qui change avec un livrable de l'éditeur : ses questions, ses faits, ses
 règles, ses cibles, ses deux résultats et ses cerfa. Le simulateur en ouvre un
-(D-20).
 _Chez l'éditeur_: **faux ami**. Le « modèle » (« modèle exécutable », « modèle
 Publicode ») y est le seul fichier publicodes, que nous appelons les règles.
 
 **Modèle de l'éditeur**:
 Le modèle d'éligibilité, tiré du livrable de l'éditeur. C'est lui qui s'ouvre au
-démarrage (D-119).
+démarrage.
 
 **Modèle de démonstration**:
 Un modèle écrit par nous, où chaque capacité du socle a sa page, pour la voir à
-l'écran sans dépendre de l'éditeur (D-82).
+l'écran sans dépendre de l'éditeur.
 _Avoid_: factice, réservé au petit modèle figé sur lequel les tests éprouvent le
 socle.
 
 **Règles**:
-Le fichier publicodes du modèle, tel que l'éditeur le livre (D-20).
-_Chez l'éditeur_: « YAML métier », « fichier exécutable » ; « modèle exécutable »
-dans les premières livraisons de la v10.
+Le fichier publicodes du modèle, tel que l'éditeur le livre.
+_Chez l'éditeur_: « YAML métier », « fichier exécutable ».
 
 **Livrable**:
 Ce que l'éditeur dépose pour une version du modèle : les règles, les contrats,
@@ -45,19 +42,19 @@ les gabarits, l'oracle.
 _Chez l'éditeur_: « package », « livraison ».
 
 **Nomenclatures**:
-Les corpus officiels des actes et des produits : CCAM, NGAP, NABM, LPP (D-21).
+Les corpus officiels des actes et des produits : CCAM, NGAP, NABM, LPP.
 _Chez l'éditeur_: « référentiels ».
 _Avoid_: référentiel, réservé au rattachement.
 
 **Référentiel**:
-La liste des établissements et des services que propose le rattachement (D-21).
+La liste des établissements et des services que propose le rattachement.
 _Chez l'éditeur_: **faux ami**. Ses « référentiels » sont nos nomenclatures.
 
 **Prescripteur**:
 Le professionnel devant l'écran : il répond aux questions, lit les résultats et
-prescrit le transport (D-199).
-_Chez l'éditeur_: « prescripteur », et encore « praticien » pour celui qui lit
-le premier résultat. Il passe à « prescripteur » partout.
+prescrit le transport.
+_Chez l'éditeur_: « prescripteur », et « praticien » pour celui qui lit
+le premier résultat.
 _Avoid_: praticien, utilisateur.
 
 ### Le rattachement
@@ -67,7 +64,6 @@ L'établissement et le service que déclare un prescripteur avant d'accéder au
 simulateur, sans aucune information sur qui il est. C'est une affiliation
 organisationnelle déclarative, pas une identité.
 _Chez l'éditeur_: aucun mot. Le rattachement n'est pas son « contexte fiable »
-(D-74).
 _Avoid_: Identification, identité. Ces mots sont réservés à une éventuelle
 authentification individuelle future (ProConnect, AgentConnect), non implémentée.
 Les employer pour le rattachement laisserait croire qu'une personne est identifiée.
@@ -78,36 +74,32 @@ référentiel, ou dont le service n'est pas sous son établissement (ANA22-01). 
 ne compte pas parmi les événements valides.
 _Avoid_: collision, réservé à deux contenus sous le même `event_id`.
 
-~~**Rattachement dégradé**~~ (retiré le 2026-11-17, #506) : le rattachement
-« Autre / Autre » donné d'office quand le référentiel ne répondait pas. Le
-prescripteur entre toujours, mais son parcours part sans rattachement.
-
 **Établissement**:
-Celui que le prescripteur déclare au rattachement (D-24).
+Celui que le prescripteur déclare au rattachement.
 _Chez l'éditeur_: **faux ami**. Notre établissement y est la « structure »
 (du prescripteur). Son « établissement » est un lieu du trajet.
 
 **Lieu de soins**:
-Un lieu du trajet où le patient reçoit ses soins (D-24).
+Un lieu du trajet où le patient reçoit ses soins.
 _Chez l'éditeur_: « lieu du soin », l'un des rôles d'un lieu, et
 « établissement ».
 _Avoid_: établissement, réservé au rattachement.
 
 **Sens**:
-L'aller, le retour, ou l'aller et le retour, que le document prescrit (D-198).
+L'aller, le retour, ou l'aller et le retour, que le document prescrit.
 _Chez l'éditeur_: « sens », le même mot ; « segment » pour une portion de trajet.
 _Avoid_: segment, réservé au texte médical.
 
 ### Le questionnaire
 
 **Questionnaire**:
-L'ensemble des questions d'un modèle, rangées en parties et en pages (D-19).
+L'ensemble des questions d'un modèle, rangées en parties et en pages.
 _Chez l'éditeur_: « parcours », ou « catalogue des pages et des questions ».
 Son « questionnaire » est celui de satisfaction.
 
 **Parcours**:
 Le chemin d'un prescripteur dans le questionnaire, page après page, jusqu'aux
-résultats (D-19).
+résultats.
 _Chez l'éditeur_: « parcours », qui désigne aussi le questionnaire.
 
 **Partie**:
@@ -116,14 +108,14 @@ les pages.
 _Chez l'éditeur_: « Partie 0 » à « Partie 3 », le même mot.
 
 **Page**:
-Un écran de questions, à l'intérieur d'une partie : P1/1, P2/trajet (D-26).
+Un écran de questions, à l'intérieur d'une partie : P1/1, P2/trajet.
 _Chez l'éditeur_: **faux ami**. « Page » y a trois sens : la « page physique »
 (notre page), la « page de résultat » et la page d'un PDF.
 _Avoid_: page pour une partie ou pour un résultat.
 
 **Question**:
 Ce qu'on demande au prescripteur, sous l'identifiant que lui donne l'éditeur :
-Q1.1, Q2.3.4 (D-40).
+Q1.1, Q2.3.4.
 _Chez l'éditeur_: « question », le même mot.
 
 **Réponse**:
@@ -140,11 +132,11 @@ _Chez l'éditeur_: « brouillon courant ».
 Le geste « Compléter », qui fige P1, P2 et leur préconisation avant le
 complément.
 _Chez l'éditeur_: « verrou », « verrou R2→P3 ». Son « jeton de verrou », côté
-serveur, n'a pas d'équivalent chez nous (D-64).
+serveur, n'a pas d'équivalent chez nous.
 
 **Rappel**:
 Un fait déjà connu, redit en bref avant la question qu'il éclaire. Il ne se
-modifie pas là : on le corrige en revenant à la page où il a été répondu (D-194).
+modifie pas là : on le corrige en revenant à la page où il a été répondu.
 _Chez l'éditeur_: « rappel », « rappel contextuel » (le traitement R).
 _Avoid_: réponse déduite. « Déduit » se dit d'une réponse qu'on ne demande plus,
 tirée d'une autre.
@@ -156,10 +148,9 @@ prescription »). Son « complément » est celui d'une adresse.
 
 **Simulation**:
 Un passage complet dans le simulateur, fait en une fois, sur le modèle chargé à
-l'ouverture. Elle ne se partage pas et ne se reprend pas (D-104). « Faire une
-nouvelle simulation » la ferme au journal des parcours (#497).
-_Chez l'éditeur_: « simulation ». Sa « révision » n'a pas d'équivalent chez nous
-(D-192).
+l'ouverture. Elle ne se partage pas et ne se reprend pas. « Faire une
+nouvelle simulation » la ferme au journal des parcours.
+_Chez l'éditeur_: « simulation ». Sa « révision » n'a pas d'équivalent chez nous.
 
 **Lecture**:
 Ce qu'on tire des réponses, des faits ou des cibles :
@@ -174,7 +165,7 @@ Ce qu'une lecture voit, selon l'endroit. Une question voit les questions posées
 avant elle. Un fait et un résultat voient les questions validées ; le résultat
 voit aussi les faits, les cibles et le jour.
 _Chez l'éditeur_: **faux ami**. Son « contexte » est un motif de fiche positive,
-et son « contexte fiable » ce que le livrable tient pour sûr (D-74).
+et son « contexte fiable » ce que le livrable tient pour sûr.
 
 **Condition**:
 Une lecture qui vaut oui ou non, sur les réponses, les faits ou les cibles :
@@ -185,7 +176,7 @@ _Chez l'éditeur_: « condition », le même mot.
 **Garde**:
 La condition qui dit si une question se pose (`appliesWhen`, `mattersWhile`) ou
 si une réponse possible se propose (`offeredWhen`). Elle ne lit que les
-questions posées avant elle (D-213, D-214).
+questions posées avant elle.
 _Chez l'éditeur_: « condition d'affichage ».
 
 ### La décision
@@ -194,24 +185,24 @@ La chaîne : Questions → Faits → Cibles → Résultats.
 
 **Fait**:
 Ce que les réponses validées établissent, sous le nom que lui donne l'éditeur
-(`fait_*`), avec sa provenance (D-12). Il vaut oui, non, ou reste inconnu. Un
-fait inconnu ne vaut jamais « non » (D-86).
+(`fait_*`), avec sa provenance. Il vaut oui, non, ou reste inconnu. Un
+fait inconnu ne vaut jamais « non ».
 _Chez l'éditeur_: « fait », le même mot.
 
 **Provenance**:
 Ce qui établit un fait : la réponse qui le donne, ou la raison qui le rend sans
-objet (D-87).
+objet.
 _Chez l'éditeur_: « provenance ».
 
 **Cible**:
 Une valeur que les règles calculent à partir des faits, sous le nom que lui
-donne l'éditeur (`cible_*`) (D-12). Elle peut rester inconnue, ou être sans
+donne l'éditeur (`cible_*`). Elle peut rester inconnue, ou être sans
 objet.
 _Chez l'éditeur_: « cible », le même mot.
-_Avoid_: sortie, output, target (D-25).
+_Avoid_: sortie, output, target.
 
 **Cible documentaire**:
-Une valeur que le cerfa écrit (D-197). Elle a deux origines : une projection des
+Une valeur que le cerfa écrit. Elle a deux origines : une projection des
 faits, qui est une cible comme les autres, ou une réponse du complément, que le
 cerfa met en forme.
 _Chez l'éditeur_: « cible documentaire », le même mot. Celles qui viennent du
@@ -219,14 +210,14 @@ complément ne sont pas dans ses règles.
 
 **Préconisation**:
 Les faits d'une simulation et les cibles qu'ils donnent. Le verrou la fige :
-le complément n'y change rien (D-11, D-16, D-200).
+le complément n'y change rien.
 _Chez l'éditeur_: « décision », « instantané » (« un instantané des faits P0–P2
 et des sorties du moteur »).
 _Avoid_: décision, sortie.
 
 **Issue**:
 La conclusion d'une préconisation, une parmi dix : `ISSUE_PMT`,
-`ISSUE_NON_ELIGIBLE`… (D-16).
+`ISSUE_NON_ELIGIBLE`….
 _Chez l'éditeur_: « issue », le même mot.
 
 **Mode**:
@@ -244,18 +235,18 @@ l'établissement, le patient, ou pas encore conclu.
 _Chez l'éditeur_: « financeur », le même mot.
 
 **Moteur de décision**:
-Ce qui calcule les cibles des faits, par les règles publicodes du modèle (D-32).
+Ce qui calcule les cibles des faits, par les règles publicodes du modèle.
 _Chez l'éditeur_: « moteur », seul. Son « noyau de décision » est le fichier
 des règles.
 
 **Graphe de décision**:
 Ce que vaut chaque règle pour chaque façon dont ses faits valent oui, non ou
-rien. `pnpm regles` le compile des règles (D-216). Il dit quelles questions ne
-changent plus rien (#196).
+rien. `pnpm regles` le compile des règles. Il dit quelles questions ne
+changent plus rien.
 _Chez l'éditeur_: aucun mot.
 
 **Moteur de questionnaire**:
-Ce qui dit, des réponses, quelles pages et quelles questions se posent (D-32).
+Ce qui dit, des réponses, quelles pages et quelles questions se posent.
 _Chez l'éditeur_: aucun mot.
 _Avoid_: « moteur » seul, réservé au moteur de décision.
 
@@ -263,82 +254,59 @@ _Avoid_: « moteur » seul, réservé au moteur de décision.
 
 **Résultat**:
 L'un des deux écrans qui concluent : R2, le premier résultat, après P2, et R3, le
-second résultat, après le complément (D-11, D-17).
+second résultat, après le complément.
 _Chez l'éditeur_: « page de résultat » ou « résultat de l'éligibilité » pour
 R2, « page finale » pour R3.
-_Avoid_: sortie (D-25), page (D-26).
+_Avoid_: sortie, page.
 
 **Trace du résultat**:
 Ce que les textes du premier résultat lisent des réponses et des cibles. Rien
-n'en est conservé (D-111, D-195).
+n'en est conservé.
 _Chez l'éditeur_: « trace d'audit », « trace technique », que décrit son
 « contrat de trace ». La sienne porte en plus la version du paquet et la
 révision.
-_Avoid_: trace, seule (D-23) ; trace d'audit, réservé à celle de l'éditeur.
+_Avoid_: trace, seule ; trace d'audit, réservé à celle de l'éditeur.
 
 **Révision**:
 Une version du premier résultat dans une simulation, numérotée `r1`, `r2`…
-Un R2 réaffiché sans modification garde sa révision ; une modification
-validée de P1 ou de P2 l'invalide, et le R2 suivant en ouvre une nouvelle. Le
-complément et le cerfa portent la révision du R2 qui les ouvre. Le journal des
-parcours s'en sert pour compter l'accès au premier résultat sur la première, et
-la répartition des issues sur la dernière valide (#386). Un R2 sans issue ou
-sans support n'en ouvre pas (#497).
-_Chez l'éditeur_: « révision », « révision courante » (ANA-1015).
+Une modification validée de P1 ou de P2 l'invalide, et le R2 suivant en ouvre
+une nouvelle. Le complément et le cerfa portent la révision du R2 qui les ouvre.
+_Chez l'éditeur_: « révision », « révision courante ».
 _Avoid_: version, réservé à celle des règles, de l'app, du document R3 et de la
 fiche patient.
 
 **Version du document**:
-Un document R3 dans une simulation, numéroté `d1`, `d2`… Son contenu et la
-révision dont il vient en font l'empreinte : le même document réaffiché garde
-sa version, un complément changé en ouvre une nouvelle. Une version tombe avec
-sa révision. Le journal des parcours la reçoit quand son PDF est prêt (#387).
-_Chez l'éditeur_: « version documentaire », `document_id` (ANA-1015).
+Un document R3 dans une simulation, numéroté `d1`, `d2`… Le même document
+réaffiché garde sa version, un complément changé en ouvre une nouvelle.
+_Chez l'éditeur_: « version documentaire », `document_id`.
 _Avoid_: révision, réservé au premier résultat et à la révision du document.
 
 **Révision du document**:
-L'état du complément dont viennent les versions du document R3, numéroté
-`dr1`, `dr2`… dans une simulation. Elle naît sous une révision du R2, au
-premier document affiché ; une page de P3 validée qui change les réponses
-l'invalide et annonce la suivante (R13, #497). Un même DTO imprimé autrement
-change de version, pas de révision du document.
+L'état du complément dont viennent les versions du document R3, numéroté `dr1`,
+`dr2`… Une page de P3 validée qui change les réponses l'invalide.
 _Chez l'éditeur_: `document_revision`.
 _Avoid_: version, réservé au PDF.
 
 **Taille imprimée**:
 La taille, en points, où un champ rempli du document R3 s'imprime vraiment,
-après le rapetissement qui le fait tenir. Un texte porté par plusieurs volets
-garde la plus petite. Le journal des parcours la reçoit par version, sous
-l'identifiant fermé du champ, `<support>.<champ>`, sans son texte (#389, #508).
-Les deux parties d'une adresse de départ ou d'arrivée y sont un seul champ.
+après le rapetissement qui le fait tenir.
 _Chez l'éditeur_: « mesure typographique », `font_size_pt`.
 _Avoid_: taille de police, qui dit la taille de départ.
-
-**Rechargement**:
-La page du CMS rechargée par le prescripteur, qui ouvre une nouvelle simulation
-et laisse l'ancienne sans fin. Le journal des parcours ne le reçoit plus : le
-contrat v10.2.2 n'a pas de champ pour le dire (#497). « Faire une nouvelle
-simulation » n'en est pas un : la page reste.
 
 **Motif**:
 Une raison que le premier résultat affiche, telle que le catalogue de l'éditeur
 l'écrit, avec son identifiant : le contexte d'une fiche positive (`E-B`), une
-phrase d'accord préalable, un scénario de la caisse, une raison de refus. Le
-même calcul choisit son texte et son identifiant. Le journal des parcours ne
-reçoit que le code de raison (#497).
+phrase d'accord préalable, un scénario de la caisse, une raison de refus.
 _Chez l'éditeur_: « contexte », « scénario », « raison » ou « whyItem » selon
 l'issue ; « motif » pour un code de raison (`reason_codes`).
 _Avoid_: raison, réservé à `cible_reason_code`, le code que les règles
-calculent. Le « motif administratif » du modus n'est pas un motif : il reprend
-la raison en clause, pour la réservation.
+calculent.
 
 **Composition du transport**:
-Ce que le trajet d'un résultat combine, pour le journal des parcours :
-terrestre seul, ligne régulière seule, les deux (mixte), inconnue faute de
-preuve, ou sans objet (#509). Q2.3.2 prouve la ligne régulière,
-Q2.3.2.terrestre sa partie terrestre.
-_Chez l'éditeur_: `transport_composition` (ANA22-04).
-_Avoid_: portion, qui ne part plus au journal.
+Ce que le trajet d'un résultat combine : terrestre seul, ligne régulière seule,
+les deux (mixte), inconnue faute de preuve, ou sans objet.
+_Chez l'éditeur_: `transport_composition`.
+_Avoid_: portion.
 
 **Fiche patient**:
 Ce que le premier résultat donne à remettre au patient, positive ou négative.
@@ -347,33 +315,26 @@ _Chez l'éditeur_: « fiche patient », le même mot.
 
 **Version de la fiche**:
 Une fiche patient dans une simulation, numérotée `f1`, `f2`…, une par révision
-qui en montre une. Le journal des parcours la reçoit en `artifact_id` dans
-l'exposition et les clics d'« Imprimer » et de « Télécharger » sur la fiche
-(#388, #507).
-_Chez l'éditeur_: « identité de rendu » de la fiche, `artifact_id` (ANA22-02).
+qui en montre une.
+_Chez l'éditeur_: « identité de rendu » de la fiche, `artifact_id`.
 _Avoid_: document, réservé au cerfa de R3.
 
 **Limite de phase**:
 La première ou la dernière page d'une phase, au moment où le prescripteur la
-voit. La dernière se lit d'après les réponses validées : une réponse peut en
-ouvrir une autre, qui devient à son tour la dernière (#497).
+voit. La dernière se lit d'après les réponses validées.
 _Chez l'éditeur_: `phase_boundary_displayed`, `boundary` (`first`, `last`).
-_Avoid_: jalon, l'ancien complément `milestones`.
+_Avoid_: jalon.
 
 **Exposition**:
-Un bouton ou une question offert au prescripteur. Une question l'est une fois
-par affichage de page. Un bouton l'est tant qu'il reste à sa place : une
-nouvelle exposition ne vient qu'après une vraie disparition, une autre version
-de son objet ou une autre révision, jamais d'un remontage technique. Son clic,
-sa saisie ou sa validation s'y rattachent par `exposure_id`. Un bouton grisé
-n'est ni exposé ni cliqué ; la position dans la fenêtre ne compte pas (#385,
-#388, #507).
-_Chez l'éditeur_: « exposition », `exposure_id` (ANA-1015).
+Un bouton ou une question offert au prescripteur. Son clic, sa saisie ou sa
+validation s'y rattachent par `exposure_id`. Un bouton grisé n'est ni exposé ni
+cliqué.
+_Chez l'éditeur_: « exposition », `exposure_id`.
 _Avoid_: vue, impression.
 
 **Cerfa**:
 Le formulaire que remplit le second résultat : la PMT (S3138g), la DAP (S3139h)
-ou le S3141, même si ce dernier n'a pas de numéro Cerfa (D-18).
+ou le S3141, même si ce dernier n'a pas de numéro Cerfa.
 _Chez l'éditeur_: « support » pour le formulaire que la préconisation retient,
 « formulaire » pour le PDF officiel, « document » pour le PDF rempli. Son
 « Cerfa » est le numéro officiel (11574*07).
@@ -384,7 +345,7 @@ _Chez l'éditeur_: « gabarit ».
 
 **Rubrique**:
 Une section imprimée d'un cerfa, qu'un autre cerfa peut reprendre : l'accident,
-le trajet, la prescription (D-138).
+le trajet, la prescription.
 _Chez l'éditeur_: « rubrique », le même mot.
 
 **Cellule**:
@@ -393,7 +354,6 @@ _Chez l'éditeur_: « cellule », le même mot.
 
 **Volet**:
 Une page à renseigner d'un cerfa. Un même champ se recopie sur chaque volet
-(D-185).
 _Chez l'éditeur_: « volet », le même mot.
 
 **Texte strict**:
@@ -402,12 +362,11 @@ son champ, ou ne s'écrit pas (la cellule médicale de la PMT et de la DAP). Qua
 il déborde, la génération le dit avec son maximum de caractères, le PDF n'est
 qu'un aperçu marqué « Aperçu – texte à valider », et l'écran fait réécrire le
 texte avant d'ouvrir les exports. Les autres textes rapetissent jusqu'à tenir
-(D-85, D-302).
 _Chez l'éditeur_: aucun mot.
 
 **Segment**:
 Un morceau du texte médical du cerfa : le soin, un besoin, un critère
-d'ambulance. Les segments se joignent par « ; » (D-141, D-198).
+d'ambulance. Les segments se joignent par « ; ».
 _Chez l'éditeur_: **faux ami**. « Segment » y désigne aussi une portion de
 trajet et une étape du stepper.
 _Avoid_: segment pour un trajet, dire l'aller, le retour ou le sens.
@@ -420,22 +379,22 @@ rejoue dans les tests et s'ouvre à l'écran.
 _Chez l'éditeur_: aucun mot.
 
 **Catalogue des seeds**:
-Les seeds d'un modèle. « Catalogue » ne s'emploie jamais seul (D-22).
+Les seeds d'un modèle. « Catalogue » ne s'emploie jamais seul.
 _Chez l'éditeur_: **faux ami**. Son « catalogue » est celui des questions.
 
 **Oracle**:
 Les cas de l'éditeur (D01, D02…), écrits en faits, dont l'attendu est une issue.
-Il passe en faits, et se rejoue depuis les réponses quand nos questions le posent (D-236).
+Il passe en faits, et se rejoue depuis les réponses quand nos questions le posent.
 _Chez l'éditeur_: « oracle », le même mot.
 
 **Trace de debug**:
 Ce que les developer tools montrent sous le questionnaire et les résultats : les
-pages, les réponses, les faits. Rien n'est conservé (D-23).
+pages, les réponses, les faits. Rien n'est conservé.
 _Chez l'éditeur_: aucun mot.
 _Avoid_: trace, seule.
 
 **Developer tools**:
 Les outils internes, ouverts en local seulement : la trace de debug, l'écran
 des seeds, le choix du modèle. La trace s'ouvre aussi partout pour la structure
-« Assurance Maladie » (D-280).
+« Assurance Maladie ».
 _Chez l'éditeur_: aucun mot.

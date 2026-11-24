@@ -1,6 +1,6 @@
 # ADR-0002 - Découpage par service via propriété d'événement
 
-> Statut : **décidé** · 2026-07-03 · Anciennement ADR-2 de `analytics.md`
+> Statut : **décidé** · 2026-07-03
 
 **Décision (révisée 2026-09-29).** L'id Grist du service est porté en propriété
 d'événement Matomo : chaque `trackEvent` l'a pour Nom, avec `simulateur` en catégorie
@@ -31,20 +31,3 @@ actuel.
 | Réf | Risque / à valider | Portée |
 |---|---|---|
 | **R-8** | Instance mutualisée beta.gouv : les custom dimensions sont indisponibles, ce que l'ADR-0002 contourne en passant par une propriété d'événement. Restent à confirmer la disponibilité des Funnels et les quotas. | partiellement tranché |
-
-## Mises à jour
-
-> **Mise à jour 2026-11-17, l'id du service créé (#506).** Un service saisi sous
-> « Autre » donne désormais l'id du service que le référentiel crée, et un
-> établissement saisi celui de son service créé. Si le référentiel ne répond
-> pas, l'événement part sans Nom : le rattachement dégradé, et son `autre`,
-> disparaissent.
-
-> **Mise à jour 2026-09-29, mesure par service, sans bandeau.** Le Nom d'événement
-> porte désormais l'id Grist du service, en clair, et non plus le `prescripteurRef`
-> pseudonymisé, retiré avec l'identification individuelle. Cela **révise** l'ADR-0002 (découpage par service) et
-> l'ADR-0003 (plus de drapeau de consentement), et **lève** la réserve RGPD R-4 : la mesure
-> redevient une mesure d'audience agrégée, dans l'exemption de consentement CNIL. Le
-> risque R-7 devient sans objet. Deux points restent à tenir : l'anonymisation de l'IP,
-> qui se règle sur l'instance Matomo et non dans le code (R-10), et les très petits
-> services, où un id de service peut désigner une ou deux personnes (R-11).

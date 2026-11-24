@@ -1,6 +1,6 @@
 # ADR-0011 - Opt-out tenu par le CMS, transmis à l'iframe par `postMessage`
 
-> Statut : **décidé** · 2026-09-30 · Anciennement ADR-5 de `analytics.md`
+> Statut : **décidé** · 2026-09-30
 
 **Décision (2026-09-30).** L'opt-out est un bouton du pied de page de Sites Conformes,
 ajouté par un script que le CMS exécute sur toutes ses pages. Ce script garde le
@@ -36,12 +36,3 @@ retenir une opposition.
 Depuis le 2026-11-12, le même choix vaut pour le journal des parcours (ADR-0042) : sur
 refus, le navigateur n'envoie rien au backend, et cesse d'envoyer sur un refus en
 cours de session.
-
-## Mises à jour
-
-> **Mise à jour 2026-09-30, opt-out dans le pied de page du CMS.** L'exemption CNIL
-> demande d'informer le prescripteur et de le laisser s'opposer à la mesure. L'opt-out
-> vit dans le pied de page de Sites Conformes, hors de notre iframe, et le choix est
-> transmis au simulateur par `postMessage` (ADR-0011). Le traceur attend ce choix avant
-> de mesurer, et ne suit plus les liens sortants. Le texte d'information reste à
-> publier sur le CMS (R-12).

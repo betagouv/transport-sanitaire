@@ -10,11 +10,10 @@
 - qui démarre le formulaire, qui l'achève, qui l'abandonne et à quelle étape ;
 - le nombre de résultats éligibles et non éligibles par service ;
 - la part des parcours ALD qui arrivent au résultat en six pages et six
-  questions au plus (#148) ;
+  questions au plus ;
 - tout ce que les 62 blocs du dashboard analytics demandent : ce qui a été
   réellement affiché (P0, questions, R2, R3, boutons), ce qui a été validé ou
-  demandé, et comment le parcours finit. Le dashboard sera livré après le
-  simulateur et recalculera l'historique depuis le journal (#380).
+  demandé, et comment le parcours finit.
 
 Le découpage se fait par service, d'après l'id du service dans le référentiel,
 que donne [le rattachement](rattachement.md). Il ne se fait pas par
@@ -52,7 +51,7 @@ pas partie.
 ## Les événements de la mesure d'audience
 
 Chaque événement part en catégorie `simulateur`. Son nom est l'id du service,
-absent quand le parcours n'a pas de service (#506). Son action est une valeur fixe, jamais
+absent quand le parcours n'a pas de service. Son action est une valeur fixe, jamais
 composée (ARCH-010).
 
 | Action | Valeur | Moment du parcours |
@@ -67,8 +66,7 @@ Le complément posé après le verrou du résultat n'émet rien.
 ### Le parcours ALD
 
 Un seul de ces événements part à chaque arrivée sur le premier résultat, juste
-après `simulation_complete`, si le parcours est un parcours ALD (#148, D-228 à
-D-231). Sa valeur est le nombre de questions posées de P1 à P2 ; un groupe de
+après `simulation_complete`, si le parcours est un parcours ALD. Sa valeur est le nombre de questions posées de P1 à P2 ; un groupe de
 cases compte pour une question.
 
 | Action | Verdict |
@@ -79,10 +77,10 @@ cases compte pour une question.
 | `parcours_ald_caisse` | issue caisse, sans conclusion sur le droit |
 
 Le verdict part à chaque passage par le résultat : le taux compte des passages,
-pas des simulations (D-230). Le modèle déclare le parcours compté, l'issue
+pas des simulations. Le modèle déclare le parcours compté, l'issue
 caisse, les parties et la limite ; le socle compte et envoie.
 
-Rien d'autre ne part (D-255) : la raison d'un dépassement est le nom du verdict,
+Rien d'autre ne part : la raison d'un dépassement est le nom du verdict,
 la durée se lit entre `simulation_start` et `simulation_complete`, et les types
 de soins, qui sont des réponses, ne partent pas.
 
