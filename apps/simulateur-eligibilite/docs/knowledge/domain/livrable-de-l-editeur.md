@@ -95,6 +95,13 @@ Le reste du paquet est **retranscrit** dans le code, selon les règles du dépô
   la version en cours. Seuls les identifiants du livrable gardent leur numéro.
   *Gardé par* `tests/recette-sans-version.test.ts`.
 
+## Les maquettes font foi
+
+**Les maquettes de l'éditeur font foi pour l'aspect et le comportement**, pas
+seulement pour les textes. On en tire des composants génériques du socle, on ne
+recopie pas leur HTML ni leur CSS. Une revue compare chaque page à sa maquette,
+à l'écran.
+
 ## En attendant une réponse de l'éditeur
 
 On intègre quand même. Le comportement livré est gardé, et un test le constate.
