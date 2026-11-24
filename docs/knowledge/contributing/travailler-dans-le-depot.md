@@ -38,15 +38,11 @@ anglais : `RattachementForm`, `SeedsTable`, `seedAnswers`.
 
 Aucun test ne garde cette règle : elle se tient à la relecture.
 
-**Une dérogation assumée.** `apps/cli` écrit ses identifiants techniques en
-anglais et garde le français pour le métier (`recueil`, `tache`, `etat`) : voir
-son [README](../../../apps/cli/README.md).
-
 ## Vérifier
 
 **La CI est la porte.** Avant de pousser, on lance seulement ce qui est rapide :
-les tests du ou des fichiers qu'on vient d'écrire, `pnpm lint` en entier, et
-`pnpm typecheck`. On pousse, et la CI dit le reste en 3 minutes.
+les tests du ou des fichiers qu'on vient d'écrire, puis `pnpm --filter <app> lint` et
+`pnpm --filter <app> typecheck` pour l'app touchée. On pousse, et la CI dit le reste.
 
 - Elle passe une à une les étapes du script `verifier` de chaque app (lint,
   typecheck, knip, test, build), sous leur nom. Une porte ajoutée au `verifier`
@@ -63,22 +59,22 @@ les tests du ou des fichiers qu'on vient d'écrire, `pnpm lint` en entier, et
 - Un worktree est supprimé à la fusion de sa PR, avec sa branche locale.
 - `tmp/` ne garde que le livrable de l'éditeur en cours et le précédent.
 - Pas de dossier `spec/` à la racine : le cadrage d'un chantier vit dans son
-  ticket Notion. `apps/datahub/spec/` est autre chose : il est suivi par git.
+  ticket Notion.
 
 ## Où écrire quoi
 
 | Ce que tu veux écrire | Où ça va |
 |---|---|
-| Une décision courante | le corps du message du commit (le pourquoi) et le ticket Notion du chantier. Pas de `D-<n>`, ni dans le code ni dans un commentaire : le journal des décisions de la v10 est clos |
-| Une décision d'architecture coûteuse à défaire et surprenante | un fichier par décision, sans détail d'implémentation, dans `docs/knowledge/adr/` de l'app concernée, ou celui de la racine si la décision traverse plusieurs apps, au format de [`ecrire-une-decision.md`](ecrire-une-decision.md) |
-| Le cadrage, le découpage et l'état d'un chantier | son ticket Notion, tenu à la main, avec une liste à cocher d'une ligne par PR. La PR cite le ticket dans son corps. Jamais un fichier du dépôt, ni une issue GitHub |
+| Une décision courante | le corps du message du commit et le ticket Notion du chantier : voir [`ecrire-une-decision.md`](ecrire-une-decision.md) |
+| Une décision d'architecture coûteuse à défaire et surprenante | un ADR : voir [`ecrire-une-decision.md`](ecrire-une-decision.md) |
+| Le cadrage, le découpage et l'état d'un chantier | son ticket Notion, tenu à la main, avec une liste à cocher d'une ligne par PR. La PR cite le ticket dans son corps. Jamais un fichier du dépôt |
 | Ce qu'une app est, ses commandes, sa structure, sa configuration | son `README.md`. La section « Commandes » est la source des commandes : une table « commande, ce qu'elle fait » |
 | Ce qu'une app sait faire | son `docs/knowledge/features.md`, un tableau « feature, ce qu'elle fait » |
 | Le vocabulaire | `CONTEXT.md`, celui de l'app ou celui de la racine |
 | Une connaissance métier actée | `docs/knowledge/domain/` de l'app concernée, ou celui de la racine si elle traverse plusieurs apps. Ce qu'une décision d'architecture change pour le métier y va aussi |
 | Le détail d'une implémentation | le code, que ses tests documentent. Ni un ADR ni un README. Un code obscur se corrige (un nom, une étape explicite), il ne s'explique pas dans une doc |
-| Ce qu'une version apporte | le `CHANGELOG.md` de l'app, au format de [`livraisons.md`](livraisons.md) |
-| Une règle de code ou de commit | ce dossier, au format de [`ecrire-une-regle.md`](ecrire-une-regle.md) |
+| Ce qu'une version apporte | le `CHANGELOG.md` de l'app : voir [`livraisons.md`](livraisons.md) |
+| Une règle de code ou de commit | ce dossier : voir [`ecrire-une-regle.md`](ecrire-une-regle.md) |
 | Une garde | **un test**, pas une phrase |
 | Une consigne aux agents | la source de la connaissance qu'elle porte, parmi les lignes ci-dessus. Les `AGENTS.md` sont générés par `pnpm agents` : on ne les édite jamais |
 
@@ -92,7 +88,9 @@ Cette chaîne classe ce qui *décrit* le dépôt. Les `AGENTS.md` générés et 
 dossier *prescrivent*. Ils ne se périment pas contre le code : c'est le code qui
 a tort contre eux.
 
-Les specs se périment : corrige la source la moins à jour, ne t'y fie pas.
+Le dossier `apps/datahub/spec/` est l'exception : il fait autorité sur le métier de
+datahub, et prime sur sa page de `domain/`. Il est suivi par git, à la différence du
+cadrage d'un chantier, qui vit dans Notion.
 
 ## Les skills
 

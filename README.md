@@ -12,14 +12,14 @@ racine, et un seul `pnpm-lock.yaml`. Le toolchain (Node, pnpm, `gh`) vient de
 | [`apps/simulateur-eligibilite`](apps/simulateur-eligibilite/README.md) | Le produit. Simulateur d'éligibilité au transport sanitaire : règles publicodes, front React/DSFR, backend Express, rattachement à un établissement et un service, remplissage du CERFA. |
 | [`apps/datahub`](apps/datahub/README.md) | L'ETL qui calcule la part des trajets réalisés via les plateformes. Code public, **données et fournisseurs privés**. |
 | [`apps/cli`](apps/cli/README.md) | `tsp`, la CLI du dépôt. Sans dépendance d'exécution, **sans tests**. |
-| `apps/dashboard` | Le tableau de bord. Une coquille Vite, sans documentation. |
+| [`apps/dashboard`](apps/dashboard/README.md) | Le tableau de bord. Une coquille Vite, déployée par `DEPLOY_APP=dashboard`. |
 
-Avant de toucher à une app, lis son `README.md` et son `AGENTS.md`.
+Avant de toucher à une app, lis son `README.md` et, si elle en a un, son `AGENTS.md`.
 
 ## Les apps restent indépendantes
 
-Aucune app n'en importe une autre. Chacune a son `package.json`, son job de CI
-et son script `verifier`. Le workspace met en commun l'installation, pas les
+Aucune app n'en importe une autre. Chacune a son `package.json`, et les apps de code
+ont leur job de CI et leur script `verifier`. Le workspace met en commun l'installation, pas les
 frontières.
 
 - **Une version d'outil partagé s'écrit dans le `catalog:`** du
@@ -55,4 +55,4 @@ pas de la CLI. Ce qu'on lance avant de pousser, et pourquoi, est dans
 - [`docs/knowledge/adr/`](docs/knowledge/adr/) : les décisions d'architecture
   qui traversent plusieurs apps.
 - [`.claude/skills/`](.claude/skills/) : trois marches à suivre, chargées à la demande.
-- Chaque app a son `README.md` et son dossier `docs/knowledge/`.
+- Chaque app a son `README.md`. Le simulateur et datahub ont aussi leur dossier `docs/knowledge/`.
