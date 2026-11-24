@@ -68,7 +68,7 @@ awk '/^## \[/{n++} n==1' CHANGELOG.md | grep -c '^- \[[0-9a-f]\{7\}\]'
 Le `pnpm-lock.yaml` ne doit pas bouger : il ne porte pas le numéro des apps. S'il
 bouge, regarde pourquoi avant de commiter.
 
-Avant de commiter : `AGENTS.md` de la racine, section « Vérifier ».
+Avant de commiter : [`travailler-dans-le-depot.md`](../../../docs/knowledge/contributing/travailler-dans-le-depot.md#vérifier), section « Vérifier ».
 
 ```bash
 git commit -am "chore(simulateur): livre la version 0.5.0"   # corps : GIT-005, GIT-006

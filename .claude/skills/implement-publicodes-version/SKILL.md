@@ -10,7 +10,7 @@ Ce skill ne porte que la marche à suivre. Les règles sont ailleurs :
 | Ce qu'il faut savoir | Où |
 |---|---|
 | où ranger le paquet et nos notes, ce que le dépôt garde du paquet, ce qui fait foi, comment répondre à l'éditeur | [`docs/knowledge/domain/livrable-de-l-editeur.md`](../../../apps/simulateur-eligibilite/docs/knowledge/domain/livrable-de-l-editeur.md) |
-| où vit le modèle, ce qu'il a le droit d'importer | `apps/simulateur-eligibilite/AGENTS.md`, [ARCH-001](../../../apps/simulateur-eligibilite/docs/knowledge/contributing/regles-d-architecture.md) |
+| où vit le modèle, ce qu'il a le droit d'importer | [ARCH-001](../../../apps/simulateur-eligibilite/docs/knowledge/contributing/regles-d-architecture.md) |
 
 Les chemins ci-dessous partent de `apps/simulateur-eligibilite/`, sauf `tmp/`,
 qui est à la racine du dépôt. Le livrable se dépose dans
@@ -106,11 +106,11 @@ identifiant chez l'éditeur. En faits d'abord (`oracle.test.ts`, sur
 produire (`oracle-par-reponses.test.ts`). Un cas qui ne se rejoue pas en
 réponses le dit dans l'en-tête du fichier, avec sa raison.
 
-Les seeds suivent : `AGENTS.md` du simulateur, § « Tests ».
+Les seeds suivent : [README du simulateur](../../../apps/simulateur-eligibilite/README.md#tests).
 
 ## 7. Vérifier
 
-Voir `AGENTS.md` (racine), section « Vérifier ».
+Voir [`travailler-dans-le-depot.md`](../../../docs/knowledge/contributing/travailler-dans-le-depot.md#vérifier).
 
 ## 8. Répondre à l'éditeur
 

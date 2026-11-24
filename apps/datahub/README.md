@@ -63,7 +63,7 @@ et y renseigner les fichiers d'entrée (voir ci-dessous).
 |---|---|
 | `pnpm etl` | enchaîne les quatre premières étapes et régénère `build/` |
 | `pnpm extract`, `pnpm staging`, `pnpm reconcile`, `pnpm marts` | lance une étape seule, dans cet ordre |
-| `pnpm publish-grist` | optionnel : publie les marts dans Grist (voir [Publication](#publication-dataviz)) |
+| `pnpm publish-grist` | optionnel : publie les marts dans Grist (voir [Publication](README.md#publication-dataviz)) |
 | `pnpm fetch-ght` | rafraîchit le référentiel GHT versionné dans `ref/ght/`, hors chaîne |
 | `pnpm test` | les tests unitaires, avec vitest |
 | `pnpm verifier` | lint, typecheck, knip et tests. La CI en passe les étapes une à une |
@@ -300,7 +300,7 @@ de l'ouvrir. Les libellés de véhicule et les
 noms de colonnes des adaptateurs décrivent des **formats**, jamais des
 fournisseurs. Garde-le ainsi en ajoutant un adaptateur.
 
-La publication dans Grist (voir [Publication](#publication-dataviz)) envoie de
+La publication dans Grist (voir [Publication](README.md#publication-dataviz)) envoie de
 vrais établissements : le doc cible doit rester privé, et sa clé
 `GRIST_API_KEY` hors du dépôt, dans un `.env` non versionné. Comme `ref/` est
 versionné, l'ETL tourne sans étape réseau.

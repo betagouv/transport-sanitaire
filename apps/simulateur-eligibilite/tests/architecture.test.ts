@@ -1,6 +1,6 @@
 // Les invariants d'architecture, rendus exécutables.
 //
-// AGENTS.md, `docs/knowledge/adr/` et `docs/knowledge/contributing/` énoncent des
+// Le README, `docs/knowledge/adr/` et `docs/knowledge/contributing/` énoncent des
 // règles. Ce fichier vérifie celles d'architecture (ARCH-001, ARCH-002).
 //
 // Chaque règle donne son pourquoi dans son message d'échec, le second argument

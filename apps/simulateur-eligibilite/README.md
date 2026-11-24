@@ -9,7 +9,7 @@ en conséquence. Le parcours débute par un rattachement obligatoire à un étab
 > dépendait ont été retirés, et la v10 s'intègre étape par étape. Le simulateur
 > s'ouvre sur le **modèle de l'éditeur**, encore incomplet. Le modèle de
 > démonstration reste à portée des developer tools, en local seulement. Voir
-> [« Entre deux modèles »](#entre-deux-modèles).
+> [« Entre deux modèles »](README.md#entre-deux-modèles).
 
 ## Fonctionnement
 
