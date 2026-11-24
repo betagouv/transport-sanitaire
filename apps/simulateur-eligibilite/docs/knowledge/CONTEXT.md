@@ -6,7 +6,7 @@ au transport sanitaire, et son écran de rattachement.
 Chaque terme dit ce que l'éditeur du modèle emploie pour la même notion
 (« Chez l'éditeur »). Le vocabulaire a été arbitré au chantier 01 de la v10
 (issue 51), puis précisé à l'issue 91 : les numéros D-… renvoient au
-[journal des décisions](adr/journal-des-decisions-v10.md).
+[journal des décisions](adr/journal-des-decisions-v10.md), clos le 2026-11-24.
 
 ## Language
 

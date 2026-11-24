@@ -1,5 +1,11 @@
 # Journal des décisions : séparer le socle et le modèle
 
+> **Journal clos le 2026-11-24.** Il reste ici, en lecture. On n'y ajoute plus
+> de ligne et on ne numérote plus de décision `D-<n>`. Une décision courante
+> vit dans le corps du message du commit et dans le ticket Notion du chantier ;
+> un ADR ne s'écrit que si elle est coûteuse à défaire et surprenante (voir
+> [`ecrire-une-decision.md`](../../../../../docs/knowledge/contributing/ecrire-une-decision.md)).
+>
 > Dernière mise à jour : 2026-11-17
 >
 > Les décisions prises pendant le chantier de la v10, dans l'ordre où elles
