@@ -1,13 +1,14 @@
-# datahub — ETL « part des trajets via les plateformes »
+# datahub, l'ETL de la part des trajets via les plateformes
 
 datahub calcule la part des trajets sanitaires réalisés via les plateformes : au
 numérateur les trajets qu'elles déclarent, au dénominateur le référentiel national de
 remboursement. Le résultat est ventilé par établissement ou GHT, par année, par type de
 transport et par enveloppe, et sort en dix-huit marts CSV. Un pipeline de cinq étapes les
 produit à partir des fichiers déclarés dans `mapping.json`, la dernière les publiant dans
-Grist pour la dataviz. Tout le métier (description des livrables, limites d'interprétation,
-règles de gestion assumées) vit dans [`spec/`](spec/) ; ce README ne traite que de
-l'exécution.
+Grist pour la dataviz. Le métier (ce que le calcul veut dire, les règles de rapprochement)
+est dans [`docs/knowledge/domain/etl-part-plateformes.md`](docs/knowledge/domain/etl-part-plateformes.md),
+les livrables et leurs limites d'interprétation dans [`spec/`](spec/), qui fait autorité.
+Ce README ne traite que de l'exécution.
 
 > **Code public, données et fournisseurs privés.** Le code de l'ETL est générique : il ne
 > connaît que des rôles (`plateforme`, `referentiel-national`, `referentiel-ght`) et des
@@ -22,7 +23,7 @@ l'exécution.
 flowchart LR
     SRC[("Sources<br/>déclarées dans mapping.json")]
 
-    subgraph ETL["pnpm etl — les 4 étapes"]
+    subgraph ETL["pnpm etl : les 4 étapes"]
         direction LR
         E["1 · extract<br/>un adaptateur par format"]
         S["2 · staging<br/>réunir et agréger"]
@@ -35,22 +36,19 @@ flowchart LR
     G[("Grist<br/>exploration et dataviz")]
 
     SRC --> E
-    M -->|"build/marts/ — les 18 marts"| P --> G
+    M -->|"build/marts/, les 18 marts"| P --> G
 ```
 
 Les quatre premières étapes sont locales et déterministes ; la cinquième, optionnelle,
 publie les marts dans [Grist](#publication-dataviz).
 
-Trois sources écrites, dans cet ordre d'autorité : `spec/`, ce README, puis le
-cadrage d'origine. **Le cadrage est le moins à jour des trois** : il annonce
-5 marts, il y en a 18. Le métier ne s'écrit plus dans ce README : il va dans
-`spec/`.
+## Où lire le métier
 
 | Document | Ce qu'il porte |
 |---|---|
+| [`docs/knowledge/domain/etl-part-plateformes.md`](docs/knowledge/domain/etl-part-plateformes.md) | Ce que le calcul veut dire, et les règles de rapprochement des sources. |
 | [`spec/livrables.md`](spec/livrables.md) | Les dix-huit marts : grain, colonnes, ce que chacun sait et ne sait pas dire. |
-| [`spec/points-attention-metier.md`](spec/points-attention-metier.md) | Les dix propriétés de la donnée et règles de gestion à connaître avant de citer un chiffre. |
-| [`docs/knowledge/domain/etl-part-plateformes.md`](docs/knowledge/domain/etl-part-plateformes.md) | La spec de cadrage d'origine. |
+| [`spec/points-attention-metier.md`](spec/points-attention-metier.md) | Les propriétés de la donnée et les règles de gestion à connaître avant de citer un chiffre. |
 
 ---
 
@@ -69,9 +67,9 @@ et y renseigner les fichiers d'entrée (voir ci-dessous).
 | `pnpm verifier` | lint, typecheck, knip et tests. La CI en passe les étapes une à une |
 
 Node 24 exécute le TypeScript nativement, il n'y a aucun build. SheetJS lit les
-`.xlsx`. Il n'y a aucune étape réseau : tous les référentiels publics sont
-versionnés dans `ref/`. `pnpm fetch-ght` ne sert qu'à rafraîchir le référentiel
-GHT commité dans `ref/ght/`, et n'est pas nécessaire au fonctionnement.
+`.xlsx`. Les quatre premières étapes n'ont aucun accès réseau : tous les référentiels
+publics sont versionnés dans `ref/`. Seuls `pnpm publish-grist` et `pnpm fetch-ght`
+parlent au réseau, et `fetch-ght` n'est pas nécessaire au fonctionnement.
 
 **Les tests n'ont pas de mock**, et **aucune donnée réelle n'entre dans les
 fixtures**.
@@ -111,8 +109,8 @@ comporte de manière générique quels que soient les fichiers fournis.
 | `cibles` | non | les [cibles](#publier-pour-une-cible) où cette plateforme figure, par exemple `["partenaire-a"]`. N'a de sens que pour le rôle `plateforme`. Absent, la plateforme ne figure que dans le périmètre complet |
 | `options` | non | paramètres propres au format, par exemple les index de colonnes finess pour le TSV. C'est ce qui permet à plusieurs fichiers de partager un adaptateur |
 
-Une entrée invalide, à laquelle il manque le rôle, le format, la location ou le label, ou
-dont le format est inconnu, fait échouer l'ETL avec un message explicite.
+Une entrée invalide (rôle, format, location ou label manquant, format inconnu) fait
+échouer l'ETL avec un message explicite.
 
 | `format` | Ce qu'il lit |
 |---|---|
@@ -124,13 +122,9 @@ dont le format est inconnu, fait échouer l'ETL avec un message explicite.
 
 ## Pipeline & artefacts
 
-Un format de fichier a un adaptateur, déclaré dans
-`src/01-extract/adapteurs/registry.ts` : le code ne connaît jamais un fournisseur.
-
-Une étape correspond à une source de complexité. Toute la connaissance propre à une
-source, son format, ses colonnes et son vocabulaire véhicule, est encapsulée dans son
-adaptateur. Les étapes suivantes sont entièrement génériques et ne raisonnent que sur les
-rôles.
+Toute la connaissance propre à une source est dans l'adaptateur de son format, déclaré
+dans `src/01-extract/adapteurs/registry.ts`. Les étapes suivantes sont génériques et ne
+raisonnent que sur les rôles.
 
 | Étape | Responsabilité | Entrée → sortie |
 |---|---|---|
@@ -139,15 +133,15 @@ rôles.
 | `reconcile` | poser les **clés** : dimension établissements ; **alignement des finess** des trajets sur le référentiel, qui fait autorité ; rattachement au GHT | `build/extract/`, `build/staging/` → `build/reconcile/` |
 | `marts`     | appliquer les **règles de calcul** (part / volumes), à chaque grain | `build/reconcile/` → `build/marts/` |
 
-| Artefact | Étape | Description | Colonnes |
-|---|---|---|---|
-| `build/extract/trajets/<label>.csv` | extract | Trajets d'une source, décodés et normalisés. | `role, source, finess_juridique, finess_geographique, ght_libelle, enveloppe, annee, vehicule_canonique, nb_trajets` |
-| `build/extract/etablissements.csv` | extract | Identité des établissements (émise par les référentiels), un par site. | `finess_juridique, finess_geographique, nom, ville, departement, categorie, score` |
-| `build/extract/ght.csv` | extract | Rattachement finess juridique → GHT, dérivé des bundles `ref/ght/`. | `finess_juridique, ght_code, ght_libelle, region, raison_sociale` |
-| `build/staging/trajets.csv` | staging | Toutes les sources réunies et agrégées au grain canonique. | idem `trajets/<label>.csv` |
-| `build/reconcile/etablissements.csv` | reconcile | Libellé représentatif de chaque établissement, pour habiller les marts. | `finess_juridique, nom, ville, departement, categorie` |
-| `build/reconcile/trajets.csv` | reconcile | Trajets aux **finess alignés sur le référentiel** et **rattachés au GHT**. Base commune des marts. | idem staging + `ght_code` |
-| `build/marts/mart_*.csv` | marts | Les **18 [livrables](spec/livrables.md)** (dont les rollups annuels 2024 et 2025 et le détail par plateforme, dérivés de `mart_ght` et de `mart_juridique`). | selon le mart |
+| Artefact | Étape | Description |
+|---|---|---|
+| `build/extract/trajets/<label>.csv` | extract | Trajets d'une source, décodés et normalisés (schéma : `src/contrats.ts`). |
+| `build/extract/etablissements.csv` | extract | Identité des établissements (émise par les référentiels), un par site. |
+| `build/extract/ght.csv` | extract | Rattachement finess juridique → GHT, dérivé des bundles `ref/ght/`. |
+| `build/staging/trajets.csv` | staging | Toutes les sources réunies et agrégées au grain canonique. |
+| `build/reconcile/etablissements.csv` | reconcile | Libellé représentatif de chaque établissement, pour habiller les marts. |
+| `build/reconcile/trajets.csv` | reconcile | Trajets aux **finess alignés sur le référentiel** et **rattachés au GHT**. Base commune des marts. |
+| `build/marts/mart_*.csv` | marts | Les **18 [livrables](spec/livrables.md)**. |
 
 ## Publication (dataviz)
 
@@ -170,9 +164,8 @@ sinon on prend les variables du shell.
 | `GRIST_API_KEY` | Clé API Grist |
 | `GRIST_DOC_URL_<NOM>` | Base API du doc d'une [cible](#publier-pour-une-cible), une variable par cible |
 
-Chaque mart publiable déclare sa table et ses colonnes dans `marts()`
-(`src/05-publish/publish.ts`) : ajouter un mart revient à ajouter une ligne. Le fichier et
-la table se déduisent du nom court. Pour chacun,
+Chaque mart publiable déclare ses colonnes dans `marts()`
+(`src/05-publish/publish.ts`) : ajouter un mart revient à ajouter une ligne. Pour chacun,
 la publication garantit la table, en la créant avec ses colonnes si elle est absente et en
 complétant les colonnes manquantes, puis remplace tout son contenu, en le vidant et en
 réinsérant. La sémantique est celle d'un snapshot : idempotente, sans lignes périmées, et
@@ -182,24 +175,8 @@ La publication ne touche pas à l'arborescence des pages : Grist crée une page 
 pour chaque table nouvelle, et elle y reste. Ranger la barre latérale, si le besoin s'en
 fait sentir, se fait à la main dans Grist.
 
-| Mart | Table Grist |
-|---|---|
-| `mart_ght.csv` (`ght`) | `Mart_Ght` |
-| `mart_ght_2024.csv` (`ght_2024`) | `Mart_Ght_2024` |
-| `mart_juridique_2024.csv` (`juridique_2024`) | `Mart_Juridique_2024` |
-| `mart_ght_2025.csv` (`ght_2025`) | `Mart_Ght_2025` |
-| `mart_juridique_2025.csv` (`juridique_2025`) | `Mart_Juridique_2025` |
-| `mart_juridique.csv` (`juridique`) | `Mart_Juridique` |
-| `mart_geographique.csv` (`geographique`) | `Mart_Geographique` |
-| `mart_hors_ght.csv` (`hors_ght`) | `Mart_Hors_Ght` |
-| `mart_article80.csv` (`article80`) | `Mart_Article80` |
-| `mart_juridique_plateforme.csv` (`juridique_plateforme`) | `Mart_Juridique_Plateforme` |
-| `mart_juridique_plateforme_<année>.csv` (`juridique_plateforme_<année>`) | `Mart_Juridique_Plateforme_<année>` |
-| `mart_ght_plateforme.csv` (`ght_plateforme`) | `Mart_Ght_Plateforme` |
-| `mart_ght_plateforme_<année>.csv` (`ght_plateforme_<année>`) | `Mart_Ght_Plateforme_<année>` |
-| `mart_taux_plateforme.csv` (`taux_plateforme`) | `Mart_Taux_Plateforme` |
-| `mart_synthese.csv` (`synthese`) | `Mart_Synthese` |
-| `mart_repartition.csv` (`repartition`) | `Mart_Repartition` |
+Le fichier et la table se déduisent du nom court : `hors_ght` lit `mart_hors_ght.csv` et
+alimente `Mart_Hors_Ght`.
 
 ⚠️ Le mart contient de vrais établissements, cf. [Confidentialité](#confidentialité) : le
 doc Grist cible doit rester privé.
@@ -253,19 +230,18 @@ reproductibilité : de l'open data figé et des mappings manuels relus par le po
 portent que des noms d'établissements et de GHT publics, aucune donnée ni identité de
 fournisseur.
 
-| Fichier | Rôle | Colonnes | Jointure `reconcile` | Contenu |
-|---|---|---|---|---|
-| `ght/*.json` | Référentiel **finess → GHT** open data (source `referentiel-ght`). | — (FHIR) | via l'adaptateur `ght-fhir-datagouv` → `build/extract/ght.csv` | 135 bundles FHIR data.gouv `etablissements-de-sante-par-ght` (ODbL), 1 par GHT, ~24 Mo. Rattache **888 finess juridiques à 135 GHT**. `pnpm fetch-ght` les rafraîchit. |
-| `plateforme-finess-mapping.csv` | Rend son **finess juridique** à un libellé libre qui désigne un **établissement** et non un GHT. Le GHT suit alors tout seul, par l'open data. | `libelle, finess_juridique, nom` | sur `libelle` (nettoyé de ses notes entre parenthèses), **avant** le mapping GHT | 18 entrées, relues par le porteur. Les libellés sont recopiés tels quels, fautes de frappe de la source comprises : c'est la clé de jointure. 6 d'entre elles ne sont pas jointes aujourd'hui : la source liste bien l'établissement, mais à zéro partout. Elles restent pour le jour où elle livrera ses volumes. |
-| `plateforme-ght-mapping.csv` | Rattache à un GHT les **libellés libres** qui désignent un vrai GHT et pour lesquels il n'y a aucun finess à trouver. | `libelle, ght_code, ght_officiel` | sur `libelle` (nettoyé de ses notes entre parenthèses) | 3 entrées ; un fuzzy match a pré-rempli, la table relue **fait foi**. C'est un **repli**, plus la clé principale : quand la source donne le détail au finess de son GHT, c'est elle qui fait autorité et l'entrée n'a plus lieu d'être. L'une des trois n'est pas jointe aujourd'hui, son GHT étant listé à zéro. |
-| `finess-ght-manuel.csv` | Overrides **finess juridique → GHT**, fusionnés par-dessus l'open data pour les entités hors référentiel. | `finess_juridique, ght_code, ght_officiel` | sur `finess_juridique` | L'**AP-HP** (750712184 → `AP-HP`, GHT à part entière) ; et **4 établissements structurellement hors des 135 GHT** (CLCC, EFS, Martinique) rencontrés dans les sources plateforme, rattachés au **GHT de leur territoire** (cf. [point 7](spec/points-attention-metier.md#7-établissements-hors-ght-rattachés-par-territoire), qui documente aussi le CH de Cayenne, laissé **hors GHT**). |
+| Fichier | Rôle | Jointure `reconcile` |
+|---|---|---|
+| `ght/*.json` | Référentiel **finess vers GHT**, open data data.gouv `etablissements-de-sante-par-ght` (ODbL), un bundle FHIR par GHT. `pnpm fetch-ght` les rafraîchit. | via l'adaptateur `ght-fhir-datagouv`, qui écrit `build/extract/ght.csv` |
+| `plateforme-finess-mapping.csv` | Rend son **finess juridique** à un libellé libre qui désigne un établissement. Les libellés sont recopiés tels quels, fautes de la source comprises : ils sont la clé de jointure. Certaines entrées ne sont pas jointes aujourd'hui, la source les listant à zéro. | sur `libelle`, nettoyé de ses notes entre parenthèses, **avant** le mapping GHT |
+| `plateforme-ght-mapping.csv` | Rattache à un GHT les libellés libres qui désignent un GHT, sans finess à trouver. C'est un repli : quand la source donne le détail au finess, l'entrée n'a plus lieu d'être. | sur `libelle`, nettoyé de la même façon |
+| `finess-ght-manuel.csv` | Overrides **finess juridique vers GHT**, par-dessus l'open data, pour les entités hors référentiel : l'AP-HP, traitée comme un GHT, et des établissements structurellement hors GHT, rattachés au GHT de leur territoire. | sur `finess_juridique` |
 
-Le finess prime toujours sur le libellé : `reconcile` cherche d'abord un finess, qui porte
-le rattachement au GHT, et ne retombe sur le mapping GHT que s'il n'en trouve aucun. Les
-conséquences métier de ces rattachements manuels sont au
-[point 6](spec/points-attention-metier.md#6-plateforme-hiérarchique--une-couverture-au-finess-partielle). Les
-rattachements par territoire des établissements hors GHT sont au
-[point 7](spec/points-attention-metier.md#7-établissements-hors-ght-rattachés-par-territoire).
+Les règles de rapprochement sont dans la
+[page de domaine](docs/knowledge/domain/etl-part-plateformes.md#rapprocher-les-sources-reconcile).
+Leurs conséquences sur les chiffres sont au
+[point 6](spec/points-attention-metier.md#6-plateforme-hiérarchique--une-couverture-au-finess-partielle)
+et au [point 7](spec/points-attention-metier.md#7-établissements-hors-ght-rattachés-par-territoire).
 
 ## Confidentialité
 
@@ -308,12 +284,13 @@ versionné, l'ETL tourne sans étape réseau.
 ## Dette connue
 
 **Des modules déguisés en classes.** `Csv`, `Xlsx`, `Paths` et `Mapping` sont des
-classes à membres uniquement statiques, ce que Biome signale
-(`noStaticOnlyClass`, en avertissement). Les convertir en fonctions exportées
-touche une centaine d'appels. **À payer quand un de ces modules sera rouvert.**
-Pas avant, et pas par un `off` dans la configuration.
+classes à membres uniquement statiques. Biome les signale par `noStaticOnlyClass`, une
+règle du preset `recommended` de `biome.base.jsonc` : aucun fichier ne la configure.
+C'est un avertissement, qui ne bloque ni `pnpm lint` ni la CI. Les convertir en
+fonctions exportées touche plus de quatre-vingts appels. **À payer quand un de ces
+modules sera rouvert.** Pas avant, et pas par un `off` dans la configuration.
 
-**`noNonNullAssertion` est éteinte dans `src/`**, pour une raison précise. Le
+**`noNonNullAssertion` est éteinte dans `src/`** (`biome.jsonc`), pour une raison précise. Le
 tsconfig active `noUncheckedIndexedAccess`, qui rend `ligne[colonne]`
 potentiellement `undefined`.
 

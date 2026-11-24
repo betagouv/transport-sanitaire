@@ -15,20 +15,13 @@ apps/cli/bin/tsp setup
 C'est la seule fois où le chemin complet sert : `setup` rend ensuite `tsp`
 appelable de partout.
 
-Seuls un shell et `git` sont requis. `setup` fait le reste, dans l'ordre :
+Seuls un shell et `git` sont requis. `setup` installe `mise` s'il manque, après
+confirmation, puis le toolchain de `mise.toml`, les dépendances, les hooks git, les
+fichiers locaux manquants (les `.env` des apps et la liste des outils) et un lien
+`~/.local/bin/tsp`. Il finit par `tsp doctor`. Un lien qui marche déjà est gardé :
+`setup` lancé depuis un worktree ne le détourne pas.
 
-1. propose d'installer `mise` s'il manque, après confirmation ;
-2. installe le toolchain épinglé dans `mise.toml` (Node, pnpm, `gh`) ;
-3. installe les dépendances ;
-4. branche les hooks git ;
-5. crée les fichiers locaux manquants depuis leurs gabarits : les `.env` des
-   apps et la liste des outils ;
-6. pose un lien `~/.local/bin/tsp`, pour appeler `tsp` de partout. Un lien qui
-   marche déjà est gardé : `setup` lancé depuis un worktree ne le détourne pas ;
-7. finit par `tsp doctor`.
-
-Il se rejoue sans risque. Un agent passe `--yes` pour ne recevoir aucune
-question.
+Il se rejoue sans risque. Un agent passe `--yes` pour ne recevoir aucune question.
 
 ## Commandes
 
@@ -110,18 +103,6 @@ directement, sans build et sans dépendance d'exécution.
 - **Aucune dépendance d'exécution.** Les arguments se lisent avec
   `node:util.parseArgs`. N'en ajoute pas : la CLI doit démarrer sur un dépôt dont
   les dépendances ne sont pas encore installées.
-- **Cinq commandes**, pas une de plus sans raison : une commande n'entre que si
-  ni `pnpm`, ni `gh`, ni `git`, ni la lecture d'un fichier ne fait le même geste
-  (ADR-0010).
-
-`src/` est rangé par module : `core/` (la ligne de commande, les sorties), `apps/`,
-`git/` et `machine/`. **Les dépendances ne vont que dans ce sens** : `core`
-n'importe aucun module, `git` et `machine` n'importent que `core` (et `apps`, pour
-`machine`), et aucun module n'importe `machine`. Rien ne le garde : c'est à la
-relecture.
-
-Une commande de lecture passe par `emit`, pour répondre à `--json`. Une commande
-rend un code de sortie, et s'inscrit dans `src/commands.ts`, d'où vient l'aide.
 
 **Pourquoi un lanceur shell.** `tsp` doit être le premier geste sur une machine
 neuve, alors que Node vient de `mise` : la CLI ne peut pas s'amorcer elle-même.
@@ -130,8 +111,9 @@ demanderait un build par plateforme pour une CLI interne. Le Node déjà présen
 sur la machine n'a pas de version garantie, et l'exécution directe de
 TypeScript en dépend.
 
-La CI et le `Procfile` appellent `pnpm` en direct. La production ne dépend pas
-de la CLI, et une panne de la CLI ne casse ni un déploiement ni une CI.
+La CI et le `Procfile` appellent `pnpm` en direct : une panne de la CLI ne casse ni
+un déploiement ni une CI. Une commande n'entre dans `tsp` que si ni `pnpm`, ni `gh`,
+ni `git`, ni la lecture d'un fichier ne fait le même geste (ADR-0010).
 
 ## Ce qu'il ne faut pas casser
 
@@ -146,10 +128,10 @@ de la CLI, et une panne de la CLI ne casse ni un déploiement ni une CI.
 
 ## Langue
 
-Les noms de commande sont en anglais, comme les scripts `pnpm`. L'aide et les
-sorties sont en français. Dans le code, le technique est en anglais et le métier
-en français : c'est la dérogation de cette app à la règle du dépôt (voir
-[`travailler-dans-le-depot.md`](../../docs/knowledge/contributing/travailler-dans-le-depot.md)).
+Les noms de commande sont en anglais, comme les scripts `pnpm`. L'aide, les sorties et
+les commentaires sont en français. Les identifiants du code sont en anglais : la CLI
+n'a aucun terme métier à nommer, la règle française du dépôt n'a donc rien à y régler
+(voir [`travailler-dans-le-depot.md`](../../docs/knowledge/contributing/travailler-dans-le-depot.md)).
 
 ## Vérifier
 

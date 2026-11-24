@@ -31,5 +31,3 @@ GitHub, plus de tableau GitHub Project, plus de workflow de fermeture.
 - Le cadrage d'un chantier vit dans Notion, plus dans un dépôt public. La
   confidentialité de `datahub` (GIT-008) vaut toujours pour les commits et les
   PR.
-- Les skills `carte-des-chantiers` et `revue-d-une-issue` reposent encore sur
-  les issues : ils sont à reprendre.

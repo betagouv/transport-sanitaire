@@ -21,7 +21,7 @@ dérive.
 ~~~~markdown
 ---
 
-### QUAL-016 - Le titre, à l'infinitif ou au présent
+### QUAL-021 - Le titre, à l'infinitif ou au présent
 
 > Raison : ce qui casse sans la règle. Une à trois phrases courtes.
 
@@ -47,11 +47,11 @@ trait d'union entouré d'espaces, jamais par un tiret cadratin.
 ## L'identifiant
 
 Le numéro est attribué à la suite, sur trois chiffres, et **ne se réutilise
-jamais**. Si `QUAL-014` est retirée, la suivante est `QUAL-016`.
+jamais**. Si `QUAL-014` est retirée, la suivante reste `QUAL-021`.
 
 Un numéro réemployé ferait pointer un vieux commit ou une vieille revue sur une
 autre règle. C'est la même raison qui fait garder les ADR révoqués dans
-`docs/knowledge/adr/`, barrés plutôt qu'effacés.
+`docs/knowledge/adr/`, avec le statut « révoqué », plutôt qu'effacés.
 
 Une règle retirée disparaît du corps du recueil. Sa ligne d'index reste, barrée,
 avec la date et le motif :
@@ -138,8 +138,7 @@ grep -nE '^\s*(describe|it)\(' apps/simulateur-eligibilite/tests/lisibilite.test
 | L'en-tête du recueil (`> Les N règles`) et son chapô (`**N règles**`) | le décompte, si le nombre change |
 | Les `AGENTS.md` | rien à écrire à la main : lance `pnpm agents`, qui reprend le tableau d'index du recueil |
 
-Les décomptes ne sont pas à surveiller à la main : vérifie-les contre l'index
-avant de committer.
+Compare les décomptes à l'index avant de committer : rien ne les vérifie.
 
 ## Ce qui ne va pas là
 
