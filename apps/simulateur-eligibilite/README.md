@@ -304,7 +304,7 @@ la DAP (#161). R3 suit C03 (#223) : le stepper titré du document, à
 « Étape 4 sur 4 » et « Préparation terminée. », le texte, la navigation, les
 deux actions, puis l'aperçu du document.
 L'avancement
-est dans l'issue 50 du dépôt, les décisions dans
+est dans son ticket Notion, les décisions dans
 [`docs/knowledge/adr/journal-des-decisions-v10.md`](docs/knowledge/adr/journal-des-decisions-v10.md).
 
 Le modèle de démonstration (`core/models/fake/` et `front/models/fake/`) déroule une commande de

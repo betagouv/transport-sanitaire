@@ -190,20 +190,20 @@ t'y fie pas.
 
 ## Marches à suivre
 
-Sept gestes récurrents ont leur mode d'emploi dans `.claude/skills/`, chargé à la
+Trois gestes récurrents ont leur mode d'emploi dans `.claude/skills/`, chargé à la
 demande plutôt que recopié ici. Un skill ne porte que la marche à suivre et des
 liens : toute règle vit dans `docs/knowledge/`. Il désigne un rôle (le relecteur,
 le porteur), jamais une personne.
 
 | Skill | Quand |
 |---|---|
-| `ecrire-une-regle` | Ajouter, modifier ou retirer une règle de `docs/knowledge/contributing/` : identifiant, raison, deux exemples, garde nommée |
-| `brancher-le-modele` | Brancher le code sur les règles de l'éditeur : déclarer le fait, la cible ou l'option, écrire le fichier du fait, poser la question, lire la cible |
-| `ajouter-une-seed` | Ajouter une seed à un modèle : ses réponses, ses cibles attendues, et ce qui la rejoue |
 | `implement-publicodes-version` | Intégrer une version du modèle livrée par l'éditeur : le paquet dans `tmp/<version>/package/`, le diff, la recopie, l'oracle, le retour à l'éditeur |
-| `ecrire-une-decision` | Écrire une décision : dire si elle mérite un ADR de `docs/knowledge/adr/`, puis l'écrire, décisions renversées gardées |
 | `livrer-une-version` | Livrer une app : numéro, journal des versions, PR vers `staging`, tag `<app>@<version>` et release, puis fusion de `staging` dans `main` |
-| `revue-d-une-issue` | Revoir une issue et sa PR : fonctionnel puis technique, écarts à l'issue, couverture, cahier de tests à cocher, app lancée à la tête de la PR, verdict |
+| `revue-d-une-pr` | Revoir une PR et son ticket Notion : fonctionnel puis technique, écarts au ticket, couverture, cahier de tests à cocher, app lancée à la tête de la PR, verdict |
+
+Les autres marches sont écrites dans `docs/knowledge/` : écrire une règle ou une
+décision (`contributing/`), brancher le modèle et ajouter une seed (le livrable
+de l'éditeur et l'`AGENTS.md` du simulateur).
 
 ## Toute règle nomme sa garde
 

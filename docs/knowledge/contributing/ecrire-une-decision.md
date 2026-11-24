@@ -1,7 +1,6 @@
 # Écrire une décision
 
-> Où une décision s'écrit, quand elle mérite un ADR, et sous quelle forme. La
-> marche à suivre est dans le skill `ecrire-une-decision`.
+> Où une décision s'écrit, quand elle mérite un ADR, et sous quelle forme.
 
 ## Où une décision s'écrit
 
@@ -35,6 +34,13 @@ est clos depuis le 2026-11-24. Il reste dans le dépôt, en lecture.
 - Dans le code, on n'écrit plus de renvoi `D-<n>` : un commentaire dit la
   raison en clair, ou n'existe pas. Les renvois qui restent seront remplacés au
   fil des passages dans les fichiers.
+
+## Avant d'écrire un ADR
+
+Lis les titres du dossier `adr/` : une décision en précise ou en renverse
+souvent une autre. Une fois écrit, vérifie que chaque renvoi relatif ouvre un
+fichier qui existe. Le corps du commit qui change le code cite l'ADR :
+« (ADR-0053) ».
 
 ## Un ADR
 
