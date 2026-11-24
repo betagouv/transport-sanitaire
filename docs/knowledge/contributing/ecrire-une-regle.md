@@ -12,8 +12,9 @@ Il y a **un recueil par domaine**, et non un fichier par règle.
 | `regles-git.md` | `GIT-` | branche et PR vers `staging`, forme du message, métadonnée d'IA, confidentialité |
 | `apps/simulateur-eligibilite/docs/knowledge/contributing/regles-d-architecture.md` | `ARCH-` | frontières, modèles, adaptateurs, lecture des faits, déclaration des questions du simulateur |
 
-`AGENTS.md` et les skills ne portent qu'un pointeur vers ce dossier. **N'y
-recopie pas les règles** : une copie dérive.
+Les skills ne portent qu'un pointeur vers ce dossier, et les `AGENTS.md`
+générés n'en reprennent que l'index. **N'y recopie pas les règles** : une copie
+dérive.
 
 ## Le squelette d'une règle
 
@@ -112,8 +113,16 @@ Toute règle finit par une ligne de garde. Il n'y a que trois cas.
 | Une assertion est possible, pas encore écrite | `*Aucune garde.* <ce qui la porterait>` |
 
 Le troisième cas est une dette, pas un statut. Avant de l'écrire, demande-toi si
-la règle vaut mieux qu'un test, comme le dit `AGENTS.md § Toute règle nomme sa
-garde`. Une règle de forme mécanisable devrait naître avec son assertion.
+la règle vaut mieux qu'un test. Une règle de forme mécanisable devrait naître
+avec son assertion.
+
+**Une règle de forme nomme l'assertion qui la garde. Sans assertion, elle
+n'existe pas.** Mieux vaut l'écrire dans un test que la répéter ici. Une règle de
+jugement, que rien ne mécanise, écrit `*Aucune garde.*` en toutes lettres plutôt
+que de laisser croire qu'elle en a une.
+
+L'état de chaque règle se lit dans la colonne « Garde » du tableau de son recueil,
+et nulle part ailleurs : le recopier créerait deux sources à tenir à jour.
 
 Vérifie le nom de l'assertion avant de le citer :
 
@@ -127,9 +136,7 @@ grep -nE '^\s*(describe|it)\(' apps/simulateur-eligibilite/tests/lisibilite.test
 |---|---|
 | Le tableau d'index du recueil | une ligne : identifiant, titre, garde |
 | L'en-tête du recueil (`> Les N règles`) et son chapô (`**N règles**`) | le décompte, si le nombre change |
-| `AGENTS.md § Écrire du code et commiter` et `§ Toute règle nomme sa garde` | le décompte total et par recueil |
-| `apps/simulateur-eligibilite/AGENTS.md` | le lien vers `regles-d-architecture.md`, si c'est le recueil de l'app |
-| `AGENTS.md § Toute règle nomme sa garde` | le texte, si la garde change de nature |
+| Les `AGENTS.md` | rien à écrire à la main : lance `pnpm agents`, qui reprend le tableau d'index du recueil |
 
 Les décomptes ne sont pas à surveiller à la main : vérifie-les contre l'index
 avant de committer.
@@ -137,10 +144,9 @@ avant de committer.
 ## Ce qui ne va pas là
 
 Ce qui n'est pas une règle numérotée se range ailleurs :
-`AGENTS.md § Où écrire quoi` dit où.
+[`travailler-dans-le-depot.md`](travailler-dans-le-depot.md#où-écrire-quoi) dit où.
 
 **Une règle qui ne vaut que pour une app va dans le recueil de cette app**,
 `apps/<app>/docs/knowledge/contributing/`, avec son propre préfixe (`ARCH-` pour
 le simulateur). Les recueils de la racine valent pour le dépôt entier : une
-exception logée dedans serait invisible depuis l'app qu'elle concerne. Le
-`AGENTS.md` de l'app ne porte qu'un lien vers son recueil.
+exception logée dedans serait invisible depuis l'app qu'elle concerne. L'`AGENTS.md` de l'app, généré, en reprend l'index.
