@@ -1,6 +1,6 @@
 # ADR-0041 - Une alerte mène à la réponse à revoir, et l'adresse suit la position
 
-> Statut : **décidé** · 2026-11-09 · Anciennement ADR-30 de `metier-et-ecran.md`
+> Statut : **décidé** · 2026-11-09
 
 **Contexte.** Une incohérence se corrigeait par « Précédent » : aucun bouton,
 aucun saut. Pour un conflit de lieux certain, l'alerte doit offrir un lien vers
@@ -25,4 +25,4 @@ La B réduite est choisie.
 l'adresse sans donnée. Pour la mesure d'audience, la correction reste dans la
 même simulation : elle n'ouvre ni étape ni exposition, et change d'adresse sans
 rien envoyer à Matomo. Le détail de la correction est dans le code et ses
-tests (`correction.ts`, `position.ts`).
+tests (`answer-correction.vo.ts`, `position-in-the-address.ts`, `correction.test.ts`).

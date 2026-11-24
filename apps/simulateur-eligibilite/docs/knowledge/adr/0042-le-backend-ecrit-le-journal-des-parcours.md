@@ -1,6 +1,6 @@
 # ADR-0042 - Journal des parcours écrit par le backend
 
-> Statut : **décidé** · 2026-11-12 · Anciennement ADR-6 de `analytics.md`
+> Statut : **décidé** · 2026-11-12
 
 **Contexte.** Le dashboard analytics doit recalculer ses 62 blocs depuis des
 événements unitaires, conservés, dédoublonnés et reliés entre eux : une
