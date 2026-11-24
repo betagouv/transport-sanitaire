@@ -95,6 +95,11 @@ qu'un modèle prend à la source. Avec le compilateur du graphe
 importent publicodes (D-76).
 `tests/architecture.test.ts` garde ces règles.
 
+**Le socle est celui du simulateur des transports sanitaires.** L'outillage
+stable (publicodes, DSFR, pdf-lib) y vit, derrière un fichier dédié. Ce qui ne
+change pas avec le modèle (logos, mise en page, impression) y vit aussi. Le
+modèle ne porte que ce que l'éditeur livre : règles, déclarations, textes.
+
 Le parcours commence par un **écran de rattachement
 obligatoire** : établissement et service, sans identifier la personne
 (`front/socle/rattachement/`, référentiel Grist). Le tout est servi par
@@ -524,6 +529,11 @@ fichier, et nulle part ailleurs dans `front/`.
 
 Node ne résout pas les extensions, Vite si. Ce n'est pas une affaire de dossier
 mais d'accessibilité, et `tests/lisibilite.test.ts` la calcule.
+
+**Les maquettes de l'éditeur font foi pour l'aspect et le comportement**, pas
+seulement pour les textes. On en tire des composants génériques du socle, on ne
+recopie pas leur HTML ni leur CSS. Une revue compare chaque page à sa maquette,
+à l'écran.
 
 **DSFR pour toute l'interface.** Emprunte la forme des props au composant appelé
 (`ComponentProps<typeof Checkbox>`) plutôt que de la recopier. Une recopie dérive

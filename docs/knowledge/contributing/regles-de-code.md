@@ -1,10 +1,10 @@
 # Les règles de code
 
-> Les 19 règles `QUAL-*`. Les conventions du dépôt sont dans
+> Les 20 règles `QUAL-*`. Les conventions du dépôt sont dans
 > [`../../AGENTS.md`](../../AGENTS.md), les règles de commit dans
 > [`regles-git.md`](regles-git.md).
 
-**19 règles**. Chacune a son identifiant. Cite-le en revue ou en commit
+**20 règles**. Chacune a son identifiant. Cite-le en revue ou en commit
 (« corrige QUAL-006 ») plutôt que de reformuler la règle.
 
 | Id | Règle | Garde |
@@ -28,8 +28,9 @@
 | QUAL-017 | Un retour qui peut manquer nomme son absence | `lisibilite.test.ts` |
 | QUAL-018 | Un fichier dit son rôle par son suffixe | `roles-par-suffixe.test.ts` (`core/socle/` seulement) |
 | QUAL-019 | Hors de React, une notion est une classe | aucune |
+| QUAL-020 | Pas de test d'absence | aucune |
 
-Sept règles n'ont aucune garde. Ce sont des règles de jugement : une assertion
+Huit règles n'ont aucune garde. Ce sont des règles de jugement : une assertion
 dirait *qu'*on a coupé, jamais *si* on a coupé au bon endroit. Elles restent à la
 revue, et le tableau le dit plutôt que de le laisser croire.
 
@@ -345,7 +346,8 @@ cerfa/field-mapping-suite.ts
 ```
 
 *Gardé par* `tests/taille-du-code.test.ts › taille du code › aucun fichier ne
-dépasse 300 lignes`.
+dépasse 300 lignes`. Le test compte `texte.split("\n").length`, soit `wc -l`
+plus un : un fichier à 300 au `wc -l` échoue.
 
 ---
 
@@ -611,6 +613,31 @@ QuestionId.of(question).value;
 ```ts
 // ❌ KO : une fonction seule, dans un fichier de types
 idOf(question);
+```
+
+*Aucune garde.* C'est du jugement, pas de la forme.
+
+---
+
+### QUAL-020 - Pas de test d'absence
+
+> Raison : un test garde un comportement de l'app, pas le souvenir d'un code
+> supprimé. Un test d'absence ne prévient aucun bug et reste à maintenir.
+
+Quand on supprime une fonctionnalité, on supprime ses tests sans les remplacer.
+Restent légitimes un vrai comportement de repli et un invariant de
+confidentialité.
+
+**Exemples**
+
+```ts
+// ✅ OK : le repli du routeur pour une route inconnue est un comportement
+expect((await get("/inconnue")).status).toBe(404);
+```
+
+```ts
+// ❌ KO : la route a été retirée, le test garde son souvenir
+expect((await get("/api/ancienne-route")).status).toBe(404);
 ```
 
 *Aucune garde.* C'est du jugement, pas de la forme.
