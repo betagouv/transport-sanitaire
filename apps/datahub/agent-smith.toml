@@ -1,0 +1,30 @@
+# Source de l'AGENTS.md de cette app. Il est généré par `pnpm agents` (ADR-0011) :
+# on corrige la source, jamais le fichier. Les scripts sont dans tooling/agents/.
+output = "AGENTS.md"
+
+[overview]
+enabled = true
+source = "README.md"
+title = "Présentation"
+
+# Les outils sont ceux de la racine, déjà dans son AGENTS.md.
+[tech_stack]
+enabled = false
+
+[available_commands]
+enabled = false
+
+[architecture_decisions]
+enabled = false
+
+[[sections]]
+title = "Confidentialité"
+command = "sh ../../tooling/agents/section.sh README.md Confidentialité"
+
+[[sections]]
+title = "Commandes"
+command = "sh ../../tooling/agents/section.sh README.md Commandes"
+
+[[sections]]
+title = "À lire"
+command = "sh ../../tooling/agents/liste-des-pages.sh docs/knowledge ../../docs/knowledge"
