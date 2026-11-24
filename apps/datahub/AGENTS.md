@@ -49,8 +49,8 @@ Un nom de fournisseur fuite par cinq chemins :
 - **un ticket Notion ou une PR**, par son titre, son corps ou un commentaire. La PR
   est publique, comme le dépôt.
 
-Relis le diff *et* le message avant de commiter, et le texte d'une issue avant
-de l'ouvrir. Les libellés de véhicule et les
+Relis le diff *et* le message avant de commiter, et le texte d'une PR ou d'un
+ticket Notion avant de l'ouvrir. Les libellés de véhicule et les
 noms de colonnes des adaptateurs décrivent des **formats**, jamais des
 fournisseurs. Garde-le ainsi en ajoutant un adaptateur.
 
