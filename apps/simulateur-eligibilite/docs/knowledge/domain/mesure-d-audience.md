@@ -2,7 +2,7 @@
 
 > Ce qu'on veut savoir du parcours de simulation, ce qui part, et ce qui ne
 > part jamais. Les décisions techniques sont dans [`../adr/`](../adr/) :
-> ADR-0001 à ADR-0003, ADR-0010, ADR-0011 et ADR-0042 à ADR-0051, et ADR-0053.
+> ADR-0002, ADR-0003, ADR-0010, ADR-0011, ADR-0042 et ADR-0043.
 
 ## Ce qu'on veut suivre
 
@@ -18,6 +18,12 @@
 Le découpage se fait par service, d'après l'id du service dans le référentiel,
 que donne [le rattachement](rattachement.md). Il ne se fait pas par
 prescripteur.
+
+Le Matomo est celui que beta.gouv.fr héberge pour ses produits : aucun stockage
+ni reporting à construire. Il n'expose pas les custom dimensions, d'où l'id du
+service porté en nom d'événement. Il ne garde pas la suite des gestes d'une
+simulation : le journal passe par notre backend. L'adresse IP y est anonymisée
+par l'instance, un réglage qui n'est pas entre nos mains.
 
 Deux canaux portent ces mesures :
 
@@ -92,7 +98,7 @@ d'action et ne se raccordent pas aux nouvelles.
 - La mesure est agrégée par service, sans cookie et sans réponse détaillée. Elle
   entre dans l'exemption de consentement de la CNIL et se passe de bandeau
   (ADR-0003).
-- Deux réserves : l'adresse IP doit être anonymisée par l'instance Matomo, et un
+- Deux réserves : l'adresse IP doit être anonymisée par l'instance Matomo (réglage de l'instance), et un
   très petit service peut désigner une ou deux personnes (R-10 et R-11 de
   l'ADR-0003).
 - Le prescripteur peut s'opposer à la mesure depuis le pied de page du CMS. Son

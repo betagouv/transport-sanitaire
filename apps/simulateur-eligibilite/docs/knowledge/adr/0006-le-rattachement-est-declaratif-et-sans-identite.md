@@ -13,7 +13,7 @@ mesure agrégée par service reste dans l'exemption CNIL (voir
 [ADR-0003](./0003-la-mesure-d-audience-se-fait-sans-bandeau-de-consentement.md)). La déclaration reste suffisante et simple.
 
 **Conséquences.** L'usurpation déclarative d'un établissement ou d'un service reste
-possible, et le rattachement n'a aucune valeur probante (voir ADR-0007). Une
+possible, et le rattachement n'a aucune valeur probante (voir [le rattachement](../domain/rattachement.md)). Une
 authentification individuelle (ProConnect, AgentConnect) reste possible plus tard ;
 elle serait une étape **distincte** du rattachement, appelée identification, et non
 une extension de celui-ci.
@@ -29,10 +29,9 @@ une extension de celui-ci.
 > **Mise à jour 2026-09-29, release officielle, rattachement sans identité.**
 > L'écran de rattachement ne demande plus **qui** réalise la simulation : plus de liste de
 > prescripteurs, plus de nom ni de prénom saisis. Il ne reste que l'établissement et
-> le service. Cela **révise** l'ADR-0006 (on ne déclare plus son identité), l'ADR-0007 (plus
-> de pseudonymisation : sans personne à masquer, le HMAC n'avait plus d'objet, et les
-> identifiants du référentiel restent en clair) et l'ADR-0008 (le référentiel lu par l'app
-> se limite aux établissements et aux services, et le backend ne détient plus que la
+> le service. Cela **révise** l'ADR-0006 (on ne déclare plus son identité), la pseudonymisation du rattachement
+> (sans personne à masquer, le HMAC n'avait plus d'objet, et les identifiants du
+> référentiel restent en clair) et le référentiel (lu par l'app, il se limite aux établissements et aux services, et le backend ne détient plus que la
 > clé Grist). La raison : le `prescripteurRef` rendait le suivi Matomo quasi nominatif,
 > donc soumis à un bandeau de consentement, ce qui bloquait la release officielle (voir
 > [ADR-0003](./0003-la-mesure-d-audience-se-fait-sans-bandeau-de-consentement.md)). Le mot « identification » est réservé à une

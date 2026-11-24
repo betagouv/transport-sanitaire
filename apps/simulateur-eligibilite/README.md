@@ -225,7 +225,7 @@ front/                   le front, bundlé par Vite
                          le conteneur de page, le pied de page
     rattachement/        LA feature de l'écran de rattachement, miroir de server/rattachement/ :
                          le formulaire à révélation progressive, les deux clients de
-                         l'API, le rattachement en mémoire de session (ADR-0007)
+                         l'API, le rattachement en mémoire de session
     simulateur/          le parcours : les écrans de résultat et du cerfa
                          (screens/), la feuille à remettre au patient et son PDF
                          (sheet/), le verrou, l'indicateur ALD
