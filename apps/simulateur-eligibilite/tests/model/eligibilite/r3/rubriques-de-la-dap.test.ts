@@ -1,4 +1,4 @@
-// Les rubriques propres à la DAP (#161) : ses motifs d'accord préalable, et la
+// Les rubriques propres à la DAP : ses motifs d'accord préalable, et la
 // situation d'un transport par avion ou bateau de ligne. Des réponses d'un
 // parcours complet et les cibles figées au verrou, les cellules qu'elles
 // donnent. « Sources et cases » de `COMPLETION_DOCUMENTS.md` et
@@ -93,7 +93,7 @@ describe("la situation d'un transport par avion ou bateau", () => {
     });
   });
 
-  it("coche « ALD non exonérante » pour le mineur reconnu, même sans avion ni bateau (#128)", () => {
+  it("coche « ALD non exonérante » pour le mineur reconnu, même sans avion ni bateau", () => {
     const cibles = {
       ...SANS_MOTIF,
       cible_ald_juridiquement_qualifiante_3_ou_4_degres: false,

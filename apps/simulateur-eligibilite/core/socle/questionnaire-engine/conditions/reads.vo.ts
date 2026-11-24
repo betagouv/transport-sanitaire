@@ -4,7 +4,7 @@
 // fois.
 
 /**
- * Ce qui ne compte que quand une cible vaut l'une de ces valeurs (#255). Ex. :
+ * Ce qui ne compte que quand une cible vaut l'une de ces valeurs. Ex. :
  * ce que lit la fiche positive ne compte que pour une issue positive.
  */
 type Branch = {

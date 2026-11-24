@@ -28,8 +28,8 @@ export const SANS_SITUATION: Reponses = {
   "Q2.3.2": false,
 };
 
-// Le même, en permission pendant un séjour en établissement : seule Q2.2.1.a
-// la dit (D-272). Ni le transfert ni les exceptions ne se posent.
+// Le même, en permission pendant un séjour en établissement : seule Q2.2.1.a la
+// dit. Ni le transfert ni les exceptions ne se posent.
 export const PATIENT_SEUL: Reponses = {
   ...SANS_SITUATION,
   "Q2.2.1": ["1_HOSPITALISATION"],

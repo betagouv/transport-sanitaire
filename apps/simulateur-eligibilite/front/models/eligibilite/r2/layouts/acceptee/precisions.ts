@@ -1,5 +1,5 @@
-// Les précisions de la fiche positive (D-111) : le séjour ou les séances,
-// l'AT-MP. Elles ne se lisent que sous les issues acceptées (D-224).
+// Les précisions de la fiche positive : le séjour ou les séances,
+// l'AT-MP. Elles ne se lisent que sous les issues acceptées.
 
 import type { Reading } from "../../../../../../core/socle";
 import {

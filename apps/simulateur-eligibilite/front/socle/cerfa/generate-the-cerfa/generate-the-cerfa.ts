@@ -34,7 +34,7 @@ export type GeneratedCerfa = {
 };
 
 /**
- * Un texte strict qui déborde (D-302) : son entrée du DTO, le nom de sa
+ * Un texte strict qui déborde : son entrée du DTO, le nom de sa
  * rubrique, le texte, et le maximum de son compteur.
  */
 export type Overflowing = {
@@ -44,7 +44,7 @@ export type Overflowing = {
   readonly maximum: number;
 };
 
-/** La marque de chaque page d'un aperçu (D-304). */
+/** La marque de chaque page d'un aperçu. */
 export const PREVIEW_MARK = "Aperçu – texte à valider";
 
 /**

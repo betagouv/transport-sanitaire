@@ -1,5 +1,5 @@
-// La variante du texte d'une raison de la fiche négative (#301) : le
-// catalogue la donne, la trace dit si sa situation est prouvée.
+// La variante du texte d'une raison de la fiche négative : le catalogue la
+// donne, la trace dit si sa situation est prouvée.
 
 import { describe, expect, it } from "vitest";
 import type { Faits } from "../../../../../core/models/eligibilite/faits/noms";

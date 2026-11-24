@@ -7,7 +7,7 @@
 // prolongés, qui coche l'ALD non exonérante, une pour l'orientation d'un retour
 // pénitentiaire, qui n'a pas d'issue, et une par cadre du séjour en cours,
 // établissement ou HAD (TS1014-B01). Une dernière s'arrête sur un conflit de
-// lieux certain, avant R2 (#353). Deux autres répondent à la finalité de soins
+// lieux certain, avant R2. Deux autres répondent à la finalité de soins
 // d'un autre motif à plus de 150 km, Oui puis Non (TS1018-01). Elles suivent les dix traces de l'oracle
 // de la v10.1.0 : le patient est accompagné d'un professionnel (Q1.1) et ses
 // critères sont ceux de la trace, 1 et 5 pour les quatre premières et
@@ -65,8 +65,8 @@ const DIALYSE_EN_LIGNE_REGULIERE = {
   "Q2.3.2.terrestre": "2_NON",
 } as const;
 
-// Une permission ne se dit qu'en Q2.2.1.a, pendant un séjour en établissement
-// (D-272) : Q2.1 n'y a que l'autre motif.
+// Une permission ne se dit qu'en Q2.2.1.a, pendant un séjour en
+// établissement : Q2.1 n'y a que l'autre motif.
 const EN_PERMISSION = {
   "Q1.3": ["7_AUCUNE"],
   "Q2.1": "14_AUTRE",
@@ -368,7 +368,7 @@ export const SEEDS: readonly Seed<Questions, Cibles>[] = [
     id: "dap-engagement-maternite",
     label: "Résultat : accord préalable, Engagement maternité",
     description:
-      "Ouvre le résultat d'une patiente qui se rend seule à l'examen obligatoire du 8ᵉ mois, à plus de 45 minutes de la maternité (Q2.2.1, Q2.14). L'issue est la demande d'accord préalable (Cerfa S3139h), motif Engagement maternité ; P3 finit par Q3.8 (D-251).",
+      "Ouvre le résultat d'une patiente qui se rend seule à l'examen obligatoire du 8ᵉ mois, à plus de 45 minutes de la maternité (Q2.2.1, Q2.14). L'issue est la demande d'accord préalable (Cerfa S3139h), motif Engagement maternité ; P3 finit par Q3.8.",
     answers: {
       "Q0.1": "1_VERIFIER",
       "Q1.1": "1_SEUL",
@@ -391,7 +391,7 @@ export const SEEDS: readonly Seed<Questions, Cibles>[] = [
     id: "pmt-mineur-soins-continus",
     label: "Résultat : prescription médicale de transport, pour un mineur",
     description:
-      "Ouvre le résultat d'un mineur en soins prolongés, sans ALD à 100 %, qui se rend à une séance d'hémodialyse (cas 8 de Q1.3). L'issue est la PMT (Cerfa S3138g) ; P3 faite, elle coche « ALD non exonérante » et porte la mention du mineur sur le volet médical (#128).",
+      "Ouvre le résultat d'un mineur en soins prolongés, sans ALD à 100 %, qui se rend à une séance d'hémodialyse (cas 8 de Q1.3). L'issue est la PMT (Cerfa S3138g) ; P3 faite, elle coche « ALD non exonérante » et porte la mention du mineur sur le volet médical.",
     answers: {
       ...DIALYSE,
       "Q1.3": [
@@ -426,7 +426,7 @@ export const SEEDS: readonly Seed<Questions, Cibles>[] = [
     id: "sejour-en-etablissement",
     label: "Résultat : permission de sortie d'un patient hospitalisé",
     description:
-      "Ouvre le résultat d'un patient en séjour dans un établissement de santé (Q2.2.1.cadre), dont le trajet est une permission de sortie autorisée d'un adulte. Elle relève de l'article 80 : sans exception (Q2.6), l'établissement prend le transport en charge (D-283).",
+      "Ouvre le résultat d'un patient en séjour dans un établissement de santé (Q2.2.1.cadre), dont le trajet est une permission de sortie autorisée d'un adulte. Elle relève de l'article 80 : sans exception (Q2.6), l'établissement prend le transport en charge.",
     answers: {
       "Q0.1": "1_VERIFIER",
       "Q1.1": "3_AVEC_UN_PROFESSIONNEL",
@@ -475,7 +475,7 @@ export const SEEDS: readonly Seed<Questions, Cibles>[] = [
     id: "conflit-de-lieux-certain",
     label: "Situations particulières : lieux incompatibles",
     description:
-      "S'arrête sur les situations particulières d'une dialyse en centre que Q2.2.1.a dit aussi permission de sortie. Aucun sens du trajet ne concilie les deux lieux : l'alerte bloque Suivant avant R2 (#353).",
+      "S'arrête sur les situations particulières d'une dialyse en centre que Q2.2.1.a dit aussi permission de sortie. Aucun sens du trajet ne concilie les deux lieux : l'alerte bloque Suivant avant R2.",
     answers: {
       "Q0.1": "1_VERIFIER",
       "Q1.1": "1_SEUL",

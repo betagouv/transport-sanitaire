@@ -1,4 +1,4 @@
-// Arriver sur le premier résultat par un parcours ALD (#148) : compter son
+// Arriver sur le premier résultat par un parcours ALD : compter son
 // verdict, avec le nombre de questions posées et rien des réponses.
 
 import type { RattachementDuReferentiel } from "../../../shared/rattachement-du-referentiel.vo";

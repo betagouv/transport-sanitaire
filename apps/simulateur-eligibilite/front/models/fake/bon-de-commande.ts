@@ -4,7 +4,7 @@
 // Le DTO parle en mots clairs (`avec_lait`). Le gabarit, lui, range les trois
 // accompagnements sous un même nom de champ, `acc` : comme les cases groupées
 // de la DAP, ils se marquent par un dessin. Les instructions sont un texte
-// strict (D-302), suivies de la remarque : s'il ne tient pas, le client le
+// strict, suivies de la remarque : s'il ne tient pas, le client le
 // réécrit avant tout téléchargement. Le nom du client n'a pas de champ : il se
 // dessine dans son cadre.
 

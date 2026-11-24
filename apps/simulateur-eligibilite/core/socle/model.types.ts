@@ -51,8 +51,8 @@ export type CoreModel<
   /** Le catalogue des seeds, chargé à la demande. */
   seeds: () => Promise<readonly Seed<Questions, Cibles>[]>;
   /**
-   * Le graphe de décision des règles (#196). Avec lui, une question dont la
-   * réponse ne change rien de ce qui compte ne se pose pas (#255).
+   * Le graphe de décision des règles. Avec lui, une question dont la
+   * réponse ne change rien de ce qui compte ne se pose pas.
    */
   decision?: {
     graph: DecisionGraphData;

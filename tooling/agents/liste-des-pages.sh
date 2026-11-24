@@ -1,7 +1,6 @@
 #!/bin/sh
 # Imprime les pages Markdown des dossiers donnés, chacune avec son titre. Les
-# ADR ont leur propre liste, et le journal des décisions est clos : ni l'un ni
-# l'autre n'y figure.
+# ADR ont leur propre liste : ils n'y figurent pas.
 #
 # Usage : liste-des-pages.sh <dossier>...
 

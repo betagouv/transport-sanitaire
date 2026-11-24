@@ -13,7 +13,7 @@
 //
 // | Cellules | Pourquoi |
 // |---|---|
-// | bénéficiaire hors son adresse, organisme, assuré, prescripteur, structure | aucune source fiable (D-74, D-268) |
+// | bénéficiaire hors son adresse, organisme, assuré, prescripteur, structure | aucune source fiable |
 // | `raison sociale VSL`, `adresse VSL`, `fait à`, `date1`, `n° ident` | au transporteur, page 4 |
 // | Engagement maternité | « hors remplissage » pour l'éditeur |
 
@@ -147,7 +147,7 @@ const CERFA: Cerfa<DtoS3138g> = {
     date_prescription: date("date"),
   },
   // À la suite de « autres (précisez) : », sur chaque volet. Une seconde ligne
-  // passerait sur le titre de la rubrique suivante (D-187). La place est celle
+  // passerait sur le titre de la rubrique suivante. La place est celle
   // que l'éditeur mesure : 220 points, moins un point de marge de chaque côté
   // (`urgence-document.mjs`).
   drawings: {

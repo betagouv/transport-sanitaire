@@ -1,6 +1,6 @@
 // Dire si la collecte marche : le signe de vie de l'heure, ou celui de l'heure
 // d'avant, est-il dans le journal ? Une sonde externe le demande, et alerte
-// quand il manque (ADR-0051). L'heure d'avant suffit : au début d'une heure, le
+// quand il manque. L'heure d'avant suffit : au début d'une heure, le
 // signe de vie de celle-ci n'est pas encore écrit.
 
 import type { Journal } from "./journal.port.ts";

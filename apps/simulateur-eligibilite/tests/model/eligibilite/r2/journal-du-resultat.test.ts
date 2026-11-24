@@ -1,6 +1,6 @@
 // Ce que le premier résultat du modèle de l'éditeur donne au journal des
-// parcours (#386), sur la seed de chaque issue : ses codes, calculés par les
-// règles, et la composition du transport (ANA22-04, #509). Voir ADR-0045.
+// parcours, sur la seed de chaque issue : ses codes, calculés par les règles,
+// et la composition du transport (ANA22-04).
 
 import { describe, expect, it } from "vitest";
 import { SEEDS } from "../../../../core/models/eligibilite/seeds-catalogue";

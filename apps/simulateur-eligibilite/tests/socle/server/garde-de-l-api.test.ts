@@ -1,7 +1,7 @@
 // @vitest-environment node
 //
-// La garde de l'API (#451), sur le vrai serveur Express, sans mock : l'origine
-// d'une écriture, son débit par IP, sa taille.
+// La garde de l'API, sur le vrai serveur Express, sans mock : l'origine d'une
+// écriture, son débit par IP, sa taille.
 
 import { afterEach, describe, expect, it } from "vitest";
 import type { WriteLimits } from "../../../server/protect-the-api.ts";

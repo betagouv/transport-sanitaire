@@ -23,7 +23,7 @@ const FAITS = `${METIER}/faits`;
 // pages. Les faits eux-mêmes ne lisent aucune partie.
 const EVALUATION_DES_FAITS = `${FAITS}/preconisation.ts`;
 const RUBRIQUES = `${R3}/rubriques`;
-// Un dossier par cerfa rempli (#158, #160, #161).
+// Un dossier par cerfa rempli.
 const CERFA_DE_R3 = ["s3141", "s3138g", "s3139h"].map(
   (cerfa) => `${R3}/${cerfa}`,
 );
@@ -105,7 +105,7 @@ describe("les domaines du modèle de l'éditeur", () => {
       ),
       "Une rubrique se lit sur les réponses et les cibles, sans savoir quel " +
         "cerfa la reçoit : chaque cerfa assemble celles qu'il porte. Faire " +
-        "évoluer ou retirer un cerfa ne touche pas les autres (D-138).",
+        "évoluer ou retirer un cerfa ne touche pas les autres.",
     ).toEqual([]);
   });
 

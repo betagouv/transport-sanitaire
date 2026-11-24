@@ -1,5 +1,5 @@
-// Les aides des tests de l'accord préalable (#136) : une demande écrite à la
-// main, et le motif qu'elle donne dans la réservation.
+// Les aides des tests de l'accord préalable : une demande écrite à la main, et
+// le motif qu'elle donne dans la réservation.
 
 import type { ValeursDesCibles } from "../traces-du-prescripteur";
 import { type Ajouts, fiche, NON_PARTAGE, puces, TAP } from "./fiches-du-test";

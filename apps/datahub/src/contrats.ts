@@ -7,7 +7,7 @@
 //   extract  ──TrajetRow──────────▶ staging ──TrajetRow──▶ reconcile ──TrajetReconcilieRow──▶ marts
 //   extract  ──EtablissementRow──▶ reconcile ──EtablissementDimensionRow──────────────────────▶ marts
 //   extract  ──GhtRattachementRow─────────────▶ reconcile (rattache trajets au GHT) ──────────▶ marts
-//   marts    ──▶ livrables (mart_juridique, mart_geographique, mart_ght, mart_hors_ght, mart_article80)
+//   marts    ──▶ livrables (la liste est dans `04-marts/marts.ts`)
 
 import type { Enveloppe, Role, VehiculeCanonique } from "./types.ts";
 
@@ -33,7 +33,7 @@ export interface TrajetRow {
 /**
  * Rattachement d'un établissement (finess juridique) à son GHT.
  * Produit par : extract (source `referentiel-ght`) → `build/extract/ght.csv`.
- * Consommé par : reconcile (à venir, pour remonter trajets et référentiel au GHT — mart_ght).
+ * Consommé par : reconcile (rattache trajets et référentiel au GHT — mart_ght).
  * Dérivé de l'open data data.gouv `etablissements-de-sante-par-ght` (voir l'adaptateur).
  */
 export interface GhtRattachementRow {

@@ -4,7 +4,7 @@
 // L'hospitalisation suit la cible des règles : la dialyse en centre seule ne
 // la donne pas, un HTNM non plus. La case « ALD non exonérante » ne vaut que
 // pour le mineur reconnu en soins prolongés, sans ALD à 100 % établie : les
-// règles ne donnent jamais les deux cases ensemble (#128). L'ALD exonérante et
+// règles ne donnent jamais les deux cases ensemble. L'ALD exonérante et
 // l'AT/MP sont les liens du transport, sous les noms de la PMT.
 
 import { given } from "../../../../../core/models/eligibilite/questions/reponses";

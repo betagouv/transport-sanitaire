@@ -54,7 +54,7 @@ const DOCUMENTS = [
   },
 ] as const;
 
-// Les champs que nous ne remplissons jamais : aucune source fiable (D-74).
+// Les champs que nous ne remplissons jamais : aucune source fiable.
 const JAMAIS_REMPLIS = [
   /\.beneficiaire_(nom_prenom|nir|naissance)$/,
   /\.organisme$/,

@@ -1,10 +1,10 @@
 // Q2.1 : la prestation, ce qui motive le déplacement, et ses sous-questions f
 // et g, sur une seule page. Q2.1 se saute quand P1 prouve déjà un motif de
 // transport ; Q2.1.f se pose quand même, si plusieurs séances sont cochées.
-// La page s'affiche dès que l'une se pose (D-102). Les faits que la page
+// La page s'affiche dès que l'une se pose. Les faits que la page
 // établit vivent sous `faits/`.
 //
-// Q2.1 ne propose que les neuf motifs généraux (QST-COLLECTE-UNIQUE, D-272).
+// Q2.1 ne propose que les neuf motifs généraux (QST-COLLECTE-UNIQUE).
 // Les situations qu'elle proposait aussi ne se découvrent plus qu'à un
 // endroit : les séances en Q1.3, le CAMSP et la convocation en Q2.2.1.b, la
 // permission en Q2.2.1.a, l'examen et l'hébergement de la maternité en Q2.2.1.
@@ -17,7 +17,7 @@ import { incoherenceDeLieux } from "../conditions/conflit-de-lieux.ts";
 /**
  * P1 prouve déjà un motif de transport : l'ambulance, une séance qualifiante,
  * une ALD à 100 % liée au soin, ou le mineur reconnu en soins continus. Q2.1
- * n'est alors pas posée (D-102), et son saut ne donne aucun « non ».
+ * n'est alors pas posée, et son saut ne donne aucun « non ».
  */
 const unMotifDeP1 = given
   .fait("fait_situation_soins_qualifiante")
@@ -27,7 +27,7 @@ const unMotifDeP1 = given
   .or(given.cible("cible_mineur_soins_prolonges").isOui());
 
 // Les séances déclarées en Q1.3. Q2.1.f se pose dès que deux sont cochées,
-// dialyse comprise, sans attendre l'hémodialyse confirmée (TS1014-L04, D-245).
+// dialyse comprise, sans attendre l'hémodialyse confirmée (TS1014-L04).
 const cas = given.question(Q1_3).answer();
 const SEANCES = ["3_CHIMIOTHERAPIE", "4_RADIOTHERAPIE", "5_DIALYSE"] as const;
 const plusieursSeances = cas.compute(

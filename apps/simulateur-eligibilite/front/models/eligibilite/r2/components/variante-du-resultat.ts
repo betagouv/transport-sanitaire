@@ -1,4 +1,4 @@
-// La variante d'une fiche patient positive (#135) : la portée du trajet, le
+// La variante d'une fiche patient positive : la portée du trajet, le
 // libellé sous lequel le catalogue de l'éditeur range le titre et le modus, et
 // le rang du titre du prescripteur. Des fonctions pures de la trace, sans React.
 // Chacune déclare ce qu'elle en lit (`ce-que-lit-un-texte.ts`).
@@ -6,7 +6,7 @@
 // Les libellés sont ceux de `titles` dans le catalogue. Chaque mode que les
 // règles peuvent donner en a un : un test le vérifie pour toutes les valeurs
 // de `cible_mode_id`. Un trajet en avion ou en bateau de ligne régulière prend
-// le libellé de la ligne régulière, pas celui du mode (#221).
+// le libellé de la ligne régulière, pas celui du mode.
 
 import { given } from "../../../../../core/models/eligibilite/questions/reponses";
 import { luPar, type TraceDe } from "./ce-que-lit-un-bloc";

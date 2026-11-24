@@ -1,6 +1,6 @@
-// Écrit un texte dans son champ (D-85, D-193, #341) : chaque étape l'écrit si
-// elle y arrive, sinon passe la main à la suivante. Un texte strict n'a pas ces
-// étapes (D-302) : il s'écrit à sa taille, ou pas (`strict-text.ts`).
+// Écrit un texte dans son champ : chaque étape l'écrit si elle y arrive, sinon
+// passe la main à la suivante. Un texte strict n'a pas ces étapes : il s'écrit
+// à sa taille, ou pas (`strict-text.ts`).
 
 import { type PDFDocument, type PDFFont, PDFTextField } from "pdf-lib";
 import type { Drawing } from "./flatten-the-form";
@@ -20,7 +20,7 @@ export type WrittenText = {
   readonly overflows: readonly Drawing[];
   /**
    * La taille à laquelle le texte s'imprime, en points : dans son champ, ou la
-   * plus petite de ses dessins sous le cadre (ADR-0048).
+   * plus petite de ses dessins sous le cadre.
    */
   readonly size: number | NotPrinted;
 };
@@ -79,7 +79,7 @@ function writeIfFits(
   return { overflows: [], size };
 }
 
-// Le texte, à la ligne, rapetissé jusqu'à `floor` au plus (D-193, #341).
+// Le texte, à la ligne, rapetissé jusqu'à `floor` au plus.
 function writeShrunk(
   field: PDFTextField,
   font: PDFFont,
@@ -94,7 +94,7 @@ function writeShrunk(
 }
 
 // Rien dans le champ : le texte se dessinera sous chaque widget, s'il en reste
-// près (#341).
+// près.
 function overflowIfNear(
   document: PDFDocument,
   field: PDFTextField,

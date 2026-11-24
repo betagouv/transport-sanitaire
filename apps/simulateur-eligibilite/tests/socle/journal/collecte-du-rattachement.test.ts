@@ -1,10 +1,10 @@
 // @vitest-environment node
 //
 // La collecte vérifie l'établissement et le service de chaque événement contre
-// le référentiel (ANA22-01, #506) : un id inconnu, ou un service hors de son
+// le référentiel (ANA22-01) : un id inconnu, ou un service hors de son
 // établissement, va en quarantaine, et ne compte pas comme un événement valide.
-// Sur le vrai serveur Express, le journal en mémoire et le référentiel snapshot,
-// sans mock.
+// Sur le vrai serveur Express, le journal en mémoire et le référentiel
+// snapshot, sans mock.
 
 import { afterEach, describe, expect, it } from "vitest";
 import { MemoryJournal } from "../../../server/journal/memory-journal.adapter.ts";

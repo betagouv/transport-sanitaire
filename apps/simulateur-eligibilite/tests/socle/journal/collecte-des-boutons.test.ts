@@ -1,8 +1,8 @@
 // @vitest-environment node
 //
-// La collecte des boutons exposés et de leurs clics (ADR-0047, ANA22-02), sur le
-// vrai serveur Express et le journal en mémoire : quatre boutons fermés, chacun
-// sur son écran, l'objet qu'il montre, et un clic qui vient du prescripteur.
+// La collecte des boutons exposés et de leurs clics (ANA22-02), sur le vrai
+// serveur Express et le journal en mémoire : quatre boutons fermés, chacun sur
+// son écran, l'objet qu'il montre, et un clic qui vient du prescripteur.
 
 import { afterEach, describe, expect, it } from "vitest";
 import { MemoryJournal } from "../../../server/journal/memory-journal.adapter.ts";

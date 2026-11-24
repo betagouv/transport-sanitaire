@@ -1,6 +1,6 @@
-// Les précisions de la trace (#132) : une seule réponse validée les prouve,
-// sinon la clé manque. `README.md` du paquet de l'éditeur, « Précisions
-// éditoriales utiles ».
+// Les précisions de la trace : une seule réponse validée les prouve, sinon la
+// clé manque. `README.md` du paquet de l'éditeur, « Précisions éditoriales
+// utiles ».
 
 import { describe, expect, it } from "vitest";
 import type { Precisions } from "../../../../front/models/eligibilite/r2/components/precisions";

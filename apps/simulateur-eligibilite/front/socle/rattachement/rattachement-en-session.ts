@@ -17,6 +17,5 @@ export function rattachementEnSession(): RattachementDuReferentiel | null {
 
 // ---- implémentation ----
 
-// En mémoire seulement, pas de localStorage. Voir
-// ADR-0007.
+// En mémoire seulement, pas de localStorage.
 let rattachementCourant: RattachementDuReferentiel | null = null;

@@ -1,6 +1,6 @@
 // Le rattachement d'un parcours, en ids du référentiel : ce que l'écran de
-// rattachement range en session, et ce que chaque événement porte (ADR-0053).
-// Rien d'autre : aucun nom, choisi ou saisi, ne part (#506).
+// rattachement range en session, et ce que chaque événement porte.
+// Rien d'autre : aucun nom, choisi ou saisi, ne part.
 
 import type { RattachementSaisi } from "./rattachement-saisi.ts";
 import type { RattachementEnregistre } from "./referentiel.ts";

@@ -1,4 +1,4 @@
-// La fiche patient négative, telle qu'elle s'affiche (#134). La seed
+// La fiche patient négative, telle qu'elle s'affiche. La seed
 // `issue-non-eligible` donne les textes de l'aperçu de l'éditeur (TS1014-J05).
 // `eligibilite` donne le titre du prescripteur, rouge foncé, et sa phrase à la
 // page, puis la feuille, que le socle pose sous ses logos avec son titre et sa

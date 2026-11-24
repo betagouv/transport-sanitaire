@@ -1,9 +1,9 @@
 // Q2.10 : la convocation, après la permission, pour la catégorie, et sur la
 // même page, pour l'appareillage, l'agrément du fournisseur (Q2.10.a) et
-// l'appareillage concerné (Q2.10.b) (D-108). Son fait vit sous `faits/`.
+// l'appareillage concerné (Q2.10.b). Son fait vit sous `faits/`.
 //
 // Q2.10 se pose quand Q2.2.1.b signale une convocation (réponse possible 13),
-// le seul endroit où elle se découvre (QST-COLLECTE-UNIQUE, D-272). Sans elle,
+// le seul endroit où elle se découvre (QST-COLLECTE-UNIQUE). Sans elle,
 // Q2.10 ne se pose pas : la convocation proposée et écartée en Q2.2.1.b vaut
 // déjà « non ».
 

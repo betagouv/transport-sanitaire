@@ -1,4 +1,4 @@
-// Les éditeurs des textes stricts d'un cerfa (D-302, D-304) : un par texte qui
+// Les éditeurs des textes stricts d'un cerfa : un par texte qui
 // déborde du PDF généré, ou qui a un brouillon. Le brouillon de départ est le
 // texte du document ; chaque frappe le remonte à qui l'affiche, et « Valider »
 // le lui confie. Sans éditeur, rien ne s'affiche.

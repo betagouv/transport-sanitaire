@@ -1,7 +1,6 @@
 #!/bin/sh
 # Imprime le dossier d'ADR donné et les noms de ses fichiers, sans extension.
-# Le nom dit la décision : le contenu n'est pas lu. Le journal des décisions de
-# la v10, clos, n'est pas un ADR.
+# Le nom dit la décision : le contenu n'est pas lu.
 #
 # Usage : liste-des-adr.sh <dossier>
 

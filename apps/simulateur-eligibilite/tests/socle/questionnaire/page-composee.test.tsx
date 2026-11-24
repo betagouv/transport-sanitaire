@@ -4,8 +4,8 @@ import { page, QuestionFactory, ReadingFactory } from "../../../core/socle";
 import { afficher } from "./afficher";
 
 // Une page composée attend « Suivant », même complète : seule une page faite
-// d'un choix unique affiché seul avance d'elle-même (D-240). Les pages sont
-// écrites ici.
+// d'un choix unique affiché seul avance d'elle-même. Les pages sont écrites
+// ici.
 
 type Questions = {
   boisson: "cafe" | "the";

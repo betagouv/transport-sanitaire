@@ -9,8 +9,7 @@ import type { RattachementDuReferentiel } from "../../../shared/rattachement-du-
  * compile pas.
  *
  * Elle couvre le questionnaire : son début, ses étapes, sa fin, son abandon.
- * Puis le verdict d'un parcours ALD à son arrivée sur le premier résultat
- * (#148).
+ * Puis le verdict d'un parcours ALD à son arrivée sur le premier résultat.
  *
  * Un objet `as const`, pas un `enum` : `erasableSyntaxOnly` (tsconfig) interdit
  * l'`enum`.

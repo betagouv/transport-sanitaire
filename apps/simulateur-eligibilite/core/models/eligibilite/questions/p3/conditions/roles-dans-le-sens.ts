@@ -1,6 +1,6 @@
 // Les rôles des lieux que P2 établit (`p2/conditions/roles-des-lieux.ts`), lus
 // dans le sens du document : Q2.13.sens ou Q3.1.2 (`sens-du-trajet.ts`).
-// Plusieurs permissions ne disent aucun sens (D-284).
+// Plusieurs permissions ne disent aucun sens.
 //
 // Les règles lisent les réponses sous leur nom (`Entrees`). Une garde les
 // reçoit de `ENTREES_DES_LIEUX`, un rappel de `entreesDe`.

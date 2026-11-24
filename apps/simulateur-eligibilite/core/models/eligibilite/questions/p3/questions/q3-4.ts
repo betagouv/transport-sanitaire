@@ -1,8 +1,8 @@
 // Q3.4 : les précisions du soin qui manquent au volet médical de la PMT et de
 // la DAP, la justification d'un lieu éloigné (Q3.4.distance) et le centre de
 // référence (Q3.4.a). Q3.4 n'est plus une question : la précision générique
-// facultative est retirée (TXT-PARCOURS-COMPLETION-20261116, #478). Le
-// prescripteur réécrit la cellule médicale en R3 s'il veut préciser (#403).
+// facultative est retirée (TXT-PARCOURS-COMPLETION-20261116). Le
+// prescripteur réécrit la cellule médicale en R3 s'il veut préciser.
 // Le S3141 n'a pas de volet médical. Rien de ce qu'elles recueillent ne
 // requalifie P2.
 
@@ -61,7 +61,7 @@ type AChoix = Answered<string> & {
 // de la première question que pose la page. Aucun code de nomenclature ne
 // s'affiche. Le motif de Q2.1, les faits qui le précisent, et les séances que
 // P1 a prouvées. Q2.1.l n'est pas codée : il n'y a pas d'intitulé à rappeler.
-// L'intitulé de chaque fait rappelé est le nôtre (D-122).
+// L'intitulé de chaque fait rappelé est le nôtre.
 function recapitulatifDuSoin(reponses: GivenAnswers<ReadByObject>) {
   const lu = (rappelee: AChoix, intitule: string) => {
     const reponse = reponses.question(rappelee).value;

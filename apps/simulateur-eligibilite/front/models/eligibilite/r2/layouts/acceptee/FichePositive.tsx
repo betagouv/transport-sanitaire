@@ -1,6 +1,6 @@
 // La fiche patient positive, à remettre au patient : la prescription médicale
-// de transport et le formulaire S3141 (#135), puis les deux demandes d'accord
-// préalable (#136). Le socle la pose sur sa feuille, sous les logos, son titre,
+// de transport et le formulaire S3141, puis les deux demandes d'accord
+// préalable. Le socle la pose sur sa feuille, sous les logos, son titre,
 // le mode d'un trajet en ligne régulière et sa raison. Le composant range un
 // `TexteDeLaFichePositive` dans les blocs du socle ; il n'écrit aucun texte de
 // l'éditeur.

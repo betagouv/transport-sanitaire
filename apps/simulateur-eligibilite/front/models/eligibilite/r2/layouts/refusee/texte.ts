@@ -1,4 +1,4 @@
-// Le texte de la fiche patient négative (#134), pour `ISSUE_NON_ELIGIBLE`.
+// Le texte de la fiche patient négative, pour `ISSUE_NON_ELIGIBLE`.
 // Une fonction pure, sans React.
 //
 // Tous les mots viennent du catalogue de l'éditeur, recopiés tels quels. Ce

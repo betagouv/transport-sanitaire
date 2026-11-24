@@ -2,8 +2,7 @@
 // v10.2.1), ligne à ligne, rapporté aux questions du modèle. Une ligne
 // conditionnelle s'affiche sous les réponses qu'elle nomme ; une ligne autonome
 // ou composée, à son rang. Aucune question du modèle, ni aucune de ses places,
-// n'est hors de l'inventaire, sauf celles que la table EN_PLUS dit (D-307,
-// D-308).
+// n'est hors de l'inventaire, sauf celles que la table EN_PLUS dit.
 
 import { describe, expect, it } from "vitest";
 import { COMPLEMENT } from "../../../core/models/eligibilite/questions/p3/partie-3";
@@ -18,7 +17,7 @@ type Ligne =
   | { readonly absente: string };
 
 const INACTIVE = { absente: "inactive à l'inventaire" };
-const HORS_P2 = { absente: "ne se pose pas (D-109)" };
+const HORS_P2 = { absente: "ne se pose pas" };
 const LIEU = (q: "Q3.2" | "Q3.3", categorie: string) =>
   `${q}.categorie:${categorie}`;
 
@@ -51,7 +50,7 @@ const INVENTAIRE: Readonly<Record<string, Ligne>> = {
     ],
     questions: ["Q2.3.3"],
   },
-  // Le CAMSP ou le CMPP se coche sur une autre page : pas de place (D-307).
+  // Le CAMSP ou le CMPP se coche sur une autre page : pas de place.
   "Q2.3.4": {
     sous: [
       "Q2.3.1:2_PLUS_DE_CINQUANTE_KM",
@@ -97,10 +96,10 @@ const INVENTAIRE: Readonly<Record<string, Ligne>> = {
   "Q2.1.e": INACTIVE,
   "Q2.1.f": {
     aSonRang: ["Q2.1.f"],
-    raison: "les séances se disent en P1, pas sur sa page (D-307)",
+    raison: "les séances se disent en P1, pas sur sa page",
   },
   "Q2.1.g": { sous: ["Q2.1:8_HOSPITALISATION"], questions: ["Q2.1.g"] },
-  "Q2.1.h": { absente: "sortie du questionnaire (D-253)" },
+  "Q2.1.h": { absente: "sortie du questionnaire" },
   "Q2.1.i": INACTIVE,
   "Q2.1.j": INACTIVE,
   "Q2.1.k": INACTIVE,
@@ -125,7 +124,7 @@ const INVENTAIRE: Readonly<Record<string, Ligne>> = {
   },
   "Q2.8.duree_48h": {
     aSonRang: ["Q2.8.duree_48h"],
-    raison: "sa garde ne lit pas les dates, aucune ne l'ouvre (D-307)",
+    raison: "sa garde ne lit pas les dates, aucune ne l'ouvre",
   },
   "Q3.1.quantity": {
     sous: ["1_ALLER", "2_RETOUR", "3_ALLER_RETOUR_EQUIVALENT"].map(
@@ -139,7 +138,7 @@ const INVENTAIRE: Readonly<Record<string, Ligne>> = {
 
 // Ce que le modèle pose en plus de l'inventaire.
 const EN_PLUS: Readonly<Record<string, Ligne>> = {
-  "côté de l'USLD ou de l'EHPAD (D-308)": {
+  "côté de l'USLD ou de l'EHPAD": {
     sous: [LIEU("Q3.3", "2_STRUCTURE_DE_SOINS"), LIEU("Q3.3", "3_AUTRE_LIEU")],
     questions: ["Q3.lieux.usld.cote", "Q3.lieux.ehpad.cote"],
   },

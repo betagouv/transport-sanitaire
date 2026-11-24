@@ -8,7 +8,7 @@
 // L'adresse suit.
 //
 // L'aller-retour ne se coche que si le retour est le même trajet, adresses
-// inversées. Plusieurs permissions du S3141 en sont chacune un (D-120).
+// inversées. Plusieurs permissions du S3141 en sont chacune un.
 
 import {
   type Categorie,

@@ -1,6 +1,6 @@
 // Le modèle de l'éditeur, ses cerfas chargeant leur gabarit sur le disque : le
 // navigateur de test ne sert pas les assets de l'app. Le PDF se génère, et le
-// texte de R3, qui l'attend (D-250), s'affiche.
+// texte de R3, qui l'attend, s'affiche.
 
 import { model } from "../../../front/models/eligibilite";
 import type { Model } from "../../../front/socle/model";

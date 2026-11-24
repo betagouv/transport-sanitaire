@@ -1,7 +1,7 @@
-// Les lieux que les contextes de P2 fixent ou bornent en P3 (Q3.2, Q3.3, #145) :
-// la matrice des lieux de `CATALOGUE_COMPLET_QUESTIONS.md`, lue dans le sens
-// du document (D-121), puis reportée sur les trois catégories
-// (QST-LIEUX-TROIS-CATEGORIES-20261105, #400).
+// Les lieux que les contextes de P2 fixent ou bornent en P3 (Q3.2, Q3.3) : la
+// matrice des lieux de `CATALOGUE_COMPLET_QUESTIONS.md`, lue dans le sens du
+// document, puis reportée sur les trois catégories
+// (QST-LIEUX-TROIS-CATEGORIES-20261105).
 
 import { describe, expect, it } from "vitest";
 import { model } from "../../../../core/models/eligibilite";
@@ -36,7 +36,7 @@ describe("les lieux que les contextes de P2 fixent (matrice des lieux)", () => {
     ]);
   });
 
-  it("le sens choisi en Q2.13.sens oriente aussi les lieux (#365)", () => {
+  it("le sens choisi en Q2.13.sens oriente aussi les lieux", () => {
     const penitentiaire: Reponses = {
       "Q2.13.sens": "2_RETOUR",
       "Q3.1.1": 1,
@@ -99,7 +99,7 @@ describe("les lieux que les contextes de P2 fixent (matrice des lieux)", () => {
   });
 });
 
-describe("le côté de l'USLD et de l'EHPAD de Q2.6 (#400, #421)", () => {
+describe("le côté de l'USLD et de l'EHPAD de Q2.6", () => {
   const sortie: Reponses = {
     ...RETOUR,
     "Q2.2.1": ["1_HOSPITALISATION"],

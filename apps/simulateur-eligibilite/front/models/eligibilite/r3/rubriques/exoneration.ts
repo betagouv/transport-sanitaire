@@ -1,6 +1,6 @@
 // La case Oui / Non des cas particuliers d'exonération du ticket modérateur
 // (Q3.7). Un cas coché donne Oui, « Aucun autre cas » donne Non. Sans Q3.7,
-// posée seulement pour une hospitalisation, les deux restent vides (D-136).
+// posée seulement pour une hospitalisation, les deux restent vides.
 
 import { given } from "../../../../../core/models/eligibilite/questions/reponses";
 import type { Rubrique } from "./rubrique";

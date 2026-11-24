@@ -22,7 +22,7 @@ import {
 
 /**
  * Une valeur à écrire : un texte dans un champ nommé, ou une case à cocher.
- * Un texte strict s'écrit à sa taille, ou pas (D-302).
+ * Un texte strict s'écrit à sa taille, ou pas.
  *
  * `checked` porte l'état d'export à écrire, souvent `On` ou `Yes`. Un gabarit
  * peut aussi mettre plusieurs cases sous un même nom : des boutons radio
@@ -62,7 +62,7 @@ export type Filled = {
   readonly sizes: ReadonlyMap<string, number>;
 };
 
-/** Un texte strict qui déborde de son champ, et son maximum (D-302). */
+/** Un texte strict qui déborde de son champ, et son maximum. */
 export type StrictOverflow = {
   readonly field: string;
   readonly maximum: number;
@@ -74,14 +74,14 @@ export type StrictOverflow = {
  * Un champ qui porte un widget sur plusieurs volets s'écrit une seule fois, et
  * les volets restent cohérents par construction.
  *
- * Un texte n'est jamais coupé, et ne bloque jamais le PDF (D-85). Il s'écrit à
- * la taille visée, puis réduite, puis rapetissé à la ligne jusqu'au plancher
- * (D-193). Au-delà, il laisse le champ vide et se
- * dessine sous son cadre, à la plus grande taille jusqu'au plancher où il en
- * reste près (`overflow.ts`, #341) ; sinon il rapetisse sous le plancher :
- * illisible plutôt que sur la ligne suivante du formulaire. Plus long que le
- * nombre de caractères du champ, il laisse toujours le champ vide. Un texte
- * strict, lui, s'écrit à sa taille ou en partie (`strict-text.ts`).
+ * Un texte n'est jamais coupé, et ne bloque jamais le PDF. Il s'écrit à
+ * la taille visée, puis réduite, puis rapetissé à la ligne jusqu'au plancher.
+ * Au-delà, il laisse le champ vide et se dessine sous son cadre, à la plus
+ * grande taille jusqu'au plancher où il en reste près (`overflow.ts`) ;
+ * sinon il rapetisse sous le plancher : illisible plutôt que sur la ligne
+ * suivante du formulaire. Plus long que le nombre de caractères du champ, il
+ * laisse toujours le champ vide. Un texte strict, lui, s'écrit à sa taille ou
+ * en partie (`strict-text.ts`).
  */
 export async function fillCerfa(
   template: Uint8Array | ArrayBuffer,

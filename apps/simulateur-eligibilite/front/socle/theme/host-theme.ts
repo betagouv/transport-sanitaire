@@ -1,4 +1,4 @@
-// Le thème du simulateur est celui de la page qui l'embarque (#342).
+// Le thème du simulateur est celui de la page qui l'embarque.
 //
 // L'app tourne dans une iframe du CMS, qui propose à son lecteur le clair, le
 // sombre ou celui du système. L'iframe ne lit pas ce choix : le CMS le lui

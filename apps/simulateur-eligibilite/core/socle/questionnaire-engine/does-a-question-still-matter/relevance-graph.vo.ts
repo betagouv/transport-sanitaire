@@ -1,4 +1,4 @@
-// Le graphe de décision tel que la pertinence le lit (#255) : ses règles
+// Le graphe de décision tel que la pertinence le lit : ses règles
 // restreintes aux faits figés, chacune fermée hors des branches qui la lisent.
 
 import {

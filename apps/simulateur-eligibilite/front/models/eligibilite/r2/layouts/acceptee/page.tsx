@@ -1,5 +1,5 @@
-// La page des issues acceptées : `ISSUE_PMT` et `ISSUE_S3141` (#135),
-// `ISSUE_DAP_SANS_URGENCE` et `ISSUE_DAP_URGENCE_ATTESTEE` (#136). Elle donne
+// La page des issues acceptées : `ISSUE_PMT` et `ISSUE_S3141`,
+// `ISSUE_DAP_SANS_URGENCE` et `ISSUE_DAP_URGENCE_ATTESTEE`. Elle donne
 // au socle le titre du prescripteur, sa phrase d'introduction, la feuille du
 // patient.
 

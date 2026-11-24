@@ -1,6 +1,6 @@
 // La fiche patient d'une demande d'accord préalable dont une partie du trajet
-// se fait en avion ou en bateau de ligne régulière (#221). Les seeds suivent
-// la projection de l'éditeur (`projection-positive.mjs`, v10.2.1) :
+// se fait en avion ou en bateau de ligne régulière. Les seeds suivent la
+// projection de l'éditeur (`projection-positive.mjs`, v10.2.1) :
 // - `issue-dap-avion-ou-bateau` et `issue-dap-avion-ou-bateau-urgence-attestee`,
 //   sans partie terrestre : titres et modus de la ligne régulière, ni cartes ni
 //   étapes (TS1014-J04), aucun badge terrestre, la ligne dite comme mode avant

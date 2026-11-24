@@ -1,8 +1,8 @@
 // @vitest-environment node
 //
-// La lecture du journal (#521), sur le vrai serveur : le tableau de bord lit
-// les entrées page par page, avec le jeton partagé. Sans jeton configuré, la
-// route n'existe pas.
+// La lecture du journal, sur le vrai serveur : le tableau de bord lit les
+// entrées page par page, avec le jeton partagé. Sans jeton configuré, la route
+// n'existe pas.
 
 import { afterEach, describe, expect, it } from "vitest";
 import { JournalEntry } from "../../../server/journal/journal-entry.entity.ts";

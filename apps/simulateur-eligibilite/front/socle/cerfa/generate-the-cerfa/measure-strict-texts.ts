@@ -1,4 +1,4 @@
-// La mesure des textes stricts d'un gabarit (D-302) : la même que celle de
+// La mesure des textes stricts d'un gabarit : la même que celle de
 // l'écriture (`strict-text.ts`), sur une copie de travail du gabarit que rien
 // n'écrit.
 

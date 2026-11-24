@@ -1,7 +1,7 @@
 // Les cas limites des contrôles de dates de Q2.8, sur la page du mineur : des
 // dates seules (DATES-SEULES-20261104), les mois et années qui se retournent,
-// le changement d'heure, et les saisies illisibles (D-107). Les messages et le
-// blocage se testent dans `blocages-de-la-permission.test.ts`.
+// le changement d'heure, et les saisies illisibles. Les messages et le blocage
+// se testent dans `blocages-de-la-permission.test.ts`.
 
 import { describe, expect, it } from "vitest";
 import {

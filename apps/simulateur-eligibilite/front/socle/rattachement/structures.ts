@@ -6,7 +6,7 @@
 //
 // Ses services ne s'affichent pas tous : les saisies des prescripteurs y
 // arrivent aussi. Seules les structures attendues s'affichent, reconnues à leur
-// libellé, dans l'ordre du porteur (#367).
+// libellé, dans l'ordre du porteur.
 
 import { normalise } from "../../../shared/rattachement-saisi";
 import type { Etablissement, Service } from "../../../shared/referentiel";

@@ -3,7 +3,7 @@
 // Les deux groupes de Q2.14 (`CONTRAT_Q214_GROUPES.json`) : une condition
 // cochée dans chacun établit le dispositif, « Aucune » dans l'un l'écarte.
 // L'examen coché en Q2.2.1 tient lieu de motif : Q2.14.motif ne se repose pas
-// (QST-MAT-SEPARATION, D-272). Un groupe sans réponse le laisse à la
+// (QST-MAT-SEPARATION). Un groupe sans réponse le laisse à la
 // maternité signalée en Q2.2.1. L'examen et l'hébergement proposés et non
 // cochés l'écartent tous deux ; un seul ne nie pas l'autre. Un HTNM coché avec
 // la maternité l'écarte si Q2.14.trajet évalue le déplacement du HTNM

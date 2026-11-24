@@ -1,6 +1,5 @@
-// Ce que le document R3 envoie au journal des parcours (#387) : chaque version
-// affichée, une fois son PDF prêt, et chaque génération ratée. Voir
-// ADR-0046.
+// Ce que le document R3 envoie au journal des parcours : chaque version
+// affichée, une fois son PDF prêt, et chaque génération ratée.
 //
 // Le modèle de test donne une PMT en taxi : son document porte le support
 // S3138g et le mode TAP, et sa taille imprimée part sous les identifiants de

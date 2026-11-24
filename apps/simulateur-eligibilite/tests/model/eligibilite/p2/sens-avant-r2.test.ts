@@ -1,7 +1,7 @@
-// Le sens du trajet avant R2 (#365, QST-LIEUX-CONFLIT-CERTAIN-20261106, Q2.13
-// détail 8) : quand les lieux de P2 ne se contredisent que dans un sens, et
-// qu'aucune réponse ne l'établit, Q2.13.sens se pose sur la page de branche.
-// Un sens qui crée le conflit s'arrête en P2, comme un conflit certain (#353).
+// Le sens du trajet avant R2 (QST-LIEUX-CONFLIT-CERTAIN-20261106, Q2.13 détail
+// 8) : quand les lieux de P2 ne se contredisent que dans un sens, et qu'aucune
+// réponse ne l'établit, Q2.13.sens se pose sur la page de branche. Un sens qui
+// crée le conflit s'arrête en P2, comme un conflit certain.
 
 import { describe, expect, it } from "vitest";
 import { LIEUX_INCOMPATIBLES } from "../../../../core/models/eligibilite/questions/p2/conditions/conflit-de-lieux";
@@ -36,8 +36,8 @@ const DIALYSE: Reponses = {
 
 type Cas = readonly [string, Reponses, Reponses["Q2.13.sens"]];
 
-// Les cinq conflits que seul le filtre de Q3.1.2 rendait certains (D-132),
-// et le sens qui les crée.
+// Les cinq conflits que seul le filtre de Q3.1.2 rendait certains, et le sens
+// qui les crée.
 const CINQ_CAS: readonly Cas[] = [
   [
     "entrée et hébergement",
@@ -145,7 +145,7 @@ describe("Q2.13.sens, le sens qui change la cohérence des lieux", () => {
     ]);
   });
 
-  it("un aller-retour différent bloque, et propose une nouvelle simulation (#486)", () => {
+  it("un aller-retour différent bloque, et propose une nouvelle simulation", () => {
     const [[, reponses]] = CINQ_CAS as [Cas];
     const question = sensPose({
       ...reponses,
@@ -162,7 +162,7 @@ describe("Q2.13.sens, le sens qui change la cohérence des lieux", () => {
     expect(question?.offersRestartOn("1_ALLER")).toBe(false);
   });
 
-  // Les conflits qu'un sens lève, que #353 laissait à P3 : le sens les change
+  // Les conflits qu'un sens lève, qui restaient à P3 : le sens les change
   // aussi (TS1017-05, l'admission en HAD d'une dialyse).
   it("se pose aussi pour une dialyse et une admission en HAD", () => {
     const reponses = { ...HOSPITALISATION("3_ADMISSION_HAD"), ...DIALYSE };
@@ -181,8 +181,8 @@ describe("Q2.13.sens ne se pose pas", () => {
 });
 
 // Plusieurs permissions ne disent aucun sens, même chacune un aller-retour
-// (QST-PERMISSION-REPETITION-SENS-20261112, D-284) : sur une sortie, le sens
-// se pose comme pour une seule.
+// (QST-PERMISSION-REPETITION-SENS-20261112) : sur une sortie, le sens se pose
+// comme pour une seule.
 describe("Q2.13.sens sur une sortie en permission", () => {
   it.each<[string, Reponses]>([
     ["une seule permission", MINEUR],

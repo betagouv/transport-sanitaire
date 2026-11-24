@@ -1,9 +1,9 @@
 // @vitest-environment node
 //
-// L'adaptateur PostgreSQL du journal, contre une vraie base Postgres en
-// mémoire (PGlite) : un événement écrit se relit tel quel, une collision et
-// une quarantaine vont dans leur table, l'établissement et le service ont
-// chacun leur colonne (ADR-0053).
+// L'adaptateur PostgreSQL du journal, contre une vraie base Postgres en mémoire
+// (PGlite) : un événement écrit se relit tel quel, une collision et une
+// quarantaine vont dans leur table, l'établissement et le service ont chacun
+// leur colonne.
 
 import { PGlite } from "@electric-sql/pglite";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";

@@ -87,7 +87,7 @@ export class WalkProgress {
   /**
    * Les questions devenues inapplicables : leurs gardes ne tiennent plus, à
    * toutes leurs places, alors que ce qu'elles lisent est validé. Une question
-   * que le graphe masque (#255), ou qui suit une question en attente sur une
+   * que le graphe masque, ou qui suit une question en attente sur une
    * page d'avant, n'en est pas : ses gardes tiennent, ou ne se décident pas
    * encore.
    */

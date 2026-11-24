@@ -1,6 +1,6 @@
-// Les motifs que la DAP remplie coche (#161) : les fondements que les règles
-// établissent, l'Engagement maternité, le seul motif de la demande d'examen
-// à l'étranger, et l'avion ou le bateau avec ses cases. Le reste de la DAP se
+// Les motifs que la DAP remplie coche : les fondements que les règles
+// établissent, l'Engagement maternité, le seul motif de la demande d'examen à
+// l'étranger, et l'avion ou le bateau avec ses cases. Le reste de la DAP se
 // vérifie dans `s3139h-rempli.test.ts`.
 
 import { describe, expect, it } from "vitest";

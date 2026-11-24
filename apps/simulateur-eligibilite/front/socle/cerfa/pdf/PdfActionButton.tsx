@@ -1,8 +1,7 @@
 // Un bouton qui agit sur un PDF, celui d'un cerfa comme celui de la feuille à
 // remettre. Tant que le PDF se prépare, il attend, et « Télécharger » le dit,
-// comme le bouton de l'éditeur (D-191). Le document quitté pendant qu'il se
-// prépare se garde (`useShown`) : un PDF arrivé après coup n'en sort jamais
-// (D-190).
+// comme le bouton de l'éditeur. Le document quitté pendant qu'il se
+// prépare se garde (`useShown`) : un PDF arrivé après coup n'en sort jamais.
 
 import { type ReactNode, useEffect, useRef } from "react";
 

@@ -1,7 +1,7 @@
-// La fiche patient d'une demande d'accord préalable, telle qu'elle s'affiche
-// (#136). Les seeds `issue-dap-sans-urgence` et `issue-dap-urgence-attestee`
-// donnent les textes des aperçus PDF de l'éditeur, recopiés ici. Les aperçus
-// HTML ne servent pas de référence : leur corps est réécrit par un script.
+// La fiche patient d'une demande d'accord préalable, telle qu'elle s'affiche.
+// Les seeds `issue-dap-sans-urgence` et `issue-dap-urgence-attestee` donnent
+// les textes des aperçus PDF de l'éditeur, recopiés ici. Les aperçus HTML ne
+// servent pas de référence : leur corps est réécrit par un script.
 // `eligibilite` donne le titre du prescripteur et sa phrase ; la fiche est la
 // feuille, posée ici dans la liseuse du socle.
 

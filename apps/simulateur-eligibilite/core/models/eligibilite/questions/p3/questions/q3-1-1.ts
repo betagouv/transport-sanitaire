@@ -1,7 +1,7 @@
 // Q3.1.1 : le nombre de trajets, que le sens choisi (Q2.13.sens ou Q3.1.2,
 // `sens-du-trajet.ts`) dit en allers simples,
 // retours simples ou allers-retours. Trois allers-retours valent 3
-// (`CONTRAT_Q31_QUANTITES.json`, D-246). Ce nombre ne recalcule pas la série
+// (`CONTRAT_Q31_QUANTITES.json`). Ce nombre ne recalcule pas la série
 // de P2.
 
 import { Q2_13_SENS } from "../../p2/questions/q2-13.ts";

@@ -1,6 +1,6 @@
 // Ce que P2 établit des deux lieux du trajet : les rôles de QST-LIEUX-001
-// (`situations-des-lieux.ts`), lus dans une orientation, l'aller ou le retour
-// (D-121). P3 la tire du sens du document (`p3/conditions/roles-dans-le-sens.ts`).
+// (`situations-des-lieux.ts`), lus dans une orientation, l'aller ou le retour.
+// P3 la tire du sens du document (`p3/conditions/roles-dans-le-sens.ts`).
 //
 // Une nature établie se rappelle sans se redemander. Une nature que P2 borne
 // sans la fixer, comme le lieu de vie d'une permission ou les deux bouts d'un
@@ -42,8 +42,8 @@ type Etablies = { readonly depart?: Etablie; readonly arrivee?: Etablie };
 
 /**
  * Les questions dont les lieux se tirent, chacune sous son nom. La dernière
- * dit le sens, qualifié avant R2 (#365). Plusieurs permissions n'en disent
- * aucun (D-284).
+ * dit le sens, qualifié avant R2. Plusieurs permissions n'en disent
+ * aucun.
  */
 export type Lues = {
   readonly soins: typeof Q1_3;

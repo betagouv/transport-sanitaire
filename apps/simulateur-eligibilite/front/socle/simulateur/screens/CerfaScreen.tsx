@@ -7,8 +7,8 @@
 // une fois le document prêt (V02) ; « Imprimer » et « Télécharger » ; l'aperçu
 // du document.
 //
-// Un texte strict qui ne tient pas se réécrit au-dessus des actions (D-302,
-// D-304). La simulation garde son brouillon et son texte validé (D-303) : le
+// Un texte strict qui ne tient pas se réécrit au-dessus des actions. La
+// simulation garde son brouillon et son texte validé : le
 // texte validé remplace celui du modèle, et chaque validation remonte le
 // document, régénéré. Le focus va alors au titre de la page.
 

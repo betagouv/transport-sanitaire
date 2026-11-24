@@ -1,4 +1,4 @@
-// La page des cinq issues orientées, sans fiche patient (D-112). Elle donne
+// La page des cinq issues orientées, sans fiche patient. Elle donne
 // au socle le titre, l'introduction et la page du prescripteur, réduits aux
 // sections que le catalogue montre, et le nom de la page, celui du gabarit de
 // l'éditeur (TS1014-TERMINOLOGIE-PRESCRIPTEUR).

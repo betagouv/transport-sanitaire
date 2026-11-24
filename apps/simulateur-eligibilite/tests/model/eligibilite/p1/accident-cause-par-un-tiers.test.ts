@@ -1,6 +1,6 @@
 // L'accident causé par un tiers, recueilli en Q1.3 avec sa date
-// (QST-Q13-TIERS-20261104, `CONTRAT_Q13_ACCIDENT_TIERS.json`, #351). Il ne
-// sert qu'aux cerfa : aucune cible ne le lit.
+// (QST-Q13-TIERS-20261104, `CONTRAT_Q13_ACCIDENT_TIERS.json`). Il ne sert
+// qu'aux cerfa : aucune cible ne le lit.
 
 import { describe, expect, it } from "vitest";
 import { model } from "../../../../core/models/eligibilite";

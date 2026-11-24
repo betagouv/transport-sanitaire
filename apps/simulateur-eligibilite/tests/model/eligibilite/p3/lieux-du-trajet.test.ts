@@ -1,6 +1,6 @@
-// Les pages du départ et de l'arrivée de P3 (Q3.2, Q3.3, #145, #400) : chaque
-// lieu se range dans l'une des trois catégories, ce que P2 établit se rappelle
-// sans se redemander, et les adresses se contrôlent sans toucher à R2.
+// Les pages du départ et de l'arrivée de P3 (Q3.2, Q3.3) : chaque lieu se range
+// dans l'une des trois catégories, ce que P2 établit se rappelle sans se
+// redemander, et les adresses se contrôlent sans toucher à R2.
 // QST-LIEUX-TROIS-CATEGORIES-20261105, `CATALOGUE_COMPLET_QUESTIONS.md` Q2.13.
 
 import { describe, expect, it } from "vitest";

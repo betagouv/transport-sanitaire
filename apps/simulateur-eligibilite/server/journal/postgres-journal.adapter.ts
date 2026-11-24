@@ -1,12 +1,12 @@
-// L'adaptateur PostgreSQL du journal (ADR-0043) : le seul à connaître ses
+// L'adaptateur PostgreSQL du journal : le seul à connaître ses
 // tables. Chaque entrée y est une ligne : des colonnes communes à tous les
 // types, pour filtrer, et l'événement entier en JSON dans `payload`, pour le
 // relire tel quel. La table ne change pas quand le contrat gagne un champ.
 //
 // Une collision va dans `journal_collisions`, un événement hors du référentiel
 // dans `journal_quarantine`, avec sa raison (ANA22-01). L'établissement et le
-// service ont chacun leur colonne (ADR-0053), le commit du serveur qui a reçu
-// l'événement aussi : le contrat ne le porte pas (ADR-0050).
+// service ont chacun leur colonne, le commit du serveur qui a reçu
+// l'événement aussi : le contrat ne le porte pas.
 //
 // Les tables se créent à la première requête si elles manquent.
 

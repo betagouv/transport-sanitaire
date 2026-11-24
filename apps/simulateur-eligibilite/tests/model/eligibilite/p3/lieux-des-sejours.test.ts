@@ -2,7 +2,7 @@
 // d'une séance sans séjour en P3 (Q3.2, Q3.3) : les rôles de QST-LIEUX-001
 // (`REFERENTIEL/02`). Le lieu de vie d'une permission n'est pas présumé
 // domicile, une séance ne présume pas l'hôpital, et deux rôles qui se
-// contredisent se refusent (#277).
+// contredisent se refusent.
 
 import { describe, expect, it } from "vitest";
 import { ciblesValant } from "../r2/traces-du-prescripteur";
@@ -54,7 +54,7 @@ describe("les lieux d'un séjour, d'une HAD et d'une permission (QST-LIEUX-001)"
     ).toContain("3_AUTRE_LIEU");
   });
 
-  // Le sens vient de Q3.1.2, pas de Q2.8.5 (D-284).
+  // Le sens vient de Q3.1.2, pas de Q2.8.5.
   it("plusieurs permissions du S3141, en aller-retour, partent de l'établissement, sans domicile présumé", () => {
     const S3141 = ciblesValant({ cible_support_id: "S3141" });
     const permissions: Reponses = {
@@ -140,7 +140,7 @@ describe("les lieux d'un séjour, d'une HAD et d'une permission (QST-LIEUX-001)"
     ]);
   });
 
-  it("une admission en HAD déclarée comme autre déplacement part de l'établissement vers le domicile (#311)", () => {
+  it("une admission en HAD déclarée comme autre déplacement part de l'établissement vers le domicile", () => {
     const sortie: Reponses = {
       ...RETOUR,
       ...AUTRE_DEPLACEMENT,
@@ -177,7 +177,7 @@ describe("les lieux d'un séjour, d'une HAD et d'une permission (QST-LIEUX-001)"
   });
 
   // L'USLD de Q2.6 peut être l'établissement du séjour, une structure de soins
-  // comme lui (D-244) : l'autre lieu reste libre.
+  // comme lui : l'autre lieu reste libre.
   it("avec l'USLD de Q2.6, l'établissement du séjour est une structure, et l'autre lieu reste libre", () => {
     const usld: Reponses = {
       ...AUTRE_DEPLACEMENT,

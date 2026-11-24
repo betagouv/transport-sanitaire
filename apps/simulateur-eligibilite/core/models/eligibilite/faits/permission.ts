@@ -2,7 +2,7 @@
 //
 // Le séjour coché en établissement, seule Q2.2.1.a la dit : elle ne se pose
 // qu'alors, et c'est le seul endroit où la permission se découvre
-// (QST-COLLECTE-UNIQUE, D-272). Une HAD n'ouvre aucune permission
+// (QST-COLLECTE-UNIQUE). Une HAD n'ouvre aucune permission
 // (TS1014-B01). Le séjour écarté, l'entrée en établissement (Q2.1.g) ou la
 // sortie vers la prison l'excluent.
 //

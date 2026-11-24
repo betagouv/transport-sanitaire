@@ -2,7 +2,7 @@
 // titre, le bouton qui y mène depuis R2, et son texte. Le socle pose les
 // boutons d'impression et de téléchargement, puis l'aperçu du document.
 //
-// Le document, d'après `cible_support_id` (#157) :
+// Le document, d'après `cible_support_id` :
 //
 // | Support | Document | Issues |
 // |---|---|---|
@@ -13,7 +13,7 @@
 //
 // Les gabarits sont ceux de `formulaires/` de la v10.1.3, à l'octet près
 // (`PROVENANCE_FORMULAIRES.json`). Les trois se remplissent : le S3141
-// (`s3141/`, #158), la PMT (`s3138g/`, #160) et la DAP (`s3139h/`, #161).
+// (`s3141/`), la PMT (`s3138g/`) et la DAP (`s3139h/`).
 //
 // Le titre et le bouton, d'après l'issue, recopiés de
 // `CONTRAT_RENDU_DOCUMENTAIRE.json` (v10.1.4, point 32) :
@@ -49,7 +49,7 @@ const SUPPORT = given.cible("cible_support_id");
 const ISSUE = given.cible("cible_issue_id");
 
 // Les documents du modèle, par support. Ce que lisent les cases d'un cerfa ne
-// compte que pour son support (#255).
+// compte que pour son support.
 const DOCUMENTS = given.all({
   S3138g: SUPPORT.branch(["S3138g"], cerfaValue(S3138G)),
   S3139h: SUPPORT.branch(["S3139h"], cerfaValue(S3139H)),

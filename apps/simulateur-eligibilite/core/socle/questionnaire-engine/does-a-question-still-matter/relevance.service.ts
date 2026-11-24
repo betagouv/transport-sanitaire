@@ -1,10 +1,10 @@
-// Ce qu'une question change de ce qui compte (#196, #255). Le socle ne pose une
+// Ce qu'une question change de ce qui compte. Le socle ne pose une
 // question que si sa réponse peut changer ce que montre le résultat, ou si une
-// question qui reste se pose (D-220, D-221). Le graphe de décision le dit, sans
+// question qui reste se pose. Le graphe de décision le dit, sans
 // dérouler les règles.
 //
 // Une question qui porte une incohérence compte toujours : elle bloque la suite,
-// et le graphe n'en sait rien (D-222). Ce que lisent ses incohérences compte
+// et le graphe n'en sait rien. Ce que lisent ses incohérences compte
 // comme ce que lisent ses gardes. Une question déclarée `alwaysAsked` compte
 // aussi toujours.
 //
@@ -13,7 +13,7 @@
 // prendre une de ses valeurs. Ex. : ce que lit la fiche positive ne compte que
 // tant que l'issue peut encore être positive. S'y ajoute ce que lisent les
 // gardes des questions qui restent et qui comptent : la question elle-même,
-// celles qui la suivent et peuvent encore se poser (`does-a-question-still-matter/askability.service.ts`, D-223),
+// celles qui la suivent et peuvent encore se poser (`does-a-question-still-matter/askability.service.ts`),
 // et celles d'avant qui attendent leur réponse.
 //
 // Les faits d'une question qui reste sont libres : sa réponse n'est pas encore
@@ -26,7 +26,7 @@
 // la question telle quelle, et les gardes qui lisent ses faits.
 //
 // Une question à plusieurs places compte à la sienne : ce qui la suit dépend
-// de la place. Ses gardes sont celles de toutes ses places (ADR-0040).
+// de la place. Ses gardes sont celles de toutes ses places.
 
 import type {
   DecisionGraphData,
@@ -146,7 +146,7 @@ export class Relevance {
 
   // La question compte si elle porte une incohérence ou se déclare toujours
   // posée, si ce que montrent les résultats dépend d'elle, ou si elle décide
-  // de la garde d'une question qui reste et qui compte elle-même (D-221).
+  // de la garde d'une question qui reste et qui compte elle-même.
   #counts(id: string, remaining: readonly string[], lens: Lens): boolean {
     const known = new Map<string, boolean>();
     const counts = (question: string): boolean => {

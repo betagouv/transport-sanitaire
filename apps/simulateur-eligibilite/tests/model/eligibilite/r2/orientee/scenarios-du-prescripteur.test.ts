@@ -1,6 +1,6 @@
-// Le scénario du résultat du prescripteur que choisit une trace (#133, D-112).
-// Les seeds donnent les traces de l'oracle ; les autres traces sont écrites à la
-// main, avec les seuls faits et cibles qu'une condition des règles lit.
+// Le scénario du résultat du prescripteur que choisit une trace. Les seeds
+// donnent les traces de l'oracle ; les autres traces sont écrites à la main,
+// avec les seuls faits et cibles qu'une condition des règles lit.
 
 import { describe, expect, it } from "vitest";
 import { SEEDS } from "../../../../../core/models/eligibilite/seeds-catalogue";
@@ -51,8 +51,8 @@ describe("les scénarios des seeds", () => {
     ).toEqual(["controle"]);
   });
 
-  // L'oracle a une ALD de base inconnue ; la seed a un transfert du Centre 15
-  // (D-111). Nous vérifions donc le scénario `centre15`, et l'ALD plus bas.
+  // L'oracle a une ALD de base inconnue ; la seed a un transfert du Centre 15.
+  // Nous vérifions donc le scénario `centre15`, et l'ALD plus bas.
   it("prend le scénario du Centre 15 pour la seed de la caisse", () => {
     expect(ids("ISSUE_CAISSE", traceDeLaSeed("issue-caisse"))).toEqual([
       "centre15",

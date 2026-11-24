@@ -1,6 +1,6 @@
-// Le texte du résultat pour les cinq issues qui n'ont pas de fiche patient
-// (D-112) : la caisse, l'établissement, la permission à la charge du patient,
-// la convocation, et le transport à l'étranger. Une fonction pure, sans React.
+// Le texte du résultat pour les cinq issues qui n'ont pas de fiche patient :
+// la caisse, l'établissement, la permission à la charge du patient, la
+// convocation, et le transport à l'étranger. Une fonction pure, sans React.
 //
 // Tous les mots viennent du catalogue de l'éditeur, recopiés tels quels. Ce
 // fichier choisit le scénario, puis range ses textes dans la page : il n'en

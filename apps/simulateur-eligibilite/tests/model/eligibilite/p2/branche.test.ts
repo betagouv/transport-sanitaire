@@ -2,12 +2,12 @@
 // chaque question se pose, ce qu'elle établit, et l'issue qui en résulte.
 // `CATALOGUE_COMPLET_QUESTIONS.md` Q2.12, Q2.13 et Q2.14,
 // `CONTRAT_REPONSES_FAITS.json` et `CONTRAT_NEGATIONS_PROUVEES.json` du paquet
-// de l'éditeur (D-110). Son Q2.12, la reprise de Q2.3, est ici Q2.3.4 à sa
-// place suivante (ADR-0040).
+// de l'éditeur. Son Q2.12, la reprise de Q2.3, est ici Q2.3.4 à sa place
+// suivante (ARCH-007).
 //
-// L'examen du 8ᵉ ou du 9ᵉ mois et l'hébergement de la maternité sont deux
-// cases de Q2.2.1 (QST-MAT-SEPARATION, D-272) : l'examen coché est le motif,
-// Q2.14 n'en demande que l'éloignement.
+// L'examen du 8ᵉ ou du 9ᵉ mois et l'hébergement de la maternité sont deux cases
+// de Q2.2.1 (QST-MAT-SEPARATION) : l'examen coché est le motif, Q2.14 n'en
+// demande que l'éloignement.
 
 import { describe, expect, it } from "vitest";
 import {
@@ -214,8 +214,8 @@ describe("Q2.14, « Aucune » dans un groupe : le dispositif est écarté", () =
     expect(faits(reponses).fait_dap_maternite.value).toBe(false);
   });
 
-  // Ce n'est pas une contradiction (D-129) : la patiente va à la maternité,
-  // sans en remplir les conditions.
+  // Ce n'est pas une contradiction : la patiente va à la maternité, sans en
+  // remplir les conditions.
   it("sans autre motif, rien ne bloque : P2 est complète", () => {
     expect(incoherences("Q2.14.eloignement", sansEloignement)).toEqual([]);
     expect(p2Complete(sansEloignement)).toBe(true);

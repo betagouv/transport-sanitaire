@@ -1,9 +1,8 @@
-// Où et à quelle taille se dessine un texte trop long pour son cadre (D-85,
-// D-94). Un texte en arrive là s'il est plus long que le nombre de caractères
-// de son champ, ou s'il ne tient pas dans son cadre au plancher de lisibilité
-// et reste près du cadre une fois dessiné dessous (#341) : une adresse longue
-// dans une zone d'une ligne, par exemple. Tout autre rapetisse jusqu'à tenir
-// dans son cadre (D-193).
+// Où et à quelle taille se dessine un texte trop long pour son cadre.
+// Un texte en arrive là s'il est plus long que le nombre de caractères de son
+// champ, ou s'il ne tient pas dans son cadre au plancher de lisibilité et reste
+// près du cadre une fois dessiné dessous : une adresse longue dans une zone d'une
+// ligne, par exemple. Tout autre rapetisse jusqu'à tenir dans son cadre.
 //
 // Le champ reste vide. Le texte part du haut du cadre, garde sa largeur, et
 // continue en dessous, quitte à passer sur ce qui s'y trouve. Il s'écrit à la
@@ -54,7 +53,7 @@ export function overflowsOf(
  * `text` dessiné sous chaque widget de son champ, à la plus grande taille, de
  * la taille réduite au plancher, où il reste près de chacun : en dépasse d'au
  * plus une ligne. Rien s'il s'en éloignerait même au plancher : plus bas, il
- * passerait sur la ligne suivante du formulaire (#341).
+ * passerait sur la ligne suivante du formulaire.
  */
 export function nearOverflowsOf(
   document: PDFDocument,

@@ -1,5 +1,5 @@
-// La trace du résultat (#132) : ce que les textes de R2 lisent. Les dix seeds
-// en donnent une chacune, comparée à la trace de l'oracle de la v10.1.0,
+// La trace du résultat : ce que les textes de R2 lisent. Les dix seeds en
+// donnent une chacune, comparée à la trace de l'oracle de la v10.1.0,
 // `exemples-traces-dix-issues.json` (nommée par son rang dans le fichier).
 //
 // L'oracle donne à toutes ses traces `permissionRepeated: false` et
@@ -61,7 +61,7 @@ const CAS: readonly [
   ],
   // Oracle : lexical vide, permissionRepeated = false (Q2.8.5 « Non »). Seule
   // Q2.2.1.a dit la permission, après le séjour de Q2.2.1, et Q2.1 a le motif
-  // 14 (D-272) : nos réponses prouvent les deux.
+  // 14 : nos réponses prouvent les deux.
   [3, "issue-s3141", [1, 5], false, SEJOUR_SANS_SOIN],
   // Oracle : lexical.careFamily = 1.
   [4, "issue-non-eligible", [1], undefined, { careFamily: 1 }],
@@ -95,7 +95,7 @@ const CAS: readonly [
     },
   ],
   // Oracle : convocationContext = { kind: control }. Seule Q2.2.1.b dit la
-  // convocation, et Q2.1 a le motif 14 (D-272).
+  // convocation, et Q2.1 a le motif 14.
   [
     8,
     "issue-convocation",
@@ -116,7 +116,7 @@ const CAS: readonly [
 describe("la trace des dix seeds", () => {
   it("couvre les dix issues, au moins une seed chacune", () => {
     // L'orientation pénitentiaire n'a pas d'issue. Les deux accords préalables
-    // en avion ou en bateau de ligne (#221) en ont une seconde.
+    // en avion ou en bateau de ligne en ont une seconde.
     const issues = new Set(
       SEEDS.flatMap(({ expected }) => expected.cible_issue_id ?? []),
     );

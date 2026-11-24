@@ -1,6 +1,6 @@
 // La page du prescripteur : ce que la caisse, l'établissement, la permission,
 // la convocation et le transport à l'étranger montrent à la place d'une fiche
-// patient (D-112). Elle range un `TexteDuPrescripteur` sous le titre et
+// patient. Elle range un `TexteDuPrescripteur` sous le titre et
 // l'introduction que le socle place ; elle n'écrit que ses intertitres, ceux
 // des gabarits de l'éditeur.
 

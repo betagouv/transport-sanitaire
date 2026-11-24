@@ -1,5 +1,5 @@
 // Q2.5 : le transfert entre établissements, distingué d'un autre déplacement
-// pendant l'hospitalisation (D-106). Q2.1 = 9 les regroupe, et Q2.2.1.a écarte
+// pendant l'hospitalisation. Q2.1 = 9 les regroupe, et Q2.2.1.a écarte
 // la permission sans dire de quel déplacement il s'agit. Les faits du
 // transfert vivent sous `faits/`.
 

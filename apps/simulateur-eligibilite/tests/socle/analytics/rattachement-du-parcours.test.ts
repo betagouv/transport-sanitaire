@@ -1,7 +1,7 @@
-// Ce que le début d'une simulation dit de son rattachement (ADR-0053) : les ids
-// du référentiel, et rien d'autre. Les noms ne partent pas : le contrat v10.2.2
-// ne les connaît pas (#497). Une saisie libre part avec les ids que le
-// référentiel lui donne, jamais celui de l'entrée « Autre » (#506).
+// Ce que le début d'une simulation dit de son rattachement : les ids du
+// référentiel, et rien d'autre. Les noms ne partent pas : le contrat v10.2.2 ne
+// les connaît pas. Une saisie libre part avec les ids que le référentiel lui
+// donne, jamais celui de l'entrée « Autre ».
 
 import { describe, expect, it } from "vitest";
 import { RegisterTheRattachement } from "../../../front/socle/rattachement/register-the-rattachement.usecase";

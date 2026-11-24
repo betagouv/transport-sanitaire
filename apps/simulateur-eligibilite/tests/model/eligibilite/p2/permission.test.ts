@@ -1,6 +1,7 @@
 // La permission (Q2.7) : quand les pages se posent, ce qu'elles proposent, ce
-// qu'elles établissent, et l'issue qu'elles donnent. `CONTRAT_REPONSES_FAITS.json`, `CONTRAT_SAISIES_ET_PAGES.md`
-// et `TSREF-20261015-05` du paquet de l'éditeur (D-107).
+// qu'elles établissent, et l'issue qu'elles donnent.
+// `CONTRAT_REPONSES_FAITS.json`, `CONTRAT_SAISIES_ET_PAGES.md` et
+// `TSREF-20261015-05` du paquet de l'éditeur.
 
 import { describe, expect, it } from "vitest";
 import type { Faits } from "../../../../core/models/eligibilite/faits/noms";
@@ -87,7 +88,7 @@ describe("quand Q2.7 se pose", () => {
   );
 });
 
-// Les deux confirmations n'ont plus « Je ne peux pas le vérifier » (D-235).
+// Les deux confirmations n'ont plus « Je ne peux pas le vérifier ».
 describe("Q2.7.a et Q2.8.4", () => {
   const valeurs = (idDePage: string, id: "Q2.7.a" | "Q2.8.4", r: Reponses) => {
     const question = posee(idDePage, id, r);

@@ -17,7 +17,7 @@ export type Navigation = {
   // simulateur et repartir d'un questionnaire vierge.
   simulationNumber: number;
   // La structure choisie au rattachement, `null` pour un établissement. Retenue
-  // pour ouvrir la trace de debug à « Assurance Maladie » (D-280).
+  // pour ouvrir la trace de debug à « Assurance Maladie ».
   structure: Structure | null;
   // Le rattachement ouvre le simulateur. Les developer tools s'ouvrent après
   // lui, depuis le simulateur.

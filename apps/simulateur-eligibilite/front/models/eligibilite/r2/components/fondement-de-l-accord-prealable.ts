@@ -1,4 +1,4 @@
-// Ce que dit la fiche d'une demande d'accord préalable (#136) : la raison que
+// Ce que dit la fiche d'une demande d'accord préalable : la raison que
 // lit le patient, ses motifs (`motif.ts`) et le motif administratif que
 // reprend le modus. Des fonctions pures de la trace, sans React.
 //

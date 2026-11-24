@@ -1,20 +1,20 @@
 // La recette des deux pages des situations particulières, livrée avec la
 // v10.1.6 (`Recette_Q221_pages_v10.1.6.json`, REC-Q221-PAGES-1016), sous
 // l'identifiant de chaque cas chez l'éditeur. Elle éprouve
-// NAV-Q221-PROGRESSIF-001 : le premier bloc et ses précisions sur une page,
-// le second sur la suivante, une validation chacune (D-252).
+// NAV-Q221-PROGRESSIF-001 : le premier bloc et ses précisions sur une page, le
+// second sur la suivante, une validation chacune.
 //
 // Les pages portent le nom que leur donne l'éditeur, `P2/contextes-situations`
-// et `P2/contextes-soins` : le journal des parcours l'envoie (ADR-0044).
+// et `P2/contextes-soins` : le journal des parcours l'envoie.
 //
 // Les cas qui ne s'appliquent pas :
-// - second-seul et aucun : Q2.2.1 se pose sur tout parcours (D-98), le premier
-//   bloc n'est jamais acquis d'avance et la page du second ne s'atteint pas
-//   sans lui ;
+// - second-seul et aucun : Q2.2.1 se pose sur tout parcours, le premier bloc
+//   n'est jamais acquis d'avance et la page du second ne s'atteint pas sans
+//   lui ;
 // - analytics : les expositions de chaque page s'éprouvent avec le journal
 //   (`tests/model/eligibilite/journal-des-questions.test.tsx`) ;
 // - incompatible : la maternité et l'HTNM se cochent ensemble depuis la
-//   v10.1.8, et Q2.14.trajet précise le déplacement évalué (D-285).
+//   v10.1.8, et Q2.14.trajet précise le déplacement évalué.
 
 import { screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";

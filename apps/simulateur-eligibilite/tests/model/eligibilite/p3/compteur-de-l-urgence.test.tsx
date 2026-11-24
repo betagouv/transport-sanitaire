@@ -1,8 +1,8 @@
-// Le compteur de Q3.5 (#480 ; T06, R04) : la précision de l'urgence se mesure
-// dès sa saisie, sur le cerfa où elle s'écrira, en 8 pt sur une ligne. Le
-// compteur dit « saisis / maximum caractères ». Trop longue, elle a le message
-// de l'éditeur, sans bloquer la page : R3 la fera raccourcir. Blanche, elle se
-// dit avec la phrase de l'éditeur.
+// Le compteur de Q3.5 (T06, R04) : la précision de l'urgence se mesure dès sa
+// saisie, sur le cerfa où elle s'écrira, en 8 pt sur une ligne. Le compteur dit
+// « saisis / maximum caractères ». Trop longue, elle a le message de l'éditeur,
+// sans bloquer la page : R3 la fera raccourcir. Blanche, elle se dit avec la
+// phrase de l'éditeur.
 
 import { screen, waitFor } from "@testing-library/react";
 import { beforeEach, describe, expect, it } from "vitest";

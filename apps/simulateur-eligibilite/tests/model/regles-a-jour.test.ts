@@ -3,9 +3,9 @@
 // `tooling/regles-publicodes.ts` : un YAML recopié sans relancer le script
 // laisserait le simulateur décider avec l'ancienne version.
 //
-// Le script écrit aussi leur graphe (`rules/regles.graphe.json`, #196). Il
-// doit valoir ce que publicodes calcule : on les compare sur des situations
-// tirées au sort, toujours les mêmes.
+// Le script écrit aussi leur graphe (`rules/regles.graphe.json`). Il doit
+// valoir ce que publicodes calcule : on les compare sur des situations tirées
+// au sort, toujours les mêmes.
 
 import { existsSync, readdirSync } from "node:fs";
 import { join } from "node:path";

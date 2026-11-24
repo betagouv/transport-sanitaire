@@ -9,7 +9,7 @@
 // - Une preuve qualifiée de P1, ou une séance médicale du déplacement,
 //   établit déjà l'indication médicale du transport. Sinon,
 //   Q2.2.1.indication la demande : voyager seul ou avec un proche ne dit ni
-//   qu'elle existe, ni qu'elle manque (D-130, D-245).
+//   qu'elle existe, ni qu'elle manque.
 // - « Non » sort le trajet du circuit de prescription : plus rien ne se pose,
 //   les règles ne concluent pas, et R2 oriente vers l'administration
 //   pénitentiaire, sans issue ni document. Ce circuit lit Q2.2.1.indication :
@@ -39,7 +39,7 @@ export const unRetourPenitentiaire = given
 // une ALD liée au soin, les soins prolongés reconnus d'un mineur, ou une
 // séance du déplacement (chimiothérapie, radiothérapie, hémodialyse). Ni une
 // ALD sans lien, ni une dialyse qui n'est pas une hémodialyse ne suffisent
-// (`REFERENTIEL/02` QST-RACCORDEMENTS-001, TS1015-08, D-245).
+// (`REFERENTIEL/02` QST-RACCORDEMENTS-001, TS1015-08).
 const PREUVES_QUALIFIEES = [
   "fait_critere_allonge",
   "fait_critere_brancard",

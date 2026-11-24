@@ -1,7 +1,7 @@
 // La convocation (Q2.10) : quand la page se pose, ce qu'elle établit, et
 // l'issue qu'elle donne. `CATALOGUE_COMPLET_QUESTIONS.md` Q2.10,
 // `CONTRAT_REPONSES_FAITS.json` et `CONTRAT_NEGATIONS_PROUVEES.json` du paquet
-// de l'éditeur (D-108).
+// de l'éditeur.
 
 import { describe, expect, it } from "vitest";
 import {
@@ -46,8 +46,8 @@ describe("quand la page de la convocation se pose", () => {
     expect(posees(reponses)).toEqual([]);
   });
 
-  // Seule Q2.2.1.b découvre la convocation : elle s'y propose quel que soit
-  // le motif de Q2.1 (QST-COLLECTE-UNIQUE, D-272).
+  // Seule Q2.2.1.b découvre la convocation : elle s'y propose quel que soit le
+  // motif de Q2.1 (QST-COLLECTE-UNIQUE).
   it.each(["1_CONSULTATION", "8_HOSPITALISATION", "14_AUTRE"] as const)(
     "propose la convocation en Q2.2.1.b après Q2.1 = %s",
     (motif) => {
@@ -108,7 +108,7 @@ describe("les faits de la convocation", () => {
 
   // Sans Q2.10.b, ni « oui » ni « non » : seul « Non » à l'agrément suffit à
   // écarter le motif (cas « Conditions obligatoires » des compléments de
-  // recette, #149).
+  // recette).
   it.each(["1_OUI", "3_NE_PEUX_PAS_VERIFIER"] as const)(
     "laisse le fait absent avec Q2.10.a = %s et Q2.10.b sans réponse",
     (agrement) => {

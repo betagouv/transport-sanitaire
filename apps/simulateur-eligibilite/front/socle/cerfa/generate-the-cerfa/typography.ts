@@ -1,7 +1,6 @@
-// La taille des textes imprimés d'un cerfa, par identifiant de mesure (ADR-0048
-// du document analytics). Elle sert à mesurer ce que le prescripteur imprime :
-// jamais le texte, seulement son identifiant et sa taille. Un texte sans
-// identifiant se mesure sous sa clé du DTO.
+// La taille des textes imprimés d'un cerfa, par identifiant de mesure. Elle sert
+// à mesurer ce que le prescripteur imprime : jamais le texte, seulement son
+// identifiant et sa taille. Un texte sans identifiant se mesure sous sa clé du DTO.
 //
 // Un texte porté par plusieurs volets, ou deux textes du même identifiant,
 // gardent la plus petite taille.

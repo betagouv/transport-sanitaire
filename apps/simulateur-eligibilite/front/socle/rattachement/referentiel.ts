@@ -1,5 +1,5 @@
 // Le référentiel côté navigateur : il appelle l'API du backend, par le client
-// que le conteneur lui donne. Voir ADR-0008.
+// que le conteneur lui donne.
 //
 // L'enregistrement d'une saisie libre retient l'entrée dans le simulateur : il
 // n'attend pas plus que son délai. Passé ce délai, le prescripteur entre sans

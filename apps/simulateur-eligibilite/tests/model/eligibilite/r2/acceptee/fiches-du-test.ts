@@ -1,4 +1,4 @@
-// Les aides des tests du texte de la fiche patient positive (#135) : des traces
+// Les aides des tests du texte de la fiche patient positive : des traces
 // écrites à la main, et la lecture de la fiche qu'elles donnent.
 
 import type { AcceptedIssueId } from "../../../../../core/models/eligibilite/cibles/issue.vo";

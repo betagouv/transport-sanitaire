@@ -9,16 +9,16 @@
 //
 // | Cellules | Pourquoi |
 // |---|---|
-// | bénéficiaire hors son adresse, assuré, prescripteur, structure | aucune source fiable (D-74, D-268) |
+// | bénéficiaire hors son adresse, assuré, prescripteur, structure | aucune source fiable |
 // | `adresse`, `dat fait le`, `fait lieu`, `num ident transport`, `pério traj`, `raison sociale` | « hors remplissage » pour l'éditeur |
 // | toute rubrique médicale | le S3141 n'en a pas (COR-10) |
 //
 // La case de l'accident causé par un tiers suit le libellé imprimé, pas
 // l'état d'export : le gabarit imprime « non » puis « oui », mais nomme `Oui`
 // la case de gauche et `non` celle de droite. Suivre les états cocherait
-// « non » pour un accident causé par un tiers (D-139). L'éditeur renomme
+// « non » pour un accident causé par un tiers. L'éditeur renomme
 // plutôt les états dans sa copie (`remplir-tiers-s3141.mjs`) ; le cerfa sort
-// aplati, et seule la case visible compte (D-290).
+// aplati, et seule la case visible compte.
 
 import { given } from "../../../../../core/models/eligibilite/questions/reponses";
 import {
@@ -45,7 +45,7 @@ import { TRAJET, type Trajet } from "../rubriques/trajet";
  * La permission : depuis quand le patient est hospitalisé (Q2.8.1), et, pour
  * plusieurs permissions, leur nombre mensuel de trajets (Q3.1.3) et la fin de
  * leur période (Q2.8.6). Une seule permission laisse ces deux-là vides : ce
- * n'est pas une fréquence (D-137).
+ * n'est pas une fréquence.
  */
 type Permission = {
   /** `AAAA-MM-JJ`. */

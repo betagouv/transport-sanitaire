@@ -29,7 +29,7 @@ export type { Mode, ResultCodes, TransportComposition, TypographicFieldId };
 /**
  * Ce qu'un résultat reçoit pour s'afficher : ce qu'il lit des questions
  * validées, des faits et des cibles (son `reading`), que le socle a calculé. Il
- * ne lit rien d'autre : ce qu'il lit se sait sans le dérouler (#254, #260).
+ * ne lit rien d'autre : ce qu'il lit se sait sans le dérouler.
  */
 export type ResultatProps<Reading = unknown> = {
   readonly reading: Reading;
@@ -94,7 +94,7 @@ export type CerfaInput<Reading = unknown> = ResultatProps<Reading> & {
 export type Intent = "check" | "prescribe";
 
 /**
- * L'invitation à donner son avis, après un résultat (#195) : un lien vers
+ * L'invitation à donner son avis, après un résultat : un lien vers
  * l'adresse exacte, sans paramètre, ouvert dans un nouvel onglet. Le socle la
  * place selon ce que le prescripteur est venu faire (`Model.intent`) : en R2
  * s'il vérifie ou si rien ne se complète, en R3 une fois le document prêt.
@@ -115,7 +115,7 @@ export type Model<
   core: CoreModel<Questions, Faits, Cibles>;
   /**
    * La version des règles, `10.1.8` : chaque événement du journal des parcours
-   * la porte (ADR-0050).
+   * la porte.
    */
   version: string;
   /** Le premier résultat, après les parties du questionnaire. */
@@ -152,7 +152,7 @@ export type Model<
     reading: Reading<CerfaReading>;
     /**
      * Le texte du second résultat, sous le stepper, avant les boutons. Avec un
-     * cerfa, il attend que son PDF soit prêt (D-250).
+     * cerfa, il attend que son PDF soit prêt.
      */
     Resultat: ComponentType<ResultatProps<CerfaReading>>;
     /**
@@ -169,7 +169,7 @@ export type Model<
     /**
      * Les questions du complément dont la réponse s'écrit telle quelle dans un
      * texte strict du cerfa, chacune vers son entrée du DTO : leur saisie a un
-     * compteur, mesuré sur le cerfa (#480). Sans elles, aucun compteur.
+     * compteur, mesuré sur le cerfa. Sans elles, aucun compteur.
      */
     measured?: Readonly<Record<string, string>>;
     /** Les libellés des deux actions sur le cerfa, qui portent le même PDF. */
@@ -179,7 +179,7 @@ export type Model<
   /**
    * Ce que le prescripteur est venu faire, d'après les questions validées.
    * `null` : on ne le sait pas. L'avis n'est alors pas proposé, et le journal
-   * des parcours n'en reçoit rien. Ce qu'il lit compte (#255).
+   * des parcours n'en reçoit rien. Ce qu'il lit compte.
    */
   intent?: Reading<Intent | null>;
   /**
@@ -194,7 +194,7 @@ export type Model<
 };
 
 /**
- * L'indicateur de parcours ALD (#148) : à chaque arrivée sur le premier
+ * L'indicateur de parcours ALD : à chaque arrivée sur le premier
  * résultat, le socle compte les pages et les questions posées dans ces parties,
  * et envoie un verdict à Matomo. Ce qu'il lit ne fait poser aucune question :
  * la mesure suit le parcours, elle ne le change pas.
@@ -218,7 +218,7 @@ export type AldIndicator = {
 /**
  * Vérifie un modèle contre ses propres types, puis le donne tel que le socle le
  * voit : sans nom de question, de fait ni de cible. Avec un graphe de décision,
- * il y ajoute ce qu'une question change de ce que lisent ses résultats (#255).
+ * il y ajoute ce qu'une question change de ce que lisent ses résultats.
  */
 export function defineModel<
   Questions extends AnyQuestions,

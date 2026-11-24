@@ -1,8 +1,7 @@
 // Les événements d'une simulation, tels que le journal les reçoit : numérotés
 // dans l'ordre, sans trou, datés, et sous l'enveloppe du contrat v10.2.2. Un
 // trou dans les numéros dit qu'un événement s'est perdu. Chaque événement dit
-// le contrat, sa provenance (ADR-0050, ADR-0053) et son origine : le
-// prescripteur, ou l'app seule.
+// le contrat, sa provenance et son origine : le prescripteur, ou l'app seule.
 //
 // Fermée, la simulation ne garde plus rien : un geste resté sur un ancien écran
 // ne part pas sous elle.

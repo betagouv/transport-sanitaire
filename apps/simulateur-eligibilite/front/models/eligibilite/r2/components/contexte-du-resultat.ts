@@ -1,4 +1,4 @@
-// Le contexte d'une fiche patient positive (#135) : la phrase qui dit pourquoi
+// Le contexte d'une fiche patient positive : la phrase qui dit pourquoi
 // le transport est pris en charge, son motif (`motif.ts`), et le motif
 // administratif que le modus reprend. Des fonctions pures de la trace, sans
 // React.

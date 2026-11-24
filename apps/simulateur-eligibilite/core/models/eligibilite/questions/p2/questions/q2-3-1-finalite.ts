@@ -4,7 +4,7 @@
 // si aucune réponse d'avant ne le prouve et que la réponse change l'issue
 // (`cible_finalite_longue_distance_decisive`). Non n'écarte que ce fondement.
 //
-// Elle a deux places, comme l'urgence (ADR-0040) : la page du trajet, après la
+// Elle a deux places, comme l'urgence : la page du trajet, après la
 // distance et la série, qui peut la rendre inutile, avant l'urgence ; puis
 // celle de la branche, si le trajet ne l'a pas posée. Sur le trajet, elle
 // s'affiche dans le panneau de « Plus de 150 km. » (NAV-PANNEAUX-GENERAL-20261116).

@@ -1,7 +1,7 @@
 // Les situations particulières du trajet, en deux blocs (Q2.2.1, puis
 // Q2.2.1.b), et leurs précisions : `CONTRAT_Q221_PROGRESSIF.json`,
 // `CONTRAT_CONTEXTES_DECISIFS.md` et `CONTRAT_NEGATIONS_PROUVEES.json` du
-// paquet de l'éditeur (D-252).
+// paquet de l'éditeur.
 //
 // Une situation proposée et écartée vaut « non ». Une situation qui ne se
 // propose pas garde son fait absent, et la réponse négative d'un bloc ne
@@ -34,7 +34,7 @@ const DES_SITUATIONS = [
 
 describe("les deux blocs", () => {
   // L'examen et l'hébergement de la maternité sont deux cases
-  // (QST-MAT-SEPARATION, D-272).
+  // (QST-MAT-SEPARATION).
   it("proposent six et cinq situations, dans l'ordre du contrat", () => {
     expect(proposees("Q2.2.1", BRANCARD)).toEqual([
       "1_HOSPITALISATION",
@@ -63,7 +63,7 @@ describe("les deux blocs", () => {
   });
 
   // La maternité et l'HTNM se cochent ensemble depuis la v10.1.8 : le
-  // déplacement évalué se demande en Q2.14.trajet (D-285).
+  // déplacement évalué se demande en Q2.14.trajet.
   it("refusent ensemble le CAMSP et le SAMSAH", () => {
     expect(
       posee("Q2.2.1.b", AUCUNE)?.incompatiblePossibleAnswers?.map(

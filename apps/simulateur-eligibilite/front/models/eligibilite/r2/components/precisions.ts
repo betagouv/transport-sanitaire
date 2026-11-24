@@ -1,5 +1,5 @@
 // Ce qu'une précision lit : ce que le texte de R2 sait dire en plus de
-// l'issue, quand une réponse le prouve (D-111). Chaque cas écrit les siennes
+// l'issue, quand une réponse le prouve. Chaque cas écrit les siennes
 // (`layouts/*/precisions.ts`) sur les réponses déclarées ici.
 //
 // Les clés et les valeurs sont celles de l'éditeur (README, « Précisions
@@ -8,7 +8,7 @@
 // deviné. Elles se lisent sur les questions validées.
 //
 // Chaque cas a ses précisions, et chacune ne se lit que sous les issues du
-// cas qui la montre (D-224). Ex. : Q2.3.3 ne dit la série qu'à la fiche
+// cas qui la montre. Ex. : Q2.3.3 ne dit la série qu'à la fiche
 // négative ; pour une issue acceptée, elle ne compte pas.
 
 import { given } from "../../../../../core/models/eligibilite/questions/reponses";

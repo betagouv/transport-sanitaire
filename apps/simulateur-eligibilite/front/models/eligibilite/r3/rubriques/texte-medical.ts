@@ -1,6 +1,6 @@
 // Le texte médical de la PMT (page 3) et de la DAP (page 2) : les segments que
 // le parcours établit, dans l'ordre de `COMPLETION_DOCUMENTS.md`, joints par
-// « ; » (`CONTRAT_ELEMENTS_MEDICAUX.json`, D-141 à D-147). Rien n'y vient de
+// « ; » (`CONTRAT_ELEMENTS_MEDICAUX.json`). Rien n'y vient de
 // l'autonomie, des critères de Q1.2, du mode, de l'accompagnement ni de son
 // équipement : les cases du mode le disent (DOC-COMMENTAIRES-MEDICAUX-20261104).
 //
@@ -9,7 +9,7 @@
 // commence pas le texte. La mention du mineur reste littérale. Le point final
 // va à la fin du tout. Aucune précision libre ne s'y ajoute : la cellule est
 // un seul texte, que le prescripteur réécrit en R3 s'il veut la préciser, ou
-// s'il ne tient pas (D-302, D-305).
+// s'il ne tient pas.
 
 import { Q1_3 } from "../../../../../core/models/eligibilite/questions/p1/questions/q1-3";
 import { Q2_1 } from "../../../../../core/models/eligibilite/questions/p2/questions/q2-1";
@@ -30,7 +30,7 @@ export type TexteMedical = {
 };
 
 // La maternité de l'Engagement maternité, son niveau, et l'hébergement du
-// dispositif s'il n'est pas un lieu du trajet (Q3.8, D-251). Le lieu du trajet
+// dispositif s'il n'est pas un lieu du trajet (Q3.8). Le lieu du trajet
 // s'écrit déjà dans sa rubrique.
 const MATERNITE = given
   .all({
@@ -115,7 +115,7 @@ const SEANCES = ["3_CHIMIOTHERAPIE", "4_RADIOTHERAPIE", "5_DIALYSE"] as const;
 // L'autre motif ne dit aucun soin (QST-Q21-AUTRE-MOTIF).
 const SANS_SOIN: readonly string[] = ["14_AUTRE"];
 
-// Le soin : Q2.1 si elle est posée, sinon les séances de Q1.3 (D-143).
+// Le soin : Q2.1 si elle est posée, sinon les séances de Q1.3.
 function soin({ motif, seances }: Entrees): readonly string[] {
   const lu = motif.value;
   if (lu !== undefined) return SANS_SOIN.includes(lu) ? [] : [Q2_1.labels[lu]];
@@ -125,9 +125,9 @@ function soin({ motif, seances }: Entrees): readonly string[] {
 }
 
 // Les segments du contrat, chacun sur la cible ou le fait qui porte sa
-// condition (D-147). Ce que Q3.8 recueille suit le motif de l'Engagement
+// condition. Ce que Q3.8 recueille suit le motif de l'Engagement
 // maternité, avant l'HTNM. L'examen se coche en Q2.2.1, l'hébergement du
-// dispositif se dit en Q2.14 (D-272).
+// dispositif se dit en Q2.14.
 function complements(entrees: Entrees): readonly string[] {
   return [
     ...etablis([
@@ -212,9 +212,9 @@ function lueTelleQuelle({
   return normale ? normale : undefined;
 }
 
-// Le sigle sans sa définition, et sans point final (D-141). Le contrat met le
+// Le sigle sans sa définition, et sans point final. Le contrat met le
 // sigle d'abord, « ALD (Affection Longue Durée) » ; les libellés le mettent
-// après, « Affection Longue Durée (ALD) » (D-235). Une définition est une suite
+// après, « Affection Longue Durée (ALD) ». Une définition est une suite
 // de mots à majuscule, que peuvent lier « à », « de », « d’ »…
 const SIGLE_PUIS_DEFINITION = /(\p{Lu}{2,}) \([^()]*\)/gu;
 const DEFINITION_PUIS_SIGLE =

@@ -10,8 +10,8 @@ import {
 } from "../simulateur/questionnaire";
 
 // La trace de debug est un developer tool. Elle s'ouvre en local, quel que soit
-// le service (D-279). Sur un build de production, elle ne s'ouvre que pour la
-// structure « Assurance Maladie », sans les autres outils (D-280). Elle montre le chemin
+// le service. Sur un build de production, elle ne s'ouvre que pour la structure
+// « Assurance Maladie », sans les autres outils. Elle montre le chemin
 // parcouru, les questions validées et leurs réponses, puis les faits et les
 // cibles de la préconisation.
 //

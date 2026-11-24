@@ -1,8 +1,8 @@
 // La permission d'un adulte, autorisée pour les soins ou l'organisation de
 // l'établissement (Q2.7 = 3, QST-PERMISSION-ADULTE-20261106, v10.1.8) : elle
-// relève de l'article 80, et pose les exceptions encore inconnues (D-283,
-// QST-PERMISSION-EXCEPTIONS-20261113).
-// Une exception encore inconnue empêche de décider (correctif du 13 novembre).
+// relève de l'article 80, et pose les exceptions encore inconnues
+// (QST-PERMISSION-EXCEPTIONS-20261113). Une exception encore inconnue empêche
+// de décider (correctif du 13 novembre).
 
 import { describe, expect, it } from "vitest";
 import {
@@ -23,8 +23,8 @@ describe("la permission d'un adulte, autorisée", () => {
     ]).toEqual([true, false, false]);
   });
 
-  // Comme le test de l'éditeur (`post_audit_20261110.mjs`, « permission adulte
-  // : Q2.6 avec les seules exceptions non établies ») : sept réponses
+  // Comme le test de l'éditeur (`post_audit_20261110.mjs`, « permission
+  // adulte : Q2.6 avec les seules exceptions non établies ») : sept réponses
   // possibles, ni la 2, que le séjour écarte, ni le Centre 15, qui exige un
   // transfert.
   it("pose les exceptions, sauf l'admission sans séjour et le Centre 15", () => {

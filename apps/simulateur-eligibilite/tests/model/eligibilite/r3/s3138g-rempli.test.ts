@@ -1,5 +1,5 @@
-// La PMT remplie (#160) : chaque cellule de l'éditeur a son champ ou sa raison
-// de rester vide, et un parcours réel s'écrit sur les deux volets du gabarit,
+// La PMT remplie : chaque cellule de l'éditeur a son champ ou sa raison de
+// rester vide, et un parcours réel s'écrit sur les deux volets du gabarit,
 // pages 3 et 4. Rien de médical ne s'écrit sur la page 4. Ce que vaut chaque
 // cellule se teste avec sa rubrique (`rubriques-du-cerfa.test.ts`,
 // `rubriques-de-la-pmt.test.ts`, `texte-medical.test.ts`), la consigne du
@@ -46,8 +46,8 @@ const CELLULES = [
   ...["structure_adresse", "structure_identifiant", "date_prescription"],
 ];
 
-// Aucune source fiable : l'identité reste à écrire à la main (D-74), hors
-// l'adresse du domicile (D-268).
+// Aucune source fiable : l'identité reste à écrire à la main, hors l'adresse du
+// domicile.
 const IDENTITES = [
   ...["beneficiaire_nom_prenom", "beneficiaire_nir", "beneficiaire_naissance"],
   ...["organisme", "assure_nom_prenom", "assure_nir"],
@@ -55,7 +55,7 @@ const IDENTITES = [
   ...["structure_adresse", "structure_identifiant"],
 ];
 
-// Les parties d'un lieu, écrites ensemble dans sa zone (D-138).
+// Les parties d'un lieu, écrites ensemble dans sa zone.
 const PARTIES_D_UN_LIEU = ["depart", "arrivee"].flatMap((extremite) =>
   ["nom", "adresse", "complement", "code_postal", "commune", "pays"].map(
     (partie) => `${extremite}_${partie}`,
@@ -136,7 +136,7 @@ describe("l'adresse du bénéficiaire sur la PMT", () => {
     ]);
   });
 
-  // Le champ n'admet que 100 caractères : l'adresse se dessine dessous (D-85).
+  // Le champ n'admet que 100 caractères : l'adresse se dessine dessous.
   it("écrit en entier une adresse de plus de 100 caractères", async () => {
     const reponses: Reponses = {
       ...PMT,
@@ -156,7 +156,7 @@ describe("l'adresse du bénéficiaire sur la PMT", () => {
 });
 
 describe("la PMT de 4 allers-retours", () => {
-  // Quatre allers-retours valent 4, et non 8 trajets simples (D-246).
+  // Quatre allers-retours valent 4, et non 8 trajets simples.
   const QUATRE: Reponses = {
     ...PMT,
     "Q3.1.2": "3_ALLER_RETOUR_EQUIVALENT",

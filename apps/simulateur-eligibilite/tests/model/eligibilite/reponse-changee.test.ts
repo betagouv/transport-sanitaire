@@ -1,6 +1,6 @@
 // Ce qu'efface une réponse changée : COR-14 et COR-23 de la v10.1.3 de
-// l'éditeur (D-190), les cas « Distance/ligne », « Certificats », « Maternité »
-// et « Contextes » de ses compléments de recette (#149), et SQ-25
+// l'éditeur, les cas « Distance/ligne », « Certificats », « Maternité » et
+// « Contextes » de ses compléments de recette, et SQ-25
 // (NAV-SOUS-QUESTIONS-20261113). Le résultat se recalcule des réponses, et le
 // complément repart vierge à chaque verrou : il reste à voir que seules les
 // réponses qui dépendent de la réponse changée, ou que sa page ne pose plus,
@@ -186,7 +186,7 @@ describe("la distance changée (cas « Distance/ligne »)", () => {
   };
 
   // L'urgence garde sa réponse : la page de branche pourrait la poser
-  // (ADR-0040). Elle ne compte plus pour autant.
+  // (ARCH-007). Elle ne compte plus pour autant.
   it("revenir à 50 km ou moins efface la série, et l'urgence n'est plus validée", () => {
     const apres = valideeAvec(EN_SERIE, "P2/trajet", {
       "Q2.3.1": "1_CINQUANTE_KM_OU_MOINS",
@@ -271,7 +271,7 @@ describe("une décision atteinte, puis une réponse changée (cas « Certificats
 describe("les groupes de la maternité changés (cas « Maternité »)", () => {
   const URGENCE_DITE: Reponses = { ...MATERNITE_ETABLIE, "Q2.3.4": "2_NON" };
 
-  // Une preuve actuelle se réutilise : l'urgence reste dite (ADR-0040).
+  // Une preuve actuelle se réutilise : l'urgence reste dite (ARCH-007).
   // L'examen coché en Q2.2.1 est le motif : seul l'éloignement change.
   it("changer d'éloignement garde l'urgence", () => {
     const brouillon = brouillonDe(URGENCE_DITE, "P2/branche");

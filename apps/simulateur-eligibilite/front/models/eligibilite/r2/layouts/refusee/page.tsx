@@ -1,4 +1,4 @@
-// La page de l'issue refusée, `ISSUE_NON_ELIGIBLE` (#134). Elle donne au
+// La page de l'issue refusée, `ISSUE_NON_ELIGIBLE`. Elle donne au
 // socle le titre du prescripteur, sa phrase d'introduction, la feuille du
 // patient. Une fiche négative ne restitue aucune portion du trajet.
 

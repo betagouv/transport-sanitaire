@@ -2,25 +2,24 @@
 // sur la même page, chacune dans son fichier : le cadre du séjour, la
 // permission (a), qu'une HAD n'ouvre pas, et l'indication médicale d'un retour
 // pénitentiaire. Puis Q2.2.1.b, les soins et rendez-vous, seule sur la page
-// suivante (D-252) : les précisions du premier bloc peuvent déjà ôter tout
+// suivante : les précisions du premier bloc peuvent déjà ôter tout
 // effet à ses situations.
 //
 // Chaque bloc a sa réponse négative, qui ne nie que les propositions qu'il
 // affiche (`CONTRAT_Q221_PROGRESSIF.json`). Le second se pose après n'importe
 // quelle réponse au premier, même négative, et le graphe le saute quand plus
 // rien ne peut en dépendre. Q2.2.1 se pose sur tous les parcours, même quand
-// Q2.1 est sautée (D-98).
+// Q2.1 est sautée.
 //
 // Chaque situation de ces blocs ne se propose qu'ici : Q2.1 n'en dit plus
-// aucune (QST-COLLECTE-UNIQUE, D-272).
+// aucune (QST-COLLECTE-UNIQUE).
 
 import { Q1_3 } from "../../p1/questions/q1-3.ts";
 import { given, question } from "../../question.ts";
 import { incoherenceDeLieux } from "../conditions/conflit-de-lieux.ts";
 import { Q2_1_G } from "./q2-1.ts";
 
-// « Déjà hospitalisé » ne se propose pas pour le trajet qui ouvre le séjour
-// (D-98).
+// « Déjà hospitalisé » ne se propose pas pour le trajet qui ouvre le séjour.
 const unSejourAProposer = given.question(Q2_1_G).answer().is("1_ENTREE").not();
 
 // La question, avant l'incohérence qui lit sa réponse.

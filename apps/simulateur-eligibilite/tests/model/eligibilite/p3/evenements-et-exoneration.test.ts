@@ -1,7 +1,7 @@
-// Les pages des évènements et de l'exonération de P3 (Q3.6, Q3.7, #147),
-// posées selon les cibles figées au verrou. `CATALOGUE_COMPLET_QUESTIONS.md`
-// Q3.6 et Q3.7, `mapping_documents.json` (AT/MP, exonération). L'accident
-// causé par un tiers se recueille en Q1.3 (#351).
+// Les pages des évènements et de l'exonération de P3 (Q3.6, Q3.7), posées selon
+// les cibles figées au verrou. `CATALOGUE_COMPLET_QUESTIONS.md` Q3.6 et Q3.7,
+// `mapping_documents.json` (AT/MP, exonération). L'accident causé par un tiers
+// se recueille en Q1.3.
 
 import { describe, expect, it } from "vitest";
 import { model } from "../../../../core/models/eligibilite";

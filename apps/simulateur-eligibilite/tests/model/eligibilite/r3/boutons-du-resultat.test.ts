@@ -1,7 +1,7 @@
-// Les boutons de R2 (#137) : pour chacune des dix issues, le libellé de
-// l'action qui complète, recopié de `CONTRAT_RENDU_DOCUMENTAIRE.json`
-// (v10.1.3). « Précédent » et « Nouvelle simulation » sont ceux du socle, et se
-// testent à l'écran.
+// Les boutons de R2 : pour chacune des dix issues, le libellé de l'action qui
+// complète, recopié de `CONTRAT_RENDU_DOCUMENTAIRE.json` (v10.1.3).
+// « Précédent » et « Nouvelle simulation » sont ceux du socle, et se testent à
+// l'écran.
 
 import { describe, expect, it } from "vitest";
 import { CIBLES_ENUMEREES } from "../../../../core/models/eligibilite/cibles/noms";

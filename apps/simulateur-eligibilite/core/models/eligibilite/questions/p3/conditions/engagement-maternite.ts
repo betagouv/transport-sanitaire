@@ -1,5 +1,5 @@
 // L'Engagement maternité d'une DAP, et l'hébergement du dispositif que dit
-// Q2.14 (`CONTRAT_Q38_MATERNITE_DOCUMENT.json`, D-251). Q3.8 et les lieux du
+// Q2.14 (`CONTRAT_Q38_MATERNITE_DOCUMENT.json`). Q3.8 et les lieux du
 // trajet les lisent.
 
 import { Q2_14_MOTIF } from "../../p2/questions/q2-14.ts";

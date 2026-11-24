@@ -1,8 +1,7 @@
-// Le texte de la fiche patient positive, pour `ISSUE_PMT` et `ISSUE_S3141`
-// (#135) et les deux accords préalables (#136) : titres, cartes et badges. Des
-// traces écrites à la main : rien n'y est prouvé, sauf ce que le test pose.
-// Les attendus sont recopiés du catalogue de l'éditeur, que l'on ne relit pas
-// ici.
+// Le texte de la fiche patient positive, pour `ISSUE_PMT` et `ISSUE_S3141` et
+// les deux accords préalables : titres, cartes et badges. Des traces écrites à
+// la main : rien n'y est prouvé, sauf ce que le test pose. Les attendus sont
+// recopiés du catalogue de l'éditeur, que l'on ne relit pas ici.
 
 import { describe, expect, it } from "vitest";
 import { CIBLES_ENUMEREES } from "../../../../../core/models/eligibilite/cibles/noms";

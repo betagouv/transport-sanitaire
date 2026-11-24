@@ -1,4 +1,4 @@
-// Les textes stricts d'un cerfa (D-302) : ceux de ses champs, et ceux qu'il
+// Les textes stricts d'un cerfa : ceux de ses champs, et ceux qu'il
 // dessine là où le gabarit n'a pas de champ. Chacun se mesure comme il
 // s'écrit : la génération, l'éditeur de R3 et le compteur d'une question
 // partagent cette mesure.

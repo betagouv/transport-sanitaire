@@ -1,9 +1,9 @@
-// Un conflit de lieux certain (NAV-LIEUX-CONFLIT-CERTAIN-20261106, #353) :
+// Un conflit de lieux certain (NAV-LIEUX-CONFLIT-CERTAIN-20261106) :
 // les réponses de P2 donnent à un lieu des natures inconciliables dans le sens
 // acquis, ou, sans sens acquis, à l'aller comme au retour. Il s'arrête avant R2.
 //
 // Un conflit qu'un seul sens crée demande ce sens avant R2 : Q2.13.sens
-// (QST-LIEUX-CONFLIT-CERTAIN-20261106, #365). Un sens qui ne change rien aux
+// (QST-LIEUX-CONFLIT-CERTAIN-20261106). Un sens qui ne change rien aux
 // lieux reste une précision de P3.
 //
 // Chaque question dont un lieu ou le sens se tire porte l'incohérence. Elle ne
@@ -112,7 +112,7 @@ function unConflitCertain(lues: Partial<Entrees>): boolean {
 }
 
 // Le sens que les réponses établissent : Q2.13.sens seule. Plusieurs
-// permissions n'en disent aucun (D-284).
+// permissions n'en disent aucun.
 function orientationAcquise({ trajetEvalue }: Entrees): Orientation | Inconnu {
   const sens = trajetEvalue.value;
   return sens === undefined ? undefined : ORIENTATION_DU_SENS[sens];

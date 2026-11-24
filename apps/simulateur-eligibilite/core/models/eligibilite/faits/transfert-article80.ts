@@ -2,7 +2,7 @@
 // potentiellement de l'article 80.
 //
 // Une entrée simple (Q2.13) ou la sortie vers la prison l'écartent. La
-// permission d'un adulte autorisée (Q2.7 = 3) l'établit (D-283), une autre
+// permission d'un adulte autorisée (Q2.7 = 3) l'établit, une autre
 // permission l'écarte. Sinon, Q2.5 l'établit, comme une admission (Q2.1.g) ou
 // un séjour en HAD (TS1014-B01), ou un autre déplacement une fois Q2.6
 // validée. Le séjour proposé et écarté le met à « non ».

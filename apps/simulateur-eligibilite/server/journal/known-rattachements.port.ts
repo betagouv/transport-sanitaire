@@ -1,6 +1,6 @@
 // Ce que la collecte demande au référentiel : l'établissement et le service
 // d'un événement y sont-ils ? Le référentiel en cache
-// (`cached-referentiel.adapter.ts`) y répond. Voir ADR-0053.
+// (`cached-referentiel.adapter.ts`) y répond.
 
 export interface KnownRattachements {
   /** L'établissement est-il au référentiel ? */

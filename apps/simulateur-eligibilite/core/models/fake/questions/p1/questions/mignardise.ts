@@ -1,5 +1,5 @@
-// La mignardise : une question déclarée sur deux pages, sous une seule réponse
-// (ADR-0040). Avec un café, elle se pose avec les accompagnements ; avec un thé
+// La mignardise : une question déclarée sur deux pages, sous une seule réponse.
+// Avec un café, elle se pose avec les accompagnements ; avec un thé
 // au lait, au service. Sa place suivante ne la pose pas si elle s'est déjà
 // posée.
 

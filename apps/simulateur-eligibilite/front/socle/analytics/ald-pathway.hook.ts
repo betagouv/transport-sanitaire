@@ -1,4 +1,4 @@
-// L'arrivée d'un parcours ALD sur le premier résultat (#148), signalée à la
+// L'arrivée d'un parcours ALD sur le premier résultat, signalée à la
 // mesure d'audience. Le simulateur calcule le verdict, qui lit le modèle.
 //
 // Le rattachement se lit ici, en session : il ne transite pas par le

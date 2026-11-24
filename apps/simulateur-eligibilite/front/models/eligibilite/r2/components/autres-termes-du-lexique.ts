@@ -1,4 +1,4 @@
-// Les termes du lexique de l'accord préalable (#136) : le segment en ligne
+// Les termes du lexique de l'accord préalable : le segment en ligne
 // régulière, le cadre CAMSP ou CMPP, et l'ambulance. Une fonction pure de la
 // trace, sans React.
 //

@@ -1,6 +1,6 @@
-// Ce que le premier résultat envoie au journal des parcours (#386) : chaque
-// révision affichée, une fois chargée, et sa chute quand une modification de
-// P1 la rend caduque. Voir ADR-0045.
+// Ce que le premier résultat envoie au journal des parcours : chaque révision
+// affichée, une fois chargée, et sa chute quand une modification de P1 la rend
+// caduque.
 //
 // Le modèle de test donne une PMT en taxi, ou un refus quand rien n'est
 // commandé. Un modèle qui ne déclare pas ses codes n'envoie pas de R2.

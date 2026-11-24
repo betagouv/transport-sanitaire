@@ -1,4 +1,4 @@
-// Les cartes de mode et les badges d'une fiche patient positive (#135). Des
+// Les cartes de mode et les badges d'une fiche patient positive. Des
 // fonctions pures de la trace, sans React.
 //
 // Les critères viennent de Q1.2, tels que les réponses les disent

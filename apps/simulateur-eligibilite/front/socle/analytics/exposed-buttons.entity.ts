@@ -1,4 +1,4 @@
-// Les boutons exposés d'une simulation (ADR-0047, ANA22-02) : au plus une
+// Les boutons exposés d'une simulation (ANA22-02) : au plus une
 // exposition courante par bouton. Un bouton offert de nouveau à la même place
 // garde la sienne : un rendu ou un montage de plus ne change rien. Une autre
 // place (un autre affichage, une autre révision, un autre objet), ou un bouton

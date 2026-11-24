@@ -2,7 +2,7 @@
 // transport, source et conditions vérifiées.
 //
 // Aucune question ne la pose au médecin : le logiciel la constate dans les
-// règles qu'il a chargées (D-105). Les règles de l'éditeur ne portent aucune
+// règles qu'il a chargées. Les règles de l'éditeur ne portent aucune
 // règle d'exclusion du transport. Le fait vaut donc « non » : rien ne
 // l'interdit. Ce n'est pas la preuve de l'éligibilité. Une simulation se fait
 // en une fois, sur le modèle chargé à l'ouverture : le constat vaut pour toute

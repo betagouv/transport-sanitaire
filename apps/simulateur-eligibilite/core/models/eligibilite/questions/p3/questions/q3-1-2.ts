@@ -1,7 +1,7 @@
 // Q3.1.2 : le sens des transports du document. Il ne se propose que s'il
 // s'accorde aux rôles que P2 a fixés aux lieux. Une permission demande son
-// sens, qu'elle soit seule ou répétée : Q2.8.5 n'en dit aucun (D-284). Un sens
-// qualifié avant R2, en Q2.13.sens, ne se redemande pas (#365).
+// sens, qu'elle soit seule ou répétée : Q2.8.5 n'en dit aucun. Un sens
+// qualifié avant R2, en Q2.13.sens, ne se redemande pas.
 
 import { unRetourPenitentiaire } from "../../p2/conditions/retour-penitentiaire.ts";
 import { Q2_1_G } from "../../p2/questions/q2-1.ts";

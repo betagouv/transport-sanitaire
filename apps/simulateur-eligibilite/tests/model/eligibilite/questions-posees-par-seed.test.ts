@@ -1,6 +1,6 @@
 // Les questions que pose chaque seed, avant le verrou puis après, filtrage par
-// le graphe compris (#255). Une question qui apparaît ou disparaît ici change
-// le parcours : elle se justifie par ce que montre le résultat (D-220 à D-224).
+// le graphe compris. Une question qui apparaît ou disparaît ici change le
+// parcours : elle se justifie par ce que montre le résultat.
 
 import { describe, expect, it } from "vitest";
 import type { Questions } from "../../../core/models/eligibilite/questions/reponses";
@@ -33,7 +33,7 @@ const LIEUX = [
 
 // Le complément d'une DAP ou d'une PMT : le patient, les lieux, le centre de
 // référence, puis la distance et l'urgence quand elles comptent. Le nombre de
-// trajets attend le sens, qu'aucune seed ne donne (D-246).
+// trajets attend le sens, qu'aucune seed ne donne.
 const complement = (...entre: string[]) => [
   "Q3.1.2",
   ...LIEUX,
@@ -44,7 +44,7 @@ const complement = (...entre: string[]) => [
 const DISTANCE = ["Q2.3.1", "Q2.3.2"];
 // La ligne régulière cochée, et sa partie terrestre sous la case.
 const LIGNE_REGULIERE = [...DISTANCE, "Q2.3.2.terrestre"];
-// Le séjour en établissement, et la permission que seule Q2.2.1.a dit (D-272).
+// Le séjour en établissement, et la permission que seule Q2.2.1.a dit.
 const PERMISSION = ["Q2.2.1", "Q2.2.1.cadre", "Q2.2.1.a", "Q2.2.1.b"];
 
 // Ce que pose chaque seed : avant le verrou, puis après.
@@ -78,7 +78,7 @@ const ATTENDU: Record<string, readonly [string[], string[]]> = {
     complement("Q3.4.a", "Q3.5"),
   ],
   // La permission vient du séjour en établissement : l'exonération du ticket
-  // modérateur se pose, comme pour tout séjour (D-272).
+  // modérateur se pose, comme pour tout séjour.
   "issue-s3141": [
     [...P1, "Q2.1", ...PERMISSION, ...DISTANCE, "Q2.7"].concat([
       "Q2.8.1",
@@ -168,8 +168,8 @@ const ATTENDU: Record<string, readonly [string[], string[]]> = {
     [...P1, "Q1.3.a", "Q2.2.1", "Q2.2.5", "Q2.2.1.b", ...DISTANCE],
     [],
   ],
-  // L'Engagement maternité finit P3 par Q3.8 (D-251). L'examen coché en
-  // Q2.2.1 est le motif : Q2.14 n'en demande que l'éloignement (D-272).
+  // L'Engagement maternité finit P3 par Q3.8. L'examen coché en Q2.2.1 est le
+  // motif : Q2.14 n'en demande que l'éloignement.
   "dap-engagement-maternite": [
     [
       "Q0.1",
@@ -200,7 +200,7 @@ const ATTENDU: Record<string, readonly [string[], string[]]> = {
   ],
   // Le séjour en établissement ouvre la permission (TS1014-B01). Celle d'un
   // adulte, autorisée, pose les exceptions, et sans exception l'établissement
-  // prend le transport en charge : rien ne se pose après (D-283).
+  // prend le transport en charge : rien ne se pose après.
   "sejour-en-etablissement": [
     ["Q0.1", "Q1.1", "Q1.2", "Q1.3", "Q2.2.1", "Q2.2.1.cadre"].concat([
       "Q2.2.1.a",
@@ -212,8 +212,8 @@ const ATTENDU: Record<string, readonly [string[], string[]]> = {
     ]),
     [],
   ],
-  // Le conflit de lieux arrête la seed sur les situations particulières
-  // (#353) : aucune question d'après ne s'y répond.
+  // Le conflit de lieux arrête la seed sur les situations particulières :
+  // aucune question d'après ne s'y répond.
   "conflit-de-lieux-certain": [
     ["Q0.1", "Q1.1", "Q1.3", "Q1.3.a", "Q1.4", "Q2.1", "Q2.2.1"].concat([
       "Q2.2.1.cadre",

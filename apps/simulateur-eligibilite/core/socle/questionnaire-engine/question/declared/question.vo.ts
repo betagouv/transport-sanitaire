@@ -152,8 +152,8 @@ export abstract class DeclaredQuestion<
   }
 
   /**
-   * La question se pose même si sa réponse ne change rien de ce qui compte
-   * (#255) : le filtrage par le graphe ne la saute pas. Une question que rien
+   * La question se pose même si sa réponse ne change rien de ce qui compte :
+   * le filtrage par le graphe ne la saute pas. Une question que rien
    * ne lit attend ainsi la décision de l'éditeur.
    */
   alwaysAsked(): this {
@@ -168,7 +168,7 @@ export abstract class DeclaredQuestion<
   /**
    * Une place suivante de la question, déjà déclarée sur une page d'avant : une
    * seule réponse, sous son id. Elle ne s'y pose que si elle ne s'est pas
-   * posée plus tôt (ADR-0040).
+   * posée plus tôt.
    */
   unlessAskedBefore(): this {
     return this.withSettings({ laterPlace: true });

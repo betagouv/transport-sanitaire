@@ -1,8 +1,8 @@
-// L'avis du modèle de l'éditeur, comme à l'écran (#195, COR-13) : le vrai
-// simulateur, ouvert sur une seed dont Q0.1 dit ce que le prescripteur est
-// venu faire. En R2, l'avis vient s'il vérifie, ou si rien ne se complète. En
-// R3, il vient dans les deux cas, une fois le document prêt : les gabarits se
-// lisent sur le disque, le PDF se génère.
+// L'avis du modèle de l'éditeur, comme à l'écran (COR-13) : le vrai simulateur,
+// ouvert sur une seed dont Q0.1 dit ce que le prescripteur est venu faire. En
+// R2, l'avis vient s'il vérifie, ou si rien ne se complète. En R3, il vient
+// dans les deux cas, une fois le document prêt : les gabarits se lisent sur le
+// disque, le PDF se génère.
 
 import { screen } from "@testing-library/react";
 import { beforeEach, describe, expect, it } from "vitest";

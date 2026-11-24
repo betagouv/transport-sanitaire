@@ -1,8 +1,8 @@
 // @vitest-environment node
 //
 // Sans `SCALINGO_POSTGRESQL_URL`, en staging comme en développement, le serveur
-// accepte les événements mais n'en garde aucun : la mémoire du serveur ne grossit
-// pas avec le trafic. Voir ADR-0043.
+// accepte les événements mais n'en garde aucun : la mémoire du serveur ne
+// grossit pas avec le trafic.
 
 import { describe, expect, it } from "vitest";
 import { adaptersFor } from "../../../server/container.ts";

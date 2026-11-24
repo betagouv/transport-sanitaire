@@ -1,9 +1,8 @@
-// L'invitation à donner son avis (#195, COR-13 de la v10.1.3) : un lien que
-// le modèle nomme et adresse, posé dans la barre d'actions d'un résultat, à
-// droite, juste avant la complétion (V02 de la v10.1.4). Il vient en
-// R2 ou en R3 selon ce que le prescripteur est venu faire et selon que le
-// résultat se complète. Les modèles ci-dessous sont écrits pour ces tests, sur
-// le modèle factice.
+// L'invitation à donner son avis (COR-13 de la v10.1.3) : un lien que le modèle
+// nomme et adresse, posé dans la barre d'actions d'un résultat, à droite, juste
+// avant la complétion (V02 de la v10.1.4). Il vient en R2 ou en R3 selon ce que
+// le prescripteur est venu faire et selon que le résultat se complète. Les
+// modèles ci-dessous sont écrits pour ces tests, sur le modèle factice.
 
 import { screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";

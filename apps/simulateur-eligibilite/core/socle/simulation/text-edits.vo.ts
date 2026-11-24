@@ -1,5 +1,5 @@
 // Les textes qu'un prescripteur réécrit sur un résultat, par entrée : son
-// brouillon, et le texte qu'il a validé (D-303). La simulation les porte d'une
+// brouillon, et le texte qu'il a validé. La simulation les porte d'une
 // transition à l'autre, et une nouvelle simulation repart sans.
 //
 // Une entrée est un nom que le résultat choisit : le socle ne sait pas ce

@@ -1,4 +1,4 @@
-// Un bouton exposé sur un écran de résultat (ADR-0047, ANA22-02) : « Imprimer »
+// Un bouton exposé sur un écran de résultat (ANA22-02) : « Imprimer »
 // ou « Télécharger » sur la fiche patient ou le document R3, ou « Donner mon
 // avis ». Son exposition dure tant qu'il reste à la même place, et chacun de
 // ses clics s'y rattache.

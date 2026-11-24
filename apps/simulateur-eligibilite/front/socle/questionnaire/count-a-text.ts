@@ -1,4 +1,4 @@
-// Le compteur d'un texte saisi (#480) : « 12 / 54 caractères » sous le champ,
+// Le compteur d'un texte saisi : « 12 / 54 caractères » sous le champ,
 // et l'erreur qui l'accompagne quand le texte ne tient pas là où il s'écrit.
 // Il prévient : la page se valide quand même. Qui l'affiche dit comment il
 // compte (`QuestionnaireForm`, `counterOf`).

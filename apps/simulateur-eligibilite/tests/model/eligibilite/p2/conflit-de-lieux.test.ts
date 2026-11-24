@@ -1,5 +1,5 @@
-// Un conflit de lieux certain s'arrête en P2 (#353,
-// NAV-LIEUX-CONFLIT-CERTAIN-20261106) : l'alerte va à la réponse qui le crée,
+// Un conflit de lieux certain s'arrête en P2
+// (NAV-LIEUX-CONFLIT-CERTAIN-20261106) : l'alerte va à la réponse qui le crée,
 // et Suivant reste bloqué. Un conflit qu'un sens lèverait attend P3.
 
 import { describe, expect, it } from "vitest";
@@ -197,7 +197,7 @@ describe("un conflit qu'un sens lèverait", () => {
         "Q2.2.1.cadre": "2_HAD",
       },
     ],
-    // Q3.1.2 ne propose que l'aller à une entrée (D-132) : P3 le dit.
+    // Q3.1.2 ne propose que l'aller à une entrée : P3 le dit.
     [
       "entrée et hébergement",
       "P2/contextes-situations",

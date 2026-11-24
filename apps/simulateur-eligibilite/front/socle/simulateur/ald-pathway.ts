@@ -1,4 +1,4 @@
-// L'indicateur de parcours ALD (#148) : le verdict d'une simulation sur son
+// L'indicateur de parcours ALD : le verdict d'une simulation sur son
 // premier résultat, avec le nombre de questions posées. Le modèle dit quel
 // parcours compte et lequel finit à la caisse ; le socle compte les pages et
 // les questions. La mesure d'audience l'envoie (`useAldResultReached`).

@@ -25,8 +25,8 @@ import type { Structure } from "./structures";
 
 type Props = {
   referentiel?: Referentiel;
-  // Toutes les entrées passent par lui : le rattachement est obligatoire
-  // (ADR-0004). La structure choisie l'accompagne, `null` pour un établissement.
+  // Toutes les entrées passent par lui : le rattachement est obligatoire.
+  // La structure choisie l'accompagne, `null` pour un établissement.
   onValide: (
     saisie: SaisieRattachement["saisie"],
     structure: Structure | null,
@@ -125,7 +125,7 @@ function PhaseExperimentale() {
 }
 
 // Choisir dans cette liste peut ouvrir le simulateur, sans aide qui l'annonce
-// (RGAA 7.4) : le porteur l'a retirée (#367).
+// (RGAA 7.4) : le porteur l'a retirée.
 function ChoixField({ saisie, modifier }: FieldsProps) {
   return (
     <SelectField

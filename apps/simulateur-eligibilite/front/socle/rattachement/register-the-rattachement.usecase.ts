@@ -2,7 +2,7 @@
 // parcours portera. Une saisie libre attend que le référentiel la crée, pour
 // partir avec ses ids dès cette visite. S'il ne répond pas, le prescripteur
 // entre quand même, sans ces ids. Voir
-// docs/knowledge/domain/enrichissement-referentiel-rattachement.md.
+// docs/knowledge/domain/rattachement.md.
 
 import { RattachementDuReferentiel } from "../../../shared/rattachement-du-referentiel.vo";
 import {

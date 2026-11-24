@@ -1,5 +1,5 @@
-// Les faits que P1 établit, chacun à trois états : « oui », « non », ou
-// absent, et alors jamais transmis aux règles (D-77).
+// Les faits que P1 établit, chacun à trois états : « oui », « non », ou absent,
+// et alors jamais transmis aux règles.
 //
 // `CONTRAT_REPONSES_FAITS.json` et `CORRECTIF_FAITS_SANS_REPONSE.md` disent,
 // fait par fait, ce qui donne chaque état. Une question pas encore validée

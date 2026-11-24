@@ -5,10 +5,10 @@ import { afficher } from "./afficher";
 import { declencheurDe } from "./panneaux";
 
 // Toute réponse peut ouvrir un panneau sous elle (NAV-PANNEAUX-GENERAL-
-// 20261116) : l'option d'un choix unique, la case seule cochée, l'option
-// d'une liste déroulante. Le panneau a ses libellés liés à leurs champs, et
-// sa page attend « Suivant » : seul un choix unique affiché seul avance
-// (D-240). Les pages sont écrites ici.
+// 20261116) : l'option d'un choix unique, la case seule cochée, l'option d'une
+// liste déroulante. Le panneau a ses libellés liés à leurs champs, et sa page
+// attend « Suivant » : seul un choix unique affiché seul avance. Les pages sont
+// écrites ici.
 
 type Questions = {
   boisson: "cafe" | "the";

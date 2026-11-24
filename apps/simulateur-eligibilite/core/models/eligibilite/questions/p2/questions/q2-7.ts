@@ -1,5 +1,5 @@
 // Q2.7 : la tranche d'âge et le cadre de la permission, dès que la permission
-// est un fait, par Q2.1 ou par Q2.2.1.a (D-107). Q2.7.a confirme la
+// est un fait, par Q2.1 ou par Q2.2.1.a. Q2.7.a confirme la
 // facturation d'un transport exceptionnel, sous le choix qui l'ouvre.
 
 import { Q1_3 } from "../../p1/questions/q1-3.ts";
@@ -42,7 +42,7 @@ export const Q2_7_A = question
     "Q2.7.a",
     "L’établissement confirme-t-il que ce transport correspond à une prestation exceptionnelle facturable au patient ?",
   )
-  // La confirmation de la réponse possible 4 de Q2.7, nommée par nous (D-107).
+  // La confirmation de la réponse possible 4 de Q2.7, nommée par nous.
   .possibleAnswers({
     "1_OUI": "Oui, les conditions de facturation ont été vérifiées.",
     "2_NON": "Non.",

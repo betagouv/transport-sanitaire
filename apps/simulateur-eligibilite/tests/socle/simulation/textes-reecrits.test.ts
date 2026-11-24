@@ -1,6 +1,5 @@
-// Les textes qu'un prescripteur réécrit sur le cerfa (D-303) : la simulation
-// les garde d'une transition à l'autre, et une nouvelle simulation repart
-// sans.
+// Les textes qu'un prescripteur réécrit sur le cerfa : la simulation les garde
+// d'une transition à l'autre, et une nouvelle simulation repart sans.
 
 import { describe, expect, it } from "vitest";
 import { Simulation, TextEdits } from "../../../core/socle/simulation";

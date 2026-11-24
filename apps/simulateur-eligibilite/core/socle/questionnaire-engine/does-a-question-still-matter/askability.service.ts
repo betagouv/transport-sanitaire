@@ -1,4 +1,4 @@
-// Les questions qui restent et qui peuvent encore se poser (#255, D-223). Une
+// Les questions qui restent et qui peuvent encore se poser. Une
 // question qui ne peut plus se poser ne compte pas : sa garde ne la laissera
 // jamais passer, et ce qu'elle lit ne change rien.
 //
@@ -12,8 +12,7 @@
 // l'ordre suffit. Une question morte garde sa réponse absente (COR-02), et sa
 // garde se lit ici comme le questionnaire la lira.
 //
-// Une question à plusieurs places est vivante tant qu'une de ses places l'est
-// (ADR-0040).
+// Une question à plusieurs places est vivante tant qu'une de ses places l'est.
 
 import { GivenAnswers } from "../answers/given-answers.vo.ts";
 import { ValidatedAnswers } from "../answers/validated-answers.vo.ts";

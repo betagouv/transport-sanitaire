@@ -1,4 +1,4 @@
-// Ce qu'un bloc de R2 lit des cibles et des faits (#260), et ce que tous
+// Ce qu'un bloc de R2 lit des cibles et des faits, et ce que tous
 // lisent des réponses. Chaque bloc le déclare à côté de lui, comme un fait
 // déclare ses questions, et ne reçoit que ça :
 //

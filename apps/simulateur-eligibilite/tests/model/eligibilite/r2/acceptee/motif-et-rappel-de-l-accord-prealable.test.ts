@@ -1,7 +1,7 @@
-// Le motif et l'introduction des deux demandes d'accord préalable (#136), et
-// la convocation et la permission qui s'y ajoutent. Des traces écrites à la
-// main : rien n'y est prouvé, sauf ce que le test pose.
-// Les attendus sont recopiés du catalogue de l'éditeur et de ses aperçus PDF.
+// Le motif et l'introduction des deux demandes d'accord préalable, et la
+// convocation et la permission qui s'y ajoutent. Des traces écrites à la main :
+// rien n'y est prouvé, sauf ce que le test pose. Les attendus sont recopiés du
+// catalogue de l'éditeur et de ses aperçus PDF.
 
 import { describe, expect, it } from "vitest";
 import { Fait } from "../../../../../core/socle";

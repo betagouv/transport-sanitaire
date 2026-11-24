@@ -1,4 +1,4 @@
-// La raison de la fiche patient négative (#134) : celle des textes de
+// La raison de la fiche patient négative : celle des textes de
 // `ISSUE_NON_ELIGIBLE` que la trace prouve. Une fonction pure, sans React.
 //
 // Le catalogue de l'éditeur donne à chaque raison une `condition` en mots, une
@@ -120,7 +120,7 @@ function aldLiee(trace: LuParLaRaison): boolean {
 // AUCUN_AUTRE_SOIN depuis la v10.1.8) n'est jamais prise : « Autre motif » seul
 // garde le texte générique.
 //
-// Jamais prouvées par nos réponses (arbitrages [ÉDITEUR], D-113) :
+// Jamais prouvées par nos réponses (arbitrages [ÉDITEUR]) :
 // AUCUN_SERIE_NON_QUALIFIANTE, AUCUN_AUTRE_DEPLACEMENT et TRANSPORT_EXCLU.
 const CONDITIONS: Readonly<Record<string, Condition>> = {
   // « ALD confirmée ; soin sans lien avec cette ALD prouvé ». Q1.3.b le
@@ -153,7 +153,7 @@ const CONDITIONS: Readonly<Record<string, Condition>> = {
     trace.precisions.careFamily === 15 &&
     trace.precisions.eventFinalityClarified === true,
   // « fait_exclusion_transport_prouvee = oui + règle officielle datée
-  // conservée en preuve ». Notre fait vaut toujours « non » (D-111).
+  // conservée en preuve ». Notre fait vaut toujours « non ».
   TRANSPORT_EXCLU: (trace) =>
     trace.faits.fait_exclusion_transport_prouvee.isOui() &&
     trace.precisions.transportExclusionRule !== undefined,

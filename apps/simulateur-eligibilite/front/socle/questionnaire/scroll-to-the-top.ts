@@ -1,4 +1,4 @@
-// L'écran revient en haut, et la page qui l'embarque avec lui (#369).
+// L'écran revient en haut, et la page qui l'embarque avec lui.
 //
 // L'app tourne dans une iframe du CMS. Remonter le document entier fait aussi
 // défiler la page hôte sous Chrome et Firefox, pas sous Safari : WebKit ne fait

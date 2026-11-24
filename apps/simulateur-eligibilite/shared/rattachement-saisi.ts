@@ -1,7 +1,6 @@
 // Ce que le formulaire de rattachement collecte, et quand il est complet.
 // Ce sont des identifiants du référentiel Grist, ou des noms saisis quand le
 // référentiel ne les a pas encore.
-// Voir ADR-0007.
 
 // Trois cas (docs/knowledge/domain/rattachement.md) :
 // - un service du référentiel, sous un établissement du référentiel. Les
@@ -65,7 +64,7 @@ export function saisieComplete(saisie: RattachementSaisi): boolean {
 
 /**
  * La longueur d'un nom saisi. Le champ ne va pas au-delà, et le backend refuse
- * un nom plus long : il ne s'écrit pas dans le référentiel (#451).
+ * un nom plus long : il ne s'écrit pas dans le référentiel.
  */
 export const LONGUEUR_MAX_D_UN_NOM = 150;
 
