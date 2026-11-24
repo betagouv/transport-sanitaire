@@ -16,6 +16,8 @@ l'exécution.
 > vit dans `mapping.json`, qui n'est pas versionné. Voir
 > [Confidentialité](#confidentialité).
 
+## Vue d'ensemble
+
 ```mermaid
 flowchart LR
     SRC[("Sources<br/>déclarées dans mapping.json")]
@@ -39,6 +41,11 @@ flowchart LR
 Les quatre premières étapes sont locales et déterministes ; la cinquième, optionnelle,
 publie les marts dans [Grist](#publication-dataviz).
 
+Trois sources écrites, dans cet ordre d'autorité : `spec/`, ce README, puis le
+cadrage d'origine. **Le cadrage est le moins à jour des trois** : il annonce
+5 marts, il y en a 18. Le métier ne s'écrit plus dans ce README : il va dans
+`spec/`.
+
 | Document | Ce qu'il porte |
 |---|---|
 | [`spec/livrables.md`](spec/livrables.md) | Les dix-huit marts : grain, colonnes, ce que chacun sait et ne sait pas dire. |
@@ -47,22 +54,27 @@ publie les marts dans [Grist](#publication-dataviz).
 
 ---
 
-## Lancer
+## Commandes
 
-```bash
-pnpm install           # installe les apps du dépôt, où qu'on le lance
-cp mapping.example.json mapping.json   # puis renseigner vos fichiers (voir ci-dessous)
-pnpm etl               # enchaîne les 4 étapes ; régénère build/
-# ou étape par étape :
-pnpm extract && pnpm staging && pnpm reconcile && pnpm marts
-pnpm test              # tests unitaires (vitest)
-pnpm publish-grist     # optionnel : publie les marts dans Grist (voir Publication)
-```
+Une fois, après `pnpm install`, copier `mapping.example.json` vers `mapping.json`
+et y renseigner les fichiers d'entrée (voir ci-dessous).
 
-Node 24 exécute le TypeScript nativement, il n'y a aucun build. SheetJS lit les `.xlsx`. Il
-n'y a aucune étape réseau : tous les référentiels publics sont versionnés dans `ref/`.
-`pnpm fetch-ght` ne sert qu'à rafraîchir le référentiel GHT commité dans `ref/ght/`, et
-n'est pas nécessaire au fonctionnement.
+| Commande | Ce qu'elle fait |
+|---|---|
+| `pnpm etl` | enchaîne les quatre premières étapes et régénère `build/` |
+| `pnpm extract`, `pnpm staging`, `pnpm reconcile`, `pnpm marts` | lance une étape seule, dans cet ordre |
+| `pnpm publish-grist` | optionnel : publie les marts dans Grist (voir [Publication](#publication-dataviz)) |
+| `pnpm fetch-ght` | rafraîchit le référentiel GHT versionné dans `ref/ght/`, hors chaîne |
+| `pnpm test` | les tests unitaires, avec vitest |
+| `pnpm verifier` | lint, typecheck, knip et tests. La CI en passe les étapes une à une |
+
+Node 24 exécute le TypeScript nativement, il n'y a aucun build. SheetJS lit les
+`.xlsx`. Il n'y a aucune étape réseau : tous les référentiels publics sont
+versionnés dans `ref/`. `pnpm fetch-ght` ne sert qu'à rafraîchir le référentiel
+GHT commité dans `ref/ght/`, et n'est pas nécessaire au fonctionnement.
+
+**Les tests n'ont pas de mock**, et **aucune donnée réelle n'entre dans les
+fixtures**.
 
 ## Configuration des entrées — `mapping.json`
 
@@ -111,6 +123,9 @@ dont le format est inconnu, fait échouer l'ETL avec un message explicite.
 | `ght-fhir-datagouv` | les bundles FHIR du jeu open data `etablissements-de-sante-par-ght`, dont la `location` est le dossier `ref/ght/`. Sortie : une dimension finess juridique vers GHT, aucun trajet |
 
 ## Pipeline & artefacts
+
+Un format de fichier a un adaptateur, déclaré dans
+`src/01-extract/adapteurs/registry.ts` : le code ne connaît jamais un fournisseur.
 
 Une étape correspond à une source de complexité. Toute la connaissance propre à une
 source, son format, ses colonnes et son vocabulaire véhicule, est encapsulée dans son
@@ -254,18 +269,53 @@ rattachements par territoire des établissements hors GHT sont au
 
 ## Confidentialité
 
-Le monorepo est public ; les données et l'identité des fournisseurs ne le sont pas.
+**Le monorepo est public ; les données et l'identité des fournisseurs ne le sont
+pas.**
 
-- **Jamais versionnés** : `data/`, qui porte les sources brutes ; `build/`, c'est-à-dire
-  tous les artefacts, dont le mart qui contient de vrais établissements ; et
-  `mapping.json`, qui lie les fichiers réels et leurs fournisseurs aux formats et aux
-  rôles.
-- **Versionnés**, parce que publics et non identifiants : `src/`, le code générique,
-  `ref/`, l'open data figé de `ref/ght/` et les mappings manuels, et
-  `mapping.example.json`, le gabarit neutre.
-- **Publication Grist**, cf. [Publication](#publication-dataviz) : les marts publiés
-  contiennent de vrais établissements, donc le doc cible doit rester privé et sa clé
-  `GRIST_API_KEY` hors du dépôt, dans un `.env` non versionné.
+Le code de l'ETL est générique. Il ne connaît que deux choses :
 
-Les libellés de véhicule et les noms de colonnes des adaptateurs décrivent des formats, pas
-des fournisseurs. Comme `ref/` est versionné, l'ETL tourne sans étape réseau.
+- des **rôles** : `plateforme`, `referentiel-national`, `referentiel-ght` ;
+- des **formats de fichier**.
+
+Jamais l'identité d'un fournisseur, jamais la moindre donnée. L'association entre
+les fichiers réels et ces formats vit dans `mapping.json`, **non versionné**. Son
+gabarit neutre est `mapping.example.json`.
+
+| Statut | Fichiers |
+|---|---|
+| **Jamais versionnés** | `data/` (sources brutes), `build/` (tous les artefacts, dont des marts contenant de vrais établissements), `mapping.json`, `.env` |
+| **Versionnés** | `src/` (code générique), `ref/` (open data figé + mappings manuels), `mapping.example.json` |
+
+Un nom de fournisseur fuite par cinq chemins :
+
+- un commentaire,
+- un nom de variable,
+- un fichier de test,
+- **un message de commit**,
+- **une issue ou une PR**, par son titre, son corps ou un commentaire. Elles
+  sont publiques, comme le dépôt.
+
+Relis le diff *et* le message avant de commiter, et le texte d'une issue avant
+de l'ouvrir. Les libellés de véhicule et les
+noms de colonnes des adaptateurs décrivent des **formats**, jamais des
+fournisseurs. Garde-le ainsi en ajoutant un adaptateur.
+
+La publication dans Grist (voir [Publication](#publication-dataviz)) envoie de
+vrais établissements : le doc cible doit rester privé, et sa clé
+`GRIST_API_KEY` hors du dépôt, dans un `.env` non versionné. Comme `ref/` est
+versionné, l'ETL tourne sans étape réseau.
+
+## Dette connue
+
+**Des modules déguisés en classes.** `Csv`, `Xlsx`, `Paths` et `Mapping` sont des
+classes à membres uniquement statiques, ce que Biome signale
+(`noStaticOnlyClass`, en avertissement). Les convertir en fonctions exportées
+touche une centaine d'appels. **À payer quand un de ces modules sera rouvert.**
+Pas avant, et pas par un `off` dans la configuration.
+
+**`noNonNullAssertion` est éteinte dans `src/`**, pour une raison précise. Le
+tsconfig active `noUncheckedIndexedAccess`, qui rend `ligne[colonne]`
+potentiellement `undefined`.
+
+C'est la garantie forte, on la garde. Le `!` en est le prix sur une colonne qu'on
+vient de lire dans l'en-tête. On éteint la règle faible pour tenir la forte.
