@@ -62,6 +62,9 @@
         }
       },
       "complexity": {
+        // Une classe aux seuls membres statiques sert d'espace de noms
+        // (`Csv.lire`, `Paths.MARTS`). C'est un style voulu, pas un défaut.
+        "noStaticOnlyClass": "off",
         // Biome compte des lignes *logiques* : un bloc de texte JSX ou une
         // chaîne multiligne y pèse une ligne. C'est le test d'architecture du
         // simulateur qui fait foi, en lignes réelles. Biome sert le retour
