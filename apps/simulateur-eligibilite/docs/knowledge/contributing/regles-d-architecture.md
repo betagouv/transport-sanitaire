@@ -25,6 +25,13 @@ coûteuses à défaire ; ici, les choix de forme du code.
 Les tests sont dans `apps/simulateur-eligibilite/tests/`. Le rangement des
 fichiers et leurs suffixes sont dans QUAL-011 et QUAL-018.
 
+Le compilateur est TypeScript 7 (`@typescript/native`). Il ne se charge plus comme
+une bibliothèque : le paquet n'expose pas l'API qui lit l'arbre du code. Les
+gardes qui lisent cet arbre (`inspection-des-sources.ts` et les tests qui s'en
+servent) chargent donc TypeScript 6, par l'alias `typescript` vers
+`@typescript/typescript6` dans le `package.json` du simulateur. L'alias se retire
+le jour où ces gardes sont réécrites sur la nouvelle interface du compilateur.
+
 ---
 
 ### ARCH-001 - `core/` ne connaît ni l'écran ni le serveur, `shared/` rien, et le rattachement reste hors du moteur
