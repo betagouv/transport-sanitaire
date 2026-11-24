@@ -100,6 +100,24 @@ jobs:
       - name: knip
         run: pnpm --filter cli knip
 
+  dashboard:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: package.json
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      # Pas de tests ni de knip : l'app n'est encore qu'une coquille.
+      - name: lint
+        run: pnpm --filter dashboard lint
+      - name: typecheck
+        run: pnpm --filter dashboard typecheck
+      - name: build
+        run: pnpm --filter dashboard build
+
   # L'audit ne se scope pas : `pnpm audit` lit le lock, et le lock est unique au
   # dépôt depuis le passage en workspace. Le répéter dans chaque job
   # auditerait plusieurs fois la même chose en laissant croire le contraire. Il a

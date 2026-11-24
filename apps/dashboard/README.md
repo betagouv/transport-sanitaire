@@ -27,10 +27,13 @@ Scalingo et ceux de `transportsanitaire.beta.gouv.fr`.
 |---|---|
 | `pnpm --filter dashboard dev` | serveur de développement Vite |
 | `pnpm --filter dashboard build` | construit la page dans `dist/` |
+| `pnpm --filter dashboard lint` | Biome, sur la config de l'app |
+| `pnpm --filter dashboard typecheck` | TypeScript, sur `vite.config.ts` |
+| `pnpm --filter dashboard verifier` | lint, typecheck, puis build |
 | `pnpm --filter dashboard start` | sert le build, comme en production |
 
 ## Ce qu'elle n'est pas encore
 
 - Elle n'affiche aucune donnée. Son contenu reste à définir (à venir).
-- Elle n'a ni script `verifier`, ni job de CI : la CI ne la couvre pas, et `pnpm verifier`
-  la saute.
+- Elle n'a ni tests ni knip. La CI passe son lint, son typecheck et son build
+  (job `dashboard`).
