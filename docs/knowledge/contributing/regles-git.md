@@ -204,6 +204,10 @@ Tout travail part d'une branche tirée de `staging`, même un correctif d'une
 ligne. Il rejoint `staging` par une PR, puis `main` avec le reste de `staging`.
 On ne commite jamais directement sur `main` ni sur `staging`.
 
+La branche s'appelle `<type>/<slug>`, sans préfixe d'outil (`claude/`) ni suffixe
+aléatoire. On la renomme avant d'ouvrir la PR : renommer la tête d'une PR
+ouverte la ferme.
+
 **Exemples**
 
 ```bash

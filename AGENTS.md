@@ -141,12 +141,12 @@ son `AGENTS.md`.
 
 ## Écrire du code et commiter
 
-26 règles numérotées vivent dans `docs/knowledge/contributing/`. **À lire avant
+27 règles numérotées vivent dans `docs/knowledge/contributing/`. **À lire avant
 d'écrire une ligne ou de commiter.**
 
 | Fichier | Ce qu'il porte |
 |---|---|
-| [`regles-de-code.md`](docs/knowledge/contributing/regles-de-code.md) | les 19 `QUAL-*` : forme d'un fichier, découpage, noms, rôles, exports, suppressions de lint |
+| [`regles-de-code.md`](docs/knowledge/contributing/regles-de-code.md) | les 20 `QUAL-*` : forme d'un fichier, découpage, noms, rôles, exports, suppressions de lint |
 | [`regles-git.md`](docs/knowledge/contributing/regles-git.md) | les 7 `GIT-*` : branche et PR vers `staging`, forme du message, métadonnée d'IA, confidentialité |
 | [`ecrire-une-regle.md`](docs/knowledge/contributing/ecrire-une-regle.md) | le format d'une règle, pour en ajouter, modifier ou retirer une |
 | [`ecrire-une-decision.md`](docs/knowledge/contributing/ecrire-une-decision.md) | où écrire une décision, quand elle mérite un ADR, la forme d'un ADR, les décisions renversées |
@@ -165,7 +165,7 @@ revue et en commit : « corrige QUAL-006 ».
 | Le cadrage, le découpage et l'état d'un chantier | son ticket Notion, tenu à la main, avec une liste à cocher d'une ligne par PR. La PR cite le ticket dans son corps. Jamais un fichier du dépôt, ni une issue GitHub |
 | Ce qu'une app sait faire | son `docs/knowledge/features.md`, un tableau « feature, ce qu'elle fait » |
 | Une connaissance métier actée | `docs/knowledge/domain/` de l'app concernée, ou celui de la racine si elle traverse plusieurs apps. Ce qu'une décision d'architecture change pour le métier y va aussi |
-| Le détail d'une implémentation | le code, que ses tests documentent. Ni un ADR ni un README |
+| Le détail d'une implémentation | le code, que ses tests documentent. Ni un ADR ni un README. Un code obscur se corrige (un nom, une étape explicite), il ne s'explique pas dans une doc |
 | Le mode d'emploi d'une app | son `README.md` |
 | Ce qu'une version apporte | le `CHANGELOG.md` de l'app, au format de [`livraisons.md`](docs/knowledge/contributing/livraisons.md) |
 | Une règle pour l'IA | `AGENTS.md`, celui de la racine ou celui de l'app |
@@ -191,7 +191,9 @@ t'y fie pas.
 ## Marches à suivre
 
 Sept gestes récurrents ont leur mode d'emploi dans `.claude/skills/`, chargé à la
-demande plutôt que recopié ici :
+demande plutôt que recopié ici. Un skill ne porte que la marche à suivre et des
+liens : toute règle vit dans `docs/knowledge/`. Il désigne un rôle (le relecteur,
+le porteur), jamais une personne.
 
 | Skill | Quand |
 |---|---|
@@ -215,7 +217,7 @@ Une règle de jugement, elle, ne se mécanise pas. Une assertion dirait *qu'*on 
 coupé, jamais *si* on a coupé au bon endroit. Elle écrit alors `*Aucune garde.*`
 en toutes lettres, plutôt que de laisser croire qu'elle en a une.
 
-L'état de chaque règle des 26 de
+L'état de chaque règle des 27 de
 [`docs/knowledge/contributing/`](docs/knowledge/contributing/) se lit dans la
 colonne « Garde » de son tableau, pas ici : recopier cet état dans ce fichier
 créerait deux sources à tenir à jour au lieu d'une.
