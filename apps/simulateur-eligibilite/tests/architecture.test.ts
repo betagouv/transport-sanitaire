@@ -1,6 +1,7 @@
 // Les invariants d'architecture, rendus exécutables.
 //
-// AGENTS.md et `docs/knowledge/adr/` énoncent des règles. Ce fichier les vérifie.
+// AGENTS.md, `docs/knowledge/adr/` et `docs/knowledge/contributing/` énoncent des
+// règles. Ce fichier vérifie celles d'architecture (ARCH-001, ARCH-002).
 //
 // Chaque règle donne son pourquoi dans son message d'échec, le second argument
 // d'`expect`. Un commentaire ne s'affiche pas quand le test rougit.
@@ -91,6 +92,15 @@ describe("le socle et le modèle", () => {
 });
 
 describe("les modèles entre eux", () => {
+  it("un modèle a ses deux dossiers, du même nom", () => {
+    expect(
+      readdirSync(join(racine, "core/models")).sort(),
+      "Le métier d'un modèle est dans `core/models/<nom>/`, son écran dans " +
+        "`front/models/<nom>/` (ARCH-002). Un modèle sans écran ne s'ouvre " +
+        "pas, et un écran sans métier n'a rien à afficher.",
+    ).toEqual([...NOMS].sort());
+  });
+
   it("un modèle n'importe rien d'un autre", () => {
     const croisements = NOMS.flatMap((nom) =>
       franchissements(
@@ -145,7 +155,7 @@ describe("invariants métier", () => {
         commencePar("front/socle/rattachement/"),
       ),
       "Le moteur d'éligibilité raisonne sur une situation médicale, jamais " +
-        "sur une identité (ADR-0009). L'analytics, " +
+        "sur une identité (ARCH-001). L'analytics, " +
         "lui, est admis : il lit le rattachement en session de son côté, sans " +
         "le faire transiter ici.",
     ).toEqual([]);

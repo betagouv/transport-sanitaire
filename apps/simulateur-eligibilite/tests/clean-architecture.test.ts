@@ -1,5 +1,5 @@
-// La clean architecture, rendue exécutable : le sens des dépendances du socle
-// (ADR-0052), puis le journal des parcours et la mesure d'audience (ADR-0043).
+// La clean architecture, rendue exécutable (ARCH-004) : le sens des
+// dépendances, puis le journal des parcours et la mesure d'audience.
 // Comme dans `architecture.test.ts`, chaque règle donne son pourquoi dans son
 // message d'échec.
 
@@ -13,13 +13,26 @@ const JOURNAL = ["server/journal", "front/socle/analytics"];
 const duDomaine = (cible: string) =>
   /\.(entity|vo|usecase|port)(\.ts)?$/.test(cible);
 
-// Ce que le sens des dépendances garde aujourd'hui.
-const GARDES = ["core/socle"];
+// Les racines où le domaine n'importe aucun adaptateur.
+const RACINES = ["core", "front", "server", "shared"];
+
+// Les racines où seul un adaptateur importe un paquet. À l'écran, un composant
+// importe React et le DSFR ; au serveur, un contrôleur importe Express.
+const SANS_PAQUET = ["core"];
 
 const estUnAdaptateur = (fichier: string) => /\.adapter(\.ts)?$/.test(fichier);
 
-// Un index dit ce que son module promet : il peut exporter un adaptateur.
-const estUnIndex = (fichier: string) => fichier.endsWith("/index.ts");
+// Un index dit ce que son module promet : il peut exporter un adaptateur. Un
+// conteneur assemble les classes d'une racine : il les choisit et les branche.
+const assemble = (fichier: string) =>
+  fichier.endsWith("/index.ts") || /(^|\/)container\.ts$/.test(fichier);
+
+// Le moteur de décision, que le modèle importe sans passer par un index : il
+// amènerait publicodes dans le chunk d'entrée (`modules-du-socle.test.ts`).
+const MOTEUR_DU_MODELE =
+  "core/socle/decision-engine/publicodes-decision-engine.adapter.ts";
+const leModeleChargeLeMoteur = (fichier: string, cible: string) =>
+  fichier.startsWith("core/models/") && cible === MOTEUR_DU_MODELE;
 
 // Les paquets qu'un fichier importe : tout ce qui n'est pas un chemin relatif.
 const PAQUET = /(?:from|import)\s*\(?\s*["']([^."'][^"']*)["']/g;
@@ -28,28 +41,29 @@ const paquetsDe = (fichier: string) =>
 
 describe("le sens des dépendances", () => {
   it("le domaine n'importe pas un adaptateur", () => {
-    const fautifs = sources(...GARDES)
-      .filter((f) => !estUnAdaptateur(f) && !estUnIndex(f))
+    const fautifs = sources(...RACINES)
+      .filter((f) => !estUnAdaptateur(f) && !assemble(f))
       .flatMap((f) =>
         importsDe(f)
-          .filter(estUnAdaptateur)
+          .filter((cible) => estUnAdaptateur(cible))
+          .filter((cible) => !leModeleChargeLeMoteur(f, cible))
           .map((cible) => `${f} → ${cible}`),
       );
     expect(
       fautifs,
       "Un adaptateur (`.adapter.ts`) dépend du domaine, jamais l'inverse " +
-        "(ADR-0052). Déclare ce que tu attends dans un port (`.port.ts`), et " +
+        "(ARCH-004). Déclare ce que tu attends dans un port (`.port.ts`), et " +
         "reçois l'adaptateur en paramètre.",
     ).toEqual([]);
   });
 
   it("une bibliothèque externe reste derrière un port", () => {
-    const fautifs = sources(...GARDES)
+    const fautifs = sources(...SANS_PAQUET)
       .filter((f) => !estUnAdaptateur(f))
       .flatMap((f) => paquetsDe(f).map((paquet) => `${f} → ${paquet}`));
     expect(
       fautifs,
-      "Seul un adaptateur (`.adapter.ts`) importe un paquet (ADR-0052) : le " +
+      "Seul un adaptateur (`.adapter.ts`) importe un paquet (ARCH-004) : le " +
         "domaine tient sans lui, et en changer ne touche qu'un fichier. Passe " +
         "par le port de l'adaptateur, ou écris-en un.",
     ).toEqual([]);
@@ -70,7 +84,7 @@ describe("le journal des parcours", () => {
     expect(
       fautifs,
       "Le journal des parcours est derrière un port, `server/journal/journal.port.ts` " +
-        "(ADR-0043) : PostgreSQL n'est que son adaptateur du moment, après " +
+        "(ARCH-004) : PostgreSQL n'est que son adaptateur du moment, après " +
         "Grist. Le reste du journal ne connaît ni la base ni ses types : passe " +
         "par le port, ou ajoute ce qui manque à l'adaptateur.",
     ).toEqual([]);
@@ -100,7 +114,7 @@ describe("le journal des parcours", () => {
       fautifs,
       "Entités, objets-valeurs, use cases et ports (`.entity.ts`, `.vo.ts`, " +
         "`.usecase.ts`, `.port.ts`) " +
-        "forment le domaine du journal et de la mesure d'audience (ADR-0043). " +
+        "forment le domaine du journal et de la mesure d'audience (ARCH-004). " +
         "Ils ne connaissent ni HTTP, ni Grist, ni l'écran : un adaptateur " +
         "(`.adapter.ts`) les relie à l'extérieur. Passe ce qui manque en " +
         "paramètre, ou déclare-le dans un port.",

@@ -1,4 +1,5 @@
-// Les dossiers de tests sont le miroir des sources (#292).
+// Les dossiers de tests sont le miroir des sources, et un dossier dit ce qu'il
+// contient (QUAL-011).
 //
 // Comme dans `tests/architecture.test.ts`, chaque règle donne son pourquoi
 // dans son message d'échec.
@@ -6,7 +7,11 @@
 import { existsSync, readdirSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
-import { racine } from "./inspection-des-sources";
+import { racine, sources } from "./inspection-des-sources";
+
+// Un nom de catégorie : il dit le genre de fichier, pas la notion que le
+// dossier porte.
+const CATEGORIE = /^(utils?|helpers?|types|commun|acces|misc|divers)$/i;
 
 // Un dossier de tests porte le nom d'un dossier de sources, et, s'il est
 // imbriqué, son parent celui d'un dossier qui contient ce dossier de sources.
@@ -51,6 +56,23 @@ describe("les dossiers de tests", () => {
         "éprouve `front/socle/questionnaire/`, `tests/model/eligibilite/r2/" +
         "acceptee/` le cas accepté de R2. Un dossier qui ne porte le nom " +
         "d'aucun dossier de sources cache ce qu'il éprouve.",
+    ).toEqual([]);
+  });
+});
+
+describe("les dossiers de sources", () => {
+  it("aucun dossier ne porte un nom de catégorie", () => {
+    const fautifs = new Set(
+      sources("core", "front", "server", "shared", "tooling", "tests")
+        .flatMap((fichier) => fichier.split("/").slice(0, -1))
+        .filter((nom) => CATEGORIE.test(nom)),
+    );
+    expect(
+      [...fautifs],
+      "Un dossier est un module, une entité ou une capacité (QUAL-011) : " +
+        "`utils/`, `helpers/` et `types/` rangent par genre de fichier, et une " +
+        "capacité s'éparpille alors sur plusieurs dossiers. Range chaque " +
+        "fichier dans le dossier de la notion qu'il sert.",
     ).toEqual([]);
   });
 });
