@@ -235,9 +235,9 @@ const ATTENDU: Record<string, readonly [string[], string[]]> = {
   ],
 };
 
-describe("les questions que pose chaque seed", async () => {
-  const seeds = await model.core.seeds();
+const seeds = await model.core.seeds();
 
+describe("les questions que pose chaque seed", () => {
   it("chaque seed a sa liste", () => {
     expect(seeds.map(({ id }) => id).sort()).toEqual(
       Object.keys(ATTENDU).sort(),

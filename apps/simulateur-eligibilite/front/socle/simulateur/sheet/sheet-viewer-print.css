@@ -81,7 +81,7 @@
      que le fond ne couvre pas, et dont les coins du haut gardent leur rayon
      une fois la bordure ôtée. */
   .socle-sheet[data-paper][data-print-layout="two-pages"]
-  .socle-sheet-follow-up {
+    .socle-sheet-follow-up {
     border-top: 9mm solid transparent;
     border-top-left-radius: 10px calc(10px + 9mm);
     border-top-right-radius: 10px calc(10px + 9mm);
