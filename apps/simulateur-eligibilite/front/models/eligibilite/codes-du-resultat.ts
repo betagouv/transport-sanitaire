@@ -43,8 +43,9 @@ function valeurDe<Value extends string>(cible: Cible<Value>): Value | null {
 }
 
 function codesDe(raison: Cible<string>): readonly string[] | null {
-  if (raison.value === undefined) return null;
-  return raison.value === null ? [] : [raison.value];
+  if (raison.isInconnue()) return null;
+  const code = raison.value ?? null;
+  return code === null ? [] : [code];
 }
 
 // Seul Oui établit la partie terrestre, et seul Non l'écarte : sans réponse,

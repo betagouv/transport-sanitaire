@@ -50,14 +50,19 @@ const AVEC_UN_MODE: readonly TransportComposition[] = [
   "mixed",
 ];
 
+// Inconnue, ou sans objet : les règles n'en tirent aucune valeur.
+function sansValeur(cible: Cible<string>): boolean {
+  return cible.isInconnue() || cible.isSansObjet();
+}
+
 // Sans support, aucun mode ne s'applique : hypothèse, point 23 du retour
 // v10.2.2. Un support inconnu laisse la composition inconnue.
 function codeDe(preuves: Preuves): TransportComposition {
   const { support, ligneReguliere, partieTerrestre, mode } = preuves;
   if (support.is("AUCUN")) return "not_applicable";
-  if (support.value == null) return "unknown";
+  if (sansValeur(support)) return "unknown";
   if (ligneReguliere.isOui()) return avecLaLigne(partieTerrestre, mode);
-  const terrestre = ligneReguliere.isNon() && mode.value != null;
+  const terrestre = ligneReguliere.isNon() && !sansValeur(mode);
   return terrestre ? "terrestrial_only" : "unknown";
 }
 
@@ -68,6 +73,6 @@ function avecLaLigne(
   mode: Cible<Mode>,
 ): TransportComposition {
   if (partieTerrestre === "absente") return "regular_line_only";
-  const mixte = partieTerrestre === "prevue" && mode.value != null;
+  const mixte = partieTerrestre === "prevue" && !sansValeur(mode);
   return mixte ? "mixed" : "unknown";
 }
