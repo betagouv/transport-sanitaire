@@ -159,7 +159,8 @@ export function referentiel(): Referentiel {
 export const referentiel = depuisGrist(process.env.GRIST_DOC_URL);
 ```
 
-*Aucune garde.* À écrire.
+*Aucune garde.* Un test refuserait des constantes légitimes : il distingue mal
+un calcul sans effet d'un appel vers l'extérieur.
 
 ---
 
