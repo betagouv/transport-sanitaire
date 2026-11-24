@@ -7,9 +7,10 @@ numérateur les trajets qu'elles déclarent, au dénominateur le référentiel n
 remboursement. Le résultat est ventilé par établissement ou GHT, par année, par type de
 transport et par enveloppe, et sort en dix-huit marts CSV. Un pipeline de cinq étapes les
 produit à partir des fichiers déclarés dans `mapping.json`, la dernière les publiant dans
-Grist pour la dataviz. Tout le métier (description des livrables, limites d'interprétation,
-règles de gestion assumées) vit dans [`spec/`](spec/) ; ce README ne traite que de
-l'exécution.
+Grist pour la dataviz. Le métier (ce que le calcul veut dire, les règles de rapprochement)
+est dans [`docs/knowledge/domain/etl-part-plateformes.md`](docs/knowledge/domain/etl-part-plateformes.md),
+les livrables et leurs limites d'interprétation dans [`spec/`](spec/), qui fait autorité.
+Ce README ne traite que de l'exécution.
 
 > **Code public, données et fournisseurs privés.** Le code de l'ETL est générique : il ne
 > connaît que des rôles (`plateforme`, `referentiel-national`, `referentiel-ght`) et des
@@ -75,9 +76,9 @@ et y renseigner les fichiers d'entrée (voir ci-dessous).
 | `pnpm verifier` | lint, typecheck, knip et tests. La CI en passe les étapes une à une |
 
 Node 24 exécute le TypeScript nativement, il n'y a aucun build. SheetJS lit les
-`.xlsx`. Il n'y a aucune étape réseau : tous les référentiels publics sont
-versionnés dans `ref/`. `pnpm fetch-ght` ne sert qu'à rafraîchir le référentiel
-GHT commité dans `ref/ght/`, et n'est pas nécessaire au fonctionnement.
+`.xlsx`. Les quatre premières étapes n'ont aucun accès réseau : tous les référentiels
+publics sont versionnés dans `ref/`. Seuls `pnpm publish-grist` et `pnpm fetch-ght`
+parlent au réseau, et `fetch-ght` n'est pas nécessaire au fonctionnement.
 
 **Les tests n'ont pas de mock**, et **aucune donnée réelle n'entre dans les
 fixtures**.
@@ -86,8 +87,7 @@ fixtures**.
 
 ## À lire
 
-- `docs/knowledge/domain/etl-part-plateformes.md` : Spec — ETL versionné : part des trajets réalisés via les plateformes
-- `docs/knowledge/features.md` : Features de datahub
+- `docs/knowledge/domain/etl-part-plateformes.md` : La part des trajets réalisés via les plateformes
 - `../../docs/knowledge/CONTEXT.md` : Le dépôt : vocabulaire
 - `../../docs/knowledge/contributing/ecrire-une-decision.md` : Écrire une décision
 - `../../docs/knowledge/contributing/ecrire-une-regle.md` : Écrire une règle de contribution
