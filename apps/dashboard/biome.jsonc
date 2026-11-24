@@ -1,0 +1,25 @@
+{
+  "$schema": "https://biomejs.dev/schemas/2.5.9/schema.json",
+  // La racine porte sa propre configuration. Biome exige qu'une configuration
+  // imbriquée se déclare telle : sans ça, il voit deux racines et refuse de
+  // tourner.
+  "root": false,
+  "extends": ["../../biome.base.jsonc"],
+  "files": {
+    "includes": ["*.ts", "*.json", "*.jsonc", "!**/*.tsbuildinfo", "!dist"]
+  },
+  "overrides": [
+    {
+      // Vite lit la configuration par son export par défaut : c'est son
+      // contrat, pas un choix de style.
+      "includes": ["vite.config.ts"],
+      "linter": {
+        "rules": {
+          "style": {
+            "noDefaultExport": "off"
+          }
+        }
+      }
+    }
+  ]
+}
