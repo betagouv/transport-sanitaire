@@ -46,8 +46,8 @@ Un nom de fournisseur fuite par cinq chemins :
 - un nom de variable,
 - un fichier de test,
 - **un message de commit**,
-- **une issue ou une PR**, par son titre, son corps ou un commentaire. Elles
-  sont publiques, comme le dépôt.
+- **un ticket Notion ou une PR**, par son titre, son corps ou un commentaire. La PR
+  est publique, comme le dépôt.
 
 Relis le diff *et* le message avant de commiter, et le texte d'une issue avant
 de l'ouvrir. Les libellés de véhicule et les

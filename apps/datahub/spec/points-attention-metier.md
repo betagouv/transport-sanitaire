@@ -189,7 +189,7 @@ identité vide. Deux causes ont été corrigées, une troisième reste ouverte.
 
 | Cause | Où c'est traité | Effet |
 |---|---|---|
-| Zéro de tête perdu (colonne stockée en numérique en amont) | `extract` normalise tout finess à 9 caractères (`src/finess.ts`) | corrigé |
+| Zéro de tête perdu (colonne stockée en numérique en amont) | `extract` complète à 9 caractères, par des zéros de tête, les seuls finess tronqués : numériques, de 1 à 8 chiffres et non nuls (`src/finess.ts`) | corrigé |
 | Colonnes juridique et géographique interverties | `reconcile` rend son entité juridique à un code déclaré juridique qui n'est qu'un site du référentiel | corrigé |
 | Finess inconnu du référentiel | rien | ligne sans identité |
 

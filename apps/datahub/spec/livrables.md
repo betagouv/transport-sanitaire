@@ -41,7 +41,8 @@ chiffre. Les noms eux-mêmes viennent de `mapping.json`, cf.
 [Configuration des entrées](../README.md#configuration-des-entrées--mappingjson).
 
 Les **rollups annuels** sont le même calcul à deux grains, `ght_<année>` et
-`juridique_<année>`, et sortent pour chaque année du référentiel national, 2024 et 2025.
+`juridique_<année>`, et sortent pour les années de la liste fixée dans le code (`ANNEES_ROLLUP`,
+`src/04-marts/mart-rollup-annuel.ts`), aujourd'hui 2024 et 2025.
 Ils réduisent le mart de ratio correspondant à leur seule année et portent
 `… annee, vehicule, plateforme, nb_plateforme, nb_cnam, ratio, alerte_qualite`, où
 `nb_cnam` est le référentiel national, `ratio = nb_plateforme / nb_cnam` et
