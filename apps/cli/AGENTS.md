@@ -34,26 +34,14 @@ qu'il le demande.
 
 ## Les modules
 
-`src/` est rangé par module. `main.ts` et `commands.ts` restent à sa racine : le
-point d'entrée, et la liste des commandes.
+`src/` est rangé par module : `core/` (la ligne de commande, les sorties), `apps/`,
+`git/` et `machine/`. **Les dépendances ne vont que dans ce sens** : `core` n'importe
+aucun module, `git` et `machine` n'importent que `core` (et `apps`, pour
+`machine`), et aucun module n'importe `machine`. Rien ne le garde : c'est à la
+relecture.
 
-| Module | Ce qu'il porte | Dépend de |
-|---|---|---|
-| `core/` | la ligne de commande, les sorties, le lancement d'un programme | rien |
-| `apps/` | la liste des apps | rien |
-| `git/` | les branches, les PR, la forme des commits | `core` |
-| `machine/` | `setup`, `doctor`, `open`, le lien vers le lanceur, les fichiers locaux | `core`, `apps` |
-
-**Les dépendances ne vont que dans ce sens.** `core` n'importe aucun module, et
-aucun module n'importe `machine`. Rien ne le garde : c'est à la relecture.
-
-## Ajouter une commande
-
-1. Un fichier par sujet, dans le module qu'il concerne, nommé d'après ce qu'il
-   permet de faire.
-2. Une fonction `xxxCommand(invocation)`, qui rend un code de sortie.
-3. Une entrée dans `src/commands.ts` : c'est elle qui l'inscrit dans l'aide.
-4. Une commande de lecture passe par `emit`, pour répondre à `--json`.
+Une commande de lecture passe par `emit`, pour répondre à `--json`. Une commande
+rend un code de sortie, et s'inscrit dans `src/commands.ts`, d'où vient l'aide.
 
 ## Ce qu'il ne faut pas casser
 
