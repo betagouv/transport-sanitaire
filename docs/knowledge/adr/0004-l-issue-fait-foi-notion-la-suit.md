@@ -1,6 +1,8 @@
 # ADR-0004 - L'issue fait foi, Notion la suit (~~la spec fait foi~~)
 
-> Statut : **décidé** · 2026-10-12 · Anciennement ADR-4 de `cli.md`
+> Statut : **révoqué** · 2026-11-24 · Remplacé par l'ADR-0009 · décidé le 2026-10-12 · Anciennement ADR-4 de `cli.md`
+
+> **Mise à jour 2026-11-24, le suivi passe dans Notion.** La décision est révoquée. Un chantier est un ticket Notion tenu à la main, sans issue GitHub ni tableau. L'ADR-0009 dit pourquoi.
 
 **Contexte.** L'équipe produit suit le travail dans Notion. Le cadrage
 technique, lui, vit dans ~~les specs du dépôt~~ l'issue du chantier (ADR-0007).

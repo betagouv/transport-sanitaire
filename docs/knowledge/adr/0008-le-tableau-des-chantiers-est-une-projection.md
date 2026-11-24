@@ -1,6 +1,8 @@
 # ADR-0008 - Le tableau des chantiers est une projection
 
-> Statut : **décidé** · 2026-10-14 · Anciennement ADR-7 de `cli.md`
+> Statut : **révoqué** · 2026-11-24 · Remplacé par l'ADR-0009 · décidé le 2026-10-14 · Anciennement ADR-7 de `cli.md`
+
+> **Mise à jour 2026-11-24, le suivi passe dans Notion.** La décision est révoquée. Un chantier est un ticket Notion tenu à la main, sans issue GitHub ni tableau. L'ADR-0009 dit pourquoi.
 
 **Contexte.** L'état se lisait dans `tsp issue list` et `tsp issue show`, dans
 un terminal, chantier par chantier. Rien ne montrait d'un coup d'œil ce qui

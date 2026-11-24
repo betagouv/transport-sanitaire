@@ -63,13 +63,13 @@ Pose au diff ces questions, et montre les réponses avant de coder :
 
 ## 3. Découper
 
-Une version s'intègre sous une issue, découpée en sous-issues, une par PR
-(`tsp issue add`, ou `/to-tasks` avec le diff en contexte). La première est
+Une version s'intègre sous un ticket Notion, découpé en une ligne de sa liste à
+cocher par PR (à la main, ou `/to-tasks` avec le diff en contexte). La première est
 toujours la recopie : elle casse tout ce qui nomme le modèle, et rien n'est vert
 tant qu'elle ne l'est pas. Chaque point du changelog qui change un comportement
 mérite ensuite la sienne.
 
-Le retour à l'éditeur est une sous-issue à part, qui ne bloque rien.
+Le retour à l'éditeur est une ligne à part, qui ne bloque rien.
 
 La livraison est un autre geste : skill `livrer-une-version`.
 

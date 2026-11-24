@@ -1,6 +1,8 @@
 # ADR-0007 - Un chantier est une issue, son état se déduit
 
-> Statut : **décidé** · 2026-10-13 · Anciennement ADR-6 de `cli.md`
+> Statut : **révoqué** · 2026-11-24 · Remplacé par l'ADR-0009 · décidé le 2026-10-13 · Anciennement ADR-6 de `cli.md`
+
+> **Mise à jour 2026-11-24, le suivi passe dans Notion.** La décision est révoquée. Un chantier est un ticket Notion tenu à la main, sans issue GitHub ni tableau. L'ADR-0009 dit pourquoi.
 
 **Contexte.** Le cadrage vivait dans `docs/specs`, le découpage dans
 `docs/tasks`, l'état dans les deux, en prose. Sur un gros chantier, l'état

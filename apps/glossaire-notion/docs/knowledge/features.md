@@ -1,7 +1,6 @@
 # Features of glossaire-notion
 
-> What the app does, from its user's point of view. `tsp features glossaire`
-> prints this table.
+> What the app does, from its user's point of view.
 
 | Feature | What it does |
 |---|---|

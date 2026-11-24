@@ -11,3 +11,7 @@ les tâches `mise`, qui n'étaient qu'un autre point d'entrée pour un humain.
 **Conséquences.** Une panne de la CLI ne casse ni un déploiement ni une CI.
 « La CI lance la même commande que localement » reste vrai, puisque `tsp`
 délègue au même script.
+
+> **Mise à jour 2026-11-24, `tsp` se réduit.** `tsp` ne lance plus les scripts
+> des apps : on écrit `pnpm --filter <app> <script>`. La CI et le `Procfile`
+> appelaient déjà `pnpm`, la décision tient. Voir l'ADR-0010.

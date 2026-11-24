@@ -1,7 +1,7 @@
 // Point d'entrée de tsp : lit la ligne de commande, lance la commande, rend son
 // code de sortie.
 
-import { findCommand, helpText } from "./commands.ts";
+import { findCommand, helpText, replacementOf } from "./commands.ts";
 import { readInvocation } from "./core/invocation.ts";
 import { print, printError } from "./core/output.ts";
 
@@ -19,7 +19,7 @@ async function main(argv: string[]): Promise<number> {
     }
     const command = findCommand(name);
     if (!command) {
-      printError(`Commande inconnue : « ${name} ». Lance tsp help.`);
+      printError(unknown(name));
       return 1;
     }
     return await command(invocation);
@@ -34,4 +34,12 @@ function explain(error: NodeJS.ErrnoException): string {
   if (!error.code?.startsWith("ERR_PARSE_ARGS")) return error.message;
   const option = /'([^']+)'/.exec(error.message)?.[1] ?? error.message;
   return `Option refusée : ${option}. Lance tsp help.`;
+}
+
+/** Une commande retirée dit ce qui la remplace. */
+function unknown(name: string): string {
+  const instead = replacementOf(name);
+  return instead === undefined
+    ? `Commande inconnue : « ${name} ». Lance tsp help.`
+    : `« ${name} » n'existe plus : ${instead}. Lance tsp help.`;
 }

@@ -1,7 +1,6 @@
 # Features de datahub
 
-> Ce que l'app sait faire, vu par celui qui s'en sert. `tsp features data`
-> affiche ce tableau. Le métier est dans [`spec/`](../../spec/), l'exécution
+> Ce que l'app sait faire, vu par celui qui s'en sert. Le métier est dans [`spec/`](../../spec/), l'exécution
 > dans le [README](../../README.md).
 
 | Feature | Ce qu'elle fait |

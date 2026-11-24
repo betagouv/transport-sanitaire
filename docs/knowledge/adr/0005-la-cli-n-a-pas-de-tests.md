@@ -10,11 +10,12 @@ passe le lint, le typecheck et knip.
 - Une régression d'une commande se voit à l'usage, pas en CI.
 - Les gardes de forme écrites en tests dans le simulateur ne couvrent pas la
   CLI. Seul Biome y garde les limites de taille.
-- L'adresse de l'API Notion se remplace par l'environnement : c'est ce qui
-  permet d'éprouver la synchronisation à la main, sur un serveur local.
 
 ## Risques
 
 | Id | Risque | État |
 |---|---|---|
 | R-4 | Sans tests, une régression ne se voit qu'à l'usage | Assumé (ADR-0005) |
+
+> **Mise à jour 2026-11-24, `tsp` se réduit.** La CLI ne parle plus à Notion : il
+> n'y a plus de synchronisation à éprouver sur un serveur local. Voir l'ADR-0010.

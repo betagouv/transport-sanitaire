@@ -1,6 +1,8 @@
 # ADR-0002 - Une action est un script du `package.json`
 
-> Statut : **décidé** · 2026-10-12 · Anciennement ADR-2 de `cli.md`
+> Statut : **révoqué** · 2026-11-24 · Remplacé par l'ADR-0010 · décidé le 2026-10-12 · Anciennement ADR-2 de `cli.md`
+
+> **Mise à jour 2026-11-24, `tsp` se réduit.** La décision est révoquée : les lanceurs et les commandes de lecture n'existent plus. L'ADR-0010 dit pourquoi.
 
 > **Mise à jour 2026-11-24, la CI est la porte.** La CI ne lance plus le script
 > `verifier` d'un bloc : elle en passe les étapes une à une, sous leur nom. Le

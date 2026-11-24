@@ -14,14 +14,6 @@ export function git(root: string, args: string[]): string {
 /** La branche vers laquelle tout travail est fusionné, telle que le distant la connaît. */
 export function stagingRef(root: string): string {
   const remote = "origin/staging";
-  return gitSucceeds(root, ["rev-parse", "--verify", "--quiet", remote])
-    ? remote
-    : "staging";
-}
-
-// ---- implémentation ----
-
-/** Vrai si git réussit : une référence existe. */
-function gitSucceeds(root: string, args: string[]): boolean {
-  return captureProgram("git", args, root).code === 0;
+  const args = ["rev-parse", "--verify", "--quiet", remote];
+  return captureProgram("git", args, root).code === 0 ? remote : "staging";
 }
