@@ -1,7 +1,5 @@
 # Le livrable de l'éditeur
 
-> Dernière mise à jour : 2026-11-02
-
 Le modèle d'éligibilité est **écrit par l'éditeur**, pas par nous. Il arrive en
 paquet, version après version. Ce document dit ce qu'on en garde, ce qui fait
 foi, et comment on lui répond. La marche à suivre pour intégrer une version est
@@ -31,8 +29,7 @@ s'y dépose avec son contenu extrait.
 
 ## Ce que le dépôt garde du paquet
 
-Le dépôt ne garde que quatre pièces du paquet, **recopiées telles quelles**
-(D-70, D-103) :
+Le dépôt ne garde que quatre pièces du paquet, **recopiées telles quelles** :
 
 | Pièce du paquet | Où elle va |
 |---|---|
@@ -43,7 +40,7 @@ Le dépôt ne garde que quatre pièces du paquet, **recopiées telles quelles**
 
 `pnpm regles` recalcule `rules/regles.json` d'après le YAML : c'est lui que le
 code importe. Il écrit aussi `rules/regles.graphe.json`, le graphe de décision
-des règles (D-216). Il s'arrête si une livraison emploie un mécanisme que le
+des règles. Il s'arrête si une livraison emploie un mécanisme que le
 graphe ne traduit pas encore.
 
 Le reste du paquet est **retranscrit** dans le code, selon les règles du dépôt :
@@ -53,7 +50,7 @@ Le reste du paquet est **retranscrit** dans le code, selon les règles du dépô
 | le dictionnaire des cibles, les faits que les règles reçoivent | `core/models/eligibilite/cibles/noms.ts` et `faits/noms.ts` |
 | le catalogue des questions, leurs options et leurs libellés | un fichier par question, sous `questions/p1/`, `p2/`, `p3/` (`questions/qN-N.ts`) |
 | le contrat réponses/faits (`CONTRAT_REPONSES_FAITS.json` et les contrats qui le précisent) | un fichier par fait, sous `faits/` |
-| l'oracle, dans le dossier `tests/` du paquet | `tests/model/eligibilite/`, en faits et en réponses (D-79) |
+| l'oracle, dans le dossier `tests/` du paquet | `tests/model/eligibilite/`, en faits et en réponses |
 | le mapping des gabarits | les cerfa de `front/models/eligibilite/r3/` |
 
 ## Brancher un fait, une cible ou une question
@@ -66,7 +63,8 @@ Le reste du paquet est **retranscrit** dans le code, selon les règles du dépô
    `tests/model/eligibilite/rules/declarations.test.ts` les compare au YAML. Une
    réponse possible se déclare dans sa question : son numéro du catalogue, puis
    son sens (`"2_AVEC_UN_PROCHE"`).
-3. Écris le fichier du fait, et réunis-le dans `faits/index.ts`.
+3. Écris le fichier du fait, sous `faits/` : le catalogue refuse au chargement un
+   fait oublié.
 4. Teste le fait par les réponses qui l'établissent, dans le test de sa partie.
    Un cas de l'éditeur qui le traverse va dans l'oracle.
 

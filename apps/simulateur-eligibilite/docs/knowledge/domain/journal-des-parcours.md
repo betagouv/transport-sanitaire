@@ -19,7 +19,7 @@ navigateur, la validation (`zod`) pour le serveur.
 | Qui | Ce qu'il fait |
 |---|---|
 | le navigateur | envoie chaque événement seul, en `keepalive`, vers `POST /api/journal/v1/events` |
-| le serveur | refuse (400) tout champ hors liste, tout champ mal formé et toute règle croisée enfreinte (26, sous leur numéro du schéma) |
+| le serveur | refuse (400) tout champ hors liste, tout champ mal formé et toute règle croisée enfreinte (`shared/analytics/contract-rule.vo.ts`) |
 | le serveur | ajoute la date de réception, l'environnement, le commit du serveur et la version de nos colonnes (`schema_version`) |
 | le serveur | refuse (422) un établissement absent du référentiel, ou un service hors de son établissement : l'événement va en quarantaine, avec sa raison |
 | le serveur | ignore un renvoi identique, et met à part (409) un autre contenu sous le même `event_id` |
@@ -65,8 +65,7 @@ build. `activity_origin` est `background` pour `button_exposed`,
 un nom. Un service ne part qu'avec son établissement. Une saisie libre attend que
 le référentiel la crée, et part avec les ids créés. Si le référentiel ne répond
 pas, le parcours part sans rattachement. Voir
-[`rattachement.md`](rattachement.md) et
-[`enrichissement-referentiel-rattachement.md`](enrichissement-referentiel-rattachement.md).
+[`rattachement.md`](rattachement.md).
 
 ## Le questionnaire
 

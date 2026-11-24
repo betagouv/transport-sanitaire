@@ -1,10 +1,9 @@
 # Le rattachement à un établissement et un service
 
-> Ce que le prescripteur déclare avant de simuler, ce que montre l'écran, et ce
-> que porte le référentiel. Les décisions techniques sont dans
-> [`../adr/`](../adr/), ADR-0006 et ARCH-001. Ce que l'écran écrit dans Grist est
-> dans [`enrichissement-referentiel-rattachement.md`](enrichissement-referentiel-rattachement.md).
-> Le vocabulaire est fixé dans [`../CONTEXT.md`](../CONTEXT.md).
+> Ce que le prescripteur déclare avant de simuler, ce que montre l'écran, ce que
+> porte le référentiel et ce que l'écran y écrit. Les décisions techniques sont
+> dans [`../adr/`](../adr/), ADR-0006 et ARCH-001. Le vocabulaire est fixé dans
+> [`../CONTEXT.md`](../CONTEXT.md).
 
 ## Ce que c'est
 
@@ -28,7 +27,7 @@ Trois contraintes :
 ## Ce que montre l'écran
 
 Une seule liste, « Établissement », sans phrase d'aide. Le simulateur s'ouvre
-dès que le choix suffit (#197, #367).
+dès que le choix suffit.
 
 ```
 Établissement ──────────────┬─ établissement du référentiel → Service ─┬─ service de la liste → simulateur
@@ -44,13 +43,12 @@ dès que le choix suffit (#197, #367).
 |---|---|
 | un service de la liste, ou une structure | le simulateur s'ouvre sans bouton |
 | une saisie libre | un bouton valide : on ne sait pas quand une saisie est finie |
-| le service « Autre » d'un établissement | le prescripteur saisit son service réel, qui est écrit dans le référentiel et apparaît dans la liste à la visite suivante ; le parcours porte l'id du service créé (#506) |
-| « Autre établissement » | le prescripteur saisit l'établissement puis le service ; les deux sont écrits, l'établissement reçoit son service « Autre » (#368), et le parcours porte leurs ids (#506) |
-| le référentiel ne répond pas | l'écran le dit et laisse entrer ; le parcours part sans établissement ni service (#506) |
+| le service « Autre » d'un établissement | le prescripteur saisit son service réel, qui est écrit dans le référentiel et apparaît dans la liste à la visite suivante ; le parcours porte l'id du service créé |
+| « Autre établissement » | le prescripteur saisit l'établissement puis le service ; les deux sont écrits, l'établissement reçoit son service « Autre », et le parcours porte leurs ids |
+| le référentiel ne répond pas | l'écran le dit et laisse entrer ; le parcours part sans établissement ni service |
 
 Changer d'écran au choix d'une liste est un changement de contexte (RGAA 7.4,
-WCAG 3.2.2), assumé par le produit. Rien ne l'annonce, à la demande du porteur
-(#367).
+WCAG 3.2.2), assumé par le produit. Rien ne l'annonce, à la demande du porteur.
 
 **Les structures.** « Libéral », « Assurance Maladie » et « Autre » s'affichent
 sous le trait, toujours dans cet ordre. Ce sont des services d'un établissement
@@ -58,15 +56,15 @@ fourre-tout du référentiel, qui ne s'affiche pas. Ses autres services ne
 s'affichent pas non plus. Le « Autre » des structures n'est pas une saisie
 libre : il ouvre le simulateur.
 
-**« Assurance Maladie »** ouvre la trace de debug sur tous les environnements
-(#407, D-280). Les seeds et le choix du modèle restent en local (#373, D-279).
+**« Assurance Maladie »** ouvre la trace de debug sur tous les environnements.
+Les seeds et le choix du modèle restent en local.
 
 ## Ce qui est interdit
 
 Aucun nom de personne, aucun identifiant de patient, aucune donnée de santé.
-Les noms saisis, d'un service ou d'un établissement, ne partent jamais à la
-[mesure d'audience](mesure-d-audience.md) : un établissement saisi n'a pas d'id
-de service, son événement part sans nom.
+Les noms saisis, d'un service ou d'un établissement, ne partent jamais, ni à la
+[mesure d'audience](mesure-d-audience.md) ni au journal : seuls partent les ids
+que le référentiel leur donne.
 
 Le rattachement vit le temps de la session, en mémoire. Rien n'est gardé dans
 le navigateur : ni `localStorage`, ni URL.
@@ -87,7 +85,6 @@ erDiagram
         id id PK
         string libelle
         string origine "formulaire quand saisi à l'écran"
-        string finess "optionnel, pour une migration FINESS"
     }
     SERVICE {
         id id PK
@@ -103,13 +100,42 @@ erDiagram
 - L'établissement fourre-tout (`Id2 = 11`) porte les structures.
 - `Origine` vaut `formulaire` sur une ligne créée depuis l'écran, établissement
   comme service : l'admin la repère, la corrige ou la retire dans Grist.
-- Une table des prescripteurs existe encore dans Grist, tenue par l'admin.
-  L'app ne la lit ni ne l'écrit depuis le 2026-09-29.
 - Le navigateur ne peut pas parler à Grist : sa clé est toute-puissante et Grist
   bloque le CORS. Le backend de l'app la détient, et sert le référentiel en
   same-origin. En production, il refuse de démarrer sans la clé ni l'adresse du
   document : son repli, un référentiel factice, n'est bon que pour un poste de
   développement, et le servir en production donnerait un simulateur
   silencieusement faux (`server/configuration.ts`).
-- Le champ `finess` est prévu, en optionnel, pour une migration vers le
-  référentiel officiel.
+
+## Ce que l'écran écrit dans le référentiel
+
+Le texte libre d'une saisie enrichit le référentiel, pour que l'admin et les
+prescripteurs suivants en bénéficient sans ressaisir. Seules les saisies libres
+s'écrivent : un service choisi dans la liste n'apprend rien au référentiel.
+
+- **Visible aussitôt.** La ligne créée reçoit un `Id2` : le plus grand de sa
+  table, plus un.
+- **Sans doublon.** Un nom déjà là, à la casse et aux espaces près, est
+  réutilisé : sous le même établissement pour un service, dans toute la table
+  pour un établissement.
+- **L'établissement d'abord.** Un établissement saisi est créé ou réutilisé, avec
+  son service « Autre » s'il est nouveau, puis son service sous lui.
+- **Aucune personne dans Grist.** L'app n'écrit ni ne lit aucune donnée de
+  personne.
+- **Non bloquant.** Une écriture qui échoue n'empêche jamais d'entrer : le
+  prescripteur passe sans les ids de sa saisie, et l'erreur est loguée.
+- **Une attente bornée.** L'écran envoie la saisie (`POST /api/rattachement`) et
+  attend les ids créés, cinq secondes au plus, pour que le parcours les porte dès
+  cette visite. Le bouton dit « Ouverture du simulateur… » pendant ce temps.
+- **Quarantaine à la collecte.** Le journal vérifie chaque paire contre le
+  référentiel, lu en cache dix minutes (un id inconnu le relit, pour qu'une
+  saisie tout juste créée passe). Un établissement inconnu, ou un service hors de
+  son établissement, va dans `journal_quarantine` avec sa raison, et ne compte pas
+  parmi les événements valides.
+
+La colonne `Origine` doit exister sur `Services_Unites` et sur `Etablissements`.
+Le détail des écritures et des réponses de la route est dans
+`server/rattachement/referentiel-grist.ts` et `routes.ts`, que couvrent
+`tests/socle/server/enrichissement.test.ts` et `referentiel-grist.test.ts` ; les ids
+au parcours et la quarantaine, `tests/socle/rattachement/enregistrement-au-serveur.test.ts`
+et `tests/socle/journal/collecte-du-rattachement.test.ts`.
