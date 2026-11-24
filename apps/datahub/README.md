@@ -283,13 +283,6 @@ versionné, l'ETL tourne sans étape réseau.
 
 ## Dette connue
 
-**Des modules déguisés en classes.** `Csv`, `Xlsx`, `Paths` et `Mapping` sont des
-classes à membres uniquement statiques. Biome les signale par `noStaticOnlyClass`, une
-règle du preset `recommended` de `biome.base.jsonc` : aucun fichier ne la configure.
-C'est un avertissement, qui ne bloque ni `pnpm lint` ni la CI. Les convertir en
-fonctions exportées touche plus de quatre-vingts appels. **À payer quand un de ces
-modules sera rouvert.** Pas avant, et pas par un `off` dans la configuration.
-
 **`noNonNullAssertion` est éteinte dans `src/`** (`biome.jsonc`), pour une raison précise. Le
 tsconfig active `noUncheckedIndexedAccess`, qui rend `ligne[colonne]`
 potentiellement `undefined`.
