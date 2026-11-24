@@ -9,6 +9,11 @@ gh = "2.98.0"
 # redite dans `packageManager` à la racine, que Corepack et la CI lisent.
 pnpm = "11.23.0"
 
+# `agent-smith` génère les `AGENTS.md` (ADR-0011). `uv` installe cet outil Python
+# dans son propre environnement, hors de toute installation globale.
+uv = "0.12.23"
+"pipx:agent-smith-cli" = "0.8.0"
+
 # Ce fichier ne porte que le toolchain. Les gestes du dépôt (installer, lancer,
 # vérifier) passent par `pnpm`, et `tsp` prépare la machine : voir
 # apps/cli/README.md.

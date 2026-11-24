@@ -99,5 +99,5 @@ Un risque résolu se retire de son tableau : l'historique de Git le garde.
 ## Quand un ADR contredit le code
 
 Le test, le code et le README de l'app l'emportent sur `docs/knowledge/adr/`
-(`AGENTS.md` § « Où écrire quoi »). Un ADR qui contredit le code a tort :
+([`travailler-dans-le-depot.md`](travailler-dans-le-depot.md#où-écrire-quoi)). Un ADR qui contredit le code a tort :
 on le corrige.

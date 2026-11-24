@@ -7,12 +7,11 @@ description: Faire la revue d'une PR et de son ticket Notion, fonctionnelle puis
 
 La revue aide le relecteur à décider : fusionner, faire corriger, ou poser une
 question. Elle est **fonctionnelle d'abord, technique ensuite**. Elle suit la
-section « Communication » d'[AGENTS.md](../../../AGENTS.md).
+section « Écrire » de [`travailler-dans-le-depot.md`](../../../docs/knowledge/contributing/travailler-dans-le-depot.md#écrire).
 
 Les règles qu'elle contrôle sont dans `docs/knowledge/contributing/`, dans
-l'`AGENTS.md` de l'app, et dans les décisions que la PR cite. Pour l'aspect des
-pages : [`apps/simulateur-eligibilite/AGENTS.md`](../../../apps/simulateur-eligibilite/AGENTS.md)
-§ « Pièges ».
+le recueil de l'app, et dans les décisions que la PR cite. Pour l'aspect des
+pages : [`livrable-de-l-editeur.md`](../../../apps/simulateur-eligibilite/docs/knowledge/domain/livrable-de-l-editeur.md#les-maquettes-font-foi).
 
 ## Ce qu'elle produit
 
@@ -58,7 +57,7 @@ cp apps/<app>/.env .claude/worktrees/revue-<n>/apps/<app>/.env   # si l'app en a
 ```
 
 Ajouter une entrée `revue-<n>` à `.claude/launch.json`, puis `preview_start`.
-Le chemin d'accès aux outils de l'app est dans son `apps/<app>/AGENTS.md` : le
+Le chemin d'accès aux outils de l'app est dans son `apps/<app>/README.md` : le
 dire en tête du cahier.
 
 ## 3. Revue fonctionnelle

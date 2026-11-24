@@ -43,7 +43,7 @@ jobs:
   # Les parcours en navigateur réel, sous Chromium et WebKit : le simulateur
   # construit, embarqué en iframe dans une page d'une autre origine. Ils ont
   # leur job, hors du `verifier` : ils demandent des navigateurs installés, que
-  # le poste d'un contributeur n'a pas forcément (voir l'AGENTS.md de l'app).
+  # le poste d'un contributeur n'a pas forcément (voir le README de l'app).
   navigateur:
     runs-on: ubuntu-latest
     steps:
@@ -92,7 +92,7 @@ jobs:
           node-version-file: package.json
           cache: pnpm
       - run: pnpm install --frozen-lockfile
-      # Pas de tests : voir apps/cli/AGENTS.md.
+      # Pas de tests : voir l'ADR-0005.
       - name: lint
         run: pnpm --filter cli lint
       - name: typecheck
@@ -103,7 +103,8 @@ jobs:
   # L'audit ne se scope pas : `pnpm audit` lit le lock, et le lock est unique au
   # dépôt depuis le passage en workspace. Le répéter dans chaque job
   # auditerait plusieurs fois la même chose en laissant croire le contraire. Il a
-  # donc son job.
+  # donc son job, qui tient aussi le contrôle des `AGENTS.md` générés : un
+  # contrôle du dépôt entier, pas d'une app (ADR-0011).
   audit:
     runs-on: ubuntu-latest
     steps:
@@ -120,6 +121,17 @@ jobs:
       # transitif de Vite ne doit pas coincer une correction sans rapport.
       - run: pnpm audit --audit-level high
         continue-on-error: true
+      # La version d'agent-smith vient de `mise.toml`, comme en local.
+      - uses: jdx/mise-action@v5
+        with:
+          install_args: uv pipx:agent-smith-cli
+      - name: AGENTS.md est généré
+        run: |
+          pnpm agents
+          if ! git diff --exit-code -- '*AGENTS.md'; then
+            echo "::error::AGENTS.md est généré : modifie la source puis lance 'pnpm agents'."
+            exit 1
+          fi
 
   # Scan de secrets sur **tout** l'historique, pas seulement le diff : un secret
   # commité puis retiré reste lisible dans les objets git. Le dépôt étant public,

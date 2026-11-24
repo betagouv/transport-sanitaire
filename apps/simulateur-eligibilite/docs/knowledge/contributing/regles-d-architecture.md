@@ -63,6 +63,9 @@ prescrit`, `› les règles publicodes ne portent que de l'éligibilité`.
   `Model` (`front/socle/model.ts`). Il n'importe rien d'un modèle.
 - Un modèle n'importe du socle que `core/socle/index.ts` et `front/socle/index.ts`.
 - Aucun modèle n'importe l'autre, d'un côté comme de l'autre.
+- Le socle dit ce qui a été montré, validé, coché. Il ne conclut rien : le modèle
+  reçoit les réponses par `GivenAnswers` et `ValidatedAnswers`, jamais brutes, et
+  applique le contrat de l'éditeur fait par fait.
 
 *Gardé par* `tests/architecture.test.ts › le socle et le modèle` et
 `› les modèles entre eux`.
@@ -153,6 +156,8 @@ par leurs méthodes`. Que l'inconnu ne soit pas un « non » est éprouvé dans
 - Un fait est un fichier de `faits/`, au nom du fait sans `fait_`, en kebab-case.
   Il n'exporte que sa déclaration.
 - Ce que plusieurs faits reprennent mot pour mot va dans `faits/communs.ts`.
+  Une donnée de l'éditeur se partage là où elle se déclare : les réponses
+  possibles, dans leur question.
 - Un fait ne lit aucune partie du questionnaire : ce sont les gardes des parties
   qui lisent les faits.
 - Le catalogue refuse au chargement un fait déclaré deux fois ou oublié.
@@ -198,9 +203,14 @@ que pour une place suivante`.
   `offeredWhen`, `inconsistentWhen`), jamais un `if` d'écran ni une fonction du
   contexte. Il n'y a qu'une lecture d'une réponse, `given.question(id).answer()` :
   le socle choisit la validée ou la saisie selon l'endroit.
+- Une garde lit le fait quand il en existe un (`given.fait("fait_permission")`).
+  Elle ne recompose pas, réponse par réponse, ce que le fait établit déjà.
+- Mieux vaut une condition écrite deux fois qu'une abstraction entre les pages et
+  les faits.
 - R2, R3, ses cerfa et les faits lisent des valeurs (`given…`), pas les réponses
   brutes (`GivenAnswers`, `ValidatedAnswers`).
-- Une condition qui lit une question vit après elle : dans son fichier, ou dans un
+- Une déclaration lit une question par son objet, et l'importe. Une condition qui
+  lit une question vit après elle : dans son fichier, ou dans un
   `conditions/` que la question n'importe pas. Sinon les deux modules s'importent
   et la question lue vaut `undefined` au chargement.
 

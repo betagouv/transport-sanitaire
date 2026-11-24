@@ -1,0 +1,49 @@
+# Source de l'AGENTS.md de la racine. Il est généré par `pnpm agents` (ADR-0011) :
+# on corrige la source, jamais le fichier. Les scripts sont dans tooling/agents/.
+output = "AGENTS.md"
+
+[overview]
+enabled = true
+source = "README.md"
+title = "Présentation"
+
+[tech_stack]
+enabled = true
+source = "mise.toml"
+title = "Outils"
+
+# Ni justfile ni adr-tools : les commandes viennent des README, les décisions
+# de la liste des fichiers d'ADR.
+[available_commands]
+enabled = false
+
+[architecture_decisions]
+enabled = false
+
+[[sections]]
+title = "Les apps"
+command = "sh tooling/agents/section.sh README.md 'Les apps'"
+
+[[sections]]
+title = "Commandes"
+command = "sh tooling/agents/section.sh README.md Commandes"
+
+[[sections]]
+title = "Commandes de tsp"
+command = "sh tooling/agents/section.sh apps/cli/README.md Commandes"
+
+[[sections]]
+title = "Décisions"
+command = "sh tooling/agents/liste-des-adr.sh docs/knowledge/adr"
+
+[[sections]]
+title = "Règles"
+command = "sh tooling/agents/index-des-regles.sh docs/knowledge/contributing/regles-de-code.md docs/knowledge/contributing/regles-git.md"
+
+[[sections]]
+title = "À lire"
+command = "sh tooling/agents/liste-des-pages.sh docs/knowledge"
+
+[[sections]]
+title = "Skills"
+command = "sh tooling/agents/liste-des-skills.sh .claude/skills"

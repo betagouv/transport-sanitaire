@@ -9,7 +9,7 @@ en conséquence. Le parcours débute par un rattachement obligatoire à un étab
 > dépendait ont été retirés, et la v10 s'intègre étape par étape. Le simulateur
 > s'ouvre sur le **modèle de l'éditeur**, encore incomplet. Le modèle de
 > démonstration reste à portée des developer tools, en local seulement. Voir
-> [« Entre deux modèles »](#entre-deux-modèles).
+> [« Entre deux modèles »](README.md#entre-deux-modèles).
 
 ## Fonctionnement
 
@@ -39,6 +39,11 @@ flowchart LR
 Aucune réponse du questionnaire ne quitte le navigateur. Le backend ne sert que le
 front et le référentiel de rattachement.
 
+Le front est en React 19, Vite et DSFR. Le questionnaire est **déclaré par
+l'application** (`core/socle/questionnaire-engine/`), et
+`front/socle/questionnaire/` l'affiche. Le backend Node/Express (`server/`) sert le
+front et `/api/*`, sur Scalingo : ce n'est pas un site statique.
+
 ## Commandes
 
 | Commande | Ce qu'elle fait |
@@ -54,6 +59,7 @@ front et le référentiel de rattachement.
 | `pnpm typecheck` | `tsc -b` sur les quatre projets : front, node, serveur et tests |
 | `pnpm build` | Typecheck puis build Vite dans `dist/`, suivi de `verifier-bundle`. `pdf-lib` et le catalogue de seeds doivent rester hors du chunk d'entrée, sans quoi chaque prescripteur télécharge ce qu'il ne verra jamais. |
 | `pnpm start` | Le serveur de production (`node server/server.ts`, Node 24) |
+| `pnpm regles` | Recalcule le `regles.json` et le `regles.graphe.json` de chaque modèle d'après son `regles.publicodes`. À lancer après toute retouche des règles : un test les compare. |
 
 Les règles d'écriture et les invariants ne sont pas de la prose, ils sont exécutables.
 On les trouve dans `tests/architecture.test.ts`, pour les frontières, dans
@@ -62,7 +68,9 @@ On les trouve dans `tests/architecture.test.ts`, pour les frontières, dans
 et les extensions d'import, dans `tests/miroir-des-sources.test.ts`, pour
 les dossiers de tests, rangés comme les sources, et dans
 `tests/modules-du-socle.test.ts`, pour l'index de chaque module du socle. Lis leur message d'échec : chacun dit ce que sa règle
-protège. Ce qu'on attend d'un contributeur est écrit dans [AGENTS.md](AGENTS.md).
+protège. Ce qu'on attend d'un contributeur est écrit dans
+[`docs/knowledge/contributing/`](../../docs/knowledge/contributing/) et dans
+[`regles-d-architecture.md`](docs/knowledge/contributing/regles-d-architecture.md).
 
 De n'importe où dans le dépôt, `pnpm --filter simulateur-eligibilite dev` lance le front
 et le backend en parallèle, et `pnpm verifier` passe la vérification sur toutes
@@ -121,6 +129,18 @@ dans `front/` (ARCH-002).
 Un module du socle, dossier direct de `core/socle/` ou de `front/socle/`, a son
 `index.ts` : ce qu'il promet au reste du socle, et le seul de ses fichiers
 qu'on importe de l'extérieur (ARCH-003).
+
+**Le socle est celui des transports sanitaires.** L'outillage stable (publicodes,
+DSFR, pdf-lib) et ce qui ne change pas avec le modèle (logos, mise en page,
+impression) y vivent. Le modèle ne porte que ce que l'éditeur livre : règles,
+déclarations, textes.
+
+Le script `front/socle/analytics/cms.js` s'exécute sur les pages du CMS, pas dans
+l'app : il n'importe rien et personne ne l'importe.
+
+**DSFR pour toute l'interface.** Un composant emprunte la forme de ses props au
+composant appelé (`ComponentProps<typeof Checkbox>`) plutôt que de la recopier :
+une recopie dérive d'une version à l'autre.
 
 ```
 shared/                  le contrat front ⇄ back, source unique des types partagés
@@ -309,7 +329,8 @@ est dans son ticket Notion, les décisions dans
 
 Le modèle de démonstration (`core/models/fake/` et `front/models/fake/`) déroule une commande de
 boisson, sans rapport avec le transport sanitaire. Il est pérenne : chaque capacité du socle
-y a sa page, et ses seeds ouvrent les pages à montrer. Le modèle de l'éditeur
+y a sa page, et ses seeds ouvrent les pages à montrer. Le socle ne sait pas qu'un
+modèle est « de démonstration ». Le modèle de l'éditeur
 s'ouvre par défaut (D-119) ; les developer tools permettent de passer à la
 démonstration. Ils ne s'ouvrent qu'en local, sous le serveur de dev et sous les
 tests, quel que soit le service choisi : staging et production n'atteignent ni la
@@ -334,6 +355,41 @@ sert à tenir en vie, et sous test, ce que le parcours réel reprendra :
 | Résultat sans suite | Quand la préconisation ne donne pas de libellé pour l'action qui verrouille, pas de partie suivante qui ait des pages ou un cerfa, ou que le résultat se dit `terminal`, le premier résultat est le dernier écran : pas de bouton pour verrouiller, et le stepper s'arrête sur lui. | `simulateur/screens/ResultatScreen.tsx` |
 
 *Gardé par* `tests/socle/simulateur/`.
+
+## Tests
+
+**Sans mock.**
+
+- Les tests d'interface passent Testing Library sur le vrai `<App />`.
+- Les tests serveur font de vraies requêtes HTTP sur une app Express montée sur
+  un référentiel injecté.
+- Les tests du socle PDF remplissent un vrai PDF, fabriqué par `pdf-lib`.
+
+`tests/socle/` éprouve le socle sur un modèle qu'on lui injecte : le factice, dans
+`tests/socle/fixtures/modele-factice/`. Il est petit et figé, pour que ces tests ne
+changent pas quand le modèle de démonstration gagne une page. `tests/model/`
+vérifie chaque modèle : `conformite.test.ts` contrôle ce que le socle suppose de
+n'importe quel modèle et rejoue ses seeds, `tests/model/eligibilite/` rejoue
+l'oracle de l'éditeur, en faits, contre le moteur.
+
+**Quelques parcours tournent dans un vrai navigateur**, dans `navigateur/` :
+Chromium et WebKit, le simulateur construit en iframe dans une page d'une autre
+origine qui charge le script du CMS. Ils vérifient ce que happy-dom ne peut pas
+dire : l'iframe, les messages avec la page, le PDF, l'accessibilité vue par axe.
+Ils restent peu nombreux : la logique s'éprouve dans `tests/`.
+
+**Une capacité ajoutée au socle arrive avec trois choses** : ses tests, sur des
+pages écrites dans le test (`tests/socle/questionnaire/afficher.tsx`), sa page
+dans le modèle de démonstration, et une seed qui ouvre cette page.
+
+**Une situation de référence va dans le `seeds-catalogue.ts` de son modèle, pas
+dans un fichier de test.** C'est un catalogue unique de situations nommées, *avec
+leurs cibles attendues*. Les réponses d'une seed se donnent par identifiant de
+question (`"Q1.2"`). Complètes, elles ouvrent un résultat et `expected` annonce les
+seules cibles qui la caractérisent. Incomplètes, elles s'arrêtent sur la première
+question sans réponse et n'annoncent rien. Sur un écart, ne corrige pas l'attendu
+pour qu'il passe : lis la règle et le contrat
+([`livrable-de-l-editeur.md`](docs/knowledge/domain/livrable-de-l-editeur.md)).
 
 ## Déployer
 

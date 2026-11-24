@@ -1,7 +1,7 @@
 # Les règles de code
 
 > Les 20 règles `QUAL-*`. Les conventions du dépôt sont dans
-> [`../../AGENTS.md`](../../AGENTS.md), les règles de commit dans
+> [`travailler-dans-le-depot.md`](travailler-dans-le-depot.md), les règles de commit dans
 > [`regles-git.md`](regles-git.md).
 
 **20 règles**. Chacune a son identifiant. Cite-le en revue ou en commit

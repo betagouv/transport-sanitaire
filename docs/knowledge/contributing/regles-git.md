@@ -1,7 +1,7 @@
 # Les règles de commit
 
 > Les 7 règles `GIT-*`. Les conventions du dépôt sont dans
-> [`../../AGENTS.md`](../../AGENTS.md), les règles de code dans
+> [`travailler-dans-le-depot.md`](travailler-dans-le-depot.md), les règles de code dans
 > [`regles-de-code.md`](regles-de-code.md).
 
 **7 règles**, mêmes conventions que les `QUAL-*`. Cite l'identifiant plutôt que de
@@ -174,7 +174,7 @@ dans le corps passe.
 > variable, un fichier de test ou le message lui-même.
 
 Relire les deux, pas seulement le diff. Voir
-[`apps/datahub/AGENTS.md`](../../apps/datahub/AGENTS.md).
+[« Confidentialité » du README de datahub](../../../apps/datahub/README.md#confidentialité).
 
 **Exemples**
 
