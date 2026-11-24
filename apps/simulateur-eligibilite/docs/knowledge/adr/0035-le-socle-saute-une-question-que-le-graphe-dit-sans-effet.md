@@ -6,7 +6,7 @@
 `mattersWhile` disait à la main qu'une réponse comptait encore, et en oubliait
 souvent : un patient seul en SAMSAH répondait à Q2.3.1, Q2.3.2 et Q2.3.3, alors
 que la caisse est son issue quelle que soit la distance. Les gardes, les faits,
-R2 et R3 savaient ce qu'ils lisent (ADR-0032 à ADR-0034) : on pouvait dire, sans
+R2 et R3 savaient ce qu'ils lisent (ARCH-008) : on pouvait dire, sans
 exécuter, ce qu'une réponse change.
 
 **Décision.** Le graphe des règles se compile au build, en un diagramme de
@@ -73,4 +73,4 @@ remontent à l'éditeur.
 
 > **Mise à jour 2026-10-28, le tri des gardes d'utilité (#256).** Le graphe ne
 > remplace aucun `mattersWhile` : ils restent tous (ADR-0035, conséquences). La
-> dernière phrase de l'ADR-0034 ne vaut plus. Décision de Simon, au journal D-227.
+> dernière phrase de la règle ARCH-008 ne vaut plus. Décision de Simon, au journal D-227.

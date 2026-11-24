@@ -53,7 +53,7 @@ le poste du prescripteur, ce que l'[ADR-0003](./0003-la-mesure-d-audience-se-fai
 - Un rechargement de la page ouvre une nouvelle simulation : l'app ne garde rien
   d'un rechargement à l'autre. Reprendre le même `simulation_id` demanderait un
   stockage dans le navigateur, que l'ADR-0003 écarte.
-- Le stockage est derrière un port (ADR-0043) : changer de base ne touche qu'un
+- Le stockage est derrière un port (ARCH-004) : changer de base ne touche qu'un
   adaptateur.
 
 ## Risques

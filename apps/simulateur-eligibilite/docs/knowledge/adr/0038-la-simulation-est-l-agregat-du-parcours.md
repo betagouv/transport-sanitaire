@@ -2,7 +2,7 @@
 
 > Statut : **décidé** · 2026-11-04 · Anciennement ADR-27 de `metier-et-ecran.md`
 
-**Contexte.** L'ADR-0036 donnait au parcours son entité, `Simulation`, mais elle
+**Contexte.** QUAL-011 donnait au parcours son entité, `Simulation`, mais elle
 ne lisait qu'une préconisation : `Simulation.of(core, réponses)`. L'état du
 parcours restait à l'écran : `useQuestionnaire` gardait la page ouverte, le
 brouillon et les réponses ; `screen.ts` devinait l'écran de départ d'une seed ;
@@ -54,6 +54,6 @@ tient en 299 lignes : une capacité de plus en sort dans son fichier (R-13).
 
 > **Mise à jour 2026-11-03, l'agrégat du parcours (#336).** L'ADR-0038 fait de
 > `Simulation` l'agrégat du parcours : l'étape, le verrou, la page ouverte et
-> les transitions y vivent ; l'écran ne garde que le brouillon. L'ADR-0036 est
+> les transitions y vivent ; l'écran ne garde que le brouillon. QUAL-011 est
 > précisé : `Simulation.of` devient `start` et `resume`. Décision de Simon, au
 > journal D-262.

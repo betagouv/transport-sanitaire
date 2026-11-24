@@ -21,7 +21,7 @@ dans le [README](README.md) § « Entre deux modèles ». Le vocabulaire est dan
 
 `core/` et `front/` ont chacun un `socle/`, qui ne dépend d'aucune version du
 modèle, et un `models/`, un dossier par modèle, du même nom des deux côtés
-(ADR-0012, ADR-0016). Les modèles sont `eligibilite/`, celui de l'éditeur, qui
+(ARCH-002). Les modèles sont `eligibilite/`, celui de l'éditeur, qui
 s'ouvre au démarrage, et `fake/`, celui de démonstration.
 
 - **Le socle ne connaît un modèle que par deux contrats** : `CoreModel`
@@ -52,15 +52,15 @@ s'ouvre au démarrage, et `fake/`, celui de démonstration.
 Le script `front/socle/analytics/cms.js` s'exécute sur les pages du CMS, pas dans
 l'app : il n'importe rien et personne ne l'importe.
 
-**L'arbre dit le chemin** (ADR-0036) : sous une racine, un dossier est un module,
+**L'arbre dit le chemin** (QUAL-011) : sous une racine, un dossier est un module,
 une entité (un nom) ou une capacité (un verbe). Un fichier porte une
 responsabilité et se nomme de ce qu'il exporte. `utils/`, `types/` et `helpers/`
 n'existent pas ici.
 
-**Un module du socle s'ouvre par son index** (ADR-0039) : hors du module, on
+**Un module du socle s'ouvre par son index** (ARCH-003) : hors du module, on
 n'importe que lui. Ses tests lisent ses fichiers en direct. Seul un adaptateur
 (`.adapter.ts`) importe un paquet, et seul un index importe un adaptateur
-(ADR-0052).
+(ARCH-004).
 
 ## Commandes
 
@@ -88,8 +88,8 @@ Ce que le code et ses tests ne disent pas :
 
 - **Une garde est une condition, jamais un `if` dans un composant.** Elle lit ce
   qui la précède. Ce qui se déclare (constructeurs, `appliesWhen`, `mattersWhile`,
-  `dependsOn`, `inconsistentWhen`, `unlessAskedBefore`) est dans ADR-0020 à
-  ADR-0022, ADR-0034, ADR-0040 et ADR-0041.
+  `dependsOn`, `inconsistentWhen`, `unlessAskedBefore`) est dans ARCH-007,
+  ARCH-008 et ADR-0041.
 - **Une garde lit le fait quand il en existe un** (`given.fait("fait_permission")`).
   Elle ne recompose pas, réponse par réponse, ce que le fait établit déjà.
 - **Une déclaration lit une question par son objet**, et l'importe. Une condition
@@ -105,7 +105,7 @@ Ce que le code et ses tests ne disent pas :
 - **Le socle dit ce qui a été montré, validé, coché. Il ne conclut rien** : le
   modèle reçoit les réponses par `GivenAnswers` et `ValidatedAnswers`, jamais
   brutes, et applique le contrat de l'éditeur fait par fait.
-- **R2 et R3 lisent des valeurs**, pas les réponses (ADR-0032).
+- **R2 et R3 lisent des valeurs**, pas les réponses (ARCH-008).
 - **Le verrou est une étape, pas un drapeau** (ADR-0038). Une saisie ne compte
   qu'une fois la page validée.
 
@@ -136,6 +136,9 @@ developer tools greffés sur le simulateur. La clean architecture est dans
 modules du socle dans
 [`tests/modules-du-socle.test.ts`](tests/modules-du-socle.test.ts), les limites de
 30 et 300 lignes dans [`tests/taille-du-code.test.ts`](tests/taille-du-code.test.ts).
+
+Les règles `ARCH-*` qu'ils gardent sont dans
+[`regles-d-architecture.md`](docs/knowledge/contributing/regles-d-architecture.md).
 
 **Ne les recopie pas ici.** Lis le fichier. Lis surtout le message d'échec avant
 de contourner une règle : il dit ce qu'elle protège.

@@ -57,14 +57,18 @@ describe("frontières de runtime", () => {
     ).toEqual([]);
   });
 
-  it("le contrat partagé ne dépend d'aucune des deux racines", () => {
+  it("le contrat partagé ne dépend d'aucune autre racine", () => {
     expect(
       franchissements(
         ["shared"],
-        (cible) => cible.startsWith("front/") || cible.startsWith("server/"),
+        (cible) =>
+          cible.startsWith("core/") ||
+          cible.startsWith("front/") ||
+          cible.startsWith("server/"),
       ),
       "`shared/` est chargé des deux côtés : il ne peut dépendre que de " +
-        "lui-même. Ce qui a besoin du front ou du serveur n'est pas du contrat.",
+        "lui-même. Ce qui a besoin du métier, du front ou du serveur n'est " +
+        "pas du contrat.",
     ).toEqual([]);
   });
 });

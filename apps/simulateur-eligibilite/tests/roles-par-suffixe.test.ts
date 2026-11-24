@@ -9,7 +9,18 @@ import { describe, expect, it } from "vitest";
 import { astDe, racine, sources } from "./inspection-des-sources";
 
 // Ce qui suit déjà la règle. Un dossier s'ajoute ici quand il y est passé.
-const GARDES = ["core/socle"];
+const GARDES = [
+  "core/socle",
+  "server/grist",
+  "server/journal",
+  "server/postgres",
+  "front/socle/analytics",
+  "front/socle/server-api",
+];
+
+// Les fichiers qui assemblent des classes ne portent pas un rôle : ils les
+// branchent, comme un `index.ts` les réexporte.
+const ASSEMBLAGES = ["front/socle/analytics/use-cases-in-the-tree.ts"];
 
 const ROLES = [
   "entity",
@@ -21,13 +32,17 @@ const ROLES = [
   "error",
   "factory",
   "types",
+  "controller",
+  "hook",
+  "client",
 ];
 const ROLE = new RegExp(`\\.(${ROLES.join("|")})\\.ts$`);
 
 describe("un fichier dit son rôle par son suffixe", () => {
   it("chaque fichier porte un suffixe de rôle", () => {
     const fautifs = sources(...GARDES).filter(
-      (f) => basename(f) !== "index.ts" && !ROLE.test(f),
+      (f) =>
+        basename(f) !== "index.ts" && !ASSEMBLAGES.includes(f) && !ROLE.test(f),
     );
     expect(
       fautifs,

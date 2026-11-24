@@ -122,11 +122,13 @@ son `AGENTS.md`.
 
 ## Écrire du code et commiter
 
-27 règles numérotées vivent dans `docs/knowledge/contributing/`. **À lire avant
+37 règles numérotées vivent dans `docs/knowledge/contributing/` et dans le recueil du simulateur. **À lire avant
 d'écrire une ligne ou de commiter.**
 
 - [`regles-de-code.md`](docs/knowledge/contributing/regles-de-code.md) : les 20 `QUAL-*`
 - [`regles-git.md`](docs/knowledge/contributing/regles-git.md) : les 7 `GIT-*`
+- [`regles-d-architecture.md`](apps/simulateur-eligibilite/docs/knowledge/contributing/regles-d-architecture.md) :
+  les 10 `ARCH-*` du simulateur
 - [`ecrire-une-regle.md`](docs/knowledge/contributing/ecrire-une-regle.md) et
   [`ecrire-une-decision.md`](docs/knowledge/contributing/ecrire-une-decision.md) :
   écrire une règle, une décision ou un ADR
@@ -193,7 +195,8 @@ n'existe pas.** Mieux vaut l'écrire dans un test que la répéter ici. Une règ
 jugement, que rien ne mécanise, écrit `*Aucune garde.*` en toutes lettres plutôt
 que de laisser croire qu'elle en a une.
 
-L'état de chaque règle des 27 de
-[`docs/knowledge/contributing/`](docs/knowledge/contributing/) se lit dans la
-colonne « Garde » de son tableau, pas ici : le recopier créerait deux sources à
+L'état de chaque règle des 37 de
+[`docs/knowledge/contributing/`](docs/knowledge/contributing/) et du
+[recueil du simulateur](apps/simulateur-eligibilite/docs/knowledge/contributing/regles-d-architecture.md)
+se lit dans la colonne « Garde » de son tableau, pas ici : le recopier créerait deux sources à
 tenir à jour.

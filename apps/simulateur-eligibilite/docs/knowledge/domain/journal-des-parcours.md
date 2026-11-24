@@ -5,7 +5,7 @@
 > [`mesure-d-audience.md`](mesure-d-audience.md). Les identifiants sont définis
 > dans [`../CONTEXT.md`](../CONTEXT.md). La décision d'écrire ce journal côté
 > serveur est dans [ADR-0042](../adr/0042-le-backend-ecrit-le-journal-des-parcours.md),
-> son découpage en ports dans [ADR-0043](../adr/0043-le-journal-passe-par-un-port-grist-en-premier.md).
+> son découpage en ports dans [ARCH-004](../contributing/regles-d-architecture.md).
 
 ## Ce que le journal reçoit
 

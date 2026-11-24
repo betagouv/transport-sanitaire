@@ -19,14 +19,14 @@
 | QUAL-008 | Répéter un littéral plutôt que fabriquer un fragment sans nom | aucune |
 | QUAL-009 | Une fonction choisit, les autres font | aucune |
 | QUAL-010 | Un fichier se sépare par sujet, pas par débordement | `taille-du-code.test.ts` (détecte seulement) |
-| QUAL-011 | Un fichier porte le nom d'une feature, pas d'une catégorie | `lisibilite.test.ts` |
+| QUAL-011 | Un fichier ou un dossier porte le nom d'une feature, pas d'une catégorie | `lisibilite.test.ts`, `miroir-des-sources.test.ts` |
 | QUAL-012 | N'exporter que ce qu'un autre fichier importe | `pnpm knip` |
 | QUAL-013 | Ne jamais formater à la main | Biome |
 | QUAL-014 | Pas de suppression pour un linter que le projet ne lance pas | aucune |
 | QUAL-015 | Une suppression nomme sa règle et sa raison | Biome |
 | QUAL-016 | Dossiers et fichiers en kebab-case, sauf un composant React | `lisibilite.test.ts` |
 | QUAL-017 | Un retour qui peut manquer nomme son absence | `lisibilite.test.ts` |
-| QUAL-018 | Un fichier dit son rôle par son suffixe | `roles-par-suffixe.test.ts` (`core/socle/` seulement) |
+| QUAL-018 | Un fichier dit son rôle par son suffixe | `roles-par-suffixe.test.ts` (les dossiers qui la suivent déjà) |
 | QUAL-019 | Hors de React, une notion est une classe | aucune |
 | QUAL-020 | Pas de test d'absence | aucune |
 
@@ -351,26 +351,35 @@ plus un : un fichier à 300 au `wc -l` échoue.
 
 ---
 
-### QUAL-011 - Un fichier porte le nom d'une feature, pas d'une catégorie
+### QUAL-011 - Un fichier ou un dossier porte le nom d'une feature, pas d'une catégorie
 
-> Raison : si le nom a besoin d'`utils`, `helpers`, `commun` ou `acces` pour
-> fonctionner, le fichier n'a pas d'intention. Son contenu appartient à ses
-> appelants.
+> Raison : si le nom a besoin d'`utils`, `helpers`, `types` ou `commun` pour
+> fonctionner, il n'a pas d'intention. Son contenu appartient à ses appelants, et
+> une capacité s'éparpille sur un dossier par genre de fichier.
+
+Sous une racine, un dossier est un module, une entité (un nom) ou une capacité
+(un verbe). Un fichier porte une responsabilité et se nomme de ce qu'il exporte.
+Les tests se rangent comme les sources : `tests/socle/questionnaire/` éprouve
+`front/socle/questionnaire/`.
 
 **Exemples**
 
 ```
 ✅ OK
 unlock.ts  questionnaire.ts  pagination.ts  lieux-du-trajet.ts
+cerfa/  questionnaire-engine/
 ```
 
 ```
 ❌ KO
 utils.ts  helpers.ts  commun.ts  acces.ts
+utils/  types/  helpers/
 ```
 
 *Gardé par* `tests/lisibilite.test.ts › un nom dit une intention › aucun fichier
-ne porte un nom de catégorie`.
+ne porte un nom de catégorie`, `tests/miroir-des-sources.test.ts › les dossiers de
+sources › aucun dossier ne porte un nom de catégorie` et
+`› les dossiers de tests › chaque dossier de tests a son dossier de sources`.
 
 ---
 
@@ -553,8 +562,7 @@ sans nom`, dans `apps/simulateur-eligibilite`.
 > notion, un calcul ou un accès à l'extérieur. Et un fichier sans rôle finit par
 > en mélanger plusieurs.
 
-Cette règle ne vaut que pour `apps/simulateur-eligibilite`, hors composants et
-hooks React.
+Cette règle ne vaut que pour `apps/simulateur-eligibilite`, hors composants React.
 
 | Suffixe | Ce que le fichier porte |
 |---|---|
@@ -567,9 +575,14 @@ hooks React.
 | `.error.ts` | une erreur du métier |
 | `.factory.ts` | ce qui fabrique une notion |
 | `.types.ts` | des types, et rien d'autre |
+| `.controller.ts` | une entrée HTTP : elle valide la requête et appelle un use case |
+| `.hook.ts` | l'adaptateur de l'écran : du React, et un appel de use case par événement |
+| `.client.ts` | un client HTTP préconfiguré : adresse, authentification, JSON, erreurs |
 
-Un `index.ts` s'en passe : il ne fait que réexporter. Une fabrique porte le nom
-de ce qu'elle fabrique et vit dans son dossier.
+Un `index.ts` s'en passe : il ne fait que réexporter. Un fichier qui assemble les
+classes d'une racine (`container.ts`, `server.ts`, `app.ts`, `main.tsx`) s'en
+passe aussi. Une fabrique porte le nom de ce qu'elle fabrique et vit dans son
+dossier. Un hook ne porte aucune règle (QUAL-019).
 
 **Exemples**
 
@@ -587,8 +600,10 @@ question/question.ts
 ```
 
 *Gardé par* `tests/roles-par-suffixe.test.ts › un fichier dit son rôle par son
-suffixe`, dans `apps/simulateur-eligibilite`. La garde ne couvre encore que
-`core/socle/` : un dossier la rejoint quand il suit la règle.
+suffixe`, dans `apps/simulateur-eligibilite`. La garde couvre `core/socle/`,
+`server/journal/`, `server/grist/`, `server/postgres/`, `front/socle/analytics/`
+et `front/socle/server-api/` : un dossier la rejoint quand il suit la règle. Que
+le hook ne porte aucune règle est du jugement.
 
 ---
 
