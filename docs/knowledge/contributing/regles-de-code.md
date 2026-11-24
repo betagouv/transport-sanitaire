@@ -23,16 +23,16 @@
 | QUAL-012 | N'exporter que ce qu'un autre fichier importe | `pnpm knip` |
 | QUAL-013 | Ne jamais formater à la main | Biome |
 | QUAL-014 | Pas de suppression pour un linter que le projet ne lance pas | aucune |
-| QUAL-015 | Une suppression nomme sa règle et sa raison | Biome |
+| QUAL-015 | Une suppression nomme sa règle et sa raison | Biome (`suppressions/parse`, `suppressions/unused`), garde seulement la présence d'une raison, pas son contenu |
 | QUAL-016 | Dossiers et fichiers en kebab-case, sauf un composant React | `lisibilite.test.ts` |
 | QUAL-017 | Un retour qui peut manquer nomme son absence | `lisibilite.test.ts` |
 | QUAL-018 | Un fichier dit son rôle par son suffixe | `roles-par-suffixe.test.ts` (les dossiers qui la suivent déjà) |
 | QUAL-019 | Hors de React, une notion est une classe | aucune |
 | QUAL-020 | Pas de test d'absence | aucune |
 
-Huit règles n'ont aucune garde. Ce sont des règles de jugement : une assertion
-dirait *qu'*on a coupé, jamais *si* on a coupé au bon endroit. Elles restent à la
-revue, et le tableau le dit plutôt que de le laisser croire.
+Huit règles n'ont aucune garde. Une garde serait trop complexe à tenir ou trop
+restrictive : elle dirait *qu'*on a coupé, jamais *si* on a coupé au bon endroit.
+Elles restent à la revue, et le tableau le dit plutôt que de le laisser croire.
 
 ---
 
@@ -159,7 +159,8 @@ export function referentiel(): Referentiel {
 export const referentiel = depuisGrist(process.env.GRIST_DOC_URL);
 ```
 
-*Aucune garde.* À écrire.
+*Aucune garde.* Un test refuserait des constantes légitimes : il distingue mal
+un calcul sans effet d'un appel vers l'extérieur.
 
 ---
 
@@ -490,8 +491,10 @@ style={{ fontWeight: 700 }}
 key={index}
 ```
 
-*Gardé par* Biome, règle `suppressions/unused` : une suppression qui ne supprime
-rien est signalée.
+*Gardé par* Biome, *seulement* pour la forme. `suppressions/parse` refuse une
+suppression sans raison (ou à raison vide). `suppressions/unused` signale une
+suppression qui ne supprime rien, dont celle posée loin de la ligne fautive. Biome
+ne lit pas la raison : « x » passe.
 
 ---
 

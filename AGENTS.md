@@ -108,7 +108,7 @@ Dossier : `docs/knowledge/adr`
 | QUAL-012 | N'exporter que ce qu'un autre fichier importe | `pnpm knip` |
 | QUAL-013 | Ne jamais formater à la main | Biome |
 | QUAL-014 | Pas de suppression pour un linter que le projet ne lance pas | aucune |
-| QUAL-015 | Une suppression nomme sa règle et sa raison | Biome |
+| QUAL-015 | Une suppression nomme sa règle et sa raison | Biome (`suppressions/parse`, `suppressions/unused`), garde seulement la présence d'une raison, pas son contenu |
 | QUAL-016 | Dossiers et fichiers en kebab-case, sauf un composant React | `lisibilite.test.ts` |
 | QUAL-017 | Un retour qui peut manquer nomme son absence | `lisibilite.test.ts` |
 | QUAL-018 | Un fichier dit son rôle par son suffixe | `roles-par-suffixe.test.ts` (les dossiers qui la suivent déjà) |
