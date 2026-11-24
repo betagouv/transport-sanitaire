@@ -26,5 +26,3 @@ remplace, et un code de sortie non nul.
 - Il n'y a plus de réglage ni de secret propre à la CLI : le jeton Notion et le
   `.env` de la racine disparaissent.
 - Une action d'app reste un script de son `package.json`. Rien ne l'enveloppe.
-- Les fichiers `features.md` des apps restent de la documentation, que rien ne
-  liste plus.

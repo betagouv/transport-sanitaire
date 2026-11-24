@@ -18,16 +18,15 @@ revient, pourvu que les conditions techniques tiennent :
 | Finalité de mesure d'audience seule | Événements de parcours et compteurs, aucune réponse détaillée |
 | Pas de suivi individuel | Nom d'événement = service, jamais une personne (voir R-11) |
 | Pas de recoupement avec d'autres traitements | Instance Matomo dédiée aux produits beta.gouv, aucun export croisé |
-| Adresse IP anonymisée | Réglage de l'instance Matomo, à vérifier (R-10) |
+| Adresse IP anonymisée | Réglage de l'instance Matomo : l'IP est anonymisée par l'instance, vérifié |
 | Information et droit d'opposition | Opt-out dans le pied de page du CMS (ADR-0011) ; texte d'information à publier (R-12) |
 
 **Conséquences.** Plus de bandeau, et la couverture de la mesure est complète. La
-réserve R-4 est levée, à la condition R-10 près.
+réserve R-4 est levée.
 
 ## Risques
 
 | Réf | Risque / à valider | Portée |
 |---|---|---|
-| **R-10** | **Anonymisation de l'IP** : l'exemption CNIL l'exige, et elle se règle sur l'instance Matomo (Administration → Confidentialité), pas dans le code. À confirmer auprès des admins de stats.beta.gouv.fr pour le site 275. | conformité, **à vérifier avant la release** |
 | **R-11** | **Très petits services** : dans un service d'une ou deux personnes, l'id du service désigne de fait des individus. Réserve mineure, acceptée sans traitement dans le code. | conformité |
 | **R-12** | **Information des prescripteurs** : l'exemption exige de dire ce qui est mesuré et comment s'y opposer. Le texte, dans la politique de confidentialité du CMS, doit décrire la mesure par service et renvoyer à l'opt-out du pied de page. | conformité, **à publier avant la release** |
