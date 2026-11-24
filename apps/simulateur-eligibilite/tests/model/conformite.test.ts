@@ -26,6 +26,15 @@ import { racine } from "../inspection-des-sources";
 
 const MODELES: Record<string, Model> = { eligibilite, fake };
 
+// Les seeds se chargent avant les tests : un `describe` ne porte pas d'attente.
+const SEEDS = Object.fromEntries(
+  await Promise.all(
+    Object.entries(MODELES).map(
+      async ([nom, model]) => [nom, await model.core.seeds()] as const,
+    ),
+  ),
+);
+
 const doublons = (valeurs: readonly string[]) => [
   ...new Set(valeurs.filter((v, rang) => valeurs.indexOf(v) !== rang)),
 ];
@@ -37,7 +46,7 @@ it("chaque modèle de `front/models/` est vérifié", () => {
   ).toEqual(readdirSync(join(racine, "front/models")).sort());
 });
 
-describe.each(Object.entries(MODELES))("le modèle %s", (_nom, model) => {
+describe.each(Object.entries(MODELES))("le modèle %s", (nom, model) => {
   const questionnaire = model.core.questionnaire.flatMap((part) => part.pages);
   const complement = model.core.complement.pages;
   const pages: readonly Page[] = [...questionnaire, ...complement];
@@ -82,8 +91,8 @@ describe.each(Object.entries(MODELES))("le modèle %s", (_nom, model) => {
     });
   });
 
-  describe("ses seeds", async () => {
-    const seeds = await model.core.seeds();
+  describe("ses seeds", () => {
+    const seeds = SEEDS[nom] ?? [];
 
     it("portent chacune un identifiant qui leur est propre", () => {
       expect(
