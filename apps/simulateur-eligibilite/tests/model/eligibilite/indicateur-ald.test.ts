@@ -1,13 +1,12 @@
-// L'indicateur de parcours ALD (#148) sur le modèle réel : le verdict d'un
-// parcours, les pages et les questions posées de P1 à R2.
+// L'indicateur de parcours ALD sur le modèle réel : le verdict d'un parcours,
+// les pages et les questions posées de P1 à R2.
 //
 // Le parcours de référence est celui de `SPECIFICATION_ALD_6_QUESTIONS.md` pour
 // un nouveau patient : Q2.2.1, répondue « Aucune », ajoute une page et une
 // question au témoin fermé, qui en compte quatre et cinq. La spécification
 // attend donc cinq pages et six questions de P1 à P2. Le second bloc, Q2.2.1.b,
 // en ajoute une de chaque : ses soins changent encore l'issue, et la
-// spécification ne masque pas une question décisive pour tenir la cible
-// (D-252).
+// spécification ne masque pas une question décisive pour tenir la cible.
 
 import { describe, expect, it } from "vitest";
 import type { Answers } from "../../../core/socle/questionnaire-engine";

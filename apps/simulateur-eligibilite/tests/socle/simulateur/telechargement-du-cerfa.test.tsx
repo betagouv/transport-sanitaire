@@ -10,7 +10,7 @@ import { ecouterLesTelechargements } from "./telechargements";
 // Le cerfa s'imprime et se télécharge sous le second résultat, rempli dans le
 // navigateur dès que le résultat s'affiche : les deux actions portent le même
 // PDF. Il porte la date du jour où le complément a été validé. Un PDF arrivé
-// après qu'on a quitté le résultat ne sort pas (D-190).
+// après qu'on a quitté le résultat ne sort pas.
 
 type User = Awaited<ReturnType<typeof ouvrirLeSimulateur>>;
 

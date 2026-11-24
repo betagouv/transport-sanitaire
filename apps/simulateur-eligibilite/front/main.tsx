@@ -13,7 +13,7 @@ import "./socle/app/dsfr-overrides.css";
 import { App, applyTheme, followHostTheme, type Models } from "./socle";
 
 // Clair par défaut : le thème est celui de la page qui embarque l'app, qui le
-// transmet dès qu'on le lui demande, puis à chaque changement (#342).
+// transmet dès qu'on le lui demande, puis à chaque changement.
 startReactDsfr({ defaultColorScheme: "light" });
 followHostTheme(applyTheme);
 

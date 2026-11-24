@@ -5,18 +5,18 @@
 // navigateur : les deux actions et l'aperçu portent le même document. Le texte
 // du résultat ne vient qu'avec un PDF prêt, non vide. Avant, « Génération du
 // document en cours… » tient sa place ; après un échec, l'alerte, et le clic
-// réessaie sans reprendre l'ancien PDF (NAV-ETATS-R3-001, D-250).
+// réessaie sans reprendre l'ancien PDF (NAV-ETATS-R3-001).
 // Un texte strict qui ne tient pas ouvre son éditeur au-dessus des actions
-// (D-302, `StrictTexts.tsx`) : le PDF n'est plus qu'un aperçu marqué, et les
+// (`StrictTexts.tsx`) : le PDF n'est plus qu'un aperçu marqué, et les
 // deux actions attendent, sans texte du résultat, jusqu'à ce que qui l'affiche
-// remonte le document avec le texte validé (D-304). Les brouillons présents au
+// remonte le document avec le texte validé. Les brouillons présents au
 // montage font aussi du PDF un aperçu. Pendant la génération, les deux actions
 // attendent, et « Télécharger » dit « Préparation du PDF ». Une action qui
 // attend un PDF ne se fait plus si le document a été quitté entre-temps
 // (`use-downloadable-pdf.ts`).
 // « Imprimer » vient avant « Télécharger » : côte à côte s'ils tiennent, l'un
 // sous l'autre sinon, le groupe en ligne du DSFR passant à la ligne sans
-// couper un libellé (D-173). Qui l'affiche peut donner de quoi tenir la place
+// couper un libellé. Qui l'affiche peut donner de quoi tenir la place
 // de l'aperçu, et ce qui précède le tout, selon que le PDF est prêt ou non.
 //
 // Le DTO se lit une fois : celui d'un résultat ne change pas tant qu'il est

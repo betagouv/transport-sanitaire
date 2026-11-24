@@ -1,7 +1,7 @@
 // Une entrée du journal des parcours : un événement tel que le navigateur l'a
 // envoyé, daté à sa réception par le serveur, avec le commit du serveur qui l'a
-// reçu, ou le signe de vie que le serveur écrit chaque heure. Voir ADR-0042,
-// ADR-0050 et ADR-0051.
+// reçu, ou le signe de vie que le serveur écrit chaque heure. Voir
+// ADR-0042.
 
 import { isDeepStrictEqual } from "node:util";
 import {
@@ -17,7 +17,7 @@ export type Build = { app_version: string; commit_sha: string };
 
 /**
  * Le signe de vie de la collecte : le serveur l'écrit chaque heure. Une heure
- * sans lui est une heure sans collecte, pas une heure sans usage (ADR-0051). Il
+ * sans lui est une heure sans collecte, pas une heure sans usage. Il
  * n'appartient à aucune simulation.
  */
 export type AliveEvent = Build & {

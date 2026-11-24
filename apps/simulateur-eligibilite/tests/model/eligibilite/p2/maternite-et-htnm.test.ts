@@ -1,6 +1,6 @@
 // La maternité et un HTNM sur le même trajet (TS1018-04, v10.1.8) : cochés
 // ensemble en Q2.2.1, ils ne disent pas le déplacement évalué. Q2.14.trajet le
-// demande, et deux déplacements font deux simulations (D-285).
+// demande, et deux déplacements font deux simulations.
 
 import { describe, expect, it } from "vitest";
 import { EXAMEN, MATERNITE, posees } from "./reponses-de-la-branche";
@@ -48,7 +48,7 @@ describe("la maternité et un HTNM cochés ensemble", () => {
     expect(posees(htnm)).not.toContain("Q2.14.eloignement");
   });
 
-  it("deux déplacements bloquent, et proposent une nouvelle simulation (#486)", () => {
+  it("deux déplacements bloquent, et proposent une nouvelle simulation", () => {
     const question = trajet(EXAMEN_ET_HTNM);
     expect(
       question?.kind === "single choice"

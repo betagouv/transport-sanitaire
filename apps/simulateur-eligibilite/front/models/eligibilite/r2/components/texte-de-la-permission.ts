@@ -1,5 +1,6 @@
-// Les textes propres à `ISSUE_S3141` (#135) : la phrase de la permission, son
-// motif (`motif.ts`), et le motif administratif du modus. Des fonctions pures de la trace, sans React.
+// Les textes propres à `ISSUE_S3141` : la phrase de la permission, son
+// motif (`motif.ts`), et le motif administratif du modus. Des fonctions pures
+// de la trace, sans React.
 //
 // L'éditeur les choisit sur Q2.8.5 (`permissionRepeated`) et sur l'ambulance.
 // Les quatre phrases ne reprennent pas les motifs administratifs de la

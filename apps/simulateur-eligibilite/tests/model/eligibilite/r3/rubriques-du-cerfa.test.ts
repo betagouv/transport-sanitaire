@@ -1,7 +1,7 @@
-// Les rubriques que les cerfa de R3 partagent (#158) : des réponses d'un
-// parcours complet et les cibles figées au verrou, les cellules qu'elles
-// donnent. Aucun PDF n'est en jeu : le test de chaque cerfa vérifie seulement
-// où vont les cellules. `mapping_documents.json` et `CONTRAT_LIEUX_CERFA.json`.
+// Les rubriques que les cerfa de R3 partagent : des réponses d'un parcours
+// complet et les cibles figées au verrou, les cellules qu'elles donnent. Aucun
+// PDF n'est en jeu : le test de chaque cerfa vérifie seulement où vont les
+// cellules. `mapping_documents.json` et `CONTRAT_LIEUX_CERFA.json`.
 
 import { describe, expect, it } from "vitest";
 import { ACCIDENT } from "../../../../front/models/eligibilite/r3/rubriques/accident";
@@ -116,7 +116,7 @@ describe("les liens du transport", () => {
   });
 });
 
-describe("l'exonération du ticket modérateur (D-136)", () => {
+describe("l'exonération du ticket modérateur", () => {
   it("un cas coché donne Oui", () => {
     const reponses: Reponses = { ...PMT, "Q3.7": ["1_ACTE_LOURD"] };
 

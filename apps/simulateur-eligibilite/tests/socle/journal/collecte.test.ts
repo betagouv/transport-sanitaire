@@ -1,8 +1,7 @@
 // @vitest-environment node
 //
 // La route de collecte du journal des parcours, sur le vrai serveur Express et
-// le journal en mémoire, sans mock. Voir ADR-0042
-// et ADR-0043.
+// le journal en mémoire, sans mock. Voir ADR-0042.
 
 import { afterEach, describe, expect, it } from "vitest";
 import { MemoryJournal } from "../../../server/journal/memory-journal.adapter.ts";

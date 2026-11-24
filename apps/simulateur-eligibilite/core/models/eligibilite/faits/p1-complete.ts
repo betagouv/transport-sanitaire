@@ -2,7 +2,7 @@
 //
 // Aucune garde ne le lit : le constater pose les questions de P1. La décision
 // l'impose, une fois P1 complète : ce qu'il lit se déclare avec sa
-// valeur, dans `faits/preconisation.ts` (#259).
+// valeur, dans `faits/preconisation.ts`.
 //
 // Il suit `CONTRAT_REPONSES_FAITS.json`.
 

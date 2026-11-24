@@ -1,8 +1,8 @@
 // Le transfert (Q2.5) : quand la page se pose, ce qu'elle établit, et
 // l'ouverture directe de Q2.6 par une admission en HAD, qui n'est pas une
-// permission. `CONTRAT_REPONSES_FAITS.json`,
-// `CONTRAT_NEGATIONS_PROUVEES.json` et le scénario `article80-bilan-complet`
-// de `tests/test_cinq_retours_a.mjs` du paquet de l'éditeur (D-106).
+// permission. `CONTRAT_REPONSES_FAITS.json`, `CONTRAT_NEGATIONS_PROUVEES.json`
+// et le scénario `article80-bilan-complet` de `tests/test_cinq_retours_a.mjs`
+// du paquet de l'éditeur.
 
 import { describe, expect, it } from "vitest";
 import { decisionEngine } from "../../../../core/models/eligibilite/cibles/evaluation";

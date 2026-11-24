@@ -1,8 +1,8 @@
-// Les pages du soin et de l'urgence de P3 (Q3.4.distance, Q3.4.a, Q3.5, #146),
-// posées selon les cibles figées au verrou. `CATALOGUE_COMPLET_QUESTIONS.md`
-// Q3.4, Q3.4.a et Q3.5, `CONTRAT_CONTEXTES_V1012.json` (`centreReference`).
-// Q3.4 ne demande que les précisions qui manquent, et rappelle le soin au-dessus
-// de la première (TXT-PARCOURS-COMPLETION-20261116, #478).
+// Les pages du soin et de l'urgence de P3 (Q3.4.distance, Q3.4.a, Q3.5), posées
+// selon les cibles figées au verrou. `CATALOGUE_COMPLET_QUESTIONS.md` Q3.4,
+// Q3.4.a et Q3.5, `CONTRAT_CONTEXTES_V1012.json` (`centreReference`). Q3.4 ne
+// demande que les précisions qui manquent, et rappelle le soin au-dessus de la
+// première (TXT-PARCOURS-COMPLETION-20261116).
 
 import { describe, expect, it } from "vitest";
 import { model } from "../../../../core/models/eligibilite";

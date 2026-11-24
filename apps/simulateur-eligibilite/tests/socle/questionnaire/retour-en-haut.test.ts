@@ -1,7 +1,7 @@
 // À chaque nouvelle page, l'écran revient en haut. Dans une iframe, l'app
 // demande aussi à la page qui l'embarque de remonter au haut de l'iframe :
-// Safari ne la laisse pas le faire elle-même (#369). La page parente est une
-// vraie fenêtre d'iframe, qui relève les messages reçus.
+// Safari ne la laisse pas le faire elle-même. La page parente est une vraie
+// fenêtre d'iframe, qui relève les messages reçus.
 
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { scrollToTheTop } from "../../../front/socle/questionnaire/scroll-to-the-top";

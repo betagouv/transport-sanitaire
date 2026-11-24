@@ -110,7 +110,7 @@ describe("la permission, déroulée dans le formulaire", () => {
 // ---- implémentation ----
 
 // Un autre motif, en séjour dans un établissement : seule Q2.2.1.a dit la
-// permission (D-272). Puis aucun soin, et 50 km ou moins : jusqu'à Q2.7.
+// permission. Puis aucun soin, et 50 km ou moins : jusqu'à Q2.7.
 async function enPermission() {
   const user = await jusquAQ21();
   await choisir(user, /^Autre motif de déplacement/);

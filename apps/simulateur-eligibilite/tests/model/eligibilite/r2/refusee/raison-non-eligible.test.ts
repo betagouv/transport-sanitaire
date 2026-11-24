@@ -1,6 +1,6 @@
-// La raison de la fiche patient négative (#134). Chaque raison du catalogue se
-// choisit sur la trace qui prouve sa condition, mot pour mot ; un fait absent
-// n'est jamais « non ».
+// La raison de la fiche patient négative. Chaque raison du catalogue se choisit
+// sur la trace qui prouve sa condition, mot pour mot ; un fait absent n'est
+// jamais « non ».
 
 import { describe, expect, it } from "vitest";
 import type { Faits } from "../../../../../core/models/eligibilite/faits/noms";

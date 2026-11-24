@@ -15,7 +15,7 @@ export const Q3_7 = question
     "Q3.7",
     "Un cas particulier d’exonération du ticket modérateur doit-il être reporté ?",
   )
-  // Les cas reprennent les notices des cerfa, seuils compris (D-123). Les cas
+  // Les cas reprennent les notices des cerfa, seuils compris. Les cas
   // 3 et 4 sont ceux de la PMT et du S3141, le cas 6 celui de la DAP.
   .possibleAnswers({
     "1_ACTE_LOURD":

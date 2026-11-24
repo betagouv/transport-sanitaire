@@ -4,8 +4,8 @@ import {
   developerToolsUnlocked,
 } from "../../../front/socle/developer-tools/unlock";
 
-// Les developer tools s'ouvrent en local, jamais sur un build de production
-// (D-279). Le service choisi n'y est pour rien.
+// Les developer tools s'ouvrent en local, jamais sur un build de production. Le
+// service choisi n'y est pour rien.
 
 describe("developerToolsUnlocked", () => {
   it("les ouvre sous le serveur de dev", () => {
@@ -22,7 +22,7 @@ describe("developerToolsUnlocked", () => {
 });
 
 // La trace de debug s'ouvre avec les developer tools, et partout pour la
-// structure « Assurance Maladie » (D-280).
+// structure « Assurance Maladie ».
 
 describe("debugTraceUnlocked", () => {
   it("l'ouvre avec les developer tools, quelle que soit la structure", () => {

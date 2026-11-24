@@ -1,6 +1,6 @@
-// Le sens des transports du document : Q2.13.sens l'a qualifié avant R2
-// (#365), sinon Q3.1.2 le dit. Plusieurs permissions (Q2.8.5) ne disent aucun
-// sens, même chacune un aller-retour (D-284). Les rôles des lieux
+// Le sens des transports du document : Q2.13.sens l'a qualifié avant R2,
+// sinon Q3.1.2 le dit. Plusieurs permissions (Q2.8.5) ne disent aucun sens,
+// même chacune un aller-retour. Les rôles des lieux
 // (`roles-dans-le-sens.ts`), Q3.1.1, Q3.4.a et le cerfa le lisent.
 
 import type { AnswerOf, GivenAnswer } from "../../../../../socle/index.ts";

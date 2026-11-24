@@ -14,7 +14,7 @@ export type Service = { id: string; libelle: string };
 export type RattachementEnregistre = { etabId: string; serviceId: string };
 
 /**
- * L'accès au référentiel passe par cette interface (ADR-0008). On peut ainsi
+ * L'accès au référentiel passe par cette interface. On peut ainsi
  * changer de source sans toucher aux composants. Le front utilise le client HTTP
  * `front/socle/rattachement/referentiel.ts`, vers le backend Grist.
  */
@@ -25,8 +25,7 @@ export interface Referentiel {
    * Ajoute au référentiel ce que la saisie lui apprend : le service saisi sous
    * « Autre », ou l'établissement saisi et son service. Donne leurs ids, que le
    * parcours porte dès cette visite. Rejette une saisie qui n'apprend rien, ou
-   * un établissement absent. Optionnel : le snapshot n'écrit pas. Voir
-   * docs/knowledge/domain/enrichissement-referentiel-rattachement.md.
+   * un établissement absent. Optionnel : le snapshot n'écrit pas.
    */
   enrichirDepuisSaisie?(
     saisie: RattachementSaisi,

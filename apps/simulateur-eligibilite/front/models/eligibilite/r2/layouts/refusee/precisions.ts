@@ -1,5 +1,5 @@
-// Les précisions de la fiche négative (D-111) : ce qui dit pourquoi. Elles ne
-// se lisent que sous l'issue refusée (D-224).
+// Les précisions de la fiche négative : ce qui dit pourquoi. Elles ne
+// se lisent que sous l'issue refusée.
 
 import type { Reading } from "../../../../../../core/socle";
 import {
@@ -34,7 +34,7 @@ const FAMILLES_DE_SOIN = [1, 2, 3, 4, 5, 6, 7, 14, 15];
 
 function familleDeSoin({ motif }: Pick<Entrees, "motif">): number | NonProuve {
   if (!motif.hasAnswer()) return undefined;
-  // Le slug porte en tête le numéro de la réponse possible au catalogue (D-75).
+  // Le slug porte en tête le numéro de la réponse possible au catalogue.
   const numero = Number.parseInt(motif.value, 10);
   return FAMILLES_DE_SOIN.includes(numero) ? numero : undefined;
 }

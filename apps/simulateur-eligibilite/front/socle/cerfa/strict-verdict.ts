@@ -1,4 +1,4 @@
-// Ce que l'écran dit d'un texte strict saisi (D-302, T06) : se valide-t-il, et
+// Ce que l'écran dit d'un texte strict saisi (T06) : se valide-t-il, et
 // sinon, pourquoi. Vide quand il est requis, il est à compléter. Trop long, il
 // est à raccourcir, avec le message de sa règle, ou celui de la cellule
 // médicale.

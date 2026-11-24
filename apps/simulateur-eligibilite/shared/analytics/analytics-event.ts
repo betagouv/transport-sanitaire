@@ -1,27 +1,26 @@
 // Un événement du journal des parcours, tel que le navigateur l'envoie : le
 // socle d'ANA-1015 (REFERENTIEL/03 du paquet de l'éditeur), et nos compléments.
 // Le navigateur n'importe que ce fichier : la validation, avec zod, est dans
-// `event-schema.ts`. Voir ADR-0042.
+// `event-schema.ts` (ADR-0042).
 
 /**
  * La version de nos compléments, écrite par le serveur à chaque événement. La 2
  * ajoute l'affichage de page, les jalons de phase et l'invalidation d'une
- * validation (ADR-0044), puis le financeur, les motifs et les portions du premier
- * résultat (ADR-0045), puis les boutons exposés, la fiche patient et ses clics
- * (ADR-0047), puis la taille des champs du document R3 (ADR-0048), puis le
- * chargement de la page (ADR-0049), puis la version de l'app et le commit
- * déployé (ADR-0050). La 3 ajoute le nom de l'établissement et celui du
- * service, et pose le rattachement sur chaque événement (ADR-0053), puis
- * prend les boutons exposés et cliqués du contrat v10.2.2 (ADR-0047, #507). La
+ * validation, puis le financeur, les motifs et les portions du premier
+ * résultat, puis les boutons exposés, la fiche patient et ses clics, puis la
+ * taille des champs du document R3, puis le chargement de la page, puis la
+ * version de l'app et le commit déployé. La 3 ajoute le nom de l'établissement
+ * et celui du service, et pose le rattachement sur chaque événement, puis
+ * prend les boutons exposés et cliqués du contrat v10.2.2. La
  * 4 est le contrat v10.2.2 entier : son enveloppe, ses champs fermés et ses
- * règles croisées, sans nos compléments (#497).
+ * règles croisées, sans nos compléments.
  */
 export const SCHEMA_VERSION = 4;
 
 /**
  * La version du contrat de parcours et de mesure que l'app respecte, celle du
  * schéma de l'éditeur (`analytics/schema-evenement.json`). Le modèle a la
- * sienne, `model_version`, et le build la sienne, `app_version` (ADR-0050).
+ * sienne, `model_version`, et le build la sienne, `app_version`.
  */
 export const CONTRACT_VERSION = "10.2.2";
 
@@ -116,7 +115,7 @@ export type TransportComposition = (typeof TRANSPORT_COMPOSITIONS)[number];
 
 /**
  * Les boutons de la fiche patient (R2) et du document (R3), exposés et cliqués
- * (ADR-0047, ANA22-02). L'avis a ses propres types.
+ * (ANA22-02). L'avis a ses propres types.
  */
 export const BUTTON_IDS = [
   "patient_sheet_print",
@@ -142,8 +141,8 @@ export const CLOSURE_REASONS = [
 export type ClosureReason = (typeof CLOSURE_REASONS)[number];
 
 /**
- * La taille réellement imprimée d'un champ rempli du document R3, en points
- * (ADR-0048). `field_id` est son identifiant fermé, `<support>.<champ>`
+ * La taille réellement imprimée d'un champ rempli du document R3, en points.
+ * `field_id` est son identifiant fermé, `<support>.<champ>`
  * (`typographic-fields.ts`), jamais son texte.
  */
 type FieldMeasurement = { field_id: string; font_size_pt: number };
@@ -163,18 +162,18 @@ export type AnalyticsEvent = {
   /** Le rang de l'événement dans sa simulation, strictement croissant. */
   sequence: number;
   occurred_at: string;
-  /** La version du contrat, `CONTRACT_VERSION` (ADR-0050). */
+  /** La version du contrat, `CONTRACT_VERSION`. */
   version: typeof CONTRACT_VERSION;
-  /** La version des règles du modèle, celle de `rules/VERSION` (ADR-0050). */
+  /** La version des règles du modèle, celle de `rules/VERSION`. */
   model_version: string;
-  /** La version de l'app, celle de `package.json` (ADR-0050). */
+  /** La version de l'app, celle de `package.json`. */
   app_version: string;
   /** Le prescripteur, ou l'app seule : seul le premier fait vivre la simulation. */
   activity_origin: ActivityOrigin;
   type: EventType;
   screen?: Screen;
   revision?: string;
-  /** La révision du document R3, à côté de celle du R2 (ADR-0048). */
+  /** La révision du document R3, à côté de celle du R2. */
   document_revision?: string;
   intent?: AnalyticsIntent;
   establishment_id?: string;
@@ -189,9 +188,9 @@ export type AnalyticsEvent = {
   reason_codes?: string[];
   document_id?: string;
   support?: Support;
-  /** Les champs remplis du document R3, sous leur identifiant fermé (ADR-0048). */
+  /** Les champs remplis du document R3, sous leur identifiant fermé. */
   expected_field_ids?: string[];
-  /** La taille de chaque champ attendu qui a pu se mesurer (ADR-0048). */
+  /** La taille de chaque champ attendu qui a pu se mesurer. */
   field_measurements?: FieldMeasurement[];
   field_group?: string;
   font_size_pt?: number;
@@ -204,7 +203,7 @@ export type AnalyticsEvent = {
 };
 
 /**
- * Le rattachement du parcours, sur chacun de ses événements (ADR-0053) : les ids
+ * Le rattachement du parcours, sur chacun de ses événements : les ids
  * du référentiel, quand il en a.
  */
 export type RattachementDuParcours = Pick<
@@ -214,7 +213,7 @@ export type RattachementDuParcours = Pick<
 
 /**
  * D'où vient un parcours, sur chacun de ses événements : la version de son
- * modèle et celle de l'app (ADR-0050), et son rattachement (ADR-0053).
+ * modèle et celle de l'app, et son rattachement.
  */
 export type Provenance = Pick<AnalyticsEvent, "model_version" | "app_version"> &
   RattachementDuParcours;

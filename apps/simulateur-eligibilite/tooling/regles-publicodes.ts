@@ -3,7 +3,7 @@
 // importent ce JSON tel quel. Aucun analyseur YAML ne part dans le bundle, et
 // le métier se charge hors de Vite.
 //
-// Il écrit aussi leur graphe de décision, `rules/regles.graphe.json` (#196) :
+// Il écrit aussi leur graphe de décision, `rules/regles.graphe.json` :
 // ce que vaut chaque règle pour chaque façon dont ses faits valent oui, non ou
 // rien. Un nœud par ligne, pour qu'une livraison se lise dans le diff.
 //

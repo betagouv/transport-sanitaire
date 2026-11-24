@@ -6,8 +6,8 @@ import {
 } from "../../../core/socle/decision-engine/decision-graph/decision-graph.vo";
 import { PublicodesGraphCompiler } from "../../../core/socle/decision-engine/publicodes-graph-compiler.adapter";
 
-// Le graphe restreint aux faits qu'on sait déjà (#255) : il vaut ce que vaut
-// le graphe entier, et ne teste plus que les faits qu'on ne sait pas.
+// Le graphe restreint aux faits qu'on sait déjà : il vaut ce que vaut le graphe
+// entier, et ne teste plus que les faits qu'on ne sait pas.
 
 const DONNEES = new PublicodesGraphCompiler({
   fait_pluie: { titre: "Il pleut" },

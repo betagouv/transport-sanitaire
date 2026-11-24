@@ -1,6 +1,6 @@
-// Le filtrage par le graphe (#255) : une question dont la réponse ne change
-// rien de ce que montre le résultat ne se pose pas. Ces cas sont les critères
-// d'acceptation de l'issue, et le second bloc des situations (D-252) ;
+// Le filtrage par le graphe : une question dont la réponse ne change rien de ce
+// que montre le résultat ne se pose pas. Ces cas sont les critères
+// d'acceptation de l'issue, et le second bloc des situations ;
 // `questions-posees-par-seed.test.ts` liste les questions posées parcours par
 // parcours.
 
@@ -140,11 +140,11 @@ describe("la distance d'une consultation", () => {
   });
 });
 
-// Le second bloc des situations (P2/contextes-soins, D-252) : le graphe le saute quand
+// Le second bloc des situations (P2/contextes-soins) : le graphe le saute quand
 // plus rien de ce qu'il établit ne compte. Ses soins changent presque toujours
 // l'issue ou sa raison, et la convocation qu'il signale ouvre Q2.10 : il se
 // pose donc. Les cas « Deux groupes » et « Contextes » des compléments de
-// recette (#149).
+// recette.
 describe("le second bloc des situations", () => {
   const { "Q2.2.1.b": _, ...SANS_SECOND_BLOC } = SEUL;
 

@@ -37,7 +37,7 @@ describe("la page du trajet", () => {
     expect(posees(SEUL)).toEqual(["Q2.3.1", "Q2.3.2"]);
   });
 
-  // Un seul bloc : la case porte son libellé, sans titre au-dessus (#281).
+  // Un seul bloc : la case porte son libellé, sans titre au-dessus.
   it("pose l'avion ou le bateau en case sans titre", () => {
     const avion = page
       ? new Questionnaire(pages)
@@ -58,7 +58,7 @@ describe("la page du trajet", () => {
   );
 
   // La ligne régulière se cumule avec la distance, sans la remplacer (cas
-  // « Distance/ligne » des compléments de recette, #149).
+  // « Distance/ligne » des compléments de recette).
   it.each(["2_PLUS_DE_CINQUANTE_KM", "3_PLUS_DE_CENT_CINQUANTE_KM"] as const)(
     "pose la série et l'urgence pour un trajet de %s avec la ligne cochée",
     (distance) => {

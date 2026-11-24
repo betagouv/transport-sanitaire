@@ -1,7 +1,7 @@
 // La liste fermée des champs du document R3 dont le journal reçoit la taille
 // imprimée (ANA22-03), recopiée de `analytics/champs-typographiques.json` de la
 // v10.2.2 : `<support>.<champ>`, par support. Les parties d'une adresse de
-// départ ou d'arrivée y sont un seul champ, `*_adresse_native`. Voir ADR-0048.
+// départ ou d'arrivée y sont un seul champ, `*_adresse_native`.
 
 /** Les champs de chaque support. */
 export const TYPOGRAPHIC_FIELDS = {

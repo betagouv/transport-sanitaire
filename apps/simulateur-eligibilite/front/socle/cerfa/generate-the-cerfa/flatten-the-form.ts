@@ -1,11 +1,10 @@
-// Aplatit un cerfa rempli : il n'y reste aucun champ (D-84).
+// Aplatit un cerfa rempli : il n'y reste aucun champ.
 //
 // Chaque champ devient le dessin de sa valeur, sur la page. Ce qu'un champ ne
 // sait pas montrer se dessine ensuite : la marque d'une case qui partage son
 // champ, un texte là où le gabarit n'a pas de champ, et un texte trop long
 // pour son cadre. Le PDF s'imprime tel quel, et rien ne s'y corrige plus dans
-// un lecteur. Un aperçu porte en plus sa marque en travers de chaque page
-// (D-304).
+// un lecteur. Un aperçu porte en plus sa marque en travers de chaque page.
 
 import {
   degrees,

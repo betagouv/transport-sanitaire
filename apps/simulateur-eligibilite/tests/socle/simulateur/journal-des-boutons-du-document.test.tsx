@@ -1,8 +1,7 @@
-// Ce que les boutons du document R3 envoient au journal des parcours (#507) :
-// leur exposition une fois le PDF prêt, chaque clic, au clavier comme à la
-// souris, puis l'impression et le téléchargement que l'app lance vraiment, sur
-// le même document. Un bouton qui attend son PDF n'est ni exposé ni cliqué.
-// Voir ADR-0047.
+// Ce que les boutons du document R3 envoient au journal des parcours : leur
+// exposition une fois le PDF prêt, chaque clic, au clavier comme à la souris,
+// puis l'impression et le téléchargement que l'app lance vraiment, sur le même
+// document. Un bouton qui attend son PDF n'est ni exposé ni cliqué.
 
 import { screen, waitFor } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";

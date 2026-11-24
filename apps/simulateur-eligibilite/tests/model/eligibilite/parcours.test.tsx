@@ -53,7 +53,7 @@ describe("le modèle de l'éditeur, déroulé dans le formulaire", () => {
     expect(screen.getByRole("group", { name: Q21 })).toBeInTheDocument();
 
     await choisir(user, /^Une entrée dans un établissement de santé/);
-    // Q2.1.g révélée, la page attend « Suivant » (D-240).
+    // Q2.1.g révélée, la page attend « Suivant ».
     await suivant(user);
     expect(await page(Q221)).toBeInTheDocument();
     expect(screen.queryByRole("checkbox", { name: HOSPITALISE })).toBeNull();
@@ -159,7 +159,7 @@ describe("le modèle de l'éditeur, déroulé dans le formulaire", () => {
 
     await choisirDans(user, Q210A, /^Oui\.$/);
     await choisirDans(user, Q210B, /^Podo-orthèse\.$/);
-    // Ses sous-champs révélés font de la page une page composée (D-240).
+    // Ses sous-champs révélés font de la page une page composée.
     expect(terminer).not.toHaveBeenCalled();
     await user.click(screen.getByRole("button", { name: "Voir le résultat" }));
     await waitFor(() => expect(terminer).toHaveBeenCalledOnce());

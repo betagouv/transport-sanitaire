@@ -9,8 +9,8 @@
 // Trois familles de cas ne se posent pas en Q1.3 :
 // - l'incertitude (`mineur-inconnu`, `ald-base-inconnue`,
 //   `proche-mineur-inconnu`, `aucune-et-incertitude`) vient du rattrapage, en
-//   P2 (#139) ;
-// - l'âge incompatible (`adulte-mineur`) se constate par le validateur (#155) ;
+//   P2 ;
+// - l'âge incompatible (`adulte-mineur`) se constate par le validateur ;
 // - le `doublon` est impossible : une case se coche une fois.
 
 import { describe, expect, it } from "vitest";

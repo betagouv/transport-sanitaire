@@ -9,7 +9,7 @@
 // événements sans en garder aucun.
 //
 // `CONTAINER_VERSION`, que Scalingo pose sur le conteneur, donne le commit
-// déployé. Sans elle, le commit vaut `inconnu`, comme côté écran (ADR-0050).
+// déployé. Sans elle, le commit vaut `inconnu`, comme côté écran.
 //
 // Voir le README § « Configuration ».
 
@@ -31,7 +31,7 @@ export type Configuration = {
   journalReadToken: string | undefined;
   /** Le nom de l'app Scalingo, écrit avec chaque événement ; `local` hors Scalingo. */
   environment: string;
-  /** La version et le commit de l'app servie, sur le signe de vie du journal (ADR-0051). */
+  /** La version et le commit de l'app servie, sur le signe de vie du journal. */
   build: Build;
 };
 
@@ -135,7 +135,7 @@ function sansValeursVides(env: Env): Env {
 }
 
 // La version que `package.json` déclare, celle du tag
-// `simulateur-eligibilite@<version>` (ADR-0050).
+// `simulateur-eligibilite@<version>`.
 function versionDeLApp(): string {
   const chemin = new URL("../package.json", import.meta.url);
   const { version } = JSON.parse(readFileSync(chemin, "utf8")) as {

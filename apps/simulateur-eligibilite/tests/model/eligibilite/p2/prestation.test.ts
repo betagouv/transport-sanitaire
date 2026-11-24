@@ -1,5 +1,5 @@
 // La page de la prestation (Q2.1) : ce qui s'y pose, d'après le catalogue de
-// l'éditeur et D-102. Q2.1 se saute quand P1 prouve déjà un motif de transport.
+// l'éditeur. Q2.1 se saute quand P1 prouve déjà un motif de transport.
 
 import { describe, expect, it } from "vitest";
 import { model } from "../../../../core/models/eligibilite";
@@ -85,8 +85,8 @@ describe("Q2.1, le motif du déplacement", () => {
     expect(ids(reponses)).not.toContain("Q2.1");
   });
 
-  // Les séances, le CAMSP, la convocation, la permission et la maternité ne
-  // se découvrent qu'à un autre endroit (QST-COLLECTE-UNIQUE, D-272).
+  // Les séances, le CAMSP, la convocation, la permission et la maternité ne se
+  // découvrent qu'à un autre endroit (QST-COLLECTE-UNIQUE).
   it.each([
     ["sans séance en Q1.3", SEUL],
     [
@@ -135,7 +135,7 @@ describe("les sous-questions de Q2.1", () => {
     expect(ids(assis(["3_CHIMIOTHERAPIE"]))).toEqual([]);
   });
 
-  // Toute dialyse déclarée compte, sans attendre Q1.3.a (TS1014-L04, D-245).
+  // Toute dialyse déclarée compte, sans attendre Q1.3.a (TS1014-L04).
   it.each([["1_OUI"], ["2_AUTRE_DIALYSE"]] as const)(
     "pose f avec une dialyse, Q1.3.a valant %s",
     (dialyse) => {

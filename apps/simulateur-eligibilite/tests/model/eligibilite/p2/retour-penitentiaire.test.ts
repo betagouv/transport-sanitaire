@@ -1,8 +1,8 @@
-// Le retour vers un établissement pénitentiaire (réponse possible 10 de Q2.2.1)
-// : TS1012-04 et `CONTRAT_CONTEXTES_V1012.json` du paquet v10.1.2 de l'éditeur,
-// les points 33 et 34 de la v10.1.3 et
+// Le retour vers un établissement pénitentiaire (réponse possible 10 de
+// Q2.2.1) : TS1012-04 et `CONTRAT_CONTEXTES_V1012.json` du paquet v10.1.2 de
+// l'éditeur, les points 33 et 34 de la v10.1.3 et
 // `CONTRAT_ORIENTATION_ADMINISTRATIVE.json`. Ce qui établit l'indication
-// médicale est notre lecture (D-130).
+// médicale est notre lecture.
 
 import { describe, expect, it } from "vitest";
 import type { Cibles } from "../../../../core/models/eligibilite/cibles/noms";
@@ -78,7 +78,7 @@ describe("l'indication médicale d'un retour vers la prison (point 33)", () => {
         "Q1.3.b": "1_LIEN_DIRECT",
       },
     ],
-    // Une séance du déplacement (TS1015-08, D-245).
+    // Une séance du déplacement (TS1015-08).
     ["une chimiothérapie", { ...SEUL, "Q1.3": ["3_CHIMIOTHERAPIE"] }],
     ["une radiothérapie", { ...SEUL, "Q1.3": ["4_RADIOTHERAPIE"] }],
     ["une hémodialyse", { ...SEUL, "Q1.3": ["5_DIALYSE"], "Q1.3.a": "1_OUI" }],
@@ -92,7 +92,7 @@ describe("l'indication médicale d'un retour vers la prison (point 33)", () => {
   });
 
   // Ni une ALD sans lien, ni une dialyse qui n'est pas une hémodialyse
-  // (TS1015-08, D-245).
+  // (TS1015-08).
   it.each([
     [
       "une ALD sans lien direct",
@@ -126,8 +126,8 @@ describe("l'indication médicale d'un retour vers la prison (point 33)", () => {
   });
 
   // Un « Non » resté de Q2.2.1.indication contredit la séance de P1 : la
-  // question ne se pose plus, sa réponse ne compte pas, et le trajet reste
-  // dans le circuit de prescription (D-104).
+  // question ne se pose plus, sa réponse ne compte pas, et le trajet reste dans
+  // le circuit de prescription.
   it("une indication établie en P1 écarte un « Non » contradictoire", () => {
     const contradiction: Reponses = {
       ...qualifie("2_NON"),

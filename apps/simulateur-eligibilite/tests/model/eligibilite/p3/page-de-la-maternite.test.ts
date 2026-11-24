@@ -1,6 +1,6 @@
-// La page de la maternité (Q3.8, #289), dernière de P3 : ce que la DAP d'un
+// La page de la maternité (Q3.8), dernière de P3 : ce que la DAP d'un
 // Engagement maternité reporte et que le trajet ne dit pas.
-// `CONTRAT_Q38_MATERNITE_DOCUMENT.json`, D-251.
+// Le contrat : `CONTRAT_Q38_MATERNITE_DOCUMENT.json`.
 
 import { describe, expect, it } from "vitest";
 import { Simulation } from "../../../../core/socle/simulation";

@@ -1,6 +1,6 @@
-// La taille des textes imprimés du document R3 (ADR-0048, ANA22-03) : une
-// mesure par version, sous les identifiants fermés de son support, liée à ses
-// impressions par la version, sans aucun texte.
+// La taille des textes imprimés du document R3 (ANA22-03) : une mesure par
+// version, sous les identifiants fermés de son support, liée à ses impressions
+// par la version, sans aucun texte.
 
 import { describe, expect, it } from "vitest";
 import type { Typography } from "../../../front/socle/analytics/document-version.entity";

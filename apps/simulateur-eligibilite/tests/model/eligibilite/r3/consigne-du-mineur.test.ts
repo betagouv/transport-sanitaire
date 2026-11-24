@@ -1,8 +1,8 @@
-// La consigne transitoire du mineur en ALD non exonérante (#128), sur la PMT
-// et la DAP remplies. Le mineur reconnu en soins prolongés coche « ALD non
-// exonérante » sur chaque volet, et sa mention entre une fois dans le texte
-// du seul volet médical (`COMPLETION_DOCUMENTS.md`, `mapping_documents.json`).
-// Avec elle, ce texte ne tient pas à 9 pt : le prescripteur le réécrit (D-302).
+// La consigne transitoire du mineur en ALD non exonérante, sur la PMT et la DAP
+// remplies. Le mineur reconnu en soins prolongés coche « ALD non exonérante »
+// sur chaque volet, et sa mention entre une fois dans le texte du seul volet
+// médical (`COMPLETION_DOCUMENTS.md`, `mapping_documents.json`). Avec elle, ce
+// texte ne tient pas à 9 pt : le prescripteur le réécrit.
 //
 // Quand la cible vaut oui se teste contre les règles (`mineur.test.ts`,
 // `ald-et-mineur.test.ts`) : jamais avec une ALD à 100 % établie, ni sans le
@@ -66,7 +66,7 @@ const VOLETS = SUPPORTS.flatMap((support) =>
   support.volets.map((page) => [support.nom, page, support] as const),
 );
 
-describe("le mineur reconnu en soins prolongés (#128)", () => {
+describe("le mineur reconnu en soins prolongés", () => {
   it.each(VOLETS)(
     "%s : coche « ALD non exonérante » sur la page %i",
     async (_nom, page, support) => {
@@ -92,7 +92,7 @@ describe("le mineur reconnu en soins prolongés (#128)", () => {
   );
 });
 
-describe("la DAP du mineur reconnu (#128)", () => {
+describe("la DAP du mineur reconnu", () => {
   it.each([
     ["en série", SERIE, ["non"]],
     ["à plus de 150 km", SANS_AVION, ["Oui"]],
@@ -113,7 +113,7 @@ describe("la DAP du mineur reconnu (#128)", () => {
 
 // Le parcours de la seed ne coche pas le cas 8 de Q1.3 : les règles ne
 // reconnaissent aucun mineur.
-describe("hors du mineur reconnu (#128)", () => {
+describe("hors du mineur reconnu", () => {
   it.each([
     ["S3138g", "sans le cas 8 de Q1.3", LA_PMT, {}, []],
     ["S3139h", "sans le cas 8 de Q1.3", LA_DAP, {}, []],

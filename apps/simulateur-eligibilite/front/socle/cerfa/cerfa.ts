@@ -48,7 +48,7 @@ export type TextBinding = {
 };
 
 /**
- * Un texte strict (D-302) : il s'écrit dans son champ à sa taille et à aucune
+ * Un texte strict : il s'écrit dans son champ à sa taille et à aucune
  * autre, ou il ne s'écrit pas. Le cerfa qui en déborde n'est qu'un aperçu, et
  * le prescripteur le réécrit.
  */
@@ -185,7 +185,7 @@ export function onOneLine(drawing: DrawingBinding): DrawingBinding {
 
 /**
  * Le texte dessiné `drawing`, strict : sur une ligne de chaque position, à sa
- * taille, ou il ne se dessine pas, et le prescripteur le réécrit (D-302).
+ * taille, ou il ne se dessine pas, et le prescripteur le réécrit.
  */
 export function strictDrawing(
   drawing: DrawingBinding,

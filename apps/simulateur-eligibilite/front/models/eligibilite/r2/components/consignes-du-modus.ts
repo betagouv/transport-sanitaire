@@ -1,4 +1,4 @@
-// Les consignes d'une fiche patient positive (#135) : le modus du catalogue,
+// Les consignes d'une fiche patient positive : le modus du catalogue,
 // lu en introduction et en étapes numérotées. Une fonction pure, sans React.
 //
 // Le catalogue écrit le modus en texte à balisage léger : `<br>` pour les

@@ -1,6 +1,6 @@
 // Les contrôles de la page de la permission du mineur (Q2.8) : un message par
 // incohérence, sur la plus tardive des deux questions, et le blocage de
-// Q2.8.6.b. `CATALOGUE_COMPLET_QUESTIONS.md` Q2.8 du paquet de l'éditeur (D-107).
+// Q2.8.6.b. `CATALOGUE_COMPLET_QUESTIONS.md` Q2.8 du paquet de l'éditeur.
 //
 // Le jour 1 est la date d'hospitalisation, le 1er octobre : le 14e jour est le
 // 14 octobre. Les dates de la permission sont des dates seules, sa durée se

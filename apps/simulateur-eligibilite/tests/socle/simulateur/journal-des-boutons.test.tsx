@@ -1,7 +1,6 @@
-// Ce que les boutons du premier résultat envoient au journal des parcours
-// (#388, #507) : leur exposition, une fois tant qu'ils restent affichés sur la
-// même fiche, puis chaque clic, au clavier comme à la souris, avec la même
-// exposition. Voir ADR-0047.
+// Ce que les boutons du premier résultat envoient au journal des parcours :
+// leur exposition, une fois tant qu'ils restent affichés sur la même fiche,
+// puis chaque clic, au clavier comme à la souris, avec la même exposition.
 //
 // Le navigateur de test ne met pas en page : le PDF de la fiche y échoue
 // toujours, et son téléchargement n'y réussit jamais.

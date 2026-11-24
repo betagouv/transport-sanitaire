@@ -19,7 +19,7 @@ type DoesNotFit = undefined;
 /**
  * La taille à laquelle `text` tient dans la zone de `field` : la taille visée,
  * sinon la taille réduite. Le nombre maximal de caractères du champ compte
- * aussi (D-85).
+ * aussi.
  */
 export function sizeInField(
   field: PDFTextField,
@@ -34,7 +34,7 @@ export function sizeInField(
 
 /**
  * `text` tient-il dans la zone de `field` à `fontSize`, et à aucune autre
- * taille ? Le nombre maximal de caractères du champ compte aussi (D-302).
+ * taille ? Le nombre maximal de caractères du champ compte aussi.
  */
 export function fitsAtSize(
   field: PDFTextField,
@@ -48,7 +48,7 @@ export function fitsAtSize(
 /**
  * La plus grande taille, de la taille réduite à `floor` par pas d'un
  * demi-point, à laquelle `text` tient dans la zone de `field` en passant à la
- * ligne (D-193). Aucune s'il n'y tient pas à `floor` (#341), s'il dépasse le
+ * ligne. Aucune s'il n'y tient pas à `floor`, s'il dépasse le
  * nombre maximal de caractères du champ, ou si le champ n'a pas de cadre.
  */
 export function sizeToFit(

@@ -1,5 +1,5 @@
 // Les points que les règles laissent ouverts pour la caisse, et le scénario
-// de l'éditeur qui dit chacun (D-112).
+// de l'éditeur qui dit chacun.
 //
 // La trace ne porte qu'une raison, `cible_reason_code`, celle du premier point.
 // Les autres se relisent dans les cibles et les faits, aux conditions mêmes

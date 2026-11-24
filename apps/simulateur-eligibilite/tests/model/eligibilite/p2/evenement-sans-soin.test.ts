@@ -1,7 +1,7 @@
-// L'événement sans soin (FAIT-EVENEMENT-SANS-SOIN-20261113, correctif v10.1.8) :
-// une qualification positive du même trajet l'établit, et il ne vaut « non »
-// que si la permission, la convocation et l'Engagement maternité sont tous
-// écartés. Un soin ordinaire de Q2.1 n'écarte rien (D-282).
+// L'événement sans soin (FAIT-EVENEMENT-SANS-SOIN-20261113, correctif
+// v10.1.8) : une qualification positive du même trajet l'établit, et il ne vaut
+// « non » que si la permission, la convocation et l'Engagement maternité sont
+// tous écartés. Un soin ordinaire de Q2.1 n'écarte rien.
 
 import { describe, expect, it } from "vitest";
 import { MATERNITE_ETABLIE } from "./reponses-de-la-branche";

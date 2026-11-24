@@ -1,5 +1,5 @@
-// Une version du document R3 (ADR-0046) : `d1`, `d2`… dans une simulation. Ce
-// que le PDF montre, la taille de ses textes imprimés (ADR-0048), et la
+// Une version du document R3 : `d1`, `d2`… dans une simulation. Ce
+// que le PDF montre, la taille de ses textes imprimés, et la
 // révision du document dont il vient, en font l'empreinte : une empreinte
 // nouvelle ouvre la version suivante. Un rendu qui change sans que le DTO
 // change en ouvre donc une aussi, sous la même révision du document.
@@ -18,7 +18,7 @@ export type DocumentContent = {
 
 /**
  * La taille de chaque texte imprimé, en points, par identifiant fermé, et les
- * identifiants des textes imprimés dont la taille ne s'est pas lue (ADR-0048).
+ * identifiants des textes imprimés dont la taille ne s'est pas lue.
  */
 export type Typography = {
   readonly sizes: Readonly<Record<string, number>>;

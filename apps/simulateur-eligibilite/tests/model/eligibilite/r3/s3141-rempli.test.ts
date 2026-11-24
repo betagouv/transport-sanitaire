@@ -1,6 +1,6 @@
-// Le S3141 rempli (#158) : chaque cellule de l'éditeur a son champ ou sa
-// raison de rester vide, et un parcours réel s'écrit sur le gabarit. Ce que
-// vaut chaque cellule se teste avec sa rubrique (`rubriques-du-cerfa.test.ts`).
+// Le S3141 rempli : chaque cellule de l'éditeur a son champ ou sa raison de
+// rester vide, et un parcours réel s'écrit sur le gabarit. Ce que vaut chaque
+// cellule se teste avec sa rubrique (`rubriques-du-cerfa.test.ts`).
 
 import { describe, expect, it } from "vitest";
 import { S3141 } from "../../../../front/models/eligibilite/r3/s3141/s3141";
@@ -40,8 +40,8 @@ const CELLULES = [
   ...["structure_identifiant", "date_prescription"],
 ];
 
-// Aucune source fiable : l'identité reste à écrire à la main (D-74), hors
-// l'adresse du domicile (D-268).
+// Aucune source fiable : l'identité reste à écrire à la main, hors l'adresse du
+// domicile.
 const IDENTITES = [
   ...["beneficiaire_nom_prenom", "beneficiaire_nir", "beneficiaire_naissance"],
   ...["assure_nom_prenom", "assure_nir"],
@@ -49,7 +49,7 @@ const IDENTITES = [
   ...["structure_adresse", "structure_identifiant"],
 ];
 
-// Les parties d'un lieu, écrites ensemble dans sa zone (D-138).
+// Les parties d'un lieu, écrites ensemble dans sa zone.
 const PARTIES_D_UN_LIEU = ["depart", "arrivee"].flatMap((extremite) =>
   ["nom", "adresse", "complement", "code_postal", "commune", "pays"].map(
     (partie) => `${extremite}_${partie}`,
@@ -80,10 +80,10 @@ describe("le S3141", () => {
 });
 
 // Le tiers recueilli en Q1.3, reporté tel quel sur le S3141 pour tous les
-// allers-retours prescrits (TS1018-05, DOC-Q13-TIERS-20261104). Sans réponse
-// à Q1.3, rien ne s'invente : ni case, ni date. Q1.3 se pose dans tous les
+// allers-retours prescrits (TS1018-05, DOC-Q13-TIERS-20261104). Sans réponse à
+// Q1.3, rien ne s'invente : ni case, ni date. Q1.3 se pose dans tous les
 // parcours, avant le verrou : la reprise en Q3.6 de l'éditeur
-// (DOC-S3141-REPRISE-TIERS-20261113) n'a rien à rattraper (D-290).
+// (DOC-S3141-REPRISE-TIERS-20261113) n'a rien à rattraper.
 describe("le tiers sur le S3141", () => {
   const { "Q1.3": _, ...SANS_Q13 } = PERMISSIONS;
 
@@ -148,7 +148,7 @@ describe("le S3141 de plusieurs permissions", () => {
     ]);
   });
 
-  // Une permission par semaine en permet 5 par mois (D-246).
+  // Une permission par semaine en permet 5 par mois.
   it("écrit 4 allers-retours par mois dans « tr mois », la case aller-retour cochée", async () => {
     const reponses: Reponses = {
       ...PERMISSIONS,
@@ -165,7 +165,7 @@ describe("le S3141 de plusieurs permissions", () => {
     ]);
   });
 
-  it("coche l'accident causé par un tiers à côté du « oui » imprimé, à droite du « non » (D-139)", async () => {
+  it("coche l'accident causé par un tiers à côté du « oui » imprimé, à droite du « non »", async () => {
     const pdf = await rempli(ACCIDENT);
     const [coche] = await markedStates(await gabarit("S3141"), pdf, "rct");
 

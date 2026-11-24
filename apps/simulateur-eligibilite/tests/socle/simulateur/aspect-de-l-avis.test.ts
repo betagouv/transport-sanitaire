@@ -1,8 +1,8 @@
-// L'aspect de l'avis (D-234), lu dans sa feuille de style : les couleurs de V01
-// et du § 5.1 de `REFERENTIEL/03` (v10.1.4), et un texte lisible au repos
-// (contraste WCAG supérieur à 4,5:1). Le survol et l'activation ne l'ont pas ;
-// l'éditeur le sait et garde ces couleurs. La place dans la barre se vérifie à
-// l'écran : le navigateur de test ne calcule pas la mise en page.
+// L'aspect de l'avis, lu dans sa feuille de style : les couleurs de V01 et
+// du § 5.1 de `REFERENTIEL/03` (v10.1.4), et un texte lisible au repos (contraste
+// WCAG supérieur à 4,5:1). Le survol et l'activation ne l'ont pas ; l'éditeur
+// le sait et garde ces couleurs. La place dans la barre se vérifie à l'écran :
+// le navigateur de test ne calcule pas la mise en page.
 
 import { readFileSync } from "node:fs";
 import { join } from "node:path";

@@ -1,7 +1,6 @@
-// Une question compte aussi par les faits qu'elle établit (#255) : quand le
-// résultat lit un de ces faits, ou quand la garde d'une question qui reste lit
-// une cible qui en dépend. Le graphe de décision dit de quels faits dépend la
-// cible.
+// Une question compte aussi par les faits qu'elle établit : quand le résultat
+// lit un de ces faits, ou quand la garde d'une question qui reste lit une cible
+// qui en dépend. Le graphe de décision dit de quels faits dépend la cible.
 
 import { describe, expect, it } from "vitest";
 import {

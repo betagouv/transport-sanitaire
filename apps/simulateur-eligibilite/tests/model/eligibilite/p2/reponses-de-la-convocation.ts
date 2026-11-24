@@ -12,7 +12,7 @@ import {
 export { ciblesDe, issue, posee, type Reponses };
 
 // Un patient seul, pour un autre motif, convoqué : seule Q2.2.1.b dit la
-// convocation (D-272), et Q2.10 se pose.
+// convocation, et Q2.10 se pose.
 export const CONVOQUE: Reponses = {
   ...SANS_SITUATION,
   "Q2.2.1.b": ["13_CONVOCATION"],

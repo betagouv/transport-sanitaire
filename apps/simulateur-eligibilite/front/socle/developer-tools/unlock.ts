@@ -1,6 +1,6 @@
 // Où s'ouvrent les developer tools : en local seulement, quel que soit le
-// service choisi (D-279). La trace de debug s'ouvre aussi partout pour la
-// structure « Assurance Maladie » (D-280).
+// service choisi. La trace de debug s'ouvre aussi partout pour la
+// structure « Assurance Maladie ».
 
 /**
  * Vrai en local : sous le serveur de dev de Vite et sous les tests. Faux sur un

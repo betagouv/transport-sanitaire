@@ -1,7 +1,7 @@
-// La précision de l'urgence sur la PMT et la DAP (#480 ; T06, R04) : un texte
-// strict, sur une ligne, en 8 pt, sur chaque volet qui la porte. Elle s'écrit
-// telle que saisie : trop longue, ou coupée d'un retour à la ligne, elle ne
-// tient pas, le cerfa n'est qu'un aperçu et la génération la signale.
+// La précision de l'urgence sur la PMT et la DAP (T06, R04) : un texte strict,
+// sur une ligne, en 8 pt, sur chaque volet qui la porte. Elle s'écrit telle que
+// saisie : trop longue, ou coupée d'un retour à la ligne, elle ne tient pas, le
+// cerfa n'est qu'un aperçu et la génération la signale.
 
 import { describe, expect, it } from "vitest";
 import { S3138G } from "../../../../front/models/eligibilite/r3/s3138g/s3138g";

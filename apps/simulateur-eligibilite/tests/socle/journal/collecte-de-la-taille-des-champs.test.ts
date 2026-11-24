@@ -1,8 +1,8 @@
 // @vitest-environment node
 //
-// La collecte de la taille des champs du document R3 (ADR-0048, ANA22-03), sur
-// le vrai serveur Express et le journal en mémoire : des identifiants fermés,
-// propres au support, et une seule mesure par `document_id`.
+// La collecte de la taille des champs du document R3 (ANA22-03), sur le vrai
+// serveur Express et le journal en mémoire : des identifiants fermés, propres
+// au support, et une seule mesure par `document_id`.
 
 import { afterEach, describe, expect, it } from "vitest";
 import { MemoryJournal } from "../../../server/journal/memory-journal.adapter.ts";

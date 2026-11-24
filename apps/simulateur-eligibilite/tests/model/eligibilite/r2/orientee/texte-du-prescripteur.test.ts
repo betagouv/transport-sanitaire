@@ -1,6 +1,6 @@
-// Le texte du résultat des cinq issues sans fiche patient (#133, D-112). Les
-// phrases attendues sont recopiées du catalogue de l'éditeur : un texte qui
-// change sans que son oracle change échoue ici.
+// Le texte du résultat des cinq issues sans fiche patient. Les phrases
+// attendues sont recopiées du catalogue de l'éditeur : un texte qui change sans
+// que son oracle change échoue ici.
 
 import { describe, expect, it } from "vitest";
 import {

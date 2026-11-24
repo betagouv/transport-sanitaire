@@ -1,4 +1,4 @@
-// Un texte strict (D-302) : il tient dans sa place à sa taille, ou il ne
+// Un texte strict : il tient dans sa place à sa taille, ou il ne
 // s'écrit pas. Sa mesure est celle de l'écriture : le champ du gabarit, passé
 // en multiligne ou gardé sur une ligne, sa marge, Helvetica, et la mise en
 // lignes de `pdf-lib` (`text-fit.ts`) ; ou, pour un texte dessiné, sa largeur

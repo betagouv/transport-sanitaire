@@ -1,5 +1,5 @@
-// Les précisions du prescripteur (D-111) : le contexte de chaque scénario.
-// Elles ne se lisent que sous les issues orientées (D-224).
+// Les précisions du prescripteur : le contexte de chaque scénario.
+// Elles ne se lisent que sous les issues orientées.
 
 import type { Questions } from "../../../../../../core/models/eligibilite/questions/reponses";
 import type { Reading } from "../../../../../../core/socle";
@@ -30,7 +30,7 @@ export const PRECISIONS_DU_PRESCRIPTEUR: Reading<Precisions> = lues(
 
 // Q2.5 dit le genre du déplacement, Q2.6.a sa durée. Le même site, l'USLD et
 // l'EHPAD n'ont pas de question qui les prouve. Un autre déplacement pendant
-// le séjour est provisoire (D-106). L'admission en HAD à domicile prouve le
+// le séjour est provisoire. L'admission en HAD à domicile prouve le
 // genre « had » seul.
 function contexteDeLArticle80({
   deplacement,

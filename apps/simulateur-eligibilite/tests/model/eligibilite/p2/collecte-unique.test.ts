@@ -1,7 +1,7 @@
-// Chaque situation ne se découvre qu'à un endroit (QST-COLLECTE-UNIQUE,
-// D-272) : Q2.1 ne dit que le motif général, les situations particulières se
-// cochent en Q2.2.1 et Q2.2.1.b, quel que soit ce motif. Seule l'entrée en
-// établissement (Q2.1.g) retire le séjour, sans rappel (TS1012-01).
+// Chaque situation ne se découvre qu'à un endroit (QST-COLLECTE-UNIQUE) : Q2.1
+// ne dit que le motif général, les situations particulières se cochent en
+// Q2.2.1 et Q2.2.1.b, quel que soit ce motif. Seule l'entrée en établissement
+// (Q2.1.g) retire le séjour, sans rappel (TS1012-01).
 
 import { describe, expect, it } from "vitest";
 import type { Questions } from "../../../../core/models/eligibilite/questions/reponses";

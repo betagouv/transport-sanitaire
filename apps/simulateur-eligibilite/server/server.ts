@@ -31,7 +31,7 @@ function configurationOuArret(): Configuration {
   }
 }
 
-// Le signe de vie de la collecte (ADR-0051) : tout de suite, puis à chaque heure
+// Le signe de vie de la collecte : tout de suite, puis à chaque heure
 // pleine. Un échec se dit dans les journaux du serveur sans l'arrêter : l'heure
 // restera sans signe de vie, et ressortira indisponible.
 function chaqueHeure(action: () => Promise<void>): void {

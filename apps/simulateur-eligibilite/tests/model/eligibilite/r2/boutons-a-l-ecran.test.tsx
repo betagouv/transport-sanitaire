@@ -1,5 +1,5 @@
-// Les boutons du résultat du modèle de l'éditeur, comme à l'écran (#137) : le
-// vrai simulateur, ouvert sur une seed de l'écran des seeds. Chaque issue a ses
+// Les boutons du résultat du modèle de l'éditeur, comme à l'écran : le vrai
+// simulateur, ouvert sur une seed de l'écran des seeds. Chaque issue a ses
 // boutons, et seulement eux. Les libellés se testent issue par issue dans
 // `boutons-du-resultat.test.ts`.
 
@@ -22,8 +22,7 @@ const PRECEDENT = "Précédent";
 const NOUVELLE = "Faire une nouvelle simulation";
 const COMPLETER = "Compléter la prescription";
 const ACCORD = "Compléter la demande d’accord préalable";
-// La fiche à remettre au patient, en PDF (#129) : seules les issues à fiche
-// l'ont.
+// La fiche à remettre au patient, en PDF : seules les issues à fiche l'ont.
 const TELECHARGER = "Télécharger";
 
 beforeEach(() => rangerRattachement(null));
@@ -148,7 +147,7 @@ describe("les boutons du modèle de l'éditeur", () => {
         name: /^Prescription préremplie prête à imprimer/,
       }),
     ).toBeInTheDocument();
-    // Le texte attend le PDF (D-250).
+    // Le texte attend le PDF.
     expect(
       await screen.findByText(/^Le document est prêt à être imprimé\./),
     ).toBeInTheDocument();

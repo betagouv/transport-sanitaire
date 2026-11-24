@@ -11,9 +11,9 @@ import { drawnOn } from "./pdf-aplati";
 import { testForm } from "./test-form";
 
 // Un texte strict qui ne tient pas sur le cerfa se réécrit au-dessus de son
-// aperçu (D-302, D-304) : le compteur, le message, « Valider » qui attend un
-// texte qui tient, et les exports suspendus jusqu'au document régénéré.
-// L'écran garde les textes comme la simulation (`TextEdits`, D-303).
+// aperçu : le compteur, le message, « Valider » qui attend un texte qui tient,
+// et les exports suspendus jusqu'au document régénéré. L'écran garde les textes
+// comme la simulation (`TextEdits`).
 
 type Fiche = {
   fields: { motif?: string };

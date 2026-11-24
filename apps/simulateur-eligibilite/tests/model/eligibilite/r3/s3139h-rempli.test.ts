@@ -1,7 +1,7 @@
-// La DAP remplie (#161) : chaque cellule de l'éditeur a son champ ou sa raison
-// de rester vide, et un parcours réel s'écrit sur les trois volets du
-// gabarit, pages 2 à 4. Rien de médical ne s'écrit hors de la page 2. Ce que
-// vaut chaque cellule se teste avec sa rubrique (`rubriques-du-cerfa.test.ts`,
+// La DAP remplie : chaque cellule de l'éditeur a son champ ou sa raison de
+// rester vide, et un parcours réel s'écrit sur les trois volets du gabarit,
+// pages 2 à 4. Rien de médical ne s'écrit hors de la page 2. Ce que vaut chaque
+// cellule se teste avec sa rubrique (`rubriques-du-cerfa.test.ts`,
 // `rubriques-de-la-pmt.test.ts`, `rubriques-de-la-dap.test.ts`,
 // `texte-medical.test.ts`), la consigne du mineur avec la PMT
 // (`consigne-du-mineur.test.ts`), les motifs cochés à part
@@ -49,8 +49,8 @@ const CELLULES = [
   ...["structure_adresse", "structure_identifiant", "date_prescription"],
 ];
 
-// Aucune source fiable : l'identité reste à écrire à la main (D-74), hors
-// l'adresse du domicile (D-268).
+// Aucune source fiable : l'identité reste à écrire à la main, hors l'adresse du
+// domicile.
 const IDENTITES = [
   ...["beneficiaire_nom_prenom", "beneficiaire_nir", "beneficiaire_naissance"],
   ...["organisme", "assure_nom_prenom", "assure_nir"],
@@ -58,7 +58,7 @@ const IDENTITES = [
   ...["structure_adresse", "structure_identifiant"],
 ];
 
-// Les parties d'un lieu, écrites ensemble dans sa zone (D-138).
+// Les parties d'un lieu, écrites ensemble dans sa zone.
 const PARTIES_D_UN_LIEU = ["depart", "arrivee"].flatMap((extremite) =>
   ["nom", "adresse", "complement", "code_postal", "commune", "pays"].map(
     (partie) => `${extremite}_${partie}`,
@@ -143,7 +143,7 @@ describe("l'adresse du bénéficiaire sur la DAP", () => {
 });
 
 describe("la DAP de 4 allers-retours", () => {
-  // Quatre allers-retours valent 4, et non 8 trajets simples (D-246).
+  // Quatre allers-retours valent 4, et non 8 trajets simples.
   const QUATRE: Reponses = {
     ...DAP,
     "Q3.1.2": "3_ALLER_RETOUR_EQUIVALENT",
@@ -165,7 +165,7 @@ describe("la DAP de 4 allers-retours", () => {
   });
 });
 
-describe("les cases inversées du gabarit (D-188)", () => {
+describe("les cases inversées du gabarit", () => {
   // Le gabarit imprime « non » puis « oui », « ALD exonérante » puis « ALD non
   // exonérante », chacun suivi de sa case : l'état de chaque case n'est pas
   // son libellé.

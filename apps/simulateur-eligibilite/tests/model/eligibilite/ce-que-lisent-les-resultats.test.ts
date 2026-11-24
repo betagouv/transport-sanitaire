@@ -1,9 +1,9 @@
 // Ce que R2 et R3 lisent : les questions telles quelles, hors des faits et des
-// cibles (#254), puis les cibles et les faits (#260). Une telle question se
-// pose toujours : sa réponse s'affiche, même quand aucun fait ne la lit. Rien
-// ne se déroule : R2 ne lit que `R2.lit`, union de ce que ses textes
-// déclarent, et R3 que son texte, son titre, son bouton, le choix de son
-// document et les entrées de ses cerfas.
+// cibles, puis les cibles et les faits. Une telle question se pose toujours :
+// sa réponse s'affiche, même quand aucun fait ne la lit. Rien ne se déroule :
+// R2 ne lit que `R2.lit`, union de ce que ses textes déclarent, et R3 que son
+// texte, son titre, son bouton, le choix de son document et les entrées de ses
+// cerfas.
 
 import { describe, expect, it } from "vitest";
 import { Reads } from "../../../core/socle/questionnaire-engine";

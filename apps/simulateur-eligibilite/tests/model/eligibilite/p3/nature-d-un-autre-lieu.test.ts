@@ -1,6 +1,6 @@
-// La nature d'un autre lieu de P3 (Q3.2, Q3.3, #400) : choisie sur une DAP,
-// saisie sinon, jamais redemandée quand P2 la prouve ; et la catégorie où
-// chaque nature se reporte. DOC-LIEUX-TROIS-CATEGORIES-20261105,
+// La nature d'un autre lieu de P3 (Q3.2, Q3.3) : choisie sur une DAP, saisie
+// sinon, jamais redemandée quand P2 la prouve ; et la catégorie où chaque
+// nature se reporte. DOC-LIEUX-TROIS-CATEGORIES-20261105,
 // `CONTRAT_LIEUX_CERFA.json`.
 
 import { describe, expect, it } from "vitest";

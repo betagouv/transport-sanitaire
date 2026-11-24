@@ -92,13 +92,13 @@ describe("les cibles déclarées", () => {
 });
 
 describe("les réponses possibles déclarées", () => {
-  // Q2.2.1 et Q2.2.1.b se partagent les situations du catalogue : chacune
-  // garde son numéro, l'examen et l'hébergement de la maternité prennent le
-  // 14 et le 15, et la réponse négative de chaque bloc est la 0
-  // (`CONTRAT_Q221_PROGRESSIF.json`, D-252, D-272). Q2.1 garde les numéros de
-  // ses neuf motifs, et Q2.14.motif ceux qui restent sans l'examen
-  // (QST-COLLECTE-UNIQUE, D-272). Q2.6 pose sa réponse possible 1, le type du
-  // transfert, à part (D-106).
+  // Q2.2.1 et Q2.2.1.b se partagent les situations du catalogue : chacune garde
+  // son numéro, l'examen et l'hébergement de la maternité prennent le 14 et le
+  // 15, et la réponse négative de chaque bloc est la 0
+  // (`CONTRAT_Q221_PROGRESSIF.json`). Q2.1 garde les numéros de ses neuf
+  // motifs, et Q2.14.motif ceux qui restent sans l'examen
+  // (QST-COLLECTE-UNIQUE). Q2.6 pose sa réponse possible 1, le type du
+  // transfert, à part.
   const A_PART = ["Q2.1", "Q2.2.1", "Q2.2.1.b", "Q2.6", "Q2.14.motif"];
   const suivies = Object.entries(REPONSES_POSSIBLES).filter(
     ([id]) => !A_PART.includes(id),

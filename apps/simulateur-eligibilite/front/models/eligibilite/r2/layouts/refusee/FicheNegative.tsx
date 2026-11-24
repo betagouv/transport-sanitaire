@@ -1,4 +1,4 @@
-// Le contenu de la fiche patient négative (#134), à remettre au patient. Le
+// Le contenu de la fiche patient négative, à remettre au patient. Le
 // socle la pose sur sa feuille, sous les logos, son titre et sa raison. Le
 // composant range un `TexteDeLaFicheNegative` dans les blocs du socle ; il
 // n'écrit aucun texte de l'éditeur. Ni cartes ni encadré bleu (TS1014-J05) :

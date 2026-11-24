@@ -1,6 +1,6 @@
 // Une simulation, l'agrégat du parcours : un modèle, les réponses validées, la
 // page ouverte, l'étape où l'on en est, et les textes réécrits sur un
-// résultat (D-303). Chaque transition (valider la page, reculer, rouvrir une
+// résultat. Chaque transition (valider la page, reculer, rouvrir une
 // réponse à revoir, aller à une position, verrouiller) donne une nouvelle
 // simulation ; aucune ne change celle-ci. L'écran n'y ajoute que le brouillon
 // de la page ouverte.

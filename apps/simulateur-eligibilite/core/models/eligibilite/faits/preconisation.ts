@@ -2,8 +2,8 @@
 //
 // Q0.1 dit un besoin, pas un fait. Le catalogue des faits déclare chacun dans
 // son fichier (`faits/`). La décision y impose la complétude :
-// P1 et P2 sont complètes quand toutes leurs questions posées ont leur réponse
-// (D-110). Un retour pénitentiaire hors du circuit de prescription ne complète
+// P1 et P2 sont complètes quand toutes leurs questions posées ont leur réponse.
+// Un retour pénitentiaire hors du circuit de prescription ne complète
 // pas P2.
 
 import {
@@ -21,7 +21,7 @@ import { CATALOGUE_DES_FAITS } from "./index.ts";
 import { type Faits, PAS_ENCORE_ETABLI } from "./noms.ts";
 
 // Les parties dont la décision impose la complétude. Une question qui ne
-// compte pas ne s'y pose pas : elle n'attend pas sa réponse (#255).
+// compte pas ne s'y pose pas : elle n'attend pas sa réponse.
 const P1_SEULE = new Questionnaire<Questions>(P1.pages);
 const P1_ET_P2 = new Questionnaire<Questions>([...P1.pages, ...P2.pages]);
 

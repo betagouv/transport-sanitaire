@@ -1,6 +1,6 @@
-// Le texte médical de la PMT et de la DAP (#159) : ses segments, leur ordre et
-// leur forme (D-141 à D-147, D-270), depuis les réponses d'un parcours et les
-// cibles que les règles calculent. `CONTRAT_ELEMENTS_MEDICAUX.json` en v10.1.7.
+// Le texte médical de la PMT et de la DAP : ses segments, leur ordre et leur
+// forme, depuis les réponses d'un parcours et les cibles que les règles
+// calculent. `CONTRAT_ELEMENTS_MEDICAUX.json` en v10.1.7.
 
 import { describe, expect, it } from "vitest";
 import type { Faits } from "../../../../core/models/eligibilite/faits/noms";
@@ -132,8 +132,7 @@ describe("les compléments", () => {
     expect(texte(dap()).elements_medicaux).not.toMatch(/justification|\[/);
   });
 
-  // L'examen se coche en Q2.2.1 : l'autre motif de Q2.1 n'écrit aucun soin
-  // (D-272).
+  // L'examen se coche en Q2.2.1 : l'autre motif de Q2.1 n'écrit aucun soin.
   it("disent l'examen de l'Engagement maternité coché en Q2.2.1", () => {
     expect(texte(MATERNITE_ETABLIE).elements_medicaux).toBe(
       "Engagement maternité : examen obligatoire du 8ᵉ ou du 9ᵉ mois de grossesse.",
@@ -213,10 +212,10 @@ describe("les compléments", () => {
   });
 });
 
-// N4-05 de la recette de l'éditeur : chaque seed qui ouvre la PMT ou la DAP,
-// P3 répondue comme la PMT, donne un texte sans crochet ni nom de règle. Le
-// texte peut rester vide : la permission de `sejour-en-etablissement` ne désigne
-// aucun soin, et son brancardage a sa case (D-270).
+// N4-05 de la recette de l'éditeur : chaque seed qui ouvre la PMT ou la DAP, P3
+// répondue comme la PMT, donne un texte sans crochet ni nom de règle. Le texte
+// peut rester vide : la permission de `sejour-en-etablissement` ne désigne
+// aucun soin, et son brancardage a sa case.
 describe("le texte médical de chaque seed qui ouvre la PMT ou la DAP", () => {
   const seeds = SEEDS.filter(({ expected }) =>
     ["S3138g", "S3139h"].includes(String(expected.cible_support_id)),

@@ -1,6 +1,6 @@
-// Ce que le questionnaire envoie au journal des parcours (#385) : chaque page
-// ouverte et ses questions, chaque saisie, chaque validation, l'entrée, les
-// limites affichées et la fin de chaque phase. Voir ADR-0044.
+// Ce que le questionnaire envoie au journal des parcours : chaque page ouverte
+// et ses questions, chaque saisie, chaque validation, l'entrée, les limites
+// affichées et la fin de chaque phase.
 //
 // Le modèle de test pose P1 (la boisson, puis les accompagnements, sauf pour
 // « Rien ») et P3 (la quantité).

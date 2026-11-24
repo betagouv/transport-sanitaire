@@ -1,5 +1,5 @@
 // Le compteur d'une question dont la réponse s'écrit telle quelle dans un texte
-// strict du cerfa (#480 ; T06, R04) : « saisis / maximum caractères », mesuré
+// strict du cerfa (T06, R04) : « saisis / maximum caractères », mesuré
 // sur le cerfa, et le message de sa règle quand elle n'y tient pas. Il
 // prévient : la page se valide quand même, R3 fait réécrire ce qui déborde.
 //

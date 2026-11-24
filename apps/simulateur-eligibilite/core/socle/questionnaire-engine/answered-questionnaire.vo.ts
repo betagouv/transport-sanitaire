@@ -116,7 +116,7 @@ export class AnsweredQuestionnaire<
   /**
    * Les réponses, une fois cette page validée avec ce brouillon. Une question
    * devenue inapplicable n'y laisse pas de réponse, sur cette page comme sur
-   * les autres (#411), ni une réponse possible que sa question ne propose plus.
+   * les autres, ni une réponse possible que sa question ne propose plus.
    * Celles qui dépendaient d'une réponse changée sont effacées
    * (`page-commit.service.ts`). Une question à plusieurs places garde la sienne si
    * une place d'avant la pose, ou si une place d'après le peut ; une question
@@ -136,10 +136,10 @@ export class AnsweredQuestionnaire<
   }
 
   /**
-   * Le brouillon de cette page après une saisie (`PageCommitService.answerOn`). Une question
-   * devenue inapplicable y perd sa réponse : reposée, elle revient vide
-   * (#411). Elle la garde si une autre de ses places la pose, ou le peut
-   * encore, et si le graphe seul la masque.
+   * Le brouillon de cette page après une saisie (`PageCommitService.answerOn`).
+   * Une question devenue inapplicable y perd sa réponse : reposée, elle revient
+   * vide. Elle la garde si une autre de ses places la pose, ou le peut encore,
+   * et si le graphe seul la masque.
    */
   answerOn(
     page: Page,
@@ -154,7 +154,7 @@ export class AnsweredQuestionnaire<
   /**
    * Ce brouillon de la page, gardé de côté, relu sur ces réponses : sans les
    * réponses des questions devenues inapplicables, ni les réponses possibles
-   * qui ne se proposent plus (#411). Ce qui tient toujours reste.
+   * qui ne se proposent plus. Ce qui tient toujours reste.
    */
   restore(page: Page, draft: Answers): Answers {
     const applicable = this.#onlyApplicable(page, draft);

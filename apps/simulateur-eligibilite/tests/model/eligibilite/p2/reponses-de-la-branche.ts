@@ -19,7 +19,7 @@ export const MATERNITE: Reponses = {
 };
 
 // L'examen du 8ᵉ ou du 9ᵉ mois coché en Q2.2.1 : il est le motif, seul
-// l'éloignement se pose (D-272).
+// l'éloignement se pose.
 export const EXAMEN: Reponses = {
   ...SANS_SITUATION,
   "Q2.2.1": ["14_EXAMEN_MATERNITE"],

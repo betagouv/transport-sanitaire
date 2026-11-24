@@ -1,6 +1,6 @@
 // Les situations de P2 qui donnent un rôle aux lieux du trajet : la table de
-// QST-LIEUX-001 (`REFERENTIEL/02`), lue dans l'orientation qu'on lui donne
-// (D-121). P3 la tire du sens du document, P2 essaie les deux (#353).
+// QST-LIEUX-001 (`REFERENTIEL/02`), lue dans l'orientation qu'on lui donne.
+// P3 la tire du sens du document, P2 essaie les deux.
 //
 // Un rôle fixe la nature d'un lieu, ou la borne à quelques natures. Un séjour
 // en établissement fixe l'établissement ; une USLD que Q2.6 cite peut l'être.
@@ -159,7 +159,7 @@ function permission(
 
 // Q2.5 = 2 pendant un séjour en établissement : l'aller en part, le retour y
 // revient. Une admission en HAD de Q2.6 n'y revient pas : elle quitte
-// l'établissement pour le domicile (D-256).
+// l'établissement pour le domicile.
 function deplacementPendantLeSejour(
   entrees: Entrees,
   orientation: Orientation | Inconnu,
@@ -196,7 +196,7 @@ function soinsPendantLaHad(
 
 // L'HTNM de Q2.2.1 est l'arrivée de l'aller, le départ du retour. Celui de
 // l'Engagement maternité n'est pas forcément un lieu du trajet : Q3.8 le
-// recueille sinon (D-251, D-272).
+// recueille sinon.
 function hebergement(
   entrees: Entrees,
   orientation: Orientation | Inconnu,

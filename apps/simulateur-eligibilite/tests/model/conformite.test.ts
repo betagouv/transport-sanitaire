@@ -60,7 +60,7 @@ describe.each(Object.entries(MODELES))("le modèle %s", (nom, model) => {
         doublons(premieres.map((question) => question.id)),
         "Les réponses sont rangées par identifiant de question. Deux questions " +
           "de même identifiant s'écraseraient l'une l'autre. Une question qui " +
-          "a plusieurs places les déclare par `unlessAskedBefore()` (ADR-0040), " +
+          "a plusieurs places les déclare par `unlessAskedBefore()` (ARCH-007), " +
           "jamais de part et d'autre du verrou.",
       ).toEqual([]);
       expect(() => new Questionnaire(pages)).not.toThrow();

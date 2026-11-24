@@ -1,5 +1,5 @@
 // Q2.3.2 : l'avion ou le bateau de ligne, une case seule sans titre dans le
-// bloc de la distance. Décochée, elle répond « non » (D-239).
+// bloc de la distance. Décochée, elle répond « non ».
 
 import { question } from "../../question.ts";
 

@@ -1,9 +1,9 @@
 // Démarrer une simulation : ouvrir un parcours, et le signaler au journal sur
 // P0. Le parcours garde les ids de l'établissement et du service du
-// rattachement, et les écrit sur chacun de ses événements (ADR-0053).
+// rattachement, et les écrit sur chacun de ses événements.
 //
-// Chaque événement dit quelle app l'a produit (ADR-0050) : la version des règles
-// du modèle ouvert, et celle du build. Le commit déployé, le serveur l'écrit à
+// Chaque événement dit quelle app l'a produit : la version des règles du
+// modèle ouvert, et celle du build. Le commit déployé, le serveur l'écrit à
 // la réception.
 
 import type {

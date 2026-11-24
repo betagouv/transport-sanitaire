@@ -1,6 +1,6 @@
-// Les boutons de la fiche patient et l'avis, et leurs clics (ADR-0047,
-// ANA22-02) : une exposition tant que le bouton reste affiché sur le même objet,
-// et chaque clic rattaché à l'exposition courante de son bouton.
+// Les boutons de la fiche patient et l'avis, et leurs clics (ANA22-02) : une
+// exposition tant que le bouton reste affiché sur le même objet, et chaque clic
+// rattaché à l'exposition courante de son bouton.
 
 import { describe, expect, it } from "vitest";
 import type { AnalyticsEvent } from "../../../shared/analytics/analytics-event";

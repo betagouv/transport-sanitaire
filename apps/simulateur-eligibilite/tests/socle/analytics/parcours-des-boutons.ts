@@ -1,6 +1,6 @@
 // Un parcours jusqu'aux écrans de résultat, pour lire ce que leurs boutons
-// envoient au journal (ADR-0047) : le R2 et sa fiche, le R3 et son document, et
-// ce que le tableau de bord de l'éditeur en compte.
+// envoient au journal : le R2 et sa fiche, le R3 et son document, et ce que le
+// tableau de bord de l'éditeur en compte.
 
 import type { Button } from "../../../front/socle/analytics/button-place.vo";
 import { Journey } from "../../../front/socle/analytics/journey.entity";

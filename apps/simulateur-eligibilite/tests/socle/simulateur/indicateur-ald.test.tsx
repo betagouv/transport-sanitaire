@@ -15,9 +15,9 @@ import {
   radio,
 } from "./questionnaire";
 
-// L'indicateur de parcours ALD (#148), sur le modèle factice : un thé tient lieu
-// de parcours ALD. À chaque arrivée sur le premier résultat, un verdict part
-// vers la mesure d'audience, avec le nombre de questions posées et rien des
+// L'indicateur de parcours ALD, sur le modèle factice : un thé tient lieu de
+// parcours ALD. À chaque arrivée sur le premier résultat, un verdict part vers
+// la mesure d'audience, avec le nombre de questions posées et rien des
 // réponses.
 
 const INDICATEUR: AldIndicator = {
@@ -96,7 +96,7 @@ describe("l'indicateur de parcours ALD", () => {
     expect(verdicts()).toEqual([]);
   });
 
-  it("envoie un verdict à chaque arrivée sur le résultat (D-230)", async () => {
+  it("envoie un verdict à chaque arrivée sur le résultat", async () => {
     const user = await ouvrir(avec());
     await allerAuResultat(user);
 

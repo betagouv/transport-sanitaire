@@ -1,7 +1,7 @@
-// Les boutons du document R3, et leurs clics (ADR-0047, ANA22-02) : une
-// exposition par version du document tant qu'il reste prêt, et chaque clic
-// rattaché à l'exposition courante. L'impression et le téléchargement lancés
-// portent le document, et ne comptent pas comme des clics.
+// Les boutons du document R3, et leurs clics (ANA22-02) : une exposition par
+// version du document tant qu'il reste prêt, et chaque clic rattaché à
+// l'exposition courante. L'impression et le téléchargement lancés portent le
+// document, et ne comptent pas comme des clics.
 
 import { describe, expect, it } from "vitest";
 import {

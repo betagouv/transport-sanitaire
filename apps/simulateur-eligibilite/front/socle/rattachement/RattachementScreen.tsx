@@ -3,7 +3,6 @@
 // À la validation, il tire de la saisie les ids du référentiel, en attendant
 // que le référentiel enregistre une saisie libre. Il les range en session pour
 // Matomo et le journal, puis prévient `App`.
-// Voir ADR-0004.
 
 import { useMemo } from "react";
 import type { Referentiel } from "../../../shared/referentiel";
@@ -16,7 +15,7 @@ type Props = {
   // Celui du serveur, donné par le conteneur ; les tests passent le leur.
   referentiel: Referentiel;
   // La structure choisie, `null` pour un établissement : `App` en tire la
-  // trace de debug (D-280).
+  // trace de debug.
   onRattache: (structure: Structure | null) => void;
 };
 

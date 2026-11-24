@@ -1,6 +1,6 @@
 // La garde de l'API. L'app est publique et anonyme : on ne peut pas réserver
 // l'API au seul front, puisqu'un script refait tout ce que fait le navigateur.
-// La garde rend l'abus coûteux et borne ses dégâts (#451).
+// La garde rend l'abus coûteux et borne ses dégâts.
 //
 // - Un POST venu d'une autre origine est refusé : un autre site ne peut pas
 //   écrire chez nous depuis le navigateur de ses visiteurs. Sans en-tête

@@ -5,8 +5,8 @@
 // départ dit si l'entrée est simple.
 //
 // Q2.13.sens se pose quand le sens change la cohérence des lieux et qu'aucune
-// réponse ne l'établit (détail 8 de Q2.13, QST-LIEUX-CONFLIT-CERTAIN-20261106,
-// #365). Un sens seulement documentaire reste à P3 : Q3.1.2.
+// réponse ne l'établit (détail 8 de Q2.13, QST-LIEUX-CONFLIT-CERTAIN-20261106).
+// Un sens seulement documentaire reste à P3 : Q3.1.2.
 
 import { Q1_3 } from "../../p1/questions/q1-3.ts";
 import { given, question } from "../../question.ts";

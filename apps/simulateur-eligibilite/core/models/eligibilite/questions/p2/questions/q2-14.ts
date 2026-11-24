@@ -4,7 +4,7 @@
 // HTNM sont cochés ensemble (Q2.14.trajet, TS1018-04).
 //
 // Q2.2.1 découvre l'examen et l'hébergement, deux cases indépendantes
-// (QST-MAT-SEPARATION, D-272). L'examen coché est déjà la finalité du
+// (QST-MAT-SEPARATION). L'examen coché est déjà la finalité du
 // déplacement : le motif ne se repose pas. L'hébergement seul ne prouve pas
 // son organisation dans le dispositif : le motif ne propose alors que celle-ci.
 

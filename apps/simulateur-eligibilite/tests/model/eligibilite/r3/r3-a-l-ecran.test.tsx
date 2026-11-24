@@ -1,9 +1,9 @@
-// R3 du modèle de l'éditeur, comme à l'écran (#223) : le vrai simulateur,
-// ouvert sur une seed, mené par P3 jusqu'au document. La page suit C03 pour
-// les cinq documents : le stepper, titré du document, à « Étape 4 sur 4 » et
+// R3 du modèle de l'éditeur, comme à l'écran : le vrai simulateur, ouvert sur
+// une seed, mené par P3 jusqu'au document. La page suit C03 pour les cinq
+// documents : le stepper, titré du document, à « Étape 4 sur 4 » et
 // « Préparation terminée. » ; le texte ; la navigation ; les deux actions ;
-// puis l'aperçu. Les gabarits se lisent sur le disque : le PDF se génère, et
-// le texte, qui l'attend, s'affiche. Une nouvelle simulation ne garde rien du
+// puis l'aperçu. Les gabarits se lisent sur le disque : le PDF se génère, et le
+// texte, qui l'attend, s'affiche. Une nouvelle simulation ne garde rien du
 // document précédent.
 
 import { screen, waitFor } from "@testing-library/react";
@@ -137,7 +137,7 @@ function titreDeLEcran() {
 }
 
 // Le stepper, le texte, la navigation et les deux actions, dans l'ordre de C03.
-// « Télécharger » dit « Préparation du PDF » tant que le PDF se génère (D-233).
+// « Télécharger » dit « Préparation du PDF » tant que le PDF se génère.
 function hautDeLaPage(): HTMLElement[] {
   const bouton = (name: string | RegExp) =>
     screen.getByRole("button", { name });

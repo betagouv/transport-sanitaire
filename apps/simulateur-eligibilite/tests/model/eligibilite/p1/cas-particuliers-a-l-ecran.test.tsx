@@ -1,7 +1,7 @@
 // La page des cas particuliers de P1 (P1/3), déroulée dans le formulaire : les
 // sous-champs que révèlent l'ALD (Q1.3.b) et la dialyse (Q1.3.a), sur la même
 // page. Ce sont les cas « ALD statut/lien » et « Deux sous-champs » des
-// compléments de recette de l'éditeur (v10.1.4, #149).
+// compléments de recette de l'éditeur (v10.1.4).
 
 import { screen, within } from "@testing-library/react";
 import { describe, expect, it } from "vitest";

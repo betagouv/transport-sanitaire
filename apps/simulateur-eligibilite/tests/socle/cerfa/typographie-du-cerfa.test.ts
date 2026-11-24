@@ -1,5 +1,5 @@
-// La taille des textes imprimés d'un cerfa, par entrée de son DTO (ADR-0048 de
-// l'analytics) : celle où chaque texte s'imprime vraiment, jamais le texte.
+// La taille des textes imprimés d'un cerfa, par entrée de son DTO : celle où
+// chaque texte s'imprime vraiment, jamais le texte.
 
 import { describe, expect, it } from "vitest";
 import {

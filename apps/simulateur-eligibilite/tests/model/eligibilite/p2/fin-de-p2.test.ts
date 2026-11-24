@@ -1,6 +1,6 @@
 // La fin de P2, par les réponses seules, sans fait forcé : `fait_p2_complete`
 // vaut « oui » quand toutes les pages de P2 qui se posent sont validées, et
-// reste absent sinon (D-110). Chaque parcours va jusqu'à l'issue des règles.
+// reste absent sinon. Chaque parcours va jusqu'à l'issue des règles.
 
 import { describe, expect, it } from "vitest";
 import {

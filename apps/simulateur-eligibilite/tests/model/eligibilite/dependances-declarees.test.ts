@@ -1,11 +1,12 @@
 // Les dépendances entre réponses du modèle de l'éditeur, question par question.
-// Une dépendance ne se devine pas : chaque question la déclare par `dependsOn`
-// (D-299). Sans elle, la réponse survit au changement de celle dont elle
-// dépend, et peut finir dans un cerfa (#411).
+// Une dépendance ne se devine pas : chaque question la déclare par `dependsOn`.
+// Sans elle, la réponse survit au changement de celle dont elle dépend, et peut
+// finir dans un cerfa.
 //
 // Ce test range donc chaque question dans une table : ce dont sa réponse
 // dépend, ou rien. Une question ajoutée n'y est pas, et l'échec demande de la
-// relire. Les tables suivent D-190, D-299, D-300 et D-301.
+// relire. Les tables suivent les
+// demandes de l'éditeur (NAV-SOUS-QUESTIONS-20261113).
 
 import { describe, expect, it } from "vitest";
 import { model } from "../../../core/models/eligibilite";
@@ -109,7 +110,7 @@ describe("les dépendances entre réponses du modèle", () => {
       },
       "Une question du modèle n'est dans aucune des deux tables de ce test, " +
         "ou une table cite une question que le modèle n'a plus. Pour une " +
-        "question ajoutée, relis la règle de l'éditeur (D-299) : sa réponse " +
+        "question ajoutée, relis la règle de l'éditeur : sa réponse " +
         "garde-t-elle son sens quand le patient, l'objet, le trajet ou le " +
         "contexte change ? Sinon, déclare-le par `dependsOn` et range-la dans " +
         "`DEPENDANCES`. Si oui, range-la dans `SANS_DEPENDANCE`.",

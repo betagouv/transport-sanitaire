@@ -1,6 +1,6 @@
-// Le filtrage par le graphe (#255) : une question ne se pose que si sa réponse
-// change ce que montre le résultat (D-220), ou la garde d'une question qui
-// reste, peut encore se poser et compte elle-même (D-221, D-223).
+// Le filtrage par le graphe : une question ne se pose que si sa réponse change
+// ce que montre le résultat, ou la garde d'une question qui reste, peut encore
+// se poser et compte elle-même.
 //
 // Ici, le résultat ne montre que la taille. La distance n'en change que les
 // réponses possibles, et la taille ne se pose que pour une entrée en
@@ -43,7 +43,7 @@ describe("les questions qui comptent", () => {
   });
 
   // La distance n'a sa première place que pour une consultation : pour un
-  // séjour, elle se pose à sa place suivante (ADR-0040), si la taille la suit.
+  // séjour, elle se pose à sa place suivante (ARCH-007), si la taille la suit.
   it("juge une place suivante à son propre rang", () => {
     const premiere = page("distance", DISTANCE.appliesWhen(CONSULTATION));
     const suivante = page("encore", DISTANCE.unlessAskedBefore());
@@ -68,7 +68,7 @@ describe("les questions qui comptent", () => {
 });
 
 // Une question masquée par le graphe garde ses gardes : elle n'est pas devenue
-// inapplicable, et sa réponse reste (NAV-SOUS-QUESTIONS-20261113, D-293).
+// inapplicable, et sa réponse reste (NAV-SOUS-QUESTIONS-20261113).
 describe("une question que le graphe masque", () => {
   const SEJOUR = {
     motif: "sejour",

@@ -1,6 +1,6 @@
-// L'enveloppe de chaque événement d'un parcours, celle du contrat v10.2.2 :
-// le contrat, le modèle, le build, le numéro et l'origine. Et la fermeture,
-// qui suit le dernier numéro et clôt le parcours (#497).
+// L'enveloppe de chaque événement d'un parcours, celle du contrat v10.2.2 : le
+// contrat, le modèle, le build, le numéro et l'origine. Et la fermeture, qui
+// suit le dernier numéro et clôt le parcours.
 
 import { describe, expect, it } from "vitest";
 import { Journey } from "../../../front/socle/analytics/journey.entity";

@@ -2,19 +2,19 @@
 // le socle lit pour lui (`R2.lit`), la trace que ses blocs lisent, le cas de
 // l'issue, les textes de l'éditeur, puis la page.
 //
-// Trois cas ont une page (`layouts/`) : acceptée, une fiche patient positive
-// (#135, #136) ; refusée, une fiche patient négative (#134) ; orientée, la page
-// du prescripteur, sans fiche (#133). Chaque issue a sa famille, donc son cas
-// (`issue.vo.ts`). Deux situations n'en ont pas : les règles n'ont pas conclu, ou un
+// Trois cas ont une page (`layouts/`) : acceptée, une fiche patient positive ;
+// refusée, une fiche patient négative ; orientée, la page du prescripteur,
+// sans fiche. Chaque issue a sa famille, donc son cas (`issue.vo.ts`). Deux
+// situations n'en ont pas : les règles n'ont pas conclu, ou un
 // retour pénitentiaire sort du circuit de prescription, et R2 oriente vers
 // l'administration pénitentiaire (point 34).
 //
 // R2 ne lit que `R2.lit` : le socle le calcule et le lui passe. Ce que R2 lit
-// des réponses se sait donc sans le dérouler (#254), et ce qu'il lit des cibles
-// et des faits est ce que ses blocs déclarent (#260). Ce que lit un cas ne
-// compte que pour ses issues (#255). La trace suit le « Contrat de trace » du
+// des réponses se sait donc sans le dérouler, et ce qu'il lit des cibles
+// et des faits est ce que ses blocs déclarent. Ce que lit un cas ne
+// compte que pour ses issues. La trace suit le « Contrat de trace » du
 // README de l'éditeur, moins ce que nous ne portons pas : la version du
-// paquet, l'empreinte du modèle et la révision (D-104). Un fait inconnu est
+// paquet, l'empreinte du modèle et la révision. Un fait inconnu est
 // une clé absente, jamais un « non ».
 
 import {
@@ -97,7 +97,7 @@ export class R2 {
     return issue.isRefused() ? "refusée" : "orientée";
   }
 
-  /** Les textes de l'éditeur, chargés à la demande (D-112). */
+  /** Les textes de l'éditeur, chargés à la demande. */
   textes(): Promise<Chargement> {
     return catalogueDeLaSession();
   }
@@ -151,7 +151,7 @@ const PARTIE_TERRESTRE = given
     return {};
   });
 
-// Les précisions de chaque cas, sous ses issues (D-224).
+// Les précisions de chaque cas, sous ses issues.
 const PRECISIONS = given
   .all({
     acceptee: ISSUE.branch(ACCEPTED_ISSUES, PRECISIONS_DE_LA_FICHE_POSITIVE),
@@ -172,8 +172,7 @@ const LU_DES_REPONSES = given
     criteres: given
       .question("Q1.2")
       .answer()
-      // Le slug porte en tête le numéro de la réponse possible au catalogue
-      // (D-75).
+      // Le slug porte en tête le numéro de la réponse possible au catalogue.
       .compute((aides) =>
         aides
           .checkedBoxes()

@@ -1,5 +1,4 @@
 // Le référentiel, lu et complété dans un doc Grist. Côté serveur uniquement.
-// Voir ADR-0008.
 //
 // Tables Grist :
 //   Etablissements   : Id2 (Int), Nom (Text), Origine (Text)
@@ -66,7 +65,6 @@ async function services(
 // réutilise leurs homonymes, avec `Origine=formulaire`, et on donne leurs Id2 :
 // le parcours les porte dès cette visite. Une sélection issue des listes
 // n'apprend rien : elle est refusée, comme un établissement absent.
-// Voir docs/knowledge/domain/enrichissement-referentiel-rattachement.md.
 async function enrichir(
   grist: GristApiClient,
   saisie: RattachementSaisi,

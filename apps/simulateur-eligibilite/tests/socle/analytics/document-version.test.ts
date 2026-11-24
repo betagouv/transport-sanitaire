@@ -1,5 +1,5 @@
-// Les versions du document R3 dans le parcours (ADR-0046) : `d1`, `d2`…, qui
-// viennent de la révision courante. Un échec n'en ouvre aucune.
+// Les versions du document R3 dans le parcours : `d1`, `d2`…, qui viennent de
+// la révision courante. Un échec n'en ouvre aucune.
 
 import { describe, expect, it } from "vitest";
 import { Journey } from "../../../front/socle/analytics/journey.entity";

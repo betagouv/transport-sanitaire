@@ -1,7 +1,7 @@
 // L'oracle de l'éditeur, rejoué par les réponses : les cas de `oracle.test.ts`
-// que le questionnaire sait produire, sans fait forcé (D-110). Chaque parcours
-// part d'un brancard à 20 km, ou d'un patient seul, et ne change que ce que le
-// cas change.
+// que le questionnaire sait produire, sans fait forcé. Chaque parcours part
+// d'un brancard à 20 km, ou d'un patient seul, et ne change que ce que le cas
+// change.
 //
 // Les cas ne se rejouent pas tous. L'oracle pose des faits que nos questions ne
 // posent pas : une ALD exonérante inconnue, la correspondance univoque, le

@@ -1,4 +1,4 @@
-// L'invitation à donner son avis (#195, COR-13 de la v10.1.3) : un lien que le
+// L'invitation à donner son avis (COR-13 de la v10.1.3) : un lien que le
 // modèle nomme et adresse. Il ouvre l'adresse exacte, sans rien y ajouter,
 // dans un nouvel onglet que les lecteurs d'écran entendent annoncer. Rien ne
 // l'ouvre seul. Il ne s'imprime pas. C'est un bouton de la barre d'actions

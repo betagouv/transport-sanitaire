@@ -1,6 +1,6 @@
-// L'indicateur de parcours ALD (#148, `SPECIFICATION_ALD_6_QUESTIONS.md`) : au
+// L'indicateur de parcours ALD (`SPECIFICATION_ALD_6_QUESTIONS.md`) : au
 // plus six pages et six questions de P1 à R2. Seule l'ALD compte, pas le mineur
-// en soins continus (D-229). Une issue caisse ne conclut pas sur le droit : son
+// en soins continus. Une issue caisse ne conclut pas sur le droit : son
 // verdict est à part. Q1.3.b, le lien du soin avec l'ALD, est un sous-champ de
 // Q1.3 : il n'ajoute aucune question au compte (REFERENTIEL/03, QST-ALD-LIEN-001).
 

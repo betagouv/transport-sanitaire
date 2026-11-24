@@ -1,4 +1,4 @@
-// Où un bouton est exposé (ADR-0047, ANA22-02) : son écran, son affichage, la
+// Où un bouton est exposé (ANA22-02) : son écran, son affichage, la
 // révision, et l'objet qu'il montre, la version de la fiche patient sur R2 ou
 // celle du document sur R3. L'avis n'a pas d'objet à lui : il porte la révision,
 // et le document en R3. Deux places égales disent que le bouton est resté où il

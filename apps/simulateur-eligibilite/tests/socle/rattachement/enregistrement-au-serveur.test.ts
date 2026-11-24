@@ -1,6 +1,6 @@
 // L'enregistrement d'une saisie libre, du navigateur au vrai serveur de test :
 // les ids qu'il donne, et l'entrée sans ids quand il ne répond pas, ou trop
-// tard. Voir docs/knowledge/domain/enrichissement-referentiel-rattachement.md.
+// tard.
 
 import { afterEach, describe, expect, it } from "vitest";
 import { referentielDuServeur } from "../../../front/socle/rattachement";

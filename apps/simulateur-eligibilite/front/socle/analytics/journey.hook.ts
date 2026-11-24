@@ -1,4 +1,4 @@
-// Le parcours d'une simulation, signalé au journal (#383) : ouvert au montage
+// Le parcours d'une simulation, signalé au journal : ouvert au montage
 // du simulateur, une seule fois, puis l'intention dès que le modèle la donne.
 // « Précédent » et le retour à P0 gardent le parcours, « Faire une nouvelle
 // simulation » le ferme, remonte le simulateur et en ouvre un autre. Ce qui

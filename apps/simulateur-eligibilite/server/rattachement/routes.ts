@@ -30,8 +30,7 @@ export function rattachementRoutes(referentiel: Referentiel): Router {
 // Enregistre dans le référentiel la saisie libre : le service saisi sous
 // « Autre », ou l'établissement saisi et son service. Donne leurs ids, que le
 // front range pour le parcours. Il attend la réponse avant d'ouvrir le
-// simulateur, et entre sans ids si elle échoue. Voir
-// docs/knowledge/domain/enrichissement-referentiel-rattachement.md.
+// simulateur, et entre sans ids si elle échoue.
 function rattacher(referentiel: Referentiel) {
   return async (req: Request, res: Response) => {
     const saisie = (req.body ?? {}) as RattachementSaisi;

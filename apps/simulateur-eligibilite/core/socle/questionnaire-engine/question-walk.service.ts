@@ -11,11 +11,11 @@
 // (`question/asked/context.vo.ts`), même relues après le verrou.
 //
 // Avec une pertinence, une question dont la réponse ne change rien de ce qui
-// compte ne se pose pas (`does-a-question-still-matter/relevance.service.ts`, #255) :
+// compte ne se pose pas (`does-a-question-still-matter/relevance.service.ts`) :
 // elle n'est jamais validée.
 //
 // Une question à plusieurs places se pose à la première où ses gardes tiennent
-// et qui compte (ADR-0040). Une place suivante ne la pose pas si elle s'est déjà
+// et qui compte. Une place suivante ne la pose pas si elle s'est déjà
 // posée plus tôt, validée ou en attente.
 
 import { GivenAnswers } from "./answers/given-answers.vo.ts";

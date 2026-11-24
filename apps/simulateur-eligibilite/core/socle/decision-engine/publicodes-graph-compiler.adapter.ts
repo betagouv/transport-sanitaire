@@ -1,4 +1,4 @@
-// Des règles publicodes au graphe de décision (#196) : l'adaptateur qui fait
+// Des règles publicodes au graphe de décision : l'adaptateur qui fait
 // compiler le graphe par publicodes. `pnpm regles` l'écrit à côté des règles,
 // les tests le compilent sur des règles écrites à la main ; le parcours, lui,
 // ne lit que le graphe écrit, sans publicodes.

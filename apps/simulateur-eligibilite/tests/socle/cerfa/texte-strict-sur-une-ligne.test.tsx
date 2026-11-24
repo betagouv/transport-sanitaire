@@ -13,10 +13,10 @@ import { ecouterLesTelechargements } from "../simulateur/telechargements";
 import { drawnOn } from "./pdf-aplati";
 import { testForm } from "./test-form";
 
-// Un texte strict dessiné tient sur une ligne de sa place (#480 ; T06, R04) :
-// un retour à la ligne, ou un texte trop large, ne tient pas. Il se réécrit
-// comme un texte de champ, avec les mots de sa règle, et un texte requis ne
-// se valide pas vide.
+// Un texte strict dessiné tient sur une ligne de sa place (T06, R04) : un
+// retour à la ligne, ou un texte trop large, ne tient pas. Il se réécrit comme
+// un texte de champ, avec les mots de sa règle, et un texte requis ne se valide
+// pas vide.
 
 type Fiche = {
   fields: Record<never, never>;

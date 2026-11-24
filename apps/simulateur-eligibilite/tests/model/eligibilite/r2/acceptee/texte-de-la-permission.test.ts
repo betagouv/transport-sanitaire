@@ -1,5 +1,5 @@
-// Le motif administratif du modus et la permission de sortie du S3141 (#135,
-// Q2.8.5), lus dans le texte de la fiche. Des traces écrites à la main.
+// Le motif administratif du modus et la permission de sortie du S3141 (Q2.8.5),
+// lus dans le texte de la fiche. Des traces écrites à la main.
 
 import { describe, expect, it } from "vitest";
 import {

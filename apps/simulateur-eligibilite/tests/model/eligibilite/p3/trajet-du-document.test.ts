@@ -1,6 +1,6 @@
-// La page du trajet de P3 (Q3.1, #144) : les transports de ce document, posés
-// selon le support figé au verrou. `CATALOGUE_COMPLET_QUESTIONS.md` Q3.1 et
-// TS1001-03 du paquet de l'éditeur.
+// La page du trajet de P3 (Q3.1) : les transports de ce document, posés selon
+// le support figé au verrou. `CATALOGUE_COMPLET_QUESTIONS.md` Q3.1 et TS1001-03
+// du paquet de l'éditeur.
 
 import { describe, expect, it } from "vitest";
 import { model } from "../../../../core/models/eligibilite";
@@ -62,7 +62,7 @@ describe("ce que la page du trajet pose (Q3.1)", () => {
     },
   );
 
-  // Q2.8.5 ne dit aucun sens (D-284) : il se demande, puis le nombre mensuel.
+  // Q2.8.5 ne dit aucun sens : il se demande, puis le nombre mensuel.
   it("pour le S3141 de plusieurs permissions, le sens et le nombre mensuel", () => {
     expect(posees("S3141", PLUSIEURS_PERMISSIONS).map(({ id }) => id)).toEqual([
       "Q3.1.2",
@@ -74,7 +74,7 @@ describe("ce que la page du trajet pose (Q3.1)", () => {
     expect(posees("S3141", MINEUR).map(({ id }) => id)).toEqual(["Q3.1.2"]);
   });
 
-  // #365 : un sens qualifié avant R2 ne se redemande pas.
+  // Un sens qualifié avant R2 ne se redemande pas.
   it("un sens choisi en Q2.13.sens ne se redemande pas : seul le nombre", () => {
     const retour: Reponses = { "Q2.13.sens": "2_RETOUR" };
     expect(posees("S3138g", retour).map(({ id }) => id)).toEqual(["Q3.1.1"]);
@@ -89,7 +89,7 @@ describe("ce que la page du trajet pose (Q3.1)", () => {
 });
 
 describe("les réponses de Q3.1", () => {
-  it("« Aller-retour différent » bloque, et propose une nouvelle simulation (#466)", () => {
+  it("« Aller-retour différent » bloque, et propose une nouvelle simulation", () => {
     const reponses: Reponses = {
       "Q3.1.1": 2,
       "Q3.1.2": "4_ALLER_RETOUR_DIFFERENT",

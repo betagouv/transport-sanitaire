@@ -4,7 +4,7 @@
 //
 // Seule exception, « ALD non exonérante » : le mineur reconnu en soins
 // prolongés la coche même sans avion ni bateau, que la DAP ne coche pas pour
-// autant (#128). La personne accompagnante est celle de P1 sur ce trajet : les
+// autant. La personne accompagnante est celle de P1 sur ce trajet : les
 // règles n'ont pas de cible propre au trajet aérien.
 
 import { given } from "../../../../../core/models/eligibilite/questions/reponses";

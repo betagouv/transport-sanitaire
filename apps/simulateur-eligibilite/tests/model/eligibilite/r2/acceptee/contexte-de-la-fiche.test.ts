@@ -1,6 +1,6 @@
-// Le contexte de la fiche patient positive (#135) : la phrase qui dit pourquoi
-// le transport est pris en charge, et le motif administratif du modus. Un code
-// de contexte n'est posé que si sa cible est prouvée ; le contexte retenu est
+// Le contexte de la fiche patient positive : la phrase qui dit pourquoi le
+// transport est pris en charge, et le motif administratif du modus. Un code de
+// contexte n'est posé que si sa cible est prouvée ; le contexte retenu est
 // celui dont les codes sont exactement ceux établis. Les attendus sont recopiés
 // du catalogue de l'éditeur.
 

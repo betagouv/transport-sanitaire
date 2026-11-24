@@ -9,11 +9,11 @@
 //
 // Le thème est celui que le DSFR du CMS a résolu, clair ou sombre, d'après le
 // choix du lecteur : `data-fr-theme` sur `<html>`. Le simulateur le demande et
-// le reçoit de même, puis à chaque changement (#342). Le protocole est celui de
+// le reçoit de même, puis à chaque changement. Le protocole est celui de
 // `front/socle/theme/host-theme.ts`.
 //
 // À chaque nouvelle page, le simulateur demande à remonter au haut de son
-// iframe : Safari ne laisse pas l'iframe faire défiler la page (#369). Le
+// iframe : Safari ne laisse pas l'iframe faire défiler la page. Le
 // protocole est celui de `front/socle/questionnaire/scroll-to-the-top.ts`.
 //
 // À coller dans Sites Conformes : Paramètres → Scripts personnalisés → « Scripts

@@ -1,6 +1,6 @@
-// Le texte de la fiche patient négative (#134). Les phrases attendues sont
-// celles de l'aperçu de l'éditeur : un texte qui change sans que son oracle
-// change échoue ici.
+// Le texte de la fiche patient négative. Les phrases attendues sont celles de
+// l'aperçu de l'éditeur : un texte qui change sans que son oracle change échoue
+// ici.
 
 import { describe, expect, it } from "vitest";
 import { SEEDS } from "../../../../../core/models/eligibilite/seeds-catalogue";

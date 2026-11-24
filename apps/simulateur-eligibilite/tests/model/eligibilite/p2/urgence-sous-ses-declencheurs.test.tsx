@@ -1,8 +1,7 @@
 // L'urgence, Q2.3.4, sur la page du trajet : elle s'affiche dans le panneau du
 // premier de ses déclencheurs devenu effectif, la tranche de distance ou la
 // case de la ligne régulière, et y reste quand l'autre le devient. Retiré, il
-// la laisse passer sous l'autre, sa réponse gardée (NAV-PANNEAUX-20261116,
-// D-307).
+// la laisse passer sous l'autre, sa réponse gardée (NAV-PANNEAUX-20261116).
 
 import { screen, within } from "@testing-library/react";
 import { describe, expect, it } from "vitest";

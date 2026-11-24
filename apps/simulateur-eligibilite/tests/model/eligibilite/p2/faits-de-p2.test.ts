@@ -1,5 +1,5 @@
-// Les faits que P2 établit, chacun à trois états : « oui », « non », ou
-// absent, et alors jamais transmis aux règles (D-77).
+// Les faits que P2 établit, chacun à trois états : « oui », « non », ou absent,
+// et alors jamais transmis aux règles.
 //
 // `CONTRAT_REPONSES_FAITS.json` dit, fait par fait, ce qui donne chaque état.
 // Seule la page du trajet est posée : les autres faits de P2 restent absents.

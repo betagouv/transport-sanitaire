@@ -12,9 +12,9 @@ import { snapshotReferentiel } from "../../../shared/referentiel";
 import { modeleDeTest, seulModele } from "../modele-de-test";
 import { seRattacher } from "../se-rattacher";
 
-// Les developer tools court-circuitent le questionnaire. Ils sont regroupés dans
-// un encadré à part, distinct des actions normales. Ils s'ouvrent en local, quel
-// que soit le service, jamais sur un build de production (D-279).
+// Les developer tools court-circuitent le questionnaire. Ils sont regroupés
+// dans un encadré à part, distinct des actions normales. Ils s'ouvrent en
+// local, quel que soit le service, jamais sur un build de production.
 
 const ENCADRE = { name: "Developer tools" } as const;
 const ECRAN_SEEDS = { name: "Seeds" } as const;

@@ -1,8 +1,8 @@
-// Les rubriques que la PMT ajoute à celles du S3141 (#160), et que la DAP
-// reprend : les motifs, le nombre de transports, l'urgence et le centre de
-// référence. Des réponses d'un parcours complet et les cibles figées au verrou,
-// les cellules qu'elles donnent. « Sources et cases » de
-// `COMPLETION_DOCUMENTS.md` et `mapping_documents.json`, en v10.1.3.
+// Les rubriques que la PMT ajoute à celles du S3141, et que la DAP reprend :
+// les motifs, le nombre de transports, l'urgence et le centre de référence. Des
+// réponses d'un parcours complet et les cibles figées au verrou, les cellules
+// qu'elles donnent. « Sources et cases » de `COMPLETION_DOCUMENTS.md` et
+// `mapping_documents.json`, en v10.1.3.
 
 import { describe, expect, it } from "vitest";
 import { CENTRE_DE_REFERENCE } from "../../../../front/models/eligibilite/r3/rubriques/centre-de-reference";
@@ -33,7 +33,7 @@ describe("les motifs de la prise en charge", () => {
     });
   });
 
-  it("cochent « ALD non exonérante » pour le mineur reconnu, sans ALD à 100 % (#128)", () => {
+  it("cochent « ALD non exonérante » pour le mineur reconnu, sans ALD à 100 %", () => {
     const cibles = {
       cible_ald_juridiquement_qualifiante_3_ou_4_degres: false,
       cible_mineur_ald_non_exonerante_reconnue: true,
@@ -100,7 +100,7 @@ describe("l'urgence", () => {
     });
   });
 
-  it("coche « autres » pour l'urgence attestée, quand l'appel au Centre 15 n'est pas établi (#464)", () => {
+  it("coche « autres » pour l'urgence attestée, quand l'appel au Centre 15 n'est pas établi", () => {
     const cibles = { cible_urgence_attestee: true };
 
     expect(cellules(URGENCE, PRECISION, cibles)).toEqual({

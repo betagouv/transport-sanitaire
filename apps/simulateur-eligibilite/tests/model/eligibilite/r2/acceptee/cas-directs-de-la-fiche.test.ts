@@ -1,17 +1,17 @@
-// Les décisions directes de la v10.1.1 qui donnent une fiche patient positive
-// (#135) : l'ALD et le mineur en soins continus, avec ou sans proche. Neuf des
-// treize cas de `impacts-v10.1.1-a.json`, sous leur identifiant chez l'éditeur.
-// Chacun se joue par les réponses, de Q1.1 à la fiche. Les attendus sont
-// recopiés de la projection de l'éditeur.
+// Les décisions directes de la v10.1.1 qui donnent une fiche patient positive :
+// l'ALD et le mineur en soins continus, avec ou sans proche. Neuf des treize
+// cas de `impacts-v10.1.1-a.json`, sous leur identifiant chez l'éditeur. Chacun
+// se joue par les réponses, de Q1.1 à la fiche. Les attendus sont recopiés de
+// la projection de l'éditeur.
 //
 // Les quatre autres cas (`mineur-inconnu`, `ald-base-inconnue`,
 // `proche-mineur-inconnu-vp` et `-tc`) vont à la caisse : ils n'ont pas de fiche
-// patient, leur résultat est celui de #133.
+// patient, leur résultat est celui des issues sans fiche patient.
 //
 // Aucun des treize cas ne mène à un accord préalable (`cible_dap_requise` est
 // faux dans les treize). La dernière partie rejoue donc les mêmes patients à
-// plus de 150 km (#136) : leur fiche est celle de la demande d'accord préalable,
-// avec le contexte ALD ou mineur propre à cette issue.
+// plus de 150 km : leur fiche est celle de la demande d'accord préalable, avec
+// le contexte ALD ou mineur propre à cette issue.
 
 import { describe, expect, it } from "vitest";
 import { catalogueResultats } from "../../../../../front/models/eligibilite/r2/components/textes-de-l-editeur";
@@ -183,7 +183,7 @@ describe("avec un proche : le véhicule personnel ou les transports en commun", 
   });
 });
 
-// Les mêmes patients à plus de 150 km, sans série : un accord préalable (#136).
+// Les mêmes patients à plus de 150 km, sans série : un accord préalable.
 const A_150_KM: Reponses = {
   "Q2.3.1": "3_PLUS_DE_CENT_CINQUANTE_KM",
   "Q2.3.3": "2_NON",

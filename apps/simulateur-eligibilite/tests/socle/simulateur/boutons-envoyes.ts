@@ -1,6 +1,6 @@
 // Ce que les boutons des écrans de résultat envoient au journal, lu depuis le
 // simulateur ouvert : leurs expositions, leurs clics, et l'impression ou le
-// téléchargement du document lancés (ADR-0047).
+// téléchargement du document lancés.
 //
 // Le dialogue d'impression, que le navigateur de test n'a pas, et l'onglet que
 // l'avis ouvrirait ne s'ouvrent pas ici : `sansDialogue` les retient.

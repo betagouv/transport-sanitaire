@@ -1,6 +1,6 @@
-// Les documents de R3 (#157) : le gabarit de chaque support, son titre et le
-// texte de R3, recopiés de `CONTRAT_RENDU_DOCUMENTAIRE.json` (v10.1.3). Les
-// trois se remplissent : `s3141-rempli.test.ts`, `s3138g-rempli.test.ts`,
+// Les documents de R3 : le gabarit de chaque support, son titre et le texte de
+// R3, recopiés de `CONTRAT_RENDU_DOCUMENTAIRE.json` (v10.1.3). Les trois se
+// remplissent : `s3141-rempli.test.ts`, `s3138g-rempli.test.ts`,
 // `s3139h-rempli.test.ts`.
 
 import { describe, expect, it } from "vitest";

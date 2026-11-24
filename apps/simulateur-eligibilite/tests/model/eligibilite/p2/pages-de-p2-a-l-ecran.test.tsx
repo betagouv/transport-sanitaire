@@ -1,8 +1,7 @@
 // Des pages de P2 rouvertes dans le formulaire : la page composée du trajet,
-// qui attend « Suivant », et les champs qu'une réponse révèle, qui le
-// bloquent tant qu'ils sont vides. Ce sont les cas « Distance/ligne » et
-// « Conditions obligatoires » des compléments de recette de l'éditeur
-// (v10.1.4, #149).
+// qui attend « Suivant », et les champs qu'une réponse révèle, qui le bloquent
+// tant qu'ils sont vides. Ce sont les cas « Distance/ligne » et « Conditions
+// obligatoires » des compléments de recette de l'éditeur (v10.1.4).
 
 import { screen, within } from "@testing-library/react";
 import { describe, expect, it } from "vitest";

@@ -2,8 +2,7 @@
 // dernière page de P1, de P2 et de P3, au moment où le prescripteur les voit
 // (REFERENTIEL/10 du paquet v10.2.2). Une limite part une fois par page : une
 // page rouverte ne la redit pas, une autre page devenue la dernière la dit à son
-// tour. Un changement de parcours ne refait pas une limite déjà affichée. Voir
-// ADR-0044.
+// tour. Un changement de parcours ne refait pas une limite déjà affichée.
 
 import type { EventDetails } from "../../../shared/analytics/analytics-event";
 import type { PageView } from "./page-view.entity";

@@ -1,8 +1,8 @@
-// Une question à plusieurs places (ADR-0040) : déclarée sur deux pages, sous une
-// seule réponse. Elle se pose à la première place où ses gardes tiennent ; la
-// seconde ne la repose pas. Une place cachée ne lui fait perdre sa réponse que
-// si c'est la dernière, et qu'aucune place d'avant ne la pose. Les pages sont
-// écrites ici.
+// Une question à plusieurs places (ARCH-007) : déclarée sur deux pages, sous
+// une seule réponse. Elle se pose à la première place où ses gardes tiennent ;
+// la seconde ne la repose pas. Une place cachée ne lui fait perdre sa réponse
+// que si c'est la dernière, et qu'aucune place d'avant ne la pose. Les pages
+// sont écrites ici.
 //
 // L'urgence se pose au trajet pour un trajet long, et à la branche quand la
 // branche la rend utile.

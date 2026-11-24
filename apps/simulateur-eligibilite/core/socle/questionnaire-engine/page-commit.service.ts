@@ -27,7 +27,7 @@ export class PageCommitService {
    * Les réponses du questionnaire, une fois la page validée. `inputs` porte
    * les réponses de la page telles qu'à l'écran. Une question de la page
    * absente d'`inputs` perd sa réponse, sauf si elle attend une autre de ses
-   * places (`waiting`, ADR-0040) : elle n'a alors pas changé.
+   * places (`waiting`) : elle n'a alors pas changé.
    */
   commit(
     answers: Answers,

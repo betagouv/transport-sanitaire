@@ -1,4 +1,4 @@
-// L'éditeur d'un texte strict qui ne tient pas sur le cerfa (D-302, D-304) :
+// L'éditeur d'un texte strict qui ne tient pas sur le cerfa :
 // tout le texte, au-dessus de l'aperçu, avec son compteur « caractères saisis
 // / maximum ». Trop long, ou vide quand il est requis, le compteur passe en
 // rouge, l'erreur s'affiche et « Valider » attend. Rien ne tronque la saisie,

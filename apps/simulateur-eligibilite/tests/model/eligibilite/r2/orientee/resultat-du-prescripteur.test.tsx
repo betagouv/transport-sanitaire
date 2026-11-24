@@ -1,8 +1,8 @@
-// Le résultat des cinq issues sans fiche patient, tel qu'il s'affiche (#133).
-// Pour chaque seed, `eligibilite` donne le titre de l'issue, un corps qui
-// porte les textes de l'éditeur, et le nom de la page, celui du gabarit (#287).
-// Le socle place l'un et l'autre, et range la page sous ce nom ; ses propres
-// tests le vérifient.
+// Le résultat des cinq issues sans fiche patient, tel qu'il s'affiche. Pour
+// chaque seed, `eligibilite` donne le titre de l'issue, un corps qui porte les
+// textes de l'éditeur, et le nom de la page, celui du gabarit. Le socle place
+// l'un et l'autre, et range la page sous ce nom ; ses propres tests le
+// vérifient.
 
 import { render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";

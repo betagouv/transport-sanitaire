@@ -15,8 +15,8 @@
 //
 // Quatre des 128 scénarios sont écartés : les trajets mixtes (avion ou bateau,
 // puis une partie terrestre). L'éditeur y donne les consignes du mode
-// terrestre. Q2.3.2.terrestre pose maintenant cette partie (#479) ; la
-// comparaison de ces quatre scénarios relève de #483.
+// terrestre. Q2.3.2.terrestre pose maintenant cette partie ; la comparaison de
+// ces quatre scénarios reste à faire.
 //
 // Ne sont pas comparés :
 // - les faits que la page du prescripteur liste chez l'éditeur. Il les dit

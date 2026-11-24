@@ -1,7 +1,7 @@
-// La fiche patient positive, telle qu'elle s'affiche (#135). Les seeds
-// `issue-pmt` et `issue-s3141` donnent les textes des aperçus de l'éditeur
-// (recopiés de leurs PDF). `eligibilite` donne le titre du prescripteur et sa
-// phrase ; la fiche est la feuille, posée ici dans la liseuse du socle.
+// La fiche patient positive, telle qu'elle s'affiche. Les seeds `issue-pmt` et
+// `issue-s3141` donnent les textes des aperçus de l'éditeur (recopiés de leurs
+// PDF). `eligibilite` donne le titre du prescripteur et sa phrase ; la fiche
+// est la feuille, posée ici dans la liseuse du socle.
 
 import { render, screen, within } from "@testing-library/react";
 import { describe, expect, it } from "vitest";

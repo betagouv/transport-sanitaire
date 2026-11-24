@@ -73,8 +73,8 @@ export const FAITS = [
 ] as const;
 
 /**
- * Ce qu'on sait de chaque fait. Un fait absent n'est pas transmis aux règles
- * (D-77) : ce qui en dépend reste indéfini.
+ * Ce qu'on sait de chaque fait. Un fait absent n'est pas transmis aux règles,
+ * et ne vaut jamais « non » : ce qui en dépend reste indéfini.
  */
 export type Faits = Readonly<Record<(typeof FAITS)[number], Fait>>;
 
@@ -90,7 +90,7 @@ export const IMPOSEE_PAR_LA_DECISION =
 
 /**
  * La provenance des faits de la prestation qu'aucune question ne pose : les
- * sous-questions qui les poseraient ne changent aucune sortie (D-102).
+ * sous-questions qui les poseraient ne changent aucune sortie.
  */
 export const SOUS_QUESTIONS_MASQUEES =
-  "Aucune question ne le pose : les sous-questions a à e et i à l de Q2.1, et le régime, restent masquées (D-102).";
+  "Aucune question ne le pose : les sous-questions a à e et i à l de Q2.1, et le régime, restent masquées.";

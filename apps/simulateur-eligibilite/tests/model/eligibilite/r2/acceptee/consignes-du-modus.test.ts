@@ -1,5 +1,5 @@
-// La lecture du modus du catalogue (#135) : introduction, étapes numérotées,
-// puces, motif administratif et badges. Des modus écrits à la main, avec les
+// La lecture du modus du catalogue : introduction, étapes numérotées, puces,
+// motif administratif et badges. Des modus écrits à la main, avec les
 // particularités de ceux de l'éditeur.
 
 import { describe, expect, it } from "vitest";

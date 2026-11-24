@@ -4,8 +4,8 @@ import { flattenCerfa } from "../../../front/socle/cerfa/generate-the-cerfa/flat
 import { drawnOn, markedStates } from "./pdf-aplati";
 import { testForm, withoutOffAppearance } from "./test-form";
 
-// Le cerfa de sortie est aplati (D-84) : ses valeurs sont dessinées sur la
-// page, et il n'y reste aucun champ à corriger dans un lecteur.
+// Le cerfa de sortie est aplati : ses valeurs sont dessinées sur la page, et il
+// n'y reste aucun champ à corriger dans un lecteur.
 
 describe("flattenCerfa", () => {
   it("ne laisse aucun champ, et garde chaque valeur écrite", async () => {

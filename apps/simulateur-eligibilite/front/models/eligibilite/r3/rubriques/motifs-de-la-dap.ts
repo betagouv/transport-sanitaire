@@ -1,8 +1,8 @@
 // Les motifs de l'accord préalable que la DAP coche (rubrique ①) : chaque
 // fondement établi par les règles, et plusieurs ensemble s'ils le sont. Le
 // transport à l'étranger à examiner n'en établit aucun : sa demande d'examen
-// s'écrit dans le texte médical (#159). L'Engagement maternité suit sa cible,
-// qui reste vide en pratique (D-129).
+// s'écrit dans le texte médical. L'Engagement maternité suit sa cible,
+// qui reste vide en pratique.
 
 import { given } from "../../../../../core/models/eligibilite/questions/reponses";
 import type { Rubrique } from "./rubrique";

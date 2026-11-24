@@ -52,7 +52,7 @@ export function useAutoAdvance(
 // L'avancement automatique ne vaut que pour une page autonome : un seul choix
 // unique, affiché seul. Une page composée garde son bouton, même complète :
 // plusieurs blocs, une case, une saisie, ou un sous-champ révélé par la
-// réponse (REFERENTIEL/03 § 11.3.1, D-240). Une question facultative le garde
+// réponse (REFERENTIEL/03 § 11.3.1). Une question facultative le garde
 // aussi : sinon la page partirait avant qu'on ait pu y répondre. De même une
 // liste déroulante, qu'on parcourt au clavier en changeant de valeur.
 export function isSingleChoicePage(

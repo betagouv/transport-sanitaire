@@ -1,7 +1,7 @@
-// Les panneaux de P3 à l'écran (`12_INVENTAIRE_PANNEAUX_10_2_1.md`, D-308) :
-// le nombre de trajets sous le sens choisi, les champs d'un lieu sous sa
-// catégorie, l'adresse hors du panneau. Une catégorie que P2 fixe ne se
-// choisit pas : ses champs se posent à leur rang, sans choix coché.
+// Les panneaux de P3 à l'écran (`12_INVENTAIRE_PANNEAUX_10_2_1.md`) : le nombre
+// de trajets sous le sens choisi, les champs d'un lieu sous sa catégorie,
+// l'adresse hors du panneau. Une catégorie que P2 fixe ne se choisit pas : ses
+// champs se posent à leur rang, sans choix coché.
 
 import { screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";

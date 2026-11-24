@@ -1,5 +1,5 @@
 // Le type de `rules/catalogue-resultats.json`, les textes de R2 que l'éditeur
-// livre à côté de ses règles. Le fichier est recopié tel quel (D-103) : ce type
+// livre à côté de ses règles. Le fichier est recopié tel quel : ce type
 // en décrit la forme, et son chargement (`catalogue-resultats.ts`) vérifie,
 // à la compilation, que le fichier livré la respecte.
 //

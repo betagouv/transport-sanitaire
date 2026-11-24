@@ -1,6 +1,6 @@
 // Q3.8 : la maternité, dernière de P3. Ce que la DAP d'un Engagement
 // maternité reporte dans ses éléments médicaux, et que le trajet ne dit pas
-// (`CONTRAT_Q38_MATERNITE_DOCUMENT.json`, D-251).
+// (`CONTRAT_Q38_MATERNITE_DOCUMENT.json`).
 //
 // Aucune situation de P2 ne fait de la maternité le départ ou l'arrivée : son
 // nom et son adresse se demandent toujours. Un hébergement du dispositif qui

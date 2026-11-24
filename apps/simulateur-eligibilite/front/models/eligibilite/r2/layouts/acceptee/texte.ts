@@ -1,14 +1,13 @@
 // Le texte de la fiche patient positive, pour `ISSUE_PMT`, `ISSUE_S3141`
-// (#135) et les deux issues d'accord préalable (#136). Une fonction pure, sans
-// React.
+// et les deux issues d'accord préalable. Une fonction pure, sans React.
 //
 // Tous les mots viennent du catalogue de l'éditeur, recopiés tels quels. Ce
 // fichier choisit le titre, la phrase du contexte, la carte, les badges et le
 // modus, puis les range : il n'en écrit aucun. Les blocs propres à l'accord
 // préalable sont l'introduction (dans les consignes) et la justification dans
 // la raison. Un trajet en avion ou en bateau de ligne régulière prend ses
-// titres et son modus, ses cartes ont leur préfixe et il n'a pas de badge
-// (#221) ; en accord préalable, ni cartes ni étapes. Son mode se dit en texte,
+// titres et son modus, ses cartes ont leur préfixe et il n'a pas de badge ;
+// en accord préalable, ni cartes ni étapes. Son mode se dit en texte,
 // avant la raison. Avec une partie terrestre (Q2.3.2.terrestre), celle-ci se
 // dit aussi en texte, après la raison, et ses étapes viennent à part, sans
 // badge (v10.2.1, R01 et R03 ; `rendu-resultats.mjs` de l'éditeur). Elle lit

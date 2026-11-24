@@ -1,5 +1,5 @@
 // La permission d'un patient de moins de 20 ans : ce que toutes les questions
-// de Q2.8 lisent de Q2.7 (D-107). Ses faits vivent sous `faits/`.
+// de Q2.8 lisent de Q2.7. Ses faits vivent sous `faits/`.
 
 import { given } from "../../question.ts";
 import { Q2_7 } from "../questions/q2-7.ts";

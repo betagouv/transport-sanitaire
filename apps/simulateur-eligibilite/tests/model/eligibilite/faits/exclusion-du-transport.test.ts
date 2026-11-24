@@ -1,11 +1,11 @@
-// L'exclusion du transport, constatée par le logiciel sans question (D-105) :
-// trois parcours creux de `tests/test_cinq_retours_a.mjs` du paquet, sous leur
+// L'exclusion du transport, constatée par le logiciel sans question : trois
+// parcours creux de `tests/test_cinq_retours_a.mjs` du paquet, sous leur
 // identifiant chez l'éditeur, et `CONTRAT_NEGATIONS_PROUVEES.json`.
 //
 // Le parcours part de nos faits : brancard, 20 km, Q2.2.1 « Aucune ». P2 y est
-// complète, par les réponses (D-110). Les quinze autres parcours
-// creux portent sur Q2.2.1, la convocation, l'ALD, la série et l'article 80 :
-// ils arrivent avec leurs questions.
+// complète, par les réponses. Les quinze autres parcours creux portent sur
+// Q2.2.1, la convocation, l'ALD, la série et l'article 80 : ils arrivent avec
+// leurs questions.
 
 import { describe, expect, it } from "vitest";
 import { model } from "../../../../core/models/eligibilite";

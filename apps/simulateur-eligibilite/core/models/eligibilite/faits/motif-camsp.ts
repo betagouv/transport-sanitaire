@@ -1,7 +1,7 @@
 // fait_motif_camsp : soin CAMSP ou CMPP qualifié.
 //
 // Le second bloc de Q2.2.1 le dit, coché ou écarté (Q2.2.1.b) : c'est le seul
-// endroit où il se découvre (QST-COLLECTE-UNIQUE, D-272). Son libellé couvre
+// endroit où il se découvre (QST-COLLECTE-UNIQUE). Son libellé couvre
 // la séance en ville organisée dans le parcours de l'enfant
 // (QST-RACCORDEMENTS-001).
 //

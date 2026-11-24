@@ -1,6 +1,6 @@
 // Les faits que la page de la prestation établit, à trois états : « oui »,
-// « non », ou absent (D-77). `CONTRAT_REPONSES_FAITS.json` et son correctif
-// disent ce qui donne chaque état.
+// « non », ou absent. `CONTRAT_REPONSES_FAITS.json` et son correctif disent ce
+// qui donne chaque état.
 
 import { describe, expect, it } from "vitest";
 import { model } from "../../../../core/models/eligibilite";

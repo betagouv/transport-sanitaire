@@ -1,7 +1,7 @@
 // L'issue du résultat : la conclusion des règles (`cible_issue_id`), et sa
-// famille. Acceptée, elle a une fiche patient positive (#135, #136) ; refusée,
-// une fiche négative (#134) ; orientée, elle renvoie le prescripteur vers
-// quelqu'un d'autre (#133). Chaque issue des règles a sa famille, et une
+// famille. Acceptée, elle a une fiche patient positive ; refusée,
+// une fiche négative ; orientée, elle renvoie le prescripteur vers
+// quelqu'un d'autre. Chaque issue des règles a sa famille, et une
 // seule : une issue que l'éditeur ajoute ne compile pas sans la sienne.
 
 import type { Cible } from "../../../socle/index.ts";

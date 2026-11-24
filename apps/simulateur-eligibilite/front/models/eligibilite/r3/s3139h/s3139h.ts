@@ -10,7 +10,7 @@
 // noms des champs et leurs états d'export sont ceux du gabarit
 // (`MAPPING_ACROFORM_GABARITS.json`). Une case partagée par des cellules qui
 // peuvent se cocher ensemble est dessinée (`drawnBox`). Chaque case suit son
-// libellé imprimé, et deux champs les inversent (D-188) :
+// libellé imprimé, et deux champs les inversent :
 //
 // | Champ | État | Libellé imprimé à côté de la case |
 // |---|---|---|
@@ -21,7 +21,7 @@
 //
 // | Cellules | Pourquoi |
 // |---|---|
-// | bénéficiaire hors son adresse, organisme, assuré, prescripteur, structure | aucune source fiable (D-74, D-268) |
+// | bénéficiaire hors son adresse, organisme, assuré, prescripteur, structure | aucune source fiable |
 // | `acc`, `ac ad`, `motif`, `date avis`, `date avis ad` | à la caisse, pages 2 et 3 |
 // | `raison soc`, `adresse`, `num ident`, `fait à`, `date fait` | au transporteur, page 4 |
 

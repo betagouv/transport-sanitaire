@@ -1,7 +1,6 @@
 // Les exceptions de l'article 80 (Q2.6.a et Q2.6) : leurs réponses possibles,
 // et le fait de chacune. Une exception proposée vaut « oui » cochée, « non »
-// sinon. Une exception qui ne s'est pas proposée prend un prédicat structurel
-// (D-106).
+// sinon. Une exception qui ne s'est pas proposée prend un prédicat structurel.
 
 import { describe, expect, it } from "vitest";
 import { decisionEngine } from "../../../../core/models/eligibilite/cibles/evaluation";

@@ -2,7 +2,7 @@
 // tools sur le simulateur.
 //
 // L'écran de rattachement passe en premier : on ne simule pas sans s'être
-// rattaché. Voir ADR-0004.
+// rattaché.
 
 import type { ComponentProps } from "react";
 import { AnalyticsProvider, type AnalyticsUseCases } from "../analytics";
@@ -146,7 +146,7 @@ function AfterRattachement({
 // simulateur reçoit du contenu déjà composé et n'importe rien de
 // `developer-tools/`. En local, ils ouvrent trois choses : le bouton vers
 // l'écran des seeds, le choix du modèle quand l'app en a plusieurs, et la trace
-// de debug. La trace s'ouvre aussi partout pour « Assurance Maladie » (D-280).
+// de debug. La trace s'ouvre aussi partout pour « Assurance Maladie ».
 function developerToolsPanel(
   navigation: Navigation,
   modelChoices: ModelChoice[],

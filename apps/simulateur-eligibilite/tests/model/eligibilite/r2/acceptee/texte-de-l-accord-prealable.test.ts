@@ -1,7 +1,7 @@
-// Le texte des deux demandes d'accord préalable (#136) : la raison que lit le
-// patient, et le lexique qu'elle remplit. Des traces écrites à la
-// main : rien n'y est prouvé, sauf ce que le test pose. Les attendus sont
-// recopiés du catalogue de l'éditeur et de ses aperçus PDF.
+// Le texte des deux demandes d'accord préalable : la raison que lit le patient,
+// et le lexique qu'elle remplit. Des traces écrites à la main : rien n'y est
+// prouvé, sauf ce que le test pose. Les attendus sont recopiés du catalogue de
+// l'éditeur et de ses aperçus PDF.
 
 import { describe, expect, it } from "vitest";
 import { codesDeLAccord } from "../../../../../front/models/eligibilite/r2/components/fondement-de-l-accord-prealable";
@@ -205,8 +205,8 @@ describe("le lexique de l'accord préalable", () => {
   });
 });
 
-// Ce que la demande donne au journal des parcours (#386, ADR-0045) : les motifs
-// que sa raison affiche.
+// Ce que la demande donne au journal des parcours : les motifs que sa raison
+// affiche.
 describe("les motifs d'une demande", () => {
   it("le contexte puis la justification", () => {
     expect(demande({ ...DIALYSE, ...LONGUE_DISTANCE })?.motifs).toEqual([

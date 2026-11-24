@@ -1,7 +1,7 @@
-// Le stepper et le titre du résultat du modèle de l'éditeur, comme à l'écran
-// (#219) : le vrai simulateur, ouvert sur une seed. Chaque partie titre son
-// stepper ; P0 et P1 annoncent la suivante, P2 et P3 rien. Le titre de R2 est
-// vert pour les issues avec fiche et complétion, noir ailleurs.
+// Le stepper et le titre du résultat du modèle de l'éditeur, comme à l'écran :
+// le vrai simulateur, ouvert sur une seed. Chaque partie titre son stepper ; P0
+// et P1 annoncent la suivante, P2 et P3 rien. Le titre de R2 est vert pour les
+// issues avec fiche et complétion, noir ailleurs.
 
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";

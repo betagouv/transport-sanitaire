@@ -1,9 +1,9 @@
-// La cellule médicale de la PMT et de la DAP remplies (#403, D-302) : un seul
-// texte, écrit à 9 pt. Un texte qui n'y tient pas fait du cerfa un aperçu :
-// seul son plus long début s'écrit, et la génération le signale avec son
-// maximum. Seule la justification du lieu éloigné (Q3.4.distance) y entre en
-// saisie libre (#478) : la DAP la porte, et la PMT déborde avec la mention du
-// mineur (`consigne-du-mineur.test.ts`).
+// La cellule médicale de la PMT et de la DAP remplies : un seul texte, écrit à
+// 9 pt. Un texte qui n'y tient pas fait du cerfa un aperçu : seul son plus long
+// début s'écrit, et la génération le signale avec son maximum. Seule la
+// justification du lieu éloigné (Q3.4.distance) y entre en saisie libre : la
+// DAP la porte, et la PMT déborde avec la mention du mineur
+// (`consigne-du-mineur.test.ts`).
 
 import { describe, expect, it } from "vitest";
 import type { Faits } from "../../../../core/models/eligibilite/faits/noms";
@@ -33,7 +33,7 @@ type Support = {
 };
 
 // Un texte de base qui tient seul dans son cadre. Celui qui n'y tient pas
-// attend l'éditeur (#348) : la DAP perd la justification de la distance.
+// attend l'éditeur : la DAP perd la justification de la distance.
 const { "Q3.4.distance": _distance, ...DAP_COURTE } = DAP;
 
 const LA_DAP: Support = {

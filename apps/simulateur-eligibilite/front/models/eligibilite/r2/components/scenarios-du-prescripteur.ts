@@ -1,5 +1,5 @@
 // Le scénario du résultat du prescripteur qui convient à une trace, pour les
-// quatre issues qui en ont un (D-112). Une fonction pure, sans React.
+// quatre issues qui en ont un. Une fonction pure, sans React.
 //
 // L'établissement, la permission et la convocation se choisissent par leur
 // contexte. La caisse se choisit par les points que les règles laissent

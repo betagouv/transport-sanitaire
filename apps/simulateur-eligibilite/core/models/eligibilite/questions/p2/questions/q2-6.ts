@@ -1,5 +1,5 @@
 // Q2.6.a, le type du transfert, posée à part, puis Q2.6, les exceptions de
-// l'article 80, sur la même page (D-106). Les exceptions attendent le type
+// l'article 80, sur la même page. Les exceptions attendent le type
 // quand il se pose : leurs réponses possibles en dépendent. Les faits de
 // l'article 80 vivent sous `faits/`.
 
@@ -25,7 +25,7 @@ const unAutreDeplacement = deplacement.is("2_AUTRE_DEPLACEMENT");
 
 /**
  * Q2.7 dit la permission d'un adulte, autorisée pour les soins ou
- * l'organisation de l'établissement : elle relève de l'article 80 (D-283).
+ * l'organisation de l'établissement : elle relève de l'article 80.
  */
 const unAdulteAutorise = given.question(Q2_7).answer().is("3_ADULTE_AUTORISEE");
 
@@ -44,7 +44,7 @@ const unTypeAPoser = unTransfert;
 export const Q2_6_A = question
   .singleChoice("Q2.6.a", "Le transfert est-il définitif ou provisoire ?")
   // Le type du transfert : la réponse possible 1 du catalogue de Q2.6, posée à
-  // part (D-106).
+  // part.
   .possibleAnswers({
     "1_DEFINITIF": "Définitif (au moins 48 heures).",
     "2_PROVISOIRE":
@@ -78,7 +78,7 @@ const exceptions = question
     "Quelle situation précise et quelles exceptions s’appliquent à ce déplacement ?",
   )
   // Les réponses possibles gardent leur numéro du catalogue, où le type est la
-  // réponse possible 1. La réponse possible 4 est la nôtre (D-106).
+  // réponse possible 1. La réponse possible 4 est la nôtre.
   .possibleAnswers({
     "2_ADMISSION_SANS_SEJOUR":
       "Admission dans un nouvel établissement, sans hospitalisation dans l’établissement de départ.",

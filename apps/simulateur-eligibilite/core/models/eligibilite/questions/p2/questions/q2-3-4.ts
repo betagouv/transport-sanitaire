@@ -1,7 +1,7 @@
 // Q2.3.4 : l'urgence, quand la garde de l'éditeur le dit
 // (`cible_question_urgence_a_afficher`), sur les faits des questions posées
-// avant elle. Elle a deux places : la page du trajet, puis celle de la branche
-// (ADR-0040). Une condition que la branche établit (le dispositif maternité)
+// avant elle. Elle a deux places : la page du trajet, puis celle de la branche.
+// Une condition que la branche établit (le dispositif maternité)
 // la pose là, si le trajet ne l'a pas posée. L'éditeur nomme Q2.12 cette
 // reprise de Q2.3 sur la page de branche (`CONTRAT_SAISIES_ET_PAGES.md`).
 //

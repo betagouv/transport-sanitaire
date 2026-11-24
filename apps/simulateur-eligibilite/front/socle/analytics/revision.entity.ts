@@ -1,11 +1,11 @@
 // Une révision du premier résultat (docs/knowledge/CONTEXT.md, « Révision ») :
 // `r1`, `r2`… dans une simulation. Elle naît à l'affichage d'un R2, et tombe
 // quand une modification de P1 ou de P2 la rend caduque. Ce qu'elle dit au
-// journal ne vient que des sorties calculées (ADR-0045) : son issue et son
-// support toujours, sans quoi elle ne naît pas (contrat v10.2.2). Les documents qui en
-// viennent portent son support, sa composition du transport et son mode
-// (ADR-0046, ANA22-04), puis la taille de leurs textes imprimés (ADR-0048,
-// ANA22-03), sous leur version et la révision du document (R13).
+// journal ne vient que des sorties calculées : son issue et son
+// support toujours, sans quoi elle ne naît pas (contrat v10.2.2). Les
+// documents qui en viennent portent son support, sa composition du transport
+// et son mode (ANA22-04), puis la taille de leurs textes imprimés (ANA22-03),
+// sous leur version et la révision du document (R13).
 
 import type {
   AnalyticsEvent,
@@ -163,7 +163,7 @@ export class Revision {
   /**
    * La taille des textes imprimés d'une version de son document, sous les
    * identifiants fermés de son support : les champs remplis sont attendus,
-   * ceux dont la taille s'est lue sont mesurés (ADR-0048). Sans support de
+   * ceux dont la taille s'est lue sont mesurés. Sans support de
    * document, elle ne part pas : ses identifiants n'auraient pas de préfixe.
    */
   typographyMeasured(

@@ -1,6 +1,6 @@
 // Le client PostgreSQL du serveur : un pool de connexions à la base que
 // Scalingo fournit, et le seul fichier qui importe le pilote `pg`. Le journal
-// des parcours y écrit (ADR-0043).
+// des parcours y écrit.
 //
 // Ce que les adaptateurs en attendent tient dans `Sql` : une requête, des
 // paramètres, des lignes. PGlite, la base des tests, en a la même forme.

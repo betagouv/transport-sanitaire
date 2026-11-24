@@ -1,6 +1,6 @@
-// Les nœuds du graphe de décision, et ce qu'on en construit (#196). Le
+// Les nœuds du graphe de décision, et ce qu'on en construit. Le
 // compilateur y combine les règles (`publicodes-graph-compiler.adapter.ts`). Le
-// filtrage (#255) y restreint une règle aux faits qu'on sait déjà, puis regarde
+// filtrage y restreint une règle aux faits qu'on sait déjà, puis regarde
 // quels faits elle teste encore.
 //
 // Les nœuds sont partagés : deux nœuds identiques n'en font qu'un, et un fait

@@ -1,5 +1,5 @@
 // Le graphe de décision : ce que vaut chaque règle d'un modèle, pour chaque
-// façon dont ses faits peuvent valoir oui, non ou rien (#196). Il se compile
+// façon dont ses faits peuvent valoir oui, non ou rien. Il se compile
 // une fois depuis les règles (`publicodes-graph-compiler.adapter.ts`), s'écrit
 // en JSON à côté d'elles, et se lit sans publicodes.
 //
