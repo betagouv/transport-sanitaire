@@ -2,7 +2,7 @@
 
 > Ce que le prescripteur déclare avant de simuler, ce que montre l'écran, et ce
 > que porte le référentiel. Les décisions techniques sont dans
-> [`../adr/`](../adr/), ADR-0006 et ADR-0009. Ce que l'écran écrit dans Grist est
+> [`../adr/`](../adr/), ADR-0006 et ARCH-001. Ce que l'écran écrit dans Grist est
 > dans [`enrichissement-referentiel-rattachement.md`](enrichissement-referentiel-rattachement.md).
 > Le vocabulaire est fixé dans [`../CONTEXT.md`](../CONTEXT.md).
 
