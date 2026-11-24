@@ -96,8 +96,8 @@ d'action et ne se raccordent pas aux nouvelles.
 - La mesure est agrégée par service, sans cookie et sans réponse détaillée. Elle
   entre dans l'exemption de consentement de la CNIL et se passe de bandeau
   (ADR-0003).
-- Deux réserves : l'adresse IP doit être anonymisée par l'instance Matomo (réglage de l'instance), et un
-  très petit service peut désigner une ou deux personnes (R-10 et R-11 de
+- L'adresse IP est anonymisée par l'instance Matomo, ce qui a été vérifié. Une réserve
+  reste : un très petit service peut désigner une ou deux personnes (R-11 de
   l'ADR-0003).
 - Le prescripteur peut s'opposer à la mesure depuis le pied de page du CMS. Son
   refus vaut aussi pour le journal (ADR-0011). Il reste à l'en informer dans la
