@@ -69,7 +69,7 @@ les tests du ou des fichiers qu'on vient d'écrire, puis `pnpm --filter <app> li
 | Une décision d'architecture coûteuse à défaire et surprenante | un ADR : voir [`ecrire-une-decision.md`](ecrire-une-decision.md) |
 | Le cadrage, le découpage et l'état d'un chantier | son ticket Notion, tenu à la main, avec une liste à cocher d'une ligne par PR. La PR cite le ticket dans son corps. Jamais un fichier du dépôt |
 | Ce qu'une app est, ses commandes, sa structure, sa configuration | son `README.md`. La section « Commandes » est la source des commandes : une table « commande, ce qu'elle fait » |
-| Ce qu'une app sait faire | son `docs/knowledge/features.md`, un tableau « feature, ce qu'elle fait » |
+| Ce qu'une app sait faire | son `README.md` |
 | Le vocabulaire | `CONTEXT.md`, celui de l'app ou celui de la racine |
 | Une connaissance métier actée | `docs/knowledge/domain/` de l'app concernée, ou celui de la racine si elle traverse plusieurs apps. Ce qu'une décision d'architecture change pour le métier y va aussi |
 | Le détail d'une implémentation | le code, que ses tests documentent. Ni un ADR ni un README. Un code obscur se corrige (un nom, une étape explicite), il ne s'explique pas dans une doc |
