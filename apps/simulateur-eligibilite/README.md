@@ -8,7 +8,7 @@ en conséquence. Le parcours débute par un rattachement obligatoire à un étab
 Le simulateur s'ouvre sur le **modèle de l'éditeur** : le modèle d'éligibilité qu'il livre
 (v10.2.2, voir `core/models/eligibilite/rules/VERSION`). Un **modèle de démonstration**
 reste à portée des developer tools, en local seulement. Voir [« Les deux
-modèles »](#les-deux-modèles).
+modèles »](README.md#les-deux-modèles).
 
 ## Fonctionnement
 
