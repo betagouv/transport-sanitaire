@@ -5,8 +5,8 @@
 //     l'identité du site au plus gros volume (`score`) comme libellé représentatif.
 //  2. Trajets réconciliés — aligne le finess de chaque trajet sur le **référentiel**, qui
 //     fait autorité : le finess juridique retenu est celui que le référentiel associe au site
-//     géographique (et non celui déclaré par la source, qui peut diverger — cf. Points
-//     d'attention métier du README). On rattache aussi chaque trajet à son GHT.
+//     géographique (et non celui déclaré par la source, qui peut diverger — cf.
+//     spec/points-attention-metier.md). On rattache aussi chaque trajet à son GHT.
 //
 // Le référentiel finess → GHT vient de `build/extract/ght.csv` (source `referentiel-ght`,
 // open data data.gouv `etablissements-de-sante-par-ght`, bundles versionnés dans `ref/ght/`).
