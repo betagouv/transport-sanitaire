@@ -10,6 +10,7 @@ Il y a **un recueil par domaine**, et non un fichier par règle.
 |---|---|---|
 | `regles-de-code.md` | `QUAL-` | forme d'un fichier, découpage, noms, exports, suppressions de lint |
 | `regles-git.md` | `GIT-` | branche et PR vers `staging`, forme du message, métadonnée d'IA, confidentialité |
+| `apps/simulateur-eligibilite/docs/knowledge/contributing/regles-d-architecture.md` | `ARCH-` | frontières, modèles, adaptateurs, lecture des faits, déclaration des questions du simulateur |
 
 `AGENTS.md` et les skills ne portent qu'un pointeur vers ce dossier. **N'y
 recopie pas les règles** : une copie dérive.
@@ -127,6 +128,7 @@ grep -nE '^\s*(describe|it)\(' apps/simulateur-eligibilite/tests/lisibilite.test
 | Le tableau d'index du recueil | une ligne : identifiant, titre, garde |
 | L'en-tête du recueil (`> Les N règles`) et son chapô (`**N règles**`) | le décompte, si le nombre change |
 | `AGENTS.md § Écrire du code et commiter` et `§ Toute règle nomme sa garde` | le décompte total et par recueil |
+| `apps/simulateur-eligibilite/AGENTS.md` | le lien vers `regles-d-architecture.md`, si c'est le recueil de l'app |
 | `AGENTS.md § Toute règle nomme sa garde` | le texte, si la garde change de nature |
 
 Les décomptes ne sont pas à surveiller à la main : vérifie-les contre l'index
@@ -137,6 +139,8 @@ avant de committer.
 Ce qui n'est pas une règle numérotée se range ailleurs :
 `AGENTS.md § Où écrire quoi` dit où.
 
-**Une convention qui ne vaut que pour une app va dans son `apps/<app>/AGENTS.md`.**
-Les recueils valent pour le dépôt entier. Une exception logée dedans serait
-invisible depuis l'app qu'elle concerne.
+**Une règle qui ne vaut que pour une app va dans le recueil de cette app**,
+`apps/<app>/docs/knowledge/contributing/`, avec son propre préfixe (`ARCH-` pour
+le simulateur). Les recueils de la racine valent pour le dépôt entier : une
+exception logée dedans serait invisible depuis l'app qu'elle concerne. Le
+`AGENTS.md` de l'app ne porte qu'un lien vers son recueil.

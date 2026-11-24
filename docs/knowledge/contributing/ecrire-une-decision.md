@@ -52,7 +52,7 @@ Un fichier porte une décision, et une seule. Il n'y a pas de recueil.
 - **Le renvoi**, dans le code ou un autre document : `ADR-<nnnn>`, sans chemin.
 
 ```markdown
-# ADR-0052 - Le domaine n'importe pas un adaptateur
+# ADR-0053 - Chaque événement porte l'établissement et le service
 
 > Statut : **décidé** · 2026-11-16
 
@@ -68,7 +68,7 @@ Un fichier porte une décision, et une seule. Il n'y a pas de recueil.
   `R-1`, `R-2`… sous l'ADR qu'il concerne.
 - Le numéro ne change plus une fois cité.
 - Un renvoi vers un autre fichier est relatif :
-  `./0043-le-journal-passe-par-un-port-grist-en-premier.md`.
+  `./0053-chaque-evenement-porte-l-etablissement-et-le-service.md`.
 
 ### Ce qui n'entre pas dans un ADR
 
@@ -84,7 +84,7 @@ Qui retombe sur une ancienne décision doit trouver pourquoi elle ne vaut plus.
 `**révoqué**`, avec le jour et l'ADR qui le remplace :
 
 ```markdown
-> Statut : **révoqué** · 2026-10-27 · Remplacé par l'ADR-0033
+> Statut : **révoqué** · 2026-10-27 · Remplacé par l'ADR-0054
 ```
 
 **Un ADR révisé garde son texte**, et reçoit un encart daté sous son en-tête,

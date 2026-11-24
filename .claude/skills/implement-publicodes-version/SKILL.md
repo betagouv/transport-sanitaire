@@ -10,7 +10,7 @@ Ce skill ne porte que la marche à suivre. Les règles sont ailleurs :
 | Ce qu'il faut savoir | Où |
 |---|---|
 | où ranger le paquet et nos notes, ce que le dépôt garde du paquet, ce qui fait foi, comment répondre à l'éditeur | [`docs/knowledge/domain/livrable-de-l-editeur.md`](../../../apps/simulateur-eligibilite/docs/knowledge/domain/livrable-de-l-editeur.md) |
-| où vit le modèle, ce qu'il a le droit d'importer | `apps/simulateur-eligibilite/AGENTS.md`, [ADR-0012](../../../apps/simulateur-eligibilite/docs/knowledge/adr/0012-le-metier-ne-depend-pas-de-l-ecran-et-vit-dans-core.md) |
+| où vit le modèle, ce qu'il a le droit d'importer | `apps/simulateur-eligibilite/AGENTS.md`, [ARCH-001](../../../apps/simulateur-eligibilite/docs/knowledge/contributing/regles-d-architecture.md) |
 
 Les chemins ci-dessous partent de `apps/simulateur-eligibilite/`, sauf `tmp/`,
 qui est à la racine du dépôt. Le livrable se dépose dans

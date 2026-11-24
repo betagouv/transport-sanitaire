@@ -179,7 +179,7 @@ et son « contexte fiable » ce que le livrable tient pour sûr (D-74).
 **Condition**:
 Une lecture qui vaut oui ou non, sur les réponses, les faits ou les cibles :
 `given.question(Q2_1).answer().is("8_HOSPITALISATION")`. Elle se compose par
-`and`, `or` et `not`, et dit ce qu'elle lit (`reads`) sans se calculer (ADR-0034).
+`and`, `or` et `not`, et dit ce qu'elle lit (`reads`) sans se calculer (ARCH-008).
 _Chez l'éditeur_: « condition », le même mot.
 
 **Garde**:

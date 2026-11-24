@@ -78,7 +78,7 @@ jamais exposées au front.
 | --- | --- | --- | --- | --- |
 | `GRIST_API_KEY` | serveur | **prod** | référentiel **snapshot factice** (dev/CI) | Clé API Grist source du référentiel (établissements/services). Jamais exposée au front. |
 | `GRIST_DOC_URL` | serveur | **prod** | référentiel **snapshot factice** (dev/CI) | Base API du doc Grist du référentiel, lu et complété avec la clé. |
-| `SCALINGO_POSTGRESQL_URL` | serveur | non | aucun | URL de la base PostgreSQL du journal des parcours, posée par l'addon PostgreSQL de Scalingo. Sans elle, le serveur accepte les événements sans en garder aucun, et le signale au démarrage. Les tables `journal_events`, `journal_collisions` et `journal_quarantine` se créent à la première écriture (ADR-0043). |
+| `SCALINGO_POSTGRESQL_URL` | serveur | non | aucun | URL de la base PostgreSQL du journal des parcours, posée par l'addon PostgreSQL de Scalingo. Sans elle, le serveur accepte les événements sans en garder aucun, et le signale au démarrage. Les tables `journal_events`, `journal_collisions` et `journal_quarantine` se créent à la première écriture (voir `docs/knowledge/domain/journal-des-parcours.md`). |
 | `JOURNAL_READ_TOKEN` | serveur | non | pas de lecture | Jeton du tableau de bord qui lit le journal : `GET /api/journal/v1/events?after=<curseur>&limit=<1..1000>`, avec `Authorization: Bearer <jeton>`. La réponse donne `entries` et `next`, le curseur de la page suivante, `null` en fin de journal. Au moins 32 caractères (`openssl rand -hex 32`). Sans lui, la route n'existe pas. |
 | `APP` | serveur | non | `local` | Nom de l'app Scalingo, posé par Scalingo. Écrit comme `environment` de chaque événement du journal. |
 | `CONTAINER_VERSION` | serveur | non | commit `inconnu` | Commit déployé, posé par Scalingo sur le conteneur. Écrit, sur 7 caractères, sur le signe de vie horaire du journal. |
@@ -117,10 +117,10 @@ les outils de développement.
 
 `core/` et `front/` ont chacun un `socle/` et un `models/`. Un modèle a son
 dossier des deux côtés, sous le même nom : son métier dans `core/`, son écran
-dans `front/` (ADR-0012, ADR-0016).
+dans `front/` (ARCH-002).
 Un module du socle, dossier direct de `core/socle/` ou de `front/socle/`, a son
 `index.ts` : ce qu'il promet au reste du socle, et le seul de ses fichiers
-qu'on importe de l'extérieur (ADR-0039).
+qu'on importe de l'extérieur (ARCH-003).
 
 ```
 shared/                  le contrat front ⇄ back, source unique des types partagés
@@ -130,12 +130,12 @@ server/                  le backend Node, barrière de sécurité : les secrets 
                          et ne sont jamais bundlés. Bootstrap, composition,
                          configuration lue une fois et refusée si elle manque en prod.
   container.ts           instancie les adaptateurs, le use case et le contrôleur
-                         (ADR-0043)
+                         (ARCH-004)
   rattachement/          LA feature backend : les routes `/api` et la source Grist du
                          référentiel, qu'elle lit et complète
   journal/               le journal des parcours en clean architecture : entité,
                          use case, port, adaptateurs (PostgreSQL, mémoire) et route,
-                         nommés par leur suffixe (ADR-0043)
+                         nommés par leur suffixe (QUAL-018)
   grist/                 le client HTTP de l'API Grist, pour le référentiel
   postgres/              le client PostgreSQL, pour le journal
 core/                    le métier, sans React ni DOM : ce qu'un serveur ou un script
@@ -252,7 +252,7 @@ front/                   le front, bundlé par Vite
                          télécharger, l'imprimer, le bouton qui l'attend). Aucun
                          gabarit.
     analytics/           la mesure d'audience et le journal des parcours en
-                         clean architecture (ADR-0043) : entités, use cases, ports,
+                         clean architecture (ARCH-004) : entités, use cases, ports,
                          adaptateurs vers Matomo, le backend et le choix du
                          prescripteur transmis par le CMS, et les contextes où
                          l'écran les lit, dont le parcours signalé au journal ; et
