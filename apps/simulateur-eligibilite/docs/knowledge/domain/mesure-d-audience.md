@@ -2,7 +2,8 @@
 
 > Ce qu'on veut savoir du parcours de simulation, ce qui part, et ce qui ne
 > part jamais. Les décisions techniques sont dans [`../adr/`](../adr/) :
-> ADR-0002, ADR-0003, ADR-0010, ADR-0011, ADR-0042 et ADR-0043.
+> ADR-0002, ADR-0003, ADR-0010, ADR-0011, ADR-0042 et ADR-0043. Ce que le journal
+> reçoit est dans [`journal-des-parcours.md`](journal-des-parcours.md).
 
 ## Ce qu'on veut suivre
 
@@ -46,8 +47,7 @@ Ce qui part :
 - les codes de résultat : issue, code de raison, mode, support.
 
 Le service saisi sous « Autre » et l'établissement saisi à l'écran n'en font
-pas partie. ~~Le journal recevait leur nom (ADR-0053).~~ (du 2026-11-16 au
-2026-11-17, #497)
+pas partie.
 
 ## Les événements de la mesure d'audience
 

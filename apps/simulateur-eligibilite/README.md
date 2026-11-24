@@ -350,7 +350,7 @@ Scalingo construit et sert cette app, et déploie depuis `main`.
 4. **Surveiller la collecte.** Le workflow `.github/workflows/signe-de-vie.yml`
    demande chaque heure à la production si le journal porte son signe de vie
    (`GET /api/journal/v1/alive`), et échoue sinon : GitHub prévient par
-   courriel (ADR-0051).
+   courriel (voir [`journal-des-parcours.md`](docs/knowledge/domain/journal-des-parcours.md)).
 5. **Brancher l'addon PostgreSQL.** Il pose `SCALINGO_POSTGRESQL_URL`, la base du
    journal des parcours ; les tables se créent à la première écriture.
 6. **Tenir la variable de production**, `GRIST_API_KEY`. Elle n'a pas de défaut, et le
