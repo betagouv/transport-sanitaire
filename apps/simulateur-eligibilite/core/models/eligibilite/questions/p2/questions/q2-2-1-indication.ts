@@ -1,6 +1,6 @@
 // Q2.2.1.indication : l'indication médicale d'un retour pénitentiaire, quand
 // P1 ne l'établit pas (point 33 de la v10.1.3). « Non » sort le trajet du
-// circuit de prescription (`conditions/retour-penitentiaire.ts`).
+// circuit de prescription (`conditions/retour-penitentiaire.condition.ts`).
 
 import type {
   ReadByObject,
@@ -10,7 +10,7 @@ import { Q1_1 } from "../../p1/questions/q1-1.question.ts";
 import { Q1_2 } from "../../p1/questions/q1-2.question.ts";
 import { Q1_3 } from "../../p1/questions/q1-3.question.ts";
 import { given, question } from "../../question.ts";
-import { uneIndicationAPoser } from "../conditions/retour-penitentiaire.ts";
+import { uneIndicationAPoser } from "../conditions/retour-penitentiaire.condition.ts";
 import { Q2_2_1 } from "./q2-2-1.question.ts";
 
 export const Q2_2_1_INDICATION = question

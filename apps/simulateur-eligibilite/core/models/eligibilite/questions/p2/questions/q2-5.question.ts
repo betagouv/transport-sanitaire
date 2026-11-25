@@ -5,15 +5,13 @@
 
 import { Q1_3 } from "../../p1/questions/q1-3.question.ts";
 import { given, question } from "../../question.ts";
-import { incoherenceDeLieux } from "../conditions/conflit-de-lieux.ts";
-import {
-  TRANSFERT_VERS_LA_PRISON,
-  unRetourPenitentiaire,
-} from "../conditions/retour-penitentiaire.ts";
+import { unRetourPenitentiaire } from "../conditions/retour-penitentiaire.condition.ts";
+import { ConflitDeLieux } from "../lieux/conflit-de-lieux.service.ts";
 import { Q2_1, Q2_1_G } from "./q2-1.question.ts";
 import { Q2_2_1 } from "./q2-2-1.question.ts";
 import { Q2_2_1_A } from "./q2-2-1-a.question.ts";
 import { Q2_2_1_CADRE } from "./q2-2-1-cadre.question.ts";
+import { TRANSFERT_VERS_LA_PRISON } from "./transfert-vers-la-prison.constants.ts";
 
 // La question, avant les règles qui lisent sa réponse.
 const declaree = question
@@ -54,7 +52,7 @@ export const Q2_5 = declaree
   .inconsistentWhen(unTransfertVersLaPrison, TRANSFERT_VERS_LA_PRISON)
   // Un autre déplacement part du séjour, ou y revient.
   .inconsistentWhen(
-    ...incoherenceDeLieux("transfert", {
+    ...ConflitDeLieux.incoherence("transfert", {
       soins: Q1_3,
       sousType: Q2_1_G,
       situations: Q2_2_1,

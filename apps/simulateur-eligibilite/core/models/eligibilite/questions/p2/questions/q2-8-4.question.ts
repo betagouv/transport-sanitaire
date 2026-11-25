@@ -1,7 +1,7 @@
 // Q2.8.4 : l'autorisation de la permission par l'établissement.
 
 import { question } from "../../question.ts";
-import { unMineurDeVingtAns } from "../conditions/permission.ts";
+import { unMineurDeVingtAns } from "../conditions/permission.condition.ts";
 
 export const Q2_8_4 = question
   .singleChoice(

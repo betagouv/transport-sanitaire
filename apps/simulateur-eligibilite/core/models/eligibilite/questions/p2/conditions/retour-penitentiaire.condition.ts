@@ -25,10 +25,6 @@ import { Q1_3, Q1_3_A } from "../../p1/questions/q1-3.question.ts";
 import { given } from "../../question.ts";
 import { Q2_2_1 } from "../questions/q2-2-1.question.ts";
 
-/** Le message qui refuse un transfert entre établissements vers la prison. */
-export const TRANSFERT_VERS_LA_PRISON =
-  "Un transfert entre établissements de santé ne mène pas à un établissement pénitentiaire. Corrigez cette réponse, ou retirez le retour pénitentiaire des situations particulières.";
-
 /** Le retour pénitentiaire est coché en Q2.2.1. */
 export const unRetourPenitentiaire = given
   .question(Q2_2_1)

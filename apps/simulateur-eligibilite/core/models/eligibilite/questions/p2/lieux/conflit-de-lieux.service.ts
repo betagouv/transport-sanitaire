@@ -19,51 +19,51 @@ import type {
   Revisit,
 } from "../../../../../socle/index.ts";
 import { given, type Inconnu } from "../../question.ts";
-import {
-  desRolesContradictoires,
-  type Entrees,
-  type Lues,
-  type Orientation,
-} from "./roles-des-lieux.ts";
-
-/** Le message de l'éditeur, mot pour mot. */
-export const LIEUX_INCOMPATIBLES =
-  "Les réponses indiquent des lieux incompatibles pour ce trajet. Revenez aux réponses précédentes pour préciser le déplacement à évaluer.";
+import { RolesDesLieux } from "./roles-des-lieux.service.ts";
+import type { Entrees, Lues, Orientation } from "./roles-des-lieux.types.ts";
 
 /** Les questions qu'une incohérence lit : celles d'avant elle, et la sienne. */
 type LuesJusquIci = { readonly [Nom in keyof Lues]?: Answered };
 
-/**
- * L'incohérence d'un conflit de lieux sur la question `propre`, telle que
- * `inconsistentWhen` la prend : il tient avec sa réponse et pas sans elle, le
- * message de l'éditeur, et les réponses d'avant à revoir.
- */
-export function incoherenceDeLieux(
-  propre: keyof Lues,
-  lues: LuesJusquIci,
-): readonly [Condition, string, { revisit: Reading<readonly Revisit[]> }] {
-  const reponses = reponsesDe(lues);
-  const apparu = reponses.compute(
-    (entrees) =>
-      unConflitCertain(entrees) && !unConflitCertain(sans(entrees, propre)),
-  );
-  const revisit = reponses.compute((entrees) => aRevoir(entrees, propre, lues));
-  return [apparu, LIEUX_INCOMPATIBLES, { revisit }];
-}
+export class ConflitDeLieux {
+  /** Le message de l'éditeur, mot pour mot. */
+  static readonly MESSAGE =
+    "Les réponses indiquent des lieux incompatibles pour ce trajet. Revenez aux réponses précédentes pour préciser le déplacement à évaluer.";
 
-/**
- * Le sens change-t-il la cohérence des lieux ? Aucune réponse ne l'établit, et
- * les rôles de P2 ne se contredisent que dans l'un des deux.
- */
-export function unSensQuiChangeLesLieux(lues: LuesJusquIci): Condition {
-  return reponsesDe(lues).compute((reponses) => {
-    const entrees = { ...SANS_REPONSES, ...reponses };
-    if (orientationAcquise(entrees) !== undefined) return false;
-    const enConflit = ORIENTATIONS.filter((orientation) =>
-      desRolesContradictoires(entrees, orientation),
+  /**
+   * L'incohérence d'un conflit de lieux sur la question `propre`, telle que
+   * `inconsistentWhen` la prend : il tient avec sa réponse et pas sans elle, le
+   * message de l'éditeur, et les réponses d'avant à revoir.
+   */
+  static incoherence(
+    propre: keyof Lues,
+    lues: LuesJusquIci,
+  ): readonly [Condition, string, { revisit: Reading<readonly Revisit[]> }] {
+    const reponses = reponsesDe(lues);
+    const apparu = reponses.compute(
+      (entrees) =>
+        unConflitCertain(entrees) && !unConflitCertain(sans(entrees, propre)),
     );
-    return enConflit.length === 1;
-  });
+    const revisit = reponses.compute((entrees) =>
+      aRevoir(entrees, propre, lues),
+    );
+    return [apparu, ConflitDeLieux.MESSAGE, { revisit }];
+  }
+
+  /**
+   * Le sens change-t-il la cohérence des lieux ? Aucune réponse ne l'établit, et
+   * les rôles de P2 ne se contredisent que dans l'un des deux.
+   */
+  static unSensQuiChangeLesLieux(lues: LuesJusquIci): Condition {
+    return reponsesDe(lues).compute((reponses) => {
+      const entrees = { ...SANS_REPONSES, ...reponses };
+      if (orientationAcquise(entrees) !== undefined) return false;
+      const enConflit = ORIENTATIONS.filter((orientation) =>
+        RolesDesLieux.desRolesContradictoires(entrees, orientation),
+      );
+      return enConflit.length === 1;
+    });
+  }
 }
 
 // ---- implémentation ----
@@ -107,7 +107,7 @@ function unConflitCertain(lues: Partial<Entrees>): boolean {
   const acquise = orientationAcquise(entrees);
   const possibles = acquise === undefined ? ORIENTATIONS : [acquise];
   return possibles.every((orientation) =>
-    desRolesContradictoires(entrees, orientation),
+    RolesDesLieux.desRolesContradictoires(entrees, orientation),
   );
 }
 

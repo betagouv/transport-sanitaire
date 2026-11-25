@@ -4,7 +4,7 @@
 //
 // Chaque question ne se pose que si le support de l'issue, figé au verrou, la
 // réclame (`CATALOGUE_COMPLET_QUESTIONS.md`, « Partie 3 »,
-// `conditions/supports-du-complement.ts`).
+// `conditions/supports-du-complement.condition.ts`).
 
 import { afterLock, page } from "../../../../socle/index.ts";
 import { Q3_1_1 } from "./questions/q3-1-1.question.ts";

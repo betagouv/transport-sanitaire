@@ -4,7 +4,7 @@
 // qu'il compare.
 
 import { question } from "../../question.ts";
-import { unMineurDeVingtAns } from "../conditions/permission.ts";
+import { unMineurDeVingtAns } from "../conditions/permission.condition.ts";
 
 export const Q2_8_1 = question
   .date("Q2.8.1", "Depuis quelle date le patient est-il hospitalisé ?")

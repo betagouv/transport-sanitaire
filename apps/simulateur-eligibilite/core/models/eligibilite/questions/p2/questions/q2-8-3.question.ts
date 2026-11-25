@@ -4,7 +4,7 @@
 // Q2.8.duree_48h.
 
 import { given, question } from "../../question.ts";
-import { unMineurDeVingtAns } from "../conditions/permission.ts";
+import { unMineurDeVingtAns } from "../conditions/permission.condition.ts";
 import { Q2_8_2 } from "./q2-8-2.question.ts";
 
 // La question, avant les règles qui lisent sa réponse.

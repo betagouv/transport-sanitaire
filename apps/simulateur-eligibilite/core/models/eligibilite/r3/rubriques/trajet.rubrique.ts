@@ -14,13 +14,11 @@ import type { Reading } from "../../../../socle/index.ts";
 import {
   type Categorie,
   HTNM,
-  natureEnLettres,
-} from "../../questions/p3/conditions/categories-du-lieu.ts";
-import {
-  type Extremite,
-  natureDuLieuChoisi,
-} from "../../questions/p3/conditions/lieux-du-trajet.ts";
-import { SENS_CHOISI } from "../../questions/p3/conditions/sens-du-trajet.ts";
+} from "../../questions/p3/lieux/categories-du-lieu.constants.ts";
+import { CategoriesDuLieu } from "../../questions/p3/lieux/categories-du-lieu.service.ts";
+import { LieuxDuTrajet } from "../../questions/p3/lieux/lieux-du-trajet.service.ts";
+import type { Extremite } from "../../questions/p3/lieux/lieux-du-trajet.types.ts";
+import { SensDuTrajet } from "../../questions/p3/lieux/sens-du-trajet.service.ts";
 import { Q3_3 } from "../../questions/p3/questions/q3-3.question.ts";
 import { given } from "../../questions/reponses.ts";
 import { LieuxDuCerfa } from "./lieux-du-cerfa.service.ts";
@@ -43,7 +41,7 @@ export const TRAJET: Rubrique<Trajet> = {
   arrivee_domicile: LieuxDuCerfa.auDomicile("arrivee"),
   arrivee_structure: zone("arrivee", "2_STRUCTURE_DE_SOINS"),
   arrivee_autre: zone("arrivee", "3_AUTRE_LIEU"),
-  aller_retour: SENS_CHOISI.compute(
+  aller_retour: SensDuTrajet.CHOISI.compute(
     (sens) => sens === "3_ALLER_RETOUR_EQUIVALENT",
   ),
 };
@@ -64,7 +62,7 @@ function lieu(extremite: Extremite) {
   const questions = LieuxDuCerfa.QUESTIONS[extremite];
   return given.all({
     categorie: questions.categorieDuLieu,
-    nature: natureDuLieuChoisi(extremite, Q3_3.choix),
+    nature: LieuxDuTrajet.natureDuLieuChoisi(extremite, Q3_3.choix),
     htnm: questions.htnm,
     nom: given.question(questions.nom).answer(),
     service: given.question(questions.service).answer(),
@@ -110,6 +108,6 @@ function structure({ nature, nom, service }: Lieu) {
 function autreLieu({ htnm, nature, nom, precision }: Lieu) {
   const enLettres = htnm
     ? HTNM
-    : precision.value?.trim() || natureEnLettres(nature);
+    : precision.value?.trim() || CategoriesDuLieu.natureEnLettres(nature);
   return [enLettres, nom.value];
 }

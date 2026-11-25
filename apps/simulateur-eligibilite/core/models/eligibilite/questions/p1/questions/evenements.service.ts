@@ -5,7 +5,9 @@
 
 import { LocalDateTime } from "../../../../../socle/index.ts";
 
-/** Au plus tard aujourd'hui, à Paris. */
-export function jusquAujourdhui(): { max?: string } {
-  return { max: LocalDateTime.dayInParis(new Date()).day() };
+export class Evenements {
+  /** Au plus tard aujourd'hui, à Paris. */
+  static jusquAujourdhui(): { max?: string } {
+    return { max: LocalDateTime.dayInParis(new Date()).day() };
+  }
 }

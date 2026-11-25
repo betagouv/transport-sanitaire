@@ -1,4 +1,4 @@
-// La nature précise d'un lieu du trajet, que P2 prouve (`situations-des-lieux.ts`).
+// La nature précise d'un lieu du trajet, que P2 prouve (`situations-des-lieux.service.ts`).
 // Ce n'est plus une liste de P3, qui ne propose que trois catégories
 // (QST-LIEUX-TROIS-CATEGORIES-20261105) : ce que P2 établit s'y rappelle sous
 // ce libellé.

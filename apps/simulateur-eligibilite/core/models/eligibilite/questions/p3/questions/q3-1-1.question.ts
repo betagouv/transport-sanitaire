@@ -1,13 +1,13 @@
 // Q3.1.1 : le nombre de trajets, que le sens choisi (Q2.13.sens ou Q3.1.2,
-// `sens-du-trajet.ts`) dit en allers simples,
+// `lieux/sens-du-trajet.service.ts`) dit en allers simples,
 // retours simples ou allers-retours. Trois allers-retours valent 3
 // (`CONTRAT_Q31_QUANTITES.json`). Ce nombre ne recalcule pas la série
 // de P2.
 
 import { Q2_13_SENS } from "../../p2/questions/q2-13.question.ts";
 import { type Context, question } from "../../question.ts";
-import { SENS_CHOISI, sensChoisi } from "../conditions/sens-du-trajet.ts";
-import { pmtOuDap } from "../conditions/supports-du-complement.ts";
+import { pmtOuDap } from "../conditions/supports-du-complement.condition.ts";
+import { SensDuTrajet } from "../lieux/sens-du-trajet.service.ts";
 import { Q3_1_2 } from "./q3-1-2.question.ts";
 
 // Les libellés de Q3.1.1, sens par sens (`CONTRAT_Q31_QUANTITES.json`).
@@ -30,13 +30,15 @@ const QUANTITES = {
 // Q3.1.1 se pose pour la PMT et la DAP, une fois choisi un sens qui a une
 // unité.
 const uneQuantiteAPoser = pmtOuDap.and(
-  SENS_CHOISI.compute((sens) => sens !== undefined && sens in QUANTITES),
+  SensDuTrajet.CHOISI.compute(
+    (sens) => sens !== undefined && sens in QUANTITES,
+  ),
 );
 
 // Le sens choisi qui a une unité. Q3.1.1 ne se pose qu'avec l'un d'eux
 // (`uneQuantiteAPoser`) : l'aller tient lieu de défaut.
 function sensAvecUnite(answers: Context["answers"]): keyof typeof QUANTITES {
-  const sens = sensChoisi({
+  const sens = SensDuTrajet.choisi({
     trajetEvalue: answers.question(Q2_13_SENS),
     sens: answers.question(Q3_1_2),
   });

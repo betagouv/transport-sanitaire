@@ -9,41 +9,32 @@
 import type { AnswerOf } from "../../../../../socle/index.ts";
 import type { Inconnu } from "../../question.ts";
 import type { Q2_6 } from "../questions/q2-6.question.ts";
-import { NATURES_DU_LIEU, type Nature } from "./natures-du-lieu.ts";
-import type { Entrees } from "./roles-des-lieux.ts";
+import { NATURES_DU_LIEU, type Nature } from "./natures-du-lieu.constants.ts";
+import type { Entrees } from "./roles-des-lieux.types.ts";
+import type {
+  Bornee,
+  Etablie,
+  Lieux,
+  Orientation,
+  Role,
+} from "./situations-des-lieux.types.ts";
 
-/** Une nature établie en P2, et ce que le rappel en dit. */
-export type Etablie = { readonly nature: Nature; readonly rappel: string };
+export class SituationsDesLieux {
+  /** Les rôles que chaque situation de P2 donne aux lieux, dans cette orientation. */
+  static rolesDesSituations(
+    entrees: Entrees,
+    orientation: Orientation | Inconnu,
+  ): Lieux[] {
+    return SITUATIONS.map((situation) => situation(entrees, orientation));
+  }
 
-/** Les natures entre lesquelles P2 laisse choisir. */
-type Bornee = { readonly natures: readonly Nature[] };
-
-/** Ce que P2 dit d'un lieu : sa nature, ou les natures qu'il admet. */
-export type Role = Etablie | Bornee;
-
-/** Les rôles qu'une situation donne, lieu par lieu. */
-export type Lieux = { readonly depart?: Role; readonly arrivee?: Role };
-
-/**
- * Le sens dans lequel les lieux se lisent. Un aller-retour équivalent se décrit
- * dans le sens de l'aller.
- */
-export type Orientation = "aller" | "retour";
-
-/** Les rôles que chaque situation de P2 donne aux lieux, dans cette orientation. */
-export function rolesDesSituations(
-  entrees: Entrees,
-  orientation: Orientation | Inconnu,
-): Lieux[] {
-  return SITUATIONS.map((situation) => situation(entrees, orientation));
-}
-
-/** Q2.6 cite cette exception de l'article 80. */
-export function q26(
-  entrees: Entrees,
-  possibleAnswer: AnswerOf<typeof Q2_6>[number],
-): boolean {
-  return entrees.contexte.checked(possibleAnswer);
+  /** Q2.6 cite cette exception de l'article 80. */
+  static q26(
+    entrees: Entrees,
+    possibleAnswer: AnswerOf<typeof Q2_6>[number],
+  ): boolean {
+    return entrees.contexte.checked(possibleAnswer);
+  }
 }
 
 // ---- implémentation ----
@@ -67,7 +58,8 @@ type Situation = (
 
 const SITUATIONS: readonly Situation[] = [
   hospitalisation,
-  (entrees) => (q26(entrees, "10_ADMISSION_HAD") ? admissionEnHad() : {}),
+  (entrees) =>
+    SituationsDesLieux.q26(entrees, "10_ADMISSION_HAD") ? admissionEnHad() : {},
   radiotherapie,
   (entrees) => (retourPenitentiaire(entrees) ? versLaPrison() : {}),
   permission,
@@ -115,7 +107,7 @@ function radiotherapie(
   entrees: Entrees,
   orientation: Orientation | Inconnu,
 ): Lieux {
-  if (!q26(entrees, "8_RADIOTHERAPIE")) return {};
+  if (!SituationsDesLieux.q26(entrees, "8_RADIOTHERAPIE")) return {};
   const origine: Etablie = {
     nature: ETABLISSEMENT,
     rappel: "L’établissement d’origine du transfert",
@@ -166,7 +158,7 @@ function deplacementPendantLeSejour(
 ): Lieux {
   const autre = entrees.transfert.is("2_AUTRE_DEPLACEMENT");
   if (!autre || !sejourEnEtablissement(entrees)) return {};
-  if (q26(entrees, "10_ADMISSION_HAD")) return {};
+  if (SituationsDesLieux.q26(entrees, "10_ADMISSION_HAD")) return {};
   if (orientation === undefined) return {};
   const sejour = hopital(
     entrees,
@@ -231,13 +223,13 @@ function dialyse(entrees: Entrees, orientation: Orientation | Inconnu): Lieux {
 // L'établissement d'un séjour. Une USLD que Q2.6 cite peut l'être : la nature
 // se choisit alors entre les deux (TS1014-E08).
 function hopital(entrees: Entrees, rappel: string): Role {
-  return q26(entrees, "6_USLD")
+  return SituationsDesLieux.q26(entrees, "6_USLD")
     ? { natures: [ETABLISSEMENT, "4_USLD"] }
     : { nature: ETABLISSEMENT, rappel };
 }
 
 // « Déjà hospitalisé » coché, dans un établissement de santé
-// (`p2/sejour.ts`).
+// (`p2/conditions/sejour.condition.ts`).
 function sejourEnEtablissement(entrees: Entrees): boolean {
   return (
     entrees.situations.checked("1_HOSPITALISATION") &&
@@ -245,7 +237,7 @@ function sejourEnEtablissement(entrees: Entrees): boolean {
   );
 }
 
-// La réponse possible 10 de Q2.2.1 est cochée (`p2/retour-penitentiaire.ts`).
+// La réponse possible 10 de Q2.2.1 est cochée (`p2/conditions/retour-penitentiaire.condition.ts`).
 function retourPenitentiaire({ situations }: Entrees): boolean {
   return situations.checked("10_RETOUR_PENITENTIAIRE");
 }

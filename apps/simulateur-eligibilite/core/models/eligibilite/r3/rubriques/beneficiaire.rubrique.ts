@@ -3,7 +3,7 @@
 // ou Q3.3, jamais celle d'un assuré ni d'un établissement. Sans domicile au
 // trajet, la cellule reste vide. Un trajet ne va pas du domicile au domicile.
 
-import type { Extremite } from "../../questions/p3/conditions/lieux-du-trajet.ts";
+import type { Extremite } from "../../questions/p3/lieux/lieux-du-trajet.types.ts";
 import { given } from "../../questions/reponses.ts";
 import { LieuxDuCerfa } from "./lieux-du-cerfa.service.ts";
 import type { Rubrique } from "./rubrique.types.ts";

@@ -7,7 +7,7 @@ import type {
   Reading,
   Unanswered,
 } from "../../../../socle/index.ts";
-import type { Extremite } from "../../questions/p3/conditions/lieux-du-trajet.ts";
+import type { Extremite } from "../../questions/p3/lieux/lieux-du-trajet.types.ts";
 import { Q3_2 } from "../../questions/p3/questions/q3-2.question.ts";
 import { Q3_3 } from "../../questions/p3/questions/q3-3.question.ts";
 

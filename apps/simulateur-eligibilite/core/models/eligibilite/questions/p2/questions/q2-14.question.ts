@@ -9,7 +9,7 @@
 // son organisation dans le dispositif : le motif ne propose alors que celle-ci.
 
 import { given, question } from "../../question.ts";
-import { brancheDecisive } from "../conditions/branche.ts";
+import { brancheDecisive } from "../conditions/branche.condition.ts";
 import { Q2_2_1 } from "./q2-2-1.question.ts";
 
 const situations = given.question(Q2_2_1).answer();

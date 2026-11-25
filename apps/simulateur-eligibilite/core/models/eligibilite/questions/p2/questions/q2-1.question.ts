@@ -12,7 +12,7 @@
 
 import { Q1_3 } from "../../p1/questions/q1-3.question.ts";
 import { given, question } from "../../question.ts";
-import { incoherenceDeLieux } from "../conditions/conflit-de-lieux.ts";
+import { ConflitDeLieux } from "../lieux/conflit-de-lieux.service.ts";
 
 /**
  * P1 prouve déjà un motif de transport : l'ambulance, une séance qualifiante,
@@ -96,7 +96,7 @@ const sousType = question
   .shownUnder(Q2_1, "8_HOSPITALISATION");
 
 export const Q2_1_G = sousType.inconsistentWhen(
-  ...incoherenceDeLieux("sousType", {
+  ...ConflitDeLieux.incoherence("sousType", {
     soins: Q1_3,
     sousType,
   }),

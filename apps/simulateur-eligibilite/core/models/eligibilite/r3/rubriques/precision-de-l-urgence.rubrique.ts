@@ -6,7 +6,7 @@
 // retours à la ligne compris : un retour à la ligne ne s'imprime pas, il se
 // corrige. Comment elle se dessine est l'affaire de l'écran.
 
-import { uneUrgenceHorsCentre15 } from "../../questions/p3/conditions/urgence-hors-centre15.ts";
+import { uneUrgenceHorsCentre15 } from "../../questions/p3/conditions/urgence-hors-centre15.condition.ts";
 import { given } from "../../questions/reponses.ts";
 import type { Rubrique } from "./rubrique.types.ts";
 

@@ -4,7 +4,7 @@
 // `precision-de-l-urgence.rubrique.ts`) : la condition même qui pose Q3.5, pour
 // qu'une précision demandée s'écrive.
 
-import { uneUrgenceHorsCentre15 } from "../../questions/p3/conditions/urgence-hors-centre15.ts";
+import { uneUrgenceHorsCentre15 } from "../../questions/p3/conditions/urgence-hors-centre15.condition.ts";
 import { given } from "../../questions/reponses.ts";
 import type { Rubrique } from "./rubrique.types.ts";
 

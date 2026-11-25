@@ -4,7 +4,7 @@
 // crée le conflit s'arrête en P2, comme un conflit certain.
 
 import { describe, expect, it } from "vitest";
-import { LIEUX_INCOMPATIBLES } from "../../../../core/models/eligibilite/questions/p2/conditions/conflit-de-lieux";
+import { ConflitDeLieux } from "../../../../core/models/eligibilite/questions/p2/lieux/conflit-de-lieux.service";
 import { Simulation } from "../../../../core/socle/simulation";
 import { model } from "../../../../front/models/eligibilite";
 import {
@@ -120,7 +120,7 @@ describe("Q2.13.sens, le sens qui change la cohérence des lieux", () => {
       const avecLeSens = { ...reponses, "Q2.13.sens": conflit };
       const simulation = Simulation.resume(model.core, avecLeSens);
 
-      expect(alertes(avecLeSens)).toEqual([LIEUX_INCOMPATIBLES]);
+      expect(alertes(avecLeSens)).toEqual([ConflitDeLieux.MESSAGE]);
       expect(simulation.stage.name).toBe("questionnaire");
       expect(simulation.page.id).toBe(BRANCHE);
     },
@@ -168,7 +168,7 @@ describe("Q2.13.sens, le sens qui change la cohérence des lieux", () => {
     const reponses = { ...HOSPITALISATION("3_ADMISSION_HAD"), ...DIALYSE };
     expect(sensPose(reponses)).toBeDefined();
     expect(alertes({ ...reponses, "Q2.13.sens": "1_ALLER" })).toEqual([
-      LIEUX_INCOMPATIBLES,
+      ConflitDeLieux.MESSAGE,
     ]);
   });
 });
