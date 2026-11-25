@@ -7,15 +7,16 @@ import type { Cibles } from "../../../core/models/fake/cibles/noms";
 import type { Faits } from "../../../core/models/fake/faits/noms";
 import type { Questions } from "../../../core/models/fake/questions/reponses";
 import { given } from "../../../core/models/fake/questions/reponses";
+import { type LuParLeResultat, R2 } from "../../../core/models/fake/r2/r2";
 import { ModelFactory } from "../../socle";
-import { type Lecture as LectureDeR2, R2 } from "./r2";
+import { pageDeR2 } from "./r2";
 import { type Lecture as LectureDeR3, R3 } from "./r3";
 
 export const model = ModelFactory.define<
   Questions,
   Faits,
   Cibles,
-  LectureDeR2["reading"],
+  LuParLeResultat,
   LectureDeR3["reading"]
 >({
   core,
@@ -23,7 +24,7 @@ export const model = ModelFactory.define<
   result: {
     title: "Résultat",
     reading: R2.lit,
-    content: (lecture) => R2.of(lecture).page(),
+    content: pageDeR2,
   },
   cerfa: {
     form: R3.document,

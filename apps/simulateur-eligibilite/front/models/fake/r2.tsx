@@ -10,8 +10,7 @@
 import type { ReactNode } from "react";
 import { SANS_COMMANDE } from "../../../core/models/fake/cibles/evaluation";
 import type { Cibles } from "../../../core/models/fake/cibles/noms";
-import { given } from "../../../core/models/fake/questions/reponses";
-import type { ValueOf } from "../../../core/socle";
+import type { LuParLeResultat } from "../../../core/models/fake/r2/r2";
 import {
   Disclosure,
   type FirstResult,
@@ -27,48 +26,19 @@ import grandeTasse from "./illustrations/grande-tasse.svg";
 import tasse from "./illustrations/tasse.svg";
 import verreGlace from "./illustrations/verre-glace.svg";
 
-/** Ce que R2 reçoit du socle : `R2.lit`. */
-export type Lecture = ResultatProps<ValueOf<typeof LU_PAR_LE_RESULTAT>>;
-
-export class R2 {
-  /** Ce que lit R2 : la commande, son lait, les façons de servir. */
-  static get lit(): typeof LU_PAR_LE_RESULTAT {
-    return LU_PAR_LE_RESULTAT;
-  }
-
-  static of(lecture: Lecture): R2 {
-    return new R2(lecture);
-  }
-
-  private readonly lecture: Lecture;
-
-  private constructor(lecture: Lecture) {
-    this.lecture = lecture;
-  }
-
-  page(): FirstResult {
-    const { reading } = this.lecture;
-    if (reading.commande.is(SANS_COMMANDE)) return RIEN_A_SERVIR;
-    return {
-      title: "La commande est prête à être complétée",
-      intro: `Commande : ${reading.commande.value}.`,
-      body: <PageDeLaCommande {...reading} />,
-    };
-  }
+/** La page de la commande, ou de ce qu'il y a à faire sans elle. */
+export function pageDeR2({
+  reading,
+}: ResultatProps<LuParLeResultat>): FirstResult {
+  if (reading.commande.is(SANS_COMMANDE)) return RIEN_A_SERVIR;
+  return {
+    title: "La commande est prête à être complétée",
+    intro: `Commande : ${reading.commande.value}.`,
+    body: <PageDeLaCommande {...reading} />,
+  };
 }
 
 // ---- implémentation ----
-
-type LuParLeResultat = ValueOf<typeof LU_PAR_LE_RESULTAT>;
-
-const LU_PAR_LE_RESULTAT = given.all({
-  commande: given.cible("commande"),
-  tourne: given.cible("lait_tourne"),
-  service: given
-    .question("service")
-    .answer()
-    .compute((service) => service.checkedBoxes()),
-});
 
 // Deux étapes : les cartes se rangent sur deux colonnes. La feuille suit les
 // boutons.
