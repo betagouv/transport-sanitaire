@@ -63,7 +63,7 @@ export type CoreModel<
   };
   /**
    * Ce qu'une question change de ce qui compte. L'écran du modèle la tire du
-   * graphe et de ce que lisent ses résultats (`defineModel`).
+   * graphe et de ce que lisent ses résultats (`ModelFactory.define`).
    */
   relevance?: Relevance;
 };

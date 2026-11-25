@@ -7,11 +7,11 @@ import type { Cibles } from "../../../core/models/fake/cibles/noms";
 import type { Faits } from "../../../core/models/fake/faits/noms";
 import type { Questions } from "../../../core/models/fake/questions/reponses";
 import { given } from "../../../core/models/fake/questions/reponses";
-import { defineModel } from "../../socle";
+import { ModelFactory } from "../../socle";
 import { type Lecture as LectureDeR2, R2 } from "./r2";
 import { type Lecture as LectureDeR3, R3 } from "./r3";
 
-export const model = defineModel<
+export const model = ModelFactory.define<
   Questions,
   Faits,
   Cibles,

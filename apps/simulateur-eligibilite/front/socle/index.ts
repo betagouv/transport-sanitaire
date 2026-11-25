@@ -33,7 +33,7 @@ export {
   text,
 } from "./cerfa";
 export { VERSION_APP } from "./deployed-version";
-export { defineModel } from "./model.factory";
+export { ModelFactory } from "./model.factory";
 export type {
   AldIndicator,
   Feedback,
