@@ -44,6 +44,8 @@ const CAS_DE_R2 = ["acceptee", "refusee", "orientee"].map((cas) => [
 const DOSSIERS_DES_CAS = CAS_DE_R2.flat();
 // Ce que les cas partagent : les blocs au métier, les composants à l'écran.
 const BLOCS_DE_R2 = [`${METIER}/r2/blocs`, `${ECRAN}/r2/components`];
+// La racine de R2 au métier assemble ses cas et ses blocs en un `ResultatR2`.
+const RACINE_DE_R2 = `${METIER}/r2/r2`;
 
 // Un dossier contient ce qui commence par son chemin suivi d'un « / ». Un
 // fichier ne contient que lui, avec ou sans son extension.
@@ -101,11 +103,27 @@ describe("les domaines du modèle de l'éditeur", () => {
     ).toEqual([]);
   });
 
+  it("rien sous la racine de R2 ne la lit", () => {
+    expect(
+      franchissements(
+        [
+          `${METIER}/r2/blocs`,
+          ...DOSSIERS_DES_CAS.filter((dossier) => dossier.startsWith(METIER)),
+        ],
+        dans(RACINE_DE_R2),
+      ),
+      "`r2.ts` choisit le cas et assemble ses blocs : un bloc ou un cas du " +
+        "métier qui l'importerait en dépendrait en retour. Ce qu'ils " +
+        "partagent est un bloc de `r2/blocs/`.",
+    ).toEqual([]);
+  });
+
   it("un bloc de R2 ne lit aucun cas", () => {
     expect(
       franchissements(BLOCS_DE_R2, dans(...DOSSIERS_DES_CAS)),
       "Un bloc se lit sur la trace, sans savoir quel cas l'affiche : " +
-        "`r2.tsx` choisit le cas, le cas assemble ses blocs et ses composants.",
+        "`r2.ts` choisit le cas au métier, `r2.tsx` lui donne sa page, le cas " +
+        "assemble ses blocs et ses composants.",
     ).toEqual([]);
   });
 

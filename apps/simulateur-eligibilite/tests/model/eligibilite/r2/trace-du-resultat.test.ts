@@ -8,8 +8,8 @@
 
 import { describe, expect, it } from "vitest";
 import { CIBLES_ENUMEREES } from "../../../../core/models/eligibilite/cibles/noms";
+import { R2 } from "../../../../core/models/eligibilite/r2/r2";
 import { SEEDS } from "../../../../core/models/eligibilite/seeds-catalogue";
-import { R2 } from "../../../../front/models/eligibilite/r2/r2";
 import {
   BRANCARD_20_KM,
   faits,

@@ -32,7 +32,8 @@ const REPONSES_BRUTES = /\b(GivenAnswers|ValidatedAnswers)\b/;
 // R2 et R3 d'un modèle : ce qu'ils disent (leurs lectures, leurs valeurs, les
 // cerfa de R3 compris) est dans `core/models/<nom>/r2|r3/`, leur rendu dans
 // `front/models/<nom>/r2|r3/`. Le modèle de démonstration range à plat son
-// rendu : son cerfa est `front/models/fake/bon-de-commande.ts`.
+// rendu (`r2.tsx`, `r3.tsx`, que l'expression couvre) : son cerfa est
+// `front/models/fake/bon-de-commande.ts`.
 const UN_RESULTAT =
   /^(core|front)\/models\/[^/]+\/(r[23](\/|\.tsx?$)|bon-de-commande\.ts$)/;
 

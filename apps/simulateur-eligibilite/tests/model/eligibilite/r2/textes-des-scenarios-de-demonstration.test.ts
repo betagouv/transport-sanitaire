@@ -35,8 +35,8 @@ import type {
 import { texteDeLaFichePositive } from "../../../../core/models/eligibilite/r2/acceptee/texte";
 import { sansBlancsDeTrop } from "../../../../core/models/eligibilite/r2/blocs/sans-blancs-de-trop";
 import { texteDuPrescripteur } from "../../../../core/models/eligibilite/r2/orientee/texte";
+import type { Trace } from "../../../../core/models/eligibilite/r2/r2";
 import { texteDeLaFicheNegative } from "../../../../core/models/eligibilite/r2/refusee/texte";
-import type { Trace } from "../../../../front/models/eligibilite/r2/r2";
 import { type Changements, faitsDuCas } from "../cibles/faits-de-l-oracle";
 import DEMONSTRATION from "../cibles/scenarios-de-demonstration.json" with {
   type: "json",
