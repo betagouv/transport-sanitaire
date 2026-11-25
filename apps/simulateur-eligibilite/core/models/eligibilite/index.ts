@@ -1,6 +1,6 @@
 // Le métier du modèle de l'éditeur, dont `rules/VERSION` porte le numéro : ses
-// questions, sa préconisation et ses seeds. Son écran, R2 et R3, est dans
-// `front/models/eligibilite/`.
+// questions, sa préconisation, ses seeds, et ce que disent ses deux résultats,
+// R2 et R3 (`r2/`, `r3/`). Leur rendu est dans `front/models/eligibilite/`.
 
 import type { CoreModel, DecisionGraphData } from "../../socle/index.ts";
 import { decisionEngine } from "./cibles/evaluation.ts";

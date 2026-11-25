@@ -51,9 +51,9 @@ describe("frontières de runtime", () => {
     expect(
       fautifs,
       "Node échoue au premier import de CSS, et React n'a rien à faire dans " +
-        "une règle métier. Ce qui s'affiche reste dans `front/` : le métier " +
-        "dit un fait (une question facultative, une borne dépassée), l'écran " +
-        "écrit la phrase.",
+        "une règle métier. Ce qui met en page (un composant, un PDF) reste dans " +
+        "`front/` : le métier dit un fait (une question facultative, une " +
+        "borne dépassée) ou choisit un texte, l'écran le montre.",
     ).toEqual([]);
   });
 
