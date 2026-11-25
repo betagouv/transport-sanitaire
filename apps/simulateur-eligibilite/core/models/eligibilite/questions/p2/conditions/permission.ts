@@ -2,7 +2,7 @@
 // de Q2.8 lisent de Q2.7. Ses faits vivent sous `faits/`.
 
 import { given } from "../../question.ts";
-import { Q2_7 } from "../questions/q2-7.ts";
+import { Q2_7 } from "../questions/q2-7.question.ts";
 
 /** Q2.7 dit un patient de moins de 20 ans : Q2.8 se pose alors. */
 export const unMineurDeVingtAns = given

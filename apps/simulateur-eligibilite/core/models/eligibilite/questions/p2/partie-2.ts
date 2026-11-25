@@ -4,38 +4,38 @@
 // (`questions/q2-2-1-indication.ts`).
 
 import { page } from "../../../../socle/index.ts";
-import { Q2_1, Q2_1_F, Q2_1_G } from "./questions/q2-1.ts";
-import { Q2_2_1, Q2_2_1_B } from "./questions/q2-2-1.ts";
-import { Q2_2_1_A } from "./questions/q2-2-1-a.ts";
-import { Q2_2_1_CADRE } from "./questions/q2-2-1-cadre.ts";
+import { Q2_1, Q2_1_F, Q2_1_G } from "./questions/q2-1.question.ts";
+import { Q2_2_1, Q2_2_1_B } from "./questions/q2-2-1.question.ts";
+import { Q2_2_1_A } from "./questions/q2-2-1-a.question.ts";
+import { Q2_2_1_CADRE } from "./questions/q2-2-1-cadre.question.ts";
 import {
   dansLeCircuit,
   Q2_2_1_INDICATION,
 } from "./questions/q2-2-1-indication.ts";
-import { Q2_2_5 } from "./questions/q2-2-5.ts";
-import { Q2_3_1 } from "./questions/q2-3-1.ts";
-import { Q2_3_1_FINALITE } from "./questions/q2-3-1-finalite.ts";
-import { Q2_3_2 } from "./questions/q2-3-2.ts";
-import { Q2_3_2_TERRESTRE } from "./questions/q2-3-2-terrestre.ts";
-import { Q2_3_3 } from "./questions/q2-3-3.ts";
-import { Q2_3_4 } from "./questions/q2-3-4.ts";
-import { Q2_5 } from "./questions/q2-5.ts";
-import { Q2_6, Q2_6_A } from "./questions/q2-6.ts";
-import { Q2_7, Q2_7_A } from "./questions/q2-7.ts";
-import { Q2_8_1 } from "./questions/q2-8-1.ts";
-import { Q2_8_2 } from "./questions/q2-8-2.ts";
-import { Q2_8_3 } from "./questions/q2-8-3.ts";
-import { Q2_8_4 } from "./questions/q2-8-4.ts";
-import { Q2_8_5 } from "./questions/q2-8-5.ts";
-import { Q2_8_6, Q2_8_6_A, Q2_8_6_B } from "./questions/q2-8-6.ts";
-import { Q2_8_DUREE_48H } from "./questions/q2-8-duree-48h.ts";
-import { Q2_10, Q2_10_A, Q2_10_B } from "./questions/q2-10.ts";
-import { Q2_13_DEPART, Q2_13_SENS } from "./questions/q2-13.ts";
+import { Q2_2_5 } from "./questions/q2-2-5.question.ts";
+import { Q2_3_1 } from "./questions/q2-3-1.question.ts";
+import { Q2_3_1_FINALITE } from "./questions/q2-3-1-finalite.question.ts";
+import { Q2_3_2 } from "./questions/q2-3-2.question.ts";
+import { Q2_3_2_TERRESTRE } from "./questions/q2-3-2-terrestre.question.ts";
+import { Q2_3_3 } from "./questions/q2-3-3.question.ts";
+import { Q2_3_4 } from "./questions/q2-3-4.question.ts";
+import { Q2_5 } from "./questions/q2-5.question.ts";
+import { Q2_6, Q2_6_A } from "./questions/q2-6.question.ts";
+import { Q2_7, Q2_7_A } from "./questions/q2-7.question.ts";
+import { Q2_8_1 } from "./questions/q2-8-1.question.ts";
+import { Q2_8_2 } from "./questions/q2-8-2.question.ts";
+import { Q2_8_3 } from "./questions/q2-8-3.question.ts";
+import { Q2_8_4 } from "./questions/q2-8-4.question.ts";
+import { Q2_8_5 } from "./questions/q2-8-5.question.ts";
+import { Q2_8_6, Q2_8_6_A, Q2_8_6_B } from "./questions/q2-8-6.question.ts";
+import { Q2_8_DUREE_48H } from "./questions/q2-8-duree-48h.question.ts";
+import { Q2_10, Q2_10_A, Q2_10_B } from "./questions/q2-10.question.ts";
+import { Q2_13_DEPART, Q2_13_SENS } from "./questions/q2-13.question.ts";
 import {
   Q2_14_ELOIGNEMENT,
   Q2_14_MOTIF,
   Q2_14_TRAJET,
-} from "./questions/q2-14.ts";
+} from "./questions/q2-14.question.ts";
 
 /** P2 : l'éligibilité. */
 export const P2 = {

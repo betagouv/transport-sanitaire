@@ -2,14 +2,17 @@
 // l'ordre, faites de ses questions (`questions/`).
 
 import { page } from "../../../../socle/index.ts";
-import { ACCOMPAGNEMENTS } from "./questions/accompagnements.ts";
-import { BOISSON } from "./questions/boisson.ts";
-import { MIGNARDISE, MIGNARDISE_AU_SERVICE } from "./questions/mignardise.ts";
+import { ACCOMPAGNEMENTS } from "./questions/accompagnements.question.ts";
+import { BOISSON } from "./questions/boisson.question.ts";
+import {
+  MIGNARDISE,
+  MIGNARDISE_AU_SERVICE,
+} from "./questions/mignardise.question.ts";
 import {
   QUELLE_PREPARATION,
   SERVICE,
   SOUS_VERRE,
-} from "./questions/service.ts";
+} from "./questions/service.question.ts";
 
 /** Modifiable tant que le résultat n'est pas verrouillé. */
 export const COMMANDE = {

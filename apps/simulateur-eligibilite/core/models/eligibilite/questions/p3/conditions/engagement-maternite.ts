@@ -2,7 +2,7 @@
 // Q2.14 (`CONTRAT_Q38_MATERNITE_DOCUMENT.json`). Q3.8 et les lieux du
 // trajet les lisent.
 
-import { Q2_14_MOTIF } from "../../p2/questions/q2-14.ts";
+import { Q2_14_MOTIF } from "../../p2/questions/q2-14.question.ts";
 import { given } from "../../question.ts";
 import { uneDap } from "./supports-du-complement.ts";
 

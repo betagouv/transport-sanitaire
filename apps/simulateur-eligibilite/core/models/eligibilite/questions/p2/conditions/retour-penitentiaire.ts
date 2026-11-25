@@ -21,9 +21,9 @@
 //   transfert entre établissements ne mène pas à une prison : il se refuse.
 // - Pour tout autre soin, la prison n'est que l'adresse d'arrivée, en P3.
 
-import { Q1_3, Q1_3_A } from "../../p1/questions/q1-3.ts";
+import { Q1_3, Q1_3_A } from "../../p1/questions/q1-3.question.ts";
 import { given } from "../../question.ts";
-import { Q2_2_1 } from "../questions/q2-2-1.ts";
+import { Q2_2_1 } from "../questions/q2-2-1.question.ts";
 
 /** Le message qui refuse un transfert entre établissements vers la prison. */
 export const TRANSFERT_VERS_LA_PRISON =

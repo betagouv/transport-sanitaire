@@ -11,15 +11,15 @@
 // les questions que pour leur type : une question de P2 peut ainsi le lire.
 
 import type { AnswerOf, GivenAnswer } from "../../../../../socle/index.ts";
-import type { Q1_3 } from "../../p1/questions/q1-3.ts";
+import type { Q1_3 } from "../../p1/questions/q1-3.question.ts";
 import type { Inconnu } from "../../question.ts";
-import type { Q2_1_G } from "../questions/q2-1.ts";
-import type { Q2_2_1 } from "../questions/q2-2-1.ts";
-import type { Q2_2_1_A } from "../questions/q2-2-1-a.ts";
-import type { Q2_2_1_CADRE } from "../questions/q2-2-1-cadre.ts";
-import type { Q2_5 } from "../questions/q2-5.ts";
-import type { Q2_6 } from "../questions/q2-6.ts";
-import type { Q2_13_DEPART, Q2_13_SENS } from "../questions/q2-13.ts";
+import type { Q2_1_G } from "../questions/q2-1.question.ts";
+import type { Q2_2_1 } from "../questions/q2-2-1.question.ts";
+import type { Q2_2_1_A } from "../questions/q2-2-1-a.question.ts";
+import type { Q2_2_1_CADRE } from "../questions/q2-2-1-cadre.question.ts";
+import type { Q2_5 } from "../questions/q2-5.question.ts";
+import type { Q2_6 } from "../questions/q2-6.question.ts";
+import type { Q2_13_DEPART, Q2_13_SENS } from "../questions/q2-13.question.ts";
 import { NATURES_DU_LIEU, type Nature } from "./natures-du-lieu.ts";
 import {
   type Etablie,

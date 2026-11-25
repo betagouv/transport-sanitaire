@@ -11,7 +11,7 @@ import type {
   ReadByObject,
   Reading,
 } from "../../../../../socle/index.ts";
-import { Q2_2_5 } from "../../p2/questions/q2-2-5.ts";
+import { Q2_2_5 } from "../../p2/questions/q2-2-5.question.ts";
 import {
   CATEGORIES,
   type Categorie,
