@@ -367,7 +367,7 @@ Les tests se rangent comme les sources : `tests/socle/questionnaire/` éprouve
 
 ```
 ✅ OK
-unlock.ts  questionnaire.ts  pagination.ts  lieux-du-trajet.ts
+unlock.service.ts  questionnaire.ts  pagination.ts  lieux-du-trajet.ts
 cerfa/  questionnaire-engine/
 ```
 
@@ -412,7 +412,7 @@ export function estServiceProduit(idService: number): boolean { … }
 ```
 
 *Gardé par* `pnpm knip`, dans `verifier`. C'est le défaut qu'a livré le fichier
-aujourd'hui appelé `unlock.ts`.
+aujourd'hui appelé `unlock.service.ts`.
 
 ---
 
@@ -571,7 +571,7 @@ Cette règle ne vaut que pour `apps/simulateur-eligibilite`, hors composants Rea
 |---|---|
 | `.entity.ts` | une notion qui a une identité et qui change |
 | `.vo.ts` | une notion qui ne vaut que par sa valeur, et ne change pas |
-| `.service.ts` | un calcul du métier qui n'appartient à aucune notion seule |
+| `.service.ts` | un calcul du métier qui n'appartient à aucune notion seule, ou une action de l'écran sur le navigateur (défiler, télécharger, appliquer un thème) |
 | `.usecase.ts` | un geste de l'application, par sa méthode `execute` |
 | `.port.ts` | ce que le métier demande à l'extérieur |
 | `.adapter.ts` | ce qui répond à un port |
@@ -595,6 +595,7 @@ nom. Un `.constants.ts` est du domaine : une entité, un objet-valeur ou un
 service peut l'importer. Un `.fait.ts` et un `.question.ts` le sont aussi : ils
 vivent dans `core/models/`, où aucun paquet ne s'importe. Un `.schema.ts` n'est pas du domaine : un contrôleur l'importe.
 Un hook ne porte aucune règle (QUAL-019).
+Un service qui touche le navigateur n'est appelé que par l'écran (un composant, un hook) ou un assembleur, jamais par une entité, un objet-valeur ou un use case.
 
 Un fichier qui n'a aucun rôle de la table (un utilitaire d'écran, une table de
 valeurs qui n'est pas une liste fermée, la déclaration d'un modèle qui n'est ni un fait ni une question) reste sans
@@ -620,6 +621,8 @@ suffixe`, dans `apps/simulateur-eligibilite`. La garde couvre `core/socle/`,
 `server/journal/`, `server/grist/`, `server/postgres/`, `front/socle/analytics/`
 et `front/socle/server-api/` : un dossier la rejoint quand il suit la règle. Un `.fait.ts` ne vit que dans un `faits/`, un `.question.ts` que dans un `questions/` de `core/models/`. Que
 le hook ne porte aucune règle est du jugement.
+
+*Aucune garde.* Pour la limite d'un service qui touche le navigateur : la garde devrait distinguer deux sortes de services, et le suffixe ne le dit pas.
 
 ---
 

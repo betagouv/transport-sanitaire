@@ -13,7 +13,7 @@ import {
   generateCerfa,
   PREVIEW_MARK,
 } from "../../../front/socle/cerfa/generate-the-cerfa/generate-the-cerfa";
-import { fileNameOf } from "../../../front/socle/cerfa/pdf/download-a-pdf";
+import { PdfFileName } from "../../../front/socle/cerfa/pdf/pdf-file-name.vo";
 import { drawnOn, markedStates, textsOn } from "./pdf-aplati";
 import { statesOf, testForm } from "./test-form";
 
@@ -222,8 +222,8 @@ describe("générer un cerfa", () => {
 
   it("date le nom du fichier au jour de Paris", () => {
     // 23 h 30 à Greenwich, le 14 : il est déjà le 15 à Paris.
-    expect(fileNameOf("fiche", new Date("2026-10-14T23:30:00Z"))).toBe(
-      "fiche-2026-10-15.pdf",
-    );
+    expect(
+      new PdfFileName("fiche", new Date("2026-10-14T23:30:00Z")).value,
+    ).toBe("fiche-2026-10-15.pdf");
   });
 });

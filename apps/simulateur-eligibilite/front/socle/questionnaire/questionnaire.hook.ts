@@ -21,10 +21,13 @@ import {
 } from "../analytics";
 import { type AutoAdvance, useAutoAdvance } from "./advance-alone.hook";
 import { AdvanceAloneService } from "./advance-alone.service";
-import { draftOf } from "./draft-an-answer";
+import { DraftAnAnswerService } from "./draft-an-answer.service";
 import { usePlacement } from "./placement.hook";
 import type { Placement } from "./placement.vo";
-import { type RevisitLink, revisitLinks } from "./revisit-an-answer";
+import {
+  RevisitAnAnswerService,
+  type RevisitLink,
+} from "./revisit-an-answer.service";
 
 export type QuestionnaireOptions = {
   // La simulation, sur la page que le questionnaire affiche.
@@ -119,7 +122,7 @@ export function useQuestionnaire({
     ...view,
     ...withRestart(handlers, autoAdvance),
     showsInconsistencies: checked || autoAdvance.autoAdvances,
-    revisitsOf: (question) => revisitLinks(simulation, question, draft),
+    revisitsOf: revisitsOn(simulation, draft),
     placement: placed.placement,
   };
 }
@@ -127,6 +130,12 @@ export function useQuestionnaire({
 // ---- implémentation ----
 
 type Move = (next: Simulation, focus?: string) => void;
+
+// Les liens vers les réponses à revoir, de la question d'une page.
+function revisitsOn(simulation: Simulation, draft: Answers) {
+  const revisits = new RevisitAnAnswerService(simulation);
+  return (question: AskedQuestion) => revisits.linksOf(question, draft);
+}
 
 type Context = {
   simulation: Simulation;
@@ -147,7 +156,10 @@ function useOpenedPage(
   onChange: (simulation: Simulation) => void,
 ) {
   const draftOn = (opened: Simulation) =>
-    draftOf(opened.page, { ...opened.answers, ...opened.restoredDraft });
+    DraftAnAnswerService.draftOf(opened.page, {
+      ...opened.answers,
+      ...opened.restoredDraft,
+    });
   const [opened, setOpened] = useState(simulation);
   const [draft, setDraft] = useState<Answers>(() => draftOn(simulation));
   const [focus, setFocus] = useState<{ on: Simulation; question: string }>();

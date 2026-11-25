@@ -15,7 +15,7 @@
 import { useLayoutEffect, useRef } from "react";
 import type { Simulation } from "../../../core/socle/simulation";
 import type { Model } from "../model.types";
-import { rattachementEnSession } from "../rattachement";
+import { RattachementSessionService } from "../rattachement";
 import type { Journey } from "./journey.entity";
 import {
   type OpenedJourney,
@@ -34,7 +34,7 @@ export function useRecordTheJourney(
   useLayoutEffect(() => {
     if (!useCases || journey.current) return;
     journey.current = useCases.startASimulation.execute({
-      rattachement: rattachementEnSession(),
+      rattachement: RattachementSessionService.enSession(),
       seeded,
       modelVersion: model.version,
     });

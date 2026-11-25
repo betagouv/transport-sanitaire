@@ -7,9 +7,9 @@ import {
   saisieComplete,
 } from "../../../shared/rattachement-saisi.vo";
 import type { Referentiel } from "../../../shared/referentiel.port";
-import { decoderChoix } from "./choix";
+import { ChoixService } from "./choix.service";
 import { estAutre, type Listes, useListes } from "./listes.hook";
-import type { Structure } from "./structures";
+import type { Structure } from "./structures.service";
 
 type Champs = {
   // La valeur choisie dans la première liste (voir `choix.ts`).
@@ -69,7 +69,7 @@ export function useSaisieRattachement(
 // ---- implémentation ----
 
 function etabChoisiDans(choix: string): string {
-  const decode = decoderChoix(choix);
+  const decode = ChoixService.decoderChoix(choix);
   return decode?.type === "etablissement" ? decode.etabId : "";
 }
 
@@ -77,7 +77,7 @@ function etabChoisiDans(choix: string): string {
 // quand même, et son parcours part sans établissement ni service.
 function deriver(champs: Champs, listes: Listes): Derivation {
   if (listes.indisponible) return { ...AUCUNE, valide: true };
-  const choix = decoderChoix(champs.choix);
+  const choix = ChoixService.decoderChoix(champs.choix);
   switch (choix?.type) {
     case "etablissement":
       return deriverService(choix.etabId, champs, listes);

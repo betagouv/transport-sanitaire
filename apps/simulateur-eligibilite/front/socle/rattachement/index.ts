@@ -3,9 +3,6 @@
 // au serveur, que le conteneur instancie.
 
 export { RattachementScreen } from "./RattachementScreen";
-export {
-  rangerRattachement,
-  rattachementEnSession,
-} from "./rattachement-en-session";
+export { RattachementSessionService } from "./rattachement-session.service";
 export { referentielDuServeur } from "./referentiel.adapter";
-export type { Structure } from "./structures";
+export type { Structure } from "./structures.service";

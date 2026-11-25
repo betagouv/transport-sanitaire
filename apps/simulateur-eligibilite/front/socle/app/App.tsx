@@ -9,9 +9,8 @@ import { AnalyticsProvider, type AnalyticsUseCases } from "../analytics";
 import {
   DebugTrace,
   DeveloperTools,
-  debugTraceUnlocked,
-  developerToolsUnlocked,
   ToolButton,
+  UnlockService,
 } from "../developer-tools";
 
 import type { Model } from "../model.types";
@@ -47,7 +46,7 @@ type ScreensProps = Pick<
   models: Models;
   /**
    * Les developer tools s'ouvrent-ils ? En local oui, sur un build de
-   * production jamais (`developerToolsUnlocked`). Un test passe `false` pour
+   * production jamais (`UnlockService.developerToolsUnlocked`). Un test passe `false` pour
    * voir l'app comme en production.
    */
   developerTools?: boolean;
@@ -68,7 +67,7 @@ export function App({ analytics, ...screens }: Props) {
 function Screens({
   models,
   referentiel,
-  developerTools = developerToolsUnlocked(),
+  developerTools = UnlockService.developerToolsUnlocked(),
 }: ScreensProps) {
   const navigation = useNavigation();
   const opened = useModelChoice(models);
@@ -138,7 +137,7 @@ function AfterRattachement({
           : undefined
       }
       DebugTrace={
-        debugTraceUnlocked(developerTools, navigation.structure)
+        UnlockService.debugTraceUnlocked(developerTools, navigation.structure)
           ? DebugTrace
           : undefined
       }

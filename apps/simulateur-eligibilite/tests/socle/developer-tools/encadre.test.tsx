@@ -6,7 +6,7 @@ import {
   DeveloperTools,
   ToolButton,
 } from "../../../front/socle/developer-tools/DeveloperTools";
-import { developerToolsUnlocked } from "../../../front/socle/developer-tools/unlock";
+import { UnlockService } from "../../../front/socle/developer-tools/unlock.service";
 import { Simulateur } from "../../../front/socle/simulateur";
 import { snapshotReferentiel } from "../../../shared/snapshot-referentiel.adapter";
 import { modeleDeTest, seulModele } from "../modele-de-test";
@@ -75,7 +75,7 @@ describe("App câble les developer tools", () => {
       <App
         models={seulModele(modeleDeTest)}
         referentiel={snapshotReferentiel}
-        developerTools={developerToolsUnlocked({ DEV: false })}
+        developerTools={UnlockService.developerToolsUnlocked({ DEV: false })}
       />,
     );
 

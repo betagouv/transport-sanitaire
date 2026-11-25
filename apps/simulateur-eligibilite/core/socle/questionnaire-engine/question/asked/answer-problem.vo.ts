@@ -1,5 +1,5 @@
 // Ce qui ne va pas dans une saisie, dit par sa nature. L'écran en écrit le
-// message (`front/socle/questionnaire/word-a-problem.ts`). Les phrases
+// message (`front/socle/questionnaire/word-a-problem.service.ts`). Les phrases
 // livrées par l'éditeur (un blocage, une incompatibilité, une incohérence)
 // restent ici, telles quelles : une API doit pouvoir les donner.
 //

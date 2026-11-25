@@ -10,12 +10,12 @@ import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { createContainer } from "./container";
 import "./socle/app/dsfr-overrides.css";
-import { App, applyTheme, followHostTheme, type Models } from "./socle";
+import { App, ApplyThemeService, HostThemeService, type Models } from "./socle";
 
 // Clair par défaut : le thème est celui de la page qui embarque l'app, qui le
 // transmet dès qu'on le lui demande, puis à chaque changement.
 startReactDsfr({ defaultColorScheme: "light" });
-followHostTheme(applyTheme);
+HostThemeService.follow((theme) => ApplyThemeService.apply(theme));
 
 // Les classes qui parlent à l'extérieur, instanciées une fois. Matomo et le
 // journal du backend suivent le même choix du prescripteur, demandé au CMS

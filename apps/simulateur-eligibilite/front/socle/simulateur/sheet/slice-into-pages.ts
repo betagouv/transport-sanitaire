@@ -1,5 +1,5 @@
 // La pagination de la feuille à remettre, décidée sur ses hauteurs mesurées en
-// papier (`measure-on-paper.ts`) : une A4 si elle tient, sinon deux, la seconde
+// papier (`measure-on-paper.service.ts`) : une A4 si elle tient, sinon deux, la seconde
 // ouverte au bloc de suivi. Sur deux pages, les dessins des cartes grandissent
 // dans la place que la première laisse libre. Des fonctions pures, en
 // millimètres : l'impression lit la mise en page, le PDF en tire ses pages.

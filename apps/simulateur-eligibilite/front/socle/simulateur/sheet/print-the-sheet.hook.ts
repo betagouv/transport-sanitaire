@@ -6,7 +6,7 @@
 
 import { type RefObject, useEffect, useRef, useState } from "react";
 import { flushSync } from "react-dom";
-import { measureSheet, measureWhenStable } from "./measure-on-paper";
+import { MeasureOnPaperService } from "./measure-on-paper.service";
 import type { NotPrinting, PrintLayout } from "./slice-into-pages";
 
 type PaperPrint = {
@@ -24,7 +24,7 @@ export function usePaperPrint(
     // Le clic a déjà posé sa mesure : `beforeprint` ne la reprend pas.
     const before = () => {
       if (preparing.current || !sheet.current) return;
-      const measured = measureSheet(sheet.current);
+      const measured = new MeasureOnPaperService(sheet.current).now();
       flushSync(() => setLayout(measured));
     };
     const after = () => {
@@ -41,10 +41,10 @@ export function usePaperPrint(
   const print = async () => {
     if (preparing.current || !sheet.current) return;
     preparing.current = true;
-    const measured = await measureWhenStable(sheet.current);
+    const paper = await new MeasureOnPaperService(sheet.current).whenStable();
     // La feuille a pu partir pendant l'attente : rien ne s'imprime.
     if (!sheet.current?.isConnected) return;
-    flushSync(() => setLayout(measured));
+    flushSync(() => setLayout(paper));
     window.print();
   };
   return { layout, print };

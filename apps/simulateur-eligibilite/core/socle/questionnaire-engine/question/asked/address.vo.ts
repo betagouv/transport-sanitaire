@@ -1,6 +1,6 @@
 // Une adresse telle qu'elle se demande : ses champs, dans son mode du moment,
 // et ce qui ne va pas dans chacun. Leurs libellés sont écrits par l'écran
-// (`front/socle/questionnaire/lay-out-an-address.ts`). Elle n'est répondue
+// (`front/socle/questionnaire/lay-out-an-address.service.ts`). Elle n'est répondue
 // qu'avec tous ses champs attendus, sans rien à corriger.
 //
 // En France, le code postal fait cinq chiffres, et le pays ne se demande pas.

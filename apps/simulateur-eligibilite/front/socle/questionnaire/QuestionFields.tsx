@@ -13,11 +13,11 @@ import type { AskedQuestion } from "../../../core/socle/questionnaire-engine";
 
 import { ConditionalPanel } from "../ui";
 import { usePanelAnnouncement } from "./announce-a-panel.hook";
-import { type CounterOf, counted } from "./count-a-text";
+import { CountATextService, type CounterOf } from "./count-a-text.service";
 import { QuestionField } from "./QuestionField";
 import type { QuestionnaireScreen } from "./questionnaire.hook";
-import type { RevisitLink } from "./revisit-an-answer";
-import { errorsOf } from "./word-a-problem";
+import type { RevisitLink } from "./revisit-an-answer.service";
+import { WordAProblemService } from "./word-a-problem.service";
 
 export function QuestionFields({
   questionnaire,
@@ -44,11 +44,16 @@ function fieldOf(
   counterOf: CounterOf | undefined,
 ): (question: AskedQuestion) => ReactNode {
   const { draft, placement } = questionnaire;
+  const counting = new CountATextService(counterOf);
   const field = (question: AskedQuestion): ReactNode => {
     const answer = draft[question.id];
-    const counter = counted(counterOf, question.id, answer);
+    const counter = counting.of(question.id, answer);
     const errors = [
-      ...errorsOf(question, answer, questionnaire.showsInconsistencies),
+      ...WordAProblemService.errorsOf(
+        question,
+        answer,
+        questionnaire.showsInconsistencies,
+      ),
       ...counter.errors,
     ];
     const links = errors.length > 0 ? questionnaire.revisitsOf(question) : [];

@@ -2,7 +2,7 @@ import { screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 import { page, QuestionFactory } from "../../../core/socle";
 import { Questionnaire } from "../../../core/socle/questionnaire-engine";
-import { errorsOf } from "../../../front/socle/questionnaire/word-a-problem";
+import { WordAProblemService } from "../../../front/socle/questionnaire/word-a-problem.service";
 import { afficher } from "./afficher";
 
 // Deux réponses possibles d'un choix multiple peuvent s'exclure : cocher l'une
@@ -77,9 +77,13 @@ describe("réponses possibles incompatibles", () => {
 
   it("refuse une réponse venue d'ailleurs qui porterait les deux", () => {
     const [criteres] = new Questionnaire([PAGE]).readWith({}).questionsOn(PAGE);
-    expect(criteres && errorsOf(criteres, ["fauteuil", "brancard"])).toEqual([
-      EXPLICATION,
-    ]);
-    expect(criteres && errorsOf(criteres, ["fauteuil", "oxygene"])).toEqual([]);
+    expect(
+      criteres &&
+        WordAProblemService.errorsOf(criteres, ["fauteuil", "brancard"]),
+    ).toEqual([EXPLICATION]);
+    expect(
+      criteres &&
+        WordAProblemService.errorsOf(criteres, ["fauteuil", "oxygene"]),
+    ).toEqual([]);
   });
 });

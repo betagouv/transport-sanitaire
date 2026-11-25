@@ -2,10 +2,7 @@ import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it } from "vitest";
 import { App } from "../../../front/socle/app/App";
-import {
-  rangerRattachement,
-  rattachementEnSession,
-} from "../../../front/socle/rattachement";
+import { RattachementSessionService } from "../../../front/socle/rattachement";
 import type { RattachementSaisi } from "../../../shared/rattachement-saisi.vo";
 import type { Referentiel } from "../../../shared/referentiel.port";
 import { snapshotReferentiel } from "../../../shared/snapshot-referentiel.adapter";
@@ -56,7 +53,7 @@ const PREMIERE_QUESTION = { name: /^quelle boisson souhaitez-vous/i };
 
 const simulateurMonte = () => screen.findByRole("group", PREMIERE_QUESTION);
 
-beforeEach(() => rangerRattachement(null));
+beforeEach(() => RattachementSessionService.ranger(null));
 
 describe("écran de rattachement", () => {
   it("affiche le rattachement d'abord, pas le formulaire", () => {
@@ -77,7 +74,7 @@ describe("écran de rattachement", () => {
 
     // Le simulateur est monté : une question de la partie 1 apparaît.
     expect(await simulateurMonte()).toBeInTheDocument();
-    expect(rattachementEnSession()).toMatchObject({
+    expect(RattachementSessionService.enSession()).toMatchObject({
       etabId: "e_chu_grenoble",
       serviceId: "s_grenoble_cardio",
     });
@@ -109,7 +106,7 @@ describe("écran de rattachement", () => {
         serviceLibre: "Néphrologie",
       },
     ]);
-    expect(rattachementEnSession()).toMatchObject({
+    expect(RattachementSessionService.enSession()).toMatchObject({
       etabId: "e_chu_grenoble",
       serviceId: "s_cree",
     });
@@ -130,7 +127,7 @@ describe("écran de rattachement", () => {
     repondre();
 
     expect(await simulateurMonte()).toBeInTheDocument();
-    expect(rattachementEnSession()).toMatchObject({
+    expect(RattachementSessionService.enSession()).toMatchObject({
       etabId: "e_cree",
       serviceId: "s_cree",
     });
@@ -149,8 +146,8 @@ describe("écran de rattachement", () => {
     await acceder(user);
 
     expect(await simulateurMonte()).toBeInTheDocument();
-    expect(rattachementEnSession()?.etabId).toBeUndefined();
-    expect(rattachementEnSession()?.serviceId).toBeUndefined();
+    expect(RattachementSessionService.enSession()?.etabId).toBeUndefined();
+    expect(RattachementSessionService.enSession()?.serviceId).toBeUndefined();
   });
 
   it("référentiel indisponible : entre quand même, sans rattachement de repli", async () => {
@@ -165,7 +162,7 @@ describe("écran de rattachement", () => {
     await acceder(user);
 
     expect(await simulateurMonte()).toBeInTheDocument();
-    expect(rattachementEnSession()?.etabId).toBeUndefined();
-    expect(rattachementEnSession()?.serviceId).toBeUndefined();
+    expect(RattachementSessionService.enSession()?.etabId).toBeUndefined();
+    expect(RattachementSessionService.enSession()?.serviceId).toBeUndefined();
   });
 });

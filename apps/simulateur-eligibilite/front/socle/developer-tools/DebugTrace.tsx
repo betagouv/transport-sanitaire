@@ -4,7 +4,7 @@
 // résultat, les faits et les cibles de la préconisation. Elle s'exporte en un
 // fichier, pour la recette.
 //
-// C'est un developer tool : en local seulement (`unlock.ts`).
+// C'est un developer tool : en local seulement (`unlock.service.ts`).
 // Le simulateur ne l'importe pas : `App` la lui passe.
 
 import { Cible } from "../../../core/socle/decision-engine";

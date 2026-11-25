@@ -37,9 +37,10 @@ import {
   useDownloadablePdf,
 } from "./downloadable-pdf.hook";
 import type { Typography } from "./generate-the-cerfa/typography";
-import { download, fileNameOf } from "./pdf/download-a-pdf";
+import { DownloadAPdfService } from "./pdf/download-a-pdf.service";
 import { PdfActionButton, type PdfSignals } from "./pdf/PdfActionButton";
-import { printPdf } from "./pdf/print-a-pdf";
+import { PdfFileName } from "./pdf/pdf-file-name.vo";
+import { PrintAPdfService } from "./pdf/print-a-pdf.service";
 import { editorsOf, type StrictTextEdits, StrictTexts } from "./StrictTexts";
 
 type Props<Dto extends CerfaDto> = {
@@ -95,7 +96,7 @@ export function CerfaDocument<Dto extends CerfaDto>({
   useSignals(editing ? undefined : settled, { onReady, onFailure });
   const ready = generated !== undefined && !editing;
   const signal = ready ? signals : {};
-  const act = useAct(signal, fileNameOf(cerfa.fileName, date));
+  const act = useAct(signal, new PdfFileName(cerfa.fileName, date).value);
   useAwaitedAction(awaited, ready ? generated?.pdf : undefined, act);
   useWithdrawal(ready, onWithdrawn);
   const onAction = (action: PdfAction) =>
@@ -129,7 +130,7 @@ function useAct(signal: PdfSignals, fileName: string) {
       return;
     }
     signal.onDownloadLaunched?.();
-    download(pdf, fileName);
+    DownloadAPdfService.download(pdf, fileName);
     signal.onDownloaded?.();
   };
 }
@@ -235,7 +236,7 @@ function usePrint(): (pdf: Blob) => void {
   useEffect(() => () => release.current?.(), []);
   return (pdf) => {
     release.current?.();
-    release.current = printPdf(pdf);
+    release.current = PrintAPdfService.print(pdf);
   };
 }
 

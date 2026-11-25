@@ -8,7 +8,7 @@
 
 import { type RefObject, useEffect, useRef } from "react";
 import type { Simulation } from "../../../core/socle/simulation";
-import { rattachementEnSession } from "../rattachement";
+import { RattachementSessionService } from "../rattachement";
 import type { AnalyticsUseCases } from "./container";
 import type { Journey, PageValidation } from "./journey.entity";
 import type { OpenedPage } from "./page-view.entity";
@@ -89,7 +89,7 @@ function useQuestionnaireRun(
   useEffect(() => {
     if (!useCases) return;
     const started = useCases.startAQuestionnaire.execute({
-      rattachement: rattachementEnSession(),
+      rattachement: RattachementSessionService.enSession(),
       counted,
       resumed,
     });

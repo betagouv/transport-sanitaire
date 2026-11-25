@@ -48,7 +48,7 @@ export type {
 } from "./model.types";
 export { referentielDuServeur } from "./rattachement";
 export { ServerApiClient } from "./server-api";
-export { applyTheme, followHostTheme } from "./theme";
+export { ApplyThemeService, HostThemeService } from "./theme";
 export {
   Disclosure,
   type IllustratedCard,

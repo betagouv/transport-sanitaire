@@ -24,9 +24,9 @@ import {
   TextField,
 } from "../ui";
 
-import { displayedLabel } from "./label-a-question";
-import { displayedFields } from "./lay-out-an-address";
-import { messageOf } from "./word-a-problem";
+import { LabelAQuestionService } from "./label-a-question.service";
+import { LayOutAnAddressService } from "./lay-out-an-address.service";
+import { WordAProblemService } from "./word-a-problem.service";
 import "./question-field.css";
 
 type Props = {
@@ -82,7 +82,10 @@ type MultipleChoice = Asked<"multiple choice">;
 function common({ question, errors }: Props) {
   return {
     id: question.id,
-    label: displayedLabel(question.label, question.optional),
+    label: LabelAQuestionService.displayedLabel(
+      question.label,
+      question.optional,
+    ),
     hint: question.hint,
     errors,
     lead: true,
@@ -124,15 +127,18 @@ function AddressQuestionField(props: Props & { question: AddressQuestion }) {
     <AddressField
       id={question.id}
       errors={failing ? [] : props.errors}
-      label={displayedLabel(question.label, question.optional)}
+      label={LabelAQuestionService.displayedLabel(
+        question.label,
+        question.optional,
+      )}
       hint={question.hint}
       lead
-      fields={displayedFields(question).map((field) => {
+      fields={LayOutAnAddressService.displayedFields(question).map((field) => {
         const problem = problems[field.name];
         return {
           ...field,
           value: address?.field(field.name) ?? "",
-          error: problem && messageOf(problem),
+          error: problem && WordAProblemService.messageOf(problem),
         };
       })}
       onChange={(name, text) =>
@@ -162,7 +168,9 @@ function NumberQuestionField(props: Props & { question: NumberQuestion }) {
 function DateQuestionField(props: Props & { question: DateQuestion }) {
   const { question } = props;
   const [unreadable, setUnreadable] = useState(false);
-  const errors = unreadable ? [messageOf(INVALID_DATE)] : props.errors;
+  const errors = unreadable
+    ? [WordAProblemService.messageOf(INVALID_DATE)]
+    : props.errors;
   return (
     <DateField
       {...text({ ...props, errors })}

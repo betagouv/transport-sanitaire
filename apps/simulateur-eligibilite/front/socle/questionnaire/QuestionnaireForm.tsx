@@ -17,7 +17,7 @@ import type {
   Validated,
 } from "../../../core/socle/questionnaire-engine";
 
-import type { CounterOf } from "./count-a-text";
+import type { CounterOf } from "./count-a-text.service";
 import { QuestionFields } from "./QuestionFields";
 import type {
   QuestionnaireOptions,
@@ -26,7 +26,7 @@ import type {
 import { useQuestionnaire } from "./questionnaire.hook";
 import { useFocusReturn } from "./return-the-focus.hook";
 import { NextStep, Stepper } from "./Stepper";
-import { scrollToTheTop } from "./scroll-to-the-top";
+import { ScrollToTheTopService } from "./scroll-to-the-top.service";
 
 type Props = QuestionnaireOptions & {
   // Les parties de ce questionnaire, dans l'ordre : celles de l'étape de la
@@ -124,7 +124,7 @@ function usePageForm(questionnaire: QuestionnaireScreen) {
 // l'écran, s'il y en a une, remonte aussi au haut de l'iframe.
 function enterPage(screen: HTMLDivElement | null) {
   if (!screen) return;
-  scrollToTheTop(screen.ownerDocument);
+  ScrollToTheTopService.scroll(screen.ownerDocument);
   const focused = `[data-question="${screen.dataset.focus}"]`;
   const title =
     screen.querySelector<HTMLElement>(`${focused} legend, ${focused} label`) ??

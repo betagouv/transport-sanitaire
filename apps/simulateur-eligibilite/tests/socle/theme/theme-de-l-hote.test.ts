@@ -3,11 +3,11 @@
 // est une vraie fenêtre d'iframe, qui répond par de vrais évènements `message`.
 
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { applyTheme } from "../../../front/socle/theme/apply-theme";
+import { ApplyThemeService } from "../../../front/socle/theme/apply-theme.service";
 import {
-  followHostTheme,
+  HostThemeService,
   type Theme,
-} from "../../../front/socle/theme/host-theme";
+} from "../../../front/socle/theme/host-theme.service";
 
 function pageParente() {
   const iframe = document.createElement("iframe");
@@ -22,9 +22,9 @@ function pageParente() {
   return { parent, demandes, repondre };
 }
 
-function suivre(options: Parameters<typeof followHostTheme>[1]) {
+function suivre(options: Parameters<typeof HostThemeService.follow>[1]) {
   const themes: Theme[] = [];
-  followHostTheme((theme) => themes.push(theme), options);
+  HostThemeService.follow((theme) => themes.push(theme), options);
   return themes;
 }
 
@@ -89,7 +89,7 @@ describe("le thème de la page qui embarque l'app", () => {
 describe("le thème posé sur le DSFR", () => {
   it("pose le choix et le thème résolu sur la racine", () => {
     const racine = document.createElement("html");
-    applyTheme("dark", racine);
+    ApplyThemeService.apply("dark", racine);
     expect(racine.getAttribute("data-fr-scheme")).toBe("dark");
     expect(racine.getAttribute("data-fr-theme")).toBe("dark");
   });

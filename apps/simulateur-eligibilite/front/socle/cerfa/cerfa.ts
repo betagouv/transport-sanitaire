@@ -99,7 +99,7 @@ export type Cerfa<Dto extends CerfaDto> = {
    * (`templateAt`), ou un formulaire fabriqué.
    */
   readonly template: () => Promise<ArrayBuffer | Uint8Array>;
-  /** Le début du nom du fichier téléchargé. `fileNameOf` y ajoute la date. */
+  /** Le début du nom du fichier téléchargé. `PdfFileName` y ajoute la date. */
   readonly fileName: string;
   readonly fields: {
     readonly [Key in keyof Dto["fields"]]-?: Binding<

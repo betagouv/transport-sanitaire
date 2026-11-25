@@ -8,7 +8,7 @@ import { screen, waitFor } from "@testing-library/react";
 import { beforeEach, describe, expect, it } from "vitest";
 import { SEEDS } from "../../../../core/models/eligibilite/seeds-catalogue";
 import { model } from "../../../../front/models/eligibilite";
-import { rangerRattachement } from "../../../../front/socle/rattachement";
+import { RattachementSessionService } from "../../../../front/socle/rattachement";
 import { ouvrirLeSimulateur } from "../../../socle/simulateur/questionnaire";
 import { completerP3 } from "../completer-p3";
 import { MODELE_AUX_GABARITS_DU_DISQUE } from "../modele-aux-gabarits-du-disque";
@@ -20,7 +20,7 @@ const DEBORDE =
   "Raccourcissez la précision sur l’urgence pour pouvoir imprimer ou télécharger le document.";
 const COMPTEUR = /^(\d+) \/ (\d+) caractères$/;
 
-beforeEach(() => rangerRattachement(null));
+beforeEach(() => RattachementSessionService.ranger(null));
 
 describe("la précision de l'urgence, en P3", () => {
   it("compte ce qui est saisi contre le maximum mesuré sur la DAP", async () => {
