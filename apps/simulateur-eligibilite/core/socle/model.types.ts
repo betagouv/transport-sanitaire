@@ -18,6 +18,13 @@ import type {
 
 import type { Seed } from "./simulation/index.ts";
 
+/**
+ * Ce que le prescripteur est venu faire : vérifier une éligibilité
+ * (`check`), ou aller jusqu'au document quand la situation le permet
+ * (`prescribe`).
+ */
+export type Intent = "check" | "prescribe";
+
 /** Les faits d'un modèle : ce que ses règles reçoivent. */
 export type AnyFaits = Readonly<Record<string, unknown>>;
 

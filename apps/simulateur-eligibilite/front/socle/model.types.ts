@@ -6,7 +6,7 @@
 // résultat ce qu'il déclare lire.
 
 import type { ComponentType, ReactNode } from "react";
-import type { AnyFaits, CoreModel } from "../../core/socle/model.types";
+import type { AnyFaits, CoreModel, Intent } from "../../core/socle/model.types";
 import type {
   AnyCibles,
   AnyQuestions,
@@ -21,7 +21,13 @@ import type { TypographicFieldId } from "../../shared/analytics/typographic-fiel
 import type { ResultCodes } from "./analytics";
 import type { BoundCerfa } from "./cerfa";
 
-export type { Mode, ResultCodes, TransportComposition, TypographicFieldId };
+export type {
+  Intent,
+  Mode,
+  ResultCodes,
+  TransportComposition,
+  TypographicFieldId,
+};
 
 /**
  * Ce qu'un résultat reçoit pour s'afficher : ce qu'il lit des questions
@@ -82,13 +88,6 @@ export type Sheet = {
 export type CerfaInput<Reading = unknown> = ResultatProps<Reading> & {
   readonly completedAt: Date;
 };
-
-/**
- * Ce que le prescripteur est venu faire : vérifier une éligibilité
- * (`check`), ou aller jusqu'au document quand la situation le permet
- * (`prescribe`).
- */
-export type Intent = "check" | "prescribe";
 
 /**
  * L'invitation à donner son avis, après un résultat : un lien vers

@@ -31,7 +31,6 @@ export type {
   AldIndicator,
   Feedback,
   FirstResult,
-  Intent,
   Mode,
   ResultatProps,
   ResultCodes,
