@@ -5,12 +5,14 @@
 // avant que le DSFR démarre, il n'y aurait personne pour le faire, et c'est ce
 // que fait `useIsDark` de react-dsfr.
 
-import type { Theme } from "./host-theme";
+import type { Theme } from "./host-theme.service";
 
-export function applyTheme(
-  theme: Theme,
-  root: HTMLElement = document.documentElement,
-): void {
-  root.setAttribute("data-fr-scheme", theme);
-  root.setAttribute("data-fr-theme", theme);
+export class ApplyThemeService {
+  static apply(
+    theme: Theme,
+    root: HTMLElement = document.documentElement,
+  ): void {
+    root.setAttribute("data-fr-scheme", theme);
+    root.setAttribute("data-fr-theme", theme);
+  }
 }

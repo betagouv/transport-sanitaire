@@ -4,7 +4,7 @@
 // fenêtre d'iframe, qui relève les messages reçus.
 
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { scrollToTheTop } from "../../../front/socle/questionnaire/scroll-to-the-top";
+import { ScrollToTheTopService } from "../../../front/socle/questionnaire/scroll-to-the-top.service";
 
 function pageParente() {
   const iframe = document.createElement("iframe");
@@ -24,7 +24,7 @@ afterEach(() => {
 describe("le retour en haut de l'écran", () => {
   it("dans l'iframe, demande à la page qui l'embarque d'y remonter", async () => {
     const { parent, demandes } = pageParente();
-    scrollToTheTop(document, { parent });
+    ScrollToTheTopService.scroll(document, { parent });
     await vi.waitFor(() =>
       expect(demandes).toEqual([{ type: "defilement-simulateur:haut" }]),
     );
@@ -35,7 +35,7 @@ describe("le retour en haut de l'écran", () => {
     const relever = (e: MessageEvent) => envoyes.push(e.data);
     window.addEventListener("message", relever);
 
-    scrollToTheTop(document, { parent: window });
+    ScrollToTheTopService.scroll(document, { parent: window });
     await new Promise((fin) => setTimeout(fin, 20));
 
     window.removeEventListener("message", relever);

@@ -1,18 +1,19 @@
 // La feuille à remettre en PDF, préparée dans le navigateur sur la feuille
-// affichée. Elle se mesure comme pour l'impression (`measure-on-paper.ts`) ; sa
+// affichée. Elle se mesure comme pour l'impression (`measure-on-paper.service.ts`) ; sa
 // copie en papier, à la mise en page retenue, est photographiée, puis coupée
 // là où l'impression coupe les pages (`slice-into-pages.ts`). Chaque tranche va
 // sur une A4 (`assemble-the-pdf.ts`). Le PDF est une image : son texte ne se
 // sélectionne pas.
 
 import { type PageImage, paperPdf } from "./assemble-the-pdf";
-import { measureWhenStable, onPaperCopy } from "./measure-on-paper";
+import { MeasureOnPaperService } from "./measure-on-paper.service";
 import { photograph } from "./photograph-a-page";
 import { type PageSlice, pageSlicesOf } from "./slice-into-pages";
 
 export async function sheetPdf(sheet: HTMLElement): Promise<Blob> {
-  const layout = await measureWhenStable(sheet);
-  return onPaperCopy(sheet, layout, async (paper) => {
+  const onPaper = new MeasureOnPaperService(sheet);
+  const layout = await onPaper.whenStable();
+  return onPaper.onCopy(layout, async (paper) => {
     const slices = pageSlicesOf(layout, paper);
     // Une feuille sans hauteur donnerait un PDF blanc : c'est un échec.
     if (slices.length === 0) throw new Error("La feuille ne se mesure pas.");

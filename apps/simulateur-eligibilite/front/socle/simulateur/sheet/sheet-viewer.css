@@ -184,7 +184,7 @@
 }
 
 /* Les cartes illustrées, à l'échelle de la feuille. Trois par rangée, aussi
-   sur la copie que la mesure pose hors de la visionneuse (measure-on-paper.ts),
+   sur la copie que la mesure pose hors de la visionneuse (measure-on-paper.service.ts),
    même sur un écran étroit. */
 .socle-sheet .socle-illustrated-cards {
   grid-template-columns: repeat(3, minmax(0, 1fr));

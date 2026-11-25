@@ -27,7 +27,7 @@ import {
   CerfaDocument,
   type CerfaDto,
   dtoFrom,
-  fileNameOf,
+  PdfFileName,
   type PdfSignals,
   type StrictTextEdits,
 } from "../../cerfa";
@@ -193,7 +193,7 @@ function Cerfa({
       </>
     );
   const dto = dtoWithAccepted(bound, context, edits.accepted);
-  const file = fileNameOf(bound.cerfa.fileName, input.completedAt);
+  const file = new PdfFileName(bound.cerfa.fileName, input.completedAt).value;
   return (
     <CerfaDocument
       key={JSON.stringify(edits.accepted)}

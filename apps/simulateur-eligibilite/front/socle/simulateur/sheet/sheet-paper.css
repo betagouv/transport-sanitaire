@@ -1,6 +1,6 @@
 /* La feuille en papier : sa mise en page d'impression, posée par un attribut
    (`data-paper`) et non par le média. Elle vaut ainsi à l'écran, sur la copie
-   que la mesure pose hors de la visionneuse (measure-on-paper.ts), comme à
+   que la mesure pose hors de la visionneuse (measure-on-paper.service.ts), comme à
    l'impression, où la feuille la porte : la pagination se mesure sur ce qui
    s'imprime. Le PDF (#129) la reprendra telle quelle.
 

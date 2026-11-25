@@ -4,7 +4,7 @@
 // sort pas (`cerfa/pdf/PdfActionButton.tsx`). Un échec se dit ; un nouveau clic réessaie.
 
 import { type RefObject, useRef, useState } from "react";
-import { download, fileNameOf, useShown } from "../../cerfa";
+import { DownloadAPdfService, PdfFileName, useShown } from "../../cerfa";
 
 /** Où en est le téléchargement. */
 export type DownloadStatus = "idle" | "preparing" | "failed";
@@ -20,7 +20,10 @@ export function useSheetDownload(sheet: RefObject<HTMLElement | null>) {
     const pdf = await prepared(sheet.current);
     preparing.current = false;
     if (!shown.current) return;
-    if (pdf !== FAILED) download(pdf, fileNameOf("fiche-patient", new Date()));
+    if (pdf !== FAILED) {
+      const name = new PdfFileName("fiche-patient", new Date()).value;
+      DownloadAPdfService.download(pdf, name);
+    }
     setStatus(pdf === FAILED ? "failed" : "idle");
   };
   return { status, save };

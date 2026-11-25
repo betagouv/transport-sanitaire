@@ -28,11 +28,12 @@ export {
   generateCerfa,
   type Overflowing,
 } from "./generate-the-cerfa/generate-the-cerfa";
-export { download, fileNameOf } from "./pdf/download-a-pdf";
+export { DownloadAPdfService } from "./pdf/download-a-pdf.service";
 export {
   PdfActionButton,
   type PdfSignals,
   useShown,
 } from "./pdf/PdfActionButton";
+export { PdfFileName } from "./pdf/pdf-file-name.vo";
 export type { StrictTextEdits } from "./StrictTexts";
 export { useTextCounters } from "./text-counters.hook";
