@@ -22,7 +22,7 @@ import {
 import { useTextCounters } from "../cerfa";
 import type { Model } from "../model";
 import { type DebugTraceProps, QuestionnaireForm } from "../questionnaire";
-import { aldPathwayOf } from "./ald-pathway.service";
+import { AldPathwayService } from "./ald-pathway.service";
 import { useFollowTheAddress } from "./follow-the-address.hook";
 import { CerfaScreen } from "./screens/CerfaScreen";
 import { ResultatScreen } from "./screens/ResultatScreen";
@@ -138,7 +138,9 @@ function FirstQuestionnaire({
       DebugTrace={DebugTrace}
       onChange={(next) => {
         const pathway =
-          next.stage.name === "resultat" ? aldPathwayOf(model, next) : null;
+          next.stage.name === "resultat"
+            ? new AldPathwayService(model).of(next)
+            : null;
         if (pathway) aldResultReached(pathway.verdict, pathway.questions);
         onChange(next);
       }}

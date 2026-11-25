@@ -5,7 +5,7 @@
 //
 // Une question qui s'affiche sous une réponse (`shownUnder`) se pose dans le
 // panneau de cette réponse, si elle est sélectionnée sur la page ; sinon, à son
-// rang (`place-under-a-response.ts`). Un parent n'ouvre qu'un panneau, même
+// rang (`placement.vo.ts`). Un parent n'ouvre qu'un panneau, même
 // pour plusieurs questions, et son apparition s'annonce sans bouger le focus.
 
 import type { ReactNode } from "react";

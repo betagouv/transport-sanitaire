@@ -17,61 +17,68 @@ export type AldPathway = {
   questions: number;
 };
 
-/** Ce que cette simulation, sur son premier résultat, donne à l'indicateur, sans rien envoyer. */
-export function aldPathwayOf(
-  model: Model,
-  simulation: Simulation,
-): AldPathway | null {
-  const indicator = model.aldIndicator;
-  if (!indicator) return null;
-  const context = simulation.resultContext(new Date());
-  if (!indicator.counted.in(context)) return null;
-  const { pages, questions } = countOf(model, indicator, simulation);
-  const caisse = indicator.caisse.in(context);
-  return {
-    verdict: EventName[verdictOf(caisse, pages, questions, indicator.limit)],
-    pages,
-    questions,
-  };
-}
+export class AldPathwayService {
+  readonly #model: Model;
 
-// ---- implémentation ----
+  constructor(model: Model) {
+    this.#model = model;
+  }
+
+  /** Ce que cette simulation, sur son premier résultat, donne à l'indicateur, sans rien envoyer. */
+  of(simulation: Simulation): AldPathway | null {
+    const indicator = this.#model.aldIndicator;
+    if (!indicator) return null;
+    const context = simulation.resultContext(new Date());
+    if (!indicator.counted.in(context)) return null;
+    const { pages, questions } = this.#countOf(indicator, simulation);
+    const caisse = indicator.caisse.in(context);
+    return {
+      verdict:
+        EventName[
+          AldPathwayService.#verdictOf(
+            caisse,
+            pages,
+            questions,
+            indicator.limit,
+          )
+        ],
+      pages,
+      questions,
+    };
+  }
+
+  // Les pages posées dans ces parties, et leurs questions hors sous-champs.
+  #countOf({ parts, subFields = [] }: AldIndicator, simulation: Simulation) {
+    const counted = new Set(
+      this.#model.core.questionnaire
+        .filter((part) => parts.includes(part.id))
+        .flatMap((part) => part.pages.map((page) => page.id)),
+    );
+    const pages = simulation.pages().filter((page) => counted.has(page.id));
+    const notCounted = new Set(subFields);
+    const questions = pages
+      .flatMap((page) => simulation.questionsOn(page))
+      .filter((question) => !notCounted.has(question.id)).length;
+    return { pages: pages.length, questions };
+  }
+
+  // Une page pose au moins une question : trop de pages, c'est aussi trop de
+  // questions. Le verdict garde le dépassement le plus large.
+  static #verdictOf(
+    caisse: boolean,
+    pages: number,
+    questions: number,
+    limit: number,
+  ): VerdictName {
+    if (caisse) return "aldCaisse";
+    if (pages > limit) return "aldTooManyPages";
+    if (questions > limit) return "aldTooManyQuestions";
+    return "aldWithinTarget";
+  }
+}
 
 type VerdictName =
   | "aldWithinTarget"
   | "aldTooManyPages"
   | "aldTooManyQuestions"
   | "aldCaisse";
-
-// Les pages posées dans ces parties, et leurs questions hors sous-champs.
-function countOf(
-  model: Model,
-  { parts, subFields = [] }: AldIndicator,
-  simulation: Simulation,
-) {
-  const counted = new Set(
-    model.core.questionnaire
-      .filter((part) => parts.includes(part.id))
-      .flatMap((part) => part.pages.map((page) => page.id)),
-  );
-  const pages = simulation.pages().filter((page) => counted.has(page.id));
-  const notCounted = new Set(subFields);
-  const questions = pages
-    .flatMap((page) => simulation.questionsOn(page))
-    .filter((question) => !notCounted.has(question.id)).length;
-  return { pages: pages.length, questions };
-}
-
-// Une page pose au moins une question : trop de pages, c'est aussi trop de
-// questions. Le verdict garde le dépassement le plus large.
-function verdictOf(
-  caisse: boolean,
-  pages: number,
-  questions: number,
-  limit: number,
-): VerdictName {
-  if (caisse) return "aldCaisse";
-  if (pages > limit) return "aldTooManyPages";
-  if (questions > limit) return "aldTooManyQuestions";
-  return "aldWithinTarget";
-}

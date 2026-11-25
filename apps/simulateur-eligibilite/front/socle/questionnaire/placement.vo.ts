@@ -15,18 +15,11 @@
 // rechargement, il suit la lecture de la page : on ne reconstruit pas un faux
 // historique.
 
-import { useRef, useState } from "react";
 import type {
   Answers,
   AskedQuestion,
   ShownUnder,
 } from "../../../core/socle/questionnaire-engine";
-
-/** La page ouverte, et ce qu'elle affiche. */
-type OpenedPage = {
-  readonly page: { readonly id: string };
-  readonly questions: readonly AskedQuestion[];
-};
 
 /** La question s'affiche à son rang : aucune de ses places n'est effective. */
 type InPlace = undefined;
@@ -100,32 +93,6 @@ export class Placement {
   #key(): string {
     return JSON.stringify([...this.#effective]);
   }
-}
-
-/**
- * Le placement de la page ouverte. `remember` le garde pour un retour sur la
- * page : à appeler quand elle se valide. « Précédent » l'abandonne, avec le
- * brouillon.
- */
-export function usePlacement(
-  { page: { id: page }, questions }: OpenedPage,
-  draft: Answers,
-) {
-  const remembered = useRef(new Map<string, Placement>());
-  const [last, setLast] = useState<{ page: string; placement: Placement }>();
-  const previous =
-    last?.page === page
-      ? last.placement
-      : (remembered.current.get(page) ?? Placement.none());
-  const placement = previous.after(questions, draft);
-  if (last?.page !== page || !placement.equals(last.placement))
-    setLast({ page, placement });
-  return {
-    placement,
-    remember: () => {
-      remembered.current.set(page, placement);
-    },
-  };
 }
 
 // ---- implémentation ----

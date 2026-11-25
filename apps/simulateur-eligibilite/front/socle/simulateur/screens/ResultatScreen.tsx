@@ -27,7 +27,8 @@ import {
   feedbackOf,
   onFirstResult,
 } from "./FeedbackLink";
-import { type Loading, resultOf, useLoaded } from "./load-the-result";
+import { useLoaded } from "./first-result.hook";
+import { FirstResultService, type Loading } from "./first-result.service";
 import "./resultat-screen.css";
 
 // Le verrou ne s'annonce pas à l'écran : l'interface nomme l'action, et le
@@ -48,7 +49,7 @@ export function ResultatScreen({
   return (
     <>
       <Content
-        result={resultOf(model, simulation)}
+        result={new FirstResultService(model).of(simulation)}
         step={{ title: model.result.title, part: parts.length }}
         startLabel={startLabelOf(model, context)}
         actions={{
