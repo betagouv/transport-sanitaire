@@ -28,8 +28,6 @@ const SANS_SUFFIXE_POUR_L_INSTANT = [
   "core/models/eligibilite/questions/p3/questions/lieu.ts",
   // les deux lectures de l'indication, que R2 et la partie 2 lisent aussi
   "core/models/eligibilite/questions/p2/questions/q2-2-1-indication.ts",
-  // les parties et le questionnaire : le sujet de la famille suivante
-  /^core\/models\/[^/]+\/questions\/(p\d\/partie-\d|questionnaire)\.ts$/,
 ];
 
 // Ce qui suit déjà la règle. Un dossier s'ajoute ici quand il y est passé.

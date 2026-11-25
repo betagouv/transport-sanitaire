@@ -2,8 +2,8 @@
 // l'éditeur.
 
 import { page } from "../../../socle/index.ts";
-import { P1 } from "./p1/partie-1.ts";
-import { P2 } from "./p2/partie-2.ts";
+import { P1 } from "./p1/partie-1.constants.ts";
+import { P2 } from "./p2/partie-2.constants.ts";
 import { question } from "./question.ts";
 
 /** P0 : le besoin du prescripteur. */

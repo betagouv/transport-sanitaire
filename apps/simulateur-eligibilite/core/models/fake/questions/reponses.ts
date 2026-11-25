@@ -5,8 +5,8 @@
 import { type AnswersOf, ReadingFactory } from "../../../socle/index.ts";
 import type { Cibles } from "../cibles/noms.ts";
 import type { Faits } from "../faits/noms.ts";
-import type { COMMANDE } from "./p1/partie-1.ts";
-import type { COMPLEMENT } from "./p2/partie-2.ts";
+import type { COMMANDE } from "./p1/partie-1.constants.ts";
+import type { COMPLEMENT } from "./p2/partie-2.constants.ts";
 
 export type Questions = AnswersOf<typeof COMMANDE> &
   AnswersOf<typeof COMPLEMENT>;

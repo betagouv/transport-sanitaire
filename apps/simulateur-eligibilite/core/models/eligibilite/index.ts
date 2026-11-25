@@ -14,8 +14,8 @@ import {
   faitsSansLaDecision,
   LECTURES_DES_FAITS,
 } from "./faits/preconisation.ts";
-import { COMPLEMENT } from "./questions/p3/partie-3.ts";
-import { PARTS } from "./questions/questionnaire.ts";
+import { COMPLEMENT } from "./questions/p3/partie-3.constants.ts";
+import { PARTS } from "./questions/questionnaire.constants.ts";
 import type { Questions } from "./questions/reponses.ts";
 import { resultatDeR2 } from "./r2/calcul-du-resultat.ts";
 import { type Lecture, R2, type ResultatR2 } from "./r2/r2.ts";

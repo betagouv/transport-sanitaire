@@ -13,8 +13,8 @@ import {
   type Relevance,
   type ValidatedAnswers,
 } from "../../../socle/index.ts";
-import { P1 } from "../questions/p1/partie-1.ts";
-import { P2 } from "../questions/p2/partie-2.ts";
+import { P1 } from "../questions/p1/partie-1.constants.ts";
+import { P2 } from "../questions/p2/partie-2.constants.ts";
 import { horsCircuit } from "../questions/p2/questions/q2-2-1-indication.ts";
 import type { Questions } from "../questions/reponses.ts";
 import { CATALOGUE_DES_FAITS } from "./index.ts";

@@ -621,7 +621,7 @@ question/question.ts
 *Gardé par* `tests/roles-par-suffixe.test.ts › un fichier dit son rôle par son
 suffixe`, dans `apps/simulateur-eligibilite`. La garde couvre `core/socle/`,
 `server/journal/`, `server/grist/`, `server/postgres/`, `front/socle/analytics/`,
-`front/socle/cerfa/` (ses composants `.tsx` exceptés) et `front/socle/server-api/`, et dans chaque modèle de `core/models/`, `questions/` et `r3/rubriques/` : un dossier la rejoint quand il suit la règle. Dans `questions/`, ce qui n'a pas de suffixe se nomme un par un dans la garde (`question.ts`, `reponses.ts`, `lieu.ts`, `champs-du-lieu.ts`, `cotes-du-lieu.ts`, `q2-2-1-indication.ts`, les parties et le questionnaire). Un `.fait.ts` ne vit que dans un `faits/`, un `.question.ts` que dans un `questions/` de `core/models/`, un `.condition.ts` que dans un `conditions/` d'une partie, un `.rubrique.ts` que dans un `r3/rubriques/`. Que
+`front/socle/cerfa/` (ses composants `.tsx` exceptés) et `front/socle/server-api/`, et dans chaque modèle de `core/models/`, `questions/` et `r3/rubriques/` : un dossier la rejoint quand il suit la règle. Dans `questions/`, ce qui n'a pas de suffixe se nomme un par un dans la garde (`question.ts`, `reponses.ts`, `lieu.ts`, `champs-du-lieu.ts`, `cotes-du-lieu.ts`, `q2-2-1-indication.ts`). Un `.fait.ts` ne vit que dans un `faits/`, un `.question.ts` que dans un `questions/` de `core/models/`, un `.condition.ts` que dans un `conditions/` d'une partie, un `.rubrique.ts` que dans un `r3/rubriques/`. Que
 le hook ne porte aucune règle est du jugement.
 
 *Aucune garde.* Pour la limite d'un service qui touche le navigateur : la garde devrait distinguer deux sortes de services, et le suffixe ne le dit pas.

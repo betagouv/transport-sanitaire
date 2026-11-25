@@ -5,8 +5,8 @@
 import { type AnswersOf, ReadingFactory } from "../../../socle/index.ts";
 import type { Cibles } from "../cibles/noms.ts";
 import type { Faits } from "../faits/noms.ts";
-import type { COMPLEMENT } from "./p3/partie-3.ts";
-import type { PARTS } from "./questionnaire.ts";
+import type { COMPLEMENT } from "./p3/partie-3.constants.ts";
+import type { PARTS } from "./questionnaire.constants.ts";
 
 export type Questions = AnswersOf<(typeof PARTS)[number] | typeof COMPLEMENT>;
 
