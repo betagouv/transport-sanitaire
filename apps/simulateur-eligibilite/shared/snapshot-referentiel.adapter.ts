@@ -32,7 +32,7 @@ const ETABLISSEMENTS: Etablissement[] = [
   // L'établissement fourre-tout : ses services sont les structures, que l'écran
   // propose à plat sous les établissements (« Libéral », « Assurance Maladie »,
   // « Autre »). Lui-même ne s'affiche pas. Voir
-  // front/socle/rattachement/structures.ts.
+  // front/socle/rattachement/structures.service.ts.
   { id: "e_liberal_cnam", libelle: "Libéral / CNAM / CPAM / Autre" },
 ];
 

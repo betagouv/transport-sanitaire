@@ -1,7 +1,7 @@
 // L'encadré des developer tools, et leurs boutons.
 //
 // Ces outils ne s'ouvrent qu'en local, quel que soit le service choisi
-// (`unlock.ts`).
+// (`unlock.service.ts`).
 //
 // L'encadré est à part, avec une bordure tiretée : ces boutons ne doivent pas se
 // confondre avec ceux du parcours.

@@ -367,7 +367,7 @@ Les tests se rangent comme les sources : `tests/socle/questionnaire/` éprouve
 
 ```
 ✅ OK
-unlock.ts  questionnaire.ts  pagination.ts  lieux-du-trajet.ts
+unlock.service.ts  questionnaire.ts  pagination.ts  lieux-du-trajet.ts
 cerfa/  questionnaire-engine/
 ```
 
@@ -412,7 +412,7 @@ export function estServiceProduit(idService: number): boolean { … }
 ```
 
 *Gardé par* `pnpm knip`, dans `verifier`. C'est le défaut qu'a livré le fichier
-aujourd'hui appelé `unlock.ts`.
+aujourd'hui appelé `unlock.service.ts`.
 
 ---
 
