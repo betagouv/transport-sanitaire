@@ -3,10 +3,10 @@
 // ici.
 
 import { describe, expect, it } from "vitest";
+import { catalogueResultats } from "../../../../../core/models/eligibilite/r2/catalogue";
+import { R2 } from "../../../../../core/models/eligibilite/r2/r2";
 import { texteDeLaFicheNegative } from "../../../../../core/models/eligibilite/r2/refusee/texte";
 import { SEEDS } from "../../../../../core/models/eligibilite/seeds-catalogue";
-import { catalogueResultats } from "../../../../../front/models/eligibilite/r2/components/textes-de-l-editeur";
-import { R2 } from "../../../../../front/models/eligibilite/r2/r2";
 import { lectureDe } from "../../p2/reponses-de-la-permission";
 import { trace } from "../traces-du-prescripteur";
 

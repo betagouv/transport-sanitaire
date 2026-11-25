@@ -11,6 +11,7 @@ import {
   type Faits,
 } from "../../../../core/models/eligibilite/faits/noms";
 import type { Precisions } from "../../../../core/models/eligibilite/r2/blocs/precisions";
+import type { Trace } from "../../../../core/models/eligibilite/r2/r2";
 import {
   Cible,
   Fait,
@@ -19,7 +20,6 @@ import {
 } from "../../../../core/socle";
 import type { CibleValues } from "../../../../core/socle/decision-engine";
 import { ResultContext } from "../../../../core/socle/simulation";
-import type { Trace } from "../../../../front/models/eligibilite/r2/r2";
 
 /** Des valeurs de cibles écrites à la main, telles que les règles les donnent. */
 export type ValeursDesCibles = Partial<CibleValues<Cibles>>;

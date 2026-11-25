@@ -6,9 +6,9 @@
 
 import { screen } from "@testing-library/react";
 import { beforeEach, describe, expect, it } from "vitest";
+import { catalogueResultats } from "../../../core/models/eligibilite/r2/catalogue";
 import { SEEDS } from "../../../core/models/eligibilite/seeds-catalogue";
 import { model } from "../../../front/models/eligibilite";
-import { catalogueResultats } from "../../../front/models/eligibilite/r2/components/textes-de-l-editeur";
 import type { Model } from "../../../front/socle/model.types";
 import { RattachementSessionService } from "../../../front/socle/rattachement";
 import { ouvrirLeSimulateur } from "../../socle/simulateur/questionnaire";

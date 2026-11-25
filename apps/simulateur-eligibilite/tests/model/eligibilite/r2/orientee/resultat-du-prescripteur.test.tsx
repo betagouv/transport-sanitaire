@@ -6,9 +6,9 @@
 
 import { render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
+import { catalogueResultats } from "../../../../../core/models/eligibilite/r2/catalogue";
 import { SEEDS } from "../../../../../core/models/eligibilite/seeds-catalogue";
-import { catalogueResultats } from "../../../../../front/models/eligibilite/r2/components/textes-de-l-editeur";
-import { R2 } from "../../../../../front/models/eligibilite/r2/r2";
+import { pageDeR2 } from "../../../../../front/models/eligibilite/r2/r2";
 import { lectureDe } from "../../p2/reponses-de-la-permission";
 
 // Le premier chargement du catalogue (900 ko) est long : il se fait avant les
@@ -20,7 +20,7 @@ await catalogueResultats();
 const afficher = async (id: string) => {
   const seed = SEEDS.find((candidate) => candidate.id === id);
   if (!seed) throw new Error(`Seed inconnue : ${id}`);
-  const resultat = await R2.of(lectureDe(seed.answers)).page();
+  const resultat = await pageDeR2(lectureDe(seed.answers));
   render(resultat.body);
   return resultat;
 };

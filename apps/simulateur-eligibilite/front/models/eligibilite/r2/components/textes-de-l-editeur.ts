@@ -1,16 +1,9 @@
-// Les textes de R2, que l'éditeur livre à côté de ses règles
-// (`rules/catalogue-resultats.json`). Ils ne se chargent qu'à la demande :
-// 900 ko de textes n'ont rien à faire sur les pages du questionnaire.
+// Les textes de R2 tels que l'écran les attend : le catalogue de l'éditeur
+// (`core/models/eligibilite/r2/catalogue.ts`), chargé une fois par session, ou
+// l'échec de son chargement.
 
 import type { CatalogueResultats } from "../../../../../core/models/eligibilite/r2/blocs/forme-du-catalogue";
-
-/** Le catalogue des textes de R2. L'affectation vérifie sa forme. */
-export async function catalogueResultats(): Promise<CatalogueResultats> {
-  const { default: catalogue } = await import(
-    "../../../../../core/models/eligibilite/rules/catalogue-resultats.json"
-  );
-  return catalogue;
-}
+import { catalogueResultats } from "../../../../../core/models/eligibilite/r2/catalogue";
 
 /** Le catalogue chargé, ou l'échec du chargement : le réseau peut manquer. */
 export type Chargement =

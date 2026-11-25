@@ -9,9 +9,9 @@ import {
   type IssueDuPrescripteur,
   scenariosDuPrescripteur,
 } from "../../../../../core/models/eligibilite/r2/blocs/scenarios-du-prescripteur";
+import { catalogueResultats } from "../../../../../core/models/eligibilite/r2/catalogue";
+import { R2, type Trace } from "../../../../../core/models/eligibilite/r2/r2";
 import { SEEDS } from "../../../../../core/models/eligibilite/seeds-catalogue";
-import { catalogueResultats } from "../../../../../front/models/eligibilite/r2/components/textes-de-l-editeur";
-import { R2, type Trace } from "../../../../../front/models/eligibilite/r2/r2";
 
 type LuParLesScenarios = Parameters<typeof scenariosDuPrescripteur>[2];
 

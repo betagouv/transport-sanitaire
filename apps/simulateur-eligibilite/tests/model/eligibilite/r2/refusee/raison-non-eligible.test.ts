@@ -6,10 +6,10 @@ import { describe, expect, it } from "vitest";
 import type { Faits } from "../../../../../core/models/eligibilite/faits/noms";
 import type { Precisions } from "../../../../../core/models/eligibilite/r2/blocs/precisions";
 import { raisonNonEligible } from "../../../../../core/models/eligibilite/r2/blocs/raison-non-eligible";
+import { catalogueResultats } from "../../../../../core/models/eligibilite/r2/catalogue";
+import { R2 } from "../../../../../core/models/eligibilite/r2/r2";
 import { SEEDS } from "../../../../../core/models/eligibilite/seeds-catalogue";
 import { Fait } from "../../../../../core/socle";
-import { catalogueResultats } from "../../../../../front/models/eligibilite/r2/components/textes-de-l-editeur";
-import { R2 } from "../../../../../front/models/eligibilite/r2/r2";
 import { ciblesDe, lectureDe } from "../../p2/reponses-de-la-permission";
 import { faux, trace, vrai } from "../traces-du-prescripteur";
 

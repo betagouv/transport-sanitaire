@@ -4,13 +4,12 @@
 import { decisionEngine } from "../../../../core/models/eligibilite/cibles/evaluation";
 import type { Cibles } from "../../../../core/models/eligibilite/cibles/noms";
 import type { Questions } from "../../../../core/models/eligibilite/questions/reponses";
+import { type Lecture, R2 } from "../../../../core/models/eligibilite/r2/r2";
 import {
   Questionnaire,
   type Reading,
 } from "../../../../core/socle/questionnaire-engine";
-
 import { ResultContext } from "../../../../core/socle/simulation";
-import { type Lecture, R2 } from "../../../../front/models/eligibilite/r2/r2";
 import { faits, pages, posee, type Reponses } from "./reponses-du-transfert";
 
 export { faits, posee, type Reponses };

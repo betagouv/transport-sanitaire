@@ -5,8 +5,8 @@
 
 import { describe, expect, it } from "vitest";
 import { model } from "../../../../core/models/eligibilite";
+import { R2 } from "../../../../core/models/eligibilite/r2/r2";
 import { Questionnaire } from "../../../../core/socle/questionnaire-engine";
-import { R2 } from "../../../../front/models/eligibilite/r2/r2";
 import { lectureDe, type Reponses } from "./reponses-de-la-permission";
 
 const pages = Questionnaire.pagesOf(model.questionnaire);

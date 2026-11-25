@@ -10,9 +10,9 @@
 import { describe, expect, it } from "vitest";
 import type { Questions } from "../../../../core/models/eligibilite/questions/reponses";
 import { texteDeLaFichePositive } from "../../../../core/models/eligibilite/r2/acceptee/texte";
+import { R2 } from "../../../../core/models/eligibilite/r2/r2";
 import { Simulation } from "../../../../core/socle/simulation";
 import { model } from "../../../../front/models/eligibilite";
-import { R2 } from "../../../../front/models/eligibilite/r2/r2";
 import { lienAld } from "../p1/lien-ald";
 import {
   ciblesDe,

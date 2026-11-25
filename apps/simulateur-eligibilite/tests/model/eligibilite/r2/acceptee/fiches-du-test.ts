@@ -7,8 +7,8 @@ import {
   type TexteDeLaFichePositive,
   texteDeLaFichePositive,
 } from "../../../../../core/models/eligibilite/r2/acceptee/texte";
-import { catalogueResultats } from "../../../../../front/models/eligibilite/r2/components/textes-de-l-editeur";
-import type { Trace } from "../../../../../front/models/eligibilite/r2/r2";
+import { catalogueResultats } from "../../../../../core/models/eligibilite/r2/catalogue";
+import type { Trace } from "../../../../../core/models/eligibilite/r2/r2";
 import { trace, type ValeursDesCibles } from "../traces-du-prescripteur";
 
 export const catalogue = await catalogueResultats();

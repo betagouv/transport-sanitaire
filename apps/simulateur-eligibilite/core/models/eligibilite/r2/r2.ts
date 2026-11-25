@@ -1,13 +1,15 @@
-// Le résultat de l'éligibilité (R2), dans l'ordre où il se calcule : ce que
-// le socle lit pour lui (`R2.lit`), la trace que ses blocs lisent, le cas de
-// l'issue, les textes de l'éditeur, puis la page.
+// Le résultat de l'éligibilité (R2) : ce qu'il lit, et ce qu'il dit. Une
+// donnée, sans React : le même résultat se rendrait à l'écran ou se renverrait
+// tel quel en JSON.
 //
-// Trois cas ont une page (`layouts/`, leurs textes dans le métier) : acceptée, une fiche patient positive ;
-// refusée, une fiche patient négative ; orientée, la page du prescripteur,
-// sans fiche. Chaque issue a sa famille, donc son cas (`issue.vo.ts`). Deux
-// situations n'en ont pas : les règles n'ont pas conclu, ou un
-// retour pénitentiaire sort du circuit de prescription, et R2 oriente vers
-// l'administration pénitentiaire (point 34).
+// Dans l'ordre où il se calcule : ce que le socle lit pour lui (`R2.lit`), la
+// trace que ses blocs lisent, puis le `ResultatR2` qu'on en tire avec le
+// catalogue de l'éditeur. Chaque issue a sa famille (`issue.vo.ts`), donc son
+// cas : acceptée, une fiche patient positive ; refusée, une fiche patient
+// négative ; orientée, la page du prescripteur, sans fiche. Trois situations
+// n'ont aucune fiche : les règles n'ont pas conclu (sans issue), elles n'ont
+// pas choisi de mode (sans mode), ou un retour pénitentiaire sort du circuit de
+// prescription et R2 oriente vers l'administration pénitentiaire (point 34).
 //
 // R2 ne lit que `R2.lit` : le socle le calcule et le lui passe. Ce que R2 lit
 // des réponses se sait donc sans le dérouler, et ce qu'il lit des cibles
@@ -17,42 +19,49 @@
 // paquet, l'empreinte du modèle et la révision. Un fait inconnu est
 // une clé absente, jamais un « non ».
 
+import type { ValueOf } from "../../../socle/index.ts";
 import {
   ACCEPTED_ISSUES,
+  type AcceptedIssueId,
   Issue,
   ORIENTED_ISSUES,
+  type OrientedIssueId,
   REFUSED_ISSUES,
-} from "../../../../core/models/eligibilite/cibles/issue.vo";
-import type { Cibles } from "../../../../core/models/eligibilite/cibles/noms";
-import type { Faits } from "../../../../core/models/eligibilite/faits/noms";
-import { dansLeCircuit } from "../../../../core/models/eligibilite/questions/p2/questions/q2-2-1-indication";
-import { given } from "../../../../core/models/eligibilite/questions/reponses";
-import { PRECISIONS_DE_LA_FICHE_POSITIVE } from "../../../../core/models/eligibilite/r2/acceptee/precisions";
-import { LU_PAR_LA_FICHE_POSITIVE } from "../../../../core/models/eligibilite/r2/acceptee/texte";
+} from "../cibles/issue.vo.ts";
+import type { Cibles } from "../cibles/noms.ts";
+import type { Faits } from "../faits/noms.ts";
+import { dansLeCircuit } from "../questions/p2/questions/q2-2-1-indication.ts";
+import { given } from "../questions/reponses.ts";
+import { PRECISIONS_DE_LA_FICHE_POSITIVE } from "./acceptee/precisions.ts";
+import {
+  LU_PAR_LA_FICHE_POSITIVE,
+  type TexteDeLaFichePositive,
+  texteDeLaFichePositive,
+} from "./acceptee/texte.ts";
 import {
   type Lu,
   luPar,
   type ReponsesLues,
   type TraceDe,
-} from "../../../../core/models/eligibilite/r2/blocs/ce-que-lit-un-bloc";
-import type { CatalogueResultats } from "../../../../core/models/eligibilite/r2/blocs/forme-du-catalogue";
+} from "./blocs/ce-que-lit-un-bloc.ts";
+import type { CatalogueResultats } from "./blocs/forme-du-catalogue.ts";
+import { type Precisions, UN_SEJOUR_REEL } from "./blocs/precisions.ts";
+import { PRECISIONS_DU_PRESCRIPTEUR } from "./orientee/precisions.ts";
 import {
-  type Precisions,
-  UN_SEJOUR_REEL,
-} from "../../../../core/models/eligibilite/r2/blocs/precisions";
-import { PRECISIONS_DU_PRESCRIPTEUR } from "../../../../core/models/eligibilite/r2/orientee/precisions";
-import { LU_PAR_LE_PRESCRIPTEUR } from "../../../../core/models/eligibilite/r2/orientee/texte";
-import { PRECISIONS_DE_LA_FICHE_NEGATIVE } from "../../../../core/models/eligibilite/r2/refusee/precisions";
-import { LU_PAR_LA_FICHE_NEGATIVE } from "../../../../core/models/eligibilite/r2/refusee/texte";
-import type { ValueOf } from "../../../../core/socle";
-import type { FirstResult, ResultatProps } from "../../../socle";
-import { catalogueDeLaSession } from "./components/textes-de-l-editeur";
-import { pageAcceptee } from "./layouts/acceptee/page";
-import { pageOrientee } from "./layouts/orientee/page";
-import { pageRefusee } from "./layouts/refusee/page";
+  LU_PAR_LE_PRESCRIPTEUR,
+  selonLAffichage,
+  type TexteDuPrescripteur,
+  texteDuPrescripteur,
+} from "./orientee/texte.ts";
+import { PRECISIONS_DE_LA_FICHE_NEGATIVE } from "./refusee/precisions.ts";
+import {
+  LU_PAR_LA_FICHE_NEGATIVE,
+  type TexteDeLaFicheNegative,
+  texteDeLaFicheNegative,
+} from "./refusee/texte.ts";
 
 /** Ce que R2 reçoit du socle : `R2.lit`. */
-export type Lecture = ResultatProps<LuParR2>;
+export type Lecture = { readonly reading: LuParR2 };
 
 /**
  * Tout ce que les blocs de R2 peuvent lire, pour des réponses et leurs
@@ -61,13 +70,47 @@ export type Lecture = ResultatProps<LuParR2>;
 export type Trace = Lu<keyof Cibles & string, keyof Faits & string> &
   ReponsesLues;
 
-/** Le cas d'une lecture : un des trois qui ont une page, ou aucun. */
-export type Cas =
-  | "acceptée"
-  | "refusée"
-  | "orientée"
-  | "sans issue"
-  | "hors circuit";
+/**
+ * Ce que le patient reçoit avec une fiche : la phrase qui l'annonce
+ * (point 28), et l'invitation à donner son avis par courriel (TS1014-J01).
+ * `avis.texte` se termine par une espace : le courriel le suit.
+ */
+export type FeuilleDuPatient = {
+  readonly introduction: string;
+  readonly avis: { readonly texte: string; readonly courriel: string };
+};
+
+/**
+ * Le résultat de R2, d'après ses réponses : un cas, et ce qu'il porte. Les
+ * cas sans fiche ne portent que leur phrase, s'ils en ont une de l'éditeur.
+ */
+export type ResultatR2 =
+  | {
+      readonly cas: "hors circuit";
+      readonly titre: string;
+      readonly texte: string;
+    }
+  | { readonly cas: "sans issue" }
+  | { readonly cas: "sans mode" }
+  | {
+      readonly cas: "acceptée";
+      readonly issue: AcceptedIssueId;
+      readonly fiche: TexteDeLaFichePositive;
+      readonly feuille: FeuilleDuPatient;
+    }
+  | {
+      readonly cas: "refusée";
+      readonly fiche: TexteDeLaFicheNegative;
+      readonly feuille: FeuilleDuPatient;
+    }
+  | {
+      readonly cas: "orientée";
+      readonly issue: OrientedIssueId;
+      readonly page: TexteDuPrescripteur;
+    };
+
+/** Le résultat attend le catalogue : une issue le demande. */
+export type DemandeLeCatalogue = undefined;
 
 export class R2 {
   /** Tout ce que R2 lit : le socle le lui passe, et rien d'autre. */
@@ -91,44 +134,54 @@ export class R2 {
     return { ...textes, ...reponses };
   }
 
-  get cas(): Cas {
-    const { dansLeCircuit, issue: cible } = this.lecture.reading;
-    if (!dansLeCircuit) return "hors circuit";
-    const issue = Issue.of(cible);
-    if (!issue) return "sans issue";
-    if (issue.isAccepted()) return "acceptée";
-    return issue.isRefused() ? "refusée" : "orientée";
+  /**
+   * Le résultat quand il ne tient pas au catalogue : hors circuit, ou sans
+   * issue. Absent quand une issue le demande.
+   */
+  get sansCatalogue(): ResultatR2 | DemandeLeCatalogue {
+    const choix = this.choix();
+    return choix instanceof Issue ? undefined : choix;
   }
 
-  /** Les textes de l'éditeur, chargés à la demande. */
-  textes(): Promise<Chargement> {
-    return catalogueDeLaSession();
+  /** Le résultat de cette lecture, avec les textes de l'éditeur. */
+  resultat(catalogue: CatalogueResultats): ResultatR2 {
+    const choix = this.choix();
+    return choix instanceof Issue ? this.deLIssue(choix, catalogue) : choix;
   }
 
-  /** La page du cas : son titre, son corps, sa fiche s'il en a une. */
-  page(): FirstResult | Promise<FirstResult> {
-    const issue = Issue.of(this.lecture.reading.issue);
-    if (this.cas === "hors circuit") return ORIENTATION_PENITENTIAIRE;
-    if (!issue) return SANS_ISSUE;
-    return this.textes().then((chargement) =>
-      "echec" in chargement
-        ? CHARGEMENT_EN_ECHEC
-        : this.pageDe(issue, chargement.catalogue),
-    );
+  // Hors circuit d'abord : l'issue ne compte alors pas. Sans issue, les règles
+  // n'ont pas pu conclure : un fait dont elles dépendent est absent.
+  private choix(): ResultatR2 | Issue {
+    const { dansLeCircuit, issue } = this.lecture.reading;
+    if (!dansLeCircuit) return ORIENTATION_PENITENTIAIRE;
+    return Issue.of(issue) ?? SANS_ISSUE;
   }
 
-  private pageDe(issue: Issue, catalogue: CatalogueResultats): FirstResult {
-    if (issue.isAccepted())
-      return pageAcceptee(catalogue, this.trace, issue.id);
-    if (issue.isOriented())
-      return pageOrientee(catalogue, this.trace, issue.id);
-    return pageRefusee(catalogue, this.trace);
+  private deLIssue(issue: Issue, catalogue: CatalogueResultats): ResultatR2 {
+    const { trace } = this;
+    if (issue.isAccepted()) {
+      const fiche = texteDeLaFichePositive(catalogue, trace, issue.id);
+      if (!fiche) return SANS_MODE;
+      return {
+        cas: "acceptée",
+        issue: issue.id,
+        fiche,
+        feuille: feuille(catalogue),
+      };
+    }
+    if (issue.isOriented()) {
+      const { id } = issue;
+      const texte = texteDuPrescripteur(catalogue, id, trace);
+      const page = selonLAffichage(texte, catalogue.issues[id]);
+      return { cas: "orientée", issue: id, page };
+    }
+    const fiche = texteDeLaFicheNegative(catalogue, trace);
+    return { cas: "refusée", fiche, feuille: feuille(catalogue) };
   }
 }
 
 // ---- implémentation ----
 
-type Chargement = Awaited<ReturnType<typeof catalogueDeLaSession>>;
 type LuParR2 = ValueOf<typeof LU_PAR_R2>;
 
 const ISSUE = given.cible("cible_issue_id");
@@ -211,39 +264,27 @@ const LU_PAR_R2 = given.all({
   reponses: LU_DES_REPONSES,
 });
 
-// Sans issue, les règles n'ont pas pu conclure : un fait dont elles dépendent
-// est absent.
-const SANS_ISSUE: FirstResult = {
-  title: "L’éligibilité n’a pas pu être calculée",
-  body: (
-    <p>
-      Les réponses données ne suffisent pas à calculer l’éligibilité : le
-      questionnaire n’est pas complet.
-    </p>
-  ),
-};
+const SANS_ISSUE: ResultatR2 = { cas: "sans issue" };
+
+// Sans mode, les règles n'ont pas pu choisir le transport : un fait dont elles
+// dépendent est absent, ou le catalogue n'a aucun texte pour ce mode.
+const SANS_MODE: ResultatR2 = { cas: "sans mode" };
 
 // Le titre et le texte de `CONTRAT_ORIENTATION_ADMINISTRATIVE.json`, sans
 // introduction : aucune fiche ne suit.
-const ORIENTATION_PENITENTIAIRE: FirstResult = {
-  title: "Ce retour relève de l’organisation pénitentiaire",
-  body: (
-    <p>
-      Ce déplacement a été identifié comme exclusivement administratif, sans
-      indication médicale de transport. Rapprochez-vous de l’administration
-      pénitentiaire pour organiser le déplacement.
-    </p>
-  ),
+const ORIENTATION_PENITENTIAIRE: ResultatR2 = {
+  cas: "hors circuit",
+  titre: "Ce retour relève de l’organisation pénitentiaire",
+  texte:
+    "Ce déplacement a été identifié comme exclusivement administratif, sans indication médicale de transport. Rapprochez-vous de l’administration pénitentiaire pour organiser le déplacement.",
 };
 
-// Le chargement en échec donne un titre et une phrase, sans rien inventer.
-// Rien ne le suit : sans textes, rien n'est à compléter.
-const CHARGEMENT_EN_ECHEC: FirstResult = {
-  title: "Le résultat n’a pas pu être affiché",
-  terminal: true,
-  body: (
-    <p role="alert">
-      Les textes du résultat n’ont pas pu être chargés. Rechargez la page.
-    </p>
-  ),
-};
+function feuille({
+  patientSheetIntro,
+  patientFeedback,
+}: CatalogueResultats): FeuilleDuPatient {
+  return {
+    introduction: patientSheetIntro,
+    avis: { texte: patientFeedback.text, courriel: patientFeedback.email },
+  };
+}

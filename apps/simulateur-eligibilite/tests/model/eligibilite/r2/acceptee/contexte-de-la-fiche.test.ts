@@ -11,7 +11,7 @@ import {
   phraseDuContexte,
 } from "../../../../../core/models/eligibilite/r2/blocs/contexte-du-resultat";
 import type { Precisions } from "../../../../../core/models/eligibilite/r2/blocs/precisions";
-import { catalogueResultats } from "../../../../../front/models/eligibilite/r2/components/textes-de-l-editeur";
+import { catalogueResultats } from "../../../../../core/models/eligibilite/r2/catalogue";
 import { trace, type ValeursDesCibles } from "../traces-du-prescripteur";
 
 const { issues } = await catalogueResultats();

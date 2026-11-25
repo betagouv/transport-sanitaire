@@ -7,7 +7,7 @@ import {
   raisonNonEligible,
   texteDeLaRaison,
 } from "../../../../../core/models/eligibilite/r2/blocs/raison-non-eligible";
-import { catalogueResultats } from "../../../../../front/models/eligibilite/r2/components/textes-de-l-editeur";
+import { catalogueResultats } from "../../../../../core/models/eligibilite/r2/catalogue";
 import { faux, trace } from "../traces-du-prescripteur";
 
 const { issues } = await catalogueResultats();

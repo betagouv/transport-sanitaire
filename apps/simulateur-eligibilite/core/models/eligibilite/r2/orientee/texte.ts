@@ -87,17 +87,17 @@ export function selonLAffichage(
 ): TexteDuPrescripteur {
   const raisons = affichage.renderReasonPanels !== false;
   const actions = raisons && affichage.renderNextSteps !== false;
+  const { titre, introduction, pourquoi, avertissement } = texte;
+  const motifs = raisons ? texte.motifs : [];
   return {
-    titre: texte.titre,
-    introduction:
-      affichage.renderPractitionerIntro === false
-        ? undefined
-        : texte.introduction,
-    pourquoi: raisons ? texte.pourquoi : undefined,
+    titre,
+    ...(affichage.renderPractitionerIntro !== false &&
+      introduction !== undefined && { introduction }),
+    ...(raisons && pourquoi && { pourquoi }),
     questions: raisons ? texte.questions : [],
     actions: actions ? texte.actions : [],
-    avertissement: raisons ? texte.avertissement : undefined,
-    motifs: raisons ? texte.motifs : [],
+    ...(raisons && avertissement !== undefined && { avertissement }),
+    ...(motifs && { motifs }),
   };
 }
 

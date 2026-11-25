@@ -3,30 +3,17 @@
 // sections que le catalogue montre, et le nom de la page, celui du gabarit de
 // l'éditeur (TS1014-TERMINOLOGIE-PRESCRIPTEUR).
 
-import type { OrientedIssueId } from "../../../../../../core/models/eligibilite/cibles/issue.vo";
-import type { TraceDe } from "../../../../../../core/models/eligibilite/r2/blocs/ce-que-lit-un-bloc";
-import type { CatalogueResultats } from "../../../../../../core/models/eligibilite/r2/blocs/forme-du-catalogue";
-import {
-  type LU_PAR_LE_PRESCRIPTEUR,
-  selonLAffichage,
-  texteDuPrescripteur,
-} from "../../../../../../core/models/eligibilite/r2/orientee/texte";
+import type { ResultatR2 } from "../../../../../../core/models/eligibilite/r2/r2";
 import type { FirstResult } from "../../../../../socle";
 import { PageDuPrescripteur } from "./PageDuPrescripteur";
 
-export function pageOrientee(
-  catalogue: CatalogueResultats,
-  trace: TraceDe<typeof LU_PAR_LE_PRESCRIPTEUR>,
-  issue: OrientedIssueId,
-): FirstResult {
-  const texte = selonLAffichage(
-    texteDuPrescripteur(catalogue, issue, trace),
-    catalogue.issues[issue],
-  );
+export function pageOrientee({
+  page,
+}: Extract<ResultatR2, { cas: "orientée" }>): FirstResult {
   return {
-    title: texte.titre,
-    intro: texte.introduction,
-    body: <PageDuPrescripteur texte={texte} />,
+    title: page.titre,
+    intro: page.introduction,
+    body: <PageDuPrescripteur texte={page} />,
     label: "Résultat pour le prescripteur",
   };
 }
