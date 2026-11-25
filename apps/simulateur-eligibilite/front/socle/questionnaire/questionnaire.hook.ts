@@ -19,11 +19,8 @@ import {
   type QuestionnaireTracking,
   useQuestionnaireTracking,
 } from "../analytics";
-import {
-  isSingleChoicePage,
-  useAutoAdvance,
-  withRestart,
-} from "./advance-alone";
+import { type AutoAdvance, useAutoAdvance } from "./advance-alone.hook";
+import { AdvanceAloneService } from "./advance-alone.service";
 import { draftOf } from "./draft-an-answer";
 import { type Placement, usePlacement } from "./place-under-a-response";
 import { type RevisitLink, revisitLinks } from "./revisit-an-answer";
@@ -67,7 +64,7 @@ type View = {
   focus: string | undefined;
 };
 
-export type Actions = {
+type Actions = {
   answer: (id: string, answer: Answer | Unanswered) => void;
   next: () => void;
   back: () => void;
@@ -112,7 +109,8 @@ export function useQuestionnaire({
   // Pendant une correction, une sélection seule n'avance pas.
   const autoAdvance = useAutoAdvance(
     view.page.id,
-    isSingleChoicePage(view.questions) && !simulation.correcting,
+    new AdvanceAloneService(view.questions).isSingleChoicePage() &&
+      !simulation.correcting,
     view.hasPendingQuestions || view.hasInconsistencies,
     handlers.next,
   );
@@ -216,6 +214,19 @@ function withRemembered(handlers: Actions, remember: () => void): Actions {
     next: () => {
       remember();
       handlers.next();
+    },
+  };
+}
+
+// Toute saisie relance l'avancement automatique, même au retour sur une page
+// déjà répondue, où le bouton « Suivant » était revenu.
+function withRestart(handlers: Actions, autoAdvance: AutoAdvance) {
+  return {
+    ...handlers,
+    autoAdvances: autoAdvance.autoAdvances,
+    answer: (id: string, answer: Answer | Unanswered) => {
+      autoAdvance.onInput();
+      handlers.answer(id, answer);
     },
   };
 }
