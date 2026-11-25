@@ -157,6 +157,8 @@ core/                    le métier, sans React ni DOM : ce qu'un serveur ou un 
       seeds-catalogue.ts les situations de référence du modèle
   socle/                 ce qui ne dépend d'aucun modèle
     cerfa/               le DTO d'un cerfa, son mapping et le calcul de ses valeurs
+    model.factory.ts     `CoreModelFactory` : le métier d'un modèle, et la pertinence de ses
+                         questions d'après ce que lisent ses résultats
     questionnaire-engine/ ce qu'est une question, une page, une partie ; les réponses
                          validées, l'invalidation des réponses dépendantes
     decision-engine/     des faits aux cibles, par les règles publicodes d'un modèle

@@ -2,6 +2,14 @@
 
 > Statut : **décidé** · 2026-10-28
 
+> **Révisé le 2026-11-25.** La pertinence n'est plus calculée à l'écran
+> (`front/socle/model.factory.ts`) mais dans le métier : `CoreModelFactory`
+> (`core/socle/model.factory.ts`) la construit d'après le graphe et ce que
+> lisent les résultats, que `CoreModel` porte désormais (R2, le choix du
+> document, son titre, son libellé de départ, le besoin). `core/models/<nom>/index.ts`
+> l'appelle : sous Node, le métier seul saute les mêmes questions que l'écran.
+> La règle ci-dessous ne change pas. Voir ARCH-001 et ARCH-002.
+
 **Contexte.** Une question se posait dès que ses gardes tenaient. Une garde
 `mattersWhile` disait à la main qu'une réponse comptait encore, et en oubliait
 souvent : un patient seul en SAMSAH répondait à Q2.3.1, Q2.3.2 et Q2.3.3, alors

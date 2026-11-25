@@ -56,11 +56,15 @@ coupés. Le résultat de R2 est une donnée, `ResultatR2`, que
 `core/models/<nom>/r2/` calcule : un cas, et ses textes, sans React. Son écran
 (`front/models/<nom>/r2/`) en fait la page, un cas après l'autre. Les valeurs de
 chaque cerfa de R3 sont dans `core/models/<nom>/r3/`, les endroits où elles
-s'écrivent dans `front/models/<nom>/r3/`.
+s'écrivent dans `front/models/<nom>/r3/`. La pertinence des questions (celles
+que les résultats rendent inutiles) est du métier aussi : `CoreModelFactory`
+(`core/socle/model.factory.ts`) la calcule, et `core/models/<nom>/index.ts`
+l'appelle. Sous Node comme à l'écran, le métier saute les mêmes questions.
 
 *Gardé par* `tests/frontieres-des-racines.test.ts` (les cinq frontières) et
 `tests/architecture.test.ts › invariants métier › le simulateur ignore qui
-prescrit`, `› les règles publicodes ne portent que de l'éligibilité`.
+prescrit`, `› les règles publicodes ne portent que de l'éligibilité`, et
+`tests/frontieres-des-racines.test.ts › la pertinence se calcule dans le métier, jamais à l'écran`.
 
 ---
 
@@ -78,6 +82,12 @@ prescrit`, `› les règles publicodes ne portent que de l'éligibilité`.
   l'écran.
 - Le socle ne le connaît que par `CoreModel` (`core/socle/model.types.ts`) et
   `Model` (`front/socle/model.types.ts`). Il n'importe rien d'un modèle.
+- `CoreModel` porte tout ce que le métier dit des résultats : ce qu'ils lisent,
+  le document que R3 choisit (sa clé) et ses valeurs, le titre, le libellé de
+  départ, le besoin, et la pertinence qu'en tire `CoreModelFactory`. `Model`
+  n'y ajoute que ce qui se voit : les pages, les endroits de chaque document
+  par la même clé, les libellés des boutons, le retour, les codes du journal. Une
+  lecture n'a qu'une source : `Model` ne redéclare rien de `CoreModel`.
 - Un modèle n'importe du socle que `core/socle/index.ts` et `front/socle/index.ts`.
 - Aucun modèle n'importe l'autre, d'un côté comme de l'autre.
 - Le socle dit ce qui a été montré, validé, coché. Il ne conclut rien : le modèle
