@@ -1,7 +1,7 @@
 // Client REST Grist minimal, dédié à la **publication** des marts pour la dataviz.
 //
-// Conventions API identiques à celles du simulateur (server/identification/
-// referentiel-grist.ts) : base = `…/api/docs/<docId>`, auth `Bearer <clé>`.
+// Conventions API identiques à celles du simulateur (server/rattachement/
+// referentiel-grist.adapter.ts) : base = `…/api/docs/<docId>`, auth `Bearer <clé>`.
 //
 // Ce module ne fait que ce dont un mart a besoin : garantir la table et ses
 // colonnes, puis **remplacer** intégralement son contenu (vider + réinsérer). Un
