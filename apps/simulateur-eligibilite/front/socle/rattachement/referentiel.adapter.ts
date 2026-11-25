@@ -10,7 +10,7 @@ import type {
   RattachementEnregistre,
   Referentiel,
   Service,
-} from "../../../shared/referentiel";
+} from "../../../shared/referentiel.port";
 import type { ServerApiClient } from "../server-api";
 
 export function referentielDuServeur(

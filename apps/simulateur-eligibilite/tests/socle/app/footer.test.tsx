@@ -6,7 +6,7 @@ import userEvent from "@testing-library/user-event";
 import { describe, expect, it } from "vitest";
 import { App } from "../../../front/socle/app/App";
 import { Footer } from "../../../front/socle/app/Footer";
-import { snapshotReferentiel } from "../../../shared/referentiel";
+import { snapshotReferentiel } from "../../../shared/snapshot-referentiel.adapter";
 import { modeleDeTest, seulModele } from "../modele-de-test";
 import { seRattacher } from "../se-rattacher";
 

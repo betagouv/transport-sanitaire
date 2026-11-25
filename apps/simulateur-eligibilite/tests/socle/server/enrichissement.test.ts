@@ -6,10 +6,8 @@
 
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from "vitest";
 import type { RattachementSaisi } from "../../../shared/rattachement-saisi.vo.ts";
-import {
-  type Referentiel,
-  snapshotReferentiel,
-} from "../../../shared/referentiel.ts";
+import type { Referentiel } from "../../../shared/referentiel.port.ts";
+import { snapshotReferentiel } from "../../../shared/snapshot-referentiel.adapter.ts";
 import { demarrer, postTo } from "./serveur-de-test.ts";
 
 const SERVICE_SAISI = {

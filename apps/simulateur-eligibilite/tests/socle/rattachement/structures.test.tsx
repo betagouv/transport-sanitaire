@@ -2,7 +2,7 @@ import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
 import { RattachementForm } from "../../../front/socle/rattachement/RattachementForm";
-import type { Referentiel } from "../../../shared/referentiel";
+import type { Referentiel } from "../../../shared/referentiel.port";
 
 // Les structures sous le trait : une liste fixe, reconnue parmi les services de
 // l'établissement fourre-tout, où arrivent aussi les saisies des prescripteurs.

@@ -2,7 +2,7 @@
 // établissement », puis les structures. Une seule liste pour trois sortes de
 // choix : ce fichier les encode en valeurs d'option, et les décode.
 
-import type { Etablissement, Service } from "../../../shared/referentiel";
+import type { Etablissement, Service } from "../../../shared/referentiel.port";
 
 export type Choix =
   | { type: "etablissement"; etabId: string }

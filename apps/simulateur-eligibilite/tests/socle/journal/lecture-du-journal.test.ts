@@ -7,7 +7,7 @@
 import { afterEach, describe, expect, it } from "vitest";
 import { JournalEntry } from "../../../server/journal/journal-entry.entity.ts";
 import { MemoryJournal } from "../../../server/journal/memory-journal.adapter.ts";
-import { snapshotReferentiel } from "../../../shared/referentiel.ts";
+import { snapshotReferentiel } from "../../../shared/snapshot-referentiel.adapter.ts";
 import {
   type AppDeTest,
   demarrer,

@@ -17,7 +17,7 @@ import type {
   RattachementEnregistre,
   Referentiel,
   Service,
-} from "../../shared/referentiel.ts";
+} from "../../shared/referentiel.port.ts";
 import {
   cellText,
   type GristApiClient,

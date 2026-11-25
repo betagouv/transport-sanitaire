@@ -5,7 +5,7 @@
 // de vraies requêtes HTTP.
 
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
-import { snapshotReferentiel } from "../../../shared/referentiel.ts";
+import { snapshotReferentiel } from "../../../shared/snapshot-referentiel.adapter.ts";
 import {
   type AppDeTest,
   demarrer,

@@ -9,7 +9,7 @@
 // libellé, dans l'ordre du porteur.
 
 import { normalise } from "../../../shared/rattachement-saisi.vo";
-import type { Etablissement, Service } from "../../../shared/referentiel";
+import type { Etablissement, Service } from "../../../shared/referentiel.port";
 
 export function estEtablissementFourreTout(etab: Etablissement): boolean {
   return (

@@ -6,10 +6,8 @@
 import { describe, expect, it } from "vitest";
 import { RegisterTheRattachement } from "../../../front/socle/rattachement/register-the-rattachement.usecase";
 import type { RattachementSaisi } from "../../../shared/rattachement-saisi.vo";
-import {
-  type Referentiel,
-  snapshotReferentiel,
-} from "../../../shared/referentiel";
+import type { Referentiel } from "../../../shared/referentiel.port";
+import { snapshotReferentiel } from "../../../shared/snapshot-referentiel.adapter";
 import { journalDeTest } from "./journal-de-test";
 
 describe("le rattachement d'un parcours", () => {

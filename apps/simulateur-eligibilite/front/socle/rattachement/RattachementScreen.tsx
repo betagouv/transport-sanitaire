@@ -5,7 +5,7 @@
 // Matomo et le journal, puis prévient `App`.
 
 import { useMemo } from "react";
-import type { Referentiel } from "../../../shared/referentiel";
+import type { Referentiel } from "../../../shared/referentiel.port";
 import { RattachementForm } from "./RattachementForm";
 import { rangerRattachement } from "./rattachement-en-session";
 import { RegisterTheRattachement } from "./register-the-rattachement.usecase";

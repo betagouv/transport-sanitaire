@@ -4,11 +4,11 @@
 
 import { describe, expect, it } from "vitest";
 import { CachedReferentiel } from "../../../server/journal/cached-referentiel.adapter.ts";
-import {
-  type Etablissement,
-  type Referentiel,
-  snapshotReferentiel,
-} from "../../../shared/referentiel.ts";
+import type {
+  Etablissement,
+  Referentiel,
+} from "../../../shared/referentiel.port.ts";
+import { snapshotReferentiel } from "../../../shared/snapshot-referentiel.adapter.ts";
 
 describe("le référentiel en cache de la collecte", () => {
   it("relit le référentiel quand sa copie a dix minutes", async () => {

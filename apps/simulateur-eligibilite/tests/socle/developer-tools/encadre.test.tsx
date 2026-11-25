@@ -8,7 +8,7 @@ import {
 } from "../../../front/socle/developer-tools/DeveloperTools";
 import { developerToolsUnlocked } from "../../../front/socle/developer-tools/unlock";
 import { Simulateur } from "../../../front/socle/simulateur";
-import { snapshotReferentiel } from "../../../shared/referentiel";
+import { snapshotReferentiel } from "../../../shared/snapshot-referentiel.adapter";
 import { modeleDeTest, seulModele } from "../modele-de-test";
 import { seRattacher } from "../se-rattacher";
 
