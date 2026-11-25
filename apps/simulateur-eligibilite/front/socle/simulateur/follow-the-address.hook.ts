@@ -10,7 +10,7 @@
 
 import { type RefObject, useEffect, useRef } from "react";
 import type { Simulation } from "../../../core/socle/simulation";
-import { hashOf, positionIn } from "../questionnaire";
+import { PositionInTheAddressService } from "../questionnaire";
 
 export function useFollowTheAddress(
   simulation: Simulation,
@@ -21,7 +21,7 @@ export function useFollowTheAddress(
   const mounted = useRef(false);
 
   useEffect(() => {
-    const hash = hashOf(simulation.position);
+    const hash = PositionInTheAddressService.hashOf(simulation.position);
     const first = !mounted.current;
     mounted.current = true;
     if (window.location.hash === hash) return;
@@ -55,9 +55,14 @@ type Current = {
 function followTheHistory(current: RefObject<Current>) {
   const { simulation, onChange } = current.current;
   const { hash } = window.location;
-  if (hash === hashOf(simulation.position)) return;
-  const position = positionIn(hash);
+  if (hash === PositionInTheAddressService.hashOf(simulation.position)) return;
+  const position = PositionInTheAddressService.positionIn(hash);
   const moved = position && simulation.moveTo(position);
   if (moved) onChange(moved);
-  else window.history.replaceState(null, "", hashOf(simulation.position));
+  else
+    window.history.replaceState(
+      null,
+      "",
+      PositionInTheAddressService.hashOf(simulation.position),
+    );
 }

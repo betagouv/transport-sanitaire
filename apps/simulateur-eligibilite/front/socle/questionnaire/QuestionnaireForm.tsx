@@ -17,7 +17,7 @@ import type {
   Validated,
 } from "../../../core/socle/questionnaire-engine";
 
-import type { CounterOf } from "./count-a-text";
+import type { CounterOf } from "./count-a-text.service";
 import { QuestionFields } from "./QuestionFields";
 import type {
   QuestionnaireOptions,

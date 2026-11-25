@@ -14,7 +14,7 @@ import {
 } from "../../../../core/socle/questionnaire-engine";
 
 import { EstablishAPreconisation } from "../../../../core/socle/simulation";
-import { errorsOf } from "../../../../front/socle/questionnaire";
+import { WordAProblemService } from "../../../../front/socle/questionnaire";
 import { MINEUR, PLUSIEURS_PERMISSIONS } from "../p2/reponses-de-la-permission";
 import { ciblesValant } from "../r2/traces-du-prescripteur";
 
@@ -95,10 +95,10 @@ describe("les réponses de Q3.1", () => {
       "Q3.1.2": "4_ALLER_RETOUR_DIFFERENT",
     };
 
-    expect(
-      errorsOf(question("Q3.1.2", "S3138g"), "4_ALLER_RETOUR_DIFFERENT"),
-    ).toEqual(["Ces deux trajets nécessitent deux simulations distinctes."]);
     const trajet = question("Q3.1.2", "S3138g");
+    expect(
+      WordAProblemService.errorsOf(trajet, "4_ALLER_RETOUR_DIFFERENT"),
+    ).toEqual(["Ces deux trajets nécessitent deux simulations distinctes."]);
     expect(trajet.offersRestartOn("4_ALLER_RETOUR_DIFFERENT")).toBe(true);
     expect(
       new Questionnaire(DU_TRAJET)
@@ -177,7 +177,10 @@ describe("les réponses de Q3.1", () => {
 
   it.each([0, 1.5])("refuse %s transport", (nombre) => {
     expect(
-      errorsOf(question("Q3.1.1", "S3138g", PRESCRIPTION), nombre),
+      WordAProblemService.errorsOf(
+        question("Q3.1.1", "S3138g", PRESCRIPTION),
+        nombre,
+      ),
     ).not.toEqual([]);
   });
 });

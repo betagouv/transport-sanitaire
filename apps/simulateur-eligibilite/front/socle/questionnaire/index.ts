@@ -2,7 +2,7 @@
 // formulaire d'une simulation, le stepper, les phrases d'un problème, et la
 // position de la simulation dans l'adresse de la page.
 
-export { hashOf, positionIn } from "./position-in-the-address";
+export { PositionInTheAddressService } from "./position-in-the-address.service";
 export { type DebugTraceProps, QuestionnaireForm } from "./QuestionnaireForm";
 export { NextStep, Stepper } from "./Stepper";
-export { errorsOf } from "./word-a-problem";
+export { WordAProblemService } from "./word-a-problem.service";

@@ -25,4 +25,4 @@ La B réduite est choisie.
 l'adresse sans donnée. Pour la mesure d'audience, la correction reste dans la
 même simulation : elle n'ouvre ni étape ni exposition, et change d'adresse sans
 rien envoyer à Matomo. Le détail de la correction est dans le code et ses
-tests (`answer-correction.vo.ts`, `position-in-the-address.ts`, `correction.test.ts`).
+tests (`answer-correction.vo.ts`, `position-in-the-address.service.ts`, `correction.test.ts`).
