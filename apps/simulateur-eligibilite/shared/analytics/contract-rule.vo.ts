@@ -5,6 +5,7 @@
 // n'envoie pas : elles ne lisent ici que les types qu'elle connaît.
 
 import type { AnalyticsEvent } from "./analytics-event.types.ts";
+import { isDocumentSupport } from "./typographic-fields.constants.ts";
 
 export class ContractRule {
   /** Le numéro de la condition dans le schéma, à partir de 1 : `3`, `19 à 21`. */
@@ -142,8 +143,6 @@ export const CONTRACT_RULES: readonly ContractRule[] = [
 
 // ---- implémentation ----
 
-const DOCUMENT_SUPPORTS: readonly string[] = ["S3138g", "S3139h", "S3141"];
-
 function ofType(...types: AnalyticsEvent["type"][]): Test {
   return (event) => types.includes(event.type);
 }
@@ -172,7 +171,7 @@ function composedOf(
 }
 
 function supportOfADocument({ support }: AnalyticsEvent): boolean {
-  return support !== undefined && DOCUMENT_SUPPORTS.includes(support);
+  return isDocumentSupport(support);
 }
 
 // Les champs attendus et mesurés sont tous du support de la mesure.
