@@ -1,6 +1,6 @@
 // Ce que le socle attend du métier d'un modèle : ses questions, avant et après
 // le verrou, ce qui calcule la préconisation, et ses seeds. Rien ne s'y
-// affiche : l'écran du modèle (`front/socle/model.ts`) s'y ajoute.
+// affiche : l'écran du modèle (`front/socle/model.types.ts`) s'y ajoute.
 //
 // Le socle déroule le parcours et ne lit aucune clé du modèle. Il transporte les
 // réponses, les faits et les cibles de l'un à l'autre (`simulation/`).

@@ -21,7 +21,7 @@ import {
 
 import { model as eligibilite } from "../../front/models/eligibilite";
 import { model as fake } from "../../front/models/fake";
-import type { Model } from "../../front/socle/model";
+import type { Model } from "../../front/socle/model.types";
 import { racine } from "../inspection-des-sources";
 
 const MODELES: Record<string, Model> = { eligibilite, fake };

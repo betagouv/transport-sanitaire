@@ -1,7 +1,7 @@
 // Le gabarit du cerfa du modèle de test, retenu ou remplacé : pour voir le
 // second résultat pendant que son PDF se génère.
 
-import type { Model } from "../../../front/socle/model";
+import type { Model } from "../../../front/socle/model.types";
 import { modeleDeTest } from "../modele-de-test";
 
 type Gabarit = () => Promise<ArrayBuffer | Uint8Array>;

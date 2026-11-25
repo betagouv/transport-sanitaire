@@ -32,7 +32,7 @@ import {
   type StrictTextEdits,
 } from "../../cerfa";
 
-import type { CerfaInput, Model } from "../../model";
+import type { CerfaInput, Model } from "../../model.types";
 import { type DebugTraceProps, Stepper } from "../../questionnaire";
 
 import { SecondaryButton } from "../../ui";

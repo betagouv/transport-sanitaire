@@ -4,7 +4,7 @@
 
 import type { Answers } from "../../../../core/socle/questionnaire-engine";
 import type { Simulation } from "../../../../core/socle/simulation";
-import type { FirstResult, Model } from "../../model";
+import type { FirstResult, Model } from "../../model.types";
 
 export type Loading = FirstResult | Promise<FirstResult>;
 

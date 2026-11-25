@@ -3,7 +3,7 @@
 
 import { describe, expect, it } from "vitest";
 import { Simulation } from "../../../core/socle/simulation";
-import type { FirstResult } from "../../../front/socle/model";
+import type { FirstResult } from "../../../front/socle/model.types";
 import { FirstResultService } from "../../../front/socle/simulateur/screens/first-result.service";
 import { modeleDeTest } from "../modele-de-test";
 import { qui } from "./questionnaire";

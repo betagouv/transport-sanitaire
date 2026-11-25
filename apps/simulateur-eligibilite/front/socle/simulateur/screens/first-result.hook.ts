@@ -2,7 +2,7 @@
 // une fois chargé quand il le promet (`first-result.service.ts`).
 
 import { useEffect, useState } from "react";
-import type { FirstResult } from "../../model";
+import type { FirstResult } from "../../model.types";
 import type { Loading } from "./first-result.service";
 
 // Un état plutôt que `use()` : une suspension née dans un `act` synchrone, celui

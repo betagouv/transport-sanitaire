@@ -3,8 +3,9 @@
 // Comme dans `architecture.test.ts`, chaque règle donne son pourquoi dans son
 // message d'échec.
 
+import ts from "typescript";
 import { describe, expect, it } from "vitest";
-import { importsDe, sources, texteDe } from "./inspection-des-sources";
+import { astDe, importsDe, sources, texteDe } from "./inspection-des-sources";
 
 // Le journal, côté serveur et côté écran, et la mesure d'audience.
 const JOURNAL = ["server/journal", "front/socle/analytics"];
@@ -53,6 +54,33 @@ const estUnImportDeZodDUneValidation = (
   paquet: string | undefined,
 ) => estUneValidation(fichier) && paquet === "zod";
 
+// Exemption : dans `front/`, un `.types.ts` peut faire un `import type` de
+// `react`, parce que le contrat du modèle porte des composants React. Un import
+// de valeur reste refusé, et `import { type X } from "react"` aussi : sous
+// `verbatimModuleSyntax` il laisse un import dans le code compilé. Un seul
+// import de `react` qui n'est pas un `import type` refuse tous ceux du fichier.
+const estUnImportTypeDeReactDuFront = (
+  fichier: string,
+  paquet: string | undefined,
+) =>
+  fichier.startsWith("front/") &&
+  fichier.endsWith(".types.ts") &&
+  paquet === "react" &&
+  tousLesImportsDeReactSontDesTypes(fichier);
+
+function tousLesImportsDeReactSontDesTypes(fichier: string): boolean {
+  const importsDeType = astDe(fichier).statements.filter(
+    (instruction) =>
+      ts.isImportDeclaration(instruction) &&
+      ts.isStringLiteral(instruction.moduleSpecifier) &&
+      instruction.moduleSpecifier.text === "react" &&
+      instruction.importClause?.isTypeOnly === true,
+  );
+  return importsDeType.length === paquetsDe(fichier).filter(estReact).length;
+}
+
+const estReact = (paquet: string | undefined) => paquet === "react";
+
 const estUnAdaptateur = (fichier: string) => /\.adapter(\.ts)?$/.test(fichier);
 
 // Un index dit ce que son module promet : il peut exporter un adaptateur. Un
@@ -100,12 +128,14 @@ describe("le sens des dépendances", () => {
       paquetsDe(f)
         .filter((paquet) => !estUnModuleNodeDuServeur(f, paquet))
         .filter((paquet) => !estUnImportDeZodDUneValidation(f, paquet))
+        .filter((paquet) => !estUnImportTypeDeReactDuFront(f, paquet))
         .map((paquet) => `${f} → ${paquet}`),
     );
     expect(
       fautifs,
       "Seul un adaptateur (`.adapter.ts`) importe un paquet (ARCH-004), sauf " +
-        "`zod` dans un `.schema.ts` : le " +
+        "`zod` dans un `.schema.ts` et `import type` de `react` dans un " +
+        "`.types.ts` de `front/` : le " +
         "domaine tient sans lui, et en changer ne touche qu'un fichier. Passe " +
         "par le port de l'adaptateur, ou écris-en un.",
     ).toEqual([]);

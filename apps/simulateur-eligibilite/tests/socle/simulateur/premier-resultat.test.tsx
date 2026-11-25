@@ -13,7 +13,7 @@ import {
   within,
 } from "@testing-library/react";
 import { afterEach, describe, expect, it } from "vitest";
-import type { FirstResult } from "../../../front/socle/model";
+import type { FirstResult } from "../../../front/socle/model.types";
 import {
   allerAuResultat,
   BOISSON,

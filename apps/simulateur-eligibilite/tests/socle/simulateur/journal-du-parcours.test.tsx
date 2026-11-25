@@ -6,7 +6,7 @@ import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it } from "vitest";
 import { App } from "../../../front/socle/app";
-import type { Model } from "../../../front/socle/model";
+import type { Model } from "../../../front/socle/model.types";
 import type { AnalyticsEvent } from "../../../shared/analytics/analytics-event.types";
 import type { Referentiel } from "../../../shared/referentiel";
 import { journalDeTest } from "../analytics/journal-de-test";

@@ -1,7 +1,7 @@
 import { screen } from "@testing-library/react";
 import { beforeEach, describe, expect, it } from "vitest";
 import { Reading } from "../../../core/socle/questionnaire-engine";
-import type { AldIndicator, Model } from "../../../front/socle/model";
+import type { AldIndicator, Model } from "../../../front/socle/model.types";
 import { audienceDeTest } from "../analytics/audience-de-test";
 import { given, modeleDeTest } from "../modele-de-test";
 import {

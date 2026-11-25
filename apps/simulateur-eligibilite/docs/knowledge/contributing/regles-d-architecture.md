@@ -67,7 +67,7 @@ prescrit`, `› les règles publicodes ne portent que de l'éligibilité`.
 - Un modèle a `core/models/<nom>/` (le métier) et `front/models/<nom>/` (l'écran),
   sous le même nom.
 - Le socle ne le connaît que par `CoreModel` (`core/socle/model.types.ts`) et
-  `Model` (`front/socle/model.ts`). Il n'importe rien d'un modèle.
+  `Model` (`front/socle/model.types.ts`). Il n'importe rien d'un modèle.
 - Un modèle n'importe du socle que `core/socle/index.ts` et `front/socle/index.ts`.
 - Aucun modèle n'importe l'autre, d'un côté comme de l'autre.
 - Le socle dit ce qui a été montré, validé, coché. Il ne conclut rien : le modèle
@@ -112,6 +112,9 @@ manque à son contrat s'ajoute à l'index. Les tests d'un module
   porte du serveur), le `.client.ts` (l'accès à l'extérieur) et le `.schema.ts`
   (une validation zod : il importe `zod`, et aucun autre paquet). Un fichier
   sans suffixe hors de `core/` n'est pas jugé : il n'a pas encore de rôle.
+- Dans `front/`, un `.types.ts` peut faire un `import type` de `react`, et de
+  `react` seulement : le contrat `Model` porte des composants React, et son
+  couplage à React est normal côté écran. Un import de valeur reste refusé.
 - Le domaine de `server/` peut importer un module `node:*` : c'est la bibliothèque
   standard de l'environnement, pas une infrastructure à remplacer. `core/`,
   `front/` et `shared/` restent sous la règle, car ils tournent aussi dans le

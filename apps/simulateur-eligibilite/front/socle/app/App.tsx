@@ -14,7 +14,7 @@ import {
   ToolButton,
 } from "../developer-tools";
 
-import type { Model } from "../model";
+import type { Model } from "../model.types";
 import { RattachementScreen } from "../rattachement";
 import { SeedsScreen } from "../seeds";
 import { Container } from "../ui";

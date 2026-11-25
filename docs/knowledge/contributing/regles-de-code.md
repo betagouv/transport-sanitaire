@@ -587,8 +587,8 @@ Cette règle ne vaut que pour `apps/simulateur-eligibilite`, hors composants Rea
 Un `index.ts` s'en passe : il ne fait que réexporter. Un fichier qui assemble les
 classes d'une racine (`container.ts`, `server.ts`, `app.ts`, `main.tsx`) s'en
 passe aussi. Une fabrique porte le nom de ce qu'elle fabrique et vit dans son
-dossier, à côté de son produit : une `.entity` ou une `.vo` du même nom. Un
-`.constants.ts` est du domaine : une entité, un objet-valeur ou un
+dossier, à côté de son produit : une `.entity`, une `.vo` ou des `.types` du même
+nom. Un `.constants.ts` est du domaine : une entité, un objet-valeur ou un
 service peut l'importer. Un `.schema.ts` n'en est pas : un contrôleur l'importe.
 Un hook ne porte aucune règle (QUAL-019).
 

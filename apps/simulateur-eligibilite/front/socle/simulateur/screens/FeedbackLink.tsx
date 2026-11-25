@@ -14,7 +14,7 @@
 // Sans intention connue, aucun lien : on ne la suppose pas.
 
 import type { Context } from "../../../../core/socle/questionnaire-engine";
-import type { Intent, Model } from "../../model";
+import type { Intent, Model } from "../../model.types";
 import "./feedback-link.css";
 
 /** L'avis que le modèle propose pour ces réponses. `null` : aucun. */

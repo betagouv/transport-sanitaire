@@ -33,19 +33,19 @@ export {
   text,
 } from "./cerfa";
 export { VERSION_APP } from "./deployed-version";
-export {
-  type AldIndicator,
-  defineModel,
-  type Feedback,
-  type FirstResult,
-  type Intent,
-  type Mode,
-  type ResultatProps,
-  type ResultCodes,
-  type Sheet,
-  type TransportComposition,
-  type TypographicFieldId,
-} from "./model";
+export { defineModel } from "./model.factory";
+export type {
+  AldIndicator,
+  Feedback,
+  FirstResult,
+  Intent,
+  Mode,
+  ResultatProps,
+  ResultCodes,
+  Sheet,
+  TransportComposition,
+  TypographicFieldId,
+} from "./model.types";
 export { referentielDuServeur } from "./rattachement";
 export { ServerApiClient } from "./server-api";
 export { applyTheme, followHostTheme } from "./theme";
