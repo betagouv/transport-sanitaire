@@ -9,7 +9,7 @@ import {
   enrichitLeReferentiel,
   type RattachementSaisi,
 } from "../../../shared/rattachement-saisi.vo";
-import type { Referentiel } from "../../../shared/referentiel";
+import type { Referentiel } from "../../../shared/referentiel.port";
 
 export class RegisterTheRattachement {
   readonly #referentiel: Referentiel;

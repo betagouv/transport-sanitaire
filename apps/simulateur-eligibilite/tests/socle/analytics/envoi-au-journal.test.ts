@@ -12,7 +12,7 @@ import { createContainer } from "../../../server/container.ts";
 import type { JournalEntry } from "../../../server/journal/journal-entry.entity.ts";
 import { MemoryJournal } from "../../../server/journal/memory-journal.adapter.ts";
 import type { AnalyticsEvent } from "../../../shared/analytics/analytics-event.types.ts";
-import { snapshotReferentiel } from "../../../shared/referentiel.ts";
+import { snapshotReferentiel } from "../../../shared/snapshot-referentiel.adapter.ts";
 import { BUILD, simulationStarted } from "../journal/evenements.ts";
 import { type AppDeTest, demarrer } from "../server/serveur-de-test.ts";
 import { ConsentementDeTest } from "./consentement-de-test.ts";

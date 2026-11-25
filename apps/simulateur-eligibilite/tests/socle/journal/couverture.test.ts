@@ -10,7 +10,7 @@ import type { Journal } from "../../../server/journal/journal.port.ts";
 import { MemoryJournal } from "../../../server/journal/memory-journal.adapter.ts";
 import { PostgresJournal } from "../../../server/journal/postgres-journal.adapter.ts";
 import { ReportAlive } from "../../../server/journal/report-alive.usecase.ts";
-import { snapshotReferentiel } from "../../../shared/referentiel.ts";
+import { snapshotReferentiel } from "../../../shared/snapshot-referentiel.adapter.ts";
 import {
   type AppDeTest,
   demarrer,

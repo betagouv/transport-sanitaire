@@ -8,7 +8,7 @@ import type { Seed } from "../../../core/socle/simulation";
 import type { AnalyticsUseCases } from "../../../front/socle/analytics";
 import { App } from "../../../front/socle/app";
 import type { FirstResult, Model } from "../../../front/socle/model.types";
-import { snapshotReferentiel } from "../../../shared/referentiel";
+import { snapshotReferentiel } from "../../../shared/snapshot-referentiel.adapter";
 import { modeleDeTest, seulModele } from "../modele-de-test";
 import { seRattacher } from "../se-rattacher";
 

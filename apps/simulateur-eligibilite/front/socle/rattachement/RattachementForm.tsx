@@ -13,7 +13,7 @@
 
 import { useState } from "react";
 import { LONGUEUR_MAX_D_UN_NOM } from "../../../shared/rattachement-saisi.vo";
-import type { Referentiel } from "../../../shared/referentiel";
+import type { Referentiel } from "../../../shared/referentiel.port";
 import { Container, SelectField, TextField } from "../ui";
 import { optionsDuChoix } from "./choix";
 import type {

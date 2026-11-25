@@ -6,7 +6,7 @@ import {
   type RattachementSaisi,
   saisieComplete,
 } from "../../../shared/rattachement-saisi.vo";
-import type { Referentiel } from "../../../shared/referentiel";
+import type { Referentiel } from "../../../shared/referentiel.port";
 import { decoderChoix } from "./choix";
 import { estAutre, type Listes, useListes } from "./listes.hook";
 import type { Structure } from "./structures";

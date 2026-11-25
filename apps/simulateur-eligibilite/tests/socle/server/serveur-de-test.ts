@@ -10,7 +10,7 @@ import type { Journal } from "../../../server/journal/journal.port.ts";
 import type { JournalPages } from "../../../server/journal/journal-pages.port.ts";
 import { MemoryJournal } from "../../../server/journal/memory-journal.adapter.ts";
 import type { WriteLimits } from "../../../server/protect-the-api.ts";
-import type { Referentiel } from "../../../shared/referentiel.ts";
+import type { Referentiel } from "../../../shared/referentiel.port.ts";
 import { BUILD } from "../journal/evenements.ts";
 
 export type AppDeTest = { base: string; close: () => Promise<void> };

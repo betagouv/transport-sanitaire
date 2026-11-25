@@ -7,10 +7,8 @@ import {
   rattachementEnSession,
 } from "../../../front/socle/rattachement";
 import type { RattachementSaisi } from "../../../shared/rattachement-saisi.vo";
-import {
-  type Referentiel,
-  snapshotReferentiel,
-} from "../../../shared/referentiel";
+import type { Referentiel } from "../../../shared/referentiel.port";
+import { snapshotReferentiel } from "../../../shared/snapshot-referentiel.adapter";
 import { modeleDeTest, seulModele } from "../modele-de-test";
 
 // L'écran de rattachement : on n'atteint pas le simulateur sans s'être rattaché.

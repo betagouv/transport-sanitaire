@@ -8,10 +8,8 @@
 
 import { afterEach, describe, expect, it } from "vitest";
 import { MemoryJournal } from "../../../server/journal/memory-journal.adapter.ts";
-import {
-  type Referentiel,
-  snapshotReferentiel,
-} from "../../../shared/referentiel.ts";
+import type { Referentiel } from "../../../shared/referentiel.port.ts";
+import { snapshotReferentiel } from "../../../shared/snapshot-referentiel.adapter.ts";
 import { type AppDeTest, demarrer, postTo } from "../server/serveur-de-test.ts";
 import { simulationStarted } from "./evenements.ts";
 

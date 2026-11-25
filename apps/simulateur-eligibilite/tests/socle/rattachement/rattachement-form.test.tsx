@@ -2,10 +2,8 @@ import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
 import { RattachementForm } from "../../../front/socle/rattachement/RattachementForm";
-import {
-  type Referentiel,
-  snapshotReferentiel,
-} from "../../../shared/referentiel";
+import type { Referentiel } from "../../../shared/referentiel.port";
+import { snapshotReferentiel } from "../../../shared/snapshot-referentiel.adapter";
 
 // L'écran est testé par ce que voit l'utilisateur : choisir, lire le champ
 // suivant, constater l'entrée dans le simulateur (`onValide`).

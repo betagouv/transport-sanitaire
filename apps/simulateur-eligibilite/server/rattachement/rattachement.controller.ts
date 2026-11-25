@@ -8,7 +8,7 @@ import {
   type RattachementSaisi,
   saisieComplete,
 } from "../../shared/rattachement-saisi.vo.ts";
-import type { Referentiel } from "../../shared/referentiel.ts";
+import type { Referentiel } from "../../shared/referentiel.port.ts";
 
 export function rattachementRoutes(referentiel: Referentiel): Router {
   const router = express.Router();

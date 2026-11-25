@@ -3,7 +3,7 @@
 // Rien d'autre : aucun nom, choisi ou saisi, ne part.
 
 import type { RattachementSaisi } from "./rattachement-saisi.vo.ts";
-import type { RattachementEnregistre } from "./referentiel.ts";
+import type { RattachementEnregistre } from "./referentiel.port.ts";
 
 export class RattachementDuReferentiel {
   readonly etabId?: string;

@@ -4,10 +4,8 @@
 // Rien ne s'y crée au chargement du module : `server.ts` l'appelle avec la
 // configuration, les tests avec leurs propres adaptateurs.
 
-import {
-  type Referentiel,
-  snapshotReferentiel,
-} from "../shared/referentiel.ts";
+import type { Referentiel } from "../shared/referentiel.port.ts";
+import { snapshotReferentiel } from "../shared/snapshot-referentiel.adapter.ts";
 import type { Configuration } from "./configuration.ts";
 import { GristApiClient } from "./grist/grist-api.client.ts";
 import { CachedReferentiel } from "./journal/cached-referentiel.adapter.ts";

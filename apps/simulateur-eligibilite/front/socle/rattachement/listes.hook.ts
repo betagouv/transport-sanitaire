@@ -8,7 +8,7 @@ import type {
   Etablissement,
   Referentiel,
   Service,
-} from "../../../shared/referentiel";
+} from "../../../shared/referentiel.port";
 import {
   estEtablissementFourreTout,
   type StructureAffichee,

@@ -9,7 +9,7 @@ import { page, QuestionFactory } from "../../../core/socle";
 import { App } from "../../../front/socle/app/App";
 import type { Model } from "../../../front/socle/model.types";
 import { rangerRattachement } from "../../../front/socle/rattachement";
-import { snapshotReferentiel } from "../../../shared/referentiel";
+import { snapshotReferentiel } from "../../../shared/snapshot-referentiel.adapter";
 import { modeleDeTest } from "../modele-de-test";
 import { seRattacher } from "../se-rattacher";
 

@@ -8,7 +8,7 @@
 // la vieille copie répond pour un id qu'elle connaît ; pour un autre, la
 // lecture échoue, et la collecte répond 503 : le navigateur réessaiera.
 
-import type { Referentiel } from "../../shared/referentiel.ts";
+import type { Referentiel } from "../../shared/referentiel.port.ts";
 import type { KnownRattachements } from "./known-rattachements.port.ts";
 
 /** L'horloge, en millisecondes : `Date.now`, sauf en test. */

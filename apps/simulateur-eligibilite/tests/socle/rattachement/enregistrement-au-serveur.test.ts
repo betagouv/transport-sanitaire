@@ -7,10 +7,8 @@ import { referentielDuServeur } from "../../../front/socle/rattachement";
 import { RegisterTheRattachement } from "../../../front/socle/rattachement/register-the-rattachement.usecase";
 import { ServerApiClient } from "../../../front/socle/server-api";
 import { RattachementDuReferentiel } from "../../../shared/rattachement-du-referentiel.vo";
-import {
-  type Referentiel,
-  snapshotReferentiel,
-} from "../../../shared/referentiel";
+import type { Referentiel } from "../../../shared/referentiel.port";
+import { snapshotReferentiel } from "../../../shared/snapshot-referentiel.adapter";
 import { type AppDeTest, demarrer } from "../server/serveur-de-test";
 
 let app: AppDeTest;
