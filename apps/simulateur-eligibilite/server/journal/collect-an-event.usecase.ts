@@ -8,7 +8,7 @@
 // (ANA22-01). La collecte ne connaît le stockage et le référentiel que par
 // leurs ports.
 
-import type { AnalyticsEvent } from "../../shared/analytics/analytics-event.ts";
+import type { AnalyticsEvent } from "../../shared/analytics/analytics-event.types.ts";
 import type { Journal, QuarantineReason } from "./journal.port.ts";
 import { type Build, JournalEntry } from "./journal-entry.entity.ts";
 import type { KnownRattachements } from "./known-rattachements.port.ts";

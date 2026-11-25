@@ -10,7 +10,7 @@
 //
 // Les tables se créent à la première requête si elles manquent.
 
-import type { RattachementDuParcours } from "../../shared/analytics/analytics-event.ts";
+import type { RattachementDuParcours } from "../../shared/analytics/analytics-event.types.ts";
 import type { Sql } from "../postgres/postgres.client.ts";
 import type {
   Journal,

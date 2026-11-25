@@ -4,7 +4,7 @@
 // page rouverte ne la redit pas, une autre page devenue la dernière la dit à son
 // tour. Un changement de parcours ne refait pas une limite déjà affichée.
 
-import type { EventDetails } from "../../../shared/analytics/analytics-event";
+import type { EventDetails } from "../../../shared/analytics/analytics-event.types";
 import type { PageView } from "./page-view.entity";
 
 export class PhaseBoundaries {

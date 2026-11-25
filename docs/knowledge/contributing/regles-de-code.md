@@ -578,6 +578,8 @@ Cette règle ne vaut que pour `apps/simulateur-eligibilite`, hors composants Rea
 | `.error.ts` | une erreur du métier |
 | `.factory.ts` | ce qui fabrique une notion |
 | `.types.ts` | des types, et rien d'autre |
+| `.constants.ts` | des listes fermées et les types qui en dérivent, sans paquet |
+| `.schema.ts` | une validation zod |
 | `.controller.ts` | une entrée HTTP : elle valide la requête et appelle un use case |
 | `.hook.ts` | l'adaptateur de l'écran : du React, et un appel de use case par événement |
 | `.client.ts` | un client HTTP préconfiguré : adresse, authentification, JSON, erreurs |
@@ -585,11 +587,14 @@ Cette règle ne vaut que pour `apps/simulateur-eligibilite`, hors composants Rea
 Un `index.ts` s'en passe : il ne fait que réexporter. Un fichier qui assemble les
 classes d'une racine (`container.ts`, `server.ts`, `app.ts`, `main.tsx`) s'en
 passe aussi. Une fabrique porte le nom de ce qu'elle fabrique et vit dans son
-dossier. Un hook ne porte aucune règle (QUAL-019).
+dossier, à côté de son produit : une `.entity` ou une `.vo` du même nom. Un
+`.constants.ts` est du domaine : une entité, un objet-valeur ou un
+service peut l'importer. Un `.schema.ts` n'en est pas : un contrôleur l'importe.
+Un hook ne porte aucune règle (QUAL-019).
 
 Un fichier qui n'a aucun rôle de la table (un utilitaire d'écran, une table de
-constantes, la déclaration d'un modèle) reste sans suffixe. Le suffixe `.adapter`
-suppose un port : sans port à satisfaire, le fichier n'est pas un adaptateur.
+valeurs qui n'est pas une liste fermée, la déclaration d'un modèle) reste sans
+suffixe. Le suffixe `.adapter` suppose un port : sans port à satisfaire, le fichier n'est pas un adaptateur.
 
 **Exemples**
 

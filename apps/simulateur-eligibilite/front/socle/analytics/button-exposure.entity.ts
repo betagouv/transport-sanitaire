@@ -3,7 +3,7 @@
 // avis ». Son exposition dure tant qu'il reste à la même place, et chacun de
 // ses clics s'y rattache.
 
-import type { AnalyticsEvent } from "../../../shared/analytics/analytics-event";
+import type { AnalyticsEvent } from "../../../shared/analytics/analytics-event.types";
 import type { ButtonPlace, Placed } from "./button-place.vo";
 
 type ButtonEvent = Placed & Pick<AnalyticsEvent, "type" | "exposure_id">;

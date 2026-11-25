@@ -12,7 +12,7 @@
 // L'opt-out du CMS vaut aussi pour le journal (ADR-0011) : rien ne part avant le
 // choix du prescripteur, ni après un refus.
 
-import type { AnalyticsEvent } from "../../../shared/analytics/analytics-event";
+import type { AnalyticsEvent } from "../../../shared/analytics/analytics-event.types";
 import { ServerApiClient, ServerApiError } from "../server-api";
 import type { Consent, ConsentSource } from "./consent.port";
 import type { Journal } from "./journal.port";

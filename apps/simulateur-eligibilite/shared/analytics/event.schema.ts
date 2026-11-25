@@ -9,7 +9,6 @@
 import { z } from "zod";
 import {
   ACTIVITY_ORIGINS,
-  type AnalyticsEvent,
   BOUNDARIES,
   BUTTON_IDS,
   CLOSURE_REASONS,
@@ -21,9 +20,10 @@ import {
   SCREENS,
   SUPPORTS,
   TRANSPORT_COMPOSITIONS,
-} from "./analytics-event.ts";
+} from "./analytics-event.constants.ts";
+import type { AnalyticsEvent } from "./analytics-event.types.ts";
 import { CONTRACT_RULES } from "./contract-rule.vo.ts";
-import { TYPOGRAPHIC_FIELDS } from "./typographic-fields.ts";
+import { TYPOGRAPHIC_FIELDS } from "./typographic-fields.constants.ts";
 
 /** Ce qui est reçu sort du contrat : un champ en trop, ou mal formé. */
 type OutOfContract = undefined;

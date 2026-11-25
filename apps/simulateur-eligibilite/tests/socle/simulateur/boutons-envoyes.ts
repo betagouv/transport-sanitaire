@@ -7,7 +7,7 @@
 
 import { Reading } from "../../../core/socle";
 import type { Intent, Model } from "../../../front/socle/model";
-import type { AnalyticsEvent } from "../../../shared/analytics/analytics-event";
+import type { AnalyticsEvent } from "../../../shared/analytics/analytics-event.types";
 import { journalDeTest } from "../analytics/journal-de-test";
 import { modeleDeTest } from "../modele-de-test";
 import { ouvrirLeSimulateur } from "./questionnaire";

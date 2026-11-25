@@ -11,7 +11,7 @@ import { describe, expect, it } from "vitest";
 import {
   explainARefusal,
   parseAnAnalyticsEvent,
-} from "../../../shared/analytics/event-schema.ts";
+} from "../../../shared/analytics/event.schema.ts";
 import { simulationStarted } from "./evenements.ts";
 
 type Event = Record<string, unknown>;

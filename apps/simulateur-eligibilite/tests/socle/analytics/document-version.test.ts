@@ -4,10 +4,10 @@
 import { describe, expect, it } from "vitest";
 import { Journey } from "../../../front/socle/analytics/journey.entity";
 import type {
-  AnalyticsEvent,
   Mode,
   TransportComposition,
-} from "../../../shared/analytics/analytics-event";
+} from "../../../shared/analytics/analytics-event.constants";
+import type { AnalyticsEvent } from "../../../shared/analytics/analytics-event.types";
 import { PROVENANCE } from "./journal-de-test";
 
 // Le R2 affiché : ses codes, sans motif.

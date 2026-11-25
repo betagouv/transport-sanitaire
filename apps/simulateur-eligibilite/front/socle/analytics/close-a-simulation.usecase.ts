@@ -2,7 +2,7 @@
 // avant que la suivante s'ouvre. Seule « Faire une nouvelle simulation » la
 // ferme pour l'instant ; l'inactivité n'est pas encore détectée.
 
-import type { ClosureReason } from "../../../shared/analytics/analytics-event";
+import type { ClosureReason } from "../../../shared/analytics/analytics-event.constants";
 import type { Journal } from "./journal.port";
 import type { Journey } from "./journey.entity";
 

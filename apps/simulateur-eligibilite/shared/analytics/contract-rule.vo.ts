@@ -4,7 +4,7 @@
 // règles 4 et 6 visent aussi `question_hidden` et `page_validated`, que l'app
 // n'envoie pas : elles ne lisent ici que les types qu'elle connaît.
 
-import type { AnalyticsEvent } from "./analytics-event.ts";
+import type { AnalyticsEvent } from "./analytics-event.types.ts";
 
 export class ContractRule {
   /** Le numéro de la condition dans le schéma, à partir de 1 : `3`, `19 à 21`. */

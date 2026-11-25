@@ -32,6 +32,8 @@ const ROLES = [
   "error",
   "factory",
   "types",
+  "constants",
+  "schema",
   "controller",
   "hook",
   "client",

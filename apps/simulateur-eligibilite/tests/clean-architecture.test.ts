@@ -22,7 +22,8 @@ const RACINES = ["core", "front", "server", "shared"];
 // sa raison : un composant (`.tsx`) importe React et le DSFR, un hook
 // (`.hook.ts`) est l'adaptateur de l'écran, un contrôleur (`.controller.ts`)
 // importe Express et zod à la porte du serveur, un client (`.client.ts`) est
-// l'accès à l'extérieur. Un fichier sans suffixe hors de `core/` n'a pas de
+// l'accès à l'extérieur, une validation (`.schema.ts`) importe zod, et lui
+// seul. Un fichier sans suffixe hors de `core/` n'a pas de
 // rôle (QUAL-018 ne vaut que pour certains dossiers) : il n'est pas jugé.
 const SANS_PAQUET_PARTOUT = ["core"];
 const SANS_PAQUET_DANS_LE_DOMAINE = ["front", "server", "shared"];
@@ -38,7 +39,19 @@ const estUnModuleNodeDuServeur = (
 ) => fichier.startsWith("server/") && paquet?.startsWith("node:");
 
 const dansLeDomaine = (fichier: string) =>
-  /\.(entity|vo|service|usecase|port|error|factory|types)\.ts$/.test(fichier);
+  /\.(entity|vo|service|usecase|port|error|factory|types|constants)\.ts$/.test(
+    fichier,
+  );
+
+const estUneValidation = (fichier: string) => fichier.endsWith(".schema.ts");
+
+// Exemption : une validation (`.schema.ts`) importe `zod`, et aucun autre
+// paquet. Elle est jugée comme le domaine, zod mis à part : sans cela, un
+// `.schema.ts` de `front/`, `server/` ou `shared/` ne serait pas jugé du tout.
+const estUnImportDeZodDUneValidation = (
+  fichier: string,
+  paquet: string | undefined,
+) => estUneValidation(fichier) && paquet === "zod";
 
 const estUnAdaptateur = (fichier: string) => /\.adapter(\.ts)?$/.test(fichier);
 
@@ -80,15 +93,19 @@ describe("le sens des dépendances", () => {
   it("une bibliothèque externe reste derrière un port", () => {
     const fautifs = [
       ...sources(...SANS_PAQUET_PARTOUT).filter((f) => !estUnAdaptateur(f)),
-      ...sources(...SANS_PAQUET_DANS_LE_DOMAINE).filter(dansLeDomaine),
+      ...sources(...SANS_PAQUET_DANS_LE_DOMAINE).filter(
+        (f) => dansLeDomaine(f) || estUneValidation(f),
+      ),
     ].flatMap((f) =>
       paquetsDe(f)
         .filter((paquet) => !estUnModuleNodeDuServeur(f, paquet))
+        .filter((paquet) => !estUnImportDeZodDUneValidation(f, paquet))
         .map((paquet) => `${f} → ${paquet}`),
     );
     expect(
       fautifs,
-      "Seul un adaptateur (`.adapter.ts`) importe un paquet (ARCH-004) : le " +
+      "Seul un adaptateur (`.adapter.ts`) importe un paquet (ARCH-004), sauf " +
+        "`zod` dans un `.schema.ts` : le " +
         "domaine tient sans lui, et en changer ne touche qu'un fichier. Passe " +
         "par le port de l'adaptateur, ou écris-en un.",
     ).toEqual([]);

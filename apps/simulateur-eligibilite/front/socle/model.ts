@@ -19,8 +19,8 @@ import {
 import type {
   Mode,
   TransportComposition,
-} from "../../shared/analytics/analytics-event";
-import type { TypographicFieldId } from "../../shared/analytics/typographic-fields";
+} from "../../shared/analytics/analytics-event.constants";
+import type { TypographicFieldId } from "../../shared/analytics/typographic-fields.constants";
 import type { ResultCodes } from "./analytics";
 import type { BoundCerfa } from "./cerfa";
 

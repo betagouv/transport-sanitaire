@@ -8,7 +8,7 @@ import express, { type Request, type Response, type Router } from "express";
 import {
   explainARefusal,
   parseAnAnalyticsEvent,
-} from "../../shared/analytics/event-schema.ts";
+} from "../../shared/analytics/event.schema.ts";
 import type { CheckAlive } from "./check-alive.usecase.ts";
 import type { CollectAnEvent, Collected } from "./collect-an-event.usecase.ts";
 

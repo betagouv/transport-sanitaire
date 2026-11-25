@@ -4,10 +4,8 @@
 // et le document en R3. Deux places égales disent que le bouton est resté où il
 // était.
 
-import type {
-  AnalyticsEvent,
-  ButtonId,
-} from "../../../shared/analytics/analytics-event";
+import type { ButtonId } from "../../../shared/analytics/analytics-event.constants";
+import type { AnalyticsEvent } from "../../../shared/analytics/analytics-event.types";
 import type { ShownDocument } from "./document-version.entity";
 
 /** Un bouton de la fiche ou du document, ou l'avis. */

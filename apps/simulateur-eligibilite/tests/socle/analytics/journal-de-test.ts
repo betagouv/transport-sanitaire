@@ -12,8 +12,8 @@ import {
 import type {
   AnalyticsEvent,
   Provenance,
-} from "../../../shared/analytics/analytics-event";
-import { parseAnAnalyticsEvent } from "../../../shared/analytics/event-schema";
+} from "../../../shared/analytics/analytics-event.types";
+import { parseAnAnalyticsEvent } from "../../../shared/analytics/event.schema";
 
 /** L'app de test, telle que le build la fige. */
 export const BUILD = { app_version: "0.8.0" };

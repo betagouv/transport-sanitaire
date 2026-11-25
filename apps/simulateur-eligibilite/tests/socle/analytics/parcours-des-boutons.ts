@@ -4,7 +4,7 @@
 
 import type { Button } from "../../../front/socle/analytics/button-place.vo";
 import { Journey } from "../../../front/socle/analytics/journey.entity";
-import type { AnalyticsEvent } from "../../../shared/analytics/analytics-event";
+import type { AnalyticsEvent } from "../../../shared/analytics/analytics-event.types";
 import { PROVENANCE } from "./journal-de-test";
 
 // Le R2 affiché : ses codes, sans motif.

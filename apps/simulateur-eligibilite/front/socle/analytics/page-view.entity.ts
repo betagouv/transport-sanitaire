@@ -5,12 +5,12 @@
 // sont exposés.
 
 import {
-  type AnalyticsEvent,
   type Boundary,
   PHASES,
   type Phase,
   SCREENS,
-} from "../../../shared/analytics/analytics-event";
+} from "../../../shared/analytics/analytics-event.constants";
+import type { AnalyticsEvent } from "../../../shared/analytics/analytics-event.types";
 
 /** La page que le simulateur ouvre : sa partie, sa place, ses questions. */
 export type OpenedPage = {

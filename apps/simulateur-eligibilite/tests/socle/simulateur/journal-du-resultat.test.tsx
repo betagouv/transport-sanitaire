@@ -7,7 +7,7 @@
 
 import { screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
-import type { AnalyticsEvent } from "../../../shared/analytics/analytics-event";
+import type { AnalyticsEvent } from "../../../shared/analytics/analytics-event.types";
 import { journalDeTest } from "../analytics/journal-de-test";
 import { modeleDeTest } from "../modele-de-test";
 import {
