@@ -109,7 +109,8 @@ manque à son contrat s'ajoute à l'index. Les tests d'un module
   `node:*` aussi, sauf dans le domaine de `server/` (voir plus bas).
 - Sont exemptés : le composant `.tsx` (il importe React et le DSFR), le `.hook.ts`
   (l'adaptateur de l'écran), le `.controller.ts` (il importe Express et zod à la
-  porte du serveur), le `.client.ts` (l'accès à l'extérieur) et le `.schema.ts`
+  porte du serveur), le `.middleware.ts` (un middleware de `server/` : il importe
+  Express et ses greffons), le `.client.ts` (l'accès à l'extérieur) et le `.schema.ts`
   (une validation zod : il importe `zod`, et aucun autre paquet). Un fichier
   sans suffixe hors de `core/` n'est pas jugé : il n'a pas encore de rôle.
 - Dans `front/`, un `.types.ts` peut faire un `import type` de `react`, et de
@@ -120,7 +121,8 @@ manque à son contrat s'ajoute à l'index. Les tests d'un module
   `front/` et `shared/` restent sous la règle, car ils tournent aussi dans le
   navigateur. Risque accepté : qu'un import comme `node:http` s'y glisse.
 - Un `index.ts` peut exporter un adaptateur, et un `container.ts` assemble ceux de
-  sa racine.
+  sa racine. Les fichiers de racine que QUAL-018 nomme font de même, par leur
+  chemin : `server/server.ts`, `server/app.ts` et `front/main.tsx`.
 - Une seule porte : un modèle charge l'adaptateur publicodes sans index, pour
   rester hors du chunk d'entrée.
 - Le domaine du journal et celui de la mesure d'audience sont plus stricts : ils

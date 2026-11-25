@@ -6,7 +6,7 @@
 
 import { rattachementEnSession } from "../rattachement";
 import type { AldVerdict } from "./audience-event.entity";
-import { useAnalyticsUseCases } from "./use-cases-in-the-tree";
+import { useAnalyticsUseCases } from "./use-cases-in-the-tree.hook";
 
 /** Signale l'arrivée d'un parcours ALD sur le premier résultat. */
 export type AldResultReached = (verdict: AldVerdict, questions: number) => void;

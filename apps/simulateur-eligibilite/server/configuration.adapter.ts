@@ -15,46 +15,16 @@
 
 import { readFileSync } from "node:fs";
 import { z } from "zod";
-import type { Build } from "./journal/journal-entry.entity.ts";
-
-export type Env = Record<string, string | undefined>;
-
-export type AccesGrist = { docUrl: string; cleApi: string };
-
-export type Configuration = {
-  port: number;
-  /** Accès au doc Grist ; absent ⇒ référentiel snapshot factice (dev/CI). */
-  grist: AccesGrist | undefined;
-  /** L'URL de la base du journal des parcours ; absente ⇒ journal qui ne garde rien. */
-  journal: string | undefined;
-  /** Le jeton qui ouvre la lecture du journal ; absent ⇒ pas de lecture. */
-  journalReadToken: string | undefined;
-  /** Le nom de l'app Scalingo, écrit avec chaque événement ; `local` hors Scalingo. */
-  environment: string;
-  /** La version et le commit de l'app servie, sur le signe de vie du journal. */
-  build: Build;
-};
-
-/** Ce que l'exploitant doit corriger : une variable par ligne, et pourquoi. */
-export class ErreurDeConfiguration extends Error {
-  readonly variables: string[];
-
-  constructor(erreur: z.ZodError) {
-    const lignes = erreur.issues.map(
-      (probleme) => `  - ${String(probleme.path[0])} : ${probleme.message}`,
-    );
-    super(
-      `Démarrage impossible — configuration invalide :\n${lignes.join("\n")}`,
-    );
-    this.name = "ErreurDeConfiguration";
-    this.variables = erreur.issues.map((probleme) => String(probleme.path[0]));
-  }
-}
+import {
+  ErreurDeConfiguration,
+  type ProblemeDeConfiguration,
+} from "./configuration.error.ts";
+import type { Configuration, Env } from "./configuration.types.ts";
 
 export function lireConfiguration(env: Env = process.env): Configuration {
   const schema = enProduction(env) ? EN_PRODUCTION : VARIABLES;
   const lu = schema.safeParse(sansValeursVides(env));
-  if (!lu.success) throw new ErreurDeConfiguration(lu.error);
+  if (!lu.success) throw new ErreurDeConfiguration(problemesDe(lu.error));
   const variables = lu.data;
   const cleApi = variables.GRIST_API_KEY;
   return {
@@ -119,6 +89,15 @@ const EN_PRODUCTION = VARIABLES.extend({
   }),
   GRIST_API_KEY: z.string({ error: SANS_DEFAUT }),
 });
+
+// Ce que le validateur reproche, une variable à la fois : la première clé du
+// chemin nomme la variable.
+function problemesDe(erreur: z.ZodError): ProblemeDeConfiguration[] {
+  return erreur.issues.map((probleme) => ({
+    variable: String(probleme.path[0]),
+    raison: probleme.message,
+  }));
+}
 
 // Scalingo fournit `PORT` et pose `NODE_ENV=production`. C'est donc lui qui
 // distingue le déploiement du poste de développement, sans variable de plus.

@@ -9,14 +9,11 @@
 import { type RefObject, useEffect, useRef } from "react";
 import type { Simulation } from "../../../core/socle/simulation";
 import { rattachementEnSession } from "../rattachement";
+import type { AnalyticsUseCases } from "./container";
 import type { Journey, PageValidation } from "./journey.entity";
 import type { OpenedPage } from "./page-view.entity";
 import type { QuestionnaireRun } from "./questionnaire-run.entity";
-import {
-  type AnalyticsUseCases,
-  useAnalyticsUseCases,
-  useJourney,
-} from "./use-cases-in-the-tree";
+import { useAnalyticsUseCases, useJourney } from "./use-cases-in-the-tree.hook";
 
 export type TrackingOptions = {
   /** La simulation sur la page affichée. */

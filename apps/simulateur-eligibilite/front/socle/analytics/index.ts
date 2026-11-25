@@ -7,6 +7,7 @@ export { type AldVerdict, EventName } from "./audience-event.entity";
 export type { ButtonTracking } from "./button.hook";
 export type { Button } from "./button-place.vo";
 export { CmsConsent } from "./cms-consent.adapter";
+export { type AnalyticsUseCases, analyticsUseCases } from "./container";
 export { DiscardingAudience } from "./discarding-audience.adapter";
 export { type DocumentTracking, useDocumentTracking } from "./document.hook";
 export { useNewSimulation, useRecordTheJourney } from "./journey.hook";
@@ -25,7 +26,5 @@ export type { ResultCodes } from "./revision.entity";
 export { ServerJournal } from "./server-journal.adapter";
 export {
   AnalyticsProvider,
-  type AnalyticsUseCases,
-  analyticsUseCases,
   JourneyProvider,
-} from "./use-cases-in-the-tree";
+} from "./use-cases-in-the-tree.hook";

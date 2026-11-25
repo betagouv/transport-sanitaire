@@ -18,9 +18,9 @@ const GARDES = [
   "front/socle/server-api",
 ];
 
-// Les fichiers qui assemblent des classes ne portent pas un rôle : ils les
-// branchent, comme un `index.ts` les réexporte.
-const ASSEMBLAGES = ["front/socle/analytics/use-cases-in-the-tree.ts"];
+// Un fichier qui assemble les classes d'une racine ne porte pas un rôle : il les
+// branche, comme un `index.ts` les réexporte.
+const ASSEMBLEURS = ["index.ts", "container.ts"];
 
 const ROLES = [
   "entity",
@@ -35,6 +35,7 @@ const ROLES = [
   "constants",
   "schema",
   "controller",
+  "middleware",
   "hook",
   "client",
 ];
@@ -43,14 +44,13 @@ const ROLE = new RegExp(`\\.(${ROLES.join("|")})\\.ts$`);
 describe("un fichier dit son rôle par son suffixe", () => {
   it("chaque fichier porte un suffixe de rôle", () => {
     const fautifs = sources(...GARDES).filter(
-      (f) =>
-        basename(f) !== "index.ts" && !ASSEMBLAGES.includes(f) && !ROLE.test(f),
+      (f) => !ASSEMBLEURS.includes(basename(f)) && !ROLE.test(f),
     );
     expect(
       fautifs,
       "Un fichier dit son rôle par son suffixe (QUAL-018) : " +
-        `${ROLES.map((role) => `\`.${role}.ts\``).join(", ")}. Seul un ` +
-        "`index.ts` s'en passe. Un fichier sans rôle en mélange plusieurs : " +
+        `${ROLES.map((role) => `\`.${role}.ts\``).join(", ")}. Seuls ` +
+        "un `index.ts` et un `container.ts` s'en passent. Un fichier sans rôle en mélange plusieurs : " +
         "range chaque morceau dans le fichier du rôle qu'il tient.",
     ).toEqual([]);
   });
@@ -64,6 +64,17 @@ describe("un fichier dit son rôle par son suffixe", () => {
       "Un `.types.ts` n'exporte que des types (QUAL-018) : il disparaît à la " +
         "compilation, et s'importe sans rien charger. Une fonction ou une " +
         "constante va dans la classe de la notion qu'elle sert.",
+    ).toEqual([]);
+  });
+
+  it("un middleware vit dans server/", () => {
+    const fautifs = sources("core", "front", "shared").filter((f) =>
+      f.endsWith(".middleware.ts"),
+    );
+    expect(
+      fautifs,
+      "Un middleware (`.middleware.ts`) laisse passer ou refuse une requête " +
+        "HTTP (QUAL-018) : il appartient au serveur, et il vit dans `server/`.",
     ).toEqual([]);
   });
 

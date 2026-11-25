@@ -22,7 +22,8 @@ const RACINES = ["core", "front", "server", "shared"];
 // rôle du domaine par son suffixe. Les autres rôles sont exemptés, chacun pour
 // sa raison : un composant (`.tsx`) importe React et le DSFR, un hook
 // (`.hook.ts`) est l'adaptateur de l'écran, un contrôleur (`.controller.ts`)
-// importe Express et zod à la porte du serveur, un client (`.client.ts`) est
+// importe Express et zod à la porte du serveur, un middleware (`.middleware.ts`)
+// importe Express et ses greffons, un client (`.client.ts`) est
 // l'accès à l'extérieur, une validation (`.schema.ts`) importe zod, et lui
 // seul. Un fichier sans suffixe hors de `core/` n'a pas de
 // rôle (QUAL-018 ne vaut que pour certains dossiers) : il n'est pas jugé.
@@ -85,8 +86,19 @@ const estUnAdaptateur = (fichier: string) => /\.adapter(\.ts)?$/.test(fichier);
 
 // Un index dit ce que son module promet : il peut exporter un adaptateur. Un
 // conteneur assemble les classes d'une racine : il les choisit et les branche.
+// Les fichiers de la racine que QUAL-018 nomme font de même : le point d'entrée
+// du serveur et son app Express, le point d'entrée de l'écran. Ils sont nommés
+// par leur chemin, pas par leur nom : un `app.ts` au fond d'un dossier n'est pas
+// une racine.
+const ASSEMBLEURS_DE_RACINE = [
+  "server/server.ts",
+  "server/app.ts",
+  "front/main.tsx",
+];
 const assemble = (fichier: string) =>
-  fichier.endsWith("/index.ts") || /(^|\/)container\.ts$/.test(fichier);
+  fichier.endsWith("/index.ts") ||
+  /(^|\/)container\.ts$/.test(fichier) ||
+  ASSEMBLEURS_DE_RACINE.includes(fichier);
 
 // Le moteur de décision, que le modèle importe sans passer par un index : il
 // amènerait publicodes dans le chunk d'entrée (`modules-du-socle.test.ts`).

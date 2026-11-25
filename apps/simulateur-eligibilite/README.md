@@ -98,7 +98,7 @@ jamais exposées au front.
 
 Les variables marquées **prod** n'ont pas de valeur par défaut : leur repli est un
 référentiel inventé, ce qui n'a de sens que sur un poste de développement. En production
-(`NODE_ENV=production`, que pose Scalingo), `server/configuration.ts` refuse donc une
+(`NODE_ENV=production`, que pose Scalingo), `server/configuration.adapter.ts` refuse donc une
 configuration incomplète : le serveur s'arrête au démarrage, avant d'ouvrir son port, sur
 la liste de ce qui cloche. Une variable posée mais vide (`GRIST_API_KEY=` dans un `.env`
 recopié) compte pour absente. Une forme invalide (`PORT=quatre-mille`, une

@@ -7,10 +7,8 @@
 
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
-import {
-  ErreurDeConfiguration,
-  lireConfiguration,
-} from "../../../server/configuration.ts";
+import { lireConfiguration } from "../../../server/configuration.adapter.ts";
+import { ErreurDeConfiguration } from "../../../server/configuration.error.ts";
 
 const PROD = { NODE_ENV: "production" };
 const CLE = "cle-grist";

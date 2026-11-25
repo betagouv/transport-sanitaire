@@ -105,7 +105,7 @@ erDiagram
   same-origin. En production, il refuse de démarrer sans la clé ni l'adresse du
   document : son repli, un référentiel factice, n'est bon que pour un poste de
   développement, et le servir en production donnerait un simulateur
-  silencieusement faux (`server/configuration.ts`).
+  silencieusement faux (`server/configuration.adapter.ts`).
 
 ## Ce que l'écran écrit dans le référentiel
 

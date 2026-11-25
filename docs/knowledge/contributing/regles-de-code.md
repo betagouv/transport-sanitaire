@@ -582,6 +582,7 @@ Cette règle ne vaut que pour `apps/simulateur-eligibilite`, hors composants Rea
 | `.schema.ts` | une validation zod |
 | `.controller.ts` | une entrée HTTP : elle valide la requête et appelle un use case |
 | `.hook.ts` | l'adaptateur de l'écran : du React, et un appel de use case par événement |
+| `.middleware.ts` | un middleware de `server/` : il laisse passer la requête ou la refuse, sans appeler de use case |
 | `.client.ts` | un client HTTP préconfiguré : adresse, authentification, JSON, erreurs |
 
 Un `index.ts` s'en passe : il ne fait que réexporter. Un fichier qui assemble les
@@ -594,7 +595,7 @@ Un hook ne porte aucune règle (QUAL-019).
 
 Un fichier qui n'a aucun rôle de la table (un utilitaire d'écran, une table de
 valeurs qui n'est pas une liste fermée, la déclaration d'un modèle) reste sans
-suffixe. Le suffixe `.adapter` suppose un port : sans port à satisfaire, le fichier n'est pas un adaptateur.
+suffixe. Le suffixe `.adapter` suppose un port : sans port à satisfaire, le fichier n'est pas un adaptateur, sauf l'adaptateur de démarrage, que seul un assembleur lit, une fois (`server/configuration.adapter.ts`).
 
 **Exemples**
 

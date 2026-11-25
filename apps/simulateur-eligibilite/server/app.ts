@@ -1,13 +1,13 @@
 // L'app Express. Elle monte l'API du rattachement et la collecte du journal
-// sous `/api`, derrière la garde de `protect-the-api.ts`, puis sert le front
+// sous `/api`, derrière la garde de `api-guard.middleware.ts`, puis sert le front
 // construit par Vite.
 //
 // `creerApp` reçoit le conteneur (`container.ts`) : les tests le créent sur le
 // snapshot et le journal en mémoire, sans mock.
 
 import express, { type Express } from "express";
+import { ApiGuard, type WriteLimits } from "./api-guard.middleware.ts";
 import type { Container } from "./container.ts";
-import { ApiGuard, type WriteLimits } from "./protect-the-api.ts";
 import { rattachementRoutes } from "./rattachement/rattachement.controller.ts";
 
 export type AppOptions = {

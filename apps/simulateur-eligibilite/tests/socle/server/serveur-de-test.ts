@@ -4,12 +4,12 @@
 
 import type { Server } from "node:http";
 import type { AddressInfo } from "node:net";
+import type { WriteLimits } from "../../../server/api-guard.middleware.ts";
 import { creerApp } from "../../../server/app.ts";
 import { createContainer } from "../../../server/container.ts";
 import type { Journal } from "../../../server/journal/journal.port.ts";
 import type { JournalPages } from "../../../server/journal/journal-pages.port.ts";
 import { MemoryJournal } from "../../../server/journal/memory-journal.adapter.ts";
-import type { WriteLimits } from "../../../server/protect-the-api.ts";
 import type { Referentiel } from "../../../shared/referentiel.port.ts";
 import { BUILD } from "../journal/evenements.ts";
 

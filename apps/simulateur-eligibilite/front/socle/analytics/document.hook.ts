@@ -5,14 +5,11 @@
 
 import { type ButtonTracking, useButtonTracking } from "./button.hook";
 import type { Button } from "./button-place.vo";
+import type { AnalyticsUseCases } from "./container";
 import type { DocumentContent } from "./document-version.entity";
 import type { Journey } from "./journey.entity";
 import type { DocumentRequest } from "./revision.entity";
-import {
-  type AnalyticsUseCases,
-  useAnalyticsUseCases,
-  useJourney,
-} from "./use-cases-in-the-tree";
+import { useAnalyticsUseCases, useJourney } from "./use-cases-in-the-tree.hook";
 
 export type DocumentTracking = ButtonTracking & {
   readonly displayed: (content: DocumentContent) => void;

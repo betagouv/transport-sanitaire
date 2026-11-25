@@ -20,7 +20,7 @@ import type { Journey } from "./journey.entity";
 import {
   type OpenedJourney,
   useAnalyticsUseCases,
-} from "./use-cases-in-the-tree";
+} from "./use-cases-in-the-tree.hook";
 
 export function useRecordTheJourney(
   model: Model,

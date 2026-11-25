@@ -11,7 +11,7 @@
 // Prérequis : la colonne `Origine` sur `Etablissements` comme sur `Services_Unites`.
 
 import { describe, expect, it } from "vitest";
-import { lireConfiguration } from "../../../server/configuration.ts";
+import { lireConfiguration } from "../../../server/configuration.adapter.ts";
 import { adaptersFor } from "../../../server/container.ts";
 
 const actif =
