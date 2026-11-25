@@ -11,14 +11,13 @@
 
 import { describe, expect, it } from "vitest";
 import { CerfaDtoService } from "../../../../core/socle/cerfa";
-import { DOCUMENTS } from "../../../../front/models/eligibilite/r3/documents";
 import {
   type BoundCerfa,
   generateCerfa,
   type Overflowing,
 } from "../../../../front/socle/cerfa";
-
 import { markedStates, textsOn } from "../../../socle/cerfa/pdf-aplati";
+import { DOCUMENTS } from "../documents-lies";
 import type { ValeursDesCibles } from "../r2/traces-du-prescripteur";
 import { DAP, donnees, gabarit, PMT, type Reponses } from "./reponses-du-cerfa";
 

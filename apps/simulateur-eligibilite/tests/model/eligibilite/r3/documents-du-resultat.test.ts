@@ -4,7 +4,8 @@
 // `s3139h-rempli.test.ts`.
 
 import { describe, expect, it } from "vitest";
-import { R3 } from "../../../../front/models/eligibilite/r3/r3";
+import { R3 } from "../../../../core/models/eligibilite/r3/r3";
+import { ENDROITS } from "../../../../front/models/eligibilite/r3/documents";
 import { lu } from "../r2/traces-du-prescripteur";
 
 const PRESCRIPTION = "Prescription préremplie prête à imprimer";
@@ -19,7 +20,7 @@ describe("le document de R3", () => {
   ] as const)("du support %s se nomme %s", (support, nom) => {
     const document = lu(R3.document, { cible_support_id: support });
 
-    expect(document?.cerfa.fileName).toBe(nom);
+    expect(document && ENDROITS[document].fileName).toBe(nom);
   });
 
   it.each([

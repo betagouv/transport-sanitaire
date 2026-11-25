@@ -25,10 +25,7 @@ const posees = (reponses: Reponses) => {
 };
 
 const preconisation = (reponses: Reponses) =>
-  new EstablishAPreconisation({
-    ...metier,
-    relevance: model.core.relevance,
-  }).execute(reponses);
+  new EstablishAPreconisation(metier).execute(reponses);
 
 const DISTANCE = ["Q2.3.1", "Q2.3.2", "Q2.3.3"];
 

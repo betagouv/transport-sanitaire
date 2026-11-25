@@ -22,8 +22,8 @@ export type FeedbackOffer = { url: string; label: string; intent: Intent };
 
 export function feedbackOf(model: Model, context: Context) {
   const { feedback } = model;
-  if (!feedback || !model.intent) return null;
-  const intent = model.intent.in(context);
+  if (!feedback || !model.core.intent) return null;
+  const intent = model.core.intent.in(context);
   return intent && { url: feedback.url, label: feedback.label, intent };
 }
 

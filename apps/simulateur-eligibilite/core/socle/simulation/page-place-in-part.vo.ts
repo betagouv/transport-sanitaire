@@ -3,13 +3,13 @@
 // parcours en tire les jalons de chaque phase. Une réponse
 // sur la dernière peut encore ouvrir une page de plus : la place change alors.
 
-import type { CoreModel } from "../model.types.ts";
+import type { SimulationModel } from "../model.types.ts";
 import type { Page } from "../questionnaire-engine/index.ts";
 
 export class PagePlaceInPart {
   /** `asked` : les pages qui se posent à cette étape. */
   static of(
-    core: CoreModel,
+    core: SimulationModel,
     asked: readonly Page[],
     page: Page,
   ): PagePlaceInPart {

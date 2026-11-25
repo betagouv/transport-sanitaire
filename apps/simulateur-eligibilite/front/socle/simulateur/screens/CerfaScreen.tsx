@@ -36,6 +36,7 @@ import { type DebugTraceProps, Stepper } from "../../questionnaire";
 
 import { SecondaryButton } from "../../ui";
 import type { ScreenProps } from "../Simulateur";
+import { BoundCerfaService } from "./bound-cerfa.service";
 import { FeedbackLink, type FeedbackOffer, feedbackOf } from "./FeedbackLink";
 import "./resultat-screen.css";
 
@@ -50,7 +51,8 @@ export function CerfaScreen({
   onChange,
   onRestart,
 }: ScreenProps & { completedAt: Date }) {
-  const { title, Resultat, reading: lecture } = model.cerfa;
+  const { title, reading: lecture } = model.core.cerfa;
+  const { Resultat } = model.cerfa;
   const trace = { title: "cerfa", ...simulation.trace() };
   const context = simulation.resultContext(completedAt);
   const reading = lecture.in(context);
@@ -181,9 +183,9 @@ function Cerfa({
   feedback,
   edits,
 }: CerfaProps) {
-  const { form, standIn, printLabel, downloadLabel } = model.cerfa;
+  const { standIn, printLabel, downloadLabel } = model.cerfa;
   const tracking = useDocumentTracking(offered(feedback));
-  const bound = form.in(context);
+  const bound = BoundCerfaService.of(model, context);
   if (!bound)
     return (
       <>

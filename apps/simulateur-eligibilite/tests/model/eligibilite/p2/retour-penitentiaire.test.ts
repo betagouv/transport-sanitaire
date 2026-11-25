@@ -171,7 +171,7 @@ describe("un retour qui relève de l'organisation pénitentiaire (point 34)", ()
       },
     });
     expect(resultat).not.toHaveProperty("sheet");
-    expect(luDe(model.cerfa.startLabel, administratif)).toBeNull();
+    expect(luDe(model.core.cerfa.startLabel, administratif)).toBeNull();
   });
 });
 

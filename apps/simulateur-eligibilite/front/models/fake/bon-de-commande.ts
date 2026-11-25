@@ -8,16 +8,13 @@
 // avant tout téléchargement. Le nom du client n'a pas de champ : il se dessine
 // dans son cadre.
 
-import {
-  type BonDeCommande,
-  VERS_LE_BON_DE_COMMANDE,
-} from "../../../core/models/fake/r3/bon-de-commande";
+import type { BonDeCommande } from "../../../core/models/fake/r3/bon-de-commande";
 import { type Cerfa, CerfaFactory, templateAt } from "../../socle";
 import gabarit from "./bon-de-commande.pdf?url";
 
 const { at, drawnBox, strictText, text } = CerfaFactory;
 
-const BON_DE_COMMANDE: Cerfa<BonDeCommande> = {
+export const BON_DE_COMMANDE: Cerfa<BonDeCommande> = {
   template: templateAt(gabarit),
   fileName: "bon-de-commande",
   fields: {
@@ -32,9 +29,3 @@ const BON_DE_COMMANDE: Cerfa<BonDeCommande> = {
   },
   drawings: { au_nom_de: at({ page: 1, x: 36, y: 174, width: 348 }) },
 };
-
-/** Le bon de commande, lié à la traduction de la commande. */
-export const bonDeCommande = CerfaFactory.link(
-  BON_DE_COMMANDE,
-  VERS_LE_BON_DE_COMMANDE,
-);

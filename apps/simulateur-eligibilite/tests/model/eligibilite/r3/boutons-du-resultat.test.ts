@@ -5,7 +5,7 @@
 
 import { describe, expect, it } from "vitest";
 import { CIBLES_ENUMEREES } from "../../../../core/models/eligibilite/cibles/noms";
-import { R3 } from "../../../../front/models/eligibilite/r3/r3";
+import { R3 } from "../../../../core/models/eligibilite/r3/r3";
 import { lu } from "../r2/traces-du-prescripteur";
 
 type Issue = (typeof CIBLES_ENUMEREES.cible_issue_id)[number];

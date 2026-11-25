@@ -7,9 +7,9 @@
 
 import { describe, expect, it } from "vitest";
 import { CerfaDtoService } from "../../../../core/socle/cerfa";
-import { DOCUMENTS } from "../../../../front/models/eligibilite/r3/documents";
 import type { BoundCerfa } from "../../../../front/socle/cerfa";
 import { markedStates, textsOn } from "../../../socle/cerfa/pdf-aplati";
+import { DOCUMENTS } from "../documents-lies";
 import {
   DAP,
   donnees,

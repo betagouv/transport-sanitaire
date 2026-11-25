@@ -9,13 +9,13 @@ import { describe, expect, it } from "vitest";
 import type { Faits } from "../../../../core/models/eligibilite/faits/noms";
 import { Fait } from "../../../../core/socle";
 import { CerfaDtoService } from "../../../../core/socle/cerfa";
-import { DOCUMENTS } from "../../../../front/models/eligibilite/r3/documents";
 import {
   type BoundCerfa,
   generateCerfa,
   type Overflowing,
 } from "../../../../front/socle/cerfa";
 import { textsIn } from "../../../socle/cerfa/pdf-aplati";
+import { DOCUMENTS } from "../documents-lies";
 import { DAP, donnees, gabarit, PMT, type Reponses } from "./reponses-du-cerfa";
 
 const SEANCE = "Ce déplacement concerne une séance de dialyse en centre";

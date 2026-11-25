@@ -1,13 +1,9 @@
 // La fabrique des liaisons d'un cerfa : ce qui dit où chaque entrée du DTO va
-// dans le gabarit, et ce qui le lie au mapping de ses valeurs. Aucune méthode
-// n'emploie `this` : un modèle les déstructure en tête de fichier
-// (`const { text, box } = CerfaFactory;`).
+// dans le gabarit. Aucune méthode n'emploie `this` : un modèle les déstructure en
+// tête de fichier (`const { text, box } = CerfaFactory;`).
 
-import type { CerfaDto, CerfaMapping } from "../../../core/socle/cerfa";
 import type {
-  BoundCerfa,
   BoxBinding,
-  Cerfa,
   DrawingBinding,
   Position,
   StrictOptions,
@@ -16,18 +12,6 @@ import type {
 } from "./cerfa.types";
 
 export class CerfaFactory {
-  /**
-   * Lie un cerfa au mapping de son DTO. Le compilateur vérifie qu'ils parlent
-   * du même DTO : une entrée oubliée ou en trop ne compile pas.
-   */
-  static link<Dto extends CerfaDto>(
-    cerfa: Cerfa<Dto>,
-    mapping: CerfaMapping<Dto>,
-  ): BoundCerfa {
-    // Le socle ne lit aucune entrée : il rend le DTO au cerfa qui l'a déclaré.
-    return { cerfa, mapping } as unknown as BoundCerfa;
-  }
-
   /** Un texte écrit dans le champ `field`. */
   static text(
     field: string,

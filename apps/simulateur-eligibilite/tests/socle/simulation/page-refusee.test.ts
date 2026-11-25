@@ -5,7 +5,7 @@
 
 import { describe, expect, it } from "vitest";
 import { page, QuestionFactory, ReadingFactory } from "../../../core/socle";
-import type { CoreModel } from "../../../core/socle/model.types";
+import type { SimulationModel } from "../../../core/socle/model.types";
 import type {
   Page,
   QuestionnairePart,
@@ -83,7 +83,7 @@ describe("une page refusée", () => {
 
 const FIN_AVANT = { debut: "2026-10-12", fin: "2026-10-11" };
 
-function modele(pages: readonly unknown[]): CoreModel {
+function modele(pages: readonly unknown[]): SimulationModel {
   return {
     preconisation: { faits: () => ({}), cibles: () => ({}), reads: new Map() },
     questionnaire: [

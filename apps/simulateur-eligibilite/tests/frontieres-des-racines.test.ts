@@ -57,6 +57,20 @@ describe("frontières de runtime", () => {
     ).toEqual([]);
   });
 
+  it("la pertinence se calcule dans le métier, jamais à l'écran", () => {
+    const fautifs = sources("front").filter((f) =>
+      /\bnew Relevance\(/.test(texteDe(f)),
+    );
+    expect(
+      fautifs,
+      "Savoir quelle question change ce que montrent les résultats est du " +
+        "métier : `CoreModelFactory` (`core/socle/model.factory.ts`) le " +
+        "calcule, et `core/models/<nom>/index.ts` l'appelle. Un calcul à " +
+        "l'écran laisserait le métier sans pertinence sous Node : le serveur " +
+        "poserait des questions que l'écran saute.",
+    ).toEqual([]);
+  });
+
   it("le contrat partagé ne dépend d'aucune autre racine", () => {
     expect(
       franchissements(

@@ -75,9 +75,9 @@ export function ResultatScreen({
 // page à poser, ou un cerfa à remplir. Un modèle peut donner un libellé sans
 // avoir encore de partie à ouvrir ; le verrou ne mène pas à un écran vide.
 function startLabelOf(model: Model, context: Context): string | null {
-  const { form, startLabel } = model.cerfa;
+  const { document, startLabel } = model.core.cerfa;
   const opens =
-    model.core.complement.pages.length > 0 || form.in(context) !== null;
+    model.core.complement.pages.length > 0 || document.in(context) !== null;
   return opens ? startLabel.in(context) : null;
 }
 

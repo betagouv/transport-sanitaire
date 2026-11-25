@@ -40,8 +40,8 @@ export function useRecordTheJourney(
     });
   }, []);
   useLayoutEffect(() => {
-    if (!useCases || !journey.current || !model.intent) return;
-    const intent = model.intent.in(simulation.resultContext(new Date()));
+    if (!useCases || !journey.current || !model.core.intent) return;
+    const intent = model.core.intent.in(simulation.resultContext(new Date()));
     if (intent) useCases.selectAnIntent.execute(journey.current, intent);
   }, [useCases, model, simulation]);
   return journey;

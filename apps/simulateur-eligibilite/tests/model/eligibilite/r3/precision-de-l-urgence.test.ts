@@ -5,13 +5,13 @@
 
 import { describe, expect, it } from "vitest";
 import { CerfaDtoService } from "../../../../core/socle/cerfa";
-import { DOCUMENTS } from "../../../../front/models/eligibilite/r3/documents";
 import {
   type BoundCerfa,
   type GeneratedCerfa,
   generateCerfa,
 } from "../../../../front/socle/cerfa";
 import { textsOn } from "../../../socle/cerfa/pdf-aplati";
+import { DOCUMENTS } from "../documents-lies";
 import { DAP, donnees, gabarit, PMT, type Reponses } from "./reponses-du-cerfa";
 
 const AUTRE = { cible_urgence_appel15: false, cible_urgence_autre: true };

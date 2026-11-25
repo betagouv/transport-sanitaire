@@ -1,26 +1,25 @@
-// Les documents de R3 : pour chaque support, son cerfa lié au mapping de ses
-// valeurs. Les valeurs sont du métier (`core/models/eligibilite/r3/`), les
-// endroits de l'écran (`s3138g/`, `s3139h/`, `s3141/`) : c'est ici qu'ils se
-// rencontrent.
+// Les endroits des documents de R3 : pour chaque support, où chaque entrée de
+// son DTO s'écrit dans le gabarit (`s3138g/`, `s3139h/`, `s3141/`). Ce que vaut
+// chaque entrée est du métier (`core/models/eligibilite/r3/`), que le socle
+// rejoint par la même clé.
 //
-// Le compilateur vérifie à chaque liaison que les deux parlent du même DTO : le
+// Le compilateur vérifie à chaque clé que les deux parlent du même DTO : le
 // métier qui ajoute une entrée casse le cerfa tant qu'il n'a pas dit où
-// l'écrire, et un endroit sans valeur ne compile pas. La table, elle, a un
-// document par support.
+// l'écrire, un endroit sans valeur ne compile pas, et un support sans cerfa non
+// plus.
 
-import type { Support } from "../../../../core/models/eligibilite/r3/r3";
-import { VERS_LA_PMT } from "../../../../core/models/eligibilite/r3/s3138g";
-import { VERS_LA_DAP } from "../../../../core/models/eligibilite/r3/s3139h";
-import { VERS_LE_S3141 } from "../../../../core/models/eligibilite/r3/s3141";
-import { type BoundCerfa, CerfaFactory } from "../../../socle";
+import type { DtosDesDocuments } from "../../../../core/models/eligibilite/r3/r3";
+import type { Cerfa } from "../../../socle";
 import { S3138G } from "./s3138g/s3138g";
 import { S3139H } from "./s3139h/s3139h";
 import { S3141 } from "./s3141/s3141";
 
-const { link } = CerfaFactory;
-
-export const DOCUMENTS = {
-  S3138g: link(S3138G, VERS_LA_PMT),
-  S3139h: link(S3139H, VERS_LA_DAP),
-  S3141: link(S3141, VERS_LE_S3141),
-} satisfies Record<Support, BoundCerfa>;
+export const ENDROITS: {
+  readonly [Support in keyof DtosDesDocuments]: Cerfa<
+    DtosDesDocuments[Support]
+  >;
+} = {
+  S3138g: S3138G,
+  S3139h: S3139H,
+  S3141,
+};
