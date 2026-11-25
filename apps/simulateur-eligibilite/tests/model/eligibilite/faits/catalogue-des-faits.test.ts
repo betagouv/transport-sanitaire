@@ -1,5 +1,5 @@
-// Le catalogue des faits : un fichier par fait sous `faits/`, qui porte son
-// nom sans `fait_`. On y lit tout ce que vaut un fait, sans chercher ailleurs.
+// Le catalogue des faits : un fichier `.fait.ts` par fait sous `faits/`, qui
+// porte son nom sans `fait_`. On y lit tout ce que vaut un fait, sans chercher ailleurs.
 // Autour d'eux, l'étape : `noms.ts` les nomme, `index.ts` les assemble,
 // `preconisation.ts` les évalue, et `communs.ts` tient ce que plusieurs lisent.
 
@@ -16,7 +16,7 @@ const ETAPE = ["noms", "index", "preconisation", "communs"].map(
 
 const sansPrefixe = (fait: string) => fait.replace(/^fait_/, "");
 const fichierDe = (fait: string) =>
-  `${DOSSIER}/${sansPrefixe(fait).replaceAll("_", "-")}.ts`;
+  `${DOSSIER}/${sansPrefixe(fait).replaceAll("_", "-")}.fait.ts`;
 const declarationDe = (fait: string) =>
   sansPrefixe(fait).replace(/_(.)/g, (_, initiale: string) =>
     initiale.toUpperCase(),
@@ -29,7 +29,7 @@ describe("le catalogue des faits", () => {
         .filter((fichier) => !ETAPE.includes(fichier))
         .sort(),
       "Un fait se trouve par son nom : `fait_distance_plus_50` vit dans " +
-        "`faits/distance-plus-50.ts`. Un fichier sans fait n'a pas sa place " +
+        "`faits/distance-plus-50.fait.ts`. Un fichier sans fait n'a pas sa place " +
         "ici : ce que plusieurs faits lisent va dans `faits/communs.ts`.",
     ).toEqual(FAITS.map(fichierDe).sort());
   });

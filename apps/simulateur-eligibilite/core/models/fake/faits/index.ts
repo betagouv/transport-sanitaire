@@ -3,10 +3,10 @@
 // Les gardes les lisent, et la préconisation les donne aux règles.
 
 import { FaitCatalogue } from "../../../socle/index.ts";
-import { accompagnements } from "./accompagnements.ts";
-import { boisson } from "./boisson.ts";
-import { citron } from "./citron.ts";
-import { lait } from "./lait.ts";
+import { accompagnements } from "./accompagnements.fait.ts";
+import { boisson } from "./boisson.fait.ts";
+import { citron } from "./citron.fait.ts";
+import { lait } from "./lait.fait.ts";
 import { FAITS, type Faits } from "./noms.ts";
 
 /** Les faits du modèle de démonstration, chacun déclaré une fois. */
