@@ -16,9 +16,9 @@ import {
   type PDFFont,
   type PDFWidgetAnnotation,
 } from "pdf-lib";
+import { SIZE_STEP, TEXT_SIZES } from "../text-sizes.constants";
 import { type Drawing, LINE_HEIGHT } from "./flatten-the-form";
 import { paddingOf } from "./text-fit";
-import { SIZE_STEP, TEXT_SIZES } from "./text-sizes";
 import { pageOf } from "./widget-page";
 
 /**

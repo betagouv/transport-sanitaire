@@ -18,19 +18,12 @@ export {
 } from "./analytics";
 export { App, type Models } from "./app";
 export {
-  at,
-  bindCerfa,
-  box,
   type Cerfa,
+  CerfaDtoService,
+  CerfaFactory,
   type CerfaMapping,
-  cerfaValue,
-  date,
-  drawnBox,
   type StrictOptions,
-  strictDrawing,
-  strictText,
   templateAt,
-  text,
 } from "./cerfa";
 export { VERSION_APP } from "./deployed-version";
 export { ModelFactory } from "./model.factory";

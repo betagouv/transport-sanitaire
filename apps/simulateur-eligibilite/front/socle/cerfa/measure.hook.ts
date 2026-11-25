@@ -4,9 +4,8 @@
 // à chaque rendu.
 
 import { useEffect, useRef, useState } from "react";
-import type { Cerfa, CerfaDto } from "./cerfa";
+import type { Cerfa, CerfaDto, StrictMeasure } from "./cerfa.types";
 import { measureOf } from "./generate-the-cerfa/generate-the-cerfa";
-import type { StrictMeasure } from "./generate-the-cerfa/strict-text";
 
 /** Mesure un texte destiné à un texte strict, par son entrée du DTO. */
 export type Measure = (entry: string, text: string) => StrictMeasure;

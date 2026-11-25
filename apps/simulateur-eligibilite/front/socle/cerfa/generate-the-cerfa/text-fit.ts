@@ -11,7 +11,7 @@ import {
   type PDFWidgetAnnotation,
   TextAlignment,
 } from "pdf-lib";
-import { SIZE_STEP, TEXT_SIZES } from "./text-sizes";
+import { SIZE_STEP, TEXT_SIZES } from "../text-sizes.constants";
 
 /** Le texte ne tient dans son cadre à aucune taille. */
 type DoesNotFit = undefined;

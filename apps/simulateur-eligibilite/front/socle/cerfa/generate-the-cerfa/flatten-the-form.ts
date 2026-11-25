@@ -22,7 +22,7 @@ import {
   StandardFonts,
   translate,
 } from "pdf-lib";
-import type { Position } from "../cerfa";
+import type { Position } from "../cerfa.types";
 import { sizeOnOneLine } from "./text-fit";
 import { pageOf } from "./widget-page";
 

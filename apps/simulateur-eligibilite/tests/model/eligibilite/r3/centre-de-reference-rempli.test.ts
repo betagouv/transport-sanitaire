@@ -8,7 +8,10 @@
 import { describe, expect, it } from "vitest";
 import { S3138G } from "../../../../front/models/eligibilite/r3/s3138g/s3138g";
 import { S3139H } from "../../../../front/models/eligibilite/r3/s3139h/s3139h";
-import { type BoundCerfa, dtoFrom } from "../../../../front/socle/cerfa";
+import {
+  type BoundCerfa,
+  CerfaDtoService,
+} from "../../../../front/socle/cerfa";
 import { markedStates, textsOn } from "../../../socle/cerfa/pdf-aplati";
 import {
   DAP,
@@ -91,7 +94,10 @@ describe("le centre de référence, entre Oui et Non (N4-01, N4-02)", () => {
 
 // Ce que le socle passe au cerfa, avec cette réponse à Q3.4.a.
 function dto(cerfa: BoundCerfa, reponses: Reponses, centre: Centre) {
-  return dtoFrom(cerfa.mapping, donnees({ ...reponses, "Q3.4.a": centre }));
+  return CerfaDtoService.from(
+    cerfa.mapping,
+    donnees({ ...reponses, "Q3.4.a": centre }),
+  );
 }
 
 // Le support rempli avec cette réponse à Q3.4.a.

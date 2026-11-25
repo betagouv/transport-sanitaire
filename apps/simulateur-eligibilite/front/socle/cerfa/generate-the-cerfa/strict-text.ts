@@ -11,18 +11,10 @@
 // indication, jamais une limite.
 
 import type { PDFFont, PDFTextField } from "pdf-lib";
+import type { StrictLayout, StrictMeasure } from "../cerfa.types";
 import { fitsAtSize } from "./text-fit";
 import { writableIn } from "./writable-text";
 import { write } from "./write-a-text";
-
-/** Ce que la mesure dit d'un texte strict. */
-export type StrictMeasure = {
-  readonly fits: boolean;
-  readonly maximum: number;
-};
-
-/** Comment un texte strict s'écrit : sa taille, et s'il tient sur une ligne. */
-export type StrictLayout = { readonly size: number; readonly oneLine: boolean };
 
 /**
  * La mesure d'un texte strict : elle ne sait que dire si un texte tient, et en

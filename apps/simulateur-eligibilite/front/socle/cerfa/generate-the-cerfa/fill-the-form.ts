@@ -7,11 +7,12 @@
 // données du patient ne quittent pas le poste.
 
 import { PDFDocument, type PDFFont, StandardFonts } from "pdf-lib";
+import type { StrictLayout } from "../cerfa.types";
+import { FieldDateService } from "../field-date.service";
 import { keepBoxAppearances } from "./box-appearances";
 import { type Box, checkBoxes } from "./check-box";
-import { formatDateForField } from "./dates";
 import type { Drawing } from "./flatten-the-form";
-import { type StrictLayout, StrictText } from "./strict-text";
+import { StrictText } from "./strict-text";
 import { writableIn } from "./writable-text";
 import {
   type Text,
@@ -126,7 +127,7 @@ function asDateIn(document: PDFDocument, dateFields: readonly string[]) {
   return (entry: Text): Text => {
     if (!dateFields.includes(entry.field)) return entry;
     const boxCount = textFieldOf(document, entry.field).getMaxLength() ?? 10;
-    return { ...entry, text: formatDateForField(entry.text, boxCount) };
+    return { ...entry, text: FieldDateService.format(entry.text, boxCount) };
   };
 }
 

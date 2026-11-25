@@ -14,7 +14,7 @@ import { S3138G } from "../../../../front/models/eligibilite/r3/s3138g/s3138g";
 import { S3139H } from "../../../../front/models/eligibilite/r3/s3139h/s3139h";
 import {
   type BoundCerfa,
-  dtoFrom,
+  CerfaDtoService,
   generateCerfa,
   type Overflowing,
 } from "../../../../front/socle/cerfa";
@@ -137,7 +137,7 @@ async function rempli(
   { nom, cerfa, reponses, cibles }: Support,
   choisies: ValeursDesCibles,
 ): Promise<{ pdf: Uint8Array; overflowing: readonly Overflowing[] }> {
-  const dto = dtoFrom(
+  const dto = CerfaDtoService.from(
     cerfa.mapping,
     donnees(reponses, { ...cibles, ...choisies }),
   );

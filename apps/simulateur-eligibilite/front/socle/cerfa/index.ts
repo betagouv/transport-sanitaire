@@ -3,26 +3,15 @@
 // téléchargent.
 
 export { CerfaDocument } from "./CerfaDocument";
-export {
-  at,
-  box,
-  type Cerfa,
-  type CerfaDto,
-  date,
-  drawnBox,
-  type StrictOptions,
-  strictDrawing,
-  strictText,
-  templateAt,
-  text,
-} from "./cerfa";
-export {
-  type BoundCerfa,
-  bindCerfa,
-  type CerfaMapping,
-  cerfaValue,
-  dtoFrom,
-} from "./generate-the-cerfa/compute-the-dto";
+export { CerfaFactory } from "./cerfa.factory";
+export type {
+  BoundCerfa,
+  Cerfa,
+  CerfaDto,
+  CerfaMapping,
+  StrictOptions,
+} from "./cerfa.types";
+export { CerfaDtoService } from "./cerfa-dto.service";
 export {
   type GeneratedCerfa,
   generateCerfa,
@@ -36,4 +25,5 @@ export {
 } from "./pdf/PdfActionButton";
 export { PdfFileName } from "./pdf/pdf-file-name.vo";
 export type { StrictTextEdits } from "./StrictTexts";
+export { templateAt } from "./template";
 export { useTextCounters } from "./text-counters.hook";

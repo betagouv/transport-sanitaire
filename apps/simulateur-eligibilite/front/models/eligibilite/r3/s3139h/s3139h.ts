@@ -26,16 +26,12 @@
 // | `raison soc`, `adresse`, `num ident`, `fait à`, `date fait` | au transporteur, page 4 |
 
 import {
-  bindCerfa,
-  box,
   type Cerfa,
+  CerfaDtoService,
+  CerfaFactory,
   type CerfaMapping,
-  date,
-  drawnBox,
-  strictText,
   type TypographicFieldId,
   templateAt,
-  text,
 } from "../../../../socle";
 import gabarit from "../gabarits/S3139h.pdf?url";
 import { ACCIDENT, type Accident } from "../rubriques/accident";
@@ -67,6 +63,8 @@ import {
   URGENCE,
   type Urgence,
 } from "../rubriques/urgence";
+
+const { box, date, drawnBox, strictText, text } = CerfaFactory;
 
 type DtoS3139h = {
   fields: Accident &
@@ -184,4 +182,4 @@ const VERS_LA_DAP: CerfaMapping<DtoS3139h> = {
 };
 
 /** La DAP, liée au calcul de son DTO. */
-export const S3139H = bindCerfa(CERFA, VERS_LA_DAP);
+export const S3139H = CerfaDtoService.link(CERFA, VERS_LA_DAP);

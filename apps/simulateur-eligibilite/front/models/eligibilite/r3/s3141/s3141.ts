@@ -22,14 +22,12 @@
 
 import { given } from "../../../../../core/models/eligibilite/questions/reponses";
 import {
-  bindCerfa,
-  box,
   type Cerfa,
+  CerfaDtoService,
+  CerfaFactory,
   type CerfaMapping,
-  date,
   type TypographicFieldId,
   templateAt,
-  text,
 } from "../../../../socle";
 import gabarit from "../gabarits/S3141.pdf?url";
 import { ACCIDENT, type Accident } from "../rubriques/accident";
@@ -40,6 +38,8 @@ import { MODE, type Mode } from "../rubriques/mode";
 import { PRESCRIPTION, type Prescription } from "../rubriques/prescription";
 import type { Rubrique } from "../rubriques/rubrique";
 import { TRAJET, type Trajet } from "../rubriques/trajet";
+
+const { box, date, text } = CerfaFactory;
 
 /**
  * La permission : depuis quand le patient est hospitalisé (Q2.8.1), et, pour
@@ -152,4 +152,4 @@ const VERS_LE_S3141: CerfaMapping<DtoS3141> = {
 };
 
 /** Le S3141, lié au calcul de son DTO. */
-export const S3141 = bindCerfa(CERFA, VERS_LE_S3141);
+export const S3141 = CerfaDtoService.link(CERFA, VERS_LE_S3141);

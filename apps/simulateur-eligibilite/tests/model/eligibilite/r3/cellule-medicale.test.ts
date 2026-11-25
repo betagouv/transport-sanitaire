@@ -12,7 +12,7 @@ import { S3138G } from "../../../../front/models/eligibilite/r3/s3138g/s3138g";
 import { S3139H } from "../../../../front/models/eligibilite/r3/s3139h/s3139h";
 import {
   type BoundCerfa,
-  dtoFrom,
+  CerfaDtoService,
   generateCerfa,
   type Overflowing,
 } from "../../../../front/socle/cerfa";
@@ -102,7 +102,10 @@ async function rempli(
   reponses: Reponses,
   faits: Partial<Faits> = {},
 ): Promise<{ texte: string; overflowing: readonly Overflowing[] }> {
-  const dto = dtoFrom(cerfa.mapping, donnees(reponses, {}, undefined, faits));
+  const dto = CerfaDtoService.from(
+    cerfa.mapping,
+    donnees(reponses, {}, undefined, faits),
+  );
   const depuisLeDisque = { ...cerfa.cerfa, template: () => gabarit(nom) };
   const genere = await generateCerfa(depuisLeDisque, dto);
   const pdf = new Uint8Array(await genere.pdf.arrayBuffer());

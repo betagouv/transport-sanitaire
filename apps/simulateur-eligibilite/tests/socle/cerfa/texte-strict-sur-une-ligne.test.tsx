@@ -4,14 +4,13 @@ import { useState } from "react";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { TextEdits } from "../../../core/socle/simulation";
 import { CerfaDocument } from "../../../front/socle/cerfa/CerfaDocument";
-import {
-  at,
-  type Cerfa,
-  strictDrawing,
-} from "../../../front/socle/cerfa/cerfa";
+import { CerfaFactory } from "../../../front/socle/cerfa/cerfa.factory";
+import type { Cerfa } from "../../../front/socle/cerfa/cerfa.types";
 import { ecouterLesTelechargements } from "../simulateur/telechargements";
 import { drawnOn } from "./pdf-aplati";
 import { testForm } from "./test-form";
+
+const { at, strictDrawing } = CerfaFactory;
 
 // Un texte strict dessiné tient sur une ligne de sa place (T06, R04) : un
 // retour à la ligne, ou un texte trop large, ne tient pas. Il se réécrit comme

@@ -6,7 +6,7 @@ import { describe, expect, it } from "vitest";
 import { Simulation } from "../../../../core/socle/simulation";
 import { model } from "../../../../front/models/eligibilite";
 import { S3139H } from "../../../../front/models/eligibilite/r3/s3139h/s3139h";
-import { dtoFrom } from "../../../../front/socle/cerfa";
+import { CerfaDtoService } from "../../../../front/socle/cerfa";
 import { textsOn } from "../../../socle/cerfa/pdf-aplati";
 import {
   donnees,
@@ -56,7 +56,7 @@ describe("la page de la maternité (Q3.8)", () => {
 
   it("s'écrit sur la DAP, dont le texte médical cite le 8ᵉ mois", async () => {
     const reponses = { ...EXAMEN_DE_MATERNITE, ...Q38 };
-    const dto = dtoFrom(S3139H.mapping, donnees(reponses));
+    const dto = CerfaDtoService.from(S3139H.mapping, donnees(reponses));
 
     const textes = await textsOn(await genere(S3139H.cerfa, "S3139h", dto), 2);
 

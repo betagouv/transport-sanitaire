@@ -5,13 +5,7 @@
 // Un texte porté par plusieurs volets, ou deux textes du même identifiant,
 // gardent la plus petite taille.
 
-/** Les tailles des textes imprimés d'un cerfa, et ceux qui n'en ont pas. */
-export type Typography = {
-  /** La taille de chaque texte imprimé, en points, par identifiant. */
-  readonly sizes: Readonly<Record<string, number>>;
-  /** Les identifiants des textes imprimés dont la taille n'a pas pu se lire. */
-  readonly unmeasured: readonly string[];
-};
+import type { Typography } from "./cerfa.types";
 
 /** La taille d'un texte dessiné ne s'est pas lue. */
 type Unread = undefined;
@@ -28,23 +22,21 @@ type Printed = {
   readonly ids?: Readonly<Record<string, string>>;
 };
 
-export function typographyOf({
-  texts,
-  fieldSizes,
-  drawn,
-  ids = {},
-}: Printed): Typography {
-  const measured = [
-    ...texts.map(([key, field]) => [key, fieldSizes.get(field)] as const),
-    ...drawn,
-  ].map(([key, size]) => [ids[key] ?? key, size] as const);
-  const sizes: Record<string, number> = {};
-  const unmeasured = new Set<string>();
-  for (const [key, size] of measured) {
-    if (size === undefined) unmeasured.add(key);
-    else sizes[key] = Math.min(size, sizes[key] ?? size);
+export class TypographyService {
+  /** Les tailles imprimées, une par identifiant de mesure. */
+  static of({ texts, fieldSizes, drawn, ids = {} }: Printed): Typography {
+    const measured = [
+      ...texts.map(([key, field]) => [key, fieldSizes.get(field)] as const),
+      ...drawn,
+    ].map(([key, size]) => [ids[key] ?? key, size] as const);
+    const sizes: Record<string, number> = {};
+    const unmeasured = new Set<string>();
+    for (const [key, size] of measured) {
+      if (size === undefined) unmeasured.add(key);
+      else sizes[key] = Math.min(size, sizes[key] ?? size);
+    }
+    // Une taille non lue pourrait être la plus petite : le texte n'en a aucune.
+    for (const key of unmeasured) delete sizes[key];
+    return { sizes, unmeasured: [...unmeasured] };
   }
-  // Une taille non lue pourrait être la plus petite : le texte n'en a aucune.
-  for (const key of unmeasured) delete sizes[key];
-  return { sizes, unmeasured: [...unmeasured] };
 }

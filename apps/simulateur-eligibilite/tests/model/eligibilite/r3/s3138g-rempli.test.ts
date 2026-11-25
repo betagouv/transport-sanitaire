@@ -7,7 +7,7 @@
 
 import { describe, expect, it } from "vitest";
 import { S3138G } from "../../../../front/models/eligibilite/r3/s3138g/s3138g";
-import { dtoFrom } from "../../../../front/socle/cerfa";
+import { CerfaDtoService } from "../../../../front/socle/cerfa";
 import {
   drawnOn,
   markedStates,
@@ -239,7 +239,7 @@ function rempli(
   reponses: Reponses,
   cibles: ValeursDesCibles = {},
 ): Promise<Uint8Array> {
-  const dto = dtoFrom(S3138G.mapping, donnees(reponses, cibles));
+  const dto = CerfaDtoService.from(S3138G.mapping, donnees(reponses, cibles));
   return genere(S3138G.cerfa, "S3138g", dto);
 }
 

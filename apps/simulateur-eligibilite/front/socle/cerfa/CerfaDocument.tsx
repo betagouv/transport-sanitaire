@@ -28,7 +28,7 @@
 
 import { type ReactNode, useEffect, useRef } from "react";
 import { CerfaPreview } from "./CerfaPreview";
-import type { Cerfa, CerfaDto } from "./cerfa";
+import type { Cerfa, CerfaDto, Typography } from "./cerfa.types";
 import {
   type PdfAction,
   type Pending,
@@ -36,7 +36,6 @@ import {
   useAwaitedAction,
   useDownloadablePdf,
 } from "./downloadable-pdf.hook";
-import type { Typography } from "./generate-the-cerfa/typography";
 import { DownloadAPdfService } from "./pdf/download-a-pdf.service";
 import { PdfActionButton, type PdfSignals } from "./pdf/PdfActionButton";
 import { PdfFileName } from "./pdf/pdf-file-name.vo";

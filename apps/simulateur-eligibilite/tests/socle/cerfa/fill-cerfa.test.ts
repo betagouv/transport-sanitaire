@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
-import { formatDateForField } from "../../../front/socle/cerfa/generate-the-cerfa/dates";
+import { FieldDateService } from "../../../front/socle/cerfa/field-date.service";
 import { fillCerfa } from "../../../front/socle/cerfa/generate-the-cerfa/fill-the-form";
-import { TEXT_SIZES } from "../../../front/socle/cerfa/generate-the-cerfa/text-sizes";
+import { TEXT_SIZES } from "../../../front/socle/cerfa/text-sizes.constants";
 import {
   drawnSizesOf,
   fontSizeOf,
@@ -238,8 +238,8 @@ describe("un texte trop long pour son cadre", () => {
 
 describe("date sur un champ peigné", () => {
   it("s'écrit sans séparateur sur huit cases, avec sur dix", () => {
-    expect(formatDateForField("2026-10-06", 8)).toBe("06102026");
-    expect(formatDateForField("2026-10-06", 10)).toBe("06/10/2026");
+    expect(FieldDateService.format("2026-10-06", 8)).toBe("06102026");
+    expect(FieldDateService.format("2026-10-06", 10)).toBe("06/10/2026");
   });
 
   it("s'écrit selon les cases du champ qui la reçoit", async () => {
@@ -259,6 +259,6 @@ describe("date sur un champ peigné", () => {
   });
 
   it("rend telle quelle une valeur qui n'est pas une date ISO", () => {
-    expect(formatDateForField("", 8)).toBe("");
+    expect(FieldDateService.format("", 8)).toBe("");
   });
 });
