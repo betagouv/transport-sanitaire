@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
-import { FieldDateService } from "../../../front/socle/cerfa/field-date.service";
-import { fillCerfa } from "../../../front/socle/cerfa/generate-the-cerfa/fill-the-form";
-import { TEXT_SIZES } from "../../../front/socle/cerfa/text-sizes.constants";
+import { FieldDateService } from "../../../../front/socle/cerfa/pdf-lib/field-date.service";
+import { FillTheFormService } from "../../../../front/socle/cerfa/pdf-lib/fill-the-form.service";
+import { TEXT_SIZES } from "../../../../front/socle/cerfa/text-sizes.constants";
 import {
   drawnSizesOf,
   fontSizeOf,
@@ -10,7 +10,7 @@ import {
   statesOf,
   testForm,
   withWidgetFontSize,
-} from "./test-form";
+} from "../test-form";
 
 // Le socle de remplissage d'un PDF : ce qu'un formulaire accepte, ce qu'il
 // refuse, ce qui survit à une relecture. Aucun gabarit réel n'est en jeu.
@@ -28,8 +28,8 @@ const SUR_DEUX_LIGNES =
 const SUR_TROIS_LIGNES =
   "EHPAD, Résidence Les Jardins du Lac, 125 avenue du Général de Gaulle, bâtiment B, 2e étage, 38120 Saint-Égrève";
 
-const remplir = async (...args: Parameters<typeof fillCerfa>) => {
-  const filled = await fillCerfa(...args);
+const remplir = async (...args: Parameters<typeof FillTheFormService.fill>) => {
+  const filled = await FillTheFormService.fill(...args);
   return { ...filled, read: await readBack(filled.pdf) };
 };
 
@@ -47,7 +47,7 @@ describe("fillCerfa", () => {
   });
 
   it("écrit un texte qui tient à la taille visée par la configuration", async () => {
-    const { pdf } = await fillCerfa(await testForm(), [
+    const { pdf } = await FillTheFormService.fill(await testForm(), [
       { field: "nom", text: "DUPONT Marie" },
     ]);
 
@@ -57,7 +57,7 @@ describe("fillCerfa", () => {
   it("dessine chaque volet à la taille du champ, même si son widget en déclare une autre", async () => {
     const template = await withWidgetFontSize(await testForm(), "adresse", 14);
 
-    const { pdf } = await fillCerfa(template, [
+    const { pdf } = await FillTheFormService.fill(template, [
       {
         field: "adresse",
         text: "Clinique des Alpes, 12 avenue Victor Hugo, Grenoble",
@@ -73,17 +73,17 @@ describe("fillCerfa", () => {
   it("refuse un état d'export que la case ne sait pas rendre", async () => {
     const template = await testForm();
     await expect(
-      fillCerfa(template, [{ field: "ald", checked: "OUI" }]),
+      FillTheFormService.fill(template, [{ field: "ald", checked: "OUI" }]),
     ).rejects.toThrow("ne connaît pas l'état « /OUI »");
   });
 
   it("refuse d'écrire un texte dans une case, et inversement", async () => {
     const template = await testForm();
     await expect(
-      fillCerfa(template, [{ field: "ald", text: "oui" }]),
+      FillTheFormService.fill(template, [{ field: "ald", text: "oui" }]),
     ).rejects.toThrow("n'est pas un champ texte");
     await expect(
-      fillCerfa(template, [{ field: "nom", checked: "Yes" }]),
+      FillTheFormService.fill(template, [{ field: "nom", checked: "Yes" }]),
     ).rejects.toThrow("n'est pas une case à cocher");
   });
 
@@ -129,7 +129,7 @@ describe("un texte strict", () => {
 
 describe("un texte trop long pour son cadre", () => {
   it("s'écrit à la taille réduite s'il n'y tient qu'à elle", async () => {
-    const { pdf } = await fillCerfa(await testForm(), [
+    const { pdf } = await FillTheFormService.fill(await testForm(), [
       {
         field: "nom",
         text: "Clinique des Alpes, 12 avenue Victor Hugo, Grenoble",
@@ -191,7 +191,7 @@ describe("un texte trop long pour son cadre", () => {
   });
 
   it("rapetisse de même sur chacun de ses volets", async () => {
-    const { pdf } = await fillCerfa(await testForm(), [
+    const { pdf } = await FillTheFormService.fill(await testForm(), [
       { field: "adresse", text: MOYEN },
     ]);
 

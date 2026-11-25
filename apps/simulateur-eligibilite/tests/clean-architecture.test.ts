@@ -9,10 +9,11 @@ import { describe, expect, it } from "vitest";
 import {
   astDe,
   importsDe,
+  paquetsDe,
   racine,
   sources,
-  texteDe,
 } from "./inspection-des-sources";
+import { estUnImportDuPaquetDeSonModule } from "./modules-d-adaptateur";
 
 // Le journal, côté serveur et côté écran, et la mesure d'audience.
 const JOURNAL = ["server/journal", "front/socle/analytics"];
@@ -137,11 +138,6 @@ const MOTEUR_DU_MODELE =
 const leModeleChargeLeMoteur = (fichier: string, cible: string) =>
   fichier.startsWith("core/models/") && cible === MOTEUR_DU_MODELE;
 
-// Les paquets qu'un fichier importe : tout ce qui n'est pas un chemin relatif.
-const PAQUET = /(?:from|import)\s*\(?\s*["']([^."'][^"']*)["']/g;
-const paquetsDe = (fichier: string) =>
-  [...texteDe(fichier).matchAll(PAQUET)].map(([, paquet]) => paquet);
-
 describe("le sens des dépendances", () => {
   it("le domaine n'importe pas un adaptateur", () => {
     const fautifs = sources(...RACINES)
@@ -168,6 +164,7 @@ describe("le sens des dépendances", () => {
       ),
     ].flatMap((f) =>
       paquetsDe(f)
+        .filter((paquet) => !estUnImportDuPaquetDeSonModule(f, paquet))
         .filter((paquet) => !estUnModuleNodeDuServeur(f, paquet))
         .filter((paquet) => !estUnImportDeZodDUneValidation(f, paquet))
         .filter((paquet) => !estUnImportTypeDeReactDuFront(f, paquet))
@@ -175,7 +172,8 @@ describe("le sens des dépendances", () => {
     );
     expect(
       fautifs,
-      "Seul un adaptateur (`.adapter.ts`) importe un paquet (ARCH-004), sauf " +
+      "Seul un adaptateur (`.adapter.ts`), ou une pièce de son module, importe un " +
+        "paquet (ARCH-004), sauf " +
         "`zod` dans un `.schema.ts` et `import type` de `react` dans un " +
         "`.types.ts` de `front/` : le " +
         "domaine tient sans lui, et en changer ne touche qu'un fichier. Passe " +

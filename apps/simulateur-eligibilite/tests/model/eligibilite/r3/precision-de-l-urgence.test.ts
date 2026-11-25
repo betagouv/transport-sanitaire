@@ -5,11 +5,8 @@
 
 import { describe, expect, it } from "vitest";
 import { CerfaDtoService } from "../../../../core/socle/cerfa";
-import {
-  type BoundCerfa,
-  type GeneratedCerfa,
-  generateCerfa,
-} from "../../../../front/socle/cerfa";
+import type { BoundCerfa, GeneratedCerfa } from "../../../../front/socle/cerfa";
+import { generateCerfa } from "../../../socle/cerfa/generer-le-cerfa";
 import { textsOn } from "../../../socle/cerfa/pdf-aplati";
 import { DOCUMENTS } from "../documents-lies";
 import { DAP, donnees, gabarit, PMT, type Reponses } from "./reponses-du-cerfa";

@@ -16,57 +16,65 @@ import {
   type PDFFont,
   type PDFWidgetAnnotation,
 } from "pdf-lib";
+import type { Drawing } from "../cerfa-pdf.types";
 import { SIZE_STEP, TEXT_SIZES } from "../text-sizes.constants";
-import { type Drawing, LINE_HEIGHT } from "./flatten-the-form";
-import { paddingOf } from "./text-fit";
-import { pageOf } from "./widget-page";
+import { FlattenTheFormService } from "./flatten-the-form.service";
+import { TextFitService } from "./text-fit.service";
+import { WidgetPageService } from "./widget-page.service";
 
-/**
- * `text` dessiné sous chaque widget de son champ : un par volet, comme les
- * valeurs écrites dans le champ. À la taille `from` au plus.
- */
-export function overflowsOf(
-  document: PDFDocument,
-  widgets: readonly PDFWidgetAnnotation[],
-  font: PDFFont,
-  text: string,
-  from: number = TEXT_SIZES.reduced,
-): Drawing[] {
-  return widgets.map((widget) => {
-    const page = pageOf(document, widget);
-    const frame = frameOf(widget);
-    const size = sizeOnPage(text, frame, font, from);
-    return {
+export class OverflowService {
+  /**
+   * `text` dessiné sous chaque widget de son champ : un par volet, comme les
+   * valeurs écrites dans le champ. À la taille `from` au plus.
+   */
+  static of(
+    document: PDFDocument,
+    widgets: readonly PDFWidgetAnnotation[],
+    font: PDFFont,
+    text: string,
+    from: number = TEXT_SIZES.reduced,
+  ): Drawing[] {
+    return widgets.map((widget) => {
+      const page = WidgetPageService.of(document, widget);
+      const frame = frameOf(widget);
+      const size = sizeOnPage(text, frame, font, from);
+      return {
+        text,
+        size,
+        at: {
+          page: document.getPages().indexOf(page) + 1,
+          x: frame.x,
+          y: firstBaseline(frame, font, size),
+          width: frame.width,
+        },
+      };
+    });
+  }
+
+  /**
+   * `text` dessiné sous chaque widget de son champ, à la plus grande taille, de
+   * la taille réduite au plancher, où il reste près de chacun : en dépasse d'au
+   * plus une ligne. Rien s'il s'en éloignerait même au plancher : plus bas, il
+   * passerait sur la ligne suivante du formulaire.
+   */
+  static near(
+    document: PDFDocument,
+    widgets: readonly PDFWidgetAnnotation[],
+    font: PDFFont,
+    text: string,
+  ): Drawing[] | TooFar {
+    const sizes = widgets.map((widget) => nearSize(widget, font, text));
+    if (!sizes.every((size): size is number => size !== undefined))
+      return undefined;
+    return OverflowService.of(
+      document,
+      widgets,
+      font,
       text,
-      size,
-      at: {
-        page: document.getPages().indexOf(page) + 1,
-        x: frame.x,
-        y: firstBaseline(frame, font, size),
-        width: frame.width,
-      },
-    };
-  });
+      Math.min(...sizes),
+    );
+  }
 }
-
-/**
- * `text` dessiné sous chaque widget de son champ, à la plus grande taille, de
- * la taille réduite au plancher, où il reste près de chacun : en dépasse d'au
- * plus une ligne. Rien s'il s'en éloignerait même au plancher : plus bas, il
- * passerait sur la ligne suivante du formulaire.
- */
-export function nearOverflowsOf(
-  document: PDFDocument,
-  widgets: readonly PDFWidgetAnnotation[],
-  font: PDFFont,
-  text: string,
-): Drawing[] | TooFar {
-  const sizes = widgets.map((widget) => nearSize(widget, font, text));
-  if (!sizes.every((size): size is number => size !== undefined))
-    return undefined;
-  return overflowsOf(document, widgets, font, text, Math.min(...sizes));
-}
-
 /** Même au plancher, le texte s'éloignerait de son cadre. */
 type TooFar = undefined;
 
@@ -80,7 +88,7 @@ type Frame = { x: number; top: number; width: number; height: number };
 
 function frameOf(widget: PDFWidgetAnnotation): Frame {
   const { x, y, width, height } = widget.getRectangle();
-  const padding = paddingOf(widget);
+  const padding = TextFitService.paddingOf(widget);
   return {
     x: x + padding,
     top: y + height - padding,
@@ -102,7 +110,7 @@ function nearSize(
     size >= TEXT_SIZES.floor;
     size -= SIZE_STEP
   ) {
-    const lineHeight = size * LINE_HEIGHT;
+    const lineHeight = size * FlattenTheFormService.LINE_HEIGHT;
     const height = linesOf(text, frame, font, size).length * lineHeight;
     if (height <= frame.height + lineHeight) return size;
   }
@@ -125,7 +133,8 @@ function bottomOf(text: string, frame: Frame, font: PDFFont, size: number) {
   const lines = linesOf(text, frame, font, size);
   const descent = font.heightAtSize(size) - ascentOf(font, size);
   const lastBaseline =
-    firstBaseline(frame, font, size) - (lines.length - 1) * size * LINE_HEIGHT;
+    firstBaseline(frame, font, size) -
+    (lines.length - 1) * size * FlattenTheFormService.LINE_HEIGHT;
   return lastBaseline - descent;
 }
 

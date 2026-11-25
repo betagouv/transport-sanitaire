@@ -4,8 +4,8 @@
 import { describe, expect, it } from "vitest";
 import { CerfaFactory } from "../../../front/socle/cerfa/cerfa.factory";
 import type { Cerfa, Position } from "../../../front/socle/cerfa/cerfa.types";
-import { generateCerfa } from "../../../front/socle/cerfa/generate-the-cerfa/generate-the-cerfa";
 import { TypographyService } from "../../../front/socle/cerfa/typography.service";
+import { generateCerfa } from "./generer-le-cerfa";
 import { statesOf, testForm } from "./test-form";
 
 const { at, box, date, drawnBox, strictText, text, onOneLine } = CerfaFactory;

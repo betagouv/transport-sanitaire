@@ -14,7 +14,7 @@ coûteuses à défaire ; ici, les choix de forme du code.
 | ARCH-001 | `core/` ne connaît ni l'écran ni le serveur, `shared/` rien, et le rattachement reste hors du moteur | `frontieres-des-racines.test.ts`, `architecture.test.ts` |
 | ARCH-002 | Un modèle a deux dossiers du même nom, et le socle ne le connaît que par deux contrats | `architecture.test.ts` |
 | ARCH-003 | Hors d'un module du socle, on n'importe que son `index.ts` | `modules-du-socle.test.ts` |
-| ARCH-004 | Le domaine n'importe aucun adaptateur, et seul un adaptateur importe un paquet | `clean-architecture.test.ts` |
+| ARCH-004 | Le domaine n'importe aucun adaptateur, et seul un adaptateur (ou son module) importe un paquet | `clean-architecture.test.ts`, `modules-d-adaptateur.test.ts` |
 | ARCH-005 | Un fait et une cible se lisent par leurs méthodes | `lecture-des-valeurs.test.ts` |
 | ARCH-006 | Un fait se déclare une fois, dans son fichier | `catalogue-des-faits.test.ts`, `domaines.test.ts` |
 | ARCH-007 | Une question se déclare par son constructeur, et se répète par `.unlessAskedBefore()` | typage, `conformite.test.ts` |
@@ -113,7 +113,7 @@ manque à son contrat s'ajoute à l'index. Les tests d'un module
 
 ---
 
-### ARCH-004 - Le domaine n'importe aucun adaptateur, et seul un adaptateur importe un paquet
+### ARCH-004 - Le domaine n'importe aucun adaptateur, et seul un adaptateur (ou son module) importe un paquet
 
 > Raison : changer de bibliothèque ne doit toucher que ses adaptateurs, et le
 > domaine doit se tester sans elle. Un use case qui importe l'adaptateur Grist
@@ -145,6 +145,25 @@ manque à son contrat s'ajoute à l'index. Les tests d'un module
   chemin : `server/server.ts`, `server/app.ts` et `front/main.tsx`.
 - Une seule porte : un modèle charge l'adaptateur publicodes sans index, pour
   rester hors du chunk d'entrée.
+- Un adaptateur peut être **un module** : un dossier dont le point d'entrée est un
+  `.adapter.ts`, et dont les autres fichiers sont ses pièces. Un port est une
+  abstraction : ce qu'elle masque va d'une seule classe à tout un module. C'est le
+  module qui a le droit d'importer le paquet, pas seulement le fichier
+  `.adapter.ts`. Ses pièces portent un rôle ordinaire (QUAL-018) : services en
+  classes, `.types.ts`, `.constants.ts`, `.vo.ts`.
+  - Vers l'intérieur : un fichier du module importe le paquet que l'adaptateur
+    masque, les autres fichiers du module, et le port avec ses `.types.ts` et
+    `.constants.ts`, à côté de lui. Rien d'autre : ni l'appelant, ni l'écran, ni un
+    service du domaine. Ce que le module doit en lire lui arrive en paramètre, par
+    le port : le cas d'usage calcule, l'adaptateur exécute.
+  - Vers l'extérieur : rien hors du module n'importe une pièce, ni le paquet. On
+    n'entre que par l'adaptateur, et seul un assembleur (`container.ts`,
+    `index.ts`) l'instancie. Le module charge ses pièces par `import()` quand le
+    paquet doit rester hors du chunk d'entrée.
+  - Un dossier n'est un module d'adaptateur que **déclaré** dans la garde
+    (`tests/modules-d-adaptateur.ts`), avec son paquet : `server/grist`,
+    `server/journal` et `server/postgres` portent un `.adapter.ts` à côté de fichiers du
+    domaine que d'autres importent, et n'en sont pas.
 - Le domaine du journal et celui de la mesure d'audience sont plus stricts : ils
   n'importent qu'entre eux et `shared/`. Seule exception : un type du métier,
   par un `import type` d'un `.types.ts` de `core/`.
@@ -154,9 +173,25 @@ manque à son contrat s'ajoute à l'index. Les tests d'un module
 que par les deux adaptateurs qui l'implémentent
 ```
 
+```
+✅ OK : le cerfa déclare CerfaPdf dans un port, pdf-lib n'est importé que par le
+module qui l'implémente, par son seul point d'entrée
+front/socle/cerfa/
+  cerfa-pdf.port.ts              ce que le cerfa attend d'un PDF
+  cerfa-pdf.types.ts             les données qui traversent le port
+  generate-the-cerfa.usecase.ts  reçoit le port, jamais pdf-lib
+  container.ts                   assemble les cas d'usage sur le port
+  pdf-lib/
+    pdf-lib-cerfa.adapter.ts     le point d'entrée : implémente le port
+    fill-the-form.service.ts     les pièces : pdf-lib, les autres pièces et le port ;
+    flatten-the-form.service.ts  rien d'extérieur ne les importe
+```
+
 *Gardé par* `tests/clean-architecture.test.ts › le sens des dépendances`, sur les
 quatre racines pour les adaptateurs, sur `core/` et le domaine des trois autres
-pour les paquets, et `› le journal des parcours`.
+pour les paquets, `tests/modules-d-adaptateur.test.ts › un module d'adaptateur`
+pour les deux sens d'un module, et `tests/clean-architecture.test.ts › le journal
+des parcours`.
 
 ---
 

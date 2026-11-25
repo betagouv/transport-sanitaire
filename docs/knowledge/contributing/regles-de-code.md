@@ -618,8 +618,8 @@ question/question.ts
 
 *Gardé par* `tests/roles-par-suffixe.test.ts › un fichier dit son rôle par son
 suffixe`, dans `apps/simulateur-eligibilite`. La garde couvre `core/socle/`,
-`server/journal/`, `server/grist/`, `server/postgres/`, `front/socle/analytics/`
-et `front/socle/server-api/` : un dossier la rejoint quand il suit la règle. Un `.fait.ts` ne vit que dans un `faits/`, un `.question.ts` que dans un `questions/` de `core/models/`. Que
+`server/journal/`, `server/grist/`, `server/postgres/`, `front/socle/analytics/`,
+`front/socle/cerfa/` (ses composants `.tsx` exceptés) et `front/socle/server-api/` : un dossier la rejoint quand il suit la règle. Un `.fait.ts` ne vit que dans un `faits/`, un `.question.ts` que dans un `questions/` de `core/models/`. Que
 le hook ne porte aucune règle est du jugement.
 
 *Aucune garde.* Pour la limite d'un service qui touche le navigateur : la garde devrait distinguer deux sortes de services, et le suffixe ne le dit pas.

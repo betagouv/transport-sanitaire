@@ -144,6 +144,8 @@ export type StrictLayout = { readonly size: number; readonly oneLine: boolean };
 export type StrictEntry = {
   readonly entry: string;
   readonly strict: Strict;
+  /** Comment il s'écrit : le PDF l'applique, il ne le décide pas. */
+  readonly layout: StrictLayout;
   readonly place: StrictPlace;
 };
 

@@ -20,6 +20,9 @@ export { App, type Models } from "./app";
 export {
   type Cerfa,
   CerfaFactory,
+  type CerfaUseCases,
+  cerfaUseCases,
+  PdfLibCerfaAdapter,
   type StrictOptions,
   templateAt,
 } from "./cerfa";

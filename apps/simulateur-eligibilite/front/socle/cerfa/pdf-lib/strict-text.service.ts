@@ -1,7 +1,7 @@
 // Un texte strict : il tient dans sa place à sa taille, ou il ne
 // s'écrit pas. Sa mesure est celle de l'écriture : le champ du gabarit, passé
 // en multiligne ou gardé sur une ligne, sa marge, Helvetica, et la mise en
-// lignes de `pdf-lib` (`text-fit.ts`) ; ou, pour un texte dessiné, sa largeur
+// lignes de `pdf-lib` (`text-fit.service.ts`) ; ou, pour un texte dessiné, sa largeur
 // sur une ligne. La génération et l'éditeur de l'écran la partagent.
 //
 // Le maximum est celui du compteur « caractères saisis / maximum », compté en
@@ -12,15 +12,16 @@
 
 import type { PDFFont, PDFTextField } from "pdf-lib";
 import type { StrictLayout, StrictMeasure } from "../cerfa.types";
-import { fitsAtSize } from "./text-fit";
-import { writableIn } from "./writable-text";
-import { write } from "./write-a-text";
+import type { StrictLineMeasure } from "../cerfa-pdf.types";
+import { TextFitService } from "./text-fit.service";
+import { WritableTextService } from "./writable-text.service";
+import { WriteATextService } from "./write-a-text.service";
 
 /**
  * La mesure d'un texte strict : elle ne sait que dire si un texte tient, et en
  * tire son maximum.
  */
-export abstract class StrictMeasurer {
+export abstract class StrictMeasurer implements StrictLineMeasure {
   /** Ce texte tient-il, et combien de caractères la place en prendrait. */
   measure(text: string): StrictMeasure {
     const characters = Array.from(text);
@@ -69,14 +70,23 @@ export class StrictText extends StrictMeasurer {
   /** Écrit le texte s'il tient, sinon son plus long début qui tient. */
   write(text: string): StrictMeasure {
     const { written, ...measured } = this.fitting(text);
-    write(this.#field, writableIn(this.#font, written), this.#layout.size);
+    WriteATextService.write(
+      this.#field,
+      WritableTextService.in(this.#font, written),
+      this.#layout.size,
+    );
     return measured;
   }
 
   protected fits(text: string): boolean {
     if (this.#layout.oneLine && BREAK.test(text)) return false;
-    const writable = writableIn(this.#font, text);
-    return fitsAtSize(this.#field, this.#font, writable, this.#layout.size);
+    const writable = WritableTextService.in(this.#font, text);
+    return TextFitService.fitsAtSize(
+      this.#field,
+      this.#font,
+      writable,
+      this.#layout.size,
+    );
   }
 }
 
@@ -98,7 +108,7 @@ export class StrictLine extends StrictMeasurer {
 
   protected fits(text: string): boolean {
     if (BREAK.test(text)) return false;
-    const writable = writableIn(this.#font, text);
+    const writable = WritableTextService.in(this.#font, text);
     return this.#font.widthOfTextAtSize(writable, this.#size) <= this.#width;
   }
 }

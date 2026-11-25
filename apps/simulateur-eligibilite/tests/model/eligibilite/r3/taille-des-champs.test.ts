@@ -6,8 +6,9 @@
 
 import { describe, expect, it } from "vitest";
 import type { CerfaDto } from "../../../../core/socle/cerfa";
-import { type BoundCerfa, generateCerfa } from "../../../../front/socle/cerfa";
+import type { BoundCerfa } from "../../../../front/socle/cerfa";
 import { TYPOGRAPHIC_FIELDS } from "../../../../shared/analytics/typographic-fields.constants";
+import { generateCerfa } from "../../../socle/cerfa/generer-le-cerfa";
 import { DOCUMENTS as CERFAS } from "../documents-lies";
 import { gabarit } from "./reponses-du-cerfa";
 

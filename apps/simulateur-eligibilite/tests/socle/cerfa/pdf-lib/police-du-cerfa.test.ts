@@ -1,12 +1,12 @@
 import { describe, expect, it } from "vitest";
-import { fillCerfa } from "../../../front/socle/cerfa/generate-the-cerfa/fill-the-form";
-import { readBack, testForm } from "./test-form";
+import { FillTheFormService } from "../../../../front/socle/cerfa/pdf-lib/fill-the-form.service";
+import { readBack, testForm } from "../test-form";
 
 // Un texte s'écrit dans la police que `pdf-lib` redessine, Helvetica : ce
 // qu'elle ne sait pas écrire ne bloque jamais le PDF.
 
-const remplir = async (...args: Parameters<typeof fillCerfa>) => {
-  const filled = await fillCerfa(...args);
+const remplir = async (...args: Parameters<typeof FillTheFormService.fill>) => {
+  const filled = await FillTheFormService.fill(...args);
   return { ...filled, read: await readBack(filled.pdf) };
 };
 

@@ -3,11 +3,12 @@ import userEvent from "@testing-library/user-event";
 import { useState } from "react";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { TextEdits } from "../../../core/socle/simulation";
+import { CerfaUseCasesProvider } from "../../../front/socle/cerfa";
 import { CerfaDocument } from "../../../front/socle/cerfa/CerfaDocument";
 import { CerfaFactory } from "../../../front/socle/cerfa/cerfa.factory";
 import type { Cerfa } from "../../../front/socle/cerfa/cerfa.types";
-import { PREVIEW_MARK } from "../../../front/socle/cerfa/generate-the-cerfa/generate-the-cerfa";
 import { ecouterLesTelechargements } from "../simulateur/telechargements";
+import { casDUsageDuCerfa, PREVIEW_MARK } from "./generer-le-cerfa";
 import { drawnOn } from "./pdf-aplati";
 import { testForm } from "./test-form";
 
@@ -145,20 +146,23 @@ function afficher(fields: Fiche["fields"]) {
 // document à chaque texte validé.
 function Ecran({ fields }: { fields: Fiche["fields"] }) {
   const [edits, setEdits] = useState(TextEdits.none());
+  const [cas] = useState(casDUsageDuCerfa);
   return (
-    <CerfaDocument
-      key={JSON.stringify(edits.accepted)}
-      cerfa={FICHE}
-      dto={{ fields: { ...fields, ...edits.accepted }, drawings: {} }}
-      date={new Date("2026-10-14T10:00:00Z")}
-      printLabel="Imprimer la fiche"
-      downloadLabel="Télécharger la fiche"
-      edits={{
-        drafts: edits.drafts,
-        onEdit: (entry, text) => setEdits((now) => now.draft(entry, text)),
-        onValidate: (entry) => setEdits((now) => now.accept(entry)),
-      }}
-    />
+    <CerfaUseCasesProvider value={cas}>
+      <CerfaDocument
+        key={JSON.stringify(edits.accepted)}
+        cerfa={FICHE}
+        dto={{ fields: { ...fields, ...edits.accepted }, drawings: {} }}
+        date={new Date("2026-10-14T10:00:00Z")}
+        printLabel="Imprimer la fiche"
+        downloadLabel="Télécharger la fiche"
+        edits={{
+          drafts: edits.drafts,
+          onEdit: (entry, text) => setEdits((now) => now.draft(entry, text)),
+          onValidate: (entry) => setEdits((now) => now.accept(entry)),
+        }}
+      />
+    </CerfaUseCasesProvider>
   );
 }
 

@@ -140,3 +140,10 @@ function estUneFonction(noeud: ts.Node): noeud is NoeudFonction {
     ts.isMethodDeclaration(noeud)
   );
 }
+
+// Les paquets qu'un fichier importe : tout ce qui n'est pas un chemin relatif.
+const PAQUET = /(?:from|import)\s*\(?\s*["']([^."'][^"']*)["']/g;
+export const paquetsDe = (fichier: string) =>
+  [...texteDe(fichier).matchAll(PAQUET)].flatMap(([, paquet]) =>
+    paquet ? [paquet] : [],
+  );

@@ -72,7 +72,7 @@ Dossier : `docs/knowledge/adr`
 | ARCH-001 | `core/` ne connaît ni l'écran ni le serveur, `shared/` rien, et le rattachement reste hors du moteur | `frontieres-des-racines.test.ts`, `architecture.test.ts` |
 | ARCH-002 | Un modèle a deux dossiers du même nom, et le socle ne le connaît que par deux contrats | `architecture.test.ts` |
 | ARCH-003 | Hors d'un module du socle, on n'importe que son `index.ts` | `modules-du-socle.test.ts` |
-| ARCH-004 | Le domaine n'importe aucun adaptateur, et seul un adaptateur importe un paquet | `clean-architecture.test.ts` |
+| ARCH-004 | Le domaine n'importe aucun adaptateur, et seul un adaptateur (ou son module) importe un paquet | `clean-architecture.test.ts`, `modules-d-adaptateur.test.ts` |
 | ARCH-005 | Un fait et une cible se lisent par leurs méthodes | `lecture-des-valeurs.test.ts` |
 | ARCH-006 | Un fait se déclare une fois, dans son fichier | `catalogue-des-faits.test.ts`, `domaines.test.ts` |
 | ARCH-007 | Une question se déclare par son constructeur, et se répète par `.unlessAskedBefore()` | typage, `conformite.test.ts` |

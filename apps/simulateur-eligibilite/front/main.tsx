@@ -44,6 +44,7 @@ createRoot(racine).render(
       models={models}
       referentiel={container.referentiel}
       analytics={container.analytics}
+      cerfa={container.cerfa}
     />
   </StrictMode>,
 );

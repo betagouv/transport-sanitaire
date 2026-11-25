@@ -1,20 +1,20 @@
 import { describe, expect, it } from "vitest";
-import { fillCerfa } from "../../../front/socle/cerfa/generate-the-cerfa/fill-the-form";
-import { flattenCerfa } from "../../../front/socle/cerfa/generate-the-cerfa/flatten-the-form";
-import { drawnOn, markedStates } from "./pdf-aplati";
-import { testForm, withoutOffAppearance } from "./test-form";
+import { FillTheFormService } from "../../../../front/socle/cerfa/pdf-lib/fill-the-form.service";
+import { FlattenTheFormService } from "../../../../front/socle/cerfa/pdf-lib/flatten-the-form.service";
+import { drawnOn, markedStates } from "../pdf-aplati";
+import { testForm, withoutOffAppearance } from "../test-form";
 
 // Le cerfa de sortie est aplati : ses valeurs sont dessinées sur la page, et il
 // n'y reste aucun champ à corriger dans un lecteur.
 
 describe("flattenCerfa", () => {
   it("ne laisse aucun champ, et garde chaque valeur écrite", async () => {
-    const filled = await fillCerfa(await testForm(), [
+    const filled = await FillTheFormService.fill(await testForm(), [
       { field: "nom", text: "DUPONT Marie" },
       { field: "motif", text: "Dialyse en centre." },
     ]);
 
-    const { pdf } = await flattenCerfa(filled.pdf);
+    const { pdf } = await FlattenTheFormService.flatten(filled.pdf);
 
     expect(await drawnOn(pdf)).toEqual({
       fields: 0,
@@ -24,11 +24,11 @@ describe("flattenCerfa", () => {
 
   it("dessine une case cochée de l'apparence de son gabarit, même sans état « Off »", async () => {
     const template = await withoutOffAppearance(await testForm(), "acc");
-    const filled = await fillCerfa(template, [
+    const filled = await FillTheFormService.fill(template, [
       { field: "acc", checked: "sucre" },
     ]);
 
-    const { pdf } = await flattenCerfa(filled.pdf);
+    const { pdf } = await FlattenTheFormService.flatten(filled.pdf);
 
     expect(await markedStates(template, pdf, "acc")).toEqual(["sucre"]);
   });

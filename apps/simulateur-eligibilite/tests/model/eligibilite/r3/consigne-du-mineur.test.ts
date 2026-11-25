@@ -11,11 +11,8 @@
 
 import { describe, expect, it } from "vitest";
 import { CerfaDtoService } from "../../../../core/socle/cerfa";
-import {
-  type BoundCerfa,
-  generateCerfa,
-  type Overflowing,
-} from "../../../../front/socle/cerfa";
+import type { BoundCerfa, Overflowing } from "../../../../front/socle/cerfa";
+import { generateCerfa } from "../../../socle/cerfa/generer-le-cerfa";
 import { markedStates, textsOn } from "../../../socle/cerfa/pdf-aplati";
 import { DOCUMENTS } from "../documents-lies";
 import type { ValeursDesCibles } from "../r2/traces-du-prescripteur";

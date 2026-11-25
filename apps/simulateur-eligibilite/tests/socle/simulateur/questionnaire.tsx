@@ -9,6 +9,7 @@ import type { AnalyticsUseCases } from "../../../front/socle/analytics";
 import { App } from "../../../front/socle/app";
 import type { FirstResult, Model } from "../../../front/socle/model.types";
 import { snapshotReferentiel } from "../../../shared/snapshot-referentiel.adapter";
+import { casDUsageDuCerfa } from "../cerfa/generer-le-cerfa";
 import { modeleDeTest, seulModele } from "../modele-de-test";
 import { seRattacher } from "../se-rattacher";
 
@@ -39,6 +40,7 @@ export async function ouvrirLeSimulateur(
       referentiel={snapshotReferentiel}
       developerTools={options.developerTools}
       analytics={options.analytics}
+      cerfa={casDUsageDuCerfa()}
     />
   );
   render(options.strictMode ? <StrictMode>{app}</StrictMode> : app);
