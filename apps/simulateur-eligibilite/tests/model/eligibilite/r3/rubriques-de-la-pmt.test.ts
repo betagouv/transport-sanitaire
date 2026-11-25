@@ -5,9 +5,9 @@
 // `mapping_documents.json`, en v10.1.3.
 
 import { describe, expect, it } from "vitest";
-import { CENTRE_DE_REFERENCE } from "../../../../front/models/eligibilite/r3/rubriques/centre-de-reference";
-import { MOTIFS } from "../../../../front/models/eligibilite/r3/rubriques/motifs";
-import { NOMBRE } from "../../../../front/models/eligibilite/r3/rubriques/nombre";
+import { CENTRE_DE_REFERENCE } from "../../../../core/models/eligibilite/r3/rubriques/centre-de-reference";
+import { MOTIFS } from "../../../../core/models/eligibilite/r3/rubriques/motifs";
+import { NOMBRE } from "../../../../core/models/eligibilite/r3/rubriques/nombre";
 import {
   PRECISION_DE_L_URGENCE,
   URGENCE,

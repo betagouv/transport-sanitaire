@@ -4,15 +4,15 @@
 // l'éditeur (TS1014-TERMINOLOGIE-PRESCRIPTEUR).
 
 import type { OrientedIssueId } from "../../../../../../core/models/eligibilite/cibles/issue.vo";
-import type { FirstResult } from "../../../../../socle";
-import type { TraceDe } from "../../components/ce-que-lit-un-bloc";
-import type { CatalogueResultats } from "../../components/forme-du-catalogue";
-import { PageDuPrescripteur } from "./PageDuPrescripteur";
+import type { TraceDe } from "../../../../../../core/models/eligibilite/r2/blocs/ce-que-lit-un-bloc";
+import type { CatalogueResultats } from "../../../../../../core/models/eligibilite/r2/blocs/forme-du-catalogue";
 import {
   type LU_PAR_LE_PRESCRIPTEUR,
   selonLAffichage,
   texteDuPrescripteur,
-} from "./texte";
+} from "../../../../../../core/models/eligibilite/r2/orientee/texte";
+import type { FirstResult } from "../../../../../socle";
+import { PageDuPrescripteur } from "./PageDuPrescripteur";
 
 export function pageOrientee(
   catalogue: CatalogueResultats,

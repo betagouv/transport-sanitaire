@@ -10,6 +10,7 @@ import {
   FAITS,
   type Faits,
 } from "../../../../core/models/eligibilite/faits/noms";
+import type { Precisions } from "../../../../core/models/eligibilite/r2/blocs/precisions";
 import {
   Cible,
   Fait,
@@ -18,7 +19,6 @@ import {
 } from "../../../../core/socle";
 import type { CibleValues } from "../../../../core/socle/decision-engine";
 import { ResultContext } from "../../../../core/socle/simulation";
-import type { Precisions } from "../../../../front/models/eligibilite/r2/components/precisions";
 import type { Trace } from "../../../../front/models/eligibilite/r2/r2";
 
 /** Des valeurs de cibles écrites à la main, telles que les règles les donnent. */

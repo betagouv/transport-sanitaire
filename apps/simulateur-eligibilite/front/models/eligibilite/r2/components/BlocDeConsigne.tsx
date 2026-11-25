@@ -1,7 +1,10 @@
 // Un bloc d'une consigne des fiches patient : un paragraphe, ou une liste à
 // puces, dont une puce peut introduire des badges.
 
-import type { BlocDeConsigne as Bloc, Puce } from "./blocs-de-consigne";
+import type {
+  BlocDeConsigne as Bloc,
+  Puce,
+} from "../../../../../core/models/eligibilite/r2/blocs/blocs-de-consigne";
 import { TexteEnrichi } from "./TexteEnrichi";
 
 export function BlocDeConsigne({ bloc }: { bloc: Bloc }) {

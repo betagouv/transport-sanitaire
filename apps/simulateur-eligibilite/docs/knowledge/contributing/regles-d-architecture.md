@@ -49,8 +49,10 @@ le jour où ces gardes sont réécrites sur la nouvelle interface du compilateur
   publicodes. Le simulateur et les modèles n'importent pas le rattachement.
 
 Ce qui sert à calculer (une question, un fait, une cible, une seed) va dans
-`core/`. Ce qui s'affiche (un résultat, une fiche, un cerfa, une phrase) va dans
-`front/`.
+`core/`. Le résultat d'un modèle aussi : ce qu'il lit, ses textes et ses valeurs
+sont du métier, dans `core/models/<nom>/r2/` et `r3/`. Ce qui le montre (un
+composant, une mise en page, un PDF) va dans `front/`. Une partie du résultat
+reste encore dans `front/models/<nom>/`.
 
 *Gardé par* `tests/frontieres-des-racines.test.ts` (les cinq frontières) et
 `tests/architecture.test.ts › invariants métier › le simulateur ignore qui
@@ -66,6 +68,10 @@ prescrit`, `› les règles publicodes ne portent que de l'éligibilité`.
 
 - Un modèle a `core/models/<nom>/` (le métier) et `front/models/<nom>/` (l'écran),
   sous le même nom.
+- Son résultat a un pied dans chacun : ce qu'il dit (ce qu'il lit, ses textes, ses
+  valeurs) est dans `core/models/<nom>/r2/` et `r3/`, sa mise en page dans
+  `front/models/<nom>/r2/` et `r3/`. Le métier du résultat n'importe jamais
+  l'écran.
 - Le socle ne le connaît que par `CoreModel` (`core/socle/model.types.ts`) et
   `Model` (`front/socle/model.types.ts`). Il n'importe rien d'un modèle.
 - Un modèle n'importe du socle que `core/socle/index.ts` et `front/socle/index.ts`.
@@ -239,7 +245,7 @@ que pour une place suivante`.
   et la question lue vaut `undefined` au chargement.
 
 *Gardé par* le typage, et `tests/lecture-des-valeurs.test.ts › R2 et R3 lisent
-des valeurs` pour R2 et R3. Les faits et les conditions n'ont pas d'autre garde
+des valeurs` pour R2 et R3, dans `core/` comme dans `front/`. Les faits et les conditions n'ont pas d'autre garde
 que le typage.
 
 ---

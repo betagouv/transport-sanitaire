@@ -4,12 +4,15 @@
 // patient.
 
 import type { AcceptedIssueId } from "../../../../../../core/models/eligibilite/cibles/issue.vo";
+import {
+  type LU_PAR_LA_FICHE_POSITIVE,
+  texteDeLaFichePositive,
+} from "../../../../../../core/models/eligibilite/r2/acceptee/texte";
+import type { TraceDe } from "../../../../../../core/models/eligibilite/r2/blocs/ce-que-lit-un-bloc";
+import type { CatalogueResultats } from "../../../../../../core/models/eligibilite/r2/blocs/forme-du-catalogue";
 import type { FirstResult } from "../../../../../socle";
-import type { TraceDe } from "../../components/ce-que-lit-un-bloc";
-import type { CatalogueResultats } from "../../components/forme-du-catalogue";
 import { pageDeLaFeuille } from "../../components/page-de-la-fiche";
 import { FichePositive } from "./FichePositive";
-import { type LU_PAR_LA_FICHE_POSITIVE, texteDeLaFichePositive } from "./texte";
 
 export function pageAcceptee(
   catalogue: CatalogueResultats,

@@ -4,8 +4,8 @@
 // texte médical et le centre de référence n'ont de champ que sur la page 3, le
 // volet médical : rien de médical ne s'écrit sur la page 4.
 //
-// Elle assemble les rubriques que les cerfa partagent (`../rubriques/`) et
-// porte la seule qui lui est propre : la pension militaire. Les noms des
+// Elle assemble les rubriques que les cerfa partagent (`r3/rubriques/` du
+// métier) et porte la seule qui lui est propre : la pension militaire. Les noms des
 // champs et leurs états d'export sont ceux du gabarit
 // (`MAPPING_ACROFORM_GABARITS.json`). Chaque case suit son libellé imprimé.
 //
@@ -19,6 +19,47 @@
 
 import { given } from "../../../../../core/models/eligibilite/questions/reponses";
 import {
+  ACCIDENT,
+  type Accident,
+} from "../../../../../core/models/eligibilite/r3/rubriques/accident";
+import {
+  BENEFICIAIRE,
+  type Beneficiaire,
+} from "../../../../../core/models/eligibilite/r3/rubriques/beneficiaire";
+import {
+  CENTRE_DE_REFERENCE,
+  type CentreDeReference,
+} from "../../../../../core/models/eligibilite/r3/rubriques/centre-de-reference";
+import {
+  EXONERATION,
+  type Exoneration,
+} from "../../../../../core/models/eligibilite/r3/rubriques/exoneration";
+import {
+  MODE,
+  type Mode,
+} from "../../../../../core/models/eligibilite/r3/rubriques/mode";
+import {
+  MOTIFS,
+  type Motifs,
+} from "../../../../../core/models/eligibilite/r3/rubriques/motifs";
+import {
+  NOMBRE,
+  type Nombre,
+} from "../../../../../core/models/eligibilite/r3/rubriques/nombre";
+import {
+  PRESCRIPTION,
+  type Prescription,
+} from "../../../../../core/models/eligibilite/r3/rubriques/prescription";
+import type { Rubrique } from "../../../../../core/models/eligibilite/r3/rubriques/rubrique";
+import {
+  TEXTE_MEDICAL,
+  type TexteMedical,
+} from "../../../../../core/models/eligibilite/r3/rubriques/texte-medical";
+import {
+  TRAJET,
+  type Trajet,
+} from "../../../../../core/models/eligibilite/r3/rubriques/trajet";
+import {
   type Cerfa,
   CerfaDtoService,
   CerfaFactory,
@@ -27,20 +68,6 @@ import {
   templateAt,
 } from "../../../../socle";
 import gabarit from "../gabarits/S3138g.pdf?url";
-import { ACCIDENT, type Accident } from "../rubriques/accident";
-import { BENEFICIAIRE, type Beneficiaire } from "../rubriques/beneficiaire";
-import {
-  CENTRE_DE_REFERENCE,
-  type CentreDeReference,
-} from "../rubriques/centre-de-reference";
-import { EXONERATION, type Exoneration } from "../rubriques/exoneration";
-import { MODE, type Mode } from "../rubriques/mode";
-import { MOTIFS, type Motifs } from "../rubriques/motifs";
-import { NOMBRE, type Nombre } from "../rubriques/nombre";
-import { PRESCRIPTION, type Prescription } from "../rubriques/prescription";
-import type { Rubrique } from "../rubriques/rubrique";
-import { TEXTE_MEDICAL, type TexteMedical } from "../rubriques/texte-medical";
-import { TRAJET, type Trajet } from "../rubriques/trajet";
 import {
   LIBELLE_DE_LA_PRECISION,
   PRECISION_DE_L_URGENCE,

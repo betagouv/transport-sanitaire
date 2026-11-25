@@ -32,10 +32,10 @@ import type {
   AcceptedIssueId,
   OrientedIssueId,
 } from "../../../../core/models/eligibilite/cibles/issue.vo";
-import { sansBlancsDeTrop } from "../../../../front/models/eligibilite/r2/components/sans-blancs-de-trop";
-import { texteDeLaFichePositive } from "../../../../front/models/eligibilite/r2/layouts/acceptee/texte";
-import { texteDuPrescripteur } from "../../../../front/models/eligibilite/r2/layouts/orientee/texte";
-import { texteDeLaFicheNegative } from "../../../../front/models/eligibilite/r2/layouts/refusee/texte";
+import { texteDeLaFichePositive } from "../../../../core/models/eligibilite/r2/acceptee/texte";
+import { sansBlancsDeTrop } from "../../../../core/models/eligibilite/r2/blocs/sans-blancs-de-trop";
+import { texteDuPrescripteur } from "../../../../core/models/eligibilite/r2/orientee/texte";
+import { texteDeLaFicheNegative } from "../../../../core/models/eligibilite/r2/refusee/texte";
 import type { Trace } from "../../../../front/models/eligibilite/r2/r2";
 import { type Changements, faitsDuCas } from "../cibles/faits-de-l-oracle";
 import DEMONSTRATION from "../cibles/scenarios-de-demonstration.json" with {

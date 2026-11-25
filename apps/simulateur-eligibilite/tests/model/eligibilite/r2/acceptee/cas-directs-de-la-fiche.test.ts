@@ -14,11 +14,11 @@
 // le contexte ALD ou mineur propre à cette issue.
 
 import { describe, expect, it } from "vitest";
-import { catalogueResultats } from "../../../../../front/models/eligibilite/r2/components/textes-de-l-editeur";
 import {
   type TexteDeLaFichePositive,
   texteDeLaFichePositive,
-} from "../../../../../front/models/eligibilite/r2/layouts/acceptee/texte";
+} from "../../../../../core/models/eligibilite/r2/acceptee/texte";
+import { catalogueResultats } from "../../../../../front/models/eligibilite/r2/components/textes-de-l-editeur";
 import { R2 } from "../../../../../front/models/eligibilite/r2/r2";
 import { lienAld } from "../../p1/lien-ald";
 import {

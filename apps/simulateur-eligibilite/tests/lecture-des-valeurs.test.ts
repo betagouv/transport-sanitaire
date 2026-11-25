@@ -29,7 +29,9 @@ const COMPARAISONS = new Set([
 // Les réponses brutes, que le socle donne au calcul des faits et aux gardes de
 // déclaration seulement.
 const REPONSES_BRUTES = /\b(GivenAnswers|ValidatedAnswers)\b/;
-const UN_RESULTAT = /^front\/models\/[^/]+\/r[23](\/|\.tsx?$)/;
+// R2 et R3 d'un modèle : leur calcul est dans `core/models/<nom>/r2|r3/`, leur
+// rendu dans `front/models/<nom>/r2|r3/`.
+const UN_RESULTAT = /^(core|front)\/models\/[^/]+\/r[23](\/|\.tsx?$)/;
 
 describe("un fait et une cible se lisent par leurs méthodes", () => {
   it("aucun `.value` d'un fait ou d'une cible n'est comparé", () => {
@@ -46,7 +48,7 @@ describe("un fait et une cible se lisent par leurs méthodes", () => {
 
 describe("R2 et R3 lisent des valeurs", () => {
   it("aucun fichier de R2 ni de R3 ne reçoit les réponses brutes", () => {
-    const fautifs = sources("front/models")
+    const fautifs = sources("core/models", "front/models")
       .filter((fichier) => UN_RESULTAT.test(fichier))
       .filter((fichier) => REPONSES_BRUTES.test(texteDe(fichier)));
     expect(

@@ -5,6 +5,12 @@
 // `TexteDeLaFichePositive` dans les blocs du socle ; il n'écrit aucun texte de
 // l'éditeur.
 
+import type {
+  PartieTerrestre,
+  TexteDeLaFichePositive,
+} from "../../../../../../core/models/eligibilite/r2/acceptee/texte";
+import type { CarteAffichee } from "../../../../../../core/models/eligibilite/r2/blocs/cartes-et-badges";
+import type { Consignes } from "../../../../../../core/models/eligibilite/r2/blocs/consignes-du-modus";
 import {
   IllustratedCards,
   NumberedSteps,
@@ -12,11 +18,8 @@ import {
   SheetFollowUp,
 } from "../../../../../socle";
 import { BlocDeConsigne } from "../../components/BlocDeConsigne";
-import type { CarteAffichee } from "../../components/cartes-et-badges";
-import type { Consignes } from "../../components/consignes-du-modus";
 import { illustrationDuMode } from "../../components/illustrations-des-modes";
 import { TexteEnrichi } from "../../components/TexteEnrichi";
-import type { PartieTerrestre, TexteDeLaFichePositive } from "./texte";
 
 export function FichePositive({ texte }: { texte: TexteDeLaFichePositive }) {
   return (

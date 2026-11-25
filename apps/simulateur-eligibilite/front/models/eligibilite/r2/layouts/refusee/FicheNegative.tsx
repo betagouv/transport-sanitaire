@@ -5,10 +5,10 @@
 // ce que l'Assurance Maladie ne rembourse pas, puis les règles de la
 // prescription et le « Le saviez-vous ? ».
 
+import type { TexteDeLaFicheNegative } from "../../../../../../core/models/eligibilite/r2/refusee/texte";
 import { Panel, SheetFollowUp } from "../../../../../socle";
 import { BlocDeConsigne } from "../../components/BlocDeConsigne";
 import { TexteEnrichi } from "../../components/TexteEnrichi";
-import type { TexteDeLaFicheNegative } from "./texte";
 
 export function FicheNegative({ texte }: { texte: TexteDeLaFicheNegative }) {
   const information = texte.informationInstitutionnelle;

@@ -4,12 +4,12 @@
 
 import { describe, expect, it } from "vitest";
 import type { Faits } from "../../../../core/models/eligibilite/faits/noms";
-import { SEEDS } from "../../../../core/models/eligibilite/seeds-catalogue";
-import { Fait } from "../../../../core/socle";
 import {
   TEXTE_MEDICAL,
   type TexteMedical,
-} from "../../../../front/models/eligibilite/r3/rubriques/texte-medical";
+} from "../../../../core/models/eligibilite/r3/rubriques/texte-medical";
+import { SEEDS } from "../../../../core/models/eligibilite/seeds-catalogue";
+import { Fait } from "../../../../core/socle";
 import {
   ENTREE,
   MATERNITE_ETABLIE,

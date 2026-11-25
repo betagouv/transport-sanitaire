@@ -3,7 +3,7 @@
 // utiles ».
 
 import { describe, expect, it } from "vitest";
-import type { Precisions } from "../../../../front/models/eligibilite/r2/components/precisions";
+import type { Precisions } from "../../../../core/models/eligibilite/r2/blocs/precisions";
 import { R2 } from "../../../../front/models/eligibilite/r2/r2";
 import { BRANCARD_20_KM } from "../p2/reponses-de-la-branche";
 import { appareillage, CONVOQUE } from "../p2/reponses-de-la-convocation";
