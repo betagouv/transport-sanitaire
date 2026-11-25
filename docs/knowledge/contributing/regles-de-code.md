@@ -594,7 +594,7 @@ Un hook ne porte aucune règle (QUAL-019).
 
 Un fichier qui n'a aucun rôle de la table (un utilitaire d'écran, une table de
 valeurs qui n'est pas une liste fermée, la déclaration d'un modèle) reste sans
-suffixe. Le suffixe `.adapter` suppose un port : sans port à satisfaire, le fichier n'est pas un adaptateur.
+suffixe. Le suffixe `.adapter` suppose un port : sans port à satisfaire, le fichier n'est pas un adaptateur, sauf l'adaptateur de démarrage, que seul un assembleur lit, une fois (`server/configuration.adapter.ts`).
 
 **Exemples**
 

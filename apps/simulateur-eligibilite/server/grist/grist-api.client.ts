@@ -8,7 +8,8 @@
 // Un appel a un délai maximal. Un Grist lent, sans être en panne, laisserait
 // sinon chaque requête du simulateur pendre avec lui.
 
-import type { AccesGrist } from "../configuration.ts";
+/** Ce que le client exige du doc : son adresse et la clé d'API. */
+export type AccesGrist = { docUrl: string; cleApi: string };
 
 export type GristRow = { id: number; fields: Record<string, unknown> };
 

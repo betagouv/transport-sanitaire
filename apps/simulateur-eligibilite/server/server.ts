@@ -1,10 +1,11 @@
 // Point d'entrée du serveur : il sert le front et l'API. La configuration est
-// lue par `configuration.ts`.
+// lue par `configuration.adapter.ts`.
 
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { creerApp } from "./app.ts";
-import { type Configuration, lireConfiguration } from "./configuration.ts";
+import { lireConfiguration } from "./configuration.adapter.ts";
+import type { Configuration } from "./configuration.types.ts";
 import { adaptersFor, createContainer } from "./container.ts";
 
 const configuration = configurationOuArret();

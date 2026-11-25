@@ -9,7 +9,7 @@
 // établissement → service, pas des libellés.
 
 import { describe, expect, it } from "vitest";
-import { lireConfiguration } from "../../../server/configuration.ts";
+import { lireConfiguration } from "../../../server/configuration.adapter.ts";
 import { adaptersFor } from "../../../server/container.ts";
 
 const actif =

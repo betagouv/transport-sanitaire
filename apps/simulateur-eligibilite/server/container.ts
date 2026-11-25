@@ -6,7 +6,7 @@
 
 import type { Referentiel } from "../shared/referentiel.port.ts";
 import { snapshotReferentiel } from "../shared/snapshot-referentiel.adapter.ts";
-import type { Configuration } from "./configuration.ts";
+import type { Configuration } from "./configuration.types.ts";
 import { GristApiClient } from "./grist/grist-api.client.ts";
 import { CachedReferentiel } from "./journal/cached-referentiel.adapter.ts";
 import { CheckAlive } from "./journal/check-alive.usecase.ts";
