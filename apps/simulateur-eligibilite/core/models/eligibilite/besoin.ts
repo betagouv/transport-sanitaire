@@ -3,8 +3,8 @@
 // placer l'avis, et le journal des parcours le reçoit au premier choix validé.
 // Sans réponse, il n'est pas connu.
 
-import { given } from "../../../core/models/eligibilite/questions/reponses";
-import type { Intent } from "../../socle";
+import type { Intent } from "../../socle/index.ts";
+import { given } from "./questions/reponses.ts";
 
 export const BESOIN = given
   .question("Q0.1")

@@ -3,9 +3,16 @@
 // Comme dans `architecture.test.ts`, chaque règle donne son pourquoi dans son
 // message d'échec.
 
+import { dirname, join, relative, resolve } from "node:path";
 import ts from "typescript";
 import { describe, expect, it } from "vitest";
-import { astDe, importsDe, sources, texteDe } from "./inspection-des-sources";
+import {
+  astDe,
+  importsDe,
+  racine,
+  sources,
+  texteDe,
+} from "./inspection-des-sources";
 
 // Le journal, côté serveur et côté écran, et la mesure d'audience.
 const JOURNAL = ["server/journal", "front/socle/analytics"];
@@ -13,6 +20,29 @@ const JOURNAL = ["server/journal", "front/socle/analytics"];
 // Son domaine : les entités, les objets-valeurs, les use cases et les ports.
 const duDomaine = (cible: string) =>
   /\.(entity|vo|usecase|port)(\.ts)?$/.test(cible);
+
+// Exemption : le domaine du journal peut lire un type du métier, par un
+// `import type` d'un `.types.ts` de `core/`. Il traduit ce que le modèle dit
+// (une intention) dans les mots du journal : avec le type du métier, une valeur
+// ajoutée au modèle casse la traduction à la compilation. Un import de valeur
+// reste refusé, et tout autre fichier de `core/` aussi.
+const estUnTypeDuMetier = (fichier: string, cible: string) =>
+  /^core\/.*\.types(\.ts)?$/.test(cible) &&
+  importsDeTypeDe(fichier).includes(cible);
+
+function importsDeTypeDe(fichier: string): string[] {
+  return astDe(fichier)
+    .statements.filter(ts.isImportDeclaration)
+    .filter((instruction) => instruction.importClause?.isTypeOnly === true)
+    .map((instruction) => instruction.moduleSpecifier)
+    .filter(ts.isStringLiteral)
+    .map((specificateur) =>
+      relative(
+        racine,
+        resolve(dirname(join(racine, fichier)), specificateur.text),
+      ),
+    );
+}
 
 // Les racines où le domaine n'importe aucun adaptateur.
 const RACINES = ["core", "front", "server", "shared"];
@@ -192,6 +222,7 @@ describe("le journal des parcours", () => {
       .flatMap((f) =>
         importsDe(f)
           .filter((cible) => !duDomaine(cible) && !cible.startsWith("shared/"))
+          .filter((cible) => !estUnTypeDuMetier(f, cible))
           .map((cible) => `${f} → ${cible}`),
       );
     expect(
@@ -201,7 +232,8 @@ describe("le journal des parcours", () => {
         "forment le domaine du journal et de la mesure d'audience (ARCH-004). " +
         "Ils ne connaissent ni HTTP, ni Grist, ni l'écran : un adaptateur " +
         "(`.adapter.ts`) les relie à l'extérieur. Passe ce qui manque en " +
-        "paramètre, ou déclare-le dans un port.",
+        "paramètre, ou déclare-le dans un port. Seul un type du métier se " +
+        "lit, par un `import type` d'un `.types.ts` de `core/`.",
     ).toEqual([]);
   });
 });

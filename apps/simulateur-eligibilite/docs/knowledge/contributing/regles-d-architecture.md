@@ -126,7 +126,8 @@ manque à son contrat s'ajoute à l'index. Les tests d'un module
 - Une seule porte : un modèle charge l'adaptateur publicodes sans index, pour
   rester hors du chunk d'entrée.
 - Le domaine du journal et celui de la mesure d'audience sont plus stricts : ils
-  n'importent qu'entre eux et `shared/`.
+  n'importent qu'entre eux et `shared/`. Seule exception : un type du métier,
+  par un `import type` d'un `.types.ts` de `core/`.
 
 ```
 ✅ OK : le moteur déclare DecisionEngine dans un port, publicodes n'est importé
