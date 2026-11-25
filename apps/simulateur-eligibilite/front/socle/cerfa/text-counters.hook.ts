@@ -5,10 +5,10 @@
 //
 // Sans cerfa, ou tant que la mesure se charge, pas de compteur.
 
-import type { Cerfa, CerfaDto } from "./cerfa";
-import { strictEntriesOf } from "./generate-the-cerfa/strict-entries";
+import type { Cerfa, CerfaDto } from "./cerfa.types";
 import { useMeasure } from "./measure.hook";
-import { verdictOf } from "./strict-verdict";
+import { StrictEntriesService } from "./strict-entries.service";
+import { StrictVerdict } from "./strict-verdict.vo";
 
 /** Ce que dit le compteur sous le champ. */
 type TextCounter = {
@@ -32,7 +32,7 @@ export function useTextCounters(
   cerfa: Cerfa<CerfaDto> | null,
   measured: Readonly<Record<string, string>>,
 ): CounterOf {
-  const entries = cerfa ? strictEntriesOf(cerfa) : [];
+  const entries = cerfa ? StrictEntriesService.of(cerfa) : [];
   const counted = (question: string) =>
     entries.find(({ entry }) => entry === measured[question]);
   const measure = useMeasure(cerfa, Object.keys(measured).some(counted));
@@ -43,7 +43,7 @@ export function useTextCounters(
     const strict = { ...found.strict, requiredMessage: undefined };
     return {
       text: `${Array.from(text).length} / ${measuredText.maximum} caractères`,
-      error: verdictOf(strict, text, measuredText).message,
+      error: StrictVerdict.of(strict, text, measuredText).message,
     };
   };
 }

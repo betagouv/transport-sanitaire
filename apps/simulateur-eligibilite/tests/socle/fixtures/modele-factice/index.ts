@@ -5,10 +5,10 @@
 
 import type { ValueOf } from "../../../../core/socle";
 import {
-  bindCerfa,
+  CerfaDtoService,
+  CerfaFactory,
   ModelFactory,
   type ResultCodes,
-  text,
 } from "../../../../front/socle";
 import type { Cibles } from "./declarations/cibles";
 import type { Faits } from "./declarations/faits";
@@ -28,7 +28,7 @@ import {
 } from "./Resultats";
 
 // Un gabarit fabriqué : le test relit ce qu'il dessine sans servir d'asset.
-const BON_DE_COMMANDE = bindCerfa<{
+const BON_DE_COMMANDE = CerfaDtoService.link<{
   fields: { commande: string; quantite: string; date: string };
   drawings: Record<never, never>;
 }>(
@@ -37,9 +37,9 @@ const BON_DE_COMMANDE = bindCerfa<{
       import("../../cerfa/test-form").then((m) => m.bonDeCommande()),
     fileName: "bon-de-commande",
     fields: {
-      commande: text("commande"),
-      quantite: text("quantite"),
-      date: text("date"),
+      commande: CerfaFactory.text("commande"),
+      quantite: CerfaFactory.text("quantite"),
+      date: CerfaFactory.text("date"),
     },
     drawings: {},
     typographicIds: {

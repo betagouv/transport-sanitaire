@@ -12,17 +12,16 @@ import type { Questions } from "../../../core/models/fake/questions/reponses";
 import { given } from "../../../core/models/fake/questions/reponses";
 import type { GivenAnswer } from "../../../core/socle";
 import {
-  at,
-  bindCerfa,
   type Cerfa,
+  CerfaDtoService,
+  CerfaFactory,
   type CerfaMapping,
-  drawnBox,
-  strictText,
   templateAt,
-  text,
 } from "../../socle";
 import { enUneLigne } from "./adresse";
 import gabarit from "./bon-de-commande.pdf?url";
+
+const { at, drawnBox, strictText, text } = CerfaFactory;
 
 type BonDeCommande = {
   fields: {
@@ -78,7 +77,7 @@ const VERS_LE_BON_DE_COMMANDE: CerfaMapping<BonDeCommande> = {
 };
 
 /** Le bon de commande, lié à la traduction de la commande. */
-export const bonDeCommande = bindCerfa(
+export const bonDeCommande = CerfaDtoService.link(
   BON_DE_COMMANDE,
   VERS_LE_BON_DE_COMMANDE,
 );

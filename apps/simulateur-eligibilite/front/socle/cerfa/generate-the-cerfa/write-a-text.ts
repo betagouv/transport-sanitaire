@@ -3,11 +3,11 @@
 // à sa taille, ou pas (`strict-text.ts`).
 
 import { type PDFDocument, type PDFFont, PDFTextField } from "pdf-lib";
+import type { StrictLayout } from "../cerfa.types";
+import { SIZE_STEP } from "../text-sizes.constants";
 import type { Drawing } from "./flatten-the-form";
 import { nearOverflowsOf, overflowsOf } from "./overflow";
-import type { StrictLayout } from "./strict-text";
 import { sizeInField, sizeToFit } from "./text-fit";
-import { SIZE_STEP } from "./text-sizes";
 
 /** Un texte à écrire dans un champ nommé. `strict` : à sa taille ou pas. */
 export type Text = {

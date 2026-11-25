@@ -8,7 +8,7 @@ import { S3138G } from "../../../../front/models/eligibilite/r3/s3138g/s3138g";
 import { S3139H } from "../../../../front/models/eligibilite/r3/s3139h/s3139h";
 import {
   type BoundCerfa,
-  dtoFrom,
+  CerfaDtoService,
   type GeneratedCerfa,
   generateCerfa,
 } from "../../../../front/socle/cerfa";
@@ -79,7 +79,7 @@ async function rempli(
   precision: string,
 ): Promise<GeneratedCerfa> {
   const saisies = { ...reponses, "Q3.5": precision };
-  const dto = dtoFrom(cerfa.mapping, donnees(saisies, AUTRE));
+  const dto = CerfaDtoService.from(cerfa.mapping, donnees(saisies, AUTRE));
   const depuisLeDisque = { ...cerfa.cerfa, template: () => gabarit(nom) };
   return generateCerfa(depuisLeDisque, dto);
 }

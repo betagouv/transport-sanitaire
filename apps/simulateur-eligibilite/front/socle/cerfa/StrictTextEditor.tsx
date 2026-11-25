@@ -12,9 +12,8 @@
 // fois, pas à chaque frappe. Rien de la saisie ne part au journal.
 
 import { useId } from "react";
-import type { Strict } from "./cerfa";
-import type { StrictMeasure } from "./generate-the-cerfa/strict-text";
-import { verdictOf } from "./strict-verdict";
+import type { Strict, StrictMeasure } from "./cerfa.types";
+import { StrictVerdict } from "./strict-verdict.vo";
 
 type Props = {
   readonly strict: Strict;
@@ -32,7 +31,9 @@ export function StrictTextEditor({ onValidate, ...cell }: Props) {
       <button
         type="button"
         className="fr-btn"
-        disabled={!verdictOf(cell.strict, cell.text, cell.measured).valid}
+        disabled={
+          !StrictVerdict.of(cell.strict, cell.text, cell.measured).valid
+        }
         onClick={onValidate}
       >
         Valider
@@ -47,7 +48,7 @@ export function StrictTextEditor({ onValidate, ...cell }: Props) {
 function Cell({ strict, text, measured, onEdit }: Omit<Props, "onValidate">) {
   const id = useId();
   const [counter, error] = [`${id}-compteur`, `${id}-erreur`];
-  const { valid } = verdictOf(strict, text, measured);
+  const { valid } = StrictVerdict.of(strict, text, measured);
   return (
     <div className={`fr-input-group${valid ? "" : " fr-input-group--error"}`}>
       <label className="fr-label" htmlFor={id}>
@@ -77,7 +78,7 @@ function MeasureOf({
 }: Pick<Props, "strict" | "text" | "measured"> & {
   ids: { counter: string; error: string };
 }) {
-  const { valid, message } = verdictOf(strict, text, measured);
+  const { valid, message } = StrictVerdict.of(strict, text, measured);
   return (
     <>
       <p

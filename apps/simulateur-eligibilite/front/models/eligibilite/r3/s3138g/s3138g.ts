@@ -19,17 +19,12 @@
 
 import { given } from "../../../../../core/models/eligibilite/questions/reponses";
 import {
-  at,
-  bindCerfa,
-  box,
   type Cerfa,
+  CerfaDtoService,
+  CerfaFactory,
   type CerfaMapping,
-  date,
-  strictDrawing,
-  strictText,
   type TypographicFieldId,
   templateAt,
-  text,
 } from "../../../../socle";
 import gabarit from "../gabarits/S3138g.pdf?url";
 import { ACCIDENT, type Accident } from "../rubriques/accident";
@@ -54,6 +49,8 @@ import {
   URGENCE,
   type Urgence,
 } from "../rubriques/urgence";
+
+const { at, box, date, strictText, text, strictDrawing } = CerfaFactory;
 
 /**
  * Les soins de pension militaire : Oui s'ils sont établis, Non s'ils sont
@@ -204,4 +201,4 @@ const VERS_LA_PMT: CerfaMapping<DtoS3138g> = {
 };
 
 /** La PMT, liée au calcul de son DTO. */
-export const S3138G = bindCerfa(CERFA, VERS_LA_PMT);
+export const S3138G = CerfaDtoService.link(CERFA, VERS_LA_PMT);

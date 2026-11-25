@@ -2,20 +2,13 @@
 // chaque texte s'imprime vraiment, jamais le texte.
 
 import { describe, expect, it } from "vitest";
-import {
-  at,
-  box,
-  type Cerfa,
-  date,
-  drawnBox,
-  onOneLine,
-  type Position,
-  strictText,
-  text,
-} from "../../../front/socle/cerfa/cerfa";
+import { CerfaFactory } from "../../../front/socle/cerfa/cerfa.factory";
+import type { Cerfa, Position } from "../../../front/socle/cerfa/cerfa.types";
 import { generateCerfa } from "../../../front/socle/cerfa/generate-the-cerfa/generate-the-cerfa";
-import { typographyOf } from "../../../front/socle/cerfa/generate-the-cerfa/typography";
+import { TypographyService } from "../../../front/socle/cerfa/typography.service";
 import { statesOf, testForm } from "./test-form";
+
+const { at, box, date, drawnBox, strictText, text, onOneLine } = CerfaFactory;
 
 type Fiche = {
   fields: {
@@ -133,7 +126,7 @@ describe("la taille des textes imprimés d'un cerfa", () => {
   });
 
   it("dit, une fois, quel texte imprimé n'a pas de taille, même lue sur un autre volet", () => {
-    const typographie = typographyOf({
+    const typographie = TypographyService.of({
       texts: [
         ["nom", "nom"],
         ["motif", "motif"],

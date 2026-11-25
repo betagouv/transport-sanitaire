@@ -4,7 +4,7 @@
 
 import { describe, expect, it } from "vitest";
 import { S3141 } from "../../../../front/models/eligibilite/r3/s3141/s3141";
-import { dtoFrom } from "../../../../front/socle/cerfa";
+import { CerfaDtoService } from "../../../../front/socle/cerfa";
 import {
   drawnOn,
   markedStates,
@@ -228,6 +228,6 @@ describe("le S3141 de plusieurs permissions", () => {
 
 // Le S3141 de ce parcours, rempli sur son gabarit.
 function rempli(reponses: Reponses): Promise<Uint8Array> {
-  const dto = dtoFrom(S3141.mapping, donnees(reponses));
+  const dto = CerfaDtoService.from(S3141.mapping, donnees(reponses));
   return genere(S3141.cerfa, "S3141", dto);
 }

@@ -6,12 +6,11 @@
 // La mesure se charge avec le premier éditeur, une fois : `pdf-lib` et le
 // gabarit, comme pour la génération.
 
-import type { Cerfa, CerfaDto, Strict } from "./cerfa";
+import type { Cerfa, CerfaDto, Strict, StrictMeasure } from "./cerfa.types";
 import type { Overflowing } from "./generate-the-cerfa/generate-the-cerfa";
-import { strictEntriesOf, textOf } from "./generate-the-cerfa/strict-entries";
-import type { StrictMeasure } from "./generate-the-cerfa/strict-text";
 import { useMeasure } from "./measure.hook";
 import { StrictTextEditor } from "./StrictTextEditor";
+import { StrictEntriesService } from "./strict-entries.service";
 
 /** Les brouillons des textes stricts, par entrée du DTO. */
 export type Drafts = Readonly<Record<string, string>>;
@@ -40,11 +39,11 @@ export function editorsOf(
   drafts: Drafts,
   overflowing: readonly Overflowing[] | undefined,
 ): Editor[] {
-  return strictEntriesOf(cerfa).flatMap(({ entry, strict }) => {
+  return StrictEntriesService.of(cerfa).flatMap(({ entry, strict }) => {
     const overflow = overflowing?.find((found) => found.entry === entry);
     const draft = drafts[entry];
     if (draft === undefined && !overflow) return [];
-    const text = draft ?? textOf(dto, entry);
+    const text = draft ?? StrictEntriesService.textOf(dto, entry);
     return [{ entry, strict, text, fallback: overflow?.maximum ?? 0 }];
   });
 }

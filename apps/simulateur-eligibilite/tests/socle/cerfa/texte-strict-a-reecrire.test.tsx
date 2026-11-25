@@ -4,11 +4,14 @@ import { useState } from "react";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { TextEdits } from "../../../core/socle/simulation";
 import { CerfaDocument } from "../../../front/socle/cerfa/CerfaDocument";
-import { type Cerfa, strictText } from "../../../front/socle/cerfa/cerfa";
+import { CerfaFactory } from "../../../front/socle/cerfa/cerfa.factory";
+import type { Cerfa } from "../../../front/socle/cerfa/cerfa.types";
 import { PREVIEW_MARK } from "../../../front/socle/cerfa/generate-the-cerfa/generate-the-cerfa";
 import { ecouterLesTelechargements } from "../simulateur/telechargements";
 import { drawnOn } from "./pdf-aplati";
 import { testForm } from "./test-form";
+
+const { strictText } = CerfaFactory;
 
 // Un texte strict qui ne tient pas sur le cerfa se réécrit au-dessus de son
 // aperçu : le compteur, le message, « Valider » qui attend un texte qui tient,

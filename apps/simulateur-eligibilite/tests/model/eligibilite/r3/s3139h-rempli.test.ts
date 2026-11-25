@@ -9,7 +9,7 @@
 
 import { describe, expect, it } from "vitest";
 import { S3139H } from "../../../../front/models/eligibilite/r3/s3139h/s3139h";
-import { dtoFrom } from "../../../../front/socle/cerfa";
+import { CerfaDtoService } from "../../../../front/socle/cerfa";
 import {
   drawnOn,
   markedStates,
@@ -261,7 +261,7 @@ function rempli(
   reponses: Reponses,
   cibles: ValeursDesCibles = {},
 ): Promise<Uint8Array> {
-  const dto = dtoFrom(S3139H.mapping, donnees(reponses, cibles));
+  const dto = CerfaDtoService.from(S3139H.mapping, donnees(reponses, cibles));
   return genere(S3139H.cerfa, "S3139h", dto);
 }
 

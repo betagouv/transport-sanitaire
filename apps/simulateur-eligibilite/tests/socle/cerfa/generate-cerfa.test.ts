@@ -1,14 +1,6 @@
 import { describe, expect, it } from "vitest";
-import {
-  at,
-  box,
-  type Cerfa,
-  date,
-  drawnBox,
-  onOneLine,
-  strictText,
-  text,
-} from "../../../front/socle/cerfa/cerfa";
+import { CerfaFactory } from "../../../front/socle/cerfa/cerfa.factory";
+import type { Cerfa } from "../../../front/socle/cerfa/cerfa.types";
 import {
   generateCerfa,
   PREVIEW_MARK,
@@ -16,6 +8,8 @@ import {
 import { PdfFileName } from "../../../front/socle/cerfa/pdf/pdf-file-name.vo";
 import { drawnOn, markedStates, textsOn } from "./pdf-aplati";
 import { statesOf, testForm } from "./test-form";
+
+const { at, box, date, drawnBox, strictText, text, onOneLine } = CerfaFactory;
 
 // Le cerfa se remplit d'après son DTO, sans rien savoir du simulateur : ici,
 // une simple fiche. Le DTO parle en mots clairs, la définition du cerfa garde

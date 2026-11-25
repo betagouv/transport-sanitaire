@@ -26,7 +26,7 @@ import {
   type BoundCerfa,
   CerfaDocument,
   type CerfaDto,
-  dtoFrom,
+  CerfaDtoService,
   PdfFileName,
   type PdfSignals,
   type StrictTextEdits,
@@ -160,7 +160,7 @@ function dtoWithAccepted(
   context: Context,
   accepted: Texts,
 ): CerfaDto {
-  const dto = dtoFrom(mapping, context);
+  const dto = CerfaDtoService.from(mapping, context);
   const drawn = cerfa.drawings;
   const among = (inDrawings: boolean) =>
     Object.fromEntries(

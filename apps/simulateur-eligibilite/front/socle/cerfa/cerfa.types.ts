@@ -1,9 +1,11 @@
-// Ce qu'est un cerfa : son gabarit, son DTO, et où chaque entrée du DTO va
+// Les types d'un cerfa : son gabarit, son DTO, et où chaque entrée du DTO va
 // dans le PDF.
 //
 // Le DTO parle en mots clairs (`longue_distance`). La définition du cerfa
 // garde pour elle les noms exacts du gabarit (`km`, état `Oui`). Un gabarit
 // qui renomme un champ ne change que sa définition, jamais le DTO.
+
+import type { Reading } from "../../../core/socle/questionnaire-engine";
 
 /**
  * Les données d'un cerfa. `fields` va dans les champs du gabarit : un texte,
@@ -42,7 +44,7 @@ export type TextBinding = {
   readonly singleLine?: boolean;
   /**
    * La valeur est une date ISO (`AAAA-MM-JJ`) : elle s'écrit selon les cases
-   * du champ, `JJMMAAAA` sur huit, `JJ/MM/AAAA` sinon (`dates.ts`).
+   * du champ, `JJMMAAAA` sur huit, `JJ/MM/AAAA` sinon (`field-date.vo.ts`).
    */
   readonly date?: boolean;
 };
@@ -130,80 +132,47 @@ type TextKey<Dto extends CerfaDto> =
     }[keyof Dto["fields"]]
   | keyof Dto["drawings"];
 
-/** Un texte écrit dans le champ `field`. */
-export function text(
-  field: string,
-  options: Omit<TextBinding, "field"> = {},
-): TextBinding {
-  return { field, ...options };
-}
-
-/**
- * Une date ISO écrite dans le champ `field`, au format de ses cases. Le DTO
- * ne sait pas combien le gabarit en a.
- */
-export function date(field: string): TextBinding {
-  return { field, date: true };
-}
-
-/** Un texte strict écrit dans le champ `field`, nommé `label` à l'écran. */
-export function strictText(
-  field: string,
-  label: string,
-  options: StrictOptions = {},
-): StrictTextBinding {
-  return { field, strict: { label, ...options } };
-}
-
-/** Une case du champ `field`, cochée par son état d'export `state`. */
-export function box(field: string, state: string): BoxBinding {
-  return { field, state };
-}
-
-/** Une case qui partage son champ : sa marque est dessinée sur la page. */
-export function drawnBox(field: string, state: string): BoxBinding {
-  return { field, state, drawn: true };
-}
-
-/**
- * Un texte dessiné à chaque position, là où le gabarit n'a pas de champ : une
- * par volet qui le porte, comme un champ recopié d'un volet à l'autre. Le DTO
- * n'en donne qu'une valeur, et ne sait rien des volets.
- */
-export function at(...positions: readonly Position[]): DrawingBinding {
-  return { positions };
-}
-
-/**
- * Le texte dessiné `drawing`, gardé sur une ligne : il rapetisse jusqu'au
- * plancher avant de passer à la ligne, là où une seconde ligne passerait sur
- * le gabarit.
- */
-export function onOneLine(drawing: DrawingBinding): DrawingBinding {
-  return { ...drawing, singleLine: true };
-}
-
-/**
- * Le texte dessiné `drawing`, strict : sur une ligne de chaque position, à sa
- * taille, ou il ne se dessine pas, et le prescripteur le réécrit.
- */
-export function strictDrawing(
-  drawing: DrawingBinding,
-  label: string,
-  options: Omit<StrictOptions, "oneLine"> = {},
-): DrawingBinding {
-  return { ...drawing, strict: { label, ...options, oneLine: true } };
-}
-
-/**
- * Le chargeur d'un gabarit servi comme asset de l'app. Un modèle en obtient
- * l'URL par `import url from "./gabarit.pdf?url"`.
- */
-export function templateAt(url: string): () => Promise<ArrayBuffer> {
-  return async () => {
-    const response = await fetch(url);
-    if (!response.ok)
-      throw new Error(`Gabarit indisponible (HTTP ${response.status}).`);
-    return response.arrayBuffer();
+/** Une valeur par entrée du DTO. */
+export type CerfaMapping<Dto extends CerfaDto> = {
+  readonly fields: {
+    readonly [Key in keyof Dto["fields"]]-?: Reading<Dto["fields"][Key]>;
   };
-}
+  readonly drawings: {
+    readonly [Key in keyof Dto["drawings"]]-?: Reading<Dto["drawings"][Key]>;
+  };
+};
+
+/** Un cerfa et le mapping qui calcule son DTO, vérifiés ensemble. */
+export type BoundCerfa = {
+  readonly cerfa: Cerfa<CerfaDto>;
+  readonly mapping: CerfaMapping<CerfaDto>;
+};
+
+/** Ce que la mesure dit d'un texte strict. */
+export type StrictMeasure = {
+  readonly fits: boolean;
+  readonly maximum: number;
+};
+
+/** Comment un texte strict s'écrit : sa taille, et s'il tient sur une ligne. */
+export type StrictLayout = { readonly size: number; readonly oneLine: boolean };
+
+/**
+ * Un texte strict du cerfa : son entrée du DTO, sa règle, et sa place, un
+ * champ du gabarit ou la plus étroite de ses positions dessinées.
+ */
+export type StrictEntry = {
+  readonly entry: string;
+  readonly strict: Strict;
+  readonly place: StrictPlace;
+};
+
+type StrictPlace = { readonly field: string } | { readonly width: number };
+
+/** Les tailles des textes imprimés d'un cerfa, et ceux qui n'en ont pas. */
+export type Typography = {
+  /** La taille de chaque texte imprimé, en points, par identifiant. */
+  readonly sizes: Readonly<Record<string, number>>;
+  /** Les identifiants des textes imprimés dont la taille n'a pas pu se lire. */
+  readonly unmeasured: readonly string[];
+};

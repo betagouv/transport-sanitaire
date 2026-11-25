@@ -2,7 +2,7 @@
 // rempli (`fill-the-form.ts`), puis aplati (`flatten-the-form.ts`).
 //
 // Le cerfa ne sait pas d'où viennent ses données : il reçoit son DTO, que le
-// simulateur calcule (`compute-the-dto.ts`), et qu'une autre source pourrait
+// simulateur calcule (`cerfa-dto.service.ts`), et qu'une autre source pourrait
 // calculer.
 //
 // `pdf-lib` et le gabarit ne se chargent qu'ici, quand le bouton s'affiche : le
@@ -13,15 +13,17 @@ import type {
   Cerfa,
   CerfaDto,
   DrawingBinding,
+  StrictMeasure,
   StrictTextBinding,
   TextBinding,
-} from "../cerfa";
+  Typography,
+} from "../cerfa.types";
+import { StrictEntriesService } from "../strict-entries.service";
+import { TEXT_SIZES } from "../text-sizes.constants";
+import { TypographyService } from "../typography.service";
 import type { FieldEntry, StrictOverflow } from "./fill-the-form";
 import type { Drawing, Mark } from "./flatten-the-form";
-import { layoutOf, strictEntriesOf, textOf } from "./strict-entries";
-import type { StrictMeasure, StrictMeasurer } from "./strict-text";
-import { TEXT_SIZES } from "./text-sizes";
-import { type Typography, typographyOf } from "./typography";
+import type { StrictMeasurer } from "./strict-text";
 
 /**
  * Le cerfa généré, les textes stricts qui en débordent, et la taille de ses
@@ -79,7 +81,7 @@ export async function generateCerfa<Dto extends CerfaDto>(
     // quelle.
     pdf: new Blob([pdf as BlobPart], { type: "application/pdf" }),
     overflowing,
-    typography: typographyOf({
+    typography: TypographyService.of({
       texts: textsOf(cerfa, entries),
       fieldSizes: filled.sizes,
       drawn: drawings.map(([key], index) => [key, drawnSizes[index]]),
@@ -99,7 +101,7 @@ export async function measureOf(
     cerfa.template(),
     import("./measure-strict-texts"),
   ]);
-  return measureStrictTexts(template, strictEntriesOf(cerfa));
+  return measureStrictTexts(template, StrictEntriesService.of(cerfa));
 }
 
 // ---- implémentation ----
@@ -111,7 +113,7 @@ async function loaded(cerfa: Cerfa<CerfaDto>) {
     import("./fill-the-form"),
     import("./flatten-the-form"),
     import("./measure-strict-texts").then(({ lineMeasurersOf }) =>
-      lineMeasurersOf(strictEntriesOf(cerfa)),
+      lineMeasurersOf(StrictEntriesService.of(cerfa)),
     ),
   ]);
   return { template, fillCerfa, flattenCerfa, lines };
@@ -165,7 +167,7 @@ function drawingsOf<Dto extends CerfaDto>(
     const { written, fits, maximum } = line.fitting(text);
     const { label } = binding.strict;
     if (!fits) overflowing.push({ entry: key, label, text, maximum });
-    const { size } = layoutOf(binding.strict);
+    const { size } = StrictEntriesService.layoutOf(binding.strict);
     return drawn(key, { ...binding, singleLine: true }, written, size);
   });
   return { drawings, overflowing };
@@ -210,7 +212,12 @@ function overflowingOf(
     if (!found || !("strict" in found[1]))
       throw new Error(`« ${field} » n'est pas un texte strict du cerfa.`);
     const [entry, { strict }] = found;
-    return { entry, label: strict.label, text: textOf(dto, entry), maximum };
+    return {
+      entry,
+      label: strict.label,
+      text: StrictEntriesService.textOf(dto, entry),
+      maximum,
+    };
   };
 }
 
@@ -230,6 +237,8 @@ function entryOf(
       : [];
   if (value === undefined) return [];
   const strict =
-    "strict" in binding ? { strict: layoutOf(binding.strict) } : {};
+    "strict" in binding
+      ? { strict: StrictEntriesService.layoutOf(binding.strict) }
+      : {};
   return [{ field: binding.field, text: String(value), ...strict }];
 }

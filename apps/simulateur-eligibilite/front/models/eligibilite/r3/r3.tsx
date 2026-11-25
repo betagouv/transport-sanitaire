@@ -35,7 +35,7 @@ import type {
   IssueId,
 } from "../../../../core/models/eligibilite/cibles/noms";
 import { given } from "../../../../core/models/eligibilite/questions/reponses";
-import { cerfaValue } from "../../../socle";
+import { CerfaDtoService } from "../../../socle";
 import { S3138G } from "./s3138g/s3138g";
 import { S3139H } from "./s3139h/s3139h";
 import { S3141 } from "./s3141/s3141";
@@ -51,9 +51,9 @@ const ISSUE = given.cible("cible_issue_id");
 // Les documents du modèle, par support. Ce que lisent les cases d'un cerfa ne
 // compte que pour son support.
 const DOCUMENTS = given.all({
-  S3138g: SUPPORT.branch(["S3138g"], cerfaValue(S3138G)),
-  S3139h: SUPPORT.branch(["S3139h"], cerfaValue(S3139H)),
-  S3141: SUPPORT.branch(["S3141"], cerfaValue(S3141)),
+  S3138g: SUPPORT.branch(["S3138g"], CerfaDtoService.readingOf(S3138G)),
+  S3139h: SUPPORT.branch(["S3139h"], CerfaDtoService.readingOf(S3139H)),
+  S3141: SUPPORT.branch(["S3141"], CerfaDtoService.readingOf(S3141)),
 } satisfies Record<Support, unknown>);
 
 const PRESCRIPTION = "Prescription préremplie prête à imprimer";

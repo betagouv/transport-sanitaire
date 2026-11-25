@@ -3,13 +3,9 @@
 // n'écrit.
 
 import { PDFDocument, type PDFFont, StandardFonts } from "pdf-lib";
-import { layoutOf, type StrictEntry } from "./strict-entries";
-import {
-  StrictLine,
-  type StrictMeasure,
-  type StrictMeasurer,
-  StrictText,
-} from "./strict-text";
+import type { StrictEntry, StrictMeasure } from "../cerfa.types";
+import { StrictEntriesService } from "../strict-entries.service";
+import { StrictLine, type StrictMeasurer, StrictText } from "./strict-text";
 import { textFieldOf } from "./write-a-text";
 
 /** Mesure un texte destiné à ce texte strict, par son entrée du DTO. */
@@ -53,7 +49,7 @@ function measurersOf(
 ): Map<string, StrictMeasurer> {
   return new Map(
     entries.map(({ entry, strict, place }) => {
-      const layout = layoutOf(strict);
+      const layout = StrictEntriesService.layoutOf(strict);
       const measurer =
         "field" in place
           ? new StrictText(textFieldOf(document, place.field), font, layout)
