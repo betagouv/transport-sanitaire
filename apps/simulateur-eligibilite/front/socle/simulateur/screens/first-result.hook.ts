@@ -1,3 +1,6 @@
+// Le premier résultat lu dans un état : tout de suite quand le modèle le donne,
+// une fois chargé quand il le promet (`first-result.service.ts`).
+
 import { useEffect, useState } from "react";
 import type { FirstResult } from "../../model";
 import type { Loading } from "./first-result.service";
