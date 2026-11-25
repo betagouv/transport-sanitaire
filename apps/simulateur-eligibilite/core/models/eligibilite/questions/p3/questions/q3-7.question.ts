@@ -8,7 +8,7 @@ import { given, question } from "../../question.ts";
 import {
   avecUnDocument,
   uneDap,
-} from "../conditions/supports-du-complement.ts";
+} from "../conditions/supports-du-complement.condition.ts";
 
 export const Q3_7 = question
   .multipleChoice(

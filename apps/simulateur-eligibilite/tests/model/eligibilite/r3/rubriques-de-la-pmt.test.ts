@@ -5,13 +5,11 @@
 // `mapping_documents.json`, en v10.1.3.
 
 import { describe, expect, it } from "vitest";
-import { CENTRE_DE_REFERENCE } from "../../../../core/models/eligibilite/r3/rubriques/centre-de-reference";
-import { MOTIFS } from "../../../../core/models/eligibilite/r3/rubriques/motifs";
-import { NOMBRE } from "../../../../core/models/eligibilite/r3/rubriques/nombre";
-import {
-  PRECISION_DE_L_URGENCE,
-  URGENCE,
-} from "../../../../core/models/eligibilite/r3/rubriques/urgence";
+import { CENTRE_DE_REFERENCE } from "../../../../core/models/eligibilite/r3/rubriques/centre-de-reference.rubrique";
+import { MOTIFS } from "../../../../core/models/eligibilite/r3/rubriques/motifs.rubrique";
+import { NOMBRE } from "../../../../core/models/eligibilite/r3/rubriques/nombre.rubrique";
+import { PRECISION_DE_L_URGENCE } from "../../../../core/models/eligibilite/r3/rubriques/precision-de-l-urgence.rubrique";
+import { URGENCE } from "../../../../core/models/eligibilite/r3/rubriques/urgence.rubrique";
 import { MINEUR } from "../p2/reponses-de-la-permission";
 import { cellules, PMT, type Reponses } from "./reponses-du-cerfa";
 

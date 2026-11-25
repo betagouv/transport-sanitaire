@@ -9,8 +9,8 @@
 // (T06, R04).
 
 import { question } from "../../question.ts";
-import { pmtOuDap } from "../conditions/supports-du-complement.ts";
-import { uneUrgenceHorsCentre15 } from "../conditions/urgence-hors-centre15.ts";
+import { pmtOuDap } from "../conditions/supports-du-complement.condition.ts";
+import { uneUrgenceHorsCentre15 } from "../conditions/urgence-hors-centre15.condition.ts";
 
 export const Q3_5 = question
   .longText(

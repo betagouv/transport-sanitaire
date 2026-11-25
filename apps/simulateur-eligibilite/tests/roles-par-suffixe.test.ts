@@ -2,11 +2,33 @@
 // dans `architecture.test.ts`, chaque règle donne son pourquoi dans son message
 // d'échec.
 
-import { existsSync } from "node:fs";
+import { existsSync, readdirSync } from "node:fs";
 import { basename, dirname, join } from "node:path";
 import ts from "typescript";
 import { describe, expect, it } from "vitest";
+import { exportsQuiNeSontPasDesConditions } from "./inspection-des-conditions";
 import { astDe, racine, sources } from "./inspection-des-sources";
+
+// Ce qui suit la règle dans chaque modèle de `core/models/`, quand il l'a : les
+// rubriques de son cerfa, et ses questions. Le reste du modèle y passera à son
+// tour.
+const DOSSIERS_DES_MODELES = ["r3/rubriques", "questions"];
+
+// Ce que `questions/` garde encore sans suffixe : des fichiers qui ne sont ni une
+// question ni une condition, et que le chantier n'a pas traités. Chacun se
+// nomme ici, un par un : un nouveau fichier sans rôle n'y entre pas par
+// mégarde.
+const SANS_SUFFIXE_POUR_L_INSTANT = [
+  // le contrat que toutes les questions d'un modèle bâtissent, et les réponses
+  // qu'il en tire
+  /^core\/models\/[^/]+\/questions\/(question|reponses)\.ts$/,
+  // trois fichiers de P3 qui bâtissent des questions de lieu sans en être une
+  "core/models/eligibilite/questions/p3/questions/champs-du-lieu.ts",
+  "core/models/eligibilite/questions/p3/questions/cotes-du-lieu.ts",
+  "core/models/eligibilite/questions/p3/questions/lieu.ts",
+  // les deux lectures de l'indication, que R2 et la partie 2 lisent aussi
+  "core/models/eligibilite/questions/p2/questions/q2-2-1-indication.ts",
+];
 
 // Ce qui suit déjà la règle. Un dossier s'ajoute ici quand il y est passé.
 const GARDES = [
@@ -17,6 +39,7 @@ const GARDES = [
   "front/socle/analytics",
   "front/socle/cerfa",
   "front/socle/server-api",
+  ...dossiersGardesDesModeles(),
 ];
 
 // Un composant React (`.tsx`) n'a pas de suffixe de rôle : QUAL-018 ne vaut pas
@@ -45,6 +68,8 @@ const ROLES = [
   "client",
   "fait",
   "question",
+  "condition",
+  "rubrique",
 ];
 const ROLE = new RegExp(`\\.(${ROLES.join("|")})\\.ts$`);
 
@@ -54,7 +79,10 @@ describe("un fichier dit son rôle par son suffixe", () => {
       (f) =>
         !ASSEMBLEURS.includes(basename(f)) &&
         !estUnComposant(f) &&
-        !ROLE.test(f),
+        !ROLE.test(f) &&
+        !SANS_SUFFIXE_POUR_L_INSTANT.some((exception) =>
+          typeof exception === "string" ? exception === f : exception.test(f),
+        ),
     );
     expect(
       fautifs,
@@ -110,6 +138,59 @@ describe("un fichier dit son rôle par son suffixe", () => {
     ).toEqual([]);
   });
 
+  it("une rubrique vit dans un dossier rubriques/ d'un cerfa", () => {
+    const fautifs = sources("core", "front", "server", "shared")
+      .filter((f) => f.endsWith(".rubrique.ts"))
+      .filter((f) => !/^core\/models\/[^/]+\/r3\/rubriques\//.test(f));
+    expect(
+      fautifs,
+      "Une déclaration de rubrique (`.rubrique.ts`) est un cadre du cerfa " +
+        "papier que plusieurs cerfa partagent (QUAL-018) : elle vit dans " +
+        "`core/models/<modèle>/r3/rubriques/`.",
+    ).toEqual([]);
+  });
+
+  it("une rubrique ne déclare qu'elle-même et son type", () => {
+    const fautifs = sources(...GARDES)
+      .filter((f) => f.endsWith(".rubrique.ts"))
+      .filter((f) => !neDeclareQuUneRubrique(astDe(f)));
+    expect(
+      fautifs,
+      "Un `.rubrique.ts` exporte des types et une seule constante, du type " +
+        "`Rubrique<…>` (QUAL-018) : ce que deux rubriques ou un cerfa " +
+        "partagent (une fonction, une table) va dans le fichier de son rôle, " +
+        "à côté.",
+    ).toEqual([]);
+  });
+
+  it("une condition vit dans un dossier conditions/ d'une partie", () => {
+    const fautifs = sources("core", "front", "server", "shared")
+      .filter((f) => f.endsWith(".condition.ts"))
+      .filter(
+        (f) => !/^core\/models\/[^/]+\/questions\/p\d\/conditions\//.test(f),
+      );
+    expect(
+      fautifs,
+      "Une condition (`.condition.ts`) est une lecture booléenne que des " +
+        "questions se partagent (QUAL-018) : elle vit dans " +
+        "`core/models/<modèle>/questions/p<N>/conditions/`.",
+    ).toEqual([]);
+  });
+
+  it("une condition n'exporte que des conditions", () => {
+    const fautifs = sources(...GARDES)
+      .filter((f) => f.endsWith(".condition.ts"))
+      .flatMap(exportsQuiNeSontPasDesConditions);
+    expect(
+      fautifs,
+      "Un `.condition.ts` n'exporte que des conditions (QUAL-018) : des " +
+        "lectures booléennes (`Reading<boolean>`), bâties avec `given…`. Une " +
+        "fonction, une classe, un type ou une lecture d'autre chose qu'un oui " +
+        "ou un non va dans le fichier de son rôle : `.service.ts`, `.types.ts`, " +
+        "`.constants.ts`. Elle sort de `conditions/`, vers ce qui la lit.",
+    ).toEqual([]);
+  });
+
   it("une fabrique vit à côté de ce qu'elle fabrique", () => {
     const fautifs = sources(...GARDES)
       .filter((f) => f.endsWith(".factory.ts"))
@@ -125,6 +206,53 @@ describe("un fichier dit son rôle par son suffixe", () => {
 });
 
 // ---- implémentation ----
+
+// Les dossiers des modèles de `core/models/` qui suivent déjà la règle.
+function dossiersGardesDesModeles(): string[] {
+  return readdirSync(join(racine, "core/models"))
+    .flatMap((modele) =>
+      DOSSIERS_DES_MODELES.map((dossier) => `core/models/${modele}/${dossier}`),
+    )
+    .filter((dossier) => existsSync(join(racine, dossier)));
+}
+
+// Des types, et une seule constante annotée `Rubrique<…>`. Le privé est libre.
+function neDeclareQuUneRubrique(source: ts.SourceFile): boolean {
+  const exportees = source.statements.filter(exporteQuelqueChose);
+  const types = exportees.filter(
+    (instruction) =>
+      ts.isTypeAliasDeclaration(instruction) ||
+      ts.isInterfaceDeclaration(instruction) ||
+      (ts.isExportDeclaration(instruction) && instruction.isTypeOnly),
+  );
+  const autres = exportees.filter(
+    (instruction) => !types.includes(instruction),
+  );
+  const [rubrique, ...reste] = autres;
+  return (
+    rubrique !== undefined &&
+    reste.length === 0 &&
+    ts.isVariableStatement(rubrique) &&
+    rubrique.declarationList.declarations.length === 1 &&
+    (rubrique.declarationList.declarations[0]?.type
+      ?.getText(source)
+      .startsWith("Rubrique<") ??
+      false)
+  );
+}
+
+function exporteQuelqueChose(instruction: ts.Statement): boolean {
+  return (
+    ts.isExportDeclaration(instruction) ||
+    ts.isExportAssignment(instruction) ||
+    (ts.canHaveModifiers(instruction) &&
+      Boolean(
+        ts
+          .getModifiers(instruction)
+          ?.some(({ kind }) => kind === ts.SyntaxKind.ExportKeyword),
+      ))
+  );
+}
 
 function exporteUneValeur(instruction: ts.Statement): boolean {
   if (ts.isExportDeclaration(instruction)) return !instruction.isTypeOnly;

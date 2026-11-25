@@ -11,7 +11,7 @@ import { question } from "../../question.ts";
 import {
   unEngagementMaternite,
   unHebergementDuDispositif,
-} from "../conditions/engagement-maternite.ts";
+} from "../conditions/engagement-maternite.condition.ts";
 import { Q3_2 } from "./q3-2.question.ts";
 import { Q3_3 } from "./q3-3.question.ts";
 

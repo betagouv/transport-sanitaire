@@ -8,7 +8,7 @@
 
 import type { AnswerOf } from "../../../../../socle/index.ts";
 import { given, question } from "../../question.ts";
-import { jusquAujourdhui } from "../conditions/evenements.ts";
+import { Evenements } from "./evenements.service.ts";
 import { Q1_2 } from "./q1-2.question.ts";
 
 // Les critères de Q1.2 qui imposent l'ambulance.
@@ -100,7 +100,7 @@ export const Q1_3_ACCIDENT_TIERS_DATE = question
     "Q1.3.accident_tiers_date",
     "À quelle date cet accident a-t-il eu lieu ?",
   )
-  .boundsFrom(jusquAujourdhui)
+  .boundsFrom(Evenements.jusquAujourdhui)
   .appliesWhen(given.question(Q1_3).answer().checked("9_ACCIDENT_TIERS"))
   .shownUnder(Q1_3, "9_ACCIDENT_TIERS");
 

@@ -8,7 +8,7 @@ import { model } from "../../../../core/models/eligibilite";
 import type { Cibles } from "../../../../core/models/eligibilite/cibles/noms";
 import type { Faits } from "../../../../core/models/eligibilite/faits/noms";
 import type { Questions } from "../../../../core/models/eligibilite/questions/reponses";
-import type { Rubrique } from "../../../../core/models/eligibilite/r3/rubriques/rubrique";
+import type { Rubrique } from "../../../../core/models/eligibilite/r3/rubriques/rubrique.types";
 import { SEEDS } from "../../../../core/models/eligibilite/seeds-catalogue";
 import type { CerfaDto } from "../../../../core/socle/cerfa";
 import { Cible } from "../../../../core/socle/decision-engine";

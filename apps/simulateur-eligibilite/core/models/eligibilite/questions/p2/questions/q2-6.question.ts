@@ -6,11 +6,11 @@
 import type { AnswerOf, Condition } from "../../../../../socle/index.ts";
 import { Q1_3 } from "../../p1/questions/q1-3.question.ts";
 import { given, question } from "../../question.ts";
-import { incoherenceDeLieux } from "../conditions/conflit-de-lieux.ts";
 import {
   unSejourEnEtablissement,
   unSejourEnHad,
-} from "../conditions/sejour.ts";
+} from "../conditions/sejour.condition.ts";
+import { ConflitDeLieux } from "../lieux/conflit-de-lieux.service.ts";
 import { Q2_1_G } from "./q2-1.question.ts";
 import { Q2_2_1 } from "./q2-2-1.question.ts";
 import { Q2_2_1_A } from "./q2-2-1-a.question.ts";
@@ -123,7 +123,7 @@ const EXCEPTIONS_A_PROPOSER: Partial<Record<Exception, Condition>> = {
 
 // Une admission en HAD ou une radiothérapie fixe un lieu : un autre lieu déjà
 // dit la contredit.
-const conflitDeLieux = incoherenceDeLieux("contexte", {
+const conflitDeLieux = ConflitDeLieux.incoherence("contexte", {
   soins: Q1_3,
   sousType: Q2_1_G,
   situations: Q2_2_1,

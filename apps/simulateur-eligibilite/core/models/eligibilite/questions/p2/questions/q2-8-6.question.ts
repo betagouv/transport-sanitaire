@@ -2,7 +2,7 @@
 // a (la fréquence) et b (le patient reste mineur de 20 ans).
 
 import { given, question } from "../../question.ts";
-import { unMineurDeVingtAns } from "../conditions/permission.ts";
+import { unMineurDeVingtAns } from "../conditions/permission.condition.ts";
 import { Q2_8_3 } from "./q2-8-3.question.ts";
 import { Q2_8_5 } from "./q2-8-5.question.ts";
 

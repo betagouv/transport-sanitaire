@@ -16,7 +16,7 @@
 
 import { Q1_3 } from "../../p1/questions/q1-3.question.ts";
 import { given, question } from "../../question.ts";
-import { incoherenceDeLieux } from "../conditions/conflit-de-lieux.ts";
+import { ConflitDeLieux } from "../lieux/conflit-de-lieux.service.ts";
 import { Q2_1_G } from "./q2-1.question.ts";
 
 // « Déjà hospitalisé » ne se propose pas pour le trajet qui ouvre le séjour.
@@ -55,7 +55,7 @@ const situations = question
 
 // Un hébergement ou un retour pénitentiaire contredit un autre lieu déjà dit.
 export const Q2_2_1 = situations.inconsistentWhen(
-  ...incoherenceDeLieux("situations", {
+  ...ConflitDeLieux.incoherence("situations", {
     soins: Q1_3,
     sousType: Q2_1_G,
     situations,

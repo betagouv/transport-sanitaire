@@ -11,14 +11,23 @@
 
 import type { CerfaMapping } from "../../../socle/index.ts";
 import { given } from "../questions/reponses.ts";
-import { ACCIDENT, type Accident } from "./rubriques/accident.ts";
-import { BENEFICIAIRE, type Beneficiaire } from "./rubriques/beneficiaire.ts";
-import { EXONERATION, type Exoneration } from "./rubriques/exoneration.ts";
-import { LIENS, type Liens } from "./rubriques/liens.ts";
-import { MODE, type Mode } from "./rubriques/mode.ts";
-import { PRESCRIPTION, type Prescription } from "./rubriques/prescription.ts";
-import type { Rubrique } from "./rubriques/rubrique.ts";
-import { TRAJET, type Trajet } from "./rubriques/trajet.ts";
+import { ACCIDENT, type Accident } from "./rubriques/accident.rubrique.ts";
+import {
+  BENEFICIAIRE,
+  type Beneficiaire,
+} from "./rubriques/beneficiaire.rubrique.ts";
+import {
+  EXONERATION,
+  type Exoneration,
+} from "./rubriques/exoneration.rubrique.ts";
+import { LIENS, type Liens } from "./rubriques/liens.rubrique.ts";
+import { MODE, type Mode } from "./rubriques/mode.rubrique.ts";
+import {
+  PRESCRIPTION,
+  type Prescription,
+} from "./rubriques/prescription.rubrique.ts";
+import type { Rubrique } from "./rubriques/rubrique.types.ts";
+import { TRAJET, type Trajet } from "./rubriques/trajet.rubrique.ts";
 
 /**
  * La permission : depuis quand le patient est hospitalisé (Q2.8.1), et, pour

@@ -1,20 +1,20 @@
 // Le côté de l'USLD et de l'EHPAD que Q2.6 cite, sur la page d'arrivée
 // (QST-LIEUX-TROIS-CATEGORIES-20261105, QST-COTE-LIEUX-20261113). Il ne se
 // demande que si les deux catégories choisies laissent encore plus d'un
-// placement (`conditions/cotes-de-q26.ts`) : un retour à domicile depuis une
+// placement (`lieux/cotes-de-q26.service.ts`) : un retour à domicile depuis une
 // USLD n'en pose aucune. « Au départ et à l'arrivée » se propose quand les deux
 // extrémités permettent la structure.
 
 import type { Condition, Reading } from "../../../../../socle/index.ts";
 import { given, question } from "../../question.ts";
-import {
-  type Choix,
-  type NatureDeQ26,
-  type Placement,
-  placementsPossibles,
-} from "../conditions/cotes-de-q26.ts";
-import { ENTREES_DES_LIEUX } from "../conditions/roles-dans-le-sens.ts";
-import { avecUnDocument } from "../conditions/supports-du-complement.ts";
+import { avecUnDocument } from "../conditions/supports-du-complement.condition.ts";
+import { CotesDeQ26 } from "../lieux/cotes-de-q26.service.ts";
+import type {
+  Choix,
+  NatureDeQ26,
+  Placement,
+} from "../lieux/cotes-de-q26.types.ts";
+import { RolesDansLeSens } from "../lieux/roles-dans-le-sens.service.ts";
 
 const COTES = {
   "1_DEPART": "Au départ",
@@ -56,8 +56,8 @@ const PLACEMENTS: Record<Cote, Placement> = {
 };
 
 function possibles(nature: NatureDeQ26, choix: Reading<Choix>) {
-  return ENTREES_DES_LIEUX.computeWith(choix, (entrees, lu) =>
-    placementsPossibles(nature, entrees, lu),
+  return RolesDansLeSens.ENTREES_DES_LIEUX.computeWith(choix, (entrees, lu) =>
+    CotesDeQ26.placementsPossibles(nature, entrees, lu),
   );
 }
 

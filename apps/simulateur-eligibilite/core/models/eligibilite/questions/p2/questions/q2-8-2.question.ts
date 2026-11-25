@@ -3,7 +3,7 @@
 // 14e jour.
 
 import { given, question } from "../../question.ts";
-import { unMineurDeVingtAns } from "../conditions/permission.ts";
+import { unMineurDeVingtAns } from "../conditions/permission.condition.ts";
 import { Q2_8_1 } from "./q2-8-1.question.ts";
 
 // La question, avant les règles qui lisent sa réponse.

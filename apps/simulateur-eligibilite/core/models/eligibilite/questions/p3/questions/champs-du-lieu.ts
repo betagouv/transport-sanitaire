@@ -8,22 +8,22 @@ import type {
   Condition,
   Reading,
 } from "../../../../../socle/index.ts";
-import type { Nature } from "../../p2/conditions/natures-du-lieu.ts";
+import type { Nature } from "../../p2/lieux/natures-du-lieu.constants.ts";
 import { Q2_2_1 } from "../../p2/questions/q2-2-1.question.ts";
 import { Q2_14_MOTIF } from "../../p2/questions/q2-14.question.ts";
 import { type Context as Contexte, given, question } from "../../question.ts";
 import {
+  avecUnDocument,
+  uneDap,
+} from "../conditions/supports-du-complement.condition.ts";
+import {
   CATEGORIES,
   type Categorie,
   HTNM,
-  type NonChoisie,
-  natureEnLettres,
-} from "../conditions/categories-du-lieu.ts";
-import type { Extremite, Lieu } from "../conditions/lieux-du-trajet.ts";
-import {
-  avecUnDocument,
-  uneDap,
-} from "../conditions/supports-du-complement.ts";
+} from "../lieux/categories-du-lieu.constants.ts";
+import { CategoriesDuLieu } from "../lieux/categories-du-lieu.service.ts";
+import type { NonChoisie } from "../lieux/categories-du-lieu.types.ts";
+import type { Extremite, Lieu } from "../lieux/lieux-du-trajet.types.ts";
 
 /** Ce que les champs savent du lieu à leur place sur la page. */
 export type Etat = {
@@ -190,7 +190,8 @@ function aPreciser({ categorie, nature }: Etat): Condition {
   return categorie.computeWith(
     nature,
     (lue, prouvee) =>
-      lue === "3_AUTRE_LIEU" && natureEnLettres(prouvee) === undefined,
+      lue === "3_AUTRE_LIEU" &&
+      CategoriesDuLieu.natureEnLettres(prouvee) === undefined,
   );
 }
 

@@ -2,7 +2,7 @@
 // (QST-LIEUX-TROIS-CATEGORIES-20261105) : sa catégorie, sur la page d'arrivée
 // le côté de l'USLD ou de l'EHPAD de Q2.6, puis la nature d'un autre lieu, le
 // nom, le service, l'adresse. Ce que P2 établit se rappelle sans se redemander
-// (`conditions/lieux-du-trajet.ts`). Aucune distance ne se compare aux
+// (`lieux/lieux-du-trajet.service.ts`). Aucune distance ne se compare aux
 // adresses.
 
 import type {
@@ -11,29 +11,18 @@ import type {
   Condition,
   Reading,
 } from "../../../../../socle/index.ts";
-import { NATURES_DU_LIEU } from "../../p2/conditions/natures-du-lieu.ts";
+import { NATURES_DU_LIEU } from "../../p2/lieux/natures-du-lieu.constants.ts";
 import { type Context as Contexte, given, question } from "../../question.ts";
+import { avecUnDocument } from "../conditions/supports-du-complement.condition.ts";
 import {
   CATEGORIES,
   type Categorie,
-  type NonChoisie,
-  natureEnLettres,
-} from "../conditions/categories-du-lieu.ts";
-import {
-  aLEtranger,
-  type Choix,
-  type Extremite,
-  type Lieu,
-  lieuDu,
-  lieuxContrairesAQ26,
-  natureDuLieuChoisi,
-} from "../conditions/lieux-du-trajet.ts";
-import {
-  desRolesContradictoires,
-  ENTREES_DES_LIEUX,
-  entreesDe,
-} from "../conditions/roles-dans-le-sens.ts";
-import { avecUnDocument } from "../conditions/supports-du-complement.ts";
+} from "../lieux/categories-du-lieu.constants.ts";
+import { CategoriesDuLieu } from "../lieux/categories-du-lieu.service.ts";
+import type { NonChoisie } from "../lieux/categories-du-lieu.types.ts";
+import { LieuxDuTrajet } from "../lieux/lieux-du-trajet.service.ts";
+import type { Choix, Extremite, Lieu } from "../lieux/lieux-du-trajet.types.ts";
+import { RolesDansLeSens } from "../lieux/roles-dans-le-sens.service.ts";
 import {
   CHAMPS_DU_LIEU,
   categorieAChoisir,
@@ -51,12 +40,12 @@ export type Libelles = { categorie: string; adresse: string; rappel: string };
 
 /** Le lieu de départ : ses questions, et ce que l'arrivée en lit. */
 export function lieuDeDepart(libelles: Libelles) {
-  const lieu = ENTREES_DES_LIEUX.compute((entrees) =>
-    lieuDu("depart", entrees),
+  const lieu = RolesDansLeSens.ENTREES_DES_LIEUX.compute((entrees) =>
+    LieuxDuTrajet.lieuDu("depart", entrees),
   );
   const categorie = categorieAChoisir("depart", libelles.categorie, lieu);
   const lecture = lectureDu(categorie, (contexte) =>
-    lieuDu("depart", entreesDe(contexte.answers)),
+    LieuxDuTrajet.lieuDu("depart", RolesDansLeSens.entreesDe(contexte.answers)),
   );
   const categorieDuLieu = categorieRetenue(lieu, categorie);
   const choix = categorieDuLieu.compute(
@@ -79,14 +68,15 @@ export function lieuDArrivee(
   libelles: Libelles,
   depart: ReturnType<typeof lieuDeDepart>,
 ) {
-  const lieu = ENTREES_DES_LIEUX.computeWith(depart.categorieDuLieu, (e, d) =>
-    lieuDu("arrivee", e, d),
+  const lieu = RolesDansLeSens.ENTREES_DES_LIEUX.computeWith(
+    depart.categorieDuLieu,
+    (e, d) => LieuxDuTrajet.lieuDu("arrivee", e, d),
   );
   const categorie = categorieAChoisir("arrivee", libelles.categorie, lieu);
   const lecture = lectureDu(categorie, (contexte) =>
-    lieuDu(
+    LieuxDuTrajet.lieuDu(
       "arrivee",
-      entreesDe(contexte.answers),
+      RolesDansLeSens.entreesDe(contexte.answers),
       depart.categorieLue(contexte),
     ),
   );
@@ -154,7 +144,7 @@ function champsDuLieu<E extends Extremite>(
 ) {
   const etat: Etat = {
     categorie: choix.compute(({ categories }) => categories?.[extremite]),
-    nature: natureDuLieuChoisi(extremite, choix),
+    nature: LieuxDuTrajet.natureDuLieuChoisi(extremite, choix),
   };
   const sur = (champ: Champ) => rappelSur(champ, lecture, libelles.rappel);
   const { categorie } = lecture;
@@ -196,7 +186,7 @@ function adresseDuLieu<E extends Extremite>(
   const adresse = question
     .address(CHAMPS_DU_LIEU[extremite].adresse, label)
     .mattersWhile(avecUnDocument)
-    .abroadIf(({ answers }) => aLEtranger(extremite, answers))
+    .abroadIf(({ answers }) => LieuxDuTrajet.aLEtranger(extremite, answers))
     .reminderFrom(rappel);
   return extremite === "depart"
     ? adresse
@@ -212,12 +202,14 @@ function adresseDuLieu<E extends Extremite>(
 }
 
 // Deux situations de P2 se contredisent sur un lieu (TS1014-AUDIT-02).
-const ROLES_CONTRADICTOIRES = ENTREES_DES_LIEUX.compute(
-  desRolesContradictoires,
+const ROLES_CONTRADICTOIRES = RolesDansLeSens.ENTREES_DES_LIEUX.compute(
+  RolesDansLeSens.desRolesContradictoires,
 );
 
 // L'USLD ou l'EHPAD de Q2.6 n'a sa place à aucun des deux lieux.
-const CONTRAIRES_A_Q26 = ENTREES_DES_LIEUX.compute(lieuxContrairesAQ26);
+const CONTRAIRES_A_Q26 = RolesDansLeSens.ENTREES_DES_LIEUX.compute(
+  LieuxDuTrajet.lieuxContrairesAQ26,
+);
 
 // Le champ qui porte le rappel : le premier que la catégorie pose.
 type Champ = "nature" | "nom" | "adresse";
@@ -238,7 +230,10 @@ function rappelSur(champ: Champ, { lire }: Lecture, label: string): Rappel {
 
 function premierChamp({ fixee, nature }: Lieu): Champ {
   if (fixee === "1_DOMICILE") return "adresse";
-  if (fixee === "3_AUTRE_LIEU" && natureEnLettres(nature) === undefined)
+  if (
+    fixee === "3_AUTRE_LIEU" &&
+    CategoriesDuLieu.natureEnLettres(nature) === undefined
+  )
     return "nature";
   return "nom";
 }

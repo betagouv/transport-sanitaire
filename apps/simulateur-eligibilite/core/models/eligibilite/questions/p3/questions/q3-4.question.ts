@@ -14,11 +14,11 @@ import type {
 import { Q1_3, Q1_3_A } from "../../p1/questions/q1-3.question.ts";
 import { Q2_1, Q2_1_F, Q2_1_G } from "../../p2/questions/q2-1.question.ts";
 import { given, question } from "../../question.ts";
-import { SENS_CHOISI } from "../conditions/sens-du-trajet.ts";
-import { pmtOuDap } from "../conditions/supports-du-complement.ts";
+import { pmtOuDap } from "../conditions/supports-du-complement.condition.ts";
+import { SensDuTrajet } from "../lieux/sens-du-trajet.service.ts";
 
 // Un retour seul ne va pas vers le centre de référence.
-const unRetourSeul = SENS_CHOISI.compute((sens) => sens === "2_RETOUR");
+const unRetourSeul = SensDuTrajet.CHOISI.compute((sens) => sens === "2_RETOUR");
 
 // La DAP au-delà de 150 km demande pourquoi le lieu de soins est éloigné.
 const JUSTIFICATION_EXIGEE = given

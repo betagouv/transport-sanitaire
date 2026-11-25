@@ -3,7 +3,7 @@
 // et Suivant reste bloqué. Un conflit qu'un sens lèverait attend P3.
 
 import { describe, expect, it } from "vitest";
-import { LIEUX_INCOMPATIBLES } from "../../../../core/models/eligibilite/questions/p2/conditions/conflit-de-lieux";
+import { ConflitDeLieux } from "../../../../core/models/eligibilite/questions/p2/lieux/conflit-de-lieux.service";
 import type { Questions } from "../../../../core/models/eligibilite/questions/reponses";
 import { Simulation } from "../../../../core/socle/simulation";
 import { model } from "../../../../front/models/eligibilite";
@@ -81,7 +81,7 @@ describe("un conflit de lieux certain", () => {
       },
     ],
   ])("%s : l'alerte va à %s, %s", (_, page, id, reponses) => {
-    expect(alertes(page, id, reponses)).toEqual([LIEUX_INCOMPATIBLES]);
+    expect(alertes(page, id, reponses)).toEqual([ConflitDeLieux.MESSAGE]);
   });
 
   it("ne va qu'à la réponse qui le crée", () => {

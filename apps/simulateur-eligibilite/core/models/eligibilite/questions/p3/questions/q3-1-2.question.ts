@@ -3,12 +3,15 @@
 // sens, qu'elle soit seule ou répétée : Q2.8.5 n'en dit aucun. Un sens
 // qualifié avant R2, en Q2.13.sens, ne se redemande pas.
 
-import { unRetourPenitentiaire } from "../../p2/conditions/retour-penitentiaire.ts";
+import { unRetourPenitentiaire } from "../../p2/conditions/retour-penitentiaire.condition.ts";
 import { Q2_1_G } from "../../p2/questions/q2-1.question.ts";
 import { Q2_6 } from "../../p2/questions/q2-6.question.ts";
 import { Q2_13_SENS } from "../../p2/questions/q2-13.question.ts";
 import { given, question } from "../../question.ts";
-import { pmtOuDap, unS3141 } from "../conditions/supports-du-complement.ts";
+import {
+  pmtOuDap,
+  unS3141,
+} from "../conditions/supports-du-complement.condition.ts";
 
 const sousType = given.question(Q2_1_G).answer();
 

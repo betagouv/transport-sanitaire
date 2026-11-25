@@ -2,7 +2,7 @@
 // Q3.1 en dépendent.
 
 import { question } from "../../question.ts";
-import { unMineurDeVingtAns } from "../conditions/permission.ts";
+import { unMineurDeVingtAns } from "../conditions/permission.condition.ts";
 
 export const Q2_8_5 = question
   .singleChoice(

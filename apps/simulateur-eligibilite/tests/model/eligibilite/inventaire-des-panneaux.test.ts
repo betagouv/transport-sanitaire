@@ -5,8 +5,8 @@
 // n'est hors de l'inventaire, sauf celles que la table EN_PLUS dit.
 
 import { describe, expect, it } from "vitest";
-import { COMPLEMENT } from "../../../core/models/eligibilite/questions/p3/partie-3";
-import { PARTS } from "../../../core/models/eligibilite/questions/questionnaire";
+import { COMPLEMENT } from "../../../core/models/eligibilite/questions/p3/partie-3.constants";
+import { PARTS } from "../../../core/models/eligibilite/questions/questionnaire.constants";
 import type { ShownUnder } from "../../../core/socle/questionnaire-engine";
 
 /** Une ligne de l'inventaire, dans le modèle. */

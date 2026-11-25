@@ -10,11 +10,8 @@
 
 import { Q1_3 } from "../../p1/questions/q1-3.question.ts";
 import { given, question } from "../../question.ts";
-import { brancheDecisive } from "../conditions/branche.ts";
-import {
-  incoherenceDeLieux,
-  unSensQuiChangeLesLieux,
-} from "../conditions/conflit-de-lieux.ts";
+import { brancheDecisive } from "../conditions/branche.condition.ts";
+import { ConflitDeLieux } from "../lieux/conflit-de-lieux.service.ts";
 import { Q2_1_G } from "./q2-1.question.ts";
 import { Q2_2_1 } from "./q2-2-1.question.ts";
 import { Q2_2_1_A } from "./q2-2-1-a.question.ts";
@@ -60,7 +57,7 @@ const LIEUX_DE_P2 = {
 
 // Le départ nommé contredit un départ que P2 fixe déjà.
 export const Q2_13_DEPART = departDeLEntree.inconsistentWhen(
-  ...incoherenceDeLieux("departDeLEntree", {
+  ...ConflitDeLieux.incoherence("departDeLEntree", {
     ...LIEUX_DE_P2,
     departDeLEntree,
   }),
@@ -82,7 +79,10 @@ const trajetEvalue = question
       "L’aller et le retour avec des besoins ou des règles différents.",
   })
   .appliesWhen(
-    unSensQuiChangeLesLieux({ ...LIEUX_DE_P2, departDeLEntree: Q2_13_DEPART }),
+    ConflitDeLieux.unSensQuiChangeLesLieux({
+      ...LIEUX_DE_P2,
+      departDeLEntree: Q2_13_DEPART,
+    }),
   )
   .possibleAnswer("4_ALLER_RETOUR_DIFFERENT", (possibleAnswer) =>
     possibleAnswer
@@ -92,7 +92,7 @@ const trajetEvalue = question
 
 // Le sens choisi rend certain le conflit qu'il crée.
 export const Q2_13_SENS = trajetEvalue.inconsistentWhen(
-  ...incoherenceDeLieux("trajetEvalue", {
+  ...ConflitDeLieux.incoherence("trajetEvalue", {
     ...LIEUX_DE_P2,
     departDeLEntree: Q2_13_DEPART,
     trajetEvalue,

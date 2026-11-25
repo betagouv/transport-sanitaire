@@ -5,7 +5,7 @@
 
 import { describe, expect, it } from "vitest";
 import { model } from "../../../../core/models/eligibilite";
-import { categorieDe } from "../../../../core/models/eligibilite/questions/p3/conditions/categories-du-lieu";
+import { CategoriesDuLieu } from "../../../../core/models/eligibilite/questions/p3/lieux/categories-du-lieu.service";
 import { Questionnaire } from "../../../../core/socle/questionnaire-engine";
 import { ciblesValant } from "../r2/traces-du-prescripteur";
 import {
@@ -108,6 +108,6 @@ describe("la catégorie de chaque nature (CONTRAT_LIEUX_CERFA)", () => {
     ["7_CABINET", "2_STRUCTURE_DE_SOINS"],
     ["8_AUTRE_LIEU", "3_AUTRE_LIEU"],
   ] as const)("%s se reporte en %s", (nature, categorie) => {
-    expect(categorieDe(nature)).toBe(categorie);
+    expect(CategoriesDuLieu.categorieDe(nature)).toBe(categorie);
   });
 });

@@ -4,7 +4,7 @@
 import { Q2_8_5 } from "../../p2/questions/q2-8-5.question.ts";
 import { Q2_8_6_A } from "../../p2/questions/q2-8-6.question.ts";
 import { type Context, given, type Inconnu, question } from "../../question.ts";
-import { unS3141 } from "../conditions/supports-du-complement.ts";
+import { unS3141 } from "../conditions/supports-du-complement.condition.ts";
 
 // La question, avant les règles qui lisent sa réponse.
 const declaree = question.number(
