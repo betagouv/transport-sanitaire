@@ -35,4 +35,4 @@ export {
   useShown,
 } from "./pdf/PdfActionButton";
 export type { StrictTextEdits } from "./StrictTexts";
-export { useTextCounters } from "./use-text-counters";
+export { useTextCounters } from "./text-counters.hook";

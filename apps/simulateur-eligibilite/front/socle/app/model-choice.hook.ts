@@ -5,7 +5,7 @@
 // rechargement de la page : l'app ne garde rien entre deux chargements.
 
 import { useState } from "react";
-import type { ModelSource } from "./model-loading";
+import type { ModelSource } from "./model-loading.hook";
 
 /** Un modèle que l'app peut dérouler. */
 type NamedModel = {

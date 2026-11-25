@@ -18,10 +18,14 @@ import type { Model } from "../model";
 import { RattachementScreen } from "../rattachement";
 import { SeedsScreen } from "../seeds";
 import { Container } from "../ui";
-import { type ModelChoice, type Models, useModelChoice } from "./model-choice";
-import { useModelLoading } from "./model-loading";
-import type { Navigation } from "./navigation";
-import { useNavigation } from "./navigation";
+import {
+  type ModelChoice,
+  type Models,
+  useModelChoice,
+} from "./model-choice.hook";
+import { useModelLoading } from "./model-loading.hook";
+import type { Navigation } from "./navigation.hook";
+import { useNavigation } from "./navigation.hook";
 import { SimulateurScreen } from "./SimulateurScreen";
 
 // `referentiel` et `analytics` viennent du conteneur ; les tests

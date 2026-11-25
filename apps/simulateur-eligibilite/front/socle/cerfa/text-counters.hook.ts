@@ -7,8 +7,8 @@
 
 import type { Cerfa, CerfaDto } from "./cerfa";
 import { strictEntriesOf } from "./generate-the-cerfa/strict-entries";
+import { useMeasure } from "./measure.hook";
 import { verdictOf } from "./strict-verdict";
-import { useMeasure } from "./use-measure";
 
 /** Ce que dit le compteur sous le champ. */
 type TextCounter = {

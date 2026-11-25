@@ -1,6 +1,6 @@
 // Le formulaire du questionnaire : le stepper, les champs de la page et les
 // boutons de navigation. La simulation est la sienne ; seul le brouillon de la page
-// vit dans `questionnaire.ts`. Le stepper titre l'écran du nom de la partie, et annonce
+// vit dans `questionnaire.hook.ts`. Le stepper titre l'écran du nom de la partie, et annonce
 // la partie suivante s'il y en a une dans ce questionnaire. La dernière n'annonce
 // rien : ce qui la suit dépend du résultat, encore inconnu.
 //
@@ -22,9 +22,9 @@ import { QuestionFields } from "./QuestionFields";
 import type {
   QuestionnaireOptions,
   QuestionnaireScreen,
-} from "./questionnaire";
-import { useQuestionnaire } from "./questionnaire";
-import { useFocusReturn } from "./return-the-focus";
+} from "./questionnaire.hook";
+import { useQuestionnaire } from "./questionnaire.hook";
+import { useFocusReturn } from "./return-the-focus.hook";
 import { NextStep, Stepper } from "./Stepper";
 import { scrollToTheTop } from "./scroll-to-the-top";
 

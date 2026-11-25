@@ -10,8 +10,8 @@ import type { Cerfa, CerfaDto, Strict } from "./cerfa";
 import type { Overflowing } from "./generate-the-cerfa/generate-the-cerfa";
 import { strictEntriesOf, textOf } from "./generate-the-cerfa/strict-entries";
 import type { StrictMeasure } from "./generate-the-cerfa/strict-text";
+import { useMeasure } from "./measure.hook";
 import { StrictTextEditor } from "./StrictTextEditor";
-import { useMeasure } from "./use-measure";
 
 /** Les brouillons des textes stricts, par entrée du DTO. */
 export type Drafts = Readonly<Record<string, string>>;

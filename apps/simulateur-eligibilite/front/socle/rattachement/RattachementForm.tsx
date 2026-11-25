@@ -19,8 +19,11 @@ import {
 } from "../../../shared/referentiel";
 import { Container, SelectField, TextField } from "../ui";
 import { optionsDuChoix } from "./choix";
-import type { Derivation, SaisieRattachement } from "./saisie-rattachement";
-import { useSaisieRattachement } from "./saisie-rattachement";
+import type {
+  Derivation,
+  SaisieRattachement,
+} from "./saisie-rattachement.hook";
+import { useSaisieRattachement } from "./saisie-rattachement.hook";
 import type { Structure } from "./structures";
 
 type Props = {

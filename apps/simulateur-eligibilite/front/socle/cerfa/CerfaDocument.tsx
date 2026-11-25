@@ -13,7 +13,7 @@
 // montage font aussi du PDF un aperçu. Pendant la génération, les deux actions
 // attendent, et « Télécharger » dit « Préparation du PDF ». Une action qui
 // attend un PDF ne se fait plus si le document a été quitté entre-temps
-// (`use-downloadable-pdf.ts`).
+// (`downloadable-pdf.hook.ts`).
 // « Imprimer » vient avant « Télécharger » : côte à côte s'ils tiennent, l'un
 // sous l'autre sinon, le groupe en ligne du DSFR passant à la ligne sans
 // couper un libellé. Qui l'affiche peut donner de quoi tenir la place
@@ -29,18 +29,18 @@
 import { type ReactNode, useEffect, useRef } from "react";
 import { CerfaPreview } from "./CerfaPreview";
 import type { Cerfa, CerfaDto } from "./cerfa";
-import type { Typography } from "./generate-the-cerfa/typography";
-import { download, fileNameOf } from "./pdf/download-a-pdf";
-import { PdfActionButton, type PdfSignals } from "./pdf/PdfActionButton";
-import { printPdf } from "./pdf/print-a-pdf";
-import { editorsOf, type StrictTextEdits, StrictTexts } from "./StrictTexts";
 import {
   type PdfAction,
   type Pending,
   type Settled,
   useAwaitedAction,
   useDownloadablePdf,
-} from "./use-downloadable-pdf";
+} from "./downloadable-pdf.hook";
+import type { Typography } from "./generate-the-cerfa/typography";
+import { download, fileNameOf } from "./pdf/download-a-pdf";
+import { PdfActionButton, type PdfSignals } from "./pdf/PdfActionButton";
+import { printPdf } from "./pdf/print-a-pdf";
+import { editorsOf, type StrictTextEdits, StrictTexts } from "./StrictTexts";
 
 type Props<Dto extends CerfaDto> = {
   cerfa: Cerfa<Dto>;

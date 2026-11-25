@@ -8,7 +8,7 @@ import {
 } from "../../../shared/rattachement-saisi";
 import type { Referentiel } from "../../../shared/referentiel";
 import { decoderChoix } from "./choix";
-import { estAutre, type Listes, useListes } from "./listes";
+import { estAutre, type Listes, useListes } from "./listes.hook";
 import type { Structure } from "./structures";
 
 type Champs = {
