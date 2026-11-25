@@ -1,12 +1,18 @@
 // Ce que le socle attend d'une version du modèle : son métier
-// (`core/socle/model.types.ts`), et ce qu'il affiche, ses deux résultats.
+// (`core/socle/model.types.ts`, qui porte ce que disent ses deux résultats), et
+// ce qu'il affiche : leur page, et où s'écrit le document.
 //
 // Le socle déroule le parcours et ne lit aucune clé du modèle. Il transporte les
 // réponses, les faits et les cibles de l'un à l'autre, et donne à chaque
 // résultat ce qu'il déclare lire.
 
 import type { ComponentType, ReactNode } from "react";
-import type { AnyFaits, CoreModel, Intent } from "../../core/socle/model.types";
+import type {
+  AnyDocuments,
+  AnyFaits,
+  CoreModel,
+  Intent,
+} from "../../core/socle/model.types";
 import type {
   AnyCibles,
   AnyQuestions,
@@ -19,7 +25,7 @@ import type {
 } from "../../shared/analytics/analytics-event.constants";
 import type { TypographicFieldId } from "../../shared/analytics/typographic-fields.constants";
 import type { ResultCodes } from "./analytics";
-import type { BoundCerfa } from "./cerfa";
+import type { Cerfa } from "./cerfa";
 
 export type {
   Intent,
@@ -59,7 +65,7 @@ export type FirstResult = {
    */
   tone?: "refusal";
   /**
-   * Rien ne suit ce résultat, quoi que donne `cerfa.startLabel` : il n'a pas
+   * Rien ne suit ce résultat, quoi que donne `core.cerfa.startLabel` : il n'a pas
    * pu conclure. Ni étape suivante ni complétion.
    */
   terminal?: boolean;
@@ -92,7 +98,7 @@ export type CerfaInput<Reading = unknown> = ResultatProps<Reading> & {
 /**
  * L'invitation à donner son avis, après un résultat : un lien vers
  * l'adresse exacte, sans paramètre, ouvert dans un nouvel onglet. Le socle la
- * place selon ce que le prescripteur est venu faire (`Model.intent`) : en R2
+ * place selon ce que le prescripteur est venu faire (`CoreModel.intent`) : en R2
  * s'il vérifie ou si rien ne se complète, en R3 une fois le document prêt.
  */
 export type Feedback = {
@@ -106,9 +112,21 @@ export type Model<
   Cibles extends AnyCibles = AnyCibles,
   FirstReading = unknown,
   CerfaReading = unknown,
+  Documents extends AnyDocuments = AnyDocuments,
 > = {
-  /** Le métier : les questions, la préconisation, les seeds. */
-  core: CoreModel<Questions, Faits, Cibles>;
+  /**
+   * Le métier : les questions, la préconisation, les seeds, et ce que disent
+   * les deux résultats (ce qu'ils lisent, le document et ses valeurs, le
+   * besoin).
+   */
+  core: CoreModel<
+    Questions,
+    Faits,
+    Cibles,
+    FirstReading,
+    CerfaReading,
+    Documents
+  >;
   /**
    * La version des règles, `10.1.8` : chaque événement du journal des parcours
    * la porte.
@@ -118,34 +136,24 @@ export type Model<
   result: {
     /** Le titre du stepper, au-dessus du `h1` que le résultat donne. */
     title: string;
-    /** Ce que le résultat lit des questions validées, en une valeur. */
-    reading: Reading<FirstReading>;
     /**
-     * Le résultat de ces réponses. Une promesse quand il charge ses textes :
-     * elle ne rejette pas, un échec de chargement est un résultat comme un
-     * autre.
+     * Le résultat de ce que `core.result.reading` lit. Une promesse quand il
+     * charge ses textes : elle ne rejette pas, un échec de chargement est un
+     * résultat comme un autre.
      */
     content: (
       props: ResultatProps<FirstReading>,
     ) => FirstResult | Promise<FirstResult>;
   };
-  /** Le second résultat, après le complément : le cerfa. */
+  /** Le second résultat, après le complément : ce qui montre le document. */
   cerfa: {
     /**
-     * Le cerfa de cette préconisation. `null` : rien ne suit le premier
-     * résultat. Le choix lit ce qu'il déclare, comme chaque entrée du cerfa.
+     * Où chaque entrée du DTO de chaque document s'écrit dans son gabarit, par
+     * la clé que `core.cerfa.document` choisit. Le compilateur vérifie que le
+     * métier et l'écran parlent du même DTO : un document sans endroits, ou une
+     * entrée sans endroit, ne compile pas.
      */
-    form: Reading<BoundCerfa | null>;
-    /**
-     * Le titre du second résultat, selon le document que la préconisation
-     * donne : celui de son stepper, qui est le `h1` de la page.
-     */
-    title: Reading<string>;
-    /**
-     * Ce que le texte du second résultat et ce qui tient la place de l'aperçu
-     * lisent des questions validées, des faits et des cibles, en une valeur.
-     */
-    reading: Reading<CerfaReading>;
+    places: { readonly [Key in keyof Documents]: Cerfa<Documents[Key]> };
     /**
      * Le texte du second résultat, sous le stepper, avant les boutons. Avec un
      * cerfa, il attend que son PDF soit prêt.
@@ -156,28 +164,10 @@ export type Model<
      * ne remplit pas encore. Sans lui, ou s'il donne `null`, l'aperçu du PDF.
      */
     standIn?: (props: CerfaInput<CerfaReading>) => ReactNode;
-    /**
-     * Le libellé de l'action qui verrouille. `null` : cette préconisation ne
-     * complète rien, le bouton n'est pas posé. Il ne l'est pas non plus tant que
-     * le complément n'a ni page ni cerfa : le verrou n'ouvre pas un écran vide.
-     */
-    startLabel: Reading<string | null>;
-    /**
-     * Les questions du complément dont la réponse s'écrit telle quelle dans un
-     * texte strict du cerfa, chacune vers son entrée du DTO : leur saisie a un
-     * compteur, mesuré sur le cerfa. Sans elles, aucun compteur.
-     */
-    measured?: Readonly<Record<string, string>>;
     /** Les libellés des deux actions sur le cerfa, qui portent le même PDF. */
     printLabel: string;
     downloadLabel: string;
   };
-  /**
-   * Ce que le prescripteur est venu faire, d'après les questions validées.
-   * `null` : on ne le sait pas. L'avis n'est alors pas proposé, et le journal
-   * des parcours n'en reçoit rien. Ce qu'il lit compte.
-   */
-  intent?: Reading<Intent | null>;
   /**
    * Les codes du premier résultat, pour le journal des parcours. Sans eux, il
    * ne reçoit que la révision. Ce qu'ils lisent ne fait poser aucune question.

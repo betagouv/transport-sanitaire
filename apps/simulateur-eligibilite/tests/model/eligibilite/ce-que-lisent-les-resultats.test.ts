@@ -14,7 +14,7 @@ describe("les questions que les résultats lisent telles quelles", () => {
   // de Q2.3.2.terrestre, la répétition de Q2.8.5, et ce dont la trace tire ses
   // précisions.
   it("R2 lit le circuit, les critères, la partie terrestre, la répétition et les précisions", () => {
-    expect(trie(model.result.reading.reads.flattened())).toEqual([
+    expect(trie(model.core.result.reading.reads.flattened())).toEqual([
       "Q1.2",
       "Q1.3",
       "Q1.3.a",
@@ -88,7 +88,7 @@ describe("les cibles et les faits que les résultats lisent", () => {
   // Le circuit et l'issue, puis ce que lisent les deux fiches et le
   // prescripteur.
   it("R2 lit ce que ses textes déclarent", () => {
-    const { cibles, faits } = model.result.reading.reads.flattened();
+    const { cibles, faits } = model.core.result.reading.reads.flattened();
     expect([...cibles].sort()).toEqual([
       "cible_ald_juridiquement_qualifiante_3_ou_4_degres",
       "cible_ambulance_equipement_bariatrique",
@@ -181,8 +181,8 @@ describe("les cibles et les faits que les résultats lisent", () => {
 // Toutes les branches réunies : ce que lit chaque cerfa, quel que soit le
 // support.
 function luParR3(): Reads {
-  const { reading, form, title, startLabel } = model.cerfa;
-  const flattened = [form, title, startLabel].map((value) =>
+  const { reading, document, title, startLabel } = model.core.cerfa;
+  const flattened = [document, title, startLabel].map((value) =>
     value.reads.flattened(),
   );
   return Reads.union(reading.reads, ...flattened);

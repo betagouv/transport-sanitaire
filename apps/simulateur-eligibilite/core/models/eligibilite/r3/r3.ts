@@ -38,15 +38,22 @@ import {
 } from "../../../socle/index.ts";
 import type { Cibles, IssueId } from "../cibles/noms.ts";
 import { given } from "../questions/reponses.ts";
-import { VERS_LA_PMT } from "./s3138g.ts";
-import { VERS_LA_DAP } from "./s3139h.ts";
-import { VERS_LE_S3141 } from "./s3141.ts";
+import { type DtoS3138g, VERS_LA_PMT } from "./s3138g.ts";
+import { type DtoS3139h, VERS_LA_DAP } from "./s3139h.ts";
+import { type DtoS3141, VERS_LE_S3141 } from "./s3141.ts";
 
 /** Les supports qui ont un document à compléter. */
 export type Support = Exclude<
   NonNullable<Cibles["cible_support_id"]["value"]>,
   "AUCUN"
 >;
+
+/** Le DTO de chaque document, par son support : ce que l'écran doit placer. */
+export type DtosDesDocuments = {
+  readonly S3138g: DtoS3138g;
+  readonly S3139h: DtoS3139h;
+  readonly S3141: DtoS3141;
+};
 
 const SUPPORT = given.cible("cible_support_id");
 const ISSUE = given.cible("cible_issue_id");
@@ -85,6 +92,12 @@ const BOUTONS: Partial<Record<IssueId, string>> = {
 export const R3 = {
   /** Le texte de R3 ne lit rien des réponses : le document les porte. */
   lit: given.all({}),
+  /** Les valeurs de chaque document, par son support. */
+  valeurs: {
+    S3138g: VERS_LA_PMT,
+    S3139h: VERS_LA_DAP,
+    S3141: VERS_LE_S3141,
+  } satisfies { [Key in Support]: CerfaMapping<DtosDesDocuments[Key]> },
   /** Le support du document que cette préconisation complète. `null` : aucun. */
   document: SUPPORT.computeWith(DOCUMENTS, ({ value: support }, documents) =>
     support == null || support === "AUCUN" ? null : documents[support],

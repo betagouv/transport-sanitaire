@@ -2,19 +2,17 @@
 // complétée, et son bon de commande. Ce que R3 dit est du métier :
 // `core/models/fake/r3/r3.ts`.
 
-import { R3 as METIER } from "../../../core/models/fake/r3/r3";
+import type { R3 as METIER } from "../../../core/models/fake/r3/r3";
 import type { ValueOf } from "../../../core/socle";
 import type { ResultatProps } from "../../socle";
-import { bonDeCommande } from "./bon-de-commande";
+import { BON_DE_COMMANDE } from "./bon-de-commande";
 
 /** Ce que R3 reçoit du socle : `R3.lit`. */
-export type Lecture = ResultatProps<ValueOf<typeof METIER.lit>>;
+type Lecture = ResultatProps<ValueOf<typeof METIER.lit>>;
 
 export const R3 = {
-  lit: METIER.lit,
-  document: METIER.aUnBon.compute((aUnBon) => (aUnBon ? bonDeCommande : null)),
-  titre: METIER.titre,
-  boutonDeDepart: METIER.boutonDeDepart,
+  /** Où s'écrivent les entrées du bon de commande. */
+  endroits: { "bon-de-commande": BON_DE_COMMANDE },
   Page: CommandeCompletee,
 };
 

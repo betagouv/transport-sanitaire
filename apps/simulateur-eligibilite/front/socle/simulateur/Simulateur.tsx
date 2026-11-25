@@ -24,6 +24,7 @@ import type { Model } from "../model.types";
 import { type DebugTraceProps, QuestionnaireForm } from "../questionnaire";
 import { AldPathwayService } from "./ald-pathway.service";
 import { useFollowTheAddress } from "./follow-the-address.hook";
+import { BoundCerfaService } from "./screens/bound-cerfa.service";
 import { CerfaScreen } from "./screens/CerfaScreen";
 import { ResultatScreen } from "./screens/ResultatScreen";
 
@@ -158,10 +159,13 @@ function SecondQuestionnaire({
   onRestart,
 }: ScreenProps) {
   const partsBefore = model.core.questionnaire.length;
-  const bound = model.cerfa.form.in(simulation.resultContext(new Date()));
+  const bound = BoundCerfaService.of(
+    model,
+    simulation.resultContext(new Date()),
+  );
   const counterOf = useTextCounters(
     bound?.cerfa ?? null,
-    model.cerfa.measured ?? {},
+    model.core.cerfa.measured ?? {},
   );
   return (
     <QuestionnaireForm

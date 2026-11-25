@@ -2,7 +2,7 @@
 // une étape, savoir où elles mènent. Un service : il fait le pont entre la
 // simulation et le moteur.
 
-import type { CoreModel } from "../model.types.ts";
+import type { SimulationModel } from "../model.types.ts";
 import {
   type AnsweredQuestionnaire,
   type Answers,
@@ -12,10 +12,10 @@ import type { PreconisationService } from "./preconisation.service.ts";
 import { SimulationStage } from "./simulation-stage.vo.ts";
 
 export class QuestionnaireReadingService {
-  readonly #core: CoreModel;
+  readonly #core: SimulationModel;
   readonly #preconisation: PreconisationService;
 
-  constructor(core: CoreModel, preconisation: PreconisationService) {
+  constructor(core: SimulationModel, preconisation: PreconisationService) {
     this.#core = core;
     this.#preconisation = preconisation;
   }

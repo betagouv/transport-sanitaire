@@ -4,12 +4,12 @@
 
 import { describe, expect, it } from "vitest";
 import { CerfaDtoService } from "../../../../core/socle/cerfa";
-import { DOCUMENTS } from "../../../../front/models/eligibilite/r3/documents";
 import {
   drawnOn,
   markedStates,
   textsIn,
 } from "../../../socle/cerfa/pdf-aplati";
+import { DOCUMENTS } from "../documents-lies";
 import {
   abscisses,
   donnees,

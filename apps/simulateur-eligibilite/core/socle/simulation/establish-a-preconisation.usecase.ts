@@ -1,7 +1,7 @@
 // Établir la préconisation de réponses, sans parcours : l'écran des seeds et
 // les tests du modèle la demandent sur des réponses données d'un coup.
 
-import type { AnyFaits, CoreModel } from "../model.types.ts";
+import type { AnyFaits, SimulationModel } from "../model.types.ts";
 import type {
   Answers,
   AnyCibles,
@@ -17,7 +17,7 @@ export class EstablishAPreconisation<
 > {
   readonly #preconisation: PreconisationService<Questions, Faits, Cibles>;
 
-  constructor(model: CoreModel<Questions, Faits, Cibles>) {
+  constructor(model: SimulationModel<Questions, Faits, Cibles>) {
     this.#preconisation = new PreconisationService(model);
   }
 

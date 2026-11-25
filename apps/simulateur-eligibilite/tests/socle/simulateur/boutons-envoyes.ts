@@ -17,7 +17,7 @@ export const LIBELLE_DE_L_AVIS = "Donnez votre avis";
 /** Le modèle, venu pour cette intention, qui invite à donner son avis. */
 export const venuPour = (intent: Intent, modele = modeleDeTest): Model => ({
   ...modele,
-  intent: Reading.constant(intent),
+  core: { ...modele.core, intent: Reading.constant(intent) },
   feedback: { url: "https://exemple.test/avis", label: LIBELLE_DE_L_AVIS },
 });
 

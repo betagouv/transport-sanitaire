@@ -5,7 +5,7 @@
 // simulation ; aucune ne change celle-ci. L'écran n'y ajoute que le brouillon
 // de la page ouverte.
 
-import type { CoreModel } from "../model.types.ts";
+import type { SimulationModel } from "../model.types.ts";
 import {
   type Answer,
   type AnsweredQuestionnaire,
@@ -30,7 +30,7 @@ import { TextEdits } from "./text-edits.vo.ts";
 
 export class Simulation {
   /** Aucune réponse : la première page du questionnaire. */
-  static start(core: CoreModel): Simulation {
+  static start(core: SimulationModel): Simulation {
     return Simulation.#at(core, SimulationStage.questionnaire(), {});
   }
 
@@ -39,14 +39,14 @@ export class Simulation {
    * données aurait sous les yeux, ou le résultat qu'elles atteignent. `on` :
    * le jour du cerfa, si elles y mènent.
    */
-  static resume(core: CoreModel, answers: Answers, on = new Date()) {
+  static resume(core: SimulationModel, answers: Answers, on = new Date()) {
     const preconisation = new PreconisationService(core);
     const reading = new QuestionnaireReadingService(core, preconisation);
     return Simulation.#at(core, reading.whereAnswersLead(answers, on), answers);
   }
 
   /** Le complément qu'ouvre ce verrou, sur sa première page. */
-  static afterLock(core: CoreModel, lock: Lock): Simulation {
+  static afterLock(core: SimulationModel, lock: Lock): Simulation {
     const complement = SimulationStage.complement(lock);
     return Simulation.#at(core, complement, lock.answers);
   }
@@ -56,7 +56,7 @@ export class Simulation {
   readonly stage: SimulationStage;
   /** Les textes réécrits sur un résultat : ils suivent chaque transition. */
   readonly edits: TextEdits;
-  readonly #core: CoreModel;
+  readonly #core: SimulationModel;
   readonly #readingService: QuestionnaireReadingService;
   readonly #preconisationService: PreconisationService;
   readonly #reading: AnsweredQuestionnaire;
@@ -65,7 +65,7 @@ export class Simulation {
 
   // Sans `reading`, la simulation lit ces réponses à cette étape.
   private constructor(
-    core: CoreModel,
+    core: SimulationModel,
     stage: SimulationStage,
     answers: Answers,
     opening?: PageOpening,
@@ -258,7 +258,7 @@ export class Simulation {
   // Cette étape, sur la page où un prescripteur ayant donné ces réponses se
   // trouverait : la première qui attend une réponse, sinon la dernière. Une
   // seed rouvre ainsi sur sa page, avec un « Précédent ».
-  static #at(core: CoreModel, stage: SimulationStage, answers: Answers) {
+  static #at(core: SimulationModel, stage: SimulationStage, answers: Answers) {
     const blank = new Simulation(core, stage, answers);
     const page = blank.#stagePages().current();
     return blank.#on(stage, page && new PageOpening(page));

@@ -16,15 +16,11 @@ export function auGabarit(
     ...modeleDeTest,
     cerfa: {
       ...cerfa,
-      form: cerfa.form.compute(
-        (bound) =>
-          bound && {
-            ...bound,
-            cerfa: {
-              ...bound.cerfa,
-              template: () => charge(bound.cerfa.template),
-            },
-          },
+      places: Object.fromEntries(
+        Object.entries(cerfa.places).map(([cle, endroits]) => [
+          cle,
+          { ...endroits, template: () => charge(endroits.template) },
+        ]),
       ),
     },
   };

@@ -6,7 +6,7 @@
 // Un service : la simulation s'en sert à chaque étape et pour verrouiller, les
 // use cases sur des réponses données d'un coup.
 
-import type { AnyFaits, CoreModel } from "../model.types.ts";
+import type { AnyFaits, SimulationModel } from "../model.types.ts";
 import {
   type AnsweredQuestionnaire,
   type Answers,
@@ -22,9 +22,9 @@ export class PreconisationService<
   Faits extends AnyFaits = AnyFaits,
   Cibles extends AnyCibles = AnyCibles,
 > {
-  readonly #core: CoreModel<Questions, Faits, Cibles>;
+  readonly #core: SimulationModel<Questions, Faits, Cibles>;
 
-  constructor(core: CoreModel<Questions, Faits, Cibles>) {
+  constructor(core: SimulationModel<Questions, Faits, Cibles>) {
     this.#core = core;
   }
 

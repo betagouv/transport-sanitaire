@@ -24,14 +24,17 @@ import {
 // On vient goûter un thé, et commander un café.
 const venuPourUneBoisson: Model = {
   ...modeleDeTest,
-  intent: given
-    .question("boisson")
-    .answer()
-    .compute((boisson) => {
-      if (boisson.is("the")) return "check";
-      if (boisson.is("cafe")) return "prescribe";
-      return null;
-    }),
+  core: {
+    ...modeleDeTest.core,
+    intent: given
+      .question("boisson")
+      .answer()
+      .compute((boisson) => {
+        if (boisson.is("the")) return "check";
+        if (boisson.is("cafe")) return "prescribe";
+        return null;
+      }),
+  },
 };
 
 async function ouvrirAvecUnJournal() {

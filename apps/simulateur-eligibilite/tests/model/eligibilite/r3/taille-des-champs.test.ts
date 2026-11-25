@@ -6,9 +6,9 @@
 
 import { describe, expect, it } from "vitest";
 import type { CerfaDto } from "../../../../core/socle/cerfa";
-import { DOCUMENTS as CERFAS } from "../../../../front/models/eligibilite/r3/documents";
 import { type BoundCerfa, generateCerfa } from "../../../../front/socle/cerfa";
 import { TYPOGRAPHIC_FIELDS } from "../../../../shared/analytics/typographic-fields.constants";
+import { DOCUMENTS as CERFAS } from "../documents-lies";
 import { gabarit } from "./reponses-du-cerfa";
 
 const COMMUNS = [

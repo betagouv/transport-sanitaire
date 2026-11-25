@@ -49,8 +49,9 @@ const OUVERT_AU_MODELE = [
 ];
 
 // Un nom par modèle : celui de l'éditeur, et le modèle de démonstration. Son
-// métier est dans `core/models/<nom>/` (son résultat compris : ce qu'il lit, ses
-// textes, ses valeurs), son écran dans `front/models/<nom>/`.
+// métier est dans `core/models/<nom>/` (ses résultats compris : ce qu'ils lisent,
+// leurs textes, le document et ses valeurs, le besoin), son écran dans
+// `front/models/<nom>/`.
 const NOMS = readdirSync(join(racine, "front/models"));
 const dossiersDu = (nom: string) =>
   [`core/models/${nom}`, `front/models/${nom}`].filter((dossier) =>

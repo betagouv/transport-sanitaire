@@ -28,7 +28,7 @@ export class FirstResultService {
     const { answers } = simulation;
     const known = FirstResultService.#loading.get(model)?.get(answers);
     if (known) return known;
-    const reading = model.result.reading.in(
+    const reading = model.core.result.reading.in(
       simulation.resultContext(new Date()),
     );
     const result = model.result.content({ reading });

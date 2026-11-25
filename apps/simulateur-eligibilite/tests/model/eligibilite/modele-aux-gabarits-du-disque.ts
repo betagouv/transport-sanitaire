@@ -23,15 +23,14 @@ export const MODELE_AUX_GABARITS_DU_DISQUE: Model = {
   ...model,
   cerfa: {
     ...model.cerfa,
-    form: model.cerfa.form.compute(
-      (bound) =>
-        bound && {
-          ...bound,
-          cerfa: {
-            ...bound.cerfa,
-            template: () => gabarit(supportDe(bound.cerfa.fileName)),
-          },
+    places: Object.fromEntries(
+      Object.entries(model.cerfa.places).map(([support, cerfa]) => [
+        support,
+        {
+          ...cerfa,
+          template: () => gabarit(supportDe(cerfa.fileName)),
         },
+      ]),
     ),
   },
 };

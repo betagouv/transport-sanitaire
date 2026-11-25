@@ -24,11 +24,14 @@ const COMPLETER = "Compléter la commande";
 
 const avec = (changement: {
   core?: Partial<Model["core"]>;
-  second?: Partial<Model["cerfa"]>;
+  second?: Partial<Model["core"]["cerfa"]>;
 }): Model => ({
   ...modeleDeTest,
-  core: { ...modeleDeTest.core, ...changement.core },
-  cerfa: { ...modeleDeTest.cerfa, ...changement.second },
+  core: {
+    ...modeleDeTest.core,
+    ...changement.core,
+    cerfa: { ...modeleDeTest.core.cerfa, ...changement.second },
+  },
 });
 
 const etape = (n: number, sur: number) =>
@@ -73,7 +76,7 @@ describe("les boutons du premier résultat", () => {
   it("ne verrouillent pas vers une partie sans page ni cerfa", async () => {
     const modele = avec({
       core: { complement: { ...modeleDeTest.core.complement, pages: [] } },
-      second: { form: Reading.constant(null) },
+      second: { document: Reading.constant(null) },
     });
     const user = await ouvrirLeSimulateur({ modele });
     await allerAuResultat(user);

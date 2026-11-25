@@ -6,7 +6,7 @@
 
 import { describe, expect, it } from "vitest";
 import { page, QuestionFactory } from "../../../core/socle";
-import type { CoreModel } from "../../../core/socle/model.types";
+import type { SimulationModel } from "../../../core/socle/model.types";
 import type {
   Answers,
   Page,
@@ -24,7 +24,7 @@ const AGENDA = page(
   question.datetime("rendezVous", "À quelle heure ?"),
 );
 
-const core: CoreModel = {
+const core: SimulationModel = {
   preconisation: { faits: () => ({}), cibles: () => ({}), reads: new Map() },
   questionnaire: [
     { id: "partie", title: "Partie", pages: [AGENDA] as Page[] },

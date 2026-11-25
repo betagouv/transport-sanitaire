@@ -6,8 +6,8 @@ import { describe, expect, it } from "vitest";
 import { CerfaDtoService } from "../../../../core/socle/cerfa";
 import { Simulation } from "../../../../core/socle/simulation";
 import { model } from "../../../../front/models/eligibilite";
-import { DOCUMENTS } from "../../../../front/models/eligibilite/r3/documents";
 import { textsOn } from "../../../socle/cerfa/pdf-aplati";
+import { DOCUMENTS } from "../documents-lies";
 import {
   donnees,
   EXAMEN_DE_MATERNITE,

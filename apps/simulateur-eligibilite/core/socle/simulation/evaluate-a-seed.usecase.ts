@@ -4,7 +4,7 @@
 // attendus, et à l'écran des seeds, qui permet de l'ouvrir.
 
 import type { CibleValues } from "../decision-engine/index.ts";
-import type { CoreModel } from "../model.types.ts";
+import type { SimulationModel } from "../model.types.ts";
 import type {
   Answers,
   AnyCibles,
@@ -55,7 +55,7 @@ export type SeedEvaluation = {
 export class EvaluateASeed {
   readonly #preconisation: PreconisationService;
 
-  constructor(model: CoreModel) {
+  constructor(model: SimulationModel) {
     this.#preconisation = new PreconisationService(model);
   }
 

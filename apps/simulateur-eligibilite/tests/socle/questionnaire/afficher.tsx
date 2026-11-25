@@ -4,7 +4,7 @@
 import { render } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { useState } from "react";
-import type { CoreModel } from "../../../core/socle/model.types";
+import type { SimulationModel } from "../../../core/socle/model.types";
 import type {
   Answers,
   AnyCibles,
@@ -66,7 +66,7 @@ const PARTIE = { id: "partie", title: "Partie" };
 function modeleDe(
   pages: readonly Page[],
   apresVerrou?: ApresVerrou,
-): CoreModel {
+): SimulationModel {
   const partie = { ...PARTIE, pages } as QuestionnairePart;
   return {
     preconisation: { faits: () => ({}), cibles: () => ({}), reads: new Map() },
@@ -87,7 +87,7 @@ function Formulaire({
   onComplete,
   onRestart,
 }: {
-  core: CoreModel;
+  core: SimulationModel;
   depart: Simulation;
   onComplete: (answers: Answers) => void;
   onRestart: () => void;

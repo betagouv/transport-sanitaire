@@ -20,7 +20,8 @@ export {
   unFait,
 } from "./decision-engine/index.ts";
 
-export type { CoreModel, Intent } from "./model.types.ts";
+export { CoreModelFactory } from "./model.factory.ts";
+export type { Intent } from "./model.types.ts";
 export {
   type AddressData,
   type Answered,
