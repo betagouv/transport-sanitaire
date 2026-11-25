@@ -11,7 +11,7 @@ import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { SEEDS } from "../../../../core/models/eligibilite/seeds-catalogue";
 import { model } from "../../../../front/models/eligibilite";
 import { catalogueResultats } from "../../../../front/models/eligibilite/r2/components/textes-de-l-editeur";
-import { rangerRattachement } from "../../../../front/socle/rattachement";
+import { RattachementSessionService } from "../../../../front/socle/rattachement";
 import {
   detailsDuStepper,
   ouvrirLeSimulateur,
@@ -34,7 +34,7 @@ type User = Awaited<ReturnType<typeof ouvrirLeSimulateur>>;
 let ecoute: ReturnType<typeof ecouterLesTelechargements>;
 
 beforeEach(() => {
-  rangerRattachement(null);
+  RattachementSessionService.ranger(null);
   ecoute = ecouterLesTelechargements();
 });
 

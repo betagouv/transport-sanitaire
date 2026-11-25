@@ -1,8 +1,5 @@
 import { describe, expect, it } from "vitest";
-import {
-  rangerRattachement,
-  rattachementEnSession,
-} from "../../../front/socle/rattachement/rattachement-en-session";
+import { RattachementSessionService } from "../../../front/socle/rattachement/rattachement-session.service";
 import { RattachementDuReferentiel } from "../../../shared/rattachement-du-referentiel.vo";
 
 const rattachement = RattachementDuReferentiel.choisi({
@@ -12,12 +9,12 @@ const rattachement = RattachementDuReferentiel.choisi({
 
 describe("session de rattachement", () => {
   it("conserve le rattachement renseigné", () => {
-    rangerRattachement(rattachement);
-    expect(rattachementEnSession()).toEqual(rattachement);
+    RattachementSessionService.ranger(rattachement);
+    expect(RattachementSessionService.enSession()).toEqual(rattachement);
   });
 
   it("n'a rien tant que personne ne s'est rattaché", () => {
-    rangerRattachement(null);
-    expect(rattachementEnSession()).toBeNull();
+    RattachementSessionService.ranger(null);
+    expect(RattachementSessionService.enSession()).toBeNull();
   });
 });

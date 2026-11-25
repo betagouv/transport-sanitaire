@@ -10,10 +10,9 @@ import type {
   Service,
 } from "../../../shared/referentiel.port";
 import {
-  estEtablissementFourreTout,
   type StructureAffichee,
-  structuresAffichees,
-} from "./structures";
+  StructuresService,
+} from "./structures.service";
 
 export type Listes = {
   etablissements: Etablissement[];
@@ -68,13 +67,14 @@ const TETE_VIDE: Tete = {
 
 async function chargerTete(referentiel: Referentiel): Promise<Tete> {
   const liste = await referentiel.listerEtablissements();
-  const fourreTout = liste.find(estEtablissementFourreTout) ?? null;
+  const fourreTout =
+    liste.find(StructuresService.estEtablissementFourreTout) ?? null;
   const structures = fourreTout
     ? await referentiel.listerServices(fourreTout.id)
     : [];
   return {
     etablissements: triParLibelle(liste.filter((e) => e !== fourreTout)),
-    structures: structuresAffichees(structures),
+    structures: StructuresService.structuresAffichees(structures),
     fourreTout,
   };
 }

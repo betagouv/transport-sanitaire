@@ -15,13 +15,13 @@ import { useState } from "react";
 import { LONGUEUR_MAX_D_UN_NOM } from "../../../shared/rattachement-saisi.vo";
 import type { Referentiel } from "../../../shared/referentiel.port";
 import { Container, SelectField, TextField } from "../ui";
-import { optionsDuChoix } from "./choix";
+import { ChoixService } from "./choix.service";
 import type {
   Derivation,
   SaisieRattachement,
 } from "./saisie-rattachement.hook";
 import { useSaisieRattachement } from "./saisie-rattachement.hook";
-import type { Structure } from "./structures";
+import type { Structure } from "./structures.service";
 
 type Props = {
   referentiel: Referentiel;
@@ -130,7 +130,10 @@ function ChoixField({ saisie, modifier }: FieldsProps) {
       label="Établissement"
       placeholder="Sélectionnez un établissement"
       value={saisie.champs.choix}
-      options={optionsDuChoix(saisie.etablissements, saisie.structures)}
+      options={ChoixService.optionsDuChoix(
+        saisie.etablissements,
+        saisie.structures,
+      )}
       onChange={(v) => modifier("choix", v)}
     />
   );

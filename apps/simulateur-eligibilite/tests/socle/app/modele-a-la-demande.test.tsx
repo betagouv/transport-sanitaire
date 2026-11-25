@@ -6,7 +6,7 @@ import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it } from "vitest";
 import { App } from "../../../front/socle/app/App";
 import type { Model } from "../../../front/socle/model.types";
-import { rangerRattachement } from "../../../front/socle/rattachement";
+import { RattachementSessionService } from "../../../front/socle/rattachement";
 import { snapshotReferentiel } from "../../../shared/snapshot-referentiel.adapter";
 import { modeleDeTest, seulModele } from "../modele-de-test";
 import { seRattacher } from "../se-rattacher";
@@ -28,7 +28,7 @@ function chargement() {
   return { user, resolve, reject };
 }
 
-beforeEach(() => rangerRattachement(null));
+beforeEach(() => RattachementSessionService.ranger(null));
 
 describe("le modèle chargé à la demande", () => {
   it("laisse se rattacher avant d'être arrivé", async () => {

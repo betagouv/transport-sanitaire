@@ -4,7 +4,7 @@
 // Le rattachement se lit ici, en session : il ne transite pas par le
 // simulateur, qui ignore qui prescrit.
 
-import { rattachementEnSession } from "../rattachement";
+import { RattachementSessionService } from "../rattachement";
 import type { AldVerdict } from "./audience-event.entity";
 import { useAnalyticsUseCases } from "./use-cases-in-the-tree.hook";
 
@@ -17,6 +17,6 @@ export function useAldResultReached(): AldResultReached {
     useCases?.reachAnAldResult.execute(
       verdict,
       questions,
-      rattachementEnSession(),
+      RattachementSessionService.enSession(),
     );
 }

@@ -7,9 +7,9 @@
 import { useMemo } from "react";
 import type { Referentiel } from "../../../shared/referentiel.port";
 import { RattachementForm } from "./RattachementForm";
-import { rangerRattachement } from "./rattachement-en-session";
+import { RattachementSessionService } from "./rattachement-session.service";
 import { RegisterTheRattachement } from "./register-the-rattachement.usecase";
-import type { Structure } from "./structures";
+import type { Structure } from "./structures.service";
 
 type Props = {
   // Celui du serveur, donné par le conteneur ; les tests passent le leur.
@@ -28,7 +28,7 @@ export function RattachementScreen({ referentiel, onRattache }: Props) {
     <RattachementForm
       referentiel={referentiel}
       onValide={async (saisie, structure) => {
-        rangerRattachement(await enregistrement.execute(saisie));
+        RattachementSessionService.ranger(await enregistrement.execute(saisie));
         onRattache(structure);
       }}
     />

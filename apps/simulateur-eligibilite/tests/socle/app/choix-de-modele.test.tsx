@@ -8,7 +8,7 @@ import { beforeEach, describe, expect, it } from "vitest";
 import { page, QuestionFactory } from "../../../core/socle";
 import { App } from "../../../front/socle/app/App";
 import type { Model } from "../../../front/socle/model.types";
-import { rangerRattachement } from "../../../front/socle/rattachement";
+import { RattachementSessionService } from "../../../front/socle/rattachement";
 import { snapshotReferentiel } from "../../../shared/snapshot-referentiel.adapter";
 import { modeleDeTest } from "../modele-de-test";
 import { seRattacher } from "../se-rattacher";
@@ -63,7 +63,7 @@ const choix = (name: string, pressed = false) =>
 const ouvrirLesDesserts = async (user: User) =>
   user.click(await choix(CARTE_DES_DESSERTS));
 
-beforeEach(() => rangerRattachement(null));
+beforeEach(() => RattachementSessionService.ranger(null));
 
 describe("le choix du modèle", () => {
   it("n'est pas proposé sur un build de production", async () => {

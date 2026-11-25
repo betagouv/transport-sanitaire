@@ -10,7 +10,7 @@ import { SEEDS } from "../../../../core/models/eligibilite/seeds-catalogue";
 import type { Seed } from "../../../../core/socle/simulation";
 import { model } from "../../../../front/models/eligibilite";
 import { catalogueResultats } from "../../../../front/models/eligibilite/r2/components/textes-de-l-editeur";
-import { rangerRattachement } from "../../../../front/socle/rattachement";
+import { RattachementSessionService } from "../../../../front/socle/rattachement";
 import {
   detailsDuStepper,
   ouvrirLeSimulateur,
@@ -21,7 +21,7 @@ import { PATIENT_SEUL } from "../p2/reponses-de-la-permission";
 // pas ses 900 ko.
 await catalogueResultats();
 
-beforeEach(() => rangerRattachement(null));
+beforeEach(() => RattachementSessionService.ranger(null));
 
 describe("le stepper des parties du modèle de l'éditeur", () => {
   it("titre P0 « Mon besoin », et annonce P1", async () => {
