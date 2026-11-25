@@ -150,6 +150,8 @@ core/                    le métier, sans React ni DOM : ce qu'un serveur ou un 
       cibles/            les cibles, et leur évaluation par les règles publicodes
       rules/             le livrable de l'éditeur : le YAML, sa `VERSION`, le catalogue
                          des textes de R2, et les JSON que `pnpm regles` en calcule
+      r2/                ce que dit le premier résultat : ses lectures, son `ResultatR2` (une
+                         donnée) et ses textes, par cas, et le chargement du catalogue
       r3/                ce que dit le second résultat : le choix du document et les valeurs de
                          chaque cerfa (`s3138g.ts`, `s3139h.ts`, `s3141.ts`, `rubriques/`)
       seeds-catalogue.ts les situations de référence du modèle
@@ -162,7 +164,7 @@ core/                    le métier, sans React ni DOM : ce qu'un serveur ou un 
 front/                   le front, bundlé par Vite
   main.tsx, container.ts le point d'entrée, et ce qui parle à l'extérieur
   models/                l'écran de chaque modèle, chargé à la demande
-    eligibilite/r2/      le premier résultat
+    eligibilite/r2/      le premier résultat : la page de chaque cas du `ResultatR2`
     eligibilite/r3/      le second résultat : les gabarits des cerfa, et où chaque champ s'écrit
   socle/
     app/                 le choix de l'écran, la navigation, le pied de page

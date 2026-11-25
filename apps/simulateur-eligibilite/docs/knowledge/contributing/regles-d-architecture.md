@@ -51,10 +51,12 @@ le jour où ces gardes sont réécrites sur la nouvelle interface du compilateur
 Ce qui sert à calculer (une question, un fait, une cible, une seed) va dans
 `core/`. Le résultat d'un modèle aussi : ce qu'il lit, ses textes et ses valeurs
 sont du métier, dans `core/models/<nom>/r2/` et `r3/`. Ce qui le montre (un
-composant, une mise en page, un PDF) va dans `front/`. R3 est entièrement
-coupé : les valeurs de chaque cerfa sont dans `core/models/<nom>/r3/`, les
-endroits où elles s'écrivent dans `front/models/<nom>/r3/`. Une partie de R2
-reste encore dans `front/models/<nom>/r2/`.
+composant, une mise en page, un PDF) va dans `front/`. R2 et R3 sont entièrement
+coupés. Le résultat de R2 est une donnée, `ResultatR2`, que
+`core/models/<nom>/r2/` calcule : un cas, et ses textes, sans React. Son écran
+(`front/models/<nom>/r2/`) en fait la page, un cas après l'autre. Les valeurs de
+chaque cerfa de R3 sont dans `core/models/<nom>/r3/`, les endroits où elles
+s'écrivent dans `front/models/<nom>/r3/`.
 
 *Gardé par* `tests/frontieres-des-racines.test.ts` (les cinq frontières) et
 `tests/architecture.test.ts › invariants métier › le simulateur ignore qui
