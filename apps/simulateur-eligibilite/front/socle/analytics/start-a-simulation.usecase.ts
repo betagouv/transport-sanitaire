@@ -9,7 +9,7 @@
 import type {
   Provenance,
   RattachementDuParcours,
-} from "../../../shared/analytics/analytics-event";
+} from "../../../shared/analytics/analytics-event.types";
 import type { RattachementDuReferentiel } from "../../../shared/rattachement-du-referentiel.vo";
 import type { Journal } from "./journal.port";
 import { Journey } from "./journey.entity";

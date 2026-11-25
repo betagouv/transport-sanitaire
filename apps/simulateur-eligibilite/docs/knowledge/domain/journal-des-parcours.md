@@ -176,7 +176,7 @@ impressions par `document_id`. `expected_field_ids` nomme les champs remplis,
 mesurer.
 
 - Un champ se nomme par l'identifiant de la liste fermée de l'éditeur,
-  `<support>.<champ>` (`shared/analytics/typographic-fields.ts`). Les deux
+  `<support>.<champ>` (`shared/analytics/typographic-fields.constants.ts`). Les deux
   parties d'une adresse de départ ou d'arrivée sont un seul champ,
   `*_adresse_native`. Les cases n'en sont pas.
 - `font_size_pt` est la taille où le texte s'imprime après le calcul qui le fait

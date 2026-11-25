@@ -1,7 +1,7 @@
 // Signaler au journal ce que le prescripteur est venu faire, une seule fois
 // par simulation : son premier choix validé.
 
-import type { AnalyticsIntent } from "../../../shared/analytics/analytics-event";
+import type { AnalyticsIntent } from "../../../shared/analytics/analytics-event.constants";
 import type { Journal } from "./journal.port";
 import type { Journey } from "./journey.entity";
 

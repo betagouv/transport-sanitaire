@@ -5,10 +5,8 @@
 // retiré puis offert de nouveau, en ouvre une nouvelle. Un clic part avec
 // l'exposition courante de son bouton, si l'écran le montre encore à sa place.
 
-import type {
-  EventDetails,
-  Screen,
-} from "../../../shared/analytics/analytics-event";
+import type { Screen } from "../../../shared/analytics/analytics-event.constants";
+import type { EventDetails } from "../../../shared/analytics/analytics-event.types";
 import { ButtonExposure } from "./button-exposure.entity";
 import { type Button, ButtonPlace, type ExposedOn } from "./button-place.vo";
 

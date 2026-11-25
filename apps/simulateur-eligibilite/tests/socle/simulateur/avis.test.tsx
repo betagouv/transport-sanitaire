@@ -7,7 +7,7 @@
 import { screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 import { Reading } from "../../../core/socle";
-import type { Intent, Model } from "../../../front/socle/model";
+import type { Intent, Model } from "../../../front/socle/model.types";
 import { modeleDeTest } from "../modele-de-test";
 import { auGabarit, gabaritRetenu } from "./gabarit-retenu";
 import {

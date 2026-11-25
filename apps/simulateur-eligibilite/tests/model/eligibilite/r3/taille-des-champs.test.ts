@@ -13,7 +13,7 @@ import {
   type CerfaDto,
   generateCerfa,
 } from "../../../../front/socle/cerfa";
-import { TYPOGRAPHIC_FIELDS } from "../../../../shared/analytics/typographic-fields";
+import { TYPOGRAPHIC_FIELDS } from "../../../../shared/analytics/typographic-fields.constants";
 import { gabarit } from "./reponses-du-cerfa";
 
 const COMMUNS = [

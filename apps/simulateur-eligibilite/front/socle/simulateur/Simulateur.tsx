@@ -20,7 +20,7 @@ import {
   useRecordTheJourney,
 } from "../analytics";
 import { useTextCounters } from "../cerfa";
-import type { Model } from "../model";
+import type { Model } from "../model.types";
 import { type DebugTraceProps, QuestionnaireForm } from "../questionnaire";
 import { AldPathwayService } from "./ald-pathway.service";
 import { useFollowTheAddress } from "./follow-the-address.hook";

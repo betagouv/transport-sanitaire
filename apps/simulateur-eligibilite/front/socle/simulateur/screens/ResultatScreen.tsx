@@ -16,7 +16,7 @@ import {
   useResultTracking,
 } from "../../analytics";
 import type { PdfSignals } from "../../cerfa";
-import type { FirstResult, Model } from "../../model";
+import type { FirstResult, Model } from "../../model.types";
 import { NextStep, Stepper } from "../../questionnaire";
 import { SecondaryButton } from "../../ui";
 import type { ScreenProps } from "../Simulateur";

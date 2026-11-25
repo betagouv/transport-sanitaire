@@ -8,7 +8,7 @@
 import { screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 import { Reading } from "../../../core/socle";
-import type { FirstResult, Model } from "../../../front/socle/model";
+import type { FirstResult, Model } from "../../../front/socle/model.types";
 import { modeleDeTest } from "../modele-de-test";
 import {
   allerAuResultat,

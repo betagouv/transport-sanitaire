@@ -3,7 +3,7 @@
 // rattaché à l'exposition courante de son bouton.
 
 import { describe, expect, it } from "vitest";
-import type { AnalyticsEvent } from "../../../shared/analytics/analytics-event";
+import type { AnalyticsEvent } from "../../../shared/analytics/analytics-event.types";
 import {
   afficherLeR2,
   BOUTONS_DE_LA_FICHE,

@@ -3,7 +3,7 @@
 // texte de R3, qui l'attend, s'affiche.
 
 import { model } from "../../../front/models/eligibilite";
-import type { Model } from "../../../front/socle/model";
+import type { Model } from "../../../front/socle/model.types";
 import { gabarit } from "./r3/reponses-du-cerfa";
 
 // Le gabarit de chaque cerfa, par le début du nom de son fichier.

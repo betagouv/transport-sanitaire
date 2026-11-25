@@ -14,7 +14,7 @@
 
 import { useLayoutEffect, useRef } from "react";
 import type { Simulation } from "../../../core/socle/simulation";
-import type { Model } from "../model";
+import type { Model } from "../model.types";
 import { rattachementEnSession } from "../rattachement";
 import type { Journey } from "./journey.entity";
 import {

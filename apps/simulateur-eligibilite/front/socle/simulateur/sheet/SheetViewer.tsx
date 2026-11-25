@@ -8,7 +8,7 @@
 
 import { useRef, useState } from "react";
 import { PdfActionButton, type PdfSignals } from "../../cerfa";
-import type { Sheet } from "../../model";
+import type { Sheet } from "../../model.types";
 import { useSheetDownload } from "./download-the-sheet.hook";
 import assuranceMaladie from "./logos/assurance-maladie.svg";
 import ministere from "./logos/ministere-de-la-sante.svg";

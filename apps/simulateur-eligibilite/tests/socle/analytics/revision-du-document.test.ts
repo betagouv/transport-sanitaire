@@ -6,7 +6,7 @@
 
 import { describe, expect, it } from "vitest";
 import type { Journey } from "../../../front/socle/analytics/journey.entity";
-import type { AnalyticsEvent } from "../../../shared/analytics/analytics-event";
+import type { AnalyticsEvent } from "../../../shared/analytics/analytics-event.types";
 import {
   afficherLeR3,
   BOUTONS_DU_DOCUMENT,

@@ -1,7 +1,7 @@
 import { resolveObjectURL } from "node:buffer";
 import { screen, waitFor } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import type { Model } from "../../../front/socle/model";
+import type { Model } from "../../../front/socle/model.types";
 import { drawnOn } from "../cerfa/pdf-aplati";
 import { auGabarit, gabaritRetenu } from "./gabarit-retenu";
 import { allerAuCerfa, bouton, ouvrirLeSimulateur } from "./questionnaire";

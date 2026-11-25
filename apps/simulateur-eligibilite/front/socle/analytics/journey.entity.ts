@@ -10,13 +10,15 @@
 // restent, et leurs clics s'y rattachent.
 
 import type {
-  AnalyticsEvent,
   AnalyticsIntent,
   ClosureReason,
-  EventDetails,
   Phase,
+} from "../../../shared/analytics/analytics-event.constants";
+import type {
+  AnalyticsEvent,
+  EventDetails,
   Provenance,
-} from "../../../shared/analytics/analytics-event";
+} from "../../../shared/analytics/analytics-event.types";
 import type { Button, ExposedOn } from "./button-place.vo";
 import type { DocumentContent } from "./document-version.entity";
 import { EventSequence, type NothingToRecord } from "./event-sequence.entity";

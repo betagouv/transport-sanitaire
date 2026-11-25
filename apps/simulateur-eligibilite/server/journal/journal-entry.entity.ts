@@ -4,10 +4,8 @@
 // ADR-0042.
 
 import { isDeepStrictEqual } from "node:util";
-import {
-  type AnalyticsEvent,
-  SCHEMA_VERSION,
-} from "../../shared/analytics/analytics-event.ts";
+import { SCHEMA_VERSION } from "../../shared/analytics/analytics-event.constants.ts";
+import type { AnalyticsEvent } from "../../shared/analytics/analytics-event.types.ts";
 
 /**
  * Ce que le serveur sait de l'app qu'il sert : sa version, et son commit sur 7

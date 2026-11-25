@@ -6,7 +6,7 @@ import {
   Reading,
   ReadingFactory,
 } from "../../../core/socle";
-import type { Model } from "../../../front/socle/model";
+import type { Model } from "../../../front/socle/model.types";
 import { audienceDeTest, nomsEtValeurs } from "../analytics/audience-de-test";
 import { modeleDeTest } from "../modele-de-test";
 import {

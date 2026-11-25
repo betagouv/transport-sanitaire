@@ -2,7 +2,7 @@
 // demande. Le contrat `Model` reste synchrone : seule son arrivée attend.
 
 import { useEffect, useState } from "react";
-import type { Model } from "../model";
+import type { Model } from "../model.types";
 
 /** Un modèle, ou sa promesse quand il se charge à la demande. */
 export type ModelSource = Model | Promise<Model>;

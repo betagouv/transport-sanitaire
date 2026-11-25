@@ -10,7 +10,7 @@ import {
   Simulation,
 } from "../../../core/socle/simulation";
 
-import type { Model } from "../model";
+import type { Model } from "../model.types";
 import { Container } from "../ui";
 import { type SeedRow, SeedsTable } from "./SeedsTable";
 

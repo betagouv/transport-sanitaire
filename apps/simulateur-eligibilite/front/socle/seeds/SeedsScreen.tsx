@@ -5,7 +5,7 @@
 
 import { lazy, Suspense, useEffect, useState } from "react";
 import type { Seed } from "../../../core/socle/simulation";
-import type { Model } from "../model";
+import type { Model } from "../model.types";
 
 type Props = {
   /** Le modèle dont on rejoue les seeds. */

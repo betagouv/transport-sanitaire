@@ -8,12 +8,14 @@
 
 import {
   type ActivityOrigin,
-  type AnalyticsEvent,
   type ClosureReason,
   CONTRACT_VERSION,
-  type EventDetails,
-  type Provenance,
-} from "../../../shared/analytics/analytics-event";
+} from "../../../shared/analytics/analytics-event.constants";
+import type {
+  AnalyticsEvent,
+  EventDetails,
+  Provenance,
+} from "../../../shared/analytics/analytics-event.types";
 
 /** Rien à garder au journal : le parcours d'une seed, ou une simulation fermée. */
 export type NothingToRecord = null;

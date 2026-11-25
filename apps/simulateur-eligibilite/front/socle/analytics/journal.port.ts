@@ -2,7 +2,7 @@
 // garder ses événements. Le backend en est l'adaptateur
 // (`server-journal.adapter.ts`). Voir ADR-0042.
 
-import type { AnalyticsEvent } from "../../../shared/analytics/analytics-event";
+import type { AnalyticsEvent } from "../../../shared/analytics/analytics-event.types";
 
 export interface Journal {
   record(event: AnalyticsEvent): Promise<void>;

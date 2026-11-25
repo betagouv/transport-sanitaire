@@ -5,10 +5,8 @@
 import { describe, expect, it } from "vitest";
 import type { Typography } from "../../../front/socle/analytics/document-version.entity";
 import { Journey } from "../../../front/socle/analytics/journey.entity";
-import type {
-  AnalyticsEvent,
-  Support,
-} from "../../../shared/analytics/analytics-event";
+import type { Support } from "../../../shared/analytics/analytics-event.constants";
+import type { AnalyticsEvent } from "../../../shared/analytics/analytics-event.types";
 import { PROVENANCE } from "./journal-de-test";
 
 // Le R2 affiché d'une PMT : ses codes, sans motif.

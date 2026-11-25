@@ -3,10 +3,8 @@
 // (R13), ses versions et leurs tailles imprimées, et les versions de la fiche
 // patient. `Journey` les numérote dans l'ordre du parcours.
 
-import type {
-  EventDetails,
-  Screen,
-} from "../../../shared/analytics/analytics-event";
+import type { Screen } from "../../../shared/analytics/analytics-event.constants";
+import type { EventDetails } from "../../../shared/analytics/analytics-event.types";
 import type { Button, ExposedOn } from "./button-place.vo";
 import { DocumentRevision } from "./document-revision.entity";
 import {

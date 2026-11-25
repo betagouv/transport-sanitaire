@@ -8,13 +8,13 @@
 // sous leur version et la révision du document (R13).
 
 import type {
-  AnalyticsEvent,
   Issue,
   Mode,
   Support,
   TransportComposition,
-} from "../../../shared/analytics/analytics-event";
-import { isDocumentSupport } from "../../../shared/analytics/typographic-fields";
+} from "../../../shared/analytics/analytics-event.constants";
+import type { AnalyticsEvent } from "../../../shared/analytics/analytics-event.types";
+import { isDocumentSupport } from "../../../shared/analytics/typographic-fields.constants";
 import type { ShownDocument, Typography } from "./document-version.entity";
 
 /** Ce que le prescripteur a vu au premier résultat. */

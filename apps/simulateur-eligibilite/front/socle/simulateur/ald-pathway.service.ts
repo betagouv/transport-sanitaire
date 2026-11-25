@@ -5,7 +5,7 @@
 
 import type { Simulation } from "../../../core/socle/simulation";
 import { type AldVerdict, EventName } from "../analytics";
-import type { AldIndicator, Model } from "../model";
+import type { AldIndicator, Model } from "../model.types";
 
 /**
  * Le verdict d'un parcours ALD, et ce qu'il a posé de pages et de questions

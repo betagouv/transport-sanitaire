@@ -32,6 +32,8 @@ const ROLES = [
   "error",
   "factory",
   "types",
+  "constants",
+  "schema",
   "controller",
   "hook",
   "client",
@@ -73,7 +75,7 @@ describe("un fichier dit son rôle par son suffixe", () => {
       fautifs,
       "Une fabrique porte le nom de ce qu'elle fabrique, et vit dans son " +
         "dossier (QUAL-018) : `question.factory.ts` à côté de " +
-        "`question.vo.ts`. Qui cherche comment naît une notion regarde à côté " +
+        "`question.vo.ts`, ou `model.factory.ts` à côté de `model.types.ts`. Qui cherche comment naît une notion regarde à côté " +
         "d'elle.",
     ).toEqual([]);
   });
@@ -98,7 +100,7 @@ function exporteUneValeur(instruction: ts.Statement): boolean {
 
 function aCoteDeSonProduit(fabrique: string): boolean {
   const produit = basename(fabrique, ".factory.ts");
-  return ["vo", "entity"].some((role) =>
+  return ["vo", "entity", "types"].some((role) =>
     existsSync(join(racine, dirname(fabrique), `${produit}.${role}.ts`)),
   );
 }

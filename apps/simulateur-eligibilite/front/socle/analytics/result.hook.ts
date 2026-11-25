@@ -3,7 +3,7 @@
 // leurs clics. Ce qui part ou non est décidé par `Journey`.
 
 import { useEffect } from "react";
-import type { FirstResult } from "../model";
+import type { FirstResult } from "../model.types";
 import { type ButtonTracking, useButtonTracking } from "./button.hook";
 import type { Button } from "./button-place.vo";
 import type { ResultCodes } from "./revision.entity";
