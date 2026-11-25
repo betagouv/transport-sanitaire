@@ -196,7 +196,7 @@ se pose (`appliesWhen`, `mattersWhile`) et de quelles réponses elle dépend (`d
   qu'en local, sous le serveur de dev et sous les tests, quel que soit le service
   choisi : staging et production n'atteignent ni la démonstration ni les seeds. Seule la
   trace de debug s'y ouvre, pour la structure « Assurance Maladie »
-  (`front/socle/developer-tools/unlock.ts`).
+  (`front/socle/developer-tools/unlock.service.ts`).
 - **Les tests du socle** tournent sur leur propre modèle factice
   (`tests/socle/fixtures/modele-factice/`), petit et figé : ils ne changent ni quand
   l'éditeur livre une version, ni quand la démonstration gagne une page.
