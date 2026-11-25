@@ -10,11 +10,10 @@
 // rubrique (`texte-medical.test.ts`).
 
 import { describe, expect, it } from "vitest";
-import { S3138G } from "../../../../front/models/eligibilite/r3/s3138g/s3138g";
-import { S3139H } from "../../../../front/models/eligibilite/r3/s3139h/s3139h";
+import { CerfaDtoService } from "../../../../core/socle/cerfa";
+import { DOCUMENTS } from "../../../../front/models/eligibilite/r3/documents";
 import {
   type BoundCerfa,
-  CerfaDtoService,
   generateCerfa,
   type Overflowing,
 } from "../../../../front/socle/cerfa";
@@ -52,12 +51,12 @@ type Support = {
 };
 
 const LA_PMT: Support = {
-  ...{ nom: "S3138g", cerfa: S3138G, reponses: PMT, cibles: {} },
+  ...{ nom: "S3138g", cerfa: DOCUMENTS.S3138g, reponses: PMT, cibles: {} },
   ...{ case: "ALD exo", etat: "NON", volets: [3, 4], medical: 3 },
 };
 // La DAP d'une série, sans avion ni bateau.
 const LA_DAP: Support = {
-  ...{ nom: "S3139h", cerfa: S3139H, reponses: DAP, cibles: SERIE },
+  ...{ nom: "S3139h", cerfa: DOCUMENTS.S3139h, reponses: DAP, cibles: SERIE },
   ...{ case: "sit", etat: "ald", volets: [2, 3, 4], medical: 2 },
 };
 const SUPPORTS = [LA_PMT, LA_DAP];

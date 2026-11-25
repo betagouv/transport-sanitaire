@@ -7,11 +7,8 @@ export { CerfaFactory } from "./cerfa.factory";
 export type {
   BoundCerfa,
   Cerfa,
-  CerfaDto,
-  CerfaMapping,
   StrictOptions,
 } from "./cerfa.types";
-export { CerfaDtoService } from "./cerfa-dto.service";
 export {
   type GeneratedCerfa,
   generateCerfa,

@@ -6,6 +6,11 @@
 // L'écran a son propre point d'entrée, `front/socle/index.ts`.
 
 export {
+  type CerfaDto,
+  CerfaDtoService,
+  type CerfaMapping,
+} from "./cerfa/index.ts";
+export {
   Cible,
   type DecisionGraphData,
   Fait,

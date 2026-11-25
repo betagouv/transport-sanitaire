@@ -6,12 +6,9 @@
 // avec la page du soin (`soin-et-urgence.test.ts`).
 
 import { describe, expect, it } from "vitest";
-import { S3138G } from "../../../../front/models/eligibilite/r3/s3138g/s3138g";
-import { S3139H } from "../../../../front/models/eligibilite/r3/s3139h/s3139h";
-import {
-  type BoundCerfa,
-  CerfaDtoService,
-} from "../../../../front/socle/cerfa";
+import { CerfaDtoService } from "../../../../core/socle/cerfa";
+import { DOCUMENTS } from "../../../../front/models/eligibilite/r3/documents";
+import type { BoundCerfa } from "../../../../front/socle/cerfa";
 import { markedStates, textsOn } from "../../../socle/cerfa/pdf-aplati";
 import {
   DAP,
@@ -36,11 +33,11 @@ type Support = {
 
 const SUPPORTS: readonly Support[] = [
   {
-    ...{ nom: "S3138g", cerfa: S3138G, reponses: PMT },
+    ...{ nom: "S3138g", cerfa: DOCUMENTS.S3138g, reponses: PMT },
     ...{ case: "transp autre cent", etat: "On", volets: [3, 4], medical: 3 },
   },
   {
-    ...{ nom: "S3139h", cerfa: S3139H, reponses: DAP },
+    ...{ nom: "S3139h", cerfa: DOCUMENTS.S3139h, reponses: DAP },
     ...{ case: "malrare", etat: "Oui", volets: [2, 3, 4], medical: 2 },
   },
 ];

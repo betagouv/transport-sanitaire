@@ -11,7 +11,7 @@ import { NOMBRE } from "../../../../core/models/eligibilite/r3/rubriques/nombre"
 import {
   PRECISION_DE_L_URGENCE,
   URGENCE,
-} from "../../../../front/models/eligibilite/r3/rubriques/urgence";
+} from "../../../../core/models/eligibilite/r3/rubriques/urgence";
 import { MINEUR } from "../p2/reponses-de-la-permission";
 import { cellules, PMT, type Reponses } from "./reponses-du-cerfa";
 

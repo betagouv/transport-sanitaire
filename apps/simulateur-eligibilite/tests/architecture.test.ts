@@ -28,9 +28,9 @@ const PARCOURS = [
   "core/socle/questionnaire-engine",
 ];
 
-// Le moteur de questionnaire, par son index : ce que le cerfa connaît du socle,
-// pour la valeur que lit son mapping.
-const VALEUR_LUE = "core/socle/questionnaire-engine";
+// Le module cerfa du métier, par son index : ce que le cerfa de l'écran
+// connaît du métier, le DTO qu'il remplit.
+const DTO_DU_METIER = "core/socle/cerfa";
 
 // Le socle, à l'écran et dans le métier.
 const SOCLE = ["front/socle", "core/socle"];
@@ -212,11 +212,11 @@ describe("invariants métier", () => {
       franchissements(
         ["front/socle/cerfa"],
         (cible) =>
-          !cible.startsWith("front/socle/cerfa/") && cible !== VALEUR_LUE,
+          !cible.startsWith("front/socle/cerfa/") && cible !== DTO_DU_METIER,
       ),
       "Remplir un cerfa ne dépend pas du simulateur : il reçoit ses données, " +
-        "d'où qu'elles viennent, et un mapping qui les lit, en valeurs du " +
-        `socle (\`${VALEUR_LUE}\`). Le simulateur branche le cerfa, jamais ` +
+        "d'où qu'elles viennent, et ne connaît du métier que le type de ce " +
+        `DTO (\`${DTO_DU_METIER}\`). Le simulateur branche le cerfa, jamais ` +
         "l'inverse. Passe ce qui lui manque en paramètre, ou rends le type " +
         "générique.",
     ).toEqual([]);

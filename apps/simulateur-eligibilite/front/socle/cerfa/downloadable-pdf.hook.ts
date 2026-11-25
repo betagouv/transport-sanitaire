@@ -5,7 +5,8 @@
 // (`useAwaitedAction`). Le document quitté entre-temps ne fait plus rien.
 
 import { type RefObject, useEffect, useRef, useState } from "react";
-import type { Cerfa, CerfaDto } from "./cerfa.types";
+import type { CerfaDto } from "../../../core/socle/cerfa";
+import type { Cerfa } from "./cerfa.types";
 import {
   type GeneratedCerfa,
   generateCerfa,

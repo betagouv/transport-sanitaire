@@ -3,8 +3,8 @@
 // cellule se teste avec sa rubrique (`rubriques-du-cerfa.test.ts`).
 
 import { describe, expect, it } from "vitest";
-import { S3141 } from "../../../../front/models/eligibilite/r3/s3141/s3141";
-import { CerfaDtoService } from "../../../../front/socle/cerfa";
+import { CerfaDtoService } from "../../../../core/socle/cerfa";
+import { DOCUMENTS } from "../../../../front/models/eligibilite/r3/documents";
 import {
   drawnOn,
   markedStates,
@@ -58,7 +58,7 @@ const PARTIES_D_UN_LIEU = ["depart", "arrivee"].flatMap((extremite) =>
 
 describe("le S3141", () => {
   it("donne à chaque cellule de l'éditeur un champ, ou une raison de rester vide", () => {
-    const portees = Object.keys(S3141.mapping.fields);
+    const portees = Object.keys(DOCUMENTS.S3141.mapping.fields);
     const sansRaison = CELLULES.filter(
       (cellule) =>
         !portees.includes(cellule) &&
@@ -71,7 +71,7 @@ describe("le S3141", () => {
   });
 
   it("ne porte que des cellules de l'éditeur", () => {
-    const portees = Object.keys(S3141.mapping.fields);
+    const portees = Object.keys(DOCUMENTS.S3141.mapping.fields);
 
     expect(portees.filter((cellule) => !CELLULES.includes(cellule))).toEqual(
       [],
@@ -228,6 +228,6 @@ describe("le S3141 de plusieurs permissions", () => {
 
 // Le S3141 de ce parcours, rempli sur son gabarit.
 function rempli(reponses: Reponses): Promise<Uint8Array> {
-  const dto = CerfaDtoService.from(S3141.mapping, donnees(reponses));
-  return genere(S3141.cerfa, "S3141", dto);
+  const dto = CerfaDtoService.from(DOCUMENTS.S3141.mapping, donnees(reponses));
+  return genere(DOCUMENTS.S3141.cerfa, "S3141", dto);
 }

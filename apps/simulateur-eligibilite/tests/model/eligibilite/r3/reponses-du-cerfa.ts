@@ -10,6 +10,7 @@ import type { Faits } from "../../../../core/models/eligibilite/faits/noms";
 import type { Questions } from "../../../../core/models/eligibilite/questions/reponses";
 import type { Rubrique } from "../../../../core/models/eligibilite/r3/rubriques/rubrique";
 import { SEEDS } from "../../../../core/models/eligibilite/seeds-catalogue";
+import type { CerfaDto } from "../../../../core/socle/cerfa";
 import { Cible } from "../../../../core/socle/decision-engine";
 import {
   type Answers,
@@ -19,11 +20,7 @@ import {
   EstablishAPreconisation,
   ResultContext,
 } from "../../../../core/socle/simulation";
-import {
-  type Cerfa,
-  type CerfaDto,
-  generateCerfa,
-} from "../../../../front/socle/cerfa";
+import { type Cerfa, generateCerfa } from "../../../../front/socle/cerfa";
 
 import { racine } from "../../../inspection-des-sources";
 import {

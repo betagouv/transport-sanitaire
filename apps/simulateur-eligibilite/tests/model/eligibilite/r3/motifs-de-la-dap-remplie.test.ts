@@ -4,8 +4,8 @@
 // vérifie dans `s3139h-rempli.test.ts`.
 
 import { describe, expect, it } from "vitest";
-import { S3139H } from "../../../../front/models/eligibilite/r3/s3139h/s3139h";
-import { CerfaDtoService } from "../../../../front/socle/cerfa";
+import { CerfaDtoService } from "../../../../core/socle/cerfa";
+import { DOCUMENTS } from "../../../../front/models/eligibilite/r3/documents";
 import { markedStates, textsOn } from "../../../socle/cerfa/pdf-aplati";
 import type { ValeursDesCibles } from "../r2/traces-du-prescripteur";
 import {
@@ -91,8 +91,11 @@ function rempli(
   reponses: Reponses,
   cibles: ValeursDesCibles = {},
 ): Promise<Uint8Array> {
-  const dto = CerfaDtoService.from(S3139H.mapping, donnees(reponses, cibles));
-  return genere(S3139H.cerfa, "S3139h", dto);
+  const dto = CerfaDtoService.from(
+    DOCUMENTS.S3139h.mapping,
+    donnees(reponses, cibles),
+  );
+  return genere(DOCUMENTS.S3139h.cerfa, "S3139h", dto);
 }
 
 // Les états marqués de la case `champ`, sur la DAP de ce parcours.

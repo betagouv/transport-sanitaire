@@ -5,7 +5,8 @@
 //
 // Sans cerfa, ou tant que la mesure se charge, pas de compteur.
 
-import type { Cerfa, CerfaDto } from "./cerfa.types";
+import type { CerfaDto } from "../../../core/socle/cerfa";
+import type { Cerfa } from "./cerfa.types";
 import { useMeasure } from "./measure.hook";
 import { StrictEntriesService } from "./strict-entries.service";
 import { StrictVerdict } from "./strict-verdict.vo";

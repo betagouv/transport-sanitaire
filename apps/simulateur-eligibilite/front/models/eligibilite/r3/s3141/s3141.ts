@@ -1,9 +1,10 @@
-// Le S3141 : la prescription de transport d'une permission de sortie, pour un
-// patient de moins de 20 ans (Cerfa 3141).
+// Le S3141 côté écran : où chaque entrée de son DTO va dans le gabarit de la
+// prescription de transport d'une permission de sortie, pour un patient de
+// moins de 20 ans (Cerfa 3141). Ce que vaut chaque entrée est dans
+// `core/models/eligibilite/r3/s3141.ts`.
 //
-// Il assemble les rubriques que les cerfa partagent (`r3/rubriques/` du
-// métier) et porte la seule qui lui est propre : la permission. Les noms des champs et leurs
-// états d'export sont ceux du gabarit (`MAPPING_ACROFORM_GABARITS.json`).
+// Les noms des champs et leurs états d'export sont ceux du gabarit
+// (`MAPPING_ACROFORM_GABARITS.json`).
 //
 // Ce qu'il laisse vide :
 //
@@ -20,41 +21,10 @@
 // plutôt les états dans sa copie (`remplir-tiers-s3141.mjs`) ; le cerfa sort
 // aplati, et seule la case visible compte.
 
-import { given } from "../../../../../core/models/eligibilite/questions/reponses";
-import {
-  ACCIDENT,
-  type Accident,
-} from "../../../../../core/models/eligibilite/r3/rubriques/accident";
-import {
-  BENEFICIAIRE,
-  type Beneficiaire,
-} from "../../../../../core/models/eligibilite/r3/rubriques/beneficiaire";
-import {
-  EXONERATION,
-  type Exoneration,
-} from "../../../../../core/models/eligibilite/r3/rubriques/exoneration";
-import {
-  LIENS,
-  type Liens,
-} from "../../../../../core/models/eligibilite/r3/rubriques/liens";
-import {
-  MODE,
-  type Mode,
-} from "../../../../../core/models/eligibilite/r3/rubriques/mode";
-import {
-  PRESCRIPTION,
-  type Prescription,
-} from "../../../../../core/models/eligibilite/r3/rubriques/prescription";
-import type { Rubrique } from "../../../../../core/models/eligibilite/r3/rubriques/rubrique";
-import {
-  TRAJET,
-  type Trajet,
-} from "../../../../../core/models/eligibilite/r3/rubriques/trajet";
+import type { DtoS3141 } from "../../../../../core/models/eligibilite/r3/s3141";
 import {
   type Cerfa,
-  CerfaDtoService,
   CerfaFactory,
-  type CerfaMapping,
   type TypographicFieldId,
   templateAt,
 } from "../../../../socle";
@@ -62,33 +32,8 @@ import gabarit from "../gabarits/S3141.pdf?url";
 
 const { box, date, text } = CerfaFactory;
 
-/**
- * La permission : depuis quand le patient est hospitalisé (Q2.8.1), et, pour
- * plusieurs permissions, leur nombre mensuel de trajets (Q3.1.3) et la fin de
- * leur période (Q2.8.6). Une seule permission laisse ces deux-là vides : ce
- * n'est pas une fréquence.
- */
-type Permission = {
-  /** `AAAA-MM-JJ`. */
-  readonly debut_hospitalisation?: string;
-  readonly nombre?: string;
-  /** `AAAA-MM-JJ`. */
-  readonly periode_fin?: string;
-};
-
-type DtoS3141 = {
-  fields: Accident &
-    Beneficiaire &
-    Permission &
-    Mode &
-    Liens &
-    Trajet &
-    Exoneration &
-    Prescription;
-  drawings: Record<never, never>;
-};
-
-const CERFA: Cerfa<DtoS3141> = {
+/** Le S3141, où chaque entrée de son DTO s'écrit. */
+export const S3141: Cerfa<DtoS3141> = {
   template: templateAt(gabarit),
   fileName: "prescription-de-permission-de-sortie",
   fields: {
@@ -141,36 +86,3 @@ const CERFA: Cerfa<DtoS3141> = {
     date_prescription: "S3141.date_prescription",
   } satisfies Record<string, TypographicFieldId<"S3141">>,
 };
-
-const PERMISSION: Rubrique<Permission> = {
-  debut_hospitalisation: given
-    .question("Q2.8.1")
-    .answer()
-    .compute(({ value }) => value),
-  nombre: given
-    .question("Q3.1.3")
-    .answer()
-    .compute(({ value }) => (value === undefined ? undefined : String(value))),
-  periode_fin: given
-    .question("Q2.8.6")
-    .answer()
-    .compute(({ value }) => value),
-};
-
-// Le DTO du S3141, rubrique par rubrique.
-const VERS_LE_S3141: CerfaMapping<DtoS3141> = {
-  fields: {
-    ...ACCIDENT,
-    ...BENEFICIAIRE,
-    ...PERMISSION,
-    ...MODE,
-    ...LIENS,
-    ...TRAJET,
-    ...EXONERATION,
-    ...PRESCRIPTION,
-  },
-  drawings: {},
-};
-
-/** Le S3141, lié au calcul de son DTO. */
-export const S3141 = CerfaDtoService.link(CERFA, VERS_LE_S3141);

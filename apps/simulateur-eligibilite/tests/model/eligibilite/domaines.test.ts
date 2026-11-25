@@ -24,10 +24,17 @@ const FAITS = `${METIER}/faits`;
 // pages. Les faits eux-mêmes ne lisent aucune partie.
 const EVALUATION_DES_FAITS = `${FAITS}/preconisation.ts`;
 const RUBRIQUES = R3.map((dossier) => `${dossier}/rubriques`);
-// Un dossier par cerfa rempli.
-const CERFA_DE_R3 = ["s3141", "s3138g", "s3139h"].map(
-  (cerfa) => `${ECRAN}/r3/${cerfa}`,
-);
+// Chaque cerfa rempli a deux pieds : ses valeurs au métier (un fichier), ses
+// endroits à l'écran (un dossier). Un fichier se désigne sans son extension,
+// que l'écran n'écrit pas dans ses imports.
+const CERFA_DE_R3 = ["s3141", "s3138g", "s3139h"].map((cerfa) => ({
+  valeurs: `${METIER}/r3/${cerfa}`,
+  endroits: `${ECRAN}/r3/${cerfa}`,
+}));
+const TOUS_LES_CERFA_DE_R3 = CERFA_DE_R3.flatMap((cerfa) => [
+  cerfa.valeurs,
+  cerfa.endroits,
+]);
 // Un cas de R2 : ses issues, ce qu'elles lisent (au métier), leur page (à
 // l'écran).
 const CAS_DE_R2 = ["acceptee", "refusee", "orientee"].map((cas) => [
@@ -38,11 +45,16 @@ const DOSSIERS_DES_CAS = CAS_DE_R2.flat();
 // Ce que les cas partagent : les blocs au métier, les composants à l'écran.
 const BLOCS_DE_R2 = [`${METIER}/r2/blocs`, `${ECRAN}/r2/components`];
 
-// Un dossier contient ce qui commence par son chemin suivi d'un « / ».
+// Un dossier contient ce qui commence par son chemin suivi d'un « / ». Un
+// fichier ne contient que lui, avec ou sans son extension.
 const dans =
-  (...dossiers: string[]) =>
+  (...chemins: string[]) =>
   (cible: string) =>
-    dossiers.some((dossier) => cible.startsWith(`${dossier}/`));
+    chemins.some(
+      (chemin) =>
+        cible.replace(/\.tsx?$/, "") === chemin ||
+        cible.startsWith(`${chemin}/`),
+    );
 
 describe("les domaines du modèle de l'éditeur", () => {
   it("une partie ne lit pas celles qui la suivent", () => {
@@ -99,7 +111,7 @@ describe("les domaines du modèle de l'éditeur", () => {
 
   it("les rubriques des cerfa ne lisent aucun cerfa", () => {
     expect(
-      franchissements(RUBRIQUES, dans(...CERFA_DE_R3)),
+      franchissements(RUBRIQUES, dans(...TOUS_LES_CERFA_DE_R3)),
       "Une rubrique se lit sur les réponses et les cibles, sans savoir quel " +
         "cerfa la reçoit : chaque cerfa assemble celles qu'il porte. Faire " +
         "évoluer ou retirer un cerfa ne touche pas les autres.",
@@ -107,15 +119,18 @@ describe("les domaines du modèle de l'éditeur", () => {
   });
 
   it("les cerfa de R3 ne s'importent pas entre eux", () => {
-    const croisements = CERFA_DE_R3.flatMap((cerfa) =>
+    const croisements = CERFA_DE_R3.flatMap(({ valeurs, endroits }) =>
       franchissements(
-        [cerfa],
-        (cible) => dans(...CERFA_DE_R3)(cible) && !dans(cerfa)(cible),
+        [`${valeurs}.ts`, endroits],
+        (cible) =>
+          dans(...TOUS_LES_CERFA_DE_R3)(cible) &&
+          !dans(valeurs, endroits)(cible),
       ),
     );
     expect(
       croisements,
-      "Ce que deux cerfa partagent est une rubrique, dans `r3/rubriques/`.",
+      "Ce que deux cerfa partagent est une rubrique, dans `r3/rubriques/` : " +
+        "ses valeurs au métier, ses endroits à l'écran.",
     ).toEqual([]);
   });
 });

@@ -6,8 +6,8 @@
 // mineur avec la DAP (`consigne-du-mineur.test.ts`).
 
 import { describe, expect, it } from "vitest";
-import { S3138G } from "../../../../front/models/eligibilite/r3/s3138g/s3138g";
-import { CerfaDtoService } from "../../../../front/socle/cerfa";
+import { CerfaDtoService } from "../../../../core/socle/cerfa";
+import { DOCUMENTS } from "../../../../front/models/eligibilite/r3/documents";
 import {
   drawnOn,
   markedStates,
@@ -67,8 +67,8 @@ const ARRIVEE = "Centre de dialyse, 149 rue de Sèvres, 75015 Paris";
 
 describe("la PMT", () => {
   const portees = [
-    ...Object.keys(S3138G.mapping.fields),
-    ...Object.keys(S3138G.mapping.drawings),
+    ...Object.keys(DOCUMENTS.S3138g.mapping.fields),
+    ...Object.keys(DOCUMENTS.S3138g.mapping.drawings),
   ];
 
   it("donne à chaque cellule de l'éditeur un champ, ou une raison de rester vide", () => {
@@ -239,8 +239,11 @@ function rempli(
   reponses: Reponses,
   cibles: ValeursDesCibles = {},
 ): Promise<Uint8Array> {
-  const dto = CerfaDtoService.from(S3138G.mapping, donnees(reponses, cibles));
-  return genere(S3138G.cerfa, "S3138g", dto);
+  const dto = CerfaDtoService.from(
+    DOCUMENTS.S3138g.mapping,
+    donnees(reponses, cibles),
+  );
+  return genere(DOCUMENTS.S3138g.cerfa, "S3138g", dto);
 }
 
 // Les états marqués de la case `champ`, sur la PMT de ce parcours.

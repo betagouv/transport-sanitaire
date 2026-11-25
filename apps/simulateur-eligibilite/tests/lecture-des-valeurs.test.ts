@@ -29,9 +29,12 @@ const COMPARAISONS = new Set([
 // Les réponses brutes, que le socle donne au calcul des faits et aux gardes de
 // déclaration seulement.
 const REPONSES_BRUTES = /\b(GivenAnswers|ValidatedAnswers)\b/;
-// R2 et R3 d'un modèle : leur calcul est dans `core/models/<nom>/r2|r3/`, leur
-// rendu dans `front/models/<nom>/r2|r3/`.
-const UN_RESULTAT = /^(core|front)\/models\/[^/]+\/r[23](\/|\.tsx?$)/;
+// R2 et R3 d'un modèle : ce qu'ils disent (leurs lectures, leurs valeurs, les
+// cerfa de R3 compris) est dans `core/models/<nom>/r2|r3/`, leur rendu dans
+// `front/models/<nom>/r2|r3/`. Le modèle de démonstration range à plat son
+// rendu : son cerfa est `front/models/fake/bon-de-commande.ts`.
+const UN_RESULTAT =
+  /^(core|front)\/models\/[^/]+\/(r[23](\/|\.tsx?$)|bon-de-commande\.ts$)/;
 
 describe("un fait et une cible se lisent par leurs méthodes", () => {
   it("aucun `.value` d'un fait ou d'une cible n'est comparé", () => {

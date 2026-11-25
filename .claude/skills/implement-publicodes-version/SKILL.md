@@ -55,7 +55,8 @@ Pose au diff ces questions, et montre les réponses avant de coder :
 | Quel contrat réponses/faits change ? | le fichier `.fait.ts` du fait concerné, sous `faits/` |
 | Quelles questions, options ou libellés changent ? | `questions/p1/`, `p2/`, `p3/` (`questions/qN-N.question.ts`, un fichier par question, avec ses options) |
 | Quels textes de R2 changent ? | les attendus des tests `texte-*` de R2 |
-| Quel gabarit ou quel mapping de cerfa change ? | `front/models/eligibilite/r3/` |
+| Quel gabarit de cerfa change ? | `front/models/eligibilite/r3/gabarits/`, et où chaque champ s'écrit dans `front/models/eligibilite/r3/s3138g/`, `s3139h/`, `s3141/` |
+| Quelle valeur d'un cerfa change (le mapping) ? | `core/models/eligibilite/r3/s3138g.ts`, `s3139h.ts`, `s3141.ts` et `rubriques/` |
 
 ## 3. Découper
 

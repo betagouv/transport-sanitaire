@@ -27,8 +27,9 @@
 // qu'il lance, une fois le document prêt, si.
 
 import { type ReactNode, useEffect, useRef } from "react";
+import type { CerfaDto } from "../../../core/socle/cerfa";
 import { CerfaPreview } from "./CerfaPreview";
-import type { Cerfa, CerfaDto, Typography } from "./cerfa.types";
+import type { Cerfa, Typography } from "./cerfa.types";
 import {
   type PdfAction,
   type Pending,

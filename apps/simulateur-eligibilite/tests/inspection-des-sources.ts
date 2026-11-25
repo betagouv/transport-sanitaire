@@ -2,7 +2,7 @@
 // fonctions. `architecture.test.ts` et `lisibilite.test.ts` s'en servent.
 // Aucune assertion ici.
 
-import { existsSync, readdirSync, readFileSync } from "node:fs";
+import { existsSync, readdirSync, readFileSync, statSync } from "node:fs";
 import { dirname, join, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import ts from "typescript";
@@ -11,7 +11,10 @@ export const racine = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 
 export type Fonction = { ligne: number; lignes: number };
 
-/** Tous les fichiers TypeScript d'un dossier, en chemins relatifs à la racine. */
+/**
+ * Tous les fichiers TypeScript d'un dossier, en chemins relatifs à la racine.
+ * Un fichier TypeScript donné à la place d'un dossier ne compte que lui.
+ */
 export function sources(...dossiers: string[]): string[] {
   const trouves: string[] = [];
   const parcourir = (dossier: string) => {
@@ -23,7 +26,10 @@ export function sources(...dossiers: string[]): string[] {
       else if (/\.tsx?$/.test(entree.name)) trouves.push(chemin);
     }
   };
-  for (const dossier of dossiers) parcourir(dossier);
+  for (const chemin of dossiers) {
+    if (statSync(join(racine, chemin)).isDirectory()) parcourir(chemin);
+    else if (/\.tsx?$/.test(chemin)) trouves.push(chemin);
+  }
   return trouves;
 }
 

@@ -51,7 +51,7 @@ Le reste du paquet est **retranscrit** dans le code, selon les règles du dépô
 | le catalogue des questions, leurs options et leurs libellés | un fichier `.question.ts` par question, sous `questions/p1/`, `p2/`, `p3/` (`questions/qN-N.question.ts`) |
 | le contrat réponses/faits (`CONTRAT_REPONSES_FAITS.json` et les contrats qui le précisent) | un fichier `.fait.ts` par fait, sous `faits/` |
 | l'oracle, dans le dossier `tests/` du paquet | `tests/model/eligibilite/`, en faits et en réponses |
-| le mapping des gabarits | les cerfa de `front/models/eligibilite/r3/` |
+| le mapping des gabarits | les valeurs dans `core/models/eligibilite/r3/` (`s3138g.ts`, `s3139h.ts`, `s3141.ts`, `rubriques/`), les champs du gabarit dans les cerfa de `front/models/eligibilite/r3/` |
 
 ## Brancher un fait, une cible ou une question
 

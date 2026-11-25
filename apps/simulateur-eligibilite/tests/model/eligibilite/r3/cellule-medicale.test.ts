@@ -8,11 +8,10 @@
 import { describe, expect, it } from "vitest";
 import type { Faits } from "../../../../core/models/eligibilite/faits/noms";
 import { Fait } from "../../../../core/socle";
-import { S3138G } from "../../../../front/models/eligibilite/r3/s3138g/s3138g";
-import { S3139H } from "../../../../front/models/eligibilite/r3/s3139h/s3139h";
+import { CerfaDtoService } from "../../../../core/socle/cerfa";
+import { DOCUMENTS } from "../../../../front/models/eligibilite/r3/documents";
 import {
   type BoundCerfa,
-  CerfaDtoService,
   generateCerfa,
   type Overflowing,
 } from "../../../../front/socle/cerfa";
@@ -38,12 +37,17 @@ const { "Q3.4.distance": _distance, ...DAP_COURTE } = DAP;
 
 const LA_DAP: Support = {
   nom: "S3139h",
-  cerfa: S3139H,
+  cerfa: DOCUMENTS.S3139h,
   reponses: DAP_COURTE,
   champ: "elmedic",
 };
 const SUPPORTS: readonly Support[] = [
-  { nom: "S3138g", cerfa: S3138G, reponses: PMT, champ: "comm évent" },
+  {
+    nom: "S3138g",
+    cerfa: DOCUMENTS.S3138g,
+    reponses: PMT,
+    champ: "comm évent",
+  },
   LA_DAP,
 ];
 

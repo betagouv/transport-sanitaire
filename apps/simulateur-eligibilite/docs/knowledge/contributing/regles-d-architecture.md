@@ -51,8 +51,10 @@ le jour où ces gardes sont réécrites sur la nouvelle interface du compilateur
 Ce qui sert à calculer (une question, un fait, une cible, une seed) va dans
 `core/`. Le résultat d'un modèle aussi : ce qu'il lit, ses textes et ses valeurs
 sont du métier, dans `core/models/<nom>/r2/` et `r3/`. Ce qui le montre (un
-composant, une mise en page, un PDF) va dans `front/`. Une partie du résultat
-reste encore dans `front/models/<nom>/`.
+composant, une mise en page, un PDF) va dans `front/`. R3 est entièrement
+coupé : les valeurs de chaque cerfa sont dans `core/models/<nom>/r3/`, les
+endroits où elles s'écrivent dans `front/models/<nom>/r3/`. Une partie de R2
+reste encore dans `front/models/<nom>/r2/`.
 
 *Gardé par* `tests/frontieres-des-racines.test.ts` (les cinq frontières) et
 `tests/architecture.test.ts › invariants métier › le simulateur ignore qui
@@ -238,14 +240,17 @@ que pour une place suivante`.
 - Mieux vaut une condition écrite deux fois qu'une abstraction entre les pages et
   les faits.
 - R2, R3, ses cerfa et les faits lisent des valeurs (`given…`), pas les réponses
-  brutes (`GivenAnswers`, `ValidatedAnswers`).
+  brutes (`GivenAnswers`, `ValidatedAnswers`). Les valeurs d'un cerfa sont au
+  métier ; l'écran ne dit que où elles s'écrivent, par un type que le métier
+  porte (`DtoS3141`…) : une entrée sans endroit, ou sans valeur, ne compile pas.
 - Une déclaration lit une question par son objet, et l'importe. Une condition qui
   lit une question vit après elle : dans son fichier, ou dans un
   `conditions/` que la question n'importe pas. Sinon les deux modules s'importent
   et la question lue vaut `undefined` au chargement.
 
 *Gardé par* le typage, et `tests/lecture-des-valeurs.test.ts › R2 et R3 lisent
-des valeurs` pour R2 et R3, dans `core/` comme dans `front/`. Les faits et les conditions n'ont pas d'autre garde
+des valeurs` pour R2 et R3, dans `core/` comme dans `front/` (le cerfa du modèle
+de démonstration compris). Les faits et les conditions n'ont pas d'autre garde
 que le typage.
 
 ---
