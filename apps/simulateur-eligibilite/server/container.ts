@@ -23,7 +23,7 @@ import { PostgresJournal } from "./journal/postgres-journal.adapter.ts";
 import { ReadAPage } from "./journal/read-a-page.usecase.ts";
 import { ReportAlive } from "./journal/report-alive.usecase.ts";
 import { PostgresClient } from "./postgres/postgres.client.ts";
-import { creerReferentielGrist } from "./rattachement/referentiel-grist.ts";
+import { creerReferentielGrist } from "./rattachement/referentiel-grist.adapter.ts";
 
 /** Ce que le serveur attend de l'extérieur : ses adaptateurs, et où il tourne. */
 export type Adapters = {

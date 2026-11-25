@@ -7,7 +7,7 @@ import {
   nomsDansLaLimite,
   type RattachementSaisi,
   saisieComplete,
-} from "../../shared/rattachement-saisi.ts";
+} from "../../shared/rattachement-saisi.vo.ts";
 import type { Referentiel } from "../../shared/referentiel.ts";
 
 export function rattachementRoutes(referentiel: Referentiel): Router {

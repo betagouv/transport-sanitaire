@@ -2,7 +2,7 @@
 // rattachement range en session, et ce que chaque événement porte.
 // Rien d'autre : aucun nom, choisi ou saisi, ne part.
 
-import type { RattachementSaisi } from "./rattachement-saisi.ts";
+import type { RattachementSaisi } from "./rattachement-saisi.vo.ts";
 import type { RattachementEnregistre } from "./referentiel.ts";
 
 export class RattachementDuReferentiel {

@@ -6,7 +6,7 @@ import {
   rangerRattachement,
   rattachementEnSession,
 } from "../../../front/socle/rattachement";
-import type { RattachementSaisi } from "../../../shared/rattachement-saisi";
+import type { RattachementSaisi } from "../../../shared/rattachement-saisi.vo";
 import {
   type Referentiel,
   snapshotReferentiel,

@@ -8,7 +8,7 @@ import { RattachementDuReferentiel } from "../../../shared/rattachement-du-refer
 import {
   enrichitLeReferentiel,
   type RattachementSaisi,
-} from "../../../shared/rattachement-saisi";
+} from "../../../shared/rattachement-saisi.vo";
 import type { Referentiel } from "../../../shared/referentiel";
 
 export class RegisterTheRattachement {

@@ -3,7 +3,7 @@
 
 import { describe, expect, it } from "vitest";
 import { AudienceEvent } from "../../../front/socle/analytics/audience-event.entity";
-import type { RattachementSaisi } from "../../../shared/rattachement-saisi";
+import type { RattachementSaisi } from "../../../shared/rattachement-saisi.vo";
 
 describe("un événement de la mesure d'audience", () => {
   it("porte l'id du service rattaché", () => {

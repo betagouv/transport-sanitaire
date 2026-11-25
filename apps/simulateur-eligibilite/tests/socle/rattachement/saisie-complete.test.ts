@@ -5,7 +5,7 @@ import { describe, expect, it } from "vitest";
 import {
   enrichitLeReferentiel,
   saisieComplete,
-} from "../../../shared/rattachement-saisi";
+} from "../../../shared/rattachement-saisi.vo";
 
 describe("saisieComplete", () => {
   it("un service du référentiel suffit", () => {

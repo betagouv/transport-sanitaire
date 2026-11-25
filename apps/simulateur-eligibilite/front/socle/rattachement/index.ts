@@ -7,5 +7,5 @@ export {
   rangerRattachement,
   rattachementEnSession,
 } from "./rattachement-en-session";
-export { referentielDuServeur } from "./referentiel";
+export { referentielDuServeur } from "./referentiel.adapter";
 export type { Structure } from "./structures";

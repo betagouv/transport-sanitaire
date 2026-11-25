@@ -12,7 +12,7 @@
 // rattachement.
 
 import { useState } from "react";
-import { LONGUEUR_MAX_D_UN_NOM } from "../../../shared/rattachement-saisi";
+import { LONGUEUR_MAX_D_UN_NOM } from "../../../shared/rattachement-saisi.vo";
 import {
   type Referentiel,
   snapshotReferentiel,

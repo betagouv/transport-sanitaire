@@ -8,7 +8,7 @@
 // arrivent aussi. Seules les structures attendues s'affichent, reconnues à leur
 // libellé, dans l'ordre du porteur.
 
-import { normalise } from "../../../shared/rattachement-saisi";
+import { normalise } from "../../../shared/rattachement-saisi.vo";
 import type { Etablissement, Service } from "../../../shared/referentiel";
 
 export function estEtablissementFourreTout(etab: Etablissement): boolean {

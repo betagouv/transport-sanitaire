@@ -135,7 +135,8 @@ s'écrivent : un service choisi dans la liste n'apprend rien au référentiel.
 
 La colonne `Origine` doit exister sur `Services_Unites` et sur `Etablissements`.
 Le détail des écritures et des réponses de la route est dans
-`server/rattachement/referentiel-grist.ts` et `routes.ts`, que couvrent
+`server/rattachement/referentiel-grist.adapter.ts` et
+`rattachement.controller.ts`, que couvrent
 `tests/socle/server/enrichissement.test.ts` et `referentiel-grist.test.ts` ; les ids
 au parcours et la quarantaine, `tests/socle/rattachement/enregistrement-au-serveur.test.ts`
 et `tests/socle/journal/collecte-du-rattachement.test.ts`.

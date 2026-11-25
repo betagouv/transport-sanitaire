@@ -5,7 +5,7 @@
 // double qui capture, un en panne, ou le snapshot, qui n'écrit pas.
 
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from "vitest";
-import type { RattachementSaisi } from "../../../shared/rattachement-saisi.ts";
+import type { RattachementSaisi } from "../../../shared/rattachement-saisi.vo.ts";
 import {
   type Referentiel,
   snapshotReferentiel,

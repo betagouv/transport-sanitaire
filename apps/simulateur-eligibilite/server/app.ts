@@ -8,7 +8,7 @@
 import express, { type Express } from "express";
 import type { Container } from "./container.ts";
 import { ApiGuard, type WriteLimits } from "./protect-the-api.ts";
-import { rattachementRoutes } from "./rattachement/routes.ts";
+import { rattachementRoutes } from "./rattachement/rattachement.controller.ts";
 
 export type AppOptions = {
   /** Répertoire du build front à servir (absent en test). */

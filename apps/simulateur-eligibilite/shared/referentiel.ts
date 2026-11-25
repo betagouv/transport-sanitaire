@@ -1,7 +1,7 @@
 // Le référentiel établissement / service : son interface, et des données
 // factices pour le développement et les tests.
 
-import type { RattachementSaisi } from "./rattachement-saisi.ts";
+import type { RattachementSaisi } from "./rattachement-saisi.vo.ts";
 
 export type Etablissement = { id: string; libelle: string };
 export type Service = { id: string; libelle: string };
@@ -16,7 +16,7 @@ export type RattachementEnregistre = { etabId: string; serviceId: string };
 /**
  * L'accès au référentiel passe par cette interface. On peut ainsi
  * changer de source sans toucher aux composants. Le front utilise le client HTTP
- * `front/socle/rattachement/referentiel.ts`, vers le backend Grist.
+ * `front/socle/rattachement/referentiel.adapter.ts`, vers le backend Grist.
  */
 export interface Referentiel {
   listerEtablissements(): Promise<Etablissement[]>;
