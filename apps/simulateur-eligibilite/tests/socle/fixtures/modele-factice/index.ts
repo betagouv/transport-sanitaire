@@ -6,7 +6,7 @@
 import type { ValueOf } from "../../../../core/socle";
 import {
   bindCerfa,
-  defineModel,
+  ModelFactory,
   type ResultCodes,
   text,
 } from "../../../../front/socle";
@@ -80,7 +80,7 @@ const REFUS: ResultCodes = {
   support: "AUCUN",
 };
 
-export const model = defineModel<
+export const model = ModelFactory.define<
   Questions,
   Faits,
   Cibles,
