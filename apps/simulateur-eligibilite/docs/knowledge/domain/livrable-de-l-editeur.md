@@ -48,8 +48,8 @@ Le reste du paquet est **retranscrit** dans le code, selon les règles du dépô
 | Pièce du paquet | Ce qu'elle devient |
 |---|---|
 | le dictionnaire des cibles, les faits que les règles reçoivent | `core/models/eligibilite/cibles/noms.ts` et `faits/noms.ts` |
-| le catalogue des questions, leurs options et leurs libellés | un fichier par question, sous `questions/p1/`, `p2/`, `p3/` (`questions/qN-N.ts`) |
-| le contrat réponses/faits (`CONTRAT_REPONSES_FAITS.json` et les contrats qui le précisent) | un fichier par fait, sous `faits/` |
+| le catalogue des questions, leurs options et leurs libellés | un fichier `.question.ts` par question, sous `questions/p1/`, `p2/`, `p3/` (`questions/qN-N.question.ts`) |
+| le contrat réponses/faits (`CONTRAT_REPONSES_FAITS.json` et les contrats qui le précisent) | un fichier `.fait.ts` par fait, sous `faits/` |
 | l'oracle, dans le dossier `tests/` du paquet | `tests/model/eligibilite/`, en faits et en réponses |
 | le mapping des gabarits | les cerfa de `front/models/eligibilite/r3/` |
 
@@ -63,7 +63,7 @@ Le reste du paquet est **retranscrit** dans le code, selon les règles du dépô
    `tests/model/eligibilite/rules/declarations.test.ts` les compare au YAML. Une
    réponse possible se déclare dans sa question : son numéro du catalogue, puis
    son sens (`"2_AVEC_UN_PROCHE"`).
-3. Écris le fichier du fait, sous `faits/` : le catalogue refuse au chargement un
+3. Écris le fichier `.fait.ts` du fait, sous `faits/` : le catalogue refuse au chargement un
    fait oublié.
 4. Teste le fait par les réponses qui l'établissent, dans le test de sa partie.
    Un cas de l'éditeur qui le traverse va dans l'oracle.

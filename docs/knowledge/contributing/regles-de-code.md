@@ -584,17 +584,20 @@ Cette règle ne vaut que pour `apps/simulateur-eligibilite`, hors composants Rea
 | `.hook.ts` | l'adaptateur de l'écran : du React, et un appel de use case par événement |
 | `.middleware.ts` | un middleware de `server/` : il laisse passer la requête ou la refuse, sans appeler de use case |
 | `.client.ts` | un client HTTP préconfiguré : adresse, authentification, JSON, erreurs |
+| `.fait.ts` | la déclaration d'un fait du modèle : un fichier de `faits/`, qui exporte un seul `unFait("fait_x")…` |
+| `.question.ts` | la déclaration d'une question du modèle : un fichier de `questions/`, qui exporte des constantes bâties par `question.<forme>(…)` |
 
 Un `index.ts` s'en passe : il ne fait que réexporter. Un fichier qui assemble les
 classes d'une racine (`container.ts`, `server.ts`, `app.ts`, `main.tsx`) s'en
 passe aussi. Une fabrique porte le nom de ce qu'elle fabrique et vit dans son
 dossier, à côté de son produit : une `.entity`, une `.vo` ou des `.types` du même
 nom. Un `.constants.ts` est du domaine : une entité, un objet-valeur ou un
-service peut l'importer. Un `.schema.ts` n'en est pas : un contrôleur l'importe.
+service peut l'importer. Un `.fait.ts` et un `.question.ts` le sont aussi : ils
+vivent dans `core/models/`, où aucun paquet ne s'importe. Un `.schema.ts` n'est pas du domaine : un contrôleur l'importe.
 Un hook ne porte aucune règle (QUAL-019).
 
 Un fichier qui n'a aucun rôle de la table (un utilitaire d'écran, une table de
-valeurs qui n'est pas une liste fermée, la déclaration d'un modèle) reste sans
+valeurs qui n'est pas une liste fermée, la déclaration d'un modèle qui n'est ni un fait ni une question) reste sans
 suffixe. Le suffixe `.adapter` suppose un port : sans port à satisfaire, le fichier n'est pas un adaptateur, sauf l'adaptateur de démarrage, que seul un assembleur lit, une fois (`server/configuration.adapter.ts`).
 
 **Exemples**
@@ -615,7 +618,7 @@ question/question.ts
 *Gardé par* `tests/roles-par-suffixe.test.ts › un fichier dit son rôle par son
 suffixe`, dans `apps/simulateur-eligibilite`. La garde couvre `core/socle/`,
 `server/journal/`, `server/grist/`, `server/postgres/`, `front/socle/analytics/`
-et `front/socle/server-api/` : un dossier la rejoint quand il suit la règle. Que
+et `front/socle/server-api/` : un dossier la rejoint quand il suit la règle. Un `.fait.ts` ne vit que dans un `faits/`, un `.question.ts` que dans un `questions/` de `core/models/`. Que
 le hook ne porte aucune règle est du jugement.
 
 ---

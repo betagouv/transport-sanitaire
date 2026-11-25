@@ -145,8 +145,8 @@ core/                    le métier, sans React ni DOM : ce qu'un serveur ou un 
   models/
     fake/                le modèle de démonstration
     eligibilite/         le modèle de l'éditeur
-      questions/         les questions, par partie (p1, p2, p3), un fichier par question
-      faits/             un fichier par fait, dans les mots des règles
+      questions/         les questions, par partie (p1, p2, p3), un `.question.ts` par question
+      faits/             un `.fait.ts` par fait, dans les mots des règles
       cibles/            les cibles, et leur évaluation par les règles publicodes
       rules/             le livrable de l'éditeur : le YAML, sa `VERSION`, le catalogue
                          des textes de R2, et les JSON que `pnpm regles` en calcule

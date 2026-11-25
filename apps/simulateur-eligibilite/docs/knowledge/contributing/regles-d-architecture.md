@@ -176,8 +176,8 @@ par leurs méthodes`. Que l'inconnu ne soit pas un « non » est éprouvé dans
 > fusion qu'un auteur de plus casse sans bruit. Un fichier par fait dit tout ce
 > qu'il vaut, et ce qu'il lit se sait sans l'exécuter.
 
-- Un fait est un fichier de `faits/`, au nom du fait sans `fait_`, en kebab-case.
-  Il n'exporte que sa déclaration.
+- Un fait est un fichier `.fait.ts` de `faits/`, au nom du fait sans `fait_`, en
+  kebab-case (`distance-plus-50.fait.ts`). Il n'exporte que sa déclaration.
 - Ce que plusieurs faits reprennent mot pour mot va dans `faits/communs.ts`.
   Une donnée de l'éditeur se partage là où elle se déclare : les réponses
   possibles, dans leur question.
