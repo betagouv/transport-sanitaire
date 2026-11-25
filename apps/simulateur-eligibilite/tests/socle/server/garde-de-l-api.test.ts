@@ -4,7 +4,7 @@
 // écriture, son débit par IP, sa taille.
 
 import { afterEach, describe, expect, it } from "vitest";
-import type { WriteLimits } from "../../../server/protect-the-api.ts";
+import type { WriteLimits } from "../../../server/api-guard.middleware.ts";
 import { LONGUEUR_MAX_D_UN_NOM } from "../../../shared/rattachement-saisi.vo.ts";
 import type { Referentiel } from "../../../shared/referentiel.port.ts";
 import { snapshotReferentiel } from "../../../shared/snapshot-referentiel.adapter.ts";

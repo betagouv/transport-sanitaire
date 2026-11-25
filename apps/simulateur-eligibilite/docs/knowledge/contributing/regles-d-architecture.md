@@ -109,7 +109,8 @@ manque à son contrat s'ajoute à l'index. Les tests d'un module
   `node:*` aussi, sauf dans le domaine de `server/` (voir plus bas).
 - Sont exemptés : le composant `.tsx` (il importe React et le DSFR), le `.hook.ts`
   (l'adaptateur de l'écran), le `.controller.ts` (il importe Express et zod à la
-  porte du serveur), le `.client.ts` (l'accès à l'extérieur) et le `.schema.ts`
+  porte du serveur), le `.middleware.ts` (un middleware de `server/` : il importe
+  Express et ses greffons), le `.client.ts` (l'accès à l'extérieur) et le `.schema.ts`
   (une validation zod : il importe `zod`, et aucun autre paquet). Un fichier
   sans suffixe hors de `core/` n'est pas jugé : il n'a pas encore de rôle.
 - Dans `front/`, un `.types.ts` peut faire un `import type` de `react`, et de

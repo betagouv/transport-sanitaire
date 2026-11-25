@@ -22,7 +22,8 @@ const RACINES = ["core", "front", "server", "shared"];
 // rôle du domaine par son suffixe. Les autres rôles sont exemptés, chacun pour
 // sa raison : un composant (`.tsx`) importe React et le DSFR, un hook
 // (`.hook.ts`) est l'adaptateur de l'écran, un contrôleur (`.controller.ts`)
-// importe Express et zod à la porte du serveur, un client (`.client.ts`) est
+// importe Express et zod à la porte du serveur, un middleware (`.middleware.ts`)
+// importe Express et ses greffons, un client (`.client.ts`) est
 // l'accès à l'extérieur, une validation (`.schema.ts`) importe zod, et lui
 // seul. Un fichier sans suffixe hors de `core/` n'a pas de
 // rôle (QUAL-018 ne vaut que pour certains dossiers) : il n'est pas jugé.

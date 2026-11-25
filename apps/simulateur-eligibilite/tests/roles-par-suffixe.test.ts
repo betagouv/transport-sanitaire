@@ -35,6 +35,7 @@ const ROLES = [
   "constants",
   "schema",
   "controller",
+  "middleware",
   "hook",
   "client",
 ];
@@ -64,6 +65,17 @@ describe("un fichier dit son rôle par son suffixe", () => {
       "Un `.types.ts` n'exporte que des types (QUAL-018) : il disparaît à la " +
         "compilation, et s'importe sans rien charger. Une fonction ou une " +
         "constante va dans la classe de la notion qu'elle sert.",
+    ).toEqual([]);
+  });
+
+  it("un middleware vit dans server/", () => {
+    const fautifs = sources("core", "front", "shared").filter((f) =>
+      f.endsWith(".middleware.ts"),
+    );
+    expect(
+      fautifs,
+      "Un middleware (`.middleware.ts`) laisse passer ou refuse une requête " +
+        "HTTP (QUAL-018) : il appartient au serveur, et il vit dans `server/`.",
     ).toEqual([]);
   });
 
