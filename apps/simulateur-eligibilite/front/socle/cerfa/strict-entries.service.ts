@@ -27,7 +27,14 @@ export class StrictEntriesService {
     return [
       ...fields.flatMap(([entry, binding]) =>
         "strict" in binding
-          ? [{ entry, strict: binding.strict, place: { field: binding.field } }]
+          ? [
+              {
+                entry,
+                strict: binding.strict,
+                layout: StrictEntriesService.layoutOf(binding.strict),
+                place: { field: binding.field },
+              },
+            ]
           : [],
       ),
       ...drawings.flatMap(([entry, { strict, positions }]) =>
@@ -36,6 +43,7 @@ export class StrictEntriesService {
               {
                 entry,
                 strict,
+                layout: StrictEntriesService.layoutOf(strict),
                 place: { width: StrictEntriesService.#narrowest(positions) },
               },
             ]

@@ -20,9 +20,10 @@ import {
   EstablishAPreconisation,
   ResultContext,
 } from "../../../../core/socle/simulation";
-import { type Cerfa, generateCerfa } from "../../../../front/socle/cerfa";
+import type { Cerfa } from "../../../../front/socle/cerfa";
 
 import { racine } from "../../../inspection-des-sources";
+import { generateCerfa } from "../../../socle/cerfa/generer-le-cerfa";
 import {
   MATERNITE_ETABLIE,
   MATERNITE_PAR_Q221,

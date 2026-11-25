@@ -1,11 +1,8 @@
 import { describe, expect, it } from "vitest";
 import { CerfaFactory } from "../../../front/socle/cerfa/cerfa.factory";
 import type { Cerfa } from "../../../front/socle/cerfa/cerfa.types";
-import {
-  generateCerfa,
-  PREVIEW_MARK,
-} from "../../../front/socle/cerfa/generate-the-cerfa/generate-the-cerfa";
 import { PdfFileName } from "../../../front/socle/cerfa/pdf/pdf-file-name.vo";
+import { generateCerfa, PREVIEW_MARK } from "./generer-le-cerfa";
 import { drawnOn, markedStates, textsOn } from "./pdf-aplati";
 import { statesOf, testForm } from "./test-form";
 

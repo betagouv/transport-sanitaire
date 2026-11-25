@@ -7,10 +7,9 @@
 import { type RefObject, useEffect, useRef, useState } from "react";
 import type { CerfaDto } from "../../../core/socle/cerfa";
 import type { Cerfa } from "./cerfa.types";
-import {
-  type GeneratedCerfa,
-  generateCerfa,
-} from "./generate-the-cerfa/generate-the-cerfa";
+import { useCerfaUseCases } from "./cerfa-use-cases-in-the-tree.hook";
+import type { CerfaUseCases } from "./container";
+import type { GeneratedCerfa } from "./generate-the-cerfa.usecase";
 
 /** L'issue d'une génération : un PDF prêt, non vide, ou un échec. */
 export type Settled =
@@ -38,14 +37,15 @@ export function useDownloadablePdf<Dto extends CerfaDto>(
   dto: Dto,
   preview: boolean,
 ) {
+  const useCases = useCerfaUseCases();
   const [downloadablePdf, setDownloadablePdf] = useState(() =>
-    generate(cerfa, dto, preview),
+    generate(useCases, cerfa, dto, preview),
   );
   const settled = useSettled(downloadablePdf);
   const awaited: AwaitedAction = useRef<PdfAction | NoAction>(null);
   const retry = (action: PdfAction) => {
     awaited.current = action;
-    setDownloadablePdf(generate(cerfa, dto, false));
+    setDownloadablePdf(generate(useCases, cerfa, dto, false));
   };
   return { settled, retry, awaited };
 }
@@ -74,11 +74,16 @@ export function useAwaitedAction(
 // Une génération qui ne rejette jamais : son échec est un état de l'écran. Un
 // PDF vide n'est pas prêt.
 function generate<Dto extends CerfaDto>(
+  useCases: CerfaUseCases | null,
   cerfa: Cerfa<Dto>,
   dto: Dto,
   preview: boolean,
 ): Promise<Settled> {
-  return generateCerfa(cerfa, dto, { preview }).then(
+  if (!useCases) {
+    console.error("[cerfa] Aucun cas d'usage du cerfa n'est branché.");
+    return Promise.resolve({ status: "failed" });
+  }
+  return useCases.generateTheCerfa.execute(cerfa, dto, { preview }).then(
     (generated): Settled => {
       if (generated.pdf.size > 0) return { status: "ready", ...generated };
       console.error("[cerfa] Le PDF généré est vide.");

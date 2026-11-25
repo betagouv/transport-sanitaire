@@ -15,8 +15,13 @@ const GARDES = [
   "server/journal",
   "server/postgres",
   "front/socle/analytics",
+  "front/socle/cerfa",
   "front/socle/server-api",
 ];
+
+// Un composant React (`.tsx`) n'a pas de suffixe de rôle : QUAL-018 ne vaut pas
+// pour lui.
+const estUnComposant = (fichier: string) => fichier.endsWith(".tsx");
 
 // Un fichier qui assemble les classes d'une racine ne porte pas un rôle : il les
 // branche, comme un `index.ts` les réexporte.
@@ -46,7 +51,10 @@ const ROLE = new RegExp(`\\.(${ROLES.join("|")})\\.ts$`);
 describe("un fichier dit son rôle par son suffixe", () => {
   it("chaque fichier porte un suffixe de rôle", () => {
     const fautifs = sources(...GARDES).filter(
-      (f) => !ASSEMBLEURS.includes(basename(f)) && !ROLE.test(f),
+      (f) =>
+        !ASSEMBLEURS.includes(basename(f)) &&
+        !estUnComposant(f) &&
+        !ROLE.test(f),
     );
     expect(
       fautifs,

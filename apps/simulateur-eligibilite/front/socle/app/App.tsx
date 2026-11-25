@@ -6,6 +6,7 @@
 
 import type { ComponentProps } from "react";
 import { AnalyticsProvider, type AnalyticsUseCases } from "../analytics";
+import { type CerfaUseCases, CerfaUseCasesProvider } from "../cerfa";
 import {
   DebugTrace,
   DeveloperTools,
@@ -32,6 +33,8 @@ import { SimulateurScreen } from "./SimulateurScreen";
 type Props = ScreensProps & {
   /** La mesure d'audience et le journal des parcours. Absents, rien ne part. */
   analytics?: AnalyticsUseCases;
+  /** La génération du cerfa et la mesure de ses textes. Absents, il ne se génère pas. */
+  cerfa?: CerfaUseCases;
 };
 
 type ScreensProps = Pick<
@@ -52,10 +55,12 @@ type ScreensProps = Pick<
   developerTools?: boolean;
 };
 
-export function App({ analytics, ...screens }: Props) {
+export function App({ analytics, cerfa, ...screens }: Props) {
   return (
     <AnalyticsProvider value={analytics ?? null}>
-      <Screens {...screens} />
+      <CerfaUseCasesProvider value={cerfa ?? null}>
+        <Screens {...screens} />
+      </CerfaUseCasesProvider>
     </AnalyticsProvider>
   );
 }

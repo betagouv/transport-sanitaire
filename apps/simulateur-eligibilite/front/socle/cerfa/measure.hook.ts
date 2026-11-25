@@ -6,7 +6,7 @@
 import { useEffect, useRef, useState } from "react";
 import type { CerfaDto } from "../../../core/socle/cerfa";
 import type { Cerfa, StrictMeasure } from "./cerfa.types";
-import { measureOf } from "./generate-the-cerfa/generate-the-cerfa";
+import { useCerfaUseCases } from "./cerfa-use-cases-in-the-tree.hook";
 
 /** Mesure un texte destiné à un texte strict, par son entrée du DTO. */
 export type Measure = (entry: string, text: string) => StrictMeasure;
@@ -19,6 +19,7 @@ export function useMeasure(
   cerfa: Cerfa<CerfaDto> | null,
   wanted: boolean,
 ): Measure | NotLoaded {
+  const useCases = useCerfaUseCases();
   const [loaded, setLoaded] = useState<{ file: string; measure: Measure }>();
   const latest = useRef(cerfa);
   latest.current = cerfa;
@@ -26,15 +27,15 @@ export function useMeasure(
   const measure = loaded?.file === file ? loaded?.measure : undefined;
   useEffect(() => {
     const current = latest.current;
-    if (!current || !file || !wanted || measure) return;
+    if (!current || !file || !wanted || measure || !useCases) return;
     let live = true;
-    measureOf(current).then(
+    useCases.measureTheStrictTexts.execute(current).then(
       (found) => live && setLoaded({ file, measure: found }),
       (cause) => console.error("[cerfa] Mesure impossible.", cause),
     );
     return () => {
       live = false;
     };
-  }, [file, wanted, measure]);
+  }, [file, wanted, measure, useCases]);
   return measure;
 }

@@ -3,10 +3,12 @@ import userEvent from "@testing-library/user-event";
 import { useState } from "react";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { TextEdits } from "../../../core/socle/simulation";
+import { CerfaUseCasesProvider } from "../../../front/socle/cerfa";
 import { CerfaDocument } from "../../../front/socle/cerfa/CerfaDocument";
 import { CerfaFactory } from "../../../front/socle/cerfa/cerfa.factory";
 import type { Cerfa } from "../../../front/socle/cerfa/cerfa.types";
 import { ecouterLesTelechargements } from "../simulateur/telechargements";
+import { casDUsageDuCerfa } from "./generer-le-cerfa";
 import { drawnOn } from "./pdf-aplati";
 import { testForm } from "./test-form";
 
@@ -110,19 +112,22 @@ async function genere() {
 // L'écran, qui remet chaque texte validé à sa place dessinée.
 function Ecran({ note }: { note: string }) {
   const [edits, setEdits] = useState(TextEdits.none());
+  const [cas] = useState(casDUsageDuCerfa);
   return (
-    <CerfaDocument
-      key={JSON.stringify(edits.accepted)}
-      cerfa={FICHE}
-      dto={{ fields: {}, drawings: { note, ...edits.accepted } }}
-      date={new Date("2026-10-14T10:00:00Z")}
-      printLabel="Imprimer la fiche"
-      downloadLabel="Télécharger la fiche"
-      edits={{
-        drafts: edits.drafts,
-        onEdit: (entry, text) => setEdits((now) => now.draft(entry, text)),
-        onValidate: (entry) => setEdits((now) => now.accept(entry)),
-      }}
-    />
+    <CerfaUseCasesProvider value={cas}>
+      <CerfaDocument
+        key={JSON.stringify(edits.accepted)}
+        cerfa={FICHE}
+        dto={{ fields: {}, drawings: { note, ...edits.accepted } }}
+        date={new Date("2026-10-14T10:00:00Z")}
+        printLabel="Imprimer la fiche"
+        downloadLabel="Télécharger la fiche"
+        edits={{
+          drafts: edits.drafts,
+          onEdit: (entry, text) => setEdits((now) => now.draft(entry, text)),
+          onValidate: (entry) => setEdits((now) => now.accept(entry)),
+        }}
+      />
+    </CerfaUseCasesProvider>
   );
 }

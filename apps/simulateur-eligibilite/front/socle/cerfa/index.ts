@@ -9,11 +9,13 @@ export type {
   Cerfa,
   StrictOptions,
 } from "./cerfa.types";
+export { CerfaUseCasesProvider } from "./cerfa-use-cases-in-the-tree.hook";
+export { type CerfaUseCases, cerfaUseCases } from "./container";
 export {
   type GeneratedCerfa,
-  generateCerfa,
+  GenerateTheCerfa,
   type Overflowing,
-} from "./generate-the-cerfa/generate-the-cerfa";
+} from "./generate-the-cerfa.usecase";
 export { DownloadAPdfService } from "./pdf/download-a-pdf.service";
 export {
   PdfActionButton,
@@ -21,6 +23,7 @@ export {
   useShown,
 } from "./pdf/PdfActionButton";
 export { PdfFileName } from "./pdf/pdf-file-name.vo";
+export { PdfLibCerfaAdapter } from "./pdf-lib/pdf-lib-cerfa.adapter";
 export type { StrictTextEdits } from "./StrictTexts";
-export { templateAt } from "./template";
+export { templateAt } from "./template.client";
 export { useTextCounters } from "./text-counters.hook";

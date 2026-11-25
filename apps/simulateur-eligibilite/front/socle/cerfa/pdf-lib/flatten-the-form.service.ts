@@ -22,55 +22,28 @@ import {
   StandardFonts,
   translate,
 } from "pdf-lib";
-import type { Position } from "../cerfa.types";
-import { sizeOnOneLine } from "./text-fit";
-import { pageOf } from "./widget-page";
+import type { Drawing, Drawn, Flattened, Mark } from "../cerfa-pdf.types";
+import { TextFitService } from "./text-fit.service";
+import { WidgetPageService } from "./widget-page.service";
 
-/** Une case à marquer : son champ, et l'état d'export qui la désigne. */
-export type Mark = { readonly field: string; readonly state: string };
+export class FlattenTheFormService {
+  /** L'interligne d'un texte dessiné, en proportion de sa taille. */
+  static readonly LINE_HEIGHT = 1.2;
 
-/**
- * Un texte à dessiner hors de tout champ, à sa taille. `at.y` est la ligne de
- * base de sa première ligne. Il passe à la ligne dans `at.width`. `singleLine` :
- * il rapetisse d'abord, depuis sa taille, pour tenir sur une ligne.
- */
-export type Drawing = {
-  readonly text: string;
-  readonly at: Position;
-  readonly size: number;
-  readonly singleLine?: boolean;
-};
-
-/** L'interligne d'un texte dessiné, en proportion de sa taille. */
-export const LINE_HEIGHT = 1.2;
-
-/** Ce qui se dessine après l'aplatissement. */
-export type Drawn = {
-  readonly marks?: readonly Mark[];
-  readonly drawings?: readonly Drawing[];
-  /** La marque d'un aperçu, en travers de chaque page. */
-  readonly watermark?: string;
-};
-
-/** Le PDF aplati, et la taille de chaque texte dessiné, dans leur ordre. */
-export type Flattened = {
-  readonly pdf: Uint8Array;
-  readonly drawnSizes: readonly number[];
-};
-
-/** Le PDF rempli `pdf`, sans aucun champ, avec `drawn` dessiné par-dessus. */
-export async function flattenCerfa(
-  pdf: Uint8Array,
-  { marks = [], drawings = [], watermark }: Drawn = {},
-): Promise<Flattened> {
-  const document = await PDFDocument.load(pdf);
-  // Les marques se relèvent avant : l'aplatissement retire les cases.
-  const stamps = marks.flatMap((mark) => stampsOf(document, mark));
-  document.getForm().flatten();
-  for (const stamp of stamps) drawStamp(stamp);
-  const drawnSizes = await drawTexts(document, drawings);
-  if (watermark) await drawWatermark(document, watermark);
-  return { pdf: await document.save(), drawnSizes };
+  /** Le PDF rempli `pdf`, sans aucun champ, avec `drawn` dessiné par-dessus. */
+  static async flatten(
+    pdf: Uint8Array,
+    { marks = [], drawings = [], watermark }: Drawn = {},
+  ): Promise<Flattened> {
+    const document = await PDFDocument.load(pdf);
+    // Les marques se relèvent avant : l'aplatissement retire les cases.
+    const stamps = marks.flatMap((mark) => stampsOf(document, mark));
+    document.getForm().flatten();
+    for (const stamp of stamps) drawStamp(stamp);
+    const drawnSizes = await drawTexts(document, drawings);
+    if (watermark) await drawWatermark(document, watermark);
+    return { pdf: await document.save(), drawnSizes };
+  }
 }
 
 // ---- implémentation ----
@@ -90,7 +63,9 @@ function stampsOf(document: PDFDocument, { field, state }: Mark): Stamp[] {
     const appearance =
       normal instanceof PDFDict ? normal.get(PDFName.of(state)) : undefined;
     if (!(appearance instanceof PDFRef)) return [];
-    return [{ page: pageOf(document, widget), widget, appearance }];
+    return [
+      { page: WidgetPageService.of(document, widget), widget, appearance },
+    ];
   });
   if (stamps.length === 0) {
     // La case resterait vide sans rien signaler, sur un document opposable.
@@ -123,7 +98,7 @@ async function drawTexts(
     const page = pages[at.page - 1];
     if (!page) throw new Error(`Le gabarit n'a pas de page ${at.page}.`);
     const size = singleLine
-      ? sizeOnOneLine(text, at.width, font, wanted)
+      ? TextFitService.sizeOnOneLine(text, at.width, font, wanted)
       : wanted;
     page.drawText(text, {
       x: at.x,
@@ -131,7 +106,7 @@ async function drawTexts(
       font,
       size,
       maxWidth: at.width,
-      lineHeight: size * LINE_HEIGHT,
+      lineHeight: size * FlattenTheFormService.LINE_HEIGHT,
     });
     return size;
   });

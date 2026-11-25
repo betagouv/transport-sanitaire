@@ -16,81 +16,83 @@ import { SIZE_STEP, TEXT_SIZES } from "../text-sizes.constants";
 /** Le texte ne tient dans son cadre à aucune taille. */
 type DoesNotFit = undefined;
 
-/**
- * La taille à laquelle `text` tient dans la zone de `field` : la taille visée,
- * sinon la taille réduite. Le nombre maximal de caractères du champ compte
- * aussi.
- */
-export function sizeInField(
-  field: PDFTextField,
-  font: PDFFont,
-  text: string,
-): number | DoesNotFit {
-  if (exceedsMaxLength(field, text)) return undefined;
-  return [TEXT_SIZES.target, TEXT_SIZES.reduced].find((fontSize) =>
-    fits(field, font, fontSize, text),
-  );
-}
+export class TextFitService {
+  /**
+   * La taille à laquelle `text` tient dans la zone de `field` : la taille visée,
+   * sinon la taille réduite. Le nombre maximal de caractères du champ compte
+   * aussi.
+   */
+  static sizeInField(
+    field: PDFTextField,
+    font: PDFFont,
+    text: string,
+  ): number | DoesNotFit {
+    if (exceedsMaxLength(field, text)) return undefined;
+    return [TEXT_SIZES.target, TEXT_SIZES.reduced].find((fontSize) =>
+      fits(field, font, fontSize, text),
+    );
+  }
 
-/**
- * `text` tient-il dans la zone de `field` à `fontSize`, et à aucune autre
- * taille ? Le nombre maximal de caractères du champ compte aussi.
- */
-export function fitsAtSize(
-  field: PDFTextField,
-  font: PDFFont,
-  text: string,
-  fontSize: number,
-): boolean {
-  return !exceedsMaxLength(field, text) && fits(field, font, fontSize, text);
-}
+  /**
+   * `text` tient-il dans la zone de `field` à `fontSize`, et à aucune autre
+   * taille ? Le nombre maximal de caractères du champ compte aussi.
+   */
+  static fitsAtSize(
+    field: PDFTextField,
+    font: PDFFont,
+    text: string,
+    fontSize: number,
+  ): boolean {
+    return !exceedsMaxLength(field, text) && fits(field, font, fontSize, text);
+  }
 
-/**
- * La plus grande taille, de la taille réduite à `floor` par pas d'un
- * demi-point, à laquelle `text` tient dans la zone de `field` en passant à la
- * ligne. Aucune s'il n'y tient pas à `floor`, s'il dépasse le
- * nombre maximal de caractères du champ, ou si le champ n'a pas de cadre.
- */
-export function sizeToFit(
-  field: PDFTextField,
-  font: PDFFont,
-  text: string,
-  floor: number = TEXT_SIZES.floor,
-): number | DoesNotFit {
-  const bounds = innerBounds(field);
-  if (exceedsMaxLength(field, text) || !hasArea(bounds)) return undefined;
-  for (
-    let size = TEXT_SIZES.reduced - SIZE_STEP;
-    size >= floor;
-    size -= SIZE_STEP
-  )
-    if (fitsMultiline(text, font, size, bounds)) return size;
-  return undefined;
-}
+  /**
+   * La plus grande taille, de la taille réduite à `floor` par pas d'un
+   * demi-point, à laquelle `text` tient dans la zone de `field` en passant à la
+   * ligne. Aucune s'il n'y tient pas à `floor`, s'il dépasse le
+   * nombre maximal de caractères du champ, ou si le champ n'a pas de cadre.
+   */
+  static sizeToFit(
+    field: PDFTextField,
+    font: PDFFont,
+    text: string,
+    floor: number = TEXT_SIZES.floor,
+  ): number | DoesNotFit {
+    const bounds = innerBounds(field);
+    if (exceedsMaxLength(field, text) || !hasArea(bounds)) return undefined;
+    for (
+      let size = TEXT_SIZES.reduced - SIZE_STEP;
+      size >= floor;
+      size -= SIZE_STEP
+    )
+      if (fitsMultiline(text, font, size, bounds)) return size;
+    return undefined;
+  }
 
-/**
- * La plus grande taille, de `wanted` au plancher par pas d'un demi-point, à
- * laquelle `text` tient sur une ligne de `width`. Au plancher, il passera à la
- * ligne : il s'écrit quand même.
- */
-export function sizeOnOneLine(
-  text: string,
-  width: number,
-  font: PDFFont,
-  wanted: number,
-): number {
-  for (let size = wanted; size > TEXT_SIZES.floor; size -= SIZE_STEP)
-    if (font.widthOfTextAtSize(text, size) <= width) return size;
-  return TEXT_SIZES.floor;
-}
+  /**
+   * La plus grande taille, de `wanted` au plancher par pas d'un demi-point, à
+   * laquelle `text` tient sur une ligne de `width`. Au plancher, il passera à la
+   * ligne : il s'écrit quand même.
+   */
+  static sizeOnOneLine(
+    text: string,
+    width: number,
+    font: PDFFont,
+    wanted: number,
+  ): number {
+    for (let size = wanted; size > TEXT_SIZES.floor; size -= SIZE_STEP)
+      if (font.widthOfTextAtSize(text, size) <= width) return size;
+    return TEXT_SIZES.floor;
+  }
 
-/**
- * La marge intérieure d'un widget : sa bordure plus un point, jamais 0, sinon
- * le texte toucherait le cadre. Le même calcul que
- * `defaultTextFieldAppearanceProvider` de `pdf-lib`.
- */
-export function paddingOf(widget: PDFWidgetAnnotation): number {
-  return (widget.getBorderStyle()?.getWidth() ?? 0) + 1;
+  /**
+   * La marge intérieure d'un widget : sa bordure plus un point, jamais 0, sinon
+   * le texte toucherait le cadre. Le même calcul que
+   * `defaultTextFieldAppearanceProvider` de `pdf-lib`.
+   */
+  static paddingOf(widget: PDFWidgetAnnotation): number {
+    return (widget.getBorderStyle()?.getWidth() ?? 0) + 1;
+  }
 }
 
 // ---- implémentation ----
@@ -134,7 +136,7 @@ function innerBounds(field: PDFTextField): Bounds | NoWidget {
   const widget = field.acroField.getWidgets()[0];
   if (!widget) return undefined;
   const rectangle = widget.getRectangle();
-  const padding = paddingOf(widget);
+  const padding = TextFitService.paddingOf(widget);
   return {
     x: 0,
     y: 0,

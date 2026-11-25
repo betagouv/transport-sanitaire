@@ -8,11 +8,14 @@ import {
   type AnalyticsUseCases,
   type App,
   analyticsUseCases,
+  type CerfaUseCases,
   CmsConsent,
+  cerfaUseCases,
   configFromEnv,
   DiscardingAudience,
   loadMatomo,
   MatomoAudience,
+  PdfLibCerfaAdapter,
   referentielDuServeur,
   ServerApiClient,
   ServerJournal,
@@ -24,6 +27,7 @@ type AppProps = ComponentProps<typeof App>;
 export type Container = {
   serverApi: ServerApiClient;
   analytics: AnalyticsUseCases;
+  cerfa: CerfaUseCases;
   referentiel: AppProps["referentiel"];
 };
 
@@ -36,6 +40,7 @@ export function createContainer(): Container {
     analytics: analyticsUseCases(audienceOf(consent), journal, {
       app_version: VERSION_APP,
     }),
+    cerfa: cerfaUseCases(new PdfLibCerfaAdapter()),
     referentiel: referentielDuServeur(serverApi),
   };
 }

@@ -1,13 +1,13 @@
 // Écrit un texte dans son champ : chaque étape l'écrit si elle y arrive, sinon
 // passe la main à la suivante. Un texte strict n'a pas ces étapes : il s'écrit
-// à sa taille, ou pas (`strict-text.ts`).
+// à sa taille, ou pas (`strict-text.service.ts`).
 
 import { type PDFDocument, type PDFFont, PDFTextField } from "pdf-lib";
 import type { StrictLayout } from "../cerfa.types";
+import type { Drawing } from "../cerfa-pdf.types";
 import { SIZE_STEP } from "../text-sizes.constants";
-import type { Drawing } from "./flatten-the-form";
-import { nearOverflowsOf, overflowsOf } from "./overflow";
-import { sizeInField, sizeToFit } from "./text-fit";
+import { OverflowService } from "./overflow.service";
+import { TextFitService } from "./text-fit.service";
 
 /** Un texte à écrire dans un champ nommé. `strict` : à sa taille ou pas. */
 export type Text = {
@@ -28,38 +28,36 @@ export type WrittenText = {
 /** Le champ n'a aucun widget : le texte ne s'imprime nulle part. */
 type NotPrinted = null;
 
-export function writeText(
-  document: PDFDocument,
-  font: PDFFont,
-  { field: name, text }: Text,
-): WrittenText {
-  const field = textFieldOf(document, name);
-  return (
-    writeIfFits(field, font, text) ??
-    writeShrunk(field, font, text) ??
-    overflowIfNear(document, field, font, text) ??
-    writeShrunk(field, font, text, SIZE_STEP) ??
-    overflow(document, field, font, text)
-  );
-}
-
-export function textFieldOf(document: PDFDocument, name: string): PDFTextField {
-  const field = document.getForm().getField(name);
-  if (!(field instanceof PDFTextField)) {
-    throw new Error(`Le champ « ${name} » n'est pas un champ texte.`);
+export class WriteATextService {
+  static text(
+    document: PDFDocument,
+    font: PDFFont,
+    { field: name, text }: Text,
+  ): WrittenText {
+    const field = WriteATextService.fieldOf(document, name);
+    return (
+      writeIfFits(field, font, text) ??
+      writeShrunk(field, font, text) ??
+      overflowIfNear(document, field, font, text) ??
+      writeShrunk(field, font, text, SIZE_STEP) ??
+      overflow(document, field, font, text)
+    );
   }
-  return field;
-}
 
-/** Écrit `text` dans `field` à `fontSize`, sur chacun de ses widgets. */
-export function write(
-  field: PDFTextField,
-  text: string,
-  fontSize: number,
-): void {
-  field.setText(text);
-  field.setFontSize(fontSize);
-  sameSizeOnEveryWidget(field);
+  static fieldOf(document: PDFDocument, name: string): PDFTextField {
+    const field = document.getForm().getField(name);
+    if (!(field instanceof PDFTextField)) {
+      throw new Error(`Le champ « ${name} » n'est pas un champ texte.`);
+    }
+    return field;
+  }
+
+  /** Écrit `text` dans `field` à `fontSize`, sur chacun de ses widgets. */
+  static write(field: PDFTextField, text: string, fontSize: number): void {
+    field.setText(text);
+    field.setFontSize(fontSize);
+    sameSizeOnEveryWidget(field);
+  }
 }
 
 // ---- implémentation ----
@@ -73,9 +71,9 @@ function writeIfFits(
   font: PDFFont,
   text: string,
 ): WrittenText | NotWritten {
-  const size = sizeInField(field, font, text);
+  const size = TextFitService.sizeInField(field, font, text);
   if (size === undefined) return undefined;
-  write(field, text, size);
+  WriteATextService.write(field, text, size);
   return { overflows: [], size };
 }
 
@@ -86,10 +84,10 @@ function writeShrunk(
   text: string,
   floor?: number,
 ): WrittenText | NotWritten {
-  const size = sizeToFit(field, font, text, floor);
+  const size = TextFitService.sizeToFit(field, font, text, floor);
   if (size === undefined) return undefined;
   field.enableMultiline();
-  write(field, text, size);
+  WriteATextService.write(field, text, size);
   return { overflows: [], size };
 }
 
@@ -102,7 +100,7 @@ function overflowIfNear(
   text: string,
 ): WrittenText | NotWritten {
   const widgets = field.acroField.getWidgets();
-  const overflows = nearOverflowsOf(document, widgets, font, text);
+  const overflows = OverflowService.near(document, widgets, font, text);
   return overflows && drawn(overflows);
 }
 
@@ -114,7 +112,7 @@ function overflow(
   text: string,
 ): WrittenText {
   const widgets = field.acroField.getWidgets();
-  return drawn(overflowsOf(document, widgets, font, text));
+  return drawn(OverflowService.of(document, widgets, font, text));
 }
 
 // Le texte dessiné sous son cadre : il s'imprime à la plus petite taille de

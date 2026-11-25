@@ -1,29 +1,35 @@
 // Génère un cerfa : son DTO traduit dans les noms du gabarit, le formulaire
-// rempli (`fill-the-form.ts`), puis aplati (`flatten-the-form.ts`).
+// rempli puis aplati par le PDF (`cerfa-pdf.port.ts`).
 //
 // Le cerfa ne sait pas d'où viennent ses données : il reçoit son DTO, que le
 // simulateur calcule (`cerfa-dto.service.ts`), et qu'une autre source pourrait
 // calculer.
 //
-// `pdf-lib` et le gabarit ne se chargent qu'ici, quand le bouton s'affiche : le
-// chunk d'entrée n'en porte rien, et `tooling/verifier-bundle.ts` le vérifie.
+// Ce fichier garde la règle du cerfa : l'ordre des opérations, ce qui fait d'un
+// PDF un aperçu, sa marque. Le PDF, lui, exécute : il ne décide de rien.
 
-import type { CerfaDto } from "../../../../core/socle/cerfa";
+import type { CerfaDto } from "../../../core/socle/cerfa";
 import type {
   BoxBinding,
   Cerfa,
   DrawingBinding,
-  StrictMeasure,
   StrictTextBinding,
   TextBinding,
   Typography,
-} from "../cerfa.types";
-import { StrictEntriesService } from "../strict-entries.service";
-import { TEXT_SIZES } from "../text-sizes.constants";
-import { TypographyService } from "../typography.service";
-import type { FieldEntry, StrictOverflow } from "./fill-the-form";
-import type { Drawing, Mark } from "./flatten-the-form";
-import type { StrictMeasurer } from "./strict-text";
+} from "./cerfa.types";
+import type { CerfaPdf } from "./cerfa-pdf.port";
+import type {
+  Drawing,
+  FieldEntry,
+  Filled,
+  Flattened,
+  Mark,
+  StrictLineMeasure,
+  StrictOverflow,
+} from "./cerfa-pdf.types";
+import { StrictEntriesService } from "./strict-entries.service";
+import { TEXT_SIZES } from "./text-sizes.constants";
+import { TypographyService } from "./typography.service";
 
 /**
  * Le cerfa généré, les textes stricts qui en débordent, et la taille de ses
@@ -46,36 +52,91 @@ export type Overflowing = {
   readonly maximum: number;
 };
 
-/** La marque de chaque page d'un aperçu. */
-export const PREVIEW_MARK = "Aperçu – texte à valider";
+export class GenerateTheCerfa {
+  /** La marque de chaque page d'un aperçu. */
+  static readonly PREVIEW_MARK = "Aperçu – texte à valider";
 
-/**
- * Génère le cerfa rempli d'après `dto`, aplati, prêt à télécharger. Il n'est
- * qu'un aperçu, marqué sur chaque page, si un texte strict en déborde, ou si
- * `preview` le demande : un texte s'y réécrit encore.
- */
-export async function generateCerfa<Dto extends CerfaDto>(
-  cerfa: Cerfa<Dto>,
-  dto: Dto,
-  { preview = false }: { preview?: boolean } = {},
-): Promise<GeneratedCerfa> {
-  const { template, fillCerfa, flattenCerfa, lines } = await loaded(cerfa);
-  const { entries, marks, overflowingOf, ...options } = instructionsOf(
-    cerfa,
-    dto,
-  );
-  const filled = await fillCerfa(template, entries, options);
-  const { drawings, ...drawn } = drawingsOf(cerfa, dto, lines);
-  const overflowing = [
-    ...filled.overflowing.map(overflowingOf),
-    ...drawn.overflowing,
-  ];
-  const marked = preview || overflowing.length > 0;
-  const { pdf, drawnSizes } = await flattenCerfa(filled.pdf, {
-    marks,
-    drawings: [...drawings.map(([, drawing]) => drawing), ...filled.overflows],
-    ...(marked ? { watermark: PREVIEW_MARK } : {}),
-  });
+  readonly #pdf: CerfaPdf;
+
+  constructor(pdf: CerfaPdf) {
+    this.#pdf = pdf;
+  }
+
+  /**
+   * Génère le cerfa rempli d'après `dto`, aplati, prêt à télécharger. Il n'est
+   * qu'un aperçu, marqué sur chaque page, si un texte strict en déborde, ou si
+   * `preview` le demande : un texte s'y réécrit encore.
+   */
+  async execute<Dto extends CerfaDto>(
+    cerfa: Cerfa<Dto>,
+    dto: Dto,
+    { preview = false }: { preview?: boolean } = {},
+  ): Promise<GeneratedCerfa> {
+    const [template, lines] = await Promise.all([
+      cerfa.template(),
+      this.#pdf.lineMeasurers(StrictEntriesService.of(cerfa)),
+    ]);
+    const { entries, marks, overflowingOf, ...options } = instructionsOf(
+      cerfa,
+      dto,
+    );
+    const filled = await this.#pdf.fill(template, entries, options);
+    const { drawings, ...drawn } = drawingsOf(cerfa, dto, lines);
+    const overflowing = [
+      ...filled.overflowing.map(overflowingOf),
+      ...drawn.overflowing,
+    ];
+    const marked = preview || overflowing.length > 0;
+    const flattened = await this.#flatten(filled, { marks, drawings }, marked);
+    return generatedOf({
+      cerfa,
+      entries,
+      filled,
+      drawings,
+      overflowing,
+      flattened,
+    });
+  }
+
+  // Le PDF rempli, sans champ, avec ses marques et ses dessins. Un texte strict
+  // qui déborde, ou l'aperçu demandé : il porte la marque de l'aperçu.
+  #flatten(
+    filled: Filled,
+    { marks, drawings }: { marks: Mark[]; drawings: DrawnTexts },
+    marked: boolean,
+  ): Promise<Flattened> {
+    return this.#pdf.flatten(filled.pdf, {
+      marks,
+      drawings: [
+        ...drawings.map(([, drawing]) => drawing),
+        ...filled.overflows,
+      ],
+      ...(marked ? { watermark: GenerateTheCerfa.PREVIEW_MARK } : {}),
+    });
+  }
+}
+
+/** Les textes dessinés, un par position, avec la clé de leur entrée. */
+type DrawnTexts = readonly (readonly [string, Drawing])[];
+
+// ---- implémentation ----
+
+// Le PDF aplati, ce qui en déborde, et la taille de ses textes imprimés.
+function generatedOf<Dto extends CerfaDto>({
+  cerfa,
+  entries,
+  filled,
+  drawings,
+  overflowing,
+  flattened: { pdf, drawnSizes },
+}: {
+  cerfa: Cerfa<Dto>;
+  entries: readonly FieldEntry[];
+  filled: Filled;
+  drawings: DrawnTexts;
+  overflowing: readonly Overflowing[];
+  flattened: Flattened;
+}): GeneratedCerfa {
   return {
     // `pdf` est une vue typée trop large pour `BlobPart` : on la repasse telle
     // quelle.
@@ -88,35 +149,6 @@ export async function generateCerfa<Dto extends CerfaDto>(
       ids: cerfa.typographicIds,
     }),
   };
-}
-
-/**
- * La mesure des textes stricts du cerfa, par entrée du DTO : `pdf-lib` et le
- * gabarit se chargent avec elle.
- */
-export async function measureOf(
-  cerfa: Cerfa<CerfaDto>,
-): Promise<(entry: string, text: string) => StrictMeasure> {
-  const [template, { measureStrictTexts }] = await Promise.all([
-    cerfa.template(),
-    import("./measure-strict-texts"),
-  ]);
-  return measureStrictTexts(template, StrictEntriesService.of(cerfa));
-}
-
-// ---- implémentation ----
-
-// Le gabarit, et ce qui le remplit, l'aplatit et mesure ses textes dessinés.
-async function loaded(cerfa: Cerfa<CerfaDto>) {
-  const [template, { fillCerfa }, { flattenCerfa }, lines] = await Promise.all([
-    cerfa.template(),
-    import("./fill-the-form"),
-    import("./flatten-the-form"),
-    import("./measure-strict-texts").then(({ lineMeasurersOf }) =>
-      lineMeasurersOf(StrictEntriesService.of(cerfa)),
-    ),
-  ]);
-  return { template, fillCerfa, flattenCerfa, lines };
 }
 
 type Binding = TextBinding | StrictTextBinding | BoxBinding;
@@ -156,7 +188,7 @@ function instructionsOf<Dto extends CerfaDto>(cerfa: Cerfa<Dto>, dto: Dto) {
 function drawingsOf<Dto extends CerfaDto>(
   cerfa: Cerfa<Dto>,
   dto: Dto,
-  lines: ReadonlyMap<string, StrictMeasurer>,
+  lines: ReadonlyMap<string, StrictLineMeasure>,
 ) {
   const overflowing: Overflowing[] = [];
   const drawings = Object.entries(cerfa.drawings).flatMap(([key, binding]) => {

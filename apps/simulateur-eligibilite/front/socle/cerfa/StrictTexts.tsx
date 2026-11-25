@@ -8,7 +8,7 @@
 
 import type { CerfaDto } from "../../../core/socle/cerfa";
 import type { Cerfa, Strict, StrictMeasure } from "./cerfa.types";
-import type { Overflowing } from "./generate-the-cerfa/generate-the-cerfa";
+import type { Overflowing } from "./generate-the-cerfa.usecase";
 import { useMeasure } from "./measure.hook";
 import { StrictTextEditor } from "./StrictTextEditor";
 import { StrictEntriesService } from "./strict-entries.service";

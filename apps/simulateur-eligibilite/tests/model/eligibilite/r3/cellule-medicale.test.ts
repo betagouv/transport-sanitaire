@@ -9,11 +9,8 @@ import { describe, expect, it } from "vitest";
 import type { Faits } from "../../../../core/models/eligibilite/faits/noms";
 import { Fait } from "../../../../core/socle";
 import { CerfaDtoService } from "../../../../core/socle/cerfa";
-import {
-  type BoundCerfa,
-  generateCerfa,
-  type Overflowing,
-} from "../../../../front/socle/cerfa";
+import type { BoundCerfa, Overflowing } from "../../../../front/socle/cerfa";
+import { generateCerfa } from "../../../socle/cerfa/generer-le-cerfa";
 import { textsIn } from "../../../socle/cerfa/pdf-aplati";
 import { DOCUMENTS } from "../documents-lies";
 import { DAP, donnees, gabarit, PMT, type Reponses } from "./reponses-du-cerfa";

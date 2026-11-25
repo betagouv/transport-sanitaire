@@ -5,10 +5,12 @@ import { PDFCheckBox, PDFDict, type PDFDocument, PDFName } from "pdf-lib";
 /** Une case à cocher, et l'état d'export à y écrire. */
 export type Box = { readonly field: string; readonly checked: string };
 
-/** Coche chaque case de `boxes`, ou refuse celle qui ne saurait se rendre. */
-export function checkBoxes(document: PDFDocument, boxes: readonly Box[]): void {
-  const form = document.getForm();
-  for (const { field, checked } of boxes) check(form, field, checked);
+export class CheckBoxService {
+  /** Coche chaque case de `boxes`, ou refuse celle qui ne saurait se rendre. */
+  static checkAll(document: PDFDocument, boxes: readonly Box[]): void {
+    const form = document.getForm();
+    for (const { field, checked } of boxes) check(form, field, checked);
+  }
 }
 
 // ---- implémentation ----
