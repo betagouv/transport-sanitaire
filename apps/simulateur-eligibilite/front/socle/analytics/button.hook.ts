@@ -4,7 +4,7 @@
 // non est décidé par `Journey`.
 
 import type { Button } from "./button-place.vo";
-import { useAnalyticsUseCases, useJourney } from "./use-cases-in-the-tree";
+import { useAnalyticsUseCases, useJourney } from "./use-cases-in-the-tree.hook";
 
 export type ButtonTracking = {
   /** Le bouton est cliqué, à la souris ou au clavier. */

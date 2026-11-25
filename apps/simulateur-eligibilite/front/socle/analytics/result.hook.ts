@@ -7,7 +7,7 @@ import type { FirstResult } from "../model.types";
 import { type ButtonTracking, useButtonTracking } from "./button.hook";
 import type { Button } from "./button-place.vo";
 import type { ResultCodes } from "./revision.entity";
-import { useAnalyticsUseCases, useJourney } from "./use-cases-in-the-tree";
+import { useAnalyticsUseCases, useJourney } from "./use-cases-in-the-tree.hook";
 
 /** On ne sait pas encore si le résultat se complète : il charge. */
 type Pending = null;

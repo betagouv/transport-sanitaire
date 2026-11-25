@@ -7,7 +7,7 @@
 import { useLayoutEffect, useRef } from "react";
 import type { Simulation } from "../../../core/socle/simulation";
 import type { ResultScreen } from "./journey.entity";
-import { useAnalyticsUseCases, useJourney } from "./use-cases-in-the-tree";
+import { useAnalyticsUseCases, useJourney } from "./use-cases-in-the-tree.hook";
 
 export function useResultScreen(
   screen: ResultScreen,
