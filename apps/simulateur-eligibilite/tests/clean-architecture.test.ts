@@ -85,8 +85,19 @@ const estUnAdaptateur = (fichier: string) => /\.adapter(\.ts)?$/.test(fichier);
 
 // Un index dit ce que son module promet : il peut exporter un adaptateur. Un
 // conteneur assemble les classes d'une racine : il les choisit et les branche.
+// Les fichiers de la racine que QUAL-018 nomme font de même : le point d'entrée
+// du serveur et son app Express, le point d'entrée de l'écran. Ils sont nommés
+// par leur chemin, pas par leur nom : un `app.ts` au fond d'un dossier n'est pas
+// une racine.
+const ASSEMBLEURS_DE_RACINE = [
+  "server/server.ts",
+  "server/app.ts",
+  "front/main.tsx",
+];
 const assemble = (fichier: string) =>
-  fichier.endsWith("/index.ts") || /(^|\/)container\.ts$/.test(fichier);
+  fichier.endsWith("/index.ts") ||
+  /(^|\/)container\.ts$/.test(fichier) ||
+  ASSEMBLEURS_DE_RACINE.includes(fichier);
 
 // Le moteur de décision, que le modèle importe sans passer par un index : il
 // amènerait publicodes dans le chunk d'entrée (`modules-du-socle.test.ts`).

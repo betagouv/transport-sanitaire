@@ -120,7 +120,8 @@ manque à son contrat s'ajoute à l'index. Les tests d'un module
   `front/` et `shared/` restent sous la règle, car ils tournent aussi dans le
   navigateur. Risque accepté : qu'un import comme `node:http` s'y glisse.
 - Un `index.ts` peut exporter un adaptateur, et un `container.ts` assemble ceux de
-  sa racine.
+  sa racine. Les fichiers de racine que QUAL-018 nomme font de même, par leur
+  chemin : `server/server.ts`, `server/app.ts` et `front/main.tsx`.
 - Une seule porte : un modèle charge l'adaptateur publicodes sans index, pour
   rester hors du chunk d'entrée.
 - Le domaine du journal et celui de la mesure d'audience sont plus stricts : ils
