@@ -2,11 +2,15 @@
 // dans `architecture.test.ts`, chaque règle donne son pourquoi dans son message
 // d'échec.
 
-import { existsSync } from "node:fs";
+import { existsSync, readdirSync } from "node:fs";
 import { basename, dirname, join } from "node:path";
 import ts from "typescript";
 import { describe, expect, it } from "vitest";
 import { astDe, racine, sources } from "./inspection-des-sources";
+
+// Ce qui suit la règle dans chaque modèle de `core/models/`, quand il l'a : les
+// rubriques de son cerfa. Le reste du modèle y passera à son tour.
+const DOSSIERS_DES_MODELES = ["r3/rubriques"];
 
 // Ce qui suit déjà la règle. Un dossier s'ajoute ici quand il y est passé.
 const GARDES = [
@@ -17,6 +21,7 @@ const GARDES = [
   "front/socle/analytics",
   "front/socle/cerfa",
   "front/socle/server-api",
+  ...dossiersGardesDesModeles(),
 ];
 
 // Un composant React (`.tsx`) n'a pas de suffixe de rôle : QUAL-018 ne vaut pas
@@ -45,6 +50,8 @@ const ROLES = [
   "client",
   "fait",
   "question",
+  "condition",
+  "rubrique",
 ];
 const ROLE = new RegExp(`\\.(${ROLES.join("|")})\\.ts$`);
 
@@ -110,6 +117,31 @@ describe("un fichier dit son rôle par son suffixe", () => {
     ).toEqual([]);
   });
 
+  it("une rubrique vit dans un dossier rubriques/ d'un cerfa", () => {
+    const fautifs = sources("core", "front", "server", "shared")
+      .filter((f) => f.endsWith(".rubrique.ts"))
+      .filter((f) => !/^core\/models\/[^/]+\/r3\/rubriques\//.test(f));
+    expect(
+      fautifs,
+      "Une déclaration de rubrique (`.rubrique.ts`) est un cadre du cerfa " +
+        "papier que plusieurs cerfa partagent (QUAL-018) : elle vit dans " +
+        "`core/models/<modèle>/r3/rubriques/`.",
+    ).toEqual([]);
+  });
+
+  it("une rubrique ne déclare qu'elle-même et son type", () => {
+    const fautifs = sources(...GARDES)
+      .filter((f) => f.endsWith(".rubrique.ts"))
+      .filter((f) => !neDeclareQuUneRubrique(astDe(f)));
+    expect(
+      fautifs,
+      "Un `.rubrique.ts` exporte des types et une seule constante, du type " +
+        "`Rubrique<…>` (QUAL-018) : ce que deux rubriques ou un cerfa " +
+        "partagent (une fonction, une table) va dans le fichier de son rôle, " +
+        "à côté.",
+    ).toEqual([]);
+  });
+
   it("une fabrique vit à côté de ce qu'elle fabrique", () => {
     const fautifs = sources(...GARDES)
       .filter((f) => f.endsWith(".factory.ts"))
@@ -125,6 +157,53 @@ describe("un fichier dit son rôle par son suffixe", () => {
 });
 
 // ---- implémentation ----
+
+// Les dossiers des modèles de `core/models/` qui suivent déjà la règle.
+function dossiersGardesDesModeles(): string[] {
+  return readdirSync(join(racine, "core/models"))
+    .flatMap((modele) =>
+      DOSSIERS_DES_MODELES.map((dossier) => `core/models/${modele}/${dossier}`),
+    )
+    .filter((dossier) => existsSync(join(racine, dossier)));
+}
+
+// Des types, et une seule constante annotée `Rubrique<…>`. Le privé est libre.
+function neDeclareQuUneRubrique(source: ts.SourceFile): boolean {
+  const exportees = source.statements.filter(exporteQuelqueChose);
+  const types = exportees.filter(
+    (instruction) =>
+      ts.isTypeAliasDeclaration(instruction) ||
+      ts.isInterfaceDeclaration(instruction) ||
+      (ts.isExportDeclaration(instruction) && instruction.isTypeOnly),
+  );
+  const autres = exportees.filter(
+    (instruction) => !types.includes(instruction),
+  );
+  const [rubrique, ...reste] = autres;
+  return (
+    rubrique !== undefined &&
+    reste.length === 0 &&
+    ts.isVariableStatement(rubrique) &&
+    rubrique.declarationList.declarations.length === 1 &&
+    (rubrique.declarationList.declarations[0]?.type
+      ?.getText(source)
+      .startsWith("Rubrique<") ??
+      false)
+  );
+}
+
+function exporteQuelqueChose(instruction: ts.Statement): boolean {
+  return (
+    ts.isExportDeclaration(instruction) ||
+    ts.isExportAssignment(instruction) ||
+    (ts.canHaveModifiers(instruction) &&
+      Boolean(
+        ts
+          .getModifiers(instruction)
+          ?.some(({ kind }) => kind === ts.SyntaxKind.ExportKeyword),
+      ))
+  );
+}
 
 function exporteUneValeur(instruction: ts.Statement): boolean {
   if (ts.isExportDeclaration(instruction)) return !instruction.isTypeOnly;

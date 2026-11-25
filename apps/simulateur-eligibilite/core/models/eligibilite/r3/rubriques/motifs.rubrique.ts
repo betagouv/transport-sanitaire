@@ -8,8 +8,8 @@
 // l'AT/MP sont les liens du transport, sous les noms de la PMT.
 
 import { given } from "../../questions/reponses.ts";
-import { LIENS } from "./liens.ts";
-import type { Rubrique } from "./rubrique.ts";
+import { LIENS } from "./liens.rubrique.ts";
+import type { Rubrique } from "./rubrique.types.ts";
 
 export type Motifs = {
   readonly hospitalisation: boolean;

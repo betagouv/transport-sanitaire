@@ -5,7 +5,7 @@
 import type { Cible } from "../../../../socle/index.ts";
 import type { Cibles } from "../../cibles/noms.ts";
 import { given } from "../../questions/reponses.ts";
-import type { Rubrique } from "./rubrique.ts";
+import type { Rubrique } from "./rubrique.types.ts";
 
 export type Mode = {
   readonly mode_tap_ou_tpmr: boolean;

@@ -3,7 +3,7 @@
 // posée seulement pour une hospitalisation, les deux restent vides.
 
 import { given } from "../../questions/reponses.ts";
-import type { Rubrique } from "./rubrique.ts";
+import type { Rubrique } from "./rubrique.types.ts";
 
 export type Exoneration = {
   readonly exoneration_oui: boolean;

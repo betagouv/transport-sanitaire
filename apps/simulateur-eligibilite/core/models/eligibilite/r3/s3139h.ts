@@ -6,33 +6,44 @@
 // DAP a les siens, et la situation d'un transport par avion ou bateau.
 
 import type { CerfaMapping } from "../../../socle/index.ts";
-import { ACCIDENT, type Accident } from "./rubriques/accident.ts";
+import { ACCIDENT, type Accident } from "./rubriques/accident.rubrique.ts";
 import {
   AVION_OU_BATEAU,
   type AvionOuBateau,
-} from "./rubriques/avion-ou-bateau.ts";
-import { BENEFICIAIRE, type Beneficiaire } from "./rubriques/beneficiaire.ts";
+} from "./rubriques/avion-ou-bateau.rubrique.ts";
+import {
+  BENEFICIAIRE,
+  type Beneficiaire,
+} from "./rubriques/beneficiaire.rubrique.ts";
 import {
   CENTRE_DE_REFERENCE,
   type CentreDeReference,
-} from "./rubriques/centre-de-reference.ts";
-import { EXONERATION, type Exoneration } from "./rubriques/exoneration.ts";
-import { LIENS, type Liens } from "./rubriques/liens.ts";
-import { MODE, type Mode } from "./rubriques/mode.ts";
+} from "./rubriques/centre-de-reference.rubrique.ts";
+import {
+  EXONERATION,
+  type Exoneration,
+} from "./rubriques/exoneration.rubrique.ts";
+import { LIENS, type Liens } from "./rubriques/liens.rubrique.ts";
+import { MODE, type Mode } from "./rubriques/mode.rubrique.ts";
 import {
   MOTIFS_DE_LA_DAP,
   type MotifsDeLaDap,
-} from "./rubriques/motifs-de-la-dap.ts";
-import { NOMBRE, type Nombre } from "./rubriques/nombre.ts";
-import { PRESCRIPTION, type Prescription } from "./rubriques/prescription.ts";
-import { TEXTE_MEDICAL, type TexteMedical } from "./rubriques/texte-medical.ts";
-import { TRAJET, type Trajet } from "./rubriques/trajet.ts";
+} from "./rubriques/motifs-de-la-dap.rubrique.ts";
+import { NOMBRE, type Nombre } from "./rubriques/nombre.rubrique.ts";
 import {
   PRECISION_DE_L_URGENCE,
   type PrecisionDeLUrgence,
-  URGENCE,
-  type Urgence,
-} from "./rubriques/urgence.ts";
+} from "./rubriques/precision-de-l-urgence.rubrique.ts";
+import {
+  PRESCRIPTION,
+  type Prescription,
+} from "./rubriques/prescription.rubrique.ts";
+import {
+  TEXTE_MEDICAL,
+  type TexteMedical,
+} from "./rubriques/texte-medical.rubrique.ts";
+import { TRAJET, type Trajet } from "./rubriques/trajet.rubrique.ts";
+import { URGENCE, type Urgence } from "./rubriques/urgence.rubrique.ts";
 
 export type DtoS3139h = {
   fields: Accident &

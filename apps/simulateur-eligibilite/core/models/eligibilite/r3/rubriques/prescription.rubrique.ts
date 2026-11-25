@@ -3,7 +3,7 @@
 // résultat, et ne remplace aucune date de soins, d'accident ou de permission.
 
 import { given } from "../../questions/reponses.ts";
-import type { Rubrique } from "./rubrique.ts";
+import type { Rubrique } from "./rubrique.types.ts";
 
 export type Prescription = {
   /** `AAAA-MM-JJ`. */

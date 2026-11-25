@@ -3,7 +3,7 @@
 // Q3.6.1, qui ne se pose que si P2 a établi le lien.
 
 import { given } from "../../questions/reponses.ts";
-import type { Rubrique } from "./rubrique.ts";
+import type { Rubrique } from "./rubrique.types.ts";
 
 export type Liens = {
   readonly lien_ald: boolean;

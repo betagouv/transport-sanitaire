@@ -4,7 +4,7 @@
 // telle quelle : Q3.4.a vient après le verrou, et les cibles y sont figées.
 
 import { given } from "../../questions/reponses.ts";
-import type { Rubrique } from "./rubrique.ts";
+import type { Rubrique } from "./rubrique.types.ts";
 
 export type CentreDeReference = {
   readonly centre_rare: boolean;

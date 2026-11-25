@@ -3,7 +3,7 @@
 // et reste décochée. Sans Q1.3 validée, ni Oui ni Non ne se coche.
 
 import { given } from "../../questions/reponses.ts";
-import type { Rubrique } from "./rubrique.ts";
+import type { Rubrique } from "./rubrique.types.ts";
 
 export type Accident = {
   readonly tiers_oui: boolean;

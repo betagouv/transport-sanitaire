@@ -10,11 +10,7 @@
 // L'aller-retour ne se coche que si le retour est le même trajet, adresses
 // inversées. Plusieurs permissions du S3141 en sont chacune un.
 
-import type {
-  AddressData,
-  Reading,
-  Unanswered,
-} from "../../../../socle/index.ts";
+import type { Reading } from "../../../../socle/index.ts";
 import {
   type Categorie,
   HTNM,
@@ -25,10 +21,10 @@ import {
   natureDuLieuChoisi,
 } from "../../questions/p3/conditions/lieux-du-trajet.ts";
 import { SENS_CHOISI } from "../../questions/p3/conditions/sens-du-trajet.ts";
-import { Q3_2 } from "../../questions/p3/questions/q3-2.question.ts";
 import { Q3_3 } from "../../questions/p3/questions/q3-3.question.ts";
 import { given } from "../../questions/reponses.ts";
-import type { Rubrique } from "./rubrique.ts";
+import { LieuxDuCerfa } from "./lieux-du-cerfa.service.ts";
+import type { Rubrique } from "./rubrique.types.ts";
 
 export type Trajet = {
   readonly depart_domicile: boolean;
@@ -40,27 +36,17 @@ export type Trajet = {
   readonly aller_retour: boolean;
 };
 
-/** Les questions de chaque lieu. */
-export const LIEUX = { depart: Q3_2, arrivee: Q3_3 } as const;
-
 export const TRAJET: Rubrique<Trajet> = {
-  depart_domicile: auDomicile("depart"),
+  depart_domicile: LieuxDuCerfa.auDomicile("depart"),
   depart_structure: zone("depart", "2_STRUCTURE_DE_SOINS"),
   depart_autre: zone("depart", "3_AUTRE_LIEU"),
-  arrivee_domicile: auDomicile("arrivee"),
+  arrivee_domicile: LieuxDuCerfa.auDomicile("arrivee"),
   arrivee_structure: zone("arrivee", "2_STRUCTURE_DE_SOINS"),
   arrivee_autre: zone("arrivee", "3_AUTRE_LIEU"),
   aller_retour: SENS_CHOISI.compute(
     (sens) => sens === "3_ALLER_RETOUR_EQUIVALENT",
   ),
 };
-
-/** La case du domicile. Sans catégorie, aucune rubrique ne reçoit le lieu. */
-export function auDomicile(extremite: Extremite): Reading<boolean> {
-  return LIEUX[extremite].categorieDuLieu.compute(
-    (categorie) => categorie === "1_DOMICILE",
-  );
-}
 
 // ---- implémentation ----
 
@@ -75,7 +61,7 @@ const USLD = "Unité de Soins de Longue Durée (USLD)";
 // La nature tient compte des côtés de l'USLD et de l'EHPAD, répondus sur la
 // page d'arrivée.
 function lieu(extremite: Extremite) {
-  const questions = LIEUX[extremite];
+  const questions = LieuxDuCerfa.QUESTIONS[extremite];
   return given.all({
     categorie: questions.categorieDuLieu,
     nature: natureDuLieuChoisi(extremite, Q3_3.choix),
@@ -99,7 +85,10 @@ function zone(extremite: Extremite, cible: Categorie) {
 function lieuEnUnTexte(lu: Lieu): string | ZoneVide {
   const designation =
     lu.categorie === "2_STRUCTURE_DE_SOINS" ? structure(lu) : autreLieu(lu);
-  const parties = [...designation, ...adresseEnParties(lu.adresse.value)]
+  const parties = [
+    ...designation,
+    ...LieuxDuCerfa.adresseEnParties(lu.adresse.value),
+  ]
     .map((partie) => partie?.trim())
     .filter((partie): partie is string => Boolean(partie))
     .filter((partie, rang, toutes) => toutes.indexOf(partie) === rang);
@@ -123,20 +112,4 @@ function autreLieu({ htnm, nature, nom, precision }: Lieu) {
     ? HTNM
     : precision.value?.trim() || natureEnLettres(nature);
   return [enLettres, nom.value];
-}
-
-/**
- * Les parties saisies de l'adresse. Le code postal et la commune vont
- * ensemble, comme sur une enveloppe.
- */
-export function adresseEnParties(adresse: AddressData | Unanswered): string[] {
-  if (adresse === undefined) return [];
-  const ville = [adresse.postalCode, adresse.city].filter(Boolean).join(" ");
-  return [
-    adresse.placeName,
-    adresse.street,
-    adresse.complement,
-    ville,
-    adresse.country,
-  ].filter((partie): partie is string => Boolean(partie));
 }

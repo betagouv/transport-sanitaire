@@ -1,6 +1,7 @@
 // L'urgence sur la PMT et la DAP, côté écran : son nom, et comment la
 // précision s'écrit sur le cerfa. Sa valeur est du métier
-// (`core/models/eligibilite/r3/rubriques/urgence.ts`).
+// (`core/models/eligibilite/r3/rubriques/urgence.rubrique.ts` et
+// `precision-de-l-urgence.rubrique.ts`).
 //
 // La précision est un texte strict (T06, R04) : sur une ligne, en 8 pt, ou le
 // prescripteur la raccourcit en R3. Le gabarit de la PMT n'a pas de champ pour

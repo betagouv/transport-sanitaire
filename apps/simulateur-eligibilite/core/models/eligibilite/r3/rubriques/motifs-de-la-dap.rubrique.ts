@@ -5,7 +5,7 @@
 // qui reste vide en pratique.
 
 import { given } from "../../questions/reponses.ts";
-import type { Rubrique } from "./rubrique.ts";
+import type { Rubrique } from "./rubrique.types.ts";
 
 export type MotifsDeLaDap = {
   readonly longue_distance: boolean;

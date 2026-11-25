@@ -9,9 +9,9 @@
 
 import type { Condition } from "../../../../socle/index.ts";
 import { given } from "../../questions/reponses.ts";
-import { MOTIFS } from "./motifs.ts";
-import { MOTIFS_DE_LA_DAP } from "./motifs-de-la-dap.ts";
-import type { Rubrique } from "./rubrique.ts";
+import { MOTIFS } from "./motifs.rubrique.ts";
+import { MOTIFS_DE_LA_DAP } from "./motifs-de-la-dap.rubrique.ts";
+import type { Rubrique } from "./rubrique.types.ts";
 
 export type AvionOuBateau = {
   readonly air_accompagnant: boolean;

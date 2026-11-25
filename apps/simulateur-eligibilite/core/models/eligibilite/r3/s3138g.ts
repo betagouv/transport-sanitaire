@@ -8,26 +8,37 @@
 
 import type { CerfaMapping } from "../../../socle/index.ts";
 import { given } from "../questions/reponses.ts";
-import { ACCIDENT, type Accident } from "./rubriques/accident.ts";
-import { BENEFICIAIRE, type Beneficiaire } from "./rubriques/beneficiaire.ts";
+import { ACCIDENT, type Accident } from "./rubriques/accident.rubrique.ts";
+import {
+  BENEFICIAIRE,
+  type Beneficiaire,
+} from "./rubriques/beneficiaire.rubrique.ts";
 import {
   CENTRE_DE_REFERENCE,
   type CentreDeReference,
-} from "./rubriques/centre-de-reference.ts";
-import { EXONERATION, type Exoneration } from "./rubriques/exoneration.ts";
-import { MODE, type Mode } from "./rubriques/mode.ts";
-import { MOTIFS, type Motifs } from "./rubriques/motifs.ts";
-import { NOMBRE, type Nombre } from "./rubriques/nombre.ts";
-import { PRESCRIPTION, type Prescription } from "./rubriques/prescription.ts";
-import type { Rubrique } from "./rubriques/rubrique.ts";
-import { TEXTE_MEDICAL, type TexteMedical } from "./rubriques/texte-medical.ts";
-import { TRAJET, type Trajet } from "./rubriques/trajet.ts";
+} from "./rubriques/centre-de-reference.rubrique.ts";
+import {
+  EXONERATION,
+  type Exoneration,
+} from "./rubriques/exoneration.rubrique.ts";
+import { MODE, type Mode } from "./rubriques/mode.rubrique.ts";
+import { MOTIFS, type Motifs } from "./rubriques/motifs.rubrique.ts";
+import { NOMBRE, type Nombre } from "./rubriques/nombre.rubrique.ts";
 import {
   PRECISION_DE_L_URGENCE,
   type PrecisionDeLUrgence,
-  URGENCE,
-  type Urgence,
-} from "./rubriques/urgence.ts";
+} from "./rubriques/precision-de-l-urgence.rubrique.ts";
+import {
+  PRESCRIPTION,
+  type Prescription,
+} from "./rubriques/prescription.rubrique.ts";
+import type { Rubrique } from "./rubriques/rubrique.types.ts";
+import {
+  TEXTE_MEDICAL,
+  type TexteMedical,
+} from "./rubriques/texte-medical.rubrique.ts";
+import { TRAJET, type Trajet } from "./rubriques/trajet.rubrique.ts";
+import { URGENCE, type Urgence } from "./rubriques/urgence.rubrique.ts";
 
 /**
  * Les soins de pension militaire : Oui s'ils sont établis, Non s'ils sont

@@ -586,13 +586,14 @@ Cette règle ne vaut que pour `apps/simulateur-eligibilite`, hors composants Rea
 | `.client.ts` | un client HTTP préconfiguré : adresse, authentification, JSON, erreurs |
 | `.fait.ts` | la déclaration d'un fait du modèle : un fichier de `faits/`, qui exporte un seul `unFait("fait_x")…` |
 | `.question.ts` | la déclaration d'une question du modèle : un fichier de `questions/`, qui exporte des constantes bâties par `question.<forme>(…)` |
+| `.rubrique.ts` | un cadre du cerfa papier, que plusieurs cerfa partagent : un fichier de `rubriques/`, qui exporte son type et une seule constante `Rubrique<…>` |
 
 Un `index.ts` s'en passe : il ne fait que réexporter. Un fichier qui assemble les
 classes d'une racine (`container.ts`, `server.ts`, `app.ts`, `main.tsx`) s'en
 passe aussi. Une fabrique porte le nom de ce qu'elle fabrique et vit dans son
 dossier, à côté de son produit : une `.entity`, une `.vo` ou des `.types` du même
 nom. Un `.constants.ts` est du domaine : une entité, un objet-valeur ou un
-service peut l'importer. Un `.fait.ts` et un `.question.ts` le sont aussi : ils
+service peut l'importer. Un `.fait.ts`, un `.question.ts` et un `.rubrique.ts` le sont aussi : ils
 vivent dans `core/models/`, où aucun paquet ne s'importe. Un `.schema.ts` n'est pas du domaine : un contrôleur l'importe.
 Un hook ne porte aucune règle (QUAL-019).
 Un service qui touche le navigateur n'est appelé que par l'écran (un composant, un hook) ou un assembleur, jamais par une entité, un objet-valeur ou un use case.
@@ -619,7 +620,7 @@ question/question.ts
 *Gardé par* `tests/roles-par-suffixe.test.ts › un fichier dit son rôle par son
 suffixe`, dans `apps/simulateur-eligibilite`. La garde couvre `core/socle/`,
 `server/journal/`, `server/grist/`, `server/postgres/`, `front/socle/analytics/`,
-`front/socle/cerfa/` (ses composants `.tsx` exceptés) et `front/socle/server-api/` : un dossier la rejoint quand il suit la règle. Un `.fait.ts` ne vit que dans un `faits/`, un `.question.ts` que dans un `questions/` de `core/models/`. Que
+`front/socle/cerfa/` (ses composants `.tsx` exceptés) et `front/socle/server-api/`, et dans chaque modèle de `core/models/`, `r3/rubriques/` : un dossier la rejoint quand il suit la règle. Un `.fait.ts` ne vit que dans un `faits/`, un `.question.ts` que dans un `questions/` de `core/models/`, un `.rubrique.ts` que dans un `r3/rubriques/`. Que
 le hook ne porte aucune règle est du jugement.
 
 *Aucune garde.* Pour la limite d'un service qui touche le navigateur : la garde devrait distinguer deux sortes de services, et le suffixe ne le dit pas.

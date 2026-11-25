@@ -4,7 +4,7 @@
 // compte que ceux de ce document : deux documents peuvent former une série.
 
 import { given } from "../../questions/reponses.ts";
-import type { Rubrique } from "./rubrique.ts";
+import type { Rubrique } from "./rubrique.types.ts";
 
 export type Nombre = {
   readonly nombre?: string;

@@ -19,8 +19,8 @@ import type {
 import { Q1_3 } from "../../questions/p1/questions/q1-3.question.ts";
 import { Q2_1 } from "../../questions/p2/questions/q2-1.question.ts";
 import { given } from "../../questions/reponses.ts";
-import type { Rubrique } from "./rubrique.ts";
-import { adresseEnParties } from "./trajet.ts";
+import { LieuxDuCerfa } from "./lieux-du-cerfa.service.ts";
+import type { Rubrique } from "./rubrique.types.ts";
 
 /** Rien n'est établi, ou rien n'est saisi : la cellule reste vide. */
 type AucunSegment = undefined;
@@ -196,7 +196,7 @@ function lieu(
   nom: string | undefined,
   adresse: AddressData | Unanswered,
 ): string | AucunSegment {
-  const parties = adresseEnParties(adresse);
+  const parties = LieuxDuCerfa.adresseEnParties(adresse);
   if (nom === undefined || parties.length === 0) return undefined;
   return `${intitule}${nom} — ${parties.join(", ")}`;
 }

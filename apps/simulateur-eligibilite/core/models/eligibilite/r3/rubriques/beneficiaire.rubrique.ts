@@ -5,8 +5,8 @@
 
 import type { Extremite } from "../../questions/p3/conditions/lieux-du-trajet.ts";
 import { given } from "../../questions/reponses.ts";
-import type { Rubrique } from "./rubrique.ts";
-import { adresseEnParties, auDomicile, LIEUX } from "./trajet.ts";
+import { LieuxDuCerfa } from "./lieux-du-cerfa.service.ts";
+import type { Rubrique } from "./rubrique.types.ts";
 
 /** Le trajet ne passe pas par le domicile, ou son adresse manque. */
 type SansDomicile = undefined;
@@ -30,12 +30,14 @@ export const BENEFICIAIRE: Rubrique<Beneficiaire> = {
 function adresseDuDomicile(extremite: Extremite) {
   return given
     .all({
-      domicile: auDomicile(extremite),
-      adresse: given.question(LIEUX[extremite].adresse).answer(),
+      domicile: LieuxDuCerfa.auDomicile(extremite),
+      adresse: given
+        .question(LieuxDuCerfa.QUESTIONS[extremite].adresse)
+        .answer(),
     })
     .compute(({ domicile, adresse }): string | SansDomicile => {
       if (!domicile) return undefined;
-      const parties = adresseEnParties(adresse.value);
+      const parties = LieuxDuCerfa.adresseEnParties(adresse.value);
       return parties.length > 0 ? parties.join(", ") : undefined;
     });
 }
