@@ -3,5 +3,5 @@
 // modules.
 
 export { App } from "./App";
-export type { Models } from "./model-choice";
-export type { ModelSource } from "./model-loading";
+export type { Models } from "./model-choice.hook";
+export type { ModelSource } from "./model-loading.hook";

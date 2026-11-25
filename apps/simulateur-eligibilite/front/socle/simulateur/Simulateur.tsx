@@ -8,7 +8,7 @@
 // questionnaire ne repose aucune question d'avant.
 //
 // L'adresse de la page suit la position de la simulation, et le bouton Retour
-// du navigateur y revient (`follow-the-address.ts`).
+// du navigateur y revient (`follow-the-address.hook.ts`).
 
 import { type ComponentType, type ReactNode, useState } from "react";
 import type { Answers } from "../../../core/socle/questionnaire-engine";
@@ -22,8 +22,8 @@ import {
 import { useTextCounters } from "../cerfa";
 import type { Model } from "../model";
 import { type DebugTraceProps, QuestionnaireForm } from "../questionnaire";
-import { aldPathwayOf } from "./ald-pathway";
-import { useFollowTheAddress } from "./follow-the-address";
+import { aldPathwayOf } from "./ald-pathway.service";
+import { useFollowTheAddress } from "./follow-the-address.hook";
 import { CerfaScreen } from "./screens/CerfaScreen";
 import { ResultatScreen } from "./screens/ResultatScreen";
 

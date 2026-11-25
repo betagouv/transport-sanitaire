@@ -12,10 +12,10 @@ import type { ReactNode } from "react";
 import type { AskedQuestion } from "../../../core/socle/questionnaire-engine";
 
 import { ConditionalPanel } from "../ui";
-import { usePanelAnnouncement } from "./announce-a-panel";
+import { usePanelAnnouncement } from "./announce-a-panel.hook";
 import { type CounterOf, counted } from "./count-a-text";
 import { QuestionField } from "./QuestionField";
-import type { QuestionnaireScreen } from "./questionnaire";
+import type { QuestionnaireScreen } from "./questionnaire.hook";
 import type { RevisitLink } from "./revisit-an-answer";
 import { errorsOf } from "./word-a-problem";
 

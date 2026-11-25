@@ -12,15 +12,18 @@
 // rattachement.
 
 import { useState } from "react";
-import { LONGUEUR_MAX_D_UN_NOM } from "../../../shared/rattachement-saisi";
+import { LONGUEUR_MAX_D_UN_NOM } from "../../../shared/rattachement-saisi.vo";
 import {
   type Referentiel,
   snapshotReferentiel,
 } from "../../../shared/referentiel";
 import { Container, SelectField, TextField } from "../ui";
 import { optionsDuChoix } from "./choix";
-import type { Derivation, SaisieRattachement } from "./saisie-rattachement";
-import { useSaisieRattachement } from "./saisie-rattachement";
+import type {
+  Derivation,
+  SaisieRattachement,
+} from "./saisie-rattachement.hook";
+import { useSaisieRattachement } from "./saisie-rattachement.hook";
 import type { Structure } from "./structures";
 
 type Props = {

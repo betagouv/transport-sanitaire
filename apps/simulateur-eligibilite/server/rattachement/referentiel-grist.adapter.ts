@@ -11,7 +11,7 @@ import {
   enrichitLeReferentiel,
   normalise,
   type RattachementSaisi,
-} from "../../shared/rattachement-saisi.ts";
+} from "../../shared/rattachement-saisi.vo.ts";
 import type {
   Etablissement,
   RattachementEnregistre,

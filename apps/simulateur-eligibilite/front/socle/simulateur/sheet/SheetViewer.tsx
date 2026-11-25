@@ -2,17 +2,17 @@
 // fond gris, sous une barre qui l'imprime et la télécharge. Les logos du
 // Ministère et de l'Assurance Maladie sont en tête : ils ne changent pas avec
 // le modèle. À l'impression, la feuille passe en papier et sort seule, sur une
-// ou deux A4 selon sa mesure (`print-the-sheet.ts`). Le PDF a les mêmes pages
-// (`download-the-sheet.ts`). Le pied de la feuille la clôt. Les gabarits de
+// ou deux A4 selon sa mesure (`print-the-sheet.hook.ts`). Le PDF a les mêmes pages
+// (`download-the-sheet.hook.ts`). Le pied de la feuille la clôt. Les gabarits de
 // l'éditeur en font foi.
 
 import { useRef, useState } from "react";
 import { PdfActionButton, type PdfSignals } from "../../cerfa";
 import type { Sheet } from "../../model";
-import { useSheetDownload } from "./download-the-sheet";
+import { useSheetDownload } from "./download-the-sheet.hook";
 import assuranceMaladie from "./logos/assurance-maladie.svg";
 import ministere from "./logos/ministere-de-la-sante.svg";
-import { usePaperPrint } from "./print-the-sheet";
+import { usePaperPrint } from "./print-the-sheet.hook";
 import { paperAttributes } from "./slice-into-pages";
 import "./sheet-viewer.css";
 import "./sheet-viewer-narrow.css";

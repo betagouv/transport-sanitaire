@@ -5,7 +5,7 @@
 
 import { afterEach, describe, expect, it } from "vitest";
 import { GristApiClient } from "../../../server/grist/grist-api.client.ts";
-import { creerReferentielGrist } from "../../../server/rattachement/referentiel-grist.ts";
+import { creerReferentielGrist } from "../../../server/rattachement/referentiel-grist.adapter.ts";
 import {
   demarrerGrist,
   type GristDeTest,

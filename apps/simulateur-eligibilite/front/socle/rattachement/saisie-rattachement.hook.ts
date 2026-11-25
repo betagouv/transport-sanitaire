@@ -5,10 +5,10 @@ import { useState } from "react";
 import {
   type RattachementSaisi,
   saisieComplete,
-} from "../../../shared/rattachement-saisi";
+} from "../../../shared/rattachement-saisi.vo";
 import type { Referentiel } from "../../../shared/referentiel";
 import { decoderChoix } from "./choix";
-import { estAutre, type Listes, useListes } from "./listes";
+import { estAutre, type Listes, useListes } from "./listes.hook";
 import type { Structure } from "./structures";
 
 type Champs = {

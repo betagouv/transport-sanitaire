@@ -5,7 +5,7 @@
 
 import { afterEach, describe, expect, it } from "vitest";
 import type { WriteLimits } from "../../../server/protect-the-api.ts";
-import { LONGUEUR_MAX_D_UN_NOM } from "../../../shared/rattachement-saisi.ts";
+import { LONGUEUR_MAX_D_UN_NOM } from "../../../shared/rattachement-saisi.vo.ts";
 import {
   type Referentiel,
   snapshotReferentiel,

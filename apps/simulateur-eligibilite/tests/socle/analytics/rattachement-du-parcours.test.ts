@@ -5,7 +5,7 @@
 
 import { describe, expect, it } from "vitest";
 import { RegisterTheRattachement } from "../../../front/socle/rattachement/register-the-rattachement.usecase";
-import type { RattachementSaisi } from "../../../shared/rattachement-saisi";
+import type { RattachementSaisi } from "../../../shared/rattachement-saisi.vo";
 import {
   type Referentiel,
   snapshotReferentiel,

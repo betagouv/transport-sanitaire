@@ -13,7 +13,7 @@ import type {
   Unanswered,
 } from "../../../core/socle/questionnaire-engine";
 
-import type { Actions } from "./questionnaire";
+import type { Actions } from "./questionnaire.hook";
 
 export type AutoAdvance = {
   /** La page avancera d'elle-même : le bouton « Suivant » n'a pas à s'afficher. */

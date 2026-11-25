@@ -587,6 +587,10 @@ classes d'une racine (`container.ts`, `server.ts`, `app.ts`, `main.tsx`) s'en
 passe aussi. Une fabrique porte le nom de ce qu'elle fabrique et vit dans son
 dossier. Un hook ne porte aucune règle (QUAL-019).
 
+Un fichier qui n'a aucun rôle de la table (un utilitaire d'écran, une table de
+constantes, la déclaration d'un modèle) reste sans suffixe. Le suffixe `.adapter`
+suppose un port : sans port à satisfaire, le fichier n'est pas un adaptateur.
+
 **Exemples**
 
 ```
