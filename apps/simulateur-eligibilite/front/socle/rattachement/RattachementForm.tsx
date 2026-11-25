@@ -13,10 +13,7 @@
 
 import { useState } from "react";
 import { LONGUEUR_MAX_D_UN_NOM } from "../../../shared/rattachement-saisi.vo";
-import {
-  type Referentiel,
-  snapshotReferentiel,
-} from "../../../shared/referentiel";
+import type { Referentiel } from "../../../shared/referentiel";
 import { Container, SelectField, TextField } from "../ui";
 import { optionsDuChoix } from "./choix";
 import type {
@@ -27,7 +24,7 @@ import { useSaisieRattachement } from "./saisie-rattachement.hook";
 import type { Structure } from "./structures";
 
 type Props = {
-  referentiel?: Referentiel;
+  referentiel: Referentiel;
   // Toutes les entrées passent par lui : le rattachement est obligatoire.
   // La structure choisie l'accompagne, `null` pour un établissement.
   onValide: (
@@ -36,10 +33,7 @@ type Props = {
   ) => void | Promise<void>;
 };
 
-export function RattachementForm({
-  referentiel = snapshotReferentiel,
-  onValide,
-}: Props) {
+export function RattachementForm({ referentiel, onValide }: Props) {
   const saisie = useSaisieRattachement(referentiel);
   const [enCours, setEnCours] = useState(false);
   const { entrer, modifier } = entrees(saisie, async (...validee) => {

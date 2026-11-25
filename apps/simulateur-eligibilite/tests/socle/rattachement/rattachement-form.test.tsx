@@ -31,7 +31,9 @@ async function optionsDeLaPremiereListe() {
 
 describe("l'écran de rattachement", () => {
   it("annonce la simulation, la phase expérimentale, puis demande l'établissement", () => {
-    render(<RattachementForm onValide={vi.fn()} />);
+    render(
+      <RattachementForm referentiel={snapshotReferentiel} onValide={vi.fn()} />,
+    );
 
     expect(
       screen.getByRole("heading", {
@@ -52,7 +54,9 @@ describe("l'écran de rattachement", () => {
   });
 
   it("liste les établissements, puis sous un trait « Autre établissement » et les structures", async () => {
-    render(<RattachementForm onValide={vi.fn()} />);
+    render(
+      <RattachementForm referentiel={snapshotReferentiel} onValide={vi.fn()} />,
+    );
 
     const options = await optionsDeLaPremiereListe();
     expect(options.map((o) => o.textContent)).toEqual([
@@ -71,7 +75,12 @@ describe("l'écran de rattachement", () => {
 
   it("établissement → un service de la liste ouvre le simulateur sans bouton", async () => {
     const onValide = vi.fn();
-    render(<RattachementForm onValide={onValide} />);
+    render(
+      <RattachementForm
+        referentiel={snapshotReferentiel}
+        onValide={onValide}
+      />,
+    );
 
     await choisir(/Établissement/, "CHU Grenoble Alpes");
     expect(screen.queryByRole("button", ACCEDER)).toBeNull();
@@ -88,7 +97,12 @@ describe("l'écran de rattachement", () => {
 
   it("une structure ouvre le simulateur, rattachée au service du fourre-tout", async () => {
     const onValide = vi.fn();
-    render(<RattachementForm onValide={onValide} />);
+    render(
+      <RattachementForm
+        referentiel={snapshotReferentiel}
+        onValide={onValide}
+      />,
+    );
 
     await choisir(/Établissement/, "Libéral");
 
@@ -103,7 +117,12 @@ describe("l'écran de rattachement", () => {
 
   it("la structure « Autre » ouvre le simulateur sans rien demander", async () => {
     const onValide = vi.fn();
-    render(<RattachementForm onValide={onValide} />);
+    render(
+      <RattachementForm
+        referentiel={snapshotReferentiel}
+        onValide={onValide}
+      />,
+    );
 
     await choisir(/Établissement/, "Autre");
 
@@ -119,7 +138,12 @@ describe("l'écran de rattachement", () => {
 
   it("service « Autre » → le nom du vrai service, puis un bouton", async () => {
     const onValide = vi.fn();
-    render(<RattachementForm onValide={onValide} />);
+    render(
+      <RattachementForm
+        referentiel={snapshotReferentiel}
+        onValide={onValide}
+      />,
+    );
 
     await choisir(/Établissement/, "CHU Grenoble Alpes");
     await choisir(/Nom du service/, "Autre");
@@ -144,7 +168,12 @@ describe("l'écran de rattachement", () => {
 
   it("« Autre établissement » → son nom et celui du service, puis un bouton", async () => {
     const onValide = vi.fn();
-    render(<RattachementForm onValide={onValide} />);
+    render(
+      <RattachementForm
+        referentiel={snapshotReferentiel}
+        onValide={onValide}
+      />,
+    );
 
     await choisir(/Établissement/, "Autre établissement");
     expect(
@@ -171,7 +200,12 @@ describe("l'écran de rattachement", () => {
 
   it("attend l'entrée sur un bouton « en cours », sans entrer deux fois", async () => {
     const onValide = vi.fn(() => new Promise<void>(() => {}));
-    render(<RattachementForm onValide={onValide} />);
+    render(
+      <RattachementForm
+        referentiel={snapshotReferentiel}
+        onValide={onValide}
+      />,
+    );
 
     await choisir(/Établissement/, "CHU Grenoble Alpes");
     await choisir(/Nom du service/, "Autre");
@@ -187,7 +221,9 @@ describe("l'écran de rattachement", () => {
   });
 
   it("changer le premier choix efface ce qui en découlait", async () => {
-    render(<RattachementForm onValide={vi.fn()} />);
+    render(
+      <RattachementForm referentiel={snapshotReferentiel} onValide={vi.fn()} />,
+    );
 
     await choisir(/Établissement/, "Autre établissement");
     await saisir("Renseignez le nom de votre établissement", "CH de Voiron");
@@ -203,7 +239,9 @@ describe("l'écran de rattachement", () => {
   });
 
   it("trie les services par ordre alphabétique, « Autre » en dernier", async () => {
-    render(<RattachementForm onValide={vi.fn()} />);
+    render(
+      <RattachementForm referentiel={snapshotReferentiel} onValide={vi.fn()} />,
+    );
 
     // Le référentiel fournit « Urgences » avant « Médecine interne ».
     await choisir(/Établissement/, "Centre hospitalier de Chambéry");
