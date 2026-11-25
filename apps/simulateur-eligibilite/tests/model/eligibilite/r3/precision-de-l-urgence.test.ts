@@ -4,11 +4,10 @@
 // cerfa n'est qu'un aperçu et la génération la signale.
 
 import { describe, expect, it } from "vitest";
-import { S3138G } from "../../../../front/models/eligibilite/r3/s3138g/s3138g";
-import { S3139H } from "../../../../front/models/eligibilite/r3/s3139h/s3139h";
+import { CerfaDtoService } from "../../../../core/socle/cerfa";
+import { DOCUMENTS } from "../../../../front/models/eligibilite/r3/documents";
 import {
   type BoundCerfa,
-  CerfaDtoService,
   type GeneratedCerfa,
   generateCerfa,
 } from "../../../../front/socle/cerfa";
@@ -28,8 +27,18 @@ type Support = {
   readonly volets: readonly number[];
 };
 
-const PMT_ = { nom: "S3138g", cerfa: S3138G, reponses: PMT, volets: [3, 4] };
-const DAP_ = { nom: "S3139h", cerfa: S3139H, reponses: DAP, volets: [2, 3, 4] };
+const PMT_ = {
+  nom: "S3138g",
+  cerfa: DOCUMENTS.S3138g,
+  reponses: PMT,
+  volets: [3, 4],
+};
+const DAP_ = {
+  nom: "S3139h",
+  cerfa: DOCUMENTS.S3139h,
+  reponses: DAP,
+  volets: [2, 3, 4],
+};
 
 describe.each([PMT_, DAP_])("la précision de l'urgence, $nom", (support) => {
   it("courte : s'écrit en 8 pt sur chaque volet", async () => {

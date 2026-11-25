@@ -6,7 +6,8 @@
 // La mesure se charge avec le premier éditeur, une fois : `pdf-lib` et le
 // gabarit, comme pour la génération.
 
-import type { Cerfa, CerfaDto, Strict, StrictMeasure } from "./cerfa.types";
+import type { CerfaDto } from "../../../core/socle/cerfa";
+import type { Cerfa, Strict, StrictMeasure } from "./cerfa.types";
 import type { Overflowing } from "./generate-the-cerfa/generate-the-cerfa";
 import { useMeasure } from "./measure.hook";
 import { StrictTextEditor } from "./StrictTextEditor";

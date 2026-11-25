@@ -18,10 +18,9 @@ export {
 } from "./analytics";
 export { App, type Models } from "./app";
 export {
+  type BoundCerfa,
   type Cerfa,
-  CerfaDtoService,
   CerfaFactory,
-  type CerfaMapping,
   type StrictOptions,
   templateAt,
 } from "./cerfa";

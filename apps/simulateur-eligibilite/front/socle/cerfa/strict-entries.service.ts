@@ -5,10 +5,10 @@
 //
 // Ce fichier ne charge rien : `pdf-lib` vient avec `measure-strict-texts.ts`.
 
+import type { CerfaDto } from "../../../core/socle/cerfa";
 import type {
   BoxBinding,
   Cerfa,
-  CerfaDto,
   Strict,
   StrictEntry,
   StrictLayout,

@@ -1,13 +1,13 @@
-// La DAP : la demande d'accord préalable (S3139h, Cerfa 11575*08). Elle sert
-// aussi à la demande d'examen d'un transport à l'étranger.
+// La DAP côté écran : où chaque entrée de son DTO va dans le gabarit de la
+// demande d'accord préalable (S3139h, Cerfa 11575*08). Elle sert aussi à la
+// demande d'examen d'un transport à l'étranger. Ce que vaut chaque entrée est
+// dans `core/models/eligibilite/r3/s3139h.ts`.
 //
 // Elle a trois volets, pages 2, 3 et 4, que chaque champ natif porte ensemble.
 // Le texte médical et le centre de référence n'ont de champ que sur la page 2,
 // le volet médical.
 //
-// Elle reprend les rubriques de la PMT (`r3/rubriques/` du métier), sauf ses
-// motifs : la DAP a les siens, et la situation d'un transport par avion ou bateau. Les
-// noms des champs et leurs états d'export sont ceux du gabarit
+// Les noms des champs et leurs états d'export sont ceux du gabarit
 // (`MAPPING_ACROFORM_GABARITS.json`). Une case partagée par des cellules qui
 // peuvent se cocher ensemble est dessinée (`drawnBox`). Chaque case suit son
 // libellé imprimé, et deux champs les inversent :
@@ -25,93 +25,23 @@
 // | `acc`, `ac ad`, `motif`, `date avis`, `date avis ad` | à la caisse, pages 2 et 3 |
 // | `raison soc`, `adresse`, `num ident`, `fait à`, `date fait` | au transporteur, page 4 |
 
-import {
-  ACCIDENT,
-  type Accident,
-} from "../../../../../core/models/eligibilite/r3/rubriques/accident";
-import {
-  AVION_OU_BATEAU,
-  type AvionOuBateau,
-} from "../../../../../core/models/eligibilite/r3/rubriques/avion-ou-bateau";
-import {
-  BENEFICIAIRE,
-  type Beneficiaire,
-} from "../../../../../core/models/eligibilite/r3/rubriques/beneficiaire";
-import {
-  CENTRE_DE_REFERENCE,
-  type CentreDeReference,
-} from "../../../../../core/models/eligibilite/r3/rubriques/centre-de-reference";
-import {
-  EXONERATION,
-  type Exoneration,
-} from "../../../../../core/models/eligibilite/r3/rubriques/exoneration";
-import {
-  LIENS,
-  type Liens,
-} from "../../../../../core/models/eligibilite/r3/rubriques/liens";
-import {
-  MODE,
-  type Mode,
-} from "../../../../../core/models/eligibilite/r3/rubriques/mode";
-import {
-  MOTIFS_DE_LA_DAP,
-  type MotifsDeLaDap,
-} from "../../../../../core/models/eligibilite/r3/rubriques/motifs-de-la-dap";
-import {
-  NOMBRE,
-  type Nombre,
-} from "../../../../../core/models/eligibilite/r3/rubriques/nombre";
-import {
-  PRESCRIPTION,
-  type Prescription,
-} from "../../../../../core/models/eligibilite/r3/rubriques/prescription";
-import {
-  TEXTE_MEDICAL,
-  type TexteMedical,
-} from "../../../../../core/models/eligibilite/r3/rubriques/texte-medical";
-import {
-  TRAJET,
-  type Trajet,
-} from "../../../../../core/models/eligibilite/r3/rubriques/trajet";
+import type { DtoS3139h } from "../../../../../core/models/eligibilite/r3/s3139h";
 import {
   type Cerfa,
-  CerfaDtoService,
   CerfaFactory,
-  type CerfaMapping,
   type TypographicFieldId,
   templateAt,
 } from "../../../../socle";
 import gabarit from "../gabarits/S3139h.pdf?url";
 import {
   LIBELLE_DE_LA_PRECISION,
-  PRECISION_DE_L_URGENCE,
   PRECISION_STRICTE,
-  type PrecisionDeLUrgence,
-  URGENCE,
-  type Urgence,
 } from "../rubriques/urgence";
 
 const { box, date, drawnBox, strictText, text } = CerfaFactory;
 
-type DtoS3139h = {
-  fields: Accident &
-    Beneficiaire &
-    MotifsDeLaDap &
-    AvionOuBateau &
-    Mode &
-    Liens &
-    Trajet &
-    Nombre &
-    Urgence &
-    PrecisionDeLUrgence &
-    TexteMedical &
-    CentreDeReference &
-    Exoneration &
-    Prescription;
-  drawings: Record<never, never>;
-};
-
-const CERFA: Cerfa<DtoS3139h> = {
+/** La DAP, où chaque entrée de son DTO s'écrit. */
+export const S3139H: Cerfa<DtoS3139h> = {
   template: templateAt(gabarit),
   fileName: "demande-d-accord-prealable",
   fields: {
@@ -186,27 +116,3 @@ const CERFA: Cerfa<DtoS3139h> = {
     date_prescription: "S3139h.date_prescription",
   } satisfies Record<string, TypographicFieldId<"S3139h">>,
 };
-
-// Le DTO de la DAP, rubrique par rubrique.
-const VERS_LA_DAP: CerfaMapping<DtoS3139h> = {
-  fields: {
-    ...ACCIDENT,
-    ...BENEFICIAIRE,
-    ...MOTIFS_DE_LA_DAP,
-    ...AVION_OU_BATEAU,
-    ...MODE,
-    ...LIENS,
-    ...TRAJET,
-    ...NOMBRE,
-    ...URGENCE,
-    ...PRECISION_DE_L_URGENCE,
-    ...TEXTE_MEDICAL,
-    ...CENTRE_DE_REFERENCE,
-    ...EXONERATION,
-    ...PRESCRIPTION,
-  },
-  drawings: {},
-};
-
-/** La DAP, liée au calcul de son DTO. */
-export const S3139H = CerfaDtoService.link(CERFA, VERS_LA_DAP);

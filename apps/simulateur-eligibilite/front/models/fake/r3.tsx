@@ -1,45 +1,20 @@
-// Le second résultat du modèle de démonstration (R3) : la commande complétée.
-// Sans boisson, il n'y a rien à compléter : R2 est le dernier écran.
+// Le second résultat du modèle de démonstration (R3) à l'écran : la commande
+// complétée, et son bon de commande. Ce que R3 dit est du métier :
+// `core/models/fake/r3/r3.ts`.
 
-import { SANS_COMMANDE } from "../../../core/models/fake/cibles/evaluation";
-import { given } from "../../../core/models/fake/questions/reponses";
+import { R3 as METIER } from "../../../core/models/fake/r3/r3";
 import type { ValueOf } from "../../../core/socle";
 import type { ResultatProps } from "../../socle";
-import { enUneLigne } from "./adresse";
 import { bonDeCommande } from "./bon-de-commande";
 
 /** Ce que R3 reçoit du socle : `R3.lit`. */
-export type Lecture = ResultatProps<
-  ValueOf<typeof LU_PAR_LA_COMMANDE_COMPLETEE>
->;
-
-// La boisson commandée, que lisent le choix du bon, son titre et le bouton.
-const COMMANDE = given.cible("commande");
-
-// Ce que lit R3 : la commande, la quantité, l'adresse.
-const LU_PAR_LA_COMMANDE_COMPLETEE = given.all({
-  commande: COMMANDE,
-  quantite: given
-    .question("quantite")
-    .answer()
-    .compute(({ value }) => String(value)),
-  adresse: given
-    .question("adresse")
-    .answer()
-    .compute((adresse) =>
-      adresse.hasAnswer() ? enUneLigne(adresse.value) : null,
-    ),
-});
+export type Lecture = ResultatProps<ValueOf<typeof METIER.lit>>;
 
 export const R3 = {
-  lit: LU_PAR_LA_COMMANDE_COMPLETEE,
-  document: COMMANDE.compute((commande) =>
-    commande.is(SANS_COMMANDE) ? null : bonDeCommande,
-  ),
-  titre: COMMANDE.compute(({ value }) => `Commande complétée : ${value}`),
-  boutonDeDepart: COMMANDE.compute((commande) =>
-    commande.is(SANS_COMMANDE) ? null : "Compléter la commande",
-  ),
+  lit: METIER.lit,
+  document: METIER.aUnBon.compute((aUnBon) => (aUnBon ? bonDeCommande : null)),
+  titre: METIER.titre,
+  boutonDeDepart: METIER.boutonDeDepart,
   Page: CommandeCompletee,
 };
 

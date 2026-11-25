@@ -1,12 +1,12 @@
-// La PMT : la prescription médicale de transport (S3138g, Cerfa 11574*07).
+// La PMT côté écran : où chaque entrée de son DTO va dans le gabarit de la
+// prescription médicale de transport (S3138g, Cerfa 11574*07). Ce que vaut
+// chaque entrée est dans `core/models/eligibilite/r3/s3138g.ts`.
 //
 // Elle a deux volets, pages 3 et 4, que chaque champ natif porte ensemble. Le
 // texte médical et le centre de référence n'ont de champ que sur la page 3, le
 // volet médical : rien de médical ne s'écrit sur la page 4.
 //
-// Elle assemble les rubriques que les cerfa partagent (`r3/rubriques/` du
-// métier) et porte la seule qui lui est propre : la pension militaire. Les noms des
-// champs et leurs états d'export sont ceux du gabarit
+// Les noms des champs et leurs états d'export sont ceux du gabarit
 // (`MAPPING_ACROFORM_GABARITS.json`). Chaque case suit son libellé imprimé.
 //
 // Ce qu'elle laisse vide :
@@ -17,94 +17,23 @@
 // | `raison sociale VSL`, `adresse VSL`, `fait à`, `date1`, `n° ident` | au transporteur, page 4 |
 // | Engagement maternité | « hors remplissage » pour l'éditeur |
 
-import { given } from "../../../../../core/models/eligibilite/questions/reponses";
-import {
-  ACCIDENT,
-  type Accident,
-} from "../../../../../core/models/eligibilite/r3/rubriques/accident";
-import {
-  BENEFICIAIRE,
-  type Beneficiaire,
-} from "../../../../../core/models/eligibilite/r3/rubriques/beneficiaire";
-import {
-  CENTRE_DE_REFERENCE,
-  type CentreDeReference,
-} from "../../../../../core/models/eligibilite/r3/rubriques/centre-de-reference";
-import {
-  EXONERATION,
-  type Exoneration,
-} from "../../../../../core/models/eligibilite/r3/rubriques/exoneration";
-import {
-  MODE,
-  type Mode,
-} from "../../../../../core/models/eligibilite/r3/rubriques/mode";
-import {
-  MOTIFS,
-  type Motifs,
-} from "../../../../../core/models/eligibilite/r3/rubriques/motifs";
-import {
-  NOMBRE,
-  type Nombre,
-} from "../../../../../core/models/eligibilite/r3/rubriques/nombre";
-import {
-  PRESCRIPTION,
-  type Prescription,
-} from "../../../../../core/models/eligibilite/r3/rubriques/prescription";
-import type { Rubrique } from "../../../../../core/models/eligibilite/r3/rubriques/rubrique";
-import {
-  TEXTE_MEDICAL,
-  type TexteMedical,
-} from "../../../../../core/models/eligibilite/r3/rubriques/texte-medical";
-import {
-  TRAJET,
-  type Trajet,
-} from "../../../../../core/models/eligibilite/r3/rubriques/trajet";
+import type { DtoS3138g } from "../../../../../core/models/eligibilite/r3/s3138g";
 import {
   type Cerfa,
-  CerfaDtoService,
   CerfaFactory,
-  type CerfaMapping,
   type TypographicFieldId,
   templateAt,
 } from "../../../../socle";
 import gabarit from "../gabarits/S3138g.pdf?url";
 import {
   LIBELLE_DE_LA_PRECISION,
-  PRECISION_DE_L_URGENCE,
   PRECISION_STRICTE,
-  type PrecisionDeLUrgence,
-  URGENCE,
-  type Urgence,
 } from "../rubriques/urgence";
 
 const { at, box, date, strictText, text, strictDrawing } = CerfaFactory;
 
-/**
- * Les soins de pension militaire : Oui s'ils sont établis, Non s'ils sont
- * écartés en Q2.2.1, rien sinon.
- */
-type Pension = {
-  readonly pension_militaire_oui: boolean;
-  readonly pension_militaire_non: boolean;
-};
-
-type DtoS3138g = {
-  fields: Accident &
-    Beneficiaire &
-    Motifs &
-    Mode &
-    Trajet &
-    Nombre &
-    Urgence &
-    TexteMedical &
-    CentreDeReference &
-    Exoneration &
-    Pension &
-    Prescription;
-  drawings: PrecisionDeLUrgence;
-};
-
-const CERFA: Cerfa<DtoS3138g> = {
+/** La PMT, où chaque entrée de son DTO s'écrit. */
+export const S3138G: Cerfa<DtoS3138g> = {
   template: templateAt(gabarit),
   fileName: "prescription-medicale-de-transport",
   fields: {
@@ -200,32 +129,3 @@ const CERFA: Cerfa<DtoS3138g> = {
     date_prescription: "S3138g.date_prescription",
   } satisfies Record<string, TypographicFieldId<"S3138g">>,
 };
-
-const pension = given.cible("cible_situation_pension_militaire");
-
-const PENSION: Rubrique<Pension> = {
-  pension_militaire_oui: pension.isOui(),
-  pension_militaire_non: pension.isNon(),
-};
-
-// Le DTO de la PMT, rubrique par rubrique.
-const VERS_LA_PMT: CerfaMapping<DtoS3138g> = {
-  fields: {
-    ...ACCIDENT,
-    ...BENEFICIAIRE,
-    ...MOTIFS,
-    ...MODE,
-    ...TRAJET,
-    ...NOMBRE,
-    ...URGENCE,
-    ...TEXTE_MEDICAL,
-    ...CENTRE_DE_REFERENCE,
-    ...EXONERATION,
-    ...PENSION,
-    ...PRESCRIPTION,
-  },
-  drawings: { ...PRECISION_DE_L_URGENCE },
-};
-
-/** La PMT, liée au calcul de son DTO. */
-export const S3138G = CerfaDtoService.link(CERFA, VERS_LA_PMT);

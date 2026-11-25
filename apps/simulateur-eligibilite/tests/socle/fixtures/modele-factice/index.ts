@@ -5,7 +5,6 @@
 
 import type { ValueOf } from "../../../../core/socle";
 import {
-  CerfaDtoService,
   CerfaFactory,
   ModelFactory,
   type ResultCodes,
@@ -28,7 +27,7 @@ import {
 } from "./Resultats";
 
 // Un gabarit fabriqué : le test relit ce qu'il dessine sans servir d'asset.
-const BON_DE_COMMANDE = CerfaDtoService.link<{
+const BON_DE_COMMANDE = CerfaFactory.link<{
   fields: { commande: string; quantite: string; date: string };
   drawings: Record<never, never>;
 }>(

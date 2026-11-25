@@ -1,21 +1,11 @@
-// Les types d'un cerfa : son gabarit, son DTO, et où chaque entrée du DTO va
-// dans le PDF.
+// Les types d'un cerfa : son gabarit, et où chaque entrée de son DTO va dans
+// le PDF. Le DTO et son mapping sont du métier (`core/socle/cerfa/`).
 //
 // Le DTO parle en mots clairs (`longue_distance`). La définition du cerfa
 // garde pour elle les noms exacts du gabarit (`km`, état `Oui`). Un gabarit
 // qui renomme un champ ne change que sa définition, jamais le DTO.
 
-import type { Reading } from "../../../core/socle/questionnaire-engine";
-
-/**
- * Les données d'un cerfa. `fields` va dans les champs du gabarit : un texte,
- * ou une case cochée (`true`). `drawings` se dessine là où le gabarit n'a pas
- * de champ. Une entrée absente laisse sa place vide.
- */
-export type CerfaDto = {
-  readonly fields: Readonly<Record<string, string | boolean | undefined>>;
-  readonly drawings: Readonly<Record<string, string | undefined>>;
-};
+import type { CerfaDto, CerfaMapping } from "../../../core/socle/cerfa";
 
 /** Un emplacement sur une page du gabarit, comptée depuis 1, en points. */
 export type Position = {
@@ -131,16 +121,6 @@ type TextKey<Dto extends CerfaDto> =
         : Key;
     }[keyof Dto["fields"]]
   | keyof Dto["drawings"];
-
-/** Une valeur par entrée du DTO. */
-export type CerfaMapping<Dto extends CerfaDto> = {
-  readonly fields: {
-    readonly [Key in keyof Dto["fields"]]-?: Reading<Dto["fields"][Key]>;
-  };
-  readonly drawings: {
-    readonly [Key in keyof Dto["drawings"]]-?: Reading<Dto["drawings"][Key]>;
-  };
-};
 
 /** Un cerfa et le mapping qui calcule son DTO, vérifiés ensemble. */
 export type BoundCerfa = {

@@ -5,14 +5,9 @@
 // son adresse, assuré, prescripteur, structure, `S3141.cadence`) n'y sont pas.
 
 import { describe, expect, it } from "vitest";
-import { S3138G } from "../../../../front/models/eligibilite/r3/s3138g/s3138g";
-import { S3139H } from "../../../../front/models/eligibilite/r3/s3139h/s3139h";
-import { S3141 } from "../../../../front/models/eligibilite/r3/s3141/s3141";
-import {
-  type BoundCerfa,
-  type CerfaDto,
-  generateCerfa,
-} from "../../../../front/socle/cerfa";
+import type { CerfaDto } from "../../../../core/socle/cerfa";
+import { DOCUMENTS as CERFAS } from "../../../../front/models/eligibilite/r3/documents";
+import { type BoundCerfa, generateCerfa } from "../../../../front/socle/cerfa";
 import { TYPOGRAPHIC_FIELDS } from "../../../../shared/analytics/typographic-fields.constants";
 import { gabarit } from "./reponses-du-cerfa";
 
@@ -28,12 +23,12 @@ const COMMUNS = [
 const DOCUMENTS = [
   {
     support: "S3138g",
-    cerfa: S3138G,
+    cerfa: CERFAS.S3138g,
     champs: [...COMMUNS, "atmp_date", "urgence_precision", "elements_medicaux"],
   },
   {
     support: "S3139h",
-    cerfa: S3139H,
+    cerfa: CERFAS.S3139h,
     champs: [
       ...COMMUNS,
       "air_atmp_date",
@@ -44,7 +39,7 @@ const DOCUMENTS = [
   },
   {
     support: "S3141",
-    cerfa: S3141,
+    cerfa: CERFAS.S3141,
     champs: [
       ...COMMUNS,
       "debut_hospitalisation",

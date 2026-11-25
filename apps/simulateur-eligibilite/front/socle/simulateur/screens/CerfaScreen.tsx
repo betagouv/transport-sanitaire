@@ -13,6 +13,7 @@
 // document, régénéré. Le focus va alors au titre de la page.
 
 import { type ComponentType, type ReactNode, type Ref, useRef } from "react";
+import { type CerfaDto, CerfaDtoService } from "../../../../core/socle/cerfa";
 import type { Context } from "../../../../core/socle/questionnaire-engine";
 import type { Simulation } from "../../../../core/socle/simulation";
 import {
@@ -25,8 +26,6 @@ import {
 import {
   type BoundCerfa,
   CerfaDocument,
-  type CerfaDto,
-  CerfaDtoService,
   PdfFileName,
   type PdfSignals,
   type StrictTextEdits,

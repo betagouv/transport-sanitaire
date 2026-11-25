@@ -8,10 +8,10 @@
 // `pdf-lib` et le gabarit ne se chargent qu'ici, quand le bouton s'affiche : le
 // chunk d'entrée n'en porte rien, et `tooling/verifier-bundle.ts` le vérifie.
 
+import type { CerfaDto } from "../../../../core/socle/cerfa";
 import type {
   BoxBinding,
   Cerfa,
-  CerfaDto,
   DrawingBinding,
   StrictMeasure,
   StrictTextBinding,
