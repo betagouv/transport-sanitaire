@@ -22,7 +22,8 @@ import {
 import { type AutoAdvance, useAutoAdvance } from "./advance-alone.hook";
 import { AdvanceAloneService } from "./advance-alone.service";
 import { draftOf } from "./draft-an-answer";
-import { type Placement, usePlacement } from "./place-under-a-response";
+import { usePlacement } from "./placement.hook";
+import type { Placement } from "./placement.vo";
 import { type RevisitLink, revisitLinks } from "./revisit-an-answer";
 
 export type QuestionnaireOptions = {
