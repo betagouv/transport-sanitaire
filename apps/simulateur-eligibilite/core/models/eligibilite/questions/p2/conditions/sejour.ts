@@ -4,9 +4,9 @@
 // pas alors (Q2.2.1.cadre).
 
 import { given } from "../../question.ts";
-import { Q2_1_G } from "../questions/q2-1.ts";
-import { Q2_2_1 } from "../questions/q2-2-1.ts";
-import { Q2_2_1_CADRE } from "../questions/q2-2-1-cadre.ts";
+import { Q2_1_G } from "../questions/q2-1.question.ts";
+import { Q2_2_1 } from "../questions/q2-2-1.question.ts";
+import { Q2_2_1_CADRE } from "../questions/q2-2-1-cadre.question.ts";
 
 const unSejourCoche = given
   .question(Q2_2_1)

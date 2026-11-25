@@ -9,8 +9,8 @@ import type {
   Reading,
 } from "../../../../../socle/index.ts";
 import type { Nature } from "../../p2/conditions/natures-du-lieu.ts";
-import { Q2_2_1 } from "../../p2/questions/q2-2-1.ts";
-import { Q2_14_MOTIF } from "../../p2/questions/q2-14.ts";
+import { Q2_2_1 } from "../../p2/questions/q2-2-1.question.ts";
+import { Q2_14_MOTIF } from "../../p2/questions/q2-14.question.ts";
 import { type Context as Contexte, given, question } from "../../question.ts";
 import {
   CATEGORIES,

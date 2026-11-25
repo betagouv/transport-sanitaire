@@ -41,7 +41,7 @@ const estUnModuleNodeDuServeur = (
 ) => fichier.startsWith("server/") && paquet?.startsWith("node:");
 
 const dansLeDomaine = (fichier: string) =>
-  /\.(entity|vo|service|usecase|port|error|factory|types|constants)\.ts$/.test(
+  /\.(entity|vo|service|usecase|port|error|factory|types|constants|fait|question)\.ts$/.test(
     fichier,
   );
 

@@ -8,7 +8,7 @@
 
 import type { AnswerOf } from "../../../../../socle/index.ts";
 import type { Inconnu } from "../../question.ts";
-import type { Q2_6 } from "../questions/q2-6.ts";
+import type { Q2_6 } from "../questions/q2-6.question.ts";
 import { NATURES_DU_LIEU, type Nature } from "./natures-du-lieu.ts";
 import type { Entrees } from "./roles-des-lieux.ts";
 

@@ -12,7 +12,7 @@ import { model } from "../../../../core/models/eligibilite";
 import { decisionEngine } from "../../../../core/models/eligibilite/cibles/evaluation";
 import { CATALOGUE_DES_FAITS } from "../../../../core/models/eligibilite/faits";
 import type { Faits } from "../../../../core/models/eligibilite/faits/noms";
-import { Q1_2 } from "../../../../core/models/eligibilite/questions/p1/questions/q1-2";
+import { Q1_2 } from "../../../../core/models/eligibilite/questions/p1/questions/q1-2.question";
 import type { Questions } from "../../../../core/models/eligibilite/questions/reponses";
 import { Fait } from "../../../../core/socle";
 import {

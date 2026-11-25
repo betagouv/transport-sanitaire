@@ -13,7 +13,7 @@ import type {
   ReadByObject,
   Reading,
 } from "../../../../../socle/index.ts";
-import { Q1_3 } from "../../p1/questions/q1-3.ts";
+import { Q1_3 } from "../../p1/questions/q1-3.question.ts";
 import {
   desRolesContradictoires as contradictoiresDans,
   type Extremite,
@@ -23,15 +23,15 @@ import {
   type Orientation,
   naturesPermises as permisesDans,
 } from "../../p2/conditions/roles-des-lieux.ts";
-import { Q2_1_G } from "../../p2/questions/q2-1.ts";
-import { Q2_2_1 } from "../../p2/questions/q2-2-1.ts";
-import { Q2_2_1_A } from "../../p2/questions/q2-2-1-a.ts";
-import { Q2_2_1_CADRE } from "../../p2/questions/q2-2-1-cadre.ts";
-import { Q2_5 } from "../../p2/questions/q2-5.ts";
-import { Q2_6 } from "../../p2/questions/q2-6.ts";
-import { Q2_13_DEPART, Q2_13_SENS } from "../../p2/questions/q2-13.ts";
+import { Q2_1_G } from "../../p2/questions/q2-1.question.ts";
+import { Q2_2_1 } from "../../p2/questions/q2-2-1.question.ts";
+import { Q2_2_1_A } from "../../p2/questions/q2-2-1-a.question.ts";
+import { Q2_2_1_CADRE } from "../../p2/questions/q2-2-1-cadre.question.ts";
+import { Q2_5 } from "../../p2/questions/q2-5.question.ts";
+import { Q2_6 } from "../../p2/questions/q2-6.question.ts";
+import { Q2_13_DEPART, Q2_13_SENS } from "../../p2/questions/q2-13.question.ts";
 import { given, type Inconnu } from "../../question.ts";
-import { Q3_1_2 } from "../questions/q3-1-2.ts";
+import { Q3_1_2 } from "../questions/q3-1-2.question.ts";
 import { sensChoisi } from "./sens-du-trajet.ts";
 
 export type {

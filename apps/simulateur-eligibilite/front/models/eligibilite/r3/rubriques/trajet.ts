@@ -20,8 +20,8 @@ import {
   natureDuLieuChoisi,
 } from "../../../../../core/models/eligibilite/questions/p3/conditions/lieux-du-trajet";
 import { SENS_CHOISI } from "../../../../../core/models/eligibilite/questions/p3/conditions/sens-du-trajet";
-import { Q3_2 } from "../../../../../core/models/eligibilite/questions/p3/questions/q3-2";
-import { Q3_3 } from "../../../../../core/models/eligibilite/questions/p3/questions/q3-3";
+import { Q3_2 } from "../../../../../core/models/eligibilite/questions/p3/questions/q3-2.question";
+import { Q3_3 } from "../../../../../core/models/eligibilite/questions/p3/questions/q3-3.question";
 import { given } from "../../../../../core/models/eligibilite/questions/reponses";
 import type {
   AddressData,

@@ -1,0 +1,148 @@
+// Q2.6.a, le type du transfert, posée à part, puis Q2.6, les exceptions de
+// l'article 80, sur la même page. Les exceptions attendent le type
+// quand il se pose : leurs réponses possibles en dépendent. Les faits de
+// l'article 80 vivent sous `faits/`.
+
+import type { AnswerOf, Condition } from "../../../../../socle/index.ts";
+import { Q1_3 } from "../../p1/questions/q1-3.question.ts";
+import { given, question } from "../../question.ts";
+import { incoherenceDeLieux } from "../conditions/conflit-de-lieux.ts";
+import {
+  unSejourEnEtablissement,
+  unSejourEnHad,
+} from "../conditions/sejour.ts";
+import { Q2_1_G } from "./q2-1.question.ts";
+import { Q2_2_1 } from "./q2-2-1.question.ts";
+import { Q2_2_1_A } from "./q2-2-1-a.question.ts";
+import { Q2_2_1_CADRE } from "./q2-2-1-cadre.question.ts";
+import { Q2_3_2 } from "./q2-3-2.question.ts";
+import { Q2_5 } from "./q2-5.question.ts";
+import { Q2_7 } from "./q2-7.question.ts";
+
+const deplacement = given.question(Q2_5).answer();
+const unTransfert = deplacement.is("1_TRANSFERT");
+const unAutreDeplacement = deplacement.is("2_AUTRE_DEPLACEMENT");
+
+/**
+ * Q2.7 dit la permission d'un adulte, autorisée pour les soins ou
+ * l'organisation de l'établissement : elle relève de l'article 80.
+ */
+const unAdulteAutorise = given.question(Q2_7).answer().is("3_ADULTE_AUTORISEE");
+
+/**
+ * Q2.3.2 ne dit pas de ligne régulière. Une ligne régulière établit déjà
+ * l'exception de l'avion ou du bateau, sans revote.
+ */
+const sansLigneReguliere = given
+  .question(Q2_3_2)
+  .answer()
+  .compute((ligne) => ligne.isNot(true));
+
+/** Q2.5 dit un transfert entre établissements : Q2.6.a se pose alors. */
+const unTypeAPoser = unTransfert;
+
+export const Q2_6_A = question
+  .singleChoice("Q2.6.a", "Le transfert est-il définitif ou provisoire ?")
+  // Le type du transfert : la réponse possible 1 du catalogue de Q2.6, posée à
+  // part.
+  .possibleAnswers({
+    "1_DEFINITIF": "Définitif (au moins 48 heures).",
+    "2_PROVISOIRE":
+      "Provisoire (moins de 48 heures avec retour dans l’établissement d’origine).",
+  })
+  .appliesWhen(unTypeAPoser);
+
+const type = given.question(Q2_6_A).answer();
+
+/**
+ * Q2.6 se pose dans le champ I de l'article 80 : un transfert, un autre
+ * déplacement pendant un séjour en établissement, la permission d'un adulte
+ * autorisée, une admission en HAD que Q2.1.g établit ou un séjour en HAD
+ * (TS1014-B01), sans Q2.5. Elle attend le type du transfert quand il se pose.
+ * Pour la permission d'un adulte, une ligne régulière établit déjà une
+ * exception : les autres ne changent plus l'issue
+ * (QST-PERMISSION-EXCEPTIONS-20261113).
+ */
+const desExceptionsAPoser = unTransfert
+  .or(unAutreDeplacement.and(unSejourEnEtablissement))
+  .or(unAdulteAutorise.and(sansLigneReguliere))
+  .or(given.question(Q2_1_G).answer().is("3_ADMISSION_HAD"))
+  .or(unSejourEnHad)
+  .and(unTypeAPoser.not().or(type.isPresent()));
+
+// Q2.6 et ses réponses possibles, avant les conditions de ses réponses
+// possibles.
+const exceptions = question
+  .multipleChoice(
+    "Q2.6",
+    "Quelle situation précise et quelles exceptions s’appliquent à ce déplacement ?",
+  )
+  // Les réponses possibles gardent leur numéro du catalogue, où le type est la
+  // réponse possible 1. La réponse possible 4 est la nôtre.
+  .possibleAnswers({
+    "2_ADMISSION_SANS_SEJOUR":
+      "Admission dans un nouvel établissement, sans hospitalisation dans l’établissement de départ.",
+    "3_CENTRE_QUINZE":
+      "Transport sanitaire demandé par le Centre 15, hors Structure Mobile d’Urgence et de Réanimation (SMUR), dans le cadre de l’aide médicale urgente.",
+    "4_AIR_MER": "Trajet aérien ou maritime autre qu’en ligne régulière.",
+    "5_HAD":
+      "Transport prescrit par une Hospitalisation à Domicile (HAD) hors soins liés à la Hospitalisation à Domicile (HAD).",
+    "6_USLD":
+      "Transport depuis/vers Unité de Soins de Longue Durée (USLD) hors même implantation géographique.",
+    "7_EHPAD":
+      "Transport depuis/vers Établissement d'Hébergement pour Personnes Âgées Dépendantes (EHPAD) hors même implantation géographique.",
+    "8_RADIOTHERAPIE":
+      "Transfert <48 heures pour radiothérapie en exercice libéral ou centre de santé.",
+    "9_DIALYSE_A_DOMICILE": "Patient pratiquant la dialyse à domicile.",
+    "10_ADMISSION_HAD":
+      "Patient hospitalisé rentrant à domicile pour une admission en Hospitalisation à Domicile (HAD).",
+    "11_AUCUNE": "Aucune de ces exceptions.",
+  })
+  .appliesWhen(desExceptionsAPoser)
+  .exclusive("11_AUCUNE");
+
+type Exception = AnswerOf<typeof exceptions>[number];
+
+/**
+ * Quand une exception se propose. Pour une admission ou un séjour en HAD, sans
+ * Q2.5, les réponses possibles 2, 3 et 8 ne se proposent pas ; pour la
+ * permission d'un adulte, ni la 2 ni la 3 : elle suppose un séjour, et n'est
+ * pas un transfert entre établissements. Les autres se proposent toujours.
+ */
+const EXCEPTIONS_A_PROPOSER: Partial<Record<Exception, Condition>> = {
+  "2_ADMISSION_SANS_SEJOUR": unTransfert
+    .and(type.is("1_DEFINITIF"))
+    .and(unSejourEnEtablissement.not()),
+  "3_CENTRE_QUINZE": unTransfert,
+  "4_AIR_MER": sansLigneReguliere,
+  "8_RADIOTHERAPIE": unTransfert
+    .and(type.is("2_PROVISOIRE"))
+    .or(unAutreDeplacement)
+    .or(unAdulteAutorise),
+};
+
+// Une admission en HAD ou une radiothérapie fixe un lieu : un autre lieu déjà
+// dit la contredit.
+const conflitDeLieux = incoherenceDeLieux("contexte", {
+  soins: Q1_3,
+  sousType: Q2_1_G,
+  situations: Q2_2_1,
+  sejour: Q2_2_1_CADRE,
+  enPermission: Q2_2_1_A,
+  transfert: Q2_5,
+  contexte: exceptions,
+});
+
+// Chaque exception de la table ne se propose que si sa condition tient. Les
+// autres se proposent toujours.
+export const Q2_6 = (
+  Object.entries(EXCEPTIONS_A_PROPOSER) as [Exception, Condition][]
+)
+  .reduce(
+    (declaree, [exception, aProposer]) =>
+      declaree.possibleAnswer(exception, (possibleAnswer) =>
+        possibleAnswer.offeredWhen(aProposer),
+      ),
+    exceptions,
+  )
+  .inconsistentWhen(...conflitDeLieux);

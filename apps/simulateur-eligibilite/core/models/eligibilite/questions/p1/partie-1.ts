@@ -2,15 +2,15 @@
 // transport. Ses pages, dans l'ordre, faites de ses questions (`questions/`).
 
 import { page } from "../../../../socle/index.ts";
-import { Q1_1 } from "./questions/q1-1.ts";
-import { Q1_2 } from "./questions/q1-2.ts";
+import { Q1_1 } from "./questions/q1-1.question.ts";
+import { Q1_2 } from "./questions/q1-2.question.ts";
 import {
   Q1_3,
   Q1_3_A,
   Q1_3_ACCIDENT_TIERS_DATE,
   Q1_3_B,
-} from "./questions/q1-3.ts";
-import { Q1_4 } from "./questions/q1-4.ts";
+} from "./questions/q1-3.question.ts";
+import { Q1_4 } from "./questions/q1-4.question.ts";
 
 /** P1 : ce qui fait le mode de transport. Aucun résultat ne la suit seule. */
 export const P1 = {

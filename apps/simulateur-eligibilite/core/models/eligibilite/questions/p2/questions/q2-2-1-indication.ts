@@ -6,12 +6,12 @@ import type {
   ReadByObject,
   ValidatedAnswers,
 } from "../../../../../socle/index.ts";
-import { Q1_1 } from "../../p1/questions/q1-1.ts";
-import { Q1_2 } from "../../p1/questions/q1-2.ts";
-import { Q1_3 } from "../../p1/questions/q1-3.ts";
+import { Q1_1 } from "../../p1/questions/q1-1.question.ts";
+import { Q1_2 } from "../../p1/questions/q1-2.question.ts";
+import { Q1_3 } from "../../p1/questions/q1-3.question.ts";
 import { given, question } from "../../question.ts";
 import { uneIndicationAPoser } from "../conditions/retour-penitentiaire.ts";
-import { Q2_2_1 } from "./q2-2-1.ts";
+import { Q2_2_1 } from "./q2-2-1.question.ts";
 
 export const Q2_2_1_INDICATION = question
   .singleChoice(

@@ -2,19 +2,19 @@
 // plus. Ses pages, dans l'ordre, faites de ses questions (`questions/`).
 
 import { afterLock, page } from "../../../../socle/index.ts";
-import { ADRESSE } from "./questions/adresse.ts";
-import { COUVERCLE } from "./questions/couvercle.ts";
-import { DEBUT } from "./questions/debut.ts";
-import { EXPEDITION } from "./questions/expedition.ts";
-import { FACTURATION } from "./questions/facturation.ts";
-import { FIN } from "./questions/fin.ts";
-import { JOUR } from "./questions/jour.ts";
-import { LIEU } from "./questions/lieu.ts";
-import { NOM } from "./questions/nom.ts";
-import { QUANTITE } from "./questions/quantite.ts";
-import { REMARQUE } from "./questions/remarque.ts";
-import { RETRAIT } from "./questions/retrait.ts";
-import { TICKET } from "./questions/ticket.ts";
+import { ADRESSE } from "./questions/adresse.question.ts";
+import { COUVERCLE } from "./questions/couvercle.question.ts";
+import { DEBUT } from "./questions/debut.question.ts";
+import { EXPEDITION } from "./questions/expedition.question.ts";
+import { FACTURATION } from "./questions/facturation.question.ts";
+import { FIN } from "./questions/fin.question.ts";
+import { JOUR } from "./questions/jour.question.ts";
+import { LIEU } from "./questions/lieu.question.ts";
+import { NOM } from "./questions/nom.question.ts";
+import { QUANTITE } from "./questions/quantite.question.ts";
+import { REMARQUE } from "./questions/remarque.question.ts";
+import { RETRAIT } from "./questions/retrait.question.ts";
+import { TICKET } from "./questions/ticket.question.ts";
 
 /** Posée après le verrou : elle complète, elle ne décide plus. */
 export const COMPLEMENT = afterLock({

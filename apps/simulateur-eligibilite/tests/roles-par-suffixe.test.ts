@@ -38,6 +38,8 @@ const ROLES = [
   "middleware",
   "hook",
   "client",
+  "fait",
+  "question",
 ];
 const ROLE = new RegExp(`\\.(${ROLES.join("|")})\\.ts$`);
 
@@ -75,6 +77,28 @@ describe("un fichier dit son rôle par son suffixe", () => {
       fautifs,
       "Un middleware (`.middleware.ts`) laisse passer ou refuse une requête " +
         "HTTP (QUAL-018) : il appartient au serveur, et il vit dans `server/`.",
+    ).toEqual([]);
+  });
+
+  it("un fait vit dans un dossier faits/ d'un modèle", () => {
+    const fautifs = sources("core", "front", "server", "shared")
+      .filter((f) => f.endsWith(".fait.ts"))
+      .filter((f) => !/^core\/models\/[^/]+\/faits\//.test(f));
+    expect(
+      fautifs,
+      "Une déclaration de fait (`.fait.ts`) est un fichier d'un modèle " +
+        "(QUAL-018) : elle vit dans `core/models/<modèle>/faits/`.",
+    ).toEqual([]);
+  });
+
+  it("une question vit dans un dossier questions/ d'un modèle", () => {
+    const fautifs = sources("core", "front", "server", "shared")
+      .filter((f) => f.endsWith(".question.ts"))
+      .filter((f) => !/^core\/models\/[^/]+\/questions\//.test(f));
+    expect(
+      fautifs,
+      "Une déclaration de question (`.question.ts`) est un fichier d'un " +
+        "modèle (QUAL-018) : elle vit dans `core/models/<modèle>/questions/`.",
     ).toEqual([]);
   });
 

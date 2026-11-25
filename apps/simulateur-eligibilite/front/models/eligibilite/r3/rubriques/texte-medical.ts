@@ -11,8 +11,8 @@
 // un seul texte, que le prescripteur réécrit en R3 s'il veut la préciser, ou
 // s'il ne tient pas.
 
-import { Q1_3 } from "../../../../../core/models/eligibilite/questions/p1/questions/q1-3";
-import { Q2_1 } from "../../../../../core/models/eligibilite/questions/p2/questions/q2-1";
+import { Q1_3 } from "../../../../../core/models/eligibilite/questions/p1/questions/q1-3.question";
+import { Q2_1 } from "../../../../../core/models/eligibilite/questions/p2/questions/q2-1.question";
 import { given } from "../../../../../core/models/eligibilite/questions/reponses";
 import type {
   AddressData,

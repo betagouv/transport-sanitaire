@@ -4,9 +4,9 @@
 // (`roles-dans-le-sens.ts`), Q3.1.1, Q3.4.a et le cerfa le lisent.
 
 import type { AnswerOf, GivenAnswer } from "../../../../../socle/index.ts";
-import { Q2_13_SENS } from "../../p2/questions/q2-13.ts";
+import { Q2_13_SENS } from "../../p2/questions/q2-13.question.ts";
 import { given, type Inconnu } from "../../question.ts";
-import { Q3_1_2 } from "../questions/q3-1-2.ts";
+import { Q3_1_2 } from "../questions/q3-1-2.question.ts";
 
 type Sens = AnswerOf<typeof Q3_1_2>;
 
