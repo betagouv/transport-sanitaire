@@ -122,31 +122,28 @@ describe("le journal du premier résultat, sur la seed de chaque issue", () => {
   });
 });
 
-// ANA22-04 : la ligne régulière vient de Q2.3.2, sa partie terrestre de
-// Q2.3.2.terrestre. `mode` ne dit que le mode terrestre.
-describe("la composition du transport", () => {
-  it("un trajet terrestre seul porte son mode", () => {
-    expect(compositionDe(reponsesDe("issue-pmt"))).toEqual({
-      transportComposition: "terrestrial_only",
-      mode: "TAP",
+// ANA22-04 : la composition du cœur part au journal sous le code du contrat, et
+// `mode` ne dit que le mode terrestre. Les cas de la composition elle-même sont
+// dans `tests/model/eligibilite/cibles/composition-du-transport.test.ts`.
+describe("la composition du transport dans le journal", () => {
+  it.each([
+    ["un trajet terrestre seul", "issue-pmt", "terrestrial_only", "TAP"],
+    [
+      "la ligne régulière seule",
+      "issue-dap-avion-ou-bateau",
+      "regular_line_only",
+      null,
+    ],
+    ["un trajet mixte", "issue-dap-trajet-mixte", "mixed", "TAP"],
+    ["un résultat sans support", "issue-caisse", "not_applicable", null],
+  ] as const)("%s part en %s", (_, seed, code, mode) => {
+    expect(compositionDe(reponsesDe(seed))).toEqual({
+      transportComposition: code,
+      mode,
     });
   });
 
-  it("la ligne régulière seule n'a pas de mode terrestre", () => {
-    expect(compositionDe(reponsesDe("issue-dap-avion-ou-bateau"))).toEqual({
-      transportComposition: "regular_line_only",
-      mode: null,
-    });
-  });
-
-  it("la ligne régulière avec une partie terrestre est mixte, avec le mode de cette partie", () => {
-    expect(compositionDe(reponsesDe("issue-dap-trajet-mixte"))).toEqual({
-      transportComposition: "mixed",
-      mode: "TAP",
-    });
-  });
-
-  it("la ligne régulière sans réponse en Q2.3.2.terrestre reste inconnue, sans mode", () => {
+  it("la ligne régulière sans réponse en Q2.3.2.terrestre part inconnue, sans mode", () => {
     const { "Q2.3.2.terrestre": _, ...sansReponse } = reponsesDe(
       "issue-dap-avion-ou-bateau",
     );
@@ -154,25 +151,6 @@ describe("la composition du transport", () => {
     expect(compositionDe(sansReponse)).toEqual({
       transportComposition: "unknown",
       mode: null,
-    });
-  });
-
-  it("un résultat sans support est sans objet, sans mode", () => {
-    expect(compositionDe(reponsesDe("issue-caisse"))).toEqual({
-      transportComposition: "not_applicable",
-      mode: null,
-    });
-  });
-
-  it("une réponse de Q2.3.2.terrestre ne change rien sans ligne régulière", () => {
-    const reponses = {
-      ...reponsesDe("issue-pmt"),
-      "Q2.3.2.terrestre": "1_OUI",
-    };
-
-    expect(compositionDe(reponses as Reponses)).toEqual({
-      transportComposition: "terrestrial_only",
-      mode: "TAP",
     });
   });
 });

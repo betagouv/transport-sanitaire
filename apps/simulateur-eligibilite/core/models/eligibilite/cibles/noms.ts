@@ -129,6 +129,9 @@ const CIBLES_BOOLEENNES = [
 
 type CibleEnumeree = keyof typeof CIBLES_ENUMEREES;
 
+/** Un mode de transport des règles : la valeur de `cible_mode_id` quand elles concluent. */
+export type ModeId = (typeof CIBLES_ENUMEREES.cible_mode_id)[number];
+
 /** Une issue des règles : la valeur de `cible_issue_id` quand elles concluent. */
 export type IssueId = (typeof CIBLES_ENUMEREES.cible_issue_id)[number];
 
