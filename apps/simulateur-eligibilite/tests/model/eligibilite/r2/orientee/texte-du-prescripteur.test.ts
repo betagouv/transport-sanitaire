@@ -7,9 +7,9 @@ import {
   ORIENTED_ISSUES,
   type OrientedIssueId,
 } from "../../../../../core/models/eligibilite/cibles/issue.vo";
+import { texteDuPrescripteur } from "../../../../../core/models/eligibilite/r2/orientee/texte";
 import { SEEDS } from "../../../../../core/models/eligibilite/seeds-catalogue";
 import { catalogueResultats } from "../../../../../front/models/eligibilite/r2/components/textes-de-l-editeur";
-import { texteDuPrescripteur } from "../../../../../front/models/eligibilite/r2/layouts/orientee/texte";
 import { R2 } from "../../../../../front/models/eligibilite/r2/r2";
 import { lectureDe } from "../../p2/reponses-de-la-permission";
 import { faux, trace, vrai } from "../traces-du-prescripteur";

@@ -6,7 +6,7 @@ import type { Faits } from "../../../../../core/models/eligibilite/faits/noms";
 import {
   raisonNonEligible,
   texteDeLaRaison,
-} from "../../../../../front/models/eligibilite/r2/components/raison-non-eligible";
+} from "../../../../../core/models/eligibilite/r2/blocs/raison-non-eligible";
 import { catalogueResultats } from "../../../../../front/models/eligibilite/r2/components/textes-de-l-editeur";
 import { faux, trace } from "../traces-du-prescripteur";
 

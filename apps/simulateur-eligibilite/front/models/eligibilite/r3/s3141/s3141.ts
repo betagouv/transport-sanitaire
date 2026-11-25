@@ -1,8 +1,8 @@
 // Le S3141 : la prescription de transport d'une permission de sortie, pour un
 // patient de moins de 20 ans (Cerfa 3141).
 //
-// Il assemble les rubriques que les cerfa partagent (`../rubriques/`) et porte
-// la seule qui lui est propre : la permission. Les noms des champs et leurs
+// Il assemble les rubriques que les cerfa partagent (`r3/rubriques/` du
+// métier) et porte la seule qui lui est propre : la permission. Les noms des champs et leurs
 // états d'export sont ceux du gabarit (`MAPPING_ACROFORM_GABARITS.json`).
 //
 // Ce qu'il laisse vide :
@@ -22,6 +22,35 @@
 
 import { given } from "../../../../../core/models/eligibilite/questions/reponses";
 import {
+  ACCIDENT,
+  type Accident,
+} from "../../../../../core/models/eligibilite/r3/rubriques/accident";
+import {
+  BENEFICIAIRE,
+  type Beneficiaire,
+} from "../../../../../core/models/eligibilite/r3/rubriques/beneficiaire";
+import {
+  EXONERATION,
+  type Exoneration,
+} from "../../../../../core/models/eligibilite/r3/rubriques/exoneration";
+import {
+  LIENS,
+  type Liens,
+} from "../../../../../core/models/eligibilite/r3/rubriques/liens";
+import {
+  MODE,
+  type Mode,
+} from "../../../../../core/models/eligibilite/r3/rubriques/mode";
+import {
+  PRESCRIPTION,
+  type Prescription,
+} from "../../../../../core/models/eligibilite/r3/rubriques/prescription";
+import type { Rubrique } from "../../../../../core/models/eligibilite/r3/rubriques/rubrique";
+import {
+  TRAJET,
+  type Trajet,
+} from "../../../../../core/models/eligibilite/r3/rubriques/trajet";
+import {
   type Cerfa,
   CerfaDtoService,
   CerfaFactory,
@@ -30,14 +59,6 @@ import {
   templateAt,
 } from "../../../../socle";
 import gabarit from "../gabarits/S3141.pdf?url";
-import { ACCIDENT, type Accident } from "../rubriques/accident";
-import { BENEFICIAIRE, type Beneficiaire } from "../rubriques/beneficiaire";
-import { EXONERATION, type Exoneration } from "../rubriques/exoneration";
-import { LIENS, type Liens } from "../rubriques/liens";
-import { MODE, type Mode } from "../rubriques/mode";
-import { PRESCRIPTION, type Prescription } from "../rubriques/prescription";
-import type { Rubrique } from "../rubriques/rubrique";
-import { TRAJET, type Trajet } from "../rubriques/trajet";
 
 const { box, date, text } = CerfaFactory;
 

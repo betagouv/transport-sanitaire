@@ -2,7 +2,7 @@
 // le socle lit pour lui (`R2.lit`), la trace que ses blocs lisent, le cas de
 // l'issue, les textes de l'éditeur, puis la page.
 //
-// Trois cas ont une page (`layouts/`) : acceptée, une fiche patient positive ;
+// Trois cas ont une page (`layouts/`, leurs textes dans le métier) : acceptée, une fiche patient positive ;
 // refusée, une fiche patient négative ; orientée, la page du prescripteur,
 // sans fiche. Chaque issue a sa famille, donc son cas (`issue.vo.ts`). Deux
 // situations n'en ont pas : les règles n'ont pas conclu, ou un
@@ -27,26 +27,29 @@ import type { Cibles } from "../../../../core/models/eligibilite/cibles/noms";
 import type { Faits } from "../../../../core/models/eligibilite/faits/noms";
 import { dansLeCircuit } from "../../../../core/models/eligibilite/questions/p2/questions/q2-2-1-indication";
 import { given } from "../../../../core/models/eligibilite/questions/reponses";
-import type { ValueOf } from "../../../../core/socle";
-import type { FirstResult, ResultatProps } from "../../../socle";
+import { PRECISIONS_DE_LA_FICHE_POSITIVE } from "../../../../core/models/eligibilite/r2/acceptee/precisions";
+import { LU_PAR_LA_FICHE_POSITIVE } from "../../../../core/models/eligibilite/r2/acceptee/texte";
 import {
   type Lu,
   luPar,
   type ReponsesLues,
   type TraceDe,
-} from "./components/ce-que-lit-un-bloc";
-import type { CatalogueResultats } from "./components/forme-du-catalogue";
-import { type Precisions, UN_SEJOUR_REEL } from "./components/precisions";
+} from "../../../../core/models/eligibilite/r2/blocs/ce-que-lit-un-bloc";
+import type { CatalogueResultats } from "../../../../core/models/eligibilite/r2/blocs/forme-du-catalogue";
+import {
+  type Precisions,
+  UN_SEJOUR_REEL,
+} from "../../../../core/models/eligibilite/r2/blocs/precisions";
+import { PRECISIONS_DU_PRESCRIPTEUR } from "../../../../core/models/eligibilite/r2/orientee/precisions";
+import { LU_PAR_LE_PRESCRIPTEUR } from "../../../../core/models/eligibilite/r2/orientee/texte";
+import { PRECISIONS_DE_LA_FICHE_NEGATIVE } from "../../../../core/models/eligibilite/r2/refusee/precisions";
+import { LU_PAR_LA_FICHE_NEGATIVE } from "../../../../core/models/eligibilite/r2/refusee/texte";
+import type { ValueOf } from "../../../../core/socle";
+import type { FirstResult, ResultatProps } from "../../../socle";
 import { catalogueDeLaSession } from "./components/textes-de-l-editeur";
 import { pageAcceptee } from "./layouts/acceptee/page";
-import { PRECISIONS_DE_LA_FICHE_POSITIVE } from "./layouts/acceptee/precisions";
-import { LU_PAR_LA_FICHE_POSITIVE } from "./layouts/acceptee/texte";
 import { pageOrientee } from "./layouts/orientee/page";
-import { PRECISIONS_DU_PRESCRIPTEUR } from "./layouts/orientee/precisions";
-import { LU_PAR_LE_PRESCRIPTEUR } from "./layouts/orientee/texte";
 import { pageRefusee } from "./layouts/refusee/page";
-import { PRECISIONS_DE_LA_FICHE_NEGATIVE } from "./layouts/refusee/precisions";
-import { LU_PAR_LA_FICHE_NEGATIVE } from "./layouts/refusee/texte";
 
 /** Ce que R2 reçoit du socle : `R2.lit`. */
 export type Lecture = ResultatProps<LuParR2>;

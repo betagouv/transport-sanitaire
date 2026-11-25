@@ -2,12 +2,15 @@
 // socle le titre du prescripteur, sa phrase d'introduction, la feuille du
 // patient. Une fiche négative ne restitue aucune portion du trajet.
 
+import type { TraceDe } from "../../../../../../core/models/eligibilite/r2/blocs/ce-que-lit-un-bloc";
+import type { CatalogueResultats } from "../../../../../../core/models/eligibilite/r2/blocs/forme-du-catalogue";
+import {
+  type LU_PAR_LA_FICHE_NEGATIVE,
+  texteDeLaFicheNegative,
+} from "../../../../../../core/models/eligibilite/r2/refusee/texte";
 import type { FirstResult } from "../../../../../socle";
-import type { TraceDe } from "../../components/ce-que-lit-un-bloc";
-import type { CatalogueResultats } from "../../components/forme-du-catalogue";
 import { pageDeLaFeuille } from "../../components/page-de-la-fiche";
 import { FicheNegative } from "./FicheNegative";
-import { type LU_PAR_LA_FICHE_NEGATIVE, texteDeLaFicheNegative } from "./texte";
 
 export function pageRefusee(
   catalogue: CatalogueResultats,

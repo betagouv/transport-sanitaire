@@ -3,13 +3,13 @@
 // avec les seuls faits et cibles qu'une condition des règles lit.
 
 import { describe, expect, it } from "vitest";
-import { SEEDS } from "../../../../../core/models/eligibilite/seeds-catalogue";
-import type { IssuePrescripteur } from "../../../../../front/models/eligibilite/r2/components/forme-du-catalogue";
-import type { Precisions } from "../../../../../front/models/eligibilite/r2/components/precisions";
+import type { IssuePrescripteur } from "../../../../../core/models/eligibilite/r2/blocs/forme-du-catalogue";
+import type { Precisions } from "../../../../../core/models/eligibilite/r2/blocs/precisions";
 import {
   type IssueDuPrescripteur,
   scenariosDuPrescripteur,
-} from "../../../../../front/models/eligibilite/r2/components/scenarios-du-prescripteur";
+} from "../../../../../core/models/eligibilite/r2/blocs/scenarios-du-prescripteur";
+import { SEEDS } from "../../../../../core/models/eligibilite/seeds-catalogue";
 import { catalogueResultats } from "../../../../../front/models/eligibilite/r2/components/textes-de-l-editeur";
 import { R2, type Trace } from "../../../../../front/models/eligibilite/r2/r2";
 

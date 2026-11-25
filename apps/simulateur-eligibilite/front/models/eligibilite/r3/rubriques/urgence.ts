@@ -10,8 +10,8 @@
 
 import { uneUrgenceHorsCentre15 } from "../../../../../core/models/eligibilite/questions/p3/conditions/urgence-hors-centre15";
 import { given } from "../../../../../core/models/eligibilite/questions/reponses";
+import type { Rubrique } from "../../../../../core/models/eligibilite/r3/rubriques/rubrique";
 import type { StrictOptions } from "../../../../socle";
-import type { Rubrique } from "./rubrique";
 
 /** Rien n'est saisi, ou l'urgence n'est pas « autres » : la place reste vide. */
 type SansPrecision = undefined;

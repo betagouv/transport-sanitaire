@@ -5,8 +5,8 @@
 // Le texte médical et le centre de référence n'ont de champ que sur la page 2,
 // le volet médical.
 //
-// Elle reprend les rubriques de la PMT (`../rubriques/`), sauf ses motifs : la
-// DAP a les siens, et la situation d'un transport par avion ou bateau. Les
+// Elle reprend les rubriques de la PMT (`r3/rubriques/` du métier), sauf ses
+// motifs : la DAP a les siens, et la situation d'un transport par avion ou bateau. Les
 // noms des champs et leurs états d'export sont ceux du gabarit
 // (`MAPPING_ACROFORM_GABARITS.json`). Une case partagée par des cellules qui
 // peuvent se cocher ensemble est dessinée (`drawnBox`). Chaque case suit son
@@ -26,6 +26,54 @@
 // | `raison soc`, `adresse`, `num ident`, `fait à`, `date fait` | au transporteur, page 4 |
 
 import {
+  ACCIDENT,
+  type Accident,
+} from "../../../../../core/models/eligibilite/r3/rubriques/accident";
+import {
+  AVION_OU_BATEAU,
+  type AvionOuBateau,
+} from "../../../../../core/models/eligibilite/r3/rubriques/avion-ou-bateau";
+import {
+  BENEFICIAIRE,
+  type Beneficiaire,
+} from "../../../../../core/models/eligibilite/r3/rubriques/beneficiaire";
+import {
+  CENTRE_DE_REFERENCE,
+  type CentreDeReference,
+} from "../../../../../core/models/eligibilite/r3/rubriques/centre-de-reference";
+import {
+  EXONERATION,
+  type Exoneration,
+} from "../../../../../core/models/eligibilite/r3/rubriques/exoneration";
+import {
+  LIENS,
+  type Liens,
+} from "../../../../../core/models/eligibilite/r3/rubriques/liens";
+import {
+  MODE,
+  type Mode,
+} from "../../../../../core/models/eligibilite/r3/rubriques/mode";
+import {
+  MOTIFS_DE_LA_DAP,
+  type MotifsDeLaDap,
+} from "../../../../../core/models/eligibilite/r3/rubriques/motifs-de-la-dap";
+import {
+  NOMBRE,
+  type Nombre,
+} from "../../../../../core/models/eligibilite/r3/rubriques/nombre";
+import {
+  PRESCRIPTION,
+  type Prescription,
+} from "../../../../../core/models/eligibilite/r3/rubriques/prescription";
+import {
+  TEXTE_MEDICAL,
+  type TexteMedical,
+} from "../../../../../core/models/eligibilite/r3/rubriques/texte-medical";
+import {
+  TRAJET,
+  type Trajet,
+} from "../../../../../core/models/eligibilite/r3/rubriques/trajet";
+import {
   type Cerfa,
   CerfaDtoService,
   CerfaFactory,
@@ -34,27 +82,6 @@ import {
   templateAt,
 } from "../../../../socle";
 import gabarit from "../gabarits/S3139h.pdf?url";
-import { ACCIDENT, type Accident } from "../rubriques/accident";
-import {
-  AVION_OU_BATEAU,
-  type AvionOuBateau,
-} from "../rubriques/avion-ou-bateau";
-import { BENEFICIAIRE, type Beneficiaire } from "../rubriques/beneficiaire";
-import {
-  CENTRE_DE_REFERENCE,
-  type CentreDeReference,
-} from "../rubriques/centre-de-reference";
-import { EXONERATION, type Exoneration } from "../rubriques/exoneration";
-import { LIENS, type Liens } from "../rubriques/liens";
-import { MODE, type Mode } from "../rubriques/mode";
-import {
-  MOTIFS_DE_LA_DAP,
-  type MotifsDeLaDap,
-} from "../rubriques/motifs-de-la-dap";
-import { NOMBRE, type Nombre } from "../rubriques/nombre";
-import { PRESCRIPTION, type Prescription } from "../rubriques/prescription";
-import { TEXTE_MEDICAL, type TexteMedical } from "../rubriques/texte-medical";
-import { TRAJET, type Trajet } from "../rubriques/trajet";
 import {
   LIBELLE_DE_LA_PRECISION,
   PRECISION_DE_L_URGENCE,

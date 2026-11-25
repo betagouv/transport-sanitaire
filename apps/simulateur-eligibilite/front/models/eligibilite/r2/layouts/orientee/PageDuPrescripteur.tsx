@@ -4,8 +4,11 @@
 // l'introduction que le socle place ; elle n'écrit que ses intertitres, ceux
 // des gabarits de l'éditeur.
 
+import type {
+  ElementDuPourquoi,
+  TexteDuPrescripteur,
+} from "../../../../../../core/models/eligibilite/r2/orientee/texte";
 import { NumberedCards, Panel } from "../../../../../socle";
-import type { ElementDuPourquoi, TexteDuPrescripteur } from "./texte";
 
 export function PageDuPrescripteur({ texte }: { texte: TexteDuPrescripteur }) {
   return (

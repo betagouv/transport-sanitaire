@@ -5,8 +5,8 @@
 // `mapping_documents.json`, en v10.1.3.
 
 import { describe, expect, it } from "vitest";
-import { AVION_OU_BATEAU } from "../../../../front/models/eligibilite/r3/rubriques/avion-ou-bateau";
-import { MOTIFS_DE_LA_DAP } from "../../../../front/models/eligibilite/r3/rubriques/motifs-de-la-dap";
+import { AVION_OU_BATEAU } from "../../../../core/models/eligibilite/r3/rubriques/avion-ou-bateau";
+import { MOTIFS_DE_LA_DAP } from "../../../../core/models/eligibilite/r3/rubriques/motifs-de-la-dap";
 import { cellules, DAP, ETRANGER, type Reponses } from "./reponses-du-cerfa";
 
 const SANS_MOTIF = {

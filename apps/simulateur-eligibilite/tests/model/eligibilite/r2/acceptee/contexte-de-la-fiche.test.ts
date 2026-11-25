@@ -9,8 +9,8 @@ import {
   codesDeContexte,
   motifAdministratif,
   phraseDuContexte,
-} from "../../../../../front/models/eligibilite/r2/components/contexte-du-resultat";
-import type { Precisions } from "../../../../../front/models/eligibilite/r2/components/precisions";
+} from "../../../../../core/models/eligibilite/r2/blocs/contexte-du-resultat";
+import type { Precisions } from "../../../../../core/models/eligibilite/r2/blocs/precisions";
 import { catalogueResultats } from "../../../../../front/models/eligibilite/r2/components/textes-de-l-editeur";
 import { trace, type ValeursDesCibles } from "../traces-du-prescripteur";
 

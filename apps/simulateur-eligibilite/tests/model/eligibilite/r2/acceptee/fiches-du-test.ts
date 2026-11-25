@@ -3,11 +3,11 @@
 
 import type { AcceptedIssueId } from "../../../../../core/models/eligibilite/cibles/issue.vo";
 import type { Faits } from "../../../../../core/models/eligibilite/faits/noms";
-import { catalogueResultats } from "../../../../../front/models/eligibilite/r2/components/textes-de-l-editeur";
 import {
   type TexteDeLaFichePositive,
   texteDeLaFichePositive,
-} from "../../../../../front/models/eligibilite/r2/layouts/acceptee/texte";
+} from "../../../../../core/models/eligibilite/r2/acceptee/texte";
+import { catalogueResultats } from "../../../../../front/models/eligibilite/r2/components/textes-de-l-editeur";
 import type { Trace } from "../../../../../front/models/eligibilite/r2/r2";
 import { trace, type ValeursDesCibles } from "../traces-du-prescripteur";
 

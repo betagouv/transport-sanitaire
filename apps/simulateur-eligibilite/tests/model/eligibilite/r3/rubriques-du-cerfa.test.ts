@@ -4,13 +4,13 @@
 // cellules. `mapping_documents.json` et `CONTRAT_LIEUX_CERFA.json`.
 
 import { describe, expect, it } from "vitest";
-import { ACCIDENT } from "../../../../front/models/eligibilite/r3/rubriques/accident";
-import { BENEFICIAIRE } from "../../../../front/models/eligibilite/r3/rubriques/beneficiaire";
-import { EXONERATION } from "../../../../front/models/eligibilite/r3/rubriques/exoneration";
-import { LIENS } from "../../../../front/models/eligibilite/r3/rubriques/liens";
-import { MODE } from "../../../../front/models/eligibilite/r3/rubriques/mode";
-import { PRESCRIPTION } from "../../../../front/models/eligibilite/r3/rubriques/prescription";
-import { TRAJET } from "../../../../front/models/eligibilite/r3/rubriques/trajet";
+import { ACCIDENT } from "../../../../core/models/eligibilite/r3/rubriques/accident";
+import { BENEFICIAIRE } from "../../../../core/models/eligibilite/r3/rubriques/beneficiaire";
+import { EXONERATION } from "../../../../core/models/eligibilite/r3/rubriques/exoneration";
+import { LIENS } from "../../../../core/models/eligibilite/r3/rubriques/liens";
+import { MODE } from "../../../../core/models/eligibilite/r3/rubriques/mode";
+import { PRESCRIPTION } from "../../../../core/models/eligibilite/r3/rubriques/prescription";
+import { TRAJET } from "../../../../core/models/eligibilite/r3/rubriques/trajet";
 import { MINEUR } from "../p2/reponses-de-la-permission";
 import {
   cellules,

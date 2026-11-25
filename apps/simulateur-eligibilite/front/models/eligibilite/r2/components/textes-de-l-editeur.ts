@@ -2,7 +2,7 @@
 // (`rules/catalogue-resultats.json`). Ils ne se chargent qu'à la demande :
 // 900 ko de textes n'ont rien à faire sur les pages du questionnaire.
 
-import type { CatalogueResultats } from "./forme-du-catalogue";
+import type { CatalogueResultats } from "../../../../../core/models/eligibilite/r2/blocs/forme-du-catalogue";
 
 /** Le catalogue des textes de R2. L'affectation vérifie sa forme. */
 export async function catalogueResultats(): Promise<CatalogueResultats> {

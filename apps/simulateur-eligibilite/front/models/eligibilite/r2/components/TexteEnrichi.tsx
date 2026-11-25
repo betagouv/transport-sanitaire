@@ -2,7 +2,7 @@
 // sont des éléments React, jamais du balisage injecté. Un lien s'ouvre dans un
 // nouvel onglet, et le dit dans son titre.
 
-import { segmentsDuTexte } from "./segments-du-texte";
+import { segmentsDuTexte } from "../../../../../core/models/eligibilite/r2/blocs/segments-du-texte";
 
 export function TexteEnrichi({ texte }: { texte: string }) {
   return segmentsDuTexte(texte).map(({ cle, gras, lien, texte: morceau }) => {
